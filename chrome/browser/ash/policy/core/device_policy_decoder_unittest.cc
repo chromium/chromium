@@ -1059,4 +1059,13 @@ TEST_F(DevicePolicyDecoderTest, DecodeDeviceLoginScreenPreferSlowCiphers) {
                                std::move(deviceloginscreenpreferslowciphers));
 }
 
+TEST_F(DevicePolicyDecoderTest, DeviceMaxUserProfiles) {
+  em::ChromeDeviceSettingsProto device_policy;
+  DecodeUnsetDevicePolicyTestHelper(device_policy, key::kDeviceMaxUserProfiles);
+
+  device_policy.mutable_devicemaxuserprofiles()->set_value(5);
+  DecodeDevicePolicyTestHelper(device_policy, key::kDeviceMaxUserProfiles,
+                               base::Value(5));
+}
+
 }  // namespace policy

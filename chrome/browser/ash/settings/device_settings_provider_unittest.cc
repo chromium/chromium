@@ -902,6 +902,17 @@ TEST_F(DeviceSettingsProviderTest, DecodeDomainAutoComplete) {
   VerifyDomainAutoComplete(&domain_value);
 }
 
+TEST_F(DeviceSettingsProviderTest, DecodeDeviceMaxUserProfiles) {
+  // By default DeviceMaxUserProfiles policy should not be set.
+  VerifyPolicyValue(kAccountsPrefDeviceMaxUserProfiles, nullptr);
+
+  // Check some meaningful value. Policy should be set.
+  device_policy_->payload().mutable_devicemaxuserprofiles()->set_value(5);
+  BuildAndInstallDevicePolicy();
+  base::Value expected_value(5);
+  VerifyPolicyValue(kAccountsPrefDeviceMaxUserProfiles, &expected_value);
+}
+
 TEST_F(DeviceSettingsProviderTest, EmptyAllowedConnectionTypesForUpdate) {
   // By default AllowedConnectionTypesForUpdate policy should not be set.
   VerifyPolicyValue(kAllowedConnectionTypesForUpdate, nullptr);

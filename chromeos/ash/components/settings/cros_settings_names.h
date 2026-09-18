@@ -25,6 +25,9 @@ inline constexpr char kAccountsPrefUsers[] = "cros.accounts.users";
 inline constexpr char kAccountsPrefEphemeralUsersEnabled[] =
     "cros.accounts.ephemeralUsersEnabled";
 
+inline constexpr char kAccountsPrefDeviceMaxUserProfiles[] =
+    "cros.accounts.deviceMaxUserProfiles";
+
 inline constexpr char kAccountsPrefDeviceLocalAccounts[] =
     "cros.accounts.deviceLocalAccounts";
 

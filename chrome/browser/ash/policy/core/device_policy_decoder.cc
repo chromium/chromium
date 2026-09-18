@@ -694,6 +694,17 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
       }
     }
   }
+
+  if (policy.has_devicemaxuserprofiles()) {
+    const em::IntegerPolicyProto& container(policy.devicemaxuserprofiles());
+    if (container.has_value()) {
+      if (auto value = DecodeIntegerValue(container.value())) {
+        policies->Set(key::kDeviceMaxUserProfiles, POLICY_LEVEL_MANDATORY,
+                      POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+                      std::move(*value), nullptr);
+      }
+    }
+  }
 }
 
 base::DictValue DecodeDeviceLocalAccountInfoProto(
