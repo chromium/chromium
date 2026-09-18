@@ -2838,7 +2838,6 @@ source_set("browser") {
       "//chrome/browser/ash/mahi/web_contents",
       "//chrome/browser/ash/multidevice_setup",
       "//chrome/browser/ash/nearby",
-      "//chrome/browser/ash/nearby/presence",
       "//chrome/browser/ash/net",
       "//chrome/browser/ash/notifications",
       "//chrome/browser/ash/ownership",

@@ -102,6 +102,9 @@ constexpr ProtoDbType kObsoleteSharedProtoDbTypeClients[] = {
     ProtoDbType::FEED_JOURNAL_DATABASE,
     ProtoDbType::VIDEO_TUTORIALS_DATABASE,
     ProtoDbType::VIDEO_TUTORIALS_V2_DATABASE,
+    ProtoDbType::NEARBY_PRESENCE_LOCAL_PUBLIC_CREDENTIAL_DATABASE,
+    ProtoDbType::NEARBY_PRESENCE_PRIVATE_CREDENTIAL_DATABASE,
+    ProtoDbType::NEARBY_PRESENCE_REMOTE_PUBLIC_CREDENTIAL_DATABASE,
     ProtoDbType::LAST,  // Marks the end of list.
 };
 

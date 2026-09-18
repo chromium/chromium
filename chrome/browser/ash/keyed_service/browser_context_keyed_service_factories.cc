@@ -82,7 +82,6 @@
 #include "chrome/browser/ash/nearby/nearby_dependencies_provider.h"
 #include "chrome/browser/ash/nearby/nearby_dependencies_provider_factory.h"
 #include "chrome/browser/ash/nearby/nearby_process_manager_factory.h"
-#include "chrome/browser/ash/nearby/presence/nearby_presence_service_factory.h"
 #include "chrome/browser/ash/nearby/quick_start_connectivity_service_factory.h"
 #include "chrome/browser/ash/net/alwayson_vpn_pre_connect_url_allowlist_service_factory.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
@@ -200,7 +199,6 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   nearby::NearbyDependenciesProvider::EnsureFactoryBuilt();
   nearby::NearbyDependenciesProviderFactory::GetInstance();
   nearby::NearbyProcessManagerFactory::GetInstance();
-  nearby::presence::NearbyPresenceServiceFactory::GetInstance();
   OAuth2LoginManagerFactory::GetInstance();
   on_device_controls::AppControlsServiceFactory::GetInstance();
   OfflineSigninLimiterFactory::GetInstance();

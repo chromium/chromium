@@ -63,7 +63,6 @@ static_library("keyed_service") {
     "//chrome/browser/ash/login/smart_lock",
     "//chrome/browser/ash/multidevice_setup",
     "//chrome/browser/ash/nearby",
-    "//chrome/browser/ash/nearby/presence",
     "//chrome/browser/ash/net",
     "//chrome/browser/ash/ownership",
     "//chrome/browser/ash/phonehub",
