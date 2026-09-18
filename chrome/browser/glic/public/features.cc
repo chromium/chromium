@@ -319,4 +319,7 @@ BASE_FEATURE(kGlicWarmOnIph, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicBackfillWarmingUsePerformanceManager,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kGlicColdWarmingUsePerformanceManager,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features

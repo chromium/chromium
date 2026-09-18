@@ -216,6 +216,37 @@ IN_PROC_BROWSER_TEST_F(GlicWarmingChecksDeferredTest,
   EXPECT_FALSE(IsWarmed());
 }
 
+class GlicWarmingChecksPerformanceManagerBrowserTest
+    : public GlicWarmingChecksTestBase {
+ public:
+  explicit GlicWarmingChecksPerformanceManagerBrowserTest(
+      const std::string& delay_ms = "5000") {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{features::kGlicWarming,
+                               {{features::kGlicWarmingDelayMs.name,
+                                 delay_ms}}},
+                              {features::kGlicColdWarmingUsePerformanceManager,
+                               {}},
+                              {features::kGlicAnchorEntryPointForOnboardedUsers,
+                               {}}},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicWarmingChecksPerformanceManagerBrowserTest,
+                       ShouldPreloadForProfile_TriggersWhenIdle) {
+  ResetPrewarming();
+  EXPECT_FALSE(IsWarmed());
+
+  service()->TryPreload(GlicWarmingTrigger::kStartup);
+  EXPECT_TRUE(
+      RunUntil([this]() { return IsWarmed(); }, "Wait for container to warm"));
+  EXPECT_FALSE(service()->GetColdWarmingSchedulerForTesting().IsScheduled());
+}
+
 struct WarmingTriggerParam {
   GlicWarmingTrigger trigger;
   std::string expected_histogram_suffix;

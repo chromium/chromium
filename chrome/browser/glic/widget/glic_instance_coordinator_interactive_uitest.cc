@@ -682,12 +682,16 @@ class GlicInstanceCoordinatorWithDelayedPreloadingUiTest
         [this]() { glic_service()->TryPreload(GlicWarmingTrigger::kStartup); });
   }
 
-  auto CheckWarmed() {
-    return Do([this]() {
-      EXPECT_TRUE(GetInstanceCoordinator()
-                      .GetWebContentsWarmingPoolForTesting()
-                      .HasWarmedContainerForTesting());
-    });
+  auto WaitUntilWarmed() {
+    return WaitUntil(
+        [this]() -> std::string {
+          return GetInstanceCoordinator()
+                         .GetWebContentsWarmingPoolForTesting()
+                         .HasWarmedContainerForTesting()
+                     ? "warmed"
+                     : "not warmed";
+        },
+        "warmed", "Wait for warmed container");
   }
 
  private:
@@ -696,10 +700,8 @@ class GlicInstanceCoordinatorWithDelayedPreloadingUiTest
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorWithDelayedPreloadingUiTest,
                        Preload) {
-  // TODO(crbug.com/411100559): Wait for preload completion rather than assuming
-  // that it will finish before the next step in the sequence.
   RunTestSequence(
-      ResetPreloading(), TryPreload(), CheckWarmed(),
+      ResetPreloading(), TryPreload(), WaitUntilWarmed(),
       PressButton(kGlicButtonElementId),
       InAnyContext(
           WaitForShow(kGlicViewElementId).SetMustRemainVisible(false)));

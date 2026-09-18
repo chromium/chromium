@@ -182,6 +182,8 @@ BASE_DECLARE_FEATURE(kGlicWarmOnNudge);
 BASE_DECLARE_FEATURE(kGlicWarmOnIph);
 
 BASE_DECLARE_FEATURE(kGlicBackfillWarmingUsePerformanceManager);
+
+BASE_DECLARE_FEATURE(kGlicColdWarmingUsePerformanceManager);
 }  // namespace features
 
 #endif  // CHROME_BROWSER_GLIC_PUBLIC_FEATURES_H_
