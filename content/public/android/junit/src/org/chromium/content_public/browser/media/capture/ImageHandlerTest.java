@@ -223,13 +223,10 @@ public class ImageHandlerTest {
     }
 
     @Test
-    public void testOnImageAvailableWhileClosingCanStillAcquire() throws Exception {
+    public void testOnImageAvailableWhileClosingDoesNotAcquire() throws Exception {
         final Image image1 = createMockImage(/* timestamp= */ 1L);
-        final Image image2 = createMockImage(/* timestamp= */ 2L);
         final Plane plane1 = image1.getPlanes()[0];
-        final Plane plane2 = image2.getPlanes()[0];
         final ArgumentCaptor<Runnable> releaseCb1 = ArgumentCaptor.forClass(Runnable.class);
-        final ArgumentCaptor<Runnable> releaseCb2 = ArgumentCaptor.forClass(Runnable.class);
 
         // Acquire one image.
         onImageAvailable(image1);
@@ -243,28 +240,16 @@ public class ImageHandlerTest {
         assertTrue(mImageHandler.isClosingForTesting());
         verify(mImageReader, never()).close();
 
-        // We should be able to acquire the next image. This is because we want to keep providing
-        // frames if the producer keeps producing them. When we recreate the ImageHandler we may get
-        // a few extra frames from the producer until it switches over to using the new Surface.
-        onImageAvailable(image2);
-        verify(mDelegate)
-                .onRgbaFrameAvailable(
-                        eq(mImageHandler), releaseCb2.capture(), eq(2L), eq(plane2), any());
-        assertEquals(2, mImageHandler.getAcquiredImageCountForTesting());
+        // Once close() is called (which ScreenCapture invokes only after the new ImageHandler has
+        // produced its first frame), new onImageAvailable() callbacks should be ignored so we do
+        // not deliver stale frames from the old surface out of order.
+        mImageHandler.onImageAvailable(mImageReader);
+        verify(mImageReader, times(1)).acquireLatestImage();
+        assertEquals(1, mImageHandler.getAcquiredImageCountForTesting());
 
-        // We should still be closing.
-        assertTrue(mImageHandler.isClosingForTesting());
-        verify(mImageReader, never()).close();
-
-        // Release the first image.
+        // Release the held image and the ImageHandler should close immediately.
         releaseCb1.getValue().run();
         verify(image1).close();
-        assertEquals(1, mImageHandler.getAcquiredImageCountForTesting());
-        verify(mImageReader, never()).close();
-
-        // Release the second image and the ImageHandler should close.
-        releaseCb2.getValue().run();
-        verify(image2).close();
         verify(mImageReader).close();
         verify(mDelegate).onClose(eq(mImageHandler));
         assertEquals(0, mImageHandler.getAcquiredImageCountForTesting());
@@ -502,5 +487,75 @@ public class ImageHandlerTest {
         verify(mDelegate, times(2)).onRgbaFrameAvailable(any(), any(), anyLong(), any(), any());
         verify(image, times(2)).close();
         assertEquals(0, mImageHandler.getAcquiredImageCountForTesting());
+    }
+
+    @Test
+    public void testPostedOnImageAvailableAfterCloseNowIgnored() throws Exception {
+        final Image image1 = createMockImage(/* timestamp= */ 1L);
+        final Plane plane1 = image1.getPlanes()[0];
+
+        when(mImageReader.acquireLatestImage()).thenReturn(image1);
+
+        // Acquire the first image.
+        mImageHandler.onImageAvailable(mImageReader);
+
+        final ArgumentCaptor<Runnable> releaseCb = ArgumentCaptor.forClass(Runnable.class);
+        verify(mDelegate)
+                .onRgbaFrameAvailable(
+                        eq(mImageHandler),
+                        releaseCb.capture(),
+                        eq(1L),
+                        eq(plane1),
+                        eq(TEST_CROP_RECT));
+
+        // Release schedules a posted task on mHandler.
+        releaseCb.getValue().run();
+        verify(image1).close();
+
+        // Call closeNow() before the posted task executes on mHandler.
+        mImageHandler.closeNow();
+        verify(mImageReader).close();
+        verify(mDelegate).onClose(eq(mImageHandler));
+
+        // Now run the queued mHandler tasks; it should be a no-op because mClosed is true.
+        shadowOf(Looper.getMainLooper()).idle();
+        verify(mImageReader, times(1)).acquireLatestImage();
+        verifyNoMoreInteractions(mDelegate);
+    }
+
+    @Test
+    public void testReleaseImageAfterCloseAndCloseNowDoesNotDoubleClose() throws Exception {
+        final Image image1 = createMockImage(/* timestamp= */ 1L);
+        final Plane plane1 = image1.getPlanes()[0];
+
+        when(mImageReader.acquireLatestImage()).thenReturn(image1);
+
+        // Acquire an image so mAcquiredImageCount == 1.
+        mImageHandler.onImageAvailable(mImageReader);
+
+        final ArgumentCaptor<Runnable> releaseCb = ArgumentCaptor.forClass(Runnable.class);
+        verify(mDelegate)
+                .onRgbaFrameAvailable(
+                        eq(mImageHandler),
+                        releaseCb.capture(),
+                        eq(1L),
+                        eq(plane1),
+                        eq(TEST_CROP_RECT));
+
+        // 1. Graceful drain requested while image1 is still held (sets mClosing = true).
+        mImageHandler.close();
+        verify(mDelegate, never()).onClose(any());
+
+        // 2. Immediate teardown requested before image1 is released.
+        mImageHandler.closeNow();
+        verify(mImageReader, times(1)).close();
+        verify(mDelegate, times(1)).onClose(eq(mImageHandler));
+
+        // 3. Pending release callback finally runs; image1 should be closed, but closeNow()
+        // and mDelegate.onClose() must not be invoked a second time.
+        releaseCb.getValue().run();
+        verify(image1, times(1)).close();
+        verify(mImageReader, times(1)).close();
+        verify(mDelegate, times(1)).onClose(eq(mImageHandler));
     }
 }

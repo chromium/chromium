@@ -261,6 +261,7 @@ TEST_F(DesktopCapturerAndroidTest, CaptureAndTemporaryError) {
   EXPECT_EQ(result2, webrtc::DesktopCapturer::Result::SUCCESS);
   ASSERT_TRUE(frame2);
   EXPECT_TRUE(frame2->updated_region().is_empty());
+  EXPECT_EQ(frame2->capture_time_ms(), 0);
 }
 
 TEST_F(DesktopCapturerAndroidTest, DirtyRegionRestoredOnNewFrame) {
@@ -536,35 +537,40 @@ TEST_F(DesktopCapturerAndroidTest, FrameBufferReuse) {
   ASSERT_TRUE(frame1);
   const uint8_t* const frame1_data = frame1->data();
 
-  // Push and capture frame 2.
+  // Release frame 1 before the next frame arrives (matching production
+  // DesktopCaptureDevice behavior where OnCaptureResult synchronously
+  // copies/converts the frame and drops its reference).
+  frame1.reset();
+
+  // Push and capture frame 2. Because frame 1 was released (!IsShared()),
+  // it should reuse frame 1's buffer.
   PushRgbaFrame();
   auto [result2, frame2] = CaptureFrame();
   EXPECT_EQ(result2, webrtc::DesktopCapturer::Result::SUCCESS);
   ASSERT_TRUE(frame2);
   const uint8_t* const frame2_data = frame2->data();
+  EXPECT_EQ(frame2_data, frame1_data);
 
-  // Frame 1 and Frame 2 should use different buffers in the 2-frame queue.
-  EXPECT_NE(frame1_data, frame2_data);
-
-  // Release frame 1 so its slot in the queue is no longer shared.
-  frame1.reset();
-
-  // Push and capture frame 3. It should reuse frame 1's buffer.
+  // Keep `frame2` alive (IsShared() == true) while frame 3 arrives.
+  // DesktopCapturerAndroid must allocate a new buffer to avoid overwriting
+  // `frame2`'s in-use pixels.
   PushRgbaFrame();
   auto [result3, frame3] = CaptureFrame();
   EXPECT_EQ(result3, webrtc::DesktopCapturer::Result::SUCCESS);
   ASSERT_TRUE(frame3);
-  EXPECT_EQ(frame3->data(), frame1_data);
+  const uint8_t* const frame3_data = frame3->data();
+  EXPECT_NE(frame3_data, frame2_data);
 
-  // Release frame 2 so its slot in the queue is no longer shared.
+  // Release both frame 2 and frame 3 so `current_frame_` is no longer shared.
   frame2.reset();
+  frame3.reset();
 
-  // Push and capture frame 4. It should reuse frame 2's buffer.
+  // Push and capture frame 4. It should reuse frame 3's buffer.
   PushRgbaFrame();
   auto [result4, frame4] = CaptureFrame();
   EXPECT_EQ(result4, webrtc::DesktopCapturer::Result::SUCCESS);
   ASSERT_TRUE(frame4);
-  EXPECT_EQ(frame4->data(), frame2_data);
+  EXPECT_EQ(frame4->data(), frame3_data);
 }
 
 TEST_F(DesktopCapturerAndroidTest, ZeroHertzWithFrameBufferReuse) {

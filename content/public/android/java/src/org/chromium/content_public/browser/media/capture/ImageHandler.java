@@ -50,6 +50,7 @@ class ImageHandler implements ImageReader.OnImageAvailableListener {
     private final ImageReader mImageReader;
     private int mAcquiredImageCount;
     private boolean mClosing;
+    private boolean mClosed;
 
     /** Whether we are actively acquiring and dispatching images. */
     private boolean mIsAcquiring;
@@ -101,6 +102,8 @@ class ImageHandler implements ImageReader.OnImageAvailableListener {
      * immediately.
      */
     void close() {
+        if (mClosed || mClosing) return;
+
         // If we have no acquired images, then it's safe to close the ImageReader because
         // we are guaranteed that the native side is not using any of those Images.
         if (mAcquiredImageCount == 0) {
@@ -118,6 +121,9 @@ class ImageHandler implements ImageReader.OnImageAvailableListener {
      * safety issues) to access data from an `Image` after it is closed.
      */
     void closeNow() {
+        if (mClosed) return;
+
+        mClosed = true;
         mImageReader.close();
         mAcquiredImageCount = 0;
         mDelegate.onClose(this);
@@ -169,6 +175,8 @@ class ImageHandler implements ImageReader.OnImageAvailableListener {
             mAcquiredImageCount--;
         }
 
+        if (mClosed) return;
+
         if (mClosing) {
             if (mAcquiredImageCount == 0) closeNow();
         } else {
@@ -179,6 +187,10 @@ class ImageHandler implements ImageReader.OnImageAvailableListener {
 
     @Override
     public void onImageAvailable(ImageReader reader) {
+        // `releaseImage()` posts this callback, so a queued task can still run after
+        // `closeNow()` or `close()`. Bail out rather than touch a closed/closing reader.
+        if (mClosed || mClosing) return;
+
         // Prevent re-entrant recursion if the delegate synchronously releases the image
         // during frame processing, which calls releaseImage() -> onImageAvailable().
         if (mIsAcquiring) return;

@@ -59,17 +59,21 @@ DesktopCapturerAndroid::DesktopCapturerAndroid(
 DesktopCapturerAndroid::DesktopCapturerAndroid(
     const webrtc::DesktopCaptureOptions& options,
     std::unique_ptr<DesktopCapturerAndroidJniInterface> jni_interface)
-    : jni_interface_(std::move(jni_interface)) {}
+    : jni_interface_(std::move(jni_interface)) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
 
 DesktopCapturerAndroid::~DesktopCapturerAndroid() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   JNIEnv* env = base::android::AttachCurrentThread();
   jni_interface_->Destroy(env, screen_capture_);
 }
 
 void DesktopCapturerAndroid::Start(Callback* callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   callback_ = callback;
   frame_is_dirty_ = false;
-  queue_.Reset();
+  current_frame_.reset();
 
   JNIEnv* env = base::android::AttachCurrentThread();
   screen_capture_.Reset(
@@ -85,6 +89,7 @@ void DesktopCapturerAndroid::SetSharedMemoryFactory(
     std::unique_ptr<webrtc::SharedMemoryFactory> shared_memory_factory) {}
 
 void DesktopCapturerAndroid::CaptureFrame() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(callback_);
 
   if (finishing_) {
@@ -93,19 +98,22 @@ void DesktopCapturerAndroid::CaptureFrame() {
     return;
   }
 
-  if (!queue_.current_frame()) {
+  if (!current_frame_) {
     callback_->OnCaptureResult(webrtc::DesktopCapturer::Result::ERROR_TEMPORARY,
                                nullptr);
     return;
   }
 
-  std::unique_ptr<webrtc::DesktopFrame> frame = queue_.current_frame()->Share();
+  std::unique_ptr<webrtc::DesktopFrame> frame = current_frame_->Share();
   if (frame_is_dirty_) {
     frame->mutable_updated_region()->SetRect(
         webrtc::DesktopRect::MakeSize(frame->size()));
     frame_is_dirty_ = false;
   } else {
     frame->mutable_updated_region()->Clear();
+    // Serving a cached static frame requires no new capture work; reset
+    // `capture_time_ms` to avoid reporting stale capture durations to metrics.
+    frame->set_capture_time_ms(0);
   }
 
   callback_->OnCaptureResult(webrtc::DesktopCapturer::Result::SUCCESS,
@@ -127,6 +135,7 @@ void DesktopCapturerAndroid::OnRgbaFrameAvailable(
     int32_t unchecked_crop_top,
     int32_t unchecked_crop_right,
     int32_t unchecked_crop_bottom) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Use unsigned checked arithmetic since our operations should never go
   // negative.
   PlaneInfo plane;
@@ -164,16 +173,19 @@ void DesktopCapturerAndroid::OnI420FrameAvailable(
 }
 
 void DesktopCapturerAndroid::OnStop(JNIEnv* env) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Shutdown();
 }
 
 void DesktopCapturerAndroid::Shutdown() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!finishing_);
   finishing_ = true;
 }
 
 void DesktopCapturerAndroid::ProcessRgbaFrame(int64_t timestamp_ns,
                                               PlaneInfo plane) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Don't process frames if we are no longer doing anything.
   if (finishing_) {
     jni_zero::RunRunnable(plane.release_cb);
@@ -184,22 +196,23 @@ void DesktopCapturerAndroid::ProcessRgbaFrame(int64_t timestamp_ns,
   const auto height = plane.crop_bottom - plane.crop_top;
   const webrtc::DesktopSize size(width.ValueOrDie<int32_t>(),
                                  height.ValueOrDie<int32_t>());
-  if (base::FeatureList::IsEnabled(kDesktopCaptureAndroidFrameBufferReuse)) {
-    queue_.MoveToNextFrame();
-    if (!queue_.current_frame() ||
-        !queue_.current_frame()->size().equals(size) ||
-        queue_.current_frame()->IsShared()) {
-      queue_.ReplaceCurrentFrame(webrtc::SharedDesktopFrame::Wrap(
-          std::make_unique<webrtc::BasicDesktopFrame>(size,
-                                                      webrtc::FOURCC_ABGR)));
-    }
-  } else {
-    queue_.ReplaceCurrentFrame(webrtc::SharedDesktopFrame::Wrap(
-        std::make_unique<webrtc::BasicDesktopFrame>(size,
-                                                    webrtc::FOURCC_ABGR)));
+  // Reuse `current_frame_` in-place if the buffer is not currently shared and
+  // its dimensions match. `DesktopCaptureDevice` synchronously processes and
+  // releases the `DesktopFrame` inside `OnCaptureResult()`, so
+  // `!current_frame_->IsShared()` is normally true on the next frame.
+  // Note: `DesktopCapturerAndroid` does not implement consumer-side frame
+  // capping or flow control; the consumer (`Callback`) is expected to discard
+  // shared frames ASAP to bound memory usage. If the callback retains the
+  // frame beyond `OnCaptureResult()` or the screen size changes, allocate a
+  // new buffer to avoid overwriting shared memory.
+  if (!current_frame_ || !current_frame_->size().equals(size) ||
+      current_frame_->IsShared() ||
+      !base::FeatureList::IsEnabled(kDesktopCaptureAndroidFrameBufferReuse)) {
+    current_frame_ = webrtc::SharedDesktopFrame::Wrap(
+        std::make_unique<webrtc::BasicDesktopFrame>(size, webrtc::FOURCC_ABGR));
   }
 
-  webrtc::DesktopFrame* current_frame = queue_.current_frame();
+  webrtc::DesktopFrame* current_frame = current_frame_.get();
 
   // We don't have access to this information to Android, but this is only
   // used for mouse cursor stuff, which we don't support currently.

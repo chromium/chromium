@@ -13,11 +13,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
-#include "third_party/webrtc/modules/desktop_capture/screen_capture_frame_queue.h"
 #include "third_party/webrtc/modules/desktop_capture/shared_desktop_frame.h"
 
 namespace content {
@@ -136,11 +136,21 @@ class CONTENT_EXPORT DesktopCapturerAndroid final
   raw_ptr<Callback> callback_ = nullptr;
   base::android::ScopedJavaGlobalRef<jobject> screen_capture_;
 
-  webrtc::ScreenCaptureFrameQueue<webrtc::SharedDesktopFrame> queue_;
+  // TODO(crbug.com/563421987): Refactor DesktopCapturerAndroid to produce
+  // media::VideoFrame directly instead of webrtc::DesktopFrame.
+  std::unique_ptr<webrtc::SharedDesktopFrame> current_frame_;
+  // Set to true if there is a new frame since the previous call to
+  // CaptureFrame().
   bool frame_is_dirty_ = false;
   int64_t last_frame_time_ns_ = 0;
   bool finishing_ = false;
   std::unique_ptr<DesktopCapturerAndroidJniInterface> jni_interface_;
+
+  // Constructed on the UI thread, detached in the constructor, and accessed
+  // exclusively on `desktopCaptureThread` thereafter (since
+  // `ScreenCapture.java` captures `Looper.myLooper()` during `Start()` and
+  // binds `ImageReader` callbacks to that thread's `Handler`).
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace content
