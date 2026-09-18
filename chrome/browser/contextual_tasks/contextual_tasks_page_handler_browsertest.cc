@@ -158,4 +158,15 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksPageHandlerBrowserTest, OpenOverflowMenuHe
   EXPECT_EQ(active_contents->GetURL().spec(), "https://support.google.com/chrome/answer/17025061");
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksPageHandlerBrowserTest, OpenAskGHelpUi) {
+  auto* tab_list = TabListInterface::From(browser());
+  int start_count = tab_list->GetTabCount();
+  page_handler_->OpenAskGHelpUi();
+  EXPECT_EQ(tab_list->GetTabCount(), start_count + 1);
+  content::WebContents* active_contents =
+      browser()->GetActiveTabInterface()->GetContents();
+  EXPECT_EQ(active_contents->GetURL().spec(),
+            contextual_tasks::GetContextualTasksTabHelpUrl());
+}
+
 }  // namespace contextual_tasks

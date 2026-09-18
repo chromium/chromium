@@ -1081,7 +1081,7 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
         'No suggestion should be selected on arrow up in zero state full tab');
   });
 
-  test('clicking activity link calls openUrl', async () => {
+  test('clicking activity link calls navigateUrl', async () => {
     loadTimeData.overrideValues({
       suggestionActivityLink:
           'Learn more about <a href="https://google.com/">activity</a>',

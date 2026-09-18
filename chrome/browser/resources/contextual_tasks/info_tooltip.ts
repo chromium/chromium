@@ -14,7 +14,6 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './info_tooltip.css.js';
 import {getHtml} from './info_tooltip.html.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
-import {WindowOpenDisposition} from '//resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
 import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';
 
 /**
@@ -252,10 +251,7 @@ export class ContextualTasksInfoTooltipElement extends CrLitElement {
 
   protected onLinkClick_(e: Event) {
     e.preventDefault();
-    if (this.linkUrl) {
-      BrowserProxyImpl.getInstance().handler.openUrl(
-          this.linkUrl, WindowOpenDisposition.NEW_FOREGROUND_TAB);
-    }
+    BrowserProxyImpl.getInstance().handler.openAskGHelpUi();
   }
 
   protected onTooltipCloseClick_(e: Event) {
