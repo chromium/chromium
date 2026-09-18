@@ -125,6 +125,9 @@ class ManifestSolutionFactory {
  private:
   class Solution;
 
+  // Unloads models and resets state associated with the given asset.
+  void UnloadAsset(const std::string& asset_id);
+
   // Resolves a file reference to a file path.
   // Returns nullopt if the asset is not available.
   std::optional<base::FilePath> ResolveFile(
