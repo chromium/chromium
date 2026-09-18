@@ -1,0 +1,26 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "ttc_audio_metrics.h",
+    "ttc_audio_metrics.mm",
+  ]
+  deps = [ "//base" ]
+  frameworks = [
+    "Accelerate.framework",
+    "Foundation.framework",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "ttc_audio_metrics_unittest.mm" ]
+  deps = [
+    ":model",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}
