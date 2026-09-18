@@ -151,6 +151,11 @@ public class UrlBar extends AutocompleteEditText {
 
     private boolean mPendingScroll;
 
+    // Whether an origin change was reported for a scroll request that had to be deferred until
+    // the next layout pass. The deferred scroll performed from layout() has no origin change
+    // information of its own, so the signal is latched here and consumed when the scroll runs.
+    private boolean mPendingScrollOriginChanged;
+
     // Captures the current intended text scroll type.
     // This may not be effective if mPendingScroll is true.
     @ScrollType private int mCurrentScrollType;
@@ -474,6 +479,7 @@ public class UrlBar extends AutocompleteEditText {
 
         if (focused) {
             mPendingScroll = false;
+            mPendingScrollOriginChanged = false;
         }
         fixupTextDirection();
 
@@ -1308,7 +1314,12 @@ public class UrlBar extends AutocompleteEditText {
         // Request scroll update in case scroll type or view dimensions have changed.
         mCurrentScrollType = scrollType;
         mPendingScroll = isLayoutRequested() || (getLayout() == null);
-        if (mPendingScroll) return;
+        if (mPendingScroll) {
+            mPendingScrollOriginChanged |= originChanged;
+            return;
+        }
+        originChanged |= mPendingScrollOriginChanged;
+        mPendingScrollOriginChanged = false;
 
         if (mFocused) return;
 
@@ -1337,6 +1348,9 @@ public class UrlBar extends AutocompleteEditText {
                 // therefore false negative using regular equality is unlikely.
                 && currentTextSize == mPreviousScrollFontSize
                 && currentIsRtl == mPreviousScrollWasRtl
+                // A previously computed scroll position is only valid for text whose origin ends
+                // at the same index the position was computed for.
+                && mOriginEndIndex == mPreviousScrollOriginEndIndex
                 && isVisibleTextTheSame(text)) {
             scrollTo(mPreviousScrollResultXPosition, 0);
 

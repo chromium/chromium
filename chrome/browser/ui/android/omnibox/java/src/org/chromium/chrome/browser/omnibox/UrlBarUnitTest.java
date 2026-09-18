@@ -977,9 +977,7 @@ public class UrlBarUnitTest {
         assertEquals(0, mUrlBar.getSelectionEnd());
     }
 
-    @Test
-    public void scrollWhenOriginChanges() {
-        // Initialize the URL bar. Verify test conditions.
+    private void setupInitialDomainScroll() {
         mUrlBar.setText(SHORT_DOMAIN);
         mUrlBar.setScrollState(
                 UrlBar.ScrollType.SCROLL_TO_TLD,
@@ -989,12 +987,53 @@ public class UrlBarUnitTest {
         assertFalse(mUrlBar.hasPendingDisplayTextScrollForTesting());
         verify(mUrlBar).scrollToTLD();
         mUrlBar.setVisibleTextPrefixHintForTesting(SHORT_DOMAIN);
+    }
+
+    @Test
+    public void scrollWhenOriginChanges() {
+        setupInitialDomainScroll();
 
         mUrlBar.setText(SHORT_SUBDOMAIN);
         mUrlBar.setScrollState(
                 UrlBar.ScrollType.SCROLL_TO_TLD,
                 /* scrollToIndex= */ SHORT_SUBDOMAIN.length(),
                 /* originChanged= */ true);
+        verify(mUrlBar, times(2)).scrollToTLD();
+    }
+
+    @Test
+    public void scrollWhenOriginChanges_scrollDeferredUntilLayout() {
+        setupInitialDomainScroll();
+
+        // Simulate a text change that requests a new layout pass (e.g. a wrap_content view),
+        // deferring the scroll request until the pass completes.
+        mUrlBar.setText(SHORT_SUBDOMAIN);
+        mUrlBar.requestLayout();
+        mUrlBar.setScrollState(
+                UrlBar.ScrollType.SCROLL_TO_TLD,
+                /* scrollToIndex= */ SHORT_SUBDOMAIN.length(),
+                /* originChanged= */ true);
+        assertTrue(mUrlBar.hasPendingDisplayTextScrollForTesting());
+        verify(mUrlBar).scrollToTLD();
+
+        // The deferred scroll must honor the origin change and recompute the scroll position
+        // rather than restore the position computed for the previous origin.
+        measureAndLayoutUrlBar();
+        assertFalse(mUrlBar.hasPendingDisplayTextScrollForTesting());
+        verify(mUrlBar, times(2)).scrollToTLD();
+    }
+
+    @Test
+    public void scrollWhenOriginEndIndexChanges() {
+        setupInitialDomainScroll();
+
+        // Even without the origin change signal, a scroll position computed for an origin that
+        // ended at a different index must not be reused.
+        mUrlBar.setText(SHORT_SUBDOMAIN);
+        mUrlBar.setScrollState(
+                UrlBar.ScrollType.SCROLL_TO_TLD,
+                /* scrollToIndex= */ SHORT_SUBDOMAIN.length(),
+                /* originChanged= */ false);
         verify(mUrlBar, times(2)).scrollToTLD();
     }
 
