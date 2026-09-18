@@ -75,18 +75,9 @@ struct HashTraits<String> : SimpleClassHashTraits<String> {
   static uint32_t GetHash(const char* key) {
     return HashString24(base::as_byte_span(std::string_view(key)));
   }
-  static uint32_t GetHash(const LChar* key) {
-    return GetHash(reinterpret_cast<const char*>(key));
-  }
 
   static bool Equal(const String& a, const char* b) { return a == b; }
   static bool Equal(const char* a, const String& b) { return a == b; }
-  static bool Equal(const String& a, const LChar* b) {
-    return a == reinterpret_cast<const char*>(b);
-  }
-  static bool Equal(const LChar* a, const String& b) {
-    return reinterpret_cast<const char*>(a) == b;
-  }
   // NOTE: There are no String == StringView overloads, so we also make no
   // Equal() for them.
 

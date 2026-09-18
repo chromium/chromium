@@ -60,8 +60,6 @@ TEST(StringTest, CreationFromHashTraits) {
   uint32_t hash = String("abc").Impl()->GetHash();
   EXPECT_EQ(hash, HashTraits<String>::GetHash(String("abc")));
   EXPECT_EQ(hash, HashTraits<String>::GetHash("abc"));
-  EXPECT_EQ(hash,
-            HashTraits<String>::GetHash(reinterpret_cast<const LChar*>("abc")));
   const UChar abc_wide[] = {'a', 'b', 'c', 0};
   EXPECT_EQ(hash, HashTraits<String>::GetHash(abc_wide));
 }
@@ -77,15 +75,6 @@ TEST(StringTest, EqualHashTraits) {
   EXPECT_FALSE(HashTraits<String>::Equal(abc, "def"));
   EXPECT_TRUE(HashTraits<String>::Equal("abc", abc));
   EXPECT_FALSE(HashTraits<String>::Equal("def", abc));
-
-  EXPECT_TRUE(
-      HashTraits<String>::Equal(abc, reinterpret_cast<const LChar*>("abc")));
-  EXPECT_FALSE(
-      HashTraits<String>::Equal(abc, reinterpret_cast<const LChar*>("def")));
-  EXPECT_TRUE(
-      HashTraits<String>::Equal(reinterpret_cast<const LChar*>("abc"), abc));
-  EXPECT_FALSE(
-      HashTraits<String>::Equal(reinterpret_cast<const LChar*>("def"), abc));
 
   const UChar abc_wide[] = {'a', 'b', 'c', 0};
   const UChar def_wide[] = {'d', 'e', 'f', 0};
