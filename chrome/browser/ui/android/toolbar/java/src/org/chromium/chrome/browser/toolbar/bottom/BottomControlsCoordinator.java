@@ -134,7 +134,6 @@ public class BottomControlsCoordinator implements BackPressHandler {
                         ? Set.of(
                                 BottomControlsProperties.ANDROID_VIEW_VISIBLE,
                                 BottomControlsProperties.Y_OFFSET,
-                                BottomControlsProperties.OFFSET_TAG,
                                 BottomControlsProperties.ANDROID_VIEW_TRANSLATE_Y,
                                 BottomControlsProperties.SHOW_SHADOW)
                         : Set.of(BottomControlsProperties.ANDROID_VIEW_VISIBLE);
