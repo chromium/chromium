@@ -809,7 +809,7 @@ void AutocompleteController::Stop(AutocompleteStopReason stop_reason) {
   CancelNotifyChangedRequest();
 
   const bool non_empty_result =
-      !internal_result_.empty() || internal_result_.has_contextual_chips();
+      !published_result_.empty() || published_result_.has_contextual_chips();
   if (stop_reason == AutocompleteStopReason::kClobbered) {
     internal_result_.Reset();
     if (non_empty_result) {
@@ -818,6 +818,12 @@ void AutocompleteController::Stop(AutocompleteStopReason stop_reason) {
       // when closing the omnibox.
       RequestNotifyChanged(/*notify_default_match=*/false, /*delayed=*/false);
     }
+  } else if (stop_reason == AutocompleteStopReason::kInactivity &&
+             omnibox::IsComposebox(input_.current_page_classification()) &&
+             internal_result_.empty()) {
+    // If Composebox suppressed the initial empty synchronous notification and
+    // timed out without receiving any async results, notify observers now.
+    RequestNotifyChanged(/*notify_default_match=*/false, /*delayed=*/false);
   }
 }
 
@@ -1628,6 +1634,14 @@ void AutocompleteController::UpdateResult(UpdateType update_type,
                    update_type == UpdateType::kLastAsyncPass ||
                    update_type == UpdateType::kMatchDeletion ||
                    update_type == UpdateType::kLastAsyncPassExceptDoc;
+
+  // For composebox, do not notify observers of empty results while asynchronous
+  // providers are still running, to avoid sending an empty synchronous pass
+  // before asynchronous zero-suggest or search results arrive.
+  if (omnibox::IsComposebox(input_.current_page_classification()) &&
+      internal_result_.empty() && !done()) {
+    return;
+  }
 
   RequestNotifyChanged(default_match_changed, !immediate);
 }
