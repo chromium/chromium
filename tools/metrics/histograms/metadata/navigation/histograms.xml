@@ -3212,6 +3212,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Navigation.UnknownInitiator.PageTransition.{Scope}"
+    enum="NavigationPageTransitionDecodedType" expires_after="2027-02-07">
+  <owner>robertlin@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Records the page transition type of a navigation when its initiator is
+    unknown (ChromeInitiatorLocation::kOther) for {Scope}. Recorded for a
+    standard navigation when it commits. For a prerendered navigation, it is
+    recorded when the page is activated.
+  </summary>
+  <token key="Scope">
+    <variant name="All" summary="all navigations"/>
+    <variant name="SRP" summary="Search Results Page (SRP) navigations"/>
+  </token>
+</histogram>
+
 <histogram name="Navigation.Unload" units="ms" expires_after="2027-01-17">
   <owner>rakina@chromium.org</owner>
   <owner>chrome-security-architecture@google.com</owner>
@@ -3928,7 +3944,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prerender.Experimental.ActivationTransitionMismatch{PreloadingTriggerType}"
-    enum="PrerenderActivationTransitionMismatchType" expires_after="2027-03-16">
+    enum="NavigationPageTransitionDecodedType" expires_after="2027-03-16">
   <owner>nhiroki@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>

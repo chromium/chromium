@@ -14,6 +14,7 @@
 namespace {
 
 void RecordInitiatorMetrics(content::NavigationHandle& navigation_handle) {
+  const ui::PageTransition transition = navigation_handle.GetPageTransition();
   bool is_srp =
       page_load_metrics::IsGoogleSearchResultUrl(navigation_handle.GetURL());
   auto* navigation_handle_user_data =
@@ -26,8 +27,7 @@ void RecordInitiatorMetrics(content::NavigationHandle& navigation_handle) {
     // PAGE_TRANSITION_FORWARD_BACK`. `PageTransitionCoreTypeIs()` strips
     // qualifiers like `PAGE_TRANSITION_FORWARD_BACK`, so checking for reload
     // first would misclassify back/forward navigations as `kReload`.
-    if ((navigation_handle.GetPageTransition() &
-         ui::PAGE_TRANSITION_FORWARD_BACK) ||
+    if ((transition & ui::PAGE_TRANSITION_FORWARD_BACK) ||
         navigation_handle.IsServedFromBackForwardCache()) {
       int history_offset = navigation_handle.GetNavigationEntryOffset();
       CHECK_NE(history_offset, 0);
@@ -37,8 +37,7 @@ void RecordInitiatorMetrics(content::NavigationHandle& navigation_handle) {
         return ChromeInitiatorLocation::kForward;
       }
     }
-    if (ui::PageTransitionCoreTypeIs(navigation_handle.GetPageTransition(),
-                                     ui::PAGE_TRANSITION_RELOAD)) {
+    if (ui::PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_RELOAD)) {
       return ChromeInitiatorLocation::kReload;
     }
     if (navigation_handle_user_data) {
@@ -47,12 +46,11 @@ void RecordInitiatorMetrics(content::NavigationHandle& navigation_handle) {
     }
     if (navigation_handle.IsRendererInitiated() &&
         navigation_handle.HasUserGesture()) {
-      if (ui::PageTransitionCoreTypeIs(navigation_handle.GetPageTransition(),
-                                       ui::PAGE_TRANSITION_LINK)) {
+      if (ui::PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_LINK)) {
         return ChromeInitiatorLocation::kLinkClick;
       }
 
-      if (ui::PageTransitionCoreTypeIs(navigation_handle.GetPageTransition(),
+      if (ui::PageTransitionCoreTypeIs(transition,
                                        ui::PAGE_TRANSITION_FORM_SUBMIT)) {
         return ChromeInitiatorLocation::kFormSubmission;
       }
@@ -65,6 +63,15 @@ void RecordInitiatorMetrics(content::NavigationHandle& navigation_handle) {
   if (is_srp) {
     base::UmaHistogramEnumeration("Navigation.InitiatorType.SRP",
                                   initiator_location);
+  }
+
+  if (initiator_location == ChromeInitiatorLocation::kOther) {
+    base::UmaHistogramSparse("Navigation.UnknownInitiator.PageTransition.All",
+                             transition);
+    if (is_srp) {
+      base::UmaHistogramSparse("Navigation.UnknownInitiator.PageTransition.SRP",
+                               transition);
+    }
   }
 }
 

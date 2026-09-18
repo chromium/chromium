@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <map>
+#include <string_view>
+#include <vector>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -145,6 +149,38 @@ class NavigationInitiatorPageLoadMetricsBrowserTest
     ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
   }
 
+  template <typename T>
+  void ExpectUma(const base::HistogramTester& histogram_tester,
+                 std::string_view name,
+                 std::vector<T> values,
+                 const base::Location& location = FROM_HERE) {
+    std::map<T, size_t> counts;
+    for (auto& value : values) {
+      counts[value]++;
+    }
+
+    histogram_tester.ExpectTotalCount(name, values.size(), location);
+    for (auto& [value, count] : counts) {
+      histogram_tester.ExpectBucketCount(name, value, count, location);
+    }
+  }
+
+  template <typename T>
+  void ExpectUma(const base::HistogramTester& histogram_tester,
+                 std::string_view name,
+                 std::initializer_list<T> values,
+                 const base::Location& location = FROM_HERE) {
+    ExpectUma(histogram_tester, name, std::vector<T>(values), location);
+  }
+
+  // Special case for an empty initializer `{}`.
+  void ExpectUma(const base::HistogramTester& histogram_tester,
+                 std::string_view name,
+                 void* values,
+                 const base::Location& location = FROM_HERE) {
+    ExpectUma(histogram_tester, name, std::vector<int>({}), location);
+  }
+
  private:
   content::test::PrerenderTestHelper prerender_helper_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -176,6 +212,10 @@ IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
       "Navigation.InitiatorType.SRP",
       MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kNewTabPage)),
       0);
+  ExpectUma(histogram_tester, "Navigation.UnknownInitiator.PageTransition.All",
+            {});
+  ExpectUma(histogram_tester, "Navigation.UnknownInitiator.PageTransition.SRP",
+            {});
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest, Basic) {
@@ -186,14 +226,14 @@ IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest, Basic) {
 
   histogram_tester.ExpectBucketCount(
       "Navigation.InitiatorType.All",
-      MetricValue(
-          page_load_metrics::NavigationHandleUserData::kInitiatorLocationOther),
-      1);
+      MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kOther)), 1);
   histogram_tester.ExpectBucketCount(
       "Navigation.InitiatorType.SRP",
-      MetricValue(
-          page_load_metrics::NavigationHandleUserData::kInitiatorLocationOther),
-      0);
+      MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kOther)), 0);
+  ExpectUma(histogram_tester, "Navigation.UnknownInitiator.PageTransition.All",
+            {ui::PAGE_TRANSITION_TYPED});
+  ExpectUma(histogram_tester, "Navigation.UnknownInitiator.PageTransition.SRP",
+            {});
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
@@ -205,14 +245,14 @@ IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
 
   histogram_tester.ExpectBucketCount(
       "Navigation.InitiatorType.All",
-      MetricValue(
-          page_load_metrics::NavigationHandleUserData::kInitiatorLocationOther),
-      1);
+      MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kOther)), 1);
   histogram_tester.ExpectBucketCount(
       "Navigation.InitiatorType.SRP",
-      MetricValue(
-          page_load_metrics::NavigationHandleUserData::kInitiatorLocationOther),
-      1);
+      MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kOther)), 1);
+  ExpectUma(histogram_tester, "Navigation.UnknownInitiator.PageTransition.All",
+            {ui::PAGE_TRANSITION_TYPED});
+  ExpectUma(histogram_tester, "Navigation.UnknownInitiator.PageTransition.SRP",
+            {ui::PAGE_TRANSITION_TYPED});
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
@@ -224,14 +264,40 @@ IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
 
   histogram_tester.ExpectBucketCount(
       "Navigation.InitiatorType.All",
-      MetricValue(
-          page_load_metrics::NavigationHandleUserData::kInitiatorLocationOther),
-      1);
+      MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kOther)), 1);
   histogram_tester.ExpectBucketCount(
       "Navigation.InitiatorType.SRP",
-      MetricValue(
-          page_load_metrics::NavigationHandleUserData::kInitiatorLocationOther),
-      0);
+      MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kOther)), 0);
+  ExpectUma(histogram_tester, "Navigation.UnknownInitiator.PageTransition.All",
+            {ui::PAGE_TRANSITION_TYPED});
+  ExpectUma(histogram_tester, "Navigation.UnknownInitiator.PageTransition.SRP",
+            {});
+}
+
+// Tests that a browser-initiated navigation triggered via an external API or
+// intent (`ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_API`), which
+// does not yet have a dedicated initiator location, records
+// `ChromeInitiatorLocation::kOther` and preserves the composite transition
+// bitmask in `Navigation.UnknownInitiator.PageTransition.All`.
+IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
+                       UnknownInitiatorFromApi) {
+  base::HistogramTester histogram_tester;
+
+  GURL url = embedded_test_server()->GetURL("www.example.com", "/empty.html");
+  GetActiveWebContents()->OpenURL(
+      content::OpenURLParams(
+          url, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                    ui::PAGE_TRANSITION_FROM_API),
+          /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
+  EXPECT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
+
+  histogram_tester.ExpectBucketCount(
+      "Navigation.InitiatorType.All",
+      MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kOther)), 1);
+  ExpectUma(histogram_tester, "Navigation.UnknownInitiator.PageTransition.All",
+            {ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_API});
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
