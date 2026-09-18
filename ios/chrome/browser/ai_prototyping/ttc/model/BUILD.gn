@@ -9,6 +9,9 @@ source_set("model") {
     "ttc_audio_engine_delegate.h",
     "ttc_audio_metrics.h",
     "ttc_audio_metrics.mm",
+    "ttc_audio_player.h",
+    "ttc_audio_player.mm",
+    "ttc_audio_player_delegate.h",
     "ttc_audio_recorder.h",
     "ttc_audio_recorder.mm",
     "ttc_audio_recorder_delegate.h",
@@ -29,6 +32,7 @@ source_set("unit_tests") {
   sources = [
     "ttc_audio_engine_unittest.mm",
     "ttc_audio_metrics_unittest.mm",
+    "ttc_audio_player_unittest.mm",
     "ttc_audio_recorder_unittest.mm",
   ]
   deps = [
