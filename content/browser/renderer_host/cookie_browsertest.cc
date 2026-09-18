@@ -22,7 +22,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_isolation_policy.h"
@@ -850,14 +849,7 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CookiesBlockedForPdfProcess) {
 
   // Commit `url` as PDF content so that the resulting frame runs in a process
   // whose SiteInfo has `is_pdf` set.
-  NavigationController::LoadURLParams params(url);
-  params.transition_type = ui::PageTransitionFromInt(
-      ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
-  params.is_pdf = true;
-  NavigateToURLBlockUntilNavigationsComplete(
-      tab, params, 1, /*ignore_uncommitted_navigations=*/false);
-  ASSERT_TRUE(IsLastCommittedEntryOfPageType(tab, PAGE_TYPE_NORMAL));
-  ASSERT_EQ(url, tab->GetLastCommittedURL());
+  ASSERT_TRUE(NavigateToURLWithPdf(tab, url));
 
   RenderFrameHost* frame = tab->GetPrimaryMainFrame();
 

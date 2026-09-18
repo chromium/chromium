@@ -37,6 +37,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/file_select_listener.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/security_principal.h"
@@ -52,6 +53,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
+#include "ui/base/page_transition_types.h"
 
 namespace content {
 
@@ -119,6 +121,23 @@ bool NavigateToURLInSameBrowsingInstance(Shell* window, const GURL& url) {
   }
 
   return true;
+}
+
+bool NavigateToURLWithPdf(WebContents* web_contents, const GURL& url) {
+  NavigationController::LoadURLParams params(url);
+  params.transition_type = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
+  params.is_pdf = true;
+  NavigateToURLBlockUntilNavigationsComplete(
+      web_contents, params, 1,
+      /*ignore_uncommitted_navigations=*/false);
+  RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
+  return IsLastCommittedEntryOfPageType(web_contents, PAGE_TYPE_NORMAL) &&
+         web_contents->GetLastCommittedURL() == url &&
+         static_cast<SiteInstanceImpl*>(main_frame->GetSiteInstance())
+             ->GetSiteInfo()
+             .is_pdf() &&
+         main_frame->GetProcess()->IsPdf();
 }
 
 bool IsExpectedSubframeErrorTransition(SiteInstance* start_site_instance,

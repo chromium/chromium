@@ -69,6 +69,12 @@ RenderFrameHost* ConvertToRenderFrameHost(FrameTreeNode* frame_tree_node);
 [[nodiscard]] bool NavigateToURLInSameBrowsingInstance(Shell* window,
                                                        const GURL& url);
 
+// Navigates `web_contents` to `url` with `is_pdf` set on the LoadURLParams,
+// simulating a navigation to PDF content so that the resulting frame commits
+// in a PDF-isolated SiteInstance and process.
+[[nodiscard]] bool NavigateToURLWithPdf(WebContents* web_contents,
+                                        const GURL& url);
+
 // Helper function to checks for a subframe navigation starting  in
 // `start_site_instance` and results in an error page correctly transitions to
 // `end_site_instance` based on whether error page isolation is enabled or not.

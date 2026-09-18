@@ -19,7 +19,6 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/navigation_controller.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
@@ -880,14 +879,7 @@ IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest, BlobUrlBlockedForPdfProcess) {
 
   // Commit `url` as PDF content so that the resulting frame runs in a process
   // whose SiteInfo has `is_pdf` set.
-  NavigationController::LoadURLParams params(url);
-  params.transition_type = ui::PageTransitionFromInt(
-      ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
-  params.is_pdf = true;
-  NavigateToURLBlockUntilNavigationsComplete(
-      tab, params, 1, /*ignore_uncommitted_navigations=*/false);
-  ASSERT_TRUE(IsLastCommittedEntryOfPageType(tab, PAGE_TYPE_NORMAL));
-  ASSERT_EQ(url, tab->GetLastCommittedURL());
+  ASSERT_TRUE(NavigateToURLWithPdf(tab, url));
 
   // The SiteInstance and RenderProcessHost are treated as PDFs. However, the
   // renderer process will not realize that blob creation should fail gracefully
@@ -896,8 +888,6 @@ IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest, BlobUrlBlockedForPdfProcess) {
   // happens to make testing the renderer kill easier below.
   RenderFrameHostImpl* frame =
       static_cast<RenderFrameHostImpl*>(tab->GetPrimaryMainFrame());
-  ASSERT_TRUE(frame->GetSiteInstance()->GetSiteInfo().is_pdf());
-  ASSERT_TRUE(frame->GetProcess()->IsPdf());
 
   // Listen for the renderer kill and bad message reason.
   RenderProcessHostBadIpcMessageWaiter kill_waiter(frame->GetProcess());
@@ -919,14 +909,7 @@ IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest,
   // AudioWorklet requires a secure context (e.g., localhost).
   GURL url = embedded_test_server()->GetURL("localhost", "/empty.html");
 
-  NavigationController::LoadURLParams params(url);
-  params.transition_type = ui::PageTransitionFromInt(
-      ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
-  params.is_pdf = true;
-  NavigateToURLBlockUntilNavigationsComplete(
-      tab, params, 1, /*ignore_uncommitted_navigations=*/false);
-  ASSERT_TRUE(IsLastCommittedEntryOfPageType(tab, PAGE_TYPE_NORMAL));
-  ASSERT_EQ(url, tab->GetLastCommittedURL());
+  ASSERT_TRUE(NavigateToURLWithPdf(tab, url));
 
   // The SiteInstance and RenderProcessHost are treated as PDFs. However, the
   // renderer process will not realize that blob creation should fail gracefully
@@ -935,8 +918,6 @@ IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest,
   // happens to make testing the renderer kill easier below.
   RenderFrameHostImpl* frame =
       static_cast<RenderFrameHostImpl*>(tab->GetPrimaryMainFrame());
-  ASSERT_TRUE(frame->GetSiteInstance()->GetSiteInfo().is_pdf());
-  ASSERT_TRUE(frame->GetProcess()->IsPdf());
 
   RenderProcessHostBadIpcMessageWaiter kill_waiter(frame->GetProcess());
 
@@ -967,18 +948,10 @@ IN_PROC_BROWSER_TEST_F(BlobUrlPdfKillswitchDisabledBrowserTest,
   WebContentsImpl* tab = static_cast<WebContentsImpl*>(shell()->web_contents());
   GURL url = embedded_test_server()->GetURL("a.test", "/empty.html");
 
-  NavigationController::LoadURLParams params(url);
-  params.transition_type = ui::PageTransitionFromInt(
-      ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
-  params.is_pdf = true;
-  NavigateToURLBlockUntilNavigationsComplete(
-      tab, params, 1, /*ignore_uncommitted_navigations=*/false);
-  ASSERT_TRUE(IsLastCommittedEntryOfPageType(tab, PAGE_TYPE_NORMAL));
-  ASSERT_EQ(url, tab->GetLastCommittedURL());
+  ASSERT_TRUE(NavigateToURLWithPdf(tab, url));
 
   RenderFrameHostImpl* frame =
       static_cast<RenderFrameHostImpl*>(tab->GetPrimaryMainFrame());
-  ASSERT_TRUE(frame->GetSiteInstance()->GetSiteInfo().is_pdf());
 
   // Executing `URL.createObjectURL` should not kill the renderer when the
   // EnforcePdfBlobRestrictions killswitch is disabled.
