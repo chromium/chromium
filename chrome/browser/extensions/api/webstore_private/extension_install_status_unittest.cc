@@ -18,10 +18,13 @@
 #include "chrome/browser/policy/cloud/extension_install_policy_service.h"
 #include "chrome/browser/policy/cloud/extension_install_policy_service_factory.h"
 #include "chrome/browser/policy/cloud/mock_extension_install_policy_service.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/policy/core/common/cloud/cloud_policy_client_types.h"
 #include "components/policy/core/common/features.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -89,7 +92,7 @@ std::unique_ptr<KeyedService> BuildEventRouter(
 }  // namespace
 
 class ExtensionInstallStatusTest : public ExtensionServiceTestWithInstall {
- public:
+ protected:
   ExtensionInstallStatusTest() = default;
 
   ExtensionInstallStatusTest(const ExtensionInstallStatusTest&) = delete;
@@ -101,6 +104,8 @@ class ExtensionInstallStatusTest : public ExtensionServiceTestWithInstall {
   void SetUp() override {
     ExtensionServiceTestWithInstall::SetUp();
     InitializeExtensionService(GetExtensionServiceInitParams());
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
     ManagementAPI::GetFactoryInstance()->SetTestingFactory(
         profile(), base::BindRepeating(&BuildManagementApi));
     EventRouterFactory::GetInstance()->SetTestingFactory(
@@ -179,6 +184,14 @@ class ExtensionInstallStatusTest : public ExtensionServiceTestWithInstall {
   // Since this is testing the MV2 deprecation, we don't want to bypass the
   // related disabling for testing.
   bool ShouldAllowMV2Extensions() override { return false; }
+
+  signin::IdentityManager* identity_manager() {
+    return identity_test_env_adaptor_->identity_test_env()->identity_manager();
+  }
+
+ private:
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_adaptor_;
 };
 
 TEST_F(ExtensionInstallStatusTest, ExtensionEnabled) {
@@ -794,7 +807,8 @@ class SupervisedUserExtensionInstallStatusTest
 // kCustodianApprovalRequiredForInstallation.
 TEST_F(SupervisedUserExtensionInstallStatusTest,
        NewExtensionWithCustodianApprovalRequiredForInstallation) {
-  testing_profile()->SetIsSupervisedProfile(true);
+  supervised_user::SupervisedUserTestEnvironment::EnableSupervisedAccount(
+      identity_manager());
   // The supervised user requires parent approval to install extensions.
   supervised_user_test_util::SetSkipParentApprovalToInstallExtensionsPref(
       profile(), false);
@@ -809,7 +823,8 @@ TEST_F(SupervisedUserExtensionInstallStatusTest,
 TEST_F(
     SupervisedUserExtensionInstallStatusTest,
     NewExtensionOnSkipApprovalModeDoesNotRequireCustodianApprovalForInstallation) {
-  testing_profile()->SetIsSupervisedProfile(true);
+  supervised_user::SupervisedUserTestEnvironment::EnableSupervisedAccount(
+      identity_manager());
   // The supervised user does not require parent approval to install extensions.
   supervised_user_test_util::SetSkipParentApprovalToInstallExtensionsPref(
       profile(), true);
@@ -824,7 +839,8 @@ TEST_F(
 TEST_F(
     SupervisedUserExtensionInstallStatusTest,
     NewExtensionWithParentApprovalDoesNotRequireCustodianApprovalForInstallation) {
-  testing_profile()->SetIsSupervisedProfile(true);
+  supervised_user::SupervisedUserTestEnvironment::EnableSupervisedAccount(
+      identity_manager());
   // The supervised user requires parent approval to install extensions.
   supervised_user_test_util::SetSkipParentApprovalToInstallExtensionsPref(
       profile(), false);
@@ -842,7 +858,8 @@ TEST_F(
 // Themes do not require approval for supervised users.
 TEST_F(SupervisedUserExtensionInstallStatusTest,
        NewThemeDoesNotRequireCustodianApprovalForInstallation) {
-  testing_profile()->SetIsSupervisedProfile(true);
+  supervised_user::SupervisedUserTestEnvironment::EnableSupervisedAccount(
+      identity_manager());
   // The supervised user requires parent approval to install extensions but
   // themes are always allowed.
   supervised_user_test_util::SetSkipParentApprovalToInstallExtensionsPref(

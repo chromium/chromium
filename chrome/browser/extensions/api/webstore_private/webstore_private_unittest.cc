@@ -20,12 +20,15 @@
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
@@ -183,7 +186,9 @@ class WebstorePrivateApiTestBase : public testing::Test {
     profile_ = profile_manager_->CreateTestingProfile(
         TestingProfile::kDefaultProfileUserName, /*prefs=*/nullptr,
         /*user_name=*/std::u16string(),
-        /*avatar_id=*/0, /*testing_factories=*/{});
+        /*avatar_id=*/0,
+        IdentityTestEnvironmentProfileAdaptor::
+            GetIdentityTestEnvironmentFactories());
     CreateExtensionServiceAndSetFactories(profile());
     extension_ = ExtensionBuilder("Test").Build();
   }
@@ -366,11 +371,26 @@ TEST_F(WebstorePrivateGetExtensionStatusTest, ExtensionCorrupted) {
 }
 
 class SupervisedUserWebstorePrivateGetExtensionStatusTest
-    : public WebstorePrivateGetExtensionStatusTest {};
+    : public WebstorePrivateGetExtensionStatusTest {
+ protected:
+  void SetUp() override {
+    WebstorePrivateGetExtensionStatusTest::SetUp();
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
+  }
+  signin::IdentityManager* identity_manager() {
+    return identity_test_env_adaptor_->identity_test_env()->identity_manager();
+  }
+
+ private:
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_adaptor_;
+};
 
 TEST_F(SupervisedUserWebstorePrivateGetExtensionStatusTest,
        ExtensionCustodianApprovalRequired) {
-  profile()->SetIsSupervisedProfile(true);
+  supervised_user::SupervisedUserTestEnvironment::EnableSupervisedAccount(
+      identity_manager());
 
   ExtensionRegistry::Get(profile())->AddDisabled(CreateExtension(kExtensionId));
   ExtensionPrefs::Get(profile())->AddDisableReason(
@@ -384,7 +404,8 @@ TEST_F(SupervisedUserWebstorePrivateGetExtensionStatusTest,
 
 TEST_F(SupervisedUserWebstorePrivateGetExtensionStatusTest,
        ExtensionCustodianApprovalRequiredForInstallation) {
-  profile()->SetIsSupervisedProfile(true);
+  supervised_user::SupervisedUserTestEnvironment::EnableSupervisedAccount(
+      identity_manager());
 
   auto function =
       base::MakeRefCounted<WebstorePrivateGetExtensionStatusFunction>();
