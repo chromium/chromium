@@ -207,10 +207,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/app_list/search/util:unit_tests",
     "//chrome/browser/ui:settings_window_manager_chromeos",
   ]
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("browser_tests") {
@@ -309,10 +305,6 @@ source_set("browser_tests") {
     "//ui/views:test_support",
     "//ui/wm",
   ]
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (!is_chromeos_device) {

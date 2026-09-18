@@ -124,8 +124,11 @@ using ::testing::NiceMock;
 
 namespace {
 
-const apps::PackageId kTestPackageId =
-    apps::PackageId(apps::PackageType::kArc, "com.test.package");
+constexpr char kTestPackageName[] = "com.test.package";
+
+apps::PackageId GetTestPackageId() {
+  return apps::PackageId(apps::PackageType::kArc, kTestPackageName);
+}
 
 class TestObserver : public app_list::AppListSyncableService::Observer {
  public:
@@ -578,7 +581,7 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserPromiseAppTest,
 
   // Register a promise app in the promise app registry cache.
   apps::PromiseAppPtr promise_app =
-      std::make_unique<apps::PromiseApp>(kTestPackageId);
+      std::make_unique<apps::PromiseApp>(GetTestPackageId());
   promise_app->status = apps::PromiseStatus::kPending;
   promise_app->name = app_name;
   promise_app->should_show = true;
@@ -589,7 +592,8 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserPromiseAppTest,
   AppListModelUpdater* model_updater = test::GetModelUpdater(client);
   EXPECT_TRUE(model_updater);
 
-  ChromeAppListItem* item = model_updater->FindItem(kTestPackageId.ToString());
+  ChromeAppListItem* item =
+      model_updater->FindItem(GetTestPackageId().ToString());
   ASSERT_TRUE(item);
   EXPECT_EQ(item->progress(), 0);
   EXPECT_EQ(item->app_status(), ash::AppStatus::kPending);
@@ -604,7 +608,7 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserPromiseAppTest,
 
   // Update the promise app in the promise app registry cache.
   apps::PromiseAppPtr update =
-      std::make_unique<apps::PromiseApp>(kTestPackageId);
+      std::make_unique<apps::PromiseApp>(GetTestPackageId());
   update->progress = 0.3;
   update->status = apps::PromiseStatus::kInstalling;
   cache()->OnPromiseApp(std::move(update));
@@ -628,7 +632,7 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserPromiseAppTest,
   // trigger removal of the promise app.
   std::string app_id = "asdfghjkl";
   apps::AppPtr app = std::make_unique<apps::App>(apps::AppType::kArc, app_id);
-  app->publisher_id = kTestPackageId.identifier();
+  app->publisher_id = GetTestPackageId().identifier();
   app->readiness = apps::Readiness::kReady;
 
   std::vector<apps::AppPtr> apps;
@@ -643,7 +647,7 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserPromiseAppTest,
   EXPECT_EQ(1, GetAndResetUpdateCount());
   EXPECT_EQ(ash::AppStatus::kInstallSuccess,
             metadata_before_removal->app_status);
-  EXPECT_FALSE(model_updater->FindItem(kTestPackageId.ToString()));
+  EXPECT_FALSE(model_updater->FindItem(GetTestPackageId().ToString()));
 }
 
 // Test that OpenSearchResult that dismisses app list runs fine without

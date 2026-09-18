@@ -182,12 +182,18 @@ bool AreAllAppAtributesNotEqualInAppList(const ChromeAppListItem* item1,
 }
 
 std::string GetLastPositionString() {
-  static syncer::StringOrdinal last_position;
-  if (!last_position.IsValid())
-    last_position = syncer::StringOrdinal::CreateInitialOrdinal();
-  else
-    last_position = last_position.CreateAfter();
-  return last_position.ToDebugString();
+  // A static StringOrdinal would require an exit-time destructor, so keep a
+  // trivially destructible counter instead and recompute the position.
+  // StringOrdinal::CreateAfter() is deterministic, so this yields the same
+  // sequence of positions.
+  static int position_count = 0;
+  syncer::StringOrdinal position =
+      syncer::StringOrdinal::CreateInitialOrdinal();
+  for (int i = 0; i < position_count; ++i) {
+    position = position.CreateAfter();
+  }
+  ++position_count;
+  return position.ToDebugString();
 }
 
 }  // namespace
