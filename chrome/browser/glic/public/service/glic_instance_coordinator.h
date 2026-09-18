@@ -130,6 +130,10 @@ class GlicInstanceCoordinator {
   virtual bool IsPanelShowingForBrowser(
       const BrowserWindowInterface& bwi) const = 0;
 
+  // Returns whether toggling `browser` (or Floaty if null) would close a panel
+  // rather than open one. Best-effort snapshot for labelling UI affordances.
+  virtual bool WouldToggleClose(BrowserWindowInterface* browser) const = 0;
+
   // Registers a callback to be run when any instance opens or closes.
   virtual base::CallbackListSubscription AddGlobalShowHideCallback(
       base::RepeatingClosure callback) = 0;

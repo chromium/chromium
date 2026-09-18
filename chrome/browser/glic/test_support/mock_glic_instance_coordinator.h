@@ -83,6 +83,10 @@ class MockGlicInstanceCoordinator
               IsPanelShowingForBrowser,
               (const BrowserWindowInterface&),
               (const, override));
+  MOCK_METHOD(bool,
+              WouldToggleClose,
+              (BrowserWindowInterface*),
+              (const, override));
   MOCK_METHOD(base::CallbackListSubscription,
               AddGlobalShowHideCallback,
               (base::RepeatingClosure),

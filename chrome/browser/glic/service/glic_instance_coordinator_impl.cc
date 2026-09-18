@@ -509,42 +509,54 @@ void GlicInstanceCoordinatorImpl::Show(BrowserWindowInterface* browser,
                      std::make_unique<glic::GlicWindowInvocationTracker>());
 }
 
-bool GlicInstanceCoordinatorImpl::MaybeCloseForToggle(
-    BrowserWindowInterface* browser,
-    mojom::InvocationSource source) {
+std::optional<GlicInstanceCoordinatorImpl::ToggleCloseTarget>
+GlicInstanceCoordinatorImpl::FindCloseTargetForToggle(
+    BrowserWindowInterface* browser) const {
   if (!browser) {
     if (!GlicEnabling::IsLiveAndFloatyEnabledByFlags()) {
-      return false;
+      return std::nullopt;
     }
     GlicInstanceImpl* instance = GetInstanceWithFloaty();
     if (!instance) {
-      return false;
+      return std::nullopt;
     }
-    EmbedderKey key = FloatingEmbedderKey();
-    instance->instance_metrics().OnToggle(source, key, /*is_showing=*/true);
-    instance->Close(key);
-    return true;
+    return ToggleCloseTarget{instance, FloatingEmbedderKey()};
   }
 
   if (!IsPanelShowingForBrowser(*browser)) {
-    return false;
+    return std::nullopt;
   }
   auto* tab = TabListInterface::From(browser)->GetActiveTab();
   if (!tab) {
-    return false;
+    return std::nullopt;
   }
   GlicInstanceImpl* instance = GetInstanceImplForTab(tab);
   if (!instance) {
-    return false;
+    return std::nullopt;
   }
   EmbedderKey key = SidePanelEmbedderKey(tab);
   if (!instance->IsActiveEmbedder(key)) {
+    return std::nullopt;
+  }
+  return ToggleCloseTarget{instance, std::move(key)};
+}
+
+bool GlicInstanceCoordinatorImpl::MaybeCloseForToggle(
+    BrowserWindowInterface* browser,
+    mojom::InvocationSource source) {
+  std::optional<ToggleCloseTarget> target = FindCloseTargetForToggle(browser);
+  if (!target) {
     return false;
   }
-
-  instance->instance_metrics().OnToggle(source, key, /*is_showing=*/true);
-  instance->Close(key);
+  target->instance->instance_metrics().OnToggle(source, target->key,
+                                                /*is_showing=*/true);
+  target->instance->Close(target->key);
   return true;
+}
+
+bool GlicInstanceCoordinatorImpl::WouldToggleClose(
+    BrowserWindowInterface* browser) const {
+  return FindCloseTargetForToggle(browser).has_value();
 }
 
 void GlicInstanceCoordinatorImpl::Toggle(BrowserWindowInterface* browser,

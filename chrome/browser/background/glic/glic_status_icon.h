@@ -57,10 +57,18 @@ class GlicStatusIcon : public StatusIconObserver,
   // BrowserCollectionObserver:
   void OnBrowserCreated(BrowserWindowInterface* browser) override;
   void OnBrowserClosed(BrowserWindowInterface* browser) override;
+  void OnBrowserActivated(BrowserWindowInterface* browser) override;
+  void OnBrowserDeactivated(BrowserWindowInterface* browser) override;
 
   void UpdateHotkey(const ui::Accelerator& hotkey);
 
   void UpdateVisibilityOfExitInContextMenu();
+
+  // Computes whether a click would open or close Gemini, and relabels the
+  // tooltip and context menu item accordingly.
+  void RefreshToggleLabel();
+
+  bool would_close_for_testing() const { return would_close_; }
 
   // Virtual for testing.
   virtual void SetIcon(const gfx::ImageSkia& icon);
@@ -83,6 +91,9 @@ class GlicStatusIcon : public StatusIconObserver,
   raw_ptr<StatusTray> status_tray_ = nullptr;
   raw_ptr<StatusIcon> status_icon_ = nullptr;
   raw_ptr<StatusIconMenuModel> context_menu_ = nullptr;
+
+  // Whether a click on the icon would close Gemini rather than open it.
+  bool would_close_ = false;
 
 #if BUILDFLAG(IS_MAC)
   OSIconProviderMac os_icon_provider_mac_;

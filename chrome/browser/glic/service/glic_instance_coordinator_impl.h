@@ -186,6 +186,7 @@ class GlicInstanceCoordinatorImpl
   bool IsDetached() const override;
   bool IsPanelShowingForBrowser(
       const BrowserWindowInterface& bwi) const override;
+  bool WouldToggleClose(BrowserWindowInterface* browser) const override;
 
   base::CallbackListSubscription AddGlobalShowHideCallback(
       base::RepeatingClosure callback) override;
@@ -320,6 +321,19 @@ class GlicInstanceCoordinatorImpl
                   const GlicRestoredState& state);
 
   bool MaybeInvoke(BrowserWindowInterface* bwi, mojom::InvocationSource source);
+
+  // The panel that a toggle would close, along with the embedder to close it
+  // through.
+  struct ToggleCloseTarget {
+    raw_ptr<GlicInstanceImpl> instance;
+    EmbedderKey key;
+  };
+
+  // Returns the target that a toggle would close now, or nullopt if a toggle
+  // would open a panel instead.
+  std::optional<ToggleCloseTarget> FindCloseTargetForToggle(
+      BrowserWindowInterface* bwi) const;
+
   bool MaybeCloseForToggle(BrowserWindowInterface* bwi,
                            mojom::InvocationSource source);
 

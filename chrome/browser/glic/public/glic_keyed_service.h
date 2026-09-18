@@ -116,6 +116,10 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
                         bool prevent_close,
                         mojom::InvocationSource source);
 
+  // Returns whether `ToggleUI(bwi, /*prevent_close=*/false, ...)` would close a
+  // panel rather than open one.
+  virtual bool WouldToggleUIClose(BrowserWindowInterface* bwi) const;
+
   // Invokes Glic with the given options and automatically submits the prompt.
   // Access is restricted to authorized callers via InvokeWithAutoSubmitPasskey.
   // Virtual for testing.

@@ -149,6 +149,11 @@ void SetupGuestUrlPresetPrefs() {
                              prefs::kGlicGuestUrlPresetProd);
 }
 
+BrowserWindowInterface* ResolveBrowser(Profile* profile,
+                                       BrowserWindowInterface* bwi) {
+  return bwi ? bwi : GetActiveGlicEligibleBrowser(profile);
+}
+
 }  // namespace
 
 GlicKeyedService::GlicKeyedService(
@@ -287,16 +292,18 @@ void GlicKeyedService::Shutdown() {
 
 void GlicKeyedService::ShowUI(BrowserWindowInterface* bwi,
                               mojom::InvocationSource source) {
-  instance_coordinator().Show(
-      bwi ? bwi : GetActiveGlicEligibleBrowser(profile_), source);
+  instance_coordinator().Show(ResolveBrowser(profile_, bwi), source);
 }
 
 void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
                                 bool prevent_close,
                                 mojom::InvocationSource source) {
-  instance_coordinator().Toggle(
-      bwi ? bwi : GetActiveGlicEligibleBrowser(profile_), prevent_close,
-      source);
+  instance_coordinator().Toggle(ResolveBrowser(profile_, bwi), prevent_close,
+                                source);
+}
+
+bool GlicKeyedService::WouldToggleUIClose(BrowserWindowInterface* bwi) const {
+  return instance_coordinator().WouldToggleClose(ResolveBrowser(profile_, bwi));
 }
 
 base::WeakPtr<GlicInstance> GlicKeyedService::InvokeWithAutoSubmit(

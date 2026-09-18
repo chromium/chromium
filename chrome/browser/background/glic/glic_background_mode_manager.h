@@ -39,6 +39,10 @@ class GlicBackgroundDelegate {
  public:
   virtual ~GlicBackgroundDelegate() = default;
   virtual void ToggleUI(bool prevent_close, mojom::InvocationSource source) = 0;
+
+  // Returns whether toggling would close a panel/window rather than open one.
+  // Used to label the status icon's tooltip and context menu item.
+  virtual bool WouldToggleClose() const = 0;
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -65,6 +69,7 @@ class GlicBackgroundModeManager : public GlicLauncherConfiguration::Observer,
 
   // GlicBackgroundDelegate:
   void ToggleUI(bool prevent_close, mojom::InvocationSource source) override;
+  bool WouldToggleClose() const override;
 
   static GlicBackgroundModeManager* GetInstance();
 
@@ -105,6 +110,7 @@ class GlicBackgroundModeManager : public GlicLauncherConfiguration::Observer,
   void RegisterHotkeys(const std::vector<ui::Accelerator>& updated_hotkeys);
   void UnregisterHotkey();
   void UpdateState();
+  void RefreshStatusIconToggleLabel();
 
   bool ShouldRegisterGlobalHotkey() const;
   bool IsEnabledInAnyLoadedProfile();
@@ -153,6 +159,8 @@ class GlicBackgroundModeManager : public GlicLauncherConfiguration::Observer,
       profile_enabled_subscriptions_;
   std::map<Profile*, base::CallbackListSubscription>
       profile_consent_subscriptions_;
+  std::map<Profile*, base::CallbackListSubscription>
+      profile_show_hide_subscriptions_;
   using ScopedProfileObserver =
       base::ScopedObservation<Profile, ProfileObserver>;
   std::map<Profile*, ScopedProfileObserver> profile_observers_;
