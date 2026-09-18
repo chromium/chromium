@@ -71,11 +71,11 @@ void RichNudge::FlipPosition() {
 
 gfx::Rect RichNudge::GetAnchorRect() const {
   auto* parent = parent_window();
-  DCHECK(parent);
+  CHECK(parent, base::NotFatalUntil::M160);
   const auto parent_bounds = parent->GetBoundsInScreen();
 
   auto* widget = GetWidget();
-  DCHECK(widget);
+  CHECK(widget, base::NotFatalUntil::M160);
   auto size = widget->GetWindowBoundsInScreen().size();
   size.Enlarge(2 * kMargin, 2 * kMargin);
 

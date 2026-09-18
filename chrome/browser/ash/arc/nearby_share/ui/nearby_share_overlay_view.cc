@@ -18,7 +18,7 @@ NearbyShareOverlayView::~NearbyShareOverlayView() = default;
 void NearbyShareOverlayView::Show(aura::Window* base_window,
                                   views::View* child_view) {
   auto* shell_surface_base = exo::GetShellSurfaceBaseForWindow(base_window);
-  DCHECK(shell_surface_base);
+  CHECK(shell_surface_base, base::NotFatalUntil::M160);
 
   CloseOverlayOn(base_window);
 

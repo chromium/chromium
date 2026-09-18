@@ -67,7 +67,7 @@ class ArcInputOverlayManagerFactory
 
 // Check if the window is still loading as a ghost window.
 bool IsGhostWindowLoading(aura::Window* window) {
-  DCHECK(window);
+  CHECK(window, base::NotFatalUntil::M160);
   if (!window->GetProperty(app_restore::kRealArcTaskWindow)) {
     return true;
   }
@@ -91,7 +91,7 @@ void CheckWriteResult(std::string package_name, bool result) {
 // `ash::GameDashboardMainMenuView` or `ash::AnchoredNudge` as its contents
 // view. Otherwise, returns nullptr.
 aura::Window* GetGameBubbleDialogAnchorWindow(aura::Window* window) {
-  DCHECK(window);
+  CHECK(window, base::NotFatalUntil::M160);
 
   auto* widget = views::Widget::GetWidgetForNativeWindow(window);
   if (!widget) {
@@ -114,14 +114,14 @@ aura::Window* GetGameBubbleDialogAnchorWindow(aura::Window* window) {
       views::AsViewClass<ash::GameDashboardMainMenuView>(contents_view)) {
     // `window` has `ash::GameDashboardMainMenuView` as contents view.
     anchor_widget = widget->parent();
-    DCHECK(anchor_widget);
+    CHECK(anchor_widget, base::NotFatalUntil::M160);
   } else if (views::AsViewClass<ash::AnchoredNudge>(contents_view) ||
              views::AsViewClass<DeleteEditShortcut>(contents_view)) {
     // `window` has `ash::AnchoredNudge` or `DeleteEditShortcut` as contents
     // view.
     if (auto* nudge_anchor_view = bubble_delegate->GetAnchorView()) {
       anchor_widget = nudge_anchor_view->GetWidget();
-      DCHECK(anchor_widget);
+      CHECK(anchor_widget, base::NotFatalUntil::M160);
     }
   }
 
@@ -224,7 +224,7 @@ void ArcInputOverlayManager::OnWindowPropertyChanged(aura::Window* window,
     return;
   }
 
-  DCHECK_EQ(window, window->GetToplevelWindow());
+  CHECK_EQ(window, window->GetToplevelWindow(), base::NotFatalUntil::M160);
   if (input_overlay_enabled_windows_.contains(window) ||
       IsGhostWindowLoading(window) || loading_data_windows_.contains(window)) {
     return;
@@ -373,7 +373,7 @@ void ArcInputOverlayManager::UnregisterAndRemoveObservation(
 // static
 std::unique_ptr<TouchInjector> ArcInputOverlayManager::ReadDefaultData(
     std::unique_ptr<TouchInjector> touch_injector) {
-  DCHECK(touch_injector);
+  CHECK(touch_injector, base::NotFatalUntil::M160);
 
   const std::string& package_name = touch_injector->package_name();
   const auto resource_id = GetInputOverlayResourceId(package_name);
@@ -402,7 +402,7 @@ std::unique_ptr<TouchInjector> ArcInputOverlayManager::ReadDefaultData(
 
 void ArcInputOverlayManager::OnFinishReadDefaultData(
     std::unique_ptr<TouchInjector> touch_injector) {
-  DCHECK(touch_injector);
+  CHECK(touch_injector, base::NotFatalUntil::M160);
 
   // Null for unit test.
   if (!data_controller_) {
@@ -423,7 +423,7 @@ void ArcInputOverlayManager::OnFinishReadDefaultData(
 void ArcInputOverlayManager::OnProtoDataAvailable(
     std::unique_ptr<TouchInjector> touch_injector,
     std::unique_ptr<AppDataProto> proto) {
-  DCHECK(touch_injector);
+  CHECK(touch_injector, base::NotFatalUntil::M160);
   if (proto) {
     touch_injector->OnProtoDataAvailable(*proto);
   }
@@ -568,8 +568,8 @@ void ArcInputOverlayManager::AddObserverToInputMethod() {
   if (!registered_top_level_window_) {
     return;
   }
-  DCHECK(registered_top_level_window_->GetHost());
-  DCHECK(!input_method_);
+  CHECK(registered_top_level_window_->GetHost(), base::NotFatalUntil::M160);
+  CHECK(!input_method_, base::NotFatalUntil::M160);
   input_method_ = registered_top_level_window_->GetHost()->GetInputMethod();
   if (input_method_) {
     input_method_->AddObserver(input_method_observer_.get());
@@ -592,7 +592,7 @@ void ArcInputOverlayManager::RegisterWindow(aura::Window* window) {
   }
 
   // It should always unregister the window first, then register another window.
-  DCHECK(!registered_top_level_window_);
+  CHECK(!registered_top_level_window_, base::NotFatalUntil::M160);
 
   const auto it = input_overlay_enabled_windows_.find(window);
   if (it == input_overlay_enabled_windows_.end()) {
@@ -618,7 +618,7 @@ void ArcInputOverlayManager::UnRegisterWindow(aura::Window* window) {
   }
   const auto it =
       input_overlay_enabled_windows_.find(registered_top_level_window_);
-  DCHECK(it != input_overlay_enabled_windows_.end());
+  CHECK(it != input_overlay_enabled_windows_.end(), base::NotFatalUntil::M160);
   if (it == input_overlay_enabled_windows_.end()) {
     return;
   }
@@ -642,12 +642,12 @@ void ArcInputOverlayManager::RegisterFocusedWindow() {
 
 void ArcInputOverlayManager::AddDisplayOverlayController(
     TouchInjector* touch_injector) {
-  DCHECK(registered_top_level_window_);
-  DCHECK(touch_injector);
+  CHECK(registered_top_level_window_, base::NotFatalUntil::M160);
+  CHECK(touch_injector, base::NotFatalUntil::M160);
   if (!registered_top_level_window_ || !touch_injector) {
     return;
   }
-  DCHECK(!display_overlay_controller_);
+  CHECK(!display_overlay_controller_, base::NotFatalUntil::M160);
 
   display_overlay_controller_ =
       std::make_unique<DisplayOverlayController>(touch_injector);
@@ -683,7 +683,7 @@ void ArcInputOverlayManager::OnLoadingFinished(
     std::unique_ptr<TouchInjector> touch_injector,
     bool is_o4c) {
   auto* window = touch_injector->window();
-  DCHECK(window);
+  CHECK(window, base::NotFatalUntil::M160);
   // Check if `window` is destroyed or destroying when calling this function.
   if (!loading_data_windows_.contains(window) || window->is_destroying()) {
     ResetForPendingTouchInjector(std::move(touch_injector));
@@ -713,7 +713,7 @@ void ArcInputOverlayManager::MayKeepTouchInjectorAfterError(
 
 ArcAppListPrefs* ArcInputOverlayManager::GetArcAppListPrefs() {
   auto* profile = ProfileManager::GetPrimaryUserProfile();
-  DCHECK(arc::IsArcAllowedForProfile(profile));
+  CHECK(arc::IsArcAllowedForProfile(profile), base::NotFatalUntil::M160);
   return ArcAppListPrefs::Get(profile);
 }
 

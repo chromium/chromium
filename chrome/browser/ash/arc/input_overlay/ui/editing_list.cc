@@ -387,7 +387,7 @@ void EditingList::MaybeApplyEduDecoration() {
 
 void EditingList::ShowKeyEditNudge() {
   const auto& list_children = scroll_content_->children();
-  DCHECK_EQ(list_children.size(), 1u);
+  CHECK_EQ(list_children.size(), 1u, base::NotFatalUntil::M160);
 
   auto nudge_data = ash::AnchoredNudgeData(
       kKeyEditNudgeID, ash::NudgeCatalogName::kGameDashboardControlsNudge,
@@ -408,7 +408,7 @@ void EditingList::ShowKeyEditNudge() {
 
 void EditingList::PerformPulseAnimation() {
   const auto& scroll_children = scroll_content_->children();
-  DCHECK_EQ(scroll_children.size(), 1u);
+  CHECK_EQ(scroll_children.size(), 1u, base::NotFatalUntil::M160);
   if (auto* list_item =
           views::AsViewClass<ActionViewListItem>(scroll_children[0])) {
     list_item->PerformPulseAnimation();
@@ -436,7 +436,7 @@ void EditingList::UpdateOnZeroState(bool is_zero_state) {
 
 void EditingList::OnAddButtonPressed() {
   // TODO(b/304819827): Support action type choose.
-  DCHECK(scroll_content_);
+  CHECK(scroll_content_, base::NotFatalUntil::M160);
   // Key edit nudge only shows up after adding the first action.
   if (scroll_content_->children().size() == 1u) {
     ash::Shell::Get()->anchored_nudge_manager()->Cancel(kKeyEditNudgeID);
@@ -447,7 +447,7 @@ void EditingList::OnAddButtonPressed() {
 }
 
 void EditingList::OnDoneButtonPressed() {
-  DCHECK(controller_);
+  CHECK(controller_, base::NotFatalUntil::M160);
   RecordEditingListFunctionTriggered(controller_->GetPackageName(),
                                      EditingListFunction::kDone);
   controller_->OnCustomizeSave();
@@ -485,7 +485,7 @@ void EditingList::OnDragStart(const ui::LocatedEvent& event) {
 
 void EditingList::OnDragUpdate(const ui::LocatedEvent& event) {
   auto* widget = GetWidget();
-  DCHECK(widget);
+  CHECK(widget, base::NotFatalUntil::M160);
 
   controller_->RemoveDeleteEditShortcutWidget();
   auto widget_bounds = widget->GetNativeWindow()->GetBoundsInScreen();
@@ -501,7 +501,7 @@ void EditingList::OnDragEnd(const ui::LocatedEvent& event) {
 
 gfx::Point EditingList::GetWidgetMagneticPositionLocal() {
   auto* widget = GetWidget();
-  DCHECK(widget);
+  CHECK(widget, base::NotFatalUntil::M160);
 
   const int width = GetPreferredSize().width();
   const auto anchor_bounds = controller_->touch_injector()->content_bounds();
@@ -634,7 +634,7 @@ void EditingList::VisibilityChanged(views::View* starting_from,
 }
 
 void EditingList::OnActionAdded(Action& action) {
-  DCHECK(scroll_content_);
+  CHECK(scroll_content_, base::NotFatalUntil::M160);
   const size_t active_action_size = controller_->GetActiveActionsSize();
   if (active_action_size == 1u) {
     // Clear the zero-state.
@@ -650,10 +650,10 @@ void EditingList::OnActionAdded(Action& action) {
 }
 
 void EditingList::OnActionRemoved(const Action& action) {
-  DCHECK(scroll_content_);
+  CHECK(scroll_content_, base::NotFatalUntil::M160);
   for (views::View* child : scroll_content_->children()) {
     auto* list_item = views::AsViewClass<ActionViewListItem>(child);
-    DCHECK(list_item);
+    CHECK(list_item, base::NotFatalUntil::M160);
     if (list_item->action() == &action) {
       scroll_content_->RemoveChildViewT(list_item);
       UpdateScrollView(/*scroll_to_bottom=*/false);
@@ -669,7 +669,7 @@ void EditingList::OnActionRemoved(const Action& action) {
 }
 
 void EditingList::OnActionTypeChanged(Action* action, Action* new_action) {
-  DCHECK(!is_zero_state_);
+  CHECK(!is_zero_state_, base::NotFatalUntil::M160);
   for (size_t i = 0; i < scroll_content_->children().size(); i++) {
     if (auto* list_item = views::AsViewClass<ActionViewListItem>(
             scroll_content_->children()[i]);
@@ -684,10 +684,10 @@ void EditingList::OnActionTypeChanged(Action* action, Action* new_action) {
 }
 
 void EditingList::OnActionInputBindingUpdated(const Action& action) {
-  DCHECK(scroll_content_);
+  CHECK(scroll_content_, base::NotFatalUntil::M160);
   for (views::View* child : scroll_content_->children()) {
     auto* list_item = views::AsViewClass<ActionViewListItem>(child);
-    DCHECK(list_item);
+    CHECK(list_item, base::NotFatalUntil::M160);
     if (list_item->action() == &action) {
       list_item->OnActionInputBindingUpdated();
       break;
@@ -696,7 +696,7 @@ void EditingList::OnActionInputBindingUpdated(const Action& action) {
 }
 
 void EditingList::OnActionNewStateRemoved(const Action& action) {
-  DCHECK(scroll_content_);
+  CHECK(scroll_content_, base::NotFatalUntil::M160);
   for (views::View* child : scroll_content_->children()) {
     if (auto* list_item = views::AsViewClass<ActionViewListItem>(child);
         list_item && list_item->action() == &action) {

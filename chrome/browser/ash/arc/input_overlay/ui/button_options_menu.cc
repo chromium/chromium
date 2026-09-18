@@ -164,7 +164,7 @@ ButtonOptionsMenu::~ButtonOptionsMenu() {
 
 void ButtonOptionsMenu::UpdateWidget() {
   auto* widget = GetWidget();
-  DCHECK(widget);
+  CHECK(widget, base::NotFatalUntil::M160);
 
   controller_->UpdateWidgetBoundsInRootWindow(
       widget,
@@ -308,7 +308,7 @@ void ButtonOptionsMenu::OnActionRemoved(const Action& action) {
 
 void ButtonOptionsMenu::OnActionTypeChanged(Action* action,
                                             Action* new_action) {
-  DCHECK_EQ(action_, action);
+  CHECK_EQ(action_, action, base::NotFatalUntil::M160);
   action_ = new_action;
   button_group_->set_action(new_action);
   auto index = GetIndexOf(action_edit_);

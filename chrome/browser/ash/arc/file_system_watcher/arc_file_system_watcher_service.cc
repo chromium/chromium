@@ -114,7 +114,7 @@ std::vector<base::FilePath> CollectChangedPaths(
 // file paths (in Android filesystem) to last modified timestamps.
 TimestampMap BuildTimestampMap(base::FilePath cros_dir,
                                base::FilePath android_dir) {
-  DCHECK(!cros_dir.EndsWithSeparator());
+  CHECK(!cros_dir.EndsWithSeparator(), base::NotFatalUntil::M160);
   TimestampMap timestamp_map;
 
   // Enumerate normal files only; directories and symlinks are skipped.
@@ -239,7 +239,7 @@ ArcFileSystemWatcherService::FileSystemWatcher::FileSystemWatcher(
       android_dir_(android_dir),
       last_notify_time_(base::TimeTicks()),
       outstanding_task_(false) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
@@ -297,7 +297,7 @@ void ArcFileSystemWatcherService::FileSystemWatcher::OnFilePathChanged(
 
 void ArcFileSystemWatcherService::FileSystemWatcher::DelayBuildTimestampMap() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(outstanding_task_);
+  CHECK(outstanding_task_, base::NotFatalUntil::M160);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&BuildTimestampMapCallback, cros_dir_, android_dir_),
@@ -308,7 +308,7 @@ void ArcFileSystemWatcherService::FileSystemWatcher::DelayBuildTimestampMap() {
 void ArcFileSystemWatcherService::FileSystemWatcher::OnBuildTimestampMap(
     std::pair<base::TimeTicks, TimestampMap> timestamp_and_map) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(outstanding_task_);
+  CHECK(outstanding_task_, base::NotFatalUntil::M160);
   base::TimeTicks snapshot_time = timestamp_and_map.first;
   TimestampMap current_timestamp_map = std::move(timestamp_and_map.second);
   std::vector<base::FilePath> changed_paths =
@@ -346,35 +346,35 @@ ArcFileSystemWatcherService::ArcFileSystemWatcherService(
       arc_bridge_service_(bridge_service),
       file_task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   arc_bridge_service_->file_system()->AddObserver(this);
   ArcVolumeMounterBridge::GetForBrowserContext(context_)->Initialize(this);
 }
 
 ArcFileSystemWatcherService::~ArcFileSystemWatcherService() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   StopWatchingFileSystem();
-  DCHECK(removable_media_watchers_.empty());
-  DCHECK(!myfiles_watcher_);
+  CHECK(removable_media_watchers_.empty(), base::NotFatalUntil::M160);
+  CHECK(!myfiles_watcher_, base::NotFatalUntil::M160);
 
   arc_bridge_service_->file_system()->RemoveObserver(this);
 }
 
 void ArcFileSystemWatcherService::OnConnectionReady() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   StopWatchingFileSystem();
   StartWatchingFileSystem();
 }
 
 void ArcFileSystemWatcherService::OnConnectionClosed() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   StopWatchingFileSystem();
 }
 
 void ArcFileSystemWatcherService::StartWatchingFileSystem() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!myfiles_watcher_);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(!myfiles_watcher_, base::NotFatalUntil::M160);
 
   // Attach a watcher to MyFiles and trigger SendAllMountEvents().
   Profile* profile = Profile::FromBrowserContext(context_);
@@ -386,7 +386,7 @@ void ArcFileSystemWatcherService::StartWatchingFileSystem() {
 }
 
 void ArcFileSystemWatcherService::StopWatchingFileSystem() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   watching_file_system_changes_ = false;
 
   for (auto& watcher : removable_media_watchers_) {
@@ -398,8 +398,8 @@ void ArcFileSystemWatcherService::StopWatchingFileSystem() {
 }
 
 void ArcFileSystemWatcherService::OnMyFilesWatcherStarted() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(myfiles_watcher_);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(myfiles_watcher_, base::NotFatalUntil::M160);
   watching_file_system_changes_ = true;
   TriggerSendAllMountEvents();
 }
@@ -424,7 +424,7 @@ ArcFileSystemWatcherService::CreateAndStartFileSystemWatcher(
 
 void ArcFileSystemWatcherService::OnFileSystemChanged(
     const std::vector<std::string>& paths) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
       arc_bridge_service_->file_system(), RequestMediaScan);
@@ -435,7 +435,7 @@ void ArcFileSystemWatcherService::OnFileSystemChanged(
 }
 
 bool ArcFileSystemWatcherService::IsWatchingFileSystemChanges() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   return watching_file_system_changes_;
 }
 
@@ -443,7 +443,7 @@ void ArcFileSystemWatcherService::StartWatchingRemovableMedia(
     const std::string& fs_uuid,
     const std::string& mount_path,
     base::OnceClosure callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   // Make sure that there is no removable media entry. Otherwise, the
   // map assignment will remove the entry after a new entry is
@@ -464,7 +464,7 @@ void ArcFileSystemWatcherService::StartWatchingRemovableMedia(
 
 void ArcFileSystemWatcherService::StopWatchingRemovableMedia(
     const std::string& mount_path) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (!removable_media_watchers_.count(mount_path)) {
     VLOG(1) << "Unmounting non-existing volume with mount path: " << mount_path;
     return;
@@ -475,7 +475,7 @@ void ArcFileSystemWatcherService::StopWatchingRemovableMedia(
 }
 
 void ArcFileSystemWatcherService::TriggerSendAllMountEvents() const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   ArcVolumeMounterBridge::GetForBrowserContext(context_)->SendAllMountEvents();
 }
 

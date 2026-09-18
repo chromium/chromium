@@ -75,7 +75,7 @@ ArcAccessibilityTreeTracker::TreeKey KeyForTaskId(int32_t task_id) {
 
 void SetChildAxTreeIDForWindow(aura::Window* window,
                                const ui::AXTreeID& treeID) {
-  DCHECK(window);
+  CHECK(window, base::NotFatalUntil::M160);
   views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
   if (!widget)
     return;
@@ -570,7 +570,7 @@ void ArcAccessibilityTreeTracker::OnEnabledFeatureChanged(
     task_id_to_window_.clear();
     focus_change_observer_.reset();
 
-    DCHECK(aura::Env::HasInstance());
+    CHECK(aura::Env::HasInstance(), base::NotFatalUntil::M160);
     env_observation_.Reset();
     windows_observer_->Reset();
     child_windows_observer_->Reset();
@@ -602,7 +602,7 @@ bool ArcAccessibilityTreeTracker::EnableTree(const ui::AXTreeID& tree_id) {
 ax::android::AXTreeSourceAndroid*
 ArcAccessibilityTreeTracker::OnAccessibilityEvent(
     const ax::android::mojom::AccessibilityEventData* const event_data) {
-  DCHECK(event_data);
+  CHECK(event_data, base::NotFatalUntil::M160);
   bool is_notification_event = event_data->notification_key.has_value();
   if (is_notification_event) {
     const std::string& notification_key = event_data->notification_key.value();
@@ -801,7 +801,7 @@ void ArcAccessibilityTreeTracker::OnSetNativeChromeVoxArcSupportProcessed(
 
   aura::Window* window = window_tracker->Pop();
   auto task_id = GetWindowTaskId(window);
-  DCHECK(task_id);
+  CHECK(task_id, base::NotFatalUntil::M160);
 
   if (enabled) {
     talkback_enabled_task_ids_.erase(*task_id);
@@ -838,7 +838,7 @@ ax::android::AXTreeSourceAndroid* ArcAccessibilityTreeTracker::CreateFromKey(
       tree_source_delegate_, std::make_unique<ArcSerializationDelegate>(),
       window);
   auto [itr, inserted] = trees_.try_emplace(std::move(key), std::move(tree));
-  DCHECK(inserted);
+  CHECK(inserted, base::NotFatalUntil::M160);
   return itr->second.get();
 }
 
@@ -943,7 +943,7 @@ void ArcAccessibilityTreeTracker::UpdateWindowProperties(aura::Window* window) {
 }
 
 void ArcAccessibilityTreeTracker::StartTrackingWindows() {
-  DCHECK(aura::Env::HasInstance());
+  CHECK(aura::Env::HasInstance(), base::NotFatalUntil::M160);
   env_observation_.Observe(aura::Env::GetInstance());
 
   for (aura::WindowTreeHost* host :

@@ -80,8 +80,9 @@ class ActionLabelTap : public ActionLabel {
  public:
   ActionLabelTap(MouseAction mouse_action, TapLabelPosition label_position)
       : ActionLabel(mouse_action), label_position_(label_position) {
-    DCHECK(mouse_action == MouseAction::PRIMARY_CLICK ||
-           mouse_action == MouseAction::SECONDARY_CLICK);
+    CHECK(mouse_action == MouseAction::PRIMARY_CLICK ||
+              mouse_action == MouseAction::SECONDARY_CLICK,
+          base::NotFatalUntil::M160);
   }
 
   ActionLabelTap(const std::u16string& text, TapLabelPosition label_position)
@@ -151,8 +152,9 @@ class ActionLabelTap : public ActionLabel {
  private:
   gfx::Point CalculateParentPositionWithFixedTouchPoint(
       TapLabelPosition label_position) {
-    DCHECK_NE(label_position_, label_position);
-    DCHECK_NE(label_position, TapLabelPosition::kNone);
+    CHECK_NE(label_position_, label_position, base::NotFatalUntil::M160);
+    CHECK_NE(label_position, TapLabelPosition::kNone,
+             base::NotFatalUntil::M160);
     auto* action_view = GetParent();
     auto fix_pos = action_view->GetTouchCenterInWindow();
     fix_pos.Offset(-touch_point_size_.width() / 2,
@@ -199,7 +201,7 @@ class ActionLabelMove : public ActionLabel {
     auto label_size = CalculatePreferredSize({});
     SetSize(label_size);
     // TODO(b/241966781): Mouse is not supported yet.
-    DCHECK_EQ(mouse_action_, MouseAction::NONE);
+    CHECK_EQ(mouse_action_, MouseAction::NONE, base::NotFatalUntil::M160);
     auto center = touch_point_size_.width() / 2;
     int offset_to_center =
         touch_point_size_.width() / 2 - kCrossPadding - label_size.height() / 2;
@@ -230,7 +232,7 @@ std::vector<raw_ptr<ActionLabel, VectorExperimental>> ActionLabel::Show(
   switch (action_type) {
     case ActionType::TAP:
       if (IsKeyboardBound(input_element)) {
-        DCHECK_EQ(1u, input_element.keys().size());
+        CHECK_EQ(1u, input_element.keys().size(), base::NotFatalUntil::M160);
         labels.emplace_back(
             parent->AddChildView(std::make_unique<ActionLabelTap>(
                 GetDisplayText(input_element.keys()[0]), label_position)));
@@ -292,7 +294,7 @@ ActionLabel::ActionLabel(const std::u16string& text, size_t index)
                                              base::Unretained(this)),
                          text),
       index_(index) {
-  DCHECK(index_ >= 0 && index_ < kActionMoveKeysSize);
+  CHECK(index_ >= 0 && index_ < kActionMoveKeysSize, base::NotFatalUntil::M160);
 }
 
 ActionLabel::~ActionLabel() = default;
@@ -334,7 +336,7 @@ void ActionLabel::RemoveNewState() {
 
 ActionView* ActionLabel::GetParent() {
   auto* view = views::AsViewClass<ActionView>(parent());
-  DCHECK(view);
+  CHECK(view, base::NotFatalUntil::M160);
   return view;
 }
 

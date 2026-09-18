@@ -40,7 +40,7 @@ ArcRobotAuthCodeFetcher::ArcRobotAuthCodeFetcher(
 ArcRobotAuthCodeFetcher::~ArcRobotAuthCodeFetcher() = default;
 
 void ArcRobotAuthCodeFetcher::Fetch(FetchCallback callback) {
-  DCHECK(!fetch_request_job_);
+  CHECK(!fetch_request_job_, base::NotFatalUntil::M160);
   const policy::CloudPolicyClient* client =
       browser_policy_connector_ash_->GetDeviceCloudPolicyManager()
           ->core()

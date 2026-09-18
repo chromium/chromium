@@ -110,13 +110,13 @@ static int64_t CalculateRequiredSpace(const base::FilePath& share_dir,
 }
 
 base::FilePath GetUserCacheFilePath(Profile* const profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M160);
   base::FilePath file_path = file_manager::util::GetShareCacheFilePath(profile);
   return file_path.Append(kArcNearbyShareDirname);
 }
 
 void DeleteSharedFiles(const base::FilePath& file_path) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
                              base::BindOnce(&DeletePathAndFiles, file_path));
 }
@@ -180,7 +180,7 @@ NearbyShareSessionImpl::~NearbyShareSessionImpl() = default;
 
 // static
 void NearbyShareSessionImpl::DeleteShareCacheFilePaths(Profile* const profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M160);
 
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock()},
@@ -190,7 +190,7 @@ void NearbyShareSessionImpl::DeleteShareCacheFilePaths(Profile* const profile) {
 
 void NearbyShareSessionImpl::OnNearbyShareClosed(
     views::Widget::ClosedReason reason) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   DVLOG(1) << __func__;
   // If share is not continuing after sharesheet closes (e.g. cancel, esc key,
@@ -203,7 +203,7 @@ void NearbyShareSessionImpl::OnNearbyShareClosed(
 }
 
 void NearbyShareSessionImpl::OnExoWindowCreated(aura::Window* const window) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   DVLOG(1) << __func__;
   if (!IsValidArcWindow(window, task_id_)) {
@@ -218,9 +218,9 @@ void NearbyShareSessionImpl::OnExoWindowCreated(aura::Window* const window) {
 }
 
 void NearbyShareSessionImpl::OnArcWindowFound(aura::Window* const arc_window) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(arc_window);
-  DCHECK(profile_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(arc_window, base::NotFatalUntil::M160);
+  CHECK(profile_, base::NotFatalUntil::M160);
 
   DVLOG(1) << __func__;
   arc_window_ = arc_window;
@@ -247,16 +247,16 @@ void NearbyShareSessionImpl::OnArcWindowFound(aura::Window* const arc_window) {
 }
 
 apps::IntentPtr NearbyShareSessionImpl::ConvertShareIntentInfoToIntent() {
-  DCHECK(share_info_);
+  CHECK(share_info_, base::NotFatalUntil::M160);
 
   DVLOG(1) << __func__;
   // Sharing files
   if (share_info_->files.has_value()) {
     const auto share_file_paths = file_handler_->GetFilePaths();
-    DCHECK_GT(share_file_paths.size(), 0u);
+    CHECK_GT(share_file_paths.size(), 0u, base::NotFatalUntil::M160);
     const auto share_file_mime_types = file_handler_->GetMimeTypes();
     const size_t expected_total_files = file_handler_->GetNumberOfFiles();
-    DCHECK_GT(expected_total_files, 0u);
+    CHECK_GT(expected_total_files, 0u, base::NotFatalUntil::M160);
 
     if (share_file_paths.size() != expected_total_files) {
       LOG(ERROR)
@@ -281,9 +281,9 @@ apps::IntentPtr NearbyShareSessionImpl::ConvertShareIntentInfoToIntent() {
 }
 
 void NearbyShareSessionImpl::OnPreparedDirectory(base::File::Error result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(arc_window_);
-  DCHECK_GT(file_handler_->GetTotalSizeOfFiles(), 0u);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(arc_window_, base::NotFatalUntil::M160);
+  CHECK_GT(file_handler_->GetTotalSizeOfFiles(), 0u, base::NotFatalUntil::M160);
 
   DVLOG(1) << __func__;
   if (result == base::File::FILE_ERROR_NO_SPACE) {
@@ -318,7 +318,7 @@ void NearbyShareSessionImpl::OnPreparedDirectory(base::File::Error result) {
 
 void NearbyShareSessionImpl::OnNearbyShareBubbleShown(
     sharesheet::SharesheetResult result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (VLOG_IS_ON(1)) {
     switch (result) {
@@ -341,9 +341,9 @@ void NearbyShareSessionImpl::OnNearbyShareBubbleShown(
 }
 
 void NearbyShareSessionImpl::OnFileStreamingStarted() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(arc_window_);
-  DCHECK(file_handler_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(arc_window_, base::NotFatalUntil::M160);
+  CHECK(file_handler_, base::NotFatalUntil::M160);
 
   DVLOG(1) << __func__;
   // Only show the progress bar if total files size is greater than
@@ -365,8 +365,8 @@ void NearbyShareSessionImpl::OnFileStreamingStarted() {
 
 void NearbyShareSessionImpl::ShowNearbyShareBubbleInArcWindow(
     std::optional<base::File::Error> result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(arc_window_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(arc_window_, base::NotFatalUntil::M160);
 
   DVLOG(1) << __func__;
 
@@ -435,7 +435,7 @@ void NearbyShareSessionImpl::ShowNearbyShareBubbleInArcWindow(
 }
 
 void NearbyShareSessionImpl::OnTimerFired() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   LOG(ERROR) << "ARC window didn't get initialized within "
              << kWindowInitializationTimeout.InSeconds() << " second(s).";
@@ -444,7 +444,7 @@ void NearbyShareSessionImpl::OnTimerFired() {
 }
 
 void NearbyShareSessionImpl::OnProgressBarIntervalElapsed() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   DVLOG(1) << __func__;
   if (progress_bar_view_) {
@@ -453,7 +453,7 @@ void NearbyShareSessionImpl::OnProgressBarIntervalElapsed() {
 }
 
 void NearbyShareSessionImpl::OnProgressBarUpdate(double value) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   DVLOG(1) << "OnProgressBarUpdate with value: " << value;
   if (progress_bar_view_) {
@@ -465,7 +465,7 @@ void NearbyShareSessionImpl::OnProgressBarUpdate(double value) {
 }
 
 void NearbyShareSessionImpl::CleanupSession(bool should_cleanup_files) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   DVLOG(1) << __func__;
 
@@ -494,7 +494,7 @@ void NearbyShareSessionImpl::CleanupSession(bool should_cleanup_files) {
 }
 
 void NearbyShareSessionImpl::ShowErrorDialog() {
-  DCHECK(arc_window_);
+  CHECK(arc_window_, base::NotFatalUntil::M160);
 
   DVLOG(1) << __func__;
   ErrorDialogView::Show(arc_window_,
@@ -504,8 +504,8 @@ void NearbyShareSessionImpl::ShowErrorDialog() {
 }
 
 void NearbyShareSessionImpl::FinishSession() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(session_instance_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(session_instance_, base::NotFatalUntil::M160);
 
   DVLOG(1) << __func__;
   // Stop timers and destroy any lingering UI surfaces or observers.
@@ -532,8 +532,8 @@ void NearbyShareSessionImpl::FinishSession() {
 
 void NearbyShareSessionImpl::OnShowLowDiskSpaceDialog(
     int64_t required_disk_space) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_GT(required_disk_space, 0);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK_GT(required_disk_space, 0, base::NotFatalUntil::M160);
 
   DVLOG(1) << "OnCalculateRequiredSpace required_disk_space: "
            << required_disk_space;

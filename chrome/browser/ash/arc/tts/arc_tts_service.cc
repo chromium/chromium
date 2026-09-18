@@ -144,7 +144,7 @@ void ArcTtsService::OnVoicesChanged(std::vector<mojom::TtsVoicePtr> voices) {
   }
 
   TtsPlatformImplChromeOs* impl = TtsPlatformImplChromeOs::GetInstance();
-  DCHECK(impl);
+  CHECK(impl, base::NotFatalUntil::M160);
   impl->SetVoices(std::move(chrome_voices));
 
   content::TtsController::GetInstance()->VoicesChanged();

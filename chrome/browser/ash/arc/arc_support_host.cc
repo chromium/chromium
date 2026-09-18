@@ -240,15 +240,15 @@ ArcSupportHost::ArcSupportHost(
       application_locale_storage_(CHECK_DEREF(application_locale_storage)),
       profile_(profile),
       request_open_app_callback_(base::BindRepeating(&RequestOpenApp)) {
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M160);
   content::URLDataSource::Add(profile_,
                               std::make_unique<ThemeSource>(profile_));
 }
 
 ArcSupportHost::~ArcSupportHost() {
   // Delegates should have been reset to nullptr at this point.
-  DCHECK(!tos_delegate_);
-  DCHECK(!error_delegate_);
+  CHECK(!tos_delegate_, base::NotFatalUntil::M160);
+  CHECK(!error_delegate_, base::NotFatalUntil::M160);
 
   if (message_host_)
     DisconnectMessageHost();
@@ -280,7 +280,8 @@ bool ArcSupportHost::GetShouldShowRunNetworkTests() {
 }
 
 void ArcSupportHost::SetArcManaged(bool is_arc_managed) {
-  DCHECK(!message_host_ || (is_arc_managed_ == is_arc_managed));
+  CHECK(!message_host_ || (is_arc_managed_ == is_arc_managed),
+        base::NotFatalUntil::M160);
   is_arc_managed_ = is_arc_managed;
 }
 
@@ -406,7 +407,7 @@ void ArcSupportHost::ShowError(ErrorInfo error_info,
     case Error::SIGN_IN_GMS_SIGNIN_ERROR:
     case Error::SIGN_IN_GMS_CHECKIN_ERROR:
     case Error::SIGN_IN_UNKNOWN_ERROR:
-      DCHECK(error_info.arg);
+      CHECK(error_info.arg, base::NotFatalUntil::M160);
       message = l10n_util::GetStringFUTF16(
           message_id, base::NumberToString16(error_info.arg.value()));
       break;
@@ -483,7 +484,7 @@ void ArcSupportHost::SetMessageHost(arc::ArcSupportMessageHost* message_host) {
     // Close() is called before opening the window.
     Close();
   } else if (ui_page_ == UIPage::ERROR) {
-    DCHECK(error_info_);
+    CHECK(error_info_, base::NotFatalUntil::M160);
     ShowError(error_info_.value(), should_show_send_feedback_,
               should_show_run_network_tests_);
   } else {
@@ -499,15 +500,15 @@ void ArcSupportHost::UnsetMessageHost(
 }
 
 void ArcSupportHost::DisconnectMessageHost() {
-  DCHECK(message_host_);
+  CHECK(message_host_, base::NotFatalUntil::M160);
   display_observer_.reset();
   message_host_->SetObserver(nullptr);
   message_host_ = nullptr;
 }
 
 void ArcSupportHost::RequestAppStart() {
-  DCHECK(!message_host_);
-  DCHECK(!app_start_pending_);
+  CHECK(!message_host_, base::NotFatalUntil::M160);
+  CHECK(!app_start_pending_, base::NotFatalUntil::M160);
 
   app_start_pending_ = true;
   request_open_app_callback_.Run(profile_.get());
@@ -515,14 +516,14 @@ void ArcSupportHost::RequestAppStart() {
 
 void ArcSupportHost::SetRequestOpenAppCallbackForTesting(
     const RequestOpenAppCallback& callback) {
-  DCHECK(!message_host_);
-  DCHECK(!app_start_pending_);
-  DCHECK(!callback.is_null());
+  CHECK(!message_host_, base::NotFatalUntil::M160);
+  CHECK(!app_start_pending_, base::NotFatalUntil::M160);
+  CHECK(!callback.is_null(), base::NotFatalUntil::M160);
   request_open_app_callback_ = callback;
 }
 
 bool ArcSupportHost::Initialize() {
-  DCHECK(message_host_);
+  CHECK(message_host_, base::NotFatalUntil::M160);
 
   const bool is_child =
       user_manager::UserManager::Get()->IsLoggedInAsChildUser();
@@ -711,11 +712,11 @@ void ArcSupportHost::OnMessage(const base::DictValue& message) {
     if (tos_delegate_) {
       tos_delegate_->OnTermsRejected();
     } else {
-      DCHECK(error_delegate_);
+      CHECK(error_delegate_, base::NotFatalUntil::M160);
       error_delegate_->OnWindowClosed();
     }
   } else if (*event == kEventOnAgreed || *event == kEventOnCanceled) {
-    DCHECK(tos_delegate_);
+    CHECK(tos_delegate_, base::NotFatalUntil::M160);
     std::optional<bool> tos_shown = message.FindBool(kTosShown);
     std::optional<bool> is_metrics_enabled =
         message.FindBool(kIsMetricsEnabled);
@@ -830,14 +831,14 @@ void ArcSupportHost::OnMessage(const base::DictValue& message) {
     if (tos_delegate_) {
       tos_delegate_->OnTermsRetryClicked();
     } else {
-      DCHECK(error_delegate_);
+      CHECK(error_delegate_, base::NotFatalUntil::M160);
       error_delegate_->OnRetryClicked();
     }
   } else if (*event == kEventOnSendFeedbackClicked) {
-    DCHECK(error_delegate_);
+    CHECK(error_delegate_, base::NotFatalUntil::M160);
     error_delegate_->OnSendFeedbackClicked();
   } else if (*event == kEventOnRunNetworkTestsClicked) {
-    DCHECK(error_delegate_);
+    CHECK(error_delegate_, base::NotFatalUntil::M160);
     error_delegate_->OnRunNetworkTestsClicked();
   } else if (*event == kEventOnTosLoadResult) {
     if (tos_delegate_) {
@@ -845,7 +846,7 @@ void ArcSupportHost::OnMessage(const base::DictValue& message) {
           message.FindBool(kSuccess).value_or(false));
     }
   } else if (*event == kEventOnErrorPageShown) {
-    DCHECK(error_delegate_);
+    CHECK(error_delegate_, base::NotFatalUntil::M160);
     error_delegate_->OnErrorPageShown(
         message.FindBool(kNetworkTestsShown).value_or(false));
   } else if (*event == kEventOnOpenPrivacySettingsPageClicked) {

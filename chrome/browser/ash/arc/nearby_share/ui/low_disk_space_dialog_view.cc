@@ -76,8 +76,8 @@ void LowDiskSpaceDialogView::Show(aura::Window* arc_window,
                                   int file_count,
                                   int64_t required_disk_space,
                                   OnCloseCallback callback) {
-  DCHECK(arc_window);
-  DCHECK(callback);
+  CHECK(arc_window, base::NotFatalUntil::M160);
+  CHECK(callback, base::NotFatalUntil::M160);
 
   DVLOG(1) << __func__;
   views::BubbleDialogDelegateView::CreateBubble(

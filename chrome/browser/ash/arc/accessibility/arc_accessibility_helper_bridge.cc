@@ -87,7 +87,7 @@ void DispatchFocusChange(
       accessibility_manager->profile() != profile)
     return;
 
-  DCHECK(exo::WMHelper::HasInstance());
+  CHECK(exo::WMHelper::HasInstance(), base::NotFatalUntil::M160);
   aura::Window* active_window = exo::WMHelper::GetInstance()->GetActiveWindow();
   if (!active_window)
     return;
@@ -242,7 +242,7 @@ void ArcAccessibilityHelperBridge::OnToggleNativeChromeVoxArcSupport(
 
 void ArcAccessibilityHelperBridge::OnAction(
     const ui::AXActionData& data) const {
-  DCHECK(data.target_node_id);
+  CHECK(data.target_node_id, base::NotFatalUntil::M160);
 
   ax::android::AXTreeSourceAndroid* tree_source =
       tree_tracker_.GetFromTreeId(data.target_tree_id);

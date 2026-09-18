@@ -75,7 +75,7 @@ TargetView::TargetView(DisplayOverlayController* controller,
                        ActionType action_type)
     : controller_(controller), action_type_(action_type) {
   const auto* touch_injector = controller_->touch_injector();
-  DCHECK(touch_injector);
+  CHECK(touch_injector, base::NotFatalUntil::M160);
   const auto& bounds = touch_injector->content_bounds();
   center_.set_x(bounds.width() / 2);
   center_.set_y(bounds.height() / 2);
@@ -89,7 +89,7 @@ TargetView::~TargetView() = default;
 
 void TargetView::UpdateWidgetBounds() {
   auto* widget = GetWidget();
-  DCHECK(widget);
+  CHECK(widget, base::NotFatalUntil::M160);
 
   controller_->UpdateWidgetBoundsInRootWindow(
       widget, controller_->touch_injector()->content_bounds());
@@ -144,9 +144,9 @@ void TargetView::OnCenterChanged() {
 
 void TargetView::MoveCursorToViewCenter() {
   auto* widget = GetWidget();
-  DCHECK(widget);
+  CHECK(widget, base::NotFatalUntil::M160);
   auto* window = widget->GetNativeWindow();
-  DCHECK(window);
+  CHECK(window, base::NotFatalUntil::M160);
   window->MoveCursorTo(bounds().CenterPoint());
 }
 

@@ -74,10 +74,11 @@ class ArcTracingDataSource
 
   // Called after constructing |bridge|.
   void RegisterBridgeOnUI(ArcTracingBridge* bridge) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    DCHECK_EQ(ArcTracingBridge::State::kDisabled, bridge->state());
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+    CHECK_EQ(ArcTracingBridge::State::kDisabled, bridge->state(),
+             base::NotFatalUntil::M160);
     bool success = bridges_.insert(bridge).second;
-    DCHECK(success);
+    CHECK(success, base::NotFatalUntil::M160);
 
     if (is_tracing_ && !stop_complete_callback_) {
       // We're currently tracing, so start the new bridge, too.
@@ -91,9 +92,9 @@ class ArcTracingDataSource
 
   // Called when destructing |bridge|.
   void UnregisterBridgeOnUI(ArcTracingBridge* bridge) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
     const size_t erase_count = bridges_.erase(bridge);
-    DCHECK_EQ(1u, erase_count);
+    CHECK_EQ(1u, erase_count, base::NotFatalUntil::M160);
 
     // Make sure we don't continue to wait for any of the bridge's callbacks.
     OnTracingStartedOnUI(false /*success*/);
@@ -144,8 +145,8 @@ class ArcTracingDataSource
 
   // Starts all registered bridges.
   void StartTracingOnUI(const perfetto::DataSourceConfig& data_source_config) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    DCHECK(!is_tracing_);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+    CHECK(!is_tracing_, base::NotFatalUntil::M160);
 
     is_tracing_ = true;
     data_source_config_ = data_source_config;
@@ -162,7 +163,7 @@ class ArcTracingDataSource
   // Stops all registered bridges. Calls |stop_complete_callback| when all
   // bridges have stopped.
   void StopTracingOnUI(base::OnceClosure stop_complete_callback) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
     // We may receive a StopTracing without StartTracing.
     if (!is_tracing_) {
@@ -174,7 +175,7 @@ class ArcTracingDataSource
     // We may still be in startup. In this case, store a callback to rerun
     // StopTracingOnUI() once startup is complete.
     if (IsAnyBridgeStarting()) {
-      DCHECK(!pending_stop_tracing_);
+      CHECK(!pending_stop_tracing_, base::NotFatalUntil::M160);
       pending_stop_tracing_ = base::BindOnce(
           &ArcTracingDataSource::StopTracingOnUI, base::Unretained(this),
           std::move(stop_complete_callback));

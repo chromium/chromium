@@ -113,7 +113,7 @@ ArcBootPhaseMonitorBridge::ArcBootPhaseMonitorBridge(
       pref_service_(user_prefs::UserPrefs::Get(context)) {
   arc_bridge_service_->boot_phase_monitor()->SetHost(this);
   auto* arc_session_manager = ArcSessionManager::Get();
-  DCHECK(arc_session_manager);
+  CHECK(arc_session_manager, base::NotFatalUntil::M160);
   arc_session_manager->AddObserver(this);
 
   // To deal with unexpected shutdown, whether ARC App launch request
@@ -130,7 +130,7 @@ ArcBootPhaseMonitorBridge::~ArcBootPhaseMonitorBridge() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   arc_bridge_service_->boot_phase_monitor()->SetHost(nullptr);
   auto* arc_session_manager = ArcSessionManager::Get();
-  DCHECK(arc_session_manager);
+  CHECK(arc_session_manager, base::NotFatalUntil::M160);
   arc_session_manager->RemoveObserver(this);
 }
 

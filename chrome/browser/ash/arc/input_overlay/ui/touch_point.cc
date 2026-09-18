@@ -295,14 +295,14 @@ void TouchPoint::DrawTouchPoint(gfx::Canvas* canvas,
                                 ActionType action_type,
                                 UIState ui_state,
                                 const gfx::Point& center) {
-  DCHECK(canvas);
-  DCHECK(color_provider);
+  CHECK(canvas, base::NotFatalUntil::M160);
+  CHECK(color_provider, base::NotFatalUntil::M160);
 
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
 
   const auto colors = GetColors(color_provider, ui_state);
-  DCHECK_EQ(colors.size(), kTouchPointComponentSize);
+  CHECK_EQ(colors.size(), kTouchPointComponentSize, base::NotFatalUntil::M160);
 
   switch (action_type) {
     case ActionType::TAP: {

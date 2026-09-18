@@ -50,7 +50,7 @@ IconSource::IconSource(const SkBitmap& bitmap, int dimension_dip)
     : bitmap_(bitmap), dimension_dip_(dimension_dip) {}
 
 gfx::ImageSkiaRep IconSource::GetImageForScale(float scale) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   const int dimension_px = static_cast<int>(dimension_dip_ * scale + 0.5);
   if (bitmap_.isNull()) {
@@ -116,7 +116,7 @@ void IconDecodeRequest::Start(const std::vector<uint8_t>& image_data,
 void IconDecodeRequest::OnImageDecoded(SetIconCallback set_icon_callback,
                                        const SkBitmap& bitmap) {
   TRACE_EVENT0("ui", "IconDecodeRequest::OnImageDecoded");
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (bitmap.isNull()) {
     DLOG(ERROR) << "Failed to decode an icon image.";

@@ -64,7 +64,7 @@ scoped_refptr<storage::FileSystemContext> GetScopedFileSystemContext(
     const GURL& url) {
   content::StoragePartition* const storage =
       browser_context->GetStoragePartitionForUrl(url);
-  DCHECK(storage);
+  CHECK(storage, base::NotFatalUntil::M160);
   return storage->GetFileSystemContext();
 }
 
@@ -74,7 +74,7 @@ file_manager::util::FileSystemURLAndHandle GetFileSystemURLAndHandle(
     const GURL& url) {
   // Obtain the absolute path in the file system.
   const base::FilePath virtual_path = ash::ExternalFileURLToVirtualPath(url);
-  DCHECK(!virtual_path.empty());
+  CHECK(!virtual_path.empty(), base::NotFatalUntil::M160);
   // Obtain the file system URL.
   return file_manager::util::CreateIsolatedURLFromVirtualPath(
       context, url::Origin(), virtual_path);
@@ -110,7 +110,7 @@ base::FilePath DoCreateShareDirectory(const base::FilePath& base_directory) {
 
 // Create file with create and write flags and return scoped fd.
 base::ScopedFD DoCreateFileForWrite(const base::FilePath& file_path) {
-  DCHECK(!file_path.empty());
+  CHECK(!file_path.empty(), base::NotFatalUntil::M160);
 
   base::File dest_file(file_path,
                        base::File::FLAG_CREATE | base::File::FLAG_WRITE);
@@ -134,10 +134,10 @@ ShareInfoFileHandler::ShareInfoFileHandler(
     base::FilePath directory,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : browser_context_(browser_context), task_runner_(task_runner) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(browser_context_);
-  DCHECK(task_runner_);
-  DCHECK(share_info);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(browser_context_, base::NotFatalUntil::M160);
+  CHECK(task_runner_, base::NotFatalUntil::M160);
+  CHECK(share_info, base::NotFatalUntil::M160);
 
   file_config_.directory = directory;
   if (share_info->files.has_value()) {
@@ -186,11 +186,11 @@ void ShareInfoFileHandler::StartPreparingFiles(
     StartedCallback started_callback,
     CompletedCallback completed_callback,
     ProgressBarUpdateCallback update_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(started_callback);
-  DCHECK(completed_callback);
-  DCHECK(update_callback);
-  DCHECK(task_runner_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(started_callback, base::NotFatalUntil::M160);
+  CHECK(completed_callback, base::NotFatalUntil::M160);
+  CHECK(update_callback, base::NotFatalUntil::M160);
+  CHECK(task_runner_, base::NotFatalUntil::M160);
 
   started_callback_ = std::move(started_callback);
   completed_callback_ = std::move(completed_callback);
@@ -215,9 +215,9 @@ void ShareInfoFileHandler::StartPreparingFiles(
 
 void ShareInfoFileHandler::OnShareDirectoryPathCreated(
     base::FilePath share_dir) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(started_callback_);
-  DCHECK(task_runner_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(started_callback_, base::NotFatalUntil::M160);
+  CHECK(task_runner_, base::NotFatalUntil::M160);
 
   if (share_dir.empty()) {
     LOG(ERROR) << "Failed to prepare temp share directory.";
@@ -265,10 +265,10 @@ void ShareInfoFileHandler::OnFileDescriptorCreated(
     const base::FilePath& dest_file_path,
     const int64_t file_size,
     base::ScopedFD dest_fd) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(url.is_valid());
-  DCHECK(!dest_file_path.empty());
-  DCHECK_GE(file_size, 0);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(url.is_valid(), base::NotFatalUntil::M160);
+  CHECK(!dest_file_path.empty(), base::NotFatalUntil::M160);
+  CHECK_GE(file_size, 0, base::NotFatalUntil::M160);
 
   if (!dest_fd.is_valid()) {
     LOG(ERROR) << "Invalid destination file descriptor.";
@@ -281,7 +281,7 @@ void ShareInfoFileHandler::OnFileDescriptorCreated(
   contexts_.emplace_front();
   auto it_context = contexts_.begin();
   *it_context = GetScopedFileSystemContext(browser_context_, url);
-  DCHECK(it_context->get());
+  CHECK(it_context->get(), base::NotFatalUntil::M160);
 
   const file_manager::util::FileSystemURLAndHandle isolated_file_system =
       GetFileSystemURLAndHandle(**it_context, url);
@@ -340,10 +340,10 @@ void ShareInfoFileHandler::OnFileStreamReadCompleted(
     const std::string& file_system_id,
     const int64_t bytes_read,
     bool result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!url_str.empty());
-  DCHECK(!file_system_id.empty());
-  DCHECK_GT(bytes_read, 0);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(!url_str.empty(), base::NotFatalUntil::M160);
+  CHECK(!file_system_id.empty(), base::NotFatalUntil::M160);
+  CHECK_GT(bytes_read, 0, base::NotFatalUntil::M160);
 
   storage::IsolatedContext::GetInstance()->RemoveReference(file_system_id);
   file_stream_adapters_.erase(it_adapter);
@@ -392,7 +392,7 @@ void ShareInfoFileHandler::OnFileStreamReadCompleted(
 
 void ShareInfoFileHandler::OnFileStreamingTimeout(
     const std::string& timeout_message) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   LOG(ERROR) << timeout_message;
   UpdateNearbyShareDataHandlingFail(DataHandlingResult::kTimeout);
@@ -401,7 +401,7 @@ void ShareInfoFileHandler::OnFileStreamingTimeout(
 
 void ShareInfoFileHandler::NotifyFileSharingCompleted(
     base::File::Error result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   // Stop active timer and reset sharing params.
   if (file_streaming_timer_.IsRunning()) {

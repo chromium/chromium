@@ -14,7 +14,7 @@ ArcBackgroundServiceObserver::~ArcBackgroundServiceObserver() = default;
 void ArcBackgroundServiceObserver::StartObserving(
     content::BrowserContext* context,
     const ObserverStateChangedCallback& callback) {
-  DCHECK_EQ(context_, nullptr);
+  CHECK_EQ(context_, nullptr, base::NotFatalUntil::M160);
   context_ = context;
   ThrottleObserver::StartObserving(context_, callback);
   auto* bridge = ArcSystemStateBridge::GetForBrowserContext(context_);
@@ -24,7 +24,7 @@ void ArcBackgroundServiceObserver::StartObserving(
 }
 
 void ArcBackgroundServiceObserver::StopObserving() {
-  DCHECK_NE(context_, nullptr);
+  CHECK_NE(context_, nullptr, base::NotFatalUntil::M160);
   observation_.Reset();
   ThrottleObserver::StopObserving();
   context_ = nullptr;

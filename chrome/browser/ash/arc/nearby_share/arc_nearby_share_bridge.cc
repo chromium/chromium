@@ -53,7 +53,7 @@ class ArcNearbyShareBridgeFactory
 // static
 ArcNearbyShareBridge* ArcNearbyShareBridge::GetForBrowserContext(
     content::BrowserContext* browser_context) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   return ArcNearbyShareBridgeFactory::GetForBrowserContext(browser_context);
 }
 
@@ -69,22 +69,22 @@ ArcNearbyShareBridge::ArcNearbyShareBridge(
     ArcBridgeService* bridge_service)
     : arc_bridge_service_(bridge_service),
       profile_(Profile::FromBrowserContext(browser_context)) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   arc_bridge_service_->nearby_share()->SetHost(this);
 
   // On startup, delete the ARC Nearby Share cache path.
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M160);
   NearbyShareSessionImpl::DeleteShareCacheFilePaths(profile_);
 }
 
 ArcNearbyShareBridge::~ArcNearbyShareBridge() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   arc_bridge_service_->nearby_share()->SetHost(nullptr);
   session_map_.clear();
 }
 
 void ArcNearbyShareBridge::OnNearbyShareSessionFinished(uint32_t task_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   if (!session_map_.erase(task_id)) {
     VLOG(1) << "No share session found for " << task_id;
   }
@@ -95,7 +95,7 @@ void ArcNearbyShareBridge::StartNearbyShare(
     mojom::ShareIntentInfoPtr share_info,
     mojo::PendingRemote<mojom::NearbyShareSessionInstance> session_instance,
     StartNearbyShareCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   VLOG(1) << "Creating Nearby Share session";
   if (!session_instance) {

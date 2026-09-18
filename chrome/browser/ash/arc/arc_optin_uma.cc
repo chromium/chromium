@@ -54,7 +54,7 @@ ArcEnabledState ComputeEnabledState(bool enabled, const Profile* profile) {
                    : ArcEnabledState::DISABLED_MANAGED_ON;
   }
 
-  DCHECK(!enabled);
+  CHECK(!enabled, base::NotFatalUntil::M160);
   return ArcEnabledState::DISABLED_MANAGED_OFF;
 }
 
@@ -108,7 +108,8 @@ void UpdateOptinTosLoadResultUMA(bool success) {
 
 void UpdateProvisioningStatusUMA(ProvisioningStatus status,
                                  const Profile* profile) {
-  DCHECK_NE(status, ProvisioningStatus::CHROME_SERVER_COMMUNICATION_ERROR);
+  CHECK_NE(status, ProvisioningStatus::CHROME_SERVER_COMMUNICATION_ERROR,
+           base::NotFatalUntil::M160);
   LogStabilityUmaEnum(
       GetHistogramNameByUserType("Arc.Provisioning.Status", profile), status);
 }
@@ -219,7 +220,8 @@ void UpdateAuthCheckinAttempts(int32_t num_attempts, const Profile* profile) {
 
 void UpdateAuthAccountCheckStatus(mojom::AccountCheckStatus status,
                                   const Profile* profile) {
-  DCHECK_LE(status, mojom::AccountCheckStatus::CHECK_FAILED);
+  CHECK_LE(status, mojom::AccountCheckStatus::CHECK_FAILED,
+           base::NotFatalUntil::M160);
   LogStabilityUmaEnum(
       GetHistogramNameByUserType("Arc.Auth.AccountCheck.Status", profile),
       status);
@@ -234,7 +236,7 @@ void UpdateAccountReauthReason(mojom::ReauthReason reason,
 void UpdateMainAccountResolutionStatus(
     const Profile* profile,
     mojom::MainAccountResolutionStatus status) {
-  DCHECK(mojom::IsKnownEnumValue(status));
+  CHECK(mojom::IsKnownEnumValue(status), base::NotFatalUntil::M160);
   LogStabilityUmaEnum(GetHistogramNameByUserType(
                           "Arc.Auth.MainAccountResolution.Status", profile),
                       status);

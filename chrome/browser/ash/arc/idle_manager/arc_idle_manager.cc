@@ -103,7 +103,7 @@ ArcIdleManager::ArcIdleManager(content::BrowserContext* context,
     powerbridge_observation_.Observe(arc_power_bridge_);
   }
 
-  DCHECK(bridge_);
+  CHECK(bridge_, base::NotFatalUntil::M160);
   bridge_->power()->AddObserver(this);
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }

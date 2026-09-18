@@ -35,13 +35,13 @@ ShareInfoFileStreamAdapter::ShareInfoFileStreamAdapter(
       dest_fd_(std::move(dest_fd)),
       result_callback_(std::move(result_callback)),
       net_iobuf_(base::MakeRefCounted<net::IOBufferWithSize>(buf_size)) {
-  DCHECK(url_.is_valid());
-  DCHECK(dest_fd_.is_valid());
-  DCHECK_GT(net_iobuf_->size(), 0);
+  CHECK(url_.is_valid(), base::NotFatalUntil::M160);
+  CHECK(dest_fd_.is_valid(), base::NotFatalUntil::M160);
+  CHECK_GT(net_iobuf_->size(), 0, base::NotFatalUntil::M160);
 }
 
 void ShareInfoFileStreamAdapter::StartRunner() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       // USER_BLOCKING because of downing files requested by the user and
@@ -55,7 +55,7 @@ void ShareInfoFileStreamAdapter::StartRunner() {
 }
 
 void ShareInfoFileStreamAdapter::StartRunnerForTesting() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()});
@@ -65,7 +65,7 @@ void ShareInfoFileStreamAdapter::StartRunnerForTesting() {
 }
 
 ShareInfoFileStreamAdapter::~ShareInfoFileStreamAdapter() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   // There was an abort mid-operation and did not complete streaming.
   if (result_callback_)
@@ -73,7 +73,7 @@ ShareInfoFileStreamAdapter::~ShareInfoFileStreamAdapter() {
 }
 
 void ShareInfoFileStreamAdapter::StartFileStreaming() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   stream_reader_ = context_->CreateFileStreamReader(
       url_, offset_, bytes_remaining_, base::Time());
@@ -88,7 +88,7 @@ void ShareInfoFileStreamAdapter::StartFileStreaming() {
 }
 
 void ShareInfoFileStreamAdapter::PerformReadFileStream() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   if (bytes_remaining_ == 0) {
     OnStreamingFinished(true);
     return;
@@ -107,8 +107,8 @@ void ShareInfoFileStreamAdapter::PerformReadFileStream() {
 }
 
 void ShareInfoFileStreamAdapter::WriteToFile(int bytes_read) {
-  DCHECK(dest_fd_.is_valid());
-  DCHECK_GT(bytes_read, 0);
+  CHECK(dest_fd_.is_valid(), base::NotFatalUntil::M160);
+  CHECK_GT(bytes_read, 0, base::NotFatalUntil::M160);
 
   auto write_fd_func = base::BindOnce(
       [](int fd, scoped_refptr<net::IOBuffer> buf, int size) -> bool {
@@ -126,7 +126,7 @@ void ShareInfoFileStreamAdapter::WriteToFile(int bytes_read) {
 }
 
 void ShareInfoFileStreamAdapter::OnReadFile(int bytes_read) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   if (bytes_read < 0) {
     LOG(ERROR) << " Reached EOF even though there are remaining bytes: "
@@ -142,7 +142,7 @@ void ShareInfoFileStreamAdapter::OnReadFile(int bytes_read) {
     return;
   }
   bytes_remaining_ -= bytes_read;
-  DCHECK_GE(bytes_remaining_, 0);
+  CHECK_GE(bytes_remaining_, 0, base::NotFatalUntil::M160);
 
   if (dest_fd_.is_valid()) {
     WriteToFile(bytes_read);
@@ -154,7 +154,7 @@ void ShareInfoFileStreamAdapter::OnReadFile(int bytes_read) {
 }
 
 void ShareInfoFileStreamAdapter::OnWriteFinished(bool result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   if (!result) {
     OnStreamingFinished(false);
@@ -166,8 +166,8 @@ void ShareInfoFileStreamAdapter::OnWriteFinished(bool result) {
 }
 
 void ShareInfoFileStreamAdapter::OnStreamingFinished(bool result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  DCHECK(result_callback_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK(result_callback_, base::NotFatalUntil::M160);
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(result_callback_), result));

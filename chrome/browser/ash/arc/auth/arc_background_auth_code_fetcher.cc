@@ -74,7 +74,7 @@ ArcBackgroundAuthCodeFetcher::~ArcBackgroundAuthCodeFetcher() = default;
 
 void ArcBackgroundAuthCodeFetcher::Fetch(FetchCallback callback) {
   bypass_proxy_ = false;
-  DCHECK(callback_.is_null());
+  CHECK(callback_.is_null(), base::NotFatalUntil::M160);
   callback_ = std::move(callback);
   context_.Prepare(base::BindOnce(&ArcBackgroundAuthCodeFetcher::OnPrepared,
                                   weak_ptr_factory_.GetWeakPtr()));
@@ -91,7 +91,7 @@ void ArcBackgroundAuthCodeFetcher::OnPrepared(bool success) {
 
 void ArcBackgroundAuthCodeFetcher::AttemptToRecoverAccessToken(
     const signin::AccessTokenInfo& token_info) {
-  DCHECK(!attempted_to_recover_access_token_);
+  CHECK(!attempted_to_recover_access_token_, base::NotFatalUntil::M160);
   attempted_to_recover_access_token_ = true;
   context_.RemoveAccessTokenFromCache(
       signin::OAuthConsumerId::kArcBackgroundAuthCodeFetcher, token_info.token);
@@ -99,8 +99,8 @@ void ArcBackgroundAuthCodeFetcher::AttemptToRecoverAccessToken(
 }
 
 void ArcBackgroundAuthCodeFetcher::StartFetchingAccessToken() {
-  DCHECK(!simple_url_loader_);
-  DCHECK(!access_token_fetcher_);
+  CHECK(!simple_url_loader_, base::NotFatalUntil::M160);
+  CHECK(!access_token_fetcher_, base::NotFatalUntil::M160);
   access_token_fetcher_ = context_.CreateAccessTokenFetcher(
       signin::OAuthConsumerId::kArcBackgroundAuthCodeFetcher,
       base::BindOnce(&ArcBackgroundAuthCodeFetcher::OnAccessTokenFetchComplete,
@@ -173,7 +173,7 @@ void ArcBackgroundAuthCodeFetcher::OnAccessTokenFetchComplete(
   resource_request->method = "POST";
   resource_request->headers.SetHeader(kGetAuthCodeKey, kGetAuthCodeValue);
 
-  DCHECK(!simple_url_loader_);
+  CHECK(!simple_url_loader_, base::NotFatalUntil::M160);
 
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);
