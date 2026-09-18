@@ -5327,7 +5327,6 @@ if (is_android) {
     deps = [
       ":build_info_java",
       ":command_line_java",
-      ":supplier_java",
       ":tasks_java",
     ]
   }
@@ -5473,7 +5472,6 @@ if (is_android) {
       ":log_java",
       ":metrics_java",
       ":resetters_java",
-      ":supplier_java",
       ":tasks_java",
       ":time_utils_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
@@ -5552,9 +5550,7 @@ if (is_android) {
       ":callback_java",
       ":lifetime_java",
       ":promise_java",
-      ":resetters_java",
       ":tasks_java",
-      ":unowned_user_data_java",
       "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
@@ -5580,7 +5576,6 @@ if (is_android) {
     deps = [
       ":callback_jni_java",
       "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
-      "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
       "//third_party/androidx:androidx_annotation_annotation_experimental_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
@@ -5862,10 +5857,8 @@ if (is_android) {
       sources = [ "android/java/src/org/chromium/base/ui/KeyboardUtils.java" ]
       deps = [
         ":base_java",
-        ":build_info_java",
         ":log_java",
         ":tasks_java",
-        "//third_party/androidx:androidx_annotation_annotation_java",
         "//third_party/androidx:androidx_core_core_java",
       ]
     }
@@ -5887,7 +5880,6 @@ if (is_android) {
     ]
 
     deps = [
-      ":base_switches_java",
       ":callback_java",
       ":command_line_java",
       ":library_loader_jni_java",
@@ -5960,7 +5952,6 @@ if (is_android) {
   android_library("base_cached_flags_java") {
     deps = [
       ":base_java",
-      ":base_shared_preferences_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
 
@@ -5972,10 +5963,7 @@ if (is_android) {
   android_library("holder_java") {
     sources = [ "android/java/src/org/chromium/base/Holder.java" ]
 
-    deps = [
-      ":callback_java",
-      ":supplier_java",
-    ]
+    deps = [ ":callback_java" ]
   }
 
   android_aidl("build_info_aidl") {
@@ -6088,7 +6076,6 @@ if (is_android) {
 
     deps = [
       ":base_java",
-      "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
       "//third_party/junit",
     ]
