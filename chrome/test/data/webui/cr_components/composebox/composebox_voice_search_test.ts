@@ -333,6 +333,46 @@ suite('ComposeboxVoiceSearch', () => {
   });
 
   test(
+      'positions error message and close button with 20px top padding ' +
+          'when audio-wave-enabled',
+      async () => {
+        loadTimeData.overrideValues({
+          voiceSearchCoherenceComposeboxesEnabled: true,
+        });
+        await createComposeboxElement();
+
+        const voiceSearchElement = await openVoiceSearchUI();
+        voiceSearchElement.audioWaveEnabled = true;
+        await voiceSearchElement.updateComplete;
+
+        mockSpeechRecognition.onerror!
+            ({error: 'network'} as SpeechRecognitionErrorEvent);
+        await microtasksFinished();
+        await voiceSearchElement.updateComplete;
+
+        const errorContainer =
+            voiceSearchElement.shadowRoot.querySelector<HTMLElement>(
+                '#error-container');
+        assertTrue(!!errorContainer);
+        assertFalse(errorContainer.hidden);
+        assertEquals(
+            '20px', window.getComputedStyle(errorContainer).paddingTop);
+
+        const closeButton =
+            voiceSearchElement.shadowRoot.querySelector<HTMLElement>(
+                '#closeButton');
+        assertTrue(!!closeButton);
+        assertEquals('14px', window.getComputedStyle(closeButton).top);
+
+        // Disabling audio-wave-enabled restores default styling.
+        voiceSearchElement.audioWaveEnabled = false;
+        await voiceSearchElement.updateComplete;
+        assertEquals(
+            '11px', window.getComputedStyle(errorContainer).paddingTop);
+        assertEquals('12px', window.getComputedStyle(closeButton).top);
+      });
+
+  test(
       'NO_MATCH error auto-closes immediately when hasErrorTimer is false',
       async () => {
         const voiceSearchElement = await openVoiceSearchUI();

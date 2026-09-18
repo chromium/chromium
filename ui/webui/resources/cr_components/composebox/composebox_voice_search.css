@@ -270,6 +270,14 @@
   transition: bottom 200ms ease-in-out, var(--voice-search-fade-transition);
 }
 
+:host([audio-wave-enabled]) #error-container {
+  padding-top: 20px;
+}
+
+:host([audio-wave-enabled]) #closeButton {
+  top: 14px;
+}
+
 /* Use opacity and pointer-events to utilize fade transition
  * if error is shown.
  */
