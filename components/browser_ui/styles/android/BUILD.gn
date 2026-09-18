@@ -9,6 +9,8 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/components/browser_ui/styles/ChromeColors.java",
     "java/src/org/chromium/components/browser_ui/styles/IncognitoColors.java",
+    "java/src/org/chromium/components/browser_ui/styles/NewLabelSpan.java",
+    "java/src/org/chromium/components/browser_ui/styles/NewLabelUtils.java",
     "java/src/org/chromium/components/browser_ui/styles/SemanticColorUtils.java",
   ]
   deps = [
@@ -21,6 +23,30 @@ android_library("java") {
     "//third_party/androidx:androidx_core_core_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
+  resources_package = "org.chromium.components.browser_ui.styles"
+}
+
+robolectric_library("junit") {
+  testonly = true
+
+  sources = [
+    "junit/src/org/chromium/components/browser_ui/styles/NewLabelSpanUnitTest.java",
+    "junit/src/org/chromium/components/browser_ui/styles/NewLabelUtilsUnitTest.java",
+  ]
+
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//base:base_junit_test_support",
+
+    # For R.style.Theme_BrowserUI_DayNight, which SemanticColorUtils needs a
+    # theme for.
+    "//components/browser_ui/theme/android:java_resources",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+  ]
+
   resources_package = "org.chromium.components.browser_ui.styles"
 }
 
