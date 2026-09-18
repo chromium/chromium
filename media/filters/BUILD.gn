@@ -20,6 +20,15 @@ if (media_use_symphonia_decoder) {
 }
 
 if (media_use_symphonia_demuxer) {
+  source_set("symphonia_source_bridge") {
+    sources = [ "symphonia_source_bridge.h" ]
+    visibility = [ ":*" ]
+    public_deps = [
+      "//base",
+      "//build/rust:cxx_cppdeps",
+    ]
+  }
+
   rust_static_library("symphonia_demuxer_bridge") {
     allow_unsafe = true
 
@@ -28,6 +37,7 @@ if (media_use_symphonia_demuxer) {
     cxx_bindings = [ "symphonia_demuxer_bridge.rs" ]
     visibility = [ ":*" ]
     deps = [ "//third_party/rust/symphonia/v0_6:lib" ]
+    public_deps = [ ":symphonia_source_bridge" ]
   }
 }
 
@@ -175,7 +185,6 @@ source_set("filters") {
   }
 
   if (media_use_symphonia_demuxer) {
-    sources += [ "symphonia_source_bridge.h" ]
     deps += [ ":symphonia_demuxer_bridge" ]
   }
 
