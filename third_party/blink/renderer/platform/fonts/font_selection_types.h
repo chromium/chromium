@@ -352,7 +352,7 @@ struct FontSelectionCapabilities {
   FontSelectionCapabilities(FontSelectionRange width,
                             FontSelectionRange slope,
                             FontSelectionRange weight)
-      : width(width), slope(slope), weight(weight), is_deleted_value_(false) {}
+      : width(width), slope(slope), weight(weight) {}
 
   FontSelectionCapabilities(HashTableDeletedValueType)
       : is_deleted_value_(true) {}

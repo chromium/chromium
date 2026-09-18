@@ -31,11 +31,11 @@ class PLATFORM_EXPORT SmallCapsIterator {
 
  private:
   UTF16TextIterator utf16_iterator_;
-  UChar32 next_u_char32_;
+  UChar32 next_u_char32_ = 0;
   bool at_end_;
 
-  SmallCapsBehavior current_small_caps_behavior_;
-  SmallCapsBehavior previous_small_caps_behavior_;
+  SmallCapsBehavior current_small_caps_behavior_ = kSmallCapsInvalid;
+  SmallCapsBehavior previous_small_caps_behavior_ = kSmallCapsInvalid;
 };
 
 }  // namespace blink

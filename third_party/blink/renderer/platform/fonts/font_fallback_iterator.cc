@@ -20,9 +20,6 @@ FontFallbackIterator::FontFallbackIterator(
     FontFallbackPriority font_fallback_priority)
     : font_description_(description),
       font_fallback_list_(fallback_list),
-      current_font_data_index_(0),
-      segmented_face_index_(0),
-      fallback_stage_(kFontGroupFonts),
       font_fallback_priority_(font_fallback_priority) {}
 
 void FontFallbackIterator::Reset() {

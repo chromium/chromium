@@ -10,10 +10,7 @@
 namespace blink {
 
 SmallCapsIterator::SmallCapsIterator(base::span<const UChar> buffer)
-    : utf16_iterator_(buffer),
-      next_u_char32_(0),
-      at_end_(buffer.empty()),
-      current_small_caps_behavior_(kSmallCapsInvalid) {}
+    : utf16_iterator_(buffer), at_end_(buffer.empty()) {}
 
 bool SmallCapsIterator::Consume(unsigned* caps_limit,
                                 SmallCapsBehavior* small_caps_behavior) {

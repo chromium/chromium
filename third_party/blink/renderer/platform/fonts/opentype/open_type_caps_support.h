@@ -19,7 +19,7 @@ class PLATFORM_EXPORT OpenTypeCapsSupport {
   STACK_ALLOCATED();
 
  public:
-  OpenTypeCapsSupport();
+  OpenTypeCapsSupport() = default;
   OpenTypeCapsSupport(
       const HarfBuzzFace*,
       FontDescription::FontVariantCaps requested_caps,
@@ -62,9 +62,9 @@ class PLATFORM_EXPORT OpenTypeCapsSupport {
     kBothToSmallCaps
   };
 
-  FontSupport font_support_;
-  CapsSynthesis caps_synthesis_;
-  mutable FontFormat font_format_;
+  FontSupport font_support_ = FontSupport::kFull;
+  CapsSynthesis caps_synthesis_ = CapsSynthesis::kNone;
+  mutable FontFormat font_format_ = FontFormat::kUndetermined;
 };
 
 }  // namespace blink

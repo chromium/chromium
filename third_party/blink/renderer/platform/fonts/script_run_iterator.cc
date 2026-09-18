@@ -292,13 +292,6 @@ ScriptRunIterator::ScriptRunIterator(base::span<const UChar> text,
                                      const ScriptData* data)
     : text_(text.data()),
       length_(base::checked_cast<wtf_size_t>(text.size())),
-      brackets_fixup_depth_(0),
-      next_set_(std::make_unique<UScriptCodeList>()),
-      ahead_set_(std::make_unique<UScriptCodeList>()),
-      // The initial value of ahead_character_ is not used.
-      ahead_character_(0),
-      ahead_pos_(0),
-      common_preferred_(USCRIPT_COMMON),
       script_data_(data) {
   DCHECK(text.data());
   DCHECK(data);

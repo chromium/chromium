@@ -61,7 +61,7 @@ class PLATFORM_EXPORT ScriptRunIterator {
   const wtf_size_t length_;
 
   Deque<BracketRec> brackets_;
-  wtf_size_t brackets_fixup_depth_;
+  wtf_size_t brackets_fixup_depth_ = 0;
   // Limit max brackets so that the bracket tracking buffer does not grow
   // excessively large when processing long runs of text.
   static const int kMaxBrackets = 32;
@@ -70,13 +70,16 @@ class PLATFORM_EXPORT ScriptRunIterator {
   // Because next_set_ and ahead_set_ are swapped as we consume characters, and
   // swapping inlined vector is not cheap, next_set_ and ahead_set_ are
   // pointers.
-  std::unique_ptr<UScriptCodeList> next_set_;
-  std::unique_ptr<UScriptCodeList> ahead_set_;
+  std::unique_ptr<UScriptCodeList> next_set_ =
+      std::make_unique<UScriptCodeList>();
+  std::unique_ptr<UScriptCodeList> ahead_set_ =
+      std::make_unique<UScriptCodeList>();
 
-  UChar32 ahead_character_;
-  wtf_size_t ahead_pos_;
+  // The initial value of ahead_character_ is not used.
+  UChar32 ahead_character_ = 0;
+  wtf_size_t ahead_pos_ = 0;
 
-  UScriptCode common_preferred_;
+  UScriptCode common_preferred_ = USCRIPT_COMMON;
 
   const ScriptData* script_data_;
 };

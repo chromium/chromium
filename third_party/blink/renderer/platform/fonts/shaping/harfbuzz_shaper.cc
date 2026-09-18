@@ -805,13 +805,13 @@ class CapsFeatureSettingsScopedOverlay final {
   void OverlayCapsFeatures(FontDescription::FontVariantCaps);
   void PrependCounting(const FontFeatureRange&);
   FontFeatureRanges* features_;
-  wtf_size_t count_features_;
+  wtf_size_t count_features_ = 0;
 };
 
 CapsFeatureSettingsScopedOverlay::CapsFeatureSettingsScopedOverlay(
     FontFeatureRanges* features,
     FontDescription::FontVariantCaps variant_caps)
-    : features_(features), count_features_(0) {
+    : features_(features) {
   OverlayCapsFeatures(variant_caps);
 }
 

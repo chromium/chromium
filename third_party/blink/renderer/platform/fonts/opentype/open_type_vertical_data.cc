@@ -137,11 +137,7 @@ struct VORGTable {
 
 }  // namespace open_type
 
-OpenTypeVerticalData::OpenTypeVerticalData(sk_sp<SkTypeface> typeface)
-    : default_vert_origin_y_(0),
-      size_per_unit_(0),
-      ascent_fallback_(0),
-      height_fallback_(0) {
+OpenTypeVerticalData::OpenTypeVerticalData(sk_sp<SkTypeface> typeface) {
   LoadMetrics(typeface);
 }
 

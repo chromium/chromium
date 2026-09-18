@@ -80,21 +80,15 @@ class PLATFORM_EXPORT ShapeResultView final
    public:
     Segment() = default;
     Segment(const ShapeResult* result, unsigned start_index, unsigned end_index)
-        : result(result),
-          view(nullptr),
-          start_index(start_index),
-          end_index(end_index) {}
+        : result(result), start_index(start_index), end_index(end_index) {}
     Segment(const ShapeResultView* view,
             unsigned start_index,
             unsigned end_index)
-        : result(nullptr),
-          view(view),
-          start_index(start_index),
-          end_index(end_index) {}
-    const ShapeResult* result;
-    const ShapeResultView* view;
-    unsigned start_index;
-    unsigned end_index;
+        : view(view), start_index(start_index), end_index(end_index) {}
+    const ShapeResult* result = nullptr;
+    const ShapeResultView* view = nullptr;
+    unsigned start_index = 0;
+    unsigned end_index = 0;
   };
   static ShapeResultView* Create(base::span<const Segment> segments);
 

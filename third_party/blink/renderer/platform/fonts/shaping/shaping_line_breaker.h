@@ -49,21 +49,21 @@ class PLATFORM_EXPORT ShapingLineBreaker {
 
    public:
     // Indicates the resulting break offset.
-    unsigned break_offset;
+    unsigned break_offset = 0;
 
     // Indicates that the shape result contains trailing spaces
-    bool has_trailing_spaces;
+    bool has_trailing_spaces = false;
 
     // True if there were no break opportunities that can fit. When this is
     // false, the result width should be smaller than or equal to the available
     // space.
-    bool is_overflow;
+    bool is_overflow = false;
 
     // True if the break is hyphenated, either by automatic hyphenation or
     // soft-hyphen characters.
     // The hyphen glyph is not included in the |ShapeResult|, and that appending
     // a hyphen glyph may overflow the specified available space.
-    bool is_hyphenated;
+    bool is_hyphenated = false;
   };
 
   // Set the start of the current line.

@@ -17,9 +17,9 @@ namespace blink {
 struct VariationAxis {
   String tag;
   String name;
-  double minValue;
-  double maxValue;
-  double defaultValue;
+  double minValue = 0;
+  double maxValue = 0;
+  double defaultValue = 0;
 };
 
 class PLATFORM_EXPORT VariableAxesNames {

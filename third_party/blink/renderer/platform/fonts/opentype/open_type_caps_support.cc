@@ -38,12 +38,6 @@ bool activationSelectorPresent(
 }
 }  // namespace
 
-OpenTypeCapsSupport::OpenTypeCapsSupport()
-    : harfbuzz_face_(nullptr),
-      font_support_(FontSupport::kFull),
-      caps_synthesis_(CapsSynthesis::kNone),
-      font_format_(FontFormat::kUndetermined) {}
-
 OpenTypeCapsSupport::OpenTypeCapsSupport(
     const HarfBuzzFace* harfbuzz_face,
     FontDescription::FontVariantCaps requested_caps,
@@ -51,10 +45,7 @@ OpenTypeCapsSupport::OpenTypeCapsSupport(
     hb_script_t script)
     : harfbuzz_face_(harfbuzz_face),
       requested_caps_(requested_caps),
-      font_synthesis_small_caps_(font_synthesis_small_caps),
-      font_support_(FontSupport::kFull),
-      caps_synthesis_(CapsSynthesis::kNone),
-      font_format_(FontFormat::kUndetermined) {
+      font_synthesis_small_caps_(font_synthesis_small_caps) {
   if (requested_caps != FontDescription::kCapsNormal)
     DetermineFontSupport(script);
 }

@@ -49,10 +49,9 @@ class FontFaceCreationParams {
   USING_FAST_MALLOC(FontFaceCreationParams);
 
  public:
-  FontFaceCreationParams() : creation_type_(kCreateFontByFamily) {}
+  FontFaceCreationParams() = default;
 
-  explicit FontFaceCreationParams(AtomicString family)
-      : creation_type_(kCreateFontByFamily), family_(family) {
+  explicit FontFaceCreationParams(AtomicString family) : family_(family) {
 #if BUILDFLAG(IS_WIN)
     // Leading "@" in the font name enables Windows vertical flow flag for the
     // font.  Because we do vertical flow by ourselves, we don't want to use the
@@ -124,7 +123,7 @@ class FontFaceCreationParams {
   }
 
  private:
-  FontFaceCreationType creation_type_;
+  FontFaceCreationType creation_type_ = kCreateFontByFamily;
   AtomicString family_;
 
   void SetFilename(std::string& filename) {

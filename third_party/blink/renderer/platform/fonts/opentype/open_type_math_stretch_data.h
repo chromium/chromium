@@ -22,11 +22,11 @@ class PLATFORM_EXPORT OpenTypeMathStretchData {
 
   // https://docs.microsoft.com/en-us/typography/opentype/spec/math#glyphPartRecord
   struct GlyphPartRecord {
-    Glyph glyph;
-    float start_connector_length;
-    float end_connector_length;
-    float full_advance;
-    bool is_extender;
+    Glyph glyph = 0;
+    float start_connector_length = 0;
+    float end_connector_length = 0;
+    float full_advance = 0;
+    bool is_extender = false;
   };
 
   // https://w3c.github.io/mathml-core/#the-glyphassembly-table

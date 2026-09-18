@@ -66,12 +66,12 @@ class PLATFORM_EXPORT OpenTypeVerticalData
   Vector<uint16_t> advance_widths_;
   Vector<uint16_t> advance_heights_;
   Vector<int16_t> top_side_bearings_;
-  int16_t default_vert_origin_y_;
+  int16_t default_vert_origin_y_ = 0;
   HashMap<Glyph, int16_t> vert_origin_y_;
 
-  float size_per_unit_;
-  float ascent_fallback_;
-  int height_fallback_;
+  float size_per_unit_ = 0;
+  float ascent_fallback_ = 0;
+  int height_fallback_ = 0;
 };
 
 }  // namespace blink

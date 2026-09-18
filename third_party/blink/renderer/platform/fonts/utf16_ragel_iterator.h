@@ -28,15 +28,11 @@ class PLATFORM_EXPORT UTF16RagelIterator {
   STACK_ALLOCATED();
 
  public:
-  UTF16RagelIterator()
-      : cursor_(0),
-        cached_category_(EmojiSegmentationCategory::kInvalidCacheEntry) {}
+  UTF16RagelIterator() = default;
 
   explicit UTF16RagelIterator(base::span<const UChar> buffer,
                               unsigned cursor = 0)
-      : buffer_(buffer),
-        cursor_(cursor),
-        cached_category_(EmojiSegmentationCategory::kInvalidCacheEntry) {}
+      : buffer_(buffer), cursor_(cursor) {}
 
   UTF16RagelIterator end() {
     UTF16RagelIterator ret = *this;
@@ -157,8 +153,9 @@ class PLATFORM_EXPORT UTF16RagelIterator {
 
  private:
   base::span<const UChar> buffer_;
-  unsigned cursor_;
-  EmojiSegmentationCategory cached_category_;
+  unsigned cursor_ = 0;
+  EmojiSegmentationCategory cached_category_ =
+      EmojiSegmentationCategory::kInvalidCacheEntry;
 };
 
 }  // namespace blink
