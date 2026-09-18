@@ -24,7 +24,7 @@ MediaSessionController::MediaSessionController(const MediaPlayerId& id,
     : id_(id),
       web_contents_(web_contents),
       media_session_(MediaSessionImpl::Get(web_contents)) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 }
 
 MediaSessionController::~MediaSessionController() {
@@ -49,14 +49,14 @@ bool MediaSessionController::OnPlaybackStarted() {
 }
 
 void MediaSessionController::OnSuspend(int player_id, bool triggered_by_user) {
-  DCHECK_EQ(player_id_, player_id);
+  CHECK_EQ(player_id_, player_id, base::NotFatalUntil::M160);
   web_contents_->media_web_contents_observer()
       ->GetMediaPlayerRemote(id_)
       ->RequestPause(triggered_by_user);
 }
 
 void MediaSessionController::OnResume(int player_id, bool triggered_by_user) {
-  DCHECK_EQ(player_id_, player_id);
+  CHECK_EQ(player_id_, player_id, base::NotFatalUntil::M160);
   web_contents_->media_web_contents_observer()
       ->GetMediaPlayerRemote(id_)
       ->RequestPlay(triggered_by_user);
@@ -64,7 +64,7 @@ void MediaSessionController::OnResume(int player_id, bool triggered_by_user) {
 
 void MediaSessionController::OnSeekForward(int player_id,
                                            base::TimeDelta seek_time) {
-  DCHECK_EQ(player_id_, player_id);
+  CHECK_EQ(player_id_, player_id, base::NotFatalUntil::M160);
   web_contents_->media_web_contents_observer()
       ->GetMediaPlayerRemote(id_)
       ->RequestSeekForward(seek_time);
@@ -72,7 +72,7 @@ void MediaSessionController::OnSeekForward(int player_id,
 
 void MediaSessionController::OnSeekBackward(int player_id,
                                             base::TimeDelta seek_time) {
-  DCHECK_EQ(player_id_, player_id);
+  CHECK_EQ(player_id_, player_id, base::NotFatalUntil::M160);
   web_contents_->media_web_contents_observer()
       ->GetMediaPlayerRemote(id_)
       ->RequestSeekBackward(seek_time);
@@ -80,7 +80,7 @@ void MediaSessionController::OnSeekBackward(int player_id,
 
 void MediaSessionController::OnSeekTo(int player_id,
                                       base::TimeDelta seek_time) {
-  DCHECK_EQ(player_id_, player_id);
+  CHECK_EQ(player_id_, player_id, base::NotFatalUntil::M160);
   web_contents_->media_web_contents_observer()
       ->GetMediaPlayerRemote(id_)
       ->RequestSeekTo(seek_time);
@@ -88,7 +88,7 @@ void MediaSessionController::OnSeekTo(int player_id,
 
 void MediaSessionController::OnSetVolumeMultiplier(int player_id,
                                                    double volume_multiplier) {
-  DCHECK_EQ(player_id_, player_id);
+  CHECK_EQ(player_id_, player_id, base::NotFatalUntil::M160);
 
   auto* observer = web_contents_->media_web_contents_observer();
   // The MediaPlayer mojo interface may not be available in tests.
@@ -100,7 +100,7 @@ void MediaSessionController::OnSetVolumeMultiplier(int player_id,
 void MediaSessionController::OnEnterPictureInPicture(
     int player_id,
     const std::optional<gfx::Size>& min_size) {
-  DCHECK_EQ(player_id_, player_id);
+  CHECK_EQ(player_id_, player_id, base::NotFatalUntil::M160);
 
   web_contents_->media_web_contents_observer()
       ->GetMediaPlayerRemote(id_)
@@ -108,7 +108,7 @@ void MediaSessionController::OnEnterPictureInPicture(
 }
 
 void MediaSessionController::OnSaveVideoFrame(int player_id) {
-  DCHECK_EQ(player_id_, player_id);
+  CHECK_EQ(player_id_, player_id, base::NotFatalUntil::M160);
 
   web_contents_->media_web_contents_observer()
       ->GetMediaPlayerRemote(id_)
@@ -118,7 +118,7 @@ void MediaSessionController::OnSaveVideoFrame(int player_id) {
 void MediaSessionController::OnSetAudioSinkId(
     int player_id,
     const std::string& raw_device_id) {
-  DCHECK_EQ(player_id_, player_id);
+  CHECK_EQ(player_id_, player_id, base::NotFatalUntil::M160);
 
   auto* render_frame_host = RenderFrameHost::FromID(id_.frame_routing_id);
   if (!render_frame_host)
@@ -147,7 +147,7 @@ void MediaSessionController::OnHashedSinkIdReceived(
 }
 
 void MediaSessionController::OnSetMute(int player_id, bool mute) {
-  DCHECK_EQ(player_id_, player_id);
+  CHECK_EQ(player_id_, player_id, base::NotFatalUntil::M160);
 
   web_contents_->media_web_contents_observer()
       ->GetMediaPlayerRemote(id_)
@@ -155,7 +155,7 @@ void MediaSessionController::OnSetMute(int player_id, bool mute) {
 }
 
 void MediaSessionController::OnRequestMediaRemoting(int player_id) {
-  DCHECK_EQ(player_id_, player_id);
+  CHECK_EQ(player_id_, player_id, base::NotFatalUntil::M160);
 
   // Media Remoting can't start if the media is paused. So we should start
   // playing before requesting Media Remoting.
@@ -172,7 +172,7 @@ void MediaSessionController::OnRequestMediaRemoting(int player_id) {
 void MediaSessionController::OnRequestVisibility(
     int player_id,
     RequestVisibilityCallback request_visibility_callback) {
-  DCHECK_EQ(player_id_, player_id);
+  CHECK_EQ(player_id_, player_id, base::NotFatalUntil::M160);
   web_contents_->media_web_contents_observer()
       ->GetMediaPlayerRemote(id_)
       ->RequestVisibility(std::move(request_visibility_callback));
@@ -184,22 +184,22 @@ RenderFrameHost* MediaSessionController::render_frame_host() const {
 
 std::optional<media_session::MediaPosition> MediaSessionController::GetPosition(
     int player_id) const {
-  DCHECK_EQ(player_id_, player_id);
+  CHECK_EQ(player_id_, player_id, base::NotFatalUntil::M160);
   return position_;
 }
 
 bool MediaSessionController::IsPictureInPictureAvailable(int player_id) const {
-  DCHECK_EQ(player_id_, player_id);
+  CHECK_EQ(player_id_, player_id, base::NotFatalUntil::M160);
   return is_picture_in_picture_available_;
 }
 
 bool MediaSessionController::IsVideoFrameAvailable(int player_id) const {
-  DCHECK_EQ(player_id_, player_id);
+  CHECK_EQ(player_id_, player_id, base::NotFatalUntil::M160);
   return is_video_frame_available_;
 }
 
 bool MediaSessionController::HasSufficientlyVisibleVideo(int player_id) const {
-  DCHECK_EQ(player_id_, player_id);
+  CHECK_EQ(player_id_, player_id, base::NotFatalUntil::M160);
   return has_sufficiently_visible_video_;
 }
 
@@ -317,28 +317,28 @@ bool MediaSessionController::AddOrRemovePlayer() {
 }
 
 bool MediaSessionController::HasAudio(int player_id) const {
-  DCHECK_EQ(player_id_, player_id);
+  CHECK_EQ(player_id_, player_id, base::NotFatalUntil::M160);
   return has_audio_;
 }
 
 bool MediaSessionController::HasVideo(int player_id) const {
-  DCHECK_EQ(player_id_, player_id);
+  CHECK_EQ(player_id_, player_id, base::NotFatalUntil::M160);
   return has_video_;
 }
 
 bool MediaSessionController::IsPaused(int player_id) const {
-  DCHECK_EQ(player_id_, player_id);
+  CHECK_EQ(player_id_, player_id, base::NotFatalUntil::M160);
   return is_paused_;
 }
 
 std::string MediaSessionController::GetAudioOutputSinkId(int player_id) const {
-  DCHECK_EQ(player_id_, player_id);
+  CHECK_EQ(player_id_, player_id, base::NotFatalUntil::M160);
   return audio_output_sink_id_;
 }
 
 bool MediaSessionController::SupportsAudioOutputDeviceSwitching(
     int player_id) const {
-  DCHECK_EQ(player_id_, player_id);
+  CHECK_EQ(player_id_, player_id, base::NotFatalUntil::M160);
   return supports_audio_output_device_switching_;
 }
 
@@ -350,7 +350,7 @@ void MediaSessionController::OnAutoPictureInPictureInfoChanged(
     int player_id,
     const media::PictureInPictureEventsInfo::AutoPipInfo&
         auto_picture_in_picture_info) {
-  DCHECK_EQ(player_id_, player_id);
+  CHECK_EQ(player_id_, player_id, base::NotFatalUntil::M160);
 
   auto* observer = web_contents_->media_web_contents_observer();
   if (!observer->IsMediaPlayerRemoteAvailable(id_)) {

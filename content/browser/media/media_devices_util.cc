@@ -48,7 +48,7 @@ void GotSalt(const std::string& frame_salt,
              MediaDeviceSaltAndOriginCallback callback,
              bool are_persistent_device_ids_allowed,
              const std::string& salt) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   std::string device_id_salt = salt;
   if (!are_persistent_device_ids_allowed) {
     device_id_salt += frame_salt;
@@ -130,7 +130,7 @@ MediaDeviceSaltAndOrigin MediaDeviceSaltAndOrigin::Empty() {
 
 void GetMediaDeviceSaltAndOrigin(GlobalRenderFrameHostId render_frame_host_id,
                                  MediaDeviceSaltAndOriginCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   RenderFrameHostImpl* frame_host =
       RenderFrameHostImpl::FromID(render_frame_host_id);
   if (!frame_host) {
@@ -271,9 +271,10 @@ void GetRawDeviceIDForMediaStreamHMAC(
     std::string hmac_device_id,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     OptionalDeviceIdCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(stream_type == MediaStreamType::DEVICE_AUDIO_CAPTURE ||
-         stream_type == MediaStreamType::DEVICE_VIDEO_CAPTURE);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK(stream_type == MediaStreamType::DEVICE_AUDIO_CAPTURE ||
+            stream_type == MediaStreamType::DEVICE_VIDEO_CAPTURE,
+        base::NotFatalUntil::M160);
   MediaDeviceType device_type = ConvertToMediaDeviceType(stream_type);
   GetRawDeviceIDForMediaDeviceHMAC(device_type, std::move(salt_and_origin),
                                    std::move(hmac_device_id),
@@ -286,7 +287,7 @@ void GetRawDeviceIDForMediaDeviceHMAC(
     std::string hmac_device_id,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     OptionalDeviceIdCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
   MediaDevicesManager::BoolDeviceTypes requested_types;
   requested_types[static_cast<size_t>(device_type)] = true;
   MediaStreamManager::GetInstance()->media_devices_manager()->EnumerateDevices(

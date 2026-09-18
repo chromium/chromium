@@ -30,8 +30,8 @@ class MouseCursorOverlayController::Observer final
       : controller_(controller),
         window_(window),
         target_web_contents_(std::move(target_web_contents)) {
-    DCHECK(controller_);
-    DCHECK(window_);
+    CHECK(controller_, base::NotFatalUntil::M160);
+    CHECK(window_, base::NotFatalUntil::M160);
     controller_->OnMouseHasGoneIdle();
     window_->AddObserver(this);
     window_->AddPreTargetHandler(this);
@@ -151,7 +151,7 @@ class MouseCursorOverlayController::Observer final
 
   // aura::WindowObserver overrides.
   void OnWindowDestroying(aura::Window* window) final {
-    DCHECK_EQ(window_, window);
+    CHECK_EQ(window_, window, base::NotFatalUntil::M160);
     StopTracking();
     window_->RemoveObserver(this);
     window_ = nullptr;

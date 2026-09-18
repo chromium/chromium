@@ -71,7 +71,7 @@ bool BrowserGpuVideoAcceleratorFactories::IsGpuVideoEncodeAcceleratorEnabled() {
 
 void BrowserGpuVideoAcceleratorFactories::GetChannelToken(
     gpu::mojom::GpuChannel::GetChannelTokenCallback cb) {
-  DCHECK(cb);
+  CHECK(cb, base::NotFatalUntil::M160);
   if (!channel_token_.is_empty()) {
     // Use cached token.
     std::move(cb).Run(channel_token_);
@@ -93,7 +93,7 @@ void BrowserGpuVideoAcceleratorFactories::OnChannelTokenReady(
     const base::UnguessableToken& token) {
   channel_token_ = token;
   channel_token_callbacks_.Notify(channel_token_);
-  DCHECK(channel_token_callbacks_.empty());
+  CHECK(channel_token_callbacks_.empty(), base::NotFatalUntil::M160);
 }
 
 int32_t BrowserGpuVideoAcceleratorFactories::GetCommandBufferRouteId() {

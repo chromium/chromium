@@ -88,14 +88,14 @@ class AudioFocusDelegateDefault : public AudioFocusDelegate {
 AudioFocusDelegateDefault::AudioFocusDelegateDefault(
     MediaSessionImpl* media_session)
     : media_session_(media_session) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 }
 
 AudioFocusDelegateDefault::~AudioFocusDelegateDefault() = default;
 
 AudioFocusDelegate::AudioFocusResult
 AudioFocusDelegateDefault::RequestAudioFocus(AudioFocusType audio_focus_type) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (!base::FeatureList::IsEnabled(
           media_session::features::kMediaSessionService)) {
@@ -130,7 +130,7 @@ AudioFocusDelegateDefault::RequestAudioFocus(AudioFocusType audio_focus_type) {
 }
 
 void AudioFocusDelegateDefault::AbandonAudioFocus() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   audio_focus_type_.reset();
 
@@ -144,13 +144,13 @@ void AudioFocusDelegateDefault::AbandonAudioFocus() {
 
 std::optional<media_session::mojom::AudioFocusType>
 AudioFocusDelegateDefault::GetCurrentFocusType() const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   return audio_focus_type_;
 }
 
 void AudioFocusDelegateDefault::MediaSessionInfoChanged(
     const media_session::mojom::MediaSessionInfoPtr& session_info) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (request_client_remote_.is_bound())
     request_client_remote_->MediaSessionInfoChanged(session_info.Clone());
@@ -159,7 +159,7 @@ void AudioFocusDelegateDefault::MediaSessionInfoChanged(
 }
 
 void AudioFocusDelegateDefault::ReleaseRequestId() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (!base::FeatureList::IsEnabled(
           media_session::features::kMediaSessionService)) {
@@ -173,15 +173,15 @@ void AudioFocusDelegateDefault::ReleaseRequestId() {
 
 void AudioFocusDelegateDefault::FinishAudioFocusRequest(AudioFocusType type,
                                                         bool success) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(request_client_remote_.is_bound());
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(request_client_remote_.is_bound(), base::NotFatalUntil::M160);
 
   audio_focus_type_ = type;
   media_session_->FinishSystemAudioFocusRequest(type, success);
 }
 
 void AudioFocusDelegateDefault::EnsureServiceConnection() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (!base::FeatureList::IsEnabled(
           media_session::features::kMediaSessionService)) {

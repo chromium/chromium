@@ -37,7 +37,7 @@ class ViewsWidgetVideoCaptureDeviceMac::UIThreadDelegate final
   ~UIThreadDelegate() override {
     // This is called by a task posted by ViewsWidgetVideoCaptureDeviceMac's
     // destructor.
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
     if (scoped_cg_window_id_) {
       scoped_cg_window_id_->RemoveObserver(this);
       scoped_cg_window_id_ = nullptr;
@@ -45,8 +45,8 @@ class ViewsWidgetVideoCaptureDeviceMac::UIThreadDelegate final
   }
 
   void ResolveFrameSinkIdOnUIThread() {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    DCHECK(!scoped_cg_window_id_);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+    CHECK(!scoped_cg_window_id_, base::NotFatalUntil::M160);
 
     scoped_cg_window_id_ = remote_cocoa::ScopedCGWindowID::Get(cg_window_id_);
     if (scoped_cg_window_id_) {
@@ -72,10 +72,10 @@ class ViewsWidgetVideoCaptureDeviceMac::UIThreadDelegate final
  private:
   // remote_cocoa::ScopedCGWindowID::Observer:
   void OnScopedCGWindowIDDestroyed(uint32_t cg_window_id) override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
     // |scoped_cg_window_id_| promises to invalidate its weak pointers before
     // this method is called.
-    DCHECK(!scoped_cg_window_id_);
+    CHECK(!scoped_cg_window_id_, base::NotFatalUntil::M160);
     device_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&FrameSinkVideoCaptureDevice::OnTargetPermanentlyLost,
@@ -84,7 +84,7 @@ class ViewsWidgetVideoCaptureDeviceMac::UIThreadDelegate final
   void OnScopedCGWindowIDMouseMoved(uint32_t cg_window_id,
                                     const gfx::PointF& location_in_window,
                                     const gfx::Size& window_size) override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
     if (cursor_controller_) {
       cursor_controller_->SetTargetSize(window_size);
       cursor_controller_->OnMouseMoved(location_in_window);

@@ -25,8 +25,8 @@ void MouseCursorOverlayController::Start(
     std::unique_ptr<Overlay> overlay,
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
-  DCHECK(overlay);
-  DCHECK(task_runner);
+  CHECK(overlay, base::NotFatalUntil::M160);
+  CHECK(task_runner, base::NotFatalUntil::M160);
 
   Stop();
   tick_clock_ = base::DefaultTickClock::GetInstance();
@@ -80,7 +80,7 @@ void MouseCursorOverlayController::SendMouseEvent() {
 void MouseCursorOverlayController::OnMouseCoordinatesUpdated(
     const gfx::Point& coordinates) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
-  DCHECK(should_send_mouse_events_);
+  CHECK(should_send_mouse_events_, base::NotFatalUntil::M160);
   last_observed_coordinates_ = coordinates;
   if (last_observed_coordinates_timer_.IsRunning()) {
     return;

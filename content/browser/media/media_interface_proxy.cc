@@ -375,7 +375,7 @@ MediaInterfaceProxy::MediaInterfaceProxy(RenderFrameHost* render_frame_host)
 
 MediaInterfaceProxy::~MediaInterfaceProxy() {
   DVLOG(1) << __func__;
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
 }
 
 void MediaInterfaceProxy::Bind(
@@ -385,7 +385,7 @@ void MediaInterfaceProxy::Bind(
 
 void MediaInterfaceProxy::CreateAudioDecoder(
     mojo::PendingReceiver<media::mojom::AudioDecoder> receiver) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
   InterfaceFactory* factory = media_interface_factory_ptr_->Get();
   if (factory)
     factory->CreateAudioDecoder(std::move(receiver));
@@ -394,10 +394,10 @@ void MediaInterfaceProxy::CreateAudioDecoder(
 void MediaInterfaceProxy::CreateVideoDecoder(
     mojo::PendingReceiver<media::mojom::VideoDecoder> receiver,
     mojo::PendingRemote<media::mojom::VideoDecoder> dst_video_decoder) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
   // The browser process cannot act as a proxy for video decoding and clients
   // should not attempt to use it that way.
-  DCHECK(!dst_video_decoder);
+  CHECK(!dst_video_decoder, base::NotFatalUntil::M160);
 
   InterfaceFactory* factory = media_interface_factory_ptr_->Get();
   if (!factory)
@@ -428,7 +428,7 @@ void MediaInterfaceProxy::CreateVideoDecoderWithTracker(
 
 void MediaInterfaceProxy::CreateAudioEncoder(
     mojo::PendingReceiver<media::mojom::AudioEncoder> receiver) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
   InterfaceFactory* factory = media_interface_factory_ptr_->Get();
   if (factory)
     factory->CreateAudioEncoder(std::move(receiver));
@@ -437,7 +437,7 @@ void MediaInterfaceProxy::CreateAudioEncoder(
 void MediaInterfaceProxy::CreateDefaultRenderer(
     const std::string& audio_device_id,
     mojo::PendingReceiver<media::mojom::Renderer> receiver) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
 
   InterfaceFactory* factory = media_interface_factory_ptr_->Get();
   if (factory)
@@ -448,7 +448,7 @@ void MediaInterfaceProxy::CreateDefaultRenderer(
 void MediaInterfaceProxy::CreateCastRenderer(
     const base::UnguessableToken& overlay_plane_id,
     mojo::PendingReceiver<media::mojom::Renderer> receiver) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
 
   // CastRenderer is always hosted in the secondary Media Service instance.
   // This may not be running in some test environments (e.g.
@@ -465,7 +465,7 @@ void MediaInterfaceProxy::CreateFlingingRenderer(
     mojo::PendingRemote<media::mojom::FlingingRendererClientExtension>
         client_extension,
     mojo::PendingReceiver<media::mojom::Renderer> receiver) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
 
   std::unique_ptr<FlingingRenderer> flinging_renderer =
       FlingingRenderer::Create(&render_frame_host(), presentation_id,
@@ -486,7 +486,7 @@ void MediaInterfaceProxy::CreateMediaFoundationRenderer(
     mojo::PendingReceiver<media::mojom::Renderer> receiver,
     mojo::PendingReceiver<media::mojom::MediaFoundationRendererExtension>
         renderer_extension_receiver) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
   DVLOG(1) << __func__ << ": this=" << this;
 
   // For protected playback, the service should have already been initialized
@@ -517,7 +517,7 @@ void MediaInterfaceProxy::CreateMediaFoundationRenderer(
 
 void MediaInterfaceProxy::CreateCdm(const media::CdmConfig& cdm_config,
                                     CreateCdmCallback create_cdm_cb) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
   DVLOG(1) << __func__ << ": cdm_config=" << cdm_config;
 
   // Handle `use_hw_secure_codecs` cases first.
@@ -629,7 +629,7 @@ void MediaInterfaceProxy::OnCdmCreated(
     media::CreateCdmStatus status) {
   DVLOG(1) << __func__ << ": status=" << static_cast<int>(status)
            << ", is_cached_factory=" << is_cached_factory;
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
 
   if (receiver) {
     std::move(callback).Run(std::move(receiver), std::move(cdm_context),
@@ -691,7 +691,7 @@ media::mojom::InterfaceFactory*
 MediaInterfaceProxy::GetMediaFoundationServiceInterfaceFactory(
     const base::FilePath& cdm_path) {
   DVLOG(3) << __func__ << ": this=" << this << ", cdm_path=" << cdm_path;
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
 
   // TODO(xhwang): Also check protected media identifier content setting.
   if (!media::SupportMediaFoundationPlayback()) {
@@ -708,7 +708,7 @@ MediaInterfaceProxy::GetMediaFoundationServiceInterfaceFactory(
 void MediaInterfaceProxy::ConnectToMediaFoundationService(
     const base::FilePath& cdm_path) {
   DVLOG(1) << __func__ << ": this=" << this << ", cdm_path=" << cdm_path;
-  DCHECK(!mf_interface_factory_remote_);
+  CHECK(!mf_interface_factory_remote_, base::NotFatalUntil::M160);
 
   // Passing an empty CdmType since it is not needed in this scenario.
   auto& mf_service = GetMediaFoundationService(
@@ -769,7 +769,7 @@ void MediaInterfaceProxy::CreateLibraryCdm(const media::CdmConfig& cdm_config,
 
 media::mojom::CdmFactory* MediaInterfaceProxy::GetCdmFactory(
     const std::string& key_system) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
 
   // CdmService only supports software secure codecs.
   auto cdm_info = CdmRegistryImpl::GetInstance()->GetCdmInfo(
@@ -799,7 +799,7 @@ media::mojom::CdmFactory* MediaInterfaceProxy::ConnectToCdmService(
     const CdmInfo& cdm_info) {
   DVLOG(1) << __func__ << ": cdm_name = " << cdm_info.name;
 
-  DCHECK(!cdm_factory_map_.count(cdm_info.type));
+  CHECK(!cdm_factory_map_.count(cdm_info.type), base::NotFatalUntil::M160);
 
   auto* browser_context = render_frame_host().GetBrowserContext();
   auto& site = render_frame_host()
@@ -823,7 +823,7 @@ media::mojom::CdmFactory* MediaInterfaceProxy::ConnectToCdmService(
 void MediaInterfaceProxy::OnCdmServiceConnectionError(
     const media::CdmType& cdm_type) {
   DVLOG(1) << __func__;
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
 
   cdm_factory_map_.erase(cdm_type);
 }

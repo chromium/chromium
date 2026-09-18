@@ -42,7 +42,7 @@ void WebContentsAutoScaler::SetCapturedContentSize(
   // The unscaled content size can be determined by removing the scale factor
   // from the |content_size|.
   const float scale_override = delegate_->GetCaptureScaleOverride();
-  DCHECK_NE(0.0f, scale_override);
+  CHECK_NE(0.0f, scale_override, base::NotFatalUntil::M160);
   const gfx::Size unscaled_content_size =
       gfx::ScaleToCeiledSize(content_size, 1.0f / scale_override);
 
@@ -135,8 +135,10 @@ float WebContentsAutoScaler::CalculatePreferredScaleFactor(
   // Next, determine what the ideal scale factors in each direction would have
   // been for this frame. Since we are using the letterboxed size here, the
   // factors should be almost identical.
-  DCHECK_NE(0.0f, unscaled_current_content_size.width());
-  DCHECK_NE(0.0f, unscaled_current_content_size.height());
+  CHECK_NE(0.0f, unscaled_current_content_size.width(),
+           base::NotFatalUntil::M160);
+  CHECK_NE(0.0f, unscaled_current_content_size.height(),
+           base::NotFatalUntil::M160);
   const gfx::Vector2dF factors(static_cast<float>(letterbox_size.width()) /
                                    unscaled_current_content_size.width(),
                                static_cast<float>(letterbox_size.height()) /

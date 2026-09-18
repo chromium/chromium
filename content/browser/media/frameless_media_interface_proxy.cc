@@ -58,7 +58,7 @@ void FramelessMediaInterfaceProxy::CreateVideoDecoder(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // The browser process cannot act as a proxy for video decoding and clients
   // should not attempt to use it that way.
-  DCHECK(!dst_video_decoder);
+  CHECK(!dst_video_decoder, base::NotFatalUntil::M160);
 
   InterfaceFactory* factory = GetMediaInterfaceFactory();
   if (!factory)
@@ -156,7 +156,7 @@ FramelessMediaInterfaceProxy::GetMediaInterfaceFactory() {
 void FramelessMediaInterfaceProxy::ConnectToMediaService() {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(!interface_factory_remote_);
+  CHECK(!interface_factory_remote_, base::NotFatalUntil::M160);
 
   mojo::PendingRemote<media::mojom::FrameInterfaceFactory> interfaces;
   std::ignore = interfaces.InitWithNewPipeAndPassReceiver();

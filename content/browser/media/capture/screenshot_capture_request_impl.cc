@@ -99,7 +99,8 @@ class ScreenshotCaptureRequestImpl : public ScreenshotCaptureRequest {
     // webrtc::DesktopCapturer::Callback (called on background thread):
     void OnCaptureResult(webrtc::DesktopCapturer::Result result,
                          std::unique_ptr<webrtc::DesktopFrame> frame) override {
-      DCHECK(capturer_task_runner_->RunsTasksInCurrentSequence());
+      CHECK(capturer_task_runner_->RunsTasksInCurrentSequence(),
+            base::NotFatalUntil::M160);
       SkBitmap bitmap;
       if (result == webrtc::DesktopCapturer::Result::SUCCESS && frame) {
         bitmap.allocN32Pixels(frame->size().width(), frame->size().height());
@@ -126,7 +127,8 @@ class ScreenshotCaptureRequestImpl : public ScreenshotCaptureRequest {
     ~CaptureWorker() override = default;
 
     void StartAndCaptureOnBackgroundThread() {
-      DCHECK(capturer_task_runner_->RunsTasksInCurrentSequence());
+      CHECK(capturer_task_runner_->RunsTasksInCurrentSequence(),
+            base::NotFatalUntil::M160);
       if (!capturer_) {
         caller_task_runner_->PostTask(
             FROM_HERE, base::BindOnce(&CaptureWorker::RunCallbackOnCallerThread,
@@ -138,12 +140,14 @@ class ScreenshotCaptureRequestImpl : public ScreenshotCaptureRequest {
     }
 
     void StopOnBackgroundThread() {
-      DCHECK(capturer_task_runner_->RunsTasksInCurrentSequence());
+      CHECK(capturer_task_runner_->RunsTasksInCurrentSequence(),
+            base::NotFatalUntil::M160);
       capturer_.reset();
     }
 
     void RunCallbackOnCallerThread(SkBitmap bitmap) {
-      DCHECK(caller_task_runner_->RunsTasksInCurrentSequence());
+      CHECK(caller_task_runner_->RunsTasksInCurrentSequence(),
+            base::NotFatalUntil::M160);
       if (callback_) {
         std::move(callback_).Run(bitmap);
       }

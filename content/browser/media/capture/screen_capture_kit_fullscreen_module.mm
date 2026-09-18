@@ -156,7 +156,8 @@ void ScreenCaptureKitFullscreenModule::Reset() {
 }
 
 void ScreenCaptureKitFullscreenModule::CheckForFullscreenPresentation() {
-  DCHECK(device_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(device_task_runner_->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M160);
   auto content_callback = base::BindPostTask(
       device_task_runner_,
       base::BindRepeating(&ScreenCaptureKitFullscreenModule::
@@ -177,7 +178,8 @@ void ScreenCaptureKitFullscreenModule::CheckForFullscreenPresentation() {
 
 void ScreenCaptureKitFullscreenModule::OnFullscreenShareableContentCreated(
     SCShareableContent* content) {
-  DCHECK(device_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(device_task_runner_->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M160);
   if (!content || !timer_.IsRunning()) {
     return;
   }
@@ -226,7 +228,8 @@ SCWindow* ScreenCaptureKitFullscreenModule::GetFullscreenWindow(
     SCShareableContent* content,
     SCWindow* editor_window,
     int number_of_impress_editor_windows) const {
-  DCHECK(device_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(device_task_runner_->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M160);
   SCWindow* fullscreen_window = nullptr;
   int fullscreenWindowLayer = 0;
   for (SCWindow* window in content.windows) {

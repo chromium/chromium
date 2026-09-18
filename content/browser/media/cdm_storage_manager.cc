@@ -216,7 +216,7 @@ void CdmStorageManager::OnFileReceiverDisconnect(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto count = cdm_files_.erase(CdmFileId(name, cdm_type, storage_key));
-  DCHECK_GT(count, 0u);
+  CHECK_GT(count, 0u, base::NotFatalUntil::M160);
 }
 
 void CdmStorageManager::DidOpenFile(const blink::StorageKey& storage_key,

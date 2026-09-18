@@ -120,7 +120,8 @@ media::RendererType FlingingRenderer::GetRendererType() {
 
 void FlingingRenderer::SetExpectedPlayState(PlayState state) {
   DVLOG(3) << __func__ << " : state " << static_cast<int>(state);
-  DCHECK(state == PlayState::kPlaying || state == PlayState::kPaused);
+  CHECK(state == PlayState::kPlaying || state == PlayState::kPaused,
+        base::NotFatalUntil::M160);
 
   expected_play_state_ = state;
   play_state_is_stable_ = (expected_play_state_ == last_play_state_received_);

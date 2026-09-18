@@ -31,8 +31,9 @@ class DesktopCaptureDeviceMac : public IOSurfaceCaptureDeviceBase {
   void OnStart() override {
     requested_format_ = capture_params().requested_format;
     requested_format_.pixel_format = media::PIXEL_FORMAT_NV12;
-    DCHECK_GT(requested_format_.frame_size.GetArea(), 0);
-    DCHECK_GT(requested_format_.frame_rate, 0);
+    CHECK_GT(requested_format_.frame_size.GetArea(), 0,
+             base::NotFatalUntil::M160);
+    CHECK_GT(requested_format_.frame_rate, 0, base::NotFatalUntil::M160);
 
     base::RepeatingCallback<void(gfx::ScopedInUseIOSurface)>
         received_io_surface_callback = base::BindRepeating(

@@ -55,7 +55,7 @@ MediaInternalsAudioFocusHelper::MediaInternalsAudioFocusHelper() = default;
 MediaInternalsAudioFocusHelper::~MediaInternalsAudioFocusHelper() = default;
 
 void MediaInternalsAudioFocusHelper::SendAudioFocusState() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (!EnsureServiceConnection())
     return;
@@ -68,7 +68,7 @@ void MediaInternalsAudioFocusHelper::SendAudioFocusState() {
 
 void MediaInternalsAudioFocusHelper::OnFocusGained(
     media_session::mojom::AudioFocusRequestStatePtr session) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -78,7 +78,7 @@ void MediaInternalsAudioFocusHelper::OnFocusGained(
 
 void MediaInternalsAudioFocusHelper::OnFocusLost(
     media_session::mojom::AudioFocusRequestStatePtr session) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -87,7 +87,7 @@ void MediaInternalsAudioFocusHelper::OnFocusLost(
 }
 
 void MediaInternalsAudioFocusHelper::SetEnabled(bool enabled) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   enabled_ = enabled;
 
@@ -101,7 +101,7 @@ void MediaInternalsAudioFocusHelper::SetEnabled(bool enabled) {
 }
 
 bool MediaInternalsAudioFocusHelper::EnsureServiceConnection() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (!enabled_)
     return false;
@@ -145,7 +145,7 @@ void MediaInternalsAudioFocusHelper::OnDebugMojoError() {
 
 void MediaInternalsAudioFocusHelper::DidGetAudioFocusRequestList(
     std::vector<media_session::mojom::AudioFocusRequestStatePtr> stack) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (!EnsureServiceConnection())
     return;
@@ -185,14 +185,14 @@ void MediaInternalsAudioFocusHelper::DidGetAudioFocusRequestList(
 void MediaInternalsAudioFocusHelper::DidGetAudioFocusDebugInfo(
     const std::string& id,
     media_session::mojom::MediaSessionDebugInfoPtr info) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (!EnsureServiceConnection())
     return;
 
   base::ListValue* sessions_list =
       audio_focus_data_.FindList(kAudioFocusSessionsKey);
-  DCHECK(sessions_list);
+  CHECK(sessions_list, base::NotFatalUntil::M160);
 
   bool updated = false;
   for (auto& value : *sessions_list) {

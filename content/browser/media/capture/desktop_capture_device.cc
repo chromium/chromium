@@ -106,7 +106,7 @@ const char* DesktopMediaTypeToString(DesktopMediaID::Type type) {
 
 void BindWakeLockProvider(
     mojo::PendingReceiver<device::mojom::WakeLockProvider> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   GetDeviceService().BindWakeLockProvider(std::move(receiver));
 }
 
@@ -491,7 +491,7 @@ DesktopCaptureDevice::Core::Core(
       zero_hertz_is_supported_(zero_hertz_is_supported) {}
 
 DesktopCaptureDevice::Core::~Core() {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M160);
   client_.reset();
   output_frame_.reset();
   last_frame_size_.SetSize(0, 0);
@@ -502,12 +502,13 @@ DesktopCaptureDevice::Core::~Core() {
 void DesktopCaptureDevice::Core::AllocateAndStart(
     const media::VideoCaptureParams& params,
     std::unique_ptr<Client> client) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK_GT(params.requested_format.frame_size.GetArea(), 0);
-  DCHECK_GT(params.requested_format.frame_rate, 0);
-  DCHECK(desktop_capturer_);
-  DCHECK(client);
-  DCHECK(!client_);
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M160);
+  CHECK_GT(params.requested_format.frame_size.GetArea(), 0,
+           base::NotFatalUntil::M160);
+  CHECK_GT(params.requested_format.frame_rate, 0, base::NotFatalUntil::M160);
+  CHECK(desktop_capturer_, base::NotFatalUntil::M160);
+  CHECK(client, base::NotFatalUntil::M160);
+  CHECK(!client_, base::NotFatalUntil::M160);
 
   scoped_high_res_timer_ = std::make_unique<ScopedHighResolutionTimer>();
   client_ = std::move(client);
@@ -532,7 +533,7 @@ void DesktopCaptureDevice::Core::AllocateAndStart(
           << ", max_cpu_consumption_percentage="
           << max_cpu_consumption_percentage_ << ")";
 
-  DCHECK(!wake_lock_);
+  CHECK(!wake_lock_, base::NotFatalUntil::M160);
   RequestWakeLock();
 
   desktop_capturer_->Start(this);
@@ -543,7 +544,7 @@ void DesktopCaptureDevice::Core::AllocateAndStart(
 }
 
 void DesktopCaptureDevice::Core::RequestRefreshFrame() {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M160);
   TRACE_EVENT0("webrtc", __func__);
   VLOG(2) << __func__;
 
@@ -574,8 +575,8 @@ void DesktopCaptureDevice::Core::RequestRefreshFrame() {
 
 void DesktopCaptureDevice::Core::SetNotificationWindowId(
     gfx::NativeViewId window_id) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK(window_id);
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M160);
+  CHECK(window_id, base::NotFatalUntil::M160);
   desktop_capturer_->SetExcludedWindow(window_id);
 }
 
@@ -595,9 +596,10 @@ void DesktopCaptureDevice::Core::InvalidateBuffers() {
 void DesktopCaptureDevice::Core::OnCaptureResult(
     webrtc::DesktopCapturer::Result result,
     std::unique_ptr<webrtc::DesktopFrame> frame) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK(client_);
-  DCHECK(capture_in_progress_ || refresh_in_progress_);
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M160);
+  CHECK(client_, base::NotFatalUntil::M160);
+  CHECK(capture_in_progress_ || refresh_in_progress_,
+        base::NotFatalUntil::M160);
   capture_in_progress_ = false;
   const bool frame_is_refresh = refresh_in_progress_;
   refresh_in_progress_ = false;
@@ -636,7 +638,7 @@ void DesktopCaptureDevice::Core::OnCaptureResult(
     ScheduleNextCaptureFrame();
     return;
   }
-  DCHECK(frame);
+  CHECK(frame, base::NotFatalUntil::M160);
 
   // Continue capturing frames when there are no changes in updated regions
   // since the last captured frame but don't send the same frame again to the
@@ -764,7 +766,7 @@ void DesktopCaptureDevice::Core::OnCaptureResultZeroCopy(
           webrtc::DesktopRect::MakeWH(frame_size.width() & ~1,
                                       frame_size.height() & ~1));
     }
-    DCHECK(frame);
+    CHECK(frame, base::NotFatalUntil::M160);
 
     const gfx::Size src_size(frame->size().width(), frame->size().height());
     // A negative stride means the frame is inverted (bottom-to-top). We handle
@@ -920,8 +922,8 @@ void DesktopCaptureDevice::Core::OnCaptureResultLegacy(
           std::move(frame),
           webrtc::DesktopRect::MakeWH(frame_width & ~1, frame_height & ~1));
     }
-    DCHECK(frame);
-    DCHECK(!frame->size().is_empty());
+    CHECK(frame, base::NotFatalUntil::M160);
+    CHECK(!frame->size().is_empty(), base::NotFatalUntil::M160);
 
     if (!frame->size().equals(output_size)) {
       VLOG(2) << "  Downscaling: frame->size=(" << frame->size().width() << "x"
@@ -937,7 +939,8 @@ void DesktopCaptureDevice::Core::OnCaptureResultLegacy(
         output_frame_ = std::make_unique<webrtc::BasicDesktopFrame>(
             output_size, webrtc::FOURCC_I420);
       }
-      DCHECK(output_frame_->size().equals(output_size));
+      CHECK(output_frame_->size().equals(output_size),
+            base::NotFatalUntil::M160);
 
       const int temp_width_y = frame->size().width();
       const int temp_height_y = frame->size().height();
@@ -1113,7 +1116,7 @@ void DesktopCaptureDevice::Core::OnCaptureResultLegacy(
 
 bool DesktopCaptureDevice::Core::DeliverTextureToClient(
     const webrtc::DesktopFrame* frame) {
-  DCHECK(frame->texture());
+  CHECK(frame->texture(), base::NotFatalUntil::M160);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "DesktopCaptureDevice::DeliverTextureToClient");
 
@@ -1136,7 +1139,8 @@ bool DesktopCaptureDevice::Core::DeliverTextureToClient(
 
   gfx::Size texture_size(frame->size().width(), frame->size().height());
 
-  DCHECK_EQ(frame->pixel_format(), webrtc::FOURCC_ARGB);
+  CHECK_EQ(frame->pixel_format(), webrtc::FOURCC_ARGB,
+           base::NotFatalUntil::M160);
   media::VideoPixelFormat pixel_format = media::PIXEL_FORMAT_ARGB;
 
   auto gmb_handle = CreateGmbHandleFromTexture(frame);
@@ -1226,7 +1230,7 @@ bool DesktopCaptureDevice::Core::DeliverTextureToClient(
 }
 
 void DesktopCaptureDevice::Core::OnCaptureTimer() {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M160);
 
   if (!client_)
     return;
@@ -1235,8 +1239,8 @@ void DesktopCaptureDevice::Core::OnCaptureTimer() {
 }
 
 void DesktopCaptureDevice::Core::CaptureFrame(bool is_refresh_frame) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK(!capture_in_progress_);
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M160);
+  CHECK(!capture_in_progress_, base::NotFatalUntil::M160);
   TRACE_EVENT1("webrtc", __func__, "is_refresh_frame", is_refresh_frame);
   VLOG(2) << __func__ << "(is_refresh_frame=" << is_refresh_frame << ")";
   LogDesktopCaptureFrameIsRefresh(capturer_type_, is_refresh_frame);
@@ -1282,7 +1286,7 @@ void DesktopCaptureDevice::Core::CaptureFrame(bool is_refresh_frame) {
 
 void DesktopCaptureDevice::Core::ScheduleNextCaptureFrame() {
   // Make sure CaptureFrame() was called at least once before.
-  DCHECK(!capture_start_time_.is_null());
+  CHECK(!capture_start_time_.is_null(), base::NotFatalUntil::M160);
 
   base::TimeDelta last_capture_duration = NowTicks() - capture_start_time_;
   VLOG(2) << __func__ << " [last_capture_duration="

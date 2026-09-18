@@ -118,7 +118,7 @@ void AudioContextManagerImpl::RecordAudibleTime(base::TimeDelta audible_time) {
   }
 
   ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
-  DCHECK(ukm_recorder);
+  CHECK(ukm_recorder, base::NotFatalUntil::M160);
 
   // AudioContextManagerImpl is created when the AudioContext starts running.
   // As the AudioContext is suspended during prerendering even if the autoplay

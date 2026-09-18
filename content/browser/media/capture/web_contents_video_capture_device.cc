@@ -61,7 +61,7 @@ void WebContentsVideoCaptureDevice::ApplySubCaptureTarget(
     base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
         callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(callback);
+  CHECK(callback, base::NotFatalUntil::M160);
 
   tracker_.AsyncCall(&WebContentsFrameTracker::ApplySubCaptureTarget)
       .WithArgs(type, target, sub_capture_target_version,

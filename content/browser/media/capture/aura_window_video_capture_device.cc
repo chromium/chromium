@@ -60,8 +60,8 @@ class AuraWindowVideoCaptureDevice::WindowTracker final
         device_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
         cursor_controller_(cursor_controller),
         target_type_(source_id.type) {
-    DCHECK(device_task_runner_);
-    DCHECK(cursor_controller_);
+    CHECK(device_task_runner_, base::NotFatalUntil::M160);
+    CHECK(cursor_controller_, base::NotFatalUntil::M160);
 
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&WindowTracker::ResolveTarget,
@@ -72,7 +72,7 @@ class AuraWindowVideoCaptureDevice::WindowTracker final
   WindowTracker& operator=(const WindowTracker&) = delete;
 
   ~WindowTracker() final {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
     if (target_window_) {
       target_window_->RemoveObserver(this);
@@ -82,7 +82,7 @@ class AuraWindowVideoCaptureDevice::WindowTracker final
   DesktopMediaID::Type target_type() const { return target_type_; }
 
   aura::Window* target_window() const {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
     return target_window_;
   }
@@ -91,11 +91,11 @@ class AuraWindowVideoCaptureDevice::WindowTracker final
   // Determines which frame sink and aura::Window should be targeted for capture
   // and notifies the device.
   void ResolveTarget(const DesktopMediaID& source_id) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
     // Since ResolveTarget() should only ever be called once, expect
     // |target_window_| to be null at this point.
-    DCHECK(!target_window_);
+    CHECK(!target_window_, base::NotFatalUntil::M160);
 
     aura::Window* const window = DesktopMediaID::GetNativeWindowById(source_id);
     aura::Window* const root_window =
@@ -153,8 +153,8 @@ class AuraWindowVideoCaptureDevice::WindowTracker final
 
   // aura::WindowObserver override.
   void OnWindowDestroying(aura::Window* window) final {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    DCHECK_EQ(window, target_window_);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+    CHECK_EQ(window, target_window_, base::NotFatalUntil::M160);
 
     video_capture_lock_.reset();
     target_window_->RemoveObserver(this);
@@ -173,8 +173,8 @@ class AuraWindowVideoCaptureDevice::WindowTracker final
 
 #if BUILDFLAG(IS_CHROMEOS)
   void OnWindowAddedToRootWindow(aura::Window* window) final {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    DCHECK_EQ(window, target_window_);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+    CHECK_EQ(window, target_window_, base::NotFatalUntil::M160);
 
     aura::Window* const root_window = target_window_->GetRootWindow();
     if (!root_window) {
@@ -185,7 +185,7 @@ class AuraWindowVideoCaptureDevice::WindowTracker final
 
     // Since the window is not destroyed, only re-parented, we can keep the
     // same subtree ID and only update the FrameSinkId of the target.
-    DCHECK(target_);
+    CHECK(target_, base::NotFatalUntil::M160);
     if (new_frame_sink_id != target_->frame_sink_id) {
       target_->frame_sink_id = new_frame_sink_id;
       device_task_runner_->PostTask(

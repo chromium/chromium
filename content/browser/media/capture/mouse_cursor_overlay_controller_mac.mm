@@ -108,8 +108,8 @@ class MouseCursorOverlayController::Observer {
       : controller_(controller),
         view_(view),
         target_web_contents_(target_web_contents) {
-    DCHECK(controller_);
-    DCHECK(view_);
+    CHECK(controller_, base::NotFatalUntil::M160);
+    CHECK(view_, base::NotFatalUntil::M160);
     controller_->OnMouseHasGoneIdle();
     mouse_tracker_ = [[MouseCursorOverlayTracker alloc]
         initWithCallback:base::BindRepeating(&Observer::OnMouseMoved,

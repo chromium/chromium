@@ -34,27 +34,29 @@ base::Token SubCaptureTargetIdWebContentsHelper::GUIDToToken(
   if (lowercase.empty()) {
     return base::Token();
   }
-  DCHECK_EQ(lowercase.length(), 32u + 4u);  // 32 hex-chars; 4 hyphens.
+  CHECK_EQ(lowercase.length(), 32u + 4u,
+           base::NotFatalUntil::M160);  // 32 hex-chars; 4 hyphens.
 
   base::RemoveChars(lowercase, "-", &lowercase);
-  DCHECK_EQ(lowercase.length(), 32u);  // 32 hex-chars; 0 hyphens.
+  CHECK_EQ(lowercase.length(), 32u,
+           base::NotFatalUntil::M160);  // 32 hex-chars; 0 hyphens.
 
   std::string_view string_piece(lowercase);
 
   uint64_t high = 0;
   bool success = base::HexStringToUInt64(string_piece.substr(0, 16), &high);
-  DCHECK(success);
+  CHECK(success, base::NotFatalUntil::M160);
 
   uint64_t low = 0;
   success = base::HexStringToUInt64(string_piece.substr(16, 16), &low);
-  DCHECK(success);
+  CHECK(success, base::NotFatalUntil::M160);
 
   return base::Token(high, low);
 }
 
 WebContents* SubCaptureTargetIdWebContentsHelper::GetRelevantWebContents(
     GlobalRenderFrameHostId rfh_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   // TODO(crbug.com/40287690): Remove this redundant check.
   if (rfh_id == GlobalRenderFrameHostId()) {
@@ -85,15 +87,15 @@ SubCaptureTargetIdWebContentsHelper::SubCaptureTargetIdWebContentsHelper(
     WebContents* web_contents)
     : WebContentsObserver(web_contents),
       WebContentsUserData<SubCaptureTargetIdWebContentsHelper>(*web_contents) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(web_contents);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(web_contents, base::NotFatalUntil::M160);
 }
 
 SubCaptureTargetIdWebContentsHelper::~SubCaptureTargetIdWebContentsHelper() =
     default;
 
 std::string SubCaptureTargetIdWebContentsHelper::ProduceId(Type type) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   CHECK(type == Type::kCropTarget || type == Type::kRestrictionTarget);
 
   std::vector<base::Token>& ids =
@@ -123,7 +125,7 @@ std::string SubCaptureTargetIdWebContentsHelper::ProduceId(Type type) {
 bool SubCaptureTargetIdWebContentsHelper::IsAssociatedWith(
     const base::Token& id,
     Type type) const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   CHECK(type == Type::kCropTarget || type == Type::kRestrictionTarget);
 
   const std::vector<base::Token>& ids =
@@ -134,8 +136,8 @@ bool SubCaptureTargetIdWebContentsHelper::IsAssociatedWith(
 
 void SubCaptureTargetIdWebContentsHelper::ReadyToCommitNavigation(
     NavigationHandle* navigation_handle) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(navigation_handle);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(navigation_handle, base::NotFatalUntil::M160);
 
   // Cross-document navigation of the top-level frame invalidates all IDs
   // associated with the observed WebContents.
@@ -148,7 +150,7 @@ void SubCaptureTargetIdWebContentsHelper::ReadyToCommitNavigation(
 }
 
 void SubCaptureTargetIdWebContentsHelper::ClearIds() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   crop_ids_.clear();
   restriction_ids_.clear();

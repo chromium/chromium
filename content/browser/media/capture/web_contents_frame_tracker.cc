@@ -132,7 +132,7 @@ class CapturedTabRegistry {
 class WebContentsContext : public WebContentsFrameTracker::Context {
  public:
   explicit WebContentsContext(WebContents* contents) : contents_(contents) {
-    DCHECK(contents_);
+    CHECK(contents_, base::NotFatalUntil::M160);
   }
   ~WebContentsContext() override = default;
 
@@ -205,7 +205,7 @@ WebContentsFrameTracker::WebContentsFrameTracker(
 {
   // Verify on construction that this object is created on the UI thread.  After
   // this, depend on the sequence checker to ensure consistent execution.
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(device_task_runner_);
 
@@ -225,7 +225,7 @@ void WebContentsFrameTracker::WillStartCapturingWebContents(
     const gfx::Size& capture_size,
     bool is_high_dpi_enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!is_capturing_);
+  CHECK(!is_capturing_, base::NotFatalUntil::M160);
   if (!web_contents()) {
     return;
   }
@@ -243,7 +243,7 @@ void WebContentsFrameTracker::WillStartCapturingWebContents(
 void WebContentsFrameTracker::DidStopCapturingWebContents() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (web_contents()) {
-    DCHECK(is_capturing_);
+    CHECK(is_capturing_, base::NotFatalUntil::M160);
     context_->DecrementCapturerCount();
     is_capturing_ = false;
 
@@ -254,7 +254,7 @@ void WebContentsFrameTracker::DidStopCapturingWebContents() {
       auto_scaler_.reset();
     }
   }
-  DCHECK(!is_capturing_);
+  CHECK(!is_capturing_, base::NotFatalUntil::M160);
 }
 
 void WebContentsFrameTracker::SetCapturedContentSize(
@@ -416,7 +416,7 @@ void WebContentsFrameTracker::ApplySubCaptureTarget(
     base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
         callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(callback);
+  CHECK(callback, base::NotFatalUntil::M160);
 
   if (sub_capture_target_version_ >= sub_capture_target_version) {
     std::move(callback).Run(
@@ -471,7 +471,7 @@ void WebContentsFrameTracker::SetWebContentsAndContextForTesting(
 void WebContentsFrameTracker::OnPossibleTargetChange() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!web_contents()) {
-    DCHECK(!context_);
+    CHECK(!context_, base::NotFatalUntil::M160);
     device_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&WebContentsVideoCaptureDevice::OnTargetPermanentlyLost,

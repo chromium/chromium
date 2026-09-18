@@ -118,7 +118,7 @@ class MediaSessionData : public base::SupportsUserData::Data {
 
 size_t ComputeFrameDepth(RenderFrameHost* rfh,
                          MapRenderFrameHostToDepth* map_rfh_to_depth) {
-  DCHECK(rfh);
+  CHECK(rfh, base::NotFatalUntil::M160);
   size_t depth = 0;
   RenderFrameHost* current_frame = rfh;
   while (current_frame) {
@@ -200,7 +200,8 @@ const base::UnguessableToken* MediaSession::MaybeGetSourceId(
 // static
 WebContents* MediaSession::GetWebContentsFromRequestId(
     const base::UnguessableToken& request_id) {
-  DCHECK_NE(base::UnguessableToken::Null(), request_id);
+  CHECK_NE(base::UnguessableToken::Null(), request_id,
+           base::NotFatalUntil::M160);
   for (WebContentsImpl* web_contents : WebContentsImpl::GetAllWebContents()) {
     MediaSessionImpl* session = MediaSessionImpl::FromWebContents(web_contents);
     if (!session)
@@ -227,14 +228,14 @@ WebContents* MediaSession::GetWebContentsFromRequestId(
 // static
 const base::UnguessableToken& MediaSession::GetRequestIdFromWebContents(
     WebContents* web_contents) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M160);
   MediaSessionImpl* session = MediaSessionImpl::FromWebContents(web_contents);
   return session ? session->GetRequestId() : base::UnguessableToken::Null();
 }
 
 // static
 void MediaSession::FlushObserversForTesting(WebContents* web_contents) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M160);
   MediaSessionImpl* session = MediaSessionImpl::FromWebContents(web_contents);
   session->flush_observers_for_testing();  // IN-TEST
 }
@@ -252,9 +253,9 @@ MediaSessionImpl* MediaSessionImpl::Get(WebContents* web_contents) {
 }
 
 MediaSessionImpl::~MediaSessionImpl() {
-  DCHECK(normal_players_.empty());
-  DCHECK(one_shot_players_.empty());
-  DCHECK(audio_focus_state_ == State::INACTIVE);
+  CHECK(normal_players_.empty(), base::NotFatalUntil::M160);
+  CHECK(one_shot_players_.empty(), base::NotFatalUntil::M160);
+  CHECK(audio_focus_state_ == State::INACTIVE, base::NotFatalUntil::M160);
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -752,8 +753,8 @@ void MediaSessionImpl::Suspend(SuspendType suspend_type) {
 }
 
 void MediaSessionImpl::Stop(SuspendType suspend_type) {
-  DCHECK(audio_focus_state_ != State::INACTIVE);
-  DCHECK(suspend_type != SuspendType::kContent);
+  CHECK(audio_focus_state_ != State::INACTIVE, base::NotFatalUntil::M160);
+  CHECK(suspend_type != SuspendType::kContent, base::NotFatalUntil::M160);
 
   if (suspend_type == SuspendType::kUI) {
     // If the site has registered an action handle for stop then we should
@@ -778,7 +779,7 @@ void MediaSessionImpl::Stop(SuspendType suspend_type) {
   if (audio_focus_state_ != State::SUSPENDED)
     OnSuspendInternal(suspend_type, State::SUSPENDED);
 
-  DCHECK(audio_focus_state_ == State::SUSPENDED);
+  CHECK(audio_focus_state_ == State::SUSPENDED, base::NotFatalUntil::M160);
   normal_players_.clear();
 
   AbandonSystemAudioFocusIfNeeded();
@@ -786,7 +787,7 @@ void MediaSessionImpl::Stop(SuspendType suspend_type) {
 }
 
 void MediaSessionImpl::Seek(base::TimeDelta seek_time) {
-  DCHECK(!seek_time.is_zero());
+  CHECK(!seek_time.is_zero(), base::NotFatalUntil::M160);
 
   if (seek_time.is_positive()) {
     // If the site has registered an action handler for seek forward then we
@@ -940,7 +941,7 @@ void MediaSessionImpl::OnImageDownloadComplete(
     const GURL& image_url,
     const std::vector<SkBitmap>& bitmaps,
     const std::vector<gfx::Size>& sizes) {
-  DCHECK(bitmaps.size() == sizes.size());
+  CHECK(bitmaps.size() == sizes.size(), base::NotFatalUntil::M160);
   SkBitmap image;
   double best_image_score = 0.0;
 
@@ -981,9 +982,11 @@ void MediaSessionImpl::OnSystemAudioFocusRequested(bool result) {
 
 void MediaSessionImpl::OnSuspendInternal(SuspendType suspend_type,
                                          State new_state) {
-  DCHECK(new_state == State::SUSPENDED || new_state == State::INACTIVE);
+  CHECK(new_state == State::SUSPENDED || new_state == State::INACTIVE,
+        base::NotFatalUntil::M160);
   // UI suspend cannot use State::INACTIVE.
-  DCHECK(suspend_type == SuspendType::kSystem || new_state == State::SUSPENDED);
+  CHECK(suspend_type == SuspendType::kSystem || new_state == State::SUSPENDED,
+        base::NotFatalUntil::M160);
 
   if (HasOnlyOneShotPlayers()) {
     return;
@@ -1044,7 +1047,7 @@ void MediaSessionImpl::Initialize() {
   delegate_ = AudioFocusDelegate::Create(this);
   delegate_->MediaSessionInfoChanged(GetMediaSessionInfoSync());
 
-  DCHECK(web_contents());
+  CHECK(web_contents(), base::NotFatalUntil::M160);
   SetSourceIconsFromFavicons(web_contents()->GetFaviconURLs());
 
   GetContentClient()->browser()->AddPresentationObserver(this, web_contents());
@@ -1058,8 +1061,8 @@ void MediaSessionImpl::OnPresentationsChanged(bool has_presentation) {
 AudioFocusDelegate::AudioFocusResult MediaSessionImpl::RequestSystemAudioFocus(
     AudioFocusType audio_focus_type) {
   // |kGainTransient| is not used in MediaSessionImpl.
-  DCHECK_NE(media_session::mojom::AudioFocusType::kGainTransient,
-            audio_focus_type);
+  CHECK_NE(media_session::mojom::AudioFocusType::kGainTransient,
+           audio_focus_type, base::NotFatalUntil::M160);
 
   should_unduck_on_focus_gained_ = true;
 
@@ -2224,7 +2227,7 @@ MediaSessionImpl::MaybeGuardDurationUpdate(
   if (!position) {
     // |position| should never go back to unset state once it's
     // set. Therefore it's safe to return it here when it's unset.
-    DCHECK(!is_throttling_);
+    CHECK(!is_throttling_, base::NotFatalUntil::M160);
     return position;
   }
 
@@ -2233,7 +2236,8 @@ MediaSessionImpl::MaybeGuardDurationUpdate(
 
   if (duration_update_allowance_ == 0) {
     is_throttling_ = true;
-    DCHECK(duration_update_allowance_timer_.IsRunning());
+    CHECK(duration_update_allowance_timer_.IsRunning(),
+          base::NotFatalUntil::M160);
 
     // Reset the timer so that we can keep the media as livestream
     // until the time difference between two updates is greater
@@ -2246,7 +2250,7 @@ MediaSessionImpl::MaybeGuardDurationUpdate(
   }
 
   --duration_update_allowance_;
-  DCHECK_GE(duration_update_allowance_, 0);
+  CHECK_GE(duration_update_allowance_, 0, base::NotFatalUntil::M160);
   if (!duration_update_allowance_timer_.IsRunning()) {
     duration_update_allowance_timer_.Start(
         FROM_HERE, kDurationUpdateAllowanceIncreaseInterval, this,

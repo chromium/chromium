@@ -14,13 +14,13 @@ MediaStreamWebContentsObserver::MediaStreamWebContentsObserver(
     WebContents* web_contents,
     base::RepeatingClosure focus_callback)
     : WebContentsObserver(web_contents) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   on_focus_callback_ = std::move(focus_callback);
 }
 
 MediaStreamWebContentsObserver::~MediaStreamWebContentsObserver() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   on_focus_callback_.Reset();
   Observe(nullptr);
@@ -28,7 +28,7 @@ MediaStreamWebContentsObserver::~MediaStreamWebContentsObserver() {
 
 void MediaStreamWebContentsObserver::OnWebContentsFocused(
     RenderWidgetHost* render_widget_host) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (on_focus_callback_)
     on_focus_callback_.Run();

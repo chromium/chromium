@@ -16,7 +16,7 @@ void IOSurfaceCaptureDeviceBase::AllocateAndStart(
     const media::VideoCaptureParams& params,
     std::unique_ptr<Client> client) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(client && !client_);
+  CHECK(client && !client_, base::NotFatalUntil::M160);
   client_ = std::move(client);
   capture_params_ = params;
 
