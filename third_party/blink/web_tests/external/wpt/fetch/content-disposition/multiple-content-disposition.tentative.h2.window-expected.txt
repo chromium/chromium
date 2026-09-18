@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] HTTP/2: differing duplicate Content-Disposition headers are not a network error
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
+[FAIL] HTTP/2: differing duplicate Content-Disposition headers are combined
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
+Harness: the test ran to completion.
+
