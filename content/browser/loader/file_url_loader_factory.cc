@@ -510,8 +510,9 @@ class FileURLLoader : public network::mojom::URLLoader {
         return;
       }
 
-      DCHECK_EQ(directory_loading_policy,
-                DirectoryLoadingPolicy::kRespondWithListing);
+      CHECK_EQ(directory_loading_policy,
+               DirectoryLoadingPolicy::kRespondWithListing,
+               base::NotFatalUntil::M160);
 
       net::RedirectInfo redirect_info;
       redirect_info.new_method = "GET";
@@ -623,7 +624,7 @@ class FileURLLoader : public network::mojom::URLLoader {
     // is used to respond to a directory request, it must be because the URL
     // path didn't have a trailing path separator. In that case we finish with
     // a redirect above which will in turn be handled by FileURLDirectoryLoader.
-    DCHECK(!info.is_directory);
+    CHECK(!info.is_directory, base::NotFatalUntil::M160);
     if (observer) {
       observer->OnStart();
     }
@@ -872,8 +873,9 @@ void FileURLLoaderFactory::CreateLoaderAndStart(
   // |mode| should be kNoCors for the case of |shared_cors_origin_access_list_|
   // being nullptr. Only internal call sites, such as ExtensionDownloader, is
   // permitted to specify nullptr.
-  DCHECK(!network::cors::IsCorsEnabledRequestMode(request.mode) ||
-         shared_cors_origin_access_list_);
+  CHECK(!network::cors::IsCorsEnabledRequestMode(request.mode) ||
+            shared_cors_origin_access_list_,
+        base::NotFatalUntil::M160);
 
   // If kDisableWebSecurity flag is specified, make all requests pretend as
   // "no-cors" requests. Otherwise, call IsSameOriginWith for a file scheme

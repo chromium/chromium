@@ -87,7 +87,7 @@ base::ListValue& EnsureLogList(base::DictValue& dict) {
 
 // Removes the log entry associated with a given record.
 void FreeLogList(base::Value* value) {
-  DCHECK(value->is_dict());
+  CHECK(value->is_dict(), base::NotFatalUntil::M160);
   value->GetDict().Remove("log");
 }
 
@@ -104,21 +104,21 @@ WebRTCInternals::PendingUpdate::PendingUpdate(PendingUpdate&& other)
       event_data_(std::move(other.event_data_)) {}
 
 WebRTCInternals::PendingUpdate::~PendingUpdate() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
 }
 
 const std::string& WebRTCInternals::PendingUpdate::event_name() const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
   return event_name_;
 }
 
 const base::Value* WebRTCInternals::PendingUpdate::event_data() const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
   return event_data_.is_none() ? nullptr : &event_data_;
 }
 
 WebRTCInternals::WebRTCInternals() : WebRTCInternals(500, true) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 }
 
 WebRTCInternals::WebRTCInternals(int aggregate_updates_ms,
@@ -132,8 +132,8 @@ WebRTCInternals::WebRTCInternals(int aggregate_updates_ms,
       num_connected_connections_(0),
       should_block_power_saving_(should_block_power_saving),
       aggregate_updates_ms_(aggregate_updates_ms) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!g_webrtc_internals);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(!g_webrtc_internals, base::NotFatalUntil::M160);
 
   const base::FilePath default_path =
       GetContentClient()->browser()->GetDefaultDownloadDirectory();
@@ -169,8 +169,8 @@ WebRTCInternals::WebRTCInternals(int aggregate_updates_ms,
 }
 
 WebRTCInternals::~WebRTCInternals() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(g_webrtc_internals);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(g_webrtc_internals, base::NotFatalUntil::M160);
   g_webrtc_internals = nullptr;
 
   if (select_file_dialog_) {
@@ -179,8 +179,8 @@ WebRTCInternals::~WebRTCInternals() {
 }
 
 WebRTCInternals* WebRTCInternals::CreateSingletonInstance() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!g_webrtc_internals);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(!g_webrtc_internals, base::NotFatalUntil::M160);
   g_webrtc_internals = new WebRTCInternals;
   return g_webrtc_internals;
 }
@@ -190,7 +190,8 @@ WebRTCInternals* WebRTCInternals::GetInstance() {
   // Currently, some unit tests call this from outside of the UI thread,
   // but that's not a real issue as these tests neglect setting
   // `g_webrtc_internals` to begin with, and therefore just ignore it.
-  DCHECK(!g_webrtc_internals || BrowserThread::CurrentlyOn(BrowserThread::UI));
+  CHECK(!g_webrtc_internals || BrowserThread::CurrentlyOn(BrowserThread::UI),
+        base::NotFatalUntil::M160);
   return g_webrtc_internals;
 }
 
@@ -199,7 +200,7 @@ void WebRTCInternals::OnPeerConnectionAdded(GlobalRenderFrameHostId frame_id,
                                             ProcessId pid,
                                             const string& url,
                                             const string& rtc_configuration) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   // TODO(tommi): Consider changing this design so that webrtc-internals has
   // minimal impact if chrome://webrtc-internals isn't open.
@@ -228,7 +229,7 @@ void WebRTCInternals::OnPeerConnectionAdded(GlobalRenderFrameHostId frame_id,
 
 void WebRTCInternals::OnPeerConnectionRemoved(GlobalRenderFrameHostId frame_id,
                                               int lid) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   auto it = FindRecord(frame_id, lid);
   if (it != peer_connection_data().end()) {
@@ -248,7 +249,7 @@ void WebRTCInternals::OnPeerConnectionUpdated(GlobalRenderFrameHostId frame_id,
                                               int lid,
                                               const string& type,
                                               const string& value) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   auto it = FindRecord(frame_id, lid);
   if (it == peer_connection_data().end())
@@ -293,7 +294,7 @@ void WebRTCInternals::OnPeerConnectionUpdated(GlobalRenderFrameHostId frame_id,
 void WebRTCInternals::OnAddStandardStats(GlobalRenderFrameHostId frame_id,
                                          int lid,
                                          base::ListValue value) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (observers_.empty())
     return;
@@ -309,7 +310,7 @@ void WebRTCInternals::OnAddStandardStats(GlobalRenderFrameHostId frame_id,
 }
 
 void WebRTCInternals::PruneOldGetUserMediaRequests() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   const double min_timestamp =
       (base::Time::Now() - kMaxMediaEntryAge).InMillisecondsFSinceUnixEpoch();
@@ -331,7 +332,7 @@ void WebRTCInternals::OnGetMedia(std::string_view request_type,
                                  bool video,
                                  const std::string& audio_constraints,
                                  const std::string& video_constraints) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   PruneOldGetUserMediaRequests();
   if (get_user_media_requests_.size() >= kMaxMediaEntries) {
@@ -377,7 +378,7 @@ void WebRTCInternals::OnGetMediaSuccess(std::string_view request_type,
                                         const std::string& stream_id,
                                         const std::string& audio_track_info,
                                         const std::string& video_track_info) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   PruneOldGetUserMediaRequests();
   if (get_user_media_requests_.size() >= kMaxMediaEntries) {
@@ -416,7 +417,7 @@ void WebRTCInternals::OnGetMediaFailure(std::string_view request_type,
                                         int request_id,
                                         const std::string& error,
                                         const std::string& error_message) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   PruneOldGetUserMediaRequests();
   if (get_user_media_requests_.size() >= kMaxMediaEntries) {
@@ -510,12 +511,12 @@ void WebRTCInternals::OnGetDisplayMediaFailure(
 }
 
 void WebRTCInternals::AddObserver(WebRTCInternalsUIObserver* observer) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   observers_.AddObserver(observer);
 }
 
 void WebRTCInternals::RemoveObserver(WebRTCInternalsUIObserver* observer) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   observers_.RemoveObserver(observer);
   if (!observers_.empty())
     return;
@@ -541,18 +542,18 @@ void WebRTCInternals::RemoveObserver(WebRTCInternalsUIObserver* observer) {
 
 void WebRTCInternals::AddConnectionsObserver(
     WebRtcInternalsConnectionsObserver* observer) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   connections_observers_.AddObserver(observer);
 }
 
 void WebRTCInternals::RemoveConnectionsObserver(
     WebRtcInternalsConnectionsObserver* observer) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   connections_observers_.RemoveObserver(observer);
 }
 
 void WebRTCInternals::UpdateObserver(WebRTCInternalsUIObserver* observer) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (peer_connection_data().size() > 0)
     observer->OnUpdate("update-all-peer-connections", &peer_connection_data_);
 
@@ -571,7 +572,7 @@ void WebRTCInternals::UpdateObserver(WebRTCInternalsUIObserver* observer) {
 
 void WebRTCInternals::EnableAudioDebugRecordings(
     content::WebContents* web_contents) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 #if BUILDFLAG(IS_ANDROID)
   EnableAudioDebugRecordingsOnAllRenderProcessHosts();
 #else
@@ -580,7 +581,7 @@ void WebRTCInternals::EnableAudioDebugRecordings(
 }
 
 void WebRTCInternals::DisableAudioDebugRecordings() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (!audio_debug_recording_session_)
     return;
   audio_debug_recording_session_.reset();
@@ -593,20 +594,20 @@ void WebRTCInternals::DisableAudioDebugRecordings() {
 }
 
 bool WebRTCInternals::IsAudioDebugRecordingsEnabled() const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   return !!audio_debug_recording_session_;
 }
 
 const base::FilePath& WebRTCInternals::GetAudioDebugRecordingsFilePath() const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   return audio_debug_recordings_file_path_;
 }
 
 void WebRTCInternals::EnableLocalEventLogRecordings(
     content::WebContents* web_contents) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(web_contents);
-  DCHECK(CanToggleEventLogRecordings());
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(web_contents, base::NotFatalUntil::M160);
+  CHECK(CanToggleEventLogRecordings(), base::NotFatalUntil::M160);
 
 #if BUILDFLAG(IS_ANDROID)
   WebRtcEventLogger* const logger = WebRtcEventLogger::Get();
@@ -619,10 +620,10 @@ void WebRTCInternals::EnableLocalEventLogRecordings(
 }
 
 void WebRTCInternals::DisableLocalEventLogRecordings() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   event_log_recordings_ = false;
-  DCHECK(CanToggleEventLogRecordings());
+  CHECK(CanToggleEventLogRecordings(), base::NotFatalUntil::M160);
   WebRtcEventLogger* const logger = WebRtcEventLogger::Get();
   if (logger) {
     logger->DisableLocalLogging();
@@ -631,7 +632,7 @@ void WebRTCInternals::DisableLocalEventLogRecordings() {
 
 void WebRTCInternals::EnableDataChannelRecordings(
     content::WebContents* web_contents) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 #if BUILDFLAG(IS_ANDROID)
   WebRtcEventLogger* const logger = WebRtcEventLogger::Get();
   if (logger) {
@@ -644,7 +645,7 @@ void WebRTCInternals::EnableDataChannelRecordings(
 }
 
 void WebRTCInternals::DisableDataChannelRecordings() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   data_channel_recording_active_ = false;
   WebRtcEventLogger* const logger = WebRtcEventLogger::Get();
@@ -654,24 +655,24 @@ void WebRTCInternals::DisableDataChannelRecordings() {
 }
 
 bool WebRTCInternals::IsEventLogRecordingsEnabled() const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   return event_log_recordings_;
 }
 
 bool WebRTCInternals::IsDataChannelRecordingsEnabled() const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   return data_channel_recording_active_;
 }
 
 bool WebRTCInternals::CanToggleEventLogRecordings() const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   return command_line_derived_logging_path_.empty();
 }
 
 void WebRTCInternals::SendUpdate(const std::string& event_name,
                                  base::Value event_data) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!observers_.empty());
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(!observers_.empty(), base::NotFatalUntil::M160);
 
   bool queue_was_empty = pending_updates_.empty();
   pending_updates_.push(PendingUpdate(event_name, std::move(event_data)));
@@ -693,7 +694,7 @@ void WebRTCInternals::SendUpdate(const std::string& event_name,
 void WebRTCInternals::RenderProcessExited(
     RenderProcessHost* host,
     const ChildProcessTerminationInfo& info) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   OnRendererExit(host->GetDeprecatedID());
   render_process_id_set_.erase(host->GetID());
   host->RemoveObserver(this);
@@ -737,7 +738,7 @@ void WebRTCInternals::MaybeShowSelectFileDialog(
 
 void WebRTCInternals::FileSelected(const ui::SelectedFileInfo& file,
                                    int /* unused_index */) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   switch (selection_type_) {
     case SelectionType::kRtcEventLogs: {
       event_log_recordings_file_path_ = file.path();
@@ -770,7 +771,7 @@ void WebRTCInternals::FileSelected(const ui::SelectedFileInfo& file,
 }
 
 void WebRTCInternals::FileSelectionCanceled() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   switch (selection_type_) {
     case SelectionType::kRtcEventLogs:
       SendUpdate("event-log-recordings-file-selection-cancelled",
@@ -791,12 +792,12 @@ void WebRTCInternals::FileSelectionCanceled() {
 }
 
 void WebRTCInternals::OnRendererExit(int render_process_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   // Iterates from the end of the list to remove the PeerConnections created
   // by the exiting renderer.
   for (int i = peer_connection_data().size() - 1; i >= 0; --i) {
-    DCHECK(peer_connection_data()[i].is_dict());
+    CHECK(peer_connection_data()[i].is_dict(), base::NotFatalUntil::M160);
 
     std::optional<int> this_rid, this_lid;
     this_rid = peer_connection_data()[i].GetDict().FindInt("rid");
@@ -820,7 +821,7 @@ void WebRTCInternals::OnRendererExit(int render_process_id) {
   // Iterates from the end of the list to remove the getUserMedia requests
   // created by the exiting renderer.
   for (int i = get_user_media_requests_.size() - 1; i >= 0; --i) {
-    DCHECK(get_user_media_requests_[i].is_dict());
+    CHECK(get_user_media_requests_[i].is_dict(), base::NotFatalUntil::M160);
 
     std::optional<int> this_rid =
         get_user_media_requests_[i].GetDict().FindInt("rid");
@@ -839,8 +840,8 @@ void WebRTCInternals::OnRendererExit(int render_process_id) {
 }
 
 void WebRTCInternals::EnableAudioDebugRecordingsOnAllRenderProcessHosts() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!audio_debug_recording_session_);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(!audio_debug_recording_session_, base::NotFatalUntil::M160);
   mojo::PendingRemote<audio::mojom::DebugRecording> debug_recording;
   content::GetAudioService().BindDebugRecording(
       debug_recording.InitWithNewPipeAndPassReceiver());
@@ -856,9 +857,9 @@ void WebRTCInternals::EnableAudioDebugRecordingsOnAllRenderProcessHosts() {
 }
 
 void WebRTCInternals::MaybeClosePeerConnection(base::Value& record) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   std::optional<bool> is_open = record.GetDict().FindBool("isOpen");
-  DCHECK(is_open.has_value());
+  CHECK(is_open.has_value(), base::NotFatalUntil::M160);
   if (!*is_open)
     return;
 
@@ -867,7 +868,7 @@ void WebRTCInternals::MaybeClosePeerConnection(base::Value& record) {
 }
 
 void WebRTCInternals::MaybeMarkPeerConnectionAsConnected(base::Value& record) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   bool was_connected = record.GetDict().FindBool("connected").value_or(true);
   if (!was_connected) {
     ++num_connected_connections_;
@@ -881,12 +882,12 @@ void WebRTCInternals::MaybeMarkPeerConnectionAsConnected(base::Value& record) {
 
 void WebRTCInternals::MaybeMarkPeerConnectionAsNotConnected(
     base::Value& record) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   bool was_connected = record.GetDict().FindBool("connected").value_or(false);
   if (was_connected) {
     record.GetDict().Set("connected", false);
     --num_connected_connections_;
-    DCHECK_GE(num_connected_connections_, 0);
+    CHECK_GE(num_connected_connections_, 0, base::NotFatalUntil::M160);
     UpdateWakeLock();
     UpdateStatsTimer();
     for (auto& observer : connections_observers_)
@@ -895,7 +896,7 @@ void WebRTCInternals::MaybeMarkPeerConnectionAsNotConnected(
 }
 
 void WebRTCInternals::UpdateWakeLock() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (!should_block_power_saving_)
     return;
 
@@ -905,7 +906,7 @@ void WebRTCInternals::UpdateWakeLock() {
             "PeerConnections are active anymore.");
     GetWakeLock()->CancelWakeLock();
   } else {
-    DCHECK_GT(num_connected_connections_, 0);
+    CHECK_GT(num_connected_connections_, 0, base::NotFatalUntil::M160);
     DVLOG(1) << ("Preventing the application from being suspended while one or "
                  "more PeerConnections are active.");
     GetWakeLock()->RequestWakeLock();
@@ -913,7 +914,7 @@ void WebRTCInternals::UpdateWakeLock() {
 }
 
 device::mojom::WakeLock* WebRTCInternals::GetWakeLock() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   // Here is a lazy binding, and will not reconnect after connection error.
   if (!wake_lock_) {
     mojo::Remote<device::mojom::WakeLockProvider> wake_lock_provider;
@@ -929,14 +930,14 @@ device::mojom::WakeLock* WebRTCInternals::GetWakeLock() {
 }
 
 void WebRTCInternals::RequestStandardStats() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   for (auto* host : PeerConnectionTrackerHost::GetAllHosts()) {
     host->GetStandardStats();
   }
 }
 
 void WebRTCInternals::UpdateStatsTimer() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (num_connected_connections_ > 0 && !observers_.empty()) {
     if (!stats_timer_.IsRunning()) {
       stats_timer_.Start(FROM_HERE, GetStatsPollingInterval(), this,
@@ -948,7 +949,7 @@ void WebRTCInternals::UpdateStatsTimer() {
 }
 
 void WebRTCInternals::ProcessPendingUpdates() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   while (!pending_updates_.empty()) {
     const auto& update = pending_updates_.front();
     for (auto& observer : observers_)
@@ -960,11 +961,11 @@ void WebRTCInternals::ProcessPendingUpdates() {
 base::ListValue::iterator WebRTCInternals::FindRecord(
     GlobalRenderFrameHostId frame_id,
     int lid) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   for (auto it = peer_connection_data().begin();
        it != peer_connection_data().end(); ++it) {
-    DCHECK(it->is_dict());
+    CHECK(it->is_dict(), base::NotFatalUntil::M160);
 
     int this_rid = it->GetDict().FindInt("rid").value_or(0);
     int this_lid = it->GetDict().FindInt("lid").value_or(0);

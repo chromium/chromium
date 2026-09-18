@@ -39,8 +39,9 @@ void PromptBasedUserConsentHandler::RequestUserConsent(
     CompletionCallback on_complete) {
   // This function cannot be called during prerendering as
   // WebOTPService::OnReceive calls this, so the DCHECK is transitively true.
-  DCHECK_NE(frame_host_->GetLifecycleState(),
-            RenderFrameHost::LifecycleState::kPrerendering);
+  CHECK_NE(frame_host_->GetLifecycleState(),
+           RenderFrameHost::LifecycleState::kPrerendering,
+           base::NotFatalUntil::M160);
   WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(&*frame_host_);
   if (!web_contents->GetDelegate()) {

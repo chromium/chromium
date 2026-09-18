@@ -35,7 +35,7 @@ base::ListValue GetNetworkErrorData() {
   base::DictValue error_codes = net::GetNetConstants();
   const base::DictValue* net_error_codes_dict =
       error_codes.FindDict(kNetworkErrorKey);
-  DCHECK(net_error_codes_dict);
+  CHECK(net_error_codes_dict, base::NotFatalUntil::M160);
 
   base::ListValue error_list;
 
@@ -61,7 +61,7 @@ bool ShouldHandleWebUIRequestCallback(const std::string& path) {
 void HandleWebUIRequestCallback(BrowserContext* current_context,
                                 const std::string& path,
                                 WebUIDataSource::GotDataCallback callback) {
-  DCHECK(ShouldHandleWebUIRequestCallback(path));
+  CHECK(ShouldHandleWebUIRequestCallback(path), base::NotFatalUntil::M160);
 
   base::DictValue data;
   data.Set(kErrorCodesDataName, GetNetworkErrorData());

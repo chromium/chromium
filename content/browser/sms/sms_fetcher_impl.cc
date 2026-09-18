@@ -43,7 +43,8 @@ void SmsFetcherImpl::Subscribe(const OriginList& origin_list,
                                SmsQueue::Subscriber& subscriber) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Should not be called multiple times for the same subscriber and origin.
-  DCHECK(!subscribers_.HasSubscriber(origin_list, &subscriber));
+  CHECK(!subscribers_.HasSubscriber(origin_list, &subscriber),
+        base::NotFatalUntil::M160);
 
   subscribers_.Push(origin_list, &subscriber);
   if (provider_)
@@ -60,11 +61,14 @@ void SmsFetcherImpl::Subscribe(const OriginList& origin_list,
   // to worry about prerendering when using WebContents::FromRenderFrameHost()
   // below (see function comments for WebContents::FromRenderFrameHost() for
   // more details).
-  DCHECK_NE(render_frame_host.GetLifecycleState(),
-            RenderFrameHost::LifecycleState::kPrerendering);
+  CHECK_NE(render_frame_host.GetLifecycleState(),
+           RenderFrameHost::LifecycleState::kPrerendering,
+           base::NotFatalUntil::M160);
   // Should not be called multiple times for the same subscriber.
-  DCHECK(!remote_cancel_callbacks_.count(&subscriber));
-  DCHECK(!subscribers_.HasSubscriber(origin_list, &subscriber));
+  CHECK(!remote_cancel_callbacks_.count(&subscriber),
+        base::NotFatalUntil::M160);
+  CHECK(!subscribers_.HasSubscriber(origin_list, &subscriber),
+        base::NotFatalUntil::M160);
 
   subscribers_.Push(origin_list, &subscriber);
 

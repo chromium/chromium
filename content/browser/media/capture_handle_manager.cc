@@ -163,7 +163,7 @@ CaptureHandleManager::Observer::Create(
     GlobalRenderFrameHostId captured,
     GlobalRenderFrameHostId capturer,
     DeviceCaptureHandleChangeCallback handle_change_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   auto* const capturer_rfhi = RenderFrameHostImpl::FromID(capturer);
   if (!capturer_rfhi || !capturer_rfhi->IsActive()) {
@@ -195,15 +195,15 @@ CaptureHandleManager::Observer::Observer(
       capture_key_(capture_key),
       capturer_(capturer),
       handle_change_callback_(std::move(handle_change_callback)) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(handle_change_callback_);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(handle_change_callback_, base::NotFatalUntil::M160);
 }
 
 CaptureHandleManager::Observer::~Observer() = default;
 
 void CaptureHandleManager::Observer::OnCaptureHandleConfigUpdate(
     const blink::mojom::CaptureHandleConfig& config) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   auto* const capturer_rfhi = RenderFrameHostImpl::FromID(capturer_);
   if (!capturer_rfhi || !capturer_rfhi->IsActive()) {
@@ -217,7 +217,7 @@ void CaptureHandleManager::Observer::OnCaptureHandleConfigUpdate(
 }
 
 void CaptureHandleManager::Observer::UpdateCaptureHandleConfig() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   auto* wc = web_contents();
   if (wc) {
     OnCaptureHandleConfigUpdate(wc->GetPrimaryPage().GetCaptureHandleConfig());

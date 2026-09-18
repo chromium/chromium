@@ -19,8 +19,9 @@ MockCaptureDeviceController::MockCaptureDeviceController(
           std::move(video_capture_service_task_runner)),
       connect_to_video_source_provider_callback_(
           std::move(connect_to_video_source_provider_callback)) {
-  DCHECK(video_capture_service_task_runner_);
-  DCHECK(!connect_to_video_source_provider_callback_.is_null());
+  CHECK(video_capture_service_task_runner_, base::NotFatalUntil::M160);
+  CHECK(!connect_to_video_source_provider_callback_.is_null(),
+        base::NotFatalUntil::M160);
 }
 
 MockCaptureDeviceController::~MockCaptureDeviceController() {
@@ -35,7 +36,7 @@ MockCaptureDeviceController::~MockCaptureDeviceController() {
 
 void MockCaptureDeviceController::AddMockCamera(MockCameraConfig config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!config.device_id.empty());
+  CHECK(!config.device_id.empty(), base::NotFatalUntil::M160);
 
   EnsureConnectedToVideoSourceProvider();
 

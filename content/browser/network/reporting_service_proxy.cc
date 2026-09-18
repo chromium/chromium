@@ -37,7 +37,7 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
       : render_process_id_(render_process_id),
         reporting_source_(reporting_source),
         network_anonymization_key_(network_anonymization_key) {
-    DCHECK(!reporting_source.is_empty());
+    CHECK(!reporting_source.is_empty(), base::NotFatalUntil::M160);
   }
 
   ReportingServiceProxyImpl(const ReportingServiceProxyImpl&) = delete;
@@ -288,7 +288,7 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
 void CreateReportingServiceProxyForFrame(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::ReportingServiceProxy> receiver) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<ReportingServiceProxyImpl>(
           render_frame_host->GetProcess()->GetID(),
@@ -301,7 +301,7 @@ void CreateReportingServiceProxyForFrame(
 void CreateReportingServiceProxyForServiceWorker(
     ServiceWorkerHost* service_worker_host,
     mojo::PendingReceiver<blink::mojom::ReportingServiceProxy> receiver) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<ReportingServiceProxyImpl>(
           service_worker_host->worker_process_id(),
@@ -313,7 +313,7 @@ void CreateReportingServiceProxyForServiceWorker(
 void CreateReportingServiceProxyForSharedWorker(
     SharedWorkerHost* shared_worker_host,
     mojo::PendingReceiver<blink::mojom::ReportingServiceProxy> receiver) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<ReportingServiceProxyImpl>(
           shared_worker_host->GetProcessHost()->GetID(),
@@ -325,7 +325,7 @@ void CreateReportingServiceProxyForSharedWorker(
 void CreateReportingServiceProxyForDedicatedWorker(
     DedicatedWorkerHost* dedicated_worker_host,
     mojo::PendingReceiver<blink::mojom::ReportingServiceProxy> receiver) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<ReportingServiceProxyImpl>(
           dedicated_worker_host->GetProcessHost()->GetID(),

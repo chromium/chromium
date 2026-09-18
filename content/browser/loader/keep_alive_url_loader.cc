@@ -298,7 +298,7 @@ class KeepAliveURLLoader::ForwardingClient final
   void OnUploadProgress(int64_t current_position,
                         int64_t total_size,
                         base::OnceCallback<void()> callback) override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
     TRACE_EVENT("loading",
                 "KeepAliveURLLoader::ForwardingClient::OnUploadProgress",
                 "request_id", request_id());
@@ -312,7 +312,7 @@ class KeepAliveURLLoader::ForwardingClient final
   }
 
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
     TRACE_EVENT("loading",
                 "KeepAliveURLLoader::ForwardingClient::OnTransferSizeUpdated",
                 "request_id", request_id());
@@ -326,7 +326,7 @@ class KeepAliveURLLoader::ForwardingClient final
 
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          network::mojom::URLResponseHeadPtr head) override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
     CHECK(IsConnected());
     target_->OnReceiveRedirect(redirect_info, std::move(head));
   }
@@ -335,7 +335,7 @@ class KeepAliveURLLoader::ForwardingClient final
       network::mojom::URLResponseHeadPtr head,
       mojo::ScopedDataPipeConsumerHandle body,
       std::optional<mojo_base::BigBuffer> cached_metadata) override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
     CHECK(IsConnected());
     target_->OnReceiveResponse(std::move(head), std::move(body),
                                std::move(cached_metadata));
@@ -343,7 +343,7 @@ class KeepAliveURLLoader::ForwardingClient final
 
   void OnComplete(
       const network::URLLoaderCompletionStatus& completion_status) override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
     CHECK(IsConnected());
     target_->OnComplete(completion_status);
   }
@@ -457,7 +457,7 @@ KeepAliveURLLoader::KeepAliveURLLoader(
       initial_url_(resource_request.url),
       last_url_(resource_request.url),
       throttles_getter_(throttles_getter) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   CHECK(network_loader_factory_);
   CHECK(policy_container_host_);
   CHECK(!resource_request.trusted_params);
@@ -587,7 +587,7 @@ bool KeepAliveURLLoader::IsContextDetached() const {
 void KeepAliveURLLoader::FollowRedirect(
     network::HttpRequestHeadersUpdateParams headers_update_params,
     const std::optional<GURL>& new_url) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   TRACE_EVENT("loading", "KeepAliveURLLoader::FollowRedirect", "request_id",
               request_id_, "url", new_url);
 
@@ -613,7 +613,7 @@ void KeepAliveURLLoader::FollowRedirect(
 
 void KeepAliveURLLoader::SetPriority(net::RequestPriority priority,
                                      int intra_priority_value) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   TRACE_EVENT("loading", "KeepAliveURLLoader::SetPriority", "request_id",
               request_id_);
 
@@ -624,7 +624,7 @@ void KeepAliveURLLoader::SetPriority(net::RequestPriority priority,
 void KeepAliveURLLoader::EndReceiveRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr head) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   did_encounter_redirect_ = true;
   CHECK_GT(redirect_limit_, 0u);
   if (--redirect_limit_ == 0) {
@@ -709,7 +709,7 @@ void KeepAliveURLLoader::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr response,
     mojo::ScopedDataPipeConsumerHandle body,
     std::optional<mojo_base::BigBuffer> cached_metadata) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   TRACE_EVENT("loading", "KeepAliveURLLoader::OnReceiveResponse", "request_id",
               request_id_, "url", last_url_);
 
@@ -795,7 +795,7 @@ void KeepAliveURLLoader::NotifyOnCompleteForTestAndDevTools(
 
 void KeepAliveURLLoader::OnComplete(
     const network::URLLoaderCompletionStatus& completion_status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   TRACE_EVENT("loading", "KeepAliveURLLoader::OnComplete", "request_id",
               request_id_);
   if (IsAttemptingRetry(/*include_failed_retry=*/false)) {
@@ -1103,7 +1103,7 @@ bool KeepAliveURLLoader::HasReceivedResponse() const {
 }
 
 void KeepAliveURLLoader::ForwardURLLoad() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   CHECK(IsRendererConnected());
   CHECK(stored_url_load_);
 
@@ -1181,7 +1181,7 @@ bool KeepAliveURLLoader::IsRendererConnected() const {
 
 net::Error KeepAliveURLLoader::WillFollowRedirect(
     const net::RedirectInfo& redirect_info) const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   // TODO(crbug.com/40236167): Add logic to handle redirecting to extensions
   // from `ChromeContentRendererClient::IsSafeRedirectTarget()`.
@@ -1259,7 +1259,7 @@ bool KeepAliveURLLoader::RetryOrDelayErrorIfNeeded(
 
 void KeepAliveURLLoader::CancelWithStatus(
     const network::URLLoaderCompletionStatus& status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   TRACE_EVENT("loading", "KeepAliveURLLoader::CancelWithStatus", "request_id",
               request_id_);
   if (IsAttemptingRetry(/*include_failed_retry=*/false)) {
@@ -1313,7 +1313,7 @@ void KeepAliveURLLoader::CancelWithStatusInternal(
 
 // Browser -> Renderer connection
 void KeepAliveURLLoader::ForwardingClient::OnDisconnected() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   TRACE_EVENT("loading", "KeepAliveURLLoader::ForwardingClient::OnDisconnected",
               "request_id", request_id());
 
@@ -1335,7 +1335,7 @@ void KeepAliveURLLoader::ForwardingClient::OnDisconnected() {
 
 // Browser <- Renderer connection.
 void KeepAliveURLLoader::OnURLLoaderDisconnected() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   TRACE_EVENT("loading", "KeepAliveURLLoader::OnURLLoaderDisconnected",
               "request_id", request_id_);
   for (auto& request_tracker : request_trackers_) {

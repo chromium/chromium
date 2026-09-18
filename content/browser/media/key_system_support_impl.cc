@@ -98,7 +98,7 @@ void KeySystemSupportImpl::SetObserver(
 // about://settings/content/protectedContent page. Namely, the default behaviour
 // of protected content IDs, and the site specific settings.
 void KeySystemSupportImpl::InitializePermissions() {
-  DCHECK(!are_permissions_initialized_);
+  CHECK(!are_permissions_initialized_, base::NotFatalUntil::M160);
 
   // Setup initial permission values.
   auto* web_contents = WebContentsImpl::FromRenderFrameHostImpl(
@@ -233,7 +233,8 @@ void KeySystemSupportImpl::ObserveKeySystemCapabilities() {
 void KeySystemSupportImpl::OnKeySystemCapabilitiesUpdated(
     KeySystemCapabilities key_system_capabilities) {
   DVLOG(3) << __func__;
-  DCHECK(IsValidKeySystemCapabilities(key_system_capabilities));
+  CHECK(IsValidKeySystemCapabilities(key_system_capabilities),
+        base::NotFatalUntil::M160);
 
   if (key_system_capabilities_.has_value() &&
       key_system_capabilities_.value() == key_system_capabilities) {

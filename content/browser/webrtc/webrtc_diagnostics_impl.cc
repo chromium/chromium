@@ -124,7 +124,7 @@ WebRtcDiagnosticsImpl::PerContext::~PerContext() {
 WebRtcDiagnosticsImpl::PerContext*
 WebRtcDiagnosticsImpl::PerContext::GetOrCreate(WebRtcDiagnosticsImpl* owner,
                                                BrowserContext* context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (!context) {
     return nullptr;
   }
@@ -147,7 +147,7 @@ WebRtcDiagnosticsImpl::PerContext::GetOrCreate(WebRtcDiagnosticsImpl* owner,
 // static
 WebRtcDiagnosticsImpl::PerContext*
 WebRtcDiagnosticsImpl::PerContext::GetIfExists(BrowserContext* context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (!context) {
     return nullptr;
   }
@@ -176,7 +176,7 @@ WebRtcDiagnosticsImpl::PeerConnectionInfo::operator=(
 WebRtcDiagnosticsImpl::PeerConnectionInfo::~PeerConnectionInfo() = default;
 
 void WebRtcDiagnosticsImpl::OnPerContextDestroyed(PerContext* state) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   contexts_.erase(state);
   // The profile is gone, so it can no longer be capturing. Recompute the
   // WebRTCInternals registration and the stats timer without it.
@@ -188,7 +188,7 @@ WebRtcDiagnostics::StartCaptureResult
 WebRtcDiagnosticsImpl::StartCaptureForClient(BrowserContext* context,
                                              std::string_view client_id,
                                              std::vector<url::Origin> origins) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   // Prevent abuse by capping origins list length to kMaxFilterOrigins.
   if (origins.size() > WebRtcDiagnostics::kMaxFilterOrigins) {
@@ -233,7 +233,7 @@ WebRtcDiagnosticsImpl::StartCaptureForClient(BrowserContext* context,
 WebRtcDiagnostics::StopCaptureResult
 WebRtcDiagnosticsImpl::StopCaptureForClient(BrowserContext* context,
                                             std::string_view client_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   PerContext* state = PerContext::GetIfExists(context);
   if (!state) {
@@ -273,7 +273,7 @@ WebRtcDiagnosticsImpl::StopCaptureForClient(BrowserContext* context,
 
 void WebRtcDiagnosticsImpl::UpdateInternalsRegistration(
     PerContext* newly_capturing) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   WebRTCInternals* webrtc_internals = WebRTCInternals::GetInstance();
   if (!webrtc_internals) {
@@ -303,7 +303,7 @@ void WebRtcDiagnosticsImpl::UpdateInternalsRegistration(
 }
 
 void WebRtcDiagnosticsImpl::UpdateStatsTimer() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   const bool want = std::ranges::any_of(contexts_, [](PerContext* state) {
     return !state->pc_metadata_.empty();
   });
@@ -323,7 +323,7 @@ void WebRtcDiagnosticsImpl::RequestStats() {
 
 WebRtcDiagnosticsImpl::PerContext* WebRtcDiagnosticsImpl::FindPerContextState(
     const base::DictValue& entry) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   std::optional<int> rid = entry.FindInt(kRidKey);
   if (!rid) {
     return nullptr;
@@ -357,7 +357,7 @@ bool WebRtcDiagnosticsImpl::GetSnapshot(
     std::string_view client_id,
     const std::vector<url::Origin>& origins,
     base::OnceCallback<void(base::Value)> callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (origins.size() > WebRtcDiagnostics::kMaxFilterOrigins) {
     return false;
@@ -464,14 +464,14 @@ bool WebRtcDiagnosticsImpl::GetSnapshot(
 
 bool WebRtcDiagnosticsImpl::IsCapturingForClient(BrowserContext* context,
                                                  std::string_view client_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   PerContext* state = PerContext::GetIfExists(context);
   return state && state->clients_.find(client_id) != state->clients_.end();
 }
 
 std::vector<std::string> WebRtcDiagnosticsImpl::GetCapturingClients(
     BrowserContext* context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   std::vector<std::string> clients;
   PerContext* state = PerContext::GetIfExists(context);
   if (!state) {
@@ -486,7 +486,7 @@ std::vector<std::string> WebRtcDiagnosticsImpl::GetCapturingClients(
 
 void WebRtcDiagnosticsImpl::AddObserver(BrowserContext* context,
                                         WebRtcDiagnostics::Observer* observer) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (PerContext* state = PerContext::GetOrCreate(this, context)) {
     state->observers_.AddObserver(observer);
   }
@@ -495,7 +495,7 @@ void WebRtcDiagnosticsImpl::AddObserver(BrowserContext* context,
 void WebRtcDiagnosticsImpl::RemoveObserver(
     BrowserContext* context,
     WebRtcDiagnostics::Observer* observer) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (PerContext* state = PerContext::GetIfExists(context)) {
     state->observers_.RemoveObserver(observer);
   }
@@ -519,7 +519,7 @@ void WebRtcDiagnosticsImpl::NotifySnapshotTruncated(PerContext* state) {
 std::optional<std::vector<url::Origin>>
 WebRtcDiagnosticsImpl::GetFilterOriginsForClient(BrowserContext* context,
                                                  std::string_view client_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   PerContext* state = PerContext::GetIfExists(context);
   if (!state) {
     return std::nullopt;
@@ -534,7 +534,7 @@ WebRtcDiagnosticsImpl::GetFilterOriginsForClient(BrowserContext* context,
 std::optional<url::Origin> WebRtcDiagnosticsImpl::GetOriginForPeerConnection(
     BrowserContext* context,
     std::string_view pc_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   PerContext* state = PerContext::GetIfExists(context);
   if (!state) {
     return std::nullopt;
@@ -550,7 +550,7 @@ std::optional<ChildProcessId>
 WebRtcDiagnosticsImpl::GetRenderProcessIdForPeerConnection(
     BrowserContext* context,
     std::string_view pc_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   PerContext* state = PerContext::GetIfExists(context);
   if (!state) {
     return std::nullopt;
@@ -565,7 +565,7 @@ WebRtcDiagnosticsImpl::GetRenderProcessIdForPeerConnection(
 
 void WebRtcDiagnosticsImpl::OnUpdate(const std::string& event_name,
                                      const base::Value* event_data) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (!event_data) {
     return;
@@ -825,7 +825,7 @@ void WebRtcDiagnosticsImpl::OnUpdate(const std::string& event_name,
 }
 
 void WebRtcDiagnosticsImpl::ResetForTesting() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   // Copy first: clearing a context's state does not destroy the PerContext, but
   // callers may destroy contexts between tests.
   std::vector<PerContext*> contexts(contexts_.begin(), contexts_.end());

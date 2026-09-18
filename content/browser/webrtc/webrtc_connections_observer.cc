@@ -11,7 +11,8 @@ namespace content {
 WebRtcConnectionsObserver::WebRtcConnectionsObserver(
     const ConnectionsCountChangedCallback& connections_count_changed_callback)
     : connections_count_changed_callback_(connections_count_changed_callback) {
-  DCHECK(!connections_count_changed_callback_.is_null());
+  CHECK(!connections_count_changed_callback_.is_null(),
+        base::NotFatalUntil::M160);
 
   WebRTCInternals* webrtc_internals = WebRTCInternals::GetInstance();
   if (!webrtc_internals)

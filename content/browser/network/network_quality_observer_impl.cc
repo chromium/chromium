@@ -25,8 +25,8 @@ bool MetricChangedMeaningfully(int32_t past_value, int32_t current_value) {
     return false;
   }
 
-  DCHECK_LE(0, past_value);
-  DCHECK_LE(0, current_value);
+  CHECK_LE(0, past_value, base::NotFatalUntil::M160);
+  CHECK_LE(0, current_value, base::NotFatalUntil::M160);
 
   // Metric has changed meaningfully only if (i) the difference between the two
   // values exceed the threshold; and, (ii) the ratio of the values also exceeds
@@ -56,7 +56,7 @@ NetworkQualityObserverImpl::NetworkQualityObserverImpl(
     network::NetworkQualityTracker* network_quality_tracker)
     : network_quality_tracker_(network_quality_tracker),
       last_notified_type_(net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   network_quality_tracker_->AddRTTAndThroughputEstimatesObserver(this);
   network_quality_tracker_->AddEffectiveConnectionTypeObserver(this);

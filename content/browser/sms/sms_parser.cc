@@ -54,7 +54,7 @@ ParseDomainResult ParseDomain(std::string_view domain) {
 }  // namespace
 
 SmsParser::Result::Result(SmsParsingStatus status) : parsing_status(status) {
-  DCHECK(parsing_status != SmsParsingStatus::kParsed);
+  CHECK(parsing_status != SmsParsingStatus::kParsed, base::NotFatalUntil::M160);
 }
 
 SmsParser::Result::Result(url::Origin top_origin,
@@ -72,7 +72,7 @@ SmsParser::Result& SmsParser::Result::operator=(Result&&) = default;
 SmsParser::Result::~Result() = default;
 
 SmsFetcher::OriginList SmsParser::Result::TakeOriginList() && {
-  DCHECK(IsValid());
+  CHECK(IsValid(), base::NotFatalUntil::M160);
   SmsFetcher::OriginList origin_list;
   if (!embedded_origin.opaque())
     origin_list.emplace_back(std::move(embedded_origin));
@@ -94,10 +94,10 @@ SmsParser::Result SmsParser::Parse(std::string_view sms) {
   auto [top_domain_parsing_status, top_gurl] = ParseDomain(top_domain);
   if (top_domain_parsing_status != SmsParsingStatus::kParsed)
     return Result(top_domain_parsing_status);
-  DCHECK(top_gurl.is_valid());
+  CHECK(top_gurl.is_valid(), base::NotFatalUntil::M160);
 
   url::Origin top_origin = url::Origin::Create(top_gurl);
-  DCHECK(!top_origin.opaque());
+  CHECK(!top_origin.opaque(), base::NotFatalUntil::M160);
 
   if (embedded_domain.empty()) {
     return Result(std::move(top_origin), url::Origin(), otp);
@@ -107,10 +107,10 @@ SmsParser::Result SmsParser::Parse(std::string_view sms) {
       ParseDomain(embedded_domain);
   if (embedded_domain_parsing_status != SmsParsingStatus::kParsed)
     return Result(embedded_domain_parsing_status);
-  DCHECK(embedded_gurl.is_valid());
+  CHECK(embedded_gurl.is_valid(), base::NotFatalUntil::M160);
 
   url::Origin embedded_origin = url::Origin::Create(embedded_gurl);
-  DCHECK(!embedded_origin.opaque());
+  CHECK(!embedded_origin.opaque(), base::NotFatalUntil::M160);
   return Result(std::move(top_origin), std::move(embedded_origin), otp);
 }
 

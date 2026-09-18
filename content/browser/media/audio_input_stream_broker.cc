@@ -58,9 +58,9 @@ AudioInputStreamBroker::AudioInputStreamBroker(
       deleter_(std::move(deleter)),
       processing_config_(std::move(processing_config)),
       renderer_factory_client_(std::move(renderer_factory_client)) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(renderer_factory_client_);
-  DCHECK(deleter_);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK(renderer_factory_client_, base::NotFatalUntil::M160);
+  CHECK(deleter_, base::NotFatalUntil::M160);
   TRACE_EVENT_BEGIN("audio", "AudioInputStreamBroker", GetTracingTrack(this));
 
   // Unretained is safe because |this| owns |renderer_factory_client_|.
@@ -77,7 +77,7 @@ AudioInputStreamBroker::AudioInputStreamBroker(
 }
 
 AudioInputStreamBroker::~AudioInputStreamBroker() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
 
   NotifyFrameHostOfAudioStreamStopped(render_process_id(), render_frame_id(),
                                       /*is_capturing=*/true);
@@ -96,9 +96,9 @@ AudioInputStreamBroker::~AudioInputStreamBroker() {
 
 void AudioInputStreamBroker::CreateStream(
     media::mojom::AudioStreamFactory* factory) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(!observer_receiver_.is_bound());
-  DCHECK(!pending_client_receiver_);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK(!observer_receiver_.is_bound(), base::NotFatalUntil::M160);
+  CHECK(!pending_client_receiver_, base::NotFatalUntil::M160);
   TRACE_EVENT_BEGIN("audio", "CreateStream", GetTracingTrack(this), "device id",
                     device_id_);
   awaiting_created_ = true;
@@ -133,7 +133,7 @@ void AudioInputStreamBroker::CreateStream(
 }
 
 void AudioInputStreamBroker::DidStartRecording() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
   // TODO(crbug.com/40091014) update tab recording indicator.
 }
 
@@ -142,7 +142,7 @@ void AudioInputStreamBroker::StreamCreated(
     media::mojom::ReadWriteAudioDataPipePtr data_pipe,
     bool initially_muted,
     const std::optional<base::UnguessableToken>& stream_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
   awaiting_created_ = false;
   // End "CreateStream" trace event.
   TRACE_EVENT_END("audio", GetTracingTrack(this), "success", !!data_pipe);
@@ -153,8 +153,8 @@ void AudioInputStreamBroker::StreamCreated(
     return;
   }
 
-  DCHECK(stream_id.has_value());
-  DCHECK(renderer_factory_client_);
+  CHECK(stream_id.has_value(), base::NotFatalUntil::M160);
+  CHECK(renderer_factory_client_, base::NotFatalUntil::M160);
   renderer_factory_client_->StreamCreated(
       std::move(stream), std::move(pending_client_receiver_),
       std::move(data_pipe), initially_muted, stream_id);
@@ -181,7 +181,7 @@ InputStreamErrorCode MapDisconnectReasonToErrorCode(DisconnectReason reason) {
 void AudioInputStreamBroker::ObserverBindingLost(
     uint32_t reason,
     const std::string& description) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
 
   DisconnectReason disconnection_reason = static_cast<DisconnectReason>(reason);
   if (!media::mojom::IsKnownEnumValue(disconnection_reason)) {
@@ -199,13 +199,13 @@ void AudioInputStreamBroker::ObserverBindingLost(
 }
 
 void AudioInputStreamBroker::ClientBindingLost() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
   disconnect_reason_ = DisconnectReason::kTerminatedByClient;
   Cleanup();
 }
 
 void AudioInputStreamBroker::Cleanup() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
 
   std::move(deleter_).Run(this);
 }

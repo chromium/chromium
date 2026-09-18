@@ -91,10 +91,12 @@ bool IsSafeToUseDataPath(SandboxGrantResult result) {
 void ProcessSandboxGrantResult(network::mojom::NetworkContextParams& params,
                                SandboxGrantResult grant_access_result) {
   // These two histograms are logged from elsewhere, so don't log them twice.
-  DCHECK(grant_access_result !=
-         SandboxGrantResult::kFailedToCreateCacheDirectory);
-  DCHECK(grant_access_result !=
-         SandboxGrantResult::kFailedToGrantSandboxAccessToCache);
+  CHECK(
+      grant_access_result != SandboxGrantResult::kFailedToCreateCacheDirectory,
+      base::NotFatalUntil::M160);
+  CHECK(grant_access_result !=
+            SandboxGrantResult::kFailedToGrantSandboxAccessToCache,
+        base::NotFatalUntil::M160);
   base::UmaHistogramEnumeration("NetworkService.GrantSandboxResult",
                                 grant_access_result);
 
@@ -118,7 +120,8 @@ void ProcessSandboxGrantResult(network::mojom::NetworkContextParams& params,
     // network service is running sandboxed then this data might not be
     // accessible, but does provide a pathway to user recovery, as the sandbox
     // can just be disabled in this case.
-    DCHECK(params.file_paths->unsandboxed_data_path.has_value());
+    CHECK(params.file_paths->unsandboxed_data_path.has_value(),
+          base::NotFatalUntil::M160);
     params.file_paths->data_directory =
         *params.file_paths->unsandboxed_data_path;
   }

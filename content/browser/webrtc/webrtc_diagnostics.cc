@@ -11,7 +11,7 @@ namespace content {
 
 // static
 WebRtcDiagnostics* WebRtcDiagnostics::GetInstance() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   return WebRtcDiagnosticsImpl::GetInstance();
 }
 

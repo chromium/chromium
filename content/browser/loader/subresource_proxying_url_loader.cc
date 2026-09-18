@@ -20,7 +20,7 @@ SubresourceProxyingURLLoader::SubresourceProxyingURLLoader(
     scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory)
     : resource_request_(resource_request),
       forwarding_client_(std::move(client)) {
-  DCHECK(network_loader_factory);
+  CHECK(network_loader_factory, base::NotFatalUntil::M160);
 
   // Make a copy of `resource_request`, because we may need to modify the
   // request.

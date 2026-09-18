@@ -66,9 +66,9 @@ void SmsProviderGms::Retrieve(RenderFrameHost* render_frame_host,
   // to worry about prerendering when using WebContents::FromRenderFrameHost()
   // below (see function comments for WebContents::FromRenderFrameHost() for
   // more details).
-  DCHECK(!render_frame_host ||
-         (render_frame_host->GetLifecycleState() !=
-          RenderFrameHost::LifecycleState::kPrerendering));
+  CHECK(!render_frame_host || (render_frame_host->GetLifecycleState() !=
+                               RenderFrameHost::LifecycleState::kPrerendering),
+        base::NotFatalUntil::M160);
   WebContents* web_contents =
       WebContents::FromRenderFrameHost(render_frame_host);
   base::android::ScopedJavaLocalRef<jobject> j_window = nullptr;

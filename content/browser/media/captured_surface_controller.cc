@@ -42,7 +42,7 @@ void OnZoomLevelChangeOnUI(
     base::RepeatingCallback<void(int)> on_zoom_level_change_callback,
     base::WeakPtr<WebContents> captured_wc,
     const HostZoomMap::ZoomLevelChange& change) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (!captured_wc) {
     return;
@@ -58,7 +58,7 @@ std::optional<CapturedSurfaceInfo> ResolveCapturedSurfaceOnUI(
     WebContentsMediaCaptureId wc_id,
     int subscription_version,
     base::RepeatingCallback<void(int)> on_zoom_level_change_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (wc_id.is_null()) {
     return std::nullopt;
@@ -101,7 +101,7 @@ CapturedSurfaceControlResult DoSendWheel(
     GlobalRenderFrameHostId capturer_rfh_id,
     base::WeakPtr<WebContents> captured_wc,
     blink::mojom::CapturedWheelActionPtr action) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   WebContentsImpl* const capturer_wci =
       WebContentsImpl::FromRenderFrameHostImpl(
@@ -241,7 +241,7 @@ CapturedSurfaceControlResult DoUpdateZoomLevel(
     GlobalRenderFrameHostId capturer_rfh_id,
     base::WeakPtr<WebContents> captured_wc,
     ZoomLevelAction action) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   WebContentsImpl* const capturer_wci =
       WebContentsImpl::FromRenderFrameHostImpl(
@@ -285,7 +285,7 @@ CapturedSurfaceControlResult DoUpdateZoomLevel(
 CapturedSurfaceControlResult FinalizeRequestPermission(
     GlobalRenderFrameHostId capturer_rfh_id,
     base::WeakPtr<WebContents> captured_wc) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   WebContentsImpl* const capturer_wci =
       WebContentsImpl::FromRenderFrameHostImpl(
@@ -322,7 +322,7 @@ void OnPermissionCheckResult(
     base::OnceCallback<CapturedSurfaceControlResult()> action_callback,
     base::OnceCallback<void(CapturedSurfaceControlResult)> reply_callback,
     CapturedSurfaceControlPermissionStatus permission_check_result) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (permission_check_result ==
       CapturedSurfaceControlPermissionStatus::kDenied) {
@@ -422,7 +422,7 @@ CapturedSurfaceController::CapturedSurfaceController(
       permission_manager_(std::move(permission_manager)),
       wc_resolution_callback_(std::move(wc_resolution_callback)),
       on_zoom_level_change_callback_(std::move(on_zoom_level_change_callback)) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
   ResolveCapturedSurface(captured_wc_id);
 }
 
@@ -430,7 +430,7 @@ CapturedSurfaceController::~CapturedSurfaceController() = default;
 
 void CapturedSurfaceController::UpdateCaptureTarget(
     WebContentsMediaCaptureId captured_wc_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
 
   ResolveCapturedSurface(captured_wc_id);
 }
@@ -438,7 +438,7 @@ void CapturedSurfaceController::UpdateCaptureTarget(
 void CapturedSurfaceController::SendWheel(
     blink::mojom::CapturedWheelActionPtr action,
     base::OnceCallback<void(CapturedSurfaceControlResult)> reply_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
 
   if (!captured_wc_.has_value()) {
     std::move(reply_callback)
@@ -458,7 +458,7 @@ void CapturedSurfaceController::SendWheel(
 void CapturedSurfaceController::UpdateZoomLevel(
     ZoomLevelAction action,
     base::OnceCallback<void(CapturedSurfaceControlResult)> reply_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
 
   if (!captured_wc_.has_value()) {
     std::move(reply_callback)
@@ -477,7 +477,7 @@ void CapturedSurfaceController::UpdateZoomLevel(
 
 void CapturedSurfaceController::RequestPermission(
     base::OnceCallback<void(CapturedSurfaceControlResult)> reply_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
 
   if (!captured_wc_.has_value()) {
     std::move(reply_callback)
@@ -495,7 +495,7 @@ void CapturedSurfaceController::RequestPermission(
 
 void CapturedSurfaceController::ResolveCapturedSurface(
     WebContentsMediaCaptureId captured_wc_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
 
   // Avoid posting new tasks (DoSendWheel/DoUpdateZoomLevel) with the old target
   // while pending resolution.
@@ -523,9 +523,9 @@ void CapturedSurfaceController::ResolveCapturedSurface(
 
 void CapturedSurfaceController::OnCapturedSurfaceResolved(
     std::optional<CapturedSurfaceInfo> captured_surface_info) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
 
-  DCHECK_GE(pending_wc_resolutions_, 1);
+  CHECK_GE(pending_wc_resolutions_, 1, base::NotFatalUntil::M160);
   if (--pending_wc_resolutions_ > 0) {
     return;
   }
@@ -543,7 +543,7 @@ void CapturedSurfaceController::OnCapturedSurfaceResolved(
 void CapturedSurfaceController::OnZoomLevelChange(
     int zoom_level_subscription_version,
     int zoom_level) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
 
   // Only propagate zoom-level updates if they are sent with the current
   // zoom-level subscription version.

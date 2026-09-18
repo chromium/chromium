@@ -77,7 +77,7 @@ class HttpCacheBackendFileOperations final
   // All the operations must be performed under `path`.
   explicit HttpCacheBackendFileOperations(const base::FilePath& path)
       : path_(path) {
-    DCHECK(path.IsAbsolute());
+    CHECK(path.IsAbsolute(), base::NotFatalUntil::M160);
   }
   ~HttpCacheBackendFileOperations() override = default;
 

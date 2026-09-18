@@ -46,7 +46,7 @@ base::OnceCallback<void(content::PermissionResult)> WrapCallback(
 void CheckPermissionOnUIThread(
     GlobalRenderFrameHostId capturer_rfh_id,
     base::OnceCallback<void(CapturedSurfaceControlPermissionStatus)> callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   RenderFrameHostImpl* const capturer_rfhi =
       RenderFrameHostImpl::FromID(capturer_rfh_id);
@@ -119,7 +119,7 @@ CapturedSurfaceControlPermissionManager::
 
 void CapturedSurfaceControlPermissionManager::CheckPermission(
     base::OnceCallback<void(CapturedSurfaceControlPermissionStatus)> callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kAutoGrantCapturedSurfaceControlPrompt)) {
@@ -145,7 +145,7 @@ void CapturedSurfaceControlPermissionManager::OnCheckResultStatic(
     base::WeakPtr<CapturedSurfaceControlPermissionManager> manager,
     base::OnceCallback<void(CapturedSurfaceControlPermissionStatus)> callback,
     CapturedSurfaceControlPermissionStatus result) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
 
   if (!manager) {
     // Intentionally ignore `result`, as the capture-session stopped
@@ -160,7 +160,7 @@ void CapturedSurfaceControlPermissionManager::OnCheckResultStatic(
 void CapturedSurfaceControlPermissionManager::OnCheckResult(
     base::OnceCallback<void(CapturedSurfaceControlPermissionStatus)> callback,
     CapturedSurfaceControlPermissionStatus result) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
 
   std::move(callback).Run(result);
 }

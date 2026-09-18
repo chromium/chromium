@@ -52,7 +52,7 @@ std::unique_ptr<NavigationURLLoader> NavigationURLLoader::Create(
   // as prerendered page activation needs to run synchronously and
   // CachedNavigationURLLoader serves a fake response synchronously.
   if (loader_type == LoaderType::kNoopForPrerender) {
-    DCHECK(cached_response_head);
+    CHECK(cached_response_head, base::NotFatalUntil::M160);
     return CachedNavigationURLLoader::Create(loader_type,
                                              std::move(request_info), delegate,
                                              std::move(cached_response_head));
@@ -68,7 +68,7 @@ std::unique_ptr<NavigationURLLoader> NavigationURLLoader::Create(
   // TODO(crbug.com/40188852): Merge this into the kNoopForPrerender path
   // above.
   if (loader_type == LoaderType::kNoopForBackForwardCache) {
-    DCHECK(cached_response_head);
+    CHECK(cached_response_head, base::NotFatalUntil::M160);
     return CachedNavigationURLLoader::Create(loader_type,
                                              std::move(request_info), delegate,
                                              std::move(cached_response_head));
@@ -94,7 +94,8 @@ std::unique_ptr<NavigationURLLoader> NavigationURLLoader::Create(
 // static
 void NavigationURLLoader::SetFactoryForTesting(
     NavigationURLLoaderFactory* factory) {
-  DCHECK(g_loader_factory == nullptr || factory == nullptr);
+  CHECK(g_loader_factory == nullptr || factory == nullptr,
+        base::NotFatalUntil::M160);
   g_loader_factory = factory;
 }
 

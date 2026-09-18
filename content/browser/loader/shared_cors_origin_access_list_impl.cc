@@ -23,7 +23,7 @@ void SharedCorsOriginAccessListImpl::SetForOrigin(
     std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
     std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,
     base::OnceClosure closure) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   origin_access_list_.SetAllowListForOrigin(source_origin, allow_patterns);
   origin_access_list_.SetBlockListForOrigin(source_origin, block_patterns);
   std::move(closure).Run();
@@ -31,7 +31,7 @@ void SharedCorsOriginAccessListImpl::SetForOrigin(
 
 const network::cors::OriginAccessList&
 SharedCorsOriginAccessListImpl::GetOriginAccessList() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   return origin_access_list_;
 }
 

@@ -25,7 +25,7 @@ WebRTCInternalsMessageHandler::WebRTCInternalsMessageHandler()
 WebRTCInternalsMessageHandler::WebRTCInternalsMessageHandler(
     WebRTCInternals* webrtc_internals)
     : webrtc_internals_(webrtc_internals) {
-  DCHECK(webrtc_internals);
+  CHECK(webrtc_internals, base::NotFatalUntil::M160);
   webrtc_internals_->AddObserver(this);
 }
 
@@ -160,7 +160,7 @@ void WebRTCInternalsMessageHandler::OnDOMLoadDone(
 
 void WebRTCInternalsMessageHandler::OnUpdate(const std::string& event_name,
                                              const base::Value* event_data) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (!IsJavascriptAllowed()) {
     // Javascript is disallowed, either due to the page still loading, or in the
     // process of being unloaded. Skip this update.

@@ -92,7 +92,7 @@ class NetworkServiceListener : public NetworkServiceProcessObserver {
 };
 
 NetworkServiceListener& GetInstance() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   static base::NoDestructor<NetworkServiceListener> listener;
   return *listener;
 }
@@ -155,12 +155,12 @@ NetworkServiceListener::OldNetworkServiceProcess::OldNetworkServiceProcess(
 }  // namespace
 
 void EnsureNetworkServiceListenerStarted() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   GetInstance();
 }
 
 base::Process GetNetworkServiceProcessForTesting() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   if (IsInProcessNetworkService())
     return base::Process::Current().Duplicate();
   return GetInstance().GetNetworkServiceProcess().Duplicate();
@@ -168,14 +168,14 @@ base::Process GetNetworkServiceProcessForTesting() {
 
 ScopedKeepOldProcessHandlePeriodForTesting::
     ScopedKeepOldProcessHandlePeriodForTesting(base::TimeDelta duration) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   CHECK_EQ(g_keep_old_process_handle_period, kKeepOldProcessHandlePeriod);
   g_keep_old_process_handle_period = duration;
 }
 
 ScopedKeepOldProcessHandlePeriodForTesting::
     ~ScopedKeepOldProcessHandlePeriodForTesting() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   g_keep_old_process_handle_period = kKeepOldProcessHandlePeriod;
 }
 

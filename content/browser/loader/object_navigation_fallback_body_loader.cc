@@ -42,7 +42,7 @@ void ObjectNavigationFallbackBodyLoader::CreateAndStart(
   RenderFrameHostImpl* render_frame_host =
       navigation_request.frame_tree_node()->current_frame_host();
   // A frame owned by <object> should always have a parent.
-  DCHECK(render_frame_host->GetParent());
+  CHECK(render_frame_host->GetParent(), base::NotFatalUntil::M160);
   // It's safe to snapshot the parent origin in the calculation here; if the
   // parent frame navigates, `render_frame_host_` will be deleted, which
   // triggers deletion of `this`, cancelling all remaining work.
