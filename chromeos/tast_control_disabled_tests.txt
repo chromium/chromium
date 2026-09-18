@@ -72,7 +72,6 @@ tast.health.MonitorKeyboardDiagnosticEvent.non_tablet_mode_form_factors
 tast.inputs.VirtualKeyboardHandwriting.docked
 tast.inputs.VirtualKeyboardHandwriting.floating
 tast.inputs.VirtualKeyboardJapaneseInputMode
-tast.inputs.VirtualKeyboardMultipaste
 tast.inputs.VirtualKeyboardSpeech
 
 # b/424789710
