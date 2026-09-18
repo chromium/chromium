@@ -122,8 +122,7 @@ export class PolicyAppElement extends CrLitElement {
         loadTimeData.getBoolean('hideUploadReportButton');
 
     sendWithPromise<void>('listenPoliciesUpdates');
-    addWebUiListener(
-        'status-updated',
+    BrowserProxy.listenForStatusUpdated(
         (status: Record<string, Status>) => this.status_ = status);
     addWebUiListener(
         'policies-updated',

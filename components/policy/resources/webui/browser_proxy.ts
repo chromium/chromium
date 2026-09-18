@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {sendWithPromise} from 'chrome://resources/js/cr.js';
+import {addWebUiListener, sendWithPromise} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {PolicyPageClientCallbackRouter, PolicyPageHandlerFactory, PolicyPageHandlerRemote} from './policy.mojom-webui.js';
-import type {GetPoliciesReason} from './policy.mojom-webui.js';
+import type {GetPoliciesReason, Status} from './policy.mojom-webui.js';
 
 const policyPageMojoMigrationEnabled =
     loadTimeData.getBoolean('policyPageMojoMigrationEnabled');
@@ -71,6 +71,15 @@ export class BrowserProxy {
           response => response.policiesJson);
     } else {
       return sendWithPromise('getPoliciesJson', reason as number);
+    }
+  }
+
+  static listenForStatusUpdated(
+      callback: (status: Record<string, Status>) => void) {
+    if (policyPageMojoMigrationEnabled) {
+      this.getInstance().callbackRouter.statusUpdated.addListener(callback);
+    } else {
+      addWebUiListener('status-updated', callback);
     }
   }
 }

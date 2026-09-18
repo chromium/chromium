@@ -244,14 +244,15 @@ base::DictValue PolicyValueAndStatusAggregator::GetAggregatedPolicyStatus() {
 base::flat_map<std::string, policy::mojom::StatusPtr>
 PolicyValueAndStatusAggregator::GetAggregatedPolicyStatusMojo() {
   std::vector<std::pair<std::string, policy::mojom::StatusPtr>> entries;
-  for (const auto& status_provider_description_pair : status_providers_) {
-    DVLOG_POLICY(3, POLICY_PROCESSING)
-        << status_provider_description_pair.first
-        << " status: " << status_provider_description_pair.second->GetStatus();
-
-    entries.emplace_back(
-        status_provider_description_pair.first,
-        status_provider_description_pair.second->GetStatusMojo());
+  for (const auto& [name, provider] : status_providers_) {
+    if (auto status = provider->GetStatusMojo()) {
+      DVLOG_POLICY(3, POLICY_PROCESSING)
+          << "Processing policy status for " << name;
+      entries.emplace_back(name, std::move(status));
+    } else {
+      DVLOG_POLICY(3, POLICY_PROCESSING)
+          << "Policy status provider " << name << " returned a null status";
+    }
   }
   return base::flat_map<std::string, policy::mojom::StatusPtr>(
       std::move(entries));

@@ -40,6 +40,8 @@
 #import "ios/web/public/test/element_selector.h"
 #import "ui/base/l10n/l10n_util.h"
 
+// TODO(crbug.com/561971708): Enable kAssertOnJavaScriptErrors for these tests.
+
 namespace {
 // Ids of elements in chrome://policy
 const char kReloadPoliciesButton[] = "reload-policies";
@@ -380,6 +382,58 @@ id<GREYMatcher> DownloadButton() {
   [ChromeEarlGrey waitForWebStateContainingElement:RefreshLogsButton()];
 }
 
+// Tests that status is updated when policies are updated.
+- (void)testStatusUpdatedOnPolicyUpdate {
+  [ChromeEarlGrey loadURL:GURL(kChromeUIPolicyURL)];
+  [ChromeEarlGrey waitForWebStateContainingElement:ReloadPoliciesButton()];
+
+  NSString* script =
+      @"(async () => {"
+       "  const {BrowserProxy} = await import('./browser_proxy.js');"
+       "  window.statusUpdatedData = null;"
+       "  BrowserProxy.listenForStatusUpdated((status) => {"
+       "    window.statusUpdatedData = status;"
+       "  });"
+       "  window.listenerReady = true;"
+       "})();"
+       "void 0;";
+  [ChromeEarlGrey evaluateJavaScriptForSideEffect:script];
+
+  bool listenerReady = base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^{
+        base::Value res = [ChromeEarlGrey
+            evaluateJavaScript:@"window.listenerReady === true"];
+        return res.is_bool() && res.GetBool();
+      });
+  GREYAssertTrue(listenerReady, @"Failed to set up status updated listener.");
+
+  base::Value initialReceived =
+      [ChromeEarlGrey evaluateJavaScript:@"window.statusUpdatedData === null"];
+  GREYAssertTrue(initialReceived.is_bool() && initialReceived.GetBool(),
+                 @"Status update received prematurely.");
+
+  // Update a policy to trigger OnPolicyUpdated and SendStatus.
+  policy_test_utils::SetPolicy(false, "AutofillCreditCardEnabled");
+
+  bool statusUpdated = base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^{
+        base::Value res = [ChromeEarlGrey
+            evaluateJavaScript:@"window.statusUpdatedData !== null"];
+        return res.is_bool() && res.GetBool();
+      });
+  GREYAssertTrue(statusUpdated,
+                 @"BrowserProxy failed to receive StatusUpdated event.");
+
+  // Verify that the received status is a valid dictionary/object.
+  base::Value verifyResult = [ChromeEarlGrey
+      evaluateJavaScript:@"typeof window.statusUpdatedData === 'object' && "
+                         @"window.statusUpdatedData !== null"];
+  GREYAssertTrue(verifyResult.is_bool() && verifyResult.GetBool(),
+                 @"Status updated event did not provide a valid object.");
+
+  policy_test_utils::ClearPolicies();
+}
+
 // -----------------------------------------------------------------------------
 // Tests for chrome://policy/logs page
 // -----------------------------------------------------------------------------
@@ -470,9 +524,6 @@ id<GREYMatcher> DownloadButton() {
   -(void)testPolicyPageUnmanaged {                 \
     [super testPolicyPageUnmanaged];               \
   }                                                \
-  -(void)testPolicyPageManagedWithCBCM {           \
-    [super testPolicyPageManagedWithCBCM];         \
-  }                                                \
   -(void)testPoliciesShowOnPage {                  \
     [super testPoliciesShowOnPage];                \
   }                                                \
@@ -499,6 +550,9 @@ id<GREYMatcher> DownloadButton() {
   }                                                \
   -(void)testPolicyLogsRefresh {                   \
     [super testPolicyLogsRefresh];                 \
+  }                                                \
+  -(void)testStatusUpdatedOnPolicyUpdate {         \
+    [super testStatusUpdatedOnPolicyUpdate];       \
   }
 
 @interface PolicyUIMojoDisabledTestCase : PolicyUITestCaseBase
@@ -511,6 +565,12 @@ id<GREYMatcher> DownloadButton() {
   config.features_disabled.push_back(
       policy::features::kPolicyPageMojoMigration);
   return config;
+}
+
+- (void)testPolicyPageManagedWithCBCM {
+  // TODO(crbug.com/40897784): Enable for both versions of the test, once the
+  // required logic is implemented.
+  [super testPolicyPageManagedWithCBCM];
 }
 
 MULTIPLEX_TESTS
@@ -526,6 +586,11 @@ MULTIPLEX_TESTS
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.features_enabled.push_back(policy::features::kPolicyPageMojoMigration);
   return config;
+}
+
+- (void)testPolicyPageManagedWithCBCM {
+  // TODO(crbug.com/40897784): Re-enable once the required logic is implemented.
+  EARL_GREY_TEST_DISABLED(@"Disabled for Mojo migration");
 }
 
 MULTIPLEX_TESTS

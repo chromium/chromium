@@ -42,10 +42,15 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
+#include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/browser/webui/policy_status_provider.h"
+#include "components/policy/core/common/cloud/cloud_policy_core.h"
+#include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
+#include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
+#include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/features.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
@@ -57,6 +62,7 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/policy_constants.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
@@ -799,6 +805,76 @@ IN_PROC_BROWSER_TEST_P(PolicyUITest, ReportButtonOTRProfile) {
                               "chrome.send('uploadReport', ['test_id']);"));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+
+IN_PROC_BROWSER_TEST_P(PolicyUITest, StatusUpdated) {
+  static constexpr char kInitialUsername[] = "user@example.com";
+  static constexpr char kInitialClientId[] = "fake_client_id";
+  static constexpr char kUpdatedUsername[] = "updated_user@example.com";
+  static constexpr char kUpdatedClientId[] = "updated_client_id";
+
+  auto* policy_manager = GetProfile()->GetCloudPolicyManager();
+  ASSERT_TRUE(policy_manager);
+  if (!policy_manager->core()->client()) {
+    policy_manager->core()->Connect(
+        std::make_unique<policy::MockCloudPolicyClient>());
+  }
+  auto policy_data = std::make_unique<enterprise_management::PolicyData>();
+  policy_data->set_state(enterprise_management::PolicyData::ACTIVE);
+  policy_data->set_username(kInitialUsername);
+  policy_data->set_device_id(kInitialClientId);
+  policy_manager->core()->store()->set_policy_data_for_testing(
+      std::move(policy_data));
+
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GURL(chrome::kChromeUIPolicyURL)));
+
+  const std::string kListenForStatusUpdateJs = R"(
+    (async () => {
+      const {BrowserProxy} = await import('./browser_proxy.js');
+      window.statusUpdatedData = null;
+      BrowserProxy.listenForStatusUpdated((status) => {
+        window.statusUpdatedData = status;
+      });
+      return true;
+    })();
+  )";
+  ASSERT_EQ(true, content::EvalJs(web_contents(), kListenForStatusUpdateJs));
+
+  // Update policy data and trigger SendStatus() via preference change.
+  auto updated_policy_data =
+      std::make_unique<enterprise_management::PolicyData>();
+  updated_policy_data->set_state(enterprise_management::PolicyData::ACTIVE);
+  updated_policy_data->set_username(kUpdatedUsername);
+  updated_policy_data->set_device_id(kUpdatedClientId);
+  policy_manager->core()->store()->set_policy_data_for_testing(
+      std::move(updated_policy_data));
+
+  // Triggers SendStatus on the C++ side.
+  g_browser_process->local_state()->SetTime(
+      enterprise_reporting::kLastUploadSucceededTimestamp, base::Time::Now());
+
+  const std::string kWaitForStatusUpdateJs = base::StringPrintf(
+      R"(
+    new Promise(resolve => {
+      const check = () => {
+        const user = window.statusUpdatedData && window.statusUpdatedData.user;
+        if (user &&
+            user.username === '%s' &&
+            user.clientId === '%s' &&
+            user.domain === 'example.com' &&
+            user.policyDescriptionKey === 'statusUser' &&
+            user.error === false) {
+          resolve(true);
+        } else {
+          setTimeout(check, 50);
+        }
+      };
+      check();
+    });
+  )",
+      kUpdatedUsername, kUpdatedClientId);
+  EXPECT_EQ(true, content::EvalJs(web_contents(), kWaitForStatusUpdateJs));
+}
 
 // TODO(crbug.com/442259475): Crashes on Android WebUI.
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)

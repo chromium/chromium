@@ -95,9 +95,7 @@ base::DictValue PolicyStatusProvider::GetStatus() {
 }
 
 policy::mojom::StatusPtr PolicyStatusProvider::GetStatusMojo() {
-  // Fallback for implementation that don't yet explicitly implement the mojo
-  // version.
-  return DictStatusToMojo(GetStatus());
+  return nullptr;
 }
 
 void PolicyStatusProvider::NotifyStatusChange() {
@@ -381,76 +379,6 @@ base::ScopedClosureRunner PolicyStatusProvider::OverrideClockForTesting(
   clock_for_testing_ = clock_for_testing;
   return base::ScopedClosureRunner(
       base::BindOnce([]() { clock_for_testing_ = nullptr; }));
-}
-
-// static
-policy::mojom::StatusPtr PolicyStatusProvider::DictStatusToMojo(
-    const base::DictValue& status_dict) {
-  auto status = policy::mojom::Status::New();
-
-  const std::map<std::string_view, std::string*> string_props = {
-      {"policyDescriptionKey", &status->policy_description_key},
-      {"clientId", &status->client_id},
-      {"deviceId", &status->device_id},
-      {"enrollmentToken", &status->enrollment_token},
-      {"domain", &status->domain},
-      {"status", &status->status},
-      {"extensionInstallStatus", &status->extension_install_status}};
-
-  const std::map<std::string_view, std::optional<std::string>*>
-      opt_string_props = {
-          {"assetId", &status->asset_id},
-          {"location", &status->location},
-          {"directoryApiId", &status->directory_api_id},
-          {"machine", &status->machine},
-          {"version", &status->version},
-          {"username", &status->username},
-          {"gaiaId", &status->gaia_id},
-          {"profileId", &status->profile_id},
-          {"refreshInterval", &status->refresh_interval},
-          {"timeSinceLastRefresh", &status->time_since_last_refresh},
-          {"timeSinceLastFetchAttempt", &status->time_since_last_fetch_attempt},
-          {"extensionInstallTimeSinceLastRefresh",
-           &status->extension_install_time_since_last_refresh},
-          {"extensionInstallTimeSinceLastFetchAttempt",
-           &status->extension_install_time_since_last_fetch_attempt},
-          {"lastCloudReportSentTimestamp",
-           &status->last_cloud_report_sent_timestamp},
-          {"timeSinceLastCloudReportSent",
-           &status->time_since_last_cloud_report_sent},
-          {"enterpriseDomainManager", &status->enterprise_domain_manager},
-      };
-
-  const std::map<std::string_view, bool*> bool_props = {
-      {"flexOrgWarning", &status->flex_org_warning},
-      {"policiesPushAvailable", &status->policies_push_available},
-      {"error", &status->error},
-      {"extensionInstallError", &status->extension_install_error},
-  };
-
-  const std::map<std::string_view, std::optional<bool>*> opt_bool_props = {
-      {"isOffHoursActive", &status->is_off_hours_active},
-      {"isAffiliated", &status->is_affiliated},
-  };
-
-  for (const auto [key, value] : status_dict) {
-    if (string_props.contains(key) && value.is_string()) {
-      *string_props.at(key) = value.GetString();
-    } else if (opt_string_props.contains(key) && value.is_string()) {
-      *opt_string_props.at(key) = value.GetString();
-    } else if (bool_props.contains(key) && value.is_bool()) {
-      *bool_props.at(key) = value.GetBool();
-    } else if (opt_bool_props.contains(key) && value.is_bool()) {
-      *opt_bool_props.at(key) = value.GetBool();
-    } else {
-      LOG_POLICY(WARNING, POLICY_PROCESSING)
-          << " status dictonary returned by a StatusProvider contains an "
-             "unexpected prop "
-          << key << " : " << value.DebugString();
-    }
-  }
-
-  return status;
 }
 
 }  // namespace policy

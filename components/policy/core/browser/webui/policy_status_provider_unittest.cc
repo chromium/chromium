@@ -23,7 +23,6 @@ constexpr char kTestAssetId[] = "asset-123";
 constexpr char kTestLocation[] = "location-xyz";
 constexpr char kTestDirectoryApiId[] = "dir-api-456";
 constexpr char kTestGaiaId[] = "gaia-789";
-constexpr char kTestStatus[] = "OK";
 
 class MockPolicyStatusObserver : public PolicyStatusProvider::Observer {
  public:
@@ -36,8 +35,6 @@ class TestPolicyStatusProvider : public PolicyStatusProvider {
   ~TestPolicyStatusProvider() override = default;
 
   void TriggerNotifyStatusChange() { NotifyStatusChange(); }
-
-  using PolicyStatusProvider::DictStatusToMojo;
 };
 
 TEST(PolicyStatusProviderTest, DefaultStatus) {
@@ -45,8 +42,7 @@ TEST(PolicyStatusProviderTest, DefaultStatus) {
   EXPECT_TRUE(provider.GetStatus().empty());
 
   policy::mojom::StatusPtr status_mojo = provider.GetStatusMojo();
-  ASSERT_FALSE(status_mojo.is_null());
-  EXPECT_TRUE(status_mojo->client_id.empty());
+  ASSERT_TRUE(status_mojo.is_null());
 }
 
 TEST(PolicyStatusProviderTest, ObserverNotification) {
@@ -120,22 +116,6 @@ TEST(PolicyStatusProviderTest, PopulateStatusFromPolicyDataPopulated) {
   EXPECT_EQ(status->location, kTestLocation);
   EXPECT_EQ(status->directory_api_id, kTestDirectoryApiId);
   EXPECT_EQ(status->gaia_id, kTestGaiaId);
-}
-
-TEST(PolicyStatusProviderTest, DictStatusToMojo) {
-  base::DictValue dict;
-  dict.Set(kClientIdKey, kTestClientId);
-  dict.Set("status", kTestStatus);
-  dict.Set("error", false);
-  dict.Set("policiesPushAvailable", true);
-
-  policy::mojom::StatusPtr status =
-      TestPolicyStatusProvider::DictStatusToMojo(dict);
-
-  EXPECT_EQ(status->client_id, kTestClientId);
-  EXPECT_EQ(status->status, kTestStatus);
-  EXPECT_FALSE(status->error);
-  EXPECT_TRUE(status->policies_push_available);
 }
 
 }  // namespace

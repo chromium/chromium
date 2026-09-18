@@ -64,13 +64,7 @@
 #import "ui/base/webui/web_ui_util.h"
 
 PolicyUIHandler::PolicyUIHandler(ProfileIOS* profile)
-    : PolicyUIHandler(mojo::NullReceiver(), mojo::NullRemote(), profile) {
-  // TODO: crbug.com/40897784 - the mojo version does not yet support
-  // SendStatus, SendSchema and SendPolicies so the observers are added only for
-  // the legacy WebUI.
-  GetPolicyService()->AddObserver(policy::POLICY_DOMAIN_CHROME, this);
-  profile_->GetPolicyConnector()->GetSchemaRegistry()->AddObserver(this);
-}
+    : PolicyUIHandler(mojo::NullReceiver(), mojo::NullRemote(), profile) {}
 
 PolicyUIHandler::PolicyUIHandler(
     mojo::PendingReceiver<policy::mojom::PolicyPageHandler> receiver,
@@ -79,6 +73,9 @@ PolicyUIHandler::PolicyUIHandler(
     : receiver_(this, std::move(receiver)),
       client_(std::move(client)),
       profile_(*profile) {
+  GetPolicyService()->AddObserver(policy::POLICY_DOMAIN_CHROME, this);
+  profile_->GetPolicyConnector()->GetSchemaRegistry()->AddObserver(this);
+
   policy::MachineLevelUserCloudPolicyManager* manager =
       GetApplicationContext()
           ->GetBrowserPolicyConnector()
@@ -119,14 +116,10 @@ PolicyUIHandler::PolicyUIHandler(
 }
 
 PolicyUIHandler::~PolicyUIHandler() {
-  // TODO: crbug.com/40897784 - Make this unconditional once mojo version also
-  // adds observers.
-  if (!receiver_.is_bound()) {
-    GetPolicyService()->RemoveObserver(policy::POLICY_DOMAIN_CHROME, this);
-    policy::SchemaRegistry* registry =
-        profile_->GetPolicyConnector()->GetSchemaRegistry();
-    registry->RemoveObserver(this);
-  }
+  GetPolicyService()->RemoveObserver(policy::POLICY_DOMAIN_CHROME, this);
+  policy::SchemaRegistry* registry =
+      profile_->GetPolicyConnector()->GetSchemaRegistry();
+  registry->RemoveObserver(this);
   policy::RecordPolicyUIButtonUsage(reload_policies_count_,
                                     /*export_to_json_count=*/0,
                                     copy_to_json_count_, upload_report_count_);
@@ -394,6 +387,7 @@ void PolicyUIHandler::OnPolicyUpdated(const policy::PolicyNamespace& ns,
                                       const policy::PolicyMap& previous,
                                       const policy::PolicyMap& current) {
   SendPolicies();
+  SendStatus();
 }
 
 void PolicyUIHandler::OnPolicyStatusChanged() {
@@ -483,6 +477,9 @@ void PolicyUIHandler::HandleReloadPolicies(const base::ListValue& args) {
 }
 
 void PolicyUIHandler::SendPolicies() {
+  if (IsMojoEnabled()) {
+    return;
+  }
   base::DictValue names = GetPolicyNames();
   base::DictValue values = GetPolicyValues();
   web_ui()->FireWebUIListener("policies-updated", names, values);
@@ -513,13 +510,17 @@ base::DictValue PolicyUIHandler::GetStatusValue() const {
 
 base::flat_map<std::string, policy::mojom::StatusPtr>
 PolicyUIHandler::GetStatus() {
-  policy::mojom::StatusPtr machine_status =
-      machine_status_provider_->GetStatusMojo();
-  machine_status->machine.reset();
-
   base::flat_map<std::string, policy::mojom::StatusPtr> result;
-  result.emplace("machine", std::move(machine_status));
-  result.emplace("user", user_policy_status_provider_->GetStatusMojo());
+  CHECK(machine_status_provider_);
+  if (auto machine_status = machine_status_provider_->GetStatusMojo()) {
+    machine_status->machine.reset();
+    result.emplace("machine", std::move(machine_status));
+  }
+
+  CHECK(user_policy_status_provider_);
+  if (auto user_status = user_policy_status_provider_->GetStatusMojo()) {
+    result.emplace("user", std::move(user_status));
+  }
   return result;
 }
 

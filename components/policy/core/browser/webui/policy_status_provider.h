@@ -97,10 +97,6 @@ class POLICY_EXPORT PolicyStatusProvider {
                                                  const CloudPolicyClient*);
   static std::u16string GetTimeSinceLastActionString(base::Time);
 
-  // TODO: crbug.com/40897784 - remove once all status providers implement the
-  // mojo version of `GetStatus()`.
-  static policy::mojom::StatusPtr DictStatusToMojo(const base::DictValue& dict);
-
   // Add policy push information along with conditional refresh interval into
   // policy `status` dictionary.
   static void SetPolicyPushAndRefreshStatus(
