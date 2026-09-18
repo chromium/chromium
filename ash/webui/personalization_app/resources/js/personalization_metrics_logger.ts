@@ -30,8 +30,6 @@ const enum HistogramName {
   PATH = 'Ash.Personalization.Path',
   AMBIENT_PERFORMANCE_GOOGLE_PHOTOS_PREVIEWS =
       'Ash.Personalization.Ambient.GooglePhotosPreviewsLoadTime',
-  KEYBOARD_BACKLIGHT_OPEN_ZONE_CUSTOMIZATION =
-      'Ash.Personalization.KeyboardBacklight.OpenZoneCustomization',
   LOCATION_PERMISSION_CHANGE_FROM_DIALOG =
       'ChromeOS.PrivacyHub.Geolocation.AccessLevelChanged.GeolocationDialog',
 }
@@ -77,11 +75,6 @@ export function logGooglePhotosPreviewsLoadTime() {
       HistogramName.AMBIENT_PERFORMANCE_GOOGLE_PHOTOS_PREVIEWS, timeMs);
   chrome.metricsPrivate.recordTime(
       HistogramName.AMBIENT_PERFORMANCE_GOOGLE_PHOTOS_PREVIEWS, timeMs);
-}
-
-export function logKeyboardBacklightOpenZoneCustomizationUMA() {
-  chrome.metricsPrivate.recordBoolean(
-      HistogramName.KEYBOARD_BACKLIGHT_OPEN_ZONE_CUSTOMIZATION, true);
 }
 
 export function logSystemLocationPermissionChange(

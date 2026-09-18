@@ -17,7 +17,6 @@ import type {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mo
 import type {CurrentBacklightState} from '../../personalization_app.mojom-webui.js';
 import {BacklightColor} from '../../personalization_app.mojom-webui.js';
 import {isMultiZoneRgbKeyboardSupported} from '../load_time_booleans.js';
-import {logKeyboardBacklightOpenZoneCustomizationUMA} from '../personalization_metrics_logger.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import type {ColorInfo} from '../utils.js';
 import {getPresetColors, RAINBOW, WALLPAPER} from '../utils.js';
@@ -155,7 +154,6 @@ export class KeyboardBacklightElement extends WithPersonalizationStore {
     assert(
         this.isMultiZoneRgbKeyboardSupported_,
         'zone customization dialog only available if multi-zone is supported');
-    logKeyboardBacklightOpenZoneCustomizationUMA();
     this.isZoneCustomizationDialogOpen_ = true;
   }
 

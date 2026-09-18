@@ -15,7 +15,6 @@
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/check.h"
 #include "base/logging.h"
-#include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_metrics.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
@@ -61,7 +60,6 @@ void PersonalizationAppKeyboardBacklightProviderImpl::
 void PersonalizationAppKeyboardBacklightProviderImpl::SetBacklightColor(
     mojom::BacklightColor backlight_color) {
   DVLOG(4) << __func__ << " backlight_color=" << backlight_color;
-  LogKeyboardBacklightColor(backlight_color);
   GetKeyboardBacklightColorController()->SetBacklightColor(
       backlight_color, GetAccountId(profile_));
   GetKeyboardBacklightColorController()

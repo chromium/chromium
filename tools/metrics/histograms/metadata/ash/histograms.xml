@@ -6057,57 +6057,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Personalization.KeyboardBacklight.Color"
-    enum="PersonalizationKeyboardBacklightColor" expires_after="2025-09-14">
-  <owner>jasontt@chromium.org</owner>
-  <owner>cros-p13n-eng@google.com</owner>
-  <summary>
-    Emitted when a user selects a keyboard backlight color in personalization
-    hub.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Personalization.KeyboardBacklight.DisplayType.Settled"
-    enum="PersonalizationKeyboardBacklightDisplayType"
-    expires_after="2025-10-26">
-  <owner>thuongphan@chromium.org</owner>
-  <owner>cros-p13n-eng@google.com</owner>
-  <summary>
-    Records the display type of keyboard backlight color that the user has
-    settled on. Emitted once for every UMA upload.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Personalization.KeyboardBacklight.OpenZoneCustomization"
-    enum="BooleanHit" expires_after="2024-09-22">
-  <owner>thuongphan@chromium.org</owner>
-  <owner>cros-p13n-eng@google.com</owner>
-  <summary>
-    Emitted every time the user selects 'Customize' button to open zone
-    customization dialog to view or set zone colors, even when no zone color
-    changed.
-  </summary>
-</histogram>
-
-<histogram
-    name="Ash.Personalization.KeyboardBacklight.ZoneColors.Zone{ZoneIdx}.Settled"
-    enum="PersonalizationKeyboardBacklightColor" expires_after="2024-12-08">
-  <owner>thuongphan@chromium.org</owner>
-  <owner>cros-p13n-eng@google.com</owner>
-  <summary>
-    Records the keyboard backlight color for zone {ZoneIdx} that the user has
-    settled on. Emitted once for every UMA upload if the user currently uses
-    customized zone colors for keyboard backlight.
-  </summary>
-  <token key="ZoneIdx">
-    <variant name="1" summary="Zone 1"/>
-    <variant name="2" summary="Zone 2"/>
-    <variant name="3" summary="Zone 3"/>
-    <variant name="4" summary="Zone 4"/>
-    <variant name="5" summary="Zone 5"/>
-  </token>
-</histogram>
-
 <histogram name="Ash.Personalization.Path" enum="PersonalizationPath"
     expires_after="2025-05-11">
   <owner>jasontt@chromium.org</owner>
