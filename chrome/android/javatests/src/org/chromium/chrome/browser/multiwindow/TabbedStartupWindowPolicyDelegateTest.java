@@ -8,7 +8,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -17,7 +16,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build.VERSION_CODES;
 
-import androidx.test.filters.SmallTest;
+import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
@@ -38,7 +37,6 @@ import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -52,8 +50,10 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.SessionStart
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -64,7 +64,6 @@ import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -100,8 +99,8 @@ public class TabbedStartupWindowPolicyDelegateTest {
         when(mSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.HISTORY));
         SyncServiceFactory.setInstanceForTesting(mSyncService);
 
+        DeviceInfo.setIsDesktopForTesting(/* isDesktop= */ true);
         mActivityTestRule.startOnBlankPage();
-        DeviceInfo.setIsDesktopForTesting(true);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabbedStartupWindowPolicyDelegate.getInstance().resetForTesting();
@@ -122,6 +121,7 @@ public class TabbedStartupWindowPolicyDelegateTest {
                                     CloseWindowAppSource.OTHER);
                         }
                     });
+            ApplicationTestUtils.waitForActivityState(activity, Stage.DESTROYED);
         }
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -136,12 +136,13 @@ public class TabbedStartupWindowPolicyDelegateTest {
                     TabbedStartupWindowPolicyDelegate.getInstance().resetForTesting();
                     SyncServiceFactory.setInstanceForTesting(null);
                     ChromeMultiInstancePersistentStore.clearSessionStartupPolicy();
+                    ChromeMultiInstancePersistentStore.deleteInstanceState(1);
                     ChromeMultiInstancePersistentStore.deleteInstanceState(2);
                 });
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     public void testNewWindow_RestoreOnStartup_NewTabPref() throws Exception {
         // Setup.
         setRestoreOnStartupPref(SessionStartupPref.NEW_TAB);
@@ -154,7 +155,7 @@ public class TabbedStartupWindowPolicyDelegateTest {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     public void testNewWindow_RestoreOnStartup_UrlsPref_SuppressesUrls() throws Exception {
         // Setup.
         setRestoreOnStartupUrlsPref(STARTUP_URLS);
@@ -169,8 +170,7 @@ public class TabbedStartupWindowPolicyDelegateTest {
     }
 
     @Test
-    @SmallTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/563034418
+    @MediumTest
     public void testStandardStartup_RestoreOnStartup_UrlsPref_OpensUrls() throws Exception {
         // Setup.
         setRestoreOnStartupUrlsPref(STARTUP_URLS);
@@ -184,7 +184,7 @@ public class TabbedStartupWindowPolicyDelegateTest {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     public void testStandardStartup_RestoreOnStartup_UrlsPref_FiltersUnsafeUrls() throws Exception {
         // Setup: Configure startup URLs with a mix of web-safe and privileged/disallowed schemes.
         setRestoreOnStartupUrlsPref(
@@ -207,7 +207,7 @@ public class TabbedStartupWindowPolicyDelegateTest {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     public void testStandardStartup_RestoreOnStartup_UrlsPref_AllUnsafeUrls_OpensNtp()
             throws Exception {
         // Setup: Configure startup URLs containing only disallowed schemes.
@@ -229,8 +229,7 @@ public class TabbedStartupWindowPolicyDelegateTest {
     }
 
     @Test
-    @SmallTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/563034418
+    @MediumTest
     public void testStandardStartup_RestoreOnStartup_UrlsPref_WithUrlIntent() throws Exception {
         // Setup.
         setRestoreOnStartupUrlsPref(STARTUP_URLS);
@@ -255,7 +254,7 @@ public class TabbedStartupWindowPolicyDelegateTest {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     public void testNewWindow_RestoreAllPolicy_SuppressesWindowRestoration() throws Exception {
         // Setup: Simulate a prior session with an instance 2 marked recoverable and RESTORE_ALL
         // policy.
@@ -392,30 +391,37 @@ public class TabbedStartupWindowPolicyDelegateTest {
     private void assertSingleNtpTab(ChromeTabbedActivity activity) {
         CriteriaHelper.pollUiThread(
                 () -> {
-                    Criteria.checkThat(activity.getTabModelSelector().getTotalTabCount(), is(1));
-                });
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabModel model = activity.getTabModelSelector().getModel(false);
-                    assertTrue(UrlUtilities.isNtpUrl(model.getTabAt(0).getOriginalUrl()));
+                    TabModelSelector selector = activity.getTabModelSelector();
+                    Criteria.checkThat(selector.getTotalTabCount(), is(1));
+                    TabModel model = selector.getModel(/* incognito= */ false);
+                    Tab tab = model.getTabAt(0);
+                    Criteria.checkThat("Initial tab should not be null", tab, notNullValue());
+                    Criteria.checkThat(
+                            "Initial tab URL should not be null",
+                            tab.getOriginalUrl(),
+                            notNullValue());
+                    Criteria.checkThat(
+                            "Initial tab should be NTP",
+                            UrlUtilities.isNtpUrl(tab.getOriginalUrl()),
+                            is(true));
                 });
     }
 
     private void assertTabUrls(ChromeTabbedActivity activity, List<String> expectedUrls) {
         CriteriaHelper.pollUiThread(
                 () -> {
-                    Criteria.checkThat(
-                            activity.getTabModelSelector().getTotalTabCount(),
-                            is(expectedUrls.size()));
-                });
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabModel model = activity.getTabModelSelector().getModel(false);
+                    TabModelSelector selector = activity.getTabModelSelector();
+                    Criteria.checkThat(selector.getTotalTabCount(), is(expectedUrls.size()));
+                    TabModel model = selector.getModel(/* incognito= */ false);
                     for (int i = 0; i < expectedUrls.size(); i++) {
-                        assertEquals(
-                                expectedUrls.get(i), model.getTabAt(i).getOriginalUrl().getSpec());
+                        Tab tab = model.getTabAt(i);
+                        Criteria.checkThat(
+                                "Tab at index " + i + " should not be null", tab, notNullValue());
+                        Criteria.checkThat(
+                                "Tab URL at index " + i + " should not be null",
+                                tab.getOriginalUrl(),
+                                notNullValue());
+                        Criteria.checkThat(tab.getOriginalUrl().getSpec(), is(expectedUrls.get(i)));
                     }
                 });
     }
