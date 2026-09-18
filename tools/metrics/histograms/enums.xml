@@ -13275,6 +13275,7 @@ from previous Chrome versions.
   <int value="-487009324" label="HttpHeadersInjection:disabled"/>
   <int value="-486491020" label="ReadAnythingWithScreen2x:enabled"/>
   <int value="-484870143" label="GlicShareImage:disabled"/>
+  <int value="-483747852" label="HardenUrlProvisionFetcher:enabled"/>
   <int value="-482494879"
       label="OmniboxHistoryQuickProviderAllowMidwordContinuations:disabled"/>
   <int value="-482259889" label="MacMDDownloadShelf:disabled"/>
@@ -19711,6 +19712,7 @@ from previous Chrome versions.
   <int value="1495059835" label="VirtualKeyboardMultipasteSuggestion:enabled"/>
   <int value="1495341532" label="disable-mtp-write-support"/>
   <int value="1495468774" label="WaylandPerSurfaceScale:enabled"/>
+  <int value="1495469657" label="HardenUrlProvisionFetcher:disabled"/>
   <int value="1495748045" label="SignedHTTPExchange:enabled"/>
   <int value="1496070561"
       label="AutofillReplaceCachedWebElementsByRendererIds:disabled"/>

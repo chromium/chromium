@@ -1505,6 +1505,10 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.HEAP_VECTOR_PROMPTLY_FREE,
                 "Whether blink::HeapVector promptly frees its backing store via"
                         + " Allocator::FreeVectorBacking()."),
+        Flag.baseFeature(
+                MediaFeatures.HARDEN_URL_PROVISION_FETCHER,
+                "Hardens URLProvisionFetcher against SSRF and OOM by restricting requests and"
+                        + " redirects to HTTPS POST and enforcing a maximum response size."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
