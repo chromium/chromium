@@ -5,6 +5,7 @@
 #include "content/browser/service_worker/service_worker_synthetic_response_manager.h"
 
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
@@ -212,6 +213,37 @@ TEST_F(ServiceWorkerSyntheticResponseManagerTest, MaybeSetResponseHead) {
       base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
   CallMaybeSetResponseHead(&manager, *head_with_no_headers);
   EXPECT_FALSE(version_->GetResponseHeadForSyntheticResponse());
+}
+
+TEST_F(ServiceWorkerSyntheticResponseManagerTest,
+       MaybeStartSyntheticResponse_TimingAllowPassed) {
+  for (bool expected_timing_allow_passed : {false, true}) {
+    auto valid_head = network::mojom::URLResponseHead::New();
+    valid_head->headers =
+        base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\n\n");
+    valid_head->headers->AddHeader("Service-Worker-Synthetic-Response", "?1");
+    valid_head->headers->AddHeader("Content-Security-Policy",
+                                   "default-src 'none'");
+    valid_head->timing_allow_passed = expected_timing_allow_passed;
+    version_->SetResponseHeadForSyntheticResponse(std::move(valid_head));
+
+    ServiceWorkerSyntheticResponseManager manager(version_);
+
+    blink::mojom::FetchAPIResponsePtr received_response;
+    EXPECT_TRUE(manager.MaybeStartSyntheticResponse(base::BindLambdaForTesting(
+        [&](blink::ServiceWorkerStatusCode status,
+            ServiceWorkerFetchDispatcher::FetchEventResult result,
+            blink::mojom::FetchAPIResponsePtr response,
+            blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream,
+            blink::mojom::ServiceWorkerFetchEventTimingPtr timing,
+            blink::mojom::ServiceWorkerFetchHandlerErrorsPtr errors,
+            scoped_refptr<ServiceWorkerVersion> version) {
+          received_response = std::move(response);
+        })));
+    ASSERT_TRUE(received_response);
+    EXPECT_EQ(expected_timing_allow_passed,
+              received_response->timing_allow_passed);
+  }
 }
 
 }  // namespace content

@@ -142,6 +142,7 @@ blink::mojom::FetchAPIResponsePtr GetFetchAPIResponse(
   out_response->was_fetched_via_spdy = head.was_fetched_via_spdy;
   out_response->has_range_requested = head.has_range_requested;
   out_response->auth_challenge_info = head.auth_challenge_info;
+  out_response->timing_allow_passed = head.timing_allow_passed;
 
   // Parse headers.
   size_t iter = 0;
