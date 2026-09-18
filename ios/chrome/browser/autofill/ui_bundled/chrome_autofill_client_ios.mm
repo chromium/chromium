@@ -775,8 +775,6 @@ void ChromeAutofillClientIOS::ShowEntityImportBubble(
     bool save_is_synchronous,
     LegalMessageLines public_passes_notice,
     EntityImportPromptResultCallback prompt_result_callback) {
-  // TODO(crbug.com/553442816): Forward `public_passes_notice` to the save
-  // entity consumer so that they are displayed in the prompt footer.
   // Enhanced Autofill is only available to signed-in users.
   std::optional<std::u16string> user_email = GetUserEmail();
   if (!user_email.has_value()) {
@@ -796,8 +794,9 @@ void ChromeAutofillClientIOS::ShowEntityImportBubble(
   }
 
   SaveEntityParams params(std::move(new_entity), std::move(old_entity),
-                          std::move(user_email.value()), save_is_synchronous,
-                          std::move(prompt_result_callback));
+                          *std::move(user_email), save_is_synchronous,
+                          std::move(prompt_result_callback),
+                          std::move(public_passes_notice));
 
   auto delegate = std::make_unique<AutofillAiSaveEntityInfoBarDelegateIOS>(
       std::move(params),

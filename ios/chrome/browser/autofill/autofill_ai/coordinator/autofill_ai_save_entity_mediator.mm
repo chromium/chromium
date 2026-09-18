@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_ui_util.h"
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_save_entity_consumer.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_observer_bridge.h"
+#import "ios/chrome/browser/autofill/model/message/autofill_legal_message_line.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/bottom_sheet_constants.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 
@@ -128,6 +129,11 @@ static constexpr base::TimeDelta kConfirmationDismissDelayIfVoiceOverRunning =
                 oldEntity:_params->old_entity
                 userEmail:_params->user_email
         saveIsSynchronous:_params->save_is_synchronous];
+
+  if (!_params->public_passes_notice.empty()) {
+    [_consumer setLegalMessages:[AutofillLegalMessageLine
+                                    convertFrom:_params->public_passes_notice]];
+  }
 }
 
 - (BOOL)isSaveToWallet {

@@ -9,6 +9,7 @@
 
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #import "components/autofill/core/browser/foundations/autofill_client.h"
+#import "components/autofill/core/browser/payments/legal_message_line.h"
 
 namespace autofill {
 
@@ -18,7 +19,8 @@ struct SaveEntityParams {
                    std::optional<EntityInstance> old_entity,
                    std::u16string user_email,
                    bool save_is_synchronous,
-                   AutofillClient::EntityImportPromptResultCallback callback);
+                   AutofillClient::EntityImportPromptResultCallback callback,
+                   LegalMessageLines public_passes_notice = {});
 
   SaveEntityParams(const SaveEntityParams&) = delete;
   SaveEntityParams& operator=(const SaveEntityParams&) = delete;
@@ -37,6 +39,7 @@ struct SaveEntityParams {
   std::u16string user_email;
   bool save_is_synchronous;
   AutofillClient::EntityImportPromptResultCallback callback;
+  LegalMessageLines public_passes_notice;
 };
 
 }  // namespace autofill
