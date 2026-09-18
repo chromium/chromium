@@ -627,12 +627,16 @@ MojoResult MojoUnwrapPlatformHandleIpcz(
     MojoHandle mojo_handle,
     const MojoUnwrapPlatformHandleOptions* options,
     MojoPlatformHandle* platform_handle) {
-  if (!mojo_handle || !platform_handle ||
-      platform_handle->struct_size < sizeof(*platform_handle)) {
+  if (!mojo_handle) {
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
   auto wrapper = ipcz_driver::WrappedPlatformHandle::Unbox(mojo_handle);
   if (!wrapper) {
+    MojoCloseIpcz(mojo_handle);
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+  if (!platform_handle ||
+      platform_handle->struct_size < sizeof(*platform_handle)) {
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
   PlatformHandle::ToMojoPlatformHandle(std::move(wrapper->handle()),
@@ -673,13 +677,18 @@ MojoResult MojoUnwrapPlatformSharedMemoryRegionIpcz(
     uint64_t* num_bytes,
     MojoSharedBufferGuid* mojo_guid,
     MojoPlatformSharedMemoryRegionAccessMode* access_mode) {
-  if (!mojo_handle || !platform_handles || !num_platform_handles ||
-      !mojo_guid) {
+  if (!mojo_handle) {
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
 
-  auto* buffer = ipcz_driver::SharedBuffer::FromBox(mojo_handle);
+  auto buffer = ipcz_driver::SharedBuffer::Unbox(mojo_handle);
   if (!buffer) {
+    MojoCloseIpcz(mojo_handle);
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+
+  if (!platform_handles || !num_platform_handles || !num_bytes || !mojo_guid ||
+      !access_mode) {
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
 
@@ -739,7 +748,6 @@ MojoResult MojoUnwrapPlatformSharedMemoryRegionIpcz(
       NOTREACHED();
   }
 
-  std::ignore = ipcz_driver::SharedBuffer::Unbox(mojo_handle);
   return MOJO_RESULT_OK;
 }
 

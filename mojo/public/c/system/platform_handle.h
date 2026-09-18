@@ -226,7 +226,7 @@ MojoWrapPlatformHandle(const struct MojoPlatformHandle* platform_handle,
 
 // Unwraps a native platform handle from a Mojo handle. If this call succeeds,
 // ownership of the underlying platform object is assumed by the caller. The
-// The Mojo handle is always closed regardless of success or failure.
+// Mojo handle is always closed regardless of success or failure.
 //
 // |mojo_handle|: The Mojo handle from which to unwrap the native platform
 //     handle.
