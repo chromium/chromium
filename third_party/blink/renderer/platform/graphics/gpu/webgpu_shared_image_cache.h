@@ -153,10 +153,6 @@ class PLATFORM_EXPORT WebGpuSharedImageLease final
   scoped_refptr<gpu::ClientSharedImage> GetSharedImage() const;
   gpu::SyncToken GetSyncToken() const;
 
-  scoped_refptr<gpu::ClientSharedImage> shared_image() const {
-    return resource_.shared_image_;
-  }
-  gpu::SyncToken sync_token() const { return resource_.sync_token_; }
   void SetSyncToken(const gpu::SyncToken& sync_token) {
     resource_.sync_token_ = sync_token;
   }

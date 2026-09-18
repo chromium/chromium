@@ -456,17 +456,16 @@ std::optional<ExternalTexture> CreateExternalTexture(
             lease->context_provider_wrapper()->ContextProvider();
         CanvasImageProvider image_provider(
             context_provider.ImageDecodeCache(kN32_SkColorType),
-            lease->shared_image()->format() == viz::SinglePlaneFormat::kRGBA_F16
+            shared_image->format() == viz::SinglePlaneFormat::kRGBA_F16
                 ? context_provider.ImageDecodeCache(kRGBA_F16_SkColorType)
                 : nullptr,
-            lease->shared_image()->color_space(),
-            lease->shared_image()->format(),
+            shared_image->color_space(), shared_image->format(),
             cc::PlaybackImageProvider::RasterMode::kGpu,
             lease->context_provider_wrapper());
 
         lease->SetSyncToken(lease->RasterInterface()->RasterSharedImage(
-            lease->shared_image(), lease->sync_token(),
-            std::move(last_recording), &image_provider, needs_clear));
+            shared_image, lease->GetSyncToken(), std::move(last_recording),
+            &image_provider, needs_clear));
 
         image_provider.ReleaseLockedImages();
         image_provider.UnbindTextureBackedImages();
