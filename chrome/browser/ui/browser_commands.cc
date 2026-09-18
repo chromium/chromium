@@ -2925,10 +2925,6 @@ bool CanViewSource(BrowserWindowInterface* browser) {
   WebContents* web_contents =
       browser->GetTabStripModel()->GetActiveWebContents();
 
-  // Disallow ViewSource if DevTools are disabled.
-  if (!DevToolsWindow::AllowDevToolsFor(browser->GetProfile(), web_contents)) {
-    return false;
-  }
   return web_contents->GetController().CanViewSource();
 }
 

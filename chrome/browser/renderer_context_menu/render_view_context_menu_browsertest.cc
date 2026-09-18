@@ -44,7 +44,6 @@
 #include "chrome/browser/context_hub/context_hub_service_factory.h"
 #include "chrome/browser/context_hub/features.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank.h"
-#include "chrome/browser/devtools/features.h"
 #include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog_test_helper.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -985,7 +984,8 @@ class ContextMenuForSupervisedUsersBrowserTest
     : public ContextMenuBrowserTestBase {
  protected:
   supervised_user::SupervisedUserService* GetSupervisedUserService() {
-    return supervised_user::SupervisedUserServiceFactory::GetForProfile(browser()->GetProfile());
+    return supervised_user::SupervisedUserServiceFactory::GetForProfile(
+        browser()->GetProfile());
   }
 
   supervised_user::KidsManagementApiServerMock& kids_management_api_mock() {
@@ -3396,24 +3396,17 @@ IN_PROC_BROWSER_TEST_F(OopifPdfExtensionContextMenuBrowserTest,
 
 class DevToolsPolicyContextMenuBrowserTest : public ContextMenuBrowserTestBase {
  public:
-  DevToolsPolicyContextMenuBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kDevToolsShowPolicyDialog);
-  }
+  DevToolsPolicyContextMenuBrowserTest() = default;
 
   void SetDevToolsAvailability(
       policy::DeveloperToolsAvailability availability) {
     browser()->GetProfile()->GetPrefs()->SetInteger(
         prefs::kDevToolsAvailability, static_cast<int>(availability));
   }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(DevToolsPolicyContextMenuBrowserTest, DevToolsBlocked) {
-  SetDevToolsAvailability(
-      policy::DeveloperToolsAvailability::kDisallowed);
+  SetDevToolsAvailability(policy::DeveloperToolsAvailability::kDisallowed);
 
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -3434,8 +3427,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsPolicyContextMenuBrowserTest, DevToolsBlocked) {
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsPolicyContextMenuBrowserTest, DevToolsAllowed) {
-  SetDevToolsAvailability(
-      policy::DeveloperToolsAvailability::kAllowed);
+  SetDevToolsAvailability(policy::DeveloperToolsAvailability::kAllowed);
 
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(

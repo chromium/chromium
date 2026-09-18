@@ -908,11 +908,9 @@ void DevToolsWindow::ToggleDevToolsWindow(
                     std::string(), true, settings, panel, agent->IsAttached(),
                     /* browser_connection */ false, toggled_by);
     if (!window) {
-      if (base::FeatureList::IsEnabled(features::kDevToolsShowPolicyDialog)) {
 #if !BUILDFLAG(IS_ANDROID)
-        DevToolsPolicyDialog::Show(inspected_web_contents);
+      DevToolsPolicyDialog::Show(inspected_web_contents);
 #endif
-      }
       return;
     }
     window->bindings_->AttachTo(agent.get());

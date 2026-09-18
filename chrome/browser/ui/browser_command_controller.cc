@@ -30,7 +30,6 @@
 #include "chrome/browser/browsing_data/browsing_data_important_sites_util.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/devtools/devtools_window.h"
-#include "chrome/browser/devtools/features.h"
 #include "chrome/browser/enterprise/isolated_mode/isolated_mode_settings_service_factory.h"
 #include "chrome/browser/feedback/public/feedback_source.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
@@ -347,23 +346,6 @@ BrowserCommandController::BrowserCommandController(BrowserWindowInterface* bwi)
   }
 
   profile_pref_registrar_.Init(profile()->GetPrefs());
-  if (!base::FeatureList::IsEnabled(features::kDevToolsShowPolicyDialog)) {
-    profile_pref_registrar_.Add(
-        prefs::kDevToolsAvailability,
-        base::BindRepeating(
-            &BrowserCommandController::UpdateCommandsForDevTools,
-            base::Unretained(this)));
-    profile_pref_registrar_.Add(
-        prefs::kDeveloperToolsAvailabilityAllowlist,
-        base::BindRepeating(
-            &BrowserCommandController::UpdateCommandsForDevTools,
-            base::Unretained(this)));
-    profile_pref_registrar_.Add(
-        prefs::kDeveloperToolsAvailabilityBlocklist,
-        base::BindRepeating(
-            &BrowserCommandController::UpdateCommandsForDevTools,
-            base::Unretained(this)));
-  }
   profile_pref_registrar_.Add(
       bookmarks::prefs::kEditBookmarksEnabled,
       base::BindRepeating(
@@ -578,7 +560,6 @@ void BrowserCommandController::GlicActiveInstanceChanged(
     glic::GlicInstance* instance) {
   UpdateGlicState();
 }
-
 
 void BrowserCommandController::FindBarVisibilityChanged() {
   // Block find command updates in locked fullscreen mode unless the instance is
@@ -917,8 +898,7 @@ void BrowserCommandController::HandleCommandWithDisposition(
     case IDC_TOGGLE_JAVASCRIPT_APPLE_EVENTS: {
       content::WebContents* web_contents =
           browser_->tab_strip_model()->GetActiveWebContents();
-      if (base::FeatureList::IsEnabled(features::kDevToolsShowPolicyDialog) &&
-          !DevToolsWindow::AllowDevToolsFor(profile(), web_contents)) {
+      if (!DevToolsWindow::AllowDevToolsFor(profile(), web_contents)) {
         DevToolsPolicyDialog::Show(web_contents);
       } else {
         chrome::ToggleJavaScriptFromAppleEventsAllowed(browser_);
@@ -943,8 +923,7 @@ void BrowserCommandController::HandleCommandWithDisposition(
     case IDC_VIEW_SOURCE: {
       content::WebContents* web_contents =
           browser_->tab_strip_model()->GetActiveWebContents();
-      if (base::FeatureList::IsEnabled(features::kDevToolsShowPolicyDialog) &&
-          !DevToolsWindow::AllowDevToolsFor(profile(), web_contents)) {
+      if (!DevToolsWindow::AllowDevToolsFor(profile(), web_contents)) {
 #if !BUILDFLAG(IS_ANDROID)
         DevToolsPolicyDialog::Show(web_contents);
 #endif
@@ -1829,25 +1808,16 @@ void BrowserCommandController::InitCommandState() {
 
   command_updater_->UpdateCommandEnabled(IDC_OPEN_FILE, CanOpenFile(browser_));
 
-  if (base::FeatureList::IsEnabled(features::kDevToolsShowPolicyDialog)) {
-    const bool dev_tools_enabled = true;
-    command_updater_->UpdateCommandEnabled(IDC_DEV_TOOLS, dev_tools_enabled);
-    command_updater_->UpdateCommandEnabled(IDC_DEV_TOOLS_CONSOLE,
-                                           dev_tools_enabled);
-    command_updater_->UpdateCommandEnabled(IDC_DEV_TOOLS_DEVICES,
-                                           dev_tools_enabled);
-    command_updater_->UpdateCommandEnabled(IDC_DEV_TOOLS_INSPECT,
-                                           dev_tools_enabled);
-    command_updater_->UpdateCommandEnabled(IDC_DEV_TOOLS_TOGGLE,
-                                           dev_tools_enabled);
-    command_updater_->UpdateCommandEnabled(IDC_VIEW_SOURCE, dev_tools_enabled);
+  command_updater_->UpdateCommandEnabled(IDC_DEV_TOOLS, true);
+  command_updater_->UpdateCommandEnabled(IDC_DEV_TOOLS_CONSOLE, true);
+  command_updater_->UpdateCommandEnabled(IDC_DEV_TOOLS_DEVICES, true);
+  command_updater_->UpdateCommandEnabled(IDC_DEV_TOOLS_INSPECT, true);
+  command_updater_->UpdateCommandEnabled(IDC_DEV_TOOLS_TOGGLE, true);
+  command_updater_->UpdateCommandEnabled(IDC_VIEW_SOURCE, true);
 #if BUILDFLAG(IS_MAC)
-    command_updater_->UpdateCommandEnabled(IDC_TOGGLE_JAVASCRIPT_APPLE_EVENTS,
-                                           dev_tools_enabled);
+  command_updater_->UpdateCommandEnabled(IDC_TOGGLE_JAVASCRIPT_APPLE_EVENTS,
+                                         true);
 #endif
-  } else {
-    UpdateCommandsForDevTools();
-  }
   command_updater_->UpdateCommandEnabled(IDC_TASK_MANAGER,
                                          CanOpenTaskManager());
   command_updater_->UpdateCommandEnabled(IDC_TASK_MANAGER_APP_MENU,
@@ -2249,15 +2219,6 @@ void BrowserCommandController::UpdateCommandsForTabState() {
   // Update the zoom commands when an active tab is selected.
   UpdateCommandsForZoomState();
   UpdateCommandsForTabKeyboardFocus(GetKeyboardFocusedTabIndex(browser_));
-  if (!base::FeatureList::IsEnabled(features::kDevToolsShowPolicyDialog)) {
-    UpdateCommandsForDevTools();
-  } else {
-    // Block the View Source command if DevTools are disabled.
-    command_updater_->UpdateCommandEnabled(
-        IDC_VIEW_SOURCE,
-        DevToolsWindow::AllowDevToolsFor(
-            profile(), browser_->tab_strip_model()->GetActiveWebContents()));
-  }
 }
 
 void BrowserCommandController::UpdateCommandsForZoomState() {
@@ -2287,30 +2248,6 @@ void BrowserCommandController::UpdateCommandsForContentRestrictionState() {
       IDC_PASTE, !(restrictions & CONTENT_RESTRICTION_PASTE));
   UpdateSaveAsState();
   UpdatePrintingState();
-}
-
-// TODO(crbug.com/442892562): Remove this function once the feature is launched.
-void BrowserCommandController::UpdateCommandsForDevTools() {
-  if (IsInLockedFullscreenMode(/*allow_ontask=*/false)) {
-    return;
-  }
-
-  bool dev_tools_enabled = DevToolsWindow::AllowDevToolsFor(
-      profile(), browser_->tab_strip_model()->GetActiveWebContents());
-  command_updater_->UpdateCommandEnabled(IDC_DEV_TOOLS, dev_tools_enabled);
-  command_updater_->UpdateCommandEnabled(IDC_DEV_TOOLS_CONSOLE,
-                                         dev_tools_enabled);
-  command_updater_->UpdateCommandEnabled(IDC_DEV_TOOLS_DEVICES,
-                                         dev_tools_enabled);
-  command_updater_->UpdateCommandEnabled(IDC_DEV_TOOLS_INSPECT,
-                                         dev_tools_enabled);
-  command_updater_->UpdateCommandEnabled(IDC_DEV_TOOLS_TOGGLE,
-                                         dev_tools_enabled);
-  command_updater_->UpdateCommandEnabled(IDC_VIEW_SOURCE, dev_tools_enabled);
-#if BUILDFLAG(IS_MAC)
-  command_updater_->UpdateCommandEnabled(IDC_TOGGLE_JAVASCRIPT_APPLE_EVENTS,
-                                         dev_tools_enabled);
-#endif
 }
 
 void BrowserCommandController::UpdateCommandsForBookmarkEditing() {

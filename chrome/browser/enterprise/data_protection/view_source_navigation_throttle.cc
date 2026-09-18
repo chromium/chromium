@@ -9,7 +9,6 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/devtools/devtools_policy_dialog.h"
 #endif
-#include "chrome/browser/devtools/features.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/policy/developer_tools_policy_checker.h"
 #include "chrome/browser/policy/developer_tools_policy_checker_factory.h"
@@ -193,14 +192,10 @@ ViewSourceNavigationThrottle::WillProcessResponse() {
         CANCEL, net::ERR_BLOCKED_BY_CLIENT, error_page_content);
   }
   if (!IsViewSourceAllowedByPolicy(profile_, navigation_handle())) {
-    if (base::FeatureList::IsEnabled(features::kDevToolsShowPolicyDialog)) {
 #if !BUILDFLAG(IS_ANDROID)
-      DevToolsPolicyDialog::Show(navigation_handle()->GetWebContents());
+    DevToolsPolicyDialog::Show(navigation_handle()->GetWebContents());
 #endif
-      return content::NavigationThrottle::ThrottleCheckResult(CANCEL);
-    }
-    return content::NavigationThrottle::ThrottleCheckResult(
-        CANCEL, net::ERR_BLOCKED_BY_ADMINISTRATOR);
+    return content::NavigationThrottle::ThrottleCheckResult(CANCEL);
   }
 
   return content::NavigationThrottle::PROCEED;

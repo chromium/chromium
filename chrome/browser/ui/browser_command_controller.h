@@ -39,7 +39,6 @@ namespace glic {
 class GlicInstance;
 }
 
-
 namespace chrome {
 
 // This class needs to expose the internal command_updater_ in some way, hence
@@ -184,9 +183,6 @@ class BrowserCommandController : public CommandUpdater,
 
   // Updates commands when the content's restrictions change.
   void UpdateCommandsForContentRestrictionState();
-
-  // Updates commands for enabling developer tools.
-  void UpdateCommandsForDevTools();
 
   // Updates commands for bookmark editing.
   void UpdateCommandsForBookmarkEditing();

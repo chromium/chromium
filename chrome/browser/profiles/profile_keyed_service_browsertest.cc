@@ -450,17 +450,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "ExtensionInstallEventRouter",
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
     "ChromeEnterpriseRealTimeUrlLookupService",
-#if !BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(IS_CHROMEOS)
-    "AshPolicyBlocklistService",
-#else
-    "ChromePolicyBlocklistService",
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-#endif  // !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_CHROMEOS)
     "ComponentExtensionContentSettingsAllowlist",
 #endif
-    "DeveloperToolsPolicyChecker",
     "EnterpriseReportingPrivateEventRouter",
     "ExtensionKeybindingRegistryShutdownNotifierFactory",
     "ExtensionNavigationRegistry",

@@ -71,7 +71,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/devtools_policy_dialog.h"
 #include "chrome/browser/devtools/devtools_window.h"
-#include "chrome/browser/devtools/features.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/geic/geic_enabling.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -3665,9 +3664,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                 if (!web_contents) {
                   return;
                 }
-                if (base::FeatureList::IsEnabled(
-                        features::kDevToolsShowPolicyDialog) &&
-                    !DevToolsWindow::AllowDevToolsFor(bwi->GetProfile(),
+                if (!DevToolsWindow::AllowDevToolsFor(bwi->GetProfile(),
                                                       web_contents)) {
 #if !BUILDFLAG(IS_ANDROID)
                   DevToolsPolicyDialog::Show(web_contents);
@@ -4686,9 +4683,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                 if (!web_contents) {
                   return;
                 }
-                if (base::FeatureList::IsEnabled(
-                        features::kDevToolsShowPolicyDialog) &&
-                    !DevToolsWindow::AllowDevToolsFor(bwi->GetProfile(),
+                if (!DevToolsWindow::AllowDevToolsFor(bwi->GetProfile(),
                                                       web_contents)) {
                   DevToolsPolicyDialog::Show(web_contents);
                 } else {

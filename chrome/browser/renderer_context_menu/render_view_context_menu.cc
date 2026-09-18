@@ -54,7 +54,6 @@
 #include "chrome/browser/context_hub/memory_bank/memory_bank_entry.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/devtools/devtools_window.h"
-#include "chrome/browser/devtools/features.h"
 #include "chrome/browser/dictation/features.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_stats.h"
@@ -2054,13 +2053,14 @@ void RenderViewContextMenu::AppendLinkItems() {
         enterprise_isolated_mode::IsolatedModeReplacesIncognito(GetProfile());
 
     if (show_open_link_off_the_record && isolated_mode_enabled) {
-      AddItemWithOptionalIcon(IDC_CONTENT_CONTEXT_OPENLINK_ISOLATED,
-                              features::IsMenuSimplificationEnabled()
-                                  ? IDS_CONTENT_CONTEXT_OPENLINK_ISOLATED_V2
-                                  : IDS_CONTENT_CONTEXT_OPENLINK_ISOLATED,
-                              features::IsRoundedIconsEnabled()
-                                  ? vector_icons::kDomainIcon
-                                  : vector_icons::kBusinessChromeRefreshOldIcon);
+      AddItemWithOptionalIcon(
+          IDC_CONTENT_CONTEXT_OPENLINK_ISOLATED,
+          features::IsMenuSimplificationEnabled()
+              ? IDS_CONTENT_CONTEXT_OPENLINK_ISOLATED_V2
+              : IDS_CONTENT_CONTEXT_OPENLINK_ISOLATED,
+          features::IsRoundedIconsEnabled()
+              ? vector_icons::kDomainIcon
+              : vector_icons::kBusinessChromeRefreshOldIcon);
     }
 
     AppendOpenInWebAppLinkItems();
@@ -3250,8 +3250,6 @@ void RenderViewContextMenu::AppendSharingItems() {
   }
 }
 
-
-
 void RenderViewContextMenu::AppendRegionSearchItem() {
   auto* entry_point_controller =
       GetBrowser() ? lens::LensOverlayEntryPointController::From(GetBrowser())
@@ -4084,8 +4082,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       // The policy on the source_web_contents_ applies; when performing the
       // action, do it on the appropriate target (the embedder_web_contents_ or
       // the RenderFrameHost, respectively).
-      if (base::FeatureList::IsEnabled(features::kDevToolsShowPolicyDialog) &&
-          !DevToolsWindow::AllowDevToolsFor(GetProfile(),
+      if (!DevToolsWindow::AllowDevToolsFor(GetProfile(),
                                             source_web_contents_)) {
 #if !BUILDFLAG(IS_ANDROID)
         DevToolsPolicyDialog::Show(source_web_contents_);
@@ -4434,15 +4431,6 @@ bool RenderViewContextMenu::IsDevCommandEnabled(int id) const {
     PrefService* prefs = GetPrefs(browser_context_);
     if (!prefs->GetBoolean(prefs::kWebKitJavascriptEnabled)) {
       return false;
-    }
-
-    // Don't enable the web inspector if the developer tools are disabled via
-    // the preference dev-tools-disabled.
-    if (!base::FeatureList::IsEnabled(features::kDevToolsShowPolicyDialog)) {
-      if (!DevToolsWindow::AllowDevToolsFor(GetProfile(),
-                                            source_web_contents_)) {
-        return false;
-      }
     }
   }
 
@@ -4801,10 +4789,9 @@ void RenderViewContextMenu::AppendSendTabToSelfItem(bool add_separator) {
             : send_tab_to_self::kSendTabToSelfEnhancedDesktopUI;
 
     // TODO(crbug.com/516708776): Remove new feature tag when no longer new.
-    menu_model_.SetIsNewFeatureAt(
-        menu_model_.GetItemCount() - 1,
-        UserEducationService::MaybeShowNewBadge(GetBrowserContext(),
-                                                stts_feature));
+    menu_model_.SetIsNewFeatureAt(menu_model_.GetItemCount() - 1,
+                                  UserEducationService::MaybeShowNewBadge(
+                                      GetBrowserContext(), stts_feature));
     return;
   }
 
