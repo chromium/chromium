@@ -45,6 +45,12 @@ using base::test::ios::WaitUntilConditionOrTimeout;
                              withCapabilities:capabilities];
 }
 
+- (void)setCapabilities:(NSDictionary<NSString*, NSNumber*>*)capabilities
+            forIdentity:(FakeSystemIdentity*)fakeIdentity {
+  [SigninEarlGreyAppInterface setCapabilities:capabilities
+                                  forIdentity:fakeIdentity];
+}
+
 - (void)addFakeIdentityForSSOAuthAddAccountFlow:
     (FakeSystemIdentity*)fakeIdentity {
   [self addFakeIdentityForSSOAuthAddAccountFlow:fakeIdentity

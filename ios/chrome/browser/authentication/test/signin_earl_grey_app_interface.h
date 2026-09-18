@@ -33,6 +33,11 @@ enum class UserSelectableType;
 + (void)addFakeIdentity:(FakeSystemIdentity*)fakeIdentity
        withCapabilities:(NSDictionary<NSString*, NSNumber*>*)capabilities;
 
+// Updates the `capabilities` of an already added `fakeIdentity`, and makes them
+// visible to the browser, simulating a capabilities fetch.
++ (void)setCapabilities:(NSDictionary<NSString*, NSNumber*>*)capabilities
+            forIdentity:(FakeSystemIdentity*)fakeIdentity;
+
 // Adds `fakeIdentity` to the fake system identity interaction manager, with
 // capabilities set or unset. This is used to simulate adding the `fakeIdentity`
 // through the fake SSO Auth flow done by

@@ -40,6 +40,11 @@ class GURL;
 - (void)addFakeIdentity:(FakeSystemIdentity*)fakeIdentity
        withCapabilities:(NSDictionary<NSString*, NSNumber*>*)capabilities;
 
+// Updates the `capabilities` of an already added `fakeIdentity`, and makes them
+// visible to the browser, simulating a capabilities fetch.
+- (void)setCapabilities:(NSDictionary<NSString*, NSNumber*>*)capabilities
+            forIdentity:(FakeSystemIdentity*)fakeIdentity;
+
 // Calls -[SigninEarlGreyImpl
 // addFakeIdentityForSSOAuthAddAccountFlow:withUnknownCapabilities:NO].
 - (void)addFakeIdentityForSSOAuthAddAccountFlow:
