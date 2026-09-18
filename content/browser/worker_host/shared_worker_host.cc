@@ -1151,7 +1151,9 @@ bool SharedWorkerHost::EvictBFCachedClientsIfLastActive(
       // client.
       return false;
     }
-    bf_cached_clients.push_back(other_rfh);
+    if (other_rfh->IsInBackForwardCache()) {
+      bf_cached_clients.push_back(other_rfh);
+    }
   }
   for (RenderFrameHostImpl* rfh_to_evict : bf_cached_clients) {
     rfh_to_evict->EvictFromBackForwardCacheWithReason(
