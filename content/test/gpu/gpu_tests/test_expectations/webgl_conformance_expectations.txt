@@ -493,6 +493,7 @@ crbug.com/543976493 [ win11 nvidia-0x2184 nvidia_ge_32.0.16.1074 ] conformance/e
 # Mac failures     #
 ####################
 
+crbug.com/562980317 [ mac angle-metal debug ] conformance/extensions/webgl-compressed-texture-size-limit.html [ Slow ]
 
 ## Mac Intel failures ##
 
