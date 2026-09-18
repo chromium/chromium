@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_PERSONALIZATION_APP_PERSONALIZATION_APP_MOCHA_TEST_BASE_H_
 #define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_PERSONALIZATION_APP_PERSONALIZATION_APP_MOCHA_TEST_BASE_H_
 
+#include <optional>
+
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/test_personalization_app_webui_provider.h"
 #include "chrome/test/base/test_chrome_web_ui_controller_factory.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 
@@ -26,13 +28,14 @@ class PersonalizationAppMochaTestBase : public WebUIMochaBrowserTest {
 
   void SetUpInProcessBrowserTestFixture() override;
   void SetUpOnMainThread() override;
+  void TearDownOnMainThread() override;
 
  private:
   void CreateDefaultWallpapers();
 
   base::test::ScopedFeatureList scoped_feature_list_;
   TestChromeWebUIControllerFactory test_factory_;
-  TestPersonalizationAppWebUIProvider test_webui_provider_;
+  std::optional<TestPersonalizationAppWebUIProvider> test_webui_provider_;
   content::ScopedWebUIControllerFactoryRegistration
       scoped_controller_factory_registration_{&test_factory_};
   base::ScopedTempDir default_wallpaper_dir_;

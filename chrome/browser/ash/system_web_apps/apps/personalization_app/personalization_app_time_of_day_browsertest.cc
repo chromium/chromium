@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/personalization_app/time_of_day_test_utils.h"
@@ -37,6 +38,7 @@
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
 #include "chrome/browser/ash/wallpaper_handlers/mock_wallpaper_handlers.h"
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -140,14 +142,14 @@ class PersonalizationAppTimeOfDayBrowserTest
     WallpaperControllerClientImpl::Get()->SetWallpaperFetcherDelegateForTesting(
         std::make_unique<wallpaper_handlers::TestWallpaperFetcherDelegate>());
 
-    auto wallpaper_controller_test_api =
-        std::make_unique<WallpaperControllerTestApi>(
-            ::ash::Shell::Get()->wallpaper_controller());
-    wallpaper_controller_test_api->SetDefaultWallpaper(
+    WallpaperControllerTestApi wallpaper_controller_test_api(
+        ::ash::Shell::Get()->wallpaper_controller());
+    wallpaper_controller_test_api.SetDefaultWallpaper(
         GetAccountId(browser()->GetProfile()));
 
+    test_webui_provider_.emplace(g_browser_process->local_state());
     test_chrome_webui_controller_factory_.AddFactoryOverride(
-        kChromeUIPersonalizationAppHost, &test_webui_provider_);
+        kChromeUIPersonalizationAppHost, &test_webui_provider_.value());
 
     time_of_day_scheduler_ = Shell::Get()
                                  ->wallpaper_controller()
@@ -178,9 +180,12 @@ class PersonalizationAppTimeOfDayBrowserTest
   }
 
   void TearDownOnMainThread() override {
-    SystemWebAppBrowserTestBase::TearDownOnMainThread();
-
     time_of_day_scheduler_ = nullptr;
+    test_chrome_webui_controller_factory_.RemoveFactoryOverride(
+        kChromeUIPersonalizationAppHost);
+    test_webui_provider_.reset();
+
+    SystemWebAppBrowserTestBase::TearDownOnMainThread();
   }
 
   content::WebContents* LaunchAppAtWallpaperSubpage(
@@ -250,7 +255,7 @@ class PersonalizationAppTimeOfDayBrowserTest
   base::SimpleTestTickClock tick_clock_;
   raw_ptr<WallpaperTimeOfDayScheduler> time_of_day_scheduler_;
   TestChromeWebUIControllerFactory test_chrome_webui_controller_factory_;
-  TestPersonalizationAppWebUIProvider test_webui_provider_;
+  std::optional<TestPersonalizationAppWebUIProvider> test_webui_provider_;
   content::ScopedWebUIControllerFactoryRegistration
       scoped_controller_factory_registration_{
           &test_chrome_webui_controller_factory_};

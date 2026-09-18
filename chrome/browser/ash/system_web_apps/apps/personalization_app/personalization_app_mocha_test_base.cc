@@ -79,15 +79,22 @@ void PersonalizationAppMochaTestBase::SetUpOnMainThread() {
   WallpaperControllerClientImpl::Get()->SetWallpaperFetcherDelegateForTesting(
       std::make_unique<wallpaper_handlers::TestWallpaperFetcherDelegate>());
   WebUIMochaBrowserTest::SetUpOnMainThread();
+  test_webui_provider_.emplace(local_state);
   test_factory_.AddFactoryOverride(kChromeUIPersonalizationAppHost,
-                                   &test_webui_provider_);
+                                   &test_webui_provider_.value());
 
   CreateDefaultWallpapers();
-  auto wallpaper_controller_test_api =
-      std::make_unique<WallpaperControllerTestApi>(
-          ::ash::Shell::Get()->wallpaper_controller());
-  wallpaper_controller_test_api->SetDefaultWallpaper(
+  WallpaperControllerTestApi wallpaper_controller_test_api(
+      ::ash::Shell::Get()->wallpaper_controller());
+  wallpaper_controller_test_api.SetDefaultWallpaper(
       GetAccountId(browser()->GetProfile()));
+}
+
+void PersonalizationAppMochaTestBase::TearDownOnMainThread() {
+  test_factory_.RemoveFactoryOverride(kChromeUIPersonalizationAppHost);
+  test_webui_provider_.reset();
+
+  WebUIMochaBrowserTest::TearDownOnMainThread();
 }
 
 // Initializes default wallpaper paths for regular users and writes JPEG

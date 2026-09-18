@@ -7,10 +7,13 @@
 
 #include <memory>
 
+#include "base/memory/raw_ref.h"
 #include "chrome/test/base/test_chrome_web_ui_controller_factory.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "url/gurl.h"
+
+class PrefService;
 
 namespace ash::personalization_app {
 
@@ -21,9 +24,22 @@ namespace ash::personalization_app {
 class TestPersonalizationAppWebUIProvider
     : public TestChromeWebUIControllerFactory::WebUIProvider {
  public:
+  // `local_state` must be non-null and must outlive `this`.
+  explicit TestPersonalizationAppWebUIProvider(PrefService* local_state);
+
+  TestPersonalizationAppWebUIProvider(
+      const TestPersonalizationAppWebUIProvider&) = delete;
+  TestPersonalizationAppWebUIProvider& operator=(
+      const TestPersonalizationAppWebUIProvider&) = delete;
+
+  ~TestPersonalizationAppWebUIProvider() override;
+
   // TestChromeWebUIControllerFactory::WebUIProvider:
   std::unique_ptr<content::WebUIController> NewWebUI(content::WebUI* web_ui,
                                                      const GURL& url) override;
+
+ private:
+  const raw_ref<PrefService> local_state_;
 };
 
 }  // namespace ash::personalization_app

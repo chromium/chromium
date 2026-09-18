@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -115,18 +116,23 @@ class PersonalizationAppWallpaperInfoBrowserTest
     WallpaperControllerClientImpl::Get()->SetWallpaperFetcherDelegateForTesting(
         std::make_unique<wallpaper_handlers::TestWallpaperFetcherDelegate>());
 
-    auto wallpaper_controller_test_api =
-        std::make_unique<WallpaperControllerTestApi>(wallpaper_controller());
-    wallpaper_controller_test_api->SetDefaultWallpaper(
+    WallpaperControllerTestApi wallpaper_controller_test_api(
+        wallpaper_controller());
+    wallpaper_controller_test_api.SetDefaultWallpaper(
         GetAccountId(browser()->GetProfile()));
 
+    test_webui_provider_.emplace(g_browser_process->local_state());
     test_chrome_webui_controller_factory_.AddFactoryOverride(
-        kChromeUIPersonalizationAppHost, &test_webui_provider_);
+        kChromeUIPersonalizationAppHost, &test_webui_provider_.value());
 
     WaitForTestSystemAppInstall();
   }
 
   void TearDownOnMainThread() override {
+    test_chrome_webui_controller_factory_.RemoveFactoryOverride(
+        kChromeUIPersonalizationAppHost);
+    test_webui_provider_.reset();
+
     SystemWebAppBrowserTestBase::TearDownOnMainThread();
   }
 
@@ -146,7 +152,7 @@ class PersonalizationAppWallpaperInfoBrowserTest
 
  private:
   TestChromeWebUIControllerFactory test_chrome_webui_controller_factory_;
-  TestPersonalizationAppWebUIProvider test_webui_provider_;
+  std::optional<TestPersonalizationAppWebUIProvider> test_webui_provider_;
   content::ScopedWebUIControllerFactoryRegistration
       scoped_controller_factory_registration_{
           &test_chrome_webui_controller_factory_};
