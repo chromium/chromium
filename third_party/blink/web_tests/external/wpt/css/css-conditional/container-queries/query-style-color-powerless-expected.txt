@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] oklch() hues are powerless when the chroma is zero
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(0, 0, 0)"
+[FAIL] lch() hues are powerless when the chroma is within the epsilon of 0.0015
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(0, 0, 0)"
+[FAIL] hsl() hues are powerless when the saturation is zero
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(0, 0, 0)"
+[FAIL] hwb() hues are powerless when whiteness and blackness sum to 100
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(0, 0, 0)"
+[FAIL] lch() hues are powerless when the chroma is exactly the epsilon of 0.0015
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(0, 0, 0)"
+[FAIL] oklch() hues are powerless when the chroma is exactly the epsilon of 0.000004
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(0, 0, 0)"
+Harness: the test ran to completion.
+

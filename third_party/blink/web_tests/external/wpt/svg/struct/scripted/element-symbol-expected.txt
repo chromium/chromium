@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Viewport of children of an uninstantiated symbol
+  assert_equals: expected Element node <svg id="svg">\n  <symbol id="circ" viewBox="1 2 5 6" requ... but got Element node <symbol id="circ" viewBox="1 2 5 6" requiredExtensions="a...
+Harness: the test ran to completion.
+
