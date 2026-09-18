@@ -6,15 +6,17 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <cstring>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -26,6 +28,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -44,7 +47,9 @@
 #include "components/update_client/crx_downloader.h"
 #include "components/update_client/task_traits.h"
 #include "components/update_client/update_client_errors.h"
+#include "net/http/http_byte_range.h"
 #include "net/http/http_status_code.h"
+#include "net/http/http_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -67,13 +72,18 @@ constexpr char kSmallDownloadData[] = "Hello, World!";
 constexpr char kDownloadUrlSwitchName[] = "download-url";
 constexpr char kDownloadSessionIdSwitchName[] = "download-session-id";
 
-// Returns the lower range from a range header value.
-int ParseRangeHeader(const std::string& header) {
-  int lower_range = 0;
-  // TODO(crbug.com/40285933): Don't use sscanf.
-  EXPECT_EQ(UNSAFE_TODO(std::sscanf(header.c_str(), "bytes=%d-", &lower_range)),
-            1);
-  return lower_range;
+// Returns the first byte position of the byte range in the value of a `Range`
+// request header, e.g. 1234 for "bytes=1234-". Fails the current test and
+// returns 0 if `header` does not contain exactly one bounded or right-unbounded
+// byte range.
+size_t ParseRangeHeaderFirstBytePosition(std::string_view header) {
+  std::vector<net::HttpByteRange> ranges;
+  if (!net::HttpUtil::ParseRangeHeader(header, &ranges) || ranges.size() != 1 ||
+      !ranges[0].HasFirstBytePosition()) {
+    ADD_FAILURE() << "Unexpected Range header: " << header;
+    return 0;
+  }
+  return base::checked_cast<size_t>(ranges[0].first_byte_position());
 }
 
 const std::string GetLargeDownloadData() {
@@ -277,15 +287,18 @@ TEST_F(BackgroundDownloaderTest, DISABLED_ServerHangup) {
       base::BindLambdaForTesting([&](const HttpRequest& request) {
         if (request.headers.contains("Range")) {
           EXPECT_EQ(request.headers.at("If-Range"), "42");
-          int lower_range = ParseRangeHeader(request.headers.at("Range"));
+          const size_t lower_range =
+              ParseRangeHeaderFirstBytePosition(request.headers.at("Range"));
+          EXPECT_LE(lower_range, data.size());
 
           std::unique_ptr<BasicHttpResponse> response =
               std::make_unique<BasicHttpResponse>();
           response->set_code(net::HTTP_PARTIAL_CONTENT);
           response->AddCustomHeader(
-              "Content-Range", absl::StrFormat("bytes %d-%zu/%zu", lower_range,
-                                               data.size(), data.size()));
-          response->set_content(data.substr(lower_range));
+              "Content-Range", absl::StrFormat("bytes %zu-%zu/%zu", lower_range,
+                                               data.size() - 1, data.size()));
+          response->set_content(
+              data.substr(std::min(lower_range, data.size())));
           return base::WrapUnique<HttpResponse>(response.release());
         } else {
           return base::WrapUnique<HttpResponse>(
@@ -572,15 +585,18 @@ TEST_F(BackgroundDownloaderCrashingClientTest, DISABLED_ClientCrash) {
       base::BindLambdaForTesting([&](const HttpRequest& request) {
         if (request.headers.contains("Range")) {
           EXPECT_EQ(request.headers.at("If-Range"), "42");
-          int lower_range = ParseRangeHeader(request.headers.at("Range"));
+          const size_t lower_range =
+              ParseRangeHeaderFirstBytePosition(request.headers.at("Range"));
+          EXPECT_LE(lower_range, data.size());
 
           std::unique_ptr<BasicHttpResponse> response =
               std::make_unique<BasicHttpResponse>();
           response->set_code(net::HTTP_PARTIAL_CONTENT);
           response->AddCustomHeader(
-              "Content-Range", absl::StrFormat("bytes %d-%zu/%zu", lower_range,
-                                               data.size(), data.size()));
-          response->set_content(data.substr(lower_range));
+              "Content-Range", absl::StrFormat("bytes %zu-%zu/%zu", lower_range,
+                                               data.size() - 1, data.size()));
+          response->set_content(
+              data.substr(std::min(lower_range, data.size())));
           return base::WrapUnique<HttpResponse>(response.release());
         } else {
           return base::WrapUnique<HttpResponse>(
