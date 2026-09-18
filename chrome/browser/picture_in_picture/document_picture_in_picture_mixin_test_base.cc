@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/run_until.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -78,17 +79,8 @@ GURL DocumentPictureInPictureMixinTestBase::GetPictureInPictureURL() const {
 }
 
 bool DocumentPictureInPictureMixinTestBase::AwaitPipWindowClosedSuccessfully() {
-  auto* render_widget_host_view = GetRenderWidgetHostView();
-  if (!render_widget_host_view) {
-    return true;
-  }
-  ui_test_utils::CheckWaiter(
-      base::BindRepeating(&content::RenderWidgetHostView::IsShowing,
-                          base::Unretained(render_widget_host_view)),
-      false, base::Seconds(30))
-      .Wait();
-
-  return (GetRenderWidgetHostView() == nullptr);
+  return base::test::RunUntil(
+      [this]() { return GetRenderWidgetHostView() == nullptr; });
 }
 
 content::RenderWidgetHostView*
