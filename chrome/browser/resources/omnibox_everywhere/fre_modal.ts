@@ -29,12 +29,29 @@ export class OmniboxEverywhereFreModalElement extends
     return getHtml.bind(this)();
   }
 
+  static override get properties() {
+    return {
+      smallLoomnibox: {
+        type: Boolean,
+        reflect: true,
+        attribute: 'small-loomnibox',
+      },
+    };
+  }
+
+  accessor smallLoomnibox: boolean = false;
+
   protected isMac_(): boolean {
     return isMac;
   }
 
   protected isFuseboxEligible_(): boolean {
     return loadTimeData.getBoolean('isFuseboxEligible');
+  }
+
+  protected getMacMenubarImgSrc_(): string {
+    return this.smallLoomnibox ? 'images/mac_menu_bar_small.png' :
+                                 'images/mac_menu_bar.png';
   }
 
   protected onCloseClick_() {

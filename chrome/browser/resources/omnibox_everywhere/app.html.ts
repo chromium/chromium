@@ -47,6 +47,7 @@ export function getHtml(this: OmniboxEverywhereAppElement) {
   ${
       this.isFreIntroModal_() ? html`
     <fre-modal
+        ?small-loomnibox="${this.smallLoomnibox_}"
         @close="${this.onFreClose_}">
     </fre-modal>
   ` : ''}

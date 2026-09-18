@@ -14,6 +14,7 @@ build_webui("build") {
     "icons/fre/keyboard.svg",
     "icons/fre/lens.svg",
     "images/mac_menu_bar.png",
+    "images/mac_menu_bar_small.png",
     "images/windows_taskbar_collapsed.png",
     "images/windows_taskbar_expanded.png",
   ]

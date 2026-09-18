@@ -6,6 +6,7 @@ import 'chrome://omnibox-everywhere.top-chrome/fre_modal.js';
 
 import type {FreModalElement} from 'chrome://omnibox-everywhere.top-chrome/fre_modal.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {isMac} from 'chrome://resources/js/platform.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -61,6 +62,9 @@ suite('FreModalTest', () => {
 
     const img = listItems[1]!.querySelector('img');
     assertTrue(!!img);
+    if (isMac) {
+      assertEquals('images/mac_menu_bar.png', img.getAttribute('src'));
+    }
   });
 
   test('clicking close button fires close event', async () => {
@@ -95,4 +99,24 @@ suite('FreModalTest', () => {
     assertEquals(
         'Open from the Mac menu bar', whereToFindPrimary.textContent.trim());
   });
+
+  test(
+      'renders small illustration when small loomnibox is enabled',
+      async () => {
+        freModal.smallLoomnibox = true;
+        await freModal.updateComplete;
+
+        assertTrue(freModal.hasAttribute('small-loomnibox'));
+        if (isMac) {
+          const img = freModal.shadowRoot.querySelector<HTMLImageElement>(
+              '.mac-menubar-img');
+          assertTrue(!!img);
+          assertEquals(
+              'images/mac_menu_bar_small.png', img.getAttribute('src'));
+        } else {
+          const imgs = freModal.shadowRoot.querySelectorAll<HTMLImageElement>(
+              '.windows-taskbar-img');
+          assertEquals(2, imgs.length);
+        }
+      });
 });
