@@ -3089,6 +3089,7 @@ public class TabListMediator implements TabListNotificationHandler {
 
             // Special case in defense of a group not being completely closed. We need to find the
             // group by the tab's old root ID.
+            // TODO(crbug.com/517544602): Migrate to a token based lookup.
             int index = getIndexForTabIdWithRelatedTabs(tab.getId());
             if (mModelList.isValidIndex(index)) {
                 if (mTabListConfig.supportsShrinkCloseAnimation) {
@@ -3246,6 +3247,7 @@ public class TabListMediator implements TabListNotificationHandler {
 
         if (model.get(TabProperties.TAB_GROUP_ID) == null) {
             model.set(TabProperties.TAB_GROUP_HEADER_ID, tabGroupId);
+            model.set(CARD_TYPE, mTabListLayoutDelegate.getGroupCardType());
         } else {
             model.set(TabProperties.TAB_GROUP_HEADER_ID, null);
         }

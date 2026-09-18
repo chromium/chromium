@@ -833,12 +833,12 @@ public class NestedLayoutDelegateUnitTest {
     }
 
     @Test
-    public void testGetUiIndexForTab() {
+    public void testGetIndexFromTabId() {
         addTabToModelList(TAB1_ID, null);
         addTabToModelList(TAB2_ID, null);
-        assertEquals(0, mDelegate.getUiIndexForTab(TAB1_ID));
-        assertEquals(1, mDelegate.getUiIndexForTab(TAB2_ID));
-        assertEquals(TabModel.INVALID_TAB_INDEX, mDelegate.getUiIndexForTab(3));
+        assertEquals(0, mDelegate.getIndexFromTabId(TAB1_ID));
+        assertEquals(1, mDelegate.getIndexFromTabId(TAB2_ID));
+        assertEquals(TabModel.INVALID_TAB_INDEX, mDelegate.getIndexFromTabId(3));
     }
 
     @Test

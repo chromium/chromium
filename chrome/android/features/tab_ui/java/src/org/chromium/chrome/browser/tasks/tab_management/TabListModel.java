@@ -152,7 +152,6 @@ public class TabListModel extends ModelList {
      * @return The index within the model list or {@link TabModel#INVALID_TAB_INDEX}.
      */
     public int indexFromTabGroupId(Token tabGroupId) {
-        if (tabGroupId == null) return TabModel.INVALID_TAB_INDEX;
         for (int i = 0; i < size(); i++) {
             PropertyModel model = get(i).model;
             if (model.get(CARD_TYPE) == TAB_GROUP
@@ -389,7 +388,10 @@ public class TabListModel extends ModelList {
         if (TabProperties.isTabOrTabGroup(model)) {
             @Nullable TabGroupColorViewProvider provider =
                     model.get(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER);
-            if (provider != null) provider.destroy();
+            if (provider != null) {
+                provider.destroy();
+                model.set(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER, null);
+            }
         }
     }
 
@@ -400,6 +402,7 @@ public class TabListModel extends ModelList {
      * @param selectedTab The current selected tab in the group.
      * @param index The index of the item in {@link TabListModel} that needs to be updated.
      */
+    // TODO(crbug.com/517544602): Remove this method when removing the flag.
     void updateTabListModelIdForGroup(Tab selectedTab, int index) {
         if (index < 0 || index >= size()) return;
 

@@ -966,6 +966,8 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
     }
 
     /** Returns the index for the tab with related tabs. */
+    // TODO(crbug.com/517544602): Migrate to a token based lookup. Scanning related tab IDs can miss
+    // a group card once cards are keyed by token and its TAB_ID goes stale.
     int getIndexForTabIdWithRelatedTabs(int tabId) {
         return mMediator.getIndexForTabIdWithRelatedTabs(tabId);
     }
