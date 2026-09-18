@@ -44,8 +44,9 @@ TEST_F(PlatformExperiencePrefsTest, RegisterPrefs) {
 TEST_F(PlatformExperiencePrefsTest, SetPrefOverrides_FeatureDisabled) {
   // Ensure the feature is disabled (default state or explicitly disable).
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({},
-                                       {features::kDisablePEHNotifications});
+  scoped_feature_list.InitWithFeatures(
+      {features::kLoadLowEngagementPEHFeaturesToPrefs},
+      {features::kDisablePEHNotifications});
 
   SetPrefOverrides(local_state());
   EXPECT_FALSE(local_state().GetBoolean(kDisablePEHNotificationsPrefName));
@@ -55,8 +56,10 @@ TEST_F(PlatformExperiencePrefsTest, SetPrefOverrides_FeatureDisabled) {
 TEST_F(PlatformExperiencePrefsTest, SetPrefOverrides_FeatureEnabled) {
   // Enable the feature.
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({features::kDisablePEHNotifications},
-                                       {});
+  scoped_feature_list.InitWithFeatures(
+      {features::kLoadLowEngagementPEHFeaturesToPrefs,
+       features::kDisablePEHNotifications},
+      {});
 
   SetPrefOverrides(local_state());
   EXPECT_TRUE(local_state().GetBoolean(kDisablePEHNotificationsPrefName));

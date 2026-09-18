@@ -18,6 +18,7 @@
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
 #include "base/win/scoped_variant.h"
+#include "base/win/win_util.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/install_static/test/scoped_install_details.h"
 #include "chrome/installer/util/util_constants.h"
@@ -152,6 +153,12 @@ class PlatformExperienceInstallerWinTest : public testing::Test {
   base::ScopedPathOverride user_data_dir_override_{chrome::DIR_USER_DATA};
   base::ScopedPathOverride exe_dir_override_{base::DIR_EXE};
   base::ScopedPathOverride module_dir_override_{base::DIR_MODULE};
+
+  // Ensure tests run consistently regardless of whether the host machine is
+  // domain-joined or enterprise-managed.
+  base::win::ScopedDomainStateForTesting scoped_domain_{false};
+  base::win::ScopedDeviceRegisteredWithManagementForTesting scoped_mdm_{false};
+  base::win::ScopedAzureADJoinStateForTesting scoped_aad_{std::nullopt};
 };
 
 // Test that no installation is attempted if the helper already exists.
