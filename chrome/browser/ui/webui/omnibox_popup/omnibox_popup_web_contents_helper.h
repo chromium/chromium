@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_OMNIBOX_POPUP_OMNIBOX_POPUP_WEB_CONTENTS_HELPER_H_
 #define CHROME_BROWSER_UI_WEBUI_OMNIBOX_POPUP_OMNIBOX_POPUP_WEB_CONTENTS_HELPER_H_
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -18,6 +19,8 @@ class WebContents;
 class OmniboxPopupWebContentsHelper
     : public content::WebContentsUserData<OmniboxPopupWebContentsHelper> {
  public:
+  using AdvanceFocusCallback = base::RepeatingCallback<void(bool /*reverse*/)>;
+
   explicit OmniboxPopupWebContentsHelper(content::WebContents* web_contents);
   OmniboxPopupWebContentsHelper(const OmniboxPopupWebContentsHelper&) = delete;
   OmniboxPopupWebContentsHelper& operator=(
@@ -29,10 +32,20 @@ class OmniboxPopupWebContentsHelper
   }
   OmniboxController* get_omnibox_controller() { return omnibox_controller_; }
 
+  void set_advance_focus_callback(AdvanceFocusCallback callback) {
+    advance_focus_callback_ = std::move(callback);
+  }
+  void AdvanceFocus(bool reverse) {
+    if (advance_focus_callback_) {
+      advance_focus_callback_.Run(reverse);
+    }
+  }
+
  private:
   friend class content::WebContentsUserData<OmniboxPopupWebContentsHelper>;
 
   raw_ptr<OmniboxController> omnibox_controller_ = nullptr;
+  AdvanceFocusCallback advance_focus_callback_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

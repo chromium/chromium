@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
+#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/search/search.h"
 #include "components/search_engines/template_url.h"
@@ -461,5 +462,12 @@ void OmniboxPopupHandler::OpenDevTools() {
   if (web_contents_) {
     DevToolsWindow::OpenDevToolsWindow(web_contents_,
                                        DevToolsOpenedByAction::kUnknown);
+  }
+}
+
+void OmniboxPopupHandler::AdvanceFocus(bool reverse) {
+  if (auto* helper =
+          OmniboxPopupWebContentsHelper::FromWebContents(web_contents_)) {
+    helper->AdvanceFocus(reverse);
   }
 }
