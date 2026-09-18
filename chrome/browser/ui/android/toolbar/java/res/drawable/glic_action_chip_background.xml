@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="?attr/colorControlHighlight">
+    <!-- Mask to keep the ripple effect within the pill shape -->
+    <item
+        android:id="@android:id/mask"
+        android:top="@dimen/glic_action_chip_vertical_inset"
+        android:bottom="@dimen/glic_action_chip_vertical_inset"
+        android:left="@dimen/glic_action_chip_horizontal_inset"
+        android:right="@dimen/glic_action_chip_horizontal_inset"
+        android:start="@dimen/glic_action_chip_horizontal_inset"
+        android:end="@dimen/glic_action_chip_horizontal_inset">
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/white" />
+            <corners android:radius="@dimen/glic_action_chip_corner_radius" />
+        </shape>
+    </item>
+
+    <item
+        android:top="@dimen/glic_action_chip_vertical_inset"
+        android:bottom="@dimen/glic_action_chip_vertical_inset"
+        android:left="@dimen/glic_action_chip_horizontal_inset"
+        android:right="@dimen/glic_action_chip_horizontal_inset"
+        android:start="@dimen/glic_action_chip_horizontal_inset"
+        android:end="@dimen/glic_action_chip_horizontal_inset">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/toolbar_text_box_bg_color" />
+            <corners android:radius="@dimen/glic_action_chip_corner_radius" />
+        </shape>
+    </item>
+</ripple>

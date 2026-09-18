@@ -44,6 +44,10 @@ found in the LICENSE file.
 
     <!-- Top-left corner radius when rounded for vertical tabs -->
     <dimen name="toolbar_corner_radius">16dp</dimen>
+    <!-- Glic action chip background corner radius and insets (40dp height pill to match location bar) -->
+    <dimen name="glic_action_chip_corner_radius">20dp</dimen>
+    <dimen name="glic_action_chip_vertical_inset">8dp</dimen>
+    <dimen name="glic_action_chip_horizontal_inset">4dp</dimen>
 
     <dimen name="mini_origin_bar_height">28dp</dimen>
 

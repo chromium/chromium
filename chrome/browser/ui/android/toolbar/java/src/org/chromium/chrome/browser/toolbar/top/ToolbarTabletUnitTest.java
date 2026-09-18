@@ -1354,7 +1354,7 @@ public final class ToolbarTabletUnitTest {
     @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testGlicToolbarWidthConsumer_hidesWhenNoSpace() {
         mToolbarTablet.ensureGlicToolbarWidthConsumer();
-        ToolbarWidthConsumer consumer = mToolbarTablet.getGlicWidthConsumerForTesting();
+        ToolbarWidthConsumer consumer = mToolbarTablet.getGlicIconWidthConsumerForTesting();
         assertNotNull(consumer);
 
         doReturn(1200).when(mToolbarTablet).getWidth();
@@ -1388,6 +1388,58 @@ public final class ToolbarTabletUnitTest {
         mToolbarTablet.setGlicActionChipVisibility(
                 true, ViewUtils.emptyClickListener(), ViewUtils.emptyLongClickListener());
         assertEquals(View.GONE, glicChip.getVisibility());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
+    public void testGlicTextToolbarWidthConsumer_hidesTextWhenNoSpace() {
+        mToolbarTablet.ensureGlicToolbarWidthConsumer();
+        ToolbarWidthConsumer iconConsumer = mToolbarTablet.getGlicIconWidthConsumerForTesting();
+        ToolbarWidthConsumer textConsumer = mToolbarTablet.getGlicTextWidthConsumerForTesting();
+        assertNotNull(iconConsumer);
+        assertNotNull(textConsumer);
+
+        doReturn(1200).when(mToolbarTablet).getWidth();
+        mToolbarTablet.setGlicActionChipVisibility(
+                true, ViewUtils.emptyClickListener(), ViewUtils.emptyLongClickListener());
+        View glicChip = mToolbarTablet.getGlicActionChipForTesting();
+        View glicText = mToolbarTablet.getGlicTextViewForTesting();
+        assertNotNull(glicChip);
+        assertNotNull(glicText);
+        assertEquals(View.VISIBLE, glicChip.getVisibility());
+
+        int iconWidth =
+                mToolbarTablet
+                        .getContext()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.min_touch_target_size);
+
+        // Give enough space to the icon consumer first.
+        assertEquals(iconWidth, iconConsumer.updateVisibility(iconWidth + 50));
+        assertTrue(iconConsumer.hasSpaceToShow());
+        assertEquals(View.VISIBLE, glicChip.getVisibility());
+
+        // When available width is large enough for text, text is VISIBLE.
+        int textWidth = textConsumer.updateVisibility(1000);
+        assertTrue(textWidth > 0);
+        assertTrue(textConsumer.hasSpaceToShow());
+        assertEquals(View.VISIBLE, glicText.getVisibility());
+        assertEquals(View.VISIBLE, glicChip.getVisibility());
+
+        // When available width < textWidth, text is GONE but icon/chip remains VISIBLE.
+        int availableWidth = textWidth - 10;
+        assertEquals(availableWidth, textConsumer.updateVisibility(availableWidth));
+        assertFalse(textConsumer.hasSpaceToShow());
+        assertEquals(View.GONE, glicText.getVisibility());
+        assertEquals(View.VISIBLE, glicChip.getVisibility());
+
+        // When icon has no space, both icon and text are GONE.
+        iconConsumer.updateVisibility(iconWidth - 10);
+        assertFalse(iconConsumer.hasSpaceToShow());
+        assertEquals(View.GONE, glicChip.getVisibility());
+        assertEquals(0, textConsumer.updateVisibility(1000));
+        assertFalse(textConsumer.hasSpaceToShow());
+        assertEquals(View.GONE, glicText.getVisibility());
     }
 
     @Test
@@ -1471,8 +1523,8 @@ public final class ToolbarTabletUnitTest {
         // 1. Show the Glic action chip and set initial focused tint.
         mToolbarTablet.setGlicActionChipVisibility(
                 /* visible= */ true, mockClickListener, mockLongClickListener);
-        ImageView glicChip = (ImageView) mToolbarTablet.getGlicActionChipView();
-        assertNotNull("Glic action chip should be inflated and non-null.", glicChip);
+        ImageView glicChip = mToolbarTablet.findViewById(R.id.glic_icon);
+        assertNotNull("Glic icon should be inflated and non-null.", glicChip);
 
         // Apply focused activity tint first.
         mToolbarTablet.onTintChanged(focusedTint, focusedTint, BrandedColorScheme.APP_DEFAULT);

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/glic_action_chip"
+    android:layout_width="wrap_content"
+    android:layout_height="?attr/toolbarButtonHeight"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:background="@drawable/glic_action_chip_background"
+    android:clickable="true"
+    android:focusable="true">
+
+    <ImageView
+        android:id="@+id/glic_icon"
+        android:layout_width="@dimen/min_touch_target_size"
+        android:layout_height="?attr/toolbarButtonHeight"
+        android:scaleType="center"
+        android:src="@drawable/ic_spark_24dp"
+        android:importantForAccessibility="no" />
+
+    <TextView
+        android:id="@+id/glic_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingEnd="16dp"
+        android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+        android:text="@string/glic_button_entrypoint_ask_gemini_label"
+        android:singleLine="true"
+        android:visibility="gone" />
+
+</LinearLayout>
