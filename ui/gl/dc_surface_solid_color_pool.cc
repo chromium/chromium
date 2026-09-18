@@ -31,7 +31,6 @@ base::expected<void, CommitError> FillSurface(
   hr = dcomp_surface->BeginDraw(&update_rect, IID_PPV_ARGS(&draw_texture),
                                 &update_offset);
   if (FAILED(hr)) {
-    LOG(ERROR) << "BeginDraw failed: " << logging::SystemErrorCodeToString(hr);
     return base::unexpected(
         CommitError{CommitError::Reason::kSolidColorSurfaceBeginDraw, hr});
   }
@@ -39,8 +38,6 @@ base::expected<void, CommitError> FillSurface(
   Microsoft::WRL::ComPtr<ID3D11RenderTargetView> rtv;
   hr = d3d11_device->CreateRenderTargetView(draw_texture.Get(), nullptr, &rtv);
   if (FAILED(hr)) {
-    LOG(ERROR) << "CreateRenderTargetView failed: "
-               << logging::SystemErrorCodeToString(hr);
     return base::unexpected(CommitError{
         CommitError::Reason::kSolidColorSurfaceCreateRenderTargetView, hr});
   }
@@ -51,7 +48,6 @@ base::expected<void, CommitError> FillSurface(
 
   hr = dcomp_surface->EndDraw();
   if (FAILED(hr)) {
-    LOG(ERROR) << "EndDraw failed: " << logging::SystemErrorCodeToString(hr);
     return base::unexpected(
         CommitError{CommitError::Reason::kSolidColorSurfaceEndDraw, hr});
   }
@@ -67,8 +63,6 @@ base::expected<void, CommitError> CreateSurface(
       gfx::ColorSpaceWin::GetDXGIFormat(gfx::ColorSpace::CreateSRGB()),
       DXGI_ALPHA_MODE_IGNORE, &out_dcomp_surface);
   if (FAILED(hr)) {
-    LOG(ERROR) << "CreateSurface failed: "
-               << logging::SystemErrorCodeToString(hr);
     return base::unexpected(CommitError{
         CommitError::Reason::kSolidColorSurfacePoolCreateSurface, hr});
   }

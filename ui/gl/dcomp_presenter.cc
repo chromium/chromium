@@ -232,6 +232,15 @@ void DCompPresenter::Present(SwapCompletionCallback completion_callback,
       // device removed is caught internally in DWM when using DComp textures.
     }
 
+    const CommitError& error = result.error();
+    LOG(ERROR) << "DComp commit failed: "
+               << CommitErrorReasonToString(error.reason)
+               << error.hr
+                      .transform([](HRESULT hr) {
+                        return ", " + logging::SystemErrorCodeToString(hr);
+                      })
+                      .value_or("");
+
     std::move(completion_callback)
         .Run(gfx::SwapCompletionResult(gfx::SwapResult::SWAP_FAILED));
     return;

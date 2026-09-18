@@ -230,7 +230,6 @@ DCLayerTree::InitializeVideoProcessor(const gfx::Size& input_size,
     // Display Adapter.
     HRESULT hr = d3d11_device_.As(&video_processor_wrapper.video_device);
     if (FAILED(hr)) {
-      LOG(ERROR) << "Failed to retrieve video device from D3D11 device";
       DisableDirectCompositionOverlays();
       return base::unexpected(
           CommitError{CommitError::Reason::
@@ -287,8 +286,6 @@ DCLayerTree::InitializeVideoProcessor(const gfx::Size& input_size,
       video_processor_wrapper.video_device->CreateVideoProcessorEnumerator(
           &desc, &video_processor_wrapper.video_processor_enumerator);
   if (FAILED(hr)) {
-    LOG(ERROR) << "CreateVideoProcessorEnumerator failed:"
-               << logging::SystemErrorCodeToString(hr);
     // It might fail again next time. Disable overlay support so
     // overlay processor will stop sending down overlay frames.
     DisableDirectCompositionOverlays();
@@ -301,8 +298,6 @@ DCLayerTree::InitializeVideoProcessor(const gfx::Size& input_size,
       video_processor_wrapper.video_processor_enumerator.Get(), 0,
       &video_processor_wrapper.video_processor);
   if (FAILED(hr)) {
-    LOG(ERROR) << "CreateVideoProcessor failed:"
-               << logging::SystemErrorCodeToString(hr);
     // It might fail again next time. Disable overlay support so
     // overlay processor will stop sending down overlay frames.
     DisableDirectCompositionOverlays();
@@ -880,8 +875,6 @@ base::expected<void, CommitError> DCLayerTree::VisualTree::BuildTree(
       HRESULT hr = dc_layer_tree_->dcomp_device_6_->PresentCompositionTextures(
           &command_queue_unk, 1);
       if (FAILED(hr)) {
-        LOG(ERROR) << "PresentCompositionTextures failed with error: "
-                   << logging::SystemErrorCodeToString(hr);
         return base::unexpected(
             CommitError{CommitError::Reason::
                             kIDCompositionDevice6PresentCompositionTextures,
@@ -897,7 +890,6 @@ base::expected<void, CommitError> DCLayerTree::VisualTree::BuildTree(
             kMicrosecondTimes);
     HRESULT hr = dc_layer_tree_->dcomp_device_->Commit();
     if (FAILED(hr)) {
-      DLOG(ERROR) << "Commit failed with error 0x" << std::hex << hr;
       return base::unexpected(
           CommitError{CommitError::Reason::kIDCompositionDeviceCommit, hr});
     }
@@ -1218,32 +1210,27 @@ base::expected<void, CommitError> DCLayerTree::CommitAndClearPendingOverlays(
 
       std::optional<SwapChainPresenter::OverlayPositionAdjustment>
           overlay_position_adjustment;
-      base::expected<DCLayerOverlayImage, CommitError> video_image =
-          video_swap_chain->PresentToSwapChain(overlay,
-                                               overlay_position_adjustment);
-      if (video_image.has_value()) {
-        overlay.overlay_image = std::move(video_image).value();
-        overlay.content_rect = gfx::RectF(overlay.overlay_image->size());
+      ASSIGN_OR_RETURN(DCLayerOverlayImage video_image,
+                       video_swap_chain->PresentToSwapChain(
+                           overlay, overlay_position_adjustment));
+      overlay.overlay_image = std::move(video_image);
+      overlay.content_rect = gfx::RectF(overlay.overlay_image->size());
 
-        if (overlay_position_adjustment) {
-          overlay.transform.MakeIdentity();
-          overlay.quad_rect =
+      if (overlay_position_adjustment) {
+        overlay.transform.MakeIdentity();
+        overlay.quad_rect =
+            gfx::Rect(overlay_position_adjustment->monitor_size);
+        if (overlay.clip_rect) {
+          overlay.clip_rect =
               gfx::Rect(overlay_position_adjustment->monitor_size);
-          if (overlay.clip_rect) {
-            overlay.clip_rect =
-                gfx::Rect(overlay_position_adjustment->monitor_size);
-          }
         }
+      }
 
-        if (overlay.video_params.is_full_screen_video &&
-            !overlay_position_adjustment) {
-          // If we failed to disable the desktop plane, we need to manually add
-          // a solid color layer to act as the video background mat.
-          need_background_layer = true;
-        }
-      } else {
-        DLOG(ERROR) << "PresentToSwapChain failed";
-        return base::unexpected(video_image.error());
+      if (overlay.video_params.is_full_screen_video &&
+          !overlay_position_adjustment) {
+        // If we failed to disable the desktop plane, we need to manually add
+        // a solid color layer to act as the video background mat.
+        need_background_layer = true;
       }
 
       if (tint_video_layer_) {

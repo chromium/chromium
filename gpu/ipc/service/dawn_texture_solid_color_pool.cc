@@ -62,8 +62,6 @@ CreateD3D12Resource(ID3D12Device* d3d12_device) {
       &heap_props, D3D12_HEAP_FLAG_SHARED, &tex_desc,
       D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(&resource));
   if (FAILED(hr)) {
-    LOG(ERROR) << "CreateCommittedResource for solid color texture failed: "
-               << logging::SystemErrorCodeToString(hr);
     return base::unexpected(gl::CommitError{
         gl::CommitError::Reason::kSolidColorTexturePoolCreateD3D12Resource,
         hr});

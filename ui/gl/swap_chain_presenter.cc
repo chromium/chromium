@@ -592,13 +592,11 @@ SwapChainPresenter::UploadVideoImage(const gfx::Size& texture_size,
                                      base::span<const uint8_t> shm_video_pixmap,
                                      size_t pixmap_stride) {
   if (!shm_video_pixmap.data()) {
-    DLOG(ERROR) << "Invalid NV12 pixmap data.";
     return base::unexpected(
         CommitError{CommitError::Reason::kUploadVideoImageInvalidPixmapData});
   }
 
   if (texture_size.width() % 2 != 0 || texture_size.height() % 2 != 0) {
-    DLOG(ERROR) << "Invalid NV12 pixmap size.";
     return base::unexpected(
         CommitError{CommitError::Reason::kUploadVideoImageInvalidPixmapSize});
   }
@@ -606,7 +604,6 @@ SwapChainPresenter::UploadVideoImage(const gfx::Size& texture_size,
   const auto cols = static_cast<size_t>(texture_size.width());
   const auto rows = static_cast<size_t>(texture_size.height());
   if (pixmap_stride < cols) {
-    DLOG(ERROR) << "Invalid NV12 pixmap stride.";
     return base::unexpected(
         CommitError{CommitError::Reason::kUploadVideoImageInvalidPixmapStride});
   }
@@ -637,8 +634,6 @@ SwapChainPresenter::UploadVideoImage(const gfx::Size& texture_size,
     HRESULT hr =
         d3d11_device_->CreateTexture2D(&desc, nullptr, &staging_texture_);
     if (FAILED(hr)) {
-      DLOG(ERROR) << "Creating D3D11 video staging texture failed: "
-                  << logging::SystemErrorCodeToString(hr);
       DisableDirectCompositionOverlays();
       return base::unexpected(CommitError{
           CommitError::Reason::kUploadVideoImageCreateStagingTexture, hr});
@@ -662,8 +657,6 @@ SwapChainPresenter::UploadVideoImage(const gfx::Size& texture_size,
   HRESULT hr =
       context->Map(staging_texture_.Get(), 0, map_type, 0, &mapped_resource);
   if (FAILED(hr)) {
-    DLOG(ERROR) << "Mapping D3D11 video staging texture failed: "
-                << logging::SystemErrorCodeToString(hr);
     return base::unexpected(CommitError{
         CommitError::Reason::kUploadVideoImageMapStagingTexture, hr});
   }
@@ -706,8 +699,6 @@ SwapChainPresenter::UploadVideoImage(const gfx::Size& texture_size,
     desc.CPUAccessFlags = 0;
     hr = d3d11_device_->CreateTexture2D(&desc, nullptr, &copy_texture_);
     if (FAILED(hr)) {
-      DLOG(ERROR) << "Creating D3D11 video upload texture failed: "
-                  << logging::SystemErrorCodeToString(hr);
       DisableDirectCompositionOverlays();
       return base::unexpected(CommitError{
           CommitError::Reason::kUploadVideoImageCreateCopyTexture, hr});
@@ -1192,8 +1183,6 @@ base::expected<void, CommitError> SwapChainPresenter::SetupPresentToSwapChain(
       // Ignore DXGI_STATUS_OCCLUDED since that's not an error but only
       // indicates that the window is occluded and we can stop rendering.
       if (FAILED(hr) && hr != DXGI_STATUS_OCCLUDED) {
-        LOG(ERROR) << "Present failed: "
-                   << logging::SystemErrorCodeToString(hr);
         return base::unexpected(CommitError{
             CommitError::Reason::kPresentToSwapChainFirstPresent, hr});
       }
@@ -1298,8 +1287,6 @@ SwapChainPresenter::FinishPresentToSwapChain() {
       // Ignore DXGI_STATUS_OCCLUDED since that's not an error but only
       // indicates that the window is occluded and we can stop rendering.
       if (FAILED(hr) && hr != DXGI_STATUS_OCCLUDED) {
-        LOG(ERROR) << "PresentBuffer failed: "
-                   << logging::SystemErrorCodeToString(hr);
         return base::unexpected(CommitError{
             CommitError::Reason::kPresentToSwapChainPresentBuffer, hr});
       }
@@ -1318,8 +1305,6 @@ SwapChainPresenter::FinishPresentToSwapChain() {
       // indicates that the window is occluded and we can stop rendering.
       HRESULT hr = swap_chain_->Present(interval, flags);
       if (FAILED(hr) && hr != DXGI_STATUS_OCCLUDED) {
-        LOG(ERROR) << "Present failed: "
-                   << logging::SystemErrorCodeToString(hr);
         return base::unexpected(
             CommitError{CommitError::Reason::kPresentToSwapChainPresent, hr});
       }
@@ -1477,8 +1462,6 @@ base::expected<void, CommitError> SwapChainPresenter::PresentDCOMPSurface(
     const HRESULT hr =
         dcomp_device_->CreateSurfaceFromHandle(surface_handle, &dcomp_surface);
     if (FAILED(hr)) {
-      LOG(ERROR) << "CreateSurfaceFromHandle failed: "
-                 << logging::SystemErrorCodeToString(hr);
       return base::unexpected(CommitError{
           CommitError::Reason::kPresentToSwapChainCreateSurfaceFromHandle, hr});
     }
@@ -1591,8 +1574,6 @@ base::expected<void, CommitError> SwapChainPresenter::VideoProcessorBlt(
         input_texture.Get(), video_processor_enumerator.Get(), &input_desc,
         &input_view);
     if (FAILED(hr)) {
-      LOG(ERROR) << "CreateVideoProcessorInputView failed: "
-                 << logging::SystemErrorCodeToString(hr);
       return base::unexpected(CommitError{
           CommitError::Reason::kPresentToSwapChainCreateVideoProcessorInputView,
           hr});
@@ -1626,8 +1607,6 @@ base::expected<void, CommitError> SwapChainPresenter::VideoProcessorBlt(
           swap_chain_buffer.Get(), video_processor_enumerator.Get(),
           &output_desc, &output_view_);
       if (FAILED(hr)) {
-        LOG(ERROR) << "CreateVideoProcessorOutputView failed: "
-                   << logging::SystemErrorCodeToString(hr);
         return base::unexpected(
             CommitError{CommitError::Reason::
                             kPresentToSwapChainCreateVideoProcessorOutputView,
@@ -1717,9 +1696,6 @@ base::expected<void, CommitError> SwapChainPresenter::VideoProcessorBlt(
     }
 
     if (FAILED(hr)) {
-      LOG(ERROR) << "VideoProcessorBlt failed: "
-                 << logging::SystemErrorCodeToString(hr);
-
       // To prevent it from failing in all coming frames, disable overlay if
       // VideoProcessorBlt is not implemented in the GPU driver.
       if (hr == E_NOTIMPL) {
@@ -1879,8 +1855,7 @@ base::expected<void, CommitError> SwapChainPresenter::ReallocateSwapChain(
       // overlay frames here and uses GL Composition instead.
       DisableDirectCompositionOverlays();
       LOG(ERROR) << "Failed to create " << DxgiFormatToString(swap_chain_format)
-                 << " swap chain of size " << swap_chain_size.ToString() << ": "
-                 << logging::SystemErrorCodeToString(hr)
+                 << " swap chain of size " << swap_chain_size.ToString()
                  << ". Disable overlay swap chains";
       return base::unexpected(CommitError{
           CommitError::Reason::
@@ -1999,8 +1974,6 @@ base::expected<void, CommitError> SwapChainPresenter::RevertSwapChainToSDR(
       swap_chain_buffer.Get(), video_processor_enumerator.Get(), &output_desc,
       &output_view_);
   if (FAILED(hr)) {
-    LOG(ERROR) << "CreateVideoProcessorOutputView failed: "
-               << logging::SystemErrorCodeToString(hr);
     return base::unexpected(CommitError{
         CommitError::Reason::
             kPresentToSwapChainSdrRevertCreateVideoProcessorOutputView,
@@ -2019,8 +1992,6 @@ base::expected<void, CommitError> SwapChainPresenter::RevertSwapChainToSDR(
                                                output_dxgi_color_space);
   hr = swap_chain_->SetColorSpace1(output_dxgi_color_space);
   if (FAILED(hr)) {
-    LOG(ERROR) << "SetColorSpace1 failed: "
-               << logging::SystemErrorCodeToString(hr);
     return base::unexpected(CommitError{
         CommitError::Reason::kPresentToSwapChainSdrRevertSetColorSpace, hr});
   }
