@@ -67,8 +67,8 @@ TEST_F(ProfileUserManagerControllerTest, GetProfilePrefs) {
   // Triggers ProfileUserManagerController::OnProfileAdded().
   ScopedAccountIdAnnotator annotator(
       testing_profile_manager().profile_manager(), kOwnerAccountId);
-  auto* profile =
-      testing_profile_manager().CreateTestingProfile("arbitrary_profile_name");
+  auto* profile = testing_profile_manager().CreateTestingProfile(
+      std::string(kOwnerAccountId.GetUserEmail()));
 
   EXPECT_TRUE(user->GetProfilePrefs());
   EXPECT_EQ(profile->GetPrefs(), user->GetProfilePrefs());

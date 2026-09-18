@@ -6,13 +6,10 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/ash/login/users/profile_user_manager_controller.h"
-#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
 #include "chrome/browser/prefs/browser_prefs.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/dbus/regmon/regmon_client.h"
 #include "components/account_id/account_id.h"
 #include "components/account_id/account_id_literal.h"
@@ -35,24 +32,16 @@ TEST(NetworkAnnotationMonitorTest, ReportTest) {
   content::BrowserTaskEnvironment task_environment;
 
   ash::test::UserSessionTestEnvironment user_session_test_environment(
-      TestingBrowserProcess::GetGlobal()->GetTestingLocalState());
-  // Declare before `profile_manager` to match production destruction order.
-  std::unique_ptr<ash::ProfileUserManagerController>
-      profile_user_manager_controller;
-  TestingProfileManager profile_manager(TestingBrowserProcess::GetGlobal());
-  ASSERT_TRUE(profile_manager.SetUp());
-  profile_user_manager_controller =
-      std::make_unique<ash::ProfileUserManagerController>(
-          profile_manager.profile_manager(), user_manager::UserManager::Get());
+      TestingBrowserProcess::GetGlobal()->GetTestingLocalState(),
+      std::make_unique<ash::test::ChromeUserSessionTestEnvironmentDelegate>(
+          TestingBrowserProcess::GetGlobal()));
 
-  ASSERT_TRUE(user_session_test_environment.AddRegularUser(kAccountId));
+  auto* user = user_session_test_environment.AddRegularUser(kAccountId);
+  ASSERT_TRUE(user);
   user_session_test_environment.LogIn(kAccountId);
 
   // Setup profile with the disabled hash code in blocklist pref.
-  ash::ScopedAccountIdAnnotator annotator(profile_manager.profile_manager(),
-                                          kAccountId);
-  auto* profile = profile_manager.CreateTestingProfile("testing_profile");
-  profile->GetPrefs()->SetDict(
+  user->GetProfilePrefs()->SetDict(
       prefs::kNetworkAnnotationBlocklist,
       base::DictValue().Set(base::NumberToString(kTestDisabledHashCode), true));
 

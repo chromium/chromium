@@ -680,6 +680,7 @@ source_set("unit_tests") {
     "session:unit_tests",
     "signin:unit_tests",
     "smart_lock:unit_tests",
+    "test:unit_tests",
     "users:unit_tests",
     "version_updater:unit_tests",
   ]

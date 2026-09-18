@@ -28,8 +28,28 @@ namespace ash::test {
 // It also provides several methods for the common testing operations.
 class UserSessionTestEnvironment {
  public:
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // Creates and initializes the ProfileManager. Called during
+    // UserSessionTestEnvironment construction after UserManager and
+    // SessionManager are initialized.
+    virtual void CreateProfileManager() = 0;
+
+    // Destroys the ProfileManager. Called during UserSessionTestEnvironment
+    // destruction before SessionManager and UserManager are destroyed.
+    virtual void DestroyProfileManager() = 0;
+
+    // Creates and initializes a Profile for the user specified by `account_id`.
+    virtual void CreateProfile(const AccountId& account_id) = 0;
+  };
+
   // `local_state` must not be nullptr and must outlive this instance.
-  explicit UserSessionTestEnvironment(PrefService* local_state);
+  // `delegate` may be nullptr for migration purposes.
+  explicit UserSessionTestEnvironment(
+      PrefService* local_state,
+      std::unique_ptr<Delegate> delegate = nullptr);
   UserSessionTestEnvironment(const UserSessionTestEnvironment&) = delete;
   UserSessionTestEnvironment& operator=(const UserSessionTestEnvironment&) =
       delete;
@@ -55,6 +75,7 @@ class UserSessionTestEnvironment {
   void LogIn(const AccountId& account_id, bool new_user = false);
 
  private:
+  std::unique_ptr<Delegate> delegate_;
   user_manager::ScopedUserManager user_manager_;
   std::unique_ptr<session_manager::SessionManager> session_manager_;
 };

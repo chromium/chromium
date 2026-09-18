@@ -25,3 +25,9 @@ include_rules = [
   "+chrome/common/chrome_switches.h",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  "chrome_user_session_test_environment_delegate_unittest\\.cc": [
+    "+chrome/browser/profiles/profile.h",
+  ]
+}

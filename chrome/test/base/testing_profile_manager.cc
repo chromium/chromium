@@ -101,12 +101,14 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
   // Create the profile and register it.
   TestingProfile::Builder builder;
   builder.SetPrefService(std::move(prefs));
-  if (is_supervised_profile)
+  if (is_supervised_profile) {
     builder.SetIsSupervisedProfile();
+  }
   builder.SetProfileName(profile_name);
   builder.SetIsNewProfile(is_new_profile.value_or(false));
-  if (policy_service)
+  if (policy_service) {
     builder.SetPolicyService(std::move(*policy_service));
+  }
   if (user_cloud_policy_manager) {
 #if BUILDFLAG(IS_CHROMEOS)
     builder.SetUserCloudPolicyManagerAsh(std::move(user_cloud_policy_manager));
@@ -274,7 +276,6 @@ void TestingProfileManager::DeleteAllTestingProfiles() {
   }
 }
 
-
 void TestingProfileManager::DeleteGuestProfile() {
   DCHECK(called_set_up_);
 
@@ -307,7 +308,8 @@ base::FilePath TestingProfileManager::GetProfilePath(
 #if BUILDFLAG(IS_CHROMEOS)
   if (ash::IsUserBrowserContextBaseName(base::FilePath(profile_name))) {
     const std::string fake_email =
-        profile_name.find('@') == std::string::npos
+        (profile_name.find('@') == std::string::npos &&
+         profile_name != kGuestProfileName)
             ? base::ToLowerASCII(profile_name) + "@test"
             : profile_name;
     profile_path =
