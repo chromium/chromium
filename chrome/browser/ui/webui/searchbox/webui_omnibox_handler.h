@@ -92,6 +92,8 @@ class WebuiOmniboxHandler : public ContextualSearchboxHandler,
       bool via_keyboard) override;
   bool ShouldShowFirstContextualDescription() const override;
   bool SupportsKeywordMode() const override;
+  void SetPopupSelection(
+      searchbox::mojom::OmniboxPopupSelectionPtr selection) override;
   void OverrideIconPaths(
       const AutocompleteMatch& match,
       searchbox::mojom::AutocompleteMatch* mojom_match) const override;
