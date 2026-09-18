@@ -210,7 +210,7 @@
 
   switch (position) {
     case AppBarPosition::kBottom:
-      bottomConstant = -AppBarHeightPortrait();
+      bottomConstant = -CurrentAppBarHeightPortrait(YES, YES);
       radii.bottomLeft = kAppBarCornerRadius;
       radii.bottomRight = kAppBarCornerRadius;
       break;
@@ -239,6 +239,11 @@
 
 - (void)layoutState:(SceneLayoutState*)layoutState
     didChangeAppBarPosition:(AppBarPosition)appBarPosition {
+  [self updateGlowConstraintsAndCornerRadii];
+}
+
+- (void)layoutState:(SceneLayoutState*)layoutState
+    didChangeAssistantContainerInvoked:(BOOL)assistantContainerInvoked {
   [self updateGlowConstraintsAndCornerRadii];
 }
 

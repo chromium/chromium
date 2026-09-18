@@ -144,7 +144,7 @@ TEST_F(ActorOverlayViewControllerTest,
   [layout_state_ setAppBarPosition:AppBarPosition::kBottom
                            passKey:ScenePassKey()];
 
-  EXPECT_EQ(bottom_constraint.constant, -AppBarHeightPortrait());
+  EXPECT_EQ(bottom_constraint.constant, -CurrentAppBarHeightPortrait(YES, YES));
   EXPECT_EQ(leading_constraint.constant, 0.0);
   EXPECT_EQ(trailing_constraint.constant, 0.0);
   ExpectCornerRadii(glow_view, expected_top_left, expected_top_right,
