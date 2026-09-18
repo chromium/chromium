@@ -10119,6 +10119,14 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(
          chrome::android::kFullscreenInsetsApiMigrationOnAutomotive)},
+
+    {"restrict-interactions-in-swipe-region-on-fullscreen",
+     flag_descriptions::kRestrictInteractionsInSwipeRegionOnFullscreenName,
+     flag_descriptions::
+         kRestrictInteractionsInSwipeRegionOnFullscreenDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         features::kRestrictInteractionsInSwipeRegionOnFullscreen)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)

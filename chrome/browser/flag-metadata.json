@@ -8758,6 +8758,11 @@
     "expiry_milestone": 154
   },
   {
+    "name": "restrict-interactions-in-swipe-region-on-fullscreen",
+    "owners": ["clhager@google.com"],
+    "expiry_milestone": 165
+  },
+  {
     "name": "rewriter-api",
     "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com"],
     "expiry_milestone": 160

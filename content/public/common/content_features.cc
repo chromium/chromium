@@ -1519,6 +1519,11 @@ BASE_FEATURE(kGinJavaBridgeMojoSkipClearObjectsOnMainDocumentReady,
 // to be killed first if the OS needs more memory.
 BASE_FEATURE(kReduceGpuPriorityOnBackground, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Restricts interactions like soft keyboard (IME) in system gesture regions
+// during fullscreen mode to prevent user lock-in.
+BASE_FEATURE(kRestrictInteractionsInSwipeRegionOnFullscreen,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Screen Capture API support for Android.
 // This should not be enabled unless ENABLE_SCREEN_CAPTURE is on, otherwise
 // it won't work.

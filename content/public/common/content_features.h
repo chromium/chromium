@@ -417,6 +417,8 @@ CONTENT_EXPORT extern const base::FeatureParam<int>
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kGinJavaBridgeMojoSkipClearObjectsOnMainDocumentReady);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kReduceGpuPriorityOnBackground);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kRestrictInteractionsInSwipeRegionOnFullscreen);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSmartZoom);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kUserMediaScreenCapturing);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kTextClassifierTimeout);

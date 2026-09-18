@@ -10827,6 +10827,8 @@ from previous Chrome versions.
   <int value="-1234740672" label="UsePdfCompositorServiceForPrint:disabled"/>
   <int value="-1234518922" label="ChromeLabs:disabled"/>
   <int value="-1234385389" label="TextFragmentColorChange:enabled"/>
+  <int value="-1233585394"
+      label="RestrictInteractionsInSwipeRegionOnFullscreen:disabled"/>
   <int value="-1232629319" label="ResamplingScrollEvents:disabled"/>
   <int value="-1232521924"
       label="AutofillRemoveCardExpiryFromDownstreamSuggestion:disabled"/>
@@ -14506,6 +14508,8 @@ from previous Chrome versions.
   <int value="-104106119" label="WebViewJavaJsBridgeMojo:disabled"/>
   <int value="-103592169" label="EnableInputProtection:enabled"/>
   <int value="-103131043" label="NtpOutlookCalendarModule:disabled"/>
+  <int value="-102947692"
+      label="RestrictInteractionsInSwipeRegionOnFullscreen:enabled"/>
   <int value="-102537270" label="extension-content-verification"/>
   <int value="-102387656" label="FillingAcrossAffiliatedWebsites:disabled"/>
   <int value="-102227288" label="PasswordExport:disabled"/>

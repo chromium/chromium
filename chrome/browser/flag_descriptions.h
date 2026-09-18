@@ -5773,6 +5773,13 @@ inline constexpr char kQueuedCompositorWebContentsUpdatesDescription[] =
     "to web contents size, rather than trigger them synchronously, to avoid "
     "visual jank during side UI resizing.";
 
+inline constexpr char kRestrictInteractionsInSwipeRegionOnFullscreenName[] =
+    "Restrict interactions in swipe region on fullscreen";
+inline constexpr char
+    kRestrictInteractionsInSwipeRegionOnFullscreenDescription[] =
+        "Restricts certain web page invocations during gestures originating "
+        "within system gesture regions in fullscreen mode.";
+
 inline constexpr char kSidePanelTopHairlineRefactorAndroidName[] =
     "Side Panel Top Hairline Refactor Android";
 inline constexpr char kSidePanelTopHairlineRefactorAndroidDescription[] =
