@@ -387,7 +387,7 @@ void MediaInternals::RenderProcessHostDestroyed(RenderProcessHost* host) {
 static bool ConvertEventToUpdate(int render_process_id,
                                  const media::MediaLogRecord& event,
                                  std::u16string* update) {
-  DCHECK(update);
+  CHECK(update, base::NotFatalUntil::M160);
 
   base::DictValue dict;
   dict.Set("renderer", render_process_id);
@@ -410,7 +410,7 @@ static bool ConvertEventToUpdate(int render_process_id,
     case media::MediaLogRecord::Type::kMediaEventTriggered: {
       // Delete the "event" param so that it won't spam the log.
       std::optional<base::Value> exists = cloned_params.Extract("event");
-      DCHECK(exists.has_value());
+      CHECK(exists.has_value(), base::NotFatalUntil::M160);
       dict.Set("type", std::move(exists.value()));
       break;
     }
@@ -431,7 +431,7 @@ static bool ConvertEventToUpdate(int render_process_id,
 void MediaInternals::OnMediaEvents(
     int render_process_id,
     const std::vector<media::MediaLogRecord>& events) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   // Notify observers that |event| has occurred.
   for (const auto& event : events) {
     if (CanUpdate()) {
@@ -444,7 +444,7 @@ void MediaInternals::OnMediaEvents(
 }
 
 void MediaInternals::AddUpdateCallback(UpdateCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   update_callbacks_.push_back(std::move(callback));
 
   base::AutoLock auto_lock(lock_);
@@ -453,7 +453,7 @@ void MediaInternals::AddUpdateCallback(UpdateCallback callback) {
 }
 
 void MediaInternals::RemoveUpdateCallback(const UpdateCallback& callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   for (size_t i = 0; i < update_callbacks_.size(); ++i) {
     if (update_callbacks_[i] == callback) {
       update_callbacks_.erase(update_callbacks_.begin() + i);
@@ -472,7 +472,7 @@ bool MediaInternals::CanUpdate() {
 }
 
 void MediaInternals::SendHistoricalMediaEvents() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   for (const auto& saved_events : saved_events_by_process_) {
     for (const auto& event : saved_events.second) {
       std::u16string update;
@@ -534,7 +534,7 @@ void MediaInternals::SendAudioStreamData() {
 }
 
 void MediaInternals::SendVideoCaptureDeviceCapabilities() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
 
   if (!CanUpdate())
     return;
@@ -555,7 +555,7 @@ void MediaInternals::UpdateVideoCaptureDeviceCapabilities(
     const std::vector<std::tuple<media::VideoCaptureDeviceDescriptor,
                                  media::VideoCaptureFormats>>&
         descriptors_and_formats) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
   video_capture_capabilities_cached_data_.clear();
 
   for (const auto& device_format_pair : descriptors_and_formats) {
@@ -658,7 +658,7 @@ void MediaInternals::SendUpdate(const std::u16string& update) {
 
 void MediaInternals::SaveEvent(int process_id,
                                const media::MediaLogRecord& event) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   auto& saved_events = saved_events_by_process_[process_id];
   saved_events.push_back(event);
   if (saved_events.size() > media::MediaLog::kLogLimit) {
@@ -672,7 +672,7 @@ void MediaInternals::SaveEvent(int process_id,
 }
 
 void MediaInternals::EraseSavedEvents(RenderProcessHost* host) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   // Orderly cleanup can be expensive if there are a lot of active players, so
   // just skip it during shutdown -- it'll be cleared up by the process kill.
   if (GetContentClient()->browser()->IsShuttingDown()) {
@@ -693,7 +693,7 @@ void MediaInternals::UpdateAudioLog(AudioLogUpdateType type,
     if ((type == UPDATE_IF_EXISTS || type == UPDATE_AND_DELETE) && !has_entry) {
       return;
     } else if (!has_entry) {
-      DCHECK_EQ(type, CREATE);
+      CHECK_EQ(type, CREATE, base::NotFatalUntil::M160);
       audio_streams_cached_data_.Set(cache_key, value.Clone());
     } else if (type == UPDATE_AND_DELETE) {
       std::optional<base::Value> out_value =

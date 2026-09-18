@@ -44,7 +44,7 @@ SystemMediaControlsNotifier::SystemMediaControlsNotifier(
     system_media_controls::SystemMediaControls* system_media_controls,
     base::UnguessableToken request_id)
     : system_media_controls_(system_media_controls) {
-  DCHECK(system_media_controls_);
+  CHECK(system_media_controls_, base::NotFatalUntil::M160);
 
 #if BUILDFLAG(IS_WIN)
   lock_polling_timer_.Start(

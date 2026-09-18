@@ -76,7 +76,7 @@ void WebAppSystemMediaControlsManager::Init() {
 }
 
 void WebAppSystemMediaControlsManager::TryConnectToAudioFocusManager() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   CHECK(!audio_focus_manager_.is_bound());
 

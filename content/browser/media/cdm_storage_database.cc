@@ -40,7 +40,7 @@ const char kDeleteFileError[] = "DeleteFileError.";
 
 static bool DatabaseIsEmpty(sql::Database* db) {
   static constexpr char kSelectCountSql[] = "SELECT COUNT(*) FROM cdm_storage";
-  DCHECK(db->IsSQLValid(kSelectCountSql));
+  CHECK(db->IsSQLValid(kSelectCountSql), base::NotFatalUntil::M160);
 
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kSelectCountSql));
@@ -89,7 +89,7 @@ std::optional<std::vector<uint8_t>> CdmStorageDatabase::ReadFile(
             "AND cdm_type = ? "
             "AND file_name = ? ";
   // clang-format on
-  DCHECK(db_.IsSQLValid(kSelectSql));
+  CHECK(db_.IsSQLValid(kSelectSql), base::NotFatalUntil::M160);
 
   last_operation_ = "ReadFile";
 
@@ -125,7 +125,7 @@ bool CdmStorageDatabase::WriteFile(const blink::StorageKey& storage_key,
          "cdm_storage(storage_key,cdm_type,file_name,data,file_size,last_modified) "
          "VALUES(?,?,?,?,?,?) ";
   // clang-format on
-  DCHECK(db_.IsSQLValid(kInsertSql));
+  CHECK(db_.IsSQLValid(kInsertSql), base::NotFatalUntil::M160);
 
   last_operation_ = "WriteFile";
 
@@ -167,7 +167,7 @@ std::optional<uint64_t> CdmStorageDatabase::GetSizeForFile(
             "AND cdm_type = ? "
             "AND file_name = ? ";
   // clang-format on
-  DCHECK(db_.IsSQLValid(kSelectSql));
+  CHECK(db_.IsSQLValid(kSelectSql), base::NotFatalUntil::M160);
 
   last_operation_ = "GetSizeForFile";
 
@@ -205,7 +205,7 @@ std::optional<uint64_t> CdmStorageDatabase::GetSizeForStorageKey(
          "AND last_modified <= ? ";
   // clang-format on
 
-  DCHECK(db_.IsSQLValid(kSelectSql));
+  CHECK(db_.IsSQLValid(kSelectSql), base::NotFatalUntil::M160);
 
   last_operation_ = "GetSizeForStorageKey";
 
@@ -241,7 +241,7 @@ std::optional<uint64_t> CdmStorageDatabase::GetSizeForTimeFrame(
          "WHERE last_modified >= ? "
          "AND last_modified <= ? ";
   // clang-format on
-  DCHECK(db_.IsSQLValid(kSelectSql));
+  CHECK(db_.IsSQLValid(kSelectSql), base::NotFatalUntil::M160);
 
   last_operation_ = "GetSizeForTimeFrame";
 
@@ -311,7 +311,7 @@ bool CdmStorageDatabase::DeleteFile(const blink::StorageKey& storage_key,
          "AND cdm_type = ? "
          "AND file_name = ? ";
   // clang-format on
-  DCHECK(db_.IsSQLValid(kDeleteSql));
+  CHECK(db_.IsSQLValid(kDeleteSql), base::NotFatalUntil::M160);
 
   last_operation_ = "DeleteFile";
 
@@ -388,7 +388,7 @@ bool CdmStorageDatabase::DeleteDataForStorageKey(
          "AND last_modified >= ? "
          "AND last_modified <= ? ";
   // clang-format on
-  DCHECK(db_.IsSQLValid(kDeleteSql));
+  CHECK(db_.IsSQLValid(kDeleteSql), base::NotFatalUntil::M160);
 
   bool success;
   {
@@ -424,7 +424,7 @@ bool CdmStorageDatabase::DeleteDataForTimeFrame(const base::Time begin,
          "WHERE last_modified >= ? "
          "AND last_modified <= ? ";
   // clang-format on
-  DCHECK(db_.IsSQLValid(kDeleteSql));
+  CHECK(db_.IsSQLValid(kDeleteSql), base::NotFatalUntil::M160);
 
   bool success;
   {
@@ -464,7 +464,7 @@ uint64_t CdmStorageDatabase::GetDatabaseSize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   static constexpr char kPageCountSql[] = "PRAGMA page_count";
-  DCHECK(db_.IsSQLValid(kPageCountSql));
+  CHECK(db_.IsSQLValid(kPageCountSql), base::NotFatalUntil::M160);
 
   last_operation_ = "QueryPageCount";
 
@@ -475,7 +475,7 @@ uint64_t CdmStorageDatabase::GetDatabaseSize() {
   uint64_t page_count = statement_count.ColumnInt(0);
 
   static constexpr char kPageSizeSql[] = "PRAGMA page_size";
-  DCHECK(db_.IsSQLValid(kPageSizeSql));
+  CHECK(db_.IsSQLValid(kPageSizeSql), base::NotFatalUntil::M160);
 
   last_operation_ = "QueryPageSize";
 
@@ -578,7 +578,7 @@ CdmStorageOpenError CdmStorageDatabase::OpenDatabase(bool is_retry) {
           "last_modified INTEGER NOT NULL,"
           "PRIMARY KEY(storage_key,cdm_type,file_name))";
   // clang-format on
-  DCHECK(db_.IsSQLValid(kCreateTableSql));
+  CHECK(db_.IsSQLValid(kCreateTableSql), base::NotFatalUntil::M160);
 
   if (!db_.Execute(kCreateTableSql)) {
     DVLOG(1) << "Failed to execute " << kCreateTableSql;
@@ -609,7 +609,7 @@ bool CdmStorageDatabase::UpgradeDatabaseSchema(sql::MetaTable* meta_table) {
   static constexpr char kAlterFileSizeSql[] =
       "ALTER TABLE cdm_storage ADD COLUMN file_size INTEGER NOT NULL DEFAULT "
       "1";
-  DCHECK(db_.IsSQLValid(kAlterFileSizeSql));
+  CHECK(db_.IsSQLValid(kAlterFileSizeSql), base::NotFatalUntil::M160);
 
   last_operation_ = "AlterDatabaseForFileSize";
 
@@ -624,7 +624,7 @@ bool CdmStorageDatabase::UpgradeDatabaseSchema(sql::MetaTable* meta_table) {
        "DEFAULT ",
        base::NumberToString(
            sql::Statement::TimeToSqlValue(base::Time::Now()))});
-  DCHECK(db_.IsSQLValid(alter_last_modified_string));
+  CHECK(db_.IsSQLValid(alter_last_modified_string), base::NotFatalUntil::M160);
 
   sql::Statement last_modified_statement(
       db_.GetUniqueStatement(alter_last_modified_string));

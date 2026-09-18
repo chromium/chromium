@@ -236,7 +236,7 @@ void NormalizeActivePaths(const base::FilePath& storage_root,
     std::vector<base::FilePath::StringType> components =
         relative_path.GetComponents();
 
-    DCHECK(!relative_path.empty());
+    CHECK(!relative_path.empty(), base::NotFatalUntil::M160);
     normalized_active_paths.insert(storage_root.Append(components.front()));
   }
 

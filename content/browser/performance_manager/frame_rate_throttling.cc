@@ -16,19 +16,19 @@
 namespace content {
 
 CONTENT_EXPORT void StartThrottlingAllFrameSinks(base::TimeDelta interval) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   GetHostFrameSinkManager()->StartThrottlingAllFrameSinks(interval);
 }
 
 CONTENT_EXPORT void StopThrottlingAllFrameSinks() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   GetHostFrameSinkManager()->StopThrottlingAllFrameSinks();
 }
 
 CONTENT_EXPORT void UpdateThrottlingFrameSinks(
     const std::set<GlobalRenderFrameHostId>& throttle_frames,
     base::TimeDelta interval) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   // viz::HostFrameSinkManager is not available in some unittest.
   if (!GetHostFrameSinkManager()) {
     return;

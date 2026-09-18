@@ -38,7 +38,7 @@ MediaKeysListenerManager* MediaKeysListenerManager::GetInstance() {
 }
 
 MediaKeysListenerManagerImpl::MediaKeysListenerManagerImpl() {
-  DCHECK(!MediaKeysListenerManager::GetInstance());
+  CHECK(!MediaKeysListenerManager::GetInstance(), base::NotFatalUntil::M160);
 
 #if USE_INSTANCED_SYSTEM_MEDIA_CONTROLS_FOR_WEB_APPS
   // Create for Windows and macOS only.
@@ -62,8 +62,9 @@ bool MediaKeysListenerManagerImpl::StartWatchingMediaKey(
     ui::KeyboardCode key_code,
     ui::MediaKeysListener::Delegate* delegate,
     base::UnguessableToken web_app_request_id) {
-  DCHECK(ui::MediaKeysListener::IsMediaKeycode(key_code));
-  DCHECK(delegate);
+  CHECK(ui::MediaKeysListener::IsMediaKeycode(key_code),
+        base::NotFatalUntil::M160);
+  CHECK(delegate, base::NotFatalUntil::M160);
   StartListeningForMediaKeysIfNecessary();
 
   // We don't want to start watching the key for an
@@ -91,14 +92,16 @@ bool MediaKeysListenerManagerImpl::StartWatchingMediaKey(
   // If this is the ActiveMediaSessionController, just update the flag.
   if (is_delegate_an_active_media_session_controller) {
     // |delegate| should never be for both the browser and a PWA
-    DCHECK(is_delegate_for_browser != is_delegate_for_pwa);
+    CHECK(is_delegate_for_browser != is_delegate_for_pwa,
+          base::NotFatalUntil::M160);
 
     if (is_delegate_for_browser) {
       listening_data->browser_active_media_session_controller_listening = true;
     } else if (is_delegate_for_pwa) {
       // If token is specified, it's a PWA that's starting to watch for a media
       // key. As a result, add it to the PWA list.
-      DCHECK(web_app_request_id != base::UnguessableToken::Null());
+      CHECK(web_app_request_id != base::UnguessableToken::Null(),
+            base::NotFatalUntil::M160);
       listening_data->listening_web_apps.insert(web_app_request_id);
     }
     UpdateWhichKeysAreListenedFor();
@@ -130,8 +133,9 @@ void MediaKeysListenerManagerImpl::StopWatchingMediaKey(
     ui::KeyboardCode key_code,
     ui::MediaKeysListener::Delegate* delegate,
     base::UnguessableToken web_app_request_id) {
-  DCHECK(ui::MediaKeysListener::IsMediaKeycode(key_code));
-  DCHECK(delegate);
+  CHECK(ui::MediaKeysListener::IsMediaKeycode(key_code),
+        base::NotFatalUntil::M160);
+  CHECK(delegate, base::NotFatalUntil::M160);
   StartListeningForMediaKeysIfNecessary();
 
   // Find or create the list of listening delegates for this key code.
@@ -164,7 +168,8 @@ void MediaKeysListenerManagerImpl::EnableInternalMediaKeyHandling() {
 void MediaKeysListenerManagerImpl::OnMediaKeysAccelerator(
     const ui::Accelerator& accelerator) {
   // We should never receive an accelerator that was never registered.
-  DCHECK(delegate_map_.contains(accelerator.key_code()));
+  CHECK(delegate_map_.contains(accelerator.key_code()),
+        base::NotFatalUntil::M160);
 
 #if BUILDFLAG(IS_APPLE)
   // For privacy, we don't want to handle media keys when the system is locked.
@@ -353,7 +358,7 @@ void MediaKeysListenerManagerImpl::StartListeningForMediaKeysIfNecessary() {
   } else {
     media_keys_listener_ = ui::MediaKeysListener::Create(
         this, ui::MediaKeysListener::Scope::kGlobal);
-    DCHECK(media_keys_listener_);
+    CHECK(media_keys_listener_, base::NotFatalUntil::M160);
   }
   EnsureAuxiliaryServices();
 }
@@ -453,7 +458,7 @@ void MediaKeysListenerManagerImpl::UpdateSystemMediaControlsEnabledControls() {
 }
 
 void MediaKeysListenerManagerImpl::UpdateMediaKeysListener() {
-  DCHECK(media_keys_listener_);
+  CHECK(media_keys_listener_, base::NotFatalUntil::M160);
 
   for (const auto& key_code_listening_data : delegate_map_) {
     const ui::KeyboardCode& key_code = key_code_listening_data.first;
@@ -503,7 +508,7 @@ bool MediaKeysListenerManagerImpl::ShouldActiveMediaSessionControllerReceiveKey(
 
   ListeningData* listening_data = itr->second.get();
 
-  DCHECK_NE(nullptr, listening_data);
+  CHECK_NE(nullptr, listening_data, base::NotFatalUntil::M160);
 
   return listening_data->browser_active_media_session_controller_listening ||
          (ShouldUseWebAppSystemMediaControls() &&

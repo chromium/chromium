@@ -265,8 +265,9 @@ SiteInfo SiteInfo::CreateForGuest(
 SiteInfo SiteInfo::Create(const IsolationContext& isolation_context,
                           const UrlInfo& url_info) {
   CHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(url_info.is_sandboxed ||
-         url_info.unique_sandbox_id == UrlInfo::kInvalidUniqueSandboxId);
+  CHECK(url_info.is_sandboxed ||
+            url_info.unique_sandbox_id == UrlInfo::kInvalidUniqueSandboxId,
+        base::NotFatalUntil::M160);
   AgentClusterKey agent_cluster_key =
       GetAgentClusterKeyForURL(isolation_context, url_info,
                                /*effective_url=*/std::nullopt);
@@ -337,7 +338,7 @@ SiteInfo SiteInfo::Create(const IsolationContext& isolation_context,
     storage_partition_config =
         GetStoragePartitionConfigForUrl(browser_context, site_url);
   }
-  DCHECK(storage_partition_config.has_value());
+  CHECK(storage_partition_config.has_value(), base::NotFatalUntil::M160);
 
   // Note: Well-formed UrlInfos can arrive here with null
   // WebExposedIsolationInfo. One example is, going through the process model
@@ -426,11 +427,12 @@ SiteInfo::SiteInfo(const AgentClusterKey& agent_cluster_key,
       is_fenced_(is_fenced),
       browser_context_id_(browser_context_id),
       embedder_isolation_info_(embedder_isolation_info) {
-  DCHECK(is_sandboxed_ ||
-         unique_sandbox_id_ == UrlInfo::kInvalidUniqueSandboxId);
-  DCHECK((oac_status() != AgentClusterKey::OACStatus::kOriginKeyedByHeader &&
-          oac_status() != AgentClusterKey::OACStatus::kOriginKeyedByDefault) ||
-         agent_cluster_key_.IsOriginKeyed());
+  CHECK(is_sandboxed_ || unique_sandbox_id_ == UrlInfo::kInvalidUniqueSandboxId,
+        base::NotFatalUntil::M160);
+  CHECK((oac_status() != AgentClusterKey::OACStatus::kOriginKeyedByHeader &&
+         oac_status() != AgentClusterKey::OACStatus::kOriginKeyedByDefault) ||
+            agent_cluster_key_.IsOriginKeyed(),
+        base::NotFatalUntil::M160);
 }
 SiteInfo::SiteInfo(const SiteInfo& rhs) = default;
 
@@ -497,7 +499,8 @@ SiteInfo SiteInfo::GetNonOriginKeyedEquivalentForMetrics(
        oac_status() == AgentClusterKey::OACStatus::kOriginKeyedByDefault) &&
       !agent_cluster_key_.GetCrossOriginIsolationKey().has_value()) {
     CHECK(agent_cluster_key_.IsOriginKeyed());
-    DCHECK(agent_cluster_key_.GetOrigin().scheme() == url::kHttpsScheme);
+    CHECK(agent_cluster_key_.GetOrigin().scheme() == url::kHttpsScheme,
+          base::NotFatalUntil::M160);
 
     // TODO(wjmaclean): It would probably be better if we just changed
     // SiteInstanceImpl::original_url_ to be SiteInfo::original_url_info_ and
@@ -591,7 +594,7 @@ bool SiteInfo::IsExactMatch(const SiteInfo& other) const {
     // If all the fields match, then the "same principal" subset must also
     // match. This is used to ensure these 2 methods stay in sync and all fields
     // used by IsSamePrincipalWith() are used by this function.
-    DCHECK(IsSamePrincipalWith(other));
+    CHECK(IsSamePrincipalWith(other), base::NotFatalUntil::M160);
   }
   return is_match;
 }
@@ -742,9 +745,9 @@ std::ostream& operator<<(std::ostream& out, const SiteInfo& site_info) {
 
 bool SiteInfo::RequiresDedicatedProcess(
     const IsolationContext& isolation_context) const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   BrowserContext* browser_context = isolation_context.browser_context();
-  DCHECK(browser_context);
+  CHECK(browser_context, base::NotFatalUntil::M160);
   return RequiresDedicatedProcessInternal(
       site_url_, isolation_context, browser_context,
       does_site_request_dedicated_process_for_coop_,
@@ -757,9 +760,9 @@ bool SiteInfo::RequiresDedicatedProcess(
 
 bool SiteInfo::ShouldLockProcessToSite(
     const IsolationContext& isolation_context) const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   BrowserContext* browser_context = isolation_context.browser_context();
-  DCHECK(browser_context);
+  CHECK(browser_context, base::NotFatalUntil::M160);
 
   // Don't lock to origin in --single-process mode, since this mode puts
   // cross-site pages into the same process.  Note that this also covers the
@@ -1071,7 +1074,7 @@ AgentClusterKey SiteInfo::GetAgentClusterKeyForURL(
   }
 
   // All other URLs use a site-keyed agent cluster based on their scheme.
-  DCHECK(!url.scheme().empty());
+  CHECK(!url.scheme().empty(), base::NotFatalUntil::M160);
   GURL site_url = GURL(base::StrCat({url.scheme(), ":"}));
   return AgentClusterKey::CreateSiteKeyed(site_url, oac_status);
 }
@@ -1191,7 +1194,7 @@ AgentClusterKey SiteInfo::GetAgentClusterKeyForSchemeOnlyOrigin(
 
   // TODO(crbug.com/433443082): Since all file URLs should have an origin of
   // "file:", consider returning an origin-keyed AgentClusterKey here.
-  DCHECK(!origin.scheme().empty());
+  CHECK(!origin.scheme().empty(), base::NotFatalUntil::M160);
   GURL site_url = GURL(origin.scheme() + ":");
   return AgentClusterKey::CreateSiteKeyed(site_url, oac_status);
 }

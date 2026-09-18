@@ -29,7 +29,7 @@ class SandboxHostLinux {
   // renderer crashes to the browser, as well as requesting fonts from sandboxed
   // processes.
   int GetChildSocket() const {
-    DCHECK(initialized_);
+    CHECK(initialized_, base::NotFatalUntil::M160);
     return child_socket_;
   }
   void Init();

@@ -69,8 +69,8 @@ CdmFileImpl::CdmFileImpl(
       storage_key_(storage_key),
       cdm_storage_manager_(manager) {
   DVLOG(3) << __func__ << " " << file_name_;
-  DCHECK(IsValidName(file_name_));
-  DCHECK(cdm_storage_manager_);
+  CHECK(IsValidName(file_name_), base::NotFatalUntil::M160);
+  CHECK(cdm_storage_manager_, base::NotFatalUntil::M160);
 
   receiver_.Bind(std::move(pending_receiver));
   receiver_.set_disconnect_handler(base::BindOnce(
@@ -91,7 +91,7 @@ CdmFileImpl::~CdmFileImpl() {
 void CdmFileImpl::Read(ReadCallback callback) {
   DVLOG(3) << __func__ << " file: " << file_name_;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(cdm_storage_manager_);
+  CHECK(cdm_storage_manager_, base::NotFatalUntil::M160);
 
   // Only 1 Read() or Write() is allowed at any time.
   if (read_callback_ || write_callback_) {
@@ -112,8 +112,8 @@ void CdmFileImpl::DidRead(std::optional<std::vector<uint8_t>> data) {
   DVLOG(3) << __func__ << " file: " << file_name_
            << ", success: " << (data.has_value() ? "yes" : "no");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(read_callback_);
-  DCHECK(cdm_storage_manager_);
+  CHECK(read_callback_, base::NotFatalUntil::M160);
+  CHECK(cdm_storage_manager_, base::NotFatalUntil::M160);
 
   bool success = data.has_value();
   ReportFileOperationUMA(success, kReadFile);
@@ -131,7 +131,7 @@ void CdmFileImpl::Write(const std::vector<uint8_t>& data,
                         WriteCallback callback) {
   DVLOG(3) << __func__ << " file: " << file_name_ << ", size: " << data.size();
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(cdm_storage_manager_);
+  CHECK(cdm_storage_manager_, base::NotFatalUntil::M160);
 
   // Only 1 Read() or Write() is allowed at any time.
   if (read_callback_ || write_callback_) {
@@ -167,7 +167,7 @@ void CdmFileImpl::Write(const std::vector<uint8_t>& data,
 void CdmFileImpl::ReportFileOperationUMA(bool success,
                                          const std::string& operation) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(cdm_storage_manager_);
+  CHECK(cdm_storage_manager_, base::NotFatalUntil::M160);
 
   // Strings for UMA names.
   static const char kUmaPrefix[] = "Media.EME.CdmFileIO";
@@ -198,8 +198,8 @@ void CdmFileImpl::ReportFileOperationUMA(bool success,
 void CdmFileImpl::DidWrite(bool success) {
   DVLOG(3) << __func__ << " file: " << file_name_;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(write_callback_);
-  DCHECK(cdm_storage_manager_);
+  CHECK(write_callback_, base::NotFatalUntil::M160);
+  CHECK(cdm_storage_manager_, base::NotFatalUntil::M160);
 
   ReportFileOperationUMA(success, kWriteFile);
 
@@ -215,8 +215,8 @@ void CdmFileImpl::DidWrite(bool success) {
 void CdmFileImpl::DeleteFile() {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(write_callback_);
-  DCHECK(cdm_storage_manager_);
+  CHECK(write_callback_, base::NotFatalUntil::M160);
+  CHECK(cdm_storage_manager_, base::NotFatalUntil::M160);
 
   DVLOG(3) << "Deleting " << file_name_;
 
@@ -228,8 +228,8 @@ void CdmFileImpl::DeleteFile() {
 void CdmFileImpl::DidDeleteFile(bool success) {
   DVLOG(3) << __func__ << " file: " << file_name_;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(write_callback_);
-  DCHECK(cdm_storage_manager_);
+  CHECK(write_callback_, base::NotFatalUntil::M160);
+  CHECK(cdm_storage_manager_, base::NotFatalUntil::M160);
 
   ReportFileOperationUMA(success, kDeleteFile);
 
@@ -244,7 +244,7 @@ void CdmFileImpl::DidDeleteFile(bool success) {
 
 void CdmFileImpl::OnReceiverDisconnect() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(cdm_storage_manager_);
+  CHECK(cdm_storage_manager_, base::NotFatalUntil::M160);
 
   // May delete `this`.
   cdm_storage_manager_->OnFileReceiverDisconnect(

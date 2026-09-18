@@ -58,7 +58,7 @@ AuthenticatorImpl::AuthenticatorImpl(
     : DocumentService(render_frame_host, std::move(receiver)),
       authenticator_common_impl_(std::move(authenticator_common_impl)) {
   authenticator_common_impl_->EnableRequestProxyExtensionsAPISupport();
-  DCHECK(authenticator_common_impl_);
+  CHECK(authenticator_common_impl_, base::NotFatalUntil::M160);
 }
 
 AuthenticatorImpl::~AuthenticatorImpl() = default;

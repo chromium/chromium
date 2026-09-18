@@ -18,7 +18,7 @@ namespace {
 
 AudioStreamMonitor* GetMonitorForRenderFrame(
     GlobalRenderFrameHostId render_frame_host_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   WebContentsImpl* const web_contents =
       static_cast<WebContentsImpl*>(WebContents::FromRenderFrameHost(
           RenderFrameHost::FromID(render_frame_host_id)));
@@ -51,25 +51,25 @@ bool AudioStreamMonitor::StreamID::operator==(const StreamID& other) const {
 
 AudioStreamMonitor::AudioStreamMonitor(WebContents* contents)
     : WebContentsObserver(contents), web_contents_(contents) {
-  DCHECK(web_contents_);
+  CHECK(web_contents_, base::NotFatalUntil::M160);
 }
 
 AudioStreamMonitor::~AudioStreamMonitor() {
-  DCHECK(audible_clients_.empty());
+  CHECK(audible_clients_.empty(), base::NotFatalUntil::M160);
 }
 
 bool AudioStreamMonitor::WasRecentlyAudible() const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
   return indicator_is_on_;
 }
 
 bool AudioStreamMonitor::IsCurrentlyAudible() const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
   return is_audible_;
 }
 
 void AudioStreamMonitor::RenderProcessGone(ChildProcessId render_process_id) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
 
   // Note: It's possible for the RenderProcessHost and WebContents (and thus
   // this class) to survive the death of the render process and subsequently be
@@ -89,14 +89,14 @@ void AudioStreamMonitor::RenderProcessGone(ChildProcessId render_process_id) {
 std::unique_ptr<AudioStreamMonitor::AudibleClientRegistration>
 AudioStreamMonitor::RegisterAudibleClient(
     GlobalRenderFrameHostId render_frame_host_id) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
   return std::make_unique<AudibleClientRegistration>(render_frame_host_id,
                                                      this);
 }
 
 void AudioStreamMonitor::AddAudibleClient(
     GlobalRenderFrameHostId render_frame_host_id) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
 
   audible_clients_[render_frame_host_id]++;
   UpdateStreams();
@@ -104,8 +104,8 @@ void AudioStreamMonitor::AddAudibleClient(
 
 void AudioStreamMonitor::RemoveAudibleClient(
     GlobalRenderFrameHostId render_frame_host_id) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(!audible_clients_.empty());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
+  CHECK(!audible_clients_.empty(), base::NotFatalUntil::M160);
 
   auto it = audible_clients_.find(render_frame_host_id);
   CHECK(it != audible_clients_.end());
@@ -169,13 +169,13 @@ void AudioStreamMonitor::UpdateStreamAudibleState(
 }
 
 void AudioStreamMonitor::StartMonitoringStreamOnUIThread(const StreamID& sid) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(streams_.find(sid) == streams_.end());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
+  CHECK(streams_.find(sid) == streams_.end(), base::NotFatalUntil::M160);
   streams_[sid] = false;
 }
 
 void AudioStreamMonitor::StopMonitoringStreamOnUIThread(const StreamID& sid) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
   auto it = streams_.find(sid);
   if (it == streams_.end())
     return;
@@ -189,7 +189,7 @@ void AudioStreamMonitor::StopMonitoringStreamOnUIThread(const StreamID& sid) {
 
 void AudioStreamMonitor::UpdateStreamAudibleStateOnUIThread(const StreamID& sid,
                                                             bool is_audible) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
   auto it = streams_.find(sid);
   if (it == streams_.end())
     return;

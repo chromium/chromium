@@ -41,7 +41,7 @@ void VirtualFidoDiscovery::AddVirtualDevice(
 }
 
 bool VirtualFidoDiscovery::RemoveVirtualDevice(std::string_view device_id) {
-  DCHECK(is_start_requested());
+  CHECK(is_start_requested(), base::NotFatalUntil::M160);
   return ::device::FidoDeviceDiscovery::RemoveDevice(device_id);
 }
 

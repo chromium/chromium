@@ -20,8 +20,8 @@ MediaInternalsProxy::MediaInternalsProxy() {
 MediaInternalsProxy::~MediaInternalsProxy() {}
 
 void MediaInternalsProxy::Attach(MediaInternalsMessageHandler* handler) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!update_callback_);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(!update_callback_, base::NotFatalUntil::M160);
 
   update_callback_ =
       base::BindRepeating(&MediaInternalsProxy::UpdateUIOnUIThread, handler);
@@ -29,14 +29,14 @@ void MediaInternalsProxy::Attach(MediaInternalsMessageHandler* handler) {
 }
 
 void MediaInternalsProxy::Detach() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   MediaInternals::GetInstance()->RemoveUpdateCallback(update_callback_);
   update_callback_.Reset();
 }
 
 void MediaInternalsProxy::GetEverything() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   MediaInternals::GetInstance()->SendHistoricalMediaEvents();
   MediaInternals::GetInstance()->SendGeneralAudioInformation();
@@ -52,7 +52,7 @@ void MediaInternalsProxy::GetEverything() {
 }
 
 void MediaInternalsProxy::GetEverythingOnIOThread() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
   // TODO(xhwang): Investigate whether we can update on UI thread directly.
   MediaInternals::GetInstance()->SendAudioStreamData();
   MediaInternals::GetInstance()->SendVideoCaptureDeviceCapabilities();
@@ -62,7 +62,7 @@ void MediaInternalsProxy::GetEverythingOnIOThread() {
 void MediaInternalsProxy::UpdateUIOnUIThread(
     MediaInternalsMessageHandler* handler,
     const std::u16string& update) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   handler->OnUpdate(update);
 }
 

@@ -33,10 +33,10 @@ AudioLoopbackStreamBroker::AudioLoopbackStreamBroker(
       shared_memory_count_(shared_memory_count),
       deleter_(std::move(deleter)),
       renderer_factory_client_(std::move(renderer_factory_client)) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(source_);
-  DCHECK(renderer_factory_client_);
-  DCHECK(deleter_);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK(source_, base::NotFatalUntil::M160);
+  CHECK(renderer_factory_client_, base::NotFatalUntil::M160);
+  CHECK(deleter_, base::NotFatalUntil::M160);
 
   if (mute_source) {
     muter_.emplace(source_->GetGroupID());
@@ -54,7 +54,7 @@ AudioLoopbackStreamBroker::AudioLoopbackStreamBroker(
 }
 
 AudioLoopbackStreamBroker::~AudioLoopbackStreamBroker() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
 
   if (source_)
     source_->RemoveLoopbackSink(this);
@@ -65,10 +65,10 @@ AudioLoopbackStreamBroker::~AudioLoopbackStreamBroker() {
 
 void AudioLoopbackStreamBroker::CreateStream(
     media::mojom::AudioStreamFactory* factory) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(!observer_receiver_.is_bound());
-  DCHECK(!client_receiver_);
-  DCHECK(source_);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK(!observer_receiver_.is_bound(), base::NotFatalUntil::M160);
+  CHECK(!client_receiver_, base::NotFatalUntil::M160);
+  CHECK(source_, base::NotFatalUntil::M160);
 
   if (muter_)  // Mute the source.
     muter_->Connect(factory);
@@ -93,27 +93,27 @@ void AudioLoopbackStreamBroker::CreateStream(
 }
 
 void AudioLoopbackStreamBroker::OnSourceGone() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
   // No further access to |source_| is allowed.
   source_ = nullptr;
   Cleanup();
 }
 
 void AudioLoopbackStreamBroker::DidStartRecording() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
 }
 
 void AudioLoopbackStreamBroker::StreamCreated(
     mojo::PendingRemote<media::mojom::AudioInputStream> stream,
     media::mojom::ReadWriteAudioDataPipePtr data_pipe) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
 
   if (!data_pipe) {
     Cleanup();
     return;
   }
 
-  DCHECK(renderer_factory_client_);
+  CHECK(renderer_factory_client_, base::NotFatalUntil::M160);
   renderer_factory_client_->StreamCreated(
       std::move(stream), std::move(client_receiver_), std::move(data_pipe),
       false /* |initially_muted|: Loopback streams are never muted. */,
@@ -121,7 +121,7 @@ void AudioLoopbackStreamBroker::StreamCreated(
 }
 
 void AudioLoopbackStreamBroker::Cleanup() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
   std::move(deleter_).Run(this);
 }
 

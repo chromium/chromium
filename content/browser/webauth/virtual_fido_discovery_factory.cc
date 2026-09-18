@@ -18,7 +18,7 @@ namespace content {
 VirtualFidoDiscoveryFactory::VirtualFidoDiscoveryFactory(
     base::WeakPtr<VirtualAuthenticatorManagerImpl> authenticator_manager)
     : weak_authenticator_manager_(authenticator_manager) {
-  DCHECK(weak_authenticator_manager_);
+  CHECK(weak_authenticator_manager_, base::NotFatalUntil::M160);
   weak_authenticator_manager_->AddObserver(this);
 }
 

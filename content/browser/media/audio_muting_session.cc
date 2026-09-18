@@ -15,7 +15,7 @@ void AudioMutingSession::Connect(media::mojom::AudioStreamFactory* factory) {
   if (muter_)
     muter_.reset();
 
-  DCHECK(factory);
+  CHECK(factory, base::NotFatalUntil::M160);
   factory->BindMuter(muter_.BindNewEndpointAndPassReceiver(), group_id_);
 }
 

@@ -173,17 +173,18 @@ class ProcessStorage : public ProcessStorageBase {
 
 std::optional<mojo::NamedPlatformChannel>
 ChildProcessLauncherHelper::CreateNamedPlatformChannelOnLauncherThread() {
-  DCHECK(CurrentlyOnProcessLauncherTaskRunner());
+  CHECK(CurrentlyOnProcessLauncherTaskRunner(), base::NotFatalUntil::M160);
   return std::nullopt;
 }
 
 void ChildProcessLauncherHelper::BeforeLaunchOnClientThread() {
-  DCHECK(client_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(client_task_runner_->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M160);
 }
 
 std::unique_ptr<PosixFileDescriptorInfo>
 ChildProcessLauncherHelper::GetFilesToMap() {
-  DCHECK(CurrentlyOnProcessLauncherTaskRunner());
+  CHECK(CurrentlyOnProcessLauncherTaskRunner(), base::NotFatalUntil::M160);
   return CreateDefaultPosixFilesToMap(
       child_process_id(), mojo_channel_->remote_endpoint(),
       /*files_to_preload=*/{}, GetProcessType(), command_line());
@@ -194,7 +195,7 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
     base::LaunchOptions* options) {
   mojo::PlatformHandle endpoint =
       mojo_channel_->TakeRemoteEndpoint().TakePlatformHandle();
-  DCHECK(endpoint.is_valid_mach_receive());
+  CHECK(endpoint.is_valid_mach_receive(), base::NotFatalUntil::M160);
   options->mach_ports_for_rendezvous.insert(std::make_pair(
       'mojo', base::MachRendezvousPort(endpoint.TakeMachReceiveRight())));
   return true;
@@ -206,7 +207,7 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
     std::unique_ptr<PosixFileDescriptorInfo> files_to_register,
     bool* is_synchronous_launch,
     int* launch_result) {
-  DCHECK(options);
+  CHECK(options, base::NotFatalUntil::M160);
   *is_synchronous_launch = false;
   rendezvous_server_ = std::make_unique<base::MachPortRendezvousServerIOS>(
       options->mach_ports_for_rendezvous);
@@ -281,7 +282,7 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
 void ChildProcessLauncherHelper::OnChildProcessStarted(
     pid_t process_id,
     std::unique_ptr<LaunchResult> launch_result) {
-  DCHECK(CurrentlyOnProcessLauncherTaskRunner());
+  CHECK(CurrentlyOnProcessLauncherTaskRunner(), base::NotFatalUntil::M160);
   scoped_refptr<ChildProcessLauncherHelper> ref(this);
   Release();  // Balances with LaunchProcessOnLauncherThread.
 
@@ -516,7 +517,7 @@ bool ChildProcessLauncherHelper::TerminateProcess(const base::Process& process,
 // static
 void ChildProcessLauncherHelper::ForceNormalProcessTerminationSync(
     ChildProcessLauncherHelper::Process process) {
-  DCHECK(CurrentlyOnProcessLauncherTaskRunner());
+  CHECK(CurrentlyOnProcessLauncherTaskRunner(), base::NotFatalUntil::M160);
   // Client has gone away, so just kill the process.  Using exit code 0 means
   // that UMA won't treat this as a crash.
   process.process.Terminate(RESULT_CODE_NORMAL_EXIT, false);

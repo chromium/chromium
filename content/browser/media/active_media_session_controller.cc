@@ -52,7 +52,7 @@ void ActiveMediaSessionController::MediaSessionInfoChanged(
     media_session::mojom::MediaSessionInfoPtr session_info) {
   MediaKeysListenerManagerImpl* media_keys_listener_manager_impl =
       BrowserMainLoop::GetInstance()->media_keys_listener_manager();
-  DCHECK(media_keys_listener_manager_impl);
+  CHECK(media_keys_listener_manager_impl, base::NotFatalUntil::M160);
 
   session_info_ = std::move(session_info);
   media_keys_listener_manager_impl->SetIsMediaPlaying(
@@ -64,7 +64,7 @@ void ActiveMediaSessionController::MediaSessionActionsChanged(
     const std::vector<MediaSessionAction>& actions) {
   MediaKeysListenerManager* media_keys_listener_manager =
       MediaKeysListenerManager::GetInstance();
-  DCHECK(media_keys_listener_manager);
+  CHECK(media_keys_listener_manager, base::NotFatalUntil::M160);
 
   // Stop listening to any keys that are currently being watched, but aren't in
   // |actions|.
@@ -179,7 +179,7 @@ bool ActiveMediaSessionController::SupportsAction(
 }
 
 void ActiveMediaSessionController::PerformAction(MediaSessionAction action) {
-  DCHECK(SupportsAction(action));
+  CHECK(SupportsAction(action), base::NotFatalUntil::M160);
   switch (action) {
     case MediaSessionAction::kPreviousTrack:
       media_controller_remote_->PreviousTrack();

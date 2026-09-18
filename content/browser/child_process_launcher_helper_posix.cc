@@ -64,7 +64,7 @@ std::unique_ptr<PosixFileDescriptorInfo> CreateDefaultPosixFilesToMap(
 #if !BUILDFLAG(IS_APPLE)
   const bool share_channel_fd = true;
   if (share_channel_fd) {
-    DCHECK(mojo_channel_remote_endpoint.is_valid());
+    CHECK(mojo_channel_remote_endpoint.is_valid(), base::NotFatalUntil::M160);
     files_to_register->Share(
         kMojoIPCChannel,
         mojo_channel_remote_endpoint.platform_handle().GetFD().get());
@@ -102,7 +102,7 @@ std::unique_ptr<PosixFileDescriptorInfo> CreateDefaultPosixFilesToMap(
     file_switch_value_builder.AddEntry(key_path_iter.first, key);
     files_to_register->ShareWithRegion(key, file, region);
     key++;
-    DCHECK(key < kContentDynamicDescriptorMax);
+    CHECK(key < kContentDynamicDescriptorMax, base::NotFatalUntil::M160);
   }
   command_line->AppendSwitchASCII(switches::kSharedFiles,
                                   file_switch_value_builder.switch_value());

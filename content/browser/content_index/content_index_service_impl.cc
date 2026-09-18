@@ -25,10 +25,10 @@ namespace content {
 void ContentIndexServiceImpl::CreateForFrame(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::ContentIndexService> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   RenderProcessHost* render_process_host = render_frame_host->GetProcess();
-  DCHECK(render_process_host);
+  CHECK(render_process_host, base::NotFatalUntil::M160);
 
   if (render_frame_host->IsNestedWithinFencedFrame()) {
     mojo::ReportBadMessage(
@@ -51,7 +51,7 @@ void ContentIndexServiceImpl::CreateForFrame(
 void ContentIndexServiceImpl::CreateForWorker(
     const ServiceWorkerVersionBaseInfo& info,
     mojo::PendingReceiver<blink::mojom::ContentIndexService> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   RenderProcessHost* render_process_host =
       RenderProcessHost::FromID(info.process_id);
@@ -86,7 +86,7 @@ ContentIndexServiceImpl::ContentIndexServiceImpl(
     : origin_(origin),
       content_index_context_(std::move(content_index_context)),
       is_top_level_context_(is_top_level_context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 }
 
 ContentIndexServiceImpl::~ContentIndexServiceImpl() = default;
@@ -94,7 +94,7 @@ ContentIndexServiceImpl::~ContentIndexServiceImpl() = default;
 void ContentIndexServiceImpl::GetIconSizes(
     blink::mojom::ContentCategory category,
     GetIconSizesCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   content_index_context_->GetIconSizes(category, std::move(callback));
 }
@@ -105,7 +105,7 @@ void ContentIndexServiceImpl::Add(
     const std::vector<SkBitmap>& icons,
     const GURL& launch_url,
     AddCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   for (const auto& icon : icons) {
     if (icon.isNull() || icon.width() * icon.height() > kMaxIconResolution) {
@@ -130,7 +130,7 @@ void ContentIndexServiceImpl::Add(
 void ContentIndexServiceImpl::Delete(int64_t service_worker_registration_id,
                                      const std::string& content_id,
                                      DeleteCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   content_index_context_->database().DeleteEntry(
       service_worker_registration_id, origin_, content_id, std::move(callback));
@@ -139,7 +139,7 @@ void ContentIndexServiceImpl::Delete(int64_t service_worker_registration_id,
 void ContentIndexServiceImpl::GetDescriptions(
     int64_t service_worker_registration_id,
     GetDescriptionsCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   content_index_context_->database().GetDescriptions(
       service_worker_registration_id, origin_, std::move(callback));

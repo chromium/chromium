@@ -88,9 +88,9 @@ AudioOutputStreamBroker::AudioOutputStreamBroker(
       client_(std::move(client)),
       observer_(render_process_id, render_frame_id, stream_id),
       observer_receiver_(&observer_) {
-  DCHECK(client_);
-  DCHECK(deleter_);
-  DCHECK(group_id_);
+  CHECK(client_, base::NotFatalUntil::M160);
+  CHECK(deleter_, base::NotFatalUntil::M160);
+  CHECK(group_id_, base::NotFatalUntil::M160);
   TRACE_EVENT_BEGIN("audio", "AudioOutputStreamBroker", GetTracingTrack(this));
 
   MediaObserver* media_observer =
@@ -137,8 +137,8 @@ AudioOutputStreamBroker::~AudioOutputStreamBroker() {
 void AudioOutputStreamBroker::CreateStream(
     media::mojom::AudioStreamFactory* factory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  DCHECK(!observer_receiver_.is_bound());
-  DCHECK(!device_switch_interface_.is_bound());
+  CHECK(!observer_receiver_.is_bound(), base::NotFatalUntil::M160);
+  CHECK(!device_switch_interface_.is_bound(), base::NotFatalUntil::M160);
   TRACE_EVENT_BEGIN("audio", "CreateStream", GetTracingTrack(this), "device id",
                     output_device_id_);
 
@@ -233,7 +233,8 @@ void AudioOutputStreamBroker::ObserverBindingLost(
 
 void AudioOutputStreamBroker::Cleanup(DisconnectReason reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  DCHECK_EQ(DisconnectReason::kDocumentDestroyed, disconnect_reason_);
+  CHECK_EQ(DisconnectReason::kDocumentDestroyed, disconnect_reason_,
+           base::NotFatalUntil::M160);
   disconnect_reason_ = reason;
   std::move(deleter_).Run(this);
 }

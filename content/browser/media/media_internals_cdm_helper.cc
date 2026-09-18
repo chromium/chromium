@@ -166,7 +166,8 @@ void MediaInternalsCdmHelper::OnKeySystemCapabilitiesUpdated(
 
   base::ListValue cdm_list;
   for (const auto& cdm_info : cdms) {
-    DCHECK(cdm_info.status != CdmInfo::Status::kUninitialized);
+    CHECK(cdm_info.status != CdmInfo::Status::kUninitialized,
+          base::NotFatalUntil::M160);
     cdm_list.Append(CdmInfoToDict(cdm_info));
   }
 

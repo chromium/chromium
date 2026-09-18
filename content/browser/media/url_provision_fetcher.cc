@@ -46,7 +46,7 @@ URLProvisionFetcher::URLProvisionFetcher(
     std::string_view user_agent)
     : url_loader_factory_(std::move(url_loader_factory)),
       user_agent_(user_agent) {
-  DCHECK(url_loader_factory_);
+  CHECK(url_loader_factory_, base::NotFatalUntil::M160);
 }
 
 void URLProvisionFetcher::OnRedirect(
@@ -94,7 +94,7 @@ void URLProvisionFetcher::Retrieve(
 
   response_cb_ = std::move(response_cb);
 
-  DCHECK(!simple_url_loader_);
+  CHECK(!simple_url_loader_, base::NotFatalUntil::M160);
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("url_prevision_fetcher", R"(
         semantics {
@@ -192,14 +192,14 @@ void URLProvisionFetcher::OnSimpleLoaderComplete(
 
 std::unique_ptr<media::ProvisionFetcher> CreateProvisionFetcher(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  DCHECK(url_loader_factory);
+  CHECK(url_loader_factory, base::NotFatalUntil::M160);
   return std::make_unique<URLProvisionFetcher>(std::move(url_loader_factory));
 }
 
 std::unique_ptr<media::ProvisionFetcher> CreateProvisionFetcherWithUserAgent(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::string_view user_agent) {
-  DCHECK(url_loader_factory);
+  CHECK(url_loader_factory, base::NotFatalUntil::M160);
   return std::make_unique<URLProvisionFetcher>(std::move(url_loader_factory),
                                                user_agent);
 }

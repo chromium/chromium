@@ -127,7 +127,7 @@ ContentProtectionWindow::~ContentProtectionWindow() {
 }
 
 void ContentProtectionWindow::OnWindowAddedToRootWindow(aura::Window* window) {
-  DCHECK_EQ(window, observed_native_view_);
+  CHECK_EQ(window, observed_native_view_, base::NotFatalUntil::M160);
   // Fires when the observed `aura::Window` is attached to a root, including
   // after a tab is dragged into another browser window or popped into its
   // own window.
@@ -139,12 +139,12 @@ void ContentProtectionWindow::OnWindowBoundsChanged(
     const gfx::Rect& old_bounds,
     const gfx::Rect& new_bounds,
     ui::PropertyChangeReason reason) {
-  DCHECK_EQ(window, observed_native_view_);
+  CHECK_EQ(window, observed_native_view_, base::NotFatalUntil::M160);
   ResizeToMatchParent();
 }
 
 void ContentProtectionWindow::OnWindowDestroying(aura::Window* window) {
-  DCHECK_EQ(window, observed_native_view_);
+  CHECK_EQ(window, observed_native_view_, base::NotFatalUntil::M160);
   // Destroy the HWND now while it is still valid. The top-level browser
   // HWND (our parent) is destroyed after aura child windows, so our child
   // HWND is still alive at this point. If we deferred to the destructor,

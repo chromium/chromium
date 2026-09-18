@@ -58,7 +58,7 @@ MidiHost::MidiHost(ChildProcessId renderer_process_id,
 }
 
 MidiHost::~MidiHost() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
   if (midi_client_ && midi_service_) {
     EndSession();
   }
@@ -69,14 +69,14 @@ void MidiHost::BindReceiver(
     ChildProcessId render_process_id,
     midi::MidiService* midi_service,
     mojo::PendingReceiver<midi::mojom::MidiSessionProvider> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
   mojo::MakeSelfOwnedReceiver(
       base::WrapUnique(new MidiHost(render_process_id, midi_service)),
       std::move(receiver));
 }
 
 void MidiHost::CompleteStartSession(Result result) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
   CHECK(midi_client_);
   if (result == Result::OK) {
     midi_session_.Bind(std::move(pending_session_receiver_));
@@ -196,7 +196,7 @@ void MidiHost::Detach() {
 void MidiHost::StartSession(
     mojo::PendingReceiver<midi::mojom::MidiSession> session_receiver,
     mojo::PendingRemote<midi::mojom::MidiSessionClient> client) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
   // Ensure that this `midi_session_` isn't already bound to another
   // MidiSessionRequest.
   if (pending_session_receiver_ || midi_client_) {
@@ -217,7 +217,7 @@ void MidiHost::StartSession(
 void MidiHost::SendData(uint32_t port,
                         const std::vector<uint8_t>& data,
                         base::TimeTicks timestamp) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
   {
     base::AutoLock auto_lock(output_port_count_lock_);
     if (output_port_count_ <= port) {

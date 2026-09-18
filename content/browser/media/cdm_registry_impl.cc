@@ -211,7 +211,8 @@ GetHardwareSecureCapabilityOverriddenFromCommandLine() {
 #if BUILDFLAG(IS_WIN)
 bool IsMediaFoundationHardwareSecurityDisabledByGpuFeature() {
   auto* gpu_data_manager = GpuDataManagerImpl::GetInstance();
-  DCHECK(gpu_data_manager->IsGpuFeatureInfoAvailable());
+  CHECK(gpu_data_manager->IsGpuFeatureInfoAvailable(),
+        base::NotFatalUntil::M160);
   return gpu_data_manager->GetGpuFeatureInfo().IsWorkaroundEnabled(
       gpu::DISABLE_MEDIA_FOUNDATION_HARDWARE_SECURITY);
 }
@@ -293,9 +294,10 @@ void CdmRegistryImpl::RegisterCdm(const CdmInfo& info) {
 void CdmRegistryImpl::SetHardwareSecureCdmStatus(CdmInfo::Status status) {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(status != CdmInfo::Status::kUninitialized &&
-         status != CdmInfo::Status::kEnabled &&
-         status != CdmInfo::Status::kCommandLineOverridden);
+  CHECK(status != CdmInfo::Status::kUninitialized &&
+            status != CdmInfo::Status::kEnabled &&
+            status != CdmInfo::Status::kCommandLineOverridden,
+        base::NotFatalUntil::M160);
 
   bool updated = false;
   for (auto& cdm_info : cdms_) {
@@ -476,7 +478,7 @@ CdmRegistryImpl::GetFinalCapability(const std::string& key_system,
 void CdmRegistryImpl::FinalizeKeySystemCapabilities() {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!key_system_capabilities_.has_value());
+  CHECK(!key_system_capabilities_.has_value(), base::NotFatalUntil::M160);
 
   // Abort existing pending LazyInitializeHardwareSecureCapability() operations
   // to avoid updating the observer twice.
@@ -568,7 +570,7 @@ void CdmRegistryImpl::LazyInitializeCapability(
   if (robustness == CdmInfo::Robustness::kHardwareSecure) {
     auto cdm_info =
         GetCdmInfo(key_system, CdmInfo::Robustness::kHardwareSecure);
-    DCHECK(cdm_info && !cdm_info->capability);
+    CHECK(cdm_info && !cdm_info->capability, base::NotFatalUntil::M160);
     GetMediaFoundationServiceCdmCapability(
         key_system, cdm_info->type, cdm_info->path,
         /*is_hw_secure=*/true, std::move(cdm_capability_cb));
@@ -593,7 +595,8 @@ void CdmRegistryImpl::OnCapabilityInitialized(
            << ", robustness=" << robustness << ", cdm_capability_or_status="
            << cdm_capability_or_status.ToString();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(pending_lazy_initializations_.count({key_system, robustness}));
+  CHECK(pending_lazy_initializations_.count({key_system, robustness}),
+        base::NotFatalUntil::M160);
 
   // Report the status of the hardware secure capability query.
   if (robustness == CdmInfo::Robustness::kHardwareSecure) {
@@ -620,7 +623,7 @@ void CdmRegistryImpl::FinalizeCapability(
     CdmInfo::Status status) {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(status != CdmInfo::Status::kUninitialized);
+  CHECK(status != CdmInfo::Status::kUninitialized, base::NotFatalUntil::M160);
 
   auto itr = cdms_.begin();
   for (; itr != cdms_.end(); itr++) {
@@ -654,7 +657,7 @@ void CdmRegistryImpl::FinalizeCapability(
 void CdmRegistryImpl::UpdateAndNotifyKeySystemCapabilities() {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(pending_lazy_initializations_.empty());
+  CHECK(pending_lazy_initializations_.empty(), base::NotFatalUntil::M160);
 
   auto key_system_capabilities = GetKeySystemCapabilities();
 
