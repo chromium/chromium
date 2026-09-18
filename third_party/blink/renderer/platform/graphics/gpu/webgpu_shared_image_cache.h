@@ -152,7 +152,6 @@ class PLATFORM_EXPORT WebGpuSharedImageLease final
   }
   bool is_cleared() const { return resource_.is_cleared_; }
   void SetCleared() { resource_.is_cleared_ = true; }
-  bool IsGpuContextLost() const;
 
   void WaitSyncToken(const gpu::SyncToken& sync_token);
 
@@ -161,6 +160,8 @@ class PLATFORM_EXPORT WebGpuSharedImageLease final
   size_t GetSize() const override;
 
  private:
+  bool IsGpuContextLost() const;
+
   Resource resource_;
   base::WeakPtr<WebGpuSharedImageCache> cache_;
 };

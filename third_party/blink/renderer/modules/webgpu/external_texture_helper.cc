@@ -443,32 +443,30 @@ std::optional<ExternalTexture> CreateExternalTexture(
 
     media::PaintCanvasVideoRenderer::PaintParams params;
     params.dest_rect = gfx::RectF(shared_image->size());
-    if (!lease->IsGpuContextLost()) {
-      cc::PaintRecorder recorder;
-      video_renderer->Paint(media_video_frame.get(), recorder.beginRecording(),
-                            media_flags, params, raster_context_provider);
-      if (cc::PaintRecord last_recording = recorder.finishRecordingAsPicture();
-          last_recording.has_draw_ops()) {
-        const bool needs_clear = !lease->is_cleared();
-        lease->SetCleared();
+    cc::PaintRecorder recorder;
+    video_renderer->Paint(media_video_frame.get(), recorder.beginRecording(),
+                          media_flags, params, raster_context_provider);
+    if (cc::PaintRecord last_recording = recorder.finishRecordingAsPicture();
+        last_recording.has_draw_ops()) {
+      const bool needs_clear = !lease->is_cleared();
+      lease->SetCleared();
 
-        auto& context_provider = context_provider_wrapper->ContextProvider();
-        CanvasImageProvider image_provider(
-            context_provider.ImageDecodeCache(kN32_SkColorType),
-            shared_image->format() == viz::SinglePlaneFormat::kRGBA_F16
-                ? context_provider.ImageDecodeCache(kRGBA_F16_SkColorType)
-                : nullptr,
-            shared_image->color_space(), shared_image->format(),
-            cc::PlaybackImageProvider::RasterMode::kGpu,
-            context_provider_wrapper);
+      auto& context_provider = context_provider_wrapper->ContextProvider();
+      CanvasImageProvider image_provider(
+          context_provider.ImageDecodeCache(kN32_SkColorType),
+          shared_image->format() == viz::SinglePlaneFormat::kRGBA_F16
+              ? context_provider.ImageDecodeCache(kRGBA_F16_SkColorType)
+              : nullptr,
+          shared_image->color_space(), shared_image->format(),
+          cc::PlaybackImageProvider::RasterMode::kGpu,
+          context_provider_wrapper);
 
-        lease->SetSyncToken(context_provider.RasterInterface()->RasterSharedImage(
-            shared_image, lease->GetSyncToken(), std::move(last_recording),
-            &image_provider, needs_clear));
+      lease->SetSyncToken(context_provider.RasterInterface()->RasterSharedImage(
+          shared_image, lease->GetSyncToken(), std::move(last_recording),
+          &image_provider, needs_clear));
 
-        image_provider.ReleaseLockedImages();
-        image_provider.UnbindTextureBackedImages();
-      }
+      image_provider.ReleaseLockedImages();
+      image_provider.UnbindTextureBackedImages();
     }
   }
 
