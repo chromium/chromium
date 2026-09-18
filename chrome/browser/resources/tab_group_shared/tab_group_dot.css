@@ -23,6 +23,12 @@ svg {
   width: 8px;
 }
 
+:host([size=large]) #groupSvg,
+:host([size=large]) svg {
+  height: 16px;
+  width: 16px;
+}
+
 #groupDot,
 circle {
   fill: var(--group-dot-color);

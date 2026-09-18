@@ -7,6 +7,7 @@ import '/tab_group_shared/tab_group_dot.js';
 import {CrUrlListItemSize} from '//resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import {TabGroupDotSize} from '/tab_group_shared/tab_group_dot.js';
 
 import type {OrganizerListSectionClient, OrganizerListSectionDelegate} from '../organizer_list_section_delegate.js';
 import type {OrganizerListSectionItem} from '../organizer_list_section_item.js';
@@ -35,7 +36,8 @@ export class TabGroupsDelegate implements
     return {
       title: [group.title],
       prefixIcon: {
-        element: html`<tab-group-dot .color="${group.color}"></tab-group-dot>`,
+        element: html`<tab-group-dot .color="${group.color}"
+            .size="${TabGroupDotSize.LARGE}"></tab-group-dot>`,
       },
       size: CrUrlListItemSize.COMPACT,
       data: group,

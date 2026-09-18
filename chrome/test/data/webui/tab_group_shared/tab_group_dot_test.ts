@@ -6,6 +6,7 @@ import 'chrome://tab-search.top-chrome/strings.m.js';
 import 'chrome://tab-search.top-chrome/tab_group_shared/tab_group_dot.js';
 
 import type {TabGroupDotElement} from 'chrome://tab-search.top-chrome/tab_group_shared/tab_group_dot.js';
+import {TabGroupDotSize} from 'chrome://tab-search.top-chrome/tab_group_shared/tab_group_dot.js';
 import {Color} from 'chrome://tab-search.top-chrome/tab_group_shared/tab_group_types.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -21,14 +22,40 @@ suite('TabGroupDotTest', () => {
   });
 
   test('renders svg and circle', () => {
+    assertEquals(TabGroupDotSize.SMALL, dot.size);
     const svg = dot.shadowRoot.querySelector('svg');
     assertTrue(!!svg);
     assertEquals('-5 -5 10 10', svg.getAttribute('viewBox'));
+    assertEquals('8px', getComputedStyle(svg).width);
+    assertEquals('8px', getComputedStyle(svg).height);
 
     const circle = dot.shadowRoot.querySelector('circle');
     assertTrue(!!circle);
     assertEquals('0', circle.getAttribute('cx'));
     assertEquals('0', circle.getAttribute('cy'));
+    assertEquals('4', circle.getAttribute('r'));
+  });
+
+  test('sets size', async () => {
+    const svg = dot.shadowRoot.querySelector('svg');
+    const circle = dot.shadowRoot.querySelector('circle');
+    assertTrue(!!svg);
+    assertTrue(!!circle);
+
+    dot.size = TabGroupDotSize.LARGE;
+    await microtasksFinished();
+
+    assertEquals('-10 -10 20 20', svg.getAttribute('viewBox'));
+    assertEquals('16px', getComputedStyle(svg).width);
+    assertEquals('16px', getComputedStyle(svg).height);
+    assertEquals('8', circle.getAttribute('r'));
+
+    dot.size = TabGroupDotSize.SMALL;
+    await microtasksFinished();
+
+    assertEquals('-5 -5 10 10', svg.getAttribute('viewBox'));
+    assertEquals('8px', getComputedStyle(svg).width);
+    assertEquals('8px', getComputedStyle(svg).height);
     assertEquals('4', circle.getAttribute('r'));
   });
 

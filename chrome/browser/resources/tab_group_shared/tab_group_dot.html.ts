@@ -9,8 +9,9 @@ import type {TabGroupDotElement} from './tab_group_dot.js';
 export function getHtml(this: TabGroupDotElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<svg id="groupSvg" viewBox="-5 -5 10 10" xmlns="http://www.w3.org/2000/svg">
-  <circle id="groupDot" cx="0" cy="0" r="4"></circle>
+<svg id="groupSvg" viewBox="${this.getViewBox_()}"
+    xmlns="http://www.w3.org/2000/svg">
+  <circle id="groupDot" cx="0" cy="0" r="${this.getRadius_()}"></circle>
 </svg>
 <!--_html_template_end_-->`;
   // clang-format on

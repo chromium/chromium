@@ -7,6 +7,7 @@ import './app.js';
 export type {Range} from '/tab_group_shared/search.js';
 export type {SearchApiProxy} from '/tab_group_shared/search_api_proxy.js';
 export {SearchApiProxyImpl} from '/tab_group_shared/search_api_proxy.js';
+export {TabGroupDotElement, TabGroupDotSize} from '/tab_group_shared/tab_group_dot.js';
 export {OrganizerPanelAppElement} from './app.js';
 export {isSplitTab, OpenTabsDelegate, OpenTabsItemType} from './delegates/open_tabs_delegate.js';
 export type {OpenTabsItem} from './delegates/open_tabs_delegate.js';
