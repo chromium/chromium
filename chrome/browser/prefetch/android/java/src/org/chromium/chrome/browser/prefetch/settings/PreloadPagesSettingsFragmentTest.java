@@ -246,7 +246,7 @@ public class PreloadPagesSettingsFragmentTest {
     @Feature({"PreloadPages"})
     public void testHelpButtonClicked() {
         // Settings in a tab doesn't have a help button or menu.
-        Assume.assumeTrue(!SettingsInTab.isEnabled());
+        Assume.assumeTrue(!SettingsInTab.shouldOpenSettingsInTab());
 
         startSettings();
         HelpAndFeedbackLauncherFactory.setInstanceForTesting(mHelpAndFeedbackLauncher);

@@ -59,11 +59,6 @@ public class SettingsInTab {
         // because desktop windows can be resized to narrow widths (< 600dp).
         if (DeviceInfo.isDesktop()) return true;
 
-        // Foldables must be explicitly checked because they act as tablets while unfolded, but if
-        // the user has settings open and folds the device, we must continue to display settings.
-        // This is consistent with other native pages like Downloads, History, and Bookmarks.
-        if (DeviceInfo.isFoldable()) return true;
-
         // Use an Activity context when available because theme changes reset application-level
         // resource configurations, causing getApplicationContext() to lose its tablet screen width
         // qualifiers (-sw600dp).
@@ -80,19 +75,5 @@ public class SettingsInTab {
             }
         }
         return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
-    }
-
-    /**
-     * Returns whether opening settings should create a settings tab rather than starting {@code
-     * SettingsActivity}.
-     *
-     * <p>TODO(crbug.com/562619494): Remove this method and call {@link #shouldOpenSettingsInTab()}
-     * directly. This is a temporary alias kept so that the call sites outside of settings code are
-     * not renamed twice: the follow-up CLs that make the "shown in tab" state sticky have to
-     * revisit each of them anyway.
-     */
-    @Deprecated
-    public static boolean isEnabled() {
-        return shouldOpenSettingsInTab();
     }
 }

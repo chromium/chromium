@@ -154,8 +154,10 @@ public class AppLocaleUtils {
                     if (success) {
                         // The locale change will trigger a process restart to apply the new
                         // language and reopen chrome when SettingsInTab is enabled. See
-                        // https://crbug.com/545907093.
-                        if (SettingsInTab.isEnabled()) {
+                        // crbug.com/545907093.
+                        // TODO(crbug.com/562619494): Consider passing shownInTab from callers
+                        // rather than querying the global.
+                        if (SettingsInTab.shouldOpenSettingsInTab()) {
                             ApplicationLifetime.setRestartForLocaleSwitch(true);
                         }
                         if (shouldUseSystemManagedLocale()) {

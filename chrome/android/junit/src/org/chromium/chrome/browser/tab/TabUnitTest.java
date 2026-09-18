@@ -990,7 +990,7 @@ public class TabUnitTest {
     @Config(qualifiers = "sw600dp")
     @EnableFeatures({ChromeFeatureList.ANDROID_SETTINGS_URL, ChromeFeatureList.SETTINGS_IN_TAB})
     public void testOnUpdateUrl_IncognitoProfile_Settings_CallsStartSettings() {
-        assertTrue(SettingsInTab.isEnabled());
+        assertTrue(SettingsInTab.shouldOpenSettingsInTab());
         SettingsNavigation mockSettingsNavigation = mock(SettingsNavigation.class);
         SettingsNavigationFactory.setInstanceForTesting(mockSettingsNavigation);
         when(mProfile.isOffTheRecord()).thenReturn(true);
@@ -1017,7 +1017,7 @@ public class TabUnitTest {
     @Config(qualifiers = "sw600dp")
     @EnableFeatures({ChromeFeatureList.ANDROID_SETTINGS_URL, ChromeFeatureList.SETTINGS_IN_TAB})
     public void testOnUpdateUrl_RegularProfile_Settings_DoesNotCallStartSettings() {
-        assertTrue(SettingsInTab.isEnabled());
+        assertTrue(SettingsInTab.shouldOpenSettingsInTab());
         SettingsNavigation mockSettingsNavigation = mock(SettingsNavigation.class);
         SettingsNavigationFactory.setInstanceForTesting(mockSettingsNavigation);
         when(mProfile.isOffTheRecord()).thenReturn(false);

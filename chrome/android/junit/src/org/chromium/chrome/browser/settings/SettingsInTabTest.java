@@ -120,7 +120,15 @@ public class SettingsInTabTest {
     @Test
     @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
     @Config(qualifiers = "sw320dp")
-    public void testShouldOpenSettingsInTab_Foldable_ReturnsTrue() {
+    public void testShouldOpenSettingsInTab_FoldedFoldable_ReturnsFalse() {
+        DeviceInfo.setIsFoldableForTesting(true);
+        assertFalse(SettingsInTab.shouldOpenSettingsInTab());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    @Config(qualifiers = "sw600dp")
+    public void testShouldOpenSettingsInTab_UnfoldedFoldable_ReturnsTrue() {
         DeviceInfo.setIsFoldableForTesting(true);
         assertTrue(SettingsInTab.shouldOpenSettingsInTab());
     }

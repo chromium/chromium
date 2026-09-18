@@ -196,7 +196,7 @@ public class SettingsPageTest {
                     int expectedNarrowMargin =
                             Math.max(minPadding, (appBar.getWidth() - wideMinWidthPx) / 2);
                     boolean isOnWideScreen = expectedNarrowMargin > minPadding;
-                    if (isOnWideScreen || SettingsInTab.isEnabled()) {
+                    if (isOnWideScreen || SettingsInTab.shouldOpenSettingsInTab()) {
                         int itemMargin =
                                 activity.getResources()
                                         .getDimensionPixelSize(R.dimen.settings_item_margin);

@@ -53,7 +53,9 @@ public class AutofillOptionsLauncherTest {
     public void testLauncherStartsAutofillOptionsFragment() {
         launchActivity();
         Class<?> expectedActivityClass =
-                SettingsInTab.isEnabled() ? ChromeLauncherActivity.class : SettingsActivity.class;
+                SettingsInTab.shouldOpenSettingsInTab()
+                        ? ChromeLauncherActivity.class
+                        : SettingsActivity.class;
         intended(
                 allOf(
                         hasComponent(expectedActivityClass.getName()),

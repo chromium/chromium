@@ -559,9 +559,8 @@ public class ChromeActivityUnitTest {
         assertTrue(
                 chromeActivity.onMenuOrKeyboardAction(R.id.preferences_id, /* fromMenu= */ true));
 
-        // Verify that the standard settings activity was launched. SettingsInTab.isEnabled() is
-        // true on foldables even in phone mode, so this asserts that the activity-vs-tab decision
-        // made by ChromeActivity is honored. Regression test for crbug.com/561692651.
+        // Verify that the standard settings activity was launched. Foldables in phone mode
+        // open SettingsActivity rather than a settings tab.
         assertSettingsActivityStarted(chromeActivity);
     }
 
@@ -588,6 +587,7 @@ public class ChromeActivityUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    @Config(qualifiers = "sw600dp")
     public void testPreferencesMenuItem_SettingsInTabFoldable_TabletMode() {
         DeviceInfo.setIsFoldableForTesting(true);
         TestChromeActivity chromeActivity = Mockito.spy(new TestChromeActivity());

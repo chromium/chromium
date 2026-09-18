@@ -932,7 +932,7 @@ public class SigninBridgeTest {
         // When SettingsInTab is enabled on desktop, settings opens in a browser tab via
         // ChromeLauncherActivity (chrome://settings) instead of starting SettingsActivity.
         Assert.assertEquals(
-                SettingsInTab.isEnabled()
+                SettingsInTab.shouldOpenSettingsInTab()
                         ? ChromeLauncherActivity.class.getName()
                         : SettingsActivity.class.getName(),
                 intent.getComponent().getClassName());

@@ -94,7 +94,7 @@ public class LanguageSettingsTest {
         // Back to "Language" screen.
         acceptLanguageList = mActivity.findViewById(R.id.language_list);
         RecyclerViewTestUtils.waitForStableRecyclerView(acceptLanguageList);
-        if (!SettingsInTab.isEnabled()) {
+        if (!SettingsInTab.shouldOpenSettingsInTab()) {
             // Settings in a tab shows the page title in the multi-column header, not in the
             // activity title.
             Assert.assertEquals(

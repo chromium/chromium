@@ -140,7 +140,7 @@ public class AutofillTravelFragmentTest {
     @SmallTest
     public void testHelpMenuTriggersAutofillHelp() {
         // Settings in a tab doesn't have a help button or menu.
-        Assume.assumeTrue(!SettingsInTab.isEnabled());
+        Assume.assumeTrue(!SettingsInTab.shouldOpenSettingsInTab());
 
         mSettingsTestRule.startSettingsActivity();
 
