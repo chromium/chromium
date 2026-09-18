@@ -11,7 +11,6 @@
 #include <unordered_map>
 
 #include "ash/constants/ash_extension_constants.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/constants/webui_url_constants.h"
@@ -78,7 +77,6 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_open_metrics.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
-#include "chrome/browser/ui/webui/ash/cloud_upload/hats_office_trigger.h"
 #include "chrome/browser/ui/webui/ash/office_fallback/office_fallback_ui.h"
 #include "chrome/browser/web_applications/test/profile_test_helper.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -2898,156 +2896,6 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, FileNotInOneDriveOpensSetUpDialog) {
       ash::cloud_upload::kOpenInitialCloudProviderMetric,
       ash::cloud_upload::CloudProvider::kOneDrive, 1);
 }
-
-class OfficeDriveHatsSurvey : public DriveTest {
- public:
-  OfficeDriveHatsSurvey() {
-    feature_list_.InitAndEnableFeature(ash::features::kHappinessTrackingOffice);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Test that the Office HaTS survey for Drive gets triggered when an Office file
-// gets opened in Drive.
-IN_PROC_BROWSER_TEST_F(OfficeDriveHatsSurvey, OpenInDrive) {
-  SetUpTest(/*disable_set_up=*/true, /*launch_files_app=*/false);
-
-  // Install Google Docs PWA.
-  webapps::AppId docs_app_id = web_app::test::InstallDummyWebApp(
-      profile(), "Google Docs",
-      GURL("https://docs.google.com/document/?usp=installed_webapp"));
-  ASSERT_EQ(docs_app_id, ash::kGoogleDocsAppId);
-  apps::AppReadinessWaiter(profile(), ash::kGoogleDocsAppId).Await();
-
-  base::test::TestFuture<std::string, ash::cloud_upload::HatsOfficeLaunchingApp>
-      hats_survey_executed_future;
-  ash::cloud_upload::HatsOfficeTrigger::Get().SetShowSurveyCallbackForTesting(
-      hats_survey_executed_future.GetCallback());
-
-  auto expected_state = apps::InstanceState(apps::kStarted | apps::kRunning |
-                                            apps::kActive | apps::kVisible);
-  apps::AppInstanceWaiter waiter(
-      apps::AppServiceProxyFactory::GetForProfile(profile())
-          ->InstanceRegistry(),
-      ash::kGoogleDocsAppId, expected_state);
-
-  base::test::TestFuture<TaskResult, std::string> task_executed_future;
-  ExecuteFileTask(profile(), CreateWebDriveOfficeTask(), file_urls_,
-                  task_executed_future.GetCallback());
-
-  CHECK_EQ(task_executed_future.Get<0>(), TaskResult::kOpened);
-  waiter.Await();
-
-  // Check that the Drive HaTS survey has been triggered.
-  const auto [app_id, launching_app] = hats_survey_executed_future.Get();
-  ASSERT_EQ(app_id, ash::kGoogleDocsAppId);
-  ASSERT_EQ(launching_app, ash::cloud_upload::HatsOfficeLaunchingApp::kDrive);
-}
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-class OfficeMS365HatsSurvey : public OneDriveTest {
- public:
-  OfficeMS365HatsSurvey() {
-    feature_list_.InitAndEnableFeature(ash::features::kHappinessTrackingOffice);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Test that the right HaTS survey gets triggered when an Office file gets
-// opened in MS365.
-IN_PROC_BROWSER_TEST_F(OfficeMS365HatsSurvey, OpenInMS365) {
-  SetUpTest(/*disable_set_up=*/true, /*launch_files_app=*/false);
-  base::test::TestFuture<std::string, ash::cloud_upload::HatsOfficeLaunchingApp>
-      hats_survey_executed_future;
-  ash::cloud_upload::HatsOfficeTrigger::Get().SetShowSurveyCallbackForTesting(
-      hats_survey_executed_future.GetCallback());
-
-  base::test::TestFuture<TaskResult, std::string> task_executed_future;
-  ExecuteFileTask(profile(), CreateOpenInOfficeTask(), file_urls_,
-                  task_executed_future.GetCallback());
-
-  CHECK_EQ(task_executed_future.Get<0>(), TaskResult::kOpened);
-
-  // Check that the MS365 HaTS survey has been triggered.
-  const auto [app_id, launching_app] = hats_survey_executed_future.Get();
-  ASSERT_EQ(app_id, ash::kMicrosoft365AppId);
-  ASSERT_EQ(launching_app, ash::cloud_upload::HatsOfficeLaunchingApp::kMS365);
-}
-
-// Test that the right HaTS survey for gets triggered when an Office file gets
-// opened in QuickOffice through the fallback dialog.
-IN_PROC_BROWSER_TEST_F(OfficeMS365HatsSurvey, FallbackQuickOffice) {
-  SetUpTest(/*disable_set_up=*/true, /*launch_files_app=*/false,
-            /*connect_to_network=*/false);
-
-  // Watch for dialog URL chrome://office-fallback.
-  GURL expected_dialog_URL(ash::kChromeUIOfficeFallbackURL);
-  content::TestNavigationObserver navigation_observer_dialog(
-      expected_dialog_URL);
-  navigation_observer_dialog.StartWatchingNewWebContents();
-
-  // Launches the office fallback dialog as the system is offline.
-  base::test::TestFuture<TaskResult, std::string> task_executed_future;
-  ExecuteFileTask(profile(), open_in_office_task_, file_urls_,
-                  task_executed_future.GetCallback());
-
-  CHECK_EQ(task_executed_future.Get<0>(), TaskResult::kOpened);
-
-  // Wait for office fallback dialog to open.
-  navigation_observer_dialog.Wait();
-  ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
-
-  base::test::TestFuture<std::string, ash::cloud_upload::HatsOfficeLaunchingApp>
-      hats_survey_executed_future;
-  ash::cloud_upload::HatsOfficeTrigger::Get().SetShowSurveyCallbackForTesting(
-      hats_survey_executed_future.GetCallback());
-
-  // Run dialog callback, with the "quick-office" option.
-  OnDialogChoiceReceived(profile(), open_in_office_task_, file_urls_,
-                         ash::office_fallback::FallbackReason::kOffline,
-                         std::move(cloud_open_metrics_),
-                         ash::office_fallback::kDialogChoiceQuickOffice);
-
-  // Check that the QuickOffice HaTS survey has been triggered.
-  const auto [app_id, launching_app] = hats_survey_executed_future.Get();
-  ASSERT_EQ(app_id, std::string());
-  ASSERT_EQ(launching_app,
-            ash::cloud_upload::HatsOfficeLaunchingApp::kQuickOffice);
-}
-
-class OfficeQuickOfficeHatsSurvey : public InProcessBrowserTest {
- public:
-  OfficeQuickOfficeHatsSurvey() {
-    feature_list_.InitAndEnableFeature(ash::features::kHappinessTrackingOffice);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Test that the right HaTS survey gets triggered when an Office file gets
-// opened in QuickOffice.
-IN_PROC_BROWSER_TEST_F(OfficeQuickOfficeHatsSurvey, OpenInQuickOffice) {
-  storage::FileSystemURL test_url;
-  std::vector<FileSystemURL> file_url{test_url};
-  base::test::TestFuture<std::string, ash::cloud_upload::HatsOfficeLaunchingApp>
-      hats_survey_executed_future;
-  ash::cloud_upload::HatsOfficeTrigger::Get().SetShowSurveyCallbackForTesting(
-      hats_survey_executed_future.GetCallback());
-
-  file_manager::file_tasks::LaunchQuickOffice(browser()->GetProfile(),
-                                              file_url);
-
-  const auto [app_id, launching_app] = hats_survey_executed_future.Get();
-  ASSERT_EQ(app_id, std::string());
-  ASSERT_EQ(launching_app,
-            ash::cloud_upload::HatsOfficeLaunchingApp::kQuickOffice);
-}
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P(
     FileTasksBrowserTest);

@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/constants/webui_url_constants.h"
 #include "ash/public/cpp/new_window_delegate.h"
@@ -50,7 +49,6 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_ui.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/drive_upload_handler.h"
-#include "chrome/browser/ui/webui/ash/cloud_upload/hats_office_trigger.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/one_drive_upload_handler.h"
 #include "chrome/browser/ui/webui/ash/office_fallback/office_fallback_ui.h"
 #include "chrome/grit/generated_resources.h"
@@ -293,13 +291,6 @@ void OpenFileFromODFS(
                       std::move(callback).Run(open);
                     },
                     profile, std::move(callback)));
-            if (base::FeatureList::IsEnabled(
-                    ash::features::kHappinessTrackingOffice)) {
-              ash::cloud_upload::HatsOfficeTrigger::Get()
-                  .ShowSurveyAfterAppInactive(
-                      ash::kMicrosoft365AppId,
-                      ash::cloud_upload::HatsOfficeLaunchingApp::kMS365);
-            }
           },
           profile, file_system, std::move(callback)));
 }

@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "base/command_line.h"
@@ -23,7 +22,6 @@
 #include "chrome/browser/ash/file_manager/office_file_tasks.h"
 #include "chrome/browser/ash/fileapi/external_file_url_util.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
-#include "chrome/browser/ui/webui/ash/cloud_upload/hats_office_trigger.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/drivefs/drivefs_util.h"
@@ -189,11 +187,6 @@ bool OpenHostedFileInNewTabOrApp(Profile* profile,
   if (!app_id.has_value()) {
     std::move(callback).Run(std::nullopt);
     return OpenNewTab(hosted_url);
-  } else if (base::FeatureList::IsEnabled(
-                 ash::features::kHappinessTrackingOffice) &&
-             file_tasks::IsOfficeFile(file_path)) {
-    ash::cloud_upload::HatsOfficeTrigger::Get().ShowSurveyAfterAppInactive(
-        app_id.value(), ash::cloud_upload::HatsOfficeLaunchingApp::kDrive);
   }
   apps::AppServiceProxy* app_service =
       apps::AppServiceProxyFactory::GetForProfile(profile);
