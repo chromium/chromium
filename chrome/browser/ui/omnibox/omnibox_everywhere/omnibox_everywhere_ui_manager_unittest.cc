@@ -2111,7 +2111,10 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   ScopedScreenOverride screen_override(&test_screen);
 
   display::Display display1(1, gfx::Rect(0, 0, 1920, 1080));
-  display1.set_work_area(gfx::Rect(0, 30, 1920, 1050));
+  // Use a top work area offset (50) safely below the native macOS menu bar
+  // (which can be up to ~38pt on MacBook screens with a notch) so AppKit does
+  // not constrain the native window below work_area.origin().
+  display1.set_work_area(gfx::Rect(0, 50, 1920, 1030));
   test_screen.display_list().AddDisplay(display1,
                                         display::DisplayList::Type::PRIMARY);
 
