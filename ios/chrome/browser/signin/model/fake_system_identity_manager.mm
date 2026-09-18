@@ -517,20 +517,6 @@ NSString* FakeSystemIdentityManager::GetCachedHostedDomainForIdentity(
   return nil;
 }
 
-void FakeSystemIdentityManager::FetchCapabilities(
-    id<SystemIdentity> identity,
-    const std::vector<std::string>& names,
-    FetchCapabilitiesCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK([storage_ containsIdentityWithGaiaID:identity.gaiaId]);
-  // Fetching the hosted domain is an asynchronous operation (as it requires
-  // some network calls).
-  PostClosure(
-      FROM_HERE,
-      base::BindOnce(&FakeSystemIdentityManager::FetchCapabilitiesAsync,
-                     GetWeakPtr(), identity, names, std::move(callback)));
-}
-
 void FakeSystemIdentityManager::FetchCapabilitiesWithPartial(
     id<SystemIdentity> identity,
     const std::vector<std::string>& names,

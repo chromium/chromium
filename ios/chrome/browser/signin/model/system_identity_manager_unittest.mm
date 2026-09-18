@@ -87,11 +87,6 @@ class TestSystemIdentityManager : public SystemIdentityManager {
       id<SystemIdentity> identity) final {
     NOTREACHED();
   }
-  void FetchCapabilities(id<SystemIdentity> identity,
-                         const std::vector<std::string>& names,
-                         FetchCapabilitiesCallback callback) final {
-    NOTREACHED();
-  }
   void FetchCapabilitiesWithPartial(
       id<SystemIdentity> identity,
       const std::vector<std::string>& names,

@@ -280,12 +280,16 @@ class SystemIdentityManager {
   virtual NSString* GetCachedHostedDomainForIdentity(
       id<SystemIdentity> identity) = 0;
 
-  // Asynchronously returns the capabilities for `identity`.
-  // TODO(crbug.com/517899430): remove this method once it's replaced by
-  // FetchCapabilitiesWithPartial.
+  // Deprecated. Asynchronously returns the capabilities for `identity`.
+  // Use the overload taking a `FetchPartialCapabilitiesCallback` instead.
+  // This method is intentionally not pure virtual, so that implementations can
+  // stop overriding it before this declaration is removed. This matters for
+  // the implementation living in the internal repository, which cannot be
+  // updated atomically with this header.
+  // TODO(crbug.com/517899430): Remove once no implementation overrides it.
   virtual void FetchCapabilities(id<SystemIdentity> identity,
                                  const std::vector<std::string>& names,
-                                 FetchCapabilitiesCallback callback) = 0;
+                                 FetchCapabilitiesCallback callback) {}
 
   // Asynchronously returns the capabilities for `identity`.
   // * `partial_callback` is called multiple times as a subset of capabilities
@@ -293,12 +297,29 @@ class SystemIdentityManager {
   // * `completion` is called once after all capabilities in `names` are fetched
   // or the fetch has failed. No more calls to `partial_callback` are expected
   // after `completion` is called.
-  // TODO(crbug.com/517899430): Have `completion` as the last parameter.
+  // The default implementation forwards to the deprecated
+  // `FetchCapabilitiesWithPartial()` so that implementations which have not
+  // migrated to this name yet keep working.
+  // TODO(crbug.com/517899430): Make pure virtual once all implementations
+  // override it, and remove the default implementation.
+  virtual void FetchCapabilities(
+      id<SystemIdentity> identity,
+      const std::vector<std::string>& names,
+      FetchPartialCapabilitiesCallback partial_callback,
+      FetchCapabilitiesCompletion completion);
+
+  // Deprecated alias of the `FetchCapabilities()` overload above. Do not call
+  // nor override in new code.
+  // This method is intentionally not pure virtual, so that implementations can
+  // stop overriding it before this declaration is removed. This matters for
+  // the implementation living in the internal repository, which cannot be
+  // updated atomically with this header.
+  // TODO(crbug.com/517899430): Remove once no implementation overrides it.
   virtual void FetchCapabilitiesWithPartial(
       id<SystemIdentity> identity,
       const std::vector<std::string>& names,
       FetchCapabilitiesCompletion completion,
-      FetchPartialCapabilitiesCallback partial_callback) = 0;
+      FetchPartialCapabilitiesCallback partial_callback);
 
   // Registers the provider for building external privacy context.
   virtual void RegisterExternalPrivacyContextProvider(

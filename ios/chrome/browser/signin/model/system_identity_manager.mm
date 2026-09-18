@@ -6,6 +6,7 @@
 
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
+#import "base/notreached.h"
 #import "google_apis/gaia/gaia_id.h"
 
 namespace {
@@ -86,6 +87,31 @@ SystemIdentityManager::PresentLinkedServicesSettingsDetailsController(
   configuration.dismissal_completion = std::move(dismissal_completion);
   return PresentLinkedServicesSettingsDetailsController(
       std::move(configuration));
+}
+
+void SystemIdentityManager::FetchCapabilities(
+    id<SystemIdentity> identity,
+    const std::vector<std::string>& names,
+    FetchPartialCapabilitiesCallback partial_callback,
+    FetchCapabilitiesCompletion completion) {
+  // Transitional: forwards to the deprecated name so that implementations
+  // which have not been renamed yet keep working. Implementations live in
+  // separate repositories and cannot all be updated atomically.
+  // TODO(crbug.com/517899430): Remove once all implementations override this
+  // method, and make it pure virtual.
+  FetchCapabilitiesWithPartial(identity, names, std::move(completion),
+                               std::move(partial_callback));
+}
+
+void SystemIdentityManager::FetchCapabilitiesWithPartial(
+    id<SystemIdentity> identity,
+    const std::vector<std::string>& names,
+    FetchCapabilitiesCompletion completion,
+    FetchPartialCapabilitiesCallback partial_callback) {
+  // Only reached if an implementation overrides neither this method nor
+  // `FetchCapabilities()`, in which case the fetch would silently never
+  // complete.
+  NOTREACHED();
 }
 
 void SystemIdentityManager::FireIdentityListChanged() {

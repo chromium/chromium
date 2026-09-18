@@ -56,9 +56,6 @@ class ChromiumSystemIdentityManager final : public SystemIdentityManager {
   void GetHostedDomain(id<SystemIdentity> identity,
                        HostedDomainCallback callback) final;
   NSString* GetCachedHostedDomainForIdentity(id<SystemIdentity> identity) final;
-  void FetchCapabilities(id<SystemIdentity> identity,
-                         const std::vector<std::string>& names,
-                         FetchCapabilitiesCallback callback) final;
   void FetchCapabilitiesWithPartial(
       id<SystemIdentity> identity,
       const std::vector<std::string>& names,
@@ -186,13 +183,6 @@ void ChromiumSystemIdentityManager::GetHostedDomain(
 
 NSString* ChromiumSystemIdentityManager::GetCachedHostedDomainForIdentity(
     id<SystemIdentity> identity) {
-  NOTREACHED();
-}
-
-void ChromiumSystemIdentityManager::FetchCapabilities(
-    id<SystemIdentity> identity,
-    const std::vector<std::string>& names,
-    FetchCapabilitiesCallback callback) {
   NOTREACHED();
 }
 

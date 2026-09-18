@@ -83,11 +83,9 @@ void AccountCapabilitiesFetcherIOS::StartImpl() {
       &AccountCapabilitiesFetcherIOS::CompleteFetchAndMaybeDestroySelf,
       weak_ptr_factory_.GetWeakPtr());
 
-  GetApplicationContext()
-      ->GetSystemIdentityManager()
-      ->FetchCapabilitiesWithPartial(identity, capability_names,
-                                     std::move(completion_callback),
-                                     std::move(partial_callback));
+  GetApplicationContext()->GetSystemIdentityManager()->FetchCapabilities(
+      identity, capability_names, std::move(partial_callback),
+      std::move(completion_callback));
 }
 
 }  // namespace ios
