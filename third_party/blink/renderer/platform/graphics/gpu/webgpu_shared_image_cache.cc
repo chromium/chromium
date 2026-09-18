@@ -67,14 +67,6 @@ gpu::SyncToken WebGpuSharedImageLease::GetSyncToken() const {
   return resource_.sync_token_;
 }
 
-gpu::raster::RasterInterface* WebGpuSharedImageLease::RasterInterface() const {
-  if (!resource_.context_provider_wrapper_) {
-    return nullptr;
-  }
-  return resource_.context_provider_wrapper_->ContextProvider()
-      .RasterInterface();
-}
-
 bool WebGpuSharedImageLease::IsGpuContextLost() const {
   return ::blink::IsGpuContextLost(resource_.context_provider_wrapper_.get());
 }
