@@ -1285,10 +1285,10 @@ def libfuzzer_mac_asan_builder(**kwargs):
 
 libfuzzer_mac_asan_builder(
     name = "Libfuzzer Upload Mac ASan",
-    builderless = False,
+    builderless = True,
     cores = 12,
-    # TODO(crbug.com/543006750): Revert to MAC_DEFAULT after arm migration.
-    os = os.MAC_15,
+    os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
     clusterfuzz_archive_path = "mac-release-asan/libfuzzer-mac-release",
     execution_timeout = 4 * time.hour,
 )
