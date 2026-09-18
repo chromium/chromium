@@ -56,18 +56,12 @@ class EslintTsTest(unittest.TestCase):
 
     if "compilerOptions" not in config:
       config["compilerOptions"] = {}
-    if "paths" not in config["compilerOptions"]:
-      config["compilerOptions"]["paths"] = {}
-
     gen_lit_dir = os.path.join(
       os.path.abspath(_BUILD_DIR), "gen", "third_party", "lit", "v3_0"
     )
     rel_lit_path = os.path.relpath(gen_lit_dir, self._in_folder).replace(
       os.sep, "/"
     )
-    config["compilerOptions"]["paths"]["/resources/lit/v3_0/lit.rollup.js"] = [
-      rel_lit_path + "/lit.d.ts"
-    ]
 
     config["compilerOptions"]["rootDir"] = os.path.normpath(self._in_folder)
     config["extends"] = os.path.normpath(

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CrLitElement} from '/resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {MyTestMixin} from './with_webui_plugin_lit_element_bindings_violations_mixin.js';
 import type {MyTestMixinInterface} from './with_webui_plugin_lit_element_bindings_violations_mixin.js';

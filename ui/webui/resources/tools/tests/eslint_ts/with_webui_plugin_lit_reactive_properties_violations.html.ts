@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html} from '/resources/lit/v3_0/lit.rollup.js';
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {SomeFooElement} from './with_webui_plugin_lit_reactive_properties_violations.js';
 

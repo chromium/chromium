@@ -4,7 +4,7 @@
 
 import './with_webui_plugin_lit_element_bindings_templatized_dom_nodes_child.js';
 
-import {CrLitElement} from '/resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getHtml} from './with_webui_plugin_lit_element_bindings_templatized_dom_nodes_violations.html.js';
 
