@@ -2092,6 +2092,10 @@ class CONTENT_EXPORT WebContentsImpl
   RenderWidgetHostView* GetCreatedWidget(ChildProcessId process_id,
                                          int route_id);
 
+  // Closes and destroys any pending or shown popup widgets created by
+  // `render_frame_host`.
+  void ClosePopupWidgetsForFrame(RenderFrameHost* render_frame_host);
+
   // Finds the new CreatedWindow by |main_frame_widget_route_id|, initializes
   // it for renderer-initiated creation, and returns it. Note that this can only
   // be called once as this call also removes it from the internal map.
