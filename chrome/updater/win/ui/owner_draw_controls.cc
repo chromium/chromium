@@ -89,23 +89,13 @@ COLORREF GetColor(bool is_high_contrast,
                           : normal_color;
 }
 
-// Returns the system color brush corresponding to `high_contrast_color_index`
-// if `is_high_contrast` is true. Otherwise, it returns `normal_brush`.
-HBRUSH GetColorBrush(bool is_high_contrast,
-                     HBRUSH normal_brush,
-                     int high_contrast_color_index) {
-  return is_high_contrast ? ::GetSysColorBrush(high_contrast_color_index)
-                          : normal_brush;
-}
-
 gfx::Rect RectToGfx(const RECT& rc) {
   return gfx::Rect(rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top);
 }
 
 }  // namespace
 
-CaptionButton::CaptionButton()
-    : foreground_brush_(::CreateSolidBrush(kCaptionForegroundColor)) {
+CaptionButton::CaptionButton() {
   UpdateThemeState();
 }
 
@@ -249,6 +239,7 @@ LRESULT CaptionButton::OnShowWindow(UINT, WPARAM wparam, LPARAM) {
 
 void CaptionButton::UpdateThemeState() {
   is_high_contrast_ = IsHighContrastOn();
+  is_dark_mode_ = IsDarkModeOn();
 }
 
 LRESULT CaptionButton::OnThemeChanged(UINT, WPARAM, LPARAM) {
@@ -261,46 +252,92 @@ LRESULT CaptionButton::OnThemeChanged(UINT, WPARAM, LPARAM) {
 }
 
 void CaptionButton::DrawItem(LPDRAWITEMSTRUCT draw_item_struct) {
-  const bool is_high_contrast = is_high_contrast_;
+  const PaintState paint_state =
+      SnapshotPaintState(draw_item_struct->itemState);
+
   HDC dc = draw_item_struct->hDC;
+  // For BS_OWNERDRAW, `rcItem` is the control's client rect.
+  const RECT& button_rect = draw_item_struct->rcItem;
 
-  RECT button_rect = {};
-  ::GetClientRect(hwnd(), &button_rect);
-
-  if (is_mouse_hovering_) {
-    // Keep the hover highlight solid.
-    FillSolidRect(dc, button_rect,
-                  GetColor(is_high_contrast, kCaptionBkHover, COLOR_HIGHLIGHT));
+  if (paint_state.paints_hover()) {
+    const COLORREF hover_color =
+        paint_state.is_dark_mode ? kCaptionBkHoverDark : kCaptionBkHover;
+    FillSolidRect(
+        dc, button_rect,
+        GetColor(paint_state.is_high_contrast, hover_color, COLOR_HIGHLIGHT));
   } else {
     // Draw the parent's gradient background.
     DrawParentBackground(hwnd(), dc, button_rect);
   }
 
-  int rgn_width = Width(button_rect) * 12 / 31;
-  int rgn_height = Height(button_rect) * 12 / 31;
+  const int rgn_width = Width(button_rect) * 12 / 31;
+  const int rgn_height = Height(button_rect) * 12 / 31;
   base::win::ScopedGDIObject<HRGN> rgn(GetButtonRgn(rgn_width, rgn_height));
+  if (rgn.is_valid()) {
+    // Center the glyph within `button_rect`. For BS_OWNERDRAW `rcItem` is the
+    // control's client rect (left/top are 0), but including `left`/`top` keeps
+    // centering robust against arbitrary bounding rects.
+    ::OffsetRgn(rgn.get(),
+                button_rect.left + (Width(button_rect) - rgn_width) / 2,
+                button_rect.top + (Height(button_rect) - rgn_height) / 2);
 
-  // Center the button in the outer button rect.
-  ::OffsetRgn(rgn.get(), (Width(button_rect) - rgn_width) / 2,
-              (Height(button_rect) - rgn_height) / 2);
-
-  ::FillRgn(
-      dc, rgn.get(),
-      GetColorBrush(is_high_contrast, foreground_brush_.get(),
-                    is_mouse_hovering_ ? COLOR_HIGHLIGHTTEXT : COLOR_BTNTEXT));
-
-  const UINT button_state = draw_item_struct->itemState;
-  if (!(button_state & ODS_FOCUS)) {
-    return;
+    // Use the stock DC brush colored for this paint state. `dc` is owned by
+    // the system only for the duration of this WM_DRAWITEM dispatch, so the
+    // previous brush color is deliberately not saved and restored.
+    ::SetDCBrushColor(dc, ResolveGlyphColor(paint_state));
+    ::FillRgn(dc, rgn.get(), static_cast<HBRUSH>(::GetStockObject(DC_BRUSH)));
   }
 
-  // Draw a scaled frame for the active/focused state.
+  // Drawn even when the control was too small for a glyph: BS_OWNERDRAW
+  // suppresses the stock focus rectangle, so this is the only keyboard focus
+  // indicator the button has.
+  if (draw_item_struct->itemState & ODS_FOCUS) {
+    DrawFocusFrame(dc, button_rect, paint_state);
+  }
+}
+
+bool CaptionButton::IsEnabled() const {
+  return IsWindow() && ::IsWindowEnabled(hwnd());
+}
+
+CaptionButton::PaintState CaptionButton::SnapshotPaintState(
+    UINT item_state) const {
+  // TODO(crbug.com/409590312): Decode ODS_SELECTED for the pressed state.
+  return {.is_enabled = !(item_state & ODS_DISABLED),
+          .is_hovered = is_mouse_hovering_,
+          .is_dark_mode = is_dark_mode_,
+          .is_high_contrast = is_high_contrast_};
+}
+
+// static
+COLORREF CaptionButton::ResolveGlyphColor(PaintState paint_state) {
+  if (paint_state.is_high_contrast) {
+    // High contrast replaces the design tokens with system colors, and is the
+    // only mode in which hover changes the glyph: the background becomes
+    // COLOR_HIGHLIGHT, so the glyph must become COLOR_HIGHLIGHTTEXT to stay
+    // legible. Both read `paints_hover()`, so they cannot disagree. The
+    // tokens below are hover independent by spec.
+    return ::GetSysColor(paint_state.paints_hover() ? COLOR_HIGHLIGHTTEXT
+                                                    : COLOR_BTNTEXT);
+  }
+  return paint_state.is_dark_mode ? kCaptionForegroundColorDark
+                                  : kCaptionForegroundColor;
+}
+
+void CaptionButton::DrawFocusFrame(HDC dc,
+                                   const RECT& button_rect,
+                                   PaintState paint_state) const {
+  const COLORREF frame_color =
+      paint_state.is_dark_mode ? kCaptionFrameColorDark : kCaptionFrameColor;
   base::win::ScopedGDIObject<HPEN> pen(::CreatePen(
       PS_INSIDEFRAME,
       /*thickness=*/
       std::max(1, ::MulDiv(1, /*dpi=*/::GetDpiForWindow(hwnd()),
                            USER_DEFAULT_SCREEN_DPI)),
-      GetColor(is_high_contrast, kCaptionFrameColor, COLOR_WINDOWFRAME)));
+      GetColor(paint_state.is_high_contrast, frame_color, COLOR_WINDOWFRAME)));
+  if (!pen.is_valid()) {
+    return;
+  }
   const HPEN old_pen = static_cast<HPEN>(::SelectObject(dc, pen.get()));
   const HBRUSH old_brush =
       static_cast<HBRUSH>(::SelectObject(dc, ::GetStockObject(NULL_BRUSH)));
@@ -310,10 +347,6 @@ void CaptionButton::DrawItem(LPDRAWITEMSTRUCT draw_item_struct) {
 
   ::SelectObject(dc, old_brush);
   ::SelectObject(dc, old_pen);
-}
-
-bool CaptionButton::IsEnabled() const {
-  return IsWindow() && ::IsWindowEnabled(hwnd());
 }
 
 COLORREF CaptionButton::bk_color() const {
@@ -740,7 +773,7 @@ BOOL CustomDlgColors::ProcessWindowMessage(HWND,
 
   if (is_dark_mode_) {
     COLORREF text_color =
-        (msg == WM_CTLCOLORBTN) ? RGB(0xA8, 0xC7, 0xFA) : RGB(0xFF, 0xFF, 0xFF);
+        (msg == WM_CTLCOLORBTN) ? kDialogButtonTextDark : kTextColorDark;
     ::SetTextColor(dc, text_color);
     ::SetBkColor(dc, kBgColorDark);
     if (!dark_bk_brush_.is_valid()) {
@@ -917,7 +950,7 @@ LRESULT CustomProgressBarCtrl::OnPaint(UINT, WPARAM, LPARAM) {
       if (is_high_contrast) {
         fill_color = ::GetSysColor(COLOR_HIGHLIGHT);
       } else if (is_dark_mode) {
-        fill_color = RGB(0xA8, 0xC7, 0xFA);
+        fill_color = kProgressBarFillColorDark;
       }
       base::win::ScopedGDIObject<HBRUSH> fill_brush(
           ::CreateSolidBrush(fill_color));

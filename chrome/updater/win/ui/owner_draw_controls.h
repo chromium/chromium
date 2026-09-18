@@ -48,8 +48,6 @@ class CaptionButton : public SubclassedWindow {
   const std::wstring& tool_tip_text() const;
   void set_tool_tip_text(const std::wstring& tool_tip_text);
 
-  void UpdateThemeState();
-
   CR_BEGIN_MSG_MAP_EX(CaptionButton)
     CR_MESSAGE_RANGE_HANDLER_EX(WM_MOUSEFIRST, WM_MOUSELAST, OnMouseMessage)
     CR_MESSAGE_HANDLER_EX(WM_MOUSEMOVE, OnMouseMove)
@@ -66,13 +64,41 @@ class CaptionButton : public SubclassedWindow {
 
   virtual HRGN GetButtonRgn(int rgn_width, int rgn_height) = 0;
 
+  // Refreshes the cached theme flags that the paint path reads.
+  void UpdateThemeState();
+
   // Cancels any outstanding TME_LEAVE registration so that the next cursor
   // entry re-arms it.
   void CancelMouseTracking();
 
   // Reports the control's own WS_DISABLED bit. Hover gating needs the enabled
-  // bit outside a draw cycle.
+  // bit outside a draw cycle; the paint path uses ODS_DISABLED instead.
   bool IsEnabled() const;
+
+  // Everything a single paint resolves against, snapshotted once so that the
+  // glyph and the background resolve against the same state.
+  struct PaintState {
+    bool is_enabled = false;
+    bool is_hovered = false;
+    bool is_dark_mode = false;
+    bool is_high_contrast = false;
+
+    // Whether this paint draws the hover treatment. `is_enabled` comes from
+    // `DRAWITEMSTRUCT::itemState` while `is_hovered` is a live member, so the
+    // two can disagree. Both the background and the glyph must ask this
+    // rather than `is_hovered`, otherwise a disabled control can paint a
+    // COLOR_HIGHLIGHTTEXT glyph on a non-highlight background.
+    bool paints_hover() const { return is_hovered && is_enabled; }
+  };
+  PaintState SnapshotPaintState(UINT item_state) const;
+
+  // Returns the color the glyph is painted with for the given `paint_state`.
+  static COLORREF ResolveGlyphColor(PaintState paint_state);
+
+  // Draws the focused-state border for the control.
+  void DrawFocusFrame(HDC dc,
+                      const RECT& button_rect,
+                      PaintState paint_state) const;
 
   LRESULT OnMouseMessage(UINT msg, WPARAM wparam, LPARAM lparam);
   LRESULT OnMouseMove(UINT msg, WPARAM wparam, LPARAM lparam);
@@ -82,13 +108,13 @@ class CaptionButton : public SubclassedWindow {
   LRESULT OnThemeChanged(UINT msg, WPARAM wparam, LPARAM lparam);
 
   COLORREF bk_color_ = RGB(0, 0, 0);
-  base::win::ScopedGDIObject<HBRUSH> foreground_brush_;
 
   HWND tool_tip_window_ = nullptr;
   std::wstring tool_tip_text_;
   bool is_tracking_mouse_events_ = false;
   bool is_mouse_hovering_ = false;
   bool is_high_contrast_ = false;
+  bool is_dark_mode_ = false;
 
   CR_MSG_MAP_CLASS_DECLARATIONS(CaptionButton)
 };

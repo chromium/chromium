@@ -27,6 +27,7 @@
 #include "chrome/updater/win/ui/l10n_util.h"
 #include "chrome/updater/win/ui/message_loop.h"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
+#include "chrome/updater/win/ui/ui_test_util.h"
 #include "chrome/updater/win/ui/ui_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -56,20 +57,7 @@ class MockProgressWndEvents : public ui::ProgressWndEvents {
   MOCK_METHOD(void, DoCancel, (), (override));
 };
 
-base::win::ScopedGDIObject<HBITMAP> CreateTestDIB24(HDC dc,
-                                                    int width,
-                                                    int height) {
-  BITMAPINFO bi = {};
-  bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-  bi.bmiHeader.biWidth = width;
-  bi.bmiHeader.biHeight = height;
-  bi.bmiHeader.biPlanes = 1;
-  bi.bmiHeader.biBitCount = 24;
-  bi.bmiHeader.biCompression = BI_RGB;
-  void* bits = nullptr;
-  return base::win::ScopedGDIObject<HBITMAP>(
-      ::CreateDIBSection(dc, &bi, DIB_RGB_COLORS, &bits, nullptr, 0));
-}
+using ::updater::test::CreateTestDIB24;
 
 // Writes the setting `IsDarkModeOn()` reads. Requires an active
 // `RegistryOverrideManager` for HKEY_CURRENT_USER.

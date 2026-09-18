@@ -6,22 +6,219 @@
 
 #include <windows.h>
 
+#include <iterator>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
+#include "base/test/test_reg_util_win.h"
+#include "base/win/registry.h"
+#include "base/win/scoped_gdi_object.h"
+#include "base/win/scoped_hdc.h"
+#include "base/win/scoped_select_object.h"
 #include "chrome/updater/win/ui/message_loop.h"
 #include "chrome/updater/win/ui/owner_draw_controls_test_api.h"
 #include "chrome/updater/win/ui/progress_wnd.h"
+#include "chrome/updater/win/ui/ui_constants.h"
+#include "chrome/updater/win/ui/ui_test_util.h"
+#include "chrome/updater/win/ui/ui_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace updater::ui {
-
 namespace {
+
+using ::testing::Gt;
+using ::testing::Optional;
+using ::updater::test::CreateTestDIB24;
+
+// Writes the registry value that `IsDarkModeOn()` reads. Fatal on failure so
+// that a broken setup surfaces directly instead of cascading into confusing
+// color mismatches.
+void SetDarkMode(bool dark) {
+  base::win::RegKey key;
+  ASSERT_EQ(
+      key.Create(
+          HKEY_CURRENT_USER,
+          L"Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+          KEY_SET_VALUE),
+      ERROR_SUCCESS);
+  ASSERT_EQ(
+      key.WriteValue(L"AppsUseLightTheme", static_cast<DWORD>(dark ? 0 : 1)),
+      ERROR_SUCCESS);
+}
+
+// Pre-filled into the test bitmap before every render. No design token and no
+// system color is magenta, so any pixel still holding this after a render is a
+// region no paint path covered. Without it such a region reads as black, which
+// is `COLOR_BTNTEXT` on the default palette, and a missing background would be
+// reported as a glyph color mismatch.
+constexpr COLORREF kUnpaintedSentinel = RGB(0xFF, 0x00, 0xFF);
+
+// Renders `button` through its owner-draw entry point into a memory DC with
+// `item_state` as the DRAWITEMSTRUCT state, then invokes `sample` with the
+// memory DC and the control's dimensions. Returns false and adds a failure if
+// the GDI setup could not be completed, so a setup problem is not reported as
+// a color mismatch.
+template <typename SampleFn>
+bool DrawItemAndSample(CaptionButton& button,
+                       UINT item_state,
+                       SampleFn sample) {
+  RECT client_rect = {};
+  if (!::GetClientRect(button.hwnd(), &client_rect)) {
+    ADD_FAILURE() << "::GetClientRect failed for the caption button";
+    return false;
+  }
+  const int width = client_rect.right - client_rect.left;
+  const int height = client_rect.bottom - client_rect.top;
+  if (width <= 0 || height <= 0) {
+    ADD_FAILURE() << "Caption button has an empty client rect: " << width << "x"
+                  << height;
+    return false;
+  }
+
+  base::win::ScopedGetDC screen_dc(nullptr);
+  base::win::ScopedCreateDC memory_dc(::CreateCompatibleDC(screen_dc));
+  if (!memory_dc.is_valid()) {
+    ADD_FAILURE() << "::CreateCompatibleDC failed";
+    return false;
+  }
+  base::win::ScopedGDIObject<HBITMAP> bitmap =
+      CreateTestDIB24(memory_dc.get(), width, height);
+  if (!bitmap.is_valid()) {
+    ADD_FAILURE() << "::CreateDIBSection failed";
+    return false;
+  }
+  // `select_bitmap` is declared after `bitmap` so that the DC's original
+  // bitmap is restored before `bitmap` is destroyed: ::DeleteObject() fails
+  // for a bitmap that is still selected into a DC, which would leak it.
+  base::win::ScopedSelectObject select_bitmap(memory_dc.get(), bitmap.get());
+
+  base::win::ScopedGDIObject<HBRUSH> sentinel_brush(
+      ::CreateSolidBrush(kUnpaintedSentinel));
+  if (!sentinel_brush.is_valid()) {
+    ADD_FAILURE() << "::CreateSolidBrush failed for the sentinel fill";
+    return false;
+  }
+  ::FillRect(memory_dc.get(), &client_rect, sentinel_brush.get());
+
+  DRAWITEMSTRUCT draw_item = {.CtlType = ODT_BUTTON,
+                              .itemState = item_state,
+                              .hwndItem = button.hwnd(),
+                              .hDC = memory_dc.get(),
+                              .rcItem = client_rect};
+  button.DrawItem(&draw_item);
+
+  // Every pixel must have been covered, either by the hover fill or by the
+  // parent's background. `DrawParentBackground()` returns early on several GDI
+  // failures, and leaving that undetected would surface later as a confusing
+  // color mismatch rather than as the setup problem it is.
+  //
+  // Two full-rect scans via ::GetPixel() (sentinel verification and color
+  // counting) require O(width * height) GDI round-trips, which is acceptable
+  // here because caption buttons are small (~30x30).
+  int unpainted = 0;
+  for (int y = 0; y < height; ++y) {
+    for (int x = 0; x < width; ++x) {
+      if (::GetPixel(memory_dc.get(), x, y) == kUnpaintedSentinel) {
+        ++unpainted;
+      }
+    }
+  }
+  if (unpainted) {
+    ADD_FAILURE() << "The control's background was not painted: " << unpainted
+                  << " of " << (width * height)
+                  << " pixels still hold the sentinel";
+    return false;
+  }
+
+  sample(memory_dc.get(), width, height);
+  return true;
+}
+
+// Returns how many pixels of the rendered control are exactly `color`.
+//
+// The glyph is deliberately located by color rather than by coordinate: its
+// position is the result of two independent floor divisions (`DrawItem`'s
+// centering and `GetButtonRgn`'s own centering) and its thickness scales with
+// DPI, so a fixed sample point silently reads the background at some control
+// heights. The minimize bar is only two pixels tall at 96 DPI, which makes
+// that failure mode easy to hit and hard to see.
+std::optional<int> CountRenderedPixels(CaptionButton& button,
+                                       UINT item_state,
+                                       COLORREF color) {
+  int count = 0;
+  if (!DrawItemAndSample(button, item_state,
+                         [&](HDC dc, int width, int height) {
+                           for (int y = 0; y < height; ++y) {
+                             for (int x = 0; x < width; ++x) {
+                               if (::GetPixel(dc, x, y) == color) {
+                                 ++count;
+                               }
+                             }
+                           }
+                         })) {
+    // Distinguishable from a real count of zero, so a rendering failure does
+    // not also read as a color mismatch.
+    return std::nullopt;
+  }
+  return count;
+}
+
+// Where in the control's client rect to sample a single rendered pixel. Used
+// for the surfaces whose geometry is unambiguous, unlike the glyph.
+enum class SamplePoint {
+  // A point inside the control but outside the glyph region, which spans the
+  // centered middle 12/31 of the control in both axes.
+  kBackground,
+  // A point along the control's outer boundary where the focus frame is drawn.
+  kFrame,
+};
+
+// Returns the pixel at `point` in the rendered control.
+COLORREF SampleRenderedPixel(CaptionButton& button,
+                             UINT item_state,
+                             SamplePoint point) {
+  COLORREF color = CLR_INVALID;
+  if (!DrawItemAndSample(
+          button, item_state, [&](HDC dc, int width, int height) {
+            POINT sample = {};
+            switch (point) {
+              case SamplePoint::kBackground:
+                // Just inside the border, clear of the glyph.
+                sample = {2, 2};
+                break;
+              case SamplePoint::kFrame:
+                // The focus frame is drawn along the border.
+                sample = {0, 0};
+                break;
+            }
+            // Both points are fixed offsets, so a caller that
+            // shrinks the control would otherwise read
+            // CLR_INVALID and report it as a color mismatch.
+            if (sample.x >= width || sample.y >= height) {
+              ADD_FAILURE() << "Sample point (" << sample.x << ", " << sample.y
+                            << ") is outside the " << width << "x" << height
+                            << " control";
+              return;
+            }
+            color = ::GetPixel(dc, sample.x, sample.y);
+          })) {
+    return CLR_INVALID;
+  }
+  return color;
+}
 
 // Thin wrappers over the test API, so the expectations below read as if they
 // were calling the control directly.
+COLORREF GlyphColor(const CaptionButton& button) {
+  return test::CaptionButtonTestApi(button).ResolveGlyphColor();
+}
+bool IsDarkMode(const CaptionButton& button) {
+  return test::CaptionButtonTestApi(button).is_dark_mode();
+}
 bool IsMouseHovering(const CaptionButton& button) {
   return test::CaptionButtonTestApi(button).is_mouse_hovering();
 }
@@ -46,7 +243,7 @@ class NoOpProgressWndEvents : public ProgressWndEvents {
 
 // Exercises the owner-drawn caption buttons. `ProgressWnd` is only the host:
 // it is the sole production dialog that installs an `OwnerDrawTitleBar`, and
-// the controls need a real parent window to be created.
+// the controls need a real parent window to be created and painted.
 class CaptionButtonTest : public ::testing::Test {
  protected:
   // Destroyed here rather than in each test body, so an early return from a
@@ -59,7 +256,11 @@ class CaptionButtonTest : public ::testing::Test {
     }
   }
 
-  void CreateTestDialog() {
+  // Creates the host dialog, optionally configuring `dark` mode.
+  void CreateTestDialog(std::optional<bool> dark = std::nullopt) {
+    if (dark.has_value()) {
+      ASSERT_NO_FATAL_FAILURE(SetDarkMode(*dark));
+    }
     progress_wnd_ = std::make_unique<ProgressWnd>(&message_loop_, nullptr);
     progress_wnd_->SetEventSink(&events_);
     // `Initialize()` calls `Create()`, which realizes the dialog and its
@@ -90,6 +291,255 @@ class CaptionButtonTest : public ::testing::Test {
   std::unique_ptr<ProgressWnd> progress_wnd_;
   std::unique_ptr<test::OwnerDrawTitleBarTestApi> title_bar_;
 };
+
+// The tests that pin a specific light or dark color. `IsDarkModeOn()` reports
+// the system window color rather than `AppsUseLightTheme` while high contrast
+// is on, and SPI_GETHIGHCONTRAST is not redirected by `registry_override_`, so
+// a host that is actually in high contrast cannot be driven into a known
+// state. The state machine tests above have no such dependency and still run.
+class CaptionButtonThemeTest : public CaptionButtonTest {
+ protected:
+  void SetUp() override {
+    // Chained even though the base currently has no `SetUp()`, so that adding
+    // one later does not silently skip it. The override must be installed
+    // before any test body calls `CreateTestDialog(dark)`.
+    CaptionButtonTest::SetUp();
+    if (HasFatalFailure()) {
+      return;
+    }
+    ASSERT_NO_FATAL_FAILURE(
+        registry_override_.OverrideRegistry(HKEY_CURRENT_USER));
+    if (IsHighContrastOn()) {
+      GTEST_SKIP() << "The host is in high contrast mode";
+    }
+  }
+
+  registry_util::RegistryOverrideManager registry_override_;
+};
+
+// Every state the glyph color is resolved from, enumerated. This is possible
+// because `ResolveGlyphColor()` is static and total, so no window, no message
+// pump and no particular host theme is needed. The fixtured tests below cover
+// the message plumbing that produces these states and the fact that the
+// resolved color is what actually reaches the pixels.
+TEST(CaptionButtonGlyphColorTest, EveryState) {
+  using PaintState = test::CaptionButtonTestApi::PaintState;
+  const struct {
+    const char* name;
+    PaintState paint_state;
+    COLORREF expected;
+  } kCases[] = {
+      // Light mode.
+      {"light",
+       {.is_enabled = true, .is_hovered = false},
+       kCaptionForegroundColor},
+      {"light hovered",
+       {.is_enabled = true, .is_hovered = true},
+       kCaptionForegroundColor},
+
+      // Dark mode.
+      {"dark",
+       {.is_enabled = true, .is_hovered = false, .is_dark_mode = true},
+       kCaptionForegroundColorDark},
+      {"dark hovered",
+       {.is_enabled = true, .is_hovered = true, .is_dark_mode = true},
+       kCaptionForegroundColorDark},
+
+      // High contrast replaces the tokens with system colors, and is the only
+      // mode in which hover changes the glyph. Dark mode must not affect it.
+      {"high contrast",
+       {.is_enabled = true, .is_hovered = false, .is_high_contrast = true},
+       ::GetSysColor(COLOR_BTNTEXT)},
+      {"high contrast hovered",
+       {.is_enabled = true, .is_hovered = true, .is_high_contrast = true},
+       ::GetSysColor(COLOR_HIGHLIGHTTEXT)},
+      {"high contrast dark",
+       {.is_enabled = true,
+        .is_hovered = false,
+        .is_dark_mode = true,
+        .is_high_contrast = true},
+       ::GetSysColor(COLOR_BTNTEXT)},
+      {"high contrast dark hovered",
+       {.is_enabled = true,
+        .is_hovered = true,
+        .is_dark_mode = true,
+        .is_high_contrast = true},
+       ::GetSysColor(COLOR_HIGHLIGHTTEXT)},
+  };
+  ASSERT_EQ(std::size(kCases), 8u)
+      << "One case per combination of hover, dark mode and high contrast, "
+         "with `is_enabled` held true; the disabled case is pinned separately";
+
+  for (const auto& test_case : kCases) {
+    SCOPED_TRACE(test_case.name);
+    EXPECT_EQ(
+        test::CaptionButtonTestApi::ResolveGlyphColor(test_case.paint_state),
+        test_case.expected);
+  }
+}
+
+// A disabled control never paints the hover treatment, so the glyph must not
+// resolve to COLOR_HIGHLIGHTTEXT even if a stale hover flag reaches the paint.
+// High contrast is the only mode where this is observable, because it is the
+// only one whose glyph color depends on hover. `DrawItem()` gates the
+// background on the same predicate, so the two cannot disagree.
+TEST(CaptionButtonGlyphColorTest, DisabledNeverResolvesTheHoverGlyph) {
+  EXPECT_EQ(
+      test::CaptionButtonTestApi::ResolveGlyphColor(
+          {.is_enabled = false, .is_hovered = true, .is_high_contrast = true}),
+      ::GetSysColor(COLOR_BTNTEXT));
+}
+
+// The caption buttons report and paint the accent color in light mode.
+TEST_F(CaptionButtonThemeTest, LightMode) {
+  ASSERT_NO_FATAL_FAILURE(CreateTestDialog(/*dark=*/false));
+
+  EXPECT_FALSE(IsDarkMode(close_button()));
+  EXPECT_FALSE(IsDarkMode(minimize_button()));
+  EXPECT_EQ(GlyphColor(close_button()), kCaptionForegroundColor);
+  EXPECT_EQ(GlyphColor(minimize_button()), kCaptionForegroundColor);
+
+  EXPECT_THAT(CountRenderedPixels(close_button(), /*item_state=*/0,
+                                  kCaptionForegroundColor),
+              Optional(Gt(0)));
+  EXPECT_THAT(CountRenderedPixels(minimize_button(), /*item_state=*/0,
+                                  kCaptionForegroundColor),
+              Optional(Gt(0)));
+}
+
+// Caption buttons created while the system is already in dark mode pick up the
+// dark accent color.
+TEST_F(CaptionButtonThemeTest, DarkMode) {
+  ASSERT_NO_FATAL_FAILURE(CreateTestDialog(/*dark=*/true));
+
+  EXPECT_TRUE(IsDarkMode(close_button()));
+  EXPECT_TRUE(IsDarkMode(minimize_button()));
+  EXPECT_EQ(GlyphColor(close_button()), kCaptionForegroundColorDark);
+  EXPECT_EQ(GlyphColor(minimize_button()), kCaptionForegroundColorDark);
+
+  EXPECT_THAT(CountRenderedPixels(close_button(), /*item_state=*/0,
+                                  kCaptionForegroundColorDark),
+              Optional(Gt(0)));
+  EXPECT_THAT(CountRenderedPixels(minimize_button(), /*item_state=*/0,
+                                  kCaptionForegroundColorDark),
+              Optional(Gt(0)));
+}
+
+// The hover background and the focus frame use their own tokens, neither of
+// which is reachable through the reported glyph color.
+TEST_F(CaptionButtonThemeTest, HoverAndFocusPixels) {
+  ASSERT_NO_FATAL_FAILURE(CreateTestDialog(/*dark=*/false));
+
+  ::SendMessage(close_button().hwnd(), WM_MOUSEMOVE, 0, 0);
+  ASSERT_TRUE(IsMouseHovering(close_button()));
+  EXPECT_EQ(SampleRenderedPixel(close_button(), /*item_state=*/0,
+                                SamplePoint::kBackground),
+            kCaptionBkHover);
+  EXPECT_EQ(SampleRenderedPixel(close_button(), ODS_FOCUS, SamplePoint::kFrame),
+            kCaptionFrameColor);
+
+  ASSERT_NO_FATAL_FAILURE(SetDarkMode(true));
+  ::SendMessage(close_button().hwnd(), WM_THEMECHANGED, 0, 0);
+  ::SendMessage(close_button().hwnd(), WM_MOUSEMOVE, 0, 0);
+  ASSERT_TRUE(IsMouseHovering(close_button()));
+  EXPECT_EQ(SampleRenderedPixel(close_button(), /*item_state=*/0,
+                                SamplePoint::kBackground),
+            kCaptionBkHoverDark);
+  EXPECT_EQ(SampleRenderedPixel(close_button(), ODS_FOCUS, SamplePoint::kFrame),
+            kCaptionFrameColorDark);
+}
+
+// A control too small for a glyph region still paints its background and its
+// focus frame. `GetButtonRgn` returns null below a few pixels, and because
+// BS_OWNERDRAW suppresses the stock focus rectangle, skipping the frame here
+// would leave the button with no keyboard focus indicator at all.
+TEST_F(CaptionButtonThemeTest, DegenerateSizeStillDrawsFocusFrame) {
+  ASSERT_NO_FATAL_FAILURE(CreateTestDialog(/*dark=*/false));
+
+  // 2x2 is below the glyph threshold: the region is sized at 12/31 of the
+  // control, which floors to zero, and `GetButtonRgn` returns null.
+  ASSERT_TRUE(::SetWindowPos(close_button().hwnd(), nullptr, 0, 0, 2, 2,
+                             SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE));
+
+  // No glyph: the accent color must not appear anywhere.
+  EXPECT_THAT(CountRenderedPixels(close_button(), /*item_state=*/0,
+                                  kCaptionForegroundColor),
+              Optional(0));
+
+  // The focus frame is still drawn.
+  EXPECT_THAT(
+      CountRenderedPixels(close_button(), ODS_FOCUS, kCaptionFrameColor),
+      Optional(Gt(0)));
+}
+
+// The caption buttons follow a dynamic theme change delivered as
+// WM_SETTINGCHANGE, and a WM_SETTINGCHANGE that `CouldBeThemeSettingChange()`
+// rejects leaves them alone.
+TEST_F(CaptionButtonThemeTest, ThemeSwitching) {
+  ASSERT_NO_FATAL_FAILURE(CreateTestDialog(/*dark=*/false));
+  ASSERT_EQ(GlyphColor(close_button()), kCaptionForegroundColor);
+
+  // The theme is switched underneath first, so a handler that acted on the
+  // rejected message would be caught by the color check below.
+  ASSERT_NO_FATAL_FAILURE(SetDarkMode(true));
+  ::SendMessage(progress_wnd_->hwnd(), WM_SETTINGCHANGE,
+                SPI_SETNONCLIENTMETRICS,
+                reinterpret_cast<LPARAM>(L"WindowMetrics"));
+  EXPECT_FALSE(IsDarkMode(close_button()));
+  EXPECT_EQ(GlyphColor(close_button()), kCaptionForegroundColor);
+
+  // "ImmersiveColorSet" is the section the shell broadcasts on a light/dark
+  // mode change, and arrives with a zero wParam, which is accepted.
+  ::SendMessage(progress_wnd_->hwnd(), WM_SETTINGCHANGE, 0,
+                reinterpret_cast<LPARAM>(L"ImmersiveColorSet"));
+  EXPECT_TRUE(IsDarkMode(close_button()));
+  EXPECT_TRUE(IsDarkMode(minimize_button()));
+  EXPECT_EQ(GlyphColor(close_button()), kCaptionForegroundColorDark);
+  EXPECT_EQ(GlyphColor(minimize_button()), kCaptionForegroundColorDark);
+
+  // Switching back via WM_THEMECHANGED restores the light mode color. The
+  // system sends WM_THEMECHANGED to every window, including children, so the
+  // broadcast is simulated here rather than relying on parent propagation.
+  ASSERT_NO_FATAL_FAILURE(SetDarkMode(false));
+  ::SendMessage(progress_wnd_->hwnd(), WM_THEMECHANGED, 0, 0);
+  ::SendMessage(close_button().hwnd(), WM_THEMECHANGED, 0, 0);
+  ::SendMessage(minimize_button().hwnd(), WM_THEMECHANGED, 0, 0);
+  EXPECT_FALSE(IsDarkMode(close_button()));
+  EXPECT_FALSE(IsDarkMode(minimize_button()));
+  EXPECT_EQ(GlyphColor(close_button()), kCaptionForegroundColor);
+  EXPECT_EQ(GlyphColor(minimize_button()), kCaptionForegroundColor);
+}
+
+// Pins the propagation rule in `OmahaWnd::RepaintForThemeChange()`: the system
+// delivers WM_THEMECHANGED to children directly, so the dialog must not
+// forward it.
+TEST_F(CaptionButtonThemeTest, ThemeChangedIsNotForwardedToChildren) {
+  ASSERT_NO_FATAL_FAILURE(CreateTestDialog(/*dark=*/false));
+  ASSERT_FALSE(IsDarkMode(close_button()));
+
+  ASSERT_NO_FATAL_FAILURE(SetDarkMode(true));
+  ::SendMessage(progress_wnd_->hwnd(), WM_THEMECHANGED, 0, 0);
+  EXPECT_FALSE(IsDarkMode(close_button()))
+      << "WM_THEMECHANGED must not be forwarded to descendants; the system "
+         "already delivers it to them";
+
+  // Which the control does act on, so the check above is not just asserting
+  // that nothing works.
+  ::SendMessage(close_button().hwnd(), WM_THEMECHANGED, 0, 0);
+  EXPECT_TRUE(IsDarkMode(close_button()));
+}
+
+// The other side of that rule: WM_SYSCOLORCHANGE only reaches top-level
+// windows, so the dialog must forward it.
+TEST_F(CaptionButtonThemeTest, SysColorChangeIsForwardedToChildren) {
+  ASSERT_NO_FATAL_FAILURE(CreateTestDialog(/*dark=*/false));
+  ASSERT_FALSE(IsDarkMode(close_button()));
+
+  ASSERT_NO_FATAL_FAILURE(SetDarkMode(true));
+  ::SendMessage(progress_wnd_->hwnd(), WM_SYSCOLORCHANGE, 0, 0);
+  EXPECT_TRUE(IsDarkMode(close_button()));
+  EXPECT_TRUE(IsDarkMode(minimize_button()));
+}
 
 TEST_F(CaptionButtonTest, HoverIgnoresPointsOutsideTheClientRect) {
   ASSERT_NO_FATAL_FAILURE(CreateTestDialog());

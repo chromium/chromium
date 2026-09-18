@@ -19,9 +19,25 @@ class CaptionButtonTestApi {
   CaptionButtonTestApi(const CaptionButtonTestApi&) = delete;
   CaptionButtonTestApi& operator=(const CaptionButtonTestApi&) = delete;
 
+  using PaintState = ::updater::ui::CaptionButton::PaintState;
+
   bool is_mouse_hovering() const { return button_->is_mouse_hovering_; }
   bool is_tracking_mouse_events() const {
     return button_->is_tracking_mouse_events_;
+  }
+  bool is_dark_mode() const { return button_->is_dark_mode_; }
+
+  // The color this button would paint its glyph with right now.
+  COLORREF ResolveGlyphColor() const {
+    const UINT item_state = button_->IsEnabled() ? 0 : ODS_DISABLED;
+    return ui::CaptionButton::ResolveGlyphColor(
+        button_->SnapshotPaintState(item_state));
+  }
+
+  // The same resolution for a state the caller constructs, which is what makes
+  // the combinations testable without a window.
+  static COLORREF ResolveGlyphColor(PaintState paint_state) {
+    return ui::CaptionButton::ResolveGlyphColor(paint_state);
   }
 
  private:
