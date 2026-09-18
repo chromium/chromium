@@ -54,7 +54,6 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/date_components.h"
 #include "third_party/blink/renderer/platform/text/date_time_format.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
@@ -156,14 +155,6 @@ MultipleFieldsTemporalInputTypeView::GetDateTimeEditElementIfCreated() const {
   return HasCreatedShadowSubtree() ? GetDateTimeEditElement() : nullptr;
 }
 
-ClearButtonElement* MultipleFieldsTemporalInputTypeView::GetClearButtonElement()
-    const {
-  auto* element = GetElement().EnsureShadowSubtree()->getElementById(
-      shadow_element_names::kIdClearButton);
-  CHECK(!element || IsA<ClearButtonElement>(element));
-  return To<ClearButtonElement>(element);
-}
-
 PickerIndicatorElement*
 MultipleFieldsTemporalInputTypeView::GetPickerIndicatorElement() const {
   auto* element = GetElement().EnsureShadowSubtree()->getElementById(
@@ -218,7 +209,6 @@ void MultipleFieldsTemporalInputTypeView::EditControlValueChanged() {
     GetElement().DispatchInputEvent();
   }
   GetElement().NotifyFormStateChanged();
-  GetElement().UpdateClearButtonVisibility();
 }
 
 String MultipleFieldsTemporalInputTypeView::FormatDateTimeFieldsState(
@@ -387,8 +377,6 @@ void MultipleFieldsTemporalInputTypeView::CreateShadowSubtree() {
 void MultipleFieldsTemporalInputTypeView::DestroyShadowSubtree() {
   DCHECK(!is_destroying_shadow_subtree_);
   is_destroying_shadow_subtree_ = true;
-  if (ClearButtonElement* element = GetClearButtonElement())
-    element->RemoveClearButtonOwner();
   if (DateTimeEditElement* element = GetDateTimeEditElement())
     element->RemoveEditControlOwner();
   if (PickerIndicatorElement* element = GetPickerIndicatorElement())
@@ -459,10 +447,6 @@ void MultipleFieldsTemporalInputTypeView::DisabledAttributeChanged(
     edit->DisabledStateChanged();
 }
 
-void MultipleFieldsTemporalInputTypeView::RequiredAttributeChanged() {
-  UpdateClearButtonVisibility();
-}
-
 void MultipleFieldsTemporalInputTypeView::HandleKeydownEvent(
     KeyboardEvent& event) {
   if (!GetElement().IsFocused())
@@ -519,7 +503,6 @@ void MultipleFieldsTemporalInputTypeView::RestoreFormControlState(
       DateTimeFieldsState::RestoreFormControlState(state);
   edit->SetValueAsDateTimeFieldsState(date_time_fields_state);
   GetElement().SetNonAttributeValue(input_type_->SanitizeValue(edit->Value()));
-  UpdateClearButtonVisibility();
 }
 
 FormControlState MultipleFieldsTemporalInputTypeView::SaveFormControlState()
@@ -583,7 +566,6 @@ void MultipleFieldsTemporalInputTypeView::UpdateView() {
     edit->SetValueAsDate(layout_parameters, date);
   else
     edit->SetEmptyValue(layout_parameters, date);
-  UpdateClearButtonVisibility();
 }
 
 AppearanceValue MultipleFieldsTemporalInputTypeView::AutoAppearance() const {
@@ -653,46 +635,6 @@ void MultipleFieldsTemporalInputTypeView::ShowPickerIndicator() {
   DCHECK(GetPickerIndicatorElement());
   GetPickerIndicatorElement()->RemoveInlineStyleProperty(
       CSSPropertyID::kDisplay);
-}
-
-void MultipleFieldsTemporalInputTypeView::FocusAndSelectClearButtonOwner() {
-  CHECK(
-      !RuntimeEnabledFeatures::HTMLInputElementDropWebkitClearButtonEnabled());
-  GetElement().Focus(FocusParams(FocusTrigger::kUserGesture));
-}
-
-bool MultipleFieldsTemporalInputTypeView::
-    ShouldClearButtonRespondToMouseEvents() {
-  CHECK(
-      !RuntimeEnabledFeatures::HTMLInputElementDropWebkitClearButtonEnabled());
-  return !GetElement().IsDisabledOrReadOnly() && !GetElement().IsRequired();
-}
-
-void MultipleFieldsTemporalInputTypeView::ClearValue() {
-  CHECK(
-      !RuntimeEnabledFeatures::HTMLInputElementDropWebkitClearButtonEnabled());
-  GetElement().SetValue("",
-                        TextFieldEventBehavior::kDispatchInputAndChangeEvent);
-  GetElement().UpdateClearButtonVisibility();
-}
-
-void MultipleFieldsTemporalInputTypeView::UpdateClearButtonVisibility() {
-  ClearButtonElement* clear_button = GetClearButtonElement();
-  if (!clear_button)
-    return;
-  CHECK(
-      !RuntimeEnabledFeatures::HTMLInputElementDropWebkitClearButtonEnabled());
-
-  if (GetElement().IsRequired() ||
-      !GetDateTimeEditElement()->AnyEditableFieldsHaveValues()) {
-    clear_button->SetInlineStyleProperty(CSSPropertyID::kOpacity, 0.0,
-                                         CSSPrimitiveValue::UnitType::kNumber);
-    clear_button->SetInlineStyleProperty(CSSPropertyID::kPointerEvents,
-                                         CSSValueID::kNone);
-  } else {
-    clear_button->RemoveInlineStyleProperty(CSSPropertyID::kOpacity);
-    clear_button->RemoveInlineStyleProperty(CSSPropertyID::kPointerEvents);
-  }
 }
 
 TextDirection MultipleFieldsTemporalInputTypeView::ComputedTextDirection() {

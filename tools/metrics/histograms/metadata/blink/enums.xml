@@ -2692,7 +2692,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2277" label="V8DeoptimizerDisableSpeculation"/>
   <int value="2278" label="CSSSelectorCue"/>
   <int value="2279" label="CSSSelectorWebkitCalendarPickerIndicator"/>
-  <int value="2280" label="CSSSelectorWebkitClearButton"/>
+  <int value="2280" label="OBSOLETE_CSSSelectorWebkitClearButton"/>
   <int value="2281" label="CSSSelectorWebkitColorSwatch"/>
   <int value="2282" label="CSSSelectorWebkitColorSwatchWrapper"/>
   <int value="2283" label="CSSSelectorWebkitDateAndTimeValue"/>

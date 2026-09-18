@@ -3591,14 +3591,6 @@
       name: "HTMLElementScrollParent",
       status: "experimental",
     },
-    // Remove support for `::-webkit-clear-button`.
-    // This shipped in M149 and the flag can be removed in M151.,
-    // NOTE: when this flag is removed, be sure to also remove "clear"
-    // from third_party/blink/renderer/core/html/shadow/shadow_element_names.json5.
-    {
-      name: "HTMLInputElementDropWebkitClearButton",
-      status: "stable"
-    },
     // Adds support for the `::interest-button` pseudo element, which is a sub-
     // feature of the interest invokers feature.
     // https://open-ui.org/components/interest-invokers.explainer/

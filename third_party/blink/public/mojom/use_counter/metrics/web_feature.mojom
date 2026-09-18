@@ -1644,7 +1644,7 @@ enum WebFeature {
   kV8DeoptimizerDisableSpeculation = 2277,
   kCSSSelectorCue = 2278,
   kCSSSelectorWebkitCalendarPickerIndicator = 2279,
-  kCSSSelectorWebkitClearButton = 2280,
+  kOBSOLETE_CSSSelectorWebkitClearButton = 2280,
   kCSSSelectorWebkitColorSwatch = 2281,
   kCSSSelectorWebkitColorSwatchWrapper = 2282,
   kCSSSelectorWebkitDateAndTimeValue = 2283,

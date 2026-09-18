@@ -38,10 +38,6 @@
       Symbol: "kIdSpinButton",
     },
     {
-      name: "clear",
-      Symbol: "kIdClearButton",
-    },
-    {
       name: "editing-view-port",
       Symbol: "kIdEditingViewPort",
     },

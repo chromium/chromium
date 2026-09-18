@@ -1127,8 +1127,6 @@ TEST(CSSSelectorParserTest, UseCountShadowPseudo) {
               WebFeature::kCSSSelectorInternalMediaControlsOverlayCastButton);
   ExpectCount("::-webkit-calendar-picker-indicator",
               WebFeature::kCSSSelectorWebkitCalendarPickerIndicator);
-  ExpectCount("::-webkit-clear-button",
-              WebFeature::kCSSSelectorWebkitClearButton);
   ExpectCount("::-webkit-color-swatch",
               WebFeature::kCSSSelectorWebkitColorSwatch);
   ExpectCount("::-webkit-color-swatch-wrapper",

@@ -242,7 +242,6 @@ TEST_F(CSSSupportsParserTest, ConsumeSupportsSelectorFn) {
   EXPECT_TRUE(ConsumeSupportsSelectorFn("selector(a + div#test::before)"));
   EXPECT_TRUE(ConsumeSupportsSelectorFn("selector(a.cls:hover)"));
   EXPECT_TRUE(ConsumeSupportsSelectorFn("selector(a.cls::before)"));
-  EXPECT_TRUE(ConsumeSupportsSelectorFn("selector(div::-webkit-clear-button)"));
   EXPECT_TRUE(ConsumeSupportsSelectorFn("selector(:is(.a))"));
   EXPECT_TRUE(ConsumeSupportsSelectorFn("selector(:where(.a))"));
   EXPECT_TRUE(ConsumeSupportsSelectorFn("selector(:has(.a))"));

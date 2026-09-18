@@ -2451,7 +2451,8 @@ void CSSSelectorParser::SplitCompoundAtImplicitCombinator(
   //
   // Example:
   //
-  // input#x::-webkit-clear-button -> [ ::-webkit-clear-button, input, #x ]
+  // input#x::-webkit-search-cancel-button -> [ ::-webkit-search-cancel-button,
+  // input, #x ]
   //
   // Likewise, ::slotted() pseudo-element has an implicit ShadowSlot combinator
   // to its left for finding matching slot element in other TreeScope.
@@ -2500,7 +2501,6 @@ WebFeature FeatureForWebKitCustomPseudoElement(const AtomicString& name) {
        WebFeature::kCSSSelectorInternalMediaControlsOverlayCastButton},
       {"-webkit-calendar-picker-indicator",
        WebFeature::kCSSSelectorWebkitCalendarPickerIndicator},
-      {"-webkit-clear-button", WebFeature::kCSSSelectorWebkitClearButton},
       {"-webkit-color-swatch", WebFeature::kCSSSelectorWebkitColorSwatch},
       {"-webkit-color-swatch-wrapper",
        WebFeature::kCSSSelectorWebkitColorSwatchWrapper},

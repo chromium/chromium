@@ -32,7 +32,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_MULTIPLE_FIELDS_TEMPORAL_INPUT_TYPE_VIEW_H_
 
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
-#include "third_party/blink/renderer/core/html/forms/clear_button_element.h"
 #include "third_party/blink/renderer/core/html/forms/date_time_edit_element.h"
 #include "third_party/blink/renderer/core/html/forms/input_type_view.h"
 #include "third_party/blink/renderer/core/html/forms/picker_indicator_element.h"
@@ -46,8 +45,7 @@ class MultipleFieldsTemporalInputTypeView final
     : public GarbageCollected<MultipleFieldsTemporalInputTypeView>,
       public InputTypeView,
       protected DateTimeEditElement::EditControlOwner,
-      protected PickerIndicatorElement::PickerIndicatorOwner,
-      protected ClearButtonElement::ClearButtonOwner {
+      protected PickerIndicatorElement::PickerIndicatorOwner {
  public:
   MultipleFieldsTemporalInputTypeView(HTMLInputElement&,
                                       BaseTemporalInputType&);
@@ -78,11 +76,6 @@ class MultipleFieldsTemporalInputTypeView final
   void DidEndChooser() final;
   String AriaLabelForPickerIndicator() const final;
 
-  // ClearButtonElement::ClearButtonOwner functions.
-  void FocusAndSelectClearButtonOwner() override;
-  bool ShouldClearButtonRespondToMouseEvents() override;
-  void ClearValue() override;
-
   // InputTypeView functions
   void Blur() final;
   AppearanceValue AutoAppearance() const override;
@@ -105,7 +98,6 @@ class MultipleFieldsTemporalInputTypeView final
   bool HasCustomFocusLogic() const final;
   void MinOrMaxAttributeChanged() final;
   void ReadonlyAttributeChanged() final;
-  void RequiredAttributeChanged() final;
   void RestoreFormControlState(const FormControlState&) final;
   FormControlState SaveFormControlState() const final;
   void DidSetValue(const String&, bool value_changed) final;
@@ -113,14 +105,12 @@ class MultipleFieldsTemporalInputTypeView final
   void UpdateView() final;
   void ValueAttributeChanged() override;
   void ListAttributeTargetChanged() final;
-  void UpdateClearButtonVisibility() final;
   TextDirection ComputedTextDirection() final;
   AXObject* PopupRootAXObject() final;
 
   DateTimeEditElement* GetDateTimeEditElement() const;
   // Similar to GetDateTimeEditElement(), but does not force creation.
   DateTimeEditElement* GetDateTimeEditElementIfCreated() const;
-  ClearButtonElement* GetClearButtonElement() const;
   PickerIndicatorElement* GetPickerIndicatorElement() const;
   bool ContainsFocusedShadowElement() const;
   void ShowPickerIndicator();

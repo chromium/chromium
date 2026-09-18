@@ -114,10 +114,7 @@ AppearanceValue AutoAppearanceFor(const Element& element) {
         element.FastGetAttribute(html_names::kIdAttr);
     if (id_value == shadow_element_names::kIdSliderThumb)
       return AppearanceValue::kSliderThumbHorizontal;
-    if (id_value == shadow_element_names::kIdSearchClearButton ||
-        (!RuntimeEnabledFeatures::
-             HTMLInputElementDropWebkitClearButtonEnabled() &&
-         id_value == shadow_element_names::kIdClearButton)) {
+    if (id_value == shadow_element_names::kIdSearchClearButton) {
       return AppearanceValue::kSearchFieldCancelButton;
     }
 
