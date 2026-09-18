@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
 #include "chrome/common/url_constants.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -42,13 +44,17 @@ TEST_F(ChromePermissionManifestTest, ChromeUntrustedURLPermissionInvalid) {
 }
 
 TEST_F(ChromePermissionManifestTest, ChromeURLPermissionAllowedWithFlag) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      extensions_features::kDisableExtensionsOnChromeUrlsSwitch);
   // Ignore the policy delegate for this test.
   PermissionsData::SetPolicyDelegate(nullptr);
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kExtensionsOnChromeURLs);
   std::string error;
   scoped_refptr<Extension> extension =
-    LoadAndExpectSuccess("permission_chrome_url_invalid.json");
+      LoadAndExpectSuccess("permission_chrome_url_invalid.json");
+  ASSERT_TRUE(extension);
   EXPECT_EQ("", error);
   const GURL& newtab_url = chrome::ChromeUINewTabURLAsGURL();
   EXPECT_TRUE(
@@ -60,6 +66,9 @@ TEST_F(ChromePermissionManifestTest, ChromeURLPermissionAllowedWithFlag) {
 // kExtensionsOnChromeURLs flag enabled.
 TEST_F(ChromePermissionManifestTest,
        ChromeUntrustedURLPermissionDisallowedWithFlag) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      extensions_features::kDisableExtensionsOnChromeUrlsSwitch);
   // Ignore the policy delegate for this test.
   PermissionsData::SetPolicyDelegate(nullptr);
   base::CommandLine::ForCurrentProcess()->AppendSwitch(

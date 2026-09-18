@@ -6,12 +6,14 @@
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
 #include "chrome/common/webui_url_constants.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
@@ -65,10 +67,14 @@ TEST_F(ContentScriptsManifestTest, MatchPattern) {
 }
 
 TEST_F(ContentScriptsManifestTest, OnChromeUrlsWithFlag) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      extensions_features::kDisableExtensionsOnChromeUrlsSwitch);
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kExtensionsOnChromeURLs);
   scoped_refptr<Extension> extension =
       LoadAndExpectSuccess("content_script_invalid_match_chrome_url.json");
+  ASSERT_TRUE(extension);
   const GURL& newtab_url = chrome::ChromeUINewTabURLAsGURL();
   EXPECT_TRUE(
       ContentScriptsInfo::ExtensionHasScriptAtURL(extension.get(), newtab_url));

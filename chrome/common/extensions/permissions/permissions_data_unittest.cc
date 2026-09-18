@@ -352,6 +352,9 @@ TEST(PermissionsDataTest, IsRestrictedUrl) {
   CheckRestrictedUrls(component.get(), /*block_chrome_urls=*/false,
                       /*block_chrome_untrusted_urls=*/false);
 
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      extensions_features::kDisableExtensionsOnChromeUrlsSwitch);
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kExtensionsOnChromeURLs);
   // Enabling the switch should allow all extensions to access chrome urls but
@@ -653,6 +656,9 @@ TEST_F(ExtensionScriptAndCaptureVisibleTest, Permissions) {
 }
 
 TEST_F(ExtensionScriptAndCaptureVisibleTest, PermissionsWithChromeURLsEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      extensions_features::kDisableExtensionsOnChromeUrlsSwitch);
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kExtensionsOnChromeURLs);
 
