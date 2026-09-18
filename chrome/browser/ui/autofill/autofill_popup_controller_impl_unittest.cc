@@ -1511,9 +1511,9 @@ class MockAxTreeManager : public ui::AXTreeManager {
               (const ui::AXTreeID tree_id),
               (const override));
   MOCK_METHOD(ui::AXTreeID, GetTreeID, (), (const override));
-  MOCK_METHOD(ui::AXTreeID, GetParentTreeID, (), (const override));
+  MOCK_METHOD(ui::AXTreeID, GetParentTreeID, (), (const, override));
   MOCK_METHOD(ui::AXNode*, GetRootAsAXNode, (), (const override));
-  MOCK_METHOD(ui::AXNode*, GetParentNodeFromParentTree, (), (const override));
+  MOCK_METHOD(ui::AXNode*, GetParentNodeFromParentTree, (), (const, override));
 };
 
 class MockAxPlatformNodeDelegate : public ui::AXPlatformNodeDelegate {
@@ -1542,8 +1542,8 @@ class MockAxPlatformNode : public ui::AXPlatformNodeBase {
   MockAxPlatformNode& operator=(MockAxPlatformNode&) = delete;
   ~MockAxPlatformNode() override = default;
 
-  MOCK_METHOD(bool, IsDestroyed, (), (const override));
-  MOCK_METHOD(ui::AXPlatformNodeDelegate*, GetDelegate, (), (const override));
+  MOCK_METHOD(bool, IsDestroyed, (), (const, override));
+  MOCK_METHOD(ui::AXPlatformNodeDelegate*, GetDelegate, (), (const, override));
 };
 
 using AutofillPopupControllerImplTestAccessibilityBase =

@@ -21,16 +21,16 @@ class MockAutofillAiModelCache : public AutofillAiModelCache {
               Update,
               (FormSignature, ModelResponse, base::span<const FieldIdentifier>),
               (override));
-  MOCK_METHOD(bool, Contains, (FormSignature), (const override));
+  MOCK_METHOD(bool, Contains, (FormSignature), (const, override));
   MOCK_METHOD(void, Erase, (FormSignature), (override));
   MOCK_METHOD((std::map<FormSignature, CacheEntryWithMetadata>),
               GetAllEntries,
               (),
-              (const override));
+              (const, override));
   MOCK_METHOD((base::flat_map<FieldIdentifier, FieldPrediction>),
               GetFieldPredictions,
               (FormSignature),
-              (const override));
+              (const, override));
 };
 
 }  // namespace autofill

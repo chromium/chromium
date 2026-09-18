@@ -14,7 +14,7 @@ class MockSelectionDelegate : public PopupRowView::SelectionDelegate {
   MockSelectionDelegate();
   ~MockSelectionDelegate() override;
 
-  MOCK_METHOD(std::optional<CellIndex>, GetSelectedCell, (), (const override));
+  MOCK_METHOD(std::optional<CellIndex>, GetSelectedCell, (), (const, override));
   MOCK_METHOD(void,
               SetSelectedCell,
               (std::optional<CellIndex>, PopupCellSelectionSource),

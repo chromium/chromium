@@ -278,7 +278,7 @@ class MockAutofillClient : public TestAutofillClient {
   MOCK_METHOD(base::span<const Suggestion>,
               GetAutofillSuggestions,
               (),
-              (const override));
+              (const, override));
   MOCK_METHOD(void,
               UpdateAutofillDataListValues,
               (const LocalFrameToken&, base::span<const SelectOption> options),

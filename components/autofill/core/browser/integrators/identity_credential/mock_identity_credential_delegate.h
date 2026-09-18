@@ -25,13 +25,13 @@ class MockIdentityCredentialDelegate : public IdentityCredentialDelegate {
                const FormFieldData& field,
                const AutofillField* autofill_field,
                AutofillClient& client),
-              (const override));
+              (const, override));
   MOCK_METHOD(void,
               NotifySuggestionAccepted,
               (const Suggestion& suggestion,
                bool show_modal,
                OnFederatedTokenReceivedCallback callback),
-              (const override));
+              (const, override));
   MOCK_METHOD(std::unique_ptr<SuggestionGenerator>,
               GetIdentityCredentialSuggestionGenerator,
               (),

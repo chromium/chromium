@@ -216,7 +216,7 @@ INSTANTIATE_TEST_SUITE_P(,
 
 class MockSyncService : public syncer::TestSyncService {
  public:
-  MOCK_METHOD(syncer::DataTypeSet, GetActiveDataTypes, (), (const override));
+  MOCK_METHOD(syncer::DataTypeSet, GetActiveDataTypes, (), (const, override));
 };
 
 class MockAutofillClient : public autofill::TestContentAutofillClient {

@@ -128,7 +128,7 @@ class MockAutofillManager : public AutofillManager {
   MOCK_METHOD(const CreditCardAccessManager*,
               GetCreditCardAccessManager,
               (),
-              (const override));
+              (const, override));
 
   base::WeakPtr<AutofillManager> GetWeakPtr() override;
 

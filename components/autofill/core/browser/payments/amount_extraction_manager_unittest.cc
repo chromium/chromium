@@ -84,7 +84,7 @@ class MockAutofillClient : public TestAutofillClient {
               GetRemoteModelExecutor,
               (),
               (override));
-  MOCK_METHOD(bool, IsOffTheRecord, (), (const override));
+  MOCK_METHOD(bool, IsOffTheRecord, (), (const, override));
 };
 
 class MockAmountExtractionManager : public AmountExtractionManager {

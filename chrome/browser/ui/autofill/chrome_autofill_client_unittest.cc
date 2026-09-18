@@ -179,8 +179,8 @@ class MockAutofillFieldPromoController : public AutofillFieldPromoController {
   ~MockAutofillFieldPromoController() override = default;
   MOCK_METHOD(void, Show, (const gfx::RectF&), (override));
   MOCK_METHOD(void, Hide, (), (override));
-  MOCK_METHOD(bool, IsMaybeShowing, (), (const override));
-  MOCK_METHOD(const base::Feature&, GetFeaturePromo, (), (const override));
+  MOCK_METHOD(bool, IsMaybeShowing, (), (const, override));
+  MOCK_METHOD(const base::Feature&, GetFeaturePromo, (), (const, override));
 };
 #endif  // !BUILDFLAG(IS_ANDROID)
 

@@ -33,35 +33,35 @@ class MockAutofillAiImportDataController
   MOCK_METHOD(base::optional_ref<const EntityInstance>,
               GetAutofillAiData,
               (),
-              (const override));
+              (const, override));
   MOCK_METHOD(void, OnSaveButtonClicked, (), (override));
   MOCK_METHOD(std::u16string,
               GetSaveUpdateDialogPrimaryButtonText,
               (),
-              (const override));
-  MOCK_METHOD(std::u16string, GetSaveUpdateDialogTitle, (), (const override));
+              (const, override));
+  MOCK_METHOD(std::u16string, GetSaveUpdateDialogTitle, (), (const, override));
   MOCK_METHOD((int),
               GetSaveUpdateDialogTitleImagesResourceId,
               (),
-              (const override));
-  MOCK_METHOD(std::u16string, GetPrimaryAccountEmail, (), (const override));
+              (const, override));
+  MOCK_METHOD(std::u16string, GetPrimaryAccountEmail, (), (const, override));
   MOCK_METHOD(std::vector<EntityAttributeUpdateDetails>,
               GetUpdatedAttributesDetails,
               (),
-              (const override));
-  MOCK_METHOD(bool, IsWalletableEntity, (), (const override));
-  MOCK_METHOD(bool, IsSavePrompt, (), (const override));
+              (const, override));
+  MOCK_METHOD(bool, IsWalletableEntity, (), (const, override));
+  MOCK_METHOD(bool, IsSavePrompt, (), (const, override));
   MOCK_METHOD(void, OnGoToWalletLinkClicked, (), (override));
-  MOCK_METHOD(bool, CloseOnAccept, (), (const override));
+  MOCK_METHOD(bool, CloseOnAccept, (), (const, override));
   MOCK_METHOD(void,
               OnBubbleClosed,
               (AutofillClient::AutofillAiBubbleResult),
               (override));
-  MOCK_METHOD(int, GetNoticeStringId, (), (const override));
+  MOCK_METHOD(int, GetNoticeStringId, (), (const, override));
   MOCK_METHOD(const LegalMessageLines&,
               GetLegalMessageLines,
               (),
-              (const override));
+              (const, override));
   MOCK_METHOD(void, OnLegalMessageLinkClicked, (const GURL&), (override));
   base::WeakPtr<AutofillAiImportDataController> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();

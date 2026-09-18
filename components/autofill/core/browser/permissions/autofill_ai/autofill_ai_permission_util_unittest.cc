@@ -103,7 +103,7 @@ DenseSet<EntityType> GetPrivatePasses() {
 
 class MockSyncService : public syncer::TestSyncService {
  public:
-  MOCK_METHOD(syncer::DataTypeSet, GetActiveDataTypes, (), (const override));
+  MOCK_METHOD(syncer::DataTypeSet, GetActiveDataTypes, (), (const, override));
 };
 
 // A test fixture that sets up default state so that all AutofillAI-related

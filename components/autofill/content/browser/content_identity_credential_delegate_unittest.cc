@@ -34,7 +34,7 @@ class MockAutofillSource : public content::webid::AutofillSource {
   MOCK_METHOD(const std::optional<std::vector<IdentityRequestAccountPtr>>,
               GetAutofillSuggestions,
               (),
-              (const override));
+              (const, override));
   MOCK_METHOD(void,
               NotifyAutofillSuggestionAccepted,
               (const GURL& idp,
