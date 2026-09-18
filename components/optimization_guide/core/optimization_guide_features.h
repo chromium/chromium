@@ -337,24 +337,6 @@ base::TimeDelta GetOnDeviceStartupMetricDelay();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool IsOnDeviceExecutionEnabled();
 
-// The amount of grace period to use from the last time the feature was used to
-// consider it as recently used. Recent usage is one of the criteria for the
-// base and adaptation on-device models to be downloaded.
-inline constexpr base::TimeDelta
-GetOnDeviceEligibleModelFeatureRecentUsePeriod() {
-  return base::Days(30);
-}
-
-// The on-device model is fetched when the device is considered eligible for
-// on-device execution. When the device stops being eligible, the model is
-// retained for this amount of time. This protects the user from repeatedly
-// downloading the model in the event eligibility fluctuates. for on-device
-// evaluation
-// See on_device_model_component.cc for how eligibility is computed.
-inline constexpr base::TimeDelta GetOnDeviceModelRetentionTime() {
-  return base::Days(30);
-}
-
 // Return the disk space required for on device model install.
 inline constexpr base::ByteSize GetDiskSpaceRequiredForOnDeviceModelInstall() {
   return base::GiB(20);

@@ -46,6 +46,7 @@
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
 #include "components/optimization_guide/core/model_execution/test/request_builder.h"
 #include "components/optimization_guide/core/model_execution/test/response_holder.h"
+#include "components/optimization_guide/core/model_execution/usage_tracker.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
@@ -128,8 +129,9 @@ class SessionImplTest : public testing::Test {
           {{"on_device_model_validation_delay", "0"}}}},
         {});
     // Mark a feature used so the model is eligible to install.
-    model_execution::prefs::RecordFeatureUsage(&broker_.local_state(),
-                                               mojom::OnDeviceFeature::kTest);
+    UsageTracker(&broker_.local_state())
+        .RaisePriority(ToUseCaseName(mojom::OnDeviceFeature::kTest),
+                       UsageTracker::Priority::kBestEffort);
   }
 
   void Initialize(proto::SolutionConfig solution_config) {
@@ -888,8 +890,9 @@ TEST_F(SessionImplTest, ExcusedFeaturesIgnoreRepeats) {
   // TODO(crbug.com/512149280): Move repetition checker to solution config.
   // Currently, this is a hardcoded override in IsRepetitionTrackedFeature.
   // Mark kProofreaderApi as used so the model is eligible.
-  model_execution::prefs::RecordFeatureUsage(
-      &broker_.local_state(), mojom::OnDeviceFeature::kProofreaderApi);
+  UsageTracker(&broker_.local_state())
+      .RaisePriority(ToUseCaseName(mojom::OnDeviceFeature::kProofreaderApi),
+                     UsageTracker::Priority::kBestEffort);
 
   base::HistogramTester histogram_tester;
   Initialize([]() {

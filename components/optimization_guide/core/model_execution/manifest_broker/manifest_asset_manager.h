@@ -43,9 +43,11 @@ class UsageTracker;
 
 // Priorities for assets in the manifest.
 enum class AssetPriority {
-  kSpeculative = 0,
-  kBestEffort = 1,
-  kUserBlocking = 2,
+  kEvictable = 0,
+  kRetain = 1,
+  kSpeculative = 2,
+  kBestEffort = 3,
+  kUserBlocking = 4,
 };
 
 // Tracks the priority of assets in the manifest.
@@ -272,12 +274,11 @@ class ManifestAssetManager : public UsageTracker::Observer {
   };
 
   // UsageTracker::Observer:
-  void OnPriorityIncrease(
-      const std::string& use_case_name,
-      std::optional<UsageTracker::Priority> previous_priority) override;
+  void OnPriorityIncrease(const std::string& use_case_name,
+                          UsageTracker::Priority previous_priority) override;
 
-  // Updates the set of assets required by the active use cases.
-  void UpdateActiveAssets();
+  // Recomputes the priorities of assets required by use cases.
+  void RecomputeAssetPriorities();
 
   // Get disk space, and call `UpdateRegistration` when done.
   void OnDiskSpaceEvaluated(std::optional<base::ByteSize> free_space);

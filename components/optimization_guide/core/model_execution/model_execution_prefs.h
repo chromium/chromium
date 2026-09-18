@@ -82,26 +82,6 @@ extern const char kManifestAssetLedger[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-void PruneOldUsagePrefs(PrefService* local_state);
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-void RecordFeatureUsage(PrefService* local_state,
-                        mojom::OnDeviceFeature feature);
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool WasFeatureRecentlyUsed(const PrefService* local_state,
-                            mojom::OnDeviceFeature feature);
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-void RecordUseCaseUsage(PrefService* local_state,
-                        const std::string& use_case_name);
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-void ClearUseCaseUsage(PrefService* local_state,
-                       const std::string& use_case_name);
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-void ClearAllUseCaseUsages(PrefService* local_state);
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool WasUseCaseRecentlyUsed(const PrefService* local_state,
-                            const std::string& use_case_name);
-
 }  // namespace optimization_guide::model_execution::prefs
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_MODEL_EXECUTION_PREFS_H_

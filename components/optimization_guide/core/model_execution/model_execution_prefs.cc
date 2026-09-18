@@ -4,52 +4,12 @@
 
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 
-#include "base/json/values_util.h"
-#include "base/notreached.h"
-#include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/time/time.h"
 #include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
-#include "components/optimization_guide/core/model_execution/on_device_features.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/public/mojom/model_broker.mojom.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "services/preferences/public/cpp/dictionary_value_update.h"
-#include "services/preferences/public/cpp/scoped_pref_update.h"
 
 namespace optimization_guide::model_execution::prefs {
-
-namespace {
-
-std::string PrefKey(mojom::OnDeviceFeature feature) {
-  return base::NumberToString(
-      (static_cast<uint64_t>(ToModelExecutionFeatureProto(feature))));
-}
-
-void SetLastUsage(PrefService* local_state,
-                  mojom::OnDeviceFeature feature,
-                  base::Time time) {
-  ::prefs::ScopedDictionaryPrefUpdate update(local_state,
-                                             localstate::kLastUsageByFeature);
-  update->Set(PrefKey(feature), base::TimeToValue(time));
-}
-
-bool IsUseRecent(std::optional<base::Time> last_use) {
-  if (!last_use) {
-    return false;
-  }
-  auto time_since_use = base::Time::Now() - *last_use;
-  base::TimeDelta recent_use_period =
-      features::GetOnDeviceEligibleModelFeatureRecentUsePeriod();
-  // Note: Since we're storing a base::Time, we need to consider the possibility
-  // of clock changes.
-  return time_since_use < recent_use_period &&
-         time_since_use > -recent_use_period;
-}
-
-}  // namespace
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   RegisterGenAiFeatures(registry);
@@ -141,81 +101,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(localstate::kEmbeddingApiModelDownloadEligible,
                                 false);
   registry->RegisterDictionaryPref(localstate::kManifestAssetLedger);
-}
-
-void PruneOldUsagePrefs(PrefService* local_state) {
-  ::prefs::ScopedDictionaryPrefUpdate update(local_state,
-                                             localstate::kLastUsageByFeature);
-  std::vector<std::string> keys_to_prune_;  // Avoid iterator invalidation.
-  for (auto kv : *update->AsConstDict()) {
-    if (!IsUseRecent(base::ValueToTime(kv.second))) {
-      keys_to_prune_.emplace_back(kv.first);
-    }
-  }
-  for (const auto& key : keys_to_prune_) {
-    update->Remove(key);
-  }
-}
-
-void RecordFeatureUsage(PrefService* local_state,
-                        mojom::OnDeviceFeature feature) {
-  SetLastUsage(local_state, feature, base::Time::Now());
-}
-
-bool WasFeatureRecentlyUsed(const PrefService* local_state,
-                            mojom::OnDeviceFeature feature) {
-  const auto* value = local_state->GetDict(localstate::kLastUsageByFeature)
-                          .Find(PrefKey(feature));
-  if (!value) {
-    return false;
-  }
-  return IsUseRecent(base::ValueToTime(*value));
-}
-
-void RecordUseCaseUsage(PrefService* local_state,
-                        const std::string& use_case_name) {
-  ::prefs::ScopedDictionaryPrefUpdate update(local_state,
-                                             localstate::kLastUsageByFeature);
-  update->Set(use_case_name, base::TimeToValue(base::Time::Now()));
-}
-
-void ClearUseCaseUsage(PrefService* local_state,
-                       const std::string& use_case_name) {
-  ::prefs::ScopedDictionaryPrefUpdate update(local_state,
-                                             localstate::kLastUsageByFeature);
-  update->Remove(use_case_name);
-  // TODO(crbug.com/489511499): Remove this fallback once all features have
-  // migrated to using RecordUseCaseUsage with string names.
-  if (std::optional<mojom::OnDeviceFeature> feature =
-          GetFeatureForUseCase(use_case_name)) {
-    update->Remove(PrefKey(*feature));
-  }
-}
-
-void ClearAllUseCaseUsages(PrefService* local_state) {
-  local_state->ClearPref(localstate::kLastUsageByFeature);
-}
-
-bool WasUseCaseRecentlyUsed(const PrefService* local_state,
-                            const std::string& use_case_name) {
-  const auto& dict = local_state->GetDict(localstate::kLastUsageByFeature);
-
-  const auto* value = dict.Find(use_case_name);
-  if (value && IsUseRecent(base::ValueToTime(*value))) {
-    return true;
-  }
-
-  // Fallback to legacy integer keys mapped to this use case.
-  // TODO(crbug.com/489511499): Remove this fallback once all features have
-  // migrated to using RecordUseCaseUsage with string names.
-  if (std::optional<mojom::OnDeviceFeature> feature =
-          GetFeatureForUseCase(use_case_name)) {
-    value = dict.Find(PrefKey(*feature));
-    if (value && IsUseRecent(base::ValueToTime(*value))) {
-      return true;
-    }
-  }
-  return false;
 }
 
 }  // namespace optimization_guide::model_execution::prefs

@@ -100,7 +100,6 @@ component("features") {
     "//components/variations",
     "//google_apis",
     "//net",
-    "//services/preferences/public/cpp",
     "//third_party/metrics_proto",
     "//ui/base",
   ]
@@ -301,6 +300,7 @@ source_set("ondevice") {
     "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//services/on_device_model/public/mojom",
+    "//services/preferences/public/cpp",
   ]
   if (build_with_model_execution) {
     sources += [
@@ -843,6 +843,7 @@ source_set("model_execution_unit_tests") {
     "//components/variations:test_support",
     "//services/network:network_service",
     "//services/network:test_support",
+    "//services/preferences/public/cpp",
     "//testing/gtest",
   ]
 

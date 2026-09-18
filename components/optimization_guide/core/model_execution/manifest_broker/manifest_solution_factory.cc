@@ -575,7 +575,8 @@ ManifestSolutionFactory::CreateSolutionForUseCase(
       manifest_.GetDeviceCategoryConfig().use_cases().at(use_case_name);
 
   if (has_unavailable_asset) {
-    if (!usage_tracker_->GetPriority(use_case_name)) {
+    if (usage_tracker_->GetPriority(use_case_name) <
+        UsageTracker::Priority::kBestEffort) {
       return base::unexpected(
           OnDeviceModelEligibilityReason::kNoOnDeviceFeatureUsed);
     }

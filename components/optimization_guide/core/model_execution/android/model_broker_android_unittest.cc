@@ -19,6 +19,7 @@
 #include "components/optimization_guide/core/model_execution/test/mock_download_progress_observer.h"
 #include "components/optimization_guide/core/model_execution/test/request_builder.h"
 #include "components/optimization_guide/core/model_execution/test/response_holder.h"
+#include "components/optimization_guide/core/model_execution/usage_tracker.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
@@ -293,11 +294,10 @@ TEST_F(ModelBrokerAndroidTest, EnterprisePolicyDisallowsModel) {
 // been used.
 TEST_F(ModelBrokerAndroidTest, DownloadSuccessForAlreadyUsedFeature) {
   InstallTestFeatureConfig();
-  model_execution::prefs::RecordFeatureUsage(&fake_broker_.local_state(),
-                                             mojom::OnDeviceFeature::kTest);
-  task_environment_.FastForwardBy(
-      features::GetOnDeviceEligibleModelFeatureRecentUsePeriod() -
-      base::Days(1));
+  UsageTracker(&fake_broker_.local_state())
+      .RaisePriority(ToUseCaseName(mojom::OnDeviceFeature::kTest),
+                     UsageTracker::Priority::kBestEffort);
+  task_environment_.FastForwardBy(kRecentUsePeriod.Get() - base::Days(1));
 
   ModelBrokerClient client(fake_broker_.BindAndPassRemote(), nullptr);
   auto session =

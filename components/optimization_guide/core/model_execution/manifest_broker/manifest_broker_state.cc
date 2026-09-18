@@ -337,10 +337,9 @@ void ManifestBrokerState::GetStateInfo(
 
 void ManifestBrokerState::SetUseCaseRequested(const std::string& use_case,
                                               bool requested) {
-  usage_tracker_.SetPriority(
-      use_case,
-      requested ? std::make_optional(UsageTracker::Priority::kUserBlocking)
-                : std::nullopt);
+  usage_tracker_.SetPriority(use_case,
+                             requested ? UsageTracker::Priority::kUserBlocking
+                                       : UsageTracker::Priority::kEvictable);
 }
 
 void ManifestBrokerState::UninstallModels() {

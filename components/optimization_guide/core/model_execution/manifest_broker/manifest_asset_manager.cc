@@ -60,6 +60,19 @@ constexpr char kRequestedVersionKey[] = "requested_version";
 // uninstall of a version. This means it may still require cleanup, but we
 // can't treat it as an installation of any real version.
 constexpr char kUninstallingVersion[] = "uninstalling";
+
+AssetPriority ToAssetPriority(UsageTracker::Priority priority) {
+  switch (priority) {
+    case UsageTracker::Priority::kEvictable:
+      return AssetPriority::kEvictable;
+    case UsageTracker::Priority::kRetain:
+      return AssetPriority::kRetain;
+    case UsageTracker::Priority::kBestEffort:
+      return AssetPriority::kBestEffort;
+    case UsageTracker::Priority::kUserBlocking:
+      return AssetPriority::kUserBlocking;
+  }
+}
 }  // namespace
 
 ManifestAssetManager::ComponentContext::ComponentContext() = default;
@@ -339,7 +352,9 @@ void AssetPriorities::Clear() {
 bool AssetPriorities::IsAtLeast(AssetPriority priority,
                                 const Manifest::AssetId& asset_id) const {
   auto it = priorities_.find(asset_id);
-  return it != priorities_.end() && it->second >= priority;
+  AssetPriority asset_priority =
+      it != priorities_.end() ? it->second : AssetPriority::kEvictable;
+  return asset_priority >= priority;
 }
 
 ManifestAssetManager::ManifestAssetManager(
@@ -470,17 +485,7 @@ void ManifestAssetManager::UpdateSolutionFactory(
     context.SetAssetId(asset_id);
   }
 
-  asset_priorities_.Clear();
-  for (const auto& [use_case_name, use_case_config] :
-       factory_->manifest().GetDeviceCategoryConfig().use_cases()) {
-    if (use_case_config.background_download()) {
-      asset_priorities_.Raise(
-          AssetPriority::kSpeculative,
-          *factory_->manifest().GetRequiredAssets(use_case_name));
-    }
-  }
-
-  UpdateActiveAssets();
+  RecomputeAssetPriorities();
 }
 
 void ManifestAssetManager::RefreshSolutions() {
@@ -529,29 +534,27 @@ bool ManifestAssetManager::VerifyInstallation(const base::FilePath& install_dir,
 
 void ManifestAssetManager::OnPriorityIncrease(
     const std::string& use_case_name,
-    std::optional<UsageTracker::Priority> previous_priority) {
+    UsageTracker::Priority previous_priority) {
   TRACE_EVENT("optimization_guide",
               "ManifestAssetManager::OnPriorityIncrease",
               perfetto::Flow::FromPointer(this), "use_case_name", use_case_name);
-  UpdateActiveAssets();
+  RecomputeAssetPriorities();
 }
 
 // Get all assets required by used use cases in usage_tracker.
-void ManifestAssetManager::UpdateActiveAssets() {
+void ManifestAssetManager::RecomputeAssetPriorities() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (const auto& [use_case, _] :
+  asset_priorities_.Clear();
+  for (const auto& [use_case_name, use_case_config] :
        factory_->manifest().GetDeviceCategoryConfig().use_cases()) {
-    std::optional<UsageTracker::Priority> priority =
-        usage_tracker_->GetPriority(use_case);
-    if (!priority) {
-      continue;
+    if (use_case_config.background_download()) {
+      asset_priorities_.Raise(
+          AssetPriority::kSpeculative,
+          *factory_->manifest().GetRequiredAssets(use_case_name));
     }
-    AssetPriority asset_priority =
-        *priority == UsageTracker::Priority::kUserBlocking
-            ? AssetPriority::kUserBlocking
-            : AssetPriority::kBestEffort;
-    asset_priorities_.Raise(asset_priority,
-                            *factory_->manifest().GetRequiredAssets(use_case));
+    asset_priorities_.Raise(
+        ToAssetPriority(usage_tracker_->GetPriority(use_case_name)),
+        *factory_->manifest().GetRequiredAssets(use_case_name));
   }
   UpdateRegistrations();
 }

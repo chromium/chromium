@@ -270,9 +270,8 @@ class ModelBrokerAndroid::SolutionFactory final
 
  private:
   // UsageTracker::Observer
-  void OnPriorityIncrease(
-      const std::string& use_case_name,
-      std::optional<UsageTracker::Priority> previous_priority) override;
+  void OnPriorityIncrease(const std::string& use_case_name,
+                          UsageTracker::Priority previous_priority) override;
 
   // Asks AICore to download the base model.
   void MaybeStartDownload(mojom::OnDeviceFeature feature);
@@ -337,7 +336,8 @@ ModelBrokerAndroid::SolutionFactory::SolutionFactory(ModelBrokerAndroid& parent)
   parent_->usage_tracker_.AddObserver(this);
   // Start model downloads for recently used features
   for (auto feature : OnDeviceFeatureSet::All()) {
-    if (parent_->usage_tracker_.GetPriority(ToUseCaseName(feature))) {
+    if (parent_->usage_tracker_.GetPriority(ToUseCaseName(feature)) >=
+        UsageTracker::Priority::kBestEffort) {
       MaybeStartDownload(feature);
     }
   }
@@ -348,8 +348,8 @@ ModelBrokerAndroid::SolutionFactory::~SolutionFactory() {
 
 void ModelBrokerAndroid::SolutionFactory::OnPriorityIncrease(
     const std::string& use_case_name,
-    std::optional<UsageTracker::Priority> previous_priority) {
-  if (previous_priority.has_value()) {
+    UsageTracker::Priority previous_priority) {
+  if (previous_priority >= UsageTracker::Priority::kBestEffort) {
     return;
   }
   auto feature = GetFeatureForUseCase(use_case_name);
@@ -413,8 +413,8 @@ void ModelBrokerAndroid::SolutionFactory::OnAICoreModelUpdated(
       if (GetAICoreFeatureFor(f) == aicore_feature) {
         loader_map_.MaybeRegisterModelDownload(
             f, spec,
-            parent_->usage_tracker_.GetPriority(ToUseCaseName(f))
-                .has_value());
+            parent_->usage_tracker_.GetPriority(ToUseCaseName(f)) >=
+                UsageTracker::Priority::kBestEffort);
       }
     }
   } else {
@@ -622,10 +622,9 @@ void ModelBrokerAndroid::GetStateInfo(
 
 void ModelBrokerAndroid::SetUseCaseRequested(const std::string& use_case,
                                              bool requested) {
-  usage_tracker_.SetPriority(
-      use_case,
-      requested ? std::make_optional(UsageTracker::Priority::kUserBlocking)
-                : std::nullopt);
+  usage_tracker_.SetPriority(use_case,
+                             requested ? UsageTracker::Priority::kUserBlocking
+                                       : UsageTracker::Priority::kEvictable);
 }
 
 void ModelBrokerAndroid::UninstallModels() {

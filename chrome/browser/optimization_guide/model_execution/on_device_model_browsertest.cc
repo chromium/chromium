@@ -21,9 +21,11 @@
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
+#include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
+#include "components/optimization_guide/core/model_execution/usage_tracker.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/manifest.pb.h"
@@ -123,8 +125,9 @@ class OnDeviceModelExecutionEnabledBrowserTest
   }
 
   void SetUpLocalStatePrefService(PrefService* local_state) override {
-    model_execution::prefs::RecordFeatureUsage(local_state,
-                                               mojom::OnDeviceFeature::kTest);
+    UsageTracker(local_state)
+        .RaisePriority(ToUseCaseName(mojom::OnDeviceFeature::kTest),
+                       UsageTracker::Priority::kBestEffort);
     UpdatePerformanceClassPref(local_state,
                                OnDeviceModelPerformanceClass::kVeryHigh);
   }
