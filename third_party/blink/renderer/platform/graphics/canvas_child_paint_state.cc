@@ -15,6 +15,7 @@ bool CanvasChildPaintState::operator==(
          transform_origin == other.transform_origin &&
          box_size == other.box_size &&
          reference_box_offset == other.reference_box_offset &&
+         canvas_size == other.canvas_size &&
          canvas_content_size == other.canvas_content_size &&
          canvas_device_pixel_content_box ==
              other.canvas_device_pixel_content_box &&

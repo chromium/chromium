@@ -932,7 +932,7 @@ void HTMLCanvasElement::OnWidthOrHeightAssigned() {
       // Invalidate the child's paint properties so that its cached
       // CanvasChildPaintState is updated with the new canvas size.
       for (LayoutObject* child = layout_object->SlowFirstChild(); child;
-           child = child->NextSibling()) {
+           child = child->NextInPreOrder(layout_object)) {
         child->SetNeedsPaintPropertyUpdate();
       }
     }

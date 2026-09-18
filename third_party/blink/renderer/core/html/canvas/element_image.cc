@@ -16,14 +16,18 @@ double ElementImage::width() const {
   if (!record_) {
     return 0;
   }
-  return record_->paint_state.box_size.width();
+  gfx::Vector2dF canvas_grid_scale_factor = GetCanvasGridScaleFactor(
+      record_->paint_state, record_->paint_state.canvas_size);
+  return record_->paint_state.box_size.width() * canvas_grid_scale_factor.x();
 }
 
 double ElementImage::height() const {
   if (!record_) {
     return 0;
   }
-  return record_->paint_state.box_size.height();
+  gfx::Vector2dF canvas_grid_scale_factor = GetCanvasGridScaleFactor(
+      record_->paint_state, record_->paint_state.canvas_size);
+  return record_->paint_state.box_size.height() * canvas_grid_scale_factor.y();
 }
 
 void ElementImage::close() {

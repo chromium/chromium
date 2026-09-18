@@ -24,13 +24,14 @@ struct PLATFORM_EXPORT CanvasChildPaintState {
 
   // Child element state.
   float effective_zoom = 1.f;
-  gfx::Point3F transform_origin;
-  gfx::SizeF box_size;
-  gfx::Vector2dF reference_box_offset;
+  gfx::Point3F transform_origin;        // CSS pixels
+  gfx::SizeF box_size;                  // Physical pixels
+  gfx::Vector2dF reference_box_offset;  // Physical pixels
 
   // Canvas state.
-  gfx::SizeF canvas_content_size;
-  gfx::Size canvas_device_pixel_content_box;
+  gfx::Size canvas_size;                      // Canvas grid
+  gfx::SizeF canvas_content_size;             // Physical pixels
+  gfx::Size canvas_device_pixel_content_box;  // Snapped physical pixels
   DOMNodeId canvas_node_id = kInvalidDOMNodeId;
   DOMNodeId canvas_child_node_id = kInvalidDOMNodeId;
   scoped_refptr<const cc::AnimatedImageFrameIndexMap>

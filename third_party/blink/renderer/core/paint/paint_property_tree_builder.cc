@@ -2006,6 +2006,7 @@ static void PopulateCanvasChildPaintState(HTMLCanvasElement* canvas,
   const LayoutReplaced* replaced = To<LayoutReplaced>(canvas->GetLayoutBox());
   const ComputedStyle& style = replaced->StyleRef();
 
+  paint_state.canvas_size = canvas->Size();
   paint_state.canvas_content_size =
       gfx::SizeF(replaced->ReplacedContentRect().size);
   paint_state.canvas_device_pixel_content_box =
@@ -4822,6 +4823,13 @@ void PaintPropertyTreeBuilder::UpdateForChildren() {
           PaintPropertyChangeType::kUnchanged) {
     object_.GetFrameView()->SetIntersectionObservationState(
         LocalFrameView::kDesired);
+  }
+
+  if (const auto* canvas = DynamicTo<HTMLCanvasElement>(object_.GetNode())) {
+    if (canvas->IsContentDrawable() && object_.NeedsPaintPropertyUpdate()) {
+      context_.force_subtree_update_reasons |=
+          PaintPropertyTreeBuilderContext::kSubtreeUpdateIsolationPiercing;
+    }
   }
 
   if (is_isolated) {
