@@ -143,7 +143,7 @@ void LoginSessionManager::OnGetSessionPropertiesResult(
 
   auto username = GetProperty<std::string>(
       properties, org_freedesktop_login1_Session::Name::kPropertyName);
-  if (!session_type.has_value()) {
+  if (!username.has_value()) {
     std::move(callback).Run(base::unexpected(username.error()));
     return;
   }
