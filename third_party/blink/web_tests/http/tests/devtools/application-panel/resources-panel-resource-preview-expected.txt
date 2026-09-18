@@ -5,7 +5,7 @@ Application
   Manifest (selected)
     Identity
     Presentation
-    Protocol Handlers
+    Protocol handlers
     Icons
     Window Controls Overlay
   Service workers
@@ -36,7 +36,7 @@ Background services
     Speculations
   Push messaging
   Reporting API
-    Crash Report Context
+    Crash report context
 Frames
   top
     Image
@@ -50,7 +50,7 @@ Application
   Manifest
     Identity
     Presentation
-    Protocol Handlers
+    Protocol handlers
     Icons
     Window Controls Overlay
   Service workers
@@ -81,7 +81,7 @@ Background services
     Speculations
   Push messaging
   Reporting API
-    Crash Report Context
+    Crash report context
 Frames
   top
     Image
@@ -95,7 +95,7 @@ Application
   Manifest
     Identity
     Presentation
-    Protocol Handlers
+    Protocol handlers
     Icons
     Window Controls Overlay
   Service workers
@@ -126,7 +126,7 @@ Background services
     Speculations
   Push messaging
   Reporting API
-    Crash Report Context
+    Crash report context
 Frames
   top
     Image
@@ -140,7 +140,7 @@ Application
   Manifest
     Identity
     Presentation
-    Protocol Handlers
+    Protocol handlers
     Icons
     Window Controls Overlay
   Service workers
@@ -171,7 +171,7 @@ Background services
     Speculations
   Push messaging
   Reporting API
-    Crash Report Context
+    Crash report context
 Frames
   top
     Image
