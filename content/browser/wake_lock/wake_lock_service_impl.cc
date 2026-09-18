@@ -29,7 +29,11 @@ void WakeLockServiceImpl::GetWakeLock(
     return;
   }
 
-  if (!render_frame_host().IsFeatureEnabled(
+  // The `screen-wake-lock` permissions policy applies to the Web Wake Lock API
+  // and shouldn't affect internal video playback wake locks (e.g., in
+  // cross-origin iframes or Picture-in-Picture windows).
+  if (reason != device::mojom::WakeLockReason::kVideoPlayback &&
+      !render_frame_host().IsFeatureEnabled(
           network::mojom::PermissionsPolicyFeature::kScreenWakeLock)) {
     return;
   }
