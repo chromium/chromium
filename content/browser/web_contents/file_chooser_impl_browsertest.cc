@@ -275,6 +275,52 @@ IN_PROC_BROWSER_TEST_F(FileChooserImplBrowserTest, UploadFolderWithDirSymlink) {
       EvalJs(shell(), "document.getElementById('fileinput').files[0].name;"));
 }
 
+// A compromised renderer can ask to enumerate any directory it has read access
+// to, including a directory symlink pointing outside of the folder the user
+// granted access to. Such a folder must not be uploaded.
+// https://crbug.com/497482008
+IN_PROC_BROWSER_TEST_F(FileChooserImplBrowserTest, UploadFolderIsDirSymlink) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), GetTestUrl(".", "file_input_webkitdirectory.html")));
+
+  // The uploaded folder itself is a directory symbolic link. The symbolic link
+  // should not be followed, so no file should be uploaded.
+  base::FilePath dir_test_data;
+  ASSERT_TRUE(base::PathService::Get(DIR_TEST_DATA, &dir_test_data));
+  base::FilePath folder_to_upload = dir_test_data.AppendASCII("file_chooser")
+                                        .AppendASCII("dir_with_dir_symlink")
+                                        .AppendASCII("symlink");
+
+  base::FilePath bar_file = folder_to_upload.AppendASCII("bar.txt");
+
+  // Skip the test if symbolic links are not supported.
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    if (!base::IsLink(folder_to_upload)) {
+      GTEST_SKIP() << "Symbolic links are not supported on this platform.";
+    }
+  }
+
+  std::unique_ptr<FileChooserDelegate> delegate(new FileChooserDelegate(
+      {bar_file}, folder_to_upload, base::OnceClosure()));
+  shell()->web_contents()->SetDelegate(delegate.get());
+  // The resulting file list is empty, so the file input may fire either
+  // `change` or `cancel`, depending on whether it considers the selection to
+  // have changed.
+  EXPECT_TRUE(ExecJs(shell(),
+                     "(async () => {"
+                     "  let listener = new Promise(resolve => {"
+                     "      fileinput.onchange = resolve;"
+                     "      fileinput.oncancel = resolve;"
+                     "  });"
+                     "  fileinput.click();"
+                     "  await listener;"
+                     "})()"));
+
+  EXPECT_EQ(
+      0, EvalJs(shell(), "document.getElementById('fileinput').files.length;"));
+}
+
 // Ensure that FileChooserImpl::FileSelected does not grant permissions if
 // invoked with Mode::kSave, as a defense against compromised renderers.
 // See https://crbug.com/435684924.
