@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -17,8 +18,10 @@ import org.chromium.chrome.test.util.TabStripUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 // Test helper for Tab Strip features.
+@NullMarked
 public class TabStripTestUtils {
 
     /**
@@ -49,6 +52,7 @@ public class TabStripTestUtils {
                                                         .getTabAt(secondIndex))));
         TabUiTestHelper.createTabGroup(activity, isIncognito, tabGroup);
         StripLayoutHelper stripLayoutHelper = getActiveStripLayoutHelper(activity);
+        TabStripUtils.settleDownCompositor(stripLayoutHelper);
         StripLayoutView[] views = stripLayoutHelper.getStripLayoutViewsForTesting();
         assertTrue(
                 "The view should be a group title.",
@@ -70,9 +74,6 @@ public class TabStripTestUtils {
      */
     public static StripLayoutHelper getActiveStripLayoutHelper(ChromeTabbedActivity activity) {
         StripLayoutHelperManager manager = TabStripUtils.getStripLayoutHelperManager(activity);
-        if (manager != null) {
-            return manager.getActiveStripLayoutHelper();
-        }
-        return null;
+        return Objects.requireNonNull(manager).getActiveStripLayoutHelper();
     }
 }

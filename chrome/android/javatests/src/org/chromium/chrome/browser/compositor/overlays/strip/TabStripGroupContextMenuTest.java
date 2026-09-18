@@ -30,13 +30,13 @@ import static org.junit.Assert.assertTrue;
 import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
+import android.app.Activity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ListView;
 
 import androidx.test.espresso.ViewAssertion;
 import androidx.test.filters.SmallTest;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -48,6 +48,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.util.Batch;
@@ -69,10 +70,12 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
+import org.chromium.chrome.test.util.TabStripUtils;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -104,33 +107,111 @@ public class TabStripGroupContextMenuTest {
     @Before
     public void setUp() throws Exception {
         mPage = mActivityTestRule.startOnBlankPage();
-        mInitialRegularActivity = (ChromeTabbedActivity) mPage.getActivity();
+        mInitialRegularActivity = mPage.getActivity();
         mStripLayoutHelper =
                 TabStripTestUtils.getActiveStripLayoutHelper(mActivityTestRule.getActivity());
         mModalDialogManager = mActivityTestRule.getActivity().getModalDialogManager();
+
+        // Closing the extra windows a previous batched test left behind also happens
+        // asynchronously, so the Activity we are about to drive may not own the window focus yet.
+        waitForSettledWindowState(mInitialRegularActivity);
     }
 
     @After
     public void tearDown() {
-        // Dismiss any remaining context menu.
-        ThreadUtils.runOnUiThreadBlocking(() -> mStripLayoutHelper.dismissContextMenu());
-
-        // Dismiss any visible dialogs(crbug.com/394606261). Clicking anywhere to dismiss the popup
-        // menu may unintentionally trigger a menu item (e.g. "Ungroup"), which can show a dialog.
-        // Attempts to redirect the click to views e.g.(R.id.compositor_view_holder) didn't work, as
-        // no views outside the popup menu were accessible while it was showing. Dismissing the
-        // popup menu directly via StripLayoutHelper was also ineffective, so explicitly dismissing
-        // all dialogs.
+        // Dismiss any context menu, modal dialogs, and soft keyboard across all running
+        // ChromeTabbedActivity instances, since tests opening an incognito or secondary window
+        // may leave dialogs, menus, or keyboard on an activity other than mInitialRegularActivity.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mModalDialogManager.dismissAllDialogs(DialogDismissalCause.UNKNOWN);
+                    for (Activity runningActivity : ApplicationStatus.getRunningActivities()) {
+                        if (runningActivity instanceof ChromeTabbedActivity cta) {
+                            StripLayoutHelper helper =
+                                    TabStripTestUtils.getActiveStripLayoutHelper(cta);
+                            if (helper != null) {
+                                helper.dismissContextMenu();
+                            }
+                            ModalDialogManager mdm = cta.getModalDialogManager();
+                            if (mdm != null) {
+                                mdm.dismissAllDialogs(DialogDismissalCause.UNKNOWN);
+                            }
+                            WindowAndroid windowAndroid = cta.getWindowAndroid();
+                            View contentView = cta.getCompositorViewHolderForTesting();
+                            if (windowAndroid != null && contentView != null) {
+                                windowAndroid.getKeyboardDelegate().hideKeyboard(contentView);
+                            }
+                        }
+                    }
                 });
+
+        // Settle the window state of the active/focused activity.
+        Activity focusedActivity = ApplicationStatus.getLastTrackedFocusedActivity();
+        ChromeTabbedActivity pageActivity = mPage != null ? mPage.getActivity() : null;
+        ChromeTabbedActivity activityToSettle =
+                (focusedActivity instanceof ChromeTabbedActivity cta
+                                && !cta.isFinishing()
+                                && !cta.isDestroyed())
+                        ? cta
+                        : (pageActivity != null
+                                        && !pageActivity.isFinishing()
+                                        && !pageActivity.isDestroyed())
+                                ? pageActivity
+                                : mActivityTestRule.getActivity();
+        waitForSettledWindowState(activityToSettle);
+
         mActivityTestRule.getActivityTestRule().setActivity(mInitialRegularActivity);
+    }
+
+    /**
+     * Waits until {@code activity} owns the window focus again and no context menu, modal dialog or
+     * soft keyboard is left showing.
+     */
+    private void waitForSettledWindowState(ChromeTabbedActivity activity) {
+        CriteriaHelper.pollUiThreadLongTimeout(
+                "Waiting for a settled window state",
+                () -> {
+                    StripLayoutHelper stripLayoutHelper =
+                            TabStripTestUtils.getActiveStripLayoutHelper(activity);
+                    if (stripLayoutHelper != null) {
+                        Criteria.checkThat(
+                                "Context menu is still showing",
+                                stripLayoutHelper.isViewContextMenuShowing(),
+                                Matchers.is(false));
+                        stripLayoutHelper.finishAnimations();
+                        Criteria.checkThat(
+                                "Strip is still animating",
+                                stripLayoutHelper.isAnimatingForTesting(),
+                                Matchers.is(false));
+                    }
+
+                    ModalDialogManager modalDialogManager = activity.getModalDialogManager();
+                    if (modalDialogManager != null) {
+                        Criteria.checkThat(
+                                "Modal dialog is still showing",
+                                modalDialogManager.isShowing(),
+                                Matchers.is(false));
+                    }
+
+                    WindowAndroid windowAndroid = activity.getWindowAndroid();
+                    View contentView = activity.getCompositorViewHolderForTesting();
+                    if (windowAndroid != null && contentView != null) {
+                        KeyboardVisibilityDelegate keyboardDelegate =
+                                windowAndroid.getKeyboardDelegate();
+                        Criteria.checkThat(
+                                "Soft keyboard is still showing",
+                                keyboardDelegate.isKeyboardShowing(contentView),
+                                Matchers.is(false));
+                    }
+
+                    Criteria.checkThat(
+                            "Activity does not own the window focus",
+                            activity.hasWindowFocus(),
+                            Matchers.is(true));
+                });
     }
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/511288697
     public void testOpenNewTabInGroup() {
         // Prepare standard state and show menu.
         prepareStandardState();
@@ -157,7 +238,6 @@ public class TabStripGroupContextMenuTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/511288697
     public void testUngroup() {
         // Prepare standard state and show menu.
         prepareStandardState();
@@ -234,7 +314,6 @@ public class TabStripGroupContextMenuTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/511288697
     public void testCloseGroup() {
         // Prepare standard state and show menu.
         prepareStandardState();
@@ -316,7 +395,6 @@ public class TabStripGroupContextMenuTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562154475
     public void testDeleteGroup() {
         // Prepare standard state and show menu.
         prepareStandardState();
@@ -503,7 +581,6 @@ public class TabStripGroupContextMenuTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562154475
     public void testSubMenuScrollability() throws InterruptedException {
         // Specifically test the drill-down case.
         HierarchicalMenuController.setDrillDownOverrideValueForTesting(true);
@@ -616,7 +693,7 @@ public class TabStripGroupContextMenuTest {
         mPage = mPage.openNewTabFast().loadAboutBlank();
         mPage = mPage.openNewTabFast().loadAboutBlank();
 
-        ChromeTabbedActivity activity = (ChromeTabbedActivity) mPage.getActivity();
+        ChromeTabbedActivity activity = mPage.getActivity();
         // Wait for the activity to be fully initialized before accessing TabModelSelector.
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -631,10 +708,9 @@ public class TabStripGroupContextMenuTest {
                 activity, /* isIncognito= */ false, /* firstIndex= */ 0, /* secondIndex= */ 1);
 
         // Re-initialize helper and manager for the current activity.
-        if (mInitialRegularActivity.getTabModelSelector().isIncognitoBrandedModelSelected()) {
-            mStripLayoutHelper = TabStripTestUtils.getActiveStripLayoutHelper(activity);
-            mModalDialogManager = activity.getModalDialogManager();
-        }
+        mStripLayoutHelper = TabStripTestUtils.getActiveStripLayoutHelper(activity);
+        TabStripUtils.settleDownCompositor(mStripLayoutHelper);
+        mModalDialogManager = activity.getModalDialogManager();
     }
 
     private void prepareIncognitoState() {
@@ -643,7 +719,7 @@ public class TabStripGroupContextMenuTest {
         mPage = mPage.openNewIncognitoTabFast();
         mPage = mPage.openNewIncognitoTabFast();
 
-        ChromeTabbedActivity activity = (ChromeTabbedActivity) mPage.getActivity();
+        ChromeTabbedActivity activity = mPage.getActivity();
         // If we opened a new window, ensure the rule tracks it for cleanup.
         mActivityTestRule.getActivityTestRule().setActivity(activity);
 
@@ -651,6 +727,7 @@ public class TabStripGroupContextMenuTest {
                 activity, /* isIncognito= */ true, /* firstIndex= */ 0, /* secondIndex= */ 1);
 
         mStripLayoutHelper = TabStripTestUtils.getActiveStripLayoutHelper(activity);
+        TabStripUtils.settleDownCompositor(mStripLayoutHelper);
         mModalDialogManager = activity.getModalDialogManager();
     }
 
@@ -664,25 +741,40 @@ public class TabStripGroupContextMenuTest {
     private void showMenu() {
         mStripLayoutHelper =
                 TabStripTestUtils.getActiveStripLayoutHelper(mActivityTestRule.getActivity());
-        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        assertTrue(
-                "First view should be a group title.", views[0] instanceof StripLayoutGroupTitle);
-        StripLayoutGroupTitle stripLayoutGroupTitle = ((StripLayoutGroupTitle) views[0]);
-        float x = stripLayoutGroupTitle.getPaddedX();
-        float y = stripLayoutGroupTitle.getPaddedY();
-        mTabGroupId = stripLayoutGroupTitle.getTabGroupId();
+        ThreadUtils.runOnUiThreadBlocking(() -> mStripLayoutHelper.finishAnimations());
+        TabStripUtils.settleDownCompositor(mStripLayoutHelper);
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+                    return views.length > 0
+                            && views[0] instanceof StripLayoutGroupTitle
+                            && views[0].isVisible()
+                            && views[0].getWidth() > 0;
+                },
+                "Group title is not visible or has zero width");
 
         final StripLayoutHelperManager manager =
                 mActivityTestRule.getActivity().getLayoutManager().getStripLayoutHelperManager();
-        InstrumentationRegistry.getInstrumentation()
-                .runOnMainSync(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                manager.simulateLongPress(x, y);
-                            }
-                        });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+                    assertTrue(
+                            "First view should be a group title.",
+                            views[0] instanceof StripLayoutGroupTitle);
+                    StripLayoutGroupTitle stripLayoutGroupTitle =
+                            ((StripLayoutGroupTitle) views[0]);
+                    float x =
+                            stripLayoutGroupTitle.getPaddedX()
+                                    + stripLayoutGroupTitle.getPaddedWidth() / 2f;
+                    float y =
+                            stripLayoutGroupTitle.getPaddedY()
+                                    + stripLayoutGroupTitle.getPaddedHeight() / 2f;
+                    mTabGroupId = stripLayoutGroupTitle.getTabGroupId();
+                    manager.simulateLongPress(x, y);
+                });
         onViewWaiting(allOf(withId(R.id.tab_group_action_menu_list), isDisplayed()));
+        onViewWaiting(allOf(withId(R.id.tab_group_title), isDisplayed()));
     }
 
     private void updateGroupTitle(String title) {

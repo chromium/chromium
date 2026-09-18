@@ -2604,7 +2604,8 @@ public class StripLayoutHelper
     }
 
     /** Returns {@code true} if a context menu triggered from long-pressing a view is showing. */
-    private boolean isViewContextMenuShowing() {
+    @VisibleForTesting
+    boolean isViewContextMenuShowing() {
         return (mTabGroupContextMenuCoordinator != null
                         && mTabGroupContextMenuCoordinator.isMenuShowing())
                 || (mTabContextMenuCoordinator != null
