@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/shared/ui/buildflags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/activity_indicator_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/colorful_symbol_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
@@ -134,7 +133,6 @@ enum class ItemIdentifier {
   self.title = l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_FIND_AND_FILL_TITLE);
 
   RegisterTableViewHeaderFooter<TableViewLinkHeaderFooterView>(self.tableView);
-  RegisterTableViewHeaderFooter<TableViewTextHeaderFooterView>(self.tableView);
   // Remove extra spacing on top of sections.
   self.tableView.sectionHeaderTopPadding = 0;
   self.tableView.backgroundColor =
@@ -250,11 +248,12 @@ enum class ItemIdentifier {
 
   switch (sectionIdentifier) {
     case SectionIdentifier::kRecentFillsSection: {
-      TableViewTextHeaderFooterView* header =
-          DequeueTableViewHeaderFooter<TableViewTextHeaderFooterView>(
+      TableViewLinkHeaderFooterView* header =
+          DequeueTableViewHeaderFooter<TableViewLinkHeaderFooterView>(
               tableView);
-      [header setTitle:l10n_util::GetNSString(
-                           IDS_AUTOFILL_AT_MEMORY_PREVIOUSLY_FILLED)];
+      [header setText:l10n_util::GetNSString(
+                          IDS_AUTOFILL_AT_MEMORY_PREVIOUSLY_FILLED)
+            withColor:[UIColor colorNamed:kTextSecondaryColor]];
       return header;
     }
     case SectionIdentifier::kAutofillSearchResultsSection: {
