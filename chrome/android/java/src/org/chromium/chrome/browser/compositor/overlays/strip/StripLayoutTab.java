@@ -422,8 +422,8 @@ public class StripLayoutTab extends StripLayoutView {
             // the tab strip.
             return false;
         }
-        return TabUtils.getTabAlertDrawable(mAlertState) != Resources.ID_NULL
-                && !shouldHideAlertIndicator();
+        boolean hasSpace = mCloseButton.getOpacity() == 0.f || getWidth() > WIDTH_TO_HIDE_ICON;
+        return TabUtils.getTabAlertDrawable(mAlertState) != Resources.ID_NULL && hasSpace;
     }
 
     /** Returns the resource ID of the alert indicator to show. */
@@ -1084,11 +1084,6 @@ public class StripLayoutTab extends StripLayoutView {
         }
 
         return closeButtonVisible && width <= WIDTH_TO_HIDE_ICON;
-    }
-
-    public boolean shouldHideAlertIndicator() {
-        final boolean closeButtonVisible = mCloseButton.getOpacity() > 0.f;
-        return closeButtonVisible && getWidth() <= WIDTH_TO_HIDE_ICON;
     }
 
     /** Returns the width of the alert indicator. */

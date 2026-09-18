@@ -75,7 +75,7 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
     @Override
     @TabAlert
     int getAlertState(Tab representativeTab, PropertyModel model) {
-        @TabAlert int stateToReturn = representativeTab.getAlertState();
+        @TabAlert int stateToReturn = super.getAlertState(representativeTab, model);
         int statePriority = TabUtils.getTabAlertPriority(stateToReturn);
         // Fast exit if not in a group or already at maximum priority state.
         if (!mMediator.isTabInTabGroup(representativeTab)
@@ -87,7 +87,7 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
         // card.
         List<Tab> relatedTabs = mMediator.getRelatedTabsForId(representativeTab.getId());
         for (Tab tab : relatedTabs) {
-            @TabAlert int currentState = tab.getAlertState();
+            @TabAlert int currentState = super.getAlertState(tab, model);
             int currentPriority = TabUtils.getTabAlertPriority(currentState);
             if (currentPriority > statePriority) {
                 statePriority = currentPriority;

@@ -73,7 +73,7 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
     @TabAlert
     int getAlertState(Tab representativeTab, PropertyModel model) {
         if (TabProperties.isTabGroupHeader(model)) return TabAlert.NONE;
-        return representativeTab.getAlertState();
+        return super.getAlertState(representativeTab, model);
     }
 
     /**

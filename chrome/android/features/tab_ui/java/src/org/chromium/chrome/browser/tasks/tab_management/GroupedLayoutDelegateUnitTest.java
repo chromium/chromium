@@ -175,6 +175,23 @@ public class GroupedLayoutDelegateUnitTest {
     }
 
     @Test
+    public void testGetAlertState_SuppressesGlicAlerts() {
+        when(mTab1.getId()).thenReturn(1);
+        when(mTab1.getAlertState()).thenReturn(TabAlert.GLIC_SHARING);
+        when(mTab2.getAlertState()).thenReturn(TabAlert.AUDIO_PLAYING);
+
+        when(mMediator.isTabInTabGroup(mTab1)).thenReturn(true);
+        when(mMediator.getRelatedTabsForId(1)).thenReturn(List.of(mTab1, mTab2));
+
+        PropertyModel model = new PropertyModel(TabProperties.ALL_KEYS_TAB_GRID);
+        assertEquals(TabAlert.AUDIO_PLAYING, mDelegate.getAlertState(mTab1, model));
+
+        when(mMediator.isTabInTabGroup(mTab1)).thenReturn(false);
+        when(mTab1.getAlertState()).thenReturn(TabAlert.GLIC_ACCESSING);
+        assertEquals(TabAlert.NONE, mDelegate.getAlertState(mTab1, model));
+    }
+
+    @Test
     public void testGetInsertionIndexOfTab() {
         createAndAddPropertyModel(TAB1_ID);
 

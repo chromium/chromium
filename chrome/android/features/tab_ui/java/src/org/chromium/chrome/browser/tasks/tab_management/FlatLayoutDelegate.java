@@ -11,7 +11,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.tab_groups.TabGroupColorId;
-import org.chromium.components.tabs.TabAlert;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
@@ -44,12 +43,6 @@ class FlatLayoutDelegate extends TabListLayoutDelegate {
     @Override
     boolean isChildTabRepresentedByGroupCard(Tab tab) {
         return false;
-    }
-
-    @Override
-    @TabAlert
-    int getAlertState(Tab representativeTab, PropertyModel model) {
-        return representativeTab.getAlertState();
     }
 
     @Override

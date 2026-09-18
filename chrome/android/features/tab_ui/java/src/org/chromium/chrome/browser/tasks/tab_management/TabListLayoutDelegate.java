@@ -88,7 +88,16 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
      * @param model The property model associated with the tab or group header.
      * @return The {@link TabAlert} that should be displayed, or {@link TabAlert#NONE} if none.
      */
-    abstract @TabAlert int getAlertState(Tab representativeTab, PropertyModel model);
+    @TabAlert
+    int getAlertState(Tab representativeTab, PropertyModel model) {
+        @TabAlert int alertState = representativeTab.getAlertState();
+        if (alertState == TabAlert.GLIC_ACCESSING || alertState == TabAlert.GLIC_SHARING) {
+            // Glic accessing and sharing states use dedicated tab underlines on the vertical tab
+            // strip and are not shown in the grid tab switcher.
+            return TabAlert.NONE;
+        }
+        return alertState;
+    }
 
     /** Returns the insertion index for a new tab card. */
     abstract int getInsertionIndexOfTab(Tab tab);
