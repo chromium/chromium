@@ -15,6 +15,9 @@ public class SampleTypeUse {
     public static void baz(JniPtr<SampleTypeDefine.Nested> ptr) {}
 
     @CalledByNative
+    public static void qux(JniUniquePtr<SampleTypeDefine> ptr) {}
+
+    @CalledByNative
     public static JniPtr<SampleTypeDefine> lendIt() {
         return null;
     }
