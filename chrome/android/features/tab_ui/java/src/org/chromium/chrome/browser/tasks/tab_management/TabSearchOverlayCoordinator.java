@@ -57,8 +57,11 @@ import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.omnibox.BackKeyBehaviorDelegate;
+import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarEmbedder;
+import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.UrlBar;
+import org.chromium.chrome.browser.omnibox.UrlBarCoordinator;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxControls;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
@@ -74,6 +77,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabwindow.TabWindowInfo;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -171,6 +175,7 @@ public class TabSearchOverlayCoordinator
     private final SearchBoxDataProvider mSearchBoxDataProvider;
     private final Callback<Profile> mProfileObserver;
     private final Callback<Boolean> mSuggestionsObserver = this::onSuggestionsChanged;
+    private final Callback<TabModelSelector> mTabModelSelectorObserver;
 
     // Recursion guard to prevent event dispatch loops when forwarding scrim scroll/drag events
     // to the underlying compositor view hierarchy.
@@ -191,6 +196,7 @@ public class TabSearchOverlayCoordinator
     private ViewTreeObserver.@Nullable OnWindowFocusChangeListener mWindowFocusListener;
     private TabObscuringHandler.@Nullable Token mTabObscuringToken;
     private boolean mEncounteredEmptyStateThisSession;
+    private @Nullable TabModelSelectorTabObserver mTabModelSelectorTabObserver;
 
     /**
      * Constructs a new TabSearchOverlayCoordinator.
@@ -262,6 +268,9 @@ public class TabSearchOverlayCoordinator
 
         mProfileObserver = this::onProfileChanged;
         mProfileSupplier.addSyncObserverAndCallIfNonNull(mProfileObserver);
+
+        mTabModelSelectorObserver = this::onTabModelSelectorAvailable;
+        mTabModelSelectorSupplier.addSyncObserverAndCallIfNonNull(mTabModelSelectorObserver);
     }
 
     /** Destroys the coordinator, cleaning up resources and child coordinators. */
@@ -275,6 +284,11 @@ public class TabSearchOverlayCoordinator
         }
         mLifecycleDispatcher.unregister(this);
         mProfileSupplier.removeObserver(mProfileObserver);
+        mTabModelSelectorSupplier.removeObserver(mTabModelSelectorObserver);
+        if (mTabModelSelectorTabObserver != null) {
+            mTabModelSelectorTabObserver.destroy();
+            mTabModelSelectorTabObserver = null;
+        }
         mBackPressManager.removeHandler(this);
         if (mChangeProcessor != null) {
             mChangeProcessor.destroy();
@@ -907,10 +921,60 @@ public class TabSearchOverlayCoordinator
         }
     }
 
+    private void onTabModelSelectorAvailable(TabModelSelector selector) {
+        if (mTabModelSelectorTabObserver != null) {
+            mTabModelSelectorTabObserver.destroy();
+        }
+
+        mTabModelSelectorTabObserver =
+                new TabModelSelectorTabObserver(selector) {
+                    @Override
+                    public void onContentChanged(Tab tab) {
+                        // Reassert focus if CompositorViewHolder.mView.requestFocus() stole focus
+                        // when a tab's content view was swapped or attached into the hierarchy
+                        // (e.g. launching a new tab and opening tab search while it loads).
+                        maybeReassertFocus();
+                    }
+
+                    @Override
+                    public void onPageLoadFinished(Tab tab, GURL url) {
+                        // Reassert focus if late-stage page load events attempted to steal focus
+                        // (e.g. clicking a link/history item that finishes loading in the
+                        // background and then attempting to use tab search).
+                        maybeReassertFocus();
+                    }
+                };
+    }
+
+    /**
+     * Checks if the URL bar has lost focus while the Tab Search overlay is visible (e.g. due to
+     * background tab loading or view attachment) and re-asserts focus and query suggestions.
+     * Preserves any existing user input query.
+     */
+    @VisibleForTesting
+    void maybeReassertFocus() {
+        if (!isVisible() || mSearchUiCoordinator == null) return;
+
+        LocationBarCoordinator locationBarCoordinator =
+                mSearchUiCoordinator.getLocationBarCoordinator();
+        if (locationBarCoordinator == null) return;
+
+        OmniboxStub omniboxStub = locationBarCoordinator.getOmniboxStub();
+        if (omniboxStub == null) return;
+
+        if (!omniboxStub.isUrlBarFocused()) {
+            UrlBarCoordinator urlBarCoordinator = locationBarCoordinator.getUrlBarCoordinator();
+            String currentQuery =
+                    urlBarCoordinator != null ? urlBarCoordinator.getTextWithoutAutocomplete() : "";
+            mSearchUiCoordinator.beginQuery(
+                    IntentOrigin.HUB, SearchType.TEXT, currentQuery, mWindowAndroid);
+        }
+    }
+
     private void onHideFinished() {
         // Clear focus only after the hide animation finishes to prevent animation flicker.
         if (mSearchUiCoordinator != null) {
-            var locationBar = mSearchUiCoordinator.getLocationBarCoordinator();
+            LocationBarCoordinator locationBar = mSearchUiCoordinator.getLocationBarCoordinator();
             locationBar.clearOmniboxFocus();
         }
         if (mPopupWindow != null && mPopupWindow.isShowing()) {
