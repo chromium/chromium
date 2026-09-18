@@ -221,6 +221,25 @@ void SessionStorageImpl::DeleteNamespace(const std::string& namespace_id,
                                                        &metadata_, namespaces_);
     }
 
+    // This namespace is still waiting for the `Clone()` call from the renderer
+    // that owns the source namespace. That call travels on a different pipe
+    // than this deletion, so it can still arrive. Tell the source namespace to
+    // drop it, as otherwise `RegisterShallowClonedNamespace()` would recreate
+    // this namespace with nobody left to delete it. This only applies to
+    // namespaces that are not persisted: window creation being refused after
+    // the renderer requested the clone always deletes without persisting,
+    // whereas a persisted namespace belongs to a window that was created, and
+    // its clone still has to be populated for session restore.
+    if (!should_persist &&
+        namespace_ptr->state() ==
+            SessionStorageNamespaceImpl::State::kNotPopulatedAndPendingClone) {
+      auto parent_it = namespaces_.find(
+          namespace_ptr->pending_population_from_parent_namespace());
+      if (parent_it != namespaces_.end()) {
+        parent_it->second->AbandonChildNamespaceWaitingForClone(namespace_id);
+      }
+    }
+
     // The object hierarchy uses iterators bound to the metadata object, so
     // make sure to delete the object hierarchy first.
     namespaces_.erase(namespace_it);

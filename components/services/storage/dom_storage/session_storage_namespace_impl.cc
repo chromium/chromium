@@ -44,6 +44,11 @@ bool SessionStorageNamespaceImpl::HasChildNamespacesWaitingForClone() const {
 void SessionStorageNamespaceImpl::ClearChildNamespacesWaitingForClone() {
   child_namespaces_waiting_for_clone_call_.clear();
 }
+void SessionStorageNamespaceImpl::AbandonChildNamespaceWaitingForClone(
+    const std::string& namespace_id) {
+  child_namespaces_waiting_for_clone_call_.erase(namespace_id);
+  abandoned_child_namespaces_.insert(namespace_id);
+}
 
 bool SessionStorageNamespaceImpl::HasAreaForStorageKeyForTesting(
     const blink::StorageKey& storage_key) const {
@@ -206,6 +211,14 @@ void SessionStorageNamespaceImpl::Clone(const std::string& clone_to_namespace) {
   // when the shared map's metadata key is written.
   if (clone_to_namespace.size() != blink::kSessionStorageNamespaceIdLength) {
     receivers_.ReportBadMessage("Invalid session storage namespace ID.");
+    return;
+  }
+
+  // The namespace this clone was meant for was deleted before this call
+  // arrived, so there is nobody left to own the clone. Drop it instead of
+  // registering a namespace that would live until the storage service shuts
+  // down.
+  if (abandoned_child_namespaces_.erase(clone_to_namespace)) {
     return;
   }
 

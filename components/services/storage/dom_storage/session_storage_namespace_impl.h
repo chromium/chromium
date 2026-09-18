@@ -119,6 +119,10 @@ class SessionStorageNamespaceImpl final
   bool HasChildNamespacesWaitingForClone() const;
   void ClearChildNamespacesWaitingForClone();
 
+  // Drops the still in-flight `Clone()` call for `namespace_id`, which was
+  // deleted before that call arrived. See `abandoned_child_namespaces_`.
+  void AbandonChildNamespaceWaitingForClone(const std::string& namespace_id);
+
   // Returns if a storage area exists for the given StorageKey in this map.
   bool HasAreaForStorageKeyForTesting(
       const blink::StorageKey& StorageKey) const;
@@ -217,6 +221,12 @@ class SessionStorageNamespaceImpl final
   // namespace. If this namespace is destructed, then these namespaces are still
   // waiting and should be unblocked.
   base::flat_set<std::string> child_namespaces_waiting_for_clone_call_;
+
+  // Namespaces that were waiting for the `Clone()` call on this namespace, but
+  // were deleted before it arrived. Entries are consumed by the in-flight
+  // `Clone()` call they correspond to; if that call never arrives (e.g. the
+  // renderer died first) they are freed along with this namespace.
+  base::flat_set<std::string> abandoned_child_namespaces_;
 
   StorageKeyAreas storage_key_areas_;
   mojo::ReceiverSet<blink::mojom::SessionStorageNamespace> receivers_;

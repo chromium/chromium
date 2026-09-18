@@ -2404,6 +2404,103 @@ TEST_P(SessionStorageImplTest, DeleteAfterCloneWithoutMojoClone) {
   EXPECT_EQ(1ul, data.size());
 }
 
+// Regression test for https://crbug.com/40761980: when the namespace a clone
+// was destined for is deleted before the renderer's `Clone()` call arrives,
+// that call must be dropped. Recreating the namespace would leak it, as the
+// object that would have deleted it is already gone.
+TEST_P(SessionStorageImplTest, CloneAfterDeleteOfPendingNamespace) {
+  std::string namespace_id1 =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+  std::string namespace_id2 =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+  blink::StorageKey storage_key1 =
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
+  session_storage()->CreateNamespace(namespace_id1);
+  mojo::Remote<blink::mojom::SessionStorageNamespace> ss_namespace1;
+  session_storage()->BindNamespace(namespace_id1,
+                                   ss_namespace1.BindNewPipeAndPassReceiver());
+  mojo::Remote<blink::mojom::StorageArea> area_n1;
+  session_storage()->BindStorageArea(storage_key1, namespace_id1,
+                                     area_n1.BindNewPipeAndPassReceiver());
+
+  // Put some data, so the clone would have something to share.
+  EXPECT_TRUE(
+      test::PutSync(area_n1.get(), StringViewToUint8Vector("key1"),
+                    StringViewToUint8Vector("value1"), std::nullopt,
+                    test::MakeStorageAreaSource(GURL(), kTestSourceToken)));
+
+  // The browser registers the namespace for the window it is about to create,
+  // and then refuses to create that window, releasing the namespace again. Both
+  // calls arrive before the renderer's `Clone()`, which is in flight on a
+  // different pipe.
+  session_storage()->CloneNamespace(
+      namespace_id1, namespace_id2,
+      mojom::SessionStorageCloneType::kWaitForCloneOnNamespace);
+  session_storage()->DeleteNamespace(namespace_id2, /*should_persist=*/false);
+  FlushMojo();
+
+  ss_namespace1->Clone(namespace_id2);
+  ss_namespace1.FlushForTesting();
+
+  // The clone should have been dropped, leaving nothing behind for the deleted
+  // namespace.
+  EXPECT_FALSE(session_storage_impl()->GetNamespaceForTesting(namespace_id2));
+  EXPECT_FALSE(session_storage_impl()
+                   ->GetMetadataForTesting()
+                   .namespace_storage_key_map()
+                   .contains(namespace_id2));
+  EXPECT_FALSE(bad_message_called_);
+}
+
+// A namespace deleted with `should_persist` set belonged to a window that was
+// created, not one that was refused, so its clone must still be populated for
+// session restore rather than dropped.
+TEST_P(SessionStorageImplTest, CloneAfterPersistedDeleteOfPendingNamespace) {
+  std::string namespace_id1 =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+  std::string namespace_id2 =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+  blink::StorageKey storage_key1 =
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
+  session_storage()->CreateNamespace(namespace_id1);
+  mojo::Remote<blink::mojom::SessionStorageNamespace> ss_namespace1;
+  session_storage()->BindNamespace(namespace_id1,
+                                   ss_namespace1.BindNewPipeAndPassReceiver());
+  mojo::Remote<blink::mojom::StorageArea> area_n1;
+  session_storage()->BindStorageArea(storage_key1, namespace_id1,
+                                     area_n1.BindNewPipeAndPassReceiver());
+
+  // Put some data, so the clone has something to share.
+  EXPECT_TRUE(
+      test::PutSync(area_n1.get(), StringViewToUint8Vector("key1"),
+                    StringViewToUint8Vector("value1"), std::nullopt,
+                    test::MakeStorageAreaSource(GURL(), kTestSourceToken)));
+
+  session_storage()->CloneNamespace(
+      namespace_id1, namespace_id2,
+      mojom::SessionStorageCloneType::kWaitForCloneOnNamespace);
+  session_storage()->DeleteNamespace(namespace_id2, /*should_persist=*/true);
+  FlushMojo();
+
+  ss_namespace1->Clone(namespace_id2);
+  ss_namespace1.FlushForTesting();
+
+  // The clone was not dropped, so the data is there for a later restore.
+  EXPECT_TRUE(session_storage_impl()
+                  ->GetMetadataForTesting()
+                  .namespace_storage_key_map()
+                  .contains(namespace_id2));
+  EXPECT_FALSE(bad_message_called_);
+
+  // And re-opening the namespace sees the cloned data.
+  session_storage()->CreateNamespace(namespace_id2);
+  mojo::Remote<blink::mojom::StorageArea> area_n2;
+  session_storage()->BindStorageArea(storage_key1, namespace_id2,
+                                     area_n2.BindNewPipeAndPassReceiver());
+  std::vector<blink::mojom::KeyValuePtr> data = test::GetAllSync(area_n2.get());
+  EXPECT_EQ(1ul, data.size());
+}
+
 // Regression test for https://crbug.com/1128318
 TEST_P(SessionStorageImplTest, Bug1128318) {
   std::string namespace_id1 =

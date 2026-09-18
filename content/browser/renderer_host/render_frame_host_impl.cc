@@ -10613,6 +10613,26 @@ void RenderFrameHostImpl::CreateNewWindow(
     return;
   }
 
+  StoragePartition* storage_partition = GetStoragePartition();
+  DOMStorageContextWrapper* dom_storage_context =
+      static_cast<DOMStorageContextWrapper*>(
+          storage_partition->GetDOMStorageContext());
+
+  // Blink asks the storage service to clone sessionStorage before asking the
+  // browser to create the window. Acquire the browser-side handle before the
+  // checks below so it deletes the clone in the storage service if the window
+  // is refused. If the params can't be validated above, it is acceptable to let
+  // the cloned namespace leak.
+  //
+  // TODO(crbug.com/562128302): Validate the source and destination
+  // sessionStorage namespace IDs.
+  scoped_refptr<SessionStorageNamespaceHandleImpl> cloned_namespace;
+  if (!params->clone_from_session_storage_namespace_id.empty()) {
+    cloned_namespace = SessionStorageNamespaceHandleImpl::CloneFrom(
+        dom_storage_context, params->session_storage_namespace_id,
+        params->clone_from_session_storage_namespace_id);
+  }
+
   // Only top-most frames can open picture-in-picture windows.
   if (params->disposition == WindowOpenDisposition::NEW_PICTURE_IN_PICTURE &&
       !IsOutermostMainFrame()) {
@@ -10697,18 +10717,10 @@ void RenderFrameHostImpl::CreateNewWindow(
     return;
   }
 
-  // This will clone the sessionStorage for namespace_id_to_clone.
-  StoragePartition* storage_partition = GetStoragePartition();
-  DOMStorageContextWrapper* dom_storage_context =
-      static_cast<DOMStorageContextWrapper*>(
-          storage_partition->GetDOMStorageContext());
-
-  scoped_refptr<SessionStorageNamespaceHandleImpl> cloned_namespace;
-  if (!params->clone_from_session_storage_namespace_id.empty()) {
-    cloned_namespace = SessionStorageNamespaceHandleImpl::CloneFrom(
-        dom_storage_context, params->session_storage_namespace_id,
-        params->clone_from_session_storage_namespace_id);
-  } else {
+  // Windows opened with noopener have nothing to clone, so their namespace is
+  // created from scratch here. The clone case is handled above, before the
+  // checks that can refuse the window.
+  if (!cloned_namespace) {
     cloned_namespace = SessionStorageNamespaceHandleImpl::Create(
         dom_storage_context, params->session_storage_namespace_id);
   }
