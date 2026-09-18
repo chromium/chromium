@@ -98,6 +98,7 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
  private:
   // Fetches recent OTPs and creates or renewes a subscription. Any OTPs
   // discovered in this process are reported to `OnOneTimeTokenReceived`.
+  // This calls OnOneTimeTokenReceived() at least one time.
   void GetRecentOtpsAndRenewSubscription();
 
   // Called when an incoming OTP tickle push notification arrives.

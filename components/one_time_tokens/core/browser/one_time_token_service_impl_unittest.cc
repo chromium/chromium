@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -221,13 +222,18 @@ TEST_F(OneTimeTokenServiceImplTest, NoBackend) {
                           base::Unretained(&observer)));
   EXPECT_TRUE(observer.results().empty());
 
-  // Subscribe should not trigger any backend calls.
+  // Subscribe should notify that the platform is not supported.
   auto subscription = service.Subscribe(
       OneTimeTokenSource::kOnDeviceSms, base::Time::Now() + base::Minutes(5),
       base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
                           base::Unretained(&observer)),
       /*expiration_callback=*/base::DoNothing());
-  EXPECT_TRUE(observer.results().empty());
+  EXPECT_FALSE(subscription.IsAlive());
+  EXPECT_THAT(observer.results(),
+              ElementsAre(Pair(OneTimeTokenSource::kOnDeviceSms,
+                               base::test::ErrorIs(
+                                   OneTimeTokenRetrievalError::
+                                       kSmsOtpBackendPlatformNotSupported))));
 }
 
 // Test that subscribing triggers a fetch.

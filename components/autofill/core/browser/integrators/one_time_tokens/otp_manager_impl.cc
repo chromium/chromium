@@ -84,7 +84,11 @@ OtpManagerImpl::OtpManagerImpl(BrowserAutofillManager& owner,
   }
 }
 
-OtpManagerImpl::~OtpManagerImpl() = default;
+OtpManagerImpl::~OtpManagerImpl() {
+  if (last_pending_get_suggestions_callback_) {
+    std::move(last_pending_get_suggestions_callback_).Run({});
+  }
+}
 
 void OtpManagerImpl::GetOtpSuggestions(
     const FormStructure& form,
@@ -105,6 +109,9 @@ void OtpManagerImpl::GetOtpSuggestions(
     return;
   }
 
+  if (last_pending_get_suggestions_callback_) {
+    std::move(last_pending_get_suggestions_callback_).Run({});
+  }
   last_pending_frame_token_ = field.host_frame();
   last_pending_get_suggestions_callback_ = std::move(callback);
 
@@ -116,9 +123,11 @@ void OtpManagerImpl::GetOtpSuggestions(
 void OtpManagerImpl::GetRecentOtpsAndRenewSubscription() {
   CHECK(one_time_token_service_);
 
+  // This may call OnOneTimeTokenReceived() zero times, but ...
   one_time_token_service_->GetRecentOneTimeTokens(base::BindRepeating(
       &OtpManagerImpl::OnOneTimeTokenReceived, weak_ptr_factory_.GetWeakPtr()));
 
+  // ... this guarantees at least one call of OnOneTimeTokenReceived().
   if (sms_otp_subscription_.IsAlive()) {
     sms_otp_subscription_.SetExpirationTime(base::Time::Now() +
                                             kSmsOtpSubscriptionDuration);
@@ -126,9 +135,22 @@ void OtpManagerImpl::GetRecentOtpsAndRenewSubscription() {
     sms_otp_subscription_ = one_time_token_service_->Subscribe(
         OneTimeTokenSource::kOnDeviceSms,
         base::Time::Now() + kSmsOtpSubscriptionDuration,
+        /*callback=*/
         base::BindRepeating(&OtpManagerImpl::OnOneTimeTokenReceived,
                             weak_ptr_factory_.GetWeakPtr()),
-        /*expiration_callback=*/base::DoNothing());
+        /*expiration_callback=*/
+        base::BindOnce(
+            [](base::WeakPtr<OtpManagerImpl> self) {
+              if (!self) {
+                return;
+              }
+              CHECK(!self->sms_otp_subscription_.IsAlive());
+              self->OnOneTimeTokenReceived(
+                  OneTimeTokenSource::kOnDeviceSms,
+                  base::unexpected(
+                      OneTimeTokenRetrievalError::kSubscriptionExpired));
+            },
+            weak_ptr_factory_.GetWeakPtr()));
   }
 
   if (gmail_otp_tickle_subscription_.IsAlive()) {

@@ -70,6 +70,12 @@ ExpiringSubscription OneTimeTokenServiceImpl::Subscribe(
     base::OnceClosure expiration_callback) {
   switch (source) {
     case OneTimeTokenSource::kOnDeviceSms: {
+      if (!sms_.backend) {
+        callback.Run(OneTimeTokenSource::kOnDeviceSms,
+                     base::unexpected(OneTimeTokenRetrievalError::
+                                          kSmsOtpBackendPlatformNotSupported));
+        return ExpiringSubscription();
+      }
       ExpiringSubscription subscription = sms_subscription_manager_.Subscribe(
           expiration, std::move(callback), std::move(expiration_callback));
       RetrieveSmsOtpIfNeeded();
@@ -162,10 +168,11 @@ void OneTimeTokenServiceImpl::FetchUserDataProcessingConsent(
 }
 
 void OneTimeTokenServiceImpl::RetrieveSmsOtpIfNeeded() {
-  if (!sms_.backend || sms_.has_pending_request ||
+  if (sms_.has_pending_request ||
       !sms_subscription_manager_.GetNumberSubscribers()) {
     return;
   }
+  CHECK(sms_.backend);
   sms_.has_pending_request = true;
   sms_.backend->RetrieveSmsOtp(
       base::BindOnce(&OneTimeTokenServiceImpl::OnResponseFromSmsOtpBackend,

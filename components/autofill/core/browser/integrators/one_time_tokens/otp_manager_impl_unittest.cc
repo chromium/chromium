@@ -404,20 +404,20 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_NewCallInvalidatesOldCallback) {
   // The future should not be ready yet, as the SMS backend has not responded.
   EXPECT_FALSE(future1.IsReady());
 
-  // Call GetOtpSuggestions again. This should invalidate the first callback.
+  // Call GetOtpSuggestions again. This should invalidate the first callback by
+  // running it with empty suggestions.
   base::test::TestFuture<const std::vector<std::string>> future2;
   otp_manager.GetOtpSuggestions(*form, test_field_, future2.GetCallback());
 
-  // The first future should still not be ready.
-  EXPECT_FALSE(future1.IsReady());
-  // The second future should also not be ready.
+  // The first future should be resolved with empty suggestions.
+  EXPECT_TRUE(future1.IsReady());
+  EXPECT_TRUE(future1.Get().empty());
+  // The second future should not be ready yet.
   EXPECT_FALSE(future2.IsReady());
 
   // Now, let the SMS backend respond.
   std::move(sms_backend_callback).Run(otp);
 
-  // The first future should still not be ready (it was invalidated).
-  EXPECT_FALSE(future1.IsReady());
   // The second future should now be ready, and contain the OTP.
   EXPECT_TRUE(future2.IsReady());
   ASSERT_EQ(future2.Get().size(), 1u);
@@ -1352,6 +1352,57 @@ TEST_F(OtpManagerImplTest, LogSubscriptionRestrictedToOutermostMainFrame) {
   OtpManagerImpl fenced_frame_otp_manager(autofill_manager(2),
                                           &one_time_token_service_);
   EXPECT_FALSE(test_api(fenced_frame_otp_manager).has_log_subscription());
+}
+
+// Tests that GetOtpSuggestions immediately invokes the callback with empty
+// suggestions if OneTimeTokenService is nullptr.
+TEST_F(OtpManagerImplTest, GetOtpSuggestions_NullServiceInvokesCallback) {
+  OtpManagerImpl otp_manager(autofill_manager(),
+                             /*one_time_token_service=*/nullptr);
+  const FormStructure* form = AddFormWithOtpField();
+  base::test::TestFuture<std::vector<std::string>> future;
+  otp_manager.GetOtpSuggestions(*form, test_field_, future.GetCallback());
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_TRUE(future.Get().empty());
+}
+
+// Tests that GetOtpSuggestions invokes the callback with empty suggestions
+// when OneTimeTokenService has no SMS backend (e.g. Desktop).
+TEST_F(OtpManagerImplTest, GetOtpSuggestions_NullSmsBackendInvokesCallback) {
+  OneTimeTokenServiceImpl service_without_backend(
+      /*sms_otp_backend=*/nullptr,
+      /*gmail_otp_backend=*/nullptr);
+  OtpManagerImpl otp_manager(autofill_manager(), &service_without_backend);
+  const FormStructure* form = AddFormWithOtpField();
+  base::test::TestFuture<std::vector<std::string>> future;
+  otp_manager.GetOtpSuggestions(*form, test_field_, future.GetCallback());
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_TRUE(future.Get().empty());
+}
+
+// Tests that a pending GetOtpSuggestions callback is invoked with empty
+// suggestions if overwritten by a subsequent call or if subscription expires.
+TEST_F(OtpManagerImplTest,
+       GetOtpSuggestions_OverwrittenOrExpiredCallbackInvoked) {
+  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
+  const FormStructure* form = AddFormWithOtpField();
+
+  base::test::TestFuture<std::vector<std::string>> first_future;
+  otp_manager.GetOtpSuggestions(*form, test_field_, first_future.GetCallback());
+  EXPECT_FALSE(first_future.IsReady());
+
+  base::test::TestFuture<std::vector<std::string>> second_future;
+  otp_manager.GetOtpSuggestions(*form, test_field_,
+                                second_future.GetCallback());
+  EXPECT_TRUE(first_future.IsReady());
+  EXPECT_TRUE(first_future.Get().empty());
+  EXPECT_FALSE(second_future.IsReady());
+
+  // Fast-forward past subscription expiration.
+  task_environment_.FastForwardBy(OtpManagerImpl::kSmsOtpSubscriptionDuration +
+                                  base::Seconds(1));
+  EXPECT_TRUE(second_future.IsReady());
+  EXPECT_TRUE(second_future.Get().empty());
 }
 
 }  // namespace autofill
