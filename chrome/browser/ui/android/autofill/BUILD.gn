@@ -20,6 +20,8 @@ source_set("autofill") {
     "autofill_error_dialog_view_android.h",
     "autofill_keyboard_accessory_view_impl.cc",
     "autofill_keyboard_accessory_view_impl.h",
+    "autofill_payments_churned_users_bottom_sheet_bridge.cc",
+    "autofill_payments_churned_users_bottom_sheet_bridge.h",
     "autofill_progress_dialog_view_android.cc",
     "autofill_progress_dialog_view_android.h",
     "autofill_save_card_bottom_sheet_bridge.cc",

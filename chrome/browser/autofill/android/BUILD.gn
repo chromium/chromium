@@ -82,6 +82,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/autofill/editors/common/text_field/TextFieldView.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/common/text_field/TextFieldViewBinder.java",
     "java/src/org/chromium/chrome/browser/autofill/helpers/FaviconHelper.java",
+    "java/src/org/chromium/chrome/browser/autofill/payments_churned_users/AutofillPaymentsChurnedUsersBottomSheetBridge.java",
     "java/src/org/chromium/chrome/browser/autofill/payments_churned_users/AutofillPaymentsChurnedUsersBottomSheetContent.java",
     "java/src/org/chromium/chrome/browser/autofill/payments_churned_users/AutofillPaymentsChurnedUsersBottomSheetCoordinator.java",
     "java/src/org/chromium/chrome/browser/autofill/payments_churned_users/AutofillPaymentsChurnedUsersBottomSheetMediator.java",
@@ -214,6 +215,7 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/autofill/autofill_ai/AutofillAiSaveUpdateEntityPromptController.java",
     "java/src/org/chromium/chrome/browser/autofill/autofill_ai/EntityAttributeUpdateDetails.java",
     "java/src/org/chromium/chrome/browser/autofill/autofill_ai/EntityDataManager.java",
+    "java/src/org/chromium/chrome/browser/autofill/payments_churned_users/AutofillPaymentsChurnedUsersBottomSheetBridge.java",
     "java/src/org/chromium/chrome/browser/autofill/wallet_reminder_notice/AutofillWalletReminderNoticeBottomSheetBridge.java",
   ]
 }
@@ -338,6 +340,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/autofill/editors/common/dropdown_field/DropdownFieldViewUnitTest.java",
     "junit/src/org/chromium/chrome/browser/autofill/editors/common/text_field/TextFieldViewUnitTest.java",
     "junit/src/org/chromium/chrome/browser/autofill/editors/utils/TestUtils.java",
+    "junit/src/org/chromium/chrome/browser/autofill/payments_churned_users/AutofillPaymentsChurnedUsersBottomSheetBridgeTest.java",
     "junit/src/org/chromium/chrome/browser/autofill/payments_churned_users/AutofillPaymentsChurnedUsersBottomSheetContentTest.java",
     "junit/src/org/chromium/chrome/browser/autofill/payments_churned_users/AutofillPaymentsChurnedUsersBottomSheetMediatorTest.java",
     "junit/src/org/chromium/chrome/browser/autofill/payments_churned_users/AutofillPaymentsChurnedUsersBottomSheetModuleTest.java",
