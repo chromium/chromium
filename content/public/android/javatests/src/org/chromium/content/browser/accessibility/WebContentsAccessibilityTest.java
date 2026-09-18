@@ -6638,6 +6638,45 @@ public class WebContentsAccessibilityTest {
     }
 
     /**
+     * Test that when an element is removed from DOM and DOM focus is reset to root, accessibility
+     * focus is moved to the root.
+     */
+    @Test
+    @SmallTest
+    public void testRemovedElementMovesAccessibilityFocusToRoot() throws Throwable {
+        setupTestWithHTML(
+                "<button id='btn' onclick='this.remove();'>Click to remove</button>"
+                        + "<p id='text'>Description</p>");
+
+        int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
+        int btnVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "btn");
+
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, createAccessibilityNodeInfo(rootVvid));
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, createAccessibilityNodeInfo(btnVvid));
+
+        // Focus the button.
+        focusNode(btnVvid);
+
+        AccessibilityNodeInfoCompat btnNodeInfo = createAccessibilityNodeInfo(btnVvid);
+        AccessibilityNodeInfoCompat rootNodeInfo = createAccessibilityNodeInfo(rootVvid);
+        Assert.assertTrue(FOCUSING_ERROR, btnNodeInfo.isAccessibilityFocused());
+        Assert.assertFalse(FOCUSING_ERROR, rootNodeInfo.isAccessibilityFocused());
+
+        // Perform click action on the button, which removes the button and clears DOM focus.
+        Assert.assertTrue(performActionOnUiThread(btnVvid, ACTION_CLICK, null, () -> true));
+
+        // Verify that root gains accessibility focus once the button is removed.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    AccessibilityNodeInfoCompat currentRoot = createAccessibilityNodeInfo(rootVvid);
+                    return currentRoot != null && currentRoot.isAccessibilityFocused();
+                });
+
+        rootNodeInfo = createAccessibilityNodeInfo(rootVvid);
+        Assert.assertTrue(FOCUSING_ERROR, rootNodeInfo.isAccessibilityFocused());
+    }
+
+    /**
      * Test that when content height dynamically expands via JavaScript, the updated scroll
      * dimensions cause ACTION_SCROLL_FORWARD and ACTION_SCROLL_DOWN to be added to the
      * AccessibilityNodeInfo.

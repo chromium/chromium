@@ -2391,10 +2391,15 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         }
 
         // If focus changed to the root or frame root (e.g. because an element became
-        // disabled, was removed from DOM, or blurred), do not reset virtual accessibility
-        // focus to the root if a web element currently has accessibility focus.
+        // disabled or blurred), do not reset virtual accessibility focus to the root if a
+        // web element currently has accessibility focus and that node is still valid in the AX tree.
         // This prevents TalkBack from jumping all the way back to the top of the web content.
-        if (isRootOrFrameRoot && mAccessibilityFocusId != View.NO_ID) {
+        // If the element was removed from the DOM or is no longer valid, we must allow
+        // accessibility focus to move to the root.
+        if (isRootOrFrameRoot
+                && mAccessibilityFocusId != View.NO_ID
+                && WebContentsAccessibilityImplJni.get()
+                        .isNodeValid(mNativeObj, mAccessibilityFocusId)) {
             return;
         }
 
