@@ -256,6 +256,38 @@ public class BookmarkImageFetcherTest {
     }
 
     @Test
+    public void testFetchImageForBookmarkWithFaviconFallback_withShoppingSpecifics_nonHttpsUrl() {
+        doReturn(createShoppingMeta("http://shoppingmeta.com/"))
+                .when(mBookmarkModel)
+                .getPowerBookmarkMeta(mBookmarkId1);
+        mBookmarkImageFetcher.fetchImageForBookmarkWithFaviconFallback(
+                mAccountBookmark1, 100, mDrawableCallback);
+
+        // The lead image should be ignored and the image service used instead.
+        verify(mImageFetcher, times(0)).fetchImage(any(), any());
+        verify(mImageServiceBridge).fetchImageFor(anyBoolean(), any(), anyInt(), any());
+
+        verify(mDrawableCallback).onResult(mDrawableCaptor.capture());
+        assertNotNull(mDrawableCaptor.getValue());
+    }
+
+    @Test
+    public void testFetchImageForBookmarkWithFaviconFallback_withShoppingSpecifics_invalidUrl() {
+        doReturn(createShoppingMeta("not a url"))
+                .when(mBookmarkModel)
+                .getPowerBookmarkMeta(mBookmarkId1);
+        mBookmarkImageFetcher.fetchImageForBookmarkWithFaviconFallback(
+                mAccountBookmark1, 100, mDrawableCallback);
+
+        // The lead image should be ignored and the image service used instead.
+        verify(mImageFetcher, times(0)).fetchImage(any(), any());
+        verify(mImageServiceBridge).fetchImageFor(anyBoolean(), any(), anyInt(), any());
+
+        verify(mDrawableCallback).onResult(mDrawableCaptor.capture());
+        assertNotNull(mDrawableCaptor.getValue());
+    }
+
+    @Test
     public void testFetchImageForBookmarkWithFaviconFallback_fallbackToFavicon() {
         doCallback(
                         3,
@@ -292,5 +324,13 @@ public class BookmarkImageFetcherTest {
                 .getLocalFaviconImageForURL(any(), any(), anyInt(), anyBoolean(), any());
 
         assertNotNull(mDrawableCaptor.getValue());
+    }
+
+    private PowerBookmarkMeta createShoppingMeta(String leadImageUrl) {
+        return PowerBookmarkMeta.newBuilder()
+                .setShoppingSpecifics(
+                        ShoppingSpecifics.newBuilder().setProductClusterId(1234L).build())
+                .setLeadImage(Image.newBuilder().setUrl(leadImageUrl).build())
+                .build();
     }
 }
