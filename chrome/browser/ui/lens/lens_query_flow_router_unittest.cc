@@ -2736,6 +2736,43 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
 }
 
 TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
+       OnControllerDestroyed_ResetsObservation) {
+  // Arrange
+  EXPECT_CALL(*mock_lens_search_controller_,
+              lens_search_contextualization_controller())
+      .WillOnce(Return(contextualization_controller_.get()));
+  TestLensQueryFlowRouter router(mock_lens_search_controller_.get(),
+                                 mock_context_controller_.get(),
+                                 profile_.get());
+
+  GURL example_url("https://example.com");
+  std::string page_title = "Title";
+  lens::MimeType primary_content_type = lens::MimeType::kAnnotatedPageContent;
+  float ui_scale_factor = 1.0f;
+  base::TimeTicks invocation_time = base::TimeTicks::Now();
+
+  EXPECT_CALL(*mock_context_controller_, AddObserver(&router));
+  EXPECT_CALL(*router.mock_session_handle(), NotifySessionStarted());
+  EXPECT_CALL(*router.mock_session_handle(),
+              StartTabContextUploadFlow(_, _, _));
+
+  router.StartQueryFlow(router.GetViewportScreenshot(),
+                        router.GetViewportScreenshot(), example_url, page_title,
+                        {}, {}, primary_content_type, std::nullopt,
+                        ui_scale_factor, invocation_time);
+
+  // When the controller is destroyed, OnControllerDestroyed should reset the
+  // observation so that subsequent resets do not call RemoveObserver on a
+  // dangling pointer.
+  EXPECT_CALL(*mock_context_controller_, RemoveObserver(&router)).Times(1);
+  router.OnControllerDestroyedForTesting();
+
+  // Subsequent call to reset_context_upload_status_observation should be a
+  // no-op and NOT call RemoveObserver again.
+  router.reset_context_upload_status_observation();
+}
+
+TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
        StartQueryFlow_DoesNotAddObserver_WhenSessionHandleExists) {
   // Arrange
   // Simulate an existing session handle from the side panel.
