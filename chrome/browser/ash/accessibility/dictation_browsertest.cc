@@ -1541,9 +1541,9 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, StandbyHints) {
 // Ensures that Search + D can be used to toggle Dictation when ChromeVox is
 // active. Also verifies that ChromeVox announces hints when they are shown in
 // the Dictation UI.
-// TODO(crbug.com/453928508): Flaky on Linux ChromiumOS MSan Tests, and Debug
-// bots.
-#if defined(MEMORY_SANITIZER) || !defined(NDEBUG)
+// TODO(crbug.com/453928508): Flaky on Linux ChromiumOS MSan Tests, ASan Tests,
+// and Debug bots.
+#if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
 #define MAYBE_ChromeVoxAnnouncesHints DISABLED_ChromeVoxAnnouncesHints
 #else
 #define MAYBE_ChromeVoxAnnouncesHints ChromeVoxAnnouncesHints
