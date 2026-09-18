@@ -58,6 +58,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
@@ -78,7 +79,6 @@ import java.util.Locale;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
 @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
 public class SettingsPageTest {
     @Rule
@@ -120,6 +120,7 @@ public class SettingsPageTest {
 
     @Test
     @MediumTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testOpenSettingsAndClickPreference() {
         mActivityTestRule.loadUrl("chrome-native://settings/");
 
@@ -142,6 +143,7 @@ public class SettingsPageTest {
 
     @Test
     @MediumTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testSearchBoxMarginsOnContainerResized() {
         mActivityTestRule.loadUrl("chrome-native://settings/");
 
@@ -267,6 +269,7 @@ public class SettingsPageTest {
 
     @Test
     @MediumTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testThemeSwitchRestoresSettingsPageAndDetailFragment() {
         mActivityTestRule.loadUrl("chrome-native://settings/");
 
@@ -300,6 +303,7 @@ public class SettingsPageTest {
     /** Regression test for https://crbug.com/535695748. */
     @Test
     @MediumTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testTwoSettingsTabsThemeSwitchRestoresDetailFragment() {
         // Open settings in the current tab and navigate to the Search engine detail fragment.
         // Tests in this class are batched, so the current tab is not necessarily index 0. Remember
@@ -343,6 +347,7 @@ public class SettingsPageTest {
 
     @Test
     @MediumTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testAccessibilityPageZoomDoesNotShowPopup() {
         mActivityTestRule.loadUrl("chrome-native://settings/");
 
@@ -373,6 +378,7 @@ public class SettingsPageTest {
     /** Regression test for https://crbug.com/546419920. */
     @Test
     @MediumTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @EnableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testAutofillAndPasswordsHighlighting() {
         // The test requires an emulator wide enough to use two-column mode.
@@ -421,6 +427,7 @@ public class SettingsPageTest {
 
     @Test
     @MediumTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testSearchBoxAutoFocus() {
         mActivityTestRule.loadUrl("chrome-native://settings/");
 
@@ -430,6 +437,7 @@ public class SettingsPageTest {
 
     @Test
     @MediumTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testAutoFocusOnSettingsPageByTabSwitching() {
         // Load Settings. See getCurrentTabIndex() for why the index is captured.
         mActivityTestRule.loadUrl("chrome-native://settings/");
@@ -487,6 +495,7 @@ public class SettingsPageTest {
     /** Regression test for https://crbug.com/549509308. */
     @Test
     @MediumTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testTwoSettingsTabs_themeChange_searchBoxRemainsVisibleOnFirstTab() {
         // Open the first tab with Settings. See getCurrentTabIndex() for why the index is captured.
         mActivityTestRule.loadUrl("chrome-native://settings/");
@@ -793,6 +802,7 @@ public class SettingsPageTest {
     /** Regression test for https://crbug.com/558516224. */
     @Test
     @MediumTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testThemeSwitchWithSelectLanguageFragment() {
         // Open Settings and wait for it to finish loading.
         mActivityTestRule.loadUrl("chrome-native://settings/");
@@ -831,6 +841,7 @@ public class SettingsPageTest {
      */
     @Test
     @MediumTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testSearchBoxAlignmentInSingleColumn_narrowScreen() {
         mActivityTestRule.loadUrl("chrome-native://settings/");
         onViewWaiting(withText(R.string.search_engine_settings)).check(matches(isDisplayed()));
@@ -928,6 +939,181 @@ public class SettingsPageTest {
                 "Search box right edge should align after exiting search",
                 firstItemBounds.right,
                 searchBoxBoundsAfterExit.right);
+    }
+
+    /**
+     * Regression test for crbug.com/562619494: when display density changes such that the scaled
+     * width drops below 600dp (the tablet threshold), the tab should still host SettingsPage, the
+     * search box should remain functional, and no orphaned fragments should remain.
+     */
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    public void testDensityChangeKeepsSettingsInTab() {
+        mActivityTestRule.loadUrl("chrome-native://settings/");
+        onViewWaiting(withText(R.string.search_engine_settings)).check(matches(isDisplayed()));
+
+        Configuration originalConfig =
+                new Configuration(
+                        mActivityTestRule.getActivity().getResources().getConfiguration());
+        try {
+            // Change display density so scaled width drops below 600dp.
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        var activity = mActivityTestRule.getActivity();
+                        Configuration config =
+                                new Configuration(activity.getResources().getConfiguration());
+                        config.densityDpi *= 2;
+                        config.smallestScreenWidthDp =
+                                Math.min(config.smallestScreenWidthDp / 2, 400);
+                        activity.getResources()
+                                .updateConfiguration(
+                                        config, activity.getResources().getDisplayMetrics());
+                    });
+
+            // Force activity recreation for the configuration change.
+            mActivityTestRule.recreateActivity();
+
+            // 1. Verify the tab still hosts SettingsPage.
+            CriteriaHelper.pollUiThread(
+                    () -> {
+                        var activity = mActivityTestRule.getActivity();
+                        if (activity == null) return false;
+                        Tab tab = activity.getActivityTab();
+                        return tab != null && tab.getNativePage() instanceof SettingsPage;
+                    },
+                    "Tab should still host SettingsPage after density change.");
+
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        var hostFragment =
+                                SettingsHostFragment.get(mActivityTestRule.getActivity());
+                        assertNotNull(
+                                "SettingsHostFragment should be present in restored activity",
+                                hostFragment);
+                        assertTrue(
+                                "Settings should still be shown in tab",
+                                SettingsHostUtil.isShownInTab(hostFragment));
+                        // 2. Verify no orphaned fragments remain.
+                        assertNotNull(
+                                "Active fragment should not be null",
+                                hostFragment.getActiveFragment());
+                    });
+
+            // 3. Verify the search box works after recreation.
+            onViewWaiting(withId(R.id.search_box)).check(matches(isDisplayed()));
+            onViewWaiting(withId(R.id.search_box)).perform(click());
+            onViewWaiting(withId(R.id.search_query_container)).check(matches(isDisplayed()));
+        } finally {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        var activity = mActivityTestRule.getActivity();
+                        if (activity != null) {
+                            activity.getResources()
+                                    .updateConfiguration(
+                                            originalConfig,
+                                            activity.getResources().getDisplayMetrics());
+                        }
+                    });
+        }
+    }
+
+    /**
+     * Regression test for crbug.com/562619494: when an unfolded foldable device (>= 600dp) opens
+     * Settings in a tab and then folds (< 600dp), Settings remains functional in the tab.
+     */
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    public void testFoldKeepsSettingsInTab() {
+        mActivityTestRule.loadUrl("chrome-native://settings/");
+        onViewWaiting(withText(R.string.search_engine_settings)).check(matches(isDisplayed()));
+
+        Configuration originalConfig =
+                new Configuration(
+                        mActivityTestRule.getActivity().getResources().getConfiguration());
+        try {
+            // Simulate folding by updating configuration smallestScreenWidthDp to phone size (<
+            // 600dp).
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        var activity = mActivityTestRule.getActivity();
+                        Configuration config =
+                                new Configuration(activity.getResources().getConfiguration());
+                        config.smallestScreenWidthDp = 400;
+                        activity.getResources()
+                                .updateConfiguration(
+                                        config, activity.getResources().getDisplayMetrics());
+                    });
+
+            mActivityTestRule.recreateActivity();
+
+            // Verify the tab still hosts SettingsPage after folding.
+            CriteriaHelper.pollUiThread(
+                    () -> {
+                        var activity = mActivityTestRule.getActivity();
+                        if (activity == null) return false;
+                        Tab tab = activity.getActivityTab();
+                        return tab != null && tab.getNativePage() instanceof SettingsPage;
+                    },
+                    "Tab should still host SettingsPage after fold.");
+
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        var hostFragment =
+                                SettingsHostFragment.get(mActivityTestRule.getActivity());
+                        assertNotNull(
+                                "SettingsHostFragment should be present after fold", hostFragment);
+                        assertTrue(
+                                "Settings should still be shown in tab after fold",
+                                SettingsHostUtil.isShownInTab(hostFragment));
+                    });
+
+            // Verify settings content and search box remain visible and interactive.
+            onViewWaiting(withId(R.id.search_box)).check(matches(isDisplayed()));
+            onViewWaiting(withText(R.string.search_engine_settings)).check(matches(isDisplayed()));
+        } finally {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        var activity = mActivityTestRule.getActivity();
+                        if (activity != null) {
+                            activity.getResources()
+                                    .updateConfiguration(
+                                            originalConfig,
+                                            activity.getResources().getDisplayMetrics());
+                        }
+                    });
+        }
+    }
+
+    /**
+     * Regression test for crbug.com/562619494. On phone form factor, typing chrome://settings opens
+     * a Settings tab rather than launching SettingsActivity.
+     */
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.PHONE)
+    public void testSettingsUrlOpensInTabOnPhone() {
+        // Use the normalized URL with a trailing slash. The navigation commits
+        // "chrome://settings/", and loadUrl() waits for that exact URL to load.
+        mActivityTestRule.loadUrl("chrome://settings/");
+
+        // Verify the settings page is loaded in the tab.
+        onViewWaiting(withText(R.string.search_engine_settings)).check(matches(isDisplayed()));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Tab tab = mActivityTestRule.getActivity().getActivityTab();
+                    assertNotNull("Activity tab should not be null", tab);
+                    assertTrue(
+                            "Tab should host a SettingsPage",
+                            tab.getNativePage() instanceof SettingsPage);
+                    var hostFragment = SettingsHostFragment.get(mActivityTestRule.getActivity());
+                    assertNotNull("SettingsHostFragment should be attached to tab", hostFragment);
+                    assertTrue(
+                            "Settings should be shown in tab",
+                            SettingsHostUtil.isShownInTab(hostFragment));
+                });
     }
 
     private void ensureTwoColumnMode() {

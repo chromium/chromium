@@ -7,10 +7,15 @@ package org.chromium.chrome.browser.settings;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
@@ -248,6 +253,64 @@ public class SettingsActivityTest {
                 "Search icon should align horizontally after rotating back in RTL",
                 searchIconBounds.left,
                 searchIconBoundsAfterRotate.left);
+    }
+
+    /**
+     * Regression test for crbug.com/562619494: when a folded device (< 600dp) opens settings (as
+     * SettingsActivity), unfolding the device (>= 600dp) keeps settings hosted in SettingsActivity
+     * rather than converting to a tab.
+     */
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    public void testUnfoldKeepsSettingsActivity() {
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        assertNull(
+                "SettingsActivity should not have SettingsHostFragment",
+                SettingsHostFragment.get(activity));
+        assertFalse(
+                "SettingsActivity fragment should not be shown in tab",
+                SettingsHostUtil.isShownInTab(activity.getMainFragment()));
+
+        Configuration originalConfig =
+                new Configuration(activity.getResources().getConfiguration());
+        try {
+            // Simulate unfold by updating configuration to tablet width (>= 600dp).
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        Configuration config =
+                                new Configuration(activity.getResources().getConfiguration());
+                        config.smallestScreenWidthDp = 700;
+                        activity.getResources()
+                                .updateConfiguration(
+                                        config, activity.getResources().getDisplayMetrics());
+                    });
+
+            SettingsActivity recreated = ApplicationTestUtils.recreateActivity(activity);
+            assertNotNull("SettingsActivity should be recreated", recreated);
+            assertNull(
+                    "Recreated activity should not have SettingsHostFragment",
+                    SettingsHostFragment.get(recreated));
+            assertFalse(
+                    "Recreated settings fragment should still not be shown in tab",
+                    SettingsHostUtil.isShownInTab(recreated.getMainFragment()));
+            onViewWaiting(
+                            Matchers.allOf(
+                                    withText(R.string.search_engine_settings),
+                                    isDescendantOfA(withId(R.id.preferences_header))))
+                    .check(matches(isDisplayed()));
+        } finally {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        var current = mSettingsActivityTestRule.getActivity();
+                        if (current != null) {
+                            current.getResources()
+                                    .updateConfiguration(
+                                            originalConfig,
+                                            current.getResources().getDisplayMetrics());
+                        }
+                    });
+        }
     }
 
     /** Rotates the activity and waits for the window to be laid out in the new orientation. */
