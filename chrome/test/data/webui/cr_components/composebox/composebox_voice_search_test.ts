@@ -1521,6 +1521,7 @@ suite('ComposeboxVoiceSearch', () => {
         assertFalse(!!buttonSpacer);
         assertEquals(
             'column', window.getComputedStyle(container).flexDirection);
+        assertEquals('20px', window.getComputedStyle(input).paddingInlineStart);
         assertEquals('20px', window.getComputedStyle(input).paddingInlineEnd);
         assertEquals('0px', window.getComputedStyle(input).paddingBottom);
         assertEquals('static', window.getComputedStyle(bottomActions).position);
@@ -1610,11 +1611,14 @@ suite('ComposeboxVoiceSearch', () => {
 
         const input =
             voiceSearchElement.shadowRoot.querySelector<HTMLElement>('#input')!;
-        // When empty, input has .empty class with max-height: 44px.
+        // When empty, input has .empty class with max-height: 44px and
+        // centered text without inline start padding.
         assertEquals('44px', window.getComputedStyle(input).maxHeight);
+        assertEquals('0px', window.getComputedStyle(input).paddingInlineStart);
 
         // When transcript is populated, max-height allows up to 7 lines
-        // (188px).
+        // (188px) and transcription text has 20px padding from start edge
+        // per Figma spec.
         const speechRes = createResults(1);
         Object.assign(
             speechRes.results[0]![0]!,
@@ -1624,6 +1628,7 @@ suite('ComposeboxVoiceSearch', () => {
         await voiceSearchElement.updateComplete;
         assertEquals('188px', window.getComputedStyle(input).maxHeight);
         assertEquals('auto', window.getComputedStyle(input).overflowY);
+        assertEquals('20px', window.getComputedStyle(input).paddingInlineStart);
         assertEquals(1, voiceSearchElement.transcriptLines);
         assertEquals('1', voiceSearchElement.getAttribute('transcript-lines'));
 
