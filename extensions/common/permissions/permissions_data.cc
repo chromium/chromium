@@ -391,7 +391,7 @@ URLPatternSet PermissionsData::GetEffectiveHostPermissions() const {
 bool PermissionsData::HasHostPermission(const GURL& url) const {
   base::AutoLock auto_lock(runtime_lock_);
   return active_permissions_unsafe_->HasExplicitAccessToOrigin(url) &&
-         !IsPolicyBlockedHostUnsafe(url);
+         !IsPolicyBlockedHostUnsafe(url) && !IsUrlBlockedByUser(url);
 }
 
 PermissionMessages PermissionsData::GetPermissionMessages() const {

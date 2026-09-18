@@ -22,6 +22,7 @@
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -140,6 +141,103 @@ IN_PROC_BROWSER_TEST_P(UserHostRestrictionsBrowserTest,
     EXPECT_EQ("Error: Blocked", try_execute_script(GetActiveTabId()));
   } else {
     EXPECT_EQ(restricted_url.spec(), try_execute_script(GetActiveTabId()));
+  }
+}
+
+// Tests that tab metadata (such as URL and title) is scrubbed and cannot be
+// queried on user-restricted sites when the extension only has host
+// permissions.
+IN_PROC_BROWSER_TEST_P(UserHostRestrictionsBrowserTest,
+                       TabMetadataOnUserRestrictedSites) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Test Extension",
+           "version": "0.1",
+           "manifest_version": 3,
+           "host_permissions": ["<all_urls>"],
+           "background": {"service_worker": "background.js"}
+         })";
+
+  static constexpr char kBackground[] =
+      R"(async function queryTabs(queryInfo) {
+           let tabs = await chrome.tabs.query(queryInfo);
+           chrome.test.sendScriptResult(tabs);
+         }
+         async function getTab(tabId) {
+           let tab = await chrome.tabs.get(tabId);
+           chrome.test.sendScriptResult(tab);
+         })";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  auto get_tab = [this, extension](int tab_id) {
+    base::Value result = BackgroundScriptExecutor::ExecuteScript(
+        profile(), extension->id(), base::StringPrintf("getTab(%d)", tab_id),
+        BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
+    return result.is_dict() ? std::move(result).TakeDict() : base::DictValue();
+  };
+
+  auto query_tabs = [this, extension](const std::string& query_json) {
+    base::Value result = BackgroundScriptExecutor::ExecuteScript(
+        profile(), extension->id(),
+        base::StringPrintf("queryTabs(%s)", query_json.c_str()),
+        BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
+    return result.is_list() ? std::move(result).TakeList() : base::ListValue();
+  };
+
+  const GURL allowed_url =
+      embedded_test_server()->GetURL("allowed.example", "/title2.html");
+  const GURL restricted_url =
+      embedded_test_server()->GetURL("restricted.example", "/title2.html");
+
+  PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
+  permissions_manager->AddUserRestrictedSite(
+      url::Origin::Create(restricted_url));
+
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, allowed_url));
+
+  // On allowed sites, the extension has host access, so the URL and title
+  // should not be scrubbed.
+  base::DictValue allowed_tab = get_tab(GetActiveTabId());
+  EXPECT_THAT(allowed_tab.FindString("url"),
+              testing::Pointee(testing::Eq(allowed_url.spec())));
+  EXPECT_THAT(allowed_tab.FindString("title"),
+              testing::Pointee(testing::Eq("Title Of Awesomeness")));
+
+  base::ListValue allowed_query =
+      query_tabs("{\"url\": \"*://allowed.example/*\"}");
+  EXPECT_EQ(1u, allowed_query.size());
+
+  ASSERT_TRUE(NavigateToURL(web_contents, restricted_url));
+
+  base::DictValue restricted_tab = get_tab(GetActiveTabId());
+  base::ListValue restricted_query_url =
+      query_tabs("{\"url\": \"*://restricted.example/*\"}");
+  base::ListValue restricted_query_title =
+      query_tabs("{\"title\": \"Title Of Awesomeness\"}");
+
+  if (GetParam()) {
+    // If user host restrictions are enabled, tab metadata should be scrubbed
+    // and queries matching the URL or title should not match the tab.
+    EXPECT_EQ(nullptr, restricted_tab.FindString("url"));
+    EXPECT_EQ(nullptr, restricted_tab.FindString("title"));
+    EXPECT_EQ(0u, restricted_query_url.size());
+    EXPECT_EQ(0u, restricted_query_title.size());
+  } else {
+    // If user host restrictions are disabled, the extension retains access.
+    EXPECT_THAT(restricted_tab.FindString("url"),
+                testing::Pointee(testing::Eq(restricted_url.spec())));
+    EXPECT_THAT(restricted_tab.FindString("title"),
+                testing::Pointee(testing::Eq("Title Of Awesomeness")));
+    EXPECT_EQ(1u, restricted_query_url.size());
+    EXPECT_EQ(1u, restricted_query_title.size());
   }
 }
 

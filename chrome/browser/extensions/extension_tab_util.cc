@@ -175,8 +175,7 @@ ExtensionTabUtil::ScrubTabBehaviorType GetScrubTabBehaviorImpl(
       // Tab-specific permission (e.g. activeTab) allowed, and the origin
       // matches.
       has_permission = true;
-    } else if (permissions->active_permissions().HasExplicitAccessToOrigin(
-                   url)) {
+    } else if (permissions->HasHostPermission(url)) {
       // Explicit host permission allows access.
       has_permission = true;
     }

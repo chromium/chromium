@@ -1335,6 +1335,44 @@ TEST_F(ExtensionScriptAndCaptureVisibleTest,
   EXPECT_EQ(ALLOWED_SCRIPT_ONLY, GetExtensionAccess(component.get(), url));
 }
 
+// Tests that HasHostPermission respects user host restrictions.
+TEST_F(ExtensionScriptAndCaptureVisibleTest,
+       UserHostRestrictions_HasHostPermission) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      extensions_features::kExtensionsMenuAccessControl);
+
+  constexpr int kContextId = 0;
+  scoped_refptr<const Extension> extension = GetExtensionWithHostPermission(
+      "test_extension", kAllHostsPermission, ManifestLocation::kInternal);
+  extension->permissions_data()->SetContextId(kContextId);
+
+  const GURL url("https://foo.example");
+
+  EXPECT_TRUE(extension->permissions_data()->HasHostPermission(url));
+
+  {
+    URLPatternSet blocked_urls;
+    blocked_urls.AddOrigin(Extension::kValidHostPermissionSchemes, url);
+    PermissionsData::SetUserHostRestrictions(
+        kContextId, std::move(blocked_urls), URLPatternSet());
+  }
+
+  EXPECT_FALSE(extension->permissions_data()->HasHostPermission(url));
+
+  {
+    URLPatternSet blocked_urls;
+    blocked_urls.AddOrigin(Extension::kValidHostPermissionSchemes, url);
+    URLPatternSet allowed_urls;
+    allowed_urls.AddOrigin(Extension::kValidHostPermissionSchemes, url);
+    PermissionsData::SetUserHostRestrictions(
+        kContextId, std::move(blocked_urls), std::move(allowed_urls));
+  }
+
+  // Allowed URLs take precedence over blocked URLs.
+  EXPECT_TRUE(extension->permissions_data()->HasHostPermission(url));
+}
+
 // Tests that user host restrictions don't let extensions run on URLs that the
 // extension doesn't request.
 TEST_F(ExtensionScriptAndCaptureVisibleTest,

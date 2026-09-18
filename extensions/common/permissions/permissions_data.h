@@ -177,11 +177,8 @@ class PermissionsData {
   // active tab permissions for.
   URLPatternSet GetEffectiveHostPermissions() const;
 
-  // TODO(rdevlin.cronin): HasHostPermission() is just a forward for the active
-  // permissions. We should either get rid of it, and have callers use
-  // active_permissions(), or should get rid of active_permissions(), and make
-  // callers use PermissionsData for everything. We should not do both.
-  // Whether the extension has access to the given `url`.
+  // Returns true if the extension has active host permission to access the
+  // given `url`, taking into account policy and user host restrictions.
   bool HasHostPermission(const GURL& url) const;
 
   // Returns the full list of permission details for messages that should

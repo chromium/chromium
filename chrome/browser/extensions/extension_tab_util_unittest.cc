@@ -7,6 +7,7 @@
 #include "base/json/json_reader.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -19,6 +20,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -62,6 +64,51 @@ TEST(ExtensionTabUtilTest, ScrubTabBehaviorForHostPermission) {
           GURL("http://www.google.com/some/path"));
   EXPECT_EQ(ExtensionTabUtil::kDontScrubTab, scrub_tab_behavior.committed_info);
   EXPECT_EQ(ExtensionTabUtil::kDontScrubTab, scrub_tab_behavior.pending_info);
+}
+
+TEST(ExtensionTabUtilTest, ScrubTabBehaviorForPolicyBlockedHost) {
+  auto extension = ExtensionBuilder("Extension with host permission")
+                       .AddHostPermission("*://www.google.com/*")
+                       .Build();
+  URLPatternSet policy_blocked_hosts;
+  policy_blocked_hosts.AddOrigin(Extension::kValidHostPermissionSchemes,
+                                 GURL("http://www.google.com"));
+  extension->permissions_data()->SetPolicyHostRestrictions(policy_blocked_hosts,
+                                                           URLPatternSet());
+
+  ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
+      ExtensionTabUtil::GetScrubTabBehavior(
+          extension.get(), mojom::ContextType::kUnspecified,
+          GURL("http://www.google.com/some/path"));
+  EXPECT_EQ(ExtensionTabUtil::kScrubTabFully,
+            scrub_tab_behavior.committed_info);
+  EXPECT_EQ(ExtensionTabUtil::kScrubTabFully, scrub_tab_behavior.pending_info);
+}
+
+TEST(ExtensionTabUtilTest, ScrubTabBehaviorForUserBlockedHost) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      extensions_features::kExtensionsMenuAccessControl);
+
+  constexpr int kContextId = 1;
+  auto extension = ExtensionBuilder("Extension with host permission")
+                       .AddHostPermission("*://www.google.com/*")
+                       .Build();
+  extension->permissions_data()->SetContextId(kContextId);
+
+  URLPatternSet user_blocked_hosts;
+  user_blocked_hosts.AddOrigin(Extension::kValidHostPermissionSchemes,
+                               GURL("http://www.google.com"));
+  PermissionsData::SetUserHostRestrictions(
+      kContextId, std::move(user_blocked_hosts), URLPatternSet());
+
+  ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
+      ExtensionTabUtil::GetScrubTabBehavior(
+          extension.get(), mojom::ContextType::kUnspecified,
+          GURL("http://www.google.com/some/path"));
+  EXPECT_EQ(ExtensionTabUtil::kScrubTabFully,
+            scrub_tab_behavior.committed_info);
+  EXPECT_EQ(ExtensionTabUtil::kScrubTabFully, scrub_tab_behavior.pending_info);
 }
 
 TEST(ExtensionTabUtilTest, ScrubTabBehaviorForExtensionOwnOrigin_GURL) {
