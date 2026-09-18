@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.Px;
 
 import org.chromium.build.annotations.NullMarked;
@@ -31,16 +32,17 @@ public class TabBottomSheetSkeletonCoordinator implements ResizingPlaceholderCoo
      *
      * @param context The Android context.
      * @param backgroundColor The background color of the placeholder.
+     * @param headerIconResId The drawable resource ID for the header icon.
      */
-    public TabBottomSheetSkeletonCoordinator(Context context, @ColorInt int backgroundColor) {
+    public TabBottomSheetSkeletonCoordinator(
+            Context context, @ColorInt int backgroundColor, @DrawableRes int headerIconResId) {
         mSkeletonView =
                 (TabBottomSheetSkeletonView)
                         LayoutInflater.from(context)
                                 .inflate(R.layout.tab_bottom_sheet_skeleton_view, null);
         mSkeletonView.setVisibility(View.INVISIBLE);
-        ColorDrawable background = new ColorDrawable();
-        background.setColor(backgroundColor);
-        mSkeletonView.setBackground(background);
+        mSkeletonView.setHeaderIcon(headerIconResId);
+        mSkeletonView.setBackground(new ColorDrawable(backgroundColor));
 
         mDefaultPeekHeightPx =
                 context.getResources()

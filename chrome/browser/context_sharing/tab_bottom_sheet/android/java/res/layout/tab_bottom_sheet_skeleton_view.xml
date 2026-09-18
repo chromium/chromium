@@ -6,12 +6,12 @@ found in the LICENSE file.
 -->
 <org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetSkeletonView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="top"
-    tools:ignore="UselessParent,UnusedResources">
+    android:importantForAccessibility="noHideDescendants"
+    tools:ignore="UselessParent">
 
     <!-- Bottom Skeleton Container -->
     <LinearLayout
@@ -27,18 +27,20 @@ found in the LICENSE file.
 
         <!-- Bar 1: 100% width -->
         <View
+            android:id="@+id/skeleton_bar_1"
             android:layout_width="match_parent"
             android:layout_height="@dimen/tab_bottom_sheet_skeleton_bar_height"
             android:background="@drawable/tab_bottom_sheet_skeleton_line" />
 
         <!-- Bar 2: 100% width -->
         <View
+            android:id="@+id/skeleton_bar_2"
             android:layout_width="match_parent"
             android:layout_height="@dimen/tab_bottom_sheet_skeleton_bar_height"
             android:layout_marginTop="@dimen/tab_bottom_sheet_skeleton_spacing"
             android:background="@drawable/tab_bottom_sheet_skeleton_line" />
 
-        <!-- Bar 3: 60% width -->
+        <!-- Bar 3: 50% width -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -46,17 +48,19 @@ found in the LICENSE file.
             android:baselineAligned="false"
             android:weightSum="1.0">
             <View
-            android:layout_width="0dp"
-            android:layout_height="@dimen/tab_bottom_sheet_skeleton_bar_height"
-            android:layout_weight="0.6"
-            android:background="@drawable/tab_bottom_sheet_skeleton_line" />
+                android:id="@+id/skeleton_bar_3"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/tab_bottom_sheet_skeleton_bar_height"
+                android:layout_weight="0.5"
+                android:background="@drawable/tab_bottom_sheet_skeleton_line" />
         </LinearLayout>
 
         <!-- Pill Box -->
         <View
+            android:id="@+id/skeleton_pill"
             android:layout_width="match_parent"
             android:layout_height="@dimen/tab_bottom_sheet_skeleton_pill_height"
-            android:layout_marginTop="@dimen/tab_bottom_sheet_skeleton_spacing"
+            android:layout_marginTop="@dimen/tab_bottom_sheet_skeleton_pill_margin_top"
             android:background="@drawable/tab_bottom_sheet_skeleton_box" />
     </LinearLayout>
 
@@ -65,7 +69,9 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="top">
-        <include layout="@layout/tab_bottom_sheet_peek_layout" />
+        <include
+            android:id="@+id/peek_view"
+            layout="@layout/tab_bottom_sheet_peek_layout" />
     </FrameLayout>
 
 </org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetSkeletonView>

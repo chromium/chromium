@@ -9,14 +9,15 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.text.TextUtils;
+import android.content.res.ColorStateList;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.PathInterpolator;
 import android.widget.FrameLayout;
-import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
@@ -32,7 +33,8 @@ import java.util.List;
 /**
  * Custom passive view displaying a skeleton loader for the Tab Bottom Sheet during WebContents
  * resize. Comprises a static peek header at the top and a skeleton group at the bottom, managing
- * default title fallback, parent clipping restoration, and NTP-style staggered wave animation.
+ * header icon configuration, element tinting, parent clipping restoration, and NTP-style staggered
+ * wave animation.
  */
 @NullMarked
 public class TabBottomSheetSkeletonView extends FrameLayout {
@@ -47,6 +49,11 @@ public class TabBottomSheetSkeletonView extends FrameLayout {
     private final AnimationHandler mAnimationHandler = new AnimationHandler();
     private @Nullable FrameLayout mHeaderContainer;
     private @Nullable ViewGroup mBottomGroup;
+    private @Nullable TabBottomSheetPeekView mPeekView;
+    private @Nullable View mBar1;
+    private @Nullable View mBar2;
+    private @Nullable View mBar3;
+    private @Nullable View mPill;
     private boolean mIsResizing;
 
     /**
@@ -64,10 +71,35 @@ public class TabBottomSheetSkeletonView extends FrameLayout {
         super.onFinishInflate();
         mHeaderContainer = findViewById(R.id.skeleton_header_container);
         mBottomGroup = findViewById(R.id.skeleton_bottom_group);
-        TextView titleView = findViewById(R.id.peek_title);
-        if (titleView != null && TextUtils.isEmpty(titleView.getText())) {
-            titleView.setText(R.string.tab_bottom_sheet_resizing_view_text);
+        mPeekView = findViewById(R.id.peek_view);
+        mBar1 = findViewById(R.id.skeleton_bar_1);
+        mBar2 = findViewById(R.id.skeleton_bar_2);
+        mBar3 = findViewById(R.id.skeleton_bar_3);
+        mPill = findViewById(R.id.skeleton_pill);
+    }
+
+    /**
+     * Sets the header icon drawable resource.
+     *
+     * @param iconResId The drawable resource ID for the header icon.
+     */
+    public void setHeaderIcon(@DrawableRes int iconResId) {
+        if (mPeekView != null) {
+            mPeekView.setPeekIcon(iconResId);
         }
+    }
+
+    /**
+     * Sets the tint color for all skeleton elements inside the bottom group.
+     *
+     * @param placeholderElemColor The resolved color for the skeleton bars and pill box.
+     */
+    public void setPlaceholderElemColor(@ColorInt int placeholderElemColor) {
+        ColorStateList tintList = ColorStateList.valueOf(placeholderElemColor);
+        if (mBar1 != null) mBar1.setBackgroundTintList(tintList);
+        if (mBar2 != null) mBar2.setBackgroundTintList(tintList);
+        if (mBar3 != null) mBar3.setBackgroundTintList(tintList);
+        if (mPill != null) mPill.setBackgroundTintList(tintList);
     }
 
     @Override
@@ -177,5 +209,9 @@ public class TabBottomSheetSkeletonView extends FrameLayout {
 
     AnimationHandler getAnimationHandlerForTesting() {
         return mAnimationHandler;
+    }
+
+    @Nullable TabBottomSheetPeekView getPeekViewForTesting() {
+        return mPeekView;
     }
 }

@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tab_bottom_sheet;
 
-import static org.chromium.chrome.R.style.Theme_BrowserUI_DayNight;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
@@ -15,13 +14,16 @@ import android.graphics.drawable.ColorDrawable;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.test.core.app.ApplicationProvider;
 
-import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.context_sharing.R;
 
 /** Unit tests for {@link TabBottomSheetSkeletonCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -35,8 +37,11 @@ public class TabBottomSheetSkeletonCoordinatorUnitTest {
     public void setUp() {
         mContext =
                 new ContextThemeWrapper(
-                        ApplicationProvider.getApplicationContext(), Theme_BrowserUI_DayNight);
-        mCoordinator = new TabBottomSheetSkeletonCoordinator(mContext, Color.WHITE);
+                        ApplicationProvider.getApplicationContext(),
+                        org.chromium.chrome.R.style.Theme_BrowserUI_DayNight);
+        mCoordinator =
+                new TabBottomSheetSkeletonCoordinator(
+                        mContext, Color.WHITE, R.drawable.ic_spark_24dp);
         TabBottomSheetSkeletonView skeletonView = mCoordinator.getSkeletonViewForTesting();
         skeletonView.setLayoutParams(
                 new ViewGroup.LayoutParams(
@@ -57,6 +62,9 @@ public class TabBottomSheetSkeletonCoordinatorUnitTest {
         ColorDrawable background = (ColorDrawable) view.getBackground();
         assertNotNull(background);
         assertEquals(Color.WHITE, background.getColor());
+        ImageView headerIcon = view.findViewById(R.id.peek_icon);
+        assertNotNull(headerIcon);
+        assertNotNull(headerIcon.getDrawable());
     }
 
     @Test
@@ -113,7 +121,8 @@ public class TabBottomSheetSkeletonCoordinatorUnitTest {
     @Test
     public void testUpdateAlpha_OnLayoutChangeListener() {
         TabBottomSheetSkeletonCoordinator unlaidOutCoordinator =
-                new TabBottomSheetSkeletonCoordinator(mContext, Color.WHITE);
+                new TabBottomSheetSkeletonCoordinator(
+                        mContext, Color.WHITE, R.drawable.ic_spark_24dp);
         TabBottomSheetSkeletonView skeletonView = unlaidOutCoordinator.getSkeletonViewForTesting();
         skeletonView.setLayoutParams(
                 new ViewGroup.LayoutParams(
@@ -141,7 +150,8 @@ public class TabBottomSheetSkeletonCoordinatorUnitTest {
     @Test
     public void testDestroy_RemovesLayoutChangeListener() {
         TabBottomSheetSkeletonCoordinator coordinator =
-                new TabBottomSheetSkeletonCoordinator(mContext, Color.WHITE);
+                new TabBottomSheetSkeletonCoordinator(
+                        mContext, Color.WHITE, R.drawable.ic_spark_24dp);
         TabBottomSheetSkeletonView skeletonView = coordinator.getSkeletonViewForTesting();
         skeletonView.setLayoutParams(
                 new ViewGroup.LayoutParams(

@@ -10,17 +10,18 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.robolectric.Shadows.shadowOf;
 
-import static org.chromium.chrome.R.style.Theme_BrowserUI_DayNight;
-
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.graphics.Color;
+import android.text.TextUtils;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -47,7 +48,8 @@ public class TabBottomSheetSkeletonViewUnitTest {
     public void setUp() {
         mContext =
                 new ContextThemeWrapper(
-                        ApplicationProvider.getApplicationContext(), Theme_BrowserUI_DayNight);
+                        ApplicationProvider.getApplicationContext(),
+                        org.chromium.chrome.R.style.Theme_BrowserUI_DayNight);
         mSkeletonView =
                 (TabBottomSheetSkeletonView)
                         LayoutInflater.from(mContext)
@@ -55,16 +57,47 @@ public class TabBottomSheetSkeletonViewUnitTest {
     }
 
     @Test
-    public void testInflationAndDefaultTitleFallback() {
+    public void testInflationHeaderIconAndPlaceholderElemColor() {
         FrameLayout headerContainer = mSkeletonView.getHeaderContainerForTesting();
         assertNotNull(headerContainer);
         assertNotNull(mSkeletonView.getBottomGroupForTesting());
 
         TextView titleView = headerContainer.findViewById(R.id.peek_title);
         assertNotNull(titleView);
+        assertTrue(TextUtils.isEmpty(titleView.getText()));
+
+        TabBottomSheetPeekView peekView = mSkeletonView.getPeekViewForTesting();
+        assertNotNull(peekView);
+        mSkeletonView.setHeaderIcon(R.drawable.ic_spark_24dp);
+        ImageView headerIcon = peekView.findViewById(R.id.peek_icon);
+        assertNotNull(headerIcon);
+        assertNotNull(headerIcon.getDrawable());
+
+        mSkeletonView.setPlaceholderElemColor(Color.CYAN);
         assertEquals(
-                mContext.getString(R.string.tab_bottom_sheet_resizing_view_text),
-                titleView.getText().toString());
+                Color.CYAN,
+                mSkeletonView
+                        .findViewById(R.id.skeleton_bar_1)
+                        .getBackgroundTintList()
+                        .getDefaultColor());
+        assertEquals(
+                Color.CYAN,
+                mSkeletonView
+                        .findViewById(R.id.skeleton_bar_2)
+                        .getBackgroundTintList()
+                        .getDefaultColor());
+        assertEquals(
+                Color.CYAN,
+                mSkeletonView
+                        .findViewById(R.id.skeleton_bar_3)
+                        .getBackgroundTintList()
+                        .getDefaultColor());
+        assertEquals(
+                Color.CYAN,
+                mSkeletonView
+                        .findViewById(R.id.skeleton_pill)
+                        .getBackgroundTintList()
+                        .getDefaultColor());
     }
 
     @Test
