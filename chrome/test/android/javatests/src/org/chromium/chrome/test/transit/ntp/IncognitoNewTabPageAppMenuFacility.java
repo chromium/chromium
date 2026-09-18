@@ -13,8 +13,11 @@ public class IncognitoNewTabPageAppMenuFacility
         extends PageAppMenuFacility<IncognitoNewTabPageStation> {
     @Override
     protected void declareItems(ItemsBuilder items) {
-        if (!IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+        boolean isIncognitoWindow = IncognitoUtils.shouldOpenIncognitoAsWindow();
+        if (!isIncognitoWindow) {
             mNewTab = declareMenuItem(items, NEW_TAB_ID);
+        } else {
+            declareAbsentMenuItem(items, NEW_TAB_ID);
         }
         mNewIncognitoTab = declareMenuItem(items, NEW_INCOGNITO_TAB_ID);
 
@@ -28,7 +31,7 @@ public class IncognitoNewTabPageAppMenuFacility
         }
 
         mNewWindow = declarePossibleMenuItem(items, NEW_WINDOW_ID);
-        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+        if (isIncognitoWindow) {
             mNewIncognitoWindow = declareMenuItem(items, NEW_INCOGNITO_WINDOW_ID);
         }
 
@@ -39,7 +42,7 @@ public class IncognitoNewTabPageAppMenuFacility
             declarePossibleMenuItem(items, SAVE_AND_SHARE_PARENT_ID);
             declarePossibleMenuItem(items, DOWNLOADS_ID);
         } else {
-            if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            if (isIncognitoWindow) {
                 declareAbsentMenuItem(items, HISTORY_ID);
             } else {
                 declareMenuItem(items, HISTORY_ID);
