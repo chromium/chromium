@@ -11,6 +11,7 @@ java_cpp_enum("autofill_generated_enums") {
     "//chrome/browser/autofill/android/android_autofill_availability_status.h",
     "//chrome/browser/autofill/android/autofill_profile_bridge.h",
     "//chrome/browser/autofill/android/save_update_address_profile_prompt_mode.h",
+    "//chrome/browser/ui/autofill/autofill_snackbar_type.h",
   ]
 }
 

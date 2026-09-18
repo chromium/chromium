@@ -376,4 +376,11 @@ TEST_F(AutofillSnackbarControllerImplTest,
                 IDS_AUTOFILL_VIRTUAL_CARD_NUMBER_SNACKBAR_ACTION_TEXT));
 }
 
+TEST_F(AutofillSnackbarControllerImplTest, GetSnackbarType_VirtualCard) {
+  controller()->Show(AutofillSnackbarType::kVirtualCard, base::DoNothing());
+
+  EXPECT_EQ(controller()->GetSnackbarType(),
+            AutofillSnackbarType::kVirtualCard);
+}
+
 }  // namespace autofill

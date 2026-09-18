@@ -71,24 +71,33 @@ public class AutofillSnackbarController implements SnackbarManager.SnackbarContr
      * @param message Message to be shown in the snackbar.
      * @param action Label for the action button in the snackbar.
      * @param duration The duration (in ms) for which the snackbar should be shown.
+     * @param snackbarType The type of the snackbar to be shown.
      */
     @CalledByNative
     void show(
             @JniType("std::u16string") String message,
             @JniType("std::u16string") String action,
-            int duration) {
+            int duration,
+            @AutofillSnackbarType int snackbarType) {
+        int identifier = getSnackbarIdentifier(snackbarType);
         Snackbar snackBar =
-                Snackbar.make(
-                                message,
-                                this,
-                                Snackbar.TYPE_ACTION,
-                                Snackbar.UMA_AUTOFILL_VIRTUAL_CARD_FILLED)
+                Snackbar.make(message, this, Snackbar.TYPE_ACTION, identifier)
                         .setAction(action, /* actionData= */ null);
         // Wrap the message text if it doesn't fit on a single line. The action text will not wrap
         // though.
         snackBar.setDefaultLines(false);
         snackBar.setDuration(duration);
         mSnackbarManager.showSnackbar(snackBar);
+    }
+
+    private static int getSnackbarIdentifier(@AutofillSnackbarType int snackbarType) {
+        switch (snackbarType) {
+            case AutofillSnackbarType.VIRTUAL_CARD:
+            default:
+                // Other snackbar types intentionally share UMA_AUTOFILL_VIRTUAL_CARD_FILLED
+                // until dedicated UMA constants are introduced.
+                return Snackbar.UMA_AUTOFILL_VIRTUAL_CARD_FILLED;
+        }
     }
 
     /** Dismiss the autofill snackbar if it's showing. No-op if it's not showing. */

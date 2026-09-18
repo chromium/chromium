@@ -90,6 +90,10 @@ public class AutofillSnackbarControllerTest {
         assertTrue(
                 "Incorrect SnackbarController type",
                 currentSnackbar.getController() instanceof AutofillSnackbarController);
+        assertEquals(
+                "Incorrect snackbar identifier",
+                Snackbar.UMA_AUTOFILL_VIRTUAL_CARD_FILLED,
+                currentSnackbar.getIdentifierForTesting());
     }
 
     @Test
@@ -128,7 +132,10 @@ public class AutofillSnackbarControllerTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mAutofillSnackbarController.show(
-                                SNACKBAR_MESSAGE_TEXT, SNACKBAR_ACTION_TEXT, SNACKBAR_DURATION));
+                                SNACKBAR_MESSAGE_TEXT,
+                                SNACKBAR_ACTION_TEXT,
+                                SNACKBAR_DURATION,
+                                AutofillSnackbarType.VIRTUAL_CARD));
     }
 
     private void dismissSnackbar() {

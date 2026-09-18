@@ -8,6 +8,7 @@
 namespace autofill {
 
 // The type of Autofill snackbar to show.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.autofill
 enum class AutofillSnackbarType {
   // Unspecified snackbar type.
   kUnspecified = 0,

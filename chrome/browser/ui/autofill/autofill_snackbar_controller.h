@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_SNACKBAR_CONTROLLER_H_
 #include <string>
 
+#include "chrome/browser/ui/autofill/autofill_snackbar_type.h"
 #include "content/public/browser/web_contents.h"
 
 namespace autofill {
@@ -27,6 +28,7 @@ class AutofillSnackbarController {
   // Return the duration for which the snackbar should be shown.
   virtual base::TimeDelta GetDuration() const = 0;
   virtual content::WebContents* GetWebContents() const = 0;
+  virtual AutofillSnackbarType GetSnackbarType() const = 0;
 };
 
 }  // namespace autofill

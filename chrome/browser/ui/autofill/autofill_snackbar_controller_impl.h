@@ -59,6 +59,7 @@ class AutofillSnackbarControllerImpl : public AutofillSnackbarController {
   std::u16string GetActionButtonText() const override;
   base::TimeDelta GetDuration() const override;
   content::WebContents* GetWebContents() const override;
+  AutofillSnackbarType GetSnackbarType() const override;
 
  private:
   // Dismisses the snackbar if it is showing. Calling Dismiss without calling
@@ -66,7 +67,7 @@ class AutofillSnackbarControllerImpl : public AutofillSnackbarController {
   void Dismiss();
 
   // Map the snackbar type to the corresponding UMA variant name for histogram.
-  std::string GetSnackbarTypeForLogging();
+  std::string GetSnackbarTypeForLogging() const;
 
   raw_ptr<content::WebContents> web_contents_;
 

@@ -164,6 +164,10 @@ content::WebContents* AutofillSnackbarControllerImpl::GetWebContents() const {
   return web_contents_;
 }
 
+AutofillSnackbarType AutofillSnackbarControllerImpl::GetSnackbarType() const {
+  return autofill_snackbar_type_;
+}
+
 void AutofillSnackbarControllerImpl::Dismiss() {
   if (!autofill_snackbar_view_) {
     return;
@@ -172,7 +176,7 @@ void AutofillSnackbarControllerImpl::Dismiss() {
   autofill_snackbar_view_->Dismiss();
 }
 
-std::string AutofillSnackbarControllerImpl::GetSnackbarTypeForLogging() {
+std::string AutofillSnackbarControllerImpl::GetSnackbarTypeForLogging() const {
   switch (autofill_snackbar_type_) {
     case AutofillSnackbarType::kVirtualCard:
       return "VirtualCard";
