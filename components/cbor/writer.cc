@@ -11,10 +11,15 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ref.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/cbor/cbor_buildflags.h"
 #include "components/cbor/constants.h"
+#include "components/cbor/experiment_metrics.h"
 
 #if BUILDFLAG(USE_CBOR_RUST)
 #include "components/cbor/rust/cbor_rust.h"
@@ -25,6 +30,37 @@ namespace cbor {
 BASE_FEATURE(kUseRustCborWriter, base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
+
+// Records `CBOR.Write.*` metrics on destruction.
+class [[nodiscard]] ScopedMetricsReporter {
+ public:
+  explicit ScopedMetricsReporter(
+      const std::optional<size_t>& output_size LIFETIME_BOUND)
+      : output_size_(output_size) {}
+  explicit ScopedMetricsReporter(std::optional<size_t>&&) = delete;
+
+  ScopedMetricsReporter(const ScopedMetricsReporter&) = delete;
+  ScopedMetricsReporter& operator=(const ScopedMetricsReporter&) = delete;
+
+  ~ScopedMetricsReporter() {
+    const base::TimeDelta elapsed = timer_.Elapsed();
+
+    UMA_HISTOGRAM_BOOLEAN("CBOR.Write.Success", output_size_->has_value());
+    if (output_size_->has_value()) {
+      UMA_HISTOGRAM_COUNTS_10M("CBOR.Write.Size",
+                               base::saturated_cast<int>(**output_size_));
+    }
+    if (base::TimeTicks::IsHighResolution()) {
+      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES("CBOR.Write.Duration", elapsed,
+                                              base::Microseconds(1),
+                                              base::Milliseconds(100), 50);
+    }
+  }
+
+ private:
+  const base::raw_ref<const std::optional<size_t>> output_size_;
+  const base::ElapsedTimer timer_;
+};
 
 // Resolves `Writer::Config::use_rust`, defaulting to `kUseRustCborWriter`.
 bool ShouldUseRustWriter(std::optional<bool> use_rust) {
@@ -169,14 +205,22 @@ std::optional<std::vector<uint8_t>> Writer::Write(const Value& node,
                                                   const Config& config) {
   const bool use_rust = ShouldUseRustWriter(config.use_rust);
 
+  // Declared before `reporter` so it outlives the destructor that reads it.
+  std::optional<size_t> output_size;
+  std::optional<ScopedMetricsReporter> reporter;
+  if (internal::ShouldRecordMetrics(config.use_rust)) {
+    reporter.emplace(output_size);
+  }
+
 #if BUILDFLAG(USE_CBOR_RUST)
   if (use_rust) {
-    auto rust_val = ConvertCppValueToRust(
+    std::optional<cbor::rust::Value> rust_val = ConvertCppValueToRust(
         node, config.max_nesting_level, config.allow_invalid_utf8_for_testing);
     if (!rust_val) {
       return std::nullopt;
     }
-    auto out = cbor::rust::write(*rust_val);
+    rs_std::Vec<uint8_t> out = cbor::rust::write(*rust_val);
+    output_size = out.size();
     return std::vector<uint8_t>(out.begin(), out.end());
   }
 #else
@@ -189,6 +233,7 @@ std::optional<std::vector<uint8_t>> Writer::Write(const Value& node,
                          config.allow_invalid_utf8_for_testing)) {
     return std::nullopt;
   }
+  output_size = cbor.size();
   return cbor;
 }
 

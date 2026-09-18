@@ -6,10 +6,15 @@
 
 #include <cmath>
 #include <limits>
+#include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/numerics/safe_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "components/cbor/cbor_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -566,6 +571,81 @@ TEST_P(CBORWriterTest, OverlyNestedCBOR) {
   EXPECT_TRUE(DoWrite(Value(map), 5).has_value());
   EXPECT_FALSE(DoWrite(Value(map), 4).has_value());
 }
+
+#if BUILDFLAG(USE_CBOR_RUST)
+
+namespace {
+
+// `CBOR.Write.Duration` is only emitted on clients whose clock can measure it.
+int ExpectedDurationCount() {
+  return base::TimeTicks::IsHighResolution() ? 1 : 0;
+}
+
+}  // namespace
+
+TEST_P(CBORWriterTest, MetricsRecordedOnSuccess) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(kUseRustCborWriter, GetParam());
+
+  base::HistogramTester histograms;
+
+  Writer::Config config;
+  std::optional<std::vector<uint8_t>> cbor = Writer::Write(Value(1), config);
+  ASSERT_TRUE(cbor.has_value());
+
+  histograms.ExpectUniqueSample("CBOR.Write.Success", true, 1);
+  histograms.ExpectTotalCount("CBOR.Write.Duration", ExpectedDurationCount());
+  histograms.ExpectUniqueSample("CBOR.Write.Size", cbor->size(), 1);
+}
+
+TEST_P(CBORWriterTest, MetricsRecordedOnFailure) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(kUseRustCborWriter, GetParam());
+
+  base::HistogramTester histograms;
+
+  Writer::Config config;
+  EXPECT_FALSE(Writer::Write(Value(), config).has_value());
+
+  histograms.ExpectUniqueSample("CBOR.Write.Success", false, 1);
+  histograms.ExpectTotalCount("CBOR.Write.Duration", ExpectedDurationCount());
+  histograms.ExpectTotalCount("CBOR.Write.Size", 0);
+}
+
+TEST_P(CBORWriterTest, MetricsNotRecordedWhenWriterIsSelectedExplicitly) {
+  // Explicit `Config::use_rust` selection opts out of metrics even when it
+  // matches the feature state.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(kUseRustCborWriter, GetParam());
+
+  base::HistogramTester histograms;
+
+  // `DoWrite()` always sets `Config::use_rust`.
+  ASSERT_TRUE(DoWrite(Value(1)).has_value());
+
+  histograms.ExpectTotalCount("CBOR.Write.Success", 0);
+  histograms.ExpectTotalCount("CBOR.Write.Duration", 0);
+  histograms.ExpectTotalCount("CBOR.Write.Size", 0);
+}
+
+#else
+
+TEST_P(CBORWriterTest, MetricsNotRecordedWithoutRustWriter) {
+  // Non-Rust builds never participate in the experiment.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kUseRustCborWriter);
+
+  base::HistogramTester histograms;
+
+  Writer::Config config;
+  ASSERT_TRUE(Writer::Write(Value(1), config).has_value());
+
+  histograms.ExpectTotalCount("CBOR.Write.Success", 0);
+  histograms.ExpectTotalCount("CBOR.Write.Duration", 0);
+  histograms.ExpectTotalCount("CBOR.Write.Size", 0);
+}
+
+#endif  // BUILDFLAG(USE_CBOR_RUST)
 
 INSTANTIATE_TEST_SUITE_P(,
                          CBORWriterTest,

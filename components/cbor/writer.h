@@ -74,8 +74,9 @@ class CBOR_EXPORT Writer {
     // enabled in tests.
     bool allow_invalid_utf8_for_testing = false;
 
-    // Selects the CBOR writer to use. When unset, follows `kUseRustCborWriter`.
-    // Setting this to true requires BUILDFLAG(USE_CBOR_RUST).
+    // Selects the CBOR writer to use. When unset, follows `kUseRustCborWriter`
+    // and reports metrics to UMA. Setting this to true requires
+    // BUILDFLAG(USE_CBOR_RUST).
     std::optional<bool> use_rust;
   };
 

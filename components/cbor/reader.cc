@@ -26,6 +26,7 @@
 
 #include "base/bit_cast.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/to_vector.h"
 #include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_macros.h"
@@ -38,6 +39,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "components/cbor/cbor_buildflags.h"
 #include "components/cbor/constants.h"
+#include "components/cbor/experiment_metrics.h"
 
 #if BUILDFLAG(USE_CBOR_RUST)
 #include "components/cbor/rust/cbor_rust.h"
@@ -118,8 +120,13 @@ const char kUnknownError[] = "An unknown error occured.";
 class [[nodiscard]] ScopedMetricsReporter {
  public:
   ScopedMetricsReporter(size_t payload_size,
-                        const Reader::DecoderError& error_code)
+                        const Reader::DecoderError& error_code LIFETIME_BOUND)
       : payload_size_(payload_size), error_code_(error_code) {}
+  ScopedMetricsReporter(size_t, Reader::DecoderError&&) = delete;
+
+  ScopedMetricsReporter(const ScopedMetricsReporter&) = delete;
+  ScopedMetricsReporter& operator=(const ScopedMetricsReporter&) = delete;
+
   ~ScopedMetricsReporter() {
     const base::TimeDelta elapsed = timer_.Elapsed();
 
@@ -133,42 +140,19 @@ class [[nodiscard]] ScopedMetricsReporter {
     }
   }
 
-  explicit ScopedMetricsReporter(ScopedMetricsReporter&&) = delete;
-  ScopedMetricsReporter& operator=(ScopedMetricsReporter&&) = delete;
-
  private:
   const size_t payload_size_;
   const base::raw_ref<const Reader::DecoderError> error_code_;
   const base::ElapsedTimer timer_;
 };
 
-// Resolves `Reader::Config::use_rust` to the parser to use. An unset value
-// follows the `kUseRustCborParser` feature.
-bool ShouldUseRustParser(const std::optional<bool>& use_rust) {
+// Resolves `Reader::Config::use_rust`, defaulting to `kUseRustCborParser`.
+bool ShouldUseRustParser(std::optional<bool> use_rust) {
   if (use_rust.has_value()) {
     return *use_rust;
   }
 #if BUILDFLAG(USE_CBOR_RUST)
   return base::FeatureList::IsEnabled(kUseRustCborParser);
-#else
-  return false;
-#endif
-}
-
-// Whether a parse configured with `use_rust` should be reported to UMA.
-//
-// Both parsers report to the same histograms, and the `kUseRustCborParser`
-// experiment group is what tells them apart. Only parses that take part in the
-// experiment may be reported:
-//
-//  - A caller that selects a parser itself does not follow the experiment. Its
-//    samples would land in whichever arm happens to agree with its choice and
-//    be dropped from the other, skewing the population being compared.
-//  - Builds without the Rust parser never query the feature, and so are in
-//    neither arm.
-bool ShouldRecordMetrics([[maybe_unused]] const std::optional<bool>& use_rust) {
-#if BUILDFLAG(USE_CBOR_RUST)
-  return !use_rust.has_value();
 #else
   return false;
 #endif
@@ -275,7 +259,7 @@ std::optional<Value> Reader::Read(base::span<uint8_t const> data,
   const bool use_rust = ShouldUseRustParser(config.use_rust);
 
   std::optional<ScopedMetricsReporter> reporter;
-  if (ShouldRecordMetrics(config.use_rust)) {
+  if (internal::ShouldRecordMetrics(config.use_rust)) {
     reporter.emplace(data.size(), error_code_out);
   }
 

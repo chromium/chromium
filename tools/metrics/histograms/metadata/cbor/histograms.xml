@@ -70,6 +70,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CBOR.Write.Duration" units="microseconds"
+    expires_after="2026-12-15">
+  <owner>zgroza@chromium.org</owner>
+  <owner>src/components/cbor/OWNERS</owner>
+  <summary>
+    Records the elapsed time for cbor::Writer::Write() (including C++-to-Rust
+    value conversion when using the Rust writer), for both successful and failed
+    calls. Emitted once per call controlled by kUseRustCborWriter in builds with
+    the Rust writer enabled, on clients with high-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="CBOR.Write.Size" units="bytes" expires_after="2026-12-15">
+  <owner>zgroza@chromium.org</owner>
+  <owner>src/components/cbor/OWNERS</owner>
+  <summary>
+    Records the output size in bytes of successful cbor::Writer::Write() calls
+    (capped at 10MB). Emitted once per successful call controlled by
+    kUseRustCborWriter in builds with the Rust writer enabled.
+  </summary>
+</histogram>
+
+<histogram name="CBOR.Write.Success" enum="BooleanSuccess"
+    expires_after="2026-12-15">
+  <owner>zgroza@chromium.org</owner>
+  <owner>src/components/cbor/OWNERS</owner>
+  <summary>
+    Records whether cbor::Writer::Write() succeeded. Emitted once per call
+    controlled by kUseRustCborWriter in builds with the Rust writer enabled.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

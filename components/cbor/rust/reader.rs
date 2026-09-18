@@ -362,8 +362,9 @@ impl Decoder {
         let mut ret: Vec<MapEntry> = Vec::new();
 
         for _ in 0..num_elements {
-            // TODO(crbug.com/259749095): Validate key type + order (and possibly return
-            // early) before attempting to parse the value.
+            // TODO(crbug.com/259749095): Validate key type + order (and
+            // possibly return early) before attempting to parse the
+            // value.
             let key_value = self.parse_value(data, depth + 1)?;
             let value = self.parse_value(data, depth + 1)?;
 
@@ -491,8 +492,9 @@ impl Decoder {
                 Ok(CborEvent::BytesEnd)
             }
             DecoderState::ReadingBytes(remaining) => {
-                // On 64-bit systems, `usize::try_from(remaining)` is infallible. On 32-bit
-                // systems, clamping to `usize::MAX` allows chunked streaming of byte strings
+                // On 64-bit systems, `usize::try_from(remaining)` is
+                // infallible. On 32-bit systems, clamping to
+                // `usize::MAX` allows chunked streaming of byte strings
                 // larger than 4GB.
                 let to_read = usize::try_from(remaining).unwrap_or(usize::MAX);
                 let chunk = match data.read_some_bytes(to_read) {
