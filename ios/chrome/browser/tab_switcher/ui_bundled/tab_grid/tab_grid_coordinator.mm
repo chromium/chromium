@@ -674,16 +674,24 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     [strongSelf setActiveMode:TabGridMode::kNormal];
     Browser* browser =
         incognito ? strongSelf.incognitoBrowser : strongSelf.regularBrowser;
-    if (!GetFirstResponderInWindowScene(
-            strongSelf.viewController.view.window.windowScene) &&
-        !FindNavigatorShouldBePresentedInBrowser(browser)) {
-      // It is possible to already have a first responder (for example the
-
-      [strongSelf.browserLayoutViewController
-              .browserViewController becomeFirstResponder];
-    }
     if (completion) {
       completion();
+    }
+
+    // Only restore the browser view controller as fallback responder when
+    // dismissing an active Tab Grid. During initial startup presentation,
+    // initial UI setup (e.g. Omnibox or web page focus) manages responder
+    // state, and synchronously forcing responder activation on `bvc` can
+    // trigger an infinite traversal in UIKit (crbug.com/562461210).
+    if (!strongSelf.firstPresentation) {
+      UIViewController* bvc =
+          strongSelf.browserLayoutViewController.browserViewController;
+      UIWindowScene* windowScene = bvc.view.window.windowScene;
+      if (!bvc.isFirstResponder &&
+          !GetFirstResponderInWindowScene(windowScene) &&
+          !FindNavigatorShouldBePresentedInBrowser(browser)) {
+        [bvc becomeFirstResponder];
+      }
     }
     strongSelf.firstPresentation = NO;
 

@@ -242,6 +242,20 @@ TEST_F(TabGridCoordinatorTest, BrowserLayoutViewControllerBeforeTabSwitcher) {
   EXPECT_TRUE(tab_switcher_active);
 }
 
+// Test that on initial presentation, `showBrowserLayoutViewController` invokes
+// the completion block.
+TEST_F(TabGridCoordinatorTest, InitialShowBrowserLayoutInvokesCompletion) {
+  layout_view_controller_.browserViewController = normal_tab_view_controller_;
+  __block BOOL completion_called = NO;
+  [coordinator_ showBrowserLayoutViewController:layout_view_controller_
+                                      incognito:NO
+                                     completion:^{
+                                       completion_called = YES;
+                                     }];
+  EXPECT_TRUE(completion_called);
+  EXPECT_EQ(normal_tab_view_controller_, coordinator_.activeViewController);
+}
+
 // Tests that it is possible to set a BrowserLayoutViewController after setting
 // a TabSwitcher.
 TEST_F(TabGridCoordinatorTest, BrowserLayoutViewControllerAfterTabSwitcher) {
