@@ -105,9 +105,6 @@ tast.apps.LaunchHelpAppFromShortcut.stable_guest
 # https://crbug.com/460054243
 tast.inputs.VirtualKeyboardTypingUserMode.guest
 
-# https://crbug.com/368606672
-tast.inputs.InputMethodManagement.guest
-
 # b/451624782
 tast.secagentd.NetworkEvents.relaxed_udp@chromeos-betty-cfi-thin-lto-chrome
 
