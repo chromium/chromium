@@ -40,6 +40,7 @@ DEFINE_UI_CLASS_PROPERTY_KEY(AppMenuActionItem::ItemHeight,
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::u16string, kAppMenuTextOverrideInternal)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ui::ImageModel, kAppMenuIconOverrideInternal)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ui::ImageModel, kAppMenuMinorIconInternal)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::u16string, kAppMenuMinorTextInternal)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::u16string, kAppMenuChipTextInternal)
 
 const ui::ClassProperty<AppMenuActionItem::DisplayType>* const
@@ -56,6 +57,9 @@ const ui::ClassProperty<ui::ImageModel*>* const
 
 const ui::ClassProperty<ui::ImageModel*>* const
     AppMenuActionItem::kMinorIconKey = kAppMenuMinorIconInternal;
+
+const ui::ClassProperty<std::u16string*>* const
+    AppMenuActionItem::kMinorTextKey = kAppMenuMinorTextInternal;
 
 const ui::ClassProperty<ui::MenuSeparatorType>* const
     AppMenuActionItem::kSeparatorKey = kAppMenuSeparatorInternal;
@@ -104,6 +108,11 @@ std::unique_ptr<actions::IndirectActionItem> AppMenuActionItem::CreateIndirect(
   if (params.icon_override.has_value()) {
     item->SetProperty(kIconOverrideKey, std::make_unique<ui::ImageModel>(
                                             params.icon_override.value()));
+  }
+
+  if (params.minor_text.has_value()) {
+    item->SetProperty(kMinorTextKey, std::make_unique<std::u16string>(
+                                         params.minor_text.value()));
   }
 
   if (params.chip_text.has_value()) {

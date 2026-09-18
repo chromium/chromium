@@ -1233,6 +1233,18 @@ std::u16string AppMenuModel::GetUpgradeDialogTitleText() {
 #endif
 }
 
+// static
+std::u16string AppMenuModel::GetUpgradeDialogSubstringText() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
+    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
+  if (!UpgradeDetector::GetInstance()->is_outdated_install() &&
+      !UpgradeDetector::GetInstance()->is_outdated_install_no_au()) {
+    return l10n_util::GetStringUTF16(IDS_RELAUNCH_TO_UPDATE_ALT_MINOR_TEXT);
+  }
+#endif
+  return std::u16string();
+}
+
 AppMenuModel::AppMenuModel(ui::AcceleratorProvider* provider,
                            BrowserWindowInterface* browser,
                            AppMenuIconController* app_menu_icon_controller,

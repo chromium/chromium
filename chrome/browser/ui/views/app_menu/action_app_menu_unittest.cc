@@ -1546,6 +1546,18 @@ TEST_F(ActionAppMenuTest, UpgradeNotificationRowStyling) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
 
+  actions::ActionItem* app_menu_root = actions::ActionManager::Get().FindAction(
+      kActionAppMenuRoot, browser_actions_->root_action_item());
+  ASSERT_NE(app_menu_root, nullptr);
+  actions::BaseAction* upgrade_indirect_item = app_menu_root->GetChildren()
+                                                   .children()[0]
+                                                   ->GetChildren()
+                                                   .children()[0]
+                                                   .get();
+  upgrade_indirect_item->SetProperty(
+      AppMenuActionItem::kMinorTextKey,
+      std::make_unique<std::u16string>(u"Restart to update"));
+
   menu.RunMenu(button_->button_controller());
   EXPECT_TRUE(menu.IsShowing());
 
@@ -1557,6 +1569,9 @@ TEST_F(ActionAppMenuTest, UpgradeNotificationRowStyling) {
   ASSERT_TRUE(upgrade_item);
   EXPECT_TRUE(upgrade_item->GetVisible());
   EXPECT_EQ(upgrade_item->title(), u"Update Chrome");
+  EXPECT_EQ(upgrade_item->GetViewAccessibility().GetCachedName(),
+            views::MenuItemView::GetAccessibleNameForMenuItem(
+                u"Update Chrome", u"Restart to update", std::nullopt));
 
   // Upgrade row should have container background with rounded top and bottom
   // corners.
@@ -1582,6 +1597,48 @@ TEST_F(ActionAppMenuTest, UpgradeNotificationRowStyling) {
   EXPECT_EQ(*block_margins,
             ChromeLayoutProvider::Get()->GetInsetsMetric(
                 INSETS_ACTION_APP_MENU_BLOCK_WITH_NOTIFICATION_MARGIN));
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
+TEST_F(ActionAppMenuTest, UpgradeNotificationWithoutMinorText) {
+  if (!browser_defaults::kShowUpgradeMenuItem) {
+    GTEST_SKIP() << "Upgrade menu item is not supported on this platform.";
+  }
+
+  actions::ActionItem* upgrade_action =
+      actions::ActionManager::Get().FindAction(
+          kActionUpgradeDialog, browser_actions_->root_action_item());
+  ASSERT_NE(upgrade_action, nullptr);
+  upgrade_action->SetVisible(true);
+
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  actions::ActionItem* app_menu_root = actions::ActionManager::Get().FindAction(
+      kActionAppMenuRoot, browser_actions_->root_action_item());
+  ASSERT_NE(app_menu_root, nullptr);
+  actions::BaseAction* upgrade_indirect_item = app_menu_root->GetChildren()
+                                                   .children()[0]
+                                                   ->GetChildren()
+                                                   .children()[0]
+                                                   .get();
+  upgrade_indirect_item->SetProperty(AppMenuActionItem::kMinorTextKey,
+                                     std::make_unique<std::u16string>());
+
+  menu.RunMenu(button_->button_controller());
+  EXPECT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  views::MenuItemView* upgrade_item =
+      root->GetMenuItemByID(kActionUpgradeDialog);
+  ASSERT_TRUE(upgrade_item);
+  EXPECT_TRUE(upgrade_item->GetVisible());
+  EXPECT_EQ(upgrade_item->GetViewAccessibility().GetCachedName(),
+            u"Update Chrome");
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();

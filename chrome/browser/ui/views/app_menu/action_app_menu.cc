@@ -358,6 +358,10 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
   const ui::Accelerator& accel = action_item->GetAccelerator();
   if (accel.key_code() != ui::VKEY_UNKNOWN) {
     menu_item->SetMinorText(accel.GetShortcutText());
+  } else if (const std::u16string* minor_text =
+                 child_base->GetProperty(AppMenuActionItem::kMinorTextKey);
+             minor_text && !minor_text->empty()) {
+    menu_item->SetMinorText(*minor_text);
   }
 
   if (std::u16string* chip_text =

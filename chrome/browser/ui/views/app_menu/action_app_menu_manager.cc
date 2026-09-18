@@ -51,6 +51,7 @@
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
+#include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_prefs.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -320,8 +321,10 @@ void ActionAppMenuManager::AddNotificationActions(actions::ActionItem* root) {
       root, BrowserActions::From(browser_window_interface_)->root_action_item(),
       ui::kColorAppMenuUpgradeRowBackground)
       .AddSection(DisplayType::kSection, [](AppMenuBuilder& section) {
-        section.AddAction(kActionUpgradeDialog,
-                          {.display_type = DisplayType::kNotification});
+        section.AddAction(
+            kActionUpgradeDialog,
+            {.display_type = DisplayType::kNotification,
+             .minor_text = AppMenuModel::GetUpgradeDialogSubstringText()});
       });
 }
 

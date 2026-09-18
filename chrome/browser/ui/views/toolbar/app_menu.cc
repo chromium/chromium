@@ -408,21 +408,6 @@ class InMenuImageButton : public ImageButton {
 BEGIN_METADATA(InMenuImageButton)
 END_METADATA
 
-// Conditionally return the update app menu item substring text based on upgrade
-// detector state.
-std::u16string GetUpgradeDialogSubstringText() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
-    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
-  if (!UpgradeDetector::GetInstance()->is_outdated_install() &&
-      !UpgradeDetector::GetInstance()->is_outdated_install_no_au()) {
-    {
-      return {l10n_util::GetStringUTF16(IDS_RELAUNCH_TO_UPDATE_ALT_MINOR_TEXT)};
-    }
-  }
-#endif
-  return std::u16string();
-}
-
 std::u16string GetSigninStatusChipString(Profile* profile) {
   const AccountInfo account_info = GetAccountInfoFromProfile(profile);
 
@@ -1640,7 +1625,8 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
       }
       case IDC_UPGRADE_DIALOG: {
         add_menu_row_background(12, ui::kColorAppMenuUpgradeRowBackground);
-        if (const auto upgrade_substring_text = GetUpgradeDialogSubstringText();
+        if (const auto upgrade_substring_text =
+                AppMenuModel::GetUpgradeDialogSubstringText();
             !upgrade_substring_text.empty()) {
           item->AddChildView(
               views::Builder<views::Label>()
