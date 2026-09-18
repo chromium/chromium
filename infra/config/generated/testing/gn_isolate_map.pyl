@@ -481,6 +481,7 @@
   "chrome/installer/mac": {
     "label": "//chrome/installer/mac:mac",
     "type": "additional_compile_target",
+    "skip_usage_check": True,
   },
   "chrome/updater:all": {
     "label": "//chrome/updater:all",

@@ -267,19 +267,6 @@
           'isolated_scripts': 'linux_chromeos_isolated_scripts',
         },
       },
-      'mac-chrome': {
-        'additional_compile_targets': [
-          'chrome',
-          'chrome/installer/mac',
-        ],
-        'mixins': [
-          'chrome-swarming-pool',
-          'mac_14_x64',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'chrome_isolated_script_tests',
-        },
-      },
       'win-branded-rel': {
         'additional_compile_targets': [
           'chrome',
