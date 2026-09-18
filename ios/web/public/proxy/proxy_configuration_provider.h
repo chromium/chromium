@@ -43,13 +43,16 @@ class ProxyConfigurationProvider : public base::SupportsUserData::Data {
 
   // Updates the current proxy configuration and initiates asynchronous
   // background mapping to native `Network.framework` configurations.
-  // If a prior mapping is still ongoing, it is canceled.
-  void UpdateProxyConfiguration(std::vector<ProxyRule> rules)
+  // If a prior mapping is still ongoing, it is canceled. Virtual for testing.
+  virtual void UpdateProxyConfiguration(std::vector<ProxyRule> rules)
       API_AVAILABLE(ios(17.0));
 
- private:
+ protected:
+  // Initializes the provider for `browser_state`. Protected to allow test
+  // subclasses.
   explicit ProxyConfigurationProvider(BrowserState* browser_state);
 
+ private:
   // Called on the main sequence when background mapping completes.
   void OnNativeProxyConfigurationsMapped(
       scoped_refptr<base::RefCountedData<base::AtomicFlag>> cancel_flag,
