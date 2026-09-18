@@ -24,8 +24,10 @@ bool IsPriceAlertsEligible(ProfileIOS* profile) {
   }
 
   // Price drop annotations are only enabled for en-US.
-  if (GetApplicationContext()->GetApplicationLocaleStorage()->Get() !=
-      "en-US") {
+  if (GetApplicationContext()
+          ->GetApplicationLocaleStorage()
+          ->GetTag()
+          .tag_string() != "en-US") {
     return false;
   }
 

@@ -112,9 +112,11 @@ void ShoppingPersistedDataTabHelper::OnFetchProductInfo(
   }
   price_drop_ = CreatePriceDrop(
       info.value(), url,
-      GetCurrencyFormatter(
-          info->currency_code,
-          GetApplicationContext()->GetApplicationLocaleStorage()->Get()));
+      GetCurrencyFormatter(info->currency_code,
+                           std::string(GetApplicationContext()
+                                           ->GetApplicationLocaleStorage()
+                                           ->GetTag()
+                                           .tag_string())));
   std::move(callback).Run(*price_drop_.get());
 }
 
@@ -242,9 +244,11 @@ void ShoppingPersistedDataTabHelper::OnProductInfoReceived(
   if (info.has_value()) {
     price_drop_ = CreatePriceDrop(
         info.value(), url,
-        GetCurrencyFormatter(
-            info.value().currency_code,
-            GetApplicationContext()->GetApplicationLocaleStorage()->Get()));
+        GetCurrencyFormatter(info.value().currency_code,
+                             std::string(GetApplicationContext()
+                                             ->GetApplicationLocaleStorage()
+                                             ->GetTag()
+                                             .tag_string())));
   }
 }
 

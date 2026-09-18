@@ -42,8 +42,10 @@ bool IsPriceTrackingPromoCardEnabled(commerce::ShoppingService* service,
                                      AuthenticationService* auth_service,
                                      PrefService* pref_service) {
   id<SystemIdentity> identity = auth_service->GetPrimaryIdentity();
-  return GetApplicationContext()->GetApplicationLocaleStorage()->Get() ==
-             "en-US" &&
+  return GetApplicationContext()
+                 ->GetApplicationLocaleStorage()
+                 ->GetTag()
+                 .tag_string() == "en-US" &&
          !push_notification_settings::
              GetMobileNotificationPermissionStatusForClient(
                  PushNotificationClientId::kCommerce, identity.gaiaId) &&

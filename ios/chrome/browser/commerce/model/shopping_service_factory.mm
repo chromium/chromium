@@ -74,7 +74,10 @@ std::unique_ptr<KeyedService> ShoppingServiceFactory::BuildServiceInstanceFor(
   PrefService* pref_service = profile->GetPrefs();
   return std::make_unique<ShoppingService>(
       GetCurrentCountryCode(GetApplicationContext()->GetVariationsService()),
-      GetApplicationContext()->GetApplicationLocaleStorage()->Get(),
+      std::string(GetApplicationContext()
+                      ->GetApplicationLocaleStorage()
+                      ->GetTag()
+                      .tag_string()),
       ios::BookmarkModelFactory::GetForProfile(profile),
       OptimizationGuideServiceFactory::GetForProfile(profile), pref_service,
       IdentityManagerFactory::GetForProfile(profile),

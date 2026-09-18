@@ -217,7 +217,10 @@
   std::unique_ptr<payments::CurrencyFormatter> formatter =
       std::make_unique<payments::CurrencyFormatter>(
           specifics.previous_price().currency_code(),
-          GetApplicationContext()->GetApplicationLocaleStorage()->Get());
+          std::string(GetApplicationContext()
+                          ->GetApplicationLocaleStorage()
+                          ->GetTag()
+                          .tag_string()));
 
   float current_price_micros =
       static_cast<float>(specifics.current_price().amount_micros());

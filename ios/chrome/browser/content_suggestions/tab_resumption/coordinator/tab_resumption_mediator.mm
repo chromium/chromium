@@ -200,7 +200,10 @@ void ConfigureTabResumptionItemForShopCard(
     std::unique_ptr<payments::CurrencyFormatter> formatter =
         std::make_unique<payments::CurrencyFormatter>(
             price_tracking_data->product_update().new_price().currency_code(),
-            GetApplicationContext()->GetApplicationLocaleStorage()->Get());
+            std::string(GetApplicationContext()
+                            ->GetApplicationLocaleStorage()
+                            ->GetTag()
+                            .tag_string()));
     config.shopCardData.priceDrop = GetPriceDrop(
         formatter.get(),
         price_tracking_data->product_update().new_price().amount_micros(),

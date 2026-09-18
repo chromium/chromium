@@ -16,8 +16,10 @@ const char kLearnMoreIncognitoUrl[] =
     "https://support.google.com/chrome/?p=incognito";
 
 GURL GetUrlWithLang(const GURL& url) {
-  std::string locale =
-      GetApplicationContext()->GetApplicationLocaleStorage()->Get();
+  std::string locale(GetApplicationContext()
+                         ->GetApplicationLocaleStorage()
+                         ->GetTag()
+                         .tag_string());
   return google_util::AppendGoogleLocaleParam(url, locale);
 }
 

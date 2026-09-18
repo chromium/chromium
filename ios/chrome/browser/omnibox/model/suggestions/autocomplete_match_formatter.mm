@@ -68,8 +68,10 @@ UIColor* DimColorIncognito() {
   if (self) {
     _match = AutocompleteMatch(match);
     _isReverseColorLogic = std::ranges::contains(
-        kReverseColorLocales,
-        GetApplicationContext()->GetApplicationLocaleStorage()->Get());
+        kReverseColorLocales, GetApplicationContext()
+                                  ->GetApplicationLocaleStorage()
+                                  ->GetTag()
+                                  .tag_string());
   }
   return self;
 }

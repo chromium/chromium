@@ -19,7 +19,10 @@ bool IsPriceInsightsRegionEnabled() {
   return commerce::IsRegionLockedFeatureEnabled(
       commerce::kPriceInsights,
       GetCurrentCountryCode(GetApplicationContext()->GetVariationsService()),
-      GetApplicationContext()->GetApplicationLocaleStorage()->Get());
+      std::string(GetApplicationContext()
+                      ->GetApplicationLocaleStorage()
+                      ->GetTag()
+                      .tag_string()));
 }
 
 bool IsPriceInsightsEnabled(ProfileIOS* profile) {

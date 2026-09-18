@@ -78,8 +78,11 @@
   tabHelper->SetDelegate(self);
 
   GURL parentAccessURL = supervised_user::GetParentAccessURL(
-      GetApplicationContext()->GetApplicationLocaleStorage()->Get(), _targetURL,
-      _filteringBehaviorReason);
+      std::string(GetApplicationContext()
+                      ->GetApplicationLocaleStorage()
+                      ->GetTag()
+                      .tag_string()),
+      _targetURL, _filteringBehaviorReason);
   _mediator = [[ParentAccessMediator alloc] initWithWebState:std::move(webState)
                                              parentAccessURL:parentAccessURL];
   _mediator.delegate = self;

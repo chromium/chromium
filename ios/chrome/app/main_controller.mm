@@ -240,7 +240,10 @@ void RegisterComponentsForUpdate() {
       GetApplicationContext()->GetComponentUpdateService();
   DCHECK(cus);
   RegisterOnDeviceHeadSuggestComponent(
-      cus, GetApplicationContext()->GetApplicationLocaleStorage()->Get());
+      cus, std::string(GetApplicationContext()
+                           ->GetApplicationLocaleStorage()
+                           ->GetTag()
+                           .tag_string()));
   RegisterSafetyTipsComponent(cus);
   RegisterOptimizationHintsComponent(cus);
   if (IsActorEnabled()) {
