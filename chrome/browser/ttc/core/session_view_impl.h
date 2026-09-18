@@ -10,13 +10,10 @@
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ttc/core/session_view.h"
 
-namespace dictation {
-class DictationBubbleUi;
-}  // namespace dictation
-
 namespace ttc {
 
 class SessionViewDelegate;
+class VoicePlateController;
 
 class SessionViewImpl : public SessionView {
  public:
@@ -28,11 +25,8 @@ class SessionViewImpl : public SessionView {
   // SessionView implementation:
   void UpdateAudioLevel(float audio_level) override;
   void OnSessionInitialized() override;
-  void OnSessionEnded() override;
 
  private:
-  void CreateVoicePlateUi();
-
   // Invoked when the user clicks the voice plate's close button.
   void OnVoicePlateCloseClicked();
 
@@ -40,9 +34,9 @@ class SessionViewImpl : public SessionView {
   // construction.
   const raw_ref<SessionViewDelegate> delegate_;
 
-  // The main UI surface for the session; a bubble anchored to the top-center of
-  // the browser window.
-  std::unique_ptr<dictation::DictationBubbleUi> voice_plate_;
+  // Owns the main UI surface for the session and keeps it in the active
+  // window.
+  std::unique_ptr<VoicePlateController> voice_plate_controller_;
 };
 
 }  // namespace ttc

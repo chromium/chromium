@@ -41,6 +41,8 @@ class DictationBubbleUi : public views::BubbleDialogDelegate {
   void Init() override;
   views::View* GetInitiallyFocusedView() override;
 
+  UiState state() const { return state_; }
+
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kViewElementIdForTesting);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCloseButtonElementIdForTesting);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToggleButtonElementIdForTesting);

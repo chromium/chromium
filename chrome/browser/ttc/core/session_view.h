@@ -19,9 +19,6 @@ class SessionView {
   // Called when the session has finished initializing and audio capture is
   // live.
   virtual void OnSessionInitialized() = 0;
-
-  // Called when the session has ended and the UI should be torn down.
-  virtual void OnSessionEnded() = 0;
 };
 
 }  // namespace ttc

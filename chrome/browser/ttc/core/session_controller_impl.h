@@ -14,6 +14,8 @@
 #include "chrome/browser/ttc/core/tool_controller.h"
 #include "chrome/browser/ttc/core/ttc_page_context_monitor.h"
 
+class BrowserWindowInterface;
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -32,14 +34,15 @@ class SessionControllerImpl : public SessionController,
   SessionControllerImpl(const SessionControllerImpl&) = delete;
   SessionControllerImpl& operator=(const SessionControllerImpl&) = delete;
 
+  // SessionController and SessionViewDelegate implementation:
+  Profile* GetProfile() override;
+
   // SessionController implementation:
   void GetPageContext(FetchCompleteCallback callback) override;
-  Profile* GetProfile() override;
   void ProcessToolCall(const ToolRequest& tool_request,
                        ToolResponseCallback tool_response_callback) override;
 
   // SessionViewDelegate implementation:
-  BrowserWindowInterface* GetBrowserWindowInterface() override;
   void EndSessionAsync() override;
 
   // TODO(bokan): Android doesn't yet have a session_view so calling
@@ -48,6 +51,10 @@ class SessionControllerImpl : public SessionController,
   Conversation& conversation() { return CHECK_DEREF(conversation_.get()); }
 
  private:
+  // Returns the last active browser window for this session's profile. May be
+  // null if there is no suitable window.
+  BrowserWindowInterface* GetBrowserWindowInterface();
+
   // Returns the WebContents that the session is currently focused on and
   // observing.
   content::WebContents* GetObservedWebContents();
