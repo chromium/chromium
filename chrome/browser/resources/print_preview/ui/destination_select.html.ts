@@ -33,9 +33,6 @@ export function getHtml(this: DestinationSelectElement) {
           ?selected="${this.noDestinations}">
         $i18n{noDestinationsMessage}
       </option>
-      <option value="seeMore" aria-label="$i18n{seeMoreDestinationsLabel}">
-        $i18n{seeMore}
-      </option>
     </select>
   </div>
 </print-preview-settings-section>

@@ -119,11 +119,6 @@ export class PrintPreviewDestinationSettingsElement extends
         reflectToAttribute: true,
       },
 
-      isDialogOpen_: {
-        type: Boolean,
-        value: false,
-      },
-
       noDestinations_: {
         type: Boolean,
         value: false,
@@ -149,7 +144,6 @@ export class PrintPreviewDestinationSettingsElement extends
   declare private displayedDestinations_: Destination[];
   declare private driveDestinationKey_: string;
   declare private hasPinSetting_: boolean;
-  declare private isDialogOpen_: boolean;
   declare private noDestinations_: boolean;
   declare private pdfPrinterDisabled_: boolean;
   declare private loaded_: boolean;
@@ -414,30 +408,15 @@ export class PrintPreviewDestinationSettingsElement extends
 
   /**
    * @param e Event containing the key of the recent destination that was
-   *     selected, or "seeMore".
+   *     selected.
    */
   private onSelectedDestinationOptionChange_(e: CustomEvent<string>) {
-    const value = e.detail;
-    if (value === 'seeMore') {
-      this.destinationStore_!.startLoadAllDestinations();
-      this.$.destinationDialog.get().show();
-      this.isDialogOpen_ = true;
-    } else {
-      this.destinationStore_!.selectDestinationByKey(value);
-    }
+    this.destinationStore_!.selectDestinationByKey(e.detail);
   }
 
   private onSeeMoreClick_() {
     this.destinationStore_!.startLoadAllDestinations();
     this.$.destinationDialog.get().show();
-    this.isDialogOpen_ = true;
-  }
-
-  private onDialogClose_() {
-    // Reset the select value if the user dismissed the dialog without
-    // selecting a new destination.
-    this.updateDestinationSelect_();
-    this.isDialogOpen_ = false;
   }
 
   private updateDestinationSelect_() {

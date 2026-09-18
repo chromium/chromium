@@ -184,11 +184,10 @@ suite('DestinationSettingsTest', function() {
   function assertDropdownItems(expectedDestinations: string[]) {
     const options =
         destinationSettings.$.destinationSelect.getVisibleItemsForTest();
-    assertEquals(expectedDestinations.length + 1, options.length);
+    assertEquals(expectedDestinations.length, options.length);
     expectedDestinations.forEach((expectedValue, index) => {
       assertEquals(expectedValue, options[index]!.value);
     });
-    assertEquals('seeMore', options[expectedDestinations.length]!.value);
   }
 
   // Tests that the dropdown contains the appropriate destinations when there
@@ -522,43 +521,6 @@ suite('DestinationSettingsTest', function() {
             });
       });
 
-  // Tests that selecting the 'see more' option opens the dialog.
-  test('OpenDialog', function() {
-    recentDestinations = destinations.slice(0, 5).map(
-        destination => makeRecentDestination(destination));
-    const whenCapabilitiesDone =
-        nativeLayer.whenCalled('getPrinterCapabilities');
-    initialize();
-    const dropdown = destinationSettings.$.destinationSelect;
-
-    return whenCapabilitiesDone
-        .then(() => {
-          return waitBeforeNextRender(destinationSettings);
-        })
-        .then(() => {
-          // This will result in the destination store setting the most recent
-          // destination.
-          assertEquals('ID1', destinationSettings.destination.id);
-          assertFalse(dropdown.disabled);
-          const dropdownItems = [
-            makeLocalDestinationKey('ID1'),
-            makeLocalDestinationKey('ID2'),
-            makeLocalDestinationKey('ID3'),
-            'Save as PDF/local/',
-            driveDestinationKey,
-          ];
-          assertDropdownItems(dropdownItems);
-
-          dropdown.dispatchEvent(new CustomEvent(
-              'selected-option-change',
-              {bubbles: true, composed: true, detail: 'seeMore'}));
-          return waitBeforeNextRender(destinationSettings);
-        })
-        .then(() => {
-          assertTrue(destinationSettings.$.destinationDialog.get().isOpen());
-        });
-  });
-
   // Tests that clicking the "See More" button opens the dialog.
   test('SeeMoreButton', async () => {
     recentDestinations = destinations.slice(0, 5).map(
@@ -814,7 +776,7 @@ suite('DestinationSettingsTest', function() {
             .then(() => {
               const options = destinationSettings.$.destinationSelect
                                   .getVisibleItemsForTest();
-              assertEquals(2, options.length);
+              assertEquals(1, options.length);
               assertEquals('Save as PDF/local/', options[0]!.value);
             });
       });

@@ -84,7 +84,7 @@ suite('DestinationDropdownCrosTest', function() {
         ]);
 
         const itemList = getList();
-        assertEquals(7, itemList.length);
+        assertEquals(6, itemList.length);
         assertEquals('One', itemList[0]!.textContent.trim());
         assertEquals('Two', itemList[1]!.textContent.trim());
         assertEquals('Three', itemList[2]!.textContent.trim());
@@ -123,11 +123,6 @@ suite('DestinationDropdownCrosTest', function() {
     down();
     assertEquals('Save to Google Drive', getHighlightedElementText());
     down();
-    assertEquals('See more…', getHighlightedElementText());
-    down();
-    assertEquals('See more…', getHighlightedElementText());
-
-    up();
     assertEquals('Save to Google Drive', getHighlightedElementText());
     up();
     assertEquals('Save as PDF', getHighlightedElementText());

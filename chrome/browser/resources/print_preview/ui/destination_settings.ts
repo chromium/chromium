@@ -95,7 +95,6 @@ export class PrintPreviewDestinationSettingsElement extends
       state: {type: Number},
       destinationStore_: {type: Object},
       displayedDestinations_: {type: Array},
-      isDialogOpen_: {type: Boolean},
       noDestinations_: {type: Boolean},
       pdfPrinterDisabled_: {type: Boolean},
       loaded_: {type: Boolean},
@@ -111,7 +110,6 @@ export class PrintPreviewDestinationSettingsElement extends
   accessor state: State = State.NOT_READY;
   protected accessor destinationStore_: DestinationStore|null = null;
   protected accessor displayedDestinations_: Destination[] = [];
-  private accessor isDialogOpen_: boolean = false;
   protected accessor noDestinations_: boolean = false;
   protected accessor pdfPrinterDisabled_: boolean = false;
   protected accessor loaded_: boolean = false;
@@ -379,30 +377,15 @@ export class PrintPreviewDestinationSettingsElement extends
 
   /**
    * @param e Event containing the key of the recent destination that was
-   *     selected, or "seeMore".
+   *     selected.
    */
   protected onSelectedOptionChange_(e: CustomEvent<string>) {
-    const value = e.detail;
-    if (value === 'seeMore') {
-      this.destinationStore_!.startLoadAllDestinations();
-      this.$.destinationDialog.get().show();
-      this.isDialogOpen_ = true;
-    } else {
-      this.destinationStore_!.selectDestinationByKey(value);
-    }
+    this.destinationStore_!.selectDestinationByKey(e.detail);
   }
 
   protected onSeeMoreClick_() {
     this.destinationStore_!.startLoadAllDestinations();
     this.$.destinationDialog.get().show();
-    this.isDialogOpen_ = true;
-  }
-
-  protected onDialogClose_() {
-    // Reset the select value if the user dismissed the dialog without
-    // selecting a new destination.
-    this.updateDestinationSelect_();
-    this.isDialogOpen_ = false;
   }
 
   private async updateDestinationSelect_() {

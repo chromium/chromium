@@ -42,12 +42,8 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewChromeOsInteractiveUiTest,
   const DeepQuery kDestinationSettings{"print-preview-app", "#sidebar",
                                        "#destinationSettings"};
 
-  const DeepQuery kDestinationDropdown = kDestinationSettings +
-                                         "#destinationSelect" + "#dropdown" +
-                                         "#destinationDropdown";
-
-  const DeepQuery kSeeMoreButton = kDestinationSettings + "#destinationSelect" +
-                                   "#dropdown" + "button:nth-child(5)";
+  const DeepQuery kSeeMoreButton =
+      kDestinationSettings + "#seeMore:not([disabled])";
 
   const DeepQuery kManagePrintersButton =
       kDestinationSettings + "print-preview-destination-dialog-cros" +
@@ -62,9 +58,8 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewChromeOsInteractiveUiTest,
       WaitForShow(kConstrainedDialogWebViewElementId),
       InstrumentNonTabWebView(kPrintPreviewId,
                               kConstrainedDialogWebViewElementId),
-      WaitForElementExists(kPrintPreviewId, kDestinationDropdown),
       Log("Click the See more button to open the destination dialog"),
-      ClickElement(kPrintPreviewId, kDestinationDropdown),
+      WaitForElementExists(kPrintPreviewId, kSeeMoreButton),
       WaitForElementToRender(kPrintPreviewId, kSeeMoreButton),
       ClickElement(kPrintPreviewId, kSeeMoreButton),
       Log("Click the Manage printers button to open the printer settings"),

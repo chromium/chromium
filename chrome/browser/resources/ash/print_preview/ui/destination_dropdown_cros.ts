@@ -89,8 +89,6 @@ export class PrintPreviewDestinationDropdownCrosElement extends
       pdfPosinset: Number,
 
       drivePosinset: Number,
-
-      seeMorePosinset: Number,
     };
   }
 
@@ -114,7 +112,6 @@ export class PrintPreviewDestinationDropdownCrosElement extends
   declare private dropdownLength_: number;
   declare pdfPosinset: number;
   declare drivePosinset: number;
-  declare seeMorePosinset: number;
 
   private opened_: boolean = false;
   private dropdownRefitPending_: boolean = false;
@@ -344,8 +341,7 @@ export class PrintPreviewDestinationDropdownCrosElement extends
       return 0;
     }
 
-    // + 1 for "See more"
-    let length = this.itemList.length + 1;
+    let length = this.itemList.length;
     if (!this.pdfPrinterDisabled) {
       length++;
     }
@@ -383,7 +379,6 @@ export class PrintPreviewDestinationDropdownCrosElement extends
     if (this.driveDestinationKey) {
       this.drivePosinset = currentPosition++;
     }
-    this.seeMorePosinset = currentPosition++;
   }
 }
 

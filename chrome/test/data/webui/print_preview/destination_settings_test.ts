@@ -166,11 +166,10 @@ suite('DestinationSettingsTest', function() {
   function assertDropdownItems(expectedDestinations: string[]) {
     const options =
         destinationSettings.$.destinationSelect.getVisibleItemsForTest();
-    assertEquals(expectedDestinations.length + 1, options.length);
+    assertEquals(expectedDestinations.length, options.length);
     expectedDestinations.forEach((expectedValue, index) => {
       assertEquals(expectedValue, options[index]!.value);
     });
-    assertEquals('seeMore', options[expectedDestinations.length]!.value);
   }
 
   // Tests that the dropdown contains the appropriate destinations when there
@@ -332,33 +331,6 @@ suite('DestinationSettingsTest', function() {
     await whenDestinationSelect;
     assertTrue(!!destinationSettings.destination);
     assertEquals('ID2', destinationSettings.destination.id);
-  });
-
-  // Tests that selecting the 'see more' option opens the dialog.
-  test('OpenDialog', async () => {
-    recentDestinations = destinations.slice(0, 5).map(
-        destination => makeRecentDestination(destination));
-    const dropdown = destinationSettings.$.destinationSelect;
-
-    await initialize();
-    // This will result in the destination store setting the most recent
-    // destination.
-    assertTrue(!!destinationSettings.destination);
-    assertEquals('ID1', destinationSettings.destination.id);
-    assertFalse(dropdown.disabled);
-    const dropdownItems = [
-      makeLocalDestinationKey('ID1'),
-      makeLocalDestinationKey('ID2'),
-      makeLocalDestinationKey('ID3'),
-      'Save as PDF/local/',
-    ];
-    assertDropdownItems(dropdownItems);
-
-    dropdown.dispatchEvent(new CustomEvent(
-        'selected-option-change',
-        {bubbles: true, composed: true, detail: 'seeMore'}));
-    await microtasksFinished();
-    assertTrue(destinationSettings.$.destinationDialog.get().isOpen());
   });
 
   // Tests that clicking the "See More" button opens the dialog.
