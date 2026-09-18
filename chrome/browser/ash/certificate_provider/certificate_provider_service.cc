@@ -216,8 +216,8 @@ CertificateProviderService::~CertificateProviderService() {
 void CertificateProviderService::SetDelegate(
     std::unique_ptr<Delegate> delegate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!delegate_);
-  DCHECK(delegate);
+  CHECK(!delegate_, base::NotFatalUntil::M160);
+  CHECK(delegate, base::NotFatalUntil::M160);
 
   delegate_ = std::move(delegate);
 }

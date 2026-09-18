@@ -117,7 +117,8 @@ class KioskAppData::CrxLoader : public extensions::SandboxedUnpackerClient {
                        const extensions::Extension* extension,
                        const SkBitmap& install_icon,
                        base::DictValue ruleset_install_prefs) override {
-    DCHECK(task_runner_->RunsTasksInCurrentSequence());
+    CHECK(task_runner_->RunsTasksInCurrentSequence(),
+          base::NotFatalUntil::M160);
 
     const extensions::KioskModeInfo* info =
         extensions::KioskModeInfo::Get(extension);
@@ -133,14 +134,16 @@ class KioskAppData::CrxLoader : public extensions::SandboxedUnpackerClient {
     NotifyFinishedInThreadPool();
   }
   void OnUnpackFailure(const extensions::CrxInstallError& error) override {
-    DCHECK(task_runner_->RunsTasksInCurrentSequence());
+    CHECK(task_runner_->RunsTasksInCurrentSequence(),
+          base::NotFatalUntil::M160);
 
     success_ = false;
     NotifyFinishedInThreadPool();
   }
 
   void StartInThreadPool() {
-    DCHECK(task_runner_->RunsTasksInCurrentSequence());
+    CHECK(task_runner_->RunsTasksInCurrentSequence(),
+          base::NotFatalUntil::M160);
 
     if (!temp_dir_.CreateUniqueTempDir()) {
       success_ = false;
@@ -157,7 +160,8 @@ class KioskAppData::CrxLoader : public extensions::SandboxedUnpackerClient {
   }
 
   void NotifyFinishedInThreadPool() {
-    DCHECK(task_runner_->RunsTasksInCurrentSequence());
+    CHECK(task_runner_->RunsTasksInCurrentSequence(),
+          base::NotFatalUntil::M160);
 
     if (!temp_dir_.Delete()) {
       LOG(WARNING) << "Can not delete temp directory at "
@@ -169,7 +173,7 @@ class KioskAppData::CrxLoader : public extensions::SandboxedUnpackerClient {
   }
 
   void NotifyFinishedOnUIThread() {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
     if (client_) {
       client_->OnCrxLoadFinished(this);
@@ -232,7 +236,7 @@ void KioskAppData::LoadFromInstalledApp(Profile* profile,
         app_id());
   }
 
-  DCHECK_EQ(app_id(), app->id());
+  CHECK_EQ(app_id(), app->id(), base::NotFatalUntil::M160);
 
   name_ = app->name();
   required_platform_version_ =
@@ -364,7 +368,7 @@ void KioskAppData::OnExtensionIconLoaded(const gfx::Image& icon) {
 }
 
 void KioskAppData::OnIconLoadDone(std::optional<gfx::ImageSkia> icon) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (!icon.has_value()) {
     // Re-fetch data from web store when failed to load cached data.
@@ -494,7 +498,7 @@ void KioskAppData::LoadFromCrx() {
 }
 
 void KioskAppData::OnCrxLoadFinished(const CrxLoader* crx_loader) {
-  DCHECK(crx_loader);
+  CHECK(crx_loader, base::NotFatalUntil::M160);
 
   if (crx_loader->crx_file() != crx_file_) {
     return;

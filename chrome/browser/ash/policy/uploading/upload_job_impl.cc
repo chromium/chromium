@@ -100,7 +100,7 @@ DataSegment::DataSegment(
       filename_(filename),
       data_(std::move(data)),
       header_entries_(header_entries) {
-  DCHECK(data_);
+  CHECK(data_, base::NotFatalUntil::M160);
 }
 
 const std::map<std::string, std::string>& DataSegment::GetHeaderEntries()
@@ -121,7 +121,7 @@ std::unique_ptr<std::string> DataSegment::GetData() {
 }
 
 size_t DataSegment::GetDataSize() const {
-  DCHECK(data_);
+  CHECK(data_, base::NotFatalUntil::M160);
   return data_->size();
 }
 
@@ -150,9 +150,9 @@ UploadJobImpl::UploadJobImpl(
       state_(IDLE),
       retry_(0),
       task_runner_(task_runner) {
-  DCHECK(access_token_manager_);
-  DCHECK(url_loader_factory_);
-  DCHECK(delegate_);
+  CHECK(access_token_manager_, base::NotFatalUntil::M160);
+  CHECK(url_loader_factory_, base::NotFatalUntil::M160);
+  CHECK(delegate_, base::NotFatalUntil::M160);
   SYSLOG(INFO) << "Upload job created.";
   if (!upload_url_.is_valid()) {
     NOTREACHED() << upload_url_ << " is not a valid URL.";
@@ -170,9 +170,9 @@ void UploadJobImpl::AddDataSegment(
     const std::string& filename,
     const std::map<std::string, std::string>& header_entries,
     std::unique_ptr<std::string> data) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
   // Cannot add data to busy or failed instance.
-  DCHECK_EQ(IDLE, state_);
+  CHECK_EQ(IDLE, state_, base::NotFatalUntil::M160);
   if (state_ != IDLE)
     return;
 
@@ -181,12 +181,12 @@ void UploadJobImpl::AddDataSegment(
 }
 
 void UploadJobImpl::Start() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
   // Cannot start an upload on a busy or failed instance.
-  DCHECK_EQ(IDLE, state_);
+  CHECK_EQ(IDLE, state_, base::NotFatalUntil::M160);
   if (state_ != IDLE)
     return;
-  DCHECK_EQ(0, retry_);
+  CHECK_EQ(0, retry_, base::NotFatalUntil::M160);
 
   SYSLOG(INFO) << "Upload job started";
   RequestAccessToken();
@@ -199,8 +199,8 @@ void UploadJobImpl::SetRetryDelayForTesting(long retry_delay_ms) {
 }
 
 void UploadJobImpl::RequestAccessToken() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(!access_token_request_);
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
+  CHECK(!access_token_request_, base::NotFatalUntil::M160);
   SYSLOG(INFO) << "Requesting access token.";
 
   state_ = ACQUIRING_TOKEN;
@@ -212,7 +212,7 @@ void UploadJobImpl::RequestAccessToken() {
 }
 
 bool UploadJobImpl::SetUpMultipart() {
-  DCHECK_EQ(ACQUIRING_TOKEN, state_);
+  CHECK_EQ(ACQUIRING_TOKEN, state_, base::NotFatalUntil::M160);
   state_ = PREPARING_CONTENT;
 
   if (mime_boundary_ && post_data_)
@@ -279,7 +279,7 @@ bool UploadJobImpl::SetUpMultipart() {
 
 void UploadJobImpl::CreateAndStartURLLoader(const std::string& access_token) {
   // Ensure that the content has been prepared and the upload url is valid.
-  DCHECK_EQ(PREPARING_CONTENT, state_);
+  CHECK_EQ(PREPARING_CONTENT, state_, base::NotFatalUntil::M160);
   SYSLOG(INFO) << "Starting URL fetcher.";
 
   std::string content_type = kUploadContentType;
@@ -303,7 +303,7 @@ void UploadJobImpl::CreateAndStartURLLoader(const std::string& access_token) {
 }
 
 void UploadJobImpl::StartUpload() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
   SYSLOG(INFO) << "Starting upload.";
 
   if (!SetUpMultipart()) {
@@ -318,8 +318,8 @@ void UploadJobImpl::StartUpload() {
 void UploadJobImpl::OnGetTokenSuccess(
     const OAuth2AccessTokenManager::Request* request,
     const OAuth2AccessTokenConsumer::TokenResponse& token_response) {
-  DCHECK_EQ(ACQUIRING_TOKEN, state_);
-  DCHECK_EQ(access_token_request_.get(), request);
+  CHECK_EQ(ACQUIRING_TOKEN, state_, base::NotFatalUntil::M160);
+  CHECK_EQ(access_token_request_.get(), request, base::NotFatalUntil::M160);
   access_token_request_.reset();
   SYSLOG(INFO) << "Token successfully acquired.";
 
@@ -331,8 +331,8 @@ void UploadJobImpl::OnGetTokenSuccess(
 void UploadJobImpl::OnGetTokenFailure(
     const OAuth2AccessTokenManager::Request* request,
     const GoogleServiceAuthError& error) {
-  DCHECK_EQ(ACQUIRING_TOKEN, state_);
-  DCHECK_EQ(access_token_request_.get(), request);
+  CHECK_EQ(ACQUIRING_TOKEN, state_, base::NotFatalUntil::M160);
+  CHECK_EQ(access_token_request_.get(), request, base::NotFatalUntil::M160);
   access_token_request_.reset();
   SYSLOG(ERROR) << "Token request failed: " << error.ToString();
   HandleError(AUTHENTICATION_ERROR);
@@ -379,7 +379,7 @@ void UploadJobImpl::HandleError(ErrorCode error_code) {
 
 void UploadJobImpl::OnURLLoadComplete(
     scoped_refptr<net::HttpResponseHeaders> headers) {
-  DCHECK_EQ(UPLOADING, state_);
+  CHECK_EQ(UPLOADING, state_, base::NotFatalUntil::M160);
 
   SYSLOG(INFO) << "URL fetch completed.";
   std::unique_ptr<network::SimpleURLLoader> url_loader = std::move(url_loader_);

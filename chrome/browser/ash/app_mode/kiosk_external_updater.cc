@@ -98,7 +98,7 @@ KioskExternalUpdater::KioskExternalUpdater(
       crx_cache_dir_(crx_cache_dir),
       crx_unpack_dir_(crx_unpack_dir) {
   // Subscribe to DiskMountManager.
-  DCHECK(disks::DiskMountManager::GetInstance());
+  CHECK(disks::DiskMountManager::GetInstance(), base::NotFatalUntil::M160);
   disks::DiskMountManager::GetInstance()->AddObserver(this);
 }
 
@@ -112,7 +112,7 @@ void KioskExternalUpdater::OnMountEvent(
     disks::DiskMountManager::MountEvent event,
     MountError error_code,
     const disks::DiskMountManager::MountPoint& mount_info) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (mount_info.mount_type != MountType::kDevice ||
       error_code != MountError::kSuccess) {
@@ -159,7 +159,7 @@ void KioskExternalUpdater::OnExternalUpdateUnpackSuccess(
     const std::string& min_browser_version,
     const base::FilePath& temp_dir,
     const base::FilePath& validated_crx_path) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   // User might pull out the usb stick before updating is completed.
   if (CheckExternalUpdateInterrupted()) {
@@ -219,7 +219,7 @@ void KioskExternalUpdater::OnExternalUpdateUnpackFailure(
 void KioskExternalUpdater::ProcessParsedManifest(
     const base::FilePath& external_update_dir,
     const ParseManifestResult& result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   auto& manager = CHECK_DEREF(KioskChromeAppManager::Get());
 
@@ -349,7 +349,7 @@ bool KioskExternalUpdater::ShouldDoExternalUpdate(
     const std::string& app_id,
     const std::string& version,
     const std::string& min_browser_version) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   auto& manager = CHECK_DEREF(KioskChromeAppManager::Get());
   auto crx_info = manager.GetCachedCrx(app_id);
@@ -383,7 +383,7 @@ bool KioskExternalUpdater::ShouldDoExternalUpdate(
 void KioskExternalUpdater::PutValidatedExtension(const std::string& app_id,
                                                  const base::FilePath& crx_file,
                                                  const std::string& version) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (CheckExternalUpdateInterrupted()) {
     return;
@@ -397,7 +397,7 @@ void KioskExternalUpdater::PutValidatedExtension(const std::string& app_id,
 
 void KioskExternalUpdater::OnPutValidatedExtension(const std::string& app_id,
                                                    bool success) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (CheckExternalUpdateInterrupted()) {
     return;
@@ -436,7 +436,7 @@ void KioskExternalUpdater::MayBeNotifyKioskAppUpdate() {
 }
 
 void KioskExternalUpdater::NotifyKioskAppUpdateAvailable() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   for (const auto& it : external_updates_) {
     if (it.second.update_status == UpdateStatus::kSuccess) {
@@ -461,7 +461,7 @@ void KioskExternalUpdater::DismissKioskUpdateNotification() {
 }
 
 std::u16string KioskExternalUpdater::GetUpdateReportMessage() const {
-  DCHECK(!IsExternalUpdatePending());
+  CHECK(!IsExternalUpdatePending(), base::NotFatalUntil::M160);
   int updated = 0;
   int failed = 0;
   std::u16string updated_apps;

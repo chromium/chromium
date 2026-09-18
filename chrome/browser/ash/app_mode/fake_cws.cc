@@ -294,7 +294,7 @@ FakeCWS::~FakeCWS() {
   // If the secondary FakeCWS was desructed after primary one, secondary will
   // work without scoped_ignore_content_verifier_. We want to catch such a
   // situation, so we check that primary FakeCWS is not destroyed yet.
-  DCHECK(g_is_fakecws_active);
+  CHECK(g_is_fakecws_active, base::NotFatalUntil::M160);
 
   if (scoped_ignore_content_verifier_) {
     g_is_fakecws_active = false;
@@ -415,7 +415,7 @@ void FakeCWS::SetupWebStoreURL(const GURL& test_server_url) {
 }
 
 void FakeCWS::OverrideGalleryCommandlineSwitches() {
-  DCHECK(web_store_url_.is_valid());
+  CHECK(web_store_url_.is_valid(), base::NotFatalUntil::M160);
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 

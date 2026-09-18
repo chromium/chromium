@@ -25,7 +25,7 @@ FileSaveDestination GetDestinationForPref(
     Profile* profile,
     const std::string& pref_name,
     FileSaveDestination fallback = FileSaveDestination::kDownloads) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M160);
   auto* pref = profile->GetPrefs()->FindPreference(pref_name);
   if (!pref || !pref->GetValue() || !pref->IsManaged()) {
     return FileSaveDestination::kNotSpecified;

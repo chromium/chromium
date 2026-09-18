@@ -120,7 +120,7 @@ base::Version GetPlatformVersion() {
 std::string GetSwitchString(const std::string& flag_name) {
   base::CommandLine cmd_line(base::CommandLine::NO_PROGRAM);
   cmd_line.AppendSwitch(flag_name);
-  DCHECK_EQ(2U, cmd_line.argv().size());
+  CHECK_EQ(2U, cmd_line.argv().size(), base::NotFatalUntil::M160);
   return cmd_line.argv()[1];
 }
 
@@ -178,7 +178,7 @@ bool KioskChromeAppManager::IsInitialized() {
 
 // static
 void KioskChromeAppManager::InitializeForTesting(Overrides* overrides) {
-  DCHECK(!g_instance);
+  CHECK(!g_instance, base::NotFatalUntil::M160);
   g_test_overrides = overrides;
 }
 
@@ -201,7 +201,7 @@ const std::string& KioskChromeAppManager::GetAutoLaunchApp() const {
 
 void KioskChromeAppManager::SetAppWasAutoLaunchedWithZeroDelay(
     const std::string& app_id) {
-  DCHECK_EQ(auto_launch_app_id_, app_id);
+  CHECK_EQ(auto_launch_app_id_, app_id, base::NotFatalUntil::M160);
   currently_auto_launched_with_zero_delay_app_ = app_id;
   auto_launched_with_zero_delay_ = true;
 }
@@ -240,7 +240,7 @@ bool KioskChromeAppManager::GetSwitchesForSessionRestore(
 
   for (const auto& it : current_command_line->argv()) {
     if (it == policy_switches_begin) {
-      DCHECK(!in_policy_switches_block);
+      CHECK(!in_policy_switches_block, base::NotFatalUntil::M160);
       in_policy_switches_block = true;
     }
 
@@ -249,12 +249,12 @@ bool KioskChromeAppManager::GetSwitchesForSessionRestore(
     }
 
     if (it == policy_switches_end) {
-      DCHECK(in_policy_switches_block);
+      CHECK(in_policy_switches_block, base::NotFatalUntil::M160);
       in_policy_switches_block = false;
     }
   }
 
-  DCHECK(!in_policy_switches_block);
+  CHECK(!in_policy_switches_block, base::NotFatalUntil::M160);
 
   if (auto_launched) {
     switches->AppendSwitch(switches::kAppAutoLaunched);
@@ -385,11 +385,11 @@ KioskAppInstallParams KioskChromeAppManager::CreatePrimaryAppInstallData(
 
   const std::string* crx_file_location =
       extension->FindString(extensions::ExternalProviderImpl::kExternalCrx);
-  DCHECK(crx_file_location);
+  CHECK(crx_file_location, base::NotFatalUntil::M160);
 
   const std::string* external_version =
       extension->FindString(extensions::ExternalProviderImpl::kExternalVersion);
-  DCHECK(external_version);
+  CHECK(external_version, base::NotFatalUntil::M160);
 
   return KioskAppInstallParams(id, *crx_file_location, *external_version,
                                is_store_app_bool);

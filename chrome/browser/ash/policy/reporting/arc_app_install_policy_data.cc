@@ -25,7 +25,7 @@ ArcAppInstallPolicyData::ArcAppInstallPolicyData(
     const std::set<std::string>& requested_apps_pending,
     std::int64_t success_count) {
   std::int64_t num_total_apps = success_count + requested_apps_pending.size();
-  DCHECK(num_total_apps != 0);  // prevent divide by 0
+  CHECK(num_total_apps != 0, base::NotFatalUntil::M160);  // prevent divide by 0
   time_created_ = time_created;
   requested_apps_pending_ = requested_apps_pending;
   success_count_ = success_count;

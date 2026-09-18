@@ -44,7 +44,7 @@ LockToSingleUserManager::GetLockToSingleUserManagerInstance() {
 LockToSingleUserManager::LockToSingleUserManager() {
   user_manager::UserManager::Get()->AddSessionStateObserver(this);
 
-  DCHECK(!g_lock_to_single_user_manager_instance);
+  CHECK(!g_lock_to_single_user_manager_instance, base::NotFatalUntil::M160);
   g_lock_to_single_user_manager_instance = this;
 }
 

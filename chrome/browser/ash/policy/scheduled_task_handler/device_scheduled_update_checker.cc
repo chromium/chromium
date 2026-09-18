@@ -85,7 +85,7 @@ void DeviceScheduledUpdateChecker::OnUpdateCheckTimerExpired() {
 
   // If no policy exists, state should have been reset and this callback
   // shouldn't have fired.
-  DCHECK(scheduled_update_check_data_);
+  CHECK(scheduled_update_check_data_, base::NotFatalUntil::M160);
 
   // |os_and_policies_update_checker_| will be destroyed as part of this object,
   // so it's safe to use "this" with any callbacks. This overrides any previous

@@ -27,10 +27,10 @@ OdfsFileDeleter::OdfsFileDeleter(
 OdfsFileDeleter::~OdfsFileDeleter() = default;
 
 void OdfsFileDeleter::StartDeletion() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   auto* profile = ProfileManager::GetActiveUserProfile();
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M160);
 
   auto* file_system_context =
       file_manager::util::GetFileManagerFileSystemContext(profile);
@@ -63,7 +63,7 @@ void OdfsFileDeleter::StartDeletion() {
 
 void OdfsFileDeleter::OnIOTaskStatus(
     const ::file_manager::io_task::ProgressStatus& status) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (status.task_id != task_id_) {
     return;

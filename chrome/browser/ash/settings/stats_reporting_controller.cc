@@ -34,7 +34,7 @@ bool StatsReportingController::IsInitialized() {
 
 // static
 void StatsReportingController::Shutdown() {
-  DCHECK(g_stats_reporting_controller);
+  CHECK(g_stats_reporting_controller, base::NotFatalUntil::M160);
   delete g_stats_reporting_controller;
   g_stats_reporting_controller = nullptr;
 }

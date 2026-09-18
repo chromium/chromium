@@ -33,7 +33,7 @@ bool HWDataUsageController::IsInitialized() {
 
 // static
 void HWDataUsageController::Shutdown() {
-  DCHECK(g_hw_data_usage_controller);
+  CHECK(g_hw_data_usage_controller, base::NotFatalUntil::M160);
   delete g_hw_data_usage_controller;
   g_hw_data_usage_controller = nullptr;
 }

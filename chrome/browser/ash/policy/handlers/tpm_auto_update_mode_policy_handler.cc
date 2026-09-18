@@ -75,7 +75,7 @@ TPMAutoUpdateModePolicyHandler::TPMAutoUpdateModePolicyHandler(
     ash::CrosSettings* cros_settings,
     PrefService* local_state)
     : cros_settings_(cros_settings), local_state_(local_state) {
-  DCHECK(local_state_);
+  CHECK(local_state_, base::NotFatalUntil::M160);
   policy_subscription_ = cros_settings_->AddSettingsObserver(
       ash::kTPMFirmwareUpdateSettings,
       base::BindRepeating(&TPMAutoUpdateModePolicyHandler::OnPolicyChanged,

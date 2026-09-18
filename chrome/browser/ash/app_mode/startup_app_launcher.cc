@@ -55,7 +55,7 @@ StartupAppLauncher::StartupAppLauncher(
       app_id_(app_id),
       should_skip_install_(should_skip_install) {
   CHECK(profile_);
-  DCHECK(crx_file::id_util::IdIsValid(app_id_));
+  CHECK(crx_file::id_util::IdIsValid(app_id_), base::NotFatalUntil::M160);
 
   // Reduce extension downloader retry backoff to avoid waiting on splash screen
   // for a long time.

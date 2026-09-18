@@ -190,7 +190,7 @@ bool ExternalDataPolicyHandler::CheckPolicySettings(
   }
 
   const base::Value* value = entry->value(base::Value::Type::DICT);
-  DCHECK(value);
+  CHECK(value, base::NotFatalUntil::M160);
   const base::DictValue& dict = value->GetDict();
   std::optional<std::string> url_string =
       GetSubkeyString(dict, errors, policy, kSubkeyURL);
@@ -419,7 +419,7 @@ bool DefaultHandlersForFileExtensionsPolicyHandler::CheckPolicySettings(
 
     const std::string* policy_id =
         policy_entry_dict.FindString(kPolicyEntryPolicyIdKey);
-    DCHECK(policy_id);
+    CHECK(policy_id, base::NotFatalUntil::M160);
 
     if (!IsValidPolicyId(*policy_id)) {
       errors->AddError(policy_name(), IDS_POLICY_VALUE_FORMAT_ERROR,
@@ -429,7 +429,7 @@ bool DefaultHandlersForFileExtensionsPolicyHandler::CheckPolicySettings(
 
     const auto* file_extensions =
         policy_entry_dict.FindList(kPolicyEntryFileExtensionsKey);
-    DCHECK(file_extensions);
+    CHECK(file_extensions, base::NotFatalUntil::M160);
 
     for (const auto& file_extension_entry : *file_extensions) {
       const std::string& file_extension = file_extension_entry.GetString();

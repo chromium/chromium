@@ -203,7 +203,7 @@ DefaultDelegate::DefaultDelegate(CertificateProviderService* service,
                                  extensions::ExtensionRegistry* registry,
                                  extensions::EventRouter* event_router)
     : service_(service), registry_(registry), event_router_(event_router) {
-  DCHECK(service_);
+  CHECK(service_, base::NotFatalUntil::M160);
   registry_->AddObserver(this);
   event_router_->RegisterObserver(
       this, api_cp::OnCertificatesUpdateRequested::kEventName);
@@ -251,7 +251,7 @@ bool DefaultDelegate::DispatchSignRequestToExtension(
     uint16_t algorithm,
     const scoped_refptr<net::X509Certificate>& certificate,
     base::span<const uint8_t> input) {
-  DCHECK(certificate);
+  CHECK(certificate, base::NotFatalUntil::M160);
   std::unique_ptr<extensions::Event> event;
   // Send the up-to-date version of the event, and fall back to the legacy event
   // if the extension is only listening for that one.

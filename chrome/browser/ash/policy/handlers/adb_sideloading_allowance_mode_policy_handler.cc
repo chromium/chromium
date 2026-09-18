@@ -90,7 +90,7 @@ AdbSideloadingAllowanceModePolicyHandler::
       adb_sideloading_policy_change_notification_(
           std::move(adb_sideloading_policy_change_notification)),
       power_manager_observer_(this) {
-  DCHECK(local_state_);
+  CHECK(local_state_, base::NotFatalUntil::M160);
   policy_subscription_ = cros_settings_->AddSettingsObserver(
       ash::kDeviceCrostiniArcAdbSideloadingAllowed,
       base::BindRepeating(
@@ -103,7 +103,7 @@ AdbSideloadingAllowanceModePolicyHandler::
 
   notification_timer_ = std::make_unique<base::OneShotTimer>();
 
-  DCHECK(power_manager_client);
+  CHECK(power_manager_client, base::NotFatalUntil::M160);
   power_manager_observer_.Observe(power_manager_client);
 }
 

@@ -98,7 +98,7 @@ void AppUsageTelemetrySampler::MaybeCollect(OptionalMetricCallback callback) {
 
 void AppUsageTelemetrySampler::ResetAppUsageDataInPrefStore(
     const AppUsageData* app_usage_data) {
-  DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(::content::BrowserThread::UI, base::NotFatalUntil::M160);
   CHECK(profile_);
   ScopedDictPrefUpdate usage_dict_pref(profile_->GetPrefs(),
                                        ::apps::kAppUsageTime);

@@ -25,7 +25,7 @@ NetworkChangeManagerClient::NetworkChangeManagerClient(
     : connection_type_(net::NetworkChangeNotifier::GetConnectionType()),
       connection_subtype_(net::NetworkChangeNotifier::GetConnectionSubtype()),
       network_change_notifier_(network_change_notifier) {
-  DCHECK(!g_network_change_manager_client);
+  CHECK(!g_network_change_manager_client, base::NotFatalUntil::M160);
   g_network_change_manager_client = this;
 
   chromeos::PowerManagerClient::Get()->AddObserver(this);
@@ -43,7 +43,7 @@ NetworkChangeManagerClient::NetworkChangeManagerClient(
 
 NetworkChangeManagerClient::~NetworkChangeManagerClient() {
   chromeos::PowerManagerClient::Get()->RemoveObserver(this);
-  DCHECK_EQ(g_network_change_manager_client, this);
+  CHECK_EQ(g_network_change_manager_client, this, base::NotFatalUntil::M160);
   g_network_change_manager_client = nullptr;
 }
 

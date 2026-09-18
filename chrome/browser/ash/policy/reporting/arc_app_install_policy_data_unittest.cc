@@ -30,7 +30,7 @@ class ArcAppInstallPolicyDataTest : public testing::Test {
 };
 
 TEST_F(ArcAppInstallPolicyDataTest, InvalidConstruction) {
-  EXPECT_DCHECK_DEATH({
+  EXPECT_CHECK_DEATH({
     ArcAppInstallPolicyData policy_data_ =
         ArcAppInstallPolicyData(base::TimeTicks::Now(), {}, 0);
   });

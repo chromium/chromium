@@ -140,7 +140,7 @@ void SkyvaultRenameHandler::OnProgressUpdate(int64_t bytes_so_far) {
 }
 
 void SkyvaultRenameHandler::OnDriveUploadDone(bool success) {
-  DCHECK(!rename_callback_.is_null());
+  CHECK(!rename_callback_.is_null(), base::NotFatalUntil::M160);
 
   auto reason = success ? download::DOWNLOAD_INTERRUPT_REASON_NONE
                         : download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED;
@@ -150,7 +150,7 @@ void SkyvaultRenameHandler::OnDriveUploadDone(bool success) {
 void SkyvaultRenameHandler::OnOneDriveUploadDone(
     bool success,
     storage::FileSystemURL file_url) {
-  DCHECK(!rename_callback_.is_null());
+  CHECK(!rename_callback_.is_null(), base::NotFatalUntil::M160);
 
   auto reason = success ? download::DOWNLOAD_INTERRUPT_REASON_NONE
                         : download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED;

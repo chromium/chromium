@@ -93,7 +93,7 @@ std::string GetSerialNumber() {
 base::ListValue ConvertExtensionProtoToValue(
     const em::ExtensionInstallReportRequest* extension_install_report_request,
     const base::DictValue& context) {
-  DCHECK(extension_install_report_request);
+  CHECK(extension_install_report_request, base::NotFatalUntil::M160);
 
   base::ListValue event_list;
   std::set<extensions::ExtensionId> seen_ids;
@@ -175,7 +175,8 @@ base::DictValue ConvertExtensionEventToValue(
 
   if (extension_install_report_log_event.has_user_type()) {
     event.Set(kUserType, extension_install_report_log_event.user_type());
-    DCHECK(extension_install_report_log_event.has_is_new_user());
+    CHECK(extension_install_report_log_event.has_is_new_user(),
+          base::NotFatalUntil::M160);
     event.Set(kIsNewUser, extension_install_report_log_event.is_new_user());
   }
 
@@ -249,7 +250,7 @@ base::DictValue ConvertExtensionEventToValue(
 base::ListValue ConvertArcAppProtoToValue(
     const em::AppInstallReportRequest* app_install_report_request,
     const base::DictValue& context) {
-  DCHECK(app_install_report_request);
+  CHECK(app_install_report_request, base::NotFatalUntil::M160);
 
   base::ListValue event_list;
   std::set<std::string> seen_ids;

@@ -53,7 +53,7 @@ constexpr char kIncludeOutputFieldName[] = "includeOutput";
 
 template <typename T>
 bool PopulateMojoEnumValueIfValid(int possible_enum, T* valid_enum_out) {
-  DCHECK(valid_enum_out);
+  CHECK(valid_enum_out, base::NotFatalUntil::M160);
   if (!base::IsValueInRangeForNumericType<
           typename std::underlying_type<T>::type>(possible_enum)) {
     return false;

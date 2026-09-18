@@ -37,7 +37,7 @@ KioskWebAppServiceLauncher::~KioskWebAppServiceLauncher() = default;
 const KioskWebAppData* KioskWebAppServiceLauncher::GetCurrentApp() const {
   const KioskWebAppData* app =
       KioskWebAppManager::Get()->GetAppByAccountId(account_id());
-  DCHECK(app);
+  CHECK(app, base::NotFatalUntil::M160);
   return app;
 }
 

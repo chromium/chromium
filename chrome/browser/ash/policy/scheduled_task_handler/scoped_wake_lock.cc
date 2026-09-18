@@ -32,7 +32,7 @@ ScopedWakeLock::ScopedWakeLock(device::mojom::WakeLockType type,
       type, device::mojom::WakeLockReason::kOther, reason,
       wake_lock_.BindNewPipeAndPassReceiver());
   // This would violate |GetWakeLockWithoutContext|'s API contract.
-  DCHECK(wake_lock_);
+  CHECK(wake_lock_, base::NotFatalUntil::M160);
   wake_lock_->RequestWakeLock();
 }
 

@@ -21,7 +21,7 @@ namespace {
 const int kNoSyncUpdatesTimeOutMs = 60000;  // 1 Minute.
 
 file_manager::io_task::IOTaskController* GetIOTaskController(Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M160);
 
   file_manager::VolumeManager* volume_manager =
       file_manager::VolumeManager::Get(profile);
@@ -124,8 +124,9 @@ void DriveUploadObserver::Cancel() {
   if (!observed_delete_task_id_.has_value()) {
     auto* io_task_controller = GetIOTaskController(profile_);
 
-    DCHECK(io_task_controller);
-    DCHECK(!io_task_controller_observer_.IsObserving());
+    CHECK(io_task_controller, base::NotFatalUntil::M160);
+    CHECK(!io_task_controller_observer_.IsObserving(),
+          base::NotFatalUntil::M160);
 
     io_task_controller_observer_.Observe(io_task_controller);
     storage::FileSystemURL file_url = FilePathToFileSystemURL(

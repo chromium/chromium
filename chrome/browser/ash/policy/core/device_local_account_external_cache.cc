@@ -60,7 +60,7 @@ DeviceLocalAccountExternalCache::~DeviceLocalAccountExternalCache() = default;
 
 void DeviceLocalAccountExternalCache::StartCache(
     const scoped_refptr<base::SequencedTaskRunner>& cache_task_runner) {
-  DCHECK(!external_cache_);
+  CHECK(!external_cache_, base::NotFatalUntil::M160);
 
   external_cache_ = std::make_unique<ExternalCacheImpl>(
       cache_dir_, shared_url_loader_factory_, cache_task_runner,

@@ -75,7 +75,7 @@ void DeviceCloudPolicyStoreAsh::Store(const em::PolicyFetchResponse& policy) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // The policy and the public key must have already been loaded by the device
   // settings service.
-  DCHECK(is_initialized());
+  CHECK(is_initialized(), base::NotFatalUntil::M160);
 
   // Cancel all pending requests.
   weak_factory_.InvalidateWeakPtrs();

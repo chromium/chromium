@@ -75,7 +75,7 @@ class RebootNotificationsScheduler::RequestQueue {
                                        return first.second.reboot_time <
                                               second.second.reboot_time;
                                      });
-    DCHECK(it != requests_.end());
+    CHECK(it != requests_.end(), base::NotFatalUntil::M160);
 
     return RequsterAndRebootTime{.requester = it->first,
                                  .reboot_time = it->second.reboot_time};
@@ -116,7 +116,7 @@ class RebootNotificationsScheduler::RequestQueue {
     const auto original_top_request = current_request();
 
     requests_[requester] = std::move(request);
-    DCHECK(current_request());
+    CHECK(current_request(), base::NotFatalUntil::M160);
 
     return original_top_request != current_request();
   }
@@ -152,14 +152,14 @@ RebootNotificationsScheduler::RebootNotificationsScheduler(
       notification_timer_(clock, tick_clock),
       dialog_timer_(clock, tick_clock),
       clock_(clock) {
-  DCHECK(!RebootNotificationsScheduler::Get());
+  CHECK(!RebootNotificationsScheduler::Get(), base::NotFatalUntil::M160);
   RebootNotificationsScheduler::SetInstance(this);
   if (session_manager::SessionManager::Get())
     observation_.Observe(session_manager::SessionManager::Get());
 }
 
 RebootNotificationsScheduler::~RebootNotificationsScheduler() {
-  DCHECK_EQ(instance, this);
+  CHECK_EQ(instance, this, base::NotFatalUntil::M160);
   observation_.Reset();
   RebootNotificationsScheduler::SetInstance(nullptr);
 }
@@ -301,7 +301,7 @@ void RebootNotificationsScheduler::ResetNotificationState() {
 }
 
 void RebootNotificationsScheduler::MaybeShowPendingRebootNotification() {
-  DCHECK(requester_queue_->current_request());
+  CHECK(requester_queue_->current_request(), base::NotFatalUntil::M160);
   notification_controller_.MaybeShowPendingRebootNotification(
       requester_queue_->current_request()->reboot_time,
       base::BindRepeating(&RebootNotificationsScheduler::OnRebootButtonClicked,
@@ -309,7 +309,7 @@ void RebootNotificationsScheduler::MaybeShowPendingRebootNotification() {
 }
 
 void RebootNotificationsScheduler::MaybeShowPendingRebootDialog() {
-  DCHECK(requester_queue_->current_request());
+  CHECK(requester_queue_->current_request(), base::NotFatalUntil::M160);
   notification_controller_.MaybeShowPendingRebootDialog(
       requester_queue_->current_request()->reboot_time,
       base::BindOnce(&RebootNotificationsScheduler::OnRebootButtonClicked,

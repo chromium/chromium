@@ -39,7 +39,7 @@ KioskModeIdleAppNameNotification* g_kiosk_mode_idle_app_message = nullptr;
 
 // static
 void KioskModeIdleAppNameNotification::Initialize() {
-  DCHECK(!g_kiosk_mode_idle_app_message);
+  CHECK(!g_kiosk_mode_idle_app_message, base::NotFatalUntil::M160);
   g_kiosk_mode_idle_app_message = new KioskModeIdleAppNameNotification();
 }
 
@@ -72,7 +72,8 @@ KioskModeIdleAppNameNotification::~KioskModeIdleAppNameNotification() {
 }
 
 void KioskModeIdleAppNameNotification::Setup() {
-  DCHECK(user_manager::UserManager::Get()->IsUserLoggedIn());
+  CHECK(user_manager::UserManager::Get()->IsUserLoggedIn(),
+        base::NotFatalUntil::M160);
   Start();
 }
 

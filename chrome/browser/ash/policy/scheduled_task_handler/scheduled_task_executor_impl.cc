@@ -26,7 +26,7 @@ void ScheduledTaskExecutorImpl::Start(
     base::TimeDelta external_delay) {
   Reset();
 
-  DCHECK(scheduled_task_data);
+  CHECK(scheduled_task_data, base::NotFatalUntil::M160);
 
   // For accuracy of the next scheduled task, capture current time as close to
   // the start of this function as possible.
@@ -72,7 +72,7 @@ base::Time ScheduledTaskExecutorImpl::GetCurrentTime() {
 base::TimeTicks ScheduledTaskExecutorImpl::GetTicksSinceBoot() {
   struct timespec ts = {};
   int ret = clock_gettime(CLOCK_BOOTTIME, &ts);
-  DCHECK_EQ(ret, 0);
+  CHECK_EQ(ret, 0, base::NotFatalUntil::M160);
   return base::TimeTicks() + base::TimeDelta::FromTimeSpec(ts);
 }
 

@@ -194,7 +194,7 @@ void OnTaskPodControllerImpl::OnPostWindowStateTypeChange(
 
 void OnTaskPodControllerImpl::OnWindowVisibilityChanged(aura::Window* window,
                                                         bool visible) {
-  DCHECK(pod_widget_);
+  CHECK(pod_widget_, base::NotFatalUntil::M160);
   // We need to check browser window visibility directly; `visible` param is for
   // webcontents visibility, which changes when we switch tabs.
   if (browser_->IsVisible()) {

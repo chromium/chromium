@@ -30,7 +30,7 @@ SupervisedUserCrosSettingsProvider::~SupervisedUserCrosSettingsProvider() =
 
 const base::Value* SupervisedUserCrosSettingsProvider::Get(
     std::string_view path) const {
-  DCHECK(HandlesSetting(path));
+  CHECK(HandlesSetting(path), base::NotFatalUntil::M160);
   auto iter = child_user_restrictions_.find(path);
   return &(iter->second);
 }

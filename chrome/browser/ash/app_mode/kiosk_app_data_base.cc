@@ -88,7 +88,7 @@ KioskAppDataBase::KioskAppDataBase(PrefService* local_state,
 KioskAppDataBase::~KioskAppDataBase() = default;
 
 void KioskAppDataBase::SaveToDictionary(ScopedDictPrefUpdate& dict_update) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   const std::string app_key = std::string(kKeyApps) + '.' + app_id_;
   const std::string name_key = app_key + '.' + kKeyName;
   const std::string icon_path_key = app_key + '.' + kKeyIcon;
@@ -98,7 +98,7 @@ void KioskAppDataBase::SaveToDictionary(ScopedDictPrefUpdate& dict_update) {
 }
 
 void KioskAppDataBase::SaveIconToDictionary(ScopedDictPrefUpdate& dict_update) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   const std::string app_key = std::string(kKeyApps) + '.' + app_id_;
   const std::string icon_path_key = app_key + '.' + kKeyIcon;
 
@@ -106,7 +106,7 @@ void KioskAppDataBase::SaveIconToDictionary(ScopedDictPrefUpdate& dict_update) {
 }
 
 bool KioskAppDataBase::LoadFromDictionary(const base::DictValue& dict) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   const std::string app_key =
       std::string(KioskAppDataBase::kKeyApps) + '.' + app_id_;
   const std::string name_key = app_key + '.' + kKeyName;
@@ -141,7 +141,7 @@ void KioskAppDataBase::DecodeIcon(DecodeIconCallback callback) {
 
 void KioskAppDataBase::SaveIcon(const SkBitmap& icon,
                                 const base::FilePath& cache_dir) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   std::optional<std::vector<uint8_t>> image_data =
       gfx::PNGCodec::EncodeBGRASkBitmap(icon, /*discard_transparency=*/false);
   if (!image_data) {
@@ -160,7 +160,7 @@ void KioskAppDataBase::SaveIcon(const SkBitmap& icon,
 }
 
 void KioskAppDataBase::ClearCache() const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   ScopedDictPrefUpdate dict_update(&local_state_.get(), dictionary_name());
 
   const std::string app_key =

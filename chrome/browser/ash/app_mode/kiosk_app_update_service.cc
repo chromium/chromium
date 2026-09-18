@@ -35,7 +35,7 @@ KioskAppUpdateService::KioskAppUpdateService(
 KioskAppUpdateService::~KioskAppUpdateService() = default;
 
 void KioskAppUpdateService::Init(const std::string& app_id) {
-  DCHECK(app_id_.empty());
+  CHECK(app_id_.empty(), base::NotFatalUntil::M160);
   app_id_ = app_id;
 
   update_observation_.Observe(extensions::ExtensionUpdater::Get(profile_));

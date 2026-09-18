@@ -27,7 +27,7 @@ StubCrosSettingsProvider::StubCrosSettingsProvider(
 StubCrosSettingsProvider::~StubCrosSettingsProvider() = default;
 
 const base::Value* StubCrosSettingsProvider::Get(std::string_view path) const {
-  DCHECK(HandlesSetting(path));
+  CHECK(HandlesSetting(path), base::NotFatalUntil::M160);
   return fake_provider_.Get(path);
 }
 

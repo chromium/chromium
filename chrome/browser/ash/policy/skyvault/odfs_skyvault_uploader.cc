@@ -67,7 +67,7 @@ base::WeakPtr<OdfsSkyvaultUploader> OdfsSkyvaultUploader::Upload(
     std::optional<const gfx::Image> thumbnail) {
   auto* file_system_context =
       file_manager::util::GetFileManagerFileSystemContext(profile);
-  DCHECK(file_system_context);
+  CHECK(file_system_context, base::NotFatalUntil::M160);
   base::FilePath tmp_dir;
   CHECK((base::GetTempDir(&tmp_dir) && tmp_dir.IsParent(path)) ||
         trigger == UploadTrigger::kMigration);
@@ -96,7 +96,7 @@ base::WeakPtr<OdfsSkyvaultUploader> OdfsSkyvaultUploader::Upload(
     std::optional<const gfx::Image> thumbnail) {
   auto* file_system_context =
       file_manager::util::GetFileManagerFileSystemContext(profile);
-  DCHECK(file_system_context);
+  CHECK(file_system_context, base::NotFatalUntil::M160);
   base::FilePath tmp_dir;
   auto file_system_url = file_system_context->CreateCrackedFileSystemURL(
       blink::StorageKey(), storage::kFileSystemTypeLocal, path);
@@ -287,9 +287,10 @@ void OdfsSkyvaultUploader::OnIOTaskStatus(
 void OdfsSkyvaultUploader::ProcessError(
     const ::file_manager::io_task::ProgressStatus& status) {
   // It's always one file.
-  DCHECK_EQ(status.sources.size(), 1u);
-  DCHECK_EQ(status.outputs.size(), 1u);
-  DCHECK_EQ(status.state, file_manager::io_task::State::kError);
+  CHECK_EQ(status.sources.size(), 1u, base::NotFatalUntil::M160);
+  CHECK_EQ(status.outputs.size(), 1u, base::NotFatalUntil::M160);
+  CHECK_EQ(status.state, file_manager::io_task::State::kError,
+           base::NotFatalUntil::M160);
 
   base::File::Error error =
       status.outputs.front().error.value_or(base::File::FILE_ERROR_FAILED);

@@ -53,7 +53,7 @@ PinDialogManager::RequestPinResult PinDialogManager::RequestPin(
     security_token_pin::ErrorLabel error_label,
     int attempts_left,
     RequestPinCallback callback) {
-  DCHECK_GE(attempts_left, -1);
+  CHECK_GE(attempts_left, -1, base::NotFatalUntil::M160);
   const bool accept_input = (attempts_left != 0);
 
   // Check the validity of sign_request_id.
@@ -103,7 +103,8 @@ PinDialogManager::StopPinRequestWithError(
     const std::string& extension_id,
     security_token_pin::ErrorLabel error_label,
     StopPinRequestCallback callback) {
-  DCHECK_NE(error_label, security_token_pin::ErrorLabel::kNone);
+  CHECK_NE(error_label, security_token_pin::ErrorLabel::kNone,
+           base::NotFatalUntil::M160);
 
   // Perform sanity checks, as the extension might have issued this call
   // incorrectly.
@@ -172,7 +173,8 @@ void PinDialogManager::ExtensionUnloaded(const std::string& extension_id) {
 
 void PinDialogManager::AddPinDialogHost(
     SecurityTokenPinDialogHost* pin_dialog_host) {
-  DCHECK(!std::ranges::contains(added_dialog_hosts_, pin_dialog_host));
+  CHECK(!std::ranges::contains(added_dialog_hosts_, pin_dialog_host),
+        base::NotFatalUntil::M160);
   added_dialog_hosts_.push_back(pin_dialog_host);
 }
 
@@ -180,7 +182,8 @@ void PinDialogManager::RemovePinDialogHost(
     SecurityTokenPinDialogHost* pin_dialog_host) {
   if (active_dialog_state_ && active_dialog_state_->host == pin_dialog_host)
     CloseActiveDialog();
-  DCHECK(std::ranges::contains(added_dialog_hosts_, pin_dialog_host));
+  CHECK(std::ranges::contains(added_dialog_hosts_, pin_dialog_host),
+        base::NotFatalUntil::M160);
   std::erase(added_dialog_hosts_, pin_dialog_host);
 }
 
@@ -223,15 +226,17 @@ PinDialogManager::SignRequestState* PinDialogManager::FindSignRequestState(
 }
 
 void PinDialogManager::OnPinEntered(const std::string& user_input) {
-  DCHECK(!active_dialog_state_->stop_pin_request_callback);
+  CHECK(!active_dialog_state_->stop_pin_request_callback,
+        base::NotFatalUntil::M160);
   last_response_closed_[active_dialog_state_->extension_id] = false;
   if (active_dialog_state_->request_pin_callback)
     std::move(active_dialog_state_->request_pin_callback).Run(user_input);
 }
 
 void PinDialogManager::OnPinDialogClosed() {
-  DCHECK(!active_dialog_state_->request_pin_callback ||
-         !active_dialog_state_->stop_pin_request_callback);
+  CHECK(!active_dialog_state_->request_pin_callback ||
+            !active_dialog_state_->stop_pin_request_callback,
+        base::NotFatalUntil::M160);
 
   last_response_closed_[active_dialog_state_->extension_id] = true;
   if (active_dialog_state_->request_pin_callback) {
@@ -259,7 +264,7 @@ void PinDialogManager::CloseActiveDialog() {
 
   active_dialog_state_->host->CloseSecurityTokenPinDialog();
   OnPinDialogClosed();
-  DCHECK(!active_dialog_state_);
+  CHECK(!active_dialog_state_, base::NotFatalUntil::M160);
 }
 
 }  // namespace chromeos

@@ -85,7 +85,7 @@ constexpr char DeviceCommandScreenshotJob::kUploadUrlFieldName[] =
 DeviceCommandScreenshotJob::DeviceCommandScreenshotJob(
     std::unique_ptr<Delegate> screenshot_delegate)
     : screenshot_delegate_(std::move(screenshot_delegate)) {
-  DCHECK(screenshot_delegate_);
+  CHECK(screenshot_delegate_, base::NotFatalUntil::M160);
 }
 
 DeviceCommandScreenshotJob::~DeviceCommandScreenshotJob() = default;
@@ -198,7 +198,7 @@ void DeviceCommandScreenshotJob::RunImpl(CallbackWithResult result_callback) {
   }
 
   upload_job_ = screenshot_delegate_->CreateUploadJob(upload_url_, this);
-  DCHECK(upload_job_);
+  CHECK(upload_job_, base::NotFatalUntil::M160);
 
   // Post tasks to the sequenced worker pool for taking screenshots on each
   // attached screen.

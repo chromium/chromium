@@ -202,8 +202,8 @@ void SystemLogUploader::UploadZippedSystemLogs(
     std::optional<RemoteCommandJob::UniqueIDType> command_id,
     std::string zipped_system_logs) {
   // Must be called on the main thread.
-  DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(!upload_job_);
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
+  CHECK(!upload_job_, base::NotFatalUntil::M160);
 
   if (zipped_system_logs.empty()) {
     SYSLOG(ERROR) << "No zipped log to upload";
@@ -234,7 +234,7 @@ void SystemLogUploader::UploadZippedSystemLogs(
 void SystemLogUploader::StartLogUpload(
     std::optional<RemoteCommandJob::UniqueIDType> command_id) {
   // Must be called on the main thread.
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
 
   if (upload_enabled_) {
     SYSLOG(INFO) << "Reading system logs for upload.";
@@ -255,7 +255,7 @@ void SystemLogUploader::OnSystemLogsLoaded(
     std::optional<RemoteCommandJob::UniqueIDType> command_id,
     std::unique_ptr<SystemLogs> system_logs) {
   // Must be called on the main thread.
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
   system_logs->push_back(std::make_pair(kPolicyDumpFileLocation,
                                         syslog_delegate_->GetPolicyAsJSON()));
 

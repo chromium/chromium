@@ -78,7 +78,7 @@ void KioskExternalUpdateValidator::OnUnpackSuccess(
     const extensions::Extension* extension,
     const SkBitmap& install_icon,
     base::DictValue ruleset_install_prefs) {
-  DCHECK(crx_file_.extension_id == extension->id());
+  CHECK(crx_file_.extension_id == extension->id(), base::NotFatalUntil::M160);
 
   std::string minimum_browser_version;
   if (const std::string* temp = extension->manifest()->FindStringPath(

@@ -132,7 +132,7 @@ void DeviceOffHoursController::UpdateOffHoursMode() {
       wtu::GetNextEventTime(now, off_hours_intervals_);
 
   // weekly off_hours_intervals_ is not empty -> update_time has a value
-  DCHECK(update_time);
+  CHECK(update_time, base::NotFatalUntil::M160);
 
   SetOffHoursEndTime(in_interval ? update_time.value() : base::Time{});
   StartOffHoursTimer(update_time.value());

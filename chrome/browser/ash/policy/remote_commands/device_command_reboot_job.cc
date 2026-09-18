@@ -110,7 +110,7 @@ DeviceCommandRebootJob::DeviceCommandRebootJob(
       clock_(clock),
       get_boot_time_callback_(std::move(get_boot_time_callback)),
       user_session_delay_(kDefaultUserSessionRebootDelay) {
-  DCHECK(get_boot_time_callback_);
+  CHECK(get_boot_time_callback_, base::NotFatalUntil::M160);
 }
 
 DeviceCommandRebootJob::~DeviceCommandRebootJob() = default;
@@ -240,7 +240,7 @@ void DeviceCommandRebootJob::ResetTriggeringEvents() {
 }
 
 void DeviceCommandRebootJob::DoReboot(const std::string& reason) {
-  DCHECK(result_callback_);
+  CHECK(result_callback_, base::NotFatalUntil::M160);
 
   // Posting the task with a callback just before reboot request does not
   // guarantee the callback reaching `RemoteCommandsService` and is very

@@ -20,7 +20,7 @@ base::FilePath DiagnosticsBrowserDelegateImpl::GetActiveUserProfileDir() {
   }
 
   auto* user = user_manager::UserManager::Get()->GetActiveUser();
-  DCHECK(user);
+  CHECK(user, base::NotFatalUntil::M160);
   auto* profile = ProfileHelper::Get()->GetProfileByUser(user);
 
   // Profile may be null if called before profile load is complete.

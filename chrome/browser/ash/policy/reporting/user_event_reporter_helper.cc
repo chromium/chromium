@@ -49,7 +49,7 @@ UserEventReporterHelper::UserEventReporterHelper(
 UserEventReporterHelper::~UserEventReporterHelper() = default;
 
 bool UserEventReporterHelper::ShouldReportUser(const std::string& email) const {
-  DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(::content::BrowserThread::UI, base::NotFatalUntil::M160);
   auto* reporting_user_tracker = g_browser_process->platform_part()
                                      ->browser_policy_connector_ash()
                                      ->GetDeviceCloudPolicyManager()
@@ -59,14 +59,14 @@ bool UserEventReporterHelper::ShouldReportUser(const std::string& email) const {
 
 bool UserEventReporterHelper::ReportingEnabled(
     const std::string& policy_path) const {
-  DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(::content::BrowserThread::UI, base::NotFatalUntil::M160);
   bool enabled = false;
   ash::CrosSettings::Get()->GetBoolean(policy_path, &enabled);
   return enabled;
 }
 
 bool UserEventReporterHelper::IsKioskUser() const {
-  DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(::content::BrowserThread::UI, base::NotFatalUntil::M160);
   auto* const primary = user_manager::UserManager::Get()->GetPrimaryUser();
   if (!primary) {
     return false;

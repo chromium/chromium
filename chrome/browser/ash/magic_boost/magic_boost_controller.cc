@@ -34,12 +34,12 @@ MagicBoostController* MagicBoostController::Get() {
 }
 
 MagicBoostController::MagicBoostController() {
-  DCHECK(!g_instance);
+  CHECK(!g_instance, base::NotFatalUntil::M160);
   g_instance = this;
 }
 
 MagicBoostController::~MagicBoostController() {
-  DCHECK_EQ(this, g_instance);
+  CHECK_EQ(this, g_instance, base::NotFatalUntil::M160);
   g_instance = nullptr;
 }
 

@@ -87,7 +87,7 @@ OnTaskSystemWebAppManagerImpl::~OnTaskSystemWebAppManagerImpl() = default;
 
 void OnTaskSystemWebAppManagerImpl::LaunchSystemWebAppAsync(
     base::OnceCallback<void(bool)> callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   // Include Boca URL in the SWA launch params so the downstream helper triggers
   // the specified callback on launch.
@@ -114,7 +114,7 @@ void OnTaskSystemWebAppManagerImpl::LaunchSystemWebAppAsync(
 
 void OnTaskSystemWebAppManagerImpl::CloseSystemWebAppWindow(
     SessionID window_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   BrowserDelegate* const browser = GetBrowserWindowWithID(window_id);
   LockedSessionWindowTracker* const window_tracker = GetWindowTracker();
   if (window_tracker) {
@@ -126,7 +126,7 @@ void OnTaskSystemWebAppManagerImpl::CloseSystemWebAppWindow(
 }
 
 SessionID OnTaskSystemWebAppManagerImpl::GetActiveSystemWebAppWindowID() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   BrowserDelegate* const browser = FindSystemWebAppBrowser(
       profile_, SystemWebAppType::BOCA, BrowserType::kApp);
@@ -141,7 +141,7 @@ SessionID OnTaskSystemWebAppManagerImpl::GetActiveSystemWebAppWindowID() {
 void OnTaskSystemWebAppManagerImpl::SetPinStateForSystemWebAppWindow(
     bool pinned,
     SessionID window_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   BrowserDelegate* const browser = GetBrowserWindowWithID(window_id);
   if (!browser) {
     return;
@@ -180,7 +180,7 @@ void OnTaskSystemWebAppManagerImpl::SetPinStateForSystemWebAppWindow(
 void OnTaskSystemWebAppManagerImpl::SetPauseStateForSystemWebAppWindow(
     bool paused,
     SessionID window_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   BrowserDelegate* const browser = GetBrowserWindowWithID(window_id);
   if (!browser) {
     return;
@@ -188,7 +188,7 @@ void OnTaskSystemWebAppManagerImpl::SetPauseStateForSystemWebAppWindow(
 
   if (paused) {
     // Focus on the boca homepage in pause mode.
-    DCHECK_GT(browser->GetWebContentsCount(), 0u);
+    CHECK_GT(browser->GetWebContentsCount(), 0u, base::NotFatalUntil::M160);
     size_t activation_index = 0;
     for (size_t idx = 0; idx < browser->GetWebContentsCount(); ++idx) {
       if (IsBocaHomePageTab(browser->GetWebContentsAt(idx))) {
@@ -386,7 +386,8 @@ void OnTaskSystemWebAppManagerImpl::PrepareSystemWebAppWindowForOnTask(
         tab_ids_to_remove.insert(tab_id);
       }
     }
-    DCHECK_NE(tab_ids_to_remove.size(), browser->GetWebContentsCount());
+    CHECK_NE(tab_ids_to_remove.size(), browser->GetWebContentsCount(),
+             base::NotFatalUntil::M160);
     RemoveTabsWithTabIds(window_id, tab_ids_to_remove);
   }
 }

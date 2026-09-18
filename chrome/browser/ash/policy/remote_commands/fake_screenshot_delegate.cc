@@ -16,7 +16,7 @@ namespace {
 class FakeUploadJob : public policy::UploadJob {
  public:
   explicit FakeUploadJob(UploadJob::Delegate* delegate) : delegate_(delegate) {
-    DCHECK(delegate_);
+    CHECK(delegate_, base::NotFatalUntil::M160);
   }
 
   ~FakeUploadJob() override = default;

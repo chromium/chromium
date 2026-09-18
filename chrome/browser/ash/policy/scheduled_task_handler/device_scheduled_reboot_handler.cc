@@ -75,7 +75,7 @@ DeviceScheduledRebootHandler::DeviceScheduledRebootHandler(
       scheduled_task_executor_(std::move(scheduled_task_executor)),
       notifications_scheduler_(notifications_scheduler),
       get_boot_time_callback_(std::move(get_boot_time_callback)) {
-  DCHECK(get_boot_time_callback_);
+  CHECK(get_boot_time_callback_, base::NotFatalUntil::M160);
 
   ash::system::TimezoneSettings::GetInstance()->AddObserver(this);
   auto* power_manager_client = chromeos::PowerManagerClient::Get();
@@ -127,7 +127,7 @@ bool DeviceScheduledRebootHandler::IsRebootSkippedForTest() const {
 void DeviceScheduledRebootHandler::OnRebootTimerExpired() {
   // If no policy exists, state should have been reset and this callback
   // shouldn't have fired.
-  DCHECK(scheduled_reboot_data_);
+  CHECK(scheduled_reboot_data_, base::NotFatalUntil::M160);
 
   // Always request restart if the device is in the kiosk mode or on the sign-in
   // screen. Once the device has rebooted, the handler will be created again and

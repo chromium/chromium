@@ -79,9 +79,9 @@ void SecurityTokenPinDialogHostPopupImpl::ShowSecurityTokenPinDialog(
     const std::optional<AccountId>& /*authenticating_user_account_id*/,
     SecurityTokenPinEnteredCallback pin_entered_callback,
     SecurityTokenPinDialogClosedCallback pin_dialog_closed_callback) {
-  DCHECK(!caller_extension_name.empty());
-  DCHECK(!enable_user_input || attempts_left);
-  DCHECK_GE(attempts_left, -1);
+  CHECK(!caller_extension_name.empty(), base::NotFatalUntil::M160);
+  CHECK(!enable_user_input || attempts_left, base::NotFatalUntil::M160);
+  CHECK_GE(attempts_left, -1, base::NotFatalUntil::M160);
 
   pin_entered_callback_ = std::move(pin_entered_callback);
   pin_dialog_closed_callback_ = std::move(pin_dialog_closed_callback);
@@ -120,14 +120,14 @@ void SecurityTokenPinDialogHostPopupImpl::CloseSecurityTokenPinDialog() {
 
 void SecurityTokenPinDialogHostPopupImpl::OnPinEntered(
     const std::string& user_input) {
-  DCHECK(active_pin_dialog_);
-  DCHECK(active_window_);
+  CHECK(active_pin_dialog_, base::NotFatalUntil::M160);
+  CHECK(active_window_, base::NotFatalUntil::M160);
   std::move(pin_entered_callback_).Run(user_input);
 }
 
 void SecurityTokenPinDialogHostPopupImpl::OnViewDestroyed() {
-  DCHECK(active_pin_dialog_);
-  DCHECK(active_window_);
+  CHECK(active_pin_dialog_, base::NotFatalUntil::M160);
+  CHECK(active_window_, base::NotFatalUntil::M160);
 
   active_pin_dialog_ = nullptr;
   active_window_ = nullptr;

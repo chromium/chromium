@@ -182,7 +182,7 @@ void StatusUploader::OnRequestUpdate(int render_process_id,
                                      int render_frame_id,
                                      blink::mojom::MediaStreamType stream_type,
                                      const content::MediaRequestState state) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   // If a video or audio capture stream is opened, set a flag so we disallow
   // upload of potentially sensitive data.
   if (state == content::MEDIA_REQUEST_STATE_OPENING &&

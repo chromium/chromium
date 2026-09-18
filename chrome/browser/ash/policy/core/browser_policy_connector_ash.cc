@@ -152,7 +152,7 @@ BrowserPolicyConnectorAsh::CreateBackgroundTaskRunner() {
 }
 
 BrowserPolicyConnectorAsh::BrowserPolicyConnectorAsh() {
-  DCHECK(ash::InstallAttributes::IsInitialized());
+  CHECK(ash::InstallAttributes::IsInitialized(), base::NotFatalUntil::M160);
 
   crd_admin_session_controller_ = std::make_unique<CrdAdminSessionController>();
 

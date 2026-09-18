@@ -119,7 +119,7 @@ bool DeviceSettingsService::IsInitialized() {
 
 // static
 void DeviceSettingsService::Shutdown() {
-  DCHECK(g_device_settings_service);
+  CHECK(g_device_settings_service, base::NotFatalUntil::M160);
   delete g_device_settings_service;
   g_device_settings_service = nullptr;
 }
@@ -161,7 +161,7 @@ DeviceSettingsService::DeviceSettingsService() {
 }
 
 DeviceSettingsService::~DeviceSettingsService() {
-  DCHECK(pending_operations_.empty());
+  CHECK(pending_operations_.empty(), base::NotFatalUntil::M160);
   for (auto& observer : observers_)
     observer.OnDeviceSettingsServiceShutdown();
 }
@@ -173,11 +173,11 @@ void DeviceSettingsService::StartProcessing(
   if (!local_state) {
     CHECK_IS_TEST();
   }
-  DCHECK(session_manager_client);
-  DCHECK(owner_key_util.get());
+  CHECK(session_manager_client, base::NotFatalUntil::M160);
+  CHECK(owner_key_util.get(), base::NotFatalUntil::M160);
   CHECK(!local_state_);
-  DCHECK(!session_manager_client_);
-  DCHECK(!owner_key_util_.get());
+  CHECK(!session_manager_client_, base::NotFatalUntil::M160);
+  CHECK(!owner_key_util_.get(), base::NotFatalUntil::M160);
 
   local_state_ = local_state;
   session_manager_client_ = session_manager_client;
@@ -204,8 +204,9 @@ void DeviceSettingsService::SetDeviceMode(policy::DeviceMode device_mode) {
     return;
 
   // Device mode can only change if was not set yet.
-  DCHECK(policy::DEVICE_MODE_PENDING == device_mode_ ||
-         policy::DEVICE_MODE_NOT_SET == device_mode_);
+  CHECK(policy::DEVICE_MODE_PENDING == device_mode_ ||
+            policy::DEVICE_MODE_NOT_SET == device_mode_,
+        base::NotFatalUntil::M160);
   device_mode_ = device_mode;
   if (GetOwnershipStatus() != OwnershipStatus::kOwnershipUnknown) {
     RunPendingOwnershipStatusCallbacks();
@@ -403,7 +404,8 @@ void DeviceSettingsService::HandleCompletedAsyncOperation(
     base::OnceClosure callback,
     SessionManagerOperation* operation,
     Status status) {
-  DCHECK_EQ(operation, pending_operations_.front().get());
+  CHECK_EQ(operation, pending_operations_.front().get(),
+           base::NotFatalUntil::M160);
   HandleCompletedOperation(std::move(callback), operation, status);
   // Only remove the pending operation here, so new operations triggered by
   // any of the callbacks above are queued up properly.

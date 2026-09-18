@@ -29,7 +29,7 @@ ScheduledTaskExecutor::Frequency GetFrequency(const std::string& frequency) {
   if (frequency == "WEEKLY")
     return ScheduledTaskExecutor::Frequency::kWeekly;
 
-  DCHECK_EQ(frequency, "MONTHLY");
+  CHECK_EQ(frequency, "MONTHLY", base::NotFatalUntil::M160);
   return ScheduledTaskExecutor::Frequency::kMonthly;
 }
 
@@ -48,14 +48,14 @@ UCalendarDaysOfWeek StringDayOfWeekToIcuDayOfWeek(
     return UCAL_THURSDAY;
   if (day_of_week == "FRIDAY")
     return UCAL_FRIDAY;
-  DCHECK_EQ(day_of_week, "SATURDAY");
+  CHECK_EQ(day_of_week, "SATURDAY", base::NotFatalUntil::M160);
   return UCAL_SATURDAY;
 }
 
 bool IsAfter(const icu::Calendar& a, const icu::Calendar& b) {
   UErrorCode status = U_ZERO_ERROR;
   if (a.after(b, status)) {
-    DCHECK(U_SUCCESS(status));
+    CHECK(U_SUCCESS(status), base::NotFatalUntil::M160);
     return true;
   }
 
@@ -81,18 +81,18 @@ std::unique_ptr<icu::Calendar> SnapToValidTimeBasedOnPolicy(
       return res_time;
 
     case ScheduledTaskExecutor::Frequency::kWeekly:
-      DCHECK(scheduled_task_data.day_of_week);
+      CHECK(scheduled_task_data.day_of_week, base::NotFatalUntil::M160);
       res_time->set(UCAL_DAY_OF_WEEK, scheduled_task_data.day_of_week.value());
       return res_time;
 
     case ScheduledTaskExecutor::Frequency::kMonthly: {
-      DCHECK(scheduled_task_data.day_of_month);
+      CHECK(scheduled_task_data.day_of_month, base::NotFatalUntil::M160);
       UErrorCode status = U_ZERO_ERROR;
       // If policy's |day_of_month| is greater than the maximum days in |time|'s
       // current month then it's set to the last day in the month.
       int cur_max_days_in_month =
           res_time->getActualMaximum(UCAL_DAY_OF_MONTH, status);
-      DCHECK(U_SUCCESS(status));
+      CHECK(U_SUCCESS(status), base::NotFatalUntil::M160);
 
       res_time->set(UCAL_DAY_OF_MONTH,
                     std::min(scheduled_task_data.day_of_month.value(),
@@ -127,7 +127,7 @@ std::unique_ptr<icu::Calendar> AdvanceToNextValidTimeBasedOnPolicy(
   auto res_time = base::WrapUnique(time.clone());
   UErrorCode status = U_ZERO_ERROR;
   res_time->add(GetFieldToAdvanceFor(scheduled_task_data.frequency), 1, status);
-  DCHECK(U_SUCCESS(status));
+  CHECK(U_SUCCESS(status), base::NotFatalUntil::M160);
   // Need to run SnapToValid again, as we might be in a month with less days
   // than the previous month.
   return SnapToValidTimeBasedOnPolicy(*res_time, scheduled_task_data);
@@ -146,22 +146,22 @@ std::optional<ScheduledTaskExecutor::ScheduledTaskData> ParseScheduledTask(
   // layers.
   const base::DictValue* task_time_field_dict =
       dict.FindDict(task_time_field_name);
-  DCHECK(task_time_field_dict);
+  CHECK(task_time_field_dict, base::NotFatalUntil::M160);
   std::optional<int> hour_opt = task_time_field_dict->FindInt("hour");
-  DCHECK(hour_opt);
+  CHECK(hour_opt, base::NotFatalUntil::M160);
   // Validated by schema validation at higher layers.
-  DCHECK(*hour_opt >= 0 && *hour_opt <= 23);
+  CHECK(*hour_opt >= 0 && *hour_opt <= 23, base::NotFatalUntil::M160);
   result.hour = *hour_opt;
 
   std::optional<int> minute_opt = task_time_field_dict->FindInt("minute");
-  DCHECK(minute_opt);
+  CHECK(minute_opt, base::NotFatalUntil::M160);
   // Validated by schema validation at higher layers.
-  DCHECK(*minute_opt >= 0 && *minute_opt <= 59);
+  CHECK(*minute_opt >= 0 && *minute_opt <= 59, base::NotFatalUntil::M160);
   result.minute = *minute_opt;
 
   // Validated by schema validation at higher layers.
   const std::string* frequency = dict.FindString({"frequency"});
-  DCHECK(frequency);
+  CHECK(frequency, base::NotFatalUntil::M160);
   result.frequency = GetFrequency(*frequency);
 
   // Parse extra fields for weekly and monthly frequencies.
@@ -200,10 +200,10 @@ std::optional<ScheduledTaskExecutor::ScheduledTaskData> ParseScheduledTask(
 base::TimeDelta GetDiff(const icu::Calendar& a, const icu::Calendar& b) {
   UErrorCode status = U_ZERO_ERROR;
   UDate a_ms = a.getTime(status);
-  DCHECK(U_SUCCESS(status));
+  CHECK(U_SUCCESS(status), base::NotFatalUntil::M160);
   UDate b_ms = b.getTime(status);
-  DCHECK(U_SUCCESS(status));
-  DCHECK(a_ms >= b_ms);
+  CHECK(U_SUCCESS(status), base::NotFatalUntil::M160);
+  CHECK(a_ms >= b_ms, base::NotFatalUntil::M160);
   return base::Milliseconds(a_ms - b_ms);
 }
 
@@ -260,7 +260,7 @@ std::unique_ptr<icu::Calendar> CalculateNextScheduledTimeAfter(
         AdvanceToNextValidTimeBasedOnPolicy(*scheduled_task_time, data);
   }
 
-  DCHECK(IsAfter(*scheduled_task_time, time));
+  CHECK(IsAfter(*scheduled_task_time, time), base::NotFatalUntil::M160);
 
   return scheduled_task_time;
 }

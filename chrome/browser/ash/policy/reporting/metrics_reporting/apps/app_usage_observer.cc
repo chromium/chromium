@@ -110,7 +110,7 @@ void AppUsageObserver::CreateOrUpdateAppUsageEntry(
     ::apps::AppType app_type,
     const base::UnguessableToken& instance_id,
     const base::TimeDelta& running_time) {
-  DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(::content::BrowserThread::UI, base::NotFatalUntil::M160);
   CHECK(profile_);
   ScopedDictPrefUpdate usage_dict_pref(profile_->GetPrefs(),
                                        ::apps::kAppUsageTime);
@@ -140,7 +140,7 @@ void AppUsageObserver::CreateOrUpdateAppUsageEntry(
 
 void AppUsageObserver::MaybeSetAppPublisherId(
     ::apps::AppPlatformMetrics::UsageTime& usage_time) {
-  DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(::content::BrowserThread::UI, base::NotFatalUntil::M160);
   CHECK(profile_);
   if (!usage_time.app_publisher_id.empty()) {
     // We are already tracking the app publisher id.

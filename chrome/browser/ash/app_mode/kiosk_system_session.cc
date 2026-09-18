@@ -112,7 +112,7 @@ void KioskSystemSession::ShuttingDown() {
 void KioskSystemSession::InitKioskAppUpdateService(const std::string& app_id) {
   // Set the app_id for the current instance of KioskAppUpdateService.
   auto* update_service = KioskAppUpdateServiceFactory::GetForProfile(profile());
-  DCHECK(update_service);
+  CHECK(update_service, base::NotFatalUntil::M160);
   if (update_service) {
     update_service->Init(app_id);
   }

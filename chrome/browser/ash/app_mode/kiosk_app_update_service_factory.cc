@@ -41,7 +41,7 @@ KioskAppUpdateServiceFactory::~KioskAppUpdateServiceFactory() = default;
 KioskAppUpdateService* KioskAppUpdateServiceFactory::GetForProfile(
     Profile* profile) {
   // This should never be called unless we are running in forced app mode.
-  DCHECK(IsRunningInForcedAppMode());
+  CHECK(IsRunningInForcedAppMode(), base::NotFatalUntil::M160);
   if (!IsRunningInForcedAppMode()) {
     return nullptr;
   }

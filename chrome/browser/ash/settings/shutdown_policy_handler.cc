@@ -14,8 +14,8 @@ namespace ash {
 ShutdownPolicyHandler::ShutdownPolicyHandler(CrosSettings* cros_settings,
                                              Delegate* delegate)
     : cros_settings_(cros_settings), delegate_(delegate) {
-  DCHECK(cros_settings_);
-  DCHECK(delegate);
+  CHECK(cros_settings_, base::NotFatalUntil::M160);
+  CHECK(delegate, base::NotFatalUntil::M160);
   shutdown_policy_subscription_ = cros_settings_->AddSettingsObserver(
       kRebootOnShutdown,
       base::BindRepeating(

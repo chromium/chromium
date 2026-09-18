@@ -120,7 +120,7 @@ void MigrationNotificationManager::ShowMigrationInfoDialog(
 
 void MigrationNotificationManager::ShowMigrationProgressNotification(
     MigrationDestination destination) {
-  DCHECK(IsCloudDestination(destination));
+  CHECK(IsCloudDestination(destination), base::NotFatalUntil::M160);
 
   std::u16string provider_str = CloudProviderToString(destination);
 
@@ -140,7 +140,7 @@ void MigrationNotificationManager::ShowMigrationProgressNotification(
 void MigrationNotificationManager::ShowMigrationCompletedNotification(
     MigrationDestination destination,
     const base::FilePath& destination_path) {
-  DCHECK(IsCloudDestination(destination));
+  CHECK(IsCloudDestination(destination), base::NotFatalUntil::M160);
 
   std::u16string provider_str = CloudProviderToString(destination);
   std::u16string folder_name = destination_path.BaseName().AsUTF16Unsafe();
@@ -183,8 +183,8 @@ void MigrationNotificationManager::ShowMigrationErrorNotification(
     MigrationDestination destination,
     const std::string& folder_name,
     const base::FilePath& error_log_path) {
-  DCHECK(!error_log_path.empty());
-  DCHECK(IsCloudDestination(destination));
+  CHECK(!error_log_path.empty(), base::NotFatalUntil::M160);
+  CHECK(IsCloudDestination(destination), base::NotFatalUntil::M160);
 
   std::u16string provider_str = CloudProviderToString(destination);
 
@@ -212,7 +212,7 @@ void MigrationNotificationManager::ShowMigrationErrorNotification(
 
 void MigrationNotificationManager::ShowConfigurationErrorNotification(
     MigrationDestination destination) {
-  DCHECK(IsCloudDestination(destination));
+  CHECK(IsCloudDestination(destination), base::NotFatalUntil::M160);
 
   std::u16string provider_str = CloudProviderToString(destination);
 

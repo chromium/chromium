@@ -86,7 +86,7 @@ class LockedSessionWindowTracker : public KeyedService,
   void OnPauseModeChanged(bool paused);
 
   bool can_start_navigation_throttle() {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
     return can_start_navigation_throttle_;
   }
   virtual void set_can_start_navigation_throttle(bool is_ready);

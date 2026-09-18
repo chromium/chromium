@@ -62,7 +62,7 @@ KioskAppManagerBase::App::~App() = default;
 base::FilePath KioskAppManagerBase::GetKioskAppIconCacheDir() {
   base::FilePath user_data_dir;
   bool has_dir = base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
-  DCHECK(has_dir);
+  CHECK(has_dir, base::NotFatalUntil::M160);
   return user_data_dir.AppendASCII(kIconCacheDir);
 }
 

@@ -257,7 +257,7 @@ void KioskWebAppData::LoadIcon() {
 
   status_ = Status::kLoading;
 
-  DCHECK(!icon_fetcher_);
+  CHECK(!icon_fetcher_, base::NotFatalUntil::M160);
   icon_fetcher_ = std::make_unique<IconFetcher>(shared_url_loader_factory_);
   icon_fetcher_->Start(icon_url_,
                        base::BindOnce(&KioskWebAppData::OnDidDownloadIcon,
@@ -344,7 +344,7 @@ GURL KioskWebAppData::GetLastIconUrl(const base::DictValue& dict) const {
 }
 
 void KioskWebAppData::OnDidDownloadIcon(SkBitmap icon) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (icon.isNull()) {
     // NOTE: Probably we should do something on error cases.
@@ -372,7 +372,7 @@ void KioskWebAppData::OnDidDownloadIcon(SkBitmap icon) {
 }
 
 void KioskWebAppData::OnIconLoadDone(std::optional<gfx::ImageSkia> icon) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (!icon.has_value()) {
     LOG(ERROR) << "Icon Load Failure";

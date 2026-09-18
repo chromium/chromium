@@ -12,7 +12,7 @@ PausableTimer::PausableTimer() = default;
 PausableTimer::~PausableTimer() = default;
 
 void PausableTimer::Start(base::OnceClosure callback) {
-  DCHECK(!timer_.IsRunning());
+  CHECK(!timer_.IsRunning(), base::NotFatalUntil::M160);
   if (!remaining_duration_.is_positive()) {
     return;
   }
@@ -21,7 +21,7 @@ void PausableTimer::Start(base::OnceClosure callback) {
 }
 
 void PausableTimer::Pause() {
-  DCHECK(timer_.IsRunning());
+  CHECK(timer_.IsRunning(), base::NotFatalUntil::M160);
   timer_.Stop();
   const base::TimeDelta passed = base::TimeTicks::Now() - last_started_;
   remaining_duration_ =
@@ -34,7 +34,7 @@ void PausableTimer::Stop() {
 }
 
 void PausableTimer::set_remaining_duration(base::TimeDelta duration) {
-  DCHECK(!timer_.IsRunning());
+  CHECK(!timer_.IsRunning(), base::NotFatalUntil::M160);
   remaining_duration_ = duration;
 }
 
