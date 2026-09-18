@@ -307,10 +307,18 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForClient final
   void EnsureControllerServiceWorker(
       mojo::PendingReceiver<blink::mojom::ControllerServiceWorker> receiver,
       blink::mojom::ControllerServiceWorkerPurpose purpose) override;
+  void CloneContainerHost(
+      mojo::PendingReceiver<blink::mojom::ServiceWorkerContainerHost> receiver)
+      override;
   void HintToUpdateServiceWorker() override;
   void EnsureFileAccess(const std::vector<base::FilePath>& file_paths,
                         EnsureFileAccessCallback callback) override;
   void OnExecutionReady() override;
+
+  // Returns true if the client's sandbox flags allow access to a
+  // ServiceWorkerContainer (i.e. not sandboxed without the allow-same-origin
+  // token).
+  bool HasValidSandboxFlags() const;
 
   // Implements ServiceWorkerContainerHost.
   const base::WeakPtr<ServiceWorkerContextCore>& context() const override;

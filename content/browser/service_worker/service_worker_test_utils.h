@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
+#include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/service_worker/service_worker_cache_writer.h"
 #include "content/browser/service_worker/service_worker_host.h"
 #include "content/browser/service_worker/service_worker_single_script_update_checker.h"
@@ -78,11 +79,15 @@ class CommittedServiceWorkerClient final {
   // client and takes the keep-aliveness of `ServiceWorkerClient`.
   CommittedServiceWorkerClient(
       ScopedServiceWorkerClient service_worker_client,
-      const GlobalRenderFrameHostId& render_frame_host_id);
+      const GlobalRenderFrameHostId& render_frame_host_id,
+      const PolicyContainerPolicies& policy_container_policies =
+          PolicyContainerPolicies());
 
   // For Worker client.
   explicit CommittedServiceWorkerClient(
-      ScopedServiceWorkerClient service_worker_client);
+      ScopedServiceWorkerClient service_worker_client,
+      const PolicyContainerPolicies& policy_container_policies =
+          PolicyContainerPolicies());
 
   CommittedServiceWorkerClient(CommittedServiceWorkerClient&& other);
   CommittedServiceWorkerClient& operator=(

@@ -780,6 +780,10 @@ bool ServiceWorkerClient::IsEligibleForServiceWorkerController() const {
     return false;
   }
 
+  if (container_host_ && !container_host_->HasValidSandboxFlags()) {
+    return false;
+  }
+
   if (!url_.is_valid()) {
     return false;
   }

@@ -46,6 +46,7 @@
 #include "mojo/public/cpp/system/functions.h"
 #include "net/cookies/site_for_cookies.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -172,11 +173,13 @@ class ServiceWorkerContainerHostTest : public testing::Test {
 
   // Creates a committed ServiceWorkerContainerHost.
   CommittedServiceWorkerClient PrepareServiceWorkerContainerHost(
-      const GURL& document_url) {
+      const GURL& document_url,
+      const PolicyContainerPolicies& policies = PolicyContainerPolicies()) {
     return CommittedServiceWorkerClient(
         CreateServiceWorkerClient(context_.get(), document_url),
         GlobalRenderFrameHostId(helper_->mock_render_process_id(),
-                                /*mock frame_routing_id=*/1));
+                                /*mock frame_routing_id=*/1),
+        policies);
   }
 
   CommittedServiceWorkerClient FinishNavigation(
@@ -258,6 +261,18 @@ class ServiceWorkerContainerHostTest : public testing::Test {
         &error));
     base::RunLoop().RunUntilIdle();
     return error;
+  }
+
+  void GetRegistrationForReady(
+      blink::mojom::ServiceWorkerContainerHost* container_host) {
+    base::RunLoop run_loop;
+    container_host->GetRegistrationForReady(base::BindOnce(
+        [](base::OnceClosure quit_closure,
+           blink::mojom::ServiceWorkerRegistrationObjectInfoPtr info) {
+          std::move(quit_closure).Run();
+        },
+        run_loop.QuitClosure()));
+    run_loop.Run();
   }
 
   void OnMojoError(const std::string& error) { bad_messages_.push_back(error); }
@@ -993,6 +1008,163 @@ TEST_F(ServiceWorkerContainerHostTest, Register_CrossOriginShouldFail) {
   Register(service_worker_client.host_remote().get(), GURL(),
            GURL("h@ttps://@"));
   EXPECT_EQ(6u, bad_messages_.size());
+}
+
+TEST_F(ServiceWorkerContainerHostTest, Register_SandboxedDocumentRejected) {
+  PolicyContainerPolicies policies;
+  policies.sandbox_flags = network::mojom::WebSandboxFlags::kOrigin;
+  CommittedServiceWorkerClient service_worker_client =
+      PrepareServiceWorkerContainerHost(GURL("https://www.example.com/foo"),
+                                        policies);
+
+  EXPECT_TRUE(bad_messages_.empty());
+  Register(service_worker_client.host_remote().get(),
+           GURL("https://www.example.com/"),
+           GURL("https://www.example.com/sw.js"));
+  EXPECT_EQ(1u, bad_messages_.size());
+}
+
+TEST_F(ServiceWorkerContainerHostTest,
+       Register_SandboxedDocumentWithAllowSameOrigin) {
+  PolicyContainerPolicies policies;
+  policies.sandbox_flags = network::mojom::WebSandboxFlags::kAutomaticFeatures;
+  CommittedServiceWorkerClient service_worker_client =
+      PrepareServiceWorkerContainerHost(GURL("https://www.example.com/foo"),
+                                        policies);
+
+  EXPECT_TRUE(bad_messages_.empty());
+  Register(service_worker_client.host_remote().get(),
+           GURL("https://www.example.com/"),
+           GURL("https://www.example.com/sw.js"));
+  EXPECT_TRUE(bad_messages_.empty());
+}
+
+TEST_F(ServiceWorkerContainerHostTest,
+       GetRegistration_SandboxedDocumentRejected) {
+  PolicyContainerPolicies policies;
+  policies.sandbox_flags = network::mojom::WebSandboxFlags::kOrigin;
+  CommittedServiceWorkerClient service_worker_client =
+      PrepareServiceWorkerContainerHost(GURL("https://www.example.com/foo"),
+                                        policies);
+
+  EXPECT_TRUE(bad_messages_.empty());
+  GetRegistration(service_worker_client.host_remote().get(),
+                  GURL("https://www.example.com/"));
+  EXPECT_EQ(1u, bad_messages_.size());
+}
+
+TEST_F(ServiceWorkerContainerHostTest,
+       GetRegistrations_SandboxedDocumentRejected) {
+  PolicyContainerPolicies policies;
+  policies.sandbox_flags = network::mojom::WebSandboxFlags::kOrigin;
+  CommittedServiceWorkerClient service_worker_client =
+      PrepareServiceWorkerContainerHost(GURL("https://www.example.com/foo"),
+                                        policies);
+
+  EXPECT_TRUE(bad_messages_.empty());
+  GetRegistrations(service_worker_client.host_remote().get());
+  EXPECT_EQ(1u, bad_messages_.size());
+}
+
+TEST_F(ServiceWorkerContainerHostTest,
+       GetRegistrationForReady_SandboxedDocumentRejected) {
+  PolicyContainerPolicies policies;
+  policies.sandbox_flags = network::mojom::WebSandboxFlags::kOrigin;
+  CommittedServiceWorkerClient service_worker_client =
+      PrepareServiceWorkerContainerHost(GURL("https://www.example.com/foo"),
+                                        policies);
+
+  EXPECT_TRUE(bad_messages_.empty());
+  GetRegistrationForReady(service_worker_client.host_remote().get());
+  EXPECT_EQ(1u, bad_messages_.size());
+}
+
+TEST_F(ServiceWorkerContainerHostTest,
+       OnExecutionReady_SandboxedDocumentRejected) {
+  PolicyContainerPolicies policies;
+  policies.sandbox_flags = network::mojom::WebSandboxFlags::kOrigin;
+  CommittedServiceWorkerClient service_worker_client =
+      PrepareServiceWorkerContainerHost(GURL("https://www.example.com/foo"),
+                                        policies);
+
+  EXPECT_TRUE(bad_messages_.empty());
+  service_worker_client.host_remote()->OnExecutionReady();
+  service_worker_client.host_remote().FlushForTesting();
+  EXPECT_EQ(1u, bad_messages_.size());
+}
+
+TEST_F(ServiceWorkerContainerHostTest,
+       HintToUpdateServiceWorker_SandboxedDocumentRejected) {
+  PolicyContainerPolicies policies;
+  policies.sandbox_flags = network::mojom::WebSandboxFlags::kOrigin;
+  CommittedServiceWorkerClient service_worker_client =
+      PrepareServiceWorkerContainerHost(GURL("https://www.example.com/foo"),
+                                        policies);
+
+  EXPECT_TRUE(bad_messages_.empty());
+  service_worker_client.host_remote()->HintToUpdateServiceWorker();
+  service_worker_client.host_remote().FlushForTesting();
+  EXPECT_EQ(1u, bad_messages_.size());
+}
+
+TEST_F(ServiceWorkerContainerHostTest,
+       EnsureControllerServiceWorker_SandboxedDocumentRejected) {
+  PolicyContainerPolicies policies;
+  policies.sandbox_flags = network::mojom::WebSandboxFlags::kOrigin;
+  CommittedServiceWorkerClient service_worker_client =
+      PrepareServiceWorkerContainerHost(GURL("https://www.example.com/foo"),
+                                        policies);
+
+  EXPECT_TRUE(bad_messages_.empty());
+  mojo::PendingRemote<blink::mojom::ControllerServiceWorker> remote;
+  service_worker_client.host_remote()->EnsureControllerServiceWorker(
+      remote.InitWithNewPipeAndPassReceiver(),
+      blink::mojom::ControllerServiceWorkerPurpose::FETCH_SUB_RESOURCE);
+  service_worker_client.host_remote().FlushForTesting();
+  EXPECT_EQ(1u, bad_messages_.size());
+}
+
+TEST_F(ServiceWorkerContainerHostTest,
+       EnsureFileAccess_SandboxedDocumentRejected) {
+  PolicyContainerPolicies policies;
+  policies.sandbox_flags = network::mojom::WebSandboxFlags::kOrigin;
+  CommittedServiceWorkerClient service_worker_client =
+      PrepareServiceWorkerContainerHost(GURL("https://www.example.com/foo"),
+                                        policies);
+
+  EXPECT_TRUE(bad_messages_.empty());
+  base::RunLoop run_loop;
+  service_worker_client.host_remote()->EnsureFileAccess({},
+                                                        run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_EQ(1u, bad_messages_.size());
+}
+
+TEST_F(ServiceWorkerContainerHostTest,
+       CloneContainerHost_SandboxedDocumentRejected) {
+  PolicyContainerPolicies policies;
+  policies.sandbox_flags = network::mojom::WebSandboxFlags::kOrigin;
+  CommittedServiceWorkerClient service_worker_client =
+      PrepareServiceWorkerContainerHost(GURL("https://www.example.com/foo"),
+                                        policies);
+
+  EXPECT_TRUE(bad_messages_.empty());
+  mojo::PendingRemote<blink::mojom::ServiceWorkerContainerHost> cloned_remote;
+  service_worker_client.host_remote()->CloneContainerHost(
+      cloned_remote.InitWithNewPipeAndPassReceiver());
+  service_worker_client.host_remote().FlushForTesting();
+  EXPECT_EQ(1u, bad_messages_.size());
+}
+
+TEST_F(ServiceWorkerContainerHostTest,
+       IsEligibleForServiceWorkerController_SandboxedDocumentFalse) {
+  PolicyContainerPolicies policies;
+  policies.sandbox_flags = network::mojom::WebSandboxFlags::kOrigin;
+  CommittedServiceWorkerClient service_worker_client =
+      PrepareServiceWorkerContainerHost(GURL("https://www.example.com/foo"),
+                                        policies);
+
+  EXPECT_FALSE(service_worker_client->IsEligibleForServiceWorkerController());
 }
 
 TEST_F(ServiceWorkerContainerHostTest, Register_BadCharactersShouldFail) {

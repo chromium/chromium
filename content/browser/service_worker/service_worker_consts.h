@@ -12,6 +12,10 @@
 namespace content {
 
 struct ServiceWorkerConsts {
+  static constexpr char kBadMessageFromSandboxedClient[] =
+      "The request message should not come from a sandboxed client without "
+      "allow-same-origin.";
+
   static constexpr char kBadMessageFromUnsupportedClient[] =
       "The request message should not come from an unsupported client.";
 

@@ -258,7 +258,8 @@ CommittedServiceWorkerClient::~CommittedServiceWorkerClient() = default;
 
 CommittedServiceWorkerClient::CommittedServiceWorkerClient(
     ScopedServiceWorkerClient service_worker_client,
-    const GlobalRenderFrameHostId& render_frame_host_id)
+    const GlobalRenderFrameHostId& render_frame_host_id,
+    const PolicyContainerPolicies& policy_container_policies)
     : service_worker_client_(std::move(service_worker_client.AsWeakPtr())) {
   // Establish dummy connections to allow sending messages without errors.
   mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
@@ -273,7 +274,7 @@ CommittedServiceWorkerClient::CommittedServiceWorkerClient(
   auto [container_info, controller_info] =
       std::move(service_worker_client)
           .CommitResponseAndRelease(
-              render_frame_host_id, PolicyContainerPolicies(),
+              render_frame_host_id, policy_container_policies,
               std::move(coep_reporter), std::move(dip_reporter),
               ukm::kInvalidSourceId);
 
@@ -331,13 +332,14 @@ CommittedServiceWorkerClient::CommittedServiceWorkerClient(
 }
 
 CommittedServiceWorkerClient::CommittedServiceWorkerClient(
-    ScopedServiceWorkerClient service_worker_client)
+    ScopedServiceWorkerClient service_worker_client,
+    const PolicyContainerPolicies& policy_container_policies)
     : service_worker_client_(std::move(service_worker_client.AsWeakPtr())) {
   // For worker cases the mojo call is not emulated (just not implemented).
   auto [received_info, controller_info] =
       std::move(service_worker_client)
           .CommitResponseAndRelease(
-              /*render_frame_host_id=*/std::nullopt, PolicyContainerPolicies(),
+              /*rfh_id=*/std::nullopt, policy_container_policies,
               /*coep_reporter=*/{}, /*dip_reporter=*/{}, ukm::kInvalidSourceId);
 
   service_worker_client_->SetContainerReady();

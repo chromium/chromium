@@ -33,6 +33,7 @@
 #include "ipc/constants.mojom.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "service_worker_container_host.h"
+#include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
@@ -131,6 +132,21 @@ void ServiceWorkerContainerHostForClient::Register(
     RegisterCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (!IsClientValidForCall(service_worker_client())) {
+    mojo::ReportBadMessage(
+        ServiceWorkerConsts::kBadMessageFromUnsupportedClient);
+    std::move(callback).Run(blink::mojom::ServiceWorkerErrorType::kUnknown,
+                            std::string(), nullptr);
+    return;
+  }
+
+  if (!HasValidSandboxFlags()) {
+    mojo::ReportBadMessage(ServiceWorkerConsts::kBadMessageFromSandboxedClient);
+    std::move(callback).Run(blink::mojom::ServiceWorkerErrorType::kUnknown,
+                            std::string(), nullptr);
+    return;
+  }
+
   if (!CanServeContainerHostMethods(
           &callback, options->scope, script_url,
           base::StringPrintf(
@@ -138,14 +154,6 @@ void ServiceWorkerContainerHostForClient::Register(
               options->scope.spec().c_str(), script_url.spec().c_str())
               .c_str(),
           nullptr)) {
-    return;
-  }
-
-  if (!IsClientValidForCall(service_worker_client())) {
-    mojo::ReportBadMessage(
-        ServiceWorkerConsts::kBadMessageFromUnsupportedClient);
-    std::move(callback).Run(blink::mojom::ServiceWorkerErrorType::kUnknown,
-                            std::string(), nullptr);
     return;
   }
 
@@ -326,6 +334,11 @@ void ServiceWorkerContainerHostForClient::EnsureControllerServiceWorker(
     blink::mojom::ControllerServiceWorkerPurpose purpose) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (!HasValidSandboxFlags()) {
+    mojo::ReportBadMessage(ServiceWorkerConsts::kBadMessageFromSandboxedClient);
+    return;
+  }
+
   // TODO(kinuko): Log the reasons we drop the request.
   if (!context() || !controller()) {
     return;
@@ -344,8 +357,22 @@ void ServiceWorkerContainerHost::CloneContainerHost(
   additional_receivers_.Add(this, std::move(receiver));
 }
 
+void ServiceWorkerContainerHostForClient::CloneContainerHost(
+    mojo::PendingReceiver<blink::mojom::ServiceWorkerContainerHost> receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!HasValidSandboxFlags()) {
+    mojo::ReportBadMessage(ServiceWorkerConsts::kBadMessageFromSandboxedClient);
+    return;
+  }
+  ServiceWorkerContainerHost::CloneContainerHost(std::move(receiver));
+}
+
 void ServiceWorkerContainerHostForClient::HintToUpdateServiceWorker() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!HasValidSandboxFlags()) {
+    mojo::ReportBadMessage(ServiceWorkerConsts::kBadMessageFromSandboxedClient);
+    return;
+  }
   service_worker_client().HintToUpdateServiceWorker();
 }
 
@@ -353,11 +380,20 @@ void ServiceWorkerContainerHostForClient::EnsureFileAccess(
     const std::vector<base::FilePath>& file_paths,
     EnsureFileAccessCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!HasValidSandboxFlags()) {
+    mojo::ReportBadMessage(ServiceWorkerConsts::kBadMessageFromSandboxedClient);
+    std::move(callback).Run();
+    return;
+  }
   service_worker_client().EnsureFileAccess(file_paths, std::move(callback));
 }
 
 void ServiceWorkerContainerHostForClient::OnExecutionReady() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!HasValidSandboxFlags()) {
+    mojo::ReportBadMessage(ServiceWorkerConsts::kBadMessageFromSandboxedClient);
+    return;
+  }
   service_worker_client().OnExecutionReady();
 }
 
@@ -1105,12 +1141,23 @@ void ServiceWorkerContainerHostForClient::GetRegistrationsComplete(
                           std::nullopt, std::move(object_infos));
 }
 
+bool ServiceWorkerContainerHostForClient::HasValidSandboxFlags() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return (policy_container_policies_.sandbox_flags &
+          network::mojom::WebSandboxFlags::kOrigin) !=
+         network::mojom::WebSandboxFlags::kOrigin;
+}
+
 bool ServiceWorkerContainerHostForClient::IsValidGetRegistrationMessage(
     const GURL& client_url,
     std::string* out_error) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsClientValidForCall(service_worker_client())) {
     *out_error = ServiceWorkerConsts::kBadMessageFromUnsupportedClient;
+    return false;
+  }
+  if (!HasValidSandboxFlags()) {
+    *out_error = ServiceWorkerConsts::kBadMessageFromSandboxedClient;
     return false;
   }
   if (!client_url.is_valid()) {
@@ -1134,6 +1181,10 @@ bool ServiceWorkerContainerHostForClient::IsValidGetRegistrationsMessage(
     *out_error = ServiceWorkerConsts::kBadMessageFromUnsupportedClient;
     return false;
   }
+  if (!HasValidSandboxFlags()) {
+    *out_error = ServiceWorkerConsts::kBadMessageFromSandboxedClient;
+    return false;
+  }
   if (!OriginCanAccessServiceWorkers(url_for_access_check())) {
     *out_error = ServiceWorkerConsts::kBadMessageImproperOrigins;
     return false;
@@ -1147,6 +1198,10 @@ bool ServiceWorkerContainerHostForClient::IsValidGetRegistrationForReadyMessage(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsClientValidForCall(service_worker_client())) {
     *out_error = ServiceWorkerConsts::kBadMessageFromUnsupportedClient;
+    return false;
+  }
+  if (!HasValidSandboxFlags()) {
+    *out_error = ServiceWorkerConsts::kBadMessageFromSandboxedClient;
     return false;
   }
 
@@ -1415,6 +1470,13 @@ void ServiceWorkerContainerHostForClient::DispatchExtendableMessageEvent(
     scoped_refptr<ServiceWorkerVersion> version,
     ::blink::TransferableMessage message,
     StatusCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!HasValidSandboxFlags()) {
+    mojo::ReportBadMessage(ServiceWorkerConsts::kBadMessageFromSandboxedClient);
+    std::move(callback).Run(blink::ServiceWorkerStatusCode::kErrorDisallowed);
+    return;
+  }
+
   bool is_allowed = AllowServiceWorker(version->scope(), version->script_url());
   ServiceWorkerMetrics::RecordMessageDispatchContextValidationResult(
       is_allowed
@@ -1446,6 +1508,13 @@ void ServiceWorkerContainerHostForClient::Update(
         outside_fetch_client_settings_object,
     blink::mojom::ServiceWorkerRegistrationObjectHost::UpdateCallback
         callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!HasValidSandboxFlags()) {
+    mojo::ReportBadMessage(ServiceWorkerConsts::kBadMessageFromSandboxedClient);
+    std::move(callback).Run(blink::mojom::ServiceWorkerErrorType::kUnknown,
+                            std::string());
+    return;
+  }
   // Don't delay update() if called by non-ServiceWorkers.
   registration->ExecuteUpdate(std::move(outside_fetch_client_settings_object),
                               std::move(callback));
