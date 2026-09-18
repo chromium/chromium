@@ -38,9 +38,11 @@ class SessionControllerImpl : public SessionController,
   Profile* GetProfile() override;
 
   // SessionController implementation:
+  void OnSessionInitialized() override;
   void GetPageContext(FetchCompleteCallback callback) override;
   void ProcessToolCall(const ToolRequest& tool_request,
                        ToolResponseCallback tool_response_callback) override;
+  void UserAudioLevelUpdate(float audio_level) override;
 
   // SessionViewDelegate implementation:
   void EndSessionAsync() override;

@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
@@ -53,6 +54,7 @@ SessionControllerImpl::SessionControllerImpl(TtcKeyedService& service)
   // calls back into GetProfile() on this object.
   conversation_ =
       service.MakeConversation(base::PassKey<SessionControllerImpl>(), *this);
+  conversation_->Start();
 
   if (content::WebContents* contents = GetObservedWebContents()) {
     // TODO(b/555800359): Reset page_context_monitor_ on active tab changes.
@@ -94,6 +96,25 @@ BrowserWindowInterface* SessionControllerImpl::GetBrowserWindowInterface() {
       ProfileBrowserCollection::GetForProfile(service_->profile());
   return browsers ? browsers->GetLastActiveBrowser() : nullptr;
 #endif
+}
+
+void SessionControllerImpl::UserAudioLevelUpdate(float audio_level) {
+  // Android doesn't have a SessionView implementation yet.
+  if (!session_view_) {
+    NOTIMPLEMENTED();
+    return;
+  }
+
+  session_view_->UpdateAudioLevel(audio_level);
+}
+
+void SessionControllerImpl::OnSessionInitialized() {
+  if (!session_view_) {
+    NOTIMPLEMENTED();
+    return;
+  }
+
+  session_view_->OnSessionInitialized();
 }
 
 void SessionControllerImpl::EndSessionAsync() {

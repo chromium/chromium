@@ -21,6 +21,9 @@ class SessionController {
  public:
   virtual ~SessionController() = default;
 
+  // Called when the backend is connected and the session is interactive.
+  virtual void OnSessionInitialized() = 0;
+
   // Fetches the context of the page this session is operating on, invoking
   // `callback` with the result.
   virtual void GetPageContext(FetchCompleteCallback callback) = 0;
@@ -32,6 +35,10 @@ class SessionController {
   // `tool_response_callback` with the result (or an error).
   virtual void ProcessToolCall(const ToolRequest& tool_request,
                                ToolResponseCallback tool_response_callback) = 0;
+
+  // Called when the level (loudness) of the user's captured microphone audio
+  // changes. `audio_level` is normalized to the [0, 1] range.
+  virtual void UserAudioLevelUpdate(float audio_level) = 0;
 };
 
 }  // namespace ttc

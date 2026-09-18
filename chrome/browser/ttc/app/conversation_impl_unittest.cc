@@ -100,6 +100,9 @@ class FakeSessionController : public SessionController {
     std::move(tool_response).Run(std::move(response));
   }
 
+  void UserAudioLevelUpdate(float audio_level) override {}
+  void OnSessionInitialized() override {}
+
   const ToolRequest& last_request() const { return last_request_; }
 
  private:

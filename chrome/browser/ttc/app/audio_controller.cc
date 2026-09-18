@@ -296,18 +296,8 @@ int AudioController::Render(base::TimeDelta delay,
     }
   }
 
-  float energy = 0.0f;
-  if (frames_rendered > 0) {
-    base::span<const float> channel = dest->channel(0);
-    float sum_squares = 0.0f;
-    for (int i = 0; i < frames_rendered; ++i) {
-      sum_squares += channel[i] * channel[i];
-    }
-    energy = std::sqrt(sum_squares / frames_rendered);
-  }
-
-  if (completed_sequence >= 0 || frames_rendered > 0) {
-    render_callback_runner_.Run(completed_sequence, energy);
+  if (completed_sequence >= 0) {
+    render_callback_runner_.Run(completed_sequence);
   }
 
   return dest->frames();
@@ -317,13 +307,9 @@ void AudioController::OnRenderError() {
   VLOG(1) << "AudioController audio render error";
 }
 
-void AudioController::OnAudioRenderedOnMainThread(int64_t completed_sequence,
-                                                  float energy) {
+void AudioController::OnAudioRenderedOnMainThread(int64_t completed_sequence) {
   if (completed_sequence >= 0) {
     completion_callbacks_.Notify(completed_sequence);
-  }
-  if (energy > 0.0f) {
-    energy_callbacks_.Notify(energy);
   }
 }
 

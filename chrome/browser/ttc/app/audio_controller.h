@@ -65,8 +65,8 @@ class AudioController : public media::AudioCapturerSource::CaptureCallback,
   base::CallbackListSubscription AddAudioCaptureListener(
       AudioCaptureCallback callback);
 
-  // Subscribes to calculated RMS audio energy (0.0 to 1.0) of captured or
-  // rendered audio for visualizer UI.
+  // Subscribes to calculated RMS audio energy (0.0 to 1.0) of captured
+  // microphone audio for visualizer UI.
   base::CallbackListSubscription AddAudioEnergyListener(
       AudioEnergyCallback callback);
 
@@ -124,7 +124,7 @@ class AudioController : public media::AudioCapturerSource::CaptureCallback,
   void OnCapturedAudioOnMainThread(std::vector<uint8_t> pcm_data,
                                    media::AudioParameters params,
                                    float energy);
-  void OnAudioRenderedOnMainThread(int64_t completed_sequence, float energy);
+  void OnAudioRenderedOnMainThread(int64_t completed_sequence);
 
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
   AudioStreamFactoryBinder factory_binder_;
@@ -138,7 +138,7 @@ class AudioController : public media::AudioCapturerSource::CaptureCallback,
   base::RepeatingCallback<
       void(std::vector<uint8_t>, media::AudioParameters, float)>
       capture_callback_runner_;
-  base::RepeatingCallback<void(int64_t, float)> render_callback_runner_;
+  base::RepeatingCallback<void(int64_t)> render_callback_runner_;
 
   scoped_refptr<media::AudioCapturerSource> audio_capturer_source_;
   std::unique_ptr<audio::OutputDevice> output_device_;

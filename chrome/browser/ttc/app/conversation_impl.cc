@@ -52,6 +52,9 @@ void ConversationImpl::Start() {
     audio_capture_subscription_ =
         audio_controller_->AddAudioCaptureListener(base::BindRepeating(
             &ConversationImpl::OnCapturedAudio, base::Unretained(this)));
+    audio_energy_subscription_ =
+        audio_controller_->AddAudioEnergyListener(base::BindRepeating(
+            &ConversationImpl::OnAudioEnergy, base::Unretained(this)));
     playback_completion_subscription_ =
         audio_controller_->AddPlaybackCompletionListener(base::BindRepeating(
             &ConversationImpl::OnPlaybackCompleted, base::Unretained(this)));
@@ -61,10 +64,16 @@ void ConversationImpl::Start() {
   if (backend_) {
     backend_->Connect();
   }
+
+  // TODO(b/562979451): This needs to be called once we've received a reply.
+  // Also audio playback/capture should be started only then too. Make this
+  // change once backend is reliably hooked up.
+  session_controller_->OnSessionInitialized();
 }
 
 void ConversationImpl::Stop() {
   audio_capture_subscription_ = {};
+  audio_energy_subscription_ = {};
   playback_completion_subscription_ = {};
 
   if (audio_controller_) {
@@ -141,6 +150,10 @@ void ConversationImpl::OnCapturedAudio(const std::vector<uint8_t>& pcm_data,
     return;
   }
   backend_->SendAudioChunk(pcm_data);
+}
+
+void ConversationImpl::OnAudioEnergy(float energy) {
+  session_controller_->UserAudioLevelUpdate(energy);
 }
 
 void ConversationImpl::OnPlaybackCompleted(int64_t sequence_number) {

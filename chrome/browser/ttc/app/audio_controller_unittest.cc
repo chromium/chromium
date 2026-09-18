@@ -252,29 +252,6 @@ TEST_F(AudioControllerTest, PlayEmptyAudioChunkDoesNotQueue) {
   EXPECT_FALSE(controller.is_playing());
 }
 
-TEST_F(AudioControllerTest, PlaybackRendersTriggerEnergyListener) {
-  AudioController controller;
-
-  float last_energy = -1.0f;
-  base::RunLoop energy_loop;
-  auto energy_sub = controller.AddAudioEnergyListener(
-      base::BindLambdaForTesting([&](float energy) {
-        last_energy = energy;
-        if (energy > 0.0f) {
-          energy_loop.Quit();
-        }
-      }));
-
-  std::vector<int16_t> samples(400, 16000);
-  controller.PlayAudio(base::as_byte_span(samples), /*sequence_number=*/1);
-
-  auto bus = media::AudioBus::Create(1, 400);
-  controller.Render(base::TimeDelta(), base::TimeTicks::Now(), {}, bus.get());
-  energy_loop.Run();
-
-  EXPECT_GT(last_energy, 0.0f);
-}
-
 TEST_F(AudioControllerTest, StartAndStopCaptureWithFakeBinder) {
   bool binder_called = false;
   auto fake_binder = base::BindLambdaForTesting(

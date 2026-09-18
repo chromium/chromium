@@ -83,6 +83,7 @@ class ConversationImpl : public Conversation, public TtcBackend::Observer {
  private:
   void OnCapturedAudio(const std::vector<uint8_t>& pcm_data,
                        const media::AudioParameters& params);
+  void OnAudioEnergy(float energy);
   void OnPlaybackCompleted(int64_t sequence_number);
 
   std::unique_ptr<TtcBackend> backend_;
@@ -92,6 +93,7 @@ class ConversationImpl : public Conversation, public TtcBackend::Observer {
   const raw_ref<SessionController> session_controller_;
 
   base::CallbackListSubscription audio_capture_subscription_;
+  base::CallbackListSubscription audio_energy_subscription_;
   base::CallbackListSubscription playback_completion_subscription_;
   base::ObserverList<Conversation::Observer> observers_;
 };
