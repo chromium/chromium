@@ -401,10 +401,8 @@ public class SettingsPageFragmentDelegateImpl
 
         mPendingUrl = null;
 
-        var fragmentClass = SettingsFragmentRegistry.getFragmentClassForUrl(url);
-        if (fragmentClass == null) {
-            fragmentClass = MainSettings.class;
-        }
+        SettingsFragmentRegistry.Resolution resolution = SettingsFragmentRegistry.resolve(url);
+        var fragmentClass = resolution.fragmentClass;
 
         // If navigating to root chrome://settings URL (e.g. via Omnibox),
         // clear any stored initial subpage URL on attached host fragment
@@ -414,10 +412,9 @@ public class SettingsPageFragmentDelegateImpl
             mSettingsHostFragment.clearInitialUrl();
         }
 
-        Bundle args = SettingsFragmentRegistry.parseUrlArguments(url);
         Fragment fragment = null;
         if (!MainSettings.class.equals(fragmentClass)) {
-            fragment = Fragment.instantiate(mActivity, fragmentClass.getName(), args);
+            fragment = Fragment.instantiate(mActivity, fragmentClass.getName(), resolution.args);
         }
 
         // Transactions pass addToBackStack = false because browser backstack

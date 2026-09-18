@@ -60,18 +60,15 @@ public class SettingsFragmentRegistryTest {
 
     @Test
     public void testRegistryInitialization() throws Exception {
-        Map<String, Class<? extends Fragment>> pathMap =
-                SettingsFragmentRegistry.sPathToFragmentMap;
-
         // Verify root path
-        assertEquals(MainSettings.class, pathMap.get(""));
-        assertEquals(MainSettings.class, pathMap.get("/"));
+        assertEquals(MainSettings.class, fragmentClassForPath(""));
+        assertEquals(MainSettings.class, fragmentClassForPath("/"));
 
         // Verify some notable mappings
-        assertEquals(PrivacySettings.class, pathMap.get("/privacy"));
-        assertEquals(AppearanceSettingsFragment.class, pathMap.get("/appearance"));
-        assertEquals(ThemeSettingsFragment.class, pathMap.get("/theme"));
-        assertEquals(SafeBrowsingSettingsFragment.class, pathMap.get("/safebrowsing"));
+        assertEquals(PrivacySettings.class, fragmentClassForPath("/privacy"));
+        assertEquals(AppearanceSettingsFragment.class, fragmentClassForPath("/appearance"));
+        assertEquals(ThemeSettingsFragment.class, fragmentClassForPath("/theme"));
+        assertEquals(SafeBrowsingSettingsFragment.class, fragmentClassForPath("/safebrowsing"));
 
         // Verify canonical path mapping
         Map<Class<? extends Fragment>, String> fragmentMap =
@@ -83,8 +80,6 @@ public class SettingsFragmentRegistryTest {
 
     @Test
     public void testRegisterMappingForTesting() throws Exception {
-        Map<String, Class<? extends Fragment>> pathMap =
-                SettingsFragmentRegistry.sPathToFragmentMap;
         Map<Class<? extends Fragment>, String> fragmentMap =
                 SettingsFragmentRegistry.sFragmentToPathMap;
 
@@ -92,17 +87,17 @@ public class SettingsFragmentRegistryTest {
         Class<? extends Fragment> testClass = Fragment.class;
 
         // Ensure it doesn't exist yet
-        assertFalse(pathMap.containsKey("/test/custom"));
+        assertNull(fragmentClassForPath(testPath));
 
         // Register the new mapping
         SettingsFragmentRegistry.registerMappingForTesting(testPath, testClass);
 
         // Verify it was added
-        assertEquals(testClass, pathMap.get("/test/custom"));
+        assertEquals(testClass, fragmentClassForPath(testPath));
         assertEquals("test/custom", fragmentMap.get(testClass));
 
         // Clean up
-        pathMap.remove("/test/custom");
+        SettingsFragmentRegistry.sPathToRouteSpecMap.remove(testPath);
         fragmentMap.remove(testClass);
     }
 
@@ -126,20 +121,18 @@ public class SettingsFragmentRegistryTest {
         // Registering with mixed case should be lowercased in the registry map
         SettingsFragmentRegistry.registerMappingForTesting("/Test/Case", Fragment.class);
 
-        Map<String, Class<? extends Fragment>> pathMap =
-                SettingsFragmentRegistry.sPathToFragmentMap;
         Map<Class<? extends Fragment>, String> fragmentMap =
                 SettingsFragmentRegistry.sFragmentToPathMap;
 
-        // Lookup key should be lowercased
-        assertTrue(pathMap.containsKey("/test/case"));
-        assertEquals(Fragment.class, pathMap.get("/test/case"));
+        // The Url is matched case insensitively, however it was registered or is written.
+        assertEquals(Fragment.class, fragmentClassForPath("/test/case"));
+        assertEquals(Fragment.class, fragmentClassForPath("/Test/Case"));
 
         // Canonical path map should preserve casing of the subpage path (without the slash)
         assertEquals("Test/Case", fragmentMap.get(Fragment.class));
 
         // Clean up
-        pathMap.remove("/test/case");
+        SettingsFragmentRegistry.sPathToRouteSpecMap.remove("/test/case");
         fragmentMap.remove(Fragment.class);
     }
 
@@ -460,5 +453,41 @@ public class SettingsFragmentRegistryTest {
                 SettingsFragmentRegistry.isSameSettingsPage(null, "chrome://settings/allSites"));
         assertFalse(
                 SettingsFragmentRegistry.isSameSettingsPage("chrome://settings/allSites", null));
+    }
+
+    @Test
+    public void testResolveReturnsThePageAndItsArguments() {
+        SettingsFragmentRegistry.Resolution resolution =
+                SettingsFragmentRegistry.resolve(
+                        "chrome://settings/siteDetails?site=https://example.com");
+        assertEquals(SingleWebsiteSettings.class, resolution.fragmentClass);
+        assertTrue(resolution.args.containsKey(SingleWebsiteSettings.EXTRA_SITE_ADDRESS));
+    }
+
+    @Test
+    public void testResolveAppliesRouteDefaults() {
+        // The page asserts on this extra, and a URL that does not name it must still produce a
+        // page that works.
+        SettingsFragmentRegistry.Resolution resolution =
+                SettingsFragmentRegistry.resolve("chrome://settings/theme");
+        assertEquals(ThemeSettingsFragment.class, resolution.fragmentClass);
+        assertEquals(
+                NightModeMetrics.ThemeSettingsEntry.SETTINGS,
+                resolution.args.getInt(ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY));
+    }
+
+    @Test
+    public void testResolveShowsMainSettingsForUnroutedUrls() {
+        assertEquals(
+                MainSettings.class,
+                SettingsFragmentRegistry.resolve("chrome://settings/notAPage").fragmentClass);
+        assertEquals(
+                MainSettings.class,
+                SettingsFragmentRegistry.resolve("chrome://settings").fragmentClass);
+    }
+
+    /** The page a settings path resolves to, or null if the path is not registered. */
+    private static Class<? extends Fragment> fragmentClassForPath(String path) {
+        return SettingsFragmentRegistry.getFragmentClassForUrl("chrome://settings" + path);
     }
 }

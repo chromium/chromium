@@ -212,12 +212,14 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
         if (ChromeFeatureList.sSettingsInTabUrlNav.isEnabled() && mInitialUrl != null) {
             String initialUrl = mInitialUrl;
             mInitialUrl = null;
-            var fragmentClass = SettingsFragmentRegistry.getFragmentClassForUrl(initialUrl);
+            SettingsFragmentRegistry.Resolution resolution =
+                    SettingsFragmentRegistry.resolve(initialUrl);
+            var fragmentClass = resolution.fragmentClass;
 
-            if (fragmentClass != null && !MainSettings.class.equals(fragmentClass)) {
-                Bundle args = SettingsFragmentRegistry.parseUrlArguments(initialUrl);
+            if (!MainSettings.class.equals(fragmentClass)) {
                 Fragment initialDetailFragment =
-                        Fragment.instantiate(requireContext(), fragmentClass.getName(), args);
+                        Fragment.instantiate(
+                                requireContext(), fragmentClass.getName(), resolution.args);
 
                 SlidingPaneLayout slidingPane = getSlidingPaneLayoutOrNull();
                 if (slidingPane != null) {
