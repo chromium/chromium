@@ -111,8 +111,8 @@ class DecorationCache {
         spec, rounded_corners, aperture_insets, margins);
     const gfx::Size image_size = source->size();
     auto nine_patch_image = gfx::ImageSkia(std::move(source), image_size);
-    auto [inserted_iter, success] =
-        cache.try_emplace(key, spec, nine_patch_image);
+    auto [inserted_iter, success] = cache.try_emplace(
+        key, spec, nine_patch_image, aperture_insets, margins);
     DCHECK(success);
     return inserted_iter->second;
   }
@@ -151,8 +151,14 @@ class DecorationCache {
 // suitable for ninebox tiling.
 template <typename Spec, typename Generator>
 struct DecorationDetails {
-  DecorationDetails(const Spec& spec, const gfx::ImageSkia& nine_patch_image)
-      : spec(spec), nine_patch_image(nine_patch_image) {}
+  DecorationDetails(const Spec& spec,
+                    const gfx::ImageSkia& nine_patch_image,
+                    const gfx::Insets& aperture_insets,
+                    const gfx::Insets& margins)
+      : spec(spec),
+        nine_patch_image(nine_patch_image),
+        aperture_insets(aperture_insets),
+        margins(margins) {}
 
   DecorationDetails(const DecorationDetails& other) = default;
   DecorationDetails& operator=(const DecorationDetails& other) = default;
@@ -163,7 +169,8 @@ struct DecorationDetails {
   ~DecorationDetails() = default;
 
   bool operator==(const DecorationDetails& other) const {
-    return spec == other.spec &&
+    return spec == other.spec && aperture_insets == other.aperture_insets &&
+           margins == other.margins &&
            nine_patch_image.BackedBySameObjectAs(other.nine_patch_image);
   }
 
@@ -184,6 +191,10 @@ struct DecorationDetails {
   Spec spec;
   // Cached ninebox image based on |spec|.
   gfx::ImageSkia nine_patch_image;
+  // Insets for the stretchable center aperture grid.
+  gfx::Insets aperture_insets;
+  // Margins for positioning the decoration around content bounds.
+  gfx::Insets margins;
 };
 
 }  // namespace ui::decoration

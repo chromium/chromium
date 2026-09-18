@@ -260,9 +260,7 @@ void Shadow::UpdateShadowAppearance() {
   const auto& details =
       decoration::ShadowDetails::Get(size_adjusted_rounded_corners, values);
 
-  const gfx::Insets aperture_insets =
-      decoration::GetNineboxApertureInsetsForShadows(
-          details.spec, size_adjusted_rounded_corners);
+  const gfx::Insets aperture_insets = details.aperture_insets;
 
   // Update |shadow_layer()| if details changed and it has been updated in
   // the past (|details_| is set), or elevation is non-zero.
@@ -280,7 +278,7 @@ void Shadow::UpdateShadowAppearance() {
 
   // Shadow margins are negative, so this expands outwards from
   // |content_bounds_|.
-  const gfx::Insets margins = gfx::ShadowValue::GetMargin(details.spec);
+  const gfx::Insets margins = details.margins;
   gfx::Rect new_layer_bounds = content_bounds_;
   new_layer_bounds.Inset(margins);
   gfx::Rect shadow_layer_bounds(new_layer_bounds.size());

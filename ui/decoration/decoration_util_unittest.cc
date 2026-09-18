@@ -19,6 +19,10 @@ TEST(ShadowUtilTest, ShadowDetailsKey) {
   details.emplace_back(ShadowDetails::Get(
       gfx::RoundedCornersF(2), ui::Shadow::MakeShadowValues(/*elevation=*/4)));
   EXPECT_EQ(1u, ShadowDetails::GetDetailsCacheSizeForTest());
+  EXPECT_EQ(details[0].aperture_insets,
+            ShadowGenerator::GetNineboxApertureInsets(details[0].spec,
+                                                      gfx::RoundedCornersF(2)));
+  EXPECT_EQ(details[0].margins, ShadowGenerator::GetMargins(details[0].spec));
 
   // Add second shadow details with a different elevation.
   details.emplace_back(ShadowDetails::Get(
