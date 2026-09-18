@@ -879,6 +879,9 @@ bool AwContents::ShouldDownloadFavicon() {
     return false;
   }
   AwSettings* aw_settings = AwSettings::FromWebContents(web_contents_.get());
+  if (!aw_settings) {
+    return false;
+  }
   return aw_settings->ShouldDownloadFavicon();
 }
 
