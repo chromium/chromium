@@ -15,8 +15,8 @@ struct DropData;
 class RenderWidgetHostImpl;
 
 // Used to track security-salient details about a drag source. This class is to
-// be owned by a WebContentsView indirectly via the Aura or Mac impls. Because
-// the security concerns that it addresses are those that arise when the
+// be owned by a WebContentsView indirectly via the Aura, Mac, or Android impls.
+// Because the security concerns that it addresses are those that arise when the
 // WebContentsView that initiated the drag is also the target of that drag, this
 // class's main question is "is the WebContentsView that is receiving the drag
 // the same one that initiated that drag?" The answer to that question may be

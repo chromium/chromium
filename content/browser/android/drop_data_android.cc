@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "content/browser/web_contents/web_contents_view_drag_security_info.h"
 #include "ui/events/android/drag_event_android.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
@@ -135,19 +136,27 @@ void PopulateCustomDataFromEvent(const ui::DragEventAndroid& event,
 }
 }  // namespace
 
-void PopulateDropDataFromEvent(const ui::DragEventAndroid& event,
-                               DropData* drop_data) {
+void PopulateDropDataFromEvent(
+    const ui::DragEventAndroid& event,
+    const WebContentsViewDragSecurityInfo& drag_security_info,
+    DropData* drop_data) {
   JNIEnv* env = AttachCurrentThread();
 
-  std::vector<std::vector<std::string>> filenames;
-  if (!event.GetJavaFilenames().is_null()) {
-    base::android::Java2dStringArrayTo2dStringVector(
-        env, event.GetJavaFilenames(), &filenames);
-  }
-  for (const auto& info : filenames) {
-    CHECK_EQ(info.size(), 2u);
-    drop_data->filenames.emplace_back(base::FilePath(info[0]),
-                                      base::FilePath(info[1]));
+  // If the image is not accessible from the frame, it means the drag contains a
+  // cross-origin image or otherwise restricted file data. To prevent this data
+  // from leaking to the renderer, we must not populate `filenames` or any
+  // future file-related fields.
+  if (drag_security_info.IsImageAccessibleFromFrame()) {
+    std::vector<std::vector<std::string>> filenames;
+    if (!event.GetJavaFilenames().is_null()) {
+      base::android::Java2dStringArrayTo2dStringVector(
+          env, event.GetJavaFilenames(), &filenames);
+    }
+    for (const auto& info : filenames) {
+      CHECK_EQ(info.size(), 2u);
+      drop_data->filenames.emplace_back(base::FilePath(info[0]),
+                                        base::FilePath(info[1]));
+    }
   }
 
   if (!event.GetJavaText().is_null()) {

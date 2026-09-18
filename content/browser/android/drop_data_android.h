@@ -20,14 +20,22 @@ class DragEventAndroid;
 
 namespace content {
 
+class WebContentsViewDragSecurityInfo;
+
 // Generate a java equivalent DropData object from |drop_data|. Note that the
 // timeline of these object are not equivalent.
 base::android::ScopedJavaLocalRef<jobject> ToJavaDropData(
     const DropData& drop_data);
 
 // Populates |drop_data| with data from the Android |event|.
-CONTENT_EXPORT void PopulateDropDataFromEvent(const ui::DragEventAndroid& event,
-                                              DropData* drop_data);
+// Uses `drag_security_info` to determine if the drag contains restricted
+// file data (e.g., cross-origin images). If restricted, prevents populating
+// `filenames` and any future file-related fields to avoid leaking data to
+// the renderer.
+CONTENT_EXPORT void PopulateDropDataFromEvent(
+    const ui::DragEventAndroid& event,
+    const WebContentsViewDragSecurityInfo& drag_security_info,
+    DropData* drop_data);
 
 // Parses and returns the custom data JSON payload from the Android |event|.
 // Returns std::nullopt if the event does not contain custom data or parsing

@@ -322,11 +322,15 @@ TEST_F(WebContentsViewAuraTest, OccludeView) {
 #define MAYBE_DragDropFilesOriginateFromRenderer \
   DISABLED_DragDropFilesOriginateFromRenderer
 #define MAYBE_DragDropImageFromRenderer DISABLED_DragDropImageFromRenderer
+#define MAYBE_DragDropImageFromRenderer_InaccessibleImageOmitted \
+  DISABLED_DragDropImageFromRenderer_InaccessibleImageOmitted
 #else
 #define MAYBE_DragDropFiles DragDropFiles
 #define MAYBE_DragDropFilesOriginateFromRenderer \
   DragDropFilesOriginateFromRenderer
 #define MAYBE_DragDropImageFromRenderer DragDropImageFromRenderer
+#define MAYBE_DragDropImageFromRenderer_InaccessibleImageOmitted \
+  DragDropImageFromRenderer_InaccessibleImageOmitted
 #endif
 
 TEST_F(WebContentsViewAuraTest, MAYBE_DragDropFiles) {
@@ -600,6 +604,76 @@ TEST_F(WebContentsViewAuraTest, MAYBE_DragDropImageFromRenderer) {
             drop_complete_data_->drop_data.file_contents_filename_extension);
   EXPECT_EQ("",
             drop_complete_data_->drop_data.file_contents_content_disposition);
+}
+
+TEST_F(WebContentsViewAuraTest,
+       MAYBE_DragDropImageFromRenderer_InaccessibleImageOmitted) {
+  WebContentsViewAura* view = GetView();
+
+  DropData initiating_drop_data;
+  initiating_drop_data.file_contents = {0x89, 0x50, 0x4E, 0x47};
+  initiating_drop_data.file_contents_image_accessible = false;
+
+  view->drag_security_info_.OnDragInitiated(
+      static_cast<RenderWidgetHostImpl*>(main_rfh()->GetRenderWidgetHost()),
+      initiating_drop_data);
+
+  EXPECT_TRUE(view->drag_security_info_.did_initiate());
+  EXPECT_FALSE(view->drag_security_info_.IsImageAccessibleFromFrame());
+
+  const base::FilePath filename(FILE_PATH_LITERAL("image.jpg"));
+  const base::span<const uint8_t> file_contents =
+      base::byte_span_from_cstring("contents");
+  const std::string url_spec = "http://example.com/image.jpg";
+  const GURL url(url_spec);
+
+  auto data = std::make_unique<ui::OSExchangeData>();
+
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(SUPPORTS_OZONE_X11)
+  if (ui::OzonePlatform::GetPlatformNameForTest() == "x11") {
+    auto* connection = x11::Connection::Get();
+    x11::Window xwindow = connection->CreateDummyWindow("Test Window");
+    connection->SetStringProperty(xwindow, x11::GetAtom("XdndDirectSave0"),
+                                  x11::GetAtom("text/plain"), "image.jpg");
+    data = std::make_unique<ui::OSExchangeData>(
+        std::make_unique<ui::XOSExchangeDataProvider>(
+            xwindow, xwindow, ui::SelectionFormatMap()));
+  }
+#endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(SUPPORTS_OZONE_X11)
+
+  data->SetFileContents(filename, file_contents);
+  data->SetURL(url, u"");
+  data->MarkRendererTaintedFromOrigin(url::Origin());
+
+  ui::DropTargetEvent event(*data.get(), kClientPt, kScreenPt,
+                            ui::DragDropTypes::DRAG_COPY);
+
+  view->OnDragEntered(event);
+  EXPECT_NE(nullptr, view->current_drag_data_);
+  if (view->current_drag_data_) {
+    EXPECT_TRUE(view->current_drag_data_->file_contents.empty());
+    EXPECT_FALSE(view->current_drag_data_->file_contents_image_accessible);
+  }
+
+  auto callback = base::BindOnce(&WebContentsViewAuraTest::OnDropComplete,
+                                 base::Unretained(this));
+  view->RegisterDropCallbackForTesting(std::move(callback));
+
+  base::RunLoop run_loop;
+  async_drop_closure_ = run_loop.QuitClosure();
+
+  auto drop_cb = view->GetDropCallback(event);
+  EXPECT_TRUE(drop_cb);
+  if (drop_cb) {
+    ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+    std::move(drop_cb).Run(std::move(data), output_drag_op,
+                           /*drag_image_layer_owner=*/nullptr);
+    run_loop.Run();
+
+    CheckDropData(view);
+    EXPECT_TRUE(drop_complete_data_->drop_data.file_contents.empty());
+    EXPECT_FALSE(drop_complete_data_->drop_data.file_contents_image_accessible);
+  }
 }
 
 #if BUILDFLAG(IS_WIN)

@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
@@ -185,6 +186,18 @@ class CONTENT_EXPORT WebContentsViewAndroid : public WebContentsView,
       RenderWidgetHostViewCreateFunction create_render_widget_host_view);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAndroidTest,
+                           DragInaccessibleImage_SameTab_Filtered);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAndroidTest,
+                           DragAccessibleImage_SameTab_Allowed);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAndroidTest,
+                           DragImage_ExternalSource_Allowed);
+  FRIEND_TEST_ALL_PREFIXES(
+      WebContentsViewAndroidTest,
+      DragInaccessibleImage_MixedMimeTypes_PreservesStringTypes);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAndroidTest,
+                           OnDragEnded_ResetsDropDataAndSecurityInfo);
+
   void OnDragEntered(const gfx::PointF& location,
                      const gfx::PointF& screen_location);
   void DragEnteredCallback(const gfx::PointF& location,

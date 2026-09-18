@@ -572,6 +572,9 @@ bool WebContentsViewAndroid::OnDragEvent(const ui::DragEventAndroid& event) {
           // Ignore, we will unpack custom data from the event.
           continue;
         } else {
+          if (!drag_security_info_.IsImageAccessibleFromFrame()) {
+            continue;
+          }
           // Create a file extension from the mime type.
           std::string ext = base::UTF16ToUTF8(mime_type);
           if (!net::GetPreferredExtensionForMimeType(ext, &ext)) {
@@ -603,7 +606,7 @@ bool WebContentsViewAndroid::OnDragEvent(const ui::DragEventAndroid& event) {
       drop_data_ = std::make_unique<DropData>();
       drop_data_->did_originate_from_renderer = false;
       drop_data_->document_is_handling_drag = document_is_handling_drag_;
-      PopulateDropDataFromEvent(event, drop_data_.get());
+      PopulateDropDataFromEvent(event, drag_security_info_, drop_data_.get());
 
       OnPerformDrop(event.location(), event.screen_location());
       break;
@@ -816,6 +819,10 @@ void WebContentsViewAndroid::OnDragEnded() {
   }
   drag_security_info_.OnDragEnded();
 
+  // Note: `drop_data_` is intentionally NOT reset here. The OS can fire
+  // ACTION_DRAG_ENDED asynchronously before `PerformDropCallback` finishes
+  // executing. If we destroy `drop_data_` here, we risk a race condition where
+  // the callback attempts to dereference a null pointer or dropped payload.
   drag_metadata_.clear();
   current_source_rwh_for_drag_.reset();
   current_target_rwh_for_drag_.reset();
