@@ -9,6 +9,14 @@ optimize_ts("education_page_detector") {
   deps = [ "//ios/web/public/js_messaging:gcrweb" ]
 }
 
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  public_deps = [ "//base" ]
+}
+
 source_set("page_classification") {
   sources = [
     "education_eligibility_vertical.h",
@@ -23,7 +31,10 @@ source_set("page_classification") {
     "shopping_eligibility_vertical.h",
     "shopping_eligibility_vertical.mm",
   ]
-  public_deps = [ "//components/page_content_annotations/core" ]
+  public_deps = [
+    ":features",
+    "//components/page_content_annotations/core",
+  ]
   deps = [
     ":education_page_detector",
     "//base",
@@ -48,11 +59,13 @@ source_set("unit_tests") {
   sources = [
     "education_eligibility_vertical_unittest.mm",
     "education_java_script_feature_unittest.mm",
+    "features_unittest.mm",
     "optimization_guide_page_classification_service_unittest.mm",
     "page_classification_service_factory_unittest.mm",
     "shopping_eligibility_vertical_unittest.mm",
   ]
   deps = [
+    ":features",
     ":page_classification",
     "//base",
     "//base/test:test_support",

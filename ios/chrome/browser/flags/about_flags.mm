@@ -115,6 +115,7 @@
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/flags/ios_chrome_flag_descriptions.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/intelligence/page_classification/features.h"
 #import "ios/chrome/browser/lens/ui_bundled/features.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
@@ -1272,6 +1273,19 @@ constexpr FeatureEntry::FeatureVariation
          nullptr},
         {"with enforcement", kClientSideDetectionWithEnforcement, nullptr},
 };
+
+const FeatureEntry::FeatureParam kPageClassificationOnDeviceOnly[] = {
+    {kPageClassificationModeParam, "on_device_only"}};
+const FeatureEntry::FeatureParam kPageClassificationVerticalsOnly[] = {
+    {kPageClassificationModeParam, "verticals_only"}};
+const FeatureEntry::FeatureParam kPageClassificationOnDeviceWithFallback[] = {
+    {kPageClassificationModeParam, "on_device_with_fallback"}};
+
+const FeatureEntry::FeatureVariation kPageClassificationVariations[] = {
+    {"On-Device Only", kPageClassificationOnDeviceOnly, nullptr},
+    {"Verticals Only", kPageClassificationVerticalsOnly, nullptr},
+    {"On-Device with Verticals Fallback",
+     kPageClassificationOnDeviceWithFallback, nullptr}};
 
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
@@ -2592,6 +2606,11 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      FEATURE_WITH_PARAMS_VALUE_TYPE(kGeminiContextualSuggestionsCues,
                                     kGeminiContextualSuggestionsCuesVariations,
                                     "GeminiContextualSuggestionsCues")},
+    {"page-classification", flag_descriptions::kPageClassificationName,
+     flag_descriptions::kPageClassificationDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kPageClassification,
+                                    kPageClassificationVariations,
+                                    "PageClassification")},
     {"infobar-banner-revamp", flag_descriptions::kInfobarBannerRevampName,
      flag_descriptions::kInfobarBannerRevampDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kInfobarBannerRevamp)},

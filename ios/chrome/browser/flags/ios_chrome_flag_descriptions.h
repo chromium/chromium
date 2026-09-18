@@ -1608,6 +1608,11 @@ inline constexpr char kPageActionMenuDescription[] =
     "When enabled, the entry point for the Page Action Menu becomes available "
     "for actions relating to the web page.";
 
+inline constexpr char kPageClassificationName[] = "Page Classification";
+inline constexpr char kPageClassificationDescription[] =
+    "Enables the page classification framework and configures classification "
+    "mode.";
+
 inline constexpr char kPageContextPdfName[] = "Page Context PDF";
 inline constexpr char kPageContextPdfDescription[] =
     "Enables PDF support for Page Context in Gemini.";
