@@ -96,7 +96,7 @@ MATCHER_P2(PermissionStatusIs,
 
 }  // namespace
 
-class TestFileSystemAccessHandle : public FileSystemAccessHandleBase {
+class TestFileSystemAccessHandle final : public FileSystemAccessHandleBase {
  public:
   using FileSystemAccessHandleBase::GetRenamePermission;
   using FileSystemAccessHandleBase::RenamePermission;
@@ -1838,6 +1838,229 @@ TEST_F(FileSystemAccessHandleGetRenamePermissionTest,
                                        dest_url),
             TestFileSystemAccessHandle::RenamePermission::
                 kAllowRenameWithoutOverwrite);
+}
+
+
+class FileSystemAccessHandleDoRequestPermissionLifecycleTest
+    : public FileSystemAccessDoRequestPermissionTestBase {
+ protected:
+  bool is_worker() const override { return false; }
+};
+
+// Tests that `DoRequestPermission()` does not encounter a UAF when
+// `kFileSystemAccessWriteMode` is enabled and the handle is destroyed during
+// the first grant's `RequestPermission()` call. Verifies that the second grant
+// request is not invoked and the completion callback is dropped without
+// executing.
+TEST_F(FileSystemAccessHandleDoRequestPermissionLifecycleTest,
+       HandleDestroyedDuringFirstGrantRequest_WriteModeEnabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(blink::features::kFileSystemAccessWriteMode);
+
+  auto handle = std::make_unique<TestFileSystemAccessHandle>(
+      manager_.get(),
+      FileSystemAccessManagerImpl::BindingContext(kTestStorageKey, kTestURL,
+                                                  kFrameId),
+      FileSystemURL::CreateForTest(kTestStorageKey,
+                                   storage::kFileSystemTypeTest,
+                                   base::FilePath::FromUTF8Unsafe("/test")),
+      handle_state_);
+
+  EXPECT_CALL(*read_grant_, GetStatus())
+      .WillRepeatedly(testing::Return(PermissionStatus::ASK));
+  EXPECT_CALL(*write_grant_, GetStatus())
+      .WillRepeatedly(testing::Return(PermissionStatus::ASK));
+
+  // Simulates the handle being destroyed (e.g. pipe disconnect) during the
+  // first grant request.
+  EXPECT_CALL(*read_grant_,
+              RequestPermission_(kFrameId, UserActivationState::kRequired, _))
+      .WillOnce(
+          [&](GlobalRenderFrameHostId, UserActivationState,
+              base::OnceCallback<void(
+                  FileSystemAccessPermissionGrant::PermissionRequestOutcome)>&
+                  cb) {
+            handle.reset();
+            std::move(cb).Run(FileSystemAccessPermissionGrant::
+                                  PermissionRequestOutcome::kUserGranted);
+          });
+
+  // Because the handle is destroyed, the subsequent write grant request should
+  // not be invoked on a dangling handle.
+  EXPECT_CALL(*write_grant_,
+              RequestPermission_(testing::_, testing::_, testing::_))
+      .Times(0);
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                         PermissionStatus>
+      future;
+  handle->DoRequestPermission(FileSystemAccessPermissionMode::kReadWrite,
+                              future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+}
+
+// Tests that `DoRequestPermission()` does not encounter a UAF when
+// `kFileSystemAccessWriteMode` is disabled and the handle is destroyed during
+// the first grant's `RequestPermission()` call. Verifies that the second grant
+// request is not invoked and the completion callback is dropped without
+// executing.
+TEST_F(FileSystemAccessHandleDoRequestPermissionLifecycleTest,
+       HandleDestroyedDuringFirstGrantRequest_WriteModeDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(blink::features::kFileSystemAccessWriteMode);
+
+  auto handle = std::make_unique<TestFileSystemAccessHandle>(
+      manager_.get(),
+      FileSystemAccessManagerImpl::BindingContext(kTestStorageKey, kTestURL,
+                                                  kFrameId),
+      FileSystemURL::CreateForTest(kTestStorageKey,
+                                   storage::kFileSystemTypeTest,
+                                   base::FilePath::FromUTF8Unsafe("/test")),
+      handle_state_);
+
+  EXPECT_CALL(*read_grant_, GetStatus())
+      .WillRepeatedly(testing::Return(PermissionStatus::ASK));
+  EXPECT_CALL(*write_grant_, GetStatus())
+      .WillRepeatedly(testing::Return(PermissionStatus::ASK));
+
+  // Simulates the handle being destroyed (e.g. pipe disconnect) during the
+  // first grant request.
+  EXPECT_CALL(*read_grant_,
+              RequestPermission_(kFrameId, UserActivationState::kRequired, _))
+      .WillOnce(
+          [&](GlobalRenderFrameHostId, UserActivationState,
+              base::OnceCallback<void(
+                  FileSystemAccessPermissionGrant::PermissionRequestOutcome)>&
+                  cb) {
+            handle.reset();
+            std::move(cb).Run(FileSystemAccessPermissionGrant::
+                                  PermissionRequestOutcome::kUserGranted);
+          });
+
+  // Because the handle is destroyed, the subsequent write grant request should
+  // not be invoked on a dangling handle.
+  EXPECT_CALL(*write_grant_,
+              RequestPermission_(testing::_, testing::_, testing::_))
+      .Times(0);
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                         PermissionStatus>
+      future;
+  handle->DoRequestPermission(FileSystemAccessPermissionMode::kReadWrite,
+                              future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+}
+
+// Tests that `DoRequestPermission()` does not encounter a UAF when
+// `kFileSystemAccessWriteMode` is enabled and the handle is destroyed during
+// the second grant's `RequestPermission()` call. Verifies that the completion
+// callback is dropped without executing.
+TEST_F(FileSystemAccessHandleDoRequestPermissionLifecycleTest,
+       HandleDestroyedDuringSecondGrantRequest_WriteModeEnabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(blink::features::kFileSystemAccessWriteMode);
+
+  auto handle = std::make_unique<TestFileSystemAccessHandle>(
+      manager_.get(),
+      FileSystemAccessManagerImpl::BindingContext(kTestStorageKey, kTestURL,
+                                                  kFrameId),
+      FileSystemURL::CreateForTest(kTestStorageKey,
+                                   storage::kFileSystemTypeTest,
+                                   base::FilePath::FromUTF8Unsafe("/test")),
+      handle_state_);
+
+  EXPECT_CALL(*read_grant_, GetStatus())
+      .WillRepeatedly(testing::Return(PermissionStatus::ASK));
+  EXPECT_CALL(*write_grant_, GetStatus())
+      .WillRepeatedly(testing::Return(PermissionStatus::ASK));
+
+  EXPECT_CALL(*read_grant_,
+              RequestPermission_(kFrameId, UserActivationState::kRequired, _))
+      .WillOnce(
+          [](GlobalRenderFrameHostId, UserActivationState,
+             base::OnceCallback<void(
+                 FileSystemAccessPermissionGrant::PermissionRequestOutcome)>&
+                 cb) {
+            std::move(cb).Run(FileSystemAccessPermissionGrant::
+                                  PermissionRequestOutcome::kUserGranted);
+          });
+
+  // Simulates the handle being destroyed (e.g. pipe disconnect) during the
+  // second grant request.
+  EXPECT_CALL(*write_grant_,
+              RequestPermission_(kFrameId, UserActivationState::kRequired, _))
+      .WillOnce(
+          [&](GlobalRenderFrameHostId, UserActivationState,
+              base::OnceCallback<void(
+                  FileSystemAccessPermissionGrant::PermissionRequestOutcome)>&
+                  cb) {
+            handle.reset();
+            std::move(cb).Run(FileSystemAccessPermissionGrant::
+                                  PermissionRequestOutcome::kUserGranted);
+          });
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                         PermissionStatus>
+      future;
+  handle->DoRequestPermission(FileSystemAccessPermissionMode::kReadWrite,
+                              future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+}
+
+// Tests that `DoRequestPermission()` does not encounter a UAF when
+// `kFileSystemAccessWriteMode` is disabled and the handle is destroyed during
+// the second grant's `RequestPermission()` call. Verifies that the completion
+// callback is dropped without executing.
+TEST_F(FileSystemAccessHandleDoRequestPermissionLifecycleTest,
+       HandleDestroyedDuringSecondGrantRequest_WriteModeDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(blink::features::kFileSystemAccessWriteMode);
+
+  auto handle = std::make_unique<TestFileSystemAccessHandle>(
+      manager_.get(),
+      FileSystemAccessManagerImpl::BindingContext(kTestStorageKey, kTestURL,
+                                                  kFrameId),
+      FileSystemURL::CreateForTest(kTestStorageKey,
+                                   storage::kFileSystemTypeTest,
+                                   base::FilePath::FromUTF8Unsafe("/test")),
+      handle_state_);
+
+  EXPECT_CALL(*read_grant_, GetStatus())
+      .WillRepeatedly(testing::Return(PermissionStatus::ASK));
+  EXPECT_CALL(*write_grant_, GetStatus())
+      .WillRepeatedly(testing::Return(PermissionStatus::ASK));
+
+  EXPECT_CALL(*read_grant_,
+              RequestPermission_(kFrameId, UserActivationState::kRequired, _))
+      .WillOnce(
+          [](GlobalRenderFrameHostId, UserActivationState,
+             base::OnceCallback<void(
+                 FileSystemAccessPermissionGrant::PermissionRequestOutcome)>&
+                 cb) {
+            std::move(cb).Run(FileSystemAccessPermissionGrant::
+                                  PermissionRequestOutcome::kUserGranted);
+          });
+
+  // Simulates the handle being destroyed (e.g. pipe disconnect) during the
+  // second grant request.
+  EXPECT_CALL(*write_grant_,
+              RequestPermission_(kFrameId, UserActivationState::kRequired, _))
+      .WillOnce(
+          [&](GlobalRenderFrameHostId, UserActivationState,
+              base::OnceCallback<void(
+                  FileSystemAccessPermissionGrant::PermissionRequestOutcome)>&
+                  cb) {
+            handle.reset();
+            std::move(cb).Run(FileSystemAccessPermissionGrant::
+                                  PermissionRequestOutcome::kUserGranted);
+          });
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                         PermissionStatus>
+      future;
+  handle->DoRequestPermission(FileSystemAccessPermissionMode::kReadWrite,
+                              future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
 }
 
 }  // namespace content

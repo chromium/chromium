@@ -45,10 +45,12 @@
 #include "components/permissions/permission_util.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/browser/fullscreen_types.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -3598,6 +3600,129 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   EXPECT_EQ(grant->GetStatus(), PermissionStatus::GRANTED);
   EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
       kTestOrigin, kTestPathInfo, HandleType::kFile, GrantType::kWrite));
+}
+// Simulates a delegate that performs custom actions, e.g. destroying
+// WebContents, releasing permission grants, or navigating frames, synchronously
+// when `ExitFullscreenModeForTab()` is invoked during
+// `ForSecurityDropFullscreen()`.
+class DropFullscreenDelegate : public content::WebContentsDelegate {
+ public:
+  explicit DropFullscreenDelegate(base::OnceClosure on_exit)
+      : on_exit_(std::move(on_exit)) {}
+
+  content::FullscreenState GetFullscreenState(
+      const content::WebContents* web_contents) const override {
+    content::FullscreenState state;
+    state.target_mode = content::FullscreenMode::kContent;
+    return state;
+  }
+
+  void ExitFullscreenModeForTab(content::WebContents* web_contents) override {
+    if (on_exit_) {
+      std::move(on_exit_).Run();
+    }
+  }
+
+ private:
+  base::OnceClosure on_exit_;
+};
+
+// Tests that `RequestPermission()` cleanly aborts without crashing if the
+// associated `WebContents` is destroyed while dropping fullscreen.
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       RequestPermission_DropFullscreenExitDestroysWebContents) {
+  content::RenderFrameHostTester::For(web_contents_->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  auto grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPathInfo, HandleType::kFile, UserAction::kOpen);
+
+  DropFullscreenDelegate delegate(
+      base::BindLambdaForTesting([&]() { web_contents_.reset(); }));
+  web_contents_->SetDelegate(&delegate);
+
+  base::test::TestFuture<PermissionRequestOutcome> future;
+  grant->RequestPermission(frame_id(), UserActivationState::kRequired,
+                           future.GetCallback());
+  EXPECT_EQ(future.Get(), PermissionRequestOutcome::kRequestAborted);
+}
+
+// Tests that `RequestPermission()` does not encounter a UAF if the caller drops
+// its reference to the grant while exiting fullscreen.
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       RequestPermission_DropFullscreenReleasesGrantReference) {
+  FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
+      ->set_auto_response_for_test(PermissionAction::GRANTED);
+  content::RenderFrameHostTester::For(web_contents_->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  auto grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPathInfo, HandleType::kFile, UserAction::kOpen);
+  auto* raw_grant = grant.get();
+
+  // Dropping the grant here simulates the handle being destroyed (e.g. pipe
+  // disconnection) while exiting fullscreen, releasing the last external
+  // strong reference to the executing `PermissionGrantImpl`.
+  DropFullscreenDelegate delegate(
+      base::BindLambdaForTesting([&]() { grant.reset(); }));
+  web_contents_->SetDelegate(&delegate);
+
+  base::test::TestFuture<PermissionRequestOutcome> future;
+  raw_grant->RequestPermission(frame_id(), UserActivationState::kRequired,
+                               future.GetCallback());
+  EXPECT_EQ(future.Get(), PermissionRequestOutcome::kUserGranted);
+  web_contents_->SetDelegate(nullptr);
+}
+
+// Tests that `RequestPermission()` safely detects frame navigation occurring
+// during fullscreen drop and aborts with `kInvalidFrame`.
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       RequestPermission_DropFullscreenNavigatesFrame) {
+  content::RenderFrameHostTester::For(web_contents_->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  auto grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPathInfo, HandleType::kFile, UserAction::kOpen);
+
+  const url::Origin other_origin =
+      url::Origin::Create(GURL("https://other.com/"));
+  DropFullscreenDelegate delegate(base::BindLambdaForTesting([&]() {
+    content::WebContentsTester::For(web_contents())
+        ->NavigateAndCommit(other_origin.GetURL());
+  }));
+  web_contents_->SetDelegate(&delegate);
+
+  base::test::TestFuture<PermissionRequestOutcome> future;
+  grant->RequestPermission(frame_id(), UserActivationState::kRequired,
+                           future.GetCallback());
+  EXPECT_EQ(future.Get(), PermissionRequestOutcome::kInvalidFrame);
+  web_contents_->SetDelegate(nullptr);
+}
+
+// Tests that `RequestPermission()` aborts with `kRequestAborted` if the grant's
+// active permission status transitions away from `ASK` (e.g. granted or denied
+// by another tab or parallel operation) while exiting fullscreen.
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       RequestPermission_DropFullscreenPermissionStatusChanges) {
+  content::RenderFrameHostTester::For(web_contents_->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  auto grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPathInfo, HandleType::kFile, UserAction::kOpen);
+
+  // Request a directory grant for the same path during the fullscreen drop
+  // window to transition the existing file grant's status to DENIED.
+  DropFullscreenDelegate delegate(base::BindLambdaForTesting([&]() {
+    permission_context()->GetWritePermissionGrant(
+        kTestOrigin, kTestPathInfo, HandleType::kDirectory, UserAction::kOpen);
+  }));
+  web_contents_->SetDelegate(&delegate);
+
+  base::test::TestFuture<PermissionRequestOutcome> future;
+  grant->RequestPermission(frame_id(), UserActivationState::kRequired,
+                           future.GetCallback());
+  EXPECT_EQ(future.Get(), PermissionRequestOutcome::kRequestAborted);
+  web_contents_->SetDelegate(nullptr);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

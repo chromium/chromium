@@ -171,23 +171,30 @@ void FileSystemAccessHandleBase::DoRequestPermission(
     return;
   }
 
+  scoped_refptr<FileSystemAccessPermissionGrant> read_grant =
+      handle_state_.read_grant;
+  scoped_refptr<FileSystemAccessPermissionGrant> write_grant =
+      handle_state_.write_grant;
+  const GlobalRenderFrameHostId frame_id = context().frame_id;
+  base::WeakPtr<FileSystemAccessHandleBase> weak_this = AsWeakPtr();
+
   // 1. Request "read"-only permission.
   if (mode == blink::mojom::FileSystemAccessPermissionMode::kRead) {
-    handle_state_.read_grant->RequestPermission(
-        context().frame_id,
+    read_grant->RequestPermission(
+        frame_id,
         FileSystemAccessPermissionGrant::UserActivationState::kRequired,
         base::BindOnce(&FileSystemAccessHandleBase::DidRequestPermission,
-                       AsWeakPtr(), mode, std::move(callback)));
+                       weak_this, mode, std::move(callback)));
     return;
   }
 
   // 2. Request "write"-only permission.
   if (mode == blink::mojom::FileSystemAccessPermissionMode::kWrite) {
-    handle_state_.write_grant->RequestPermission(
-        context().frame_id,
+    write_grant->RequestPermission(
+        frame_id,
         FileSystemAccessPermissionGrant::UserActivationState::kRequired,
         base::BindOnce(&FileSystemAccessHandleBase::DidRequestPermission,
-                       AsWeakPtr(), mode, std::move(callback)));
+                       weak_this, mode, std::move(callback)));
     return;
   }
 
@@ -200,31 +207,34 @@ void FileSystemAccessHandleBase::DoRequestPermission(
     // write permission status.
     if (GetReadPermissionStatus() == PermissionStatus::ASK &&
         GetWritePermissionStatus() == PermissionStatus::ASK) {
-      handle_state_.read_grant->RequestPermission(
-          context().frame_id,
+      read_grant->RequestPermission(
+          frame_id,
           FileSystemAccessPermissionGrant::UserActivationState::kRequired,
           base::DoNothing());
-      handle_state_.write_grant->RequestPermission(
-          context().frame_id,
+      if (!weak_this) {
+        return;
+      }
+      write_grant->RequestPermission(
+          frame_id,
           FileSystemAccessPermissionGrant::UserActivationState::kRequired,
           base::BindOnce(&FileSystemAccessHandleBase::DidRequestPermission,
-                         AsWeakPtr(), mode, std::move(callback)));
+                         weak_this, mode, std::move(callback)));
       return;
     }
     if (GetReadPermissionStatus() == PermissionStatus::ASK) {
-      handle_state_.read_grant->RequestPermission(
-          context().frame_id,
+      read_grant->RequestPermission(
+          frame_id,
           FileSystemAccessPermissionGrant::UserActivationState::kRequired,
           base::BindOnce(&FileSystemAccessHandleBase::DidRequestPermission,
-                         AsWeakPtr(), mode, std::move(callback)));
+                         weak_this, mode, std::move(callback)));
       return;
     }
     if (GetWritePermissionStatus() == PermissionStatus::ASK) {
-      handle_state_.write_grant->RequestPermission(
-          context().frame_id,
+      write_grant->RequestPermission(
+          frame_id,
           FileSystemAccessPermissionGrant::UserActivationState::kRequired,
           base::BindOnce(&FileSystemAccessHandleBase::DidRequestPermission,
-                         AsWeakPtr(), mode, std::move(callback)));
+                         weak_this, mode, std::move(callback)));
       return;
     }
     NOTREACHED();
@@ -235,21 +245,23 @@ void FileSystemAccessHandleBase::DoRequestPermission(
     // the write permission request probably fails the same way. And we check
     // the final permission status after the permission request completes
     // anyway.
-    handle_state_.read_grant->RequestPermission(
-        context().frame_id,
+    read_grant->RequestPermission(
+        frame_id,
         FileSystemAccessPermissionGrant::UserActivationState::kRequired,
         base::DoNothing());
+    if (!weak_this) {
+      return;
+    }
   }
 
   // When the standalone write mode feature is disabled, we don't need to
   // check the write permission status as it's always requested with read
   // permission, i.e. only `GetReadWritePermissionStatus()` is valid here, and
   // it must be ASK.
-  handle_state_.write_grant->RequestPermission(
-      context().frame_id,
-      FileSystemAccessPermissionGrant::UserActivationState::kRequired,
+  write_grant->RequestPermission(
+      frame_id, FileSystemAccessPermissionGrant::UserActivationState::kRequired,
       base::BindOnce(&FileSystemAccessHandleBase::DidRequestPermission,
-                     AsWeakPtr(), mode, std::move(callback)));
+                     weak_this, mode, std::move(callback)));
   // Both read & write permission is either granted or denied at this point.
 }
 

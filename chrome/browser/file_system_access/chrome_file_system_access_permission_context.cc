@@ -914,7 +914,7 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     // TODO(crbug.com/40101962): Determine if this should return denied for
     // guard block, and how ancestor permission should be handled.
-    if (status_ == PermissionStatus::ASK &&
+    if (status_ == PermissionStatus::ASK && context_ &&
         context_->CanAutoGrantViaPersistentPermission(origin_, path_info_.path,
                                                       handle_type_, type_)) {
       return PermissionStatus::GRANTED;
@@ -942,6 +942,7 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
       UserActivationState user_activation_state,
       base::OnceCallback<void(PermissionRequestOutcome)> callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    scoped_refptr<PermissionGrantImpl> self(this);
 
     // Check if a permission request has already been processed previously. This
     // check is done first because we don't want to reset the status of a
@@ -1116,11 +1117,32 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
     // Drop fullscreen mode so that the user sees the URL bar.
     auto blocker = web_contents->ForSecurityDropFullscreen(
         /*display_id=*/display::kInvalidDisplayId);
-    if (!blocker) {
+
+    // Exiting fullscreen can run nested message loops during which the
+    // permission context may be destroyed, or concurrent operations may have
+    // already resolved or changed the grant status away from `ASK` (e.g. user
+    // accepted/denied another prompt or permission was revoked/granted). Abort
+    // if the prompt is no longer needed or if the context is gone.
+    if (!blocker || !context_ ||
+        GetActivePermissionStatus() != PermissionStatus::ASK) {
       RunCallbackAndRecordPermissionRequestOutcome(
           std::move(callback), PermissionRequestOutcome::kRequestAborted);
       return;
     }
+
+    // Exiting fullscreen can run nested message loops during which the frame,
+    // WebContents, or permission manager could be destroyed or navigated.
+    // Re-resolve and validate before proceeding.
+    base::expected<FileSystemAccessPermissionRequestManager*,
+                   PermissionRequestOutcome>
+        request_manager_or_error =
+            RevalidateRequestManagerAfterFullscreenDrop(frame_id);
+    if (!request_manager_or_error.has_value()) {
+      RunCallbackAndRecordPermissionRequestOutcome(
+          std::move(callback), request_manager_or_error.error());
+      return;
+    }
+    request_manager = *request_manager_or_error;
 
     if (context_->IsEligibleToUpgradePermissionRequestToRestorePrompt(
             origin_, path_info_.path, handle_type_, user_action_, type_)) {
@@ -1527,6 +1549,7 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
 
   void SetPath(const content::PathInfo& new_path) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    scoped_refptr<PermissionGrantImpl> self(this);
 
     if (path_info_ == new_path) {
       return;
@@ -1534,8 +1557,8 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
 
     path_info_ = new_path;
 
-    if (base::FeatureList::IsEnabled(
-            features::kFileSystemAccessPersistentPermissions)) {
+    if (context_ && base::FeatureList::IsEnabled(
+                        features::kFileSystemAccessPersistentPermissions)) {
       const std::unique_ptr<Object> object = context_->GetGrantedObject(
           origin_, PathAsPermissionKey(path_info_.path));
       if (object) {
@@ -1550,6 +1573,56 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
 
     // May destroy `this`.
     NotifyPermissionStatusChanged();
+  }
+
+ private:
+  // Re-validates the RenderFrameHost, WebContents, embedding origin, and
+  // permission request manager after exiting fullscreen mode.
+  //
+  // Exiting fullscreen mode can invoke nested modal message loops on some
+  // platforms. During these loops, events such as tab closure or navigation
+  // can asynchronously destroy the RenderFrameHost, WebContents, or the
+  // permission manager.
+  //
+  // Returns the active `FileSystemAccessPermissionRequestManager` on success,
+  // or a `PermissionRequestOutcome` error if the frame or context became
+  // invalid.
+  base::expected<FileSystemAccessPermissionRequestManager*,
+                 PermissionRequestOutcome>
+  RevalidateRequestManagerAfterFullscreenDrop(
+      content::GlobalRenderFrameHostId frame_id) const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(frame_id);
+    if (!rfh ||
+        rfh->IsInactiveAndDisallowActivation(
+            content::DisallowActivationReasonId::
+                kFileSystemAccessPermissionRequest) ||
+        rfh->IsNestedWithinFencedFrame()) {
+      return base::unexpected(PermissionRequestOutcome::kInvalidFrame);
+    }
+
+    content::WebContents* web_contents =
+        content::WebContents::FromRenderFrameHost(rfh);
+    if (!web_contents) {
+      return base::unexpected(PermissionRequestOutcome::kInvalidFrame);
+    }
+
+    url::Origin embedding_origin = url::Origin::Create(
+        permissions::PermissionUtil::GetLastCommittedOriginAsURL(
+            rfh->GetMainFrame()));
+    if (embedding_origin != origin_ ||
+        rfh->GetStorageKey().IsThirdPartyContext()) {
+      return base::unexpected(PermissionRequestOutcome::kThirdPartyContext);
+    }
+
+    auto* request_manager =
+        FileSystemAccessPermissionRequestManager::FromWebContents(web_contents);
+    if (!request_manager) {
+      return base::unexpected(PermissionRequestOutcome::kRequestAborted);
+    }
+
+    return request_manager;
   }
 
   SEQUENCE_CHECKER(sequence_checker_);

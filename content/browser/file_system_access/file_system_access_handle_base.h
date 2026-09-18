@@ -56,7 +56,7 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
   FileSystemAccessHandleBase(const FileSystemAccessHandleBase&) = delete;
   FileSystemAccessHandleBase& operator=(const FileSystemAccessHandleBase&) =
       delete;
-  ~FileSystemAccessHandleBase();
+  virtual ~FileSystemAccessHandleBase();
 
   const storage::FileSystemURL& url() const { return url_; }
   const SharedHandleState& handle_state() const { return handle_state_; }
