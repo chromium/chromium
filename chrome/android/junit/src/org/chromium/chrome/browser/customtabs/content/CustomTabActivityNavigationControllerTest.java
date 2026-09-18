@@ -11,26 +11,20 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
+import android.content.pm.ActivityInfo;
 import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.window.OnBackInvokedDispatcher;
-
-import com.google.common.collect.ImmutableList;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -41,12 +35,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.PackageManagerWrapper;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -76,40 +70,29 @@ public class CustomTabActivityNavigationControllerTest {
             new CustomTabActivityContentTestEnvironment();
 
     private CustomTabActivityNavigationController mNavigationController;
-    private TestContext mTestContext;
 
     @Mock CustomTabActivityTabController mTabController;
     @Mock FinishHandler mFinishHandler;
     @Mock OnBackInvokedDispatcher mDispatcher;
-    @Mock private PackageManager mPackageManager;
-    @Mock private ResolveInfo mResolveInfo;
     @Mock private ChromeTabbedActivity mAdjacentActivity;
 
-    class TestContext extends ContextWrapper {
-        public TestContext(Context base) {
-            super(base);
-        }
-
-        @Override
-        public PackageManager getPackageManager() {
-            return new PackageManagerWrapper(mPackageManager);
-        }
-    }
-
     @Before
-    public void setUp() throws PackageManager.NameNotFoundException {
-        Context appContext = ContextUtils.getApplicationContext();
-        // ApkInfo reads the app's own PackageInfo (e.g. via IntentUtils.intentTargetsSelf()).
-        // mPackageManager is a mock, and an unstubbed mock returns null rather than throwing
-        // NameNotFoundException, which would NPE inside ApkInfo. Delegate to the real
-        // PackageInfo so the version information matches the rest of the test environment.
-        PackageInfo appPackageInfo =
-                appContext.getPackageManager().getPackageInfo(appContext.getPackageName(), 0);
-
-        mTestContext = new TestContext(appContext);
-        ContextUtils.initApplicationContextForTests(mTestContext);
-
-        doReturn(appPackageInfo).when(mPackageManager).getPackageInfo(anyString(), anyInt());
+    public void setUp() {
+        // The "open in browser" flow checks PackageManagerUtils.canResolveActivity() for the
+        // outgoing VIEW intent, and shows an error toast if nothing handles it. Register a
+        // handler with Robolectric's PackageManager shadow so the intent resolves the way it
+        // would on a real device.
+        ResolveInfo browserResolveInfo = new ResolveInfo();
+        browserResolveInfo.activityInfo = new ActivityInfo();
+        browserResolveInfo.activityInfo.packageName = "com.test.browser";
+        browserResolveInfo.activityInfo.name = "BrowserActivity";
+        Intent browserIntent =
+                new Intent(
+                                Intent.ACTION_VIEW,
+                                Uri.parse(CustomTabActivityContentTestEnvironment.INITIAL_URL))
+                        .addCategory(Intent.CATEGORY_BROWSABLE);
+        Shadows.shadowOf(ContextUtils.getApplicationContext().getPackageManager())
+                .addResolveInfoForIntent(browserIntent, browserResolveInfo);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             when(env.activity.getOnBackInvokedDispatcher()).thenReturn(mDispatcher);
@@ -120,9 +103,6 @@ public class CustomTabActivityNavigationControllerTest {
         Tab tab = env.prepareTab();
         when(tab.getUrl()).thenReturn(new GURL("")); // avoid DomDistillerUrlUtils going to native.
         env.tabProvider.setInitialTab(tab, TabCreationMode.DEFAULT);
-        doReturn(ImmutableList.of(mResolveInfo))
-                .when(mPackageManager)
-                .queryIntentActivities(any(), anyInt());
     }
 
     // Predictive back is enabled by default on SDK 36+. Pin to older SDKs to
