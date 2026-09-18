@@ -32,6 +32,8 @@ static_library("trusted_vault") {
       "frontend_trusted_vault_connection.h",
       "legacy_standalone_trusted_vault_storage.cc",
       "legacy_standalone_trusted_vault_storage.h",
+      "legacy_standalone_trusted_vault_storage_adapter.cc",
+      "legacy_standalone_trusted_vault_storage_adapter.h",
       "physical_device_recovery_factor.cc",
       "physical_device_recovery_factor.h",
       "proto_string_bytes_conversion.cc",
@@ -99,6 +101,7 @@ if (!is_android && !is_ios) {
     testonly = true
     sources = [
       "download_keys_response_handler_unittest.cc",
+      "legacy_standalone_trusted_vault_storage_adapter_unittest.cc",
       "legacy_standalone_trusted_vault_storage_unittest.cc",
       "physical_device_recovery_factor_unittest.cc",
       "proto_string_bytes_conversion_unittest.cc",
