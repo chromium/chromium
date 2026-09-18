@@ -84,6 +84,7 @@ EditorMediator::EditorMediator(
       manta_service_(CHECK_DEREF(manta_service)),
       panel_manager_(this),
       editor_geolocation_provider_(std::move(editor_geolocation_provider)),
+      mako_bubble_coordinator_(&application_locale_storage_.get()),
       editor_context_(this, this, editor_geolocation_provider_.get()),
       editor_switch_(std::make_unique<EditorSwitch>(this,
                                                     profile,

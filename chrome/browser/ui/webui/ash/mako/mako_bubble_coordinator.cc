@@ -9,9 +9,9 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_consent_view.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_rewrite_view.h"
@@ -22,6 +22,7 @@
 #include "chrome/grit/orca_resources_map.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "content/public/common/url_constants.h"
 #include "net/base/url_util.h"
 #include "ui/base/ime/ash/ime_bridge.h"
@@ -36,27 +37,23 @@ std::string_view ToOrcaModeParamValue(MakoEditorMode mode) {
   return mode == MakoEditorMode::kWrite ? kOrcaWriteMode : kOrcaRewriteMode;
 }
 
-std::string GetSystemLocale() {
-  return g_browser_process != nullptr
-             ? g_browser_process->GetApplicationLocale()
-             : "";
-}
-
 }  // namespace
 
-MakoBubbleCoordinator::MakoBubbleCoordinator() = default;
+MakoBubbleCoordinator::MakoBubbleCoordinator(
+    const ApplicationLocaleStorage* application_locale_storage)
+    : application_locale_storage_(CHECK_DEREF(application_locale_storage)) {}
 
 MakoBubbleCoordinator::~MakoBubbleCoordinator() {
   CloseUI();
 }
 
 void MakoBubbleCoordinator::LoadConsentUI(Profile* profile) {
-  GURL url = net::AppendOrReplaceQueryParameter(GURL(kChromeUIMakoPrivacyURL),
-                                                kOrcaHostLanguageParamKey,
-                                                GetSystemLocale());
+  GURL url = net::AppendOrReplaceQueryParameter(
+      GURL(kChromeUIMakoPrivacyURL), kOrcaHostLanguageParamKey,
+      application_locale_storage_->Get());
 
   contents_wrapper_ = std::make_unique<WebUIContentsWrapperT<MakoUntrustedUI>>(
-      GURL(kChromeUIMakoPrivacyURL), profile, IDS_ACCNAME_ORCA);
+      url, profile, IDS_ACCNAME_ORCA);
   views::BubbleDialogDelegateView::CreateBubble(
       std::make_unique<MakoConsentView>(contents_wrapper_.get(),
                                         context_caret_bounds_));
@@ -81,7 +78,7 @@ void MakoBubbleCoordinator::LoadEditorUI(
   url = net::AppendOrReplaceQueryParameter(url, kOrcaFreeformParamKey,
                                            freeform_text);
   url = net::AppendOrReplaceQueryParameter(url, kOrcaHostLanguageParamKey,
-                                           GetSystemLocale());
+                                           application_locale_storage_->Get());
   url = net::AppendOrReplaceQueryParameter(url, kOrcaFeedbackEnabledParamKey,
                                            base::ToString(feedback_enabled));
   auto* magic_boost_state = chromeos::MagicBoostState::Get();

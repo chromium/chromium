@@ -8,10 +8,12 @@
 #include <optional>
 #include <string_view>
 
+#include "base/memory/raw_ref.h"
 #include "ui/gfx/geometry/rect.h"
 
-class WebUIContentsWrapper;
+class ApplicationLocaleStorage;
 class Profile;
+class WebUIContentsWrapper;
 
 namespace ash {
 
@@ -23,7 +25,9 @@ enum class MakoEditorMode {
 // Class used to manage the state of Mako WebUI bubble contents.
 class MakoBubbleCoordinator {
  public:
-  MakoBubbleCoordinator();
+  // `application_locale_storage` must not be null and must outlive `this`.
+  explicit MakoBubbleCoordinator(
+      const ApplicationLocaleStorage* application_locale_storage);
   MakoBubbleCoordinator(const MakoBubbleCoordinator&) = delete;
   MakoBubbleCoordinator& operator=(const MakoBubbleCoordinator&) = delete;
   ~MakoBubbleCoordinator();
@@ -50,6 +54,8 @@ class MakoBubbleCoordinator {
   }
 
  private:
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
+
   // Cached context caret bounds at which to anchor the mako UI. This might not
   // correspond to the most recent active text input client's caret bounds, e.g.
   // if the mako UI was triggered from a freeform text input, the cached caret
