@@ -72,7 +72,6 @@ class HTMLConstructionSite final {
   };
 
   static constexpr unsigned kMaximumHTMLParserDOMTreeDepth = 512;
-  static constexpr unsigned kObsoleteTextNodeLengthLimit = 1 << 16;
 
   HTMLConstructionSite(HTMLParserReentryPermit*,
                        Document&,

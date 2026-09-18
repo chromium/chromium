@@ -5957,14 +5957,6 @@
       public: true,
     },
     {
-      // Historically, the parser split Text nodes at ~64k boundaries. This
-      // behavior is no longer necessary; by default the parser keeps each run
-      // of text in a single Text node. Enabling this flag restores the legacy
-      // behavior of splitting Text nodes at 64k boundaries. Shipping in M151
-      // and can be removed in M153.
-      name: "SplitLargeTextNodes",
-    },
-    {
       // Splits a qualified name on its first colon, per the DOM "validate and
       // extract" algorithm, so any later colons are part of the local name.
       // See https://crbug.com/490251709

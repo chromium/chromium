@@ -7648,7 +7648,8 @@ Called by update_permissions_policy_enum.py.-->
              enabled."/>
   <int value="27" label="(Deliberately skipped due to C++/enums.xml mismatch)"/>
   <int value="28" label="Failed because a deep hierarchy was encountered."/>
-  <int value="29" label="Failed because a long text string was encountered."/>
+  <int value="29"
+      label="(Obsolete) Failed because a long text string was encountered."/>
 </enum>
 
 <enum name="InnerHTMLFastPathParserUnsupportedTagType">

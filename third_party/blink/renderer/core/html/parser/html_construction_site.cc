@@ -27,7 +27,6 @@
 #include "third_party/blink/renderer/core/html/parser/html_construction_site.h"
 
 #include <algorithm>
-#include <limits>
 
 #include "base/compiler_specific.h"
 #include "base/notreached.h"
@@ -86,7 +85,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
-#include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
@@ -128,32 +126,6 @@ static bool HasImpliedEndTag(const HTMLStackItem* item) {
     default:
       return false;
   }
-}
-
-static bool ShouldUseLengthLimit(const ContainerNode& node) {
-  DCHECK(RuntimeEnabledFeatures::SplitLargeTextNodesEnabled());
-  if (auto* html_element = DynamicTo<HTMLElement>(&node)) {
-    return !html_element->HasTagName(html_names::kScriptTag) &&
-           !html_element->HasTagName(html_names::kStyleTag);
-  }
-  return !IsA<SVGScriptElement>(node);
-}
-
-static unsigned NextTextBreakPositionForContainer(
-    const ContainerNode& node,
-    unsigned current_position,
-    unsigned string_length,
-    std::optional<unsigned>& length_limit) {
-  DCHECK(RuntimeEnabledFeatures::SplitLargeTextNodesEnabled());
-  if (string_length < HTMLConstructionSite::kObsoleteTextNodeLengthLimit) {
-    return string_length;
-  }
-  if (!length_limit) {
-    length_limit = ShouldUseLengthLimit(node)
-                       ? HTMLConstructionSite::kObsoleteTextNodeLengthLimit
-                       : std::numeric_limits<unsigned>::max();
-  }
-  return std::min(current_position + *length_limit, string_length);
 }
 
 static inline WhitespaceMode RecomputeWhiteSpaceMode(
@@ -250,15 +222,6 @@ static inline void Insert(HTMLConstructionSite::InsertionLocation location,
   }
 }
 
-static inline unsigned TextFitsInContainer(const ContainerNode& node,
-                                           unsigned length) {
-  DCHECK(RuntimeEnabledFeatures::SplitLargeTextNodesEnabled());
-  // Common case is all text fits in the default text limit. Only lookup length
-  // limit when necessary as it is costly.
-  return length < HTMLConstructionSite::kObsoleteTextNodeLengthLimit ||
-         !ShouldUseLengthLimit(node);
-}
-
 // See https://github.com/whatwg/html/pull/12709
 // Direct children of the Document or disconnected nodes cannot be removed.
 // This state can change during parser operations, e.g. by iframe pagehide
@@ -276,46 +239,6 @@ static inline bool RemoveChildIfValidForRemoval(ContainerNode* parent,
   return false;
 }
 
-// This is only needed for TextDocuments where we might have text nodes
-// approaching the default length limit (~64k) and we don't want to break a text
-// node in the middle of a combining character.
-static unsigned FindBreakIndexBetween(const StringBuilder& string,
-                                      unsigned current_position,
-                                      unsigned proposed_break_index) {
-  DCHECK_LT(current_position, proposed_break_index);
-  DCHECK_LE(proposed_break_index, string.length());
-  // The end of the string is always a valid break.
-  if (proposed_break_index == string.length()) {
-    return proposed_break_index;
-  }
-
-  // Latin-1 does not have breakable boundaries. If we ever moved to a different
-  // 8-bit encoding this could be wrong.
-  if (string.Is8Bit()) {
-    return proposed_break_index;
-  }
-
-  // We need at least two characters look-ahead to account for UTF-16
-  // surrogates, but can't search off the end of the buffer!
-  unsigned break_search_length =
-      std::min(proposed_break_index - current_position + 2,
-               string.length() - current_position);
-  CharacterBreakIterator it(
-      string.Span16().subspan(current_position, break_search_length));
-
-  if (it.IsBreak(proposed_break_index - current_position)) {
-    return proposed_break_index;
-  }
-
-  int adjusted_break_index_in_substring =
-      it.Preceding(proposed_break_index - current_position);
-  if (adjusted_break_index_in_substring > 0) {
-    return current_position + adjusted_break_index_in_substring;
-  }
-  // We failed to find a breakable point, let the caller figure out what to do.
-  return 0;
-}
-
 void HTMLConstructionSite::FlushPendingText() {
   if (pending_text_.IsEmpty()) {
     return;
@@ -330,74 +253,16 @@ void HTMLConstructionSite::FlushPendingText() {
   InsertionLocation location = AdjustInsertionLocation(
       {pending_text_.parent.Get(), pending_text_.next_child.Get()});
 
-  if (!RuntimeEnabledFeatures::SplitLargeTextNodesEnabled()) {
-    Text* child = Text::Create(
-        location.parent->GetDocument(),
-        TryCanonicalizeString(string, pending_text_.whitespace_mode));
-    Node* previous_child = location.next_child
-                               ? location.next_child->previousSibling()
-                               : location.parent->lastChild();
-    if (auto* previous_text = DynamicTo<Text>(previous_child)) {
-      previous_text->ParserAppendData(child->data());
-    } else {
-      Insert(location, child);
-    }
-    pending_text_.Discard();
-    return;
-  }
-
-  // Legacy behavior: split text nodes into smaller chunks. This contradicts the
-  // HTML5 spec, but was done for performance, see:
-  // https://bugs.webkit.org/show_bug.cgi?id=55898
-
-  // Lazily determine the line limit as it's non-trivial, and in the typical
-  // case not necessary. Note that this is faster than using a ternary operator
-  // to determine limit.
-  std::optional<unsigned> length_limit;
-
-  unsigned current_position = 0;
-  while (current_position < string.length()) {
-    unsigned proposed_break_index = NextTextBreakPositionForContainer(
-        *location.parent, current_position, string.length(), length_limit);
-    unsigned break_index =
-        FindBreakIndexBetween(string, current_position, proposed_break_index);
-    DCHECK_LE(break_index, string.length());
-    if (!break_index) {
-      // FindBreakIndexBetween returns 0 if it cannot find a breakpoint. In this
-      // case, just keep the entire string.
-      break_index = string.length();
-    }
-    unsigned substring_view_length = break_index - current_position;
-    StringView substring_view;
-    if (!current_position && substring_view_length >= string.length())
-        [[likely]] {
-      substring_view = string;
-    } else {
-      substring_view = string.SubstringView(current_position,
-                                            break_index - current_position);
-    }
-    String substring =
-        TryCanonicalizeString(substring_view, pending_text_.whitespace_mode);
-
-    DCHECK_GT(break_index, current_position);
-    DCHECK_EQ(break_index - current_position, substring.length());
-    Text* child =
-        Text::Create(location.parent->GetDocument(), std::move(substring));
-    Node* previous_child = location.next_child
-                               ? location.next_child->previousSibling()
-                               : location.parent->lastChild();
-    if (auto* previous_text = DynamicTo<Text>(previous_child)) {
-      if (TextFitsInContainer(*location.parent,
-                              previous_text->length() + child->length())) {
-        previous_text->ParserAppendData(child->data());
-      } else {
-        Insert(location, child);
-      }
-    } else {
-      Insert(location, child);
-    }
-    DCHECK_EQ(child->length(), break_index - current_position);
-    current_position = break_index;
+  Text* child = Text::Create(
+      location.parent->GetDocument(),
+      TryCanonicalizeString(string, pending_text_.whitespace_mode));
+  Node* previous_child = location.next_child
+                             ? location.next_child->previousSibling()
+                             : location.parent->lastChild();
+  if (auto* previous_text = DynamicTo<Text>(previous_child)) {
+    previous_text->ParserAppendData(child->data());
+  } else {
+    Insert(location, child);
   }
   pending_text_.Discard();
 }

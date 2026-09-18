@@ -3210,9 +3210,7 @@ void HTMLTreeBuilder::Flush() {
   // O(n^2) string copies for text documents, because they generate a single
   // <pre> with a potentially very large amount of content.
   const bool defer_text_run =
-      insertion_mode_ == kTextMode ||
-      (is_text_document_ &&
-       !RuntimeEnabledFeatures::SplitLargeTextNodesEnabled());
+      (insertion_mode_ == kTextMode) || is_text_document_;
   if (defer_text_run && DeferTreeBuilderFlushEnabled()) {
     base::TimeTicks now = base::TimeTicks::Now();
 

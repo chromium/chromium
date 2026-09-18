@@ -428,10 +428,6 @@ String ScanTextResult<UChar>::TextToString() const {
 //   events that may be fired. Allowing this could be problematic if the fast
 //   path fails. For example, the 'onload' event of an <img> would be called
 //   multiple times if parsing fails.
-// - When the SplitLargeTextNodes feature is enabled, fails if a text is
-//   encountered larger than
-//   HTMLConstructionSite::kObsoleteTextNodeLengthLimit. This requires special
-//   processing.
 // - Fails if a deep hierarchy is encountered. This is both to avoid a crash,
 //   but also at a certain depth elements get added as siblings vs children (see
 //   use of HTMLConstructionSite::kMaximumHTMLParserDOMTreeDepth).
@@ -1351,19 +1347,9 @@ class HTMLFastPathParser {
       }
       DCHECK(scanned_text.text.empty() || !scanned_text.escaped_text);
       if (!scanned_text.text.empty()) {
-        const auto text = scanned_text.text;
-        if (RuntimeEnabledFeatures::SplitLargeTextNodesEnabled() &&
-            text.size() >= HTMLConstructionSite::kObsoleteTextNodeLengthLimit) {
-          return Fail(HtmlFastPathResult::kFailedBigText);
-        }
         parent->ParserAppendChildInDocumentFragment(
             Text::Create(document_, scanned_text.TryCanonicalizeString()));
       } else if (scanned_text.escaped_text) {
-        if (RuntimeEnabledFeatures::SplitLargeTextNodesEnabled() &&
-            scanned_text.escaped_text->size() >=
-                HTMLConstructionSite::kObsoleteTextNodeLengthLimit) {
-          return Fail(HtmlFastPathResult::kFailedBigText);
-        }
         parent->ParserAppendChildInDocumentFragment(
             Text::Create(document_, scanned_text.escaped_text->AsString()));
       }

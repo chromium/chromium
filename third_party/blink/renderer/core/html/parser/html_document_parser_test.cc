@@ -25,7 +25,6 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 
@@ -286,9 +285,7 @@ TEST_P(HTMLDocumentParserTest, DeferTreeBuilderFlushDisabled) {
 TEST_P(HTMLDocumentParserTest, DeferTreeBuilderFlushInTextDocument) {
   base::test::ScopedFeatureList scoped_feature_list;
   EnableDeferTreeBuilderFlushForTest(scoped_feature_list);
-  // In-body flush deferral is active for text documents when Text-node
-  // splitting is off (the default).
-  ScopedSplitLargeTextNodesForTest split_large_text_nodes(false);
+  // In-body flush deferral is active for text documents.
   auto* parser = CreateTextDocumentParser();
   ScopedParserDetacher detacher(parser);
   Document* document = parser->GetDocument();
@@ -345,9 +342,8 @@ TEST_P(HTMLDocumentParserTest,
        DeferTreeBuilderFlushNotDeferredForHtmlDocument) {
   base::test::ScopedFeatureList scoped_feature_list;
   EnableDeferTreeBuilderFlushForTest(scoped_feature_list);
-  // Splitting is off, but in-body deferral is scoped to text documents, so an
-  // ordinary HTML document's in-body text run must not be deferred.
-  ScopedSplitLargeTextNodesForTest split_large_text_nodes(false);
+  // In-body deferral is scoped to text documents, so an ordinary HTML
+  // document's in-body text run must not be deferred.
   auto& document = To<HTMLDocument>(GetDocument());
   ASSERT_FALSE(document.IsTextDocument());
   if (document.documentElement()) {
@@ -367,35 +363,6 @@ TEST_P(HTMLDocumentParserTest,
 
   // The second chunk flushes immediately even without advancing the clock,
   // because deferral does not apply to HTML documents.
-  parser->AppendBytes(base::byte_span_from_cstring("bbb"));
-  parser->Flush();
-  task_environment().FastForwardBy(base::TimeDelta());
-
-  EXPECT_EQ("aaabbb", pre->firstChild()->nodeValue());
-}
-
-TEST_P(HTMLDocumentParserTest,
-       DeferTreeBuilderFlushInBodyDisabledWhenSplitting) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  EnableDeferTreeBuilderFlushForTest(scoped_feature_list);
-  // Even for a text document, restoring legacy 64k Text-node splitting bounds
-  // the merge cost, so in-body flush deferral is disabled.
-  ScopedSplitLargeTextNodesForTest split_large_text_nodes(true);
-  auto* parser = CreateTextDocumentParser();
-  ScopedParserDetacher detacher(parser);
-  Document* document = parser->GetDocument();
-
-  parser->AppendBytes(base::byte_span_from_cstring("aaa"));
-  parser->Flush();
-  task_environment().FastForwardBy(base::TimeDelta());
-
-  Element* pre = document->QuerySelector(AtomicString("pre"));
-  ASSERT_TRUE(pre);
-  ASSERT_TRUE(pre->firstChild());
-  EXPECT_EQ("aaa", pre->firstChild()->nodeValue());
-
-  // With splitting on, the second chunk flushes immediately even without
-  // advancing the clock.
   parser->AppendBytes(base::byte_span_from_cstring("bbb"));
   parser->Flush();
   task_environment().FastForwardBy(base::TimeDelta());
