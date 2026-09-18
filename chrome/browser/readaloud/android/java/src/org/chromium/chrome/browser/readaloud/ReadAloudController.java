@@ -923,7 +923,7 @@ public class ReadAloudController
             return;
         }
         if (ReadAloudFeatures.isNativeEnabled()) {
-            if (mNativeBridge != null) {
+            if (mNativeBridge.isInitialized()) {
                 mPendingRequests.add(urlSpecHash);
                 mNativeBridge.checkReadability(url);
             }

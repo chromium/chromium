@@ -890,6 +890,24 @@ public class ReadAloudControllerUnitTest {
 
     @Test
     @EnableFeatures(ReadAloudFeatures.READ_ALOUD_NATIVE)
+    public void testCheckReadability_nativeBridgeNotInitialized_doesNotQueuePendingRequest() {
+        when(mNativeBridgeNatives.init(any(), any())).thenReturn(0L);
+        mController.onProfileAvailable(mMockProfile);
+
+        // When the native bridge is uninitialized (pointer == 0), checkReadability should not be
+        // called and the URL hash should not be stuck in mPendingRequests.
+        mController.maybeCheckReadability(mTab);
+        verify(mNativeBridgeNatives, never()).checkReadability(anyLong(), any());
+
+        // Re-initializing with a valid native bridge pointer should now allow the request through.
+        when(mNativeBridgeNatives.init(any(), any())).thenReturn(12345L);
+        mController.onProfileAvailable(mMockProfile);
+        mController.maybeCheckReadability(mTab);
+        verify(mNativeBridgeNatives).checkReadability(eq(12345L), eq(sTestGURL));
+    }
+
+    @Test
+    @EnableFeatures(ReadAloudFeatures.READ_ALOUD_NATIVE)
     public void testOnReadabilityResult_nativeEnabled() {
         when(mNativeBridgeNatives.init(any(), any())).thenReturn(12345L);
         mController.onProfileAvailable(mMockProfile);

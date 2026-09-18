@@ -28,7 +28,9 @@ ReadAloudBridge::ReadAloudBridge(JNIEnv* env,
                                  ReadAloudService* service)
     : weak_java_native_bridge_(env, j_native_bridge), service_(service) {}
 
-ReadAloudBridge::~ReadAloudBridge() = default;
+ReadAloudBridge::~ReadAloudBridge() {
+  OnNativeDestroyed();
+}
 
 // ============================================================================
 // ReadAloudService::Delegate (Outbound Callbacks: C++ -> Java)
