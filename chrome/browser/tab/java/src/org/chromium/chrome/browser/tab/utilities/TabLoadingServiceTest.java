@@ -529,6 +529,25 @@ public class TabLoadingServiceTest {
         verify(mNavigationController, never()).setNeedsReload();
     }
 
+    @Test
+    @EnableFeatures(OPTIMIZATION_LIMIT_LOADS)
+    public void testCancelLoadIfNeeded_ActivatedTabSkipsStopLoading() {
+        configureConcurrentServiceWithMemoryGb(2);
+        setupTabForLoad(mTab, TAB_ID);
+        setupTabForLoad(mTab2, TAB_ID_2);
+        when(mTab.isActivated()).thenReturn(true);
+
+        mService.queueLoadIfNeeded(mTab);
+        mService.queueLoadIfNeeded(mTab2);
+
+        assertTrue(mService.cancelLoadIfNeeded(mTab));
+
+        verify(mTab, never()).stopLoading();
+        verify(mNavigationController, never()).setNeedsReload();
+        verify(mTab2).loadIfNeeded(true);
+        assertFalse(mService.isTabQueuedForLoad(TAB_ID));
+    }
+
     private void setupTabForLoad(Tab tab, int id) {
         when(tab.getId()).thenReturn(id);
         when(tab.loadIfNeeded(true)).thenReturn(true);

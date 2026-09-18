@@ -291,7 +291,9 @@ public class TabLoadingService {
             tab.removeObserver(sObserver);
         }
 
-        if (wasLoading && !tab.isDestroyed()) {
+        // If the tab is currently activated (in foreground), do not stop its load or mark it for
+        // reload as the user is actively viewing it.
+        if (wasLoading && !tab.isDestroyed() && !tab.isActivated()) {
             tab.stopLoading();
             WebContents webContents = tab.getWebContents();
             if (webContents != null && !webContents.isDestroyed()) {
