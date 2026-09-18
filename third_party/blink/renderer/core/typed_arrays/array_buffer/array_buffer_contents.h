@@ -156,7 +156,7 @@ class CORE_EXPORT ArrayBufferContents {
     return backing_store_;
   }
 
-  void Transfer(ArrayBufferContents& other);
+  void TransferOrCopy(ArrayBufferContents& other);
   void ShareWith(ArrayBufferContents& other);
   void ShareNonSharedForInternalUse(ArrayBufferContents& other);
   void CopyTo(ArrayBufferContents& other);

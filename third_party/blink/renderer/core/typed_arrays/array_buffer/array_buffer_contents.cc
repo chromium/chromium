@@ -153,10 +153,18 @@ void ArrayBufferContents::Reset() {
   backing_store_.reset();
 }
 
-void ArrayBufferContents::Transfer(ArrayBufferContents& other) {
+void ArrayBufferContents::TransferOrCopy(ArrayBufferContents& other) {
   DCHECK(!IsShared());
   DCHECK(!other.IsValid());
-  other.backing_store_ = std::move(backing_store_);
+  // Transfer may be done with the intent of sending the bytes to a different
+  // thread, so play it safe by reverting to copying contents if the use
+  // count indicates we're not the only user.
+  if (backing_store_.use_count() != 1) {
+    CopyTo(other);
+    backing_store_.reset();
+  } else {
+    other.backing_store_ = std::move(backing_store_);
+  }
 }
 
 void ArrayBufferContents::ShareWith(ArrayBufferContents& other) {
@@ -174,10 +182,18 @@ void ArrayBufferContents::ShareNonSharedForInternalUse(
 }
 
 void ArrayBufferContents::CopyTo(ArrayBufferContents& other) {
-  other = ArrayBufferContents(
-      DataLength(), 1, IsShared() ? kShared : kNotShared, kDontInitialize);
-  if (!IsValid() || !other.IsValid())
+  if (!IsValid()) {
+    other = ArrayBufferContents();
     return;
+  }
+  const std::optional<size_t> max_num_elements =
+      backing_store_->IsResizableByUserJavaScript()
+          ? std::make_optional(backing_store_->MaxByteLength())
+          : std::nullopt;
+  other = ArrayBufferContents(
+      DataLength(), max_num_elements, 1, IsShared() ? kShared : kNotShared,
+      kDontInitialize, ArrayBufferContents::AllocationFailureBehavior::kCrash);
+  CHECK(other.IsValid());
   other.ByteSpan().copy_from(ByteSpan());
 }
 

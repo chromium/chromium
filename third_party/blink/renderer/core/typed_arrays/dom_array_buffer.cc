@@ -157,16 +157,12 @@ v8::Maybe<bool> DOMArrayBuffer::TransferDetachable(
     return v8::Just(false);
   }
 
-  if (!Content()->IsValid()) {
-    // We transfer an empty ArrayBuffer, we can just allocate an empty content.
-    result = ArrayBufferContents(Content()->BackingStore());
-  } else {
-    Content()->Transfer(result);
-  }
-
   v8::HandleScope handle_scope(isolate);
   v8::LocalVector<v8::ArrayBuffer> buffer_handles(isolate);
 
+  // First detach all the JS wrappers, so we (likely) would be retaining the
+  // only reference to the backing store. ArrayBufferContents needs to know
+  // that to avoid an unnecessary copy.
   bool first = true;
   bool failed = false;
   ForArrayBuffersInAllWorlds(
@@ -193,6 +189,16 @@ v8::Maybe<bool> DOMArrayBuffer::TransferDetachable(
   if (failed) {
     // Propagate an exception to the caller.
     return v8::Nothing<bool>();
+  }
+
+  if (!Content()->IsValid()) {
+    // We transfer an empty ArrayBuffer, we can just allocate an empty content.
+    result = ArrayBufferContents(
+        0, 1, ArrayBufferContents::kNotShared,
+        ArrayBufferContents::kDontInitialize,
+        ArrayBufferContents::AllocationFailureBehavior::kCrash);
+  } else {
+    Content()->TransferOrCopy(result);
   }
 
   Detach();

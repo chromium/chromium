@@ -85,7 +85,7 @@ ArrayBufferContents TransferArrayBufferForSpan(
     if (!result.IsValid()) {
       // We haven't found a matching arraybuffer yet, and this one meets
       // all the criteria. It is our result.
-      contents.Transfer(result);
+      result = std::move(contents);
     }
   }
   return result;

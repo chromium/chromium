@@ -113,7 +113,7 @@ TEST(BlinkTransferableMessageStructTraitsTest,
   auto backing_store = v8_buffer->GetBackingStore();
   auto* originalContentsData = static_cast<uint8_t*>(backing_store->Data());
   {
-    ArrayBufferContents buffer_contents(backing_store);
+    ArrayBufferContents buffer_contents(std::move(backing_store));
     uint8_t i = 0;
     std::ranges::generate(buffer_contents.ByteSpan(), [&i]() { return i++; });
   }
