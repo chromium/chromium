@@ -667,9 +667,10 @@ TEST_F(ChromeWebClientTest, GetJavaScriptFeatures_ClientSideDetection) {
 TEST_F(ChromeWebClientTest, IsUniversalOptOutEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{universal_optout::features::kUniversalOptOut,
-                            universal_optout::features::
-                                kUniversalOptOutSettings},
+      /*enabled_features=*/
+      {universal_optout::features::kUniversalOptOut,
+       universal_optout::features::kUniversalOptOutExtension,
+       universal_optout::features::kUniversalOptOutSettings},
       /*disabled_features=*/{});
 
   ChromeWebClient web_client;

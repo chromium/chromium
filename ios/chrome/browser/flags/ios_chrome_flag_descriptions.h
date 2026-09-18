@@ -1893,6 +1893,11 @@ inline constexpr char kTaiyakiAllSurfacesName[] = "Taiyaki (all surfaces)";
 inline constexpr char kTaiyakiAllSurfacesDescription[] =
     "Enables Taiyaki for all surfaces (including post-FRE).";
 
+inline constexpr char kUniversalOptOutExtensionName[] =
+    "Universal Opt Out Extension";
+inline constexpr char kUniversalOptOutExtensionDescription[] =
+    "Enables the Universal Opt Out WebExtension.";
+
 inline constexpr char kUniversalOptOutSettingsName[] =
     "Universal Opt Out Settings";
 inline constexpr char kUniversalOptOutSettingsDescription[] =

@@ -2789,6 +2789,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kBrowsingHistorySimilarVisitsGroupingDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(history::kBrowsingHistorySimilarVisitsGrouping)},
+    {"universal-opt-out-extension",
+     flag_descriptions::kUniversalOptOutExtensionName,
+     flag_descriptions::kUniversalOptOutExtensionDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(universal_optout::features::kUniversalOptOutExtension)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

@@ -17,8 +17,20 @@ namespace universal_optout::features {
 // Controls the rollout of the Universal Opt-Out feature.
 BASE_DECLARE_FEATURE(kUniversalOptOut);
 
+// Controls the rollout of the Universal Opt-Out extension on supported iOS
+// versions (iOS 18.4 to 26).
+BASE_DECLARE_FEATURE(kUniversalOptOutExtension);
+
 // Feature flag for the settings page development.
 BASE_DECLARE_FEATURE(kUniversalOptOutSettings);
+
+// Returns whether the Universal Opt-Out feature is enabled.
+// On non-iOS platforms, returns `kUniversalOptOut`.
+// On iOS < 18.4, returns false.
+// On iOS >= 27, returns `kUniversalOptOut`.
+// On iOS between 18.4 and 27, returns true only if both `kUniversalOptOut` and
+// `kUniversalOptOutExtension` are enabled.
+bool IsUniversalOptOutEnabled();
 
 // Comma-separated list of target administrative area codes that are eligible
 // (e.g., "us-fl,us-tx").

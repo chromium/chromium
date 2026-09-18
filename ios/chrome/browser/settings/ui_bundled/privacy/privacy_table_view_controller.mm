@@ -114,8 +114,7 @@ bool ShouldShowUniversalOptOutSettings(PrefService* prefs) {
   return (prefs->GetBoolean(universal_optout::prefs::kUniversalOptOutEnabled) ||
           prefs->GetBoolean(
               universal_optout::prefs::kUniversalOptOutEligible)) &&
-         base::FeatureList::IsEnabled(
-             universal_optout::features::kUniversalOptOut) &&
+         universal_optout::features::IsUniversalOptOutEnabled() &&
          base::FeatureList::IsEnabled(
              universal_optout::features::kUniversalOptOutSettings);
 }

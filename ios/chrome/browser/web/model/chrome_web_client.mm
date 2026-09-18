@@ -720,8 +720,7 @@ bool ChromeWebClient::IsSmoothScrollingSupported() const {
 
 bool ChromeWebClient::IsUniversalOptOutEnabled(
     web::BrowserState* browser_state) const {
-  if (!base::FeatureList::IsEnabled(
-          universal_optout::features::kUniversalOptOut) ||
+  if (!universal_optout::features::IsUniversalOptOutEnabled() ||
       !base::FeatureList::IsEnabled(
           universal_optout::features::kUniversalOptOutSettings)) {
     return false;

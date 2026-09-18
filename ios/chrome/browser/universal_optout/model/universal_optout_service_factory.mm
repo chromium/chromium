@@ -44,7 +44,7 @@ UniversalOptOutServiceFactory::~UniversalOptOutServiceFactory() = default;
 std::unique_ptr<KeyedService>
 UniversalOptOutServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
-  if (!base::FeatureList::IsEnabled(features::kUniversalOptOut)) {
+  if (!features::IsUniversalOptOutEnabled()) {
     return nullptr;
   }
 
