@@ -9,6 +9,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/version_info/version_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::app_time {
@@ -34,12 +35,18 @@ TEST_F(ActiveTimeTest, CreateActiveTime) {
   EXPECT_EQ(start, active_time.active_from());
   EXPECT_EQ(end, active_time.active_to());
 
-  // Try to create ActiveTime with invalid ranges.
-  EXPECT_CHECK_DEATH(AppActivity::ActiveTime(start, start));
-  EXPECT_CHECK_DEATH(AppActivity::ActiveTime(end, start));
+  if (DCHECK_IS_ON() || version_info::GetMajorVersionNumberAsInt() >= 160) {
+    // Try to create ActiveTime with invalid ranges.
+    EXPECT_CHECK_DEATH(AppActivity::ActiveTime(start, start));
+    EXPECT_CHECK_DEATH(AppActivity::ActiveTime(end, start));
+  }
 }
 
 TEST_F(ActiveTimeTest, UpdateActiveTime) {
+  if (!DCHECK_IS_ON() && version_info::GetMajorVersionNumberAsInt() < 160) {
+    GTEST_SKIP() << "Not fatal until M160 in non-DCHECK builds";
+  }
+
   AppActivity::ActiveTime active_time(
       TimeFromString("11 Jan 2020 10:00:00 PST"),
       TimeFromString("11 Jan 2020 10:10:00 PST"));

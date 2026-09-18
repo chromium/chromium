@@ -7,6 +7,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
+#include "components/version_info/version_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -30,6 +31,9 @@ class ArcAppInstallPolicyDataTest : public testing::Test {
 };
 
 TEST_F(ArcAppInstallPolicyDataTest, InvalidConstruction) {
+  if (!DCHECK_IS_ON() && version_info::GetMajorVersionNumberAsInt() < 160) {
+    GTEST_SKIP() << "Not fatal until M160 in non-DCHECK builds";
+  }
   EXPECT_CHECK_DEATH({
     ArcAppInstallPolicyData policy_data_ =
         ArcAppInstallPolicyData(base::TimeTicks::Now(), {}, 0);
