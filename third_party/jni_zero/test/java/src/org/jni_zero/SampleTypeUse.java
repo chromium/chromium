@@ -27,5 +27,7 @@ public class SampleTypeUse {
         JniUniquePtr<SampleTypeDefine> makeOwned();
 
         JniRawPtr<SampleTypeDefine> makeRaw();
+
+        void useIt(JniPtr<SampleTypeDefine> ptr);
     }
 }

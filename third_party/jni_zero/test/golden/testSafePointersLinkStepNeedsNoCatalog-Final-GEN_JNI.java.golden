@@ -12,4 +12,6 @@ public class GEN_JNI {
   public static native Object org_jni_1zero_SampleTypeUse_makeOwned();
   // Hashed name: Java_J_N_MQrd9t_h
   public static native Object org_jni_1zero_SampleTypeUse_makeRaw();
+  // Hashed name: Java_J_N_MFA8vVgh
+  public static native void org_jni_1zero_SampleTypeUse_useIt(long ptr);
 }

@@ -29,6 +29,8 @@ def _return_type_cpp_mirror(java_type):
 
 
 def _param_type_cpp_non_mirror(java_type, use_const=False):
+  if java_type.is_safe_pointer():
+    return java_type.to_backend_cpp_type()
   if converted_type := java_type.converted_type:
     # Drop & when the type is obviously a pointer to avoid "const char *&".
     if not java_type.is_primitive() and not converted_type.endswith('*'):
@@ -75,6 +77,16 @@ def _prep_param(sb, param, native):
   orig_name = param.cpp_name()
   java_type = param.java_type
 
+  if java_type.is_safe_pointer():
+    assert java_type.java_class == java_types.JNI_PTR_CLASS, (
+        f'Only JniPtr is supported as a parameter in proxy native methods; '
+        f'got {java_type.java_class}.')
+    cpp_type = java_type.to_backend_cpp_type()
+    ret = f'{param.name}_converted'
+    with sb.statement():
+      sb(f'{cpp_type} {ret} = reinterpret_cast<{cpp_type}>({orig_name})')
+    return ret
+
   if java_type.converted_type:
     ret = f'{param.name}_converted'
     with sb.statement():
@@ -103,6 +115,8 @@ def _prep_param(sb, param, native):
 
 def _param_type_for_assert_message(param):
   param_type = param.java_type
+  if param_type.is_safe_pointer():
+    return param_type.to_backend_cpp_type()
   if param_type.converted_type:
     return param_type.converted_type
   if param_type.is_primitive():

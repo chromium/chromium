@@ -56,7 +56,7 @@ class NativeMethod:
     if self.is_proxy:
       class_without_prefix = java_class.class_without_prefix
       # Signature with all reference types changed to "Object".
-      self.proxy_signature = self.signature.to_proxy()
+      self.proxy_signature = self.signature.to_proxy(unwrap_safe_pointers=True)
       if self.needs_implicit_array_element_class_param:
         self.proxy_signature = proxy.add_implicit_array_element_class_param(
             self.proxy_signature)

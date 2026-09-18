@@ -453,8 +453,10 @@ class JavaParam:
   java_type: JavaType
   name: str
 
-  def to_proxy(self):
+  def to_proxy(self, *, unwrap_safe_pointers=False):
     """Converts to types used over JNI boundary."""
+    if unwrap_safe_pointers and self.java_type.is_safe_pointer():
+      return JavaParam(LONG, self.name)
     return JavaParam(self.java_type.to_proxy(), self.name)
 
   def cpp_name(self):
@@ -472,9 +474,10 @@ class JavaParamList(tuple):
   def get_types(self):
     return tuple(p.java_type for p in self)
 
-  def to_proxy(self):
+  def to_proxy(self, *, unwrap_safe_pointers=False):
     """Converts to types used over JNI boundary."""
-    return JavaParamList(p.to_proxy() for p in self)
+    return JavaParamList(
+        p.to_proxy(unwrap_safe_pointers=unwrap_safe_pointers) for p in self)
 
   def to_java_declaration(self, type_resolver=None):
     return ', '.join(
@@ -509,10 +512,11 @@ class JavaSignature:
     sb += [self.return_type.to_descriptor()]
     return ''.join(sb)
 
-  def to_proxy(self):
+  def to_proxy(self, *, unwrap_safe_pointers=False):
     """Converts to types used over JNI boundary."""
     return_type = self.return_type.to_proxy()
-    param_list = self.param_list.to_proxy()
+    param_list = self.param_list.to_proxy(
+        unwrap_safe_pointers=unwrap_safe_pointers)
     return JavaSignature.from_params(return_type, param_list)
 
 
@@ -689,6 +693,7 @@ MAP_CLASS = JavaClass('java/util/Map')
 
 JNI_PTR_CLASS = JavaClass('org/jni_zero/JniPtr')
 JNI_PTR_INNER_CLASS = JavaClass('org/jni_zero/JniPtrInner')
+JNI_ZERO_INTERNAL_CLASS = JavaClass('org/jni_zero/JniZeroInternal')
 JNI_UNIQUE_PTR_CLASS = JavaClass('org/jni_zero/JniUniquePtr')
 JNI_RAW_PTR_CLASS = JavaClass('org/jni_zero/JniRawPtr')
 
