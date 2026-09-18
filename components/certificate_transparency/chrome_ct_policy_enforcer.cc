@@ -21,7 +21,7 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "components/certificate_transparency/ct_known_logs.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "net/cert/ct_policy_status.h"
 #include "net/cert/signed_certificate_timestamp.h"
 #include "net/cert/x509_certificate.h"
@@ -153,7 +153,7 @@ CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCompliance(
 
 std::optional<base::Time> ChromeCTPolicyEnforcer::GetLogDisqualificationTime(
     std::string_view log_id) const {
-  CHECK_EQ(log_id.size(), crypto::kSHA256Length);
+  CHECK_EQ(log_id.size(), crypto::hash::kSha256Size);
 
   auto p = std::lower_bound(
       std::begin(disqualified_logs_), std::end(disqualified_logs_), log_id,

@@ -11,7 +11,7 @@
 #include <iterator>
 
 #include "base/time/time.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 
 namespace certificate_transparency {
 
@@ -40,7 +40,7 @@ std::vector<std::pair<std::string, base::Time>> GetDisqualifiedLogs() {
   std::vector<std::pair<std::string, base::Time>> result;
   for (const auto& log : kDisqualifiedCTLogList) {
     result.push_back(
-        std::make_pair(std::string(log.log_id, crypto::kSHA256Length),
+        std::make_pair(std::string(log.log_id, crypto::hash::kSha256Size),
                        log.disqualification_date));
   }
   return result;

@@ -24,7 +24,6 @@
 #include "base/values.h"
 #include "components/url_formatter/url_fixer.h"
 #include "components/url_matcher/url_matcher.h"
-#include "crypto/sha2.h"
 #include "net/base/hash_value.h"
 #include "net/base/host_port_pair.h"
 #include "net/cert/asn1_util.h"

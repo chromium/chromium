@@ -10,7 +10,6 @@
 #include <algorithm>
 
 #include "base/time/time.h"
-#include "crypto/sha2.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace certificate_transparency {
