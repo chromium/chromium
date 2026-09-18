@@ -671,6 +671,7 @@ ContextualSearchboxHandler::GetContextualSessionHandle() {
 }
 
 ContextualSearchboxHandler::~ContextualSearchboxHandler() {
+  CancelAllTabContextFetches();
   query_contextualizer_.reset();
   if (context_controller_) {
     context_controller_->RemoveObserver(this);
@@ -1140,11 +1141,31 @@ void ContextualSearchboxHandler::ContinueAddTabContext(
 
   lens::TabContextualizationController* tab_contextualization_controller =
       lens::TabContextualizationController::From(tab);
-  tab_contextualization_controller->GetPageContext(base::BindOnce(
-      &ContextualSearchboxHandler::OnGetTabPageContext,
-      weak_ptr_factory_.GetWeakPtr(), delay_upload, context_token));
+  auto* contextual_session_handle = GetContextualSessionHandle();
+  auto fetch = std::make_unique<TabContextFetch>();
+  fetch->tab_id = tab_id;
+  fetch->session = contextual_session_handle
+                       ? contextual_session_handle->AsWeakPtr()
+                       : nullptr;
+  fetch->add_tab_context_callback = std::move(callback);
+  fetch->timer.Start(
+      FROM_HERE, tab_context_fetch_timeout_,
+      base::BindOnce(&ContextualSearchboxHandler::OnTabContextFetchTimeout,
+                     weak_ptr_factory_.GetWeakPtr(), context_token));
+  pending_tab_context_fetches_.insert_or_assign(context_token,
+                                                std::move(fetch));
+  tab_contextualization_controller->GetPageContext(
+      base::BindOnce(&ContextualSearchboxHandler::OnGetTabPageContext,
+                     weak_ptr_factory_.GetWeakPtr(), delay_upload,
+                     context_token),
+      context_token);
 
-  std::move(callback).Run(base::ok(context_token));
+  auto pending_request = pending_tab_context_fetches_.find(context_token);
+  if (pending_request != pending_tab_context_fetches_.end() &&
+      pending_request->second->add_tab_context_callback) {
+    std::move(pending_request->second->add_tab_context_callback)
+        .Run(base::ok(context_token));
+  }
 }
 
 void ContextualSearchboxHandler::AddTabContext(
@@ -1713,6 +1734,7 @@ bool ContextualSearchboxHandler::ShouldOpenInLensSidePanel(
 void ContextualSearchboxHandler::DeleteContext(
     const base::UnguessableToken& context_token,
     bool from_automatic_chip) {
+  CancelTabContextFetch(context_token);
   // Delete tab underline if it exists:
   if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
     auto it = selected_tabs.find(context_token);
@@ -1818,6 +1840,7 @@ void ContextualSearchboxHandler::ClearFiles(
 void ContextualSearchboxHandler::ClearFiles(
     bool should_block_auto_suggested_tabs,
     bool query_submitted) {
+  CancelAllTabContextFetches();
   if (auto* contextual_session_handle = GetContextualSessionHandle()) {
     // Clears files if `query_submitted`=true, and if
     // `omnibox::kContextManagementInComposebox` is enabled.
@@ -2019,14 +2042,7 @@ void ContextualSearchboxHandler::OnContextUploadStatusChanged(
       contextual_search::IsTerminalContextStatus(context_upload_status) &&
       context_upload_status !=
           contextual_search::ContextUploadStatus::kUploadSuccessful) {
-    if (auto node = selected_tabs.extract(context_token)) {
-      int32_t tab_id = node.mapped();
-      if (auto* active_task_context_provider = GetActiveTaskContextProvider();
-          active_task_context_provider != nullptr) {
-        active_task_context_provider->RemoveLocalTabUnderline(
-            tabs::TabHandle(tab_id));
-      }
-    }
+    RemoveSelectedTabState(context_token);
   }
 
   // Ensure `input_state_model_` is updated when context status changes.
@@ -2168,24 +2184,121 @@ void ContextualSearchboxHandler::OnGetTabPageContext(
     bool delay_upload,
     const base::UnguessableToken& context_token,
     std::unique_ptr<lens::ContextualInputData> page_content_data) {
-  auto uploaded_context_tokens = GetUploadedContextTokens();
-  // Check if the context token is in the list of uploaded context tokens.
-  auto it = std::find(uploaded_context_tokens.begin(),
-                      uploaded_context_tokens.end(), context_token);
-  if (it == uploaded_context_tokens.end()) {
-    // Tab was deleted before the file upload flow could start.
+  auto tab_context_fetch = TakeTabContextFetch(context_token);
+  if (!tab_context_fetch) {
     return;
   }
 
-  if (delay_upload) {
-    SnapshotTabContext(context_token, std::move(page_content_data));
-  } else {
-    UploadTabContext(context_token, std::move(page_content_data));
+  auto* contextual_session_handle = tab_context_fetch->session.get();
+  const bool token_active =
+      contextual_session_handle &&
+      contextual_session_handle == GetContextualSessionHandle() &&
+      std::ranges::contains(
+          contextual_session_handle->GetUploadedContextTokens(), context_token);
+
+  if (page_content_data && token_active) {
+    if (tab_context_fetch->add_tab_context_callback) {
+      std::move(tab_context_fetch->add_tab_context_callback)
+          .Run(base::ok(context_token));
+    }
+    if (delay_upload) {
+      SnapshotTabContext(context_token, std::move(page_content_data));
+    } else {
+      UploadTabContext(context_token, std::move(page_content_data));
+    }
+    if (input_state_model_) {
+      input_state_model_->OnContextChanged();
+    }
+    return;
   }
 
-  // Ensure `input_state_model_` is updated when tab is uploaded.
+  if (contextual_session_handle) {
+    contextual_session_handle->RemoveUploadedContextToken(context_token);
+  }
+  if (!tab_context_fetch->add_tab_context_callback) {
+    ReportTabContextFetchFailure(context_token);
+    return;
+  }
+
+  RemoveSelectedTabState(context_token);
   if (input_state_model_) {
     input_state_model_->OnContextChanged();
+  }
+  std::move(tab_context_fetch->add_tab_context_callback)
+      .Run(base::unexpected(
+          contextual_search::ContextUploadErrorType::kBrowserProcessingError));
+}
+
+std::unique_ptr<ContextualSearchboxHandler::TabContextFetch>
+ContextualSearchboxHandler::TakeTabContextFetch(
+    const base::UnguessableToken& context_token) {
+  auto it = pending_tab_context_fetches_.find(context_token);
+  if (it == pending_tab_context_fetches_.end()) {
+    return nullptr;
+  }
+  auto fetch = std::move(it->second);
+  pending_tab_context_fetches_.erase(it);
+  fetch->timer.Stop();
+  return fetch;
+}
+
+void ContextualSearchboxHandler::OnTabContextFetchTimeout(
+    const base::UnguessableToken& context_token) {
+  auto fetch = TakeTabContextFetch(context_token);
+  if (!fetch) {
+    return;
+  }
+  ReleaseTabContextFetchResources(context_token, *fetch);
+  ReportTabContextFetchFailure(context_token);
+}
+
+void ContextualSearchboxHandler::CancelTabContextFetch(
+    const base::UnguessableToken& context_token) {
+  auto fetch = TakeTabContextFetch(context_token);
+  if (fetch) {
+    ReleaseTabContextFetchResources(context_token, *fetch);
+  }
+}
+
+void ContextualSearchboxHandler::CancelAllTabContextFetches() {
+  while (!pending_tab_context_fetches_.empty()) {
+    base::UnguessableToken context_token =
+        pending_tab_context_fetches_.begin()->first;
+    CancelTabContextFetch(context_token);
+  }
+}
+
+void ContextualSearchboxHandler::ReleaseTabContextFetchResources(
+    const base::UnguessableToken& context_token,
+    const TabContextFetch& fetch) {
+  auto* tab_contextualization_controller =
+      lens::TabContextualizationController::From(
+          tabs::TabHandle(fetch.tab_id).Get());
+  if (tab_contextualization_controller) {
+    tab_contextualization_controller->CancelPageContextRequest(context_token);
+  }
+  if (fetch.session) {
+    fetch.session->RemoveUploadedContextToken(context_token);
+  }
+}
+
+void ContextualSearchboxHandler::ReportTabContextFetchFailure(
+    const base::UnguessableToken& context_token) {
+  OnContextUploadStatusChanged(
+      context_token, lens::MimeType::kUnknown,
+      contextual_search::ContextUploadStatus::kUploadFailed,
+      contextual_search::ContextUploadErrorType::kBrowserProcessingError);
+}
+
+void ContextualSearchboxHandler::RemoveSelectedTabState(
+    const base::UnguessableToken& context_token) {
+  auto node = selected_tabs.extract(context_token);
+  if (node &&
+      base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
+    auto* provider = GetActiveTaskContextProvider();
+    if (provider) {
+      provider->RemoveLocalTabUnderline(tabs::TabHandle(node.mapped()));
+    }
   }
 }
 

@@ -14,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/task_runner.h"
 #include "base/timer/timer.h"
+#include "base/unguessable_token.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_bitmap_processing.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
@@ -77,6 +78,11 @@ class TabContextualizationController : public content::WebContentsObserver {
   // finishes loading.
   virtual void GetPageContext(GetPageContextCallback callback);
 
+  void GetPageContext(GetPageContextCallback callback,
+                      const base::UnguessableToken& cancellation_id);
+
+  bool CancelPageContextRequest(const base::UnguessableToken& cancellation_id);
+
   // Updates current page eligibility once received.
   void OnEligibilityChecked(bool is_page_context_eligible,
                             optimization_guide::AIPageContentResultOrError apc);
@@ -110,6 +116,12 @@ class TabContextualizationController : public content::WebContentsObserver {
       optimization_guide::AIPageContentResultOrError result);
 
  private:
+  enum class PageContextAvailability {
+    kReadyToExtract,
+    kLoading,
+    kUnavailable,
+  };
+
   // Creates the eligibility API if it has not been created.
   void CreatePageContextEligibilityAPI();
 
@@ -119,8 +131,12 @@ class TabContextualizationController : public content::WebContentsObserver {
 
   // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;
-  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
-                     const GURL& validated_url) override;
+  void DocumentOnLoadCompletedInPrimaryMainFrame() override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
+  void DidStopLoading() override;
+  void NavigationStopped() override;
+  void BeforeUnloadDialogCancelled() override;
 
   // TabInterface::WillDiscardContentsCallback:
   void WillDiscardContents(tabs::TabInterface* tab,
@@ -131,7 +147,9 @@ class TabContextualizationController : public content::WebContentsObserver {
   void WillDetach(tabs::TabInterface* tab,
                   tabs::TabInterface::DetachReason reason);
 
-  void FlushPendingPageContextCallbacks();
+  PageContextAvailability GetPageContextAvailability() const;
+  void MaybeCompleteDeferredPageContextRequests();
+  void CompleteDeferredPageContextRequests(bool should_extract);
 
   // Gets the annotated page content from the page context eligibility API.
   void GetAnnotatedPageContent(GetAnnotatedPageContentCallback callback);
@@ -191,10 +209,17 @@ class TabContextualizationController : public content::WebContentsObserver {
 
   bool is_page_context_eligible_ = false;
 
+  struct DeferredPageContextRequest {
+    std::optional<base::UnguessableToken> cancellation_id;
+    GetPageContextCallback callback;
+  };
+
   // Client supplied callbacks received for tabs that are currently loading.
   // Page content extraction is deferred until the loading completes after which
   // these callbacks will be used.
-  std::vector<GetPageContextCallback> pending_page_context_callbacks_;
+  std::vector<DeferredPageContextRequest> deferred_page_context_requests_;
+
+  std::optional<base::UnguessableToken> scoped_cancellation_id_;
 
   // Timer to flush pending page context callbacks if page load completion is
   // not received within the timeout period.

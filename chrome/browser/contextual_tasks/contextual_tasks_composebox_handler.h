@@ -219,6 +219,12 @@ class ContextualTasksComposeboxHandler
   // input state model, and the WebUI page.
   void DeactivateSmartTabSharing();
 
+  void ForwardTabContextResult(
+      const base::UnguessableToken& token,
+      AddTabContextCallback callback,
+      base::expected<base::UnguessableToken,
+                     contextual_search::ContextUploadErrorType> result);
+
   TakeInputStateModelCallback take_input_model_callback_;
   raw_ptr<contextual_tasks::ContextualTasksUIInterface> web_ui_interface_;
 

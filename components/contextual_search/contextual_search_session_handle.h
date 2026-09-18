@@ -212,6 +212,10 @@ class ContextualSearchSessionHandle {
   // and deleted.
   bool DeleteFile(const base::UnguessableToken& file_token);
 
+  // Removes the token from the list of uploaded context tokens. Returns true if
+  // the token was found and removed.
+  bool RemoveUploadedContextToken(const base::UnguessableToken& file_token);
+
   using DeselectedTabsMap = std::map<SessionID, std::pair<GURL, std::string>>;
 
   const DeselectedTabsMap& deselected_tabs_urls() const {

@@ -11,11 +11,14 @@
 #include <string>
 
 #include "base/callback_list.h"
+#include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -483,6 +486,25 @@ class ContextualSearchboxHandler
       const base::UnguessableToken& context_token,
       std::unique_ptr<lens::ContextualInputData> page_content_data);
 
+  struct TabContextFetch {
+    base::OneShotTimer timer;
+    int32_t tab_id = 0;
+    base::WeakPtr<contextual_search::ContextualSearchSessionHandle> session;
+    AddTabContextCallback add_tab_context_callback;
+  };
+
+  std::unique_ptr<TabContextFetch> TakeTabContextFetch(
+      const base::UnguessableToken& context_token);
+  void OnTabContextFetchTimeout(const base::UnguessableToken& context_token);
+  void CancelTabContextFetch(const base::UnguessableToken& context_token);
+  void CancelAllTabContextFetches();
+  void ReleaseTabContextFetchResources(
+      const base::UnguessableToken& context_token,
+      const TabContextFetch& fetch);
+  void ReportTabContextFetchFailure(
+      const base::UnguessableToken& context_token);
+  void RemoveSelectedTabState(const base::UnguessableToken& context_token);
+
   // Helper function that handles the caching of the tab context. Once it's
   // successfully cached, we notify the page that the file is uploaded.
   void SnapshotTabContext(
@@ -531,6 +553,11 @@ class ContextualSearchboxHandler
 
   // Callback to get the contextual session handle from WebUI controller.
   GetSessionHandleCallback get_session_callback_;
+
+  base::flat_map<base::UnguessableToken, std::unique_ptr<TabContextFetch>>
+      pending_tab_context_fetches_;
+
+  base::TimeDelta tab_context_fetch_timeout_ = base::Seconds(60);
 
   base::ScopedObservation<TabListInterface, TabListInterfaceObserver>
       tab_list_observation_{this};

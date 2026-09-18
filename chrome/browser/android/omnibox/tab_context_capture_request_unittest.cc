@@ -24,7 +24,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_web_contents_factory.h"
-#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
@@ -356,6 +355,12 @@ class TabContextualizationControllerTest : public testing::Test {
   }
 
  protected:
+  void StartPendingNavigation() {
+    navigation_ = content::NavigationSimulator::CreateBrowserInitiated(
+        GURL("https://example.com"), web_contents());
+    navigation_->Start();
+  }
+
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingProfile profile_;
@@ -367,10 +372,13 @@ class TabContextualizationControllerTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   ui::UnownedUserDataHost unowned_user_data_host_;
   std::unique_ptr<base::WeakPtrFactory<tabs::TabInterface>> tab_weak_factory_;
+  std::unique_ptr<content::NavigationSimulator> navigation_;
 };
 
 TEST_F(TabContextualizationControllerTest, FlushTriggeredByOverallTimeout) {
-  content::WebContentsTester::For(web_contents())->TestSetIsLoading(true);
+  StartPendingNavigation();
+  ASSERT_TRUE(web_contents()->HasUncommittedNavigationInPrimaryMainFrame());
+  ASSERT_FALSE(web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame());
 
   base::RunLoop run_loop;
   EXPECT_CALL(*controller_, FetchPageContextInternal(_))
@@ -393,20 +401,21 @@ TEST_F(TabContextualizationControllerTest, FlushTriggeredByOverallTimeout) {
 }
 
 TEST_F(TabContextualizationControllerTest,
-       DidFinishLoadFlushesAndCancelsTimer) {
-  content::WebContentsTester::For(web_contents())->TestSetIsLoading(true);
+       LoadCompletionFlushesAndCancelsTimer) {
+  StartPendingNavigation();
+  navigation_->SetKeepLoading(true);
+  navigation_->Commit();
+  ASSERT_FALSE(web_contents()->HasUncommittedNavigationInPrimaryMainFrame());
+  ASSERT_FALSE(web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame());
+  ASSERT_TRUE(web_contents()->IsLoading());
 
   EXPECT_CALL(*controller_, FetchPageContextInternal(_)).Times(1);
 
   controller_->GetPageContext(base::DoNothing());
 
-  // Simulate DidFinishLoad on the primary main frame.
-  content::RenderFrameHost* main_rfh = web_contents()->GetPrimaryMainFrame();
-  static_cast<content::WebContentsObserver*>(controller_.get())
-      ->DidFinishLoad(main_rfh, GURL("https://example.com"));
-
-  // Fast forward past the 5-second timer. FetchPageContextInternal should not
-  // be called a second time.
+  navigation_->StopLoading();
+  testing::Mock::VerifyAndClearExpectations(controller_.get());
+  EXPECT_CALL(*controller_, FetchPageContextInternal(_)).Times(0);
   task_environment()->FastForwardBy(base::Seconds(10));
 }
 
@@ -418,7 +427,9 @@ TEST_F(TabContextualizationControllerTest, OverallTimeoutRespectedFromParam) {
         {{"overall_flush_timeout_seconds", "3"}}}},
       /*disabled_features=*/{});
 
-  content::WebContentsTester::For(web_contents())->TestSetIsLoading(true);
+  StartPendingNavigation();
+  ASSERT_TRUE(web_contents()->HasUncommittedNavigationInPrimaryMainFrame());
+  ASSERT_FALSE(web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame());
 
   base::RunLoop run_loop;
   EXPECT_CALL(*controller_, FetchPageContextInternal(_))
