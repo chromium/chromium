@@ -6,8 +6,10 @@ package org.chromium.chrome.browser.tabmodel;
 
 import android.view.MotionEvent;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.widget.list_view.ListViewTouchTracker;
 import org.chromium.ui.util.MotionEventUtils;
@@ -64,5 +66,15 @@ public final class TabClosureParamsUtils {
      */
     public static boolean shouldAllowUndo(int downMotionButtonState) {
         return downMotionButtonState == MotionEventUtils.MOTION_EVENT_BUTTON_NONE;
+    }
+
+    /**
+     * Whether tab closure may dispatch {@code beforeunload} and {@code unload} handlers on this
+     * build and form factor.
+     *
+     * @return true if unload handlers may be dispatched during tab closure.
+     */
+    public static boolean areUnloadHandlersEnabled() {
+        return ChromeFeatureList.sAndroidBeforeUnloadSupport.isEnabled() && DeviceInfo.isDesktop();
     }
 }
