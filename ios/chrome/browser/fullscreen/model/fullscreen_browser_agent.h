@@ -147,9 +147,28 @@ class FullscreenBrowserAgent : public BrowserUserData<FullscreenBrowserAgent> {
                                   FullscreenModeTransitionTrigger trigger,
                                   bool animated);
 
-  // Notifies all observers of an updated state.
+  // Queues a state update for all observers and drains the queue. Requests
+  // made by observers while a broadcast is in flight are replayed once it
+  // finishes, so the observer list is never iterated reentrantly.
   void NotifyObserversOfUpdatedState(
       base::TimeDelta duration = base::TimeDelta());
+
+  // Queues a transition completion for all observers and drains the queue,
+  // with the same deferral guarantee as NotifyObserversOfUpdatedState().
+  void NotifyFullscreenDidTransition(FullscreenTransition transition);
+
+  // Broadcasts the queued notifications until none is left. Does nothing when
+  // called while a broadcast is in flight: the outermost call drains whatever
+  // the observers queued.
+  void FlushPendingNotifications();
+
+  // Runs a single WillUpdateState()/DidUpdateState() broadcast. Only called by
+  // FlushPendingNotifications().
+  void BroadcastUpdatedState(base::TimeDelta duration);
+
+  // Runs a single FullscreenDidTransition() broadcast. Only called by
+  // FlushPendingNotifications().
+  void BroadcastDidTransition(FullscreenTransition transition);
 
   // Handles the completion of the transition animation started by the
   // `generation`-th transition. Completions belonging to a superseded
@@ -157,9 +176,6 @@ class FullscreenBrowserAgent : public BrowserUserData<FullscreenBrowserAgent> {
   void AnimationDidComplete(FullscreenTransition transition,
                             int generation,
                             bool finished);
-
-  // Notifies observers of transition completion.
-  void NotifyFullscreenDidTransition(FullscreenTransition transition);
 
   // Records metrics and timing when an incremental scroll reaches a boundary.
   void RecordIncrementalScrollMetrics(CGFloat pre_scroll_top_progress,
@@ -203,6 +219,26 @@ class FullscreenBrowserAgent : public BrowserUserData<FullscreenBrowserAgent> {
   // True if the agent is currently broadcasting WillUpdateState. Used to
   // ensure AddObscuredInset() is only called a the correct time.
   bool updating_insets_ = false;
+
+  // Tracks broadcasts requested reentrantly while `notifying_observers_` is
+  // true so they can be replayed once the active broadcast unwinds.
+  struct PendingNotifications {
+    // Set when a WillUpdateState()/DidUpdateState() broadcast is pending.
+    std::optional<base::TimeDelta> state_update_duration;
+    // Set when a FullscreenDidTransition() broadcast is pending.
+    std::optional<FullscreenTransition> completed_transition;
+
+    bool HasAny() const {
+      return state_update_duration.has_value() ||
+             completed_transition.has_value();
+    }
+  };
+
+  // True while `FlushPendingNotifications()` is actively draining broadcasts.
+  bool notifying_observers_ = false;
+
+  // Queued broadcasts to drain.
+  PendingNotifications pending_notifications_;
 
   // True if an animated fullscreen transition is currently in progress.
   bool is_animating_ = false;

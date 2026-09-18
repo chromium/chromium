@@ -5,7 +5,9 @@
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 
 #import <algorithm>
+#import <utility>
 
+#import "base/auto_reset.h"
 #import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
@@ -109,6 +111,13 @@ constexpr FullscreenState SettledStateForTransition(
              ? FullscreenState::kUICollapsed
              : FullscreenState::kUIExpanded;
 }
+
+// Maximum number of observer broadcasts (state updates and transition
+// completions) drained by a single FlushPendingNotifications() call. One
+// nesting level queues at most two broadcasts, so this leaves room for the
+// state to settle before the queue is abandoned.
+constexpr int kMaxNotificationPasses = 4;
+
 }  // namespace
 
 FullscreenBrowserAgent::FullscreenBrowserAgent(Browser* browser)
@@ -315,11 +324,46 @@ void FullscreenBrowserAgent::UpdateProgressAndBroadcast(
 
 void FullscreenBrowserAgent::NotifyObserversOfUpdatedState(
     base::TimeDelta duration) {
-  // Prevent reentrant calls that can occur when layout changes or scroll
-  // events are synchronously triggered while notifying observers.
-  if (updating_insets_) {
+  pending_notifications_.state_update_duration = duration;
+  FlushPendingNotifications();
+}
+
+void FullscreenBrowserAgent::NotifyFullscreenDidTransition(
+    FullscreenTransition transition) {
+  pending_notifications_.completed_transition = transition;
+  FlushPendingNotifications();
+}
+
+void FullscreenBrowserAgent::FlushPendingNotifications() {
+  if (notifying_observers_) {
     return;
   }
+
+  base::AutoReset<bool> notifying_observers(&notifying_observers_, true);
+
+  // Draining normally converges after the queued broadcasts run, because the
+  // insets stop changing and observers stop requesting updates. The cap only
+  // exists so observers that keep invalidating each other cannot spin forever.
+  for (int pass = 0;
+       pending_notifications_.HasAny() && pass < kMaxNotificationPasses;
+       ++pass) {
+    // Always broadcast state updates before transition completion so observers
+    // see final insets/progress before FullscreenDidTransition().
+    if (auto duration = std::exchange(
+            pending_notifications_.state_update_duration, std::nullopt)) {
+      BroadcastUpdatedState(*duration);
+    } else if (auto transition = std::exchange(
+                   pending_notifications_.completed_transition, std::nullopt)) {
+      BroadcastDidTransition(*transition);
+    }
+  }
+
+  // Discard any unsettled leftovers rather than replaying them from an
+  // unrelated notification later on.
+  pending_notifications_ = {};
+}
+
+void FullscreenBrowserAgent::BroadcastUpdatedState(base::TimeDelta duration) {
   animation_duration_ = duration;
   updating_insets_ = true;
   UIEdgeInsets old_insets = insets_;
@@ -364,7 +408,7 @@ void FullscreenBrowserAgent::AnimationDidComplete(
   NotifyFullscreenDidTransition(transition);
 }
 
-void FullscreenBrowserAgent::NotifyFullscreenDidTransition(
+void FullscreenBrowserAgent::BroadcastDidTransition(
     FullscreenTransition transition) {
   for (auto& observer : observers_) {
     observer.FullscreenDidTransition(this, transition);

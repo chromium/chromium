@@ -79,6 +79,41 @@ class RangeTestFullscreenBrowserAgentObserver
   CGFloat max_;
 };
 
+// An observer that re-enters the agent from DidUpdateState(), mimicking the
+// overscroll actions fullscreen disabler that synchronously reacts to a
+// viewport inset change.
+class ReentrantFullscreenBrowserAgentObserver
+    : public FullscreenBrowserAgentObserver {
+ public:
+  explicit ReentrantFullscreenBrowserAgentObserver(
+      base::PassKey<FullscreenBrowserAgentTest> pass_key)
+      : pass_key_(pass_key) {}
+
+  void WillUpdateState(FullscreenBrowserAgent* agent) override {
+    will_update_count_++;
+  }
+
+  void DidUpdateState(FullscreenBrowserAgent* agent) override {
+    did_update_count_++;
+    if (!reenter_on_did_update_) {
+      return;
+    }
+    // Only re-enter once, so the nested update cannot recurse indefinitely if
+    // the guard regresses.
+    reenter_on_did_update_ = false;
+    agent->ExitFullscreen(pass_key_,
+                          FullscreenModeTransitionTrigger::kForcedByCode,
+                          /*animated=*/false);
+  }
+
+  bool reenter_on_did_update_ = false;
+  int will_update_count_ = 0;
+  int did_update_count_ = 0;
+
+ private:
+  base::PassKey<FullscreenBrowserAgentTest> pass_key_;
+};
+
 // Test fixture for testing FullscreenBrowserAgent class.
 class FullscreenBrowserAgentTest : public PlatformTest {
  protected:
@@ -147,6 +182,46 @@ TEST_F(FullscreenBrowserAgentTest, InvalidateInsetRange) {
   agent->RemoveObserver(&observer1);
   agent->RemoveObserver(&observer2);
   agent->RemoveObserver(&observer3);
+}
+
+// Tests that a state update requested from within a DidUpdateState()
+// notification is deferred until the in-flight notification finishes, instead
+// of iterating the observer list while an outer iteration is live.
+TEST_F(FullscreenBrowserAgentTest, DeferReentrantUpdateFromDidUpdateState) {
+  FullscreenBrowserAgent::CreateForBrowser(browser_.get());
+  FullscreenBrowserAgent* agent =
+      FullscreenBrowserAgent::FromBrowser(browser_.get());
+
+  RangeTestFullscreenBrowserAgentObserver range_observer(UIRectEdgeTop, 10.0,
+                                                         50.0);
+  ReentrantFullscreenBrowserAgentObserver reentrant_observer(PassKey());
+  agent->AddObserver(&range_observer);
+  agent->AddObserver(&reentrant_observer);
+
+  // Establish the inset range. The initial expanded state maps to the max
+  // inset, so collapsing below will change the insets and trigger
+  // DidUpdateState().
+  agent->InvalidateInsetRange();
+  ASSERT_EQ(50.0, agent->insets().top);
+
+  reentrant_observer.will_update_count_ = 0;
+  reentrant_observer.did_update_count_ = 0;
+  reentrant_observer.reenter_on_did_update_ = true;
+
+  agent->EnterFullscreen(PassKey(),
+                         FullscreenModeTransitionTrigger::kForcedByCode,
+                         /*animated=*/false);
+
+  // The collapse is broadcast first, then the ExitFullscreen() requested from
+  // DidUpdateState() is replayed, so observers end up in sync with the
+  // committed progress instead of rendering the collapsed insets.
+  EXPECT_EQ(2, reentrant_observer.will_update_count_);
+  EXPECT_EQ(2, reentrant_observer.did_update_count_);
+  EXPECT_EQ(1.0, agent->top_progress());
+  EXPECT_EQ(50.0, agent->insets().top);
+
+  agent->RemoveObserver(&range_observer);
+  agent->RemoveObserver(&reentrant_observer);
 }
 
 // Tests that SetKeyboardObscuredInset correctly overrides bottom insets.
