@@ -295,22 +295,19 @@ suite('OrganizerListSectionItemTest', () => {
       });
 
   test(
-      'forwards sliced highlight ranges to title and description elements',
+      'forwards highlight ranges to title and description elements',
       async () => {
         listItem.item = {
           title: ['Google Search', 'YouTube'],
           description: [{text: 'google.com'}, {text: '5 mins ago'}],
           highlightRanges: {
-            // "Google Search YouTube" -> "Google": [0, 6), "Search": [7, 13),
-            // "YouTube": [14, 21)
             title: [
-              {start: 0, length: 6},
-              {start: 14, length: 3},
+              [{start: 0, length: 6}],
+              [{start: 0, length: 3}],
             ],
-            // "google.com 5 mins ago" -> "google.com": [0, 10), "5 mins ago":
-            // [11, 21)
             description: [
-              {start: 0, length: 6},
+              [{start: 0, length: 6}],
+              [],
             ],
           },
         };

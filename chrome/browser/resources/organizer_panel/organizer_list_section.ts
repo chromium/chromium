@@ -8,14 +8,13 @@ import './organizer_list_section_item.js';
 import {assert} from '//resources/js/assert.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import type {SearchOptions} from '/tab_group_shared/search.js';
-import {search} from '/tab_group_shared/search.js';
 
 import {getCss} from './organizer_list_section.css.js';
 import {getHtml} from './organizer_list_section.html.js';
 import type {OrganizerListSectionClient, OrganizerListSectionDelegate} from './organizer_list_section_delegate.js';
 import type {HighlightableOrganizerListSectionItem, OrganizerListSectionItem, OrganizerListSectionItemElement} from './organizer_list_section_item.js';
-import {SEARCH_PART_SEPARATOR} from './search_utils.js';
+import type {SearchOptions} from './search_utils.js';
+import {search} from './search_utils.js';
 
 /**
  * This is the number of items in a section that are rendered before the "Show
@@ -65,31 +64,27 @@ export class OrganizerListSectionElement extends CrLitElement implements
   // has been applied and the list of items has been filtered.
   protected accessor filteredSearchQuery_: string = '';
 
-  private searchOptions_: SearchOptions<
-      HighlightableOrganizerListSectionItem<unknown>> = {
-    includeScore: true,
-    includeMatches: true,
-    ignoreLocation: false,
-    threshold: 0.0,
-    distance: 200,
-    keys:
-        [
-          {
-            name: 'title',
-            // Parts are joined with SEARCH_PART_SEPARATOR (newline) rather than
-            // a space so queries cannot match across part boundaries (e.g. the
-            // end of one title and the start of another in a split view).
-            getter: item => item.title.join(SEARCH_PART_SEPARATOR),
-            weight: 2,
-          },
-          {
-            name: 'description',
-            getter: item =>
-                item.description?.map(d => d.text).join(SEARCH_PART_SEPARATOR),
-            weight: 1,
-          },
-        ],
-  };
+  private searchOptions_:
+      SearchOptions<HighlightableOrganizerListSectionItem<unknown>> = {
+        includeScore: true,
+        includeMatches: true,
+        ignoreLocation: false,
+        threshold: 0.0,
+        distance: 200,
+        keys:
+            [
+              {
+                name: 'title',
+                getter: item => item.title,
+                weight: 2,
+              },
+              {
+                name: 'description',
+                getter: item => item.description?.map(d => d.text),
+                weight: 1,
+              },
+            ],
+      };
 
   // The panel WebUI will remain loaded but invisible when the panel is closed.
   // While invisible, the WebUI will not receive update events from the browser,

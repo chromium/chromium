@@ -21,7 +21,6 @@ import {getCss} from './organizer_list_section_item.css.js';
 import {getHtml} from './organizer_list_section_item.html.js';
 import type {OrganizerListSectionItemDescriptionElement, OrganizerListSectionItemDescriptionPart} from './organizer_list_section_item_description.js';
 import type {OrganizerListSectionItemTitleElement} from './organizer_list_section_item_title.js';
-import {sliceRangesForParts} from './search_utils.js';
 
 export type {OrganizerListSectionItemDescriptionPart};
 
@@ -85,8 +84,8 @@ export interface OrganizerListSectionItem<T> {
 // Search metadata attached to an item for highlighting matching ranges.
 export interface HighlightableItem {
   highlightRanges?: {
-    title?: Range[],
-    description?: Range[],
+    title?: Range[][],
+    description?: Range[][],
   };
 }
 
@@ -161,14 +160,12 @@ export class OrganizerListSectionItemElement extends
   }
 
   protected titleHighlightRanges_(): Range[][] {
-    return sliceRangesForParts(
-        this.item.title, this.item.highlightRanges?.title);
+    return this.item.highlightRanges?.title ?? this.item.title.map(() => []);
   }
 
   protected descriptionHighlightRanges_(): Range[][] {
-    return sliceRangesForParts(
-        this.item.description?.map(d => d.text) || [],
-        this.item.highlightRanges?.description);
+    return this.item.highlightRanges?.description ??
+        (this.item.description?.map(() => []) || []);
   }
 }
 

@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {renderHighlightedText, SEARCH_PART_SEPARATOR, sliceRangesForParts} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
-import type {Range} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
+import {renderHighlightedText, search, SearchApiProxyImpl, sliceRangesForParts} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
+import type {Range, SearchOptions} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {html, render} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
+
+import {TestSearchApiProxy} from './test_search_api_proxy.js';
 
 suite('SearchUtilsTest', () => {
   suite('renderHighlightedText', () => {
@@ -187,16 +189,70 @@ suite('SearchUtilsTest', () => {
           sliceRangesForParts(parts, ranges, ''));
     });
 
-    test('uses SEARCH_PART_SEPARATOR by default', () => {
-      // Joined string: `Google${SEARCH_PART_SEPARATOR}Search`
+    test('uses newline separator by default', () => {
+      // Joined string: "Google\nSearch"
       const parts = ['Google', 'Search'];
       const ranges: Range[] = [{start: 7, length: 6}];
       assertDeepEquals(
           [[], [{start: 0, length: 6}]],
-          sliceRangesForParts(parts, ranges, SEARCH_PART_SEPARATOR));
+          sliceRangesForParts(parts, ranges, '\n'));
       assertDeepEquals(
-          sliceRangesForParts(parts, ranges, SEARCH_PART_SEPARATOR),
+          sliceRangesForParts(parts, ranges, '\n'),
           sliceRangesForParts(parts, ranges));
+    });
+  });
+
+  suite('search', () => {
+    interface TestItem {
+      title: string[];
+      description?: string[];
+      highlightRanges?: {
+        title?: Range[][],
+        description?: Range[][],
+      };
+    }
+
+    const searchOptions: SearchOptions<TestItem> = {
+      keys: [
+        {name: 'title', getter: item => item.title, weight: 2},
+        {name: 'description', getter: item => item.description, weight: 1},
+      ],
+    };
+
+    setup(() => {
+      SearchApiProxyImpl.setInstance(new TestSearchApiProxy());
+    });
+
+    test('returns shallow copy when query is empty', async () => {
+      const items: TestItem[] = [{title: ['Google', 'Search']}];
+      const results = await search('', items, searchOptions);
+      assertDeepEquals(items, results);
+    });
+
+    test('slices highlight ranges per part for multi-part fields', async () => {
+      const items: TestItem[] = [
+        {
+          title: ['Google Search', 'YouTube'],
+          description: ['google.com', 'youtube.com'],
+        },
+      ];
+      const results = await search('You', items, searchOptions);
+      assertEquals(1, results.length);
+      assertDeepEquals(
+          [[], [{start: 0, length: 3}]], results[0]!.highlightRanges?.title);
+      assertDeepEquals(
+          [[], [{start: 0, length: 3}]],
+          results[0]!.highlightRanges?.description);
+    });
+
+    test('prevents matching across part boundaries', async () => {
+      const items: TestItem[] = [
+        {
+          title: ['Google Search', 'YouTube'],
+        },
+      ];
+      const results = await search('Search You', items, searchOptions);
+      assertEquals(0, results.length);
     });
   });
 });
