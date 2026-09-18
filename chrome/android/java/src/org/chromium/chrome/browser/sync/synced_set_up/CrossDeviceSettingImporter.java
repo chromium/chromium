@@ -765,12 +765,14 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
             prefs.put(omniboxPositionPref, localStatePrefs.getBoolean(omniboxPositionPref));
         }
 
-        PrefService userPrefs = UserPrefs.get(profile);
-        if (userPrefs != null) {
-            String allCardsPref = Pref.MAGIC_STACK_HOME_MODULE_ENABLED;
-            prefs.put(allCardsPref, userPrefs.getBoolean(allCardsPref));
-            for (String key : MODULE_TYPE_TO_USER_PREFS_KEY.values()) {
-                prefs.put(key, userPrefs.getBoolean(key));
+        if (UserPrefs.areNativePrefsLoaded(profile)) {
+            PrefService userPrefs = UserPrefs.get(profile);
+            if (userPrefs != null) {
+                String allCardsPref = Pref.MAGIC_STACK_HOME_MODULE_ENABLED;
+                prefs.put(allCardsPref, userPrefs.getBoolean(allCardsPref));
+                for (String key : MODULE_TYPE_TO_USER_PREFS_KEY.values()) {
+                    prefs.put(key, userPrefs.getBoolean(key));
+                }
             }
         }
 
@@ -1019,6 +1021,8 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
      * @param preferencesToApply The preferences to apply.
      */
     private void applyUserPrefSettings(Profile profile, Map<String, Object> preferencesToApply) {
+        if (!UserPrefs.areNativePrefsLoaded(profile)) return;
+
         PrefService userPrefs = UserPrefs.get(profile);
         if (userPrefs == null) return;
 
