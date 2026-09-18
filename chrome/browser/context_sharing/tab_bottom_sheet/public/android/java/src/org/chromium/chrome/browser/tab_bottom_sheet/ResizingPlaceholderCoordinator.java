@@ -23,6 +23,13 @@ public interface ResizingPlaceholderCoordinator {
      */
     void updateVisibleHeight(@Px int visibleHeight);
 
+    /**
+     * Notifies the coordinator whether the sheet is actively in resizing mode.
+     *
+     * @param isResizing True if resizing mode is active, false otherwise.
+     */
+    default void setIsResizing(boolean isResizing) {}
+
     /** Destroys the coordinator and cleans up any observers or resources. */
     default void destroy() {}
 }

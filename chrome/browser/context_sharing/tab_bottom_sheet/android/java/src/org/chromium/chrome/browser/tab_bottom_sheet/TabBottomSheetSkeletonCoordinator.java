@@ -97,7 +97,13 @@ public class TabBottomSheetSkeletonCoordinator implements ResizingPlaceholderCoo
     }
 
     @Override
+    public void setIsResizing(boolean isResizing) {
+        mSkeletonView.setIsResizing(isResizing);
+    }
+
+    @Override
     public void destroy() {
+        mSkeletonView.setIsResizing(false);
         mSkeletonView.removeOnLayoutChangeListener(mLayoutChangeListener);
     }
 

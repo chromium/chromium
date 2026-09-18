@@ -4,37 +4,59 @@
 
 package org.chromium.chrome.browser.tab_bottom_sheet;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.PathInterpolator;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Px;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.context_sharing.R;
+import org.chromium.ui.animation.AnimationHandler;
+import org.chromium.ui.animation.AnimationListeners;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Custom passive view displaying a skeleton loader for the Tab Bottom Sheet during WebContents
  * resize. Comprises a static peek header at the top and a skeleton group at the bottom, managing
- * default title fallback and parent clipping restoration.
+ * default title fallback, parent clipping restoration, and NTP-style staggered wave animation.
  */
 @NullMarked
 public class TabBottomSheetSkeletonView extends FrameLayout {
+    @VisibleForTesting static final int FADE_DURATION_MS = 620;
+    @VisibleForTesting static final int FADE_STAGGER_MS = 83;
+    @VisibleForTesting static final float HIGH_OPACITY = 1.0f;
+    @VisibleForTesting static final float LOW_OPACITY = 0.6f;
+
+    private static final PathInterpolator FADE_CYCLE_CURVE =
+            new PathInterpolator(0.33f, 0f, 0.83f, 0.83f);
+
+    private final AnimationHandler mAnimationHandler = new AnimationHandler();
     private @Nullable FrameLayout mHeaderContainer;
     private @Nullable ViewGroup mBottomGroup;
+    private boolean mIsResizing;
 
     /**
      * Constructor for inflating via XML with attributes.
      *
-     * @param context The Context the view is running in.
-     * @param attrs The attributes of the XML tag that is inflating the view.
+     * @param context The Android context.
+     * @param attrs The XML attributes.
      */
     public TabBottomSheetSkeletonView(Context context, @Nullable AttributeSet attrs) {
-        super(context, attrs, 0);
+        super(context, attrs);
     }
 
     @Override
@@ -65,33 +87,95 @@ public class TabBottomSheetSkeletonView extends FrameLayout {
     }
 
     /**
+     * Sets whether the sheet is actively resizing.
+     *
+     * @param isResizing True if resizing mode is active, false otherwise.
+     */
+    public void setIsResizing(boolean isResizing) {
+        if (mIsResizing != isResizing) {
+            mIsResizing = isResizing;
+            updateAnimationState();
+        }
+    }
+
+    /**
      * Sets the alpha of the bottom skeleton group.
      *
-     * @param alpha The target alpha between 0.0f and 1.0f.
+     * @param alpha The alpha value between 0.0f and 1.0f.
      */
     public void setBottomGroupAlpha(float alpha) {
         if (mBottomGroup != null && mBottomGroup.getAlpha() != alpha) {
             mBottomGroup.setAlpha(alpha);
+            updateAnimationState();
         }
     }
 
-    /** Returns the measured/laid-out height of the header container. */
-    public @Px int getHeaderHeight() {
+    private void updateAnimationState() {
+        if (mBottomGroup == null) return;
+
+        boolean shouldAnimate =
+                mIsResizing && mBottomGroup.getAlpha() > 0f && ValueAnimator.areAnimatorsEnabled();
+        if (shouldAnimate) {
+            if (!mAnimationHandler.isAnimationPresent()) {
+                mAnimationHandler.startAnimation(createWaveAnimatorSet());
+            }
+        } else {
+            mAnimationHandler.forceFinishAnimation();
+        }
+    }
+
+    @VisibleForTesting
+    AnimatorSet createWaveAnimatorSet() {
+        assert mBottomGroup != null;
+        int count = mBottomGroup.getChildCount();
+        List<Animator> animators = new ArrayList<>(count);
+        for (int i = 0; i < count; i++) {
+            View child = mBottomGroup.getChildAt(i);
+            ObjectAnimator pulse =
+                    ObjectAnimator.ofFloat(child, View.ALPHA, HIGH_OPACITY, LOW_OPACITY);
+            pulse.setStartDelay((long) i * FADE_STAGGER_MS);
+            pulse.setDuration(FADE_DURATION_MS);
+            pulse.setInterpolator(FADE_CYCLE_CURVE);
+            pulse.setRepeatCount(ValueAnimator.INFINITE);
+            pulse.setRepeatMode(ValueAnimator.REVERSE);
+            animators.add(pulse);
+        }
+
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.playTogether(animators);
+        animatorSet.addListener(AnimationListeners.onAnimationEnd(this::resetChildAlphas));
+        return animatorSet;
+    }
+
+    private void resetChildAlphas() {
+        if (mBottomGroup == null) return;
+        int count = mBottomGroup.getChildCount();
+        for (int i = 0; i < count; i++) {
+            mBottomGroup.getChildAt(i).setAlpha(HIGH_OPACITY);
+        }
+    }
+
+    /** Returns the measured height of the header container, or 0 if not laid out. */
+    @Px
+    public int getHeaderHeight() {
         return mHeaderContainer != null ? mHeaderContainer.getHeight() : 0;
     }
 
-    /** Returns the measured/laid-out height of the bottom skeleton group. */
-    public @Px int getBottomGroupHeight() {
+    /** Returns the measured height of the bottom skeleton group, or 0 if not laid out. */
+    @Px
+    public int getBottomGroupHeight() {
         return mBottomGroup != null ? mBottomGroup.getHeight() : 0;
     }
 
-    @Nullable
-    ViewGroup getBottomGroupForTesting() {
+    @Nullable ViewGroup getBottomGroupForTesting() {
         return mBottomGroup;
     }
 
-    @Nullable
-    FrameLayout getHeaderContainerForTesting() {
+    @Nullable FrameLayout getHeaderContainerForTesting() {
         return mHeaderContainer;
+    }
+
+    AnimationHandler getAnimationHandlerForTesting() {
+        return mAnimationHandler;
     }
 }

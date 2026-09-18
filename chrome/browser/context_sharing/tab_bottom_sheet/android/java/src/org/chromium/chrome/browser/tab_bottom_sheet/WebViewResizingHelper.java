@@ -184,6 +184,9 @@ public class WebViewResizingHelper {
     }
 
     private void resetInternal(boolean reattachPlaceholder) {
+        if (mPlaceholderCoordinator != null) {
+            mPlaceholderCoordinator.setIsResizing(false);
+        }
         mAnimationHandler.forceFinishAnimation();
         mResizingContainer.removeAllViews();
         if (mResizingPlaceholder != null) {
@@ -297,6 +300,9 @@ public class WebViewResizingHelper {
         mAnimationHandler.startAnimation(valueAnimator);
 
         mIsViewportSizeFixed = true;
+        if (mPlaceholderCoordinator != null) {
+            mPlaceholderCoordinator.setIsResizing(true);
+        }
 
         if (mResizingPlaceholder != null) {
             mResizingPlaceholder.setVisibility(View.VISIBLE);
@@ -308,6 +314,9 @@ public class WebViewResizingHelper {
         if (mThinWebView == null) return;
 
         mIsViewportSizeFixed = false;
+        if (mPlaceholderCoordinator != null) {
+            mPlaceholderCoordinator.setIsResizing(false);
+        }
         mAnimationHandler.forceFinishAnimation();
         boolean sizeChanged = updateBounds(/* ignoreCache= */ true);
 
