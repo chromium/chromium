@@ -890,6 +890,26 @@ TEST_F(BrowserControlsOffsetManagerTest,
 }
 
 TEST_F(BrowserControlsOffsetManagerTest,
+       MetadataShownRatioClampedDuringHeightChangeAnimation) {
+  MockBrowserControlsOffsetManagerClient client(100.0f, 0.5f, 0.5f);
+  BrowserControlsOffsetManager* manager = client.manager();
+
+  EXPECT_FLOAT_EQ(100.0f, manager->ContentTopOffset());
+  EXPECT_FLOAT_EQ(1.0f, manager->TopControlsShownRatio());
+
+  // Shrinking the height with animation initiates an animation where
+  // the initial shown ratio exceeds 1.0f (old_height / new_height = 2.0f).
+  client.SetBrowserControlsParams({50, 0, 0, 0, true, false});
+  EXPECT_TRUE(manager->HasAnimation());
+
+  // GetMetadata() must clamp the ratio to [0.0f, 1.0f].
+  BrowserControlsMetadata metadata = manager->GetMetadata();
+  EXPECT_GE(metadata.top_controls_shown_ratio, 0.0f);
+  EXPECT_LE(metadata.top_controls_shown_ratio, 1.0f);
+  EXPECT_FLOAT_EQ(1.0f, metadata.top_controls_shown_ratio);
+}
+
+TEST_F(BrowserControlsOffsetManagerTest,
        ShrinkingHeightKeepsBrowserControlsHidden) {
   MockBrowserControlsOffsetManagerClient client(100.0f, 0.5f, 0.5f);
   BrowserControlsOffsetManager* manager = client.manager();

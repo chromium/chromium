@@ -183,10 +183,12 @@ float BrowserControlsOffsetManager::BottomControlsMinHeightOffset() const {
 BrowserControlsMetadata BrowserControlsOffsetManager::GetMetadata() const {
   BrowserControlsMetadata metadata;
   metadata.top_controls_height = TopControlsHeight();
-  metadata.top_controls_shown_ratio = TopControlsShownRatio();
+  metadata.top_controls_shown_ratio =
+      std::clamp(TopControlsShownRatio(), 0.f, 1.f);
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   metadata.bottom_controls_height = BottomControlsHeight();
-  metadata.bottom_controls_shown_ratio = BottomControlsShownRatio();
+  metadata.bottom_controls_shown_ratio =
+      std::clamp(BottomControlsShownRatio(), 0.f, 1.f);
   metadata.top_controls_min_height_offset = TopControlsMinHeightOffset();
   metadata.bottom_controls_min_height_offset = BottomControlsMinHeightOffset();
   metadata.has_offset_tag =
