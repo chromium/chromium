@@ -520,10 +520,8 @@ std::pair<bool, v8::MaybeLocal<v8::String>> TrustedTypesCodeGenerationCheck(
 
   // If CSP allows eval in a Trusted Types environment ('trusted-types-eval'),
   // then pass it through.
-  if (RuntimeEnabledFeatures::TrustedTypesHTMLEnabled()) {
-    if (ContentSecurityPolicyTrustedTypesCodeGenerationCheck(context)) {
-      return {true, v8::MaybeLocal<v8::String>()};
-    }
+  if (ContentSecurityPolicyTrustedTypesCodeGenerationCheck(context)) {
+    return {true, v8::MaybeLocal<v8::String>()};
   }
 
   v8::TryCatch try_catch(isolate);
@@ -548,17 +546,15 @@ std::pair<bool, v8::MaybeLocal<v8::String>> TrustedTypesCodeGenerationCheck(
     return {false, v8::MaybeLocal<v8::String>()};
   }
 
-  if (RuntimeEnabledFeatures::TrustedTypesHTMLEnabled()) {
-    // This check implements steps 1.2.8 of
-    // https://w3c.github.io/webappsec-csp/#can-compile-strings
-    bool has_changed =
-        stringified_source !=
-        (string_or_trusted_script->IsString()
-             ? string_or_trusted_script->GetAsString()
-             : string_or_trusted_script->GetAsTrustedScript()->toString());
-    if (has_changed) {
-      return {false, v8::MaybeLocal<v8::String>()};
-    }
+  // This check implements steps 1.2.8 of
+  // https://w3c.github.io/webappsec-csp/#can-compile-strings
+  bool has_changed =
+      stringified_source !=
+      (string_or_trusted_script->IsString()
+           ? string_or_trusted_script->GetAsString()
+           : string_or_trusted_script->GetAsTrustedScript()->toString());
+  if (has_changed) {
+    return {false, v8::MaybeLocal<v8::String>()};
   }
 
   return {true, V8String(isolate, stringified_source)};

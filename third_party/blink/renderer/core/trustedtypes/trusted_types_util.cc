@@ -162,13 +162,10 @@ String GetSamplePrefix(const AtomicString& interface_name,
   if (interface_name.empty()) {
     // No interface name? Then we have no prefix to use.
   } else if (interface_name == trusted_types_names::kEval) {
-    bool is_function =
-        RuntimeEnabledFeatures::TrustedTypesHTMLEnabled()
-            ? (value.starts_with(kFunctionAnonymousPrefix) ||
-               value.starts_with(kAsyncFunctionAnonymousPrefix) ||
-               value.starts_with(kGeneratorAnonymousPrefix) ||
-               value.starts_with(kAsyncGeneratorAnonymousPrefix))
-            : value.starts_with(kFunctionAnonymousPrefix);
+    bool is_function = value.starts_with(kFunctionAnonymousPrefix) ||
+                       value.starts_with(kAsyncFunctionAnonymousPrefix) ||
+                       value.starts_with(kGeneratorAnonymousPrefix) ||
+                       value.starts_with(kAsyncGeneratorAnonymousPrefix);
     sample_prefix.Append(is_function ? trusted_types_names::kFunction
                                      : trusted_types_names::kEval);
   } else if ((interface_name == trusted_types_names::kWorker ||
@@ -365,22 +362,19 @@ String GetStringFromScriptHelper(
     return script;
   }
 
-  if (RuntimeEnabledFeatures::TrustedTypesHTMLEnabled()) {
-    // https://w3c.github.io/trusted-types/dist/spec/#require-trusted-types-for-pre-navigation-check
-    // steps 5 + 6. The spec assumes that the return value will include the
-    // "javascript:" URL designator, but our implementation assumes it's
-    // stripped. Thus we'll add the prefix here, but will return the string
-    // without.
-    if (do_javascript_url_check &&
-        !KURL(StrCat({"javascript:", result->toString()})).IsValid()) {
-      if (TrustedTypeFail(
-              kNavigateToJavascriptURLAndDefaultPolicyCreatedInvalidURL,
-              context, interface_name, property_name, exception_state,
-              script)) {
-        return String();
-      }
-      return script;
+  // https://w3c.github.io/trusted-types/dist/spec/#require-trusted-types-for-pre-navigation-check
+  // steps 5 + 6. The spec assumes that the return value will include the
+  // "javascript:" URL designator, but our implementation assumes it's
+  // stripped. Thus we'll add the prefix here, but will return the string
+  // without.
+  if (do_javascript_url_check &&
+      !KURL(StrCat({"javascript:", result->toString()})).IsValid()) {
+    if (TrustedTypeFail(
+            kNavigateToJavascriptURLAndDefaultPolicyCreatedInvalidURL, context,
+            interface_name, property_name, exception_state, script)) {
+      return String();
     }
+    return script;
   }
 
   return result->toString();

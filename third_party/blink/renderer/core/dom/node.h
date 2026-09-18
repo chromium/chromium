@@ -1184,10 +1184,8 @@ class CORE_EXPORT Node : public EventTarget {
   // removes them from their old parent (as though they had been inserted into
   // a DocumentFragment).
   static HeapVector<Member<Node>> ConvertNodeUnionsIntoNodes(
-      const ContainerNode* parent,
       const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& node_unions,
       Document& document,
-      const AtomicString& property_name,
       ExceptionState& exception_state);
 
   bool SelfOrAncestorHasDirAutoAttribute() const {

@@ -82,14 +82,6 @@ AttributeTypeVector BuildAttributeVector() {
   table.ReserveInitialCapacity(std::size(kTypeTable) +
                                std::size(kEventHandlerNames));
   for (const auto& entry : kTypeTable) {
-    // In legacy-Trusted-Types, we didn't record SVG elements properly in
-    // this function. So we can now use this to retain the old behaviour, until
-    // TrustedTypesHTML is perma-launched.
-    if (!RuntimeEnabledFeatures::TrustedTypesHTMLEnabled() &&
-        entry.element.NamespaceURI() == svg_names::kNamespaceURI) {
-      continue;
-    }
-
     // Attribute comparisons are case-insensitive, for both element and
     // attribute name. We rely on the fact that they're stored as lowercase.
     DCHECK(entry.element.LocalName().ContainsNoAsciiUpper());
@@ -135,14 +127,6 @@ AttributeTypeVector BuildPropertyVector() {
   };
   AttributeTypeVector table;
   for (const auto& entry : kTypeTable) {
-    // In legacy-Trusted-Types, we didn't record SVG elements properly in
-    // this function. So we can now use this to retain the old behaviour, until
-    // TrustedTypesHTML is perma-launched.
-    if (!RuntimeEnabledFeatures::TrustedTypesHTMLEnabled() &&
-        entry.element.NamespaceURI() == svg_names::kNamespaceURI) {
-      continue;
-    }
-
     // Elements are case-insensitive, but property names are not.
     // Properties don't have a namespace, so we're leaving that blank.
     DCHECK(entry.element.LocalName().ContainsNoAsciiUpper());
@@ -187,10 +171,9 @@ SpecificTrustedType FindEntryInAttributeTypeVector(
   // step 2, matches event handlers only against the HTML-known namespaces,
   // not against any namespace.
   //
-  // For legacy behaviour and for property type vectors, "*" should match any
-  // namespace. For attributes, it should only match HTML, SVG, and MathML.
+  // For property type vectors, "*" should match any namespace.
+  // For attributes, it should only match HTML, SVG, and MathML.
   bool matches_star_atom =
-      !RuntimeEnabledFeatures::TrustedTypesHTMLEnabled() ||
       (&attribute_type_vector == &GetPropertyTypeVector()) ||
       (element_namespace == html_names::xhtmlNamespaceURI ||
        element_namespace == svg_names::kNamespaceURI ||

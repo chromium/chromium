@@ -4919,77 +4919,27 @@ void Document::writeln(const String& text,
 }
 
 void Document::write(v8::Isolate* isolate,
-                     const Vector<String>& text,
+                     const HeapVector<Member<V8UnionStringOrTrustedHTML>>& text,
                      ExceptionState& exception_state) {
-  StringBuilder builder;
-  for (const String& string : text)
-    builder.Append(string);
-  String string =
-      TrustedTypesCheckForHTML(builder.ReleaseString(), GetExecutionContext(),
-                               trusted_types_names::kDocument,
-                               trusted_types_names::kWrite, exception_state);
-  if (exception_state.HadException())
-    return;
-
-  write(string, EnteredDOMWindow(isolate), exception_state);
-}
-
-void Document::writeln(v8::Isolate* isolate,
-                       const Vector<String>& text,
-                       ExceptionState& exception_state) {
-  StringBuilder builder;
-  for (const String& string : text)
-    builder.Append(string);
-  String string =
-      TrustedTypesCheckForHTML(builder.ReleaseString(), GetExecutionContext(),
-                               trusted_types_names::kDocument,
-                               trusted_types_names::kWriteln, exception_state);
-  if (exception_state.HadException())
-    return;
-
-  writeln(string, EnteredDOMWindow(isolate), exception_state);
-}
-
-void Document::write(v8::Isolate* isolate,
-                     TrustedHTML* text,
-                     ExceptionState& exception_state) {
-  write(text->toString(), EnteredDOMWindow(isolate), exception_state);
-}
-
-void Document::writeln(v8::Isolate* isolate,
-                       TrustedHTML* text,
-                       ExceptionState& exception_state) {
-  writeln(text->toString(), EnteredDOMWindow(isolate), exception_state);
-}
-
-void Document::write(v8::Isolate* isolate,
-                     TrustedHTML* first_text,
-                     HeapVector<Member<V8UnionStringOrTrustedHTML>> other_texts,
-                     ExceptionState& exception_state) {
-  Write(isolate, first_text, other_texts, /*line_feed*/ false, "write",
-        exception_state);
+  Write(isolate, text, /*line_feed=*/false, "write", exception_state);
 }
 
 void Document::writeln(
     v8::Isolate* isolate,
-    TrustedHTML* first_text,
-    HeapVector<Member<V8UnionStringOrTrustedHTML>> other_texts,
+    const HeapVector<Member<V8UnionStringOrTrustedHTML>>& text,
     ExceptionState& exception_state) {
-  Write(isolate, first_text, other_texts, /*line_feed*/ true, "writeln",
-        exception_state);
+  Write(isolate, text, /*line_feed=*/true, "writeln", exception_state);
 }
 
 void Document::Write(v8::Isolate* isolate,
-                     TrustedHTML* first_text,
-                     HeapVector<Member<V8UnionStringOrTrustedHTML>> other_texts,
+                     const HeapVector<Member<V8UnionStringOrTrustedHTML>>& text,
                      bool line_feed,
                      const char* sink,
                      ExceptionState& exception_state) {
   // https://html.spec.whatwg.org/#document.write(), steps 1-3:
   StringBuilder builder;
-  builder.Append(first_text->toString());
   bool is_trusted = true;
-  for (const auto& text_or_trusted : other_texts) {
+  for (const auto& text_or_trusted : text) {
     if (text_or_trusted->IsString()) {
       builder.Append(text_or_trusted->GetAsString());
       is_trusted = false;

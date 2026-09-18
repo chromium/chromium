@@ -119,17 +119,9 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     [CallWith=Isolate, CEReactions, RaisesException, MeasureAs=DocumentOpenTwoArgs] Document open(optional DOMString type = "text/html", optional DOMString replace = "");
     [CallWith=Isolate, RaisesException, MeasureAs=DocumentOpenThreeArgs] Window open(USVString url, DOMString name, DOMString features);
     [CEReactions, RaisesException] void close();
-    [CallWith=Isolate, CEReactions, RaisesException] void write(DOMString... text);
-    [CallWith=Isolate, CEReactions, RaisesException] void writeln(DOMString... text);
-
-    // TrustedTypes variants of the above.
-    [CallWith=Isolate, CEReactions, RaisesException] void write(TrustedHTML text);
-    [CallWith=Isolate, CEReactions, RaisesException] void writeln(TrustedHTML text);
-
-    // TODO(330516530): Merge all write/writeln variants, once TrustedTypesHTML
-    // is perma-enabled.
-    [CallWith=Isolate, CEReactions, RaisesException, RuntimeEnabled=TrustedTypesHTML] undefined write(TrustedHTML text1, (TrustedHTML or DOMString)... text);
-    [CallWith=Isolate, CEReactions, RaisesException, RuntimeEnabled=TrustedTypesHTML] undefined writeln(TrustedHTML text1, (TrustedHTML or DOMString)... text);
+    // https://html.spec.whatwg.org/multipage/dynamic-markup-insertion.html#dom-document-write
+    [CallWith=Isolate, CEReactions, RaisesException] void write((TrustedHTML or DOMString)... text);
+    [CallWith=Isolate, CEReactions, RaisesException] void writeln((TrustedHTML or DOMString)... text);
 
     // user interaction
     readonly attribute Window? defaultView;

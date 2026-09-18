@@ -3694,82 +3694,47 @@ const AttrNameToTrustedType& Element::GetCheckedAttributeTypes() const {
 }
 
 const std::tuple<SpecificTrustedType, const AtomicString, const AtomicString>
-Element::GetTrustedTypeDataForAttribute(const QualifiedName& q_name,
-                                        const char* legacy_sink_name) const {
+Element::GetTrustedTypeDataForAttribute(const QualifiedName& q_name) const {
   // https://w3c.github.io/trusted-types/dist/spec/#abstract-opdef-get-trusted-type-data-for-attribute
 
-  // We implement both legacy and new behaviour, guarded by TrustedTypesHTML.
-  //
-  // Once TrustedTypesHTML is perma-enabled, the second branch can be removed,
-  // as can the legacy_sink_name parameter. And the return type can become
-  // AttrNameToTrustedType::value_type.
-  if (RuntimeEnabledFeatures::TrustedTypesHTMLEnabled()) {
-    // Step 1: Let data be null. (Nothing to do; we don't set data.)
-    // Step 2: If [... conditions ...] and attribute is the name of an event
-    //         handler content attribute: [...]
-    if (q_name.NamespaceURI().IsNull() &&
-        (namespaceURI() == html_names::xhtmlNamespaceURI ||
-         namespaceURI() == svg_names::kNamespaceURI ||
-         namespaceURI() == mathml_names::kNamespaceURI) &&
-        IsTrustedTypesEventHandlerAttribute(q_name)) {
-      return {SpecificTrustedType::kScript, trusted_types_names::kElement,
-              q_name.LocalName()};
-    }
-
-    // Step 3: Find the row in the following table [...]
-    // Since there's only one namespaced, TT-relevant attribute, we'll keep
-    // namespaces out of the tables. Thus, we'll handle the one namespaced
-    // attribute separately.
-    if (!q_name.NamespaceURI().empty() &&
-        !q_name.Matches(xlink_names::kHrefAttr)) {
-      return {SpecificTrustedType::kNone, trusted_types_names::kElement,
-              q_name.LocalName()};
-    }
-    const AttrNameToTrustedType* attribute_types = &GetCheckedAttributeTypes();
-    AttrNameToTrustedType::const_iterator iter =
-        attribute_types->find(q_name.LocalName());
-
-    // Step 4: Return data. [data might be null.]
-    if (iter == attribute_types->end()) {
-      return {SpecificTrustedType::kNone, trusted_types_names::kElement,
-              q_name.LocalName()};
-    }
-    return {iter->value.first, iter->value.second, q_name.LocalName()};
-  } else {
-    // Legacy behaviour; no longer spec compliant.
-
-    // TODO(vogelheim): Once the TrustedTypesHTML flag is removed, this code
-    // also gets removed and it should be easy to change the return type back
-    // to a reference.
-    AtomicString property_name(legacy_sink_name);
-    if (!q_name.NamespaceURI().IsNull() &&
-        !SVGAnimatedHref::IsKnownAttribute(q_name)) {
-      return {SpecificTrustedType::kNone, trusted_types_names::kElement,
-              property_name};
-    }
-    const AttrNameToTrustedType* attribute_types = &GetCheckedAttributeTypes();
-    AttrNameToTrustedType::const_iterator iter =
-        attribute_types->find(q_name.LocalName());
-    if (iter != attribute_types->end()) {
-      return {iter->value.first, trusted_types_names::kElement, property_name};
-    }
-
-    if (IsTrustedTypesEventHandlerAttribute(q_name)) {
-      return {SpecificTrustedType::kScript, trusted_types_names::kElement,
-              property_name};
-    }
-
-    return {SpecificTrustedType::kNone, trusted_types_names::kElement,
-            property_name};
+  // Step 1: Let data be null. (Nothing to do; we don't set data.)
+  // Step 2: If [... conditions ...] and attribute is the name of an event
+  //         handler content attribute: [...]
+  if (q_name.NamespaceURI().IsNull() &&
+      (namespaceURI() == html_names::xhtmlNamespaceURI ||
+       namespaceURI() == svg_names::kNamespaceURI ||
+       namespaceURI() == mathml_names::kNamespaceURI) &&
+      IsTrustedTypesEventHandlerAttribute(q_name)) {
+    return {SpecificTrustedType::kScript, trusted_types_names::kElement,
+            q_name.LocalName()};
   }
+
+  // Step 3: Find the row in the following table [...]
+  // Since there's only one namespaced, TT-relevant attribute, we'll keep
+  // namespaces out of the tables. Thus, we'll handle the one namespaced
+  // attribute separately.
+  if (!q_name.NamespaceURI().empty() &&
+      !q_name.Matches(xlink_names::kHrefAttr)) {
+    return {SpecificTrustedType::kNone, trusted_types_names::kElement,
+            q_name.LocalName()};
+  }
+  const AttrNameToTrustedType* attribute_types = &GetCheckedAttributeTypes();
+  AttrNameToTrustedType::const_iterator iter =
+      attribute_types->find(q_name.LocalName());
+
+  // Step 4: Return data. [data might be null.]
+  if (iter == attribute_types->end()) {
+    return {SpecificTrustedType::kNone, trusted_types_names::kElement,
+            q_name.LocalName()};
+  }
+  return {iter->value.first, iter->value.second, q_name.LocalName()};
 }
 
 AtomicString Element::TrustedTypesCheckForAttribute(
     const QualifiedName& q_name,
     const V8TrustedType* value,
-    const char* legacy_sink_name,
     ExceptionState& exception_state) const {
-  auto data = GetTrustedTypeDataForAttribute(q_name, legacy_sink_name);
+  auto data = GetTrustedTypeDataForAttribute(q_name);
   return TrustedTypesCheckFor(std::get<0>(data), value, GetExecutionContext(),
                               std::get<1>(data), std::get<2>(data),
                               exception_state);
@@ -3778,9 +3743,8 @@ AtomicString Element::TrustedTypesCheckForAttribute(
 AtomicString Element::TrustedTypesCheckForAttribute(
     const QualifiedName& q_name,
     AtomicString value,
-    const char* legacy_sink_name,
     ExceptionState& exception_state) const {
-  auto data = GetTrustedTypeDataForAttribute(q_name, legacy_sink_name);
+  auto data = GetTrustedTypeDataForAttribute(q_name);
   return TrustedTypesCheckFor(std::get<0>(data), std::move(value),
                               GetExecutionContext(), std::get<1>(data),
                               std::get<2>(data), exception_state);
@@ -8219,7 +8183,7 @@ void Element::setAttributeNS(const AtomicString& namespace_uri,
   }
 
   AtomicString trusted_value = TrustedTypesCheckForAttribute(
-      *parsed_name, std::move(value), "setAttributeNS", exception_state);
+      *parsed_name, std::move(value), exception_state);
   if (exception_state.HadException()) {
     return;
   }
@@ -8238,7 +8202,7 @@ void Element::setAttributeNS(const AtomicString& namespace_uri,
   }
 
   AtomicString trusted_value = TrustedTypesCheckForAttribute(
-      *parsed_name, trusted_string, "setAttributeNS", exception_state);
+      *parsed_name, trusted_string, exception_state);
   if (exception_state.HadException()) {
     return;
   }
@@ -13629,9 +13593,7 @@ Element::ValidateAttributeIndex(wtf_size_t index,
   // See https://crbug.com/333739948.
 
   if (index == kNotFound) {
-    return RuntimeEnabledFeatures::TrustedTypesHTMLEnabled()
-               ? FindAttributeIndex(qname)
-               : index;
+    return FindAttributeIndex(qname);
   }
 
   // If we previously found an attribute, we must also have attribute data.
@@ -13655,58 +13617,41 @@ void Element::SetAttributeWithoutValidation(const QualifiedName& name,
 void Element::SetAttributeWithValidation(Attr* attribute,
                                          const AtomicString& value,
                                          ExceptionState& exception_state) {
-  if (RuntimeEnabledFeatures::TrustedTypesHTMLEnabled()) {
-    CHECK(attribute);
-    // Corresponds to:
-    // https://whatpr.org/dom/1268.html#set-an-existing-attribute-value
-    // Eventually: https://dom.spec.whatwg.org/#set-an-existing-attribute-value
+  CHECK(attribute);
+  // Corresponds to:
+  // https://whatpr.org/dom/1268.html#set-an-existing-attribute-value
+  // Eventually: https://dom.spec.whatwg.org/#set-an-existing-attribute-value
 
-    // Step 1: If attribute's element is null, then set attribute [...]
-    // Note: Was performed by the caller.
-    // Step 2.1: Let originalElement be attribute's element.
-    // Note: originalElement is this. We already remember that.
+  // Step 1: If attribute's element is null, then set attribute [...]
+  // Note: Was performed by the caller.
+  // Step 2.1: Let originalElement be attribute's element.
+  // Note: originalElement is this. We already remember that.
 
-    // Step 2.2: Let verifiedValue be [..] verify attribute value [...].
-    AtomicString verified_value = TrustedTypesCheckForAttribute(
-        attribute->GetQualifiedName(), value, "setAttribute", exception_state);
-    if (exception_state.HadException()) {
-      return;
-    }
-
-    // Step 2.3: If attribute’s element is null, then set attribute’s value to
-    // value, and return.
-    // Note: Step 2.2 might have changed element_.
-    // Note: Without an owner element, attribute should accept the value without
-    //       additional checking.
-    if (!attribute->ownerElement()) {
-      attribute->setValue(verified_value, ASSERT_NO_EXCEPTION);
-      return;
-    }
-
-    // Step 2.4: If attribute’s element is not originalElement, then return.
-    if (attribute->ownerElement() != this) {
-      return;
-    }
-
-    // Step 2.5: Change attribute to verifiedValue.
-    // Note: We've done all the validations here, so we can now call 'without':
-    SetAttributeWithoutValidation(attribute->GetQualifiedName(),
-                                  verified_value);
-    return;
-  }
-
-  // Legacy behaviour. To be removed once TrustedTypesHTML is perma-enabled.
-  const QualifiedName name = attribute->GetQualifiedName();
-  SynchronizeAttribute(name);
-
-  AtomicString trusted_value = TrustedTypesCheckForAttribute(
-      name, value, "setAttribute", exception_state);
+  // Step 2.2: Let verifiedValue be [..] verify attribute value [...].
+  AtomicString verified_value = TrustedTypesCheckForAttribute(
+      attribute->GetQualifiedName(), value, exception_state);
   if (exception_state.HadException()) {
     return;
   }
 
-  SetAttributeInternal(FindAttributeIndex(name), name, trusted_value,
-                       AttributeModificationReason::kDirectly);
+  // Step 2.3: If attribute’s element is null, then set attribute’s value to
+  // value, and return.
+  // Note: Step 2.2 might have changed element_.
+  // Note: Without an owner element, attribute should accept the value without
+  //       additional checking.
+  if (!attribute->ownerElement()) {
+    attribute->setValue(verified_value, ASSERT_NO_EXCEPTION);
+    return;
+  }
+
+  // Step 2.4: If attribute’s element is not originalElement, then return.
+  if (attribute->ownerElement() != this) {
+    return;
+  }
+
+  // Step 2.5: Change attribute to verifiedValue.
+  // Note: We've done all the validations here, so we can now call 'without':
+  SetAttributeWithoutValidation(attribute->GetQualifiedName(), verified_value);
 }
 
 void Element::SetSynchronizedLazyAttribute(const QualifiedName& name,
@@ -13738,7 +13683,7 @@ void Element::SetAttributeHinted(AtomicString local_name,
   if (q_name.LocalName().starts_with("on") ||
       !GetCheckedAttributeTypes().empty()) [[unlikely]] {
     value = TrustedTypesCheckForAttribute(q_name, std::move(value),
-                                          "setAttribute", exception_state);
+                                          exception_state);
     if (exception_state.HadException()) {
       return;
     }
@@ -13750,8 +13695,8 @@ void Element::SetAttributeHinted(AtomicString local_name,
     // Check whether the "real" TT check would have come to the same result.
     // Debug-only, since not running the check at all is the whole point of this
     // branch.
-    DCHECK_EQ(value, TrustedTypesCheckForAttribute(
-                         q_name, value, "setAttribute", exception_state));
+    DCHECK_EQ(value,
+              TrustedTypesCheckForAttribute(q_name, value, exception_state));
     DCHECK(!exception_state.HadException());
     DCHECK_EQ(index, ValidateAttributeIndex(index, q_name));
   }
@@ -13774,8 +13719,8 @@ void Element::SetAttributeHinted(AtomicString local_name,
 
   auto [index, q_name] =
       LookupAttributeQNameHinted(std::move(local_name), hint);
-  AtomicString value = TrustedTypesCheckForAttribute(
-      q_name, trusted_string, "setAttribute", exception_state);
+  AtomicString value =
+      TrustedTypesCheckForAttribute(q_name, trusted_string, exception_state);
   if (exception_state.HadException()) {
     return;
   }
@@ -13842,8 +13787,7 @@ ALWAYS_INLINE void Element::SetAttributeInternal(
 Attr* Element::setAttributeNode(Attr* attr_node,
                                 ExceptionState& exception_state) {
   AtomicString value = TrustedTypesCheckForAttribute(
-      attr_node->GetQualifiedName(), attr_node->value(), "setAttributeNode",
-      exception_state);
+      attr_node->GetQualifiedName(), attr_node->value(), exception_state);
   if (exception_state.HadException()) {
     return nullptr;
   }

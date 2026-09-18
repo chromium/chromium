@@ -28,28 +28,17 @@ void SVGAnimatedString::setBaseVal(const V8UnionStringOrTrustedScriptURL* value,
     case V8UnionStringOrTrustedScriptURL::ContentType::kString:
       string = value->GetAsString();
       if (ContextElement()->IsScriptElement()) {
-        // Newer updates to Trusted Types are more specific on which values to
-        // check and how to name them. Until the TrustedTypesHTML flag can be
-        // removed, we need to support both ways:
-        if (RuntimeEnabledFeatures::TrustedTypesHTMLEnabled()) {
-          // https://github.com/w3c/svgwg/pull/934
-          if (AttributeName() == svg_names::kHrefAttr ||
-              AttributeName() == xlink_names::kHrefAttr) {
-            string = TrustedTypesCheckForScriptURL(
-                string, ContextElement()->GetExecutionContext(),
-                trusted_types_names::kSVGScriptElement,
-                trusted_types_names::kHref, exception_state);
-          }
-        } else {
-          // https://w3c.github.io/trusted-types/dist/spec/#integration-with-svg
-          // (Spec is no longer current.)
+        // https://github.com/w3c/svgwg/pull/934
+        if (AttributeName() == svg_names::kHrefAttr ||
+            AttributeName() == xlink_names::kHrefAttr) {
           string = TrustedTypesCheckForScriptURL(
               string, ContextElement()->GetExecutionContext(),
-              trusted_types_names::kSVGAnimatedString,
-              trusted_types_names::kBaseVal, exception_state);
+              trusted_types_names::kSVGScriptElement,
+              trusted_types_names::kHref, exception_state);
         }
-        if (exception_state.HadException())
+        if (exception_state.HadException()) {
           return;
+        }
       }
       break;
     case V8UnionStringOrTrustedScriptURL::ContentType::kTrustedScriptURL:

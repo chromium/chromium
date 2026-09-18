@@ -521,8 +521,7 @@ class CORE_EXPORT Element : public ContainerNode {
   // Returns attributes that should be checked against Trusted Types
   virtual const AttrNameToTrustedType& GetCheckedAttributeTypes() const;
   const std::tuple<SpecificTrustedType, const AtomicString, const AtomicString>
-  GetTrustedTypeDataForAttribute(const QualifiedName& q_name,
-                                 const char* legacy_sink_name) const;
+  GetTrustedTypeDataForAttribute(const QualifiedName& q_name) const;
 
   static std::optional<QualifiedName> ParseAttributeName(
       const AtomicString& namespace_uri,
@@ -2662,11 +2661,9 @@ class CORE_EXPORT Element : public ContainerNode {
   void RemoveAttributeInternal(wtf_size_t index, AttributeModificationReason);
   AtomicString TrustedTypesCheckForAttribute(const QualifiedName&,
                                              AtomicString value,
-                                             const char* legacy_sink_name,
                                              ExceptionState&) const;
   AtomicString TrustedTypesCheckForAttribute(const QualifiedName&,
                                              const V8TrustedType* value,
-                                             const char* legacy_sink_name,
                                              ExceptionState&) const;
 
   // These Hinted versions of the functions are subtle hot path

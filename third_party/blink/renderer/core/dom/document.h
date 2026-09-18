@@ -273,7 +273,6 @@ class StyleResolver;
 class Text;
 class TransformSource;
 class TreeWalker;
-class TrustedHTML;
 class TrustedHTMLParserOptions;
 class V8DocumentReadyState;
 class V8NodeFilter;
@@ -979,19 +978,11 @@ class CORE_EXPORT Document : public ContainerNode,
   void writeln(const String& text,
                LocalDOMWindow* entered_window = nullptr,
                ExceptionState& = ASSERT_NO_EXCEPTION);
-  void write(v8::Isolate*, const Vector<String>& text, ExceptionState&);
-  void writeln(v8::Isolate*, const Vector<String>& text, ExceptionState&);
-
-  // TrustedHTML variants of the above.
-  void write(v8::Isolate*, TrustedHTML*, ExceptionState&);
-  void writeln(v8::Isolate*, TrustedHTML*, ExceptionState&);
   void write(v8::Isolate*,
-             TrustedHTML*,
-             HeapVector<Member<V8UnionStringOrTrustedHTML>>,
+             const HeapVector<Member<V8UnionStringOrTrustedHTML>>& text,
              ExceptionState&);
   void writeln(v8::Isolate*,
-               TrustedHTML*,
-               HeapVector<Member<V8UnionStringOrTrustedHTML>>,
+               const HeapVector<Member<V8UnionStringOrTrustedHTML>>& text,
                ExceptionState&);
 
   // Corresponds to https://html.spec.whatwg.org/#document-write-steps
@@ -999,8 +990,7 @@ class CORE_EXPORT Document : public ContainerNode,
   // This implements steps 1-5 of the algorithm, and calls
   // write(const String&, LocalDOMWindow*, ExceptionState&) for the remainder.
   void Write(v8::Isolate*,
-             TrustedHTML*,
-             HeapVector<Member<V8UnionStringOrTrustedHTML>>,
+             const HeapVector<Member<V8UnionStringOrTrustedHTML>>& text,
              bool line_feed,
              const char* sink,
              ExceptionState&);

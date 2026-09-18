@@ -868,69 +868,29 @@ static Node* FindViableNextSibling(
 
 static Node* NodeOrStringToNode(
     const V8UnionNodeOrStringOrTrustedScript* node_or_string,
-    Document& document,
-    bool needs_trusted_types_check,
-    const AtomicString& property_name,
-    ExceptionState& exception_state) {
-  if (!needs_trusted_types_check) {
-    // Without trusted type checks, we simply extract the string from whatever
-    // constituent type we find.
-    switch (node_or_string->GetContentType()) {
-      case V8UnionNodeOrStringOrTrustedScript::ContentType::kNode:
-        return node_or_string->GetAsNode();
-      case V8UnionNodeOrStringOrTrustedScript::ContentType::kString:
-        return Text::Create(document, node_or_string->GetAsString());
-      case V8UnionNodeOrStringOrTrustedScript::ContentType::kTrustedScript:
-        return Text::Create(document,
-                            node_or_string->GetAsTrustedScript()->toString());
-    }
-    NOTREACHED();
+    Document& document) {
+  // We simply extract the string from whatever constituent type we find.
+  switch (node_or_string->GetContentType()) {
+    case V8UnionNodeOrStringOrTrustedScript::ContentType::kNode:
+      return node_or_string->GetAsNode();
+    case V8UnionNodeOrStringOrTrustedScript::ContentType::kString:
+      return Text::Create(document, node_or_string->GetAsString());
+    case V8UnionNodeOrStringOrTrustedScript::ContentType::kTrustedScript:
+      return Text::Create(document,
+                          node_or_string->GetAsTrustedScript()->toString());
   }
-
-  // With trusted type checks, we can process trusted script or non-text nodes
-  // directly. Strings or text nodes need to be checked.
-  if (node_or_string->IsNode() && !node_or_string->GetAsNode()->IsTextNode())
-    return node_or_string->GetAsNode();
-
-  if (node_or_string->IsTrustedScript()) {
-    return Text::Create(document,
-                        node_or_string->GetAsTrustedScript()->toString());
-  }
-
-  String string_value = node_or_string->IsString()
-                            ? node_or_string->GetAsString()
-                            : node_or_string->GetAsNode()->textContent();
-
-  string_value = TrustedTypesCheckForScript(
-      string_value, document.GetExecutionContext(), trusted_types_names::kNode,
-      property_name, exception_state);
-  if (exception_state.HadException())
-    return nullptr;
-  return Text::Create(document, string_value);
 }
 
 // Converts |node_unions| from bindings into actual Nodes by converting strings
 // and script into text nodes via NodeOrStringToNode.
-// Returns nullptr if an exception was thrown.
 // static
 VectorOf<Node> Node::ConvertNodeUnionsIntoNodes(
-    const ContainerNode* parent,
     const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& node_unions,
     Document& document,
-    const AtomicString& property_name,
     ExceptionState& exception_state) {
-  bool needs_check = !RuntimeEnabledFeatures::TrustedTypesHTMLEnabled() &&
-                     IsA<HTMLScriptElement>(parent) &&
-                     document.GetExecutionContext() &&
-                     document.GetExecutionContext()->RequireTrustedTypes();
   VectorOf<Node> nodes;
   for (const auto& node_union : node_unions) {
-    Node* node = NodeOrStringToNode(node_union, document, needs_check,
-                                    property_name, exception_state);
-    if (exception_state.HadException()) {
-      nodes.clear();
-      return nodes;
-    }
+    Node* node = NodeOrStringToNode(node_union, document);
     if (node) {
       if (auto* fragment = DynamicTo<DocumentFragment>(node)) {
         NodeVector fragment_nodes;
@@ -1008,9 +968,8 @@ void Node::prepend(
     return;
   }
 
-  VectorOf<Node> node_vector = ConvertNodeUnionsIntoNodes(
-      this_node, nodes, GetDocument(), trusted_types_names::kPrepend,
-      exception_state);
+  VectorOf<Node> node_vector =
+      ConvertNodeUnionsIntoNodes(nodes, GetDocument(), exception_state);
   if (exception_state.HadException()) {
     return;
   }
@@ -1030,8 +989,7 @@ void Node::append(
   }
 
   VectorOf<Node> node_vector =
-      ConvertNodeUnionsIntoNodes(this_node, nodes, GetDocument(),
-                                 trusted_types_names::kAppend, exception_state);
+      ConvertNodeUnionsIntoNodes(nodes, GetDocument(), exception_state);
   if (exception_state.HadException()) {
     return;
   }
@@ -1046,8 +1004,7 @@ void Node::before(
     return;
   Node* viable_previous_sibling = FindViablePreviousSibling(*this, nodes);
   VectorOf<Node> node_vector =
-      ConvertNodeUnionsIntoNodes(parent, nodes, GetDocument(),
-                                 trusted_types_names::kBefore, exception_state);
+      ConvertNodeUnionsIntoNodes(nodes, GetDocument(), exception_state);
   if (exception_state.HadException()) {
     return;
   }
@@ -1066,8 +1023,7 @@ void Node::after(
     return;
   Node* viable_next_sibling = FindViableNextSibling(*this, nodes);
   VectorOf<Node> node_vector =
-      ConvertNodeUnionsIntoNodes(parent, nodes, GetDocument(),
-                                 trusted_types_names::kAfter, exception_state);
+      ConvertNodeUnionsIntoNodes(nodes, GetDocument(), exception_state);
   if (exception_state.HadException()) {
     return;
   }
@@ -1300,9 +1256,8 @@ void Node::replaceWith(
   if (!parent)
     return;
   Node* viable_next_sibling = FindViableNextSibling(*this, nodes);
-  VectorOf<Node> node_vector = ConvertNodeUnionsIntoNodes(
-      parent, nodes, GetDocument(), trusted_types_names::kReplaceWith,
-      exception_state);
+  VectorOf<Node> node_vector =
+      ConvertNodeUnionsIntoNodes(nodes, GetDocument(), exception_state);
   if (exception_state.HadException()) {
     return;
   }
@@ -1325,9 +1280,8 @@ void Node::replaceChildren(
     return;
   }
 
-  VectorOf<Node> nodes = ConvertNodeUnionsIntoNodes(
-      this_node, node_unions, GetDocument(), trusted_types_names::kReplace,
-      exception_state);
+  VectorOf<Node> nodes =
+      ConvertNodeUnionsIntoNodes(node_unions, GetDocument(), exception_state);
   if (exception_state.HadException()) {
     return;
   }
