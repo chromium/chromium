@@ -415,14 +415,17 @@ void OmniboxEverywhereHandler::SetHotkey(const std::string& hotkey_spec) {
 }
 
 void OmniboxEverywhereHandler::ShowHotkeyDropdown(
-    const gfx::Rect& anchor_bounds) {
+    const gfx::Rect& anchor_bounds,
+    ShowHotkeyDropdownCallback callback) {
   if (!web_contents_) {
+    std::move(callback).Run();
     return;
   }
 
   views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
       web_contents_->GetTopLevelNativeWindow());
   if (!widget) {
+    std::move(callback).Run();
     return;
   }
 
@@ -442,13 +445,15 @@ void OmniboxEverywhereHandler::ShowHotkeyDropdown(
       base::BindRepeating(&OmniboxEverywhereHandler::SetHotkey,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&OmniboxEverywhereHandler::OnHotkeyDropdownClosed,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void OmniboxEverywhereHandler::OnHotkeyDropdownClosed() {
+void OmniboxEverywhereHandler::OnHotkeyDropdownClosed(
+    ShowHotkeyDropdownCallback callback) {
   if (service_) {
     service_->OnHotkeyDropdownClosed();
   }
+  std::move(callback).Run();
 }
 
 void OmniboxEverywhereHandler::PushFreState() {

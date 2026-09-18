@@ -57,7 +57,8 @@ class OmniboxEverywhereHandler : public ContextualSearchboxHandler,
                    bool shift_key,
                    bool is_voice_search) override;
   void DismissFre(searchbox::mojom::FreStage stage) override;
-  void ShowHotkeyDropdown(const gfx::Rect& anchor_bounds) override;
+  void ShowHotkeyDropdown(const gfx::Rect& anchor_bounds,
+                          ShowHotkeyDropdownCallback callback) override;
   void OpenHotkeySettings() override;
   void SetHotkey(const std::string& hotkey_spec);
   void StartScreenshare(bool prefer_entire_screen,
@@ -107,7 +108,7 @@ class OmniboxEverywhereHandler : public ContextualSearchboxHandler,
 
  private:
   void OnAiModeEligibilityOrPrefChanged();
-  void OnHotkeyDropdownClosed();
+  void OnHotkeyDropdownClosed(ShowHotkeyDropdownCallback callback);
   void PushFreState();
   void PushProfileInfo();
 

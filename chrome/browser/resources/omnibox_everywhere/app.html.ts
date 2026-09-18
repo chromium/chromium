@@ -58,6 +58,7 @@ export function getHtml(this: OmniboxEverywhereAppElement) {
         ?small-loomnibox="${this.smallLoomnibox_}"
         .mode="${FreChinMode.SHORTCUT_SETUP}"
         .hotkeyTokens="${this.hotkeyTokens_}"
+        .dropdownOpen="${this.isHotkeyDropdownOpen_}"
         @show-hotkey-dropdown="${this.onFreShowHotkeyDropdown_}"
         @open-settings="${this.onFreOpenSettings_}"
         @close="${this.onFreClose_}">
@@ -70,6 +71,7 @@ export function getHtml(this: OmniboxEverywhereAppElement) {
         ?small-loomnibox="${this.smallLoomnibox_}"
         .mode="${FreChinMode.SHORTCUT_REMINDER}"
         .hotkeyTokens="${this.hotkeyTokens_}"
+        .dropdownOpen="${this.isHotkeyDropdownOpen_}"
         @show-hotkey-dropdown="${this.onFreShowHotkeyDropdown_}"
         @open-settings="${this.onFreOpenSettings_}"
         @close="${this.onFreClose_}">

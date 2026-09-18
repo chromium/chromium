@@ -329,6 +329,7 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
   showHotkeyDropdown(
       anchorBounds: {x: number, y: number, width: number, height: number}) {
     this.methodCalled('showHotkeyDropdown', {anchorBounds});
+    return Promise.resolve();
   }
 
   openHotkeySettings() {

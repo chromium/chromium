@@ -2623,6 +2623,69 @@ suite('OmniboxEverywhereAppTest', () => {
 
         assertEquals(1, testProxy.handler.getCallCount('onEscapePressed'));
       });
+
+  test(
+      'hotkey dropdown open state prevents blur from removing is-active',
+      async () => {
+        window.dispatchEvent(new Event('focus'));
+        await microtasksFinished();
+        assertTrue(app.hasAttribute('is-active'));
+
+        const nativeHasFocus = document.hasFocus;
+        document.hasFocus = () => false;
+
+        try {
+          testProxy.page.setFreState({
+            stage: FreStage.kShortcutSetupChin,
+            currentHotkeyTokens: ['Alt', 'Space'],
+          });
+          await microtasksFinished();
+
+          const setupChin = app.shadowRoot?.querySelector<FreChinElement>(
+              '#freShortcutSetupChin');
+          assertTrue(!!setupChin);
+
+          const dropdownTrigger =
+              setupChin.shadowRoot?.querySelector<HTMLElement>(
+                  '.dropdown-trigger');
+          assertTrue(!!dropdownTrigger);
+          assertEquals('false', dropdownTrigger.getAttribute('aria-expanded'));
+
+          let resolveDropdown: () => void;
+          testProxy.handler.showHotkeyDropdown = () =>
+              new Promise<void>((resolve) => {
+                resolveDropdown = resolve;
+              });
+
+          dropdownTrigger.click();
+          await microtasksFinished();
+
+          assertEquals('true', dropdownTrigger.getAttribute('aria-expanded'));
+
+          // Blur while dropdown is open does not remove is-active.
+          window.dispatchEvent(new Event('blur'));
+          await microtasksFinished();
+          assertTrue(app.hasAttribute('is-active'));
+
+          // Dropdown closes.
+          resolveDropdown!();
+          await microtasksFinished();
+
+          // After settling, inactive state applies because document does not
+          // have focus.
+          await new Promise(resolve => setTimeout(resolve, 0));
+          await app.updateComplete;
+          assertFalse(app.hasAttribute('is-active'));
+          assertEquals('false', dropdownTrigger.getAttribute('aria-expanded'));
+
+          // Focus restores is-active.
+          window.dispatchEvent(new Event('focus'));
+          await microtasksFinished();
+          assertTrue(app.hasAttribute('is-active'));
+        } finally {
+          document.hasFocus = nativeHasFocus;
+        }
+      });
 });
 
 suite('OmniboxEverywhereProfileIconTest', () => {
