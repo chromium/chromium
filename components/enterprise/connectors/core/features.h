@@ -49,6 +49,14 @@ BASE_DECLARE_FEATURE(kEnableDownloadEnterpriseScanOnClank);
 // Controls whether cancellation of uploads is enabled for content analysis.
 BASE_DECLARE_FEATURE(kEnableCancelUploadOnContentAnalysis);
 
+// Controls whether a user cancelling a content analysis scan immediately stops
+// in-progress file opening and hashing, instead of only stopping it when the
+// request handler is torn down. The teardown path blocks the UI thread inside
+// base::JobHandle::Cancel() until in-progress reads finish; signalling
+// cancellation at click time lets those workers unwind on their own so nothing
+// has to wait.
+BASE_DECLARE_FEATURE(kNonBlockingFileOpeningJobCancel);
+
 // Controls whether the audit-only network request connector policy will be
 // applied if set.
 BASE_DECLARE_FEATURE(kEnableAuditOnlyNetworkRequestConnector);

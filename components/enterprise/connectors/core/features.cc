@@ -45,6 +45,11 @@ BASE_FEATURE(kEnableDownloadEnterpriseScanOnClank,
 BASE_FEATURE(kEnableCancelUploadOnContentAnalysis,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether a user cancelling a content analysis scan immediately stops
+// in-progress file opening and hashing. See features.h for details.
+BASE_FEATURE(kNonBlockingFileOpeningJobCancel,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnableAuditOnlyNetworkRequestConnector,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
