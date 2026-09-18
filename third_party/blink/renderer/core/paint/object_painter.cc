@@ -124,8 +124,10 @@ void ObjectPainter::PaintAllPhasesAtomically(const PaintInfo& paint_info) {
   PaintInfo info(paint_info);
   info.phase = PaintPhase::kBlockBackground;
   layout_object_.Paint(info);
-  info.phase = PaintPhase::kForcedColorsModeBackplate;
-  layout_object_.Paint(info);
+  if (layout_object_.GetDocument().InForcedColorsMode()) {
+    info.phase = PaintPhase::kForcedColorsModeBackplate;
+    layout_object_.Paint(info);
+  }
   info.phase = PaintPhase::kFloat;
   layout_object_.Paint(info);
   info.phase = PaintPhase::kForeground;

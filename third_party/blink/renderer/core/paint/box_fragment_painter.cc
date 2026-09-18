@@ -1827,8 +1827,10 @@ void BoxFragmentPainter::PaintAllPhasesAtomically(const PaintInfo& paint_info) {
   local_paint_info.phase = PaintPhase::kBlockBackground;
   PaintInternal(local_paint_info);
 
-  local_paint_info.phase = PaintPhase::kForcedColorsModeBackplate;
-  PaintInternal(local_paint_info);
+  if (box_fragment_.GetDocument().InForcedColorsMode()) {
+    local_paint_info.phase = PaintPhase::kForcedColorsModeBackplate;
+    PaintInternal(local_paint_info);
+  }
 
   local_paint_info.phase = PaintPhase::kFloat;
   PaintInternal(local_paint_info);
