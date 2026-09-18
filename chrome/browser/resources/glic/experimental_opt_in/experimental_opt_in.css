@@ -19,6 +19,10 @@ html {
   width: auto !important;
 }
 
+#dialogRoot {
+  outline: none;
+}
+
 .panel:not([hidden]) {
   display: flex;
 }
@@ -119,6 +123,11 @@ html.android,
 html.android body {
   height: 100% !important;
   width: 100% !important;
+}
+
+html.android #dialogRoot {
+  height: 100%;
+  width: 100%;
 }
 
 html.android .panel {

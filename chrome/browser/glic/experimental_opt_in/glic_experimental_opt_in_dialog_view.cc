@@ -6,7 +6,10 @@
 
 #include <memory>
 
+#include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_ui.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -24,6 +27,7 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view_class_properties.h"
@@ -79,15 +83,15 @@ GlicExperimentalOptInDialogView::GlicExperimentalOptInDialogView(
   SetModalType(ui::mojom::ModalType::kChild);
   set_esc_should_cancel_dialog_override(true);
 
-  if (base::FeatureList::IsEnabled(features::kGlicOptInDialogA11yFix)) {
-    SetAccessibleWindowRole(ax::mojom::Role::kDialog);
-    SetAccessibleTitle(
-        l10n_util::GetStringUTF16(IDS_GLIC_EXPERIMENTAL_OPT_IN_TITLE));
-  }
-
   auto web_view = std::make_unique<GlicWebView>(profile, tab_interface);
   web_view_ = web_view.get();
   web_view->SetProperty(views::kElementIdentifierKey, kDialogElementId);
+
+  if (base::FeatureList::IsEnabled(features::kGlicOptInDialogA11yFix)) {
+    SetAccessibleTitle(
+        l10n_util::GetStringUTF16(IDS_GLIC_EXPERIMENTAL_OPT_IN_TITLE));
+    SetInitiallyFocusedView(web_view_);
+  }
 
   RequiredExperimentalOptIn required_state =
       RequiredExperimentalOptIn::kExperimental;
@@ -103,22 +107,26 @@ GlicExperimentalOptInDialogView::GlicExperimentalOptInDialogView(
       (required_state == RequiredExperimentalOptIn::kExperimental)
           ? kGlicExperimentalOptInDefaultHeightExperimental
           : kGlicExperimentalOptInDefaultHeightGlic);
-  web_view->SetPreferredSize(initial_size);
+  web_view_->SetPreferredSize(initial_size);
 
   // Create WebContents for the webview.
   auto web_contents =
       content::WebContents::Create(content::WebContents::CreateParams(profile));
+
+  if (base::FeatureList::IsEnabled(features::kGlicOptInDialogA11yFix)) {
+    Observe(web_contents.get());
+  }
 
   // Load the experimental opt-in WebUI.
   web_contents->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(
           GURL(chrome::kChromeUIGlicExperimentalOptInURL)));
 
-  web_view->SetOwnedWebContents(std::move(web_contents));
+  web_view_->SetOwnedWebContents(std::move(web_contents));
 
   // Enable auto-resizing from content, with min size as initial size and a max
   // size.
-  web_view->EnableSizingFromWebContents(
+  web_view_->EnableSizingFromWebContents(
       gfx::Size(kGlicExperimentalOptInDefaultWidth, 200),
       gfx::Size(kGlicExperimentalOptInDefaultWidth, 800));
 
@@ -132,10 +140,25 @@ views::WebView* GlicExperimentalOptInDialogView::GetWebViewForTesting() {
   return web_view_;
 }
 
+void GlicExperimentalOptInDialogView::
+    DocumentOnLoadCompletedInPrimaryMainFrame() {
+  if (!base::FeatureList::IsEnabled(features::kGlicOptInDialogA11yFix)) {
+    return;
+  }
+  if (web_view_) {
+    web_view_->RequestFocus();
+  }
+}
+
 void GlicExperimentalOptInDialogView::OnViewAddedToWidget(
     views::View* observed_view) {
   if (observed_view != web_view_) {
     return;
+  }
+
+  if (base::FeatureList::IsEnabled(features::kGlicOptInDialogA11yFix) &&
+      GetWidget() && !widget_observation_.IsObserving()) {
+    widget_observation_.Observe(GetWidget());
   }
 
   // Apply rounded corners to the NativeViewHost to prevent WebUI content
@@ -147,16 +170,42 @@ void GlicExperimentalOptInDialogView::OnViewAddedToWidget(
 void GlicExperimentalOptInDialogView::OnViewIsDeleting(
     views::View* observed_view) {
   if (observed_view == web_view_) {
+    Observe(nullptr);
     view_observation_.Reset();
     web_view_ = nullptr;
   }
 }
 
-views::View* GlicExperimentalOptInDialogView::GetInitiallyFocusedView() {
-  if (base::FeatureList::IsEnabled(features::kGlicOptInDialogA11yFix)) {
-    return GetContentsView();
+void GlicExperimentalOptInDialogView::OnWidgetVisibilityChanged(
+    views::Widget* widget,
+    bool visible) {
+  if (!visible || title_announced_) {
+    return;
   }
-  return views::DialogDelegate::GetInitiallyFocusedView();
+
+  // Announce asynchronously: TabDialogManager shows and then activates the
+  // widget synchronously, so posting a task lets the window finish becoming
+  // the active window before the title is announced.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&GlicExperimentalOptInDialogView::AnnounceAccessibleTitle,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void GlicExperimentalOptInDialogView::OnWidgetDestroying(
+    views::Widget* widget) {
+  widget_observation_.Reset();
+}
+
+void GlicExperimentalOptInDialogView::AnnounceAccessibleTitle() {
+  if (title_announced_ || !web_view_ || !GetWidget() ||
+      !GetWidget()->IsVisible()) {
+    return;
+  }
+
+  title_announced_ = true;
+  web_view_->GetViewAccessibility().AnnounceAlert(
+      l10n_util::GetStringUTF16(IDS_GLIC_EXPERIMENTAL_OPT_IN_TITLE));
 }
 
 }  // namespace glic
