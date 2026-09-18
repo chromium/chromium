@@ -305,8 +305,7 @@ void BackGestureEventHandler::OnTouchEvent(ui::TouchEvent* event) {
 }
 
 const std::string& BackGestureEventHandler::GetName() const {
-  static const std::string name("BackGestureEventHandler");
-  return name;
+  return name_;
 }
 
 base::WeakPtr<ui::GestureConsumer> BackGestureEventHandler::GetWeakPtr() {

@@ -178,6 +178,8 @@ class ASH_EXPORT WindowRestoreController
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       windows_observation_{this};
 
+  SaveWindowCallback save_window_callback_for_testing_;
+
   base::WeakPtrFactory<WindowRestoreController> weak_ptr_factory_{this};
 };
 

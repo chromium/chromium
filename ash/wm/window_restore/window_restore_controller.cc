@@ -47,10 +47,6 @@ namespace {
 
 WindowRestoreController* g_instance = nullptr;
 
-// Callback for testing which is run when `SaveWindowImpl()` triggers a write to
-// file.
-WindowRestoreController::SaveWindowCallback g_save_window_callback_for_testing;
-
 // The list of possible app window parents.
 constexpr ShellWindowId kAppParentContainers[19] = {
     kShellWindowId_DeskContainerA,       kShellWindowId_DeskContainerB,
@@ -535,8 +531,9 @@ void WindowRestoreController::SaveWindowImpl(
       BuildWindowInfo(window, activation_index, mru_windows);
   ::full_restore::SaveWindowInfo(*window_info);
 
-  if (g_save_window_callback_for_testing)
-    g_save_window_callback_for_testing.Run(*window_info);
+  if (save_window_callback_for_testing_) {
+    save_window_callback_for_testing_.Run(*window_info);
+  }
 }
 
 void WindowRestoreController::RestoreStateTypeAndClearLaunchedKey(
@@ -630,7 +627,7 @@ void WindowRestoreController::CancelAndRemoveRestorePropertyClearCallback(
 
 void WindowRestoreController::SetSaveWindowCallbackForTesting(
     SaveWindowCallback callback) {
-  g_save_window_callback_for_testing = std::move(callback);
+  save_window_callback_for_testing_ = std::move(callback);
 }
 
 }  // namespace ash

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
 #include <utility>
 
 #include "ash/birch/birch_item.h"
@@ -1721,9 +1722,9 @@ struct LayoutTestParams {
   gfx::Size display_size;
   ShelfAlignment shelf_alignment;
   //  Expected birch bar bounds with 1 to 4 chips in landscape mode.
-  std::vector<gfx::Rect> expected_landscape_bounds;
+  std::array<gfx::Rect, 4> expected_landscape_bounds;
   // Expected birch bar bounds with 1 to 4 chips in portrait mode.
-  std::vector<gfx::Rect> expected_portrait_bounds;
+  std::array<gfx::Rect, 4> expected_portrait_bounds;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1764,7 +1765,7 @@ class BirchBarLayoutTest
       scoped_internal_display_id_;
 };
 
-const LayoutTestParams kLayoutTestParams[] = {
+constexpr LayoutTestParams kLayoutTestParams[] = {
     // The narrow display whose shorter side can only hold up to 2 chips.
     {/*display_size=*/gfx::Size(1080, 640),
      ShelfAlignment::kBottom,

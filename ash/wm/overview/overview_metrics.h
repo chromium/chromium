@@ -75,7 +75,7 @@ inline constexpr char kExitOverviewPresentationHistogram[] =
 inline constexpr char kOverviewDelayedDeskBarPresentationHistogram[] =
     "Ash.Overview.DelayedDeskBar.PresentationTime";
 
-const ui::PresentationTimeRecorder::BucketParams&
+ui::PresentationTimeRecorder::BucketParams
 GetOverviewPresentationTimeBucketParams();
 
 // Returns metric name with format:

@@ -127,6 +127,8 @@ class BackGestureEventHandler : public display::DisplayObserver,
   // whether back gesture should be shown.
   bool should_wait_for_touch_ack_ = false;
 
+  const std::string name_ = "BackGestureEventHandler";
+
   base::WeakPtrFactory<BackGestureEventHandler> weak_ptr_factory_{this};
 };
 

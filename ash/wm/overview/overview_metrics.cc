@@ -27,11 +27,10 @@ void RecordOverviewEndAction(OverviewEndAction type) {
   UMA_HISTOGRAM_ENUMERATION(kOverviewEndActionHistogram, type);
 }
 
-const ui::PresentationTimeRecorder::BucketParams&
+ui::PresentationTimeRecorder::BucketParams
 GetOverviewPresentationTimeBucketParams() {
-  static const ui::PresentationTimeRecorder::BucketParams kParams(
+  return ui::PresentationTimeRecorder::BucketParams(
       base::Milliseconds(20), base::Seconds(30), 100);
-  return kParams;
 }
 
 const char* GetOverviewEnterPresentationTimeMetricName(

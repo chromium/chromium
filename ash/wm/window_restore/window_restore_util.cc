@@ -48,7 +48,7 @@ namespace ash {
 
 namespace {
 
-base::FilePath informed_restore_image_path_for_test_;
+base::FilePath* g_informed_restore_image_path_for_test = nullptr;
 
 // If `use_screen` is true we convert to screen coordinates, otherwise we
 // convert to root window coordinates.
@@ -269,8 +269,9 @@ void GetFaviconForUrl(const std::string& page_url,
 }
 
 base::FilePath GetInformedRestoreImagePath() {
-  if (!informed_restore_image_path_for_test_.empty()) {
-    return informed_restore_image_path_for_test_;
+  if (g_informed_restore_image_path_for_test &&
+      !g_informed_restore_image_path_for_test->empty()) {
+    return *g_informed_restore_image_path_for_test;
   }
   base::FilePath home_dir;
   CHECK(base::PathService::Get(base::DIR_HOME, &home_dir));
@@ -278,7 +279,9 @@ base::FilePath GetInformedRestoreImagePath() {
 }
 
 void SetInformedRestoreImagePathForTest(const base::FilePath& path) {
-  informed_restore_image_path_for_test_ = path;
+  delete g_informed_restore_image_path_for_test;
+  g_informed_restore_image_path_for_test =
+      path.empty() ? nullptr : new base::FilePath(path);
 }
 
 }  // namespace ash
