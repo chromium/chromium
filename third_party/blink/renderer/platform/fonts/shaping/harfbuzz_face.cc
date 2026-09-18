@@ -238,6 +238,70 @@ static hb_bool_t HarfBuzzGetNominalGlyph(hb_font_t* hb_font,
   return HarfBuzzGetGlyph(hb_font, font_data, unicode, 0, glyph, user_data);
 }
 
+static unsigned int HarfBuzzGetNominalGlyphs(
+    hb_font_t* hb_font,
+    void* font_data,
+    unsigned int count,
+    const hb_codepoint_t* first_unicode,
+    unsigned int unicode_stride,
+    hb_codepoint_t* first_glyph,
+    unsigned int glyph_stride,
+    void* user_data) {
+  HarfBuzzFontData* hb_font_data =
+      reinterpret_cast<HarfBuzzFontData*>(font_data);
+  CHECK(hb_font_data);
+
+  auto resolve_nominal_glyphs =
+      [&](unsigned int start, const UnicodeRangeSet* range_set = nullptr)
+          __attribute__((always_inline)) {
+            UNSAFE_BUFFERS({
+              for (unsigned int i = start; i < count; ++i) {
+                hb_codepoint_t u = *reinterpret_cast<const hb_codepoint_t*>(
+                    reinterpret_cast<const char*>(first_unicode) +
+                    i * unicode_stride);
+                if (range_set && !range_set->Contains(u)) {
+                  return i;
+                }
+                hb_codepoint_t* g = reinterpret_cast<hb_codepoint_t*>(
+                    reinterpret_cast<char*>(first_glyph) + i * glyph_stride);
+                if (!HarfBuzzGetGlyph(hb_font, font_data, u, 0, g, user_data)) {
+                  return i;
+                }
+              }
+            });
+            return count;
+          };
+
+  if (hb_font_data->range_set_) {
+    return resolve_nominal_glyphs(0, hb_font_data->range_set_);
+  }
+
+  VariationSelectorMode variation_selector_mode =
+      hb_font_data->GetVariationSelectorMode();
+  if (UseFontVariantEmojiVariationSelector(variation_selector_mode)) {
+    return resolve_nominal_glyphs(0);
+  }
+
+  unsigned int done = hb_font_get_nominal_glyphs(
+      hb_font_get_parent(hb_font), count, first_unicode, unicode_stride,
+      first_glyph, glyph_stride);
+
+#if BUILDFLAG(IS_APPLE)
+  if (done < count) {
+    UNSAFE_BUFFERS({
+      const hb_codepoint_t u = *reinterpret_cast<const hb_codepoint_t*>(
+          reinterpret_cast<const char*>(first_unicode) + done * unicode_stride);
+      if (u == uchar::kHyphen || u == uchar::kNonBreakingHyphen ||
+          u == uchar::kLineSeparator || u == uchar::kParagraphSeparator) {
+        return resolve_nominal_glyphs(done);
+      }
+    });
+  }
+#endif
+
+  return done;
+}
+
 static hb_position_t HarfBuzzGetGlyphHorizontalAdvance(hb_font_t* hb_font,
                                                        void* font_data,
                                                        hb_codepoint_t glyph,
@@ -501,6 +565,8 @@ class HarfBuzzSkiaFontFuncs final {
                                            nullptr);
     hb_font_funcs_set_nominal_glyph_func(funcs, HarfBuzzGetNominalGlyph,
                                          nullptr, nullptr);
+    hb_font_funcs_set_nominal_glyphs_func(funcs, HarfBuzzGetNominalGlyphs,
+                                          nullptr, nullptr);
     // TODO(crbug.com/899718): Replace vertical metrics callbacks with
     // HarfBuzz VORG/VMTX internal implementation by deregistering those.
     hb_font_funcs_set_glyph_v_advance_func(
