@@ -9,8 +9,6 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/fake_hats_bluetooth_revamp_trigger_impl.h"
-#include "ash/public/cpp/hats_bluetooth_revamp_trigger.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/system/bluetooth/bluetooth_detailed_view.h"
 #include "ash/system/bluetooth/bluetooth_device_list_controller.h"
@@ -133,8 +131,6 @@ class BluetoothDetailedViewControllerTest : public AshTestBase {
     BluetoothDeviceListController::Factory::SetFactoryForTesting(nullptr);
     BluetoothDetailedView::Factory::SetFactoryForTesting(nullptr);
 
-    fake_trigger_impl_ = std::make_unique<FakeHatsBluetoothRevampTriggerImpl>();
-
     base::RunLoop().RunUntilIdle();
   }
 
@@ -205,16 +201,11 @@ class BluetoothDetailedViewControllerTest : public AshTestBase {
     return bluetooth_config_test_helper()->fake_device_operation_handler();
   }
 
-  size_t GetTryToShowSurveyCount() {
-    return fake_trigger_impl_->try_to_show_survey_count();
-  }
-
  private:
   ScopedBluetoothConfigTestHelper* bluetooth_config_test_helper() {
     return ash_test_helper()->bluetooth_config_test_helper();
   }
 
-  std::unique_ptr<FakeHatsBluetoothRevampTriggerImpl> fake_trigger_impl_;
   raw_ptr<FakeBluetoothDetailedView> bluetooth_detailed_view_ = nullptr;
   raw_ptr<FakeBluetoothDeviceListController> bluetooth_device_list_controller_ =
       nullptr;
@@ -267,22 +258,18 @@ TEST_F(BluetoothDetailedViewControllerTest,
 TEST_F(BluetoothDetailedViewControllerTest,
        ChangesBluetoothEnabledStateWhenTogglePressed) {
   EXPECT_EQ(BluetoothSystemState::kEnabled, GetBluetoothAdapterState());
-  EXPECT_EQ(0u, GetTryToShowSurveyCount());
 
   bluetooth_detailed_view_delegate()->OnToggleClicked(/*new_state=*/false);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(BluetoothSystemState::kDisabling, GetBluetoothAdapterState());
-  EXPECT_EQ(1u, GetTryToShowSurveyCount());
 
   bluetooth_detailed_view_delegate()->OnToggleClicked(/*new_state=*/true);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(BluetoothSystemState::kEnabling, GetBluetoothAdapterState());
-  EXPECT_EQ(2u, GetTryToShowSurveyCount());
 }
 
 TEST_F(BluetoothDetailedViewControllerTest,
-       OnPairNewDeviceRequestedOpensBluetoothDialogWithHatsTrigger) {
-  EXPECT_EQ(0u, GetTryToShowSurveyCount());
+       OnPairNewDeviceRequestedOpensBluetoothDialog) {
   EXPECT_EQ(0, GetSystemTrayClient()->show_bluetooth_pairing_dialog_count());
   // OnPairNewDeviceRequested deletes previous device, which means
   // bluetooth_detailed_view_ and bluetooth_list_controller_ are invalidated.
@@ -290,7 +277,6 @@ TEST_F(BluetoothDetailedViewControllerTest,
   ResetBluetoothDeviceListController();
   bluetooth_detailed_view_delegate()->OnPairNewDeviceRequested();
   EXPECT_EQ(1, GetSystemTrayClient()->show_bluetooth_pairing_dialog_count());
-  EXPECT_EQ(1u, GetTryToShowSurveyCount());
 }
 
 TEST_F(BluetoothDetailedViewControllerTest,
@@ -409,8 +395,6 @@ class BluetoothDetailedViewControllerConnectWarningTest : public AshTestBase {
         ->unified_system_tray_controller()
         ->ShowBluetoothDetailedView();
 
-    fake_trigger_impl_ = std::make_unique<FakeHatsBluetoothRevampTriggerImpl>();
-
     BluetoothDeviceListController::Factory::SetFactoryForTesting(nullptr);
     BluetoothDetailedView::Factory::SetFactoryForTesting(nullptr);
   }
@@ -436,10 +420,6 @@ class BluetoothDetailedViewControllerConnectWarningTest : public AshTestBase {
             ->detailed_view_controller());
   }
 
-  size_t GetTryToShowSurveyCount() {
-    return fake_trigger_impl_->try_to_show_survey_count();
-  }
-
   void SetShouldShowWarningDialog(bool should_show_warning_dialog) {
     hid_preserving_bluetooth_state_test_helper_->fake_hid_preserving_bluetooth()
         ->SetShouldShowWarningDialog(should_show_warning_dialog);
@@ -461,7 +441,6 @@ class BluetoothDetailedViewControllerConnectWarningTest : public AshTestBase {
     return ash_test_helper()->bluetooth_config_test_helper();
   }
 
-  std::unique_ptr<FakeHatsBluetoothRevampTriggerImpl> fake_trigger_impl_;
   std::unique_ptr<HidPreservingBluetoothStateControllerTestHelper>
       hid_preserving_bluetooth_state_test_helper_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -470,59 +449,50 @@ class BluetoothDetailedViewControllerConnectWarningTest : public AshTestBase {
 TEST_F(BluetoothDetailedViewControllerConnectWarningTest,
        ChangesBluetoothEnabledStateWhenTogglePressed) {
   EXPECT_EQ(BluetoothSystemState::kEnabled, GetBluetoothAdapterState());
-  EXPECT_EQ(0u, GetTryToShowSurveyCount());
   EXPECT_EQ(0u, GetDialogShownCount());
 
   bluetooth_detailed_view_delegate()->OnToggleClicked(/*new_state=*/false);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(BluetoothSystemState::kDisabling, GetBluetoothAdapterState());
-  EXPECT_EQ(1u, GetTryToShowSurveyCount());
   EXPECT_EQ(0u, GetDialogShownCount());
 
   bluetooth_detailed_view_delegate()->OnToggleClicked(/*new_state=*/true);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(BluetoothSystemState::kEnabling, GetBluetoothAdapterState());
-  EXPECT_EQ(2u, GetTryToShowSurveyCount());
   EXPECT_EQ(0u, GetDialogShownCount());
 }
 
 TEST_F(BluetoothDetailedViewControllerConnectWarningTest,
        SimulateShowWarningDialogOnDisconnect_ResultTrue) {
   EXPECT_EQ(BluetoothSystemState::kEnabled, GetBluetoothAdapterState());
-  EXPECT_EQ(0u, GetTryToShowSurveyCount());
   EXPECT_EQ(0u, GetDialogShownCount());
 
   SetShouldShowWarningDialog(true);
   bluetooth_detailed_view_delegate()->OnToggleClicked(/*new_state=*/false);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(BluetoothSystemState::kEnabled, GetBluetoothAdapterState());
-  EXPECT_EQ(1u, GetTryToShowSurveyCount());
   EXPECT_EQ(1u, GetDialogShownCount());
 
   CompleteShowWarningDialog(/*show_dialog_result=*/true);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(BluetoothSystemState::kDisabling, GetBluetoothAdapterState());
-  EXPECT_EQ(1u, GetTryToShowSurveyCount());
   EXPECT_EQ(1u, GetDialogShownCount());
 }
 
 TEST_F(BluetoothDetailedViewControllerConnectWarningTest,
        SimulateShowWarningDialogOnDisconnect_ResultFalse) {
   EXPECT_EQ(BluetoothSystemState::kEnabled, GetBluetoothAdapterState());
-  EXPECT_EQ(0u, GetTryToShowSurveyCount());
   EXPECT_EQ(0u, GetDialogShownCount());
 
   SetShouldShowWarningDialog(true);
   bluetooth_detailed_view_delegate()->OnToggleClicked(/*new_state=*/false);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(BluetoothSystemState::kEnabled, GetBluetoothAdapterState());
-  EXPECT_EQ(1u, GetTryToShowSurveyCount());
   EXPECT_EQ(1u, GetDialogShownCount());
 
   CompleteShowWarningDialog(/*show_dialog_result=*/false);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(BluetoothSystemState::kEnabled, GetBluetoothAdapterState());
-  EXPECT_EQ(1u, GetTryToShowSurveyCount());
   EXPECT_EQ(1u, GetDialogShownCount());
 }
 

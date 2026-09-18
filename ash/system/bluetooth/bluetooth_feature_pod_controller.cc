@@ -9,7 +9,6 @@
 #include "ash/ash_element_identifiers.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
-#include "ash/public/cpp/hats_bluetooth_revamp_trigger.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -100,10 +99,6 @@ void BluetoothFeaturePodController::OnIconPressed() {
       !is_toggled, mojom::HidWarningDialogSource::kQuickSettings);
 
   TrackToggleUMA(/*target_toggle_state=*/!is_toggled);
-
-  if (auto* hats_bluetooth_revamp_trigger = HatsBluetoothRevampTrigger::Get()) {
-    hats_bluetooth_revamp_trigger->TryToShowSurvey();
-  }
 }
 
 void BluetoothFeaturePodController::OnLabelPressed() {
@@ -113,9 +108,6 @@ void BluetoothFeaturePodController::OnLabelPressed() {
 
   TrackDiveInUMA();
 
-  if (auto* hats_bluetooth_revamp_trigger = HatsBluetoothRevampTrigger::Get()) {
-    hats_bluetooth_revamp_trigger->TryToShowSurvey();
-  }
   tray_controller_->ShowBluetoothDetailedView();
 }
 

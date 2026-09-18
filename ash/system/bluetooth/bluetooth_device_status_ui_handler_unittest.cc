@@ -7,8 +7,6 @@
 #include <memory>
 
 #include "ash/constants/ash_pref_names.h"
-#include "ash/public/cpp/fake_hats_bluetooth_revamp_trigger_impl.h"
-#include "ash/public/cpp/hats_bluetooth_revamp_trigger.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -47,8 +45,6 @@ class BluetoothDeviceStatusUiHandlerTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    fake_trigger_impl_ = std::make_unique<FakeHatsBluetoothRevampTriggerImpl>();
-
     local_state_ = std::make_unique<TestingPrefServiceSimple>();
     local_state_->registry()->RegisterIntegerPref(
         prefs::kBluetoothConnectionToastShownCount, 0);
@@ -69,7 +65,6 @@ class BluetoothDeviceStatusUiHandlerTest : public AshTestBase {
     histogram_tester_.reset();
     device_status_ui_handler_.reset();
     local_state_.reset();
-    fake_trigger_impl_.reset();
     AshTestBase::TearDown();
   }
 
@@ -101,10 +96,6 @@ class BluetoothDeviceStatusUiHandlerTest : public AshTestBase {
     return paired_device;
   }
 
-  size_t GetTryToShowSurveyCount() {
-    return fake_trigger_impl_->try_to_show_survey_count();
-  }
-
  protected:
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 
@@ -116,7 +107,6 @@ class BluetoothDeviceStatusUiHandlerTest : public AshTestBase {
         ->fake_bluetooth_device_status_notifier();
   }
 
-  std::unique_ptr<FakeHatsBluetoothRevampTriggerImpl> fake_trigger_impl_;
   std::unique_ptr<MockBluetoothDeviceStatusUiHandler> device_status_ui_handler_;
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
 };
@@ -127,10 +117,8 @@ TEST_F(BluetoothDeviceStatusUiHandlerTest, PairedDevice) {
 }
 
 TEST_F(BluetoothDeviceStatusUiHandlerTest, ConnectedDevice) {
-  EXPECT_EQ(0u, GetTryToShowSurveyCount());
   EXPECT_CALL(device_status_ui_handler(), ShowToast);
   SetConnectedDevice(GetPairedDevice());
-  EXPECT_EQ(2u, GetTryToShowSurveyCount());
 }
 
 TEST_F(BluetoothDeviceStatusUiHandlerTest, DisconnectedDevice) {

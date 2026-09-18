@@ -8,7 +8,6 @@
 
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
-#include "ash/public/cpp/hats_bluetooth_revamp_trigger.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -127,10 +126,6 @@ void BluetoothDetailedViewController::OnPropertiesUpdated(
 void BluetoothDetailedViewController::OnToggleClicked(bool new_state) {
   remote_hid_preserving_bluetooth_->TryToSetBluetoothEnabledState(
       new_state, mojom::HidWarningDialogSource::kQuickSettings);
-
-  if (auto* hats_bluetooth_revamp_trigger = HatsBluetoothRevampTrigger::Get()) {
-    hats_bluetooth_revamp_trigger->TryToShowSurvey();
-  }
 }
 
 void BluetoothDetailedViewController::OnPairNewDeviceRequested() {
@@ -138,10 +133,6 @@ void BluetoothDetailedViewController::OnPairNewDeviceRequested() {
   NET_LOG(EVENT) << "Attempting to show the bluetooth pairing dialog";
   Shell::Get()->system_tray_model()->client()->ShowBluetoothPairingDialog(
       /*device_address=*/std::nullopt);
-
-  if (auto* hats_bluetooth_revamp_trigger = HatsBluetoothRevampTrigger::Get()) {
-    hats_bluetooth_revamp_trigger->TryToShowSurvey();
-  }
 }
 
 void BluetoothDetailedViewController::OnDeviceListItemSelected(

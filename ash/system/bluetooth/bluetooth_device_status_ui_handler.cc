@@ -7,7 +7,6 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
-#include "ash/public/cpp/hats_bluetooth_revamp_trigger.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/shell.h"
@@ -117,10 +116,6 @@ void BluetoothDeviceStatusUiHandler::OnDeviceConnected(
         base::TimeTicks::Now() - last_connection_timestamp_.value());
   }
   last_connection_timestamp_ = base::TimeTicks::Now();
-
-  if (auto* hats_bluetooth_revamp_trigger = HatsBluetoothRevampTrigger::Get()) {
-    hats_bluetooth_revamp_trigger->TryToShowSurvey();
-  }
 }
 
 void BluetoothDeviceStatusUiHandler::ShowToast(ash::ToastData toast_data) {
