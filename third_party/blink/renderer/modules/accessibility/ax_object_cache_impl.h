@@ -612,6 +612,12 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // vector so that the next time it's called, it will only retrieve objects
   // that have changed since now.
   ui::AXLocationAndScrollUpdates TakeLocationChangsForSerialization();
+  bool HasPendingLocationChanges() const {
+    return !changed_bounds_ids_.empty();
+  }
+  bool HasPendingLocationChange(AXID id) const {
+    return changed_bounds_ids_.Contains(id);
+  }
 
   // Sends the location changes over mojo to the browser process.
   void SerializeLocationChanges();
@@ -652,6 +658,12 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // to the serializer.
   bool HasObjectsPendingSerialization() const override {
     return !pending_objects_to_serialize_.empty();
+  }
+  void ClearObjectsPendingSerializationForTesting() {
+    pending_objects_to_serialize_.clear();
+  }
+  void ResetLifecycleForTesting() {
+    lifecycle_.EnsureStateAtMost(AXObjectCacheLifecycle::kDeferTreeUpdates);
   }
   bool IsDirty() override;
 

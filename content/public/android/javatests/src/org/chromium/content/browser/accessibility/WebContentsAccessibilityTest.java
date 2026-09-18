@@ -53,6 +53,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
@@ -162,6 +163,7 @@ import org.chromium.base.test.util.TestAnimations;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.HostZoomMap;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
@@ -6699,5 +6701,160 @@ public class WebContentsAccessibilityTest {
                 0,
                 ex2NodeInfo.getChildCount());
     }
-}
 
+    @Test
+    @SmallTest
+    public void testZoomUpdatesFocusBounds_withCacheEnabled() throws Throwable {
+        setupTestWithHTML(
+                "<div>"
+                        + "<button id='button1'>Button 1</button>"
+                        + "<button id='button2'>Button 2</button>"
+                        + "<button id='button3'>Button 3</button>"
+                        + "<button id='button4'>Button 4</button>"
+                        + "</div>");
+
+        int buttonVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "button1");
+        performActionOnUiThread(buttonVvid, ACTION_ACCESSIBILITY_FOCUS, null);
+
+        AccessibilityNodeInfoCompat initialNodeInfo = createAccessibilityNodeInfo(buttonVvid);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, initialNodeInfo);
+
+        Rect initialBounds = new Rect();
+        initialNodeInfo.getBoundsInScreen(initialBounds);
+
+        clearInvocations(mActivityTestRule.getWebContentsAccessibility());
+
+        // Simulate page zoom.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> HostZoomMap.setZoomLevel(mActivityTestRule.getWebContents(), 2.22));
+
+        // When multiple elements change bounds at once (e.g. during page zoom), updates are batched
+        // and the focused node is cleared from `mNodeInfoCache`.
+        verify(
+                        mActivityTestRule.getWebContentsAccessibility(),
+                        timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).atLeastOnce())
+                .clearNodeInfoCacheForGivenId(eq(buttonVvid));
+
+        // Wait for the bounds of the focused node to update.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    AccessibilityNodeInfoCompat zoomedNodeInfo =
+                            createAccessibilityNodeInfo(buttonVvid);
+                    if (zoomedNodeInfo == null) return false;
+                    Rect zoomedBounds = new Rect();
+                    zoomedNodeInfo.getBoundsInScreen(zoomedBounds);
+                    return !initialBounds.equals(zoomedBounds);
+                },
+                "Expected focus bounds to change after zoom.");
+    }
+
+    @Test
+    @SmallTest
+    public void testZoomUpdatesFocusBounds_withCacheDisabled() throws Throwable {
+        setupTestWithHTML(
+                "<div>"
+                        + "<button id='button1'>Button 1</button>"
+                        + "<button id='button2'>Button 2</button>"
+                        + "<button id='button3'>Button 3</button>"
+                        + "<button id='button4'>Button 4</button>"
+                        + "</div>");
+
+        doReturn(false)
+                .when(mActivityTestRule.getWebContentsAccessibility())
+                .isNodeInfoCacheEnabled();
+
+        int buttonVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "button1");
+        performActionOnUiThread(buttonVvid, ACTION_ACCESSIBILITY_FOCUS, null);
+
+        AccessibilityNodeInfoCompat initialNodeInfo = createAccessibilityNodeInfo(buttonVvid);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, initialNodeInfo);
+
+        Rect initialBounds = new Rect();
+        initialNodeInfo.getBoundsInScreen(initialBounds);
+
+        clearInvocations(mActivityTestRule.getWebContentsAccessibility());
+
+        // Simulate page zoom.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> HostZoomMap.setZoomLevel(mActivityTestRule.getWebContents(), 2.22));
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    AccessibilityNodeInfoCompat zoomedNodeInfo =
+                            createAccessibilityNodeInfo(buttonVvid);
+                    if (zoomedNodeInfo == null) return false;
+                    Rect zoomedBounds = new Rect();
+                    zoomedNodeInfo.getBoundsInScreen(zoomedBounds);
+                    return !initialBounds.equals(zoomedBounds);
+                },
+                "Expected focus bounds to change after zoom with cache disabled.");
+
+        // When cache is disabled, clearNodeInfoCache() should not be called.
+        verify(mActivityTestRule.getWebContentsAccessibility(), never()).clearNodeInfoCache();
+    }
+
+    @Test
+    @SmallTest
+    public void testZoomUpdatesFocusBounds_singleElement() throws Throwable {
+        setupTestWithHTML("<button id='button'>Target Button</button>");
+
+        int buttonVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "button");
+        performActionOnUiThread(buttonVvid, ACTION_ACCESSIBILITY_FOCUS, null);
+
+        AccessibilityNodeInfoCompat initialNodeInfo = createAccessibilityNodeInfo(buttonVvid);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, initialNodeInfo);
+
+        Rect initialBounds = new Rect();
+        initialNodeInfo.getBoundsInScreen(initialBounds);
+
+        clearInvocations(mActivityTestRule.getWebContentsAccessibility());
+
+        // Simulate page zoom.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> HostZoomMap.setZoomLevel(mActivityTestRule.getWebContents(), 2.22));
+
+        // The focused node should be cleared from `mNodeInfoCache`.
+        verify(
+                        mActivityTestRule.getWebContentsAccessibility(),
+                        timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).atLeastOnce())
+                .clearNodeInfoCacheForGivenId(eq(buttonVvid));
+
+        // Wait for the bounds of the focused node to update.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    AccessibilityNodeInfoCompat zoomedNodeInfo =
+                            createAccessibilityNodeInfo(buttonVvid);
+                    if (zoomedNodeInfo == null) return false;
+                    Rect zoomedBounds = new Rect();
+                    zoomedNodeInfo.getBoundsInScreen(zoomedBounds);
+                    return !initialBounds.equals(zoomedBounds);
+                },
+                "Expected focus bounds to change after zoom.");
+    }
+
+    @Test
+    @SmallTest
+    public void testSendDelayedWindowContentChangedEvent_clearsCache() throws Throwable {
+        setupTestWithHTML("<button id='button'>Target Button</button>");
+
+        int buttonVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "button");
+        performActionOnUiThread(buttonVvid, ACTION_ACCESSIBILITY_FOCUS, null);
+
+        AccessibilityNodeInfoCompat initialNodeInfo = createAccessibilityNodeInfo(buttonVvid);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, initialNodeInfo);
+
+        clearInvocations(mActivityTestRule.getWebContentsAccessibility());
+
+        // Call sendDelayedWindowContentChangedEvent directly on UI thread.
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mActivityTestRule
+                                .getWebContentsAccessibility()
+                                .sendDelayedWindowContentChangedEvent());
+
+        verify(
+                        mActivityTestRule.getWebContentsAccessibility(),
+                        timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+                .clearNodeInfoCache();
+    }
+}

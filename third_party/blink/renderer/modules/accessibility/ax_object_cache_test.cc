@@ -1510,4 +1510,68 @@ TEST_F(AccessibilityTest, AriaOwnsWithUnmappedOrDetachedChildDoesNotCrash) {
   GetAXObjectCache().UpdateAXForAllDocuments();
 }
 
+TEST_F(AccessibilityTest, ZoomCausesLocationChangesWithoutTreeUpdates) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #target {
+        font-size: 16px;
+        width: 100px;
+        height: 50px;
+      }
+    </style>
+    <div id="target" role="region" aria-label="Target">Hello World</div>
+  )HTML");
+
+  auto& cache = GetAXObjectCache();
+  cache.SetAXMode(ui::kAXModeComplete);
+
+  AXObject* target = GetAXObjectByElementId("target");
+  ASSERT_NE(target, nullptr);
+  AXID target_id = target->AXObjectID();
+
+  // Initial commit and serialization to establish the clean baseline tree.
+  ASSERT_TRUE(cache.CommitAXUpdates(GetDocument(), /*force=*/true));
+  std::vector<ui::AXTreeUpdate> initial_updates;
+  std::vector<ui::AXEvent> initial_events;
+  bool had_end_of_test_event = false;
+  bool had_load_complete_messages = false;
+  {
+    ScopedFreezeAXCache freeze(cache);
+    cache.GetUpdatesAndEventsForSerialization(initial_updates, initial_events,
+                                              had_end_of_test_event,
+                                              had_load_complete_messages);
+  }
+  cache.ClearObjectsPendingSerializationForTesting();
+  cache.ResetLifecycleForTesting();
+  ASSERT_FALSE(initial_updates.empty());
+  ASSERT_FALSE(cache.IsDirty());
+  ASSERT_FALSE(cache.HasObjectsPendingSerialization());
+  EXPECT_FALSE(cache.HasPendingLocationChanges());
+
+  // Trigger page zoom by changing `layout_zoom_factor_`.
+  GetDocument().GetFrame()->SetLayoutZoomFactor(2.0f);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  // Check whether zoom marked the cache dirty or added location changes.
+  EXPECT_TRUE(cache.HasPendingLocationChanges());
+  EXPECT_TRUE(cache.HasPendingLocationChange(target_id));
+  EXPECT_FALSE(cache.IsDirty());
+
+  // Take location changes and verify target is present with updated bounds.
+  ui::AXLocationAndScrollUpdates loc_updates =
+      cache.TakeLocationChangsForSerialization();
+  EXPECT_FALSE(loc_updates.location_changes.empty());
+  bool found_target_in_loc_changes = false;
+  for (const auto& change : loc_updates.location_changes) {
+    if (change.id == target_id) {
+      found_target_in_loc_changes = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(found_target_in_loc_changes);
+
+  // After taking location changes, pending location changes are cleared.
+  EXPECT_FALSE(cache.HasPendingLocationChanges());
+}
+
 }  // namespace blink

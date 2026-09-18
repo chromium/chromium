@@ -1082,8 +1082,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
             // If we are disabling the cache for assistive technology users, clear the cache when
             // an AT is activated.
-            if (ContentFeatureList.sAccessibilityDeprecateJavaNodeCacheDisableCache.getValue()
-                    && AccessibilityState.isAccessibilityToolPresent()) {
+            if (!isNodeInfoCacheEnabled()) {
                 mNodeInfoCache.clear();
             }
 
@@ -1204,6 +1203,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         mHistogramRecorder.updateMaxNodesInCache(mNodeInfoCache.size());
     }
 
+    /** Clears the entire `AccessibilityNodeInfoCompat` cache. */
+    public void clearNodeInfoCache() {
+        mNodeInfoCache.clear();
+    }
+
     @CalledByNative
     public void clearNodeInfoCacheForGivenId(int virtualViewId) {
         // Recycle and remove the element in our cache for this |virtualViewId|.
@@ -1214,6 +1218,12 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         }
         // Remove this node from requested image data nodes in case data changed with update.
         mImageDataRequestedNodes.remove(virtualViewId);
+    }
+
+    /** Returns whether the `AccessibilityNodeInfoCompat` cache is enabled. */
+    public boolean isNodeInfoCacheEnabled() {
+        return !ContentFeatureList.sAccessibilityDeprecateJavaNodeCacheDisableCache.getValue()
+                || !AccessibilityState.isAccessibilityToolPresent();
     }
 
     /**
@@ -1381,8 +1391,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 // After successfully populating this node, add it to our cache then return.
                 // Cache is only disabled when accessibility tools are present, to preserve
                 // performance for the less correctness-oriented general user population.
-                if (!(ContentFeatureList.sAccessibilityDeprecateJavaNodeCacheDisableCache.getValue()
-                        && AccessibilityState.isAccessibilityToolPresent())) {
+                if (isNodeInfoCacheEnabled()) {
                     mNodeInfoCache.put(virtualViewId, AccessibilityNodeInfoCompat.obtain(info));
                 }
                 mHistogramRecorder.incrementNodeWasCreatedFromScratch();
@@ -2214,11 +2223,19 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
     /**
      * Send a WINDOW_CONTENT_CHANGED event after a short delay. This helps throttle such events from
-     * firing too quickly during animations, for example.
+     * firing too quickly during animations or zoom, for example. Invalidate the entire cache since
+     * the web contents changed, and if an element has accessibility focus, also notify Android so
+     * its bounds are updated.
      */
     @CalledByNative
-    private void sendDelayedWindowContentChangedEvent() {
+    void sendDelayedWindowContentChangedEvent() {
+        if (isNodeInfoCacheEnabled()) {
+            clearNodeInfoCache();
+        }
         sendWindowContentChangedEvent(View.NO_ID, /* setSubtreeChanged= */ true);
+        if (mAccessibilityFocusId != View.NO_ID) {
+            sendWindowContentChangedEvent(mAccessibilityFocusId, /* setSubtreeChanged= */ true);
+        }
     }
 
     @VisibleForTesting
