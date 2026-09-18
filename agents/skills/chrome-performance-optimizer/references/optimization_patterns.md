@@ -398,3 +398,7 @@ ______________________________________________________________________
      mean score.
    - Run 150-iteration Pinpoint jobs on M1 hardware to filter noise ($p \<
      0.05$).
+3. **Avoid LTO/PGO-Ineffective Tweaks**:
+   - Changes unlikely to make an effect on LTO/PGO-optimized builds (like moving
+     functions to headers for better inlining) should be avoided.
+   - Note that Pinpoint runs ThinLTO (without PGO), while other bots use PGO.

@@ -78,6 +78,7 @@ ______________________________________________________________________
      - Must be strictly novel (not in Gerrit / not in fetch_tried_cls.py).
      - Must aim for architectural leverage (eliminating heap/GC allocations in hot per-element/per-token loops, caching expensive computations across iterations, bypassing heavy subsystems for common cases, or deferring work).
      - Reject micro-tweaks (< 0.1% impact) that will not stand out in Pinpoint noise.
+     - Avoid changes unlikely to affect LTO/PGO builds (like moving functions to headers for inlining); Pinpoint uses ThinLTO and other bots use PGO.
   5. Return a structured proposal containing:
      - Target Files & Functions
      - Specific Architectural Mechanism & Rationale
@@ -146,6 +147,7 @@ ______________________________________________________________________
      Assess whether this optimization is architecturally sound and spec-compliant:
      - Does it maintain DOM, CSS, HTML, or JavaScript language specification fidelity?
      - Does it bypass necessary security, sanitization, or lifecycle checks just to appear faster?
+     - Does it rely on changes unlikely to affect LTO/PGO builds (like moving functions to headers for inlining)? These should be avoided.
      - If the change is fundamentally flawed, unviable, or introduces irreparable correctness bugs:
        Output:
        ```

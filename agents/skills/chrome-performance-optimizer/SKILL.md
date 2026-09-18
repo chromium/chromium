@@ -155,6 +155,9 @@ ______________________________________________________________________
 >   `topic:chrome-perf-opt-rejected` or `topic:chrome-perf-opt-accepted`. Do NOT
 >   combine multiple separate optimizations into a single CL; each optimization
 >   must stand on its own merits as an independent CL.
+> - **Avoid Changes Ineffective on LTO/PGO Builds**: Changes unlikely to make an
+>   effect on LTO/PGO builds (like moving functions to headers for better
+>   inlining) should be avoided; Pinpoint uses ThinLTO and other bots use PGO.
 > - **No Micro-Tweaks**: Do NOT propose single variable renames, isolated
 >   trivial bound checks, or micro-helpers that produce `< 0.1%` change and
 >   vanish in Pinpoint noise.
@@ -226,10 +229,13 @@ on the candidate branch:
      - Does it take prohibited architectural shortcuts (e.g. bypassing security
        checks, skipping required style updates, or breaking lifecycle
        guarantees) that only create an illusory speedup?
-   - **Veto Rule**: If the change is fundamentally flawed or unviable, the
-     subagent issues a `VETO` decision and aborts immediately. The candidate is
-     **discarded without uploading to Gerrit or triggering Pinpoint**, saving
-     hours of expensive Apple Silicon bot time.
+     - Does it rely on changes unlikely to affect LTO/PGO builds (like moving
+       functions to headers for inlining)? These should be avoided.
+   - **Veto Rule**: If the change is fundamentally flawed, unviable, or
+     introduces irreparable correctness bugs, the subagent issues a `VETO`
+     decision and aborts immediately. The candidate is **discarded without
+     uploading to Gerrit or triggering Pinpoint**, saving hours of expensive
+     Apple Silicon bot time.
 
 2. **Chromium & V8 Code Quality Audit Checklist**: If conceptually sound, the
    subagent audits the diff against core engine standards:
