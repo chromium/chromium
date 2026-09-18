@@ -508,6 +508,15 @@ EntityInstance GetEntityInstance(std::vector<AttributeInstance> attributes,
       std::string(options.frecency_override));
 }
 
+AttributeInstance GetAttributeInstance(AttributeTypeName type_name,
+                                       std::u16string_view value,
+                                       VerificationStatus status) {
+  AttributeInstance attribute((AttributeType(type_name)));
+  attribute.SetRawInfo(attribute.type().field_type(), std::u16string(value),
+                       status);
+  return attribute;
+}
+
 EntityInstance MaskEntityInstance(const EntityInstance& entity_instance) {
   CHECK(entity_instance.record_type() ==
             EntityInstance::RecordType::kServerWallet ||

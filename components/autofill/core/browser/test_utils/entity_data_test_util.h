@@ -270,6 +270,12 @@ using EntityOptions = EntityOptionsT<>;
 EntityInstance GetEntityInstance(std::vector<AttributeInstance> attributes,
                                  EntityOptions options = {});
 
+// Creates an AttributeInstance of `type_name` with raw `value` and `status`.
+AttributeInstance GetAttributeInstance(
+    AttributeTypeName type_name,
+    std::u16string_view value,
+    VerificationStatus status = VerificationStatus::kNoStatus);
+
 // Returns a copy of `entity_instance` with all obfuscated attributes masked.
 // Note that the masking is a toy version of what the server might do - it
 // simply takes the last 4 characters of obfuscated attributes.
