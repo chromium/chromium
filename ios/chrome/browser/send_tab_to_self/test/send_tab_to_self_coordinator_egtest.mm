@@ -771,8 +771,8 @@ void DismissSendTabToSelfModal() {
   id<GREYMatcher> sendToDevicesMenuItem =
       chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
           IDS_SEND_TAB_TO_SELF);
-  [[EarlGrey selectElementWithMatcher:sendToDevicesMenuItem]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:sendToDevicesMenuItem];
 
   // Tap the context menu item.
   [[EarlGrey selectElementWithMatcher:sendToDevicesMenuItem]
@@ -808,8 +808,8 @@ void DismissSendTabToSelfModal() {
   id<GREYMatcher> sendToDevicesMenuItem =
       chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
           IDS_SEND_TAB_TO_SELF);
-  [[EarlGrey selectElementWithMatcher:sendToDevicesMenuItem]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:sendToDevicesMenuItem];
 
   // Tap the context menu item.
   [[EarlGrey selectElementWithMatcher:sendToDevicesMenuItem]
@@ -850,8 +850,8 @@ void DismissSendTabToSelfModal() {
   id<GREYMatcher> sendToDevicesMenuItem =
       chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
           IDS_SEND_TAB_TO_SELF);
-  [[EarlGrey selectElementWithMatcher:sendToDevicesMenuItem]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:sendToDevicesMenuItem];
 
   // Tap the context menu item.
   [[EarlGrey selectElementWithMatcher:sendToDevicesMenuItem]
@@ -903,8 +903,8 @@ void DismissSendTabToSelfModal() {
   id<GREYMatcher> sendToDevicesMenuItem =
       chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
           IDS_SEND_TAB_TO_SELF);
-  [[EarlGrey selectElementWithMatcher:sendToDevicesMenuItem]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:sendToDevicesMenuItem];
 
   // Tap the context menu item.
   [[EarlGrey selectElementWithMatcher:sendToDevicesMenuItem]
@@ -1125,10 +1125,9 @@ void DismissSendTabToSelfModal() {
   NSString* labelText =
       l10n_util::GetNSStringF(IDS_SEND_TAB_TO_SELF_INFOBAR_AUTO_OPEN_SUBTITLE,
                               base::SysNSStringToUTF16(kRemoteDeviceName));
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(labelText),
-                                          grey_sufficientlyVisible(), nil)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:grey_accessibilityLabel(
+                                                       labelText)];
 }
 
 // Tests that when a shared tab is auto-opened, its tab card in the Tab Grid
@@ -1159,10 +1158,9 @@ void DismissSendTabToSelfModal() {
   NSString* labelText =
       l10n_util::GetNSStringF(IDS_SEND_TAB_TO_SELF_INFOBAR_AUTO_OPEN_SUBTITLE,
                               base::SysNSStringToUTF16(kRemoteDeviceName));
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(labelText),
-                                          grey_sufficientlyVisible(), nil)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:grey_accessibilityLabel(
+                                                       labelText)];
 
   // Tap the newly opened tab (index 1) to view it.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(1)]
@@ -1204,10 +1202,9 @@ void DismissSendTabToSelfModal() {
   NSString* labelText =
       l10n_util::GetNSStringF(IDS_SEND_TAB_TO_SELF_INFOBAR_AUTO_OPEN_SUBTITLE,
                               base::SysNSStringToUTF16(kRemoteDeviceName));
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(labelText),
-                                          grey_sufficientlyVisible(), nil)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:grey_accessibilityLabel(
+                                                       labelText)];
 
   // Relaunch the app with the fake identity.
   RelaunchAppWithIdentity([self appConfigurationForTestCase],
@@ -1217,10 +1214,9 @@ void DismissSendTabToSelfModal() {
   OpenTabGridAndWaitTillVisible();
 
   // Verify that the label is still visible after restart.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(labelText),
-                                          grey_sufficientlyVisible(), nil)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:grey_accessibilityLabel(
+                                                       labelText)];
 
   // Tap the tab (index 1) to view it.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(1)]
