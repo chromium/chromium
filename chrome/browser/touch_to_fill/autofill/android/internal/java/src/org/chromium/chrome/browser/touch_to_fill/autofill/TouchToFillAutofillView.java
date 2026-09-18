@@ -58,9 +58,7 @@ class TouchToFillAutofillView implements BottomSheetContent {
         mBottomSheetController = bottomSheetController;
         mContentView =
                 LayoutInflater.from(context)
-                        .inflate(
-                                R.layout.touch_to_fill_autofill_personal_context_notice_screen,
-                                null);
+                        .inflate(R.layout.touch_to_fill_autofill_home_screen, null);
     }
 
     void setSheetItemListAdapter(Adapter adapter) {

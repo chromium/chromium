@@ -65,7 +65,7 @@ android_resources("java_resources") {
     "java/res/drawable/touch_to_fill_tab_item_bg.xml",
     "java/res/drawable/touch_to_fill_tab_layout_bg.xml",
     "java/res/layout/touch_to_fill_all_loyalty_cards_item.xml",
-    "java/res/layout/touch_to_fill_autofill_personal_context_notice_screen.xml",
+    "java/res/layout/touch_to_fill_autofill_home_screen.xml",
     "java/res/layout/touch_to_fill_bnpl_issuer_selection_screen.xml",
     "java/res/layout/touch_to_fill_bnpl_issuer_selection_sheet_item.xml",
     "java/res/layout/touch_to_fill_bnpl_issuer_tos_screen.xml",
