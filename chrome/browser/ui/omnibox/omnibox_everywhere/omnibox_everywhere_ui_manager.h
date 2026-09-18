@@ -80,6 +80,9 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   static constexpr int kPopupSmallFixedWidth = 528;
   static int GetPopupFixedWidth();
   static constexpr int kDefaultRestingHeight = 152;
+  // Resting height when the FRE intro modal is shown (searchbox + 2-row FRE
+  // modal card + drop-shadow body padding).
+  static constexpr int kFreModalRestingHeight = 424;
   static constexpr base::TimeDelta kActivationGracePeriod =
       base::Milliseconds(500);
 

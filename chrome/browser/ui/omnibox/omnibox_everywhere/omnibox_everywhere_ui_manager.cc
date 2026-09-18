@@ -499,7 +499,11 @@ void OmniboxEverywhereUIManager::CreateAndInitWidget(
     params.context = context;
   }
 
-  params.bounds = CalculateWidgetBounds(kDefaultRestingHeight);
+  const bool is_fre_intro_modal =
+      base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhereFre) &&
+      prefs::GetCurrentFreStage(profile_) == prefs::FreStage::kIntroModal;
+  params.bounds = CalculateWidgetBounds(
+      is_fre_intro_modal ? kFreModalRestingHeight : kDefaultRestingHeight);
 
   auto web_view = std::make_unique<views::WebView>(profile_);
   web_view->SetProperty(views::kElementIdentifierKey,
