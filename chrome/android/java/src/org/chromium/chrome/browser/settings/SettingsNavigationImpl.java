@@ -205,7 +205,7 @@ public class SettingsNavigationImpl implements SettingsNavigation {
             @Nullable Bundle fragmentArgs,
             boolean addToBackStack,
             @Nullable String tag) {
-        if (useSettingsInTab()) {
+        if (useSettingsInTab(context)) {
             Activity activity = ActivityUtil.getActivityFromContext(context);
             // Some components pass a non-Activity context (e.g. AccessibilitySettings).
             if (activity == null) {
@@ -267,7 +267,12 @@ public class SettingsNavigationImpl implements SettingsNavigation {
             @Nullable String tag) {
         String fragmentName = fragment == null ? null : fragment.getName();
         return SettingsIntentUtil.createIntent(
-                context, fragmentName, fragmentArgs, addToBackStack, tag, useSettingsInTab());
+                context,
+                fragmentName,
+                fragmentArgs,
+                addToBackStack,
+                tag,
+                useSettingsInTab(context));
     }
 
     @Override
@@ -456,10 +461,27 @@ public class SettingsNavigationImpl implements SettingsNavigation {
         ResettersForTesting.register(() -> mUseSettingsActivityForTesting = false);
     }
 
-    private boolean useSettingsInTab() {
+    /**
+     * Returns whether settings should be displayed in a tab. Derives the answer from the live
+     * settings host when one exists (so the state remains fixed even if the screen width changes
+     * while settings is open), falling back to {@link SettingsInTab#shouldOpenSettingsInTab()} only
+     * when settings is not currently open.
+     */
+    private boolean useSettingsInTab(@Nullable Context context) {
         // Always use SettingsActivity if requested by tests.
         if (mUseSettingsActivityForTesting) {
             return false;
+        }
+        Activity activity = ActivityUtil.getActivityFromContext(context);
+        if (activity == null) {
+            activity = ApplicationStatus.getLastTrackedFocusedActivity();
+        }
+        if (activity instanceof SettingsHost host) {
+            return host.isShownInTab();
+        }
+        SettingsHostFragment settingsHostFragment = SettingsHostFragment.get(activity);
+        if (settingsHostFragment != null) {
+            return true;
         }
         return SettingsInTab.shouldOpenSettingsInTab();
     }

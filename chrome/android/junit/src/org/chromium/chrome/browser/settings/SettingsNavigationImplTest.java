@@ -303,4 +303,60 @@ public class SettingsNavigationImplTest {
                 DownloadSettings.class.getName(),
                 lastIntent.getStringExtra(SettingsIntentUtil.EXTRA_SHOW_FRAGMENT));
     }
+
+    /**
+     * When settings is already open in a tab, {@code startSettings()} must route to the existing
+     * {@link SettingsHostFragment} even if {@link SettingsInTab#shouldOpenSettingsInTab()} has
+     * become false (e.g. screen width changed on a foldable device).
+     */
+    @Test
+    @DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
+    public void testStartSettings_SettingsInTabDisabled_ShowsInHostFragment() {
+        var scenario = Robolectric.buildActivity(TestActivity.class).setup();
+        TestActivity activity = scenario.get();
+        TestSettingsHostFragment hostFragment = new TestSettingsHostFragment();
+        activity.getSupportFragmentManager()
+                .beginTransaction()
+                .add(
+                        android.R.id.content,
+                        hostFragment,
+                        SettingsHostFragment.SETTINGS_NATIVE_PAGE_TAG)
+                .commitNow();
+        assertFalse(SettingsInTab.shouldOpenSettingsInTab());
+
+        mSettingsNavigationImpl.startSettings(activity, SecondFakeSettingsFragment.class, null);
+        hostFragment.getChildFragmentManager().executePendingTransactions();
+
+        assertTrue(hostFragment.getActiveFragment() instanceof SecondFakeSettingsFragment);
+    }
+
+    /**
+     * When settings is already open in a tab, {@code createSettingsIntent()} must create an intent
+     * to open in a tab via {@link SettingsHostFragment} even if {@link
+     * SettingsInTab#shouldOpenSettingsInTab()} is false.
+     */
+    @Test
+    @DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
+    public void
+            testCreateSettingsIntent_SettingsInTabDisabled_WithHostFragment_LaunchesChromeLauncherActivity() {
+        var scenario = Robolectric.buildActivity(TestActivity.class).setup();
+        TestActivity activity = scenario.get();
+        TestSettingsHostFragment hostFragment = new TestSettingsHostFragment();
+        activity.getSupportFragmentManager()
+                .beginTransaction()
+                .add(
+                        android.R.id.content,
+                        hostFragment,
+                        SettingsHostFragment.SETTINGS_NATIVE_PAGE_TAG)
+                .commitNow();
+        assertFalse(SettingsInTab.shouldOpenSettingsInTab());
+
+        Intent intent =
+                mSettingsNavigationImpl.createSettingsIntent(
+                        activity, FakeEmbeddableSettingsFragment.class);
+
+        assertEquals(Intent.ACTION_VIEW, intent.getAction());
+        assertEquals(UrlConstants.SETTINGS_URL, intent.getDataString());
+        assertEquals(ChromeLauncherActivity.class.getName(), intent.getComponent().getClassName());
+    }
 }

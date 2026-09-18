@@ -37,17 +37,20 @@ public final class SettingsNavigationFactory {
     /**
      * Create a {@link SettingsNavigation} instance scoped to the tab holding the given context.
      *
-     * <p>If SettingsInTab and URL navigation are enabled and a valid activity context is provided,
-     * resolves the tab-scoped delegate bound to the active {@link SettingsHostFragment}.
+     * <p>If URL navigation is enabled and a valid activity context is provided, resolves the
+     * tab-scoped delegate bound to the active {@link SettingsHostFragment}.
      */
     public static SettingsNavigation createSettingsNavigation(Context context) {
         if (sInstanceForTesting != null) {
             return sInstanceForTesting;
         }
 
-        if (!SettingsInTab.isEnabled() || !ChromeFeatureList.sSettingsInTabUrlNav.isEnabled()) {
+        if (!ChromeFeatureList.sSettingsInTabUrlNav.isEnabled()) {
             return sInstance;
         }
+
+        // SettingsInTabUrlNav implies that SettingsInTab is enabled.
+        assert SettingsInTab.isFeatureEnabled();
 
         Activity activity = ContextUtils.activityFromContext(context);
         if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
