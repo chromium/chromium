@@ -30,10 +30,6 @@ class MockAutofillAiManager : public AutofillAiManager {
               OnFormSubmitted,
               (const FormStructure&, ukm::SourceId),
               (override));
-  MOCK_METHOD(bool,
-              ShouldDisplayIph,
-              (const FormStructure&, FieldGlobalId),
-              (const override));
   MOCK_METHOD(void,
               OnAutofillAiSuggestionsShown,
               (const FormStructure&,

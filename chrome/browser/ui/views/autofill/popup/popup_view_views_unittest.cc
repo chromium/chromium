@@ -231,10 +231,6 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
         .WillByDefault(Return(autofill_popup_sub_controller_.GetWeakPtr()));
     ON_CALL(autofill_popup_controller_, GetMainFillingProduct)
         .WillByDefault([&controller = autofill_popup_controller_]() {
-          if (controller.GetAutofillSuggestionTriggerSource() ==
-              AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl) {
-            return FillingProduct::kAtMemory;
-          }
           return controller.GetLineCount() > 0
                      ? GetFillingProductFromSuggestionType(
                            controller.GetSuggestionAt(0).type)
@@ -3539,9 +3535,8 @@ TEST_F(PopupViewViewsPayNowPayLaterTabsTest,
 }
 
 TEST_F(PopupViewViewsTest, SearchBar_RemainVisibleEvenWithNoSuggestions) {
-  ON_CALL(controller(), GetAutofillSuggestionTriggerSource)
-      .WillByDefault(
-          Return(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl));
+  ON_CALL(controller(), GetMainFillingProduct)
+      .WillByDefault(Return(FillingProduct::kAtMemory));
   CreateAndShowView(
       /*ids=*/{}, CreateParamsForTestWidget(),
       AutofillPopupView::SearchBarConfig{.placeholder = u"Recall from memory",
@@ -3561,9 +3556,8 @@ TEST_F(PopupViewViewsTest, SearchBar_RemainVisibleEvenWithNoSuggestions) {
 }
 
 TEST_F(PopupViewViewsTest, AtMemory_KeyboardNavigation) {
-  ON_CALL(controller(), GetAutofillSuggestionTriggerSource)
-      .WillByDefault(
-          Return(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl));
+  ON_CALL(controller(), GetMainFillingProduct)
+      .WillByDefault(Return(FillingProduct::kAtMemory));
   input::NativeWebKeyboardEvent event(
       blink::WebKeyboardEvent::Type::kRawKeyDown,
       blink::WebInputEvent::kNoModifiers, ui::EventTimeForNow());
@@ -3618,9 +3612,8 @@ TEST_F(PopupViewViewsTest, AtMemory_KeyboardNavigation) {
 // Tests that arrow keys can be used to navigate between parent and sub-popup
 // back and forth.
 TEST_F(PopupViewViewsTest, AtMemory_KeyboardArrowsNavigationBetweenPopups) {
-  ON_CALL(controller(), GetAutofillSuggestionTriggerSource)
-      .WillByDefault(
-          Return(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl));
+  ON_CALL(controller(), GetMainFillingProduct)
+      .WillByDefault(Return(FillingProduct::kAtMemory));
 
   controller().set_suggestions({
       CreateSuggestionWithChildren(

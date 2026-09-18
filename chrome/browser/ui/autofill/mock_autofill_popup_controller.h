@@ -35,12 +35,6 @@ class MockAutofillPopupController : public AutofillPopupController {
   // AutofillPopupViewDelegate:
   MOCK_METHOD(void, Hide, (SuggestionHidingReason), (override));
   MOCK_METHOD(void, ViewDestroyed, (), (override));
-  MOCK_METHOD(bool, HasSelection, (), (const override));
-  MOCK_METHOD(gfx::Rect, popup_bounds, (), (const override));
-  MOCK_METHOD(AutofillSuggestionTriggerSource,
-              GetAutofillSuggestionTriggerSource,
-              (),
-              (const override));
   MOCK_METHOD(bool,
               ShouldIgnoreMouseObservedOutsideItemBoundsCheck,
               (),

@@ -1479,7 +1479,6 @@ class MockAutofillDriver : public ContentAutofillDriver {
   MockAutofillDriver& operator=(MockAutofillDriver&) = delete;
 
   ~MockAutofillDriver() override = default;
-  MOCK_METHOD(ui::AXTreeID, GetAxTreeId, (), (const override));
 };
 
 class AutofillPopupControllerForPopupAxTest
@@ -1502,17 +1501,7 @@ class MockAxTreeManager : public ui::AXTreeManager {
   MockAxTreeManager& operator=(MockAxTreeManager&) = delete;
   ~MockAxTreeManager() override = default;
 
-  MOCK_METHOD(ui::AXPlatformNodeDelegate*,
-              GetDelegate,
-              (const ui::AXTreeID tree_id, const int32_t node_id),
-              (const override));
-  MOCK_METHOD(ui::AXPlatformNodeDelegate*,
-              GetRootDelegate,
-              (const ui::AXTreeID tree_id),
-              (const override));
-  MOCK_METHOD(ui::AXTreeID, GetTreeID, (), (const override));
   MOCK_METHOD(ui::AXTreeID, GetParentTreeID, (), (const, override));
-  MOCK_METHOD(ui::AXNode*, GetRootAsAXNode, (), (const override));
   MOCK_METHOD(ui::AXNode*, GetParentNodeFromParentTree, (), (const, override));
 };
 
@@ -1567,7 +1556,6 @@ class AutofillPopupControllerImplTestAccessibility
   void SetUp() override {
     AutofillPopupControllerImplTestAccessibilityBase::SetUp();
 
-    ON_CALL(driver(), GetAxTreeId()).WillByDefault(Return(test_tree_id_));
     ON_CALL(client().suggestion_controller(manager()),
             GetRootAXPlatformNodeForWebContents)
         .WillByDefault(Return(&mock_ax_platform_node_));
