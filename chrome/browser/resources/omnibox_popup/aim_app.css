@@ -29,6 +29,15 @@
   --search-animated-glif-rotation-duration: 2000ms;
 }
 
+/* Paints the popup's surface. The composebox fills its own box to within the
+ * transparent border 'search-animated-glow' reserves for its glow, so without
+ * this the page behind the popup shows through that edge.
+ * https://source.chromium.org/chromium/chromium/src/+/main:ui/webui/resources/cr_components/search/animated_glow.css;l=244 */
+:host([webui-shadow-enabled_]) #content {
+  background-color: var(--color-omnibox-results-background);
+  border-radius: var(--cr-composebox-expanded-border-radius);
+}
+
 #composebox {
   --color-composebox-background: var(--color-omnibox-results-background);
   --color-composebox-cancel-button: unset; /* Lens only */
@@ -57,6 +66,12 @@
   --color-composebox-font-light: var(--color-omnibox-text);
   --color-composebox-hover: unset; /* Lens only */
   --color-composebox-input-icon: var(--color-omnibox-results-icon);
+
+  /* The composebox is the popup's surface rather than a plate drawn on a
+   * page, so it takes no outline of its own; the drop shadow separates it.
+   * An opaque one would also cover the outer edge of the glow stroke. */
+  --color-composebox-input-plate-outline: transparent;
+
   --color-composebox-lens-button: unset; /* Lens only */
   --color-composebox-pdf-chip-icon: var(--color-omnibox-text-dimmed);
   --color-composebox-scrim-background: unset; /* No scrim. */

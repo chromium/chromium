@@ -238,19 +238,32 @@ RoundedOmniboxResultsFrame::RoundedOmniboxResultsFrame(
   const int corner_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
       views::ShapeContextTokens::kOmniboxExpandedRadius);
   auto* webui_content = GetOmniboxPopupWebUIBaseContent();
+  // When the page paints the popup's shadow, this frame must not paint a
+  // background, rounded corners or a shadow: the renderer draws all of them,
+  // including transparent shadow pixels in the margin around the content.
+  draw_shadow_in_webui_ =
+      webui_content && webui_content->ShouldDrawShadowInWebUI();
   const bool masks_to_bounds =
       webui_content && webui_content->ShouldSizeWebViewToPreferredHeight();
+  // Skipped entirely when the WebUI paints the background itself.
+  std::unique_ptr<views::Background> background;
+  if (!draw_shadow_in_webui_) {
+    background = views::CreateSolidBackground(kColorOmniboxResultsBackground);
+  }
   // Host the contents in its own View to simplify layout and customization.
   auto contents_host_builder =
       views::Builder<views::View>()
           .CopyAddressTo(&contents_host_)
-          .SetBackground(
-              views::CreateSolidBackground(kColorOmniboxResultsBackground))
+          .SetBackground(std::move(background))
           .SetPaintToLayer()
           .CustomConfigure(base::BindOnce(
               [](const int corner_radius, const bool masks_to_bounds,
-                 views::View* view) {
+                 const bool draw_shadow_in_webui, views::View* view) {
                 view->layer()->SetFillsBoundsOpaquely(false);
+                if (draw_shadow_in_webui) {
+                  // Rounded corners would clip the WebUI-drawn shadow.
+                  return;
+                }
                 if (masks_to_bounds) {
                   view->layer()->SetMasksToBounds(true);
                 }
@@ -259,7 +272,7 @@ RoundedOmniboxResultsFrame::RoundedOmniboxResultsFrame(
                     gfx::RoundedCornersF(corner_radius));
                 view->layer()->SetIsFastRoundedCorner(true);
               },
-              corner_radius, masks_to_bounds))
+              corner_radius, masks_to_bounds, draw_shadow_in_webui_))
           .AddChild(views::Builder<TopBackgroundView>(
                         std::make_unique<TopBackgroundView>(location_bar))
                         .CopyAddressTo(&top_background_));
@@ -267,8 +280,9 @@ RoundedOmniboxResultsFrame::RoundedOmniboxResultsFrame(
   auto contents_host = std::move(contents_host_builder).Build();
   contents_host->AddChildViewRaw(contents_.get());
 
-  // Initialize the shadow.
-  SetElevation(kDefaultElevation);
+  if (!draw_shadow_in_webui_) {
+    SetElevation(kDefaultElevation);
+  }
 
   AddChildView(std::move(contents_host));
 }
@@ -332,9 +346,12 @@ gfx::Insets RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets() {
 }
 
 // static
+// Popups that paint their own shadow reserve this margin as `body` padding.
+// LINT.IfChange(ShadowInsets)
 gfx::Insets RoundedOmniboxResultsFrame::GetShadowInsets() {
   return views::BubbleBorder::GetBorderAndShadowInsets(kDefaultElevation);
 }
+// LINT.ThenChange(//chrome/browser/resources/omnibox_popup/omnibox_popup_document_style.css:ShadowMargin)
 
 std::unique_ptr<views::View> RoundedOmniboxResultsFrame::ExtractContents() {
   auto contents = std::exchange(contents_, nullptr);
@@ -402,6 +419,12 @@ void RoundedOmniboxResultsFrame::Layout(PassKey) {
   }
 
   gfx::Rect results_bounds(contents_host_->GetContentsBounds());
+  if (draw_shadow_in_webui_) {
+    // The WebUI paints the shadow, so the WebView must cover the whole widget,
+    // shadow margin included. There is also no location bar cutout to skip.
+    contents_->SetBoundsRect(results_bounds);
+    return;
+  }
   results_bounds.Inset(GetContentInsets());
 
   // Align webview horizontal bounds and positioning with the outer view.

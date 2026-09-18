@@ -10,7 +10,8 @@ import type {OmniboxAimAppElement} from './aim_app.js';
 export function getHtml(this: OmniboxAimAppElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<div id="content">
+<div id="content"
+    class="${this.webuiShadowEnabled_ ? 'omnibox-shadow-layer' : ''}">
   <cr-omnibox-composebox searchbox-next-enabled id="composebox"
       searchbox-layout-mode="${this.getSearchboxLayoutMode_()}"
       ?disable-caret-color-animation="${!this.caretAnimationsEnabled_}"

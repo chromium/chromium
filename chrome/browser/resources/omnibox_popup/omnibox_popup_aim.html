@@ -1,26 +1,11 @@
-﻿<!doctype html>
+<!doctype html>
 <html dir="$i18n{textdirection}" lang="$i18n{language}" $i18n{webuiRoundedIconsAttribute}>
 <head>
   <meta charset="utf-8">
   <title>Omnibox Popup</title>
   <link rel="stylesheet" href="//resources/css/text_defaults_md.css">
   <link rel="stylesheet" href="chrome://theme/colors.css?sets=ui,chrome">
-  <style>
-    html {
-      height: auto;
-      overflow: hidden;
-
-      /* Note: Needed to prevent a horizontal scrollbar when this UI is shown
-         via OmniboxPopupPresenter (not reproducible in a tab). */
-      max-width: 100vw;
-    }
-
-    body {
-      background-color: var(--color-omnibox-results-background);
-      height: auto;
-      margin: 0;
-    }
-  </style>
+  <link rel="stylesheet" href="omnibox_popup_document_style.css">
 </head>
 <body>
   <omnibox-aim-app></omnibox-aim-app>

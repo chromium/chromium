@@ -109,6 +109,10 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
   bool ShouldApplyHeightWorkarounds() const;
   bool ShouldSizeWebViewToPreferredHeight() const;
 
+  // True when the WebUI, rather than the Views frame, is responsible for
+  // painting the popup's background, rounded corners and drop shadow.
+  bool ShouldDrawShadowInWebUI() const;
+
   bool IsShown() { return is_shown_; }
   void set_is_shown(bool is_shown) { is_shown_ = is_shown; }
 

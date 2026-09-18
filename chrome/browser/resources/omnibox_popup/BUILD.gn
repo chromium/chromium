@@ -12,6 +12,7 @@ build_webui("build") {
     "images/create_images.png",
     "omnibox_popup.html",
     "omnibox_popup_aim.html",
+    "omnibox_popup_document_style.css",
     "omnibox_popup_full.html",
   ]
   ts_files = [

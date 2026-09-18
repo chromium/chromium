@@ -315,6 +315,18 @@ bool OmniboxPopupPresenterBase::IsShown() const {
 }
 
 void OmniboxPopupPresenterBase::OnContentHeightChanged(int content_height) {
+  if (ShouldDrawShadowInWebUI()) {
+    // The WebUI reserves the shadow margin inside its own document, so the
+    // reported height includes it. Strip it back out so `content_height_`
+    // keeps meaning "height of the popup content"; `SynchronizePopupBounds()`
+    // adds the shadow margin back when sizing the widget.
+    // TODO(crbug.com/563367122): Streamline height coordination between WebUI
+    // and Views so shadow insets do not need to be manually stripped and
+    // re-added.
+    content_height =
+        std::max(1, content_height -
+                        RoundedOmniboxResultsFrame::GetShadowInsets().height());
+  }
   content_height_ = content_height;
   // Restore opacity once we receive a valid content height.
   if (ShouldHideForInitialLayout() && content_height_ > 1 && widget_) {
@@ -456,6 +468,10 @@ OmniboxPopupPresenterBase::CreateResultsFrame(
 }
 
 bool OmniboxPopupPresenterBase::ShouldShowLocationBarCutout() const {
+  return false;
+}
+
+bool OmniboxPopupPresenterBase::ShouldDrawShadowInWebUI() const {
   return false;
 }
 

@@ -1,0 +1,35 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* Document-level styles shared by the AIM and full WebUI omnibox popups.
+ * These target 'html' and 'body', so they cannot live in
+ * omnibox_popup_shared_style.css, which is included into shadow roots. */
+
+html {
+  height: auto;
+  overflow: hidden;
+
+  /* Note: Needed to prevent a horizontal scrollbar when this UI is shown
+     via OmniboxPopupPresenter (not reproducible in a tab). */
+  max-width: 100vw;
+}
+
+body {
+  background-color: var(--color-omnibox-results-background);
+  height: auto;
+  margin: 0;
+}
+
+/* Set when the page, rather than the Views frame, paints the popup's drop
+   shadow. The document goes transparent so the shadow composites over what is
+   behind the popup, and reserves the margin the shadow needs. The shadow
+   itself is drawn by '.omnibox-shadow-layer' in
+   omnibox_popup_shared_style.css. */
+/* LINT.IfChange(ShadowMargin) */
+body:has([webui-shadow-enabled_]) {
+  background-color: transparent;
+  box-sizing: border-box;
+  padding: 16px 16px 28px;
+}
+/* LINT.ThenChange(//chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.cc:ShadowInsets) */

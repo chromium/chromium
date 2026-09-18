@@ -157,6 +157,10 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
   source->AddBoolean("webuiOmniboxPopupSelectionControlEnabled",
                      base::FeatureList::IsEnabled(
                          omnibox::kWebUIOmniboxPopupSelectionControl));
+  source->AddBoolean("omniboxAimWebUIShadowEnabled",
+                     omnibox::ShouldDrawAimShadowInWebUI());
+  source->AddBoolean("omniboxFullWebUIShadowEnabled",
+                     omnibox::ShouldDrawFullPopupShadowInWebUI());
   source->AddBoolean(
       "searchboxMultiline",
       base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup) &&

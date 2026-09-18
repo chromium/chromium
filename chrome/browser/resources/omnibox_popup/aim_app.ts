@@ -62,6 +62,10 @@ export class OmniboxAimAppElement extends CrLitElement {
       isOblongShape_: {type: Boolean},
       webuiOmniboxSimplificationEnabled_: {type: Boolean},
       smartComposeEnabled_: {type: Boolean},
+      webuiShadowEnabled_: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
@@ -95,6 +99,10 @@ export class OmniboxAimAppElement extends CrLitElement {
       loadTimeData.getBoolean('webuiOmniboxSimplificationEnabled');
   protected accessor smartComposeEnabled_: boolean =
       loadTimeData.getBoolean('composeboxSmartComposeEnabled');
+  // When true, this page paints the popup's background, rounded corners and
+  // drop shadow instead of the Views frame.
+  protected accessor webuiShadowEnabled_: boolean =
+      loadTimeData.getBoolean('omniboxAimWebUIShadowEnabled');
 
   private eventTracker_ = new EventTracker();
   private browserProxy_: BrowserProxy;

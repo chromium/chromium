@@ -248,6 +248,10 @@ bool OmniboxPopupFullPresenter::ShouldSizeWebViewToPreferredHeight() const {
       omnibox::kOmniboxFullWebUISizeWebViewToPreferredHeight);
 }
 
+bool OmniboxPopupFullPresenter::ShouldDrawShadowInWebUI() const {
+  return omnibox::ShouldDrawFullPopupShadowInWebUI();
+}
+
 bool OmniboxPopupFullPresenter::ShouldHideForInitialLayout() const {
   return false;
 }
@@ -298,14 +302,16 @@ void OmniboxPopupFullPresenter::SynchronizePopupBounds() {
       -RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets());
 
   const int default_height = widget_bounds.height();
-  bool has_results = content_height_ > default_height;
-  int target_elevation =
-      has_results ? RoundedOmniboxResultsFrame::kDefaultElevation : 0;
 
   auto* results_frame =
       views::AsViewClass<FullWebUIOmniboxFrame>(GetResultsFrame());
   CHECK(results_frame);
-  results_frame->SetElevation(target_elevation);
+  const bool shadow_in_webui = ShouldDrawShadowInWebUI();
+  if (!shadow_in_webui) {
+    const bool has_results = content_height_ > default_height;
+    results_frame->SetElevation(
+        has_results ? RoundedOmniboxResultsFrame::kDefaultElevation : 0);
+  }
 
   widget_bounds.set_height(content_height_ > 1 ? content_height_
                                                : default_height);
@@ -317,7 +323,12 @@ void OmniboxPopupFullPresenter::SynchronizePopupBounds() {
   widget_bounds.set_height(
       std::max(get_minimum_size().height(), widget_bounds.height()));
 
-  widget_bounds.Inset(-results_frame->GetInsets());
+  // Normally the frame's border supplies the shadow margin. When the page
+  // paints the shadow the frame has no border, so add the margin here; the
+  // WebView covers it and the page paints the shadow into it.
+  widget_bounds.Inset(-(shadow_in_webui
+                            ? RoundedOmniboxResultsFrame::GetShadowInsets()
+                            : results_frame->GetInsets()));
   GetWidget()->SetBounds(widget_bounds);
 }
 

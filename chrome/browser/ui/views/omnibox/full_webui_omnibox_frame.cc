@@ -29,7 +29,7 @@ namespace {
 #if !defined(USE_AURA)
 class ResultsViewTargeterDelegate : public views::ViewTargeterDelegate {
  public:
-  explicit ResultsViewTargeterDelegate(RoundedOmniboxResultsFrame* frame)
+  explicit ResultsViewTargeterDelegate(FullWebUIOmniboxFrame* frame)
       : frame_(frame) {}
 
   ResultsViewTargeterDelegate(const ResultsViewTargeterDelegate&) = delete;
@@ -39,12 +39,20 @@ class ResultsViewTargeterDelegate : public views::ViewTargeterDelegate {
 
   views::View* TargetForRect(views::View* root,
                              const gfx::Rect& rect) override {
+    // On macOS (non-Aura), there is no `WindowTargeter` to exclude the shadow
+    // margin at the window level. Because the widget bounds include the shadow
+    // margin, and in WebUI shadow mode the WebView spans the entire widget,
+    // clicks in the transparent shadow margin would be swallowed by the
+    // WebView. Redirect rects falling entirely in that margin to `root` (this
+    // frame), which forwards them to the browser window beneath so underlying
+    // controls (e.g. bookmarks bar or web content) receive the events.
+    gfx::Rect interior = root->GetLocalBounds();
+    interior.Inset(RoundedOmniboxResultsFrame::GetShadowInsets());
+    if (!interior.Intersects(rect)) {
+      return root;
+    }
     if (frame_->forward_mouse_events()) {
-      int top_inset =
-          frame_->GetInsets().top() +
-          RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets().top() +
-          GetLayoutConstant(LayoutConstant::kLocationBarHeight);
-      if (rect.y() < top_inset) {
+      if (rect.y() < frame_->GetEventForwardingInsets().top()) {
         return root;
       }
     }
@@ -52,7 +60,7 @@ class ResultsViewTargeterDelegate : public views::ViewTargeterDelegate {
   }
 
  private:
-  raw_ptr<RoundedOmniboxResultsFrame> frame_;
+  raw_ptr<FullWebUIOmniboxFrame> frame_;
 };
 #endif  // !USE_AURA
 
@@ -120,11 +128,14 @@ void FullWebUIOmniboxFrame::OnMouseEvent(ui::MouseEvent* event) {
 
 #endif  // !USE_AURA
 
-gfx::Insets FullWebUIOmniboxFrame::GetEventForwardingInsets() {
-  int top_inset = GetInsets().top() + GetLocationBarAlignmentInsets().top() +
+gfx::Insets FullWebUIOmniboxFrame::GetEventForwardingInsets() const {
+  // The widget is always expanded by the shadow margin, whether the shadow is
+  // painted by this frame's border or by the page.
+  const gfx::Insets insets = GetShadowInsets();
+  int top_inset = insets.top() + GetLocationBarAlignmentInsets().top() +
                   GetLayoutConstant(LayoutConstant::kLocationBarHeight);
-  return gfx::Insets::TLBR(top_inset, GetInsets().left(), GetInsets().bottom(),
-                           GetInsets().right());
+  return gfx::Insets::TLBR(top_inset, insets.left(), insets.bottom(),
+                           insets.right());
 }
 
 #if defined(USE_AURA)
@@ -134,7 +145,7 @@ void FullWebUIOmniboxFrame::UpdateWindowTargeter() {
   }
   auto* window = GetWidget()->GetNativeWindow();
   const gfx::Insets insets =
-      forward_mouse_events() ? GetEventForwardingInsets() : GetInsets();
+      forward_mouse_events() ? GetEventForwardingInsets() : GetShadowInsets();
   if (window->targeter()) {
     window->targeter()->SetInsets(insets);
   } else {

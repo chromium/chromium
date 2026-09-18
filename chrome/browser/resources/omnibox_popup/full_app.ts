@@ -7,6 +7,7 @@ import '/strings.m.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -20,6 +21,20 @@ export class OmniboxFullAppElement extends CrLitElement {
   override render() {
     return getHtml.bind(this)();
   }
+
+  static override get properties() {
+    return {
+      webuiShadowEnabled_: {
+        type: Boolean,
+        reflect: true,
+      },
+    };
+  }
+
+  // When true, this page paints the popup's background, rounded corners and
+  // drop shadow instead of the Views frame.
+  protected accessor webuiShadowEnabled_: boolean =
+      loadTimeData.getBoolean('omniboxFullWebUIShadowEnabled');
 
   private eventTracker_ = new EventTracker();
 

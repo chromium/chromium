@@ -57,6 +57,7 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   bool ShouldDetachWebContentsOnHide() const override;
   bool ShouldEvictOnHide() const override;
   bool ShouldSizeWebViewToPreferredHeight() const override;
+  bool ShouldDrawShadowInWebUI() const override;
   bool ShouldHideForInitialLayout() const override;
 
   bool IsDeactivating() const override;

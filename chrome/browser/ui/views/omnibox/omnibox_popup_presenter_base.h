@@ -140,6 +140,11 @@ class OmniboxPopupPresenterBase
   // height in RoundedOmniboxResultsFrame.
   virtual bool ShouldSizeWebViewToPreferredHeight() const = 0;
 
+  // Returns whether the popup's drop shadow is painted by the page rather than
+  // by the results frame. When true the frame paints nothing and the WebView
+  // is expanded to cover the shadow margin.
+  virtual bool ShouldDrawShadowInWebUI() const;
+
   virtual std::string_view GetPopupMetricPrefix() const = 0;
 
   OmniboxPopupPresenterDelegate& delegate() const {

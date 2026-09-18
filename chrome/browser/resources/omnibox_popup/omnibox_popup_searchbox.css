@@ -118,6 +118,13 @@
   --cr-searchbox-voice-icon-offset: 53px;
 }
 
+/* TODO(crbug.com/563367122): Clean up shadow coordination between the inner
+ * searchbox and the outer popup shadow layer. */
+:host([webui-shadow-enabled_][dropdown-is-visible]) {
+  --cr-searchbox-shadow: none;
+  height: auto;
+}
+
 @media (forced-colors: active) {
   :host {
     border: 1px solid ActiveBorder;

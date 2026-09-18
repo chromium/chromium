@@ -152,6 +152,13 @@ bool IsWebUIOmniboxInBrowserViewEnabled();
 // profile-based `IsAimPopupEnabled()` function below instead.
 bool IsAimPopupFeatureEnabled();
 
+// Whether the page, rather than the Views frame, paints the popup's drop
+// shadow. The Views layer and the page must agree exactly: if they disagree
+// the shadow margin is either reserved twice or not at all. Call these from
+// both sides rather than recombining the underlying flags.
+bool ShouldDrawAimShadowInWebUI();
+bool ShouldDrawFullPopupShadowInWebUI();
+
 // Returns true if the AIM Popup feature is fully enabled for the given
 // `profile`. This is the correct function for external code to use, as it
 // checks both the base::Feature flag and all other requirements like user

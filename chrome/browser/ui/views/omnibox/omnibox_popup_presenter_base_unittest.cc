@@ -8,6 +8,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
+#include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
@@ -32,6 +33,15 @@ class TestOmniboxPopupPresenter : public OmniboxPopupPresenterBase {
   std::string_view GetPopupMetricPrefix() const override {
     return "TestPrefix";
   }
+};
+
+// Presenter whose popup paints its own drop shadow in the page, so the Views
+// layer reserves the shadow margin around the content.
+class TestShadowOmniboxPopupPresenter : public TestOmniboxPopupPresenter {
+ public:
+  using TestOmniboxPopupPresenter::TestOmniboxPopupPresenter;
+
+  bool ShouldDrawShadowInWebUI() const override { return true; }
 };
 
 class TestDeferredOmniboxPopupPresenter : public OmniboxPopupPresenterBase {
@@ -122,6 +132,10 @@ class OmniboxPopupPresenterBaseTest : public views::ViewsTestBase {
   base::WeakPtr<OmniboxPopupPresenterBase> GetVisualStateWeakPtr(
       OmniboxPopupPresenterBase* presenter) {
     return presenter->visual_state_weak_factory_.GetWeakPtr();
+  }
+
+  int GetContentHeight(OmniboxPopupPresenterBase* presenter) {
+    return presenter->content_height_;
   }
 };
 
@@ -346,4 +360,37 @@ TEST_F(OmniboxPopupPresenterBaseTest,
                                     1);
   histogram_tester.ExpectTotalCount(
       "TestPrefix.ResultToContentReadyOnFirstShow", 1);
+}
+
+// When the page paints the shadow, the height the renderer reports includes
+// the shadow margin the document reserves for it. `content_height_` must stay
+// the height of the popup content alone.
+TEST_F(OmniboxPopupPresenterBaseTest, ContentHeightExcludesShadowMargin) {
+  auto presenter = std::make_unique<TestShadowOmniboxPopupPresenter>(
+      nullptr, dummy_delegate_, controller_.get());
+
+  presenter->OnContentHeightChanged(400);
+
+  EXPECT_EQ(GetContentHeight(presenter.get()),
+            400 - RoundedOmniboxResultsFrame::GetShadowInsets().height());
+}
+
+TEST_F(OmniboxPopupPresenterBaseTest, ContentHeightUnchangedWithoutShadow) {
+  auto presenter = std::make_unique<TestOmniboxPopupPresenter>(
+      nullptr, dummy_delegate_, controller_.get());
+
+  presenter->OnContentHeightChanged(400);
+
+  EXPECT_EQ(GetContentHeight(presenter.get()), 400);
+}
+
+// A height smaller than the shadow margin must not produce a zero or negative
+// content height, which would be read as "no content yet".
+TEST_F(OmniboxPopupPresenterBaseTest, ContentHeightClampedBelowShadowMargin) {
+  auto presenter = std::make_unique<TestShadowOmniboxPopupPresenter>(
+      nullptr, dummy_delegate_, controller_.get());
+
+  presenter->OnContentHeightChanged(1);
+
+  EXPECT_EQ(GetContentHeight(presenter.get()), 1);
 }

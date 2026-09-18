@@ -282,6 +282,15 @@ bool IsAimPopupFeatureEnabled() {
   return base::FeatureList::IsEnabled(internal::kWebUIOmniboxAimPopup);
 }
 
+bool ShouldDrawAimShadowInWebUI() {
+  return IsWebUIOmniboxFullPopupEnabled() &&
+         base::FeatureList::IsEnabled(kOmniboxAimWebUIShadow);
+}
+
+bool ShouldDrawFullPopupShadowInWebUI() {
+  return base::FeatureList::IsEnabled(kOmniboxFullWebUIShadow);
+}
+
 bool IsAimPopupEnabled(Profile* profile) {
   if (!profile) {
     return false;

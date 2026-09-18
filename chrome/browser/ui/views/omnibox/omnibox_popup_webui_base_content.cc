@@ -137,7 +137,12 @@ OmniboxPopupWebUIBaseContent::~OmniboxPopupWebUIBaseContent() {
 
 void OmniboxPopupWebUIBaseContent::AddedToWidget() {
   views::WebView::AddedToWidget();
-  holder()->SetNativeViewCornerRadii(GetRoundedCornerRadii());
+  // In shadow mode this view spans the shadow margin as well, so rounding it
+  // would round the margin box and clip the shadow's outer corners. The page
+  // draws the popup's corners itself.
+  holder()->SetNativeViewCornerRadii(ShouldDrawShadowInWebUI()
+                                         ? gfx::RoundedCornersF()
+                                         : GetRoundedCornerRadii());
 }
 
 gfx::RoundedCornersF OmniboxPopupWebUIBaseContent::GetRoundedCornerRadii()
@@ -168,6 +173,13 @@ void OmniboxPopupWebUIBaseContent::OnLocationBarBoundsChanged() {
 
   if (popup_presenter_) {
     width = std::max(width, popup_presenter_->get_minimum_size().width());
+    if (popup_presenter_->ShouldDrawShadowInWebUI()) {
+      // The WebView spans the whole widget, shadow margin included, and the
+      // page reserves that margin in its own layout. The renderer viewport
+      // must match the WebView or the content would be laid out narrower than
+      // the widget.
+      width += RoundedOmniboxResultsFrame::GetShadowInsets().width();
+    }
   }
 
   // Update the auto-resize limits for WebUI so that the WebUI updates
@@ -670,6 +682,10 @@ bool OmniboxPopupWebUIBaseContent::ShouldApplyHeightWorkarounds() const {
 bool OmniboxPopupWebUIBaseContent::ShouldSizeWebViewToPreferredHeight() const {
   return popup_presenter_ &&
          popup_presenter_->ShouldSizeWebViewToPreferredHeight();
+}
+
+bool OmniboxPopupWebUIBaseContent::ShouldDrawShadowInWebUI() const {
+  return popup_presenter_ && popup_presenter_->ShouldDrawShadowInWebUI();
 }
 
 BEGIN_METADATA(OmniboxPopupWebUIBaseContent)

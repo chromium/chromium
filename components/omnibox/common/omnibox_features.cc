@@ -266,6 +266,14 @@ BASE_FEATURE(kOmniboxAimEvictOnHide, DISABLED);
 // frame when hidden.
 BASE_FEATURE(kOmniboxFullWebUIEvictOnHide, DISABLED);
 
+// When enabled, the AIM WebUI popup's drop shadow is painted by the page
+// rather than by the Views frame. Only takes effect when both the AIM
+// popup and the full WebUI popup are enabled.
+BASE_FEATURE(kOmniboxAimWebUIShadow, ENABLED);
+
+// Same as `kOmniboxAimWebUIShadow`, but for the full WebUI popup.
+BASE_FEATURE(kOmniboxFullWebUIShadow, ENABLED);
+
 // When enabled, sizes the AIM popup child WebView bounds directly to its
 // preferred height in RoundedOmniboxResultsFrame and eliminates transient
 // height resets on hide.

@@ -83,6 +83,10 @@ class RoundedOmniboxResultsFrame : public views::View {
 
   // Only used on platforms that support Aura (non-Mac).
   [[maybe_unused]] bool forward_mouse_events_;
+
+  // True when the WebUI paints the popup's background, rounded corners and
+  // drop shadow instead of this frame. Determined at construction.
+  bool draw_shadow_in_webui_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_ROUNDED_OMNIBOX_RESULTS_FRAME_H_

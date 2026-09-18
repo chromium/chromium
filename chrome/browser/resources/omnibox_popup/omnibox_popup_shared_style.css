@@ -61,6 +61,45 @@
    * difference. */
   --omnibox-font-size: 14.3px;
   --omnibox-context-menu-container-margin-top: 2px;
+
+  /* Popup drop shadow, matching views::BubbleBorder at
+   * RoundedOmniboxResultsFrame::kDefaultElevation (16). Its two shadows come
+   * from gfx::ShadowValue::MakeShadowValues():
+   * https://source.chromium.org/chromium/chromium/src/+/main:ui/gfx/shadow_value.cc;l=87
+   *   key     - offset (0, 0),  Skia blur 32, kColorShadowBase @ alpha 0x1a
+   *   ambient - offset (0, 12), Skia blur 32, kColorShadowBase @ alpha 0x3d
+   *
+   * The blur is 10px, not 16px: Views turns a Skia blur into a Gaussian sigma
+   * with RadiusToSigma() (0.288675 * blur / 2 + 0.5 = 5.12), while CSS
+   * defines sigma as half the blur radius.
+   * https://source.chromium.org/chromium/chromium/src/+/main:ui/gfx/skia_paint_util.cc;l=77
+   *
+   * kColorShadowBase is Google Grey 800 in light mode and black in dark
+   * mode. It is E_CPONLY, so there is no generated CSS variable for it. */
+  --omnibox-webui-shadow-base-rgb: 60, 64, 67;
+  --omnibox-webui-shadow:
+      0 0 12px rgba(var(--omnibox-webui-shadow-base-rgb), 0.08),
+      0 12px 16px rgba(var(--omnibox-webui-shadow-base-rgb), 0.18);
+}
+
+/* kColorShadowBase is black in dark mode. */
+@media (prefers-color-scheme: dark) {
+  :host {
+    --omnibox-webui-shadow-base-rgb: 0, 0, 0;
+  }
+}
+
+.omnibox-shadow-layer {
+  position: relative;
+}
+
+.omnibox-shadow-layer::before {
+  border-radius: inherit;
+  box-shadow: var(--omnibox-webui-shadow);
+  content: '';
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
 }
 
 cr-searchbox-dropdown {

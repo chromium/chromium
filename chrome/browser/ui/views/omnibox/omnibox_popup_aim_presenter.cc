@@ -96,6 +96,10 @@ bool OmniboxPopupAimPresenter::ShouldSizeWebViewToPreferredHeight() const {
       omnibox::kOmniboxAimSizeWebViewToPreferredHeight);
 }
 
+bool OmniboxPopupAimPresenter::ShouldDrawShadowInWebUI() const {
+  return omnibox::ShouldDrawAimShadowInWebUI();
+}
+
 void OmniboxPopupAimPresenter::OnWidgetActivationChanged(views::Widget* widget,
                                                          bool active) {
   if (active) {
