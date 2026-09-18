@@ -1286,7 +1286,7 @@ def libfuzzer_mac_asan_builder(**kwargs):
 libfuzzer_mac_asan_builder(
     name = "Libfuzzer Upload Mac ASan",
     builderless = True,
-    cores = 12,
+    cores = None,
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     clusterfuzz_archive_path = "mac-release-asan/libfuzzer-mac-release",
