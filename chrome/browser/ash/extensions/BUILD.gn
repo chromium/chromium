@@ -47,7 +47,7 @@ static_library("extensions") {
   public_deps = [
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/extensions/api/input_ime",
-    "//chromeos/ash/experiences/extensions/api",
+    "//chromeos/ash/experiences/extensions/common/api",
   ]
 
   deps = [

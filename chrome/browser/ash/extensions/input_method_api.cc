@@ -38,7 +38,7 @@
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "chromeos/ash/components/language_packs/handwriting.h"
 #include "chromeos/ash/components/language_packs/language_pack_manager.h"
-#include "chromeos/ash/experiences/extensions/api/input_method_private.h"
+#include "chromeos/ash/experiences/extensions/common/api/input_method_private.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"

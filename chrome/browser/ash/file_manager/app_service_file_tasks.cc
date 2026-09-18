@@ -40,7 +40,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/hats_office_trigger.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
-#include "chromeos/ash/experiences/extensions/api/file_manager_private.h"
+#include "chromeos/ash/experiences/extensions/common/api/file_manager_private.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"

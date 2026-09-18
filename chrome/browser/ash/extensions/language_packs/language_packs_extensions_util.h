@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_EXTENSIONS_LANGUAGE_PACKS_LANGUAGE_PACKS_EXTENSIONS_UTIL_H_
 
 #include "chromeos/ash/components/language_packs/language_pack_manager.h"
-#include "chromeos/ash/experiences/extensions/api/input_method_private.h"
+#include "chromeos/ash/experiences/extensions/common/api/input_method_private.h"
 
 namespace chromeos {
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/experiences/extensions/chromeos_extensions_api_permissions.h"
+#include "chromeos/ash/experiences/extensions/common/chromeos_extensions_api_permissions.h"
 
 #include "base/containers/span.h"
 #include "extensions/common/permissions/api_permission.h"

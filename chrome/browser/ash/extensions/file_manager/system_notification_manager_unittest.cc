@@ -37,7 +37,7 @@
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
-#include "chromeos/ash/experiences/extensions/api/file_manager_private.h"
+#include "chromeos/ash/experiences/extensions/common/api/file_manager_private.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/file_system_url.h"

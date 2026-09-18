@@ -5,9 +5,9 @@
 /**
  * @fileoverview Definitions for chrome.inputMethodPrivate API
  * Generated from:
- * chromeos/ash/experiences/extensions/api/input_method_private.json run
+ * chromeos/ash/experiences/extensions/common/api/input_method_private.json run
  * `tools/json_schema_compiler/compiler.py
- * chromeos/ash/experiences/extensions/api/input_method_private.json -g
+ * chromeos/ash/experiences/extensions/common/api/input_method_private.json -g
  * ts_definitions` to regenerate.
  */
 

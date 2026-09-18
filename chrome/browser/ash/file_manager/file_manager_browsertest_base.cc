@@ -172,7 +172,7 @@
 #include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
 #include "chromeos/ash/experiences/arc/test/connection_holder_util.h"
 #include "chromeos/ash/experiences/arc/test/fake_file_system_instance.h"
-#include "chromeos/ash/experiences/extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
+#include "chromeos/ash/experiences/extensions/common/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "components/account_id/account_id.h"

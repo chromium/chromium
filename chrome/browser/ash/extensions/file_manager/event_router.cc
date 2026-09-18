@@ -66,7 +66,7 @@
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
-#include "chromeos/ash/experiences/extensions/api/file_manager_private.h"
+#include "chromeos/ash/experiences/extensions/common/api/file_manager_private.h"
 #include "chromeos/components/disks/disks_prefs.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/drive/drive_pref_names.h"

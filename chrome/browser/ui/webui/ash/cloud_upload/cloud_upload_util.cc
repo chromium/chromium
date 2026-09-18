@@ -29,7 +29,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "chromeos/ash/components/system_web_apps/system_web_app_type.h"
-#include "chromeos/ash/experiences/extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
+#include "chromeos/ash/experiences/extensions/common/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"

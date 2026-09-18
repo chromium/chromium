@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/experiences/extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
+#include "chromeos/ash/experiences/extensions/common/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
 
 #include <memory>
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "chromeos/ash/experiences/extensions/api/manifest_types.h"
+#include "chromeos/ash/experiences/extensions/common/api/manifest_types.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"

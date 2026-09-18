@@ -9,7 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/api/input_ime/input_ime_api_chromeos.h"
-#include "chromeos/ash/experiences/extensions/api/input_method_private.h"
+#include "chromeos/ash/experiences/extensions/common/api/input_method_private.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_function.h"

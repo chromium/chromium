@@ -20,7 +20,7 @@
 #include "chrome/browser/ash/fileapi/recent_source.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-forward.h"
-#include "chromeos/ash/experiences/extensions/api/file_manager_private.h"
+#include "chromeos/ash/experiences/extensions/common/api/file_manager_private.h"
 #include "components/drive/file_errors.h"
 #include "storage/browser/file_system/file_system_url.h"
 

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SPEECH_SPEECH_RECOGNITION_CONSTANTS_H_
 #define CHROME_BROWSER_SPEECH_SPEECH_RECOGNITION_CONSTANTS_H_
 
-#include "chromeos/ash/experiences/extensions/api/speech_recognition_private.h"
+#include "chromeos/ash/experiences/extensions/common/api/speech_recognition_private.h"
 
 static_assert(BUILDFLAG(IS_CHROMEOS));
 

@@ -15,7 +15,7 @@
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
-#include "chromeos/ash/experiences/extensions/api/file_manager_private.h"
+#include "chromeos/ash/experiences/extensions/common/api/file_manager_private.h"
 #include "extensions/common/extension.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -12,7 +12,7 @@ static_library("language_packs") {
     "language_packs_extensions_util.h",
   ]
 
-  public_deps = [ "//chromeos/ash/experiences/extensions/api" ]
+  public_deps = [ "//chromeos/ash/experiences/extensions/common/api" ]
 
   deps = [
     "//base",

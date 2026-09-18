@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ash/file_system_provider/operations/open_file.h"
 
-#include "chromeos/ash/experiences/extensions/api/file_system_provider.h"
-#include "chromeos/ash/experiences/extensions/api/file_system_provider_internal.h"
+#include "chromeos/ash/experiences/extensions/common/api/file_system_provider.h"
+#include "chromeos/ash/experiences/extensions/common/api/file_system_provider_internal.h"
 
 namespace ash::file_system_provider::operations {
 

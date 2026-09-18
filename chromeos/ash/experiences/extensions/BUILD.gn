@@ -6,25 +6,6 @@ import("//tools/grit/grit_rule.gni")
 
 assert(is_chromeos)
 
-static_library("extensions") {
-  sources = [
-    "api/file_system_provider_capabilities/file_system_provider_capabilities_handler.cc",
-    "api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h",
-    "chromeos_extensions_api_permissions.cc",
-    "chromeos_extensions_api_permissions.h",
-    "chromeos_extensions_api_provider.cc",
-    "chromeos_extensions_api_provider.h",
-  ]
-
-  deps = [
-    ":resources",
-    "//ash/constants",
-    "//chromeos/ash/experiences/extensions/api",
-    "//chromeos/ash/experiences/extensions/api:extensions_features",
-    "//extensions/common",
-  ]
-}
-
 grit("resources") {
   source = "chromeos_extensions_resources.grd"
   output_dir = "$root_gen_dir/chromeos/ash/experiences/extensions"
@@ -35,19 +16,7 @@ grit("resources") {
   ]
 }
 
-source_set("unit_tests") {
+group("unit_tests") {
   testonly = true
-
-  sources =
-      [ "api/file_system_provider/file_system_provider_handler_unittest.cc" ]
-  deps = [
-    ":extensions",
-    "//base",
-    "//base/test:test_support",
-    "//components/version_info",
-    "//extensions:test_support",
-    "//extensions/common",
-    "//testing/gtest",
-  ]
-  data = [ "test/data/" ]
+  deps = [ "//chromeos/ash/experiences/extensions/common:unit_tests" ]
 }

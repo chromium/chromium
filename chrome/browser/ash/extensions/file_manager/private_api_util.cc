@@ -42,7 +42,7 @@
 #include "chromeos/ash/components/drivefs/drivefs_pinning_manager.h"
 #include "chromeos/ash/components/drivefs/drivefs_util.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
-#include "chromeos/ash/experiences/extensions/api/file_manager_private.h"
+#include "chromeos/ash/experiences/extensions/common/api/file_manager_private.h"
 #include "components/drive/drive_api_util.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/drive/file_errors.h"

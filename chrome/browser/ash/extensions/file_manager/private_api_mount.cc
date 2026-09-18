@@ -30,7 +30,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
-#include "chromeos/ash/experiences/extensions/api/file_manager_private.h"
+#include "chromeos/ash/experiences/extensions/common/api/file_manager_private.h"
 #include "components/drive/event_logger.h"
 #include "components/services/unzip/content/unzip_service.h"
 #include "components/services/unzip/public/cpp/unzip.h"

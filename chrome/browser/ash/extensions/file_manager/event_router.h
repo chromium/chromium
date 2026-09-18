@@ -36,7 +36,7 @@
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_observer.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
-#include "chromeos/ash/experiences/extensions/api/file_manager_private.h"
+#include "chromeos/ash/experiences/extensions/common/api/file_manager_private.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"

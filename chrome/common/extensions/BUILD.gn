@@ -108,7 +108,7 @@ source_set("extensions") {
   if (is_chromeos) {
     deps += [
       "//ash/constants",
-      "//chromeos/ash/experiences/extensions",
+      "//chromeos/ash/experiences/extensions/common",
     ]
   }
 }

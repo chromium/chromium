@@ -9,7 +9,7 @@
 
 #include "base/values.h"
 #include "chrome/browser/ash/extensions/input_method_api.h"
-#include "chromeos/ash/experiences/extensions/api/input_method_private.h"
+#include "chromeos/ash/experiences/extensions/common/api/input_method_private.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/event_router.h"
 

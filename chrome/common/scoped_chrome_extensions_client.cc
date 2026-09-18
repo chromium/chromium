@@ -28,7 +28,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/common/chromeos/extensions/chromeos_system_extensions_api_provider.h"
-#include "chromeos/ash/experiences/extensions/chromeos_extensions_api_provider.h"
+#include "chromeos/ash/experiences/extensions/common/chromeos_extensions_api_provider.h"
 #endif
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));

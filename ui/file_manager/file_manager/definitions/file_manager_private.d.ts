@@ -5,9 +5,9 @@
 /**
  * @fileoverview Definitions for chrome.fileManagerPrivate API
  * Generated from:
- * chromeos/ash/experiences/extensions/api/file_manager_private.idl run
+ * chromeos/ash/experiences/extensions/common/api/file_manager_private.idl run
  * `tools/json_schema_compiler/compiler.py
- * chromeos/ash/experiences/extensions/api/file_manager_private.idl -g
+ * chromeos/ash/experiences/extensions/common/api/file_manager_private.idl -g
  * ts_definitions` to regenerate.
  */
 

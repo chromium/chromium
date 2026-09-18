@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/files/file.h"
-#include "chromeos/ash/experiences/extensions/api/file_system_provider.h"
+#include "chromeos/ash/experiences/extensions/common/api/file_system_provider.h"
 #include "extensions/browser/extension_function.h"
 
 namespace extensions {

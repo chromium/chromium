@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/experiences/extensions/chromeos_extensions_api_provider.h"
+#include "chromeos/ash/experiences/extensions/common/chromeos_extensions_api_provider.h"
 
 #include <string_view>
 
-#include "chromeos/ash/experiences/extensions/api/api_features.h"
-#include "chromeos/ash/experiences/extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
-#include "chromeos/ash/experiences/extensions/api/generated_schemas.h"
-#include "chromeos/ash/experiences/extensions/api/manifest_features.h"
-#include "chromeos/ash/experiences/extensions/api/permission_features.h"
-#include "chromeos/ash/experiences/extensions/chromeos_extensions_api_permissions.h"
+#include "chromeos/ash/experiences/extensions/common/api/api_features.h"
+#include "chromeos/ash/experiences/extensions/common/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
+#include "chromeos/ash/experiences/extensions/common/api/generated_schemas.h"
+#include "chromeos/ash/experiences/extensions/common/api/manifest_features.h"
+#include "chromeos/ash/experiences/extensions/common/api/permission_features.h"
+#include "chromeos/ash/experiences/extensions/common/chromeos_extensions_api_permissions.h"
 #include "chromeos/ash/experiences/extensions/grit/chromeos_extensions_resources.h"
 #include "extensions/common/features/json_feature_provider_source.h"
 #include "extensions/common/manifest_handler_registry.h"

@@ -6,7 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "chromeos/ash/experiences/extensions/chromeos_extensions_api_provider.h"
+#include "chromeos/ash/experiences/extensions/common/chromeos_extensions_api_provider.h"
 #include "components/version_info/channel.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/features/feature_channel.h"

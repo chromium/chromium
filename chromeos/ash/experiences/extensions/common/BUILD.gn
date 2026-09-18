@@ -1,0 +1,41 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+static_library("common") {
+  sources = [
+    "api/file_system_provider_capabilities/file_system_provider_capabilities_handler.cc",
+    "api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h",
+    "chromeos_extensions_api_permissions.cc",
+    "chromeos_extensions_api_permissions.h",
+    "chromeos_extensions_api_provider.cc",
+    "chromeos_extensions_api_provider.h",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//chromeos/ash/experiences/extensions:resources",
+    "//chromeos/ash/experiences/extensions/common/api",
+    "//chromeos/ash/experiences/extensions/common/api:extensions_features",
+    "//extensions/common",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources =
+      [ "api/file_system_provider/file_system_provider_handler_unittest.cc" ]
+  deps = [
+    ":common",
+    "//base",
+    "//base/test:test_support",
+    "//components/version_info",
+    "//extensions:test_support",
+    "//extensions/common",
+    "//testing/gtest",
+  ]
+  data = [ "//chromeos/ash/experiences/extensions/test/data/" ]
+}

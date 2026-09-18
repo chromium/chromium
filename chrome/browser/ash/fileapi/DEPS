@@ -27,5 +27,5 @@ include_rules = [
   "+chrome/browser/media_galleries/fileapi",
   "+chrome/browser/profiles",
   "+chrome/test/base",
-  "+chromeos/ash/experiences/extensions/api/file_manager_private.h",
+  "+chromeos/ash/experiences/extensions/common/api/file_manager_private.h",
 ]
