@@ -52,7 +52,6 @@
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
-#include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
@@ -367,10 +366,8 @@ class PwaInstallViewBrowserTest : public base::test::WithFeatureOverride,
         BrowserView::GetBrowserViewForBrowser(browser()));
   }
   void VerifyLabelVisibility(bool isVisible) {
-    auto* page_action_view = GetPageActionView();
     if (!features::IsWebUILocationBarEnabled()) {
-      auto* view = page_actions::GetIconLabelBubbleViewForTesting(
-          page_action_view, kActionInstallPwa);
+      auto* view = GetPageActionAccessor().view();
       FastForwardAnimation(view);
     }
     EXPECT_EQ(GetPageActionAccessor().ShouldShowSuggestionChip(), isVisible);
@@ -528,8 +525,7 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
     ASSERT_TRUE(result.installable);
   }
 
-  auto* page_action_view = page_actions::GetIconLabelBubbleViewForTesting(
-      GetPageActionView(), kActionInstallPwa);
+  auto* page_action_view = GetPageActionAccessor().view();
   views::InkDropHost* const ink_drop =
       views::InkDrop::Get(page_action_view->ink_drop_view());
 
@@ -610,8 +606,7 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, LabelAnimation) {
   ASSERT_TRUE(app_banner_manager_->WaitForInstallableCheck());
   EXPECT_TRUE(GetPageActionAccessor().GetVisible());
   if (!features::IsWebUILocationBarEnabled()) {
-    auto* view = page_actions::GetIconLabelBubbleViewForTesting(
-        GetPageActionView(), kActionInstallPwa);
+    auto* view = GetPageActionAccessor().view();
     FastForwardAnimation(view);
   }
   EXPECT_TRUE(GetPageActionAccessor().ShouldShowSuggestionChip());

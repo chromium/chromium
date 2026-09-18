@@ -12,8 +12,6 @@
 #include "ui/actions/action_id.h"
 #include "ui/views/bubble/bubble_anchor.h"
 
-class IconLabelBubbleView;
-
 namespace page_actions {
 
 class WebUIPageActionControl;
@@ -36,7 +34,6 @@ class WebUIPageActionView : public PageActionViewInterface {
   std::u16string GetTooltipText() const override;
   std::u16string GetAccessibleName() const override;
   void SetVisible(bool visible) override;
-  IconLabelBubbleView* GetIconLabelBubbleViewNotMigrated() override;
 
   actions::ActionId action_id() const { return action_id_; }
 

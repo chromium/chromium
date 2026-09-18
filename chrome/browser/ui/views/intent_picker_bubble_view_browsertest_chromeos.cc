@@ -36,7 +36,7 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
-#include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "chrome/browser/ui/views/web_apps/web_app_link_capturing_test_utils.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -244,13 +244,9 @@ class IntentPickerBubbleViewBrowserTestChromeOSBase
   }
 
   views::Button* GetIntentPickerIcon() {
-    auto* toolbar_button_provider =
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->toolbar_button_provider();
-    return page_actions::GetIconLabelBubbleViewForTesting(
-        toolbar_button_provider->GetPageActionViewInterface(
-            kActionShowIntentPicker),
-        kActionShowIntentPicker);
+    return page_actions::PageActionTestAccessor(browser(),
+                                                kActionShowIntentPicker)
+        .view();
   }
 
   void ClickIconToShowBubble() {

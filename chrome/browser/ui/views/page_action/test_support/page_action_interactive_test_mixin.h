@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
-#include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "ui/actions/actions.h"
 #include "ui/base/interaction/state_observer.h"

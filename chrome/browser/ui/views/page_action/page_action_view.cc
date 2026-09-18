@@ -306,10 +306,6 @@ bool PageActionView::GetDeclaredVisible() const {
   return declared_visible_;
 }
 
-IconLabelBubbleView* PageActionView::GetIconLabelBubbleViewNotMigrated() {
-  NOTREACHED();
-}
-
 actions::ActionId PageActionView::GetActionId() const {
   return action_item_->GetActionId().value();
 }
