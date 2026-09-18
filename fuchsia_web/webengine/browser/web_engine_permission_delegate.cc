@@ -123,17 +123,3 @@ WebEnginePermissionDelegate::GetPermissionResultForEmbeddedRequester(
           blink::PermissionDescriptorToPermissionType(permission_descriptor),
           overridden_origin));
 }
-
-void WebEnginePermissionDelegate::OnPermissionStatusChangeSubscriptionAdded(
-    content::PermissionController::SubscriptionId subscription_id) {
-  // TODO(crbug.com/40680523): Implement permission status subscription. It's
-  // used in blink to emit PermissionStatus.onchange notifications.
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
-void WebEnginePermissionDelegate::UnsubscribeFromPermissionResultChange(
-    content::PermissionController::SubscriptionId subscription_id) {
-  // TODO(crbug.com/40680523): Implement permission status subscription. It's
-  // used in blink to emit PermissionStatus.onchange notifications.
-  NOTIMPLEMENTED_LOG_ONCE();
-}
