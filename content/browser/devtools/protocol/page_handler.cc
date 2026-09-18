@@ -1533,23 +1533,37 @@ void PageHandler::CaptureScreenshot(
   // Set view size for the screenshot right after emulating.
   if (clip) {
     double scale = dpfactor * clip->GetScale();
+    // Round the temporary view outward so resizable platforms provide enough
+    // source pixels after the widget's device scale factor is applied. This
+    // prevents double rounding from leaving the source too small.
     widget_host->GetView()->SetSize(
-        gfx::Size(base::ClampRound(clip->GetWidth() * scale),
-                  base::ClampRound(clip->GetHeight() * scale)));
+        gfx::Size(base::ClampCeil(clip->GetWidth() * scale),
+                  base::ClampCeil(clip->GetHeight() * scale)));
   } else if (emulation_enabled) {
     widget_host->GetView()->SetSize(
         gfx::ScaleToFlooredSize(emulated_view_size, dpfactor));
   }
   if (emulation_enabled || clip) {
-    const gfx::Size requested_image_size =
-        clip ? gfx::Size(clip->GetWidth(), clip->GetHeight())
-             : emulated_view_size;
     double scale = widget_host_device_scale_factor * dpfactor;
     if (clip) {
       scale *= clip->GetScale();
+      // CDP clip dimensions are double-precision DIPs. Preserve their
+      // fractions until conversion to the integral physical bitmap size. A
+      // positive dimension must remain nonempty because an empty requested
+      // size means that no cropping is needed in ScreenshotCaptured().
+      auto round_clip_dimension = [scale](double dimension) {
+        if (!(dimension > 0 && scale > 0)) {
+          return 0;
+        }
+        return std::max(1, base::ClampRound(dimension * scale));
+      };
+      pending_request->requested_image_size =
+          gfx::Size(round_clip_dimension(clip->GetWidth()),
+                    round_clip_dimension(clip->GetHeight()));
+    } else {
+      pending_request->requested_image_size =
+          gfx::ScaleToRoundedSize(emulated_view_size, scale);
     }
-    pending_request->requested_image_size =
-        gfx::ScaleToRoundedSize(requested_image_size, scale);
   }
 
   // TODO(crbug.com/377715191): this should check RenderWidgetHostViewBase

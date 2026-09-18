@@ -501,8 +501,10 @@ int ColorsSquareDiff(SkColor color1, SkColor color2) {
              b_diff * b_diff;
 }
 
-bool ColorsMatchWithinLimit(SkColor color1, SkColor color2, int max_collor_diff) {
-  return ColorsSquareDiff(color1, color2) <= max_collor_diff * max_collor_diff;
+bool ColorsMatchWithinLimit(SkColor color1,
+                            SkColor color2,
+                            int max_color_diff) {
+  return ColorsSquareDiff(color1, color2) <= max_color_diff * max_color_diff;
 }
 
 // Adapted from cc::ExactPixelComparator.
@@ -510,7 +512,7 @@ bool MatchesBitmap(const SkBitmap& expected_bmp,
                    const SkBitmap& actual_bmp,
                    const gfx::Rect& matching_mask,
                    float device_scale_factor,
-                   int max_collor_diff) {
+                   int max_color_diff) {
   // Number of pixels with an error
   int error_pixels_count = 0;
 
@@ -532,7 +534,8 @@ bool MatchesBitmap(const SkBitmap& expected_bmp,
       SkColor actual_color =
           actual_bmp.getColor(x * device_scale_factor, y * device_scale_factor);
       SkColor expected_color = expected_bmp.getColor(x, y);
-      if (!ColorsMatchWithinLimit(actual_color, expected_color, max_collor_diff)) {
+      if (!ColorsMatchWithinLimit(actual_color, expected_color,
+                                  max_color_diff)) {
         if (error_pixels_count < 10) {
           LOG(ERROR) << "Pixel (" << x << "," << y
                      << "). Expected: " << std::hex << expected_color
@@ -635,10 +638,10 @@ class CaptureScreenshotTest : public DevToolsProtocolTest {
     // Allow some error between actual and expected pixel values.
     // That assumes there is no shift in pixel positions, so it only works
     // reliably if all pixels have equal values.
-    int max_collor_diff = 20;
+    int max_color_diff = 20;
 
     EXPECT_TRUE(MatchesBitmap(expected_bitmap, result_bitmap, matching_mask,
-                              device_scale_factor, max_collor_diff));
+                              device_scale_factor, max_color_diff));
   }
 
   gfx::Size GetPageContentSize() {
@@ -969,6 +972,121 @@ IN_PROC_BROWSER_TEST_F(NoGPUCaptureScreenshotTest, MAYBE_LargeScreenshot) {
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+
+class HiDpiCaptureScreenshotTest : public CaptureScreenshotTest {
+ protected:
+  void SetUp() override {
+    EnablePixelOutput(/*force_device_scale_factor=*/2.0f);
+    DevToolsProtocolTest::SetUp();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(HiDpiCaptureScreenshotTest,
+                       FractionalClipRoundsAfterScale) {
+  shell()->LoadURL(
+      GURL("data:text/html,"
+           "<!doctype html><style>html,body{margin:0;width:400px;height:300px}"
+           "body{background:%230000ff}.edge{position:absolute}"
+           ".left{left:0;top:0;width:4px;height:100px;background:%23ff0000}"
+           ".right{left:188px;top:0;width:20px;height:100px;"
+           "background:%2300ff00}.top{left:0;top:0;width:220px;height:4px;"
+           "background:%23ffff00}.bottom{left:0;top:18px;width:220px;"
+           "height:20px;background:%2300ffff}</style>"
+           "<div class='edge left'></div><div class='edge right'></div>"
+           "<div class='edge top'></div><div class='edge bottom'></div>"));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  Attach();
+
+  constexpr float kDeviceScaleFactor = 3;
+  SetDeviceMetricsOverride(/*width=*/400, /*height=*/300, kDeviceScaleFactor,
+                           /*mobile=*/false,
+                           /*fitWindow=*/std::nullopt);
+  ASSERT_FALSE(error());
+  ASSERT_FLOAT_EQ(2.0f, shell()
+                            ->web_contents()
+                            ->GetPrimaryMainFrame()
+                            ->GetRenderWidgetHost()
+                            ->GetDeviceScaleFactor());
+
+  auto capture_clip = [this](double width, double height) {
+    base::DictValue params;
+    params.Set("format", EncodingEnumToString(ScreenshotEncoding::PNG));
+    params.Set("fromSurface", true);
+    base::DictValue clip;
+    clip.Set("x", 0);
+    clip.Set("y", 0);
+    clip.Set("width", width);
+    clip.Set("height", height);
+    clip.Set("scale", 1);
+    params.Set("clip", std::move(clip));
+    const base::DictValue* result =
+        SendCommandSync("Page.captureScreenshot", std::move(params));
+    if (error() || !result) {
+      ADD_FAILURE() << "Page.captureScreenshot failed";
+      return SkBitmap();
+    }
+    const std::string* encoded_screenshot = result->FindString("data");
+    if (!encoded_screenshot) {
+      ADD_FAILURE() << "Page.captureScreenshot returned no data";
+      return SkBitmap();
+    }
+    return DecodePNG(*encoded_screenshot);
+  };
+
+  auto expect_edge_colors = [](const SkBitmap& screenshot) {
+    EXPECT_TRUE(ColorsMatchWithinLimit(
+        screenshot.getColor(0, screenshot.height() / 2),
+        SkColorSetRGB(0xff, 0x00, 0x00), /*max_color_diff=*/20));
+    EXPECT_TRUE(ColorsMatchWithinLimit(
+        screenshot.getColor(screenshot.width() - 1, screenshot.height() / 2),
+        SkColorSetRGB(0x00, 0xff, 0x00), /*max_color_diff=*/20));
+    EXPECT_TRUE(ColorsMatchWithinLimit(
+        screenshot.getColor(screenshot.width() / 2, 0),
+        SkColorSetRGB(0xff, 0xff, 0x00), /*max_color_diff=*/20));
+    EXPECT_TRUE(ColorsMatchWithinLimit(
+        screenshot.getColor(screenshot.width() / 2, screenshot.height() - 1),
+        SkColorSetRGB(0x00, 0xff, 0xff), /*max_color_diff=*/20));
+    EXPECT_TRUE(ColorsMatchWithinLimit(
+        screenshot.getColor(screenshot.width() / 2, screenshot.height() / 2),
+        SkColorSetRGB(0x00, 0x00, 0xff), /*max_color_diff=*/20));
+  };
+
+  SkBitmap bitmap = capture_clip(/*width=*/192.65625,
+                                 /*height=*/21.671875);
+  ASSERT_FALSE(bitmap.empty());
+  // The scaled dimensions are 577.96875 by 65.015625. This distinguishes
+  // nearest rounding from truncating before scale, floor, and ceiling. The
+  // asymmetric edges also catch wrapping if the captured source is too small.
+  EXPECT_EQ(gfx::Size(578, 65), gfx::Size(bitmap.width(), bitmap.height()));
+  expect_edge_colors(bitmap);
+
+  // This width rounds to 579 directly but 580 after narrowing to float, so it
+  // also protects the protocol's double precision through the conversion.
+  SkBitmap precision_bitmap = capture_clip(/*width=*/193.166666,
+                                           /*height=*/21.671875);
+  ASSERT_FALSE(precision_bitmap.empty());
+  EXPECT_EQ(gfx::Size(579, 65),
+            gfx::Size(precision_bitmap.width(), precision_bitmap.height()));
+
+  // An empty requested size is the no-crop sentinel, so a positive subpixel
+  // clip must still produce the minimum 1x1 physical bitmap.
+  SkBitmap subpixel_bitmap = capture_clip(/*width=*/0.1, /*height=*/0.1);
+  ASSERT_FALSE(subpixel_bitmap.empty());
+  EXPECT_EQ(gfx::Size(1, 1),
+            gfx::Size(subpixel_bitmap.width(), subpixel_bitmap.height()));
+
+  // Nearest rounding requests 579x65 physical pixels, while rounding the
+  // temporary view before applying its 2x native scale would provide only
+  // 578x64. Verify that the final column and row come from the right and
+  // bottom edges instead of wrapping around to the left and top edges.
+  SkBitmap containment_bitmap =
+      capture_clip(/*width=*/192.83333333333334, /*height=*/21.5);
+  ASSERT_FALSE(containment_bitmap.empty());
+  EXPECT_EQ(gfx::Size(579, 65),
+            gfx::Size(containment_bitmap.width(), containment_bitmap.height()));
+  expect_edge_colors(containment_bitmap);
+  SendCommandSync("Emulation.clearDeviceMetricsOverride");
+}
 
 // Setting frame size (through RWHV) is not supported on Android.
 // This test seems to be very flaky on all platforms: https://crbug.com/801173
