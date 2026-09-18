@@ -870,6 +870,51 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Variations.SimulateAndApplyRuntimeMutableChanges.RotateUmaLogResult"
+    enum="VariationsRotateUmaLogResult" expires_after="2027-06-11">
+  <owner>lucnguyen@google.com</owner>
+  <owner>rogerm@google.com</owner>
+  <owner>asvitkine@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Recorded when runtime mutable changes are ready to be applied, right before
+    applying mutations. Records the result of attempting to rotate the UMA log
+    via VariationsServiceClient::RotateUmaLogForRuntimeMutability.
+  </summary>
+</histogram>
+
+<histogram
+    name="Variations.SimulateAndApplyRuntimeMutableChanges.RotateUmaLogTime"
+    units="ms" expires_after="2027-06-11">
+  <owner>lucnguyen@google.com</owner>
+  <owner>rogerm@google.com</owner>
+  <owner>asvitkine@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Recorded when runtime mutable changes are ready to be applied and UMA log
+    rotation succeeds (RotateUmaLogResult::kSuccess), right before applying
+    mutations. Measures the time taken to rotate the UMA log (closing the
+    current log and opening a new one) via
+    VariationsServiceClient::RotateUmaLogForRuntimeMutability.
+  </summary>
+</histogram>
+
+<histogram name="Variations.SimulateAndApplyRuntimeMutableChanges.Time"
+    units="ms" expires_after="2027-06-11">
+  <owner>lucnguyen@google.com</owner>
+  <owner>rogerm@google.com</owner>
+  <owner>asvitkine@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Recorded every time SimulateAndApplyRuntimeMutableChanges is called.
+    Measures the total time taken to simulate and apply runtime mutable changes
+    from a variations seed, including study filtering, trial simulation,
+    conflict checking, pre-mutation callbacks, UMA log rotation, applying
+    mutations, and post-mutation callbacks.
+  </summary>
+</histogram>
+
 <histogram name="Variations.StickyAfterQuery.Activation"
     enum="FieldTrialNameHash" expires_after="2027-03-07">
   <owner>asvitkine@chromium.org</owner>

@@ -29,6 +29,7 @@
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "components/metrics/delegating_provider.h"
 #include "components/metrics/metrics_log.h"
@@ -47,11 +48,12 @@ FORWARD_DECLARE_TEST(IOSChromeMetricsServiceClientTest,
 namespace first_run {
 class FirstRunCoordinatorMetricsHelper;
 class FirstRunProfileAgentMetricsHelper;
-}
+}  // namespace first_run
 
 namespace variations {
 class SyntheticTrialRegistry;
-}
+class VariationsService;
+}  // namespace variations
 
 namespace metrics {
 
@@ -119,16 +121,44 @@ class MetricsService {
     FRIEND_TEST_ALL_PREFIXES(MetricsServiceTest, OutOfBandLogUpload);
   };
 
+  // A passkey for rotating logs for runtime mutable feature mutations.
+  using RuntimeMutabilityPassKey =
+      base::PassKey<variations::VariationsService, MetricsService>;
+
+  static RuntimeMutabilityPassKey GetRuntimeMutabilityPassKeyForTesting() {
+    return RuntimeMutabilityPassKey(base::PassKey<MetricsService>());
+  }
+
+  // The result of attempting to rotate the UMA log.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(RotateUmaLogResult)
+  enum class RotateUmaLogResult {
+    kSuccess = 0,
+    kTooEarly = 1,
+    kRecordingDisabled = 2,
+    kReportingDisabled = 3,
+    kNotSupported = 4,
+    kMaxValue = kNotSupported,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/variations/enums.xml:VariationsRotateUmaLogResult)
+
   // Starts the process of uploading metrics data outside of the uploads
   // scheduled by the MetricsRotationScheduler. Upload attempt is silently
-  // dropped (never retried) and function returns false if:
+  // dropped (never retried) if:
   // 1) the MetricsService has not uploaded the first ongoing log OR
   // 2) recording is disabled OR
-  // 3) reporting is off and the first ongoing log hasn't been created.
+  // 3) reporting is off.
   //
   // This function is currently only used within the iOS FRE screens and should
   // be used very sparingly.
-  bool StartOutOfBandUploadIfPossible(OutOfBandUploadPasskey passkey);
+  RotateUmaLogResult StartOutOfBandUploadIfPossible(
+      OutOfBandUploadPasskey passkey);
+
+  // Closes the current UMA log and opens a new one for runtime mutable
+  // feature mutations, scheduling the closed log for upload.
+  RotateUmaLogResult RotateUmaLogForRuntimeMutability(
+      RuntimeMutabilityPassKey passkey);
 
   // Returns the client ID for this client, or the empty string if metrics
   // recording is not currently running.
@@ -519,6 +549,10 @@ class MetricsService {
   // Pushes the text of the current and staged logs into persistent storage.
   void PushPendingLogsToPersistentStorage(
       MetricsLogsEventManager::CreateReason reason);
+
+  // Closes the current UMA log, saves it to persistent storage for upload,
+  // opens a new log, and starts the scheduler if necessary.
+  RotateUmaLogResult RotateUmaLog(MetricsLogsEventManager::CreateReason reason);
 
   // Ensures that scheduler is running, assuming the current settings are such
   // that metrics should be reported. If not, this is a no-op.

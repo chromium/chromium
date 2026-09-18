@@ -61,7 +61,9 @@ class MetricsLogsEventManager {
     kOutOfBand = 10,
     // The log was created due to a flush from the client.
     kFlush = 11,
-    kMaxValue = kFlush,
+    // The log was created due to runtime mutable changes being applied.
+    kRuntimeMutability = 12,
+    kMaxValue = kRuntimeMutability,
   };
   // LINT.ThenChange(/tools/metrics/histograms/metadata/uma/enums.xml:MetricsLogCreateReason)
 

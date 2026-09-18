@@ -1418,13 +1418,76 @@ TEST_F(MetricsServiceTest, OutOfBandLogUpload) {
   // Assert that the uploader is no longer uploading, and then trigger an
   // upload.
   EXPECT_FALSE(client.uploader()->is_uploading());
-  service.StartOutOfBandUploadIfPossible(
-      MetricsService::OutOfBandUploadPasskey());
+  EXPECT_EQ(MetricsService::RotateUmaLogResult::kSuccess,
+            service.StartOutOfBandUploadIfPossible(
+                MetricsService::OutOfBandUploadPasskey()));
 
   // Fast forward the time so that the upload loop starts uploading logs.
   task_environment_.FastForwardBy(unsent_log_interval);
   EXPECT_TRUE(client.uploader()->is_uploading());
   client.uploader()->CompleteUpload(200);
+}
+
+// Verify that calling RotateUmaLogForRuntimeMutability() closes the current log
+// and opens a new one when called after logs have started being sent, and is a
+// no-op if called too early.
+TEST_F(MetricsServiceTest, RotateUmaLogForRuntimeMutability) {
+  EnableMetricsReporting();
+  TestMetricsServiceClient client;
+  TestMetricsService service(GetMetricsStateManager(), &client,
+                             GetLocalState());
+  service.InitializeMetricsRecordingState();
+  service.Start();
+  ASSERT_EQ(TestMetricsService::INIT_TASK_SCHEDULED, service.state());
+
+  base::HistogramTester histogram_tester;
+
+  // Calling RotateUmaLogForRuntimeMutability() before logs have started being
+  // sent (IsTooEarlyToCloseLog() is true) should be a no-op.
+  EXPECT_EQ(MetricsService::RotateUmaLogResult::kTooEarly,
+            service.RotateUmaLogForRuntimeMutability(
+                MetricsService::GetRuntimeMutabilityPassKeyForTesting()));
+  EXPECT_FALSE(service.LogStoreForTest()->has_unsent_logs());
+  histogram_tester.ExpectTotalCount(
+      "UMA.MetricsService.PushPendingLogsToPersistentStorageReason", 0);
+
+  // Fast forward the time until the initial init tasks run.
+  base::TimeDelta initialization_delay = service.GetInitializationDelay();
+  task_environment_.FastForwardBy(initialization_delay);
+  EXPECT_EQ(TestMetricsService::INIT_TASK_DONE, service.state());
+
+  // Fast forward until MetricsRotationScheduler completes the first ongoing
+  // log.
+  task_environment_.FastForwardBy(
+      base::Seconds(MetricsScheduler::GetInitialIntervalSeconds()) -
+      initialization_delay);
+  ASSERT_EQ(TestMetricsService::SENDING_LOGS, service.state());
+
+  // Stage and discard the first ongoing log.
+  MetricsLogStore* test_log_store = service.LogStoreForTest();
+  test_log_store->StageNextLog();
+  test_log_store->DiscardStagedLog();
+  EXPECT_FALSE(test_log_store->has_unsent_logs());
+
+  // Calling RotateUmaLogForRuntimeMutability() should now push the current log
+  // to persistent storage and open a new log.
+  EXPECT_EQ(MetricsService::RotateUmaLogResult::kSuccess,
+            service.RotateUmaLogForRuntimeMutability(
+                MetricsService::GetRuntimeMutabilityPassKeyForTesting()));
+  EXPECT_TRUE(test_log_store->has_unsent_logs());
+  histogram_tester.ExpectUniqueSample(
+      "UMA.MetricsService.PushPendingLogsToPersistentStorageReason",
+      MetricsLogsEventManager::CreateReason::kRuntimeMutability, 1);
+
+  // Stage and discard the log that was closed by
+  // RotateUmaLogForRuntimeMutability().
+  test_log_store->StageNextLog();
+  test_log_store->DiscardStagedLog();
+  EXPECT_FALSE(test_log_store->has_unsent_logs());
+
+  // Verify that a new log is open by staging the current log.
+  service.StageCurrentLogForTest();
+  EXPECT_TRUE(test_log_store->has_unsent_logs());
 }
 
 TEST_F(MetricsServiceTest,

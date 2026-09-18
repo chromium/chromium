@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/version.h"
+#include "components/metrics/metrics_service.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/seed_response.h"
 #include "components/version_info/channel.h"
@@ -97,6 +98,12 @@ class VariationsServiceClient {
   // Returns whether we verify the variations seed with its signature when we
   // load the variations seed from disk on startup.
   virtual bool EnableSignatureVerificationOnLoad();
+
+  // Rotates the current UMA log (closes current and opens a new one) right
+  // before runtime mutable variations changes are applied.
+  virtual metrics::MetricsService::RotateUmaLogResult
+      RotateUmaLogForRuntimeMutability(
+          metrics::MetricsService::RuntimeMutabilityPassKey);
 
  private:
   // Gets the channel of the embedder. But all variations callers should use

@@ -45,6 +45,8 @@ class IOSChromeVariationsServiceClient
   std::optional<base::flat_set<std::string>> GetAllProfilesKeys(
       PrefService* local_state) override;
   bool IsChromeEnterpriseCoreSupported() override;
+  metrics::MetricsService::RotateUmaLogResult RotateUmaLogForRuntimeMutability(
+      metrics::MetricsService::RuntimeMutabilityPassKey passkey) override;
   version_info::Channel GetChannel() override;
 };
 

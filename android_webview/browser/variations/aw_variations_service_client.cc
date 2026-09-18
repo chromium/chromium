@@ -4,6 +4,8 @@
 
 #include "android_webview/browser/variations/aw_variations_service_client.h"
 
+#include "android_webview/browser/metrics/aw_metrics_service_client.h"
+#include "base/check.h"
 #include "components/version_info/android/channel_getter.h"
 #include "components/version_info/version_info.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -47,6 +49,16 @@ bool AwVariationsServiceClient::EnableSignatureVerificationOnLoad() {
   // TODO(549757421): Investigate whether we can skip signature verification
   // on WebView to improve WebView's startup performance.
   return true;
+}
+
+metrics::MetricsService::RotateUmaLogResult
+AwVariationsServiceClient::RotateUmaLogForRuntimeMutability(
+    metrics::MetricsService::RuntimeMutabilityPassKey passkey) {
+  AwMetricsServiceClient* client = AwMetricsServiceClient::GetInstance();
+  CHECK(client);
+  metrics::MetricsService* metrics_service = client->GetMetricsService();
+  CHECK(metrics_service);
+  return metrics_service->RotateUmaLogForRuntimeMutability(passkey);
 }
 
 }  // namespace android_webview

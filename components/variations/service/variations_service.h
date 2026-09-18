@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -73,6 +74,9 @@ class DeviceVariationsRestrictionByPolicyApplicator;
 // When enabled, runtime mutable field trials from the periodically fetched
 // seeds will be applied to the current session.
 BASE_DECLARE_FEATURE(kVariationsRuntimeMutability);
+// When set, the UMA log will be rotated (closed and reopened) every time
+// runtime mutable experiments are applied.
+BASE_DECLARE_FEATURE_PARAM(bool, kVariationsRuntimeMutabilityRotateUmaLog);
 
 // Used to (a) set up field trials based on stored variations seed data and (b)
 // fetch new seed data from the variations server.

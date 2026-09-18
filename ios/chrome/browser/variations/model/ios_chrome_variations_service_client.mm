@@ -4,10 +4,12 @@
 
 #import "ios/chrome/browser/variations/model/ios_chrome_variations_service_client.h"
 
+#import "base/check.h"
 #import "base/path_service.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "base/version.h"
+#import "components/metrics/metrics_service.h"
 #import "components/variations/seed_response.h"
 #import "components/variations/synthetic_trials.h"
 #import "components/version_info/version_info.h"
@@ -74,6 +76,15 @@ IOSChromeVariationsServiceClient::GetAllProfilesKeys(PrefService* local_state) {
 
 bool IOSChromeVariationsServiceClient::IsChromeEnterpriseCoreSupported() {
   return true;
+}
+
+metrics::MetricsService::RotateUmaLogResult
+IOSChromeVariationsServiceClient::RotateUmaLogForRuntimeMutability(
+    metrics::MetricsService::RuntimeMutabilityPassKey passkey) {
+  metrics::MetricsService* metrics_service =
+      GetApplicationContext()->GetMetricsService();
+  CHECK(metrics_service);
+  return metrics_service->RotateUmaLogForRuntimeMutability(passkey);
 }
 
 version_info::Channel IOSChromeVariationsServiceClient::GetChannel() {

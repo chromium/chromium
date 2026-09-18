@@ -91,6 +91,8 @@ std::string CreateReasonToString(
       return "Reason: Manually triggered by client";
     case MetricsLogsEventManager::CreateReason::kFlush:
       return "Reason: Flush";
+    case MetricsLogsEventManager::CreateReason::kRuntimeMutability:
+      return "Reason: Runtime mutations applied";
   }
 }
 

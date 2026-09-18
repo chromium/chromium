@@ -32,6 +32,7 @@
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/pass_key.h"
 #include "base/values.h"
@@ -41,6 +42,7 @@
 #include "build/build_config.h"
 #include "components/encrypted_messages/encrypted_message.pb.h"
 #include "components/encrypted_messages/message_encrypter.h"
+#include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/startup_visibility.h"
 #include "components/network_time/network_time_tracker.h"
@@ -344,6 +346,11 @@ std::optional<std::string> EncryptAndEncodeSerialNumber(
 }  // namespace
 
 BASE_FEATURE(kVariationsRuntimeMutability, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(bool,
+                   kVariationsRuntimeMutabilityRotateUmaLog,
+                   &kVariationsRuntimeMutability,
+                   "rotate_uma_log",
+                   false);
 
 #if BUILDFLAG(IS_CHROMEOS)
 // This is a utility which syncs the policy-managed value of
@@ -880,6 +887,9 @@ void VariationsService::SimulateAndApplyRuntimeMutableChanges(
     const VariationsSeed& seed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  base::ScopedUmaHistogramTimer scoped_timer(
+      "Variations.SimulateAndApplyRuntimeMutableChanges.Time");
+
   // TODO(crbug.com/482450632): Consider doing the heavy work in the
   // background.
 
@@ -950,6 +960,25 @@ void VariationsService::SimulateAndApplyRuntimeMutableChanges(
   for (auto& changes : prepared_changes) {
     for (auto& update : changes.feature_updates) {
       update.RunPreMutationCallback();
+    }
+  }
+
+  // Right before runtime mutable mutations are applied, rotate the UMA log
+  // (close and reopen) so that metrics recorded before the mutation are
+  // attributed to the pre-mutation state, and subsequent metrics are recorded
+  // in a fresh log.
+  if (kVariationsRuntimeMutabilityRotateUmaLog.Get()) {
+    base::ElapsedTimer rotate_uma_log_timer;
+    metrics::MetricsService::RotateUmaLogResult result =
+        client_->RotateUmaLogForRuntimeMutability(
+            base::PassKey<VariationsService>());
+    base::UmaHistogramEnumeration(
+        "Variations.SimulateAndApplyRuntimeMutableChanges.RotateUmaLogResult",
+        result);
+    if (result == metrics::MetricsService::RotateUmaLogResult::kSuccess) {
+      base::UmaHistogramTimes(
+          "Variations.SimulateAndApplyRuntimeMutableChanges.RotateUmaLogTime",
+          rotate_uma_log_timer.Elapsed());
     }
   }
 

@@ -1251,27 +1251,42 @@ void MetricsService::StartSchedulerIfNecessary() {
   }
 }
 
-bool MetricsService::StartOutOfBandUploadIfPossible(
-    OutOfBandUploadPasskey passkey) {
-  DVLOG(1) << "StartOutOfBandUploadIfPossible";
+MetricsService::RotateUmaLogResult
+MetricsService::StartOutOfBandUploadIfPossible(OutOfBandUploadPasskey passkey) {
+  return RotateUmaLog(MetricsLogsEventManager::CreateReason::kOutOfBand);
+}
+
+MetricsService::RotateUmaLogResult
+MetricsService::RotateUmaLogForRuntimeMutability(
+    RuntimeMutabilityPassKey passkey) {
+  return RotateUmaLog(
+      MetricsLogsEventManager::CreateReason::kRuntimeMutability);
+}
+
+MetricsService::RotateUmaLogResult MetricsService::RotateUmaLog(
+    MetricsLogsEventManager::CreateReason reason) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DVLOG(1) << "RotateUmaLog reason=" << static_cast<int>(reason);
 
   // If the service has not uploaded the initial logs, don't upload.
   if (IsTooEarlyToCloseLog()) {
-    return false;
+    return RotateUmaLogResult::kTooEarly;
   }
 
   // If recording or reporting are off, don't upload.
-  if (!recording_active() || !reporting_active()) {
-    return false;
+  if (!recording_active()) {
+    return RotateUmaLogResult::kRecordingDisabled;
+  }
+  if (!reporting_active()) {
+    return RotateUmaLogResult::kReportingDisabled;
   }
 
   // Upload current log and open a new log.
-  PushPendingLogsToPersistentStorage(
-      MetricsLogsEventManager::CreateReason::kOutOfBand);
+  PushPendingLogsToPersistentStorage(reason);
   OpenNewLog();
   StartSchedulerIfNecessary();
 
-  return true;
+  return RotateUmaLogResult::kSuccess;
 }
 
 void MetricsService::StartScheduledUpload() {

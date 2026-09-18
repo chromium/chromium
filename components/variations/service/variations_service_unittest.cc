@@ -14,6 +14,7 @@
 #include "base/base64.h"
 #include "base/byte_size.h"
 #include "base/feature_list.h"
+#include "base/features.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -97,6 +98,12 @@ const char kApplyRuntimeMutableChangesHasConflictingChangesMetric[] =
     "Variations.ApplyRuntimeMutableChanges.HasConflictingChanges";
 const char kApplyRuntimeMutableChangesValidationFailedStudyNameMetric[] =
     "Variations.ApplyRuntimeMutableChanges.ValidationFailedStudyName";
+const char kSimulateAndApplyRuntimeMutableChangesRotateUmaLogResultMetric[] =
+    "Variations.SimulateAndApplyRuntimeMutableChanges.RotateUmaLogResult";
+const char kSimulateAndApplyRuntimeMutableChangesRotateUmaLogTimeMetric[] =
+    "Variations.SimulateAndApplyRuntimeMutableChanges.RotateUmaLogTime";
+const char kSimulateAndApplyRuntimeMutableChangesTimeMetric[] =
+    "Variations.SimulateAndApplyRuntimeMutableChanges.Time";
 
 // TODO(crbug.com/40742801): Remove when fake VariationsServiceClient created.
 class TestVariationsServiceClient : public VariationsServiceClient {
@@ -141,6 +148,21 @@ class TestVariationsServiceClient : public VariationsServiceClient {
     return &test_url_loader_factory_;
   }
 
+  metrics::MetricsService::RotateUmaLogResult RotateUmaLogForRuntimeMutability(
+      metrics::MetricsService::RuntimeMutabilityPassKey) override {
+    rotate_uma_log_for_runtime_mutability_call_count_++;
+    return rotate_uma_log_result_;
+  }
+
+  void set_rotate_uma_log_result(
+      metrics::MetricsService::RotateUmaLogResult result) {
+    rotate_uma_log_result_ = result;
+  }
+
+  int rotate_uma_log_for_runtime_mutability_call_count() const {
+    return rotate_uma_log_for_runtime_mutability_call_count_;
+  }
+
  private:
   // VariationsServiceClient:
   version_info::Channel GetChannel() override { return channel_; }
@@ -149,6 +171,9 @@ class TestVariationsServiceClient : public VariationsServiceClient {
   version_info::Channel channel_ = version_info::Channel::UNKNOWN;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
+  int rotate_uma_log_for_runtime_mutability_call_count_ = 0;
+  metrics::MetricsService::RotateUmaLogResult rotate_uma_log_result_ =
+      metrics::MetricsService::RotateUmaLogResult::kSuccess;
 };
 
 // A test class used to validate expected functionality in VariationsService.
@@ -3152,6 +3177,187 @@ TEST_F(VariationsServiceTest,
       PrepareRuntimeMutableChangesResult::kSuccess, 2);
   histogram_tester.ExpectTotalCount(
       kApplyRuntimeMutableChangesValidationFailedStudyNameMetric, 0);
+}
+
+// Verifies that right before runtime mutable mutations are applied, the UMA log
+// is rotated (closed and reopened) via the client. Also verifies that it is not
+// rotated if there are no prepared changes or conflicting changes.
+TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_RotatesUmaLog) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+
+  std::vector<std::string> event_log;
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  auto feature_list = std::make_unique<base::FeatureList>();
+  feature_list->InitFromCommandLine(
+      "VariationsRuntimeMutability:rotate_uma_log/true",
+      base::features::kFeatureParamWithCache.name);
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureA,
+      /*pre_mutation_callback=*/
+      base::BindLambdaForTesting(
+          [&event_log, &service](
+              std::reference_wrapper<const base::Feature> feature,
+              std::string_view study_name, std::string_view group_name,
+              base::FeatureList::OverrideState state) {
+            event_log.push_back("pre_mutation");
+            // Before mutations are applied, RotateUmaLogForRuntimeMutability
+            // should not have been called yet.
+            EXPECT_EQ(service.client()
+                          ->rotate_uma_log_for_runtime_mutability_call_count(),
+                      0);
+            EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+          }),
+      /*post_mutation_callback=*/
+      base::BindLambdaForTesting(
+          [&event_log, &service](
+              std::reference_wrapper<const base::Feature> feature,
+              std::string_view study_name, std::string_view group_name,
+              base::FeatureList::OverrideState state) {
+            event_log.push_back("post_mutation");
+            // After mutations are applied, RotateUmaLogForRuntimeMutability
+            // should have been called exactly once.
+            EXPECT_EQ(service.client()
+                          ->rotate_uma_log_for_runtime_mutability_call_count(),
+                      1);
+            EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+          }));
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  // Case 1: Empty prepared changes (e.g. no eligible studies in seed).
+  // RotateUmaLogForRuntimeMutability should not be called.
+  {
+    base::HistogramTester histogram_tester;
+    VariationsSeed empty_seed;
+    service.SimulateAndApplyRuntimeMutableChanges(empty_seed);
+    EXPECT_EQ(
+        service.client()->rotate_uma_log_for_runtime_mutability_call_count(),
+        0);
+    histogram_tester.ExpectTotalCount(
+        kSimulateAndApplyRuntimeMutableChangesTimeMetric, 1);
+    histogram_tester.ExpectTotalCount(
+        kSimulateAndApplyRuntimeMutableChangesRotateUmaLogResultMetric, 0);
+    histogram_tester.ExpectTotalCount(
+        kSimulateAndApplyRuntimeMutableChangesRotateUmaLogTimeMetric, 0);
+  }
+
+  // Case 2: Conflicting changes. RotateUmaLogForRuntimeMutability should not be
+  // called.
+  {
+    base::HistogramTester histogram_tester;
+    VariationsSeed conflicting_seed;
+    *conflicting_seed.add_study() =
+        *CreateTestRuntimeMutableSeed("Study1", "Group1", {},
+                                      {kTestRuntimeFeatureA.name})
+             .mutable_study(0);
+    *conflicting_seed.add_study() =
+        *CreateTestRuntimeMutableSeed("Study2", "Group2", {},
+                                      {kTestRuntimeFeatureA.name})
+             .mutable_study(0);
+    service.SimulateAndApplyRuntimeMutableChanges(conflicting_seed);
+    EXPECT_EQ(
+        service.client()->rotate_uma_log_for_runtime_mutability_call_count(),
+        0);
+    histogram_tester.ExpectTotalCount(
+        kSimulateAndApplyRuntimeMutableChangesTimeMetric, 1);
+    histogram_tester.ExpectTotalCount(
+        kSimulateAndApplyRuntimeMutableChangesRotateUmaLogResultMetric, 0);
+    histogram_tester.ExpectTotalCount(
+        kSimulateAndApplyRuntimeMutableChangesRotateUmaLogTimeMetric, 0);
+  }
+
+  // Case 3: Valid changes. RotateUmaLogForRuntimeMutability should be called
+  // exactly once, right after pre-mutation callbacks and right before
+  // mutations are applied.
+  {
+    base::HistogramTester histogram_tester;
+    VariationsSeed valid_seed = CreateTestRuntimeMutableSeed(
+        "Study1", "Group1", {}, {kTestRuntimeFeatureA.name});
+    service.SimulateAndApplyRuntimeMutableChanges(valid_seed);
+    EXPECT_THAT(event_log,
+                testing::ElementsAre("pre_mutation", "post_mutation"));
+    EXPECT_EQ(
+        service.client()->rotate_uma_log_for_runtime_mutability_call_count(),
+        1);
+    histogram_tester.ExpectTotalCount(
+        kSimulateAndApplyRuntimeMutableChangesTimeMetric, 1);
+    histogram_tester.ExpectUniqueSample(
+        kSimulateAndApplyRuntimeMutableChangesRotateUmaLogResultMetric,
+        metrics::MetricsService::RotateUmaLogResult::kSuccess, 1);
+    histogram_tester.ExpectTotalCount(
+        kSimulateAndApplyRuntimeMutableChangesRotateUmaLogTimeMetric, 1);
+  }
+}
+
+// Verifies that when the rotate_uma_log param is false (the default),
+// RotateUmaLogForRuntimeMutability is not called when applying mutations.
+TEST_F(VariationsServiceTest,
+       ApplyRuntimeMutableChanges_RotateUmaLogDisabledByDefault) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  auto feature_list = std::make_unique<base::FeatureList>();
+  feature_list->InitFromCommandLine("VariationsRuntimeMutability", "");
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureA,
+      /*pre_mutation_callback=*/base::DoNothing(),
+      /*post_mutation_callback=*/base::DoNothing());
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  base::HistogramTester histogram_tester;
+  VariationsSeed valid_seed = CreateTestRuntimeMutableSeed(
+      "Study1", "Group1", {}, {kTestRuntimeFeatureA.name});
+  service.SimulateAndApplyRuntimeMutableChanges(valid_seed);
+
+  EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+  EXPECT_EQ(
+      service.client()->rotate_uma_log_for_runtime_mutability_call_count(), 0);
+  histogram_tester.ExpectTotalCount(
+      kSimulateAndApplyRuntimeMutableChangesRotateUmaLogResultMetric, 0);
+  histogram_tester.ExpectTotalCount(
+      kSimulateAndApplyRuntimeMutableChangesRotateUmaLogTimeMetric, 0);
+}
+
+// Verifies that when RotateUmaLogForRuntimeMutability returns a non-success
+// result, RotateUmaLogResult records that result and RotateUmaLogTime is not
+// recorded.
+TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_RotateUmaLogFails) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+  service.client()->set_rotate_uma_log_result(
+      metrics::MetricsService::RotateUmaLogResult::kTooEarly);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  auto feature_list = std::make_unique<base::FeatureList>();
+  feature_list->InitFromCommandLine(
+      "VariationsRuntimeMutability:rotate_uma_log/true",
+      base::features::kFeatureParamWithCache.name);
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureA,
+      /*pre_mutation_callback=*/base::DoNothing(),
+      /*post_mutation_callback=*/base::DoNothing());
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  base::HistogramTester histogram_tester;
+  VariationsSeed valid_seed = CreateTestRuntimeMutableSeed(
+      "Study1", "Group1", {}, {kTestRuntimeFeatureA.name});
+  service.SimulateAndApplyRuntimeMutableChanges(valid_seed);
+
+  EXPECT_EQ(
+      service.client()->rotate_uma_log_for_runtime_mutability_call_count(), 1);
+  histogram_tester.ExpectUniqueSample(
+      kSimulateAndApplyRuntimeMutableChangesRotateUmaLogResultMetric,
+      metrics::MetricsService::RotateUmaLogResult::kTooEarly, 1);
+  histogram_tester.ExpectTotalCount(
+      kSimulateAndApplyRuntimeMutableChangesRotateUmaLogTimeMetric, 0);
 }
 
 // Verifies that if post-mutation validation fails, the study name hash is

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/metrics/variations/chrome_variations_service_client.h"
 
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
@@ -16,6 +17,7 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
+#include "components/metrics/metrics_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/seed_response.h"
@@ -119,6 +121,15 @@ bool ChromeVariationsServiceClient::IsChromeEnterpriseCoreSupported() {
 #else
   return true;
 #endif
+}
+
+metrics::MetricsService::RotateUmaLogResult
+ChromeVariationsServiceClient::RotateUmaLogForRuntimeMutability(
+    metrics::MetricsService::RuntimeMutabilityPassKey passkey) {
+  metrics::MetricsService* metrics_service =
+      g_browser_process->metrics_service();
+  CHECK(metrics_service);
+  return metrics_service->RotateUmaLogForRuntimeMutability(passkey);
 }
 
 version_info::Channel ChromeVariationsServiceClient::GetChannel() {

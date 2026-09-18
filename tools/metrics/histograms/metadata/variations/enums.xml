@@ -310,6 +310,18 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="All variations are restricted"/>
 </enum>
 
+<!-- LINT.IfChange(VariationsRotateUmaLogResult) -->
+
+<enum name="VariationsRotateUmaLogResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Too early (initial log not yet uploaded)"/>
+  <int value="2" label="Recording disabled"/>
+  <int value="3" label="Reporting disabled"/>
+  <int value="4" label="Not supported"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/metrics/metrics_service.h:RotateUmaLogResult) -->
+
 <enum name="VariationsRuntimeMutabilityResult">
   <int value="0" label="Unknown">Reserved value. This should not be used.</int>
   <int value="1" label="Success">
