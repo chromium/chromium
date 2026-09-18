@@ -9,7 +9,6 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/accessibility/accessibility_features.h"
 
 ReadAnythingSoftNavigationObserver::ReadAnythingSoftNavigationObserver() =
     default;

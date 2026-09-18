@@ -4,14 +4,10 @@
 
 #include "chrome/browser/ui/read_anything/read_anything_service.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
-#include "ui/accessibility/accessibility_features.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/accessibility/embedded_a11y_extension_loader.h"

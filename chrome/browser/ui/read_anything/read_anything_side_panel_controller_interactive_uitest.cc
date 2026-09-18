@@ -4,11 +4,8 @@
 
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_controller.h"
 
-#include <atomic>
 #include <optional>
 
-#include "base/metrics/histogram_base.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -20,13 +17,11 @@
 #include "chrome/browser/ui/read_anything/read_anything_entry_point_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/read_anything/read_anything_prefs.h"
-#include "chrome/browser/ui/read_anything/read_anything_side_panel_controller_utils.h"
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_interactive_test_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -34,7 +29,6 @@
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/accessibility/reading/distillable_pages.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/user_education/views/help_bubble_view.h"

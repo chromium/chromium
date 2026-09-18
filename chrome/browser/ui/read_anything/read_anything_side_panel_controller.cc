@@ -4,55 +4,34 @@
 
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_controller.h"
 
-#include <algorithm>
-#include <climits>
 #include <memory>
 #include <optional>
 
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/time/time.h"
 #include "chrome/browser/dom_distiller/tab_utils.h"
-#include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/page_action/page_action_observer.h"
 #include "chrome/browser/ui/read_anything/read_anything_contents_wrapper.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/read_anything/read_anything_omnibox_controller.h"
-#include "chrome/browser/ui/read_anything/read_anything_prefs.h"
-#include "chrome/browser/ui/read_anything/read_anything_service.h"
-#include "chrome/browser/ui/read_anything/read_anything_side_panel_controller_utils.h"
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_web_view.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_page_handler.h"
-#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
 #include "chrome/browser/ui/webui_browser/webui_browser.h"
 #include "components/accessibility/reading/distillable_pages.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/language/core/browser/language_model.h"
-#include "components/language/core/browser/language_model_manager.h"
-#include "components/language/core/common/locale_util.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/common/url_constants.h"
-#include "read_anything_entry_point_controller.h"
-#include "read_anything_side_panel_controller.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "ui/accessibility/accessibility_features.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/base/metadata/metadata_types.h"
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ReadAnythingSidePanelControllerGlue);
 

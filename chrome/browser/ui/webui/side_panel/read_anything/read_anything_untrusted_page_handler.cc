@@ -4,22 +4,18 @@
 
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_page_handler.h"
 
-#include <algorithm>
 #include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
-#include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "chrome/browser/accessibility/phrase_segmentation/dependency_parser_model_loader.h"
 #include "chrome/browser/accessibility/phrase_segmentation/dependency_parser_model_loader_factory.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -67,7 +63,6 @@
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
-#include "net/http/http_status_code.h"
 #include "pdf/buildflags.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -77,11 +72,8 @@
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_mode.h"
-#include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_id_forward.h"
-#include "ui/accessibility/ax_tree_manager.h"
 #include "ui/accessibility/ax_tree_update.h"
-#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"

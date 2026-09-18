@@ -12,7 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
-#include "read_aloud_traversal_utils.h"
+#include "chrome/renderer/accessibility/read_anything/read_aloud_traversal_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_position.h"

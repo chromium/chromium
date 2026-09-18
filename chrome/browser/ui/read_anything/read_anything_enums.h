@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_READ_ANYTHING_READ_ANYTHING_ENUMS_H_
 #define CHROME_BROWSER_UI_READ_ANYTHING_READ_ANYTHING_ENUMS_H_
 
-#include <optional>
-
 #include "base/notreached.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"

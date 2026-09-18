@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/read_anything/read_anything_service_factory.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/browser_resources.h"
-#include "extensions/browser/extension_system.h"
 #include "ui/accessibility/accessibility_features.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)

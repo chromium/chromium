@@ -12,14 +12,11 @@
 
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "chrome/renderer/accessibility/read_anything/read_anything_test_utils.h"
 #include "chrome/test/base/chrome_render_view_test.h"
-#include "read_anything_app_model.h"
-#include "read_anything_test_utils.h"
 #include "services/strings/grit/services_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -27,8 +24,6 @@
 #include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_event_intent.h"
 #include "ui/accessibility/ax_node_id_forward.h"
-#include "ui/accessibility/ax_serializable_tree.h"
-#include "ui/accessibility/ax_updates_and_events.h"
 #include "ui/base/l10n/l10n_util.h"
 
 using ::testing::ElementsAre;

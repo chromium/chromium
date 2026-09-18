@@ -9,14 +9,10 @@
 #include <utility>
 #include <vector>
 
-#include "base/base_paths.h"
-#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_callback_support.h"
-#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -43,10 +39,8 @@
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_node_id_forward.h"
-#include "ui/accessibility/ax_serializable_tree.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "url/gurl.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-microtask-queue.h"
 

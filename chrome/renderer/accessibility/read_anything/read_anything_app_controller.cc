@@ -5,17 +5,14 @@
 #include "chrome/renderer/accessibility/read_anything/read_anything_app_controller.h"
 
 #include <algorithm>
-#include <climits>
 #include <memory>
 #include <optional>
-#include <queue>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
 #include "base/check_deref.h"
-#include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/language_tag.h"
@@ -40,7 +37,6 @@
 #include "chrome/renderer/accessibility/read_anything/read_anything_distiller_factory.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_node_utils.h"
 #include "components/language/core/common/locale_util.h"
-#include "components/translate/core/common/translate_constants.h"
 #include "content/public/renderer/chrome_object_extensions_utils.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
@@ -52,18 +48,14 @@
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_local_frame.h"
-#include "third_party/blink/public/web/web_script_source.h"
-#include "third_party/re2/src/re2/re2.h"
-#include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkColorType.h"
-#include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
+#include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_location_and_scroll_updates.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_id_forward.h"
-#include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_serializable_tree.h"
 #include "ui/accessibility/ax_text_utils.h"
@@ -71,9 +63,7 @@
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_serializer.h"
 #include "ui/accessibility/ax_tree_update.h"
-#include "ui/accessibility/mojom/ax_event.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/geometry/size.h"
 #include "url/url_util.h"
 #include "v8/include/cppgc/allocation.h"
 #include "v8/include/v8-context.h"

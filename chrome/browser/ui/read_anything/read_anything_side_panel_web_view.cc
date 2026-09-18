@@ -12,7 +12,6 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents_delegate.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
 using SidePanelWebUIViewT_ReadAnythingUntrustedUI =

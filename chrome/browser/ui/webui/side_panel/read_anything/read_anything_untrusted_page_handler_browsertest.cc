@@ -4,15 +4,14 @@
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_page_handler.h"
 
 #include <cstddef>
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
-#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_command_line.h"
@@ -28,7 +27,6 @@
 #include "chrome/browser/ui/read_anything/read_anything_immersive_web_view.h"
 #include "chrome/browser/ui/read_anything/read_anything_prefs.h"
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_controller.h"
-#include "chrome/browser/ui/read_anything/read_anything_side_panel_controller_utils.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
@@ -38,9 +36,6 @@
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
-#include "chrome/browser/user_education/user_education_service.h"
-#include "chrome/browser/user_education/user_education_service_factory.h"
-#include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/read_anything/read_anything.mojom-shared.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
 #include "chrome/test/base/chrome_test_path_utils.h"
@@ -49,13 +44,10 @@
 #include "chrome/test/user_education/mock_browser_user_education_interface.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/language_detection/core/constants.h"
-#include "components/prefs/pref_value_map.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/common/translate_features.h"
-#include "components/user_education/common/new_badge/new_badge_specification.h"
-#include "components/user_education/common/user_education_features.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -63,7 +55,6 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_web_ui.h"
 #include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
-#include "mojo/public/mojom/base/values.mojom.h"
 #include "pdf/pdf_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -71,18 +62,11 @@
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_updates_and_events.h"
-#include "ui/accessibility/mojom/ax_event.mojom.h"
-#include "ui/accessibility/mojom/ax_tree_id.mojom.h"
-#include "ui/accessibility/mojom/ax_tree_update.mojom.h"
-#include "ui/accessibility/platform/browser_accessibility.h"
-#include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_sequence_number_token.h"
 #include "ui/base/window_open_disposition.h"
-#include "ui/gfx/geometry/size.h"
 #if BUILDFLAG(IS_CHROMEOS)
-#include "base/test/bind.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/chrome_os_extension_wrapper.h"
 #include "extensions/browser/extension_host_test_helper.h"

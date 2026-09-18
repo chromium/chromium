@@ -4,7 +4,6 @@
 
 #include "chrome/renderer/accessibility/read_anything/screen2x_distiller.h"
 
-#include <memory>
 #include <optional>
 #include <vector>
 
@@ -15,7 +14,6 @@
 #include "content/public/renderer/render_frame.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_serializable_tree.h"
 #include "ui/accessibility/ax_tree_update.h"

@@ -7,8 +7,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "components/find_in_page/find_tab_helper.h"
@@ -16,7 +14,6 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
 ReadAnythingImmersiveWebView::ReadAnythingImmersiveWebView(
