@@ -8,6 +8,7 @@
 #include "base/containers/span.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "services/webnn/ort/context_impl_ort.h"
+#include "services/webnn/ort/environment.h"
 #include "services/webnn/ort/ort_data_type.h"
 #include "services/webnn/ort/ort_status.h"
 #include "services/webnn/ort/platform_functions_ort.h"
@@ -40,6 +41,7 @@ TensorImplOrt::TensorImplOrt(
     mojom::TensorInfoPtr tensor_info,
     RepresentationPtr representation,
     size_t size,
+    scoped_refptr<Environment> env,
     ScopedOrtExternalMemoryHandle d3d_heap_external_memory_handle,
     Microsoft::WRL::ComPtr<ID3D12Resource> mapped_d3d12_buffer,
     ScopedOrtValue tensor)
@@ -47,11 +49,14 @@ TensorImplOrt::TensorImplOrt(
                       context,
                       std::move(tensor_info),
                       std::move(representation)),
+      env_(std::move(env)),
       d3d_heap_external_memory_handle_(
           std::move(d3d_heap_external_memory_handle)),
       mapped_d3d12_buffer_(std::move(mapped_d3d12_buffer)),
       tensor_(std::move(tensor)),
-      size_(size) {}
+      size_(size) {
+  CHECK(env_);
+}
 
 TensorImplOrt::~TensorImplOrt() = default;
 

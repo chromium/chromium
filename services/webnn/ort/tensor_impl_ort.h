@@ -16,6 +16,8 @@
 
 namespace webnn::ort {
 
+class Environment;
+
 class TensorImplOrt final : public WebNNTensorImpl {
  public:
   TensorImplOrt(mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
@@ -30,6 +32,7 @@ class TensorImplOrt final : public WebNNTensorImpl {
                 mojom::TensorInfoPtr tensor_info,
                 RepresentationPtr representation,
                 size_t size,
+                scoped_refptr<Environment> env,
                 ScopedOrtExternalMemoryHandle d3d_heap_external_memory_handle,
                 Microsoft::WRL::ComPtr<ID3D12Resource> mapped_d3d12_buffer,
                 ScopedOrtValue tensor);
@@ -52,6 +55,10 @@ class TensorImplOrt final : public WebNNTensorImpl {
 
   base::span<uint8_t> AsSpan() const;
 
+  // Null unless this tensor holds an external memory handle. Declared first
+  // (destroyed last) so the EP plugin backing
+  // `d3d_heap_external_memory_handle_`'s release callback stays loaded.
+  scoped_refptr<Environment> env_;
   // The device allocator used for device tensor creation. May be nullptr if
   // device tensor is not supported.
   // If the device allocator is present, the tensor is allocated by the device

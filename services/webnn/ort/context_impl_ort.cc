@@ -658,9 +658,11 @@ ContextImplOrt::CreateTensorFromSharedImageImpl(
 
   // ORT requires that we keep the OrtExternalMemoryHandle alive as long as the
   // tensor is alive, so we also need to pass the handle to TensorImplOrt.
+  // `env_` is also passed so the EP plugin providing the handle's release
+  // callback isn't unloaded before the tensor releases it.
   return base::MakeRefCounted<TensorImplOrt>(
       std::move(receiver), *this, std::move(tensor_info),
-      std::move(representation), shared_image_byte_size,
+      std::move(representation), shared_image_byte_size, env_,
       std::move(external_memory_handle), std::move(d3d12_buffer),
       std::move(tensor));
 }
