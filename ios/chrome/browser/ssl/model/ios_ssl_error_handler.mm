@@ -187,7 +187,10 @@ void IOSSSLErrorHandler::ShowSSLInterstitial() {
       std::make_unique<security_interstitials::IOSBlockingPageControllerClient>(
           web_state_,
           CreateMetricsHelper(web_state_, request_url_, overridable),
-          GetApplicationContext()->GetApplicationLocaleStorage()->Get()));
+          std::string(GetApplicationContext()
+                          ->GetApplicationLocaleStorage()
+                          ->GetTag()
+                          .tag_string())));
   std::string error_html = page->GetHtmlContents();
   IOSBlockingPageTabHelper::FromWebState(web_state_)
       ->AssociateBlockingPage(navigation_id_, std::move(page));
@@ -204,7 +207,10 @@ void IOSSSLErrorHandler::ShowCaptivePortalInterstitial(
       new security_interstitials::IOSBlockingPageControllerClient(
           web_state_,
           CreateMetricsHelper(web_state_, request_url_, overridable_),
-          GetApplicationContext()->GetApplicationLocaleStorage()->Get()));
+          std::string(GetApplicationContext()
+                          ->GetApplicationLocaleStorage()
+                          ->GetTag()
+                          .tag_string())));
   std::string error_html = page->GetHtmlContents();
   IOSBlockingPageTabHelper::FromWebState(web_state_)
       ->AssociateBlockingPage(navigation_id_, std::move(page));

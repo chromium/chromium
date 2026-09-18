@@ -195,7 +195,10 @@ IOSEnterpriseInterstitial::EnterprisePageControllerClient::
     : IOSBlockingPageControllerClient(
           resource.weak_web_state.get(),
           CreateMetricsHelper(resource),
-          GetApplicationContext()->GetApplicationLocaleStorage()->Get()),
+          std::string(GetApplicationContext()
+                          ->GetApplicationLocaleStorage()
+                          ->GetTag()
+                          .tag_string())),
       request_url_(resource.url),
       threat_type_(resource.threat_type),
       threat_source_(resource.threat_source),

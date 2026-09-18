@@ -111,7 +111,10 @@ CreateSslBlockingPage(web::WebState* web_state, const GURL& url) {
           std::make_unique<
               security_interstitials::IOSBlockingPageMetricsHelper>(
               web_state, request_url, reporting_info),
-          GetApplicationContext()->GetApplicationLocaleStorage()->Get()));
+          std::string(GetApplicationContext()
+                          ->GetApplicationLocaleStorage()
+                          ->GetTag()
+                          .tag_string())));
 }
 
 std::unique_ptr<security_interstitials::IOSSecurityInterstitialPage>
@@ -129,7 +132,10 @@ CreateCaptivePortalBlockingPage(web::WebState* web_state) {
           std::make_unique<
               security_interstitials::IOSBlockingPageMetricsHelper>(
               web_state, request_url, reporting_info),
-          GetApplicationContext()->GetApplicationLocaleStorage()->Get()));
+          std::string(GetApplicationContext()
+                          ->GetApplicationLocaleStorage()
+                          ->GetTag()
+                          .tag_string())));
 }
 
 std::unique_ptr<security_interstitials::IOSSecurityInterstitialPage>

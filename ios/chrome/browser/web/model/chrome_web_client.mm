@@ -210,7 +210,10 @@ NSString* GetLookalikeUrlErrorPageHtml(web::WebState* web_state,
           lookalike_info->match_type,
           std::make_unique<LookalikeUrlControllerClient>(
               web_state, lookalike_info->safe_url, lookalike_info->request_url,
-              GetApplicationContext()->GetApplicationLocaleStorage()->Get()));
+              std::string(GetApplicationContext()
+                              ->GetApplicationLocaleStorage()
+                              ->GetTag()
+                              .tag_string())));
   std::string error_page_content = page->GetHtmlContents();
   security_interstitials::IOSBlockingPageTabHelper::FromWebState(web_state)
       ->AssociateBlockingPage(navigation_id, std::move(page));
@@ -235,7 +238,10 @@ NSString* GetHttpsOnlyModeErrorPageHtml(web::WebState* web_state,
           web_state, container->http_url(), service,
           std::make_unique<HttpsOnlyModeControllerClient>(
               web_state, container->http_url(),
-              GetApplicationContext()->GetApplicationLocaleStorage()->Get()));
+              std::string(GetApplicationContext()
+                              ->GetApplicationLocaleStorage()
+                              ->GetTag()
+                              .tag_string())));
 
   std::string error_page_content = page->GetHtmlContents();
   security_interstitials::IOSBlockingPageTabHelper::FromWebState(web_state)
@@ -270,7 +276,10 @@ NSString* GetSupervisedUserErrorPageHTML(web::WebState* web_state,
           error_info->filtering_result().reason,
           container->IsRemoteApprovalPendingForUrl(url),
           error_info->is_main_frame(),
-          GetApplicationContext()->GetApplicationLocaleStorage()->Get(),
+          std::string(GetApplicationContext()
+                          ->GetApplicationLocaleStorage()
+                          ->GetTag()
+                          .tag_string()),
           ui_util::SystemSuggestedFontSizeMultiplier());
 
   security_interstitials::IOSBlockingPageTabHelper::FromWebState(web_state)
@@ -338,7 +347,10 @@ void ChromeWebClient::AddAdditionalSchemes(Schemes* schemes) const {
 
 std::string ChromeWebClient::GetApplicationLocale() const {
   DCHECK(GetApplicationContext());
-  return GetApplicationContext()->GetApplicationLocaleStorage()->Get();
+  return std::string(GetApplicationContext()
+                         ->GetApplicationLocaleStorage()
+                         ->GetTag()
+                         .tag_string());
 }
 
 bool ChromeWebClient::IsAppSpecificURL(const GURL& url) const {

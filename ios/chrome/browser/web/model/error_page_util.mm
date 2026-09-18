@@ -56,7 +56,10 @@ NSString* GetErrorPage(const GURL& url,
           /*can_show_network_diagnostics_dialog=*/false, is_off_the_record,
           /*auto_fetch_feature_enabled=*/false,
           /*is_kiosk_mode=*/false,
-          GetApplicationContext()->GetApplicationLocaleStorage()->Get(),
+          std::string(GetApplicationContext()
+                          ->GetApplicationLocaleStorage()
+                          ->GetTag()
+                          .tag_string()),
           /*is_blocked_by_extension=*/false,
           /*error_page_params=*/nullptr);
 

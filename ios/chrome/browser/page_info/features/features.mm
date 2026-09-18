@@ -10,5 +10,8 @@
 
 bool IsAboutThisSiteFeatureEnabled() {
   return page_info::IsAboutThisSiteFeatureEnabled(
-      GetApplicationContext()->GetApplicationLocaleStorage()->Get());
+      std::string(GetApplicationContext()
+                      ->GetApplicationLocaleStorage()
+                      ->GetTag()
+                      .tag_string()));
 }

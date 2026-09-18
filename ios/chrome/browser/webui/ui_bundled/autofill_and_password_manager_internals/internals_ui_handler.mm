@@ -50,9 +50,11 @@ web::WebUIIOSDataSource* CreateInternalsHTMLSource(
                     std::string(version_info::GetLastChange()));
   source->AddString(version_ui::kUserAgent, web::GetWebClient()->GetUserAgent(
                                                 web::UserAgentType::MOBILE));
-  source->AddString(
-      "app_locale",
-      GetApplicationContext()->GetApplicationLocaleStorage()->Get());
+  source->AddString("app_locale",
+                    std::string(GetApplicationContext()
+                                    ->GetApplicationLocaleStorage()
+                                    ->GetTag()
+                                    .tag_string()));
   return source;
 }
 

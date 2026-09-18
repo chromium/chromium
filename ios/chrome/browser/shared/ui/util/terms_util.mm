@@ -88,9 +88,12 @@ std::string GetLocalizedFileName(const std::string& base_name,
 }
 
 std::string GetTermsOfServicePath() {
-  const std::string& locale =
-      GetApplicationContext()->GetApplicationLocaleStorage()->Get();
-  return GetLocalizedFileName(kChromeTosFilePrefix, locale, kHtmlFileExtension);
+  std::string_view locale = GetApplicationContext()
+                                ->GetApplicationLocaleStorage()
+                                ->GetTag()
+                                .tag_string();
+  return GetLocalizedFileName(kChromeTosFilePrefix, std::string(locale),
+                              kHtmlFileExtension);
 }
 
 GURL GetUnifiedTermsOfServiceURL(bool embbed) {

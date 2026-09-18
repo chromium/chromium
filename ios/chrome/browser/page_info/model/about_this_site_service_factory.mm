@@ -42,7 +42,10 @@ AboutThisSiteServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
   const bool is_about_this_site_language_supported =
       page_info::IsAboutThisSiteFeatureEnabled(
-          GetApplicationContext()->GetApplicationLocaleStorage()->Get());
+          std::string(GetApplicationContext()
+                          ->GetApplicationLocaleStorage()
+                          ->GetTag()
+                          .tag_string()));
 
   base::UmaHistogramBoolean("Security.PageInfo.AboutThisSiteLanguageSupported",
                             is_about_this_site_language_supported);
