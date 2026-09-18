@@ -319,6 +319,8 @@ class PDFiumPage {
   friend class PDFiumPageLinkTest;
   friend class PDFiumTestBase;
 
+  FRIEND_TEST_ALL_PREFIXES(PDFiumPageHeuristicEnhancementsTest,
+                           AnnotLinkReplacesDuplicateWebLink);
   FRIEND_TEST_ALL_PREFIXES(PDFiumPageHighlightTest, PopulateHighlights);
   FRIEND_TEST_ALL_PREFIXES(PDFiumPageImageForOcrTest, LowResolutionImage);
   FRIEND_TEST_ALL_PREFIXES(PDFiumPageImageForOcrTest, HighResolutionImage);

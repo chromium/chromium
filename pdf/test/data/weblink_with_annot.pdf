@@ -1,0 +1,126 @@
+%PDF-1.7
+% ò¤ô
+% Exercises the removal of web links that an annotation link duplicates.
+%
+% The page prints four URLs as plain text, one per line, 50 units apart. Three
+% of them are also covered by a /Link annotation:
+%
+%   y=200  http://example.com/a  annotation 6, same URL     -> duplicate
+%   y=150  http://example.com/b  no annotation              -> not a duplicate
+%   y=100  http://example.com/c  annotation 7, other URL    -> not a duplicate
+%   y=50   http://example.com    annotation 8, same URL but
+%                                spelled with a trailing
+%                                slash                      -> duplicate
+%
+% PDFium's text scanner reports a link for every printed URL, and its
+% annotation pass reports one per /Link annotation, so lines 1 and 4 would
+% otherwise yield two links each for the same span of text.
+1 0 obj <<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+2 0 obj <<
+  /Type /Pages
+  /MediaBox [0 0 400 250]
+  /Count 1
+  /Kids [3 0 R]
+>>
+endobj
+3 0 obj <<
+  /Type /Page
+  /Parent 2 0 R
+  /Resources <<
+    /Font <<
+      /F1 4 0 R
+    >>
+  >>
+  /Contents 5 0 R
+  /Annots [6 0 R 7 0 R 8 0 R]
+>>
+endobj
+4 0 obj <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Times-Roman
+>>
+endobj
+% The printed text. Each URL sits on its own line so that an annotation can
+% cover one without touching its neighbors.
+5 0 obj <<
+  /Length 154
+>>
+stream
+BT
+/F1 12 Tf
+20 200 Td
+(http://example.com/a) Tj
+0 -50 Td
+(http://example.com/b) Tj
+0 -50 Td
+(http://example.com/c) Tj
+0 -50 Td
+(http://example.com) Tj
+ET
+endstream
+endobj
+% Covers the first line with the URL that line already prints. The web link is
+% redundant and gets dropped.
+6 0 obj <<
+  /Type /Annot
+  /Subtype /Link
+  /Rect [10 194 320 214]
+  /Border [0 0 0]
+  /A <<
+    /Type /Action
+    /S /URI
+    /URI (http://example.com/a)
+  >>
+>>
+endobj
+% Covers the third line, but points somewhere else. The two links are not
+% interchangeable, so both survive.
+7 0 obj <<
+  /Type /Annot
+  /Subtype /Link
+  /Rect [10 94 320 114]
+  /Border [0 0 0]
+  /A <<
+    /Type /Action
+    /S /URI
+    /URI (http://other.test/)
+  >>
+>>
+endobj
+% Covers the fourth line. The printed text has no trailing slash while this
+% /URI does, so the two only match once they are compared as GURLs.
+8 0 obj <<
+  /Type /Annot
+  /Subtype /Link
+  /Rect [10 44 320 64]
+  /Border [0 0 0]
+  /A <<
+    /Type /Action
+    /S /URI
+    /URI (http://example.com/)
+  >>
+>>
+endobj
+xref
+0 9
+0000000000 65535 f 
+0000000849 00000 n 
+0000000902 00000 n 
+0000000991 00000 n 
+0000001147 00000 n 
+0000001345 00000 n 
+0000001661 00000 n 
+0000001942 00000 n 
+0000002254 00000 n 
+trailer <<
+  /Root 1 0 R
+  /Size 9
+>>
+startxref
+2422
+%%EOF

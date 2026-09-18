@@ -10,9 +10,12 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
+#include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/extend.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
@@ -53,6 +56,7 @@
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/range/range.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -428,6 +432,17 @@ std::vector<UnassociatedTextRunRange> FindUnassociatedTextRunRanges(
   }
 
   return ranges;
+}
+
+// Returns the range of page text that a link covers, given the link's
+// `start_char_index` and `char_count`. Returns an empty range if the link is
+// not over any text. A link that is over text always covers at least one
+// character, so the returned range is never empty in that case.
+gfx::Range GetLinkTextRange(int32_t start_char_index, int32_t char_count) {
+  if (start_char_index < 0 || char_count <= 0) {
+    return gfx::Range();
+  }
+  return gfx::Range(start_char_index, start_char_index + char_count);
 }
 
 }  // namespace
@@ -1546,6 +1561,11 @@ void PDFiumPage::PopulateAnnotationLinks() {
   FPDF_PAGE page = GetPage();
   // Make sure `page` stays valid for the duration of the loop.
   ScopedPageUnloadPreventer scoped_unload_preventer(this);
+  // Collect the annotation links separately, since a single annotation link
+  // may wrap across multiple lines and thus be enumerated as several links
+  // with the same URL. Appending them to `links_` only after all the
+  // deletions below prevents one of them from erasing another.
+  std::vector<Link> annotation_links;
   while (FPDFLink_Enumerate(page, &start_pos, &link_annot)) {
     Link link;
     Area area = GetLinkTarget(link_annot, &link.target);
@@ -1586,8 +1606,40 @@ void PDFiumPage::PopulateAnnotationLinks() {
         gfx::RectF(link_rect.left(), link_rect.bottom(), link_rect.width(),
                    link_rect.height()),
         &link.start_char_index, &link.char_count);
-    links_.emplace_back(link);
+
+    // Remove web links that this annotation link already covers, so the same
+    // URL does not appear twice. Compare the character ranges with an overlap
+    // test rather than for equality, since the annotation range is derived
+    // geometrically from the annotation rect and need not match the range the
+    // text scanner produced for the web link.
+    if (::features::IsPdfAccessibilityHeuristicEnhancementsEnabled() &&
+        !link.target.url.empty()) {
+      const gfx::Range annot_text_range =
+          GetLinkTextRange(link.start_char_index, link.char_count);
+      if (!annot_text_range.is_empty()) {
+        // Compare the URLs as GURLs, not as strings, so that two spellings of
+        // the same destination still count as duplicates. The web link's URL
+        // comes from the page text, while the annotation's URL comes from its
+        // /URI entry, and the two don't always agree character for character.
+        // e.g. text that reads "http://example.com" paired with an annotation
+        // pointing at "http://example.com/".
+        const GURL annot_url(link.target.url);
+        auto is_duplicate_web_link = [&annot_text_range,
+                                      &annot_url](const Link& web_link) {
+          const gfx::Range web_text_range =
+              GetLinkTextRange(web_link.start_char_index, web_link.char_count);
+          return !web_text_range.is_empty() &&
+                 web_text_range.Intersects(annot_text_range) &&
+                 GURL(web_link.target.url) == annot_url;
+        };
+        std::erase_if(links_, is_duplicate_web_link);
+      }
+    }
+
+    annotation_links.emplace_back(std::move(link));
   }
+
+  base::Extend(links_, std::move(annotation_links));
 }
 
 void PDFiumPage::CalculateImages() {
