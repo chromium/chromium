@@ -430,8 +430,97 @@ cr-expand-button {
   margin-left: 2px;
 }
 
-cr-slider {
-  width: 100%;
+/* Quality Score Rating Chips */
+.rating-chips-row {
+  display: flex;
+  gap: 6px;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+
+.rating-chip {
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: flex;
+  flex: 1;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  height: 36px;
+  justify-content: center;
+  max-width: 44px;
+  min-width: 28px;
+  transition: transform 100ms ease, box-shadow 100ms ease;
+}
+
+.rating-chip:hover {
+  transform: translateY(-1px);
+}
+
+.rating-chip:focus-visible {
+  outline: 2px solid var(--google-blue-600);
+  outline-offset: 2px;
+}
+
+/* Tier Colors: Unselected (subtle pastel tint) */
+.rating-chip.tier-very-good,
+.rating-grade-pill.tier-very-good {
+  background-color: rgba(19, 115, 51, 0.12);
+  color: var(--google-green-700);
+}
+
+.rating-chip.tier-good,
+.rating-grade-pill.tier-good {
+  background-color: rgba(234, 134, 0, 0.12);
+  color: var(--google-yellow-800, #b06000);
+}
+
+.rating-chip.tier-bad,
+.rating-grade-pill.tier-bad {
+  background-color: rgba(232, 113, 10, 0.12);
+  color: var(--google-orange-800, #c26401);
+}
+
+.rating-chip.tier-very-bad,
+.rating-grade-pill.tier-very-bad {
+  background-color: rgba(217, 48, 37, 0.12);
+  color: var(--google-red-600);
+}
+
+/* Tier Colors: Selected (solid fill with white text & focus ring) */
+.rating-chip.selected {
+  color: #fff;
+  font-weight: 700;
+}
+
+.rating-chip.tier-very-good.selected {
+  background-color: var(--google-green-700);
+  box-shadow: 0 0 0 2px var(--google-green-700);
+}
+
+.rating-chip.tier-good.selected {
+  background-color: var(--google-yellow-800, #b06000);
+  box-shadow: 0 0 0 2px var(--google-yellow-800, #b06000);
+}
+
+.rating-chip.tier-bad.selected {
+  background-color: var(--google-orange-800, #c26401);
+  box-shadow: 0 0 0 2px var(--google-orange-800, #c26401);
+}
+
+.rating-chip.tier-very-bad.selected {
+  background-color: var(--google-red-600);
+  box-shadow: 0 0 0 2px var(--google-red-600);
+}
+
+.rating-grade-pill {
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 8px;
 }
 
 .defect-select {

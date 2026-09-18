@@ -260,15 +260,28 @@ export function getHtml(this: TabGroupsElement) {
           <div class="feedback-section">
             <div class="feedback-section-header">
               <span class="feedback-section-label">
-                Quality Score (1–10): ${this.feedbackRating_ ?? 10}
+                Quality Score (1–10)
+              </span>
+              <span class="rating-grade-pill ${
+                  this.getRatingTierClass_(this.feedbackRating_ ?? 10)}">
+                ${this.getRatingTierLabel_(this.feedbackRating_ ?? 10)}
               </span>
             </div>
-            <cr-slider min="1" max="10" snaps="true"
-                marker-count="10" pin="true"
-                .value="${this.feedbackRating_ ?? 10}"
-                @cr-slider-value-changed="${
-                    this.onRatingCrSliderValueChanged_}">
-            </cr-slider>
+            <div class="rating-chips-row" role="radiogroup"
+                aria-label="Quality Score from 1 to 10">
+              ${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(item => html`
+                <button type="button" role="radio"
+                    class="rating-chip ${this.getRatingTierClass_(item)} ${
+                        this.feedbackRating_ === item ? 'selected' : ''}"
+                    data-score="${item}"
+                    aria-label="Score ${item}: ${
+                        this.getRatingTierLabel_(item)}"
+                    aria-checked="${this.feedbackRating_ === item}"
+                    @click="${this.onRatingChipClick_}">
+                  ${item}
+                </button>
+              `)}
+            </div>
           </div>
 
           <div class="feedback-section">
