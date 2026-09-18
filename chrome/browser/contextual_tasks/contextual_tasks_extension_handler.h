@@ -17,6 +17,7 @@
 #include "chrome/browser/contextual_tasks/aim_message_poster.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_types.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_observer.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "content/public/browser/document_user_data.h"
@@ -55,9 +56,13 @@ class ContextualTasksExtensionHandler
       public composebox::mojom::PageHandler,
       public searchbox::mojom::PageHandler,
       public contextual_tasks::AimMessagePoster,
-      public PermissionPromptObserver::Observer {
+      public PermissionPromptObserver::Observer,
+      public contextual_tasks::ContextualTasksUiService::Observer {
  public:
   ~ContextualTasksExtensionHandler() override;
+
+  // contextual_tasks::ContextualTasksUiService::Observer:
+  void OnLensOverlayStateChanged(bool is_showing) override;
 
   // PermissionPromptObserver::Observer:
   void OnPermissionPromptChanged(bool is_showing,
@@ -246,6 +251,9 @@ class ContextualTasksExtensionHandler
   base::ScopedObservation<PermissionPromptObserver,
                           PermissionPromptObserver::Observer>
       permission_prompt_observation_{this};
+  base::ScopedObservation<contextual_tasks::ContextualTasksUiService,
+                          contextual_tasks::ContextualTasksUiService::Observer>
+      ui_service_observation_{this};
 
   std::optional<base::Uuid> task_id_;
   omnibox::ToolMode active_tool_ = omnibox::TOOL_MODE_UNSPECIFIED;
