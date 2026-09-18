@@ -34,6 +34,7 @@ import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -51,6 +52,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -136,6 +138,7 @@ public class TabbedStartupWindowPolicyDelegateTest {
 
     @Test
     @SmallTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/563034418
     public void testStandardStartup_RestoreOnStartup_UrlsPref_OpensUrls() throws Exception {
         // Setup.
         setRestoreOnStartupUrlsPref(STARTUP_URLS);
@@ -150,6 +153,7 @@ public class TabbedStartupWindowPolicyDelegateTest {
 
     @Test
     @SmallTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/563034418
     public void testStandardStartup_RestoreOnStartup_UrlsPref_WithUrlIntent() throws Exception {
         // Setup.
         setRestoreOnStartupUrlsPref(STARTUP_URLS);

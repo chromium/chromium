@@ -44,6 +44,7 @@ import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -85,6 +86,7 @@ import java.util.List;
 @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
 @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS + ":enable_by_default/true"})
 @Batch(Batch.PER_CLASS)
+@DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/563034033
 public class VerticalTabsTest {
     private static final String TEST_GROUP_TITLE = "Vertical Tabs Project";
     private static final int TEST_TABS_TO_MAKE = 5;

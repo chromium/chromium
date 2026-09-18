@@ -604,6 +604,7 @@ public class PageInfoViewTest {
     /** Tests PageInfo on a secure website. */
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/563034197
     public void testShowOnSecureWebsite() throws IOException {
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         onViewWaiting(
@@ -685,6 +686,7 @@ public class PageInfoViewTest {
     /** Tests clicking "Back to safety" button on suspicious site warning. */
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/563034197
     public void testSuspiciousSiteBackToSafetyButtonClick() throws IOException {
         String safeUrl = mTestServerRule.getServer().getURL(sSimpleHtml);
         String suspiciousUrl =
@@ -726,6 +728,7 @@ public class PageInfoViewTest {
     /** Tests clicking "Mark as safe" button on suspicious site warning. */
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/563034197
     public void testSuspiciousSiteMarkAsSafeButtonClick() throws IOException {
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         ThreadUtils.runOnUiThreadBlocking(
@@ -1143,6 +1146,7 @@ public class PageInfoViewTest {
     /** Tests resetting permissions on the permissions page of the PageInfo UI. */
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/563034197
     public void testResetPermissionsOnSubpage() throws Exception {
         mActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSiteDataHtml));
         String url = mTestServerRule.getServer().getURL("/");
@@ -1170,6 +1174,7 @@ public class PageInfoViewTest {
      */
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/563034197
     public void testClearFederatedIdentityEmbargoOnSubpage() throws Exception {
         String rpUrl = mTestServerRule.getServer().getURL(sSimpleHtml);
         mActivityTestRule.loadUrl(rpUrl);
@@ -1236,6 +1241,7 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Features.EnableFeatures(PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/563034197
     public void testShowLocationPermissionSubpage() throws IOException {
         addSomePermissions(mTestServerRule.getServer().getURL("/"));
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));

@@ -63,6 +63,7 @@ import java.util.List;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
+@DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/563034351
 public class BrowsingDataBridgeTest {
     private static final String TEST_FILE_PATH_1 = "/chrome/test/data/browsing_data/a.html";
     private static final String TEST_FILE_PATH_2 = "/chrome/test/data/browsing_data/b.html";

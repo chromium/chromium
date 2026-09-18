@@ -54,6 +54,7 @@ import java.util.concurrent.TimeoutException;
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
 // PictureInPicture#isEnabled() is true on Android 11+.
 @DisableIf.Build(sdk_is_less_than = VERSION_CODES.R)
+@DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/563034213
 public class PictureInPictureActivityBrowserTest {
     @Rule
     public AutoResetCtaTransitTestRule mActivityTestRule =
