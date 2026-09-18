@@ -25,6 +25,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
@@ -57,6 +58,7 @@
 #include "net/server/http_server_response_info.h"
 #include "net/socket/server_socket.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "url/origin.h"
 #include "v8/include/v8-version-string.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -824,8 +826,14 @@ void DevToolsHttpHandler::OnWebSocketRequest(
   if (!thread_)
     return;
 
-  if (request.headers.count("origin") &&
-      !remote_allow_origins_.count(request.headers.at("origin")) &&
+  bool is_same_origin =
+      server_ip_address_ &&
+      url::Origin::Create(
+          GURL(base::StrCat({"http://", server_ip_address_->ToString()})))
+          .IsSameOriginWith(GURL(request.GetHeaderValue("origin")));
+  if (request.headers.count("origin") && !is_same_origin &&
+      !remote_allow_origins_.count(
+          base::ToLowerASCII(request.headers.at("origin"))) &&
       !remote_allow_origins_.count("*")) {
     const std::string& origin = request.headers.at("origin");
     const std::string message = base::StringPrintf(

@@ -581,6 +581,14 @@ TEST_F(DevToolsWebSocketHandlerTest,
   // It means that the request is accepted by the server though.
   EXPECT_EQ(request->GetResponseCode(), 500);
 
+  // Accepts an upgrade request with an Origin matching the server's origin.
+  request = RunRequestUntilCompletion(
+      debugging_url,
+      {{"connection", "upgrade"},
+       {"upgrade", "websocket"},
+       {"origin", base::StringPrintf("http://127.0.0.1:%d", port)}});
+  EXPECT_EQ(request->GetResponseCode(), 500);
+
   // Denies an upgrade request with an Origin header.
   request = RunRequestUntilCompletion(debugging_url,
                                       {{"connection", "upgrade"},
@@ -642,6 +650,17 @@ TEST_F(DevToolsWebSocketHandlerTest, TestAllowsCLIOverrideAllowsOrigins) {
                                            });
   // This error is expected because it's not a well-formed WS request.
   // It means that the request is accepted by the server though.
+  EXPECT_EQ(request->GetResponseCode(), 500);
+
+  // Same origin as the server is still allowed even when --remote-allow-origins
+  // specifies a different origin.
+  request = RunRequestUntilCompletion(
+      debugging_url,
+      {
+          {"connection", "upgrade"},
+          {"upgrade", "websocket"},
+          {"origin", base::StringPrintf("http://127.0.0.1:%d", port)},
+      });
   EXPECT_EQ(request->GetResponseCode(), 500);
 
   request = RunRequestUntilCompletion(debugging_url,
