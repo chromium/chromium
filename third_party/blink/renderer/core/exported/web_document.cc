@@ -440,6 +440,7 @@ bool WebDocument::ExecuteScriptTool(
         script_tool_declaration->untrusted_content;
     web_tool_declaration->consequential =
         script_tool_declaration->consequential;
+    web_tool_declaration->debugging = script_tool_declaration->debugging;
   }
   return model_context->ExecuteTool(
       invocation_id, name, input_arguments,

@@ -19,6 +19,8 @@ experimental domain WebMCP
       optional boolean untrustedContent
       # A hint indicating that executing the tool will result in consequential actions, ex: booking a flight, transferring money.
       optional boolean consequential
+      # If true, indicates that the tool is intended for debugging and developer tooling rather than end-user interactions.
+      optional boolean debugging
       # If the declarative tool was declared with the autosubmit attribute.
       optional boolean autosubmit
 

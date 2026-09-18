@@ -21,7 +21,7 @@
           execute: echo,
           name: "initial_imperative_tool",
           description: "An imperative WebMCP tool",
-          annotations: { readOnlyHint: true, untrustedContentHint: false, consequentialHint: false },
+          annotations: { readOnlyHint: true, untrustedContentHint: false, consequentialHint: false, debugging: false },
         };
         window.initialController = new AbortController();
         document.modelContext.registerTool(initial_imperative_tool, { signal: window.initialController.signal });
@@ -32,7 +32,7 @@
               name: "new_imperative_tool",
               description: "Another imperative tool",
               inputSchema,
-              annotations: { readOnlyHint: false, untrustedContentHint: false, consequentialHint: false },
+              annotations: { readOnlyHint: false, untrustedContentHint: false, consequentialHint: false, debugging: false },
             });
             const form = document.createElement("form");
             form.id = "new_declarative";
@@ -91,14 +91,16 @@
 
   async function waitAdded(count) {
     addedTarget += count;
-    if (addedCount >= addedTarget) return;
+    if (addedCount >= addedTarget)
+      return;
     addedResolvers = Promise.withResolvers();
     return addedResolvers.promise;
   }
 
   async function waitRemoved(count) {
     removedTarget += count;
-    if (removedCount >= removedTarget) return;
+    if (removedCount >= removedTarget)
+      return;
     removedResolvers = Promise.withResolvers();
     return removedResolvers.promise;
   }

@@ -24,6 +24,7 @@ Adding {
         [1] : {
             annotations : {
                 consequential : false
+                debugging : false
                 readOnly : true
                 untrustedContent : false
             }
@@ -50,6 +51,7 @@ Adding {
         [0] : {
             annotations : {
                 consequential : false
+                debugging : false
                 readOnly : false
                 untrustedContent : false
             }
