@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "url/android/parsed_android.h"
 #include "url/third_party/mozilla/url_parse.h"
@@ -76,7 +77,9 @@ ScopedJavaLocalRef<JGURL> GURLAndroid::FromNativeGURL(JNIEnv* env,
 
 // static
 ScopedJavaLocalRef<JGURL> GURLAndroid::EmptyGURL(JNIEnv* env) {
-  return GURLJni::emptyGURL(env);
+  static base::NoDestructor<jni_zero::ScopedJavaGlobalRef<JGURL>> instance(
+      env, GURLJni::emptyGURL(env));
+  return instance->AsLocalRef(env);
 }
 
 static void JNI_GURL_GetOrigin(JNIEnv* env,

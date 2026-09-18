@@ -156,8 +156,10 @@ public class GURL {
 
     @CalledByNative
     private void toNativeGURL(long nativeGurl, long nativeParsed) {
-        mParsed.initNative(nativeParsed);
-        GURLJni.get().initNative(mSpec, mIsValid, nativeGurl, nativeParsed);
+        if (!mSpec.isEmpty()) {
+            mParsed.initNative(nativeParsed);
+            GURLJni.get().initNative(mSpec, mIsValid, nativeGurl, nativeParsed);
+        }
     }
 
     /** See native GURL::is_valid(). */
