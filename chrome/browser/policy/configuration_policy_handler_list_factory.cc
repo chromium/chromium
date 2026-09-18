@@ -2270,7 +2270,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   { key::kExtensionDOMActivityLoggingEnabled,
-    prefs::kExtensionDOMActivityLoggingEnabled,
+    enterprise_reporting::kExtensionDOMActivityLoggingEnabled,
     base::Value::Type::BOOLEAN },
   { key::kExtensionReviewPromptsEnabled,
     prefs::kExtensionReviewPromptsAllowed,

@@ -8,7 +8,7 @@
 #include "base/json/values_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/enterprise/reporting/prefs.h"
+#include "components/enterprise/browser/reporting/prefs.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"

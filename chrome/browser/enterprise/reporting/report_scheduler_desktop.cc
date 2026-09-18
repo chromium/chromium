@@ -12,7 +12,7 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/reporting/prefs.h"
+#include "components/enterprise/browser/reporting/prefs.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/reporting_util.h"
 #include "chrome/browser/upgrade_detector/build_state.h"

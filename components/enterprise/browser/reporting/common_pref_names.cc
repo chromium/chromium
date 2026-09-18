@@ -78,6 +78,14 @@ const char kSaasUsageReport[] = "enterprise_reporting.saas_usage.report";
 const char kSaasUsageReportLastTriggerTime[] =
     "enterprise_reporting.saas_usage.last_trigger_time";
 
+#if !BUILDFLAG(IS_IOS)
+// The browser version that performed the most recent report upload.
+const char kLastUploadVersion[] = "enterprise_reporting.last_upload_version";
+
+const char kCloudLegacyTechReportAllowlist[] =
+    "enterprise_reporting.legacy_tech.urls";
+#endif  // !BUILDFLAG(IS_IOS)
+
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 // Boolean that indicates whether Chrome enterprise extension request is enabled
 // or not.
@@ -89,6 +97,15 @@ const char kCloudExtensionRequestEnabled[] =
 // denied.
 const char kCloudExtensionRequestIds[] =
     "enterprise_reporting.extension_request.ids";
+
+// The list of requests that have been uploaded to the server.
+const char kCloudExtensionRequestUploadedIds[] =
+    "enterprise_reporting.extension_request.pending.ids";
+
+// Boolean pref indicating whether extension DOM activity logging is enabled
+// for enterprise telemetry.
+const char kExtensionDOMActivityLoggingEnabled[] =
+    "enterprise_reporting.extension_dom_activity_logging_enabled";
 #endif
 
 }  // namespace enterprise_reporting

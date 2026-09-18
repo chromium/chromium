@@ -2561,11 +2561,6 @@ inline constexpr char kEchoCheckedOffers[] = "EchoCheckedOffers";
 // Policy that indicates how to handle animated images.
 inline constexpr char kAnimationPolicy[] = "settings.a11y.animation_policy";
 
-// Boolean pref indicating whether extension DOM activity logging is enabled
-// for enterprise telemetry.
-inline constexpr char kExtensionDOMActivityLoggingEnabled[] =
-    "enterprise_reporting.extension_dom_activity_logging_enabled";
-
 // A list of URLs (for U2F) or domains (for webauthn) that automatically permit
 // direct attestation of a Security Key.
 inline constexpr char kSecurityKeyPermitAttestation[] =

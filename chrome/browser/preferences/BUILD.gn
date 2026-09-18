@@ -51,7 +51,6 @@ android_library("pref_service_java") {
 # target for each pref file.
 java_cpp_strings("java_pref_names_srcjar") {
   sources = [
-    "//chrome/browser/enterprise/reporting/prefs.cc",
     "//chrome/browser/new_tab_page/prefs/ntp_pref_names.h",
     "//chrome/browser/ui/safety_hub/safety_hub_prefs.h",
     "//chrome/common/pref_names.h",
@@ -60,6 +59,7 @@ java_cpp_strings("java_pref_names_srcjar") {
     "//components/commerce/core/pref_names.h",
     "//components/dom_distiller/core/pref_names.h",
     "//components/embedder_support/pref_names.h",
+    "//components/enterprise/browser/reporting/common_pref_names.cc",
     "//components/feed/core/common/pref_names.cc",
     "//components/feed/core/shared_prefs/pref_names.cc",
     "//components/history/core/common/pref_names.cc",
