@@ -101,7 +101,7 @@ void SystemWebAppBackgroundTask::CloseDelegate::CloseContents(
 
 void SystemWebAppBackgroundTask::CloseWebContents(
     content::WebContents* contents) {
-  DCHECK(contents == web_contents_.get());
+  CHECK(contents == web_contents_.get(), base::NotFatalUntil::M160);
   web_contents_.reset();
 }
 

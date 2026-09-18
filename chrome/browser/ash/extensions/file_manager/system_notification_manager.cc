@@ -484,7 +484,7 @@ void SystemNotificationManager::HandleBulkPinningNotificationClick() {
 NotificationPtr SystemNotificationManager::MakeBulkPinningErrorNotification(
     const Event& event) {
   // Parse the event args as a bulk-pinning progress struct.
-  DCHECK(!event.args().empty());
+  CHECK(!event.args().empty(), base::NotFatalUntil::M160);
   auto progress = fmp::BulkPinProgress::FromValue(event.args()[0]);
   if (!progress) {
     LOG(ERROR) << "Cannot parse BulkPinProgress from " << event.args()[0];
@@ -553,7 +553,7 @@ NotificationPtr SystemNotificationManager::MakeBulkPinningErrorNotification(
 
 NotificationPtr SystemNotificationManager::MakeDriveSyncErrorNotification(
     const Event& event) {
-  DCHECK(!event.args().empty());
+  CHECK(!event.args().empty(), base::NotFatalUntil::M160);
   auto sync_error = fmp::DriveSyncErrorEvent::FromValue(event.args()[0]);
   if (!sync_error) {
     LOG(ERROR) << "Cannot parse DriveSyncErrorEvent from " << event.args()[0];
@@ -639,7 +639,7 @@ void SystemNotificationManager::HandleDriveDialogClick(
 
 NotificationPtr SystemNotificationManager::MakeDriveConfirmDialogNotification(
     const Event& event) {
-  DCHECK(!event.args().empty());
+  CHECK(!event.args().empty(), base::NotFatalUntil::M160);
   auto dialog_event = fmp::DriveConfirmDialogEvent::FromValue(event.args()[0]);
   if (!dialog_event) {
     LOG(ERROR) << "Cannot parse DriveConfirmDialogEvent from "
@@ -919,7 +919,8 @@ NotificationPtr SystemNotificationManager::MakeMountErrorNotification(
           weak_ptr_factory_.GetWeakPtr(), volume.mount_path().value(),
           uma_types_for_buttons)));
 
-  DCHECK_EQ(buttons.size(), uma_types_for_buttons.size());
+  CHECK_EQ(buttons.size(), uma_types_for_buttons.size(),
+           base::NotFatalUntil::M160);
   notification->set_buttons(buttons);
 
   return notification;
@@ -990,7 +991,7 @@ NotificationPtr SystemNotificationManager::MakeRemovableNotification(
           DeviceNotificationUserActionUmaType::OPEN_MEDIA_DEVICE_NAVIGATION);
     } else {
       const PrefService* const service = profile_->GetPrefs();
-      DCHECK(service);
+      CHECK(service, base::NotFatalUntil::M160);
       bool arc_enabled = service->GetBoolean(arc::prefs::kArcEnabled);
       bool arc_removable_media_access_enabled =
           service->GetBoolean(arc::prefs::kArcHasAccessToRemovableMedia);
@@ -1042,7 +1043,8 @@ NotificationPtr SystemNotificationManager::MakeRemovableNotification(
       notification_buttons.emplace_back(
           GetStringUTF16(IDS_REMOVABLE_DEVICE_OPEN_SETTTINGS_BUTTON_LABEL));
     }
-    DCHECK_EQ(notification_buttons.size(), uma_types_for_buttons.size());
+    CHECK_EQ(notification_buttons.size(), uma_types_for_buttons.size(),
+             base::NotFatalUntil::M160);
     notification->set_buttons(notification_buttons);
   }
   if (volume.device_type() != ash::DeviceType::kUnknown &&

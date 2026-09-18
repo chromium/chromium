@@ -291,7 +291,8 @@ void PersonalizationAppSeaPenProviderBase::OnFetchWallpaperDone(
 
 void PersonalizationAppSeaPenProviderBase::OnRecentSeaPenImageSelected(
     bool success) {
-  DCHECK(pending_select_recent_sea_pen_image_callback_);
+  CHECK(pending_select_recent_sea_pen_image_callback_,
+        base::NotFatalUntil::M160);
   std::move(pending_select_recent_sea_pen_image_callback_).Run(success);
 }
 

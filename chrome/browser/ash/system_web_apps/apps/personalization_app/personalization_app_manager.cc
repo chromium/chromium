@@ -44,7 +44,7 @@ class PersonalizationAppManagerImpl : public PersonalizationAppManager {
       content::BrowserContext* context,
       local_search_service::LocalSearchServiceProxy& local_search_service_proxy)
       : profile_(Profile::FromBrowserContext(context)) {
-    DCHECK(profile_);
+    CHECK(profile_, base::NotFatalUntil::M160);
     search_handler_ = std::make_unique<SearchHandler>(
         local_search_service_proxy, profile_->GetPrefs(),
         std::make_unique<EnterprisePolicyDelegateImpl>(context));

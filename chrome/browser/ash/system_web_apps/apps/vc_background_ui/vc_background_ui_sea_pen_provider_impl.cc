@@ -37,7 +37,7 @@ namespace {
 
 CameraEffectsController* GetCameraEffectsController() {
   auto* controller = Shell::Get()->camera_effects_controller();
-  DCHECK(controller);
+  CHECK(controller, base::NotFatalUntil::M160);
   return controller;
 }
 
@@ -177,7 +177,7 @@ void VcBackgroundUISeaPenProviderImpl::OnCameraEffectChanged(
     const cros::mojom::EffectsConfigPtr& new_effects) {
   user_manager::User* active_user =
       user_manager::UserManager::Get()->GetActiveUser();
-  DCHECK(active_user);
+  CHECK(active_user, base::NotFatalUntil::M160);
 
   if (active_user->GetAccountId() !=
       personalization_app::GetAccountId(profile_)) {

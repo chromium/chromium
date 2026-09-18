@@ -48,7 +48,7 @@ std::string ErrorToString(component_updater::ComponentManagerAsh::Error error) {
 
 ComponentUpdaterServiceProvider::ComponentUpdaterServiceProvider(
     component_updater::ComponentManagerAsh* cros_component_manager) {
-  DCHECK(cros_component_manager);
+  CHECK(cros_component_manager, base::NotFatalUntil::M160);
 
   cros_component_manager_ = cros_component_manager;
   cros_component_manager_->SetDelegate(this);

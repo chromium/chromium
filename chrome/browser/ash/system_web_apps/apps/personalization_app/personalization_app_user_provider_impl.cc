@@ -126,7 +126,7 @@ void PersonalizationAppUserProviderImpl::SetUserImageObserver(
   // May already be bound if user refreshes page.
   user_image_observer_remote_.reset();
   user_image_observer_remote_.Bind(std::move(observer));
-  DCHECK(user_manager::UserManager::IsInitialized());
+  CHECK(user_manager::UserManager::IsInitialized(), base::NotFatalUntil::M160);
   auto* user_manager = user_manager::UserManager::Get();
   if (!user_manager_observer_.IsObserving()) {
     user_manager_observer_.Observe(user_manager);
@@ -151,7 +151,7 @@ void PersonalizationAppUserProviderImpl::SetUserImageObserver(
 void PersonalizationAppUserProviderImpl::GetUserInfo(
     GetUserInfoCallback callback) {
   const user_manager::User* user = GetUser(profile_);
-  DCHECK(user);
+  CHECK(user, base::NotFatalUntil::M160);
   std::move(callback).Run(ash::personalization_app::UserDisplayInfo(*user));
 }
 
@@ -267,7 +267,7 @@ void PersonalizationAppUserProviderImpl::OnFileSelected(
 void PersonalizationAppUserProviderImpl::OnUserImageChanged(
     const user_manager::User& user) {
   const user_manager::User* desired_user = GetUser(profile_);
-  DCHECK(desired_user);
+  CHECK(desired_user, base::NotFatalUntil::M160);
 
   if (user.GetAccountId() != desired_user->GetAccountId()) {
     return;
@@ -345,7 +345,7 @@ void PersonalizationAppUserProviderImpl::OnUserProfileImageUpdated(
     const user_manager::User& user,
     const gfx::ImageSkia& profile_image) {
   const user_manager::User* desired_user = GetUser(profile_);
-  DCHECK(desired_user);
+  CHECK(desired_user, base::NotFatalUntil::M160);
 
   if (user.GetAccountId() != desired_user->GetAccountId()) {
     return;

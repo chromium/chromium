@@ -129,7 +129,7 @@ void FileManagerPrivateSharesheetHasTargetsFunction::OnDrivePropertyCollected(
     std::unique_ptr<std::vector<std::string>> mime_types,
     std::unique_ptr<api::file_manager_private::EntryProperties> properties,
     base::File::Error error) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (error != base::File::FILE_OK) {
     LOG(ERROR) << "Error reading file properties in Drive: " << error;
@@ -258,7 +258,7 @@ void FileManagerPrivateInvokeSharesheetFunction::OnDrivePropertyCollected(
     std::unique_ptr<std::vector<std::string>> mime_types,
     std::unique_ptr<api::file_manager_private::EntryProperties> properties,
     base::File::Error error) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (error != base::File::FILE_OK) {
     Respond(Error("Drive File Error"));

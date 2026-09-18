@@ -234,7 +234,7 @@ ImageLoaderPrivateGetPdfThumbnailFunction::Run() {
 void ImageLoaderPrivateGetPdfThumbnailFunction::FetchThumbnail(
     const gfx::Size& size,
     const std::string& content) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   if (content.empty()) {
     Respond(Error("Failed to read PDF file"));
     return;
@@ -245,7 +245,7 @@ void ImageLoaderPrivateGetPdfThumbnailFunction::FetchThumbnail(
     return;
   }
   base::as_writable_chars(base::span(pdf_region.mapping)).copy_from(content);
-  DCHECK(!pdf_thumbnailer_.is_bound());
+  CHECK(!pdf_thumbnailer_.is_bound(), base::NotFatalUntil::M160);
   GetPdfService()->BindPdfThumbnailer(
       pdf_thumbnailer_.BindNewPipeAndPassReceiver());
   pdf_thumbnailer_.set_disconnect_handler(base::BindOnce(
@@ -273,7 +273,7 @@ void ImageLoaderPrivateGetPdfThumbnailFunction::ThumbnailDisconnected() {
 
 void ImageLoaderPrivateGetPdfThumbnailFunction::GotThumbnail(
     const SkBitmap& bitmap) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   pdf_thumbnailer_.reset();
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&ConvertAndEncode, bitmap),

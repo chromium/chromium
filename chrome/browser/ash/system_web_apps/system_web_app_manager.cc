@@ -173,9 +173,10 @@ web_app::ExternalInstallOptions CreateInstallOptionsForSystemApp(
     const SystemWebAppDelegate& delegate,
     bool force_update,
     bool is_disabled) {
-  DCHECK(delegate.GetInstallUrl().GetScheme() == content::kChromeUIScheme ||
-         delegate.GetInstallUrl().GetScheme() ==
-             content::kChromeUIUntrustedScheme);
+  CHECK(delegate.GetInstallUrl().GetScheme() == content::kChromeUIScheme ||
+            delegate.GetInstallUrl().GetScheme() ==
+                content::kChromeUIUntrustedScheme,
+        base::NotFatalUntil::M160);
 
   web_app::ExternalInstallOptions install_options(
       delegate.GetInstallUrl(), web_app::mojom::UserDisplayMode::kStandalone,
@@ -223,7 +224,7 @@ SystemWebAppManager::SystemWebAppManager(
                         web_app::GetProfileCategoryForLogging(profile)})),
       pref_service_(profile_->GetPrefs()),
       icon_checker_(SystemWebAppIconChecker::Create(profile_)) {
-  DCHECK(provider_);
+  CHECK(provider_, base::NotFatalUntil::M160);
   // Always create delegates because many System Web App WebUIs are disabled
   // when the delegate is not present and we need them in tests. Tests can
   // override the list of delegates with SetSystemAppsForTesting().
@@ -288,7 +289,7 @@ SystemWebAppManager* SystemWebAppManager::GetForTest(Profile* profile) {
   }
 
   SystemWebAppManager* swa_manager = Get(profile);
-  DCHECK(swa_manager);
+  CHECK(swa_manager, base::NotFatalUntil::M160);
 
   if (provider->on_registry_ready().is_signaled()) {
     return swa_manager;
@@ -356,8 +357,9 @@ void SystemWebAppManager::Start() {
       // Only allow force enabled origin trials on chrome:// and
       // chrome-untrusted:// URLs.
       const auto& scheme = origin_to_trial_names.first.scheme();
-      DCHECK(scheme == content::kChromeUIScheme ||
-             scheme == content::kChromeUIUntrustedScheme);
+      CHECK(scheme == content::kChromeUIScheme ||
+                scheme == content::kChromeUIUntrustedScheme,
+            base::NotFatalUntil::M160);
       // TODO(crbug.com/40115403): Find some ways to validate supplied
       // origin trial names. Ideally, construct them from some static const
       // char*.
@@ -500,7 +502,7 @@ bool SystemWebAppManager::IsSystemWebApp(const webapps::AppId& app_id) const {
 const std::vector<std::string>* SystemWebAppManager::GetEnabledOriginTrials(
     const SystemWebAppDelegate* system_app,
     const GURL& url) const {
-  DCHECK(system_app);
+  CHECK(system_app, base::NotFatalUntil::M160);
   const auto& origin_to_origin_trials = system_app->GetEnabledOriginTrials();
   auto iter_trials = origin_to_origin_trials.find(url::Origin::Create(url));
 
@@ -529,9 +531,9 @@ void SystemWebAppManager::OnReadyToCommitNavigation(
   // This function should only be called when an navigation happens inside a
   // System App. So the |app_id| should always have a valid associated System
   // App type.
-  DCHECK(type.has_value());
+  CHECK(type.has_value(), base::NotFatalUntil::M160);
   auto* system_app = GetSystemApp(type.value());
-  DCHECK(system_app);
+  CHECK(system_app, base::NotFatalUntil::M160);
 
   const std::vector<std::string>* trials =
       GetEnabledOriginTrials(system_app, navigation_handle->GetURL());
@@ -640,7 +642,7 @@ void SystemWebAppManager::RecordSystemWebAppInstallDuration(
     const base::TimeDelta& install_duration) const {
   // Install duration should be non-negative. A low resolution clock could
   // result in a |install_duration| of 0.
-  DCHECK_GE(install_duration.InMilliseconds(), 0);
+  CHECK_GE(install_duration.InMilliseconds(), 0, base::NotFatalUntil::M160);
 
   if (!shutting_down_) {
     base::UmaHistogramMediumTimes(kFreshInstallDurationHistogramName,
@@ -734,7 +736,7 @@ void SystemWebAppManager::OnAppsSynchronized(
   // May be called more than once in tests.
   if (!on_apps_synchronized_->is_signaled()) {
     on_apps_synchronized_->Signal();
-    DCHECK(provider_->is_registry_ready());
+    CHECK(provider_->is_registry_ready(), base::NotFatalUntil::M160);
     provider_->policy_manager().OnDisableListPolicyChanged();
     // TODO(http://crbug.com/40167016): Don't create SWA background tasks that
     // are associated with a disabled SWA.

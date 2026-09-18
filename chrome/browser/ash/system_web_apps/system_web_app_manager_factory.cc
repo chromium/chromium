@@ -57,7 +57,8 @@ SystemWebAppManagerFactory::BuildServiceInstanceForBrowserContext(
       g_browser_process->GetFeatures()->application_locale_storage();
 
   Profile* profile = Profile::FromBrowserContext(context);
-  DCHECK(web_app::WebAppProviderFactory::IsServiceCreatedForProfile(profile));
+  CHECK(web_app::WebAppProviderFactory::IsServiceCreatedForProfile(profile),
+        base::NotFatalUntil::M160);
 
   std::unique_ptr<SystemWebAppManager> swa_manager =
       std::make_unique<SystemWebAppManager>(application_locale_storage,

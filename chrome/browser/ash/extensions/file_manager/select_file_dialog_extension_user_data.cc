@@ -27,7 +27,7 @@ void SelectFileDialogExtensionUserData::SetDialogDataForWebContents(
     const std::string& routing_id,
     ui::SelectFileDialog::Type type,
     std::optional<policy::DlpFileDestination> dialog_caller) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M160);
   web_contents->SetUserData(
       kSelectFileDialogExtensionUserDataKey,
       base::WrapUnique(new SelectFileDialogExtensionUserData(

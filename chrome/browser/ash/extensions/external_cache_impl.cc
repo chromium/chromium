@@ -349,8 +349,8 @@ void ExternalCacheImpl::OnExtensionDownloadFinished(
     const extensions::ExtensionDownloaderDelegate::PingResult& ping_result,
     const std::set<int>& request_ids,
     InstallCallback callback) {
-  DCHECK(file_ownership_passed);
-  DCHECK(file.expected_version.IsValid());
+  CHECK(file_ownership_passed, base::NotFatalUntil::M160);
+  CHECK(file.expected_version.IsValid(), base::NotFatalUntil::M160);
   local_cache_.PutExtension(
       file.extension_id, file.expected_hash, file.path, file.expected_version,
       base::BindOnce(&ExternalCacheImpl::OnPutExtension,
@@ -548,7 +548,7 @@ void ExternalCacheImpl::OnPutExternalExtension(
     PutExternalExtensionCallback callback,
     const base::FilePath& file_path,
     bool file_ownership_passed) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   OnPutExtension(id, file_path, file_ownership_passed);
   std::move(callback).Run(id, !file_ownership_passed);
 }

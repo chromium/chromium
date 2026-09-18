@@ -229,7 +229,7 @@ ChromeCameraAppUIDelegate::StorageMonitor::~StorageMonitor() {
 void ChromeCameraAppUIDelegate::StorageMonitor::StartMonitoring(
     base::FilePath monitor_path,
     base::RepeatingCallback<void(StorageMonitorStatus)> callback) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M160);
   // Initialize and set most properties
   monitor_path_ = std::move(monitor_path);
   callback_ = callback;
@@ -245,7 +245,7 @@ void ChromeCameraAppUIDelegate::StorageMonitor::StartMonitoring(
 }
 
 void ChromeCameraAppUIDelegate::StorageMonitor::StopMonitoring() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M160);
   if (timer_.IsRunning()) {
     timer_.Stop();
   }
@@ -733,7 +733,8 @@ void ChromeCameraAppUIDelegate::MonitorFileDeletionOnFileThread(
     FileMonitor* file_monitor,
     const base::FilePath& file_path,
     base::OnceCallback<void(FileMonitorResult)> callback) {
-  DCHECK(file_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(file_task_runner_->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M160);
 
   file_monitor->Monitor(file_path, std::move(callback));
 }

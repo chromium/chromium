@@ -107,7 +107,7 @@ void ContinueGetSelectedFileInfoWithDriveFsMetadata(
 void GetSelectedFileInfoInternal(
     Profile* profile,
     std::unique_ptr<GetSelectedFileInfoParams> params) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M160);
 
   for (size_t i = params->selected_files.size(); i < params->file_paths.size();
        ++i) {
@@ -349,7 +349,7 @@ void SingleEntryPropertiesGetterForDriveFs::Start(
     const storage::FileSystemURL& file_system_url,
     Profile* const profile,
     ResultCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   SingleEntryPropertiesGetterForDriveFs* instance =
       new SingleEntryPropertiesGetterForDriveFs(file_system_url, profile,
@@ -367,15 +367,15 @@ SingleEntryPropertiesGetterForDriveFs::SingleEntryPropertiesGetterForDriveFs(
       file_system_url_(file_system_url),
       running_profile_(profile),
       properties_(std::make_unique<fmp::EntryProperties>()) {
-  DCHECK(callback_);
-  DCHECK(profile);
+  CHECK(callback_, base::NotFatalUntil::M160);
+  CHECK(profile, base::NotFatalUntil::M160);
 }
 
 SingleEntryPropertiesGetterForDriveFs::
     ~SingleEntryPropertiesGetterForDriveFs() = default;
 
 void SingleEntryPropertiesGetterForDriveFs::StartProcess() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   drive::DriveIntegrationService* integration_service =
       drive::DriveIntegrationServiceFactory::FindForProfile(running_profile_);
@@ -429,7 +429,7 @@ void SingleEntryPropertiesGetterForDriveFs::StartProcess() {
 void SingleEntryPropertiesGetterForDriveFs::OnGetFileInfo(
     drive::FileError error,
     drivefs::mojom::FileMetadataPtr metadata) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (!metadata) {
     CompleteGetEntryProperties(error);
@@ -557,8 +557,8 @@ void SingleEntryPropertiesGetterForDriveFs::OnGetFileInfo(
 
 void SingleEntryPropertiesGetterForDriveFs::CompleteGetEntryProperties(
     drive::FileError error) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(callback_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(callback_, base::NotFatalUntil::M160);
 
   std::move(callback_).Run(std::move(properties_),
                            drive::FileErrorToBaseFileError(error));
@@ -567,7 +567,7 @@ void SingleEntryPropertiesGetterForDriveFs::CompleteGetEntryProperties(
 
 void FillIconSet(fmp::IconSet* output,
                  const ash::file_system_provider::IconSet& input) {
-  DCHECK(output);
+  CHECK(output, base::NotFatalUntil::M160);
   using ash::file_system_provider::IconSet;
   if (input.HasIcon(IconSet::IconSize::SIZE_16x16)) {
     output->icon16x16_url = input.GetIcon(IconSet::IconSize::SIZE_16x16).spec();
@@ -580,7 +580,7 @@ void FillIconSet(fmp::IconSet* output,
 void VolumeToVolumeMetadata(Profile* profile,
                             const Volume& volume,
                             fmp::VolumeMetadata* volume_metadata) {
-  DCHECK(volume_metadata);
+  CHECK(volume_metadata, base::NotFatalUntil::M160);
 
   volume_metadata->volume_id = volume.volume_id();
 

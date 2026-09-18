@@ -127,7 +127,7 @@ DBusHelperObserverForTest::~DBusHelperObserverForTest() = default;  // IN-TEST
 // static
 void DBusHelperObserverForTest::Set(DBusHelperObserverForTest* observer) {
   // Only allow set `g_dbus_helper_observer` when it is null or resets it.
-  DCHECK(!g_dbus_helper_observer || !observer);
+  CHECK(!g_dbus_helper_observer || !observer, base::NotFatalUntil::M160);
 
   g_dbus_helper_observer = observer;
 }

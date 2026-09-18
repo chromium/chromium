@@ -113,7 +113,7 @@ class SingleEntryPropertiesGetterForFileSystemProvider {
   static void Start(const storage::FileSystemURL file_system_url,
                     const std::set<EntryPropertyName>& names,
                     ResultCallback callback) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
     SingleEntryPropertiesGetterForFileSystemProvider* instance =
         new SingleEntryPropertiesGetterForFileSystemProvider(
@@ -134,11 +134,11 @@ class SingleEntryPropertiesGetterForFileSystemProvider {
         file_system_url_(file_system_url),
         names_(names),
         properties_(new EntryProperties) {
-    DCHECK(!callback_.is_null());
+    CHECK(!callback_.is_null(), base::NotFatalUntil::M160);
   }
 
   void StartProcess() {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
     FileSystemURLParser parser(file_system_url_);
     if (!parser.Parse()) {
@@ -182,7 +182,7 @@ class SingleEntryPropertiesGetterForFileSystemProvider {
 
   void OnGetMetadataCompleted(std::unique_ptr<EntryMetadata> metadata,
                               base::File::Error result) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
     if (result != base::File::FILE_OK) {
       CompleteGetEntryProperties(result);
@@ -219,8 +219,8 @@ class SingleEntryPropertiesGetterForFileSystemProvider {
   }
 
   void CompleteGetEntryProperties(base::File::Error result) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    DCHECK(!callback_.is_null());
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+    CHECK(!callback_.is_null(), base::NotFatalUntil::M160);
 
     std::move(callback_).Run(std::move(properties_), result);
     content::GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE, this);
@@ -248,7 +248,7 @@ class SingleEntryPropertiesGetterForDocumentsProvider {
   static void Start(const storage::FileSystemURL file_system_url,
                     Profile* const profile,
                     ResultCallback callback) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
     SingleEntryPropertiesGetterForDocumentsProvider* instance =
         new SingleEntryPropertiesGetterForDocumentsProvider(
@@ -267,12 +267,12 @@ class SingleEntryPropertiesGetterForDocumentsProvider {
         file_system_url_(ResolveFuseBoxFSURL(profile, file_system_url)),
         profile_(profile),
         properties_(new EntryProperties) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    DCHECK(!callback_.is_null());
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+    CHECK(!callback_.is_null(), base::NotFatalUntil::M160);
   }
 
   void StartProcess() {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
     auto* root_map =
         arc::ArcDocumentsProviderRootMap::GetForBrowserContext(profile_);
@@ -309,7 +309,7 @@ class SingleEntryPropertiesGetterForDocumentsProvider {
   void OnGetExtraFileMetadata(
       base::File::Error error,
       const arc::ArcDocumentsProviderRoot::ExtraFileMetadata& metadata) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
     if (error != base::File::FILE_OK) {
       CompleteGetEntryProperties(error);
@@ -327,8 +327,8 @@ class SingleEntryPropertiesGetterForDocumentsProvider {
   }
 
   void CompleteGetEntryProperties(base::File::Error error) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    DCHECK(callback_);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+    CHECK(callback_, base::NotFatalUntil::M160);
 
     std::move(callback_).Run(std::move(properties_), error);
     content::GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE, this);
@@ -455,7 +455,7 @@ FileManagerPrivateInternalGetEntryPropertiesFunction::
 
 ExtensionFunction::ResponseAction
 FileManagerPrivateInternalGetEntryPropertiesFunction::Run() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   using api::file_manager_private_internal::GetEntryProperties::Params;
   const std::optional<Params> params = Params::Create(args());
@@ -525,8 +525,9 @@ void FileManagerPrivateInternalGetEntryPropertiesFunction::
                                const storage::FileSystemURL& url,
                                std::unique_ptr<EntryProperties> properties,
                                base::File::Error error) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(0 <= processed_count_ && processed_count_ < properties_list_.size());
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(0 <= processed_count_ && processed_count_ < properties_list_.size(),
+        base::NotFatalUntil::M160);
 
   if (error == base::File::FILE_OK) {
     properties->external_file_url =
@@ -552,7 +553,7 @@ FileManagerPrivateInternalPinDriveFileFunction::
 
 ExtensionFunction::ResponseAction
 FileManagerPrivateInternalPinDriveFileFunction::Run() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   using extensions::api::file_manager_private_internal::PinDriveFile::Params;
   const std::optional<Params> params = Params::Create(args());
@@ -604,7 +605,7 @@ FileManagerPrivateInternalPinDriveFileFunction::RunAsyncForDriveFs(
 
 void FileManagerPrivateInternalPinDriveFileFunction::OnPinStateSet(
     drive::FileError error) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (error == drive::FILE_ERROR_OK) {
     Respond(NoArguments());

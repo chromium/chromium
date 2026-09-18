@@ -102,7 +102,8 @@ GURL GetBitmapJpegDataUrl(const SkBitmap& bitmap) {
   }
   GURL data_url = GetJpegDataUrl(base::as_string_view(output.value()));
   // @see `url.mojom` warning about dropping urls that are too long.
-  DCHECK_LT(data_url.spec().size(), url::mojom::kMaxURLChars);
+  CHECK_LT(data_url.spec().size(), url::mojom::kMaxURLChars,
+           base::NotFatalUntil::M160);
   return data_url;
 }
 
@@ -340,7 +341,7 @@ void PersonalizationAppWallpaperProviderImpl::SetWallpaperObserver(
 
 void PersonalizationAppWallpaperProviderImpl::OnWallpaperResized() {
   auto* wallpaper_controller = WallpaperController::Get();
-  DCHECK(wallpaper_controller);
+  CHECK(wallpaper_controller, base::NotFatalUntil::M160);
 
   const AccountId account_id = GetAccountId(profile_);
 
@@ -476,7 +477,7 @@ void PersonalizationAppWallpaperProviderImpl::OnWallpaperResized() {
 }
 
 void PersonalizationAppWallpaperProviderImpl::OnWallpaperPreviewEnded() {
-  DCHECK(wallpaper_observer_remote_.is_bound());
+  CHECK(wallpaper_observer_remote_.is_bound(), base::NotFatalUntil::M160);
   wallpaper_observer_remote_->OnWallpaperPreviewEnded();
   // Make sure to fire another |OnWallpaperResized| after preview is over
   // so that personalization app ends up with correct wallpaper state.
@@ -495,7 +496,7 @@ void PersonalizationAppWallpaperProviderImpl::SelectWallpaper(
   }
 
   auto* wallpaper_controller = WallpaperController::Get();
-  DCHECK(wallpaper_controller);
+  CHECK(wallpaper_controller, base::NotFatalUntil::M160);
   if (!wallpaper_controller->CanSetUserWallpaper(GetAccountId(profile_))) {
     wallpaper_receiver_.ReportBadMessage("Invalid request to set wallpaper");
     return;
@@ -517,7 +518,7 @@ void PersonalizationAppWallpaperProviderImpl::SelectWallpaper(
   SetMinimizedWindowStateForPreview(preview_mode);
 
   WallpaperControllerClientImpl* client = WallpaperControllerClientImpl::Get();
-  DCHECK(client);
+  CHECK(client, base::NotFatalUntil::M160);
   client->RecordWallpaperSourceUMA(ash::WallpaperType::kOnline);
 
   if (IsTimeOfDayWallpaper(collection_id) &&
@@ -543,7 +544,7 @@ void PersonalizationAppWallpaperProviderImpl::SelectWallpaper(
 void PersonalizationAppWallpaperProviderImpl::SelectDefaultImage(
     SelectDefaultImageCallback callback) {
   WallpaperControllerClientImpl* client = WallpaperControllerClientImpl::Get();
-  DCHECK(client);
+  CHECK(client, base::NotFatalUntil::M160);
   client->RecordWallpaperSourceUMA(ash::WallpaperType::kDefault);
   WallpaperController::Get()->SetDefaultWallpaper(
       GetAccountId(profile_), /*show_wallpaper=*/true, std::move(callback));
@@ -560,7 +561,7 @@ void PersonalizationAppWallpaperProviderImpl::SelectLocalImage(
   }
 
   ash::WallpaperController* wallpaper_controller = WallpaperController::Get();
-  DCHECK(wallpaper_controller);
+  CHECK(wallpaper_controller, base::NotFatalUntil::M160);
   if (!wallpaper_controller->CanSetUserWallpaper(GetAccountId(profile_))) {
     wallpaper_receiver_.ReportBadMessage("Invalid request to set wallpaper");
     return;
@@ -597,7 +598,7 @@ void PersonalizationAppWallpaperProviderImpl::SelectGooglePhotosPhoto(
   }
 
   auto* wallpaper_controller = WallpaperController::Get();
-  DCHECK(wallpaper_controller);
+  CHECK(wallpaper_controller, base::NotFatalUntil::M160);
   if (!wallpaper_controller->CanSetUserWallpaper(GetAccountId(profile_))) {
     wallpaper_receiver_.ReportBadMessage("Invalid request to set wallpaper");
     return;
@@ -611,7 +612,7 @@ void PersonalizationAppWallpaperProviderImpl::SelectGooglePhotosPhoto(
   SetMinimizedWindowStateForPreview(preview_mode);
 
   WallpaperControllerClientImpl* client = WallpaperControllerClientImpl::Get();
-  DCHECK(client);
+  CHECK(client, base::NotFatalUntil::M160);
 
   client->RecordWallpaperSourceUMA(ash::WallpaperType::kOnceGooglePhotos);
 
@@ -636,7 +637,7 @@ void PersonalizationAppWallpaperProviderImpl::SelectGooglePhotosAlbum(
   }
 
   auto* wallpaper_controller = WallpaperController::Get();
-  DCHECK(wallpaper_controller);
+  CHECK(wallpaper_controller, base::NotFatalUntil::M160);
   if (!wallpaper_controller->CanSetUserWallpaper(GetAccountId(profile_))) {
     wallpaper_receiver_.ReportBadMessage(
         "Invalid request to select google photos album");
@@ -647,7 +648,7 @@ void PersonalizationAppWallpaperProviderImpl::SelectGooglePhotosAlbum(
     std::move(pending_set_daily_refresh_callback_).Run(/*success=*/false);
   }
   WallpaperControllerClientImpl* client = WallpaperControllerClientImpl::Get();
-  DCHECK(client);
+  CHECK(client, base::NotFatalUntil::M160);
 
   client->RecordWallpaperSourceUMA(ash::WallpaperType::kDailyGooglePhotos);
 
@@ -708,7 +709,7 @@ void PersonalizationAppWallpaperProviderImpl::SetDailyRefreshCollectionId(
   }
 
   auto* wallpaper_controller = WallpaperController::Get();
-  DCHECK(wallpaper_controller);
+  CHECK(wallpaper_controller, base::NotFatalUntil::M160);
   if (!wallpaper_controller->CanSetUserWallpaper(GetAccountId(profile_))) {
     wallpaper_receiver_.ReportBadMessage("Invalid request to set wallpaper");
     return;
@@ -724,7 +725,7 @@ void PersonalizationAppWallpaperProviderImpl::SetDailyRefreshCollectionId(
 
   std::optional<ash::WallpaperInfo> info =
       wallpaper_controller->GetWallpaperInfoForAccountId(account_id);
-  DCHECK(info);
+  CHECK(info, base::NotFatalUntil::M160);
 
   if (collection_id.empty()) {
     // Daily refresh is disabled.
@@ -776,9 +777,10 @@ void PersonalizationAppWallpaperProviderImpl::UpdateDailyRefreshWallpaper(
   std::optional<ash::WallpaperInfo> info =
       wallpaper_controller->GetWallpaperInfoForAccountId(
           GetAccountId(profile_));
-  DCHECK(info);
-  DCHECK(info->type == WallpaperType::kDaily ||
-         info->type == WallpaperType::kDailyGooglePhotos);
+  CHECK(info, base::NotFatalUntil::M160);
+  CHECK(info->type == WallpaperType::kDaily ||
+            info->type == WallpaperType::kDailyGooglePhotos,
+        base::NotFatalUntil::M160);
   auto* client = WallpaperControllerClientImpl::Get();
   client->RecordWallpaperSourceUMA(info->type);
 
@@ -862,8 +864,8 @@ PersonalizationAppWallpaperProviderImpl::
 void PersonalizationAppWallpaperProviderImpl::OnFetchCollections(
     bool success,
     const std::vector<backdrop::Collection>& collections) {
-  DCHECK(wallpaper_collection_info_fetcher_);
-  DCHECK(!pending_collections_callbacks_.empty());
+  CHECK(wallpaper_collection_info_fetcher_, base::NotFatalUntil::M160);
+  CHECK(!pending_collections_callbacks_.empty(), base::NotFatalUntil::M160);
 
   std::optional<std::vector<backdrop::Collection>> result;
   if (success && !collections.empty()) {
@@ -977,25 +979,27 @@ void PersonalizationAppWallpaperProviderImpl::OnGetLocalImageThumbnail(
 
 void PersonalizationAppWallpaperProviderImpl::OnOnlineWallpaperSelected(
     bool success) {
-  DCHECK(pending_select_wallpaper_callback_);
+  CHECK(pending_select_wallpaper_callback_, base::NotFatalUntil::M160);
   std::move(pending_select_wallpaper_callback_).Run(success);
 }
 
 void PersonalizationAppWallpaperProviderImpl::OnGooglePhotosWallpaperSelected(
     bool success) {
-  DCHECK(pending_select_google_photos_photo_callback_);
+  CHECK(pending_select_google_photos_photo_callback_,
+        base::NotFatalUntil::M160);
   std::move(pending_select_google_photos_photo_callback_).Run(success);
 }
 
 void PersonalizationAppWallpaperProviderImpl::OnLocalImageSelected(
     bool success) {
-  DCHECK(pending_select_local_image_callback_);
+  CHECK(pending_select_local_image_callback_, base::NotFatalUntil::M160);
   std::move(pending_select_local_image_callback_).Run(success);
 }
 
 void PersonalizationAppWallpaperProviderImpl::OnDailyRefreshWallpaperUpdated(
     bool success) {
-  DCHECK(pending_update_daily_refresh_wallpaper_callback_);
+  CHECK(pending_update_daily_refresh_wallpaper_callback_,
+        base::NotFatalUntil::M160);
   std::move(pending_update_daily_refresh_wallpaper_callback_).Run(success);
 }
 
@@ -1009,7 +1013,7 @@ void PersonalizationAppWallpaperProviderImpl::OnDailyRefreshWallpaperForced(
 void PersonalizationAppWallpaperProviderImpl::FindAttribution(
     const ash::WallpaperInfo& info,
     const std::optional<std::vector<backdrop::Collection>>& collections) {
-  DCHECK(!wallpaper_attribution_info_fetcher_);
+  CHECK(!wallpaper_attribution_info_fetcher_, base::NotFatalUntil::M160);
   if (!collections.has_value() || collections->empty()) {
     const std::string key = GetOnlineWallpaperKey(info);
     NotifyWallpaperChanged(
@@ -1042,7 +1046,7 @@ void PersonalizationAppWallpaperProviderImpl::FindImageMetadataInCollection(
     bool success,
     const std::string& collection_id,
     const std::vector<backdrop::Image>& images) {
-  DCHECK(wallpaper_attribution_info_fetcher_);
+  CHECK(wallpaper_attribution_info_fetcher_, base::NotFatalUntil::M160);
 
   const backdrop::Image* backend_image = nullptr;
   if (success && !images.empty()) {
@@ -1113,7 +1117,7 @@ void PersonalizationAppWallpaperProviderImpl::FindImageMetadataInCollection(
 void PersonalizationAppWallpaperProviderImpl::FindSeaPenWallpaperAttribution(
     const uint32_t id) {
   auto* sea_pen_wallpaper_manager = SeaPenWallpaperManager::GetInstance();
-  DCHECK(sea_pen_wallpaper_manager);
+  CHECK(sea_pen_wallpaper_manager, base::NotFatalUntil::M160);
 
   sea_pen_wallpaper_manager->GetImageAndMetadata(
       GetAccountId(profile_), id,
@@ -1197,13 +1201,13 @@ void PersonalizationAppWallpaperProviderImpl::SetMinimizedWindowStateForPreview(
 
 void PersonalizationAppWallpaperProviderImpl::NotifyAttributionChanged(
     ash::personalization_app::mojom::CurrentAttributionPtr attribution) {
-  DCHECK(wallpaper_observer_remote_.is_bound());
+  CHECK(wallpaper_observer_remote_.is_bound(), base::NotFatalUntil::M160);
   wallpaper_observer_remote_->OnAttributionChanged(std::move(attribution));
 }
 
 void PersonalizationAppWallpaperProviderImpl::NotifyWallpaperChanged(
     ash::personalization_app::mojom::CurrentWallpaperPtr current_wallpaper) {
-  DCHECK(wallpaper_observer_remote_.is_bound());
+  CHECK(wallpaper_observer_remote_.is_bound(), base::NotFatalUntil::M160);
   wallpaper_observer_remote_->OnWallpaperChanged(std::move(current_wallpaper));
 }
 

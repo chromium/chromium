@@ -93,7 +93,7 @@ void FjordOobeServiceProvider::GetOobeState(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender) {
   FjordOobeStateManager* manager = FjordOobeStateManager::Get();
-  DCHECK(manager);
+  CHECK(manager, base::NotFatalUntil::M160);
 
   fjord_oobe_state::proto::FjordOobeStateInfo state =
       manager->GetFjordOobeStateInfo();

@@ -22,7 +22,7 @@ ExtensionFunction::ResponseAction SpeechRecognitionPrivateStartFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
   const api::speech_recognition_private::StartOptions* options =
       &params->options;
-  DCHECK(options);
+  CHECK(options, base::NotFatalUntil::M160);
   std::optional<int> client_id;
   std::optional<std::string> locale;
   std::optional<bool> interim_results;
@@ -63,7 +63,7 @@ ExtensionFunction::ResponseAction SpeechRecognitionPrivateStopFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
   const api::speech_recognition_private::StopOptions* options =
       &params->options;
-  DCHECK(options);
+  CHECK(options, base::NotFatalUntil::M160);
   std::optional<int> client_id;
   if (options->client_id)
     client_id = *options->client_id;

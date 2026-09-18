@@ -28,7 +28,7 @@
 
 ChromeFileManagerUIDelegate::ChromeFileManagerUIDelegate(content::WebUI* web_ui)
     : web_ui_(web_ui) {
-  DCHECK(web_ui_);
+  CHECK(web_ui_, base::NotFatalUntil::M160);
   Profile* profile = Profile::FromWebUI(web_ui_);
   content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 }
@@ -149,7 +149,7 @@ void ChromeFileManagerUIDelegate::RecordDocsOfflineStats(
   // Emitted after 1 day has elapsed since it was last emitted.
   if (Profile* const profile = Profile::FromWebUI(web_ui_)) {
     PrefService* const prefs = profile->GetPrefs();
-    DCHECK(prefs);
+    CHECK(prefs, base::NotFatalUntil::M160);
 
     const base::TimeDelta time_since_last_update =
         base::Time::Now() -

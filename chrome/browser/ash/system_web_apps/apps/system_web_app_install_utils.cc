@@ -64,10 +64,10 @@ SkColor GetDefaultBackgroundColor(const bool use_dark_mode) {
   ui::ColorProviderSource* color_provider_source =
       ash::ColorUtil::GetColorProviderSourceForWindow(
           ash::Shell::GetPrimaryRootWindow());
-  DCHECK(color_provider_source);
+  CHECK(color_provider_source, base::NotFatalUntil::M160);
   const ui::ColorProvider* color_provider =
       color_provider_source->GetColorProvider();
-  DCHECK(color_provider);
+  CHECK(color_provider, base::NotFatalUntil::M160);
 
   ui::ColorId color_id =
       use_dark_mode ? cros_tokens::kBgColorDark : cros_tokens::kBgColorLight;

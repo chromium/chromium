@@ -31,7 +31,7 @@ FileManagerPrivateInternalGetVolumeRootFunction::Run() {
   file_manager::VolumeManager* const volume_manager =
       file_manager::VolumeManager::Get(
           Profile::FromBrowserContext(browser_context()));
-  DCHECK(volume_manager);
+  CHECK(volume_manager, base::NotFatalUntil::M160);
   base::WeakPtr<file_manager::Volume> volume =
       volume_manager->FindVolumeById(volume_id);
   if (!volume.get()) {
@@ -40,7 +40,7 @@ FileManagerPrivateInternalGetVolumeRootFunction::Run() {
 
   content::ChildProcessSecurityPolicy* policy =
       content::ChildProcessSecurityPolicy::GetInstance();
-  DCHECK(policy);
+  CHECK(policy, base::NotFatalUntil::M160);
   const auto process_id = source_process_id();
   // Read-only permisisons.
   // TODO(crbug.com/379869738) Remove FromUnsafeValue.
@@ -55,9 +55,9 @@ FileManagerPrivateInternalGetVolumeRootFunction::Run() {
   // Convert volume's mount path to a virtual path.
   scoped_refptr<storage::FileSystemContext> file_system_context =
       render_frame_host()->GetStoragePartition()->GetFileSystemContext();
-  DCHECK(file_system_context.get());
+  CHECK(file_system_context.get(), base::NotFatalUntil::M160);
   auto* const backend = ash::FileSystemBackend::Get(*file_system_context);
-  DCHECK(backend);
+  CHECK(backend, base::NotFatalUntil::M160);
   file_manager::util::FileDefinition fd;
   if (!backend->GetVirtualPath(volume->mount_path(), &fd.virtual_path)) {
     return RespondNow(

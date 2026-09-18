@@ -218,7 +218,7 @@ void DriveFsEventRouter::OnError(const drivefs::mojom::DriveError& error) {
 
 void DriveFsEventRouter::Observe(
     drive::DriveIntegrationService* const service) {
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M160);
   if (service != drive_observation_.GetSource()) {
     drive_observation_.Reset();
     drive_observation_.Observe(service);

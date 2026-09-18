@@ -136,7 +136,8 @@ bool ChromeRecorderAppUIDelegate::CanUseSpeakerLabelForCurrentProfile() {
 
 void ChromeRecorderAppUIDelegate::RecordSpeakerLabelConsent(
     const sync_pb::UserConsentTypes::RecorderSpeakerLabelConsent& consent) {
-  DCHECK(identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  CHECK(identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin),
+        base::NotFatalUntil::M160);
 
   const GaiaId gaia_id =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)

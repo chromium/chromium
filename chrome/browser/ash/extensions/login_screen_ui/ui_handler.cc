@@ -95,7 +95,7 @@ UiHandler* UiHandler::Get(bool can_create) {
 
 // static
 void UiHandler::Shutdown() {
-  DCHECK(g_instance);
+  CHECK(g_instance, base::NotFatalUntil::M160);
   delete g_instance;
   g_instance = nullptr;
 }

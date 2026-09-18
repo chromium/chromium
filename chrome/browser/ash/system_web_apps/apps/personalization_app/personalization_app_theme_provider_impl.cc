@@ -131,7 +131,7 @@ void PersonalizationAppThemeProviderImpl::SetColorModePref(
 void PersonalizationAppThemeProviderImpl::SetColorModeAutoScheduleEnabled(
     bool enabled) {
   PrefService* pref_service = profile_->GetPrefs();
-  DCHECK(pref_service);
+  CHECK(pref_service, base::NotFatalUntil::M160);
   const ScheduleType schedule_type =
       enabled ? ScheduleType::kSunsetToSunrise : ScheduleType::kNone;
   pref_service->SetInteger(ash::prefs::kDarkModeScheduleType,
@@ -168,38 +168,38 @@ void PersonalizationAppThemeProviderImpl::EnableGeolocationForSystemServices() {
 
 void PersonalizationAppThemeProviderImpl::OnColorModeChanged(
     bool dark_mode_enabled) {
-  DCHECK(theme_observer_remote_.is_bound());
+  CHECK(theme_observer_remote_.is_bound(), base::NotFatalUntil::M160);
   theme_observer_remote_->OnColorModeChanged(dark_mode_enabled);
 }
 
 void PersonalizationAppThemeProviderImpl::OnColorSchemeChanged() {
-  DCHECK(theme_observer_remote_.is_bound());
+  CHECK(theme_observer_remote_.is_bound(), base::NotFatalUntil::M160);
   theme_observer_remote_->OnColorSchemeChanged(
       color_palette_controller_->GetColorScheme(GetAccountId(profile_)));
 }
 
 void PersonalizationAppThemeProviderImpl::OnStaticColorChanged() {
-  DCHECK(theme_observer_remote_.is_bound());
+  CHECK(theme_observer_remote_.is_bound(), base::NotFatalUntil::M160);
   theme_observer_remote_->OnStaticColorChanged(
       color_palette_controller_->GetStaticColor(GetAccountId(profile_)));
 }
 
 void PersonalizationAppThemeProviderImpl::OnSampleColorSchemesChanged(
     const std::vector<ash::SampleColorScheme>& sampleColorSchemes) {
-  DCHECK(theme_observer_remote_.is_bound());
+  CHECK(theme_observer_remote_.is_bound(), base::NotFatalUntil::M160);
   theme_observer_remote_->OnSampleColorSchemesChanged(sampleColorSchemes);
 }
 
 bool PersonalizationAppThemeProviderImpl::IsColorModeAutoScheduleEnabled() {
   PrefService* pref_service = profile_->GetPrefs();
-  DCHECK(pref_service);
+  CHECK(pref_service, base::NotFatalUntil::M160);
   const auto schedule_type = static_cast<ScheduleType>(
       pref_service->GetInteger(ash::prefs::kDarkModeScheduleType));
   return schedule_type == ScheduleType::kSunsetToSunrise;
 }
 
 void PersonalizationAppThemeProviderImpl::NotifyColorModeAutoScheduleChanged() {
-  DCHECK(theme_observer_remote_.is_bound());
+  CHECK(theme_observer_remote_.is_bound(), base::NotFatalUntil::M160);
   theme_observer_remote_->OnColorModeAutoScheduleChanged(
       IsColorModeAutoScheduleEnabled());
 }

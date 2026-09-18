@@ -40,7 +40,7 @@ void OnSeaPenImageDeleted(const AccountId& account_id,
   }
   // Set selected wallpaper to default if the deleted image currently selected.
   auto* wallpaper_controller = WallpaperController::Get();
-  DCHECK(wallpaper_controller);
+  CHECK(wallpaper_controller, base::NotFatalUntil::M160);
   auto wallpaper_info =
       wallpaper_controller->GetWallpaperInfoForAccountId(account_id);
   if (wallpaper_info.has_value() &&
@@ -64,7 +64,7 @@ void OnSeaPenImageSaved(const AccountId& account_id,
     return;
   }
   auto* wallpaper_controller = WallpaperController::Get();
-  DCHECK(wallpaper_controller);
+  CHECK(wallpaper_controller, base::NotFatalUntil::M160);
   wallpaper_controller->SetSeaPenWallpaper(account_id, image_id, preview_mode,
                                            std::move(callback));
 }
@@ -141,7 +141,7 @@ void PersonalizationAppSeaPenProviderImpl::SelectRecentSeaPenImageInternal(
     const bool preview_mode,
     SelectRecentSeaPenImageCallback callback) {
   ash::WallpaperController* wallpaper_controller = WallpaperController::Get();
-  DCHECK(wallpaper_controller);
+  CHECK(wallpaper_controller, base::NotFatalUntil::M160);
 
   const std::string& user_id_hash = GetUser(profile_)->username_hash();
   if (preview_mode) {
@@ -168,7 +168,7 @@ bool PersonalizationAppSeaPenProviderImpl::
 void PersonalizationAppSeaPenProviderImpl::GetRecentSeaPenImageIdsInternal(
     GetRecentSeaPenImageIdsCallback callback) {
   auto* sea_pen_wallpaper_manager = SeaPenWallpaperManager::GetInstance();
-  DCHECK(sea_pen_wallpaper_manager);
+  CHECK(sea_pen_wallpaper_manager, base::NotFatalUntil::M160);
   sea_pen_wallpaper_manager->GetImageIds(GetAccountId(profile_),
                                          std::move(callback));
 }
@@ -178,7 +178,7 @@ void PersonalizationAppSeaPenProviderImpl::
         const uint32_t id,
         SeaPenWallpaperManager::GetImageAndMetadataCallback callback) {
   auto* sea_pen_wallpaper_manager = SeaPenWallpaperManager::GetInstance();
-  DCHECK(sea_pen_wallpaper_manager);
+  CHECK(sea_pen_wallpaper_manager, base::NotFatalUntil::M160);
   sea_pen_wallpaper_manager->GetImageAndMetadata(GetAccountId(profile_), id,
                                                  std::move(callback));
 }
@@ -224,7 +224,7 @@ void PersonalizationAppSeaPenProviderImpl::DeleteRecentSeaPenImage(
   }
 
   auto* sea_pen_wallpaper_manager = SeaPenWallpaperManager::GetInstance();
-  DCHECK(sea_pen_wallpaper_manager);
+  CHECK(sea_pen_wallpaper_manager, base::NotFatalUntil::M160);
 
   sea_pen_wallpaper_manager->DeleteSeaPenImage(
       GetAccountId(profile_), id,
@@ -238,7 +238,7 @@ void PersonalizationAppSeaPenProviderImpl::OnFetchWallpaperDoneInternal(
     const bool preview_mode,
     base::OnceCallback<void(bool success)> callback) {
   auto* sea_pen_wallpaper_manager = SeaPenWallpaperManager::GetInstance();
-  DCHECK(sea_pen_wallpaper_manager);
+  CHECK(sea_pen_wallpaper_manager, base::NotFatalUntil::M160);
   const AccountId account_id = GetAccountId(profile_);
   sea_pen_wallpaper_manager->SaveSeaPenImage(
       account_id, sea_pen_image, query,

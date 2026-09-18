@@ -61,11 +61,12 @@ PersonalizationAppManagerFactory::~PersonalizationAppManagerFactory() = default;
 std::unique_ptr<KeyedService>
 PersonalizationAppManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  DCHECK(CanSeeWallpaperOrPersonalizationApp(
-      Profile::FromBrowserContext(context)));
+  CHECK(
+      CanSeeWallpaperOrPersonalizationApp(Profile::FromBrowserContext(context)),
+      base::NotFatalUntil::M160);
   auto* local_search_service_proxy = local_search_service::
       LocalSearchServiceProxyFactory::GetForBrowserContext(context);
-  DCHECK(local_search_service_proxy);
+  CHECK(local_search_service_proxy, base::NotFatalUntil::M160);
 
   return PersonalizationAppManager::Create(context,
                                            *local_search_service_proxy);

@@ -39,7 +39,7 @@ void LoggedExtensionFunction::OnResponded() {
       Profile::FromBrowserContext(browser_context()));
   std::string request_id_str = request_uuid().AsLowercaseString();
   if (logger && log_on_completion_) {
-    DCHECK(response_type());
+    CHECK(response_type(), base::NotFatalUntil::M160);
     bool success = *response_type() == ResponseType::kSucceeded;
     UNSAFE_TODO(logger->Log(
         logging::LOGGING_INFO, "%s[%s] %s. (elapsed time: %" PRId64 "ms)",

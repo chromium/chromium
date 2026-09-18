@@ -110,7 +110,7 @@ void FileManagerPrivateSelectFileFunction::GetSelectedFileInfoResponse(
     bool for_open,
     int index,
     const std::vector<ui::SelectedFileInfo>& files) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (files.size() != 1) {
     Respond(Error("No file selected"));
     return;
@@ -184,7 +184,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateSelectFilesFunction::Run() {
 }
 
 void FileManagerPrivateSelectFilesFunction::OnReSyncFile() {
-  DCHECK(resync_files_remaining_ > 0);
+  CHECK(resync_files_remaining_ > 0, base::NotFatalUntil::M160);
   if (--resync_files_remaining_ > 0) {
     return;
   }
@@ -202,7 +202,7 @@ void FileManagerPrivateSelectFilesFunction::OnReSyncFile() {
 void FileManagerPrivateSelectFilesFunction::GetSelectedFileInfoResponse(
     bool for_open,
     const std::vector<ui::SelectedFileInfo>& files) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (files.empty()) {
     Respond(Error("No files selected"));
     return;
@@ -268,7 +268,7 @@ FileManagerPrivateGetAndroidPickerAppsFunction::Run() {
 
 void FileManagerPrivateGetAndroidPickerAppsFunction::OnActivitiesLoaded(
     std::vector<arc::mojom::IntentHandlerInfoPtr> handlers) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
   auto* intent_helper =
@@ -287,7 +287,7 @@ void FileManagerPrivateGetAndroidPickerAppsFunction::OnActivitiesLoaded(
 void FileManagerPrivateGetAndroidPickerAppsFunction::OnIconsLoaded(
     std::vector<arc::mojom::IntentHandlerInfoPtr> handlers,
     std::unique_ptr<arc::ArcIntentHelperBridge::ActivityToIconsMap> icons) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   using api::file_manager_private::FileTask;
   std::vector<api::file_manager_private::AndroidApp> results;

@@ -16,7 +16,7 @@ namespace {
 
 template <class T>
 void SetValueOptional(T value, std::optional<T>* destination) {
-  DCHECK(destination);
+  CHECK(destination, base::NotFatalUntil::M160);
   if (value >= 0) {
     *destination = value;
   }
@@ -25,7 +25,7 @@ void SetValueOptional(T value, std::optional<T>* destination) {
 template <>
 void SetValueOptional(std::string value,
                       std::optional<std::string>* destination) {
-  DCHECK(destination);
+  CHECK(destination, base::NotFatalUntil::M160);
   if (!value.empty()) {
     *destination = std::move(value);
   }
@@ -48,7 +48,7 @@ namespace file_manager_private {
 
 base::DictValue MojoMediaMetadataToValue(
     chrome::mojom::MediaMetadataPtr metadata) {
-  DCHECK(metadata);
+  CHECK(metadata, base::NotFatalUntil::M160);
 
   file_manager_private::MediaMetadata media_metadata;
   media_metadata.mime_type = std::move(metadata->mime_type);

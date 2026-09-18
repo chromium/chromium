@@ -75,7 +75,7 @@ base::FilePath ChromeCameraSaveDelegate::GetFinalPathRelativeToRoot() const {
 }
 
 base::FilePath ChromeCameraSaveDelegate::GetOneDriveUploadFolder() const {
-  DCHECK(is_onedrive());
+  CHECK(is_onedrive(), base::NotFatalUntil::M160);
   Profile* profile = Profile::FromBrowserContext(context_);
   if (!ash::cloud_upload::IsODFSMounted(profile)) {
     LOG(ERROR) << "ODFS is not mounted.";

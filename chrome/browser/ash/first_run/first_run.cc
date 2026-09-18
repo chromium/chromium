@@ -76,7 +76,7 @@ class AppLauncher final : public ProfileObserver {
   // App launcher owns itself and will be deleted when the app is launched or
   // the profile is destroyed.
   static void LaunchHelpAfterSWALoad(Profile* profile) {
-    DCHECK(ShouldLaunchHelpApp(profile));
+    CHECK(ShouldLaunchHelpApp(profile), base::NotFatalUntil::M160);
     new AppLauncher(profile);
   }
   // ProfileObserver:
