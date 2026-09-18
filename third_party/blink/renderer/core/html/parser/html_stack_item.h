@@ -410,6 +410,9 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
   AtomicString namespace_uri_;
   wtf_size_t num_token_attributes_ = 0;
   bool is_document_fragment_node_;
+
+  // Maintained by HTMLElementStack.
+  bool has_p_element_in_button_scope_ = false;
 };
 
 }  // namespace blink

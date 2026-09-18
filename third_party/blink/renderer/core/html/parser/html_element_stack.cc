@@ -26,7 +26,7 @@
 
 #include "third_party/blink/renderer/core/html/parser/html_element_stack.h"
 
-#include "third_party/blink/renderer/core/dom/element.h"
+#include "base/containers/adapters.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
@@ -148,6 +148,10 @@ inline bool IsButtonScopeMarker(HTMLStackItem* item) {
            item->GetHTMLTag() == HTMLTag::kButton;
   }
   return IsScopeMarkerNonHTML(item);
+}
+
+inline bool IsHTMLPElement(HTMLStackItem* item) {
+  return item->IsHTMLNamespace() && item->GetHTMLTag() == HTMLTag::kP;
 }
 
 }  // namespace
@@ -347,8 +351,10 @@ void HTMLElementStack::InsertAbove(HTMLStackItem* item,
     return;
   }
 
+  HeapVector<Member<HTMLStackItem>> items_above;
   for (HTMLStackItem* item_above = top_.Get(); item_above;
        item_above = item_above->NextItemInStack()) {
+    items_above.push_back(item_above);
     if (item_above->NextItemInStack() != item_below) {
       continue;
     }
@@ -357,6 +363,8 @@ void HTMLElementStack::InsertAbove(HTMLStackItem* item,
     item->SetSanitizer(item_below->GetSanitizer());
     item->SetNextItemInStack(item_above->ReleaseNextItemInStack());
     item_above->SetNextItemInStack(item);
+    items_above.push_back(item);
+    UpdatePElementInButtonScope(items_above);
     item->GetElement()->BeginParsingChildren();
     return;
   }
@@ -492,6 +500,9 @@ bool HTMLElementStack::InTableScope(
 }
 
 bool HTMLElementStack::InButtonScope(html_names::HTMLTag tag) const {
+  if (tag == HTMLTag::kP) {
+    return top_->has_p_element_in_button_scope_;
+  }
   return InScopeCommon<IsButtonScopeMarker>(top_.Get(), tag);
 }
 
@@ -523,6 +534,9 @@ void HTMLElementStack::PushCommon(HTMLStackItem* item) {
   DCHECK(root_node_);
 
   stack_depth_++;
+  item->has_p_element_in_button_scope_ =
+      IsHTMLPElement(item) || (!IsButtonScopeMarker(item) && top_ &&
+                               top_->has_p_element_in_button_scope_);
   if (top_) {
     item->SetSanitizer(top_->GetSanitizer());
   }
@@ -545,7 +559,9 @@ void HTMLElementStack::RemoveNonTopCommon(Element* element) {
   DCHECK(!IsA<HTMLHtmlElement>(element));
   DCHECK(!IsA<HTMLBodyElement>(element));
   DCHECK_NE(Top(), element);
+  HeapVector<Member<HTMLStackItem>> items_above;
   for (HTMLStackItem* item = top_.Get(); item; item = item->NextItemInStack()) {
+    items_above.push_back(item);
     if (item->NextItemInStack()->GetElement() == element) {
       // FIXME: Is it OK to call finishParsingChildren()
       // when the children aren't actually finished?
@@ -554,10 +570,26 @@ void HTMLElementStack::RemoveNonTopCommon(Element* element) {
       item->SetNextItemInStack(
           item->ReleaseNextItemInStack()->ReleaseNextItemInStack());
       stack_depth_--;
+      UpdatePElementInButtonScope(items_above);
       return;
     }
   }
   NOTREACHED();
+}
+
+// `items_above` holds the stack items from `top_` down to the deepest item
+// whose cached bit may be stale after a stack mutation. Items below the last
+// entry are unaffected, since each item's bit only depends on the items below
+// it, so recompute bottom-up from there.
+void HTMLElementStack::UpdatePElementInButtonScope(
+    const HeapVector<Member<HTMLStackItem>>& items_above) {
+  for (const auto& it : base::Reversed(items_above)) {
+    HTMLStackItem* item = it.Get();
+    HTMLStackItem* below = item->NextItemInStack();
+    item->has_p_element_in_button_scope_ =
+        IsHTMLPElement(item) || (!IsButtonScopeMarker(item) && below &&
+                                 below->has_p_element_in_button_scope_);
+  }
 }
 
 HTMLStackItem* HTMLElementStack::FurthestBlockForFormattingElement(
@@ -580,6 +612,7 @@ void HTMLElementStack::Replace(HTMLStackItem* old_item,
   DCHECK(new_item);
   DCHECK(!new_item->NextItemInStack());
   HTMLStackItem* previous_item = nullptr;
+  HeapVector<Member<HTMLStackItem>> items_above;
   for (HTMLStackItem* item = top_.Get(); item; item = item->NextItemInStack()) {
     if (item == old_item) {
       if (previous_item) {
@@ -587,8 +620,11 @@ void HTMLElementStack::Replace(HTMLStackItem* old_item,
         previous_item->SetNextItemInStack(new_item);
       }
       new_item->SetNextItemInStack(old_item->ReleaseNextItemInStack());
+      items_above.push_back(new_item);
+      UpdatePElementInButtonScope(items_above);
       return;
     }
+    items_above.push_back(item);
     previous_item = item;
   }
   // This should only be called with items in the stack.
