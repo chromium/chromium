@@ -15,22 +15,22 @@ SmbKerberosCredentialsUpdater::SmbKerberosCredentialsUpdater(
       active_account_name_(credentials_manager->GetActiveAccount()),
       active_account_changed_callback_(
           std::move(active_account_changed_callback)) {
-  DCHECK(credentials_manager_);
+  CHECK(credentials_manager_, base::NotFatalUntil::M160);
   credentials_manager_->AddObserver(this);
 }
 
 SmbKerberosCredentialsUpdater::~SmbKerberosCredentialsUpdater() {
-  DCHECK(credentials_manager_);
+  CHECK(credentials_manager_, base::NotFatalUntil::M160);
   credentials_manager_->RemoveObserver(this);
 }
 
 bool SmbKerberosCredentialsUpdater::IsKerberosEnabled() const {
-  DCHECK(credentials_manager_);
+  CHECK(credentials_manager_, base::NotFatalUntil::M160);
   return credentials_manager_->IsKerberosEnabled();
 }
 
 void SmbKerberosCredentialsUpdater::OnKerberosEnabledStateChanged() {
-  DCHECK(credentials_manager_);
+  CHECK(credentials_manager_, base::NotFatalUntil::M160);
 
   // If Kerberos got disabled by policy, set `active_account_name_` to empty
   // string, which means no account is available.
@@ -40,7 +40,7 @@ void SmbKerberosCredentialsUpdater::OnKerberosEnabledStateChanged() {
 }
 
 void SmbKerberosCredentialsUpdater::OnAccountsChanged() {
-  DCHECK(credentials_manager_);
+  CHECK(credentials_manager_, base::NotFatalUntil::M160);
   UpdateActiveAccount(credentials_manager_->GetActiveAccount());
 }
 

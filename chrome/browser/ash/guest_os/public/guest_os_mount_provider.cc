@@ -100,7 +100,7 @@ class GuestOsMountProviderInner : public CachedCallback<ScopedVolume, bool> {
         vm_type_(vm_type),
         prepare_(std::move(prepare)) {
     // This profile should be the user's primary profile, not an incognito one.
-    DCHECK(!profile->IsOffTheRecord());
+    CHECK(!profile->IsOffTheRecord(), base::NotFatalUntil::M160);
   }
 
   // Mount.

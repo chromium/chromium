@@ -37,7 +37,7 @@ NetworkScanner::NetworkScanner() = default;
 NetworkScanner::~NetworkScanner() = default;
 
 void NetworkScanner::FindHostsInNetwork(FindHostsCallback callback) {
-  DCHECK(!running_);
+  CHECK(!running_, base::NotFatalUntil::M160);
 
   if (locators_.empty()) {
     find_hosts_returned_ = true;
@@ -61,7 +61,7 @@ void NetworkScanner::RegisterHostLocator(std::unique_ptr<HostLocator> locator) {
 }
 
 net::IPAddress NetworkScanner::ResolveHost(const std::string& host) const {
-  DCHECK(find_hosts_returned_);
+  CHECK(find_hosts_returned_, base::NotFatalUntil::M160);
 
   const auto& host_iter = found_hosts_.find(base::ToLowerASCII(host));
   if (host_iter == found_hosts_.end()) {
@@ -74,7 +74,7 @@ net::IPAddress NetworkScanner::ResolveHost(const std::string& host) const {
 void NetworkScanner::OnHostsFound(uint32_t request_id,
                                   bool success,
                                   const HostMap& host_map) {
-  DCHECK_GT(requests_.count(request_id), 0u);
+  CHECK_GT(requests_.count(request_id), 0u, base::NotFatalUntil::M160);
 
   if (success) {
     AddHostsToResults(request_id, host_map);
@@ -86,7 +86,7 @@ void NetworkScanner::OnHostsFound(uint32_t request_id,
 void NetworkScanner::AddHostsToResults(uint32_t request_id,
                                        const HostMap& new_hosts) {
   auto request_iter = requests_.find(request_id);
-  DCHECK(request_iter != requests_.end());
+  CHECK(request_iter != requests_.end(), base::NotFatalUntil::M160);
 
   HostMap& existing_hosts = request_iter->second.hosts_found;
   for (const auto& new_host : new_hosts) {
@@ -112,10 +112,10 @@ uint32_t NetworkScanner::AddNewRequest(FindHostsCallback callback) {
 
 void NetworkScanner::FireCallbackIfFinished(uint32_t request_id) {
   auto request_iter = requests_.find(request_id);
-  DCHECK(request_iter != requests_.end());
+  CHECK(request_iter != requests_.end(), base::NotFatalUntil::M160);
 
   uint32_t& remaining_requests = request_iter->second.remaining_requests;
-  DCHECK_GT(remaining_requests, 0u);
+  CHECK_GT(remaining_requests, 0u, base::NotFatalUntil::M160);
 
   if (--remaining_requests == 0) {
     RequestInfo info = std::move(request_iter->second);

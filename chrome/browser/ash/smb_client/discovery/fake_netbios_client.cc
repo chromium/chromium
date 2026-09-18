@@ -20,7 +20,7 @@ void FakeNetBiosClient::ExecuteNameRequest(
     const net::IPAddress& broadcast_address,
     uint16_t transaction_id,
     NetBiosResponseCallback callback) {
-  DCHECK(callback);
+  CHECK(callback, base::NotFatalUntil::M160);
 
   for (const auto& kv : fake_data_) {
     const net::IPEndPoint& ip_address = kv.first;

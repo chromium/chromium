@@ -165,7 +165,7 @@ bool GuestOsSessionTracker::IsVmStopping(const std::string& vm_name) {
 // ash::ConciergeClient::VmObserver overrides.
 void GuestOsSessionTracker::OnVmStarted(
     const vm_tools::concierge::VmStartedSignal& signal) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   if (signal.owner_id() != owner_id_) {
     return;
   }
@@ -174,7 +174,7 @@ void GuestOsSessionTracker::OnVmStarted(
 
 void GuestOsSessionTracker::OnVmStopped(
     const vm_tools::concierge::VmStoppedSignal& signal) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   if (signal.owner_id() != owner_id_) {
     return;
   }
@@ -200,7 +200,7 @@ void GuestOsSessionTracker::OnVmStopping(
 // ash::CiceroneClient::Observer overrides.
 void GuestOsSessionTracker::OnContainerStarted(
     const vm_tools::cicerone::ContainerStartedSignal& signal) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   if (signal.owner_id() != owner_id_) {
     return;
   }
@@ -255,7 +255,7 @@ void GuestOsSessionTracker::HandleNewGuest(const std::string& vm_name,
 
 void GuestOsSessionTracker::OnContainerShutdown(
     const vm_tools::cicerone::ContainerShutdownSignal& signal) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   if (signal.owner_id() != owner_id_) {
     return;
   }
@@ -286,7 +286,7 @@ void GuestOsSessionTracker::HandleContainerShutdown(
 base::CallbackListSubscription GuestOsSessionTracker::RunOnceContainerStarted(
     const GuestId& id,
     base::OnceCallback<void(GuestInfo)> callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   auto iter = guests_.find(id);
   if (iter != guests_.end()) {
     std::move(callback).Run(iter->second);
@@ -323,7 +323,7 @@ void GuestOsSessionTracker::AddGuestForTesting(const GuestId& id,
 base::CallbackListSubscription GuestOsSessionTracker::RunOnShutdown(
     const GuestId& id,
     base::OnceCallback<void()> callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   auto& cb_list = container_shutdown_callbacks_[id];
   if (!cb_list) {
     cb_list = std::make_unique<base::OnceCallbackList<void()>>();

@@ -48,7 +48,8 @@ bool HasPolicyValue(const PrefService& pref_service,
 bool IsFingerprintDisabledByPolicySinglePurpose(
     const PrefService& pref_service,
     LegacyFingerprintEngine::Purpose purpose) {
-  DCHECK(purpose != LegacyFingerprintEngine::Purpose::kAny);
+  CHECK(purpose != LegacyFingerprintEngine::Purpose::kAny,
+        base::NotFatalUntil::M160);
   const bool enabled =
       HasPolicyValue(pref_service, purpose, kFactorsOptionAll) ||
       HasPolicyValue(pref_service, purpose, kFactorsOptionFingerprint);

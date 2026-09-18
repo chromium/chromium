@@ -20,8 +20,8 @@ SmbShareInfo::SmbShareInfo(const SmbUrl& share_url,
       workgroup_(workgroup),
       use_kerberos_(use_kerberos),
       password_salt_(password_salt) {
-  DCHECK(share_url_.IsValid());
-  DCHECK(!display_name.empty());
+  CHECK(share_url_.IsValid(), base::NotFatalUntil::M160);
+  CHECK(!display_name.empty(), base::NotFatalUntil::M160);
 }
 
 SmbShareInfo::~SmbShareInfo() = default;

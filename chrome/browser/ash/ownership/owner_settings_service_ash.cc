@@ -190,7 +190,7 @@ OwnerSettingsServiceAsh::OwnerSettingsServiceAsh(
 }
 
 OwnerSettingsServiceAsh::~OwnerSettingsServiceAsh() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
   if (device_settings_service_)
     device_settings_service_->RemoveObserver(this);
 
@@ -209,7 +209,7 @@ OwnerSettingsServiceAsh* OwnerSettingsServiceAsh::FromWebUI(
 }
 
 void OwnerSettingsServiceAsh::OnTPMTokenReady() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
   waiting_for_tpm_token_ = false;
 
   // TPMTokenLoader initializes the TPM and NSS database which is necessary to
@@ -244,7 +244,7 @@ bool OwnerSettingsServiceAsh::HandlesSetting(const std::string& setting) {
 
 bool OwnerSettingsServiceAsh::Set(const std::string& setting,
                                   const base::Value& value) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
   if (!IsOwner() && !IsOwnerInTests(user_id_))
     return false;
 
@@ -302,7 +302,7 @@ base::ListValue OwnerSettingsServiceAsh::GetListForSetting(
 
 bool OwnerSettingsServiceAsh::AppendToList(const std::string& setting,
                                            const base::Value& value) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
   base::ListValue new_value = GetListForSetting(setting);
   new_value.Append(value.Clone());
   return Set(setting, base::Value(std::move(new_value)));
@@ -310,7 +310,7 @@ bool OwnerSettingsServiceAsh::AppendToList(const std::string& setting,
 
 bool OwnerSettingsServiceAsh::RemoveFromList(const std::string& setting,
                                              const base::Value& value) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
   base::ListValue new_value = GetListForSetting(setting);
   new_value.EraseValue(value);
   return Set(setting, base::Value(std::move(new_value)));
@@ -332,7 +332,7 @@ bool OwnerSettingsServiceAsh::CommitTentativeDeviceSettings(
 }
 
 void OwnerSettingsServiceAsh::OnProfileAdded(Profile* profile) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
   if (profile != profile_)
     return;
 
@@ -345,7 +345,7 @@ void OwnerSettingsServiceAsh::OnProfileManagerDestroying() {
 }
 
 void OwnerSettingsServiceAsh::OwnerKeySet(bool success) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
   RecordOwnerKeyEvent(OwnerKeyEvent::kOwnerKeySet, success);
 
   // If the new owner key was successfully set and there was a different owner
@@ -361,12 +361,12 @@ void OwnerSettingsServiceAsh::OwnerKeySet(bool success) {
 }
 
 void OwnerSettingsServiceAsh::OwnershipStatusChanged() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
   StorePendingChanges();
 }
 
 void OwnerSettingsServiceAsh::DeviceSettingsUpdated() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
   StorePendingChanges();
 }
 
@@ -579,7 +579,7 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
       settings.mutable_user_whitelist()->clear_user_whitelist();
       list = settings.mutable_user_allowlist()->mutable_user_allowlist();
     }
-    DCHECK(list);
+    CHECK(list, base::NotFatalUntil::M160);
     list->Clear();
     for (const auto& user : value.GetList()) {
       if (user.is_string()) {
@@ -701,7 +701,7 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
 }
 
 void OwnerSettingsServiceAsh::OnPostKeypairLoadedActions() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
 
   const AccountId* account_id = ash::AnnotatedAccountId::Get(profile_);
   user_id_ = account_id ? account_id->GetUserEmail() : std::string();
@@ -716,7 +716,7 @@ void OwnerSettingsServiceAsh::OnPostKeypairLoadedActions() {
 void OwnerSettingsServiceAsh::ReloadKeypairImpl(
     base::OnceCallback<void(scoped_refptr<PublicKey>,
                             scoped_refptr<PrivateKey>)> callback) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
 
   // The profile may not be fully created yet: abort, and wait till it is. The
   // ProfileManager may be null in unit tests, in which case we can assume the
@@ -832,7 +832,7 @@ void OwnerSettingsServiceAsh::ReportStatusAndContinueStoring(bool success) {
 
 void OwnerSettingsServiceAsh::MigrateFeatureFlags(
     enterprise_management::ChromeDeviceSettingsProto* settings) {
-  DCHECK(IsOwner() || IsOwnerInTests(user_id_));
+  CHECK(IsOwner() || IsOwnerInTests(user_id_), base::NotFatalUntil::M160);
 
   if (settings->feature_flags().switches_size() == 0) {
     return;

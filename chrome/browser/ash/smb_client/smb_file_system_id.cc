@@ -28,8 +28,8 @@ std::vector<std::string> GetComponents(const std::string& file_system_id) {
   std::vector<std::string> components = SplitStringUsingSubstr(
       file_system_id, kDelimiter, base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
-  DCHECK_GE(components.size(), 2u);
-  DCHECK_LE(components.size(), 3u);
+  CHECK_GE(components.size(), 2u, base::NotFatalUntil::M160);
+  CHECK_LE(components.size(), 3u, base::NotFatalUntil::M160);
 
   return components;
 }
@@ -68,7 +68,7 @@ std::string CreateFileSystemIdForUser(const base::FilePath& share_path,
 
 base::FilePath GetSharePathFromFileSystemId(const std::string& file_system_id) {
   const std::vector<std::string> components = GetComponents(file_system_id);
-  DCHECK_GE(components.size(), 1u);
+  CHECK_GE(components.size(), 1u, base::NotFatalUntil::M160);
 
   return base::FilePath(components[1]);
 }

@@ -59,7 +59,7 @@ SmbFsShare::SmbFsShare(Profile* profile,
       display_name_(display_name),
       options_(options),
       mount_id_(GenerateStableMountId()) {
-  DCHECK(share_url_.IsValid());
+  CHECK(share_url_.IsValid(), base::NotFatalUntil::M160);
 }
 
 SmbFsShare::~SmbFsShare() {
@@ -75,8 +75,8 @@ void SmbFsShare::RemoveMountObserver(MountObserver* observer) {
 }
 
 void SmbFsShare::Mount(SmbFsShare::MountCallback callback) {
-  DCHECK(!mounter_);
-  DCHECK(!host_);
+  CHECK(!mounter_, base::NotFatalUntil::M160);
+  CHECK(!host_, base::NotFatalUntil::M160);
 
   if (unmount_pending_) {
     LOG(WARNING) << "Cannot mount a shared that is being unmounted";
@@ -146,7 +146,7 @@ void SmbFsShare::DeleteRecursively(
 }
 
 void SmbFsShare::OnDeleteRecursivelyDone(base::File::Error error) {
-  DCHECK(delete_recursively_callback_);
+  CHECK(delete_recursively_callback_, base::NotFatalUntil::M160);
   std::move(delete_recursively_callback_).Run(error);
 }
 
@@ -178,7 +178,7 @@ void SmbFsShare::Unmount(SmbFsShare::UnmountCallback callback) {
 
   storage::ExternalMountPoints* const mount_points =
       storage::ExternalMountPoints::GetSystemInstance();
-  DCHECK(mount_points);
+  CHECK(mount_points, base::NotFatalUntil::M160);
   bool success = mount_points->RevokeFileSystem(mount_id_);
   CHECK(success);
 
@@ -213,12 +213,12 @@ void SmbFsShare::OnMountDone(MountCallback callback,
     return;
   }
 
-  DCHECK(smbfs_host);
+  CHECK(smbfs_host, base::NotFatalUntil::M160);
   host_ = std::move(smbfs_host);
 
   storage::ExternalMountPoints* const mount_points =
       storage::ExternalMountPoints::GetSystemInstance();
-  DCHECK(mount_points);
+  CHECK(mount_points, base::NotFatalUntil::M160);
   bool success = mount_points->RegisterFileSystem(
       mount_id_, storage::kFileSystemTypeSmbFs,
       storage::FileSystemMountOption(), host_->mount_path());
@@ -303,7 +303,7 @@ void SmbFsShare::OnSmbCredentialsDialogShowDone(
 }
 
 void SmbFsShare::RemoveSavedCredentials(RemoveCredentialsCallback callback) {
-  DCHECK(!remove_credentials_callback_);
+  CHECK(!remove_credentials_callback_, base::NotFatalUntil::M160);
 
   if (!host_) {
     std::move(callback).Run(false /* success */);
@@ -316,7 +316,7 @@ void SmbFsShare::RemoveSavedCredentials(RemoveCredentialsCallback callback) {
 }
 
 void SmbFsShare::OnRemoveSavedCredentialsDone(bool success) {
-  DCHECK(remove_credentials_callback_);
+  CHECK(remove_credentials_callback_, base::NotFatalUntil::M160);
   std::move(remove_credentials_callback_).Run(success);
 }
 

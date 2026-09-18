@@ -45,7 +45,8 @@ bool HasPolicyValue(const PrefService& pref_service,
 // kAny) by reading the policy value.
 bool IsPinDisabledByPolicySinglePurpose(const PrefService& pref_service,
                                         CryptohomePinEngine::Purpose purpose) {
-  DCHECK_NE(purpose, CryptohomePinEngine::Purpose::kAny);
+  CHECK_NE(purpose, CryptohomePinEngine::Purpose::kAny,
+           base::NotFatalUntil::M160);
   const bool enabled =
       HasPolicyValue(pref_service, purpose, kFactorsOptionAll) ||
       HasPolicyValue(pref_service, purpose, kFactorsOptionPin) ||

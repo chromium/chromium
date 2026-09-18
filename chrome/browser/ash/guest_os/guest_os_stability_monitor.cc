@@ -16,25 +16,25 @@ GuestOsStabilityMonitor::GuestOsStabilityMonitor(const std::string& histogram)
       seneschal_observer_(this),
       chunneld_observer_(this) {
   auto* concierge_client = ash::ConciergeClient::Get();
-  DCHECK(concierge_client);
+  CHECK(concierge_client, base::NotFatalUntil::M160);
   concierge_client->WaitForServiceToBeAvailable(
       base::BindOnce(&GuestOsStabilityMonitor::ConciergeStarted,
                      weak_ptr_factory_.GetWeakPtr()));
 
   auto* cicerone_client = ash::CiceroneClient::Get();
-  DCHECK(cicerone_client);
+  CHECK(cicerone_client, base::NotFatalUntil::M160);
   cicerone_client->WaitForServiceToBeAvailable(
       base::BindOnce(&GuestOsStabilityMonitor::CiceroneStarted,
                      weak_ptr_factory_.GetWeakPtr()));
 
   auto* seneschal_client = ash::SeneschalClient::Get();
-  DCHECK(seneschal_client);
+  CHECK(seneschal_client, base::NotFatalUntil::M160);
   seneschal_client->WaitForServiceToBeAvailable(
       base::BindOnce(&GuestOsStabilityMonitor::SeneschalStarted,
                      weak_ptr_factory_.GetWeakPtr()));
 
   auto* chunneld_client = ash::ChunneldClient::Get();
-  DCHECK(chunneld_client);
+  CHECK(chunneld_client, base::NotFatalUntil::M160);
   chunneld_client->WaitForServiceToBeAvailable(
       base::BindOnce(&GuestOsStabilityMonitor::ChunneldStarted,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -43,34 +43,34 @@ GuestOsStabilityMonitor::GuestOsStabilityMonitor(const std::string& histogram)
 GuestOsStabilityMonitor::~GuestOsStabilityMonitor() = default;
 
 void GuestOsStabilityMonitor::ConciergeStarted(bool is_available) {
-  DCHECK(is_available);
+  CHECK(is_available, base::NotFatalUntil::M160);
 
   auto* concierge_client = ash::ConciergeClient::Get();
-  DCHECK(concierge_client);
+  CHECK(concierge_client, base::NotFatalUntil::M160);
   concierge_observer_.Observe(concierge_client);
 }
 
 void GuestOsStabilityMonitor::CiceroneStarted(bool is_available) {
-  DCHECK(is_available);
+  CHECK(is_available, base::NotFatalUntil::M160);
 
   auto* cicerone_client = ash::CiceroneClient::Get();
-  DCHECK(cicerone_client);
+  CHECK(cicerone_client, base::NotFatalUntil::M160);
   cicerone_observer_.Observe(cicerone_client);
 }
 
 void GuestOsStabilityMonitor::SeneschalStarted(bool is_available) {
-  DCHECK(is_available);
+  CHECK(is_available, base::NotFatalUntil::M160);
 
   auto* seneschal_client = ash::SeneschalClient::Get();
-  DCHECK(seneschal_client);
+  CHECK(seneschal_client, base::NotFatalUntil::M160);
   seneschal_observer_.Observe(seneschal_client);
 }
 
 void GuestOsStabilityMonitor::ChunneldStarted(bool is_available) {
-  DCHECK(is_available);
+  CHECK(is_available, base::NotFatalUntil::M160);
 
   auto* chunneld_client = ash::ChunneldClient::Get();
-  DCHECK(chunneld_client);
+  CHECK(chunneld_client, base::NotFatalUntil::M160);
   chunneld_observer_.Observe(chunneld_client);
 }
 

@@ -40,7 +40,7 @@ void GuestOsFileWatcher::Watch(
     base::FilePathWatcher::Callback file_watcher_callback,
     file_manager::FileWatcher::BoolCallback callback) {
   auto* client = ash::CiceroneClient::Get();
-  DCHECK(!file_watcher_callback_);
+  CHECK(!file_watcher_callback_, base::NotFatalUntil::M160);
   file_watcher_callback_ = std::move(file_watcher_callback);
   vm_tools::cicerone::AddFileWatchRequest req;
   req.set_owner_id(owner_id_);
@@ -69,13 +69,13 @@ void GuestOsFileWatcher::Watch(
 
 void GuestOsFileWatcher::OnFileWatchTriggered(
     const vm_tools::cicerone::FileWatchTriggeredSignal& signal) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   if (signal.owner_id() != owner_id_ || signal.vm_name() != guest_id_.vm_name ||
       signal.container_name() != guest_id_.container_name) {
     return;
   }
 
-  DCHECK(file_watcher_callback_);
+  CHECK(file_watcher_callback_, base::NotFatalUntil::M160);
   file_watcher_callback_.Run(mount_path_.Append(signal.path()),
                              /*error=*/false);
 }

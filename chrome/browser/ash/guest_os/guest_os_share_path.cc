@@ -185,7 +185,7 @@ GuestOsSharePath::GuestOsSharePath(Profile* profile)
 GuestOsSharePath::~GuestOsSharePath() = default;
 
 void GuestOsSharePath::Shutdown() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   if (auto* client = ash::ConciergeClient::Get()) {
     client->RemoveVmObserver(this);
   }
@@ -427,7 +427,7 @@ void GuestOsSharePath::SharePath(const std::string& vm_name,
                                  uint32_t seneschal_server_handle,
                                  const base::FilePath& path,
                                  SharePathCallback callback) {
-  DCHECK(callback);
+  CHECK(callback, base::NotFatalUntil::M160);
   CallSeneschalSharePath(vm_name, seneschal_server_handle, path,
                          std::move(callback));
 }
@@ -454,7 +454,7 @@ void GuestOsSharePath::UnsharePath(const std::string& vm_name,
                                    const base::FilePath& path,
                                    bool unpersist,
                                    SuccessCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   if (auto* info = FindSharedPathInfo(path)) {
     if (RemoveSharedPathInfo(*info, vm_name)) {
       shared_paths_.erase(path);
@@ -585,7 +585,7 @@ void GuestOsSharePath::OnVmStarted(
 
 void GuestOsSharePath::OnVmStopped(
     const vm_tools::concierge::VmStoppedSignal& signal) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   for (auto it = shared_paths_.begin(); it != shared_paths_.end();) {
     if (RemoveSharedPathInfo(it->second, signal.name())) {
       shared_paths_.erase(it++);
@@ -627,7 +627,7 @@ void GuestOsSharePath::OnVolumeMounted(ash::MountError error_code,
 
 void GuestOsSharePath::OnVolumeUnmounted(ash::MountError error_code,
                                          const file_manager::Volume& volume) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   if (error_code != ash::MountError::kSuccess) {
     return;
   }
@@ -653,7 +653,7 @@ void GuestOsSharePath::OnVolumeUnmounted(ash::MountError error_code,
 
 void GuestOsSharePath::RegisterSharedPath(const std::string& vm_name,
                                           const base::FilePath& path) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   // Paths may be called to be shared multiple times for the same or different
   // vm.  If path is already registered, add vm_name to list of VMs shared with
   // and return.
@@ -687,7 +687,7 @@ void GuestOsSharePath::RegisterSharedPath(const std::string& vm_name,
 }
 
 void GuestOsSharePath::OnFileWatcherDeleted(const base::FilePath& path) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   // Check if volume is still mounted.
   auto* vmgr = file_manager::VolumeManager::Get(profile_);
   if (!vmgr) {
@@ -708,7 +708,7 @@ void GuestOsSharePath::OnFileWatcherDeleted(const base::FilePath& path) {
 
 void GuestOsSharePath::OnVolumeMountCheck(const base::FilePath& path,
                                           bool mount_exists) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   // If the Volume mount does not exist, then we assume that the path was
   // not deleted, but the volume was unmounted.  We call seneschal_callback_
   // for our tests, but otherwise do nothing and assume an UnmountEvent is
@@ -722,7 +722,7 @@ void GuestOsSharePath::OnVolumeMountCheck(const base::FilePath& path,
 }
 
 void GuestOsSharePath::PathDeleted(const base::FilePath& path) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   auto* info = FindSharedPathInfo(path);
   if (!info) {
     return;

@@ -151,7 +151,7 @@ void GenerateNewOwnerKeyOnWorkerThread(
 
 void PostOnWorkerThreadWithCertDb(WorkerTask worker_task,
                                   net::NSSCertDatabase* nss_db) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   CHECK(nss_db);
 
   // TODO(eseckler): It seems loading the key is important for the UsersPrivate
@@ -167,7 +167,7 @@ void PostOnWorkerThreadWithCertDb(WorkerTask worker_task,
 
 void GetCertDbAndPostOnWorkerThreadOnIO(NssCertDatabaseGetter nss_getter,
                                         WorkerTask worker_task) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   // Running |nss_getter| may either return a non-null pointer
   // synchronously or invoke the given callback asynchronously with a non-null
@@ -183,7 +183,7 @@ void GetCertDbAndPostOnWorkerThreadOnIO(NssCertDatabaseGetter nss_getter,
 }
 
 void GetCertDbAndPostOnWorkerThread(Profile* profile, WorkerTask worker_task) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&GetCertDbAndPostOnWorkerThreadOnIO,
                                 NssServiceFactory::GetForContext(profile)
@@ -238,10 +238,10 @@ OwnerKeyLoader::OwnerKeyLoader(
       owner_key_util_(std::move(owner_key_util)),
       is_enterprise_managed_(is_enterprise_managed),
       callback_(std::move(callback)) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(profile_);
-  DCHECK(owner_key_util_);
-  DCHECK(callback_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(profile_, base::NotFatalUntil::M160);
+  CHECK(owner_key_util_, base::NotFatalUntil::M160);
+  CHECK(callback_, base::NotFatalUntil::M160);
   if (!device_settings_service_) {
     CHECK_IS_TEST();
   }
@@ -249,7 +249,7 @@ OwnerKeyLoader::OwnerKeyLoader(
 OwnerKeyLoader::~OwnerKeyLoader() = default;
 
 void OwnerKeyLoader::Run() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   DCHECK(callback_) << "Run() can only be called once.";
 
   if (g_browser_process && g_browser_process->IsShuttingDown()) {
@@ -282,7 +282,7 @@ void OwnerKeyLoader::Run() {
 
 void OwnerKeyLoader::OnPublicKeyLoaded(
     scoped_refptr<ownership::PublicKey> public_key) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   public_key_ = std::move(public_key);
 
@@ -313,7 +313,7 @@ void OwnerKeyLoader::OnPublicKeyLoaded(
 void OwnerKeyLoader::OnPrivateKeyLoaded(
     scoped_refptr<ownership::PrivateKey> private_key,
     bool found_in_public_slot) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   if (IsKeyPresent(private_key)) {
     RecordOwnerKeyEvent(OwnerKeyEvent::kOwnerHasKeys,
                         /*success=*/AreKeysPresent(public_key_, private_key));
@@ -485,7 +485,7 @@ void OwnerKeyLoader::GenerateNewKey() {
 void OwnerKeyLoader::OnNewKeyGenerated(
     scoped_refptr<ownership::PublicKey> public_key,
     scoped_refptr<ownership::PrivateKey> private_key) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   if (AreKeysPresent(public_key, private_key)) {
     RecordOwnerKeyEvent(OwnerKeyEvent::kOwnerKeyGenerated,
                         /*success=*/(generate_attempt_counter_ == 0));

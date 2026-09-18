@@ -75,7 +75,7 @@ std::optional<SmbShareInfo> DictToShare(const base::DictValue& dict) {
   }
 
   SmbUrl url(share_url);
-  DCHECK(url.IsValid());
+  CHECK(url.IsValid(), base::NotFatalUntil::M160);
   SmbShareInfo info(url, GetStringValue(dict, kDisplayNameKey),
                     GetStringValue(dict, kUsernameKey),
                     GetStringValue(dict, kWorkgroupKey),

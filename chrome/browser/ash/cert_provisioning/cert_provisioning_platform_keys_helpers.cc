@@ -86,8 +86,7 @@ void CertIterator::OnGetAttributeForKeyDone(
     std::optional<std::vector<uint8_t>> attr_value,
     chromeos::platform_keys::Status status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(wait_counter_ > 0);
-
+  CHECK(wait_counter_ > 0, base::NotFatalUntil::M160);
 
   if (status != chromeos::platform_keys::Status::kSuccess) {
     StopIteration(status);
@@ -107,7 +106,7 @@ void CertIterator::OnGetAttributeForKeyDone(
 
 void CertIterator::StopIteration(chromeos::platform_keys::Status status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!on_finished_callback_.is_null());
+  CHECK(!on_finished_callback_.is_null(), base::NotFatalUntil::M160);
 
   weak_factory_.InvalidateWeakPtrs();
   std::move(on_finished_callback_).Run(status);
@@ -173,7 +172,7 @@ void LatestCertsWithIdsGetter::ProcessOneCert(
 void LatestCertsWithIdsGetter::OnIterationFinished(
     chromeos::platform_keys::Status status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!callback_.is_null());
+  CHECK(!callback_.is_null(), base::NotFatalUntil::M160);
 
   weak_factory_.InvalidateWeakPtrs();
 
@@ -271,7 +270,7 @@ void CertDeleter::DeleteCert(scoped_refptr<net::X509Certificate> cert) {
 
 void CertDeleter::OnDeleteCertDone(chromeos::platform_keys::Status status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(pending_delete_tasks_counter_ > 0);
+  CHECK(pending_delete_tasks_counter_ > 0, base::NotFatalUntil::M160);
 
   if (status != chromeos::platform_keys::Status::kSuccess) {
     ReturnStatus(status);
@@ -301,7 +300,7 @@ void CertDeleter::CheckStateAndMaybeFinish() {
 
 void CertDeleter::ReturnStatus(chromeos::platform_keys::Status status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!callback_.is_null());
+  CHECK(!callback_.is_null(), base::NotFatalUntil::M160);
 
   weak_factory_.InvalidateWeakPtrs();
   std::move(callback_).Run(status);

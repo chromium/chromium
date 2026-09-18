@@ -61,7 +61,7 @@ VmSKForwardingNativeMessageHost::VmSKForwardingNativeMessageHost(
     ResponseCallback response_callback)
     : response_callback_(std::move(response_callback)),
       json_message_to_send_(json_message_to_send) {
-  DCHECK(response_callback_);
+  CHECK(response_callback_, base::NotFatalUntil::M160);
 }
 
 VmSKForwardingNativeMessageHost::~VmSKForwardingNativeMessageHost() {
@@ -74,7 +74,7 @@ VmSKForwardingNativeMessageHost::~VmSKForwardingNativeMessageHost() {
 
 void VmSKForwardingNativeMessageHost::Start(
     extensions::NativeMessageHost::Client* client) {
-  DCHECK(!client_);
+  CHECK(!client_, base::NotFatalUntil::M160);
   client_ = client;
   if (!json_message_to_send_.empty()) {
     client_->PostMessageFromNativeHost(json_message_to_send_);
@@ -90,7 +90,7 @@ void VmSKForwardingNativeMessageHost::OnMessage(const std::string& message) {
             << "Discarding the message.";
     return;
   }
-  DCHECK(client_);
+  CHECK(client_, base::NotFatalUntil::M160);
 
   std::move(response_callback_).Run(message /* response */);
   client_->CloseChannel(std::string() /* error_message */);
@@ -138,8 +138,8 @@ void VmSKForwardingNativeMessageHost::DeliverMessageToSKForwardingExtension(
     Profile* profile,
     const std::string& json_message,
     base::OnceCallback<void(const std::string& response)> response_callback) {
-  DCHECK(profile);
-  DCHECK(response_callback);
+  CHECK(profile, base::NotFatalUntil::M160);
+  CHECK(response_callback, base::NotFatalUntil::M160);
 
   // Send the message to the first enabled extension from the origins list.
   for (const auto* extension_url : VmSKForwardingNativeMessageHost::kOrigins) {

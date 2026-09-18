@@ -38,7 +38,7 @@ void InMemoryHostLocator::FindHosts(FindHostsCallback callback) {
 }
 
 void InMemoryHostLocator::RunCallback() {
-  DCHECK(!should_run_synchronously_);
+  CHECK(!should_run_synchronously_, base::NotFatalUntil::M160);
 
   std::move(stored_callback_).Run(true /* success */, host_map_);
 }

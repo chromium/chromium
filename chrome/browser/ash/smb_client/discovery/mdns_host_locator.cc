@@ -163,7 +163,7 @@ void MDnsHostLocator::OnFindHostsDone(bool success, const HostMap& hosts) {
 }
 
 void MDnsHostLocator::Impl::FindHosts(FindHostsCallback callback) {
-  DCHECK(callback_.is_null());
+  CHECK(callback_.is_null(), base::NotFatalUntil::M160);
   callback_ = std::move(callback);
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&MDnsHostLocator::Impl::FindHostsOnIOThread,
@@ -261,10 +261,10 @@ void MDnsHostLocator::Impl::OnPtrTransactionResponse(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (result == MDnsTransaction::Result::RESULT_RECORD) {
-    DCHECK(record);
+    CHECK(record, base::NotFatalUntil::M160);
 
     const net::PtrRecordRdata* data = record->rdata<net::PtrRecordRdata>();
-    DCHECK(data);
+    CHECK(data, base::NotFatalUntil::M160);
 
     services_.push_back(data->ptrdomain());
   } else if (result == MDnsTransaction::Result::RESULT_DONE) {
@@ -289,9 +289,9 @@ void MDnsHostLocator::Impl::OnSrvTransactionResponse(
     return;
   }
 
-  DCHECK(record);
+  CHECK(record, base::NotFatalUntil::M160);
   const net::SrvRecordRdata* srv = record->rdata<net::SrvRecordRdata>();
-  DCHECK(srv);
+  CHECK(srv, base::NotFatalUntil::M160);
 
   CreateATransaction(srv->target());
 }
@@ -303,10 +303,10 @@ void MDnsHostLocator::Impl::OnATransactionResponse(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (result == MDnsTransaction::Result::RESULT_RECORD) {
-    DCHECK(record);
+    CHECK(record, base::NotFatalUntil::M160);
 
     const net::ARecordRdata* ip = record->rdata<net::ARecordRdata>();
-    DCHECK(ip);
+    CHECK(ip, base::NotFatalUntil::M160);
 
     results_[RemoveLocal(raw_hostname)] = ip->address();
   }
@@ -332,7 +332,7 @@ void MDnsHostLocator::Impl::ResolveServicesFound() {
 void MDnsHostLocator::Impl::FireCallbackIfFinished() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  DCHECK_GT(remaining_transactions_, 0u);
+  CHECK_GT(remaining_transactions_, 0u, base::NotFatalUntil::M160);
   if (--remaining_transactions_ == 0) {
     FireCallback(true /* success */);
   }
@@ -342,7 +342,7 @@ void MDnsHostLocator::Impl::FireCallback(bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // DCHECK to ensure that remaining_transactions_ is at 0 if success is true.
-  DCHECK(!success || (remaining_transactions_ == 0));
+  CHECK(!success || (remaining_transactions_ == 0), base::NotFatalUntil::M160);
 
   std::move(callback_).Run(success, std::move(results_));
 }

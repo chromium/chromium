@@ -107,7 +107,7 @@ Profile* QuickPairBrowserDelegateImpl::GetActiveProfile() {
 
   user_manager::User* active_user =
       user_manager::UserManager::Get()->GetActiveUser();
-  DCHECK(active_user);
+  CHECK(active_user, base::NotFatalUntil::M160);
 
   return Profile::FromBrowserContext(
       BrowserContextHelper::Get()->GetBrowserContextByUser(active_user));

@@ -279,7 +279,7 @@ std::string CertProvisioningWorkerStatic::GetFailureMessageWithPii() const {
 void CertProvisioningWorkerStatic::Stop(CertProvisioningWorkerState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  DCHECK(IsFinalState(state));
+  CHECK(IsFinalState(state), base::NotFatalUntil::M160);
 
   CancelScheduledTasks();
   UpdateState(FROM_HERE, state);
@@ -326,7 +326,7 @@ void CertProvisioningWorkerStatic::DoStep() {
     case CertProvisioningWorkerState::kInconsistentDataError:
     case CertProvisioningWorkerState::kFailed:
     case CertProvisioningWorkerState::kCanceled:
-      DCHECK(false);
+      CHECK(false, base::NotFatalUntil::M160);
       return;
     case CertProvisioningWorkerState::kReadyForNextOperation:
     case CertProvisioningWorkerState::kAuthorizeInstructionReceived:
@@ -349,7 +349,8 @@ void CertProvisioningWorkerStatic::UpdateState(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK(kStaticWorkerStates.Has(new_state)) << static_cast<int>(new_state);
-  DCHECK(GetStateOrderedIndex(state_) < GetStateOrderedIndex(new_state));
+  CHECK(GetStateOrderedIndex(state_) < GetStateOrderedIndex(new_state),
+        base::NotFatalUntil::M160);
 
   prev_state_ = state_;
   state_ = new_state;
@@ -1064,7 +1065,7 @@ void CertProvisioningWorkerStatic::InitAfterDeserialization() {
 void CertProvisioningWorkerStatic::RegisterForInvalidations() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  DCHECK(invalidator_);
+  CHECK(invalidator_, base::NotFatalUntil::M160);
 
   // Registering the callback with base::Unretained is OK because this class
   // owns |invalidator_|, and the callback will never be called after
@@ -1081,7 +1082,7 @@ void CertProvisioningWorkerStatic::RegisterForInvalidations() {
 void CertProvisioningWorkerStatic::UnregisterFromInvalidations() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  DCHECK(invalidator_);
+  CHECK(invalidator_, base::NotFatalUntil::M160);
 
   invalidator_->Unregister();
 }

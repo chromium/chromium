@@ -73,8 +73,8 @@ NetBiosHostLocator::NetBiosHostLocator(
 NetBiosHostLocator::~NetBiosHostLocator() = default;
 
 void NetBiosHostLocator::FindHosts(FindHostsCallback callback) {
-  DCHECK(!running_);
-  DCHECK(callback);
+  CHECK(!running_, base::NotFatalUntil::M160);
+  CHECK(callback, base::NotFatalUntil::M160);
   callback_ = std::move(callback);
   running_ = true;
 
@@ -142,7 +142,7 @@ void NetBiosHostLocator::PacketReceived(const std::vector<uint8_t>& packet,
 void NetBiosHostLocator::OnPacketParsed(
     const net::IPEndPoint& sender_ip,
     const std::vector<std::string>& hostnames) {
-  DCHECK_GE(outstanding_parse_requests_, 0);
+  CHECK_GE(outstanding_parse_requests_, 0, base::NotFatalUntil::M160);
 
   --outstanding_parse_requests_;
   for (const auto& hostname : hostnames) {
@@ -155,7 +155,7 @@ void NetBiosHostLocator::OnPacketParsed(
 }
 
 void NetBiosHostLocator::StopDiscovery() {
-  DCHECK(!discovery_done_);
+  CHECK(!discovery_done_, base::NotFatalUntil::M160);
 
   discovery_done_ = true;
   netbios_clients_.clear();
@@ -171,8 +171,8 @@ void NetBiosHostLocator::FinishFindHosts() {
 }
 
 void NetBiosHostLocator::ResetHostLocator() {
-  DCHECK_EQ(0, outstanding_parse_requests_);
-  DCHECK(netbios_clients_.empty());
+  CHECK_EQ(0, outstanding_parse_requests_, base::NotFatalUntil::M160);
+  CHECK(netbios_clients_.empty(), base::NotFatalUntil::M160);
 
   results_.clear();
   discovery_done_ = false;

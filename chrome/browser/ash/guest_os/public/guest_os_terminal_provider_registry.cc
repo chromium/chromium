@@ -33,7 +33,7 @@ GuestOsTerminalProviderRegistry::List() {
 }
 
 GuestOsTerminalProvider* GuestOsTerminalProviderRegistry::Get(Id id) const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   auto pos = providers_.find(id);
   if (pos == providers_.end()) {
     return nullptr;
@@ -64,7 +64,7 @@ GuestOsTerminalProviderRegistry::Id GuestOsTerminalProviderRegistry::Register(
     std::unique_ptr<GuestOsTerminalProvider> provider) {
   // We use the range 0->INT_MAX because these IDs can get serialised into
   // base::Value, and that's the range they support.
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   CHECK(next_id_ < INT_MAX);
   Id id = next_id_++;
   providers_[id] = std::move(provider);
@@ -75,7 +75,7 @@ GuestOsTerminalProviderRegistry::Id GuestOsTerminalProviderRegistry::Register(
 
 void GuestOsTerminalProviderRegistry::SyncPrefs(
     GuestOsTerminalProviderRegistry::Id id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   auto pos = providers_.find(id);
   CHECK(pos != providers_.end());
@@ -100,7 +100,7 @@ void GuestOsTerminalProviderRegistry::SyncPrefs(
 
 std::unique_ptr<GuestOsTerminalProvider>
 GuestOsTerminalProviderRegistry::Unregister(Id id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   auto pos = providers_.find(id);
   // No one should be unregistering random providers, so it's an error to try
   // and unregister one which doesn't exist rather than a no-op.

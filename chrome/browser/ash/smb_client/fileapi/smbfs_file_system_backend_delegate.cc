@@ -20,8 +20,8 @@ SmbFsFileSystemBackendDelegate::~SmbFsFileSystemBackendDelegate() = default;
 
 storage::AsyncFileUtil* SmbFsFileSystemBackendDelegate::GetAsyncFileUtil(
     storage::FileSystemType type) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  DCHECK_EQ(storage::kFileSystemTypeSmbFs, type);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK_EQ(storage::kFileSystemTypeSmbFs, type, base::NotFatalUntil::M160);
   return async_file_util_.get();
 }
 

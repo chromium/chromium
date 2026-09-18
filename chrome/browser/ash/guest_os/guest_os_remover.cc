@@ -34,7 +34,7 @@ GuestOsRemover::GuestOsRemover(Profile* profile,
 GuestOsRemover::~GuestOsRemover() = default;
 
 void GuestOsRemover::RemoveVm() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   vm_tools::concierge::StopVmRequest request;
   request.set_owner_id(ash::ProfileHelper::GetUserIdHashFromProfile(profile_));
   request.set_name(vm_name_);
@@ -46,7 +46,7 @@ void GuestOsRemover::RemoveVm() {
 
 void GuestOsRemover::StopVmFinished(
     std::optional<vm_tools::concierge::SuccessFailureResponse> response) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   if (!response) {
     LOG(ERROR) << "Failed to stop termina vm. Empty response.";
     std::move(callback_).Run(Result::kStopVmNoResponse);
@@ -78,7 +78,7 @@ void GuestOsRemover::StopVmFinished(
 
 void GuestOsRemover::DestroyDiskImageFinished(
     std::optional<vm_tools::concierge::DestroyDiskImageResponse> response) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   if (!response) {
     LOG(ERROR) << "Failed to destroy disk image. Empty response.";
     std::move(callback_).Run(Result::kDestroyDiskImageFailed);

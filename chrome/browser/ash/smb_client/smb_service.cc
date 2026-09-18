@@ -98,12 +98,12 @@ enum class AuthMethod {
 };
 
 void RecordMountResult(SmbMountResult result) {
-  DCHECK_LE(result, SmbMountResult::kMaxValue);
+  CHECK_LE(result, SmbMountResult::kMaxValue, base::NotFatalUntil::M160);
   UMA_HISTOGRAM_ENUMERATION("NativeSmbFileShare.MountResult", result);
 }
 
 void RecordAuthenticationMethod(AuthMethod method) {
-  DCHECK_LE(method, AuthMethod::kMaxValue);
+  CHECK_LE(method, AuthMethod::kMaxValue, base::NotFatalUntil::M160);
   UMA_HISTOGRAM_ENUMERATION("NativeSmbFileShare.AuthenticationMethod", method);
 }
 
@@ -117,7 +117,7 @@ SmbService::SmbService(Profile* profile,
       profile_(profile),
       registry_(profile) {
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile_);
-  DCHECK(user);
+  CHECK(user, base::NotFatalUntil::M160);
 
   SmbProviderClient* client = GetSmbProviderClient();
   if (!client) {
@@ -202,7 +202,7 @@ void SmbService::RegisterProfilePrefs(
 }
 
 void SmbService::UnmountSmbFs(const base::FilePath& mount_path) {
-  DCHECK(!mount_path.empty());
+  CHECK(!mount_path.empty(), base::NotFatalUntil::M160);
 
   for (auto it = smbfs_shares_.begin(); it != smbfs_shares_.end(); ++it) {
     SmbFsShare* share = it->second.get();
@@ -224,7 +224,7 @@ void SmbService::UnmountSmbFs(const base::FilePath& mount_path) {
 
 void SmbService::OnSmbfsRemoveSavedCredentialsDone(const std::string& mount_id,
                                                    bool success) {
-  DCHECK(!mount_id.empty());
+  CHECK(!mount_id.empty(), base::NotFatalUntil::M160);
 
   auto it = smbfs_shares_.find(mount_id);
   if (it == smbfs_shares_.end()) {
@@ -239,8 +239,8 @@ void SmbService::OnSmbfsRemoveSavedCredentialsDone(const std::string& mount_id,
 }
 
 SmbFsShare* SmbService::GetSmbFsShareForPath(const base::FilePath& path) {
-  DCHECK(!path.empty());
-  DCHECK(path.IsAbsolute());
+  CHECK(!path.empty(), base::NotFatalUntil::M160);
+  CHECK(path.IsAbsolute(), base::NotFatalUntil::M160);
 
   for (const auto& entry : smbfs_shares_) {
     const base::FilePath mount_path = entry.second->mount_path();
@@ -309,7 +309,7 @@ void SmbService::Mount(const std::string& display_name,
   std::string workgroup;
 
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile_);
-  DCHECK(user);
+  CHECK(user, base::NotFatalUntil::M160);
 
   if (use_kerberos) {
     // Differentiate between AD and KerberosEnabled via policy in metrics.
@@ -371,7 +371,7 @@ void SmbService::OnUserInitiatedMountDone(
     return;
   }
 
-  DCHECK(!mount_path.empty());
+  CHECK(!mount_path.empty(), base::NotFatalUntil::M160);
   if (should_open_file_manager_after_mount) {
     platform_util::ShowItemInFolder(profile_, mount_path);
   }
@@ -394,7 +394,7 @@ void SmbService::MountInternal(const SmbShareInfo& info,
   }
 
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile_);
-  DCHECK(user);
+  CHECK(user, base::NotFatalUntil::M160);
 
   SmbFsShare::MountOptions smbfs_options;
   smbfs_options.resolved_host =
@@ -590,7 +590,7 @@ void SmbService::CompleteSetup() {
 }
 
 void SmbService::OnSetupCompleteForTesting(base::OnceClosure callback) {
-  DCHECK(!setup_complete_callback_);
+  CHECK(!setup_complete_callback_, base::NotFatalUntil::M160);
   if (share_finder_) {
     std::move(callback).Run();
     return;
@@ -649,7 +649,7 @@ bool SmbService::IsShareMounted(const SmbUrl& share) const {
     base::FilePath share_path =
         GetSharePathFromFileSystemId(info.file_system_id());
     SmbUrl parsed_url(share_path.value());
-    DCHECK(parsed_url.IsValid());
+    CHECK(parsed_url.IsValid(), base::NotFatalUntil::M160);
     if (parsed_url.ToString() == share.ToString()) {
       return true;
     }

@@ -49,7 +49,7 @@ constexpr net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotationTag() {
 
 NetBiosClient::NetBiosClient(network::mojom::NetworkContext* network_context)
     : bind_address_(net::IPAddress::IPv4AllZeros(), 0 /* port */) {
-  DCHECK(network_context);
+  CHECK(network_context, base::NotFatalUntil::M160);
 
   network_context->CreateUDPSocket(
       server_socket_.BindNewPipeAndPassReceiver(),
@@ -61,8 +61,8 @@ NetBiosClient::~NetBiosClient() = default;
 void NetBiosClient::ExecuteNameRequest(const net::IPAddress& broadcast_address,
                                        uint16_t transaction_id,
                                        NetBiosResponseCallback callback) {
-  DCHECK(!executed_);
-  DCHECK(callback);
+  CHECK(!executed_, base::NotFatalUntil::M160);
+  CHECK(callback, base::NotFatalUntil::M160);
 
   broadcast_address_ = net::IPEndPoint(broadcast_address, kNetBiosPort);
   transaction_id_ = transaction_id;
@@ -147,7 +147,7 @@ void NetBiosClient::OnReceived(int32_t result,
     return;
   }
 
-  DCHECK(data);
+  CHECK(data, base::NotFatalUntil::M160);
   std::vector<uint8_t> response_packet(data->begin(), data->end());
 
   callback_.Run(response_packet, transaction_id_, src_ip.value());

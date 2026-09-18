@@ -12,8 +12,8 @@ namespace ash::smb_client {
 bool ParseUserPrincipalName(const std::string& user_principal_name,
                             std::string* user_name,
                             std::string* workgroup) {
-  DCHECK(user_name);
-  DCHECK(workgroup);
+  CHECK(user_name, base::NotFatalUntil::M160);
+  CHECK(workgroup, base::NotFatalUntil::M160);
   std::vector<std::string> parts = base::SplitString(
       user_principal_name, "@", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (parts.size() != 2 || parts.at(0).empty() || parts.at(1).empty()) {
@@ -30,8 +30,8 @@ bool ParseUserPrincipalName(const std::string& user_principal_name,
 bool ParseDownLevelLogonName(const std::string& logon_name,
                              std::string* user_name,
                              std::string* workgroup) {
-  DCHECK(user_name);
-  DCHECK(workgroup);
+  CHECK(user_name, base::NotFatalUntil::M160);
+  CHECK(workgroup, base::NotFatalUntil::M160);
   std::vector<std::string> parts = base::SplitString(
       logon_name, "\\", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (parts.size() != 2 || parts.at(0).empty() || parts.at(1).empty()) {

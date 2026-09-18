@@ -84,7 +84,7 @@ LocalFileSuggestionProvider::LocalFileSuggestionProvider(
       local_state_(CHECK_DEREF(local_state)),
       profile_(profile),
       max_last_modified_time_(GetMaxFileSuggestionRecency()) {
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M160);
 
   task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::TaskPriority::USER_BLOCKING, base::MayBlock(),
@@ -241,7 +241,8 @@ void LocalFileSuggestionProvider::OnValidationComplete(
             });
 
   on_validation_complete_callback_list_.Notify(final_results);
-  DCHECK(on_validation_complete_callback_list_.empty());
+  CHECK(on_validation_complete_callback_list_.empty(),
+        base::NotFatalUntil::M160);
 }
 
 }  // namespace ash

@@ -25,7 +25,7 @@ namespace {
 void AllowCredentialsRequestOnUIThread(Profile* profile,
                                        const base::FilePath& path) {
   SmbService* service = SmbServiceFactory::Get(profile);
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M160);
   SmbFsShare* share = service->GetSmbFsShareForPath(path);
   // Because the request is posted from the IO thread, there's no guarantee the
   // share still exists at this point.
@@ -53,7 +53,8 @@ class DeleteRecursivelyOperation {
         path_(path),
         callback_(std::move(callback)),
         origin_task_runner_(std::move(origin_task_runner)) {
-    DCHECK(origin_task_runner_->RunsTasksInCurrentSequence());
+    CHECK(origin_task_runner_->RunsTasksInCurrentSequence(),
+          base::NotFatalUntil::M160);
   }
 
   DeleteRecursivelyOperation() = delete;
@@ -62,10 +63,10 @@ class DeleteRecursivelyOperation {
       delete;
 
   void Start() {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
     SmbService* service = SmbServiceFactory::Get(profile_);
-    DCHECK(service);
+    CHECK(service, base::NotFatalUntil::M160);
     SmbFsShare* share = service->GetSmbFsShareForPath(path_);
 
     // Because the request is posted from the IO thread, there's no guarantee
@@ -84,7 +85,7 @@ class DeleteRecursivelyOperation {
   }
 
   void OnDeleteRecursively(base::File::Error error) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
     // Make StatusCallback on the thread where the operation originated.
     origin_task_runner_->PostTask(FROM_HERE,
@@ -102,7 +103,7 @@ class DeleteRecursivelyOperation {
 SmbFsAsyncFileUtil::SmbFsAsyncFileUtil(Profile* profile)
     : AsyncFileUtilAdapter(std::make_unique<storage::LocalFileUtil>()),
       profile_(profile) {
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M160);
 }
 
 SmbFsAsyncFileUtil::~SmbFsAsyncFileUtil() = default;
@@ -111,7 +112,7 @@ void SmbFsAsyncFileUtil::ReadDirectory(
     std::unique_ptr<storage::FileSystemOperationContext> context,
     const storage::FileSystemURL& url,
     ReadDirectoryCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   content::GetUIThreadTaskRunner({})->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&AllowCredentialsRequestOnUIThread, profile_, url.path()),
@@ -132,7 +133,7 @@ void SmbFsAsyncFileUtil::DeleteRecursively(
     std::unique_ptr<storage::FileSystemOperationContext> context,
     const storage::FileSystemURL& url,
     StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&DeleteRecursivelyOperation::Start,
