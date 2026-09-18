@@ -64,6 +64,8 @@ class MODULES_EXPORT AudioWorklet final : public Worklet {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AudioContextTest, AudioWorkletTerminatedOnClose);
+  FRIEND_TEST_ALL_PREFIXES(AudioContextTest,
+                           AudioWorkletCreateProcessorTeardownOnMainThread);
 
   // Implements Worklet
   bool NeedsToCreateGlobalScope() final;

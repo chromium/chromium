@@ -9,9 +9,16 @@
 #include <optional>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/workers/threaded_worklet_messaging_proxy.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
+
+namespace base {
+class SingleThreadTaskRunner;
+}  // namespace base
 
 namespace blink {
 
@@ -31,6 +38,7 @@ class MODULES_EXPORT AudioWorkletMessagingProxy final
     : public ThreadedWorkletMessagingProxy {
  public:
   AudioWorkletMessagingProxy(ExecutionContext*, AudioWorklet*);
+  ~AudioWorkletMessagingProxy() override;
 
   // Since the creation of AudioWorkletProcessor needs to be done in the
   // different thread, this method is a wrapper for cross-thread task posting.
@@ -41,11 +49,15 @@ class MODULES_EXPORT AudioWorkletMessagingProxy final
   // Invokes AudioWorkletGlobalScope to create an instance of
   // AudioWorkletProcessor.
   static void CreateProcessorOnRenderingThread(
+      CrossThreadWeakHandle<AudioWorkletMessagingProxy>,
+      scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
       WorkerThread*,
       scoped_refptr<AudioWorkletHandler>,
       const String& name,
       MessagePortChannel,
       scoped_refptr<SerializedScriptValue> node_options);
+
+  void WorkerThreadTerminated() override;
 
   // Invoked by AudioWorkletObjectProxy on AudioWorkletThread to fetch the
   // information from AudioWorkletGlobalScope to AudioWorkletMessagingProxy
@@ -80,6 +92,13 @@ class MODULES_EXPORT AudioWorkletMessagingProxy final
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AudioContextTest, AudioWorkletTerminatedOnClose);
+  FRIEND_TEST_ALL_PREFIXES(AudioContextTest,
+                           AudioWorkletCreateProcessorTeardownOnMainThread);
+
+  // Invoked on the main thread after processor creation completes on the
+  // worklet thread. Releases the retained handler reference under the graph
+  // lock.
+  void DidCreateProcessor(scoped_refptr<AudioWorkletHandler>);
 
   // Implements ThreadedWorkletMessagingProxy.
   std::unique_ptr<ThreadedWorkletObjectProxy> CreateObjectProxy(
@@ -92,6 +111,13 @@ class MODULES_EXPORT AudioWorkletMessagingProxy final
 
   // Each entry consists of processor name and associated AudioParam list.
   HashMap<String, Vector<CrossThreadAudioParamInfo>> processor_info_map_;
+
+  // Tracks handlers awaiting processor creation on the worklet thread.
+  // Retaining a reference here guarantees that handler teardown and graph
+  // cleanup always execute on the main thread, even if the node is collected
+  // while creation is in flight.
+  HashSet<scoped_refptr<AudioWorkletHandler>>
+      pending_create_processor_handlers_;
 
   Member<AudioWorklet> worklet_;
 };
