@@ -11,10 +11,9 @@ import android.util.Size;
 import android.view.View;
 import android.view.Window;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.actor.OffscreenRenderingManager;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxTabUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.utilities.OnDemandBackgroundTabCaptureConfig;
 import org.chromium.content_public.browser.WebContents;
@@ -55,7 +54,7 @@ public class TabItemPickerOffscreenRenderer {
         if (!OnDemandBackgroundTabCaptureConfig.isOffscreenRenderingEnabled()
                 || mActivity.isFinishing()
                 || mActivity.isDestroyed()
-                || TabItemPickerTabUtils.hasLoadedContent(tab)) {
+                || FuseboxTabUtils.hasLoadedContent(tab)) {
             return;
         }
         if (!mOffscreenRenderingTabs.add(tab)) {
@@ -110,7 +109,6 @@ public class TabItemPickerOffscreenRenderer {
         return new Size(Math.max(1, width), Math.max(1, height));
     }
 
-    @VisibleForTesting
     public Set<Tab> getOffscreenRenderingTabsForTesting() {
         return mOffscreenRenderingTabs;
     }

@@ -70,6 +70,7 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -91,6 +92,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileResolver;
 import org.chromium.chrome.browser.profiles.ProfileResolverJni;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.utilities.TabLoadingService;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -282,6 +284,7 @@ public class FuseboxMediatorUnitTest {
     @Mock private Tab mTab;
     @Mock private PropertyObserver<PropertyKey> mPropertyObserver;
     @Mock private DriveFilePickerClient mDriveFilePickerClient;
+    @Mock private TabLoadingService mTabLoadingService;
 
     @Captor private ArgumentCaptor<Intent> mIntentCaptor;
     @Captor private ArgumentCaptor<WindowAndroid.IntentCallback> mIntentCallbackCaptor;
@@ -375,6 +378,7 @@ public class FuseboxMediatorUnitTest {
                                 anyLong(), anyBoolean()))
                 .thenAnswer(i -> "token-" + i.getArgument(0));
         DriveFilePickerClient.setInstanceForTesting(mDriveFilePickerClient);
+        TabLoadingService.setInstanceForTesting(mTabLoadingService);
         lenient().doReturn(true).when(mDriveFilePickerClient).isAvailable(any());
         lenient()
                 .doReturn(Promise.fulfilled(null))
@@ -561,8 +565,8 @@ public class FuseboxMediatorUnitTest {
         Tab t = mockTab(id);
         when(t.getUrl()).thenReturn(url);
         when(t.isInitialized()).thenReturn(true);
-        when(t.getTimestampMillis()).thenReturn(id * 100L);
-        when(t.getWebContents()).thenReturn(mWebContents);
+        lenient().when(t.getTimestampMillis()).thenReturn(id * 100L);
+        lenient().when(t.getWebContents()).thenReturn(mWebContents);
         return t;
     }
 
@@ -2240,6 +2244,21 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
+    public void testReconcileSuggestedTabs_doesNotQueueLoad() {
+        mMediator.beginInput(mSession);
+        SuggestedTabInfo info =
+                new SuggestedTabInfo(1, "Title", new GURL("https://google.com"), 12345L);
+        when(mTab.getId()).thenReturn(1);
+        when(mTabModelSelector.getTabById(1)).thenReturn(mTab);
+
+        mSuggestedTabsSupplier.set(List.of(info));
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Suggested tab loads are never cancelled, so they must never be queued either.
+        verify(mTabLoadingService, never()).queueLoadIfNeeded(any());
+    }
+
+    @Test
     public void updateModelForRecentTabs_nonDesktop_remainsHidden() {
         OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ false);
         mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
@@ -2782,5 +2801,40 @@ public class FuseboxMediatorUnitTest {
         assertEquals(
                 IconResourceIdsProtoIntDef.IconResourceIds.SEARCH_LOUPE_WITH_SPARKLE,
                 mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_ICON_ID));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE)
+    public void onAddRecentTab_inactiveTab_queuesLoadViaTabLoadingService() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
+        recreateMediator();
+        Tab inactiveTab = mockTab(2, JUnitTestGURLs.URL_1);
+        when(inactiveTab.getWebContents()).thenReturn(null);
+
+        mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
+        mModel.get(FuseboxProperties.POPUP_RECENT_TABS_BUTTON_DATA_LIST).get(0).onClicked.run();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mTabLoadingService).queueLoadIfNeeded(inactiveTab);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE,
+        ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION
+                + ":cancel_load_on_deselection/true"
+    })
+    public void onAddRecentTab_cancelledTab_queuesLoadViaTabLoadingService() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
+        recreateMediator();
+        when(mWebContents.getRenderWidgetHostView()).thenReturn(mRenderWidgetHostView);
+        Tab cancelledTab = mockTab(2, JUnitTestGURLs.URL_1);
+        when(cancelledTab.needsReload()).thenReturn(true);
+
+        mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
+        mModel.get(FuseboxProperties.POPUP_RECENT_TABS_BUTTON_DATA_LIST).get(0).onClicked.run();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mTabLoadingService).queueLoadIfNeeded(cancelledTab);
     }
 }

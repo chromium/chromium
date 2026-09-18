@@ -32,10 +32,14 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.utilities.TabLoadingService;
 import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
 
@@ -46,6 +50,9 @@ public class FuseboxAttachmentUnitTest {
     private static final String CAPTURE_TOKEN = "capture_token";
     private static final String CACHE_TOKEN = "cache_token";
     private static final int TAB_ID = 1;
+    private static final String OPTIMIZATION_CANCEL_ON_DESELECTION =
+            ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION
+                    + ":cancel_load_on_deselection/true";
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -54,6 +61,7 @@ public class FuseboxAttachmentUnitTest {
     @Mock private ComposeboxQueryControllerBridge mBridge;
     @Mock private WebContents mWebContents;
     @Mock private RenderWidgetHostView mRenderWidgetHostView;
+    @Mock private TabLoadingService mTabLoadingService;
 
     private Resources mResources;
     private Bitmap mBitmap;
@@ -63,6 +71,7 @@ public class FuseboxAttachmentUnitTest {
         mResources = ApplicationProvider.getApplicationContext().getResources();
         mBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
         OmniboxResourceProvider.setTabFaviconFactory((tab) -> mBitmap);
+        TabLoadingService.setInstanceForTesting(mTabLoadingService);
 
         lenient().when(mTab.getTitle()).thenReturn("Tab Title");
         lenient().when(mTab.getId()).thenReturn(TAB_ID);
@@ -253,5 +262,53 @@ public class FuseboxAttachmentUnitTest {
 
         assertFalse(attachment.uploadToBackend(mBridge, /* bypassTabCacheThisTime= */ false));
         assertFalse(attachment.hasToken());
+    }
+
+    @Test
+    @EnableFeatures(OPTIMIZATION_CANCEL_ON_DESELECTION)
+    public void removeFromBackend_tabAttachment_cancelsLoadWhenEnabled() {
+        FuseboxAttachment attachment =
+                FuseboxAttachment.forTab(
+                        mTab,
+                        /* bypassTabCache= */ false,
+                        mResources,
+                        FuseboxAttachmentButtonType.TAB_PICKER,
+                        /* isSuggestedTab= */ false);
+
+        attachment.removeFromBackend(mBridge);
+
+        verify(mTabLoadingService).cancelLoadIfNeeded(mTab);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION)
+    public void removeFromBackend_tabAttachment_doesNotCancelLoadWhenDisabled() {
+        FuseboxAttachment attachment =
+                FuseboxAttachment.forTab(
+                        mTab,
+                        /* bypassTabCache= */ false,
+                        mResources,
+                        FuseboxAttachmentButtonType.TAB_PICKER,
+                        /* isSuggestedTab= */ false);
+
+        attachment.removeFromBackend(mBridge);
+
+        verify(mTabLoadingService, never()).cancelLoadIfNeeded(any());
+    }
+
+    @Test
+    @EnableFeatures(OPTIMIZATION_CANCEL_ON_DESELECTION)
+    public void removeFromBackend_suggestedTabAttachment_doesNotCancelLoad() {
+        FuseboxAttachment attachment =
+                FuseboxAttachment.forTab(
+                        mTab,
+                        /* bypassTabCache= */ false,
+                        mResources,
+                        FuseboxAttachmentButtonType.SUGGESTED_TAB,
+                        /* isSuggestedTab= */ true);
+
+        attachment.removeFromBackend(mBridge);
+
+        verify(mTabLoadingService, never()).cancelLoadIfNeeded(any());
     }
 }

@@ -22,6 +22,8 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerView
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.utilities.OnDemandBackgroundTabCaptureConfig;
+import org.chromium.chrome.browser.tab.utilities.TabLoadingService;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -295,6 +297,11 @@ public final class FuseboxAttachment extends ListItem {
      * @param bridge The bridge to use for removal
      */
     public void removeFromBackend(ComposeboxQueryControllerBridge bridge) {
+        if (tab != null
+                && !isSuggestedTab
+                && OnDemandBackgroundTabCaptureConfig.isCancelLoadOnDeselectionEnabled()) {
+            TabLoadingService.getInstance().cancelLoadIfNeeded(tab);
+        }
         if (hasToken()) {
             bridge.removeAttachment(getToken());
         }

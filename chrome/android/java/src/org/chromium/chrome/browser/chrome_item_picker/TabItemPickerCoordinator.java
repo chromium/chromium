@@ -475,7 +475,7 @@ public class TabItemPickerCoordinator {
             Tab tab = mTabModelSelector.getTabById(tabId);
             if (tab == null
                     || !FuseboxTabUtils.isTabEligibleForAttachment(tab)
-                    || TabItemPickerTabUtils.hasLoadedContent(tab)) {
+                    || FuseboxTabUtils.hasLoadedContent(tab)) {
                 return;
             }
 
@@ -648,7 +648,7 @@ public class TabItemPickerCoordinator {
                 int tabId = item.getTabId();
                 Tab tab = mTabModelSelector.getTabById(tabId);
 
-                if (TabItemPickerTabUtils.hasLoadedContent(tab)) {
+                if (FuseboxTabUtils.hasLoadedContent(tab)) {
                     activePickedCount++;
                 }
                 if (mCachedTabIds.contains(tabId)) {

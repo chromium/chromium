@@ -270,6 +270,11 @@ public class TabLoadingService {
      * <p>Registered callbacks are notified with {@link LoadResult#CANCELLED} so consumers can tear
      * down any UI they put up for the load.
      *
+     * <p><b>Cancellation is global and immediate.</b> Loads are keyed by tab and are not reference
+     * counted, so a caller that cancels a tab also cancels it for every other component waiting on
+     * that same tab. Callers that cancel speculatively, or on behalf of a UI whose state the user
+     * may still discard, must therefore be sure no other component still needs the load.
+     *
      * @param tab The tab to cancel loading for.
      * @return true if an active or pending load for the tab was cancelled.
      */
@@ -383,6 +388,7 @@ public class TabLoadingService {
         }
     }
 
+    /** Clears all queued and loading state for testing. */
     public void clearForTesting() {
         mQueuedTabs.clear();
         mTabLoadGenerations.clear();
@@ -391,7 +397,8 @@ public class TabLoadingService {
         mPendingTabs.clear();
     }
 
-    static void setInstanceForTesting(@Nullable TabLoadingService service) {
+    /** Sets the singleton instance of {@link TabLoadingService} for testing. */
+    public static void setInstanceForTesting(@Nullable TabLoadingService service) {
         sInstanceForTesting = service;
         ResettersForTesting.register(() -> sInstanceForTesting = null);
     }

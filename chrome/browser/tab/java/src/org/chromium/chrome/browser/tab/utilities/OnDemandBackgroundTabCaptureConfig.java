@@ -37,7 +37,7 @@ public final class OnDemandBackgroundTabCaptureConfig {
 
     /**
      * Returns whether an in-flight background tab load should be cancelled when the tab is
-     * deselected in the tab item picker.
+     * deselected in the tab item picker or removed in Fusebox.
      */
     public static boolean isCancelLoadOnDeselectionEnabled() {
         return isOptimizationEnabled()
