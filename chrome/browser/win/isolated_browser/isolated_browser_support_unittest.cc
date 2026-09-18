@@ -46,6 +46,8 @@
 #include "chrome/elevation_service/elevator.h"
 #include "chrome/install_static/test/scoped_install_details.h"
 #include "components/crash/core/common/crash_key.h"
+#include "components/keep_alive_registry/keep_alive_registry.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/prefs/mock_pref_change_callback.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/testing_pref_service.h"
@@ -283,6 +285,71 @@ TEST_F(IsolatedBrowserSupportSystemTest, SetIsolationStateTwice) {
                 base::test::ValueIs(IsolationState::kIsolationDisabled));
     EXPECT_FALSE(IsIsolationEnabled());
   }
+}
+
+TEST_F(IsolatedBrowserSupportSystemTest, ScopedKeepAlive) {
+  install_static::ScopedInstallDetails details(/*system_level=*/true);
+
+  EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+      KeepAliveOrigin::ISOLATION_STATE_CHANGE));
+  EXPECT_TRUE(KeepAliveRegistry::GetInstance()->IsRestartAllowed());
+
+  // 1. Enabling isolation: ScopedKeepAlive is registered with restart disabled.
+  {
+    base::test::TestFuture<base::expected<IsolationState, HRESULT>> future;
+    SetIsolationState(IsolationState::kProcessIsolation, &prefs_,
+                      future.GetCallback());
+
+    EXPECT_TRUE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+        KeepAliveOrigin::ISOLATION_STATE_CHANGE));
+    EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsRestartAllowed());
+
+    const auto result = future.Take();
+    EXPECT_THAT(result, base::test::ValueIs(IsolationState::kProcessIsolation));
+
+    EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+        KeepAliveOrigin::ISOLATION_STATE_CHANGE));
+    EXPECT_TRUE(KeepAliveRegistry::GetInstance()->IsRestartAllowed());
+  }
+
+  // 2. Disabling isolation: ScopedKeepAlive remains registered until
+  // completion.
+  {
+    base::test::TestFuture<base::expected<IsolationState, HRESULT>> future;
+    SetIsolationState(IsolationState::kIsolationDisabled, &prefs_,
+                      future.GetCallback());
+
+    EXPECT_TRUE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+        KeepAliveOrigin::ISOLATION_STATE_CHANGE));
+    EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsRestartAllowed());
+
+    const auto result = future.Take();
+    EXPECT_THAT(result,
+                base::test::ValueIs(IsolationState::kIsolationDisabled));
+
+    EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+        KeepAliveOrigin::ISOLATION_STATE_CHANGE));
+    EXPECT_TRUE(KeepAliveRegistry::GetInstance()->IsRestartAllowed());
+  }
+}
+
+TEST_F(IsolatedBrowserSupportSystemTest, ShuttingDownAborts) {
+  install_static::ScopedInstallDetails details(/*system_level=*/true);
+
+  KeepAliveRegistry::GetInstance()->SetIsShuttingDown(true);
+  absl::Cleanup reset_shutting_down = [] {
+    KeepAliveRegistry::GetInstance()->SetIsShuttingDown(false);
+  };
+
+  base::test::TestFuture<base::expected<IsolationState, HRESULT>> future;
+  SetIsolationState(IsolationState::kProcessIsolation, &prefs_,
+                    future.GetCallback());
+
+  const auto result = future.Take();
+  EXPECT_THAT(result, base::test::ErrorIs(E_ABORT));
+  EXPECT_FALSE(IsIsolationEnabled());
+  EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+      KeepAliveOrigin::ISOLATION_STATE_CHANGE));
 }
 
 class IsolatedBrowserSupportSystemTestWithFailures

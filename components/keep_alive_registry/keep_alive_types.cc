@@ -101,6 +101,8 @@ std::ostream& operator<<(std::ostream& out, const KeepAliveOrigin& origin) {
       return out << "OMNIBOX_EVERYWHERE_STARTUP";
     case KeepAliveOrigin::FETCH_KEEPALIVE_REQUEST:
       return out << "FETCH_KEEPALIVE_REQUEST";
+    case KeepAliveOrigin::ISOLATION_STATE_CHANGE:
+      return out << "ISOLATION_STATE_CHANGE";
   }
 
   NOTREACHED() << static_cast<int>(origin);

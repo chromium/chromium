@@ -35,6 +35,9 @@
 #include "chrome/elevation_service/elevator.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/isolation_support.h"
+#include "components/keep_alive_registry/keep_alive_registry.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/os_crypt/async/browser/key_provider.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -76,15 +79,21 @@ base::expected<base::win::RegKey, LONG> GetIsolatedBrowserRegistryKey(
   return regkey;
 }
 
+// Persists the requested isolation `state` to the Windows registry.
+// `keep_alive` is kept on the stack and destroyed upon function exit so that
+// the keep-alive remains active until after `completed` has run. This prevents
+// premature shutdown if the consumer creates its own keep-alive in `completed`.
 void CompleteRegistryPersistence(
     IsolationState state,
-    base::OnceCallback<void(base::expected<IsolationState, HRESULT>)>
-        completed) {
+    base::OnceCallback<void(base::expected<IsolationState, HRESULT>)> completed,
+    std::unique_ptr<ScopedKeepAlive> keep_alive) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto regkey = GetIsolatedBrowserRegistryKey(KEY_READ | KEY_WRITE);
   if (!regkey.has_value()) {
-    std::move(completed).Run(
-        base::unexpected(HRESULT_FROM_WIN32(regkey.error())));
+    if (completed) {
+      std::move(completed).Run(
+          base::unexpected(HRESULT_FROM_WIN32(regkey.error())));
+    }
     return;
   }
 
@@ -101,11 +110,15 @@ void CompleteRegistryPersistence(
   }
 
   if (result != ERROR_SUCCESS) {
-    std::move(completed).Run(base::unexpected(HRESULT_FROM_WIN32(result)));
+    if (completed) {
+      std::move(completed).Run(base::unexpected(HRESULT_FROM_WIN32(result)));
+    }
     return;
   }
 
-  std::move(completed).Run(state);
+  if (completed) {
+    std::move(completed).Run(state);
+  }
 }
 
 }  // namespace
@@ -408,11 +421,24 @@ void SetIsolationState(
         completed) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!install_static::IsSystemInstall()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(completed), base::unexpected(E_NOTIMPL)));
+    if (completed) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(completed), base::unexpected(E_NOTIMPL)));
+    }
     return;
   }
+
+  if (KeepAliveRegistry::GetInstance()->IsShuttingDown()) {
+    if (completed) {
+      std::move(completed).Run(base::unexpected(E_ABORT));
+    }
+    return;
+  }
+
+  auto keep_alive =
+      std::make_unique<ScopedKeepAlive>(KeepAliveOrigin::ISOLATION_STATE_CHANGE,
+                                        KeepAliveRestartOption::DISABLED);
 
   // Switching from isolated to non-isolated requires re-encrypting the
   // app-bound key into a non-isolated state.
@@ -428,30 +454,40 @@ void SetIsolationState(
     // there is no previously encrypted key, then there's nothing to do - it
     // will be stored encrypted correctly after restart.
     if (provider->IsKeyStored()) {
-      provider->GetKey(base::BindOnce(
+      auto* raw_provider = provider.get();
+      // Bind `provider`, `completed`, and `keep_alive` so they remain alive
+      // during key retrieval and registry persistence. `keep_alive` stays
+      // on the stack frame of the callback or `CompleteRegistryPersistence`
+      // until after `completed` is called, ensuring keep-alive continuity.
+      raw_provider->GetKey(base::BindOnce(
           [](std::unique_ptr<os_crypt_async::AppBoundEncryptionProviderWin>
                  provider,
              base::OnceCallback<void(base::expected<IsolationState, HRESULT>)>
                  completed,
-             IsolationState state, const std::string& tag,
+             IsolationState state, std::unique_ptr<ScopedKeepAlive> keep_alive,
+             const std::string& tag,
              base::expected<os_crypt_async::Encryptor::Key,
                             os_crypt_async::KeyProvider::KeyError> result) {
             if (!result.has_value()) {
-              base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-                  FROM_HERE, base::BindOnce(std::move(completed),
-                                            base::unexpected(E_FAIL)));
+              if (completed) {
+                std::move(completed).Run(base::unexpected(E_FAIL));
+              }
               return;
             }
-            CompleteRegistryPersistence(state, std::move(completed));
+            CompleteRegistryPersistence(state, std::move(completed),
+                                        std::move(keep_alive));
           },
-          std::move(provider), std::move(completed), state));
+          std::move(provider), std::move(completed), state,
+          std::move(keep_alive)));
       return;
     }
   }
 
+  // Post persistence to the UI task runner, passing `keep_alive` so it remains
+  // active through registry writing and execution of `completed`.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&CompleteRegistryPersistence, state,
-                                std::move(completed)));
+                                std::move(completed), std::move(keep_alive)));
 }
 
 void SetIsolatedBrowserLaunchResult(HRESULT hr) {

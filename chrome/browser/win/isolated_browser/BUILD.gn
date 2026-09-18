@@ -17,6 +17,7 @@ source_set("isolated_browser_support") {
     "//chrome/elevation_service:public_headers",
     "//chrome/install_static:install_static_util",
     "//chrome/installer/util:isolation_support",
+    "//components/keep_alive_registry",
     "//components/os_crypt/browser:key_provider_interface",
     "//content/public/browser",
   ]
@@ -67,6 +68,7 @@ source_set("unit_tests") {
     "//chrome/installer/util:with_no_strings",
     "//chrome/test:test_support",
     "//components/crash/core/common:crash_key",
+    "//components/keep_alive_registry",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/variations",

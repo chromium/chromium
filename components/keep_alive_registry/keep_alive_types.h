@@ -95,6 +95,9 @@ enum class KeepAliveOrigin {
 
   // c/b/loader
   FETCH_KEEPALIVE_REQUEST,
+
+  // c/b/win
+  ISOLATION_STATE_CHANGE,
 };
 
 // Restart: Allow Chrome to restart when all the registered KeepAlives allow
