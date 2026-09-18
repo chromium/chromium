@@ -10,7 +10,6 @@ import android.os.Handler;
 
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.TraceEvent;
-import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
 import org.chromium.support_lib_boundary.WebMessageBoundaryInterface;
 import org.chromium.support_lib_boundary.WebMessageCallbackBoundaryInterface;
@@ -83,13 +82,10 @@ class SupportLibWebMessagePortAdapter implements WebMessagePortBoundaryInterface
                         BoundaryInterfaceReflectionUtil.castToSuppLibClass(
                                 WebMessageCallbackBoundaryInterface.class, callback));
         mPort.setMessageCallback(
-                new MessagePort.MessageCallback() {
-                    @Override
-                    public void onMessage(MessagePayload messagePayload, MessagePort[] ports) {
-                        callbackAdapter.onMessage(
-                                SupportLibWebMessagePortAdapter.this,
-                                new SupportLibWebMessageAdapter(messagePayload, ports));
-                    }
+                (messagePayload, ports, senderOrigin) -> {
+                    callbackAdapter.onMessage(
+                            SupportLibWebMessagePortAdapter.this,
+                            new SupportLibWebMessageAdapter(messagePayload, ports));
                 },
                 handler);
     }

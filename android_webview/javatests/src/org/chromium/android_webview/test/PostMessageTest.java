@@ -40,9 +40,9 @@ import org.chromium.net.test.util.TestWebServer;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Set;
 import java.util.Locale;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
@@ -96,10 +96,12 @@ public class PostMessageTest extends AwParameterizedTest {
         public static class Data {
             public final MessagePayload mMessagePayload;
             public final Looper mLastLooper;
+            public final String mSenderOrigin;
 
-            public Data(MessagePayload messagePayload, Looper looper) {
+            public Data(MessagePayload messagePayload, Looper looper, String senderOrigin) {
                 mMessagePayload = messagePayload;
                 mLastLooper = looper;
+                mSenderOrigin = senderOrigin;
             }
 
             public String getStringValue() {
@@ -120,8 +122,13 @@ public class PostMessageTest extends AwParameterizedTest {
         }
 
         public void notifyCalled(MessagePayload messagePayload) {
+            notifyCalled(messagePayload, null);
+        }
+
+        public void notifyCalled(MessagePayload messagePayload, String senderOrigin) {
             try {
-                mQueue.add(new ChannelContainer.Data(messagePayload, Looper.myLooper()));
+                mQueue.add(
+                        new ChannelContainer.Data(messagePayload, Looper.myLooper(), senderOrigin));
             } catch (IllegalStateException e) {
                 // We expect this add operation will always succeed since the default capacity of
                 // the queue is Integer.MAX_VALUE.
@@ -468,7 +475,7 @@ public class PostMessageTest extends AwParameterizedTest {
                 () -> {
                     MessagePort[] channel = mAwContents.createMessageChannel();
                     // set a web event handler, this puts the port in a started state.
-                    channel[1].setMessageCallback((_, _) -> {}, null);
+                    channel[1].setMessageCallback((_, _, _) -> {}, null);
                     Assert.assertThrows(
                             IllegalStateException.class,
                             () ->
@@ -509,7 +516,7 @@ public class PostMessageTest extends AwParameterizedTest {
                 () -> {
                     MessagePort[] channel1 = mAwContents.createMessageChannel();
                     // set a web event handler, this puts the port in a started state.
-                    channel1[1].setMessageCallback((_, _) -> {}, null);
+                    channel1[1].setMessageCallback((_, _, _) -> {}, null);
                     MessagePort[] channel2 = mAwContents.createMessageChannel();
                     Assert.assertThrows(
                             IllegalStateException.class,
@@ -738,7 +745,9 @@ public class PostMessageTest extends AwParameterizedTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     channel[0].setMessageCallback(
-                            (message, _) -> channelContainer.notifyCalled(message), null);
+                            (message, _, senderOrigin) ->
+                                    channelContainer.notifyCalled(message, senderOrigin),
+                            null);
                     mAwContents.postMessageToMainFrame(
                             new MessagePayload(WEBVIEW_MESSAGE),
                             mWebServer.getBaseUrl(),
@@ -748,6 +757,10 @@ public class PostMessageTest extends AwParameterizedTest {
         // wait for the asynchronous response from JS
         ChannelContainer.Data data = channelContainer.waitForMessageCallback();
         Assert.assertEquals(HELLO + JS_MESSAGE, data.getStringValue());
+        // getResponseUrl("") is intentionally used instead of getBaseUrl() because
+        // getResponseUrl("") omits the trailing slash to match the RFC 6454 serialized
+        // origin format (scheme://host:port).
+        Assert.assertEquals(mWebServer.getResponseUrl(""), data.mSenderOrigin);
     }
 
     // Verify that a message port can be used immediately (even if it is in
@@ -765,7 +778,7 @@ public class PostMessageTest extends AwParameterizedTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     channel[0].setMessageCallback(
-                            (message, _) -> channelContainer.notifyCalled(message), null);
+                            (message, _, _) -> channelContainer.notifyCalled(message), null);
                     mAwContents.postMessageToMainFrame(
                             new MessagePayload(WEBVIEW_MESSAGE),
                             mWebServer.getBaseUrl(),
@@ -793,7 +806,7 @@ public class PostMessageTest extends AwParameterizedTest {
                 () -> {
                     MessagePort[] channel = mAwContents.createMessageChannel();
                     channel[1].setMessageCallback(
-                            (message, _) -> channelContainer.notifyCalled(message), null);
+                            (message, _, _) -> channelContainer.notifyCalled(message), null);
                     channel[0].postMessage(new MessagePayload(HELLO), null);
                 });
         // Wait for the asynchronous response from JS.
@@ -844,7 +857,7 @@ public class PostMessageTest extends AwParameterizedTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     channel[0].setMessageCallback(
-                            (message, _) -> channelContainer.notifyCalled(message), null);
+                            (message, _, _) -> channelContainer.notifyCalled(message), null);
                     mAwContents.postMessageToMainFrame(
                             new MessagePayload(WEBVIEW_MESSAGE),
                             mWebServer.getBaseUrl(),
@@ -916,7 +929,7 @@ public class PostMessageTest extends AwParameterizedTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     channel[0].setMessageCallback(
-                            (message, _) -> channelContainer.notifyCalled(message), null);
+                            (message, _, _) -> channelContainer.notifyCalled(message), null);
                     mAwContents.postMessageToMainFrame(
                             new MessagePayload(WEBVIEW_MESSAGE),
                             mWebServer.getBaseUrl(),
@@ -969,9 +982,9 @@ public class PostMessageTest extends AwParameterizedTest {
                             mWebServer.getBaseUrl(),
                             new MessagePort[] {channel[1]});
                     channel[0].setMessageCallback(
-                            (_, ports) -> {
+                            (_, ports, _) -> {
                                 ports[0].setMessageCallback(
-                                        (message, _) -> {
+                                        (message, _, _) -> {
                                             Assert.assertEquals("3", message.getAsString());
                                             ports[0].postMessage(new MessagePayload("4"), null);
                                         },
@@ -1103,7 +1116,7 @@ public class PostMessageTest extends AwParameterizedTest {
                 () -> {
                     MessagePort[] channel = mAwContents.createMessageChannel();
                     channel[0].setMessageCallback(
-                            (message, _) -> channelContainer.notifyCalled(message), null);
+                            (message, _, _) -> channelContainer.notifyCalled(message), null);
                     mAwContents.postMessageToMainFrame(
                             new MessagePayload(WEBVIEW_MESSAGE),
                             mWebServer.getBaseUrl(),
@@ -1135,7 +1148,7 @@ public class PostMessageTest extends AwParameterizedTest {
                 () -> {
                     MessagePort[] channel = mAwContents.createMessageChannel();
                     channel[0].setMessageCallback(
-                            (message, _) -> channelContainer.notifyCalled(message), null);
+                            (message, _, _) -> channelContainer.notifyCalled(message), null);
                     mAwContents.postMessageToMainFrame(
                             new MessagePayload(WEBVIEW_MESSAGE),
                             mWebServer.getBaseUrl(),
@@ -1178,7 +1191,7 @@ public class PostMessageTest extends AwParameterizedTest {
                 () -> {
                     MessagePort[] channel = mAwContents.createMessageChannel();
                     channel[0].setMessageCallback(
-                            (message, _) -> channelContainer.notifyCalled(message), null);
+                            (message, _, _) -> channelContainer.notifyCalled(message), null);
                     mAwContents.postMessageToMainFrame(
                             new MessagePayload(WEBVIEW_MESSAGE),
                             mWebServer.getBaseUrl(),
@@ -1213,7 +1226,7 @@ public class PostMessageTest extends AwParameterizedTest {
                 () -> {
                     MessagePort[] channel = mAwContents.createMessageChannel();
                     channel[0].setMessageCallback(
-                            (message, _) -> channelContainer.notifyCalled(message), null);
+                            (message, _, _) -> channelContainer.notifyCalled(message), null);
                     mAwContents.postMessageToMainFrame(
                             new MessagePayload(WEBVIEW_MESSAGE),
                             mWebServer.getBaseUrl(),
@@ -1250,7 +1263,7 @@ public class PostMessageTest extends AwParameterizedTest {
                 () -> {
                     MessagePort[] channel = mAwContents.createMessageChannel();
                     channel[0].setMessageCallback(
-                            (message, _) -> channelContainer.notifyCalled(message), null);
+                            (message, _, _) -> channelContainer.notifyCalled(message), null);
                     mAwContents.postMessageToMainFrame(
                             new MessagePayload(WEBVIEW_MESSAGE),
                             mWebServer.getBaseUrl(),
@@ -1274,9 +1287,9 @@ public class PostMessageTest extends AwParameterizedTest {
                 () -> {
                     MessagePort[] channel = mAwContents.createMessageChannel();
                     channel[0].setMessageCallback(
-                            (message, _) -> channelContainer1.notifyCalled(message), null);
+                            (message, _, _) -> channelContainer1.notifyCalled(message), null);
                     channel[1].setMessageCallback(
-                            (message, _) -> channelContainer2.notifyCalled(message),
+                            (message, _, _) -> channelContainer2.notifyCalled(message),
                             new Handler(thread.getLooper()));
                     channel[0].postMessage(new MessagePayload("foo"), null);
                     channel[1].postMessage(new MessagePayload("bar"), null);
@@ -1302,7 +1315,7 @@ public class PostMessageTest extends AwParameterizedTest {
                     MessagePort[] channel = mAwContents.createMessageChannel();
                     channelContainer.set(channel);
                     channel[0].setMessageCallback(
-                            (message, _) -> channelContainer.notifyCalled(message),
+                            (message, _, _) -> channelContainer.notifyCalled(message),
                             new Handler(thread.getLooper()));
                     channel[1].postMessage(new MessagePayload("foo"), null);
                 });
@@ -1314,7 +1327,7 @@ public class PostMessageTest extends AwParameterizedTest {
                 () -> {
                     MessagePort[] channel = channelContainer.get();
                     channel[0].setMessageCallback(
-                            (message, _) -> channelContainer2.notifyCalled(message), null);
+                            (message, _, _) -> channelContainer2.notifyCalled(message), null);
                     channel[1].postMessage(new MessagePayload("bar"), null);
                 });
         ChannelContainer.Data data2 = channelContainer2.waitForMessageCallback();
@@ -1415,7 +1428,7 @@ public class PostMessageTest extends AwParameterizedTest {
 
         final MessagePort[] ports2 = createChannelOnUiThread();
         ports2[0].setMessageCallback(
-                (messagePayload, _) -> {
+                (messagePayload, _, _) -> {
                     ThreadUtils.checkUiThread();
                     container.notifyCalled(messagePayload);
                 },
@@ -1469,7 +1482,7 @@ public class PostMessageTest extends AwParameterizedTest {
                         () -> {
                             MessagePort[] ports = mAwContents.createMessageChannel();
                             // Move message port into |receiving| state.
-                            ports[0].setMessageCallback((_, _) -> {}, null);
+                            ports[0].setMessageCallback((_, _, _) -> {}, null);
                             return ports;
                         });
         // Close message channel on another thread, simulate the case where the "finalize" is called
@@ -1497,7 +1510,7 @@ public class PostMessageTest extends AwParameterizedTest {
         Assert.assertThrows(
                 "Port transferred, should not able to listen on",
                 IllegalStateException.class,
-                () -> portsToTransfer[0].setMessageCallback((_, _) -> {}, null));
+                () -> portsToTransfer[0].setMessageCallback((_, _, _) -> {}, null));
     }
 
     @Test
@@ -1515,7 +1528,7 @@ public class PostMessageTest extends AwParameterizedTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> ports[0].postMessage(new MessagePayload("msg1"), null));
         ports[1].setMessageCallback(
-                (messagePayload, _) -> container.notifyCalled(messagePayload), handler);
+                (messagePayload, _, _) -> container.notifyCalled(messagePayload), handler);
         Assert.assertEquals("msg1", container.waitForMessageCallback().getStringValue());
     }
 
@@ -1543,7 +1556,7 @@ public class PostMessageTest extends AwParameterizedTest {
                 () -> {
                     MessagePort[] ports = mAwContents.createMessageChannel();
                     ports[0].setMessageCallback(
-                            (message, _) -> container.notifyCalled(message), null);
+                            (message, _, _) -> container.notifyCalled(message), null);
                     mAwContents.postMessageToMainFrame(
                             new MessagePayload("*"), "*", new MessagePort[] {ports[1]});
                     ports = null;

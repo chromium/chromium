@@ -22,7 +22,6 @@ import android.os.Bundle;
 import androidx.browser.customtabs.CustomTabsService;
 import androidx.browser.customtabs.PostMessageBackend;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -49,8 +48,6 @@ import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.mojo_base.mojom.UnguessableToken;
-import org.chromium.net.GURLUtils;
-import org.chromium.net.GURLUtilsJni;
 import org.chromium.url.GURL;
 
 /** Unit tests for {@link PostMessageHandler}. */
@@ -78,7 +75,6 @@ public class PostMessageHandlerTest {
     @Mock private MessagePort mSecondLocalPort;
     @Mock private MessagePort mSecondRemotePort;
     @Captor private ArgumentCaptor<WebContentsObserver> mObserverCaptor;
-    @Mock private GURLUtils.Natives mGURLUtilsJni;
 
     private PostMessageHandler mHandler;
 
@@ -98,14 +94,7 @@ public class PostMessageHandlerTest {
                 .thenReturn(new MessagePort[] {mSecondLocalPort, mSecondRemotePort});
         lenient().when(mNavigation.hasCommitted()).thenReturn(true);
         lenient().when(mNavigation.isSameDocument()).thenReturn(false);
-        GURLUtilsJni.setInstanceForTesting(mGURLUtilsJni);
-        lenient().when(mGURLUtilsJni.getOrigin(any())).thenReturn("https://www.example.com");
         mHandler = new PostMessageHandler(mPostMessageBackend);
-    }
-
-    @After
-    public void tearDown() {
-        GURLUtilsJni.setInstanceForTesting(null);
     }
 
     @Test
@@ -410,7 +399,7 @@ public class PostMessageHandlerTest {
     public void testMessageCallbackSendsOriginInBundle() {
         MessageCallback callback = initializeAndCaptureMessageCallback();
 
-        callback.onMessage(new MessagePayload("test_message"), null);
+        callback.onMessage(new MessagePayload("test_message"), null, "https://www.example.com");
 
         ArgumentCaptor<Bundle> bundleCaptor = ArgumentCaptor.forClass(Bundle.class);
         verify(mPostMessageBackend).onPostMessage(eq("test_message"), bundleCaptor.capture());
@@ -420,74 +409,47 @@ public class PostMessageHandlerTest {
     }
 
     @Test
-    public void testMessageCallbackUsesOriginCapturedAtChannelCreation() {
+    public void testMessageCallbackWithCrossOriginSenderOrigin() {
         MessageCallback callback = initializeAndCaptureMessageCallback();
 
-        // The document navigates away after the channel was created. A message already queued on
-        // the UI task runner must still be attributed to the document that sent it, not to
-        // whatever happens to be committed by the time it is delivered. These stubs are lenient
-        // precisely because the handler must no longer consult them.
-        lenient()
-                .when(mMainFrame.getLastCommittedURL())
-                .thenReturn(new GURL("https://other.example.com/p"));
-        lenient().when(mGURLUtilsJni.getOrigin(any())).thenReturn("https://other.example.com");
-
-        callback.onMessage(new MessagePayload("test_message"), null);
+        callback.onMessage(new MessagePayload("test_message"), null, "https://evil.example.com");
 
         ArgumentCaptor<Bundle> bundleCaptor = ArgumentCaptor.forClass(Bundle.class);
         verify(mPostMessageBackend).onPostMessage(eq("test_message"), bundleCaptor.capture());
-        assertEquals(
-                "https://www.example.com", bundleCaptor.getValue().getString(POST_MESSAGE_ORIGIN));
+        Bundle bundle = bundleCaptor.getValue();
+        assertNotNull(bundle);
+        assertEquals("https://evil.example.com", bundle.getString(POST_MESSAGE_ORIGIN));
     }
 
     @Test
-    public void testMessageCallbackWithEmptyOriginSendsNullBundle() {
-        when(mGURLUtilsJni.getOrigin(any())).thenReturn("");
+    public void testMessageCallbackWithNullSenderOriginSendsNullBundle() {
         MessageCallback callback = initializeAndCaptureMessageCallback();
 
-        callback.onMessage(new MessagePayload("test_message"), null);
+        callback.onMessage(new MessagePayload("test_message"), null, null);
 
         verify(mPostMessageBackend).onPostMessage("test_message", null);
     }
 
     @Test
-    public void testMessageCallbackWithNullMainFrameUrlSendsNullBundle() {
-        when(mMainFrame.getLastCommittedURL()).thenReturn(null);
-        MessageCallback callback = initializeAndCaptureMessageCallback(/* targetUri= */ null);
+    public void testMessageCallbackWithEmptySenderOriginSendsNullBundle() {
+        MessageCallback callback = initializeAndCaptureMessageCallback();
 
-        callback.onMessage(new MessagePayload("test_message"), null);
-
-        verify(mPostMessageBackend).onPostMessage("test_message", null);
-    }
-
-    @Test
-    public void testMessageCallbackWithEmptyMainFrameUrlSendsNullBundle() {
-        when(mMainFrame.getLastCommittedURL()).thenReturn(GURL.emptyGURL());
-        MessageCallback callback = initializeAndCaptureMessageCallback(/* targetUri= */ null);
-
-        callback.onMessage(new MessagePayload("test_message"), null);
+        callback.onMessage(new MessagePayload("test_message"), null, "");
 
         verify(mPostMessageBackend).onPostMessage("test_message", null);
     }
 
     @Test
-    public void testMessageCallbackWithInvalidMainFrameUrlSendsNullBundle() {
-        when(mMainFrame.getLastCommittedURL()).thenReturn(new GURL("invalid url"));
-        MessageCallback callback = initializeAndCaptureMessageCallback(/* targetUri= */ null);
+    public void testMessageCallbackWithOpaqueSenderOrigin() {
+        MessageCallback callback = initializeAndCaptureMessageCallback();
 
-        callback.onMessage(new MessagePayload("test_message"), null);
+        callback.onMessage(new MessagePayload("test_message"), null, "null");
 
-        verify(mPostMessageBackend).onPostMessage("test_message", null);
-    }
-
-    @Test
-    public void testMessageCallbackWithNullMainFrameSendsNullBundle() {
-        when(mWebContents.getMainFrame()).thenReturn(null);
-        MessageCallback callback = initializeAndCaptureMessageCallback(/* targetUri= */ null);
-
-        callback.onMessage(new MessagePayload("test_message"), null);
-
-        verify(mPostMessageBackend).onPostMessage("test_message", null);
+        ArgumentCaptor<Bundle> bundleCaptor = ArgumentCaptor.forClass(Bundle.class);
+        verify(mPostMessageBackend).onPostMessage(eq("test_message"), bundleCaptor.capture());
+        Bundle bundle = bundleCaptor.getValue();
+        assertNotNull(bundle);
+        assertEquals("null", bundle.getString(POST_MESSAGE_ORIGIN));
     }
 
     @Test
@@ -495,7 +457,7 @@ public class PostMessageHandlerTest {
         MessageCallback callback = initializeAndCaptureMessageCallback();
         when(mFirstLocalPort.isTransferred()).thenReturn(true);
 
-        callback.onMessage(new MessagePayload("test_message"), null);
+        callback.onMessage(new MessagePayload("test_message"), null, "https://www.example.com");
 
         verify(mPostMessageBackend, never()).onPostMessage(any(), any());
     }
@@ -505,7 +467,7 @@ public class PostMessageHandlerTest {
         MessageCallback callback = initializeAndCaptureMessageCallback();
         when(mWebContents.isDestroyed()).thenReturn(true);
 
-        callback.onMessage(new MessagePayload("test_message"), null);
+        callback.onMessage(new MessagePayload("test_message"), null, "https://www.example.com");
 
         verify(mPostMessageBackend, never()).onPostMessage(any(), any());
     }
@@ -515,7 +477,7 @@ public class PostMessageHandlerTest {
         MessageCallback callback = initializeAndCaptureMessageCallback();
         mHandler.reset(null);
 
-        callback.onMessage(new MessagePayload("test_message"), null);
+        callback.onMessage(new MessagePayload("test_message"), null, "https://www.example.com");
 
         verify(mPostMessageBackend, never()).onPostMessage(any(), any());
     }

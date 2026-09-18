@@ -22,8 +22,17 @@ public interface MessagePort {
          *
          * @param messagePayload The message payload that was received.
          * @param sentPorts The {@link MessagePort}s that were sent if any.
+         * @param senderOrigin The ASCII-serialized origin of the message sender per RFC 6454 /
+         *     WHATWG URL (e.g., standard {@code scheme://host[:port]} without a trailing slash, or
+         *     {@code "null"} for opaque origins), or {@code null} if unknown. Represented as a
+         *     {@link String} rather than {@code org.chromium.url.Origin} to avoid object allocation
+         *     churn on high-frequency {@code postMessage} streams and to align directly with Web
+         *     IDL's {@code DOMString origin} and Custom Tabs bundle extras.
          */
-        void onMessage(MessagePayload messagePayload, MessagePort @Nullable [] sentPorts);
+        void onMessage(
+                MessagePayload messagePayload,
+                MessagePort @Nullable [] sentPorts,
+                @Nullable String senderOrigin);
     }
 
     /**

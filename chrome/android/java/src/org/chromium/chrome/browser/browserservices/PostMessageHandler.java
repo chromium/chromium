@@ -35,7 +35,6 @@ import org.chromium.content_public.browser.Page;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
-import org.chromium.net.GURLUtils;
 import org.chromium.url.GURL;
 
 /**
@@ -46,21 +45,13 @@ public class PostMessageHandler implements OriginVerificationListener {
     private static final String TAG = "PostMessageHandler";
 
     // TODO(crbug.com/40257514): This should get moved into androidx.browser.
-    private static final String POST_MESSAGE_ORIGIN =
-            "androidx.browser.customtabs.POST_MESSAGE_ORIGIN";
+    static final String POST_MESSAGE_ORIGIN = "androidx.browser.customtabs.POST_MESSAGE_ORIGIN";
 
     private final MessageCallback mMessageCallback;
     private final PostMessageBackend mPostMessageBackend;
     private @Nullable WebContents mWebContents;
     private @Nullable WebContentsObserver mWebContentsObserver;
     private MessagePort @Nullable [] mChannel;
-
-    /**
-     * The origin of the document {@link #mChannel} was created for, captured at channel creation
-     * time. Resolving the origin lazily per message would be racy: a message can sit in the UI task
-     * queue while a navigation commits, which would attribute it to the wrong document.
-     */
-    private @Nullable String mChannelOrigin;
 
     private @Nullable Uri mPostMessageSourceUri;
     private @Nullable Uri mPostMessageTargetUri;
@@ -77,7 +68,7 @@ public class PostMessageHandler implements OriginVerificationListener {
     public PostMessageHandler(PostMessageBackend postMessageBackend) {
         mPostMessageBackend = postMessageBackend;
         mMessageCallback =
-                (messagePayload, sentPorts) -> {
+                (messagePayload, sentPorts, senderOrigin) -> {
                     if (mChannel == null) {
                         Log.e(TAG, "Discarding postMessage as channel is null.");
                         return;
@@ -94,9 +85,13 @@ public class PostMessageHandler implements OriginVerificationListener {
                     }
 
                     Bundle bundle = null;
-                    if (mChannelOrigin != null && !mChannelOrigin.isEmpty()) {
+                    // For opaque origins (e.g., sandboxed iframes without allow-same-origin or
+                    // data: URLs), senderOrigin is serialized as the literal string "null" per
+                    // RFC 6454 and forwarded in POST_MESSAGE_ORIGIN to align with the web
+                    // platform's MessageEvent.origin.
+                    if (senderOrigin != null && !senderOrigin.isEmpty()) {
                         bundle = new Bundle();
-                        bundle.putString(POST_MESSAGE_ORIGIN, mChannelOrigin);
+                        bundle.putString(POST_MESSAGE_ORIGIN, senderOrigin);
                     }
                     assumeNonNull(messagePayload.getAsString());
                     mPostMessageBackend.onPostMessage(messagePayload.getAsString(), bundle);
@@ -213,7 +208,6 @@ public class PostMessageHandler implements OriginVerificationListener {
         closeChannelPort();
         mChannel = webContents.createMessageChannel();
         mChannel[0].setMessageCallback(mMessageCallback, null);
-        mChannelOrigin = getCommittedOrigin(webContents);
 
         assumeNonNull(mPostMessageSourceUri);
         webContents.postMessageToMainFrame(
@@ -226,19 +220,6 @@ public class PostMessageHandler implements OriginVerificationListener {
     }
 
     /**
-     * @return The origin of the primary main frame's committed document, in the same format
-     *     previously reported to clients via {@link #POST_MESSAGE_ORIGIN}, or null if it cannot be
-     *     determined.
-     */
-    private static @Nullable String getCommittedOrigin(WebContents webContents) {
-        RenderFrameHost mainFrame = webContents.getMainFrame();
-        if (mainFrame == null) return null;
-        GURL url = mainFrame.getLastCommittedURL();
-        if (url == null || url.isEmpty() || !url.isValid()) return null;
-        return GURLUtils.getOrigin(url.getSpec());
-    }
-
-    /**
      * Drops the message channel without notifying the client. {@link MessagePort#close()} throws if
      * the port has already been transferred, so guard against that.
      */
@@ -248,7 +229,6 @@ public class PostMessageHandler implements OriginVerificationListener {
             mChannel[0].close();
         }
         mChannel = null;
-        mChannelOrigin = null;
     }
 
     /**

@@ -5,6 +5,8 @@
 #include "content/browser/android/app_web_message_port.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
@@ -26,6 +28,7 @@
 #include "third_party/blink/public/common/messaging/web_message_port.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/messaging/transferable_message.mojom.h"
+#include "url/origin.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/android/content_jni_headers/AppWebMessagePort_jni.h"
@@ -164,6 +167,8 @@ bool AppWebMessagePort::Accept(mojo::Message* message) {
     // Decode mojo message failed.
     return false;
   }
+  std::optional<url::Origin> sender_origin =
+      std::move(transferable_message.sender_origin);
   auto ports = std::move(transferable_message.ports);
   auto optional_payload =
       blink::DecodeToWebMessagePayload(std::move(transferable_message));
@@ -179,7 +184,12 @@ bool AppWebMessagePort::Accept(mojo::Message* message) {
       ConvertWebMessagePayloadToJava(payload);
   CHECK(j_message, base::NotFatalUntil::M159);
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_AppWebMessagePort_onMessage(env, GetJavaObj(env), j_message, j_ports);
+  std::optional<std::string> serialized_sender_origin;
+  if (sender_origin.has_value()) {
+    serialized_sender_origin = sender_origin->Serialize();
+  }
+  Java_AppWebMessagePort_onMessage(env, GetJavaObj(env), j_message, j_ports,
+                                   serialized_sender_origin);
   return true;
 }
 

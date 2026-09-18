@@ -7,12 +7,12 @@ package org.chromium.content.browser;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.util.Pair;
 
 import androidx.annotation.MainThread;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
@@ -85,6 +85,21 @@ public class AppWebMessagePort implements MessagePort {
         // The |what| value for handleMessage.
         private static final int MESSAGE_RECEIVED = 1;
 
+        private static class MessagePortMessage {
+            public final MessagePayload payload;
+            public final MessagePort @Nullable [] ports;
+            public final @Nullable String senderOrigin;
+
+            public MessagePortMessage(
+                    MessagePayload payload,
+                    MessagePort @Nullable [] ports,
+                    @Nullable String senderOrigin) {
+                this.payload = payload;
+                this.ports = ports;
+                this.senderOrigin = senderOrigin;
+            }
+        }
+
         private final MessageCallback mMessageCallback;
 
         MessageHandler(MessageCallback callback, @Nullable Handler handler) {
@@ -95,10 +110,8 @@ public class AppWebMessagePort implements MessagePort {
         @Override
         public void handleMessage(final Message msg) {
             if (msg.what == MESSAGE_RECEIVED) {
-                @SuppressWarnings("unchecked") // msg.obj is always Pair from onMessage().
-                final Pair<MessagePayload, MessagePort[]> obj =
-                        (Pair<MessagePayload, MessagePort[]>) msg.obj;
-                mMessageCallback.onMessage(obj.first, obj.second);
+                final MessagePortMessage obj = (MessagePortMessage) msg.obj;
+                mMessageCallback.onMessage(obj.payload, obj.ports, obj.senderOrigin);
                 return;
             }
             throw new IllegalStateException("undefined message");
@@ -106,9 +119,14 @@ public class AppWebMessagePort implements MessagePort {
 
         @MainThread
         public void onMessage(
-                final MessagePayload messagePayload, final MessagePort @Nullable [] sentPorts) {
+                final MessagePayload messagePayload,
+                final MessagePort @Nullable [] sentPorts,
+                final @Nullable String senderOrigin) {
             ThreadUtils.assertOnUiThread();
-            sendMessage(obtainMessage(MESSAGE_RECEIVED, Pair.create(messagePayload, sentPorts)));
+            sendMessage(
+                    obtainMessage(
+                            MESSAGE_RECEIVED,
+                            new MessagePortMessage(messagePayload, sentPorts, senderOrigin)));
         }
     }
 
@@ -256,10 +274,13 @@ public class AppWebMessagePort implements MessagePort {
 
     @MainThread
     @CalledByNative
-    private void onMessage(MessagePayload payload, MessagePort @Nullable [] ports) {
+    private void onMessage(
+            MessagePayload payload,
+            MessagePort @Nullable [] ports,
+            @JniType("std::optional<std::string>") @Nullable String senderOrigin) {
         ThreadUtils.assertOnUiThread();
         if (mMessageHandler != null) {
-            mMessageHandler.onMessage(payload, ports);
+            mMessageHandler.onMessage(payload, ports, senderOrigin);
         } else {
             // Their will be a case that the Java listener is cleared, but listeners in C++ is not
             // cleared yet. We can safely ignore those messages and close the ports to avoid
