@@ -1586,6 +1586,9 @@ TEST_F(ExtensionManagementServiceTest, IsExtensionBlockedByLowTrust) {
   const std::string extension_id = "abcdefghijklmnopabcdefghijklmnop";
 
   // 1. Simulate low trust (unmanaged).
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForPlatform(),
+      policy::EnterpriseManagementAuthority::NONE);
   policy::ScopedManagementServiceOverrideForTesting profile_management(
       policy::ManagementServiceFactory::GetForProfile(profile_.get()),
       policy::EnterpriseManagementAuthority::NONE);
