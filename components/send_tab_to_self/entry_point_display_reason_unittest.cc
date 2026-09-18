@@ -118,6 +118,39 @@ TEST_F(EntryPointDisplayReasonTest, ShouldHideEntryPointIfModelNotReady) {
                                           pref_service()));
 }
 
+// Tests that the entry point is hidden when Sync is still configuring (e.g.
+// immediately after re-auth) even if the model has cached local metadata ready.
+TEST_F(EntryPointDisplayReasonTest, ShouldHideEntryPointIfSyncConfiguring) {
+  SignIn();
+  sync_service()->SetMaxTransportState(
+      syncer::SyncService::TransportState::CONFIGURING);
+  send_tab_to_self_model()->SetIsReady(true);
+  send_tab_to_self_model()->SetHasValidTargetDevice(true);
+
+  EXPECT_FALSE(GetEntryPointDisplayReason(GURL(kHttpsUrl), sync_service(),
+                                          send_tab_to_self_model(),
+                                          pref_service()));
+}
+
+// Tests that the entry point is hidden if either SEND_TAB_TO_SELF or
+// DEVICE_INFO is not active in SyncService.
+TEST_F(EntryPointDisplayReasonTest,
+       ShouldHideEntryPointIfRequiredDataTypesInactive) {
+  SignIn();
+  send_tab_to_self_model()->SetIsReady(true);
+  send_tab_to_self_model()->SetHasValidTargetDevice(true);
+
+  sync_service()->SetFailedDataTypes({syncer::SEND_TAB_TO_SELF});
+  EXPECT_FALSE(GetEntryPointDisplayReason(GURL(kHttpsUrl), sync_service(),
+                                          send_tab_to_self_model(),
+                                          pref_service()));
+
+  sync_service()->SetFailedDataTypes({syncer::DEVICE_INFO});
+  EXPECT_FALSE(GetEntryPointDisplayReason(GURL(kHttpsUrl), sync_service(),
+                                          send_tab_to_self_model(),
+                                          pref_service()));
+}
+
 TEST_F(EntryPointDisplayReasonTest, ShouldShowPromoIfHasNoValidTargetDevice) {
   SignIn();
   send_tab_to_self_model()->SetIsReady(true);

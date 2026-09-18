@@ -13,6 +13,7 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service.h"
 #include "url/gurl.h"
 
@@ -119,7 +120,13 @@ std::optional<EntryPointDisplayReason> GetEntryPointDisplayReason(
     return std::nullopt;
   }
 
-  if (!send_tab_to_self_model->IsReady()) {
+  if (!send_tab_to_self_model->IsReady() ||
+      // SendTabToSelfModel relies on DeviceInfoTracker for target device
+      // availability. Ensure both data types are actively syncing (and not
+      // configuring with stale local device cache) before evaluating target
+      // devices.
+      !sync_service->GetActiveDataTypes().HasAll(
+          {syncer::SEND_TAB_TO_SELF, syncer::DEVICE_INFO})) {
     return std::nullopt;
   }
 
