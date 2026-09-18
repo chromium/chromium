@@ -17,6 +17,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -58,6 +59,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/reload_page_dialog_controller.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/search_test_utils.h"
@@ -118,6 +120,7 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/mojom/event_router.mojom-test-utils.h"
+#include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -125,6 +128,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/features.h"
+#include "net/base/filename_util.h"
 #include "net/base/network_isolation_key.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/dns/mock_host_resolver.h"
@@ -448,7 +452,7 @@ class ExtensionWebRequestApiTest : public ExtensionApiTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ExtensionApiTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(switches::kGaiaUrl, "http://gaia.com");
+    command_line->AppendSwitchASCII(::switches::kGaiaUrl, "http://gaia.com");
     command_line->AppendSwitchASCII(embedder_support::kOriginTrialPublicKey,
                                     kOriginTrialPublicKeyForTesting);
   }
@@ -1003,7 +1007,7 @@ class DevToolsFrontendInWebRequestApiTest : public ExtensionApiTest {
     embedded_test_server()->ServeFilesFromDirectory(test_root_dir_);
     ASSERT_TRUE(StartEmbeddedTestServer());
     command_line->AppendSwitchASCII(
-        switches::kCustomDevtoolsFrontend,
+        ::switches::kCustomDevtoolsFrontend,
         embedded_test_server()
             ->GetURL("customfrontend.example.com", "/devtoolsfrontend/")
             .spec());
@@ -3426,7 +3430,7 @@ class WebUiNtpInterceptionWebRequestAPITest
   }
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ExtensionApiTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(switches::kGoogleBaseURL,
+    command_line->AppendSwitchASCII(::switches::kGoogleBaseURL,
                                     https_test_server_.base_url().spec());
   }
   void SetUpOnMainThread() override {
@@ -9467,7 +9471,7 @@ class SecurityInfoBrokenWebRequestApiTest : public ExtensionWebRequestApiTest {
     // network::switches::kIgnoreCertificateErrorsSPKIList is a recommended
     // alternative, which does not allow to explore invalid cert, since it
     // treats any certificate as valid.
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+    command_line->AppendSwitch(::switches::kIgnoreCertificateErrors);
   }
 };
 
@@ -9721,5 +9725,248 @@ IN_PROC_BROWSER_TEST_F(WebRequestProxyingWebTransportCrashTest,
 }
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+namespace {
+
+constexpr char kExtensionId1[] = "iegclhlplifhodhkoafiokenjoapiobj";
+constexpr char kKey1[] =
+    "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjzv7dI7Ygyh67VHE1DdidudpYf8P"
+    "Ffv8iucWvzO+3xpF/Dm5xNo7aQhPNiEaNfHwJQ7lsp4gc+C+4bbaVewBFspTruoSJhZc5uEf"
+    "qxwovJwN+v1/SUFXTXQmQBv6gs0qZB4gBbl4caNQBlqrFwAMNisnu1V6UROna8rOJQ90D7Nv"
+    "7TCwoVPKBfVshpFjdDOTeBg4iLctO3S/06QYqaTDrwVceSyHkVkvzBY6tc6mnYX0RZu78J9i"
+    "L8bdqwfllOhs69cqoHHgrLdI6JdOyiuh6pBP6vxMlzSKWJ3YTNjaQTPwfOYaLMuzdl0v+Ydz"
+    "afIzV9zwe4Xiskk+5JNGt8b2rQIDAQAB";
+
+constexpr char kExtensionId2[] = "jjeoclcdfjddkdjokiejckgcildcflpp";
+constexpr char kKey2[] =
+    "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC+uU63MD6T82Ldq5wjrDFn5mGmPnnnj"
+    "WZBWxYXfpG4kVf0s+p24VkXwTXsxeI12bRm8/ft9sOq0XiLfgQEh5JrVUZqvFlaZYoS+g"
+    "iZfUqzKFGMLa4uiSMDnvv+byxrqAepKz5G8XX/q5Wm5cvpdjwgiu9z9iM768xJy+Ca/G5"
+    "qQwIDAQAB";
+
+}  // namespace
+
+class ExtensionWebRequestFileUrlRedirectApiTest
+    : public ExtensionWebRequestApiTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ExtensionWebRequestApiTest::SetUpCommandLine(command_line);
+    // In MV3, webRequestBlocking is restricted to policy-installed or
+    // allowlisted extensions. Allowlist the test extension IDs.
+    command_line->AppendSwitchASCII(
+        extensions::switches::kAllowlistedExtensionID,
+        base::StringPrintf("%s,%s", kExtensionId1, kExtensionId2));
+  }
+};
+
+// Tests that an extension must have local file access to redirect to file URLs.
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestFileUrlRedirectApiTest,
+                       FileUrlRedirect) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "FileUrlRedirect",
+           "version": "0.1",
+           "manifest_version": 3,
+           "key": "%s",
+           "background": {"service_worker": "background.js"},
+           "permissions": [
+             "webRequest",
+             "webRequestBlocking"
+           ],
+           "host_permissions": [
+             "<all_urls>",
+             "file:///*"
+           ]
+         })";
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.webRequest.onBeforeRequest.addListener(
+             (details) => {
+               if (details.url === $1) {
+                 return {redirectUrl: $2};
+               }
+             },
+             {urls: ['<all_urls>']},
+             ['blocking']);
+         chrome.test.sendMessage('ready');)";
+  static constexpr char kPageHtml[] = "<html><body></body></html>";
+  static constexpr char kInjectIframeScript[] =
+      R"(const frame = document.createElement('iframe');
+         frame.src = $1;
+         document.body.appendChild(frame);)";
+
+  base::FilePath test_dir;
+  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_dir));
+  const GURL file_url =
+      net::FilePathToFileURL(test_dir.AppendASCII("simple.html"));
+  const GURL redirect_url("http://example.com/redirect");
+
+  TestExtensionDir test_extension_dir;
+  test_extension_dir.WriteManifest(base::StringPrintf(kManifest, kKey1));
+  test_extension_dir.WriteFile(
+      FILE_PATH_LITERAL("background.js"),
+      content::JsReplace(kBackgroundJs, redirect_url, file_url));
+  test_extension_dir.WriteFile(FILE_PATH_LITERAL("page.html"), kPageHtml);
+
+  ExtensionTestMessageListener ready_listener("ready");
+  ChromeTestExtensionLoader loader(profile());
+  loader.set_allow_file_access(false);
+  scoped_refptr<const Extension> extension =
+      loader.LoadExtension(test_extension_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  // Cache the extension ID for later use.
+  const ExtensionId extension_id = extension->id();
+  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+
+  const GURL extension_page = extension->GetResourceURL("page.html");
+
+  auto test_redirection = [&](const GURL& expected_url) {
+    ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), extension_page));
+    content::TestNavigationObserver observer(GetActiveWebContents(), 1);
+    ASSERT_TRUE(
+        content::ExecJs(GetActiveWebContents(),
+                        content::JsReplace(kInjectIframeScript, redirect_url)));
+    observer.Wait();
+
+    content::RenderFrameHost* child_frame =
+        content::ChildFrameAt(GetActiveWebContents()->GetPrimaryMainFrame(), 0);
+    ASSERT_TRUE(child_frame);
+    EXPECT_EQ(expected_url, child_frame->GetLastCommittedURL());
+  };
+
+  // Initially, the extension does not have file access. The redirect to the
+  // file URL is denied, so the navigation stays at the original redirect URL.
+  test_redirection(redirect_url);
+
+  // Grant file access to the extension. This reloads the extension, so we
+  // reset the pointer to be safe.
+  ready_listener.Reset();
+  extension = nullptr;
+  util::SetAllowFileAccess(extension_id, profile(), true);
+  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+
+  // With file access allowed, the extension successfully redirects to the file
+  // URL.
+  test_redirection(file_url);
+
+  // Revoke file access again.
+  ready_listener.Reset();
+  util::SetAllowFileAccess(extension_id, profile(), false);
+  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+
+  // Once revoked, redirection to the file URL is denied again.
+  test_redirection(redirect_url);
+}
+
+// Tests that when an extension without file access attempts to redirect to a
+// file URL, its redirect is ignored and another extension's redirect takes
+// effect.
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestFileUrlRedirectApiTest,
+                       FileUrlRedirectPrecedence) {
+  static constexpr char kExt1Manifest[] =
+      R"({
+           "name": "ext1",
+           "version": "0.1",
+           "manifest_version": 3,
+           "key": "%s",
+           "background": {"service_worker": "background.js"},
+           "permissions": [
+             "webRequest",
+             "webRequestBlocking"
+           ],
+           "host_permissions": [
+             "<all_urls>"
+           ]
+         })";
+  static constexpr char kExt2Manifest[] =
+      R"({
+           "name": "ext2",
+           "version": "0.1",
+           "manifest_version": 3,
+           "key": "%s",
+           "background": {"service_worker": "background.js"},
+           "permissions": [
+             "webRequest",
+             "webRequestBlocking"
+           ],
+           "host_permissions": [
+             "<all_urls>",
+             "file:///*"
+           ]
+         })";
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.webRequest.onBeforeRequest.addListener(
+             (details) => {
+               if (details.url === $1) {
+                 return {redirectUrl: $2};
+               }
+             },
+             {urls: ['<all_urls>']},
+             ['blocking']);
+         chrome.test.sendMessage($3);)";
+  static constexpr char kPageHtml[] = "<html><body></body></html>";
+  static constexpr char kInjectIframeScript[] =
+      R"(const frame = document.createElement('iframe');
+         frame.src = $1;
+         document.body.appendChild(frame);)";
+
+  base::FilePath test_dir;
+  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_dir));
+  const GURL file_url =
+      net::FilePathToFileURL(test_dir.AppendASCII("simple.html"));
+  const GURL redirect_url("http://example.com/redirect");
+  const GURL ext1_redirect_url("http://example.com/ext1_redirect");
+
+  // Extension 1 (installed first, lower precedence): Redirects to
+  // http://example.com/ext1_redirect.
+  TestExtensionDir ext1_dir;
+  ext1_dir.WriteManifest(base::StringPrintf(kExt1Manifest, kKey1));
+  ext1_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
+                     content::JsReplace(kBackgroundJs, redirect_url,
+                                        ext1_redirect_url, "ext1_ready"));
+  ext1_dir.WriteFile(FILE_PATH_LITERAL("page.html"), kPageHtml);
+
+  ExtensionTestMessageListener ext1_listener("ext1_ready");
+  ChromeTestExtensionLoader loader1(profile());
+  loader1.set_allow_file_access(false);
+  scoped_refptr<const Extension> extension1 =
+      loader1.LoadExtension(ext1_dir.UnpackedPath());
+  ASSERT_TRUE(extension1);
+  ASSERT_TRUE(ext1_listener.WaitUntilSatisfied());
+
+  // Extension 2 (installed second, higher precedence): Redirects to file:// URL
+  // without file access.
+  TestExtensionDir ext2_dir;
+  ext2_dir.WriteManifest(base::StringPrintf(kExt2Manifest, kKey2));
+  ext2_dir.WriteFile(
+      FILE_PATH_LITERAL("background.js"),
+      content::JsReplace(kBackgroundJs, redirect_url, file_url, "ext2_ready"));
+  ext2_dir.WriteFile(FILE_PATH_LITERAL("page.html"), kPageHtml);
+
+  ExtensionTestMessageListener ext2_listener("ext2_ready");
+  ChromeTestExtensionLoader loader2(profile());
+  loader2.set_allow_file_access(false);
+  scoped_refptr<const Extension> extension2 =
+      loader2.LoadExtension(ext2_dir.UnpackedPath());
+  ASSERT_TRUE(extension2);
+  ASSERT_TRUE(ext2_listener.WaitUntilSatisfied());
+
+  // Navigate to extension 1's page.
+  GURL extension_page = extension1->GetResourceURL("page.html");
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), extension_page));
+
+  // Inject an iframe navigating to http://example.com/redirect.
+  content::TestNavigationObserver observer(GetActiveWebContents(), 1);
+  ASSERT_TRUE(
+      content::ExecJs(GetActiveWebContents(),
+                      content::JsReplace(kInjectIframeScript, redirect_url)));
+  observer.Wait();
+
+  // Extension 2's file redirect should have been rejected, so extension 1's
+  // redirect to http://example.com/ext1_redirect should have been used.
+  content::RenderFrameHost* child_frame =
+      content::ChildFrameAt(GetActiveWebContents()->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(child_frame);
+  EXPECT_EQ(ext1_redirect_url, child_frame->GetLastCommittedURL());
+}
 
 }  // namespace extensions

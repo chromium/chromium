@@ -89,6 +89,7 @@ inline constexpr char kOnResponseStarted[] = "onResponseStarted";
 inline constexpr char kOnSendHeaders[] = "onSendHeaders";
 
 // Error messages.
+extern const char kFileUrlRedirectDisallowed[];
 extern const char kInvalidRedirectUrl[];
 extern const char kInvalidBlockingResponse[];
 extern const char kBlockingPermissionRequired[];

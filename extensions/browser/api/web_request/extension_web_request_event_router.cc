@@ -50,6 +50,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_navigation_registry.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/rules_registry_ids.h"
@@ -2201,6 +2202,13 @@ void WebRequestEventRouter::AppendResponseDelta(
     const std::string& event_name,
     EventResponse& response,
     int extra_info_spec) {
+  // Extensions may not redirect to a file:// URL without explicit local file
+  // access.
+  if (response.new_url.SchemeIsFile() &&
+      !util::AllowFileAccess(extension_id, blocked_request.browser_context)) {
+    response.new_url = GURL();
+  }
+
   helpers::EventResponseDelta delta =
       CalculateDelta(&blocked_request, &response, extra_info_spec);
 
