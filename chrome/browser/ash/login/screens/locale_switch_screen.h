@@ -63,6 +63,8 @@ class LocaleSwitchScreen : public BaseScreen,
   ~LocaleSwitchScreen() override;
 
   // signin::IdentityManager::Observer:
+  void OnRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info) override;
   void OnErrorStateOfRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info,
       const GoogleServiceAuthError& error,

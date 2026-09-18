@@ -132,6 +132,12 @@ void LocaleSwitchScreenBrowserTest::ProceedToLocaleSwitchScreen() {
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   signin::WaitForRefreshTokensLoaded(identity_manager);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    const CoreAccountId account_id =
+        identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+    return !account_id.empty() &&
+           identity_manager->HasAccountWithRefreshToken(account_id);
+  }));
   AccountInfo account_info = identity_manager->FindExtendedAccountInfoByGaiaId(
       FakeGaiaMixin::kFakeUserGaiaId);
   AccountCapabilitiesTestMutator mutator(&account_info);
