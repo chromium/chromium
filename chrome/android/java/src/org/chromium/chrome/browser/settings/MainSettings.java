@@ -426,6 +426,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
         // The Notifications preference should lead to the Android Settings notifications page.
         Intent intent = new Intent();
         if (shouldShowNotificationPref(getContext(), intent)) {
+            addNotificationIntentFlags(intent, SettingsHostUtil.isShownInTab(this));
             Preference notifications = findPreference(PREF_NOTIFICATIONS);
             notifications.setOnPreferenceClickListener(
                     preference -> {
@@ -464,16 +465,25 @@ public class MainSettings extends ChromeBaseSettingsFragment
         return !DeviceInfo.isAutomotive();
     }
 
+    /**
+     * Fills in {@code intent} to open the Android notification settings for Chrome, and returns
+     * whether that screen can be resolved. Callers that launch the intent must also call {@link
+     * #addNotificationIntentFlags}.
+     */
     private static boolean shouldShowNotificationPref(Context context, Intent intent) {
         intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
         intent.putExtra(
                 Settings.EXTRA_APP_PACKAGE, ContextUtils.getApplicationContext().getPackageName());
-        if (SettingsInTab.isEnabled()) {
-            // SettingsInTab opens the notification UI in a new window.
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        }
         PackageManager pm = context.getPackageManager();
         return intent.resolveActivity(pm) != null;
+    }
+
+    /** Adds the launch flags needed to open the Android notification settings from settings. */
+    private static void addNotificationIntentFlags(Intent intent, boolean shownInTab) {
+        if (shownInTab) {
+            // Settings shown in a tab opens the notification UI in a new window.
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        }
     }
 
     /**
@@ -757,6 +767,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
      * From search results, open a preference that is not handled via {@code android:fragment}
      * specified in the xml resource, therefore needs manual processing.
      *
+     * @param shownInTab Whether settings is being shown in a browser tab.
      * @return Whether the flow should proceed and update the fragment state. For some preferences
      *     that open an external activity, the state should remain as is.
      */
@@ -765,14 +776,18 @@ public class MainSettings extends ChromeBaseSettingsFragment
             Profile profile,
             String key,
             Bundle extras,
-            ModalDialogManager modalDialogManager) {
+            ModalDialogManager modalDialogManager,
+            boolean shownInTab) {
         if (key.equals(PREF_PASSWORDS)) {
             MainSettings.showPasswordSettings(context, profile, modalDialogManager);
             // Open an external activity. Keep the state as is.
             return false;
         } else if (key.equals(PREF_NOTIFICATIONS)) {
             Intent intent = new Intent();
-            if (shouldShowNotificationPref(context, intent)) context.startActivity(intent);
+            if (shouldShowNotificationPref(context, intent)) {
+                addNotificationIntentFlags(intent, shownInTab);
+                context.startActivity(intent);
+            }
             return false;
         } else if (key.equals(PREF_DEFAULT_BROWSER)) {
             Activity activity = ActivityUtil.getActivityFromContext(context);

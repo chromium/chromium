@@ -123,10 +123,21 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
      */
     private boolean mClearingBackStackForRoot;
 
+    /**
+     * Whether settings is being shown in a tab. Resolved from the host in {@link #onAttach} so that
+     * the value stays constant for the lifetime of this fragment, even if the screen width changes
+     * (e.g. the device is folded or unfolded).
+     */
+    private boolean mShownInTab;
+
     @Override
     public void onAttach(Context context) {
+        // This fragment is created by the framework, so the value cannot be injected. Resolve it
+        // from the host. getActivity() is null during onAttach(), so pass the attach context.
+        mShownInTab = SettingsHostUtil.isShownInTab(this, context);
+
         // Traditional settings has the theme applied at the activity level.
-        if (!SettingsInTab.isEnabled()) {
+        if (!mShownInTab) {
             super.onAttach(context);
             return;
         }
@@ -229,13 +240,13 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
             }
         }
 
-        // When SettingsInTab is enabled in single-column mode, do not instantiate an initial detail
+        // When shown in a tab in single-column mode, do not instantiate an initial detail
         // fragment if no sub-fragment intent was specified. Returning null prevents
         // PreferenceHeaderFragmentCompat from calling openPane() on SlidingPaneLayout, keeping
         // MainSettings displayed as the top-level root settings page, with no detail fragment. In
         // two-column mode, fallback to super.onCreateInitialDetailFragment() to populate the
         // default detail pane.
-        if (SettingsInTab.isEnabled() && !isTwoColumn()) {
+        if (mShownInTab && !isTwoColumn()) {
             // Remove any existing stale detail fragments (e.g. after a sign-out or when returning
             // to root settings in single-column mode) and clear the back stack so that stale
             // detail fragments are not resurrected when transitioning to two-column mode.
@@ -289,9 +300,9 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
     /**
      * Handles back stack becoming empty after FragmentManager finishes executing transactions. In
      * two-column mode, populates the initial detail fragment so the detail pane does not remain
-     * blank. In single-column mode, removes any remaining detail fragment (if SettingsInTab is
-     * enabled and we are clearing the back stack to return to root), closes the sliding pane,
-     * restores header focusability, and clears the now-stale detail pane titles.
+     * blank. In single-column mode, removes any remaining detail fragment (if shown in a tab and we
+     * are clearing the back stack to return to root), closes the sliding pane, restores header
+     * focusability, and clears the now-stale detail pane titles.
      */
     private void onBackStackEmpty() {
         if (getView() == null) return;
@@ -308,8 +319,8 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
         if (isTwoColumn()) {
             ensureInitialDetailFragment();
         } else if (clearingForRoot) {
-            assert SettingsInTab.isEnabled();
-            // When SettingsInTab is enabled in single-column mode, there should be no detail
+            assert mShownInTab;
+            // When shown in a tab in single-column mode, there should be no detail
             // fragment when at the root settings level. If any detail fragment remains (e.g.
             // an un-backstacked base fragment after popping all back stack entries), remove it
             // and close the sliding pane.
@@ -321,7 +332,7 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
             updateHeaderPaneFocusability();
             detailPaneEmptied = true;
         } else if (fragmentManager.findFragmentById(R.id.preferences_detail) == null) {
-            // When SettingsInTab is disabled, single-column mode (e.g. portrait on a tablet)
+            // When not shown in a tab, single-column mode (e.g. portrait on a tablet)
             // retains an initial detail fragment. Only close the sliding pane and restore
             // header focusability if no detail fragment remains (e.g. after exiting search).
             getSlidingPaneLayout().closePane();
@@ -405,7 +416,7 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
         // into a canonical chrome://settings/<path> URL string, pushing a new
         // NavigationEntry onto WebContents navigation history, updating the
         // Omnibox URL, and synchronizing browser Back/Forward navigation.
-        if (!SettingsInTab.isEnabled() || !ChromeFeatureList.sSettingsInTabUrlNav.isEnabled()) {
+        if (!mShownInTab || !ChromeFeatureList.sSettingsInTabUrlNav.isEnabled()) {
             return super.onPreferenceStartFragment(caller, preference);
         }
 
@@ -616,7 +627,7 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
             return null;
         }
         // Use a null fragment to indicate MainSettings.
-        if (SettingsInTab.isEnabled() && MainSettings.class.getName().equals(fragmentName)) {
+        if (mShownInTab && MainSettings.class.getName().equals(fragmentName)) {
             return new FragmentData(null, addToBackStack, tag);
         }
         // Use requireContext() instead of requireActivity() to include themed contexts used by

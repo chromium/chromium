@@ -17,12 +17,14 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
@@ -470,6 +472,47 @@ public class MultiColumnSettingsTest {
         }
     }
 
+    /**
+     * Fragment that hosts settings in a browser tab, like {@code SettingsHostFragment} does in
+     * production. {@link MultiColumnSettings} is created by the framework, so it resolves whether
+     * it is shown in a tab from its host in {@code onAttach()}.
+     */
+    public static class TestSettingsHostFragment extends Fragment implements SettingsHost {
+        /** Container that holds the hosted settings fragment. */
+        private final int mContentId = View.generateViewId();
+
+        @Override
+        public View onCreateView(
+                LayoutInflater inflater,
+                @Nullable ViewGroup container,
+                @Nullable Bundle savedInstanceState) {
+            FrameLayout content = new FrameLayout(requireContext());
+            content.setId(mContentId);
+            return content;
+        }
+
+        @Override
+        public boolean isShownInTab() {
+            return true;
+        }
+
+        void addSettingsFragment(Fragment settings) {
+            getChildFragmentManager().beginTransaction().add(mContentId, settings).commitNow();
+        }
+    }
+
+    /**
+     * Adds {@code settings} to {@code activity} below a host fragment that reports settings as
+     * shown in a tab, mirroring production where {@code SettingsHostFragment} hosts {@link
+     * MultiColumnSettings} in a tab.
+     */
+    private static void addSettingsInTab(
+            FragmentActivity activity, int containerId, Fragment settings) {
+        TestSettingsHostFragment host = new TestSettingsHostFragment();
+        activity.getSupportFragmentManager().beginTransaction().add(containerId, host).commitNow();
+        host.addSettingsFragment(settings);
+    }
+
     @Test
     @SmallTest
     public void testProcessPendingFragmentIntent_ConsumesAndRemovesIntentExtras() {
@@ -526,10 +569,7 @@ public class MultiColumnSettingsTest {
                     MultiColumnSettings settings = new TestMultiColumnSettings();
                     settings.setPendingFragmentIntent(intent);
 
-                    activity.getSupportFragmentManager()
-                            .beginTransaction()
-                            .add(android.R.id.content, settings)
-                            .commitNow();
+                    addSettingsInTab(activity, android.R.id.content, settings);
 
                     // Ensure we don't instantiate a second instance of MainSettings as a detail
                     // fragment.
@@ -562,10 +602,7 @@ public class MultiColumnSettingsTest {
                     MultiColumnSettings settings = new TestMultiColumnSettings();
                     settings.setPendingFragmentIntent(intent);
 
-                    activity.getSupportFragmentManager()
-                            .beginTransaction()
-                            .add(android.R.id.content, settings)
-                            .commitNow();
+                    addSettingsInTab(activity, android.R.id.content, settings);
 
                     Fragment detailFragment = settings.onCreateInitialDetailFragment();
                     assertNotNull("Detail fragment should be instantiated", detailFragment);
@@ -598,10 +635,7 @@ public class MultiColumnSettingsTest {
                     TestMultiColumnSettings settings = new TestMultiColumnSettings();
                     settings.setIsTwoColumnForTesting(TriState.TRUE);
 
-                    activity.getSupportFragmentManager()
-                            .beginTransaction()
-                            .add(android.R.id.content, settings)
-                            .commitNow();
+                    addSettingsInTab(activity, android.R.id.content, settings);
 
                     assertNotNull(
                             "In two-column mode, onCreateInitialDetailFragment should return"
@@ -623,10 +657,7 @@ public class MultiColumnSettingsTest {
                     TestMultiColumnSettings settings = new TestMultiColumnSettings();
                     settings.setIsTwoColumnForTesting(TriState.FALSE);
 
-                    activity.getSupportFragmentManager()
-                            .beginTransaction()
-                            .add(android.R.id.content, settings)
-                            .commitNow();
+                    addSettingsInTab(activity, android.R.id.content, settings);
 
                     assertNull(
                             "In single-column mode, onCreateInitialDetailFragment should return"
@@ -648,10 +679,7 @@ public class MultiColumnSettingsTest {
                     TestMultiColumnSettings settings = new TestMultiColumnSettings();
                     settings.setIsTwoColumnForTesting(TriState.FALSE);
 
-                    activity.getSupportFragmentManager()
-                            .beginTransaction()
-                            .add(android.R.id.content, settings)
-                            .commitNow();
+                    addSettingsInTab(activity, android.R.id.content, settings);
 
                     ViewGroup headerGroup =
                             settings.requireView().findViewById(R.id.preferences_header);
@@ -691,10 +719,7 @@ public class MultiColumnSettingsTest {
                     TestMultiColumnSettings settings = new TestMultiColumnSettings();
                     settings.setIsTwoColumnForTesting(TriState.TRUE);
 
-                    activity.getSupportFragmentManager()
-                            .beginTransaction()
-                            .add(android.R.id.content, settings)
-                            .commitNow();
+                    addSettingsInTab(activity, android.R.id.content, settings);
 
                     // Open a detail fragment with addToBackStack=true.
                     settings.showDetailFragment(new TestFragment(), true, null);
@@ -741,10 +766,7 @@ public class MultiColumnSettingsTest {
                     settingsHolder[0] = settings;
                     settings.setIsTwoColumnForTesting(TriState.FALSE);
 
-                    activity.getSupportFragmentManager()
-                            .beginTransaction()
-                            .add(container.getId(), settings)
-                            .commitNow();
+                    addSettingsInTab(activity, container.getId(), settings);
                 });
 
         // Wait for the layout and measure pass to complete so SlidingPaneLayout evaluates
@@ -809,10 +831,7 @@ public class MultiColumnSettingsTest {
                     settings.setInitialUrl(
                             "chrome://settings/siteDetails?site=https%3A%2F%2Fgoogle.com");
 
-                    activity.getSupportFragmentManager()
-                            .beginTransaction()
-                            .add(android.R.id.content, settings)
-                            .commitNow();
+                    addSettingsInTab(activity, android.R.id.content, settings);
 
                     Fragment detailFragment = settings.onCreateInitialDetailFragment();
                     assertNotNull(
@@ -847,10 +866,7 @@ public class MultiColumnSettingsTest {
                     SettingsNavigationFactory.setInstanceForTesting(mockNavigation);
 
                     MultiColumnSettings settings = new TestMultiColumnSettings();
-                    activity.getSupportFragmentManager()
-                            .beginTransaction()
-                            .add(android.R.id.content, settings)
-                            .commitNow();
+                    addSettingsInTab(activity, android.R.id.content, settings);
 
                     Preference preference = new Preference(settings.requireContext());
                     preference.setFragment(TestFragment.class.getName());
@@ -881,10 +897,7 @@ public class MultiColumnSettingsTest {
                     SettingsNavigationFactory.setInstanceForTesting(mockNavigation);
 
                     MultiColumnSettings settings = new TestMultiColumnSettings();
-                    activity.getSupportFragmentManager()
-                            .beginTransaction()
-                            .add(android.R.id.content, settings)
-                            .commitNow();
+                    addSettingsInTab(activity, android.R.id.content, settings);
 
                     Preference preference = new Preference(settings.requireContext());
                     preference.setFragment(TestFragment.class.getName());
@@ -910,10 +923,7 @@ public class MultiColumnSettingsTest {
                     SettingsNavigationFactory.setInstanceForTesting(mockNavigation);
 
                     MultiColumnSettings settings = new TestMultiColumnSettings();
-                    activity.getSupportFragmentManager()
-                            .beginTransaction()
-                            .add(android.R.id.content, settings)
-                            .commitNow();
+                    addSettingsInTab(activity, android.R.id.content, settings);
 
                     Preference preference = new Preference(settings.requireContext());
                     preference.setFragment(null);
@@ -940,10 +950,7 @@ public class MultiColumnSettingsTest {
                     SettingsNavigationFactory.setInstanceForTesting(mockNavigation);
 
                     MultiColumnSettings settings = new TestMultiColumnSettings();
-                    activity.getSupportFragmentManager()
-                            .beginTransaction()
-                            .add(android.R.id.content, settings)
-                            .commitNow();
+                    addSettingsInTab(activity, android.R.id.content, settings);
 
                     Preference preference = new Preference(settings.requireContext());
                     preference.setFragment("invalid.fragment.class.Name");

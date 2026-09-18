@@ -1798,7 +1798,8 @@ public class SettingsSearchCoordinator
                     mProfile,
                     entry.key,
                     entry.extras,
-                    mModalDialogManagerSupplier.asNonNull().get())) {
+                    mModalDialogManagerSupplier.asNonNull().get(),
+                    mShownInTab)) {
                 enterResultState();
             }
             return;
