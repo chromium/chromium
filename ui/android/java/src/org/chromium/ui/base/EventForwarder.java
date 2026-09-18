@@ -16,6 +16,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
+import android.view.ViewConfiguration;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
@@ -27,7 +28,9 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContentUriUtils;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
@@ -63,6 +66,10 @@ public class EventForwarder {
     private final boolean mIsAtLeastU =
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
 
+    private final int mScaledTouchSlop;
+    private final ObserverList<TouchSequenceObserver> mTouchSequenceObservers =
+            new ObserverList<>();
+
     // The mime type for a URL.
     private static final String URL_MIME_TYPE = "text/x-moz-url";
 
@@ -80,6 +87,12 @@ public class EventForwarder {
 
     // Track the last tool type of touch sequence.
     private int mLastToolType;
+
+    // Active touch sequence state tracking.
+    private boolean mIsTouchDown;
+    private float mLastDownX;
+    private float mLastDownY;
+    private boolean mHasExceededTouchSlop;
 
     // Tracks the starting position of the last trackpad scroll.
     // Only used when isTrackpadScrollEventFromAtLeastU() is true.
@@ -100,6 +113,22 @@ public class EventForwarder {
     private @Nullable StylusWritingDelegate mStylusWritingDelegate;
 
     private final PointerLockEventHelper mPointerLockEventHelper = new PointerLockEventHelper();
+
+    /**
+     * Observer for touch sequence lifecycle events. Used by consumers to monitor touches and
+     * distinguish taps from swipes, such as protecting interactions originating in system gesture
+     * insets.
+     */
+    @FunctionalInterface
+    public interface TouchSequenceObserver {
+        /**
+         * Called when an active touch sequence has ended (ACTION_UP or ACTION_CANCEL).
+         *
+         * @param hasExceededTouchSlop Whether the touch sequence moved beyond the scaled touch slop
+         *     threshold (indicating a drag or swipe rather than a tap).
+         */
+        void onTouchSequenceEnded(boolean hasExceededTouchSlop);
+    }
 
     /** Interface to provide stylus writing functionality. */
     public interface StylusWritingDelegate {
@@ -137,7 +166,8 @@ public class EventForwarder {
                 nativeEventForwarder,
                 isDragDropEnabled,
                 convertTrackpadEventsToMouse,
-                useBufferedInput);
+                useBufferedInput,
+                getInitialTouchSlop());
     }
 
     @VisibleForTesting
@@ -145,11 +175,13 @@ public class EventForwarder {
             long nativeEventForwarder,
             boolean isDragDropEnabled,
             boolean convertTrackpadEventsToMouse,
-            boolean useBufferedInput) {
+            boolean useBufferedInput,
+            int scaledTouchSlop) {
         mNativeEventForwarder = nativeEventForwarder;
         mIsDragDropEnabled = isDragDropEnabled;
         mConvertTrackpadEventsToMouse = convertTrackpadEventsToMouse;
         mUseBufferedInput = useBufferedInput;
+        mScaledTouchSlop = scaledTouchSlop;
         mVelocityTracker = VelocityTracker.obtain();
         var oldValue = sEventForwarders.put(nativeEventForwarder, this);
         assert oldValue == null;
@@ -217,10 +249,12 @@ public class EventForwarder {
             return false;
         }
 
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+        int actionMasked = event.getActionMasked();
+        if (actionMasked == MotionEvent.ACTION_DOWN) {
             mLastToolType = event.getToolType(0);
             logActionDown(event);
         }
+        updateTouchSequence(actionMasked, event.getX(), event.getY());
 
         if (touchEventRequiresSpecialHandling(event)) {
             return true;
@@ -228,6 +262,75 @@ public class EventForwarder {
 
         final boolean isTouchHandleEvent = false;
         return sendTouchEvent(event, isTouchHandleEvent);
+    }
+
+    /**
+     * Adds an observer for touch sequence lifecycle events.
+     *
+     * @param observer The observer to add.
+     */
+    public void addTouchSequenceObserver(TouchSequenceObserver observer) {
+        mTouchSequenceObservers.addObserver(observer);
+    }
+
+    /**
+     * Removes an observer for touch sequence lifecycle events.
+     *
+     * @param observer The observer to remove.
+     */
+    public void removeTouchSequenceObserver(TouchSequenceObserver observer) {
+        mTouchSequenceObservers.removeObserver(observer);
+    }
+
+    /**
+     * Returns whether there is an active touch sequence whose initial touch-down point falls within
+     * the system gesture insets of the specified view.
+     *
+     * @param view The view whose gesture insets are used.
+     * @return True if a touch sequence is active and originated in gesture insets.
+     */
+    public boolean hasTouchOriginatingInGestureInsets(View view) {
+        if (!mIsTouchDown) return false;
+        return ViewUtils.isPointInGestureInsets(view, mLastDownX, mLastDownY);
+    }
+
+    /**
+     * Returns whether the current active touch sequence has moved beyond the scaled touch slop
+     * threshold.
+     */
+    public boolean hasCurrentTouchExceededTouchSlop() {
+        return mHasExceededTouchSlop;
+    }
+
+    private void updateTouchSequence(int actionMasked, float x, float y) {
+        if (actionMasked == MotionEvent.ACTION_DOWN) {
+            // Touch sequence started; record starting position and reset slop state.
+            mIsTouchDown = true;
+            mLastDownX = x;
+            mLastDownY = y;
+            mHasExceededTouchSlop = false;
+        } else if (actionMasked == MotionEvent.ACTION_MOVE) {
+            // Track movement to see if the gesture exceeds the touch slop threshold.
+            if (mIsTouchDown && !mHasExceededTouchSlop) {
+                mHasExceededTouchSlop =
+                        hasExceededTouchSlop(mLastDownX, mLastDownY, x, y, mScaledTouchSlop);
+            }
+        } else if (actionMasked == MotionEvent.ACTION_UP) {
+            // Touch sequence completed normally; notify observers with the final slop state.
+            mIsTouchDown = false;
+            notifyTouchSequenceEnded(mHasExceededTouchSlop);
+        } else if (actionMasked == MotionEvent.ACTION_CANCEL) {
+            // Touch sequence cancelled (e.g. system gesture takeover); treat as exceeded slop.
+            mIsTouchDown = false;
+            mHasExceededTouchSlop = true;
+            notifyTouchSequenceEnded(true);
+        }
+    }
+
+    private void notifyTouchSequenceEnded(boolean hasExceededTouchSlop) {
+        for (TouchSequenceObserver observer : mTouchSequenceObservers) {
+            observer.onTouchSequenceEnded(hasExceededTouchSlop);
+        }
     }
 
     /**
@@ -1037,6 +1140,17 @@ public class EventForwarder {
             }
         }
         return true;
+    }
+
+    private static int getInitialTouchSlop() {
+        return ViewConfiguration.get(ContextUtils.getApplicationContext()).getScaledTouchSlop();
+    }
+
+    private static boolean hasExceededTouchSlop(
+            float startX, float startY, float currentX, float currentY, int slopThreshold) {
+        float dx = currentX - startX;
+        float dy = currentY - startY;
+        return (dx * dx + dy * dy) > (slopThreshold * slopThreshold);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)

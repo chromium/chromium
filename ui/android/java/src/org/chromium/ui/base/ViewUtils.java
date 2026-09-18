@@ -6,19 +6,26 @@ package org.chromium.ui.base;
 
 import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
+import static android.view.View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+import static android.view.WindowInsets.Type.systemGestures;
+import static android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE;
 
 import android.animation.Animator;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Insets;
 import android.graphics.Region;
+import android.os.Build;
 import android.transition.Transition;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowInsets;
+import android.view.WindowInsetsController;
 
 import androidx.annotation.LayoutRes;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
@@ -407,5 +414,58 @@ public final class ViewUtils {
                         if (a != null) a.cancel();
                     }
                 });
+    }
+
+    /**
+     * Returns whether the given view or its window is currently in sticky immersive mode, where
+     * transient system bars appear temporarily upon swipe.
+     *
+     * @param view The view to check.
+     * @return True if in sticky immersive mode, false otherwise.
+     */
+    public static boolean isStickyImmersiveMode(View view) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            WindowInsetsController controller = view.getWindowInsetsController();
+            return controller != null
+                    && controller.getSystemBarsBehavior() == BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE;
+        }
+        return (view.getSystemUiVisibility() & SYSTEM_UI_FLAG_IMMERSIVE_STICKY) != 0;
+    }
+
+    /**
+     * Checks whether the specified coordinate falls within the system gesture insets of the given
+     * view. Coordinates are translated to the window coordinate space to test against the decor
+     * view or window screen boundaries.
+     *
+     * @param view The view whose gesture insets are used.
+     * @param x The X coordinate in the view's local coordinate space.
+     * @param y The Y coordinate in the view's local coordinate space.
+     * @return True if (x, y) falls inside the system gesture insets, false otherwise.
+     */
+    static boolean isPointInGestureInsets(View view, float x, float y) {
+        WindowInsets windowInsets = view.getRootWindowInsets();
+        if (windowInsets == null) return false;
+
+        Insets gestureInsets =
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+                        ? windowInsets.getInsets(systemGestures())
+                        : windowInsets.getSystemGestureInsets();
+        if (gestureInsets == null) return false;
+
+        View rootView = view.getRootView();
+        int rootWidth = rootView.getWidth();
+        int rootHeight = rootView.getHeight();
+        if (rootWidth <= 0 || rootHeight <= 0) return false;
+
+        sLocationTmp[0] = 0;
+        sLocationTmp[1] = 0;
+        view.getLocationInWindow(sLocationTmp);
+        float windowX = x + sLocationTmp[0];
+        float windowY = y + sLocationTmp[1];
+
+        return windowX < gestureInsets.left
+                || windowX > rootWidth - gestureInsets.right
+                || windowY < gestureInsets.top
+                || windowY > rootHeight - gestureInsets.bottom;
     }
 }

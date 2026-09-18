@@ -4,6 +4,10 @@
 
 package org.chromium.ui.base;
 
+import static android.view.WindowInsets.Type.systemGestures;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyFloat;
@@ -21,6 +25,7 @@ import static org.mockito.Mockito.verify;
 
 import android.content.ClipData;
 import android.content.ClipDescription;
+import android.graphics.Insets;
 import android.net.Uri;
 import android.os.Build;
 import android.view.DragEvent;
@@ -29,6 +34,8 @@ import android.view.MotionEvent;
 import android.view.MotionEvent.PointerCoords;
 import android.view.Surface;
 import android.view.View;
+import android.view.ViewConfiguration;
+import android.view.WindowInsets;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -41,9 +48,11 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.ui.base.EventForwarder.TouchSequenceObserver;
 import org.chromium.ui.util.MotionEventUtils;
 
 import java.io.IOException;
@@ -55,18 +64,26 @@ public class EventForwarderTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock EventForwarder.Natives mNativeMock;
+    @Mock TouchSequenceObserver mTouchSequenceObserver;
+    @Mock View mView;
+    @Mock View mDecorView;
+    @Mock WindowInsets mWindowInsets;
 
     private static final long NATIVE_EVENT_FORWARDER_ID = 1;
+    private final int mScaledTouchSlop =
+            ViewConfiguration.get(ContextUtils.getApplicationContext()).getScaledTouchSlop();
 
     @Before
     public void setUp() {
         EventForwarderJni.setInstanceForTesting(mNativeMock);
+        doReturn(mDecorView).when(mView).getRootView();
+        doReturn(mWindowInsets).when(mView).getRootWindowInsets();
     }
 
     @Test
     public void testSendTrackpadClicksAsMouseEventToNative() {
         EventForwarder eventForwarder =
-                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false);
+                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false, mScaledTouchSlop);
 
         // Left click
         MotionEvent leftClickEvent = MotionEventTestUtils.getTrackpadLeftClickEvent();
@@ -83,7 +100,7 @@ public class EventForwarderTest {
     @Test
     public void testSendTrackpadClickReleaseAsMouseEventToNative() {
         EventForwarder eventForwarder =
-                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false);
+                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false, mScaledTouchSlop);
 
         // Left click
         MotionEvent leftClickReleaseEvent =
@@ -106,7 +123,7 @@ public class EventForwarderTest {
     @Test
     public void testSendTrackpadClickAndDragAsMouseEventToNative() {
         EventForwarder eventForwarder =
-                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false);
+                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false, mScaledTouchSlop);
         MotionEvent clickAndDragEvent =
                 MotionEventTestUtils.getTrackpadEvent(
                         MotionEvent.ACTION_MOVE, MotionEvent.BUTTON_PRIMARY);
@@ -118,7 +135,7 @@ public class EventForwarderTest {
     @Test
     public void testSendTrackpadHoverAsMouseEventToNative() {
         EventForwarder eventForwarder =
-                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false);
+                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false, mScaledTouchSlop);
         MotionEvent hoverEvent =
                 MotionEventTestUtils.getTrackpadEvent(MotionEvent.ACTION_HOVER_MOVE, 0);
         eventForwarder.onHoverEvent(hoverEvent);
@@ -129,7 +146,7 @@ public class EventForwarderTest {
     @Test
     public void testMotionEventWithHistory_unbufferedInput() {
         EventForwarder eventForwarder =
-                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, false, false);
+                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, false, false, mScaledTouchSlop);
         final long downTime = 100;
         final long eventTime = 200;
         final long latestEventTime = 400;
@@ -172,7 +189,7 @@ public class EventForwarderTest {
     @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void testMotionEventWithHistory_bufferedInput() {
         EventForwarder eventForwarder =
-                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, false, true);
+                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, false, true, mScaledTouchSlop);
         final long downTime = 100;
         final long eventTime = 200;
         final long latestEventTime = 400;
@@ -213,7 +230,7 @@ public class EventForwarderTest {
     @Test
     public void testSendTrackEventAsTouchEventWhenButtonIsNotClicked() {
         EventForwarder eventForwarder =
-                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false);
+                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false, mScaledTouchSlop);
         MotionEvent trackpadTouchDownEventNoClick =
                 MotionEventTestUtils.getTrackpadTouchDownEventNoClick();
         eventForwarder.onTouchEvent(trackpadTouchDownEventNoClick);
@@ -240,7 +257,7 @@ public class EventForwarderTest {
     @Test
     public void testNotSendTrackpadClickAsMouseEventWhenFeatureDisabled() {
         EventForwarder eventForwarder =
-                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, false, false);
+                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, false, false, mScaledTouchSlop);
         MotionEvent trackpadClickDownEvent = MotionEventTestUtils.getTrackpadLeftClickEvent();
         eventForwarder.onTouchEvent(trackpadClickDownEvent);
         verify(mNativeMock, never())
@@ -306,7 +323,7 @@ public class EventForwarderTest {
     @Test
     public void testCapturedPointerTrackpadMoveEvent() {
         EventForwarder eventForwarder =
-                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false);
+                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false, mScaledTouchSlop);
 
         MotionEvent moveEvent = MotionEventTestUtils.getCapturedTrackpadMoveEvent(14, 21);
 
@@ -320,7 +337,7 @@ public class EventForwarderTest {
     @Test
     public void testCapturedPointerTrackpadMoveEventAfterDown() {
         EventForwarder eventForwarder =
-                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false);
+                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false, mScaledTouchSlop);
         final long downTime = 100;
         final long eventTime = 200;
         MotionEvent downEvent =
@@ -385,7 +402,7 @@ public class EventForwarderTest {
     @Test
     public void testCapturedPointerMouseReleasePreservesActionButton() {
         EventForwarder eventForwarder =
-                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false);
+                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false, mScaledTouchSlop);
         MotionEvent.PointerProperties properties = new MotionEvent.PointerProperties();
         properties.id = 0;
         properties.toolType = MotionEvent.TOOL_TYPE_MOUSE;
@@ -428,7 +445,7 @@ public class EventForwarderTest {
     @Test
     public void testCapturedPointerRelativeTrackpadReleaseUsesButtonStateFallback() {
         EventForwarder eventForwarder =
-                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false);
+                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false, mScaledTouchSlop);
         MotionEvent.PointerProperties properties = new MotionEvent.PointerProperties();
         properties.id = 0;
         properties.toolType = MotionEvent.TOOL_TYPE_FINGER;
@@ -472,7 +489,7 @@ public class EventForwarderTest {
 
     private void testCapturedPointerTrackpadMultiTouchClickEvent(int pointersCnt, int buttonState) {
         EventForwarder eventForwarder =
-                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false);
+                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false, mScaledTouchSlop);
 
         MotionEvent moveEvent =
                 MotionEvent.obtain(
@@ -536,7 +553,7 @@ public class EventForwarderTest {
     @Test
     public void testCapturedPointerMouseMoveEvent() {
         EventForwarder eventForwarder =
-                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false);
+                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false, mScaledTouchSlop);
 
         final long downTime = 100;
         final long eventTime = 200;
@@ -595,7 +612,7 @@ public class EventForwarderTest {
     @Test
     public void testCapturedPointerMouseScrollEvent() {
         EventForwarder eventForwarder =
-                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false);
+                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false, mScaledTouchSlop);
 
         final long downTime = 100;
         final long eventTime = 200;
@@ -619,7 +636,7 @@ public class EventForwarderTest {
     @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void testTrackpadScrollDirection() {
         EventForwarder eventForwarder =
-                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false);
+                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false, mScaledTouchSlop);
 
         // Swipe RIGHT: X increases.
         long downTime = 100;
@@ -674,7 +691,7 @@ public class EventForwarderTest {
     @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void testTrackpadFlingDirection() {
         EventForwarder eventForwarder =
-                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false);
+                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false, mScaledTouchSlop);
 
         long downTime = 100;
         long eventTime1 = 200;
@@ -770,7 +787,7 @@ public class EventForwarderTest {
         }
         ClipDescription clipDescription = new ClipDescription("label", mimeTypes);
         EventForwarder eventForwarder =
-                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, false, false);
+                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, false, false, mScaledTouchSlop);
         DragEvent event = mock(DragEvent.class);
         doReturn(DragEvent.ACTION_DROP).when(event).getAction();
         doReturn(14f).when(event).getX();
@@ -781,7 +798,7 @@ public class EventForwarderTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord("Android.DragDrop.Files.Count", expectedFilenames.length)
                         .build();
-        eventForwarder.onDragEvent(event, mock(View.class));
+        eventForwarder.onDragEvent(event, mView);
         verify(mNativeMock, times(1))
                 .onDragEvent(
                         eq(EventForwarderTest.NATIVE_EVENT_FORWARDER_ID),
@@ -813,6 +830,139 @@ public class EventForwarderTest {
                         isNull(),
                         isNull());
         histograms.assertExpected();
+        eventForwarder.destroy();
+    }
+
+    @Test
+    public void testTouchSequenceTracking_tap() {
+        EventForwarder eventForwarder =
+                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, false, false, mScaledTouchSlop);
+        eventForwarder.addTouchSequenceObserver(mTouchSequenceObserver);
+
+        MotionEvent down = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 10f, 20f, 0);
+        eventForwarder.onTouchEvent(down);
+
+        assertFalse(eventForwarder.hasCurrentTouchExceededTouchSlop());
+
+        MotionEvent up = MotionEvent.obtain(0, 50, MotionEvent.ACTION_UP, 10f, 20f, 0);
+        eventForwarder.onTouchEvent(up);
+
+        verify(mTouchSequenceObserver, times(1)).onTouchSequenceEnded(false);
+
+        eventForwarder.removeTouchSequenceObserver(mTouchSequenceObserver);
+        eventForwarder.destroy();
+    }
+
+    @Test
+    public void testTouchSequenceTracking_swipe() {
+        EventForwarder eventForwarder =
+                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, false, false, mScaledTouchSlop);
+        eventForwarder.addTouchSequenceObserver(mTouchSequenceObserver);
+
+        MotionEvent down = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 10f, 20f, 0);
+        eventForwarder.onTouchEvent(down);
+
+        MotionEvent move = MotionEvent.obtain(0, 50, MotionEvent.ACTION_MOVE, 200f, 20f, 0);
+        eventForwarder.onTouchEvent(move);
+
+        assertTrue(eventForwarder.hasCurrentTouchExceededTouchSlop());
+
+        MotionEvent up = MotionEvent.obtain(0, 100, MotionEvent.ACTION_UP, 200f, 20f, 0);
+        eventForwarder.onTouchEvent(up);
+
+        verify(mTouchSequenceObserver, times(1)).onTouchSequenceEnded(true);
+
+        eventForwarder.destroy();
+    }
+
+    @Test
+    public void testTouchSequenceTracking_cancel() {
+        EventForwarder eventForwarder =
+                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, false, false, mScaledTouchSlop);
+        eventForwarder.addTouchSequenceObserver(mTouchSequenceObserver);
+
+        MotionEvent down = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 10f, 20f, 0);
+        eventForwarder.onTouchEvent(down);
+
+        MotionEvent cancel = MotionEvent.obtain(0, 50, MotionEvent.ACTION_CANCEL, 10f, 20f, 0);
+        eventForwarder.onTouchEvent(cancel);
+
+        verify(mTouchSequenceObserver, times(1)).onTouchSequenceEnded(true);
+
+        eventForwarder.destroy();
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    public void testHasTouchOriginatingInGestureInsets() {
+        EventForwarder eventForwarder =
+                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, false, false, mScaledTouchSlop);
+        Insets gestureInsets = Insets.of(50, 50, 50, 50);
+        doReturn(gestureInsets).when(mWindowInsets).getInsets(systemGestures());
+        doReturn(1000).when(mDecorView).getWidth();
+        doReturn(2000).when(mDecorView).getHeight();
+
+        // No active touch
+        assertFalse(eventForwarder.hasTouchOriginatingInGestureInsets(mView));
+
+        // Touch down inside insets (x = 20 < 50)
+        MotionEvent downInside = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 20f, 500f, 0);
+        eventForwarder.onTouchEvent(downInside);
+        assertTrue(eventForwarder.hasTouchOriginatingInGestureInsets(mView));
+
+        // Touch up resets active state
+        MotionEvent up = MotionEvent.obtain(0, 50, MotionEvent.ACTION_UP, 20f, 500f, 0);
+        eventForwarder.onTouchEvent(up);
+        assertFalse(eventForwarder.hasTouchOriginatingInGestureInsets(mView));
+
+        // Touch down outside insets (x = 500, y = 500)
+        MotionEvent downOutside =
+                MotionEvent.obtain(0, 100, MotionEvent.ACTION_DOWN, 500f, 500f, 0);
+        eventForwarder.onTouchEvent(downOutside);
+        assertFalse(eventForwarder.hasTouchOriginatingInGestureInsets(mView));
+
+        eventForwarder.destroy();
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    public void testHasTouchOriginatingInGestureInsets_decorViewBounds() {
+        EventForwarder eventForwarder =
+                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, false, false, mScaledTouchSlop);
+        doReturn(1080).when(mDecorView).getWidth();
+        doReturn(2000).when(mDecorView).getHeight();
+        doReturn(800).when(mView).getWidth();
+        doReturn(2000).when(mView).getHeight();
+
+        Insets gestureInsets = Insets.of(50, 50, 50, 50);
+        doReturn(gestureInsets).when(mWindowInsets).getInsets(systemGestures());
+
+        // Touch at x = 760: exceeds mView.getWidth() - 50 (750), but inside mDecorView (1080 - 50 =
+        // 1030)
+        MotionEvent down = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 760f, 500f, 0);
+        eventForwarder.onTouchEvent(down);
+        assertFalse(eventForwarder.hasTouchOriginatingInGestureInsets(mView));
+
+        // Touch at x = 1050: exceeds mDecorView.getWidth() - 50 (1030)
+        MotionEvent downEdge = MotionEvent.obtain(0, 50, MotionEvent.ACTION_DOWN, 1050f, 500f, 0);
+        eventForwarder.onTouchEvent(downEdge);
+        assertTrue(eventForwarder.hasTouchOriginatingInGestureInsets(mView));
+
+        eventForwarder.destroy();
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    public void testHasTouchOriginatingInGestureInsets_unmeasuredRootView() {
+        EventForwarder eventForwarder =
+                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, false, false, mScaledTouchSlop);
+        Insets gestureInsets = Insets.of(50, 50, 50, 50);
+        doReturn(gestureInsets).when(mWindowInsets).getInsets(systemGestures());
+
+        MotionEvent downEdge = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 960f, 500f, 0);
+        eventForwarder.onTouchEvent(downEdge);
+        assertFalse(eventForwarder.hasTouchOriginatingInGestureInsets(mView));
+
         eventForwarder.destroy();
     }
 }

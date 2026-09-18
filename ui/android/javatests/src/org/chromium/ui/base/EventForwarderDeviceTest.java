@@ -15,8 +15,10 @@ import android.os.Build;
 import android.os.SystemClock;
 import android.view.InputDevice;
 import android.view.MotionEvent;
+import android.view.ViewConfiguration;
 
 import androidx.test.filters.SmallTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Before;
@@ -49,6 +51,9 @@ public class EventForwarderDeviceTest {
     private static final long NATIVE_EVENT_FORWARDER_ID = 1;
 
     private EventForwarder mEventForwarder;
+    private final int mScaledTouchSlop =
+            ViewConfiguration.get(InstrumentationRegistry.getInstrumentation().getTargetContext())
+                    .getScaledTouchSlop();
 
     @Before
     public void setUp() {
@@ -67,7 +72,8 @@ public class EventForwarderDeviceTest {
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void testSendTrackpadScrollAsMouseWheelToNativeAtLeastU() {
-        mEventForwarder = new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false);
+        mEventForwarder =
+                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false, mScaledTouchSlop);
 
         final long downTime = SystemClock.uptimeMillis();
         long eventTime = downTime;
@@ -102,7 +108,8 @@ public class EventForwarderDeviceTest {
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void testSendTrackpadStartFlingToNativeAtLeastU() {
-        mEventForwarder = new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false);
+        mEventForwarder =
+                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false, mScaledTouchSlop);
 
         final long downTime = SystemClock.uptimeMillis();
         long eventTime = downTime;
