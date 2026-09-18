@@ -72,16 +72,6 @@ uint32_t AssociatedEndpointRustAdapter::GetInterfaceId() const {
   return client_adapter_ ? client_adapter_->id() : handle_.id();
 }
 
-// Closes the endpoint and sends the peer-endpoint-closed disconnect
-// notification over the IPC pipe immediately.
-void AssociatedEndpointRustAdapter::Close() {
-  if (client_adapter_) {
-    client_adapter_->Close();
-  } else {
-    handle_.reset();
-  }
-}
-
 // Forwards an outgoing IPC message from Rust to the bound C++ endpoint client.
 // Fills the role of MultiplexRouterHandle::send_message().
 void AssociatedEndpointRustAdapter::SendMessage(

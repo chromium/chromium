@@ -34,12 +34,6 @@ pub struct CppRouterHandle {
     adapter: cxx::UniquePtr<ffi::AssociatedEndpointRustAdapter>,
 }
 
-impl Drop for CppRouterHandle {
-    fn drop(&mut self) {
-        self.close();
-    }
-}
-
 impl CppRouterHandle {
     /// Returns `None` if `adapter` is null.
     pub fn new(adapter: cxx::UniquePtr<ffi::AssociatedEndpointRustAdapter>) -> Option<Self> {
@@ -90,13 +84,6 @@ impl CppRouterHandle {
         let info = Box::new(endpoint_info);
         let runner = task_runner.as_scoped_refptr();
         self.adapter.pin_mut().Bind(runner, info);
-    }
-
-    /// Close the endpoint and send disconnect notification over the IPC pipe.
-    pub fn close(&mut self) {
-        if let Some(adapter) = self.adapter.as_mut() {
-            adapter.Close();
-        }
     }
 }
 

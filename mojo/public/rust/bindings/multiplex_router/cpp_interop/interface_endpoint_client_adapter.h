@@ -8,9 +8,10 @@
 #include <memory>
 #include <optional>
 
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "mojo/public/cpp/bindings/associated_group.h"
 #include "mojo/public/cpp/bindings/associated_group_controller.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -48,12 +49,15 @@ class InterfaceEndpointClientAdapter
       scoped_refptr<base::SequencedTaskRunner> runner);
 
   // Receives an incoming one-way IPC message from InterfaceEndpointClient, and
-  // invokes the Rust incoming callback without a responder.
+  // invokes the Rust incoming callback without a responder. Returns true if the
+  // message was accepted and dispatched to Rust, or false if deserialization
+  // failed.
   bool Accept(mojo::Message* message) override;
 
   // Receives an incoming request IPC message from InterfaceEndpointClient with
   // a responder, and invokes the Rust incoming callback with the responder
-  // wrapper.
+  // wrapper. Returns true if the message was accepted and dispatched to Rust,
+  // or false if deserialization failed.
   bool AcceptWithResponder(
       mojo::Message* message,
       std::unique_ptr<mojo::internal::ResponderThunk> responder) override;
@@ -67,17 +71,22 @@ class InterfaceEndpointClientAdapter
   void SendMessage(
       std::unique_ptr<mojo::rust::ScopedMessageHandleWrapper> message_wrapper);
 
-  uint32_t id() const { return id_; }
+  // An endpoint may be bound before it is associated with a message pipe, in
+  // which case neither the interface ID nor the group controller exists yet.
+  // `mojo::InterfaceEndpointClient` picks both up when the association event
+  // fires, so always ask it rather than caching the values here.
 
-  mojo::AssociatedGroupController* group_controller() const {
-    return group_controller_.get();
+  // Returns the interface ID of this endpoint, or `mojo::kInvalidInterfaceId`
+  // if it isn't associated with a message pipe yet.
+  uint32_t id() const { return client_.interface_id(); }
+
+  // Returns the group controller for this endpoint's pipe, or nullptr if it
+  // isn't associated with a message pipe yet.
+  mojo::AssociatedGroupController* group_controller() {
+    return associated_group_.GetController();
   }
 
   base::SequencedTaskRunner* task_runner() const { return task_runner_.get(); }
-
-  // Resets the client, closing the endpoint and sending a disconnect
-  // notification over the IPC pipe immediately.
-  void Close();
 
  private:
   friend class base::RefCountedDeleteOnSequence<InterfaceEndpointClientAdapter>;
@@ -91,23 +100,22 @@ class InterfaceEndpointClientAdapter
     bool Accept(mojo::Message* message) override;
   };
 
-  // The associated interface ID of this endpoint
-  uint32_t id_;
-
   // Pointer to data that Rust needs to run its handlers
   std::optional<::rust::Box<EndpointInfo>> info_;
 
   // Sequence on which to run methods
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  // The actual underlying C++ object that manages routing. Used so that our
-  // enclosing `AssociatedEndpointRustAdapter` can register new associated
-  // endpoints.
-  scoped_refptr<mojo::AssociatedGroupController> group_controller_;
+  // Captured from `handle` before it is moved into `client_`. Holds only a
+  // callback into the handle's internally-locked state, so it is safe to call
+  // from any thread.
+  mojo::AssociatedGroup associated_group_;
 
   // A connection to the group controller that's specific to this associated
   // interface. Embeds the interface ID; for sending and receiving messages.
   mojo::InterfaceEndpointClient client_;
+
+  base::WeakPtrFactory<InterfaceEndpointClientAdapter> weak_ptr_factory_{this};
 };
 
 }  // namespace mojo::rust::bindings

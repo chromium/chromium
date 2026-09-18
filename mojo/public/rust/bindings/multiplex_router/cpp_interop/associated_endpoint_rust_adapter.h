@@ -42,9 +42,9 @@ class InterfaceEndpointClientAdapter;
 // - Unbound: Unbound adapters may be moved across sequences before `Bind()` is
 // called.
 // - Bound: `Bind` permanently binds the adapter to a sequence. Outgoing calls
-//   (`SendMessage`, `Close`) will automatically run on the given sequence. All
-//   incoming IPC messages, disconnect callbacks, and destruction must be
-//   invoked only on the bound sequence.
+//   (e.g. `SendMessage`) will automatically run on the given sequence. All
+//   incoming IPC messages and disconnect callbacks are invoked only on the
+//   bound sequence. Destruction will be automatically posted to the sequence.
 class AssociatedEndpointRustAdapter {
  public:
   explicit AssociatedEndpointRustAdapter(
@@ -70,9 +70,6 @@ class AssociatedEndpointRustAdapter {
 
   // Returns the interface ID assigned to this endpoint on the routing group.
   uint32_t GetInterfaceId() const;
-
-  // Closes the endpoint and sends a disconnect notification over the pipe.
-  void Close();
 
   // Forwards an outgoing IPC message from Rust to the bound C++ endpoint
   // client.

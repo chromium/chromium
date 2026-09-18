@@ -21,6 +21,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/interface_id.h"
 #include "mojo/public/cpp/bindings/lib/responder_thunk.h"
 #include "mojo/public/rust/bindings/multiplex_router/cpp_interop/cxx.rs.h"
@@ -51,22 +52,18 @@ namespace mojo::rust::bindings {
 // Rust handler.
 class RustResponder : public mojo::MessageReceiver {
  public:
-  explicit RustResponder(const EndpointInfo& info) : info_(info) {}
+  RustResponder(base::WeakPtr<InterfaceEndpointClientAdapter> adapter,
+                uint64_t rust_request_id)
+      : adapter_(std::move(adapter)), rust_request_id_(rust_request_id) {}
 
   bool Accept(mojo::Message* message) override {
-    return cxx_incoming_handler(
-        info_,
-        std::make_unique<mojo::rust::ScopedMessageHandleWrapper>(
-            message->TakeMojoMessage()),
-        nullptr);
+    message->set_request_id(rust_request_id_);
+    return adapter_ && adapter_->Accept(message);
   }
 
  private:
-  // RAW_PTR_EXCLUSION: FFI (this is allocated by Rust). Note that this struct
-  // is owned by `client_` (via its internal async responders map). `client_`
-  // drops all pending responders when the pipe closes or when `client_` is
-  // destroyed, which occurs before `info_` is freed.
-  RAW_PTR_EXCLUSION const EndpointInfo& info_;
+  base::WeakPtr<InterfaceEndpointClientAdapter> adapter_;
+  const uint64_t rust_request_id_;
 };
 
 bool InterfaceEndpointClientAdapter::NoOpValidator::Accept(
@@ -79,10 +76,9 @@ InterfaceEndpointClientAdapter::InterfaceEndpointClientAdapter(
     ::rust::Box<EndpointInfo> info,
     scoped_refptr<base::SequencedTaskRunner> runner)
     : base::RefCountedDeleteOnSequence<InterfaceEndpointClientAdapter>(runner),
-      id_(handle.id()),
       info_(std::move(info)),
       task_runner_(std::move(runner)),
-      group_controller_(handle.group_controller()),
+      associated_group_(handle),
       client_(std::move(handle),
               /*receiver=*/this,
               /*payload_validator=*/std::make_unique<NoOpValidator>(),
@@ -113,8 +109,8 @@ bool InterfaceEndpointClientAdapter::Accept(mojo::Message* message) {
       *info_.value(),
       std::make_unique<mojo::rust::ScopedMessageHandleWrapper>(
           message->TakeMojoMessage()),
-      std::make_unique<MojoResponderWrapper>(nullptr, task_runner_,
-                                             group_controller_));
+      std::make_unique<MojoResponderWrapper>(
+          nullptr, task_runner_, base::WrapRefCounted(group_controller())));
 }
 
 // Receives an incoming request IPC message from InterfaceEndpointClient with
@@ -131,8 +127,9 @@ bool InterfaceEndpointClientAdapter::AcceptWithResponder(
       *info_.value(),
       std::make_unique<mojo::rust::ScopedMessageHandleWrapper>(
           message->TakeMojoMessage()),
-      std::make_unique<MojoResponderWrapper>(std::move(responder), task_runner_,
-                                             group_controller_));
+      std::make_unique<MojoResponderWrapper>(
+          std::move(responder), task_runner_,
+          base::WrapRefCounted(group_controller())));
 }
 
 // Invoked by InterfaceEndpointClient on pipe disconnection or error; calls
@@ -166,24 +163,13 @@ void InterfaceEndpointClientAdapter::SendMessage(
   mojo::Message message = mojo::Message::CreateFromMessageHandle(&handle);
 
   if (message.has_flag(mojo::Message::kFlagExpectsResponse)) {
+    uint64_t rust_request_id = message.request_id();
     client_.AcceptWithResponder(
-        &message, std::make_unique<RustResponder>(*info_.value()));
+        &message, std::make_unique<RustResponder>(
+                      weak_ptr_factory_.GetWeakPtr(), rust_request_id));
   } else {
     client_.Accept(&message);
   }
-}
-
-// Resets the client, closing the endpoint and sending a disconnect
-// notification over the IPC pipe immediately.
-void InterfaceEndpointClientAdapter::Close() {
-  if (!task_runner_->RunsTasksInCurrentSequence()) {
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&InterfaceEndpointClientAdapter::Close,
-                       scoped_refptr<InterfaceEndpointClientAdapter>(this)));
-    return;
-  }
-  client_.CloseWithReason(0, std::string_view());
 }
 
 }  // namespace mojo::rust::bindings

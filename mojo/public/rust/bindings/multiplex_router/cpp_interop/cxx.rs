@@ -60,9 +60,6 @@ pub mod ffi {
         /// Returns the associated interface ID assigned to this endpoint.
         fn GetInterfaceId(self: &AssociatedEndpointRustAdapter) -> u32;
 
-        /// Closes `self` and notifies its peer that the interface is closed
-        fn Close(self: Pin<&mut AssociatedEndpointRustAdapter>);
-
         /// Sends an outgoing Mojom IPC message through the C++ endpoint.
         fn SendMessage(
             self: &AssociatedEndpointRustAdapter,
@@ -107,10 +104,10 @@ pub mod ffi {
 // SAFETY: Neither of the fields of `AssociatedEndpointRustAdapter` care about
 // which thread they're on.
 unsafe impl Send for ffi::AssociatedEndpointRustAdapter {}
-// SAFETY: All `&self` methods on `AssociatedEndpointRustAdapter`
-// (`SendMessage`, `Close`, `RegisterNewEndpoint`) are thread-safe or
-// sequence-bound. The only danger is that `Bind` must not be called
-// concurrently with anything else, which is enforced by taking &mut.
+// SAFETY: All `&self` methods on `AssociatedEndpointRustAdapter` are
+// thread-safe. `SendMessage()` automatically bounces to the bound sequence if
+// called off-sequence. `Bind()` mutates the adapter and is safely protected by
+// taking `&mut self`.
 unsafe impl Sync for ffi::AssociatedEndpointRustAdapter {}
 
 // SAFETY: `MojoResponderWrapper` wraps a C++ `base::SequenceBound`, so
