@@ -69,7 +69,8 @@ video::-internal-picture-in-picture-interstitial-message {
     text-wrap: none;
     text-align: center;
     background-color: transparent;
-    font-family: Roboto-Regular, Sans-serif, Segoe, Serif, Helvetica;
+    /* Use a generic family consistent with other UA shadow controls. */
+    font-family: sans-serif;
     padding: 0px;
     margin: 0px;
 }
@@ -105,7 +106,8 @@ video::-internal-media-remoting-toast-message {
     text-align: center;
     background-color: rgba(40, 44, 50, 0.7);
     font-size: 90%;
-    font-family: Roboto-Regular, Sans-serif, Segoe, Serif, Helvetica;
+    /* Use a generic family consistent with other UA shadow controls. */
+    font-family: sans-serif;
     padding: 10pt 24pt 10pt 24pt;
     margin: 0px;
 }

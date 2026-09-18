@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/pointer_type_names.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_cast_button_element.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_current_time_display_element.h"
@@ -1823,6 +1824,38 @@ TEST_F(MediaControlsImplTest,
   // Click to pause.
   SimulateClick(overlay_play_button);
   EXPECT_TRUE(MediaControls().MediaElement().paused());
+}
+
+TEST_F(MediaControlsImplTest, InterstitialFontFamilyIsGeneric) {
+  auto& video =
+      To<HTMLVideoElement>(*GetDocument().QuerySelector(AtomicString("video")));
+  video.MediaRemotingStarted(WebString::FromUtf8("Living Room TV"));
+  UpdateAllLifecyclePhasesForTest();
+
+  ShadowRoot* shadow_root = video.UserAgentShadowRoot();
+  ASSERT_TRUE(shadow_root);
+
+  bool found_interstitial_message = false;
+  bool found_toast_message = false;
+
+  for (Element* child = ElementTraversal::FirstChild(*shadow_root); child;
+       child = ElementTraversal::Next(*child, shadow_root)) {
+    if (child->ShadowPseudoId() == "-internal-media-interstitial-message") {
+      found_interstitial_message = true;
+      const ComputedStyle* style = child->GetComputedStyle();
+      ASSERT_TRUE(style);
+      EXPECT_TRUE(style->GetFontDescription().Family().FamilyIsGeneric());
+    } else if (child->ShadowPseudoId() ==
+               "-internal-media-remoting-toast-message") {
+      found_toast_message = true;
+      const ComputedStyle* style = child->GetComputedStyle();
+      ASSERT_TRUE(style);
+      EXPECT_TRUE(style->GetFontDescription().Family().FamilyIsGeneric());
+    }
+  }
+
+  EXPECT_TRUE(found_interstitial_message);
+  EXPECT_TRUE(found_toast_message);
 }
 
 }  // namespace blink
