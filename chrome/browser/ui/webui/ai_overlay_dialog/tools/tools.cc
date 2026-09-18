@@ -166,11 +166,12 @@ void AiOverlayTools::OpenUrl(const std::string& url_string,
         std::move(request),
         base::BindOnce(
             [](OpenUrlCallback callback, ToolResponse response) {
-              const std::string* error = response.FindString("error");
-              if (error) {
-                std::move(callback).Run(base::unexpected(*error));
-              } else {
+              if (response.Ok()) {
                 std::move(callback).Run(std::monostate());
+              } else {
+                std::move(callback).Run(
+                    base::unexpected(response.error().message.value_or(
+                        "Tool execution failed")));
               }
             },
             std::move(callback)));

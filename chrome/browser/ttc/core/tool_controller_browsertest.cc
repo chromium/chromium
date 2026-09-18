@@ -58,7 +58,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, OpenUrlCurrentTab) {
                                       future.GetCallback());
 
   ToolResponse response = future.Take();
-  EXPECT_TRUE(response.empty());
+  EXPECT_TRUE(response.Ok());
 
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), url);
 }
@@ -77,9 +77,11 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, UnsupportedTool) {
                                       future.GetCallback());
 
   ToolResponse response = future.Take();
-  const std::string* error = response.FindString("error");
-  ASSERT_TRUE(error);
-  EXPECT_EQ(*error, "Unsupported tool");
+  ASSERT_FALSE(response.Ok());
+  EXPECT_EQ(response.error().code,
+            actor::mojom::ActionResultCode::kToolUnknown);
+  ASSERT_TRUE(response.error().message.has_value());
+  EXPECT_EQ(*response.error().message, "Unsupported tool");
 }
 
 }  // namespace

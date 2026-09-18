@@ -289,13 +289,13 @@ TEST_F(AiOverlayDialogPageHandlerTest, StreamingSession_HandlesToolCall) {
   remember_request.name = "remember_this";
   remember_request.arguments.Set("key", "test_key");
   remember_request.arguments.Set("value", "test_val");
-  ToolResponse remember_response;
+  std::optional<ToolResponse> remember_response;
   handler()->OnToolCall(remember_request,
                         base::BindLambdaForTesting([&](ToolResponse resp) {
                           remember_response = std::move(resp);
                         }));
-  const std::string* remember_status = remember_response.FindString("status");
-  ASSERT_TRUE(remember_status);
+  ASSERT_TRUE(remember_response.has_value());
+  EXPECT_TRUE(remember_response->Ok());
   const std::vector<std::pair<std::string, std::string>> expected_notes = {
       {"test_key", "test_val"}};
   EXPECT_EQ(controller()->GetRememberedNotes(), expected_notes);
@@ -304,27 +304,25 @@ TEST_F(AiOverlayDialogPageHandlerTest, StreamingSession_HandlesToolCall) {
   ToolRequest forget_request;
   forget_request.name = "forget_this";
   forget_request.arguments.Set("key", "test_key");
-  ToolResponse forget_response;
+  std::optional<ToolResponse> forget_response;
   handler()->OnToolCall(forget_request,
                         base::BindLambdaForTesting([&](ToolResponse resp) {
                           forget_response = std::move(resp);
                         }));
-  const std::string* forget_status = forget_response.FindString("status");
-  ASSERT_TRUE(forget_status);
-  EXPECT_EQ(*forget_status, "ok");
+  ASSERT_TRUE(forget_response.has_value());
+  EXPECT_TRUE(forget_response->Ok());
   EXPECT_TRUE(controller()->GetRememberedNotes().empty());
 
   // Test close_voice_interface tool call
   ToolRequest close_request;
   close_request.name = "close_voice_interface";
-  ToolResponse close_response;
+  std::optional<ToolResponse> close_response;
   handler()->OnToolCall(close_request,
                         base::BindLambdaForTesting([&](ToolResponse resp) {
                           close_response = std::move(resp);
                         }));
-  const std::string* close_status = close_response.FindString("status");
-  ASSERT_TRUE(close_status);
-  EXPECT_EQ(*close_status, "ok");
+  ASSERT_TRUE(close_response.has_value());
+  EXPECT_TRUE(close_response->Ok());
 
   handler_remote()->StopStreamingSession();
   handler_remote().FlushForTesting();

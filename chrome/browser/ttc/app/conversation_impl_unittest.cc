@@ -95,9 +95,7 @@ class FakeSessionController : public SessionController {
                        ToolResponseCallback tool_response) override {
     last_request_.name = tool_request.name;
     last_request_.arguments = tool_request.arguments.Clone();
-    ToolResponse response;
-    response.Set("status", "ok");
-    std::move(tool_response).Run(std::move(response));
+    std::move(tool_response).Run(ToolResponse::Success());
   }
 
   void UserAudioLevelUpdate(float audio_level) override {}
@@ -204,7 +202,7 @@ TEST_F(ConversationImplTest, ToolCallForwardedToSessionController) {
   tool_request.name = "navigate";
   tool_request.arguments.Set("url", "abc");
 
-  ToolResponse response;
+  std::optional<ToolResponse> response;
   conversation.OnToolCall(std::move(tool_request),
                           base::BindLambdaForTesting([&](ToolResponse result) {
                             response = std::move(result);
@@ -218,9 +216,8 @@ TEST_F(ConversationImplTest, ToolCallForwardedToSessionController) {
   EXPECT_EQ(*url, "abc");
 
   // The response should be routed back from the SessionController.
-  const std::string* status = response.FindString("status");
-  ASSERT_TRUE(status);
-  EXPECT_EQ(*status, "ok");
+  ASSERT_TRUE(response.has_value());
+  EXPECT_TRUE(response->Ok());
 }
 
 TEST_F(ConversationImplTest, Downsample48kHzTo16kHz) {

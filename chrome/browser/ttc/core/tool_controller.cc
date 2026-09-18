@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_task_metadata.h"
@@ -49,9 +48,8 @@ void ToolController::ProcessToolCall(const ToolRequest& tool_request,
   }
 #endif
 
-  ToolResponse response;
-  response.Set("error", "Unsupported tool");
-  std::move(callback).Run(std::move(response));
+  std::move(callback).Run(ToolResponse::Error(
+      actor::mojom::ActionResultCode::kToolUnknown, "Unsupported tool"));
 }
 
 void ToolController::EnsureTaskCreated(
@@ -74,12 +72,11 @@ void ToolController::EnsureTaskCreated(
 #if !BUILDFLAG(IS_ANDROID)
 void ToolController::OpenUrl(const base::DictValue& arguments,
                              ToolResponseCallback callback) {
-  ToolResponse response;
-
   const std::string* url = arguments.FindString("url");
   if (!url) {
-    response.Set("error", "Missing url argument");
-    std::move(callback).Run(std::move(response));
+    std::move(callback).Run(
+        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
+                            "Missing url argument"));
     return;
   }
 
@@ -87,8 +84,9 @@ void ToolController::OpenUrl(const base::DictValue& arguments,
 
   // TODO(b/544823467): Add support for opening in a new tab.
   if (new_tab) {
-    response.Set("error", "New tab not supported yet");
-    std::move(callback).Run(std::move(response));
+    std::move(callback).Run(
+        ToolResponse::Error(actor::mojom::ActionResultCode::kNotImplemented,
+                            "New tab not supported yet"));
     return;
   }
 
@@ -99,16 +97,17 @@ void ToolController::OpenUrl(const base::DictValue& arguments,
     browser = collection->GetLastActiveBrowser();
   }
   if (!browser) {
-    response.Set("error", "No active browser window");
-    std::move(callback).Run(std::move(response));
+    std::move(callback).Run(
+        ToolResponse::Error(actor::mojom::ActionResultCode::kWindowWentAway,
+                            "No active browser window"));
     return;
   }
 
   actor::ActorKeyedService* actor_service =
       actor::ActorKeyedService::Get(profile_);
   if (!actor_service) {
-    response.Set("error", "Something went wrong");
-    std::move(callback).Run(std::move(response));
+    // No actor error code describes an unavailable ActorKeyedService.
+    std::move(callback).Run(ToolResponse::Error("Something went wrong"));
     return;
   }
 
@@ -116,8 +115,8 @@ void ToolController::OpenUrl(const base::DictValue& arguments,
 
   tabs::TabInterface* active_tab = browser->GetTabStripModel()->GetActiveTab();
   if (!active_tab) {
-    response.Set("error", "No active tab");
-    std::move(callback).Run(std::move(response));
+    std::move(callback).Run(ToolResponse::Error(
+        actor::mojom::ActionResultCode::kTabWentAway, "No active tab"));
     return;
   }
   std::vector<std::unique_ptr<actor::ToolRequest>> actions;
@@ -136,18 +135,14 @@ void ToolController::OnNavigateActionsFinished(
     actor::TabObservationStrategy strategy) {
   CHECK(!results.empty());
 
-  ToolResponse response;
-  if (!actor::IsOk(*results[0].result)) {
-    std::string error_message = results[0].result->message;
-    if (error_message.empty()) {
-      error_message =
-          "Action failed with code: " +
-          base::NumberToString(static_cast<int>(results[0].result->code));
-    }
-    response.Set("error", std::move(error_message));
+  const actor::mojom::ActionResult& result = *results[0].result;
+  if (!actor::IsOk(result)) {
+    std::move(callback).Run(ToolResponse::Error(result.code, result.message));
+    return;
   }
-  std::move(callback).Run(std::move(response));
+  std::move(callback).Run(ToolResponse::Success());
 }
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace ttc

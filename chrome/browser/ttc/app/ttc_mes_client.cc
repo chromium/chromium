@@ -10,6 +10,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/time/time.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -39,6 +40,36 @@ ToProtoVerbalization(ToolDefinition::Verbalization verbalization) {
     case ToolDefinition::Verbalization::kStandard:
       return optimization_guide::proto::ToolDefinition::VERBALIZATION_STANDARD;
   }
+}
+
+// Encodes `response` as the JSON object the server expects: successful calls
+// report {"status": "ok"} alongside any tool-specific values, and failures
+// report {"error": {"message": <message>, "code": <numeric actor error code>}},
+// where each of `message` and `code` is present only if set on the error.
+base::DictValue ToResponseDict(ToolResponse response) {
+  if (!response.Ok()) {
+    const ToolError& error = response.error();
+    VLOG(1) << "Tool call failed: "
+            << (error.code ? base::ToString(*error.code) : "no code") << ": "
+            << error.message.value_or("no message");
+    CHECK(error.message || error.code);
+
+    base::DictValue error_dict;
+    if (error.message) {
+      error_dict.Set("message", *error.message);
+    }
+    if (error.code) {
+      error_dict.Set("code", static_cast<int>(*error.code));
+    }
+
+    base::DictValue dict;
+    dict.Set("error", std::move(error_dict));
+    return dict;
+  }
+
+  base::DictValue dict = std::move(response).TakeResult();
+  dict.Set("status", "ok");
+  return dict;
 }
 
 }  // namespace
@@ -206,10 +237,10 @@ void TtcMesClient::HandleToolCall(
     if (!args_dict) {
       LOG(ERROR) << "Failed to parse tool call arguments as JSON: "
                  << tool_call.arguments_json();
-      ToolResponse error_response;
-      error_response.Set("error", "Invalid JSON provided for tool arguments");
-      OnToolExecutionComplete(tool_call.call_id(), tool_call.name(),
-                              std::move(error_response));
+      OnToolExecutionComplete(
+          tool_call.call_id(), tool_call.name(),
+          ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
+                              "Invalid JSON provided for tool arguments"));
       return;
     }
     tool_request.arguments = std::move(*args_dict);
@@ -230,7 +261,8 @@ void TtcMesClient::OnToolExecutionComplete(const std::string& call_id,
   auto* tool_response = frame.mutable_tool_response();
   tool_response->set_call_id(call_id);
   tool_response->set_name(tool_name);
-  std::optional<std::string> json = base::WriteJson(response);
+  std::optional<std::string> json =
+      base::WriteJson(ToResponseDict(std::move(response)));
   CHECK(json);
   tool_response->set_response_json(std::move(*json));
   SendFrame(frame);

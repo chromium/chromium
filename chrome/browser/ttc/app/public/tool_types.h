@@ -5,10 +5,13 @@
 #ifndef CHROME_BROWSER_TTC_APP_PUBLIC_TOOL_TYPES_H_
 #define CHROME_BROWSER_TTC_APP_PUBLIC_TOOL_TYPES_H_
 
+#include <optional>
 #include <string>
+#include <variant>
 
 #include "base/functional/callback_forward.h"
 #include "base/values.h"
+#include "components/actor/public/mojom/actor_types.mojom-shared.h"
 
 namespace ttc {
 
@@ -55,8 +58,57 @@ struct ToolRequest {
   base::DictValue arguments;
 };
 
-// The result of executing a tool.
-using ToolResponse = base::DictValue;
+// Details of a failed tool call. At least one of the fields is always set.
+struct ToolError {
+  // The actor error code, if the failure came from an actor tool. Never kOk.
+  std::optional<actor::mojom::ActionResultCode> code;
+
+  // An English language description of the failure. If absent, `code` is set
+  // and callers should describe the failure using it.
+  std::optional<std::string> message;
+};
+
+// The result of executing a tool: either a success, which may carry a
+// tool-specific result dict, or a failure, which carries an actor error code
+// and/or a message. Instances can only be created through the factories below.
+class ToolResponse {
+ public:
+  // Returns a response for a tool call that succeeded. `result` holds
+  // tool-specific values to report back to the model, and may be empty.
+  static ToolResponse Success(base::DictValue result = base::DictValue());
+
+  // Returns a response for a tool call that failed with actor error `code`,
+  // which must not be kOk. An empty `message` is treated as absent, leaving
+  // the failure described by `code` alone.
+  static ToolResponse Error(actor::mojom::ActionResultCode code,
+                            std::string message = std::string());
+
+  // Returns a response for a tool call that failed for a reason that has no
+  // corresponding actor error code. `message` must not be empty.
+  static ToolResponse Error(std::string message);
+
+  ToolResponse(ToolResponse&&);
+  ToolResponse& operator=(ToolResponse&&);
+  ~ToolResponse();
+
+  ToolResponse(const ToolResponse&) = delete;
+  ToolResponse& operator=(const ToolResponse&) = delete;
+
+  // Whether the tool call succeeded.
+  bool Ok() const;
+
+  // The tool-specific result values, which may be empty. Valid only if Ok().
+  const base::DictValue& GetResult() const;
+  base::DictValue TakeResult() &&;
+
+  // Details of the failure. Valid only if !Ok().
+  const ToolError& error() const;
+
+ private:
+  explicit ToolResponse(std::variant<base::DictValue, ToolError> value);
+
+  std::variant<base::DictValue, ToolError> value_;
+};
 
 using ToolResponseCallback = base::OnceCallback<void(ToolResponse)>;
 

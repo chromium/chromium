@@ -113,6 +113,12 @@ class AnimatedIconSource : public gfx::CanvasImageSource {
 };
 #endif
 
+// Builds a failed ToolResponse from an AiOverlayTools error string.
+ttc::ToolResponse ToolFailure(std::string message) {
+  return ttc::ToolResponse::Error(message.empty()
+                                      ? std::string("Tool execution failed")
+                                      : std::move(message));
+}
 
 }  // namespace
 
@@ -617,28 +623,20 @@ void AiOverlayDialogPageHandler::OnToolCall(
           << ", args=" << arguments;
 
   auto send_error = [&response_callback](std::string error_message) {
-    base::DictValue dict;
-    dict.Set("error", std::move(error_message));
-    std::move(response_callback).Run(std::move(dict));
+    std::move(response_callback).Run(ToolFailure(std::move(error_message)));
   };
 
   auto send_status_ok = [&response_callback]() {
-    base::DictValue dict;
-    dict.Set("status", "ok");
-    std::move(response_callback).Run(std::move(dict));
+    std::move(response_callback).Run(ToolResponse::Success());
   };
 
   auto make_status_cb = [](ToolResponseCallback callback) {
     return base::BindOnce(
         [](ToolResponseCallback cb,
            base::expected<std::monostate, std::string> result) {
-          base::DictValue dict;
-          if (result.has_value()) {
-            dict.Set("status", "ok");
-          } else {
-            dict.Set("error", result.error());
-          }
-          std::move(cb).Run(std::move(dict));
+          std::move(cb).Run(result.has_value()
+                                ? ToolResponse::Success()
+                                : ToolFailure(std::move(result.error())));
         },
         std::move(callback));
   };
@@ -755,17 +753,16 @@ void AiOverlayDialogPageHandler::OnToolCall(
             [](ToolResponseCallback cb,
                base::expected<ai_overlay_dialog::mojom::SwitchTabResultPtr,
                               std::string> result) {
-              base::DictValue dict;
-              if (result.has_value() && result.value()) {
-                dict.Set("status", "ok");
-                dict.Set("title", result.value()->title);
-                dict.Set("url", result.value()->url.spec());
-                dict.Set("tab_id", result.value()->tab_id);
-              } else {
-                dict.Set("error",
-                         result.has_value() ? "Null result" : result.error());
+              if (!result.has_value() || !result.value()) {
+                std::move(cb).Run(ToolFailure(
+                    result.has_value() ? "Null result" : result.error()));
+                return;
               }
-              std::move(cb).Run(std::move(dict));
+              base::DictValue dict;
+              dict.Set("title", result.value()->title);
+              dict.Set("url", result.value()->url.spec());
+              dict.Set("tab_id", result.value()->tab_id);
+              std::move(cb).Run(ToolResponse::Success(std::move(dict)));
             },
             std::move(response_callback)));
     return;
@@ -858,27 +855,27 @@ void AiOverlayDialogPageHandler::OnToolCall(
       send_error("Missing query parameter");
       return;
     }
-    tools->OpenPage(*query,
-                    base::BindOnce(
-                        [](ToolResponseCallback cb,
-                           base::expected<std::string, std::string> result) {
-                          base::DictValue dict;
-                          if (result.has_value()) {
-                            std::optional<base::DictValue> parsed =
-                                base::JSONReader::ReadDict(
-                                    result.value(),
-                                    base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-                            if (parsed) {
-                              dict = std::move(*parsed);
-                            } else {
-                              dict.Set("result", result.value());
-                            }
-                          } else {
-                            dict.Set("error", result.error());
-                          }
-                          std::move(cb).Run(std::move(dict));
-                        },
-                        std::move(response_callback)));
+    tools->OpenPage(
+        *query, base::BindOnce(
+                    [](ToolResponseCallback cb,
+                       base::expected<std::string, std::string> result) {
+                      if (!result.has_value()) {
+                        std::move(cb).Run(ToolFailure(result.error()));
+                        return;
+                      }
+                      std::optional<base::DictValue> parsed =
+                          base::JSONReader::ReadDict(
+                              result.value(),
+                              base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+                      base::DictValue dict;
+                      if (parsed) {
+                        dict = std::move(*parsed);
+                      } else {
+                        dict.Set("result", result.value());
+                      }
+                      std::move(cb).Run(ToolResponse::Success(std::move(dict)));
+                    },
+                    std::move(response_callback)));
     return;
   }
 
@@ -928,19 +925,19 @@ void AiOverlayDialogPageHandler::OnToolCall(
       return;
     }
     tools->OpenGeminiPanel(
-        *prompt, base::BindOnce(
-                     [](ToolResponseCallback cb,
-                        base::expected<std::string, std::string> result) {
-                       base::DictValue dict;
-                       if (result.has_value()) {
-                         dict.Set("status", "ok");
-                         dict.Set("message", result.value());
-                       } else {
-                         dict.Set("error", result.error());
-                       }
-                       std::move(cb).Run(std::move(dict));
-                     },
-                     std::move(response_callback)));
+        *prompt,
+        base::BindOnce(
+            [](ToolResponseCallback cb,
+               base::expected<std::string, std::string> result) {
+              if (!result.has_value()) {
+                std::move(cb).Run(ToolFailure(result.error()));
+                return;
+              }
+              base::DictValue dict;
+              dict.Set("message", result.value());
+              std::move(cb).Run(ToolResponse::Success(std::move(dict)));
+            },
+            std::move(response_callback)));
     return;
   }
 
