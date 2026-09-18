@@ -836,18 +836,23 @@ public class IntentHandler {
         AutocompleteMatch match = AutocompleteCoordinator.classify(profile, query);
         assert match != null;
 
-        if (!match.isSearchSuggestion()) return match.getUrl().getSpec();
+        if (!match.isSearchSuggestion()
+                && !ExternalIntentUrlChecker.isUnsafeExternalIntentUrl(match.getUrl())) {
+            return match.getUrl().getSpec();
+        }
 
         List<String> urls =
                 IntentUtils.safeGetStringArrayListExtra(
                         intent, RecognizerResultsIntent.EXTRA_VOICE_SEARCH_RESULT_URLS);
-        if (urls != null && urls.size() > 0) {
-            return urls.get(0);
-        } else {
-            return TemplateUrlServiceFactory.getForProfile(profile)
-                    .getUrlForVoiceSearchQuery(query)
-                    .getSpec();
+        if (urls != null && !urls.isEmpty()) {
+            String url = urls.get(0);
+            if (!TextUtils.isEmpty(url) && !isUrlUnsafe(url)) {
+                return url;
+            }
         }
+        return TemplateUrlServiceFactory.getForProfile(profile)
+                .getUrlForVoiceSearchQuery(query)
+                .getSpec();
     }
 
     /**
@@ -1381,7 +1386,7 @@ public class IntentHandler {
 
         Profile profile = ProfileManager.getLastUsedRegularProfile();
         AutocompleteMatch match = AutocompleteCoordinator.classify(profile, text);
-        if (match != null) {
+        if (match != null && !ExternalIntentUrlChecker.isUnsafeExternalIntentUrl(match.getUrl())) {
             urls.add(match.getUrl().getSpec());
             return urls;
         }

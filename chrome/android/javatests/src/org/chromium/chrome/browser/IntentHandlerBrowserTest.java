@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -84,6 +85,43 @@ public class IntentHandlerBrowserTest {
     @Test
     @MediumTest
     @UiThreadTest
+    @Feature({"Android-AppBase"})
+    public void testGetQueryFromVoiceSearchResultIntent_internalResultUrl() {
+        Intent intent = new Intent(RecognizerResultsIntent.ACTION_VOICE_SEARCH_RESULTS);
+        intent.putStringArrayListExtra(
+                RecognizerResultsIntent.EXTRA_VOICE_SEARCH_RESULT_STRINGS,
+                new ArrayList<>(Collections.singletonList(VOICE_SEARCH_QUERY)));
+        intent.putStringArrayListExtra(
+                RecognizerResultsIntent.EXTRA_VOICE_SEARCH_RESULT_URLS,
+                new ArrayList<>(Collections.singletonList(UrlConstants.VERSION_URL)));
+        String url = IntentHandler.getUrlFromVoiceSearchResult(intent);
+        Assert.assertNotNull(url);
+        Assert.assertFalse(
+                "Supplied internal URL should not be used: " + url,
+                url.startsWith(UrlConstants.CHROME_SCHEME));
+        assertThat(url, startsWith(VOICE_SEARCH_QUERY_URL));
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    @Feature({"Android-AppBase"})
+    public void testGetQueryFromVoiceSearchResultIntent_internalUrlQuery() {
+        Intent intent = new Intent(RecognizerResultsIntent.ACTION_VOICE_SEARCH_RESULTS);
+        intent.putStringArrayListExtra(
+                RecognizerResultsIntent.EXTRA_VOICE_SEARCH_RESULT_STRINGS,
+                new ArrayList<>(Collections.singletonList(UrlConstants.VERSION_URL)));
+        String url = IntentHandler.getUrlFromVoiceSearchResult(intent);
+        Assert.assertNotNull(url);
+        Assert.assertFalse(
+                "Internal URL query should fall back to search: " + url,
+                url.startsWith(UrlConstants.CHROME_SCHEME));
+        assertThat(url, startsWith("https://www.google.com/search?q="));
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
     public void testGetURLFromShareIntent_validURL() {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.putExtra(Intent.EXTRA_TEXT, JUnitTestGURLs.EXAMPLE_URL.getSpec());
@@ -101,6 +139,21 @@ public class IntentHandlerBrowserTest {
         intent.setType("text/plain");
         String url = IntentHandler.getUrlFromShareIntent(intent);
         Assert.assertEquals(url, JUnitTestGURLs.GOOGLE_URL.getSpec());
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    public void testGetURLFromShareIntent_internalUrl() {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.putExtra(Intent.EXTRA_TEXT, UrlConstants.VERSION_URL);
+        intent.setType("text/plain");
+        String url = IntentHandler.getUrlFromShareIntent(intent);
+        Assert.assertNotNull(url);
+        Assert.assertFalse(
+                "Internal URL share should fall back to search: " + url,
+                url.startsWith(UrlConstants.CHROME_SCHEME));
+        assertThat(url, startsWith("https://www.google.com/search?q="));
     }
 
     @Test
