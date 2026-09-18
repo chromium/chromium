@@ -5,6 +5,7 @@
 package org.chromium.components.browser_ui.widget.list_view;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -76,6 +77,15 @@ public class TouchTrackingListView extends ListView implements ListViewTouchTrac
             Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         mGestureDetector = new GestureDetector(context, mGestureListener);
+    }
+
+    @Override
+    protected void onFocusChanged(
+            boolean gainFocus, int direction, @Nullable Rect previouslyFocusedRect) {
+        // Ignore previouslyFocusedRect (which is in root window coordinates when FocusFinder moves
+        // focus from a sibling container such as the tab group color picker) so ListView selects
+        // the first enabled item on FOCUS_DOWN and the last enabled item on FOCUS_UP.
+        super.onFocusChanged(gainFocus, direction, /* previouslyFocusedRect= */ null);
     }
 
     @Override

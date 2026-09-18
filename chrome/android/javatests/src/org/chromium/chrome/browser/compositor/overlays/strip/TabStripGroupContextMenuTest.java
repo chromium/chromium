@@ -36,7 +36,6 @@ import android.widget.ListView;
 
 import androidx.test.espresso.ViewAssertion;
 import androidx.test.filters.SmallTest;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -54,7 +53,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -112,25 +110,19 @@ public class TabStripGroupContextMenuTest {
 
     @After
     public void tearDown() {
-        // Dismiss any remaining context menu.
-        ThreadUtils.runOnUiThreadBlocking(() -> mStripLayoutHelper.dismissContextMenu());
-
-        // Dismiss any visible dialogs(crbug.com/394606261). Clicking anywhere to dismiss the popup
-        // menu may unintentionally trigger a menu item (e.g. "Ungroup"), which can show a dialog.
-        // Attempts to redirect the click to views e.g.(R.id.compositor_view_holder) didn't work, as
-        // no views outside the popup menu were accessible while it was showing. Dismissing the
-        // popup menu directly via StripLayoutHelper was also ineffective, so explicitly dismissing
-        // all dialogs.
+        // Dismiss any remaining context menu and visible dialogs (crbug.com/394606261), then wait
+        // for the window to regain focus before resetting to the initial activity.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    mStripLayoutHelper.dismissContextMenu();
                     mModalDialogManager.dismissAllDialogs(DialogDismissalCause.UNKNOWN);
                 });
+        CriteriaHelper.pollUiThread(() -> mActivityTestRule.getActivity().hasWindowFocus());
         mActivityTestRule.getActivityTestRule().setActivity(mInitialRegularActivity);
     }
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/511288697
     public void testOpenNewTabInGroup() {
         // Prepare standard state and show menu.
         prepareStandardState();
@@ -157,7 +149,6 @@ public class TabStripGroupContextMenuTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/511288697
     public void testUngroup() {
         // Prepare standard state and show menu.
         prepareStandardState();
@@ -234,7 +225,6 @@ public class TabStripGroupContextMenuTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/511288697
     public void testCloseGroup() {
         // Prepare standard state and show menu.
         prepareStandardState();
@@ -316,7 +306,6 @@ public class TabStripGroupContextMenuTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562154475
     public void testDeleteGroup() {
         // Prepare standard state and show menu.
         prepareStandardState();
@@ -358,7 +347,6 @@ public class TabStripGroupContextMenuTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/511288697
     public void testUpdateAndDeleteGroupTitle() {
         // Prepare standard state and show menu.
         prepareStandardState();
@@ -383,7 +371,6 @@ public class TabStripGroupContextMenuTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562154475
     public void testUpdateGroupColor() {
         // Prepare standard state and show menu.
         prepareStandardState();
@@ -418,7 +405,6 @@ public class TabStripGroupContextMenuTest {
     @Test
     @SmallTest
     @Feature("KeyboardA11y")
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/511288697
     public void testKeyboardFocusAndActivation() {
         // Prepare standard state and show menu.
         prepareStandardState();
@@ -428,6 +414,7 @@ public class TabStripGroupContextMenuTest {
 
         // Start with the edit text box. Click to focus, then hit down arrow.
         onView(withId(R.id.tab_group_title)).perform(click());
+        onViewWaiting(allOf(withId(R.id.tab_group_title), isFocused()));
         onView(withId(R.id.tab_group_title)).perform(pressKey(KeyEvent.KEYCODE_DPAD_DOWN));
 
         // One of the color picker circles should be focused in the first row.
@@ -503,7 +490,6 @@ public class TabStripGroupContextMenuTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562154475
     public void testSubMenuScrollability() throws InterruptedException {
         // Specifically test the drill-down case.
         HierarchicalMenuController.setDrillDownOverrideValueForTesting(true);
@@ -631,10 +617,8 @@ public class TabStripGroupContextMenuTest {
                 activity, /* isIncognito= */ false, /* firstIndex= */ 0, /* secondIndex= */ 1);
 
         // Re-initialize helper and manager for the current activity.
-        if (mInitialRegularActivity.getTabModelSelector().isIncognitoBrandedModelSelected()) {
-            mStripLayoutHelper = TabStripTestUtils.getActiveStripLayoutHelper(activity);
-            mModalDialogManager = activity.getModalDialogManager();
-        }
+        mStripLayoutHelper = TabStripTestUtils.getActiveStripLayoutHelper(activity);
+        mModalDialogManager = activity.getModalDialogManager();
     }
 
     private void prepareIncognitoState() {
@@ -664,24 +648,28 @@ public class TabStripGroupContextMenuTest {
     private void showMenu() {
         mStripLayoutHelper =
                 TabStripTestUtils.getActiveStripLayoutHelper(mActivityTestRule.getActivity());
-        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        assertTrue(
-                "First view should be a group title.", views[0] instanceof StripLayoutGroupTitle);
-        StripLayoutGroupTitle stripLayoutGroupTitle = ((StripLayoutGroupTitle) views[0]);
-        float x = stripLayoutGroupTitle.getPaddedX();
-        float y = stripLayoutGroupTitle.getPaddedY();
-        mTabGroupId = stripLayoutGroupTitle.getTabGroupId();
-
         final StripLayoutHelperManager manager =
                 mActivityTestRule.getActivity().getLayoutManager().getStripLayoutHelperManager();
-        InstrumentationRegistry.getInstrumentation()
-                .runOnMainSync(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                manager.simulateLongPress(x, y);
-                            }
-                        });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mStripLayoutHelper.updateLayout(0);
+                    mStripLayoutHelper.finishAnimations();
+                    mStripLayoutHelper.updateLayout(0);
+                    StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+                    assertTrue(
+                            "First view should be a group title.",
+                            views[0] instanceof StripLayoutGroupTitle);
+                    StripLayoutGroupTitle stripLayoutGroupTitle =
+                            ((StripLayoutGroupTitle) views[0]);
+                    float x =
+                            stripLayoutGroupTitle.getPaddedX()
+                                    + stripLayoutGroupTitle.getPaddedWidth() / 2f;
+                    float y =
+                            stripLayoutGroupTitle.getPaddedY()
+                                    + stripLayoutGroupTitle.getPaddedHeight() / 2f;
+                    mTabGroupId = stripLayoutGroupTitle.getTabGroupId();
+                    manager.simulateLongPress(x, y);
+                });
         onViewWaiting(allOf(withId(R.id.tab_group_action_menu_list), isDisplayed()));
     }
 
@@ -689,28 +677,22 @@ public class TabStripGroupContextMenuTest {
         KeyboardVisibilityDelegate delegate =
                 mActivityTestRule.getActivity().getWindowAndroid().getKeyboardDelegate();
 
-        // Click group title text box to display keyboard for editing.
+        // Click group title text box to focus it for editing.
         onView(withId(R.id.tab_group_title)).perform(click());
+        onViewWaiting(allOf(withId(R.id.tab_group_title), isFocused()));
 
-        // Verify keyboard is displayed.
-        CriteriaHelper.pollUiThread(
-                () ->
-                        delegate.isKeyboardShowing(
-                                mActivityTestRule
-                                        .getActivity()
-                                        .getCompositorViewHolderForTesting()));
-
-        // Enter new title in text box and press "enter" to dismiss keyboard to update group title.
+        // Enter new title in text box and press "enter" to dismiss menu and update group title.
         onView(withId(R.id.tab_group_title))
                 .perform(replaceText(title))
                 .perform(pressImeActionButton());
 
-        // Verify keyboard is dismissed.
+        // Verify keyboard and context menu are dismissed.
         CriteriaHelper.pollUiThread(
                 () ->
-                        !delegate.isKeyboardShowing(
-                                mActivityTestRule
-                                        .getActivity()
-                                        .getCompositorViewHolderForTesting()));
+                        mActivityTestRule.getActivity().hasWindowFocus()
+                                && !delegate.isKeyboardShowing(
+                                        mActivityTestRule
+                                                .getActivity()
+                                                .getCompositorViewHolderForTesting()));
     }
 }
