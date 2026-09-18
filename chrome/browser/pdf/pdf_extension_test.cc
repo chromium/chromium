@@ -595,8 +595,9 @@ class PDFExtensionLoadTest
         LOG(INFO) << "Loading: " << pdf_file;
         testing::AssertionResult success =
             LoadPdf(embedded_test_server()->GetURL("/" + pdf_file));
-        if (pdf_file == "pdf_private/cfuzz5.pdf")
+        if (pdf_file == "pdf_private/cfuzz5.pdf") {
           continue;
+        }
         EXPECT_EQ(PdfIsExpectedToLoad(pdf_file), success) << pdf_file;
       }
       ++count;
@@ -1194,8 +1195,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, TabTitleWithEmbeddedPdfDataUrl) {
       "data:text/html,"
       "<html><head><title>TabTitleWithEmbeddedPdf</title></head><body>"
       "<embed type=\"application/pdf\" src=\"" +
-      url +
-      "\"></body></html>";
+      url + "\"></body></html>";
   ASSERT_TRUE(LoadPdfInFirstChild(GURL(data_url)));
   EXPECT_EQ(u"TabTitleWithEmbeddedPdf", GetActiveWebContents()->GetTitle());
 }
@@ -1600,7 +1600,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest,
 #if BUILDFLAG(IS_WIN)
   constexpr int kFirstPosition = 917;
 #elif BUILDFLAG(IS_CHROMEOS)
-  constexpr int kFirstPosition = 937;
+  constexpr int kFirstPosition = 918;
 #else
   constexpr int kFirstPosition = 918;
 #endif
@@ -1617,9 +1617,9 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest,
                                        /*command=*/false);
   ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
 #if BUILDFLAG(IS_WIN)
-  constexpr int kSecondPosition = 1834;
+  constexpr int kSecondPosition = 1837;
 #elif BUILDFLAG(IS_CHROMEOS)
-  constexpr int kSecondPosition = 1875;
+  constexpr int kSecondPosition = 1837;
 #else
   constexpr int kSecondPosition = 1836;
 #endif
@@ -2334,8 +2334,9 @@ class PDFExtensionSaveTest : public PDFExtensionComboBoxTest {
   }
 
   void WaitForSavedPdf(const base::FilePath& path) {
-    while (!base::PathExists(path))
+    while (!base::PathExists(path)) {
       content::RunAllTasksUntilIdle();
+    }
   }
 
   base::FilePath GetDownloadDir() const { return temp_dir_.GetPath(); }
@@ -2483,8 +2484,9 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionSaveWithPolicyTest,
   ClickLeftSideOfEditableComboBox(extension_host);
   TypeHello(extension_host);
   SaveEditedPdf(extension_host);
-  while (CountPdfFilesInDir(GetDownloadDir()) != 102)
+  while (CountPdfFilesInDir(GetDownloadDir()) != 102) {
     content::RunAllTasksUntilIdle();
+  }
 }
 
 class PDFExtensionClipboardTest : public PDFExtensionComboBoxTest,
@@ -2601,8 +2603,9 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionClipboardTest,
   // Put the cursor back to the left side of the combo box.
   ClickLeftSideOfEditableComboBox(extension_host);
 
-  for (int i = 0; i < 3; ++i)
+  for (int i = 0; i < 3; ++i) {
     PressRightArrow(extension_host);
+  }
 
   // Press shift + left arrow 2 times. Letting go of shift in between.
   auto action = base::BindLambdaForTesting(
@@ -2662,8 +2665,9 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionClipboardTest,
   // Put the cursor back to the left side of the combo box.
   ClickLeftSideOfEditableComboBox(extension_host);
 
-  for (int i = 0; i < 3; ++i)
+  for (int i = 0; i < 3; ++i) {
     PressRightArrow(extension_host);
+  }
 
   // Press shift + left arrow 3 times. Holding down shift in between.
   {
@@ -3014,8 +3018,9 @@ class RequestWaiter {
 
   void WaitForRequest() {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    if (!IsAlreadyIntercepted())
+    if (!IsAlreadyIntercepted()) {
       run_loop_.Run();
+    }
     DCHECK(IsAlreadyIntercepted());
   }
 
@@ -3026,8 +3031,9 @@ class RequestWaiter {
     DCHECK(params);
 
     base::AutoLock lock(lock_);
-    if (url_to_intercept_ != params->url_request.url || already_intercepted_)
+    if (url_to_intercept_ != params->url_request.url || already_intercepted_) {
       return false;
+    }
 
     already_intercepted_ = true;
     run_loop_.Quit();
@@ -3461,8 +3467,9 @@ class PDFExtensionSubmitFormTest : public PDFExtensionTest {
   void SetUpOnMainThread() override {
     embedded_test_server()->RegisterRequestMonitor(base::BindLambdaForTesting(
         [this](const net::test_server::HttpRequest& request) {
-          if (request.relative_url != "/pdf/test_endpoint")
+          if (request.relative_url != "/pdf/test_endpoint") {
             return;
+          }
 
           EXPECT_EQ(request.method, net::test_server::METHOD_POST);
           EXPECT_THAT(request.content, StartsWith("\%FDF"));
@@ -4230,8 +4237,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
   ASSERT_EQ(1, browser()->GetTabStripModel()->count());
 
   // Resume the PDF load and ensure the second PDF loads without crashing.
-  test_mime_handler_stream_manager2->ResumeExtensionNavigation(
-      embedder_host2);
+  test_mime_handler_stream_manager2->ResumeExtensionNavigation(embedder_host2);
   ASSERT_TRUE(
       test_mime_handler_stream_manager2->WaitUntilPdfLoaded(embedder_host2));
 
