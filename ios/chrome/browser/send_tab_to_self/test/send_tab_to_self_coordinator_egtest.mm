@@ -104,6 +104,13 @@ void OpenTabGridAndWaitTillVisible() {
                       chrome_test_util::TabGridCellAtIndex(0)];
 }
 
+// Leaves the Tab Grid to bring the active WebState back to the foreground.
+void DismissTabGrid() {
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+}
+
 // Returns the localized label for the Send Tab to Self button.
 NSString* SendTabToSelfButtonLabel() {
   return l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF);
@@ -785,6 +792,7 @@ void DismissSendTabToSelfModal() {
 
   // Clean up.
   DismissSendTabToSelfModal();
+  DismissTabGrid();
 }
 
 // Tests that when the "Send to your device" bottom sheet is opened from the tab
@@ -877,6 +885,7 @@ void DismissSendTabToSelfModal() {
 
   // Clean up.
   DismissSendTabToSelfModal();
+  DismissTabGrid();
 }
 
 // Tests that long-pressing the defocused location view shows "Send to your
@@ -1128,6 +1137,9 @@ void DismissSendTabToSelfModal() {
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:grey_accessibilityLabel(
                                                        labelText)];
+
+  // Clean up: dismiss the Tab Grid.
+  DismissTabGrid();
 }
 
 // Tests that when a shared tab is auto-opened, its tab card in the Tab Grid
@@ -1173,6 +1185,9 @@ void DismissSendTabToSelfModal() {
       selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(labelText),
                                           grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_nil()];
+
+  // Clean up: dismiss the Tab Grid.
+  DismissTabGrid();
 }
 
 // Tests that the tab card activity label is correctly persisted and restored
@@ -1232,6 +1247,9 @@ void DismissSendTabToSelfModal() {
                                                      labelText),
                                                  grey_sufficientlyVisible(),
                                                  nil)];
+
+  // Clean up: dismiss the Tab Grid.
+  DismissTabGrid();
 }
 
 // Tests that when a shared tab is auto-opened, the activation tracking survives
@@ -1359,9 +1377,7 @@ void DismissSendTabToSelfModal() {
   [ChromeEarlGrey waitForMainTabCount:3];
 
   // Leave the Tab Grid to bring the active WebState back to the foreground.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
-      performAction:grey_tap()];
-  [ChromeEarlGreyUI waitForAppToIdle];
+  DismissTabGrid();
 
   // Verify that no InfoBar message banner is displayed since the user already
   // saw the tab arrive in the Tab Grid.
