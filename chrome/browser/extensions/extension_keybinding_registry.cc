@@ -226,7 +226,8 @@ bool ExtensionKeybindingRegistry::NotifyEventTargets(
 
 void ExtensionKeybindingRegistry::CommandExecuted(
     const ExtensionId& extension_id,
-    const std::string& command) {
+    const std::string& command,
+    const ui::Accelerator& accelerator) {
   if (!browser_context_) {
     return;
   }
@@ -251,7 +252,7 @@ void ExtensionKeybindingRegistry::CommandExecuted(
     ActiveTabPermissionGranter* granter =
         web_contents ? ActiveTabPermissionGranter::FromWebContents(web_contents)
                      : nullptr;
-    if (granter) {
+    if (granter && !accelerator.IsMediaKey()) {
       granter->GrantIfRequested(extension);
     }
 
@@ -439,7 +440,7 @@ bool ExtensionKeybindingRegistry::ExecuteCommands(
     }
 
     if (extension_id.empty() || it->first == extension_id) {
-      CommandExecuted(it->first, it->second);
+      CommandExecuted(it->first, it->second, accelerator);
       executed = true;
     }
   }

@@ -117,7 +117,8 @@ class ExtensionKeybindingRegistry : public CommandService::Observer,
 
   // Notifies appropriate parties that a command has been executed.
   void CommandExecuted(const ExtensionId& extension_id,
-                       const std::string& command);
+                       const std::string& command,
+                       const ui::Accelerator& accelerator);
 
   // Add event target (extension_id, command name) to the target list of
   // `accelerator`. Note that only media keys can have more than one event

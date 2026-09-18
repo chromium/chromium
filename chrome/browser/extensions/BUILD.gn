@@ -3275,5 +3275,9 @@ source_set("interactive_ui_tests") {
     if (use_ozone) {
       deps += [ "//ui/ozone" ]
     }
+
+    if (toolkit_views) {
+      deps += [ "//chrome/browser/ui/views/extensions:extensions_views_utils" ]
+    }
   }
 }

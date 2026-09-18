@@ -16,6 +16,9 @@
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/views/extensions/extension_keybinding_registry_views.h"
+#endif
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -26,6 +29,7 @@
 #include "content/public/test/javascript_test_observer.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
+#include "extensions/browser/permissions/active_tab_permission_granter.h"
 #include "extensions/browser/test_event_router_observer.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/extension_action/action_info.h"
@@ -545,6 +549,69 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, MAYBE_AllowDuplicatedMediaKeys) {
   // We should get two success result.
   ASSERT_TRUE(catcher.GetNextResult());
   ASSERT_TRUE(catcher.GetNextResult());
+}
+
+// Test that media keys do not grant activeTab permissions to an extension.
+IN_PROC_BROWSER_TEST_F(CommandsApiTest, MediaKeysDoNotGrantActiveTab) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(R"(
+    {
+      "name": "Media Key Active Tab Test",
+      "version": "1.0",
+      "manifest_version": 3,
+      "permissions": ["activeTab"],
+      "background": {
+        "service_worker": "background.js"
+      },
+      "commands": {
+        "MediaStop": {
+          "suggested_key": {
+            "default": "MediaStop"
+          },
+          "description": "Media stop command"
+        }
+      }
+    })");
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), R"(
+    chrome.commands.onCommand.addListener((command) => {
+      chrome.test.sendMessage("command_received");
+    });
+  )");
+
+  ExtensionTestMessageListener listener("command_received");
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, embedded_test_server()->GetURL(
+                                              "/extensions/test_file.txt")));
+
+  ActiveTabPermissionGranter* granter =
+      ActiveTabPermissionGranter::FromWebContents(web_contents);
+  ASSERT_TRUE(granter);
+  EXPECT_FALSE(granter->IsGranted(extension));
+
+  // Activate the Media Stop key. On Mac, ui_controls cannot synthesize NSEvents
+  // for media keycodes (VKEY_MEDIA_STOP), so trigger the accelerator directly
+  // via ExtensionKeybindingRegistryViews.
+#if BUILDFLAG(IS_MAC)
+  ExtensionKeybindingRegistryViews* registry =
+      ExtensionKeybindingRegistryViews::From(GetBrowserWindowInterface());
+  ASSERT_TRUE(registry);
+  registry->AcceleratorPressed(
+      ui::Accelerator(ui::VKEY_MEDIA_STOP, ui::EF_NONE));
+#else
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(GetBrowserWindowInterface(),
+                                              ui::VKEY_MEDIA_STOP, false, false,
+                                              false, false));
+#endif
+
+  EXPECT_TRUE(listener.WaitUntilSatisfied());
+
+  // Verify that activeTab permission was NOT granted by the media key command.
+  EXPECT_FALSE(granter->IsGranted(extension));
 }
 
 #if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)

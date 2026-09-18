@@ -227,7 +227,7 @@ void ExtensionCommandsGlobalRegistry::OnKeyPressed(
 void ExtensionCommandsGlobalRegistry::ExecuteCommand(
     const ExtensionId& extension_id,
     const std::string& command_id) {
-  CommandExecuted(extension_id, command_id);
+  CommandExecuted(extension_id, command_id, ui::Accelerator());
 }
 
 }  // namespace extensions
