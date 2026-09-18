@@ -299,14 +299,16 @@ struct XuTestCase {
   std::vector<uint8_t> expected_data;  // used only for GetCtrl tests
 };
 
-const XuTestCase xu_test_cases[] = {
-    {"DevPath_CtrlQuery", kDevPath(), kQueryCtrl(), 0, kData()},
-    {"DevId_CtrlQuery", kDevId(), kQueryCtrl(), ENOENT, kEmpty()},
-    {"DevPath_CtrlMapping", kDevPath(), kCtrlMapping(), 0, kValueAsUint8()},
-    {"DevId_CtrlMapping", kDevId(), kCtrlMapping(), ENOENT, kEmpty()},
-    {"IPAddr_CtrlQuery", kIPAddr(), kQueryCtrl(), 0, kEmpty()},
-    {"IPAddr_CtrlMapping", kIPAddr(), kCtrlMapping(), 0, kValueAsUint8()},
-};
+std::vector<XuTestCase> GetXuTestCases() {
+  return {
+      {"DevPath_CtrlQuery", kDevPath(), kQueryCtrl(), 0, kData()},
+      {"DevId_CtrlQuery", kDevId(), kQueryCtrl(), ENOENT, kEmpty()},
+      {"DevPath_CtrlMapping", kDevPath(), kCtrlMapping(), 0, kValueAsUint8()},
+      {"DevId_CtrlMapping", kDevId(), kCtrlMapping(), ENOENT, kEmpty()},
+      {"IPAddr_CtrlQuery", kIPAddr(), kQueryCtrl(), 0, kEmpty()},
+      {"IPAddr_CtrlMapping", kIPAddr(), kCtrlMapping(), 0, kValueAsUint8()},
+  };
+}
 
 // Test that the XU camera can get control given a ctrl query/mapping
 TEST_P(CfMXuCameraServiceTest, XuCameraGetCtrl) {
@@ -342,7 +344,7 @@ TEST_P(CfMXuCameraServiceTest, XuCameraSetCtrl) {
 INSTANTIATE_TEST_SUITE_P(
     CfMXuCameraServiceTests,
     CfMXuCameraServiceTest,
-    testing::ValuesIn<XuTestCase>(xu_test_cases),
+    testing::ValuesIn(GetXuTestCases()),
     [](const testing::TestParamInfo<CfMXuCameraServiceTest::ParamType>& info) {
       return info.param.test_name;
     });

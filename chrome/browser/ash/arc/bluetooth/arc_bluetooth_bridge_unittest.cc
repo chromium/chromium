@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ash/arc/bluetooth/arc_bluetooth_bridge.h"
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/system/sys_info.h"
@@ -36,7 +38,7 @@ namespace {
 constexpr int16_t kTestRssi = -50;
 constexpr int16_t kTestRssi2 = -70;
 constexpr char kTestServiceUUID[] = "00001357-0000-1000-8000-00805f9b34fb";
-const std::vector<uint8_t> kEIR = {0x00, 0x01, 0x02};
+constexpr uint8_t kEIR[] = {0x00, 0x01, 0x02};
 }  // namespace
 
 namespace arc {
@@ -82,7 +84,7 @@ class ArcBluetoothBridgeTest : public testing::Test {
         /* manufacture_data = */ {});
     fake_bluetooth_device_client->UpdateEIR(
         dbus::ObjectPath(bluez::FakeBluetoothDeviceClient::kLowEnergyPath),
-        kEIR);
+        base::ToVector(kEIR));
     fake_bluetooth_gatt_service_client->ExposeHeartRateService(
         dbus::ObjectPath(bluez::FakeBluetoothDeviceClient::kLowEnergyPath));
     fake_bluetooth_gatt_characteristic_client->ExposeHeartRateCharacteristics(
@@ -318,7 +320,7 @@ TEST_F(ArcBluetoothBridgeTest, LEDeviceFound) {
 
   EXPECT_EQ(std::string(bluez::FakeBluetoothDeviceClient::kLowEnergyAddress),
             addr->To<std::string>());
-  EXPECT_EQ(kEIR, eir);
+  EXPECT_THAT(eir, testing::ElementsAreArray(kEIR));
   EXPECT_EQ(kTestRssi, le_device_found_data->rssi());
 
   ChangeTestDeviceRssi(kTestRssi2);

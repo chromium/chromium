@@ -75,6 +75,8 @@ source_set("unit_tests") {
     "//chrome/browser/ui",
     "//chrome/browser/ui/webui/ash/edu_coexistence",
     "//chrome/test:test_support",
+    "//components/account_id",
+    "//components/account_id:test_support",
     "//components/account_manager_core:test_support",
     "//components/policy/proto",
     "//components/prefs:test_support",
@@ -84,10 +86,6 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("browser_tests") {

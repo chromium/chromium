@@ -20,6 +20,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/prefs/pref_service.h"
@@ -50,8 +51,9 @@ constexpr GaiaId::Literal kSecondaryAccount3GaiaId("secondary-account-3");
 constexpr char kSecondaryAccount4[] = "secondaryAccount4@gmail.com";
 constexpr GaiaId::Literal kSecondaryAccount4GaiaId("secondary-account-4");
 
-const AccountId kDeviceAccount =
-    AccountId::FromUserEmailGaiaId(kPrimaryAccount, kPrimaryAccountGaiaId);
+constexpr AccountId::Literal kDeviceAccount =
+    AccountId::Literal::FromUserEmailGaiaId(kPrimaryAccount,
+                                            kPrimaryAccountGaiaId);
 
 ::account_manager::Account GetAccountFor(const std::string& email,
                                          const GaiaId& gaia_id) {

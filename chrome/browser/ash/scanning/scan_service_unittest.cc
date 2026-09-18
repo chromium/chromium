@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/scanning/scan_service.h"
 
 #include <cstdint>
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -83,11 +82,17 @@ constexpr uint32_t kSecondResolution = 600;
 // Email used for test profile.
 constexpr char kUserEmail[] = "user@email.com";
 
-// Translation from file type to saved file extension.
-const std::map<mojo_ipc::FileType, std::string> kFileTypes = {
-    {mojo_ipc::FileType::kJpg, "jpg"},
-    {mojo_ipc::FileType::kPdf, "pdf"},
-    {mojo_ipc::FileType::kPng, "png"}};
+// Returns the saved file extension for `file_type`.
+const char* GetFileExtension(mojo_ipc::FileType file_type) {
+  switch (file_type) {
+    case mojo_ipc::FileType::kJpg:
+      return "jpg";
+    case mojo_ipc::FileType::kPdf:
+      return "pdf";
+    case mojo_ipc::FileType::kPng:
+      return "png";
+  }
+}
 
 // Returns an ADF Duplex DocumentSource object.
 lorgnette::DocumentSource CreateAdfDuplexDocumentSource() {
@@ -129,8 +134,6 @@ std::vector<base::FilePath> CreateSavedScanPaths(
     const base::Time& scan_time,
     const mojo_ipc::FileType& file_type,
     int num_pages_to_scan) {
-  const auto typeAndExtension = kFileTypes.find(file_type);
-  EXPECT_NE(typeAndExtension, kFileTypes.cend());
   std::vector<base::FilePath> file_paths;
   if (file_type == mojo_ipc::FileType::kPdf) {
     file_paths.reserve(1);
@@ -140,7 +143,7 @@ std::vector<base::FilePath> CreateSavedScanPaths(
     for (int i = 1; i <= num_pages_to_scan; i++) {
       file_paths.push_back(dir.Append(
           base::StringPrintf("scan_%s_%d.%s", GetTimestamp(scan_time).c_str(),
-                             i, typeAndExtension->second.c_str())));
+                             i, GetFileExtension(file_type))));
     }
   }
   return file_paths;

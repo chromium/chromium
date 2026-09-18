@@ -82,6 +82,8 @@ constexpr std::string_view kFreeformWallpaperTimeoutMetric =
 constexpr std::string_view kFreeformWallpaperHasImageMetric =
     "Ash.SeaPen.Freeform.Api.Wallpaper.HasImage";
 
+constexpr char kGenerativePrompt[] = "prompt used to generate images";
+
 const SkBitmap CreateTestBitmap() {
   return gfx::test::CreateBitmap(1, SK_ColorMAGENTA);
 }
@@ -936,7 +938,6 @@ TEST_F(SeaPenFetcherTest, FreeformThumbnails_StoresGenerativePrompts) {
       },
       {});
   auto query = MakeFreeformQuery();
-  static std::string generative_prompt = "prompt used to generate images";
 
   EXPECT_CALL(
       snapper_provider(),
@@ -955,7 +956,7 @@ TEST_F(SeaPenFetcherTest, FreeformThumbnails_StoresGenerativePrompts) {
                   std::move(delayed_callback)
                       .Run(CreateMantaResponseWithGenerativePrompt(
                                SeaPenFetcher::kNumTextThumbnailsRequested,
-                               generative_prompt),
+                               kGenerativePrompt),
                            {.status_code = manta::MantaStatusCode::kOk,
                             .message = std::string()});
                 },
@@ -976,7 +977,7 @@ TEST_F(SeaPenFetcherTest, FreeformThumbnails_StoresGenerativePrompts) {
   std::vector<testing::Matcher<ash::SeaPenImage>> matchers;
   for (size_t i = 0; i < SeaPenFetcher::kNumTextThumbnailsRequested; i++) {
     matchers.push_back(MatchesSeaPenImage(
-        CreateTestBitmap(), kFakeGenerationSeed + i, generative_prompt));
+        CreateTestBitmap(), kFakeGenerationSeed + i, kGenerativePrompt));
   }
   EXPECT_THAT(fetch_thumbnails_future
                   .Get<std::optional<std::vector<ash::SeaPenImage>>>()
@@ -995,10 +996,9 @@ TEST_F(SeaPenFetcherTest, FetchFreeformWallpaper_ExperimentOff_UsesUserPrompt) {
           ash::features::kSeaPenQueryRewrite,
       });
   auto user_query = MakeFreeformQuery();
-  std::string generative_prompt = "prompt used to generate images";
   ash::personalization_app::mojom::SeaPenQueryPtr generative_prompt_query =
-      ash::personalization_app::mojom ::SeaPenQuery::NewTextQuery(
-          generative_prompt);
+      ash::personalization_app::mojom::SeaPenQuery::NewTextQuery(
+          kGenerativePrompt);
 
   EXPECT_CALL(snapper_provider(),
               Call(base::test::EqualsProto(CreateMantaRequest(
@@ -1026,7 +1026,7 @@ TEST_F(SeaPenFetcherTest, FetchFreeformWallpaper_ExperimentOff_UsesUserPrompt) {
   sea_pen_fetcher()->FetchWallpaper(
       manta::proto::FeatureName::CHROMEOS_WALLPAPER,
       ash::SeaPenImage(std::string(GetJpgBytes()), kFakeGenerationSeed,
-                       generative_prompt),
+                       kGenerativePrompt),
       user_query, fetch_wallpaper_future.GetCallback());
 
   EXPECT_THAT(fetch_wallpaper_future.Get().value(),
@@ -1043,10 +1043,9 @@ TEST_F(SeaPenFetcherTest, FetchFreeformWallpaper_UsesGenerativePrompt) {
       },
       {});
   auto user_query = MakeFreeformQuery();
-  std::string generative_prompt = "prompt used to generate images";
   ash::personalization_app::mojom::SeaPenQueryPtr generative_prompt_query =
-      ash::personalization_app::mojom ::SeaPenQuery::NewTextQuery(
-          generative_prompt);
+      ash::personalization_app::mojom::SeaPenQuery::NewTextQuery(
+          kGenerativePrompt);
 
   EXPECT_CALL(
       snapper_provider(),
@@ -1075,7 +1074,7 @@ TEST_F(SeaPenFetcherTest, FetchFreeformWallpaper_UsesGenerativePrompt) {
   sea_pen_fetcher()->FetchWallpaper(
       manta::proto::FeatureName::CHROMEOS_WALLPAPER,
       ash::SeaPenImage(std::string(GetJpgBytes()), kFakeGenerationSeed,
-                       generative_prompt),
+                       kGenerativePrompt),
       user_query, fetch_wallpaper_future.GetCallback());
 
   EXPECT_THAT(fetch_wallpaper_future.Get().value(),
@@ -1136,7 +1135,6 @@ TEST_F(SeaPenFetcherTest, FetchTemplateWallpaper_UsesTemplate) {
       },
       {});
   auto template_query = MakeTemplateQuery();
-  std::string generative_prompt = "prompt used to generate images";
 
   EXPECT_CALL(snapper_provider(),
               Call(base::test::EqualsProto(CreateMantaRequest(
@@ -1164,7 +1162,7 @@ TEST_F(SeaPenFetcherTest, FetchTemplateWallpaper_UsesTemplate) {
   sea_pen_fetcher()->FetchWallpaper(
       manta::proto::FeatureName::CHROMEOS_WALLPAPER,
       ash::SeaPenImage(std::string(GetJpgBytes()), kFakeGenerationSeed,
-                       generative_prompt),
+                       kGenerativePrompt),
       template_query, fetch_wallpaper_future.GetCallback());
 
   EXPECT_THAT(fetch_wallpaper_future.Get().value(),
