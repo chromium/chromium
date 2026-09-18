@@ -205,7 +205,8 @@ void AudioController::Capture(const media::AudioBus* audio_source,
     return;
   }
 
-  std::vector<uint8_t> pcm_data(audio_source->frames() * sizeof(int16_t));
+  std::vector<uint8_t> pcm_data(audio_source->frames() * sizeof(int16_t) *
+                                audio_source->channels());
   audio_source->ToInterleavedBytes<media::SignedInt16SampleTypeTraits>(
       base::span(pcm_data));
 
