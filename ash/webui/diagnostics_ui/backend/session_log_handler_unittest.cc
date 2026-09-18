@@ -199,6 +199,7 @@ class SessionLogHandlerTest : public NoSessionAshTestBase {
     task_runner_.reset();
     task_environment()->RunUntilIdle();
     ui::SelectFileDialog::SetFactory(nullptr);
+    EXPECT_TRUE(temp_dir_.Delete());
 
     NoSessionAshTestBase::TearDown();
   }

@@ -89,9 +89,9 @@ constexpr mojom::TopRowKey kClassicTopRowKeys[] = {
     mojom::TopRowKey::kVolumeDown,
     mojom::TopRowKey::kVolumeUp};
 
-const std::vector<uint32_t> kInternalJinlonScanCodes = {
-    0xEA, 0xE7, 0x91, 0x92, 0x93, 0x94, 0x95,
-    0x96, 0x97, 0x98, 0xA0, 0xAE, 0xB0};
+constexpr uint32_t kInternalJinlonScanCodes[] = {0xEA, 0xE7, 0x91, 0x92, 0x93,
+                                                 0x94, 0x95, 0x96, 0x97, 0x98,
+                                                 0xA0, 0xAE, 0xB0};
 
 constexpr mojom::TopRowKey kInternalJinlonTopRowKeys[] = {
     mojom::TopRowKey::kBack,
@@ -497,7 +497,8 @@ class FakeInputDeviceInfoHelper : public InputDeviceInfoHelper {
           ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard;
       info->keyboard_top_row_layout =
           ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom;
-      info->keyboard_scan_codes = kInternalJinlonScanCodes;
+      info->keyboard_scan_codes.assign(std::begin(kInternalJinlonScanCodes),
+                                       std::end(kInternalJinlonScanCodes));
 
       keyboard_info = std::make_unique<ui::KeyboardCapability::KeyboardInfo>();
       keyboard_info->device_type =
@@ -507,7 +508,9 @@ class FakeInputDeviceInfoHelper : public InputDeviceInfoHelper {
           std::end(kInternalJinlonActionKeys));
       keyboard_info->top_row_layout =
           ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom;
-      keyboard_info->top_row_scan_codes = kInternalJinlonScanCodes;
+      keyboard_info->top_row_scan_codes.assign(
+          std::begin(kInternalJinlonScanCodes),
+          std::end(kInternalJinlonScanCodes));
       EXPECT_EQ(7, id);
     } else if (base_name == "event8") {
       device_caps = ui::kMicrosoftBluetoothNumberPad;
@@ -534,7 +537,8 @@ class FakeInputDeviceInfoHelper : public InputDeviceInfoHelper {
           ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard;
       info->keyboard_top_row_layout =
           ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom;
-      info->keyboard_scan_codes = kInternalJinlonScanCodes;
+      info->keyboard_scan_codes.assign(std::begin(kInternalJinlonScanCodes),
+                                       std::end(kInternalJinlonScanCodes));
       // Set 0xC4 to be F8.
       info->keyboard_scan_codes[7] = 0xC4;
 
@@ -546,7 +550,9 @@ class FakeInputDeviceInfoHelper : public InputDeviceInfoHelper {
           std::end(kInternalJinlonActionKeys));
       keyboard_info->top_row_layout =
           ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom;
-      keyboard_info->top_row_scan_codes = kInternalJinlonScanCodes;
+      keyboard_info->top_row_scan_codes.assign(
+          std::begin(kInternalJinlonScanCodes),
+          std::end(kInternalJinlonScanCodes));
       keyboard_info->top_row_scan_codes[7] = 0xC4;
       keyboard_info->top_row_action_keys[7] = ui::TopRowActionKey::kUnknown;
       EXPECT_EQ(11, id);

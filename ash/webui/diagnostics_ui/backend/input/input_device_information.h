@@ -14,10 +14,6 @@
 
 namespace ash::diagnostics {
 
-template <typename T>
-T GetLayoutFromFile(const base::FilePath& file_path,
-                    const std::map<std::string, T>& layout_mapping);
-
 // Wrapper for tracking several pieces of information about an evdev-backed
 // device.
 class InputDeviceInformation {

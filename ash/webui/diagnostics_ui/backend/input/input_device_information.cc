@@ -7,6 +7,9 @@
 #include <fcntl.h>
 #include <linux/input-event-codes.h>
 
+#include <string_view>
+#include <utility>
+
 #include "ash/shell.h"
 #include "ash/webui/diagnostics_ui/backend/input/input_data_provider.h"
 #include "base/files/file_util.h"
@@ -20,19 +23,18 @@
 
 namespace ash::diagnostics {
 
-InputDeviceInformation::InputDeviceInformation() = default;
-InputDeviceInformation::~InputDeviceInformation() = default;
+namespace {
 
-const std::map<std::string, mojom::BottomLeftLayout> kBottomLeftLayoutMapping =
-    {
+constexpr std::pair<std::string_view, mojom::BottomLeftLayout>
+    kBottomLeftLayoutMapping[] = {
         {"keyboard_bottom_left_3_keys",
          mojom::BottomLeftLayout::kBottomLeft3Keys},
         {"keyboard_bottom_left_4_keys",
          mojom::BottomLeftLayout::kBottomLeft4Keys},
 };
 
-const std::map<std::string, mojom::BottomRightLayout>
-    kBottomRightLayoutMapping = {
+constexpr std::pair<std::string_view, mojom::BottomRightLayout>
+    kBottomRightLayoutMapping[] = {
         {"keyboard_bottom_right_2_keys",
          mojom::BottomRightLayout::kBottomRight2Keys},
         {"keyboard_bottom_right_3_keys",
@@ -41,23 +43,30 @@ const std::map<std::string, mojom::BottomRightLayout>
          mojom::BottomRightLayout::kBottomRight4Keys},
 };
 
-const std::map<std::string, mojom::NumpadLayout> kNumpadLayoutMapping = {
-    {"numeric_pad_3_column", mojom::NumpadLayout::kNumpad3Column},
-    {"numeric_pad_4_column", mojom::NumpadLayout::kNumpad4Column},
+constexpr std::pair<std::string_view, mojom::NumpadLayout>
+    kNumpadLayoutMapping[] = {
+        {"numeric_pad_3_column", mojom::NumpadLayout::kNumpad3Column},
+        {"numeric_pad_4_column", mojom::NumpadLayout::kNumpad4Column},
 };
 
-template <typename T>
+template <typename T, size_t N>
 T GetLayoutFromFile(const base::FilePath& file_path,
-                    const std::map<std::string, T>& layout_mapping) {
+                    const std::pair<std::string_view, T> (&mapping)[N]) {
   std::string layout_string;
   if (base::ReadFileToString(file_path, &layout_string)) {
-    auto it = layout_mapping.find(layout_string);
-    if (it != layout_mapping.end()) {
-      return it->second;
+    for (const auto& [key, value] : mapping) {
+      if (key == layout_string) {
+        return value;
+      }
     }
   }
-  return T::kUnknown;  // Default to kUnknown if file read or mapping fails
+  return T::kUnknown;
 }
+
+}  // namespace
+
+InputDeviceInformation::InputDeviceInformation() = default;
+InputDeviceInformation::~InputDeviceInformation() = default;
 
 // All blockings calls for identifying hardware need to go here: both
 // EventDeviceInfo::Initialize and ui::GetInputPathInSys can block in
