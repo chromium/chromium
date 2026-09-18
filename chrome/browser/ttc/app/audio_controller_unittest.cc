@@ -252,6 +252,13 @@ TEST_F(AudioControllerTest, PlayEmptyAudioChunkDoesNotQueue) {
   EXPECT_FALSE(controller.is_playing());
 }
 
+TEST_F(AudioControllerTest, PlayPlaceholderAudioChunkDoesNotQueue) {
+  AudioController controller;
+  // 2 bytes (1 sample) is treated as a placeholder chunk and dropped
+  std::vector<uint8_t> tiny_chunk(2, 0);
+  controller.PlayAudio(tiny_chunk, /*sequence_number=*/1);
+  EXPECT_FALSE(controller.is_playing());
+}
 TEST_F(AudioControllerTest, StartAndStopCaptureWithFakeBinder) {
   bool binder_called = false;
   auto fake_binder = base::BindLambdaForTesting(

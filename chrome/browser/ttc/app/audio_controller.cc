@@ -26,21 +26,26 @@ namespace ttc {
 
 namespace {
 
-// Low-latency hardware sample rate is natively 48kHz on macOS CoreAudio and
-// Android (AAudio/OpenSLES), as well as Linux and Windows WASAPI.
+// Hardware microphone input sample rate is natively 48kHz on macOS CoreAudio
+// and Android (AAudio/OpenSLES), while ConversationImpl downsamples 48kHz to
+// 16kHz for model input. On other platforms, 16kHz capture is requested
+// directly.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 constexpr int kDefaultCaptureSampleRate = 48000;
 constexpr int kDefaultCaptureFramesPerBuffer = 480;  // 10ms at 48kHz
 
-constexpr int kDefaultPlaybackSampleRate = 48000;
-constexpr int kDefaultPlaybackFramesPerBuffer = 480;
+constexpr int kDefaultPlaybackFramesPerBuffer = 480;  // 20ms at 24kHz
 #else
 constexpr int kDefaultCaptureSampleRate = 16000;
 constexpr int kDefaultCaptureFramesPerBuffer = 1600;  // 100ms chunks
 
-constexpr int kDefaultPlaybackSampleRate = 24000;
 constexpr int kDefaultPlaybackFramesPerBuffer = 2400;  // 100ms chunks
 #endif
+
+// Model execution service audio output is 24kHz mono PCM16 across all
+// platforms. Resampling from 24kHz to hardware device sample rate (e.g. 48kHz)
+// is handled automatically by the Chrome Audio Service.
+constexpr int kDefaultPlaybackSampleRate = 24000;
 
 AudioController::AudioStreamFactoryBinder& GetDefaultBinderForTestingStorage() {
   static base::NoDestructor<AudioController::AudioStreamFactoryBinder> binder;
@@ -145,7 +150,9 @@ base::CallbackListSubscription AudioController::AddPlaybackCompletionListener(
 void AudioController::PlayAudio(base::span<const uint8_t> pcm_data,
                                 const media::AudioParameters& params,
                                 int64_t sequence_number) {
-  if (pcm_data.empty()) {
+  // Ignore empty or placeholder/preamble chunks (< 2 samples = 4 bytes) that
+  // carry no usable audio and can cause buffer underruns.
+  if (pcm_data.size() < sizeof(int16_t) * 2) {
     return;
   }
   {
