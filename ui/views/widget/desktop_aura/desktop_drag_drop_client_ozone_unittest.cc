@@ -19,6 +19,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/client/drag_drop_delegate.h"
+#include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/platform_cursor.h"
@@ -27,6 +28,7 @@
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/platform_window/wm/wm_drag_handler.h"
 #include "ui/platform_window/wm/wm_drop_handler.h"
@@ -289,6 +291,13 @@ class DesktopDragDropClientOzoneTest : public ViewsTestBase {
   void ResetClient() {
     SetWmDropHandler(platform_window_.get(), nullptr);
     client_.reset();
+  }
+
+  // Destroys the drag-drop client along with the widget that hosts the drag
+  // source, emulating the teardown of a DesktopNativeWidgetAura.
+  void DestroyDragSource() {
+    ResetClient();
+    widget_.reset();
   }
 
   base::WeakPtr<DesktopDragDropClientOzoneTest> GetWeakPtr() {
@@ -642,6 +651,59 @@ TEST_F(DesktopDragDropClientOzoneTest, DestroyClientDuringDrop) {
   EXPECT_EQ(1, dragdrop_delegate_->num_enters());
   EXPECT_EQ(1, dragdrop_delegate_->num_updates());
   EXPECT_EQ(1, dragdrop_delegate_->num_drops());
+}
+
+namespace {
+
+// A window delegate that runs a closure when the window loses capture.
+class CaptureLostDelegate : public aura::test::TestWindowDelegate {
+ public:
+  explicit CaptureLostDelegate(base::OnceClosure on_capture_lost)
+      : on_capture_lost_(std::move(on_capture_lost)) {}
+
+  CaptureLostDelegate(const CaptureLostDelegate&) = delete;
+  CaptureLostDelegate& operator=(const CaptureLostDelegate&) = delete;
+
+  ~CaptureLostDelegate() override = default;
+
+  // aura::test::TestWindowDelegate:
+  void OnCaptureLost() override {
+    if (on_capture_lost_) {
+      std::move(on_capture_lost_).Run();
+    }
+  }
+
+ private:
+  base::OnceClosure on_capture_lost_;
+};
+
+}  // namespace
+
+// Starting a drag releases the capture, which synchronously dispatches a
+// capture-changed event.  A handler of that event may tear down the UI that
+// owns the drag source, including this client.  Verify that the drag is
+// rejected instead of using the freed objects.
+TEST_F(DesktopDragDropClientOzoneTest, CaptureReleaseDestroysDragSource) {
+  // Create a second top-level widget that holds the capture, the way an open
+  // menu or a tab drag does.
+  auto capture_widget = std::make_unique<Widget>();
+  Widget::InitParams params(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                            Widget::InitParams::TYPE_WINDOW);
+  params.bounds = gfx::Rect(100, 100);
+  capture_widget->Init(std::move(params));
+  capture_widget->Show();
+
+  CaptureLostDelegate capture_lost_delegate(base::BindOnce(
+      &DesktopDragDropClientOzoneTest::DestroyDragSource, GetWeakPtr()));
+  aura::Window capture_window(&capture_lost_delegate);
+  capture_window.Init(ui::LAYER_NOT_DRAWN);
+  capture_widget->GetNativeWindow()->AddChild(&capture_window);
+  capture_window.Show();
+  capture_window.SetCapture();
+  ASSERT_TRUE(capture_window.HasCapture());
+
+  EXPECT_EQ(DragOperation::kNone,
+            StartDragAndDrop(ui::DragDropTypes::DRAG_COPY));
 }
 
 }  // namespace views

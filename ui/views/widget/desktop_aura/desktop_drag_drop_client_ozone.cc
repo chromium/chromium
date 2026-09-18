@@ -15,6 +15,7 @@
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/client/drag_drop_client_observer.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_tracker.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
@@ -167,11 +168,29 @@ DragOperation DesktopDragDropClientOzone::StartDragAndDrop(
   DCHECK(!drag_context_);
   drag_context_ = std::make_unique<DragContext>();
 
+  // This object is owned by a DesktopNativeWidgetAura that can be destroyed
+  // while this method is on the stack, which would also destroy this object
+  // and the windows passed in.  So keep track of whether everything is still
+  // alive after each call that may run nested event handlers.
+  auto alive = weak_factory_.GetWeakPtr();
+  aura::WindowTracker window_tracker({root_window, source_window});
+
   if (drag_handler_->ShouldReleaseCaptureForDrag(data.get())) {
     aura::Window* capture_window =
         aura::client::GetCaptureClient(root_window)->GetGlobalCaptureWindow();
     if (capture_window) {
+      // Releasing capture synchronously dispatches a capture-changed event and
+      // notifies capture observers, which may tear down UI, including this
+      // object and the windows involved in the drag.
       capture_window->ReleaseCapture();
+      if (!alive) {
+        return DragOperation::kNone;
+      }
+      if (!window_tracker.Contains(root_window) ||
+          !window_tracker.Contains(source_window)) {
+        drag_context_.reset();
+        return DragOperation::kNone;
+      }
     }
   }
 
@@ -194,13 +213,9 @@ DragOperation DesktopDragDropClientOzone::StartDragAndDrop(
     }
   }
 
-  // This object is owned by a DesktopNativeWidgetAura that can be destroyed
-  // during the drag loop, which will also destroy this object.  So keep track
-  // of whether we are still alive after the drag ends.
-  auto alive = weak_factory_.GetWeakPtr();
-
   const bool drag_succeeded = drag_handler_->StartDrag(
-      *data.get(), allowed_operations, source, cursor_client->GetCursor(),
+      *data.get(), allowed_operations, source,
+      cursor_client ? cursor_client->GetCursor() : gfx::NativeCursor(),
       !source_window->HasCapture(),
       base::BindOnce(&DesktopDragDropClientOzone::OnDragStarted,
                      weak_factory_.GetWeakPtr()),
