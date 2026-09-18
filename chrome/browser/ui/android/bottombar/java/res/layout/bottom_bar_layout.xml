@@ -5,6 +5,8 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
+<!-- Default layout_height is @dimen/bottom_bar_height; overridden dynamically
+     at runtime in BottomBarCoordinator via BottomBarUtils.getBottomBarHeight(). -->
 <org.chromium.chrome.browser.ui.bottombar.BottomBarView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"

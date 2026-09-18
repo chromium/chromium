@@ -5,11 +5,10 @@
 package org.chromium.chrome.browser.toolbar.bottom;
 
 import android.annotation.SuppressLint;
-import android.content.res.Resources;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.DimenRes;
+import androidx.annotation.Px;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -90,13 +89,16 @@ public class BottomControlsCoordinator implements BackPressHandler {
      * @param layoutManager A {@link LayoutManager} to attach overlays to.
      * @param resourceManager A {@link ResourceManager} for loading textures into the compositor.
      * @param controlsStacker A {@link BottomControlsStacker} to update the bottom controls.
+     * @param browserControlsVisibilityDelegate Delegate for browser controls visibility.
      * @param fullscreenManager A {@link FullscreenManager} to listen for fullscreen changes.
      * @param edgeToEdgeControllerSupplier A supplier to control drawing to the edge of the screen.
+     * @param tabSupplier Supplier of the current tab.
      * @param root The parent {@link ViewGroup} for the bottom controls.
      * @param layerType The layer type of the bottom controls.
+     * @param height The height of the bottom controls in pixels.
      * @param contentDelegateSupplier Supplier of delegate for bottom controls UI operations.
      * @param tabObscuringHandler Delegate object handling obscuring views.
-     * @param overlayPanelVisibilitySupplier Notifies overlay panel visibility event.
+     * @param overlayPanelStateSupplier Notifies overlay panel state event.
      * @param constraintsSupplier Used to access current constraints of the browser controls.
      * @param readAloudRestoringSupplier Supplier that returns true if Read Aloud is currently
      *     restoring its player, e.g. after theme change.
@@ -113,7 +115,7 @@ public class BottomControlsCoordinator implements BackPressHandler {
             NullableObservableSupplier<Tab> tabSupplier,
             ScrollingBottomViewResourceFrameLayout root,
             @LayerType int layerType,
-            @DimenRes int heightResId,
+            @Px int height,
             OneshotSupplier<BottomControlsContentDelegate> contentDelegateSupplier,
             TabObscuringHandler tabObscuringHandler,
             NonNullObservableSupplier<@PanelState Integer> overlayPanelStateSupplier,
@@ -141,10 +143,7 @@ public class BottomControlsCoordinator implements BackPressHandler {
 
         View container = root.findViewById(R.id.bottom_container_slot);
         ViewGroup.LayoutParams params = container.getLayoutParams();
-
-        Resources res = root.getResources();
-        int bottomControlsHeight = res.getDimensionPixelOffset(heightResId);
-        params.height = bottomControlsHeight;
+        params.height = height;
 
         mMediator =
                 new BottomControlsMediator(
@@ -156,7 +155,7 @@ public class BottomControlsCoordinator implements BackPressHandler {
                         layerType,
                         contentDelegateSupplier,
                         tabObscuringHandler,
-                        bottomControlsHeight,
+                        height,
                         root.getTopShadowHeight(),
                         overlayPanelStateSupplier,
                         edgeToEdgeControllerSupplier,
@@ -167,7 +166,7 @@ public class BottomControlsCoordinator implements BackPressHandler {
                 .registerResource(root.getId(), root.getResourceAdapter());
 
         mContentDelegateSupplier = contentDelegateSupplier;
-        Toast.setGlobalExtraYOffset(res.getDimensionPixelSize(heightResId));
+        Toast.setGlobalExtraYOffset(height);
 
         // Set the visibility of BottomControls to false by default. Components within
         // BottomControls should update the visibility explicitly if needed.

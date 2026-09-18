@@ -83,6 +83,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.ToolbarPositionController;
 import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.chrome.browser.ui.edge_to_edge.TransitiveTopInsetProvider;
@@ -529,10 +530,7 @@ public class NewTabAnimationLayoutUnitTest {
         when(mNewTab.isIncognitoBranded()).thenReturn(false);
 
         int bottomBarHeight =
-                mNewTabAnimationLayout
-                        .getContext()
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.bottom_bar_height);
+                BottomBarUtils.getBottomBarHeight(mNewTabAnimationLayout.getContext());
 
         // Viewport of Web page excludes bottom controls
         Rect compositorRect = new Rect(0, 0, 1080, 1920 - bottomBarHeight);
@@ -770,10 +768,7 @@ public class NewTabAnimationLayoutUnitTest {
         when(mNewTab.isIncognitoBranded()).thenReturn(false);
 
         int bottomBarHeight =
-                mNewTabAnimationLayout
-                        .getContext()
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.bottom_bar_height);
+                BottomBarUtils.getBottomBarHeight(mNewTabAnimationLayout.getContext());
 
         // Viewport of Web page excludes bottom controls
         Rect compositorRect = new Rect(0, 0, 1080, 1920 - bottomBarHeight);
@@ -842,10 +837,7 @@ public class NewTabAnimationLayoutUnitTest {
         when(mEdgeToEdgeController.getSystemBottomInsetPx()).thenReturn(bottomChinHeight);
 
         int bottomBarHeight =
-                mNewTabAnimationLayout
-                        .getContext()
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.bottom_bar_height);
+                BottomBarUtils.getBottomBarHeight(mNewTabAnimationLayout.getContext());
 
         // Viewport of NTP is full screen
         Rect compositorRect = new Rect(0, 0, 1080, 1920);
@@ -914,10 +906,7 @@ public class NewTabAnimationLayoutUnitTest {
         when(mEdgeToEdgeController.getSystemBottomInsetPx()).thenReturn(bottomChinHeight);
 
         int bottomBarHeight =
-                mNewTabAnimationLayout
-                        .getContext()
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.bottom_bar_height);
+                BottomBarUtils.getBottomBarHeight(mNewTabAnimationLayout.getContext());
 
         // Viewport of starting Web page excludes bottom controls & bottom chin
         Rect compositorRect = new Rect(0, 0, 1080, 1920 - bottomBarHeight - bottomChinHeight);
@@ -995,10 +984,7 @@ public class NewTabAnimationLayoutUnitTest {
         when(mEdgeToEdgeController.getSystemBottomInsetPx()).thenReturn(bottomChinHeight);
 
         int bottomBarHeight =
-                mNewTabAnimationLayout
-                        .getContext()
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.bottom_bar_height);
+                BottomBarUtils.getBottomBarHeight(mNewTabAnimationLayout.getContext());
         int controlContainerHeight =
                 mNewTabAnimationLayout
                         .getContext()

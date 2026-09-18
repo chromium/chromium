@@ -66,6 +66,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarPositionController;
 import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton;
 import org.chromium.chrome.browser.ui.android.bars_common.TabSwitcherButtonView;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
@@ -501,16 +502,14 @@ public class NewTabAnimationLayout extends Layout {
 
         boolean isNtp = UrlUtilities.isNtpUrl(tab.getUrl()) && !tab.isIncognitoBranded();
 
+        Context context = getContext();
         int height = 0;
         boolean hasBottomBar = false;
-        if (BottomBarConfigUtils.isBottomBarEnabled(getContext())) {
+        if (BottomBarConfigUtils.isBottomBarEnabled(context)) {
             // On NTP, bottom bar is only disabled if shouldDisableOnNtp() is true.
             boolean disabledOnNtp = isNtp && BottomBarConfigUtils.shouldDisableOnNtp();
             if (!disabledOnNtp) {
-                height +=
-                        getContext()
-                                .getResources()
-                                .getDimensionPixelSize(R.dimen.bottom_bar_height);
+                height += BottomBarUtils.getBottomBarHeight(context);
                 hasBottomBar = true;
             }
         }
@@ -518,8 +517,7 @@ public class NewTabAnimationLayout extends Layout {
         boolean hasBottomToolbar = false;
         if (!isNtp && !ToolbarPositionController.shouldShowToolbarOnTop(tab)) {
             height +=
-                    getContext()
-                            .getResources()
+                    context.getResources()
                             .getDimensionPixelSize(R.dimen.control_container_height);
             hasBottomToolbar = true;
         }

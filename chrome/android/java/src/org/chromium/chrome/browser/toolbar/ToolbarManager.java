@@ -228,6 +228,7 @@ import org.chromium.chrome.browser.ui.appmenu.MenuButtonDelegate;
 import org.chromium.chrome.browser.ui.bottombar.AiModeActionCoordinator;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarUtils;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeatureKey;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
@@ -2557,7 +2558,9 @@ public class ToolbarManager
                         mActivityTabProvider.asObservable(),
                         (ScrollingBottomViewResourceFrameLayout) tabGroupUiContainer,
                         LayerType.TABSTRIP_TOOLBAR,
-                        R.dimen.tab_group_ui_height,
+                        mActivity
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.tab_group_ui_height),
                         SupplierUtils.upcast(
                                 mTabGroupUiOneshotSupplier, BottomControlsContentDelegate.class),
                         mTabObscuringHandler,
@@ -2622,7 +2625,7 @@ public class ToolbarManager
                         mActivityTabProvider.asObservable(),
                         (ScrollingBottomViewResourceFrameLayout) bottomAppBarContainer,
                         LayerType.BOTTOM_APP_BAR,
-                        R.dimen.bottom_bar_height,
+                        BottomBarUtils.getBottomBarHeight(mActivity),
                         bottomBarContainerOneshotSupplier,
                         mTabObscuringHandler,
                         mLayoutManager.getOverlayPanelManager().getPanelStateSupplier(),

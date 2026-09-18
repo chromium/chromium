@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.ToolbarPositionController;
 import org.chromium.chrome.browser.toolbar.ToolbarPositionController.ToolbarPositionAndSource;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarPreference;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.base.TestActivity;
 
@@ -105,7 +106,7 @@ public class NewBackgroundTabAnimationDataUnitTest {
         Resources res = activity.getResources();
         mToolbarButtonWidth = res.getDimensionPixelSize(R.dimen.toolbar_button_width);
         mToolbarHeight = res.getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
-        mBottomBarHeight = res.getDimensionPixelSize(R.dimen.bottom_bar_height);
+        mBottomBarHeight = BottomBarUtils.getBottomBarHeight(activity);
 
         when(mToolbarTabSwitcherButton.getGlobalVisibleRect(any(Rect.class)))
                 .thenAnswer(

@@ -11,6 +11,7 @@ import android.content.res.ColorStateList;
 import android.graphics.drawable.RippleDrawable;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.Px;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -49,7 +50,7 @@ public class BottomBarUtils {
     }
 
     /** Gets the height of the bottom bar. */
-    public static int getBottomBarHeight(Context context) {
+    public static @Px int getBottomBarHeight(Context context) {
         return context.getResources().getDimensionPixelSize(R.dimen.bottom_bar_height);
     }
 

@@ -58,6 +58,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.NewTabAnimationUtils.RectStart;
 import org.chromium.chrome.browser.hub.ShrinkExpandHubLayoutAnimatorProvider.ImageViewWeakRefBitmapCallback;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.TestActivity;
 
@@ -999,13 +1000,7 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
         assertNotNull(thumbnailCallback);
 
         Size thumbnailSize = new Size(20, 85);
-        int bottomBarHeight =
-                mHubContainerView
-                        .getContext()
-                        .getResources()
-                        .getDimensionPixelSize(
-                                org.chromium.chrome.browser.ui.android.bars_common.R.dimen
-                                        .bottom_bar_height);
+        int bottomBarHeight = BottomBarUtils.getBottomBarHeight(mHubContainerView.getContext());
         Rect initialRect = new Rect(0, 0, WIDTH, 10);
         Rect finalRect = new Rect(50, 10, 70, 95);
         ShrinkExpandAnimationData data =

@@ -77,6 +77,12 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
                 (BottomBarView)
                         LayoutInflater.from(context)
                                 .inflate(R.layout.bottom_bar_layout, parent, false);
+        int height = BottomBarUtils.getBottomBarHeight(context);
+        ViewGroup.LayoutParams params = mView.getLayoutParams();
+        if (params != null && params.height != height) {
+            params.height = height;
+            mView.setLayoutParams(params);
+        }
 
         boolean shouldIncludeHomeButton = BottomBarConfigUtils.shouldIncludeHomeButtonIfEnabled();
         List<ActionConfig> configs = createActionConfigs(mView, shouldIncludeHomeButton);
