@@ -8,6 +8,8 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
 
@@ -16,8 +18,6 @@ class Database;
 }  // namespace sql
 
 namespace history {
-
-struct VisitContentAnnotations;
 
 // A database that stores visit content & context annotations. A
 // `VisitAnnotationsDatabase` must also be a `VisitDatabase`, as this joins with
@@ -65,6 +65,14 @@ class VisitAnnotationsDatabase {
   bool GetContentAnnotationsForVisit(
       VisitID visit_id,
       VisitContentAnnotations* out_content_annotations);
+
+  // Queries `VisitContentAnnotations` for multiple `visit_ids`. Clears
+  // `content_annotations` and populates it with found annotations keyed by
+  // VisitID. Returns true on success (even if some IDs were not found in the
+  // database).
+  bool GetContentAnnotationsForVisits(
+      base::span<const VisitID> visit_ids,
+      base::flat_map<VisitID, VisitContentAnnotations>* content_annotations);
 
   // Query for a `VisitContextAnnotations` given `visit_id`. If it's found and
   // valid, this method returns true, and `out_context_annotations` is filled.

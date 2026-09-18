@@ -7,6 +7,9 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
+#include "base/containers/span.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
@@ -733,6 +736,111 @@ TEST_F(VisitAnnotationsDatabaseTest, DeserializeDataFromCrossDeviceSync) {
   EXPECT_EQ(deserialized_categories, expected_deserialized_categories);
   EXPECT_EQ(deserialized_related_searches,
             expected_deserialized_related_searches);
+}
+
+TEST_F(VisitAnnotationsDatabaseTest,
+       GetContentAnnotationsForVisits_EmptyInput) {
+  base::flat_map<VisitID, VisitContentAnnotations> annotations;
+  annotations[42] = VisitContentAnnotations();
+  EXPECT_TRUE(GetContentAnnotationsForVisits({}, &annotations));
+  EXPECT_TRUE(annotations.empty());
+}
+
+TEST_F(VisitAnnotationsDatabaseTest,
+       GetContentAnnotationsForVisits_PartialPresence) {
+  VisitID id1 = AddVisitWithTime(base::Time::Now());
+  VisitID id2 = AddVisitWithTime(base::Time::Now());
+  VisitID id3 = AddVisitWithTime(base::Time::Now());
+
+  VisitContentAnnotations annot1;
+  annot1.search_terms = u"search term 1";
+  AddContentAnnotationsForVisit(id1, annot1);
+
+  VisitContentAnnotations annot3;
+  annot3.search_terms = u"search term 3";
+  AddContentAnnotationsForVisit(id3, annot3);
+
+  // Query id1, id2 (no annotations), id3, and non-existent id 99999.
+  base::flat_map<VisitID, VisitContentAnnotations> annotations;
+  std::vector<VisitID> query_ids = {id1, id2, id3, 99999};
+  EXPECT_TRUE(GetContentAnnotationsForVisits(query_ids, &annotations));
+  EXPECT_EQ(2u, annotations.size());
+  EXPECT_TRUE(annotations.contains(id1));
+  EXPECT_EQ(u"search term 1", annotations[id1].search_terms);
+  EXPECT_FALSE(annotations.contains(id2));
+  EXPECT_TRUE(annotations.contains(id3));
+  EXPECT_EQ(u"search term 3", annotations[id3].search_terms);
+}
+
+TEST_F(VisitAnnotationsDatabaseTest,
+       GetContentAnnotationsForVisits_DuplicateIDs) {
+  VisitID id1 = AddVisitWithTime(base::Time::Now());
+  VisitID id2 = AddVisitWithTime(base::Time::Now());
+
+  VisitContentAnnotations annot1;
+  annot1.search_terms = u"alpha";
+  AddContentAnnotationsForVisit(id1, annot1);
+
+  VisitContentAnnotations annot2;
+  annot2.search_terms = u"beta";
+  AddContentAnnotationsForVisit(id2, annot2);
+
+  // Passing duplicate IDs in the query vector should not error or duplicate map
+  // entries, even when duplicates span across batch chunks (kBatchSize = 250).
+  base::flat_map<VisitID, VisitContentAnnotations> annotations;
+  std::vector<VisitID> query_ids = {id1, id2, id1, id2, id1};
+  EXPECT_TRUE(GetContentAnnotationsForVisits(query_ids, &annotations));
+  EXPECT_EQ(2u, annotations.size());
+  EXPECT_TRUE(annotations.contains(id1));
+  EXPECT_TRUE(annotations.contains(id2));
+
+  // Verify duplicates across chunk boundaries.
+  std::vector<VisitID> cross_chunk_query_ids;
+  cross_chunk_query_ids.reserve(252);
+  cross_chunk_query_ids.push_back(id1);
+  for (int i = 0; i < 250; ++i) {
+    cross_chunk_query_ids.push_back(90000 + i);
+  }
+  cross_chunk_query_ids.push_back(id1);
+  annotations.clear();
+  EXPECT_TRUE(
+      GetContentAnnotationsForVisits(cross_chunk_query_ids, &annotations));
+  EXPECT_EQ(1u, annotations.size());
+  EXPECT_TRUE(annotations.contains(id1));
+  EXPECT_EQ(u"alpha", annotations[id1].search_terms);
+}
+
+TEST_F(VisitAnnotationsDatabaseTest,
+       GetContentAnnotationsForVisits_BatchChunking) {
+  constexpr size_t kNumVisits = 251;
+  std::vector<VisitID> expected_ids;
+  expected_ids.reserve(kNumVisits);
+
+  for (size_t i = 0; i < kNumVisits; ++i) {
+    VisitID id = AddVisitWithTime(base::Time::Now());
+    VisitContentAnnotations annot;
+    annot.alternative_title = base::StringPrintf("title_%zu", i);
+    AddContentAnnotationsForVisit(id, annot);
+    expected_ids.push_back(id);
+  }
+
+  // Exact boundary of kBatchSize (250).
+  base::flat_map<VisitID, VisitContentAnnotations> annotations_250;
+  EXPECT_TRUE(GetContentAnnotationsForVisits(
+      base::span(expected_ids).first(250u), &annotations_250));
+  EXPECT_EQ(250u, annotations_250.size());
+
+  // Second chunk boundary of kBatchSize + 1 (251).
+  base::flat_map<VisitID, VisitContentAnnotations> annotations_251;
+  EXPECT_TRUE(GetContentAnnotationsForVisits(expected_ids, &annotations_251));
+  EXPECT_EQ(251u, annotations_251.size());
+
+  for (size_t i = 0; i < expected_ids.size(); ++i) {
+    VisitID id = expected_ids[i];
+    ASSERT_TRUE(annotations_251.contains(id));
+    EXPECT_EQ(base::StringPrintf("title_%zu", i),
+              annotations_251[id].alternative_title);
+  }
 }
 
 }  // namespace history
