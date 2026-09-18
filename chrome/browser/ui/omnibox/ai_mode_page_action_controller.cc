@@ -52,6 +52,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
@@ -317,7 +318,9 @@ void AiModePageActionController::UpdatePageActionUi(bool is_visible) {
 
   if (omnibox::kWebUIOmniboxDynamicColorScheme.Get()) {
     page_action_controller->OverrideBackgroundColor(
-        kActionAiMode, kColorOmniboxResultsBackgroundHovered);
+        kActionAiMode, ui::kColorSysStateHoverOnSubtle);
+    page_action_controller->OverrideForegroundColor(kActionAiMode,
+                                                    ui::kColorSysOnSurface);
   }
 
   ImageCacheKey key{config->id, GURL(config->favicon_url).spec()};
@@ -332,14 +335,21 @@ void AiModePageActionController::UpdatePageActionUi(bool is_visible) {
   }
 
   if (config->id == SearchEngineType::SEARCH_ENGINE_GOOGLE) {
+    ui::ColorId spark_color_id = kColorOmniboxIconForegroundTonal;
+    if (omnibox::kWebUIOmniboxDynamicColorScheme.Get()) {
+      spark_color_id = ui::kColorSysOnSurface;
+    }
     ui::ImageModel image_model = ui::ImageModel::FromImageGenerator(
-        base::BindRepeating([](const ui::ColorProvider* color_provider) {
-          return gfx::CreateVectorIcon(
-              features::IsRoundedIconsEnabled() ? omnibox::kSearchSparkIcon
-                                                : omnibox::kSearchSparkOldIcon,
-              GetLayoutConstant(LayoutConstant::kLocationBarChipIconSize),
-              color_provider->GetColor(kColorOmniboxIconForegroundTonal));
-        }),
+        base::BindRepeating(
+            [](ui::ColorId color_id, const ui::ColorProvider* color_provider) {
+              return gfx::CreateVectorIcon(
+                  features::IsRoundedIconsEnabled()
+                      ? omnibox::kSearchSparkIcon
+                      : omnibox::kSearchSparkOldIcon,
+                  GetLayoutConstant(LayoutConstant::kLocationBarChipIconSize),
+                  color_provider->GetColor(color_id));
+            },
+            spark_color_id),
         gfx::Size(GetLayoutConstant(LayoutConstant::kLocationBarChipIconSize),
                   GetLayoutConstant(LayoutConstant::kLocationBarChipIconSize)));
     ShowAndOverrideImage(image_model, key, IconSource::kVectorIcon);

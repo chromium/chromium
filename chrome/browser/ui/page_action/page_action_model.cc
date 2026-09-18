@@ -443,4 +443,19 @@ std::optional<ui::ColorId> PageActionModel::GetOverrideBackgroundColorId()
   return override_background_color_id_;
 }
 
+void PageActionModel::SetOverrideForegroundColorId(
+    PageActionPassKey,
+    std::optional<ui::ColorId> override_foreground_color_id) {
+  if (override_foreground_color_id_ == override_foreground_color_id) {
+    return;
+  }
+  override_foreground_color_id_ = override_foreground_color_id;
+  NotifyChange(Property::kOverrideForegroundColor);
+}
+
+std::optional<ui::ColorId> PageActionModel::GetOverrideForegroundColorId()
+    const {
+  return override_foreground_color_id_;
+}
+
 }  // namespace page_actions

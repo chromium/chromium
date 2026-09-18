@@ -317,7 +317,8 @@ omnibox-popup-contextual-entrypoint {
 }
 
 :host([searchbox-dynamic-color-scheme_]) #composeButton::part(compose-button) {
-  background-color: var(--color-omnibox-results-background-hovered);
+  background-color: var(--color-sys-state-hover-on-subtle);
+  color: var(--color-sys-on-surface);
 }
 
 #composeButton[has-virtual-focus]::part(compose-button),

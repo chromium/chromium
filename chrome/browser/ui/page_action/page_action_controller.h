@@ -315,6 +315,9 @@ class PageActionController {
   virtual void OverrideBackgroundColor(
       actions::ActionId action_id,
       std::optional<ui::ColorId> override_background_color_id) = 0;
+  virtual void OverrideForegroundColor(
+      actions::ActionId action_id,
+      std::optional<ui::ColorId> override_foreground_color_id) = 0;
 
   // Functions to set configs for anchored messages.
   virtual void SetAnchoredMessageText(
@@ -444,6 +447,9 @@ class PageActionControllerImpl : public PageActionController,
   void OverrideBackgroundColor(
       actions::ActionId action_id,
       std::optional<ui::ColorId> override_background_color_id) override;
+  void OverrideForegroundColor(
+      actions::ActionId action_id,
+      std::optional<ui::ColorId> override_foreground_color_id) override;
   void SetAnchoredMessageText(
       actions::ActionId action_id,
       const std::u16string& anchored_message_text) override;

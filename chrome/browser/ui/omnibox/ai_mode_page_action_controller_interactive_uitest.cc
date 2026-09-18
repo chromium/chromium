@@ -36,6 +36,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interactive_test.h"
+#include "ui/color/color_id.h"
 
 namespace omnibox {
 
@@ -359,9 +360,32 @@ IN_PROC_BROWSER_TEST_F(
                 kActionAiMode));
         ASSERT_NE(view, nullptr);
         SkColor actual_bg_color = view->GetBackgroundColorForTesting();
-        SkColor expected_bg_color = view->GetColorProvider()->GetColor(
-            kColorOmniboxResultsBackgroundHovered);
+        SkColor expected_bg_color =
+            view->GetColorProvider()->GetColor(ui::kColorSysStateHoverOnSubtle);
         EXPECT_EQ(actual_bg_color, expected_bg_color);
+      }));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AiModePageActionControllerDynamicAiModeButtonInteractiveUiTest,
+    VerifyForegroundColorOverride) {
+  RunTestSequence(
+      OpenTabWithPageUrlAndFocusOmnibox(/*is_ntp=*/true),
+      CheckChipVisible(true), Do([this]() {
+        if (features::IsWebUILocationBarEnabled()) {
+          return;
+        }
+        auto* provider = BrowserView::GetBrowserViewForBrowser(browser())
+                             ->toolbar_button_provider();
+        auto* view = static_cast<page_actions::PageActionView*>(
+            page_actions::GetIconLabelBubbleViewForTesting(
+                provider->GetPageActionViewInterface(kActionAiMode),
+                kActionAiMode));
+        ASSERT_NE(view, nullptr);
+        SkColor actual_fg_color = view->GetForegroundColorForTesting();
+        SkColor expected_fg_color =
+            view->GetColorProvider()->GetColor(ui::kColorSysOnSurface);
+        EXPECT_EQ(actual_fg_color, expected_fg_color);
       }));
 }
 

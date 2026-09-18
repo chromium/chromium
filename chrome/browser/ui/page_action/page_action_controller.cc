@@ -475,6 +475,13 @@ void PageActionControllerImpl::OverrideBackgroundColor(
       PageActionPassKey(), override_background_color_id);
 }
 
+void PageActionControllerImpl::OverrideForegroundColor(
+    actions::ActionId action_id,
+    std::optional<ui::ColorId> override_foreground_color_id) {
+  FindPageActionModel(action_id).SetOverrideForegroundColorId(
+      PageActionPassKey(), override_foreground_color_id);
+}
+
 void PageActionControllerImpl::SetAnchoredMessageText(
     actions::ActionId action_id,
     const std::u16string& anchored_message_text) {

@@ -721,6 +721,16 @@ SkColor PageActionView::GetBackgroundColor() const {
   return IconLabelBubbleView::GetBackgroundColor();
 }
 
+SkColor PageActionView::GetForegroundColor() const {
+  if (observation_.IsObserving() &&
+      observation_.GetSource()->GetOverrideForegroundColorId().has_value() &&
+      GetColorProvider()) {
+    return GetColorProvider()->GetColor(
+        *observation_.GetSource()->GetOverrideForegroundColorId());
+  }
+  return IconLabelBubbleView::GetForegroundColor();
+}
+
 bool PageActionView::PaintedOnSolidBackground() const {
   return IconLabelBubbleView::PaintedOnSolidBackground() ||
          IsAnchoredMessageVisible();

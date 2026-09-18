@@ -159,6 +159,7 @@ class PageActionView : public IconLabelBubbleView,
 
   // IconLabelBubbleView:
   SkColor GetBackgroundColor() const override;
+  SkColor GetForegroundColor() const override;
   bool PaintedOnSolidBackground() const override;
 
  private:
