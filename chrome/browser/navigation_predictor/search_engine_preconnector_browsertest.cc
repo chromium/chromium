@@ -698,6 +698,19 @@ class SearchEnginePreconnectorWithPreconnect2FeatureBrowserTest
                                                 disabled_features);
   }
 
+  void SetUpOnMainThread() override {
+    SearchEnginePreconnector* preconnector = GetSearchEnginePreconnector();
+    ASSERT_TRUE(preconnector);
+    preconnector->ResetStateForTesting();
+
+    SearchEnginePreconnectorBrowserTest::SetUpOnMainThread();
+
+    for (auto& [url, count] : preresolve_counts_) {
+      count = 0;
+    }
+    remote_.reset();
+  }
+
   bool PreconnectFromKeyedServiceEnabled() const override { return GetParam(); }
 };
 
@@ -727,6 +740,19 @@ class SearchEnginePreconnectorWithResetConnectionFailureOnSessionUsedBrowserTest
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
+  }
+
+  void SetUpOnMainThread() override {
+    SearchEnginePreconnector* preconnector = GetSearchEnginePreconnector();
+    ASSERT_TRUE(preconnector);
+    preconnector->ResetStateForTesting();
+
+    SearchEnginePreconnectorBrowserTest::SetUpOnMainThread();
+
+    for (auto& [url, count] : preresolve_counts_) {
+      count = 0;
+    }
+    remote_.reset();
   }
 
   bool PreconnectFromKeyedServiceEnabled() const override { return GetParam(); }

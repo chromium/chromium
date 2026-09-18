@@ -161,6 +161,14 @@ class SearchEnginePreconnector
     is_short_session_for_testing_ = is_short_session;
   }
 
+  void ResetStateForTesting() {
+    StopPreconnecting();
+    ResetReceiver();
+    preconnect_manager_.reset();
+    consecutive_connection_failure_ = 0;
+    last_preconnect_attempt_time_.reset();
+  }
+
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
   bool HasDeviceBoundSessionPrewarmerForTesting() const {
     return !!device_bound_session_prewarmer_;
