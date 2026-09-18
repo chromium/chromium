@@ -232,7 +232,7 @@ void AwDrawFnImpl::ReportRenderingThreads(int functor,
 AwDrawFnImpl::AwDrawFnImpl()
     : render_thread_manager_(content::GetUIThreadTaskRunner({})) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(g_draw_fn_function_table);
+  CHECK(g_draw_fn_function_table);
 
   ++g_instance_count;
 
