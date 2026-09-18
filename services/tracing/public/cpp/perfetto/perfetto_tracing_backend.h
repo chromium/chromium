@@ -5,10 +5,14 @@
 #ifndef SERVICES_TRACING_PUBLIC_CPP_PERFETTO_PERFETTO_TRACING_BACKEND_H_
 #define SERVICES_TRACING_PUBLIC_CPP_PERFETTO_PERFETTO_TRACING_BACKEND_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/thread_annotations.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing_backend.h"
 
@@ -69,11 +73,17 @@ class PerfettoTracingBackend : public perfetto::TracingBackend {
   SEQUENCE_CHECKER(muxer_sequence_checker_);
   base::Lock task_runner_lock_;
   base::WeakPtr<ProducerEndpoint> producer_endpoint_;
-  raw_ptr<perfetto::base::TaskRunner> muxer_task_runner_ = nullptr;
-  mojo::PendingRemote<mojom::PerfettoService> perfetto_service_;
+  raw_ptr<perfetto::base::TaskRunner> muxer_task_runner_
+      GUARDED_BY(task_runner_lock_) = nullptr;
+  mojo::PendingRemote<mojom::PerfettoService> perfetto_service_
+      GUARDED_BY(task_runner_lock_);
 
-  scoped_refptr<base::SequencedTaskRunner> consumer_connection_task_runner_;
-  ConsumerConnectionFactory consumer_connection_factory_;
+  scoped_refptr<base::SequencedTaskRunner> consumer_connection_task_runner_
+      GUARDED_BY(task_runner_lock_);
+  ConsumerConnectionFactory consumer_connection_factory_
+      GUARDED_BY(task_runner_lock_) = nullptr;
+  std::optional<base::WeakPtr<ConsumerEndpoint>> pending_consumer_endpoint_
+      GUARDED_BY(task_runner_lock_);
 
   base::WeakPtrFactory<PerfettoTracingBackend> weak_factory_{this};
 };

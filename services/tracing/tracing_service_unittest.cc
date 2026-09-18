@@ -545,4 +545,56 @@ TEST_F(TracingServiceTest, TraceToFile) {
 }
 #endif
 
+TEST_F(TracingServiceTest, DeferredConsumerConnection) {
+  perfetto::DataSourceDescriptor dsd;
+  dsd.set_name("com.example.custom_data_source_deferred");
+  CustomDataSource::Events ds_events;
+  CustomDataSource::set_events(&ds_events);
+  CustomDataSource::Register(dsd);
+
+  // Create, configure, and start a tracing session BEFORE the consumer and
+  // producer are connected to the tracing service (simulating early startup).
+  auto session =
+      perfetto::Tracing::NewTrace(perfetto::BackendType::kCustomBackend);
+  perfetto::TraceConfig perfetto_config;
+  perfetto_config.add_buffers()->set_size_kb(1024);
+  auto* ds_cfg = perfetto_config.add_data_sources()->mutable_config();
+  ds_cfg->set_name("com.example.custom_data_source_deferred");
+  session->Setup(perfetto_config);
+  session->Start();
+
+  // Wait for InitializeConsumer() -> ConnectConsumer() to execute on the
+  // Perfetto task runner before SetConsumerConnectionFactory() is called.
+  base::RunLoop wait_for_consumer_init;
+  PerfettoTracedProcess::GetTaskRunner()->PostTask(
+      FROM_HERE, wait_for_consumer_init.QuitClosure());
+  wait_for_consumer_init.Run();
+
+  // Now connect both consumer and producer to the tracing service; the pending
+  // consumer endpoint should connect and start the buffered session.
+  EnableClientApiConsumer();
+  EnableClientApiProducer();
+
+  ds_events.wait_for_setup_loop.Run();
+  ds_events.wait_for_start_loop.Run();
+
+  size_t kNumPackets = 10;
+  CustomDataSource::Trace([kNumPackets](CustomDataSource::TraceContext ctx) {
+    for (size_t i = 0; i < kNumPackets; i++) {
+      ctx.NewTracePacket()->set_for_testing()->set_str(
+          tracing::kPerfettoTestString);
+    }
+    ctx.Flush();
+  });
+
+  base::RunLoop wait_for_stop_loop;
+  session->SetOnStopCallback(
+      [&wait_for_stop_loop] { wait_for_stop_loop.Quit(); });
+  session->Stop();
+  ds_events.wait_for_stop_loop.Run();
+  wait_for_stop_loop.Run();
+
+  EXPECT_EQ(kNumPackets, ReadAndCountTestPackets(*session));
+}
+
 }  // namespace tracing
