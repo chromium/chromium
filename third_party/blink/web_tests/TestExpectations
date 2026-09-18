@@ -9215,3 +9215,6 @@ crbug.com/562009743 [ Win ] fast/ruby/base-shorter-than-text.html [ Failure Pass
 
 # Gardener 2026-09-17
 crbug.com/562895059 external/wpt/streams/readable-byte-streams/crashtests/from-cross-realm.html [ Crash Failure ]
+
+# Gardener 2026-09-18
+crbug.com/559396684 [ Debug ] external/wpt/content-security-policy/securitypolicyviolation/targeting-for-inline-handler-in-markup-then-disconnected.html [ Failure Pass ]
