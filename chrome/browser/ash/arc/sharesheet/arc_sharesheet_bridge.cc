@@ -44,7 +44,7 @@ class ArcSharesheetBridgeFactory
 // static
 ArcSharesheetBridge* ArcSharesheetBridge::GetForBrowserContext(
     content::BrowserContext* context) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   return ArcSharesheetBridgeFactory::GetForBrowserContext(context);
 }
 
@@ -58,13 +58,13 @@ ArcSharesheetBridge::ArcSharesheetBridge(content::BrowserContext* context,
                                          ArcBridgeService* bridge_service)
     : arc_bridge_service_(bridge_service),
       profile_(Profile::FromBrowserContext(context)) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   arc_bridge_service_->sharesheet()->SetHost(this);
   VLOG(1) << "ArcSharesheetBridge created";
 }
 
 ArcSharesheetBridge::~ArcSharesheetBridge() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   arc_bridge_service_->sharesheet()->SetHost(nullptr);
 }
 

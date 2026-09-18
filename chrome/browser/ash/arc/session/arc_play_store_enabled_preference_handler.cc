@@ -41,8 +41,8 @@ ArcPlayStoreEnabledPreferenceHandler::ArcPlayStoreEnabledPreferenceHandler(
     Profile* profile,
     ArcSessionManager* arc_session_manager)
     : profile_(profile), arc_session_manager_(arc_session_manager) {
-  DCHECK(profile_);
-  DCHECK(arc_session_manager_);
+  CHECK(profile_, base::NotFatalUntil::M160);
+  CHECK(arc_session_manager_, base::NotFatalUntil::M160);
 }
 
 ArcPlayStoreEnabledPreferenceHandler::~ArcPlayStoreEnabledPreferenceHandler() {
@@ -50,7 +50,7 @@ ArcPlayStoreEnabledPreferenceHandler::~ArcPlayStoreEnabledPreferenceHandler() {
 }
 
 void ArcPlayStoreEnabledPreferenceHandler::Start() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   // Start observing Google Play Store enabled preference.
   pref_change_registrar_.Init(profile_->GetPrefs());
@@ -100,7 +100,7 @@ void ArcPlayStoreEnabledPreferenceHandler::Start() {
 }
 
 void ArcPlayStoreEnabledPreferenceHandler::OnPreferenceChanged() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   const bool is_play_store_enabled = IsArcPlayStoreEnabledForProfile(profile_);
   if (!IsArcPlayStoreEnabledPreferenceManagedForProfile(profile_)) {
     // Update UMA only for non-Managed cases. Note, that multiple OptIn/OptOut

@@ -93,7 +93,7 @@ void ArcActivationNecessityChecker::OnChecked(CheckCallback callback,
                                               bool result) {
   // Check if the user installed any apps and the last launch time if any.
   ArcAppListPrefs* app_list = ArcAppListPrefs::Get(profile_);
-  DCHECK(app_list);
+  CHECK(app_list, base::NotFatalUntil::M160);
   std::optional<base::Time> last_launch;
   bool is_app_installed = false;
   const auto app_ids = app_list->GetAppIds();

@@ -48,12 +48,12 @@ bool IsControlChar(const std::u16string& text) {
 
 ui::TextInputClient* GetTextInputClient() {
   ash::IMEBridge* bridge = ash::IMEBridge::Get();
-  DCHECK(bridge);
+  CHECK(bridge, base::NotFatalUntil::M160);
   ash::TextInputTarget* handler = bridge->GetInputContextHandler();
   if (!handler)
     return nullptr;
   ui::TextInputClient* client = handler->GetInputMethod()->GetTextInputClient();
-  DCHECK(client);
+  CHECK(client, base::NotFatalUntil::M160);
   return client;
 }
 
@@ -271,7 +271,7 @@ void InputConnectionImpl::SetSelection(const gfx::Range& new_selection_range) {
 
 void InputConnectionImpl::SendKeyEvent(
     std::unique_ptr<ui::KeyEvent> key_event) {
-  DCHECK(key_event);
+  CHECK(key_event, base::NotFatalUntil::M160);
   std::string error;
   if (!ime_engine_->SendKeyEvents(input_context_id_, {*key_event}, &error)) {
     LOG(ERROR) << error;
@@ -320,10 +320,10 @@ void InputConnectionImpl::StartStateUpdateTimer() {
 }
 
 void InputConnectionImpl::SendControlKeyEvent(const std::u16string& text) {
-  DCHECK(IsControlChar(text));
+  CHECK(IsControlChar(text), base::NotFatalUntil::M160);
 
   const std::string str = base::UTF16ToUTF8(text);
-  DCHECK_EQ(1u, str.length());
+  CHECK_EQ(1u, str.length(), base::NotFatalUntil::M160);
 
   for (const auto& t : kControlCharToKeyEvent) {
     if (std::get<0>(t) == str[0]) {

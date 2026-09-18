@@ -73,7 +73,7 @@ void ArcVmmSwapScheduler::SetSwapoutThrottleInterval(base::TimeDelta interval) {
 void ArcVmmSwapScheduler::SetActiveSwappableChecking(
     base::TimeDelta period,
     std::unique_ptr<PeaceDurationProvider> peace_duration_provider) {
-  DCHECK(peace_duration_provider);
+  CHECK(peace_duration_provider, base::NotFatalUntil::M160);
   swappable_checking_period_ = period;
   peace_duration_provider_ = std::move(peace_duration_provider);
   swappable_checking_timer_.Start(

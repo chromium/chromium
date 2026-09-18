@@ -747,7 +747,7 @@ void ArcPolicyBridge::OnCommandReceived(
 
   if (!instance) {
     VLOG(1) << "ARC not ready yet, will retry remote command once it is ready.";
-    DCHECK(on_arc_instance_ready_callback_.is_null());
+    CHECK(on_arc_instance_ready_callback_.is_null(), base::NotFatalUntil::M160);
 
     // base::Unretained is safe here since this class owns the callback's
     // lifetime.

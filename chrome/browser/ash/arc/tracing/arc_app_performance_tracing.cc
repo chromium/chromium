@@ -259,7 +259,7 @@ base::DictValue ArcAppPerformanceTracing::StopCustomTracing() {
   custom_trace_result_.reset();
   if (session_ && session_->tracing_active()) {
     session_->Finish();
-    DCHECK(custom_trace_result_.has_value());
+    CHECK(custom_trace_result_.has_value(), base::NotFatalUntil::M160);
   }
 
   if (!custom_trace_result_.has_value()) {
@@ -296,7 +296,7 @@ void ArcAppPerformanceTracing::OnWindowActivated(ActivationReason reason,
 }
 
 void ArcAppPerformanceTracing::TrackIfTaskIsActive() {
-  DCHECK(active_window_);
+  CHECK(active_window_, base::NotFatalUntil::M160);
 
   if (active_task_) {
     return;
@@ -329,7 +329,7 @@ void ArcAppPerformanceTracing::TrackIfTaskIsActive() {
 
 void ArcAppPerformanceTracing::OnWindowDestroying(aura::Window* window) {
   // ARC++ window will be destroyed.
-  DCHECK_EQ(active_window_, window);
+  CHECK_EQ(active_window_, window, base::NotFatalUntil::M160);
 
   MaybeCancelTracing();
 
@@ -359,7 +359,7 @@ void ArcAppPerformanceTracing::OnTaskDestroyed(int32_t task_id) {
 }
 
 void ArcAppPerformanceTracing::StartJankinessTracing() {
-  DCHECK(!jankiness_timer_.IsRunning());
+  CHECK(!jankiness_timer_.IsRunning(), base::NotFatalUntil::M160);
   jankiness_timer_.Start(
       FROM_HERE, kJankinessTracingTime,
       base::BindOnce(&ArcAppPerformanceTracing::FinalizeJankinessTracing,
@@ -367,7 +367,7 @@ void ArcAppPerformanceTracing::StartJankinessTracing() {
 }
 
 void ArcAppPerformanceTracing::HandleActiveAppRendered(base::Time timestamp) {
-  DCHECK(active_task_);
+  CHECK(active_task_, base::NotFatalUntil::M160);
 
   const std::string& app_id = task_id_to_app_id_[active_task_->id].first;
   const base::Time launch_request_time =
@@ -388,7 +388,8 @@ void ArcAppPerformanceTracing::OnCommit(exo::Surface* surface) {
 void ArcAppPerformanceTracing::OnSurfaceDestroying(exo::Surface* surface) {
   // |scoped_surface_| might be already reset in case window is destroyed
   // first.
-  DCHECK(!active_task_ || (active_task_->root_surface.get() == surface));
+  CHECK(!active_task_ || (active_task_->root_surface.get() == surface),
+        base::NotFatalUntil::M160);
   DetachActiveWindow();
 }
 
@@ -503,7 +504,7 @@ void ArcAppPerformanceTracing::OnGfxMetrics(const std::string& package_name,
 void ArcAppPerformanceTracing::MaybeStartTracing() {
   if (session_) {
     // We are already tracing, ignore.
-    DCHECK_EQ(session_->window(), active_window_);
+    CHECK_EQ(session_->window(), active_window_, base::NotFatalUntil::M160);
     return;
   }
 

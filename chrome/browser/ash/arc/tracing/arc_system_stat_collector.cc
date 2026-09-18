@@ -349,7 +349,7 @@ struct ArcSystemStatCollector::SystemReadersContext {
   // Releases |context|. Must be called on background thread.
   static void FreeOnBackgroundThread(
       std::unique_ptr<ArcSystemStatCollector::SystemReadersContext> context) {
-    DCHECK(context);
+    CHECK(context, base::NotFatalUntil::M160);
     context.reset();
   }
 
@@ -404,7 +404,7 @@ void ArcSystemStatCollector::Stop() {
 void ArcSystemStatCollector::Flush(const base::TimeTicks& min_timestamp,
                                    const base::TimeTicks& max_timestamp,
                                    ArcSystemModel* system_model) {
-  DCHECK(!timer_.IsRunning());
+  CHECK(!timer_.IsRunning(), base::NotFatalUntil::M160);
   size_t sample_index =
       write_index_ >= samples_.size() ? write_index_ - samples_.size() : 0;
   ArcValueEventTrimmer mem_total(&system_model->memory_events(),
@@ -530,7 +530,7 @@ std::unique_ptr<base::Value> ArcSystemStatCollector::Serialize() const {
 
 std::string ArcSystemStatCollector::SerializeToJson() const {
   std::unique_ptr<base::Value> root = Serialize();
-  DCHECK(root);
+  CHECK(root, base::NotFatalUntil::M160);
   std::string output;
   if (!base::JSONWriter::WriteWithOptions(
           *root, base::JSONWriter::OPTIONS_PRETTY_PRINT, &output)) {
@@ -641,7 +641,7 @@ void ArcSystemStatCollector::FreeSystemReadersContext() {
 
 void ArcSystemStatCollector::OnInitOnUiThread(
     std::unique_ptr<ArcSystemStatCollector::SystemReadersContext> context) {
-  DCHECK(!context_ && context);
+  CHECK(!context_ && context, base::NotFatalUntil::M160);
   context_ = std::move(context);
 
   timer_.Start(
@@ -654,7 +654,7 @@ void ArcSystemStatCollector::OnInitOnUiThread(
 std::unique_ptr<ArcSystemStatCollector::SystemReadersContext>
 ArcSystemStatCollector::ReadSystemStatOnBackgroundThread(
     std::unique_ptr<SystemReadersContext> context) {
-  DCHECK(context);
+  CHECK(context, base::NotFatalUntil::M160);
   context->current_frame.timestamp = base::TimeTicks::Now();
   if (!context->system_readers[SystemReader::kZram].is_valid() ||
       !ParseStatFile(context->system_readers[SystemReader::kZram].get(),
@@ -729,8 +729,8 @@ ArcSystemStatCollector::ReadSystemStatOnBackgroundThread(
 
 void ArcSystemStatCollector::UpdateSystemStatOnUiThread(
     std::unique_ptr<SystemReadersContext> context) {
-  DCHECK(!context_ && context);
-  DCHECK(!samples_.empty());
+  CHECK(!context_ && context, base::NotFatalUntil::M160);
+  CHECK(!samples_.empty(), base::NotFatalUntil::M160);
   Sample& current_sample = samples_[write_index_ % samples_.size()];
   current_sample.timestamp = context->current_frame.timestamp;
   current_sample.mem_total_kb = context->current_frame.mem_info[0];
@@ -742,7 +742,8 @@ void ArcSystemStatCollector::UpdateSystemStatOnUiThread(
 
   // We calculate delta, so ignore first update.
   if (write_index_) {
-    DCHECK_GT(context->current_frame.timestamp, previous_frame_.timestamp);
+    CHECK_GT(context->current_frame.timestamp, previous_frame_.timestamp,
+             base::NotFatalUntil::M160);
     const double to_milli_watts_scale =
         0.001 / (context->current_frame.timestamp - previous_frame_.timestamp)
                     .InSecondsF();
@@ -763,21 +764,22 @@ void ArcSystemStatCollector::UpdateSystemStatOnUiThread(
     current_sample.memory_power = static_cast<int>(
         (context->current_frame.memory_energy - previous_frame_.memory_energy) *
         to_milli_watts_scale);
-    DCHECK_GE(current_sample.cpu_power, 0);
-    DCHECK_GE(current_sample.gpu_power, 0);
-    DCHECK_GE(current_sample.memory_power, 0);
+    CHECK_GE(current_sample.cpu_power, 0, base::NotFatalUntil::M160);
+    CHECK_GE(current_sample.gpu_power, 0, base::NotFatalUntil::M160);
+    CHECK_GE(current_sample.memory_power, 0, base::NotFatalUntil::M160);
   }
   current_sample.cpu_temperature = context->current_frame.cpu_temperature;
   current_sample.cpu_frequency = context->current_frame.cpu_frequency;
   current_sample.package_power_constraint =
       static_cast<int>(context->current_frame.package_power_constraint *
                        0.001 /* micro-watts to milli-watts */);
-  DCHECK_GE(current_sample.package_power_constraint, 0);
-  DCHECK_GE(current_sample.swap_sectors_read, 0);
-  DCHECK_GE(current_sample.swap_sectors_write, 0);
-  DCHECK_GE(current_sample.swap_waiting_time_ms, 0);
-  DCHECK_GE(current_sample.mem_total_kb, 0);
-  DCHECK_GE(current_sample.mem_used_kb, 0);
+  CHECK_GE(current_sample.package_power_constraint, 0,
+           base::NotFatalUntil::M160);
+  CHECK_GE(current_sample.swap_sectors_read, 0, base::NotFatalUntil::M160);
+  CHECK_GE(current_sample.swap_sectors_write, 0, base::NotFatalUntil::M160);
+  CHECK_GE(current_sample.swap_waiting_time_ms, 0, base::NotFatalUntil::M160);
+  CHECK_GE(current_sample.mem_total_kb, 0, base::NotFatalUntil::M160);
+  CHECK_GE(current_sample.mem_used_kb, 0, base::NotFatalUntil::M160);
   previous_frame_ = context->current_frame;
   ++write_index_;
 

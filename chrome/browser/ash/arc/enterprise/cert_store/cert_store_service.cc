@@ -131,7 +131,7 @@ void ListCertsOnIO(scoped_refptr<base::TaskRunner> original_task_runner,
                    net::NSSCertDatabase::ListCertsCallback callback,
                    net::NSSCertDatabase* database) {
   // |database->ListCertsInSlot| must be called from the IO thread.
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   if (slot == keymanagement::mojom::ChapsSlot::kSystem &&
       !database->GetSystemSlot()) {
@@ -160,7 +160,7 @@ void ListCertsWithDbGetterOnIO(
     net::NSSCertDatabase::ListCertsCallback callback,
     NssCertDatabaseGetter database_getter) {
   // |database_getter| must be run from the IO thread.
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
 
   // Running |database_getter| may either return a non-null pointer
   // synchronously or invoke the given callback asynchronously with a non-null
@@ -182,7 +182,7 @@ void ListCerts(content::BrowserContext* const context,
                keymanagement::mojom::ChapsSlot slot,
                net::NSSCertDatabase::ListCertsCallback callback) {
   // |context| must be accessed on the UI thread.
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   // The NssCertDatabaseGetter must be posted to the IO thread immediately.
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -205,7 +205,7 @@ void CheckCorporateFlag(
     std::move(callback).Run(/* allowed */ false);
     return;
   }
-  DCHECK(corporate_key.has_value());
+  CHECK(corporate_key.has_value(), base::NotFatalUntil::M160);
   std::move(callback).Run(/* allowed */ corporate_key.value());
 }
 
@@ -216,8 +216,8 @@ void IsCertificateAllowed(IsCertificateAllowedCallback callback,
                           scoped_refptr<net::X509Certificate> cert,
                           content::BrowserContext* const context) {
   // |context| must be accessed on the UI thread.
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(cert);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(cert, base::NotFatalUntil::M160);
 
   // Check if the key is marked for corporate usage.
   ash::platform_keys::KeyPermissionsServiceFactory::GetForBrowserContext(
@@ -235,8 +235,10 @@ std::optional<CertDescription> BuildCertDescritionOnWorkerThread(
     net::ScopedCERTCertificate nss_cert,
     keymanagement::mojom::ChapsSlot slot) {
   // Direct NSS calls must be made on a worker thread (not the IO/UI threads).
-  DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::IO));
-  DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::IO),
+        base::NotFatalUntil::M160);
+  CHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M160);
 
   // NSS cert must be non null.
   if (!nss_cert)
@@ -402,7 +404,7 @@ void CertStoreService::BuildAllowedCertDescriptionsRecursively(
   }
 
   net::ScopedCERTCertificate cert = std::move(cert_queue.front());
-  DCHECK(cert);
+  CHECK(cert, base::NotFatalUntil::M160);
   cert_queue.pop();
 
   scoped_refptr<net::X509Certificate> x509_cert =
@@ -563,7 +565,7 @@ bool CertStoreService::CertificateCache::Update(
   std::set<std::string> new_required_cert_names;
   for (const auto& certificate : cert_descriptions) {
     CERTCertificate* nss_cert = certificate.nss_cert.get();
-    DCHECK(nss_cert);
+    CHECK(nss_cert, base::NotFatalUntil::M160);
 
     // Fetch certificate name.
     std::string cert_name =

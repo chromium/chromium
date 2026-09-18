@@ -310,7 +310,7 @@ bool IsInRange(EventType type,
 // read successfully. Events must be sorted and be known.
 bool LoadEvents(const base::ListValue* value,
                 ArcTracingGraphicsModel::BufferEvents* out_events) {
-  DCHECK(out_events);
+  CHECK(out_events, base::NotFatalUntil::M160);
   if (!value) {
     return false;
   }
@@ -366,8 +366,8 @@ bool LoadEvents(const base::ListValue* value,
 
 bool LoadEventsContainer(const base::DictValue* dict,
                          ArcTracingGraphicsModel::EventsContainer* out_events) {
-  DCHECK(out_events->buffer_events().empty());
-  DCHECK(out_events->global_events().empty());
+  CHECK(out_events->buffer_events().empty(), base::NotFatalUntil::M160);
+  CHECK(out_events->global_events().empty(), base::NotFatalUntil::M160);
 
   if (!dict) {
     return false;

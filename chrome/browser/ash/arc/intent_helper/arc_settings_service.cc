@@ -657,9 +657,9 @@ void ArcSettingsServiceImpl::SyncBackupEnabled() const {
   if (backup_settings) {
     const PrefService::Preference* pref =
         registrar_.prefs()->FindPreference(prefs::kArcBackupRestoreEnabled);
-    DCHECK(pref);
+    CHECK(pref, base::NotFatalUntil::M160);
     const base::Value* value = pref->GetValue();
-    DCHECK(value->is_bool());
+    CHECK(value->is_bool(), base::NotFatalUntil::M160);
     backup_settings->SetBackupEnabled(value->GetBool(),
                                       !pref->IsUserModifiable());
   }
@@ -890,8 +890,8 @@ void ArcSettingsServiceImpl::SyncTimeZoneByGeolocation() const {
 void ArcSettingsServiceImpl::SyncUse24HourClock() const {
   const PrefService::Preference* pref =
       registrar_.prefs()->FindPreference(ash::prefs::kUse24HourClock);
-  DCHECK(pref);
-  DCHECK(pref->GetValue()->is_bool());
+  CHECK(pref, base::NotFatalUntil::M160);
+  CHECK(pref->GetValue()->is_bool(), base::NotFatalUntil::M160);
   bool use24HourClock = pref->GetValue()->GetBool();
   base::DictValue extras;
   extras.Set("use24HourClock", use24HourClock);
@@ -907,8 +907,8 @@ void ArcSettingsServiceImpl::SyncUserGeolocation() const {
   // We need to map tri-state of ChromeOS toggle to boolean ARC++ toggle.
   const PrefService::Preference* pref = registrar_.prefs()->FindPreference(
       ash::prefs::kUserGeolocationAccessLevel);
-  DCHECK(pref);
-  DCHECK(pref->GetValue()->is_int());
+  CHECK(pref, base::NotFatalUntil::M160);
+  CHECK(pref->GetValue()->is_int(), base::NotFatalUntil::M160);
 
   bool enabled_for_arc =
       ash::PrivacyHubController::CrosToArcGeolocationPermissionMapping(
@@ -959,8 +959,8 @@ void ArcSettingsServiceImpl::AddLocalStatePrefToObserve(
 int ArcSettingsServiceImpl::GetIntegerPref(const std::string& pref_name) const {
   const PrefService::Preference* pref =
       registrar_.prefs()->FindPreference(pref_name);
-  DCHECK(pref);
-  DCHECK(pref->GetValue()->is_int());
+  CHECK(pref, base::NotFatalUntil::M160);
+  CHECK(pref->GetValue()->is_int(), base::NotFatalUntil::M160);
   return pref->GetValue()->GetIfInt().value_or(-1);
 }
 
@@ -968,8 +968,8 @@ bool ArcSettingsServiceImpl::GetBooleanPref(
     const std::string& pref_name) const {
   const PrefService::Preference* pref =
       registrar_.prefs()->FindPreference(pref_name);
-  DCHECK(pref);
-  DCHECK(pref->GetValue()->is_bool());
+  CHECK(pref, base::NotFatalUntil::M160);
+  CHECK(pref->GetValue()->is_bool(), base::NotFatalUntil::M160);
   return pref->GetValue()->GetBool();
 }
 
@@ -977,9 +977,9 @@ bool ArcSettingsServiceImpl::IsBooleanPrefManaged(
     const std::string& pref_name) const {
   const PrefService::Preference* pref =
       registrar_.prefs()->FindPreference(pref_name);
-  DCHECK(pref);
+  CHECK(pref, base::NotFatalUntil::M160);
   bool value_exists = pref->GetValue()->is_bool();
-  DCHECK(value_exists);
+  CHECK(value_exists, base::NotFatalUntil::M160);
   return !pref->IsUserModifiable();
 }
 
@@ -988,7 +988,7 @@ void ArcSettingsServiceImpl::SendBoolLocalStatePrefSettingsBroadcast(
     const std::string& action) const {
   const PrefService::Preference* local_state_pref =
       local_state_->FindPreference(pref_name);
-  DCHECK(local_state_pref);
+  CHECK(local_state_pref, base::NotFatalUntil::M160);
   bool enabled = local_state_->GetBoolean(pref_name);
   SendBoolValueSettingsBroadcast(enabled, !local_state_pref->IsUserModifiable(),
                                  action);
@@ -999,8 +999,8 @@ void ArcSettingsServiceImpl::SendBoolPrefSettingsBroadcast(
     const std::string& action) const {
   const PrefService::Preference* pref =
       registrar_.prefs()->FindPreference(pref_name);
-  DCHECK(pref);
-  DCHECK(pref->GetValue()->is_bool());
+  CHECK(pref, base::NotFatalUntil::M160);
+  CHECK(pref->GetValue()->is_bool(), base::NotFatalUntil::M160);
   bool enabled = pref->GetValue()->GetBool();
   SendBoolValueSettingsBroadcast(enabled, !pref->IsUserModifiable(), action);
 }
@@ -1024,7 +1024,7 @@ void ArcSettingsServiceImpl::SendSettingsBroadcast(
     return;
   std::string extras_json;
   bool write_success = base::JSONWriter::Write(extras, &extras_json);
-  DCHECK(write_success);
+  CHECK(write_success, base::NotFatalUntil::M160);
 
   instance->SendBroadcast(
       action, kArcIntentHelperPackageName,
@@ -1086,7 +1086,7 @@ void ArcSettingsService::OnArcPlayStoreEnabledChanged(bool enabled) {
 }
 
 void ArcSettingsService::OnArcInitialStart() {
-  DCHECK(!IsInitialSettingsPending());
+  CHECK(!IsInitialSettingsPending(), base::NotFatalUntil::M160);
 
   if (!impl_) {
     SetInitialSettingsPending(true);

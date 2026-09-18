@@ -145,11 +145,11 @@ void ArcRequirementChecker::EmulateRequirementCheckCompletionForTesting() {
 void ArcRequirementChecker::StartRequirementChecks(
     bool is_terms_of_service_negotiation_needed,
     StartRequirementChecksCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_EQ(state_, State::kStopped);
-  DCHECK(profile_);
-  DCHECK(!terms_of_service_negotiator_);
-  DCHECK(!requirement_check_callback_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK_EQ(state_, State::kStopped, base::NotFatalUntil::M160);
+  CHECK(profile_, base::NotFatalUntil::M160);
+  CHECK(!terms_of_service_negotiator_, base::NotFatalUntil::M160);
+  CHECK(!requirement_check_callback_, base::NotFatalUntil::M160);
 
   state_ = State::kNegotiatingTermsOfService;
   requirement_check_callback_ = std::move(callback);
@@ -187,11 +187,11 @@ void ArcRequirementChecker::StartRequirementChecks(
 
 void ArcRequirementChecker::StartBackgroundChecks(
     StartBackgroundChecksCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_EQ(state_, State::kStopped);
-  DCHECK(!android_management_checker_);
-  DCHECK(!background_check_callback_);
-  DCHECK(!wait_for_policy_timer_.IsRunning());
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK_EQ(state_, State::kStopped, base::NotFatalUntil::M160);
+  CHECK(!android_management_checker_, base::NotFatalUntil::M160);
+  CHECK(!background_check_callback_, base::NotFatalUntil::M160);
+  CHECK(!wait_for_policy_timer_.IsRunning(), base::NotFatalUntil::M160);
 
   state_ = State::kCheckingAndroidManagementBackground;
   background_check_callback_ = std::move(callback);
@@ -208,20 +208,23 @@ void ArcRequirementChecker::StartBackgroundChecks(
 }
 
 void ArcRequirementChecker::OnFirstPoliciesLoaded(policy::PolicyDomain domain) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_EQ(state_, State::kWaitingForPoliciesBackground);
-  DCHECK_EQ(domain, policy::POLICY_DOMAIN_CHROME);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK_EQ(state_, State::kWaitingForPoliciesBackground,
+           base::NotFatalUntil::M160);
+  CHECK_EQ(domain, policy::POLICY_DOMAIN_CHROME, base::NotFatalUntil::M160);
 
   wait_for_policy_timer_.Stop();
   OnFirstPoliciesLoadedOrTimeout();
 }
 
 void ArcRequirementChecker::OnTermsOfServiceNegotiated(bool accepted) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_EQ(state_, State::kNegotiatingTermsOfService);
-  DCHECK(profile_);
-  DCHECK(terms_of_service_negotiator_ || !g_ui_enabled);
-  DCHECK(requirement_check_callback_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK_EQ(state_, State::kNegotiatingTermsOfService,
+           base::NotFatalUntil::M160);
+  CHECK(profile_, base::NotFatalUntil::M160);
+  CHECK(terms_of_service_negotiator_ || !g_ui_enabled,
+        base::NotFatalUntil::M160);
+  CHECK(requirement_check_callback_, base::NotFatalUntil::M160);
   terms_of_service_negotiator_.reset();
 
   if (!accepted) {
@@ -239,8 +242,9 @@ void ArcRequirementChecker::OnTermsOfServiceNegotiated(bool accepted) {
 }
 
 void ArcRequirementChecker::StartAndroidManagementCheck() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_EQ(state_, State::kNegotiatingTermsOfService);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK_EQ(state_, State::kNegotiatingTermsOfService,
+           base::NotFatalUntil::M160);
 
   state_ = State::kCheckingAndroidManagement;
 
@@ -268,10 +272,12 @@ void ArcRequirementChecker::StartAndroidManagementCheck() {
 
 void ArcRequirementChecker::OnAndroidManagementChecked(
     ArcAndroidManagementChecker::CheckResult result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_EQ(state_, State::kCheckingAndroidManagement);
-  DCHECK(android_management_checker_ || !g_ui_enabled);
-  DCHECK(requirement_check_callback_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK_EQ(state_, State::kCheckingAndroidManagement,
+           base::NotFatalUntil::M160);
+  CHECK(android_management_checker_ || !g_ui_enabled,
+        base::NotFatalUntil::M160);
+  CHECK(requirement_check_callback_, base::NotFatalUntil::M160);
   android_management_checker_.reset();
   state_ = State::kStopped;
 
@@ -293,12 +299,13 @@ void ArcRequirementChecker::OnAndroidManagementChecked(
 
 void ArcRequirementChecker::OnBackgroundAndroidManagementChecked(
     ArcAndroidManagementChecker::CheckResult result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_EQ(state_, State::kCheckingAndroidManagementBackground);
-  DCHECK(background_check_callback_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK_EQ(state_, State::kCheckingAndroidManagementBackground,
+           base::NotFatalUntil::M160);
+  CHECK(background_check_callback_, base::NotFatalUntil::M160);
 
   if (g_enable_check_android_management_in_tests.value_or(true)) {
-    DCHECK(android_management_checker_);
+    CHECK(android_management_checker_, base::NotFatalUntil::M160);
     android_management_checker_.reset();
   }
 
@@ -321,8 +328,9 @@ void ArcRequirementChecker::OnBackgroundAndroidManagementChecked(
 }
 
 void ArcRequirementChecker::WaitForPoliciesLoad() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_EQ(state_, State::kWaitingForPoliciesBackground);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK_EQ(state_, State::kWaitingForPoliciesBackground,
+           base::NotFatalUntil::M160);
 
   auto* policy_service =
       profile_->GetProfilePolicyConnector()->policy_service();
@@ -342,9 +350,10 @@ void ArcRequirementChecker::WaitForPoliciesLoad() {
 }
 
 void ArcRequirementChecker::OnFirstPoliciesLoadedOrTimeout() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_EQ(state_, State::kWaitingForPoliciesBackground);
-  DCHECK(background_check_callback_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK_EQ(state_, State::kWaitingForPoliciesBackground,
+           base::NotFatalUntil::M160);
+  CHECK(background_check_callback_, base::NotFatalUntil::M160);
 
   state_ = State::kStopped;
 

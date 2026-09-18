@@ -54,7 +54,7 @@ class NotificationDelegate : public message_center::NotificationDelegate,
   // ArcSessionManagerObserver:
   void OnArcPlayStoreEnabledChanged(bool enabled) override {
     // ARC Play Store can be only opted out in case notifcation is shown.
-    DCHECK(!enabled);
+    CHECK(!enabled, base::NotFatalUntil::M160);
     Dismiss();
   }
 
@@ -71,8 +71,8 @@ class NotificationDelegate : public message_center::NotificationDelegate,
 
   // Called in case transition state is changed.
   void OnTransitionChanged() {
-    DCHECK_EQ(ArcManagementTransition::NO_TRANSITION,
-              GetManagementTransition(profile_));
+    CHECK_EQ(ArcManagementTransition::NO_TRANSITION,
+             GetManagementTransition(profile_), base::NotFatalUntil::M160);
     Dismiss();
   }
 
@@ -98,9 +98,10 @@ const char kManagementTransitionNotificationId[] =
 
 void ShowManagementTransitionNotification(Profile* profile) {
   const ArcManagementTransition transition = GetManagementTransition(profile);
-  DCHECK(transition == ArcManagementTransition::CHILD_TO_REGULAR ||
-         transition == ArcManagementTransition::REGULAR_TO_CHILD ||
-         transition == ArcManagementTransition::UNMANAGED_TO_MANAGED);
+  CHECK(transition == ArcManagementTransition::CHILD_TO_REGULAR ||
+            transition == ArcManagementTransition::REGULAR_TO_CHILD ||
+            transition == ArcManagementTransition::UNMANAGED_TO_MANAGED,
+        base::NotFatalUntil::M160);
 
   message_center::NotifierId notifier_id(
       message_center::NotifierType::SYSTEM_COMPONENT, kNotifierId,

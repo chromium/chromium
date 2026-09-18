@@ -412,7 +412,7 @@ ArcInputMethodManagerService::ArcInputMethodManagerService(
             base::Unretained(this)));
   }
 
-  DCHECK(ash::IMEBridge::Get());
+  CHECK(ash::IMEBridge::Get(), base::NotFatalUntil::M160);
   ash::IMEBridge::Get()->AddObserver(this);
 }
 
@@ -467,7 +467,7 @@ void ArcInputMethodManagerService::OnActiveImeChanged(
     // Create a list of enabled Chrome OS IMEs.
     auto enabled_imes = imm->GetActiveIMEState()->GetEnabledInputMethodIds();
     std::erase_if(enabled_imes, ash::extension_ime_util::IsArcIME);
-    DCHECK(!enabled_imes.empty());
+    CHECK(!enabled_imes.empty(), base::NotFatalUntil::M160);
     imm->GetActiveIMEState()->ChangeInputMethod(enabled_imes[0],
                                                 false /* show_message */);
     return;

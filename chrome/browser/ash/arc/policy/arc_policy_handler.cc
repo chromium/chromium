@@ -55,7 +55,7 @@ void WarnInvalidVariablesInManagedConfiguration(
     const std::string& application_package_name,
     const base::DictValue& managed_configuration,
     policy::PolicyMap::Entry* arc_policy) {
-  DCHECK(arc_policy);
+  CHECK(arc_policy, base::NotFatalUntil::M160);
 
   for (const auto kv : managed_configuration) {
     const base::Value& value = kv.second;

@@ -30,8 +30,8 @@ namespace {
 
 // Returns whether ArcDiskSpaceMonitor should be activated.
 bool ShouldActivate() {
-  DCHECK(ArcSessionManager::Get());
-  DCHECK(ArcSessionManager::Get()->profile());
+  CHECK(ArcSessionManager::Get(), base::NotFatalUntil::M160);
+  CHECK(ArcSessionManager::Get()->profile(), base::NotFatalUntil::M160);
   // Activate if and only if virtio-blk is used for /data.
   return ShouldUseVirtioBlkData(
       ArcSessionManager::Get()->profile()->GetPrefs());

@@ -119,7 +119,7 @@ ArcVmmManager::ArcVmmManager(content::BrowserContext* context,
   app_instance_observation_.Observe(bridge_service_->app());
 
   auto* client = ash::ConciergeClient::Get();
-  DCHECK(client);
+  CHECK(client, base::NotFatalUntil::M160);
   if (client) {
     concierge_observation_.Observe(client);
   } else {
@@ -376,7 +376,7 @@ void ArcVmmManager::ShrinkArcVmMemoryAndEnableSwap(
     vm_tools::concierge::SwapOperation requested_operation) {
   // Trim ARCVM memory before enable vmm swap in order to squeeze the vm
   // memory. Send enable operation if trim success.
-  DCHECK(!trim_call_.is_null());
+  CHECK(!trim_call_.is_null(), base::NotFatalUntil::M160);
   DVLOG(1) << "ShrinkArcVmMemoryAndEnableSwap with request "
            << static_cast<int>(requested_operation);
   trim_call_.Run(

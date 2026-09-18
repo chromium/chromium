@@ -22,8 +22,9 @@ void ArcVmWorkingSetTrimExecutor::Trim(content::BrowserContext* context,
                                        ResultCallback callback,
                                        ArcVmReclaimType reclaim_type,
                                        int page_limit) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_NE(ArcVmReclaimType::kReclaimNone, reclaim_type);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK_NE(ArcVmReclaimType::kReclaimNone, reclaim_type,
+           base::NotFatalUntil::M160);
   const char* error = nullptr;
 
   if (ArcVmWorkingSetTrimExecutor::is_trimming_) {
@@ -86,7 +87,7 @@ void ArcVmWorkingSetTrimExecutor::OnDropArcVmCaches(
     bool result) {
   constexpr const char kErrorMessage[] =
       "Failed to drop ARCVM's guest page caches";
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   LOG_IF(WARNING, !result) << kErrorMessage;
 

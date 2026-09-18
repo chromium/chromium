@@ -82,8 +82,8 @@ ArcAppPerformanceTracingSession::ArcAppPerformanceTracingSession(
     aura::Window* window,
     TicksNowCallback ticks_now_callback)
     : window_(window), ticks_now_callback_(std::move(ticks_now_callback)) {
-  DCHECK(window_);
-  DCHECK(ticks_now_callback_);
+  CHECK(window_, base::NotFatalUntil::M160);
+  CHECK(ticks_now_callback_, base::NotFatalUntil::M160);
 }
 
 ArcAppPerformanceTracingSession::~ArcAppPerformanceTracingSession() {
@@ -96,9 +96,9 @@ void ArcAppPerformanceTracingSession::Schedule(
     const base::TimeDelta& start_delay,
     const base::TimeDelta& tracing_period,
     DoneCallback on_done) {
-  DCHECK(!tracing_active());
-  DCHECK(!HasPresentFrames());
-  DCHECK(!tracing_timer_.IsRunning());
+  CHECK(!tracing_active(), base::NotFatalUntil::M160);
+  CHECK(!HasPresentFrames(), base::NotFatalUntil::M160);
+  CHECK(!tracing_timer_.IsRunning(), base::NotFatalUntil::M160);
   detect_idles_ = detect_idles;
   tracing_period_ = tracing_period;
   on_done_ = std::move(on_done);
@@ -112,8 +112,8 @@ void ArcAppPerformanceTracingSession::Schedule(
 }
 
 void ArcAppPerformanceTracingSession::Finish() {
-  DCHECK(tracing_active());
-  DCHECK(HasPresentFrames());
+  CHECK(tracing_active(), base::NotFatalUntil::M160);
+  CHECK(HasPresentFrames(), base::NotFatalUntil::M160);
   Analyze(ticks_now_callback_.Run() - tracing_start_);
 }
 
@@ -121,7 +121,8 @@ void ArcAppPerformanceTracingSession::OnSurfaceDestroying(
     exo::Surface* surface) {
   // |scoped_surface_| might be already reset in case window is destroyed
   // first.
-  DCHECK(!scoped_surface_ || (scoped_surface_->get() == surface));
+  CHECK(!scoped_surface_ || (scoped_surface_->get() == surface),
+        base::NotFatalUntil::M160);
   Stop(std::nullopt);
 }
 
@@ -135,7 +136,7 @@ base::TimeDelta ArcAppPerformanceTracingSession::timer_delay_for_testing()
 }
 
 void ArcAppPerformanceTracingSession::Start() {
-  DCHECK(!tracing_timer_.IsRunning());
+  CHECK(!tracing_timer_.IsRunning(), base::NotFatalUntil::M160);
 
   VLOG(1) << "Start tracing.";
 
@@ -143,7 +144,7 @@ void ArcAppPerformanceTracingSession::Start() {
   frames_.emplace();
 
   exo::Surface* const surface = exo::GetShellRootSurface(window_);
-  DCHECK(surface);
+  CHECK(surface, base::NotFatalUntil::M160);
   // Use scoped surface observer to be safe on the surface
   // destruction. |exo::GetShellRootSurface| would fail in case
   // the surface gets destroyed before widget.
@@ -195,7 +196,7 @@ bool ArcAppPerformanceTracingSession::DetectIdle() {
 }
 
 void ArcAppPerformanceTracingSession::OnCommit(exo::Surface* surface) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (DetectIdle()) {
     Stop(std::nullopt);

@@ -34,7 +34,7 @@ ArcInitialOptInMetricsRecorder::~ArcInitialOptInMetricsRecorder() {
 }
 
 void ArcInitialOptInMetricsRecorder::OnArcOptInUserAction() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   arc_opt_in_time_ = base::TimeTicks::Now();
 }
 
@@ -49,7 +49,7 @@ void ArcInitialOptInMetricsRecorder::OnArcInitialStart() {
 }
 
 void ArcInitialOptInMetricsRecorder::OnArcAppListReady() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (arc_app_list_ready_reported_) {
     return;

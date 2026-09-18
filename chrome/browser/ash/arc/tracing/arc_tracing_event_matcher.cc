@@ -19,10 +19,10 @@ ArcTracingEventMatcher::~ArcTracingEventMatcher() = default;
 
 ArcTracingEventMatcher::ArcTracingEventMatcher(const std::string& data) {
   std::string::size_type position = data.find(':');
-  DCHECK(position);
+  CHECK(position, base::NotFatalUntil::M160);
   category_ = data.substr(0, position);
   name_ = data.substr(position + 1);
-  DCHECK(!category_.empty());
+  CHECK(!category_.empty(), base::NotFatalUntil::M160);
   position = name_.find('(');
   if (position != std::string::npos) {
     DCHECK_EQ(')', name_.back());

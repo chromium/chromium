@@ -83,7 +83,7 @@ void ShowLowDiskSpaceErrorNotification(content::BrowserContext* context) {
               [](const user_manager::User* user,
                  std::optional<int> button_index) {
                 if (button_index) {
-                  DCHECK_EQ(0, *button_index);
+                  CHECK_EQ(0, *button_index, base::NotFatalUntil::M160);
                   ash::SettingsAppManager::Get()->Open(
                       CHECK_DEREF(user),
                       {.sub_page =

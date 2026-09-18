@@ -56,7 +56,7 @@ void ArcGraphicsJankDetector::OnSample(base::Time timestamp) {
   }
 
   if (stage_ == Stage::kWarmUp) {
-    DCHECK(warm_up_sample_cnt_);
+    CHECK(warm_up_sample_cnt_, base::NotFatalUntil::M160);
     if (--warm_up_sample_cnt_) {
       return;
     }
@@ -77,7 +77,7 @@ void ArcGraphicsJankDetector::OnSample(base::Time timestamp) {
     return;
   }
 
-  DCHECK_EQ(Stage::kActive, stage_);
+  CHECK_EQ(Stage::kActive, stage_, base::NotFatalUntil::M160);
   if (delta >= period_ * kJankDetectionThresholdPercent / 100) {
     callback_.Run(timestamp - delta + period_);
   }

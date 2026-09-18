@@ -188,7 +188,7 @@ ArcServiceLauncher::ArcServiceLauncher(
                                   ash::GetChannel(),
                                   scheduler_configuration_manager,
                                   arc_dlc_installer_.get())) {
-  DCHECK(g_arc_service_launcher == nullptr);
+  CHECK(g_arc_service_launcher == nullptr, base::NotFatalUntil::M160);
   g_arc_service_launcher = this;
 
   if (base::FeatureList::IsEnabled(kEnableVirtioBlkForData) ||
@@ -198,7 +198,7 @@ ArcServiceLauncher::ArcServiceLauncher(
 }
 
 ArcServiceLauncher::~ArcServiceLauncher() {
-  DCHECK_EQ(g_arc_service_launcher, this);
+  CHECK_EQ(g_arc_service_launcher, this, base::NotFatalUntil::M160);
   g_arc_service_launcher = nullptr;
 }
 
@@ -264,8 +264,8 @@ void ArcServiceLauncher::MaybeSetProfile(Profile* profile) {
 }
 
 void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
-  DCHECK(arc_service_manager_);
-  DCHECK(arc_session_manager_);
+  CHECK(arc_service_manager_, base::NotFatalUntil::M160);
+  CHECK(arc_session_manager_, base::NotFatalUntil::M160);
 
   // Initialize the locked fullscreen manager with the primary user profile.
   arc_locked_fullscreen_manager_ =

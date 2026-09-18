@@ -25,24 +25,24 @@ std::string GetHistogramName(const std::string& category,
 }
 
 void ReportFPS(const std::string& category_name, double fps) {
-  DCHECK(!category_name.empty());
-  DCHECK_GT(fps, 0);
+  CHECK(!category_name.empty(), base::NotFatalUntil::M160);
+  CHECK_GT(fps, 0, base::NotFatalUntil::M160);
   base::UmaHistogramCounts100(GetHistogramName(category_name, "FPS2"),
                               static_cast<int>(std::round(fps)));
 }
 
 void ReportPerceivedFPS(const std::string& category_name,
                         double perceived_fps) {
-  DCHECK(!category_name.empty());
-  DCHECK_GT(perceived_fps, 0);
+  CHECK(!category_name.empty(), base::NotFatalUntil::M160);
+  CHECK_GT(perceived_fps, 0, base::NotFatalUntil::M160);
   base::UmaHistogramCounts100(GetHistogramName(category_name, "PerceivedFPS2"),
                               static_cast<int>(std::round(perceived_fps)));
 }
 
 void ReportCommitDeviation(const std::string& category_name,
                            double commit_deviation) {
-  DCHECK(!category_name.empty());
-  DCHECK_GE(commit_deviation, 0);
+  CHECK(!category_name.empty(), base::NotFatalUntil::M160);
+  CHECK_GE(commit_deviation, 0, base::NotFatalUntil::M160);
   base::UmaHistogramCustomCounts(
       GetHistogramName(category_name, "CommitDeviation2"),
       static_cast<int>(std::round(commit_deviation)), 100 /* min */,
@@ -51,8 +51,8 @@ void ReportCommitDeviation(const std::string& category_name,
 
 void ReportPresentDeviation(const std::string& category_name,
                             double present_deviation) {
-  DCHECK(!category_name.empty());
-  DCHECK_GE(present_deviation, 0);
+  CHECK(!category_name.empty(), base::NotFatalUntil::M160);
+  CHECK_GE(present_deviation, 0, base::NotFatalUntil::M160);
   base::UmaHistogramCustomCounts(
       GetHistogramName(category_name, "PresentDeviation2"),
       static_cast<int>(std::round(present_deviation)), 100 /* min */,
@@ -60,8 +60,8 @@ void ReportPresentDeviation(const std::string& category_name,
 }
 
 void ReportQuality(const std::string& category_name, double quality) {
-  DCHECK(!category_name.empty());
-  DCHECK_GT(quality, 0);
+  CHECK(!category_name.empty(), base::NotFatalUntil::M160);
+  CHECK_GT(quality, 0, base::NotFatalUntil::M160);
   // Report quality from 0 to 100%.
   const int sample = (int)(quality * 100.0);
   base::UmaHistogramPercentageObsoleteDoNotUse(
@@ -70,8 +70,8 @@ void ReportQuality(const std::string& category_name, double quality) {
 
 void ReportJanksPerMinute(const std::string& category_name,
                           double janks_per_minute) {
-  DCHECK(!category_name.empty());
-  DCHECK_GE(janks_per_minute, 0);
+  CHECK(!category_name.empty(), base::NotFatalUntil::M160);
+  CHECK_GE(janks_per_minute, 0, base::NotFatalUntil::M160);
   base::UmaHistogramCounts100(
       GetHistogramName(category_name, "JanksPerMinute2"),
       static_cast<int>(std::round(janks_per_minute)));
@@ -79,8 +79,8 @@ void ReportJanksPerMinute(const std::string& category_name,
 
 void ReportJanksPercentage(const std::string& category_name,
                            double janks_percentage) {
-  DCHECK(!category_name.empty());
-  DCHECK_GE(janks_percentage, 0);
+  CHECK(!category_name.empty(), base::NotFatalUntil::M160);
+  CHECK_GE(janks_percentage, 0, base::NotFatalUntil::M160);
   base::UmaHistogramCounts100(
       GetHistogramName(category_name, "JanksPercentage2"),
       static_cast<int>(std::round(janks_percentage)));

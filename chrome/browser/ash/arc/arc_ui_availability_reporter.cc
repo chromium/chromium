@@ -48,7 +48,7 @@ class ConnectionNotifier
                      ConnectionHolder<InstanceType, HostType>* holder)
       : ArcUiAvailabilityReporter::ConnectionNotifierBase(owner),
         holder_(holder) {
-    DCHECK(!holder_->IsConnected());
+    CHECK(!holder_->IsConnected(), base::NotFatalUntil::M160);
     holder_->AddObserver(this);
   }
 
@@ -72,7 +72,7 @@ class ConnectionNotifier
 ArcUiAvailabilityReporter::ArcUiAvailabilityReporter(Profile* profile,
                                                      Mode mode)
     : profile_(profile), mode_(mode), start_ticks_(base::TimeTicks::Now()) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M160);
   // Some unit tests may not have |ArcServiceManager| set.
   ArcServiceManager* const service_manager = ArcServiceManager::Get();
   if (!service_manager)
@@ -112,7 +112,7 @@ std::string ArcUiAvailabilityReporter::GetHistogramNameForMode(Mode mode) {
 }
 
 void ArcUiAvailabilityReporter::MaybeReport() {
-  DCHECK(!connection_notifiers_.empty());
+  CHECK(!connection_notifiers_.empty(), base::NotFatalUntil::M160);
 
   // Check that all tracked instance are connected.
   for (const auto& connection_notifier : connection_notifiers_) {

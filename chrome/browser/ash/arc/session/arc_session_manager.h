@@ -367,7 +367,7 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
 
   // Invokes functions as if requirement checks are completed for testing.
   void EmulateRequirementCheckCompletionForTesting() {
-    DCHECK(requirement_checker_);
+    CHECK(requirement_checker_, base::NotFatalUntil::M160);
     requirement_checker_->EmulateRequirementCheckCompletionForTesting();
   }
 

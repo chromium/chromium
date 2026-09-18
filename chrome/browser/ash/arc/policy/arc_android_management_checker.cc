@@ -42,7 +42,7 @@ ArcAndroidManagementChecker::~ArcAndroidManagementChecker() {
 }
 
 void ArcAndroidManagementChecker::StartCheck(CheckCallback callback) {
-  DCHECK(callback_.is_null());
+  CHECK(callback_.is_null(), base::NotFatalUntil::M160);
 
   // No need to check Android Management if the user is a Chrome OS managed
   // user, or belongs to a well-known non-enterprise domain.
@@ -83,7 +83,7 @@ void ArcAndroidManagementChecker::OnRefreshTokensLoaded() {
 }
 
 void ArcAndroidManagementChecker::StartCheckInternal() {
-  DCHECK(!callback_.is_null());
+  CHECK(!callback_.is_null(), base::NotFatalUntil::M160);
 
   if (!identity_manager_->HasAccountWithRefreshToken(device_account_id_)) {
     LOG(ERROR) << "No refresh token is available for android management check.";
@@ -99,7 +99,7 @@ void ArcAndroidManagementChecker::StartCheckInternal() {
 
 void ArcAndroidManagementChecker::OnAndroidManagementChecked(
     policy::AndroidManagementClient::Result management_result) {
-  DCHECK(!callback_.is_null());
+  CHECK(!callback_.is_null(), base::NotFatalUntil::M160);
   VLOG(2) << "Android management check done " << management_result << ".";
   if (retry_on_error_ &&
       management_result == policy::AndroidManagementClient::Result::ERROR) {
@@ -123,8 +123,8 @@ void ArcAndroidManagementChecker::OnAndroidManagementChecked(
 }
 
 void ArcAndroidManagementChecker::ScheduleRetry() {
-  DCHECK(retry_on_error_);
-  DCHECK(!callback_.is_null());
+  CHECK(retry_on_error_, base::NotFatalUntil::M160);
+  CHECK(!callback_.is_null(), base::NotFatalUntil::M160);
   VLOG(2) << "Schedule next android management check in " << retry_delay_;
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(

@@ -113,7 +113,7 @@ std::string ResolveVariableChain(const VariableResolver& resolver,
                                  std::vector<std::string_view> variables) {
   for (const auto& variable : variables) {
     // Variables should always be valid and have a mapping in |resolver|.
-    DCHECK(resolver.find(variable) != resolver.end());
+    CHECK(resolver.find(variable) != resolver.end(), base::NotFatalUntil::M160);
 
     // Resolve the given variable and return if it has a value.
     std::string result = resolver.at(variable).Run();
@@ -139,16 +139,17 @@ std::string SearchAndReplace(
 
   // Loop as long as |regex| matches |search_input|.
   while (re2::RE2::PartialMatch(search_input, regex, &capture)) {
-    DCHECK(capture.data() != nullptr);
+    CHECK(capture.data() != nullptr, base::NotFatalUntil::M160);
     // Output the prefix skipped by PartialMatch until |capture| is found.
-    DCHECK(capture.begin() >= search_input.begin());
+    CHECK(capture.begin() >= search_input.begin(), base::NotFatalUntil::M160);
     size_t prefix_size = capture.begin() - search_input.begin();
     output.emplace_back(search_input.data(), prefix_size);
     // Output the replacement for |capture|.
     output.emplace_back(replacement_getter.Run(capture));
 
     // Update |search_input| to the suffix after |capture|.
-    DCHECK(search_input.length() >= prefix_size + capture.length());
+    CHECK(search_input.length() >= prefix_size + capture.length(),
+          base::NotFatalUntil::M160);
     size_t remaining_size =
         search_input.length() - (prefix_size + capture.length());
     search_input = std::string_view(
@@ -192,7 +193,8 @@ void ReplaceVariables(const VariableResolver& resolver,
   auto chain_resolver = base::BindRepeating(
       [](const VariableResolver& resolver, std::string_view variable) {
         // Remove the "${" prefix and the "}" suffix from |variable|.
-        DCHECK(variable.starts_with("${") && variable.ends_with("}"));
+        CHECK(variable.starts_with("${") && variable.ends_with("}"),
+              base::NotFatalUntil::M160);
         const std::string_view chain = variable.substr(2, variable.size() - 3);
         const std::vector<std::string_view> variables = SplitByColon(chain);
 

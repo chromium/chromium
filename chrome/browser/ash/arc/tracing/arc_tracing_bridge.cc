@@ -187,7 +187,8 @@ class ArcTracingDataSource
     for (ArcTracingBridge* bridge : bridges_) {
       // StopTracingOnUI should only be called once all bridges have completed
       // or abandoned startup.
-      DCHECK_NE(ArcTracingBridge::State::kStarting, bridge->state());
+      CHECK_NE(ArcTracingBridge::State::kStarting, bridge->state(),
+               base::NotFatalUntil::M160);
       if (bridge->state() != ArcTracingBridge::State::kEnabled) {
         continue;
       }
@@ -204,7 +205,7 @@ class ArcTracingDataSource
   // Called by each bridge when it has started tracing. Also called when a
   // bridge is unregistered.
   void OnTracingStartedOnUI(bool success) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
     if (!IsAnyBridgeStarting() && pending_stop_tracing_) {
       std::move(pending_stop_tracing_).Run();
     }
@@ -213,7 +214,7 @@ class ArcTracingDataSource
   // Called by each bridge when it has stopped tracing. Also called when a
   // bridge is unregistered.
   void OnTracingStoppedOnUI() {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
     // When a bridge unregisters, we may not actually be stopping.
     if (!stop_complete_callback_) {
@@ -282,20 +283,20 @@ ArcTracingBridge* ArcTracingBridge::GetForBrowserContext(
 // static
 ArcTracingBridge* ArcTracingBridge::GetForBrowserContextForTesting(
     content::BrowserContext* context) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   return ArcTracingBridgeFactory::GetForBrowserContextForTesting(context);
 }
 
 ArcTracingBridge::ArcTracingBridge(content::BrowserContext* context,
                                    ArcBridgeService* bridge_service)
     : arc_bridge_service_(bridge_service) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   arc_bridge_service_->tracing()->AddObserver(this);
   ArcTracingDataSource::GetInstance()->RegisterBridgeOnUI(this);
 }
 
 ArcTracingBridge::~ArcTracingBridge() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   ArcTracingDataSource::GetInstance()->UnregisterBridgeOnUI(this);
   arc_bridge_service_->tracing()->RemoveObserver(this);
 }
@@ -308,7 +309,7 @@ void ArcTracingBridge::GetCategories(std::set<std::string>* category_set) {
 }
 
 void ArcTracingBridge::OnConnectionReady() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   mojom::TracingInstance* tracing_instance = ARC_GET_INSTANCE_FOR_METHOD(
       arc_bridge_service_->tracing(), QueryAvailableCategories);
   if (!tracing_instance) {
@@ -320,7 +321,7 @@ void ArcTracingBridge::OnConnectionReady() {
 
 void ArcTracingBridge::OnCategoriesReady(
     const std::vector<std::string>& categories) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   base::AutoLock lock(categories_lock_);
   // There is no API in TraceLog to remove a category from the UI. As an
@@ -334,7 +335,7 @@ void ArcTracingBridge::OnCategoriesReady(
 
 void ArcTracingBridge::StartTracing(const std::string& config,
                                     StartCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (state_ != State::kDisabled) {
     DLOG(WARNING) << "Cannot start tracing, it is already enabled.";
@@ -375,14 +376,14 @@ void ArcTracingBridge::StartTracing(const std::string& config,
 
 void ArcTracingBridge::OnArcTracingStarted(StartCallback callback,
                                            bool success) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_EQ(State::kStarting, state_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK_EQ(State::kStarting, state_, base::NotFatalUntil::M160);
   state_ = success ? State::kEnabled : State::kDisabled;
   std::move(callback).Run(success);
 }
 
 void ArcTracingBridge::StopTracing(StopCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (state_ != State::kEnabled) {
     DLOG(WARNING) << "Cannot stop tracing, it is not enabled.";
@@ -404,8 +405,8 @@ void ArcTracingBridge::StopTracing(StopCallback callback) {
 
 void ArcTracingBridge::OnArcTracingStopped(StopCallback callback,
                                            bool success) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_EQ(State::kStopping, state_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK_EQ(State::kStopping, state_, base::NotFatalUntil::M160);
   state_ = State::kDisabled;
   if (!success) {
     LOG(ERROR) << "Failed to stop tracing";

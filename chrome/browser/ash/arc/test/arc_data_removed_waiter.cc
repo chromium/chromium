@@ -10,7 +10,7 @@
 namespace arc {
 
 ArcDataRemovedWaiter::ArcDataRemovedWaiter() {
-  DCHECK(ArcSessionManager::Get());
+  CHECK(ArcSessionManager::Get(), base::NotFatalUntil::M160);
   ArcSessionManager::Get()->AddObserver(this);
 }
 
