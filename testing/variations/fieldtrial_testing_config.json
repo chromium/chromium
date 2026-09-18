@@ -5826,7 +5826,7 @@
             ]
         }
     ],
-    "ContextualTasks_PermanentPinning_Desktop": [
+    "ContextualTasks_EphemeralPinning_Desktop": [
         {
             "platforms": [
                 "chromeos",
@@ -5836,7 +5836,7 @@
             ],
             "experiments": [
                 {
-                    "name": "PinningAndEphemeral_20260901",
+                    "name": "PinningEphemeral_20260915",
                     "params": {
                         "ContextualTasksEntryPoint": "toolbar-ephemeral-branded",
                         "overflow-items": "all-without-new-thread"
