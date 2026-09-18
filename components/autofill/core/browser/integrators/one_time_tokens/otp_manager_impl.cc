@@ -59,6 +59,7 @@ std::string GetMockOtpValue() {
   return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
       one_time_tokens::switches::kMockOtpValue);
 }
+
 }  // namespace
 
 OtpManagerImpl::OtpManagerImpl(BrowserAutofillManager& owner,
@@ -89,8 +90,8 @@ void OtpManagerImpl::GetOtpSuggestions(
     const FormStructure& form,
     const FormFieldData& field,
     OtpManagerImpl::GetOtpSuggestionsCallback callback) {
-  if (owner_->driver().IsEmbedded() || field.origin().opaque() ||
-      !OtpFieldDetector::IsOtpForm(form)) {
+  if (!one_time_token_service_ || owner_->driver().IsEmbedded() ||
+      field.origin().opaque() || !OtpFieldDetector::IsOtpForm(form)) {
     std::move(callback).Run({});
     return;
   }
@@ -113,9 +114,7 @@ void OtpManagerImpl::GetOtpSuggestions(
 }
 
 void OtpManagerImpl::GetRecentOtpsAndRenewSubscription() {
-  if (!one_time_token_service_ || !GetMockOtpValue().empty()) {
-    return;
-  }
+  CHECK(one_time_token_service_);
 
   one_time_token_service_->GetRecentOneTimeTokens(base::BindRepeating(
       &OtpManagerImpl::OnOneTimeTokenReceived, weak_ptr_factory_.GetWeakPtr()));
@@ -150,7 +149,7 @@ void OtpManagerImpl::OnFieldTypesDetermined(
     FormGlobalId form_id,
     AutofillManager::Observer::FieldTypeSource source,
     bool small_forms_were_parsed) {
-  // On non-android platforms and in tests the backend may be not initialized.
+  // On non-Android platforms and in tests the backend may be not initialized.
   // Furthermore, do not retrieve or subscribe to OTPs for embedded frame trees
   // (such as fenced frames or GuestViews).
   if (!one_time_token_service_ || manager.driver().IsEmbedded()) {
@@ -158,11 +157,11 @@ void OtpManagerImpl::OnFieldTypesDetermined(
   }
 
   const FormStructure* form = owner_->FindCachedFormById(form_id);
-  if (!form) {
+  if (!form || !OtpFieldDetector::IsOtpForm(*form)) {
     return;
   }
 
-  if (!OtpFieldDetector::IsOtpForm(*form)) {
+  if (!GetMockOtpValue().empty()) {
     return;
   }
 
@@ -248,17 +247,13 @@ void OtpManagerImpl::OnTickleReceived(OneTimeTokenSource source) {
 void OtpManagerImpl::OnOneTimeTokenReceived(
     OneTimeTokenSource backend_type,
     base::expected<OneTimeToken, OneTimeTokenRetrievalError> token_or_error) {
-  // If token_or_error holds an error, run the callback with empty otp value.
-  if (!token_or_error.has_value()) {
-    if (!last_pending_get_suggestions_callback_.is_null()) {
-      std::move(last_pending_get_suggestions_callback_).Run({});
-    }
+  if (!last_pending_get_suggestions_callback_) {
     return;
   }
 
-  // If we are here, token_or_error holds a OneTimeToken, we check if the
-  // callback is valid.
-  if (!last_pending_get_suggestions_callback_) {
+  // If token_or_error holds an error, run the callback with empty otp value.
+  if (!token_or_error.has_value()) {
+    std::move(last_pending_get_suggestions_callback_).Run({});
     return;
   }
 
