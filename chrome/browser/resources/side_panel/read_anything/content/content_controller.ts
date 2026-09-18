@@ -66,6 +66,8 @@ const READABILITY_TAG_TO_RM_TAG: Map<string, string> = new Map([
   ['button', 'div'],
   ['details', 'div'],
   ['mark', 'div'],
+  ['i', 'b'],
+  ['em', 'b'],
 ]);
 
 export interface ContentListener {
