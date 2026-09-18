@@ -1518,6 +1518,7 @@ if (_is_default_toolchain) {
       "javatests:chrome_test_java_org.chromium.chrome.browser.tabmodel",
       "javatests:chrome_test_java_org.chromium.chrome.browser.tasks",
       "javatests:chrome_test_java_org.chromium.chrome.browser.toolbar",
+      "javatests:chrome_test_java_org.chromium.chrome.browser.touch_to_fill",
       "javatests:chrome_test_java_org.chromium.chrome.browser.webapps",
       "javatests:chrome_test_java_various",
       "//chrome/browser/actor/android:javatests",

@@ -591,7 +591,6 @@ android_library("chrome_test_java_org.chromium.chrome.browser.autofill") {
   sources = [
     "src/org/chromium/chrome/browser/autofill/AtMemoryBottomSheetRenderTest.java",
     "src/org/chromium/chrome/browser/autofill/AutofillSnackbarControllerTest.java",
-    "src/org/chromium/chrome/browser/autofill/TouchToFillCreditCardTest.java",
     "src/org/chromium/chrome/browser/autofill/anchored_dialog/AnchoredDialogTest.java",
     "src/org/chromium/chrome/browser/autofill/save_card/AutofillSaveCardBottomSheetRenderTest.java",
     "src/org/chromium/chrome/browser/autofill/save_card/AutofillSaveCardBottomSheetViewBinderTest.java",
@@ -1689,6 +1688,22 @@ android_library("chrome_test_java_org.chromium.chrome.browser.toolbar") {
     "//chrome/browser/ui/android/toolbar:optional_button_java",
     "//chrome/browser/user_education:java",
     "//ui/accessibility:ui_accessibility_test_support_java",
+  ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.touch_to_fill") {
+  resources_package = "org.chromium.chrome"
+
+  sources = [ "src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillCreditCardTest.java" ]
+
+  deps = [
+    ":chrome_test_java_helper",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/settings:settings_in_tab_java",
+    "//chrome/browser/ui/android/autofill/internal:java",
+    "//chrome/browser/ui/android/autofill/internal:javatests",
+    "//components/autofill/core/browser/data_model/payments:mojo_bindings_java",
+    "//components/payments/content/android:service_impl_java",
   ]
 }
 
