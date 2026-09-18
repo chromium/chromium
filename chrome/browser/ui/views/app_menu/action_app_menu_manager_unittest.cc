@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
 
-#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/defaults.h"
@@ -22,6 +21,7 @@
 #include "components/bookmarks/common/bookmark_bar_visibility_state.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/enterprise/isolated_mode/isolated_mode_features.h"
+#include "components/enterprise/isolated_mode/prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -285,10 +285,13 @@ TEST_F(ActionAppMenuManagerTest, MAYBE_ProfileSubmenuSingleProfile) {
 
 TEST_F(ActionAppMenuManagerTest,
        BlockActionsEnterpriseIsolatedModeReplacesIncognito) {
-  base::test::ScopedCommandLine scoped_command_line;
-  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
-      enterprise_isolated_mode::switches::
-          kForceEnterpriseIsolatedModeReplacesIncognito);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      enterprise_isolated_mode::kEnableEnterpriseIsolatedMode);
+  profile_->GetPrefs()->SetInteger(
+      enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
+      static_cast<int>(
+          enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
 
   ActionAppMenuManager menu_manager(&mock_window_interface_);
   menu_manager.CreateMenuHierarchy();

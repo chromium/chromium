@@ -9,13 +9,14 @@
 #include <tuple>
 
 #include "base/check_deref.h"
-#include "base/command_line.h"
-#include "base/test/scoped_command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/isolated_mode/isolated_mode_features.h"
+#include "components/enterprise/isolated_mode/prefs.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -166,13 +167,17 @@ class ManagedConfigurationServiceEnterpriseIsolatedModeTest
     : public ManagedConfigurationServiceTest {
  public:
   void SetUp() override {
-    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
-        enterprise_isolated_mode::switches::
-            kForceEnterpriseIsolatedModeReplacesIncognito);
+    scoped_feature_list_.InitAndEnableFeature(
+        enterprise_isolated_mode::kEnableEnterpriseIsolatedMode);
     ManagedConfigurationServiceTest::SetUp();
+    profile()->GetPrefs()->SetInteger(
+        enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
+        static_cast<int>(
+            enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
   }
+
  private:
-  base::test::ScopedCommandLine scoped_command_line_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ManagedConfigurationServiceEnterpriseIsolatedModeTest, IsNotBound) {
