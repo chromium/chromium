@@ -12,7 +12,8 @@
 // Protocol for Picture-in-Picture commands.
 @protocol PictureInPictureCommands <NSObject>
 
-// Shows picture-in-picture with the given configuration.
+// Shows picture-in-picture with the given configuration. This should only be
+// called on the main browser.
 - (void)showPictureInPictureWithConfig:(PictureInPictureConfiguration*)config;
 
 // Dismisses picture-in-picture.

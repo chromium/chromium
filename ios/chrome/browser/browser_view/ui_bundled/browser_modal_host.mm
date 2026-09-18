@@ -1933,6 +1933,8 @@ const char kContextPanelDismissedHistogram[] =
 #pragma mark - PictureInPictureCommands
 
 - (void)showPictureInPictureWithConfig:(PictureInPictureConfiguration*)config {
+  CHECK(!_browser->GetProfile()->IsOffTheRecord());
+
   [_pictureInPictureCoordinator stop];
 
   UIViewController* baseViewController = [self activeBaseViewController];
