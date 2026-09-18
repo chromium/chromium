@@ -9,7 +9,6 @@ import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PRO
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,6 +18,7 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 import org.chromium.android_webview.AwCrashyClassUtils;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwSwitches;
+import org.chromium.base.CommandLine;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
@@ -27,6 +27,9 @@ import org.chromium.base.test.util.Features;
 /**
  * Tests that WebView only enables test crashes under the right conditions when the correct flags
  * are flipped.
+ *
+ * <p>Each test sets up its flags and features with the usual annotations and starts the browser
+ * process itself, so that the cases which must not crash assert that startup completes normally.
  */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
@@ -46,17 +49,17 @@ public class AwCrashyClassUtilsTest extends AwParameterizedTest {
                 };
     }
 
-    @Before
-    public void setUp() throws Exception {
-        mRule.startBrowserProcess();
-    }
-
     @Test(expected = RuntimeException.class)
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({AwSwitches.WEBVIEW_FORCE_CRASH_JAVA})
     @Features.EnableFeatures({AwFeatures.WEBVIEW_ENABLE_CRASH})
-    public void testJavaCrashWhenEnabled() {
+    public void testJavaCrashWhenEnabled() throws Exception {
+        mRule.startBrowserProcess();
+        // The switch is appended here rather than declared with @CommandLineFlags.Add because
+        // once startup is unified it runs maybeCrashIfEnabled() itself, and a startup failure
+        // leaves the pre-native UI task queue permanently wedged, which hangs test teardown.
+        // TODO(crbug.com/544990736): assert on startup crashing once that is recoverable.
+        CommandLine.getInstance().appendSwitch(AwSwitches.WEBVIEW_FORCE_CRASH_JAVA);
         Assert.assertTrue(AwCrashyClassUtils.shouldCrashJava());
         AwCrashyClassUtils.maybeCrashIfEnabled();
     }
@@ -65,37 +68,37 @@ public class AwCrashyClassUtilsTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     @CommandLineFlags.Add(AwSwitches.WEBVIEW_FORCE_CRASH_JAVA)
-    public void testNoJavaCrashWhenEnabledAndExperimentDisabled() {
+    public void testNoJavaCrashWhenEnabledAndExperimentDisabled() throws Exception {
+        mRule.startBrowserProcess();
         Assert.assertFalse(AwCrashyClassUtils.shouldCrashJava());
         Assert.assertFalse(AwCrashyClassUtils.shouldCrashNative());
-        AwCrashyClassUtils.maybeCrashIfEnabled();
     }
 
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
     @CommandLineFlags.Add(AwSwitches.WEBVIEW_FORCE_CRASH_NATIVE)
-    public void testNoNativeCrashWhenEnabledAndExperimentDisabled() {
+    public void testNoNativeCrashWhenEnabledAndExperimentDisabled() throws Exception {
+        mRule.startBrowserProcess();
         Assert.assertFalse(AwCrashyClassUtils.shouldCrashJava());
         Assert.assertFalse(AwCrashyClassUtils.shouldCrashNative());
-        AwCrashyClassUtils.maybeCrashIfEnabled();
     }
 
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    public void testNoCrashWhenCompletelyDisabled() {
+    public void testNoCrashWhenCompletelyDisabled() throws Exception {
+        mRule.startBrowserProcess();
         Assert.assertFalse(AwCrashyClassUtils.shouldCrashJava());
         Assert.assertFalse(AwCrashyClassUtils.shouldCrashNative());
-        AwCrashyClassUtils.maybeCrashIfEnabled();
     }
 
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    public void testNoCrashWhenDisabledAndTestExperimentEnabled() {
+    public void testNoCrashWhenDisabledAndTestExperimentEnabled() throws Exception {
+        mRule.startBrowserProcess();
         Assert.assertFalse(AwCrashyClassUtils.shouldCrashJava());
         Assert.assertFalse(AwCrashyClassUtils.shouldCrashNative());
-        AwCrashyClassUtils.maybeCrashIfEnabled();
     }
 }
