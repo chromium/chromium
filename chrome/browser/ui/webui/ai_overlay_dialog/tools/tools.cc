@@ -235,6 +235,9 @@ void AiOverlayTools::SwitchTab(const std::string& query,
   TabStripModel* tab_strip_model = browser_->GetTabStripModel();
   for (int i = 0; i < tab_strip_model->count(); ++i) {
     content::WebContents* contents = tab_strip_model->GetWebContentsAt(i);
+    if (!contents || !contents->GetLastCommittedURL().SchemeIsHTTPOrHTTPS()) {
+      continue;
+    }
     std::string title =
         base::ToLowerASCII(base::UTF16ToUTF8(contents->GetTitle()));
     std::string url = base::ToLowerASCII(contents->GetURL().spec());

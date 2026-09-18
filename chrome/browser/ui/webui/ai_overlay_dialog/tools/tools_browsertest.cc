@@ -269,6 +269,22 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, SwitchTabByUrl) {
   EXPECT_EQ(initial_active - 1, browser()->GetTabStripModel()->active_index());
 }
 
+IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest,
+                       SwitchTabBlocksNonHttpSchemes) {
+  AddTabWithTitle(embedded_test_server()->GetURL("/empty.html?1"), "First Tab");
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("chrome://version"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  AddTabWithTitle(embedded_test_server()->GetURL("/empty.html?3"), "Third Tab");
+
+  base::test::TestFuture<SwitchTabResult> future;
+  tools()->SwitchTab("version", future.GetCallback());
+
+  EXPECT_FALSE(future.Get().has_value());
+  EXPECT_EQ("No matching tab found", future.Get().error());
+}
+
 IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, SwitchTabNotFound) {
   AddTabWithTitle(embedded_test_server()->GetURL("/empty.html?1"), "First Tab");
 
