@@ -172,7 +172,11 @@ void BookmarkMenuBridge::BuildRootMenu(bool recurse) {
   is_menu_valid_ = true;
 }
 
-void BookmarkMenuBridge::BookmarkMergedSurfaceServiceBeingDeleted() {}
+void BookmarkMenuBridge::BookmarkMergedSurfaceServiceBeingDeleted() {
+  bookmark_service_observation_.Reset();
+  bookmark_service_ = nullptr;
+  bookmark_nodes_.clear();
+}
 
 void BookmarkMenuBridge::BookmarkNodeAdded(const BookmarkParentFolder& parent,
                                            size_t index) {

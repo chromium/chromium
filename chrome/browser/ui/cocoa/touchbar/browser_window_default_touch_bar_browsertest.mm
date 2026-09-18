@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,79 +8,50 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/mac/mac_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/command_updater.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search_engines/template_url_service_factory_test_util.h"
 #include "chrome/browser/ui/browser_command_controller.h"
-#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection_platform_delegate.h"
-#include "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
-#include "content/public/test/test_renderer_host.h"
-#include "content/public/test/web_contents_tester.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #import "ui/base/cocoa/touch_bar_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
-class BrowserWindowDefaultTouchBarUnitTest : public BrowserWithTestWindowTest {
+class BrowserWindowDefaultTouchBarBrowserTest : public InProcessBrowserTest {
  public:
-  void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
-
-    // The touch bar can show a search engine prompt, which requires this
-    // service.
-    template_service_util_ =
-        std::make_unique<TemplateURLServiceFactoryTestUtil>(profile());
-    template_service_util_->VerifyLoad();
-
-    command_updater_ = chrome::BrowserCommandController::From(browser());
-
-    browser()->tab_strip_model()->AppendWebContents(
-        content::WebContentsTester::CreateTestWebContents(profile(), nullptr),
-        true);
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
 
     touch_bar_ = [[BrowserWindowDefaultTouchBar alloc] init];
     touch_bar_.browser = browser();
   }
 
   void UpdateCommandEnabled(int id, bool enabled) {
-    command_updater_->UpdateCommandEnabled(id, enabled);
+    chrome::BrowserCommandController::From(browser())->UpdateCommandEnabled(
+        id, enabled);
   }
 
   bool ShowsHomeButton() {
-    return browser()->GetProfile()->GetPrefs()->GetBoolean(
-        prefs::kShowHomeButton);
+    return GetProfile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton);
   }
 
   void SetShowHomeButton(bool flag) {
-    browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton,
-                                                    flag);
+    GetProfile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, flag);
   }
 
-  void TearDown() override {
+  void TearDownOnMainThread() override {
     touch_bar_.browser = nullptr;
     touch_bar_ = nil;
 
-    BrowserWithTestWindowTest::TearDown();
+    InProcessBrowserTest::TearDownOnMainThread();
   }
-
-  CocoaTestHelper cocoa_test_helper_;
-  raw_ptr<CommandUpdater, DanglingUntriaged>
-      command_updater_;  // Weak, owned by Browser.
-
-  std::unique_ptr<TemplateURLServiceFactoryTestUtil> template_service_util_;
 
   BrowserWindowDefaultTouchBar* __strong touch_bar_;
 };
@@ -89,7 +60,8 @@ class BrowserWindowDefaultTouchBarUnitTest : public BrowserWithTestWindowTest {
 // these identifiers may be written out to disk on users' computers if they
 // customize the Touch Bar, and the corresponding items will disappear if they
 // can no longer be created.
-TEST_F(BrowserWindowDefaultTouchBarUnitTest, HistoricTouchBarItems) {
+IN_PROC_BROWSER_TEST_F(BrowserWindowDefaultTouchBarBrowserTest,
+                       HistoricTouchBarItems) {
   NSTouchBar* touch_bar = [touch_bar_ makeTouchBar];
   for (NSString* item_identifier : {
            @"BACK-FWD",
@@ -117,7 +89,7 @@ TEST_F(BrowserWindowDefaultTouchBarUnitTest, HistoricTouchBarItems) {
 // Tests if BrowserWindowDefaultTouchBar can produce the items it says it can
 // and, for each kind of bar, also verify that the advertised/customizable lists
 // include some representative items (if not, the lists might be wrong.)
-TEST_F(BrowserWindowDefaultTouchBarUnitTest, TouchBarItems) {
+IN_PROC_BROWSER_TEST_F(BrowserWindowDefaultTouchBarBrowserTest, TouchBarItems) {
   auto test_default_identifiers = [&](NSSet* expected_identifiers) {
     NSTouchBar* touch_bar = [touch_bar_ makeTouchBar];
     NSMutableSet<NSString*>* advertised_identifiers = [NSMutableSet set];
@@ -162,7 +134,8 @@ TEST_F(BrowserWindowDefaultTouchBarUnitTest, TouchBarItems) {
 }
 
 // Tests the reload or stop touch bar item.
-TEST_F(BrowserWindowDefaultTouchBarUnitTest, ReloadOrStopTouchBarItem) {
+IN_PROC_BROWSER_TEST_F(BrowserWindowDefaultTouchBarBrowserTest,
+                       ReloadOrStopTouchBarItem) {
   NSTouchBar* touch_bar = [touch_bar_ makeTouchBar];
   [touch_bar_ setIsPageLoading:NO];
 
@@ -182,7 +155,8 @@ TEST_F(BrowserWindowDefaultTouchBarUnitTest, ReloadOrStopTouchBarItem) {
 }
 
 // Tests the bookmark star touch bar item.
-TEST_F(BrowserWindowDefaultTouchBarUnitTest, BookmkarStarTouchBarItem) {
+IN_PROC_BROWSER_TEST_F(BrowserWindowDefaultTouchBarBrowserTest,
+                       BookmkarStarTouchBarItem) {
   NSTouchBar* touch_bar = [touch_bar_ makeTouchBar];
 
   [touch_bar_ setIsStarred:NO];
@@ -200,7 +174,8 @@ TEST_F(BrowserWindowDefaultTouchBarUnitTest, BookmkarStarTouchBarItem) {
 }
 
 // Tests if the back button on the touch bar is in sync with the back command.
-TEST_F(BrowserWindowDefaultTouchBarUnitTest, BackCommandUpdate) {
+IN_PROC_BROWSER_TEST_F(BrowserWindowDefaultTouchBarBrowserTest,
+                       BackCommandUpdate) {
   NSTouchBar* touch_bar = [touch_bar_ makeTouchBar];
   NSTouchBarItem* item = [touch_bar
       itemForIdentifier:BrowserWindowDefaultTouchBar.backItemIdentifier];
@@ -214,7 +189,8 @@ TEST_F(BrowserWindowDefaultTouchBarUnitTest, BackCommandUpdate) {
 
 // Tests if the forward button on the touch bar is in sync with the forward
 // command.
-TEST_F(BrowserWindowDefaultTouchBarUnitTest, ForwardCommandUpdate) {
+IN_PROC_BROWSER_TEST_F(BrowserWindowDefaultTouchBarBrowserTest,
+                       ForwardCommandUpdate) {
   NSTouchBar* touch_bar = [touch_bar_ makeTouchBar];
   NSTouchBarItem* item = [touch_bar
       itemForIdentifier:BrowserWindowDefaultTouchBar.forwardItemIdentifier];
@@ -226,7 +202,8 @@ TEST_F(BrowserWindowDefaultTouchBarUnitTest, ForwardCommandUpdate) {
   EXPECT_FALSE(button.enabled);
 }
 
-TEST_F(BrowserWindowDefaultTouchBarUnitTest, BackAccessibilityLabel) {
+IN_PROC_BROWSER_TEST_F(BrowserWindowDefaultTouchBarBrowserTest,
+                       BackAccessibilityLabel) {
   NSTouchBar* touch_bar = [touch_bar_ makeTouchBar];
   NSTouchBarItem* item = [touch_bar
       itemForIdentifier:BrowserWindowDefaultTouchBar.backItemIdentifier];
@@ -236,7 +213,8 @@ TEST_F(BrowserWindowDefaultTouchBarUnitTest, BackAccessibilityLabel) {
               l10n_util::GetNSString(IDS_ACCNAME_BACK));
 }
 
-TEST_F(BrowserWindowDefaultTouchBarUnitTest, ForwardAccessibilityLabel) {
+IN_PROC_BROWSER_TEST_F(BrowserWindowDefaultTouchBarBrowserTest,
+                       ForwardAccessibilityLabel) {
   NSTouchBar* touch_bar = [touch_bar_ makeTouchBar];
   NSTouchBarItem* item = [touch_bar
       itemForIdentifier:BrowserWindowDefaultTouchBar.forwardItemIdentifier];
@@ -247,7 +225,7 @@ TEST_F(BrowserWindowDefaultTouchBarUnitTest, ForwardAccessibilityLabel) {
 }
 
 // Tests that the home button in the Touch Bar is in sync with the setting.
-TEST_F(BrowserWindowDefaultTouchBarUnitTest, HomeUpdate) {
+IN_PROC_BROWSER_TEST_F(BrowserWindowDefaultTouchBarBrowserTest, HomeUpdate) {
   NSTouchBar* touch_bar = [touch_bar_ makeTouchBar];
 
   // Save the current state before we start mucking with preferences.
@@ -273,14 +251,12 @@ TEST_F(BrowserWindowDefaultTouchBarUnitTest, HomeUpdate) {
 
 // Tests that closing a browser doesn't cause a use-after-free when resetting
 // the browser property of the Touch Bar.
-TEST_F(BrowserWindowDefaultTouchBarUnitTest, OnBrowserClosedNoCrash) {
+IN_PROC_BROWSER_TEST_F(BrowserWindowDefaultTouchBarBrowserTest,
+                       OnBrowserClosedNoCrash) {
   EXPECT_NE(nil, touch_bar_);
   EXPECT_EQ(browser(), touch_bar_.browser);
 
-  // Simulate OnBrowserClosed from GlobalBrowserCollection.
-  BrowserCollectionObserver* platform_delegate =
-      GlobalBrowserCollection::GetInstance()->GetPlatformDelegate();
-  platform_delegate->OnBrowserClosed(browser());
+  CloseBrowserSynchronously(browser());
 
   // The Touch Bar's browser property should be reset, and the bridge destroyed.
   EXPECT_EQ(nullptr, touch_bar_.browser);
