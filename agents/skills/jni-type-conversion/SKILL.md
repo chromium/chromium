@@ -17,6 +17,13 @@ You must first read the prerequisite skill:
 1. **Identify Candidates**: Look for JNI methods (annotated with
    `@NativeMethods` or `@CalledByNative`) that take or return types that are
    currently being explicitly converted in C++.
+   - **Tip**: Inspect every `JavaRef` (`jobject`, `jstring`, `j*Array`, etc.)
+     parameter in the C++ implementation. Any parameter that is immediately run
+     through a conversion/unwrapping function (such as
+     `content::WebContents::FromJavaWebContents(...)`,
+     `Profile::FromJavaObject(...)`, `url::GURLAndroid::ToNativeGURL(...)`,
+     `TabAndroid::GetNativeTab(...)`, `ConvertJavaStringToUTF8(...)`, etc.) is a
+     prime candidate for `@JniType`.
 2. **Discovery (CRITICAL)**: To see if a type already has a `@JniType`
    conversion defined, search the codebase for `FromJniType` or `ToJniType`
    definitions for that C++ type:
@@ -25,13 +32,40 @@ You must first read the prerequisite skill:
    ```
    If a conversion exists, note the header file where it is defined; you will
    need to include it from any C++ files that require the conversion.
-3. **Check C++ Implementation**: Verify that the C++ side performs explicit
-   conversions using functions like:
-   - `ConvertJavaStringToUTF8` -> `std::string`
-   - `ConvertJavaStringToUTF16` -> `std::u16string`
-   - `JavaIntArrayToIntVector` -> `std::vector<int32_t>`
-   - `ToJavaArrayOfStrings` -> `std::vector<std::string>`
-   - `base::android::ConvertJavaStringToUTF8` -> `std::string`
+3. **Common `@JniType` Types & C++ Conversions**:
+   - `std::string` / `std::u16string` (`base/android/jni_string.h`) \<-
+     `ConvertJavaStringToUTF8`, `ConvertJavaStringToUTF16`,
+     `ConvertUTF8ToJavaString`, `ConvertUTF16ToJavaString`
+   - `std::vector<T>` / `std::optional<T>`
+     (`third_party/jni_zero/default_conversions.h`) \<-
+     `JavaIntArrayToIntVector`, `JavaLongArrayToInt64Vector`,
+     `AppendJavaStringArrayToStringVector`, `ToJavaArrayOfStrings`, etc.
+   - `base::OnceClosure` / `base::OnceCallback<...>` /
+     `base::RepeatingCallback<...>` (`base/android/callback_android.h`) \<-
+     `RunObjectCallbackAndroid`, `RunBooleanCallbackAndroid`,
+     `RunIntCallbackAndroid`, etc.
+   - `content::WebContents*` (`content/public/browser/web_contents.h`) \<-
+     `content::WebContents::FromJavaWebContents`, `GetJavaWebContents`
+   - `content::RenderFrameHost*` (`content/public/browser/render_frame_host.h`)
+     \<- `content::RenderFrameHost::FromJavaRenderFrameHost`,
+     `GetJavaRenderFrameHost`
+   - `Profile*` (`chrome/browser/profiles/profile.h`) \<-
+     `Profile::FromJavaObject`, `GetJavaObject`
+   - `TabAndroid*` (`chrome/browser/android/tab_android.h`) \<-
+     `TabAndroid::GetNativeTab`, `GetJavaObject`
+   - `ui::WindowAndroid*` (`ui/android/window_android.h`) \<-
+     `ui::WindowAndroid::FromJavaWindowAndroid`, `GetJavaObject`
+   - `GURL` (`url/android/gurl_android.h`) \<- `url::GURLAndroid::ToNativeGURL`,
+     `url::GURLAndroid::FromNativeGURL`
+   - `url::Origin` (`url/origin.h`) \<- `url::Origin::FromJavaObject`,
+     `ToJavaObject`
+   - `PrefService*` (`components/prefs/android/pref_service_android.h`) \<-
+     `PrefServiceAndroid::FromPrefServiceAndroid`
+   - `signin::IdentityManager*`
+     (`components/signin/public/identity_manager/identity_manager.h`)
+   - `base::Token` (`base/android/token_android.h`), `base::UnguessableToken`
+     (`base/android/unguessable_token_android.h`), `base::Uuid` for
+     `java.util.UUID` (`base/uuid.h`)
 4. **Verify Constraints**: Do NOT convert if:
    - The conversion is conditional (e.g., inside an `if` block that might skip
      it).
@@ -62,7 +96,15 @@ You must first read the prerequisite skill:
    - Ensure `org.jni_zero.JniType` is imported.
 6. **Update C++**:
    - Change the C++ parameter type to the native type (e.g.,
-     `const std::string&`, `std::vector<int32_t>&`, `base::OnceClosure`).
+     `const std::string&`, `const std::vector<int32_t>&`, `base::OnceClosure`).
+   - **Use Rvalue References (`T&&`) When Moving**: `FromJniType` returns
+     temporary values (rvalues) that are forwarded to the C++ method. When the
+     C++ implementation transfers ownership or can avoid a copy with
+     `std::move()` (e.g., assigning into a struct field, container, or binding
+     into a callback), use a non-const rvalue reference parameter (e.g.,
+     `std::vector<int64_t>&&`, `std::string&&`) instead of `const T&`, and pass
+     it with `std::move()`. Note that `&&` is not needed in the Java
+     `@JniType("...")` annotation.
    - Remove the explicit conversion calls and intermediate variables.
    - **Remove Unused JNIEnv**: If the `JNIEnv* env` parameter used to be used,
      but is no longer used after `@JniType` additions, it should be removed from
