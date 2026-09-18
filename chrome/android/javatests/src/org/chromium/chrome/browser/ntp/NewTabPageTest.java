@@ -289,10 +289,12 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
-    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.R, message = "http://crbug.com/40664848")
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // Failing on desktop http://crbug.com/40664848
-    @DisabledTest(message = "b/524422264")
     public void testFocusFakebox() {
+        CriteriaHelper.pollUiThread(
+                () ->
+                        !mNtp.getView().isLayoutRequested()
+                                && !mFakebox.isLayoutRequested()
+                                && mFakebox.getHeight() > 0);
         int initialFakeboxTop = getFakeboxTop(mNtp);
 
         TouchCommon.singleClickView(mFakebox);
@@ -304,8 +306,8 @@ public class NewTabPageTest {
             Assert.assertTrue(afterFocusFakeboxTop < initialFakeboxTop);
         }
 
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         mOmnibox.clearFocus();
+        waitForUrlFocusPercent(mNtp, 0f);
         waitForFakeboxTopPosition(mNtp, initialFakeboxTop);
     }
 
@@ -1088,13 +1090,15 @@ public class NewTabPageTest {
     }
 
     private void waitForFakeboxFocusAnimationComplete(NewTabPage ntp) {
-        // Tablet doesn't animate fakebox but simply focuses Omnibox upon click.
-        // Skip the check on animation.
-        if (mActivityTestRule.getActivity().isTablet()) return;
         waitForUrlFocusPercent(ntp, 1f);
     }
 
     private void waitForUrlFocusPercent(final NewTabPage ntp, float percent) {
+        // Tablet doesn't animate fakebox but simply focuses Omnibox upon click.
+        // Skip the check on animation.
+        if (mActivityTestRule.getActivity().isTablet()) {
+            return;
+        }
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
