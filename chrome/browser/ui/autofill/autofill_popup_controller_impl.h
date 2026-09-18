@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/autofill_popup_hide_helper.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
+#include "chrome/browser/ui/autofill/key_press_handler_registration.h"
 #include "chrome/browser/ui/autofill/next_idle_barrier.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
@@ -24,7 +25,6 @@
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/browser/ui/tabbed_pane_enums.h"
 #include "components/autofill/core/common/aliases.h"
-#include "content/public/browser/render_widget_host.h"
 
 namespace content {
 class WebContents;
@@ -196,21 +196,9 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   base::WeakPtr<AutofillPopupView> view_;
   base::WeakPtr<AutofillSuggestionDelegate> delegate_;
 
-  // A helper class for capturing key press events associated with a
-  // `content::RenderFrameHost`.
-  class KeyPressObserver {
-   public:
-    explicit KeyPressObserver(AutofillPopupControllerImpl* observer);
-    ~KeyPressObserver();
-
-    void Observe(content::RenderFrameHost* rfh);
-    void Reset();
-
-   private:
-    const raw_ref<AutofillPopupControllerImpl> observer_;
-    content::GlobalRenderFrameHostId rfh_;
-    content::RenderWidgetHost::KeyPressEventCallback handler_;
-  } key_press_observer_{this};
+  // Keeps `HandleKeyPressEvent()` registered with the frame the popup is
+  // anchored to.
+  KeyPressHandlerRegistration key_press_registration_;
 
   // Whether a sufficient amount of time has passed since showing or updating
   // suggestions. It is used to safeguard against accepting suggestions too
