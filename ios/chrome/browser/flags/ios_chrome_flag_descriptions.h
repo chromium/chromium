@@ -1371,12 +1371,6 @@ inline constexpr char kNTPBackgroundDownsampleImageDescription[] =
     "Downsamples user-uploaded NTP background images to screen size, "
     "reducing memory usage.";
 
-inline constexpr char kNTPHeaderUseTransformsForAnimationsName[] =
-    "NTP Header Transform Animations";
-inline constexpr char kNTPHeaderUseTransformsForAnimationsDescription[] =
-    "Use high-performance transforms for NTP header animations instead of "
-    "updating constraints on scroll.";
-
 inline constexpr char kNativeFindInPageName[] = "Native Find in Page";
 inline constexpr char kNativeFindInPageDescription[] =
     "When enabled, the JavaScript implementation of the Find in Page feature "

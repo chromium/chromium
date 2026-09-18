@@ -18,9 +18,6 @@
 
 BASE_FEATURE(kOverrideFeedSettings, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kNTPHeaderUseTransformsForAnimations,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kFeedSwipeInProductHelp, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUseFeedEligibilityService, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -106,10 +103,6 @@ bool IsAimEnabledInNtp() {
 
 bool IsConsistentLogoDoodleHeightEnabled() {
   return base::FeatureList::IsEnabled(kConsistentLogoDoodleHeight);
-}
-
-bool IsNTPHeaderTransformsForAnimationsEnabled() {
-  return base::FeatureList::IsEnabled(kNTPHeaderUseTransformsForAnimations);
 }
 
 bool IsNTPRedesignEnabled() {
