@@ -19,6 +19,7 @@ namespace {
 // Tool names.
 NSString* const kToolNavigate = @"Navigate";
 NSString* const kToolClick = @"Click";
+NSString* const kToolDragAndRelease = @"Drag and Release";
 NSString* const kToolHistoryBack = @"History Back";
 NSString* const kToolHistoryForward = @"History Forward";
 NSString* const kToolType = @"Type";
@@ -44,6 +45,7 @@ NSString* const kWindowIdMacro = @"{{window_id}}";
 // modification for these tools for debugging.
 bool IsWebActuationTool(NSString* tool) {
   return [tool isEqualToString:kToolClick] ||
+         [tool isEqualToString:kToolDragAndRelease] ||
          [tool isEqualToString:kToolType] ||
          [tool isEqualToString:kToolMultiTool] ||
          [tool isEqualToString:kToolScroll] ||
@@ -524,6 +526,16 @@ bool IsWebActuationTool(NSString* tool) {
         }
       }
     },
+    kToolDragAndRelease : @{
+      @"ui" : @[ _tabIdContainer, _frameIdContainer, _jsonContainer ],
+      @"template" : @{
+        @"drag_and_release" : @{
+          @"tab_id" : kTabIdMacro,
+          @"from_target" : @{@"coordinate" : @{@"x" : @(100), @"y" : @(100)}},
+          @"to_target" : @{@"coordinate" : @{@"x" : @(200), @"y" : @(200)}}
+        }
+      }
+    },
     kToolCloseTab : @{
       @"ui" : @[ _tabIdContainer, _jsonContainer ],
       @"template" : @{@"close_tab" : @{@"tab_id" : kTabIdMacro}}
@@ -603,15 +615,25 @@ bool IsWebActuationTool(NSString* tool) {
     toolDict[@"tab_id"] = @([tabId intValue]);
   }
 
-  // Update Target (Frame).
-  if (toolDict[@"target"]) {
+  // Update Target (Frame). Multi-target tools such as drag and release use
+  // `from_target`/`to_target` instead of a single `target`. Each key is seeded
+  // with a distinct `content_node_id` so that selecting a frame does not
+  // produce a degenerate same-node drag; the concrete node IDs are expected to
+  // be hand-edited afterwards.
+  NSDictionary<NSString*, NSNumber*>* targetKeyToContentNodeId =
+      @{@"target" : @(1), @"from_target" : @(1), @"to_target" : @(2)};
+  for (NSString* targetKey in targetKeyToContentNodeId) {
+    if (!toolDict[targetKey]) {
+      continue;
+    }
     if (frameId) {
-      toolDict[@"target"] =
-          [@{@"document_identifier" : frameId, @"content_node_id" : @(1)}
-              mutableCopy];
-    } else if (configTemplate[@"target"]) {
+      toolDict[targetKey] = [@{
+        @"document_identifier" : frameId,
+        @"content_node_id" : targetKeyToContentNodeId[targetKey]
+      } mutableCopy];
+    } else if (configTemplate[targetKey]) {
       // Revert to template default if frame deselected.
-      toolDict[@"target"] = [configTemplate[@"target"] mutableCopy];
+      toolDict[targetKey] = [configTemplate[targetKey] mutableCopy];
     }
   }
 
@@ -656,9 +678,10 @@ bool IsWebActuationTool(NSString* tool) {
  * Updates the JSON template for the specified tool with the given params.
  *
  * This parses the existing JSON (or loads the template if empty) and updates it
- * with the provided tab ID and frame ID. If frameId is unset, the `target` in
- * the default is used. If frameId is set, a document-identifier based target is
- * used.
+ * with the provided tab ID and frame ID. If frameId is unset, the target(s) in
+ * the default are used. If frameId is set, document-identifier based target(s)
+ * are used. Multi-target tools such as drag and release carry
+ * `from_target`/`to_target` rather than a single `target`.
  *
  * @param toolName The name of the tool (e.g. "Navigate", "Click").
  * @param tabId The tab ID to set in the JSON (can be nil).
@@ -833,7 +856,8 @@ bool IsWebActuationTool(NSString* tool) {
   NSMutableArray<NSString*>* orderedTools = [NSMutableArray arrayWithArray:@[
     kToolMultiTool, kToolNavigate, kToolClick, kToolType, kToolHistoryBack,
     kToolHistoryForward, kToolWait, kToolScroll, kToolScrollTo, kToolSelect,
-    kToolCloseTab, kToolAttemptLogin, kToolCreateTab, kToolActivateTab
+    kToolDragAndRelease, kToolCloseTab, kToolAttemptLogin, kToolCreateTab,
+    kToolActivateTab
   ]];
   if (base::FeatureList::IsEnabled(autofill::features::kGlicActorAutofill)) {
     [orderedTools addObject:kToolAttemptFormFilling];

@@ -26,6 +26,7 @@ enum class ActionType {
   kScroll,
   kScrollTo,
   kSelect,
+  kDragAndRelease,
   kAttemptLogin,
   kAttemptFormFilling,
   kCreateTab,
@@ -62,6 +63,9 @@ ActionType GetActionType(const std::string& key) {
   }
   if (key == "select") {
     return ActionType::kSelect;
+  }
+  if (key == "drag_and_release") {
+    return ActionType::kDragAndRelease;
   }
   if (key == "attempt_login") {
     return ActionType::kAttemptLogin;
@@ -256,6 +260,21 @@ bool MapSelectAction(const base::DictValue& dict,
   return select->ByteSizeLong() > 0;
 }
 
+bool MapDragAndReleaseAction(const base::DictValue& dict,
+                             optimization_guide::proto::Action* action) {
+  auto* drag_and_release = action->mutable_drag_and_release();
+  if (std::optional<int> tab_id = dict.FindInt("tab_id")) {
+    drag_and_release->set_tab_id(*tab_id);
+  }
+  if (const base::DictValue* from_target = dict.FindDict("from_target")) {
+    MapActionTarget(*from_target, drag_and_release->mutable_from_target());
+  }
+  if (const base::DictValue* to_target = dict.FindDict("to_target")) {
+    MapActionTarget(*to_target, drag_and_release->mutable_to_target());
+  }
+  return drag_and_release->ByteSizeLong() > 0;
+}
+
 bool MapAttemptLoginAction(const base::DictValue& dict,
                            optimization_guide::proto::Action* action) {
   auto* attempt_login = action->mutable_attempt_login();
@@ -399,6 +418,8 @@ bool ParseActionFromDict(const base::DictValue& dict,
       return MapScrollToAction(value.GetDict(), action);
     case ActionType::kSelect:
       return MapSelectAction(value.GetDict(), action);
+    case ActionType::kDragAndRelease:
+      return MapDragAndReleaseAction(value.GetDict(), action);
     case ActionType::kAttemptLogin:
       return MapAttemptLoginAction(value.GetDict(), action);
     case ActionType::kAttemptFormFilling:
