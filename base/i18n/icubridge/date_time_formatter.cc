@@ -301,15 +301,15 @@ std::u16string GetMonthSkeleton(const icu::UnicodeString& icu_initial_pattern,
 }
 
 std::u16string GetDaySkeleton(const std::string& skeleton,
-                              DateTimeFormatterOptions::ItemLength length,
-                              SkeletonOptions options) {
-  if (!options.has_day) {
+                              DateTimeFormatterOptions options,
+                              SkeletonOptions skeleton_options) {
+  if (!skeleton_options.has_day) {
     return u"";
   }
 
   // If there is no day or year, a separated logic is applied.
-  if (!options.has_year && !options.has_month) {
-    switch (length) {
+  if (!skeleton_options.has_year && !skeleton_options.has_month) {
+    switch (options.length) {
       case DateTimeFormatterOptions::ItemLength::kShort:
       case DateTimeFormatterOptions::ItemLength::kMedium:
         return u"d";
@@ -317,6 +317,14 @@ std::u16string GetDaySkeleton(const std::string& skeleton,
       case DateTimeFormatterOptions::ItemLength::kLong:
         return u"dd";
     }
+  }
+
+  // Temporary solution, the goal should be to land something like
+  // https://github.com/unicode-org/icu4x/pull/8492."
+  if (options.format_identifier ==
+          DateTimeFormatterOptions::FormatIdentifier::kMD &&
+      options.length == DateTimeFormatterOptions::ItemLength::kMedium) {
+    return u"d";
   }
 
   return std::u16string(std::ranges::count(skeleton, 'd'), 'd');
@@ -402,8 +410,7 @@ icu::UnicodeString GetFormattedSkeleton(
                                             options, skeleton_options));
   }
   if (skeleton_options.has_day) {
-    output_skeleton.append(
-        GetDaySkeleton(skeleton, options.length, skeleton_options));
+    output_skeleton.append(GetDaySkeleton(skeleton, options, skeleton_options));
   }
   if (skeleton_options.has_weekday) {
     // Max between 1u and weekday_count is used to force its presence.
