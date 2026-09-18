@@ -29,8 +29,7 @@ class MojoRenderer;
 //
 // Implementors of new media::Renderer types are encouraged to create small
 // wrapper factories that use MRF, rather than creating derived MojoRenderer
-// types, or extending MRF. See DecryptingRendererFactory for and example of a
-// small wrapper around MRF.
+// types, or extending MRF.
 class MojoRendererFactory final : public RendererFactory {
  public:
   explicit MojoRendererFactory(

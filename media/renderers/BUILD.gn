@@ -15,8 +15,6 @@ source_set("renderers") {
     "audio_renderer_impl.h",
     "decrypting_renderer.cc",
     "decrypting_renderer.h",
-    "decrypting_renderer_factory.cc",
-    "decrypting_renderer_factory.h",
     "default_decoder_factory.cc",
     "default_decoder_factory.h",
     "paint_canvas_video_renderer.cc",

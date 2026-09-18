@@ -17,6 +17,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/bind_post_task.h"
@@ -49,7 +50,6 @@
 #include "media/mojo/buildflags.h"
 #include "media/mojo/mojom/key_system_support.mojom.h"
 #include "media/mojo/mojom/media_metrics_provider.mojom.h"
-#include "media/renderers/decrypting_renderer_factory.h"
 #include "media/renderers/default_decoder_factory.h"
 #include "media/renderers/renderer_impl_factory.h"
 #include "media/video/gpu_video_accelerator_factories.h"
@@ -577,11 +577,7 @@ MediaFactory::CreateRendererFactorySelector(
         RendererType::kCast, std::make_unique<CastRendererClientFactory>(
                                  media_log, CreateMojoRendererFactory()));
 #else
-    // The "default" MojoRendererFactory can be wrapped by a
-    // DecryptingRendererFactory without changing any behavior.
-    factory_selector->AddBaseFactory(
-        RendererType::kMojo, std::make_unique<media::DecryptingRendererFactory>(
-                                 media_log, CreateMojoRendererFactory()));
+    NOTREACHED();
 #endif  // BUILDFLAG(ENABLE_CAST_RENDERER)
   }
 #endif  // BUILDFLAG(ENABLE_MOJO_RENDERER)
