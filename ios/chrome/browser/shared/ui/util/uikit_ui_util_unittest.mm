@@ -120,4 +120,36 @@ TEST_F(UIKitUIUtilTest, MemoryFootprintForImage) {
   EXPECT_EQ(MemoryFootprintForImage(image), image_size_in_kb);
 }
 
+// Tests that CanShowTabStrip returns true only for Regular x Regular size
+// class.
+TEST_F(UIKitUIUtilTest, TestCanShowTabStrip) {
+  UITraitCollection* regularXRegular = [UITraitCollection
+      traitCollectionWithTraits:^(id<UIMutableTraits> mutableTraits) {
+        mutableTraits.horizontalSizeClass = UIUserInterfaceSizeClassRegular;
+        mutableTraits.verticalSizeClass = UIUserInterfaceSizeClassRegular;
+      }];
+  EXPECT_TRUE(CanShowTabStrip(regularXRegular));
+
+  UITraitCollection* compactXRegular = [UITraitCollection
+      traitCollectionWithTraits:^(id<UIMutableTraits> mutableTraits) {
+        mutableTraits.horizontalSizeClass = UIUserInterfaceSizeClassCompact;
+        mutableTraits.verticalSizeClass = UIUserInterfaceSizeClassRegular;
+      }];
+  EXPECT_FALSE(CanShowTabStrip(compactXRegular));
+
+  UITraitCollection* regularXCompact = [UITraitCollection
+      traitCollectionWithTraits:^(id<UIMutableTraits> mutableTraits) {
+        mutableTraits.horizontalSizeClass = UIUserInterfaceSizeClassRegular;
+        mutableTraits.verticalSizeClass = UIUserInterfaceSizeClassCompact;
+      }];
+  EXPECT_FALSE(CanShowTabStrip(regularXCompact));
+
+  UITraitCollection* compactXCompact = [UITraitCollection
+      traitCollectionWithTraits:^(id<UIMutableTraits> mutableTraits) {
+        mutableTraits.horizontalSizeClass = UIUserInterfaceSizeClassCompact;
+        mutableTraits.verticalSizeClass = UIUserInterfaceSizeClassCompact;
+      }];
+  EXPECT_FALSE(CanShowTabStrip(compactXCompact));
+}
+
 }  // namespace

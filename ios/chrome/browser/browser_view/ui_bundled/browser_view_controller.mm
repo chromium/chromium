@@ -128,10 +128,6 @@ enum HeaderBehaviour {
   Overlap
 };
 
-// Inset to remove from the toolbar height when in full-screen mode with the
-// dynamic island visible.
-const CGFloat kTopDynamicIslandInset = 24;
-
 // The maximum number of polling attempts for the presented view controller
 // dismissal.
 const CGFloat kMaxPollingAttemptsForDismissal = 3;
@@ -1014,6 +1010,7 @@ bool IsFullscreenNextIAEnabled() {
 - (void)viewSafeAreaInsetsDidChange {
   [super viewSafeAreaInsetsDidChange];
   [self setUpViewLayout:NO];
+  [self updateNTPSafeAreaInsets];
   // Update the heights of the toolbars to account for the new insets.
   self.primaryToolbarHeightConstraint.constant =
       [self primaryToolbarHeightWithInset];
@@ -1055,6 +1052,8 @@ bool IsFullscreenNextIAEnabled() {
     // Update the collapsedTopToolbarHeight when the dynamic island has moved.
     [self updateToolbarState];
   }
+
+  [self updateNTPSafeAreaInsets];
 
   if (!IsFullscreenRefactoringEnabled()) {
     if (self.ntpCoordinator.isNTPActiveForCurrentWebState &&
@@ -1379,7 +1378,7 @@ bool IsFullscreenNextIAEnabled() {
   // When the tab strip is active, it acts as the topmost header and covers
   // the safe area. The primary toolbar is laid out below it.
   if (!CanShowTabStrip(self)) {
-    height += self.rootSafeAreaInsets.top;
+    height += [self topInset];
   }
 
   return height;
@@ -1694,15 +1693,55 @@ bool IsFullscreenNextIAEnabled() {
   [_browserCoordinatorHandler hideComposebox];
 }
 
+// Updates the safe area insets for the NTP view controller to account for
+// dynamic window controls (e.g. Stage Manager window control pill on iPad)
+// when the NTP view is pinned to the top view edge.
+- (void)updateNTPSafeAreaInsets {
+  if (!self.ntpCoordinator.started ||
+      !self.ntpCoordinator.isNTPActiveForCurrentWebState) {
+    return;
+  }
+  UIViewController* NTPViewController = self.ntpCoordinator.viewController;
+  if (!NTPViewController.isViewLoaded) {
+    return;
+  }
+
+  BOOL canShowTabStrip = CanShowTabStrip(self);
+  BOOL isSplitToolbarMode = IsSplitToolbarMode(self);
+
+  BOOL useTopViewEdge = NO;
+  if (IsChromeNextIaEnabled()) {
+    useTopViewEdge = !canShowTabStrip && !_isOffTheRecord;
+  } else {
+    useTopViewEdge = !canShowTabStrip && isSplitToolbarMode && !_isOffTheRecord;
+  }
+
+  CGFloat additionalTopSafeAreaInset = 0;
+  if (useTopViewEdge) {
+    additionalTopSafeAreaInset =
+        std::max<CGFloat>(0, [self topInset] - self.view.safeAreaInsets.top);
+  }
+
+  UIEdgeInsets currentInsets = NTPViewController.additionalSafeAreaInsets;
+  if (currentInsets.top != additionalTopSafeAreaInset) {
+    currentInsets.top = additionalTopSafeAreaInset;
+    NTPViewController.additionalSafeAreaInsets = currentInsets;
+  }
+}
+
 // Updates the constraints for the NTP view.
 - (void)updateNTPConstraints {
   CHECK(IsFullscreenRefactoringEnabled());
+  if (!self.ntpCoordinator.started ||
+      !self.ntpCoordinator.isNTPActiveForCurrentWebState) {
+    return;
+  }
   UIViewController* NTPViewController = self.ntpCoordinator.viewController;
   if (!NTPViewController.isViewLoaded || !NTPViewController.view.superview) {
     return;
   }
+  [self updateNTPSafeAreaInsets];
   [NSLayoutConstraint deactivateConstraints:_NTPConstraints];
-  DCHECK(self.ntpCoordinator.isNTPActiveForCurrentWebState);
 
   BOOL canShowTabStrip = CanShowTabStrip(self);
   BOOL isSplitToolbarMode = IsSplitToolbarMode(self);
@@ -1911,13 +1950,10 @@ bool IsFullscreenNextIAEnabled() {
   CGFloat topInset = self.rootSafeAreaInsets.top;
 
   // On iOS 26, the safe area layout guide doesn't automatically adjust for the
-  // control setting island's dimensions.
-  // If the app is windowed, the dynamic island is not included in the
-  // status bar. In that case, `topInset` should be updated.
+  // window controls / corner adaptation dimensions in windowed mode.
   CGFloat topInsetWithCornerAdaptation = [self topInsetWithCornerAdaptation];
   if (topInsetWithCornerAdaptation - topInset > 0) {
-    topInset =
-        fmax(topInset, topInsetWithCornerAdaptation - kTopDynamicIslandInset);
+    topInset = topInsetWithCornerAdaptation;
   }
   return topInset;
 }

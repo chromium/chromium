@@ -286,14 +286,7 @@ bool IsWindowedMode(UIWindow* window) {
 }
 
 bool CanShowTabStrip(UITraitCollection* traitCollection) {
-  if (IsRegularXRegularSizeClass(traitCollection)) {
-    return true;
-  }
-  if (@available(iOS 26, *)) {
-    return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
-  }
-
-  return false;
+  return IsRegularXRegularSizeClass(traitCollection);
 }
 
 bool CanShowTabStrip(id<UITraitEnvironment> environment) {
