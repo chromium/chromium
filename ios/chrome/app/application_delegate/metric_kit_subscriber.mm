@@ -182,7 +182,9 @@ std::string HistogramPrefix(bool include_mismatch) {
     [[MXMetricManager sharedManager] removeSubscriber:self];
   }
   if (@available(iOS 27.0, *)) {
-    [[MetricKitReportSubscriber sharedInstance] setEnabled:enable];
+    if (base::FeatureList::IsEnabled(kMetrickitSwiftReportSubscriber)) {
+      [[MetricKitReportSubscriber sharedInstance] setEnabled:enable];
+    }
   }
 }
 
