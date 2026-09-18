@@ -16,7 +16,10 @@ import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /** Contains information about a single browsing history item. */
 @NullMarked
@@ -29,6 +32,7 @@ public class HistoryItem extends TimedItem {
     private final boolean mIsActorVisit;
     private final long mMostRecentJavaTimestamp;
     private final long[] mNativeTimestampList;
+    private final Map<GURL, long[]> mAllTimestamps;
     private @Nullable Long mStableId;
     private final @Nullable List<HistoryItem> mSubItems;
     private final boolean mIsExpanded;
@@ -36,6 +40,50 @@ public class HistoryItem extends TimedItem {
     private final @Nullable Long mClusterId;
 
     private @Nullable HistoryContentManager mManager;
+
+    /**
+     * @param url The url for this item.
+     * @param domain The string to display for the item's domain.
+     * @param title The string to display for the item's title.
+     * @param appId ID of the app that this item was generated for. {@code null} if this is
+     *     generated for BrApp, or the app can't be identified.
+     * @param mostRecentJavaTimestamp Most recent Java compatible navigation time.
+     * @param allTimestamps Map of URLs to microsecond resolution navigation times.
+     * @param blockedVisit Whether the visit to this item was blocked when it was attempted.
+     * @param isActorVisit Whether the visit is actor initiated.
+     */
+    public HistoryItem(
+            GURL url,
+            String domain,
+            String title,
+            @Nullable String appId,
+            long mostRecentJavaTimestamp,
+            Map<GURL, long[]> allTimestamps,
+            boolean blockedVisit,
+            boolean isActorVisit) {
+        mUrl = url;
+        mDomain = domain;
+        mTitle =
+                blockedVisit
+                        ? ContextUtils.getApplicationContext()
+                                .getString(R.string.android_history_blocked_site)
+                        : TextUtils.isEmpty(title) ? url.getSpec() : title;
+        mAppId = appId;
+        mMostRecentJavaTimestamp = mostRecentJavaTimestamp;
+        mAllTimestamps = copyAllTimestampsMap(allTimestamps);
+        long[] primaryTimestamps = mAllTimestamps.get(url);
+        if (primaryTimestamps != null) {
+            mNativeTimestampList = Arrays.copyOf(primaryTimestamps, primaryTimestamps.length);
+        } else {
+            mNativeTimestampList = extractAllTimestamps(mAllTimestamps);
+        }
+        mWasBlockedVisit = blockedVisit;
+        mIsActorVisit = isActorVisit;
+        mSubItems = null;
+        mIsExpanded = false;
+        mIsClusterHead = false;
+        mClusterId = null;
+    }
 
     /**
      * @param url The url for this item.
@@ -57,25 +105,20 @@ public class HistoryItem extends TimedItem {
             long[] nativeTimestamps,
             boolean blockedVisit,
             boolean isActorVisit) {
-        mUrl = url;
-        mDomain = domain;
-        mTitle =
-                blockedVisit
-                        ? ContextUtils.getApplicationContext()
-                                .getString(R.string.android_history_blocked_site)
-                        : TextUtils.isEmpty(title) ? url.getSpec() : title;
-        mAppId = appId;
-        mMostRecentJavaTimestamp = mostRecentJavaTimestamp;
-        mNativeTimestampList = Arrays.copyOf(nativeTimestamps, nativeTimestamps.length);
-        mWasBlockedVisit = blockedVisit;
-        mIsActorVisit = isActorVisit;
-        mSubItems = null;
-        mIsExpanded = false;
-        mIsClusterHead = false;
-        mClusterId = null;
+        this(
+                url,
+                domain,
+                title,
+                appId,
+                mostRecentJavaTimestamp,
+                Collections.singletonMap(url, nativeTimestamps),
+                blockedVisit,
+                isActorVisit);
     }
 
-    /** @return The url for this item. */
+    /**
+     * @return The url for this item.
+     */
     public GURL getUrl() {
         return mUrl;
     }
@@ -116,11 +159,41 @@ public class HistoryItem extends TimedItem {
     }
 
     /**
+     * @return The full map of URLs to timestamp arrays.
+     */
+    public Map<GURL, long[]> getAllTimestamps() {
+        return mAllTimestamps;
+    }
+
+    /**
      * @return An array of timestamps representing visits to this item's url that matches the
-     * resolution used in native code.
+     *     resolution used in native code.
      */
     public long[] getNativeTimestamps() {
         return Arrays.copyOf(mNativeTimestampList, mNativeTimestampList.length);
+    }
+
+    private static Map<GURL, long[]> copyAllTimestampsMap(Map<GURL, long[]> allTimestamps) {
+        Map<GURL, long[]> copy = new HashMap<>();
+        for (Map.Entry<GURL, long[]> entry : allTimestamps.entrySet()) {
+            long[] timestamps = entry.getValue();
+            copy.put(entry.getKey(), Arrays.copyOf(timestamps, timestamps.length));
+        }
+        return Collections.unmodifiableMap(copy);
+    }
+
+    private static long[] extractAllTimestamps(Map<GURL, long[]> allTimestamps) {
+        int totalSize = 0;
+        for (long[] timestamps : allTimestamps.values()) {
+            totalSize += timestamps.length;
+        }
+        long[] result = new long[totalSize];
+        int index = 0;
+        for (long[] timestamps : allTimestamps.values()) {
+            System.arraycopy(timestamps, 0, result, index, timestamps.length);
+            index += timestamps.length;
+        }
+        return result;
     }
 
     @Override
@@ -216,6 +289,7 @@ public class HistoryItem extends TimedItem {
         private final @Nullable String mAppId;
         private final long mMostRecentJavaTimestamp;
         private final long[] mNativeTimestampList;
+        private final Map<GURL, long[]> mAllTimestamps;
         private final boolean mWasBlockedVisit;
         private final boolean mIsActorVisit;
         private @Nullable HistoryContentManager mManager;
@@ -233,6 +307,7 @@ public class HistoryItem extends TimedItem {
             mAppId = item.getAppId();
             mMostRecentJavaTimestamp = item.getTimestamp();
             mNativeTimestampList = item.getNativeTimestamps();
+            mAllTimestamps = item.getAllTimestamps();
             mWasBlockedVisit = item.wasBlockedVisit();
             mIsActorVisit = item.isActorVisit();
             mManager = item.mManager;
@@ -285,6 +360,7 @@ public class HistoryItem extends TimedItem {
         mAppId = builder.mAppId;
         mMostRecentJavaTimestamp = builder.mMostRecentJavaTimestamp;
         mNativeTimestampList = builder.mNativeTimestampList;
+        mAllTimestamps = builder.mAllTimestamps;
         mWasBlockedVisit = builder.mWasBlockedVisit;
         mIsActorVisit = builder.mIsActorVisit;
         mManager = builder.mManager;

@@ -17,7 +17,9 @@ import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /** The JNI bridge for Android to fetch and manipulate browsing history. */
 @NullMarked
@@ -117,9 +119,15 @@ public class BrowsingHistoryBridge implements HistoryProvider {
             @JniType("std::u16string") String title,
             @JniType("std::optional<std::string>") @Nullable String appId,
             long mostRecentJavaTimestamp,
-            @JniType("std::vector<int64_t>") long[] nativeTimestamps,
+            @JniType("std::vector<GURL>") List<GURL> urls,
+            @JniType("std::vector<std::vector<int64_t>>") List<long[]> nativeTimestampsList,
             boolean blockedVisit,
             boolean isActorVisit) {
+        assert urls.size() == nativeTimestampsList.size();
+        Map<GURL, long[]> allTimestamps = new HashMap<>();
+        for (int i = 0; i < urls.size(); i++) {
+            allTimestamps.put(urls.get(i), nativeTimestampsList.get(i));
+        }
         items.add(
                 new HistoryItem(
                         url,
@@ -127,7 +135,7 @@ public class BrowsingHistoryBridge implements HistoryProvider {
                         title,
                         appId,
                         mostRecentJavaTimestamp,
-                        nativeTimestamps,
+                        allTimestamps,
                         blockedVisit,
                         isActorVisit));
     }

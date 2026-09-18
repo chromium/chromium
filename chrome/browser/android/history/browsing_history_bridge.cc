@@ -21,6 +21,15 @@
 #include "third_party/jni_zero/default_conversions.h"
 #include "url/android/gurl_android.h"
 
+namespace jni_zero {
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType<std::vector<int64_t>>(
+    JNIEnv* env,
+    const std::vector<int64_t>& vec) {
+  return ScopedJavaLocalRef<jobject>(ToJniArray(env, vec));
+}
+}  // namespace jni_zero
+
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/BrowsingHistoryBridge_jni.h"
 
@@ -126,26 +135,47 @@ void BrowsingHistoryBridge::OnQueryComplete(
       domain = base::UTF8ToUTF16(entry.url.GetScheme() + ":");
     }
 
-    // This relies on the list of timestamps per url in |all_timestamps| being a
-    // sorted data structure.
-    // Since the similar visits grouping logic does not yet exist on Android,
-    // `all_timestamps` will only carry timestamps for the same url. See
-    // b/460405414 for more details.
-    // TODO(b/483287809): Enable similar visits grouping for Android.
-    auto url_and_timestamps = entry.all_timestamps.find(entry.url);
-    CHECK(url_and_timestamps != entry.all_timestamps.end());
-    const std::set<base::Time>& timestamps = url_and_timestamps->second;
-    int64_t most_recent_java_timestamp =
-        timestamps.rbegin()->InMillisecondsSinceUnixEpoch();
-    std::vector<int64_t> native_timestamps;
-    for (const base::Time& val : timestamps) {
-      native_timestamps.push_back(
-          val.ToDeltaSinceWindowsEpoch().InMicroseconds());
+    if (base::FeatureList::IsEnabled(
+            history::kBrowsingHistorySimilarVisitsGrouping)) {
+      std::vector<GURL> urls;
+      std::vector<std::vector<int64_t>> native_timestamps_list;
+      int64_t most_recent_java_timestamp = 0;
+
+      for (const auto& [url, timestamps] : entry.all_timestamps) {
+        urls.push_back(url);
+        std::vector<int64_t> native_timestamps;
+        for (const base::Time& val : timestamps) {
+          native_timestamps.push_back(
+              val.ToDeltaSinceWindowsEpoch().InMicroseconds());
+          most_recent_java_timestamp = std::max(
+              most_recent_java_timestamp, val.InMillisecondsSinceUnixEpoch());
+        }
+        native_timestamps_list.push_back(std::move(native_timestamps));
+      }
+
+      Java_BrowsingHistoryBridge_createHistoryItemAndAddToList(
+          env, j_query_result_obj_, entry.url, domain, entry.title,
+          entry.app_id, most_recent_java_timestamp, urls,
+          native_timestamps_list, entry.blocked_visit, entry.is_actor_visit);
+    } else {
+      // This relies on the list of timestamps per url in |all_timestamps| being
+      // a sorted data structure. When similar visits grouping is disabled,
+      // `all_timestamps` will only carry timestamps for the same url.
+      auto url_and_timestamps = entry.all_timestamps.find(entry.url);
+      CHECK(url_and_timestamps != entry.all_timestamps.end());
+      const std::set<base::Time>& timestamps = url_and_timestamps->second;
+      int64_t most_recent_java_timestamp =
+          timestamps.rbegin()->InMillisecondsSinceUnixEpoch();
+      std::vector<int64_t> native_timestamps;
+      for (const base::Time& val : timestamps) {
+        native_timestamps.push_back(
+            val.ToDeltaSinceWindowsEpoch().InMicroseconds());
+      }
+      Java_BrowsingHistoryBridge_createHistoryItemAndAddToList(
+          env, j_query_result_obj_, entry.url, domain, entry.title,
+          entry.app_id, most_recent_java_timestamp, {entry.url},
+          {native_timestamps}, entry.blocked_visit, entry.is_actor_visit);
     }
-    Java_BrowsingHistoryBridge_createHistoryItemAndAddToList(
-        env, j_query_result_obj_, entry.url, domain, entry.title, entry.app_id,
-        most_recent_java_timestamp, native_timestamps, entry.blocked_visit,
-        entry.is_actor_visit);
   }
 
   Java_BrowsingHistoryBridge_onQueryHistoryComplete(

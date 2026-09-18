@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.history;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
@@ -27,6 +29,7 @@ import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /** Unit tests for BrowsingHistoryBridge. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -74,13 +77,88 @@ public class BrowsingHistoryBridgeTest {
         mBrowsingHistoryBridge.setObserver(adapter);
 
         List<HistoryItem> items = new ArrayList<>();
-        long[] timestamps = new long[0];
+        List<GURL> urls = List.of(GURL.emptyGURL());
+        List<long[]> timestampsList = List.of(new long[0]);
         String appId = "org.chromium.dino.Trex";
         BrowsingHistoryBridge.createHistoryItemAndAddToList(
-                items, GURL.emptyGURL(), "domain.com", "title", appId, 0, timestamps, false, false);
+                items,
+                GURL.emptyGURL(),
+                "domain.com",
+                "title",
+                appId,
+                0,
+                urls,
+                timestampsList,
+                false,
+                false);
         mBrowsingHistoryBridge.onQueryHistoryComplete(items, false);
 
         adapter.markItemForRemoval(items.get(0));
         verify(mNativeMocks).markItemForRemoval(anyLong(), any(), eq(appId), any());
+    }
+
+    @Test
+    public void testCreateHistoryItemAndAddToList_SingleUrl() {
+        List<HistoryItem> items = new ArrayList<>();
+        GURL url = new GURL("https://example.com");
+        long[] timestamps = new long[] {1000L, 2000L};
+        List<GURL> urls = List.of(url);
+        List<long[]> timestampsList = List.of(timestamps);
+
+        BrowsingHistoryBridge.createHistoryItemAndAddToList(
+                items,
+                url,
+                "example.com",
+                "Example Title",
+                /* appId= */ null,
+                /* mostRecentJavaTimestamp= */ 2000L,
+                urls,
+                timestampsList,
+                /* blockedVisit= */ false,
+                /* isActorVisit= */ false);
+
+        assertEquals(1, items.size());
+        HistoryItem item = items.get(0);
+        assertEquals(url, item.getUrl());
+        assertArrayEquals(timestamps, item.getNativeTimestamps());
+
+        Map<GURL, long[]> allTimestamps = item.getAllTimestamps();
+        assertEquals(1, allTimestamps.size());
+        assertArrayEquals(timestamps, allTimestamps.get(url));
+    }
+
+    @Test
+    public void testCreateHistoryItemAndAddToList_MultipleUrlsGrouped() {
+        List<HistoryItem> items = new ArrayList<>();
+        GURL primaryUrl = new GURL("https://example.com/page1");
+        GURL secondaryUrl = new GURL("https://example.com/page2");
+
+        long[] primaryTimestamps = new long[] {100L, 200L};
+        long[] secondaryTimestamps = new long[] {300L};
+
+        List<GURL> urls = List.of(primaryUrl, secondaryUrl);
+        List<long[]> timestampsList = List.of(primaryTimestamps, secondaryTimestamps);
+
+        BrowsingHistoryBridge.createHistoryItemAndAddToList(
+                items,
+                primaryUrl,
+                "example.com",
+                "Example Grouped Title",
+                /* appId= */ null,
+                /* mostRecentJavaTimestamp= */ 300L,
+                urls,
+                timestampsList,
+                /* blockedVisit= */ false,
+                /* isActorVisit= */ false);
+
+        assertEquals(1, items.size());
+        HistoryItem item = items.get(0);
+        assertEquals(primaryUrl, item.getUrl());
+        assertArrayEquals(primaryTimestamps, item.getNativeTimestamps());
+
+        Map<GURL, long[]> allTimestamps = item.getAllTimestamps();
+        assertEquals(2, allTimestamps.size());
+        assertArrayEquals(primaryTimestamps, allTimestamps.get(primaryUrl));
+        assertArrayEquals(secondaryTimestamps, allTimestamps.get(secondaryUrl));
     }
 }
