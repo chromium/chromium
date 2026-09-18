@@ -49,24 +49,24 @@ HTMLMenuOwnerElement::HTMLMenuOwnerElement(HTMLQualifiedName tag_name,
   DCHECK(RuntimeEnabledFeatures::MenuElementsEnabled());
 }
 
-bool HTMLMenuOwnerElement::IsInDialogMode() const {
-  return is_in_dialog_mode_;
+bool HTMLMenuOwnerElement::IsInViolationMode() const {
+  return is_in_violation_mode_;
 }
 
-void HTMLMenuOwnerElement::ScheduleDialogModeUpdate() {
+void HTMLMenuOwnerElement::ScheduleViolationModeUpdate() {
   HTMLMenuOwnerElement* root = FindMenuRoot(this);
   DCHECK(root);
-  if (root->is_dialog_mode_update_scheduled_) {
+  if (root->is_violation_mode_update_scheduled_) {
     return;
   }
-  root->is_dialog_mode_update_scheduled_ = true;
+  root->is_violation_mode_update_scheduled_ = true;
   GetDocument().GetAgent().event_loop()->EnqueueMicrotask(
-      BindOnce(&HTMLMenuOwnerElement::UpdateDialogModeForMenuHierarchy,
+      BindOnce(&HTMLMenuOwnerElement::UpdateViolationModeForMenuHierarchy,
                WrapWeakPersistent(root)));
 }
 
-void HTMLMenuOwnerElement::UpdateDialogModeForMenuHierarchy() {
-  is_dialog_mode_update_scheduled_ = false;
+void HTMLMenuOwnerElement::UpdateViolationModeForMenuHierarchy() {
+  is_violation_mode_update_scheduled_ = false;
 
   if (!menu_mutation_observer_) {
     // If our observer has been destroyed, that means we are no longer the root
@@ -79,13 +79,13 @@ void HTMLMenuOwnerElement::UpdateDialogModeForMenuHierarchy() {
 
   const bool is_content_model_violated = total_violations_in_tree_ > 0;
 
-  if (!is_content_model_violated && !is_in_dialog_mode_) {
+  if (!is_content_model_violated && !is_in_violation_mode_) {
 #if EXPENSIVE_DCHECKS_ARE_ON()
     for (Node* node = this; node; node = NodeTraversal::Next(*node, this)) {
       if (auto* menu = DynamicTo<HTMLMenuOwnerElement>(node)) {
-        DCHECK(!menu->is_in_dialog_mode_)
-            << "Invariant failed: Root is not in dialog mode, target is not "
-               "dialog mode, but a descendant menu is in dialog mode.";
+        DCHECK(!menu->is_in_violation_mode_)
+            << "Invariant failed: Root is not in violation mode, target is "
+               "not in violation mode, but a descendant menu is.";
       }
     }
 #endif
@@ -96,8 +96,8 @@ void HTMLMenuOwnerElement::UpdateDialogModeForMenuHierarchy() {
 
   for (Node* node = this; node; node = NodeTraversal::Next(*node, this)) {
     if (auto* menu = DynamicTo<HTMLMenuOwnerElement>(node)) {
-      if (menu->is_in_dialog_mode_ != is_content_model_violated) {
-        menu->is_in_dialog_mode_ = is_content_model_violated;
+      if (menu->is_in_violation_mode_ != is_content_model_violated) {
+        menu->is_in_violation_mode_ = is_content_model_violated;
         if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
           cache->HandleAttributeChanged(html_names::kRoleAttr, menu);
         }
@@ -109,7 +109,7 @@ void HTMLMenuOwnerElement::UpdateDialogModeForMenuHierarchy() {
 void HTMLMenuOwnerElement::IncreaseContentModelViolationCount() {
   ++total_violations_in_tree_;
   if (total_violations_in_tree_ == 1) {
-    ScheduleDialogModeUpdate();
+    ScheduleViolationModeUpdate();
   }
 }
 
@@ -117,7 +117,7 @@ void HTMLMenuOwnerElement::DecreaseContentModelViolationCount() {
   DCHECK_GT(total_violations_in_tree_, 0);
   --total_violations_in_tree_;
   if (total_violations_in_tree_ == 0) {
-    ScheduleDialogModeUpdate();
+    ScheduleViolationModeUpdate();
   }
 }
 
@@ -129,15 +129,15 @@ Node::InsertionNotificationRequest HTMLMenuOwnerElement::InsertedInto(
     return result;
   }
 
-  DCHECK(!is_in_dialog_mode_)
+  DCHECK(!is_in_violation_mode_)
       << "Before attaching we haven't been checking for violations";
 
   HTMLMenuOwnerElement* root = FindMenuRoot(parentNode());
   if (root) {
-    if (root->is_in_dialog_mode_) {
-      // A menu in our hierarchy has a violation, so we are going to dialog
-      // mode.
-      is_in_dialog_mode_ = true;
+    if (root->is_in_violation_mode_) {
+      // A menu in our hierarchy has a violation, so we are going to
+      // violation mode.
+      is_in_violation_mode_ = true;
       if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
         cache->HandleAttributeChanged(html_names::kRoleAttr, this);
       }
@@ -154,7 +154,7 @@ Node::InsertionNotificationRequest HTMLMenuOwnerElement::InsertedInto(
       this, visited_nodes, /*disconnected_parent=*/nullptr);
 
   if (total_violations_in_tree_ > 0) {
-    DCHECK(is_dialog_mode_update_scheduled_)
+    DCHECK(is_violation_mode_update_scheduled_)
         << "CheckNodeAndDescendantsForViolations should have scheduled an "
            "update";
   }
@@ -169,7 +169,7 @@ void HTMLMenuOwnerElement::RemovedFrom(ContainerNode& insertion_point) {
     menu_mutation_observer_ = nullptr;
     total_violations_in_tree_ = 0;
   }
-  is_in_dialog_mode_ = false;
+  is_in_violation_mode_ = false;
 }
 
 void HTMLMenuOwnerElement::Trace(Visitor* visitor) const {

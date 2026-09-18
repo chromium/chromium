@@ -18,7 +18,7 @@ promise_test(async () => {
 
   // Append inner to the document. As a top-level menu, its InsertedInto will
   // run synchronously, instantiate an observer, traverse the tree, find the
-  // button, and call ScheduleDialogModeUpdate(), queueing a microtask.
+  // button, and call ScheduleViolationModeUpdate(), queueing a microtask.
   document.body.appendChild(inner);
 
   // Synchronously reparent inner into outer. inner's RemovedFrom runs, disconnecting

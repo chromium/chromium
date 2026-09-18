@@ -5980,9 +5980,6 @@ data/accessibility/html/menulist-aria-labelledby-overrides-label-expected-aurali
 data/accessibility/html/menulist-aria-labelledby-overrides-label-expected-blink.txt
 data/accessibility/html/menulist-aria-labelledby-overrides-label-expected-mac.txt
 data/accessibility/html/menulist-aria-labelledby-overrides-label.html
-data/accessibility/html/menulist-dialog-mode-setsize-expected-auralinux.txt
-data/accessibility/html/menulist-dialog-mode-setsize-expected-blink.txt
-data/accessibility/html/menulist-dialog-mode-setsize.html
 data/accessibility/html/menulist-invoked-by-button-expected-auralinux.txt
 data/accessibility/html/menulist-invoked-by-button-expected-blink.txt
 data/accessibility/html/menulist-invoked-by-button-expected-mac.txt
@@ -6006,6 +6003,9 @@ data/accessibility/html/menulist-multiple-invokers.html
 data/accessibility/html/menulist-popover-expected-auralinux.txt
 data/accessibility/html/menulist-popover-expected-blink.txt
 data/accessibility/html/menulist-popover.html
+data/accessibility/html/menulist-violation-mode-setsize-expected-auralinux.txt
+data/accessibility/html/menulist-violation-mode-setsize-expected-blink.txt
+data/accessibility/html/menulist-violation-mode-setsize.html
 data/accessibility/html/meta-expected-android.txt
 data/accessibility/html/meta-expected-fuchsia.txt
 data/accessibility/html/meta-expected-mac.txt

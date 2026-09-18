@@ -2577,7 +2577,7 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
   }
 
   if (auto* menu_bar = DynamicTo<HTMLMenuBarElement>(GetNode())) {
-    if (menu_bar->IsInDialogMode()) {
+    if (menu_bar->IsInViolationMode()) {
       return menu_bar->IsTopLevelOwnerForContentModelViolation()
                  ? ax::mojom::blink::Role::kDialog
                  : ax::mojom::blink::Role::kList;
@@ -2586,7 +2586,7 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
   }
 
   if (auto* menu_list = DynamicTo<HTMLMenuListElement>(GetNode())) {
-    if (menu_list->IsInDialogMode()) {
+    if (menu_list->IsInViolationMode()) {
       return menu_list->IsTopLevelOwnerForContentModelViolation()
                  ? ax::mojom::blink::Role::kDialog
                  : ax::mojom::blink::Role::kList;

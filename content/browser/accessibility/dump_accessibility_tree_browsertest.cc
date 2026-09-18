@@ -1634,8 +1634,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityMenuListDialogModeSetsize) {
-  RunHtmlTest(FILE_PATH_LITERAL("menulist-dialog-mode-setsize.html"));
+                       AccessibilityMenuListViolationModeSetsize) {
+  RunHtmlTest(FILE_PATH_LITERAL("menulist-violation-mode-setsize.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,

@@ -138,7 +138,7 @@ bool HTMLMenuItemElement::IsKeyboardFocusableSlow(
     return true;
   }
 
-  if (owning_menu_element_->IsInDialogMode()) {
+  if (owning_menu_element_->IsInViolationMode()) {
     // Content model is violated, so we make everything tab-focusable.
     return true;
   }
@@ -319,7 +319,7 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
   if (!owning_menu_element_) {
     return;
   }
-  if (owning_menu_element_->IsInDialogMode()) {
+  if (owning_menu_element_->IsInViolationMode()) {
     return;
   }
   MenuItemList menuitems = owning_menu_element_->ItemList();
