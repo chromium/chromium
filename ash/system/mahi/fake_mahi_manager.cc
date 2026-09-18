@@ -30,34 +30,28 @@ bool g_use_zero_duration = false;
 // Constants -------------------------------------------------------------------
 
 constexpr char16_t kDefaultAnswer[] = u"Fake answer";
-
 constexpr char16_t kDefaultContentTitle[] = u"fake content title";
-
 constexpr char16_t kDefaultSelectedText[] = u"fake selected text";
-
 constexpr char kDefaultContentUrl[] = "https://en.wikipedia.org/wiki/Wombat";
-
-const std::vector<chromeos::MahiOutline> kDefaultOutlines(
-    {chromeos::MahiOutline(/*id=*/1, u"Outline 1"),
-     chromeos::MahiOutline(/*id=*/2, u"Outline 2"),
-     chromeos::MahiOutline(/*id=*/3, u"Outline 3"),
-     chromeos::MahiOutline(/*id=*/4, u"Outline 4"),
-     chromeos::MahiOutline(/*id=*/5, u"Outline 5")});
-
 constexpr char16_t kDefaultContentText[] =
     u"fake content text\nfake content text\nfake content text\nfake content "
     u"text\nfake content text";
-
 constexpr char16_t kDefaultSummaryText[] =
     u"fake summary text\nfake summary text\nfake summary text\nfake summary "
     u"text\nfake summary text";
-
 constexpr char16_t kDefaultElucidationText[] =
     u"fake elucidation text\nfake elucidation text\nfake elucidation text"
     u"\nfake elucidation text";
-
 constexpr char kMahiSettingsUrl[] =
     "chrome://os-settings/systemPreferences?settingId=612";
+
+std::vector<chromeos::MahiOutline> GetDefaultOutlines() {
+  return {chromeos::MahiOutline(/*id=*/1, u"Outline 1"),
+          chromeos::MahiOutline(/*id=*/2, u"Outline 2"),
+          chromeos::MahiOutline(/*id=*/3, u"Outline 3"),
+          chromeos::MahiOutline(/*id=*/4, u"Outline 4"),
+          chromeos::MahiOutline(/*id=*/5, u"Outline 5")};
+}
 
 }  // namespace
 
@@ -122,7 +116,7 @@ void FakeMahiManager::GetElucidation(MahiElucidationCallback callback) {
 void FakeMahiManager::GetOutlines(MahiOutlinesCallback callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(std::move(callback), kDefaultOutlines,
+      base::BindOnce(std::move(callback), GetDefaultOutlines(),
                      chromeos::MahiResponseStatus::kSuccess),
       g_use_zero_duration
           ? base::TimeDelta()

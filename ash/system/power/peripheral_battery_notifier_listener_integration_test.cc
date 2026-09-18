@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
@@ -33,15 +34,8 @@ using BatteryType = device::BluetoothDevice::BatteryType;
 
 namespace {
 
-const std::u16string& NotificationMessagePrefix() {
-  static const std::u16string prefix(u"Battery low (");
-  return prefix;
-}
-
-const std::u16string& NotificationMessageSuffix() {
-  static const std::u16string suffix(u"%)");
-  return suffix;
-}
+constexpr std::u16string_view kNotificationMessagePrefix = u"Battery low (";
+constexpr std::u16string_view kNotificationMessageSuffix = u"%)";
 
 }  // namespace
 
@@ -124,13 +118,13 @@ class PeripheralBatteryNotifierListenerTest : public AshTestBase {
   // Extracts the battery percentage from the message of a notification.
   uint8_t ExtractBatteryPercentage(message_center::Notification* notification) {
     const std::u16string& message = notification->message();
-    EXPECT_TRUE(base::StartsWith(message, NotificationMessagePrefix(),
+    EXPECT_TRUE(base::StartsWith(message, kNotificationMessagePrefix,
                                  base::CompareCase::SENSITIVE));
-    EXPECT_TRUE(base::EndsWith(message, NotificationMessageSuffix(),
+    EXPECT_TRUE(base::EndsWith(message, kNotificationMessageSuffix,
                                base::CompareCase::SENSITIVE));
 
-    int prefix_size = NotificationMessagePrefix().size();
-    int suffix_size = NotificationMessageSuffix().size();
+    int prefix_size = kNotificationMessagePrefix.size();
+    int suffix_size = kNotificationMessageSuffix.size();
     int key_len = message.size() - prefix_size - suffix_size;
     EXPECT_GT(key_len, 0);
 

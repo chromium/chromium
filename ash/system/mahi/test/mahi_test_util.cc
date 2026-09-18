@@ -12,26 +12,17 @@
 
 namespace ash::mahi_test_util {
 
-namespace {
-
-// Constants -------------------------------------------------------------------
-
-const std::vector<chromeos::MahiOutline> kFakeOutlines(
-    {chromeos::MahiOutline(/*id=*/1, u"Outline 1"),
-     chromeos::MahiOutline(/*id=*/2, u"Outline 2"),
-     chromeos::MahiOutline(/*id=*/3, u"Outline 3"),
-     chromeos::MahiOutline(/*id=*/4, u"Outline 4"),
-     chromeos::MahiOutline(/*id=*/5, u"Outline 5")});
-
-}  // namespace
-
-const std::vector<chromeos::MahiOutline>& GetDefaultFakeOutlines() {
-  return kFakeOutlines;
+std::vector<chromeos::MahiOutline> GetDefaultFakeOutlines() {
+  return {chromeos::MahiOutline(/*id=*/1, u"Outline 1"),
+          chromeos::MahiOutline(/*id=*/2, u"Outline 2"),
+          chromeos::MahiOutline(/*id=*/3, u"Outline 3"),
+          chromeos::MahiOutline(/*id=*/4, u"Outline 4"),
+          chromeos::MahiOutline(/*id=*/5, u"Outline 5")};
 }
 
 void ReturnDefaultOutlines(
     chromeos::MahiManager::MahiOutlinesCallback callback) {
-  std::move(callback).Run(kFakeOutlines,
+  std::move(callback).Run(GetDefaultFakeOutlines(),
                           chromeos::MahiResponseStatus::kSuccess);
 }
 

@@ -11,8 +11,7 @@
 
 namespace ash::mahi_test_util {
 
-// Returns a default outline array for testing.
-const std::vector<chromeos::MahiOutline>& GetDefaultFakeOutlines();
+std::vector<chromeos::MahiOutline> GetDefaultFakeOutlines();
 
 // Runs `callback` to return the default outlines successfully.
 void ReturnDefaultOutlines(

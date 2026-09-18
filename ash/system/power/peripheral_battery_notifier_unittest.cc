@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
@@ -28,14 +29,12 @@ using BI = ash::PeripheralBatteryListener::BatteryInfo;
 
 namespace {
 
-const std::u16string& NotificationMessagePrefix() {
-  static const std::u16string prefix(u"Battery low (");
-  return prefix;
+constexpr std::u16string_view NotificationMessagePrefix() {
+  return u"Battery low (";
 }
 
-const std::u16string& NotificationMessageSuffix() {
-  static const std::u16string suffix(u"%)");
-  return suffix;
+constexpr std::u16string_view NotificationMessageSuffix() {
+  return u"%)";
 }
 
 }  // namespace

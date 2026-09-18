@@ -29,12 +29,6 @@ namespace {
 // Milliseconds per minute.
 constexpr int kMillisecondsPerMinute = 60000;
 
-// Default week title for a few special languages that cannot find the start of
-// a week. So far the known languages that cannot return their day of week are:
-// 'bn', 'fa', 'mr', 'pa-PK'.
-const std::vector<std::u16string> kDefaultWeekTitle = {u"S", u"M", u"T", u"W",
-                                                       u"T", u"F", u"S"};
-
 UDate TimeToUDate(const base::Time& time) {
   return static_cast<UDate>(time.InSecondsFSinceUnixEpoch() *
                             base::Time::kMillisecondsPerSecond);
