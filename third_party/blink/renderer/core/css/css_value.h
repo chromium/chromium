@@ -56,7 +56,11 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   bool IsScopedKeywordValue() const {
     return class_type_ == kScopedKeywordClass;
   }
-  bool IsValuePair() const { return class_type_ == kValuePairClass; }
+  bool IsValuePair() const {
+    return class_type_ >= kValuePairClass &&
+           class_type_ <= kParamValuePairClass;
+  }
+  bool IsBaseValuePair() const { return class_type_ == kValuePairClass; }
   bool IsValueList() const { return class_type_ >= kValueListClass; }
 
   bool IsBaseValueList() const { return class_type_ == kValueListClass; }
@@ -299,9 +303,14 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kStringClass,
     kURIClass,
     kURLPatternClass,
+
+    // Value pair classes. These must remain contiguous (and
+    // kParamValuePairClass must stay at the end of the run), as
+    // IsValuePair() tests them with a range check.
     kValuePairClass,
     kLightDarkValuePairClass,
     kParamValuePairClass,
+
     kScrollClass,
     kViewClass,
     kRatioClass,

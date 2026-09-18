@@ -1908,7 +1908,7 @@ const CSSValue* BorderShape::ParseSingleValue(
   // geometry box and when they are omitted, they aren't equal.
   // E.g. circle() circle() is not the same as circle(), it's actually
   // circle() border-box circle() padding-box.
-  if (!inner || (outer->IsValuePair() && inner->IsValuePair() &&
+  if (!inner || (outer->IsBaseValuePair() && inner->IsBaseValuePair() &&
                  base::ValuesEquivalent(inner, outer))) {
     return outer;
   }
@@ -7386,7 +7386,7 @@ const CSSValue* OffsetPosition::ParseSingleValue(
       std::optional<WebFeature>());
 
   // Count when we receive a valid position other than 'auto'.
-  if (value && value->IsValuePair()) {
+  if (value && value->IsBaseValuePair()) {
     context.Count(WebFeature::kCSSOffsetInEffect);
   }
   return value;

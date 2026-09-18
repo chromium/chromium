@@ -609,7 +609,6 @@ CounterStyleSystem CounterStyle::ToCounterStyleSystemEnum(
     system_keyword = id->GetValueID();
   } else {
     // Either fixed or extends.
-    DCHECK(value->IsValuePair());
     const CSSValuePair* pair = To<CSSValuePair>(value);
     DCHECK(pair->First().IsIdentifierValue());
     system_keyword = To<CSSIdentifierValue>(pair->First()).GetValueID();
@@ -772,7 +771,8 @@ CounterStyle::CounterStyle(
     if (system_ == CounterStyleSystem::kUnresolvedExtends) {
       const auto& second = To<CSSValuePair>(system)->Second();
       extends_name_ = To<CSSCustomIdentValue>(second).Value();
-    } else if (system_ == CounterStyleSystem::kFixed && system->IsValuePair()) {
+    } else if (system_ == CounterStyleSystem::kFixed &&
+               system->IsBaseValuePair()) {
       const auto& second = To<CSSValuePair>(system)->Second();
       first_symbol_value_ =
           To<CSSPrimitiveValue>(second).ComputeInteger(*media_values);
