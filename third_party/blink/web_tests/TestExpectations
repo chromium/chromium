@@ -1726,12 +1726,6 @@ crbug.com/893490 [ Mac ] external/wpt/css/css-text/white-space/control-chars-09F
 # tests in this group need implementation of keyDown/keyUp
 crbug.com/893480 [ Mac ] external/wpt/input-events/input-events-typing.html [ Failure Timeout ]
 crbug.com/893480 [ Win ] external/wpt/input-events/input-events-typing.html [ Failure Timeout ]
-crbug.com/893480 [ Mac ] external/wpt/infrastructure/testdriver/actions/eventOrder.html [ Timeout ]
-crbug.com/893480 [ Win ] external/wpt/infrastructure/testdriver/actions/eventOrder.html [ Timeout ]
-crbug.com/893480 external/wpt/infrastructure/testdriver/actions/multiDevice.html [ Failure Timeout ]
-crbug.com/893480 external/wpt/infrastructure/testdriver/actions/actionsWithKeyPressed.html [ Failure Timeout ]
-crbug.com/893480 [ Debug ] external/wpt/infrastructure/testdriver/actions/textEditCommands.html [ Failure Timeout ]
-crbug.com/893480 [ Release ] external/wpt/infrastructure/testdriver/actions/textEditCommands.html [ Failure Timeout ]
 crbug.com/893480 [ Mac ] external/wpt/input-events/input-events-get-target-ranges.html [ Failure Timeout ]
 
 # needs implementation of test_driver_internal.action_sequence
@@ -4047,7 +4041,6 @@ crbug.com/626703 external/wpt/workers/modules/shared-worker-import-csp.html [ Fa
 crbug.com/626703 external/wpt/workers/interfaces/WorkerUtils/importScripts/blob-url.worker.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/input-events/input-events-get-target-ranges-non-collapsed-selection.tentative.html?TypingA [ Skip Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/input-events/input-events-typing.html [ Failure Timeout ]
-crbug.com/626703 [ Linux ] external/wpt/infrastructure/testdriver/actions/eventOrder.html [ Timeout ]
 crbug.com/626703 external/wpt/css/CSS2/tables/table-anonymous-objects-211.xht [ Failure ]
 crbug.com/626703 external/wpt/selection/textcontrols/selectionchange-bubble.html [ Timeout ]
 crbug.com/626703 external/wpt/density-size-correction/density-corrected-image-svg-aspect-ratio-cross-origin.sub.html [ Failure ]
