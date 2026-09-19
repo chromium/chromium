@@ -232,6 +232,7 @@
 #import "ios/chrome/browser/visited_url_ranking/model/visited_url_ranking_service_factory.h"
 #import "ios/chrome/browser/voice/ui_bundled/text_to_speech_playback_controller_factory.h"
 #import "ios/chrome/browser/web/model/java_script_console/java_script_console_feature_factory.h"
+#import "ios/chrome/browser/web_extension/model/extension_service_factory.h"
 #import "ios/chrome/browser/webauthn/model/ios_device_authorization_service_factory.h"
 #import "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
@@ -356,6 +357,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   EnterpriseNetworkAuthServiceFactoryIOS::GetInstance();
   EnterpriseProxyErrorServiceFactoryIOS::GetInstance();
   EnterpriseProxyServiceFactoryIOS::GetInstance();
+  ExtensionServiceFactory::GetInstance();
   ExternalFileRemoverFactory::GetInstance();
   GeminiCapabilitiesManagerFactory::GetInstance();
   GeminiServiceFactory::GetInstance();
