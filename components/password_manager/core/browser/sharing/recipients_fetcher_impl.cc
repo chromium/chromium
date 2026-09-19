@@ -32,8 +32,10 @@ RecipientInfo ToRecipientInfo(const sync_pb::UserInfo& user_info) {
   recipient_info.user_id = user_info.user_id();
   recipient_info.user_name = user_info.user_display_info().display_name();
   recipient_info.email = user_info.user_display_info().email();
-  recipient_info.profile_image_url =
-      user_info.user_display_info().profile_image_url();
+  GURL image_url(user_info.user_display_info().profile_image_url());
+  if (image_url.is_valid() && image_url.SchemeIs(url::kHttpsScheme)) {
+    recipient_info.profile_image_url = image_url.spec();
+  }
   recipient_info.public_key =
       PublicKey::FromProto(user_info.cross_user_sharing_public_key());
   return recipient_info;

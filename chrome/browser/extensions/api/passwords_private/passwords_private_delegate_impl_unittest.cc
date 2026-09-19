@@ -114,7 +114,7 @@ constexpr char kTestUserId[] = "12345";
 constexpr char kTestUserName[] = "Theo Tester";
 constexpr char kTestEmail[] = "theo@example.com";
 constexpr char kTestProfileImageUrl[] =
-    "https://3837fjsdjaka.image.example.com";
+    "https://3837fjsdjaka.image.example.com/";
 constexpr char kTestPublicKeyBase64[] =
     "MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MTI=";
 constexpr uint32_t kTestPublicKeyVersion = 42;

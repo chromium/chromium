@@ -10,6 +10,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/test/test_simple_task_runner.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/protocol/password_sharing_recipients.pb.h"
@@ -82,7 +83,7 @@ TEST_F(RecipientsFetcherImplTest, ShouldFetchRecipientInfoWhenRequestSucceeds) {
   const std::string kTestUserName = "Theo Tester";
   const std::string kTestEmail = "theo@example.com";
   const std::string kTestProfileImageUrl =
-      "https://3837fjsdjaka.image.example.com";
+      "https://3837fjsdjaka.image.example.com/";
   const std::string kTestPublicKey = "01234567890123456789012345678912";
   const std::string kTestPublicKeyBase64 =
       "MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MTI=";
@@ -123,6 +124,53 @@ TEST_F(RecipientsFetcherImplTest, ShouldFetchRecipientInfoWhenRequestSucceeds) {
   recipient_fetcher.FetchFamilyMembers(callback.Get());
 
   RunUntilIdle();
+}
+
+TEST_F(RecipientsFetcherImplTest, ShouldFilterNonHttpsProfileImageUrl) {
+  const std::string kTestUserId = "12345";
+  const std::string kTestUserName = "Theo Tester";
+  const std::string kTestEmail = "theo@example.com";
+  const std::string kTestProfileImageUrl =
+      "http://3837fjsdjaka.image.example.com/";
+  const std::string kTestPublicKey = "01234567890123456789012345678912";
+  const std::string kTestPublicKeyBase64 =
+      "MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MTI=";
+  const uint32_t kTestPublicKeyVersion = 0;
+
+  // Create the server response with an http:// profile image URL.
+  sync_pb::PasswordSharingRecipientsResponse response;
+  response.set_result(sync_pb::PasswordSharingRecipientsResponse::SUCCESS);
+
+  sync_pb::UserInfo* user_info = response.add_recipients();
+  user_info->set_user_id(kTestUserId);
+  user_info->mutable_user_display_info()->set_display_name(kTestUserName);
+  user_info->mutable_user_display_info()->set_email(kTestEmail);
+  user_info->mutable_user_display_info()->set_profile_image_url(
+      kTestProfileImageUrl);
+  user_info->mutable_cross_user_sharing_public_key()->set_x25519_public_key(
+      kTestPublicKey);
+  user_info->mutable_cross_user_sharing_public_key()->set_version(
+      kTestPublicKeyVersion);
+
+  SetServerResponse(response);
+
+  // Set up the expected callback with an empty profile_image_url.
+  RecipientInfo expected_recipient_info;
+  expected_recipient_info.user_id = kTestUserId;
+  expected_recipient_info.user_name = kTestUserName;
+  expected_recipient_info.email = kTestEmail;
+  expected_recipient_info.profile_image_url = "";
+  expected_recipient_info.public_key.key = kTestPublicKeyBase64;
+  expected_recipient_info.public_key.key_version = kTestPublicKeyVersion;
+
+  base::test::TestFuture<std::vector<RecipientInfo>,
+                         FetchFamilyMembersRequestStatus>
+      future;
+  RecipientsFetcherImpl recipient_fetcher = CreateRecipientFetcher();
+  recipient_fetcher.FetchFamilyMembers(future.GetCallback());
+
+  EXPECT_THAT(future.Get<0>(), ElementsAre(expected_recipient_info));
+  EXPECT_EQ(future.Get<1>(), FetchFamilyMembersRequestStatus::kSuccess);
 }
 
 // Tests the scenario in which the sender of the request is not part of a family
