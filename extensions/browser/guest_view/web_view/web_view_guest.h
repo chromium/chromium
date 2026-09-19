@@ -16,6 +16,8 @@
 #include "base/values.h"
 #include "components/guest_view/browser/guest_view.h"
 #include "content/public/browser/javascript_dialog_manager.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/page_navigator.h"
 #include "content/public/browser/permission_result.h"
 #include "extensions/browser/guest_view/web_view/javascript_dialog_helper.h"
 #include "extensions/browser/guest_view/web_view/web_view_find_helper.h"
@@ -163,6 +165,9 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
 
   // Returns spatial navigation status.
   bool IsSpatialNavigationEnabled() const;
+
+  const std::optional<content::OpenURLParams>&
+  GetPendingWindowOpenURLParamsForTesting() const;
 
   base::WeakPtr<WebViewGuest> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -336,18 +341,18 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
 
   void PushWebViewStateToIOThread(content::RenderFrameHost* guest_host);
 
-  // Loads the `url` provided. `force_navigation` indicates whether to reload
-  // the content if the provided `url` matches the current page of the guest.
-  // If a `navigation_handle_callback` function is provided, it should be called
-  // with the pending navigation (if any) when the navigation handle become
+  // Loads the URL using the parameters provided in `load_url_params`.
+  // `force_navigation` indicates whether to reload the content if the provided
+  // URL matches the current page of the guest. If a
+  // `navigation_handle_callback` function is provided, it should be called
+  // with the pending navigation (if any) when the navigation handle becomes
   // available. This allows callers to observe or attach their specific data.
   // This function may not be called if the navigation fails for any reason.
-  void LoadURLWithParams(const GURL& url,
-                         const content::Referrer& referrer,
-                         ui::PageTransition transition_type,
-                         base::OnceCallback<void(content::NavigationHandle&)>
-                             navigation_handle_callback,
-                         bool force_navigation);
+  void LoadURLWithParams(
+      content::NavigationController::LoadURLParams load_url_params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback,
+      bool force_navigation);
 
   void RequestNewWindowPermission(WindowOpenDisposition disposition,
                                   const gfx::Rect& initial_bounds,
@@ -363,10 +368,12 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   // Creates a new guest window owned by this WebViewGuest.
   void CreateNewGuestWebViewWindow(const content::OpenURLParams& params);
 
-  void NewGuestWebViewCallback(WindowOpenDisposition disposition,
-                               const GURL& url,
-                               const std::string& frame_name,
-                               std::unique_ptr<GuestViewBase> guest);
+  void NewGuestWebViewCallback(
+      WindowOpenDisposition disposition,
+      const GURL& url,
+      const std::string& frame_name,
+      std::optional<content::OpenURLParams> open_url_params,
+      std::unique_ptr<GuestViewBase> guest);
 
   bool HandleKeyboardShortcuts(const input::NativeWebKeyboardEvent& event);
 
@@ -410,14 +417,18 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
 
   std::unique_ptr<WebViewGuestDelegate> web_view_guest_delegate_;
 
-  // Tracks the name, and target URL of the new window. Once the first
-  // navigation commits, we no longer track this information.
+  // Tracks the name, target URL, and pending OpenURL parameters of the new
+  // window. Once the first navigation commits, we no longer track this
+  // information.
   struct NewWindowInfo {
     // Name of the new window.
     std::string name;
 
     // Expected initial URL of the new window.
     GURL url;
+
+    // Parameters for the pending navigation, if any.
+    std::optional<content::OpenURLParams> open_url_params;
 
     // Whether OpenURL navigation from the newly created GuestView has changed
     // `url`. The pending OpenURL navigation needs to be applied after attaching
@@ -430,6 +441,8 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
     bool did_start_navigating_away_from_initial_url = false;
 
     NewWindowInfo(const GURL& url, const std::string& name);
+    NewWindowInfo(const content::OpenURLParams& params,
+                  const std::string& name);
     NewWindowInfo(const NewWindowInfo&);
     ~NewWindowInfo();
   };

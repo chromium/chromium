@@ -33,10 +33,12 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_security_policy.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/navigation_throttle_registry.h"
+#include "content/public/browser/page_navigator.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -270,6 +272,10 @@ static base::LazyInstance<WebViewKeyToIDMap>::DestructorAtExit
 WebViewGuest::NewWindowInfo::NewWindowInfo(const GURL& url,
                                            const std::string& name)
     : name(name), url(url) {}
+
+WebViewGuest::NewWindowInfo::NewWindowInfo(const content::OpenURLParams& params,
+                                           const std::string& name)
+    : name(name), url(params.url), open_url_params(params) {}
 
 WebViewGuest::NewWindowInfo::NewWindowInfo(const WebViewGuest::NewWindowInfo&) =
     default;
@@ -626,12 +632,15 @@ void WebViewGuest::MaybeRecreateGuestContents(
   // We'll need to trigger the intended navigation in the new guest contents,
   // but we need to wait until later in the attachment process, after the state
   // related to the WebRequest API is set up.
-  recreate_initial_nav_ = base::BindOnce(
-      &WebViewGuest::LoadURLWithParams, weak_ptr_factory_.GetWeakPtr(),
-      web_contents_create_params.initial_popup_url, content::Referrer(),
-      ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
-      base::OnceCallback<void(content::NavigationHandle&)>(),
-      /*force_navigation=*/true);
+  content::NavigationController::LoadURLParams load_url_params(
+      web_contents_create_params.initial_popup_url);
+  load_url_params.referrer = content::Referrer();
+  load_url_params.transition_type = ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
+  recreate_initial_nav_ =
+      base::BindOnce(&WebViewGuest::LoadURLWithParams,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(load_url_params),
+                     base::OnceCallback<void(content::NavigationHandle&)>(),
+                     /*force_navigation=*/true);
 }
 
 void WebViewGuest::ClearCodeCache(base::Time remove_since,
@@ -860,7 +869,7 @@ content::GuestPageHolder* WebViewGuest::GuestCreateNewWindow(
       WebViewGuest::Type, owner_rfh(), site_instance, create_params,
       base::BindOnce(&WebViewGuest::NewGuestWebViewCallback,
                      weak_ptr_factory_.GetWeakPtr(), disposition, url,
-                     main_frame_name));
+                     main_frame_name, std::nullopt));
   WebViewGuest* guest =
       static_cast<WebViewGuest*>(guest_manager->GetGuestByInstanceIDSafely(
           guest_instance_id,
@@ -940,7 +949,7 @@ void WebViewGuest::CreateNewGuestWebViewWindow(
       WebViewGuest::Type, embedder_rfh(), nullptr, create_params,
       base::BindOnce(&WebViewGuest::NewGuestWebViewCallback,
                      weak_ptr_factory_.GetWeakPtr(), params.disposition,
-                     params.url, std::string()));
+                     params.url, std::string(), params));
   WebViewGuest* guest =
       static_cast<WebViewGuest*>(guest_manager->GetGuestByInstanceIDSafely(
           guest_instance_id,
@@ -959,14 +968,16 @@ void WebViewGuest::NewGuestWebViewCallback(
     WindowOpenDisposition disposition,
     const GURL& url,
     const std::string& frame_name,
+    std::optional<content::OpenURLParams> open_url_params,
     std::unique_ptr<GuestViewBase> guest) {
   auto* raw_new_guest = static_cast<WebViewGuest*>(guest.release());
   std::unique_ptr<WebViewGuest> new_guest = base::WrapUnique(raw_new_guest);
 
   raw_new_guest->SetOpener(this);
 
-  pending_new_windows_.insert(
-      std::make_pair(raw_new_guest, NewWindowInfo(url, frame_name)));
+  NewWindowInfo info(url, frame_name);
+  info.open_url_params = std::move(open_url_params);
+  pending_new_windows_.insert(std::make_pair(raw_new_guest, std::move(info)));
 
   // Request permission to show the new window.
   RequestNewWindowPermission(disposition, gfx::Rect(), std::move(new_guest));
@@ -1699,18 +1710,21 @@ void WebViewGuest::NavigateGuest(
   }
 
   GURL url = ResolveURL(src);
+  content::NavigationController::LoadURLParams load_url_params(url);
+  load_url_params.referrer = content::Referrer();
+  load_url_params.transition_type = ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
 
   // We wait for all the content scripts to load and then navigate the guest
   // if the navigation is embedder-initiated. For browser-initiated navigations,
   // content scripts will be ready.
   if (force_navigation) {
     SignalWhenReady(base::BindOnce(
-        &WebViewGuest::LoadURLWithParams, weak_ptr_factory_.GetWeakPtr(), url,
-        content::Referrer(), ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
-        std::move(navigation_handle_callback), force_navigation));
+        &WebViewGuest::LoadURLWithParams, weak_ptr_factory_.GetWeakPtr(),
+        std::move(load_url_params), std::move(navigation_handle_callback),
+        force_navigation));
     return;
   }
-  LoadURLWithParams(url, content::Referrer(), ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
+  LoadURLWithParams(std::move(load_url_params),
                     std::move(navigation_handle_callback), force_navigation);
 }
 
@@ -1812,9 +1826,16 @@ void WebViewGuest::ApplyAttributes(const base::DictValue& params) {
       const NewWindowInfo& new_window_info = it->second;
       if (!new_window_info.did_start_navigating_away_from_initial_url &&
           (new_window_info.url_changed_via_open_url || !HasOpener())) {
-        NavigateGuest(new_window_info.url.spec(),
-                      /*navigation_handle_callback=*/{},
-                      false /* force_navigation */);
+        if (new_window_info.open_url_params) {
+          LoadURLWithParams(content::NavigationController::LoadURLParams(
+                                *new_window_info.open_url_params),
+                            /*navigation_handle_callback=*/{},
+                            /*force_navigation=*/false);
+        } else {
+          NavigateGuest(new_window_info.url.spec(),
+                        /*navigation_handle_callback=*/{},
+                        false /* force_navigation */);
+        }
       }
 
       // Once a new guest is attached to the DOM of the embedder page, then the
@@ -2027,10 +2048,10 @@ WebContents* WebViewGuest::OpenURLFromTab(
       const NewWindowInfo& info = it->second;
       // TODO(https://crbug.com/40275094): Consider plumbing
       // `navigation_handle_callback`.
-      NewWindowInfo new_window_info(params.url, info.name);
+      NewWindowInfo new_window_info(params, info.name);
       new_window_info.url_changed_via_open_url =
           new_window_info.url != info.url;
-      it->second = new_window_info;
+      it->second = std::move(new_window_info);
       return nullptr;
     }
   }
@@ -2044,7 +2065,7 @@ WebContents* WebViewGuest::OpenURLFromTab(
   // it is not allowed to navigate to, a 'loadabort' event will fire in the
   // embedder, and the guest will be navigated to about:blank.
   if (params.disposition == WindowOpenDisposition::CURRENT_TAB) {
-    LoadURLWithParams(params.url, params.referrer, params.transition,
+    LoadURLWithParams(content::NavigationController::LoadURLParams(params),
                       std::move(navigation_handle_callback),
                       true /* force_navigation */);
     return web_contents();
@@ -2134,19 +2155,19 @@ void WebViewGuest::RequestPointerLock(WebContents* web_contents,
 }
 
 void WebViewGuest::LoadURLWithParams(
-    const GURL& url,
-    const content::Referrer& referrer,
-    ui::PageTransition transition_type,
+    content::NavigationController::LoadURLParams load_url_params,
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback,
     bool force_navigation) {
   if (!attached() && base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
     pending_first_navigation_ =
-        base::BindOnce(&WebViewGuest::LoadURLWithParams, GetWeakPtr(), url,
-                       referrer, transition_type,
+        base::BindOnce(&WebViewGuest::LoadURLWithParams, GetWeakPtr(),
+                       std::move(load_url_params),
                        std::move(navigation_handle_callback), force_navigation);
     return;
   }
+
+  const GURL url = load_url_params.url;
 
   if (!url.is_valid()) {
     LoadAbort(true /* is_top_level */, url, net::ERR_INVALID_URL);
@@ -2187,15 +2208,26 @@ void WebViewGuest::LoadURLWithParams(
   }
 
   GURL validated_url(url);
-  GetGuestMainFrame()->GetProcess()->FilterURL(false, &validated_url);
   // As guests do not swap processes on navigation, only navigations to
   // normal web URLs are supported.  No protocol handlers are installed for
   // other schemes (e.g., WebUI or extensions), and no permissions or bindings
   // can be granted to the guest process.
-  content::NavigationController::LoadURLParams load_url_params(validated_url);
-  load_url_params.referrer = referrer;
-  load_url_params.transition_type = transition_type;
-  load_url_params.extra_headers = std::string();
+  if (GetGuestMainFrame()->GetProcess()->FilterURL(false, &validated_url) ==
+      content::RenderProcessHost::FilterURLResult::kBlocked) {
+    // If blocked, we mostly don't preserve the navigation params when
+    // navigating to the block URL.
+    content::NavigationController::LoadURLParams blocked_params(validated_url);
+    blocked_params.referrer = load_url_params.referrer;
+    blocked_params.transition_type = load_url_params.transition_type;
+    load_url_params = std::move(blocked_params);
+  } else {
+    load_url_params.url = validated_url;
+    // TODO(mcnee): Before we propagated the full navigation params, we only
+    // considered main frame navigations here. We clear the FTN id to preserve
+    // this behaviour. Should we handle subframes here? Could such a navigation
+    // reach here?
+    load_url_params.frame_tree_node_id = content::FrameTreeNodeId();
+  }
   if (is_overriding_user_agent_) {
     load_url_params.override_user_agent =
         content::NavigationController::UA_OVERRIDE_TRUE;
@@ -2325,6 +2357,12 @@ bool WebViewGuest::HasOpener() {
     return GetGuestPageHolder().GetOpener();
   }
   return web_contents()->HasOpener();
+}
+
+const std::optional<content::OpenURLParams>&
+WebViewGuest::GetPendingWindowOpenURLParamsForTesting() const {
+  CHECK_EQ(pending_new_windows_.size(), 1u);
+  return pending_new_windows_.begin()->second.open_url_params;
 }
 
 }  // namespace extensions

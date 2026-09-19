@@ -1866,7 +1866,17 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestReassignSrcAttribute) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, Shim_TestNewWindow) {
-  TestHelper("testNewWindow", "web_view/shim", NEEDS_TEST_SERVER);
+  ASSERT_TRUE(InitializeEmbeddedTestServer());
+  EmbeddedTestServerAcceptConnections();
+
+  GURL newwindow_url = embedded_test_server()->GetURL(
+      "localhost", "/extensions/platform_apps/web_view/shim/empty_guest.html");
+  content::TestNavigationObserver observer(newwindow_url);
+  observer.StartWatchingNewWebContents();
+  observer.set_wait_event(
+      content::TestNavigationObserver::WaitEvent::kNavigationFinished);
+
+  TestHelper("testNewWindow", "web_view/shim", NO_TEST_SERVER);
 
   // The first <webview> tag in the test will run window.open(), which the
   // embedder will translate into an injected second <webview> tag.  Ensure
@@ -1887,6 +1897,15 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, Shim_TestNewWindow) {
       guest_instance1->GetSecurityPrincipal().GetStoragePartitionConfig(),
       guest_instance2->GetSecurityPrincipal().GetStoragePartitionConfig());
   EXPECT_TRUE(guest_instance1->IsRelatedSiteInstance(guest_instance2));
+
+  observer.Wait();
+  EXPECT_TRUE(observer.last_navigation_succeeded());
+  EXPECT_EQ(newwindow_url, observer.last_navigation_url());
+  EXPECT_EQ(guest1->GetLastCommittedOrigin(), observer.last_initiator_origin());
+  EXPECT_EQ(guest1->GetFrameToken(), observer.last_initiator_frame_token());
+  EXPECT_EQ(guest1->GetProcess()->GetID(),
+            observer.last_initiator_process_id());
+  EXPECT_EQ(guest_instance1, observer.last_source_site_instance());
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, Shim_TestNewWindowTwoListeners) {
@@ -2069,7 +2088,24 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, NewWindow_NoName) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, NewWindow_Redirect) {
-  TestHelper("testNewWindowRedirect", "web_view/newwindow", NEEDS_TEST_SERVER);
+  ASSERT_TRUE(InitializeEmbeddedTestServer());
+  EmbeddedTestServerAcceptConnections();
+
+  GURL newwindow_url = embedded_test_server()->GetURL(
+      "localhost", "/extensions/platform_apps/web_view/newwindow/guest.html");
+  content::TestNavigationObserver nav_observer(newwindow_url);
+  nav_observer.StartWatchingNewWebContents();
+  nav_observer.set_wait_event(
+      content::TestNavigationObserver::WaitEvent::kNavigationFinished);
+
+  TestHelper("testNewWindowRedirect", "web_view/newwindow", NO_TEST_SERVER);
+
+  nav_observer.Wait();
+  EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+  EXPECT_EQ(newwindow_url, nav_observer.last_navigation_url());
+  EXPECT_TRUE(nav_observer.last_initiator_origin().has_value());
+  EXPECT_TRUE(nav_observer.last_initiator_frame_token().has_value());
+  EXPECT_TRUE(nav_observer.last_initiator_process_id());
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, NewWindow_Close) {
@@ -3166,6 +3202,84 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, OpenURLFromTab_CurrentTab_Succeed) {
   ASSERT_TRUE(load_listener.WaitUntilSatisfied());
 
   EXPECT_EQ(test_url, GetGuestRenderFrameHost()->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_P(WebViewTest,
+                       OpenURLFromTab_CurrentTab_PreservesInitiator) {
+  LoadAppWithGuest("web_view/simple");
+
+  GURL test_url("http://www.google.com");
+  content::RenderFrameHost* guest_rfh = GetGuestRenderFrameHost();
+  url::Origin initiator_origin = guest_rfh->GetLastCommittedOrigin();
+  blink::LocalFrameToken initiator_frame_token = guest_rfh->GetFrameToken();
+  content::ChildProcessId initiator_process_id =
+      guest_rfh->GetProcess()->GetID();
+  scoped_refptr<content::SiteInstance> source_site_instance =
+      guest_rfh->GetSiteInstance();
+  content::OpenURLParams params(
+      test_url, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+      ui::PAGE_TRANSITION_LINK, true /* is_renderer_initiated */);
+  params.initiator_origin = initiator_origin;
+  params.source_render_frame_id = guest_rfh->GetRoutingID();
+  params.source_render_process_id = initiator_process_id.GetUnsafeValue();
+  params.initiator_process_id = initiator_process_id.GetUnsafeValue();
+  params.initiator_frame_token = initiator_frame_token;
+  params.source_site_instance = source_site_instance;
+
+  content::TestNavigationObserver nav_observer(GetGuestWebContents());
+  nav_observer.set_wait_event(
+      content::TestNavigationObserver::WaitEvent::kNavigationFinished);
+  GetGuestWebContents()->OpenURL(params, /*navigation_handle_callback=*/{});
+
+  nav_observer.Wait();
+
+  EXPECT_EQ(test_url, GetGuestRenderFrameHost()->GetLastCommittedURL());
+  EXPECT_EQ(initiator_origin, nav_observer.last_initiator_origin());
+  EXPECT_EQ(initiator_frame_token, nav_observer.last_initiator_frame_token());
+  EXPECT_EQ(initiator_process_id, nav_observer.last_initiator_process_id());
+  EXPECT_EQ(source_site_instance, nav_observer.last_source_site_instance());
+}
+
+// This test was added speculatively in relation to https://crbug.com/523201686
+// We simply test that the initiator info is propagated through OpenURLFromTab.
+// It's unclear whether a navigation like this could actually be performed.
+IN_PROC_BROWSER_TEST_P(WebViewTest,
+                       OpenURLFromTab_NewWindow_PreservesInitiator) {
+  LoadAppWithGuest("web_view/simple");
+
+  GURL test_url("http://www.google.com");
+  content::RenderFrameHost* guest_rfh = GetGuestRenderFrameHost();
+  url::Origin initiator_origin = guest_rfh->GetLastCommittedOrigin();
+  blink::LocalFrameToken initiator_frame_token = guest_rfh->GetFrameToken();
+  content::ChildProcessId initiator_process_id =
+      guest_rfh->GetProcess()->GetID();
+  scoped_refptr<content::SiteInstance> source_site_instance =
+      guest_rfh->GetSiteInstance();
+  content::OpenURLParams params(
+      test_url, content::Referrer(), WindowOpenDisposition::NEW_WINDOW,
+      ui::PAGE_TRANSITION_LINK, true /* is_renderer_initiated */);
+  params.initiator_origin = initiator_origin;
+  params.source_render_frame_id = guest_rfh->GetRoutingID();
+  params.source_render_process_id = initiator_process_id.GetUnsafeValue();
+  params.initiator_process_id = initiator_process_id.GetUnsafeValue();
+  params.initiator_frame_token = initiator_frame_token;
+  params.source_site_instance = source_site_instance;
+
+  GetGuestWebContents()->OpenURL(params, /*navigation_handle_callback=*/{});
+
+  extensions::WebViewGuest* guest =
+      extensions::WebViewGuest::FromGuestViewBase(GetGuestView());
+  ASSERT_TRUE(guest);
+  const std::optional<content::OpenURLParams>& pending_params_opt =
+      guest->GetPendingWindowOpenURLParamsForTesting();
+  ASSERT_TRUE(pending_params_opt.has_value());
+  const content::OpenURLParams& pending_params = *pending_params_opt;
+  EXPECT_EQ(test_url, pending_params.url);
+  EXPECT_EQ(initiator_origin, pending_params.initiator_origin);
+  EXPECT_EQ(initiator_frame_token, pending_params.initiator_frame_token);
+  EXPECT_EQ(initiator_process_id.GetUnsafeValue(),
+            pending_params.initiator_process_id);
+  EXPECT_TRUE(pending_params.is_renderer_initiated);
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, OpenURLFromTab_NewWindow_Abort) {
