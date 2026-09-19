@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,20 +7,15 @@ package org.chromium.chrome.browser.intents;
 import android.content.Intent;
 import android.os.SystemClock;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 
-@RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@RunWith(BaseRobolectricTestRunner.class)
 public class BrowserIntentUtilsUnitTest {
     @Test
-    @SmallTest
     public void testAddTimestampToIntent() {
         Intent intent = new Intent();
         Assert.assertEquals(-1, BrowserIntentUtils.getLaunchedRealtimeMillis(intent));
