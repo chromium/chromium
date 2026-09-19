@@ -26,6 +26,13 @@ class Canvas;
 
 namespace ui::decoration {
 
+// Defines the requirements for a specification used by DecorationDetails.
+template <typename Spec>
+concept DecorationSpec = requires(const Spec& a, const Spec& b) {
+  { a == b } -> std::same_as<bool>;
+  { a < b } -> std::same_as<bool>;
+};
+
 // Defines the requirements for a generator used by DecorationDetails.
 //
 // - `GetMargins()`: Insets from content bounds to the decoration's outer edge
@@ -37,6 +44,7 @@ namespace ui::decoration {
 //   persistent state (e.g., clips or transforms) on the canvas.
 template <typename Generator, typename Spec>
 concept DecorationGenerator =
+    DecorationSpec<Spec> &&
     requires(gfx::Canvas* canvas,
              const Spec& spec,
              const gfx::RoundedCornersF& rounded_corners,
@@ -50,7 +58,7 @@ concept DecorationGenerator =
       } -> std::same_as<void>;
     };
 
-template <typename Spec, DecorationGenerator<Spec> Generator>
+template <DecorationSpec Spec, DecorationGenerator<Spec> Generator>
 struct DecorationDetails;
 
 namespace internal {
@@ -58,7 +66,7 @@ namespace internal {
 // Creates an image with decorations painted around a rounded rect with the
 // given corner radii. The image is sized just large enough to paint the
 // decoration with a 1px square center aperture.
-template <typename Spec, DecorationGenerator<Spec> Generator>
+template <DecorationSpec Spec, DecorationGenerator<Spec> Generator>
 class NineboxImageSource : public gfx::CanvasImageSource {
  public:
   NineboxImageSource(const Spec& spec,
@@ -99,7 +107,7 @@ class NineboxImageSource : public gfx::CanvasImageSource {
 };
 
 // Generic cache for decoration details.
-template <typename Spec, DecorationGenerator<Spec> Generator>
+template <DecorationSpec Spec, DecorationGenerator<Spec> Generator>
 class DecorationCache {
  public:
   static const DecorationDetails<Spec, Generator>& Get(
@@ -163,7 +171,7 @@ class DecorationCache {
 
 // A struct that describes a visual decoration and its depiction as an image
 // suitable for ninebox tiling.
-template <typename Spec, DecorationGenerator<Spec> Generator>
+template <DecorationSpec Spec, DecorationGenerator<Spec> Generator>
 struct DecorationDetails {
   DecorationDetails(const Spec& spec,
                     const gfx::ImageSkia& nine_patch_image,
