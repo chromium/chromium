@@ -86,7 +86,6 @@ class IncognitoClearBrowsingDataDialogCoordinator;
 class InitialWebUIManager;
 class InitialWebUIWindowMetricsManager;
 class IOSPromoController;
-class LocationBar;
 class LocationBarModel;
 class MemorySaverOptInIPHController;
 class PinnedToolbarActions;
@@ -309,12 +308,6 @@ class BrowserWindowFeatures {
 
   // Returns true if a FindBarController exists for this browser window.
   bool HasFindBarController() const;
-
-  // Returns the LocationBar for this browser window. Currently delegates to
-  // BrowserWindow::GetLocationBar() via downcast, but should eventually become
-  // an owned member of BrowserWindowFeatures.
-  LocationBar* location_bar();
-  const LocationBar* location_bar() const;
 
   LocationBarModel* location_bar_model() { return location_bar_model_.get(); }
   const LocationBarModel* location_bar_model() const {
