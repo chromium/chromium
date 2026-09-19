@@ -222,8 +222,14 @@ String InputEvent::inputType() const {
 
 StaticRangeVector InputEvent::getTargetRanges() const {
   StaticRangeVector static_ranges;
-  for (const auto& range : ranges_)
+  for (const auto& range : ranges_) {
+    if ((Retarget(range->startContainer()) != range->startContainer() ||
+         Retarget(range->endContainer()) != range->endContainer()) &&
+        RuntimeEnabledFeatures::GetTargetRangesRetargetingEnabled()) {
+      continue;
+    }
     static_ranges.push_back(StaticRange::Create(range));
+  }
   return static_ranges;
 }
 

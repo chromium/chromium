@@ -3456,6 +3456,12 @@
       status: "stable",
     },
     {
+      // Performs retargeting on the output of InputEvent.getTargetRanges() to
+      // prevent leaking nodes in shadow roots.
+      name: "GetTargetRangesRetargeting",
+      status: "stable",
+    },
+    {
       name: "GetUserMediaEchoCancellationModes",
       status: "stable",
     },
