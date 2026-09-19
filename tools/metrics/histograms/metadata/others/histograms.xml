@@ -2693,6 +2693,11 @@ chromium-metrics-reviews@google.com.
     Web App. It is not recorded if Chrome is launched in other ways: by the
     installer, after an update, after a flag change, after an OS update, to
     install/uninstall/list apps, or in background mode.
+
+    On Windows, launches via shortcuts with an AppUserModelID that specify
+    --source-shortcut-location are categorized into kShortcutDesktop,
+    kShortcutTaskbar, or kShortcutStartMenu (or their WebApp counterparts),
+    falling back to kWithAppId if unadorned.
   </summary>
 </histogram>
 

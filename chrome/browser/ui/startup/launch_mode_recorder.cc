@@ -98,17 +98,19 @@ ArgType GetArgType(const std::wstring& arg) {
 }
 
 // Gets info about how Chrome was launched, either from the
-// command line switch --source-shortcut or --source-app-id in the case of a
-// rendezvous to an existing process, or from ::GetStartupInfoW. Returns nullopt
-// if Chrome wasn't launched from a shortcut or an App Id. This can be expensive
-// and shouldn't be called from the UI thread.
+// command line switch --source-shortcut, --source-app-id, or
+// --source-shortcut-location in the case of a rendezvous to an existing
+// process, or from ::GetStartupInfoW. Returns nullopt if Chrome wasn't launched
+// from a shortcut or an App Id. This can be expensive and shouldn't be called
+// from the UI thread.
 std::optional<StartupInfo> GetStartupInfo(
     const base::CommandLine& command_line) {
   if (command_line.HasSwitch(switches::kSourceShortcut)) {
     return StartupInfo{.shortcut_path = command_line.GetSwitchValueNative(
                            switches::kSourceShortcut)};
   }
-  if (command_line.HasSwitch(switches::kSourceAppId)) {
+  if (command_line.HasSwitch(switches::kSourceAppId) ||
+      command_line.HasSwitch(switches::kSourceShortcutLocation)) {
     return StartupInfo{};
   }
   STARTUPINFOW si = {sizeof(si)};
@@ -142,6 +144,26 @@ void RecordLaunchMode(const base::CommandLine command_line,
 }
 
 #if BUILDFLAG(IS_WIN)
+// Returns the LaunchMode for a launch that occurred with an AppUserModelID
+// (where STARTF_TITLEISAPPID was set or --source-app-id was passed),
+// taking into account any shortcut location passed via rendezvous.
+LaunchMode GetLaunchModeForAppIdLaunch(std::string_view shortcut_location,
+                                       bool is_app_launch) {
+  if (shortcut_location == switches::kSourceShortcutLocationDesktop) {
+    return is_app_launch ? LaunchMode::kWebAppShortcutDesktop
+                         : LaunchMode::kShortcutDesktop;
+  }
+  if (shortcut_location == switches::kSourceShortcutLocationTaskbar) {
+    return is_app_launch ? LaunchMode::kWebAppShortcutTaskbar
+                         : LaunchMode::kShortcutTaskbar;
+  }
+  if (shortcut_location == switches::kSourceShortcutLocationStartMenu) {
+    return is_app_launch ? LaunchMode::kWebAppShortcutStartMenu
+                         : LaunchMode::kShortcutStartMenu;
+  }
+  return is_app_launch ? LaunchMode::kWebAppOther : LaunchMode::kWithAppId;
+}
+
 // Gets LaunchMode from `command_line`, potentially using some functions that
 // might be slow, e.g., involve disk access, and hence, this should not be
 // used on the UI thread.
@@ -152,18 +174,17 @@ std::optional<LaunchMode> GetLaunchModeSlow(
                        command_line.HasSwitch(switches::kAppId);
   if (!startup_info.has_value() ||
       !startup_info.value().launched_from_shortcut()) {
-    // Not launched from a shortcut. Check if we're launched as a registered
-    // file or protocol handler, or with an AppId.
+    // Not launched from a shortcut file path. Check if Chrome is launched:
+    // - as a registered file or protocol handler, or
+    // - with an AppId or shortcut location.
     std::vector<base::CommandLine::StringType> args = command_line.GetArgs();
     if (args.size() < 1) {
-      if (is_app_launch) {
-        return LaunchMode::kWebAppOther;
+      if (startup_info.has_value()) {
+        return GetLaunchModeForAppIdLaunch(
+            command_line.GetSwitchValueASCII(switches::kSourceShortcutLocation),
+            is_app_launch);
       }
-      // If no command line arguments, and not launched from a shortcut,
-      // and startup_info isn't null, then must have been launched with an
-      // AppId. Otherwise, launched some other way.
-      return startup_info.has_value() ? LaunchMode::kWithAppId
-                                      : LaunchMode::kOther;
+      return is_app_launch ? LaunchMode::kWebAppOther : LaunchMode::kOther;
     }
     auto arg_type = GetArgType(args[0]);
     bool single_argument_switch = command_line.HasSingleArgumentSwitch();

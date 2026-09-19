@@ -29,6 +29,11 @@ struct PathKeyAndLaunchMode {
   LaunchMode launch_mode;
 };
 
+struct LocationAndLaunchMode {
+  const char* location_switch;
+  LaunchMode launch_mode;
+};
+
 }  // namespace
 
 class LaunchModeRecorderTest : public testing::Test {
@@ -185,6 +190,61 @@ TEST_F(LaunchModeRecorderTest, SlowModeWebAppShortcut) {
     cmd_line.AppendSwitchASCII(switches::kAppId, "abcdefg");
     ComputeLaunchModeAndVerify(cmd_line, path_key_and_mode.launch_mode);
   }
+}
+
+TEST_F(LaunchModeRecorderTest, SlowModeChromeShortcutLocation) {
+  static constexpr LocationAndLaunchMode kLocationsAndModes[] = {
+      {switches::kSourceShortcutLocationDesktop, LaunchMode::kShortcutDesktop},
+      {switches::kSourceShortcutLocationTaskbar, LaunchMode::kShortcutTaskbar},
+      {switches::kSourceShortcutLocationStartMenu,
+       LaunchMode::kShortcutStartMenu},
+  };
+  for (const auto& [location_switch, expected_mode] : kLocationsAndModes) {
+    // Test standalone launch.
+    base::CommandLine cmd_line(base::CommandLine::NO_PROGRAM);
+    cmd_line.AppendSwitchASCII(switches::kSourceShortcutLocation,
+                               location_switch);
+    ComputeLaunchModeAndVerify(cmd_line, expected_mode);
+
+    // Test rendezvous launch where --source-app-id is also present.
+    base::CommandLine rendezvous_cmd_line(base::CommandLine::NO_PROGRAM);
+    rendezvous_cmd_line.AppendSwitchNative(switches::kSourceAppId,
+                                           L"ChromeAppId");
+    rendezvous_cmd_line.AppendSwitchASCII(switches::kSourceShortcutLocation,
+                                          location_switch);
+    ComputeLaunchModeAndVerify(rendezvous_cmd_line, expected_mode);
+  }
+
+  // An unexpected location string should fall back to kWithAppId.
+  base::CommandLine invalid_cmd_line(base::CommandLine::NO_PROGRAM);
+  invalid_cmd_line.AppendSwitchASCII(switches::kSourceShortcutLocation,
+                                     "invalid_location");
+  ComputeLaunchModeAndVerify(invalid_cmd_line, LaunchMode::kWithAppId);
+}
+
+TEST_F(LaunchModeRecorderTest, SlowModeWebAppShortcutLocation) {
+  static constexpr LocationAndLaunchMode kLocationsAndModes[] = {
+      {switches::kSourceShortcutLocationDesktop,
+       LaunchMode::kWebAppShortcutDesktop},
+      {switches::kSourceShortcutLocationTaskbar,
+       LaunchMode::kWebAppShortcutTaskbar},
+      {switches::kSourceShortcutLocationStartMenu,
+       LaunchMode::kWebAppShortcutStartMenu},
+  };
+  for (const auto& [location_switch, expected_mode] : kLocationsAndModes) {
+    base::CommandLine cmd_line(base::CommandLine::NO_PROGRAM);
+    cmd_line.AppendSwitchASCII(switches::kAppId, "abcdefg");
+    cmd_line.AppendSwitchASCII(switches::kSourceShortcutLocation,
+                               location_switch);
+    ComputeLaunchModeAndVerify(cmd_line, expected_mode);
+  }
+
+  // An unexpected location string for web app should fall back to kWebAppOther.
+  base::CommandLine invalid_cmd_line(base::CommandLine::NO_PROGRAM);
+  invalid_cmd_line.AppendSwitchASCII(switches::kAppId, "abcdefg");
+  invalid_cmd_line.AppendSwitchASCII(switches::kSourceShortcutLocation,
+                                     "invalid_location");
+  ComputeLaunchModeAndVerify(invalid_cmd_line, LaunchMode::kWebAppOther);
 }
 
 class LaunchModeRecorderNoneTest

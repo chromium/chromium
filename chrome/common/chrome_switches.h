@@ -997,6 +997,14 @@ inline constexpr char kSourceAppId[] = "source-app-id";
 // metrics.
 inline constexpr char kSourceShortcut[] = "source-shortcut";
 
+// Specifies the origin location of the shortcut that launched Chrome (e.g.
+// desktop, start-menu, taskbar). Used to record launch metrics when launched
+// with an AppId.
+inline constexpr char kSourceShortcutLocation[] = "source-shortcut-location";
+inline constexpr char kSourceShortcutLocationDesktop[] = "desktop";
+inline constexpr char kSourceShortcutLocationStartMenu[] = "start-menu";
+inline constexpr char kSourceShortcutLocationTaskbar[] = "taskbar";
+
 // Identifies Chrome instances that start in foreground mode at startup to
 // record related metrics.
 inline constexpr char kStartupForegroundLaunch[] = "startup-foreground-launch";
