@@ -735,6 +735,7 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/lens_server_proto:lens_overlay_proto",
     "//ui/actions:actions_headers",
+    "//ui/base/interaction:test_support",
     "//ui/base/unowned_user_data",
     "//ui/webui:buildflags",
   ]

@@ -1426,45 +1426,28 @@ void ContextualTasksSidePanelCoordinator::ShowPageInfoBubble(
     return;
   }
 
-  content::WebContents* webui_contents =
-      contextual_tasks_panel_host_
-          ? contextual_tasks_panel_host_->GetToolbarWebContents()
-          : nullptr;
-  if (!webui_contents || !webui_contents->GetWebUI()) {
-    // TODO(crbug.com/534863502): Remove temporary workaround once toolbar WebUI
-    // is setup.
-    webui_contents = contents;
-  }
-
   BrowserView* browser_view =
       BrowserView::GetBrowserViewForBrowser(browser_window_);
   if (!browser_view) {
     return;
   }
 
-  auto handler = ui::TrackedElementHandlerDocumentSingleton::GetOrCreate(
-      webui_contents->GetPrimaryMainFrame());
-  if (!handler) {
+  views::BubbleAnchor specification_anchor = GetSuperGButtonAnchor();
+  if (specification_anchor.IsNull()) {
     return;
   }
-
-  ui::TrackedElement* anchor_element =
-      ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
-          kContextualTasksSuperGButtonElementId, handler->context());
-  if (!anchor_element) {
-    return;
-  }
-
-  views::BubbleAnchor specification_anchor =
-      views::BubbleAnchor(anchor_element);
 
   PageInfoBubbleSpecification::Builder builder(
       specification_anchor, browser_view->GetWidget()->GetNativeWindow(),
       contents, contents->GetVisibleURL());
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  // Deliberately does not bind `specification_anchor`: this callback outlives
+  // the anchored bubble, and the anchor holds a raw pointer to a WebUI
+  // `ui::TrackedElement` owned by the side panel document. The anchor is
+  // re-resolved when the menu is actually shown instead.
   builder.SetOnExtensionsClickedCallback(base::BindRepeating(
       &ContextualTasksSidePanelCoordinator::OnSeeExtensionsClicked,
-      weak_ptr_factory_.GetWeakPtr(), specification_anchor));
+      weak_ptr_factory_.GetWeakPtr()));
 #endif
   std::unique_ptr<PageInfoBubbleSpecification> specification = builder.Build();
 
@@ -1480,21 +1463,53 @@ void ContextualTasksSidePanelCoordinator::ShowPageInfoBubble(
 #endif
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+views::BubbleAnchor
+ContextualTasksSidePanelCoordinator::GetSuperGButtonAnchor() {
+  content::WebContents* webui_contents =
+      contextual_tasks_panel_host_
+          ? contextual_tasks_panel_host_->GetToolbarWebContents()
+          : nullptr;
+  if (!webui_contents) {
+    return views::BubbleAnchor();
+  }
+
+  auto handler = ui::TrackedElementHandlerDocumentSingleton::GetOrCreate(
+      webui_contents->GetPrimaryMainFrame());
+  if (!handler) {
+    return views::BubbleAnchor();
+  }
+
+  ui::TrackedElement* anchor_element =
+      ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
+          kContextualTasksSuperGButtonElementId, handler->context());
+  if (!anchor_element) {
+    return views::BubbleAnchor();
+  }
+
+  return views::BubbleAnchor(anchor_element);
+}
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE) && !BUILDFLAG(IS_ANDROID)
-void ContextualTasksSidePanelCoordinator::OnSeeExtensionsClicked(
-    views::BubbleAnchor anchor) {
+void ContextualTasksSidePanelCoordinator::OnSeeExtensionsClicked() {
   content::WebContents* contents = GetActiveWebContents();
   if (!contents) {
     return;
   }
   if (!extensions_container_) {
+    // `base::Unretained` is safe: `extensions_container_` is owned by `this`
+    // and therefore cannot outlive it.
     extensions_container_ =
-        std::make_unique<ContextualTasksExtensionsContainer>(browser_window_,
-                                                             contents);
+        std::make_unique<ContextualTasksExtensionsContainer>(
+            browser_window_, contents,
+            base::BindRepeating(
+                &ContextualTasksSidePanelCoordinator::GetSuperGButtonAnchor,
+                base::Unretained(this)));
   } else {
     extensions_container_->SetWebContents(contents);
   }
-  extensions_container_->ShowExtensionsMenu(anchor);
+  extensions_container_->ShowExtensionsMenu();
 }
 #endif
 

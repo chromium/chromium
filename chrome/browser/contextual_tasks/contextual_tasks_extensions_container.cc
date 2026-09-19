@@ -22,9 +22,11 @@ namespace contextual_tasks {
 
 ContextualTasksExtensionsContainer::ContextualTasksExtensionsContainer(
     BrowserWindowInterface* browser,
-    content::WebContents* web_contents)
+    content::WebContents* web_contents,
+    AnchorProvider anchor_provider)
     : browser_(browser),
       web_contents_(web_contents ? web_contents->GetWeakPtr() : nullptr),
+      anchor_provider_(std::move(anchor_provider)),
       extensions_menu_coordinator_(
           base::FeatureList::IsEnabled(
               extensions_features::kExtensionsMenuAccessControl)
@@ -34,9 +36,7 @@ ContextualTasksExtensionsContainer::ContextualTasksExtensionsContainer(
 ContextualTasksExtensionsContainer::~ContextualTasksExtensionsContainer() =
     default;
 
-void ContextualTasksExtensionsContainer::ShowExtensionsMenu(
-    views::BubbleAnchor anchor) {
-  anchor_ = anchor;
+void ContextualTasksExtensionsContainer::ShowExtensionsMenu() {
   if (extensions_menu_coordinator_ &&
       extensions_menu_coordinator_->IsShowing()) {
     extensions_menu_coordinator_->Hide();
@@ -44,6 +44,13 @@ void ContextualTasksExtensionsContainer::ShowExtensionsMenu(
   }
   if (ExtensionsMenuView::IsShowing()) {
     ExtensionsMenuView::Hide();
+    return;
+  }
+
+  // The anchor is resolved at show time; its backing element may have gone
+  // away since the menu was last shown.
+  views::BubbleAnchor anchor = GetAnchor();
+  if (anchor.IsNull()) {
     return;
   }
 
@@ -93,7 +100,7 @@ bool ContextualTasksExtensionsContainer::ShowToolbarActionPopupForAPICall(
 }
 
 void ContextualTasksExtensionsContainer::ToggleExtensionsMenu() {
-  ShowExtensionsMenu(anchor_);
+  ShowExtensionsMenu();
 }
 
 bool ContextualTasksExtensionsContainer::HasAnyExtensions() const {
@@ -167,17 +174,21 @@ ContextualTasksExtensionsContainer::GetFocusManagerForAccelerator() {
 views::BubbleAnchor
 ContextualTasksExtensionsContainer::GetReferenceButtonForPopup(
     const extensions::ExtensionId& action_id) {
-  return anchor_;
+  return GetAnchor();
 }
 
 views::BubbleAnchor
 ContextualTasksExtensionsContainer::GetExtensionsButtonAnchor() {
-  return anchor_;
+  return GetAnchor();
 }
 
 views::BubbleBorder::Arrow ContextualTasksExtensionsContainer::GetPopupArrow()
     const {
   return views::BubbleBorder::TOP_LEFT;
+}
+
+views::BubbleAnchor ContextualTasksExtensionsContainer::GetAnchor() const {
+  return anchor_provider_ ? anchor_provider_.Run() : views::BubbleAnchor();
 }
 
 }  // namespace contextual_tasks
