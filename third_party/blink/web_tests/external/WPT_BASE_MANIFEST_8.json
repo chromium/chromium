@@ -623107,6 +623107,20 @@
        {}
       ]
      ],
+     "svg-intrinsic-size-009.html": [
+      "0799f8204ccda879af421cbae72a24b459d4b539",
+      [
+       null,
+       {}
+      ]
+     ],
+     "svg-intrinsic-size-010.html": [
+      "c8ac77426fb5afefa6cacb222eee45b2d9533544",
+      [
+       null,
+       {}
+      ]
+     ],
      "table-percentage-max-width-beside-float.html": [
       "be82ac0da66fcfb4e327580b11b491e2621b0629",
       [
@@ -708584,14 +708598,14 @@
           ]
          ],
          "elementsFromPoint-update-element-geometry-offscreen.tentative.html": [
-          "4f4c1dad209585ba8814c01bcf5580f33aa154b9",
+          "722b2bc2b425fa3f1f596bbec108aaa0a8231d6f",
           [
            null,
            {}
           ]
          ],
          "elementsFromPoint-update-element-geometry.tentative.html": [
-          "3ca34514f86af8d50a703b05a3107df578dd99b5",
+          "9bb641822763aca34b4628d0e062802757b063ed",
           [
            null,
            {}
@@ -709376,7 +709390,7 @@
          ]
         ],
         "update-element-geometry-get-bounding-client-rect.tentative.html": [
-         "d18f5a80b6aef2bdf1ab7e66c877db7b94854e20",
+         "0f4ba35eacfe211fff45dfe598df3b667a20a98c",
          [
           null,
           {}
@@ -752767,16 +752781,6 @@
          }
         ]
        ],
-       "menu-dialog-mode-focus.html": [
-        "0d5e2f3873dda6a7cd25045a11a11317e6ed71f3",
-        [
-         null,
-         {
-          "testdriver": true,
-          "timeout": "long"
-         }
-        ]
-       ],
        "menu-elements-pageup-pagedown.optional.html": [
         "f40cf401d4cf782246d544969f8092ea2ac957bf",
         [
@@ -752810,6 +752814,16 @@
          null,
          {
           "testdriver": true
+         }
+        ]
+       ],
+       "menu-violation-mode-focus.html": [
+        "f99ec6d7469fcc1bebb953e482ca724ec95afd7c",
+        [
+         null,
+         {
+          "testdriver": true,
+          "timeout": "long"
          }
         ]
        ],
@@ -752874,8 +752888,8 @@
          {}
         ]
        ],
-       "reparent-with-pending-dialog-microtask.html": [
-        "b1161d9421eff378d0e74e558fb7e52fd2a75521",
+       "reparent-with-pending-violation-microtask.html": [
+        "2a376884dfe7d8d29e578997cb31d31cf48bb6ff",
         [
          null,
          {
@@ -826609,7 +826623,7 @@
      ]
     ],
     "SpeechRecognition-installOnDevice.https.html": [
-     "9e9091a33811fbf231c403b28b2c7e114a61e4ff",
+     "6aff4950e0f6b43db07d38db4188f0926eb2dda0",
      [
       null,
       {
@@ -873845,7 +873859,7 @@
       ]
      ],
      "concat.https.any.js": [
-      "3da7a8493ddb58c217bd8f765ee912a3d6925ae6",
+      "49918610cc86024d85da15185ab201623c4cf284",
       [
        "webnn/conformance_tests/concat.https.any.html?cpu",
        {
