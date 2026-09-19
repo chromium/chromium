@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<title>A natively painted radio button has a circular border radius</title>
+<link rel="help" href="https://crbug.com/40877887">
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+
+<input id="radio" type="radio">
+<input id="checkbox" type="checkbox">
+<input id="none" type="radio" style="appearance: none">
+<input id="authored" type="radio" style="appearance: none; border-radius: 4px">
+
+<script>
+function radii(id) {
+  const style = getComputedStyle(document.getElementById(id));
+  return [style.borderTopLeftRadius, style.borderTopRightRadius,
+          style.borderBottomLeftRadius, style.borderBottomRightRadius];
+}
+
+test(() => {
+  assert_array_equals(radii('radio'), ['50%', '50%', '50%', '50%']);
+}, 'A native radio button is round, so box-shadow and outline follow the ' +
+   'circle the theme paints rather than the square border box.');
+
+test(() => {
+  assert_array_equals(radii('checkbox'), ['0px', '0px', '0px', '0px']);
+}, 'A native checkbox is square and keeps a square border box.');
+
+test(() => {
+  assert_array_equals(radii('none'), ['0px', '0px', '0px', '0px']);
+}, 'appearance: none hands the box back to the author, who gets no radius ' +
+   'they did not ask for.');
+
+test(() => {
+  assert_array_equals(radii('authored'), ['4px', '4px', '4px', '4px']);
+}, 'An author radius on an appearance: none radio button is honoured.');
+</script>

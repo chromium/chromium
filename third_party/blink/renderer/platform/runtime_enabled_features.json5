@@ -5049,6 +5049,13 @@
       status: "stable",
     },
     {
+      // Gives a natively painted input[type=radio] a 50% border radius so that
+      // box-shadow and outline follow the circle the theme paints instead of
+      // the square border box. See crbug.com/40877887.
+      name: "RadioButtonCircularBorderRadius",
+      status: "stable",
+    },
+    {
       // Sets Range boundaries relative to a sibling node lazily, avoiding the
       // O(n) Node::NodeIndex()/NodeTraversal::ChildAt walks so that selectNode()
       // is O(1) instead of O(n). See crbug.com/515812864.
