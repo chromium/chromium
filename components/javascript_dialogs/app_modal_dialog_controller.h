@@ -11,6 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -72,6 +73,11 @@ class AppModalDialogController : public content::WebContentsObserver {
 
   // Invalidates the dialog, therefore causing it to not be shown when its turn
   // to be shown comes around.
+  //
+  // WARNING: This runs the dialog's closed callback, which can synchronously
+  // re-enter the dialog queue and destroy `this` (see the implementation).
+  // Callers must not touch this object after calling this method unless they
+  // hold a weak pointer to it, see `GetWeakPtr()`.
   void Invalidate();
 
   // Callbacks from NativeDialog when the user accepts or cancels the dialog.
@@ -97,6 +103,12 @@ class AppModalDialogController : public content::WebContentsObserver {
   bool display_suppress_checkbox() const { return display_suppress_checkbox_; }
   bool is_before_unload_dialog() const { return is_before_unload_dialog_; }
   bool is_reload() const { return is_reload_; }
+
+  // Weak pointers are invalidated at the start of the destructor, before
+  // `CompleteDialog()` runs.
+  base::WeakPtr<AppModalDialogController> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
   // content::WebContentsObserver overrides:
   void WebContentsDestroyed() final;
@@ -143,6 +155,8 @@ class AppModalDialogController : public content::WebContentsObserver {
   // Used only for testing. Specifies alternative prompt text that should be
   // used when notifying the delegate.
   std::optional<std::u16string> override_prompt_text_;
+
+  base::WeakPtrFactory<AppModalDialogController> weak_ptr_factory_{this};
 };
 
 // An interface to observe that a modal dialog is shown.
