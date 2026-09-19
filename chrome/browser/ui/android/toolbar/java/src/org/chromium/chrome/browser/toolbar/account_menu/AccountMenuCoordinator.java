@@ -100,7 +100,7 @@ public class AccountMenuCoordinator {
             return;
         }
 
-        mMediator.updateMenuItems();
+        mMediator.updateMenuItems(/* recordShownMetrics= */ true);
 
         mPopupWindow = createPopupWindow(anchorView);
         mPopupWindow.show();

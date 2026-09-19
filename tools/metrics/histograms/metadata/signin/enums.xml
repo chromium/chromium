@@ -208,6 +208,24 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/signin/core/browser/account_management_type_metrics_recorder.h:AccountManagementTypesSummary) -->
 
+<!-- LINT.IfChange(AccountMenuEvent) -->
+
+<enum name="AccountMenuEvent">
+  <int value="0" label="User signed out, sign-in promo card shown"/>
+  <int value="1"
+      label="User signed out, sign-in disallowed, no promo card shown"/>
+  <int value="2" label="User signed in, account card shown"/>
+  <int value="3" label="User signed in with an error, account card shown"/>
+  <int value="4" label="Sign-in button on promo card clicked"/>
+  <int value="5" label="Passwords and autofill clicked"/>
+  <int value="6" label="New Incognito tab clicked"/>
+  <int value="7" label="New Incognito window clicked"/>
+  <int value="8" label="Manage your Google Account clicked"/>
+  <int value="9" label="Account settings clicked"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/account_menu/AccountMenuMediator.java:AccountMenuEvent) -->
+
 <!-- LINT.IfChange(AccountMoveDecision) -->
 
 <enum name="AccountMoveDecision">
