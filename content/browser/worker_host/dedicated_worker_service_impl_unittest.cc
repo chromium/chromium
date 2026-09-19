@@ -40,6 +40,7 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/tokens/tokens_mojom_traits.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "third_party/blink/public/mojom/blob/blob_url_store.mojom.h"
 #include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container.mojom.h"
@@ -774,4 +775,81 @@ TEST_F(DedicatedWorkerServiceImplTest,
             net::StorageAccessApiStatus::kAccessViaAPI);
 }
 
+// Tests that DedicatedWorkerHost::CreateBlobUrlStoreProvider successfully binds
+// the BlobURLStore receiver when the worker has a standard non-opaque origin.
+TEST_F(DedicatedWorkerServiceImplTest, CreateBlobUrlStoreProvider) {
+  TestDedicatedWorkerServiceObserver observer;
+  base::ScopedObservation<DedicatedWorkerService,
+                          DedicatedWorkerService::Observer>
+      scoped_observation(&observer);
+  scoped_observation.Observe(GetDedicatedWorkerService());
+
+  const GURL kUrl("http://example.com/");
+  std::unique_ptr<TestWebContents> web_contents = CreateWebContents(kUrl);
+  TestRenderFrameHost* render_frame_host = web_contents->GetPrimaryMainFrame();
+  const ChildProcessId render_process_host_id =
+      render_frame_host->GetProcess()->GetID();
+  const auto origin = url::Origin::Create(kUrl);
+  auto mock_dedicated_worker = std::make_unique<MockDedicatedWorker>(
+      render_process_host_id, render_frame_host->GetGlobalId(), origin);
+  observer.RunUntilWorkerEvent();
+  EXPECT_EQ(observer.dedicated_worker_infos().size(), 1u);
+  if (observer.dedicated_worker_infos().empty()) {
+    return;
+  }
+  const blink::DedicatedWorkerToken worker_token =
+      observer.dedicated_worker_infos().begin()->first;
+  DedicatedWorkerHost* host =
+      static_cast<DedicatedWorkerServiceImpl*>(GetDedicatedWorkerService())
+          ->GetDedicatedWorkerHostFromToken(worker_token);
+  EXPECT_TRUE(host);
+  if (!host) {
+    return;
+  }
+
+  // Verify that the worker host can create a BlobURLStore provider.
+  mojo::Remote<blink::mojom::BlobURLStore> remote;
+  host->CreateBlobUrlStoreProvider(remote.BindNewPipeAndPassReceiver());
+  EXPECT_TRUE(remote.is_bound());
+}
+
+// Tests that DedicatedWorkerHost::CreateBlobUrlStoreProvider successfully binds
+// the BlobURLStore receiver when the worker has an opaque origin (e.g. data:
+// URL workers).
+TEST_F(DedicatedWorkerServiceImplTest, CreateBlobUrlStoreProviderOpaqueOrigin) {
+  TestDedicatedWorkerServiceObserver observer;
+  base::ScopedObservation<DedicatedWorkerService,
+                          DedicatedWorkerService::Observer>
+      scoped_observation(&observer);
+  scoped_observation.Observe(GetDedicatedWorkerService());
+
+  const GURL kUrl("http://example.com/");
+  std::unique_ptr<TestWebContents> web_contents = CreateWebContents(kUrl);
+  TestRenderFrameHost* render_frame_host = web_contents->GetPrimaryMainFrame();
+  const ChildProcessId render_process_host_id =
+      render_frame_host->GetProcess()->GetID();
+  const auto origin = url::Origin();
+  auto mock_dedicated_worker = std::make_unique<MockDedicatedWorker>(
+      render_process_host_id, render_frame_host->GetGlobalId(), origin);
+  observer.RunUntilWorkerEvent();
+  EXPECT_EQ(observer.dedicated_worker_infos().size(), 1u);
+  if (observer.dedicated_worker_infos().empty()) {
+    return;
+  }
+  const blink::DedicatedWorkerToken worker_token =
+      observer.dedicated_worker_infos().begin()->first;
+  DedicatedWorkerHost* host =
+      static_cast<DedicatedWorkerServiceImpl*>(GetDedicatedWorkerService())
+          ->GetDedicatedWorkerHostFromToken(worker_token);
+  EXPECT_TRUE(host);
+  if (!host) {
+    return;
+  }
+
+  // Verify that the worker host with an opaque origin can create a
+  // BlobURLStore provider.
+  mojo::Remote<blink::mojom::BlobURLStore> remote;
+  host->CreateBlobUrlStoreProvider(remote.BindNewPipeAndPassReceiver());
+  EXPECT_TRUE(remote.is_bound());
+}
 }  // namespace content

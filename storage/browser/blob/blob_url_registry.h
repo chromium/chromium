@@ -42,6 +42,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobUrlRegistry {
     // This refers to either a first-party or different third-party context
     // attempting to access a Blob URL created in a third-party context.
     kNotMappedCrossPartitionSameOriginAccessThirdPartyBlobURL,
+    // This refers to an attempt to access a Blob URL created in a context with
+    // a different origin.
+    kNotMappedCrossOrigin,
     kNotMappedOther
   };
 

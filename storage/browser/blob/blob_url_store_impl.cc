@@ -173,8 +173,8 @@ void BlobURLStoreImpl::ResolveAsURLLoaderFactory(
   // mime types (which result in a resource load for the URL as well) don't get
   // blocked by partitioning. For more information, see crbug.com/426787402.
   bool is_top_level_blob_document_self_fetch =
-  top_level_blob_document_url_.has_value() &&
-  top_level_blob_document_url_.value() == url;
+      top_level_blob_document_url_.has_value() &&
+      top_level_blob_document_url_.value() == url;
 
   if (!is_top_level_blob_document_self_fetch) {
     const BlobUrlRegistry::MappingStatus mapping_status =

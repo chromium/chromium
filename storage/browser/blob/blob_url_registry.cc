@@ -96,8 +96,8 @@ bool BlobUrlRegistry::AddUrlMapping(
     int render_process_host_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!BlobUrlUtils::UrlHasFragment(blob_url));
-  if (IsUrlMapped(blob_url, storage_key) ==
-      BlobUrlRegistry::MappingStatus::kIsMapped) {
+  if (IsUrlMapped(blob_url, storage_key) !=
+      BlobUrlRegistry::MappingStatus::kNotMappedOther) {
     return false;
   }
   BlobUrlData data;
@@ -176,7 +176,7 @@ BlobUrlRegistry::MappingStatus BlobUrlRegistry::IsUrlMapped(
     // A fallback_ check isn't needed because a given Blob URL will either be
     // registered in this BlobUrlRegistry or registered in the fallback
     // BlobUrlRegistry but not both.
-    return BlobUrlRegistry::MappingStatus::kNotMappedOther;
+    return BlobUrlRegistry::MappingStatus::kNotMappedCrossOrigin;
   }
   if (fallback_) {
     return fallback_->IsUrlMapped(blob_url, storage_key);

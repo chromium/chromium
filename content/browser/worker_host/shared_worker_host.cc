@@ -780,8 +780,13 @@ void SharedWorkerHost::CreateBlobUrlStoreProvider(
 
   auto* storage_partition_impl = GetStoragePartitionImpl();
 
+  // Pass `instance().renderer_origin()` rather than
+  // `instance().worker_storage_key().origin()` because when
+  // `kDataUrlWorkerOpaqueOrigin` is disabled, a data: URL shared worker's
+  // `worker_storage_key_.origin()` remains non-opaque while its renderer-side
+  // origin is opaque. We must use the origin actually used by the renderer.
   storage_partition_impl->GetBlobUrlRegistry()->AddReceiver(
-      GetWorkerStorageKey(), instance().worker_storage_key().origin(),
+      GetWorkerStorageKey(), instance().renderer_origin(),
       GetProcessHost()->GetDeprecatedID(), std::move(receiver),
       /*context_type_for_debugging=*/"Shared Worker",
       base::BindRepeating(
@@ -796,10 +801,12 @@ void SharedWorkerHost::CreateBlobUrlStoreProvider(
       base::BindRepeating([]() -> bool { return false; }),
       !(GetContentClient()->browser()->IsBlobUrlPartitioningEnabled(
           GetProcessHost()->GetBrowserContext())),
-      base::FeatureList::IsEnabled(blink::features::kDataUrlWorkerOpaqueOrigin)
-          ? storage::BlobURLValidityCheckBehavior::DEFAULT
-          : storage::BlobURLValidityCheckBehavior::
-                ALLOW_OPAQUE_ORIGIN_STORAGE_KEY_MISMATCH);
+      (!base::FeatureList::IsEnabled(
+           blink::features::kDataUrlWorkerOpaqueOrigin) &&
+       instance().renderer_origin().opaque())
+          ? storage::BlobURLValidityCheckBehavior::
+                ALLOW_OPAQUE_ORIGIN_STORAGE_KEY_MISMATCH
+          : storage::BlobURLValidityCheckBehavior::DEFAULT);
 }
 
 void SharedWorkerHost::CreateBucketManagerHost(

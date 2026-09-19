@@ -46,6 +46,7 @@
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/messaging/message_port_descriptor.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/blob/blob_url_store.mojom.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_exception_details.mojom.h"
 #include "url/origin.h"
 
@@ -418,6 +419,36 @@ TEST_F(SharedWorkerHostTest, CreateNetworkFactoryParamsForSubresources) {
   EXPECT_EQ(host->GetWorkerStorageKey().origin(),
             params->isolation_info.frame_origin());
   EXPECT_FALSE(params->isolation_info.nonce().has_value());
+}
+
+TEST_F(SharedWorkerHostTest, CreateBlobUrlStoreProvider) {
+  base::WeakPtr<SharedWorkerHost> host = CreateHost();
+  mojo::Remote<blink::mojom::BlobURLStore> remote;
+  host->CreateBlobUrlStoreProvider(remote.BindNewPipeAndPassReceiver());
+  EXPECT_TRUE(remote.is_bound());
+}
+
+TEST_F(SharedWorkerHostTest, CreateBlobUrlStoreProviderOpaqueOrigin) {
+  const GURL kDataWorkerUrl("data:text/javascript,");
+  blink::StorageKey creator_storage_key =
+      blink::StorageKey::CreateFirstParty(url::Origin());
+  blink::StorageKey worker_storage_key =
+      blink::StorageKey::CreateFirstParty(url::Origin());
+  url::Origin renderer_origin = url::Origin();
+  SharedWorkerInstance instance(
+      kDataWorkerUrl, blink::mojom::ScriptType::kClassic,
+      network::mojom::CredentialsMode::kSameOrigin, "name", creator_storage_key,
+      worker_storage_key, renderer_origin,
+      blink::mojom::SharedWorkerCreationContextType::kSecure,
+      blink::mojom::SharedWorkerSameSiteCookies::kNone,
+      /*extended_lifetime=*/false);
+  auto host = std::make_unique<SharedWorkerHost>(
+      &service_, instance, site_instance_,
+      std::vector<network::mojom::ContentSecurityPolicyPtr>(),
+      base::MakeRefCounted<PolicyContainerHost>());
+  mojo::Remote<blink::mojom::BlobURLStore> remote;
+  host->CreateBlobUrlStoreProvider(remote.BindNewPipeAndPassReceiver());
+  EXPECT_TRUE(remote.is_bound());
 }
 
 TEST_F(SharedWorkerHostTest,

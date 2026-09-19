@@ -124,7 +124,7 @@ TEST_P(BlobUrlRegistryTestP, URLRegistration) {
   // Test using a storage key that doesn't correspond to the Blob URL.
   EXPECT_NE(storageKey1, storageKey2);
   EXPECT_EQ(registry.IsUrlMapped(kURL1, storageKey2),
-            BlobUrlRegistry::MappingStatus::kNotMappedOther);
+            BlobUrlRegistry::MappingStatus::kNotMappedCrossOrigin);
   EXPECT_FALSE(registry.RemoveUrlMapping(kURL1, storageKey2));
   EXPECT_EQ(registry.IsUrlMapped(kURL1, storageKey1),
             BlobUrlRegistry::MappingStatus::kIsMapped);
@@ -152,13 +152,48 @@ TEST_P(BlobUrlRegistryTestP, URLRegistration) {
     EXPECT_TRUE(registry.GetBlobFromUrl(kURL1));
 
     EXPECT_EQ(registry.IsUrlMapped(kURL1, partitionedStorageKey2),
-              BlobUrlRegistry::MappingStatus::kNotMappedOther);
+              BlobUrlRegistry::MappingStatus::kNotMappedCrossOrigin);
     EXPECT_FALSE(registry.RemoveUrlMapping(kURL1, partitionedStorageKey2));
     EXPECT_EQ(registry.IsUrlMapped(kURL1, partitionedStorageKey1),
               BlobUrlRegistry::MappingStatus::kIsMapped);
     EXPECT_TRUE(registry.RemoveUrlMapping(kURL1, partitionedStorageKey1));
   }
   EXPECT_EQ(0u, registry.url_count());
+}
+
+TEST_P(BlobUrlRegistryTestP, RejectDuplicateUrlMapping) {
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  const std::string kBlobId1 = "Blob1";
+  const std::string kBlobId2 = "Blob2";
+  const GURL kURL1 = GURL("blob://Blob1");
+  const blink::StorageKey storageKey1 =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(kURL1));
+  const blink::StorageKey storageKey2 = blink::StorageKey::CreateFirstParty(
+      url::Origin::Create(GURL("blob://Blob2")));
+
+  FakeBlob blob1(kBlobId1);
+  FakeBlob blob2(kBlobId2);
+
+  BlobUrlRegistry registry;
+  EXPECT_TRUE(registry.AddUrlMapping(kURL1, blob1.Clone(), storageKey1,
+                                     storageKey1.origin(),
+                                     /*render_process_host_id=*/0));
+
+  // Attempting to register the exact same URL with the same storage key
+  // should also be rejected.
+  EXPECT_FALSE(registry.AddUrlMapping(kURL1, blob1.Clone(), storageKey1,
+                                      storageKey1.origin(),
+                                      /*render_process_host_id=*/0));
+
+  // Attempting to register the exact same URL with a different storage key
+  // should be rejected to maintain mapping integrity.
+  EXPECT_FALSE(registry.AddUrlMapping(kURL1, blob2.Clone(), storageKey2,
+                                      storageKey2.origin(),
+                                      /*render_process_host_id=*/0));
+
+  EXPECT_EQ(registry.IsUrlMapped(kURL1, storageKey2),
+            BlobUrlRegistry::MappingStatus::kNotMappedCrossOrigin);
+  EXPECT_EQ(kBlobId1, UuidFromBlob(registry.GetBlobFromUrl(kURL1)));
 }
 
 INSTANTIATE_TEST_SUITE_P(
