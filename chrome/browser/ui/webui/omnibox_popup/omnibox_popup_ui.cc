@@ -146,6 +146,8 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
                         TemplateURLServiceFactory::GetForProfile(profile_)));
   source->AddBoolean("omniboxAimPopupEnabled",
                      omnibox::IsAimPopupFeatureEnabled());
+  source->AddBoolean("webuiOmniboxFullPopupEnabled",
+                     omnibox::IsWebUIOmniboxFullPopupEnabled());
   // TODO(b/504670497): Replace this NTP-specific flag with a generic flag.
   // TODO(b/474406096): Replace this NTP-specific flag with a generic flag.
   source->AddBoolean("isFuseboxEnabled", false);

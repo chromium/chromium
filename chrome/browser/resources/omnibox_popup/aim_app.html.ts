@@ -23,6 +23,7 @@ export function getHtml(this: OmniboxAimAppElement) {
       .smartComposeEnabled="${this.smartComposeEnabled_}"
       .submitButtonIconType="${SubmitButtonIconType.FORWARD}"
       .isOblongShape="${this.isOblongShape_}"
+      .closeOnEscape="${this.webuiOmniboxFullPopupEnabled_}"
       .webuiOmniboxSimplificationEnabled="${this.webuiOmniboxSimplificationEnabled_}"
       .showVoiceSearch="${true}"
       .disableVoiceSearchAnimation="${this.disableVoiceSearchAnimation_}"
