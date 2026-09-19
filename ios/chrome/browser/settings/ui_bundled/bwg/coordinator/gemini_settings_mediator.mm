@@ -175,6 +175,10 @@ const NSInteger kDynamicSettingsItemTypeOffset = 10000;
   _prefService->SetBoolean(prefs::kIOSGeminiCameraSetting, value);
 }
 
+- (void)setGeminiSuggestionsPref:(BOOL)value {
+  _prefService->SetBoolean(prefs::kIOSGeminiSuggestionsSetting, value);
+}
+
 - (void)setClosedCaptioningPref:(BOOL)value {
   _prefService->SetBoolean(prefs::kIOSGeminiLiveClosedCaptioningSetting, value);
 }

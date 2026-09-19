@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/bwg/model/gemini_settings_metadata.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/ui/gemini_camera_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/ui/gemini_location_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/bwg/ui/gemini_suggestions_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/utils/gemini_settings_metrics.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
@@ -100,6 +101,8 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
   GeminiLocationViewController* _locationViewController;
   // Camera view controller shown when camera row is tapped.
   GeminiCameraViewController* _cameraViewController;
+  // Suggestions view controller shown when suggestions row is tapped.
+  GeminiSuggestionsViewController* _suggestionsViewController;
   // Closed captioning preference value.
   BOOL _closedCaptioningEnabled;
   // Precise location preference value.
@@ -202,8 +205,6 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
                                     IDS_IOS_GEMINI_SETTINGS_SUGGESTIONS_TITLE)
              trailingDetailText:[self suggestionsTrailingDetailText]
         accessibilityIdentifier:kSuggestionsCellId];
-    _suggestionsItem.accessoryType = UITableViewCellAccessoryNone;
-    _suggestionsItem.accessibilityTraits &= ~UIAccessibilityTraitButton;
 
     NSString* suggestionsFooterText =
         l10n_util::GetNSString(IDS_IOS_GEMINI_SETTINGS_SUGGESTIONS_FOOTER_TEXT);
@@ -484,6 +485,16 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
   }
 
   if ([self.tableViewModel itemTypeForIndexPath:indexPath] ==
+      ItemTypeSuggestions) {
+    _suggestionsViewController = [[GeminiSuggestionsViewController alloc]
+        initWithStyle:ChromeTableViewStyle()];
+    _suggestionsViewController.suggestionsEnabled = _suggestionsEnabled;
+    _suggestionsViewController.mutator = self.mutator;
+    [self.navigationController pushViewController:_suggestionsViewController
+                                         animated:YES];
+  }
+
+  if ([self.tableViewModel itemTypeForIndexPath:indexPath] ==
       ItemTypeAppActivity) {
     RecordGeminiSettingsItemUsed(IOSGeminiSettingsItem::kGeminiAppsActivity);
     RecordGeminiSettingsAppsActivity();
@@ -590,6 +601,10 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
   }
 
   _suggestionsEnabled = enabled;
+
+  if (_suggestionsViewController) {
+    _suggestionsViewController.suggestionsEnabled = enabled;
+  }
 
   if ([self isViewLoaded]) {
     _suggestionsItem.trailingDetailText = [self suggestionsTrailingDetailText];

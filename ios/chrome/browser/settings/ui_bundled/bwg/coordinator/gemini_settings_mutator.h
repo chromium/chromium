@@ -23,6 +23,9 @@ class GURL;
 // Sets the Camera Permission pref value.
 - (void)setCameraPermissionPref:(BOOL)value;
 
+// Sets the Gemini Suggestions pref value.
+- (void)setGeminiSuggestionsPref:(BOOL)value;
+
 // Sets the Closed Captioning pref value.
 - (void)setClosedCaptioningPref:(BOOL)value;
 
