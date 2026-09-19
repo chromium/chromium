@@ -14,6 +14,7 @@ import android.view.ViewConfiguration;
 import android.webkit.WebView;
 
 import androidx.annotation.Nullable;
+import androidx.test.espresso.AppNotIdleException;
 import androidx.test.espresso.PerformException;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
@@ -38,6 +39,7 @@ import java.util.Locale;
  */
 public class ForgivingClickAction implements ViewAction {
     private static final String TAG = "ForgivingClickAction";
+    private static final String MOTION_EVENTS_CLASS = "androidx.test.espresso.action.MotionEvents";
 
     private final CoordinatesProvider mCoordinatesProvider;
     private final Tapper mTapper;
@@ -142,6 +144,18 @@ public class ForgivingClickAction implements ViewAction {
                                         (int) precision[0],
                                         (int) precision[1]));
             } catch (RuntimeException re) {
+                if (isAppNotIdleExceptionAfterEventsSent(re)) {
+                    Log.w(
+                            TAG,
+                            "Main looper never went idle after "
+                                    + getDescription()
+                                    + "; the tap was already delivered, so treating it as"
+                                    + " successful and letting the caller's own conditions decide"
+                                    + " whether the UI reacted.",
+                            re);
+                    status = Tapper.Status.SUCCESS;
+                    break;
+                }
                 throw new PerformException.Builder()
                         .withActionDescription(
                                 String.format(
@@ -160,7 +174,7 @@ public class ForgivingClickAction implements ViewAction {
             int duration = ViewConfiguration.getPressedStateDuration();
             // ensures that all work enqueued to process the tap has been run.
             if (duration > 0) {
-                uiController.loopMainThreadForAtLeast(duration);
+                loopMainThreadForAtLeastForgivingly(uiController, duration);
             }
 
             if (status == Tapper.Status.WARNING) {
@@ -199,7 +213,86 @@ public class ForgivingClickAction implements ViewAction {
         if (mTapper == Tap.SINGLE && view instanceof WebView) {
             // WebViews will not process click events until double tap
             // timeout. Not the best place for this - but good for now.
-            uiController.loopMainThreadForAtLeast(ViewConfiguration.getDoubleTapTimeout());
+            loopMainThreadForAtLeastForgivingly(
+                    uiController, ViewConfiguration.getDoubleTapTimeout());
         }
+    }
+
+    /**
+     * Waits for at least {@code duration} ms, tolerating the main looper never going idle.
+     *
+     * <p>{@link UiController#loopMainThreadForAtLeast(long)} ends with loopMainThreadUntilIdle(),
+     * so it throws {@link AppNotIdleException} under a continuously animating UI. The tap has
+     * already been delivered by the time this is called, so settling is best-effort.
+     */
+    private static void loopMainThreadForAtLeastForgivingly(
+            UiController uiController, int duration) {
+        try {
+            uiController.loopMainThreadForAtLeast(duration);
+        } catch (AppNotIdleException e) {
+            Log.w(TAG, "Main looper did not settle after the tap; continuing anyway.", e);
+        }
+    }
+
+    /**
+     * Returns whether {@code t} is an {@link AppNotIdleException} raised after the tap's UP event
+     * was already injected.
+     *
+     * <p>Espresso's UiControllerImpl#injectMotionEvent() submits the injection task and calls
+     * loopUntil(MOTION_INJECTION_HAS_COMPLETED). Once the event is injected and signaled,
+     * Interrogator only checks whether conditions are met when the queue is empty or the head
+     * message is due more than 15ms out (taskDueLong); while a sync barrier is up or the head
+     * message is due within 15ms (taskDueSoon, e.g. 60Hz frame callbacks every 16.6ms), it keeps
+     * looping and eventually fails with MAIN_LOOPER_HAS_IDLED. An AppNotIdleException for
+     * MAIN_LOOPER_HAS_IDLED raised underneath MotionEvents#sendUp() therefore means the whole
+     * DOWN/UP pair was delivered and only the post-injection quiescence check failed. Callers
+     * verify the resulting UI state themselves (Public Transit does so via its arrival Conditions),
+     * so the tap can be reported as successful.
+     *
+     * <p>Exceptions raised before the UP event are not forgiven: the gesture would be left open,
+     * with no UP or CANCEL, free to decay into a spurious long press.
+     */
+    private boolean isAppNotIdleExceptionAfterEventsSent(Throwable t) {
+        // Walking the cause chain is defensive; no Espresso path currently wraps
+        // AppNotIdleException, but nothing guarantees that stays true.
+        while (t != null) {
+            if (t instanceof AppNotIdleException) {
+                String message = t.getMessage();
+                return message != null
+                        && message.contains("MAIN_LOOPER_HAS_IDLED")
+                        && isRaisedAfterUpEvent(t);
+            }
+            t = t.getCause();
+        }
+        return false;
+    }
+
+    private boolean isRaisedAfterUpEvent(Throwable t) {
+        if (mTapper == Tap.DOUBLE) {
+            return false;
+        }
+        if (hasStackFrame(t, MOTION_EVENTS_CLASS, "sendUp")) {
+            return true;
+        }
+        // Tap.SINGLE waits a further 1.5 * tapTimeout after sendUp() has returned. That wait has
+        // neither sendUp() nor sendDown() on the stack, yet both events are already out, so the
+        // absence of a sendDown() frame is enough to conclude the tap completed. Tap.LONG cannot
+        // use the same deduction: it holds the press by waiting *before* calling sendUp(), so an
+        // exception with no sendUp() frame may well mean the UP was never sent.
+        if (mTapper != Tap.SINGLE) {
+            return false;
+        }
+        return !hasStackFrame(t, MOTION_EVENTS_CLASS, "sendDown")
+                && !hasStackFrame(t, MOTION_EVENTS_CLASS, "sendCancel");
+    }
+
+    private static boolean hasStackFrame(Throwable t, String className, String methodName) {
+        for (StackTraceElement frame : t.getStackTrace()) {
+            if (frame.getClassName().equals(className)
+                    && frame.getMethodName().equals(methodName)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -159,6 +159,9 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> implements V
         return mViewSpec.ancestor(viewClass, viewMatcher);
     }
 
+    // TODO(crbug.com/536995089): The ViewActions.click()/longClick() branches below do not
+    // tolerate AppNotIdleException the way ForgivingClickAction does, so they still fail when a
+    // continuously animating window keeps the main looper from ever looking idle to Espresso.
     @Override
     public TripBuilder clickTo() {
         if (mOptions.mDisplayedPercentageRequired <= 90) {
