@@ -318,6 +318,9 @@ void SessionController::DidUpdateStreamProviderState(
       stream_provider.GetState() == StreamState::kFailed) {
     std::unique_ptr<StreamProvider> provider_to_delete;
     if (is_attached) {
+      if (kSessionEndsOnStreamEnd.Get()) {
+        is_shutting_down_ = true;
+      }
       provider_to_delete = std::move(attached_stream_provider_);
     } else {
       auto it = std::ranges::find_if(finalizing_stream_providers_,
