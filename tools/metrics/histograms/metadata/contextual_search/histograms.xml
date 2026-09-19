@@ -309,7 +309,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="ContextualSearch.File.Size.Tab.PageContents.{ContextualSearchSource}"
+    name="ContextualSearch.File.Size.V2.Tab.PageContents.{ContextualSearchSource}"
     units="bytes" expires_after="2027-05-25">
   <owner>jkoblinsky@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
@@ -326,7 +326,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="ContextualSearch.File.Size.Tab.ViewportScreenshot.{ContextualSearchSource}"
+    name="ContextualSearch.File.Size.V2.Tab.ViewportScreenshot.{ContextualSearchSource}"
     units="bytes" expires_after="2027-05-25">
   <owner>jkoblinsky@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
@@ -342,7 +342,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="ContextualSearch.File.Size.{ContextualSearchFileTypes}.{ContextualSearchSource}"
+    name="ContextualSearch.File.Size.V2.{ContextualSearchFileTypes}.{ContextualSearchSource}"
     units="bytes" expires_after="2027-01-20">
   <owner>hujasonx@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
@@ -356,7 +356,7 @@ chromium-metrics-reviews@google.com.
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
 
-<histogram name="ContextualSearch.File.Size.{ContextualSearchSource}"
+<histogram name="ContextualSearch.File.Size.V2.{ContextualSearchSource}"
     units="bytes" expires_after="2027-03-07">
   <owner>wenhuc@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>

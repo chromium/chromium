@@ -39,7 +39,10 @@ const char kContextualSearchQueryModality[] =
     "ContextualSearch.Query.Modality.V2";
 const char kContextualSearchQueryCount[] =
     "ContextualSearch.Session.QueryCount";
-const char kContextualSearchFileSizePerType[] = "ContextualSearch.File.Size.";
+const char kContextualSearchFileSizePerType[] =
+    "ContextualSearch.File.Size.V2.";
+constexpr int kMaxFileSizeBytes = 100 * 1024 * 1024;
+constexpr int kFileSizeBucketCount = 50;
 
 std::string UploadStatusToString(ContextUploadStatus status) {
   switch (status) {
@@ -280,12 +283,13 @@ void ContextualSearchMetricsRecorder::RecordQueryMetrics(
 void ContextualSearchMetricsRecorder::RecordFileSizeMetric(
     lens::MimeType mime_type,
     uint64_t file_size_bytes) {
-  base::UmaHistogramCounts10M(kContextualSearchFileSizePerType +
-                                  MimeTypeToString(mime_type) + "." +
-                                  metrics_suffix_,
-                              file_size_bytes);
-  base::UmaHistogramCounts10M(
-      kContextualSearchFileSizePerType + metrics_suffix_, file_size_bytes);
+  base::UmaHistogramCustomCounts(
+      kContextualSearchFileSizePerType + MimeTypeToString(mime_type) + "." +
+          metrics_suffix_,
+      file_size_bytes, /*min=*/1, kMaxFileSizeBytes, kFileSizeBucketCount);
+  base::UmaHistogramCustomCounts(
+      kContextualSearchFileSizePerType + metrics_suffix_, file_size_bytes,
+      /*min=*/1, kMaxFileSizeBytes, kFileSizeBucketCount);
 }
 
 void ContextualSearchMetricsRecorder::RecordTabPartsSizes(
@@ -293,14 +297,16 @@ void ContextualSearchMetricsRecorder::RecordTabPartsSizes(
     uint64_t page_contents_size_bytes) {
   std::string tab_mime_type =
       MimeTypeToString(lens::MimeType::kAnnotatedPageContent);
-  base::UmaHistogramCounts10M(
+  base::UmaHistogramCustomCounts(
       base::StrCat({kContextualSearchFileSizePerType, tab_mime_type,
                     ".ViewportScreenshot.", metrics_suffix_}),
-      viewport_screenshot_size_bytes);
-  base::UmaHistogramCounts10M(
+      viewport_screenshot_size_bytes, /*min=*/1, kMaxFileSizeBytes,
+      kFileSizeBucketCount);
+  base::UmaHistogramCustomCounts(
       base::StrCat({kContextualSearchFileSizePerType, tab_mime_type,
                     ".PageContents.", metrics_suffix_}),
-      page_contents_size_bytes);
+      page_contents_size_bytes, /*min=*/1, kMaxFileSizeBytes,
+      kFileSizeBucketCount);
 }
 
 void ContextualSearchMetricsRecorder::RecordFileDeletedMetrics(

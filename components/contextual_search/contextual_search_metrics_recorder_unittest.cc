@@ -60,15 +60,15 @@ const char kContextualSearchQueryModality[] =
 const char kContextualSearchQueryCount[] =
     "ContextualSearch.Session.QueryCount.Unknown";
 const char kContextualSearchFileSizePdf[] =
-    "ContextualSearch.File.Size.Pdf.Unknown";
+    "ContextualSearch.File.Size.V2.Pdf.Unknown";
 const char kContextualSearchFileSizeAll[] =
-    "ContextualSearch.File.Size.Unknown";
+    "ContextualSearch.File.Size.V2.Unknown";
 const char kContextualSearchFileSizeImage[] =
-    "ContextualSearch.File.Size.Image.Unknown";
+    "ContextualSearch.File.Size.V2.Image.Unknown";
 const char kContextualSearchFileSizeTabViewportScreenshot[] =
-    "ContextualSearch.File.Size.Tab.ViewportScreenshot.Unknown";
+    "ContextualSearch.File.Size.V2.Tab.ViewportScreenshot.Unknown";
 const char kContextualSearchFileSizeTabPageContents[] =
-    "ContextualSearch.File.Size.Tab.PageContents.Unknown";
+    "ContextualSearch.File.Size.V2.Tab.PageContents.Unknown";
 const char kContextualSearchToolMode[] = "ContextualSearch.Tools.Unknown";
 const char kContextualSearchModelMode[] = "ContextualSearch.Models.Unknown";
 const char kContextualSearchToolModeOnSubmission[] =
@@ -664,15 +664,21 @@ TEST_F(ContextualSearchMetricsRecorderTest, AggregatedFileValidationError) {
 TEST_F(ContextualSearchMetricsRecorderTest, AggregatedFileSizeMetrics) {
   metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
   metrics().RecordFileSizeMetric(lens::MimeType::kPdf, 100);
+  metrics().RecordFileSizeMetric(lens::MimeType::kPdf, 50 * 1024 * 1024);
 
   metrics().RecordFileSizeMetric(lens::MimeType::kImage, 200);
   DestructMetricsRecorder();
 
-  histogram_tester().ExpectUniqueSample(kContextualSearchFileSizePdf, 100, 1);
+  histogram_tester().ExpectBucketCount(kContextualSearchFileSizePdf, 100, 1);
+  histogram_tester().ExpectBucketCount(kContextualSearchFileSizePdf,
+                                       50 * 1024 * 1024, 1);
+  histogram_tester().ExpectTotalCount(kContextualSearchFileSizePdf, 2);
   histogram_tester().ExpectUniqueSample(kContextualSearchFileSizeImage, 200, 1);
 
-  histogram_tester().ExpectTotalCount(kContextualSearchFileSizeAll, 2);
+  histogram_tester().ExpectTotalCount(kContextualSearchFileSizeAll, 3);
   histogram_tester().ExpectBucketCount(kContextualSearchFileSizeAll, 100, 1);
+  histogram_tester().ExpectBucketCount(kContextualSearchFileSizeAll,
+                                       50 * 1024 * 1024, 1);
   histogram_tester().ExpectBucketCount(kContextualSearchFileSizeAll, 200, 1);
 }
 
