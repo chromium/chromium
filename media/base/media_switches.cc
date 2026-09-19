@@ -1227,11 +1227,12 @@ BASE_FEATURE(kPlatformHEVCDecoderSupport, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kPlatformHEVCEncoderSupport, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_APPLE)
-// Enables HEVC high-bit-depth hardware accelerated encoding on macOS. Covers
-// Main10 (10-bit 4:2:0) and RExt 8/10-bit 4:2:2 and 4:4:4.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
+// Enables HEVC high-bit-depth hardware accelerated encoding. Covers Main10
+// (10-bit 4:2:0) and RExt 8/10-bit 4:2:2 and 4:4:4 on macOS, and the 10-bit
+// HEVC range extension profiles on Windows via the D3D12 encoder.
 BASE_FEATURE(kPlatformHEVCHbdEncoderSupport, base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_APPLE)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 

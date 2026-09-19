@@ -135,10 +135,44 @@ EncoderStatus CheckD3D12VideoEncoderCodecConfigurationSupport(
 #undef CU_SIZE
 #undef TU_SIZE
         };
-    CHECK_EQ(support->CodecSupportLimits.DataSize,
-             sizeof(D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC));
+    // The variant is discriminated by DataSize, so the two structs must not be
+    // the same size, and HEVC1 must keep the legacy struct as its prefix for
+    // the field-by-field copy below to be a faithful translation.
+    static_assert(
+        sizeof(D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC1) !=
+            sizeof(D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC),
+        "HEVC and HEVC1 support structs cannot be told apart by DataSize");
+    static_assert(
+        offsetof(D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC1,
+                 max_transform_hierarchy_depth_intra) ==
+            offsetof(D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC,
+                     max_transform_hierarchy_depth_intra),
+        "HEVC1 no longer starts with the legacy HEVC support struct");
+    const bool is_hevc1 =
+        support->CodecSupportLimits.DataSize ==
+        sizeof(D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC1);
+    CHECK(is_hevc1 ||
+          support->CodecSupportLimits.DataSize ==
+              sizeof(D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC));
     for (const auto& config : hevc_common_configurations) {
-      *support->CodecSupportLimits.pHEVCSupport = config;
+      if (is_hevc1) {
+        // The HEVC1 struct extends the legacy one; only the shared prefix
+        // carries the desired configuration, the trailing capability fields
+        // are driver outputs.
+        *support->CodecSupportLimits.pHEVCSupport1 = {
+            .SupportFlags = config.SupportFlags,
+            .MinLumaCodingUnitSize = config.MinLumaCodingUnitSize,
+            .MaxLumaCodingUnitSize = config.MaxLumaCodingUnitSize,
+            .MinLumaTransformUnitSize = config.MinLumaTransformUnitSize,
+            .MaxLumaTransformUnitSize = config.MaxLumaTransformUnitSize,
+            .max_transform_hierarchy_depth_inter =
+                config.max_transform_hierarchy_depth_inter,
+            .max_transform_hierarchy_depth_intra =
+                config.max_transform_hierarchy_depth_intra,
+        };
+      } else {
+        *support->CodecSupportLimits.pHEVCSupport = config;
+      }
       EncoderStatus status =
           CheckD3D12VideoEncoderCodecConfigurationSupportImpl(video_device,
                                                               support);

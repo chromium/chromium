@@ -4,12 +4,20 @@
 
 #include "media/gpu/windows/d3d12_video_encode_h265_delegate.h"
 
+#include <algorithm>
+#include <array>
+#include <bit>
+#include <iterator>
 #include <ranges>
 
 #include "base/bits.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/span.h"
+#include "base/logging.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_color_space.h"
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
 #include "media/gpu/h264_rate_control_util.h"
@@ -51,6 +59,68 @@ constexpr auto kVideoCodecProfileToD3D12Profile =
             {HEVCPROFILE_MAIN, D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN},
             {HEVCPROFILE_MAIN10, D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN10},
         });
+
+// The HEVC range extension profiles all map to the single Chromium
+// HEVCPROFILE_REXT, so they cannot be keyed by VideoCodecProfile like the map
+// above. Each of them accepts exactly one DXGI input format, which is what
+// determines the chroma subsampling and the bit depth of the coded stream.
+struct D3D12H265RangeExtensionProfile {
+  D3D12_VIDEO_ENCODER_PROFILE_HEVC h265_profile;
+  VideoPixelFormat pixel_format;
+  DXGI_FORMAT dxgi_format;
+};
+
+constexpr auto kH265RangeExtensionProfiles =
+    std::to_array<D3D12H265RangeExtensionProfile>({
+        {D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN10_422, PIXEL_FORMAT_P210LE,
+         DXGI_FORMAT_Y210},
+        {D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN10_444, PIXEL_FORMAT_P410LE,
+         DXGI_FORMAT_Y410},
+    });
+
+// Returns the range extension D3D12 profile matching |input_format|. All the
+// range extension profiles are reported as the single HEVCPROFILE_REXT by
+// Chromium, so the input format (which determines the chroma subsampling and
+// bit depth of the coded stream) is what selects between them.
+std::optional<D3D12_VIDEO_ENCODER_PROFILE_HEVC> GetRangeExtensionProfile(
+    VideoPixelFormat input_format) {
+  for (auto [h265_profile, pixel_format, dxgi_format] :
+       kH265RangeExtensionProfiles) {
+    if (pixel_format == input_format) {
+      return h265_profile;
+    }
+  }
+  return std::nullopt;
+}
+
+bool IsProfileLevelSupported(ID3D12VideoDevice3* video_device,
+                             D3D12_VIDEO_ENCODER_PROFILE_HEVC h265_profile) {
+  D3D12_VIDEO_ENCODER_LEVEL_TIER_CONSTRAINTS_HEVC min_level;
+  D3D12_VIDEO_ENCODER_LEVEL_TIER_CONSTRAINTS_HEVC max_level;
+  D3D12_FEATURE_DATA_VIDEO_ENCODER_PROFILE_LEVEL profile_level{
+      .Codec = D3D12_VIDEO_ENCODER_CODEC_HEVC,
+      .Profile = {.DataSize = sizeof(h265_profile),
+                  .pHEVCProfile = &h265_profile},
+      .MinSupportedLevel = {.DataSize = sizeof(min_level),
+                            .pHEVCLevelSetting = &min_level},
+      .MaxSupportedLevel = {.DataSize = sizeof(max_level),
+                            .pHEVCLevelSetting = &max_level},
+  };
+  return CheckD3D12VideoEncoderProfileLevel(video_device, &profile_level)
+      .is_ok();
+}
+
+bool IsInputFormatSupported(ID3D12VideoDevice3* video_device,
+                            D3D12_VIDEO_ENCODER_PROFILE_HEVC h265_profile,
+                            DXGI_FORMAT dxgi_format) {
+  D3D12_FEATURE_DATA_VIDEO_ENCODER_INPUT_FORMAT input_format{
+      .Codec = D3D12_VIDEO_ENCODER_CODEC_HEVC,
+      .Profile = {.DataSize = sizeof(h265_profile),
+                  .pHEVCProfile = &h265_profile},
+      .Format = dxgi_format,
+  };
+  return CheckD3D12VideoEncoderInputFormat(video_device, &input_format).is_ok();
+}
 
 uint8_t D3D12VideoEncoderLevelsHevcToH265LevelIDC(
     D3D12_VIDEO_ENCODER_LEVELS_HEVC level) {
@@ -191,7 +261,7 @@ void D3D12VideoEncodeH265ReferenceFrameManager::MarkFrameUnreferenced(
 
 void D3D12VideoEncodeH265ReferenceFrameManager::
     WriteReferencePictureDescriptorsToPictureParameters(
-        D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_HEVC* pic_params,
+        D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_HEVC1* pic_params,
         base::span<uint32_t> list0_reference_frames) {
   CHECK(pic_params);
   for (auto& descriptor : descriptors_) {
@@ -213,32 +283,16 @@ D3D12VideoEncodeH265Delegate::GetSupportedProfiles(
   CHECK(video_device);
   std::vector<std::pair<VideoCodecProfile, std::vector<VideoPixelFormat>>>
       profiles;
+
   for (auto [video_codec_profile, h265_profile] :
        kVideoCodecProfileToD3D12Profile) {
-    D3D12_VIDEO_ENCODER_LEVEL_TIER_CONSTRAINTS_HEVC min_level;
-    D3D12_VIDEO_ENCODER_LEVEL_TIER_CONSTRAINTS_HEVC max_level;
-    D3D12_FEATURE_DATA_VIDEO_ENCODER_PROFILE_LEVEL profile_level{
-        .Codec = D3D12_VIDEO_ENCODER_CODEC_HEVC,
-        .Profile = {.DataSize = sizeof(h265_profile),
-                    .pHEVCProfile = &h265_profile},
-        .MinSupportedLevel = {.DataSize = sizeof(min_level),
-                              .pHEVCLevelSetting = &min_level},
-        .MaxSupportedLevel = {.DataSize = sizeof(max_level),
-                              .pHEVCLevelSetting = &max_level},
-    };
-    if (!CheckD3D12VideoEncoderProfileLevel(video_device, &profile_level)
-             .is_ok()) {
+    if (!IsProfileLevelSupported(video_device, h265_profile)) {
       continue;
     }
     std::vector<VideoPixelFormat> formats;
     for (VideoPixelFormat format : {PIXEL_FORMAT_NV12, PIXEL_FORMAT_P010LE}) {
-      D3D12_FEATURE_DATA_VIDEO_ENCODER_INPUT_FORMAT input_format{
-          .Codec = D3D12_VIDEO_ENCODER_CODEC_HEVC,
-          .Profile = profile_level.Profile,
-          .Format = VideoPixelFormatToDxgiFormat(format),
-      };
-      if (CheckD3D12VideoEncoderInputFormat(video_device, &input_format)
-              .is_ok()) {
+      if (IsInputFormatSupported(video_device, h265_profile,
+                                 VideoPixelFormatToDxgiFormat(format))) {
         formats.push_back(format);
       }
     }
@@ -246,6 +300,22 @@ D3D12VideoEncodeH265Delegate::GetSupportedProfiles(
       profiles.emplace_back(video_codec_profile, formats);
     }
   }
+
+  // The range extension profiles are all reported as HEVCPROFILE_REXT, one
+  // entry per supported input format so callers can tell the variants apart
+  // and report their chroma subsampling and bit depth to the client. They are
+  // gated behind a feature.
+  if (base::FeatureList::IsEnabled(kPlatformHEVCHbdEncoderSupport)) {
+    for (auto [h265_profile, pixel_format, dxgi_format] :
+         kH265RangeExtensionProfiles) {
+      if (IsProfileLevelSupported(video_device, h265_profile) &&
+          IsInputFormatSupported(video_device, h265_profile, dxgi_format)) {
+        profiles.emplace_back(HEVCPROFILE_REXT,
+                              std::vector<VideoPixelFormat>{pixel_format});
+      }
+    }
+  }
+
   return profiles;
 }
 
@@ -260,9 +330,12 @@ D3D12VideoEncodeH265Delegate::D3D12VideoEncodeH265Delegate(
       .DataSize = sizeof(gop_structure_),
       .pHEVCGroupOfPictures = &gop_structure_,
   };
+  // pic_params_ is the HEVC1 struct which shares its field layout with the
+  // legacy HEVC struct; main/main10 keep reporting the legacy DataSize.
   input_arguments_.PictureControlDesc.PictureControlCodecData = {
-      .DataSize = sizeof(pic_params_),
-      .pHEVCPicData = &pic_params_,
+      .DataSize = sizeof(D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_HEVC),
+      .pHEVCPicData = reinterpret_cast<
+          D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_HEVC*>(&pic_params_),
   };
 }
 
@@ -453,9 +526,11 @@ EncoderStatus D3D12VideoEncodeH265Delegate::EncodeImpl(
     BuildPackedH265SPS(packed_header_, sps);
     BuildPackedH265PPS(packed_header_, pps);
     // Emit HDR10 static metadata SEI (mastering display colour volume and
-    // content light level) for HDR (PQ/HLG) main10 streams, when the input
-    // frame carries the metadata.
-    if (h265_profile_ == D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN10 &&
+    // content light level) for HDR (PQ/HLG) main10 and range extension
+    // streams, when the input frame carries the metadata.
+    if ((h265_profile_ == D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN10 ||
+         h265_profile_ == D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN10_422 ||
+         h265_profile_ == D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN10_444) &&
         video_color_space.IsHDR()) {
       BuildPackedH265SEI(packed_header_,
                          ToMasteringDisplayInfo(input_hdr_metadata),
@@ -571,6 +646,51 @@ EncoderStatus D3D12VideoEncodeH265Delegate::InitializeVideoEncoder(
   CHECK_EQ(VideoCodecProfileToVideoCodec(config.output_profile),
            VideoCodec::kHEVC);
 
+  // The range extension profiles all map to the single HEVCPROFILE_REXT; the
+  // input format determines which one is requested, since it defines the
+  // chroma subsampling and bit depth of the coded stream.
+  const bool is_range_extension_profile =
+      config.output_profile == HEVCPROFILE_REXT;
+  if (is_range_extension_profile) {
+    if (!base::FeatureList::IsEnabled(kPlatformHEVCHbdEncoderSupport)) {
+      return {EncoderStatus::Codes::kEncoderUnsupportedProfile,
+              "HEVC range extension profiles are not enabled"};
+    }
+    std::optional<D3D12_VIDEO_ENCODER_PROFILE_HEVC> range_extension_profile =
+        GetRangeExtensionProfile(config.input_format);
+    if (!range_extension_profile.has_value()) {
+      return {EncoderStatus::Codes::kEncoderUnsupportedConfig,
+              base::StringPrintf(
+                  "D3D12VideoEncoder doesn't support HEVC range extension with "
+                  "input pixel format %s",
+                  VideoPixelFormatToString(config.input_format))};
+    }
+    h265_profile_ = *range_extension_profile;
+    if (!IsProfileLevelSupported(video_device_.Get(), h265_profile_)) {
+      return {EncoderStatus::Codes::kEncoderUnsupportedProfile,
+              base::StringPrintf(
+                  "D3D12VideoEncoder doesn't support H265 profile %d",
+                  h265_profile_)};
+    }
+    if (!IsInputFormatSupported(video_device_.Get(), h265_profile_,
+                                input_format_)) {
+      return {EncoderStatus::Codes::kEncoderUnsupportedConfig,
+              base::StringPrintf(
+                  "D3D12VideoEncoder doesn't support H265 profile %d with "
+                  "input format %s",
+                  h265_profile_, DxgiFormatToString(input_format_))};
+    }
+  } else if (kVideoCodecProfileToD3D12Profile.contains(config.output_profile)) {
+    h265_profile_ = kVideoCodecProfileToD3D12Profile.at(config.output_profile);
+  } else {
+    return {
+        EncoderStatus::Codes::kEncoderUnsupportedProfile,
+        base::StringPrintf(
+            "D3D12VideoEncoder only support H265 main/main10/range extension "
+            "profile, got %s",
+            GetProfileName(config.output_profile))};
+  }
+
   D3D12_VIDEO_ENCODER_CODEC_PICTURE_CONTROL_SUPPORT_HEVC
   picture_control_support_h265{};
   D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC_PICTURE_CONTROL_SUPPORT
@@ -656,56 +776,182 @@ EncoderStatus D3D12VideoEncodeH265Delegate::InitializeVideoEncoder(
     return status;
   }
 
-  if (!kVideoCodecProfileToD3D12Profile.contains(config.output_profile)) {
-    return {
-        EncoderStatus::Codes::kEncoderUnsupportedProfile,
-        base::StringPrintf(
-            "D3D12VideoEncoder only support H265 main/main10 profile, got %s",
-            GetProfileName(config.output_profile))};
-  }
-
-  h265_profile_ = kVideoCodecProfileToD3D12Profile.at(config.output_profile);
   D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC
   codec_config_support_hevc;
+  D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC1
+  codec_config_support_hevc1;
   D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT
   codec_config_support{
       .Codec = D3D12_VIDEO_ENCODER_CODEC_HEVC,
       .Profile = {.DataSize = sizeof(h265_profile_),
                   .pHEVCProfile = &h265_profile_},
-      .CodecSupportLimits = {.DataSize = sizeof(codec_config_support_hevc),
-                             .pHEVCSupport = &codec_config_support_hevc},
+      .CodecSupportLimits = {},
   };
+  if (is_range_extension_profile) {
+    // Range extension profiles use the extended HEVC1 support struct; the
+    // legacy profiles must keep using the legacy one.
+    codec_config_support.CodecSupportLimits = {
+        .DataSize = sizeof(codec_config_support_hevc1),
+        .pHEVCSupport1 = &codec_config_support_hevc1};
+  } else {
+    codec_config_support.CodecSupportLimits = {
+        .DataSize = sizeof(codec_config_support_hevc),
+        .pHEVCSupport = &codec_config_support_hevc};
+  }
   status = CheckD3D12VideoEncoderCodecConfigurationSupport(
       video_device_.Get(), &codec_config_support);
   if (!status.is_ok()) {
     return status;
   }
+  // The HEVC1 struct shares its field layout with the legacy struct, so the
+  // shared prefix is read through the legacy type in both cases.
+  const auto* codec_config_support_shared =
+      is_range_extension_profile
+          ? reinterpret_cast<
+                const D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC*>(
+                &codec_config_support_hevc1)
+          : &codec_config_support_hevc;
   codec_config_hevc_ = {
       .ConfigurationFlags =
           D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAG_ENABLE_LONG_TERM_REFERENCES |
-          (codec_config_support_hevc.SupportFlags &
+          (codec_config_support_shared->SupportFlags &
                    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_SAO_FILTER_SUPPORT
                ? D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAG_ENABLE_SAO_FILTER
                : D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAG_NONE) |
-          (codec_config_support_hevc.SupportFlags &
+          (codec_config_support_shared->SupportFlags &
                    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_ASYMETRIC_MOTION_PARTITION_REQUIRED
                ? D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAG_USE_ASYMETRIC_MOTION_PARTITION
                : D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAG_NONE) |
-          (codec_config_support_hevc.SupportFlags &
+          (codec_config_support_shared->SupportFlags &
                    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_TRANSFORM_SKIP_SUPPORT
                ? D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAG_ENABLE_TRANSFORM_SKIPPING
                : D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAG_NONE),
-      .MinLumaCodingUnitSize = codec_config_support_hevc.MinLumaCodingUnitSize,
-      .MaxLumaCodingUnitSize = codec_config_support_hevc.MaxLumaCodingUnitSize,
+      .MinLumaCodingUnitSize =
+          codec_config_support_shared->MinLumaCodingUnitSize,
+      .MaxLumaCodingUnitSize =
+          codec_config_support_shared->MaxLumaCodingUnitSize,
       .MinLumaTransformUnitSize =
-          codec_config_support_hevc.MinLumaTransformUnitSize,
+          codec_config_support_shared->MinLumaTransformUnitSize,
       .MaxLumaTransformUnitSize =
-          codec_config_support_hevc.MaxLumaTransformUnitSize,
+          codec_config_support_shared->MaxLumaTransformUnitSize,
       .max_transform_hierarchy_depth_inter =
-          codec_config_support_hevc.max_transform_hierarchy_depth_inter,
+          codec_config_support_shared->max_transform_hierarchy_depth_inter,
       .max_transform_hierarchy_depth_intra =
-          codec_config_support_hevc.max_transform_hierarchy_depth_intra,
+          codec_config_support_shared->max_transform_hierarchy_depth_intra,
   };
+
+  if (is_range_extension_profile) {
+    codec_config_support_hevc_flags1_ =
+        codec_config_support_hevc1.SupportFlags1;
+    // Separate colour plane coding is not implemented yet; the driver must not
+    // require it for 4:4:4.
+    if (codec_config_support_hevc_flags1_ &
+        D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG1_SEPARATE_COLOUR_PLANE_REQUIRED) {
+      return {EncoderStatus::Codes::kEncoderUnsupportedConfig,
+              "D3D12VideoEncoder requires separate colour plane coding for "
+              "HEVC 4:4:4, which is not supported"};
+    }
+    // Each of the range extension coding tools below would require enabling
+    // the matching configuration flag and writing the corresponding SPS/PPS
+    // range extension syntax, neither of which is implemented yet. A driver
+    // reporting one of them as optional only gets it disabled, but one
+    // reported as required cannot be satisfied.
+    constexpr D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS kRequiredFlagsNotImplemented =
+        D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_TRANSFORM_SKIP_ROTATION_ENABLED_REQUIRED |
+        D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_TRANSFORM_SKIP_CONTEXT_ENABLED_REQUIRED |
+        D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_IMPLICIT_RDPCM_ENABLED_REQUIRED |
+        D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_EXPLICIT_RDPCM_ENABLED_REQUIRED |
+        D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_EXTENDED_PRECISION_PROCESSING_REQUIRED |
+        D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_INTRA_SMOOTHING_DISABLED_REQUIRED |
+        D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_HIGH_PRECISION_OFFSETS_ENABLED_REQUIRED |
+        D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_PERSISTENT_RICE_ADAPTATION_ENABLED_REQUIRED |
+        D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_CABAC_BYPASS_ALIGNMENT_ENABLED_REQUIRED |
+        D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_CROSS_COMPONENT_PREDICTION_ENABLED_FLAG_REQUIRED |
+        D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_CHROMA_QP_OFFSET_LIST_ENABLED_FLAG_REQUIRED;
+    if (codec_config_support_shared->SupportFlags &
+        kRequiredFlagsNotImplemented) {
+      return {EncoderStatus::Codes::kEncoderUnsupportedConfig,
+              "D3D12VideoEncoder requires range extension coding tools that "
+              "are not implemented"};
+    }
+    // The trailing HEVC1 picture control fields must take values the driver
+    // reported as allowed. Zero is preferred; if the driver does not allow it,
+    // the lowest allowed value is used and the matching PPS range extension
+    // syntax is written from the picked values in ToPPS().
+    const auto& support1 = codec_config_support_hevc1;
+    auto pick_allowed = [](uint32_t allowed_values, uint32_t preferred,
+                           const char* field_name) {
+      // A driver reporting no allowed values at all is treated as
+      // unrestricted, and the preferred value is then used.
+      if (allowed_values == 0u) {
+        return preferred;
+      }
+      if (allowed_values & (1u << preferred)) {
+        return preferred;
+      }
+      const uint32_t picked =
+          static_cast<uint32_t>(std::countr_zero(allowed_values));
+      DVLOG(1) << "D3D12VideoEncoder driver does not allow value " << preferred
+               << " for HEVC range extension picture control "
+                  "field "
+               << field_name << ", picked " << picked;
+      return picked;
+    };
+    pic_params_.diff_cu_chroma_qp_offset_depth = static_cast<UCHAR>(
+        pick_allowed(support1.allowed_diff_cu_chroma_qp_offset_depth_values, 0,
+                     "diff_cu_chroma_qp_offset_depth"));
+    pic_params_.log2_sao_offset_scale_luma = static_cast<UCHAR>(
+        pick_allowed(support1.allowed_log2_sao_offset_scale_luma_values, 0,
+                     "log2_sao_offset_scale_luma"));
+    pic_params_.log2_sao_offset_scale_chroma = static_cast<UCHAR>(
+        pick_allowed(support1.allowed_log2_sao_offset_scale_chroma_values, 0,
+                     "log2_sao_offset_scale_chroma"));
+    pic_params_.log2_max_transform_skip_block_size_minus2 =
+        static_cast<UCHAR>(pick_allowed(
+            support1.allowed_log2_max_transform_skip_block_size_minus2_values,
+            0, "log2_max_transform_skip_block_size_minus2"));
+    // The chroma QP offset list prefers being empty; if the driver requires a
+    // non-empty one, each entry takes the lowest allowed offset. The offsets
+    // are in [-12, 12], signalled by bit (value + 12).
+    // pick_allowed() returns the index of a set bit, so a driver advertising a
+    // bit above the syntax limit would yield a list longer than the six entries
+    // the offset lists hold. The HEVC syntax caps this field at 5, so clamp to
+    // the array extent instead of trusting the driver's bitmask.
+    pic_params_.chroma_qp_offset_list_len_minus1 = static_cast<UCHAR>(std::min(
+        pick_allowed(support1.allowed_chroma_qp_offset_list_len_minus1_values,
+                     0, "chroma_qp_offset_list_len_minus1"),
+        base::checked_cast<uint32_t>(std::size(pic_params_.cb_qp_offset_list) -
+                                     1)));
+    const size_t chroma_qp_offset_list_len =
+        static_cast<size_t>(pic_params_.chroma_qp_offset_list_len_minus1) + 1;
+    auto cb_allowed = base::span(support1.allowed_cb_qp_offset_list_values)
+                          .first(chroma_qp_offset_list_len);
+    auto cr_allowed = base::span(support1.allowed_cr_qp_offset_list_values)
+                          .first(chroma_qp_offset_list_len);
+    auto cb_list = base::span(pic_params_.cb_qp_offset_list);
+    auto cr_list = base::span(pic_params_.cr_qp_offset_list);
+    for (size_t i = 0; i < chroma_qp_offset_list_len; ++i) {
+      // As above, an empty bitmask is treated as unrestricted and no offset
+      // is applied.
+      cb_list[i] =
+          cb_allowed[i] == 0u
+              ? 0
+              : static_cast<int8_t>(std::countr_zero(cb_allowed[i])) - 12;
+      cr_list[i] =
+          cr_allowed[i] == 0u
+              ? 0
+              : static_cast<int8_t>(std::countr_zero(cr_allowed[i])) - 12;
+    }
+    // SAO and transform skipping have no REQUIRED counterpart in the support
+    // flags, so they can simply stay disabled for the range extension
+    // profiles.
+    codec_config_hevc_.ConfigurationFlags &= ~(
+        D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAG_ENABLE_SAO_FILTER |
+        D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAG_ENABLE_TRANSFORM_SKIPPING);
+    // Range extension profiles require the HEVC1 picture control data struct.
+    input_arguments_.PictureControlDesc.PictureControlCodecData = {
+        .DataSize = sizeof(pic_params_), .pHEVCPicData1 = &pic_params_};
+  }
 
   uint32_t gop_length = config.gop_length.value();
   gop_structure_ = {
@@ -815,7 +1061,14 @@ EncoderStatus::Or<size_t> D3D12VideoEncodeH265Delegate::ReadbackBitstream(
   }
 
   auto slice_size = std::move(size_or_error).value();
-  DCHECK_GE(slice_size, 4u);
+  // Some drivers report success while writing no bitstream at all; surface
+  // that as a hardware error instead of crashing on the start code check.
+  if (slice_size < 4u) {
+    return {EncoderStatus::Codes::kEncoderHardwareDriverError,
+            base::StringPrintf(
+                "D3D12VideoEncoder wrote no bitstream data (%zu bytes)",
+                slice_size)};
+  }
   // Follow the same logic as H.264 encode delegate. Do not mandate start code
   // of first NALU to be 0x00000001 only, unless we see interop issue.
   if (bitstream_buffer.first(3u) != base::span_from_cstring("\0\0\1") &&
@@ -855,9 +1108,41 @@ H265VPS D3D12VideoEncodeH265Delegate::ToVPS() const {
   vps.vps_base_layer_internal_flag = true;
   vps.vps_base_layer_available_flag = true;
   vps.vps_temporal_id_nesting_flag = true;
-  vps.profile_tier_level.general_profile_idc = h265_profile_ + 1;
-  vps.profile_tier_level.general_profile_compatibility_flags =
-      1u << (31 - vps.profile_tier_level.general_profile_idc);
+  // Per H.265 Annex A.2/A.3: main/main10 use their profile_idc with the
+  // matching compatibility flag, while the format range extension profiles
+  // all use profile_idc 4 with compatibility flag[4] and the constraint
+  // indicator flags from Table A.4.
+  switch (h265_profile_) {
+    case D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN:
+      vps.profile_tier_level.general_profile_idc =
+          H265ProfileTierLevel::kProfileIdcMain;
+      vps.profile_tier_level.general_profile_compatibility_flags = 1u << 30;
+      break;
+    case D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN10:
+      vps.profile_tier_level.general_profile_idc =
+          H265ProfileTierLevel::kProfileIdcMain10;
+      vps.profile_tier_level.general_profile_compatibility_flags = 1u << 29;
+      break;
+    case D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN10_422:
+      vps.profile_tier_level.general_profile_idc =
+          H265ProfileTierLevel::kProfileIdcRangeExtensions;
+      vps.profile_tier_level.general_profile_compatibility_flags = 1u << 27;
+      vps.profile_tier_level.general_max_12bit_constraint_flag = true;
+      vps.profile_tier_level.general_max_10bit_constraint_flag = true;
+      vps.profile_tier_level.general_max_422chroma_constraint_flag = true;
+      vps.profile_tier_level.general_lower_bit_rate_constraint_flag = true;
+      break;
+    case D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN10_444:
+      vps.profile_tier_level.general_profile_idc =
+          H265ProfileTierLevel::kProfileIdcRangeExtensions;
+      vps.profile_tier_level.general_profile_compatibility_flags = 1u << 27;
+      vps.profile_tier_level.general_max_12bit_constraint_flag = true;
+      vps.profile_tier_level.general_max_10bit_constraint_flag = true;
+      vps.profile_tier_level.general_lower_bit_rate_constraint_flag = true;
+      break;
+    default:
+      NOTREACHED();
+  }
   vps.profile_tier_level.general_progressive_source_flag = true;
   vps.profile_tier_level.general_non_packed_constraint_flag = true;
   vps.profile_tier_level.general_frame_only_constraint_flag = true;
@@ -877,21 +1162,54 @@ H265SPS D3D12VideoEncodeH265Delegate::ToSPS(const H265VPS& vps) const {
   sps.sps_temporal_id_nesting_flag = vps.vps_temporal_id_nesting_flag;
   sps.profile_tier_level = vps.profile_tier_level;
   sps.sps_seq_parameter_set_id = 0;
-  sps.chroma_format_idc = 1;
-  // Main10 encodes 10-bit luma and chroma; Main encodes 8-bit. The profile is
-  // reflected in the profile_tier_level, so the SPS bit depth must match.
-  if (h265_profile_ == D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN10) {
-    sps.bit_depth_luma_minus8 = 2;
-    sps.bit_depth_chroma_minus8 = 2;
+  // The chroma subsampling and bit depth of the coded stream: the 10 bit
+  // profiles encode 10-bit luma and chroma, and the range extension profiles
+  // 4:2:2 and 4:4:4 per their input format.
+  switch (h265_profile_) {
+    case D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN:
+      sps.chroma_format_idc = 1;
+      break;
+    case D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN10:
+      sps.chroma_format_idc = 1;
+      sps.bit_depth_luma_minus8 = 2;
+      sps.bit_depth_chroma_minus8 = 2;
+      break;
+    case D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN10_422:
+      sps.chroma_format_idc = 2;
+      sps.bit_depth_luma_minus8 = 2;
+      sps.bit_depth_chroma_minus8 = 2;
+      break;
+    case D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN10_444:
+      sps.chroma_format_idc = 3;
+      sps.bit_depth_luma_minus8 = 2;
+      sps.bit_depth_chroma_minus8 = 2;
+      break;
+    default:
+      NOTREACHED();
+  }
+  // The driver reports through the HEVC1 support flags which SPS fields the
+  // app must enable for the range extension profiles.
+  if (codec_config_support_hevc_flags1_ &
+      D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG1_TEMPORAL_MVP_ENABLED_REQUIRED) {
+    sps.sps_temporal_mvp_enabled_flag = true;
+  }
+  if (codec_config_support_hevc_flags1_ &
+      D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG1_STRONG_INTRA_SMOOTHING_ENABLED_REQUIRED) {
+    sps.strong_intra_smoothing_enabled_flag = true;
   }
   sps.pic_width_in_luma_samples = base::bits::AlignUp(
       input_size_.Width, resolution_support_limits_.SubregionBlockPixelsSize);
   sps.pic_height_in_luma_samples = base::bits::AlignUp(
       input_size_.Height, resolution_support_limits_.SubregionBlockPixelsSize);
+  // The conformance window offsets are in chroma sample units, so scale the
+  // luma padding by SubWidthC/SubHeightC (H.265 Table 6-1) rather than assuming
+  // 4:2:0.
+  const int sub_width_c = sps.chroma_format_idc == 3 ? 1 : 2;
+  const int sub_height_c = sps.chroma_format_idc == 1 ? 2 : 1;
   sps.conf_win_right_offset =
-      (sps.pic_width_in_luma_samples - input_size_.Width) >> 1;
+      (sps.pic_width_in_luma_samples - input_size_.Width) / sub_width_c;
   sps.conf_win_bottom_offset =
-      (sps.pic_height_in_luma_samples - input_size_.Height) >> 1;
+      (sps.pic_height_in_luma_samples - input_size_.Height) / sub_height_c;
   sps.log2_max_pic_order_cnt_lsb_minus4 =
       gop_structure_.log2_max_pic_order_cnt_lsb_minus4;
   sps.sps_max_dec_pic_buffering_minus1 = vps.vps_max_dec_pic_buffering_minus1;
@@ -943,6 +1261,46 @@ H265PPS D3D12VideoEncodeH265Delegate::ToPPS(const H265SPS& sps) const {
       codec_config_hevc_.ConfigurationFlags &
       D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAG_DISABLE_LOOP_FILTER_ACROSS_SLICES);
   pps.deblocking_filter_control_present_flag = true;
+  // The range extension profiles signal the HEVC1 picture control values
+  // picked in InitializeVideoEncoder() through the PPS range extension
+  // syntax, so the coded bitstream matches what was recorded at EncodeFrame.
+  if (h265_profile_ == D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN10_422 ||
+      h265_profile_ == D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN10_444) {
+    const bool has_chroma_qp_offset_list =
+        pic_params_.diff_cu_chroma_qp_offset_depth > 0 ||
+        pic_params_.chroma_qp_offset_list_len_minus1 > 0;
+    if (pic_params_.log2_sao_offset_scale_luma > 0 ||
+        pic_params_.log2_sao_offset_scale_chroma > 0 ||
+        has_chroma_qp_offset_list) {
+      pps.pps_extension_present_flag = true;
+      pps.pps_range_extension_flag = true;
+      pps.log2_sao_offset_scale_luma = pic_params_.log2_sao_offset_scale_luma;
+      pps.log2_sao_offset_scale_chroma =
+          pic_params_.log2_sao_offset_scale_chroma;
+      pps.chroma_qp_offset_list_enabled_flag = has_chroma_qp_offset_list;
+      if (has_chroma_qp_offset_list) {
+        pps.diff_cu_chroma_qp_offset_depth =
+            pic_params_.diff_cu_chroma_qp_offset_depth;
+        pps.chroma_qp_offset_list_len_minus1 =
+            pic_params_.chroma_qp_offset_list_len_minus1;
+        // Bounded to the array extent when pic_params_ was populated.
+        const size_t chroma_qp_offset_list_len =
+            static_cast<size_t>(pps.chroma_qp_offset_list_len_minus1) + 1;
+        auto pps_cb =
+            base::span(pps.cb_qp_offset_list).first(chroma_qp_offset_list_len);
+        auto pps_cr =
+            base::span(pps.cr_qp_offset_list).first(chroma_qp_offset_list_len);
+        auto pic_cb = base::span(pic_params_.cb_qp_offset_list)
+                          .first(chroma_qp_offset_list_len);
+        auto pic_cr = base::span(pic_params_.cr_qp_offset_list)
+                          .first(chroma_qp_offset_list_len);
+        for (size_t i = 0; i < chroma_qp_offset_list_len; ++i) {
+          pps_cb[i] = pic_cb[i];
+          pps_cr[i] = pic_cr[i];
+        }
+      }
+    }
+  }
   return pps;
 }
 

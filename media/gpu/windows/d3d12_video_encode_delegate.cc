@@ -228,6 +228,19 @@ D3D12VideoEncodeDelegate::GetSupportedProfiles(
     for (const auto& [profile, formats] : profiles) {
       supported_profile.profile = profile;
       supported_profile.gpu_supported_pixel_formats = formats;
+      // The range extension profile variant is identified by its input format,
+      // so report its chroma subsampling and bit depth for the client to match
+      // encode options, like the macOS encoder does. The regular profiles
+      // leave both fields empty.
+      if (profile == HEVCPROFILE_REXT) {
+        supported_profile.chroma_sampling =
+            VideoPixelFormatToChromaSampling(formats[0]);
+        supported_profile.bit_depth =
+            base::checked_cast<uint8_t>(BitDepth(formats[0]));
+      } else {
+        supported_profile.chroma_sampling = std::nullopt;
+        supported_profile.bit_depth = std::nullopt;
+      }
       if (supports_shared_image) {
         static constexpr auto kSupportedPixelFormatD3D12VideoProcessing =
             base::MakeFixedFlatSet<VideoPixelFormat>(

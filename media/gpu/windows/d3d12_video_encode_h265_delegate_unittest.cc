@@ -4,7 +4,11 @@
 
 #include "media/gpu/windows/d3d12_video_encode_h265_delegate.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
+#include "media/base/media_switches.h"
+#include "media/base/video_types.h"
 #include "media/base/win/d3d12_mocks.h"
 #include "media/base/win/d3d12_video_mocks.h"
 #include "media/gpu/windows/d3d12_video_encode_delegate_unittest.h"
@@ -20,6 +24,29 @@ using testing::NiceMock;
 using testing::Return;
 
 namespace media {
+
+namespace {
+
+// The one DXGI input format each D3D12 HEVC profile accepts. A profile's coded
+// bit depth and chroma subsampling are decided by its input format, so a driver
+// supporting the profile is expected to accept exactly this format for it.
+DXGI_FORMAT GetInputFormatForProfile(
+    D3D12_VIDEO_ENCODER_PROFILE_HEVC h265_profile) {
+  switch (h265_profile) {
+    case D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN:
+      return DXGI_FORMAT_NV12;
+    case D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN10:
+      return DXGI_FORMAT_P010;
+    case D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN10_422:
+      return DXGI_FORMAT_Y210;
+    case D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN10_444:
+      return DXGI_FORMAT_Y410;
+    default:
+      return DXGI_FORMAT_UNKNOWN;
+  }
+}
+
+}  // namespace
 
 class D3D12VideoEncodeH265ReferenceFrameManagerTest : public ::testing::Test {
  protected:
@@ -122,6 +149,28 @@ class D3D12VideoEncodeH265DelegateTest
           return S_OK;
         });
     ON_CALL(*video_device3_.Get(),
+            CheckFeatureSupport(D3D12_FEATURE_VIDEO_ENCODER_INPUT_FORMAT, _, _))
+        .WillByDefault([](D3D12_FEATURE_VIDEO, void* data, UINT size) {
+          EXPECT_EQ(size,
+                    sizeof(D3D12_FEATURE_DATA_VIDEO_ENCODER_INPUT_FORMAT));
+          if (size != sizeof(D3D12_FEATURE_DATA_VIDEO_ENCODER_INPUT_FORMAT)) {
+            return E_INVALIDARG;
+          }
+          auto* input_format =
+              static_cast<D3D12_FEATURE_DATA_VIDEO_ENCODER_INPUT_FORMAT*>(data);
+          EXPECT_EQ(input_format->Codec, D3D12_VIDEO_ENCODER_CODEC_HEVC);
+          EXPECT_EQ(input_format->Profile.DataSize,
+                    sizeof(D3D12_VIDEO_ENCODER_PROFILE_HEVC));
+          if (input_format->Profile.DataSize !=
+              sizeof(D3D12_VIDEO_ENCODER_PROFILE_HEVC)) {
+            return E_INVALIDARG;
+          }
+          input_format->IsSupported =
+              input_format->Format ==
+              GetInputFormatForProfile(*input_format->Profile.pHEVCProfile);
+          return S_OK;
+        });
+    ON_CALL(*video_device3_.Get(),
             CheckFeatureSupport(
                 D3D12_FEATURE_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT, _, _))
         .WillByDefault([](D3D12_FEATURE_VIDEO, void* data, UINT size) {
@@ -144,20 +193,18 @@ class D3D12VideoEncodeH265DelegateTest
               sizeof(D3D12_VIDEO_ENCODER_PROFILE_HEVC)) {
             return E_INVALIDARG;
           }
-          EXPECT_EQ(*codec_config->Profile.pHEVCProfile,
-                    D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN);
           codec_config->IsSupported =
-              codec_config->Codec == D3D12_VIDEO_ENCODER_CODEC_HEVC &&
-              *codec_config->Profile.pHEVCProfile ==
-                  D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN;
-          EXPECT_EQ(
-              codec_config->CodecSupportLimits.DataSize,
-              sizeof(D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC));
-          if (codec_config->CodecSupportLimits.DataSize !=
-              sizeof(D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC)) {
+              codec_config->Codec == D3D12_VIDEO_ENCODER_CODEC_HEVC;
+          const bool is_hevc1 =
+              codec_config->CodecSupportLimits.DataSize ==
+              sizeof(D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC1);
+          if (!is_hevc1 &&
+              codec_config->CodecSupportLimits.DataSize !=
+                  sizeof(
+                      D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC)) {
             return E_INVALIDARG;
           }
-          *codec_config->CodecSupportLimits.pHEVCSupport = {
+          D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC1 support_hevc1{
               .SupportFlags =
                   D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_NONE,
               .MinLumaCodingUnitSize =
@@ -170,7 +217,35 @@ class D3D12VideoEncodeH265DelegateTest
                   D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_TUSIZE_32x32,
               .max_transform_hierarchy_depth_inter = 0,
               .max_transform_hierarchy_depth_intra = 0,
+              .allowed_diff_cu_chroma_qp_offset_depth_values = 0x1,
+              .allowed_log2_sao_offset_scale_luma_values = 0x1,
+              .allowed_log2_sao_offset_scale_chroma_values = 0x1,
+              .allowed_log2_max_transform_skip_block_size_minus2_values = 0x1,
+              .allowed_chroma_qp_offset_list_len_minus1_values = 0x1,
+              .allowed_cb_qp_offset_list_values = {1u << 12},
+              .allowed_cr_qp_offset_list_values = {1u << 12},
+              .SupportFlags1 =
+                  D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG1_NONE,
           };
+          if (is_hevc1) {
+            *codec_config->CodecSupportLimits.pHEVCSupport1 = support_hevc1;
+          } else {
+            D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC
+            support_hevc{
+                .SupportFlags = support_hevc1.SupportFlags,
+                .MinLumaCodingUnitSize = support_hevc1.MinLumaCodingUnitSize,
+                .MaxLumaCodingUnitSize = support_hevc1.MaxLumaCodingUnitSize,
+                .MinLumaTransformUnitSize =
+                    support_hevc1.MinLumaTransformUnitSize,
+                .MaxLumaTransformUnitSize =
+                    support_hevc1.MaxLumaTransformUnitSize,
+                .max_transform_hierarchy_depth_inter =
+                    support_hevc1.max_transform_hierarchy_depth_inter,
+                .max_transform_hierarchy_depth_intra =
+                    support_hevc1.max_transform_hierarchy_depth_intra,
+            };
+            *codec_config->CodecSupportLimits.pHEVCSupport = support_hevc;
+          }
           return S_OK;
         });
     ON_CALL(*video_device3_.Get(),
@@ -190,7 +265,10 @@ class D3D12VideoEncodeH265DelegateTest
           }
           EXPECT_EQ(support->Codec, D3D12_VIDEO_ENCODER_CODEC_HEVC);
           EXPECT_TRUE(support->InputFormat == DXGI_FORMAT_NV12 ||
-                      support->InputFormat == DXGI_FORMAT_P010);
+                      support->InputFormat == DXGI_FORMAT_P010 ||
+                      support->InputFormat == DXGI_FORMAT_AYUV ||
+                      support->InputFormat == DXGI_FORMAT_Y210 ||
+                      support->InputFormat == DXGI_FORMAT_Y410);
           support->SupportFlags =
               support->Codec == D3D12_VIDEO_ENCODER_CODEC_HEVC
                   ? D3D12_VIDEO_ENCODER_SUPPORT_FLAG_GENERAL_SUPPORT_OK
@@ -242,7 +320,7 @@ TEST_F(D3D12VideoEncodeH265ReferenceFrameManagerTest,
   EXPECT_EQ(reference_manager.GetReferenceFrameId(0), std::nullopt);
 
   std::vector<uint32_t> list0_reference_frames;
-  D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_HEVC pic_params{};
+  D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_HEVC1 pic_params{};
   reference_manager.WriteReferencePictureDescriptorsToPictureParameters(
       &pic_params, list0_reference_frames);
   EXPECT_EQ(pic_params.ReferenceFramesReconPictureDescriptorsCount, 0u);
@@ -305,6 +383,157 @@ TEST_F(D3D12VideoEncodeH265ReferenceFrameManagerTest,
   EXPECT_EQ(descriptors[0].PictureOrderCountNumber, 1u);
 }
 
+TEST_F(D3D12VideoEncodeH265DelegateTest, GetSupportedProfiles) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kPlatformHEVCHbdEncoderSupport);
+  // The range extension profiles are all reported as HEVCPROFILE_REXT, one
+  // entry per supported input format.
+  std::vector<std::pair<VideoCodecProfile, std::vector<VideoPixelFormat>>>
+      expected_profiles = {
+          {HEVCPROFILE_MAIN, {PIXEL_FORMAT_NV12}},
+          {HEVCPROFILE_MAIN10, {PIXEL_FORMAT_P010LE}},
+          {HEVCPROFILE_REXT, {PIXEL_FORMAT_P210LE}},
+          {HEVCPROFILE_REXT, {PIXEL_FORMAT_P410LE}},
+      };
+  EXPECT_EQ(
+      D3D12VideoEncodeH265Delegate::GetSupportedProfiles(video_device3_.Get()),
+      expected_profiles);
+}
+
+TEST_F(D3D12VideoEncodeH265DelegateTest,
+       GetSupportedProfiles_HevcRextDisabled) {
+  // The range extension profiles must not be advertised until the encode path
+  // supports them, regardless of driver support.
+  std::vector<std::pair<VideoCodecProfile, std::vector<VideoPixelFormat>>>
+      expected_profiles = {
+          {HEVCPROFILE_MAIN, {PIXEL_FORMAT_NV12}},
+          {HEVCPROFILE_MAIN10, {PIXEL_FORMAT_P010LE}},
+      };
+  EXPECT_EQ(
+      D3D12VideoEncodeH265Delegate::GetSupportedProfiles(video_device3_.Get()),
+      expected_profiles);
+}
+
+TEST_F(D3D12VideoEncodeH265DelegateTest,
+       GetSupportedProfiles_NoRangeExtension) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kPlatformHEVCHbdEncoderSupport);
+  // Simulate a driver which supports main and main10 only.
+  ON_CALL(*video_device3_.Get(),
+          CheckFeatureSupport(D3D12_FEATURE_VIDEO_ENCODER_PROFILE_LEVEL, _, _))
+      .WillByDefault([](D3D12_FEATURE_VIDEO, void* data, UINT size) {
+        auto* profile_level =
+            static_cast<D3D12_FEATURE_DATA_VIDEO_ENCODER_PROFILE_LEVEL*>(data);
+        D3D12_VIDEO_ENCODER_PROFILE_HEVC h265_profile =
+            *profile_level->Profile.pHEVCProfile;
+        profile_level->IsSupported =
+            h265_profile == D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN ||
+            h265_profile == D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN10;
+        *profile_level->MinSupportedLevel.pHEVCLevelSetting = {
+            D3D12_VIDEO_ENCODER_LEVELS_HEVC_1,
+            D3D12_VIDEO_ENCODER_TIER_HEVC_MAIN};
+        *profile_level->MaxSupportedLevel.pHEVCLevelSetting = {
+            kMaxLevel, D3D12_VIDEO_ENCODER_TIER_HEVC_MAIN};
+        return S_OK;
+      });
+  std::vector<std::pair<VideoCodecProfile, std::vector<VideoPixelFormat>>>
+      expected_profiles = {
+          {HEVCPROFILE_MAIN, {PIXEL_FORMAT_NV12}},
+          {HEVCPROFILE_MAIN10, {PIXEL_FORMAT_P010LE}},
+      };
+  EXPECT_EQ(
+      D3D12VideoEncodeH265Delegate::GetSupportedProfiles(video_device3_.Get()),
+      expected_profiles);
+}
+
+TEST_F(D3D12VideoEncodeH265DelegateTest,
+       GetSupportedProfiles_PartialRangeExtension) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kPlatformHEVCHbdEncoderSupport);
+  // Simulate a driver which advertises every profile at profile/level query,
+  // but only accepts NV12 and Y410 as input format. main10 and the 8 bit 4:4:4
+  // and 10 bit 4:2:2 range extension profiles must then be dropped.
+  ON_CALL(*video_device3_.Get(),
+          CheckFeatureSupport(D3D12_FEATURE_VIDEO_ENCODER_INPUT_FORMAT, _, _))
+      .WillByDefault([](D3D12_FEATURE_VIDEO, void* data, UINT size) {
+        auto* input_format =
+            static_cast<D3D12_FEATURE_DATA_VIDEO_ENCODER_INPUT_FORMAT*>(data);
+        input_format->IsSupported =
+            input_format->Format ==
+                GetInputFormatForProfile(*input_format->Profile.pHEVCProfile) &&
+            (input_format->Format == DXGI_FORMAT_NV12 ||
+             input_format->Format == DXGI_FORMAT_Y410);
+        return S_OK;
+      });
+  std::vector<std::pair<VideoCodecProfile, std::vector<VideoPixelFormat>>>
+      expected_profiles = {
+          {HEVCPROFILE_MAIN, {PIXEL_FORMAT_NV12}},
+          {HEVCPROFILE_REXT, {PIXEL_FORMAT_P410LE}},
+      };
+  EXPECT_EQ(
+      D3D12VideoEncodeH265Delegate::GetSupportedProfiles(video_device3_.Get()),
+      expected_profiles);
+}
+
+// The base encoder reports each RExt variant's chroma subsampling and bit
+// depth on its profile so the client can match encode options; the regular
+// profiles leave both fields empty.
+TEST_F(D3D12VideoEncodeH265DelegateTest,
+       SupportedProfilesReportRextVariantFields) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kPlatformHEVCHbdEncoderSupport);
+
+  ON_CALL(*video_device3_.Get(),
+          CheckFeatureSupport(
+              D3D12_FEATURE_VIDEO_ENCODER_OUTPUT_RESOLUTION_RATIOS_COUNT, _, _))
+      .WillByDefault([](D3D12_FEATURE_VIDEO, void* data, UINT) {
+        static_cast<
+            D3D12_FEATURE_DATA_VIDEO_ENCODER_OUTPUT_RESOLUTION_RATIOS_COUNT*>(
+            data)
+            ->ResolutionRatiosCount = 1;
+        return S_OK;
+      });
+  ON_CALL(
+      *video_device3_.Get(),
+      CheckFeatureSupport(D3D12_FEATURE_VIDEO_ENCODER_OUTPUT_RESOLUTION, _, _))
+      .WillByDefault([](D3D12_FEATURE_VIDEO, void* data, UINT) {
+        auto* output_resolution =
+            static_cast<D3D12_FEATURE_DATA_VIDEO_ENCODER_OUTPUT_RESOLUTION*>(
+                data);
+        output_resolution->IsSupported = true;
+        output_resolution->MinResolutionSupported = {1280, 720};
+        output_resolution->MaxResolutionSupported = {4096, 4096};
+        return S_OK;
+      });
+  ON_CALL(
+      *video_device3_.Get(),
+      CheckFeatureSupport(D3D12_FEATURE_VIDEO_ENCODER_RATE_CONTROL_MODE, _, _))
+      .WillByDefault([](D3D12_FEATURE_VIDEO, void* data, UINT) {
+        static_cast<D3D12_FEATURE_DATA_VIDEO_ENCODER_RATE_CONTROL_MODE*>(data)
+            ->IsSupported = true;
+        return S_OK;
+      });
+
+  auto supported_profiles = D3D12VideoEncodeDelegate::GetSupportedProfiles(
+      video_device3_.Get(), gpu::GpuDriverBugWorkarounds{},
+      {D3D12_VIDEO_ENCODER_CODEC_HEVC});
+
+  for (const auto& supported_profile : supported_profiles) {
+    if (supported_profile.profile == HEVCPROFILE_REXT) {
+      ASSERT_FALSE(supported_profile.gpu_supported_pixel_formats.empty());
+      const VideoPixelFormat format =
+          supported_profile.gpu_supported_pixel_formats[0];
+      EXPECT_EQ(supported_profile.chroma_sampling,
+                VideoPixelFormatToChromaSampling(format));
+      EXPECT_EQ(supported_profile.bit_depth,
+                base::checked_cast<uint8_t>(BitDepth(format)));
+    } else {
+      EXPECT_FALSE(supported_profile.chroma_sampling.has_value());
+      EXPECT_FALSE(supported_profile.bit_depth.has_value());
+    }
+  }
+}
+
 TEST_F(D3D12VideoEncodeH265DelegateTest, UnsupportedCodec) {
   ON_CALL(*video_device3_.Get(),
           CheckFeatureSupport(D3D12_FEATURE_VIDEO_ENCODER_CODEC, _, _))
@@ -322,6 +551,322 @@ TEST_F(D3D12VideoEncodeH265DelegateTest, UnsupportedProfile) {
   config.input_format = PIXEL_FORMAT_P210LE;
   EXPECT_EQ(encoder_delegate_->Initialize(config).code(),
             EncoderStatus::Codes::kEncoderUnsupportedProfile);
+}
+
+TEST_F(D3D12VideoEncodeH265DelegateTest, InitializeRangeExtensionProfiles) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kPlatformHEVCHbdEncoderSupport);
+  // Each range extension profile variant is selected by its input format.
+  for (VideoPixelFormat input_format :
+       {PIXEL_FORMAT_P210LE, PIXEL_FORMAT_P410LE}) {
+    VideoEncodeAccelerator::Config config = GetDefaultH265Config();
+    config.output_profile = HEVCPROFILE_REXT;
+    config.input_format = input_format;
+    ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok())
+        << "input format: " << input_format;
+    encoder_delegate_ = std::make_unique<D3D12VideoEncodeH265Delegate>(
+        video_device3_, gpu::GpuDriverBugWorkarounds{});
+    encoder_delegate_->SetFactoriesForTesting(
+        base::BindRepeating(&CreateVideoEncoderWrapper),
+        base::BindRepeating(&CreateVideoProcessorWrapper));
+  }
+}
+
+// With the d3d12_hevc_encode_packed_format_dpb_sizing workaround active, the
+// reference-only textures must match the recon layout the Intel driver
+// allocates internally. The fixture's coded size is 1280x720, which both
+// dimensions 64-align to 1280x768; the height then grows by the format's
+// chroma factor, so Y410 textures are 1280x1152 and Y210 textures are
+// 1280x1536, while bi-planar formats stay 1280x720.
+TEST_F(D3D12VideoEncodeH265DelegateTest,
+       ReferenceTextureSizingWithPackedFormatWorkaround) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kPlatformHEVCHbdEncoderSupport);
+
+  // The delegate only commits the reference textures, so the captured
+  // descriptors are exactly the DPB resources.
+  std::vector<D3D12_RESOURCE_DESC> committed_resource_descs;
+  ON_CALL(*device_.Get(), CreateCommittedResource)
+      .WillByDefault([&](const D3D12_HEAP_PROPERTIES*, D3D12_HEAP_FLAGS,
+                         const D3D12_RESOURCE_DESC* desc, D3D12_RESOURCE_STATES,
+                         const D3D12_CLEAR_VALUE*, REFIID, void**) {
+        committed_resource_descs.push_back(*desc);
+        return S_OK;
+      });
+
+  gpu::GpuDriverBugWorkarounds gpu_workarounds;
+  gpu_workarounds.d3d12_hevc_encode_packed_format_dpb_sizing = true;
+
+  const struct {
+    VideoCodecProfile profile;
+    VideoPixelFormat input_format;
+    DXGI_FORMAT reference_format;
+    gfx::Size expected_reference_size;
+  } kCases[] = {
+      {HEVCPROFILE_MAIN, PIXEL_FORMAT_NV12, DXGI_FORMAT_NV12, {1280, 720}},
+      {HEVCPROFILE_REXT, PIXEL_FORMAT_P210LE, DXGI_FORMAT_Y210, {1280, 1536}},
+      {HEVCPROFILE_REXT, PIXEL_FORMAT_P410LE, DXGI_FORMAT_Y410, {1280, 1152}},
+  };
+  for (const auto& test_case : kCases) {
+    committed_resource_descs.clear();
+    encoder_delegate_ = std::make_unique<D3D12VideoEncodeH265Delegate>(
+        video_device3_, gpu_workarounds);
+    encoder_delegate_->SetFactoriesForTesting(
+        base::BindRepeating(&CreateVideoEncoderWrapper),
+        base::BindRepeating(&CreateVideoProcessorWrapper));
+
+    VideoEncodeAccelerator::Config config = GetDefaultH265Config();
+    config.output_profile = test_case.profile;
+    config.input_format = test_case.input_format;
+    ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok())
+        << "input format: " << test_case.input_format;
+
+    int reference_texture_count = 0;
+    for (const D3D12_RESOURCE_DESC& desc : committed_resource_descs) {
+      if (desc.Format != test_case.reference_format) {
+        continue;
+      }
+      ++reference_texture_count;
+      EXPECT_EQ(desc.Width,
+                static_cast<UINT64>(test_case.expected_reference_size.width()));
+      EXPECT_EQ(desc.Height,
+                static_cast<UINT>(test_case.expected_reference_size.height()));
+    }
+    EXPECT_GT(reference_texture_count, 0)
+        << "input format: " << test_case.input_format;
+  }
+}
+
+TEST_F(D3D12VideoEncodeH265DelegateTest,
+       InitializeRangeExtensionProfileUnsupportedInputFormat) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kPlatformHEVCHbdEncoderSupport);
+  // NV12 (or any other 4:2:0 format) doesn't select a range extension profile.
+  VideoEncodeAccelerator::Config config = GetDefaultH265Config();
+  config.output_profile = HEVCPROFILE_REXT;
+  EXPECT_EQ(encoder_delegate_->Initialize(config).code(),
+            EncoderStatus::Codes::kEncoderUnsupportedConfig);
+}
+
+TEST_F(D3D12VideoEncodeH265DelegateTest,
+       InitializeRangeExtensionProfileNoProfileLevelSupport) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kPlatformHEVCHbdEncoderSupport);
+  // Simulate a driver that doesn't support the range extension profiles at
+  // the profile/level query.
+  ON_CALL(*video_device3_.Get(),
+          CheckFeatureSupport(D3D12_FEATURE_VIDEO_ENCODER_PROFILE_LEVEL, _, _))
+      .WillByDefault([](D3D12_FEATURE_VIDEO, void* data, UINT size) {
+        auto* profile_level =
+            static_cast<D3D12_FEATURE_DATA_VIDEO_ENCODER_PROFILE_LEVEL*>(data);
+        D3D12_VIDEO_ENCODER_PROFILE_HEVC h265_profile =
+            *profile_level->Profile.pHEVCProfile;
+        profile_level->IsSupported =
+            h265_profile == D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN ||
+            h265_profile == D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN10;
+        *profile_level->MinSupportedLevel.pHEVCLevelSetting = {
+            D3D12_VIDEO_ENCODER_LEVELS_HEVC_1,
+            D3D12_VIDEO_ENCODER_TIER_HEVC_MAIN};
+        *profile_level->MaxSupportedLevel.pHEVCLevelSetting = {
+            kMaxLevel, D3D12_VIDEO_ENCODER_TIER_HEVC_MAIN};
+        return S_OK;
+      });
+  VideoEncodeAccelerator::Config config = GetDefaultH265Config();
+  config.output_profile = HEVCPROFILE_REXT;
+  config.input_format = PIXEL_FORMAT_P410LE;
+  EXPECT_EQ(encoder_delegate_->Initialize(config).code(),
+            EncoderStatus::Codes::kEncoderUnsupportedProfile);
+}
+
+TEST_F(D3D12VideoEncodeH265DelegateTest,
+       InitializeRangeExtensionProfileNoInputFormatSupport) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kPlatformHEVCHbdEncoderSupport);
+  // Simulate a driver that accepts every format but 10 bit 4:2:2.
+  ON_CALL(*video_device3_.Get(),
+          CheckFeatureSupport(D3D12_FEATURE_VIDEO_ENCODER_INPUT_FORMAT, _, _))
+      .WillByDefault([](D3D12_FEATURE_VIDEO, void* data, UINT size) {
+        auto* input_format =
+            static_cast<D3D12_FEATURE_DATA_VIDEO_ENCODER_INPUT_FORMAT*>(data);
+        input_format->IsSupported =
+            input_format->Format ==
+                GetInputFormatForProfile(*input_format->Profile.pHEVCProfile) &&
+            input_format->Format != DXGI_FORMAT_Y210;
+        return S_OK;
+      });
+  VideoEncodeAccelerator::Config config = GetDefaultH265Config();
+  config.output_profile = HEVCPROFILE_REXT;
+  config.input_format = PIXEL_FORMAT_P210LE;
+  EXPECT_EQ(encoder_delegate_->Initialize(config).code(),
+            EncoderStatus::Codes::kEncoderUnsupportedConfig);
+}
+
+TEST_F(D3D12VideoEncodeH265DelegateTest, EncodeFrameRangeExtension444) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kPlatformHEVCHbdEncoderSupport);
+  VideoEncodeAccelerator::Config config = GetDefaultH265Config();
+  config.output_profile = HEVCPROFILE_REXT;
+  config.input_format = PIXEL_FORMAT_P410LE;
+  ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok());
+
+  auto input_frame =
+      CreateResource(config.input_visible_size, config.input_format);
+  constexpr size_t kBufferSize = 1024;
+  constexpr size_t kStreamSize = 512;
+  auto shared_memory = base::UnsafeSharedMemoryRegion::Create(kBufferSize);
+  BitstreamBuffer bitstream_buffer(0, shared_memory.Duplicate(), kBufferSize);
+  EXPECT_CALL(*GetVideoEncoderWrapper(), GetEncoderOutputMetadata())
+      .WillOnce(Return(GetEncoderOutputMetadataResourceMap(kStreamSize)));
+  bool is_key_frame;
+  EXPECT_CALL(*GetVideoEncoderWrapper(), Encode)
+      .WillOnce([&](const D3D12_VIDEO_ENCODER_ENCODEFRAME_INPUT_ARGUMENTS&
+                        input_arguments,
+                    const D3D12_VIDEO_ENCODER_RECONSTRUCTED_PICTURE&) {
+        // Range extension profiles use the HEVC1 picture control data.
+        if (input_arguments.PictureControlDesc.PictureControlCodecData
+                .DataSize !=
+            sizeof(D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_HEVC1)) {
+          return EncoderStatus::Codes::kSystemAPICallError;
+        }
+        is_key_frame = input_arguments.PictureControlDesc
+                           .PictureControlCodecData.pHEVCPicData1->FrameType ==
+                       D3D12_VIDEO_ENCODER_FRAME_TYPE_HEVC_IDR_FRAME;
+        return EncoderStatus::Codes::kOk;
+      });
+  EXPECT_CALL(*GetVideoEncoderWrapper(), ReadbackBitstream)
+      .WillOnce([&](base::span<uint8_t> bitstream_buffer) {
+        constexpr base::span kStartCode = base::span_from_cstring("\0\0\1");
+        EXPECT_GE(bitstream_buffer.size(), kStartCode.size());
+        std::ranges::copy(kStartCode, bitstream_buffer.begin());
+        return EncoderStatus::Codes::kOk;
+      });
+  auto result_or_error = encoder_delegate_->Encode(
+      input_frame, gfx::Rect(config.input_visible_size),
+      gfx::ColorSpace::CreateSRGB(), bitstream_buffer,
+      VideoEncoder::EncodeOptions());
+  ASSERT_TRUE(result_or_error.has_value());
+  EXPECT_EQ(std::move(result_or_error).value().metadata.key_frame,
+            is_key_frame);
+
+  // The written headers must signal the 10 bit 4:4:4 range extension profile:
+  // profile_idc 4 with the max_10bit constraint flag, and chroma_format_idc 3.
+  H265Parser parser;
+  base::WritableSharedMemoryMapping map = shared_memory.Map();
+  parser.SetStream(map.GetMemoryAsSpan<uint8_t>());
+  H265NALU nalu;
+  ASSERT_EQ(parser.AdvanceToNextNALU(&nalu), H265Parser::Result::kOk);
+  EXPECT_EQ(nalu.nal_unit_type, H265NALU::VPS_NUT);
+  ASSERT_EQ(parser.AdvanceToNextNALU(&nalu), H265Parser::Result::kOk);
+  EXPECT_EQ(nalu.nal_unit_type, H265NALU::SPS_NUT);
+  int sps_id;
+  ASSERT_EQ(parser.ParseSPS(&sps_id), H265Parser::Result::kOk);
+  const H265SPS* sps = parser.GetSPS(sps_id);
+  ASSERT_TRUE(sps);
+  EXPECT_EQ(sps->profile_tier_level.general_profile_idc,
+            H265ProfileTierLevel::kProfileIdcRangeExtensions);
+  EXPECT_TRUE(sps->profile_tier_level.general_max_10bit_constraint_flag);
+  EXPECT_EQ(sps->chroma_format_idc, 3);
+  EXPECT_EQ(sps->bit_depth_luma_minus8, 2);
+  EXPECT_EQ(sps->bit_depth_chroma_minus8, 2);
+}
+
+TEST_F(D3D12VideoEncodeH265DelegateTest,
+       EncodeFrameRangeExtensionPpsRangeExtension) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kPlatformHEVCHbdEncoderSupport);
+  // Simulate a driver that requires a non-empty chroma QP offset list (it
+  // disallows a zero diff_cu_chroma_qp_offset_depth): the lowest allowed value
+  // must be picked and signalled in the PPS range extension. The SAO offset
+  // scale stays zero, the only value HEVC permits at 10 bit.
+  ON_CALL(*video_device3_.Get(),
+          CheckFeatureSupport(
+              D3D12_FEATURE_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT, _, _))
+      .WillByDefault([](D3D12_FEATURE_VIDEO, void* data, UINT size) {
+        auto* codec_config = static_cast<
+            D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT*>(
+            data);
+        codec_config->IsSupported = true;
+        D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC1 support_hevc1{
+            .SupportFlags =
+                D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_NONE,
+            .MinLumaCodingUnitSize =
+                D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_CUSIZE_8x8,
+            .MaxLumaCodingUnitSize =
+                D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_CUSIZE_64x64,
+            .MinLumaTransformUnitSize =
+                D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_TUSIZE_4x4,
+            .MaxLumaTransformUnitSize =
+                D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_TUSIZE_32x32,
+            .max_transform_hierarchy_depth_inter = 0,
+            .max_transform_hierarchy_depth_intra = 0,
+            .allowed_diff_cu_chroma_qp_offset_depth_values = 0x2,  // only 1
+            .allowed_log2_sao_offset_scale_luma_values = 0x1,
+            .allowed_log2_sao_offset_scale_chroma_values = 0x1,
+            .allowed_log2_max_transform_skip_block_size_minus2_values = 0x1,
+            .allowed_chroma_qp_offset_list_len_minus1_values = 0x1,
+            .allowed_cb_qp_offset_list_values = {1u << 12},
+            .allowed_cr_qp_offset_list_values = {1u << 12},
+            .SupportFlags1 =
+                D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG1_NONE,
+        };
+        *codec_config->CodecSupportLimits.pHEVCSupport1 = support_hevc1;
+        return S_OK;
+      });
+
+  VideoEncodeAccelerator::Config config = GetDefaultH265Config();
+  config.output_profile = HEVCPROFILE_REXT;
+  config.input_format = PIXEL_FORMAT_P210LE;
+  ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok());
+
+  auto input_frame =
+      CreateResource(config.input_visible_size, config.input_format);
+  constexpr size_t kBufferSize = 1024;
+  constexpr size_t kStreamSize = 512;
+  auto shared_memory = base::UnsafeSharedMemoryRegion::Create(kBufferSize);
+  BitstreamBuffer bitstream_buffer(0, shared_memory.Duplicate(), kBufferSize);
+  EXPECT_CALL(*GetVideoEncoderWrapper(), GetEncoderOutputMetadata())
+      .WillOnce(Return(GetEncoderOutputMetadataResourceMap(kStreamSize)));
+  EXPECT_CALL(*GetVideoEncoderWrapper(), Encode)
+      .WillOnce(Return(EncoderStatus::Codes::kOk));
+  EXPECT_CALL(*GetVideoEncoderWrapper(), ReadbackBitstream)
+      .WillOnce([&](base::span<uint8_t> bitstream_buffer) {
+        constexpr base::span kStartCode = base::span_from_cstring("\0\0\1");
+        EXPECT_GE(bitstream_buffer.size(), kStartCode.size());
+        std::ranges::copy(kStartCode, bitstream_buffer.begin());
+        return EncoderStatus::Codes::kOk;
+      });
+  auto result_or_error = encoder_delegate_->Encode(
+      input_frame, gfx::Rect(config.input_visible_size),
+      gfx::ColorSpace::CreateSRGB(), bitstream_buffer,
+      VideoEncoder::EncodeOptions());
+  ASSERT_TRUE(result_or_error.has_value());
+
+  // The written PPS must carry the picked values in its range extension.
+  H265Parser parser;
+  base::WritableSharedMemoryMapping map = shared_memory.Map();
+  parser.SetStream(map.GetMemoryAsSpan<uint8_t>());
+  H265NALU nalu;
+  ASSERT_EQ(parser.AdvanceToNextNALU(&nalu), H265Parser::Result::kOk);
+  EXPECT_EQ(nalu.nal_unit_type, H265NALU::VPS_NUT);
+  ASSERT_EQ(parser.AdvanceToNextNALU(&nalu), H265Parser::Result::kOk);
+  EXPECT_EQ(nalu.nal_unit_type, H265NALU::SPS_NUT);
+  int sps_id;
+  ASSERT_EQ(parser.ParseSPS(&sps_id), H265Parser::Result::kOk);
+  ASSERT_EQ(parser.AdvanceToNextNALU(&nalu), H265Parser::Result::kOk);
+  EXPECT_EQ(nalu.nal_unit_type, H265NALU::PPS_NUT);
+  int pps_id;
+  ASSERT_EQ(parser.ParsePPS(nalu, &pps_id), H265Parser::Result::kOk);
+  const H265PPS* pps = parser.GetPPS(pps_id);
+  ASSERT_TRUE(pps);
+  EXPECT_TRUE(pps->pps_extension_present_flag);
+  EXPECT_TRUE(pps->pps_range_extension_flag);
+  EXPECT_EQ(pps->log2_sao_offset_scale_luma, 0);
+  EXPECT_EQ(pps->log2_sao_offset_scale_chroma, 0);
+  EXPECT_TRUE(pps->chroma_qp_offset_list_enabled_flag);
+  EXPECT_EQ(pps->diff_cu_chroma_qp_offset_depth, 1);
+  EXPECT_EQ(pps->chroma_qp_offset_list_len_minus1, 0);
+  EXPECT_EQ(pps->cb_qp_offset_list[0], 0);
+  EXPECT_EQ(pps->cr_qp_offset_list[0], 0);
 }
 
 TEST_F(D3D12VideoEncodeH265DelegateTest, EncodeFrame) {

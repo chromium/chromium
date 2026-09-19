@@ -41,9 +41,10 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeH265ReferenceFrameManager
   void MarkFrameUnreferenced(uint8_t buffer_id);
 
   // Write the reference picture descriptors to |pic_params| according to the
-  // ListxReferenceFrames variables.
+  // ListxReferenceFrames variables. The picture control data struct is the
+  // HEVC1 variant which shares its field layout with the legacy HEVC struct.
   void WriteReferencePictureDescriptorsToPictureParameters(
-      D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_HEVC* pic_params,
+      D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_HEVC1* pic_params,
       base::span<uint32_t> list0_reference_frames);
 
  private:
@@ -103,12 +104,20 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeH265Delegate
   D3D12_VIDEO_ENCODER_PROFILE_HEVC h265_profile_{};
   D3D12_VIDEO_ENCODER_LEVEL_TIER_CONSTRAINTS_HEVC h265_level_{};
   D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC codec_config_hevc_{};
+  // The HEVC1 support flags reported for range extension profiles; used for
+  // the SPS fields (e.g. temporal MVP) the driver requires. Zero for the
+  // legacy main/main10 profiles.
+  D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS1
+  codec_config_support_hevc_flags1_{};
   D3D12_FEATURE_DATA_VIDEO_ENCODER_RESOLUTION_SUPPORT_LIMITS
   resolution_support_limits_{};
 
-  // Input arguments.
+  // Input arguments. The picture control data uses the HEVC1 struct: it shares
+  // its field layout with the legacy HEVC struct, and range extension profiles
+  // require the extended size. For main/main10 the DataSize reported to the
+  // driver is the legacy one.
   D3D12_VIDEO_ENCODER_SEQUENCE_GOP_STRUCTURE_HEVC gop_structure_{};
-  D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_HEVC pic_params_{};
+  D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_HEVC1 pic_params_{};
   D3D12VideoEncoderRateControl current_rate_control_;
 
   std::optional<H264RateController> software_rate_controller_;
