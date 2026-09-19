@@ -335,6 +335,7 @@ void SaveAndFillManagerImpl::OnDidGetDetailsForCreateCard(
 }
 
 void SaveAndFillManagerImpl::PopulateInitialUploadDetails() {
+  upload_details_ = UploadCardRequestDetails();
   // For "Save and Fill" flow, we don't know whether CVC will be provided by the
   // user so we only check the CVC storage user preference to populate the
   // signal.
