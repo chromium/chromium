@@ -142,6 +142,7 @@
 <translation id="1090541560108055381">配對前，請確認兩部裝置上均顯示這組代碼</translation>
 <translation id="1093457606523402488">可偵測到的網路：</translation>
 <translation id="1093645050124056515">ctrl + alt + 向下鍵</translation>
+<translation id="1095398697303758108">按兩下 Ctrl 鍵來啟用強化版自動填入功能</translation>
 <translation id="1095879482467973146">Google 密碼管理工具網頁版</translation>
 <translation id="1097016918605049747">無法翻譯這個網頁</translation>
 <translation id="1099962274138857708">從「<ph name="DEVICE_NAME" />」複製的圖片</translation>
@@ -859,6 +860,7 @@
 <translation id="1656528038316521561">背景不透明度</translation>
 <translation id="1657406563541664238">只要自動傳送使用統計資料及當機報告給 Google，就能助我們一臂之力，讓 <ph name="PRODUCT_NAME" /> 更臻完美</translation>
 <translation id="1657937299377480641">你必須要求家長授予權限，才能再次登入帳戶並存取教育資源</translation>
+<translation id="1657952527687824398">將焦點移至分頁群組</translation>
 <translation id="1658424621194652532">這個網頁正在存取你的麥克風。</translation>
 <translation id="1660405268563702784">「<ph name="APP_NAME" />」有可用的更新</translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{修正導致瀏覽器運作緩慢的分頁}other{修正導致瀏覽器運作緩慢的分頁}}</translation>
@@ -2312,6 +2314,7 @@
 <translation id="2767077837043621282">無法更新 Chromebook。請稍後再試。</translation>
 <translation id="2767127727915954024">在你關閉這個網站的所有分頁前，<ph name="ORIGIN" /> 都可以編輯「<ph name="FILENAME" />」</translation>
 <translation id="2769174155451290427">已上傳的圖片</translation>
+<translation id="2769715732905083104">將焦點移至分頁群組</translation>
 <translation id="2770082596325051055">暫停下載 <ph name="FILE_NAME" /></translation>
 <translation id="2770465223704140727">從清單中移除</translation>
 <translation id="2770690685823456775">將你的密碼匯出至其他資料夾</translation>
@@ -2586,7 +2589,7 @@
 <translation id="2979893796619951531">排除網站</translation>
 <translation id="2981113813906970160">顯示大型滑鼠游標</translation>
 <translation id="2981728693230031897">使用 Gemini 歸納本頁摘要</translation>
-<translation id="2983311431122838216">Google 搜尋中的問問 AI 模式</translation>
+<translation id="2983311431122838216">問問 Google 搜尋的 AI 模式</translation>
 <translation id="2983373101216420412">充電盒電量為 <ph name="PERCENTAGE" />%。</translation>
 <translation id="2983818520079887040">設定...</translation>
 <translation id="2984727013951557074">系統仍在將檔案同步到 Google 雲端硬碟。</translation>
@@ -5319,6 +5322,7 @@
 <translation id="5060419232449737386">字幕設定</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{這個資料夾內含 1 個書籤。確定要刪除該書籤嗎？}other{這個資料夾內含 # 個書籤。確定要刪除這些書籤嗎？}}</translation>
 <translation id="5061531353537614467">凍原</translation>
+<translation id="5061781067616989032">自行設定鍵盤快速鍵</translation>
 <translation id="5062863364865466276">移動方式</translation>
 <translation id="5063480226653192405">用量</translation>
 <translation id="5064921774605267982">開啟<ph name="PROFILE_NAME" />的設定檔。這個設定檔是由你的家長管理。</translation>
@@ -6526,6 +6530,7 @@
 <translation id="6022659036123304283">打造專屬的 Chrome</translation>
 <translation id="6024317249717725918">使用「<ph name="VISUAL_SEARCH_PROVIDER" />」搜尋影片影格(&amp;S)</translation>
 <translation id="6025215716629925253">堆疊追蹤</translation>
+<translation id="6026436621921471553">將焦點移出分頁群組</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - 已連接 USB 裝置</translation>
 <translation id="6027143200498653403">你詢問與歷史記錄有關的問題時，系統會根據瀏覽記錄中的特定資訊提供解答</translation>
 <translation id="6027945736510816438">你是不是要輸入 <ph name="WEBSITE" />？</translation>
@@ -6994,6 +6999,7 @@
 <translation id="6399675241776343019">已拒絕</translation>
 <translation id="6399774419735315745">女間諜</translation>
 <translation id="6400360390396538896">一律在 <ph name="ORIGIN" /> 上執行</translation>
+<translation id="6400714103322134861">將焦點移出分頁群組</translation>
 <translation id="6401118106417399952">裝置 EID 為 <ph name="EID_NUMBER" />，裝置序號為 <ph name="SERIAL_NUMBER" />。你可以使用這些號碼啟用服務。</translation>
 <translation id="6401458660421980302">如要將這個分頁傳送到其他裝置，請在該裝置上登入 Chrome</translation>
 <translation id="6402042774506839496">如要瞭解原因，請與應用程式開發人員聯絡</translation>
@@ -7398,6 +7404,7 @@
 <translation id="6710213216561001401">返回</translation>
 <translation id="6710394144992407503">在網頁上輸入文字時，檢查是否有拼字錯誤</translation>
 <translation id="6711236403841768371"><ph name="END_DATE" /> 之前</translation>
+<translation id="6711569175139833669">按兩下 ⌘ 鍵來啟用強化版自動填入功能</translation>
 <translation id="6712943853047024245">你已儲存過這個使用者名稱在「<ph name="WEBSITE" />」的密碼</translation>
 <translation id="6713233729292711163">新增工作資料夾</translation>
 <translation id="6713441551032149301">按住啟動器按鍵可以切換功能鍵和系統最上排按鍵</translation>
@@ -8554,6 +8561,7 @@
 <translation id="7602173054665172958">列印管理</translation>
 <translation id="7602805861133750578">你現在可以集中管理分頁群組、Gemini 對話和 AI 模式討論串，並且可隨時取消固定。</translation>
 <translation id="7602868996817972616">問問 Google 這個網頁的內容</translation>
+<translation id="7603583710244190070">貴機構禁止分享這個分頁的畫面</translation>
 <translation id="7603785829538808504">下列網站採用自訂設定</translation>
 <translation id="7604543761927773395">{NUM_PASSWORDS,plural, =1{未匯入 1 組密碼}other{未匯入 {NUM_PASSWORDS} 組密碼}}</translation>
 <translation id="7605163396341021431">授權 Android 應用程式控制這台 Chromebook 上的 USB 裝置</translation>
@@ -8707,6 +8715,7 @@
 <translation id="7707108266051544351">這個網站無法使用動作感應器。</translation>
 <translation id="7707922173985738739">使用行動數據</translation>
 <translation id="7709152031285164251">失敗 - <ph name="INTERRUPT_REASON" /></translation>
+<translation id="7709839510451455295">清除強化版自動填入功能的自訂快速鍵</translation>
 <translation id="7710568461918838723">投放(&amp;C)...</translation>
 <translation id="7711968363685835633">停用個人化轉換、建議和使用者字典</translation>
 <translation id="7712739869553853093">列印預覽對話方塊</translation>
@@ -8746,6 +8755,7 @@
 <translation id="7742706086992565332">你可以設定特定網站的縮放比例</translation>
 <translation id="7742879569460013116">將連結分享至：</translation>
 <translation id="774377079771918250">選擇儲存位置</translation>
+<translation id="7743876437245989842">貴機構禁止分享分頁的畫面</translation>
 <translation id="7744047395460924128">查看你的列印歷史記錄</translation>
 <translation id="7744192722284567281">發生資料侵害事件</translation>
 <translation id="7744649840067671761">按下新的切換工具或鍵盤按鍵即可開始指派。
@@ -9369,6 +9379,7 @@
 <translation id="8215129063232901118">透過 <ph name="DEVICE_TYPE" /> 使用手機上的功能和內容</translation>
 <translation id="8217212468862726597">醒目顯示指標</translation>
 <translation id="8217399928341212914">繼續禁止自動下載多個檔案</translation>
+<translation id="8218411859495801458">編輯強化版自動填入功能的自訂快速鍵</translation>
 <translation id="8221358554841691213">中型焦點樣式</translation>
 <translation id="8221942262855134126">管理密碼</translation>
 <translation id="8222112516148944758">系統現在會自動儲存分頁群組，並同步到所有裝置</translation>
@@ -9752,6 +9763,7 @@
 <translation id="851263357009351303">永遠允許 <ph name="HOST" /> 顯示圖片</translation>
 <translation id="8513108775083588393">自動旋轉</translation>
 <translation id="8513357934662532537">如要將 <ph name="USER_EMAIL" /> 的密碼匯入「<ph name="BRAND" />」，請選取 CSV 檔案</translation>
+<translation id="8514257511170433540">填寫表單時使用預設鍵盤快速鍵</translation>
 <translation id="8514746246728959655">請改用其他安全金鑰</translation>
 <translation id="8514828975162859845">蛋糕棒棒糖</translation>
 <translation id="8514955299594277296">不允許網站在裝置上儲存資料 (不建議)</translation>
@@ -10734,7 +10746,7 @@
 <translation id="967624055006145463">已儲存的資料</translation>
 <translation id="96774243435178359">受管理的印表機</translation>
 <translation id="968000525894980488">開啟 Google Play 服務。</translation>
-<translation id="968037381421390582">貼上「<ph name="SEARCH_TERMS" />」並執行搜尋</translation>
+<translation id="968037381421390582">貼上「<ph name="SEARCH_TERMS" />」並搜尋</translation>
 <translation id="969096075394517431">變更語言</translation>
 <translation id="969574218206797926">Chromium 會將閒置分頁占用的記憶體釋出給使用中的分頁和其他應用程式</translation>
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 個分頁}other{# 個分頁}}</translation>
@@ -10743,6 +10755,7 @@
 <translation id="973558314812359997">游標大小</translation>
 <translation id="973788791897303708">這個分頁群組已額滿</translation>
 <translation id="97381968209917373">刪除憑證「<ph name="CERT_NAME" />」</translation>
+<translation id="97570902379088759">貴機構禁止分享「<ph name="TAB_NAME" />」的畫面</translation>
 <translation id="975893173032473675">翻譯目標語言</translation>
 <translation id="976572010712028687">驗證家長身分</translation>
 <translation id="977175416263153310">在隔離視窗開啟</translation>

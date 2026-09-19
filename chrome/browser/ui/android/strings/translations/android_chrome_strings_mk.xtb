@@ -514,6 +514,7 @@
 <translation id="2996291259634659425">Создајте лозинка</translation>
 <translation id="2996682533106928201">Допрете за да отфрлите</translation>
 <translation id="2996809686854298943">Потребен е URL</translation>
+<translation id="3007318536447999974">За да разговарате со Gemini, дајте му дозвола да го користи микрофонот. Mоже да управувате со ова во <ph name="BEGIN_LINK" />Поставки<ph name="END_LINK" />.</translation>
 <translation id="3024215143424744261">Поставките за „Режим за читање“ се затворени</translation>
 <translation id="3024277805447899099">Прегледајте ја сликата</translation>
 <translation id="3026955690410463085">Вклучи линк</translation>
@@ -1815,7 +1816,9 @@
 <translation id="8058746566562539958">Отвори во нова Chrome картичка</translation>
 <translation id="8062594758852531064">Продолжено вчитување однапред:</translation>
 <translation id="8063895661287329888">Не успеа да се додаде обележувачот.</translation>
+<translation id="8064081231614696741">Изберете друга папка</translation>
 <translation id="8066816452984416180">Брзо обележете ја страницава. За да ја измените кратенкава, допрете и задржете.</translation>
+<translation id="8068041627541121907">Gemini сака да го користи микрофонот</translation>
 <translation id="8072436850275034464">Картичките што сте ги затвориле неодамна може да ги отворите повторно од секаде каде што користите Chrome</translation>
 <translation id="8073388330009372546">Отвори слика во нова картичка</translation>
 <translation id="8076492880354921740">Картички</translation>

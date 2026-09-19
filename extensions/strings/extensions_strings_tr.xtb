@@ -28,6 +28,7 @@
 <translation id="1757786065507923842">Ebeveyn izni isteği başarısız oldu.</translation>
 <translation id="1803557475693955505">'<ph name="BACKGROUND_PAGE" />' arka plan sayfası yüklenemedi.</translation>
 <translation id="1875387611427697908">Bu yalnızca <ph name="CHROME_WEB_STORE" /> kullanılarak eklenebilir</translation>
+<translation id="1901182793187376715"><ph name="EXTENSION_NAME" /> (uzantı kimliği: "<ph name="EXTENSION_ID" />"), düşük güven düzeyine sahip ortamlarda politika ile yüklenemez.</translation>
 <translation id="2131077480075264">"<ph name="IMPORT_NAME" />" tarafından izin verilmediğinden "<ph name="APP_NAME" />" yüklenemiyor</translation>
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" eklensin mi?</translation>
 <translation id="2159915644201199628">Resmin kodu çözülemedi: '<ph name="IMAGE_NAME" />'</translation>

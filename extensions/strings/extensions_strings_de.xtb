@@ -28,6 +28,7 @@
 <translation id="1757786065507923842">Berechtigungsanfrage an Eltern fehlgeschlagen.</translation>
 <translation id="1803557475693955505">Hintergrundseite "<ph name="BACKGROUND_PAGE" />" konnte nicht geladen werden.</translation>
 <translation id="1875387611427697908">Dieser Artikel kann nur über den <ph name="CHROME_WEB_STORE" /> hinzugefügt werden</translation>
+<translation id="1901182793187376715"><ph name="EXTENSION_NAME" /> (Erweiterungs-ID „<ph name="EXTENSION_ID" />“) kann in wenig vertrauenswürdigen Umgebungen nicht per Richtlinie installiert werden.</translation>
 <translation id="2131077480075264">"<ph name="APP_NAME" />" konnte nicht installiert werden, da dies vom "<ph name="IMPORT_NAME" />" nicht zugelassen wurde.</translation>
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" hinzufügen?</translation>
 <translation id="2159915644201199628">Bild konnte nicht decodiert werden: "<ph name="IMAGE_NAME" />"</translation>

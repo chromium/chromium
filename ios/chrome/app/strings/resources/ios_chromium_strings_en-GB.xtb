@@ -142,6 +142,7 @@ Try waiting a few minutes before switching accounts. If you switch accounts now,
 <translation id="3855938650519180865">What's new in Chromium</translation>
 <translation id="3886689467633467988">Sign in to this site and Chromium to get your bookmarks and more on all your devices.</translation>
 <translation id="3949514465204582407">Chromium tip: Get your passwords in any app</translation>
+<translation id="3983298990898629929">Set Chromium as your default browser to open links in one tap</translation>
 <translation id="4005283307739974863">Opens and Runs Safety Check in Chromium.</translation>
 <translation id="4043291146360695975">Passwords are saved to Password Manager on this device only.</translation>
 <translation id="4046625794029820944">Stop copying URLs. Set Chromium as default to load pages directly.</translation>
@@ -303,6 +304,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">Your password will be saved to Password Manager for <ph name="EMAIL" />.</translation>
 <translation id="7434848749522628428">This passkey will be saved to Password Manager for <ph name="USER_EMAIL" /></translation>
+<translation id="7453822113116681031">Make Chromium your default browser to open links in one tap</translation>
 <translation id="7504829997542308412">Open Chromium</translation>
 <translation id="7531461704633548377">From Chromium</translation>
 <translation id="7554983317097061001">Chromium tip: Move Chromium to the dock</translation>

@@ -838,6 +838,8 @@
 <translation id="2384307209577226199">پیش‌فرض شرکتی</translation>
 <translation id="2385809941344967209">‏Chrome را از تنظیمات Chrome به‌روزرسانی کنید</translation>
 <translation id="2386255080630008482">گواهی سرور باطل شده است.</translation>
+<translation id="2387424091060104123">‏پیشنهادشده توسط Gemini · <ph name="SRC_LINK" />مشاهده منابع<ph name="END_SRC_LINK" />
+می‌توانید این پیشنهاد را از Chrome بردارید. منبع اصلی‌تان حذف نخواهد شد. <ph name="MANAGE_LINK" />مدیریت «تکمیل خودکار بهبودیافته»<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">بسط دادن</translation>
 <translation id="2392959068659972793">نمایش خط‌مشی‌ها با مقدار تنظیم نشده</translation>
 <translation id="239429038616798445">این روش ارسال در دسترس نیست. روش دیگری را امتحان کنید.</translation>
@@ -1519,6 +1521,8 @@
 <translation id="3577473026931028326">مشکلی پیش آمد. دوباره امتحان کنید.</translation>
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">‏وقتی این صفحه آماده شد، Chrome به شما اطلاع می‌دهد. &lt;a&gt;لغو&lt;/a&gt;</translation>
+<translation id="3581499772329034229">افزودن خودکار زبانه‌ها</translation>
+<translation id="3582670569275100909">محموله‌ها</translation>
 <translation id="3582930987043644930">افزودن نام</translation>
 <translation id="3583757800736429874">&amp;انجام مجدد انتقال</translation>
 <translation id="3584299510153766161">دو سوراخ پایین</translation>
@@ -1594,6 +1598,7 @@
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">در حال بارکردن…</translation>
 <translation id="3709599264800900598">نوشتاری که کپی کرده‌اید</translation>
+<translation id="3711223220609269738">زبانه مجزای جدید</translation>
 <translation id="3711430313228789376">‏مرورگر Chrome می‌خواهد گذرواژه‌ها را نشان دهد</translation>
 <translation id="3711895659073496551">تعویق</translation>
 <translation id="3712004750972384495">درحال ذخیره کردن ضبط صفحه‌نمایش</translation>
@@ -1612,6 +1617,7 @@
 <translation id="3727309136762649052">فضای نام</translation>
 <translation id="3727850735097852673">‏برای استفاده از «مدیر گذرواژه Google» با macOS Keychain، برنامه Chrome را مجدداً راه‌اندازی کنید و دسترسی به Keychain را مجاز کنید. پس‌از راه‌اندازی مجدد، برگه‌هایتان دوباره باز می‌شوند.</translation>
 <translation id="3728173127485570463">‏مرورگر Chrome ازاین‌پس برای تکمیل خودکار گذرواژه‌ها نیازی به اثر انگشت شما نخواهد داشت</translation>
+<translation id="3729811201279509483">افزودن دستی زبانه‌ها</translation>
 <translation id="3736564442532774454">‏مرورگر Chrome می‌خواهد اطلاعات حساس شما را در <ph name="APP_NAME" /> پر کند.</translation>
 <translation id="3738166223076830879">سرپرست شما مرورگرتان را مدیریت می‌کند.</translation>
 <translation id="3739842843727261045">«رأی موافق» بازخوردی با این معنا ارسال می‌کند که شما این نتایج را می‌پسندید</translation>
@@ -2775,6 +2781,7 @@
 <translation id="5649053991847567735">بارگیری‌های خودکار</translation>
 <translation id="5651323159439184939">تغذیه تراکتوری</translation>
 <translation id="5653681867130739344">‏کارت شناسایی را به‌طور امن در «کیف پول Google» به‌روزرسانی کنید</translation>
+<translation id="5653744563415531641">‏اطلاعاتتان را ذخیره کنید تا کارهایی مانند پر کردن فرم‌ها در محصولات Google را سریع‌تر انجام دهید. می‌توانید <ph name="MANAGE_WALLET_SETTINGS_LINK" /> برای <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">شناسه گزارش خرابی بارگذاری‌شده:</translation>
 <translation id="5654965123204121933">نشانی وب حاوی رشته جایگزین الزامی <ph name="SEARCH_TERMS_REPLACEMENT" /> نیست: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">ایمیل</translation>
@@ -3221,6 +3228,7 @@
 <translation id="6410264514553301377">‏CVC‏ و تاریخ انقضای <ph name="CREDIT_CARD" /> را وارد کنید</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">کادر گفتگوی تأیید ولی</translation>
+<translation id="6413532517183895572">مدیریت تنظیمات «کیف پول»</translation>
 <translation id="6415778972515849510">‏Chromium می‌تواند کمک کند از حساب Google خود محافظت کنید و گذرواژه‌تان را تغییر دهید.</translation>
 <translation id="6416877227920300343">‫EDP</translation>
 <translation id="6418199314628742460">حتماً همه داده‌های شخصی یا کسب‌وکار مهم را در فضای ذخیره‌سازی خارجی ذخیره کنید.</translation>
@@ -4009,6 +4017,7 @@
 <translation id="7758069387465995638">دیوار آتش یا نرم‌افزار ضدویروس ممکن است مانع اتصال شده باشد.</translation>
 <translation id="7759147511335618829">‏برنامه‌ریزی مجدد و کنترل دستگاه MIDI</translation>
 <translation id="7759809451544302770">اختیاری</translation>
+<translation id="7760566304700414795">محموله</translation>
 <translation id="776110834126722255">منسوخ</translation>
 <translation id="7761159795823346334">دوربین مجاز شود؟</translation>
 <translation id="7761701407923456692">گواهی سرور با نشانی وب مطابقت ندارد.</translation>
@@ -4354,6 +4363,7 @@
 <translation id="8371841335382565017">نمایش فهرست دستگاه برای پخش محتوا</translation>
 <translation id="8371889962595521444">گواهی‌نامه ریشه سفارشی</translation>
 <translation id="8374636051559112948">متفاوت است</translation>
+<translation id="8377507422902936905">سفارش‌ها</translation>
 <translation id="837840316697671463">اگر نمی‌توانید فایلی را در دستگاهتان پیدا کنید، آن را در <ph name="CLOUD_PROVIDER" /> جستجو کنید.</translation>
 <translation id="8378714024927312812">توسط سازمانتان مدیریت می‌شود</translation>
 <translation id="8380941800586852976">خطرناک</translation>

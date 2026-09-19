@@ -142,6 +142,7 @@ Odota muutama minuutti ennen tilin vaihtamista. Jos vaihdat tiliä nyt, tämä d
 <translation id="3855938650519180865">Uutta Chromiumissa</translation>
 <translation id="3886689467633467988">Kirjaudu tälle sivustolle ja Chromiumiin, niin voit käyttää kirjanmerkkejä ja muita asetuksia kaikilla laitteillasi.</translation>
 <translation id="3949514465204582407">Chromium-vinkki: Käytä salasanoja missä tahansa sovelluksessa</translation>
+<translation id="3983298990898629929">Valitse Chromium oletusselaimeksi, niin voit avata linkit yhdellä napautuksella</translation>
 <translation id="4005283307739974863">Avaa ja suorittaa turvatarkistuksen Chromiumissa.</translation>
 <translation id="4043291146360695975">Salasanat tallennetaan Salasanojen ylläpitoon vain tällä laitteella.</translation>
 <translation id="4046625794029820944">Lopeta URL-osoitteiden kopiointi. Valitse Chromium oletusselaimeksi, niin voit ladata sivuja suoraan.</translation>
@@ -303,6 +304,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">Salasana tallennetaan Salasanojen ylläpitoon sähköpostiosoitteella <ph name="EMAIL" />.</translation>
 <translation id="7434848749522628428">Tämä avainkoodi tallennetaan Salasanojen ylläpitoon sähköpostiosoitteella <ph name="USER_EMAIL" /></translation>
+<translation id="7453822113116681031">Tee Chromiumista oletusselain, niin voit avata linkit yhdellä napautuksella</translation>
 <translation id="7504829997542308412">Avaa Chromium</translation>
 <translation id="7531461704633548377">Chromiumista</translation>
 <translation id="7554983317097061001">Chromium-vinkki: Siirrä Chromium alapalkkiin</translation>

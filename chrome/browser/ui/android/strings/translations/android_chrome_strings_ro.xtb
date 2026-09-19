@@ -514,7 +514,9 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="2996291259634659425">Creează o expresie de acces</translation>
 <translation id="2996682533106928201">Atinge ca să închizi</translation>
 <translation id="2996809686854298943">Adresă URL obligatorie</translation>
+<translation id="3007318536447999974">Ca să vorbești cu Gemini, acordă-i permisiunea să-ți folosească microfonul. Poți gestiona această opțiune și din <ph name="BEGIN_LINK" />Setări<ph name="END_LINK" /></translation>
 <translation id="3024215143424744261">Preferințele pentru modul de lectură au fost închise</translation>
+<translation id="3024277805447899099">Previzualizează imaginea</translation>
 <translation id="3026955690410463085">Include linkul</translation>
 <translation id="3027950907978057636">Din <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Fără preîncărcare</translation>
@@ -1031,6 +1033,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="5040262127954254034">Confidențialitate</translation>
 <translation id="504456571576643789">De reținut</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> fereastră selectată}few{<ph name="WINDOW_COUNT_NORMAL" /> ferestre selectate}other{<ph name="WINDOW_COUNT_NORMAL" /> de ferestre selectate}}</translation>
+<translation id="5058506215037547387">Previzualizează pagina</translation>
 <translation id="506254248375231072">Nicio filă</translation>
 <translation id="5075939510584558547">Salvează fără criptare</translation>
 <translation id="5078638979202084724">Marchează toate filele</translation>
@@ -1813,7 +1816,9 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="8058746566562539958">Deschide în filă Chrome nouă</translation>
 <translation id="8062594758852531064">Preîncărcare prelungită:</translation>
 <translation id="8063895661287329888">Marcajul nu a putut fi adăugat.</translation>
+<translation id="8064081231614696741">Alege alt dosar</translation>
 <translation id="8066816452984416180">Marchează rapid această pagină. Pentru a edita comanda rapidă, atinge-o lung.</translation>
+<translation id="8068041627541121907">Gemini vrea să-ți folosească microfonul</translation>
 <translation id="8072436850275034464">Poți să redeschizi filele pe care le-ai închis recent, oriunde folosești Chrome</translation>
 <translation id="8073388330009372546">Vezi imaginea în filă nouă</translation>
 <translation id="8076492880354921740">File</translation>

@@ -514,6 +514,7 @@
 <translation id="2996291259634659425">Придумайте кодовую фразу</translation>
 <translation id="2996682533106928201">Нажмите, чтобы закрыть</translation>
 <translation id="2996809686854298943">Необходимо указать URL</translation>
+<translation id="3007318536447999974">Чтобы разговаривать с Gemini, разрешите ему использовать микрофон. Вы также можете сделать это в <ph name="BEGIN_LINK" />настройках<ph name="END_LINK" />.</translation>
 <translation id="3024215143424744261">Настройки режима чтения закрыты</translation>
 <translation id="3024277805447899099">Предпросмотр изображения</translation>
 <translation id="3026955690410463085">Добавить ссылку</translation>
@@ -1815,7 +1816,9 @@
 <translation id="8058746566562539958">Открыть в новой вкладке</translation>
 <translation id="8062594758852531064">Расширенная предзагрузка:</translation>
 <translation id="8063895661287329888">Не удалось добавить закладку.</translation>
+<translation id="8064081231614696741">Выберите другую папку</translation>
 <translation id="8066816452984416180">Добавить страницу в закладки. Чтобы изменить функцию кнопки, нажмите и удерживайте ее.</translation>
+<translation id="8068041627541121907">Gemini запрашивает доступ к микрофону</translation>
 <translation id="8072436850275034464">Вы можете на любом устройстве открыть недавно закрытые вкладки в Chrome.</translation>
 <translation id="8073388330009372546">Открыть в новой вкладке</translation>
 <translation id="8076492880354921740">Вкладки</translation>

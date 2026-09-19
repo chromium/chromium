@@ -837,6 +837,8 @@
 <translation id="2384307209577226199">Для предприятий (по умолчанию)</translation>
 <translation id="2385809941344967209">Обновить браузер через настройки Chrome</translation>
 <translation id="2386255080630008482">Сертификат сервера отозван.</translation>
+<translation id="2387424091060104123">Предложено Gemini · <ph name="SRC_LINK" />Посмотреть источники<ph name="END_SRC_LINK" />
+Вы можете удалить это предложение из Chrome. Источник удален не будет. <ph name="MANAGE_LINK" />Настроить улучшенное автозаполнение<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Длиннее</translation>
 <translation id="2392959068659972793">Показывать правила, значения которых не заданы</translation>
 <translation id="239429038616798445">Этот способ доставки недоступен. Выберите другой.</translation>
@@ -1518,6 +1520,7 @@
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Мы сообщим вам, когда страница будет готова. &lt;a&gt;Отмена&lt;/a&gt;</translation>
 <translation id="3581499772329034229">Автоматическое добавление вкладок</translation>
+<translation id="3582670569275100909">Отправки</translation>
 <translation id="3582930987043644930">Добавьте имя</translation>
 <translation id="3583757800736429874">&amp;Повторить перемещение</translation>
 <translation id="3584299510153766161">Два отверстия снизу</translation>
@@ -4012,6 +4015,7 @@
 <translation id="7758069387465995638">Возможно, подключение заблокировано брандмауэром или антивирусным ПО.</translation>
 <translation id="7759147511335618829">Управление/программирование MIDI</translation>
 <translation id="7759809451544302770">Необязательно</translation>
+<translation id="7760566304700414795">Доставка</translation>
 <translation id="776110834126722255">Устаревшее правило</translation>
 <translation id="7761159795823346334">Предоставить доступ к камере?</translation>
 <translation id="7761701407923456692">Сертификат сервера не соответствует URL.</translation>
@@ -4357,6 +4361,7 @@
 <translation id="8371841335382565017">Показать список устройств для трансляции</translation>
 <translation id="8371889962595521444">Пользовательские корневые сертификаты</translation>
 <translation id="8374636051559112948">разный</translation>
+<translation id="8377507422902936905">Заказы</translation>
 <translation id="837840316697671463">Если вы не можете найти какой-либо из них на устройстве, посмотрите в сервисе "<ph name="CLOUD_PROVIDER" />".</translation>
 <translation id="8378714024927312812">Управляется вашей организацией</translation>
 <translation id="8380941800586852976">Опасно</translation>

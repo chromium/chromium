@@ -514,7 +514,9 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2996291259634659425">Criar senha longa</translation>
 <translation id="2996682533106928201">Toque para dispensar</translation>
 <translation id="2996809686854298943">O URL é obrigatório</translation>
+<translation id="3007318536447999974">Para falar com o Gemini, dê permissão de acesso ao microfone. Também é possível gerenciar essa funcionalidade nas <ph name="BEGIN_LINK" />Configurações<ph name="END_LINK" />.</translation>
 <translation id="3024215143424744261">Preferências do modo de leitura fechadas</translation>
+<translation id="3024277805447899099">Imagem de prévia</translation>
 <translation id="3026955690410463085">Incluir link</translation>
 <translation id="3027950907978057636">De <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Sem pré-carregamento</translation>
@@ -785,7 +787,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4137746084635924146">Idioma atual do dispositivo</translation>
 <translation id="414128724510021958">Sites para computador solicitados por padrão</translation>
 <translation id="4162867837470729563">Lista de opções de compartilhamento no tamanho máximo.</translation>
-<translation id="4164642020717536140">Navegação na web rápida e segura</translation>
+<translation id="4164642020717536140">Navegação rápida e segura na web</translation>
 <translation id="4165077084524712774">Mais ferramentas</translation>
 <translation id="4169156312706405526">Anexar arquivos do Drive</translation>
 <translation id="4170577491341606575">Buscando seus dados\u2026</translation>
@@ -1032,6 +1034,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="5040262127954254034">Privacidade</translation>
 <translation id="504456571576643789">Lembre-se</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> janela selecionada}one{<ph name="WINDOW_COUNT_NORMAL" /> janela selecionada}other{<ph name="WINDOW_COUNT_NORMAL" /> janelas selecionadas}}</translation>
+<translation id="5058506215037547387">Visualizar página</translation>
 <translation id="506254248375231072">Nenhuma guia</translation>
 <translation id="5075939510584558547">Salvar sem criptografia</translation>
 <translation id="5078638979202084724">Adicionar todas as guias aos favoritos</translation>
@@ -1814,7 +1817,9 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8058746566562539958">Abrir em nova guia do Chrome</translation>
 <translation id="8062594758852531064">Pré-carregamento estendido:</translation>
 <translation id="8063895661287329888">Falha ao adicionar favorito.</translation>
+<translation id="8064081231614696741">Escolha outra pasta</translation>
 <translation id="8066816452984416180">Adicione esta página aos favoritos rapidamente. Para editar este atalho, toque e pressione.</translation>
+<translation id="8068041627541121907">O Gemini quer usar o microfone</translation>
 <translation id="8072436850275034464">Reabra guias fechadas recentemente em qualquer lugar onde usa o Chrome</translation>
 <translation id="8073388330009372546">Abrir imagem em nova guia</translation>
 <translation id="8076492880354921740">Guias</translation>
@@ -2063,7 +2068,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="9015111999662965458">Para garantir que o dispositivo seja usado com segurança, talvez sua organização precise acessar informações sobre o sistema operacional, o navegador, as configurações e os softwares instalados no dispositivo</translation>
 <translation id="9019199799064251516">Continuar sem um bloqueio de perfil do carro?</translation>
 <translation id="9022774213089566801">Visitados com frequência</translation>
-<translation id="9024318700713112071">Defina o Chrome como o navegador padrão</translation>
+<translation id="9024318700713112071">Defina o Chrome como navegador padrão</translation>
 <translation id="9027728231343310283">Desfazer <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Mover para\u2026</translation>
 <translation id="904146253922032365">Toque e segure para mostrar as guias na vertical</translation>

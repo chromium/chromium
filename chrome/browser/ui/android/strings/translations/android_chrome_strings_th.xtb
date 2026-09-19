@@ -514,6 +514,7 @@
 <translation id="2996291259634659425">สร้างพาสเฟรส</translation>
 <translation id="2996682533106928201">แตะเพื่อปิด</translation>
 <translation id="2996809686854298943">ต้องระบุ URL</translation>
+<translation id="3007318536447999974">ให้สิทธิ์ Gemini เข้าถึงไมโครโฟน หากต้องการพูดคุยกับ Gemini คุณจัดการสิทธิ์นี้ใน<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" />ได้เช่นกัน</translation>
 <translation id="3024215143424744261">ปิดค่ากำหนดโหมดการอ่านแล้ว</translation>
 <translation id="3024277805447899099">แสดงตัวอย่างรูปภาพ</translation>
 <translation id="3026955690410463085">รวมลิงก์</translation>
@@ -1815,7 +1816,9 @@
 <translation id="8058746566562539958">เปิดในแท็บใหม่ของ Chrome</translation>
 <translation id="8062594758852531064">การโหลดล่วงหน้าที่เพิ่มขึ้น:</translation>
 <translation id="8063895661287329888">เพิ่มบุ๊กมาร์กไม่สำเร็จ</translation>
+<translation id="8064081231614696741">เลือกโฟลเดอร์อื่น</translation>
 <translation id="8066816452984416180">บุ๊กมาร์กหน้านี้อย่างรวดเร็ว หากต้องการแก้ไขทางลัดนี้ ให้แตะค้างไว้</translation>
+<translation id="8068041627541121907">Gemini ต้องการใช้ไมโครโฟนของคุณ</translation>
 <translation id="8072436850275034464">คุณสามารถเปิดแท็บที่เพิ่งปิดไปอีกครั้งได้จากทุกที่ที่คุณใช้ Chrome</translation>
 <translation id="8073388330009372546">เปิดภาพในแท็บใหม่</translation>
 <translation id="8076492880354921740">แท็บ</translation>
@@ -1992,7 +1995,7 @@
 <translation id="8715300232952757586">ระบบจะปิด <ph name="TAB_TITLE" /></translation>
 <translation id="8723453889042591629">แปลหน้านี้อย่างรวดเร็ว หากต้องการแก้ไขทางลัดนี้ ให้แตะค้างไว้</translation>
 <translation id="8725066075913043281">ลองอีกครั้ง</translation>
-<translation id="8727043961453758442">ใช้ประโยชน์สูงสุดจาก Chrome</translation>
+<translation id="8727043961453758442">ใช้ประโยชน์จาก Chrome ให้คุ้มค่าที่สุด</translation>
 <translation id="8731268612289859741">รหัสความปลอดภัย</translation>
 <translation id="8738163682604285902">ดูโหมดการอ่านไหม</translation>
 <translation id="8746155870861185046">แชร์ไฮไลต์</translation>

@@ -150,6 +150,7 @@
 <translation id="2575822587468774919">‘ပုံဖြင့်ရှာဖွေမှု’ ဖြင့် ရှာရန် တစ်ခုခုရွေးပါ</translation>
 <translation id="2576118232315942160">သင့်စက်အားလုံးတွင် စကားဝှက်နှင့် အခြားအရာများရယူရန် Chromium သို့ လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="2587622539943955767">Chromium ဒေါင်းလုဒ်လုပ်ရန်နှင့် သင့် Google Account သို့ လက်မှတ်ထိုးဝင်ရန် QR ကုဒ်ကို ဖုန်းဖြင့် စကင်ဖတ်ပါ။</translation>
+<translation id="2587885422541096572">Chromium ဖြင့် ရှာရန်။</translation>
 <translation id="2592940277904433508">Chromium ဆက်သုံးရန်</translation>
 <translation id="259935314519650377">ဒေါင်းလုဒ်လုပ်ထားသော ထည့်သွင်းသည့်ဖိုင်ကို ကက်ရှ်လုပ်၍မရပါ။ အမှား- <ph name="UNPACK_CACHING_ERROR_CODE" />။</translation>
 <translation id="2620436844016719705">စနစ်</translation>
@@ -782,6 +783,7 @@ Chromium သည်သင့်ကြိုတင်ချိန်ညှိခ�
 <translation id="897581876605952338">Chromium Enterprise အမှတ်တံဆိပ်</translation>
 <translation id="8980139959902937527">သင့် <ph name="DEVICE_TYPE" /> တွင် Chromium အက်ပ်ဖြင့် Google ၏ လုံခြုံမှုကို သွားရင်းလာရင်း ရယူပါ</translation>
 <translation id="8981150672034878610">သင့်ပရိုဖိုင်ကို ဖွင့်ချိန်တွင် တစ်ခုခုမှားသွားသဖြင့် Chromium ကို စတင်၍မရပါ။ Chromium ကို ပြန်စကြည့်ပါ။</translation>
+<translation id="8981886272598860786">Chromium ဖြင့် ရှာရန် (သို့) <ph name="BEGIN_LINK" />ဆက်တင်များ<ph name="END_LINK" /> တွင် စိတ်ကြိုက်လုပ်ရန်</translation>
 <translation id="8988036198400390003">Chromium ပရိုဖိုင်များ စီမံရန်</translation>
 <translation id="8993855408334954620">Chromium ရှိ Gemini နှင့် သင်ဖွင့်ထားသောတဘ်အကြား ရွှေ့ကြည့်ရန် ကီးဘုတ်သုံးပါ။</translation>
 <translation id="9018218886431812662">ထည့်ပြီးပါပြီ</translation>

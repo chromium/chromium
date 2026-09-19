@@ -28,6 +28,7 @@
 <translation id="1757786065507923842">Không thể yêu cầu cha mẹ cho phép.</translation>
 <translation id="1803557475693955505">Không thể tải trang nền '<ph name="BACKGROUND_PAGE" />'.</translation>
 <translation id="1875387611427697908">Chỉ có thể thêm ứng dụng/tiện ích này từ <ph name="CHROME_WEB_STORE" /></translation>
+<translation id="1901182793187376715"><ph name="EXTENSION_NAME" /> (mã tiện ích "<ph name="EXTENSION_ID" />") không thể được cài đặt theo chính sách trong các môi trường có độ tin cậy thấp.</translation>
 <translation id="2131077480075264">Không thể cài đặt "<ph name="APP_NAME" />" vì "<ph name="IMPORT_NAME" />" không cho phép ứng dụng này</translation>
 <translation id="2150661552845026580">Thêm "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2159915644201199628">Không thể giải mã hình ảnh: '<ph name="IMAGE_NAME" />'</translation>

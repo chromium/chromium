@@ -28,6 +28,7 @@
 <translation id="1757786065507923842">Échec de la demande d'autorisation parentale.</translation>
 <translation id="1803557475693955505">Impossible de charger la page d'arrière-plan "<ph name="BACKGROUND_PAGE" />".</translation>
 <translation id="1875387611427697908">Cet élément doit être installé depuis le <ph name="CHROME_WEB_STORE" /></translation>
+<translation id="1901182793187376715"><ph name="EXTENSION_NAME" /> (ID d'extension "<ph name="EXTENSION_ID" />") ne peut pas être installée par une règle dans des environnements de faible confiance.</translation>
 <translation id="2131077480075264">Impossible d'installer l'application "<ph name="APP_NAME" />", car elle n'est pas autorisée par "<ph name="IMPORT_NAME" />".</translation>
 <translation id="2150661552845026580">Installer "<ph name="EXTENSION_NAME" />" ?</translation>
 <translation id="2159915644201199628">Impossible de décoder l'image : "<ph name="IMAGE_NAME" />".</translation>

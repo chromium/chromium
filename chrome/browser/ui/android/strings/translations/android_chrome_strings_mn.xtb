@@ -514,6 +514,7 @@
 <translation id="2996291259634659425">Нэвтрэх үг үүсгэх</translation>
 <translation id="2996682533106928201">Хаахын тулд товшино уу</translation>
 <translation id="2996809686854298943">URL шаардлагатай</translation>
+<translation id="3007318536447999974">Gemini-тай ярихын тулд таны микрофоныг ашиглах зөвшөөрөл өгнө үү. Та үүнийг мөн <ph name="BEGIN_LINK" />Тохиргооноос<ph name="END_LINK" /> удирдах боломжтой</translation>
 <translation id="3024215143424744261">Унших горимын сонголтуудыг хаасан</translation>
 <translation id="3024277805447899099">Зураг урьдчилан үзэх</translation>
 <translation id="3026955690410463085">Холбоос оруулна уу</translation>
@@ -1815,7 +1816,9 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8058746566562539958">Chrome-н шинэ табад нээх</translation>
 <translation id="8062594758852531064">Уртасгасан урьдчилан ачаалал:</translation>
 <translation id="8063895661287329888">Хавчуургыг нэмж чадсангүй.</translation>
+<translation id="8064081231614696741">Өөр фолдер сонгох</translation>
 <translation id="8066816452984416180">Энэ хуудсыг шуурхай тэмдэглэнэ үү. Энэ товчлолыг засахын тулд хүрээд удаан дарна уу.</translation>
+<translation id="8068041627541121907">Gemini таны микрофоныг ашиглахыг хүсэж байна</translation>
 <translation id="8072436850275034464">Та Chrome-г хаанаас ч ашигласан бай саяхан хаасан табуудаа дахин нээх боломжтой</translation>
 <translation id="8073388330009372546">Зургийг шинэ цонхонд нээ</translation>
 <translation id="8076492880354921740">Таб</translation>

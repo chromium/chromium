@@ -28,6 +28,7 @@
 <translation id="1757786065507923842">Kon nie ouertoestemmingversoek uitvoer nie.</translation>
 <translation id="1803557475693955505">Kon nie plaaslike agtergrondbladsy '<ph name="BACKGROUND_PAGE" />' laai nie.</translation>
 <translation id="1875387611427697908">Dit kan net van die <ph name="CHROME_WEB_STORE" /> af bygevoeg word</translation>
+<translation id="1901182793187376715"><ph name="EXTENSION_NAME" /> (uitbreiding-ID “<ph name="EXTENSION_ID" />”) kan nie met beleid in omgewings met lae vertroue geïnstalleer word nie.</translation>
 <translation id="2131077480075264">Kan nie "<ph name="APP_NAME" />" installeer nie omdat dit nie deur "<ph name="IMPORT_NAME" />" toegelaat word nie</translation>
 <translation id="2150661552845026580">Voeg "<ph name="EXTENSION_NAME" />" by?</translation>
 <translation id="2159915644201199628">Kon nie prent ontsyfer nie: "<ph name="IMAGE_NAME" />"</translation>

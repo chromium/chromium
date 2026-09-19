@@ -514,7 +514,9 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2996291259634659425">암호 만들기</translation>
 <translation id="2996682533106928201">닫으려면 탭하세요</translation>
 <translation id="2996809686854298943">URL이 필요합니다.</translation>
+<translation id="3007318536447999974">Gemini와 대화하려면 Gemini에 마이크 사용 권한을 부여하세요. 이 옵션은 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />에서도 관리할 수 있습니다.</translation>
 <translation id="3024215143424744261">읽기 모드 환경설정 닫힘</translation>
+<translation id="3024277805447899099">이미지 미리보기</translation>
 <translation id="3026955690410463085">링크 포함</translation>
 <translation id="3027950907978057636">출처: <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">미리 로드 안함</translation>
@@ -787,6 +789,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4162867837470729563">공유 옵션 목록이 전체 높이로 열렸습니다.</translation>
 <translation id="4164642020717536140">빠르고 안전하게 웹을 탐색하세요</translation>
 <translation id="4165077084524712774">도구 더보기</translation>
+<translation id="4169156312706405526">Drive에서 파일 첨부</translation>
 <translation id="4170577491341606575">데이터를 가져오는 중\u2026</translation>
 <translation id="4172051516777682613">항상 표시</translation>
 <translation id="4176838562184310003">Chrome이 제대로 종료되지 않았으며, 손실된 창과 탭을 복원하려고 시도할 수 있습니다. 복원 시 일부 창이 최소화될 수 있습니다.</translation>
@@ -1030,6 +1033,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5040262127954254034">개인 정보 보호</translation>
 <translation id="504456571576643789">고려사항</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" />개 창 선택됨}other{<ph name="WINDOW_COUNT_NORMAL" />개 창 선택됨}}</translation>
+<translation id="5058506215037547387">페이지 미리보기</translation>
 <translation id="506254248375231072">탭 없음</translation>
 <translation id="5075939510584558547">암호화 없이 저장</translation>
 <translation id="5078638979202084724">모든 탭 북마크</translation>
@@ -1627,7 +1631,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7335766481146072567">계속을 누릅니다.</translation>
 <translation id="7336259382292148213">알림 문제 없음</translation>
 <translation id="7339898014177206373">새 창</translation>
-<translation id="7349983576451251297">맞춤 탭 대신 Chrome 브라우저에서 웹페이지를 엽니다.</translation>
+<translation id="7349983576451251297">Chrome 브라우저에서 맞춤 탭 대신 웹페이지 열기</translation>
 <translation id="7352339641508007922">긴 스크린샷을 찍으려면 드래그하세요.</translation>
 <translation id="7352651011704765696">문제가 발생했습니다</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{선택한 1개 항목 공유}other{선택한 #개 항목 공유}}</translation>
@@ -1812,7 +1816,9 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8058746566562539958">새 Chrome 탭에서 열기</translation>
 <translation id="8062594758852531064">확장된 미리 로드:</translation>
 <translation id="8063895661287329888">북마크를 추가하지 못했습니다.</translation>
+<translation id="8064081231614696741">다른 폴더 선택</translation>
 <translation id="8066816452984416180">이 페이지를 빠르게 북마크에 추가합니다. 바로가기를 수정하려면 길게 터치하세요.</translation>
+<translation id="8068041627541121907">Gemini가 내 마이크를 사용하려고 합니다</translation>
 <translation id="8072436850275034464">Chrome을 사용하면 어디서나 최근에 닫은 탭을 다시 열 수 있습니다</translation>
 <translation id="8073388330009372546">새 탭에서 이미지 열기</translation>
 <translation id="8076492880354921740">탭</translation>

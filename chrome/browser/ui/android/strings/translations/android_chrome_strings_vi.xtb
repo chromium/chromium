@@ -514,7 +514,9 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2996291259634659425">Tạo cụm mật khẩu</translation>
 <translation id="2996682533106928201">Nhấn để đóng</translation>
 <translation id="2996809686854298943">Cần có URL</translation>
+<translation id="3007318536447999974">Để trò chuyện với Gemini, hãy cấp quyền sử dụng micrô cho Gemini. Bạn cũng có thể quản lý quyền này trong phần <ph name="BEGIN_LINK" />Cài đặt<ph name="END_LINK" /></translation>
 <translation id="3024215143424744261">Đã đóng các lựa chọn ưu tiên của Chế độ đọc</translation>
+<translation id="3024277805447899099">Xem trước hình ảnh</translation>
 <translation id="3026955690410463085">Thêm đường liên kết</translation>
 <translation id="3027950907978057636">Từ <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Không tải trước</translation>
@@ -787,6 +789,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="4162867837470729563">Danh sách các lựa chọn chia sẻ được mở trên toàn màn hình.</translation>
 <translation id="4164642020717536140">Duyệt web nhanh chóng và an toàn</translation>
 <translation id="4165077084524712774">Công cụ khác</translation>
+<translation id="4169156312706405526">Đính kèm tệp từ Drive</translation>
 <translation id="4170577491341606575">Đang tải dữ liệu của bạn\u2026</translation>
 <translation id="4172051516777682613">Luôn hiển thị</translation>
 <translation id="4176838562184310003">Chrome đã tắt không đúng cách và có thể cố gắng khôi phục các cửa sổ và thẻ bị mất. Một số cửa sổ có thể bị thu nhỏ khi được khôi phục.</translation>
@@ -1030,6 +1033,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5040262127954254034">Quyền riêng tư</translation>
 <translation id="504456571576643789">Những yếu tố cần xem xét</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{Đã chọn <ph name="WINDOW_COUNT_ONE" /> cửa sổ}other{Đã chọn <ph name="WINDOW_COUNT_NORMAL" /> cửa sổ}}</translation>
+<translation id="5058506215037547387">Xem trước trang</translation>
 <translation id="506254248375231072">Không có thẻ nào</translation>
 <translation id="5075939510584558547">Lưu mà không mã hoá</translation>
 <translation id="5078638979202084724">Đánh dấu tất cả các thẻ</translation>
@@ -1255,6 +1259,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="604996488070107836">Không tải xuống được <ph name="FILE_NAME" /> do lỗi không xác định.</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="606985262342505139">Đã mở bảng thẻ ở dưới cùng trên toàn màn hình</translation>
+<translation id="6070608977567243308">Mua sắm bằng Google Ống kính</translation>
 <translation id="6071995715087444295">Để kiểm tra xem có mật khẩu nào bị lộ không, hãy đăng nhập vào Tài khoản Google của bạn</translation>
 <translation id="6078323886959318429">Thêm lối tắt</translation>
 <translation id="6085886413119427067">Xác định cách kết nối với các trang web qua đường kết nối an toàn</translation>
@@ -1302,6 +1307,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="6232535412751077445">Bật tính năng “Không theo dõi” nghĩa là một yêu cầu sẽ được đi kèm với lưu lượng duyệt web của bạn. Mọi ảnh hưởng đều phụ thuộc vào việc trang web có phản hồi yêu cầu không và cách thức diễn giải yêu cầu.
 
 Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cách hiển thị cho bạn các quảng cáo không dựa trên các trang web khác mà bạn đã truy cập. Nhiều trang web sẽ vẫn thu thập và sử dụng dữ liệu duyệt web của bạn — ví dụ: để tăng cường bảo mật, cung cấp nội dung, quảng cáo và đề xuất, đồng thời tạo số liệu thống kê báo cáo.</translation>
+<translation id="6235349850462976369">Dịch ảnh bằng Google Ống kính</translation>
 <translation id="623755660902014047">Chế độ đọc</translation>
 <translation id="6246073558347462570">Cửa sổ bật lên theo ngữ cảnh</translation>
 <translation id="6247557882553405851">Trình quản lý mật khẩu</translation>
@@ -1810,7 +1816,9 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8058746566562539958">Mở trong thẻ Chrome mới</translation>
 <translation id="8062594758852531064">Chế độ tải trước mở rộng:</translation>
 <translation id="8063895661287329888">Không thêm được dấu trang.</translation>
+<translation id="8064081231614696741">Chọn một thư mục khác</translation>
 <translation id="8066816452984416180">Nhanh chóng đánh dấu trang này. Để chỉnh sửa lối tắt này, hãy chạm và giữ lối tắt.</translation>
+<translation id="8068041627541121907">Gemini muốn sử dụng micrô của bạn</translation>
 <translation id="8072436850275034464">Bạn có thể mở lại các thẻ gần đây bạn đã đóng trên bất cứ thiết bị nào mà bạn có dùng Chrome</translation>
 <translation id="8073388330009372546">Mở ảnh trong thẻ mới</translation>
 <translation id="8076492880354921740">Thẻ</translation>
@@ -1930,7 +1938,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8460932807646981183">Quản lý các công cụ tìm kiếm và tính năng tìm kiếm trong trang web</translation>
 <translation id="8465252176946159372">Không hợp lệ</translation>
 <translation id="8472353072135865937">{NUM_BOOKMARKS,plural, =1{Mở trong cửa sổ mới}other{Mở tất cả (#) trong cửa sổ mới}}</translation>
-<translation id="8473863474539038330">Địa chỉ và các lựa chọn khác</translation>
+<translation id="8473863474539038330">Địa chỉ và thông tin khác</translation>
 <translation id="847433688444405067">Duyệt xem trên các thiết bị</translation>
 <translation id="8477178913400731244">Xoá dữ liệu</translation>
 <translation id="8481771036036087705">Đã mở bảng chọn tham gia Chrome Finds trên một nửa màn hình</translation>

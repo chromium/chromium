@@ -837,6 +837,8 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2384307209577226199">Valore predefinito aziendale</translation>
 <translation id="2385809941344967209">Aggiorna Chrome dalle impostazioni di Chrome</translation>
 <translation id="2386255080630008482">Il certificato del server è stato revocato.</translation>
+<translation id="2387424091060104123">Suggerito da Gemini · <ph name="SRC_LINK" />Visualizza le fonti<ph name="END_SRC_LINK" />
+Puoi rimuovere questo suggerimento da Chrome. La fonte originale non verrà eliminata. <ph name="MANAGE_LINK" />Gestisci la compilazione automatica avanzata<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Elabora</translation>
 <translation id="2392959068659972793">Mostra policy senza valori</translation>
 <translation id="239429038616798445">Questo metodo di spedizione non è disponibile. Prova un metodo diverso.</translation>
@@ -1516,6 +1518,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Chrome ti avviserà quando questa pagina sarà pronta. &lt;a&gt;Annulla&lt;/a&gt;</translation>
 <translation id="3581499772329034229">Aggiungi schede automaticamente</translation>
+<translation id="3582670569275100909">Spedizioni</translation>
 <translation id="3582930987043644930">Aggiungi nome</translation>
 <translation id="3583757800736429874">&amp;Ripeti spostamento</translation>
 <translation id="3584299510153766161">Perforatura doppia in basso</translation>
@@ -4009,6 +4012,7 @@ Ulteriori dettagli:
 <translation id="7758069387465995638">Il software antivirus o il firewall potrebbe avere bloccato la connessione.</translation>
 <translation id="7759147511335618829">Controllo e riprogr. disp. MIDI</translation>
 <translation id="7759809451544302770">Facoltativo</translation>
+<translation id="7760566304700414795">Spedizione</translation>
 <translation id="776110834126722255">Obsoleto</translation>
 <translation id="7761159795823346334">Vuoi consentire l'accesso alla fotocamera?</translation>
 <translation id="7761701407923456692">Il certificato del server non corrisponde all'URL.</translation>
@@ -4354,6 +4358,7 @@ Ulteriori dettagli:
 <translation id="8371841335382565017">Mostra l'elenco dei dispositivi per la trasmissione</translation>
 <translation id="8371889962595521444">Certificati radice personalizzati</translation>
 <translation id="8374636051559112948">Varia</translation>
+<translation id="8377507422902936905">Ordini</translation>
 <translation id="837840316697671463">Se non riesci a trovare un file sul dispositivo, cercalo su <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Gestito dalla tua organizzazione</translation>
 <translation id="8380941800586852976">Pericolosa</translation>

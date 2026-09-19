@@ -514,6 +514,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2996291259634659425">Criar frase de acesso</translation>
 <translation id="2996682533106928201">Toque para ignorar</translation>
 <translation id="2996809686854298943">URL obrigatório</translation>
+<translation id="3007318536447999974">Para falar com o Gemini, dê-lhe autorização para usar o seu microfone. Também pode gerir esta opção nas <ph name="BEGIN_LINK" />Definições<ph name="END_LINK" /></translation>
 <translation id="3024215143424744261">Preferências do Modo de leitura fechadas</translation>
 <translation id="3024277805447899099">Pré-visualizar imagem</translation>
 <translation id="3026955690410463085">Incluir link</translation>
@@ -1815,7 +1816,9 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="8058746566562539958">Abrir num novo sep. do Chrome</translation>
 <translation id="8062594758852531064">Pré-carregamento alargado:</translation>
 <translation id="8063895661287329888">Falha ao adicionar marcador.</translation>
+<translation id="8064081231614696741">Escolha outra pasta</translation>
 <translation id="8066816452984416180">Adicione esta página aos marcadores rapidamente. Para editar este atalho, toque sem soltar.</translation>
+<translation id="8068041627541121907">O Gemini quer usar o seu microfone</translation>
 <translation id="8072436850275034464">Pode reabrir separadores que tenha fechado recentemente onde quer que esteja a usar o Chrome</translation>
 <translation id="8073388330009372546">Abrir imagem num novo separad.</translation>
 <translation id="8076492880354921740">Separadores</translation>

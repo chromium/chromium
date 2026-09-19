@@ -149,6 +149,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2575822587468774919">Izberite kar koli za iskanje s slikovnim iskanjem</translation>
 <translation id="2576118232315942160">Če želite dostopati do gesel in drugega v vseh napravah, se prijavite v Chromium</translation>
 <translation id="2587622539943955767">S telefonom optično preberite kodo QR, da prenesete Chromium, in se prijavite v račun Google.</translation>
+<translation id="2587885422541096572">za iskanje s Chromiumom.</translation>
 <translation id="2592940277904433508">Še naprej uporabljaj Chromium</translation>
 <translation id="259935314519650377">Prenesenega namestitvenega programa ni bilo mogoče predpomniti. Napaka: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Sistem</translation>
@@ -781,6 +782,7 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="897581876605952338">Logotip za Chromium Enterprise</translation>
 <translation id="8980139959902937527">Vzemite Googlovo varnost s sabo na pot z aplikacijo Chromium v napravi <ph name="DEVICE_TYPE" /></translation>
 <translation id="8981150672034878610">Chromiuma ni mogoče zagnati, ker je prišlo do težave pri odpiranju profila. Poskusite znova zagnati Chromium.</translation>
+<translation id="8981886272598860786">za iskanje s Chromiumom ali prilagajanje v <ph name="BEGIN_LINK" />nastavitvah<ph name="END_LINK" /></translation>
 <translation id="8988036198400390003">Upravljanje profilov v Chromiumu</translation>
 <translation id="8993855408334954620">S tipkovnico se pomikajte med Geminijem v Chromiumu in odprtim zavihkom.</translation>
 <translation id="9018218886431812662">Namestitev je dokončana</translation>

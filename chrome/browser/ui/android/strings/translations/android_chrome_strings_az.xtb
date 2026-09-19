@@ -514,6 +514,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="2996291259634659425">Parol söz yaradın</translation>
 <translation id="2996682533106928201">Bağlamaq üçün toxunun</translation>
 <translation id="2996809686854298943">URL tələb olunur</translation>
+<translation id="3007318536447999974">Gemini ilə danışmaq üçün mikrofonunuzdan istifadə etməsinə icazə verin. Bunu <ph name="BEGIN_LINK" />Ayarlar<ph name="END_LINK" /> bölməsində də idarə edə bilərsiniz</translation>
 <translation id="3024215143424744261">Oxu rejimi tərcihləri bağlandı</translation>
 <translation id="3024277805447899099">Şəkli önizləyin</translation>
 <translation id="3026955690410463085">Keçid daxil edin</translation>
@@ -1813,7 +1814,9 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="8058746566562539958">Yeni Chrome tabında açın</translation>
 <translation id="8062594758852531064">Artırılmış əvvəlcədən yükləmə:</translation>
 <translation id="8063895661287329888">Əlfəcin əlavə etmək alınmadı.</translation>
+<translation id="8064081231614696741">Başqa qovluq seçin</translation>
 <translation id="8066816452984416180">Səhifəni sürətlə əlfəcinləyin. Qısayolu redaktə etmək üçün toxunub saxlayın.</translation>
+<translation id="8068041627541121907">Gemini mikrofonunuzdan istifadə etmək istəyir</translation>
 <translation id="8072436850275034464">Son zamanlarda bağladığınız tabları Chrome istifadə etdiyiniz hər yerdə yenidən aça bilərsiniz</translation>
 <translation id="8073388330009372546">Şəkli yeni tabda açın</translation>
 <translation id="8076492880354921740">Tablar</translation>

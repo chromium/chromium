@@ -514,6 +514,7 @@
 <translation id="2996291259634659425">পাসফ্রেজ তৈরি করুন</translation>
 <translation id="2996682533106928201">বাতিল করতে ট্যাপ করুন</translation>
 <translation id="2996809686854298943">URL প্রয়োজন</translation>
+<translation id="3007318536447999974">Gemini-র সাথে কথা বলতে, এটিকে আপনার মাইক্রোফোন ব্যবহার করার অনুমতি দিন। এছাড়াও, আপনি <ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" /> থেকে এটি ম্যানেজ করতে পারবেন</translation>
 <translation id="3024215143424744261">রিডিং মোড সম্পর্কিত পছন্দ বন্ধ করা হয়েছে</translation>
 <translation id="3024277805447899099">ছবির প্রিভিউ দেখুন</translation>
 <translation id="3026955690410463085">লিঙ্ক যোগ করুন</translation>
@@ -1815,7 +1816,9 @@
 <translation id="8058746566562539958">নতুন Chrome ট্যাবে খুলুন</translation>
 <translation id="8062594758852531064">এক্সটেনডেড প্রিলোডিং:</translation>
 <translation id="8063895661287329888">বুকমার্ক যোগ করতে ব্যর্থ হয়েছে।</translation>
+<translation id="8064081231614696741">অন্য ফোল্ডার বেছে নিন</translation>
 <translation id="8066816452984416180">এই পৃষ্ঠা দ্রুত বুকমার্ক করুন। এই শর্টকার্ট এডিট করতে, টাচ করে ধরে রাখুন।</translation>
+<translation id="8068041627541121907">Gemini আপনার মাইক্রোফোন ব্যবহার করতে চায়</translation>
 <translation id="8072436850275034464">আপনি Chrome ব্যবহার করেন এমন যেকোনও জায়গা থেকে সম্প্রতি বন্ধ করা ট্যাব আবার খুলতে পারবেন</translation>
 <translation id="8073388330009372546">নতুন ট্যাবে ছবি খুলুন</translation>
 <translation id="8076492880354921740">ট্যাবগুলি</translation>

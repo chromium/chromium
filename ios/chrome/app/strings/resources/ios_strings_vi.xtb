@@ -269,6 +269,7 @@
 <translation id="17906873777101817">Đề xuất lưu mật khẩu và khoá truy cập</translation>
 <translation id="1794893174442046596">Nhóm thẻ</translation>
 <translation id="1807893857950749072">Cho phép thông báo của tính năng theo dõi giá…</translation>
+<translation id="1808142805674973090">Chuyển chế độ</translation>
 <translation id="1809929083618343438">Thao tác này sẽ xoá thông tin được chọn khỏi Chrome nhưng không xoá thông tin này khỏi Tài khoản Google của bạn.</translation>
 <translation id="1810976980198522421">Huỷ</translation>
 <translation id="1815941218935345331">Mật mã</translation>
@@ -851,6 +852,7 @@
 <translation id="3779810277399252432">Không có kết nối Internet.</translation>
 <translation id="3782614601387961027">Đóng cảnh báo</translation>
 <translation id="3789841737615482174">Cài đặt</translation>
+<translation id="3793603310364129123">Ít bước hơn, mở đường liên kết nhanh hơn</translation>
 <translation id="380329542618494757">Tên</translation>
 <translation id="3803696231112616155">Đề xuất dịch trang web này</translation>
 <translation id="3810973564298564668">Quản lý</translation>
@@ -1382,6 +1384,7 @@
 <translation id="5467163657366219870">Tắt tính năng Xem trước bản đồ</translation>
 <translation id="5474397204728336997">Mật khẩu cho nhóm gia đình, các chế độ tuỳ chỉnh mới và nhiều tính năng khác. Nhấn để tìm hiểu thêm.</translation>
 <translation id="5475793109165786685">{count,plural, =0{Chưa nhập mật khẩu nào}=1{Đã nhập {count} mật khẩu}other{Đã nhập {count} mật khẩu}}</translation>
+<translation id="5477188385487393357">Bỏ qua thao tác sao chép và dán</translation>
 <translation id="5478327362747197944">Tạo trực tiếp Sự kiện trên lịch bằng cách nhấp vào một ngày trên trang web.</translation>
 <translation id="5482922178977937393">Bạn có muốn nhận thông báo về tin tức, thể thao và nhiều nội dung khác dựa trên mối quan tâm của mình không?</translation>
 <translation id="5483838506518938965">Bạn đã hoàn tất</translation>
@@ -1748,6 +1751,7 @@
 <translation id="6585618849026997638">Bạn có thể thêm dấu trang để truy cập lại một trang mà bạn thấy quan trọng</translation>
 <translation id="6589001036857939353">Hợp nhất thông tin trùng lặp</translation>
 <translation id="659407965921887085">Thẻ này cho thấy mức giảm giá trên web của những sản phẩm mà bạn đang theo dõi</translation>
+<translation id="6596324345367949437">Gemini không hoạt động ở chế độ ẩn danh</translation>
 <translation id="6596481460663245319">Tìm ảnh bằng Google</translation>
 <translation id="6601302169302852717">Đã lưu hình ảnh vào Google Photos cho <ph name="USER_EMAIL" /></translation>
 <translation id="6602173570135186741">Tự động điền và mật khẩu</translation>
@@ -2334,7 +2338,7 @@ Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="8449869326050867919">Đã chia sẻ mật khẩu</translation>
 <translation id="8461708300275916315">Nếu bạn dưới 18 tuổi</translation>
 <translation id="8473815223723723001">Chỉnh sửa hình ảnh bằng Gemini</translation>
-<translation id="8473863474539038330">Địa chỉ và các lựa chọn khác</translation>
+<translation id="8473863474539038330">Địa chỉ và thông tin khác</translation>
 <translation id="8474378002946546633">Cho phép thông báo</translation>
 <translation id="8477178913400731244">Xoá dữ liệu</translation>
 <translation id="8481184073299279701">Nhấn nút "Bắt đầu ghi nhật ký" để thu thập nhật ký trong bảng điều khiển JavaScript và lỗi từ tất cả các thẻ trong tương lai. Nhật ký sẽ được thu thập (và chỉ được lưu trữ trong bộ nhớ) cho đến khi bạn đóng trang này hoặc nhấn vào "Dừng ghi nhật ký".</translation>

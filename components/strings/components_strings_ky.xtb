@@ -837,6 +837,8 @@
 <translation id="2384307209577226199">Демейки ишкана</translation>
 <translation id="2385809941344967209">Chrome'дун параметрлерине өтүп, Chrome'ду жаңыртыңыз</translation>
 <translation id="2386255080630008482">Сервер тастыктамасы жокко чыгарылды.</translation>
+<translation id="2387424091060104123">Gemini сунуштады · <ph name="SRC_LINK" />Булактарды көрүү<ph name="END_SRC_LINK" />
+Бул сунушту Chrome'дон өчүрсөңүз болот. Түпнуска булагыңыз өчүрүлбөйт. <ph name="MANAGE_LINK" />Жакшыртылган автотолтурууну тескөө<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Толуктоо</translation>
 <translation id="2392959068659972793">Мааниси коюлбаган эрежелерди көрсөтүү</translation>
 <translation id="239429038616798445">Жөнөтүүнүн мындай ыкмасы мүмкүн эмес. Башка ыкманы байкап көрүңүз.</translation>
@@ -1517,6 +1519,8 @@
 <translation id="3577473026931028326">Бир жерден ката кетти. Кайталап көрүңүз.</translation>
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Бул барак даяр болгондо, Chrome сизге кабарлап коёт. &lt;a&gt;Баш тартуу&lt;/a&gt;</translation>
+<translation id="3581499772329034229">Өтмөктөрдү автоматтык түрдө кошуу</translation>
+<translation id="3582670569275100909">Жөнөтүүлөр</translation>
 <translation id="3582930987043644930">Ысым кошуу</translation>
 <translation id="3583757800736429874">Жылдырууну &amp;кайталоо</translation>
 <translation id="3584299510153766161">Төмөн жагын бир нече жолу тешүү</translation>
@@ -1592,6 +1596,7 @@
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" />, <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">Жүктөлүүдө…</translation>
 <translation id="3709599264800900598">Сиз көчүргөн текст</translation>
+<translation id="3711223220609269738">Жаңы окчундатылган өтмөк</translation>
 <translation id="3711430313228789376">Chrome серепчиси сырсөздөрдү көрсөткөнгө аракет кылып жатат</translation>
 <translation id="3711895659073496551">Токтото туруу</translation>
 <translation id="3712004750972384495">Экрандан жаздырылган видео сакталууда</translation>
@@ -1610,6 +1615,7 @@
 <translation id="3727309136762649052">Ысымдар мейкиндиги</translation>
 <translation id="3727850735097852673">Сырсөздөрдү башкаргычты macOS Keychain менен колдонуу үчүн Chrome'ду кайра иштетип, Keychain'ге мүмкүнчүлүк бериңиз. Кайра иштеткенден кийин өтмөктөрүңүз кайрадан ачылат.</translation>
 <translation id="3728173127485570463">Chrome серепчиси сырсөздөрдү автотолтуруу үчүн мындан ары манжа изин талап кылбайт</translation>
+<translation id="3729811201279509483">Өтмөктөрдү кол менен кошуу</translation>
 <translation id="3736564442532774454">Chrome серепчиси <ph name="APP_NAME" /> колдонмосуна купуя маалыматыңызды киргизгенге аракет кылып жатат.</translation>
 <translation id="3738166223076830879">Серепчиңизди администраторуңуз башкарат.</translation>
 <translation id="3739842843727261045">"Жакты" баскычын басып, бул натыйжалардын сизге жакканын билдире аласыз</translation>
@@ -2773,6 +2779,7 @@
 <translation id="5649053991847567735">Автоматтык жүктөп алуулар</translation>
 <translation id="5651323159439184939">Авто азыктандыруучу</translation>
 <translation id="5653681867130739344">Google Капчыктагы мамлекеттик ID картаны жаңыртыңыз</translation>
+<translation id="5653744563415531641">Маалыматыңызды сактап, Google кызматтарында формаларды толтуруу сыяктуу иштерди тезирээк бүтүрүңүз. <ph name="MANAGE_WALLET_SETTINGS_LINK" /> <ph name="ACCOUNT" /> колдоно аласыз.</translation>
 <translation id="5654927323611874862">Ката жөнүндө кабарлоо идентификатору жүктөлүп берилди:</translation>
 <translation id="5654965123204121933">URL дарегинде талап кылынган <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /> алмаштыруу сабы камтылбайт</translation>
 <translation id="5659593005791499971">Электрондук почта</translation>
@@ -3219,6 +3226,7 @@
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> карточкасынын мөөнөтү аяктоочу күнүн жана CVC кодун киргизиңиз</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Ата-эненин уруксаты диалогу</translation>
+<translation id="6413532517183895572">Капчыктын параметрлерин тескөө</translation>
 <translation id="6415778972515849510">Chromium Google аккаунтуңуздун коопсуздугун коргоп, сырсөзүңүздү өзгөртүүгө жардам берет.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Маанилүү же жеке маалымат сакталбаганын текшериңиз.</translation>
@@ -4006,6 +4014,7 @@
 <translation id="7758069387465995638">Туташуу брандмауэр же антивирус программасы менен бөгөттөлгөн окшойт.</translation>
 <translation id="7759147511335618829">MIDI түзмөгүн көзөмөлдөө жана кайра программалоо</translation>
 <translation id="7759809451544302770">Кошумча</translation>
+<translation id="7760566304700414795">Жөнөтүү</translation>
 <translation id="776110834126722255">Жоюлган саясат</translation>
 <translation id="7761159795823346334">Камераны колдонууга уруксат бересизби?</translation>
 <translation id="7761701407923456692">Сервердин тастыктамасы URL'ге дал келбейт.</translation>
@@ -4351,6 +4360,7 @@
 <translation id="8371841335382565017">Тышкы экранга чыгаруу үчүн түзмөк тизмесин көрсөтүү</translation>
 <translation id="8371889962595521444">Ыңгайлаштырылган негизги тастыктамалар</translation>
 <translation id="8374636051559112948">Ар кандай</translation>
+<translation id="8377507422902936905">Буйрутмалар</translation>
 <translation id="837840316697671463">Эгер файлды түзмөгүңүздө көрбөсөңүз, аны <ph name="CLOUD_PROVIDER" /> кызматынан издеңиз.</translation>
 <translation id="8378714024927312812">Уюмуңуз тарабынан башкарылат</translation>
 <translation id="8380941800586852976">Коркунучтуу</translation>

@@ -514,6 +514,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="2996291259634659425">Passphrase erstellen</translation>
 <translation id="2996682533106928201">Zum Schließen tippen</translation>
 <translation id="2996809686854298943">URL erforderlich</translation>
+<translation id="3007318536447999974">Wenn du mit Gemini sprechen möchtest, benötigt Gemini Zugriff auf dein Mikrofon. Du kannst dies auch <ph name="BEGIN_LINK" />in den Einstellungen<ph name="END_LINK" /> verwalten.</translation>
 <translation id="3024215143424744261">Einstellungen für den Lesemodus sind geschlossen</translation>
 <translation id="3024277805447899099">Bildvorschau</translation>
 <translation id="3026955690410463085">Link hinzufügen</translation>
@@ -786,7 +787,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="4137746084635924146">Aktuelle Gerätesprache</translation>
 <translation id="414128724510021958">Desktopwebsites werden standardmäßig angefordert</translation>
 <translation id="4162867837470729563">Die Liste der Freigabeoptionen ist vollständig geöffnet.</translation>
-<translation id="4164642020717536140">Schnelles und sicheres Surfen im Web</translation>
+<translation id="4164642020717536140">Schnell und sicher im Web surfen</translation>
 <translation id="4165077084524712774">Weitere Tools</translation>
 <translation id="4169156312706405526">Dateien aus Drive anhängen</translation>
 <translation id="4170577491341606575">Daten werden abgerufen\u2026</translation>
@@ -1258,6 +1259,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="604996488070107836"><ph name="FILE_NAME" /> konnte aufgrund eines unbekannten Fehlers nicht heruntergeladen werden.</translation>
 <translation id="605721222689873409">JJ</translation>
 <translation id="606985262342505139">Tab-Ansicht am unteren Rand ist vollständig geöffnet</translation>
+<translation id="6070608977567243308">Mit Lens suchen und einkaufen</translation>
 <translation id="6071995715087444295">Melde dich in deinem Google-Konto an, um nach den kompromittierten Passwörtern zu suchen</translation>
 <translation id="6078323886959318429">Neue Verknüpfung</translation>
 <translation id="6085886413119427067">Legt fest, wie Websites über eine sichere Verbindung aufgerufen werden</translation>
@@ -1305,6 +1307,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="6232535412751077445">Wenn du das Kästchen „Do Not Track“ anklickst, wird mit deinen Browserzugriffen eine Anforderung gesendet. Wie sich diese Anforderung auswirkt, hängt davon ab, ob eine Website darauf reagiert und wie die Anforderung interpretiert wird.
 
 Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht darauf basiert, welche Websites du zuvor besucht hast. Viele Websites erfassen weiterhin deine Browserdaten und verwenden sie, um beispielsweise die Sicherheit zu verbessern oder Inhalte, Werbeanzeigen und Empfehlungen bereitzustellen und Statistiken für Berichte zu erstellen.</translation>
+<translation id="6235349850462976369">Bild mit Lens übersetzen</translation>
 <translation id="623755660902014047">Lesemodus</translation>
 <translation id="6246073558347462570">Pop-up-Fenster „Kontext hinzufügen“</translation>
 <translation id="6247557882553405851">Google Passwortmanager</translation>
@@ -1813,7 +1816,9 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8058746566562539958">In neuem Chrome-Tab öffnen</translation>
 <translation id="8062594758852531064">Erweitertes Vorabladen:</translation>
 <translation id="8063895661287329888">Fehler beim Hinzufügen des Lesezeichens.</translation>
+<translation id="8064081231614696741">Anderen Ordner wählen</translation>
 <translation id="8066816452984416180">Diese Seite schnell als Lesezeichen speichern. Zum Ändern dieser Verknüpfung Button gedrückt halten.</translation>
+<translation id="8068041627541121907">Gemini möchte dein Mikrofon verwenden</translation>
 <translation id="8072436850275034464">Kürzlich geschlossene Tabs lassen sich überall in Chrome wieder öffnen</translation>
 <translation id="8073388330009372546">Bild in neuem Tab öffnen</translation>
 <translation id="8076492880354921740">Tabs</translation>

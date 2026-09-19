@@ -148,6 +148,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2575822587468774919">Zgjidh çdo gjë për të kërkuar me "Kërkimin nëpërmjet imazheve"</translation>
 <translation id="2576118232315942160">Për të marrë fjalëkalimet etj. në të gjitha pajisjet e tua, identifikohu në Chromium</translation>
 <translation id="2587622539943955767">Skano kodin QR me telefonin tënd për të shkarkuar Chromium dhe identifikohu në "Llogarinë tënde të Google".</translation>
+<translation id="2587885422541096572">për të kërkuar me Chromium.</translation>
 <translation id="2592940277904433508">Vazhdo të përdorësh Chromium</translation>
 <translation id="259935314519650377">Instaluesi i shkarkuar nuk u ruajt te memoria specifike. Gabim: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Sistemi</translation>
@@ -778,6 +779,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="897581876605952338">Logoja e Chromium Enterprise</translation>
 <translation id="8980139959902937527">Merr sigurinë e Google kur je në lëvizje me aplikacionin e Chromium në <ph name="DEVICE_TYPE" /></translation>
 <translation id="8981150672034878610">Chromium nuk mund të niset sepse ka ndodhur një gabim gjatë hapjes së profilit tënd. Provo të rinisësh Chromium.</translation>
+<translation id="8981886272598860786">për të kërkuar me Chromium ose për të personalizuar te <ph name="BEGIN_LINK" />Cilësimet<ph name="END_LINK" /></translation>
 <translation id="8988036198400390003">Menaxho profilet e Chromium</translation>
 <translation id="8993855408334954620">Përdor tastierën për të naviguar mes Gemini në Chromium dhe skedës sate të hapur.</translation>
 <translation id="9018218886431812662">Instalimi përfundoi</translation>

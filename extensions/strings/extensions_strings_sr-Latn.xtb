@@ -28,6 +28,7 @@
 <translation id="1757786065507923842">Zahtev za dozvolu roditelja nije uspeo.</translation>
 <translation id="1803557475693955505">Nije moguće učitati stranicu u pozadini „<ph name="BACKGROUND_PAGE" />“.</translation>
 <translation id="1875387611427697908">Ovo može da se doda samo iz usluge <ph name="CHROME_WEB_STORE" /></translation>
+<translation id="1901182793187376715"><ph name="EXTENSION_NAME" /> (ID dodatka <ph name="EXTENSION_ID" />) ne može da se instalira u skladu sa smernicama u okruženjima sa niskim nivoom poverenja.</translation>
 <translation id="2131077480075264">Nije uspelo instaliranje „<ph name="APP_NAME" />“ jer to ne dozvoljava „<ph name="IMPORT_NAME" />“</translation>
 <translation id="2150661552845026580">Želite li da dodate „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="2159915644201199628">Nije moguće dekodirati sliku: „<ph name="IMAGE_NAME" />“</translation>

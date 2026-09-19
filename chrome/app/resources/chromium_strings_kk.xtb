@@ -148,6 +148,7 @@
 <translation id="2575822587468774919">"Сурет іздеу" функциясымен іздеу керек кез келген нәрсені таңдаңыз.</translation>
 <translation id="2576118232315942160">Құпия сөздер мен басқа ақпаратты барлық құрылғыдан алу үшін Chromium аккаунтына кіріңіз.</translation>
 <translation id="2587622539943955767">Chromium браузерін жүктеп алу және Google аккаунтына кіру үшін телефонмен QR кодын сканерлеңіз.</translation>
+<translation id="2587885422541096572">Chromium-мен іздеу үшін.</translation>
 <translation id="2592940277904433508">Chromium-ді пайдалана беру</translation>
 <translation id="259935314519650377">Жүктеп алынған орнату құралы кэштелмеді. Қате: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Жүйе</translation>
@@ -339,6 +340,7 @@
 <translation id="4621240073146040695">Сәл қалды! Жаңартуды аяқтау үшін Chromium жүйесін қайта іске қосыңыз.</translation>
 <translation id="4625064703209785397">Chromium-нің V8 жүйесімен сайттар жылдам жұмыс істейді, бірақ Chromium-нің шабуылдарға төзімділігі сәл азаяды.</translation>
 <translation id="4626321472657185181">Chromium-мен іздеу функциясын ашу</translation>
+<translation id="4654639495249754755">Chromium профилі</translation>
 <translation id="4665829708273112819">Ескерту: Chromium кеңейтімдердің браузерді қолдану тарихын жазуына кедергі бола алмайды. Бұл кеңейтімді Инкогнито режимінде өшіру үшін бұл опцияның белгісін алып тастаңыз.</translation>
 <translation id="4673151026126227699">Chromium пайдалану есептерін де бөліссеңіз, бұл есептерде сіз кірген URL мекенжайлары қамтылады.</translation>
 <translation id="4673710618874938871"><ph name="USER_NAME" /> (мүше) ретінде кірдіңіз. Аккаунт мәзірін ашу</translation>
@@ -471,6 +473,7 @@
 <translation id="6174920971222007286">Бұл файл қауіпті болуы мүмкін.<ph name="LINE_BREAK" />Құпия сөзді көрсетсеңіз, Chromium бұл жүктеп алу әрекетін тексере алады. Файл туралы ақпарат Google Safe Browsing қызметіне жіберіледі, бірақ файл контенті мен құпия сөз құрылғыңызда қалады.</translation>
 <translation id="6182736845697986886">Орнатылмады, себебі жаңарту серверінде ішкі қате пайда болды.</translation>
 <translation id="6183079672144801177"><ph name="TARGET_DEVICE_NAME" /> құрылғысындағы Chromium браузеріне кіргеніңізді тексеріп, қайта жіберіп көріңіз.</translation>
+<translation id="6192070012454216182">Chromium кішірейтілсе де, кез келген жерден іздеңіз және сұрақ қойыңыз. Chromium-нің фондық режимде істеуіне мүмкіндік береді.</translation>
 <translation id="6212496753309875659">Бұл компьютерде жаңа Chromium нұсқасы бұрыннан бар. Бағдарламалық жасақтама жұмыс істемесе, Chromium жойып, әрекетті қайталап көріңіз.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium браузері қазір қайта іске қосылады}=1{Chromium браузері 1 секундтан кейін қайта іске қосылады}other{Chromium браузері # секундтан кейін қайта іске қосылады}}</translation>
 <translation id="6241367896540709610">Chromium файлдарды жүктеп алу үшін жадты пайдалануға рұқсат сұрайды.</translation>
@@ -597,6 +600,7 @@
 <translation id="7288567540154601580">Қойындылар мен кеңейтімдер</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium мұны өшіруге кеңес береді.}other{Chromium бұларды өшіруге кеңес береді.}}</translation>
 <translation id="7296334833518879294">Жүйе дыбысын бөлісу үшін жүйе параметрлерін ашып, Chromium үшін "Тек жүйе дыбысын жазу" опциясына рұқсат беріңіз. Содан кейін Chromium-ді қайта іске қосуыңыз қажет.</translation>
+<translation id="7299899569525778554">Компьютерден іздеу</translation>
 <translation id="731795002583552498">Chromium браузерін жаңарту</translation>
 <translation id="7318036098707714271">Реттеулер файлы бұзылған немесе жарамсыз.
 
@@ -652,6 +656,7 @@ Chromium параметрлеріңізді қалпына келтіре алм
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">Интернет трафигіңізді пайдалана алатын адамдар қандай сайттарға кіретініңізді көрмейтіндей етіңіз. Chromium браузері DNS жүйесіндегі сайттың IP мекенжайын іздеу үшін қауіпсіз байланысты пайдаланады.</translation>
 <translation id="7810005234485217901">"Сурет іздеу" функциясына оңай кіру үшін оны бекітуге болады.</translation>
+<translation id="7813626943009612327">Chromium-нен тыс контент, мысалы, басқа қолданба немесе ашық файл туралы сұраңыз.</translation>
 <translation id="7828527096541974699">Chromium-мен бөлісетін контентті таңдау</translation>
 <translation id="7828947555739565424">Осы құрылғыда бұл аккаунтқа Chromium профилі тіркеліп қойған.</translation>
 <translation id="7845233973568007926">Орнатқаныңыз үшін рақмет. <ph name="BUNDLE_NAME" /> пайдаланбас бұрын компьютерді өшіріп қосуыңыз керек.</translation>
@@ -742,6 +747,7 @@ Chromium параметрлеріңізді қалпына келтіре алм
 <translation id="8619360774459241877">Chromium іске қосылуда…</translation>
 <translation id="8624541899164515475">Параметрлер, жаңа қойындыда ашылады.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing браузерін әдепкі браузер қылу мүмкін емес.</translation>
+<translation id="8676101123715131330">Chromium-мен кез келген жерден іздеңіз</translation>
 <translation id="8697124171261953979">Сонымен қатар ол Chromium іске қосқаныңызда немесе Omnibox ішінен іздегеніңізде қайсы бет көрсетілетінін бақылайды.</translation>
 <translation id="8704119203788522458">Сізге арналған Chromium.</translation>
 <translation id="8712637175834984815">Түсінікті</translation>
@@ -775,6 +781,7 @@ Chromium параметрлеріңізді қалпына келтіре алм
 <translation id="897581876605952338">Chromium Enterprise логотипі</translation>
 <translation id="8980139959902937527"><ph name="DEVICE_TYPE" /> құрылғысындағы Chromium-мен жол-жөнекей Google қауіпсіздігін қамтамасыз етіңіз</translation>
 <translation id="8981150672034878610">Профиліңізді ашу кезінде бірдеңе дұрыс болмағандықтан, Chromium-ді іске қосу мүмкін емес. Chromium-ді қайта іске қосып көріңіз.</translation>
+<translation id="8981886272598860786">Chromium-мен іздеу немесе <ph name="BEGIN_LINK" />Параметрлер<ph name="END_LINK" /> бөлімінде бейімдеу үшін</translation>
 <translation id="8988036198400390003">Chromium профильдерін басқару</translation>
 <translation id="8993855408334954620">Chromium-дегі Gemini мен ашық қойынды арасында ауысу үшін пернетақтаны пайдаланыңыз.</translation>
 <translation id="9018218886431812662">Орнату аяқталды</translation>

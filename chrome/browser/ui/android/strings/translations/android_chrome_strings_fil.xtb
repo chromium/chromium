@@ -514,6 +514,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="2996291259634659425">Gumawa ng passphrase</translation>
 <translation id="2996682533106928201">I-tap para i-dismiss</translation>
 <translation id="2996809686854298943">Kinakailangan ang URL</translation>
+<translation id="3007318536447999974">Para makipag-usap sa Gemini, bigyan ito ng pahintulot na gamitin ang iyong mikropono. Puwede mo ring pamahalaan ito sa <ph name="BEGIN_LINK" />Mga Setting<ph name="END_LINK" /></translation>
 <translation id="3024215143424744261">Nakasara ang mga preference sa Reading mode</translation>
 <translation id="3024277805447899099">I-preview ang larawan</translation>
 <translation id="3026955690410463085">Kasama ang link</translation>
@@ -1815,7 +1816,9 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8058746566562539958">Buksan sa bagong tab ng Chrome</translation>
 <translation id="8062594758852531064">Na-extend na pag-preload:</translation>
 <translation id="8063895661287329888">Hindi naidagdag ang bookmark.</translation>
+<translation id="8064081231614696741">Pumili ng ibang folder</translation>
 <translation id="8066816452984416180">Mabilis na i-bookmark ang page na ito. Para i-edit ang shortcut na ito, pindutin ito nang matagal.</translation>
+<translation id="8068041627541121907">Gustong gamitin ng Gemini ang iyong mikropono</translation>
 <translation id="8072436850275034464">Puwede mong buksan ulit ang mga tab na isinara mo kamakailan kahit saan ka man gumagamit ng Chrome</translation>
 <translation id="8073388330009372546">Buksan ang larawan sa bagong tab</translation>
 <translation id="8076492880354921740">Mga Tab</translation>

@@ -149,6 +149,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="2575822587468774919">Сүрөт издөө функциясы менен издөө үчүн каалаган нерсени тандаңыз</translation>
 <translation id="2576118232315942160">Бардык түзмөктөрүңүздө сырсөздөрдү жана башка нерселерди алуу үчүн Chromium'га кириңиз</translation>
 <translation id="2587622539943955767">Chromium'ду жүктөп алып, Google аккаунтуңузга кирүү үчүн телефонуңуз менен QR кодду скандаңыз.</translation>
+<translation id="2587885422541096572">Chromium менен издөө үчүн.</translation>
 <translation id="2592940277904433508">Chromium'ду колдоно берүү</translation>
 <translation id="259935314519650377">Жүктөлүп алынган орноткучтун кеши түзүлбөй калды. Ката: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Система</translation>
@@ -781,6 +782,7 @@ Chromium параметрлериңизди калыбына келтире ал
 <translation id="897581876605952338">Chromium Enterprise логотиби</translation>
 <translation id="8980139959902937527"><ph name="DEVICE_TYPE" /> түзмөгүңүздөгү Chromium колдонмосу менен Google'дун коопсуздук функцияларын жолдо жүргөндө да пайдаланыңыз</translation>
 <translation id="8981150672034878610">Профилиңизди ачуу учурунда бир жерден ката кеткендиктен Chromium ачылбай калды. Chromium'ду кайра ачып көрүңүз.</translation>
+<translation id="8981886272598860786">Chromium менен издөө же <ph name="BEGIN_LINK" />Параметрлерде<ph name="END_LINK" /> ыңгайлаштыруу үчүн</translation>
 <translation id="8988036198400390003">Chromium профилдерин тескөө</translation>
 <translation id="8993855408334954620">Chromium'дагы Gemini менен ачык өтмөктүн ортосунда которулуу үчүн баскычтопту колдонуңуз.</translation>
 <translation id="9018218886431812662">Орнотулду</translation>

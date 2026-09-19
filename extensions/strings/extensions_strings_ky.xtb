@@ -28,6 +28,7 @@
 <translation id="1757786065507923842">Ата-эненин уруксат сурамы ишке ашкан жок.</translation>
 <translation id="1803557475693955505">'<ph name="BACKGROUND_PAGE" />' фондук баракча жүктөлгөн жок.</translation>
 <translation id="1875387611427697908">Муну <ph name="CHROME_WEB_STORE" /> дарегинен гана кошсо болот</translation>
+<translation id="1901182793187376715"><ph name="EXTENSION_NAME" /> (кеңейтүүнүн идентификатору "<ph name="EXTENSION_ID" />") ишеним деңгээли төмөн чөйрөлөрдө саясат аркылуу орнотулбайт.</translation>
 <translation id="2131077480075264">"<ph name="APP_NAME" />" орното албайт, анткени ага "<ph name="IMPORT_NAME" />" тарабынан уруксат берилген эмес</translation>
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" кошулсунбу?</translation>
 <translation id="2159915644201199628">Сүрөттүн коддору чечилген жок: '<ph name="IMAGE_NAME" />'</translation>

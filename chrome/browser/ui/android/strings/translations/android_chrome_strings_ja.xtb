@@ -514,6 +514,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="2996291259634659425">パスフレーズの作成</translation>
 <translation id="2996682533106928201">タップすると閉じます</translation>
 <translation id="2996809686854298943">URLが必要です</translation>
+<translation id="3007318536447999974">Gemini に話しかけるには、マイクの使用を許可してください。これは [<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] でも管理できます</translation>
 <translation id="3024215143424744261">リーディング モードの設定を閉じました</translation>
 <translation id="3024277805447899099">プレビュー画像</translation>
 <translation id="3026955690410463085">リンクを含める</translation>
@@ -1465,7 +1466,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="6786747875388722282">拡張機能</translation>
 <translation id="6787600234697426339">ウィンドウの数が上限の <ph name="MAX_INSTANCE_COUNT" /> 個に達しました</translation>
 <translation id="6795633245022906657">新しいタブをすばやく開きます。このショートカットは [設定] で編集できます。</translation>
-<translation id="679588508577699489">Chrome を既定のブラウザにする</translation>
+<translation id="679588508577699489">Chrome をデフォルトに設定する</translation>
 <translation id="679845623837196966">リーディング リストを表示</translation>
 <translation id="679956319013005046">自動入力サービスを設定するには、まず使用するサービスを <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />で追加します。</translation>
 <translation id="6802555630140434547">ウィンドウが閉じられます</translation>
@@ -1815,7 +1816,9 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="8058746566562539958">新しい Chrome タブで開く</translation>
 <translation id="8062594758852531064">拡張プリロード:</translation>
 <translation id="8063895661287329888">ブックマークを追加できませんでした。</translation>
+<translation id="8064081231614696741">別のフォルダの選択</translation>
 <translation id="8066816452984416180">このページをブックマークに簡単に追加できます。このショートカットを編集するには、長押ししてください。</translation>
+<translation id="8068041627541121907">Gemini がマイクの使用許可を求めています</translation>
 <translation id="8072436850275034464">Chrome を使用するどのデバイスからでも最近閉じたタブをもう一度開くことができます</translation>
 <translation id="8073388330009372546">新しいタブで画像を開く</translation>
 <translation id="8076492880354921740">タブ</translation>
@@ -2064,7 +2067,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="9015111999662965458">デバイスを安全に使用できるようにするため、組織で必要に応じてオペレーティング システム、ブラウザ、設定、デバイスにインストールされているソフトウェアに関する情報を確認する場合があります。</translation>
 <translation id="9019199799064251516">車のプロフィールをロックせずに続行しますか？</translation>
 <translation id="9022774213089566801">よく使用するサイト</translation>
-<translation id="9024318700713112071">Chrome を既定として設定</translation>
+<translation id="9024318700713112071">Chrome をデフォルトにする</translation>
 <translation id="9027728231343310283"><ph name="SITE" /> を取消</translation>
 <translation id="9035378196785279980">\u2026 に移動</translation>
 <translation id="904146253922032365">長押しするとタブを縦方向に表示できます</translation>

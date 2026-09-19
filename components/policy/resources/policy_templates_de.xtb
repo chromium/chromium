@@ -2716,6 +2716,19 @@ Wenn die Richtlinie auf „2“ (Deaktiviert) festgelegt wird, ist die Einbindun
 <translation id="2702023190395322609">Empfehlungen zu Medien aktivieren</translation>
 <translation id="2702682139813393777">Erzwingen, dass Windows-Hosts für natives Messaging über cmd.exe gestartet werden</translation>
 <translation id="270582584528242502">Keine Warnung anzeigen, wenn der Nutzer versucht, den Browser zu schließen</translation>
+<translation id="2706209533052022524">„Anprobieren“ ist eine KI-basierte Funktion, mit der Nutzer Bilder von Kleidung, die sie im Web finden, virtuell anprobieren können. Wenn Gemini in Chrome aktiviert ist, erhalten sie außerdem hilfreiche Shopping-Informationen.
+
+„0“ = Die Nutzung der Funktion wird zugelassen, wobei Google relevante Daten zur Verbesserung seiner KI-Modelle verwenden darf. Relevante Daten können je nach Funktion Bilder, Eingaben, Ausgaben, Quellenmaterial und Feedback sein. Diese Daten werden möglicherweise auch manuell überprüft, um KI-Modelle zu verbessern. „0“ ist der Standardwert, sofern unten nicht anders angegeben.
+
+„1“ = Die Nutzung der Funktion wird zugelassen, Google darf die Modelle jedoch nicht mithilfe von Nutzerinhalten (einschließlich Bildern, Eingaben, Ausgaben, Quellenmaterial und Feedback) verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, und für Konten von Bildungseinrichtungen, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
+
+„2“ = Die Nutzung der Funktion wird nicht zugelassen.
+
+Hinweis: Die Einschränkung von Modellverbesserungen (Wert „1“) gilt nur, wenn „Anprobieren“ über den <ph name="CHROME" />-Browser-Flow ausgelöst wird. Sie gilt nicht, wenn die Funktion über andere Flows verwendet wird.
+
+Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durch die Richtlinie „<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />“ bestimmt. Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen sind unter https://support.google.com/chrome/a?p=generative_ai_settings verfügbar.
+
+„Anprobieren“ ist nicht in allen Ländern und Sprachen verfügbar. Das Festlegen dieser Richtlinie garantiert nicht, dass die Funktion aktiviert wird. Sie ist weiterhin von der Verfügbarkeit abhängig. Weitere Informationen zur Einführung der Funktion sind in den Versionshinweisen für Chrome Enterprise unter https://support.google.com/chrome/a/answer/7679408 verfügbar.</translation>
 <translation id="2706708761587205154">Drucken nur mit PIN zulassen</translation>
 <translation id="2707733461906745082">Profiltrennung</translation>
 <translation id="2707873794476722903">Safe Browsing ist im Standardmodus aktiv.</translation>
@@ -3632,6 +3645,7 @@ Wenn die Richtlinie <ph name="NTPCARDSVISIBLE" /> deaktiviert ist, wird die Outl
       Hinweis: Bei Geräten, die über <ph name="MS_AD_NAME" /> verwaltet werden, unterstützt diese Richtlinie die Erweiterung von <ph name="MACHINE_NAME_VARIABLE" /> auf den <ph name="MS_AD_NAME" />-Computernamen oder einen Teilstring davon. Wenn der Computername beispielsweise „<ph name="MACHINE_NAME_EXAMPLE" />“ lautet, wird „<ph name="MACHINE_NAME_VARIABLE_EXAMPLE" />“ durch die vier Zeichen nach der sechsten Stelle ersetzt, z. B. „<ph name="MACHINE_NAME_PART_EXAMPLE" />“. Die Position basiert auf null.
 
       Diese Richtlinie wurde eingestellt. Bitte verwende stattdessen die Richtlinie <ph name="PRINTERS_POLICY_NAME" />.</translation>
+<translation id="3296337890215573972">„Anprobieren“ deaktivieren.</translation>
 <translation id="3296560797994110772">Verknüpfungen mit der Suchtaste werden zuerst an die App gesendet, bevor sie vom Betriebssystem verarbeitet werden.</translation>
 <translation id="3300441638895109781">Authentifizierungsvorgang unter ChromeOS automatisch aktualisieren</translation>
 <translation id="3300784749135986828">Aktiviere oder deaktiviere die Funktion <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />.</translation>
@@ -5508,6 +5522,7 @@ Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://ch
 <translation id="4554651132977135445">Loopback-Verarbeitungsmodus der Nutzerrichtlinien</translation>
 <translation id="4554991346503872538">Nie Übersetzung anbieten</translation>
 <translation id="4555850956567117258">Remote-Bescheinigung (Remote Attestation) für den Nutzer aktivieren</translation>
+<translation id="455594321531952386">Einstellungen für „Anprobieren“.</translation>
 <translation id="4557134566541205630">Standardsuchanbieter-URL für die "Neuer Tab"-Seite</translation>
 <translation id="4557484263538581790">Einstellungen für KI-Modus-Integrationen von Drittanbietern in der Adressleiste und im Suchfeld auf der Seite „Neuer Tab“.</translation>
 <translation id="4558166110367609724">Überspringt automatisch die Nutzungsbedingungen und lädt den Browser.</translation>
@@ -8066,6 +8081,7 @@ Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 
 Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden, die über MCX Teil einer Domain sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.</translation>
 <translation id="6106258663605167373">Verwaltungshinweis in der Fußzeile auf der Seite „Neuer Tab“ deaktivieren</translation>
+<translation id="6108531405177298087">„Anprobieren“ mit Modellverbesserung aktivieren.</translation>
 <translation id="610892566190435199">Melden des Energiestatus auf Geräten aktivieren</translation>
 <translation id="6111936128861357925">Easter Egg-Dinosaurierspiel zulassen</translation>
 <translation id="6118226055960302400">Weniger striktes Verhalten wiederherstellen.</translation>
@@ -9877,6 +9893,7 @@ Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden 
       Die Konfiguration wird heruntergeladen und im Cache gespeichert. Sobald sich die URL oder der Hash ändert, wird sie noch einmal heruntergeladen.
 
       Wenn du diese Richtlinie konfigurierst, kann sie von Nutzern nicht geändert werden. Wird sie nicht konfiguriert, können Nutzer auch weiterhin den standardmäßigen Crostini-Container mit seiner fortlaufenden Konfiguration verwenden, sofern Crostini von allen Richtlinien zugelassen wird.</translation>
+<translation id="7130092870893836308">„Anprobieren“ ohne Modellverbesserung aktivieren.</translation>
 <translation id="7132877481099023201">URLs, denen ohne Nachfrage Zugriff auf Videoaufnahmegeräte gestattet wird</translation>
 <translation id="7134420220355750019">Mit dieser Richtlinie kann die rechte Maustaste als primäre Maustaste festgelegt werden.
 

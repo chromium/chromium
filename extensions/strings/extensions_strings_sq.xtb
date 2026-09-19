@@ -28,6 +28,7 @@
 <translation id="1757786065507923842">Kërkesa për lejen e prindit dështoi.</translation>
 <translation id="1803557475693955505">Faqja e sfondit "<ph name="BACKGROUND_PAGE" />" nuk mund të ngarkohej.</translation>
 <translation id="1875387611427697908">Kjo mund të shtohet vetëm nga <ph name="CHROME_WEB_STORE" /></translation>
+<translation id="1901182793187376715"><ph name="EXTENSION_NAME" /> (ID-ja e shtesës "<ph name="EXTENSION_ID" />") nuk mund të instalohet nëpërmjet politikave politikë në mjedise me besim të ulët.</translation>
 <translation id="2131077480075264">"<ph name="APP_NAME" />" nuk mund të instalohet sepse nuk lejohet nga "<ph name="IMPORT_NAME" />"</translation>
 <translation id="2150661552845026580">Të shtohet "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2159915644201199628">Nuk mund të dekodohet imazhi: "<ph name="IMAGE_NAME" />"</translation>

@@ -837,6 +837,8 @@
 <translation id="2384307209577226199">Байгууллагын өгөгдмөл</translation>
 <translation id="2385809941344967209">Chrome-н тохиргоон дээрээс Chrome-г шинэчлэх</translation>
 <translation id="2386255080630008482">Серверийн гэрчилгээг цуцалсан байна.</translation>
+<translation id="2387424091060104123">Gemini-с санал болгосон · <ph name="SRC_LINK" />Эх сурвалжуудыг харах<ph name="END_SRC_LINK" />
+Та энэ зөвлөмжийг Chrome-с хасах боломжтой. Таны эх сурвалжийг устгахгүй. <ph name="MANAGE_LINK" />Сайжруулсан автомат бөглөлтийг удирдах<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Сайтар боловсруулах</translation>
 <translation id="2392959068659972793">Утга нь тодорхойлогдоогүй журмуудыг харуул</translation>
 <translation id="239429038616798445">Хүргэлтийн энэ арга боломжгүй тул өөр арга сонгоно уу.</translation>
@@ -1520,6 +1522,7 @@
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Энэ хуудас бэлэн болмогц Chrome танд мэдэгдэх болно. &lt;a&gt;Цуцлах&lt;/a&gt;</translation>
 <translation id="3581499772329034229">Табуудыг автоматаар нэмэх</translation>
+<translation id="3582670569275100909">Тээвэрлэлтүүд</translation>
 <translation id="3582930987043644930">Нэр нэмэх</translation>
 <translation id="3583757800736429874">&amp; Зөөвөрлөх үйлдлийг дахин хийх</translation>
 <translation id="3584299510153766161">Доод буланд хоёр нүх цоолох</translation>
@@ -4012,6 +4015,7 @@
 <translation id="7758069387465995638">Галт хана, эсвэл вирусын эсрэг программ холболтыг блоклосон байж болзошгүй.</translation>
 <translation id="7759147511335618829">MIDI төхөөрөмжийн хяналт, дахин программчлах</translation>
 <translation id="7759809451544302770">Сонголтын</translation>
+<translation id="7760566304700414795">Тээвэрлэлт</translation>
 <translation id="776110834126722255">Зогсоосон</translation>
 <translation id="7761159795823346334">Камерыг зөвшөөрөх үү?</translation>
 <translation id="7761701407923456692">Серверийн гэрчилгээ нь холбоостой таарахгүй байна.</translation>
@@ -4357,6 +4361,7 @@
 <translation id="8371841335382565017">Дамжуулах төхөөрөмжийн жагсаалтыг харуулах</translation>
 <translation id="8371889962595521444">Захиалгат үндсэн гэрчилгээ</translation>
 <translation id="8374636051559112948">Ялгаатай</translation>
+<translation id="8377507422902936905">Захиалга</translation>
 <translation id="837840316697671463">Хэрэв та төхөөрөмж дээрээсээ файл олох боломжгүй байвал тухайн файлыг <ph name="CLOUD_PROVIDER" /> дээрээс хайна уу.</translation>
 <translation id="8378714024927312812">Танай байгууллагаас удирддаг</translation>
 <translation id="8380941800586852976">Аюултай</translation>

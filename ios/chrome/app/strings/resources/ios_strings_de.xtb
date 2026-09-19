@@ -456,6 +456,7 @@
 <translation id="2381405137052800939">Grundeinstellungen</translation>
 <translation id="2384692388811649784">Inkognitotabs ausblenden</translation>
 <translation id="2386793615875593361">1 ausgewählt</translation>
+<translation id="2388949452472546050">Die von dir besuchten Websites, einschließlich Google, entscheiden selbst, wie sie auf diese Anfrage reagieren. Abhängig von der Gesetzeslage in deiner Region schränken Websites möglicherweise den Verkauf und die Weitergabe deiner Daten oder deren Verwendung für personalisierte Werbung ein. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="2390457533592708044">„<ph name="MODULE_NAME" />“ ausblenden</translation>
 <translation id="2393230427496852974">Meinungen anderer Nutzer lesen</translation>
 <translation id="2394659309569789395">Website trotzdem öffnen</translation>
@@ -1966,7 +1967,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="7293429513719260019">Sprache auswählen</translation>
 <translation id="72961285530871072">Dadurch wird dein Level-Up-Fortschritt endgültig gelöscht und die Daten zur Nutzung der Level-Up-Funktion werden für dein Profil nicht mehr an Google gesendet.
 
-Du kannst es jederzeit wieder aktivieren.</translation>
+Du kannst „Level Up“ jederzeit wieder aktivieren.</translation>
 <translation id="7300448350764260141">Schütze dich noch besser vor Onlinebedrohungen.</translation>
 <translation id="7311244614769792472">Keine Ergebnisse gefunden</translation>
 <translation id="7312823817809783355">Meine Aufgaben</translation>

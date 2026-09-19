@@ -149,6 +149,7 @@
 <translation id="2575822587468774919">Изаберите било шта за претрагу помоћу претраге слика</translation>
 <translation id="2576118232315942160">Да би вам лозинке и други садржај били доступни на свим уређајима, пријавите се у Chromium</translation>
 <translation id="2587622539943955767">Скенирајте QR кôд телефоном да бисте преузели Chromium и пријавили се на Google налог.</translation>
+<translation id="2587885422541096572">за претраживање помоћу Chromium-а.</translation>
 <translation id="2592940277904433508">Настави са коришћењем Chromium-а</translation>
 <translation id="259935314519650377">Кеширање преузетог инсталационог програма није успело. Грешка: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Систем</translation>
@@ -781,6 +782,7 @@ Chromium не може да врати подешавања.</translation>
 <translation id="897581876605952338">Логотип Chromium-а за предузећа</translation>
 <translation id="8980139959902937527">Користите безбедност коју Google нуди у покрету уз апликацију Chromium на уређају <ph name="DEVICE_TYPE" /></translation>
 <translation id="8981150672034878610">Не можете да покренете Chromium јер је дошло до грешке при отварању профила. Пробајте да рестартујете Chromium.</translation>
+<translation id="8981886272598860786">за претраживање помоћу Chromium-а или прилагођавање у <ph name="BEGIN_LINK" />Подешавањима<ph name="END_LINK" /></translation>
 <translation id="8988036198400390003">Управљај Chromium профилима</translation>
 <translation id="8993855408334954620">Користите тастатуру за кретање између Gemini-ја у Chromium-у и отворене картице.</translation>
 <translation id="9018218886431812662">Инсталација је завршена</translation>
