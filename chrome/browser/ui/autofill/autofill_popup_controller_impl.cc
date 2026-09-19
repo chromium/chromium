@@ -331,7 +331,7 @@ void AutofillPopupControllerImpl::Show(
   }
 
   content::RenderFrameHost* rfh = FindRenderFrameHostByToken(
-      *web_contents_, controller_common_.anchor_frame_token);
+      *web_contents_, controller_common_.field_id.frame_token);
   if (!rfh) {
     Hide(SuggestionHidingReason::kNoFrameHasFocus);
     return;
@@ -468,7 +468,7 @@ void AutofillPopupControllerImpl::UpdateDataListValues(
 
 const LocalFrameToken& AutofillPopupControllerImpl::GetAnchorFrameToken()
     const {
-  return controller_common_.anchor_frame_token;
+  return controller_common_.field_id.frame_token;
 }
 
 bool AutofillPopupControllerImpl::IsViewVisibilityAcceptingThresholdEnabled()
@@ -571,7 +571,9 @@ void AutofillPopupControllerImpl::AcceptSuggestion(
   base::UmaHistogramEnumeration("Autofill.SuggestionAccepted.Method",
                                 accept_method);
 
-  delegate_->DidAcceptSuggestion(suggestion, GetSuggestionMetadata(index));
+  delegate_->DidAcceptSuggestion(suggestion, GetSuggestionMetadata(index),
+                                 controller_common_.form_id,
+                                 controller_common_.field_id);
 }
 
 AutofillSuggestionDelegate::SuggestionUiMetadata
@@ -930,7 +932,9 @@ void AutofillPopupControllerImpl::SelectSuggestion(int index) {
   }
 
   any_suggestion_selected_ = true;
-  delegate_->DidSelectSuggestion(GetSuggestionAt(index));
+  delegate_->DidSelectSuggestion(GetSuggestionAt(index),
+                                 controller_common_.form_id,
+                                 controller_common_.field_id);
 }
 
 void AutofillPopupControllerImpl::UnselectSuggestion() {

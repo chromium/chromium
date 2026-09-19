@@ -343,10 +343,42 @@ class TestCreditCardAccessManager : public CreditCardAccessManager {
               (override));
 };
 
+class TestExternalDelegate : public AutofillExternalDelegate {
+ public:
+  using AutofillExternalDelegate::AutofillExternalDelegate;
+  using AutofillExternalDelegate::DidAcceptSuggestion;
+  using AutofillExternalDelegate::DidSelectSuggestion;
+
+  void OnQuery(const FormData& form,
+               const FormFieldData& field,
+               const gfx::Rect& caret_bounds,
+               AutofillSuggestionTriggerSource trigger_source) override {
+    form_id_ = form.global_id();
+    field_id_ = field.global_id();
+    AutofillExternalDelegate::OnQuery(form, field, caret_bounds,
+                                      trigger_source);
+  }
+
+  void DidSelectSuggestion(const Suggestion& suggestion) {
+    DidSelectSuggestion(suggestion, form_id_, field_id_);
+  }
+
+  void DidAcceptSuggestion(const Suggestion& suggestion,
+                           const SuggestionMetadata& metadata = {}) {
+    DidAcceptSuggestion(suggestion, metadata, form_id_, field_id_);
+  }
+
+ private:
+  FormGlobalId form_id_;
+  FieldGlobalId field_id_;
+};
+
 class MockBrowserAutofillManager : public TestBrowserAutofillManager {
  public:
   explicit MockBrowserAutofillManager(AutofillDriver* driver)
       : TestBrowserAutofillManager(driver) {
+    test_api(*this).SetExternalDelegate(
+        std::make_unique<TestExternalDelegate>(this));
     test_api(*this).set_credit_card_access_manager(
         std::make_unique<TestCreditCardAccessManager>(this));
     test_api(*this).set_bnpl_manager(
@@ -591,8 +623,9 @@ class AutofillExternalDelegateTest : public testing::Test,
     return Eq(queried_field().global_id());
   }
 
-  AutofillExternalDelegate& external_delegate() {
-    return *test_api(autofill_manager()).external_delegate();
+  TestExternalDelegate& external_delegate() {
+    return static_cast<TestExternalDelegate&>(
+        *test_api(autofill_manager()).external_delegate());
   }
   PersonalDataManager& pdm() {
     return autofill_client().GetPersonalDataManager();

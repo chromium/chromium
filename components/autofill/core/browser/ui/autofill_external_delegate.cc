@@ -607,7 +607,7 @@ void AutofillExternalDelegate::AttemptToDisplayAutofillSuggestions(
 #endif
 
   AutofillClient::PopupOpenArgs open_args(
-      trigger_field->global_id().frame_token,
+      last_query_.form_id, trigger_field->global_id(),
       should_use_caret_bounds ? gfx::RectF(caret_bounds_)
                               : trigger_field->bounds(),
       trigger_field->text_direction(), std::move(suggestions), trigger_source_,
@@ -744,7 +744,9 @@ bool AutofillExternalDelegate::IsSearching() const {
 }
 
 void AutofillExternalDelegate::DidSelectSuggestion(
-    const Suggestion& suggestion) {
+    const Suggestion& suggestion,
+    const FormGlobalId& form_id,
+    const FieldGlobalId& field_id) {
   ClearPreviewedForm();
 
   switch (suggestion.type) {
@@ -906,7 +908,9 @@ void AutofillExternalDelegate::DidSelectSuggestion(
 
 void AutofillExternalDelegate::DidAcceptSuggestion(
     const Suggestion& suggestion,
-    const SuggestionMetadata& metadata) {
+    const SuggestionMetadata& metadata,
+    const FormGlobalId& form_id,
+    const FieldGlobalId& field_id) {
   CHECK(suggestion.IsAcceptable());
   // TODO(crbug.com/552871965): Extract the logging here to a separate function.
   base::UmaHistogramEnumeration("Autofill.Suggestions.AcceptedType",

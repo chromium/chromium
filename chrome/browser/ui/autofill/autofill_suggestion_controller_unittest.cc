@@ -40,6 +40,7 @@
 #include "components/autofill/core/browser/ui/autofill_external_delegate.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/common/aliases.h"
+#include "components/autofill/core/common/autofill_test_util.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/prefs/pref_service.h"
@@ -264,11 +265,14 @@ TEST_F(AutofillSuggestionControllerTest, PopupsWithOnlyDataLists) {
 
 TEST_F(AutofillSuggestionControllerTest, GetOrCreate) {
   auto create_controller = [&](gfx::RectF bounds) {
+    LocalFrameToken frame_token(*main_frame()->GetFrameToken());
     return AutofillSuggestionController::GetOrCreate(
         client().suggestion_controller(manager()).GetWeakPtr(),
         manager().external_delegate().GetWeakPtrForTest(), web_contents(),
-        PopupControllerCommon(LocalFrameToken(*main_frame()->GetFrameToken()),
-                              std::move(bounds), base::i18n::UNKNOWN_DIRECTION),
+        PopupControllerCommon(
+            FormGlobalId(frame_token, test::MakeFormRendererId()),
+            FieldGlobalId(frame_token, test::MakeFieldRendererId()),
+            std::move(bounds), base::i18n::UNKNOWN_DIRECTION),
         /*form_control_ax_id=*/0,
         AutofillSuggestionTriggerSource::kUnspecified);
   };
@@ -333,12 +337,15 @@ TEST_F(AutofillSuggestionControllerTest, ProperlyResetController) {
                               SuggestionType::kAutocompleteEntry});
 
   // Now show a new popup with the same controller, but with fewer items.
+  LocalFrameToken frame_token(*main_frame()->GetFrameToken());
   base::WeakPtr<AutofillSuggestionController> controller =
       AutofillSuggestionController::GetOrCreate(
           client().suggestion_controller(manager()).GetWeakPtr(),
           manager().external_delegate().GetWeakPtrForTest(), web_contents(),
-          PopupControllerCommon(LocalFrameToken(*main_frame()->GetFrameToken()),
-                                gfx::RectF(), base::i18n::UNKNOWN_DIRECTION),
+          PopupControllerCommon(
+              FormGlobalId(frame_token, test::MakeFormRendererId()),
+              FieldGlobalId(frame_token, test::MakeFieldRendererId()),
+              gfx::RectF(), base::i18n::UNKNOWN_DIRECTION),
           /*form_control_ax_id=*/0,
           AutofillSuggestionTriggerSource::kUnspecified);
   EXPECT_EQ(0, controller->GetLineCount());

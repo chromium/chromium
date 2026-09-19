@@ -1235,11 +1235,13 @@ TEST_F(AutofillAgentTest, DidSelectSuggestion_AutocompleteEntry) {
       DidAcceptSuggestion(
           ::testing::Field(&autofill::Suggestion::type,
                            autofill::SuggestionType::kAutocompleteEntry),
-          ::testing::_))
+          ::testing::_, ::testing::_, ::testing::_))
       .WillOnce(
           [&](const autofill::Suggestion& suggestion,
               const autofill::AutofillSuggestionDelegate::SuggestionMetadata&
-                  metadata) {
+                  metadata,
+              const autofill::FormGlobalId& form_id,
+              const autofill::FieldGlobalId& field_id) {
             AutofillDriverIOS* driver =
                 AutofillDriverIOS::FromWebStateAndWebFrame(&fake_web_state_,
                                                            fake_main_frame_);
@@ -1337,7 +1339,7 @@ TEST_F(AutofillAgentTest, DidSelectSuggestion_Undo) {
       mock_delegate,
       DidAcceptSuggestion(::testing::Field(&autofill::Suggestion::type,
                                            autofill::SuggestionType::kUndo),
-                          ::testing::_));
+                          ::testing::_, ::testing::_, ::testing::_));
 
   // Show the popup to set the delegate used by didSelectSuggestion.
   std::vector<autofill::Suggestion> suggestions;
@@ -1413,7 +1415,7 @@ TEST_F(AutofillAgentTest,
         mock_delegate,
         DidAcceptSuggestion(testing::Field(&autofill::Suggestion::payload,
                                            autofill::Suggestion::Payload()),
-                            testing::_));
+                            testing::_, testing::_, testing::_));
 
     FormSuggestion* form_suggestion = FormSuggestionWithPayload(
         u"", autofill::SuggestionType::kCreditCardEntry,
@@ -1438,7 +1440,7 @@ TEST_F(AutofillAgentTest,
         mock_delegate,
         DidAcceptSuggestion(
             testing::Field(&autofill::Suggestion::payload, expected_payload),
-            testing::_));
+            testing::_, testing::_, testing::_));
 
     FormSuggestion* form_suggestion = FormSuggestionWithPayload(
         u"", autofill::SuggestionType::kCreditCardEntry, expected_payload,
@@ -1463,7 +1465,7 @@ TEST_F(AutofillAgentTest,
         mock_delegate,
         DidAcceptSuggestion(
             testing::Field(&autofill::Suggestion::payload, expected_payload),
-            testing::_));
+            testing::_, testing::_, testing::_));
 
     FormSuggestion* form_suggestion = FormSuggestionWithPayload(
         u"", autofill::SuggestionType::kCreditCardEntry, expected_payload,
@@ -1489,7 +1491,7 @@ TEST_F(AutofillAgentTest,
         mock_delegate,
         DidAcceptSuggestion(
             testing::Field(&autofill::Suggestion::payload, expected_payload),
-            testing::_));
+            testing::_, testing::_, testing::_));
 
     FormSuggestion* form_suggestion = FormSuggestionWithPayload(
         u"", autofill::SuggestionType::kCreditCardEntry, expected_payload,
@@ -1515,7 +1517,7 @@ TEST_F(AutofillAgentTest,
         mock_delegate,
         DidAcceptSuggestion(
             testing::Field(&autofill::Suggestion::payload, expected_payload),
-            testing::_));
+            testing::_, testing::_, testing::_));
 
     FormSuggestion* form_suggestion = FormSuggestionWithPayload(
         u"", autofill::SuggestionType::kCreditCardEntry, expected_payload,
@@ -1540,7 +1542,7 @@ TEST_F(AutofillAgentTest,
         mock_delegate,
         DidAcceptSuggestion(
             testing::Field(&autofill::Suggestion::payload, expected_payload),
-            testing::_));
+            testing::_, testing::_, testing::_));
 
     FormSuggestion* form_suggestion = FormSuggestionWithPayload(
         u"", autofill::SuggestionType::kCreditCardEntry, expected_payload,
@@ -1573,7 +1575,7 @@ TEST_F(AutofillAgentTest,
         mock_delegate,
         DidAcceptSuggestion(testing::Field(&autofill::Suggestion::payload,
                                            autofill::Suggestion::Payload()),
-                            testing::_));
+                            testing::_, testing::_, testing::_));
 
     FormSuggestion* form_suggestion = FormSuggestionWithPayload(
         u"", autofill::SuggestionType::kCreditCardEntry,
@@ -1598,7 +1600,7 @@ TEST_F(AutofillAgentTest,
         mock_delegate,
         DidAcceptSuggestion(
             testing::Field(&autofill::Suggestion::payload, expected_payload),
-            testing::_));
+            testing::_, testing::_, testing::_));
 
     FormSuggestion* form_suggestion = FormSuggestionWithPayload(
         u"", autofill::SuggestionType::kCreditCardEntry, expected_payload,
@@ -1624,7 +1626,7 @@ TEST_F(AutofillAgentTest,
         mock_delegate,
         DidAcceptSuggestion(testing::Field(&autofill::Suggestion::payload,
                                            autofill::Suggestion::Payload()),
-                            testing::_));
+                            testing::_, testing::_, testing::_));
 
     FormSuggestion* form_suggestion = FormSuggestionWithPayload(
         u"", autofill::SuggestionType::kCreditCardEntry, input_payload,
@@ -1650,7 +1652,7 @@ TEST_F(AutofillAgentTest,
         mock_delegate,
         DidAcceptSuggestion(
             testing::Field(&autofill::Suggestion::payload, expected_payload),
-            testing::_));
+            testing::_, testing::_, testing::_));
 
     FormSuggestion* form_suggestion = FormSuggestionWithPayload(
         u"", autofill::SuggestionType::kCreditCardEntry, expected_payload,
@@ -1676,7 +1678,7 @@ TEST_F(AutofillAgentTest,
         mock_delegate,
         DidAcceptSuggestion(testing::Field(&autofill::Suggestion::payload,
                                            autofill::Suggestion::Payload()),
-                            testing::_));
+                            testing::_, testing::_, testing::_));
 
     FormSuggestion* form_suggestion = FormSuggestionWithPayload(
         u"", autofill::SuggestionType::kCreditCardEntry, input_payload,
@@ -1701,7 +1703,7 @@ TEST_F(AutofillAgentTest,
         mock_delegate,
         DidAcceptSuggestion(testing::Field(&autofill::Suggestion::payload,
                                            autofill::Suggestion::Payload()),
-                            testing::_));
+                            testing::_, testing::_, testing::_));
 
     FormSuggestion* form_suggestion = FormSuggestionWithPayload(
         u"", autofill::SuggestionType::kCreditCardEntry, input_payload,

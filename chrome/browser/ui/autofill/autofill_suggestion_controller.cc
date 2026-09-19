@@ -78,7 +78,7 @@ AutofillSuggestionController::GetOrCreate(
     int32_t form_control_ax_id,
     AutofillSuggestionTriggerSource trigger_source) {
   if (previous && previous->MayRecycle(delegate, web_contents,
-                                       controller_common.anchor_frame_token,
+                                       controller_common.field_id.frame_token,
                                        trigger_source)) {
     previous->Recycle(std::move(controller_common), form_control_ax_id);
     return previous;

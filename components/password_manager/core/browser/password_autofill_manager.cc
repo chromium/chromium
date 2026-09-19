@@ -283,6 +283,13 @@ bool PasswordAutofillManager::OnSearchSubmitted(const std::u16string& filter) {
 }
 
 void PasswordAutofillManager::DidSelectSuggestion(
+    const Suggestion& suggestion,
+    const autofill::FormGlobalId& form_id,
+    const autofill::FieldGlobalId& field_id) {
+  DidSelectSuggestion(suggestion);
+}
+
+void PasswordAutofillManager::DidSelectSuggestion(
     const Suggestion& suggestion) {
   ClearPreviewedForm();
   if (suggestion.type == autofill::SuggestionType::kAllSavedPasswordsEntry ||
@@ -314,6 +321,14 @@ void PasswordAutofillManager::DidSelectSuggestion(
   }
   PreviewSuggestion(GetUsernameFromSuggestion(suggestion.main_text.value),
                     suggestion.type);
+}
+
+void PasswordAutofillManager::DidAcceptSuggestion(
+    const Suggestion& suggestion,
+    const SuggestionMetadata& metadata,
+    const autofill::FormGlobalId& form_id,
+    const autofill::FieldGlobalId& field_id) {
+  DidAcceptSuggestion(suggestion, metadata);
 }
 
 void PasswordAutofillManager::DidAcceptSuggestion(
@@ -759,8 +774,9 @@ bool PasswordAutofillManager::ShowPopup(
     metrics_util::MaybeLogMetricsForPasswordAndWebauthnCounts(
         suggestions, is_for_webauthn_request);
     // TODO(crbug.com/41474723): Set the right `form_control_ax_id`.
+    // TODO(crbug.com/563089510): Set the right FormGlobalId.
     last_popup_open_args_ = autofill::AutofillClient::PopupOpenArgs(
-        field_id.frame_token, bounds, text_direction, suggestions,
+        autofill::FormGlobalId(), field_id, bounds, text_direction, suggestions,
         autofill::AutofillSuggestionTriggerSource::kPasswordManager,
         /*form_control_ax_id=*/0, autofill::PopupAnchorType::kField);
   }

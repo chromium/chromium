@@ -455,8 +455,10 @@ bool HasGuid(const Suggestion::Payload& payload) {
               : Suggestion::Payload();
 
       CHECK_GE(index, 0);
+      // TODO(crbug.com/563089510): Set the correct form and field IDs.
       delegate->DidAcceptSuggestion(
-          autofill_suggestion, {.multi_index = {static_cast<size_t>(index)}});
+          autofill_suggestion, {.multi_index = {static_cast<size_t>(index)}},
+          FormGlobalId(), FieldGlobalId());
     }
     return;
   }

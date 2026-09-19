@@ -29,6 +29,9 @@ class TestAutofillExternalDelegate : public AutofillExternalDelegate {
 
   ~TestAutofillExternalDelegate() override;
 
+  using AutofillExternalDelegate::DidAcceptSuggestion;
+  using AutofillExternalDelegate::DidSelectSuggestion;
+
   // AutofillExternalDelegate overrides.
   void OnSuggestionsShown(base::span<const Suggestion> suggestions,
                           const SuggestionUiMetadata& metadata) override;
@@ -45,6 +48,9 @@ class TestAutofillExternalDelegate : public AutofillExternalDelegate {
       mojom::AutofillSuggestionAvailability suggestion_availability) override;
 
   // Functions unique to TestAutofillExternalDelegate.
+  void DidSelectSuggestion(const Suggestion& suggestion);
+  void DidAcceptSuggestion(const Suggestion& suggestion,
+                           const SuggestionMetadata& metadata = {});
 
   void WaitForPopupHidden();
 
@@ -91,7 +97,8 @@ class TestAutofillExternalDelegate : public AutofillExternalDelegate {
   AutofillSuggestionTriggerSource trigger_source_ =
       AutofillSuggestionTriggerSource::kUnspecified;
 
-  // The field id of the most recent Autofill query.
+  // The form and field id of the most recent Autofill query.
+  FormGlobalId form_id_;
   FieldGlobalId field_id_;
 
   // The results returned by the most recent Autofill query.

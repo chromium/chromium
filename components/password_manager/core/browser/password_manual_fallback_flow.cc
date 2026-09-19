@@ -213,7 +213,9 @@ bool PasswordManualFallbackFlow::OnSearchSubmitted(
 }
 
 void PasswordManualFallbackFlow::DidSelectSuggestion(
-    const Suggestion& suggestion) {
+    const Suggestion& suggestion,
+    const autofill::FormGlobalId& form_id,
+    const autofill::FieldGlobalId& field_id) {
   CHECK(SupportsSuggestionType(suggestion.type));
   if (!suggestion.IsAcceptable()) {
     return;
@@ -275,7 +277,9 @@ void PasswordManualFallbackFlow::DidSelectSuggestion(
 
 void PasswordManualFallbackFlow::DidAcceptSuggestion(
     const Suggestion& suggestion,
-    const SuggestionMetadata& metadata) {
+    const SuggestionMetadata& metadata,
+    const autofill::FormGlobalId& form_id,
+    const autofill::FieldGlobalId& field_id) {
   CHECK(SupportsSuggestionType(suggestion.type));
   if (!suggestion.IsAcceptable()) {
     return;
@@ -427,8 +431,10 @@ void PasswordManualFallbackFlow::RunFlowImpl(
               IsTriggerFieldRelevantInPasswordForm(password_form) &&
               !password_form->HasNewPasswordElement()));
   // TODO(crbug.com/41474723): Set the right `form_control_ax_id`.
+  // TODO(crbug.com/563089510): Set the right FormGlobalId.
   autofill::AutofillClient::PopupOpenArgs open_args(
-      field_id_.frame_token, bounds, text_direction, std::move(suggestions),
+      autofill::FormGlobalId(), field_id_, bounds, text_direction,
+      std::move(suggestions),
       autofill::AutofillSuggestionTriggerSource::kManualFallbackPasswords,
       /*form_control_ax_id=*/0, autofill::PopupAnchorType::kField);
   autofill_client_->ShowAutofillSuggestions(open_args,

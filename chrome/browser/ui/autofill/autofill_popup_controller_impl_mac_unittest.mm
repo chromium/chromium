@@ -11,6 +11,7 @@
 #import "chrome/browser/ui/cocoa/touchbar/web_textfield_touch_bar_controller.h"
 #import "components/autofill/core/browser/suggestions/suggestion.h"
 #import "components/autofill/core/browser/suggestions/suggestion_type.h"
+#import "components/autofill/core/common/autofill_test_util.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "ui/gfx/geometry/rect_f.h"
@@ -41,9 +42,11 @@ class AutofillPopupControllerImplMacForTesting
       : AutofillPopupControllerImplMac(
             external_delegate,
             web_contents,
-            PopupControllerCommon(frame_token,
-                                  element_bounds,
-                                  base::i18n::UNKNOWN_DIRECTION)) {}
+            PopupControllerCommon(
+                FormGlobalId(frame_token, test::MakeFormRendererId()),
+                FieldGlobalId(frame_token, test::MakeFieldRendererId()),
+                element_bounds,
+                base::i18n::UNKNOWN_DIRECTION)) {}
 
   ~AutofillPopupControllerImplMacForTesting() override = default;
 

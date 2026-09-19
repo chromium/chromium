@@ -1186,8 +1186,11 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
                         1)));
 
   client().suggestion_controller(manager()).Recycle(
-      PopupControllerCommon(manager().driver().GetFrameToken(), {},
-                            base::i18n::UNKNOWN_DIRECTION),
+      PopupControllerCommon(FormGlobalId(manager().driver().GetFrameToken(),
+                                         test::MakeFormRendererId()),
+                            FieldGlobalId(manager().driver().GetFrameToken(),
+                                          test::MakeFieldRendererId()),
+                            {}, base::i18n::UNKNOWN_DIRECTION),
       /*form_control_ax_id=*/0);
 
   ShowSuggestions(manager(), {test::CreateAutofillSuggestion(

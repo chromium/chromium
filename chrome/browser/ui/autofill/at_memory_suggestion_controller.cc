@@ -92,8 +92,10 @@ void AtMemorySuggestionController::AcceptSuggestion(
   Suggestion suggestion = suggestions_[index];
   if (delegate_) {
     delegate_->DidAcceptSuggestion(
-        suggestion, AutofillSuggestionDelegate::SuggestionMetadata{
-                        .multi_index = {static_cast<size_t>(index)}});
+        suggestion,
+        AutofillSuggestionDelegate::SuggestionMetadata{
+            .multi_index = {static_cast<size_t>(index)}},
+        controller_common_.form_id, controller_common_.field_id);
   }
 }
 
@@ -171,7 +173,7 @@ void AtMemorySuggestionController::UpdateDataListValues(
 
 const LocalFrameToken& AtMemorySuggestionController::GetAnchorFrameToken()
     const {
-  return controller_common_.anchor_frame_token;
+  return controller_common_.field_id.frame_token;
 }
 
 void AtMemorySuggestionController::HideViewAndDie() {
@@ -290,9 +292,11 @@ void AtMemorySuggestionController::OnChildSuggestionSelected(
   Suggestion suggestion = parent_suggestion.children[child_position];
   if (delegate_) {
     delegate_->DidAcceptSuggestion(
-        suggestion, AutofillSuggestionDelegate::SuggestionMetadata{
-                        .multi_index = {static_cast<size_t>(parent_position),
-                                        static_cast<size_t>(child_position)}});
+        suggestion,
+        AutofillSuggestionDelegate::SuggestionMetadata{
+            .multi_index = {static_cast<size_t>(parent_position),
+                            static_cast<size_t>(child_position)}},
+        controller_common_.form_id, controller_common_.field_id);
   }
 }
 

@@ -593,8 +593,10 @@ void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(
     mouse_metrics_recorder_->RecordAccepted(suggestions_filling_product_);
   }
   delegate_->DidAcceptSuggestion(
-      suggestion, AutofillSuggestionDelegate::SuggestionMetadata{
-                      .multi_index = {static_cast<size_t>(index)}});
+      suggestion,
+      AutofillSuggestionDelegate::SuggestionMetadata{
+          .multi_index = {static_cast<size_t>(index)}},
+      controller_common_.form_id, controller_common_.field_id);
 }
 
 bool AutofillKeyboardAccessoryControllerImpl::RemoveSuggestion(int index) {
@@ -741,7 +743,7 @@ void AutofillKeyboardAccessoryControllerImpl::Show(
   }
 
   content::RenderFrameHost* rfh = FindRenderFrameHostByToken(
-      *web_contents_, controller_common_.anchor_frame_token);
+      *web_contents_, controller_common_.field_id.frame_token);
   if (!rfh) {
     Hide(SuggestionHidingReason::kNoFrameHasFocus);
     return;
@@ -855,7 +857,7 @@ void AutofillKeyboardAccessoryControllerImpl::UpdateDataListValues(
 
 const LocalFrameToken&
 AutofillKeyboardAccessoryControllerImpl::GetAnchorFrameToken() const {
-  return controller_common_.anchor_frame_token;
+  return controller_common_.field_id.frame_token;
 }
 
 bool AutofillKeyboardAccessoryControllerImpl::HasSuggestions() const {
@@ -1029,7 +1031,8 @@ void AutofillKeyboardAccessoryControllerImpl::SelectSuggestion(int index) {
     if (mouse_metrics_recorder_) {
       mouse_metrics_recorder_->RecordSelected(suggestions_filling_product_);
     }
-    delegate_->DidSelectSuggestion(suggestion);
+    delegate_->DidSelectSuggestion(suggestion, controller_common_.form_id,
+                                   controller_common_.field_id);
   } else {
     delegate_->ClearPreviewedForm();
   }

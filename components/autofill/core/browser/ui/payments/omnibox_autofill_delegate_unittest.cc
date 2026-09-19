@@ -1176,7 +1176,8 @@ TEST_F(OmniboxAutofillDelegateTest,
 
   Suggestion suggestion(SuggestionType::kCreditCardEntry);
 
-  delegate->DidAcceptSuggestion(suggestion, /*metadata=*/{});
+  delegate->DidAcceptSuggestion(suggestion, /*metadata=*/{}, form.global_id(),
+                                form.fields().front().global_id());
 
   histogram_tester.ExpectBucketCount("Autofill.OmniboxAutofill.Events",
                                      OmniboxAutofillEvents::kSuggestionAccepted,
@@ -1455,7 +1456,8 @@ TEST_F(OmniboxAutofillDelegateFillingTest, FillOrPreviewCard_SubframeForm) {
   std::string guid = cards[0]->guid();
   suggestion.payload = Suggestion::Guid(guid);
 
-  delegate->DidSelectSuggestion(suggestion);
+  delegate->DidSelectSuggestion(suggestion, child_form.global_id(),
+                                child_form.fields().front().global_id());
 
   // Trigger fill (DidAcceptSuggestion).
   EXPECT_CALL(autofill_driver(1),
@@ -1464,7 +1466,8 @@ TEST_F(OmniboxAutofillDelegateFillingTest, FillOrPreviewCard_SubframeForm) {
       .Times(1);
   EXPECT_CALL(autofill_driver(0), ExecuteApplyFormAction).Times(0);
 
-  delegate->DidAcceptSuggestion(suggestion, {});
+  delegate->DidAcceptSuggestion(suggestion, {}, child_form.global_id(),
+                                child_form.fields().front().global_id());
 }
 
 // Tests that selecting and accepting a credit card suggestion for a main frame
@@ -1514,7 +1517,8 @@ TEST_F(OmniboxAutofillDelegateFillingTest, FillOrPreviewCard_MainFrameForm) {
   std::string guid = cards[0]->guid();
   suggestion.payload = Suggestion::Guid(guid);
 
-  delegate->DidSelectSuggestion(suggestion);
+  delegate->DidSelectSuggestion(suggestion, form.global_id(),
+                                form.fields().front().global_id());
 
   // Trigger fill (DidAcceptSuggestion).
   EXPECT_CALL(autofill_driver(0),
@@ -1522,7 +1526,8 @@ TEST_F(OmniboxAutofillDelegateFillingTest, FillOrPreviewCard_MainFrameForm) {
                                      mojom::ActionPersistence::kFill))
       .Times(1);
 
-  delegate->DidAcceptSuggestion(suggestion, {});
+  delegate->DidAcceptSuggestion(suggestion, {}, form.global_id(),
+                                form.fields().front().global_id());
 }
 
 }  // namespace

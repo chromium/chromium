@@ -50,7 +50,8 @@ AutofillSuggestionControllerForTest::AutofillSuggestionControllerForTest(
     : AutofillSuggestionControllerForTestBase(
           external_delegate,
           web_contents,
-          PopupControllerCommon(frame_token,
+          PopupControllerCommon(FormGlobalId(frame_token, FormRendererId()),
+                                FieldGlobalId(frame_token, FieldRendererId()),
                                 element_bounds,
                                 base::i18n::UNKNOWN_DIRECTION)) {}
 

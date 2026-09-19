@@ -139,7 +139,10 @@ PasswordGenerationPopupControllerImpl::PasswordGenerationPopupControllerImpl(
           autofill::FormControlType::kInputPassword)),
       generation_element_id_(ui_data.generation_element_id),
       max_length_(ui_data.max_length),
-      controller_common_(autofill::LocalFrameToken(*frame->GetFrameToken()),
+      controller_common_(ui_data.form_data.global_id(),
+                         autofill::FieldGlobalId(
+                             autofill::LocalFrameToken(*frame->GetFrameToken()),
+                             ui_data.generation_element_id),
                          bounds,
                          ui_data.text_direction),
       state_(kOfferGeneration),

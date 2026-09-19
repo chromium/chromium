@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/mock_autofill_suggestion_delegate.h"
+#include "components/autofill/core/common/autofill_test_util.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -25,6 +26,16 @@ namespace {
 using ::testing::_;
 using ::testing::ElementsAreArray;
 using ::testing::Eq;
+
+FormGlobalId MakeFormGlobalId(AutofillManager& manager) {
+  return FormGlobalId(manager.driver().GetFrameToken(),
+                      test::MakeFormRendererId());
+}
+
+FieldGlobalId MakeFieldGlobalId(AutofillManager& manager) {
+  return FieldGlobalId(manager.driver().GetFrameToken(),
+                       test::MakeFieldRendererId());
+}
 
 class MockAtMemoryBottomSheetBridge : public AtMemoryBottomSheetBridge {
  public:
@@ -49,7 +60,8 @@ class TestAtMemorySuggestionControllerAutofillClient
     if (!suggestion_controller_) {
       auto* controller = new AtMemorySuggestionController(
           manager.external_delegate().GetWeakPtrForTest(), &GetWebContents(),
-          PopupControllerCommon(manager.driver().GetFrameToken(), {},
+          PopupControllerCommon(MakeFormGlobalId(manager),
+                                MakeFieldGlobalId(manager), {},
                                 base::i18n::UNKNOWN_DIRECTION));
       suggestion_controller_ = controller->GetWeakPtr();
     }
@@ -167,7 +179,8 @@ TEST_F(AtMemorySuggestionControllerTest, RecreatesControllerIfDelegateChanges) {
       AutofillSuggestionController::GetOrCreate(
           /*previous=*/nullptr,
           manager1.external_delegate().GetWeakPtrForTest(), web_contents(),
-          PopupControllerCommon(manager1.driver().GetFrameToken(), {},
+          PopupControllerCommon(MakeFormGlobalId(manager1),
+                                MakeFieldGlobalId(manager1), {},
                                 base::i18n::UNKNOWN_DIRECTION),
           /*form_control_ax_id=*/0,
           AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl);
@@ -184,7 +197,8 @@ TEST_F(AtMemorySuggestionControllerTest, RecreatesControllerIfDelegateChanges) {
       AutofillSuggestionController::GetOrCreate(
           controller1_weak, manager2.external_delegate().GetWeakPtrForTest(),
           web_contents(),
-          PopupControllerCommon(manager2.driver().GetFrameToken(), {},
+          PopupControllerCommon(MakeFormGlobalId(manager2),
+                                MakeFieldGlobalId(manager2), {},
                                 base::i18n::UNKNOWN_DIRECTION),
           /*form_control_ax_id=*/0,
           AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl);
@@ -203,7 +217,8 @@ TEST_F(AtMemorySuggestionControllerTest, RecyclesControllerIfDelegateIsSame) {
       AutofillSuggestionController::GetOrCreate(
           /*previous=*/nullptr,
           manager1.external_delegate().GetWeakPtrForTest(), web_contents(),
-          PopupControllerCommon(manager1.driver().GetFrameToken(), {},
+          PopupControllerCommon(MakeFormGlobalId(manager1),
+                                MakeFieldGlobalId(manager1), {},
                                 base::i18n::UNKNOWN_DIRECTION),
           /*form_control_ax_id=*/0,
           AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl);
@@ -212,7 +227,8 @@ TEST_F(AtMemorySuggestionControllerTest, RecyclesControllerIfDelegateIsSame) {
       AutofillSuggestionController::GetOrCreate(
           controller1_weak, manager1.external_delegate().GetWeakPtrForTest(),
           web_contents(),
-          PopupControllerCommon(manager1.driver().GetFrameToken(), {},
+          PopupControllerCommon(MakeFormGlobalId(manager1),
+                                MakeFieldGlobalId(manager1), {},
                                 base::i18n::UNKNOWN_DIRECTION),
           /*form_control_ax_id=*/0,
           AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl);
@@ -236,7 +252,8 @@ TEST_F(AtMemorySuggestionControllerTest, AcceptSuggestion) {
           suggestions[0],
           testing::Field(
               &AutofillSuggestionDelegate::SuggestionMetadata::multi_index,
-              std::vector<size_t>{0})));
+              std::vector<size_t>{0}),
+          _, _));
 
   client().suggestion_controller(manager()).AcceptSuggestion(
       /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kTap);
@@ -248,7 +265,9 @@ TEST_F(AtMemorySuggestionControllerTest, DelegateRouting) {
   testing::NiceMock<MockAutofillSuggestionDelegate> mock_delegate;
   auto* controller = new AtMemorySuggestionController(
       mock_delegate.GetWeakPtr(), web_contents(),
-      PopupControllerCommon({}, gfx::RectF(), base::i18n::UNKNOWN_DIRECTION));
+      PopupControllerCommon(MakeFormGlobalId(manager()),
+                            MakeFieldGlobalId(manager()), gfx::RectF(),
+                            base::i18n::UNKNOWN_DIRECTION));
 
   auto mock_bridge =
       std::make_unique<MockAtMemoryBottomSheetBridge>(controller);
@@ -281,7 +300,8 @@ TEST_F(AtMemorySuggestionControllerTest, DelegateRouting) {
           parent,
           testing::Field(
               &AutofillSuggestionDelegate::SuggestionMetadata::multi_index,
-              std::vector<size_t>{0})));
+              std::vector<size_t>{0}),
+          _, _));
   controller->OnSuggestionAccepted(0);
 
   // OnChildSuggestionsShown routes to OnSuggestionsShown with parent metadata.
@@ -296,7 +316,8 @@ TEST_F(AtMemorySuggestionControllerTest, DelegateRouting) {
           child,
           testing::Field(
               &AutofillSuggestionDelegate::SuggestionMetadata::multi_index,
-              std::vector<size_t>{0, 0})));
+              std::vector<size_t>{0, 0}),
+          _, _));
   controller->OnChildSuggestionSelected(0, 0);
 
   // IsSearching routes to IsSearching on delegate.

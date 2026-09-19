@@ -83,15 +83,25 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
   void OnSuggestionsHidden(autofill::SuggestionHidingReason reason) override;
   bool OnFilterChanged(const std::u16string& filter) override;
   bool OnSearchSubmitted(const std::u16string& filter) override;
-  void DidSelectSuggestion(const autofill::Suggestion& suggestion) override;
+  void DidSelectSuggestion(const autofill::Suggestion& suggestion,
+                           const autofill::FormGlobalId& form_id,
+                           const autofill::FieldGlobalId& field_id) override;
   void DidAcceptSuggestion(const autofill::Suggestion& suggestion,
-                           const SuggestionMetadata& metadata) override;
+                           const SuggestionMetadata& metadata,
+                           const autofill::FormGlobalId& form_id,
+                           const autofill::FieldGlobalId& field_id) override;
   bool RemoveSuggestion(const autofill::Suggestion& suggestion) override;
   void ClearPreviewedForm() override;
   autofill::FillingProduct GetMainFillingProduct() const override;
   void OnTabSelected(autofill::TabbedPaneTabType tab_type) override;
   bool IsSearching() const override;
   autofill::FieldGlobalId GetQueriedFieldId() const override;
+
+  // PasswordAutofillManager ignores the `form_id` and `field_id` in
+  // AutofillSuggestionDelegate::Did{Select,Accept}Suggestion().
+  void DidSelectSuggestion(const autofill::Suggestion& suggestion);
+  void DidAcceptSuggestion(const autofill::Suggestion& suggestion,
+                           const SuggestionMetadata& metadata);
 
   // Invoked when a password mapping is added.
   void OnAddPasswordFillData(const autofill::PasswordFormFillData& fill_data);

@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/autofill/at_memory_suggestion_controller.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/autofill/core/common/autofill_test_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,7 +24,8 @@ class MockAtMemorySuggestionController : public AtMemorySuggestionController {
       : AtMemorySuggestionController(
             nullptr,
             nullptr,
-            PopupControllerCommon({},
+            PopupControllerCommon(test::MakeFormGlobalId(),
+                                  test::MakeFieldGlobalId(),
                                   gfx::RectF(),
                                   base::i18n::UNKNOWN_DIRECTION)) {}
   MOCK_METHOD(void, OnDismissed, (), (override));
@@ -39,6 +41,7 @@ class AtMemoryBottomSheetBridgeTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
+  autofill::test::AutofillUnitTestEnvironment autofill_environment_;
   TestingProfile profile_;
   std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window_;
   std::unique_ptr<MockAtMemorySuggestionController> controller_;
