@@ -782,8 +782,9 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroupedTabThenGroup) {
   CloseGroup(group);
   tab_groups::TabGroupId restored_group_id = RestoreGroup(group, browser(), 1);
 
-  // Tab will be restored at the end of the group instead of the original index.
-  const int expected_tabstrip_index = 3;
+  // Restored at its original index in the group, even though the group was
+  // closed and reopened.
+  const int expected_tabstrip_index = 2;
   ASSERT_NO_FATAL_FAILURE(RestoreTab(browser(), expected_tabstrip_index));
 
   EXPECT_EQ(browser()
@@ -2711,6 +2712,14 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreSplitInOpenGroup) {
   VerifySplitViewInGroup(tab_strip_model, group, /*expected_total_tabs=*/4,
                          /*expected_grouped_tabs=*/3,
                          /*expected_split_tabs=*/2);
+
+  // The split returns ahead of the tab that stayed in the group.
+  EXPECT_EQ(GURL("https://www.0.com/"),
+            tab_strip_model->GetWebContentsAt(1)->GetLastCommittedURL());
+  EXPECT_EQ(GURL("https://www.1.com/"),
+            tab_strip_model->GetWebContentsAt(2)->GetLastCommittedURL());
+  EXPECT_EQ(GURL("https://www.2.com/"),
+            tab_strip_model->GetWebContentsAt(3)->GetLastCommittedURL());
 }
 
 // Close a window containing a split view, then restore it.
@@ -3405,6 +3414,104 @@ IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest, RestoreTabInSavedGroup) {
                 ->GetTabGroup(saved_group.local_group_id().value())
                 ->ListTabs(),
             gfx::Range(1, 3));
+}
+
+// A tab closed from the middle of an open saved group returns to its original
+// index, not the end of the group.
+IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest,
+                       RestoreTabInSavedGroupAtOriginalIndex) {
+  tab_groups::TabGroupSyncService* service =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          browser()->GetProfile());
+  ASSERT_TRUE(service);
+
+  const GURL url1("https://www.1.com/");
+  const GURL url2("https://www.2.com/");
+  const GURL url3("https://www.3.com/");
+  AddTab(browser(), url1);
+  AddTab(browser(), url2);
+  AddTab(browser(), url3);
+
+  TabStripModel* const tab_strip_model = browser()->tab_strip_model();
+  const tab_groups::TabGroupId group =
+      tab_strip_model->AddToNewGroup({1, 2, 3});
+  ASSERT_TRUE(service->GetGroup(group));
+
+  // Close the first tab in the group.
+  CloseTab(1);
+  ASSERT_EQ(gfx::Range(1, 3),
+            tab_strip_model->group_model()->GetTabGroup(group)->ListTabs());
+
+  // Restored at its original index in the group, and active.
+  EXPECT_EQ(group, RestoreTab(browser(), /*expected_tabstrip_index=*/1));
+
+  EXPECT_EQ(gfx::Range(1, 4),
+            tab_strip_model->group_model()->GetTabGroup(group)->ListTabs());
+
+  // The tabs in the group should be back in their original order.
+  EXPECT_EQ(url1, tab_strip_model->GetWebContentsAt(1)->GetLastCommittedURL());
+  EXPECT_EQ(url2, tab_strip_model->GetWebContentsAt(2)->GetLastCommittedURL());
+  EXPECT_EQ(url3, tab_strip_model->GetWebContentsAt(3)->GetLastCommittedURL());
+
+  // The saved group should reflect the same ordering.
+  const std::optional<tab_groups::SavedTabGroup> saved_group =
+      service->GetGroup(group);
+  ASSERT_TRUE(saved_group);
+  ASSERT_EQ(3u, saved_group->saved_tabs().size());
+  EXPECT_EQ(url1, saved_group->saved_tabs()[0].url());
+  EXPECT_EQ(url2, saved_group->saved_tabs()[1].url());
+  EXPECT_EQ(url3, saved_group->saved_tabs()[2].url());
+}
+
+// A tab whose group moved to another window while it was closed returns to its
+// index within that group, not its old index in the old window.
+IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest,
+                       RestoreTabAfterGroupMovedToAnotherWindow) {
+  const GURL url1("https://www.1.com/");
+  const GURL url2("https://www.2.com/");
+  const GURL url3("https://www.3.com/");
+  AddTab(browser(), url1);
+  AddTab(browser(), url2);
+  AddTab(browser(), url3);
+
+  const tab_groups::TabGroupId group =
+      browser()->tab_strip_model()->AddToNewGroup({1, 2, 3});
+
+  // Index 2 of the window, but index 1 of the group.
+  CloseTab(2);
+
+  // Move the group to a second window, where it lands at a different index.
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.4.com/"), WindowOpenDisposition::NEW_WINDOW,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
+  BrowserWindowInterface* const second_browser =
+      browser_created_observer.Wait();
+  ASSERT_NE(browser(), second_browser);
+  chrome::MoveGroupToExistingWindow(browser(), second_browser, group);
+
+  TabStripModel* const second_tab_strip_model =
+      second_browser->GetTabStripModel();
+  ASSERT_TRUE(second_tab_strip_model->group_model()->ContainsTabGroup(group));
+  const gfx::Range group_indices_before =
+      second_tab_strip_model->group_model()->GetTabGroup(group)->ListTabs();
+  ASSERT_EQ(2u, group_indices_before.length());
+
+  content::WebContents* const restored_contents =
+      RestoreMostRecentlyClosed(second_browser);
+  ASSERT_TRUE(restored_contents);
+
+  // The tab is back in the middle of the group in its new window.
+  const int restored_index =
+      second_tab_strip_model->GetIndexOfWebContents(restored_contents);
+  ASSERT_EQ(static_cast<int>(group_indices_before.start()) + 1, restored_index);
+  EXPECT_EQ(group, second_tab_strip_model->GetTabGroupForTab(restored_index));
+  EXPECT_EQ(url1, second_tab_strip_model->GetWebContentsAt(restored_index - 1)
+                      ->GetLastCommittedURL());
+  EXPECT_EQ(url2, second_tab_strip_model->GetWebContentsAt(restored_index)
+                      ->GetLastCommittedURL());
+  EXPECT_EQ(url3, second_tab_strip_model->GetWebContentsAt(restored_index + 1)
+                      ->GetLastCommittedURL());
 }
 
 // Verify closing all tabs in a group individually, then restoring all of the

@@ -115,6 +115,12 @@ struct SESSIONS_EXPORT Tab : public Entry {
   // Index within the tab strip. May be -1 for an unknown index.
   int tabstrip_index = -1;
 
+  // Index within `group`, if the tab was in one. May be -1 for an unknown
+  // index. Unlike `tabstrip_index`, this survives the group being reopened
+  // with a new local id or moved to another window. Set only by contexts whose
+  // indices address the tab strip; desktop, the only reader, is one.
+  int index_in_group = -1;
+
   // True if the tab was pinned.
   bool pinned = false;
 

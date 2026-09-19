@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/browser_live_tab_context.h"
 
+#include <algorithm>
 #include <memory>
 #include <numeric>
 #include <optional>
@@ -91,6 +92,33 @@ sessions::LiveTabContext* GetLiveTabContext(BrowserWindowInterface* browser) {
   return browser && !browser->IsDeleteScheduled()
              ? BrowserLiveTabContext::From(browser)
              : nullptr;
+}
+
+// Returns the tab strip index at which to restore a tab closed from
+// `index_in_group` of `group`. Resolving against the group's current range,
+// rather than the tab strip, survives the group being reopened or moved to
+// another window. An unknown or unreachable index lands at the end.
+int GetInsertionIndexInGroup(const TabStripModel& tab_strip_model,
+                             std::optional<tab_groups::TabGroupId> group,
+                             int index_in_group) {
+  const TabGroupModel* const group_model = tab_strip_model.group_model();
+  if (!group.has_value() || !group_model ||
+      !group_model->ContainsTabGroup(group.value())) {
+    return tab_strip_model.count();
+  }
+
+  // An empty range means the group has no tabs or is detached; resolving
+  // against it would put the tab at index 0, outside the group.
+  const gfx::Range group_range =
+      group_model->GetTabGroup(group.value())->ListTabs();
+  if (group_range.is_empty()) {
+    return tab_strip_model.count();
+  }
+  if (index_in_group < 0) {
+    return static_cast<int>(group_range.end());
+  }
+  return std::min(static_cast<int>(group_range.start()) + index_in_group,
+                  static_cast<int>(group_range.end()));
 }
 
 }  // namespace
@@ -372,7 +400,7 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
     group_id = saved_group->local_group_id();
 
     if (group_id) {
-      BrowserWindowInterface* source_browser =
+      BrowserWindowInterface* const source_browser =
           tab_groups::SavedTabGroupUtils::GetBrowserWithTabGroupId(
               group_id.value());
       if (original_session_type == sessions::tab_restore::Type::GROUP) {
@@ -399,9 +427,15 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
       return nullptr;
     }
 
-    // Add the saved tab to the end of group.
+    // Mapped here rather than in the sessions layer because the group's range
+    // is only known after it was opened or moved into `browser` above.
+    // `tab_index` is unused: it indexes the tab strip, not the group.
+    // TODO(crbug.com/486858673): `index_in_group` is not persisted, so a tab
+    // restored after a restart still lands at the end of its group.
+    const int insertion_index = GetInsertionIndexInGroup(
+        *tab_strip_model_, group_id, tab.index_in_group);
     web_contents = chrome::AddRestoredTab(
-        browser, tab.navigations, tab_strip_model_->count(),
+        browser, tab.navigations, insertion_index,
         tab.normalized_navigation_index(), tab.extension_app_id, group_id,
         select, tab.pinned, base::TimeTicks(), base::Time(), storage_namespace,
         tab.user_agent_override, tab.extra_data,

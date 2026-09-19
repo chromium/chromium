@@ -1507,6 +1507,16 @@ void TabRestoreServiceHelper::PopulateTab(Tab* tab,
 
       tab->group_visual_data =
           *context->GetVisualDataForGroup(tab->group.value());
+
+      // Counted rather than derived from the group's first index, which stays
+      // correct while the group is non-contiguous, e.g. mid-drag.
+      int index_in_group = 0;
+      for (int i = 0; i < tab->tabstrip_index; ++i) {
+        if (context->GetTabGroupForTab(i) == tab->group) {
+          ++index_in_group;
+        }
+      }
+      tab->index_in_group = index_in_group;
     }
 
     tab->extra_data = context->GetExtraDataForTab(tab->tabstrip_index);
