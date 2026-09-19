@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,28 +10,23 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.inputmethod.CursorAnchorInfo;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.blink.mojom.InputCursorAnchorInfo;
 import org.chromium.blink_public.common.BlinkFeatures;
-import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestInputMethodManagerWrapper;
 import org.chromium.gfx.mojom.Rect;
 
 /** Test for {@link CursorAnchorInfoController}. */
-@RunWith(ContentJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures(BlinkFeatures.INPUT_CURSOR_ANCHOR_INFO_MIGRATION)
-public class CursorAnchorInfoControllerTest {
+public class CursorAnchorInfoControllerUnitTest {
     private static final class TestViewDelegate implements CursorAnchorInfoController.ViewDelegate {
         public int locationX;
         public int locationY;
@@ -158,8 +153,6 @@ public class CursorAnchorInfoControllerTest {
     }
 
     @Test
-    @SmallTest
-    @Feature({"Input-Text-IME"})
     public void testFocusedNodeChanged() {
         TestInputMethodManagerWrapper immw = new TestInputMethodManagerWrapper(null);
         TestViewDelegate viewDelegate = new TestViewDelegate();
@@ -195,8 +188,6 @@ public class CursorAnchorInfoControllerTest {
     }
 
     @Test
-    @SmallTest
-    @Feature({"Input-Text-IME"})
     public void testImmediateMode() {
         TestInputMethodManagerWrapper immw = new TestInputMethodManagerWrapper(null);
         TestViewDelegate viewDelegate = new TestViewDelegate();
@@ -331,8 +322,6 @@ public class CursorAnchorInfoControllerTest {
     }
 
     @Test
-    @SmallTest
-    @Feature({"Input-Text-IME"})
     public void testMonitorMode() {
         TestInputMethodManagerWrapper immw = new TestInputMethodManagerWrapper(null);
         TestViewDelegate viewDelegate = new TestViewDelegate();
@@ -519,8 +508,6 @@ public class CursorAnchorInfoControllerTest {
     }
 
     @Test
-    @SmallTest
-    @Feature({"Input-Text-IME"})
     public void testUpdateCursorAnchorInfoData() {
         TestInputMethodManagerWrapper immw = new TestInputMethodManagerWrapper(null);
         TestViewDelegate viewDelegate = new TestViewDelegate();
@@ -578,8 +565,6 @@ public class CursorAnchorInfoControllerTest {
     }
 
     @Test
-    @SmallTest
-    @Feature({"Input-Text-IME"})
     public void testUpdateTextAndSelection() {
         TestInputMethodManagerWrapper immw = new TestInputMethodManagerWrapper(null);
         TestViewDelegate viewDelegate = new TestViewDelegate();
@@ -616,8 +601,6 @@ public class CursorAnchorInfoControllerTest {
     }
 
     @Test
-    @SmallTest
-    @Feature({"Input-Text-IME"})
     public void testInsertionMarker() {
         TestInputMethodManagerWrapper immw = new TestInputMethodManagerWrapper(null);
         TestViewDelegate viewDelegate = new TestViewDelegate();
@@ -665,8 +648,6 @@ public class CursorAnchorInfoControllerTest {
     }
 
     @Test
-    @SmallTest
-    @Feature({"Input-Text-IME"})
     @EnableFeatures(BlinkFeatures.INPUT_CURSOR_ANCHOR_INFO_MIGRATION)
     public void testInsertionMarker_MigrationEnabled() {
         TestInputMethodManagerWrapper immw = new TestInputMethodManagerWrapper(null);
@@ -712,8 +693,6 @@ public class CursorAnchorInfoControllerTest {
     }
 
     @Test
-    @SmallTest
-    @Feature({"Input-Text-IME"})
     public void testMatrix() {
         TestInputMethodManagerWrapper immw = new TestInputMethodManagerWrapper(null);
         TestViewDelegate viewDelegate = new TestViewDelegate();

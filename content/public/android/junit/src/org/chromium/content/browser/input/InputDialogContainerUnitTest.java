@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,24 +6,20 @@ package org.chromium.content.browser.input;
 
 import android.content.Context;
 
-import androidx.test.InstrumentationRegistry;
-import androidx.test.filters.SmallTest;
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.content.browser.picker.InputDialogContainer;
 import org.chromium.ui.base.ime.TextInputType;
 
 /** Unittests for the {@link org.chromium.content.browser.picker.InputDialogContainer} class. */
-@RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
-public class InputDialogContainerTest {
+@RunWith(BaseRobolectricTestRunner.class)
+public class InputDialogContainerUnitTest {
     // Defined in third_party/WebKit/Source/platform/DateComponents.h
     private static final double DATE_DIALOG_DEFAULT_MIN = -62135596800000.0;
     private static final double DATE_DIALOG_DEFAULT_MAX = 8640000000000000.0;
@@ -46,12 +42,10 @@ public class InputDialogContainerTest {
         mInputActionDelegate = new InputActionDelegateForTests();
         mInputDialogContainer =
                 new InputDialogContainerForTests(
-                        InstrumentationRegistry.getContext(), mInputActionDelegate);
+                        ApplicationProvider.getApplicationContext(), mInputActionDelegate);
     }
 
     @Test
-    @SmallTest
-    @Feature({"DateTimeDialog"})
     public void testDateValueParsing() {
         mInputDialogContainer.setShowDialogExpectation(
                 TextInputType.DATE,
@@ -131,8 +125,6 @@ public class InputDialogContainerTest {
     }
 
     @Test
-    @SmallTest
-    @Feature({"DateTimeDialog"})
     public void testDatetimelocalValueParsing() {
         mInputDialogContainer.setShowDialogExpectation(
                 TextInputType.DATE_TIME_LOCAL,
@@ -216,8 +208,6 @@ public class InputDialogContainerTest {
     }
 
     @Test
-    @SmallTest
-    @Feature({"DateTimeDialog"})
     public void testMonthValueParsing() {
         mInputDialogContainer.setShowDialogExpectation(
                 TextInputType.MONTH,
@@ -297,8 +287,6 @@ public class InputDialogContainerTest {
     }
 
     @Test
-    @SmallTest
-    @Feature({"DateTimeDialog"})
     public void testTimeValueParsing() {
         mInputDialogContainer.setShowDialogExpectation(
                 TextInputType.TIME,
@@ -359,8 +347,6 @@ public class InputDialogContainerTest {
     }
 
     @Test
-    @SmallTest
-    @Feature({"DateTimeDialog"})
     public void testWeekValueParsing() {
         mInputDialogContainer.setShowDialogExpectation(
                 TextInputType.WEEK,
@@ -444,8 +430,6 @@ public class InputDialogContainerTest {
     }
 
     @Test
-    @SmallTest
-    @Feature({"DateTimeDialog"})
     public void testDateValueGenerating() {
         mInputActionDelegate.setReplaceDateTimeExpectation(0);
         mInputDialogContainer.setFieldDateTimeValue(TextInputType.DATE, 1970, 0, 1, 0, 0, 0, 0, 0);
@@ -462,8 +446,6 @@ public class InputDialogContainerTest {
     }
 
     @Test
-    @SmallTest
-    @Feature({"DateTimeDialog"})
     public void testDatetimelocalValueGenerating() {
         mInputActionDelegate.setReplaceDateTimeExpectation(0);
         mInputDialogContainer.setFieldDateTimeValue(
@@ -483,8 +465,6 @@ public class InputDialogContainerTest {
     }
 
     @Test
-    @SmallTest
-    @Feature({"DateTimeDialog"})
     public void testMonthValueGenerating() {
         mInputActionDelegate.setReplaceDateTimeExpectation(0);
         mInputDialogContainer.setFieldDateTimeValue(TextInputType.MONTH, 1970, 0, 0, 0, 0, 0, 0, 0);
@@ -502,8 +482,6 @@ public class InputDialogContainerTest {
     }
 
     @Test
-    @SmallTest
-    @Feature({"DateTimeDialog"})
     public void testTimeValueGenerating() {
         mInputActionDelegate.setReplaceDateTimeExpectation(0.0);
         mInputDialogContainer.setFieldDateTimeValue(TextInputType.TIME, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -518,8 +496,6 @@ public class InputDialogContainerTest {
     }
 
     @Test
-    @SmallTest
-    @Feature({"DateTimeDialog"})
     public void testWeekValueGenerating() {
         mInputActionDelegate.setReplaceDateTimeExpectation(-259200000.0);
         mInputDialogContainer.setFieldDateTimeValue(TextInputType.WEEK, 1970, 0, 0, 0, 0, 0, 0, 1);

@@ -1,23 +1,23 @@
-// Copyright 2012 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.content.browser;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.url.URI;
 
+import java.net.URISyntaxException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
-@RunWith(BaseJUnit4ClassRunner.class)
-public class EncodeHtmlDataUriTest {
+@RunWith(BaseRobolectricTestRunner.class)
+public class EncodeHtmlDataUriUnitTest {
     private static final String DATA_URI_PREFIX = "data:text/html;utf-8,";
 
     private String getData(String dataUri) {
@@ -26,14 +26,13 @@ public class EncodeHtmlDataUriTest {
         return dataUri.substring(DATA_URI_PREFIX.length());
     }
 
-    private String decode(String dataUri) throws java.io.UnsupportedEncodingException {
+    private String decode(String dataUri) {
         String data = getData(dataUri);
-        return URLDecoder.decode(data, "UTF-8");
+        return URLDecoder.decode(data, StandardCharsets.UTF_8);
     }
 
     @Test
-    @SmallTest
-    public void testDelimitersEncoding() throws java.io.UnsupportedEncodingException {
+    public void testDelimitersEncoding() {
         String testString = "><#%\"'";
         String encodedUri = UrlUtils.encodeHtmlDataUri(testString);
         String decodedUri = decode(encodedUri);
@@ -41,8 +40,7 @@ public class EncodeHtmlDataUriTest {
     }
 
     @Test
-    @SmallTest
-    public void testUnwiseCharactersEncoding() throws java.io.UnsupportedEncodingException {
+    public void testUnwiseCharactersEncoding() {
         String testString = "{}|\\^[]`";
         String encodedUri = UrlUtils.encodeHtmlDataUri(testString);
         String decodedUri = decode(encodedUri);
@@ -50,8 +48,7 @@ public class EncodeHtmlDataUriTest {
     }
 
     @Test
-    @SmallTest
-    public void testWhitespaceEncoding() throws java.io.UnsupportedEncodingException {
+    public void testWhitespaceEncoding() {
         String testString = " \n\t";
         String encodedUri = UrlUtils.encodeHtmlDataUri(testString);
         String decodedUri = decode(encodedUri);
@@ -60,9 +57,7 @@ public class EncodeHtmlDataUriTest {
     }
 
     @Test
-    @SmallTest
-    public void testReturnsValidUri()
-            throws java.net.URISyntaxException, java.io.UnsupportedEncodingException {
+    public void testReturnsValidUri() throws URISyntaxException {
         String testString = "<html><body onload=\"alert('Hello \\\"world\\\"');\"></body></html>";
         String encodedUri = UrlUtils.encodeHtmlDataUri(testString);
         String decodedUri = decode(encodedUri);

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,25 +6,23 @@ package org.chromium.content.browser.picker;
 
 import android.widget.TimePicker;
 
-import androidx.test.InstrumentationRegistry;
-import androidx.test.filters.SmallTest;
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Tests for DateTimePickerDialog. */
-@RunWith(BaseJUnit4ClassRunner.class)
-public class DateTimePickerDialogTest {
+@RunWith(BaseRobolectricTestRunner.class)
+public class DateTimePickerDialogUnitTest {
     // TODO(tkent): fix deprecation warnings crbug.com/537037
     @Test
     @SuppressWarnings("deprecation")
-    @SmallTest
     public void testOnTimeChanged() {
         int september = 8;
-        TimePicker picker = new TimePicker(InstrumentationRegistry.getContext());
+        TimePicker picker = new TimePicker(ApplicationProvider.getApplicationContext());
         // 2015-09-16 00:00 UTC
         long min = 1442361600000L;
         // 2015-09-17 00:00 UTC
