@@ -33,6 +33,11 @@ inline constexpr char kPinnedCastMigrationComplete[] =
 inline constexpr char kTabsFromOtherDevicesAutoPinnedMigration[] =
     "toolbar.tabs_from_other_devices_auto_pinned_migration";
 
+// Indicates whether the TTC toolbar button has been auto-pinned for existing
+// profiles.
+inline constexpr char kTtcAutoPinnedMigration[] =
+    "toolbar.ttc_auto_pinned_migration";
+
 }  // namespace prefs
 
 namespace toolbar {

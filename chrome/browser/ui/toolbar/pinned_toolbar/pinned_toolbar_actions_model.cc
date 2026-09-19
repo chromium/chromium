@@ -17,6 +17,7 @@
 #include "base/strings/strcat.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ttc/core/features.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
@@ -254,6 +255,11 @@ void PinnedToolbarActionsModel::MaybeMigrateExistingPinnedStates() {
     UpdatePinnedState(kActionSidePanelShowTabsFromOtherDevices, true);
     pref_service_->SetBoolean(prefs::kTabsFromOtherDevicesAutoPinnedMigration,
                               true);
+  }
+  if (base::FeatureList::IsEnabled(ttc::kTtc) &&
+      !pref_service_->GetBoolean(prefs::kTtcAutoPinnedMigration)) {
+    UpdatePinnedState(kActionTtcToolbar, true);
+    pref_service_->SetBoolean(prefs::kTtcAutoPinnedMigration, true);
   }
 }
 

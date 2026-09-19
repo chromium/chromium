@@ -450,6 +450,7 @@ enum {
   kProfileDefaultContentSettingValuesInlineCueMenu = 100384,
   kExtensionsPinnedByDefault = 100385,
   kAudioFocusEnforcementEnabled = 100386,
+  kTtcAutoPinnedMigration = 100387,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -698,6 +699,11 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::WriteBehavior::kWriteToBoth}},
     {prefs::kOrganizerPanelEntrypointEnabled,
      {syncable_prefs_ids::kOrganizerPanelEntrypointEnabled, syncer::PREFERENCES,
+      sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone,
+      sync_preferences::WriteBehavior::kWriteToBoth}},
+    {prefs::kTtcAutoPinnedMigration,
+     {syncable_prefs_ids::kTtcAutoPinnedMigration, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone,
       sync_preferences::WriteBehavior::kWriteToBoth}},
