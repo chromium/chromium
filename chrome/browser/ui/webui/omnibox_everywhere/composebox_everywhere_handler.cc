@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
@@ -125,5 +126,13 @@ void ComposeboxEverywhereHandler::OpenUrl(
   if (service_) {
     service_->OpenUrl(url, disposition, ui::PAGE_TRANSITION_LINK,
                       std::move(navigation_handle_callback));
+  }
+}
+
+void ComposeboxEverywhereHandler::OnEscapePressed() {
+  if (service_) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&OmniboxEverywhereService::HidePopup,
+                                  base::Unretained(service_)));
   }
 }

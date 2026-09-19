@@ -44,6 +44,7 @@ class ComposeboxEverywhereHandler : public ComposeboxHandler {
                         StartScreenshareCallback callback) override;
   void CaptureRegionScreenshot(
       CaptureRegionScreenshotCallback callback) override;
+  void OnEscapePressed() override;
 
   // ContextualSearchboxHandler:
   void OpenUrl(GURL url,

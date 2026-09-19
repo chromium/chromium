@@ -170,7 +170,10 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
       this.isActive_ = false;
     });
     this.eventTracker_.add(
-        document, 'visibilitychange', this.onVisibilitychange_.bind(this));
+        document.documentElement, 'visibilitychange',
+        this.onVisibilitychange_.bind(this));
+    this.eventTracker_.add(
+        window, 'keydown', (e: KeyboardEvent) => this.onKeyDown_(e));
     this.setupListeners_();
     this.onVisibilitychange_();
   }
@@ -435,6 +438,43 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
     this.setIsComposebox_(false);
     await this.updateComplete;
     this.focusActiveInput_();
+  }
+
+  private onKeyDown_(e: KeyboardEvent) {
+    if (e.key !== 'Escape' || e.defaultPrevented) {
+      return;
+    }
+    if (this.showVoiceSearchOverlay_) {
+      return;
+    }
+
+    if (this.isComposeboxMode_) {
+      const composebox =
+          this.shadowRoot?.querySelector<OmniboxEverywhereComposeboxElement>(
+              'omnibox-everywhere-composebox');
+      if (composebox) {
+        composebox.handleEscapeKeyLogic();
+        e.preventDefault();
+        return;
+      }
+    } else {
+      const searchbox =
+          this.shadowRoot?.querySelector<OmniboxEverywhereOmniboxElement>(
+              'omnibox-everywhere-omnibox');
+      if (searchbox) {
+        const inputElement = searchbox.getInputElement();
+        if (inputElement && inputElement.getInputValue()) {
+          inputElement.setInputText('');
+          searchbox.clearAutocompleteMatches();
+          searchbox.focusInput();
+          e.preventDefault();
+          return;
+        }
+      }
+    }
+
+    SearchboxBrowserProxy.getInstance().handler.onEscapePressed();
+    e.preventDefault();
   }
 
   protected async onComposeboxSubmit_() {

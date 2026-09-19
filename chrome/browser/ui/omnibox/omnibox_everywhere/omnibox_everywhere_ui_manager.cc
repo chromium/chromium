@@ -1498,9 +1498,12 @@ OmniboxEverywhereUIManager::CreateContentsWrapper(Profile* profile) {
   if (contents_wrapper_factory_) {
     return contents_wrapper_factory_.Run(profile);
   }
+  // Do not close UI immediately on Escape in PreHandleKeyboardEvent so that the
+  // WebUI searchbox and composebox can staged-unwind (clear input or context)
+  // before dismissing the popup.
   return std::make_unique<WebUIContentsWrapperT<OmniboxEverywhereUI>>(
       GURL(chrome::kChromeUIOmniboxEverywhereURL), profile,
-      IDS_TASK_MANAGER_OMNIBOX, /*esc_closes_ui=*/true,
+      IDS_TASK_MANAGER_OMNIBOX, /*esc_closes_ui=*/false,
       /*supports_draggable_regions=*/true);
 }
 

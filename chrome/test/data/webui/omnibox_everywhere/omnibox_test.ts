@@ -2172,6 +2172,111 @@ suite('OmniboxEverywhereAppTest', () => {
         assertEquals('Alt', reminderChin.hotkeyTokens[0]);
         assertEquals('Space', reminderChin.hotkeyTokens[1]);
       });
+
+  test(
+      'escape key with text in composebox clears text and stays in composebox',
+      async () => {
+        const searchbox =
+            app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+        searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+          detail: {text: 'hello world', files: [], mode: 0, model: 0},
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+
+        const composebox =
+            app.shadowRoot.querySelector('omnibox-everywhere-composebox')!;
+        assertTrue(!!composebox);
+        assertEquals('hello world', composebox.input);
+
+        window.dispatchEvent(new KeyboardEvent(
+            'keydown', {key: 'Escape', bubbles: true, cancelable: true}));
+        await microtasksFinished();
+
+        assertTrue(
+            !!app.shadowRoot.querySelector('omnibox-everywhere-composebox'));
+        assertEquals('', composebox.input);
+        assertEquals(0, testProxy.handler.getCallCount('onEscapePressed'));
+      });
+
+  test(
+      'escape key with empty composebox exits composebox mode to searchbox',
+      async () => {
+        const searchbox =
+            app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+        searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+          detail: {text: '', files: [], mode: 0, model: 0},
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+
+        const composebox =
+            app.shadowRoot.querySelector('omnibox-everywhere-composebox')!;
+        assertTrue(!!composebox);
+        assertEquals('', composebox.input);
+
+        window.dispatchEvent(new KeyboardEvent(
+            'keydown', {key: 'Escape', bubbles: true, cancelable: true}));
+        await microtasksFinished();
+
+        assertFalse(
+            !!app.shadowRoot.querySelector('omnibox-everywhere-composebox'));
+        const restoredSearchbox =
+            app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+        assertTrue(!!restoredSearchbox);
+        assertEquals(0, testProxy.handler.getCallCount('onEscapePressed'));
+      });
+
+  test('escape key with text in searchbox clears searchbox text', async () => {
+    const searchbox =
+        app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+    searchbox.setInputText('searchbox query');
+    assertEquals('searchbox query', searchbox.$.input.getInputValue());
+
+    window.dispatchEvent(new KeyboardEvent(
+        'keydown', {key: 'Escape', bubbles: true, cancelable: true}));
+    await microtasksFinished();
+
+    assertEquals('', searchbox.$.input.getInputValue());
+    assertEquals(0, testProxy.handler.getCallCount('onEscapePressed'));
+  });
+
+  test('escape key with empty searchbox calls onEscapePressed', async () => {
+    const searchbox =
+        app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+    assertEquals('', searchbox.$.input.getInputValue());
+
+    window.dispatchEvent(new KeyboardEvent(
+        'keydown', {key: 'Escape', bubbles: true, cancelable: true}));
+    await microtasksFinished();
+
+    assertEquals(1, testProxy.handler.getCallCount('onEscapePressed'));
+  });
+
+  test(
+      'escape key with empty searchbox when FRE modal is showing calls ' +
+          'onEscapePressed',
+      async () => {
+        testProxy.page.setFreState({
+          stage: FreStage.kIntroModal,
+          currentHotkeyTokens: [],
+        });
+        await testProxy.page.$.flushForTesting();
+        await microtasksFinished();
+
+        assertTrue(!!app.shadowRoot.querySelector('fre-modal'));
+        const searchbox =
+            app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+        assertEquals('', searchbox.$.input.getInputValue());
+
+        window.dispatchEvent(new KeyboardEvent(
+            'keydown', {key: 'Escape', bubbles: true, cancelable: true}));
+        await microtasksFinished();
+
+        assertEquals(1, testProxy.handler.getCallCount('onEscapePressed'));
+      });
 });
 
 suite('OmniboxEverywhereProfileIconTest', () => {
