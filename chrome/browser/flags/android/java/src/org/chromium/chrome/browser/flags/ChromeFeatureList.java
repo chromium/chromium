@@ -1402,7 +1402,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sStartSurfaceReturnTime =
             newCachedFlag(START_SURFACE_RETURN_TIME, true);
     public static final CachedFlag sSyncRestoreOnStartupPref =
-            newCachedFlag(SYNC_RESTORE_ON_STARTUP_PREF, /* defaultValue= */ false);
+            newCachedFlag(SYNC_RESTORE_ON_STARTUP_PREF, /* defaultValue= */ true);
     public static final CachedFlag sTabClosureCommittedMethodRefactor =
             newCachedFlag(TAB_CLOSURE_COMMITTED_METHOD_REFACTOR, false);
     public static final CachedFlag sTabClosureMethodRefactor =
