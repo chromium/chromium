@@ -6,7 +6,8 @@ import 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 
 import {INITIAL_ITEM_COUNT, SearchApiProxyImpl} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {OrganizerListSectionElement, OrganizerListSectionItem, OrganizerListSectionItemElement} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
-import type {CrExpandButtonElement} from 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
+import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+import type {CrUrlListItemElement} from 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -94,9 +95,12 @@ suite('OrganizerListSectionTest', () => {
             listSection.shadowRoot.querySelector<HTMLElement>('#collapse');
         assertTrue(!!collapse);
         const expandButton =
-            listSection.shadowRoot.querySelector<CrExpandButtonElement>(
-                'cr-expand-button');
+            listSection.shadowRoot.querySelector<CrUrlListItemElement>(
+                '#expandButton');
         assertTrue(!!expandButton);
+        const expandButtonIcon =
+            expandButton.querySelector<CrIconElement>('#expandButtonIcon');
+        assertTrue(!!expandButtonIcon);
 
         const initialItems =
             itemsContainer.querySelectorAll<OrganizerListSectionItemElement>(
@@ -117,16 +121,32 @@ suite('OrganizerListSectionTest', () => {
         assertEquals(collapse, children[3]);
         assertEquals(expandButton, children[4]);
 
-        assertFalse(expandButton.expanded);
-        assertFalse(listSection.hasAttribute('expanded_'));
-        assertEquals('Show more', expandButton.textContent.trim());
+        assertEquals('compact', expandButton.size);
 
-        expandButton.click();
+        const expandButtonIconContainer =
+            expandButton.shadowRoot.querySelector<HTMLElement>(
+                '#iconContainer');
+        assertTrue(!!expandButtonIconContainer);
+        const itemIconContainer =
+            initialItems[0]!.$.crUrlListItem.shadowRoot
+                .querySelector<HTMLElement>('#iconContainer');
+        assertTrue(!!itemIconContainer);
+        assertEquals('40px', getComputedStyle(itemIconContainer).width);
+        assertEquals('40px', getComputedStyle(expandButtonIconContainer).width);
+
+        const focusable = expandButton.getFocusableElement();
+        assertFalse(listSection.hasAttribute('expanded_'));
+        assertEquals('Show more', expandButton.title);
+        assertEquals('cr:keyboard-arrow-down', expandButtonIcon.icon);
+        assertEquals('false', focusable.getAttribute('aria-expanded'));
+
+        focusable.click();
         await microtasksFinished();
 
-        assertTrue(expandButton.expanded);
         assertTrue(listSection.hasAttribute('expanded_'));
-        assertEquals('Show less', expandButton.textContent.trim());
+        assertEquals('Show less', expandButton.title);
+        assertEquals('cr:keyboard-arrow-up', expandButtonIcon.icon);
+        assertEquals('true', focusable.getAttribute('aria-expanded'));
 
         const collapsedItems =
             collapse.querySelectorAll('organizer-list-section-item');
@@ -134,12 +154,13 @@ suite('OrganizerListSectionTest', () => {
         assertDeepEquals(['Tab 4'], collapsedItems[0]!.item.title);
         assertEquals(expandButton, itemsContainer.lastElementChild);
 
-        expandButton.click();
+        focusable.click();
         await microtasksFinished();
 
-        assertFalse(expandButton.expanded);
         assertFalse(listSection.hasAttribute('expanded_'));
-        assertEquals('Show more', expandButton.textContent.trim());
+        assertEquals('Show more', expandButton.title);
+        assertEquals('cr:keyboard-arrow-down', expandButtonIcon.icon);
+        assertEquals('false', focusable.getAttribute('aria-expanded'));
         assertEquals(
             1, collapse.querySelectorAll('organizer-list-section-item').length);
 
@@ -164,7 +185,7 @@ suite('OrganizerListSectionTest', () => {
         await microtasksFinished();
 
         const expandButton =
-            listSection.shadowRoot.querySelector('cr-expand-button');
+            listSection.shadowRoot.querySelector('#expandButton');
         assertEquals(null, expandButton);
       });
 

@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
+import '//resources/cr_elements/cr_icon/cr_icon.js';
+import '//resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import './organizer_list_section_item.js';
 
+import type {CrUrlListItemElement} from '//resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
@@ -131,6 +133,28 @@ export class OrganizerListSectionElement extends CrLitElement implements
     }
   }
 
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    this.updateExpandButtonAriaExpanded_();
+  }
+
+  /**
+   * `<cr-url-list-item>` has no `aria-expanded` property, so set the attribute
+   * directly on the focusable element it exposes. Awaiting the button's own
+   * first update is required: this runs before a newly created child element
+   * has rendered its shadow DOM, so its focusable element does not exist yet.
+   */
+  private async updateExpandButtonAriaExpanded_() {
+    const expandButton =
+        this.shadowRoot.querySelector<CrUrlListItemElement>('#expandButton');
+    if (!expandButton) {
+      return;
+    }
+    await expandButton.updateComplete;
+    expandButton.getFocusableElement().setAttribute(
+        'aria-expanded', this.expanded_ ? 'true' : 'false');
+  }
+
   onItemsChanged(items: Array<OrganizerListSectionItem<unknown>>) {
     this.items = items;
   }
@@ -192,8 +216,12 @@ export class OrganizerListSectionElement extends CrLitElement implements
     return loadTimeData.getString(this.expanded_ ? 'showLess' : 'showMore');
   }
 
-  protected onExpandedChanged_(e: CustomEvent<{value: boolean}>) {
-    this.expanded_ = e.detail.value;
+  protected getExpandButtonIcon_(): string {
+    return this.expanded_ ? 'cr:keyboard-arrow-up' : 'cr:keyboard-arrow-down';
+  }
+
+  protected onExpandButtonClick_() {
+    this.expanded_ = !this.expanded_;
   }
 
   protected onCollapseTransitionend_(e: TransitionEvent) {

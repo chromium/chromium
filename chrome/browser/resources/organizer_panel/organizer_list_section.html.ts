@@ -29,10 +29,13 @@ ${this.hasNoSearchResults_() ? html`
           </organizer-list-section-item>
         `)}
       </div>
-      <cr-expand-button id="expandButton" ?expanded="${this.expanded_}"
-          @expanded-changed="${this.onExpandedChanged_}">
-        ${this.getExpandButtonLabel_()}
-      </cr-expand-button>
+      <cr-url-list-item id="expandButton" size="compact"
+          .title="${this.getExpandButtonLabel_()}"
+          @click="${this.onExpandButtonClick_}">
+        <cr-icon id="expandButtonIcon" slot="customIcon"
+            .icon="${this.getExpandButtonIcon_()}">
+        </cr-icon>
+      </cr-url-list-item>
     ` : ''}
   </div>
 `}

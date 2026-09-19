@@ -41,3 +41,14 @@
   transition: height 300ms ease-out;
   visibility: visible;
 }
+
+#expandButton::part(iconContainer) {
+  background: none;
+  margin-inline-end: 4px;
+  width: 40px;
+}
+
+#expandButtonIcon {
+  --iron-icon-height: 16px;
+  --iron-icon-width: 16px;
+}

@@ -16,6 +16,12 @@
   --organizer-list-section-item-trailing-button-size_: 24px;
 }
 
+#crUrlListItem::part(iconContainer) {
+  background: none;
+  margin-inline-end: 4px;
+  width: 40px;
+}
+
 #content {
   display: flex;
   flex-direction: column;
