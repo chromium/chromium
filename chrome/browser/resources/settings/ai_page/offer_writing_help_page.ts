@@ -9,29 +9,28 @@ import './ai_policy_indicator.js';
 import '../controls/settings_toggle_button.js';
 import '../settings_page/settings_subpage.js';
 
-import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {PrefService} from '/shared/settings/prefs2/pref_service.js';
-import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
-import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
-import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {AiPageComposeInteractions, MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
-import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
+import {SettingsViewMixinLit} from '../settings_page/settings_view_mixin_lit.js';
 
 import {getAiLearnMoreUrl} from './ai_learn_more_url_util.js';
 import {AiEnterpriseFeaturePrefName, AiPageActions} from './constants.js';
-import {getTemplate} from './offer_writing_help_page.html.js';
+import {getCss} from './offer_writing_help_page.css.js';
+import {getHtml} from './offer_writing_help_page.html.js';
 
 export const COMPOSE_PROACTIVE_NUDGE_PREF = 'compose.proactive_nudge_enabled';
 export const COMPOSE_PROACTIVE_NUDGE_DISABLED_SITES_PREF =
     'compose.proactive_nudge_disabled_sites_with_time';
 
-const SettingsOfferWritingHelpPageElementBase = SettingsViewMixin(I18nMixin(
-    ListPropertyUpdateMixin(PrefServiceObserverMixin(PolymerElement))));
+const SettingsOfferWritingHelpPageElementBase = SettingsViewMixinLit(
+    I18nMixinLit(PrefServiceObserverMixinLit(CrLitElement)));
 
 export class SettingsOfferWritingHelpPageElement extends
     SettingsOfferWritingHelpPageElementBase {
@@ -39,27 +38,27 @@ export class SettingsOfferWritingHelpPageElement extends
     return 'settings-offer-writing-help-page';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      siteList_: {
-        type: Array,
-        value: () => [],
-      },
-      enableComposeProactiveNudge_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('enableComposeProactiveNudge'),
-      },
-      enterprisePref_: Object,
+      siteList_: {type: Array},
+      enableComposeProactiveNudge_: {type: Boolean},
+      enterprisePref_: {type: Object},
     };
   }
 
-  declare private siteList_: string[];
-  declare private enableComposeProactiveNudge_: boolean;
-  declare private enterprisePref_: chrome.settingsPrivate.PrefObject;
+  protected accessor siteList_: string[] = [];
+  protected accessor enableComposeProactiveNudge_: boolean =
+      loadTimeData.getBoolean('enableComposeProactiveNudge');
+  protected accessor enterprisePref_: chrome.settingsPrivate.PrefObject|
+      undefined;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -78,13 +77,14 @@ export class SettingsOfferWritingHelpPageElement extends
     this.metricsBrowserProxy_.recordAction(action);
   }
 
-  private onLearnMoreClick_() {
+  protected onLearnMoreClick_() {
     this.recordInteractionMetrics_(
         AiPageComposeInteractions.LEARN_MORE_LINK_CLICKED,
         AiPageActions.COMPOSE_LEARN_MORE_CLICKED);
   }
 
-  private onComposeProactiveNudgeToggleChange_(e: Event) {
+  protected onComposeProactiveNudgeToggleSettingsBooleanControlChange_(
+      e: Event) {
     const toggle = e.target as SettingsToggleButtonElement;
     if (toggle.checked) {
       this.recordInteractionMetrics_(
@@ -97,13 +97,14 @@ export class SettingsOfferWritingHelpPageElement extends
         AiPageActions.COMPOSE_PROACTIVE_NUDGE_DISABLED);
   }
 
-  private hasSites_(): boolean {
+  protected hasSites_(): boolean {
     return this.siteList_.length > 0;
   }
 
-  private onDeleteClick_(e: DomRepeatEvent<string>) {
+  protected onDeleteClick_(e: Event) {
+    const target = e.currentTarget as HTMLElement;
     PrefService.getInstance().deletePrefDictEntry(
-        COMPOSE_PROACTIVE_NUDGE_DISABLED_SITES_PREF, e.model.item);
+        COMPOSE_PROACTIVE_NUDGE_DISABLED_SITES_PREF, target.dataset['site']!);
   }
 
   private onPrefsChanged_() {
@@ -111,22 +112,22 @@ export class SettingsOfferWritingHelpPageElement extends
                          .getPref<Record<string, number>>(
                              COMPOSE_PROACTIVE_NUDGE_DISABLED_SITES_PREF)
                          .value;
-    const newSites = Object.keys(prefDict);
-
-    this.updateList('siteList_', (entry: string) => entry, newSites);
+    this.siteList_ = Object.keys(prefDict);
   }
 
-  private getLearnMoreUrl_(): string {
+  protected getLearnMoreUrl_(): string {
     return getAiLearnMoreUrl(
         this.enterprisePref_, loadTimeData.getString('composeLearnMorePageURL'),
         loadTimeData.getString('composeLearnMorePageManagedURL'));
   }
 
-  // SettingsViewMixin implementation.
+  // SettingsViewMixinLit implementation.
   override focusBackButton() {
-    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+    this.shadowRoot.querySelector('settings-subpage')!.focusBackButton();
   }
 }
+
+export type OfferWritingHelpPageElement = SettingsOfferWritingHelpPageElement;
 
 declare global {
   interface HTMLElementTagNameMap {

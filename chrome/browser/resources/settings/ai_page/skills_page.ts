@@ -5,46 +5,43 @@
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import '../controls/settings_toggle_button.js';
-import '../settings_columned_section.css.js';
 import '../settings_page/settings_subpage.js';
-import '../settings_shared.css.js';
 import '../icons.html.js';
 
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 
-import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
+import {SettingsViewMixinLit} from '../settings_page/settings_view_mixin_lit.js';
 
-import {getTemplate} from './skills_page.html.js';
+import {getCss} from './skills_page.css.js';
+import {getHtml} from './skills_page.html.js';
 
-const SettingsSkillsPageElementBase = SettingsViewMixin(PolymerElement);
+const SettingsSkillsPageElementBase = SettingsViewMixinLit(CrLitElement);
 
 export class SettingsSkillsPageElement extends SettingsSkillsPageElementBase {
   static get is() {
     return 'settings-skills-page';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
-    return {
-      routePath: String,
-    };
+  override render() {
+    return getHtml.bind(this)();
   }
 
-  declare routePath: string;
-
-  private onSkillsGalleryClick_() {
+  protected onSkillsGalleryLinkClick_() {
     OpenWindowProxyImpl.getInstance().openUrl('chrome://skills');
   }
 
-  // SettingsViewMixin implementation.
+  // SettingsViewMixinLit implementation.
   override focusBackButton() {
-    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+    this.shadowRoot.querySelector('settings-subpage')!.focusBackButton();
   }
 }
+
+export type SkillsPageElement = SettingsSkillsPageElement;
 
 declare global {
   interface HTMLElementTagNameMap {

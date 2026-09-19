@@ -1,32 +1,5 @@
-<style include="cr-shared-style settings-shared settings-columned-section">
-  .cr-row {
-    border-top: none;
-  }
-
-  .list-frame {
-    padding-inline-start: var(--cr-section-indent-width);
-  }
-
-  #disabledSitesList {
-    display: flex;
-    flex-direction: column;
-  }
-
-  #disabledSitesList > div:not(:first-child) {
-    border-top: var(--cr-separator-line);
-  }
-
-  cr-icon {
-    flex-shrink: 0;
-  }
-
-  settings-toggle-button.hr {
-    padding-top: 16px;
-  }
-</style>
-
 <settings-subpage page-title="$i18n{aiComposeLabel}"
-    route-path$="[[routePath]]">
+    route-path="${this.routePath}">
 <settings-ai-policy-indicator
     pref-key="optimization_guide.model_execution.compose_enterprise_policy_allowed">
 </settings-ai-policy-indicator>
@@ -35,10 +8,10 @@
     <div id="helpMeWriteLabel">$i18n{aiComposeLabel}</div>
     <div class="secondary">
       $i18n{aiComposeSublabelV2}$i18n{sentenceEnd}
-      <a href="[[getLearnMoreUrl_(enterprisePref_)]]"
+      <a href="${this.getLearnMoreUrl_()}"
           aria-label="$i18n{aiComposeSettingLearnMoreA11y}"
           aria-description="$i18n{opensInNewTab}"
-          on-click="onLearnMoreClick_" target="_blank">
+          @click="${this.onLearnMoreClick_}" target="_blank">
         $i18n{learnMore}
       </a>
     </div>
@@ -80,12 +53,12 @@
   </div>
 </div>
 
-<template is="dom-if" if="[[enableComposeProactiveNudge_]]" restamp>
+${this.enableComposeProactiveNudge_ ? html`
   <settings-toggle-button class="hr"
       pref-key="compose.proactive_nudge_enabled"
       label="$i18n{offerWritingHelpToggleLabel}"
       sub-label="$i18n{offerWritingHelpToggleSublabel}"
-      on-settings-boolean-control-change="onComposeProactiveNudgeToggleChange_">
+      @settings-boolean-control-change="${this.onComposeProactiveNudgeToggleSettingsBooleanControlChange_}">
   </settings-toggle-button>
   <div class="cr-row">
     <div id="disabledSitesHeading" class="flex">
@@ -93,24 +66,25 @@
     </div>
   </div>
   <div id="noDisabledSitesLabel" class="list-frame"
-      hidden$="[[hasSites_(siteList_.*)]]">
+      ?hidden="${this.hasSites_()}">
     <div class="list-item secondary">
       $i18n{offerWritingHelpNoDisabledSites}
     </div>
   </div>
   <div id="disabledSitesList" class="list-frame" role="list">
-    <template is="dom-repeat" items="[[siteList_]]">
+    ${this.siteList_.map(item => html`
       <div class="list-item" role="listitem">
-        <div class="start cr-padded-text">[[item]]</div>
+        <div class="start cr-padded-text">${item}</div>
         <cr-icon-button
             class="icon-delete-gray"
-            aria-label="[[i18n('offerWritingHelpRemoveDisabledSiteAriaLabel',
-                          item)]]"
-            on-click="onDeleteClick_"
+            aria-label="${this.i18n(
+                'offerWritingHelpRemoveDisabledSiteAriaLabel', item)}"
+            data-site="${item}"
+            @click="${this.onDeleteClick_}"
             title="$i18n{delete}">
         </cr-icon-button>
       </div>
-    </template>
+    `)}
   </div>
-</template>
+` : ''}
 </settings-subpage>

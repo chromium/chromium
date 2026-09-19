@@ -3,13 +3,11 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsOfferWritingHelpPageElement} from 'chrome://settings/lazy_load.js';
 import {AiEnterpriseFeaturePrefName, AiPageActions, COMPOSE_PROACTIVE_NUDGE_DISABLED_SITES_PREF, COMPOSE_PROACTIVE_NUDGE_PREF} from 'chrome://settings/lazy_load.js';
 import {AiPageComposeInteractions, loadTimeData, MetricsBrowserProxyImpl, ModelExecutionEnterprisePolicyValue, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
+import {isChildVisible, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
@@ -55,7 +53,7 @@ suite('ComposePage', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-offer-writing-help-page');
     document.body.appendChild(page);
-    return flushTasks();
+    return microtasksFinished();
   }
 
   async function assertFeatureInteractionMetrics(
@@ -71,8 +69,9 @@ suite('ComposePage', function() {
   test('MainToggle', async () => {
     await createPage();
     await prefService.setPrefValue(COMPOSE_PROACTIVE_NUDGE_PREF, false);
+    await microtasksFinished();
 
-    const mainToggle = page.shadowRoot!.querySelector('settings-toggle-button');
+    const mainToggle = page.shadowRoot.querySelector('settings-toggle-button');
     assertTrue(!!mainToggle);
 
     // Check disabled case.
@@ -97,21 +96,21 @@ suite('ComposePage', function() {
     await createPage();
     // "No sites added" message should be shown when list is empty.
     const noDisabledSitesLabel =
-        page.shadowRoot!.querySelector('#noDisabledSitesLabel');
+        page.shadowRoot.querySelector('#noDisabledSitesLabel');
     assertTrue(!!noDisabledSitesLabel);
     assertTrue(isVisible(noDisabledSitesLabel));
 
     const disabledSites =
-        page.shadowRoot!.querySelectorAll('div[role=listitem]');
+        page.shadowRoot.querySelectorAll('div[role=listitem]');
     assertEquals(0, disabledSites.length);
 
     // Adding an entry to the pref should populate the list and remove the "No
     // sites added" message.
     await prefService.setPrefDictEntry(
         COMPOSE_PROACTIVE_NUDGE_DISABLED_SITES_PREF, 'foo', 'bar');
-    flush();
+    await microtasksFinished();
     assertFalse(isVisible(noDisabledSitesLabel));
-    const newSites = page.shadowRoot!.querySelectorAll('div[role=listitem]');
+    const newSites = page.shadowRoot.querySelectorAll('div[role=listitem]');
     assertEquals(1, newSites.length);
   });
 
@@ -121,27 +120,27 @@ suite('ComposePage', function() {
         COMPOSE_PROACTIVE_NUDGE_DISABLED_SITES_PREF, 'foo', 'foo');
     await prefService.setPrefDictEntry(
         COMPOSE_PROACTIVE_NUDGE_DISABLED_SITES_PREF, 'bar', 'bar');
-    flush();
+    await microtasksFinished();
 
-    const sites = page.shadowRoot!.querySelectorAll('div[role=listitem]');
+    const sites = page.shadowRoot.querySelectorAll('div[role=listitem]');
     assertEquals(2, sites.length);
     // Check the content of the first list item.
-    const entry1 = sites[0]!.firstChild!.textContent;
+    const entry1 = sites[0]!.firstElementChild!.textContent;
     assertTrue(!!entry1);
     assertEquals('foo', entry1);
     // Check the content of the second list item.
-    const entry2 = sites[1]!.firstChild!.textContent;
+    const entry2 = sites[1]!.firstElementChild!.textContent;
     assertTrue(!!entry2);
     assertEquals('bar', entry2);
 
     // Get the delete button of the second list item and click to remove.
-    const button = sites[1]!.lastChild as HTMLElement;
+    const button = sites[1]!.lastElementChild as HTMLElement;
     assertTrue(!!button);
     button.click();
-    flush();
-    const newSites = page.shadowRoot!.querySelectorAll('div[role=listitem]');
+    await microtasksFinished();
+    const newSites = page.shadowRoot.querySelectorAll('div[role=listitem]');
     assertEquals(1, newSites.length);
-    const remainingEntry = newSites[0]!.firstChild!.textContent;
+    const remainingEntry = newSites[0]!.firstElementChild!.textContent;
     assertTrue(!!remainingEntry);
     assertEquals('foo', remainingEntry);
   });
@@ -155,7 +154,7 @@ suite('ComposePage', function() {
 
     assertTrue(isChildVisible(page, '#helpMeWriteLabel'));
     const toggle1 =
-        page.shadowRoot!.querySelector<HTMLElement>('settings-toggle-button');
+        page.shadowRoot.querySelector<HTMLElement>('settings-toggle-button');
     assertFalse(!!toggle1);
 
     // Case 2, Compose proactive nudge is enabled, HelpMeWrite section should be
@@ -165,7 +164,7 @@ suite('ComposePage', function() {
 
     assertTrue(isChildVisible(page, '#helpMeWriteLabel'));
     const toggle2 =
-        page.shadowRoot!.querySelector<HTMLElement>('settings-toggle-button');
+        page.shadowRoot.querySelector<HTMLElement>('settings-toggle-button');
     assertTrue(!!toggle2);
     assertTrue(isVisible(toggle2));
 
@@ -177,7 +176,7 @@ suite('ComposePage', function() {
   test('ComposeLearnMore', async () => {
     await createPage();
 
-    const learnMoreLink = page.shadowRoot!.querySelector('a');
+    const learnMoreLink = page.shadowRoot.querySelector('a');
     assertTrue(!!learnMoreLink);
     assertEquals(
         loadTimeData.getString('composeLearnMorePageURL'), learnMoreLink.href);
@@ -194,7 +193,7 @@ suite('ComposePage', function() {
         ModelExecutionEnterprisePolicyValue.ALLOW_WITHOUT_LOGGING);
     await createPage();
 
-    const learnMoreLink = page.shadowRoot!.querySelector('a');
+    const learnMoreLink = page.shadowRoot.querySelector('a');
     assertTrue(!!learnMoreLink);
     assertEquals(
         loadTimeData.getString('composeLearnMorePageManagedURL'),
@@ -205,7 +204,7 @@ suite('ComposePage', function() {
     await createPage();
 
     const indicator =
-        page.shadowRoot!.querySelector('settings-ai-policy-indicator');
+        page.shadowRoot.querySelector('settings-ai-policy-indicator');
     assertTrue(!!indicator);
     assertEquals(AiEnterpriseFeaturePrefName.COMPOSE, indicator.prefKey);
   });

@@ -1,0 +1,36 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=../settings_columned_section_lit.css.js
+ * #import=../settings_shared_lit.css.js
+ * #include=cr-shared-style-lit settings-shared-lit settings-columned-section-lit
+ * #css_wrapper_metadata_end */
+
+.cr-row {
+  border-top: none;
+}
+
+.list-frame {
+  padding-inline-start: var(--cr-section-indent-width);
+}
+
+#disabledSitesList {
+  display: flex;
+  flex-direction: column;
+}
+
+#disabledSitesList > div:not(:first-child) {
+  border-top: var(--cr-separator-line);
+}
+
+cr-icon {
+  flex-shrink: 0;
+}
+
+settings-toggle-button.hr {
+  padding-top: 16px;
+}

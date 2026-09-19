@@ -1,15 +1,5 @@
-<!--
-Copyright 2026 The Chromium Authors
-Use of this source code is governed by a BSD-style license that can be
-found in the LICENSE file.
--->
-<style include="cr-shared-style settings-shared settings-columned-section">
-  .settings-columned-section h2.description-header {
-    font-weight: 500;
-  }
-</style>
 <settings-subpage page-title="$i18n{skillsSettingLabel}"
-    route-path="[[routePath]]">
+    route-path="${this.routePath}">
   <settings-toggle-button
       id="skillsToggle"
       pref-key="skills.enabled"
@@ -48,6 +38,6 @@ found in the LICENSE file.
   <cr-link-row id="skillsGalleryLink" class="hr"
       label="$i18n{skillsGalleryHeader}"
       sub-label="$i18n{skillsGalleryLabel}"
-      on-click="onSkillsGalleryClick_" external>
+      @click="${this.onSkillsGalleryLinkClick_}" external>
   </cr-link-row>
 </settings-subpage>

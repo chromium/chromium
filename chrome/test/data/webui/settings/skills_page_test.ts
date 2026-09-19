@@ -8,8 +8,8 @@ import 'chrome://settings/settings.js';
 import type {SettingsSkillsPageElement} from 'chrome://settings/lazy_load.js';
 import {OpenWindowProxyImpl, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 
@@ -43,18 +43,17 @@ suite('SkillsPage', function() {
     openWindowProxy.reset();
   });
 
-  async function createPage() {
+  function createPage() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     subpage = document.createElement('settings-skills-page');
     document.body.appendChild(subpage);
-    return flushTasks();
+    return microtasksFinished();
   }
 
   test('skillsToggle', async () => {
     await createPage();
 
-
-    const toggle = subpage.shadowRoot!.querySelector('settings-toggle-button');
+    const toggle = subpage.shadowRoot.querySelector('settings-toggle-button');
     assertTrue(!!toggle);
 
     // Default should be true.
@@ -76,7 +75,7 @@ suite('SkillsPage', function() {
     await createPage();
 
     const linkRow =
-        subpage.shadowRoot!.querySelector<HTMLElement>('#skillsGalleryLink');
+        subpage.shadowRoot.querySelector<HTMLElement>('#skillsGalleryLink');
     assertTrue(!!linkRow);
 
     linkRow.click();

@@ -1,26 +1,10 @@
-
-<style include="settings-shared settings-columned-section">
-  .separator {
-    margin: 0 4px;
-  }
-
-  .separator + settings-toggle-button {
-    margin-inline-end: 12px;
-  }
-
-  cr-icon {
-    flex-shrink: 0;
-  }
-
-  cr-policy-pref-indicator {
-    margin-inline-end: 4px;
-  }
-</style>
+<!-- #html_wrapper_imports_start
+import {FeatureOptInState} from './constants.js';
+#html_wrapper_imports_end -->
 <settings-subpage page-title="$i18n{aiSuggestionsLabel}"
-    route-path="[[routePath]]">
+    route-path="${this.routePath}">
   <div class="settings-row first">
-    <template is="dom-if" if="[[!isDisabledByPolicy_(enterprisePref_)]]"
-        restamp>
+    ${!this.isDisabledByPolicy_() ? html`
       <div class="cr-row first flex">
         <div class="flex cr-padded-text">
           <div id="aiSuggestionsLabel">$i18n{aiSuggestionsToggleLabel}</div>
@@ -29,15 +13,14 @@
             <a href="$i18n{aiSuggestionsHelpCenterArticleLink}"
                 aria-label="$i18n{learnMore}"
                 aria-description="$i18n{opensInNewTab}" id="learnMoreLink"
-                on-click="onLearnMoreClick_" target="_blank">
+                @click="${this.onLearnMoreLinkClick_}" target="_blank">
               $i18n{learnMore}
             </a>
           </div>
         </div>
       </div>
       <div class="separator"></div>
-    </template>
-    <template is="dom-if" if="[[isDisabledByPolicy_(enterprisePref_)]]" restamp>
+    ` : html`
       <div class="cr-row first">
         <div class="flex cr-padded-text">
           <div id="aiSuggestionsLabel">$i18n{aiSuggestionsToggleLabel}</div>
@@ -46,7 +29,7 @@
             <a href="$i18n{aiSuggestionsHelpCenterArticleLink}"
                 aria-label="$i18n{learnMore}"
                 aria-description="$i18n{opensInNewTab}" id="learnMoreLink"
-                on-click="onLearnMoreClick_" target="_blank">
+                @click="${this.onLearnMoreLinkClick_}" target="_blank">
               $i18n{learnMore}
             </a>
           </div>
@@ -55,15 +38,16 @@
       <settings-ai-policy-indicator id="policyIndicator"
           pref-key="contextual_cueing.chrome_suggestions_settings">
       </settings-ai-policy-indicator>
-    </template>
+    `}
     <settings-toggle-button
         id="showSuggestionsToggle"
         aria-label="$i18n{aiSuggestionsToggleLabel}"
         pref-key="optimization_guide.contextual_cueing_setting_state"
-        numeric-unchecked-values="[[computeNumericUncheckedValues_(enterprisePref_)]]"
-        numeric-checked-value="[[featureOptInStateEnum_.ENABLED]]"
-        disabled="[[isDisabledByPolicy_(enterprisePref_)]]"
-        on-settings-boolean-control-change="onSuggestionsToggleChange_">
+        .numericUncheckedValues="${this.computeNumericUncheckedValues_()}"
+        .numericCheckedValue="${FeatureOptInState.ENABLED}"
+        ?disabled="${this.isDisabledByPolicy_()}"
+        @settings-boolean-control-change="${
+            this.onShowSuggestionsToggleSettingsBooleanControlChange_}">
     </settings-toggle-button>
   </div>
   <div class="settings-columned-section">
@@ -81,7 +65,7 @@
         </li>
       </ul>
     </div>
-  <div class="column">
+    <div class="column">
       <h2 class="description-header">$i18n{columnHeadingConsider}</h2>
       <ul class="icon-bulleted-list">
         <li>
@@ -96,7 +80,7 @@
             <a href="chrome://settings/syncSetup"
                 aria-label="$i18n{aiSuggestionsConsider2Link}"
                 aria-description="$i18n{opensInNewTab}" id="syncSettingsLink"
-                on-click="onSyncSettingsClick_" target="_blank">
+                @click="${this.onSyncSettingsLinkClick_}" target="_blank">
               $i18n{aiSuggestionsConsider2Link}
             </a>
           </div>

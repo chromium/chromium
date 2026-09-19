@@ -9,8 +9,8 @@ import type {SettingsAiSuggestionsPageElement} from 'chrome://settings/lazy_load
 import {AiEnterpriseFeaturePrefName, AiPageActions, FeatureOptInState, SettingsAiPageFeaturePrefName as PrefName} from 'chrome://settings/lazy_load.js';
 import {AiPageSuggestionsInteractions, ChromeSuggestionsSettingsValue, loadTimeData, MetricsBrowserProxyImpl, ModelExecutionEnterprisePolicyValue, OpenWindowProxyImpl, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
@@ -58,7 +58,7 @@ suite('SuggestionsPage', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     subpage = document.createElement('settings-ai-suggestions-page');
     document.body.appendChild(subpage);
-    return flushTasks();
+    return microtasksFinished();
   }
 
   async function assertFeatureInteractionMetrics(
@@ -73,11 +73,11 @@ suite('SuggestionsPage', function() {
   test('showSuggestionsToggle', async () => {
     await createPage();
 
-    const toggle = subpage.shadowRoot!.querySelector('settings-toggle-button');
+    const toggle = subpage.shadowRoot.querySelector('settings-toggle-button');
     assertTrue(!!toggle);
 
     const policyIndicator =
-        subpage.shadowRoot!.querySelector('cr-policy-pref-indicator');
+        subpage.shadowRoot.querySelector('cr-policy-pref-indicator');
     assertFalse(!!policyIndicator);
 
     // Check NOT_INITIALIZED case.
@@ -116,15 +116,15 @@ suite('SuggestionsPage', function() {
     await createPage();
 
     const indicator =
-        subpage.shadowRoot!.querySelector('settings-ai-policy-indicator');
+        subpage.shadowRoot.querySelector('settings-ai-policy-indicator');
     assertTrue(!!indicator);
 
-    const toggle = subpage.shadowRoot!.querySelector('settings-toggle-button');
+    const toggle = subpage.shadowRoot.querySelector('settings-toggle-button');
     assertTrue(!!toggle);
     assertTrue(toggle.disabled);
     assertFalse(toggle.checked);
 
-    const linkout = subpage.shadowRoot!.querySelector('.cr-row.flex');
+    const linkout = subpage.shadowRoot.querySelector('.cr-row.flex');
     assertFalse(!!linkout);
   });
 
@@ -136,7 +136,7 @@ suite('SuggestionsPage', function() {
     await createPage();
 
     const learnMoreLink =
-        subpage.shadowRoot!.querySelector<HTMLAnchorElement>('#learnMoreLink');
+        subpage.shadowRoot.querySelector<HTMLAnchorElement>('#learnMoreLink');
     assertTrue(!!learnMoreLink);
     assertEquals('https://support.google.com/chrome?p=', learnMoreLink.href);
     learnMoreLink.click();
@@ -150,7 +150,7 @@ suite('SuggestionsPage', function() {
     await createPage();
 
     const syncSettingsLink =
-        subpage.shadowRoot!.querySelector<HTMLAnchorElement>(
+        subpage.shadowRoot.querySelector<HTMLAnchorElement>(
             '#syncSettingsLink');
     assertTrue(!!syncSettingsLink);
     assertEquals('chrome://settings/syncSetup', syncSettingsLink.href);
