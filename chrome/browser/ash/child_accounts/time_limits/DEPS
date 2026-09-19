@@ -22,12 +22,14 @@ include_rules = [
   "+chrome/browser/web_applications/web_app_constants.h",
   "+chrome/browser/web_applications/web_app_helpers.h",
   "+chrome/browser/web_applications/web_app_management_type.h",
-  "+chrome/browser/web_applications/web_app_provider.h",
   "+chrome/browser/web_applications/web_app_tab_helper.h",
   "+chrome/browser/web_applications/web_app_utils.h",
 ]
 
 specific_include_rules = {
+  ".*(unittest|browsertest)\\.cc": [
+    "+chrome/browser/web_applications/web_app_provider.h",
+  ],
   "app_time_controller\\.cc": [
     "+chrome/grit",
   ],

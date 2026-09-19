@@ -53,7 +53,6 @@ include_rules = [
   "+chrome/browser/ui/webui/ash/cloud_upload",
   "+chrome/browser/ui/webui/ash/office_fallback",
   "+chrome/browser/ui/webui/extensions",
-  "+chrome/browser/web_applications/web_app_provider.h",
   "+chrome/browser/web_applications/web_app_registry_update.h",
   "+chrome/browser/web_applications/web_app_sync_bridge.h",
   "+chrome/common/chrome_constants.h",
@@ -67,6 +66,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  ".*(unittest|browsertest)\\.cc": [
+    "+chrome/browser/web_applications/web_app_provider.h",
+  ],
   ".*test.*\\..*": [
     "+chrome/browser/ash/login/test",
     "+chrome/browser/browser_process.h",

@@ -28,12 +28,14 @@ include_rules = [
   "+chrome/browser/web_applications/test/fake_web_app_provider.h",
   "+chrome/browser/web_applications/test/web_app_install_test_utils.h",
   "+chrome/browser/web_applications/web_app_install_info.h",
-  "+chrome/browser/web_applications/web_app_provider.h",
   "+chrome/browser/web_applications/web_app_registrar.h",
   "+chrome/test/base"
 ]
 
 specific_include_rules = {
+  ".*(unittest|browsertest)\\.cc": [
+    "+chrome/browser/web_applications/web_app_provider.h",
+  ],
   "note_taking_helper_browsertest\\.cc": [
     "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
     "+chrome/browser/ui/tabs/tab_strip_model.h",

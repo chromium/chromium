@@ -60,13 +60,15 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/browser/signin",
   "+chrome/browser/unified_consent",
-  "+chrome/browser/web_applications/web_app_provider.h",
   "+chrome/common/chrome_constants.h",
   "+chrome/common/chrome_content_client.h",
   "+chrome/common/chrome_paths.h",
 ]
 
 specific_include_rules = {
+  ".*(unittest|browsertest)\\.cc": [
+    "+chrome/browser/web_applications/web_app_provider.h",
+  ],
   ".*test(_.*)?\\.(cc|h)": [
     "+chrome/browser/ash/policy/test_support",
     "+chrome/browser/extensions/chrome_test_extension_loader.h",

@@ -32,12 +32,14 @@ include_rules = [
   "+chrome/browser/web_applications/web_app_command_manager.h",
   "+chrome/browser/web_applications/web_app_icon_manager.h",
   "+chrome/browser/web_applications/web_app_install_info.h",
-  "+chrome/browser/web_applications/web_app_provider.h",
   "+chrome/common/chrome_constants.h",
   "+chrome/test/base",
 ]
 
 specific_include_rules = {
+  ".*(unittest|browsertest)\\.cc": [
+    "+chrome/browser/web_applications/web_app_provider.h",
+  ],
   ".*_browsertest\\.cc": [
     "+chrome/browser/ui/browser_commands.h",
   ],
