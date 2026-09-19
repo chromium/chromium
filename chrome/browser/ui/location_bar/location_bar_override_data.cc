@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/location_bar/location_bar_override_data.h"
 
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "components/tabs/public/tab_interface.h"
@@ -31,7 +31,10 @@ LocationBar* GetLocationBarForWebContents(content::WebContents* web_contents) {
   if (tabs::TabInterface* tab =
           tabs::TabInterface::MaybeGetFromContents(web_contents)) {
     if (BrowserWindowInterface* browser = tab->GetBrowserWindowInterface()) {
-      return browser->GetFeatures().location_bar();
+      // The window can be absent in unit tests that stub out the browser.
+      if (BrowserWindow* window = BrowserWindow::FromBrowser(browser)) {
+        return window->GetLocationBar();
+      }
     }
   }
   return nullptr;

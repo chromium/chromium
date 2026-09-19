@@ -13,7 +13,7 @@
 #include "base/task/thread_pool.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/contextual_search/searchbox_context_data.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
@@ -86,7 +86,8 @@ void OmniboxPopupFileSelector::OpenFileUploadDialog(
   }
   if (!OmniboxContextMenuController::GetOmniboxEverywhereUI(web_contents)) {
     if (auto* browser_window = webui::GetBrowserWindowInterface(web_contents)) {
-      if (auto* location_bar = browser_window->GetFeatures().location_bar()) {
+      if (auto* location_bar =
+              BrowserWindow::FromBrowser(browser_window)->GetLocationBar()) {
         if (was_ai_mode_open) {
           if (auto* presenter_delegate = location_bar->GetPresenterDelegate()) {
             if (auto* presenter =
@@ -385,7 +386,8 @@ void OmniboxPopupFileSelector::NotifyFileSelectionClosed() {
       return;
     }
 
-    auto* location_bar = browser_window->GetFeatures().location_bar();
+    auto* location_bar =
+        BrowserWindow::FromBrowser(browser_window)->GetLocationBar();
     if (!location_bar) {
       return;
     }

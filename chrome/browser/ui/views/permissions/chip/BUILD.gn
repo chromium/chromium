@@ -98,6 +98,7 @@ source_set("browser_tests") {
 
   deps = [
     ":chip",
+    "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui/views:content_setting_bubble_contents",
     "//chrome/browser/ui/views/permissions",
     "//chrome/browser/ui/window_metadata",

@@ -15,7 +15,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
@@ -64,9 +64,10 @@ SplitTabHighlightController::SplitTabHighlightController(
       browser_window_interface_->RegisterActiveTabDidChange(
           base::BindRepeating(&SplitTabHighlightController::OnActiveTabChange,
                               base::Unretained(this))));
-  chip_controller_observation_.Observe(browser_window_interface_->GetFeatures()
-                                           .location_bar()
-                                           ->GetChipController());
+  chip_controller_observation_.Observe(
+      BrowserWindow::FromBrowser(browser_window_interface_)
+          ->GetLocationBar()
+          ->GetChipController());
   for (ui::ElementIdentifier identifier : GetTrackedBubbleDialogs()) {
     AddShowHideElementSubscriptions(identifier);
   }

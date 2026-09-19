@@ -8,7 +8,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -92,7 +92,7 @@ class PermissionDashboardBrowserTest : public InProcessBrowserTest {
   }
 
   LocationBar* location_bar() {
-    return browser()->GetFeatures().location_bar();
+    return BrowserWindow::FromBrowser(browser())->GetLocationBar();
   }
 
   PermissionDashboardController* dashboard_controller() {

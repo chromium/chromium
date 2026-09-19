@@ -31,6 +31,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
@@ -923,7 +924,8 @@ WebUIToolbarWebView::AdjustOmniboxTextForCopy(const std::u16string& text,
   GURL url;
   bool write_url = false;
 
-  LocationBar* location_bar = browser_->GetFeatures().location_bar();
+  LocationBar* location_bar =
+      BrowserWindow::FromBrowser(browser_)->GetLocationBar();
   if (location_bar) {
     OmniboxController* controller = location_bar->GetOmniboxController();
     if (controller && controller->edit_model()) {
