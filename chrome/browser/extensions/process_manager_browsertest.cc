@@ -47,6 +47,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/security_principal.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -1675,10 +1676,18 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
         << "The initial navigation should be allowed, but not the server "
            "redirect to extension2's manifest";
     EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, nav_observer.last_net_error_code());
-    // We expect the URL to be sanitized, per https://crbug.com/517156678.
+    // The failed navigation's URL is only reduced to its origin when the error
+    // page commits in the initiator's process, per
+    // https://crbug.com/517156678. With subframe error page isolation, the
+    // error page commits in a dedicated error page process instead, and the
+    // full URL is committed.
     // TODO(crbug.com/40134629): Remove the sanitization once Subframe Error
     // Page Isolation ships.
-    GURL expected_url = extension2_manifest.DeprecatedGetOriginAsURL();
+    GURL expected_url =
+        content::SiteIsolationPolicy::IsErrorPageIsolationEnabled(
+            /*in_main_frame=*/false)
+            ? extension2_manifest
+            : extension2_manifest.DeprecatedGetOriginAsURL();
     EXPECT_EQ(expected_url, nav_observer.last_navigation_url());
     EXPECT_EQ(expected_url, ChildFrameAt(main_frame, 1)->GetLastCommittedURL());
     EXPECT_EQ(1u, pm->GetAllFrames().size());
