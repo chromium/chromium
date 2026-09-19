@@ -102,7 +102,8 @@ public class TabGroupUiUtils {
         } else if (syncGroupId != null && syncService != null) {
             SavedTabGroup group = syncService.getGroup(syncGroupId);
             if (group != null) {
-                return GroupWindowInfo.forSyncedGroup(context, group, checker.getState(group));
+                return GroupWindowInfo.forSyncedGroup(
+                        context, tabModel, group, checker.getState(group));
             }
         }
         return null;

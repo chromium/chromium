@@ -104,7 +104,7 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
 
         GroupWindowInfo groupInfo =
                 GroupWindowInfo.forSyncedGroup(
-                        mContext, mSavedTabGroup, GroupWindowState.IN_CURRENT);
+                        mContext, mTabModel, mSavedTabGroup, GroupWindowState.IN_CURRENT);
 
         mMediator =
                 new TabGroupListBottomSheetRowMediator(
@@ -169,7 +169,8 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         mSavedTabGroup.localId = null;
         mSavedTabGroup.savedTabs.get(0).localId = null;
         GroupWindowInfo groupInfo =
-                GroupWindowInfo.forSyncedGroup(mContext, mSavedTabGroup, GroupWindowState.HIDDEN);
+                GroupWindowInfo.forSyncedGroup(
+                        mContext, mTabModel, mSavedTabGroup, GroupWindowState.HIDDEN);
         mMediator =
                 new TabGroupListBottomSheetRowMediator(
                         groupInfo,
@@ -200,7 +201,8 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         mSavedTabGroup.localId = null;
         mSavedTabGroup.savedTabs.get(0).localId = null;
         GroupWindowInfo groupInfo =
-                GroupWindowInfo.forSyncedGroup(mContext, mSavedTabGroup, GroupWindowState.HIDDEN);
+                GroupWindowInfo.forSyncedGroup(
+                        mContext, mTabModel, mSavedTabGroup, GroupWindowState.HIDDEN);
         mMediator =
                 new TabGroupListBottomSheetRowMediator(
                         groupInfo,

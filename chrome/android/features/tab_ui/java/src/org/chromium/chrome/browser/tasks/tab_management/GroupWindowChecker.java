@@ -107,7 +107,8 @@ public class GroupWindowChecker {
             @GroupWindowState int groupWindowState = getState(savedTabGroup);
             if (tabGroupSelectionPredicate.shouldInclude(groupWindowState)) {
                 groupList.add(
-                        GroupWindowInfo.forSyncedGroup(mContext, savedTabGroup, groupWindowState));
+                        GroupWindowInfo.forSyncedGroup(
+                                mContext, mCurrentTabModel, savedTabGroup, groupWindowState));
             }
         }
     }
