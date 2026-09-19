@@ -316,6 +316,10 @@ TEST_F(D3D12VideoEncodeH265DelegateTest, UnsupportedCodec) {
 TEST_F(D3D12VideoEncodeH265DelegateTest, UnsupportedProfile) {
   VideoEncodeAccelerator::Config config = GetDefaultH265Config();
   config.output_profile = HEVCPROFILE_REXT;
+  // P210LE selects a range extension variant, so the request reaches the
+  // profile gate below and is rejected there; an input format that selects no
+  // variant is rejected earlier as an unsupported config.
+  config.input_format = PIXEL_FORMAT_P210LE;
   EXPECT_EQ(encoder_delegate_->Initialize(config).code(),
             EncoderStatus::Codes::kEncoderUnsupportedProfile);
 }
@@ -569,7 +573,7 @@ TEST_F(D3D12VideoEncodeH265DelegateTest, EncodeMain10HDRFrameFromRGBInput) {
   config.output_profile = HEVCPROFILE_MAIN10;
   config.input_format = PIXEL_FORMAT_ARGB;
   ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok());
-  EXPECT_EQ(encoder_delegate_->GetFormatForTesting(), DXGI_FORMAT_P010);
+  EXPECT_EQ(encoder_delegate_->GetInputFormat(), DXGI_FORMAT_P010);
 
   auto input_frame =
       CreateResource(config.input_visible_size, config.input_format);

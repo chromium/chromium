@@ -14,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "media/gpu/windows/d3d12_fence.h"
 #include "media/gpu/windows/d3d12_helpers.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace media {
 
@@ -36,12 +37,17 @@ class D3D12CopyCommandQueueWrapper {
                          const D3D12_TEXTURE_COPY_LOCATION& src_location,
                          const D3D12_BOX* src_box = nullptr);
 
-  bool CopyBufferToNV12Texture(ID3D12Resource* target_texture,
-                               ID3D12Resource* source_buffer,
-                               uint32_t y_offset,
-                               uint32_t y_stride,
-                               uint32_t uv_offset,
-                               uint32_t uv_stride);
+  // Copies a bi-planar (NV12 or P010) frame from |source_buffer| into
+  // |target_texture|. |size| is the size of the frame held in |source_buffer|,
+  // which may be smaller than |target_texture|. The offsets and strides are in
+  // bytes.
+  bool CopyBufferToBiPlanarTexture(ID3D12Resource* target_texture,
+                                   ID3D12Resource* source_buffer,
+                                   const gfx::Size& size,
+                                   uint32_t y_offset,
+                                   uint32_t y_stride,
+                                   uint32_t uv_offset,
+                                   uint32_t uv_stride);
 
   D3D12FenceAndValue Execute();
   void WaitSync();

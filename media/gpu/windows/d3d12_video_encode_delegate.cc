@@ -4,14 +4,21 @@
 
 #include "media/gpu/windows/d3d12_video_encode_delegate.h"
 
+#include <algorithm>
+#include <optional>
 #include <ranges>
 
 #include "base/bits.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "media/base/media_switches.h"
+#include "media/base/video_codecs.h"
+#include "media/base/video_frame.h"
+#include "media/base/video_types.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
 #include "media/gpu/h264_dpb.h"
@@ -42,15 +49,28 @@ namespace media {
 
 namespace {
 
-bool Is420Subsampled(DXGI_FORMAT format) {
+// How many luma samples share one chroma sample, horizontally and vertically.
+struct ChromaSubsampling {
+  int x = 1;
+  int y = 1;
+};
+
+ChromaSubsampling GetChromaSubsampling(DXGI_FORMAT format) {
   switch (format) {
+    // 4:2:0: chroma is shared both horizontally and vertically.
     case DXGI_FORMAT_NV12:
     case DXGI_FORMAT_P010:
     case DXGI_FORMAT_P016:
     case DXGI_FORMAT_420_OPAQUE:
-      return true;
+      return {2, 2};
+    // 4:2:2: chroma is shared horizontally only.
+    case DXGI_FORMAT_Y210:
+    case DXGI_FORMAT_Y216:
+    case DXGI_FORMAT_YUY2:
+      return {2, 1};
+    // 4:4:4 and RGB have a chroma sample per pixel, so any crop is expressible.
     default:
-      return false;
+      return {1, 1};
   }
 }
 
@@ -84,8 +104,10 @@ bool IsVBRSupported(ID3D12VideoDevice3* video_device,
   return SUCCEEDED(hr) && vbr.IsSupported;
 }
 
-DXGI_FORMAT GetDxgiInputFormat(VideoCodecProfile output_profile,
-                               VideoPixelFormat input_format) {
+// Returns the DXGI format the encoder should consume for |output_profile|, or
+// std::nullopt if |input_format| cannot be encoded into that profile.
+std::optional<DXGI_FORMAT> GetDxgiInputFormat(VideoCodecProfile output_profile,
+                                              VideoPixelFormat input_format) {
   // H.264 high10 and HEVC main10 are 10 bit by definition, while AV1 main
   // covers both 8 and 10 bit, so for AV1 main the input format is what decides
   // the coded bit depth.
@@ -96,6 +118,18 @@ DXGI_FORMAT GetDxgiInputFormat(VideoCodecProfile output_profile,
     return DXGI_FORMAT_P010;
   } else if (output_profile == AV1PROFILE_PROFILE_HIGH) {
     return DXGI_FORMAT_AYUV;
+  } else if (output_profile == HEVCPROFILE_REXT) {
+    // The input format selects the range extension profile variant and thus
+    // the DXGI format of the coded stream. Only the 10 bit variants are
+    // supported; 8 bit range extension uses the upstream 4:4:4 path.
+    switch (input_format) {
+      case PIXEL_FORMAT_P210LE:
+        return DXGI_FORMAT_Y210;  // main10_422, 10 bit 4:2:2
+      case PIXEL_FORMAT_P410LE:
+        return DXGI_FORMAT_Y410;  // main10_444, 10 bit 4:4:4
+      default:
+        return std::nullopt;
+    }
   } else {
     return DXGI_FORMAT_NV12;
   }
@@ -199,7 +233,8 @@ D3D12VideoEncodeDelegate::GetSupportedProfiles(
             base::MakeFixedFlatSet<VideoPixelFormat>(
                 {PIXEL_FORMAT_I420, PIXEL_FORMAT_NV12, PIXEL_FORMAT_YV12,
                  PIXEL_FORMAT_NV21, PIXEL_FORMAT_ARGB, PIXEL_FORMAT_XRGB,
-                 PIXEL_FORMAT_ABGR, PIXEL_FORMAT_XBGR});
+                 PIXEL_FORMAT_ABGR, PIXEL_FORMAT_XBGR, PIXEL_FORMAT_XB30,
+                 PIXEL_FORMAT_RGBAF16});
         std::ranges::copy(
             kSupportedPixelFormatD3D12VideoProcessing,
             std::back_inserter(supported_profile.gpu_supported_pixel_formats));
@@ -246,14 +281,48 @@ EncoderStatus D3D12VideoEncodeDelegate::Initialize(
   input_size_.Width = config.input_visible_size.width();
   input_size_.Height = config.input_visible_size.height();
 
-  input_format_ = GetDxgiInputFormat(output_profile_, config.input_format);
+  std::optional<DXGI_FORMAT> input_format =
+      GetDxgiInputFormat(output_profile_, config.input_format);
+  if (!input_format) {
+    return {EncoderStatus::Codes::kEncoderUnsupportedConfig,
+            base::StrCat({"Input format ",
+                          VideoPixelFormatToString(config.input_format),
+                          " cannot be encoded into profile ",
+                          GetProfileName(output_profile_)})};
+  }
+  input_format_ = *input_format;
   processed_input_frame_.Reset();
+
+  // A packed 4:2:2 macro-pixel covers two horizontally adjacent luma samples,
+  // so an odd width has no representation in the encoder input surface. 4:2:0
+  // formats pad their half-resolution chroma planes instead and so are not
+  // constrained here; odd crops are still rejected per frame in Encode().
+  const ChromaSubsampling input_subsampling =
+      GetChromaSubsampling(input_format_);
+  if (input_subsampling.x == 2 && input_subsampling.y == 1 &&
+      config.input_visible_size.width() % 2 != 0) {
+    return {
+        EncoderStatus::Codes::kEncoderUnsupportedConfig,
+        base::StrCat({"Odd input width ",
+                      base::NumberToString(config.input_visible_size.width()),
+                      " is not supported for 4:2:2 encoding"})};
+  }
 
   bitrate_allocation_ = AllocateBitrateForDefaultEncoding(config);
   framerate_ = config.framerate;
   rate_control_ = D3D12VideoEncoderRateControl::Create(
       bitrate_allocation_, config.framerate, video_device_.Get(),
       output_profile_);
+
+  // The encoder wrapper will use this for allocating the bitstream buffer,
+  // make it at least as large as the estimated bitstream size and the size
+  // of an uncompressed frame, whichever is larger.
+  min_bitstream_buffer_size_ = std::max(
+      static_cast<uint64_t>(VideoEncodeAccelerator::EstimateBitstreamBufferSize(
+          config.bitrate, config.framerate, config.input_format,
+          config.input_visible_size)),
+      static_cast<uint64_t>(VideoFrame::AllocationSize(
+          config.input_format, config.input_visible_size)));
 
   static constexpr uint32_t kDefaultGOPLength = 3000;
   config.gop_length = config.gop_length.value_or(kDefaultGOPLength);
@@ -337,21 +406,22 @@ D3D12VideoEncodeDelegate::Encode(
                           " is not a valid region of the input texture ",
                           input_frame_rect.ToString()})};
   }
-  // 4:2:0 chroma is shared between neighboring row and column pairs, so an odd
-  // origin or size does not name a whole chroma sample and cannot be cropped
-  // to. Reject it rather than silently encoding a different region, matching
-  // MF VEA's behavior.
-  //
-  // Note that for 4:2:2 formats, x and width must be even. Make sure this is
-  // handled if in the future we allow GPU passthrough of such texture to the
-  // encoder.
-  if (Is420Subsampled(input_frame_desc.Format) &&
-      (input_visible_rect.x() % 2 != 0 || input_visible_rect.y() % 2 != 0 ||
-       input_visible_rect.width() % 2 != 0 ||
-       input_visible_rect.height() % 2 != 0)) {
+  // Subsampled chroma is shared between neighboring rows and/or columns, so an
+  // odd origin or size along a shared axis does not name a whole chroma sample
+  // and cannot be cropped to. Reject it rather than silently encoding a
+  // different region, matching MF VEA's behavior. 4:2:2 shares along x only,
+  // so its height is unconstrained.
+  const ChromaSubsampling subsampling =
+      GetChromaSubsampling(input_frame_desc.Format);
+  if (input_visible_rect.x() % subsampling.x != 0 ||
+      input_visible_rect.width() % subsampling.x != 0 ||
+      input_visible_rect.y() % subsampling.y != 0 ||
+      input_visible_rect.height() % subsampling.y != 0) {
     return {EncoderStatus::Codes::kInvalidInputFrame,
-            "Input frame visible rectangle is not properly aligned for a 4:2:0 "
-            "subsampled format"};
+            base::StrCat({"Input frame visible rectangle ",
+                          input_visible_rect.ToString(),
+                          " is not properly aligned for the subsampled input "
+                          "format"})};
   }
   const gfx::Rect encoder_input_rect(
       0, 0, base::checked_cast<int>(input_size_.Width),

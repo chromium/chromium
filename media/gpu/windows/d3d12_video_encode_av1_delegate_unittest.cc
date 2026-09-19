@@ -454,7 +454,7 @@ TEST_F(D3D12VideoEncodeAV1DelegateTest, EncodeFrameWith10BitInput) {
   VideoEncodeAccelerator::Config config = GetDefaultConfig();
   config.input_format = PIXEL_FORMAT_P010LE;
   ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok());
-  EXPECT_EQ(encoder_delegate_->GetFormatForTesting(), DXGI_FORMAT_P010);
+  EXPECT_EQ(encoder_delegate_->GetInputFormat(), DXGI_FORMAT_P010);
   EXPECT_EQ(GetSequenceHeader().bit_depth, 10);
 
   auto input_frame = MakeComPtr<NiceMock<D3D12ResourceMock>>();

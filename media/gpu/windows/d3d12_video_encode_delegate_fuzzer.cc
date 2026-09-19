@@ -607,7 +607,7 @@ class FuzzerVideoEncoderWrapper : public D3D12VideoEncoderWrapper {
         .WillByDefault([](UINT, const D3D12_RANGE*) {});
   }
 
-  bool Initialize(uint32_t) override { return true; }
+  bool Initialize(uint32_t, uint64_t) override { return true; }
   bool Wait(D3D12FenceAndValue) override { return true; }
   EncoderStatus Encode(
       const D3D12_VIDEO_ENCODER_ENCODEFRAME_INPUT_ARGUMENTS&,

@@ -967,7 +967,8 @@ EncoderStatus D3D12VideoEncodeAV1Delegate::InitializeVideoEncoder(
   }
 
   // We use full frame mode so the number of subregions is always 1.
-  if (!video_encoder_wrapper_->Initialize(/*max_subregions_number=*/1)) {
+  if (!video_encoder_wrapper_->Initialize(/*max_subregions_number=*/1,
+                                          min_bitstream_buffer_size_)) {
     return {EncoderStatus::Codes::kEncoderInitializationError,
             " Failed to initialize D3D12VideoEncoderWrapper."};
   }

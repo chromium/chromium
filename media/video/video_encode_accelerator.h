@@ -529,15 +529,19 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
   virtual void SetSharedImageInterfaceForTesting(
       scoped_refptr<gpu::SharedImageInterface> sii);
 
- protected:
-  // Do not delete directly; use Destroy() or own it with a unique_ptr, which
-  // will Destroy() it properly by default.
-  virtual ~VideoEncodeAccelerator();
-
+  // Returns a heuristic estimate of the output buffer size needed for a single
+  // encoded frame with the given parameters, derived from the uncompressed
+  // frame size and the bitrate with an overshoot allowance. It is an estimate,
+  // not a hard upper bound.
   static size_t EstimateBitstreamBufferSize(const Bitrate& bitrate,
                                             uint32_t framerate,
                                             VideoPixelFormat input_format,
                                             const gfx::Size& coded_size);
+
+ protected:
+  // Do not delete directly; use Destroy() or own it with a unique_ptr, which
+  // will Destroy() it properly by default.
+  virtual ~VideoEncodeAccelerator();
 };
 
 MEDIA_EXPORT bool operator==(const VideoEncodeAccelerator::SupportedProfile& l,

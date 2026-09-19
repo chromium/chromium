@@ -47,7 +47,7 @@ class MockD3D12VideoEncoderWrapper : public D3D12VideoEncoderWrapper {
   MockD3D12VideoEncoderWrapper();
   ~MockD3D12VideoEncoderWrapper() override;
 
-  MOCK_METHOD(bool, Initialize, (uint32_t));
+  MOCK_METHOD(bool, Initialize, (uint32_t, uint64_t), (override));
   MOCK_METHOD(bool, Wait, (D3D12FenceAndValue));
   MOCK_METHOD2(
       Encode,

@@ -220,7 +220,7 @@ class D3D12VideoEncodeDelegateTest : public D3D12VideoEncodeDelegateTestBase {
 
 TEST_F(D3D12VideoEncodeDelegateTest, Initialize) {
   EXPECT_TRUE(encoder_delegate_->Initialize(GetDefaultH264Config()).is_ok());
-  EXPECT_EQ(encoder_delegate_->GetFormatForTesting(), DXGI_FORMAT_NV12);
+  EXPECT_EQ(encoder_delegate_->GetInputFormat(), DXGI_FORMAT_NV12);
 }
 
 TEST_F(D3D12VideoEncodeDelegateTest, P010InputFormatFor10BitProfile) {
@@ -228,7 +228,7 @@ TEST_F(D3D12VideoEncodeDelegateTest, P010InputFormatFor10BitProfile) {
   config.input_format = PIXEL_FORMAT_P010LE;
   config.output_profile = H264PROFILE_HIGH10PROFILE;
   EXPECT_TRUE(encoder_delegate_->Initialize(config).is_ok());
-  EXPECT_EQ(encoder_delegate_->GetFormatForTesting(), DXGI_FORMAT_P010);
+  EXPECT_EQ(encoder_delegate_->GetInputFormat(), DXGI_FORMAT_P010);
 }
 
 TEST_F(D3D12VideoEncodeDelegateTest,
@@ -242,7 +242,7 @@ TEST_F(D3D12VideoEncodeDelegateTest,
     config.input_format = rgb_format;
     config.output_profile = H264PROFILE_HIGH10PROFILE;
     EXPECT_TRUE(encoder_delegate_->Initialize(config).is_ok());
-    EXPECT_EQ(encoder_delegate_->GetFormatForTesting(), DXGI_FORMAT_P010)
+    EXPECT_EQ(encoder_delegate_->GetInputFormat(), DXGI_FORMAT_P010)
         << "Unexpected input format for RGB pixel format "
         << VideoPixelFormatToString(rgb_format);
   }

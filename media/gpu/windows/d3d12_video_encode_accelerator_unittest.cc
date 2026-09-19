@@ -668,4 +668,31 @@ TEST_F(D3D12VideoEncodeAcceleratorTest, ForwardsVisibleRectToDelegate) {
   EXPECT_EQ(factory_ptr->visible_rects_[0], gfx::Rect(kSupportedSize));
 }
 
+// The upload layout must be computed in bytes: a 10-bit plane holds two bytes
+// per sample, so computing offsets from PlaneSize() samples would place the UV
+// plane inside the Y plane and under-size the buffer.
+TEST_F(D3D12VideoEncodeAcceleratorTest, BiPlanarUploadLayoutInBytes) {
+  // NV12: one byte per sample; the 1920-byte rows align up to 2048.
+  auto nv12 = GetBiPlanarUploadLayout(PIXEL_FORMAT_NV12, {1920, 1080});
+  EXPECT_EQ(nv12.y_pitch, 2048u);
+  EXPECT_EQ(nv12.uv_pitch, 2048u);
+  EXPECT_EQ(nv12.uv_offset, 2048u * 1080u);
+  EXPECT_EQ(nv12.buffer_size, 2048u * 1080u + 2048u * 540u);
+
+  // P010LE: two bytes per sample; the 3840-byte rows are already aligned.
+  auto p010 = GetBiPlanarUploadLayout(PIXEL_FORMAT_P010LE, {1920, 1080});
+  EXPECT_EQ(p010.y_pitch, 3840u);
+  EXPECT_EQ(p010.uv_pitch, 3840u);
+  EXPECT_EQ(p010.uv_offset, 3840u * 1080u);
+  EXPECT_EQ(p010.buffer_size, 3840u * 1080u + 3840u * 540u);
+
+  // P010LE at an odd height: 3840 * 1081 is not a multiple of the 512-byte
+  // footprint placement alignment, so the UV offset is rounded up.
+  auto p010_odd = GetBiPlanarUploadLayout(PIXEL_FORMAT_P010LE, {1920, 1081});
+  EXPECT_EQ(p010_odd.y_pitch, 3840u);
+  EXPECT_EQ(p010_odd.uv_pitch, 3840u);
+  EXPECT_EQ(p010_odd.uv_offset, 4151296u);
+  EXPECT_EQ(p010_odd.buffer_size, 4151296u + 3840u * 541u);
+}
+
 }  // namespace media

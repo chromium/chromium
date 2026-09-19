@@ -4,8 +4,7 @@
 
 #include "media/gpu/windows/d3d12_video_encoder_wrapper.h"
 
-#include <algorithm>
-
+#include "base/notreached.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/gpu/windows/d3d12_helpers.h"
 #include "media/gpu/windows/d3d12_video_helpers.h"
@@ -47,7 +46,8 @@ D3D12VideoEncoderWrapper::D3D12VideoEncoderWrapper(
 
 D3D12VideoEncoderWrapper::~D3D12VideoEncoderWrapper() = default;
 
-bool D3D12VideoEncoderWrapper::Initialize(uint32_t max_subregions_number) {
+bool D3D12VideoEncoderWrapper::Initialize(uint32_t max_subregions_number,
+                                          uint64_t bitstream_buffer_size) {
   CHECK(video_encoder_);
   CHECK(video_encoder_heap_);
   Microsoft::WRL::ComPtr<ID3D12Device> device;
@@ -124,12 +124,11 @@ bool D3D12VideoEncoderWrapper::Initialize(uint32_t max_subregions_number) {
     return false;
   }
 
-  // A NV12 format frame consists of a Y-plane which occupies the same size as
-  // the frame itself, and an UV-plane which is half the size of the frame.
-  // A buffer of 1 + 1/2 = 3/2 times the size of the frame bytes should be
-  // enough for a compressed bitstream.
-  CD3DX12_RESOURCE_DESC bitstream_desc = CD3DX12_RESOURCE_DESC::Buffer(
-      resolution_desc.Width * resolution_desc.Height * 3 / 2);
+  // |bitstream_buffer_size| is the size the delegate computed and advertised
+  // to the client, so a frame that fits the client's bitstream buffer always
+  // fits here; the two can never disagree.
+  CD3DX12_RESOURCE_DESC bitstream_desc =
+      CD3DX12_RESOURCE_DESC::Buffer(bitstream_buffer_size);
   hr = device->CreateCommittedResource(&D3D12HeapProperties::kReadback,
                                        D3D12_HEAP_FLAG_NONE, &bitstream_desc,
                                        D3D12_RESOURCE_STATE_COPY_DEST, nullptr,

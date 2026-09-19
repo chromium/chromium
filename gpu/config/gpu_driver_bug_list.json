@@ -3994,6 +3994,19 @@
       "features": [
         "round_up_3d_texture_size_to_pot_for_limit"
       ]
+    },
+    {
+      "id": 502,
+      "cr_bugs": [40275246],
+      "description": "Intel drivers ask for D3D12 HEVC RExt recon pictures with an internal packed 4:2:2/4:4:4.",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "multi_gpu_category": "active",
+      "features": [
+        "d3d12_hevc_encode_packed_format_dpb_sizing"
+      ]
     }
   ]
 }

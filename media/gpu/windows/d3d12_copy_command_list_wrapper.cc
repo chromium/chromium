@@ -4,6 +4,10 @@
 
 #include "media/gpu/windows/d3d12_copy_command_list_wrapper.h"
 
+#include "base/check_op.h"
+#include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
+
 namespace media {
 
 // static
@@ -79,53 +83,68 @@ bool D3D12CopyCommandQueueWrapper::CopyTextureRegion(
   return true;
 }
 
-bool D3D12CopyCommandQueueWrapper::CopyBufferToNV12Texture(
+bool D3D12CopyCommandQueueWrapper::CopyBufferToBiPlanarTexture(
     ID3D12Resource* target_texture,
     ID3D12Resource* source_buffer,
+    const gfx::Size& size,
     uint32_t y_offset,
     uint32_t y_stride,
     uint32_t uv_offset,
     uint32_t uv_stride) {
   CHECK_EQ(source_buffer->GetDesc().Dimension, D3D12_RESOURCE_DIMENSION_BUFFER);
   D3D12_RESOURCE_DESC target_texture_desc = target_texture->GetDesc();
+  CHECK_LE(static_cast<uint64_t>(size.width()), target_texture_desc.Width);
+  CHECK_LE(static_cast<uint32_t>(size.height()), target_texture_desc.Height);
+  const UINT width = base::checked_cast<UINT>(size.width());
+  const UINT height = base::checked_cast<UINT>(size.height());
+
+  DXGI_FORMAT y_plane_format;
+  DXGI_FORMAT uv_plane_format;
+  switch (target_texture_desc.Format) {
+    case DXGI_FORMAT_NV12:
+      y_plane_format = DXGI_FORMAT_R8_TYPELESS;
+      uv_plane_format = DXGI_FORMAT_R8G8_TYPELESS;
+      break;
+    case DXGI_FORMAT_P010:
+      y_plane_format = DXGI_FORMAT_R16_TYPELESS;
+      uv_plane_format = DXGI_FORMAT_R16G16_TYPELESS;
+      break;
+    default:
+      NOTREACHED();
+  }
 
   // The COPY_SOURCE/COPY_DEST states can be promote/decayed. So the resource
   // barriers are not necessary here. See
   // https://learn.microsoft.com/en-us/windows/win32/direct3d12/using-resource-barriers-to-synchronize-resource-states-in-direct3d-12#common-state-promotion
-  return CopyTextureRegion(
-             {.pResource = target_texture,
-              .Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX,
-              .SubresourceIndex = 0},
-             0, 0, 0,
-             {.pResource = source_buffer,
-              .Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT,
-              .PlacedFootprint =
-                  {
-                      .Offset = y_offset,
-                      .Footprint = {.Format = DXGI_FORMAT_R8_TYPELESS,
-                                    .Width = static_cast<UINT>(
-                                        target_texture_desc.Width),
-                                    .Height = target_texture_desc.Height,
-                                    .Depth = 1,
-                                    .RowPitch = y_stride},
-                  }}) &&
-         CopyTextureRegion(
-             {.pResource = target_texture,
-              .Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX,
-              .SubresourceIndex = 1},
-             0, 0, 0,
-             {.pResource = source_buffer,
-              .Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT,
-              .PlacedFootprint = {
-                  .Offset = uv_offset,
-                  .Footprint = {.Format = DXGI_FORMAT_R8G8_TYPELESS,
-                                .Width = static_cast<UINT>(
-                                             target_texture_desc.Width + 1) /
-                                         2,
-                                .Height = (target_texture_desc.Height + 1) / 2,
-                                .Depth = 1,
-                                .RowPitch = uv_stride},
-              }});
+  return CopyTextureRegion({.pResource = target_texture,
+                            .Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX,
+                            .SubresourceIndex = 0},
+                           0, 0, 0,
+                           {.pResource = source_buffer,
+                            .Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT,
+                            .PlacedFootprint =
+                                {
+                                    .Offset = y_offset,
+                                    .Footprint = {.Format = y_plane_format,
+                                                  .Width = width,
+                                                  .Height = height,
+                                                  .Depth = 1,
+                                                  .RowPitch = y_stride},
+                                }}) &&
+         CopyTextureRegion({.pResource = target_texture,
+                            .Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX,
+                            .SubresourceIndex = 1},
+                           0, 0, 0,
+                           {.pResource = source_buffer,
+                            .Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT,
+                            .PlacedFootprint = {
+                                .Offset = uv_offset,
+                                .Footprint = {.Format = uv_plane_format,
+                                              .Width = (width + 1) / 2,
+                                              .Height = (height + 1) / 2,
+                                              .Depth = 1,
+                                              .RowPitch = uv_stride},
+                            }});
 }
 
 D3D12FenceAndValue D3D12CopyCommandQueueWrapper::Execute() {

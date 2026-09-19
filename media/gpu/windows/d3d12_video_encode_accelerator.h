@@ -30,12 +30,31 @@
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d12_copy_command_list_wrapper.h"
 #include "media/gpu/windows/d3d12_video_encode_delegate.h"
+#include "media/gpu/windows/packed_yuv_utils.h"
 #include "media/video/video_encode_accelerator.h"
 
 namespace media {
 
 class CommandBufferHelper;
 class VEAEncodingLatencyMetricsHelper;
+
+// The upload buffer layout for the bi-planar path, computed in bytes: the
+// rows of each plane are placed at pitches aligned to the placed-footprint
+// requirement of CopyTextureRegion(), and the same pitches are used as the
+// wrapped frame strides and the copy's row pitches.
+struct BiPlanarUploadLayout {
+  size_t y_pitch;
+  size_t uv_pitch;
+  size_t uv_offset;
+  size_t buffer_size;
+};
+
+// Computes |BiPlanarUploadLayout| for |format| (NV12 or P010LE) at |size|.
+// Row counts and row bytes come from VideoFrame::Rows() and
+// VideoFrame::RowBytes(), which return bytes, so 10-bit formats are sized
+// correctly.
+MEDIA_GPU_EXPORT BiPlanarUploadLayout
+GetBiPlanarUploadLayout(VideoPixelFormat format, const gfx::Size& size);
 
 typedef base::OnceCallback<void(
     scoped_refptr<VideoFrame> frame,
@@ -125,6 +144,23 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAccelerator
 
   D3D12PictureBuffer CreateResourceForSharedMemoryVideoFrame(
       const VideoFrame& frame);
+
+  // Create |input_texture_|/|upload_buffer_| unless the cached one can already
+  // hold the frame. Return false if allocation failed.
+  bool EnsureInputTexture(DXGI_FORMAT format);
+  bool EnsureUploadBuffer(uint64_t size);
+
+  // Fill |input_texture_| from |frame| and queue the upload on
+  // |copy_command_queue_|, without executing it. |dxgi_format| is the encoder
+  // input format; the bi-planar overload takes the VideoPixelFormat it
+  // corresponds to, the packed one the format the frame is converted to before
+  // being interleaved. Return false if an error was encountered.
+  bool UploadBiPlanarVideoFrame(const VideoFrame& frame,
+                                DXGI_FORMAT dxgi_format,
+                                VideoPixelFormat pixel_format);
+  bool UploadPackedVideoFrame(const VideoFrame& frame,
+                              DXGI_FORMAT dxgi_format,
+                              VideoPixelFormat source_format);
 
   void EncodeTask(scoped_refptr<VideoFrame> frame,
                   const VideoEncoder::EncodeOptions& options);
@@ -238,6 +274,18 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAccelerator
   Microsoft::WRL::ComPtr<ID3D12Resource> upload_buffer_
       GUARDED_BY_CONTEXT(encoder_sequence_checker_);
   Microsoft::WRL::ComPtr<ID3D12Resource> input_texture_
+      GUARDED_BY_CONTEXT(encoder_sequence_checker_);
+
+  // Staging frame the input is converted into before being interleaved into a
+  // packed encoder input format. Unused for bi-planar input formats, which are
+  // converted straight into |upload_buffer_|.
+  scoped_refptr<VideoFrame> packing_source_frame_
+      GUARDED_BY_CONTEXT(encoder_sequence_checker_);
+
+  // Packs |packing_source_frame_| into the packed encoder input formats. Owns
+  // the scratch space the interleaves need, so packing does not allocate per
+  // frame.
+  DXGIFramePacker packed_dxgi_packer_
       GUARDED_BY_CONTEXT(encoder_sequence_checker_);
 
   // Cache for shared handle to D3D12Resource mapping when caching is enabled.

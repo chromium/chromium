@@ -8,11 +8,16 @@
 
 #include <algorithm>
 #include <ranges>
+#include <utility>
 
+#include "base/bits.h"
 #include "base/check_is_test.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
+#include "base/numerics/checked_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -28,6 +33,7 @@
 #include "gpu/ipc/service/shared_image_stub.h"
 #include "media/base/encoder_status.h"
 #include "media/base/media_switches.h"
+#include "media/base/video_types.h"
 #include "media/base/video_util.h"
 #include "media/gpu/command_buffer_helper.h"
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
@@ -35,6 +41,7 @@
 #include "media/gpu/windows/d3d12_video_encode_av1_delegate.h"
 #include "media/gpu/windows/d3d12_video_encode_delegate.h"
 #include "media/gpu/windows/d3d12_video_encode_h264_delegate.h"
+#include "media/gpu/windows/packed_yuv_utils.h"
 #include "third_party/microsoft_dxheaders/src/include/directx/d3dx12_core.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
 
@@ -79,6 +86,26 @@ std::string GetEncoderStatusHistogramName(VideoCodecProfile profile) {
   return base::StrCat(
       {kEncoderStatusHistogramPrefix,
        GetCodecNameForUMA(VideoCodecProfileToVideoCodec(profile))});
+}
+
+// DXGI offers bi-planar formats only for 4:2:0; the 4:2:2 and 4:4:4 encoder
+// inputs (Y210/Y410 for HEVC RExt, AYUV for AV1 High) are packed single-plane
+// layouts. The two are uploaded differently: a bi-planar frame is converted
+// straight into the mapped upload buffer, while a packed one is converted to
+// the planar or bi-planar format of matching geometry first and then
+// interleaved by DXGIFramePacker. See packed_yuv_utils.h.
+
+// Returns the VideoPixelFormat matching bi-planar |encoder_input_format|, or
+// PIXEL_FORMAT_UNKNOWN if it is not a bi-planar format handled here.
+VideoPixelFormat GetBiPlanarUploadFormat(DXGI_FORMAT encoder_input_format) {
+  switch (encoder_input_format) {
+    case DXGI_FORMAT_NV12:  // 8 bit 4:2:0.
+      return PIXEL_FORMAT_NV12;
+    case DXGI_FORMAT_P010:  // 10 bit 4:2:0.
+      return PIXEL_FORMAT_P010LE;
+    default:
+      return PIXEL_FORMAT_UNKNOWN;
+  }
 }
 
 #define RETURN_ON_FAILURE_WITH_CALLBACK(hr, message)                       \
@@ -304,7 +331,64 @@ void D3D12GenerateResourceFromSharedImageVideoFrame(
                      std::move(frame_available_cb)));
 }
 
+bool ProfileMatchesConfig(
+    const VideoEncodeAccelerator::SupportedProfile& profile,
+    const VideoEncodeAccelerator::Config& config) {
+  if (profile.profile != config.output_profile) {
+    return false;
+  }
+  if (profile.chroma_sampling.has_value() &&
+      profile.chroma_sampling !=
+          VideoPixelFormatToChromaSampling(config.input_format)) {
+    return false;
+  }
+  if (profile.bit_depth.has_value() &&
+      profile.bit_depth !=
+          base::checked_cast<uint8_t>(BitDepth(config.input_format))) {
+    return false;
+  }
+  return true;
+}
+
+bool IsVisibleRectOriginChromaAligned(const VideoFrame& frame) {
+  switch (VideoPixelFormatToChromaSampling(frame.format())) {
+    case VideoChromaSampling::k420:
+      return frame.visible_rect().x() % 2 == 0 &&
+             frame.visible_rect().y() % 2 == 0;
+    case VideoChromaSampling::k422:
+      return frame.visible_rect().x() % 2 == 0;
+    // 4:4:4, luma-only and RGB formats have no subsampling.
+    case VideoChromaSampling::k444:
+    case VideoChromaSampling::k400:
+    case VideoChromaSampling::kUnknown:
+      return true;
+  }
+  NOTREACHED();
+}
+
 }  // namespace
+
+BiPlanarUploadLayout GetBiPlanarUploadLayout(VideoPixelFormat format,
+                                             const gfx::Size& size) {
+  // PlaneSize() returns samples, not bytes, so compute the row counts and row
+  // bytes via Rows() and RowBytes(), which are byte-based and therefore
+  // correct for 10-bit formats.
+  const size_t y_row_bytes =
+      VideoFrame::RowBytes(VideoFrame::Plane::kY, format, size.width());
+  const size_t uv_row_bytes =
+      VideoFrame::RowBytes(VideoFrame::Plane::kUV, format, size.width());
+  const size_t y_rows =
+      VideoFrame::Rows(VideoFrame::Plane::kY, format, size.height());
+  const size_t uv_rows =
+      VideoFrame::Rows(VideoFrame::Plane::kUV, format, size.height());
+  const size_t y_pitch = base::bits::AlignUp(
+      y_row_bytes, size_t{D3D12_TEXTURE_DATA_PITCH_ALIGNMENT});
+  const size_t uv_pitch = base::bits::AlignUp(
+      uv_row_bytes, size_t{D3D12_TEXTURE_DATA_PITCH_ALIGNMENT});
+  const size_t uv_offset = base::bits::AlignUp(
+      y_pitch * y_rows, size_t{D3D12_TEXTURE_DATA_PLACEMENT_ALIGNMENT});
+  return {y_pitch, uv_pitch, uv_offset, uv_offset + uv_pitch * uv_rows};
+}
 
 struct D3D12VideoEncodeAccelerator::InputFrameRef {
   InputFrameRef(scoped_refptr<VideoFrame> frame,
@@ -460,9 +544,6 @@ EncoderStatus D3D12VideoEncodeAccelerator::Initialize(
            << config.AsHumanReadableString();
 
   config_ = config;
-  bitstream_buffer_size_ = EstimateBitstreamBufferSize(
-      config.bitrate, config.framerate, config.input_format,
-      config.input_visible_size);
   client_ptr_factory_ = std::make_unique<base::WeakPtrFactory<Client>>(client);
   client_ = client_ptr_factory_->GetWeakPtr();
   media_log_ = std::move(media_log);
@@ -490,8 +571,10 @@ EncoderStatus D3D12VideoEncodeAccelerator::Initialize(
   }
 
   SupportedProfiles profiles = GetSupportedProfiles();
-  auto profile = std::ranges::find(profiles, config.output_profile,
-                                   &SupportedProfile::profile);
+  auto profile =
+      std::ranges::find_if(profiles, [&config](const auto& candidate) {
+        return ProfileMatchesConfig(candidate, config);
+      });
   if (profile == std::ranges::end(profiles)) {
     MEDIA_LOG(ERROR, media_log_) << "Unsupported output profile "
                                  << GetProfileName(config.output_profile);
@@ -631,6 +714,12 @@ void D3D12VideoEncodeAccelerator::InitializeTask(
     return NotifyError(status);
   }
 
+  // Take the size the delegate sized its bitstream buffer against, so the
+  // capacity advertised to the client and the encoder's own buffer cannot
+  // disagree.
+  bitstream_buffer_size_ =
+      base::checked_cast<size_t>(encoder_->GetMinBitstreamBufferSize());
+
   size_t num_of_manual_reference_buffers =
       encoder_->GetMaxNumOfManualRefBuffers();
   if (config.manual_reference_buffer_control &&
@@ -651,8 +740,10 @@ void D3D12VideoEncodeAccelerator::InitializeTask(
   encoder_info_.number_of_manual_reference_buffers =
       num_of_manual_reference_buffers;
 
-  auto profile_it = std::ranges::find(profiles, config.output_profile,
-                                      &SupportedProfile::profile);
+  auto profile_it =
+      std::ranges::find_if(profiles, [&config](const auto& candidate) {
+        return ProfileMatchesConfig(candidate, config);
+      });
   if (profile_it != std::ranges::end(profiles)) {
     encoder_info_.gpu_supported_pixel_formats =
         profile_it->gpu_supported_pixel_formats;
@@ -755,6 +846,203 @@ D3D12VideoEncodeAccelerator::CreateResourceForDXGIHandleBackedVideoFrame(
   return input_texture;
 }
 
+bool D3D12VideoEncodeAccelerator::EnsureInputTexture(DXGI_FORMAT format) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
+  D3D12_RESOURCE_DESC input_texture_desc =
+      CD3DX12_RESOURCE_DESC::Tex2D(format, config_.input_visible_size.width(),
+                                   config_.input_visible_size.height(), 1, 1);
+  // The format is part of the reuse predicate: a cached texture of a different
+  // format cannot receive this frame even when it is large enough.
+  if (input_texture_ && input_texture_->GetDesc().Format == format &&
+      input_texture_->GetDesc().Width >= input_texture_desc.Width &&
+      input_texture_->GetDesc().Height >= input_texture_desc.Height) {
+    return true;
+  }
+  HRESULT hr = device_->CreateCommittedResource(
+      &D3D12HeapProperties::kDefault, D3D12_HEAP_FLAG_NONE, &input_texture_desc,
+      D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(&input_texture_));
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed to CreateCommittedResource for input_texture";
+    return false;
+  }
+  std::wstring debug_name = base::UTF8ToWide(base::StringPrintf(
+      "D3D12VEA input_texture_ %dx%d", config_.input_visible_size.width(),
+      config_.input_visible_size.height()));
+  CHECK_EQ(input_texture_->SetName(debug_name.c_str()), S_OK);
+  return true;
+}
+
+bool D3D12VideoEncodeAccelerator::EnsureUploadBuffer(uint64_t size) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
+  D3D12_RESOURCE_DESC upload_buffer_desc = CD3DX12_RESOURCE_DESC::Buffer(size);
+  if (upload_buffer_ &&
+      upload_buffer_->GetDesc().Width >= upload_buffer_desc.Width) {
+    return true;
+  }
+  HRESULT hr = device_->CreateCommittedResource(
+      &D3D12HeapProperties::kUpload, D3D12_HEAP_FLAG_NONE, &upload_buffer_desc,
+      D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
+      IID_PPV_ARGS(&upload_buffer_));
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed to CreateCommittedResource for upload_buffer";
+    return false;
+  }
+  std::wstring debug_name = base::UTF8ToWide(base::StringPrintf(
+      "D3D12VEA upload_buffer_ %dx%d", config_.input_visible_size.width(),
+      config_.input_visible_size.height()));
+  CHECK_EQ(upload_buffer_->SetName(debug_name.c_str()), S_OK);
+  return true;
+}
+
+bool D3D12VideoEncodeAccelerator::UploadBiPlanarVideoFrame(
+    const VideoFrame& frame,
+    DXGI_FORMAT dxgi_format,
+    VideoPixelFormat pixel_format) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
+  if (!EnsureInputTexture(dxgi_format)) {
+    return false;
+  }
+
+  const BiPlanarUploadLayout layout =
+      GetBiPlanarUploadLayout(pixel_format, config_.input_visible_size);
+
+  if (!EnsureUploadBuffer(layout.buffer_size)) {
+    return false;
+  }
+
+  {
+    ScopedD3D12ResourceMap map;
+    if (!map.Map(upload_buffer_.Get())) {
+      LOG(ERROR) << "Failed to map upload_buffer";
+      return false;
+    }
+    scoped_refptr<VideoFrame> upload_frame = VideoFrame::WrapExternalYuvData(
+        pixel_format, config_.input_visible_size,
+        gfx::Rect(config_.input_visible_size), config_.input_visible_size,
+        base::checked_cast<int>(layout.y_pitch),
+        base::checked_cast<int>(layout.uv_pitch),
+        map.data().first(layout.uv_offset),
+        map.data().subspan(layout.uv_offset), frame.timestamp());
+    EncoderStatus result =
+        frame_converter_.ConvertAndScale(frame, *upload_frame);
+    if (!result.is_ok()) {
+      LOG(ERROR) << "Failed to ConvertAndScale frame: " << result.message();
+      return false;
+    }
+  }
+
+  if (!copy_command_queue_->CopyBufferToBiPlanarTexture(
+          input_texture_.Get(), upload_buffer_.Get(),
+          config_.input_visible_size, 0,
+          base::checked_cast<uint32_t>(layout.y_pitch),
+          base::checked_cast<uint32_t>(layout.uv_offset),
+          base::checked_cast<uint32_t>(layout.uv_pitch))) {
+    LOG(ERROR) << "Failed to CopyBufferToBiPlanarTexture";
+    return false;
+  }
+  return true;
+}
+
+bool D3D12VideoEncodeAccelerator::UploadPackedVideoFrame(
+    const VideoFrame& frame,
+    DXGI_FORMAT dxgi_format,
+    VideoPixelFormat source_format) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
+  if (!EnsureInputTexture(dxgi_format)) {
+    return false;
+  }
+
+  const size_t row_bytes =
+      GetPackedDxgiRowBytes(dxgi_format, config_.input_visible_size.width());
+  if (row_bytes == 0) {
+    LOG(ERROR) << "Unsupported packed encoder input format";
+    return false;
+  }
+  // CopyTextureRegion() reads the buffer as a placed footprint, whose row pitch
+  // must be D3D12_TEXTURE_DATA_PITCH_ALIGNMENT aligned.
+  const size_t row_pitch = base::bits::AlignUp(
+      row_bytes, size_t{D3D12_TEXTURE_DATA_PITCH_ALIGNMENT});
+  const size_t height =
+      base::checked_cast<size_t>(config_.input_visible_size.height());
+  const base::CheckedNumeric<size_t> buffer_size =
+      base::CheckMul(row_pitch, height);
+  if (!buffer_size.IsValid()) {
+    LOG(ERROR) << "Upload buffer size overflowed";
+    return false;
+  }
+  if (!EnsureUploadBuffer(buffer_size.ValueOrDie())) {
+    return false;
+  }
+
+  // DXGIFramePacker interleaves from a planar or bi-planar frame, which is
+  // what VideoFrameConverter can produce. A frame already in the source
+  // format and the target geometry is packed directly; otherwise convert
+  // into the staging frame, which is retained across frames to keep the
+  // encode path free of per-frame allocations. Compare against the visible
+  // size rather than the coded size, which VideoFrame pads to the format's
+  // sample boundaries.
+  const VideoFrame* pack_source_frame = &frame;
+  if (frame.format() != source_format ||
+      frame.visible_rect().size() != config_.input_visible_size) {
+    if (!packing_source_frame_ ||
+        packing_source_frame_->format() != source_format ||
+        packing_source_frame_->visible_rect().size() !=
+            config_.input_visible_size) {
+      packing_source_frame_ = VideoFrame::CreateZeroInitializedFrame(
+          source_format, config_.input_visible_size,
+          gfx::Rect(config_.input_visible_size), config_.input_visible_size,
+          base::TimeDelta());
+      if (!packing_source_frame_) {
+        LOG(ERROR) << "Failed to allocate packing source frame";
+        return false;
+      }
+    }
+
+    EncoderStatus result =
+        frame_converter_.ConvertAndScale(frame, *packing_source_frame_);
+    if (!result.is_ok()) {
+      LOG(ERROR) << "Failed to ConvertAndScale frame: " << result.message();
+      return false;
+    }
+    pack_source_frame = packing_source_frame_.get();
+  }
+
+  {
+    ScopedD3D12ResourceMap map;
+    if (!map.Map(upload_buffer_.Get())) {
+      LOG(ERROR) << "Failed to map upload_buffer";
+      return false;
+    }
+    if (!packed_dxgi_packer_.Pack(*pack_source_frame, dxgi_format, map.data(),
+                                  row_pitch)) {
+      LOG(ERROR) << "Failed to pack frame into the encoder input format";
+      return false;
+    }
+  }
+
+  if (!copy_command_queue_->CopyTextureRegion(
+          {.pResource = input_texture_.Get(),
+           .Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX,
+           .SubresourceIndex = 0},
+          0, 0, 0,
+          {.pResource = upload_buffer_.Get(),
+           .Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT,
+           .PlacedFootprint = {
+               .Offset = 0,
+               .Footprint = {
+                   .Format = dxgi_format,
+                   .Width = base::checked_cast<UINT>(
+                       config_.input_visible_size.width()),
+                   .Height = base::checked_cast<UINT>(
+                       config_.input_visible_size.height()),
+                   .Depth = 1,
+                   .RowPitch = base::checked_cast<UINT>(row_pitch)}}})) {
+    LOG(ERROR) << "Failed to copy packed frame into input_texture";
+    return false;
+  }
+  return true;
+}
+
 D3D12PictureBuffer
 D3D12VideoEncodeAccelerator::CreateResourceForSharedMemoryVideoFrame(
     const VideoFrame& frame) {
@@ -765,74 +1053,30 @@ D3D12VideoEncodeAccelerator::CreateResourceForSharedMemoryVideoFrame(
     return {};
   }
   CHECK(frame.HasDirectCpuAccess());
-
-  D3D12_RESOURCE_DESC input_texture_desc = CD3DX12_RESOURCE_DESC::Tex2D(
-      DXGI_FORMAT_NV12, config_.input_visible_size.width(),
-      config_.input_visible_size.height(), 1, 1);
-  if (!input_texture_ ||
-      input_texture_->GetDesc().Width < input_texture_desc.Width ||
-      input_texture_->GetDesc().Height < input_texture_desc.Height) {
-    HRESULT hr = device_->CreateCommittedResource(
-        &D3D12HeapProperties::kDefault, D3D12_HEAP_FLAG_NONE,
-        &input_texture_desc, D3D12_RESOURCE_STATE_COMMON, nullptr,
-        IID_PPV_ARGS(&input_texture_));
-    if (FAILED(hr)) {
-      LOG(ERROR) << "Failed to CreateCommittedResource for input_texture";
-      return {};
-    }
-    std::wstring debug_name = base::UTF8ToWide(base::StringPrintf(
-        "D3D12VEA input_texture_ %dx%d", config_.input_visible_size.width(),
-        config_.input_visible_size.height()));
-    CHECK_EQ(input_texture_->SetName(debug_name.c_str()), S_OK);
+  if (!IsVisibleRectOriginChromaAligned(frame)) {
+    LOG(ERROR) << "Frame visible rect origin is not aligned to the chroma "
+                  "subsampling of its format";
+    return {};
   }
 
-  gfx::Size y_size = VideoFrame::PlaneSize(
-      PIXEL_FORMAT_NV12, VideoFrame::Plane::kY, config_.input_visible_size);
-  gfx::Size uv_size = VideoFrame::PlaneSize(
-      PIXEL_FORMAT_NV12, VideoFrame::Plane::kUV, config_.input_visible_size);
-  uint32_t uv_offset = y_size.GetArea();
-
-  D3D12_RESOURCE_DESC upload_buffer_desc =
-      CD3DX12_RESOURCE_DESC::Buffer(uv_offset + uv_size.GetArea());
-  if (!upload_buffer_ ||
-      upload_buffer_->GetDesc().Width < upload_buffer_desc.Width) {
-    HRESULT hr = device_->CreateCommittedResource(
-        &D3D12HeapProperties::kUpload, D3D12_HEAP_FLAG_NONE,
-        &upload_buffer_desc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
-        IID_PPV_ARGS(&upload_buffer_));
-    if (FAILED(hr)) {
-      LOG(ERROR) << "Failed to CreateCommittedResource for upload_buffer";
-      return {};
-    }
-    std::wstring debug_name = base::UTF8ToWide(base::StringPrintf(
-        "D3D12VEA upload_buffer_ %dx%d", config_.input_visible_size.width(),
-        config_.input_visible_size.height()));
-    CHECK_EQ(upload_buffer_->SetName(debug_name.c_str()), S_OK);
+  // Upload in the encoder's own input format so the delegate's video processor
+  // pass is skipped entirely, and so packed 4:2:2/4:4:4 inputs keep their
+  // chroma resolution instead of going through a 4:2:0 intermediate.
+  const DXGI_FORMAT dxgi_format = encoder_->GetInputFormat();
+  bool uploaded = false;
+  if (const VideoPixelFormat packed_source_format =
+          GetPackedDxgiSourceFormat(dxgi_format);
+      packed_source_format != PIXEL_FORMAT_UNKNOWN) {
+    uploaded = UploadPackedVideoFrame(frame, dxgi_format, packed_source_format);
+  } else if (const VideoPixelFormat bi_planar_format =
+                 GetBiPlanarUploadFormat(dxgi_format);
+             bi_planar_format != PIXEL_FORMAT_UNKNOWN) {
+    uploaded = UploadBiPlanarVideoFrame(frame, dxgi_format, bi_planar_format);
+  } else {
+    LOG(ERROR) << "Unsupported encoder input format for shared memory upload";
+    return {};
   }
-
-  {
-    ScopedD3D12ResourceMap map;
-    if (!map.Map(upload_buffer_.Get())) {
-      LOG(ERROR) << "Failed to map upload_buffer";
-      return {};
-    }
-    scoped_refptr<VideoFrame> upload_frame = VideoFrame::WrapExternalYuvData(
-        PIXEL_FORMAT_NV12, config_.input_visible_size,
-        gfx::Rect(config_.input_visible_size), config_.input_visible_size,
-        y_size.width(), uv_size.width(), map.data().first(uv_offset),
-        map.data().subspan(uv_offset), frame.timestamp());
-    EncoderStatus result =
-        frame_converter_.ConvertAndScale(frame, *upload_frame);
-    if (!result.is_ok()) {
-      LOG(ERROR) << "Failed to ConvertAndScale frame: " << result.message();
-      return {};
-    }
-  }
-
-  if (!copy_command_queue_->CopyBufferToNV12Texture(
-          input_texture_.Get(), upload_buffer_.Get(), 0, y_size.width(),
-          uv_offset, uv_size.width())) {
-    LOG(ERROR) << "Failed to CopyBufferToNV12Texture";
+  if (!uploaded) {
     return {};
   }
 
