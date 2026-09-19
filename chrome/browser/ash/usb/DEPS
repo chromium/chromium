@@ -18,8 +18,9 @@ include_rules = [
   "+chrome/browser/ash/bruschetta",
   "+chrome/browser/ash/crostini",
   "+chrome/browser/ash/guest_os",
-  "+chrome/browser/notifications",
   "+chrome/browser/profiles",
   "+chrome/grit",
   "+chrome/test/base",
+
+  "+ui/message_center/message_center.h",
 ]

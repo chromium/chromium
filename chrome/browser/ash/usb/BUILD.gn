@@ -36,7 +36,6 @@ static_library("usb") {
     "//chrome/browser/ash/bruschetta",
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/guest_os",
-    "//chrome/browser/notifications:system_notification_helper",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/ui/webui/ash/settings/pages/crostini",
     "//chromeos/ash/components/browser_context_helper",
@@ -45,6 +44,7 @@ static_library("usb") {
     "//chromeos/constants",
     "//components/vector_icons",
     "//services/device/public/cpp/usb",
+    "//ui/message_center",
   ]
 
   allow_circular_includes_from =
@@ -63,7 +63,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/bruschetta",
     "//chrome/browser/ash/crostini:test_support",
     "//chrome/browser/ash/guest_os",
-    "//chrome/browser/notifications:system_notification_helper",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/chunneld",
     "//chromeos/ash/components/dbus/seneschal",
