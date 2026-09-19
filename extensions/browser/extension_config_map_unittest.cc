@@ -115,4 +115,20 @@ TEST_F(ExtensionConfigMapTest, GetConfigProvider) {
   EXPECT_EQ(nullptr, config_map()->GetConfigProvider(*non_component_extension));
 }
 
+TEST_F(ExtensionConfigMapTest, IsUnboundedElementAllowed) {
+  const ExtensionId extension_id = "test_extension_id";
+  EXPECT_FALSE(config_map()->IsUnboundedElementAllowed(extension_id));
+
+  class UnboundedAllowedConfigProvider : public ExtensionConfigProvider {
+   public:
+    explicit UnboundedAllowedConfigProvider(ExtensionId id)
+        : ExtensionConfigProvider(std::move(id)) {}
+    bool IsUnboundedElementAllowed() const override { return true; }
+  };
+
+  config_map()->RegisterConfigProvider(
+      std::make_unique<UnboundedAllowedConfigProvider>(extension_id));
+  EXPECT_TRUE(config_map()->IsUnboundedElementAllowed(extension_id));
+}
+
 }  // namespace extensions

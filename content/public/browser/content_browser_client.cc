@@ -804,6 +804,11 @@ bool ContentBrowserClient::IsPopupBypassAllowed(
   return false;
 }
 
+bool ContentBrowserClient::IsUnboundedElementAllowed(
+    RenderFrameHost* render_frame_host) {
+  return false;
+}
+
 bool ContentBrowserClient::CanCreateWindow(
     RenderFrameHost* opener,
     const GURL& opener_url,

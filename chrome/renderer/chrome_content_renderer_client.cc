@@ -1287,6 +1287,22 @@ bool ChromeContentRendererClient::AllowPopup() {
 #endif
 }
 
+bool ChromeContentRendererClient::IsUnboundedElementAllowed(
+    content::RenderFrame* render_frame) {
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  if (render_frame && render_frame->GetWebFrame()) {
+    const blink::WebSecurityOrigin origin =
+        render_frame->GetWebFrame()->GetSecurityOrigin();
+    if (!origin.IsNull() &&
+        origin.Protocol().Equals(extensions::kExtensionScheme) &&
+        origin.Host().Equals(extension_misc::kContextualTasksExtensionId)) {
+      return true;
+    }
+  }
+#endif
+  return false;
+}
+
 bool ChromeContentRendererClient::ShouldNotifyServiceWorkerOnWebSocketActivity(
     v8::Local<v8::Context> context) {
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)

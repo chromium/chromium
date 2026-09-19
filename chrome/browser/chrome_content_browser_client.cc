@@ -669,6 +669,8 @@
 #include "chrome/browser/extensions/chrome_extension_cookies.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
+#include "extensions/browser/extension_config_map.h"
+#include "extensions/browser/extension_config_map_factory.h"
 #include "extensions/browser/extension_mojo_binder_registry.h"
 #include "extensions/browser/extension_mojo_binder_registry_factory.h"
 #include "extensions/browser/extension_protocols.h"
@@ -4375,6 +4377,20 @@ bool ChromeContentBrowserClient::IsPopupBypassAllowed(
     base::UmaHistogramEnumeration("Security.PopupBypassAllowedType",
                                   PopupBypassType::kContentScript);
     return true;
+  }
+#endif
+  return false;
+}
+
+bool ChromeContentBrowserClient::IsUnboundedElementAllowed(
+    content::RenderFrameHost* render_frame_host) {
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  const url::Origin& origin = render_frame_host->GetLastCommittedOrigin();
+  if (origin.scheme() == extensions::kExtensionScheme) {
+    auto* config_map =
+        extensions::ExtensionConfigMapFactory::GetForBrowserContext(
+            render_frame_host->GetBrowserContext());
+    return config_map && config_map->IsUnboundedElementAllowed(origin.host());
   }
 #endif
   return false;

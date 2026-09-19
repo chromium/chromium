@@ -45,4 +45,8 @@ bool ContextualTasksExtensionConfigProvider::
   return true;
 }
 
+bool ContextualTasksExtensionConfigProvider::IsUnboundedElementAllowed() const {
+  return true;
+}
+
 }  // namespace contextual_tasks

@@ -66,8 +66,9 @@ class CORE_EXPORT ContextFeatureSettings final
       const ExecutionContext* context);
 
   // ContextEnabled=UnboundedElement
-  void EnableUnboundedElement(bool enable) {
-    enable_unbounded_element_ = enable;
+  void EnableUnboundedElement(bool is_privileged = false) {
+    enable_unbounded_element_ = true;
+    enable_unbounded_element_privileged_ = is_privileged;
   }
   bool isUnboundedElementEnabled() const;
 
@@ -78,6 +79,7 @@ class CORE_EXPORT ContextFeatureSettings final
   bool enable_mojo_js_file_system_access_helper_ = false;
   bool enable_private_aggregation_in_shared_storage_ = false;
   bool enable_unbounded_element_ = false;
+  bool enable_unbounded_element_privileged_ = false;
 };
 
 }  // namespace blink

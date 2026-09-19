@@ -4967,16 +4967,19 @@ void RenderFrameImpl::DidCreateScriptContext(v8::Local<v8::Context> context,
 
   if (world_id == ISOLATED_WORLD_ID_GLOBAL &&
       base::FeatureList::IsEnabled(blink::features::kUnboundedElement)) {
-    bool is_unbounded_allowed =
-        base::FeatureList::IsEnabled(
-            blink::features::kUnboundedElementOnTheOpenWeb) ||
+    bool is_privileged =
         enabled_bindings_.Has(BindingsPolicyValue::kWebUi) ||
         (GetWebFrame() && !GetWebFrame()->GetSecurityOrigin().IsNull() &&
          GetWebFrame()->GetSecurityOrigin().IsWebUI() &&
          GetWebFrame()->GetSecurityOrigin().Protocol() !=
-             kChromeUIUntrustedScheme);
+             kChromeUIUntrustedScheme) ||
+        GetContentClient()->renderer()->IsUnboundedElementAllowed(this);
+    bool is_unbounded_allowed =
+        base::FeatureList::IsEnabled(
+            blink::features::kUnboundedElementOnTheOpenWeb) ||
+        is_privileged;
     if (is_unbounded_allowed) {
-      blink::WebV8Features::EnableUnboundedElement(context, true);
+      blink::WebV8Features::EnableUnboundedElement(context, is_privileged);
     }
   }
 

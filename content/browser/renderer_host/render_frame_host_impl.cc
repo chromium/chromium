@@ -11532,15 +11532,19 @@ void RenderFrameHostImpl::InitializeCrashReportContext(
 // - ContextFeatureSettings::GetUnboundedElementAuth (renderer side)
 //
 // Permissions require UnboundedElement to be enabled AND either:
-// 1) UnboundedElementOnTheOpenWeb is enabled, or
-// 2) The context/origin is a privileged WebUI scheme (or has WebUI bindings).
+// - UnboundedElementOnTheOpenWeb is enabled,
+// - The context/origin is a privileged WebUI scheme (or has WebUI bindings), or
+// - The embedder explicitly authorizes the frame via
+//   ContentBrowserClient::IsUnboundedElementAllowed.
 RenderFrameHostImpl::UnboundedElementAuth
 RenderFrameHostImpl::GetUnboundedElementAuth() const {
   if (!base::FeatureList::IsEnabled(blink::features::kUnboundedElement)) {
     return UnboundedElementAuth::kDenied;
   }
   if (GetLastCommittedOrigin().scheme() != kChromeUIUntrustedScheme &&
-      (web_ui() != nullptr || HasWebUIOrigin(GetLastCommittedOrigin()))) {
+      (web_ui() != nullptr || HasWebUIOrigin(GetLastCommittedOrigin()) ||
+       GetContentClient()->browser()->IsUnboundedElementAllowed(
+           const_cast<RenderFrameHostImpl*>(this)))) {
     return UnboundedElementAuth::kAllowedPrivileged;
   }
   if (base::FeatureList::IsEnabled(

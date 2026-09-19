@@ -129,6 +129,11 @@ bool ContentRendererClient::AllowPopup() {
   return false;
 }
 
+bool ContentRendererClient::IsUnboundedElementAllowed(
+    RenderFrame* render_frame) {
+  return false;
+}
+
 bool ContentRendererClient::ShouldNotifyServiceWorkerOnWebSocketActivity(
     v8::Local<v8::Context> context) {
   return false;

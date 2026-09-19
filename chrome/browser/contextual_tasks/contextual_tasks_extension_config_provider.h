@@ -25,6 +25,7 @@ class ContextualTasksExtensionConfigProvider
   base::DictValue GetLoadTimeData(content::BrowserContext& context) override;
   bool IsJsErrorReportingEnabled() const override;
   bool ShouldCrashOnJsErrorInDevelopmentBuild() const override;
+  bool IsUnboundedElementAllowed() const override;
 };
 
 }  // namespace contextual_tasks

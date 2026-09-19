@@ -61,6 +61,10 @@ bool ExtensionConfigProvider::ShouldCrashOnJsErrorInDevelopmentBuild() const {
   return false;
 }
 
+bool ExtensionConfigProvider::IsUnboundedElementAllowed() const {
+  return false;
+}
+
 ExtensionConfigMap::ExtensionConfigMap() = default;
 
 ExtensionConfigMap::~ExtensionConfigMap() = default;
@@ -89,6 +93,13 @@ ExtensionConfigProvider* ExtensionConfigMap::GetConfigProvider(
     const ExtensionId& extension_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return base::FindPtrOrNull(providers_, extension_id);
+}
+
+bool ExtensionConfigMap::IsUnboundedElementAllowed(
+    const ExtensionId& extension_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto* provider = GetConfigProvider(extension_id);
+  return provider && provider->IsUnboundedElementAllowed();
 }
 
 void ExtensionConfigMap::ClearProvidersForTesting() {

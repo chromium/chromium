@@ -95,7 +95,7 @@ void WebV8Features::EnableMojoJSFileSystemAccessHelper(
 
 // static
 void WebV8Features::EnableUnboundedElement(v8::Local<v8::Context> context,
-                                           bool enable) {
+                                           bool is_privileged) {
   ExecutionContext* execution_context = ExecutionContext::From(context);
   if (!execution_context) {
     return;
@@ -103,7 +103,7 @@ void WebV8Features::EnableUnboundedElement(v8::Local<v8::Context> context,
   ContextFeatureSettings::From(
       execution_context,
       ContextFeatureSettings::CreationMode::kCreateIfNotExists)
-      ->EnableUnboundedElement(enable);
+      ->EnableUnboundedElement(is_privileged);
 }
 
 // static

@@ -62,6 +62,10 @@ class ExtensionConfigProvider {
   // development builds for early detection in test/local environments.
   virtual bool ShouldCrashOnJsErrorInDevelopmentBuild() const;
 
+  // Returns true if this extension is allowed to use the Unbounded Element API.
+  // Defaults to false.
+  virtual bool IsUnboundedElementAllowed() const;
+
  private:
   const ExtensionId extension_id_;
   std::optional<ui::TemplateReplacements> template_replacements_;
@@ -91,6 +95,10 @@ class ExtensionConfigMap : public KeyedService {
   // Returns the ExtensionConfigProvider registered for `extension_id`, or
   // nullptr if no provider is registered.
   ExtensionConfigProvider* GetConfigProvider(const ExtensionId& extension_id);
+
+  // Returns true if the extension with `extension_id` is allowed to use the
+  // Unbounded Element API.
+  bool IsUnboundedElementAllowed(const ExtensionId& extension_id);
 
   void ClearProvidersForTesting();
 

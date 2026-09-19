@@ -190,6 +190,7 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/test/test_renderer_host.h"
@@ -203,6 +204,8 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/test/test_renderer_host.h"
+#include "extensions/browser/extension_config_map.h"
+#include "extensions/browser/extension_config_map_factory.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/script_injection_tracker.h"
@@ -2751,6 +2754,46 @@ TEST_F(ChromeContentBrowserClientMimeHandlerFilePickerTest,
           "chrome-extension://bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/viewer.html"))));
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+using ChromeContentBrowserClientUnboundedElementTest =
+    ChromeRenderViewHostTestHarness;
+
+TEST_F(ChromeContentBrowserClientUnboundedElementTest,
+       IsUnboundedElementAllowed) {
+  ChromeContentBrowserClient client;
+  NavigateAndCommit(GURL("https://example.test/page"));
+  EXPECT_FALSE(client.IsUnboundedElementAllowed(main_rfh()));
+
+  const extensions::ExtensionId kExtensionId = "test_extension_id";
+
+  content::RenderFrameHostTester::For(main_rfh())
+      ->InitializeRenderFrameIfNeeded();
+  content::RenderFrameHost* extension_rfh =
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("extension");
+  content::RenderFrameHostTester::For(extension_rfh)
+      ->InitializeRenderFrameIfNeeded();
+  content::OverrideLastCommittedOrigin(
+      extension_rfh,
+      url::Origin::Create(GURL(std::string("chrome-extension://") +
+                               kExtensionId + "/index.html")));
+
+  EXPECT_FALSE(client.IsUnboundedElementAllowed(extension_rfh));
+
+  class TestUnboundedConfigProvider
+      : public extensions::ExtensionConfigProvider {
+   public:
+    explicit TestUnboundedConfigProvider(extensions::ExtensionId id)
+        : extensions::ExtensionConfigProvider(std::move(id)) {}
+    bool IsUnboundedElementAllowed() const override { return true; }
+  };
+
+  extensions::ExtensionConfigMapFactory::GetOrCreateForBrowserContext(profile())
+      ->RegisterConfigProvider(
+          std::make_unique<TestUnboundedConfigProvider>(kExtensionId));
+  EXPECT_TRUE(client.IsUnboundedElementAllowed(extension_rfh));
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)

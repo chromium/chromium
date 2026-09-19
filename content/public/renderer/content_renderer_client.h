@@ -231,6 +231,10 @@ class CONTENT_EXPORT ContentRendererClient {
   // Returns true if a popup window should be allowed.
   virtual bool AllowPopup();
 
+  // Returns true if the given `render_frame` is allowed to use the Unbounded
+  // Element API (for example, specific component extensions).
+  virtual bool IsUnboundedElementAllowed(RenderFrame* render_frame);
+
   // Service worker may react on the activity. For example, reset the idle
   // timer.
   virtual bool ShouldNotifyServiceWorkerOnWebSocketActivity(

@@ -57,38 +57,24 @@ bool ContextFeatureSettings::isMojoJSEnabled() const {
 // - RenderFrameHostImpl::GetUnboundedElementAuth (browser side)
 // - ContextFeatureSettings::GetUnboundedElementAuth (renderer side)
 //
-// Permissions require UnboundedElement to be enabled AND either:
-// 1) UnboundedElementOnTheOpenWeb is enabled,
-// 2) The context was marked privileged (enable_unbounded_element_), or
-// 3) The context origin is a privileged WebUI scheme
-//    (SecurityOrigin::IsWebUI(), excluding chrome-untrusted).
-//
-// Note that enable_unbounded_element_ is set for WebUI contexts in
-// RenderFrameImpl, but can also be set when UnboundedElementOnTheOpenWeb is
-// enabled. Therefore, we check SecurityOrigin::IsWebUI() to distinguish
-// kAllowedPrivileged (which does not require user activation) from
-// kAllowedOpenWeb.
+// In the renderer, RenderFrameImpl::DidCreateScriptContext determines whether
+// the context is allowed to use UnboundedElement (either via open-web flag or
+// privileged WebUI/extension origin) and configures ContextFeatureSettings via
+// WebV8Features::EnableUnboundedElement(context, is_privileged).
 ContextFeatureSettings::UnboundedElementAuth
 ContextFeatureSettings::GetUnboundedElementAuth(
     const ExecutionContext* context) {
   if (!RuntimeEnabledFeatures::UnboundedElementEnabled() || !context) {
     return UnboundedElementAuth::kDenied;
   }
-  const SecurityOrigin* security_origin = context->GetSecurityOrigin();
-  bool is_privileged = security_origin && security_origin->IsWebUI() &&
-                       security_origin->Protocol() != "chrome-untrusted";
-  if (is_privileged) {
-    return UnboundedElementAuth::kAllowedPrivileged;
-  }
   const auto* settings =
       Supplement<ExecutionContext>::From<ContextFeatureSettings>(context);
-  bool is_allowed =
-      (settings && settings->enable_unbounded_element_) ||
-      RuntimeEnabledFeatures::UnboundedElementOnTheOpenWebEnabled();
-  if (is_allowed) {
-    return UnboundedElementAuth::kAllowedOpenWeb;
+  if (!settings || !settings->enable_unbounded_element_) {
+    return UnboundedElementAuth::kDenied;
   }
-  return UnboundedElementAuth::kDenied;
+  return settings->enable_unbounded_element_privileged_
+             ? UnboundedElementAuth::kAllowedPrivileged
+             : UnboundedElementAuth::kAllowedOpenWeb;
 }
 
 bool ContextFeatureSettings::isUnboundedElementEnabled() const {
