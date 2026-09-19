@@ -33,10 +33,11 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -57,9 +58,9 @@ import org.chromium.ui.base.UiAndroidFeatures;
     ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING
 })
 @Restriction(DeviceFormFactor.PHONE)
-@DisableIf.Build(sdk_is_greater_than = VERSION_CODES.R) // https://crbug.com/40215137
+@MaxAndroidSdkLevel(value = VERSION_CODES.R, reason = "https://crbug.com/40215137")
 @DisableFeatures(UiAndroidFeatures.USE_NEW_ETC1_ENCODER) // https://crbug.com/400962657
-// TODO(crbug.com/344669867): Failing when batched, batch this again.
+@Batch(Batch.PER_CLASS)
 public class TabSwitcherMultiWindowTest {
     @Rule
     public AutoResetCtaTransitTestRule mActivityTestRule =
