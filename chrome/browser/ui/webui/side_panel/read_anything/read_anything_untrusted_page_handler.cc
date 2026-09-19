@@ -137,7 +137,11 @@ class ReadAnythingUntrustedPageHandler::DomDistillerDelegate
 
   // Cancels an in-flight distillation request, if any. Resetting the handle
   // removes this delegate as an observer, so OnArticleReady() is not called.
-  void CancelDistillation() { viewer_handle_.reset(); }
+  void CancelDistillation() {
+    viewer_handle_.reset();
+    // Cleared so it is never attributed to a later distillation.
+    start_time_ = base::TimeTicks();
+  }
 
   // dom_distiller::ViewRequestDelegate:
   void OnArticleReady(
@@ -1245,7 +1249,6 @@ void ReadAnythingUntrustedPageHandler::RequestReadabilityDistillation(
   if (!features::IsReadAnythingWithReadabilityEnabled()) {
     return;
   }
-  readability_distillation_tree_change_start_time_ = base::TimeTicks();
 
   // Tree changes reset this state in OnActiveAXTreeIDChanged(), but
   // same-document (SPA) navigations reuse the AXTree ID, so reset here.
@@ -1265,6 +1268,9 @@ void ReadAnythingUntrustedPageHandler::ResetReadabilityState() {
   if (distiller_delegate_) {
     distiller_delegate_->CancelDistillation();
   }
+  dom_distiller_title_.reset();
+  dom_distiller_content_.reset();
+  readability_distillation_tree_change_start_time_ = base::TimeTicks();
 }
 
 void ReadAnythingUntrustedPageHandler::PerformActionInTargetTree(
@@ -1676,7 +1682,8 @@ bool ReadAnythingUntrustedPageHandler::RequestDomDistillerDistillation(
     content::WebContents* content) {
   if (!content || !features::IsReadAnythingWithReadabilityEnabled() ||
       features::IsReadAnythingReadAloudPhraseHighlightingEnabled() ||
-      is_pdf_with_frame_ || IsGoogleDocs(content->GetLastCommittedURL())) {
+      is_pdf_with_frame_ || is_waiting_for_pdf_frame_ ||
+      IsGoogleDocs(content->GetLastCommittedURL())) {
     return false;
   }
 

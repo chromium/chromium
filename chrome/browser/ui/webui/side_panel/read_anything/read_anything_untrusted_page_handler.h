@@ -192,6 +192,11 @@ class ReadAnythingUntrustedPageHandler :
   const std::optional<std::string>& dom_distiller_content() const {
     return dom_distiller_content_;
   }
+
+  base::TimeTicks readability_distillation_tree_change_start_time() const {
+    return readability_distillation_tree_change_start_time_;
+  }
+
   bool ack_timed_out_for_testing() const { return ack_timed_out_for_testing_; }
 
   static const int kMaxWordsDistilled = 25000;
@@ -422,8 +427,9 @@ class ReadAnythingUntrustedPageHandler :
   bool RequestDomDistillerDistillation(content::WebContents* contents);
 
   // Resets the state of the current readability distillation: resolves an
-  // outstanding RequestReadabilityDistillation callback with empty strings and
-  // cancels the in-flight DomDistiller distillation, if any.
+  // outstanding RequestReadabilityDistillation callback with empty strings,
+  // cancels the in-flight DomDistiller distillation, if any, and clears the
+  // cached article and its timing state.
   void ResetReadabilityState();
 
   // Called if IsReadAnythingWithReadabilityEnabled is enabled. Records

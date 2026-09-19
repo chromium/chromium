@@ -2581,6 +2581,31 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(received_content.empty());
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerDistillerTest,
+                       NavigationToGoogleDocs_ClearsCachedDistilledContent) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  handler_ = CreateHandler();
+
+  // Navigate to an article page and wait for distillation to complete.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/simple.html")));
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return handler_->dom_distiller_title().has_value(); }));
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return handler_->dom_distiller_content().has_value(); }));
+
+  // Navigate to Google Docs where use_readability is false.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("https://docs.google.com/document/d/123")));
+
+  // Verify that cached Readability state (title, content, and distillation
+  // start time) was cleared.
+  EXPECT_FALSE(handler_->dom_distiller_title().has_value());
+  EXPECT_FALSE(handler_->dom_distiller_content().has_value());
+  EXPECT_TRUE(
+      handler_->readability_distillation_tree_change_start_time().is_null());
+}
+
 class ReadAnythingUntrustedPageHandlerDistillerRefactorTest
     : public ReadAnythingUntrustedPageHandlerTest {
  public:
@@ -2590,6 +2615,63 @@ class ReadAnythingUntrustedPageHandlerDistillerRefactorTest
              features::kReadAnythingDistillerRefactor},
             {features::kReadAnythingReadAloudPhraseHighlighting}) {}
 };
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerDistillerRefactorTest,
+                       OnActiveAXTreeIDChanged_CancelsInFlightDistillation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  handler_ = CreateHandler();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/simple.html")));
+
+  // Start distillation and assert it is in flight: the request can only be
+  // resolved by a posted task, so the callback has not run yet.
+  base::test::TestFuture<const std::string&, const std::string&> future;
+  handler_->RequestReadabilityDistillation(future.GetCallback());
+  ASSERT_FALSE(future.IsReady());
+
+  // Calling OnActiveAXTreeIDChanged immediately without yielding to the
+  // message loop guarantees that the asynchronous distillation is in flight.
+  OnActiveAXTreeIDChanged();
+
+  // Verify the in-flight request was cancelled immediately: the pending
+  // request resolves synchronously with empty content rather than with stale
+  // content from the previous tree.
+  ASSERT_TRUE(future.IsReady());
+  auto [title, content] = future.Take();
+  EXPECT_TRUE(title.empty());
+  EXPECT_TRUE(content.empty());
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerDistillerRefactorTest,
+                       RequestReadabilityDistillation_WaitingForPdfFrame) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  handler_ = CreateHandler();
+  content::WebContents* contents = GetReadAnythingWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/simple.html")));
+
+  // Simulate identifying the page as a PDF but the PDF frame has not
+  // loaded yet.
+  extensions::mime_handler::MimeHandlerStreamManager::Create(contents);
+  handler_->OnActiveAXTreeIDChanged();
+
+  // Attempt to make a readability distillation
+  base::test::TestFuture<const std::string&, const std::string&> future;
+  handler_->RequestReadabilityDistillation(future.GetCallback());
+
+  // Because we are waiting for a PDF frame, the request resolves immediately
+  // with empty content, and no distillation is started, so the renderer falls
+  // back to Screen2x for the PDF.
+  ASSERT_TRUE(future.IsReady());
+  auto [title, content] = future.Take();
+  EXPECT_TRUE(title.empty());
+  EXPECT_TRUE(content.empty());
+  EXPECT_FALSE(handler_->dom_distiller_content().has_value());
+
+  contents->RemoveUserData(
+      extensions::mime_handler::MimeHandlerStreamManager::UserDataKey());
+}
 
 IN_PROC_BROWSER_TEST_F(
     ReadAnythingUntrustedPageHandlerDistillerRefactorTest,
