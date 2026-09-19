@@ -4,6 +4,8 @@
 
 #include "media/gpu/windows/d3d12_video_encode_h265_delegate.h"
 
+#include <ranges>
+
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
@@ -306,6 +308,43 @@ class D3D12VideoEncodeH265DelegateTest
     return config;
   }
 
+  // Mocks the feature probes that D3D12VideoEncodeDelegate::
+  // GetSupportedProfiles() runs before reaching the per-codec profile
+  // listing.
+  void SetUpBaseProfileProbes() {
+    ON_CALL(
+        *video_device3_.Get(),
+        CheckFeatureSupport(
+            D3D12_FEATURE_VIDEO_ENCODER_OUTPUT_RESOLUTION_RATIOS_COUNT, _, _))
+        .WillByDefault([](D3D12_FEATURE_VIDEO, void* data, UINT) {
+          static_cast<
+              D3D12_FEATURE_DATA_VIDEO_ENCODER_OUTPUT_RESOLUTION_RATIOS_COUNT*>(
+              data)
+              ->ResolutionRatiosCount = 1;
+          return S_OK;
+        });
+    ON_CALL(*video_device3_.Get(),
+            CheckFeatureSupport(D3D12_FEATURE_VIDEO_ENCODER_OUTPUT_RESOLUTION,
+                                _, _))
+        .WillByDefault([](D3D12_FEATURE_VIDEO, void* data, UINT) {
+          auto* output_resolution =
+              static_cast<D3D12_FEATURE_DATA_VIDEO_ENCODER_OUTPUT_RESOLUTION*>(
+                  data);
+          output_resolution->IsSupported = true;
+          output_resolution->MinResolutionSupported = {1280, 720};
+          output_resolution->MaxResolutionSupported = {4096, 4096};
+          return S_OK;
+        });
+    ON_CALL(*video_device3_.Get(),
+            CheckFeatureSupport(D3D12_FEATURE_VIDEO_ENCODER_RATE_CONTROL_MODE,
+                                _, _))
+        .WillByDefault([](D3D12_FEATURE_VIDEO, void* data, UINT) {
+          static_cast<D3D12_FEATURE_DATA_VIDEO_ENCODER_RATE_CONTROL_MODE*>(data)
+              ->IsSupported = true;
+          return S_OK;
+        });
+  }
+
   static constexpr D3D12_VIDEO_ENCODER_LEVELS_HEVC kMaxLevel =
       D3D12_VIDEO_ENCODER_LEVELS_HEVC_31;
   Microsoft::WRL::ComPtr<D3D12DeviceMock> device_;
@@ -483,36 +522,7 @@ TEST_F(D3D12VideoEncodeH265DelegateTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(kPlatformHEVCHbdEncoderSupport);
 
-  ON_CALL(*video_device3_.Get(),
-          CheckFeatureSupport(
-              D3D12_FEATURE_VIDEO_ENCODER_OUTPUT_RESOLUTION_RATIOS_COUNT, _, _))
-      .WillByDefault([](D3D12_FEATURE_VIDEO, void* data, UINT) {
-        static_cast<
-            D3D12_FEATURE_DATA_VIDEO_ENCODER_OUTPUT_RESOLUTION_RATIOS_COUNT*>(
-            data)
-            ->ResolutionRatiosCount = 1;
-        return S_OK;
-      });
-  ON_CALL(
-      *video_device3_.Get(),
-      CheckFeatureSupport(D3D12_FEATURE_VIDEO_ENCODER_OUTPUT_RESOLUTION, _, _))
-      .WillByDefault([](D3D12_FEATURE_VIDEO, void* data, UINT) {
-        auto* output_resolution =
-            static_cast<D3D12_FEATURE_DATA_VIDEO_ENCODER_OUTPUT_RESOLUTION*>(
-                data);
-        output_resolution->IsSupported = true;
-        output_resolution->MinResolutionSupported = {1280, 720};
-        output_resolution->MaxResolutionSupported = {4096, 4096};
-        return S_OK;
-      });
-  ON_CALL(
-      *video_device3_.Get(),
-      CheckFeatureSupport(D3D12_FEATURE_VIDEO_ENCODER_RATE_CONTROL_MODE, _, _))
-      .WillByDefault([](D3D12_FEATURE_VIDEO, void* data, UINT) {
-        static_cast<D3D12_FEATURE_DATA_VIDEO_ENCODER_RATE_CONTROL_MODE*>(data)
-            ->IsSupported = true;
-        return S_OK;
-      });
+  SetUpBaseProfileProbes();
 
   auto supported_profiles = D3D12VideoEncodeDelegate::GetSupportedProfiles(
       video_device3_.Get(), gpu::GpuDriverBugWorkarounds{},
@@ -531,6 +541,103 @@ TEST_F(D3D12VideoEncodeH265DelegateTest,
       EXPECT_FALSE(supported_profile.chroma_sampling.has_value());
       EXPECT_FALSE(supported_profile.bit_depth.has_value());
     }
+  }
+}
+
+// With GPU shared images enabled, the advertised GPU input formats are the
+// ones the video processor can convert to the profile's encoder input format.
+// This mock behaves like a vendor whose video processor cannot produce the
+// packed range extension formats or consume RGBAF16.
+TEST_F(D3D12VideoEncodeH265DelegateTest,
+       SupportedProfilesProbeGpuSharedImageFormats) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{kPlatformHEVCHbdEncoderSupport, {}}, {kD3D12SharedImageEncode, {}}},
+      {});
+  SetUpBaseProfileProbes();
+
+  ON_CALL(*video_device3_.Get(),
+          CheckFeatureSupport(D3D12_FEATURE_VIDEO_PROCESS_SUPPORT, _, _))
+      .WillByDefault([](D3D12_FEATURE_VIDEO, void* data, UINT) {
+        auto* support =
+            static_cast<D3D12_FEATURE_DATA_VIDEO_PROCESS_SUPPORT*>(data);
+        const DXGI_FORMAT input = support->InputSample.Format.Format;
+        const DXGI_FORMAT output = support->OutputFormat.Format;
+        // Identity pairs are rejected on purpose: frames already in the
+        // encoder's input format must be advertised without a probe, so the
+        // identity conversion never reaches the video processor.
+        support->SupportFlags =
+            input != output && input != DXGI_FORMAT_R16G16B16A16_FLOAT &&
+                    (output == DXGI_FORMAT_NV12 || output == DXGI_FORMAT_P010)
+                ? D3D12_VIDEO_PROCESS_SUPPORT_FLAG_SUPPORTED
+                : D3D12_VIDEO_PROCESS_SUPPORT_FLAG_NONE;
+        return S_OK;
+      });
+
+  auto supported_profiles = D3D12VideoEncodeDelegate::GetSupportedProfiles(
+      video_device3_.Get(), gpu::GpuDriverBugWorkarounds{},
+      {D3D12_VIDEO_ENCODER_CODEC_HEVC});
+
+  for (const auto& supported_profile : supported_profiles) {
+    if (supported_profile.profile == HEVCPROFILE_REXT) {
+      // This mock cannot produce the packed formats, so shared image encoding
+      // is not advertised for the range extension rows.
+      EXPECT_FALSE(supported_profile.supports_gpu_shared_images);
+      ASSERT_EQ(supported_profile.gpu_supported_pixel_formats.size(), 1u);
+      continue;
+    }
+    EXPECT_TRUE(supported_profile.supports_gpu_shared_images);
+    auto formats = supported_profile.gpu_supported_pixel_formats;
+    EXPECT_NE(std::ranges::find(formats, PIXEL_FORMAT_ARGB), formats.end());
+    EXPECT_NE(std::ranges::find(formats, PIXEL_FORMAT_XB30), formats.end());
+    // RGBAF16 is not VP-convertible on this mock, so it must not be
+    // advertised.
+    EXPECT_EQ(std::ranges::find(formats, PIXEL_FORMAT_RGBAF16), formats.end());
+  }
+
+  // A frame already in the encoder's input format is supported without a
+  // video processor pass, even though this mock rejects identity pairs.
+  auto main_profile = *std::ranges::find_if(
+      supported_profiles,
+      [](const auto& p) { return p.profile == HEVCPROFILE_MAIN; });
+  EXPECT_NE(std::ranges::find(main_profile.gpu_supported_pixel_formats,
+                              PIXEL_FORMAT_NV12),
+            main_profile.gpu_supported_pixel_formats.end());
+  auto main10_profile = *std::ranges::find_if(
+      supported_profiles,
+      [](const auto& p) { return p.profile == HEVCPROFILE_MAIN10; });
+  EXPECT_NE(std::ranges::find(main10_profile.gpu_supported_pixel_formats,
+                              PIXEL_FORMAT_P010LE),
+            main10_profile.gpu_supported_pixel_formats.end());
+}
+
+// A platform whose video processor supports every candidate pair, including
+// RGBAF16, must advertise it.
+TEST_F(D3D12VideoEncodeH265DelegateTest,
+       SupportedProfilesProbeGpuSharedImageFormatsAllSupported) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{kPlatformHEVCHbdEncoderSupport, {}}, {kD3D12SharedImageEncode, {}}},
+      {});
+  SetUpBaseProfileProbes();
+
+  ON_CALL(*video_device3_.Get(),
+          CheckFeatureSupport(D3D12_FEATURE_VIDEO_PROCESS_SUPPORT, _, _))
+      .WillByDefault([](D3D12_FEATURE_VIDEO, void* data, UINT) {
+        static_cast<D3D12_FEATURE_DATA_VIDEO_PROCESS_SUPPORT*>(data)
+            ->SupportFlags = D3D12_VIDEO_PROCESS_SUPPORT_FLAG_SUPPORTED;
+        return S_OK;
+      });
+
+  auto supported_profiles = D3D12VideoEncodeDelegate::GetSupportedProfiles(
+      video_device3_.Get(), gpu::GpuDriverBugWorkarounds{},
+      {D3D12_VIDEO_ENCODER_CODEC_HEVC});
+
+  for (const auto& supported_profile : supported_profiles) {
+    EXPECT_TRUE(supported_profile.supports_gpu_shared_images);
+    auto formats = supported_profile.gpu_supported_pixel_formats;
+    EXPECT_NE(std::ranges::find(formats, PIXEL_FORMAT_RGBAF16), formats.end());
+    EXPECT_NE(std::ranges::find(formats, PIXEL_FORMAT_XB30), formats.end());
   }
 }
 

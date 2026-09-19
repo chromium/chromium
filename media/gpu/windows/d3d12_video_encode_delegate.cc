@@ -5,11 +5,13 @@
 #include "media/gpu/windows/d3d12_video_encode_delegate.h"
 
 #include <algorithm>
+#include <map>
 #include <optional>
 #include <ranges>
+#include <utility>
 
 #include "base/bits.h"
-#include "base/containers/fixed_flat_set.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -28,6 +30,7 @@
 #include "media/gpu/windows/d3d12_video_encoder_wrapper.h"
 #include "media/gpu/windows/format_utils.h"
 #include "third_party/microsoft_dxheaders/src/include/directx/d3dx12_core.h"
+#include "ui/gfx/color_space_win.h"
 
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 #include "media/gpu/windows/d3d12_video_encode_h265_delegate.h"
@@ -135,6 +138,50 @@ std::optional<DXGI_FORMAT> GetDxgiInputFormat(VideoCodecProfile output_profile,
   }
 }
 
+// The shared image formats the encoder advertises as GPU inputs, with the
+// DXGI format the video processor sees them as. These follow the texture
+// formats Chromium actually creates on Windows (D3DImageBackingFactory): the
+// B-first 32bpp formats are B8G8R8A8 and the R-first ones R8G8B8A8 textures,
+// with the X channel carried as opaque alpha — the D3D shared image factory
+// creates no X8 layouts.
+constexpr auto kGpuSharedImageFormatCandidates =
+    base::MakeFixedFlatMap<VideoPixelFormat, DXGI_FORMAT>({
+        {PIXEL_FORMAT_NV12, DXGI_FORMAT_NV12},
+        {PIXEL_FORMAT_P010LE, DXGI_FORMAT_P010},
+        {PIXEL_FORMAT_ARGB, DXGI_FORMAT_B8G8R8A8_UNORM},
+        {PIXEL_FORMAT_XRGB, DXGI_FORMAT_B8G8R8A8_UNORM},
+        {PIXEL_FORMAT_ABGR, DXGI_FORMAT_R8G8B8A8_UNORM},
+        {PIXEL_FORMAT_XBGR, DXGI_FORMAT_R8G8B8A8_UNORM},
+        {PIXEL_FORMAT_XB30, DXGI_FORMAT_R10G10B10A2_UNORM},
+        {PIXEL_FORMAT_RGBAF16, DXGI_FORMAT_R16G16B16A16_FLOAT},
+    });
+
+// Whether the video processor can convert |input_format| to |output_format|.
+// Probed at a representative resolution with BT.709; format pair support does
+// not depend on the resolution or the color space.
+bool IsVideoProcessorFormatPairSupported(ID3D12VideoDevice3* video_device,
+                                         DXGI_FORMAT input_format,
+                                         DXGI_FORMAT output_format) {
+  const gfx::ColorSpace rec709 = gfx::ColorSpace::CreateREC709();
+  D3D12_FEATURE_DATA_VIDEO_PROCESS_SUPPORT support{
+      .InputSample = {.Width = 1280,
+                      .Height = 720,
+                      .Format = {.Format = input_format,
+                                 .ColorSpace =
+                                     gfx::ColorSpaceWin::GetDXGIColorSpace(
+                                         rec709)}},
+      .InputFrameRate = {30, 1},
+      .OutputFormat = {.Format = output_format,
+                       .ColorSpace =
+                           gfx::ColorSpaceWin::GetDXGIColorSpace(rec709)},
+      .OutputFrameRate = {30, 1},
+  };
+  HRESULT hr = video_device->CheckFeatureSupport(
+      D3D12_FEATURE_VIDEO_PROCESS_SUPPORT, &support, sizeof(support));
+  return SUCCEEDED(hr) &&
+         support.SupportFlags == D3D12_VIDEO_PROCESS_SUPPORT_FLAG_SUPPORTED;
+}
+
 }  // namespace
 
 // static
@@ -144,6 +191,21 @@ D3D12VideoEncodeDelegate::GetSupportedProfiles(
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     const std::vector<D3D12_VIDEO_ENCODER_CODEC>& codecs) {
   CHECK(video_device);
+  // Video processor support is queried per (candidate, encoder input) DXGI
+  // format pair, and the same pair recurs across profiles and codecs. Cache
+  // the results for this call: the device does not change within it, so each
+  // pair only needs one probe.
+  std::map<std::pair<DXGI_FORMAT, DXGI_FORMAT>, bool> vp_support_cache;
+  auto supports_vp_format_pair = [&](DXGI_FORMAT source_format,
+                                     DXGI_FORMAT target_format) {
+    const auto [it, inserted] = vp_support_cache.try_emplace(
+        std::make_pair(source_format, target_format), false);
+    if (inserted) {
+      it->second = IsVideoProcessorFormatPairSupported(
+          video_device, source_format, target_format);
+    }
+    return it->second;
+  };
   VideoEncodeAccelerator::SupportedProfiles supported_profiles;
   for (D3D12_VIDEO_ENCODER_CODEC codec : codecs) {
     D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC codec_support{.Codec = codec};
@@ -242,16 +304,24 @@ D3D12VideoEncodeDelegate::GetSupportedProfiles(
         supported_profile.bit_depth = std::nullopt;
       }
       if (supports_shared_image) {
-        static constexpr auto kSupportedPixelFormatD3D12VideoProcessing =
-            base::MakeFixedFlatSet<VideoPixelFormat>(
-                {PIXEL_FORMAT_I420, PIXEL_FORMAT_NV12, PIXEL_FORMAT_YV12,
-                 PIXEL_FORMAT_NV21, PIXEL_FORMAT_ARGB, PIXEL_FORMAT_XRGB,
-                 PIXEL_FORMAT_ABGR, PIXEL_FORMAT_XBGR, PIXEL_FORMAT_XB30,
-                 PIXEL_FORMAT_RGBAF16});
+        std::vector<VideoPixelFormat> shared_image_formats;
+        const DXGI_FORMAT encoder_input_format =
+            GetDxgiInputFormat(profile, formats[0])
+                .value_or(DXGI_FORMAT_UNKNOWN);
+        if (encoder_input_format != DXGI_FORMAT_UNKNOWN) {
+          for (const auto& [pixel_format, dxgi_format] :
+               kGpuSharedImageFormatCandidates) {
+            if (dxgi_format == encoder_input_format ||
+                supports_vp_format_pair(dxgi_format, encoder_input_format)) {
+              shared_image_formats.push_back(pixel_format);
+            }
+          }
+        }
+        supported_profile.supports_gpu_shared_images =
+            !shared_image_formats.empty();
         std::ranges::copy(
-            kSupportedPixelFormatD3D12VideoProcessing,
+            shared_image_formats,
             std::back_inserter(supported_profile.gpu_supported_pixel_formats));
-        supported_profile.supports_gpu_shared_images = supports_shared_image;
       }
       supported_profiles.push_back(supported_profile);
     }
