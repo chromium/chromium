@@ -8581,6 +8581,7 @@ from previous Chrome versions.
   <int value="-1913552656" label="VCBackgroundReplace:enabled"/>
   <int value="-1913484012" label="IsNameEnabled:disabled"/>
   <int value="-1912999136" label="enable-automatic-password-saving:enabled"/>
+  <int value="-1912062630" label="AutofillEnableOmniboxGPayButton:disabled"/>
   <int value="-1911918596" label="WebviewAccelerateSmallCanvases:disabled"/>
   <int value="-1911816830"
       label="TabStripEmptySpaceContextMenuAndroid:disabled"/>
@@ -11042,6 +11043,7 @@ from previous Chrome versions.
   <int value="-1168910727"
       label="enable-experimental-accessibility-language-detection-dynamic"/>
   <int value="-1168836114" label="AndroidTabDeclutterAutoDelete:enabled"/>
+  <int value="-1168541496" label="AutofillEnableOmniboxGPayButton:enabled"/>
   <int value="-1168123287" label="WebRTC-FrameBuffer3:disabled"/>
   <int value="-1168016146" label="AndroidWebAppMenuButton:enabled"/>
   <int value="-1167992523" label="DesktopPWAsCustomTabUI:disabled"/>

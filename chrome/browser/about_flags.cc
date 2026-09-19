@@ -14074,6 +14074,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(switches::kHandleMdmErrorsForDasherAccountsOnAndroid)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+    {"autofill-enable-omnibox-gpay-button",
+     flag_descriptions::kAutofillEnableOmniboxGPayButtonName,
+     flag_descriptions::kAutofillEnableOmniboxGPayButtonDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableOmniboxGPayButton)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

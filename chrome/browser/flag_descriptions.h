@@ -1147,6 +1147,13 @@ inline constexpr char kAutofillEnableOmniboxAutofillDescription[] =
     "When enabled, an Autofill payments omnibox chip will appear for relevant "
     "payment checkout forms.";
 
+inline constexpr char kAutofillEnableOmniboxGPayButtonName[] =
+    "Enable Omnibox Autofill chip for Google Pay buttons";
+inline constexpr char kAutofillEnableOmniboxGPayButtonDescription[] =
+    "When enabled, a Google Pay omnibox chip will appear when a Google Pay "
+    "button is detected on the page, and clicking the chip will simulate "
+    "clicking the Google Pay button.";
+
 inline constexpr char kAutofillEnablePayNowPayLaterTabsName[] =
     "Enable Pay Now Pay Later tabs UI for payments autofill on Chrome";
 inline constexpr char kAutofillEnablePayNowPayLaterTabsDescription[] =
