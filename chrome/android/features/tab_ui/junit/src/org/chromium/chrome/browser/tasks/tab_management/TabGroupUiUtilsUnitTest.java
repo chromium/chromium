@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -52,6 +53,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -69,6 +71,9 @@ public class TabGroupUiUtilsUnitTest {
     @Mock private TabGroupUiActionHandler mUiActionHandler;
     @Mock private Tab mTab;
     @Mock private Tab mDestTab;
+    @Mock private TabList mComprehensiveModel;
+    @Mock private TabModelSelector mOtherSelector;
+    @Mock private TabModel mOtherModel;
 
     private Context mContext;
 
@@ -602,5 +607,170 @@ public class TabGroupUiUtilsUnitTest {
                         /* syncGroupId= */ null);
 
         assertNull(info);
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true")
+    public void testGetGroupWindowInfo_retainsBothLocalAndSyncId() {
+        Token groupId = Token.createRandom();
+        String syncId = "sync-closing-123";
+        SavedTabGroup savedGroup = new SavedTabGroup();
+        savedGroup.syncId = syncId;
+        savedGroup.localId = new LocalTabGroupId(groupId);
+        savedGroup.title = "Remote Title";
+        when(mTabGroupSyncService.getGroup(syncId)).thenReturn(savedGroup);
+
+        when(mTab.getTabGroupId()).thenReturn(groupId);
+        when(mTab.isClosing()).thenReturn(true);
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
+
+        when(mComprehensiveModel.iterator()).thenAnswer(inv -> List.of(mTab).iterator());
+        when(mTabModel.getTabsInGroup(groupId)).thenReturn(Collections.emptyList());
+        when(mTabModel.getComprehensiveModel()).thenReturn(mComprehensiveModel);
+        when(mTabModel.getTabGroupTitle(groupId)).thenReturn("Live Closing Title");
+        when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(TabGroupColorId.CYAN);
+
+        GroupWindowInfo info =
+                TabGroupUiUtils.getGroupWindowInfo(
+                        mContext, mTabModel, mTabGroupSyncService, groupId, syncId);
+
+        assertNotNull(info);
+        assertEquals(groupId, info.localId);
+        assertEquals(syncId, info.syncId);
+        assertEquals("Live Closing Title", info.title);
+        assertEquals(TabGroupColorId.CYAN, info.color);
+        assertEquals(GroupWindowState.IN_CURRENT_CLOSING, info.groupWindowState);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void testGetGroupWindowInfo_flagDisabled_returnsLocalGroupDirectly() {
+        Token groupId = Token.createRandom();
+        String syncId = "sync-closing-123";
+
+        when(mTabModel.getTabCountForGroup(groupId)).thenReturn(2);
+        when(mTabModel.tabGroupExists(groupId)).thenReturn(true);
+        when(mTabModel.getTabGroupTitle(groupId)).thenReturn("Local Title");
+        when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(TabGroupColorId.CYAN);
+        when(mTabModel.getTabsInGroup(groupId)).thenReturn(Collections.emptyList());
+
+        GroupWindowInfo info =
+                TabGroupUiUtils.getGroupWindowInfo(
+                        mContext, mTabModel, mTabGroupSyncService, groupId, syncId);
+
+        assertNotNull(info);
+        assertEquals(groupId, info.localId);
+        assertNull(info.syncId);
+        assertEquals("Local Title", info.title);
+        verify(mTabGroupSyncService, never()).getGroup(syncId);
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true")
+    public void testGetLocalTabsInGroup_fallsBackToComprehensiveModel() {
+        Token groupId = Token.createRandom();
+        when(mTab.getTabGroupId()).thenReturn(groupId);
+        when(mTab.isClosing()).thenReturn(true);
+
+        when(mComprehensiveModel.iterator()).thenAnswer(inv -> List.of(mTab).iterator());
+        when(mTabModel.getTabsInGroup(groupId)).thenReturn(Collections.emptyList());
+        when(mTabModel.getComprehensiveModel()).thenReturn(mComprehensiveModel);
+
+        List<Tab> tabs = TabGroupUiUtils.getLocalTabsInGroup(mTabModel, groupId);
+        assertEquals(1, tabs.size());
+        assertEquals(mTab, tabs.get(0));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void testGetLocalTabsInGroup_flagDisabled_doesNotFallBack() {
+        Token groupId = Token.createRandom();
+        when(mTabModel.getTabsInGroup(groupId)).thenReturn(Collections.emptyList());
+
+        List<Tab> tabs = TabGroupUiUtils.getLocalTabsInGroup(mTabModel, groupId);
+        assertTrue(tabs.isEmpty());
+        verify(mTabModel, never()).getComprehensiveModel();
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true")
+    public void testGetLocalTabsInGroup_activeTabs_usesTabModelDirectly() {
+        Token groupId = Token.createRandom();
+        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab));
+
+        List<Tab> tabs = TabGroupUiUtils.getLocalTabsInGroup(mTabModel, groupId);
+        assertEquals(1, tabs.size());
+        assertEquals(mTab, tabs.get(0));
+        verify(mTabModel, never()).getComprehensiveModel();
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true")
+    public void testGetTabModelForGroup_crossWindow() {
+        Token groupId = Token.createRandom();
+        when(mTabModel.getTabsInGroup(groupId)).thenReturn(Collections.emptyList());
+        when(mTabModel.isIncognito()).thenReturn(false);
+
+        when(mTabWindowManager.findWindowIdForTabGroup(eq(groupId), eq(true))).thenReturn(2);
+        when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mOtherSelector);
+        when(mOtherSelector.getModel(false)).thenReturn(mOtherModel);
+
+        assertEquals(mOtherModel, TabGroupUiUtils.getTabModelForGroup(mTabModel, groupId));
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true")
+    public void testGetLocalOrCrossWindowTabsInGroup_crossWindow() {
+        Token groupId = Token.createRandom();
+        when(mTabModel.getTabsInGroup(groupId)).thenReturn(Collections.emptyList());
+        when(mTabModel.isIncognito()).thenReturn(false);
+
+        when(mTabWindowManager.findWindowIdForTabGroup(eq(groupId), eq(true))).thenReturn(2);
+        when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mOtherSelector);
+        when(mOtherSelector.getModel(false)).thenReturn(mOtherModel);
+        when(mOtherModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab));
+
+        List<Tab> tabs = TabGroupUiUtils.getLocalOrCrossWindowTabsInGroup(mTabModel, groupId);
+        assertEquals(1, tabs.size());
+        assertEquals(mTab, tabs.get(0));
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true")
+    public void testGetGroupWindowInfo_resolvesCrossWindowLocalGroup() {
+        Token groupId = Token.createRandom();
+        when(mTabModel.getTabsInGroup(groupId)).thenReturn(Collections.emptyList());
+        when(mTabModel.isIncognito()).thenReturn(false);
+
+        when(mTabWindowManager.findWindowIdForTabGroup(eq(groupId), anyBoolean())).thenReturn(2);
+        when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mOtherSelector);
+        when(mOtherSelector.getModel(false)).thenReturn(mOtherModel);
+
+        when(mOtherModel.tabGroupExists(groupId)).thenReturn(true);
+        when(mOtherModel.getTabCountForGroup(groupId)).thenReturn(3);
+        when(mOtherModel.getTabGroupTitle(groupId)).thenReturn("Window 2 Local Title");
+        when(mOtherModel.getTabGroupColorWithFallback(groupId)).thenReturn(TabGroupColorId.PURPLE);
+        when(mOtherModel.getTabsInGroup(groupId)).thenReturn(Collections.emptyList());
+
+        GroupWindowInfo info =
+                TabGroupUiUtils.getGroupWindowInfo(
+                        mContext,
+                        mTabModel,
+                        /* syncService= */ null,
+                        groupId,
+                        /* syncGroupId= */ null);
+
+        assertNotNull(info);
+        assertEquals(groupId, info.localId);
+        assertNull(info.syncId);
+        assertEquals("Window 2 Local Title", info.title);
+        assertEquals(TabGroupColorId.PURPLE, info.color);
+        assertEquals(3, info.tabCount);
     }
 }

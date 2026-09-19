@@ -22,12 +22,15 @@ import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
+import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -96,9 +99,32 @@ public class TabGroupUiUtils {
             @Nullable Token groupId,
             @Nullable String syncGroupId) {
         GroupWindowChecker checker = new GroupWindowChecker(context, syncService, tabModel);
+        if (isRemoteGroupOperationsEnabled() && syncService != null) {
+            SavedTabGroup savedGroup = null;
+            if (syncGroupId != null) {
+                savedGroup = syncService.getGroup(syncGroupId);
+            } else if (groupId != null) {
+                savedGroup = syncService.getGroup(new LocalTabGroupId(groupId));
+            }
+            if (savedGroup != null) {
+                if (savedGroup.localId == null && groupId != null) {
+                    savedGroup.localId = new LocalTabGroupId(groupId);
+                }
+                Token effectiveGroupId =
+                        groupId != null
+                                ? groupId
+                                : (savedGroup.localId != null
+                                        ? savedGroup.localId.tabGroupId
+                                        : null);
+                TabModel localTabModel = getTabModelForGroup(tabModel, effectiveGroupId);
+                return GroupWindowInfo.forSyncedGroup(
+                        context, localTabModel, savedGroup, checker.getState(savedGroup));
+            }
+        }
         if (groupId != null) {
+            TabModel localTabModel = getTabModelForGroup(tabModel, groupId);
             return GroupWindowInfo.forLocalGroup(
-                    context, tabModel, groupId, checker.getState(groupId));
+                    context, localTabModel, groupId, checker.getState(groupId));
         } else if (syncGroupId != null && syncService != null) {
             SavedTabGroup group = syncService.getGroup(syncGroupId);
             if (group != null) {
@@ -107,6 +133,125 @@ public class TabGroupUiUtils {
             }
         }
         return null;
+    }
+
+    /**
+     * Returns the list of local {@link Tab}s belonging to {@code groupId}. If the group is
+     * detached/pending closure (so {@link TabModel#getTabsInGroup(Token)} returns empty), falls
+     * back to filtering {@link TabModel#getComprehensiveModel()}.
+     *
+     * @param tabModel The tab model containing tabs.
+     * @param groupId The target tab group ID.
+     * @return List of tabs belonging to the group.
+     */
+    public static List<Tab> getLocalTabsInGroup(TabModel tabModel, @Nullable Token groupId) {
+        if (groupId == null) {
+            return Collections.emptyList();
+        }
+        List<Tab> tabs = tabModel.getTabsInGroup(groupId);
+        if (!tabs.isEmpty() || !isRemoteGroupOperationsEnabled()) {
+            return tabs;
+        }
+        List<Tab> allGroupTabs = new ArrayList<>();
+        TabList comprehensiveModel = tabModel.getComprehensiveModel();
+        if (comprehensiveModel != null) {
+            if (comprehensiveModel.iterator() != null) {
+                for (Tab tab : comprehensiveModel) {
+                    if (groupId.equals(tab.getTabGroupId())) {
+                        allGroupTabs.add(tab);
+                    }
+                }
+            } else {
+                for (int i = 0; i < comprehensiveModel.getCount(); i++) {
+                    Tab tab = comprehensiveModel.getTabAt(i);
+                    if (tab != null && groupId.equals(tab.getTabGroupId())) {
+                        allGroupTabs.add(tab);
+                    }
+                }
+            }
+        }
+        return allGroupTabs;
+    }
+
+    /**
+     * Returns the {@link TabModel} containing {@code groupId}, checking {@code currentTabModel}
+     * first, then searching across other windows if cross-window tab group operations are enabled.
+     *
+     * @param currentTabModel The current {@link TabModel}.
+     * @param groupId The target tab group ID.
+     * @return The {@link TabModel} containing the group, or {@code currentTabModel} if not found
+     *     elsewhere.
+     */
+    public static TabModel getTabModelForGroup(TabModel currentTabModel, @Nullable Token groupId) {
+        if (groupId == null) {
+            return currentTabModel;
+        }
+        if (!getLocalTabsInGroup(currentTabModel, groupId).isEmpty()) {
+            return currentTabModel;
+        }
+        if (isCrossWindowTabGroupOperationsEnabled()) {
+            TabWindowManager windowManager = TabWindowManagerSingleton.getInstance();
+            if (windowManager != null) {
+                @WindowId
+                int windowId =
+                        windowManager.findWindowIdForTabGroup(
+                                groupId,
+                                /* includeClosingGroups= */ isRemoteGroupOperationsEnabled());
+                if (windowId != TabWindowManager.INVALID_WINDOW_ID) {
+                    TabModelSelector selector = windowManager.getTabModelSelectorById(windowId);
+                    if (selector != null) {
+                        TabModel otherModel = selector.getModel(currentTabModel.isIncognito());
+                        if (otherModel != null) {
+                            return otherModel;
+                        }
+                    }
+                }
+            }
+        }
+        return currentTabModel;
+    }
+
+    /**
+     * Returns all tabs belonging to {@code groupId}, checking {@code currentTabModel} first, and
+     * querying other windows if cross-window operations are enabled and the group is not present
+     * locally.
+     *
+     * @param currentTabModel The current {@link TabModel}.
+     * @param groupId The target tab group ID.
+     * @return List of tabs belonging to the group, or empty list if none found.
+     */
+    public static List<Tab> getLocalOrCrossWindowTabsInGroup(
+            TabModel currentTabModel, @Nullable Token groupId) {
+        if (groupId == null) {
+            return Collections.emptyList();
+        }
+        List<Tab> localTabs = getLocalTabsInGroup(currentTabModel, groupId);
+        if (!localTabs.isEmpty()) {
+            return localTabs;
+        }
+        if (isCrossWindowTabGroupOperationsEnabled()) {
+            TabWindowManager windowManager = TabWindowManagerSingleton.getInstance();
+            if (windowManager != null) {
+                @WindowId
+                int windowId =
+                        windowManager.findWindowIdForTabGroup(
+                                groupId,
+                                /* includeClosingGroups= */ isRemoteGroupOperationsEnabled());
+                if (windowId != TabWindowManager.INVALID_WINDOW_ID) {
+                    List<Tab> windowTabs =
+                            windowManager.getGroupedTabsByWindow(
+                                    windowId, groupId, currentTabModel.isIncognito());
+                    if (windowTabs != null && !windowTabs.isEmpty()) {
+                        return windowTabs;
+                    }
+                    TabModel otherModel = getTabModelForGroup(currentTabModel, groupId);
+                    if (otherModel != currentTabModel) {
+                        return getLocalTabsInGroup(otherModel, groupId);
+                    }
+                }
+            }
+        }
+        return Collections.emptyList();
     }
 
     private static boolean isRemoteGroup(GroupWindowInfo group) {
