@@ -9,27 +9,30 @@ import android.graphics.Bitmap;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
-import androidx.test.filters.SmallTest;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.GraphicsMode;
 
-import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.base.task.AsyncTask;
+import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 /** Unit test for ThumbnailProviderDiskStorage. */
-@RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
-public class ThumbnailDiskStorageTest {
+@RunWith(BaseRobolectricTestRunner.class)
+// Needed so Bitmap.compress(PNG) and Bitmap.sameAs() operate on real Skia pixel buffers.
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
+public class ThumbnailDiskStorageUnitTest {
     private static final String CONTENT_ID1 = "contentId1";
     private static final String CONTENT_ID2 = "contentId2";
     private static final String CONTENT_ID3 = "contentId3";
@@ -125,43 +128,40 @@ public class ThumbnailDiskStorageTest {
     @Before
     public void setUp() {
         mTestThumbnailGenerator = new TestThumbnailGenerator();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mTestThumbnailDiskStorage =
-                            new TestThumbnailDiskStorage(mTestThumbnailGenerator);
-                    // Clear the disk cache so that cached entries from previous runs won't show up.
-                    mTestThumbnailDiskStorage.clear();
-                });
+        ThumbnailDiskStorage.sDiskLruCache.clear();
+        ThumbnailDiskStorage.sIconSizesMap.clear();
+        mTestThumbnailDiskStorage = new TestThumbnailDiskStorage(mTestThumbnailGenerator);
+        // Clear the disk cache so that preexisting cached files do not interrupt test execution.
+        mTestThumbnailDiskStorage.clear();
         try {
-            // Use .get() to ensure init and clear are completed. Since they have no onPostExecute
-            // they are completely finished once .get() returns.
+            RobolectricUtil.runAllBackgroundAndUiAllowBlocking();
             mTestThumbnailDiskStorage.mInitTask.get();
             mTestThumbnailDiskStorage.mLastClearTask.get();
         } catch (Exception e) {
             throw new RuntimeException("Exception occurred while waiting for task.", e);
         }
         mTestThumbnailDiskStorage.removeCount.set(0);
-        Assert.assertEquals(0, mTestThumbnailDiskStorage.mSizeBytes);
+        assertEquals(0, mTestThumbnailDiskStorage.mSizeBytes);
     }
 
     /** Verify that an inserted thumbnail can be retrieved. */
     @Test
-    @SmallTest
     public void testCanInsertAndGet() {
-        mTestThumbnailDiskStorage.addToDisk(CONTENT_ID1, BITMAP1, ICON_WIDTH1);
-        Assert.assertEquals(1, mTestThumbnailDiskStorage.getCacheCount());
+        addToDisk(CONTENT_ID1, BITMAP1, ICON_WIDTH1);
+        assertEquals(1, mTestThumbnailDiskStorage.getCacheCount());
 
         TestThumbnailRequest request = new TestThumbnailRequest(CONTENT_ID1);
         retrieveThumbnailAndAssertRetrieved(request);
 
         // Ensure the thumbnail generator is not called.
-        Assert.assertEquals(0, mTestThumbnailGenerator.generateCount.get());
-        Assert.assertTrue(
-                mTestThumbnailDiskStorage.getFromDisk(CONTENT_ID1, ICON_WIDTH1).sameAs(BITMAP1));
+        assertEquals(0, mTestThumbnailGenerator.generateCount.get());
+        Bitmap bitmap = getFromDisk(CONTENT_ID1, ICON_WIDTH1);
+        assertNotNull(bitmap);
+        assertTrue(bitmap.sameAs(BITMAP1));
 
         // Since retrieval re-adds an existing entry, remove was called once already.
         removeThumbnailAndExpectedCount(CONTENT_ID1, 2);
-        Assert.assertEquals(0, mTestThumbnailDiskStorage.mSizeBytes);
+        assertEquals(0, mTestThumbnailDiskStorage.mSizeBytes);
     }
 
     /**
@@ -169,42 +169,41 @@ public class ThumbnailDiskStorageTest {
      * and the first entry data will be replaced with the second.
      */
     @Test
-    @SmallTest
     public void testRepeatedInsertShouldBeUpdated() {
-        mTestThumbnailDiskStorage.addToDisk(CONTENT_ID1, BITMAP1, ICON_WIDTH1);
-        mTestThumbnailDiskStorage.addToDisk(CONTENT_ID1, BITMAP2, ICON_WIDTH1);
+        addToDisk(CONTENT_ID1, BITMAP1, ICON_WIDTH1);
+        addToDisk(CONTENT_ID1, BITMAP2, ICON_WIDTH1);
 
         // Verify that the old entry is updated with the new
-        Assert.assertEquals(1, mTestThumbnailDiskStorage.getCacheCount());
-        Assert.assertTrue(
-                mTestThumbnailDiskStorage.getFromDisk(CONTENT_ID1, ICON_WIDTH1).sameAs(BITMAP2));
+        assertEquals(1, mTestThumbnailDiskStorage.getCacheCount());
+        Bitmap bitmap = getFromDisk(CONTENT_ID1, ICON_WIDTH1);
+        assertNotNull(bitmap);
+        assertTrue(bitmap.sameAs(BITMAP2));
 
         // Note: since an existing entry is re-added, remove was called once already
         removeThumbnailAndExpectedCount(CONTENT_ID1, 2);
-        Assert.assertEquals(0, mTestThumbnailDiskStorage.mSizeBytes);
+        assertEquals(0, mTestThumbnailDiskStorage.mSizeBytes);
     }
 
     /** Verify that retrieveThumbnail makes the called entry the most recent entry in cache. */
     @Test
-    @SmallTest
     public void testRetrieveThumbnailShouldMakeEntryMostRecent() {
-        mTestThumbnailDiskStorage.addToDisk(CONTENT_ID1, BITMAP1, ICON_WIDTH1);
-        mTestThumbnailDiskStorage.addToDisk(CONTENT_ID2, BITMAP1, ICON_WIDTH1);
-        mTestThumbnailDiskStorage.addToDisk(CONTENT_ID3, BITMAP1, ICON_WIDTH1);
-        Assert.assertEquals(3, mTestThumbnailDiskStorage.getCacheCount());
+        addToDisk(CONTENT_ID1, BITMAP1, ICON_WIDTH1);
+        addToDisk(CONTENT_ID2, BITMAP1, ICON_WIDTH1);
+        addToDisk(CONTENT_ID3, BITMAP1, ICON_WIDTH1);
+        assertEquals(3, mTestThumbnailDiskStorage.getCacheCount());
 
         // Verify no trimming is done
-        Assert.assertEquals(0, mTestThumbnailDiskStorage.removeCount.get());
+        assertEquals(0, mTestThumbnailDiskStorage.removeCount.get());
 
         TestThumbnailRequest request = new TestThumbnailRequest(CONTENT_ID1);
         retrieveThumbnailAndAssertRetrieved(request);
-        Assert.assertEquals(mTestThumbnailGenerator.generateCount.get(), 0);
+        assertEquals(mTestThumbnailGenerator.generateCount.get(), 0);
 
         // Since retrieval re-adds an existing entry, remove was called once already
-        Assert.assertEquals(1, mTestThumbnailDiskStorage.removeCount.get());
+        assertEquals(1, mTestThumbnailDiskStorage.removeCount.get());
 
         // Verify that the called entry is the most recent entry
-        Assert.assertTrue(
+        assertTrue(
                 mTestThumbnailDiskStorage
                         .getMostRecentEntry()
                         .equals(Pair.create(CONTENT_ID1, ICON_WIDTH1)));
@@ -212,24 +211,23 @@ public class ThumbnailDiskStorageTest {
         removeThumbnailAndExpectedCount(CONTENT_ID1, 2);
         removeThumbnailAndExpectedCount(CONTENT_ID2, 3);
         removeThumbnailAndExpectedCount(CONTENT_ID3, 4);
-        Assert.assertEquals(0, mTestThumbnailDiskStorage.mSizeBytes);
+        assertEquals(0, mTestThumbnailDiskStorage.mSizeBytes);
     }
 
     /** Verify that trim removes the least recently used entry. */
     @Test
-    @SmallTest
     public void testExceedLimitShouldTrim() {
         // Add thumbnails up to cache limit to get 1 entry trimmed
         int count = 0;
         while (mTestThumbnailDiskStorage.removeCount.get() == 0) {
-            mTestThumbnailDiskStorage.addToDisk("contentId" + count, BITMAP1, ICON_WIDTH1);
+            addToDisk("contentId" + count, BITMAP1, ICON_WIDTH1);
             ++count;
         }
 
         // Since count includes the oldest entry trimmed, verify that cache size is one less
-        Assert.assertEquals(count - 1, mTestThumbnailDiskStorage.getCacheCount());
+        assertEquals(count - 1, mTestThumbnailDiskStorage.getCacheCount());
         // The oldest entry was contentId0 before trim and should now be contentId1.
-        Assert.assertTrue(
+        assertTrue(
                 mTestThumbnailDiskStorage
                         .getOldestEntry()
                         .equals(Pair.create(CONTENT_ID1, ICON_WIDTH1)));
@@ -238,7 +236,7 @@ public class ThumbnailDiskStorageTest {
         for (int i = 1; i <= count - 1; i++) {
             removeThumbnailAndExpectedCount("contentId" + i, i + 1);
         }
-        Assert.assertEquals(0, mTestThumbnailDiskStorage.mSizeBytes);
+        assertEquals(0, mTestThumbnailDiskStorage.mSizeBytes);
     }
 
     /**
@@ -246,35 +244,42 @@ public class ThumbnailDiskStorageTest {
      * sizes.
      */
     @Test
-    @SmallTest
     public void testRemoveAllThumbnailsWithSameContentId() {
-        mTestThumbnailDiskStorage.addToDisk(CONTENT_ID1, BITMAP1, ICON_WIDTH1);
-        mTestThumbnailDiskStorage.addToDisk(CONTENT_ID1, BITMAP1, ICON_WIDTH2);
-        Assert.assertEquals(2, mTestThumbnailDiskStorage.getCacheCount());
-        Assert.assertEquals(2, getIconSizes(CONTENT_ID1).size());
+        addToDisk(CONTENT_ID1, BITMAP1, ICON_WIDTH1);
+        addToDisk(CONTENT_ID1, BITMAP1, ICON_WIDTH2);
+        assertEquals(2, mTestThumbnailDiskStorage.getCacheCount());
+        assertEquals(2, getIconSizes(CONTENT_ID1).size());
 
         // Expect two removals from cache for the two thumbnails
         removeThumbnailAndExpectedCount(CONTENT_ID1, 2);
-        Assert.assertEquals(0, mTestThumbnailDiskStorage.getCacheCount());
-        Assert.assertTrue(getIconSizes(CONTENT_ID1) == null);
+        assertEquals(0, mTestThumbnailDiskStorage.getCacheCount());
+        assertTrue(getIconSizes(CONTENT_ID1) == null);
 
-        Assert.assertEquals(0, mTestThumbnailDiskStorage.mSizeBytes);
+        assertEquals(0, mTestThumbnailDiskStorage.mSizeBytes);
+    }
+
+    private void addToDisk(String contentId, Bitmap bitmap, int iconSizePx) {
+        AsyncTask.SERIAL_EXECUTOR.execute(
+                () -> mTestThumbnailDiskStorage.addToDisk(contentId, bitmap, iconSizePx));
+        RobolectricUtil.runAllBackgroundAndUiAllowBlocking();
+    }
+
+    private @Nullable Bitmap getFromDisk(String contentId, int iconSizePx) {
+        AtomicReference<Bitmap> result = new AtomicReference<>();
+        AsyncTask.SERIAL_EXECUTOR.execute(
+                () -> result.set(mTestThumbnailDiskStorage.getFromDisk(contentId, iconSizePx)));
+        RobolectricUtil.runAllBackgroundAndUiAllowBlocking();
+        return result.get();
     }
 
     /** Retrieve thumbnail and assert that {@link ThumbnailStorageDelegate} has received it. */
     private void retrieveThumbnailAndAssertRetrieved(final TestThumbnailRequest request) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mTestThumbnailDiskStorage.retrieveThumbnail(request));
+        mTestThumbnailDiskStorage.retrieveThumbnail(request);
 
         try {
             // This tasks calls onThumbnailRetrieved which creates a CacheThumbnailTask.
+            RobolectricUtil.runAllBackgroundAndUiAllowBlocking();
             mTestThumbnailDiskStorage.mLastGetThumbnailTask.get();
-            // Since AsyncTask runs GetThumbnailTask's onPostExecute in a non-blocking way, we need
-            // to ensure that it has finished calling onThumbnailRetrieved and created the cache
-            // task before waiting on it. Use a short poll time since it usually doesn't take very
-            // long to complete onPostExecute.
-            CriteriaHelper.pollInstrumentationThread(
-                    () -> mTestThumbnailDiskStorage.mLastCacheThumbnailTask != null);
             // Ensure that the cache is up-to-date before considering the thumbnail "retrieved".
             mTestThumbnailDiskStorage.mLastCacheThumbnailTask.get();
         } catch (Exception e) {
@@ -289,14 +294,14 @@ public class ThumbnailDiskStorageTest {
      * @param expectedRemoveCount The expected removeCount.
      */
     private void removeThumbnailAndExpectedCount(String contentId, int expectedRemoveCount) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mTestThumbnailDiskStorage.removeFromDisk(contentId));
+        mTestThumbnailDiskStorage.removeFromDisk(contentId);
         try {
+            RobolectricUtil.runAllBackgroundAndUiAllowBlocking();
             mTestThumbnailDiskStorage.mLastRemoveThumbnailTask.get();
         } catch (Exception e) {
             throw new RuntimeException("Exception occurred while waiting for task.", e);
         }
-        Assert.assertEquals(expectedRemoveCount, mTestThumbnailDiskStorage.removeCount.get());
+        assertEquals(expectedRemoveCount, mTestThumbnailDiskStorage.removeCount.get());
     }
 
     private Set<Integer> getIconSizes(String contentId) {
