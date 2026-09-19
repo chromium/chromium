@@ -573,7 +573,7 @@ search-animated-glow {
   top: var(--cr-composebox-submit-container-top, 58px);
 }
 
-:host([submit-enabled][searchbox-layout-mode='TallBottomContext'][show-dropdown]:not([show-file-carousel])) .carousel-divider {
+:host([submit-enabled][searchbox-layout-mode='TallBottomContext'][show-dropdown]:not([show-file-carousel]):not([has-grid])) .carousel-divider {
   --contextual-entrypoint-and-carousel-carousel-divider-margin-top: 50px;
 }
 
