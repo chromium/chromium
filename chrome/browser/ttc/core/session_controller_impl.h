@@ -5,10 +5,11 @@
 #ifndef CHROME_BROWSER_TTC_CORE_SESSION_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_TTC_CORE_SESSION_CONTROLLER_IMPL_H_
 
-#include <memory>
+#include <string>
 
 #include "base/check_deref.h"
 #include "base/memory/raw_ref.h"
+#include "chrome/browser/ttc/app/public/conversation.h"
 #include "chrome/browser/ttc/core/session_controller.h"
 #include "chrome/browser/ttc/core/session_view_delegate.h"
 #include "chrome/browser/ttc/core/tool_controller.h"
@@ -22,12 +23,12 @@ class WebContents;
 
 namespace ttc {
 
-class Conversation;
 class SessionView;
 class TtcKeyedService;
 
 class SessionControllerImpl : public SessionController,
-                              public SessionViewDelegate {
+                              public SessionViewDelegate,
+                              public Conversation::Observer {
  public:
   explicit SessionControllerImpl(TtcKeyedService& service);
   ~SessionControllerImpl() override;
@@ -47,6 +48,11 @@ class SessionControllerImpl : public SessionController,
 
   // SessionViewDelegate implementation:
   void EndSessionAsync() override;
+
+  // Conversation::Observer implementation:
+  void OnConversationStateChanged(bool connected,
+                                  const std::string& session_id,
+                                  const std::string& error_message) override;
 
   // TODO(bokan): Android doesn't yet have a session_view so calling
   // this will crash there.

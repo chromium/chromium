@@ -10,6 +10,10 @@
 
 class Profile;
 
+namespace content {
+class BrowserContext;
+}
+
 namespace ttc {
 
 class TtcKeyedService;
@@ -18,6 +22,10 @@ class TtcInteractiveBrowserTestBase : public InteractiveBrowserTest {
  public:
   TtcInteractiveBrowserTestBase();
   ~TtcInteractiveBrowserTestBase() override;
+
+  // InteractiveBrowserTest:
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override;
 
  protected:
   Profile* profile();

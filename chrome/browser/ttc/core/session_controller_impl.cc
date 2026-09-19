@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/notimplemented.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
@@ -54,7 +55,6 @@ SessionControllerImpl::SessionControllerImpl(TtcKeyedService& service)
   // calls back into GetProfile() on this object.
   conversation_ =
       service.MakeConversation(base::PassKey<SessionControllerImpl>(), *this);
-  conversation_->Start();
 
   if (content::WebContents* contents = GetObservedWebContents()) {
     // TODO(b/555800359): Reset page_context_monitor_ on active tab changes.
@@ -63,9 +63,30 @@ SessionControllerImpl::SessionControllerImpl(TtcKeyedService& service)
         base::BindRepeating(&SessionControllerImpl::OnPageContextChanged,
                             base::Unretained(this)));
   }
+
+  if (conversation_) {
+    conversation_->AddObserver(this);
+    conversation_->Start();
+  }
 }
 
-SessionControllerImpl::~SessionControllerImpl() = default;
+SessionControllerImpl::~SessionControllerImpl() {
+  if (conversation_) {
+    conversation_->RemoveObserver(this);
+    conversation_->Stop();
+  }
+}
+
+void SessionControllerImpl::OnConversationStateChanged(
+    bool connected,
+    const std::string& session_id,
+    const std::string& error_message) {
+  if (!connected) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&TtcKeyedService::EndSession, service_->GetWeakPtr()));
+  }
+}
 
 void SessionControllerImpl::GetPageContext(FetchCompleteCallback callback) {
   if (!page_context_monitor_) {
