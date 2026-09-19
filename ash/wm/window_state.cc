@@ -1048,8 +1048,10 @@ void WindowState::NotifyPreStateTypeChange(
 void WindowState::NotifyPostStateTypeChange(
     ExtendedWindowStateType old_window_state_type) {
   WindowStateType old_plain_type = IgnoreGrouping(old_window_state_type);
-  for (auto& observer : observer_list_)
-    observer.OnPostWindowStateTypeChange(this, old_plain_type);
+  // Allow reentrancy here since a call that triggers
+  // `NotifyPreStateTypeChange()` will also trigger this function.
+  observer_list_.NotifyAllowReentrancy(
+      &WindowStateObserver::OnPostWindowStateTypeChange, this, old_plain_type);
   OnPostPipStateChange(old_plain_type);
   UpdateWindowStateRestoreHistoryStack(old_window_state_type);
   SaveWindowForWindowRestore(this);
