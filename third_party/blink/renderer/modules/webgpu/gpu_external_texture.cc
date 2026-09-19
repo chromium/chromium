@@ -174,11 +174,9 @@ GPUExternalTexture* GPUExternalTexture::CreateImpl(
     return nullptr;
   }
 
-  ExternalTexture external_texture = CreateExternalTexture(
+  std::optional<ExternalTexture> external_texture = CreateExternalTexture(
       cache->device(), dst_predefined_color_space, media_video_frame);
-
-  if (external_texture.wgpu_external_texture == nullptr ||
-      external_texture.mailbox_texture == nullptr) {
+  if (!external_texture) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                       "Failed to import texture from video");
     return nullptr;
@@ -186,8 +184,8 @@ GPUExternalTexture* GPUExternalTexture::CreateImpl(
 
   GPUExternalTexture* gpu_external_texture =
       MakeGarbageCollected<GPUExternalTexture>(
-          cache, std::move(external_texture.wgpu_external_texture),
-          external_texture.mailbox_texture, external_texture.is_zero_copy,
+          cache, std::move(external_texture->wgpu_external_texture),
+          external_texture->mailbox_texture, external_texture->is_zero_copy,
           media_video_frame->metadata().read_lock_fences_enabled,
           media_video_frame_unique_id, webgpu_desc->label());
 
