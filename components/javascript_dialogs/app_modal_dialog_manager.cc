@@ -7,8 +7,10 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -233,16 +235,40 @@ bool AppModalDialogManager::HandleJavaScriptDialog(
 void AppModalDialogManager::CancelDialogs(content::WebContents* web_contents,
                                           bool reset_state) {
   AppModalDialogQueue* queue = AppModalDialogQueue::GetInstance();
+
+  // `AppModalDialogController::Invalidate()` runs the dialog's closed callback,
+  // which can synchronously re-enter this method and the dialog queue. That
+  // re-entrancy can both mutate `queue` (invalidating the iterators used here)
+  // and destroy the queued dialogs, since
+  // `AppModalDialogQueue::GetNextDialog()` deletes invalidated dialogs as it
+  // drains the queue. So collect weak pointers to the dialogs to cancel up
+  // front, and re-check each one before using it.
+  // See https://crbug.com/560439699.
+  std::vector<base::WeakPtr<AppModalDialogController>> dialogs_to_cancel;
   for (auto& dialog : *queue) {
     if (dialog->web_contents() == web_contents) {
+      dialogs_to_cancel.push_back(dialog->GetWeakPtr());
+    }
+  }
+  for (base::WeakPtr<AppModalDialogController>& dialog : dialogs_to_cancel) {
+    // `dialog` is null if it was already destroyed by the re-entrant cancelling
+    // triggered by an earlier dialog in this loop.
+    if (dialog) {
       dialog->Invalidate();
     }
   }
+
+  // The active dialog is deliberately looked up after the loop above: closing
+  // the queued dialogs can have shown a different dialog in the meantime.
+  // `Invalidate()` may destroy `active_dialog` (it closes its view, which owns
+  // it), so nothing may be done with the pointer afterwards.
   AppModalDialogController* active_dialog = queue->active_dialog();
   if (active_dialog && active_dialog->web_contents() == web_contents) {
     active_dialog->Invalidate();
   }
 
+  // Note: no weak pointer is needed for `this`: `AppModalDialogManager` is a
+  // `base::NoDestructor` singleton, so it outlives any re-entrant call above.
   if (reset_state) {
     javascript_dialog_extra_data_.erase(web_contents);
   }
