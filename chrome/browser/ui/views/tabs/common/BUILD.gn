@@ -208,6 +208,7 @@ source_set("browser_tests") {
     "//content/test:test_support",
     "//testing/gmock",
     "//ui/events:test_support",
+    "//ui/views:test_support",
   ]
 
   if (use_ozone) {

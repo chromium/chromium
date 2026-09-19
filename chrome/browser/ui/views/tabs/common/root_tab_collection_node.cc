@@ -198,6 +198,16 @@ void RootTabCollectionNode::OnTabStripModelChanged(
     for (auto index : selection.new_model.selected_indices()) {
       tabs::TabInterface* tab = tab_strip_model->GetTabAtIndex(index);
       selected_tabs.insert(tab->GetHandle());
+      if (std::optional<tab_groups::TabGroupId> group_id = tab->GetGroup();
+          group_id.has_value() && GetController() &&
+          GetController()->IsGroupCollapsed(group_id.value()) &&
+          !GetController()->GetDragHandler().IsDraggingGroups()) {
+        if (const TabGroup* group =
+                tab_strip_model->group_model()->GetTabGroup(group_id.value())) {
+          GetController()->ToggleTabGroupCollapsedState(
+              group, ToggleTabGroupCollapsedStateOrigin::kTabsSelected);
+        }
+      }
     }
     auto old_selections =
         base::STLSetDifference<SelectionHandles>(selected_tabs_, selected_tabs);

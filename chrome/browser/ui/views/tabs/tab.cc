@@ -655,6 +655,25 @@ bool Tab::OnKeyPressed(const ui::KeyEvent& event) {
     return true;
   }
 #endif
+  if (std::optional<event_utils::ExtendSelectionDirection> direction =
+          event_utils::GetExtendSelectionCommandForKeyboardEvent(event)) {
+    const int offset =
+        (*direction == event_utils::ExtendSelectionDirection::kNext) ? 1 : -1;
+    if (Tab* adjacent_tab = controller_->GetAdjacentTab(this, offset)) {
+      if (!IsSelected()) {
+        controller_->SelectTab(this, event);
+      }
+      controller_->ExtendSelectionTo(adjacent_tab);
+      base::RecordAction(UserMetricsAction("TabMultiSelect_ExtendSelectionTo"));
+      if (views::FocusManager* focus_manager = GetFocusManager()) {
+        focus_manager->SetFocusedViewWithReason(
+            adjacent_tab,
+            views::FocusManager::FocusChangeReason::kFocusTraversal);
+      }
+    }
+    return true;
+  }
+
   if (event.key_code() == ui::VKEY_RETURN && !IsSelected()) {
     controller_->SelectTab(this, event);
     return true;

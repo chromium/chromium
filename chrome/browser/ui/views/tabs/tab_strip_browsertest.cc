@@ -51,6 +51,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/test/ax_event_counter.h"
+#include "ui/views/test/mock_activation_controller.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -72,6 +73,21 @@ class TabStripBrowsertest : public InProcessBrowserTest {
     // which would end up testing behavior that is not part of the browser.
     feature_list_.InitWithFeatures(
         {}, {tabs::kTabStripUnification, features::kTabGroupHoverCards});
+  }
+
+  void SetUp() override {
+#if defined(USE_MOCK_ACTIVATION_CONTROLLER)
+    activation_controller_ =
+        std::make_unique<views::test::MockActivationController>();
+#endif
+    InProcessBrowserTest::SetUp();
+  }
+
+  void TearDownOnMainThread() override {
+#if defined(USE_MOCK_ACTIVATION_CONTROLLER)
+    activation_controller_.reset();
+#endif
+    InProcessBrowserTest::TearDownOnMainThread();
   }
 
   TabStripModel* tab_strip_model() { return browser()->GetTabStripModel(); }
@@ -127,6 +143,11 @@ class TabStripBrowsertest : public InProcessBrowserTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
+#if defined(USE_MOCK_ACTIVATION_CONTROLLER)
+  // Emulates widget activation in-process via RAII so parallel browser_tests
+  // shards cannot steal OS window activation and clobber FocusManager focus.
+  std::unique_ptr<views::test::MockActivationController> activation_controller_;
+#endif
 };
 
 // Regression test for crbug.com/40636026.
@@ -1584,6 +1605,161 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, AddSelectionFromAnchorTo) {
   EXPECT_TRUE(tab_strip()->IsTabSelected(tab_strip()->tab_at(2)));
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "TabMultiSelect_AddSelectionFromAnchorTo"));
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, KeyboardExtendTabSelection_Right) {
+  base::UserActionTester user_action_tester;
+  AppendTab();
+  AppendTab();
+  AppendTab();
+  AppendTab();
+  tab_strip()->SelectTab(tab_strip()->tab_at(1), GetDummyEvent());
+  tab_strip()->GetFocusManager()->SetFocusedView(tab_strip()->tab_at(1));
+
+  // Shift + Right should extend selection to tab 2 and advance focus.
+  ui::KeyEvent shift_right(ui::EventType::kKeyPressed, ui::VKEY_RIGHT,
+                           ui::EF_SHIFT_DOWN);
+  EXPECT_TRUE(tab_strip()->tab_at(1)->OnKeyPressed(shift_right));
+  EXPECT_FALSE(tab_strip()->IsTabSelected(tab_strip()->tab_at(0)));
+  EXPECT_TRUE(tab_strip()->IsTabSelected(tab_strip()->tab_at(1)));
+  EXPECT_TRUE(tab_strip()->IsTabSelected(tab_strip()->tab_at(2)));
+  EXPECT_FALSE(tab_strip()->IsTabSelected(tab_strip()->tab_at(3)));
+  EXPECT_TRUE(tab_strip()->tab_at(2)->HasFocus());
+  EXPECT_EQ(
+      1, user_action_tester.GetActionCount("TabMultiSelect_ExtendSelectionTo"));
+
+  // Sequential Shift + Right from newly focused tab 2 should extend to tab 3.
+  EXPECT_TRUE(tab_strip()->tab_at(2)->OnKeyPressed(shift_right));
+  EXPECT_TRUE(tab_strip()->IsTabSelected(tab_strip()->tab_at(1)));
+  EXPECT_TRUE(tab_strip()->IsTabSelected(tab_strip()->tab_at(2)));
+  EXPECT_TRUE(tab_strip()->IsTabSelected(tab_strip()->tab_at(3)));
+  EXPECT_TRUE(tab_strip()->tab_at(3)->HasFocus());
+  EXPECT_EQ(
+      2, user_action_tester.GetActionCount("TabMultiSelect_ExtendSelectionTo"));
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, KeyboardContractTabSelection_Left) {
+  base::UserActionTester user_action_tester;
+  AppendTab();
+  AppendTab();
+  AppendTab();
+  AppendTab();
+  // Anchor at tab 1 and extend right to tab 2.
+  tab_strip()->SelectTab(tab_strip()->tab_at(1), GetDummyEvent());
+  tab_strip()->GetFocusManager()->SetFocusedView(tab_strip()->tab_at(1));
+  ui::KeyEvent shift_right(ui::EventType::kKeyPressed, ui::VKEY_RIGHT,
+                           ui::EF_SHIFT_DOWN);
+  EXPECT_TRUE(tab_strip()->tab_at(1)->OnKeyPressed(shift_right));
+  EXPECT_TRUE(tab_strip()->IsTabSelected(tab_strip()->tab_at(1)));
+  EXPECT_TRUE(tab_strip()->IsTabSelected(tab_strip()->tab_at(2)));
+  EXPECT_TRUE(tab_strip()->tab_at(2)->HasFocus());
+  EXPECT_EQ(
+      1, user_action_tester.GetActionCount("TabMultiSelect_ExtendSelectionTo"));
+
+  // Contracting: Shift + Left from tab 2 back towards anchor tab 1 contracts
+  // the selection.
+  ui::KeyEvent shift_left(ui::EventType::kKeyPressed, ui::VKEY_LEFT,
+                          ui::EF_SHIFT_DOWN);
+  EXPECT_TRUE(tab_strip()->tab_at(2)->OnKeyPressed(shift_left));
+  EXPECT_TRUE(tab_strip()->IsTabSelected(tab_strip()->tab_at(1)));
+  EXPECT_FALSE(tab_strip()->IsTabSelected(tab_strip()->tab_at(2)));
+  EXPECT_TRUE(tab_strip()->tab_at(1)->HasFocus());
+  EXPECT_EQ(
+      2, user_action_tester.GetActionCount("TabMultiSelect_ExtendSelectionTo"));
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
+                       KeyboardExtendTabSelection_Boundary) {
+  AppendTab();
+  AppendTab();
+  tab_strip()->SelectTab(tab_strip()->tab_at(0), GetDummyEvent());
+  tab_strip()->GetFocusManager()->SetFocusedView(tab_strip()->tab_at(0));
+
+  // Pressing Shift + Left at index 0 should be consumed without crash, out of
+  // bounds, or wrapping around to the last tab.
+  ui::KeyEvent shift_left(ui::EventType::kKeyPressed, ui::VKEY_LEFT,
+                          ui::EF_SHIFT_DOWN);
+  EXPECT_TRUE(tab_strip()->tab_at(0)->OnKeyPressed(shift_left));
+  EXPECT_TRUE(tab_strip()->IsTabSelected(tab_strip()->tab_at(0)));
+  EXPECT_FALSE(tab_strip()->IsTabSelected(tab_strip()->tab_at(1)));
+  EXPECT_FALSE(tab_strip()->IsTabSelected(tab_strip()->tab_at(2)));
+  EXPECT_TRUE(tab_strip()->tab_at(0)->HasFocus());
+
+  // Pressing Shift + Right at the last tab should also be consumed without
+  // wrapping around to index 0.
+  tab_strip()->SelectTab(tab_strip()->tab_at(2), GetDummyEvent());
+  tab_strip()->GetFocusManager()->SetFocusedView(tab_strip()->tab_at(2));
+  ui::KeyEvent shift_right(ui::EventType::kKeyPressed, ui::VKEY_RIGHT,
+                           ui::EF_SHIFT_DOWN);
+  EXPECT_TRUE(tab_strip()->tab_at(2)->OnKeyPressed(shift_right));
+  EXPECT_FALSE(tab_strip()->IsTabSelected(tab_strip()->tab_at(0)));
+  EXPECT_FALSE(tab_strip()->IsTabSelected(tab_strip()->tab_at(1)));
+  EXPECT_TRUE(tab_strip()->IsTabSelected(tab_strip()->tab_at(2)));
+  EXPECT_TRUE(tab_strip()->tab_at(2)->HasFocus());
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
+                       KeyboardExtendTabSelection_AfterFocusTraversal) {
+  AppendTab();
+  AppendTab();
+  AppendTab();
+  AppendTab();
+  // Select and anchor at tab 0.
+  tab_strip()->SelectTab(tab_strip()->tab_at(0), GetDummyEvent());
+  ASSERT_TRUE(tab_strip()->IsTabSelected(tab_strip()->tab_at(0)));
+  ASSERT_FALSE(tab_strip()->IsTabSelected(tab_strip()->tab_at(2)));
+
+  // Simulate plain arrow-key focus traversal to tab 2 without updating
+  // selection.
+  tab_strip()->GetFocusManager()->SetFocusedView(tab_strip()->tab_at(2));
+  ASSERT_TRUE(tab_strip()->tab_at(2)->HasFocus());
+  ASSERT_TRUE(tab_strip()->IsTabSelected(tab_strip()->tab_at(0)));
+  ASSERT_FALSE(tab_strip()->IsTabSelected(tab_strip()->tab_at(2)));
+
+  // Pressing Shift + Right on unfocused tab 2 should re-anchor at tab 2 and
+  // select tabs 2 and 3 rather than extending from the old anchor (tab 0).
+  ui::KeyEvent shift_right(ui::EventType::kKeyPressed, ui::VKEY_RIGHT,
+                           ui::EF_SHIFT_DOWN);
+  EXPECT_TRUE(tab_strip()->tab_at(2)->OnKeyPressed(shift_right));
+  EXPECT_FALSE(tab_strip()->IsTabSelected(tab_strip()->tab_at(0)));
+  EXPECT_FALSE(tab_strip()->IsTabSelected(tab_strip()->tab_at(1)));
+  EXPECT_TRUE(tab_strip()->IsTabSelected(tab_strip()->tab_at(2)));
+  EXPECT_TRUE(tab_strip()->IsTabSelected(tab_strip()->tab_at(3)));
+  EXPECT_FALSE(tab_strip()->IsTabSelected(tab_strip()->tab_at(4)));
+  EXPECT_TRUE(tab_strip()->tab_at(3)->HasFocus());
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
+                       KeyboardExtendTabSelection_CollapsedGroupAndPinned) {
+  AppendTab();
+  AppendTab();
+  AppendTab();
+  // Tab 0 is pinned; Tab 1 is unpinned; Tabs 2 and 3 are in a collapsed group.
+  tab_strip_model()->SetTabPinned(0, true);
+  tab_groups::TabGroupId group = tab_strip_model()->AddToNewGroup({2, 3});
+  tab_strip()->ToggleTabGroupCollapsedState(group);
+  ASSERT_TRUE(tab_strip()->IsGroupCollapsed(group));
+
+  // Select and focus pinned tab 0, then extend right across the pinned/unpinned
+  // boundary to tab 1.
+  tab_strip()->SelectTab(tab_strip()->tab_at(0), GetDummyEvent());
+  tab_strip()->GetFocusManager()->SetFocusedView(tab_strip()->tab_at(0));
+  ui::KeyEvent shift_right(ui::EventType::kKeyPressed, ui::VKEY_RIGHT,
+                           ui::EF_SHIFT_DOWN);
+  EXPECT_TRUE(tab_strip()->tab_at(0)->OnKeyPressed(shift_right));
+  EXPECT_TRUE(tab_strip()->IsTabSelected(tab_strip()->tab_at(0)));
+  EXPECT_TRUE(tab_strip()->IsTabSelected(tab_strip()->tab_at(1)));
+  EXPECT_TRUE(tab_strip()->tab_at(1)->HasFocus());
+
+  // Extend right from tab 1 into tab 2 (inside the collapsed group). The group
+  // should auto-expand so focus lands on a visible tab view.
+  EXPECT_TRUE(tab_strip()->tab_at(1)->OnKeyPressed(shift_right));
+  EXPECT_FALSE(tab_strip()->IsGroupCollapsed(group));
+  EXPECT_TRUE(tab_strip()->IsTabSelected(tab_strip()->tab_at(0)));
+  EXPECT_TRUE(tab_strip()->IsTabSelected(tab_strip()->tab_at(1)));
+  EXPECT_TRUE(tab_strip()->IsTabSelected(tab_strip()->tab_at(2)));
+  EXPECT_TRUE(tab_strip()->tab_at(2)->GetVisible());
+  EXPECT_TRUE(tab_strip()->tab_at(2)->HasFocus());
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, CreateSplitUKMLogged) {

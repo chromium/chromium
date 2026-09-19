@@ -66,4 +66,37 @@ std::optional<ReorderDirection> GetReorderCommandForKeyboardEvent(
   }
 }
 
+std::optional<ExtendSelectionDirection>
+GetExtendSelectionCommandForKeyboardEvent(
+    const ui::KeyEvent& event,
+    views::LayoutOrientation orientation) {
+  if (event.type() != ui::EventType::kKeyPressed || !event.IsShiftDown() ||
+      event.IsControlDown() || event.IsCommandDown() || event.IsAltDown() ||
+      event.IsAltGrDown()) {
+    return std::nullopt;
+  }
+
+  if (orientation == views::LayoutOrientation::kHorizontal) {
+    const bool is_right = event.key_code() == ui::VKEY_RIGHT;
+    const bool is_left = event.key_code() == ui::VKEY_LEFT;
+    if (!is_left && !is_right) {
+      return std::nullopt;
+    }
+
+    const bool is_rtl = base::i18n::IsRTL();
+    const bool is_next = (is_right && !is_rtl) || (is_left && is_rtl);
+    return is_next ? ExtendSelectionDirection::kNext
+                   : ExtendSelectionDirection::kPrevious;
+  } else {
+    switch (event.key_code()) {
+      case ui::VKEY_UP:
+        return ExtendSelectionDirection::kPrevious;
+      case ui::VKEY_DOWN:
+        return ExtendSelectionDirection::kNext;
+      default:
+        return std::nullopt;
+    }
+  }
+}
+
 }  // namespace event_utils

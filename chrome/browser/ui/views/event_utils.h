@@ -39,6 +39,25 @@ GetReorderCommandForKeyboardEvent(const ui::KeyEvent& event,
                                   views::LayoutOrientation orientation =
                                       views::LayoutOrientation::kHorizontal);
 
+enum class ExtendSelectionDirection {
+  // The selection should extend to a previous entry in an ordered list (this
+  // corresponds to "left" in a left-to-right UI, or "up" in a vertical UI).
+  kPrevious,
+  // The selection should extend to a further entry in an ordered list (this
+  // corresponds to "right" in a left-to-right UI, or "down" in a vertical UI).
+  kNext,
+};
+
+// Some keyboard commands are used to sequentially extend selection across
+// items, such as tabs in the tabstrip. If the event corresponds to an extend
+// selection command, returns the direction of the extension. If the event does
+// not correspond to an extend selection command, returns nullopt.
+CHROME_VIEWS_EXPORT std::optional<ExtendSelectionDirection>
+GetExtendSelectionCommandForKeyboardEvent(
+    const ui::KeyEvent& event,
+    views::LayoutOrientation orientation =
+        views::LayoutOrientation::kHorizontal);
+
 }  // namespace event_utils
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EVENT_UTILS_H_
