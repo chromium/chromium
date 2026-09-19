@@ -64,6 +64,8 @@ class TabFavicon : public favicon::FaviconDriverObserver {
                         const gfx::Image& image) override;
 
  private:
+  float GetDeviceScaleFactor() const;
+
   static void GetFaviconOrFallback(
       TabAndroid* tab_android,
       base::OnceCallback<void(const SkBitmap&)> callback);

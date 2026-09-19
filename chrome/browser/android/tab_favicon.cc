@@ -169,6 +169,13 @@ void TabFavicon::OnDestroyed(JNIEnv* env) {
   delete this;
 }
 
+float TabFavicon::GetDeviceScaleFactor() const {
+  if (active_web_contents_ && active_web_contents_->GetNativeView()) {
+    return active_web_contents_->GetNativeView()->GetDipScale();
+  }
+  return display::Screen::Get()->GetPrimaryDisplay().device_scale_factor();
+}
+
 ScopedJavaLocalRef<jobject> TabFavicon::GetFavicon(JNIEnv* env) {
   ScopedJavaLocalRef<jobject> bitmap;
 
@@ -176,18 +183,13 @@ ScopedJavaLocalRef<jobject> TabFavicon::GetFavicon(JNIEnv* env) {
     return bitmap;
   }
 
+  float device_scale_factor = GetDeviceScaleFactor();
   // Always return the default favicon in Android.
-  SkBitmap favicon = favicon_driver_->GetFavicon().AsBitmap();
+  SkBitmap favicon = favicon_driver_->GetFavicon()
+                         .AsImageSkia()
+                         .GetRepresentation(device_scale_factor)
+                         .GetBitmap();
   if (!favicon.empty()) {
-    float device_scale_factor = 1.0f;
-    if (active_web_contents_ && active_web_contents_->GetNativeView()) {
-      device_scale_factor =
-          active_web_contents_->GetNativeView()->GetDipScale();
-    } else {
-      device_scale_factor =
-          display::Screen::Get()->GetPrimaryDisplay().device_scale_factor();
-    }
-
     int target_size_dip = device_scale_factor * gfx::kFaviconSize;
     if (favicon.width() != target_size_dip ||
         favicon.height() != target_size_dip) {
@@ -206,7 +208,8 @@ void TabFavicon::OnFaviconUpdated(favicon::FaviconDriver* favicon_driver,
                                   const GURL& icon_url,
                                   bool icon_url_changed,
                                   const gfx::Image& image) {
-  SkBitmap favicon = image.AsImageSkia().GetRepresentation(1.0f).GetBitmap();
+  SkBitmap favicon =
+      image.AsImageSkia().GetRepresentation(GetDeviceScaleFactor()).GetBitmap();
   if (favicon.empty()) {
     return;
   }
@@ -220,8 +223,8 @@ void TabFavicon::OnFaviconUpdated(favicon::FaviconDriver* favicon_driver,
 
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  auto new_width = image.Width();
-  auto new_height = image.Height();
+  auto new_width = favicon.width();
+  auto new_height = favicon.height();
   if (static_cast<bool>(Java_TabFavicon_shouldUpdateFaviconForBrowserUi(
           env, tab_android_, new_width, new_height))) {
     Java_TabFavicon_onFaviconAvailable(
