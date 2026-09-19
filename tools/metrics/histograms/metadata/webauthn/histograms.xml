@@ -988,6 +988,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.Windows.KeyCredentialCreationFailureStatus"
+    enum="WindowsKeyCredentialStatus" expires_after="2027-03-07">
+  <owner>kenrb@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the non-success KeyCredentialStatus returned by
+    IKeyCredentialRetrievalResult when creating or opening a KeyCredential via
+    the Windows Runtime API fails with a status error.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.Windows.KeyCredentialManagerSupported"
     enum="WindowsKeyCredentialManagerSupportResults" expires_after="2026-12-31">
   <owner>kenrb@chromium.org</owner>
@@ -1008,6 +1019,17 @@ chromium-metrics-reviews@google.com.
     Windows Runtime API. It is recorded when that method is called, which
     currently only happens when signing a UV passkey request for the GPM passkey
     enclave service.
+  </summary>
+</histogram>
+
+<histogram name="WebAuthentication.Windows.KeyCredentialSignFailureStatus"
+    enum="WindowsKeyCredentialStatus" expires_after="2027-03-07">
+  <owner>kenrb@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the non-success KeyCredentialStatus returned by
+    IKeyCredentialOperationResult when signing with a KeyCredential via the
+    Windows Runtime API fails with a status error.
   </summary>
 </histogram>
 

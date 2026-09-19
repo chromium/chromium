@@ -46,6 +46,8 @@ using ABI::Windows::Security::Credentials::KeyCredentialOperationResult;
 using ABI::Windows::Security::Credentials::KeyCredentialRetrievalResult;
 using ABI::Windows::Security::Credentials::KeyCredentialStatus;
 using ABI::Windows::Security::Credentials::
+    KeyCredentialStatus_AlgorithmNotSupported;
+using ABI::Windows::Security::Credentials::
     KeyCredentialStatus_CredentialAlreadyExists;
 using ABI::Windows::Security::Credentials::KeyCredentialStatus_NotFound;
 using ABI::Windows::Security::Credentials::KeyCredentialStatus_Success;
@@ -65,6 +67,7 @@ namespace {
 // and key creation.
 // Do not delete or reorder entries, this must be kept in sync with the
 // corresponding metrics enum.
+// LINT.IfChange(KeyCredentialCreateResult)
 enum class KeyCredentialCreateResult {
   kSucceeded = 0,
   kAPIReturnedError = 1,
@@ -77,7 +80,9 @@ enum class KeyCredentialCreateResult {
 
   kMaxValue = 7,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:WindowsKeyCredentialCreateResult)
 
+// LINT.IfChange(KeyCredentialSignResult)
 enum class KeyCredentialSignResult {
   kSucceeded = 0,
   kAPIReturnedError = 1,
@@ -90,15 +95,55 @@ enum class KeyCredentialSignResult {
 
   kMaxValue = 7,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:WindowsKeyCredentialSignResult)
+
+// Mirrors ABI::Windows::Security::Credentials::KeyCredentialStatus.
+// Do not delete or reorder entries, this must be kept in sync with the
+// corresponding metrics enum.
+// LINT.IfChange(KeyCredentialStatusResult)
+enum class KeyCredentialStatusResult {
+  kSuccess = 0,
+  kUnknownError = 1,
+  kNotFound = 2,
+  kUserCanceled = 3,
+  kUserPrefersPassword = 4,
+  kCredentialAlreadyExists = 5,
+  kSecurityDeviceLocked = 6,
+  kAlgorithmNotSupported = 7,
+
+  kMaxValue = 7,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:WindowsKeyCredentialStatus)
+
+KeyCredentialStatusResult ConvertKeyCredentialStatus(
+    KeyCredentialStatus status) {
+  if (status < 0 ||
+      status > static_cast<int>(KeyCredentialStatusResult::kMaxValue)) {
+    return KeyCredentialStatusResult::kUnknownError;
+  }
+  return static_cast<KeyCredentialStatusResult>(status);
+}
 
 void RecordCreateAsyncResult(KeyCredentialCreateResult result) {
   base::UmaHistogramEnumeration(
       "WebAuthentication.Windows.KeyCredentialCreation", result);
 }
 
+void RecordCreateFailureStatus(KeyCredentialStatus status) {
+  base::UmaHistogramEnumeration(
+      "WebAuthentication.Windows.KeyCredentialCreationFailureStatus",
+      ConvertKeyCredentialStatus(status));
+}
+
 void RecordSignAsyncResult(KeyCredentialSignResult result) {
   base::UmaHistogramEnumeration("WebAuthentication.Windows.KeyCredentialSign",
                                 result);
+}
+
+void RecordSignFailureStatus(KeyCredentialStatus status) {
+  base::UmaHistogramEnumeration(
+      "WebAuthentication.Windows.KeyCredentialSignFailureStatus",
+      ConvertKeyCredentialStatus(status));
 }
 
 // Due to a Windows bug (http://task.ms/49689617), the system UI for
@@ -128,6 +173,7 @@ class HelloDialogForegrounder
   // user verification dialog to the foreground.
   // Do not delete or reorder entries, this must be kept in sync with the
   // corresponding metrics enum.
+  // LINT.IfChange(ForegroundHelloDialogResult)
   enum class ForegroundHelloDialogResult {
     kSucceeded = 0,
     kForegroundingFailed = 1,
@@ -136,6 +182,7 @@ class HelloDialogForegrounder
 
     kMaxValue = 3,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:WindowsForegroundedHelloDialog)
 
   enum class State {
     kNotStarted,
@@ -228,10 +275,18 @@ void OnSigningSuccess(
 
   KeyCredentialStatus status;
   HRESULT hr = sign_result->get_Status(&status);
-  if (FAILED(hr) || status != KeyCredentialStatus_Success) {
+  if (FAILED(hr)) {
     LOG(ERROR) << FormatError(
         "Failed to obtain Status from IKeyCredentialOperationResult", hr);
     RecordSignAsyncResult(KeyCredentialSignResult::kInvalidStatusReturned);
+    std::move(callback).Run(
+        base::unexpected(UserVerifyingKeySigningError::kUnknownError));
+    return;
+  } else if (status != KeyCredentialStatus_Success) {
+    LOG(ERROR) << "IKeyCredentialOperationResult failed with status "
+               << static_cast<uint32_t>(status);
+    RecordSignAsyncResult(KeyCredentialSignResult::kInvalidStatusReturned);
+    RecordSignFailureStatus(status);
     UserVerifyingKeySigningError sign_error;
     switch (status) {
       case KeyCredentialStatus_UserCanceled:
@@ -396,6 +451,7 @@ void OnKeyCreationCompletionSuccess(
     LOG(ERROR) << "IKeyCredentialRetrievalResult failed with status "
                << static_cast<uint32_t>(status);
     RecordCreateAsyncResult(KeyCredentialCreateResult::kInvalidResultReturned);
+    RecordCreateFailureStatus(status);
     UserVerifyingKeyCreationError uv_key_error;
     switch (status) {
       case KeyCredentialStatus_CredentialAlreadyExists:
@@ -407,6 +463,9 @@ void OnKeyCreationCompletionSuccess(
       case KeyCredentialStatus_UserCanceled:
       case KeyCredentialStatus_UserPrefersPassword:
         uv_key_error = UserVerifyingKeyCreationError::kUserCancellation;
+        break;
+      case KeyCredentialStatus_AlgorithmNotSupported:
+        uv_key_error = UserVerifyingKeyCreationError::kNoMatchingAlgorithm;
         break;
       default:
         uv_key_error = UserVerifyingKeyCreationError::kUnknownError;

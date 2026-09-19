@@ -740,12 +740,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//third_party/blink/renderer/modules/credentialmanagement/authentication_credentials_container.cc:WebAuthenticationResidentKeyRequirement) -->
 
+<!-- LINT.IfChange(WindowsForegroundedHelloDialog) -->
+
 <enum name="WindowsForegroundedHelloDialog">
   <int value="0" label="Succeeded"/>
   <int value="1" label="SetForegroundWindow failed"/>
   <int value="2" label="Window not found"/>
   <int value="3" label="Polling cancelled before finding window"/>
 </enum>
+
+<!-- LINT.ThenChange(//crypto/user_verifying_key_win.cc:ForegroundHelloDialogResult) -->
+
+<!-- LINT.IfChange(WindowsKeyCredentialCreateResult) -->
 
 <enum name="WindowsKeyCredentialCreateResult">
   <int value="0" label="Operation succeeded"/>
@@ -758,6 +764,8 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Invalid credential returned"/>
 </enum>
 
+<!-- LINT.ThenChange(//crypto/user_verifying_key_win.cc:KeyCredentialCreateResult) -->
+
 <enum name="WindowsKeyCredentialManagerSupportResults">
   <int value="0" label="KeyCredentialManager Available"/>
   <int value="1" label="KeyCredentialManager Not Available"/>
@@ -766,6 +774,8 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="PostAsyncHandlers Call Failed"/>
   <int value="5" label="Async Operation Failed"/>
 </enum>
+
+<!-- LINT.IfChange(WindowsKeyCredentialSignResult) -->
 
 <enum name="WindowsKeyCredentialSignResult">
   <int value="0" label="Operation succeeded"/>
@@ -777,6 +787,23 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Invalid result returned"/>
   <int value="7" label="Invalid signature buffer returned"/>
 </enum>
+
+<!-- LINT.ThenChange(//crypto/user_verifying_key_win.cc:KeyCredentialSignResult) -->
+
+<!-- LINT.IfChange(WindowsKeyCredentialStatus) -->
+
+<enum name="WindowsKeyCredentialStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="UnknownError"/>
+  <int value="2" label="NotFound"/>
+  <int value="3" label="UserCanceled"/>
+  <int value="4" label="UserPrefersPassword"/>
+  <int value="5" label="CredentialAlreadyExists"/>
+  <int value="6" label="SecurityDeviceLocked"/>
+  <int value="7" label="AlgorithmNotSupported"/>
+</enum>
+
+<!-- LINT.ThenChange(//crypto/user_verifying_key_win.cc:KeyCredentialStatusResult) -->
 
 </enums>
 
