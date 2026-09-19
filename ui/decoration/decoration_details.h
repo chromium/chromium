@@ -5,6 +5,7 @@
 #ifndef UI_DECORATION_DECORATION_DETAILS_H_
 #define UI_DECORATION_DECORATION_DETAILS_H_
 
+#include <concepts>
 #include <cstddef>
 #include <memory>
 #include <utility>
@@ -25,7 +26,31 @@ class Canvas;
 
 namespace ui::decoration {
 
-template <typename Spec, typename Generator>
+// Defines the requirements for a generator used by DecorationDetails.
+//
+// - `GetMargins()`: Insets from content bounds to the decoration's outer edge
+//   (negative when extending outside content bounds).
+// - `GetNineboxApertureInsets()`: Insets from the ninebox image edges to its
+//   stretchable center tile (total space needed for the decoration and corner
+//   rounding).
+// - `Draw()`: Paints the decoration around `content_rect` without leaving
+//   persistent state (e.g., clips or transforms) on the canvas.
+template <typename Generator, typename Spec>
+concept DecorationGenerator =
+    requires(gfx::Canvas* canvas,
+             const Spec& spec,
+             const gfx::RoundedCornersF& rounded_corners,
+             const gfx::Rect& content_rect) {
+      { Generator::GetMargins(spec) } -> std::same_as<gfx::Insets>;
+      {
+        Generator::GetNineboxApertureInsets(spec, rounded_corners)
+      } -> std::same_as<gfx::Insets>;
+      {
+        Generator::Draw(canvas, spec, rounded_corners, content_rect)
+      } -> std::same_as<void>;
+    };
+
+template <typename Spec, DecorationGenerator<Spec> Generator>
 struct DecorationDetails;
 
 namespace internal {
@@ -33,18 +58,7 @@ namespace internal {
 // Creates an image with decorations painted around a rounded rect with the
 // given corner radii. The image is sized just large enough to paint the
 // decoration with a 1px square center aperture.
-//
-// `Generator` must define:
-//   - `static gfx::Insets GetNineboxApertureInsets(const Spec&, const
-//   gfx::RoundedCornersF&);`
-//   - `static gfx::Insets GetMargins(const Spec&);`
-//   - `static void Draw(gfx::Canvas*, const Spec&, const
-//   gfx::RoundedCornersF&, const gfx::Rect&);`
-//
-// `Draw()` must leave no persistent state on the canvas: any clip or transform
-// it needs must be undone before it returns, or it will corrupt whichever
-// generator draws next when several are composited into one image.
-template <typename Spec, typename Generator>
+template <typename Spec, DecorationGenerator<Spec> Generator>
 class NineboxImageSource : public gfx::CanvasImageSource {
  public:
   NineboxImageSource(const Spec& spec,
@@ -85,7 +99,7 @@ class NineboxImageSource : public gfx::CanvasImageSource {
 };
 
 // Generic cache for decoration details.
-template <typename Spec, typename Generator>
+template <typename Spec, DecorationGenerator<Spec> Generator>
 class DecorationCache {
  public:
   static const DecorationDetails<Spec, Generator>& Get(
@@ -149,7 +163,7 @@ class DecorationCache {
 
 // A struct that describes a visual decoration and its depiction as an image
 // suitable for ninebox tiling.
-template <typename Spec, typename Generator>
+template <typename Spec, DecorationGenerator<Spec> Generator>
 struct DecorationDetails {
   DecorationDetails(const Spec& spec,
                     const gfx::ImageSkia& nine_patch_image,
