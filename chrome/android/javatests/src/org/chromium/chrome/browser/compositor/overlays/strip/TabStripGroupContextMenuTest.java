@@ -186,7 +186,6 @@ public class TabStripGroupContextMenuTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/511288697
     public void testUngroup_Incognito() {
         // Prepare incognito state and show menu.
         prepareIncognitoState();
@@ -265,7 +264,6 @@ public class TabStripGroupContextMenuTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/511288697
     public void testCloseGroup_Incognito() {
         // Prepare incognito state and show menu.
         prepareIncognitoState();
