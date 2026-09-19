@@ -62,6 +62,33 @@ function waitForAllTabs(callback) {
   waitForTabs();
 }
 
+// Waits until a tab has non-zero width and height.
+function waitForTabWithNonZeroSize(tabId, callback) {
+  const MAX_RETRIES = 100;  // 3 seconds timeout (100 * 30ms).
+  let attempts = 0;
+
+  function waitForTab() {
+    chrome.tabs.get(tabId, function(tab) {
+      if (chrome.runtime.lastError) {
+        chrome.test.fail(
+            'Error waiting for tab size: ' + chrome.runtime.lastError.message);
+        return;
+      }
+
+      if (tab && tab.width > 0 && tab.height > 0) {
+        callback(tab);
+      } else if (attempts < MAX_RETRIES) {
+        attempts++;
+        setTimeout(waitForTab, 30);
+      } else {
+        chrome.test.fail(
+            'Timeout waiting for tab ' + tabId + ' to have a non-zero size.');
+      }
+    });
+  }
+  waitForTab();
+}
+
 // Like chrome.tabs.query, but with the ability to filter by |tabId| as well.
 // Returns the found tab or null
 function queryForTab(tabId, queryInfo, callback) {
