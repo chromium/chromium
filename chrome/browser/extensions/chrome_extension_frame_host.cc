@@ -38,14 +38,22 @@ void ChromeExtensionFrameHost::RequestScriptInjectionPermission(
     mojom::InjectionType script_type,
     mojom::RunLocation run_location,
     RequestScriptInjectionPermissionCallback callback) {
+  content::RenderFrameHost& render_frame_host = receivers_.CurrentTargetFrame();
   if (!crx_file::id_util::IdIsValid(extension_id)) {
-    content::RenderProcessHost* render_process =
-        receivers_.CurrentTargetFrame().GetProcess();
+    content::RenderProcessHost* render_process = render_frame_host.GetProcess();
     if (render_process) {
       bad_message::ReceivedBadMessage(
           render_process,
           bad_message::CEFH_INVALID_EXTENSION_ID_FOR_SCRIPT_INJECT_REQUEST);
     }
+    return;
+  }
+
+  // We only handle blocked actions for the primary main frame since there is no
+  // way to surface permission requests for non-primary frames (such as
+  // subframes or prerendered frames) to the user.
+  if (!render_frame_host.IsInPrimaryMainFrame()) {
+    std::move(callback).Run(false);
     return;
   }
 

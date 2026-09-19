@@ -12,6 +12,7 @@
 #include "extensions/renderer/extension_web_view_helper.h"
 #include "extensions/renderer/renderer_extension_registry.h"
 #include "pdf/buildflags.h"
+#include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -102,10 +103,15 @@ PermissionsData::PageAccess ExtensionInjectionHost::CanExecuteOnFrame(
         tab_id,
         nullptr /* ignore error */);
   }
+  blink::WebDocument document = web_local_frame->GetDocument();
+  const bool document_is_prerendering =
+      !document.IsNull() && document.IsPrerendering();
   if (access == PermissionsData::PageAccess::kWithheld &&
-      (tab_id == -1 || !render_frame->GetWebFrame()->IsOutermostMainFrame())) {
-    // Note: we don't consider ACCESS_WITHHELD for child frames or for frames
-    // outside of tabs because there is nowhere to surface a request.
+      (tab_id == -1 || !web_local_frame->IsOutermostMainFrame() ||
+       document_is_prerendering)) {
+    // Note: we don't consider ACCESS_WITHHELD for child frames, for frames
+    // outside of tabs, or for prerendered frames because there is nowhere to
+    // surface a request.
     // TODO(devlin): We should ask for permission somehow. crbug.com/40419472.
     access = PermissionsData::PageAccess::kDenied;
   }
