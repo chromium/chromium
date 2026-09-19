@@ -3459,6 +3459,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="IOS.Gemini.Suggestions.Settings.SuggestionsToggled"
+    enum="Boolean" expires_after="2027-02-06">
+  <owner>kanouche@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records that the user toggled the Suggestions setting on (true) or off
+    (false) in the Gemini suggestions settings UI.
+  </summary>
+</histogram>
+
 <histogram name="IOS.GMOSKOAttributionPlacementID.LongAttributionWindow"
     units="Placement ID" expires_after="2027-07-26">
   <owner>gujen@google.com</owner>

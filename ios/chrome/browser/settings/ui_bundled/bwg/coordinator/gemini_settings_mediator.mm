@@ -35,6 +35,8 @@ const NSInteger kDynamicSettingsItemTypeOffset = 10000;
   PrefBackedBoolean* _preciseLocationPref;
   // Accessor for the camera permission preference.
   PrefBackedBoolean* _cameraPref;
+  // Accessor for the suggestions preference.
+  PrefBackedBoolean* _suggestionsPref;
   // Accessor for the closed captioning preference.
   PrefBackedBoolean* _closedCaptioningPref;
   // Accessor for the microphone permission preference.
@@ -68,6 +70,13 @@ const NSInteger kDynamicSettingsItemTypeOffset = 10000;
                    prefName:prefs::kIOSGeminiCameraSetting];
     _cameraPref.observer = self;
 
+    if (IsGeminiContextualSuggestionsCuesEnabled()) {
+      _suggestionsPref = [[PrefBackedBoolean alloc]
+          initWithPrefService:prefService
+                     prefName:prefs::kIOSGeminiSuggestionsSetting];
+      _suggestionsPref.observer = self;
+    }
+
     _closedCaptioningPref = [[PrefBackedBoolean alloc]
         initWithPrefService:prefService
                    prefName:prefs::kIOSGeminiLiveClosedCaptioningSetting];
@@ -96,6 +105,10 @@ const NSInteger kDynamicSettingsItemTypeOffset = 10000;
   _cameraPref.observer = nil;
   _cameraPref = nil;
 
+  [_suggestionsPref stop];
+  _suggestionsPref.observer = nil;
+  _suggestionsPref = nil;
+
   [_closedCaptioningPref stop];
   _closedCaptioningPref.observer = nil;
   _closedCaptioningPref = nil;
@@ -117,6 +130,9 @@ const NSInteger kDynamicSettingsItemTypeOffset = 10000;
   _consumer = consumer;
   [_consumer setPreciseLocationEnabled:_preciseLocationPref.value];
   [_consumer setCameraPermissionEnabled:_cameraPref.value];
+  if (IsGeminiContextualSuggestionsCuesEnabled()) {
+    [_consumer setGeminiSuggestionsEnabled:_suggestionsPref.value];
+  }
   [_consumer setClosedCaptioningEnabled:_closedCaptioningPref.value];
   [_consumer setMicrophoneEnabled:_microphonePref.value];
   [_consumer setPageContentSharingEnabled:_pageContentPref.value];
@@ -187,6 +203,8 @@ const NSInteger kDynamicSettingsItemTypeOffset = 10000;
     [self.consumer setPreciseLocationEnabled:_preciseLocationPref.value];
   } else if (observableBoolean == _cameraPref) {
     [self.consumer setCameraPermissionEnabled:_cameraPref.value];
+  } else if (observableBoolean == _suggestionsPref) {
+    [self.consumer setGeminiSuggestionsEnabled:_suggestionsPref.value];
   } else if (observableBoolean == _closedCaptioningPref) {
     [self.consumer setClosedCaptioningEnabled:_closedCaptioningPref.value];
   } else if (observableBoolean == _microphonePref) {

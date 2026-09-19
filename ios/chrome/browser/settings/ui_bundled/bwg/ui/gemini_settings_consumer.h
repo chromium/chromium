@@ -18,6 +18,9 @@
 // Sets the Camera Permission boolean.
 - (void)setCameraPermissionEnabled:(BOOL)enabled;
 
+// Sets the Gemini Suggestions boolean.
+- (void)setGeminiSuggestionsEnabled:(BOOL)enabled;
+
 // Sets the Closed Captioning boolean.
 - (void)setClosedCaptioningEnabled:(BOOL)enabled;
 

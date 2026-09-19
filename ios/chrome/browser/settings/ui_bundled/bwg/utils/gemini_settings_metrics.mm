@@ -68,3 +68,25 @@ void RecordGeminiCameraSettingsToggled(bool enabled) {
         "MobileGeminiCameraSettingsGeminiCameraPermissionToggledOff"));
   }
 }
+
+void RecordGeminiSuggestionsSettingsClose() {
+  base::RecordAction(
+      base::UserMetricsAction("MobileGeminiSuggestionsSettingsClose"));
+}
+
+void RecordGeminiSuggestionsSettingsBack() {
+  base::RecordAction(
+      base::UserMetricsAction("MobileGeminiSuggestionsSettingsBack"));
+}
+
+void RecordGeminiSuggestionsSettingsToggled(bool enabled) {
+  base::UmaHistogramBoolean(
+      "IOS.Gemini.Suggestions.Settings.SuggestionsToggled", enabled);
+  if (enabled) {
+    base::RecordAction(base::UserMetricsAction(
+        "MobileGeminiSuggestionsSettingsSuggestionsToggledOn"));
+  } else {
+    base::RecordAction(base::UserMetricsAction(
+        "MobileGeminiSuggestionsSettingsSuggestionsToggledOff"));
+  }
+}

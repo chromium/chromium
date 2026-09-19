@@ -20587,6 +20587,42 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileGeminiSuggestionsSettingsBack">
+  <owner>kanouche@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    Reported when the user navigates back from the Gemini Suggestions Settings
+    screen to the Gemini Settings screen. iOS only.
+  </description>
+</action>
+
+<action name="MobileGeminiSuggestionsSettingsClose">
+  <owner>kanouche@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    Reported when the Gemini Suggestions Settings UI is dismissed via Done
+    button. iOS only.
+  </description>
+</action>
+
+<action name="MobileGeminiSuggestionsSettingsSuggestionsToggledOff">
+  <owner>kanouche@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    Reported when the user toggles the Gemini suggestions setting off from the
+    Gemini Suggestions Settings UI. iOS only.
+  </description>
+</action>
+
+<action name="MobileGeminiSuggestionsSettingsSuggestionsToggledOn">
+  <owner>kanouche@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    Reported when the user toggles the Gemini suggestions setting on from the
+    Gemini Suggestions Settings UI. iOS only.
+  </description>
+</action>
+
 <action name="MobileGeminiTabDetached">
   <owner>joepeplowski@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>
