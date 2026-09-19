@@ -337,6 +337,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, LensButton) {
 IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, TabPicker) {
   RunTest("contextual_tasks/tab_picker_test.js", "mocha.run();");
 }
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, Favicons) {
+  RunTest("contextual_tasks/favicons_test.js", "mocha.run();");
+}
 #endif
 
 // TODO(crbug.com/480689282): Flaky on ChromeOS debug.

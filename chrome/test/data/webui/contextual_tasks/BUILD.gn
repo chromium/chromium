@@ -44,6 +44,7 @@ build_webui_tests("build") {
   if (!is_android) {
     files += [
       "extension_post_message_handler_test.ts",
+      "favicons_test.ts",
       "info_tooltip_test.ts",
       "lens_button_test.ts",
       "tab_picker_test.ts",
