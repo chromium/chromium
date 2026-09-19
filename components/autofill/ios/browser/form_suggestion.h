@@ -15,6 +15,7 @@
 #import "components/autofill/core/browser/suggestions/suggestion.h"
 #import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
 
@@ -40,6 +41,12 @@ struct FormSuggestionMetadata {
   // Indicates if the UI surface that uses the suggestion explicitly accepts
   // auto-submission.
   bool accepts_auto_submit = false;
+
+  // The form and field that triggered these suggestions.
+  // Note that the `form_id` identifies the *browser* form, i.e., the form after
+  // flattening the renderer form.
+  autofill::FormGlobalId form_id;
+  autofill::FieldGlobalId field_id;
 
   // The delegate that provided this suggestion. Used for stateless suggestion
   // routing in `AutofillAgent`. Must be preserved when copying or modifying

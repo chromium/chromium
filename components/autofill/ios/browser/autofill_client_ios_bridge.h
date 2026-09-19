@@ -21,7 +21,9 @@ struct Suggestion;
 
 - (void)showAutofillPopup:(const std::vector<autofill::Suggestion>&)suggestions
        suggestionDelegate:
-           (const base::WeakPtr<autofill::AutofillSuggestionDelegate>&)delegate;
+           (const base::WeakPtr<autofill::AutofillSuggestionDelegate>&)delegate
+                   formId:(autofill::FormGlobalId)formId
+                  fieldId:(autofill::FieldGlobalId)fieldId;
 
 - (void)hideAutofillPopup;
 

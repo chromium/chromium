@@ -246,7 +246,9 @@ WebViewAutofillClientIOS::ShowAutofillSuggestions(
     base::WeakPtr<AutofillSuggestionDelegate> delegate) {
   active_suggestion_delegate_ = std::move(delegate);
   [bridge_ showAutofillPopup:open_args.suggestions
-          suggestionDelegate:active_suggestion_delegate_];
+          suggestionDelegate:active_suggestion_delegate_
+                      formId:open_args.form_id
+                     fieldId:open_args.field_id];
   return SuggestionUiSessionId();
 }
 

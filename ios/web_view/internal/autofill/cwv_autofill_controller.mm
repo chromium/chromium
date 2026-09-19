@@ -596,8 +596,9 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
 
 - (void)showAutofillPopup:(const std::vector<autofill::Suggestion>&)suggestions
        suggestionDelegate:
-           (const base::WeakPtr<autofill::AutofillSuggestionDelegate>&)
-               delegate {
+           (const base::WeakPtr<autofill::AutofillSuggestionDelegate>&)delegate
+                   formId:(autofill::FormGlobalId)formId
+                  fieldId:(autofill::FieldGlobalId)fieldId {
   // We only want Autofill suggestions.
   std::vector<autofill::Suggestion> filtered_suggestions;
 
@@ -625,7 +626,9 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
                suggestion.type == autofill::SuggestionType::kCreditCardEntry;
       });
   [_autofillAgent showAutofillPopup:filtered_suggestions
-                 suggestionDelegate:delegate];
+                 suggestionDelegate:delegate
+                             formId:formId
+                            fieldId:fieldId];
 }
 
 - (void)hideAutofillPopup {

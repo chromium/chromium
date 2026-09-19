@@ -10,7 +10,7 @@
 #import <cstdint>
 #import <memory>
 #import <optional>
-#include <ranges>
+#import <ranges>
 #import <string>
 #import <tuple>
 #import <utility>
@@ -216,10 +216,17 @@ bool HasGuid(const Suggestion::Payload& payload) {
   NSString* _typedValue;
 
   // Primary autofill suggestions carry their delegate directly in
-  // `FormSuggestionMetadata` for stateless routing. `_lastReceivedDelegate` is
-  // updated here as a passive fallback for unbound suggestions (e.g. manual
-  // fill) targeting the currently active frame.
+  // `FormSuggestionMetadata` for stateless routing. `_lastReceivedDelegate`,
+  // `_lastReceivedFormId`, and `_lastReceivedFieldId` serve as a passive
+  // fallback for unbound suggestions (e.g. bottom sheet, manual fill) targeting
+  // the currently active frame.
+  // As an invariant, `_lastReceivedDelegate != nullptr` implies that
+  // `_lastReceivedFormId` and `_lastReceivedFieldId` are populated.
   base::WeakPtr<autofill::AutofillSuggestionDelegate> _lastReceivedDelegate;
+  // Note that the `_lastReceivedFormId` identifies the *browser* form, i.e.,
+  // the form after flattening the renderer form.
+  FormGlobalId _lastReceivedFormId;
+  FieldGlobalId _lastReceivedFieldId;
 
   // The autofill data that needs to be sent when the |webState_| is shown.
   std::optional<AutofillData> _pendingFormData;
@@ -434,13 +441,21 @@ bool HasGuid(const Suggestion::Payload& payload) {
       (base::FeatureList::IsEnabled(
            autofill::features::kAutofillEnableBottomSheetScanCardAndFill) &&
        suggestion.type == SuggestionType::kSaveAndFillCreditCardEntry)) {
-    // Pick the delegate bound to the suggestion if available.
-    // Otherwise, fall back to the last received delegate (e.g. for manual
-    // fill).
-    base::WeakPtr<autofill::AutofillSuggestionDelegate> delegate =
-        suggestion.metadata.suggestion_delegate
-            ? suggestion.metadata.suggestion_delegate
-            : _lastReceivedDelegate;
+    // Pick the delegate and form/field IDs bound to the suggestion if
+    // available. Otherwise, fall back to the last received ones (e.g. for
+    // bottom sheet or manual fill).
+    base::WeakPtr<autofill::AutofillSuggestionDelegate> delegate;
+    FormGlobalId form_id;
+    FieldGlobalId field_id;
+    if (suggestion.metadata.suggestion_delegate) {
+      delegate = suggestion.metadata.suggestion_delegate;
+      form_id = suggestion.metadata.form_id;
+      field_id = suggestion.metadata.field_id;
+    } else {
+      delegate = _lastReceivedDelegate;
+      form_id = _lastReceivedFormId;
+      field_id = _lastReceivedFieldId;
+    }
 
     if (delegate) {
       Suggestion autofill_suggestion(suggestion.type);
@@ -455,10 +470,9 @@ bool HasGuid(const Suggestion::Payload& payload) {
               : Suggestion::Payload();
 
       CHECK_GE(index, 0);
-      // TODO(crbug.com/563089510): Set the correct form and field IDs.
       delegate->DidAcceptSuggestion(
           autofill_suggestion, {.multi_index = {static_cast<size_t>(index)}},
-          FormGlobalId(), FieldGlobalId());
+          form_id, field_id);
     }
     return;
   }
@@ -593,8 +607,9 @@ bool HasGuid(const Suggestion::Payload& payload) {
 
 - (void)showAutofillPopup:(const std::vector<Suggestion>&)popup_suggestions
        suggestionDelegate:
-           (const base::WeakPtr<autofill::AutofillSuggestionDelegate>&)
-               delegate {
+           (const base::WeakPtr<autofill::AutofillSuggestionDelegate>&)delegate
+                   formId:(FormGlobalId)formId
+                  fieldId:(FieldGlobalId)fieldId {
   if (popup_suggestions.empty() &&
       base::FeatureList::IsEnabled(
           autofill::features::
@@ -757,6 +772,8 @@ bool HasGuid(const Suggestion::Payload& payload) {
 
     FormSuggestionMetadata metadata;
     metadata.suggestion_delegate = delegate;
+    metadata.form_id = formId;
+    metadata.field_id = fieldId;
 
     FormSuggestion* suggestion =
         [FormSuggestion suggestionWithValue:value
@@ -804,6 +821,8 @@ bool HasGuid(const Suggestion::Payload& payload) {
         MayPerformAtMemoryAction(AtMemoryAction::kTriggerSearchUI, *client)) {
       FormSuggestionMetadata metadata;
       metadata.suggestion_delegate = delegate;
+      metadata.form_id = formId;
+      metadata.field_id = fieldId;
       FormSuggestion* atMemorySuggestion = [FormSuggestion
                   suggestionWithValue:
                       l10n_util::GetNSString(
@@ -823,10 +842,13 @@ bool HasGuid(const Suggestion::Payload& payload) {
   }
 
   // Primary autofill suggestions carry their delegate directly in
-  // `FormSuggestionMetadata` for stateless routing. `_lastReceivedDelegate` is
-  // updated here as a passive fallback for unbound suggestions (e.g. manual
-  // fill) targeting the currently active frame.
+  // `FormSuggestionMetadata` for stateless routing. `_lastReceivedDelegate`,
+  // `_lastReceivedFormId`, and `_lastReceivedFieldId` are updated here as a
+  // passive fallback for unbound suggestions (e.g. bottom sheet, manual fill)
+  // targeting the currently active frame.
   _lastReceivedDelegate = delegate;
+  _lastReceivedFormId = formId;
+  _lastReceivedFieldId = fieldId;
 
   [self onSuggestionsReady:suggestions];
 
@@ -839,6 +861,8 @@ bool HasGuid(const Suggestion::Payload& payload) {
 
 - (void)hideAutofillPopup {
   _lastReceivedDelegate.reset();
+  _lastReceivedFormId = {};
+  _lastReceivedFieldId = {};
   [self onSuggestionsReady:@[]];
 }
 
@@ -1418,7 +1442,7 @@ bool HasGuid(const Suggestion::Payload& payload) {
   _lastQueriedFieldID = {form.host_frame(), fieldIdentifier};
 
   // Query the BrowserAutofillManager for suggestions. Results will arrive in
-  // -showAutofillPopup:suggestionDelegate:.
+  // -showAutofillPopup:suggestionDelegate:formId:fieldId:.
   driver->AskForValuesToFill(form, _lastQueriedFieldID);
 }
 
@@ -1453,6 +1477,8 @@ bool HasGuid(const Suggestion::Payload& payload) {
 
   if (frame->IsMainFrame()) {
     _lastReceivedDelegate.reset();
+    _lastReceivedFormId = {};
+    _lastReceivedFieldId = {};
     _suggestionsAvailableCompletion = nil;
     _suggestionHandledCompletion = nil;
     _mostRecentSuggestions = nil;
