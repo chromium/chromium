@@ -241,11 +241,17 @@ constexpr char kPasswordBreachEntryTrigger[] = "PASSWORD_ENTRY";
 // Transforms `rect` from the `rfh`'s local root's coordinate system to the
 // main frame's coordinate system.
 gfx::RectF TransformToRootCoordinates(content::RenderFrameHost& rfh,
-                                      const gfx::RectF& rect) {
+                                      gfx::RectF rect) {
   content::RenderWidgetHostView* view = rfh.GetView();
   if (!view) {
     return rect;
   }
+
+  // Intersect the coordinates with the view's bounds. This is to make it hard
+  // for a malicious frame to position an Password Manager popup over a field
+  // from different frame (provided the attacker's and the victim's frames do
+  // not share the same local root).
+  rect.InclusiveIntersect(gfx::RectF(view->GetViewBounds().size()));
 
   // Transform all corners to handle CSS `transform: scale(...)` correctly
   // (crbug.com/562177779).

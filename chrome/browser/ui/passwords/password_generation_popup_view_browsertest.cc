@@ -136,8 +136,9 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
                        DoNotCrashInCaseOfInsuffucientVerticalSpace) {
   auto* client = ChromePasswordManagerClient::FromWebContents(WebContents());
   client->SetCurrentTargetFrameForTesting(WebContents()->GetPrimaryMainFrame());
-  client->ShowPasswordEditingPopup(gfx::RectF(0, -20, 10, 10), FormData(),
-                                   FieldRendererId(100), u"password123");
+  client->ShowPasswordEditingPopup(
+      gfx::RectF(gfx::Rect({}, WebContents()->GetSize())), FormData(),
+      FieldRendererId(100), u"password123");
   EXPECT_FALSE(client->generation_popup_controller());
   // Avoid dangling pointers on shutdown.
   client->SetCurrentTargetFrameForTesting(nullptr);
