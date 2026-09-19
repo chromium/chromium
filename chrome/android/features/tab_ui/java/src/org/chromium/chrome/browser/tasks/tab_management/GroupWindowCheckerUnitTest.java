@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -38,6 +40,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupColorId;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,6 +57,11 @@ public class GroupWindowCheckerUnitTest {
     @Mock private TabModel mTabModel;
     @Spy private TabList mTabList;
     @Mock private Tab mTab1;
+    @Mock private TabWindowManager mTabWindowManager;
+    @Mock private TabModelSelector mSelectorWindow2;
+    @Mock private TabModel mModelWindow2;
+    @Mock private Tab mClosingTabInWindow2;
+    @Mock private TabList mComprehensiveModelWindow2;
     private Context mContext;
     private GroupWindowChecker mSyncUtils;
 
@@ -195,7 +203,7 @@ public class GroupWindowCheckerUnitTest {
         when(mTabList.iterator()).thenAnswer(invocation -> tabList.iterator());
         when(mTab1.getTabGroupId()).thenReturn(new Token(200L, 1L));
 
-        when(tabWindowManager.findWindowIdForTabGroup(token)).thenReturn(1);
+        when(tabWindowManager.findWindowIdForTabGroup(eq(token), anyBoolean())).thenReturn(1);
         TabModelSelector selector = mock(TabModelSelector.class);
         TabModel headlessModel = mock(TabModel.class);
         when(headlessModel.getTabModelType()).thenReturn(TabModelType.HEADLESS);
@@ -261,7 +269,7 @@ public class GroupWindowCheckerUnitTest {
         when(mTabList.iterator()).thenAnswer(invocation -> tabList.iterator());
         when(mTab1.getTabGroupId()).thenReturn(Token.createRandom());
 
-        when(tabWindowManager.findWindowIdForTabGroup(token)).thenReturn(1);
+        when(tabWindowManager.findWindowIdForTabGroup(eq(token), anyBoolean())).thenReturn(1);
         TabModelSelector selector = mock(TabModelSelector.class);
         TabModel headlessModel = mock(TabModel.class);
         when(headlessModel.getTabModelType()).thenReturn(TabModelType.HEADLESS);
@@ -377,6 +385,7 @@ public class GroupWindowCheckerUnitTest {
 
     private SavedTabGroup createSavedTabGroup(Token token, String title) {
         SavedTabGroup tabGroup = new SavedTabGroup();
+        tabGroup.syncId = "sync_" + title;
         tabGroup.localId = token != null ? new LocalTabGroupId(token) : null;
         tabGroup.savedTabs = new ArrayList<>();
         tabGroup.title = title;
@@ -441,7 +450,7 @@ public class GroupWindowCheckerUnitTest {
     @EnableFeatures(
             ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true")
     public void testShouldShowGroupByState_remoteGroupOperationsEnabled() {
-        assertFalse(GroupWindowChecker.shouldShowGroupByState(GroupWindowState.IN_CURRENT_CLOSING));
+        assertTrue(GroupWindowChecker.shouldShowGroupByState(GroupWindowState.IN_CURRENT_CLOSING));
         assertTrue(GroupWindowChecker.shouldShowGroupByState(GroupWindowState.HIDDEN));
         assertTrue(GroupWindowChecker.shouldShowGroupByState(GroupWindowState.IN_CURRENT));
         assertTrue(GroupWindowChecker.shouldShowGroupByState(GroupWindowState.IN_ANOTHER));
@@ -509,5 +518,112 @@ public class GroupWindowCheckerUnitTest {
 
         assertFalse(mSyncUtils.hasOtherGroups(token1));
         assertTrue(mSyncUtils.hasOtherGroups(null));
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true")
+    public void testHasOtherGroups_closingSyncedGroup_flagEnabled() {
+        Token closingToken = Token.createRandom();
+        SavedTabGroup closingGroup = createSavedTabGroup(closingToken, "closingSyncedTitle");
+        closingGroup.savedTabs.add(new SavedTabGroupTab());
+
+        when(mSyncService.getAllGroupIds()).thenReturn(new String[] {"closingSyncId"});
+        when(mSyncService.getGroup("closingSyncId")).thenReturn(closingGroup);
+        when(mTab1.getTabGroupId()).thenReturn(closingToken);
+        when(mTab1.isClosing()).thenReturn(true);
+        when(mTabList.iterator()).thenAnswer(invocation -> List.of(mTab1).iterator());
+
+        assertTrue(mSyncUtils.hasOtherGroups(null));
+        assertTrue(mSyncUtils.hasOtherGroups(Token.createRandom()));
+        List<GroupWindowInfo> groups = mSyncUtils.getDefaultSortedGroupList();
+        assertEquals(1, groups.size());
+        assertEquals(GroupWindowState.IN_CURRENT_CLOSING, groups.get(0).groupWindowState);
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true")
+    public void testGetDefaultSortedGroupList_closingLocalGroupExcluded() {
+        when(mTabModel.isIncognito()).thenReturn(true);
+        Token closingToken = Token.createRandom();
+        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(closingToken));
+        when(mTab1.getTabGroupId()).thenReturn(closingToken);
+        when(mTab1.isClosing()).thenReturn(true);
+        when(mTabList.iterator()).thenAnswer(invocation -> List.of(mTab1).iterator());
+
+        assertFalse(mSyncUtils.hasOtherGroups(null));
+        assertEquals(0, mSyncUtils.getDefaultSortedGroupList().size());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    @DisableFeatures(
+            ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations")
+    public void testGroupClosingInAnotherWindow_remoteGroupOperationsDisabled() {
+        TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
+
+        Token closingToken = Token.createRandom();
+        SavedTabGroup closingGroup = createSavedTabGroup(closingToken, "closingSyncedTitle");
+        closingGroup.savedTabs.add(new SavedTabGroupTab());
+
+        when(mSyncService.getAllGroupIds()).thenReturn(new String[] {"closingSyncId"});
+        when(mSyncService.getGroup("closingSyncId")).thenReturn(closingGroup);
+
+        when(mTabList.iterator()).thenAnswer(invocation -> Collections.emptyIterator());
+
+        when(mTabWindowManager.findWindowIdForTabGroup(eq(closingToken), eq(false)))
+                .thenReturn(TabWindowManager.INVALID_WINDOW_ID);
+        when(mTabWindowManager.findWindowIdForTabGroup(eq(closingToken), eq(true))).thenReturn(2);
+
+        assertEquals(GroupWindowState.IN_ANOTHER, mSyncUtils.getState(closingGroup));
+        List<GroupWindowInfo> groups = mSyncUtils.getDefaultSortedGroupList();
+        assertEquals(1, groups.size());
+        assertEquals(GroupWindowState.IN_ANOTHER, groups.get(0).groupWindowState);
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true")
+    public void testGroupClosingInAnotherWindow_remoteGroupOperationsEnabled() {
+        TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
+
+        Token closingToken = Token.createRandom();
+        SavedTabGroup closingGroup = createSavedTabGroup(closingToken, "staleRemoteTitle");
+        closingGroup.savedTabs.add(new SavedTabGroupTab());
+
+        when(mSyncService.getAllGroupIds()).thenReturn(new String[] {"closingSyncId"});
+        when(mSyncService.getGroup("closingSyncId")).thenReturn(closingGroup);
+
+        when(mTabList.iterator()).thenAnswer(invocation -> Collections.emptyIterator());
+
+        when(mTabWindowManager.findWindowIdForTabGroup(eq(closingToken), eq(false)))
+                .thenReturn(TabWindowManager.INVALID_WINDOW_ID);
+        when(mTabWindowManager.findWindowIdForTabGroup(eq(closingToken), eq(true))).thenReturn(2);
+
+        when(mModelWindow2.getTabModelType()).thenReturn(TabModelType.STANDARD);
+        when(mModelWindow2.isIncognito()).thenReturn(false);
+        when(mSelectorWindow2.getModel(false)).thenReturn(mModelWindow2);
+        when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mSelectorWindow2);
+
+        when(mClosingTabInWindow2.getTabGroupId()).thenReturn(closingToken);
+        when(mClosingTabInWindow2.isClosing()).thenReturn(true);
+        when(mComprehensiveModelWindow2.iterator())
+                .thenAnswer(inv -> List.of(mClosingTabInWindow2).iterator());
+        when(mModelWindow2.getComprehensiveModel()).thenReturn(mComprehensiveModelWindow2);
+        when(mModelWindow2.getTabsInGroup(closingToken)).thenReturn(Collections.emptyList());
+        when(mModelWindow2.getTabGroupTitle(closingToken))
+                .thenReturn("Live Window 2 Closing Title");
+        when(mModelWindow2.getTabGroupColorWithFallback(closingToken))
+                .thenReturn(TabGroupColorId.RED);
+
+        assertEquals(GroupWindowState.HIDDEN, mSyncUtils.getState(closingGroup));
+
+        List<GroupWindowInfo> groups = mSyncUtils.getDefaultSortedGroupList();
+        assertEquals(1, groups.size());
+        assertEquals(GroupWindowState.HIDDEN, groups.get(0).groupWindowState);
+        assertEquals("Live Window 2 Closing Title", groups.get(0).title);
+        assertEquals(TabGroupColorId.RED, groups.get(0).color);
+        assertEquals(1, groups.get(0).tabCount);
     }
 }
