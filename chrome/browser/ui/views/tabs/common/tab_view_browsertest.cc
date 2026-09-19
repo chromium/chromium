@@ -6,7 +6,8 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/icubridge/default_icu_locale.h"
-#include "base/i18n/rtl.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -1278,9 +1279,7 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabViewTest, MAYBE_HorizontalSeparators) {
 }
 
 IN_PROC_BROWSER_TEST_F(HorizontalTabViewTest, HorizontalSeparators_RTL) {
-  std::string original_locale =
-      std::string(base::i18n::GetDefaultIcuLocale().tag_string());
-  base::i18n::SetICUDefaultLocale("ar");
+  base::i18n::ScopedRTLForTesting scoped_rtl(true);
 
   AppendTab();
   AppendTab();
@@ -1317,8 +1316,6 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabViewTest, HorizontalSeparators_RTL) {
   opacities1 = tab1->tab_styling()->GetSeparatorOpacitiesForTesting();
   EXPECT_EQ(opacities1.left, 0.0f);
   EXPECT_EQ(opacities1.right, 0.0f);
-
-  base::i18n::SetICUDefaultLocale(original_locale);
 }
 
 IN_PROC_BROWSER_TEST_F(HorizontalTabViewTest,
