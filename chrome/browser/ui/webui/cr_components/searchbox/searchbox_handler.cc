@@ -380,12 +380,6 @@ base::DictValue SearchboxHandler::GetWebUIDataSourceDict(
            GetVoiceSearchCoherenceCobrowsingComposeboxEnabled());
 
   // Enables if voice search ntp searchbox live experiment is on. Includes new
-  // metrics, new animation, new submit/stop buttons, no live transcription.
-  dict.Set(
-      "voiceSearchCoherenceSearchboxNoLiveTranscriptionEnabled",
-      base::FeatureList::IsEnabled(omnibox::kVoiceSearchCoherenceSearchbox));
-
-  // Enables if voice search ntp searchbox live experiment is on. Includes new
   // metrics, new animation, new submit/stop buttons, live transcription.
   dict.Set("voiceSearchCoherenceSearchboxWithLiveTranscriptionEnabled",
            omnibox::kVoiceSearchCoherenceSearchboxWithLiveTranscription.Get());
