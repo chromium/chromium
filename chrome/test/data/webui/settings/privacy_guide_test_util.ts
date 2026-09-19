@@ -173,6 +173,7 @@ export async function createPrivacyGuidePageForTest(
   document.body.appendChild(page);
 
   setupPrivacyRouteForTest();
+  await microtasksFinished();
 
   setupSync({
     syncBrowserProxy: syncBrowserProxy,
