@@ -617,7 +617,7 @@ oauth2client==3.0.0 \
     --hash=sha256:a6034847934e8dc6b676dc5648486e7a8bcd76a0669c3ca7140a5b86162df243 \
     --hash=sha256:d91e655716b132d06ea9bf4bf02d0a652ada98fde38c9ee0ab6a844b9aa54833 \
     --hash=sha256:f1a083936e34f1d72eb307ac9fc0ae1655200707600f8e4c600400dd08ca9575
-opencv-python==4.8.1.78+chromium.1 ; platform_machine != 'aarch64' or sys_platform != 'linux' \
+opencv-python==4.8.1.78+chromium.1 \
     --hash=sha256:178ae00350bf1130cbc84216d4a1f0969cd3c31963ae7ce1831efc295880c4d6 \
     --hash=sha256:3871ff49e9aa240fc82d9b6110f868d21f79c3e478a155de70d2a6e28556e0c2 \
     --hash=sha256:4523bd688834c48f3167711ef08ebed680fe7c13d9922aad39d0ec52a9a789b9 \
@@ -703,7 +703,7 @@ pexpect==4.8.0+chromium.1 \
     --hash=sha256:b69aca5500b9cb4e5535bb1a8b105e5600a5f464d47fa7fbcaaaf70f684af5fe \
     --hash=sha256:d4737adfd513e61a0b5d580447cef6b659fd6f1a5311aa24ca282df289a02196 \
     --hash=sha256:d9aaf104ed0b54ced0438b2bd17832e48a4643a9403c49c7225952014e60cd70
-pillow==10.4.0 ; platform_machine != 'aarch64' or sys_platform != 'linux' \
+pillow==10.4.0 \
     --hash=sha256:026dbe011f1f3c78487614add2b5987c5040139c32113e1027a8f2882d2529d3 \
     --hash=sha256:37251922614046bc350a732d801320fcab619b8235d506976c5d0601cedc7d4b \
     --hash=sha256:5dc6761a6efc781e6a1544206f22c80c3af4c8cf461206d46a1e6006e4429ff3 \
