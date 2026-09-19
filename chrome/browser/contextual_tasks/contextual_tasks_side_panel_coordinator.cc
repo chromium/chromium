@@ -98,6 +98,10 @@
 #include "ui/actions/actions.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/extensions/tab_helper.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/view_type_utils.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
@@ -171,6 +175,16 @@ std::unique_ptr<content::WebContents> CreateWebContents(
   // BrowserWindowInterface.
   permissions::PermissionRequestManager::CreateForWebContents(
       web_contents.get());
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  // WebContents created here never go through TabHelpers::AttachTabHelpers(),
+  // unlike the ones the panel adopts from a real tab via
+  // TransferWebContentsFromTab(). The extensions menu, which can be opened
+  // from the side panel's page info bubble, reads extension state for the
+  // active WebContents through extensions::TabHelper and dereferences it
+  // without a null check, so attach it explicitly.
+  extensions::TabHelper::CreateForWebContents(web_contents.get());
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   return web_contents;
 }

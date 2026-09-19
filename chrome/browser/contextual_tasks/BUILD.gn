@@ -495,8 +495,10 @@ source_set("ui_impl") {
   }
 
   if (enable_extensions_core) {
-    deps +=
-        [ "//chrome/browser/resources/contextual_tasks/extension:resources" ]
+    deps += [
+      "//chrome/browser/extensions",
+      "//chrome/browser/resources/contextual_tasks/extension:resources",
+    ]
     if (!is_android) {
       sources += [
         "contextual_tasks_extensions_container.cc",
@@ -752,6 +754,10 @@ source_set("unit_tests") {
       "//components/passage_embeddings/core",
       "//services/network/public/cpp",
     ]
+  }
+
+  if (enable_extensions_core) {
+    deps += [ "//chrome/browser/extensions" ]
   }
 }
 
