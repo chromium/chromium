@@ -2469,7 +2469,7 @@ void LayoutBox::InLayoutNGInlineFormattingContextWillChange(bool new_value) {
 }
 
 bool LayoutBox::PhysicalFragmentList::MayHaveFragmentItems() const {
-  return !IsEmpty() && front().IsInlineFormattingContext();
+  return !empty() && front().IsInlineFormattingContext();
 }
 
 bool LayoutBox::PhysicalFragmentList::SlowHasFragmentItems() const {

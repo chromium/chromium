@@ -713,7 +713,7 @@ void LayoutBlockFlow::SetShouldDoFullPaintInvalidationForFirstLine() {
   DCHECK(ChildrenInline());
 
   const auto fragments = PhysicalFragments();
-  if (fragments.IsEmpty()) {
+  if (fragments.empty()) {
     return;
   }
   for (const PhysicalBoxFragment& fragment : fragments) {

@@ -521,8 +521,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     explicit PhysicalFragmentList(const LayoutResultList& layout_results)
         : layout_results_(layout_results) {}
 
-    wtf_size_t Size() const { return layout_results_.size(); }
-    bool IsEmpty() const { return layout_results_.empty(); }
+    wtf_size_t size() const { return layout_results_.size(); }
+    bool empty() const { return layout_results_.empty(); }
 
     bool MayHaveFragmentItems() const;
     bool HasFragmentItems() const {

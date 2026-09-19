@@ -190,7 +190,7 @@ void ReplacedPainter::Paint(const PaintInfo& paint_info) {
     //
     // Guard against empty fragments, because the layout results may be missing
     // in certain paint phases or states.
-    if (!layout_replaced_.PhysicalFragments().IsEmpty()) {
+    if (!layout_replaced_.PhysicalFragments().empty()) {
       const auto& fragment = layout_replaced_.PhysicalFragments().front();
       BoxFragmentPainter::PaintAdHighlightIfNeeded(
           local_paint_info, paint_offset, fragment, layout_replaced_,
