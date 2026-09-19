@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_controller.h"
 
+#include <utility>
+
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -35,12 +37,6 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/widget/widget.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
-#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_shortcut_win.h"
-#endif
-
 namespace omnibox_everywhere {
 
 OmniboxEverywhereController::OmniboxEverywhereController(
@@ -56,14 +52,7 @@ OmniboxEverywhereController::OmniboxEverywhereController(
               base::BindRepeating(&OmniboxEverywhereController::Close,
                                   base::Unretained(this)))),
       listener_(listener ? listener
-                         : ui::GlobalAcceleratorListener::GetInstance())
-#if BUILDFLAG(IS_WIN)
-      ,
-      shortcut_helper_(base::ThreadPool::CreateCOMSTATaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}))
-#endif
-{
+                         : ui::GlobalAcceleratorListener::GetInstance()) {
   CHECK(base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhere));
   if (g_browser_process && g_browser_process->local_state()) {
     enabled_pref_member_.Init(
@@ -501,24 +490,6 @@ void OmniboxEverywhereController::OnKeyPressed(
 void OmniboxEverywhereController::ExecuteCommand(
     const std::string& accelerator_group_id,
     const std::string& command_id) {}
-
-void OmniboxEverywhereController::CreateStartMenuShortcut(
-    base::OnceCallback<void(bool)> callback) {
-#if BUILDFLAG(IS_WIN)
-  if (callback) {
-    shortcut_helper_
-        .AsyncCall(&OmniboxEverywhereShortcutHelperWin::CreateStartMenuShortcut)
-        .Then(std::move(callback));
-  } else {
-    shortcut_helper_.AsyncCall(base::IgnoreResult(
-        &OmniboxEverywhereShortcutHelperWin::CreateStartMenuShortcut));
-  }
-#else
-  if (callback) {
-    std::move(callback).Run(false);
-  }
-#endif
-}
 
 void OmniboxEverywhereController::OfferPinToTaskbar(
     base::OnceCallback<void(bool)> callback) {

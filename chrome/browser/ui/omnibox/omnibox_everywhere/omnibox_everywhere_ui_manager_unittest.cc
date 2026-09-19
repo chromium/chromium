@@ -5,14 +5,19 @@
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_ui_manager.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
+#include "base/base_paths.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_path_override.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/autocomplete/chrome_aim_eligibility_service.h"
 #include "chrome/browser/browser_process.h"
@@ -64,6 +69,7 @@
 #include <shellapi.h>
 #include <wrl/client.h>
 
+#include "base/files/file_util.h"
 #include "base/win/scoped_propvariant.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -152,6 +158,13 @@ class OmniboxEverywhereUIManagerTest : public ChromeViewsTestBase {
   void SetUp() override {
     feature_list_.InitAndEnableFeature(omnibox::kOmniboxEverywhere);
     set_native_widget_type(NativeWidgetType::kDesktop);
+#if BUILDFLAG(IS_WIN)
+    // Showing a persistent widget creates the Start Menu shortcut that the
+    // Shell requires for taskbar pinning. Keep that out of the real profile.
+    ASSERT_TRUE(temp_start_menu_dir_.CreateUniqueTempDir());
+    start_menu_override_.emplace(base::DIR_START_MENU,
+                                 temp_start_menu_dir_.GetPath());
+#endif
     ChromeViewsTestBase::SetUp();
   }
 
@@ -205,6 +218,10 @@ class OmniboxEverywhereUIManagerTest : public ChromeViewsTestBase {
  protected:
   base::test::ScopedFeatureList feature_list_;
   TestingProfile profile_;
+#if BUILDFLAG(IS_WIN)
+  base::ScopedTempDir temp_start_menu_dir_;
+  std::optional<base::ScopedPathOverride> start_menu_override_;
+#endif
 };
 
 TEST_F(OmniboxEverywhereUIManagerTest, ShowAndCloseWidget) {
@@ -2487,6 +2504,125 @@ TEST_F(OmniboxEverywhereUIManagerTest, MinimizeClosesWidgetInEphemeralMode) {
   // all platforms.
   widget->Minimize();
   EXPECT_FALSE(ui_manager->IsVisible());
+
+  ui_manager->Shutdown();
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest,
+       DisableTaskbarPinningDoesNotAffectOpenWidget) {
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, false);
+  }
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+
+  HWND hwnd = views::HWNDForWidget(widget);
+  ASSERT_NE(hwnd, nullptr);
+
+  // The check reports that no usable shortcut could be obtained.
+  ui_manager->DisableTaskbarPinning();
+
+  // The Shell ignores PreventPinning once the AUMID is set, so the open widget
+  // keeps its pinning state; suppression applies to later widgets.
+  Microsoft::WRL::ComPtr<IPropertyStore> pps;
+  ASSERT_HRESULT_SUCCEEDED(
+      SHGetPropertyStoreForWindow(hwnd, IID_PPV_ARGS(&pps)));
+  base::win::ScopedPropVariant pv;
+  ASSERT_HRESULT_SUCCEEDED(
+      pps->GetValue(PKEY_AppUserModel_PreventPinning, pv.Receive()));
+  EXPECT_EQ(pv.get().vt, VT_EMPTY);
+
+  ui_manager->Shutdown();
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest,
+       DisableTaskbarPinningAppliesToLaterWidgets) {
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, false);
+  }
+  auto ui_manager = CreateUIManager();
+  ASSERT_FALSE(ui_manager->widget());
+
+  ui_manager->DisableTaskbarPinning();
+
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+
+  HWND hwnd = views::HWNDForWidget(widget);
+  ASSERT_NE(hwnd, nullptr);
+
+  Microsoft::WRL::ComPtr<IPropertyStore> pps;
+  ASSERT_HRESULT_SUCCEEDED(
+      SHGetPropertyStoreForWindow(hwnd, IID_PPV_ARGS(&pps)));
+  base::win::ScopedPropVariant pv;
+  ASSERT_HRESULT_SUCCEEDED(
+      pps->GetValue(PKEY_AppUserModel_PreventPinning, pv.Receive()));
+  EXPECT_EQ(pv.get().vt, VT_BOOL);
+  EXPECT_EQ(pv.get().boolVal, VARIANT_TRUE);
+
+  // Suppressing pinning must not cost the widget its own taskbar grouping and
+  // icon, which the AppUserModelId provides.
+  base::win::ScopedPropVariant pv_appid;
+  ASSERT_HRESULT_SUCCEEDED(
+      pps->GetValue(PKEY_AppUserModel_ID, pv_appid.Receive()));
+  EXPECT_EQ(pv_appid.get().vt, VT_LPWSTR);
+  EXPECT_NE(
+      std::wstring(pv_appid.get().pwszVal).find(L"app_search_with_chrome"),
+      std::wstring::npos);
+
+  ui_manager->Shutdown();
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest, CreateStartMenuShortcut) {
+  auto ui_manager = CreateUIManager();
+  base::test::TestFuture<bool> future;
+  ui_manager->CreateStartMenuShortcut(future.GetCallback());
+  EXPECT_TRUE(future.Get());
+  ui_manager->Shutdown();
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest, StartMenuShortcutRetriesOnFailure) {
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, false);
+  }
+  auto ui_manager = CreateUIManager();
+
+  // Point DIR_START_MENU at a regular file so shortcut creation fails.
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath not_a_directory =
+      temp_dir.GetPath().Append(FILE_PATH_LITERAL("not_a_directory"));
+  ASSERT_TRUE(base::WriteFile(not_a_directory, "content"));
+  {
+    base::ScopedPathOverride invalid_start_menu(base::DIR_START_MENU,
+                                                not_a_directory,
+                                                /*is_absolute=*/true,
+                                                /*create=*/false);
+    ui_manager->ShowForProfile(&profile_, GetContext());
+    ASSERT_TRUE(ui_manager->widget());
+    EXPECT_TRUE(base::test::RunUntil(
+        [&]() { return ui_manager->taskbar_pinning_disabled_for_testing(); }));
+    EXPECT_FALSE(ui_manager->start_menu_shortcut_requested_for_testing());
+  }
+
+  // Close the open widget so that a subsequent ShowForProfile creates a new
+  // one.
+  ui_manager->widget()->CloseNow();
+  ASSERT_FALSE(ui_manager->widget());
+
+  // With a valid Start Menu directory restored, creating the next persistent
+  // widget retries shortcut creation and restores taskbar pinning.
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->widget());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return !ui_manager->taskbar_pinning_disabled_for_testing(); }));
+  EXPECT_TRUE(ui_manager->start_menu_shortcut_requested_for_testing());
 
   ui_manager->Shutdown();
 }

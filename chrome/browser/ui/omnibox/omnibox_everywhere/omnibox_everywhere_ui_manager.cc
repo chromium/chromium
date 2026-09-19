@@ -99,7 +99,9 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include "base/task/thread_pool.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_shortcut_win.h"
+#include "ui/base/win/shell.h"
 #endif
 
 namespace omnibox_everywhere {
@@ -196,7 +198,14 @@ OmniboxEverywhereUIManager::OmniboxEverywhereUIManager(
     ContentsWrapperFactory contents_wrapper_factory)
     : contents_wrapper_factory_(std::move(contents_wrapper_factory)),
       unhandled_keyboard_event_handler_(
-          std::make_unique<views::UnhandledKeyboardEventHandler>()) {
+          std::make_unique<views::UnhandledKeyboardEventHandler>())
+#if BUILDFLAG(IS_WIN)
+      ,
+      shortcut_helper_(base::ThreadPool::CreateCOMSTATaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}))
+#endif
+{
 #if defined(USE_AURA)
   event_handler_ = std::make_unique<OmniboxEverywhereEventHandlerAura>(*this);
 #endif
@@ -231,6 +240,32 @@ bool OmniboxEverywhereUIManager::IsPointInDraggableRegion(
   return draggable_region_ && !draggable_region_->isEmpty() &&
          draggable_region_->contains(point.x(), point.y());
 }
+
+#if BUILDFLAG(IS_WIN)
+void OmniboxEverywhereUIManager::CreateStartMenuShortcut(
+    base::OnceCallback<void(bool)> callback) {
+  shortcut_helper_
+      .AsyncCall(&OmniboxEverywhereShortcutHelperWin::CreateStartMenuShortcut)
+      .Then(std::move(callback));
+}
+
+void OmniboxEverywhereUIManager::DisableTaskbarPinning() {
+  taskbar_pinning_disabled_ = true;
+}
+
+void OmniboxEverywhereUIManager::OnStartMenuShortcutChecked(
+    bool shortcut_exists) {
+  // TODO(crbug.com/562064992): The widget that triggered the check keeps its
+  // AUMID, so it stays pinnable; only later widgets are covered.
+  if (!shortcut_exists) {
+    DisableTaskbarPinning();
+    // Reset so that transient failures can be retried on the next widget.
+    start_menu_shortcut_requested_ = false;
+  } else {
+    taskbar_pinning_disabled_ = false;
+  }
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 content::WebContents* OmniboxEverywhereUIManager::web_contents() const {
   return contents_wrapper_ ? contents_wrapper_->web_contents() : nullptr;
@@ -479,7 +514,16 @@ void OmniboxEverywhereUIManager::CreateAndInitWidget(
   widget_->SetCanAppearInExistingFullscreenSpaces(true);
 #endif
 #if BUILDFLAG(IS_WIN)
-  SetWindowProperties(views::HWNDForWidget(widget_.get()), is_ephemeral);
+  const HWND hwnd = views::HWNDForWidget(widget_.get());
+  SetWindowProperties(hwnd, is_ephemeral,
+                      /*allow_pinning=*/!taskbar_pinning_disabled_);
+  // Ephemeral widgets are never pinnable, so they do not need the Start Menu
+  // shortcut that the Shell requires for pinning.
+  if (!is_ephemeral && !std::exchange(start_menu_shortcut_requested_, true)) {
+    CreateStartMenuShortcut(
+        base::BindOnce(&OmniboxEverywhereUIManager::OnStartMenuShortcutChecked,
+                       weak_factory_.GetWeakPtr()));
+  }
 #endif  // BUILDFLAG(IS_WIN)
   widget_->MakeCloseSynchronous(base::BindOnce(
       &OmniboxEverywhereUIManager::OnWidgetClosed, base::Unretained(this)));

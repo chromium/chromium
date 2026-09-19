@@ -136,6 +136,11 @@ class OmniboxEverywhereControllerTest : public ChromeViewsTestBase {
  public:
   void SetUp() override {
     set_native_widget_type(NativeWidgetType::kDesktop);
+#if BUILDFLAG(IS_WIN)
+    ASSERT_TRUE(temp_start_menu_dir_.CreateUniqueTempDir());
+    start_menu_override_.emplace(base::DIR_START_MENU,
+                                 temp_start_menu_dir_.GetPath());
+#endif
     ChromeViewsTestBase::SetUp();
     profile_ = std::make_unique<TestingProfile>();
     TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetBoolean(
@@ -180,6 +185,10 @@ class OmniboxEverywhereControllerTest : public ChromeViewsTestBase {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<TemplateURLServiceFactoryTestUtil>
       template_url_service_test_util_;
+#if BUILDFLAG(IS_WIN)
+  base::ScopedTempDir temp_start_menu_dir_;
+  std::optional<base::ScopedPathOverride> start_menu_override_;
+#endif
 };
 
 using OmniboxEverywhereGlobalFeaturesTest = ChromeViewsTestBase;
@@ -857,24 +866,7 @@ TEST_F(OmniboxEverywhereControllerTest,
   EXPECT_TRUE(controller.IsVisible());
 }
 
-#if BUILDFLAG(IS_WIN)
-TEST_F(OmniboxEverywhereControllerTest, CreateStartMenuShortcut) {
-  base::ScopedTempDir user_data_dir;
-  ASSERT_TRUE(user_data_dir.CreateUniqueTempDir());
-  base::ScopedPathOverride user_data_override(chrome::DIR_USER_DATA,
-                                              user_data_dir.GetPath());
 
-  base::ScopedTempDir start_menu_dir;
-  ASSERT_TRUE(start_menu_dir.CreateUniqueTempDir());
-  base::ScopedPathOverride start_menu_override(base::DIR_START_MENU,
-                                               start_menu_dir.GetPath());
-
-  omnibox_everywhere::OmniboxEverywhereController controller;
-  base::test::TestFuture<bool> future;
-  controller.CreateStartMenuShortcut(future.GetCallback());
-  EXPECT_TRUE(future.Get());
-}
-#endif
 
 TEST_F(OmniboxEverywhereControllerTest, PinToTaskbar) {
   omnibox_everywhere::OmniboxEverywhereController controller;
