@@ -807,6 +807,7 @@ robolectric_library("ui_android_junit_tests") {
     "java/src/org/chromium/ui/text/DownloadableFontTextAppearanceSpanTest.java",
     "junit/src/org/chromium/ui/AsyncViewProviderTest.java",
     "junit/src/org/chromium/ui/AsyncViewStubTest.java",
+    "junit/src/org/chromium/ui/UiUtilsUnitTest.java",
     "junit/src/org/chromium/ui/animation/AnimationHandlerUnitTest.java",
     "junit/src/org/chromium/ui/animation/AnimationPerformanceTrackerUnitTest.java",
     "junit/src/org/chromium/ui/animation/CommonAnimationsFactoryUnitTest.java",
@@ -853,6 +854,7 @@ robolectric_library("ui_android_junit_tests") {
     "junit/src/org/chromium/ui/insets/InsetsRectProviderTest.java",
     "junit/src/org/chromium/ui/insets/WindowInsetsUtilsUnitTest.java",
     "junit/src/org/chromium/ui/listmenu/KeyboardAccessibleListViewUnitTest.java",
+    "junit/src/org/chromium/ui/listmenu/ListMenuButtonUnitTest.java",
     "junit/src/org/chromium/ui/listmenu/ListMenuHostUnitTest.java",
     "junit/src/org/chromium/ui/listmenu/ListMenuItemViewBinderUnitTest.java",
     "junit/src/org/chromium/ui/listmenu/ListMenuItemWithSubmenuViewBinderUnitTest.java",
@@ -894,6 +896,7 @@ robolectric_library("ui_android_junit_tests") {
     "junit/src/org/chromium/ui/widget/PopupSpecCalculatorTest.java",
     "junit/src/org/chromium/ui/widget/SpanBackgroundHelperTest.java",
     "junit/src/org/chromium/ui/widget/TextViewWithClickableSpansTest.java",
+    "junit/src/org/chromium/ui/widget/TextViewWithLeadingUnitTest.java",
     "junit/src/org/chromium/ui/widget/ToastManagerTest.java",
     "junit/src/org/chromium/ui/widget/ToastTest.java",
     "junit/src/org/chromium/ui/widget/ViewLookupCachingFrameLayoutTest.java",
@@ -1029,8 +1032,6 @@ android_library("ui_unit_device_javatests") {
   mergeable_android_manifests = [ "junit/AndroidManifest.xml" ]
 
   sources = [
-    "java/src/org/chromium/ui/UiUtilsTest.java",
-    "java/src/org/chromium/ui/listmenu/ListMenuButtonTest.java",
     "java/src/org/chromium/ui/widget/TextViewWithTightWrapTest.java",
     "javatests/src/org/chromium/ui/animation/RenderTestAnimationUtils.java",
     "javatests/src/org/chromium/ui/animation/ViewArcAnimatorRenderTest.java",
@@ -1040,7 +1041,6 @@ android_library("ui_unit_device_javatests") {
     "javatests/src/org/chromium/ui/insets/WindowInsetsUtilsJavaUnitTest.java",
     "javatests/src/org/chromium/ui/theme/ThemeResourceWrapperJavaUnitTest.java",
     "javatests/src/org/chromium/ui/widget/OutlineOverlayHelperJavaUnitTest.java",
-    "junit/src/org/chromium/ui/widget/TextViewWithLeadingTest.java",
   ]
 
   deps = [

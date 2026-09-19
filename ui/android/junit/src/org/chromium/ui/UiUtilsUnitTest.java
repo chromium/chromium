@@ -1,4 +1,4 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,30 +12,21 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.BaseActivityTestRule;
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.Batch;
-import org.chromium.ui.test.util.BlankUiTestActivity;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 import java.util.Set;
 
 /** Unit tests for {@link UiUtils}. */
-@RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
-public class UiUtilsTest {
-    @ClassRule
-    public static BaseActivityTestRule<BlankUiTestActivity> activityTestRule =
-            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+@RunWith(BaseRobolectricTestRunner.class)
+public class UiUtilsUnitTest {
 
     private Context mContext;
 
@@ -46,7 +37,6 @@ public class UiUtilsTest {
 
     /** Test the method {@link UiUtils#maybeSetLinkMovementMethod(TextView)}. */
     @Test
-    @SmallTest
     public void testMaybeSetLinkMovementMethod() {
         TextView textView = new TextView(mContext);
 
@@ -72,7 +62,6 @@ public class UiUtilsTest {
 
     /** Test the method {@link UiUtils#computeMenuWidth(int, int, int, int, int)}. */
     @Test
-    @SmallTest
     public void testComputeMenuWidth() {
         final int minWidth = 188;
         final int maxAllowedWidth = 800;
@@ -162,7 +151,6 @@ public class UiUtilsTest {
      * Set)}.
      */
     @Test
-    @SmallTest
     public void testComputeListAdapterContentDimensions() {
         MultiTypeTestAdapter adapter =
                 new MultiTypeTestAdapter(
