@@ -386,6 +386,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kDisablePartnerHomepageAndroid,
     &kDisableScrollbarOfFadingEdgeScrollView,
     &kDontAutoHideBrowserControls,
+    &kDownloadToolbarButtonForDesktop,
     &kEdgeToEdgeAutomotive,
     &kEdgeToEdgeBottomChin,
     &kEdgeToEdgeEverywhere,
@@ -819,6 +820,7 @@ BASE_FEATURE(kDisablePartnerHomepageAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kDisableScrollbarOfFadingEdgeScrollView, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kDiscardPageWithCrashedSubframePolicy, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kDontAutoHideBrowserControls, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDownloadToolbarButtonForDesktop, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kEdgeToEdgeAutomotive, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kEdgeToEdgeBottomChin, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kEdgeToEdgeEverywhere, base::FEATURE_ENABLED_BY_DEFAULT);

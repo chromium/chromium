@@ -13290,6 +13290,7 @@ from previous Chrome versions.
   <int value="-480376207" label="OmniboxMiaZPS:enabled"/>
   <int value="-480263549" label="AutofillShadowDOM:disabled"/>
   <int value="-479908983" label="PrintPreviewCrosPrimary:disabled"/>
+  <int value="-479757082" label="DownloadToolbarButtonForDesktop:disabled"/>
   <int value="-479601398" label="InfoCardAcknowledgementTracking:enabled"/>
   <int value="-479065716" label="CloudGamingDevice:disabled"/>
   <int value="-478462945" label="enable-ephemeral-apps"/>
@@ -15800,6 +15801,7 @@ from previous Chrome versions.
   <int value="294946885" label="WebViewThrottleBackgroundBeginFrame:disabled"/>
   <int value="295094635" label="ReadAnythingLocalSidePanel:disabled"/>
   <int value="295661985" label="video-capture-use-gpu-memory-buffer"/>
+  <int value="295998467" label="DownloadToolbarButtonForDesktop:enabled"/>
   <int value="296066418" label="CCTResizableForThirdParties:disabled"/>
   <int value="296215399" label="WindowsMixedReality:disabled"/>
   <int value="296239394" label="HybridChargerNotifications:disabled"/>

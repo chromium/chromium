@@ -547,6 +547,8 @@ public abstract class ChromeFeatureList {
     public static final String DISCO_FEED_ENDPOINT = "DiscoFeedEndpoint";
     public static final String DISPLAY_EDGE_TO_EDGE_FULLSCREEN = "DisplayEdgeToEdgeFullscreen";
     public static final String DOCUMENT_PICTURE_IN_PICTURE_API = "DocumentPictureInPictureAPI";
+    public static final String DOWNLOAD_TOOLBAR_BUTTON_FOR_DESKTOP =
+            "DownloadToolbarButtonForDesktop";
     public static final String DRAW_CUTOUT_EDGE_TO_EDGE = "DrawCutoutEdgeToEdge";
     public static final String EDGELESS_TOP_INSET = "EdgelessTopInset";
     public static final String EDGE_TO_EDGE_AUTOMOTIVE = "EdgeToEdgeAutomotive";
@@ -1802,6 +1804,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(DEFAULT_BROWSER_PROMO_FRE, true);
     public static final MutableFlagWithSafeDefault sDisableGridTabSwitcher =
             newMutableFlagWithSafeDefault(DISABLE_GRID_TAB_SWITCHER, false);
+    public static final MutableFlagWithSafeDefault sDownloadToolbarButtonForDesktop =
+            newMutableFlagWithSafeDefault(DOWNLOAD_TOOLBAR_BUTTON_FOR_DESKTOP, false);
     public static final MutableFlagWithSafeDefault sEnableSwipeToSwitchPane =
             newMutableFlagWithSafeDefault(ENABLE_SWIPE_TO_SWITCH_PANE, false);
     public static final MutableFlagWithSafeDefault sEnableToolbarPositioningInResizeMode =

@@ -5720,6 +5720,11 @@ inline constexpr char kDisableGridTabSwitcherDescription[] =
     "Disables the grid tab switcher on Android. Only applies to large form "
     "factor devices.";
 
+inline constexpr char kDownloadToolbarButtonForDesktopName[] =
+    "Download Toolbar Button for Desktop";
+inline constexpr char kDownloadToolbarButtonForDesktopDescription[] =
+    "Enables the download toolbar button and popup tray on Android desktop.";
+
 inline constexpr char kEdgeToEdgeAutomotiveName[] = "Edge-to-Edge Automotive";
 inline constexpr char kEdgeToEdgeAutomotiveDescription[] =
     "When this is enabled, edge to edge logic will be enabled on automotive "

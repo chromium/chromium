@@ -7856,6 +7856,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabSwitcherDragDropDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabSwitcherDragDropAndroid)},
 
+    {"download-toolbar-button-for-desktop",
+     flag_descriptions::kDownloadToolbarButtonForDesktopName,
+     flag_descriptions::kDownloadToolbarButtonForDesktopDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kDownloadToolbarButtonForDesktop)},
+
     {"tab-search-for-desktop", flag_descriptions::kTabSearchForDesktopName,
      flag_descriptions::kTabSearchForDesktopDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabSearchForDesktop)},
