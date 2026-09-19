@@ -74,8 +74,14 @@
   );
   outline: none;
   resize: none;
+  scrollbar-width: none;
   transition: var(--voice-search-fade-transition);
   width: 100%;
+}
+
+#input.empty {
+  mask-image: none;
+  overflow: hidden;
 }
 
 #input,

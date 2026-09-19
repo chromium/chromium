@@ -34,6 +34,7 @@
   overflow-y: visible;
   padding-block-start: var(--recording-wave-top-padding, 0);
   position: relative;
+  scrollbar-width: none;
 }
 
 .wave-wrapper {

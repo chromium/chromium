@@ -1612,4 +1612,42 @@ suite('ComposeboxVoiceSearch', () => {
         assertEquals(1, voiceSearchElement.transcriptLines);
         assertEquals('1', voiceSearchElement.getAttribute('transcript-lines'));
       });
+
+  test(
+      'empty transcript input has no mask-image and is not scrollable',
+      async () => {
+        await createComposeboxElement();
+        const voiceSearchElement = await openVoiceSearchUI();
+        const input =
+            voiceSearchElement.shadowRoot.querySelector<HTMLElement>('#input')!;
+
+        // Live transcript mode defaults to true; empty input has no mask-image.
+        assertTrue(input.classList.contains('empty'));
+        assertEquals('none', window.getComputedStyle(input).maskImage);
+        assertEquals('none', window.getComputedStyle(input).scrollbarWidth);
+
+        // Helper text mode without live transcript has overflow hidden.
+        voiceSearchElement.helperTextEnabled = true;
+        voiceSearchElement.liveTranscriptEnabled = false;
+        await voiceSearchElement.updateComplete;
+        assertEquals('none', window.getComputedStyle(input).maskImage);
+        assertEquals('hidden', window.getComputedStyle(input).overflowY);
+
+        // Audio-wave-enabled mode keeps mask-image: none and no scrollbar.
+        voiceSearchElement.toggleAttribute('audio-wave-enabled', true);
+        await voiceSearchElement.updateComplete;
+        assertEquals('none', window.getComputedStyle(input).maskImage);
+        assertEquals('none', window.getComputedStyle(input).scrollbarWidth);
+
+        // Non-empty transcript restores gradient mask and scrollable overflow.
+        voiceSearchElement.liveTranscriptEnabled = true;
+        (voiceSearchElement as any).transcript_ = 'hello world';
+        voiceSearchElement.requestUpdate();
+        await voiceSearchElement.updateComplete;
+
+        assertFalse(input.classList.contains('empty'));
+        assertTrue(window.getComputedStyle(input).maskImage !== 'none');
+        assertEquals('auto', window.getComputedStyle(input).overflowY);
+        assertEquals('none', window.getComputedStyle(input).scrollbarWidth);
+      });
 });

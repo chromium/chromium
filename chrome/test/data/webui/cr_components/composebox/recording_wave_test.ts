@@ -49,6 +49,12 @@ suite('RecordingWaveElementTest', () => {
     assertEquals('RECORDING-WAVE', recordingWaveElement.tagName);
     assertFalse(recordingWaveElement.isListening);
     assertTrue(recordingWaveElement.darkThemeColorsEnabled);
+    assertEquals(
+        'clip', window.getComputedStyle(recordingWaveElement).overflowX);
+    assertEquals(
+        'visible', window.getComputedStyle(recordingWaveElement).overflowY);
+    assertEquals(
+        'none', window.getComputedStyle(recordingWaveElement).scrollbarWidth);
   });
 
   test('isListening toggles internal state and AudioProcessor', async () => {
