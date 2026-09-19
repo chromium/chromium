@@ -7,31 +7,28 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import '../controls/settings_toggle_button.js';
-import '../settings_columned_section.css.js';
 import '../settings_page/settings_section.js';
-import '../settings_shared.css.js';
 import './ai_site_add_dialog.js';
 import '/shared/settings/controls/cr_policy_pref_indicator.js';
 
 import {PrefService} from '/shared/settings/prefs2/pref_service.js';
-import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
+import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import type {CrLazyRenderLitElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './ai_mode_search_page.html.js';
+import {getCss} from './ai_mode_search_page.css.js';
+import {getHtml} from './ai_mode_search_page.html.js';
 
 const SettingsAiModeSearchPageElementBase =
-    PrefServiceObserverMixin(PolymerElement);
+    PrefServiceObserverMixinLit(CrLitElement);
 
 export interface SettingsAiModeSearchPageElement {
   $: {
-    menu: CrLazyRenderElement<CrActionMenuElement>,
+    menu: CrLazyRenderLitElement<CrActionMenuElement>,
   };
 }
 
@@ -41,32 +38,28 @@ export class SettingsAiModeSearchPageElement extends
     return 'settings-ai-mode-search-page';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      siteList_: {
-        type: Array,
-        value: () => [],
-      },
-      showAddSiteDialog_: {
-        type: Boolean,
-        value: false,
-      },
-      siteToEdit_: {
-        type: String,
-        value: '',
-      },
-      enterprisePref_: Object,
+      siteList_: {type: Array},
+      showAddSiteDialog_: {type: Boolean},
+      siteToEdit_: {type: String},
+      enterprisePref_: {type: Object},
     };
   }
 
-  declare private siteList_: string[];
-  declare private showAddSiteDialog_: boolean;
-  declare private siteToEdit_: string;
-  declare private enterprisePref_: chrome.settingsPrivate.PrefObject;
+  protected accessor siteList_: string[] = [];
+  protected accessor showAddSiteDialog_: boolean = false;
+  protected accessor siteToEdit_: string = '';
+  protected accessor enterprisePref_: chrome.settingsPrivate.PrefObject|
+      undefined;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -77,7 +70,7 @@ export class SettingsAiModeSearchPageElement extends
         () => this.onSiteExclusionsChanged_());
   }
 
-  private isDisabledByPolicy_(): boolean {
+  protected isDisabledByPolicy_(): boolean {
     return !!this.enterprisePref_ && this.enterprisePref_.value === 1;
   }
 
@@ -86,35 +79,36 @@ export class SettingsAiModeSearchPageElement extends
     this.siteList_ = Object.keys(exclusions).sort();
   }
 
-  private hasSites_(): boolean {
+  protected hasSites_(): boolean {
     return this.siteList_.length > 0;
   }
 
-  private onAddSiteClick_() {
+  protected onAddSiteClick_() {
     this.siteToEdit_ = '';
     this.showAddSiteDialog_ = true;
   }
 
-  private onMenuClick_(e: DomRepeatEvent<string>) {
-    this.siteToEdit_ = e.model.item;
-    this.$.menu.get().showAt(e.target as HTMLElement);
+  protected onMenuClick_(e: Event) {
+    const target = e.currentTarget as HTMLElement;
+    this.siteToEdit_ = target.dataset['site']!;
+    this.$.menu.get().showAt(target);
   }
 
-  private onEditClick_() {
+  protected onEditClick_() {
     this.$.menu.get().close();
     this.showAddSiteDialog_ = true;
   }
 
-  private onRemoveSiteClick_() {
+  protected onRemoveSiteClick_() {
     this.$.menu.get().close();
     this.removeSiteExclusion(this.siteToEdit_);
   }
 
-  private onAddSiteDialogClose_() {
+  protected onAddSiteDialogClose_() {
     this.showAddSiteDialog_ = false;
   }
 
-  private onAddSite_(e: CustomEvent<string>) {
+  protected onAddSite_(e: CustomEvent<string>) {
     if (this.siteToEdit_ && this.siteToEdit_ !== e.detail) {
       this.removeSiteExclusion(this.siteToEdit_);
     }
@@ -137,15 +131,17 @@ export class SettingsAiModeSearchPageElement extends
         'contextual_tasks.site_exclusions', domain);
   }
 
-  private onLearnMoreRowClick_() {
+  protected onLearnMoreRowClick_() {
     OpenWindowProxyImpl.getInstance().openUrl(
         'https://support.google.com/chrome?p=ai_mode_search');
   }
 
-  private onLearnMoreClick_(event: Event) {
+  protected onLearnMoreClick_(event: Event) {
     event.stopPropagation();
   }
 }
+
+export type AiModeSearchPageElement = SettingsAiModeSearchPageElement;
 
 declare global {
   interface HTMLElementTagNameMap {

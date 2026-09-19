@@ -7,7 +7,6 @@ import 'chrome://settings/lazy_load.js';
 import type {SettingsAiModeSearchPageElement} from 'chrome://settings/lazy_load.js';
 import {OpenWindowProxyImpl, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -57,13 +56,13 @@ suite('AiModeSearchSubpage', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     subpage = document.createElement('settings-ai-mode-search-page');
     document.body.appendChild(subpage);
-    return flushTasks();
+    return microtasksFinished();
   }
 
   test('shareTabsEveryThreadToggle', async () => {
     await createPage();
 
-    const toggle = subpage.shadowRoot!.querySelector('settings-toggle-button');
+    const toggle = subpage.shadowRoot.querySelector('settings-toggle-button');
     assertTrue(!!toggle);
     assertFalse(toggle.checked);
 
@@ -88,10 +87,10 @@ suite('AiModeSearchSubpage', function() {
     await createPage();
 
     const indicator =
-        subpage.shadowRoot!.querySelector('cr-policy-pref-indicator');
+        subpage.shadowRoot.querySelector('cr-policy-pref-indicator');
     assertFalse(!!indicator);
 
-    const linkout = subpage.shadowRoot!.querySelector('cr-link-row');
+    const linkout = subpage.shadowRoot.querySelector('cr-link-row');
     assertTrue(!!linkout);
   });
 
@@ -99,24 +98,24 @@ suite('AiModeSearchSubpage', function() {
     await createPage();
     await prefService.setPrefValue(
         'contextual_tasks.smart_tab_sharing_settings', 1);
-    await flushTasks();
+    await microtasksFinished();
 
     const indicator =
-        subpage.shadowRoot!.querySelector('cr-policy-pref-indicator');
+        subpage.shadowRoot.querySelector('cr-policy-pref-indicator');
     assertTrue(!!indicator);
 
-    const toggle = subpage.shadowRoot!.querySelector('settings-toggle-button');
+    const toggle = subpage.shadowRoot.querySelector('settings-toggle-button');
     assertTrue(!!toggle);
     assertTrue(toggle.disabled);
 
-    const linkout = subpage.shadowRoot!.querySelector('cr-link-row');
+    const linkout = subpage.shadowRoot.querySelector('cr-link-row');
     assertFalse(!!linkout);
   });
 
   test('learnMoreLinkRow', async function() {
     await createPage();
 
-    const linkout = subpage.shadowRoot!.querySelector('cr-link-row');
+    const linkout = subpage.shadowRoot.querySelector('cr-link-row');
     assertTrue(!!linkout);
 
     linkout.click();
@@ -128,7 +127,7 @@ suite('AiModeSearchSubpage', function() {
   test('learnMoreLink', async () => {
     await createPage();
 
-    const learnMoreLink = subpage.shadowRoot!.querySelector('a');
+    const learnMoreLink = subpage.shadowRoot.querySelector('a');
     assertTrue(!!learnMoreLink);
     assertEquals(
         'https://support.google.com/chrome?p=ai_mode_search',
@@ -153,19 +152,19 @@ suite('AiModeSearchSubpage', function() {
     await createPage();
 
     // Check initial state
-    const siteList = subpage.shadowRoot!.querySelector('#siteList');
+    const siteList = subpage.shadowRoot.querySelector('#siteList');
     assertTrue(!!siteList);
     let items = siteList.querySelectorAll('.list-item');
     assertEquals(0, items.length);
 
     // Open add dialog
     const addButton =
-        subpage.shadowRoot!.querySelector<HTMLElement>('#addSiteButton');
+        subpage.shadowRoot.querySelector<HTMLElement>('#addSiteButton');
     assertTrue(!!addButton);
     addButton.click();
-    await flushTasks();
+    await microtasksFinished();
 
-    const addDialog = subpage.shadowRoot!.querySelector('ai-site-add-dialog');
+    const addDialog = subpage.shadowRoot.querySelector('ai-site-add-dialog');
     assertTrue(!!addDialog);
 
     // Type a site and submit
@@ -180,7 +179,7 @@ suite('AiModeSearchSubpage', function() {
     assertFalse(dialogAddButton.hasAttribute('disabled'));
     const closePromise1 = eventToPromise('close', addDialog);
     dialogAddButton.click();
-    await Promise.all([closePromise1, flushTasks()]);
+    await Promise.all([closePromise1, microtasksFinished()]);
 
     const exclusionsAfter = subpage.getSiteExclusions();
     assertEquals(
@@ -194,10 +193,11 @@ suite('AiModeSearchSubpage', function() {
 
     // Open add dialog again
     addButton.click();
-    await flushTasks();
+    await microtasksFinished();
 
-    // Re-query the dialog because it is inside a dom-if and was recreated
-    const addDialog2 = subpage.shadowRoot!.querySelector('ai-site-add-dialog');
+    // Re-query the dialog because it is conditionally rendered and was
+    // recreated
+    const addDialog2 = subpage.shadowRoot.querySelector('ai-site-add-dialog');
     assertTrue(!!addDialog2);
 
     // Type a second site that should sort before the first one
@@ -211,7 +211,7 @@ suite('AiModeSearchSubpage', function() {
     assertTrue(!!dialogAddButton2);
     assertFalse(dialogAddButton2.hasAttribute('disabled'));
     dialogAddButton2.click();
-    await flushTasks();
+    await microtasksFinished();
 
     // Check list sorted
     items = siteList.querySelectorAll('.list-item');
@@ -223,19 +223,19 @@ suite('AiModeSearchSubpage', function() {
     const menuButton = items[0]!.querySelector('cr-icon-button');
     assertTrue(!!menuButton);
     menuButton.click();
-    await flushTasks();
+    await microtasksFinished();
 
-    const actionMenu = subpage.shadowRoot!.querySelector('cr-action-menu');
+    const actionMenu = subpage.shadowRoot.querySelector('cr-action-menu');
     assertTrue(!!actionMenu);
     assertTrue(actionMenu.open);
 
     const editButton = actionMenu.querySelector<HTMLElement>('#edit');
     assertTrue(!!editButton);
     editButton.click();
-    await flushTasks();
+    await microtasksFinished();
 
     // Verify it opens the dialog pre-populated
-    const editDialog = subpage.shadowRoot!.querySelector('ai-site-add-dialog');
+    const editDialog = subpage.shadowRoot.querySelector('ai-site-add-dialog');
     assertTrue(!!editDialog);
     const editInput = editDialog.shadowRoot.querySelector('cr-input');
     assertTrue(!!editInput);
@@ -248,7 +248,7 @@ suite('AiModeSearchSubpage', function() {
     assertTrue(!!saveButton);
     const closePromise3 = eventToPromise('close', editDialog);
     saveButton.click();
-    await Promise.all([closePromise3, flushTasks()]);
+    await Promise.all([closePromise3, microtasksFinished()]);
 
     // Check list sorted
     items = siteList.querySelectorAll('.list-item');
@@ -260,13 +260,13 @@ suite('AiModeSearchSubpage', function() {
     const removeMenuButton = items[0]!.querySelector('cr-icon-button');
     assertTrue(!!removeMenuButton);
     removeMenuButton.click();
-    await flushTasks();
+    await microtasksFinished();
 
     assertTrue(actionMenu.open);
     const deleteButton = actionMenu.querySelector<HTMLElement>('#delete');
     assertTrue(!!deleteButton);
     deleteButton.click();
-    await flushTasks();
+    await microtasksFinished();
 
     items = siteList.querySelectorAll('.list-item');
     assertEquals(1, items.length);

@@ -1,0 +1,25 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=../settings_shared_lit.css.js
+ * #include=settings-shared-lit
+ * #css_wrapper_metadata_end */
+
+.separator {
+  margin: 0 4px;
+}
+
+.separator + settings-toggle-button {
+  margin-inline-end: 12px;
+}
+
+.cr-padded-text {
+  flex: 1;
+}
+
+cr-policy-pref-indicator {
+  margin-inline-end: var(--cr-icon-button-margin-start);
+}

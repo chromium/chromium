@@ -9,8 +9,7 @@ import type {SettingsDictationPageElement} from 'chrome://settings/lazy_load.js'
 import {DictationBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {loadTimeData, PrefsBrowserProxy, PrefService, resetRouterForTesting} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestDictationBrowserProxy} from './test_dictation_browser_proxy.js';
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
@@ -49,7 +48,8 @@ suite('DictationPage', function() {
 
     page = document.createElement('settings-dictation-page');
     document.body.appendChild(page);
-    await flushTasks();
+    await browserProxy.whenCalled('getDictationShortcut');
+    await microtasksFinished();
   });
 
   test('ShortcutUpdateSuccess', async () => {
@@ -74,7 +74,7 @@ suite('DictationPage', function() {
 
     const shortcut = await browserProxy.whenCalled('setDictationShortcut');
     assertEquals('InvalidShortcut', shortcut);
-    await flushTasks();
+    await microtasksFinished();
 
     // Verify element reverted shortcut property back to original pref value.
     assertEquals('Ctrl+Alt+D', page.$.shortcutInput.shortcut);
@@ -84,7 +84,7 @@ suite('DictationPage', function() {
     browserProxy.setDictationShortcutValue('⌃⇧D');
     await prefService.setPrefValue(
         'browser.voice_typing_hotkey', 'Ctrl+Shift+D');
-    await flushTasks();
+    await microtasksFinished();
 
     assertEquals('⌃⇧D', page.$.shortcutInput.shortcut);
   });

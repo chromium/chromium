@@ -1,18 +1,5 @@
-<style include="cr-shared-style settings-shared">
-  .keyboard-shortcut-setting {
-    align-items: center;
-  }
-
-  .shortcut-input {
-    margin-top: 2px;
-  }
-
-  .section {
-    padding: 0 var(--cr-section-padding);
-  }
-</style>
 <settings-subpage page-title="$i18n{dictationSettingLabel}"
-    route-path="[[routePath]]">
+    route-path="${this.routePath}">
   <div class="section">
     <h2 class="cr-title-text">$i18n{dictationPreferencesHeader}</h2>
     <div class="cr-row keyboard-shortcut-setting">
@@ -34,9 +21,9 @@
           input-aria-label="$i18n{dictationShortcutLabel}"
           edit-button-aria-label="$i18n{dictationShortcutEditLabel}"
           clear-button-aria-label="$i18n{dictationShortcutClearLabel}"
-          shortcut="[[registeredShortcut_]]"
+          .shortcut="${this.registeredShortcut_}"
           allow-ctrl-alt-shortcuts
-          on-shortcut-updated="onShortcutUpdated_">
+          @shortcut-updated="${this.onShortcutUpdated_}">
       </cr-shortcut-input>
     </div>
   </div>

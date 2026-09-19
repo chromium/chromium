@@ -1,45 +1,21 @@
-<style include="settings-shared">
-  .separator {
-    margin: 0 4px;
-  }
-
-  .separator + settings-toggle-button {
-    margin-inline-end: 12px;
-  }
-
-  cr-icon {
-    flex-shrink: 0;
-  }
-
-  .cr-padded-text {
-    flex: 1;
-  }
-
-  cr-policy-pref-indicator {
-    margin-inline-end: var(--cr-icon-button-margin-start);
-  }
-</style>
-
 <settings-section page-title="$i18n{stsSettingsEntrypointGoogleSearchAiMode}">
   <div class="settings-row first">
-    <template is="dom-if" if="[[!isDisabledByPolicy_(enterprisePref_)]]"
-        restamp>
+    ${!this.isDisabledByPolicy_() ? html`
       <cr-link-row
           label="$i18n{stsSettingsOption1ShareOpenTabsForEveryThreadV3}"
-          on-click="onLearnMoreRowClick_" external>
+          @click="${this.onLearnMoreRowClick_}" external>
         <div slot="sub-label">
           <span>$i18n{stsSettingsOption1ChooseHowRelevantOpenTabsCanBeUsedV3}</span>
           <a href="https://support.google.com/chrome?p=ai_mode_search"
               aria-label="$i18n{stsSettingsOption1LearnMore}"
               aria-description="$i18n{opensInNewTab}"
-              on-click="onLearnMoreClick_" target="_blank">
+              @click="${this.onLearnMoreClick_}" target="_blank">
             $i18n{stsSettingsOption1LearnMore}
           </a>
         </div>
       </cr-link-row>
       <div class="separator"></div>
-    </template>
-    <template is="dom-if" if="[[isDisabledByPolicy_(enterprisePref_)]]" restamp>
+    ` : html`
       <div class="cr-row first">
         <div class="flex cr-padded-text">
           <div id="stsLabel">
@@ -50,23 +26,23 @@
             <a href="https://support.google.com/chrome?p=ai_mode_search"
                 aria-label="$i18n{stsSettingsOption1LearnMore}"
                 aria-description="$i18n{opensInNewTab}" id="learnMoreLink"
-                on-click="onLearnMoreClick_" target="_blank">
+                @click="${this.onLearnMoreClick_}" target="_blank">
               $i18n{stsSettingsOption1LearnMore}
             </a>
           </div>
         </div>
       </div>
       <div class="cr-row first" id="aiPolicyIndicator">
-        <cr-policy-pref-indicator pref="[[enterprisePref_]]">
+        <cr-policy-pref-indicator .pref="${this.enterprisePref_}">
         </cr-policy-pref-indicator>
         $i18n{aiSubpageFeatureManagedDisabledLabel}
       </div>
-    </template>
+    `}
     <settings-toggle-button
         id="shareTabsEveryThreadToggle"
         aria-label="$i18n{stsSettingsOption1ShareOpenTabsForEveryThreadV3}"
         pref-key="contextual_tasks.share_open_tabs_every_thread"
-        disabled="[[isDisabledByPolicy_(enterprisePref_)]]">
+        ?disabled="${this.isDisabledByPolicy_()}">
     </settings-toggle-button>
   </div>
   <div class="hr"></div>
@@ -77,12 +53,12 @@
         $i18n{stsSettingsOption1SitesAddedHereWontBeReferenced}
       </div>
     </div>
-    <cr-button id="addSiteButton" on-click="onAddSiteClick_">
+    <cr-button id="addSiteButton" @click="${this.onAddSiteClick_}">
       $i18n{add}
     </cr-button>
   </div>
   <div id="noSitesAddedLabel" class="list-frame"
-      hidden$="[[hasSites_(siteList_.*)]]">
+      ?hidden="${this.hasSites_()}">
     <div class="list-item">
       <div class="flex secondary">
         No sites added
@@ -90,37 +66,37 @@
     </div>
   </div>
   <div id="siteList" class="list-frame" role="list">
-    <template is="dom-repeat" items="[[siteList_]]">
+    ${this.siteList_.map(item => html`
       <div class="list-item" role="listitem">
-        <div class="start cr-padded-text">[[item]]</div>
+        <div class="start cr-padded-text">${item}</div>
         <cr-icon-button
             class="icon-more-vert"
             aria-label="More actions"
-            on-click="onMenuClick_"
+            data-site="${item}"
+            @click="${this.onMenuClick_}"
             title="More actions">
         </cr-icon-button>
       </div>
-    </template>
+    `)}
   </div>
 
-  <cr-lazy-render id="menu">
-    <template>
-      <cr-action-menu>
-        <button id="edit" class="dropdown-item" role="menuitem"
-            on-click="onEditClick_">
-          $i18n{edit}
-        </button>
-        <button id="delete" class="dropdown-item" role="menuitem"
-            on-click="onRemoveSiteClick_">
-          $i18n{remove}
-        </button>
-      </cr-action-menu>
-    </template>
-  </cr-lazy-render>
+  <cr-lazy-render-lit id="menu" .template="${() => html`
+    <cr-action-menu>
+      <button id="edit" class="dropdown-item" role="menuitem"
+          @click="${this.onEditClick_}">
+        $i18n{edit}
+      </button>
+      <button id="delete" class="dropdown-item" role="menuitem"
+          @click="${this.onRemoveSiteClick_}">
+        $i18n{remove}
+      </button>
+    </cr-action-menu>
+  `}">
+  </cr-lazy-render-lit>
 
-  <template is="dom-if" if="[[showAddSiteDialog_]]" restamp>
-    <ai-site-add-dialog on-close="onAddSiteDialogClose_"
-        on-add-site="onAddSite_" site="[[siteToEdit_]]">
+  ${this.showAddSiteDialog_ ? html`
+    <ai-site-add-dialog @close="${this.onAddSiteDialogClose_}"
+        @add-site="${this.onAddSite_}" .site="${this.siteToEdit_}">
     </ai-site-add-dialog>
-  </template>
+  ` : ''}
 </settings-section>
