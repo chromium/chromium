@@ -60,14 +60,6 @@ OmniboxPopupHandler::OmniboxPopupHandler(
     }
   }
   NotifyDefaultSearchProviderChanged();
-
-  if (controller_ && controller_->edit_model()) {
-    if (auto* popup_view = controller_->edit_model()->popup_view()) {
-      // Notify the popup view that the WebUI page handler is ready to process
-      // input and display suggestions.
-      popup_view->OnPopupHandlerReady();
-    }
-  }
 }
 
 OmniboxPopupHandler::~OmniboxPopupHandler() = default;

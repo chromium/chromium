@@ -16,7 +16,9 @@
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
@@ -364,6 +366,14 @@ void OmniboxPopupUI::CreatePageHandler(
       std::move(receiver), std::move(page), web_ui()->GetWebContents(),
       omnibox_controller);
   popup_handler_->set_embedder(embedder());
+  if (omnibox_controller->edit_model()) {
+    if (auto* popup_view = omnibox_controller->edit_model()->popup_view()) {
+      // Notify the popup view after `popup_handler_` is assigned so
+      // `GetPopupHandler()` is valid during synchronous `OnPopupHandlerReady()`
+      // callbacks.
+      popup_view->OnPopupHandlerReady();
+    }
+  }
 }
 
 void OmniboxPopupUI::BindInterface(

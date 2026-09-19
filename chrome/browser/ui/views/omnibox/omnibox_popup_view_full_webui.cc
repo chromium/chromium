@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_full_webui.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -36,7 +37,6 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/range/range.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -133,19 +133,49 @@ void OmniboxPopupViewFullWebUI::SyncNativeStateToWebUI(bool query_zps) {
   // all text, and empty text defaults to Range(0, 0)).
   gfx::Range selection(0, text.length());
 
+  // `last_sent_text_` is null after a state reset (e.g., tab switch).
+  // Otherwise, check if `text` has diverged from what WebUI currently has.
+  const bool text_changed = !last_sent_text_ || text != *last_sent_text_;
+
   const gfx::Range handler_selection = popup_handler->latest_selection();
   const std::u16string full_url = controller()->client()->GetFormattedFullURL();
+  // When `user_input_in_progress` is false, a highlight may have been created
+  // against the unelided `full_url` rather than the elided
+  // `permanent_display_text` (`text`).
+  const size_t max_selection_length =
+      user_input_in_progress ? text.length()
+                             : std::max(text.length(), full_url.length());
   const bool is_handler_selection_valid =
-      handler_selection.IsValid() &&
-      handler_selection.GetMax() <= text.length();
+      !text_changed && handler_selection.IsValid() &&
+      handler_selection.GetMax() <= max_selection_length;
 
-  if (omnibox_view_ && omnibox_view_->HasSelection()) {
-    // If the native view has an active highlight (e.g. from mouse dragging or
-    // double-clicking in Views), preserve the exact selection range.
-    selection = omnibox_view_->GetSelectionBounds();
+  // Don't test `OmniboxView::HasSelection()` here. `OmniboxViewViews` keeps
+  // reporting a selection long after it was handed off (nothing clears it,
+  // since the native view holds `FocusBehavior::NEVER` in Full WebUI mode and
+  // so never sees `OnBlur()`), and `WebUIReadOnlyOmnibox` hardcodes it to true
+  // because an `<input>` always has a selection. Inspect the range instead, and
+  // require it to be in-bounds so a highlight left over from longer, stale text
+  // can't be applied.
+  const gfx::Range native_selection = omnibox_view_
+                                          ? omnibox_view_->GetSelectionBounds()
+                                          : gfx::Range::InvalidRange();
+  const bool has_native_highlight =
+      native_selection.IsValid() && !native_selection.is_empty() &&
+      native_selection.GetMax() <= max_selection_length;
+
+  if (has_native_highlight &&
+      native_selection != last_consumed_native_selection_) {
+    // The native view has a highlight we have not handed off yet (e.g. from
+    // mouse dragging or double-clicking in Views), so preserve the exact
+    // selection range. Record it so that later syncs, which would still see
+    // this same range on `omnibox_view_`, defer to whatever selection WebUI
+    // reports instead of re-applying it.
+    selection = native_selection;
+    last_consumed_native_selection_ = native_selection;
   } else if (user_input_in_progress) {
-    // Preserve existing WebUI selection if valid, otherwise place
-    // caret at the end of the text.
+    // Preserve existing WebUI selection if the text has not changed and WebUI
+    // selection is valid; otherwise default to placing the caret at the end of
+    // the user text.
     selection = is_handler_selection_valid
                     ? handler_selection
                     : gfx::Range(text.length(), text.length());
@@ -156,9 +186,6 @@ void OmniboxPopupViewFullWebUI::SyncNativeStateToWebUI(bool query_zps) {
     selection = handler_selection;
   }
 
-  // `last_sent_text_` is null after a state reset (e.g., tab switch).
-  // Otherwise, check if `text`, `selection`, or `focus` has diverged.
-  bool text_changed = !last_sent_text_ || text != *last_sent_text_;
   bool selection_changed = selection != handler_selection;
   bool focus_changed = !last_sent_focus_ || focus != *last_sent_focus_;
 
@@ -243,6 +270,7 @@ void OmniboxPopupViewFullWebUI::OnTabChanged(content::WebContents* contents) {
   TRACE_EVENT("omnibox", "OmniboxPopupViewFullWebUI::OnTabChanged");
   last_sent_text_.reset();
   last_sent_focus_.reset();
+  last_consumed_native_selection_.reset();
   controller()->edit_model()->ResetDisplayTexts();
 
   // Cancel in-flight queries from the previous tab immediately rather than
@@ -409,6 +437,16 @@ void OmniboxPopupViewFullWebUI::OnFocus(bool query_zps, bool select_all) {
     last_sent_text_.reset();
     last_sent_focus_.reset();
   }
+  // Reset `last_consumed_native_selection_` when the popup is opening
+  // (`changed`) or when a user-initiated focus/select-all (`query_zps` or
+  // `select_all`) is triggered while the popup is already
+  // open (`!changed`), so a repeated `OmniboxView::SelectAll` with identical
+  // bounds is still handed off to WebUI. Skip resetting during passive focus
+  // restorations (`!changed && !query_zps && !select_all`) so
+  // a stale native selection does not overwrite the user's WebUI selection.
+  if (changed || query_zps || select_all) {
+    last_consumed_native_selection_.reset();
+  }
 
   // Set popup state to kFull before setting focus state to prevent focus ring
   // flicker during the transition.
@@ -440,21 +478,14 @@ void OmniboxPopupViewFullWebUI::OnBlur() {
 }
 
 void OmniboxPopupViewFullWebUI::OnPopupHandlerReady() {
-  is_popup_handler_ready_ = true;
   if (on_ready_callback_) {
     std::move(on_ready_callback_).Run();
   }
 }
 
 bool OmniboxPopupViewFullWebUI::IsPopupHandlerReady() const {
-  // Check `is_popup_handler_ready_` to handle the synchronous
-  // `OnPopupHandlerReady()` callback invoked during the `OmniboxPopupHandler`
-  // constructor before `std::make_unique` finishes assigning to
-  // `popup_ui->popup_handler_`. Also check `GetPopupHandler()` to verify
-  // presence once construction has completed.
-  return is_popup_handler_ready_ ||
-         const_cast<OmniboxPopupViewFullWebUI*>(this)->GetPopupHandler() !=
-             nullptr;
+  return const_cast<OmniboxPopupViewFullWebUI*>(this)->GetPopupHandler() !=
+         nullptr;
 }
 
 OmniboxPopupHandler* OmniboxPopupViewFullWebUI::GetPopupHandler() {

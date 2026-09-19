@@ -153,6 +153,119 @@ suite('OmniboxPopupSearchboxTest', function() {
     assertFalse(canRedo);
   });
 
+  test('InFlightWebUiInputMergedWithSetInputState', async () => {
+    // User typed 'e' in WebUI while SetInputState('h') was in-flight.
+    const input = searchbox.$.input.inputElement;
+    input.value = 'e';
+    input.setSelectionRange(1, 1);
+    input.dispatchEvent(new CustomEvent('input', {
+      bubbles: true,
+      composed: true,
+      detail: {value: 'e', isComposing: false},
+    }));
+    await microtasksFinished();
+
+    // Verify autocomplete query was deferred before initial SetInputState.
+    assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
+
+    // SetInputState with text='h' arrives from native Views.
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      text: 'h',
+      selection: {start: 1, end: 1},
+      userInputInProgress: true,
+      isFocused: true,
+    }));
+    await microtasksFinished();
+
+    // Verify that the merged text is 'he' and selection is at end (2, 2).
+    assertEquals('he', searchbox.$.input.inputElement.value);
+    assertEquals(2, searchbox.$.input.inputElement.selectionStart);
+    assertEquals(2, searchbox.$.input.inputElement.selectionEnd);
+
+    // Verify autocomplete query was dispatched for the merged text.
+    assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+    const [, , queryText] = testProxy.handler.getArgs('queryAutocomplete')[0];
+    assertEquals('he', queryText);
+  });
+
+  test(
+      'InFlightWebUiInputWithInlineAutocompletionMergedWithSetInputState',
+      async () => {
+        // User typed 'r' in WebUI.
+        const input = searchbox.$.input.inputElement;
+        input.value = 'r';
+        input.setSelectionRange(1, 1);
+        input.dispatchEvent(new CustomEvent('input', {
+          bubbles: true,
+          composed: true,
+          detail: {value: 'r', isComposing: false},
+        }));
+        await microtasksFinished();
+
+        // Autocomplete result arrives for 'r' with inline autocompletion
+        // 'eddit.com'.
+        testProxy.page.autocompleteResultChanged(
+            createAutocompleteResultForTesting({
+              input: 'r',
+              matches: [
+                createSearchMatchForTesting({
+                  allowedToBeDefaultMatch: true,
+                  inlineAutocompletion: 'eddit.com',
+                  fillIntoEdit: 'reddit.com',
+                }),
+              ],
+            }));
+        await microtasksFinished();
+        // Verify that raw typed 'r' was not overwritten by inline
+        // autocompletion.
+        assertEquals('r', searchbox.$.input.inputElement.value);
+
+        // SetInputState with text='ca' arrives from native Views.
+        callbackRouter.setInputState(createDefaultOmniboxInputState({
+          text: 'ca',
+          selection: {start: 2, end: 2},
+          userInputInProgress: true,
+          isFocused: true,
+        }));
+        await microtasksFinished();
+
+        // Verify that only raw typed 'r' was merged with 'ca' to form 'car',
+        // ignoring the inline autocompletion ('eddit.com').
+        assertEquals('car', searchbox.$.input.inputElement.value);
+        assertEquals(3, searchbox.$.input.inputElement.selectionStart);
+        assertEquals(3, searchbox.$.input.inputElement.selectionEnd);
+      });
+
+  test(
+      'InFlightWebUiInputPreservesLongerTextWhenDelayedSetInputStateArrives',
+      async () => {
+        // User already typed 'planet' in WebUI.
+        const input = searchbox.$.input.inputElement;
+        input.value = 'planet';
+        input.setSelectionRange(6, 6);
+        input.dispatchEvent(new CustomEvent('input', {
+          bubbles: true,
+          composed: true,
+          detail: {value: 'planet', isComposing: false},
+        }));
+        await microtasksFinished();
+
+        // Delayed SetInputState with text='plan' arrives from native Views.
+        callbackRouter.setInputState(createDefaultOmniboxInputState({
+          text: 'plan',
+          selection: {start: 4, end: 4},
+          userInputInProgress: true,
+          isFocused: true,
+        }));
+        await microtasksFinished();
+
+        // Verify that the longer WebUI input 'planet' is preserved and not
+        // truncated back to 'plan'.
+        assertEquals('planet', searchbox.$.input.inputElement.value);
+        assertEquals(6, searchbox.$.input.inputElement.selectionStart);
+        assertEquals(6, searchbox.$.input.inputElement.selectionEnd);
+      });
+
   test('EnterKeySubmitsVerbatimMatchWhenNoMatchSelected', async () => {
     for (const virtualFocus of [false, true]) {
       loadTimeData.overrideValues(
@@ -2409,14 +2522,6 @@ suite('OmniboxPopupSearchboxTest', function() {
  });
 
  test('ClearsAutocompleteMatchesOnSetInputState', async () => {
-   // Initial state on Tab 1.
-   callbackRouter.setInputState(createDefaultOmniboxInputState({
-     tabId: 1,
-     text: 'tab 1',
-     isFocused: true,
-   }));
-   await microtasksFinished();
-
    // Populate autocomplete result to show dropdown.
    searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
      queryId: searchbox.activeQueryId,
@@ -2427,9 +2532,8 @@ suite('OmniboxPopupSearchboxTest', function() {
    await microtasksFinished();
    assertTrue(searchbox.dropdownIsVisible);
 
-   // Update input state via Mojo (simulating tab switch to Tab 2).
+   // Update input state via Mojo (simulating tab switch / state reset).
    callbackRouter.setInputState(createDefaultOmniboxInputState({
-     tabId: 2,
      text: 'new tab input',
      isFocused: true,
      isTabSwitch: true,

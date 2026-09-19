@@ -1794,6 +1794,13 @@ void LocationBarView::OnFullWebUiOmniboxReady() {
       had_focus && omnibox_view_->is_user_initiated_focus() &&
       !GetOmniboxController()->edit_model()->user_input_in_progress();
   if (had_focus) {
+    // Capture `omnibox_view_`'s selection before `SetFocusedView(this)` blurs
+    // it (`OmniboxViewViews::OnBlur()` collapses any active selection range to
+    // a caret), and restore it so `SyncNativeStateToWebUI()` can hand off the
+    // exact selection to WebUI.
+    const gfx::Range saved_selection = omnibox_view_
+                                           ? omnibox_view_->GetSelectionBounds()
+                                           : gfx::Range::InvalidRange();
     // Make `LocationBarView` focusable so `SetFocusedView()` satisfies
     // `IsFocusable()`.
     // NOTE: We don't call `UpdateFocusBehavior()` here because it
@@ -1804,6 +1811,12 @@ void LocationBarView::OnFullWebUiOmniboxReady() {
     // it.
     if (focus_manager) {
       focus_manager->SetFocusedView(this);
+    }
+    // Restore the pre-blur selection on `omnibox_view_` so that
+    // `popup_view->OnFocus()` (and `RequestInputState()`) can read and hand off
+    // the exact selection range via `SyncNativeStateToWebUI()`.
+    if (omnibox_view_ && saved_selection.IsValid()) {
+      omnibox_view_->SetSelectionBounds(saved_selection);
     }
     if (auto* popup_view = GetOmniboxPopupView()) {
       popup_view->OnFocus(query_zps);

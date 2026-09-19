@@ -292,6 +292,12 @@ export class OmniboxPopupSearchboxElement extends
   // True during an active IME (Input Method Editor) text composition session.
   // Used to suppress intermediate selection updates until composition finishes.
   private isComposing_: boolean = false;
+  // True if the user has typed directly into the WebUI DOM input element since
+  // the last `onSetInputState_` invocation.
+  private hasDirectUserDomInput_: boolean = false;
+  // True after the initial `onSetInputState_` has arrived from native Views to
+  // synchronize input state.
+  private hasReceivedInitialInputState_: boolean = false;
   private fullUrlShown_: boolean = false;
   // TODO(b/504669677): Replace `deferredFocusAction_` with
   // an actual handshake, to give more control of when focusing happens, instead
@@ -927,7 +933,6 @@ export class OmniboxPopupSearchboxElement extends
     }
 
     this.lastInputSelection_ = {start, end};
-
     this.popupPageHandler_.onSelectionChanged(
         {start, end}, this.currentSequenceNum_, this.fullUrlShown_);
   }
@@ -942,26 +947,49 @@ export class OmniboxPopupSearchboxElement extends
       performance.mark(
           'OmniboxPopupSearchboxElement::onSetInputState_:TabSwitch');
     }
-    this.$.input.setInputText(state.text);
+    this.hasReceivedInitialInputState_ = true;
+
+    let text = state.text;
+    let selection = state.selection;
+
+    // Handle race condition where user typed characters into WebUI while
+    // the SetInputState IPC was in-flight from native Views.
+    if (this.hasDirectUserDomInput_ && state.userInputInProgress &&
+        !state.isTabSwitch) {
+      const lastInput = this.getInputElement().lastInput();
+      const userTypedVal = this.lastInputText_ || lastInput?.text ||
+          this.getInputElement().getInputValue();
+      if (userTypedVal) {
+        if (!userTypedVal.startsWith(state.text)) {
+          text = state.text + userTypedVal;
+          selection = {start: text.length, end: text.length};
+        } else if (userTypedVal.length > state.text.length) {
+          text = userTypedVal;
+          selection = {start: text.length, end: text.length};
+        }
+      }
+    }
+    this.hasDirectUserDomInput_ = false;
+
+    this.$.input.setInputText(text);
     this.userInputInProgress_ = state.userInputInProgress;
-    this.hasUserInput_ = state.userInputInProgress && !!state.text.trim();
+    this.hasUserInput_ = state.userInputInProgress && !!text.trim();
     this.currentSequenceNum_ = state.sequenceNumber;
     this.tabId_ = state.tabId;
     this.fullUrl_ = state.fullUrl;
-    this.lastQueriedInput = state.text;
     this.permanentDisplayText_ = state.permanentDisplayText;
     this.isComposing_ = false;
     const keywordChanged =
         this.inputKeywordModel?.keyword !== state.keywordModel?.keyword ||
         this.inputKeywordModel?.type !== state.keywordModel?.type;
     this.inputKeywordModel = state.keywordModel;
-    this.lastInputText_ = state.text;
-    this.lastInputSelection_ = state.selection;
+    this.lastInputText_ = text;
+    this.lastInputSelection_ = selection;
     // Clear edit history and set baseline text on hard state resets (e.g. tab
     // switch, revert), but preserve active edit history if an IPC arrives
     // while the user is actively typing in the same tab.
     if (state.isTabSwitch || !state.userInputInProgress) {
-      this.textfieldModel_.setInitialText(state.text, state.selection);
+      this.textfieldModel_.setInitialText(text, selection);
     }
     this.updateEditHistoryState_();
 
@@ -990,9 +1018,9 @@ export class OmniboxPopupSearchboxElement extends
       this.fullUrlShown_ = false;
     }
 
-    this.hasInputSelection_ = state.selection.start !== state.selection.end;
+    this.hasInputSelection_ = selection.start !== selection.end;
 
-    this.selectRange(state.selection);
+    this.selectRange(selection);
     this.getDropdownElement().unselect();
 
     // Records user timing marks for tab state restoration and browser/tab
@@ -1022,11 +1050,17 @@ export class OmniboxPopupSearchboxElement extends
     // an on-focus autocomplete query.
     if (state.queryZps) {
       this.queryAutocomplete(
-          state.text, /*preventInlineAutocomplete=*/ false,
+          text, /*preventInlineAutocomplete=*/ false,
           /*isOnFocus=*/ true);
+    } else if (text !== state.text) {
+      this.queryAutocomplete(
+          text, /*preventInlineAutocomplete=*/ false,
+          /*isOnFocus=*/ false);
+      this.popupPageHandler_.onSelectionChanged(
+          selection, this.currentSequenceNum_, this.fullUrlShown_);
     } else {
       // Prevent stale tracking of queried input across state updates.
-      this.lastQueriedInput = state.text;
+      this.lastQueriedInput = text;
     }
   }
 
@@ -1074,6 +1108,8 @@ export class OmniboxPopupSearchboxElement extends
    * callback to complete the hide handshake.
    */
   private async onClearPopup_(): Promise<void> {
+    this.hasReceivedInitialInputState_ = false;
+    this.hasDirectUserDomInput_ = false;
     this.$.input.setInputText('');
     this.getInputElement().blur();
     this.clearAutocompleteMatches();
@@ -1085,6 +1121,8 @@ export class OmniboxPopupSearchboxElement extends
    * clicking outside.
    */
   private handleFocusLost_() {
+    this.hasReceivedInitialInputState_ = false;
+    this.hasDirectUserDomInput_ = false;
     this.getInputElement().setSelectionRange(0, 0);
     this.getInputElement().blur();
     // Clear autocomplete results so clicking into omnibox_view_views
@@ -1245,6 +1283,7 @@ export class OmniboxPopupSearchboxElement extends
       e: CustomEvent<{value: string, isComposing: boolean}>) {
     this.userInputInProgress_ = true;
     this.hasUserInput_ = !!e.detail.value.trim();
+    this.hasDirectUserDomInput_ = true;
 
     this.updateTextfieldModel_(e.detail.value, e.detail.isComposing);
     this.lastInputText_ = e.detail.value;
@@ -1257,7 +1296,7 @@ export class OmniboxPopupSearchboxElement extends
       // tab switch (restoring the permanent URL instead of a blank string).
       this.clearAutocompleteMatches();
       this.popupPageHandler_.onInputCleared(this.currentSequenceNum_);
-    } else {
+    } else if (this.hasReceivedInitialInputState_) {
       this.onSearchboxInputTextUpdated(e);
     }
   }
