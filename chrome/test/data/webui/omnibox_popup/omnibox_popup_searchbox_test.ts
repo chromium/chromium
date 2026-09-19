@@ -3315,4 +3315,294 @@ suite('OmniboxPopupSearchboxTest', function() {
        assertFalse(tabEvent.defaultPrevented);
        assertEquals(0, handler.getCallCount('advanceFocus'));
      });
+
+ test('UnfocusedSingleClick_SelectsAllOnMouseUp', async () => {
+   const testText = 'https://example.com/test';
+   callbackRouter.setInputState(createDefaultOmniboxInputState({
+     text: testText,
+     isFocused: false,
+     selection: {start: 0, end: 0},
+   }));
+   await microtasksFinished();
+
+   const input = searchbox.getInputElement().inputElement;
+   assertEquals(0, input.selectionStart);
+   assertEquals(0, input.selectionEnd);
+
+   // Mousedown on unfocused input.
+   searchbox.getInputElement().dispatchEvent(new MouseEvent('mousedown', {
+     button: 0,
+     buttons: 1,
+     clientX: 20,
+     clientY: 20,
+     detail: 1,
+     bubbles: true,
+     composed: true,
+   }));
+   input.focus();
+   await microtasksFinished();
+
+   // Mouseup on document without movement.
+   document.dispatchEvent(new MouseEvent('mouseup', {
+     button: 0,
+     buttons: 0,
+     clientX: 20,
+     clientY: 20,
+     detail: 1,
+     bubbles: true,
+     composed: true,
+   }));
+   await microtasksFinished();
+
+   // Verify all text is selected on mouse release.
+   assertEquals(0, input.selectionStart);
+   assertEquals(testText.length, input.selectionEnd);
+ });
+
+ test('UnfocusedDragSelection_PreservesPartialSelection', async () => {
+   const testText = 'https://example.com/test';
+   callbackRouter.setInputState(createDefaultOmniboxInputState({
+     text: testText,
+     isFocused: false,
+     selection: {start: 0, end: 0},
+   }));
+   await microtasksFinished();
+
+   const input = searchbox.getInputElement().inputElement;
+
+   // Mousedown on unfocused input.
+   searchbox.getInputElement().dispatchEvent(new MouseEvent('mousedown', {
+     button: 0,
+     buttons: 1,
+     clientX: 20,
+     clientY: 20,
+     detail: 1,
+     bubbles: true,
+     composed: true,
+   }));
+   input.focus();
+
+   // Simulate Blink setting partial drag selection.
+   input.setSelectionRange(8, 19);
+
+   // Mousemove beyond 3px threshold.
+   document.dispatchEvent(new MouseEvent('mousemove', {
+     buttons: 1,
+     clientX: 80,
+     clientY: 20,
+     bubbles: true,
+     composed: true,
+   }));
+
+   // Mouseup on document.
+   document.dispatchEvent(new MouseEvent('mouseup', {
+     button: 0,
+     buttons: 0,
+     clientX: 80,
+     clientY: 20,
+     detail: 1,
+     bubbles: true,
+     composed: true,
+   }));
+   await microtasksFinished();
+
+   // Verify partial drag selection was preserved and NOT overwritten by
+   // select-all.
+   assertEquals(8, input.selectionStart);
+   assertEquals(19, input.selectionEnd);
+   assertEquals('example.com', input.value.substring(8, 19));
+ });
+
+ test('DoubleClick_PreservesWordSelection', async () => {
+   const testText = 'hello world';
+   callbackRouter.setInputState(createDefaultOmniboxInputState({
+     text: testText,
+     isFocused: false,
+     selection: {start: 0, end: 0},
+   }));
+   await microtasksFinished();
+
+   const input = searchbox.getInputElement().inputElement;
+
+   // Simulate click 1 (select all on mouseup).
+   searchbox.getInputElement().dispatchEvent(new MouseEvent('mousedown', {
+     button: 0,
+     buttons: 1,
+     clientX: 10,
+     clientY: 10,
+     detail: 1,
+     bubbles: true,
+     composed: true,
+   }));
+   input.focus();
+   document.dispatchEvent(new MouseEvent('mouseup', {
+     button: 0,
+     buttons: 0,
+     clientX: 10,
+     clientY: 10,
+     detail: 1,
+     bubbles: true,
+     composed: true,
+   }));
+   await microtasksFinished();
+   assertEquals(0, input.selectionStart);
+   assertEquals(testText.length, input.selectionEnd);
+
+   // Simulate click 2 (double-click word selection of 'hello').
+   searchbox.getInputElement().dispatchEvent(new MouseEvent('mousedown', {
+     button: 0,
+     buttons: 1,
+     clientX: 10,
+     clientY: 10,
+     detail: 2,
+     bubbles: true,
+     composed: true,
+   }));
+   // Mousedown should have collapsed the range selection so Blink can perform
+   // native word selection.
+   assertEquals(0, input.selectionStart);
+   assertEquals(0, input.selectionEnd);
+
+   input.setSelectionRange(0, 5);
+   document.dispatchEvent(new MouseEvent('mouseup', {
+     button: 0,
+     buttons: 0,
+     clientX: 10,
+     clientY: 10,
+     detail: 2,
+     bubbles: true,
+     composed: true,
+   }));
+   await microtasksFinished();
+
+   assertEquals(0, input.selectionStart);
+   assertEquals(5, input.selectionEnd);
+ });
+
+ test('AlreadyFocusedClick_PlacesCaretWithoutSelectAll', async () => {
+   callbackRouter.setInputState(createDefaultOmniboxInputState({
+     text: 'hello world',
+     isFocused: true,
+     selection: {start: 0, end: 11},
+   }));
+   await microtasksFinished();
+
+   const input = searchbox.getInputElement().inputElement;
+   input.focus();
+   input.setSelectionRange(5, 5);
+
+   // Click inside already-focused input.
+   searchbox.getInputElement().dispatchEvent(new MouseEvent('mousedown', {
+     button: 0,
+     buttons: 1,
+     clientX: 50,
+     clientY: 20,
+     detail: 1,
+     bubbles: true,
+     composed: true,
+   }));
+   document.dispatchEvent(new MouseEvent('mouseup', {
+     button: 0,
+     buttons: 0,
+     clientX: 50,
+     clientY: 20,
+     detail: 1,
+     bubbles: true,
+     composed: true,
+   }));
+   await microtasksFinished();
+
+   assertEquals(5, input.selectionStart);
+   assertEquals(5, input.selectionEnd);
+ });
+
+ test('KeydownDuringMouseDown_CancelsSelectAll', async () => {
+   callbackRouter.setInputState(createDefaultOmniboxInputState({
+     text: 'https://example.com',
+     isFocused: false,
+     selection: {start: 0, end: 0},
+   }));
+   await microtasksFinished();
+
+   const input = searchbox.getInputElement().inputElement;
+
+   // Mousedown arms tracker.
+   searchbox.getInputElement().dispatchEvent(new MouseEvent('mousedown', {
+     button: 0,
+     buttons: 1,
+     clientX: 20,
+     clientY: 20,
+     detail: 1,
+     bubbles: true,
+     composed: true,
+   }));
+   input.focus();
+
+   // Keydown during mousedown.
+   searchbox.$.inputWrapper.dispatchEvent(new KeyboardEvent('keydown', {
+     key: 'ArrowLeft',
+     bubbles: true,
+     composed: true,
+   }));
+
+   // Mouseup after keydown.
+   document.dispatchEvent(new MouseEvent('mouseup', {
+     button: 0,
+     buttons: 0,
+     clientX: 20,
+     clientY: 20,
+     detail: 1,
+     bubbles: true,
+     composed: true,
+   }));
+   await microtasksFinished();
+
+   // Ensure select-all was canceled.
+   assertFalse(
+       input.selectionStart === 0 &&
+       input.selectionEnd === 'https://example.com'.length);
+ });
+
+ test('DropdownVisible_LocksOutSelectAllOnMouseDown', async () => {
+   callbackRouter.setInputState(createDefaultOmniboxInputState({
+     text: 'test',
+     isFocused: false,
+     selection: {start: 0, end: 0},
+   }));
+   testProxy.page.autocompleteResultChanged(createAutocompleteResultForTesting({
+     queryId: searchbox.activeQueryId,
+     sequenceId: 1,
+     input: 'test',
+     matches: [createSearchMatchForTesting()],
+   }));
+   await microtasksFinished();
+   assertTrue(searchbox.dropdownIsVisible);
+
+   const input = searchbox.getInputElement().inputElement;
+
+   searchbox.getInputElement().dispatchEvent(new MouseEvent('mousedown', {
+     button: 0,
+     buttons: 1,
+     clientX: 20,
+     clientY: 20,
+     detail: 1,
+     bubbles: true,
+     composed: true,
+   }));
+   input.focus();
+   document.dispatchEvent(new MouseEvent('mouseup', {
+     button: 0,
+     buttons: 0,
+     clientX: 20,
+     clientY: 20,
+     detail: 1,
+     bubbles: true,
+     composed: true,
+   }));
+   await microtasksFinished();
+
+   // When dropdown is already visible, mousedown should not force select all.
+   assertFalse(
+       input.selectionStart === 0 && input.selectionEnd === 'test'.length);
+ });
 });

@@ -64,6 +64,12 @@ function isNtpUrl(url: string): boolean {
       url.startsWith('chrome-search://local-ntp') || url === 'about:blank';
 }
 
+/**
+ * Minimum distance (in pixels) moved to differentiate dragging from clicking.
+ * Matches Blink's native drag threshold.
+ */
+const DRAG_THRESHOLD_PX = 3;
+
 export interface AimButtonConfig {
   text: string;
   title: string;
@@ -304,8 +310,11 @@ export class OmniboxPopupSearchboxElement extends
   // of relying on deferred focus/selectall.
   // Stores pending focus action if focus arrives while document is hidden.
   private deferredFocusAction_: DeferredFocusAction|null = null;
-  // Used to signify that on mouseup, the default action of `unselect()`
-  // should be ignored.
+  // Captured mouse coordinates when mouse button is pressed.
+  private clientXAtMouseDown_: number = 0;
+  private clientYAtMouseDown_: number = 0;
+  // If true, the entire text will be selected on mouse release (if no drag
+  // occurred).
   private selectAllOnMouseRelease_: boolean = false;
   private textfieldModel_: TextfieldModel = new TextfieldModel();
   // Stores the input text prior to the latest edit or selection change event.
@@ -401,18 +410,8 @@ export class OmniboxPopupSearchboxElement extends
     });
     this.inputResizeObserver_.observe(this.$.inputWrapper);
 
-    // When `selectAllOnMouseRelease_` is true (set during `onInputMousedown_`
-    // when the input is focused and the selection is collapsed), prevent the
-    // default `mouseup` behavior. This stops the text from being unselected
-    // after a full selection was programmatically applied during `mousedown`.
-    this.eventTracker_.add(
-        this.$.input.inputElement, 'mouseup', (e: MouseEvent) => {
-          if (this.shadowRoot?.activeElement === this.$.input &&
-              this.selectAllOnMouseRelease_) {
-            this.selectAllOnMouseRelease_ = false;
-            e.preventDefault();
-          }
-        });
+    this.eventTracker_.add(document, 'mousemove', this.onMouseMove_.bind(this));
+    this.eventTracker_.add(document, 'mouseup', this.onMouseUp_.bind(this));
 
     this.eventTracker_.add(
         canShowSecondarySideMediaQueryList, 'change',
@@ -676,20 +675,35 @@ export class OmniboxPopupSearchboxElement extends
   }
 
   protected onInputMousedown_(e: MouseEvent) {
+    const wasUnfocused = this.shadowRoot?.activeElement !== this.$.input;
+    const input = this.getInputElement().inputElement;
+
     // If the full url is currently selected, a second mouse click should
     // show the full url.
     this.showFullUrlOnDeselect_();
+
+    // Multi-clicks (e.g. double-click word select) should let Blink handle
+    // selection without being overwritten on mouseup.
+    if (e.detail >= 2) {
+      this.selectAllOnMouseRelease_ = false;
+      // If a range is currently selected (e.g., from the first click of a
+      // double click selecting all text on mouse release), Blink's
+      // SelectionController ignores double-click word selection because
+      // Selection().IsRange() is true. Collapse the selection so Blink performs
+      // native word selection at the click coordinates.
+      if (input.selectionStart !== input.selectionEnd) {
+        this.getInputElement().setSelectionRange(0, 0);
+      }
+      return;
+    }
+
     // If nothing is selected, a mouse click should select all the text
-    // if the input is not already focused. (i.e. focusing on omnibox).
-    const input = this.getInputElement().inputElement;
-    if (!this.dropdownIsVisible &&
-        this.shadowRoot?.activeElement !== this.$.input) {
-      // Only handle left (0) and middle (1) mouse button clicks.
-      if (e.button === 0 || e.button === 1) {
-        if (input.selectionStart === input.selectionEnd) {
-          this.selectAllOnMouseRelease_ = true;
-          input.select();
-        }
+    // if the input is not already focused (i.e. focusing on omnibox).
+    if (!this.dropdownIsVisible && wasUnfocused && e.button === 0) {
+      if (input.selectionStart === input.selectionEnd) {
+        this.selectAllOnMouseRelease_ = true;
+        this.clientXAtMouseDown_ = e.clientX;
+        this.clientYAtMouseDown_ = e.clientY;
       }
     }
     if (e.button === 0 && e.composedPath().includes(input)) {
@@ -699,7 +713,31 @@ export class OmniboxPopupSearchboxElement extends
     }
   }
 
+  private onMouseMove_(e: MouseEvent) {
+    // Only track drag distance while the primary (left) mouse button is held.
+    if (this.selectAllOnMouseRelease_ && (e.buttons & 1) !== 0) {
+      const dx = Math.abs(e.clientX - this.clientXAtMouseDown_);
+      const dy = Math.abs(e.clientY - this.clientYAtMouseDown_);
+      if (dx > DRAG_THRESHOLD_PX || dy > DRAG_THRESHOLD_PX) {
+        this.selectAllOnMouseRelease_ = false;
+      }
+    }
+  }
+
+  private onMouseUp_(e: MouseEvent) {
+    // Defer selecting all text to mouseup so that Blink finishes native
+    // pointer/caret placement before we apply the full selection, preventing
+    // the selection from being collapsed on mouse release.
+    if (this.shadowRoot?.activeElement === this.$.input &&
+        this.selectAllOnMouseRelease_ && e.button === 0) {
+      this.getInputElement().select();
+    }
+    this.selectAllOnMouseRelease_ = false;
+  }
+
   override async onInputWrapperKeydown(e: KeyboardEvent) {
+    this.selectAllOnMouseRelease_ = false;
+
     const modifier = isMac ? e.metaKey && !e.ctrlKey : e.ctrlKey && !e.metaKey;
 
     if (modifier) {
@@ -1123,6 +1161,7 @@ export class OmniboxPopupSearchboxElement extends
   private handleFocusLost_() {
     this.hasReceivedInitialInputState_ = false;
     this.hasDirectUserDomInput_ = false;
+    this.selectAllOnMouseRelease_ = false;
     this.getInputElement().setSelectionRange(0, 0);
     this.getInputElement().blur();
     // Clear autocomplete results so clicking into omnibox_view_views
@@ -1149,7 +1188,7 @@ export class OmniboxPopupSearchboxElement extends
     // If a partial sub-range (e.g. from double click or drag) is requested
     // while displaying an elided URL, unelide to `fullUrl_` before applying
     // the selection so the highlight matches full URL coordinates exactly.
-    if (start !== end && !isFullSelection && this.fullUrl_) {
+    if (start !== end && !isFullSelection) {
       this.maybeShowFullUrl_();
     }
 
@@ -1163,7 +1202,7 @@ export class OmniboxPopupSearchboxElement extends
   }
 
   private maybeShowFullUrl_() {
-    if (this.fullUrlShown_ || this.userInputInProgress_) {
+    if (this.fullUrlShown_ || this.userInputInProgress_ || !this.fullUrl_) {
       return;
     }
     this.fullUrlShown_ = true;
@@ -1281,6 +1320,7 @@ export class OmniboxPopupSearchboxElement extends
 
   protected onSearchboxInputTextUpdated_(
       e: CustomEvent<{value: string, isComposing: boolean}>) {
+    this.selectAllOnMouseRelease_ = false;
     this.userInputInProgress_ = true;
     this.hasUserInput_ = !!e.detail.value.trim();
     this.hasDirectUserDomInput_ = true;
