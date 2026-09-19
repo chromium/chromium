@@ -4260,7 +4260,7 @@
     // https://crbug.com/534781954
     {
       name: "ModuleMapDoNotCacheFailedFetch",
-      status: "experimental",
+      status: "stable",
     },
     // ModulePreloadReferrer enables modulepreload to send proper referrer
     // headers as specified in the HTML spec.
