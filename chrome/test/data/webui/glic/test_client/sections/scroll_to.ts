@@ -128,7 +128,7 @@ $.scrollToFetchAPCBn.addEventListener('click', async () => {
 $.scrollToBn.addEventListener('click', async () => {
   if (!(getBrowser()!.scrollTo)) {
     logMessage(
-        `scrollTo is not enabled. Run with --enable-features=GlicScrollTo.`);
+        'scrollTo is not enabled. Run with --enable-features=GlicScrollTo.');
     return;
   }
 

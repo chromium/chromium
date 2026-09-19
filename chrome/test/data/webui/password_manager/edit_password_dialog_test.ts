@@ -280,7 +280,7 @@ suite('EditPasswordDialogTest', function() {
    {oldNote: 'same note', newNote: 'same note', expectedMetricBucket: 4}]
       .forEach(
           testCase =>
-              test(`changePasswordWithNotesForMetrics`, async function() {
+              test('changePasswordWithNotesForMetrics', async function() {
                 const password = createPasswordEntry({
                   id: 1,
                   url: 'test.com',

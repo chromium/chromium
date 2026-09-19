@@ -112,7 +112,7 @@ suite('OnboardingTooltipTest', () => {
 
 [true, false].forEach(useFork => {
   suite(
-      `ContextualTasksOnboardingTooltipForkTest ` +
+      'ContextualTasksOnboardingTooltipForkTest ' +
           `(useContextualTasksComposeboxFork = ${useFork})`,
       () => {
         const AUTO_TOKEN = '0000000000000000AAAAAAAAAAAAAA01';

@@ -108,13 +108,13 @@ $.getlocation.addEventListener('click', async () => {
           Longitude: ${longitude}<br>
           Accuracy: ${accuracy} meters
         `;
-      $.locationStatus.innerText = `Location Received.`;
+      $.locationStatus.innerText = 'Location Received.';
     } catch (error) {
       $.locationStatus.innerText = `Error: ${error}`;
-      $.location.innerHTML = ``;
+      $.location.innerHTML = '';
       if (error instanceof GeolocationPositionError) {
         if (error.code === 1) {
-          $.locationStatus.innerText = `Permission Denied.`;
+          $.locationStatus.innerText = 'Permission Denied.';
           if (!permissionSwitches['osGeolocation'].checked) {
             $.locationOsErrorUI.style.display = 'block';
           } else if (!permissionSwitches['geolocation'].checked) {

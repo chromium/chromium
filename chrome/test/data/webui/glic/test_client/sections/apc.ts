@@ -30,6 +30,6 @@ $.copyAPCToClipboardBtn.addEventListener('click', async () => {
       '/parse-apc-text', {method: 'POST', body: annotatedPageContent});
   const textproto = await postResponse.text();
   navigator.clipboard.writeText(textproto);
-  $.APCResult.innerText = `APC TEXTPROTO copied to clipboard`
-      + `\nFully Qualified Message Name: chrome_intelligence_proto_features.AnnotatedPageContent`;
+  $.APCResult.innerText = 'APC TEXTPROTO copied to clipboard' +
+      '\nFully Qualified Message Name: chrome_intelligence_proto_features.AnnotatedPageContent';
 });

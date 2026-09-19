@@ -168,7 +168,7 @@ suite('SearchEngineEntryTest', function() {
   test('Edit_Enabled', async function() {
     const engine = entry.engine;
     const editButton =
-        entry.shadowRoot.querySelector<HTMLButtonElement>(`#editIconButton`)!;
+        entry.shadowRoot.querySelector<HTMLButtonElement>('#editIconButton')!;
     assertTrue(isVisible(editButton));
 
     const promise = eventToPromise<ViewOrEditSearchEngineEvent>(
@@ -460,7 +460,7 @@ suite('EnterpriseSiteSearchEntryTests', function() {
     await microtasksFinished();
     const engineUnfeatured = entry.engine;
     const editButton =
-        entry.shadowRoot.querySelector<HTMLButtonElement>(`#editIconButton`)!;
+        entry.shadowRoot.querySelector<HTMLButtonElement>('#editIconButton')!;
     assertTrue(isVisible(editButton));
 
     const whenFired = eventToPromise<ViewOrEditSearchEngineEvent>(
@@ -577,7 +577,7 @@ suite('EnterpriseSiteSearchEntryTests', function() {
         const managedEngine = entry.engine;
         const viewDetailsButton =
             entry.shadowRoot.querySelector<HTMLButtonElement>(
-                `#viewDetailsButton`)!;
+                '#viewDetailsButton')!;
         assertTrue(isVisible(viewDetailsButton));
 
         const whenFired = eventToPromise<ViewOrEditSearchEngineEvent>(

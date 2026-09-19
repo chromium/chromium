@@ -190,10 +190,10 @@ suite('AppearanceFontHandler', function() {
     const cssFamilyName = fontsPage.$.fixedFontPreview.computedStyleMap().get(
                               'font-family') as CSSStyleValue;
     // <if expr="is_macosx">
-    assertEquals(`Osaka-Mono`, cssFamilyName.toString());
+    assertEquals('Osaka-Mono', cssFamilyName.toString());
     // </if>
     // <if expr="not is_macosx">
-    assertEquals(`Osaka`, cssFamilyName.toString());
+    assertEquals('Osaka', cssFamilyName.toString());
     // </if>
   });
 
@@ -258,7 +258,7 @@ suite('AppearanceFontHandler', function() {
     assertEquals('', element.style.position);
     assertEquals('', element.style.inset);
     assertEquals(
-        `"sample'; position: fixed; inset: 0; --custom:'"`,
+        '"sample\'; position: fixed; inset: 0; --custom:\'"',
         element.style.fontFamily);
   });
 });

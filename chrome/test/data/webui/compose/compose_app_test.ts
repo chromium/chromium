@@ -445,7 +445,7 @@ suite('ComposeApp', () => {
     // Mock a filtered error response that enables the go back button.
     await mockInput('Initial input.');
     app.$.submitButton.click();
-    const errorMessage = `filtered error message`;
+    const errorMessage = 'filtered error message';
     loadTimeData.overrideValues({['errorFiltered']: errorMessage});
     await mockResponse('', ComposeStatus.kFiltered, false, true);
 

@@ -13,7 +13,7 @@ import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {ADD_TAB_CONTEXT_FN, createComposeboxElement, FAKE_TOKEN_STRING, MockInputState, setupComposeboxTest} from './test_support.js';
 
-suite(`NewTabPageComposeboxContextMenuTest`, () => {
+suite('NewTabPageComposeboxContextMenuTest', () => {
   const testProxy = setupComposeboxTest();
 
   suite('Context menu', () => {

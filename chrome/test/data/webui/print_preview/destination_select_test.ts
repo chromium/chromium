@@ -59,7 +59,7 @@ suite('DestinationSelectTest', function() {
     compareIcon(selectEl, printIcon);
 
     // Select a destination with the enterprise printer icon.
-    await selectOption(destinationSelect, `ID4/local/`);
+    await selectOption(destinationSelect, 'ID4/local/');
     const enterpriseIcon = loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
         'domain' :
         'business-old';

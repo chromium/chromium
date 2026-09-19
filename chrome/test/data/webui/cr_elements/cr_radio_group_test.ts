@@ -36,7 +36,7 @@ suite('cr-radio-group', () => {
   function verifyNoneSelectedOneFocusable(name: string) {
     const uncheckedRows =
         Array.from(radioGroup.querySelectorAll<CrRadioButtonElement>(
-            `cr-radio-button:not([checked])`));
+            'cr-radio-button:not([checked])'));
     assertEquals(3, uncheckedRows.length);
 
     const focusableRow = uncheckedRows.filter(
@@ -50,7 +50,7 @@ suite('cr-radio-group', () => {
   }
 
   function checkNoneFocusable() {
-    const allRows = Array.from(radioGroup.querySelectorAll(`cr-radio-button`));
+    const allRows = Array.from(radioGroup.querySelectorAll('cr-radio-button'));
     assertEquals(3, allRows.length);
 
     const unfocusableRows =

@@ -20,7 +20,7 @@ import {assertStyle} from '../test_support.js';
 import * as testSupport from './test_support.js';
 
 
-suite(`NewTabPageComposeboxUploadFileTest`, () => {
+suite('NewTabPageComposeboxUploadFileTest', () => {
   const testProxy = testSupport.setupComposeboxTest();
 
   test('uploading/deleting pdf file queries zps', async () => {
@@ -715,7 +715,7 @@ suite(`NewTabPageComposeboxUploadFileTest`, () => {
   });
 });
 
-suite(`NewTabPageComposeboxUploadPasteTest`, () => {
+suite('NewTabPageComposeboxUploadPasteTest', () => {
   const testProxy = testSupport.setupComposeboxTest();
 
   test('pasting valid files calls addFileContext', async () => {
@@ -1122,7 +1122,7 @@ suite(`NewTabPageComposeboxUploadPasteTest`, () => {
 
 
 
-suite(`NewTabPageComposeboxUploadToolModeTest`, () => {
+suite('NewTabPageComposeboxUploadToolModeTest', () => {
   const testProxy = testSupport.setupComposeboxTest();
 
   test('correctly sets create image mode', async () => {
@@ -1261,7 +1261,7 @@ suite(`NewTabPageComposeboxUploadToolModeTest`, () => {
   });
 });
 
-suite(`NewTabPageComposeboxUploadContextTest`, () => {
+suite('NewTabPageComposeboxUploadContextTest', () => {
   const testProxy = testSupport.setupComposeboxTest();
 
   test('when flag enabled, adds tab context of ghost file', async () => {

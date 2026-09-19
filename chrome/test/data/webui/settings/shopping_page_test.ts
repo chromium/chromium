@@ -45,7 +45,7 @@ suite('ShoppingPage', function() {
   [{shoppingOptIn: true},
    {shoppingOptIn: false},
   ].forEach(({shoppingOptIn}) => {
-    test(`Toggle should show current opt-in status`, async function() {
+    test('Toggle should show current opt-in status', async function() {
       loadTimeData.overrideValues({
         canEnableOrDisableAutofillAi: true,
       });
@@ -63,7 +63,7 @@ suite('ShoppingPage', function() {
     });
   });
 
-  test(`Toggle should switch opt-in status in prefs`, async function() {
+  test('Toggle should switch opt-in status in prefs', async function() {
     loadTimeData.overrideValues({canEnableOrDisableAutofillAi: true});
 
     entityDataManager.setGetOptInStatusResponse(true);
@@ -135,7 +135,7 @@ suite('ShoppingPage', function() {
    },
   ].forEach(({experimentEnabled, addressAutofillStatus, toggleDisabled}) => {
     test(
-        `Toggle takes into account address opt in status ` +
+        'Toggle takes into account address opt in status ' +
             `experimentEnabled(${experimentEnabled}) ` +
             `addressAutofillStatus(${addressAutofillStatus})`,
         async function() {

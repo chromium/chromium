@@ -518,7 +518,7 @@ suite('ContextualTasksComposeboxFilesTest', () => {
 
 [true, false].forEach(useFork => {
   suite(
-      `ContextualTasksComposeboxForkFilesTest ` +
+      'ContextualTasksComposeboxForkFilesTest ' +
           `(useContextualTasksComposeboxFork = ${useFork})`,
       () => {
         let mockComposeboxPageHandler: TestMock<ComposeboxPageHandlerRemote>&
@@ -894,7 +894,7 @@ function disableAnimationsRecursively(element: Element) {
 
 [true, false].forEach(useFork => {
   suite(
-      `ContextualTasksComposeboxForkAutoTabTest ` +
+      'ContextualTasksComposeboxForkAutoTabTest ' +
           `(useContextualTasksComposeboxFork = ${useFork})`,
       () => {
         const AUTO_TOKEN = '0000000000000000AAAAAAAAAAAAAA01';

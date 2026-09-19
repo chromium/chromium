@@ -518,7 +518,7 @@ suite('ContactInfoPageUiTest', function() {
           'deleteHomeAddressNotice', homeUrl, STUB_USER_ACCOUNT_INFO.email);
       assertEquals(
           dialog.$.description.innerHTML, expectedMessage,
-          `Home address delete confirmation view description is incorrect.`);
+          'Home address delete confirmation view description is incorrect.');
       dialog.$.dialog.close();
       // Make sure closing clean-ups are finished.
       await eventToPromise('close', dialog.$.dialog);
@@ -551,7 +551,7 @@ suite('ContactInfoPageUiTest', function() {
           'deleteWorkAddressNotice', workUrl, STUB_USER_ACCOUNT_INFO.email);
       assertEquals(
           dialog.$.description.innerHTML, expectedMessage,
-          `Work address delete confirmation view description is incorrect.`);
+          'Work address delete confirmation view description is incorrect.');
       dialog.$.dialog.close();
       // Make sure closing clean-ups are finished.
       await eventToPromise('close', dialog.$.dialog);
@@ -586,14 +586,14 @@ suite('ContactInfoPageUiTest', function() {
           STUB_USER_ACCOUNT_INFO.email);
       assertEquals(
           dialog.$.description.innerHTML, expectedDescription,
-          `Name email delete confirmation view description is incorrect.`);
+          'Name email delete confirmation view description is incorrect.');
 
       const title = dialog.shadowRoot!.querySelector<HTMLElement>('#title');
       assertTrue(!!title);
       assertEquals(
           title.innerHTML,
           loadTimeData.getString('removeNameEmailAddressConfirmationTitle'),
-          `Name email delete confirmation view title is incorrect.`);
+          'Name email delete confirmation view title is incorrect.');
 
       const removeButton =
           dialog.shadowRoot!.querySelector<HTMLElement>('#remove');
@@ -601,7 +601,7 @@ suite('ContactInfoPageUiTest', function() {
       assertEquals(
           removeButton.innerText,
           loadTimeData.getString('removeAddressFromChrome'),
-          `Name email delete confirmation remove button label is incorrect.`);
+          'Name email delete confirmation remove button label is incorrect.');
       dialog.$.dialog.close();
       // Make sure closing clean-ups are finished.
       await eventToPromise('close', dialog.$.dialog);

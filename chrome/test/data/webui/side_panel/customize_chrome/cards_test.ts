@@ -307,7 +307,7 @@ suite('CardsTest', () => {
       });
 
 
-  test(`cards can be disabled/enabled via their checkbox`, async () => {
+  test('cards can be disabled/enabled via their checkbox', async () => {
     // Arrange & Act.
     await setupTest(
         [
@@ -349,7 +349,7 @@ suite('CardsTest', () => {
         1, metrics.count('NewTabPage.Modules.Enabled.Customize', 'foo'));
   });
 
-  test(`cards can be disabled/enabled via their label`, async () => {
+  test('cards can be disabled/enabled via their label', async () => {
     // Arrange & Act.
     await setupTest(
         [

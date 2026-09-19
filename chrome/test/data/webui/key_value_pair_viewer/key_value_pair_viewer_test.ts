@@ -51,7 +51,7 @@ suite('KeyValuePairViewerTest', function() {
 
   setup(async function() {
     document.body.innerHTML =
-        getTrustedHtml(`<key-value-pair-viewer></key-value-pair-viewer>`);
+        getTrustedHtml('<key-value-pair-viewer></key-value-pair-viewer>');
     element = document.body.querySelector('key-value-pair-viewer')!;
     element.entries = ENTRIES;
     element.loading = false;

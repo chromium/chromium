@@ -285,7 +285,7 @@ suite('NewTabPageAppTest', () => {
     });
   });
 
-  suite(`OgbThemingRemoveScrim`, () => {
+  suite('OgbThemingRemoveScrim', () => {
     test('Ogb updates on ntp load', async () => {
       // Act.
 
@@ -789,7 +789,7 @@ suite('NewTabPageAppTest', () => {
           });
         });
 
-    test(`clicking #customizeButton records click`, () => {
+    test('clicking #customizeButton records click', () => {
       // Act.
       getCustomizeButton().click();
 
@@ -851,7 +851,7 @@ suite('NewTabPageAppTest', () => {
       assertStyle(modules, 'display', 'none');
     });
 
-    test(`clicking records click`, () => {
+    test('clicking records click', () => {
       // Act.
       $$<HTMLElement>(app, 'ntp-modules')!.click();
 
@@ -1979,7 +1979,7 @@ suite('NewTabPageAppTest', () => {
           // Assert centers match exactly.
           assertDeepEquals(
               searchboxCenter, composeboxCenter,
-              `Center position mismatch. ` +
+              'Center position mismatch. ' +
                   `Searchbox: (${searchboxCenter.x}, ${searchboxCenter.y}), ` +
                   `Composebox: (${composeboxCenter.x}, ${composeboxCenter.y})`);
         });
@@ -2430,14 +2430,14 @@ suite('NewTabPageAppTest', () => {
         assertButtonAnimated();
       });
 
-      test(`clicking #customizeButton records click`, () => {
+      test('clicking #customizeButton records click', () => {
         getCustomizeButton().click();
         assertEquals(1, metrics.count('NewTabPage.Click'));
         assertEquals(
             1, metrics.count('NewTabPage.Click', NtpElement.CUSTOMIZE_BUTTON));
       });
 
-      test(`clicking #wallpaperSearchButton records click`, () => {
+      test('clicking #wallpaperSearchButton records click', () => {
         getWallpaperSearchButton().click();
         assertEquals(1, metrics.count('NewTabPage.Click'));
         assertEquals(

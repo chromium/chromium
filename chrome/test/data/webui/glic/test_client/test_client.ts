@@ -62,7 +62,7 @@ $.syncCookiesBn.addEventListener('click', async () => {
   $.syncCookieStatus!.innerText = 'Requesting';
   try {
     await getBrowser()!.refreshSignInCookies!();
-    $.syncCookieStatus!.innerText = `Done!`;
+    $.syncCookieStatus!.innerText = 'Done!';
   } catch (e) {
     $.syncCookieStatus!.innerText = `Caught error: ${e}`;
   }

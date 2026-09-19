@@ -323,14 +323,14 @@ suite('FlagsAppTest', function() {
         2,
         app.shadowRoot
             .querySelectorAll(
-                `#tab-content-available flags-experiment:not([hidden])`)
+                '#tab-content-available flags-experiment:not([hidden])')
             .length);
     assertTrue(!!noMatchMsg[1]);
     assertEquals(
         1,
         app.shadowRoot
             .querySelectorAll(
-                `#tab-content-unavailable flags-experiment:not([hidden])`)
+                '#tab-content-unavailable flags-experiment:not([hidden])')
             .length);
   });
 

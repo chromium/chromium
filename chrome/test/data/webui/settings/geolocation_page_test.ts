@@ -30,7 +30,7 @@ function createPref(
       []);
 }
 
-suite(`GeolocationPage`, function() {
+suite('GeolocationPage', function() {
   let page: GeolocationPageElement;
   let settingsPrefs: SettingsPrefsElement;
   let siteSettingsBrowserProxy: TestSiteSettingsBrowserProxy;

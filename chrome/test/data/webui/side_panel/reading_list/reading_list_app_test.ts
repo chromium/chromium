@@ -111,7 +111,7 @@ suite('ReadingListAppTest', () => {
 
   test('click on item passes event info', async () => {
     const item = readingListApp.shadowRoot.querySelector(
-        `[data-url="https://www.apple.com"]`)!;
+        '[data-url="https://www.apple.com"]')!;
     item.dispatchEvent(new MouseEvent('click'));
     const [, click] = await testProxy.whenCalled('openUrl');
     assertFalse(

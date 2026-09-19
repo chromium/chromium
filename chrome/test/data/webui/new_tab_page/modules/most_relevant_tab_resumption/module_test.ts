@@ -147,7 +147,7 @@ suite('NewTabPageModulesMostRelevantTabResumptionModuleTest', () => {
 
       const dismissEvent: DismissModuleInstanceEvent =
           await waitForDismissEvent;
-      assertEquals(`Tabs hidden`, dismissEvent.detail.message);
+      assertEquals('Tabs hidden', dismissEvent.detail.message);
 
       // Act.
       const restoreCallback = dismissEvent.detail.restoreCallback!;
@@ -169,17 +169,17 @@ suite('NewTabPageModulesMostRelevantTabResumptionModuleTest', () => {
       await microtasksFinished();
 
       const dismissEvent: DismissModuleElementEvent = await waitForDismissEvent;
-      assertEquals(`Tab hidden`, dismissEvent.detail.message);
+      assertEquals('Tab hidden', dismissEvent.detail.message);
       assertEquals(
-          1, metrics.count(`NewTabPage.TabResumption.VisitDismissIndex`, 0));
-      assertEquals(1, handler.getCallCount(`dismissURLVisit`));
+          1, metrics.count('NewTabPage.TabResumption.VisitDismissIndex', 0));
+      assertEquals(1, handler.getCallCount('dismissURLVisit'));
 
       // Act.
       const restoreCallback = dismissEvent.detail.restoreCallback!;
       restoreCallback();
       assertTrue(!!moduleElement);
       assertEquals(
-          1, metrics.count(`NewTabPage.TabResumption.VisitRestoreIndex`, 0));
+          1, metrics.count('NewTabPage.TabResumption.VisitRestoreIndex', 0));
     });
 
     test('Tab click fires usage event', async () => {
@@ -194,11 +194,11 @@ suite('NewTabPageModulesMostRelevantTabResumptionModuleTest', () => {
       urlVisitElement.removeAttribute('href');
       urlVisitElement.click();
       await microtasksFinished();
-      assertEquals(1, metrics.count(`NewTabPage.TabResumption.ClickIndex`));
+      assertEquals(1, metrics.count('NewTabPage.TabResumption.ClickIndex'));
       assertEquals(
           1,
           metrics.count(
-              `NewTabPage.TabResumption.Visit.ClickSource`, VisitSource.kTab));
+              'NewTabPage.TabResumption.Visit.ClickSource', VisitSource.kTab));
       assertEquals(
           ScoredURLUserAction.kSeen, handler.getArgs('recordAction')[0][0]);
       assertEquals(
@@ -223,7 +223,7 @@ suite('NewTabPageModulesMostRelevantTabResumptionModuleTest', () => {
       const waitForUsageEvent = eventToPromise('usage', moduleElement);
       seeMoreButtonElement.removeAttribute('href');
       seeMoreButtonElement.click();
-      assertEquals(1, metrics.count(`NewTabPage.TabResumption.SeeMoreClick`));
+      assertEquals(1, metrics.count('NewTabPage.TabResumption.SeeMoreClick'));
       await waitForUsageEvent;
     });
   });

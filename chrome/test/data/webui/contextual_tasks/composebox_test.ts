@@ -1298,7 +1298,7 @@ suite('ContextualTasksComposeboxTest', () => {
 // =============================================================================
 [true, false].forEach(useFork => {
   suite(
-      `ContextualTasksComposeboxForkSmokeTest ` +
+      'ContextualTasksComposeboxForkSmokeTest ' +
           `(useContextualTasksComposeboxFork = ${useFork})`,
       () => {
         let testProxy: TestContextualTasksBrowserProxy;
@@ -1415,7 +1415,7 @@ suite('ContextualTasksComposeboxTest', () => {
 // =============================================================================
 [true, false].forEach(useFork => {
   suite(
-      `ContextualTasksComposeboxForkBasicInputTest ` +
+      'ContextualTasksComposeboxForkBasicInputTest ' +
           `(useContextualTasksComposeboxFork = ${useFork})`,
       () => {
         let testProxy: TestContextualTasksBrowserProxy;
@@ -1722,7 +1722,7 @@ suite('ContextualTasksComposeboxTest', () => {
 // =============================================================================
 [true, false].forEach(useFork => {
   suite(
-      `ContextualTasksComposeboxForkDropdownTest ` +
+      'ContextualTasksComposeboxForkDropdownTest ' +
           `(useContextualTasksComposeboxFork = ${useFork})`,
       () => {
         let mockComposeboxPageHandler: TestMock<ComposeboxPageHandlerRemote>&
@@ -2033,7 +2033,7 @@ suite('ContextualTasksComposeboxTest', () => {
 // - false: uses the legacy <cr-composebox> (routing calls via `mockSearchboxPageHandler`).
 [true, false].forEach(useFork => {
   suite(
-      `ContextualTasksComposeboxForkContextMenuTest ` +
+      'ContextualTasksComposeboxForkContextMenuTest ' +
           `(useContextualTasksComposeboxFork = ${useFork})`,
       () => {
         let testProxy: TestContextualTasksBrowserProxy;
@@ -2371,7 +2371,7 @@ suite('ContextualTasksComposeboxTest', () => {
 // carousel that fires carousel-resize. These checks target the fork; the legacy
 // path's wrapper-side height flow is covered by the flag-off suite above.
 // =============================================================================
-suite(`ContextualTasksComposeboxResizeTest`, () => {
+suite('ContextualTasksComposeboxResizeTest', () => {
   // Minimal ResizeObserver stub whose instances can be triggered on demand;
   // the components debounce their resize callbacks, so tests advance the mock
   // timer after triggering.
@@ -2543,7 +2543,7 @@ suite(`ContextualTasksComposeboxResizeTest`, () => {
 // =============================================================================
 [true, false].forEach(useFork => {
   suite(
-      `ContextualTasksComposeboxForkGlowTest ` +
+      'ContextualTasksComposeboxForkGlowTest ' +
           `(useContextualTasksComposeboxFork = ${useFork})`,
       () => {
         let parts: CtComposeboxAppParts;
@@ -2649,7 +2649,7 @@ suite(`ContextualTasksComposeboxResizeTest`, () => {
 
 [true, false].forEach(useFork => {
   suite(
-      `ContextualTasksComposeboxForkErrorScrimTest ` +
+      'ContextualTasksComposeboxForkErrorScrimTest ' +
           `(useContextualTasksComposeboxFork = ${useFork})`,
       () => {
         let mockComposeboxPageHandler: TestMock<ComposeboxPageHandlerRemote>&
@@ -2852,7 +2852,7 @@ function createVoiceResults(transcripts: string[]): SpeechRecognitionEvent {
 [true, false].forEach(useFork => {
   [true, false].forEach(coherenceEnabled => {
     suite(
-        `ContextualTasksComposeboxForkVoiceTest ` +
+        'ContextualTasksComposeboxForkVoiceTest ' +
             `(useContextualTasksComposeboxFork = ${useFork}, ` +
             `coherence = ${coherenceEnabled})`,
         () => {

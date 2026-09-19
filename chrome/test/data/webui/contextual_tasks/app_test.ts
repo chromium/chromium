@@ -181,7 +181,7 @@ suite('ContextualTasksAppTest', function() {
 
   test('does not attempt to restore thread if params available', async () => {
     window.history.replaceState(
-        {}, '', `?chrome_task_id=123&thread=333&turn=444&title=wrong`);
+        {}, '', '?chrome_task_id=123&thread=333&turn=444&title=wrong');
 
     const threadId = '111';
     const turnId = '222';
@@ -199,7 +199,7 @@ suite('ContextualTasksAppTest', function() {
 
   test('history entry added if task changes', async () => {
     window.history.replaceState(
-        {}, '', `?chrome_task_id=111&thread=222&turn=333&title=wrong`);
+        {}, '', '?chrome_task_id=111&thread=222&turn=333&title=wrong');
 
     const {proxy} = await createContextualTasksAppElement(/*url=*/ fixtureUrl);
 
@@ -217,7 +217,7 @@ suite('ContextualTasksAppTest', function() {
 
   test('no history entry added if task did not change', async () => {
     window.history.replaceState(
-        {}, '', `?chrome_task_id=111&thread=222&turn=333&title=wrong`);
+        {}, '', '?chrome_task_id=111&thread=222&turn=333&title=wrong');
 
     const {proxy} = await createContextualTasksAppElement(/*url=*/ fixtureUrl);
 
@@ -250,10 +250,10 @@ suite('ContextualTasksAppTest', function() {
 
   test('back navigation fetches previous task url', async () => {
     window.history.replaceState(
-        {}, '', `?chrome_task_id=111&thread=222&turn=333&title=wrong`);
+        {}, '', '?chrome_task_id=111&thread=222&turn=333&title=wrong');
 
     const {appElement, proxy} = await createContextualTasksAppElement(
-        /*url=*/ `http://example.com?mtid=111&mstk=222&q=title`);
+        /*url=*/ 'http://example.com?mtid=111&mstk=222&q=title');
     const {promise, resolve} = Promise.withResolvers<void>();
     appElement.setPopStateFinishedCallbackForTesting(resolve);
     await microtasksFinished();
@@ -275,7 +275,7 @@ suite('ContextualTasksAppTest', function() {
 
   test('history requested if url param set', async () => {
     // Make sure the history panel is requested in the URL.
-    window.history.replaceState({}, '', `?open_history=true`);
+    window.history.replaceState({}, '', '?open_history=true');
 
     const {appElement} =
         await createContextualTasksAppElement(/*url=*/ 'http://example.com');

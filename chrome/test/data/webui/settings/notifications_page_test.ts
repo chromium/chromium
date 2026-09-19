@@ -32,7 +32,7 @@ function createPref(
       []);
 }
 
-suite(`NotificationsPage`, function() {
+suite('NotificationsPage', function() {
   let page: NotificationsPageElement;
   let settingsPrefs: SettingsPrefsElement;
   let siteSettingsBrowserProxy: TestSiteSettingsBrowserProxy;

@@ -48,7 +48,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
                }))
           .concat([
             {
-              origin: `https://www.example5.com:443`,
+              origin: 'https://www.example5.com:443',
               permissions: [
                 {type: ContentSettingsTypes.NOTIFICATIONS, settingValue: null},
               ],
@@ -58,7 +58,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
                   PermissionsRevocationType.ABUSIVE_NOTIFICATION_PERMISSIONS,
             },
             {
-              origin: `https://www.example6.com:443`,
+              origin: 'https://www.example6.com:443',
               permissions: [
                 {type: ContentSettingsTypes.NOTIFICATIONS, settingValue: null},
               ],

@@ -225,12 +225,12 @@ import {navigateTo} from './test_util.js';
             historyTabs.selected = -1;
             await microtasksFinished();
           }
-          assertEquals(`chrome://history/syncedTabs`, window.location.href);
+          assertEquals('chrome://history/syncedTabs', window.location.href);
         });
   });
 });
 
-suite(`routing-test-with-history-clusters-pref-set`, () => {
+suite('routing-test-with-history-clusters-pref-set', () => {
   let app: HistoryAppElement;
   let testProxy: TestHistoryBrowserProxy;
   let testMetricsProxy: TestMetricsProxy;
@@ -261,37 +261,37 @@ suite(`routing-test-with-history-clusters-pref-set`, () => {
   }
 
   test(
-      `route to non default last selected tab when no url params set `,
+      'route to non default last selected tab when no url params set ',
       async () => {
         initialize();
         await microtasksFinished();
-        assertEquals(`chrome://history/grouped`, window.location.href);
+        assertEquals('chrome://history/grouped', window.location.href);
       });
 
-  test(`route to grouped url when last tab is grouped`, async () => {
+  test('route to grouped url when last tab is grouped', async () => {
     loadTimeData.overrideValues({lastSelectedTab: 0});
     initialize();
     await microtasksFinished();
-    assertEquals(`chrome://history/`, window.location.href);
+    assertEquals('chrome://history/', window.location.href);
     testProxy.handler.reset();
 
     navigateTo('/grouped', app);
     await microtasksFinished();
-    assertEquals(`chrome://history/grouped`, window.location.href);
+    assertEquals('chrome://history/grouped', window.location.href);
     const lastSelectedTab =
         await testProxy.handler.whenCalled('setLastSelectedTab');
     assertEquals(lastSelectedTab, 1);
   });
 
-  test(`route to list url when last tab is list`, async () => {
+  test('route to list url when last tab is list', async () => {
     loadTimeData.overrideValues({lastSelectedTab: 0});
     initialize();
     await microtasksFinished();
-    assertEquals(`chrome://history/`, window.location.href);
+    assertEquals('chrome://history/', window.location.href);
   });
 });
 
-suite(`routing-test-with-history-embeddings-enabled`, () => {
+suite('routing-test-with-history-embeddings-enabled', () => {
   let app: HistoryAppElement;
 
   suiteSetup(() => {

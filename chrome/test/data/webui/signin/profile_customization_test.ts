@@ -186,7 +186,7 @@ suite('ProfileCustomizationTest', function() {
   });
 });
 
-suite(`LocalProfileCreationTest`, function() {
+suite('LocalProfileCreationTest', function() {
   let app: ProfileCustomizationAppElement;
   let browserProxy: TestProfileCustomizationBrowserProxy;
 

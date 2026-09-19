@@ -461,7 +461,7 @@ suite('SafetyHubPage', function() {
   });
 
   test(
-      `Safe Browsing Card updates upon Safe Browsing settings change`,
+      'Safe Browsing Card updates upon Safe Browsing settings change',
       async function() {
         const standardCardData: CardInfo = {
           header: 'Safe Browsing is on',

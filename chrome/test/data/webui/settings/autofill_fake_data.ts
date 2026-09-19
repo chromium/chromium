@@ -102,7 +102,7 @@ export function createCreditCardEntry(
     imageSrc: 'chrome://theme/IDR_AUTOFILL_CC_GENERIC',
     metadata: {
       isLocal: true,
-      summaryLabel: hasIdentifier ? `My Credit Card` : networkAndLastFour,
+      summaryLabel: hasIdentifier ? 'My Credit Card' : networkAndLastFour,
       summarySublabel: isNewFopDisplay ?
           (hasIdentifier ? networkAndLastFour : '') :
           'Jane Doe',
@@ -205,7 +205,7 @@ function ibanPatternMaker(ibanValue: string): string {
     if (i < 4 || i >= strippedValue.length - 4) {
       output += strippedValue.charAt(i);
     } else {
-      output += `*`;
+      output += '*';
     }
   }
   return output;

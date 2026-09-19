@@ -572,17 +572,17 @@ suite('parseEvent', () => {
     }
 
     test(
-        `should throw if required field 'appId' is missing for INSTALL START`,
+        'should throw if required field \'appId\' is missing for INSTALL START',
         () => {
           const message: Record<string, unknown> = {...baseInstallStart};
           delete message['appId'];
           assertThrows(
               () => parseEvent(message),
-              `Message missing required field 'appId'`);
+              'Message missing required field \'appId\'');
         });
 
     test(
-        `should throw if required field 'version' is missing for INSTALL END`,
+        'should throw if required field \'version\' is missing for INSTALL END',
         () => {
           const message: Record<string, unknown> = {
             'eventType': 'INSTALL',
@@ -594,11 +594,11 @@ suite('parseEvent', () => {
           };
           assertThrows(
               () => parseEvent(message),
-              `Message missing required field 'version'`);
+              'Message missing required field \'version\'');
         });
 
     test(
-        `should throw if required field 'appId' is missing for UNINSTALL START`,
+        'should throw if required field \'appId\' is missing for UNINSTALL START',
         () => {
           const message: Record<string, unknown> = {
             'eventType': 'UNINSTALL',
@@ -613,10 +613,10 @@ suite('parseEvent', () => {
           delete message['appId'];
           assertThrows(
               () => parseEvent(message),
-              `Message missing required field 'appId'`);
+              'Message missing required field \'appId\'');
         });
     test(
-        `should throw if required field 'version' is missing for UNINSTALL START`,
+        'should throw if required field \'version\' is missing for UNINSTALL START',
         () => {
           const message: Record<string, unknown> = {
             'eventType': 'UNINSTALL',
@@ -631,10 +631,10 @@ suite('parseEvent', () => {
           delete message['version'];
           assertThrows(
               () => parseEvent(message),
-              `Message missing required field 'version'`);
+              'Message missing required field \'version\'');
         });
     test(
-        `should throw if required field 'reason' is missing for UNINSTALL START`,
+        'should throw if required field \'reason\' is missing for UNINSTALL START',
         () => {
           const message: Record<string, unknown> = {
             'eventType': 'UNINSTALL',
@@ -649,7 +649,7 @@ suite('parseEvent', () => {
           delete message['reason'];
           assertThrows(
               () => parseEvent(message),
-              `Message missing required field 'reason'`);
+              'Message missing required field \'reason\'');
         });
 
     suite('UPDATE END message validation', () => {
@@ -669,7 +669,7 @@ suite('parseEvent', () => {
         };
         assertThrows(
             () => parseEvent(message),
-            `Message has field 'updateStates' of unexpected non-array type 'object'.`);
+            'Message has field \'updateStates\' of unexpected non-array type \'object\'.');
       });
 
       test('should throw if an updateState item is missing state', () => {
@@ -679,7 +679,7 @@ suite('parseEvent', () => {
         };
         assertThrows(
             () => parseEvent(message),
-            `Message missing required field 'state'`);
+            'Message missing required field \'state\'');
       });
 
       test('should throw if result is not a string', () => {
@@ -689,12 +689,12 @@ suite('parseEvent', () => {
         };
         assertThrows(
             () => parseEvent(message),
-            `Message has field result with unexpected type 'number', expected 'string'`);
+            'Message has field result with unexpected type \'number\', expected \'string\'');
       });
     });
 
     test(
-        `should throw if required field 'eulaRequired' is missing for PERSISTED_DATA`,
+        'should throw if required field \'eulaRequired\' is missing for PERSISTED_DATA',
         () => {
           const message: Record<string, unknown> = {
             'eventType': 'PERSISTED_DATA',
@@ -705,7 +705,7 @@ suite('parseEvent', () => {
           };
           assertThrows(
               () => parseEvent(message),
-              `Message missing required field 'eulaRequired'`);
+              'Message missing required field \'eulaRequired\'');
         });
 
     test('should throw for unknown eventType', () => {
@@ -731,7 +731,7 @@ suite('parseEvent', () => {
       const message: Record<string, unknown> = {...baseInstallStart, 'pid': {}};
       assertThrows(
           () => parseEvent(message),
-          `Message has field 'pid' with unexpected type 'object', expected 'number' or 'string'`);
+          'Message has field \'pid\' with unexpected type \'object\', expected \'number\' or \'string\'');
     });
 
     test('should throw for non-finite pid', () => {
@@ -741,7 +741,7 @@ suite('parseEvent', () => {
       };
       assertThrows(
           () => parseEvent(message),
-          `Message has field 'pid' with a numeric value that is not an integer.`);
+          'Message has field \'pid\' with a numeric value that is not an integer.');
     });
 
     test('should throw for string pid that is not a number', () => {
@@ -751,7 +751,7 @@ suite('parseEvent', () => {
       };
       assertThrows(
           () => parseEvent(message),
-          `Message has field 'pid' with a numeric value that is not an integer.`);
+          'Message has field \'pid\' with a numeric value that is not an integer.');
     });
 
     test('should throw for decimal pid', () => {
@@ -761,7 +761,7 @@ suite('parseEvent', () => {
       };
       assertThrows(
           () => parseEvent(message),
-          `Message has field 'pid' with a numeric value that is not an integer.`);
+          'Message has field \'pid\' with a numeric value that is not an integer.');
     });
 
     test('should throw for string pid that is a decimal number', () => {
@@ -771,7 +771,7 @@ suite('parseEvent', () => {
       };
       assertThrows(
           () => parseEvent(message),
-          `Message has field 'pid' with a numeric value that is not an integer.`);
+          'Message has field \'pid\' with a numeric value that is not an integer.');
     });
 
     test('should throw for invalid eventId type', () => {
@@ -781,7 +781,7 @@ suite('parseEvent', () => {
       };
       assertThrows(
           () => parseEvent(message),
-          `Message has field eventId with unexpected type 'number', expected 'string'`);
+          'Message has field eventId with unexpected type \'number\', expected \'string\'');
     });
 
     test('should throw if errors is not an array', () => {
@@ -791,7 +791,7 @@ suite('parseEvent', () => {
       };
       assertThrows(
           () => parseEvent(message),
-          `Message has field 'errors' of unexpected non-array type 'object'.`);
+          'Message has field \'errors\' of unexpected non-array type \'object\'.');
     });
 
     test('should throw if errors contains non-object', () => {
@@ -801,7 +801,7 @@ suite('parseEvent', () => {
       };
       assertThrows(
           () => parseEvent(message),
-          `Message has field 'errors' containing an element of unexpected type 'number', expected 'object'.`);
+          'Message has field \'errors\' containing an element of unexpected type \'number\', expected \'object\'.');
     });
 
     test('should throw if errors contains an array', () => {
@@ -811,7 +811,7 @@ suite('parseEvent', () => {
       };
       assertThrows(
           () => parseEvent(message),
-          `Message has field 'errors' of unexpected array type.`);
+          'Message has field \'errors\' of unexpected array type.');
     });
 
     test('should throw if error item is missing category', () => {
@@ -821,7 +821,7 @@ suite('parseEvent', () => {
       };
       assertThrows(
           () => parseEvent(message),
-          `Message missing required field 'category'`);
+          'Message missing required field \'category\'');
     });
 
     test('should parse numeric error fields from strings', () => {
@@ -840,7 +840,7 @@ suite('parseEvent', () => {
       };
       assertThrows(
           () => parseEvent(message),
-          `Message has field 'category' with unexpected type 'object', expected 'number' or 'string'`);
+          'Message has field \'category\' with unexpected type \'object\', expected \'number\' or \'string\'');
     });
 
     test('should throw if error item has decimal type for category', () => {
@@ -850,7 +850,7 @@ suite('parseEvent', () => {
       };
       assertThrows(
           () => parseEvent(message),
-          `Message has field 'category' with a numeric value that is not an integer.`);
+          'Message has field \'category\' with a numeric value that is not an integer.');
     });
 
     test('should throw for unimplemented event type', () => {
@@ -875,7 +875,7 @@ suite('parseEvent', () => {
       };
       assertThrows(
           () => parseEvent(message),
-          `Message has field 'lastChecked' with unparsable datetime value 'not-a-number'`);
+          'Message has field \'lastChecked\' with unparsable datetime value \'not-a-number\'');
     });
 
     suite('LOAD_POLICY END message validation', () => {
@@ -895,30 +895,30 @@ suite('parseEvent', () => {
         };
         assertThrows(
             () => parseEvent(message),
-            `Message has field policySet with unexpected type 'number', expected 'object'`);
+            'Message has field policySet with unexpected type \'number\', expected \'object\'');
       });
 
-      test(`should throw if 'policiesByName' is missing`, () => {
+      test('should throw if \'policiesByName\' is missing', () => {
         const message: Record<string, unknown> = {
           ...baseLoadPolicyEndMessage,
           'policySet': {'policiesByAppId': {}},
         };
         assertThrows(
             () => parseEvent(message),
-            `Message missing required field 'policiesByName'`);
+            'Message missing required field \'policiesByName\'');
       });
 
-      test(`should throw if 'policiesByAppId' is missing`, () => {
+      test('should throw if \'policiesByAppId\' is missing', () => {
         const message: Record<string, unknown> = {
           ...baseLoadPolicyEndMessage,
           'policySet': {'policiesByName': {}},
         };
         assertThrows(
             () => parseEvent(message),
-            `Message missing required field 'policiesByAppId'`);
+            'Message missing required field \'policiesByAppId\'');
       });
 
-      test(`should throw if a policy in 'policiesByName' is not an object`, () => {
+      test('should throw if a policy in \'policiesByName\' is not an object', () => {
         const message: Record<string, unknown> = {
           ...baseLoadPolicyEndMessage,
           'policySet': {
@@ -928,11 +928,11 @@ suite('parseEvent', () => {
         };
         assertThrows(
             () => parseEvent(message),
-            `Message has field policy1 with unexpected type 'number', expected 'object'`);
+            'Message has field policy1 with unexpected type \'number\', expected \'object\'');
       });
 
       test(
-          `should throw if a policy in 'policiesByName' is missing 'valuesBySource'`,
+          'should throw if a policy in \'policiesByName\' is missing \'valuesBySource\'',
           () => {
             const message: Record<string, unknown> = {
               ...baseLoadPolicyEndMessage,
@@ -943,11 +943,11 @@ suite('parseEvent', () => {
             };
             assertThrows(
                 () => parseEvent(message),
-                `Message missing required field 'valuesBySource'`);
+                'Message missing required field \'valuesBySource\'');
           });
 
       test(
-          `should throw if a policy in 'policiesByName' is missing 'prevailingSource'`,
+          'should throw if a policy in \'policiesByName\' is missing \'prevailingSource\'',
           () => {
             const message: Record<string, unknown> = {
               ...baseLoadPolicyEndMessage,
@@ -959,11 +959,11 @@ suite('parseEvent', () => {
             };
             assertThrows(
                 () => parseEvent(message),
-                `Message missing required field 'prevailingSource'`);
+                'Message missing required field \'prevailingSource\'');
           });
 
       test(
-          `should throw if an app policy in 'policiesByAppId' is not an object`,
+          'should throw if an app policy in \'policiesByAppId\' is not an object',
           () => {
             const message: Record<string, unknown> = {
               ...baseLoadPolicyEndMessage,
@@ -974,10 +974,10 @@ suite('parseEvent', () => {
             };
             assertThrows(
                 () => parseEvent(message),
-                `Message has field {app1} with unexpected type 'number', expected 'object'`);
+                'Message has field {app1} with unexpected type \'number\', expected \'object\'');
           });
 
-      test(`should throw if a policy in 'policiesByAppId' is not an object`, () => {
+      test('should throw if a policy in \'policiesByAppId\' is not an object', () => {
         const message: Record<string, unknown> = {
           ...baseLoadPolicyEndMessage,
           'policySet': {
@@ -987,11 +987,11 @@ suite('parseEvent', () => {
         };
         assertThrows(
             () => parseEvent(message),
-            `Message has field policy2 with unexpected type 'number', expected 'object'`);
+            'Message has field policy2 with unexpected type \'number\', expected \'object\'');
       });
 
       test(
-          `should throw if a policy in 'policiesByAppId' is missing 'valuesBySource'`,
+          'should throw if a policy in \'policiesByAppId\' is missing \'valuesBySource\'',
           () => {
             const message: Record<string, unknown> = {
               ...baseLoadPolicyEndMessage,
@@ -1004,11 +1004,11 @@ suite('parseEvent', () => {
             };
             assertThrows(
                 () => parseEvent(message),
-                `Message missing required field 'valuesBySource'`);
+                'Message missing required field \'valuesBySource\'');
           });
 
       test(
-          `should throw if a policy in 'policiesByAppId' is missing 'prevailingSource'`,
+          'should throw if a policy in \'policiesByAppId\' is missing \'prevailingSource\'',
           () => {
             const message: Record<string, unknown> = {
               ...baseLoadPolicyEndMessage,
@@ -1021,7 +1021,7 @@ suite('parseEvent', () => {
             };
             assertThrows(
                 () => parseEvent(message),
-                `Message missing required field 'prevailingSource'`);
+                'Message missing required field \'prevailingSource\'');
           });
     });
   });

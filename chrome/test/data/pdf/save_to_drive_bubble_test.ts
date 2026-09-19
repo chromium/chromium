@@ -78,8 +78,8 @@ const tests = [
     const element = createBubbleElement();
     const anchor = document.createElement('div');
     anchor.style.position = 'fixed';
-    anchor.style.top = `400px`;
-    anchor.style.left = `400px`;
+    anchor.style.top = '400px';
+    anchor.style.left = '400px';
     document.body.appendChild(anchor);
     element.showAt(anchor);
 

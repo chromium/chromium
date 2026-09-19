@@ -72,7 +72,7 @@ suite('NewTabPageDoodleShareDialogTest', () => {
     });
   });
 
-  test(`clicking email navigates to email`, async () => {
+  test('clicking email navigates to email', async () => {
     // Arrange.
     doodleShareDialog.title = 'foo';
     doodleShareDialog.url = 'https://bar.com';

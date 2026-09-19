@@ -82,7 +82,7 @@ suite('ExtensionsActivityLogHistoryTest', function() {
         activityType:
             chrome.activityLogPrivate.ExtensionActivityType.CONTENT_SCRIPT,
         apiCall: '',
-        args: `["script1.js","script2.js"]`,
+        args: '["script1.js","script2.js"]',
         count: 1,
         extensionId: EXTENSION_ID,
         pageTitle: 'Test Extension',
@@ -118,7 +118,7 @@ suite('ExtensionsActivityLogHistoryTest', function() {
         extensionId: EXTENSION_ID,
         other: {
           webRequest:
-              `{"modified_request_headers":true, "added_request_headers":"a"}`,
+              '{"modified_request_headers":true, "added_request_headers":"a"}',
         },
         pageUrl: `chrome-extension://${EXTENSION_ID}/index.html`,
         time: 1546499283237.616,

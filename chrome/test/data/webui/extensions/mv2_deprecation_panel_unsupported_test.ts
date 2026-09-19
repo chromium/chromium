@@ -156,7 +156,7 @@ suite('ExtensionsMV2DeprecationPanel_UnsupportedStage', function() {
         const id = 'a'.repeat(32);
         const recommendationsUrl =
             `https://chromewebstore.google.com/detail/${id}` +
-            `/related-recommendations`;
+            '/related-recommendations';
         panelElement.extensions = [createExtensionInfo({
           name: 'Extension A',
           id,

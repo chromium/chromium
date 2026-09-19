@@ -22,7 +22,7 @@ import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.
 
 import {ADD_FILE_CONTEXT_FN, createComposeboxElement, createFuseboxAction, getSubmitContainer, getSubmitIcon, MockInputState, setupComposeboxTest} from './test_support.js';
 
-suite(`NewTabPageComposeboxTest`, () => {
+suite('NewTabPageComposeboxTest', () => {
   const testProxy = setupComposeboxTest();
 
   test(

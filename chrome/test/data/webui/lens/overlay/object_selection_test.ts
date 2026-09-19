@@ -110,7 +110,7 @@ suite('ObjectSelection', function() {
   });
 
   test(
-      `verify that tapping an object issues lens request via mojo`,
+      'verify that tapping an object issues lens request via mojo',
       async () => {
         await simulateClick(selectionOverlayElement, {x: 120, y: 15});
 
@@ -132,7 +132,7 @@ suite('ObjectSelection', function() {
       });
 
   test(
-      `verify that smaller objects have priority over larger objects`,
+      'verify that smaller objects have priority over larger objects',
       async () => {
         await simulateClick(selectionOverlayElement, {x: 320, y: 50});
 
@@ -141,7 +141,7 @@ suite('ObjectSelection', function() {
       });
 
   test(
-      `verify that tapping on objects with masks sets the mask click flag`,
+      'verify that tapping on objects with masks sets the mask click flag',
       async () => {
         // Tap on the object at index 0, which has a mask.
         await simulateClick(selectionOverlayElement, {x: 21, y: 16});

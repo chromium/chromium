@@ -104,7 +104,7 @@ suite('PrivacyPage', function() {
 });
 
 
-suite(`CookiesSubpage`, function() {
+suite('CookiesSubpage', function() {
   let page: SettingsPrivacyPageElement;
   let settingsPrefs: SettingsPrefsElement;
 

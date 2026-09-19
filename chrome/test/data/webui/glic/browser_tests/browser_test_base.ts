@@ -143,7 +143,7 @@ export class SequencedSubscriber<T> {
               evalCount} values, last value was ${
               JSON.stringify(lastValueSaw)}${errorSuffix}`);
         } else {
-          console.warn(`waitFor() failed, saw no values emitted`);
+          console.warn('waitFor() failed, saw no values emitted');
         }
         throw e;
       }

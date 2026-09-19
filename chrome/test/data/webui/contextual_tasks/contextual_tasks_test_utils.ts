@@ -40,7 +40,7 @@ export function assertHTMLElement(element: Element|null|undefined):
 
 export function assertStyle(
     element: Element|null, name: string, expected: string, error: string = '') {
-  assertTrue(!!element, `Element is null`);
+  assertTrue(!!element, 'Element is null');
   const actual = window.getComputedStyle(element).getPropertyValue(name).trim();
   assertEquals(expected, actual, error);
 }
@@ -243,7 +243,7 @@ export async function verifyFileCarouselMatchesUploaded(
   // Assert file is uploaded.
   assertEquals(
       1, mockSearchboxPageHandler.getCallCount(ADD_FILE_CONTEXT_FN),
-      `Add file context should be called for this file once.`);
+      'Add file context should be called for this file once.');
   const fileBuffer = await file.arrayBuffer();
   const fileArray = Array.from(new Uint8Array(fileBuffer));
 

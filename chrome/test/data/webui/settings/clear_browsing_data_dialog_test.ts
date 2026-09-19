@@ -903,7 +903,7 @@ suite('DeleteBrowsingDataDialog', function() {
     // actual signOut string is passed from the C++ side.
     webUIListenerCallback(
         'browsing-data-counter-text-update', 'browser.clear_data.cookies',
-        `<a href="#" id="signOutLink"></a>`);
+        '<a href="#" id="signOutLink"></a>');
     await microtasksFinished();
 
     const cookiesCheckbox = getCheckboxForDataType(BrowsingDataType.SITE_DATA);

@@ -1331,7 +1331,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
 // =============================================================================
 [true, false].forEach(useFork => {
   suite(
-      `ContextualTasksComposeboxForkInjectInputTest ` +
+      'ContextualTasksComposeboxForkInjectInputTest ' +
           `(useContextualTasksComposeboxFork = ${useFork})`,
       () => {
         const QUERY_AUTOCOMPLETE_FN = 'queryAutocomplete';

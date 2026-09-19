@@ -95,7 +95,7 @@ export async function verifyFileCarouselMatchesUploaded(
   // Assert file is uploaded.
   assertEquals(
       1, mockSearchboxPageHandler.getCallCount(ADD_FILE_CONTEXT_FN),
-      `Add file context should be called for this file once.`);
+      'Add file context should be called for this file once.');
   const fileBuffer = await file.arrayBuffer();
   const fileArray = Array.from(new Uint8Array(fileBuffer));
 

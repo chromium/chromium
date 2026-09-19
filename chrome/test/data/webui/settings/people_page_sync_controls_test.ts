@@ -796,7 +796,7 @@ suite('SyncControlsAccountSettingsTest', function() {
     await microtasksFinished();
 
     const batchUploadElement =
-        syncControls.shadowRoot.querySelector(`#batchUploadPromo`);
+        syncControls.shadowRoot.querySelector('#batchUploadPromo');
     assertTrue(!!batchUploadElement);
     assertTrue(isVisible(batchUploadElement));
 
@@ -816,7 +816,7 @@ suite('SyncControlsAccountSettingsTest', function() {
     await microtasksFinished();
 
     const batchUploadElement =
-        syncControls.shadowRoot.querySelector(`#batchUploadPromo`);
+        syncControls.shadowRoot.querySelector('#batchUploadPromo');
     assertTrue(!!batchUploadElement);
     assertTrue(isVisible(batchUploadElement));
 

@@ -48,13 +48,13 @@ async function renderContext(context: AdditionalContext) {
           part.webPageData.mainDocument.innerText?.substring(0, 20)}...\n`;
     }
     if (part.annotatedPageData) {
-      pre.innerText += `Annotated Page Data: present\n`;
+      pre.innerText += 'Annotated Page Data: present\n';
     }
     if (part.tabContext) {
       pre.innerText += 'Tab Context: present\n';
     }
     if (part.pdf) {
-      pre.innerText += `PDF: present\n`;
+      pre.innerText += 'PDF: present\n';
     }
     if (part.region) {
       if (part.region.rect) {
@@ -62,7 +62,7 @@ async function renderContext(context: AdditionalContext) {
         pre.innerText +=
             `Region: ${rect.x}, ${rect.y}, ${rect.width}, ${rect.height}\n`;
       } else {
-        pre.innerText += `Region: present but no rect\n`;
+        pre.innerText += 'Region: present but no rect\n';
       }
     }
     if (part.pendingRegion) {
@@ -72,7 +72,7 @@ async function renderContext(context: AdditionalContext) {
         pre.innerText += `Pending Region ID ${id} Bounds: ${rect.x}, ${
             rect.y}, ${rect.width}, ${rect.height}\n`;
       } else {
-        pre.innerText += `Pending Region: present but no rect\n`;
+        pre.innerText += 'Pending Region: present but no rect\n';
       }
     }
   }

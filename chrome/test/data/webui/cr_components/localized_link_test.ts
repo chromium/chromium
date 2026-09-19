@@ -21,73 +21,73 @@ suite('localized_link', function() {
 
   test('LinkFirst', function() {
     document.body.innerHTML =
-        getLocalizedStringWithLinkElementHtml(`<a>first link</a>then text`, ``);
+        getLocalizedStringWithLinkElementHtml('<a>first link</a>then text', '');
     localizedStringWithLink = document.body.querySelector('localized-link');
     assertTrue(!!localizedStringWithLink);
     assertEquals(
         localizedStringWithLink.$.container.innerHTML,
-        `<a id="id0" aria-labelledby="id0 id1" tabindex="0">first link</a>` +
-            `<span id="id1" aria-hidden="true">then text</span>`);
+        '<a id="id0" aria-labelledby="id0 id1" tabindex="0">first link</a>' +
+            '<span id="id1" aria-hidden="true">then text</span>');
   });
 
   test('TextLinkText', function() {
     document.body.innerHTML = getLocalizedStringWithLinkElementHtml(
-        `first text <a>then link</a> then more text`, ``);
+        'first text <a>then link</a> then more text', '');
     localizedStringWithLink = document.body.querySelector('localized-link');
     assertTrue(!!localizedStringWithLink);
     assertEquals(
         localizedStringWithLink.$.container.innerHTML,
-        `<span id="id0" aria-hidden="true">first text </span>` +
-            `<a id="id1" aria-labelledby="id0 id1 id2" tabindex="0">then link</a>` +
-            `<span id="id2" aria-hidden="true"> then more text</span>`);
+        '<span id="id0" aria-hidden="true">first text </span>' +
+            '<a id="id1" aria-labelledby="id0 id1 id2" tabindex="0">then link</a>' +
+            '<span id="id2" aria-hidden="true"> then more text</span>');
   });
 
   test('LinkLast', function() {
     document.body.innerHTML =
-        getLocalizedStringWithLinkElementHtml(`first text<a>then link</a>`, ``);
+        getLocalizedStringWithLinkElementHtml('first text<a>then link</a>', '');
     localizedStringWithLink = document.body.querySelector('localized-link');
     assertTrue(!!localizedStringWithLink);
     assertEquals(
         localizedStringWithLink.$.container.innerHTML,
-        `<span id="id0" aria-hidden="true">first text</span>` +
-            `<a id="id1" aria-labelledby="id0 id1" tabindex="0">then link</a>`);
+        '<span id="id0" aria-hidden="true">first text</span>' +
+            '<a id="id1" aria-labelledby="id0 id1" tabindex="0">then link</a>');
   });
 
   test('PopulatedLink', function() {
     document.body.innerHTML = getLocalizedStringWithLinkElementHtml(
-        `<a>populated link</a>`, `https://google.com`);
+        '<a>populated link</a>', 'https://google.com');
     localizedStringWithLink = document.body.querySelector('localized-link');
     assertTrue(!!localizedStringWithLink);
     assertEquals(
         localizedStringWithLink.$.container.innerHTML,
-        `<a id="id0" aria-labelledby="id0" tabindex="0" ` +
-            `href="https://google.com" target="_blank">populated link</a>`);
+        '<a id="id0" aria-labelledby="id0" tabindex="0" ' +
+            'href="https://google.com" target="_blank">populated link</a>');
   });
 
   test('PrepopulatedLink', function() {
     document.body.innerHTML = getLocalizedStringWithLinkElementHtml(
-        `<a href='https://google.com'>pre-populated link</a>`, ``);
+        '<a href=\'https://google.com\'>pre-populated link</a>', '');
     localizedStringWithLink = document.body.querySelector('localized-link');
     assertTrue(!!localizedStringWithLink);
     assertEquals(
         localizedStringWithLink.$.container.innerHTML,
-        `<a href="https://google.com" id="id0" aria-labelledby="id0" tabindex="0">` +
-            `pre-populated link</a>`);
+        '<a href="https://google.com" id="id0" aria-labelledby="id0" tabindex="0">' +
+            'pre-populated link</a>');
   });
 
   test('NoLinkPresent', function() {
     document.body.innerHTML = getLocalizedStringWithLinkElementHtml(
-        `No anchor tags in this sentence.`, ``);
+        'No anchor tags in this sentence.', '');
     localizedStringWithLink = document.body.querySelector('localized-link');
     assertTrue(!!localizedStringWithLink);
     assertEquals(
         localizedStringWithLink.$.container.innerHTML,
-        `No anchor tags in this sentence.`);
+        'No anchor tags in this sentence.');
   });
 
   test('LinkClick', async () => {
     document.body.innerHTML = getLocalizedStringWithLinkElementHtml(
-        `Text with a <a href='#'>link</a>`, ``);
+        'Text with a <a href=\'#\'>link</a>', '');
     const localizedLink = document.body.querySelector('localized-link');
     assertTrue(!!localizedLink);
     const anchorTag = localizedLink.shadowRoot.querySelector('a');
@@ -100,7 +100,7 @@ suite('localized_link', function() {
 
   test('LinkAuxclick', async () => {
     document.body.innerHTML = getLocalizedStringWithLinkElementHtml(
-        `Text with a <a href='#'>link</a>`, ``);
+        'Text with a <a href=\'#\'>link</a>', '');
     const localizedLink = document.body.querySelector('localized-link');
     assertTrue(!!localizedLink);
     const anchorTag = localizedLink.shadowRoot.querySelector('a');
@@ -115,7 +115,7 @@ suite('localized_link', function() {
 
   test('link disabled', async function() {
     document.body.innerHTML = getLocalizedStringWithLinkElementHtml(
-        `Text with a <a href='#'>link</a>`, ``);
+        'Text with a <a href=\'#\'>link</a>', '');
     const localizedLink = document.body.querySelector('localized-link');
     assertTrue(!!localizedLink);
     const anchorTag = localizedLink.shadowRoot.querySelector('a');
@@ -128,12 +128,13 @@ suite('localized_link', function() {
 
   test('change localizedString', async function() {
     document.body.innerHTML = getLocalizedStringWithLinkElementHtml(
-        `Text with a <a href='#'>link</a>`, ``);
+        'Text with a <a href=\'#\'>link</a>', '');
     const localizedLink = document.body.querySelector('localized-link');
     assertTrue(!!localizedLink);
     const localizedLinkPromise = eventToPromise('link-clicked', localizedLink);
     localizedLink.linkDisabled = true;
-    localizedLink.localizedString = `Different text with <a href='#'>link</a>`;
+    localizedLink.localizedString =
+        'Different text with <a href=\'#\'>link</a>';
     await microtasksFinished();
 
     // Tab index is still -1 due to it being disabled.

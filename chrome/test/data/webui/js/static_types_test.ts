@@ -64,7 +64,7 @@ suite('StaticTypesTest', function() {
 
     // c holds stringified value of `test`, which isn't a template literal.
     // Casting since purposefully passing incorrect value.
-    const c = `test` as unknown as TemplateStringsArray;
+    const c = 'test' as unknown as TemplateStringsArray;
     ensureThrows(c);
   });
 });

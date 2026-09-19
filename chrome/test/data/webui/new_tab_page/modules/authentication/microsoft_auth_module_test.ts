@@ -101,7 +101,7 @@ suite('MicrosoftAuthModule', () => {
     assertEquals(1, childDocument.getCallCount('acquireTokenPopup'));
     assertEquals(
         1,
-        metrics.count(`NewTabPage.MicrosoftAuth.AuthStarted`, AuthType.kPopup));
+        metrics.count('NewTabPage.MicrosoftAuth.AuthStarted', AuthType.kPopup));
   });
 
   test('does not populate module if handler says not to', async () => {

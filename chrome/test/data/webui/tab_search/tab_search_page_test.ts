@@ -542,7 +542,7 @@ suite('TabSearchAppTest', () => {
       recentlyClosedTabs: [{
         groupId: null,
         tabId: 3,
-        title: `SampleTab`,
+        title: 'SampleTab',
         url: 'https://www.sampletab.com',
         lastActiveTime: {internalValue: BigInt(3)},
         lastActiveElapsedText: '',

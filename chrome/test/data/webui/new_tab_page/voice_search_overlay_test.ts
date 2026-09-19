@@ -372,7 +372,7 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
     assertTrue(mockSpeechRecognition.abortCalled);
   });
 
-  test(`clicking '#retryLink' starts voice search if in retry state`, () => {
+  test('clicking \'#retryLink\' starts voice search if in retry state', () => {
     // Arrange.
     mockSpeechRecognition.onnomatch!();
     mockSpeechRecognition.startCalled = false;

@@ -275,7 +275,7 @@ suite('NewTabFooterAppTest', () => {
               'incrementCustomizeChromeButtonOpenCount'));
     });
 
-    test(`clicking #customizeButton records click`, () => {
+    test('clicking #customizeButton records click', () => {
       getCustomizeButton().click();
       assertEquals(1, metrics.count('NewTabPage.Footer.Click'));
       assertEquals(
@@ -427,7 +427,7 @@ suite('NewTabFooterAppTest', () => {
       await setupFooter();
     });
 
-    test(`right click opens context menu`, async () => {
+    test('right click opens context menu', async () => {
       const container = $$(element, '#container');
       assertTrue(!!container);
 

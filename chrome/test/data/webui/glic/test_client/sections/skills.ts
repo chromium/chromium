@@ -128,7 +128,7 @@ function initSkillPreviews() {
         }
         currentSubscription = skills.getSkillPreviews?.()?.subscribeObserver?.({
           next: (skillPreviews: SkillPreview[]) => {
-            logMessage(`skills previews updated.`);
+            logMessage('skills previews updated.');
             updateSkillsListUi(skillPreviews);
           },
           error: (err: any) => {
@@ -141,7 +141,7 @@ function initSkillPreviews() {
     const observableSkillPreviews = browser.getSkillPreviews()!;
     observableSkillPreviews.subscribeObserver!({
       next: (skillPreviews: SkillPreview[]) => {
-        logMessage(`skills previews updated.`);
+        logMessage('skills previews updated.');
         updateSkillsListUi(skillPreviews);
       },
       error: (err: any) => {

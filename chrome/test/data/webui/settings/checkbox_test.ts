@@ -92,7 +92,7 @@ suite('SettingsCheckbox', function() {
   });
 
   test('sub label should be able to have an id', () => {
-    testElement.subLabelHtml = `<a id="subLabelWithLink"></a>`;
+    testElement.subLabelHtml = '<a id="subLabelWithLink"></a>';
     flush();
 
     const actionLink =
@@ -101,7 +101,7 @@ suite('SettingsCheckbox', function() {
   });
 
   test('sub label should be able to have an aria-label', () => {
-    testElement.subLabelHtml = `<a aria-label="Label"></a>`;
+    testElement.subLabelHtml = '<a aria-label="Label"></a>';
     flush();
 
     const actionLink = testElement.$.subLabel.querySelector('a');
@@ -112,7 +112,7 @@ suite('SettingsCheckbox', function() {
   test(
       'click on sub label link should not toggle the button', async function() {
         testElement.checked = true;
-        testElement.subLabelHtml = `<a href="#"></a>`;
+        testElement.subLabelHtml = '<a href="#"></a>';
         flush();
 
         const actionLink = testElement.$.subLabel.querySelector('a');
@@ -128,7 +128,7 @@ suite('SettingsCheckbox', function() {
 
   test('click on sub label text should toggle the button', async function() {
     testElement.checked = true;
-    testElement.subLabelHtml = `<a href="#"></a>`;
+    testElement.subLabelHtml = '<a href="#"></a>';
     flush();
 
     assertTrue(testElement.checked);
@@ -140,7 +140,7 @@ suite('SettingsCheckbox', function() {
   });
 
   test('click on sub label link should fire a custom event', async function() {
-    testElement.subLabelHtml = `<a href="#" id="subLabelWithLink"></a>`;
+    testElement.subLabelHtml = '<a href="#" id="subLabelWithLink"></a>';
     flush();
 
     const actionLink = testElement.$.subLabel.querySelector('a');
@@ -154,7 +154,7 @@ suite('SettingsCheckbox', function() {
   });
 
   test('click on sub label text should not fire a custom event', () => {
-    testElement.subLabelHtml = `<a href="#" id="subLabelWithLink"></a>`;
+    testElement.subLabelHtml = '<a href="#" id="subLabelWithLink"></a>';
     testElement.addEventListener('sub-label-link-clicked', () => {
       assertNotReached(
           'custom event should not be triggered for non action link clicks.');

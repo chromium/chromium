@@ -1355,7 +1355,7 @@ suite('Modification', () => {
                 {
                   title: 'e1',
                   titleDirection: TextDirection.LEFT_TO_RIGHT,
-                  url: `https://e1/`,
+                  url: 'https://e1/',
                   source: TileSource.ENTERPRISE_SHORTCUTS,
                   titleSource: 0,
                   isQueryTile: false,
@@ -1365,7 +1365,7 @@ suite('Modification', () => {
                 {
                   title: 'c1',
                   titleDirection: TextDirection.LEFT_TO_RIGHT,
-                  url: `https://e1/`,
+                  url: 'https://e1/',
                   source: TileSource.CUSTOM_LINKS,
                   titleSource: 1,
                   isQueryTile: false,
@@ -1425,7 +1425,7 @@ suite('Modification', () => {
             {
               title: 'e1',
               titleDirection: TextDirection.LEFT_TO_RIGHT,
-              url: `https://e1/`,
+              url: 'https://e1/',
               source: TileSource.ENTERPRISE_SHORTCUTS,
               titleSource: 0,
               isQueryTile: false,
@@ -1435,7 +1435,7 @@ suite('Modification', () => {
             {
               title: 'c1',
               titleDirection: TextDirection.LEFT_TO_RIGHT,
-              url: `https://c1/`,
+              url: 'https://c1/',
               source: TileSource.CUSTOM_LINKS,
               titleSource: 1,
               isQueryTile: false,
@@ -1768,7 +1768,7 @@ function createDragAndDropSuite(singleRow: boolean, reflowOnOverflow: boolean) {
     const enterpriseShortcut = {
       title: 'e1',
       titleDirection: TextDirection.LEFT_TO_RIGHT,
-      url: `https://e1/`,
+      url: 'https://e1/',
       source: TileSource.ENTERPRISE_SHORTCUTS,
       titleSource: 0,
       isQueryTile: false,
@@ -1778,7 +1778,7 @@ function createDragAndDropSuite(singleRow: boolean, reflowOnOverflow: boolean) {
     const customLink1 = {
       title: 'c1',
       titleDirection: TextDirection.LEFT_TO_RIGHT,
-      url: `https://c1/`,
+      url: 'https://c1/',
       source: TileSource.CUSTOM_LINKS,
       titleSource: 1,
       isQueryTile: false,
@@ -1788,7 +1788,7 @@ function createDragAndDropSuite(singleRow: boolean, reflowOnOverflow: boolean) {
     const customLink2 = {
       title: 'c2',
       titleDirection: TextDirection.LEFT_TO_RIGHT,
-      url: `https://c2/`,
+      url: 'https://c2/',
       source: TileSource.CUSTOM_LINKS,
       titleSource: 2,
       isQueryTile: false,
@@ -1842,7 +1842,7 @@ function createDragAndDropSuite(singleRow: boolean, reflowOnOverflow: boolean) {
     const enterpriseShortcut = {
       title: 'a',
       titleDirection: TextDirection.LEFT_TO_RIGHT,
-      url: `https://a/`,
+      url: 'https://a/',
       source: TileSource.ENTERPRISE_SHORTCUTS,
       titleSource: 0,
       isQueryTile: false,
@@ -1852,7 +1852,7 @@ function createDragAndDropSuite(singleRow: boolean, reflowOnOverflow: boolean) {
     const customLink = {
       title: 'b',
       titleDirection: TextDirection.LEFT_TO_RIGHT,
-      url: `https://b/`,
+      url: 'https://b/',
       source: TileSource.CUSTOM_LINKS,
       titleSource: 1,
       isQueryTile: false,
@@ -1896,7 +1896,7 @@ function createDragAndDropSuite(singleRow: boolean, reflowOnOverflow: boolean) {
     const enterpriseShortcut = {
       title: 'a',
       titleDirection: TextDirection.LEFT_TO_RIGHT,
-      url: `https://a/`,
+      url: 'https://a/',
       source: TileSource.ENTERPRISE_SHORTCUTS,
       titleSource: 0,
       isQueryTile: false,
@@ -1906,7 +1906,7 @@ function createDragAndDropSuite(singleRow: boolean, reflowOnOverflow: boolean) {
     const customLink = {
       title: 'b',
       titleDirection: TextDirection.LEFT_TO_RIGHT,
-      url: `https://b/`,
+      url: 'https://b/',
       source: TileSource.CUSTOM_LINKS,
       titleSource: 1,
       isQueryTile: false,
@@ -2186,7 +2186,7 @@ suite('EnterpriseShortcuts', () => {
           {
             title: 'c',
             titleDirection: TextDirection.LEFT_TO_RIGHT,
-            url: `https://c/`,
+            url: 'https://c/',
             source: TileSource.CUSTOM_LINKS,
             titleSource: 1,
             isQueryTile: false,

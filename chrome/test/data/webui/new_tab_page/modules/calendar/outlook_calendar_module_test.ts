@@ -35,7 +35,7 @@ suite('NewTabPageModulesOutlookCalendarModuleTest', () => {
         mock => ParentTrustedDocumentProxy.setInstance(mock));
   });
 
-  test(`creates module`, async () => {
+  test('creates module', async () => {
     handler.setPromiseResolveFor('getEvents', {events: createEvents(1)});
     module = await outlookCalendarDescriptor.initialize(0) as
         OutlookCalendarModuleElement;
@@ -47,7 +47,7 @@ suite('NewTabPageModulesOutlookCalendarModuleTest', () => {
     assertEquals(module.$.moduleHeader.headerText, title);
   });
 
-  test(`module not created when there are no events`, async () => {
+  test('module not created when there are no events', async () => {
     handler.setPromiseResolveFor('getEvents', {events: createEvents(0)});
     module = await outlookCalendarDescriptor.initialize(0) as
         OutlookCalendarModuleElement;
@@ -76,7 +76,7 @@ suite('NewTabPageModulesOutlookCalendarModuleTest', () => {
         event.detail.message);
   });
 
-  test(`dismiss and restore module`, async () => {
+  test('dismiss and restore module', async () => {
     // Set up module.
     handler.setPromiseResolveFor('getEvents', {events: createEvents(1)});
     module = await outlookCalendarDescriptor.initialize(0) as

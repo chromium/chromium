@@ -826,7 +826,7 @@ suite('ExtensionDetailViewTest', function() {
     const id = 'a'.repeat(32);
     const recommendationsUrl =
         `https://chromewebstore.google.com/detail/${id}` +
-        `/related-recommendations`;
+        '/related-recommendations';
     await updateItemData({recommendationsUrl: recommendationsUrl});
 
     // Action menu is visible when the extension has a recommendations url.

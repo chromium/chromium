@@ -13,7 +13,7 @@ import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestSyncConfirmationBrowserProxy} from './test_sync_confirmation_browser_proxy.js';
 
-suite(`SigninSyncConfirmationTest`, function() {
+suite('SigninSyncConfirmationTest', function() {
   let app: SyncConfirmationAppElement;
   let browserProxy: TestSyncConfirmationBrowserProxy;
 
@@ -81,7 +81,7 @@ suite(`SigninSyncConfirmationTest`, function() {
 // scenarios are as expected. If the corresponding HTML file was updated
 // without also updating the attributes referring to consent strings,
 // this test will break.
-suite(`SigninSyncConfirmationConsentRecordingTest`, function() {
+suite('SigninSyncConfirmationConsentRecordingTest', function() {
   let app: SyncConfirmationAppElement;
   let browserProxy: TestSyncConfirmationBrowserProxy;
 

@@ -368,7 +368,7 @@ suite('SelectionOverlay', function() {
               testBrowserProxy.handler.getCallCount('closePreselectionBubble'));
         });
 
-    test(`verify that a tap calls closePreselectionBubble`, async () => {
+    test('verify that a tap calls closePreselectionBubble', async () => {
       const imageBounds = getImageBoundingRect(selectionOverlayElement);
       await simulateClick(
           selectionOverlayElement,
@@ -637,7 +637,7 @@ suite('SelectionOverlay', function() {
     });
 
     test(
-        `verify that dragging performs region search, even when an object overlaps`,
+        'verify that dragging performs region search, even when an object overlaps',
         async () => {
           // Drag that starts and ends inside the bounding box of an object.
           const objectEl = selectionOverlayElement.$.objectSelectionLayer
@@ -749,7 +749,7 @@ suite('SelectionOverlay', function() {
                   postSelectionStyles.getPropertyValue('--selection-top')));
         });
     test(
-        `verify that only objects respond to taps, even when post selection overlaps`,
+        'verify that only objects respond to taps, even when post selection overlaps',
         async () => {
           // Add the post selection over the words.
           await simulateDrag(

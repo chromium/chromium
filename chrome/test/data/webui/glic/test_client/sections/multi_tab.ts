@@ -98,9 +98,9 @@ async function fetchPinnedTabState(
           pdfSizeLimit,
           maxMetaTags,
         });
-    logMessage(`Pinned tab context: ` + JSON.stringify(update));
+    logMessage('Pinned tab context: ' + JSON.stringify(update));
   } catch (e: any) {
-    logMessage(`Failed to grab pinned tab context: ` + JSON.stringify(e));
+    logMessage('Failed to grab pinned tab context: ' + JSON.stringify(e));
     update.errorReason = e.message;
   }
   return update;

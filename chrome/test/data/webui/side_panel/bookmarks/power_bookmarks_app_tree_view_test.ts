@@ -743,7 +743,7 @@ suite('TreeView', () => {
         folder5Item.getBookmarkDescriptionForTests(folder5Row.bookmark);
     assertTrue(
         !!description && description.includes('4'),
-        `Folder 5 description should reflect 4 children after move, ` +
+        'Folder 5 description should reflect 4 children after move, ' +
             `got: ${description}`);
   });
 
