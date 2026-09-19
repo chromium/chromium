@@ -85,11 +85,7 @@ void ReadAnythingImmersiveWebView::FindReply(content::WebContents* web_contents,
 std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
 ReadAnythingImmersiveWebView::CloseAndTakeContentsWrapper() {
   SetWebContents(nullptr);  // This is necessary to reset the web contents.
-  // SetHost cannot be called on a crashed WebContents and will throw a DCHECK
-  // crash if it is.
-  if (!contents_wrapper_->web_contents()->IsCrashed()) {
-    contents_wrapper_->SetHost(nullptr);
-  }
+  contents_wrapper_->SetHost(nullptr);
   SetVisible(false);
 
   // Call OnEntryHidden on the Controller

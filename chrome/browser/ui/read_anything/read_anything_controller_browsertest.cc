@@ -56,6 +56,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
+#include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/pwn_open_url_helper.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/base/url_util.h"
@@ -3216,4 +3217,144 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   EXPECT_EQ(webui::GetTabInterface(irm_contents), tab);
   EXPECT_EQ(webui::GetBrowserWindowInterface(irm_contents),
             tab->GetBrowserWindowInterface());
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       PresentationTogglingTeardownSafeAndConsistent) {
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
+  tabs::TabInterface* tab = tab_strip_model->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+  auto* side_panel_ui = SidePanelUI::From(browser());
+
+  // 1. Show in immersive mode:
+  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  AwaitAndAssertOverlayVisibility(/*visible=*/true);
+
+  // 2. Toggle to side panel mode:
+  controller->TogglePresentation(/*is_user_initiated=*/true);
+  AssertOverlayVisibility(/*visible=*/false);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
+  ASSERT_TRUE(GetSidePanelWebContents());
+
+  auto* side_panel =
+      BrowserView::GetBrowserViewForBrowser(browser())->side_panel();
+  auto* content_parent = side_panel->GetContentParentView();
+  ASSERT_FALSE(content_parent->children().empty());
+  auto* side_panel_view =
+      static_cast<ReadAnythingSidePanelWebView*>(content_parent->children()[0]);
+  ASSERT_TRUE(side_panel_view->contents_wrapper());
+  EXPECT_EQ(side_panel_view->contents_wrapper()->GetHost().get(),
+            side_panel_view);
+
+  // 3. Verify TakeContentsWrapper() immediately clears `host_` even while
+  // `side_panel_view` is still alive (e.g. during animated side panel close
+  // between OnEntryWillHide and OnEntryHidden). Without SetHost(nullptr) in
+  // TakeContentsWrapper(), GetHost() would still point to `side_panel_view`.
+  auto wrapper = side_panel_view->TakeContentsWrapper();
+  ASSERT_TRUE(wrapper);
+  EXPECT_FALSE(wrapper->GetHost());
+
+  // Return ownership to the controller and transition back to immersive mode.
+  wrapper->web_contents()->RemoveUserData(
+      ReadAnythingSidePanelControllerGlue::UserDataKey());
+  controller->TransferWebUiOwnership(
+      ReadAnythingContentsWrapper(std::move(wrapper)),
+      ReadAnythingController::PresentationState::kInSidePanel);
+  side_panel_ui->Close(SidePanelEntryHideReason::kSidePanelClosed,
+                       /*suppress_animations=*/true);
+  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  AwaitAndAssertOverlayVisibility(/*visible=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       CrashedRendererTeardownClearsHostWithoutCrash) {
+  content::ScopedAllowRendererCrashes allow_renderer_crashes;
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
+  tabs::TabInterface* tab = tab_strip_model->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+  auto* side_panel_ui = SidePanelUI::From(browser());
+
+  // 1. Crash the Reading Mode renderer while in Immersive Mode. This triggers
+  // OnRendererCrashed() -> CloseImmersiveUI() ->
+  // ReadAnythingImmersiveWebView::CloseAndTakeContentsWrapper() ->
+  // SetHost(nullptr) while web_contents()->IsCrashed() is true.
+  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  AwaitAndAssertOverlayVisibility(/*visible=*/true);
+  content::WebContents* immersive_contents = GetImmersiveWebContents();
+  ASSERT_TRUE(immersive_contents);
+  content::WaitForLoadStop(immersive_contents);
+
+  {
+    content::RenderProcessHostWatcher crash_observer(
+        immersive_contents,
+        content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+    immersive_contents->GetPrimaryMainFrame()->GetProcess()->Shutdown(
+        /*exit_code=*/1);
+    crash_observer.Wait();
+  }
+  ASSERT_TRUE(immersive_contents->IsCrashed());
+  AwaitAndAssertOverlayVisibility(/*visible=*/false);
+
+  // 2. Verify that CloseAndTakeContentsWrapper() directly clears `host_` even
+  // when web_contents()->IsCrashed() is true and the view is still alive.
+  // With the old `if (!IsCrashed())` check, SetHost(nullptr) was skipped and
+  // GetHost() remained non-null while the view was alive.
+  auto wrapper = controller->GetOrCreateWebUIWrapper(
+      ReadAnythingController::PresentationState::kInImmersiveOverlay);
+  content::WebContents* wrapper_contents = wrapper->web_contents();
+  content::WaitForLoadStop(wrapper_contents);
+  controller->SetPresentationState(
+      ReadAnythingController::PresentationState::kInactive);
+  auto immersive_view = std::make_unique<ReadAnythingImmersiveWebView>(
+      base::DoNothing(), std::move(wrapper).release(),
+      ReadAnythingOpenTrigger::kOmniboxChip);
+  {
+    content::RenderProcessHostWatcher crash_observer(
+        wrapper_contents,
+        content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+    wrapper_contents->GetPrimaryMainFrame()->GetProcess()->Shutdown(
+        /*exit_code=*/1);
+    crash_observer.Wait();
+  }
+  ASSERT_TRUE(wrapper_contents->IsCrashed());
+
+  auto taken_wrapper = immersive_view->CloseAndTakeContentsWrapper();
+  ASSERT_TRUE(taken_wrapper);
+  EXPECT_TRUE(taken_wrapper->web_contents()->IsCrashed());
+  EXPECT_FALSE(taken_wrapper->GetHost());
+
+  // 3. Crash the Reading Mode renderer while in Side Panel Mode. This triggers
+  // OnRendererCrashed() -> CloseSidePanelUI() ->
+  // ReadAnythingSidePanelWebView::TakeContentsWrapper() -> SetHost(nullptr)
+  // while web_contents()->IsCrashed() is true.
+  controller->RecreateWebUIWrapper();
+  controller->ShowSidePanelUI(SidePanelOpenTrigger::kAppMenu);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
+  content::WebContents* side_panel_contents = GetSidePanelWebContents();
+  ASSERT_TRUE(side_panel_contents);
+  content::WaitForLoadStop(side_panel_contents);
+
+  {
+    content::RenderProcessHostWatcher crash_observer(
+        side_panel_contents,
+        content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+    side_panel_contents->GetPrimaryMainFrame()->GetProcess()->Shutdown(
+        /*exit_code=*/1);
+    crash_observer.Wait();
+  }
+  ASSERT_TRUE(side_panel_contents->IsCrashed());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
 }
