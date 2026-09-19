@@ -318,8 +318,11 @@ class SearchBoxMediator implements DestroyObserver {
         // Use int pixel size instead of float dimension to avoid precision error on the percentage.
         final float transitionLength =
                 currentNtpFakeSearchBoxTransitionStartOffset + mTransitionEndOffset;
+
         // Tab strip height is zero on phones, and may vary on tablets.
-        int tabStripHeight = tabStripHeightSupplier != null ? tabStripHeightSupplier.get() : 0;
+        Integer tabStripHeightValue =
+                tabStripHeightSupplier != null ? tabStripHeightSupplier.get() : null;
+        int tabStripHeight = tabStripHeightValue != null ? tabStripHeightValue : 0;
 
         // When scrollY equals searchBoxTop + tabStripHeight -transitionStartOffset, it marks the
         // start point of the transition. When scrollY equals searchBoxTop plus transitionEndOffset
