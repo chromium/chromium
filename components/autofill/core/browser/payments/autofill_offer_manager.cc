@@ -4,7 +4,6 @@
 
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 
-
 #include "base/check_deref.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"

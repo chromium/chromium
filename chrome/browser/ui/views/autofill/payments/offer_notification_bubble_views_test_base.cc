@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_api.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "net/dns/mock_host_resolver.h"
 
@@ -40,7 +41,13 @@ constexpr int64_t kCreditCardInstrumentId = 0x4444;
 }  // namespace
 
 OfferNotificationBubbleViewsTestBase::OfferNotificationBubbleViewsTestBase()
-    : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+    : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillEnableWalletDirectOffers,
+       features::kAutofillEnableWalletDirectOffersNotificationBubble},
+      /*disabled_features=*/{});
+}
 
 OfferNotificationBubbleViewsTestBase::~OfferNotificationBubbleViewsTestBase() =
     default;

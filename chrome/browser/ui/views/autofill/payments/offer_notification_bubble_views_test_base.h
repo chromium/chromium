@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller_impl.h"
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_bubble_views.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -146,6 +147,7 @@ class OfferNotificationBubbleViewsTestBase
   std::unique_ptr<EventWaiter<DialogEvent>> event_waiter_;
   net::EmbeddedTestServer https_server_;
   content::ContentMockCertVerifier cert_verifier_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 }  // namespace autofill

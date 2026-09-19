@@ -7,11 +7,13 @@
 #include <stdint.h>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/offer_notification_options.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "url/gurl.h"
 
 namespace autofill {
@@ -44,6 +46,13 @@ OfferNotificationHandler::~OfferNotificationHandler() = default;
 
 void OfferNotificationHandler::UpdateOfferNotificationVisibility(
     AutofillClient& client) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillEnableWalletDirectOffers) ||
+      !base::FeatureList::IsEnabled(
+          features::kAutofillEnableWalletDirectOffersNotificationBubble)) {
+    return;
+  }
+
   const GURL url = client.GetLastCommittedPrimaryMainFrameURL();
 
   if (ValidOfferExistsForUrl(url)) {

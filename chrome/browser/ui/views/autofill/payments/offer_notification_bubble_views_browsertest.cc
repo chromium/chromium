@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/payments/payments_ui_constants.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -9,6 +10,7 @@
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_bubble_views_test_base.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_api.h"
 #include "components/autofill/core/browser/test_utils/test_autofill_clock.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/widget/widget.h"
@@ -85,6 +87,39 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
   // As kAutofillBubbleSurviveNavigationTime has been reached, the bubble should
   // no longer be showing.
   EXPECT_TRUE(IsIconVisible());
+  EXPECT_FALSE(GetOfferNotificationBubbleViews());
+}
+
+class OfferNotificationBubbleViewsBubbleDisabledBrowserTest
+    : public OfferNotificationBubbleViewsTestBase {
+ public:
+  OfferNotificationBubbleViewsBubbleDisabledBrowserTest() {
+    feature_list_.InitAndDisableFeature(
+        features::kAutofillEnableWalletDirectOffersNotificationBubble);
+  }
+  ~OfferNotificationBubbleViewsBubbleDisabledBrowserTest() override = default;
+  OfferNotificationBubbleViewsBubbleDisabledBrowserTest(
+      const OfferNotificationBubbleViewsBubbleDisabledBrowserTest&) = delete;
+  OfferNotificationBubbleViewsBubbleDisabledBrowserTest& operator=(
+      const OfferNotificationBubbleViewsBubbleDisabledBrowserTest&) = delete;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that the offer notification bubble will not be shown if the wallet
+// direct offers notification bubble feature is disabled.
+IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBubbleDisabledBrowserTest,
+                       NotificationBubbleDisabled) {
+  auto offer_data = CreateCardLinkedOfferDataWithDomains(
+      {GetUrl("www.example.com", "/"), GetUrl("www.test.com", "/")});
+  test_api(personal_data()->payments_data_manager())
+      .AddOfferData(std::move(offer_data));
+  personal_data()->NotifyPersonalDataObserver();
+
+  // Neither icon nor bubble should be visible.
+  NavigateToAndWaitForForm(GetUrl("www.example.com", "/first"));
+  EXPECT_FALSE(IsIconVisible());
   EXPECT_FALSE(GetOfferNotificationBubbleViews());
 }
 
