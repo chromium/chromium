@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_surface_manager.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -105,29 +106,40 @@ class DefaultBrowserPromptManagerTest : public testing::Test {
 };
 
 TEST_F(DefaultBrowserPromptManagerTest, ShowsAppMenuItem) {
+  TestingProfile profile;
   auto* manager = DefaultBrowserPromptManager::GetInstance();
-  ASSERT_FALSE(manager->show_app_menu_item());
+  ASSERT_FALSE(manager->ShouldShowAppMenuItem(&profile));
 
   manager->MaybeShowPrompt();
-  ASSERT_TRUE(manager->show_app_menu_item());
+  ASSERT_TRUE(manager->ShouldShowAppMenuItem(&profile));
+  EXPECT_FALSE(manager->ShouldShowAppMenuItem(nullptr));
+  EXPECT_FALSE(manager->ShouldShowAppMenuItem(
+      profile.GetPrimaryOTRProfile(/*create_if_needed=*/true)));
+
+  TestingProfile::Builder guest_builder;
+  guest_builder.SetGuestSession();
+  std::unique_ptr<TestingProfile> guest_profile = guest_builder.Build();
+  EXPECT_FALSE(manager->ShouldShowAppMenuItem(guest_profile.get()));
 }
 
 TEST_F(DefaultBrowserPromptManagerTest, AppMenuItemHiddenOnPromptAccept) {
+  TestingProfile profile;
   auto* manager = DefaultBrowserPromptManager::GetInstance();
   manager->MaybeShowPrompt();
-  ASSERT_TRUE(manager->show_app_menu_item());
+  ASSERT_TRUE(manager->ShouldShowAppMenuItem(&profile));
 
   manager->CloseAllPrompts(DefaultBrowserPromptManager::CloseReason::kAccept);
-  ASSERT_FALSE(manager->show_app_menu_item());
+  ASSERT_FALSE(manager->ShouldShowAppMenuItem(&profile));
 }
 
 TEST_F(DefaultBrowserPromptManagerTest, AppMenuItemPersistsOnPromptDismissed) {
+  TestingProfile profile;
   auto* manager = DefaultBrowserPromptManager::GetInstance();
   manager->MaybeShowPrompt();
-  ASSERT_TRUE(manager->show_app_menu_item());
+  ASSERT_TRUE(manager->ShouldShowAppMenuItem(&profile));
 
   manager->CloseAllPrompts(DefaultBrowserPromptManager::CloseReason::kDismiss);
-  ASSERT_TRUE(manager->show_app_menu_item());
+  ASSERT_TRUE(manager->ShouldShowAppMenuItem(&profile));
 }
 
 constexpr int kMaxPromptCount = 5;

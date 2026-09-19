@@ -4097,6 +4097,18 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionSetBrowserAsDefault)
+          .SetText(
+              l10n_util::GetStringUTF16(IDS_SET_BROWSER_AS_DEFAULT_MENU_ITEM))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled()
+                  ? omnibox::kChromeProductIcon
+                  : omnibox::kProductChromeRefreshOldIcon,
+              ui::kColorMenuIconOnEmphasizedBackground))
+          .SetProperty(views::kElementIdentifierKey,
+                       AppMenuModel::kSetBrowserAsDefaultMenuItem)
+          .SetVisible(
+              DefaultBrowserPromptManager::GetInstance()->ShouldShowAppMenuItem(
+                  profile))
           .Build());
 #endif
 

@@ -10,6 +10,8 @@
 #include "base/memory/singleton.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_surface_manager.h"
 
+class Profile;
+
 // DefaultBrowserPromptManager is a Global singleton class that is responsible
 // for owning and displaying prompts that nudge user to set Chrome as their
 // default browser.
@@ -26,7 +28,7 @@ class DefaultBrowserPromptManager {
 
   static DefaultBrowserPromptManager* GetInstance();
 
-  bool show_app_menu_item() const { return show_app_menu_item_; }
+  bool ShouldShowAppMenuItem(const Profile* profile) const;
 
   // Returns true if the prompt was shown, false if not.
   bool MaybeShowPrompt();

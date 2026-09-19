@@ -62,6 +62,9 @@ bool ShouldRoundBottomCorners(size_t index,
     return true;
   }
   for (size_t i = index + 1; i < items.size(); ++i) {
+    if (!items[i]->GetActionItem()->GetVisible()) {
+      continue;
+    }
     const auto display_type = items[i]->GetActionItem()->GetProperty(
         AppMenuActionItem::kDisplayTypeKey);
     if (display_type != AppMenuActionItem::DisplayType::kDivider &&
@@ -78,6 +81,9 @@ bool ShouldRoundTopCorners(size_t index,
   // preceding non-divider item rounded its bottom corners.
   for (size_t i = index; i > 0; --i) {
     size_t prev_index = i - 1;
+    if (!items[prev_index]->GetActionItem()->GetVisible()) {
+      continue;
+    }
     const auto display_type = items[prev_index]->GetActionItem()->GetProperty(
         AppMenuActionItem::kDisplayTypeKey);
     if (display_type == AppMenuActionItem::DisplayType::kDivider ||

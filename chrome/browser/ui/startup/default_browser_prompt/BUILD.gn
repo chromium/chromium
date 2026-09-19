@@ -74,8 +74,10 @@ source_set("impl") {
     "//chrome/browser/default_browser",
     "//chrome/browser/infobars",
     "//chrome/browser/profiles:profile_manager",
+    "//chrome/browser/ui:browser_actions",
     "//chrome/browser/ui:browser_tab_strip_tracker",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
@@ -89,6 +91,7 @@ source_set("impl") {
     "//components/vector_icons",
     "//components/version_info",
     "//content/public/common",
+    "//ui/actions",
     "//ui/base",
   ]
 

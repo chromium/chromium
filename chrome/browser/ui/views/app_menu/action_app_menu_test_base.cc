@@ -73,7 +73,8 @@ void ActionAppMenuTestBase::SetUp() {
                        .SetActionId(action_id)
                        .SetText(text)
                        .SetEnabled(true)
-                       .SetVisible(action_id != kActionUpgradeDialog)
+                       .SetVisible(action_id != kActionUpgradeDialog &&
+                                   action_id != kActionSetBrowserAsDefault)
                        .Build());
   };
 
@@ -94,6 +95,7 @@ void ActionAppMenuTestBase::SetUp() {
   add_action(kActionShowSyncPassphraseDialog, u"Enter passphrase");
   add_action(kActionShowSigninWhenPaused, u"Sign in again");
   add_action(kActionUpgradeDialog, u"Update Chrome");
+  add_action(kActionSetBrowserAsDefault, u"Set Chrome as default browser");
   add_action(kActionPasswordsAndAutofillSubmenu, u"Passwords and autofill");
   add_action(kActionShowPasswordManager, u"Password Manager");
   add_action(kActionShowPaymentMethods, u"Payment methods");

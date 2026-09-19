@@ -2474,12 +2474,8 @@ bool AppMenuModel::AddGlobalErrorMenuItems() {
 }
 bool AppMenuModel::AddDefaultBrowserMenuItems() {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-  if (browser_->GetProfile()->IsPrimaryOTRProfileWithRegularParent() ||
-      browser_->GetProfile()->IsGuestSession()) {
-    return false;
-  }
-
-  if (DefaultBrowserPromptManager::GetInstance()->show_app_menu_item()) {
+  if (DefaultBrowserPromptManager::GetInstance()->ShouldShowAppMenuItem(
+          browser_->GetProfile())) {
     AddItemWithIcon(
         IDC_SET_BROWSER_AS_DEFAULT,
         l10n_util::GetStringUTF16(IDS_SET_BROWSER_AS_DEFAULT_MENU_ITEM),

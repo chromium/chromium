@@ -325,6 +325,10 @@ void ActionAppMenuManager::AddNotificationActions(actions::ActionItem* root) {
             kActionUpgradeDialog,
             {.display_type = DisplayType::kNotification,
              .minor_text = AppMenuModel::GetUpgradeDialogSubstringText()});
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+        section.AddAction(kActionSetBrowserAsDefault,
+                          {.display_type = DisplayType::kNotification});
+#endif
       });
 }
 
