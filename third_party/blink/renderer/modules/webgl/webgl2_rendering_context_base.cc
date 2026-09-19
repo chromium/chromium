@@ -4500,14 +4500,12 @@ ScriptValue WebGL2RenderingContextBase::getIndexedParameter(
 std::optional<Vector<GLuint>> WebGL2RenderingContextBase::getUniformIndices(
     WebGLProgram* program,
     const Vector<String>& uniform_names) {
-  // TODO(https://crbug.com/1465002): This should return std::nullopt
-  // if there is an error.
-  Vector<GLuint> result;
   if (!ValidateWebGLProgramOrShader("getUniformIndices", program))
-    return result;
+    return std::nullopt;
 
   PointableStringArray uniform_strings(uniform_names);
 
+  Vector<GLuint> result;
   result.resize(uniform_names.size());
   ContextGL()->GetUniformIndices(ObjectOrZero(program), uniform_strings.size(),
                                  uniform_strings.data(), result.data());
