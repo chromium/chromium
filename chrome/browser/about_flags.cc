@@ -7675,6 +7675,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kExcludePipFromScreenCapture)},
 
 #if BUILDFLAG(ENABLE_PDF)
+    {"pdf-accessibility-heuristic-enhancements",
+     flag_descriptions::kPdfAccessibilityHeuristicEnhancementsName,
+     flag_descriptions::kPdfAccessibilityHeuristicEnhancementsDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kPdfAccessibilityHeuristicEnhancements)},
+
     {"pdf-brotli-decode", flag_descriptions::kPdfBrotliDecodeName,
      flag_descriptions::kPdfBrotliDecodeDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(chrome_pdf::features::kPdfBrotliDecode)},

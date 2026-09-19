@@ -8597,6 +8597,10 @@ inline constexpr char kPaintPreviewDemoName[] = "Paint Preview Demo";
 inline constexpr char kPaintPreviewDemoDescription[] =
     "If enabled a menu item is added to the Android main menu to demo paint "
     "previews.";
+inline constexpr char kPdfAccessibilityHeuristicEnhancementsName[] =
+    "PDF Accessibility Heuristic Enhancements";
+inline constexpr char kPdfAccessibilityHeuristicEnhancementsDescription[] =
+    "Enables heuristic enhancements for PDF accessibility.";
 
 inline constexpr char kPdfBrotliDecodeName[] = "PDF Brotli Decode";
 inline constexpr char kPdfBrotliDecodeDescription[] =

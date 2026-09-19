@@ -8117,6 +8117,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "pdf-accessibility-heuristic-enhancements",
+    "owners": [ "kristislee@google.com", "komo-eng@google.com", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "pdf-brotli-decode",
     "owners": [ "aryankrishnan4b@gmail.com", "//pdf/OWNERS" ],
     "expiry_milestone": 160

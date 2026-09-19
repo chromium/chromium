@@ -12958,6 +12958,8 @@ from previous Chrome versions.
   <int value="-576759065" label="HoldingSpaceInProgressAnimationV2:disabled"/>
   <int value="-576475188" label="BorealisForceDoubleScale:disabled"/>
   <int value="-576462208" label="PageContentCache:enabled"/>
+  <int value="-575657659"
+      label="PdfAccessibilityHeuristicEnhancements:enabled"/>
   <int value="-575139778" label="NtpDriveModuleNoSyncRequirement:enabled"/>
   <int value="-575081438"
       label="OmniboxMostVisitedTilesFadingOnTablet:disabled"/>
@@ -17064,6 +17066,8 @@ from previous Chrome versions.
   <int value="689984419" label="PermissionSiteSettingsRadioButton:enabled"/>
   <int value="690185633" label="NonValidatingReloadOnNormalReload:disabled"/>
   <int value="690408242" label="AndroidDataImporterService:enabled"/>
+  <int value="690788813"
+      label="PdfAccessibilityHeuristicEnhancements:disabled"/>
   <int value="690901353" label="WindowsSystemTracing:enabled"/>
   <int value="691020108" label="NTPCondensedTileLayout:disabled"/>
   <int value="691523087" label="GlicPanelResetOnStart:disabled"/>
