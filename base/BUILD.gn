@@ -5494,6 +5494,7 @@ if (is_android) {
     deps = [
       ":tasks_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
     ]
   }
 
@@ -5889,6 +5890,7 @@ if (is_android) {
       ":callback_java",
       ":command_line_java",
       ":library_loader_jni_java",
+      ":lifetime_java",
       ":log_java",
       ":metrics_java",
       ":resetters_java",

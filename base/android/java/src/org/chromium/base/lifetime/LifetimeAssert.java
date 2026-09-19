@@ -8,6 +8,8 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.JniZero;
+
 import org.chromium.base.task.PostTask;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.CheckDiscard;
@@ -40,6 +42,17 @@ import java.util.Set;
 @NullMarked
 @CheckDiscard("Lifetime assertions aren't used when DCHECK is off.")
 public class LifetimeAssert {
+    public static void registerSafePointersTrackerFactory() {
+        if (!BuildConfig.ENABLE_ASSERTS) {
+            return;
+        }
+        JniZero.setSafePointersTrackerFactory(
+                target -> {
+                    LifetimeAssert assertInstance = assumeNonNull(LifetimeAssert.create(target));
+                    return () -> LifetimeAssert.destroy(assertInstance);
+                });
+    }
+
     interface TestHook {
         void onCleaned(WrappedReference ref, @Nullable String msg);
     }

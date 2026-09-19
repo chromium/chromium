@@ -17,6 +17,7 @@
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "build/robolectric_buildflags.h"
+#include "partition_alloc/pointers/raw_ptr.h"
 #include "third_party/jni_zero/jni_zero.h"
 #include "third_party/jni_zero/system_jni/Throwable_jni.h"
 
@@ -26,6 +27,19 @@
 namespace base {
 namespace android {
 namespace {
+
+// Increments raw_ptr bookkeeping (BackupRefPtr refcount) while Java holds ptr.
+uintptr_t WrapRawPtrImpl(uintptr_t ptr) {
+  return reinterpret_cast<uintptr_t>(
+      base::raw_ptr_traits::ImplForTraits<base::RawPtrTraits::kEmpty>::
+          WrapRawPtr(reinterpret_cast<void*>(ptr)));
+}
+
+// Decrements raw_ptr bookkeeping when Java releases a JniRawPtr.
+void ReleaseWrappedPtrImpl(uintptr_t ptr) {
+  base::raw_ptr_traits::ImplForTraits<base::RawPtrTraits::kEmpty>::
+      ReleaseWrappedPtr(reinterpret_cast<void*>(ptr));
+}
 
 #if !BUILDFLAG(IS_ROBOLECTRIC)
 thread_local const JNINativeInterface* g_previous_functions = nullptr;
@@ -87,6 +101,7 @@ const char kOomInGetJavaExceptionInfoMessage[] =
     "Unable to obtain Java stack trace due to OutOfMemoryError";
 
 void InitVM(JavaVM* vm) {
+  jni_zero::SetRawPtrHooks(&WrapRawPtrImpl, &ReleaseWrappedPtrImpl);
   jni_zero::InitVM(vm);
   jni_zero::SetExceptionHandler(CheckException);
   JNIEnv* env = jni_zero::AttachCurrentThread();

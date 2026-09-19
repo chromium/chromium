@@ -26,6 +26,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils.CurrentThreadTimeMillisTimer;
 import org.chromium.base.TimeUtils.UptimeMillisTimer;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.build.BuildConfig;
@@ -402,6 +403,7 @@ public class LibraryLoader {
         if (DEBUG) {
             logLinkerUsed();
         }
+        LifetimeAssert.registerSafePointersTrackerFactory();
     }
 
     /**

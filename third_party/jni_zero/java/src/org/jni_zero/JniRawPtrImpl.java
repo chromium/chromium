@@ -4,18 +4,23 @@
 
 package org.jni_zero;
 
+import org.jni_zero.JniZero.SafePointersTracker;
+import org.jni_zero.internal.Nullable;
+
 /**
  * Internal implementation of {@link JniRawPtr}.
  *
  * <p>Enforces explicit lifecycle tracking and safe pointer invalidation.
  */
 class JniRawPtrImpl<T extends JniTypeToken> implements JniRawPtr<T>, JniPtrInner<T> {
+    private final @Nullable SafePointersTracker mTracker;
     private long mNativePointer;
 
     @CalledByNative
     JniRawPtrImpl(long nativePointer) {
         assert nativePointer != 0;
         mNativePointer = nativePointer;
+        mTracker = JniZero.createSafePointersTracker(this);
     }
 
     @Override
@@ -31,6 +36,9 @@ class JniRawPtrImpl<T extends JniTypeToken> implements JniRawPtr<T>, JniPtrInner
     @Override
     public void release() {
         if (mNativePointer != 0) {
+            if (mTracker != null) {
+                mTracker.destroy();
+            }
             long ptr = mNativePointer;
             mNativePointer = 0;
             if (JniZero.isRawPtrHooksEnabled()) {

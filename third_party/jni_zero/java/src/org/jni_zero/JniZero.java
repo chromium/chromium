@@ -4,6 +4,8 @@
 
 package org.jni_zero;
 
+import org.jni_zero.internal.Nullable;
+
 import java.util.Collections;
 
 /** Core APIs. */
@@ -12,9 +14,27 @@ public class JniZero {
     private static ClassLoader sPendingJniClassLoader;
     private static boolean sInitialized;
     private static boolean sRawPtrHooksEnabled;
+    private static @Nullable SafePointersTrackerFactory sTrackerFactory;
 
     static boolean isRawPtrHooksEnabled() {
         return sRawPtrHooksEnabled;
+    }
+
+    /** Seam for //base's LifetimeAssert to attach leak tracking without a //base dep. */
+    public interface SafePointersTrackerFactory {
+        SafePointersTracker create(Object target);
+    }
+
+    public interface SafePointersTracker {
+        void destroy();
+    }
+
+    public static void setSafePointersTrackerFactory(SafePointersTrackerFactory factory) {
+        sTrackerFactory = factory;
+    }
+
+    static @Nullable SafePointersTracker createSafePointersTracker(Object target) {
+        return sTrackerFactory == null ? null : sTrackerFactory.create(target);
     }
 
     /** Sets the ClassLoader used to resolve classes by JNI Zero. */
