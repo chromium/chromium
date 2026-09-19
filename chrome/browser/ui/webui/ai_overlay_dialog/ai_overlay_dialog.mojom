@@ -36,9 +36,11 @@ struct PageContentNode {
   array<PageContentNode> children;
 };
 
-// Result payload containing base64-encoded JPEG image data and scale metadata.
+// Result payload containing raw JPEG image data bytes and scale metadata.
 struct RawViewportRegionResult {
+  // Deprecated: Migrating to jpeg_bytes. To be removed after internal roll.
   string jpeg_data_b64;
+  mojo_base.mojom.BigBuffer jpeg_bytes;
   int32 width;
   int32 height;
   float scale_factor;
@@ -89,6 +91,8 @@ interface PageHandler {
   //
   // x, y: Top-left corner coordinates of the target region in viewport CSS pixels.
   // width, height: Dimensions of the target region in viewport CSS pixels.
+  // Returns null if there is no active web contents, render view, or if surface
+  // capture/encoding fails.
   CaptureRawViewportRegion(int32 x, int32 y, int32 width, int32 height)
       => (RawViewportRegionResult? result);
 

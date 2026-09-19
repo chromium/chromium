@@ -344,7 +344,9 @@ void AiOverlayDialogPageHandler::CaptureRawViewportRegion(
 
             std::string b64_data = base::Base64Encode(*jpeg_bytes);
             auto res = ai_overlay_dialog::mojom::RawViewportRegionResult::New();
-            res->jpeg_data_b64 = b64_data;
+            res->jpeg_data_b64 = std::move(b64_data);
+            res->jpeg_bytes =
+                mojo_base::BigBuffer(base::as_byte_span(*jpeg_bytes));
             res->width = bitmap.width();
             res->height = bitmap.height();
             res->scale_factor = scale;
