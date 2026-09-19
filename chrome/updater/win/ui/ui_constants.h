@@ -24,6 +24,22 @@ inline constexpr COLORREF kAccentColorDark = RGB(0xA8, 0xC7, 0xFA);
 inline constexpr COLORREF kCaptionForegroundColor = kAccentColor;
 inline constexpr COLORREF kCaptionForegroundColorDark = kAccentColorDark;
 
+// Glyph color for a disabled caption button. Currently matches the GDS
+// disabled button tokens (`kButtonFgDisabled[Dark]`) because the caption glyph
+// is a button foreground, but spelled out rather than aliased so the caption
+// can be retuned without moving the dialog buttons.
+//
+// The light value is 2.7:1 against `kBgColorLight`, under the 3:1 of WCAG
+// 1.4.11. That is intentional: the criterion exempts inactive controls, and
+// dimming below the enabled accent is the point. The dark value is 4.4:1
+// against `kBgColorDark`.
+// TODO(crbug.com/409590312): Confirm with design whether caption glyphs and
+// GDS buttons should share the disabled token.
+inline constexpr COLORREF kCaptionForegroundColorDisabled =
+    RGB(0x9E, 0x9E, 0x9E);
+inline constexpr COLORREF kCaptionForegroundColorDisabledDark =
+    RGB(0x80, 0x86, 0x8B);
+
 // Focused caption button border color.
 // TODO(crbug.com/409590312): Revisit light mode contrast with design.
 inline constexpr COLORREF kCaptionFrameColor = RGB(0xC1, 0xC1, 0xC1);

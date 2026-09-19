@@ -312,13 +312,21 @@ CaptionButton::PaintState CaptionButton::SnapshotPaintState(
 // static
 COLORREF CaptionButton::ResolveGlyphColor(PaintState paint_state) {
   if (paint_state.is_high_contrast) {
-    // High contrast replaces the design tokens with system colors, and is the
-    // only mode in which hover changes the glyph: the background becomes
+    // High contrast replaces the design tokens with system colors, so the
+    // glyph takes whatever a stock BUTTON would paint.
+    if (!paint_state.is_enabled) {
+      return ::GetSysColor(COLOR_GRAYTEXT);
+    }
+    // The only mode in which hover changes the glyph: the background becomes
     // COLOR_HIGHLIGHT, so the glyph must become COLOR_HIGHLIGHTTEXT to stay
-    // legible. Both read `paints_hover()`, so they cannot disagree. The
-    // tokens below are hover independent by spec.
+    // legible. `DrawItem()` selects that background with the same
+    // `paints_hover()` call, so do not narrow this to `is_hovered`.
     return ::GetSysColor(paint_state.paints_hover() ? COLOR_HIGHLIGHTTEXT
                                                     : COLOR_BTNTEXT);
+  }
+  if (!paint_state.is_enabled) {
+    return paint_state.is_dark_mode ? kCaptionForegroundColorDisabledDark
+                                    : kCaptionForegroundColorDisabled;
   }
   return paint_state.is_dark_mode ? kCaptionForegroundColorDark
                                   : kCaptionForegroundColor;

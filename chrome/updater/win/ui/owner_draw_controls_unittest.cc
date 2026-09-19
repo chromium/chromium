@@ -6,6 +6,8 @@
 
 #include <windows.h>
 
+#include <bitset>
+#include <cstdint>
 #include <iterator>
 #include <memory>
 #include <optional>
@@ -317,6 +319,15 @@ class CaptionButtonThemeTest : public CaptionButtonTest {
   registry_util::RegistryOverrideManager registry_override_;
 };
 
+// Position of `paint_state` in the 16 entry space spanned by the four flags
+// `ResolveGlyphColor()` reads. Defined once so that the enumeration below and
+// its exhaustiveness check cannot disagree about the encoding.
+int StateIndex(const test::CaptionButtonTestApi::PaintState& paint_state) {
+  return (paint_state.is_enabled ? 1 : 0) | (paint_state.is_hovered ? 2 : 0) |
+         (paint_state.is_dark_mode ? 4 : 0) |
+         (paint_state.is_high_contrast ? 8 : 0);
+}
+
 // Every state the glyph color is resolved from, enumerated. This is possible
 // because `ResolveGlyphColor()` is static and total, so no window, no message
 // pump and no particular host theme is needed. The fixtured tests below cover
@@ -336,6 +347,12 @@ TEST(CaptionButtonGlyphColorTest, EveryState) {
       {"light hovered",
        {.is_enabled = true, .is_hovered = true},
        kCaptionForegroundColor},
+      {"light disabled",
+       {.is_enabled = false, .is_hovered = false},
+       kCaptionForegroundColorDisabled},
+      {"light disabled hovered",
+       {.is_enabled = false, .is_hovered = true},
+       kCaptionForegroundColorDisabled},
 
       // Dark mode.
       {"dark",
@@ -344,6 +361,12 @@ TEST(CaptionButtonGlyphColorTest, EveryState) {
       {"dark hovered",
        {.is_enabled = true, .is_hovered = true, .is_dark_mode = true},
        kCaptionForegroundColorDark},
+      {"dark disabled",
+       {.is_enabled = false, .is_hovered = false, .is_dark_mode = true},
+       kCaptionForegroundColorDisabledDark},
+      {"dark disabled hovered",
+       {.is_enabled = false, .is_hovered = true, .is_dark_mode = true},
+       kCaptionForegroundColorDisabledDark},
 
       // High contrast replaces the tokens with system colors, and is the only
       // mode in which hover changes the glyph. Dark mode must not affect it.
@@ -353,6 +376,16 @@ TEST(CaptionButtonGlyphColorTest, EveryState) {
       {"high contrast hovered",
        {.is_enabled = true, .is_hovered = true, .is_high_contrast = true},
        ::GetSysColor(COLOR_HIGHLIGHTTEXT)},
+      {"high contrast disabled",
+       {.is_enabled = false, .is_hovered = false, .is_high_contrast = true},
+       ::GetSysColor(COLOR_GRAYTEXT)},
+      // Disabled outranks hover, so this stays COLOR_GRAYTEXT rather than
+      // becoming COLOR_HIGHLIGHTTEXT: `paints_hover()` is false while disabled
+      // and `DrawItem()` therefore does not paint the COLOR_HIGHLIGHT
+      // background that COLOR_HIGHLIGHTTEXT exists to sit on.
+      {"high contrast disabled hovered",
+       {.is_enabled = false, .is_hovered = true, .is_high_contrast = true},
+       ::GetSysColor(COLOR_GRAYTEXT)},
       {"high contrast dark",
        {.is_enabled = true,
         .is_hovered = false,
@@ -365,10 +398,36 @@ TEST(CaptionButtonGlyphColorTest, EveryState) {
         .is_dark_mode = true,
         .is_high_contrast = true},
        ::GetSysColor(COLOR_HIGHLIGHTTEXT)},
+      {"high contrast dark disabled",
+       {.is_enabled = false,
+        .is_hovered = false,
+        .is_dark_mode = true,
+        .is_high_contrast = true},
+       ::GetSysColor(COLOR_GRAYTEXT)},
+      {"high contrast dark disabled hovered",
+       {.is_enabled = false,
+        .is_hovered = true,
+        .is_dark_mode = true,
+        .is_high_contrast = true},
+       ::GetSysColor(COLOR_GRAYTEXT)},
   };
-  ASSERT_EQ(std::size(kCases), 8u)
-      << "One case per combination of hover, dark mode and high contrast, "
-         "with `is_enabled` held true; the disabled case is pinned separately";
+  ASSERT_EQ(std::size(kCases), 16u)
+      << "One case per combination of enabled, hover, dark mode and high "
+         "contrast";
+
+  // The size check alone would accept a duplicated row paired with a missing
+  // one, which would quietly drop a state from a test whose whole premise is
+  // that it covers all of them. Together, 16 rows and 16 distinct bit patterns
+  // prove the enumeration is exhaustive.
+  uint32_t covered = 0;
+  for (const auto& test_case : kCases) {
+    covered |= 1u << StateIndex(test_case.paint_state);
+  }
+  ASSERT_EQ(covered, 0xFFFFu)
+      << "The rows are not the 16 distinct states. Missing indices are the set "
+         "bits of "
+      << std::bitset<16>(~covered & 0xFFFFu)
+      << " (bit 0 is enabled, 1 hover, 2 dark mode, 3 high contrast)";
 
   for (const auto& test_case : kCases) {
     SCOPED_TRACE(test_case.name);
@@ -376,18 +435,6 @@ TEST(CaptionButtonGlyphColorTest, EveryState) {
         test::CaptionButtonTestApi::ResolveGlyphColor(test_case.paint_state),
         test_case.expected);
   }
-}
-
-// A disabled control never paints the hover treatment, so the glyph must not
-// resolve to COLOR_HIGHLIGHTTEXT even if a stale hover flag reaches the paint.
-// High contrast is the only mode where this is observable, because it is the
-// only one whose glyph color depends on hover. `DrawItem()` gates the
-// background on the same predicate, so the two cannot disagree.
-TEST(CaptionButtonGlyphColorTest, DisabledNeverResolvesTheHoverGlyph) {
-  EXPECT_EQ(
-      test::CaptionButtonTestApi::ResolveGlyphColor(
-          {.is_enabled = false, .is_hovered = true, .is_high_contrast = true}),
-      ::GetSysColor(COLOR_BTNTEXT));
 }
 
 // The caption buttons report and paint the accent color in light mode.
@@ -422,6 +469,93 @@ TEST_F(CaptionButtonThemeTest, DarkMode) {
               Optional(Gt(0)));
   EXPECT_THAT(CountRenderedPixels(minimize_button(), /*item_state=*/0,
                                   kCaptionForegroundColorDark),
+              Optional(Gt(0)));
+}
+
+// `GlyphColor()` reads the live WS_DISABLED bit, which is the path taken
+// outside a draw cycle. The pixel test below covers the other direction, the
+// ODS_DISABLED bit the system puts in `DRAWITEMSTRUCT::itemState`.
+TEST_F(CaptionButtonThemeTest, DisabledReportsTheDisabledGlyphColor) {
+  ASSERT_NO_FATAL_FAILURE(CreateTestDialog(/*dark=*/false));
+
+  // Both caption buttons resolve the glyph the same way, so both are
+  // exercised, even though only the close button is disabled in production.
+  CaptionButton* const buttons[] = {&close_button(), &minimize_button()};
+  for (CaptionButton* button : buttons) {
+    ::EnableWindow(button->hwnd(), FALSE);
+    EXPECT_EQ(GlyphColor(*button), kCaptionForegroundColorDisabled);
+    ::EnableWindow(button->hwnd(), TRUE);
+    EXPECT_EQ(GlyphColor(*button), kCaptionForegroundColor);
+  }
+}
+
+// A disabled button paints the disabled token and never the accent token, so
+// it is visually distinguishable from an enabled one.
+TEST_F(CaptionButtonThemeTest, DisabledGlyphPixels) {
+  ASSERT_NO_FATAL_FAILURE(CreateTestDialog(/*dark=*/false));
+
+  // ODS_DISABLED is passed directly, exactly as the sibling tests do with
+  // ODS_FOCUS.
+  EXPECT_THAT(CountRenderedPixels(close_button(), ODS_DISABLED,
+                                  kCaptionForegroundColorDisabled),
+              Optional(Gt(0)));
+  EXPECT_THAT(CountRenderedPixels(close_button(), ODS_DISABLED,
+                                  kCaptionForegroundColor),
+              Optional(0));
+
+  EXPECT_THAT(CountRenderedPixels(minimize_button(), ODS_DISABLED,
+                                  kCaptionForegroundColorDisabled),
+              Optional(Gt(0)));
+  EXPECT_THAT(CountRenderedPixels(minimize_button(), ODS_DISABLED,
+                                  kCaptionForegroundColor),
+              Optional(0));
+
+  ASSERT_NO_FATAL_FAILURE(SetDarkMode(true));
+  ::SendMessage(close_button().hwnd(), WM_THEMECHANGED, 0, 0);
+  ::SendMessage(minimize_button().hwnd(), WM_THEMECHANGED, 0, 0);
+  // Pin the switch itself: a theme change that did not take effect would
+  // otherwise surface below as a zero count for the dark token, which reads as
+  // a color bug rather than the setup failure it is.
+  ASSERT_TRUE(IsDarkMode(close_button()));
+  ASSERT_TRUE(IsDarkMode(minimize_button()));
+
+  EXPECT_THAT(CountRenderedPixels(close_button(), ODS_DISABLED,
+                                  kCaptionForegroundColorDisabledDark),
+              Optional(Gt(0)));
+  EXPECT_THAT(CountRenderedPixels(close_button(), ODS_DISABLED,
+                                  kCaptionForegroundColorDark),
+              Optional(0));
+
+  EXPECT_THAT(CountRenderedPixels(minimize_button(), ODS_DISABLED,
+                                  kCaptionForegroundColorDisabledDark),
+              Optional(Gt(0)));
+  EXPECT_THAT(CountRenderedPixels(minimize_button(), ODS_DISABLED,
+                                  kCaptionForegroundColorDark),
+              Optional(0));
+}
+
+// A disabled control takes neither the hover background nor the hover glyph,
+// even while `is_mouse_hovering_` is set.
+//
+// `OnEnable()` clears `is_mouse_hovering_` when the control is disabled, so a
+// live control does not reach this state, and
+// `CaptionButtonTest.DisablingClearsHoverAndCancelsTracking` pins that. But
+// `SnapshotPaintState()` mixes the paint time ODS_DISABLED bit with the live
+// `is_mouse_hovering_` member, so the two can still disagree within a single
+// draw. `paints_hover()` is what keeps that disagreement off the screen.
+TEST_F(CaptionButtonThemeTest, DisabledIgnoresStaleHover) {
+  ASSERT_NO_FATAL_FAILURE(CreateTestDialog(/*dark=*/false));
+
+  ::SendMessage(close_button().hwnd(), WM_MOUSEMOVE, 0, 0);
+  ASSERT_TRUE(IsMouseHovering(close_button()));
+
+  // Asserted as a non match rather than against a named token: the background
+  // painted here is the parent's, blitted in by `DrawParentBackground()`.
+  EXPECT_NE(SampleRenderedPixel(close_button(), ODS_DISABLED,
+                                SamplePoint::kBackground),
+            kCaptionBkHover);
+  EXPECT_THAT(CountRenderedPixels(close_button(), ODS_DISABLED,
+                                  kCaptionForegroundColorDisabled),
               Optional(Gt(0)));
 }
 
