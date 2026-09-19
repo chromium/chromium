@@ -24,7 +24,8 @@ TabBottomSheetTestFeature::TabBottomSheetTestFeature(tabs::TabInterface* tab)
   views_bridge_ = std::make_unique<CoBrowseViewsBridge>(
       *tab, TabBottomSheetClientType::kUnknown,
       CoBrowseContainerType::kBottomSheet, provider,
-      /*enable_pinch_to_zoom=*/false, kColorSidePanelContentBackground);
+      /*enable_pinch_to_zoom=*/false, kColorSidePanelContentBackground,
+      ui::kColorSysSurface1);
   tab_bottom_sheet_bridge_ = std::make_unique<TabBottomSheetBridge>(this, tab);
 }
 

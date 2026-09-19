@@ -70,11 +70,11 @@ public class GlicBottomSheetComponentProvider implements CoBrowseComponentProvid
 
     @Override
     public ResizingPlaceholderCoordinator createResizingPlaceholderCoordinator(
-            Context context, @ColorInt int backgroundColor) {
+            Context context, @ColorInt int backgroundColor, @ColorInt int placeholderElemColor) {
         if (TabBottomSheetUtils.PLACEHOLDER_SKELETON.equals(
                 TabBottomSheetUtils.getResizingPlaceholderType())) {
             return new TabBottomSheetSkeletonCoordinator(
-                    context, backgroundColor, R.drawable.ic_spark_blue_16dp);
+                    context, backgroundColor, placeholderElemColor, R.drawable.ic_spark_blue_16dp);
         }
         return new LegacyResizingPlaceholderCoordinator(context, backgroundColor);
     }

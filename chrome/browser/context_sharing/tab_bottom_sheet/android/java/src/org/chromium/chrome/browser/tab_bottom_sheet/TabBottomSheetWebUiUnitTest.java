@@ -125,6 +125,7 @@ public class TabBottomSheetWebUiUnitTest {
                         mContextMenuPopulatorFactory,
                         mSelectionDropdownMenuDelegate,
                         Color.WHITE,
+                        Color.LTGRAY,
                         TabBottomSheetClientType.UNKNOWN,
                         CoBrowseContainerType.BOTTOM_SHEET,
                         /* ephemeralTabOpener= */ null,
@@ -148,6 +149,7 @@ public class TabBottomSheetWebUiUnitTest {
                         mContextMenuPopulatorFactory,
                         mSelectionDropdownMenuDelegate,
                         Color.WHITE,
+                        Color.LTGRAY,
                         TabBottomSheetClientType.UNKNOWN,
                         CoBrowseContainerType.BOTTOM_SHEET,
                         null,
@@ -173,6 +175,7 @@ public class TabBottomSheetWebUiUnitTest {
                         mContextMenuPopulatorFactory,
                         mSelectionDropdownMenuDelegate,
                         Color.WHITE,
+                        Color.LTGRAY,
                         TabBottomSheetClientType.UNKNOWN,
                         CoBrowseContainerType.BOTTOM_SHEET,
                         null,
@@ -323,7 +326,8 @@ public class TabBottomSheetWebUiUnitTest {
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
-        when(mMockComponentProvider.createResizingPlaceholderCoordinator(any(), eq(Color.WHITE)))
+        when(mMockComponentProvider.createResizingPlaceholderCoordinator(
+                        any(), eq(Color.WHITE), eq(Color.LTGRAY)))
                 .thenReturn(mMockPlaceholderCoordinator);
         View containerView = new View(context);
         TabBottomSheetWebUi webUi =
@@ -334,6 +338,7 @@ public class TabBottomSheetWebUiUnitTest {
                         mContextMenuPopulatorFactory,
                         mSelectionDropdownMenuDelegate,
                         Color.WHITE,
+                        Color.LTGRAY,
                         TabBottomSheetClientType.UNKNOWN,
                         CoBrowseContainerType.BOTTOM_SHEET,
                         null,
@@ -423,6 +428,7 @@ public class TabBottomSheetWebUiUnitTest {
                         mockFactory,
                         mSelectionDropdownMenuDelegate,
                         Color.WHITE,
+                        Color.LTGRAY,
                         TabBottomSheetClientType.UNKNOWN,
                         CoBrowseContainerType.SIDE_PANEL,
                         /* ephemeralTabOpener= */ null,
@@ -469,6 +475,7 @@ public class TabBottomSheetWebUiUnitTest {
                         mockFactory,
                         mSelectionDropdownMenuDelegate,
                         Color.WHITE,
+                        Color.LTGRAY,
                         TabBottomSheetClientType.UNKNOWN,
                         CoBrowseContainerType.SIDE_PANEL,
                         /* ephemeralTabOpener= */ null,
@@ -654,6 +661,7 @@ public class TabBottomSheetWebUiUnitTest {
                         mockFactory,
                         mSelectionDropdownMenuDelegate,
                         Color.WHITE,
+                        Color.LTGRAY,
                         TabBottomSheetClientType.UNKNOWN,
                         CoBrowseContainerType.SIDE_PANEL,
                         mockOpener,
@@ -700,6 +708,7 @@ public class TabBottomSheetWebUiUnitTest {
                         mockFactory,
                         mSelectionDropdownMenuDelegate,
                         Color.WHITE,
+                        Color.LTGRAY,
                         TabBottomSheetClientType.UNKNOWN,
                         CoBrowseContainerType.SIDE_PANEL,
                         /* ephemeralTabOpener= */ null,
@@ -742,6 +751,7 @@ public class TabBottomSheetWebUiUnitTest {
                         mContextMenuPopulatorFactory,
                         mSelectionDropdownMenuDelegate,
                         Color.WHITE,
+                        Color.LTGRAY,
                         TabBottomSheetClientType.CONTEXTUAL_TASKS,
                         CoBrowseContainerType.BOTTOM_SHEET,
                         /* ephemeralTabOpener= */ null,
@@ -772,6 +782,7 @@ public class TabBottomSheetWebUiUnitTest {
                         mContextMenuPopulatorFactory,
                         mSelectionDropdownMenuDelegate,
                         Color.WHITE,
+                        Color.LTGRAY,
                         TabBottomSheetClientType.GLIC,
                         CoBrowseContainerType.BOTTOM_SHEET,
                         /* ephemeralTabOpener= */ null,
@@ -878,6 +889,7 @@ public class TabBottomSheetWebUiUnitTest {
                 ContextMenuPopulatorFactory contextMenuPopulatorFactory,
                 SelectionDropdownMenuDelegate selectionDropdownMenuDelegate,
                 int backgroundColor,
+                int placeholderElemColor,
                 @TabBottomSheetClientType int clientType,
                 @CoBrowseContainerType int containerType,
                 @Nullable BiConsumer<GURL, String> ephemeralTabOpener,
@@ -890,6 +902,7 @@ public class TabBottomSheetWebUiUnitTest {
                     contextMenuPopulatorFactory,
                     selectionDropdownMenuDelegate,
                     backgroundColor,
+                    placeholderElemColor,
                     clientType,
                     containerType,
                     ephemeralTabOpener,

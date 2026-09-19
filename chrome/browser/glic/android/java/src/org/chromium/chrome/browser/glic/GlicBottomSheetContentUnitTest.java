@@ -184,7 +184,7 @@ public class GlicBottomSheetContentUnitTest {
     @DisableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET_RESIZE_WEBVIEW)
     public void testProvider_createResizingPlaceholderCoordinator_defaultLegacy() {
         ResizingPlaceholderCoordinator coordinator =
-                mProvider.createResizingPlaceholderCoordinator(mContext, Color.WHITE);
+                mProvider.createResizingPlaceholderCoordinator(mContext, Color.WHITE, Color.LTGRAY);
         assertTrue(coordinator instanceof LegacyResizingPlaceholderCoordinator);
         coordinator.destroy();
     }
@@ -200,7 +200,7 @@ public class GlicBottomSheetContentUnitTest {
     })
     public void testProvider_createResizingPlaceholderCoordinator_skeletonEnabled() {
         ResizingPlaceholderCoordinator coordinator =
-                mProvider.createResizingPlaceholderCoordinator(mContext, Color.WHITE);
+                mProvider.createResizingPlaceholderCoordinator(mContext, Color.WHITE, Color.LTGRAY);
         assertTrue(coordinator instanceof TabBottomSheetSkeletonCoordinator);
         coordinator.destroy();
     }

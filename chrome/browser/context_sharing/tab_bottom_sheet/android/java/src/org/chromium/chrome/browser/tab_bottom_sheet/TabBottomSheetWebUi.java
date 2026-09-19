@@ -84,6 +84,7 @@ public class TabBottomSheetWebUi {
             ContextMenuPopulatorFactory contextMenuPopulatorFactory,
             SelectionDropdownMenuDelegate selectionDropdownMenuDelegate,
             @ColorInt int backgroundColor,
+            @ColorInt int placeholderElemColor,
             @TabBottomSheetClientType int clientType,
             @CoBrowseContainerType int containerType,
             @Nullable BiConsumer<GURL, String> ephemeralTabOpener,
@@ -104,6 +105,7 @@ public class TabBottomSheetWebUi {
                         containerView,
                         windowAndroid,
                         backgroundColor,
+                        placeholderElemColor,
                         containerType == CoBrowseContainerType.SIDE_PANEL,
                         componentProvider);
     }

@@ -41,7 +41,7 @@ public class TabBottomSheetSkeletonCoordinatorUnitTest {
                         org.chromium.chrome.R.style.Theme_BrowserUI_DayNight);
         mCoordinator =
                 new TabBottomSheetSkeletonCoordinator(
-                        mContext, Color.WHITE, R.drawable.ic_spark_24dp);
+                        mContext, Color.WHITE, Color.LTGRAY, R.drawable.ic_spark_24dp);
         TabBottomSheetSkeletonView skeletonView = mCoordinator.getSkeletonViewForTesting();
         skeletonView.setLayoutParams(
                 new ViewGroup.LayoutParams(
@@ -65,6 +65,14 @@ public class TabBottomSheetSkeletonCoordinatorUnitTest {
         ImageView headerIcon = view.findViewById(R.id.peek_icon);
         assertNotNull(headerIcon);
         assertNotNull(headerIcon.getDrawable());
+        assertEquals(
+                Color.LTGRAY,
+                mCoordinator
+                        .getSkeletonViewForTesting()
+                        .getBottomGroupForTesting()
+                        .getChildAt(0)
+                        .getBackgroundTintList()
+                        .getDefaultColor());
     }
 
     @Test
@@ -122,7 +130,7 @@ public class TabBottomSheetSkeletonCoordinatorUnitTest {
     public void testUpdateAlpha_OnLayoutChangeListener() {
         TabBottomSheetSkeletonCoordinator unlaidOutCoordinator =
                 new TabBottomSheetSkeletonCoordinator(
-                        mContext, Color.WHITE, R.drawable.ic_spark_24dp);
+                        mContext, Color.WHITE, Color.LTGRAY, R.drawable.ic_spark_24dp);
         TabBottomSheetSkeletonView skeletonView = unlaidOutCoordinator.getSkeletonViewForTesting();
         skeletonView.setLayoutParams(
                 new ViewGroup.LayoutParams(
@@ -151,7 +159,7 @@ public class TabBottomSheetSkeletonCoordinatorUnitTest {
     public void testDestroy_RemovesLayoutChangeListener() {
         TabBottomSheetSkeletonCoordinator coordinator =
                 new TabBottomSheetSkeletonCoordinator(
-                        mContext, Color.WHITE, R.drawable.ic_spark_24dp);
+                        mContext, Color.WHITE, Color.LTGRAY, R.drawable.ic_spark_24dp);
         TabBottomSheetSkeletonView skeletonView = coordinator.getSkeletonViewForTesting();
         skeletonView.setLayoutParams(
                 new ViewGroup.LayoutParams(

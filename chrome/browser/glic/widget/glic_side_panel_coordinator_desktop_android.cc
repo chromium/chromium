@@ -231,7 +231,8 @@ SidePanelNativeView GlicSidePanelCoordinatorDesktopAndroid::CreateView(
             *tab_, context_sharing::TabBottomSheetClientType::kGlic,
             context_sharing::CoBrowseContainerType::kSidePanel,
             java_component_provider_,
-            /*enable_pinch_to_zoom=*/false, kColorGlicBackground);
+            /*enable_pinch_to_zoom=*/false, kColorGlicBackground,
+            kColorGlicPlaceholderElem);
     cobrowse_views_bridge_->CreateCoBrowseViews(web_contents_.get(),
                                                 /*request_focus=*/false);
   }

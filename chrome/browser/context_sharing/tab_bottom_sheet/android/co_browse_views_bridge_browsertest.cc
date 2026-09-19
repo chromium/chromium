@@ -92,7 +92,8 @@ IN_PROC_BROWSER_TEST_F(
   CoBrowseViewsBridge views_bridge(*tab1, TabBottomSheetClientType::kUnknown,
                                    CoBrowseContainerType::kBottomSheet,
                                    provider, /*enable_pinch_to_zoom=*/false,
-                                   kColorSidePanelContentBackground);
+                                   kColorSidePanelContentBackground,
+                                   ui::kColorSysSurface1);
 
   // 5. Set web contents to nullptr (inactive state, placeholder is shown).
   views_bridge.SetWebContents(nullptr, /*request_focus=*/false);

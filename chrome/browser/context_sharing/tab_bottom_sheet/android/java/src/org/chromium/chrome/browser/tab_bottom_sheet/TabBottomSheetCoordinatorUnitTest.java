@@ -160,6 +160,7 @@ public class TabBottomSheetCoordinatorUnitTest {
                         containerViewSpy,
                         mWindowAndroid,
                         Color.WHITE,
+                        Color.LTGRAY,
                         false,
                         new TestCoBrowseComponentProvider());
         when(mMockWebUi.getWebViewResizingHelper()).thenReturn(mWebViewResizingHelper);

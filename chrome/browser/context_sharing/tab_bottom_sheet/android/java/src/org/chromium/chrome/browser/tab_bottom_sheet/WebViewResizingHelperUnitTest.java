@@ -92,7 +92,7 @@ public class WebViewResizingHelperUnitTest {
         when(mMockWindowAndroid.getInsetObserver()).thenReturn(mMockInsetObserver);
         when(mMockWindow.getDecorView()).thenReturn(mMockDecorView);
         when(mMockDecorView.getHeight()).thenReturn(1000);
-        when(mMockComponentProvider.createResizingPlaceholderCoordinator(any(), anyInt()))
+        when(mMockComponentProvider.createResizingPlaceholderCoordinator(any(), anyInt(), anyInt()))
                 .thenAnswer(
                         inv ->
                                 new LegacyResizingPlaceholderCoordinator(
@@ -104,6 +104,7 @@ public class WebViewResizingHelperUnitTest {
                         mContainerView,
                         mMockWindowAndroid,
                         Color.WHITE,
+                        Color.LTGRAY,
                         false,
                         mMockComponentProvider);
     }
@@ -114,7 +115,8 @@ public class WebViewResizingHelperUnitTest {
         assertEquals(1, container.getChildCount());
         verify(mMockInsetObserver).addWindowInsetsAnimationListener(any());
         assertEquals(mMockComponentProvider, mHelper.getComponentProviderForTesting());
-        verify(mMockComponentProvider).createResizingPlaceholderCoordinator(mContext, Color.WHITE);
+        verify(mMockComponentProvider)
+                .createResizingPlaceholderCoordinator(mContext, Color.WHITE, Color.LTGRAY);
         assertNotNull(mHelper.getPlaceholderCoordinator());
     }
 
@@ -123,7 +125,12 @@ public class WebViewResizingHelperUnitTest {
         CoBrowseComponentProvider mockProvider = mock(CoBrowseComponentProvider.class);
         WebViewResizingHelper helper =
                 new WebViewResizingHelper(
-                        mContainerView, mMockWindowAndroid, Color.WHITE, false, mockProvider);
+                        mContainerView,
+                        mMockWindowAndroid,
+                        Color.WHITE,
+                        Color.LTGRAY,
+                        false,
+                        mockProvider);
         assertEquals(mockProvider, helper.getComponentProviderForTesting());
     }
 
@@ -131,7 +138,7 @@ public class WebViewResizingHelperUnitTest {
     public void testComponentProvider_NullPassedThroughConstructor() {
         WebViewResizingHelper helper =
                 new WebViewResizingHelper(
-                        mContainerView, mMockWindowAndroid, Color.WHITE, false, null);
+                        mContainerView, mMockWindowAndroid, Color.WHITE, Color.LTGRAY, false, null);
         assertNull(helper.getComponentProviderForTesting());
     }
 
@@ -427,6 +434,7 @@ public class WebViewResizingHelperUnitTest {
                         mContainerView,
                         mMockWindowAndroid,
                         Color.WHITE,
+                        Color.LTGRAY,
                         true,
                         mMockComponentProvider);
         mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
@@ -456,6 +464,7 @@ public class WebViewResizingHelperUnitTest {
                         mContainerView,
                         mMockWindowAndroid,
                         Color.WHITE,
+                        Color.LTGRAY,
                         true,
                         mMockComponentProvider);
         mHelper.setThinWebView(null, mMockWebContents);
@@ -765,13 +774,18 @@ public class WebViewResizingHelperUnitTest {
                 mock(ResizingPlaceholderCoordinator.class);
         View customPlaceholderView = new View(mContext);
         when(customCoordinator.getView()).thenReturn(customPlaceholderView);
-        when(provider.createResizingPlaceholderCoordinator(any(), anyInt()))
+        when(provider.createResizingPlaceholderCoordinator(any(), anyInt(), anyInt()))
                 .thenReturn(customCoordinator);
 
         WebViewResizingHelper helper =
                 new WebViewResizingHelper(
-                        mContainerView, mMockWindowAndroid, Color.WHITE, false, provider);
-        verify(provider).createResizingPlaceholderCoordinator(mContext, Color.WHITE);
+                        mContainerView,
+                        mMockWindowAndroid,
+                        Color.WHITE,
+                        Color.LTGRAY,
+                        false,
+                        provider);
+        verify(provider).createResizingPlaceholderCoordinator(mContext, Color.WHITE, Color.LTGRAY);
         assertSame(customCoordinator, helper.getPlaceholderCoordinator());
 
         helper.updatePlaceholderHeight(250);
@@ -789,11 +803,17 @@ public class WebViewResizingHelperUnitTest {
     @Test
     public void testPlaceholderCoordinator_NullCoordinator_WorksCleanly() {
         CoBrowseComponentProvider provider = mock(CoBrowseComponentProvider.class);
-        when(provider.createResizingPlaceholderCoordinator(any(), anyInt())).thenReturn(null);
+        when(provider.createResizingPlaceholderCoordinator(any(), anyInt(), anyInt()))
+                .thenReturn(null);
 
         WebViewResizingHelper helper =
                 new WebViewResizingHelper(
-                        mContainerView, mMockWindowAndroid, Color.WHITE, false, provider);
+                        mContainerView,
+                        mMockWindowAndroid,
+                        Color.WHITE,
+                        Color.LTGRAY,
+                        false,
+                        provider);
         assertNull(helper.getPlaceholderCoordinator());
         FrameLayout container = (FrameLayout) helper.getResizingContainer();
         assertEquals(0, container.getChildCount());

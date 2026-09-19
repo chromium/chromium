@@ -42,7 +42,8 @@ GlicSidePanelCoordinatorAndroid::GlicSidePanelCoordinatorAndroid(
       *tab, context_sharing::TabBottomSheetClientType::kGlic,
       context_sharing::CoBrowseContainerType::kBottomSheet,
       CreateBottomSheetContentProvider(),
-      /*enable_pinch_to_zoom=*/false, kColorGlicBackground);
+      /*enable_pinch_to_zoom=*/false, kColorGlicBackground,
+      kColorGlicPlaceholderElem);
   tab_bottom_sheet_bridge_ =
       std::make_unique<context_sharing::TabBottomSheetBridge>(this, tab);
   manager_initialized_subscription_ =

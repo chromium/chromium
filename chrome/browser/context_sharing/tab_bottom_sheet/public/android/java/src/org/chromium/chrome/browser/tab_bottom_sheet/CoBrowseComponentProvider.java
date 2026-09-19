@@ -49,10 +49,11 @@ public interface CoBrowseComponentProvider {
      *
      * @param context The {@link Context} used to inflate placeholder views.
      * @param backgroundColor The background color of the sheet / placeholder.
+     * @param placeholderElemColor The element color of the placeholder skeleton items.
      * @return A custom {@link ResizingPlaceholderCoordinator}, or null to use default.
      */
     default @Nullable ResizingPlaceholderCoordinator createResizingPlaceholderCoordinator(
-            Context context, @ColorInt int backgroundColor) {
+            Context context, @ColorInt int backgroundColor, @ColorInt int placeholderElemColor) {
         return null;
     }
 

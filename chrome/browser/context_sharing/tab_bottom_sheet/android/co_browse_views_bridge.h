@@ -42,7 +42,8 @@ class CoBrowseViewsBridge {
       context_sharing::CoBrowseContainerType container_type,
       const base::android::JavaRef<jobject>& bottom_sheet_content_provider,
       bool enable_pinch_to_zoom,
-      ui::ColorId background_color_id);
+      ui::ColorId background_color_id,
+      ui::ColorId placeholder_elem_color_id);
   ~CoBrowseViewsBridge();
 
   CoBrowseViewsBridge(const CoBrowseViewsBridge&) = delete;
@@ -69,6 +70,7 @@ class CoBrowseViewsBridge {
   const context_sharing::CoBrowseContainerType container_type_;
   const bool enable_pinch_to_zoom_;
   const ui::ColorId background_color_id_;
+  const ui::ColorId placeholder_elem_color_id_;
   base::android::ScopedJavaGlobalRef<jobject> java_co_browse_views_;
   base::android::ScopedJavaGlobalRef<jobject> bottom_sheet_content_provider_;
   raw_ptr<ui::WindowAndroid> window_android_ = nullptr;

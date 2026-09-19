@@ -108,6 +108,7 @@ public class WebViewResizingHelper {
      * @param containerView The parent view containing the bottom sheet WebUI.
      * @param windowAndroid The window hosting the sheet.
      * @param backgroundColor The background color of the placeholder.
+     * @param placeholderElemColor The element color of the placeholder skeleton items.
      * @param isSidePanel Whether the container is hosted in a side panel.
      * @param componentProvider Provider for custom co-browse components, or null.
      */
@@ -115,6 +116,7 @@ public class WebViewResizingHelper {
             View containerView,
             WindowAndroid windowAndroid,
             @ColorInt int backgroundColor,
+            @ColorInt int placeholderElemColor,
             boolean isSidePanel,
             @Nullable CoBrowseComponentProvider componentProvider) {
         mContext = containerView.getContext();
@@ -139,7 +141,7 @@ public class WebViewResizingHelper {
         mPlaceholderCoordinator =
                 mComponentProvider != null
                         ? mComponentProvider.createResizingPlaceholderCoordinator(
-                                mContext, backgroundColor)
+                                mContext, backgroundColor, placeholderElemColor)
                         : null;
         mResizingPlaceholder =
                 mPlaceholderCoordinator != null ? mPlaceholderCoordinator.getView() : null;

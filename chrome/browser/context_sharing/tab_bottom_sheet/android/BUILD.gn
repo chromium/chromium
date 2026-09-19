@@ -43,7 +43,6 @@ android_resources("java_resources") {
     "java/res/layout/tab_bottom_sheet_peek_layout.xml",
     "java/res/layout/tab_bottom_sheet_resizing_view.xml",
     "java/res/layout/tab_bottom_sheet_skeleton_view.xml",
-    "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
   ]
   deps = [

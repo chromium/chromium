@@ -32,16 +32,21 @@ public class TabBottomSheetSkeletonCoordinator implements ResizingPlaceholderCoo
      *
      * @param context The Android context.
      * @param backgroundColor The background color of the placeholder.
+     * @param placeholderElemColor The element color of the skeleton bars and pill box.
      * @param headerIconResId The drawable resource ID for the header icon.
      */
     public TabBottomSheetSkeletonCoordinator(
-            Context context, @ColorInt int backgroundColor, @DrawableRes int headerIconResId) {
+            Context context,
+            @ColorInt int backgroundColor,
+            @ColorInt int placeholderElemColor,
+            @DrawableRes int headerIconResId) {
         mSkeletonView =
                 (TabBottomSheetSkeletonView)
                         LayoutInflater.from(context)
                                 .inflate(R.layout.tab_bottom_sheet_skeleton_view, null);
         mSkeletonView.setVisibility(View.INVISIBLE);
         mSkeletonView.setHeaderIcon(headerIconResId);
+        mSkeletonView.setPlaceholderElemColor(placeholderElemColor);
         mSkeletonView.setBackground(new ColorDrawable(backgroundColor));
 
         mDefaultPeekHeightPx =

@@ -5,9 +5,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:shape="rectangle"
-    tools:ignore="UnusedResources">
-    <solid android:color="@macro/tab_bottom_sheet_skeleton_element" />
+    android:shape="rectangle">
+    <solid android:color="@android:color/white" />
     <corners android:radius="@dimen/tab_bottom_sheet_skeleton_bar_radius" />
 </shape>

@@ -113,6 +113,7 @@ public class CoBrowseViewFactory {
      *
      * @param webContents The {@link WebContents} to be displayed in the thin web view.
      * @param backgroundColor The background color for the content.
+     * @param placeholderElemColor The element color for placeholder skeleton items.
      * @param clientType The client using coBrowseViews.
      * @param containerType The type of container hosting the views.
      * @param requestFocus Whether focus should be requested for the web contents.
@@ -121,6 +122,7 @@ public class CoBrowseViewFactory {
     CoBrowseViews buildCoBrowseViews(
             @Nullable WebContents webContents,
             @ColorInt int backgroundColor,
+            @ColorInt int placeholderElemColor,
             @TabBottomSheetClientType int clientType,
             @CoBrowseContainerType int containerType,
             boolean requestFocus,
@@ -132,11 +134,11 @@ public class CoBrowseViewFactory {
                 createWebUi(
                         containerView,
                         backgroundColor,
+                        placeholderElemColor,
                         clientType,
                         containerType,
                         webContents,
                         bottomSheetContentProvider);
-
         webUi.setWebContents(webContents, requestFocus);
 
         return new CoBrowseViews(
@@ -149,11 +151,25 @@ public class CoBrowseViewFactory {
                 () -> createPeekViewManagerIfNeeded(bottomSheetContentProvider));
     }
 
+    /**
+     * Builds {@link CoBrowseViews} from native JNI.
+     *
+     * @param windowAndroid The {@link WindowAndroid} hosting the views.
+     * @param webContents The {@link WebContents} to display, or null.
+     * @param backgroundColor The background color for the content.
+     * @param placeholderElemColor The element color for placeholder skeleton items.
+     * @param clientType The client using coBrowseViews.
+     * @param containerType The type of container hosting the views.
+     * @param requestFocus Whether focus should be requested for the web contents.
+     * @param bottomSheetContentProvider The provider for bottom sheet content, or null.
+     * @return The {@link CoBrowseViews} instance, or null if the factory is unavailable.
+     */
     @CalledByNative
     public static @Nullable CoBrowseViews buildCoBrowseViews(
             @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid,
             @Nullable @JniType("content::WebContents*") WebContents webContents,
             @ColorInt int backgroundColor,
+            @ColorInt int placeholderElemColor,
             @TabBottomSheetClientType int clientType,
             @CoBrowseContainerType int containerType,
             boolean requestFocus,
@@ -168,6 +184,7 @@ public class CoBrowseViewFactory {
         return factory.buildCoBrowseViews(
                 webContents,
                 backgroundColor,
+                placeholderElemColor,
                 clientType,
                 containerType,
                 requestFocus,
@@ -179,6 +196,7 @@ public class CoBrowseViewFactory {
      *
      * @param containerView The container view.
      * @param backgroundColor The background color of the sheet.
+     * @param placeholderElemColor The element color of placeholder skeleton items.
      * @param clientType The client type for the tab bottom sheet.
      * @param containerType The type of container hosting the sheet.
      * @param webContents The web contents to display, or null.
@@ -188,6 +206,7 @@ public class CoBrowseViewFactory {
     private TabBottomSheetWebUi createWebUi(
             View containerView,
             @ColorInt int backgroundColor,
+            @ColorInt int placeholderElemColor,
             @TabBottomSheetClientType int clientType,
             @CoBrowseContainerType int containerType,
             @Nullable WebContents webContents,
@@ -199,6 +218,7 @@ public class CoBrowseViewFactory {
                 mContextMenuPopulatorFactory,
                 mSelectionDropdownMenuDelegate,
                 backgroundColor,
+                placeholderElemColor,
                 clientType,
                 containerType,
                 // Passes a callback to the components layer to open ephemeral tabs,

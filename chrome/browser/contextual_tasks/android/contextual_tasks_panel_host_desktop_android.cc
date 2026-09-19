@@ -160,7 +160,8 @@ bool ContextualTasksPanelHostDesktopAndroid::MaybeCreateBridge() {
           context_sharing::TabBottomSheetClientType::kContextualTasks,
           context_sharing::CoBrowseContainerType::kSidePanel,
           /*bottom_sheet_content_provider=*/nullptr,
-          /*enable_pinch_to_zoom=*/true, kColorSidePanelContentBackground);
+          /*enable_pinch_to_zoom=*/true, kColorSidePanelContentBackground,
+          ui::kColorSysSurface1);
   return co_browse_views_bridge_ != nullptr;
 }
 

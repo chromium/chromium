@@ -261,6 +261,7 @@
   E_CPONLY(kColorGlicBackground) \
   E_CPONLY(kColorGlicModalBackground) \
   E_CPONLY(kColorGlicModalForeground) \
+  E_CPONLY(kColorGlicPlaceholderElem) \
   E_CPONLY(kColorGlicActiveTabUnderlineGradient1) \
   E_CPONLY(kColorGlicActiveTabUnderlineGradient2) \
   E_CPONLY(kColorGlicActiveTabUnderlineGradient3) \
