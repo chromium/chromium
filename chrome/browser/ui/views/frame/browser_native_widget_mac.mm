@@ -61,6 +61,7 @@
 #include "components/remote_cocoa/common/application.mojom.h"
 #include "components/remote_cocoa/common/native_widget_ns_window.mojom.h"
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
+#include "components/viz/common/frame_timing_details.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/actions/actions.h"
@@ -70,6 +71,7 @@
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/compositor/compositor.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/native_theme/native_theme.h"
 #import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
@@ -391,7 +393,7 @@ void BrowserNativeWidgetMac::OnWidgetDestroyed(views::Widget* widget) {
   browser_view_ = nullptr;
   last_theme_color_.reset();
   last_is_vertical_tabs_.reset();
-  last_is_glass_eligible_.reset();
+  last_is_glass_eligible_ = false;
   glass_frame_service_subscription_ = {};
   NativeWidgetMac::OnWidgetDestroyed(widget);
 }
@@ -789,8 +791,10 @@ void BrowserNativeWidgetMac::OnWidgetInitDone() {
             browser_view_->browser(),
             base::BindRepeating(&BrowserNativeWidgetMac::UpdateGlassEligibility,
                                 base::Unretained(this)));
-    UpdateGlassEligibility(
-        glass_frame_service->IsBrowserWindowEligible(browser_view_->browser()));
+    if (glass_frame_service->IsBrowserWindowEligible(
+            browser_view_->browser())) {
+      UpdateGlassEligibility(true);
+    }
   }
 }
 
@@ -801,6 +805,7 @@ void BrowserNativeWidgetMac::OnWidgetThemeChanged(views::Widget* widget) {
 
 void BrowserNativeWidgetMac::OnWindowDestroying(
     gfx::NativeWindow native_window) {
+  weak_ptr_factory_.InvalidateWeakPtrs();
   // Clear delegates set in CreateNSWindow() to prevent objects with a reference
   // to |window| attempting to validate commands by looking for a Browser*.
   NativeWidgetMacNSWindow* ns_window =
@@ -930,6 +935,40 @@ void BrowserNativeWidgetMac::OnVerticalTabStripResizingChanged(
   UpdateBackgroundGeometry();
 }
 
+void BrowserNativeWidgetMac::RemoveGlassBackground(
+    const viz::FrameTimingDetails& frame_timing_details) {
+  if (last_is_glass_eligible_) {
+    return;
+  }
+
+  if (!GetNSWindowHost()) {
+    return;
+  }
+
+  NSWindow* const ns_window = GetNSWindowHost()->GetInProcessNSWindow();
+  if (!ns_window) {
+    return;
+  }
+
+  GetNSWindowHost()->SetLayerAndCompositorOpaque(true);
+  [ns_window setBackgroundColor:[NSColor windowBackgroundColor]];
+  [ns_window setOpaque:YES];
+  if (glass_background_view_) {
+    [glass_background_view_ removeFromSuperview];
+    glass_background_view_ = nil;
+  }
+  if (tint_view_) {
+    [tint_view_ removeFromSuperview];
+    tint_view_ = nil;
+  }
+  if (opaque_background_view_) {
+    [opaque_background_view_ removeFromSuperview];
+    opaque_background_view_ = nil;
+  }
+  last_theme_color_.reset();
+  last_is_vertical_tabs_.reset();
+}
+
 bool BrowserNativeWidgetMac::IsGlassEligible() const {
   if (auto* const glass_frame_service = GlassFrameService::GetInstance()) {
     if (auto* const browser = browser_view_->browser()) {
@@ -954,30 +993,26 @@ void BrowserNativeWidgetMac::UpdateGlassEligibility(bool is_glass_eligible) {
   }
 
   last_is_glass_eligible_ = is_glass_eligible;
-
-  GetNSWindowHost()->SetLayerAndCompositorOpaque(!is_glass_eligible);
+  weak_ptr_factory_.InvalidateWeakPtrs();
 
   if (!is_glass_eligible) {
-    [ns_window setBackgroundColor:[NSColor windowBackgroundColor]];
-    [ns_window setOpaque:YES];
-    if (glass_background_view_) {
-      [glass_background_view_ removeFromSuperview];
-      glass_background_view_ = nil;
-    }
-    if (tint_view_) {
-      [tint_view_ removeFromSuperview];
-      tint_view_ = nil;
-    }
-    if (opaque_background_view_) {
-      [opaque_background_view_ removeFromSuperview];
-      opaque_background_view_ = nil;
-    }
-    last_theme_color_.reset();
-    last_is_vertical_tabs_.reset();
+    // While waiting for the opaque frame to present, update the underlying view
+    // background to the inactive theme color.
+    UpdateBackgroundColor();
+
+    // Defer tearing down the glass views and switching the window/compositor
+    // to opaque until the compositor presents the newly-painted opaque frame.
+    // This avoids a white flash during the transition.
+    auto* const compositor = GetWidget()->GetCompositor();
+    CHECK(compositor);
+    compositor->RequestSuccessfulPresentationTimeForNextFrame(
+        base::BindOnce(&BrowserNativeWidgetMac::RemoveGlassBackground,
+                       weak_ptr_factory_.GetWeakPtr()));
     return;
   }
 
   if (@available(macOS 26.0, *)) {
+    GetNSWindowHost()->SetLayerAndCompositorOpaque(false);
     [ns_window setOpaque:NO];
 
     // A completely transparent background ([NSColor clearColor]) causes AppKit

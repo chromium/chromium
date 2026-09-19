@@ -412,7 +412,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetMacGlassTest,
 
   ui_test_utils::ToggleFullscreenModeAndWait(browser());
 
-  EXPECT_TRUE([ns_window isOpaque]);
+  ASSERT_TRUE(base::test::RunUntil([&]() { return [ns_window isOpaque]; }));
   auto [fs_glass_view, fs_tint_view, fs_opaque_view] =
       GetGlassViews(content_view);
   EXPECT_EQ(fs_glass_view, nil);
@@ -438,6 +438,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetMacGlassTest,
   BrowserWindowInterface* second_browser =
       CreateBrowser(browser()->GetProfile());
   GlassFrameService::GetInstance()->OnBrowserActivated(second_browser);
+  ASSERT_TRUE(base::test::RunUntil([&]() { return [first_window isOpaque]; }));
   EXPECT_EQ(1.0, [[first_window backgroundColor] alphaComponent]);
   EXPECT_TRUE(first_view->GetWidget()->GetLayer()->fills_bounds_opaquely());
   auto [glass1_ineligible, tint1_ineligible, opaque1_ineligible] =
@@ -457,7 +458,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetMacGlassTest,
 
   EXPECT_EQ(1.0, [[first_window backgroundColor] alphaComponent]);
   EXPECT_TRUE(first_view->GetWidget()->GetLayer()->fills_bounds_opaquely());
-  EXPECT_TRUE([second_window isOpaque]);
+  ASSERT_TRUE(base::test::RunUntil([&]() { return [second_window isOpaque]; }));
   EXPECT_EQ(1.0, [[second_window backgroundColor] alphaComponent]);
   auto [glass2_ineligible, tint2_ineligible, opaque2_ineligible] =
       GetGlassViews(second_content_view);
