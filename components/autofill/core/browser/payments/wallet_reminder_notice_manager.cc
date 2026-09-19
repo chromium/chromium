@@ -120,6 +120,7 @@ void WalletReminderNoticeManager::OnGetWalletReminderNoticeResponse(
     autofill_metrics::LogWalletReminderNoticeShowResult(
         autofill_metrics::WalletReminderNoticeShowResult::
             kNotShownAlreadyAcknowledgedAccordingToServer);
+    prefs::SetHasShownWalletReminderNotice(client_->GetPrefs());
     return;
   }
 

@@ -295,6 +295,8 @@ TEST_F(
       RecordLegalReminderAcknowledgmentRequestDetails::FlowType::
           kChromeDownstream,
       PaymentsAutofillClient::PaymentsRpcResult::kSuccess, response_details);
+
+  EXPECT_TRUE(prefs::HasShownWalletReminderNotice(autofill_client_.GetPrefs()));
   histogram_tester.ExpectUniqueSample(
       "Autofill.WalletReminderNotice.ShowResult",
       autofill_metrics::WalletReminderNoticeShowResult::
