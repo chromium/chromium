@@ -465,4 +465,42 @@ TEST_F(ChildFrameNavigationFilteringThrottleDnsAliasTest,
   EXPECT_TRUE(last_matched_subdomain_disallow_rule_.value_or(false));
 }
 
+TEST_F(ChildFrameNavigationFilteringThrottleTest,
+       AdTagReadyAtProcessSelectionMetric_Ready) {
+  base::HistogramTester histogram_tester;
+  InitializeDocumentSubresourceFilter(GURL("https://example.test"),
+                                      mojom::ActivationLevel::kDryRun);
+  CreateTestSubframeAndInitNavigation(GURL("https://example.test/allowed.html"),
+                                      main_rfh());
+  navigation_simulator()->Start();
+  WaitForThrottle();
+
+  navigation_simulator()->ReadyToCommit();
+  histogram_tester.ExpectUniqueSample(
+      "Navigation.OriginAgentCluster.AdTagReadyAtProcessSelection", true, 1);
+}
+
+TEST_F(ChildFrameNavigationFilteringThrottleDnsAliasTest,
+       AdTagReadyAtProcessSelectionMetric_NotReadyDueToAliases) {
+  base::HistogramTester histogram_tester;
+  InitializeDocumentSubresourceFilterWithSubstringRules(
+      GURL("https://example.test"), {"disallowed.com"},
+      mojom::ActivationLevel::kDryRun);
+
+  CreateTestSubframeAndInitNavigation(
+      GURL("https://example.test/some_path.html"), main_rfh());
+  navigation_simulator()->Start();
+  WaitForThrottle();
+
+  // The subresource filter must wait for the response to see the resolved DNS
+  // aliases before judging whether it is an ad, leaving the calculation pending
+  // at process selection time.
+  std::vector<std::string> dns_aliases({"alias1.com", "disallowed.com"});
+  SetResponseDnsAliasesForNavigation(std::move(dns_aliases));
+
+  navigation_simulator()->ReadyToCommit();
+  histogram_tester.ExpectUniqueSample(
+      "Navigation.OriginAgentCluster.AdTagReadyAtProcessSelection", false, 1);
+}
+
 }  // namespace subresource_filter

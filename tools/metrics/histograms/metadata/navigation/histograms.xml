@@ -1948,6 +1948,17 @@ chromium-metrics-reviews@google.com.
   <token key="NavigationMode" variants="NavigationMode"/>
 </histogram>
 
+<histogram name="Navigation.OriginAgentCluster.AdTagReadyAtProcessSelection"
+    enum="Boolean" expires_after="2027-02-07">
+  <owner>lbrady@google.com</owner>
+  <owner>chrome-security-architecture@google.com</owner>
+  <summary>
+    Records whether the ad tag result was ready by the time process selection
+    occurred for a child frame navigation. Recorded in
+    ChildFrameNavigationFilteringThrottle::WillProcessResponse().
+  </summary>
+</histogram>
+
 <histogram name="Navigation.OriginAgentCluster.Result"
     enum="OriginAgentClusterEndResult" expires_after="2027-06-24">
   <owner>alexmos@chromium.org</owner>
@@ -3424,6 +3435,26 @@ chromium-metrics-reviews@google.com.
     state for the wasted speculative RFH and the new RFH differs.
 
     Recorded on RenderFrameHostManager::GetFrameHostNavigation(), for
+    {InitiatorType} navigations that picked a RenderFrameHost that is different
+    from the speculative RFH previously created for the navigation.
+  </summary>
+  <token key="InitiatorType" variants="InitiatorType"/>
+</histogram>
+
+<histogram
+    name="Navigation.{InitiatorType}.WastedSpeculativeRFH.ExcludedAdsFromOriginIsolation"
+    enum="Boolean" expires_after="2027-02-07">
+  <owner>lbrady@google.com</owner>
+  <owner>chrome-security-architecture@google.com</owner>
+  <summary>
+    For {InitiatorType} navigations that result in wasting a speculative RFH
+    that was previously created for the navigation (i.e. when the
+    WastedSpeculativeRFHCase metric records kWasted_NowUseCurrentRFH or
+    kWasted_NowUseNewSpeculativeRFH), records whether the speculative RFH was
+    wasted because the navigation was excluded from origin isolation due to
+    being tagged as an ad.
+
+    Recorded on RenderFrameHostManager::GetFrameHostForNavigation(), for
     {InitiatorType} navigations that picked a RenderFrameHost that is different
     from the speculative RFH previously created for the navigation.
   </summary>

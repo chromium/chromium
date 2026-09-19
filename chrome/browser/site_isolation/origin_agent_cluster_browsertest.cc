@@ -16,6 +16,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
+#include "components/subresource_filter/content/browser/child_frame_navigation_filtering_throttle.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/subresource_filter/core/common/common_features.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
@@ -149,6 +150,8 @@ class OriginAgentClusterBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUpOnMainThread() override {
+    host_resolver()->AddIPLiteralRuleWithDnsAliases(
+        "alias.bar.com", "127.0.0.1", {"ad.bar.com"});
     host_resolver()->AddRule("*", "127.0.0.1");
     embedded_test_server()->StartAcceptingConnections();
   }
@@ -186,6 +189,8 @@ class OriginAgentClusterBrowserTest : public InProcessBrowserTest {
       enabled_features.push_back(
           subresource_filter::kSafeBrowsingSubresourceFilter);
       enabled_features.push_back(subresource_filter::kAdTagging);
+      enabled_features.push_back(
+          features::kSendCnameAliasesToSubresourceFilterFromBrowser);
     } else {
       disabled_features.push_back(features::kOriginIsolationHeader);
       disabled_features.push_back(features::kExcludeAdsFromOriginIsolation);
@@ -216,6 +221,13 @@ class OriginAgentClusterBrowserTest : public InProcessBrowserTest {
       response->set_content_type("text/html");
       response->AddCustomHeader("Origin-Agent-Cluster", "?1");
       response->set_content("<body><iframe id='test'></iframe></body>");
+      return std::move(response);
+    } else if (request.relative_url == "/site_key_me") {
+      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+      response->set_code(net::HTTP_OK);
+      response->set_content_type("text/html");
+      response->AddCustomHeader("Origin-Agent-Cluster", "?0");
+      response->set_content("I like site keys!");
       return std::move(response);
     }
 
@@ -658,6 +670,154 @@ IN_PROC_BROWSER_TEST_F(OriginKeyedProcessByDefaultBrowserTest,
   content::RenderFrameHost* child =
       ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   EXPECT_TRUE(content::HasOriginKeyedProcess(child));
+}
+
+// Verify that metrics for Ad Tag Readiness and Speculative RFH swaps due to
+// ad origin isolation exclusion are correctly recorded.
+IN_PROC_BROWSER_TEST_F(OriginKeyedProcessByDefaultBrowserTest,
+                       MetricsAdTagReadinessAndExcludedAdsSpeculativeRFHSwap) {
+  base::HistogramTester histogram_tester;
+
+  GURL main_frame_url(https_server()->GetURL("foo.com", "/iframe_blank.html"));
+  GURL ad_url(https_server()->GetURL("ad.bar.com", "/title1.html"));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+
+  content::TestNavigationManager nav_manager(web_contents, ad_url);
+
+  EXPECT_TRUE(content::BeginNavigateIframeToURL(web_contents, "test", ad_url));
+
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
+
+  content::RenderFrameHost* child =
+      ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
+  EXPECT_FALSE(content::HasOriginKeyedProcess(child));
+
+  // The ad tag calculation finished by process selection time.
+  histogram_tester.ExpectUniqueSample(
+      "Navigation.OriginAgentCluster.AdTagReadyAtProcessSelection", true, 1);
+
+  // The speculative RFH was wasted and discarded because the ad frame was
+  // excluded from origin isolation (switched from origin-keyed to site-keyed).
+  histogram_tester.ExpectBucketCount(
+      "Navigation.All.WastedSpeculativeRFH.ExcludedAdsFromOriginIsolation",
+      true, 1);
+}
+
+// Verify that non-ad navigations opting out via Origin-Agent-Cluster: ?0 do
+// NOT record true for ExcludedAdsFromOriginIsolation.
+IN_PROC_BROWSER_TEST_F(OriginKeyedProcessByDefaultBrowserTest,
+                       NonAdOptOutDoesNotRecordExcludedAdsMetric) {
+  base::HistogramTester histogram_tester;
+
+  GURL main_frame_url(https_server()->GetURL("foo.com", "/iframe_blank.html"));
+  GURL opt_out_url(https_server()->GetURL("bar.com", "/site_key_me"));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+
+  content::TestNavigationManager nav_manager(web_contents, opt_out_url);
+
+  EXPECT_TRUE(
+      content::BeginNavigateIframeToURL(web_contents, "test", opt_out_url));
+
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
+
+  content::RenderFrameHost* child =
+      ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
+  EXPECT_FALSE(content::HasOriginKeyedProcess(child));
+
+  // Since this is not an ad, ExcludedAdsFromOriginIsolation must never record
+  // true.
+  histogram_tester.ExpectBucketCount(
+      "Navigation.All.WastedSpeculativeRFH.ExcludedAdsFromOriginIsolation",
+      true, 0);
+}
+
+// Verify that if ad tagging calculation is not ready at process selection time,
+// the frame falls back to default origin-keyed isolation and records the ad tag
+// as not ready.
+IN_PROC_BROWSER_TEST_F(OriginKeyedProcessByDefaultBrowserTest,
+                       AdTagNotReadyAtProcessSelectionRemainsOriginKeyed) {
+  base::HistogramTester histogram_tester;
+
+  GURL main_frame_url(https_server()->GetURL("foo.com", "/iframe_blank.html"));
+
+  // CNAME alias evaluation happens in WillProcessResponse, after process
+  // selection has occurred. This causes the ad tag to be discovered late, so it
+  // doesn't influence process selection.
+  GURL alias_url(https_server()->GetURL("alias.bar.com", "/title1.html"));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+
+  content::TestNavigationManager nav_manager(web_contents, alias_url);
+
+  EXPECT_TRUE(
+      content::BeginNavigateIframeToURL(web_contents, "test", alias_url));
+
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
+
+  content::RenderFrameHost* child =
+      ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
+  // Because ad tagging wasn't ready at process selection time, it fell back to
+  // default origin isolation and stayed origin-keyed.
+  EXPECT_TRUE(content::HasOriginKeyedProcess(child));
+
+  // The ad tag calculation was not finished by process selection time.
+  histogram_tester.ExpectUniqueSample(
+      "Navigation.OriginAgentCluster.AdTagReadyAtProcessSelection", false, 1);
+
+  // Since it was origin-keyed from the start and stayed origin-keyed, the
+  // speculative RFH was not wasted due to ad exclusion.
+  histogram_tester.ExpectBucketCount(
+      "Navigation.All.WastedSpeculativeRFH.ExcludedAdsFromOriginIsolation",
+      true, 0);
+}
+
+// Verify that cross-site redirects to an ad frame do NOT record true for
+// ExcludedAdsFromOriginIsolation, as the speculative RFH was wasted due to the
+// cross-site redirect rather than the ad origin isolation exclusion.
+IN_PROC_BROWSER_TEST_F(OriginKeyedProcessByDefaultBrowserTest,
+                       CrossSiteRedirectToAdDoesNotRecordExcludedAdsMetric) {
+  base::HistogramTester histogram_tester;
+
+  GURL main_frame_url(https_server()->GetURL("foo.com", "/iframe_blank.html"));
+  GURL ad_url(https_server()->GetURL("ad.bar.com", "/title1.html"));
+  GURL redirect_url(
+      https_server()->GetURL("a.com", "/server-redirect?" + ad_url.spec()));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+
+  content::TestNavigationManager nav_manager(web_contents, redirect_url);
+
+  EXPECT_TRUE(
+      content::BeginNavigateIframeToURL(web_contents, "test", redirect_url));
+
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
+
+  content::RenderFrameHost* child =
+      ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
+  EXPECT_FALSE(content::HasOriginKeyedProcess(child));
+
+  // The speculative RFH was wasted due to the cross-site redirect from a.com
+  // to ad.bar.com, not because of the ad origin isolation exclusion.
+  histogram_tester.ExpectUniqueSample(
+      "Navigation.All.WastedSpeculativeRFH.ExcludedAdsFromOriginIsolation",
+      false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Navigation.All.WastedSpeculativeRFH.ReplacementRFHCreatedNewProcess",
+      true, 1);
 }
 
 // A same-site, cross-origin child frame inside an ad frame should remain

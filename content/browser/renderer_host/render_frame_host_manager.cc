@@ -34,6 +34,7 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "components/viz/common/features.h"
+#include "content/browser/agent_cluster_key.h"
 #include "content/browser/back_forward_cache/back_forward_cache_metrics.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
@@ -683,6 +684,7 @@ void RecordWastedSpeculativeRFHCase(bool from_ad_click,
 
 void RecordWastedAndReplacementRFHDiff(
     bool from_ad_click,
+    bool is_ad_tagged_by_host_filter,
     scoped_refptr<SiteInstanceImpl> wasted_rfh_site_instance,
     scoped_refptr<SiteInstanceImpl> new_site_instance) {
   std::string initiator_types[] = {"All",
@@ -716,6 +718,25 @@ void RecordWastedAndReplacementRFHDiff(
         base::StrCat({"Navigation.", initiator_type,
                       ".WastedSpeculativeRFH.ReplacementRFHCreatedNewProcess"}),
         (!new_rph || new_rph->GetRenderFrameHostCount() == 0));
+
+    const SiteInfo& wasted_site_info = wasted_rfh_site_instance->GetSiteInfo();
+    const SiteInfo& new_site_info = new_site_instance->GetSiteInfo();
+    bool wasted_rfh_was_origin_keyed_by_default =
+        wasted_site_info.agent_cluster_key().oac_status() ==
+        AgentClusterKey::OACStatus::kOriginKeyedByDefault;
+    bool replacement_rfh_is_site_keyed_by_default =
+        new_site_info.agent_cluster_key().oac_status() ==
+        AgentClusterKey::OACStatus::kSiteKeyedByDefault;
+
+    bool is_ad_excluded_from_origin_isolation =
+        is_ad_tagged_by_host_filter && wasted_rfh_was_origin_keyed_by_default &&
+        replacement_rfh_is_site_keyed_by_default &&
+        wasted_site_info.GetNonOriginKeyedEquivalentForMetrics(
+            wasted_rfh_site_instance->GetIsolationContext()) == new_site_info;
+    base::UmaHistogramBoolean(
+        base::StrCat({"Navigation.", initiator_type,
+                      ".WastedSpeculativeRFH.ExcludedAdsFromOriginIsolation"}),
+        is_ad_excluded_from_origin_isolation);
   }
 }
 
@@ -2106,7 +2127,8 @@ RenderFrameHostManager::GetFrameHostForNavigation(
         // TODO(crbug.com/401175298): Figure out how the speculative RFH can be
         // gone at this point.
         RecordWastedAndReplacementRFHDiff(
-            from_ad_click, speculative_render_frame_host_->GetSiteInstance(),
+            from_ad_click, request->IsAdTaggedByHostFilter(),
+            speculative_render_frame_host_->GetSiteInstance(),
             render_frame_host_->GetSiteInstance());
       }
     } else if (!speculative_render_frame_host_ ||
@@ -2127,7 +2149,8 @@ RenderFrameHostManager::GetFrameHostForNavigation(
         // TODO(crbug.com/401175298): Figure out how the speculative RFH can be
         // gone at this point.
         RecordWastedAndReplacementRFHDiff(
-            from_ad_click, speculative_render_frame_host_->GetSiteInstance(),
+            from_ad_click, request->IsAdTaggedByHostFilter(),
+            speculative_render_frame_host_->GetSiteInstance(),
             dest_site_instance);
       }
     } else {

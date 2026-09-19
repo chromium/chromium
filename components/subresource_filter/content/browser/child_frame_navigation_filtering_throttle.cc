@@ -14,6 +14,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
@@ -94,6 +95,11 @@ ChildFrameNavigationFilteringThrottle::WillProcessResponse() {
                                      weak_ptr_factory_.GetWeakPtr()));
     }
   }
+
+  bool is_ad_tag_ready = pending_load_policy_calculations_ == 0;
+  base::UmaHistogramBoolean(
+      "Navigation.OriginAgentCluster.AdTagReadyAtProcessSelection",
+      is_ad_tag_ready);
 
   // Load policy notifications should go out by WillProcessResponse, unless
   // we received CNAME aliases in the response and alias checking is enabled.
