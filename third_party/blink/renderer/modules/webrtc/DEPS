@@ -1,6 +1,7 @@
 include_rules = [
     "+base/strings/stringprintf.h",
     "+base/unguessable_token.h",
+    "+base/uuid.h",
     "+media/audio/audio_sink_parameters.h",
     "+media/base/audio_bus.h",
     "+media/base/audio_capturer_source.h",

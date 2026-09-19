@@ -10,6 +10,10 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 
+namespace base {
+class Uuid;
+}  // namespace base
+
 namespace content {
 class RenderFrameHost;
 }  // namespace content
@@ -18,15 +22,16 @@ namespace rtc_diagnostic_logging {
 
 // Starts RTC diagnostic logging. After calling this function, WebRTC activity
 // is subject to logging, but there are no guarantees that logging will actually
-// happen as it is subject to authorization and other checks. If
-// `should_upload_on_stop` is true, a best-effort attempt will be made to upload
-// the log after logging is completed. The callback is invoked with a UUID that
-// identifies the log.
+// happen as it is subject to authorization and other checks. `session_id` is a
+// UUID that identifies the log. If `should_upload_on_stop` is true, a
+// best-effort attempt will be made to upload the log after logging is
+// completed.
 void StartRtcDiagnosticLogging(
     content::RenderFrameHost& frame_host,
+    const base::Uuid& session_id,
     bool should_upload_on_stop,
     const base::flat_map<std::string, std::string>& metadata,
-    base::OnceCallback<void(const std::string&)> callback);
+    base::OnceClosure callback);
 
 // Finishes RTC diagnostic logging. If a logging session was started,
 // it will end. After `callback` is invoked, the caller can assume no further

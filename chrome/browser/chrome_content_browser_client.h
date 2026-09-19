@@ -868,9 +868,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   void StartRtcDiagnosticLogging(
       content::RenderFrameHost& frame_host,
+      const base::Uuid& session_id,
       bool should_upload_on_stop,
       const base::flat_map<std::string, std::string>& metadata,
-      base::OnceCallback<void(const std::string&)> callback) override;
+      base::OnceClosure callback) override;
 
   void FinishRtcDiagnosticLogging(
       content::RenderFrameHost& frame_host,

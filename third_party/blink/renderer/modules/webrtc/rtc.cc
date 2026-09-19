@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/webrtc/rtc.h"
 
 #include "base/notreached.h"
+#include "base/uuid.h"
 #include "third_party/blink/public/common/webrtc/rtc_logging_utils.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -101,9 +102,12 @@ ScriptPromise<IDLString> RTC::startDiagnosticLogging(
     metadata.Set(pair.first, pair.second);
   }
 
+  base::Uuid session_id = base::Uuid::GenerateRandomV4();
+  String session_id_str(session_id.AsLowercaseString());
   GetDiagnosticLoggingDispatcher().StartDiagnosticLogging(
-      options->allowUpload(), std::move(metadata),
-      BindOnce(&OnDiagnosticLoggingResult, WrapPersistent(resolver)));
+      session_id, options->allowUpload(), std::move(metadata),
+      BindOnce(&OnDiagnosticLoggingResult, WrapPersistent(resolver),
+               session_id_str));
 
   return promise;
 }

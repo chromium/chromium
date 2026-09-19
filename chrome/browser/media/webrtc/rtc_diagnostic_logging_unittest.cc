@@ -236,11 +236,11 @@ class RTCDiagnosticLoggingTest : public ChromeRenderViewHostTestHarness {
     content::RenderProcessHost* rph = main_rfh()->GetProcess();
 
     // Start logging first.
-    base::test::TestFuture<const std::string&> future;
+    const base::Uuid uuid = base::Uuid::GenerateRandomV4();
+    base::test::TestFuture<void> future;
     content::GetContentClientForTesting()->browser()->StartRtcDiagnosticLogging(
-        *main_rfh(), upload, metadata, future.GetCallback());
-    std::string uuid = future.Get();
-    EXPECT_TRUE(IsValidUuid(uuid));
+        *main_rfh(), uuid, upload, metadata, future.GetCallback());
+    EXPECT_TRUE(future.Wait());
 
     // Add a message if logging started.
     auto* controller = GetControllerForProcess(rph);
@@ -354,7 +354,7 @@ class RTCDiagnosticLoggingTest : public ChromeRenderViewHostTestHarness {
     // Clean up the log directory to ensure test isolation.
     base::DeletePathRecursively(log_dir);
 
-    return {uuid, upload_data, uncompressed_log};
+    return {uuid.AsLowercaseString(), upload_data, uncompressed_log};
   }
 
  protected:
@@ -536,11 +536,11 @@ TEST_F(RTCDiagnosticLoggingTest, GlobalPolicyDisabled) {
       prefs::kWebRTCDiagnosticLogCollectionAllowedForOrigins,
       std::move(allowed_origins));
 
-  base::test::TestFuture<const std::string&> future;
+  base::test::TestFuture<void> future;
   content::GetContentClientForTesting()->browser()->StartRtcDiagnosticLogging(
-      *main_rfh(),
+      *main_rfh(), base::Uuid::GenerateRandomV4(),
       /*should_upload_on_stop=*/true, {}, future.GetCallback());
-  EXPECT_FALSE(future.Get().empty());
+  EXPECT_TRUE(future.Wait());
   EXPECT_FALSE(controller()->web_api_settings().has_value());
 }
 
@@ -554,11 +554,11 @@ TEST_F(RTCDiagnosticLoggingTest, GlobalPolicyEnabled) {
       prefs::kWebRTCDiagnosticLogCollectionAllowedForOrigins,
       std::move(allowed_origins));
 
-  base::test::TestFuture<const std::string&> future;
+  base::test::TestFuture<void> future;
   content::GetContentClientForTesting()->browser()->StartRtcDiagnosticLogging(
-      *main_rfh(),
+      *main_rfh(), base::Uuid::GenerateRandomV4(),
       /*should_upload_on_stop=*/true, {}, future.GetCallback());
-  EXPECT_FALSE(future.Get().empty());
+  EXPECT_TRUE(future.Wait());
   EXPECT_TRUE(controller()->web_api_settings().has_value());
 }
 
@@ -572,11 +572,11 @@ TEST_F(RTCDiagnosticLoggingTest, OriginPolicyBlocked) {
       prefs::kWebRTCDiagnosticLogCollectionAllowedForOrigins,
       std::move(allowed_origins));
 
-  base::test::TestFuture<const std::string&> future;
+  base::test::TestFuture<void> future;
   content::GetContentClientForTesting()->browser()->StartRtcDiagnosticLogging(
-      *main_rfh(),
+      *main_rfh(), base::Uuid::GenerateRandomV4(),
       /*should_upload_on_stop=*/true, {}, future.GetCallback());
-  EXPECT_FALSE(future.Get().empty());
+  EXPECT_TRUE(future.Wait());
   EXPECT_FALSE(controller()->web_api_settings().has_value());
 }
 
@@ -590,11 +590,11 @@ TEST_F(RTCDiagnosticLoggingTest, OriginPolicyPatternMatch) {
       prefs::kWebRTCDiagnosticLogCollectionAllowedForOrigins,
       std::move(allowed_origins));
 
-  base::test::TestFuture<const std::string&> future;
+  base::test::TestFuture<void> future;
   content::GetContentClientForTesting()->browser()->StartRtcDiagnosticLogging(
-      *main_rfh(),
+      *main_rfh(), base::Uuid::GenerateRandomV4(),
       /*should_upload_on_stop=*/true, {}, future.GetCallback());
-  EXPECT_FALSE(future.Get().empty());
+  EXPECT_TRUE(future.Wait());
   EXPECT_TRUE(controller()->web_api_settings().has_value());
 }
 
@@ -605,12 +605,12 @@ TEST_F(RTCDiagnosticLoggingTest, SameOriginSubframeLoggingAllowed) {
   subframe = content::NavigationSimulator::NavigateAndCommitFromDocument(
       GURL("https://example.com/subframe"), subframe);
 
-  base::test::TestFuture<const std::string&> future;
+  base::test::TestFuture<void> future;
   content::GetContentClientForTesting()->browser()->StartRtcDiagnosticLogging(
-      *subframe,
+      *subframe, base::Uuid::GenerateRandomV4(),
       /*should_upload_on_stop=*/true, {}, future.GetCallback());
 
-  EXPECT_FALSE(future.Get().empty());
+  EXPECT_TRUE(future.Wait());
   EXPECT_TRUE(controller()->web_api_settings().has_value());
 }
 
@@ -621,12 +621,12 @@ TEST_F(RTCDiagnosticLoggingTest, CrossOriginSubframeLoggingNotAllowed) {
   subframe = content::NavigationSimulator::NavigateAndCommitFromDocument(
       GURL("https://other-example.com"), subframe);
 
-  base::test::TestFuture<const std::string&> future;
+  base::test::TestFuture<void> future;
   content::GetContentClientForTesting()->browser()->StartRtcDiagnosticLogging(
-      *subframe,
+      *subframe, base::Uuid::GenerateRandomV4(),
       /*should_upload_on_stop=*/true, {}, future.GetCallback());
 
-  EXPECT_FALSE(future.Get().empty());
+  EXPECT_TRUE(future.Wait());
   EXPECT_FALSE(controller()->web_api_settings().has_value());
 }
 
@@ -634,11 +634,11 @@ TEST_F(RTCDiagnosticLoggingTest, OriginChangeBlocksLogging) {
   NavigateAndCommit(GURL("https://example.com"));
   content::RenderProcessHost* rph = main_rfh()->GetProcess();
 
-  base::test::TestFuture<const std::string&> future;
+  base::test::TestFuture<void> future;
   content::GetContentClientForTesting()->browser()->StartRtcDiagnosticLogging(
-      *main_rfh(),
+      *main_rfh(), base::Uuid::GenerateRandomV4(),
       /*should_upload_on_stop=*/true, {}, future.GetCallback());
-  EXPECT_FALSE(future.Get().empty());
+  EXPECT_TRUE(future.Wait());
   auto* controller = GetControllerForProcess(rph);
   ASSERT_TRUE(controller);
   EXPECT_TRUE(controller->web_api_settings().has_value());
@@ -660,11 +660,11 @@ TEST_F(RTCDiagnosticLoggingTest, OriginChangeBlocksLogging) {
 TEST_F(RTCDiagnosticLoggingTest, AddMessagesAuthorized) {
   NavigateAndCommit(GURL("https://example.com"));
 
-  base::test::TestFuture<const std::string&> future;
+  base::test::TestFuture<void> future;
   content::GetContentClientForTesting()->browser()->StartRtcDiagnosticLogging(
-      *main_rfh(),
+      *main_rfh(), base::Uuid::GenerateRandomV4(),
       /*should_upload_on_stop=*/true, {}, future.GetCallback());
-  EXPECT_FALSE(future.Get().empty());
+  EXPECT_TRUE(future.Wait());
 
   task_environment()->RunUntilIdle();
 
@@ -714,11 +714,11 @@ TEST_F(RTCDiagnosticLoggingTest, AddMessagesUnauthorized) {
   NavigateAndCommit(GURL("https://example.com"));
   content::RenderProcessHost* rph = main_rfh()->GetProcess();
 
-  base::test::TestFuture<const std::string&> future;
+  base::test::TestFuture<void> future;
   content::GetContentClientForTesting()->browser()->StartRtcDiagnosticLogging(
-      *main_rfh(),
+      *main_rfh(), base::Uuid::GenerateRandomV4(),
       /*should_upload_on_stop=*/true, {}, future.GetCallback());
-  EXPECT_FALSE(future.Get().empty());
+  EXPECT_TRUE(future.Wait());
   task_environment()->RunUntilIdle();
 
   auto* controller = GetControllerForProcess(rph);
@@ -786,9 +786,10 @@ TEST_F(RTCDiagnosticLoggingTest,
   SetRtcEventLogPolicyAndAddPeerConnection(main_rfh(), url);
 
   // Must call StartRtcDiagnosticLogging first to set web_api_settings.
-  base::test::TestFuture<const std::string&> start_future;
+  const base::Uuid uuid = base::Uuid::GenerateRandomV4();
+  base::test::TestFuture<void> start_future;
   content::GetContentClientForTesting()->browser()->StartRtcDiagnosticLogging(
-      *main_rfh(), /*should_upload_on_stop=*/true, {},
+      *main_rfh(), uuid, /*should_upload_on_stop=*/true, {},
       start_future.GetCallback());
   EXPECT_TRUE(start_future.Wait());
 
@@ -806,7 +807,7 @@ TEST_F(RTCDiagnosticLoggingTest,
   const std::string filename =
       log_file_path.BaseName().RemoveExtension().AsUTF8Unsafe();
   EXPECT_TRUE(filename.starts_with("webrtc_event_log_01"));
-  EXPECT_THAT(filename, testing::HasSubstr(start_future.Get()));
+  EXPECT_THAT(filename, testing::HasSubstr(uuid.AsLowercaseString()));
   EXPECT_TRUE(webrtc_event_logging::IsValidRemoteBoundLogFilename(filename));
 }
 
@@ -825,10 +826,10 @@ TEST_F(RTCDiagnosticLoggingTest, EventLogStartedAfterSessionIdSet) {
                                             base::GetCurrentProcId(),
                                             url.spec(), "");
 
-  base::test::TestFuture<const std::string&> start_future;
+  base::test::TestFuture<void> start_future;
   content::GetContentClientForTesting()->browser()->StartRtcDiagnosticLogging(
-      *main_rfh(), /*should_upload_on_stop=*/true, {},
-      start_future.GetCallback());
+      *main_rfh(), base::Uuid::GenerateRandomV4(),
+      /*should_upload_on_stop=*/true, {}, start_future.GetCallback());
   EXPECT_TRUE(start_future.Wait());
 
   base::FilePath log_file_path;
@@ -869,12 +870,12 @@ TEST_F(RTCDiagnosticLoggingTest, EventLogCancelledAfterSessionIdSet) {
                                             base::GetCurrentProcId(),
                                             url.spec(), "");
 
-  base::test::TestFuture<const std::string&> start_future;
+  const base::Uuid uuid = base::Uuid::GenerateRandomV4();
+  base::test::TestFuture<void> start_future;
   content::GetContentClientForTesting()->browser()->StartRtcDiagnosticLogging(
-      *main_rfh(), /*should_upload_on_stop=*/true, {},
+      *main_rfh(), uuid, /*should_upload_on_stop=*/true, {},
       start_future.GetCallback());
-  std::string uuid = start_future.Get();
-  EXPECT_FALSE(uuid.empty());
+  EXPECT_TRUE(start_future.Wait());
 
   base::FilePath log_file_path;
   EXPECT_CALL(remote_observer_,
@@ -891,7 +892,8 @@ TEST_F(RTCDiagnosticLoggingTest, EventLogCancelledAfterSessionIdSet) {
 
   base::test::TestFuture<void> cancel_future;
   event_log_manager_->CancelLogging(main_rfh()->GetProcess()->GetDeprecatedID(),
-                                    uuid, cancel_future.GetCallback());
+                                    uuid.AsLowercaseString(),
+                                    cancel_future.GetCallback());
   EXPECT_TRUE(cancel_future.Wait());
 
   base::test::TestFuture<void> log_manager_future;
@@ -950,10 +952,10 @@ TEST_F(RTCDiagnosticLoggingTest,
   SetRtcEventLogPolicyAndAddPeerConnection(main_rfh(), url);
 
   // Must call StartRtcDiagnosticLogging first to set web_api_settings.
-  base::test::TestFuture<const std::string&> start_future;
+  base::test::TestFuture<void> start_future;
   content::GetContentClientForTesting()->browser()->StartRtcDiagnosticLogging(
-      *main_rfh(), /*should_upload_on_stop=*/true, {},
-      start_future.GetCallback());
+      *main_rfh(), base::Uuid::GenerateRandomV4(),
+      /*should_upload_on_stop=*/true, {}, start_future.GetCallback());
   EXPECT_TRUE(start_future.Wait());
 
   base::FilePath log_file_path;
@@ -980,10 +982,10 @@ TEST_F(
   SetRtcEventLogPolicyAndAddPeerConnection(main_rfh(), url);
 
   // Must call StartRtcDiagnosticLogging first to set web_api_settings.
-  base::test::TestFuture<const std::string&> start_future;
+  base::test::TestFuture<void> start_future;
   content::GetContentClientForTesting()->browser()->StartRtcDiagnosticLogging(
-      *main_rfh(), /*should_upload_on_stop=*/false, {},
-      start_future.GetCallback());
+      *main_rfh(), base::Uuid::GenerateRandomV4(),
+      /*should_upload_on_stop=*/false, {}, start_future.GetCallback());
   EXPECT_TRUE(start_future.Wait());
 
   base::FilePath log_file_path;
@@ -1009,10 +1011,10 @@ TEST_F(RTCDiagnosticLoggingTest,
                                            /*event_log_allowed=*/false);
 
   // Must call StartRtcDiagnosticLogging first to set web_api_settings.
-  base::test::TestFuture<const std::string&> start_future;
+  base::test::TestFuture<void> start_future;
   content::GetContentClientForTesting()->browser()->StartRtcDiagnosticLogging(
-      *main_rfh(), /*should_upload_on_stop=*/false, {},
-      start_future.GetCallback());
+      *main_rfh(), base::Uuid::GenerateRandomV4(),
+      /*should_upload_on_stop=*/false, {}, start_future.GetCallback());
   EXPECT_TRUE(start_future.Wait());
 
   EXPECT_CALL(remote_observer_,
@@ -1034,10 +1036,10 @@ TEST_F(RTCDiagnosticLoggingTest,
                                            "https://allowed.com");
 
   // Must call StartRtcDiagnosticLogging first to set web_api_settings.
-  base::test::TestFuture<const std::string&> start_future;
+  base::test::TestFuture<void> start_future;
   content::GetContentClientForTesting()->browser()->StartRtcDiagnosticLogging(
-      *main_rfh(), /*should_upload_on_stop=*/false, {},
-      start_future.GetCallback());
+      *main_rfh(), base::Uuid::GenerateRandomV4(),
+      /*should_upload_on_stop=*/false, {}, start_future.GetCallback());
   EXPECT_TRUE(start_future.Wait());
 
   EXPECT_CALL(remote_observer_,
@@ -1082,10 +1084,10 @@ TEST_F(RTCDiagnosticLoggingTest,
   SetRtcEventLogPolicyAndAddPeerConnection(otr_rfh, url);
 
   // Must call StartRtcDiagnosticLogging first to set web_api_settings.
-  base::test::TestFuture<const std::string&> start_future;
+  base::test::TestFuture<void> start_future;
   content::GetContentClientForTesting()->browser()->StartRtcDiagnosticLogging(
-      *otr_rfh, /*should_upload_on_stop=*/false, {},
-      start_future.GetCallback());
+      *otr_rfh, base::Uuid::GenerateRandomV4(),
+      /*should_upload_on_stop=*/false, {}, start_future.GetCallback());
   EXPECT_TRUE(start_future.Wait());
 
   EXPECT_CALL(remote_observer_,
@@ -1107,10 +1109,10 @@ TEST_F(RTCDiagnosticLoggingTest,
                        {"https://example.com", "https://other-example.com"});
 
   // Must call StartRtcDiagnosticLogging first to set web_api_settings.
-  base::test::TestFuture<const std::string&> start_future;
+  base::test::TestFuture<void> start_future;
   content::GetContentClientForTesting()->browser()->StartRtcDiagnosticLogging(
-      *main_rfh(), /*should_upload_on_stop=*/false, {},
-      start_future.GetCallback());
+      *main_rfh(), base::Uuid::GenerateRandomV4(),
+      /*should_upload_on_stop=*/false, {}, start_future.GetCallback());
   EXPECT_TRUE(start_future.Wait());
 
   // Navigate to a different origin authorized by policy.
@@ -1132,10 +1134,10 @@ TEST_F(RTCDiagnosticLoggingTest,
   NavigateAndCommit(url);
   SetRtcEventLogPolicyAndAddPeerConnection(main_rfh(), url);
 
-  base::test::TestFuture<const std::string&> start_future;
+  base::test::TestFuture<void> start_future;
   content::GetContentClientForTesting()->browser()->StartRtcDiagnosticLogging(
-      *main_rfh(), /*should_upload_on_stop=*/true, {},
-      start_future.GetCallback());
+      *main_rfh(), base::Uuid::GenerateRandomV4(),
+      /*should_upload_on_stop=*/true, {}, start_future.GetCallback());
   EXPECT_TRUE(start_future.Wait());
 
   EXPECT_CALL(remote_observer_,
@@ -1163,10 +1165,10 @@ TEST_F(RTCDiagnosticLoggingTest,
   NavigateAndCommit(url);
   SetRtcEventLogPolicyAndAddPeerConnection(main_rfh(), url);
 
-  base::test::TestFuture<const std::string&> start_future;
+  base::test::TestFuture<void> start_future;
   content::GetContentClientForTesting()->browser()->StartRtcDiagnosticLogging(
-      *main_rfh(), /*should_upload_on_stop=*/true, {},
-      start_future.GetCallback());
+      *main_rfh(), base::Uuid::GenerateRandomV4(),
+      /*should_upload_on_stop=*/true, {}, start_future.GetCallback());
   EXPECT_TRUE(start_future.Wait());
 
   EXPECT_CALL(remote_observer_,

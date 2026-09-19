@@ -37,9 +37,10 @@ class MockContentBrowserClient : public ContentBrowserClient {
   MOCK_METHOD(void,
               StartRtcDiagnosticLogging,
               (RenderFrameHost&,
+               const base::Uuid&,
                bool,
                (const base::flat_map<std::string, std::string>&),
-               base::OnceCallback<void(const std::string&)>),
+               base::OnceClosure),
               (override));
   MOCK_METHOD(void,
               FinishRtcDiagnosticLogging,
@@ -81,19 +82,17 @@ class RTCLoggingDispatcherImplTest : public RenderViewHostTestHarness {
 
 TEST_F(RTCLoggingDispatcherImplTest, StartDiagnosticLoggingForwardsToClient) {
   base::flat_map<std::string, std::string> metadata = {{"key", "value"}};
-  const std::string kUuid = "test-uuid";
+  const base::Uuid kUuid = base::Uuid::GenerateRandomV4();
 
-  EXPECT_CALL(mock_client_,
-              StartRtcDiagnosticLogging(Ref(*main_rfh()), true, metadata, _))
-      .WillOnce([&](RenderFrameHost&, bool,
+  EXPECT_CALL(mock_client_, StartRtcDiagnosticLogging(Ref(*main_rfh()), kUuid,
+                                                      true, metadata, _))
+      .WillOnce([&](RenderFrameHost&, const base::Uuid&, bool,
                     const base::flat_map<std::string, std::string>&,
-                    base::OnceCallback<void(const std::string&)> cb) {
-        std::move(cb).Run(kUuid);
-      });
+                    base::OnceClosure cb) { std::move(cb).Run(); });
 
-  base::test::TestFuture<const std::string&> future;
-  remote_->StartDiagnosticLogging(true, metadata, future.GetCallback());
-  EXPECT_EQ(future.Get(), kUuid);
+  base::test::TestFuture<void> future;
+  remote_->StartDiagnosticLogging(kUuid, true, metadata, future.GetCallback());
+  EXPECT_TRUE(future.Wait());
 }
 
 TEST_F(RTCLoggingDispatcherImplTest, FinishDiagnosticLoggingForwardsToClient) {
@@ -124,7 +123,8 @@ TEST_F(RTCLoggingDispatcherImplTest, FeatureDisabledStart) {
   feature_list.InitAndDisableFeature(blink::features::kRTCDiagnosticLogging);
 
   mojo::test::BadMessageObserver bad_message_observer;
-  remote_->StartDiagnosticLogging(true, {}, base::DoNothing());
+  remote_->StartDiagnosticLogging(base::Uuid::GenerateRandomV4(), true, {},
+                                  base::DoNothing());
   EXPECT_EQ("RTCDiagnosticLogging feature not enabled",
             bad_message_observer.WaitForBadMessage());
 }
@@ -149,6 +149,14 @@ TEST_F(RTCLoggingDispatcherImplTest, FeatureDisabledCancel) {
             bad_message_observer.WaitForBadMessage());
 }
 
+TEST_F(RTCLoggingDispatcherImplTest, InvalidSessionId) {
+  mojo::test::BadMessageObserver bad_message_observer;
+  remote_->StartDiagnosticLogging(base::Uuid(), /*upload=*/true, {},
+                                  base::DoNothing());
+  EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
+              ::testing::HasSubstr("VALIDATION_ERROR_DESERIALIZATION_FAILED"));
+}
+
 TEST_F(RTCLoggingDispatcherImplTest, TooManyMetadata) {
   base::flat_map<std::string, std::string> metadata;
   for (size_t i = 0; i < blink::RTCMetadataValidator::kMaxMetadataSize + 1;
@@ -157,7 +165,8 @@ TEST_F(RTCLoggingDispatcherImplTest, TooManyMetadata) {
   }
 
   mojo::test::BadMessageObserver bad_message_observer;
-  remote_->StartDiagnosticLogging(/*upload=*/true, metadata, base::DoNothing());
+  remote_->StartDiagnosticLogging(base::Uuid::GenerateRandomV4(),
+                                  /*upload=*/true, metadata, base::DoNothing());
   EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
               ::testing::HasSubstr("VALIDATION_ERROR_DESERIALIZATION_FAILED"));
 }
@@ -168,7 +177,8 @@ TEST_F(RTCLoggingDispatcherImplTest, TooLongMetadataValue) {
       std::string(blink::RTCMetadataValidator::kMaxMetadataLength + 1, 'a');
 
   mojo::test::BadMessageObserver bad_message_observer;
-  remote_->StartDiagnosticLogging(/*upload=*/true, metadata, base::DoNothing());
+  remote_->StartDiagnosticLogging(base::Uuid::GenerateRandomV4(),
+                                  /*upload=*/true, metadata, base::DoNothing());
   EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
               ::testing::HasSubstr("VALIDATION_ERROR_DESERIALIZATION_FAILED"));
 }
@@ -179,7 +189,8 @@ TEST_F(RTCLoggingDispatcherImplTest, TooLongMetadataKey) {
                        'a')] = "value";
 
   mojo::test::BadMessageObserver bad_message_observer;
-  remote_->StartDiagnosticLogging(/*upload=*/true, metadata, base::DoNothing());
+  remote_->StartDiagnosticLogging(base::Uuid::GenerateRandomV4(),
+                                  /*upload=*/true, metadata, base::DoNothing());
   EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
               ::testing::HasSubstr("VALIDATION_ERROR_DESERIALIZATION_FAILED"));
 }
@@ -191,7 +202,8 @@ TEST_F(RTCLoggingDispatcherImplTest, TooLongMetadataValueUtf8) {
   metadata["key"] = value;
 
   mojo::test::BadMessageObserver bad_message_observer;
-  remote_->StartDiagnosticLogging(/*upload=*/true, metadata, base::DoNothing());
+  remote_->StartDiagnosticLogging(base::Uuid::GenerateRandomV4(),
+                                  /*upload=*/true, metadata, base::DoNothing());
   EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
               ::testing::HasSubstr("VALIDATION_ERROR_DESERIALIZATION_FAILED"));
 }
@@ -252,9 +264,10 @@ class RTCLoggingDispatcherImplDefaultContentClientTest
 
 TEST_F(RTCLoggingDispatcherImplDefaultContentClientTest,
        StartDiagnosticLogging) {
-  base::test::TestFuture<const std::string&> future;
-  remote_->StartDiagnosticLogging(/*upload=*/true, {}, future.GetCallback());
-  EXPECT_TRUE(base::Uuid::ParseLowercase(future.Get()).is_valid());
+  base::test::TestFuture<void> future;
+  remote_->StartDiagnosticLogging(base::Uuid::GenerateRandomV4(),
+                                  /*upload=*/true, {}, future.GetCallback());
+  EXPECT_TRUE(future.Wait());
 }
 
 TEST_F(RTCLoggingDispatcherImplDefaultContentClientTest,

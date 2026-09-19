@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/uuid.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/webrtc/rtc_logging_utils.h"
 #include "third_party/blink/public/mojom/webrtc/rtc_logging.mojom-blink.h"
@@ -80,12 +81,14 @@ class MockRTCLoggingDispatcher : public mojom::blink::RTCLoggingDispatcher {
   }
 
   void StartDiagnosticLogging(
+      const base::Uuid& session_id,
       bool upload,
       const HashMap<String, String>& metadata,
       StartDiagnosticLoggingCallback callback) override {
+    uuid_ = String(session_id.AsLowercaseString());
     upload_ = upload;
     metadata_ = metadata;
-    std::move(callback).Run(uuid_);
+    std::move(callback).Run();
   }
 
   void FinishDiagnosticLogging(
@@ -110,7 +113,6 @@ class MockRTCLoggingDispatcher : public mojom::blink::RTCLoggingDispatcher {
     return finish_metadata_;
   }
   const String& uuid() const { return uuid_; }
-  void set_uuid(const String& uuid) { uuid_ = uuid; }
 
  private:
   mojo::Receiver<mojom::blink::RTCLoggingDispatcher> receiver_{this};
@@ -119,7 +121,7 @@ class MockRTCLoggingDispatcher : public mojom::blink::RTCLoggingDispatcher {
   HashMap<String, String> finish_metadata_;
   bool finish_called_ = false;
   bool cancel_called_ = false;
-  String uuid_ = "test-uuid";
+  String uuid_;
 };
 
 class RTCTest : public testing::Test {
@@ -198,6 +200,8 @@ TEST_F(RTCTest, StartDiagnosticLogging) {
 
   tester.WaitUntilSettled();
   EXPECT_TRUE(tester.IsFulfilled());
+  EXPECT_TRUE(
+      base::Uuid::ParseLowercase(tester.ValueAsString().Utf8()).is_valid());
   EXPECT_EQ(tester.ValueAsString(), mock_dispatcher().uuid());
   EXPECT_TRUE(mock_dispatcher().upload());
   EXPECT_EQ(mock_dispatcher().metadata().at("key"), "value");
@@ -211,6 +215,8 @@ TEST_F(RTCTest, StartDiagnosticLoggingDefaultOptions) {
 
   tester.WaitUntilSettled();
   EXPECT_TRUE(tester.IsFulfilled());
+  EXPECT_TRUE(
+      base::Uuid::ParseLowercase(tester.ValueAsString().Utf8()).is_valid());
   EXPECT_EQ(tester.ValueAsString(), mock_dispatcher().uuid());
   EXPECT_FALSE(mock_dispatcher().upload());
   EXPECT_TRUE(mock_dispatcher().metadata().empty());

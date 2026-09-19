@@ -149,11 +149,11 @@ void DoFinishRtcDiagnosticLogging(
 
 void StartRtcDiagnosticLogging(
     content::RenderFrameHost& frame_host,
+    const base::Uuid& session_id,
     bool should_upload_on_stop,
     const base::flat_map<std::string, std::string>& metadata,
-    base::OnceCallback<void(const std::string&)> callback) {
+    base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  std::string uuid = base::Uuid::GenerateRandomV4().AsLowercaseString();
 
 #if WEBRTC_DIAGNOSTIC_LOGGING_SUPPORTED
   url::Origin origin = frame_host.GetLastCommittedOrigin();
@@ -161,61 +161,60 @@ void StartRtcDiagnosticLogging(
   if (!main_frame_host ||
       !main_frame_host->GetLastCommittedOrigin().IsSameOriginWith(origin) ||
       !main_frame_host->IsInPrimaryMainFrame()) {
-    std::move(callback).Run(uuid);
+    std::move(callback).Run();
     return;
   }
   content::BrowserContext* browser_context = frame_host.GetBrowserContext();
   if (!WebRtcLoggingController::IsWebRtcTextLogAllowed(
           browser_context, webrtc_logging::ApiType::kWeb, origin)) {
-    std::move(callback).Run(uuid);
+    std::move(callback).Run();
     return;
   }
   content::RenderProcessHost* process_host = frame_host.GetProcess();
   if (!process_host) {
-    std::move(callback).Run(uuid);
+    std::move(callback).Run();
     return;
   }
   auto* controller =
       WebRtcLoggingController::FromRenderProcessHost(process_host);
   if (!controller) {
-    std::move(callback).Run(uuid);
+    std::move(callback).Run();
     return;
   }
 
+  const std::string session_id_str = session_id.AsLowercaseString();
   auto metadata_map =
       std::make_unique<WebRtcLogMetaDataMap>(metadata.begin(), metadata.end());
-  metadata_map->emplace("__uuid__", uuid);
+  metadata_map->emplace("__uuid__", session_id_str);
 
   WebRtcLoggingController::WebApiSettings web_api_settings{
       .should_upload_on_stop = should_upload_on_stop,
       .origin = origin,
-      .uuid = uuid};
+      .uuid = session_id_str};
 
   controller->StartLogging(
       base::BindOnce(
           [](scoped_refptr<WebRtcLoggingController> controller,
              std::unique_ptr<WebRtcLogMetaDataMap> metadata,
-             const url::Origin origin, std::string uuid,
-             base::OnceCallback<void(const std::string&)> callback,
-             bool success, const std::string&) {
+             const url::Origin origin, base::OnceClosure callback, bool success,
+             const std::string&) {
             if (success && VerifySettings(controller.get(), origin)) {
               controller->SetMetaData(
                   std::move(metadata),
                   base::BindOnce(
-                      [](std::string uuid,
-                         base::OnceCallback<void(const std::string&)> callback,
-                         bool,
-                         const std::string&) { std::move(callback).Run(uuid); },
-                      std::move(uuid), std::move(callback)));
+                      [](base::OnceClosure callback, bool, const std::string&) {
+                        std::move(callback).Run();
+                      },
+                      std::move(callback)));
             } else {
-              std::move(callback).Run(uuid);
+              std::move(callback).Run();
             }
           },
           base::WrapRefCounted(controller), std::move(metadata_map), origin,
-          std::move(uuid), std::move(callback)),
+          std::move(callback)),
       web_api_settings);
 #else
-  std::move(callback).Run(uuid);
+  std::move(callback).Run();
 #endif
 }
 

@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/task/bind_post_task.h"
 #include "base/test/test_future.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/media/webrtc/rtc_diagnostic_logging_utils.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager.h"
@@ -115,9 +116,10 @@ class WebRtcDiagnosticLogCollectionAllowedForOriginsPolicyTest
     content::RenderFrameHost* frame = web_contents->GetPrimaryMainFrame();
     WebRtcLoggingController::AttachToRenderProcessHost(frame->GetProcess());
 
-    base::test::TestFuture<const std::string&> start_rtc_diag_future;
+    base::test::TestFuture<void> start_rtc_diag_future;
     rtc_diagnostic_logging::StartRtcDiagnosticLogging(
-        *frame, /*should_upload_on_stop=*/true, {},
+        *frame, base::Uuid::GenerateRandomV4(), /*should_upload_on_stop=*/true,
+        {},
         base::BindPostTaskToCurrentDefault(
             start_rtc_diag_future.GetCallback()));
     EXPECT_TRUE(start_rtc_diag_future.Wait());
