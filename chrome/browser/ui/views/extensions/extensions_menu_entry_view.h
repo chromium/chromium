@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/extensions/extensions_menu_view_model.h"
 #include "chrome/browser/ui/views/extensions/extension_context_menu_controller.h"
@@ -15,6 +16,7 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view.h"
+#include "url/origin.h"
 
 class BrowserWindowInterface;
 class HoverButton;
@@ -39,7 +41,8 @@ class ExtensionsMenuEntryView
       bool is_enterprise,
       ToolbarActionViewModel* view_model,
       views::Button::PressedCallback action_button_callback,
-      base::RepeatingCallback<void(bool)> site_access_toggle_callback,
+      base::RepeatingCallback<void(const url::Origin&, bool)>
+          site_access_toggle_callback,
       views::Button::PressedCallback site_permissions_button_callback);
   ExtensionsMenuEntryView(const ExtensionsMenuEntryView&) = delete;
   ExtensionsMenuEntryView& operator=(const ExtensionsMenuEntryView&) = delete;
@@ -57,6 +60,7 @@ class ExtensionsMenuEntryView
       ExtensionsMenuViewModel::ControlState button_state);
 
   const extensions::ExtensionId& extension_id() { return extension_id_; }
+  const url::Origin& origin() const { return origin_; }
 
   // Accessors for testing.
   bool IsContextMenuRunningForTesting() const;
@@ -89,6 +93,9 @@ class ExtensionsMenuEntryView
 
   // The id of the extension the entry corresponds to.
   const extensions::ExtensionId extension_id_;
+
+  // The origin of the site currently displayed in this menu entry.
+  url::Origin origin_;
 
   // Controller responsible for showing the context menu for an extension.
   std::unique_ptr<ExtensionContextMenuController> context_menu_controller_;

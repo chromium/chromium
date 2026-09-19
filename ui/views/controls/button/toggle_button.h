@@ -65,6 +65,7 @@ class VIEWS_EXPORT ToggleButton : public Button {
  protected:
   // views::View:
   void OnThemeChanged() override;
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
   // views::Button:
   void NotifyClick(const ui::Event& event) override;
@@ -98,7 +99,6 @@ class VIEWS_EXPORT ToggleButton : public Button {
 
   // views::View:
   bool CanAcceptEvent(const ui::Event& event) override;
-  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
   // Button:
   void PaintButtonContents(gfx::Canvas* canvas) override;

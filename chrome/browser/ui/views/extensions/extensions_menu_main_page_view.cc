@@ -89,6 +89,8 @@ struct ExtensionIdWrapper {
 DEFINE_UI_CLASS_PROPERTY_TYPE(ExtensionIdWrapper*)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ExtensionIdWrapper, kExtensionIdKey)
 
+// TODO(crbug.com/563454001): Revisit this once Benjamin's (bkeen@) widget-level
+// input protection system is landed.
 // A button in the extensions menu requesting access section that grants one
 // time site access to the extension. It uses an input event activation
 // protector to prevent unintended clicks.
@@ -104,6 +106,26 @@ class ExtensionsMenuAllowButton : public views::MdTextButton {
   void VisibilityChanged(views::View* starting_from, bool is_visible) override {
     views::MdTextButton::VisibilityChanged(starting_from, is_visible);
     input_protector_.VisibilityChanged(is_visible);
+  }
+
+  void AddedToWidget() override {
+    views::MdTextButton::AddedToWidget();
+    if (IsDrawn()) {
+      input_protector_.VisibilityChanged(/*is_visible=*/true);
+    }
+  }
+
+  void RemovedFromWidget() override {
+    views::MdTextButton::RemovedFromWidget();
+    input_protector_.VisibilityChanged(/*is_visible=*/false);
+  }
+
+  bool GetNeedsNotificationWhenVisibleBoundsChange() const override {
+    return true;
+  }
+
+  void OnVisibleBoundsChanged() override {
+    input_protector_.MaybeUpdateViewProtectedTimeStamp();
   }
 
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override {
@@ -245,8 +267,7 @@ void ExtensionsMenuMainPageView::CreateAndInsertMenuEntry(
       base::BindRepeating(&ExtensionsMenuHandler::OnActionButtonClicked,
                           base::Unretained(menu_handler_), extension_id),
       base::BindRepeating(&ExtensionsMenuHandler::OnExtensionToggleSelected,
-                          base::Unretained(menu_handler_), extension_id,
-                          entry_state.origin),
+                          base::Unretained(menu_handler_), extension_id),
       base::BindRepeating(&ExtensionsMenuHandler::OpenSitePermissionsPage,
                           base::Unretained(menu_handler_), extension_id));
   item->Update(entry_state);

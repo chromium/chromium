@@ -93,6 +93,7 @@ source_set("extensions_menu_entry_view") {
     "//chrome/browser/ui/views/extensions:extensions_views_utils",
     "//ui/base/metadata",
     "//ui/views",
+    "//url",
   ]
   deps = [
     "//chrome/app:generated_resources",
@@ -101,6 +102,7 @@ source_set("extensions_menu_entry_view") {
     "//chrome/browser/ui/views:layout_provider",
     "//ui/base",
     "//ui/color",
+    "//ui/events",
     "//ui/gfx",
     "//ui/strings:ui_strings",
   ]
@@ -343,11 +345,13 @@ source_set("browser_tests") {
       "//extensions/browser:webstore_installer",
       "//extensions/common",
       "//extensions/common:extension_features",
+      "//net:test_support",
       "//testing/gmock",
       "//testing/gtest",
       "//ui/events:test_support",
       "//ui/views",
       "//ui/views:test_support",
+      "//url",
     ]
     if (use_aura && !is_chromeos) {
       deps += [ "//chrome/browser/ui/views:native_widget_factory" ]

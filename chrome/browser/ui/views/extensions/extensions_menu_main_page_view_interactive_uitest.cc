@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_menu_main_page_view.h"
 
+#include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
@@ -52,6 +53,7 @@
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/state_observer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
@@ -59,6 +61,7 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/views_switches.h"
 
 namespace {
 
@@ -196,6 +199,7 @@ class ExtensionsMenuMainPageViewInteractiveUITest
 
   // ExtensionsToolbarUITest:
   void ShowUi(const std::string& name) override;
+  void SetUpCommandLine(base::CommandLine* command_line) override;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -205,6 +209,13 @@ ExtensionsMenuMainPageViewInteractiveUITest::
     ExtensionsMenuMainPageViewInteractiveUITest() {
   scoped_feature_list_.InitAndEnableFeature(
       extensions_features::kExtensionsMenuAccessControl);
+}
+
+void ExtensionsMenuMainPageViewInteractiveUITest::SetUpCommandLine(
+    base::CommandLine* command_line) {
+  ExtensionsToolbarUITest::SetUpCommandLine(command_line);
+  command_line->AppendSwitch(
+      views::switches::kDisableInputEventActivationProtectionForTesting);
 }
 
 void ExtensionsMenuMainPageViewInteractiveUITest::ShowMenu() {
@@ -513,6 +524,14 @@ class ExtensionsMenuMainPageViewInteractiveTest
       const ExtensionsMenuMainPageViewInteractiveTest&) = delete;
   ExtensionsMenuMainPageViewInteractiveTest& operator=(
       const ExtensionsMenuMainPageViewInteractiveTest&) = delete;
+
+  // InteractiveBrowserTestMixin<extensions::ExtensionBrowserTest>:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InteractiveBrowserTestMixin<
+        extensions::ExtensionBrowserTest>::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(
+        views::switches::kDisableInputEventActivationProtectionForTesting);
+  }
 
   // Installs extension with `name` and `host_permission`.
   scoped_refptr<const extensions::Extension>

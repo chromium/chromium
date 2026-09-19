@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_menu_entry_view.h"
 
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/strcat.h"
@@ -20,6 +22,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/events/event.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
@@ -27,7 +30,10 @@
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/input_event_activation_protector.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/vector_icons.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 
@@ -83,6 +89,83 @@ views::Builder<HoverButton> GetSitePermissionsButtonBuilder(
 
 }  // namespace
 
+// TODO(crbug.com/563454001): Revisit this once Benjamin's (bkeen@) widget-level
+// input protection system is landed.
+// A toggle button in `ExtensionsMenuEntryView` that grants or revokes site
+// access for an extension. It uses `views::InputEventActivationProtector` to
+// prevent unintended interactions after view creation, visibility changes, or
+// cross-origin navigations.
+class ExtensionsMenuSiteAccessToggle : public views::ToggleButton {
+  METADATA_HEADER(ExtensionsMenuSiteAccessToggle, views::ToggleButton)
+
+ public:
+  ExtensionsMenuSiteAccessToggle() { ResetInputProtection(); }
+  ExtensionsMenuSiteAccessToggle(const ExtensionsMenuSiteAccessToggle&) =
+      delete;
+  ExtensionsMenuSiteAccessToggle& operator=(
+      const ExtensionsMenuSiteAccessToggle&) = delete;
+  ~ExtensionsMenuSiteAccessToggle() override = default;
+
+  // Resets the protection window in `views::InputEventActivationProtector` when
+  // the displayed site origin changes across a navigation.
+  void ResetInputProtection() {
+    input_protector_.MaybeUpdateViewProtectedTimeStamp(/*force=*/true);
+  }
+
+  // views::View:
+  void VisibilityChanged(views::View* starting_from, bool is_visible) override {
+    views::ToggleButton::VisibilityChanged(starting_from, is_visible);
+    input_protector_.VisibilityChanged(is_visible);
+  }
+
+  void AddedToWidget() override {
+    views::ToggleButton::AddedToWidget();
+    if (IsDrawn()) {
+      input_protector_.VisibilityChanged(/*is_visible=*/true);
+    }
+  }
+
+  void RemovedFromWidget() override {
+    views::ToggleButton::RemovedFromWidget();
+    input_protector_.VisibilityChanged(/*is_visible=*/false);
+  }
+
+  bool GetNeedsNotificationWhenVisibleBoundsChange() const override {
+    return true;
+  }
+
+  void OnVisibleBoundsChanged() override {
+    input_protector_.MaybeUpdateViewProtectedTimeStamp();
+  }
+
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override {
+    views::ToggleButton::OnBoundsChanged(previous_bounds);
+    input_protector_.MaybeUpdateViewProtectedTimeStamp();
+  }
+
+  // views::Button:
+  void NotifyClick(const ui::Event& event) override {
+    if (input_protector_.IsPossiblyUnintendedInteraction(
+            event, /*allow_key_events=*/false)) {
+      return;
+    }
+    views::ToggleButton::NotifyClick(event);
+  }
+
+ private:
+  views::InputEventActivationProtector input_protector_;
+};
+
+BEGIN_METADATA(ExtensionsMenuSiteAccessToggle)
+END_METADATA
+
+BEGIN_VIEW_BUILDER(/* no export */,
+                   ExtensionsMenuSiteAccessToggle,
+                   views::ToggleButton)
+END_VIEW_BUILDER
+
+DEFINE_VIEW_BUILDER(/* no export */, ExtensionsMenuSiteAccessToggle)
+
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kExtensionsMenuEntryViewElementId);
 
 ExtensionsMenuEntryView::ExtensionsMenuEntryView(
@@ -90,7 +173,8 @@ ExtensionsMenuEntryView::ExtensionsMenuEntryView(
     bool is_enterprise,
     ToolbarActionViewModel* view_model,
     views::Button::PressedCallback action_button_callback,
-    base::RepeatingCallback<void(bool)> site_access_toggle_callback,
+    base::RepeatingCallback<void(const url::Origin&, bool)>
+        site_access_toggle_callback,
     views::Button::PressedCallback site_permissions_button_callback)
     : extension_id_(view_model->GetId()) {
   CHECK(base::FeatureList::IsEnabled(
@@ -147,7 +231,7 @@ ExtensionsMenuEntryView::ExtensionsMenuEntryView(
                               kExtensionsMenuButtonRadius))
                       .SetFocusBehavior(views::View::FocusBehavior::ALWAYS),
                   // Site access toggle.
-                  views::Builder<views::ToggleButton>()
+                  views::Builder<ExtensionsMenuSiteAccessToggle>()
                       .CopyAddressTo(&site_access_toggle_)
                       .SetProperty(
                           views::kMarginsKey,
@@ -155,14 +239,26 @@ ExtensionsMenuEntryView::ExtensionsMenuEntryView(
                       .SetAccessibleName(l10n_util::GetStringFUTF16(
                           IDS_EXTENSIONS_MENU_EXTENSION_SITE_ACCESS_TOGGLE_ACCESSIBLE_NAME,
                           view_model->GetActionName()))
+                      // Pass `this` to access `origin()` at click time rather
+                      // than binding a static copy of the origin.
                       .SetCallback(base::BindRepeating(
-                          [](views::ToggleButton* toggle_button,
-                             base::RepeatingCallback<void(bool)>
+                          [](ExtensionsMenuEntryView* entry_view,
+                             const base::RepeatingCallback<void(
+                                 const url::Origin&, bool)>&
                                  site_access_toggle_callback) {
                             site_access_toggle_callback.Run(
-                                toggle_button->GetIsOn());
+                                entry_view->origin(),
+                                entry_view->site_access_toggle_->GetIsOn());
                           },
-                          site_access_toggle_, site_access_toggle_callback)),
+                          // Passing `base::Unretained(this)` is safe because
+                          // `site_access_toggle_` is a child view of `this`
+                          // (`ExtensionsMenuEntryView`). The view hierarchy
+                          // guarantees that `views::View::~View()` destroys all
+                          // child views and their bound callbacks before `this`
+                          // is deallocated, so the callback can never outlive
+                          // `this`.
+                          base::Unretained(this),
+                          std::move(site_access_toggle_callback))),
                   // Context menu button.
                   views::Builder<HoverButton>(
                       std::make_unique<HoverButton>(
@@ -238,6 +334,14 @@ ExtensionsMenuEntryView::~ExtensionsMenuEntryView() = default;
 
 void ExtensionsMenuEntryView::Update(
     ExtensionsMenuViewModel::MenuEntryState entry_state) {
+  if (origin_ != entry_state.origin) {
+    origin_ = entry_state.origin;
+    if (auto* toggle = views::AsViewClass<ExtensionsMenuSiteAccessToggle>(
+            site_access_toggle_)) {
+      toggle->ResetInputProtection();
+    }
+  }
+
   site_access_toggle_->SetVisible(
       entry_state.site_access_toggle.status !=
       ExtensionsMenuViewModel::ControlState::Status::kHidden);
