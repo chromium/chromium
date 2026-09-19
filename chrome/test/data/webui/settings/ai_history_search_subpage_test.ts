@@ -7,9 +7,8 @@ import type {SettingsHistorySearchPageElement} from 'chrome://settings/lazy_load
 import {AiEnterpriseFeaturePrefName, AiPageActions, FeatureOptInState, SettingsAiPageFeaturePrefName as PrefName} from 'chrome://settings/lazy_load.js';
 import {AiPageHistorySearchInteractions, loadTimeData, MetricsBrowserProxyImpl, ModelExecutionEnterprisePolicyValue, OpenWindowProxyImpl, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
@@ -54,7 +53,7 @@ suite('HistorySearchSubpage', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     subpage = document.createElement('settings-history-search-page');
     document.body.appendChild(subpage);
-    return flushTasks();
+    return microtasksFinished();
   }
 
   async function assertFeatureInteractionMetrics(
@@ -69,11 +68,11 @@ suite('HistorySearchSubpage', function() {
   test('historySearchToggle', async () => {
     await createPage();
 
-    const toggle = subpage.shadowRoot!.querySelector('settings-toggle-button');
+    const toggle = subpage.shadowRoot.querySelector('settings-toggle-button');
     assertTrue(!!toggle);
 
     const policyIndicator =
-        subpage.shadowRoot!.querySelector('cr-policy-pref-indicator');
+        subpage.shadowRoot.querySelector('cr-policy-pref-indicator');
     assertFalse(!!policyIndicator);
 
     // Check NOT_INITIALIZED case.
@@ -112,22 +111,22 @@ suite('HistorySearchSubpage', function() {
     await createPage();
 
     const indicator =
-        subpage.shadowRoot!.querySelector('cr-policy-pref-indicator');
+        subpage.shadowRoot.querySelector('cr-policy-pref-indicator');
     assertTrue(!!indicator);
 
-    const toggle = subpage.shadowRoot!.querySelector('settings-toggle-button');
+    const toggle = subpage.shadowRoot.querySelector('settings-toggle-button');
     assertTrue(!!toggle);
     assertTrue(toggle.disabled);
     assertFalse(toggle.checked);
 
-    const linkout = subpage.shadowRoot!.querySelector('cr-link-row');
+    const linkout = subpage.shadowRoot.querySelector('cr-link-row');
     assertFalse(!!linkout);
   });
 
   test('historySearchLinkout', async function() {
     await createPage();
 
-    const linkout = subpage.shadowRoot!.querySelector('cr-link-row');
+    const linkout = subpage.shadowRoot.querySelector('cr-link-row');
     assertTrue(!!linkout);
 
     linkout.click();
@@ -141,7 +140,7 @@ suite('HistorySearchSubpage', function() {
   test('historySearchLearnMore', async () => {
     await createPage();
 
-    const learnMoreLink = subpage.shadowRoot!.querySelector('a');
+    const learnMoreLink = subpage.shadowRoot.querySelector('a');
     assertTrue(!!learnMoreLink);
     assertEquals(
         learnMoreLink.href,
@@ -159,7 +158,7 @@ suite('HistorySearchSubpage', function() {
         ModelExecutionEnterprisePolicyValue.ALLOW_WITHOUT_LOGGING);
     await createPage();
 
-    const learnMoreLink = subpage.shadowRoot!.querySelector('a');
+    const learnMoreLink = subpage.shadowRoot.querySelector('a');
     assertTrue(!!learnMoreLink);
     assertEquals(
         learnMoreLink.href,
@@ -168,14 +167,14 @@ suite('HistorySearchSubpage', function() {
 
   test('historySearchTextWithAnswers', async () => {
     function checkVisibility(selector: string) {
-      const element = subpage.shadowRoot!.querySelector(selector);
+      const element = subpage.shadowRoot.querySelector(selector);
       assertTrue(!!element);
       return isVisible(element);
     }
 
     await createPage();
     const linkout =
-        subpage.shadowRoot!.querySelector<HTMLElement>('#linkoutText');
+        subpage.shadowRoot.querySelector<HTMLElement>('#linkoutText');
     assertTrue(!!linkout);
     assertEquals(
         loadTimeData.getString('historySearchSettingSublabelV2') +
@@ -193,7 +192,7 @@ suite('HistorySearchSubpage', function() {
     loadTimeData.overrideValues({historyEmbeddingsAnswersFeatureEnabled: true});
     await createPage();
     const linkoutWithAnswers =
-        subpage.shadowRoot!.querySelector<HTMLElement>('#linkoutText');
+        subpage.shadowRoot.querySelector<HTMLElement>('#linkoutText');
     assertTrue(!!linkoutWithAnswers);
     assertEquals(
         loadTimeData.getString('historySearchWithAnswersSettingSublabelV2') +

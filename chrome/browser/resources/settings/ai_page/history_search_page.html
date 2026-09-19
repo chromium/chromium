@@ -1,67 +1,50 @@
-<style include="settings-shared settings-columned-section">
-  .separator {
-    margin: 0 4px;
-  }
-
-  .separator + settings-toggle-button {
-    margin-inline-end: 12px;
-  }
-
-  cr-icon {
-    flex-shrink: 0;
-  }
-
-  cr-policy-pref-indicator {
-    margin-inline-end: 4px;
-  }
-</style>
-
+<!-- #html_wrapper_imports_start
+import {FeatureOptInState} from './constants.js';
+#html_wrapper_imports_end -->
 <settings-subpage page-title="$i18n{historySearchSettingLabel}"
-    route-path$="[[routePath]]">
+    route-path="${this.routePath}">
 <div class="settings-row first">
-  <template is="dom-if" if="[[!isDisabledByPolicy_(enterprisePref_)]]"
-      restamp>
+  ${!this.isDisabledByPolicy_() ? html`
     <cr-link-row label="$i18n{historySearchSettingLabel}"
-        on-click="onHistorySearchLinkoutClick_" external>
+        @click="${this.onHistorySearchLinkoutClick_}" external>
       <div slot="sub-label">
-        <span id="linkoutText">[[toggleSubLabelV2_]]</span>
-        <a href="[[getLearnMoreUrl_(enterprisePref_)]]"
+        <span id="linkoutText">${this.toggleSubLabelV2_}</span>
+        <a href="${this.getLearnMoreUrl_()}"
             aria-label="$i18n{historySearchLearnMoreA11yLabel}"
             aria-description="$i18n{opensInNewTab}"
-            on-click="onLearnMoreClick_" target="_blank">
+            @click="${this.onLearnMoreClick_}" target="_blank">
           $i18n{learnMore}
         </a>
       </div>
     </cr-link-row>
     <div class="separator"></div>
-  </template>
-  <template is="dom-if" if="[[isDisabledByPolicy_(enterprisePref_)]]" restamp>
+  ` : html`
     <div class="cr-row first">
       <div class="flex cr-padded-text">
         <div id="historySearchLabel">$i18n{historySearchSettingLabel}</div>
         <div class="secondary">
-          [[toggleSubLabelV2_]]
-          <a href="[[getLearnMoreUrl_(enterprisePref_)]]"
+          ${this.toggleSubLabelV2_}
+          <a href="${this.getLearnMoreUrl_()}"
               aria-label="$i18n{historySearchLearnMoreA11yLabel}"
               aria-description="$i18n{opensInNewTab}"
-              on-click="onLearnMoreClick_" target="_blank">
+              @click="${this.onLearnMoreClick_}" target="_blank">
             $i18n{learnMore}
           </a>
         </div>
       </div>
     </div>
     <cr-policy-pref-indicator id="policyIndicator"
-          pref="[[enterprisePref_]]">
+        .pref="${this.enterprisePref_}">
     </cr-policy-pref-indicator>
-  </template>
+  `}
   <settings-toggle-button aria-label="$i18n{historySearchSettingLabel}"
-      learn-more-url="[[getLearnMoreUrl_(enterprisePref_)]]"
+      learn-more-url="${this.getLearnMoreUrl_()}"
       learn-more-aria-label="$i18n{historySearchLearnMoreA11yLabel}"
       pref-key="optimization_guide.history_search_setting_state"
-      numeric-unchecked-values="[[numericUncheckedValues_]]"
-      numeric-checked-value="[[featureOptInStateEnum_.ENABLED]]"
-      on-settings-boolean-control-change="onHistorySearchToggleChange_"
-      disabled="[[isDisabledByPolicy_(enterprisePref_)]]">
+      .numericUncheckedValues="${this.numericUncheckedValues_}"
+      .numericCheckedValue="${FeatureOptInState.ENABLED}"
+      @settings-boolean-control-change="${this.onHistorySearchToggleSettingsBooleanControlChange_}"
+      ?disabled="${this.isDisabledByPolicy_()}">
   </settings-toggle-button>
 </div>
 <div class="settings-columned-section">
@@ -71,16 +54,16 @@
       <li>
         <cr-icon icon="settings20:search-spark" aria-hidden="true"></cr-icon>
         <div id="whenOnPageContentText" class="secondary"
-            hidden="[[isAnswersFeatureEnabled_]]">
+            ?hidden="${this.isAnswersFeatureEnabled_}">
           $i18n{historySearchWhenOnPageContent}
         </div>
         <div id="whenOnPageContentTextWithAnswers" class="secondary"
-            hidden="[[!isAnswersFeatureEnabled_]]">
+            ?hidden="${!this.isAnswersFeatureEnabled_}">
           $i18n{historySearchWithAnswersWhenOnPageContent}
         </div>
       </li>
       <li id="whenOnRecallInfoWithAnswers"
-          hidden="[[!isAnswersFeatureEnabled_]]">
+          ?hidden="${!this.isAnswersFeatureEnabled_}">
         <cr-icon icon="settings20:summarize-auto-2" aria-hidden="true">
         </cr-icon>
         <div class="secondary">
@@ -118,15 +101,15 @@
       <li>
         <cr-icon icon="settings20:file-save" aria-hidden="true"></cr-icon>
         <div id="considerDataEncryptedText" class="secondary"
-            hidden="[[isAnswersFeatureEnabled_]]">
+            ?hidden="${this.isAnswersFeatureEnabled_}">
           $i18n{historySearchConsiderDataEncrypted}
         </div>
         <div id="considerDataEncryptedTextWithAnswers" class="secondary"
-            hidden="[[!isAnswersFeatureEnabled_]]">
+            ?hidden="${!this.isAnswersFeatureEnabled_}">
           $i18n{historySearchWithAnswersConsiderDataEncrypted}
         </div>
       </li>
-      <li id="considerOutDatedItem" hidden="[[!isAnswersFeatureEnabled_]]">
+      <li id="considerOutDatedItem" ?hidden="${!this.isAnswersFeatureEnabled_}">
         <cr-icon icon="settings20:difference" aria-hidden="true"></cr-icon>
         <div class="secondary">
           $i18n{historySearchWithAnswersConsiderOutdated}

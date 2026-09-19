@@ -8,8 +8,7 @@ import 'chrome://settings/lazy_load.js';
 import type {InlineCueMenuPageElement, SettingsToggleButtonElement} from 'chrome://settings/lazy_load.js';
 import {ContentSetting, ContentSettingsTypes, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
 import {createContentSettingTypeToValuePair, createRawSiteException, createSiteSettingsPrefs} from './test_util.js';
@@ -33,13 +32,17 @@ suite('InlineCueMenuPage', function() {
     browserProxy.setPrefs(prefs);
     page = document.createElement('settings-inline-cue-menu-page');
     document.body.appendChild(page);
-    await flushTasks();
+    await Promise.all([
+      browserProxy.whenCalled('getDefaultValueForContentType'),
+      browserProxy.whenCalled('getExceptionList'),
+    ]);
+    await microtasksFinished();
   }
 
   test('MainToggle', async function() {
     await initPage();
     const mainToggle =
-        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        page.shadowRoot.querySelector<SettingsToggleButtonElement>(
             '#mainToggle');
     assertTrue(!!mainToggle);
     assertTrue(mainToggle.checked);
@@ -53,11 +56,11 @@ suite('InlineCueMenuPage', function() {
   test('BlockedSitesListUpdate', async function() {
     await initPage();
     const noSitesLabel =
-        page.shadowRoot!.querySelector<HTMLElement>('.list-frame .secondary');
+        page.shadowRoot.querySelector<HTMLElement>('.list-frame .secondary');
     assertTrue(!!noSitesLabel);
     assertTrue(isVisible(noSitesLabel));
 
-    const siteListItems = page.shadowRoot!.querySelectorAll<HTMLElement>(
+    const siteListItems = page.shadowRoot.querySelectorAll<HTMLElement>(
         '.list-item[role=listitem]');
     assertEquals(0, siteListItems.length);
   });
@@ -75,7 +78,7 @@ suite('InlineCueMenuPage', function() {
     ]);
     await initPage(prefs);
 
-    const siteListItems = page.shadowRoot!.querySelectorAll<HTMLElement>(
+    const siteListItems = page.shadowRoot.querySelectorAll<HTMLElement>(
         '.list-item[role=listitem]');
     assertEquals(1, siteListItems.length);
     assertTrue(siteListItems[0]!.textContent.includes('foo.com'));
@@ -98,7 +101,7 @@ suite('InlineCueMenuPage', function() {
     ]);
     await initPage(prefs);
 
-    const siteListItems = page.shadowRoot!.querySelectorAll<HTMLElement>(
+    const siteListItems = page.shadowRoot.querySelectorAll<HTMLElement>(
         '.list-item[role=listitem]');
     assertEquals(2, siteListItems.length);
 
@@ -117,15 +120,15 @@ suite('InlineCueMenuPage', function() {
 
   test('AddSiteDialog', async function() {
     await initPage();
-    assertFalse(!!page.shadowRoot!.querySelector('add-site-dialog'));
+    assertFalse(!!page.shadowRoot.querySelector('add-site-dialog'));
 
     const addSiteButton =
-        page.shadowRoot!.querySelector<HTMLElement>('#addSite');
+        page.shadowRoot.querySelector<HTMLElement>('#addSite');
     assertTrue(!!addSiteButton);
     addSiteButton.click();
-    await flushTasks();
+    await microtasksFinished();
 
-    const addSiteDialog = page.shadowRoot!.querySelector('add-site-dialog');
+    const addSiteDialog = page.shadowRoot.querySelector('add-site-dialog');
     assertTrue(!!addSiteDialog);
   });
 });

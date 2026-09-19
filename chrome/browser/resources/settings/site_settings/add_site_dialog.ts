@@ -93,9 +93,11 @@ export class AddSiteDialogElement extends AddSiteDialogElementBase {
   override connectedCallback() {
     super.connectedCallback();
 
-    assert(this.category);
-    assert(this.contentSetting);
-    assert(typeof this.hasIncognito !== 'undefined');
+    queueMicrotask(() => {
+      assert(this.category);
+      assert(this.contentSetting);
+      assert(typeof this.hasIncognito !== 'undefined');
+    });
 
     this.$.dialog.showModal();
   }

@@ -9,25 +9,22 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import '../icons.html.js';
 import '../site_settings/add_site_dialog.js';
 import '../site_favicon.js';
-import '../site_settings/site_settings_shared.css.js';
 import '../controls/settings_toggle_button.js';
 import '../settings_page/settings_subpage.js';
-import '../settings_shared.css.js';
 
-import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
-import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
+import {SettingsViewMixinLit} from '../settings_page/settings_view_mixin_lit.js';
 import {ContentSetting, ContentSettingsTypes} from '../site_settings/constants.js';
-import type {RawSiteException} from '../site_settings/site_settings_browser_proxy.js';
-import {DefaultSettingSource} from '../site_settings/site_settings_browser_proxy.js';
-import {SiteSettingsMixin} from '../site_settings/site_settings_mixin.js';
+import type {RawSiteException, SiteSettingsBrowserProxy} from '../site_settings/site_settings_browser_proxy.js';
+import {DefaultSettingSource, SiteSettingsBrowserProxyImpl} from '../site_settings/site_settings_browser_proxy.js';
 import {isSettingEnabled} from '../site_settings/site_settings_util.js';
 
-import {getTemplate} from './inline_cue_menu_page.html.js';
+import {getCss} from './inline_cue_menu_page.css.js';
+import {getHtml} from './inline_cue_menu_page.html.js';
 
 export interface InlineCueMenuPageElement {
   $: {
@@ -35,63 +32,42 @@ export interface InlineCueMenuPageElement {
   };
 }
 
-const InlineCueMenuPageElementBase = SettingsViewMixin(
-    SiteSettingsMixin(WebUiListenerMixin(I18nMixin(PolymerElement))));
+const InlineCueMenuPageElementBase =
+    SettingsViewMixinLit(WebUiListenerMixinLit(I18nMixinLit(CrLitElement)));
 
 export class InlineCueMenuPageElement extends InlineCueMenuPageElementBase {
   static get is() {
     return 'settings-inline-cue-menu-page';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      pref_: {
-        type: Object,
-        value() {
-          return {type: chrome.settingsPrivate.PrefType.BOOLEAN};
-        },
-      },
-
-      sites_: {
-        type: Array,
-        value: () => [],
-      },
-
-      showAddSiteDialog_: {
-        type: Boolean,
-        value: false,
-      },
-
-      hasIncognito_: {
-        type: Boolean,
-        value: false,
-      },
-
-      // Expose ContentSettingsTypes enum to the HTML template.
-      contentSettingsTypesEnum_: {
-        type: Object,
-        value: ContentSettingsTypes,
-      },
-
-      // Expose ContentSetting enum to the HTML template.
-      contentSettingEnum_: {
-        type: Object,
-        value: ContentSetting,
-      },
+      pref_: {type: Object},
+      sites_: {type: Array},
+      showAddSiteDialog_: {type: Boolean},
     };
   }
 
-  declare private pref_: chrome.settingsPrivate.PrefObject<boolean>;
-  declare private sites_: RawSiteException[];
-  declare private showAddSiteDialog_: boolean;
-  declare private hasIncognito_: boolean;
+  protected accessor pref_: chrome.settingsPrivate.PrefObject<boolean> = {
+    key: '',
+    type: chrome.settingsPrivate.PrefType.BOOLEAN,
+    value: false,
+  };
+  protected accessor sites_: RawSiteException[] = [];
+  protected accessor showAddSiteDialog_: boolean = false;
+  private browserProxy_: SiteSettingsBrowserProxy =
+      SiteSettingsBrowserProxyImpl.getInstance();
 
-  override ready() {
-    super.ready();
+  override connectedCallback() {
+    super.connectedCallback();
 
     this.addWebUiListener(
         'contentSettingCategoryChanged',
@@ -119,44 +95,51 @@ export class InlineCueMenuPageElement extends InlineCueMenuPageElementBase {
   }
 
   private async updateSites_() {
-    const sites = await this.browserProxy.getExceptionList(
+    const sites = await this.browserProxy_.getExceptionList(
         ContentSettingsTypes.INLINE_CUE_MENU);
     this.sites_ = sites.filter(site => site.setting === ContentSetting.BLOCK);
   }
 
-  private hasSites_(): boolean {
+  protected hasSites_(): boolean {
     return this.sites_.length > 0;
   }
 
-  private onAddSiteClick_() {
+  protected onAddSiteClick_() {
     chrome.metricsPrivate.recordUserAction(
         'Settings.AiPage.InlineCueMenu.AddSiteClicked');
     this.showAddSiteDialog_ = true;
   }
 
-  private onAddSiteDialogClosed_() {
+  protected onAddSiteDialogClose_() {
     this.showAddSiteDialog_ = false;
     this.updateSites_();
   }
 
-  private onDeleteSiteClick_(e: DomRepeatEvent<RawSiteException>) {
-    const site = e.model.item;
-    this.browserProxy.resetCategoryPermissionForPattern(
+  protected onDeleteSiteClick_(e: Event) {
+    const target = e.currentTarget as HTMLElement;
+    const index = Number(target.dataset['index']);
+    const site = this.sites_[index];
+    this.browserProxy_.resetCategoryPermissionForPattern(
         site.origin, site.embeddingOrigin, ContentSettingsTypes.INLINE_CUE_MENU,
         site.incognito);
   }
 
   private async updateToggleValue_() {
-    const defaultValue = await this.browserProxy.getDefaultValueForContentType(
+    const defaultValue = await this.browserProxy_.getDefaultValueForContentType(
         ContentSettingsTypes.INLINE_CUE_MENU);
+
+    const pref: chrome.settingsPrivate.PrefObject<boolean> = {
+      key: '',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: isSettingEnabled(defaultValue.setting),
+    };
 
     // Update pref_ policy enforcement properties to match standard
     // ContentSettings category controls (see
     // settings_category_default_radio_group.ts).
     if (defaultValue.source !== undefined &&
         defaultValue.source !== DefaultSettingSource.PREFERENCE) {
-      this.set(
-          'pref_.enforcement', chrome.settingsPrivate.Enforcement.ENFORCED);
+      pref.enforcement = chrome.settingsPrivate.Enforcement.ENFORCED;
       let controlledBy = chrome.settingsPrivate.ControlledBy.USER_POLICY;
       switch (defaultValue.source) {
         case DefaultSettingSource.POLICY:
@@ -171,16 +154,13 @@ export class InlineCueMenuPageElement extends InlineCueMenuPageElementBase {
         default:
           break;
       }
-      this.set('pref_.controlledBy', controlledBy);
-    } else {
-      this.set('pref_.enforcement', null);
-      this.set('pref_.controlledBy', null);
+      pref.controlledBy = controlledBy;
     }
 
-    this.set('pref_.value', isSettingEnabled(defaultValue.setting));
+    this.pref_ = pref;
   }
 
-  private onMainToggleChange_() {
+  protected onMainToggleSettingsBooleanControlChange_() {
     if (this.$.mainToggle.checked) {
       chrome.metricsPrivate.recordUserAction(
           'Settings.AiPage.InlineCueMenu.Enabled');
@@ -188,22 +168,22 @@ export class InlineCueMenuPageElement extends InlineCueMenuPageElementBase {
       chrome.metricsPrivate.recordUserAction(
           'Settings.AiPage.InlineCueMenu.Disabled');
     }
-    this.browserProxy.setDefaultValueForContentType(
+    this.browserProxy_.setDefaultValueForContentType(
         ContentSettingsTypes.INLINE_CUE_MENU,
         this.$.mainToggle.checked ? ContentSetting.ALLOW :
                                     ContentSetting.BLOCK);
   }
 
-  private getPreviewText_(): TrustedHTML {
+  protected getPreviewText_(): TrustedHTML {
     return this.i18nAdvanced('siteSettingsInlineCueMenuPreviewText', {
       tags: ['span'],
       attrs: ['class'],
     });
   }
 
-  // SettingsViewMixin implementation.
+  // SettingsViewMixinLit implementation.
   override focusBackButton() {
-    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+    this.shadowRoot.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

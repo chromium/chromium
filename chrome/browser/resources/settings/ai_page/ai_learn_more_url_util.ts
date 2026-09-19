@@ -5,9 +5,9 @@
 import {ModelExecutionEnterprisePolicyValue} from './constants.js';
 
 export function getAiLearnMoreUrl(
-    enterprisePref: chrome.settingsPrivate.PrefObject, learnMoreUrl: string,
-    learnMoreEnterpriseUrl: string): string {
-  return enterprisePref.value ===
+    enterprisePref: chrome.settingsPrivate.PrefObject|undefined,
+    learnMoreUrl: string, learnMoreEnterpriseUrl: string): string {
+  return enterprisePref?.value ===
           ModelExecutionEnterprisePolicyValue.ALLOW_WITHOUT_LOGGING ?
       learnMoreEnterpriseUrl :
       learnMoreUrl;

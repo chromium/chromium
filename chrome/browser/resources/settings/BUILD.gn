@@ -537,6 +537,8 @@ build_webui("build") {
     "ai_page/ai_policy_indicator.css",
     "ai_page/ai_site_add_dialog.css",
     "ai_page/dictation_page.css",
+    "ai_page/history_search_page.css",
+    "ai_page/inline_cue_menu_page.css",
     "a11y_page/a11y_page_index.css",
     "a11y_page/captions_page.css",
     "a11y_page/live_caption.css",
@@ -626,6 +628,7 @@ build_webui("build") {
     "settings_page/settings_subpage.css",
     "site_settings/clear_storage_dialog_shared.css",
     "site_settings/site_settings_shared.css",
+    "site_settings/site_settings_shared_lit.css",
     "system_page/system_page.css",
   ]
 

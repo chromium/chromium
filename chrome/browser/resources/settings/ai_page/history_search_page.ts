@@ -7,27 +7,27 @@ import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import '/shared/settings/controls/cr_policy_pref_indicator.js';
 import './ai_logging_info_bullet.js';
 import '../controls/settings_toggle_button.js';
-import '../settings_columned_section.css.js';
 import '../settings_page/settings_subpage.js';
-import '../settings_shared.css.js';
+import '../icons.html.js';
 
-import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
+import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {AiPageHistorySearchInteractions, MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
-import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
+import {SettingsViewMixinLit} from '../settings_page/settings_view_mixin_lit.js';
 
 import {getAiLearnMoreUrl} from './ai_learn_more_url_util.js';
 import {isFeatureDisabledByPolicy} from './ai_policy_indicator.js';
 import {AiEnterpriseFeaturePrefName, AiPageActions, FeatureOptInState} from './constants.js';
-import {getTemplate} from './history_search_page.html.js';
+import {getCss} from './history_search_page.css.js';
+import {getHtml} from './history_search_page.html.js';
 
 const SettingsHistorySearchPageElementBase =
-    SettingsViewMixin(PrefServiceObserverMixin(PolymerElement));
+    SettingsViewMixinLit(PrefServiceObserverMixinLit(CrLitElement));
 
 export class SettingsHistorySearchPageElement extends
     SettingsHistorySearchPageElementBase {
@@ -35,53 +35,37 @@ export class SettingsHistorySearchPageElement extends
     return 'settings-history-search-page';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      featureOptInStateEnum_: {
-        type: Object,
-        value: FeatureOptInState,
-      },
-
-      isAnswersFeatureEnabled_: {
-        type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('historyEmbeddingsAnswersFeatureEnabled'),
-      },
-
-      numericUncheckedValues_: {
-        type: Array,
-        value: () =>
-            [FeatureOptInState.DISABLED, FeatureOptInState.NOT_INITIALIZED],
-      },
-
-      // TODO(crbug.com/362225975): Remove V2 suffixes.
-      toggleSubLabelV2_: {
-        type: String,
-        value: () => {
-          return (loadTimeData.getBoolean(
-                      'historyEmbeddingsAnswersFeatureEnabled') ?
-                      loadTimeData.getString(
-                          'historySearchWithAnswersSettingSublabelV2') :
-                      loadTimeData.getString(
-                          'historySearchSettingSublabelV2')) +
-              loadTimeData.getString('sentenceEnd') +
-              ' ';  // Whitespace is needed to separate the sub-label from the
-                    // following Learn More.
-        },
-      },
-
-      enterprisePref_: Object,
+      isAnswersFeatureEnabled_: {type: Boolean},
+      numericUncheckedValues_: {type: Array},
+      toggleSubLabelV2_: {type: String},
+      enterprisePref_: {type: Object},
     };
   }
 
-  declare private isAnswersFeatureEnabled_: boolean;
-  declare private numericUncheckedValues_: FeatureOptInState[];
-  declare private toggleSubLabelV2_: string;
-  declare private enterprisePref_: chrome.settingsPrivate.PrefObject;
+  protected accessor isAnswersFeatureEnabled_: boolean =
+      loadTimeData.getBoolean('historyEmbeddingsAnswersFeatureEnabled');
+  protected accessor numericUncheckedValues_: FeatureOptInState[] =
+      [FeatureOptInState.DISABLED, FeatureOptInState.NOT_INITIALIZED];
+  // TODO(crbug.com/362225975): Remove V2 suffixes.
+  protected accessor toggleSubLabelV2_: string =
+      (loadTimeData.getBoolean('historyEmbeddingsAnswersFeatureEnabled') ?
+           loadTimeData.getString('historySearchWithAnswersSettingSublabelV2') :
+           loadTimeData.getString('historySearchSettingSublabelV2')) +
+      loadTimeData.getString('sentenceEnd') +
+      ' ';  // Whitespace is needed to separate the sub-label from the
+            // following Learn More.
+  protected accessor enterprisePref_: chrome.settingsPrivate.PrefObject|
+      undefined;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
 
@@ -98,7 +82,7 @@ export class SettingsHistorySearchPageElement extends
     this.metricsBrowserProxy_.recordAction(action);
   }
 
-  private onHistorySearchLinkoutClick_() {
+  protected onHistorySearchLinkoutClick_() {
     this.recordInteractionMetrics_(
         AiPageHistorySearchInteractions.FEATURE_LINK_CLICKED,
         AiPageActions.HISTORY_SEARCH_FEATURE_LINK_CLICKED);
@@ -107,7 +91,7 @@ export class SettingsHistorySearchPageElement extends
         loadTimeData.getString('historySearchDataHomeUrl'));
   }
 
-  private onLearnMoreClick_(event: Event) {
+  protected onLearnMoreClick_(event: Event) {
     // Stop the propagation of events, so that clicking on the 'Learn More' link
     // won't trigger the external linkout action on the parent cr-link-row
     // element.
@@ -117,7 +101,7 @@ export class SettingsHistorySearchPageElement extends
         AiPageActions.HISTORY_SEARCH_LEARN_MORE_CLICKED);
   }
 
-  private onHistorySearchToggleChange_(e: Event) {
+  protected onHistorySearchToggleSettingsBooleanControlChange_(e: Event) {
     const toggle = e.target as SettingsToggleButtonElement;
     if (toggle.checked) {
       this.recordInteractionMetrics_(
@@ -130,22 +114,24 @@ export class SettingsHistorySearchPageElement extends
         AiPageActions.HISTORY_SEARCH_DISABLED);
   }
 
-  private getLearnMoreUrl_(): string {
+  protected getLearnMoreUrl_(): string {
     return getAiLearnMoreUrl(
         this.enterprisePref_,
         loadTimeData.getString('historySearchLearnMoreUrl'),
         loadTimeData.getString('historySearchLearnMoreManagedUrl'));
   }
 
-  private isDisabledByPolicy_(): boolean {
+  protected isDisabledByPolicy_(): boolean {
     return isFeatureDisabledByPolicy(this.enterprisePref_);
   }
 
-  // SettingsViewMixin implementation.
+  // SettingsViewMixinLit implementation.
   override focusBackButton() {
-    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+    this.shadowRoot.querySelector('settings-subpage')!.focusBackButton();
   }
 }
+
+export type HistorySearchPageElement = SettingsHistorySearchPageElement;
 
 declare global {
   interface HTMLElementTagNameMap {
