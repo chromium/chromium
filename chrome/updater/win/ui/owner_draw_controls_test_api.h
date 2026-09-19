@@ -10,21 +10,35 @@
 
 namespace updater::test {
 
-// Grants tests access to a single caption button's internals without widening
+// Grants tests access to a tracked button's internals without widening
 // the production API surface, in the spirit of `views::test::ButtonTestApi`.
-class CaptionButtonTestApi {
+class TrackedButtonTestApi {
  public:
-  explicit CaptionButtonTestApi(const ui::CaptionButton& button)
+  explicit TrackedButtonTestApi(const ui::TrackedButton& button)
       : button_(button) {}
-  CaptionButtonTestApi(const CaptionButtonTestApi&) = delete;
-  CaptionButtonTestApi& operator=(const CaptionButtonTestApi&) = delete;
-
-  using PaintState = ::updater::ui::CaptionButton::PaintState;
+  TrackedButtonTestApi(const TrackedButtonTestApi&) = delete;
+  TrackedButtonTestApi& operator=(const TrackedButtonTestApi&) = delete;
 
   bool is_mouse_hovering() const { return button_->is_mouse_hovering_; }
   bool is_tracking_mouse_events() const {
     return button_->is_tracking_mouse_events_;
   }
+
+ private:
+  const base::raw_ref<const ui::TrackedButton> button_;
+};
+
+// Grants tests access to a single caption button's internals without widening
+// the production API surface, in the spirit of `views::test::ButtonTestApi`.
+class CaptionButtonTestApi : public TrackedButtonTestApi {
+ public:
+  explicit CaptionButtonTestApi(const ui::CaptionButton& button)
+      : TrackedButtonTestApi(button), button_(button) {}
+  CaptionButtonTestApi(const CaptionButtonTestApi&) = delete;
+  CaptionButtonTestApi& operator=(const CaptionButtonTestApi&) = delete;
+
+  using PaintState = ::updater::ui::CaptionButton::PaintState;
+
   bool is_dark_mode() const { return button_->is_dark_mode_; }
 
   // The color this button would paint its glyph with right now.

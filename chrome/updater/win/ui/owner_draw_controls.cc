@@ -137,6 +137,9 @@ HWND CaptionButton::Create(HWND parent, const RECT& bounds, int control_id) {
                  MAKELONG(2000, 0));
   ::SendMessageW(tool_tip_window_, TTM_ACTIVATE, TRUE, 0);
 
+  // TTF_SUBCLASS makes the tooltip subclass this control and read the mouse
+  // messages itself. Dropping that flag would require relaying every mouse
+  // message here with TTM_RELAYEVENT instead, which nothing does anymore.
   TOOLINFOW ti = {
       .cbSize = sizeof(TOOLINFOW),
       .uFlags = TTF_IDISHWND | TTF_SUBCLASS,
@@ -150,19 +153,10 @@ HWND CaptionButton::Create(HWND parent, const RECT& bounds, int control_id) {
   return hwnd();
 }
 
-LRESULT CaptionButton::OnMouseMessage(UINT msg, WPARAM wparam, LPARAM lparam) {
-  if (tool_tip_window_ && ::IsWindow(tool_tip_window_)) {
-    MSG relay_msg = {hwnd(), msg, wparam, lparam};
-    ::SendMessageW(tool_tip_window_, TTM_RELAYEVENT, 0,
-                   reinterpret_cast<LPARAM>(&relay_msg));
-  }
-  // Mouse messages must continue to the default `BUTTON` procedure so that
-  // it can track pressed state, capture the mouse, and fire `BN_CLICKED`.
-  SetMsgHandled(FALSE);
-  return 1;
-}
+TrackedButton::TrackedButton() = default;
+TrackedButton::~TrackedButton() = default;
 
-LRESULT CaptionButton::OnMouseMove(UINT, WPARAM, LPARAM lparam) {
+LRESULT TrackedButton::OnMouseMove(UINT, WPARAM, LPARAM lparam) {
   // `BUTTON` captures the mouse on WM_LBUTTONDOWN, so moves outside the client
   // rect keep arriving here.
   RECT client_rect = {};
@@ -192,7 +186,7 @@ LRESULT CaptionButton::OnMouseMove(UINT, WPARAM, LPARAM lparam) {
   return 0;
 }
 
-void CaptionButton::CancelMouseTracking() {
+void TrackedButton::CancelMouseTracking() {
   if (!is_tracking_mouse_events_) {
     return;
   }
@@ -205,7 +199,7 @@ void CaptionButton::CancelMouseTracking() {
   is_tracking_mouse_events_ = false;
 }
 
-LRESULT CaptionButton::OnMouseLeave(UINT, WPARAM, LPARAM) {
+LRESULT TrackedButton::OnMouseLeave(UINT, WPARAM, LPARAM) {
   is_tracking_mouse_events_ = false;
   if (is_mouse_hovering_) {
     is_mouse_hovering_ = false;
@@ -216,7 +210,7 @@ LRESULT CaptionButton::OnMouseLeave(UINT, WPARAM, LPARAM) {
   return 0;
 }
 
-LRESULT CaptionButton::OnEnable(UINT, WPARAM wparam, LPARAM) {
+LRESULT TrackedButton::OnEnable(UINT, WPARAM wparam, LPARAM) {
   if (!wparam) {
     is_mouse_hovering_ = false;
     CancelMouseTracking();
@@ -227,7 +221,7 @@ LRESULT CaptionButton::OnEnable(UINT, WPARAM wparam, LPARAM) {
   return 0;
 }
 
-LRESULT CaptionButton::OnShowWindow(UINT, WPARAM wparam, LPARAM) {
+LRESULT TrackedButton::OnShowWindow(UINT, WPARAM wparam, LPARAM) {
   if (!wparam) {
     is_mouse_hovering_ = false;
     CancelMouseTracking();
@@ -235,6 +229,10 @@ LRESULT CaptionButton::OnShowWindow(UINT, WPARAM wparam, LPARAM) {
 
   SetMsgHandled(FALSE);
   return 0;
+}
+
+bool TrackedButton::IsEnabled() const {
+  return IsWindow() && ::IsWindowEnabled(hwnd());
 }
 
 void CaptionButton::UpdateThemeState() {
@@ -296,15 +294,11 @@ void CaptionButton::DrawItem(LPDRAWITEMSTRUCT draw_item_struct) {
   }
 }
 
-bool CaptionButton::IsEnabled() const {
-  return IsWindow() && ::IsWindowEnabled(hwnd());
-}
-
 CaptionButton::PaintState CaptionButton::SnapshotPaintState(
     UINT item_state) const {
   // TODO(crbug.com/409590312): Decode ODS_SELECTED for the pressed state.
   return {.is_enabled = !(item_state & ODS_DISABLED),
-          .is_hovered = is_mouse_hovering_,
+          .is_hovered = is_mouse_hovering(),
           .is_dark_mode = is_dark_mode_,
           .is_high_contrast = is_high_contrast_};
 }
@@ -1111,51 +1105,6 @@ void FlatButton::SetIsPrimary(bool is_primary) {
   }
 }
 
-LRESULT FlatButton::OnMouseMessage(UINT msg, WPARAM wparam, LPARAM lparam) {
-  SetMsgHandled(FALSE);
-  return 1;
-}
-
-LRESULT FlatButton::OnMouseMove(UINT, WPARAM, LPARAM) {
-  if (!is_tracking_mouse_events_) {
-    TRACKMOUSEEVENT tme = {};
-    tme.cbSize = sizeof(TRACKMOUSEEVENT);
-    tme.dwFlags = TME_HOVER | TME_LEAVE;
-    tme.hwndTrack = hwnd();
-    tme.dwHoverTime = 1;
-    is_tracking_mouse_events_ = _TrackMouseEvent(&tme);
-  }
-  SetMsgHandled(FALSE);
-  return 0;
-}
-
-LRESULT FlatButton::OnMouseHover(UINT, WPARAM, LPARAM) {
-  if (!is_mouse_hovering_) {
-    is_mouse_hovering_ = true;
-    ::InvalidateRect(hwnd(), nullptr, FALSE);
-    ::UpdateWindow(hwnd());
-  }
-  SetMsgHandled(FALSE);
-  return 0;
-}
-
-LRESULT FlatButton::OnMouseLeave(UINT, WPARAM, LPARAM) {
-  TRACKMOUSEEVENT tme = {};
-  tme.cbSize = sizeof(TRACKMOUSEEVENT);
-  tme.dwFlags = TME_CANCEL | TME_HOVER | TME_LEAVE;
-  tme.hwndTrack = hwnd();
-  _TrackMouseEvent(&tme);
-
-  is_tracking_mouse_events_ = false;
-  is_mouse_hovering_ = false;
-
-  ::InvalidateRect(hwnd(), nullptr, FALSE);
-  ::UpdateWindow(hwnd());
-
-  SetMsgHandled(FALSE);
-  return 0;
-}
-
 LRESULT FlatButton::OnThemeChanged(UINT, WPARAM, LPARAM) {
   UpdateThemeState();
   if (IsWindow()) {
@@ -1194,7 +1143,7 @@ LRESULT FlatButton::OnPaint(UINT, WPARAM, LPARAM) {
 
   DrawParentBackground(hwnd(), dc, rect);
 
-  const bool is_disabled = !::IsWindowEnabled(hwnd());
+  const bool is_disabled = !IsEnabled();
   const bool is_default =
       (::GetWindowLong(hwnd(), GWL_STYLE) & BS_DEFPUSHBUTTON) != 0;
   const bool is_pressed =
@@ -1202,6 +1151,7 @@ LRESULT FlatButton::OnPaint(UINT, WPARAM, LPARAM) {
 
   const bool is_high_contrast = is_high_contrast_;
   const bool is_dark_mode = is_dark_mode_;
+  const bool is_hovered = is_mouse_hovering();
 
   COLORREF bg = CLR_INVALID;
   COLORREF text = CLR_INVALID;
@@ -1211,8 +1161,8 @@ LRESULT FlatButton::OnPaint(UINT, WPARAM, LPARAM) {
     const bool is_focused =
         (::GetFocus() == hwnd()) ||
         ((::SendMessageW(hwnd(), BM_GETSTATE, 0, 0) & BST_FOCUS) != 0);
-    const bool use_highlight = is_pressed || is_default || is_mouse_hovering_ ||
-                               is_focused || is_primary_;
+    const bool use_highlight =
+        is_pressed || is_default || is_hovered || is_focused || is_primary_;
 
     bg = use_highlight ? ::GetSysColor(COLOR_HIGHLIGHT)
                        : ::GetSysColor(COLOR_BTNFACE);
@@ -1226,14 +1176,14 @@ LRESULT FlatButton::OnPaint(UINT, WPARAM, LPARAM) {
       border = bg;
     } else if (is_primary_) {
       bg = is_pressed ? kPrimaryButtonBgDarkPressed
-                      : (is_mouse_hovering_ ? kPrimaryButtonBgDarkHover
-                                            : kPrimaryButtonBgDark);
+                      : (is_hovered ? kPrimaryButtonBgDarkHover
+                                    : kPrimaryButtonBgDark);
       text = kPrimaryButtonFgDark;
       border = bg;
     } else {
       bg = is_pressed ? kSecondaryButtonBgDarkPressed
-                      : (is_mouse_hovering_ ? kSecondaryButtonBgDarkHover
-                                            : kSecondaryButtonBgDark);
+                      : (is_hovered ? kSecondaryButtonBgDarkHover
+                                    : kSecondaryButtonBgDark);
       text = kSecondaryButtonFgDark;
       border = kSecondaryButtonBorderDark;
     }
@@ -1244,16 +1194,15 @@ LRESULT FlatButton::OnPaint(UINT, WPARAM, LPARAM) {
       border = bg;
     } else if (is_primary_) {
       bg = is_pressed ? kPrimaryButtonBgPressed
-                      : (is_mouse_hovering_ ? kPrimaryButtonBgHover
-                                            : kPrimaryButtonBg);
+                      : (is_hovered ? kPrimaryButtonBgHover : kPrimaryButtonBg);
       text = kPrimaryButtonFg;
       border = bg;
     } else {
-      bg = is_pressed ? kSecondaryButtonBgPressed
-                      : (is_mouse_hovering_ ? kSecondaryButtonBgHover
-                                            : kSecondaryButtonBg);
+      bg = is_pressed
+               ? kSecondaryButtonBgPressed
+               : (is_hovered ? kSecondaryButtonBgHover : kSecondaryButtonBg);
       text = kSecondaryButtonFg;
-      border = is_mouse_hovering_ ? kSecondaryButtonFg : kSecondaryButtonBorder;
+      border = is_hovered ? kSecondaryButtonFg : kSecondaryButtonBorder;
     }
   }
 
