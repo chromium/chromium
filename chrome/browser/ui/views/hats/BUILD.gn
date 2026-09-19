@@ -48,5 +48,6 @@ source_set("impl") {
     "//ui/base/metadata",
     "//ui/views",
     "//ui/web_dialogs",
+    "//url",
   ]
 }

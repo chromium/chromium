@@ -33,6 +33,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/views/test/views_test_utils.h"
@@ -355,6 +356,10 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, UnknownURLFragment) {
 IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, NewWebContents) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
+  content::TestNavigationObserver navigation_observer(nullptr);
+  navigation_observer.set_expected_initial_url(GURL("http://foo.com"));
+  navigation_observer.StartWatchingNewWebContents();
+
   auto* dialog = new MockHatsNextWebDialog(
       browser(), "open_new_web_contents_for_testing", std::nullopt,
       std::nullopt, embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
@@ -366,10 +371,15 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, NewWebContents) {
   dialog->WaitForClose();
 
   // Check that a tab with http://foo.com (defined in hats_next_mock.html) has
-  // been opened in the regular browser and is active.
+  // been opened in the regular browser and is active, with an opaque initiator
+  // origin.
   EXPECT_EQ(
       GURL("http://foo.com"),
       browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL());
+
+  navigation_observer.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_observer.last_initiator_origin().has_value());
+  EXPECT_TRUE(navigation_observer.last_initiator_origin()->opaque());
 }
 
 // The devtools browser for undocked devtools has no tab strip and can't open
@@ -379,6 +389,10 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   BrowserWindowInterface* devtools_browser = OpenUndockedDevToolsWindow();
+
+  content::TestNavigationObserver navigation_observer(nullptr);
+  navigation_observer.set_expected_initial_url(GURL("http://foo.com"));
+  navigation_observer.StartWatchingNewWebContents();
 
   auto* dialog = new MockHatsNextWebDialog(
       devtools_browser, "open_new_web_contents_for_testing", std::nullopt,
@@ -391,10 +405,39 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest,
   dialog->WaitForClose();
 
   // Check that a tab with http://foo.com (defined in hats_next_mock.html) has
-  // been opened in the regular browser and is active.
+  // been opened in the regular browser and is active, with an opaque initiator
+  // origin.
   EXPECT_EQ(
       GURL("http://foo.com"),
       browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL());
+
+  navigation_observer.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_observer.last_initiator_origin().has_value());
+  EXPECT_TRUE(navigation_observer.last_initiator_origin()->opaque());
+}
+
+IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest,
+                       NewWebContentsBlocksDataUrl) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  content::TestNavigationObserver navigation_observer(
+      GURL("data:text/html,<h1>blocked</h1>"), /*quit_mode=*/{},
+      /*ignore_uncommitted_navigations=*/false);
+  navigation_observer.StartWatchingNewWebContents();
+
+  auto* dialog = new MockHatsNextWebDialog(
+      browser(), "open_data_url_for_testing", std::nullopt, std::nullopt,
+      embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
+      base::Seconds(100), base::DoNothing(), base::DoNothing(), {}, {});
+
+  EXPECT_CALL(*hats_service(), HatsNextDialogClosed);
+  dialog->WaitForClose();
+  navigation_observer.WaitForNavigationFinished();
+
+  // Top-level data: URL navigations initiated by a renderer are blocked by
+  // BlockedSchemeNavigationThrottle.
+  EXPECT_FALSE(navigation_observer.last_navigation_succeeded());
+  EXPECT_EQ(net::ERR_ABORTED, navigation_observer.last_net_error_code());
 }
 
 IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, DialogResize) {

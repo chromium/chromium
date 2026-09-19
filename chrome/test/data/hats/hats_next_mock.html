@@ -44,6 +44,11 @@
         history.pushState('', '', '#close');
       }
 
+      if (params.get('trigger_id') == "open_data_url_for_testing") {
+        window.open('data:text/html,<h1>blocked</h1>', '_blank');
+        history.pushState('', '', '#close');
+      }
+
       if (params.get('trigger_id') == "resize_for_testing") {
         // Size wrapping div element to a known size, with one dimension smaller
         // than the by-default renderer-enforced minimum.
