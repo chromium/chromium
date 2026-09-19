@@ -24,4 +24,17 @@ found in the LICENSE file.
     <!-- Flyout Menu Constants-->
     <item type="integer" format="integer" name="flyout_menu_delay_in_ms">300</item>
     <item type="integer" format="integer" name="flyout_menu_hover_exit_delay_in_ms">50</item>
+
+    <!-- OpenType features disabled for all native UI text, via the root
+         TextAppearance style. Ligatures and contextual alternates can render a
+         run of ordinary characters as a single unrelated glyph, which is not
+         appropriate for the untrusted text that browser UI has to display.
+         Required ligatures ("rlig") and the joining and conjunct features used
+         by cursive and complex scripts are deliberately left enabled. Web
+         contents are unaffected: they are rendered by Blink, not by Android
+         TextViews.
+
+         Kept as a resource so that every style that needs it shares one value.
+         See crbug.com/391788835. -->
+    <string name="default_font_feature_settings" translatable="false">\"liga\" 0, \"calt\" 0</string>
 </resources>

@@ -97,12 +97,15 @@ found in the LICENSE file.
 
     <!-- Styled to match BlackHeadline but setup to override values in the app compat parent theme.
          Note that the fontFamily doesn't get applied on older versions of Android.
-         See https://crbug.com/918697.-->
+         See https://crbug.com/918697.
+         Despite the name, this style descends from an AppCompat parent rather than from
+         TextAppearance, so it has to repeat the font feature settings explicitly. -->
     <style name="TextAppearance.AlertDialogTitleStyle"
         parent="RtlOverlay.DialogWindowTitle.AppCompat">
         <item name="android:textColor">@color/default_text_color_list</item>
         <item name="android:textSize">@dimen/headline_size</item>
         <item name="android:fontFamily">@font/accent_font</item>
+        <item name="android:fontFeatureSettings">@string/default_font_feature_settings</item>
         <item name="android:textStyle">normal</item>
     </style>
 
