@@ -57,8 +57,12 @@ class ListContainerHelper::CharAllocator {
       // Confident that destructor is called by caller of this function. Since
       // CharAllocator does not handle construction after
       // allocation, it doesn't handle desctrution before deallocation.
-      DCHECK_LE(position, LastElement());
-      DCHECK_GE(position, Begin());
+      // Enforced in all builds: erasing from an empty list or erasing a
+      // past-the-end position underflows the std::copy below into a wild
+      // memmove (~2^64 bytes) and corrupts size/capacity bookkeeping.
+      CHECK_GT(size, 0u);
+      CHECK_LE(position, LastElement());
+      CHECK_GE(position, Begin());
       char* start = UNSAFE_TODO(position + step);
       std::copy(start, End(), position);
 
@@ -190,9 +194,11 @@ class ListContainerHelper::CharAllocator {
 
   void Erase(PositionInCharAllocator* position) {
     DCHECK_EQ(this, position->ptr_to_container);
+    CHECK_GT(size_, 0u);
 
     // Update |position| to point to the element after the erased element.
     InnerList& list = storage_[position->vector_index];
+    CHECK_GT(list.size, 0u);
     char* item_iterator = position->item_iterator;
     if (item_iterator == list.LastElement())
       position->Increment();
