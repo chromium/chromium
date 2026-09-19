@@ -1,26 +1,19 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.download;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Tests for MimeUtils class. */
-@RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
-public class MimeUtilsTest {
+@RunWith(BaseRobolectricTestRunner.class)
+public class MimeUtilsUnitTest {
     @Test
-    @SmallTest
-    @Feature({"Download"})
     public void testGetFileExtension() {
         Assert.assertEquals("ext", MimeUtils.getFileExtension("", "file.ext"));
         Assert.assertEquals("ext", MimeUtils.getFileExtension("http://file.ext", ""));
@@ -33,8 +26,6 @@ public class MimeUtilsTest {
      * varying MIME types and Content-Dispositions.
      */
     @Test
-    @SmallTest
-    @Feature({"Download"})
     public void testCanAutoOpenMimeType() {
         // Should not open any download type MIME types.
         Assert.assertFalse(MimeUtils.canAutoOpenMimeType("application/download"));
@@ -51,8 +42,6 @@ public class MimeUtilsTest {
      * (such as application/x-wifi-config) regardless of file extension.
      */
     @Test
-    @SmallTest
-    @Feature({"Download"})
     public void testRemapGenericMimeType() {
         Assert.assertEquals(
                 "image/jpeg",

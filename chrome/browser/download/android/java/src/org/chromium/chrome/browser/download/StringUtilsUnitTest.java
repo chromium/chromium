@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,26 +8,23 @@ import android.content.Context;
 import android.text.format.DateUtils;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.GraphicsMode;
 
-import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.components.offline_items_collection.OfflineItem.Progress;
 import org.chromium.components.offline_items_collection.OfflineItemProgressUnit;
 
 /** Tests of {@link StringUtils}. */
-@RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
-public class StringUtilsTest {
+@RunWith(BaseRobolectricTestRunner.class)
+// Needed so TextPaint.measureText measures wide CJK glyphs accurately instead of 1px/char.
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
+public class StringUtilsUnitTest {
     @Test
-    @SmallTest
-    @Feature({"Download"})
     public void testGetProgressTextForUi() {
         Assert.assertEquals(
                 "Downloading…", StringUtils.getProgressTextForUi(ProgressBuilder.indeterminate()));
@@ -68,8 +65,6 @@ public class StringUtilsTest {
     }
 
     @Test
-    @SmallTest
-    @Feature({"Download"})
     public void testFormatRemainingTime() {
         final Context context = ApplicationProvider.getApplicationContext();
         Assert.assertEquals("0 secs left", StringUtils.timeLeftForUi(context, 0));
@@ -100,8 +95,6 @@ public class StringUtilsTest {
     }
 
     @Test
-    @SmallTest
-    @Feature({"Download"})
     public void testGetAvailableBytesForUi() {
         final Context context = ApplicationProvider.getApplicationContext();
         Assert.assertEquals("0.00 KB available", StringUtils.getAvailableBytesForUi(context, 0));
@@ -114,8 +107,6 @@ public class StringUtilsTest {
     }
 
     @Test
-    @SmallTest
-    @Feature({"Download"})
     public void testDownloadUtilsGetStringForBytes() {
         final Context context = ApplicationProvider.getApplicationContext();
         Assert.assertEquals("0.00 KB", DownloadUtils.getStringForBytes(context, 0));
@@ -127,8 +118,6 @@ public class StringUtilsTest {
     }
 
     @Test
-    @SmallTest
-    @Feature({"Download"})
     public void testGetAbbrieviatedFileName() {
         Assert.assertEquals("123.pdf", StringUtils.getAbbreviatedFileName("123.pdf", 10));
         Assert.assertEquals(
@@ -141,8 +130,6 @@ public class StringUtilsTest {
     }
 
     @Test
-    @SmallTest
-    @Feature({"Download"})
     public void testGetAbbreviatedFileNameEarlyReturn() {
         // Pure ASCII with length <= limit should early return
         Assert.assertEquals("123.pdf", StringUtils.getAbbreviatedFileName("123.pdf", 7));
@@ -151,8 +138,6 @@ public class StringUtilsTest {
     }
 
     @Test
-    @SmallTest
-    @Feature({"Download"})
     public void testGetAbbreviatedFileNameOptimization() {
         // Verify that extremely long ASCII filenames with length > limit are abbreviated correctly
         StringBuilder sb = new StringBuilder();
@@ -166,8 +151,6 @@ public class StringUtilsTest {
     }
 
     @Test
-    @SmallTest
-    @Feature({"Download"})
     public void testGetAbbreviatedFileNameUnicodeOptimization() {
         // Verify that extremely long Unicode filenames do not cause timeout and loop limit works
         StringBuilder sb = new StringBuilder();
@@ -188,8 +171,6 @@ public class StringUtilsTest {
     }
 
     @Test
-    @SmallTest
-    @Feature({"Download"})
     public void testGetAbbreviatedFileNameUnicode() {
         // Verify that it handles very wide Unicode and decorative characters, and places ellipsis
         // correctly

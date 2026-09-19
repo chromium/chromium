@@ -157,47 +157,14 @@ generate_jni("jni_headers") {
   ]
 }
 
-android_library("download_java_tests") {
-  testonly = true
-
-  sources = [
-    "java/src/org/chromium/chrome/browser/download/DownloadFileProviderTest.java",
-    "java/src/org/chromium/chrome/browser/download/MimeUtilsTest.java",
-    "java/src/org/chromium/chrome/browser/download/StringUtilsTest.java",
-  ]
-
-  deps = [
-    ":file_provider_java",
-    ":java",
-    "//base:base_java",
-    "//base:base_java_test_support",
-    "//chrome/browser/flags:java",
-    "//chrome/browser/preferences:java",
-    "//chrome/browser/profiles/android:java",
-    "//chrome/browser/settings:test_support_java",
-    "//chrome/test/android:chrome_java_unit_test_support",
-    "//components/browser_ui/settings/android:java",
-    "//components/browser_ui/util/android:java",
-    "//components/offline_items_collection/core:core_java",
-    "//components/policy/android:policy_java_test_support",
-    "//components/prefs/android:java",
-    "//components/user_prefs/android:java",
-    "//content/public/test/android:content_java_test_support",
-    "//third_party/android_deps:espresso_java",
-    "//third_party/androidx:androidx_preference_preference_java",
-    "//third_party/androidx:androidx_test_core_java",
-    "//third_party/androidx:androidx_test_monitor_java",
-    "//third_party/androidx:androidx_test_runner_java",
-    "//third_party/junit",
-    "//third_party/mockito:mockito_java",
-  ]
-}
-
 robolectric_library("junit_tests") {
   sources = [
     "java/src/org/chromium/chrome/browser/download/DownloadDialogBridgeUnitTest.java",
     "java/src/org/chromium/chrome/browser/download/DownloadDirectoryProviderUnitTest.java",
+    "java/src/org/chromium/chrome/browser/download/DownloadFileProviderUnitTest.java",
     "java/src/org/chromium/chrome/browser/download/DownloadLocationDialogMetricsUnitTest.java",
+    "java/src/org/chromium/chrome/browser/download/MimeUtilsUnitTest.java",
+    "java/src/org/chromium/chrome/browser/download/StringUtilsUnitTest.java",
     "java/src/org/chromium/chrome/browser/download/dialogs/DownloadDialogUtilsUnitTest.java",
     "java/src/org/chromium/chrome/browser/download/dialogs/OpenDownloadDialogTest.java",
     "java/src/org/chromium/chrome/browser/download/settings/DownloadLocationPreferenceDialogUnitTest.java",
@@ -214,11 +181,13 @@ robolectric_library("junit_tests") {
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/test/android:chrome_java_unit_test_support",
+    "//components/browser_ui/util/android:java",
     "//components/offline_items_collection/core:core_java",
     "//components/prefs/android:java",
     "//net/android:net_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",

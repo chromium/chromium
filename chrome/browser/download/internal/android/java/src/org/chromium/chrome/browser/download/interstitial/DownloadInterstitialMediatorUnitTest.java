@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,7 +25,6 @@ import static org.chromium.chrome.browser.download.interstitial.DownloadIntersti
 import static org.chromium.chrome.browser.download.interstitial.DownloadInterstitialProperties.STATE;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -36,8 +35,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.download.home.StubbedOfflineContentProvider;
 import org.chromium.chrome.browser.download.home.list.ListProperties;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -59,8 +57,8 @@ import java.util.Map;
  * Unit tests for the {@link DownloadInterstitialMediator}. Modifies the page state through the
  * {@link PropertyModel} and observes changes to the mediator/model.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
-public class DownloadInterstitialMediatorTest {
+@RunWith(BaseRobolectricTestRunner.class)
+public class DownloadInterstitialMediatorUnitTest {
     private static final String DOWNLOAD_BUTTON_TEXT = "Download";
     private static final String CANCEL_BUTTON_TEXT = "Cancel";
     private static final String RESUME_BUTTON_TEXT = "Resume";
@@ -108,16 +106,12 @@ public class DownloadInterstitialMediatorTest {
     }
 
     @Test
-    @SmallTest
-    @Feature({"NewDownloadTab"})
     public void testItemIsAttached() {
         assertEquals(mItem0, mModel.get(DOWNLOAD_ITEM));
         mUmaTestingHelper.assertActionWasLogged(INITIATED, 1);
     }
 
     @Test
-    @SmallTest
-    @Feature({"NewDownloadTab"})
     public void testSecondDownloadNotAttached() {
         OfflineItem item1 = createOfflineItem("item1");
         item1.originalUrl = JUnitTestGURLs.URL_1;
@@ -128,8 +122,6 @@ public class DownloadInterstitialMediatorTest {
     }
 
     @Test
-    @SmallTest
-    @Feature({"NewDownloadTab"})
     public void testInProgressDownloadNotAttached() {
         OfflineItem item1 = createOfflineItem("item1");
         item1.originalUrl = JUnitTestGURLs.URL_1;
@@ -152,8 +144,6 @@ public class DownloadInterstitialMediatorTest {
     }
 
     @Test
-    @SmallTest
-    @Feature({"NewDownloadTab"})
     public void testInProgressItemIsCancelled() {
         assertEquals(OfflineItemState.IN_PROGRESS, mModel.get(DOWNLOAD_ITEM).state);
         clickButtonWithText(CANCEL_BUTTON_TEXT);
@@ -164,8 +154,6 @@ public class DownloadInterstitialMediatorTest {
     }
 
     @Test
-    @SmallTest
-    @Feature({"NewDownloadTab"})
     public void testInProgressReDownload() {
         assertEquals(OfflineItemState.IN_PROGRESS, mModel.get(DOWNLOAD_ITEM).state);
         clickButtonWithText(CANCEL_BUTTON_TEXT);
@@ -182,8 +170,6 @@ public class DownloadInterstitialMediatorTest {
     }
 
     @Test
-    @SmallTest
-    @Feature({"NewDownloadTab"})
     public void testInProgressPauseDownload() {
         assertEquals(OfflineItemState.IN_PROGRESS, mModel.get(DOWNLOAD_ITEM).state);
         mModel.get(ListProperties.CALLBACK_PAUSE).onResult(mModel.get(DOWNLOAD_ITEM));
@@ -194,8 +180,6 @@ public class DownloadInterstitialMediatorTest {
     }
 
     @Test
-    @SmallTest
-    @Feature({"NewDownloadTab"})
     public void testInProgressResumeDownload() {
         assertEquals(OfflineItemState.IN_PROGRESS, mModel.get(DOWNLOAD_ITEM).state);
         mModel.get(ListProperties.CALLBACK_PAUSE).onResult(mModel.get(DOWNLOAD_ITEM));
@@ -208,8 +192,6 @@ public class DownloadInterstitialMediatorTest {
     }
 
     @Test
-    @SmallTest
-    @Feature({"NewDownloadTab"})
     public void testCancelledDownloadIsDeletedImmediately() {
         assertEquals(OfflineItemState.IN_PROGRESS, mModel.get(DOWNLOAD_ITEM).state);
         clickButtonWithText(CANCEL_BUTTON_TEXT);
@@ -220,8 +202,6 @@ public class DownloadInterstitialMediatorTest {
     }
 
     @Test
-    @SmallTest
-    @Feature({"NewDownloadTab"})
     public void testOpenDownload() {
         mProvider.completeDownload(mModel.get(DOWNLOAD_ITEM).id);
         assertEquals(OfflineItemState.COMPLETE, mModel.get(DOWNLOAD_ITEM).state);
@@ -232,8 +212,6 @@ public class DownloadInterstitialMediatorTest {
     }
 
     @Test
-    @SmallTest
-    @Feature({"NewDownloadTab"})
     public void testDeleteDownload() {
         mProvider.completeDownload(mModel.get(DOWNLOAD_ITEM).id);
         assertEquals(OfflineItemState.COMPLETE, mModel.get(DOWNLOAD_ITEM).state);
@@ -247,8 +225,6 @@ public class DownloadInterstitialMediatorTest {
     }
 
     @Test
-    @SmallTest
-    @Feature({"NewDownloadTab"})
     public void testCancelDeleteDialogKeepsDownload() {
         mProvider.completeDownload(mModel.get(DOWNLOAD_ITEM).id);
         assertEquals(OfflineItemState.COMPLETE, mModel.get(DOWNLOAD_ITEM).state);
@@ -261,8 +237,6 @@ public class DownloadInterstitialMediatorTest {
     }
 
     @Test
-    @SmallTest
-    @Feature({"NewDownloadTab"})
     public void testReDownloadDeletedDownload() {
         mProvider.completeDownload(mModel.get(DOWNLOAD_ITEM).id);
         assertEquals(OfflineItemState.COMPLETE, mModel.get(DOWNLOAD_ITEM).state);
@@ -283,8 +257,6 @@ public class DownloadInterstitialMediatorTest {
     }
 
     @Test
-    @SmallTest
-    @Feature({"NewDownloadTab"})
     public void testDeletedDownloadIsRemovedImmediately() {
         mProvider.completeDownload(mModel.get(DOWNLOAD_ITEM).id);
         assertEquals(OfflineItemState.COMPLETE, mModel.get(DOWNLOAD_ITEM).state);
@@ -295,8 +267,6 @@ public class DownloadInterstitialMediatorTest {
     }
 
     @Test
-    @SmallTest
-    @Feature({"NewDownloadTab"})
     public void testSharingLogsMetrics() {
         mProvider.completeDownload(mModel.get(DOWNLOAD_ITEM).id);
         mModel.get(ListProperties.CALLBACK_SHARE).onResult(mModel.get(DOWNLOAD_ITEM));

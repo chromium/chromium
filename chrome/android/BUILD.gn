@@ -1453,7 +1453,6 @@ if (_is_default_toolchain) {
       "javatests:chrome_unit_test_java_org.chromium.chrome.browser.download",
       "javatests:chrome_unit_test_java_org.chromium.chrome.browser.share",
       "javatests:chrome_unit_test_java_various",
-      "//chrome/browser/download/android:download_java_tests",
       "//url:url_java_unit_tests",
     ]
 

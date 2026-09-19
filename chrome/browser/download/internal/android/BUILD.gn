@@ -269,7 +269,6 @@ android_library("unit_device_javatests") {
     "java/src/org/chromium/chrome/browser/download/home/DownloadActivityV2Test.java",
     "java/src/org/chromium/chrome/browser/download/home/StubbedOfflineContentProvider.java",
     "java/src/org/chromium/chrome/browser/download/home/StubbedProvider.java",
-    "java/src/org/chromium/chrome/browser/download/interstitial/DownloadInterstitialMediatorTest.java",
   ]
 
   deps = [
@@ -327,6 +326,7 @@ android_library("unit_device_javatests") {
 
 robolectric_library("junit") {
   sources = [
+    "java/src/org/chromium/chrome/browser/download/home/StubbedOfflineContentProvider.java",
     "java/src/org/chromium/chrome/browser/download/home/filter/DeleteUndoOfflineItemFilterTest.java",
     "java/src/org/chromium/chrome/browser/download/home/filter/FiltersTest.java",
     "java/src/org/chromium/chrome/browser/download/home/filter/OffTheRecordOfflineItemFilterTest.java",
@@ -337,24 +337,32 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/download/home/list/ItemUtilsTest.java",
     "java/src/org/chromium/chrome/browser/download/home/list/ShareUtilsTest.java",
     "java/src/org/chromium/chrome/browser/download/home/list/UiUtilsTest.java",
+    "java/src/org/chromium/chrome/browser/download/interstitial/DownloadInterstitialMediatorUnitTest.java",
   ]
 
   deps = [
     ":java",
+    ":java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//chrome/browser/download/android:java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/ui/messages/android:java",
+    "//components/browser_ui/modaldialog/android:java",
     "//components/browser_ui/util/android:java",
+    "//components/download/public/common:public_java",
     "//components/offline_items_collection/core:core_java",
     "//components/url_formatter/android:url_formatter_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",
+    "//ui/android:ui_java_test_support",
     "//url:gurl_java",
     "//url:gurl_junit_test_support",
   ]

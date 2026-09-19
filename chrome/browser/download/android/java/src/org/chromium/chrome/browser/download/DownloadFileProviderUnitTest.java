@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.download;
 import static org.mockito.Mockito.doReturn;
 
 import android.net.Uri;
-
-import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -20,19 +18,16 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.download.DownloadDirectoryProvider.SecondaryStorageInfo;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 /** Test content URI can be generated correctly by {@link DownloadFileProvider}. */
-@RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
-public class DownloadFileProviderTest {
+@RunWith(BaseRobolectricTestRunner.class)
+public class DownloadFileProviderUnitTest {
     private static final String PRIMARY_STORAGE_DOWNLOAD_DIRECTORY_PATH =
             "/storage/emulated/1234/Download";
 
@@ -100,8 +95,6 @@ public class DownloadFileProviderTest {
     }
 
     @Test
-    @SmallTest
-    @Feature({"Download"})
     public void testGenerateContentUri() {
         String packageName = ContextUtils.getApplicationContext().getPackageName();
         verifyContentUri(
@@ -137,8 +130,6 @@ public class DownloadFileProviderTest {
     }
 
     @Test
-    @SmallTest
-    @Feature({"Download"})
     public void testParseContentUri() {
         String packageName = ContextUtils.getApplicationContext().getPackageName();
         verifyParseContentUri(
