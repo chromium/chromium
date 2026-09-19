@@ -45,6 +45,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.actor.OffscreenRenderingManager;
 import org.chromium.chrome.browser.chrome_item_picker.TabItemPickerCoordinator.ItemPickerNavigationProvider;
+import org.chromium.chrome.browser.chrome_item_picker.TabItemPickerCoordinator.ThumbnailCaptureResult;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -327,11 +328,14 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
         watcher.assertExpected();
         verify(tab).removeObserver(observer);
         verify(mTabContentManager)
-                .cacheTabThumbnailWithCallback(eq(tab), eq(false), mCallbackCaptor.capture());
+                .cacheTabThumbnailWithCallback(eq(tab), eq(true), mCallbackCaptor.capture());
 
         var thumbnailWatcher =
                 HistogramWatcher.newBuilder()
                         .expectAnyRecord("Android.TabItemPicker.OnDemandThumbnailFetchDuration")
+                        .expectIntRecord(
+                                "Android.TabItemPicker.ThumbnailCaptureResult",
+                                ThumbnailCaptureResult.CAPTURE_EMPTY)
                         .build();
 
         mCallbackCaptor.getValue().onResult(null);
@@ -594,7 +598,7 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
         observer.didFirstVisuallyNonEmptyPaint(tab);
 
         verify(mTabContentManager)
-                .cacheTabThumbnailWithCallback(eq(tab), eq(false), mCallbackCaptor.capture());
+                .cacheTabThumbnailWithCallback(eq(tab), eq(true), mCallbackCaptor.capture());
         verify(mockOffscreenManager, never()).stopOffscreenRendering(tab);
 
         mCallbackCaptor.getValue().onResult(null);
@@ -905,6 +909,50 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
 
         mNavigationProvider.finishSelection(
                 Arrays.asList(TabListEditorItemSelectionId.createTabId(101)));
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE)
+    public void testThumbnailCaptureResult_LiveCaptured() {
+        Tab tab = selectLoadableTab(101);
+        verify(tab).addObserver(mTabObserverCaptor.capture());
+        TabObserver observer = mTabObserverCaptor.getValue();
+
+        observer.onPageLoadFinished(tab, JUnitTestGURLs.URL_1);
+        verify(mTabContentManager)
+                .cacheTabThumbnailWithCallback(eq(tab), eq(true), mCallbackCaptor.capture());
+
+        Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.TabItemPicker.ThumbnailCaptureResult",
+                                ThumbnailCaptureResult.LIVE_CAPTURED)
+                        .build();
+
+        mCallbackCaptor.getValue().onResult(bitmap);
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE,
+        OPTIMIZATION_CANCEL_ON_DESELECTION
+    })
+    public void testThumbnailCaptureResult_CancelledPreserved() {
+        selectLoadableTab(101);
+
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.TabItemPicker.ThumbnailCaptureResult",
+                                ThumbnailCaptureResult.CANCELLED_PRESERVED)
+                        .build();
+
+        mNavigationProvider.onSelectionStateChange(Collections.emptySet());
 
         watcher.assertExpected();
     }

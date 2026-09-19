@@ -6401,6 +6401,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.TabItemPicker.ThumbnailCaptureResult"
+    enum="TabItemPickerThumbnailCaptureResult" expires_after="2027-07-07">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>madhavpruthi@google.com</owner>
+  <summary>
+    Records the outcome of thumbnail capture and visual presentation following
+    an on-demand background tab load in the tab item picker. Indicates whether a
+    live visual thumbnail was captured, an empty fallback occurred, a load
+    failed, or an existing thumbnail was preserved upon cancellation.
+  </summary>
+</histogram>
+
 <histogram name="Android.TabletDeterminationMismatch" enum="Boolean"
     expires_after="2027-01-17">
   <owner>skavuluru@google.com</owner>

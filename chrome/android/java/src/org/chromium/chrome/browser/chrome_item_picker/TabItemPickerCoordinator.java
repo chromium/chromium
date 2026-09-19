@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 
 import androidx.activity.ComponentActivity;
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.ArraySet;
 
@@ -63,6 +64,8 @@ import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -387,6 +390,24 @@ public class TabItemPickerCoordinator {
         }
     }
 
+    // LINT.IfChange(TabItemPickerThumbnailCaptureResult)
+    @IntDef({
+        ThumbnailCaptureResult.LIVE_CAPTURED,
+        ThumbnailCaptureResult.CAPTURE_EMPTY,
+        ThumbnailCaptureResult.LOAD_FAILED,
+        ThumbnailCaptureResult.CANCELLED_PRESERVED
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ThumbnailCaptureResult {
+        int LIVE_CAPTURED = 0;
+        int CAPTURE_EMPTY = 1;
+        int LOAD_FAILED = 2;
+        int CANCELLED_PRESERVED = 3;
+        int NUM_ENTRIES = 4;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:TabItemPickerThumbnailCaptureResult)
+
     public static class ItemPickerNavigationProvider
             implements TabListEditorCoordinator.NavigationProvider, ItemPickerSelectionHandler {
 
@@ -605,6 +626,16 @@ public class TabItemPickerCoordinator {
             }
 
             if (result != LoadResult.SUCCESS) {
+                @ThumbnailCaptureResult
+                int captureResult =
+                        result == LoadResult.CANCELLED
+                                ? ThumbnailCaptureResult.CANCELLED_PRESERVED
+                                : ThumbnailCaptureResult.LOAD_FAILED;
+                RecordHistogram.recordEnumeratedHistogram(
+                        "Android.TabItemPicker.ThumbnailCaptureResult",
+                        captureResult,
+                        ThumbnailCaptureResult.NUM_ENTRIES);
+
                 // Drop the stale thumbnail only when the load actually failed, so the card falls
                 // back to a placeholder. Cancellation deliberately leaves it intact. This must
                 // happen before hiding the spinner, which triggers a thumbnail re-fetch. When
@@ -624,8 +655,8 @@ public class TabItemPickerCoordinator {
             long thumbnailStartTime = SystemClock.elapsedRealtime();
             mTabContentManager.cacheTabThumbnailWithCallback(
                     tab,
-                    /* returnBitmap= */ false,
-                    _ -> {
+                    /* returnBitmap= */ true,
+                    bitmap -> {
                         mOffscreenRenderer.stopOffscreenRenderingIfNeeded(tab);
                         if (mIsDestroyed) {
                             return;
@@ -635,6 +666,16 @@ public class TabItemPickerCoordinator {
                         RecordHistogram.recordMediumTimesHistogram(
                                 "Android.TabItemPicker.OnDemandThumbnailFetchDuration",
                                 thumbnailDuration);
+
+                        @ThumbnailCaptureResult
+                        int captureResult =
+                                bitmap != null
+                                        ? ThumbnailCaptureResult.LIVE_CAPTURED
+                                        : ThumbnailCaptureResult.CAPTURE_EMPTY;
+                        RecordHistogram.recordEnumeratedHistogram(
+                                "Android.TabItemPicker.ThumbnailCaptureResult",
+                                captureResult,
+                                ThumbnailCaptureResult.NUM_ENTRIES);
 
                         var controller = mControllerSupplier.get();
                         if (controller != null) {

@@ -2257,6 +2257,17 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="CHANGED_COLOR_AND_TITLE"/>
 </enum>
 
+<!-- LINT.IfChange(TabItemPickerThumbnailCaptureResult) -->
+
+<enum name="TabItemPickerThumbnailCaptureResult">
+  <int value="0" label="Live Captured"/>
+  <int value="1" label="Capture Empty (Placeholder Fallback)"/>
+  <int value="2" label="Load Failed (Placeholder Fallback)"/>
+  <int value="3" label="Cancelled (Preserved Existing Thumbnail)"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/chrome_item_picker/TabItemPickerCoordinator.java:TabItemPickerThumbnailCaptureResult) -->
+
 <enum name="TabListEditorShareActionState">
   <int value="0" label="UNKNOWN_SHARE_STATE"/>
   <int value="1" label="SUCCESSFULLY_SHARED_TABS"/>
