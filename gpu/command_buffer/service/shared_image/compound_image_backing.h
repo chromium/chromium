@@ -356,12 +356,17 @@ class GPU_GLES2_EXPORT CompoundImageBacking
   // TODO(crbug.com/40276878): Remove this method once we figure out the mapping
   // between SharedImageUsage and BufferUsage and no longer need to use
   // BufferUsage.
+  // If `shared_image_factory` is non-null, dynamic backing allocation is
+  // possible, which lets tests exercise the path where GetOrAllocateBacking()
+  // allocates an additional element because no existing element supports the
+  // requested access stream.
   static std::unique_ptr<SharedImageBacking> CreateSharedMemoryForTesting(
       SharedImageBackingFactory* gpu_backing_factory,
       scoped_refptr<SharedImageCopyManager> copy_manager,
       const Mailbox& mailbox,
       const SharedImageInfo& si_info,
-      gfx::BufferUsage buffer_usage);
+      gfx::BufferUsage buffer_usage,
+      scoped_refptr<SharedImageFactoryRef> shared_image_factory = nullptr);
 
   CompoundImageBacking(
       const Mailbox& mailbox,
@@ -416,8 +421,8 @@ class GPU_GLES2_EXPORT CompoundImageBacking
       const AccessParams& params,
       std::unique_ptr<SharedImageBacking>& out_transient_backing);
 
-  // Returns the gpu backing from the list of |element_| which has a shm and a
-  // gpu backing.
+  // Returns the GPU backing that holds the latest content from |elements_|, or
+  // nullptr if no GPU backing holds the latest content.
   SharedImageBacking* GetGpuBacking();
 
   bool HasLatestContent(ElementHolder& element);
