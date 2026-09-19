@@ -65,6 +65,7 @@ import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelType;
@@ -108,6 +109,8 @@ public class TabWindowManagerImplUnitTest {
     @Mock private TabModel mTabModel;
     @Mock private TabModel mIncognitoTabModel;
     @Mock private TabGroupSyncService mTabGroupSyncService;
+    @Mock private Tab mClosingTab;
+    @Mock private TabList mComprehensiveModel;
 
     private OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier;
     private AsyncTabParamsManager mAsyncTabParamsManager;
@@ -1268,6 +1271,32 @@ public class TabWindowManagerImplUnitTest {
     @Test
     public void testFindWindowIdForTabGroup_notFound() {
         assertEquals(INVALID_WINDOW_ID, mSubject.findWindowIdForTabGroup(GROUP_ID));
+    }
+
+    @Test
+    public void testFindWindowIdForTabGroup_closingInComprehensiveModel() {
+        when(mTabModelSelectorFactory.buildHeadlessSelector(anyInt(), any()))
+                .thenReturn(new Pair<>(mTabModelSelector, mDestroyable));
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
+        when(mTabModelSelector.getModels()).thenReturn(List.of(mTabModel));
+        when(mTabModel.tabGroupExists(GROUP_ID)).thenReturn(false);
+
+        when(mClosingTab.getTabGroupId()).thenReturn(GROUP_ID);
+        when(mComprehensiveModel.iterator()).thenAnswer(inv -> List.of(mClosingTab).iterator());
+        when(mTabModel.getComprehensiveModel()).thenReturn(mComprehensiveModel);
+
+        TabWindowManager tabWindowManager = createTabWindowManager(mTabModelSelectorFactory);
+        tabWindowManager.requestSelectorWithoutActivity(1, mProfile);
+
+        assertEquals(
+                INVALID_WINDOW_ID,
+                tabWindowManager.findWindowIdForTabGroup(
+                        GROUP_ID, /* includeClosingGroups= */ false));
+        assertEquals(INVALID_WINDOW_ID, tabWindowManager.findWindowIdForTabGroup(GROUP_ID));
+        assertEquals(
+                1,
+                tabWindowManager.findWindowIdForTabGroup(
+                        GROUP_ID, /* includeClosingGroups= */ true));
     }
 
     @Test

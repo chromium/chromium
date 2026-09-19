@@ -551,6 +551,15 @@ public class TabWindowManagerImpl implements TabWindowManager {
         return tabModelSelector.getModel(isIncognito).getTabsInGroup(tabGroupId);
     }
 
+    private static boolean hasGroupInComprehensiveModel(TabModel tabModel, Token tabGroupId) {
+        for (Tab tab : tabModel.getComprehensiveModel()) {
+            if (tabGroupId.equals(tab.getTabGroupId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public @Nullable TabModelSelector getTabModelSelectorById(@WindowId int windowId) {
         return mWindowIdToSelectors.get(windowId);
@@ -714,7 +723,7 @@ public class TabWindowManagerImpl implements TabWindowManager {
     }
 
     @Override
-    public @WindowId int findWindowIdForTabGroup(Token tabGroupId) {
+    public @WindowId int findWindowIdForTabGroup(Token tabGroupId, boolean includeClosingGroups) {
         for (Map.Entry<TabModelSelector, @WindowId Integer> entry :
                 mSelectorsToWindowId.entrySet()) {
             TabModelSelector selector = entry.getKey();
@@ -727,6 +736,9 @@ public class TabWindowManagerImpl implements TabWindowManager {
                 }
                 if (TabGroupSyncUtils.isInCurrentWindow(
                         tabModel, new LocalTabGroupId(tabGroupId))) {
+                    return entry.getValue();
+                }
+                if (includeClosingGroups && hasGroupInComprehensiveModel(tabModel, tabGroupId)) {
                     return entry.getValue();
                 }
             }
