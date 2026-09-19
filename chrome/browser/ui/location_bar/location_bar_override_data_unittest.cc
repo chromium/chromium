@@ -8,7 +8,6 @@
 #include <optional>
 #include <string>
 
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
@@ -201,16 +200,12 @@ TEST_F(LocationBarOverrideDataTest, FallbackToTabLocationBar) {
   EXPECT_EQ(GetLocationBarForWebContents(web_contents()), nullptr);
 
   // When the tab has an associated browser window interface,
-  // GetLocationBarForWebContents() queries the browser window features for the
-  // tab's location bar.
+  // GetLocationBarForWebContents() asks that window for its location bar. The
+  // stubbed browser has no window, so there is nothing to fall back to.
   MockBrowserWindowInterface mock_browser;
-  BrowserWindowFeatures features;
   EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
       .WillRepeatedly(testing::Return(&mock_browser));
-  EXPECT_CALL(mock_browser, GetFeatures())
-      .WillRepeatedly(testing::ReturnRef(features));
-  EXPECT_EQ(GetLocationBarForWebContents(web_contents()),
-            features.location_bar());
+  EXPECT_EQ(GetLocationBarForWebContents(web_contents()), nullptr);
 
   // Attaching LocationBarOverrideData should take precedence over the fallback.
   FakeLocationBar fake_location_bar;

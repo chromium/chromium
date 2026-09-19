@@ -16,6 +16,7 @@
 #include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/browser/ui/accelerator_utils.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -874,7 +875,8 @@ class WebUILocationBarInteractiveUiTest
   }
 
   gfx::Range GetBrowserSideSelection() {
-    auto* location_bar = browser()->GetFeatures().location_bar();
+    auto* location_bar =
+        BrowserWindow::FromBrowser(browser())->GetLocationBar();
     if (mode() == Mode::kFull) {
       // Full popup stores the selection it saves on tab switch in
       // PopupHandler rather than the OmniboxView.

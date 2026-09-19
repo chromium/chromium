@@ -9,7 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -725,7 +725,8 @@ IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest,
                   net::MatchesCookieWithName("auth_cookie"))));
 
   // Trigger an Omnibox autocomplete search suggestion request.
-  LocationBar* location_bar = browser()->GetFeatures().location_bar();
+  LocationBar* location_bar =
+      BrowserWindow::FromBrowser(browser())->GetLocationBar();
   location_bar->FocusLocation(/*is_user_initiated=*/true,
                               /*clear_focus_if_failed=*/false);
   OmniboxView* omnibox_view = location_bar->GetOmniboxView();

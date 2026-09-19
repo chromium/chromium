@@ -17,7 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/blocked_content/framebust_block_tab_helper.h"
 #include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
@@ -186,7 +186,9 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, ModelAllowsRedirection) {
   EXPECT_TRUE(helper->HasBlockedUrls());
 
   LocationBarTesting* location_bar_testing =
-      browser()->GetFeatures().location_bar()->GetLocationBarForTesting();
+      BrowserWindow::FromBrowser(browser())
+          ->GetLocationBar()
+          ->GetLocationBarForTesting();
   ASSERT_TRUE(location_bar_testing);
 
   const size_t framebust_index =

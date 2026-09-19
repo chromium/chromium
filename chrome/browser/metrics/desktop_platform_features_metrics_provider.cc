@@ -14,7 +14,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
@@ -91,8 +90,11 @@ void DesktopPlatformFeaturesMetricsProvider::ProvideCurrentSessionData(
         base::UmaHistogramCounts100000("Tabs.WindowWidth2",
                                        window_size.width());
 
-        // Record the width of the omnibox.
-        LocationBar* location_bar = browser->GetFeatures().location_bar();
+        // Record the width of the omnibox. `window` above is the same object
+        // as BrowserWindow::FromBrowser(browser) and was already null-checked,
+        // so the window is known to exist here.
+        LocationBar* location_bar =
+            BrowserWindow::FromBrowser(browser)->GetLocationBar();
         if (location_bar && location_bar->IsVisible()) {
           base::UmaHistogramCounts100000("Omnibox.Width",
                                          location_bar->Bounds().width());
