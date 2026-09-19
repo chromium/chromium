@@ -39,6 +39,12 @@ BASE_DECLARE_FEATURE(kAutofillExtractFullUrlOnIOs);
 // propagated.
 BASE_DECLARE_FEATURE(kAutofillFormSubmissionEventsInCaptureMode);
 
+// Ignores the `tabindex` attribute when determining whether a form field is
+// focusable, aligning iOS with Blink's Element::IsFocusable(). A negative
+// `tabindex` only removes an element from the sequential focus order; it stays
+// programmatically focusable and fillable.
+BASE_DECLARE_FEATURE(kAutofillIgnoreTabIndexForFocusabilityIos);
+
 // Detaches the listeners for the payments suggestion bottom sheet when the
 // listeners are invalidated (i.e. the field type is no longer a credit card
 // field). This can be used in combination with kAutofillPaymentsSheetV3Ios.

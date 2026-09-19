@@ -64,7 +64,8 @@ NSString* GetAutofillTestPlaceholders(const AutofillPlaceholderConfig& config) {
            "var gCrWebPlaceholderAutofillDedupeFormSubmission = %s;"
            "var gCrWebPlaceholderAutofillEmailVerification = %s;"
            "var gCrWebPlaceholderAutofillReportFormSubmissionErrors = %s;"
-           "var gCrWebPlaceholderAutofillCountFormSubmissionInRenderer = %s;",
+           "var gCrWebPlaceholderAutofillCountFormSubmissionInRenderer = %s;"
+           "var gCrWebPlaceholderAutofillIgnoreTabIndexForFocusability = %s;",
           config.autofill_across_iframes_throttling ? "true" : "false",
           config.autofill_disallow_more_hyphen_like_labels ? "true" : "false",
           config.autofill_support_date_input ? "true" : "false",
@@ -72,7 +73,8 @@ NSString* GetAutofillTestPlaceholders(const AutofillPlaceholderConfig& config) {
           config.autofill_dedupe_form_submission ? "true" : "false",
           config.autofill_email_verification ? "true" : "false",
           config.autofill_report_form_submission_errors ? "true" : "false",
-          config.autofill_count_form_submission_in_renderer ? "true" : "false"];
+          config.autofill_count_form_submission_in_renderer ? "true" : "false",
+          config.autofill_ignore_tab_index_for_focusability ? "true" : "false"];
 }
 
 }  // namespace autofill::test

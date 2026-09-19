@@ -1299,6 +1299,68 @@ TEST_F(AutofillControllerJsTest, ExtractAutofillableElements_Date_Disabled) {
   EXPECT_NSEQ(@YES, result);
 }
 
+// HTML with a payment form that mimics the hidden mirror field pattern used by
+// hosted payment fields (e.g. Braintree): an off-screen input that is taken out
+// of the sequential focus order with `tabindex='-1'` while remaining
+// programmatically focusable and fillable.
+NSString* const kHTMLWithHiddenMirrorField =
+    @"<html><body>"
+     "<form name='TestForm' action='http://example.com/'>"
+     "<input type='text' id='cvc' name='cvc' autocomplete='cc-csc'>"
+     "<input id='mirror' name='mirror' autocomplete='cc-csc' tabindex='-1' "
+     "aria-hidden='true' style='opacity:0;width:2px;height:40px'>"
+     "</form></body></html>";
+
+// JavaScript that extracts the forms of the page and collects the extracted
+// fields matching the hidden mirror field of `kHTMLWithHiddenMirrorField`.
+NSString* const kExtractMirrorFieldJavaScript =
+    @"var forms = __gCrWeb.getRegisteredApi('autofill')."
+     "getFunction('extractNewForms')(true);"
+     "var mirrorFields = forms[0]['fields'].filter(function(field) {"
+     "  return field['name'] === 'mirror';"
+     "});";
+
+// Test that a hidden mirror field with a negative `tabindex` is extracted as
+// focusable when kAutofillIgnoreTabIndexForFocusabilityIos is enabled, matching
+// Blink's Element::IsFocusable() which ignores the tab index.
+TEST_F(AutofillControllerJsTest,
+       WebFormControlElementToFormField_IgnoreTabIndexForFocusability) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kAutofillIgnoreTabIndexForFocusabilityIos);
+
+  autofill::test::AutofillPlaceholderConfig config;
+  config.autofill_ignore_tab_index_for_focusability = true;
+  InjectUserScriptsWithPlaceholders(config);
+
+  web::test::LoadHtml(kHTMLWithHiddenMirrorField, web_state());
+  ExecuteJavaScript(kExtractMirrorFieldJavaScript);
+
+  ASSERT_NSEQ(@YES, ExecuteJavaScript(@"mirrorFields.length === 1"));
+  EXPECT_NSEQ(@YES, ExecuteJavaScript(@"mirrorFields[0]['is_focusable']"));
+}
+
+// Test that a hidden mirror field with a negative `tabindex` is extracted as
+// not focusable when kAutofillIgnoreTabIndexForFocusabilityIos is disabled,
+// which is the status quo behavior.
+TEST_F(
+    AutofillControllerJsTest,
+    WebFormControlElementToFormField_IgnoreTabIndexForFocusability_Disabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      kAutofillIgnoreTabIndexForFocusabilityIos);
+
+  autofill::test::AutofillPlaceholderConfig config;
+  config.autofill_ignore_tab_index_for_focusability = false;
+  InjectUserScriptsWithPlaceholders(config);
+
+  web::test::LoadHtml(kHTMLWithHiddenMirrorField, web_state());
+  ExecuteJavaScript(kExtractMirrorFieldJavaScript);
+
+  ASSERT_NSEQ(@YES, ExecuteJavaScript(@"mirrorFields.length === 1"));
+  EXPECT_NSEQ(@NO, ExecuteJavaScript(@"mirrorFields[0]['is_focusable']"));
+}
+
 TEST_F(AutofillControllerJsTest, IsAutofillableInputElement) {
   constexpr auto kElementsExpectingTrue = std::to_array<ElementByName>({
       {"firstname", 0, -1},

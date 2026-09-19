@@ -61,6 +61,11 @@ GetReplacements() {
             base::FeatureList::IsEnabled(::kAutofillSupportContentEditableIos)
         ? @"true"
         : @"false",
+    @"gCrWebPlaceholderAutofillIgnoreTabIndexForFocusability" :
+            base::FeatureList::IsEnabled(
+                ::kAutofillIgnoreTabIndexForFocusabilityIos)
+        ? @"true"
+        : @"false",
   };
 }
 }  // namespace
