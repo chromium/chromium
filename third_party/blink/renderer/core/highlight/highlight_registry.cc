@@ -343,6 +343,11 @@ void HighlightRegistry::ScheduleRepaint() {
 
 void HighlightRegistry::SetForTesting(AtomicString highlight_name,
                                       Highlight* highlight) {
+  Set(highlight_name, highlight);
+}
+
+void HighlightRegistry::Set(const AtomicString& highlight_name,
+                            Highlight* highlight) {
   // Register before deregistering the Highlight being replaced, so the
   // registration count doesn't transiently drop to zero when a name is set to
   // the Highlight it already maps to.
@@ -383,7 +388,7 @@ HighlightRegistry* HighlightRegistry::setForBinding(
     ExceptionState& exception_state) {
   UseCounter::Count(ExecutionContext::From(script_state),
                     WebFeature::kHighlightAPIRegisterHighlight);
-  SetForTesting(highlight_name, highlight);
+  Set(highlight_name, highlight);
   return this;
 }
 

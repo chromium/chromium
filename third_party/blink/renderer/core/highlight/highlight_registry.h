@@ -114,6 +114,7 @@ class CORE_EXPORT HighlightRegistry : public ScriptWrappable,
       const HighlightsFromPointOptions* options);
 
  private:
+  void Set(const AtomicString& highlight_name, Highlight* highlight);
   bool IsAbstractRangePaintable(AbstractRange*, Document*) const;
 
   // Adds `highlight_name` to the set of custom highlights tracked as
