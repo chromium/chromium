@@ -2116,4 +2116,15 @@ TEST_F(ContextualTasksUiTest, CreateWebUIController) {
   EXPECT_NE(controller->GetAs<ContextualTasksUI>(), nullptr);
 }
 
+TEST_F(ContextualTasksUiTest, HelpBubbleHandlerFactoryBindTest) {
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  TestContextualTasksUIBase controller(&web_ui);
+
+  mojo::Remote<help_bubble::mojom::HelpBubbleHandlerFactory> remote;
+  controller.BindInterface(remote.BindNewPipeAndPassReceiver());
+  remote.FlushForTesting();
+  EXPECT_TRUE(remote.is_connected());
+}
+
 }  // namespace contextual_tasks

@@ -11,6 +11,7 @@
 #include "chrome/browser/chrome_browser_interface_binders_webui_parts.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_toolbar.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_post_rearchitecture.h"
 #include "chrome/browser/media/media_engagement_score_details.mojom.h"
 #include "chrome/browser/optimization_guide/optimization_guide_internals_ui.h"
 #include "chrome/browser/ui/webui/actor_internals/actor_internals_ui.h"
@@ -175,7 +176,9 @@ void BindTrackedElementHandlerRestricted(
       controller->GetAs<ProfilePickerUI>() ||
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 #endif  // !BUILDFLAG(IS_ANDROID)
-      controller->GetAs<ContextualTasksUI>();
+      controller->GetAs<ContextualTasksUI>() ||
+      controller
+          ->GetAs<contextual_tasks::ContextualTasksUIPostRearchitecture>();
 
   if (!is_allowed) {
     mojo::ReportBadMessage(
@@ -361,7 +364,7 @@ void PopulateChromeWebUIFrameBindersPartsAllPlatforms(
 #endif
 #if BUILDFLAG(ENABLE_WEBUI_CONTEXTUAL_TASKS_COMPOSEBOX)
       ,
-      ContextualTasksUI
+      ContextualTasksUI, contextual_tasks::ContextualTasksUIPostRearchitecture
 #endif
       >(map);
 #endif  // BUILDFLAG(IS_ANDROID)
