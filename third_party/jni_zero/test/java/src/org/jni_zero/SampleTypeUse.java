@@ -29,5 +29,8 @@ public class SampleTypeUse {
         JniRawPtr<SampleTypeDefine> makeRaw();
 
         void useIt(JniPtr<SampleTypeDefine> ptr);
+
+        // Parameter name "self" triggers C++ member-function dispatch.
+        void doThing(JniPtr<SampleTypeDefine> self);
     }
 }

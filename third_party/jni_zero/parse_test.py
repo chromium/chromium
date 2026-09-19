@@ -706,6 +706,65 @@ public class ProxyParamTest {
                             contents,
                             enable_safe_pointers=True)
 
+  def testParseProxyNativeNullableMemberFirstParamError(self):
+    contents = """
+package org.jni_zero;
+import androidx.annotation.Nullable;
+public class NullableMemberTest {
+  @JniType("::foo::Foo")
+  public interface NativeFoo extends JniTypeToken {}
+
+  @NativeMethods
+  interface Natives {
+    void doSomething(@Nullable JniPtr<NativeFoo> self);
+  }
+}
+"""
+    with self.assertRaisesRegex(parse.ParseError, r'cannot be @Nullable'):
+      _parse_java_file_data('NullableMemberTest.java',
+                            contents,
+                            enable_safe_pointers=True)
+
+  def testParseProxyNativeConflictingClassNameError(self):
+    contents = """
+package org.jni_zero;
+public class ConflictClassTest {
+  @JniType("::foo::Foo")
+  public interface NativeFoo extends JniTypeToken {}
+
+  @NativeMethods
+  interface Natives {
+    @NativeClassQualifiedName("bar::Bar")
+    void doSomething(JniPtr<NativeFoo> self);
+  }
+}
+"""
+    with self.assertRaisesRegex(
+        parse.ParseError,
+        r'specifies both @NativeClassQualifiedName and a safe pointer'):
+      _parse_java_file_data('ConflictClassTest.java',
+                            contents,
+                            enable_safe_pointers=True)
+
+  def testParseProxyNativeSafePtrNativePrefixError(self):
+    contents = """
+package org.jni_zero;
+public class NativePrefixMemberTest {
+  @JniType("::foo::Foo")
+  public interface NativeFoo extends JniTypeToken {}
+
+  @NativeMethods
+  interface Natives {
+    void doSomething(JniPtr<NativeFoo> nativeFoo);
+  }
+}
+"""
+    with self.assertRaisesRegex(
+        parse.ParseError, r'Use "self" to dispatch to a C\+\+ member function'):
+      _parse_java_file_data('NativePrefixMemberTest.java',
+                            contents,
+                            enable_safe_pointers=True)
+
   def testParseProxyNativeRawPtrParamError(self):
     contents = """
 package org.jni_zero;

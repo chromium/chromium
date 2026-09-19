@@ -522,13 +522,40 @@ def _parse_proxy_natives(type_resolver, contents):
             f'{p.java_type.java_class.name}, but @NativeMethods parameters '
             f'must use JniPtr<T>. (JniUniquePtr and JniRawPtr implement '
             f'JniPtr and can be passed as arguments).')
+    native_class_name = annotations.get('NativeClassQualifiedName')
+    if params:
+      first_param = params[0]
+      is_long_member = (first_param.java_type.is_primitive()
+                        and first_param.java_type.primitive_name == 'long'
+                        and first_param.name.startswith('native'))
+      is_safe_ptr_member = (first_param.java_type.is_safe_pointer()
+                            and first_param.name == 'self')
+      if (first_param.java_type.is_safe_pointer()
+          and first_param.name.startswith('native')):
+        raise ParseError(
+            f'Method "{name}" safe pointer first parameter '
+            f'"{first_param.name}" starts with "native". Use "self" to '
+            f'dispatch to a C++ member function, or another name for a free '
+            f'function.')
+      if is_long_member or is_safe_ptr_member:
+        first_param_annotations, _ = _parse_annotations(
+            _split_by_delimiter(params_part, ',')[0])
+        if 'Nullable' in first_param_annotations:
+          raise ParseError(
+              f'Method "{name}" first parameter "{first_param.name}" dispatches '
+              f'to a C++ member function and cannot be @Nullable.')
+        if is_safe_ptr_member and native_class_name:
+          raise ParseError(
+              f'Method "{name}" specifies both @NativeClassQualifiedName and a '
+              f'safe pointer first parameter "self". The C++ '
+              f'class is already defined by @JniType on '
+              f'{first_param.java_type.generics[0].java_class.name}.')
     signature = java_types.JavaSignature.from_params(return_type, params)
     ret.methods.append(
-        ParsedNative(
-            static=False,
-            name=name,
-            signature=signature,
-            native_class_name=annotations.get('NativeClassQualifiedName')))
+        ParsedNative(static=False,
+                     name=name,
+                     signature=signature,
+                     native_class_name=native_class_name))
   if not ret.methods:
     raise ParseError('Found no methods within @NativeMethod interface.')
   ret.methods.sort()

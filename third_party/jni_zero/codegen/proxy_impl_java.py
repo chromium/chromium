@@ -50,8 +50,11 @@ def _proxy_method(sb, ctx, native, method_fqn):
 public {return_type_str} {native.name}({sig_params})""")
   with sb.block():
     if native.first_param_cpp_type:
-      sb(f'assert {native.params[0].name} != 0;\n')
-    for p in native.params:
+      if native.params[0].java_type.is_safe_pointer():
+        sb(f'assert {native.params[0].name} != null;\n')
+      else:
+        sb(f'assert {native.params[0].name} != 0;\n')
+    for p in native.params[1:] if native.first_param_cpp_type else native.params:
       if not p.java_type.is_primitive() and not p.java_type.nullable:
         sb(f'assert {p.name} != null : "Parameter \\"{p.name}\\" was null. Add @Nullable to it?";\n')
     with sb.statement():

@@ -21,6 +21,8 @@
 // * JNIEnv* parameters are optional.
 // * Types do not have to be exact; they must accept rvalues of the examples.
 //
+// void ::my::cpp::Define::DoThing(JNIEnv* env);
+//
 // static ::jni_zero::JniUniquePtr<::my::cpp::Define> JNI_SampleTypeUse_MakeOwned(JNIEnv* env);
 //
 // static ::jni_zero::JniRawPtr<::my::cpp::Define> JNI_SampleTypeUse_MakeRaw(JNIEnv* env);
@@ -35,12 +37,35 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleTypeUse() {}
 #define DEFINE_JNI_FOR_SampleTypeUse()                                                             \
   namespace {                                                                                      \
                                                                                                    \
-  JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleTypeUse_1makeOwned( \
+  JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleTypeUse_1doThing( \
       JNIEnv* env,                                                                                 \
-      jclass jcaller) {                                                                            \
+      jclass jcaller,                                                                              \
+      int64_t self) {                                                                              \
     /* Prevent -Wunused-function warning. */                                                       \
     YouForgotToCallMacro_DEFINE_JNI_SampleTypeUse();                                               \
                                                                                                    \
+    ::my::cpp::Define* _ptr = reinterpret_cast<::my::cpp::Define*>(self);                          \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(_ptr->DoThing(std::forward<decltype(args)>(args)...)) {                             \
+        return _ptr->DoThing(std::forward<decltype(args)>(args)...);                               \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env); }) {                                             \
+        return func_wrapper(env);                                                                  \
+      } else if constexpr (requires { func_wrapper(); }) {                                         \
+        return func_wrapper();                                                                     \
+      } else {                                                                                     \
+        static_assert(false, "::my::cpp::Define::DoThing() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleTypeUse_jni.h for an example."); \
+      }                                                                                            \
+    };                                                                                             \
+    dependent_context(0);                                                                          \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleTypeUse_1makeOwned( \
+      JNIEnv* env,                                                                                 \
+      jclass jcaller) {                                                                            \
     /* Lambda required to make "if constexpr" work properly. */                                    \
     auto dependent_context = [&](auto) {                                                           \
       /* Lambda required to disambiguate overloads. */                                             \

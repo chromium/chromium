@@ -84,15 +84,33 @@ class NativeMethod:
     # Set when the first param dictates this is implemented as a member
     # function of the native class given as the first parameter.
     first_param = self.params and self.params[0]
-    if (first_param and first_param.java_type.is_primitive()
-        and first_param.java_type.primitive_name == 'long'
-        and first_param.name.startswith('native')):
-      if parsed_method.native_class_name:
-        self.first_param_cpp_type = parsed_method.native_class_name
-      else:
-        self.first_param_cpp_type = first_param.name[len('native'):]
+    is_long_member = (first_param and first_param.java_type.is_primitive()
+                      and first_param.java_type.primitive_name == 'long'
+                      and first_param.name.startswith('native'))
+    is_safe_ptr_member = (first_param
+                          and first_param.java_type.is_safe_pointer()
+                          and first_param.name == 'self')
+    if is_long_member or is_safe_ptr_member:
+      self._member_first_param = first_param
     else:
-      self.first_param_cpp_type = None
+      self._member_first_param = None
+
+  @property
+  def first_param_cpp_type(self):
+    # Resolved lazily: the link step builds NativeMethod without a type
+    # catalog, so a safe pointer token has no C++ type there.
+    first_param = self._member_first_param
+    if not first_param:
+      return None
+    if first_param.java_type.is_safe_pointer():
+      backend_type = first_param.java_type.to_backend_cpp_type()
+      assert backend_type.endswith('*'), (
+          'Only JniPtr<T> may be used as the "self" first parameter; '
+          f'got {first_param.java_type.java_class.name}.')
+      return backend_type[:-1]
+    if self.native_class_name:
+      return self.native_class_name
+    return first_param.name[len('native'):]
 
   @property
   def params(self):
