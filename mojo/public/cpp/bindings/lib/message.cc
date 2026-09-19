@@ -414,6 +414,35 @@ Message::Message(base::span<const uint8_t> payload,
   serialized_ = true;
 }
 
+Message::Message(ScopedMessageHandle message_handle,
+                 std::vector<ScopedHandle> handles)
+    : handle_(std::move(message_handle)),
+      handles_(std::move(handles)),
+      transferable_(false),
+      serialized_(true) {
+  DCHECK(handle_.is_valid());
+  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("mojom"),
+              "mojo::Message::Message_FromExtractedHandle", "this", this);
+
+  void* buffer = nullptr;
+  uint32_t num_bytes = 0;
+  MojoGetMessageDataOptions options;
+  options.struct_size = sizeof(options);
+  options.flags = MOJO_GET_MESSAGE_DATA_FLAG_IGNORE_HANDLES;
+  MojoResult rv = MojoGetMessageData(handle_->value(), &options, &buffer,
+                                     &num_bytes, nullptr, nullptr);
+  CHECK_EQ(MOJO_RESULT_OK, rv);
+  // Verify that `handle_` has no remaining unextracted handles
+  // We should get OK if there were never any handles, and
+  // NOT_FOUND if there were handles that got extracted previously.
+  DCHECK_EQ(handles_.empty() ? MOJO_RESULT_OK : MOJO_RESULT_NOT_FOUND,
+            MojoGetMessageData(handle_->value(), nullptr, nullptr, nullptr,
+                               nullptr, nullptr));
+  CHECK(buffer);
+  CHECK_GE(num_bytes, sizeof(internal::MessageHeader));
+  payload_buffer_ = internal::Buffer(buffer, num_bytes, num_bytes);
+}
+
 // static
 Message Message::CreateFromMessageHandle(ScopedMessageHandle* message_handle) {
   DCHECK(message_handle);
@@ -541,6 +570,16 @@ ScopedMessageHandle Message::TakeMojoMessage() {
   // called before this method.
   DCHECK(associated_endpoint_handles()->empty());
   DCHECK(transferable_);
+  payload_buffer_.Seal();
+  auto handle = std::move(handle_);
+  Reset();
+  return handle;
+}
+
+ScopedMessageHandle Message::TakeMessageHandleForRust() {
+  DCHECK(serialized_);
+  DCHECK(handles()->empty());
+  DCHECK(associated_endpoint_handles()->empty());
   payload_buffer_.Seal();
   auto handle = std::move(handle_);
   Reset();

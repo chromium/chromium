@@ -122,6 +122,19 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
   // |TakeMojoMessage()| is called.
   Message(base::span<const uint8_t> payload, base::span<ScopedHandle> handles);
 
+  // Constructs a serialized `Message` object from an existing
+  // `ScopedMessageHandle` whose message header has already been validated and
+  // whose attached handles have already been extracted (e.g. by bindings in
+  // another language).
+  //
+  // This is like `CreateFromMessageHandle`, but for callers who have already
+  // extracted the handles from the message.
+  //
+  // This should only be used to represent an incoming message. Outgoing
+  // operations like serializing or attaching handles will `CHECK`-fail.
+  Message(ScopedMessageHandle message_handle,
+          std::vector<ScopedHandle> handles);
+
   Message(const Message&) = delete;
   Message& operator=(const Message&) = delete;
 
@@ -259,6 +272,19 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
   // transmission. Note that this invalidates this Message object, taking
   // ownership of its internal storage and any attached handles.
   ScopedMessageHandle TakeMojoMessage();
+
+  // Takes the underlying message handle, invalidating this `Message` object.
+  //
+  // Unlike `TakeMojoMessage()`, which is used for sending outgoing messages,
+  // this function is used to pass ownership of a message to Rust. It can be
+  // used for either direction of message.
+  //
+  // Before calling this method, the message must be serialized and the caller
+  // must empty `handles_` and `associated_endpoint_handles_` (either by taking
+  // ownership of them via `mutable_handles()` and
+  // `mutable_associated_endpoint_handles()` for incoming messages, or by
+  // calling `SerializeHandles()` for outgoing messages).
+  ScopedMessageHandle TakeMessageHandleForRust();
 
   // Notifies the system that this message is "bad," in this case meaning it was
   // rejected by bindings validation code.
