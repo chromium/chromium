@@ -19,6 +19,7 @@
 #import "components/optimization_guide/proto/features/contextual_cueing.pb.h"
 #import "components/page_content_annotations/core/page_content_annotation_type.h"
 #import "ios/chrome/browser/intelligence/contextual_cueing/contextual_cueing_evaluator.h"
+#import "ios/chrome/browser/intelligence/page_classification/page_classification_service.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 #import "url/gurl.h"
@@ -95,6 +96,11 @@ class ContextualCueingTabHelper
   const std::optional<std::vector<page_content_annotations::Category>>&
   GetCategories() const;
 
+  // Returns the latest result from PageClassificationService for the current
+  // committed page, or std::nullopt if classification has not completed.
+  const std::optional<PageClassificationResult>& GetPageClassificationResult()
+      const;
+
   // Returns the contextual cue for the current committed page, or std::nullopt
   // if no cue is available.
   const std::optional<optimization_guide::proto::ContextualCue>&
@@ -136,6 +142,20 @@ class ContextualCueingTabHelper
 
   // Callback invoked when OnDevicePageClassificationService finishes.
   void OnPageClassified(
+      const GURL& expected_url,
+      const std::optional<std::vector<page_content_annotations::Category>>&
+          categories);
+
+  // Callback invoked when PageClassificationService finishes.
+  void OnPageClassificationServiceResultReceived(
+      const GURL& expected_url,
+      const PageClassificationResult& result);
+
+  // Asynchronously requests classification from PageClassificationService.
+  void RequestPageClassificationService(const GURL& url);
+
+  // Common evaluation and cue request handler once categories are determined.
+  void ProcessClassificationResult(
       const GURL& expected_url,
       const std::optional<std::vector<page_content_annotations::Category>>&
           categories);
@@ -182,8 +202,15 @@ class ContextualCueingTabHelper
   // stops showing (or on tab helper destruction). Empty when not active.
   base::ScopedClosureRunner fet_dismiss_runner_;
 
+  // Raw category annotations and confidence scores for the current page.
   std::optional<std::vector<page_content_annotations::Category>> categories_;
+  // Structured multi-vertical classification result from
+  // PageClassificationService (e.g. shopping, education) for the current page.
+  std::optional<PageClassificationResult> page_classification_result_;
+  // The contextual cue proto payload returned from server model execution,
+  // containing UI labels and the prompt.
   std::optional<optimization_guide::proto::ContextualCue> cue_;
+  bool is_model_execution_in_flight_ = false;
 
   std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry_;
 

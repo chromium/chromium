@@ -32,6 +32,9 @@
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/on_device_category_classifier/on_device_page_classification_service.h"
 #import "ios/chrome/browser/intelligence/on_device_category_classifier/on_device_page_classification_service_factory.h"
+#import "ios/chrome/browser/intelligence/page_classification/features.h"
+#import "ios/chrome/browser/intelligence/page_classification/page_classification_service.h"
+#import "ios/chrome/browser/intelligence/page_classification/page_classification_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -71,6 +74,11 @@ void ContextualCueingTabHelper::RemoveObserver(Observer* observer) {
 const std::optional<std::vector<page_content_annotations::Category>>&
 ContextualCueingTabHelper::GetCategories() const {
   return categories_;
+}
+
+const std::optional<PageClassificationResult>&
+ContextualCueingTabHelper::GetPageClassificationResult() const {
+  return page_classification_result_;
 }
 
 const std::optional<optimization_guide::proto::ContextualCue>&
@@ -157,6 +165,7 @@ void ContextualCueingTabHelper::DidFinishNavigation(
 
   CancelClassification();
   categories_.reset();
+  page_classification_result_.reset();
 
   if (navigation_context->IsSameDocument()) {
     StartClassification();
@@ -195,6 +204,7 @@ void ContextualCueingTabHelper::CancelClassification() {
   }
   weak_ptr_factory_.InvalidateWeakPtrs();
   log_entry_.reset();
+  is_model_execution_in_flight_ = false;
 
   DismissFeatureEngagementPromo();
 
@@ -203,12 +213,17 @@ void ContextualCueingTabHelper::CancelClassification() {
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
   CHECK(profile);
-  OnDevicePageClassificationService* service =
+  OnDevicePageClassificationService* on_device_page_classification_service =
       OnDevicePageClassificationServiceFactory::GetForProfile(profile);
-  if (!service) {
-    return;
+  if (on_device_page_classification_service) {
+    on_device_page_classification_service->CancelClassification(web_state_);
   }
-  service->CancelClassification(web_state_);
+
+  PageClassificationService* page_classification_service =
+      PageClassificationServiceFactory::GetForProfile(profile);
+  if (page_classification_service) {
+    page_classification_service->CancelClassification(web_state_);
+  }
 }
 
 void ContextualCueingTabHelper::StartClassification() {
@@ -249,21 +264,44 @@ void ContextualCueingTabHelper::StartClassification() {
     return;
   }
 
-  // TODO(crbug.com/549660446): Add PageClassificationService via verticals
-  // here.
-  if (IsGeminiContextualSuggestionsCuesOnDeviceClassifierEnabled()) {
-    OnDevicePageClassificationService* service =
-        OnDevicePageClassificationServiceFactory::GetForProfile(profile);
-    if (!service) {
-      return;
-    }
+  PageClassificationMode mode = GetPageClassificationMode();
 
-    service->ClassifyWebState(
-        web_state_, base::BindOnce(&ContextualCueingTabHelper::OnPageClassified,
-                                   weak_ptr_factory_.GetWeakPtr(), url));
+  if (mode == PageClassificationMode::kVerticalsOnly) {
+    RequestPageClassificationService(url);
+  } else {
+    // Mode is kOnDeviceOnly or kOnDeviceWithVerticalsFallback.
+    OnDevicePageClassificationService* on_device_page_classification_service =
+        OnDevicePageClassificationServiceFactory::GetForProfile(profile);
+    if (on_device_page_classification_service) {
+      on_device_page_classification_service->ClassifyWebState(
+          web_state_,
+          base::BindOnce(&ContextualCueingTabHelper::OnPageClassified,
+                         weak_ptr_factory_.GetWeakPtr(), url));
+    } else if (mode == PageClassificationMode::kOnDeviceWithVerticalsFallback) {
+      RequestPageClassificationService(url);
+    }
   }
 }
 
+void ContextualCueingTabHelper::RequestPageClassificationService(
+    const GURL& url) {
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+  CHECK(profile);
+  PageClassificationService* page_classification_service =
+      PageClassificationServiceFactory::GetForProfile(profile);
+  if (page_classification_service) {
+    page_classification_service->ClassifyWebState(
+        web_state_,
+        base::BindOnce(&ContextualCueingTabHelper::
+                           OnPageClassificationServiceResultReceived,
+                       weak_ptr_factory_.GetWeakPtr(), url));
+  }
+}
+
+// TODO(crbug.com/517561797): Unify OnDevicePageClassificationService under the
+// PageClassificationService interface so both paths share the same result
+// callback and types.
 void ContextualCueingTabHelper::OnPageClassified(
     const GURL& expected_url,
     const std::optional<std::vector<page_content_annotations::Category>>&
@@ -272,15 +310,66 @@ void ContextualCueingTabHelper::OnPageClassified(
     return;
   }
 
+  // If OnDevice model was unavailable / returned std::nullopt and fallback is
+  // enabled, trigger PageClassificationService.
+  if (!categories.has_value() &&
+      GetPageClassificationMode() ==
+          PageClassificationMode::kOnDeviceWithVerticalsFallback) {
+    RequestPageClassificationService(expected_url);
+    return;
+  }
+
+  ProcessClassificationResult(expected_url, categories);
+}
+
+void ContextualCueingTabHelper::OnPageClassificationServiceResultReceived(
+    const GURL& expected_url,
+    const PageClassificationResult& result) {
+  if (!web_state_ || web_state_->GetLastCommittedURL() != expected_url) {
+    return;
+  }
+
+  page_classification_result_ = result;
+
+  // TODO(crbug.com/517561797): Remove this translation once
+  // ContextualCueingEvaluator accepts PageClassificationResult directly.
+  std::vector<page_content_annotations::Category> eligible_categories;
+  for (const auto& category_result : result.category_results) {
+    if (category_result.is_eligible) {
+      eligible_categories.push_back(page_content_annotations::Category{
+          .category_type = category_result.category_type,
+          .score = category_result.score,
+      });
+    }
+  }
+
+  std::optional<std::vector<page_content_annotations::Category>> opt_categories;
+  if (!eligible_categories.empty()) {
+    opt_categories = std::move(eligible_categories);
+  }
+
+  ProcessClassificationResult(expected_url, opt_categories);
+}
+
+void ContextualCueingTabHelper::ProcessClassificationResult(
+    const GURL& expected_url,
+    const std::optional<std::vector<page_content_annotations::Category>>&
+        categories) {
   categories_ = categories;
 
   for (Observer& observer : observers_) {
     observer.OnPageClassificationCompleted(this, categories_);
   }
 
-  if (!categories.has_value()) {
+  if (!categories_.has_value() || categories_->empty()) {
     RecordContextualCueingDecision(
         ContextualCueingDecision::kFailedCategoryClassification);
+    return;
+  }
+
+  // Do not issue duplicate requests if a cue is already available or model
+  // execution is already in flight.
+  if (cue_.has_value() || is_model_execution_in_flight_) {
     return;
   }
 
@@ -291,7 +380,7 @@ void ContextualCueingTabHelper::OnPageClassified(
   ContextualCueingEvaluator evaluator(GetCapTrackerService(),
                                       GetFeatureEngagementTracker());
   ContextualCueingEvaluator::EvaluationResult evaluation_result =
-      evaluator.Evaluate(expected_url, *categories, mime_type);
+      evaluator.Evaluate(expected_url, *categories_, mime_type);
   if (!evaluation_result.is_eligible()) {
     RecordContextualCueingDecision(evaluation_result.decision);
     return;
@@ -307,6 +396,10 @@ void ContextualCueingTabHelper::InitiateModelExecutionRequest(
   if (!web_state_ || web_state_->GetLastCommittedURL() != expected_url) {
     return;
   }
+  if (cue_.has_value() || is_model_execution_in_flight_) {
+    return;
+  }
+  is_model_execution_in_flight_ = true;
 
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
@@ -351,6 +444,7 @@ void ContextualCueingTabHelper::OnModelExecutionResponseReceived(
     const GURL& expected_url,
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
+  is_model_execution_in_flight_ = false;
   if (!web_state_ || web_state_->GetLastCommittedURL() != expected_url) {
     return;
   }
