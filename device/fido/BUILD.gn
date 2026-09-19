@@ -39,6 +39,7 @@ component("fido") {
     "//components/cbor",
     "//components/device_event_log",
     "//crypto",
+    "//crypto:cose",
     "//third_party/boringssl",
   ]
 

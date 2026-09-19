@@ -118,6 +118,7 @@ if (is_desktop) {
       ":interface",
       "//base",
       "//crypto",
+      "//crypto:cose",
     ]
   }
 
@@ -134,6 +135,7 @@ if (is_desktop) {
       "//base/test:test_support",
       "//content/test:test_support",
       "//crypto",
+      "//crypto:cose",
       "//crypto:test_support",
       "//testing/gmock",
       "//testing/gtest",
