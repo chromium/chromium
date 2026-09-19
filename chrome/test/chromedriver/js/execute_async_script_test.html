@@ -73,6 +73,60 @@ function testNonUserScriptCustomErrorCode(runner) {
   runner.waitForAsync("custom error with custom error code");
 }
 
+function testUserScriptNullReturnDoesNotBeatCallback(runner) {
+  const script =
+      'return (async function(){' +
+      '  setTimeout(()=>arguments[0](42), 5); return null;' +
+      '}).apply(null, arguments);';
+  executeAsyncScript(script, [], true)
+    .then((result) => {
+      assertEquals(StatusCode.OK, result.status);
+      assertEquals(42, result.value);
+      runner.continueTesting();
+    });
+  runner.waitForAsync('null return does not beat callback');
+}
+
+function testUserScriptReturnedPromiseFulfillmentDoesNotBeatCallback(runner) {
+  const script =
+      'setTimeout(() => arguments[0](42), 0);' +
+      'return Promise.resolve(24);';
+  executeAsyncScript(script, [], true)
+    .then((result) => {
+      assertEquals(StatusCode.OK, result.status);
+      assertEquals(42, result.value);
+      runner.continueTesting();
+    });
+  runner.waitForAsync('returned promise fulfillment does not beat callback');
+}
+
+function testUserScriptCallbackBeatsReturnedPromiseRejection(runner) {
+  const script =
+      'return new Promise((resolve, reject) => {' +
+      '  arguments[0](42); reject(new Error("late"));' +
+      '});';
+  executeAsyncScript(script, [], true)
+    .then((result) => {
+      assertEquals(StatusCode.OK, result.status);
+      assertEquals(42, result.value);
+      runner.continueTesting();
+    });
+  runner.waitForAsync('callback beats returned promise rejection');
+}
+
+function testUserScriptReturnedPromiseRejectionBeatsLaterCallback(runner) {
+  const script =
+      'setTimeout(() => arguments[0](42), 0);' +
+      'return Promise.reject(new Error("early"));';
+  executeAsyncScript(script, [], true)
+    .then((result) => {
+      assertEquals(StatusCode.JAVASCRIPT_ERROR, result.status);
+      assertEquals(0, result.value.indexOf('early'));
+      runner.continueTesting();
+    });
+  runner.waitForAsync('returned promise rejection beats later callback');
+}
+
 </script>
 <body>
 </body>

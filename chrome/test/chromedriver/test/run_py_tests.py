@@ -1303,6 +1303,83 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
         4,
         self._driver.ExecuteScript('return 4'))
 
+  def testExecuteAsyncScriptZeroTimeout(self):
+    # A genuinely pending async operation must respect a zero driver timeout.
+    self._driver.SetTimeouts({'script': 0})
+    with self.assertRaises(chromedriver.ScriptTimeout):
+      self._driver.ExecuteAsyncScript('void 0;')
+
+    # Regular script can still run after an async timeout.
+    self._driver.SetTimeouts({'script': 1000})
+    self.assertEqual(
+        4,
+        self._driver.ExecuteScript('return 4'))
+
+  def testExecuteAsyncScriptRejectsRaisesJavaScriptError(self):
+    # A returned-promise rejection that wins over the callback should map to
+    # JavaScriptError, not ScriptTimeout.
+    self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
+    self._driver.SetTimeouts({'script': 1000})
+    with self.assertRaisesRegex(chromedriver.JavaScriptError, 'boom'):
+      self._driver.ExecuteAsyncScript(
+          'setTimeout(() => arguments[0](42), 50);'
+          'return Promise.reject(new Error("boom"));')
+
+  def testExecuteAsyncScriptReturnedPromiseFulfillmentDoesNotBeatCallback(
+      self):
+    self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
+    self._driver.SetTimeouts({'script': 1000})
+    self.assertEqual(
+        42,
+        self._driver.ExecuteAsyncScript(
+            'setTimeout(() => arguments[0](42), 50);'
+            'return Promise.resolve(24);'))
+
+  def testExecuteAsyncScriptUnboundedTimeout(self):
+    self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
+    # Replace a short finite timeout with null, then wait longer than the old
+    # timeout to prove that null is applied rather than ignored.
+    self._driver.SetTimeouts({'script': 10})
+    self._driver.SetTimeouts({'script': None})
+    self.assertIsNone(self._driver.GetTimeouts()['script'])
+    self.assertEqual(
+        7,
+        self._driver.ExecuteAsyncScript(
+            'setTimeout(()=>arguments[0](7), 100);'))
+
+    # Reset script to a finite value so this also proves that the mixed request
+    # forwards its null value rather than silently dropping it.
+    self._driver.SetTimeouts({'script': 10})
+    self._driver.SetTimeouts({'script': None, 'implicit': 0})
+    timeouts = self._driver.GetTimeouts()
+    self.assertIsNone(timeouts['script'])
+    self.assertEqual(0, timeouts['implicit'])
+
+  def testExecuteAsyncScriptLargeTimeout(self):
+    self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
+    timeout = 2**31
+    # Bypass the test client's independent HTTP timeout guard. This verifies
+    # that the WebDriver endpoint accepts a timeout beyond setTimeout's signed
+    # 32-bit delay range and that an immediate callback still completes.
+    self._driver.ExecuteCommand(
+        chromedriver.Command.SET_TIMEOUTS, {'script': timeout})
+    self.assertEqual(timeout, self._driver.GetTimeouts()['script'])
+    self.assertEqual(
+        7,
+        self._driver.ExecuteAsyncScript('arguments[0](7);'))
+
+  def testExecuteAsyncScriptDoesNotUsePageSetTimeout(self):
+    self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
+    try:
+      self._driver.ExecuteScript(
+          'window.setTimeout = function() { throw new Error("unexpected"); };')
+      self._driver.SetTimeouts({'script': 1000})
+      self.assertEqual(
+          7,
+          self._driver.ExecuteAsyncScript('arguments[0](7);'))
+    finally:
+      self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
+
   def testSwitchToFrame(self):
     self._driver.ExecuteScript(
         'var frame = document.createElement("iframe");'

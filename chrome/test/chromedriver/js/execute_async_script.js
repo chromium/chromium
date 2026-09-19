@@ -10,7 +10,6 @@ var StatusCode = {
   OK: 0,
   UNKNOWN_ERROR: 13,
   JAVASCRIPT_ERROR: 17,
-  SCRIPT_TIMEOUT: 28,
 };
 
 /**
@@ -28,13 +27,14 @@ var StatusCode = {
 *     If not, UnknownError will be used instead of JavaScriptError if an
 *     exception occurs during the script, and an additional error callback will
 *     be supplied to the script.
-* @param {boolean} timeout The duration in ms to keep the returned promise from
-* being garbage collected.
 */
-async function executeAsyncScript(script, args, isUserSupplied, timeout) {
+async function executeAsyncScript(script, args, isUserSupplied) {
   const Promise = window.cdc_adoQpoasnfa76pfcZLmcfl_Promise || window.Promise;
+  const promiseResolve = Promise.resolve.bind(Promise);
+  const promiseThen = Function.prototype.call.bind(Promise.prototype.then);
   function isThenable(value) {
-    return typeof value === 'object' && typeof value.then === 'function';
+    return value != null && typeof value === 'object' &&
+        typeof value.then === 'function';
   }
   function reportValue(value) {
     return {status: StatusCode.OK, value: value};
@@ -48,33 +48,31 @@ async function executeAsyncScript(script, args, isUserSupplied, timeout) {
     }
     return {status: code, value: message};
   }
-  var promise = new Promise((resolve, reject) => {
-    args.push(resolve);
-    if (!isUserSupplied) {
-      args.push(reject);
-    }
-    try {
-      let scriptResult = new Function(script).apply(null, args);
-      if (isThenable(scriptResult)) {
-        const resolvedPromise = Promise.resolve(scriptResult);
-        resolvedPromise.then((value) => {
-          // Must be thenable if user-supplied.
-          if (!isUserSupplied || isThenable(value))
-            resolve(value);
-        })
-        .catch(reject);
-      }
-    } catch (error) {
-      reject(error);
-    }
+  let resolveScript;
+  let rejectScript;
+  const scriptPromise = new Promise((resolve, reject) => {
+    resolveScript = resolve;
+    rejectScript = reject;
   });
+  const resultPromise = promiseThen(scriptPromise, reportValue, reportError);
 
-  if (typeof timeout !== 'undefined') {
-    setTimeout(() => {return promise;}, timeout);
+  args.push(resolveScript);
+  if (!isUserSupplied) {
+    args.push(rejectScript);
   }
-  return await promise.then((result) => {
-    return reportValue(result);
-  }).catch((error) => {
-    return reportError(error);
-  });
+  try {
+    const scriptResult = new Function(script).apply(null, args);
+    if (isThenable(scriptResult)) {
+      const resolvedPromise = promiseResolve(scriptResult);
+      if (isUserSupplied) {
+        promiseThen(resolvedPromise, undefined, rejectScript);
+      } else {
+        promiseThen(resolvedPromise, resolveScript, rejectScript);
+      }
+    }
+  } catch (error) {
+    rejectScript(error);
+  }
+
+  return await resultPromise;
 }

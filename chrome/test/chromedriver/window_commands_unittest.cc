@@ -1181,6 +1181,36 @@ TEST(WindowCommandsTest, ExecuteAsyncScript_ArgsNotAList) {
       << status.message();
 }
 
+namespace {
+
+class AsyncTimeoutWebView : public StubWebView {
+ public:
+  AsyncTimeoutWebView() : StubWebView("1") {}
+  ~AsyncTimeoutWebView() override = default;
+
+  Status CallUserAsyncFunction(const std::string& frame,
+                               const std::string& function,
+                               const base::ListValue& args,
+                               const base::TimeDelta& timeout,
+                               std::unique_ptr<base::Value>* result) override {
+    // Simulate a driver-level timeout for async script execution.
+    return Status(kTimeout);
+  }
+};
+
+}  // namespace
+
+TEST(WindowCommandsTest, ExecuteAsyncScript_TimeoutMapsToScriptTimeout) {
+  AsyncTimeoutWebView webview;
+  base::DictValue params;
+  params.Set("script", "irrelevant");
+  params.Set("args", base::ListValue());
+  std::unique_ptr<base::Value> result;
+  Status status =
+      CallWindowCommand(ExecuteExecuteAsyncScript, &webview, params, &result);
+  ASSERT_EQ(kScriptTimeout, status.code()) << status.message();
+}
+
 TEST(WindowCommandsTest, SendKeysToActiveElement_NoValue) {
   base::DictValue params;
   Status status = CallWindowCommand(ExecuteSendKeysToActiveElement, params);

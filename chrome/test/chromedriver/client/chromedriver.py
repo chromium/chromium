@@ -449,16 +449,18 @@ class ChromeDriver(object):
     return self.ExecuteCommand(Command.GET_TIMEOUTS)
 
   def SetTimeouts(self, params):
-    if (len(params) == 0):
-      return;
-    sorted_params = sorted(params.items(), key=lambda x: x[1])
-    max_kv = sorted_params[-1];
-    # make sure that we have ms on the both sides of inequality
-    if (self._executor.HttpTimeout() * 500 < max_kv[1]):
-      raise ChromeDriverException(
-        'Timeout "%s" for ChromeDriver exceeds 50%% of the '
-            'HTTP connection timeout'
-         % max_kv[0])
+    if len(params) == 0:
+      return
+    non_null_params = [
+        (key, value) for key, value in params.items() if value is not None
+    ]
+    if non_null_params:
+      max_kv = max(non_null_params, key=lambda item: item[1])
+      # Both sides of the comparison are in milliseconds.
+      if self._executor.HttpTimeout() * 500 < max_kv[1]:
+        raise ChromeDriverException(
+            'Timeout "%s" for ChromeDriver exceeds 50%% of the '
+            'HTTP connection timeout' % max_kv[0])
     return self.ExecuteCommand(Command.SET_TIMEOUTS, params)
 
   def GetCurrentUrl(self):
