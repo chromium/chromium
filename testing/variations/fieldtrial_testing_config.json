@@ -1060,6 +1060,21 @@
             ]
         }
     ],
+    "AndroidTabUiRefactor": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidTabUiRefactor"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidThreadPriority": [
         {
             "platforms": [
