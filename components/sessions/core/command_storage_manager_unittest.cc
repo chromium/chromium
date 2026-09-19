@@ -10,6 +10,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -107,6 +108,30 @@ class TestCommandStorageManagerDelegate : public CommandStorageManagerDelegate {
  private:
   int error_count_ = 0;
   bool delayed_save_ = false;
+};
+
+// A delegate that rebuilds all of its commands when a write error is reported,
+// which is what SessionService does. See
+// SessionService::OnErrorWritingSessionCommands() and
+// SessionService::ScheduleResetCommands().
+class RebuildOnErrorDelegate : public TestCommandStorageManagerDelegate {
+ public:
+  ~RebuildOnErrorDelegate() override = default;
+
+  // Must be called before any error can be reported. Not passed to the
+  // constructor because the manager needs the delegate at construction time.
+  void set_manager(CommandStorageManager* manager) { manager_ = manager; }
+
+  // TestCommandStorageManagerDelegate:
+  void OnErrorWritingSessionCommands() override {
+    TestCommandStorageManagerDelegate::OnErrorWritingSessionCommands();
+    manager_->set_pending_reset(true);
+    manager_->ClearPendingCommands();
+    manager_->AppendRebuildCommand(std::make_unique<SessionCommand>(201, 0));
+  }
+
+ private:
+  raw_ptr<CommandStorageManager> manager_ = nullptr;
 };
 
 TEST_P(CommandStorageManagerTest, AppendCommandsAndSave) {
@@ -270,6 +295,9 @@ TEST_P(CommandStorageManagerTest, SaveBeforeEncryptorIsReady) {
   // Save is called before the encryptor is ready.
   manager.AppendRebuildCommand(std::make_unique<SessionCommand>(101, 0));
   manager.Save();
+  // The first call lets the encryptor become ready; the second lets any write
+  // that was deferred until then complete.
+  test_helper.RunMessageLoopUntilBackendDone();
   test_helper.RunMessageLoopUntilBackendDone();
 
   EncryptSessionStorageStage stage = GetEncryptSessionStorageStage();
@@ -288,19 +316,65 @@ TEST_P(CommandStorageManagerTest, SaveBeforeEncryptorIsReady) {
         "Session.CommandStorageManager.EncryptedBackendUninitialized", kSave,
         1);
   } else if (stage ==
-             EncryptSessionStorageStage::kWriteBothReadPreferEncrypted) {
-    EXPECT_EQ(1, delegate.error_count());
-    EXPECT_FALSE(manager.pending_commands().empty());
-  } else if (stage ==
-             EncryptSessionStorageStage::kWriteEncryptedReadPreferEncrypted) {
-    EXPECT_EQ(1, delegate.error_count());
-    EXPECT_FALSE(manager.pending_commands().empty());
+                 EncryptSessionStorageStage::kWriteBothReadPreferEncrypted ||
+             stage == EncryptSessionStorageStage::
+                          kWriteEncryptedReadPreferEncrypted) {
+    // The write is deferred until the encryptor is ready. Waiting for the
+    // encryptor is not a write failure, so no error should be reported.
+    EXPECT_EQ(0, delegate.error_count());
+    EXPECT_TRUE(manager.pending_commands().empty());
+    // SessionEncryptedBackendUninitialized::kSave = 0
+    const int kSave = 0;
+    histogram_tester.ExpectUniqueSample(
+        "Session.CommandStorageManager.EncryptedBackendUninitialized", kSave,
+        1);
   } else {
     FAIL() << "Unhandled EncryptSessionStorageStage: "
            << static_cast<int>(stage);
   }
   EXPECT_FALSE(manager.pending_reset());
   EXPECT_EQ(0, manager.commands_since_reset());
+}
+
+// Regression test for crbug.com/562992858. When a save is attempted before the
+// encryptor is ready, the manager must not be left holding pending commands
+// that are unaccounted for by `commands_since_reset()`. Otherwise a delegate
+// that rebuilds its commands in response to a write error (as SessionService
+// does) trips the CHECK in ClearPendingCommands().
+TEST_P(CommandStorageManagerTest, RebuildAfterSaveBeforeEncryptorIsReady) {
+  RebuildOnErrorDelegate delegate;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt =
+      os_crypt_async::GetTestOSCryptAsyncForTesting(
+          /*is_sync_for_unittests=*/false);
+  CommandStorageManager manager(GetParam().session_type, path_, &delegate,
+                                os_crypt.get(), backend_task_runner_);
+  delegate.set_manager(&manager);
+  CommandStorageManagerTestHelper test_helper(&manager);
+
+  // Save is called before the encryptor is ready.
+  manager.AppendRebuildCommand(std::make_unique<SessionCommand>(101, 0));
+  manager.Save();
+
+  // Every pending command must still be counted by `commands_since_reset()`.
+  EXPECT_GE(manager.commands_since_reset(),
+            static_cast<int>(manager.pending_commands().size()));
+
+  // Lets the encryptor become ready, and runs the delegate's error handler if
+  // the manager reported an error.
+  test_helper.RunMessageLoopUntilBackendDone();
+
+  EXPECT_EQ(0, delegate.error_count());
+  EXPECT_GE(manager.commands_since_reset(),
+            static_cast<int>(manager.pending_commands().size()));
+
+  // The deferred commands are written once the encryptor is available.
+  test_helper.RunMessageLoopUntilBackendDone();
+  if (test_helper.ShouldWriteCleartextFiles()) {
+    EXPECT_FALSE(GetCleartextSessionFiles().empty());
+  }
+  if (test_helper.ShouldWriteEncryptedFiles()) {
+    EXPECT_FALSE(GetEncryptedSessionFiles().empty());
+  }
 }
 
 TEST_P(CommandStorageManagerTest,

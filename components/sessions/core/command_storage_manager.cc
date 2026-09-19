@@ -270,6 +270,34 @@ void CommandStorageManager::OnEncryptorReady(
   }
 }
 
+void CommandStorageManager::AppendCommandsToEncryptedBackend(
+    std::vector<std::unique_ptr<SessionCommand>> commands,
+    bool truncate,
+    base::OnceClosure error_callback) {
+  if (!encrypted_backend_) {
+    // This should be uncommon, but could occur if OnEncryptorReady is slow,
+    // which happens on platforms where obtaining the key requires talking to
+    // an OS service (e.g. the Freedesktop secret service on Linux).
+    //
+    // Queue the write rather than reporting an error. Waiting for the encryptor
+    // is not a write failure, and reporting one here would trigger a full
+    // session rebuild in the delegate. It would also leave `commands` unwritten
+    // and unaccounted for by `commands_since_reset_`, breaking the invariant
+    // that ClearPendingCommands() checks. See crbug.com/562992858.
+    LogEncryptedBackendUninitialized(
+        SessionEncryptedBackendUninitialized::kSave);
+    pending_encrypted_ops_.push_back(
+        base::BindOnce(&CommandStorageManager::AppendCommandsToEncryptedBackend,
+                       weak_factory_.GetWeakPtr(), std::move(commands),
+                       truncate, std::move(error_callback)));
+    return;
+  }
+  backend_task_runner_->PostNonNestableTask(
+      FROM_HERE,
+      base::BindOnce(&CommandStorageBackend::AppendCommands, encrypted_backend_,
+                     std::move(commands), truncate, std::move(error_callback)));
+}
+
 void CommandStorageManager::ScheduleCommand(
     std::unique_ptr<SessionCommand> command) {
   DCHECK(command);
@@ -369,17 +397,8 @@ void CommandStorageManager::Save() {
           FROM_HERE, base::BindOnce(&CommandStorageBackend::AppendCommands,
                                     backend_, std::move(pending_commands_),
                                     pending_reset_, std::move(error_callback)));
-      if (encrypted_backend_) {
-        backend_task_runner_->PostNonNestableTask(
-            FROM_HERE,
-            base::BindOnce(&CommandStorageBackend::AppendCommands,
-                           encrypted_backend_, std::move(pending_commands_copy),
-                           pending_reset_, base::DoNothing()));
-      } else {
-        // This should be uncommon, but could occur if OnEncryptorReady is slow.
-        LogEncryptedBackendUninitialized(
-            SessionEncryptedBackendUninitialized::kSave);
-      }
+      AppendCommandsToEncryptedBackend(std::move(pending_commands_copy),
+                                       pending_reset_, base::DoNothing());
       break;
     }
     case EncryptSessionStorageStage::kWriteBothReadPreferEncrypted: {
@@ -392,33 +411,15 @@ void CommandStorageManager::Save() {
           FROM_HERE, base::BindOnce(&CommandStorageBackend::AppendCommands,
                                     backend_, std::move(pending_commands_copy),
                                     pending_reset_, base::DoNothing()));
-      if (encrypted_backend_) {
-        backend_task_runner_->PostNonNestableTask(
-            FROM_HERE,
-            base::BindOnce(&CommandStorageBackend::AppendCommands,
-                           encrypted_backend_, std::move(pending_commands_),
-                           pending_reset_, std::move(error_callback)));
-      } else {
-        LogEncryptedBackendUninitialized(
-            SessionEncryptedBackendUninitialized::kSave);
-        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, base::BindOnce(std::move(error_callback)));
-      }
+      AppendCommandsToEncryptedBackend(std::move(pending_commands_),
+                                       pending_reset_,
+                                       std::move(error_callback));
       break;
     }
     case EncryptSessionStorageStage::kWriteEncryptedReadPreferEncrypted:
-      if (encrypted_backend_) {
-        backend_task_runner_->PostNonNestableTask(
-            FROM_HERE,
-            base::BindOnce(&CommandStorageBackend::AppendCommands,
-                           encrypted_backend_, std::move(pending_commands_),
-                           pending_reset_, std::move(error_callback)));
-      } else {
-        LogEncryptedBackendUninitialized(
-            SessionEncryptedBackendUninitialized::kSave);
-        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, base::BindOnce(std::move(error_callback)));
-      }
+      AppendCommandsToEncryptedBackend(std::move(pending_commands_),
+                                       pending_reset_,
+                                       std::move(error_callback));
       break;
   }
   if (pending_reset_) {

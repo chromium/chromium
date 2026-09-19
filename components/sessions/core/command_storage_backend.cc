@@ -535,7 +535,10 @@ void CommandStorageBackend::AppendCommands(
     last_or_current_path_with_valid_marker_ = open_file_->path;
   }
 
-  if (!open_file_ && !IsError(status)) {
+  if (!open_file_ && status == WriteStatus::kUnknown) {
+    // Note that `IsError()` is true for `kUnknown`, so this cannot test
+    // `!IsError(status)`: that would leave `status` as `kUnknown` and trip the
+    // DCHECK below whenever the file could not be opened.
     status = WriteStatus::kFileNotOpened;
   }
   DCHECK_NE(status, WriteStatus::kUnknown);
