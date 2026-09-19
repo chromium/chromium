@@ -395,8 +395,7 @@ final class SigninButtonMediator
 
         // TODO(crbug.com/551756560): Use a delegate pattern to handle form-factor-based behavior
         // instead of branching here.
-        if (DeviceInfo.isDesktop()
-                && SigninFeatureMap.isEnabled(SigninFeatures.SIGNIN_BUTTON_PROFILE_MENU)) {
+        if (isAccountMenuEnabled()) {
             if (mAccountMenuCoordinator == null) {
                 mAccountMenuCoordinator =
                         new AccountMenuCoordinator(
@@ -411,6 +410,25 @@ final class SigninButtonMediator
         }
 
         startSigninFlow();
+    }
+
+    /** Whether taps on the button open the account menu instead of starting the sign-in flow. */
+    private boolean isAccountMenuEnabled() {
+        return DeviceInfo.isDesktop()
+                && SigninFeatureMap.isEnabled(SigninFeatures.SIGNIN_BUTTON_PROFILE_MENU);
+    }
+
+    /**
+     * Returns the access point for the shared sign-in coordinator, which is created eagerly before
+     * the surface that starts the flow is known. When the account menu is enabled the menu is that
+     * surface, so the flow is attributed to {@link
+     * SigninAccessPoint#ACCOUNT_MENU_SIGNED_OUT_STATE}; otherwise the button starts the flow
+     * itself.
+     */
+    private @SigninAccessPoint int getSigninAccessPoint() {
+        return isAccountMenuEnabled()
+                ? SigninAccessPoint.ACCOUNT_MENU_SIGNED_OUT_STATE
+                : SigninAccessPoint.NTP_SIGNED_OUT_ICON;
     }
 
     private void startSigninFlow() {
@@ -492,7 +510,7 @@ final class SigninButtonMediator
                                     () -> mBottomSheetController,
                                     SupplierUtils.of(mModalDialogManager),
                                     SupplierUtils.of(mSnackbarManager),
-                                    SigninAccessPoint.NTP_SIGNED_OUT_ICON);
+                                    getSigninAccessPoint());
         }
     }
 

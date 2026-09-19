@@ -469,6 +469,7 @@ bool IsValidAccessPointForHistoryOptinScreen(
     case signin_metrics::AccessPoint::kDriveFilePickerIos:
     case signin_metrics::AccessPoint::kGlicLaunchButton:
     case signin_metrics::AccessPoint::kSkills:
+    case signin_metrics::AccessPoint::kAccountMenuSignedOutState:
     case signin_metrics::AccessPoint::kHistoryPage:
     case signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup:
     case signin_metrics::AccessPoint::kWidget:

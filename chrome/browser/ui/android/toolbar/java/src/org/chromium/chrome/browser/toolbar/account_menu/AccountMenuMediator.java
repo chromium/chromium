@@ -266,7 +266,7 @@ public class AccountMenuMediator
                             mContext,
                             originalProfile,
                             config,
-                            SigninAccessPoint.NTP_SIGNED_OUT_ICON);
+                            SigninAccessPoint.ACCOUNT_MENU_SIGNED_OUT_STATE);
             if (intent != null) {
                 mContext.startActivity(intent);
             }
