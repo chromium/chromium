@@ -134,10 +134,6 @@
 
 namespace {
 
-BrowserWindowInterface* FromWebContents(content::WebContents* web_contents) {
-  return webui::GetBrowserWindowInterface(web_contents);
-}
-
 void UpdateDarkModePreferenceFromUrl(content::WebContents* wc,
                                      const GURL& url,
                                      Profile* profile) {
@@ -1000,21 +996,11 @@ bool ContextualTasksUI::IsShownInTab() {
 }
 
 BrowserWindowInterface* ContextualTasksUI::GetBrowser() {
-  content::WebContents* web_contents = web_ui()->GetWebContents();
-  BrowserWindowInterface* window = FromWebContents(web_contents);
-  if (window) {
-    return window;
-  }
-  tabs::TabInterface* tab =
-      tabs::TabInterface::MaybeGetFromContents(web_contents);
-  if (tab) {
-    return tab->GetBrowserWindowInterface();
-  }
-  return nullptr;
+  return ContextualTasksUIBase::GetBrowser();
 }
 
 Profile* ContextualTasksUI::GetProfile() {
-  return contextual_tasks::ContextualTasksUIBase::GetProfile();
+  return ContextualTasksUIBase::GetProfile();
 }
 
 contextual_tasks::ContextualTasksAutoSuggestionManager*
@@ -1023,7 +1009,7 @@ ContextualTasksUI::GetAutoSuggestionManager() {
 }
 
 content::WebContents* ContextualTasksUI::GetWebUIWebContents() {
-  return web_ui()->GetWebContents();
+  return ContextualTasksUIBase::GetWebUIWebContents();
 }
 
 void ContextualTasksUI::CloseSidePanel() {
@@ -1601,19 +1587,6 @@ ContextualTasksUI::GetPageRemote() {
   return page_;
 }
 
-contextual_tasks::ContextualTasksPanelController*
-ContextualTasksUI::GetPanelController() {
-  if (!web_ui()->GetWebContents()) {
-    return nullptr;
-  }
-
-  auto* browser = webui::GetBrowserWindowInterface(web_ui()->GetWebContents());
-  if (!browser) {
-    return nullptr;
-  }
-
-  return contextual_tasks::ContextualTasksPanelController::From(browser);
-}
 
 ContextualTasksUI::FrameNavObserver::FrameNavObserver(
     content::WebContents* web_contents,

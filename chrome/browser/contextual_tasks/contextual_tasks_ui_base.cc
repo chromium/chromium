@@ -5,6 +5,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_base.h"
 
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_permission_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
@@ -21,6 +22,7 @@
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/common/composebox_features.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "extensions/buildflags/buildflags.h"
@@ -58,6 +60,40 @@ ContextualTasksUIBase::~ContextualTasksUIBase() = default;
 
 Profile* ContextualTasksUIBase::GetProfile() {
   return Profile::FromWebUI(web_ui());
+}
+
+content::WebContents* ContextualTasksUIBase::GetWebUIWebContents() {
+  return web_ui()->GetWebContents();
+}
+
+BrowserWindowInterface* ContextualTasksUIBase::GetBrowser() {
+  content::WebContents* web_contents = web_ui()->GetWebContents();
+  if (!web_contents) {
+    return nullptr;
+  }
+  BrowserWindowInterface* window =
+      webui::GetBrowserWindowInterface(web_contents);
+  if (window) {
+    return window;
+  }
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  if (tab) {
+    return tab->GetBrowserWindowInterface();
+  }
+  return nullptr;
+}
+
+ContextualTasksPanelController* ContextualTasksUIBase::GetPanelController() {
+  if (!web_ui()->GetWebContents()) {
+    return nullptr;
+  }
+
+  auto* browser = webui::GetBrowserWindowInterface(web_ui()->GetWebContents());
+  if (!browser) {
+    return nullptr;
+  }
+  return ContextualTasksPanelController::From(browser);
 }
 
 content::WebUIDataSource* ContextualTasksUIBase::RegisterWebUIDataSource(

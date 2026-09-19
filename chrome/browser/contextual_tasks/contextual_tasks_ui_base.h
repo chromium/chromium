@@ -16,7 +16,10 @@
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"  // nogncheck
 
+class BrowserWindowInterface;
+
 namespace content {
+class WebContents;
 class WebUI;
 class WebUIDataSource;
 }  // namespace content
@@ -25,6 +28,7 @@ class Profile;
 
 namespace contextual_tasks {
 
+class ContextualTasksPanelController;
 class ContextualTasksPermissionController;
 
 // Base WebUI controller class for Contextual Tasks.
@@ -103,6 +107,9 @@ class ContextualTasksUIBase
       toolbar_ui_api::mojom::LhsChipIdentifier identifier) override;
 
   Profile* GetProfile();
+  content::WebContents* GetWebUIWebContents();
+  BrowserWindowInterface* GetBrowser();
+  ContextualTasksPanelController* GetPanelController();
   contextual_tasks_toolbar::mojom::Page* GetToolbarPageRemote() {
     return toolbar_page_.get();
   }

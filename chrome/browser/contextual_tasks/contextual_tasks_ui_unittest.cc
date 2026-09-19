@@ -14,6 +14,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_permission_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_base.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_post_rearchitecture.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_page.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -2125,6 +2127,42 @@ TEST_F(ContextualTasksUiTest, HelpBubbleHandlerFactoryBindTest) {
   controller.BindInterface(remote.BindNewPipeAndPassReceiver());
   remote.FlushForTesting();
   EXPECT_TRUE(remote.is_connected());
+}
+
+TEST_F(ContextualTasksUiTest, BaseAccessors_PostRearchitecture) {
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  auto post_rearch_ui =
+      std::make_unique<ContextualTasksUIPostRearchitecture>(&web_ui);
+
+  ASSERT_NE(post_rearch_ui, nullptr);
+  EXPECT_EQ(post_rearch_ui->GetWebUIWebContents(),
+            embedded_web_contents_.get());
+  EXPECT_EQ(post_rearch_ui->GetBrowser(), nullptr);
+  EXPECT_EQ(post_rearch_ui->GetPanelController(), nullptr);
+
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window;
+  webui::SetBrowserWindowInterface(embedded_web_contents_.get(),
+                                   &mock_browser_window);
+  EXPECT_EQ(post_rearch_ui->GetBrowser(), &mock_browser_window);
+  webui::SetBrowserWindowInterface(embedded_web_contents_.get(), nullptr);
+}
+
+TEST_F(ContextualTasksUiTest, BaseAccessors_Legacy) {
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  auto legacy_ui = std::make_unique<ContextualTasksUI>(&web_ui);
+
+  ASSERT_NE(legacy_ui, nullptr);
+  EXPECT_EQ(legacy_ui->GetWebUIWebContents(), embedded_web_contents_.get());
+  EXPECT_EQ(legacy_ui->GetBrowser(), nullptr);
+  EXPECT_EQ(legacy_ui->GetPanelController(), nullptr);
+
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window;
+  webui::SetBrowserWindowInterface(embedded_web_contents_.get(),
+                                   &mock_browser_window);
+  EXPECT_EQ(legacy_ui->GetBrowser(), &mock_browser_window);
+  webui::SetBrowserWindowInterface(embedded_web_contents_.get(), nullptr);
 }
 
 }  // namespace contextual_tasks

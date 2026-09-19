@@ -352,8 +352,6 @@ class ContextualTasksUI
                              const GURL& url,
                              bool replace_navigation_entry) override;
 
-  contextual_tasks::ContextualTasksPanelController* GetPanelController();
-
   void UpdateExpandButtonEnabled(bool enabled) override;
 
   std::unique_ptr<contextual_tasks::ContextualTasksAutoSuggestionManager>
