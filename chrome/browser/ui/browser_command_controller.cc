@@ -15,6 +15,7 @@
 #include "base/debug/profiler.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
@@ -129,6 +130,7 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/translate/core/browser/translate_manager.h"
+#include "components/zoom/zoom_controller.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
@@ -2241,6 +2243,14 @@ void BrowserCommandController::UpdateCommandsForZoomState() {
   command_updater_->UpdateCommandEnabled(IDC_ZOOM_NORMAL,
                                          CanResetZoom(contents));
   command_updater_->UpdateCommandEnabled(IDC_ZOOM_MINUS, CanZoomOut(contents));
+
+  if (const auto* zoom_controller =
+          zoom::ZoomController::FromWebContents(contents)) {
+    if (auto* const zoom_action = FindAction(kActionZoomNormal, browser_)) {
+      zoom_action->SetText(
+          base::FormatPercent(zoom_controller->GetZoomPercent()));
+    }
+  }
 }
 
 void BrowserCommandController::UpdateCommandsForContentRestrictionState() {

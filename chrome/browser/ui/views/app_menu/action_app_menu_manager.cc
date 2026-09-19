@@ -541,6 +541,7 @@ void ActionAppMenuManager::AddToolsAndActionsActions(
                 kActionZoomSubmenu,
                 [](AppMenuBuilder& sub) {
                   sub.AddAction(kActionZoomMinus)
+                      .AddAction(kActionZoomNormal)
                       .AddAction(kActionZoomPlus)
                       .AddAction(kActionFullscreen);
                 },

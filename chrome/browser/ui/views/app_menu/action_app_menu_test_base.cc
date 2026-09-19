@@ -177,6 +177,7 @@ void ActionAppMenuTestBase::SetUp() {
   add_action(kActionShowManagementPage, u"Managed by your organization");
   add_action(kActionZoomSubmenu, u"Zoom");
   add_action(kActionZoomMinus, u"Zoom Out");
+  add_action(kActionZoomNormal, u"100%");
   add_action(kActionZoomPlus, u"Zoom In");
   add_action(kActionFullscreen, u"Fullscreen");
 

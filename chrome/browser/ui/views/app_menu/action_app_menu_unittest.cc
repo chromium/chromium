@@ -1154,11 +1154,12 @@ TEST_F(ActionAppMenuTest, ZoomLabelUpdatesOnZoomChange) {
   EXPECT_TRUE(zoom_label->GetVisible());
   EXPECT_EQ(zoom_label->GetText(), base::FormatPercent(100));
 
-  // Change zoom level and verify that the label updates to print the new zoom
-  // percent.
-  zoom_controller->SetZoomLevel(2.0);
-  EXPECT_EQ(zoom_label->GetText(),
-            base::FormatPercent(zoom_controller->GetZoomPercent()));
+  // Verify that the label updates when the action item's text changes.
+  actions::ActionItem* normal_action =
+      actions::ActionManager::Get().FindAction(kActionZoomNormal);
+  ASSERT_TRUE(normal_action);
+  normal_action->SetText(base::FormatPercent(200));
+  EXPECT_EQ(zoom_label->GetText(), base::FormatPercent(200));
 
   menu.CloseMenu();
 }

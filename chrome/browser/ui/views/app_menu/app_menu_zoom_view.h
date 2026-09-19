@@ -11,8 +11,6 @@
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
-#include "base/scoped_observation.h"
-#include "components/zoom/zoom_observer.h"
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/color/color_id.h"
@@ -30,12 +28,8 @@ class ImageButton;
 class Label;
 }  // namespace views
 
-namespace zoom {
-class ZoomController;
-}
-
 // Custom horizontal container view for Zoom controls in ActionAppMenu.
-class AppMenuZoomView : public views::BoxLayoutView, public zoom::ZoomObserver {
+class AppMenuZoomView : public views::BoxLayoutView {
   METADATA_HEADER(AppMenuZoomView, views::BoxLayoutView)
 
  public:
@@ -49,12 +43,6 @@ class AppMenuZoomView : public views::BoxLayoutView, public zoom::ZoomObserver {
   AppMenuZoomView& operator=(const AppMenuZoomView&) = delete;
   ~AppMenuZoomView() override;
 
-  // zoom::ZoomObserver:
-  void OnZoomChanged(
-      const zoom::ZoomController::ZoomChangedEventData& data) override;
-  void OnZoomControllerDestroyed(
-      zoom::ZoomController* zoom_controller) override;
-
   views::Label* zoom_label_for_testing() const { return zoom_label_; }
 
  private:
@@ -62,7 +50,7 @@ class AppMenuZoomView : public views::BoxLayoutView, public zoom::ZoomObserver {
   // string for the zoom label.
   int GetZoomLabelMaxWidth() const;
 
-  // Creates the zoom child controls (-, +, and fullscreen buttons), for the
+  // Creates the zoom child controls (-, %, +, and fullscreen buttons), for the
   // zoom menu item.
   void BuildZoomChildControls(
       actions::BaseAction* zoom_row_action_item,
@@ -74,28 +62,12 @@ class AppMenuZoomView : public views::BoxLayoutView, public zoom::ZoomObserver {
   std::unique_ptr<views::ImageButton> CreateZoomButton(
       actions::ActionItem* zoom_child);
 
-  // Updates the zoom label text and enables/disables the zoom buttons based on
-  // the current zoom percent.
-  void UpdateZoomControls();
-
-  // Updates the fullscreen button's enabled state, tooltip, and accessible name
-  // based on whether fullscreen is supported and whether the window is in
-  // fullscreen mode.
-  void UpdateFullScreenButton();
-
   // Returns the active web contents, or nullptr if unavailable.
   content::WebContents* GetActiveWebContents() const;
 
-  // Returns the current zoom percentage for the active web contents.
-  int GetCurrentZoomPercent() const;
-
   raw_ptr<BrowserWindowInterface> browser_window_interface_;
   raw_ptr<views::Label> zoom_label_ = nullptr;
-  raw_ptr<views::ImageButton> zoom_minus_button_ = nullptr;
-  raw_ptr<views::ImageButton> zoom_plus_button_ = nullptr;
-  raw_ptr<views::ImageButton> zoom_fullscreen_button_ = nullptr;
-  base::ScopedObservation<zoom::ZoomController, zoom::ZoomObserver>
-      zoom_observation_{this};
+  base::CallbackListSubscription zoom_label_subscription_;
   std::vector<base::CallbackListSubscription> button_subscriptions_;
 };
 
