@@ -1750,7 +1750,7 @@ Unknown properties are collapsed to zero. -->
   <int value="9" label="Move to tab right"/>
   <int value="10" label="Move to specific tab"/>
   <int value="11" label="Move to last tab"/>
-  <int value="12" label="Search currently-open tabs"/>
+  <int value="12" label="Search currently-open tabs (deprecated)"/>
   <int value="13" label="Toggle multi-task menu (not implemented)"/>
   <int value="14" label="Close tab"/>
   <int value="15" label="Close window"/>
