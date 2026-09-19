@@ -6,6 +6,9 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <limits>
 #include <memory>
 #include <utility>
 
@@ -91,7 +94,7 @@ SkColor4f ColorWithAlpha(SkColor color, float alpha) {
 // serialization), while releasing the full-desktop SkPixelRef from memory.
 SkBitmap ExtractCompactSubset(const SkBitmap& source,
                               const gfx::Rect& crop_rect) {
-  if (source.empty() || crop_rect.IsEmpty()) {
+  if (source.drawsNothing() || crop_rect.IsEmpty()) {
     return SkBitmap();
   }
   gfx::Rect safe_crop = crop_rect;
@@ -110,6 +113,7 @@ SkBitmap ExtractCompactSubset(const SkBitmap& source,
   if (!source.readPixels(compact_copy.pixmap(), safe_crop.x(), safe_crop.y())) {
     return SkBitmap();
   }
+  compact_copy.setImmutable();
   return compact_copy;
 }
 
@@ -358,6 +362,7 @@ class RegionSelectOverlayView : public views::View {
   }
 
   void ClearBitmaps() {
+    is_dragging_ = false;
     bitmap_.reset();
     image_ = gfx::ImageSkia();
   }
@@ -493,7 +498,13 @@ class RegionSelectOverlayView : public views::View {
   void OnGestureEvent(ui::GestureEvent* event) override {
     switch (event->type()) {
       case ui::EventType::kGestureTapDown:
+        event->SetHandled();
+        break;
       case ui::EventType::kGestureTapCancel:
+        if (is_dragging_) {
+          is_dragging_ = false;
+          coordinator_->OnDragCancelled();
+        }
         event->SetHandled();
         break;
       case ui::EventType::kGestureScrollBegin:
@@ -528,6 +539,7 @@ class RegionSelectOverlayView : public views::View {
 
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override {
     if (accelerator.key_code() == ui::VKEY_ESCAPE) {
+      is_dragging_ = false;
       coordinator_->OnDragCancelled();
       return true;
     }
@@ -688,6 +700,7 @@ OmniboxEverywhereRegionSelectOverlay::OmniboxEverywhereRegionSelectOverlay(
     : callback_(std::move(callback)) {}
 
 OmniboxEverywhereRegionSelectOverlay::~OmniboxEverywhereRegionSelectOverlay() {
+  auto callback = std::move(callback_);
   widget_observations_.RemoveAllObservations();
   for (auto& widget : widgets_) {
     if (widget) {
@@ -705,8 +718,8 @@ OmniboxEverywhereRegionSelectOverlay::~OmniboxEverywhereRegionSelectOverlay() {
   widgets_.clear();
   screenshot_.reset();
   display_slices_.clear();
-  if (callback_) {
-    std::move(callback_).Run(SkBitmap());
+  if (callback) {
+    std::move(callback).Run(SkBitmap());
   }
 }
 
@@ -762,7 +775,7 @@ void OmniboxEverywhereRegionSelectOverlay::Initialize(
     gfx::NativeWindow context) {
   std::vector<display::Display> target_displays =
       GetTargetDisplaysForSource(source);
-  if (target_displays.empty()) {
+  if (target_displays.empty() || screenshot.drawsNothing()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&OmniboxEverywhereRegionSelectOverlay::Finish,
                                   weak_factory_.GetWeakPtr(), SkBitmap()));
@@ -776,6 +789,7 @@ void OmniboxEverywhereRegionSelectOverlay::Initialize(
                                     screenshot.height());
 
   screenshot_ = screenshot;
+  screenshot_.setImmutable();
   display_slices_.clear();
 
   // Determine which display should be active/focused (display nearest cursor).
@@ -985,19 +999,16 @@ void OmniboxEverywhereRegionSelectOverlay::Finish(
 
   for (auto& widget : widgets_) {
     if (widget) {
-      if (!widget->IsClosed()) {
-        // Hide before releasing the bitmaps below, so that a paint scheduled
-        // in between cannot flash black, and so this fullscreen overlay skips
-        // any platform close animation.
-        widget->Hide();
-      }
       if (auto* overlay_view = views::AsViewClass<RegionSelectOverlayView>(
               widget->GetContentsView())) {
         overlay_view->ClearBitmaps();
       }
-      // This may be running inside a Widget close notification, where the
-      // Widget forbids synchronous destruction, so close asynchronously.
       if (!widget->IsClosed()) {
+        // Hide before closing so this fullscreen overlay skips any platform
+        // close animation and prevents paint flashes.
+        widget->Hide();
+        // This may be running inside a Widget close notification, where the
+        // Widget forbids synchronous destruction, so close asynchronously.
         widget->Close();
       }
     }
