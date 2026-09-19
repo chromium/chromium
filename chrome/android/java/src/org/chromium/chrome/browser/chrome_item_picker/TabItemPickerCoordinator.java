@@ -366,6 +366,19 @@ public class TabItemPickerCoordinator {
                 mNavigationProvider != null ? mNavigationProvider.getSelectedItemsCount() : 0;
         RecordHistogram.recordCount100Histogram(
                 "Android.TabItemPicker.Cancel.SelectedTabs.Count", selectedCount);
+        int cancelledLoadsCount =
+                mNavigationProvider != null ? mNavigationProvider.getCancelledLoadsCount() : 0;
+        RecordHistogram.recordCount100Histogram(
+                "Android.TabItemPicker.Cancel.CancelledLoads.Count", cancelledLoadsCount);
+        int netCancelledTabsCount =
+                mNavigationProvider != null ? mNavigationProvider.getNetCancelledTabsCount() : 0;
+        RecordHistogram.recordCount100Histogram(
+                "Android.TabItemPicker.Cancel.NetCancelledTabs.Count", netCancelledTabsCount);
+        if (cancelledLoadsCount > 0 && mNavigationProvider != null) {
+            RecordHistogram.recordBooleanHistogram(
+                    "Android.TabItemPicker.CancelledTabReselected",
+                    mNavigationProvider.hasReselectedCancelledTab());
+        }
 
         if (mActivity instanceof ChromeItemPickerActivity cipa) {
             cipa.finishWithCancel();
@@ -389,9 +402,12 @@ public class TabItemPickerCoordinator {
         private final Map<Tab, Long> mLoadingTabsToStartTimes = new HashMap<>();
         private final TabItemPickerOffscreenRenderer mOffscreenRenderer;
         private final LoadIfNeededCallback mLoadIfNeededCallback = this::onTabLoadFinished;
+        private final Set<Integer> mCancelledTabIds = new ArraySet<>();
 
         private boolean mIsDestroyed;
         private int mSelectedItemsCount;
+        private int mCancelledLoadsCount;
+        private boolean mHasReselectedCancelledTab;
 
         public ItemPickerNavigationProvider(
                 Activity activity,
@@ -415,6 +431,29 @@ public class TabItemPickerCoordinator {
         /** Returns the number of currently selected items in the picker. */
         public int getSelectedItemsCount() {
             return mSelectedItemsCount;
+        }
+
+        /**
+         * Returns the total (gross) count of on-demand tab load cancellation operations triggered
+         * during this picker session. An individual tab increments this count each time it is
+         * deselected.
+         */
+        public int getCancelledLoadsCount() {
+            return mCancelledLoadsCount;
+        }
+
+        /**
+         * Returns the net count of background tabs that were cancelled and remained unselected at
+         * the end of this picker session. Tabs that were deselected but subsequently re-selected
+         * are excluded.
+         */
+        public int getNetCancelledTabsCount() {
+            return mCancelledTabIds.size();
+        }
+
+        /** Returns whether any previously cancelled tab was re-selected during this session. */
+        public boolean hasReselectedCancelledTab() {
+            return mHasReselectedCancelledTab;
         }
 
         @Override
@@ -477,6 +516,10 @@ public class TabItemPickerCoordinator {
                     || !FuseboxTabUtils.isTabEligibleForAttachment(tab)
                     || FuseboxTabUtils.hasLoadedContent(tab)) {
                 return;
+            }
+
+            if (mCancelledTabIds.remove(tabId)) {
+                mHasReselectedCancelledTab = true;
             }
 
             // Avoid double-observing the same tab if it's already being loaded.
@@ -546,6 +589,11 @@ public class TabItemPickerCoordinator {
             if (mIsDestroyed) {
                 mOffscreenRenderer.stopOffscreenRenderingIfNeeded(tab);
                 return;
+            }
+
+            if (result == LoadResult.CANCELLED) {
+                mCancelledLoadsCount++;
+                mCancelledTabIds.add(tab.getId());
             }
 
             Long startTime = mLoadingTabsToStartTimes.remove(tab);
@@ -661,6 +709,14 @@ public class TabItemPickerCoordinator {
                     "Android.TabItemPicker.ActiveTabsPicked.Count", activePickedCount);
             RecordHistogram.recordCount100Histogram(
                     "Android.TabItemPicker.CachedTabsPicked.Count", cachedPickedCount);
+            RecordHistogram.recordCount100Histogram(
+                    "Android.TabItemPicker.CancelledLoads.Count", mCancelledLoadsCount);
+            RecordHistogram.recordCount100Histogram(
+                    "Android.TabItemPicker.NetCancelledTabs.Count", mCancelledTabIds.size());
+            if (mCancelledLoadsCount > 0) {
+                RecordHistogram.recordBooleanHistogram(
+                        "Android.TabItemPicker.CancelledTabReselected", mHasReselectedCancelledTab);
+            }
             var controller = mControllerSupplier.get();
             assert controller != null;
             controller.hideByAction();

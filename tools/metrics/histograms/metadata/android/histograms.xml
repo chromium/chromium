@@ -6270,6 +6270,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.TabItemPicker.Cancel.CancelledLoads.Count"
+    units="count" expires_after="2027-07-07">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>madhavpruthi@google.com</owner>
+  <summary>
+    Records the total (gross) number of on-demand background tab load
+    cancellation operations triggered during the tab item picker session. An
+    individual tab increments this count each time it is deselected. Recorded
+    when the user exits the Tab Picker by cancelling (e.g. back press).
+  </summary>
+</histogram>
+
+<histogram name="Android.TabItemPicker.Cancel.NetCancelledTabs.Count"
+    units="count" expires_after="2027-07-07">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>madhavpruthi@google.com</owner>
+  <summary>
+    Records the net number of background tabs that were cancelled and remained
+    unselected when the user exited the tab item picker by cancelling (e.g. back
+    press). Unlike Cancel.CancelledLoads.Count, tabs that were deselected but
+    subsequently re-selected are not included.
+  </summary>
+</histogram>
+
 <histogram name="Android.TabItemPicker.Cancel.SelectedTabs.Count" units="count"
     expires_after="2027-07-07">
   <owner>ckitagawa@chromium.org</owner>
@@ -6279,6 +6303,44 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the number of tabs selected when the user exits the Tab Picker by
     cancelling (e.g. back press).
+  </summary>
+</histogram>
+
+<histogram name="Android.TabItemPicker.CancelledLoads.Count" units="count"
+    expires_after="2027-07-07">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>madhavpruthi@google.com</owner>
+  <summary>
+    Records the total (gross) number of on-demand background tab load
+    cancellation operations triggered during the tab item picker session. An
+    individual tab increments this count each time it is deselected. Recorded
+    when the user confirms their selection in the Tab Picker.
+  </summary>
+</histogram>
+
+<histogram name="Android.TabItemPicker.CancelledTabReselected" enum="Boolean"
+    expires_after="2027-07-07">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>madhavpruthi@google.com</owner>
+  <summary>
+    Recorded at the end of a tab item picker session in which one or more
+    on-demand tab loads were cancelled. Records true if the user subsequently
+    re-selected at least one of those cancelled tabs during the same session, or
+    false if none were re-selected.
+  </summary>
+</histogram>
+
+<histogram name="Android.TabItemPicker.NetCancelledTabs.Count" units="count"
+    expires_after="2027-07-07">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>madhavpruthi@google.com</owner>
+  <summary>
+    Records the net number of background tabs that remained cancelled and
+    unselected at the end of the tab item picker session (i.e. tabs that were
+    selected on-demand, cancelled upon deselection, and never re-selected).
+    Recorded when the user confirms their selection in the Tab Picker. Can be
+    paired with SelectedTabs.Count to compute the fraction of on-demand tab
+    loads discarded by the user.
   </summary>
 </histogram>
 

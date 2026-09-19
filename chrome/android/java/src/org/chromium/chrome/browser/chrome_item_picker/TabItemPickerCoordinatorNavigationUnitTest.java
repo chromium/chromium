@@ -63,6 +63,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -818,6 +819,94 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
         mNavigationProvider.destroy();
 
         verify(tab, never()).stopLoading();
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE,
+        OPTIMIZATION_CANCEL_ON_DESELECTION
+    })
+    public void testFinishSelection_RecordsCancelledLoadsCount() {
+        Tab tab = selectLoadableTab(101);
+        mNavigationProvider.onSelectionStateChange(Collections.emptySet());
+
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Android.TabItemPicker.CancelledLoads.Count", 1)
+                        .expectIntRecord("Android.TabItemPicker.NetCancelledTabs.Count", 1)
+                        .expectBooleanRecord("Android.TabItemPicker.CancelledTabReselected", false)
+                        .build();
+
+        mNavigationProvider.finishSelection(Collections.emptyList());
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE,
+        OPTIMIZATION_CANCEL_ON_DESELECTION
+    })
+    public void testCancelPicker_RecordsCancelCancelledLoadsCount() {
+        Tab tab = selectLoadableTab(101);
+        when(mTabListEditorController.isVisible()).thenReturn(true);
+        mNavigationProvider.onSelectionStateChange(Collections.emptySet());
+
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Android.TabItemPicker.Cancel.CancelledLoads.Count", 1)
+                        .expectIntRecord("Android.TabItemPicker.Cancel.NetCancelledTabs.Count", 1)
+                        .expectBooleanRecord("Android.TabItemPicker.CancelledTabReselected", false)
+                        .build();
+
+        mNavigationProvider.goBack();
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE,
+        OPTIMIZATION_CANCEL_ON_DESELECTION
+    })
+    public void testReselectionAfterCancellation_GrossVsNetMetrics() {
+        Tab tab = selectLoadableTab(101);
+        mNavigationProvider.onSelectionStateChange(Collections.emptySet());
+        simulateCancelledRendererState(tab);
+
+        // Re-select tab 101.
+        mNavigationProvider.onSelectionStateChange(selectionFor(101));
+
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Android.TabItemPicker.CancelledLoads.Count", 1)
+                        .expectIntRecord("Android.TabItemPicker.NetCancelledTabs.Count", 0)
+                        .expectBooleanRecord("Android.TabItemPicker.CancelledTabReselected", true)
+                        .build();
+
+        mNavigationProvider.finishSelection(
+                Arrays.asList(TabListEditorItemSelectionId.createTabId(101)));
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE,
+        OPTIMIZATION_CANCEL_ON_DESELECTION
+    })
+    public void testFinishSelection_NoCancellations_DoesNotRecordCancelledTabReselected() {
+        selectLoadableTab(101);
+
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.TabItemPicker.CancelledTabReselected")
+                        .build();
+
+        mNavigationProvider.finishSelection(
+                Arrays.asList(TabListEditorItemSelectionId.createTabId(101)));
+
+        watcher.assertExpected();
     }
 
     /**
