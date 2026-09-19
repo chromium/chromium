@@ -414,6 +414,7 @@ ntp-lens-upload-dialog {
   --cr-composebox-submit-icon-offset: 0;
   --cr-composebox-submit-icon-size: 24px;
   --cr-composebox-submit-width: 48px;
+  --voice-search-wave-top: 49px;
   background: var(--color-composebox-background);
   border: none;
   border-radius: 28px;
@@ -428,18 +429,52 @@ ntp-lens-upload-dialog {
   position: absolute;
   position-anchor: --dialog-anchor;
   top: anchor(top);
+  transition: height 200ms ease-in-out, min-height 200ms ease-in-out;
   width: var(--ntp-search-box-width);
 }
 
-#voiceSearchDialog:has(#voiceSearch[live-transcript-enabled]) {
+#voiceSearchDialog:has(
+    #voiceSearch[live-transcript-enabled]:not([audio-wave-enabled])) {
   height: auto;
   max-height: 254px;
   min-height: 128px;
 }
 
 #voiceSearchDialog:has(#voiceSearch[audio-wave-enabled]) {
+  --voice-search-wave-top: 49px;
   height: 168px;
   min-height: 168px;
+}
+
+#voiceSearchDialog:has(#voiceSearch[transcript-lines='2']) {
+  --transcript-lines: 2;
+}
+
+#voiceSearchDialog:has(#voiceSearch[transcript-lines='3']) {
+  --transcript-lines: 3;
+}
+
+#voiceSearchDialog:has(#voiceSearch[transcript-lines='4']) {
+  --transcript-lines: 4;
+}
+
+#voiceSearchDialog:has(#voiceSearch[transcript-lines='5']) {
+  --transcript-lines: 5;
+}
+
+#voiceSearchDialog:has(#voiceSearch[transcript-lines='6']) {
+  --transcript-lines: 6;
+}
+
+#voiceSearchDialog:has(#voiceSearch[transcript-lines='7']) {
+  --transcript-lines: 7;
+}
+
+#voiceSearchDialog:has(#voiceSearch[has-multiline-transcript]) {
+  --voice-search-wave-top: min(
+      198px, calc(30px + var(--transcript-lines, 2) * 24px));
+  height: min(302px, calc(134px + var(--transcript-lines, 2) * 24px));
+  min-height: min(302px, calc(134px + var(--transcript-lines, 2) * 24px));
 }
 
 /* Disable default scrim and use custom scrim instead. */
@@ -453,7 +488,8 @@ ntp-lens-upload-dialog {
   width: 100%;
 }
 
-#voiceSearchDialog:has(#voiceSearch[live-transcript-enabled])
+#voiceSearchDialog:has(
+    #voiceSearch[live-transcript-enabled]:not([audio-wave-enabled]))
     #voiceSearchCardContainer {
   height: auto;
 }
@@ -477,18 +513,24 @@ ntp-lens-upload-dialog {
   --voice-search-minimum-height: 128px;
 }
 
-#voiceSearch[live-transcript-enabled] {
+#voiceSearch[live-transcript-enabled]:not([audio-wave-enabled]) {
   height: auto;
   inset: auto;
   position: static;
 }
 
+/* In audio-wave mode, overlay #voiceSearch directly over #voiceSearchGlow. */
 #voiceSearch[audio-wave-enabled] {
+  --voice-bottom-actions-bottom: 16px;
   --voice-bottom-actions-inset-inline-end: 16px;
   --voice-search-minimum-height: 168px;
   height: 100%;
   inset: 0;
   position: absolute;
+}
+
+#voiceSearch[audio-wave-enabled][has-multiline-transcript] {
+  --voice-bottom-actions-bottom: 8px;
 }
 
 #voiceSearch::part(voice-stop-button) {
@@ -515,7 +557,8 @@ ntp-lens-upload-dialog {
   height: 48px;
   inset-inline: 0;
   padding: 0;
-  top: 49px;
+  top: var(--voice-search-wave-top);
+  transition: top 200ms ease-in-out;
 }
 
 :host-context([webui-rounded-icons]) {
