@@ -219,13 +219,13 @@ void OmniboxPopupHandler::SetInputState(
     bool query_zps,
     searchbox::mojom::InputKeywordModelPtr keyword_model,
     bool is_tab_switch) {
+  current_sequence_number_++;
+  TRACE_EVENT("omnibox", "OmniboxPopupHandler::SetInputState",
+              "sequence_number", current_sequence_number_, "is_focused",
+              is_focused, "is_tab_switch", is_tab_switch);
+
   latest_selection_ = selection;
   show_full_url_ = show_full_url;
-  current_sequence_number_++;
-
-  TRACE_EVENT2("omnibox", "OmniboxPopupHandler::SetInputState",
-               "sequence_number", current_sequence_number_, "is_focused",
-               is_focused);
 
   auto state = omnibox_popup::mojom::OmniboxInputState::New();
   state->sequence_number = current_sequence_number_;
