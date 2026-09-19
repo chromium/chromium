@@ -166,6 +166,13 @@ suite('FreChinTest', () => {
         freChin.shadowRoot.querySelectorAll<HTMLElement>('.key-badge');
     assertEquals(3, keyBadges.length);
 
+    const toSearchLabel =
+        freChin.shadowRoot.querySelector<HTMLElement>('.to-search-label');
+    assertTrue(!!toSearchLabel);
+    assertEquals(
+        'to search with Chrome. Change shortcut in Settings',
+        toSearchLabel.textContent.replace(/\s+/g, ' ').trim());
+
     const changeShortcutLabel =
         freChin.shadowRoot.querySelector('.change-shortcut-label');
     assertTrue(!!changeShortcutLabel);
@@ -177,6 +184,10 @@ suite('FreChinTest', () => {
         freChin.shadowRoot.querySelector<HTMLAnchorElement>('.settings-link');
     assertTrue(!!settingsLink);
     assertEquals('Settings', settingsLink.textContent.trim());
+
+    const settingsPromise = eventToPromise('open-settings', freChin);
+    settingsLink.click();
+    await settingsPromise;
   });
 
   test('clicking close button fires close event', async () => {
