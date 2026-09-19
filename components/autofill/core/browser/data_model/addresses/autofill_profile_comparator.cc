@@ -281,8 +281,10 @@ std::optional<PhoneNumber> AutofillProfileComparator::MergePhoneNumbers(
   // - Both are not in international format, so their country codes both default
   //   to `region`.
   // - One of them is in international format, so we prefer that country code.
-  CHECK(HasInternationalCountryCode(n1) != HasInternationalCountryCode(n2) ||
-        n1.country_code() == n2.country_code());
+  if (HasInternationalCountryCode(n1) == HasInternationalCountryCode(n2) &&
+      n1.country_code() != n2.country_code()) {
+    return std::nullopt;
+  }
   merged_number.set_country_code(
       HasInternationalCountryCode(n1) ? n1.country_code() : n2.country_code());
   merged_number.set_national_number(
