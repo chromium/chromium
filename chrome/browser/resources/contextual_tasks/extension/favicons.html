@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <!-- Opts this document into responsive iframe sizing so the embedder can
+       size the frame to the favicon group's natural dimensions. Must appear
+       in <head> (before <body> exists) or Blink ignores it. -->
+  <meta name="responsive-embedded-sizing" content="allow-origins=*">
+  <title>Favicons</title>
+  <style>
+    html,
+    body {
+      background-color: transparent;
+      color-scheme: light dark;
+      height: fit-content;
+      margin: 0;
+      overflow: hidden;
+      padding: 0;
+      user-select: none;
+      width: fit-content;
+    }
+  </style>
+</head>
+<body>
+  <favicons-app></favicons-app>
+  <script type="module" src="favicons_app.js"></script>
+  <script type="module" src="post_message_handler.js"></script>
+</body>
+</html>

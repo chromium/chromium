@@ -94,6 +94,7 @@ build_webui("build") {
 
   static_files = [
     "chip.html",
+    "favicons.html",
     "lens_button.html",
     "manifest.json",
   ]
@@ -108,11 +109,16 @@ build_webui("build") {
   ]
 
   ts_files = [
+    "favicons_app.html.ts",
+    "favicons_app.ts",
     "lens_button_app.html.ts",
     "lens_button_app.ts",
   ]
 
-  css_files = [ "lens_button_app.css" ]
+  css_files = [
+    "favicons_app.css",
+    "lens_button_app.css",
+  ]
 
   ts_deps = [
     "//chrome/browser/resources/contextual_tasks:build_ts",
@@ -151,7 +157,10 @@ build_webui("build") {
   # package all parent UI files individually in the extension.
   optimize = true
   optimize_webui_host = "chrome-extension://glbjnfimcajjenihimblfaponejbkoph"
-  optimize_webui_in_files = [ "lens_button_app.js" ]
+  optimize_webui_in_files = [
+    "favicons_app.js",
+    "lens_button_app.js",
+  ]
 
   optimize_webui_external_paths =
       [ "chrome://contextual-tasks/|" +

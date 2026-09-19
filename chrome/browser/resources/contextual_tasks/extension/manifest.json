@@ -31,6 +31,7 @@
     {
       "resources": [
         "chip.html",
+        "favicons.html",
         "lens_button.html"
       ],
       "matches": [
