@@ -20,7 +20,8 @@ IOS_DEVICE = 'iPhone 14 Pro'
 
 def do_delay_imports():
     global devil_chromium, devil_env, apk_helper
-    global device_utils, webview_app, avd
+    global device_utils, webview_app, avd, \
+        fuchsia_cuttlefish_emulator_environment
     global CommandFailedError, SyncParallelizer
     # Packages here are only isolated when running test for Android
     # This import adds `devil` to `sys.path`.
@@ -32,7 +33,8 @@ def do_delay_imports():
     from devil.android.device_errors import CommandFailedError
     from devil.android.tools import webview_app
     from devil.utils.parallelizer import SyncParallelizer
-    from pylib.local.emulator import avd
+    from pylib.local.emulator import (avd,
+                                      fuchsia_cuttlefish_emulator_environment)
 
 
 @memoized
@@ -274,35 +276,41 @@ class ChromeAndroidBase(Product):
             self._host.executive.run_command(
                 [install_script, 'uninstall', '--device', device])
 
-    @contextlib.contextmanager
     def get_devices(self):
-        instances = []
-        try:
-            if self._options.avd_config:
-                _log.info(
-                    f'Installing emulator from {self._options.avd_config}')
-                config = avd.AvdConfig(self._options.avd_config)  # pylint: disable=undefined-variable;
-                config.Install()
+        # pylint: disable=undefined-variable
+        serial = None
+        if self._options.avd_config:
+            _log.info(f'Installing emulator from {self._options.avd_config}')
+            config = avd.AvdConfig(self._options.avd_config)
+            config.Install()
 
-                # use '--child-processes' to decide how many emulators to launch
-                for _ in range(max(self.processes, 1)):
-                    instance = config.CreateInstance()
-                    instances.append(instance)
+            # use '--child-processes' to decide how many emulators to launch
+            instances = []
+            for _ in range(max(self.processes, 1)):
+                instance = config.CreateInstance()
+                instances.append(instance)
 
-                SyncParallelizer(instances).Start(  # pylint: disable=undefined-variable;
-                    writable_system=True,
-                    window=self._options.emulator_window)
+            parallelizer = SyncParallelizer(instances)
+            self._tasks.callback(parallelizer.Stop)
+            parallelizer.Start(writable_system=True,
+                               window=self._options.emulator_window)
+        elif fuchsia_cuttlefish_emulator_environment.IsSupported():
+            _log.info('Launching Cuttlefish emulator')
+            cuttlefish = (
+                fuchsia_cuttlefish_emulator_environment.CuttlefishInstance(
+                    adb_path=self.adb_binary))
+            self._tasks.callback(cuttlefish.Stop)
+            serial = cuttlefish.Start()
 
-            #TODO(weizhong): when choose device, make sure abi matches with target
-            yield device_utils.DeviceUtils.HealthyDevices()  # pylint: disable=undefined-variable;
-        finally:
-            SyncParallelizer(instances).Stop()  # pylint: disable=undefined-variable;
+        #TODO(weizhong): when choose device, make sure abi matches with target
+        kwargs = {'device_arg': serial} if serial else {}
+        return device_utils.DeviceUtils.HealthyDevices(**kwargs)
 
     @contextlib.contextmanager
     def test_env(self):
         with super().test_env():
             devil_chromium.Initialize(adb_path=self.adb_binary)  # pylint: disable=undefined-variable;
-            self.devices = self._tasks.enter_context(self.get_devices())
+            self.devices = self.get_devices()
             if not self.devices:
                 raise Exception('No devices attached to this host. '
                                 "Make sure to provide '--avd-config' "
