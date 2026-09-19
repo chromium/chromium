@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/read_anything/read_anything_service_factory.h"
 
 #include "chrome/browser/extensions/chrome_extension_system_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/ui/read_anything/read_anything_service.h"
 #include "chrome/common/chrome_features.h"
@@ -45,6 +44,5 @@ bool ReadAnythingServiceFactory::ServiceIsCreatedWithBrowserContext() const {
 std::unique_ptr<KeyedService>
 ReadAnythingServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return std::make_unique<ReadAnythingService>(
-      Profile::FromBrowserContext(context));
+  return std::make_unique<ReadAnythingService>();
 }

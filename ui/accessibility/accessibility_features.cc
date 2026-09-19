@@ -420,11 +420,6 @@ bool IsHatsReadingModeSurveyEnabled() {
   return base::FeatureList::IsEnabled(::features::kHatsReadingModeSurvey);
 }
 
-bool IsReadAnythingDocsIntegrationEnabled() {
-  return base::FeatureList::IsEnabled(
-      ax::mojom::features::kReadAnythingDocsIntegration);
-}
-
 BASE_FEATURE(kReadAnythingWithReadability, base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsReadAnythingWithReadabilityEnabled() {
   return base::FeatureList::IsEnabled(::features::kReadAnythingWithReadability);

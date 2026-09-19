@@ -4,12 +4,10 @@
 
 #include "chrome/browser/ui/read_anything/read_anything_service.h"
 
-#include "base/check_is_test.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/accessibility/embedded_a11y_extension_loader.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/read_anything/read_anything_prefs.h"
 #include "chrome/browser/ui/read_anything/read_anything_service_factory.h"
@@ -20,43 +18,16 @@
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "base/command_line.h"
 #include "chrome/browser/component_updater/wasm_tts_engine_component_installer.h"
-#include "chrome/browser/extensions/component_loader.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/common/content_switches.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS)
-
-namespace {
-
-// The number of seconds to wait before removing the extension. This avoids
-// removing an extension only to add it back immediately.
-constexpr int kRemoveExtensionDelaySeconds = 30;
-
-}  // namespace
 
 #if !BUILDFLAG(IS_CHROMEOS)
 const base::FilePath::CharType kManifestV3FileName[] =
     FILE_PATH_LITERAL("wasm_tts_manifest_v3.json");
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-ReadAnythingService::ReadAnythingService(Profile* profile) : profile_(profile) {
-  if (features::IsReadAnythingDocsIntegrationEnabled()) {
-    EmbeddedA11yExtensionLoader::GetInstance()->Init();
-
-    // The extension may still be installed from a previous session. Queue the
-    // timer to uninstall it.
-    // TODO(https://crbug.com/362787711): This logic also needs to run if the
-    // feature is disabled.
-    local_reading_mode_switch_delay_timer_.Start(
-        FROM_HERE, base::Seconds(kRemoveExtensionDelaySeconds),
-        base::BindRepeating(
-            &ReadAnythingService::OnLocalReadingModeSwitchDelayTimeout,
-            weak_ptr_factory_.GetWeakPtr()));
-  }
-}
-
-// The service is shutting down which means the profile is destroying, at which
-// point we should not be re-entrantly trying to modify the profile by removing
-// the extension. Instead remove the extension at startup.
+ReadAnythingService::ReadAnythingService() = default;
 ReadAnythingService::~ReadAnythingService() = default;
 
 // static
@@ -71,13 +42,6 @@ void ReadAnythingService::OnReadAnythingShown() {
 #if !BUILDFLAG(IS_CHROMEOS)
   SetupDesktopEngine();
 #endif  // !BUILDFLAG(IS_CHROMEOS)
-
-  if (!features::IsReadAnythingDocsIntegrationEnabled()) {
-    return;
-  }
-
-  active_local_reading_mode_count_++;
-  InstallGDocsHelperExtension();
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -114,61 +78,6 @@ void ReadAnythingService::SetupDesktopEngine() {
   }
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
-
-void ReadAnythingService::OnReadAnythingHidden() {
-  if (!features::IsReadAnythingDocsIntegrationEnabled()) {
-    return;
-  }
-
-  active_local_reading_mode_count_--;
-  local_reading_mode_switch_delay_timer_.Reset();
-}
-
-void ReadAnythingService::InstallGDocsHelperExtension() {
-#if BUILDFLAG(IS_CHROMEOS)
-  EmbeddedA11yExtensionLoader::GetInstance()->InstallExtensionWithId(
-      extension_misc::kReadingModeGDocsHelperExtensionId,
-      extension_misc::kReadingModeGDocsHelperExtensionPath,
-      extension_misc::kReadingModeGDocsHelperManifestFilename,
-      /*should_localize=*/false);
-#else
-  auto* component_loader = extensions::ComponentLoader::Get(profile_);
-  if (!component_loader) {
-    // In tests, the loader might not be created.
-    CHECK_IS_TEST();
-    return;
-  }
-  if (!component_loader->Exists(
-          extension_misc::kReadingModeGDocsHelperExtensionId)) {
-    component_loader->Add(
-        IDR_READING_MODE_GDOCS_HELPER_MANIFEST,
-        base::FilePath(FILE_PATH_LITERAL("reading_mode_gdocs_helper")));
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-}
-
-void ReadAnythingService::RemoveGDocsHelperExtension() {
-#if BUILDFLAG(IS_CHROMEOS)
-  EmbeddedA11yExtensionLoader::GetInstance()->RemoveExtensionWithId(
-      extension_misc::kReadingModeGDocsHelperExtensionId);
-#else
-  auto* component_loader = extensions::ComponentLoader::Get(profile_);
-  if (!component_loader) {
-    // In tests, the loader might not be created.
-    CHECK_IS_TEST();
-    return;
-  }
-  component_loader->Remove(extension_misc::kReadingModeGDocsHelperExtensionId);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-}
-
-void ReadAnythingService::OnLocalReadingModeSwitchDelayTimeout() {
-  if (active_local_reading_mode_count_ > 0) {
-    return;
-  }
-
-  RemoveGDocsHelperExtension();
-}
 
 void ReadAnythingService::RemoveTtsDownloadExtension() {
 #if !BUILDFLAG(IS_CHROMEOS)

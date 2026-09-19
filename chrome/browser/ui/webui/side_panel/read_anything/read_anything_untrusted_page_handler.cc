@@ -308,12 +308,6 @@ void ReadAnythingWebContentsObserver::AccessibilityEventReceived(
   page_handler_->AccessibilityEventReceived(details);
 }
 
-void ReadAnythingWebContentsObserver::AccessibilityLocationChangesReceived(
-    const ui::AXTreeID& tree_id,
-    ui::AXLocationAndScrollUpdates& details) {
-  page_handler_->AccessibilityLocationChangesReceived(tree_id, details);
-}
-
 void ReadAnythingWebContentsObserver::PrimaryPageChanged(content::Page& page) {
   page_handler_->PrimaryPageChanged();
 }
@@ -543,14 +537,6 @@ void ReadAnythingUntrustedPageHandler::AccessibilityEventReceived(
     const ui::AXUpdatesAndEvents& details) {
   page_->AccessibilityEventReceived(details.ax_tree_id, details.updates,
                                     details.events);
-}
-
-void ReadAnythingUntrustedPageHandler::AccessibilityLocationChangesReceived(
-    const ui::AXTreeID& tree_id,
-    ui::AXLocationAndScrollUpdates& details) {
-  if (features::IsReadAnythingDocsIntegrationEnabled()) {
-    page_->AccessibilityLocationChangesReceived(tree_id, details);
-  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

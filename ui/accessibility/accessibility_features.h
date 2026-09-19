@@ -343,8 +343,6 @@ AX_BASE_EXPORT bool IsReadAnythingLineFocusEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kHatsReadingModeSurvey);
 AX_BASE_EXPORT bool IsHatsReadingModeSurveyEnabled();
 
-AX_BASE_EXPORT bool IsReadAnythingDocsIntegrationEnabled();
-
 // Enable ReadabilityJS as the distillation source for Reading Mode.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingWithReadability);
 AX_BASE_EXPORT bool IsReadAnythingWithReadabilityEnabled();

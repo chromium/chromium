@@ -6889,11 +6889,6 @@ inline constexpr char kReadAnythingDistillerRefactorDescription[] =
     "Optimizes how web page content is prepared and processed for Reading "
     "Mode.";
 
-inline constexpr char kReadAnythingDocsIntegrationName[] =
-    "Reading Mode Google Docs Integration";
-inline constexpr char kReadAnythingDocsIntegrationDescription[] =
-    "Allows Reading Mode to work on Google Docs.";
-
 inline constexpr char kReadAnythingReadabilitySelectTextName[] =
     "Reading Mode Select Text with Readability";
 inline constexpr char kReadAnythingReadabilitySelectTextDescription[] =

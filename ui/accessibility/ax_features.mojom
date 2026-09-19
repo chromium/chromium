@@ -18,13 +18,6 @@ feature kScreenAIOCREnabled {
   const bool default_state = true;
 };
 
-// This feature protects Read Anything from performing large actions on
-// pages that shouldn't be updated.
-feature kReadAnythingDocsIntegration {
-  const string name = "ReadAnythingDocsIntegration";
-  const bool default_state = false;
-};
-
 // Controls the new native C++ implementation for Read Aloud on Android,
 // replacing the previous Speakr service integration.
 feature kReadAloudNative {

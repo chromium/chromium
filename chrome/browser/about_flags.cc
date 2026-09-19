@@ -7963,11 +7963,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReadAnythingReadAloudPhraseHighlightingDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(features::kReadAnythingReadAloudPhraseHighlighting)},
-
-    {"read-anything-docs-integration",
-     flag_descriptions::kReadAnythingDocsIntegrationName,
-     flag_descriptions::kReadAnythingDocsIntegrationDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ax::mojom::features::kReadAnythingDocsIntegration)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
     {"image-descriptions-alternative-routing",

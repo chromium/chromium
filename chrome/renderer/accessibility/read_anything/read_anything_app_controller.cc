@@ -478,48 +478,6 @@ void ReadAnythingAppController::ProcessModelUpdates() {
   }
 }
 
-void ReadAnythingAppController::AccessibilityLocationChangesReceived(
-    const ui::AXTreeID& tree_id,
-    const ui::AXLocationAndScrollUpdates& details) {
-  NOTREACHED() << "Non-const ref version of this method should be used as a "
-                  "performance optimization.";
-}
-
-void ReadAnythingAppController::AccessibilityLocationChangesReceived(
-    const ui::AXTreeID& tree_id,
-    ui::AXLocationAndScrollUpdates& details) {
-  // AccessibilityLocationChangesReceived causes some unexpected crashes and
-  // AXNode behavior. Therefore, flag-guard this behind the
-  // IsReadAnythingDocsIntegration flag, since these changes were initially
-  // added to support Google Docs. See crbug.com/411776559.
-  if (!features::IsReadAnythingDocsIntegrationEnabled()) {
-    return;
-  }
-  // If the AccessibilityLocationChangesReceived callback happens after
-  // the current active tree has been destroyed, do nothing.
-  DUMP_WILL_BE_CHECK(model_.active_tree_id() != ui::AXTreeIDUnknown());
-  DUMP_WILL_BE_CHECK(model_.ContainsTree(tree_id));
-  // TODO: crbug.com/411776559- Determine if a DUMP_WILL_BE_CHECK is needed
-  // here or if it's okay to just ignore AccessibilityLocationChangesReceived
-  // events if they're sent not on the active tree.
-  DUMP_WILL_BE_CHECK(model_.active_tree_id() == tree_id);
-  if (model_.active_tree_id() == ui::AXTreeIDUnknown() ||
-      !model_.ContainsTree(tree_id) || model_.active_tree_id() != tree_id) {
-    return;
-  }
-  // Listen to location change notifications to update locations of the nodes
-  // accordingly.
-  for (auto& change : details.location_changes) {
-    ui::AXNode* ax_node = model_.GetAXNode(change.id);
-    if (!ax_node) {
-      continue;
-    }
-    ax_node->SetLocation(change.new_location.offset_container_id,
-                         change.new_location.bounds,
-                         change.new_location.transform.get());
-  }
-}
-
 void ReadAnythingAppController::ExecuteJavaScript(const std::string& script) {
   // TODO(crbug.com/40802192): Use v8::Function rather than javascript. If
   // possible, replace this function call with firing an event.

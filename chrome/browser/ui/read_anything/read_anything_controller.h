@@ -41,7 +41,6 @@ struct NativeWebKeyboardEvent;
 }  // namespace input
 
 class ReadAnythingController;
-class ReadAnythingService;
 
 // A helper class to observe a specific WebContents, so the ReadAnything
 // Controller can observe multiple WebContents. Event callbacks are configured
@@ -322,8 +321,6 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
   // ReleaseMainContentsCapture() instead to ensure the handle is correctly
   // managed.
   base::ScopedClosureRunner main_contents_capturer_handle_;
-
-  raw_ptr<ReadAnythingService> active_service_ = nullptr;
 
   static bool freeze_distillation_for_testing_;
 

@@ -201,14 +201,13 @@ void ReadAnythingController::RemoveImmersiveActivationObserver(
 void ReadAnythingController::OnEntryShown(ReadAnythingOpenTrigger trigger) {
   observers_.Notify(&Observer::Activate, /*active=*/true, trigger,
                     /*completed_session_duration=*/std::nullopt);
-  active_service_ =
-      ReadAnythingService::Get(tab_->GetBrowserWindowInterface()->GetProfile());
   // At the moment, services are created for normal, guest, and incognito
   // profiles but not unusual profile types. On the other hand,
   // ReadAnythingController is created for all tabs. Thus we need a
   // nullptr check.
-  if (active_service_) {
-    active_service_->OnReadAnythingShown();
+  if (auto* service = ReadAnythingService::Get(
+          tab_->GetBrowserWindowInterface()->GetProfile())) {
+    service->OnReadAnythingShown();
   }
 
   if (is_presentation_transitioning_) {
@@ -250,11 +249,6 @@ void ReadAnythingController::OnEntryHidden() {
   observers_.Notify(&Observer::Activate, /*active=*/false,
                     /*trigger=*/ReadAnythingOpenTrigger::kUnknown,
                     completed_session_duration);
-
-  if (active_service_) {
-    active_service_->OnReadAnythingHidden();
-    active_service_ = nullptr;
-  }
 }
 
 std::optional<base::TimeDelta>

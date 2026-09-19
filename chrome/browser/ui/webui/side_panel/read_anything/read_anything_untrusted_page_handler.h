@@ -125,9 +125,6 @@ class ReadAnythingWebContentsObserver : public content::WebContentsObserver {
   // content::WebContentsObserver:
   void AccessibilityEventReceived(
       const ui::AXUpdatesAndEvents& details) override;
-  void AccessibilityLocationChangesReceived(
-      const ui::AXTreeID& tree_id,
-      ui::AXLocationAndScrollUpdates& details) override;
   void PrimaryPageChanged(content::Page& page) override;
   void WebContentsDestroyed() override;
   void DidStopLoading() override;
@@ -215,9 +212,6 @@ class ReadAnythingUntrustedPageHandler :
       base::Seconds(2);
 
   void AccessibilityEventReceived(const ui::AXUpdatesAndEvents& details);
-  void AccessibilityLocationChangesReceived(
-      const ui::AXTreeID& tree_id,
-      ui::AXLocationAndScrollUpdates& details);
   void PrimaryPageChanged();
   void DidStopLoading();
   void DidUpdateAudioMutingState(bool muted);

@@ -87,12 +87,10 @@ class MockReadAnythingLifecycleObserver : public ReadAnythingLifecycleObserver {
 
 class MockReadAnythingService : public ReadAnythingService {
  public:
-  explicit MockReadAnythingService(Profile* profile)
-      : ReadAnythingService(profile) {}
+  MockReadAnythingService() = default;
   ~MockReadAnythingService() override = default;
 
   MOCK_METHOD(void, OnReadAnythingShown, (), (override));
-  MOCK_METHOD(void, OnReadAnythingHidden, (), (override));
 };
 
 class ReadAnythingControllerBrowserTest : public InProcessBrowserTest {
@@ -1779,10 +1777,9 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   auto* service = static_cast<MockReadAnythingService*>(
       ReadAnythingServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           browser()->GetProfile(),
-          base::BindRepeating([](content::BrowserContext* context)
+          base::BindRepeating([](content::BrowserContext* /*context*/)
                                   -> std::unique_ptr<KeyedService> {
-            return std::make_unique<MockReadAnythingService>(
-                Profile::FromBrowserContext(context));
+            return std::make_unique<MockReadAnythingService>();
           })));
 
   tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
@@ -1795,8 +1792,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   controller->OnEntryShown(ReadAnythingOpenTrigger::kOmniboxChip);
   testing::Mock::VerifyAndClearExpectations(service);
 
-  // Expect service to be notified of hide.
-  EXPECT_CALL(*service, OnReadAnythingHidden()).Times(1);
   controller->OnEntryHidden();
   histogram_tester.ExpectTotalCount(
       "Accessibility.ReadAnything.ShownDurationMax1Day", 1);

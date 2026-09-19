@@ -24,8 +24,7 @@ class ReadAnythingMochaBrowserTest : public WebUIMochaBrowserTest {
     set_test_loader_host(chrome::kChromeUIUntrustedReadAnythingSidePanelHost);
     set_test_loader_scheme(content::kChromeUIUntrustedScheme);
     scoped_feature_list_.InitWithFeatures(
-        {}, {features::kReadAnythingReadAloudPhraseHighlighting,
-             ax::mojom::features::kReadAnythingDocsIntegration});
+        {}, {features::kReadAnythingReadAloudPhraseHighlighting});
   }
 
   void RunSidePanelTest(const std::string& file, const std::string& trigger) {

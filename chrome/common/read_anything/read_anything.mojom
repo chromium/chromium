@@ -386,13 +386,6 @@ interface UntrustedPage {
   // then show informational or error messages depending on the status.
   OnGetVoicePackInfo(VoicePackInfo voice_pack_info);
 
-  // Send a location change notification to the WebUI. The WebUI updates the
-  // locations for each node in the vector. This does not trigger a distillation.
-  [RuntimeFeature=ax.mojom.features.kReadAnythingDocsIntegration]
-  AccessibilityLocationChangesReceived(
-    ax.mojom.AXTreeID tree_id,
-    ax.mojom.AXLocationAndScrollUpdates details);
-
   // Sends the active AXTreeID to the WebUI. This is not guaranteed to be called
   // after the tree_id was previously passed to AccessibilityEventsReceived.
   // ukm_source_id is a ukm::SourceId which is used to tie the UKM event to the

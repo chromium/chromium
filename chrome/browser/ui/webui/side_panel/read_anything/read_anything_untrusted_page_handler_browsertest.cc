@@ -99,14 +99,6 @@ class MockPage : public read_anything::mojom::UntrustedPage {
                     const std::vector<ui::AXTreeUpdate>& updates,
                     const std::vector<ui::AXEvent>& events));
   MOCK_METHOD(void,
-              AccessibilityLocationChangesReceived,
-              (const ui::AXTreeID& tree_id,
-               ui::AXLocationAndScrollUpdates& details));
-  MOCK_METHOD(void,
-              AccessibilityLocationChangesReceived,
-              (const ui::AXTreeID& tree_id,
-               const ui::AXLocationAndScrollUpdates& details));
-  MOCK_METHOD(void,
               OnSettingsRestoredFromPrefs,
               (read_anything::mojom::LineSpacing line_spacing,
                read_anything::mojom::LetterSpacing letter_spacing,
