@@ -67,6 +67,7 @@ typedef NS_ENUM(NSInteger, Symbol) {
   SymbolEllipsisSquareFill,
   SymbolEnterprise,
   SymbolFamilylink,
+  SymbolImageCreate,
   SymbolIncognito,
   SymbolIncognitoCircleFill,
   SymbolIncognitoRectangle,

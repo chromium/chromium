@@ -22,7 +22,6 @@
 #import "ios/chrome/browser/composebox/shared/ui/composebox_ui_constants.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_config.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_input_state.h"
-#import "ios/chrome/browser/composebox/ui/composebox_ui_util.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
