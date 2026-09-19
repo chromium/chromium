@@ -196,22 +196,30 @@ views::Textfield& LabeledTextfieldWithErrorMessage::GetInputTextField() const {
   return *input;
 }
 
-void LabeledTextfieldWithErrorMessage::SetErrorState(bool is_valid) {
+void LabeledTextfieldWithErrorMessage::MaybeShowError() {
   CHECK(input);
-  is_valid_input = is_valid;
-  input->SetInvalid(!is_valid);
+  const bool show_error = !input->GetText().empty() && !is_valid_input;
+  input->SetInvalid(show_error);
   if (error_label) {
-    error_label->SetVisible(!is_valid);
+    error_label->SetVisible(show_error);
+    if (show_error) {
+      error_label->GetViewAccessibility().AnnouncePolitely(
+          error_label->GetText());
+    }
   }
   if (error_label_placeholder) {
-    error_label_placeholder->SetVisible(is_valid);
+    error_label_placeholder->SetVisible(!show_error);
   }
 }
 
-void LabeledTextfieldWithErrorMessage::MaybeAnnounceError() {
-  if (!GetInputTextField().GetText().empty() && !is_valid_input) {
-    error_label->GetViewAccessibility().AnnouncePolitely(
-        error_label->GetText());
+void LabeledTextfieldWithErrorMessage::HideError() {
+  CHECK(input);
+  input->SetInvalid(false);
+  if (error_label) {
+    error_label->SetVisible(false);
+  }
+  if (error_label_placeholder) {
+    error_label_placeholder->SetVisible(true);
   }
 }
 

@@ -93,7 +93,7 @@ class SaveAndFillDialogControllerImpl : public SaveAndFillDialogController {
   // Determines the current state of the Save and Fill dialog. This state
   // can be a local card save, an upload card save, or a pending state while
   // waiting for the preflight response.
-  SaveAndFillDialogState dialog_state_;
+  SaveAndFillDialogState dialog_state_ = SaveAndFillDialogState::kLocalDialog;
 
   LegalMessageLines legal_message_lines_;
 

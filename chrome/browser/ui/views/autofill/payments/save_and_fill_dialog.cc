@@ -91,14 +91,16 @@ std::u16string SaveAndFillDialog::GetWindowTitle() const {
 void SaveAndFillDialog::ContentsChanged(views::Textfield* sender,
                                         const std::u16string& new_contents) {
   if (sender == &card_number_data_.GetInputTextField()) {
-    card_number_data_.SetErrorState(
-        /*is_valid=*/controller_->IsValidCreditCardNumber(new_contents));
+    card_number_data_.is_valid_input =
+        controller_->IsValidCreditCardNumber(new_contents);
+    card_number_data_.HideError();
   } else if (sender == &cvc_data_.GetInputTextField()) {
-    cvc_data_.SetErrorState(
-        /*is_valid=*/controller_->IsValidCvc(new_contents));
+    cvc_data_.is_valid_input = controller_->IsValidCvc(new_contents);
+    cvc_data_.HideError();
   } else if (sender == &name_on_card_data_.GetInputTextField()) {
-    name_on_card_data_.SetErrorState(
-        /*is_valid=*/controller_->IsValidNameOnCard(new_contents));
+    name_on_card_data_.is_valid_input =
+        controller_->IsValidNameOnCard(new_contents);
+    name_on_card_data_.HideError();
   } else if (sender == &expiration_date_data_.GetInputTextField()) {
     size_t new_cursor_position;
 
@@ -114,8 +116,9 @@ void SaveAndFillDialog::ContentsChanged(views::Textfield* sender,
       sender->SelectSelectionModel(
           gfx::SelectionModel(new_cursor_position, gfx::CURSOR_FORWARD));
     }
-    expiration_date_data_.SetErrorState(
-        /*is_valid=*/controller_->IsValidExpirationDate(formatted_input));
+    expiration_date_data_.is_valid_input =
+        controller_->IsValidExpirationDate(formatted_input);
+    expiration_date_data_.HideError();
   }
   // Enable the save button iff all textfields are valid.
   SetButtonEnabled(ui::mojom::DialogButton::kOk,
@@ -131,13 +134,13 @@ void SaveAndFillDialog::OnDidChangeFocus(views::View* before,
     card_number_data_.GetInputTextField().SetText(
         GetFormattedCardNumberForDisplay(
             card_number_data_.GetInputTextField().GetText()));
-    card_number_data_.MaybeAnnounceError();
+    card_number_data_.MaybeShowError();
   } else if (before == &cvc_data_.GetInputTextField()) {
-    cvc_data_.MaybeAnnounceError();
+    cvc_data_.MaybeShowError();
   } else if (before == &name_on_card_data_.GetInputTextField()) {
-    name_on_card_data_.MaybeAnnounceError();
+    name_on_card_data_.MaybeShowError();
   } else if (before == &expiration_date_data_.GetInputTextField()) {
-    expiration_date_data_.MaybeAnnounceError();
+    expiration_date_data_.MaybeShowError();
   }
 }
 
@@ -211,12 +214,7 @@ void SaveAndFillDialog::CreateMainContentView() {
   cvc_data_.GetInputTextField().SetTextInputType(
       ui::TextInputType::TEXT_INPUT_TYPE_NUMBER);
   cvc_data_.GetInputTextField().SetController(this);
-  cvc_data_.GetInputTextField().SetPlaceholderText(l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_CVC_PLACEHOLDER));
   cvc_data_.GetInputTextField().SetDefaultWidthInChars(18);
-  // CVC is an optional field, so it is considered valid by default when the
-  // dialog first appears.
-  cvc_data_.SetErrorState(/*is_valid=*/true);
 
   // Create the horizontal row for expiration date, cvc, and icon.
   main_view_->AddChildView(

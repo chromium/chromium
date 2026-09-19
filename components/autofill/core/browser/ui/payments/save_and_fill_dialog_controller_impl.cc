@@ -211,12 +211,7 @@ bool SaveAndFillDialogControllerImpl::IsValidCreditCardNumber(
 
 bool SaveAndFillDialogControllerImpl::IsValidCvc(
     std::u16string_view input_text) const {
-  // If the CVC is empty, it's considered valid since it's an optional field.
-  if (input_text.empty()) {
-    return true;
-  }
-
-  // For non-empty CVC, it must be 3 or 4 digits.
+  // CVC must be 3 or 4 digits.
   if (input_text.length() < 3 || input_text.length() > 4) {
     return false;
   }

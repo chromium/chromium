@@ -67,11 +67,12 @@ struct LabeledTextfieldWithErrorMessage {
 
   views::Textfield& GetInputTextField() const;
 
-  void SetErrorState(bool is_valid);
+  // Shows the error state and announces the error message if the input is
+  // non-empty and invalid.
+  void MaybeShowError();
 
-  // Announces the error message if the current state is invalid and an error
-  // message is being shown.
-  void MaybeAnnounceError();
+  // Hides the visual error state.
+  void HideError();
 };
 
 // Gets the user avatar icon if available, or else a placeholder.

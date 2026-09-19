@@ -54,6 +54,23 @@ class SaveAndFillDialog : public views::DialogDelegateView,
 
   base::WeakPtr<SaveAndFillDialog> GetWeakPtr();
 
+#if defined(UNIT_TEST)
+  const LabeledTextfieldWithErrorMessage& card_number_data_for_testing() const {
+    return card_number_data_;
+  }
+  const LabeledTextfieldWithErrorMessage& cvc_data_for_testing() const {
+    return cvc_data_;
+  }
+  const LabeledTextfieldWithErrorMessage& expiration_date_data_for_testing()
+      const {
+    return expiration_date_data_;
+  }
+  const LabeledTextfieldWithErrorMessage& name_on_card_data_for_testing()
+      const {
+    return name_on_card_data_;
+  }
+#endif
+
  private:
   // Initialize the dialog's contents.
   void InitViews();
