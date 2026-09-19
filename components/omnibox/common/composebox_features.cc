@@ -24,7 +24,10 @@ BASE_FEATURE(kComposeboxSkillsOmniboxEverywhere,
 BASE_FEATURE(kComposeboxSkillsOmniboxPopup, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kComposeboxRichImageSuggestions,
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kComposeboxPersistentAimButton, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kComposeboxPersistentAimButtonRealbox,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kComposeboxPersistentAimButtonOmnibox,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kComposeboxPersistentAimButtonWithX,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSuggestRequestSendsMultifileCgiParam,

@@ -1624,16 +1624,21 @@ inline constexpr char kComposeboxRichImageSuggestionsName[] =
 inline constexpr char kComposeboxRichImageSuggestionsDescription[] =
     "Enables richer image suggestions in the Composebox for image generation.";
 
-inline constexpr char kComposeboxPersistentAimButtonName[] =
-    "Composebox Persistent AIM Button";
-inline constexpr char kComposeboxPersistentAimButtonDescription[] =
-    "Persists the AIM button in the Composebox.";
+inline constexpr char kComposeboxPersistentAimButtonRealboxName[] =
+    "Composebox Persistent AIM Button (Realbox)";
+inline constexpr char kComposeboxPersistentAimButtonRealboxDescription[] =
+    "Persists the AIM button in the Realbox Composebox.";
+
+inline constexpr char kComposeboxPersistentAimButtonOmniboxName[] =
+    "Composebox Persistent AIM Button (Omnibox)";
+inline constexpr char kComposeboxPersistentAimButtonOmniboxDescription[] =
+    "Persists the AIM button in the Omnibox Composebox.";
 
 inline constexpr char kComposeboxPersistentAimButtonWithXName[] =
     "Composebox Persistent AIM Button With X";
 inline constexpr char kComposeboxPersistentAimButtonWithXDescription[] =
-    "Shows an X icon on the persistent AIM button. Only effective if "
-    "persistent AIM button is also enabled.";
+    "Shows an X icon on the persistent AIM button. Only effective if the "
+    "persistent AIM button is also enabled for the surface.";
 
 inline constexpr char kComposeboxSkillsContextualTasksName[] =
     "Composebox/Searchbox Skills (Contextual Tasks)";
