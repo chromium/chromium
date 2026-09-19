@@ -147,6 +147,7 @@ int StartHostAsRoot() {
   // LaunchProcess redirects stdin to /dev/null, but start_host prompts for a
   // PIN if one isn't specified on the command-line, so dup and remap it.
   base::LaunchOptions options;
+  options.allow_new_privs = true;
   int stdin_dup = dup(STDIN_FILENO);
   options.fds_to_remap.emplace_back(stdin_dup, STDIN_FILENO);
   auto create_config_process =
