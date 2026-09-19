@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs.SideUiSize;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest.UpdateReason;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.util.TokenHolder;
 
@@ -373,7 +374,11 @@ final class SideUiCoordinatorImpl
     // BrowserControlsStateProvider.Observer implementation:
     @Override
     public void onTopControlsHeightChanged(int topControlsHeight, int topControlsMinHeight) {
-        updateUiInternal(new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+        updateUiInternal(
+                new UiUpdateRequest(
+                        /* sideUiId= */ null,
+                        /* suppressAnimations= */ true,
+                        UpdateReason.TOP_CONTROLS_HEIGHT_CHANGED));
     }
 
     @Override
@@ -386,24 +391,40 @@ final class SideUiCoordinatorImpl
             boolean bottomControlsMinHeightChanged,
             boolean requestNewFrame,
             boolean isVisibilityForced) {
-        updateUiInternal(new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+        updateUiInternal(
+                new UiUpdateRequest(
+                        /* sideUiId= */ null,
+                        /* suppressAnimations= */ true,
+                        UpdateReason.CONTROLS_OFFSET_CHANGED));
     }
 
     // ConfigurationChangedObserver Implementation
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-        updateUiInternal(new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+        updateUiInternal(
+                new UiUpdateRequest(
+                        /* sideUiId= */ null,
+                        /* suppressAnimations= */ true,
+                        UpdateReason.ANDROID_CONFIGURATION_CHANGED));
     }
 
     // FullscreenManager.Observer implementation:
     @Override
     public void onEnterFullscreen(Tab tab, FullscreenOptions options) {
-        updateUiInternal(new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+        updateUiInternal(
+                new UiUpdateRequest(
+                        /* sideUiId= */ null,
+                        /* suppressAnimations= */ true,
+                        UpdateReason.FULL_SCREEN_MODE_ENTERED));
     }
 
     @Override
     public void onExitFullscreen(Tab tab) {
-        updateUiInternal(new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+        updateUiInternal(
+                new UiUpdateRequest(
+                        /* sideUiId= */ null,
+                        /* suppressAnimations= */ true,
+                        UpdateReason.FULL_SCREEN_MODE_EXITED));
     }
 
     @VisibleForTesting
