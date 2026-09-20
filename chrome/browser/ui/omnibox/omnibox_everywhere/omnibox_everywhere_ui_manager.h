@@ -71,11 +71,14 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOmniboxEverywhereElementId);
 
   // Fixed popup window width:
-  //   680px (Loomnibox searchbox content width)
+  //   680px (Loomnibox searchbox content width; 480px when smallLoomnibox param
+  //          is enabled)
   // +  48px (24px left + 24px right body padding in omnibox_everywhere.html to
   //          accommodate the drop shadow without clipping).
-  // = 728px total window width.
+  // = 728px total window width (528px when smallLoomnibox is enabled).
   static constexpr int kPopupFixedWidth = 728;
+  static constexpr int kPopupSmallFixedWidth = 528;
+  static int GetPopupFixedWidth();
   static constexpr int kDefaultRestingHeight = 152;
   static constexpr base::TimeDelta kActivationGracePeriod =
       base::Milliseconds(500);

@@ -107,6 +107,11 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
       callbackRouter_: {type: Object},
       hasMostVisitedTiles_: {type: Boolean},
       mostVisitedEnabled_: {type: Boolean},
+      smallLoomnibox_: {
+        type: Boolean,
+        reflect: true,
+        attribute: 'small-loomnibox',
+      },
       freStage_: {type: Number},
       hotkeyTokens_: {type: Array},
       isActive_: {
@@ -145,6 +150,8 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
       SearchboxBrowserProxy.getInstance().callbackRouter;
   protected accessor mostVisitedEnabled_: boolean =
       loadTimeData.getBoolean('omniboxEverywhereMostVisitedEnabled');
+  protected accessor smallLoomnibox_: boolean =
+      loadTimeData.getBoolean('smallLoomnibox');
   protected accessor hasMostVisitedTiles_: boolean = false;
   protected accessor freStage_: FreStage =
       (loadTimeData.valueExists('initialFreStage') ?

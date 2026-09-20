@@ -1174,6 +1174,7 @@ suite('OmniboxEverywhereAppTest', () => {
       profileName: 'Test Profile',
       profileEmail: 'test@example.com',
       omniboxEverywhereProfilePickerEnabled: false,
+      smallLoomnibox: true,
       initialFreStage: 0,
       composeboxCancelButtonTitle: 'Close AI Mode',
       composeboxCancelButtonTitleInput: 'Clear text',
@@ -1897,6 +1898,38 @@ suite('OmniboxEverywhereAppTest', () => {
         // Now unhidden.
         assertFalse(mvContainer.hidden);
       });
+
+  test('smallLoomnibox controls max-tiles and attribute', async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({
+      omniboxEverywhereMostVisitedEnabled: true,
+      smallLoomnibox: true,
+      initialFreStage: 0,
+    });
+    const smallApp = document.createElement('omnibox-everywhere-app');
+    document.body.appendChild(smallApp);
+    await microtasksFinished();
+
+    assertTrue(smallApp.hasAttribute('small-loomnibox'));
+    const mv = smallApp.shadowRoot.querySelector('cr-most-visited')!;
+    assertTrue(!!mv);
+    assertEquals('5', mv.getAttribute('max-tiles'));
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({
+      omniboxEverywhereMostVisitedEnabled: true,
+      smallLoomnibox: false,
+      initialFreStage: 0,
+    });
+    const normalApp = document.createElement('omnibox-everywhere-app');
+    document.body.appendChild(normalApp);
+    await microtasksFinished();
+
+    assertFalse(normalApp.hasAttribute('small-loomnibox'));
+    const normalMv = normalApp.shadowRoot.querySelector('cr-most-visited')!;
+    assertTrue(!!normalMv);
+    assertEquals('7', normalMv.getAttribute('max-tiles'));
+  });
 
   test(
       'close-composebox event exits composebox mode and focuses searchbox',

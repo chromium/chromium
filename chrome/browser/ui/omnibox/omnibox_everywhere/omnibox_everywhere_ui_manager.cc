@@ -350,11 +350,18 @@ void OmniboxEverywhereUIManager::ShowForProfile(Profile* profile,
 
   if (web_contents()) {
     if (auto* rwhv = web_contents()->GetRenderWidgetHostView()) {
-      constexpr gfx::Size kAutoResizeMinSize(kPopupFixedWidth, 50);
-      constexpr gfx::Size kAutoResizeMaxSize(kPopupFixedWidth, 800);
+      const gfx::Size kAutoResizeMinSize(GetPopupFixedWidth(), 50);
+      const gfx::Size kAutoResizeMaxSize(GetPopupFixedWidth(), 800);
       rwhv->EnableAutoResize(kAutoResizeMinSize, kAutoResizeMaxSize);
     }
   }
+}
+
+// static
+int OmniboxEverywhereUIManager::GetPopupFixedWidth() {
+  return omnibox::kOmniboxEverywhereSmallLoomniboxParam.Get()
+             ? kPopupSmallFixedWidth
+             : kPopupFixedWidth;
 }
 
 gfx::Rect OmniboxEverywhereUIManager::CalculateWidgetBounds(int height) {
@@ -362,7 +369,7 @@ gfx::Rect OmniboxEverywhereUIManager::CalculateWidgetBounds(int height) {
       display::Screen::Get()->GetDisplayNearestPoint(
           display::Screen::Get()->GetCursorScreenPoint());
   gfx::Rect work_area = target_display.work_area();
-  int width = std::min(kPopupFixedWidth, work_area.width());
+  int width = std::min(GetPopupFixedWidth(), work_area.width());
   int clamped_height = std::min(height, work_area.height());
   int x = work_area.x() + (work_area.width() - width) / 2;
   int y = work_area.y() + (work_area.height() - clamped_height) / 2;
@@ -928,7 +935,7 @@ void OmniboxEverywhereUIManager::ResizeDueToAutoResize(
     return;
   }
   constexpr int kAutoResizeMinHeight = 56;
-  gfx::Size target_size(kPopupFixedWidth,
+  gfx::Size target_size(GetPopupFixedWidth(),
                         std::max(new_size.height(), kAutoResizeMinHeight));
   if (widget_->GetSize() != target_size) {
     widget_->SetSize(target_size);
