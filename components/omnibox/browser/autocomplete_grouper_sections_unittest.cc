@@ -2416,6 +2416,44 @@ TEST(AutocompleteGrouperSectionsTest, DesktopComposeboxZpsSection) {
         // Group search gets in along with contextual searches.
         {96, 95, 93});
   }
+  {
+    SCOPED_TRACE("ZPS rich image action matches only");
+    test(
+        {
+            CreateMatch(99, omnibox::GROUP_RICH_IMAGE_ACTION),
+            CreateMatch(98, omnibox::GROUP_RICH_IMAGE_ACTION),
+            CreateMatch(97, omnibox::GROUP_RICH_IMAGE_ACTION),
+        },
+        // All rich image actions get in, up to `max_aim_suggestions`.
+        {99, 98, 97});
+  }
+  {
+    SCOPED_TRACE("Rich image actions are grouped after all other groups");
+    test(
+        {
+            CreateMatch(100, omnibox::GROUP_RICH_IMAGE_ACTION),
+            CreateMatch(99, omnibox::GROUP_SEARCH),
+            CreateMatch(98, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(97, omnibox::GROUP_AI_MODE_ZERO_SUGGEST_CANNED),
+            CreateMatch(96, omnibox::GROUP_CONTEXTUAL_SEARCH),
+        },
+        // Rich image actions are last despite having the highest relevance.
+        {99, 98, 97, 96, 100});
+  }
+  {
+    SCOPED_TRACE("Rich image actions are dropped once the section is full");
+    test(
+        {
+            CreateMatch(99, omnibox::GROUP_SEARCH),
+            CreateMatch(98, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(97, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(96, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(95, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(94, omnibox::GROUP_RICH_IMAGE_ACTION),
+        },
+        // `max_suggestions` is reached before the rich image action is added.
+        {99, 98, 97, 96, 95});
+  }
 }
 #endif  // !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
 
