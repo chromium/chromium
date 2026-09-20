@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <string>
 
 #include "base/compiler_specific.h"
@@ -26,6 +27,18 @@
 #include "components/user_data_importer/common/imported_bookmark_entry.h"
 #include "sql/database.h"
 #include "testing/platform_test.h"
+
+namespace {
+
+struct BookmarkData {
+  bool in_toolbar;
+  GURL url;
+  // We store the path with levels of nesting delimited by forward slashes.
+  std::u16string path;
+  std::u16string title;
+};
+
+}  // namespace
 
 // In order to test the Safari import functionality effectively, we store a
 // simulated Library directory containing dummy data files in the same
@@ -55,13 +68,7 @@ class SafariImporterTest : public PlatformTest {
 
 TEST_F(SafariImporterTest, BookmarkImport) {
   // Expected results
-  const struct {
-    bool in_toolbar;
-    GURL url;
-    // We store the path with levels of nesting delimited by forward slashes.
-    std::u16string path;
-    std::u16string title;
-  } kImportedBookmarksData[] = {
+  const auto kImportedBookmarksData = std::to_array<BookmarkData>({
       {true, GURL("http://www.apple.com/"), u"Toolbar/", u"Apple"},
       {true, GURL("http://www.yahoo.com/"), u"Toolbar/", u"Yahoo!"},
       {true, GURL("http://www.cnn.com/"), u"Toolbar/News", u"CNN"},
@@ -72,7 +79,7 @@ TEST_F(SafariImporterTest, BookmarkImport) {
       {false, GURL(), std::u16string(), u"Empty Folder"},
       {false, GURL("http://www.webkit.org/blog/"), std::u16string(),
        u"Surfin' Safari - The WebKit Blog"},
-  };
+  });
 
   scoped_refptr<SafariImporter> importer(GetSafariImporter());
   std::vector<user_data_importer::ImportedBookmarkEntry> bookmarks;
@@ -82,31 +89,24 @@ TEST_F(SafariImporterTest, BookmarkImport) {
 
   for (size_t i = 0; i < num_bookmarks; ++i) {
     user_data_importer::ImportedBookmarkEntry& entry = bookmarks[i];
-    EXPECT_EQ(UNSAFE_TODO(kImportedBookmarksData[i]).in_toolbar,
-              entry.in_toolbar);
-    EXPECT_EQ(UNSAFE_TODO(kImportedBookmarksData[i]).url, entry.url);
+    EXPECT_EQ(kImportedBookmarksData[i].in_toolbar, entry.in_toolbar);
+    EXPECT_EQ(kImportedBookmarksData[i].url, entry.url);
 
     std::vector<std::u16string> path =
-        base::SplitString(UNSAFE_TODO(kImportedBookmarksData[i]).path, u"/",
+        base::SplitString(kImportedBookmarksData[i].path, u"/",
                           base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     ASSERT_EQ(path.size(), entry.path.size());
     for (size_t j = 0; j < path.size(); ++j) {
       EXPECT_EQ(path[j], entry.path[j]);
     }
 
-    EXPECT_EQ(UNSAFE_TODO(kImportedBookmarksData[i]).title, entry.title);
+    EXPECT_EQ(kImportedBookmarksData[i].title, entry.title);
   }
 }
 
 TEST_F(SafariImporterTest, BookmarkImportWithEmptyBookmarksMenu) {
   // Expected results.
-  const struct {
-    bool in_toolbar;
-    GURL url;
-    // We store the path with levels of nesting delimited by forward slashes.
-    std::u16string path;
-    std::u16string title;
-  } kImportedBookmarksData[] = {
+  const auto kImportedBookmarksData = std::to_array<BookmarkData>({
       {true, GURL("http://www.apple.com/"), u"Toolbar/", u"Apple"},
       {true, GURL("http://www.yahoo.com/"), u"Toolbar/", u"Yahoo!"},
       {true, GURL("http://www.cnn.com/"), u"Toolbar/News", u"CNN"},
@@ -114,7 +114,7 @@ TEST_F(SafariImporterTest, BookmarkImportWithEmptyBookmarksMenu) {
        u"The New York Times"},
       {false, GURL("http://www.webkit.org/blog/"), std::u16string(),
        u"Surfin' Safari - The WebKit Blog"},
-  };
+  });
 
   scoped_refptr<SafariImporter> importer(
       GetSafariImporterWithPathSuffix("empty_bookmarks_menu"));
@@ -125,19 +125,18 @@ TEST_F(SafariImporterTest, BookmarkImportWithEmptyBookmarksMenu) {
 
   for (size_t i = 0; i < num_bookmarks; ++i) {
     user_data_importer::ImportedBookmarkEntry& entry = bookmarks[i];
-    EXPECT_EQ(UNSAFE_TODO(kImportedBookmarksData[i]).in_toolbar,
-              entry.in_toolbar);
-    EXPECT_EQ(UNSAFE_TODO(kImportedBookmarksData[i]).url, entry.url);
+    EXPECT_EQ(kImportedBookmarksData[i].in_toolbar, entry.in_toolbar);
+    EXPECT_EQ(kImportedBookmarksData[i].url, entry.url);
 
     std::vector<std::u16string> path =
-        base::SplitString(UNSAFE_TODO(kImportedBookmarksData[i]).path, u"/",
+        base::SplitString(kImportedBookmarksData[i].path, u"/",
                           base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     ASSERT_EQ(path.size(), entry.path.size());
     for (size_t j = 0; j < path.size(); ++j) {
       EXPECT_EQ(path[j], entry.path[j]);
     }
 
-    EXPECT_EQ(UNSAFE_TODO(kImportedBookmarksData[i]).title, entry.title);
+    EXPECT_EQ(kImportedBookmarksData[i].title, entry.title);
   }
 }
 

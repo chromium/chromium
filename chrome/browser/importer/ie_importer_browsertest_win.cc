@@ -54,39 +54,27 @@
 
 namespace {
 
-const BookmarkInfo kIEBookmarks[] = {
-  {true, 2, {"Links", "SubFolderOfLinks"},
-    L"SubLink",
-    "http://www.links-sublink.com/"},
-  {true, 1, {"Links"},
-    L"TheLink",
-    "http://www.links-thelink.com/"},
-  {false, 0, {},
-    L"Google Home Page",
-    "http://www.google.com/"},
-  {false, 0, {},
-    L"TheLink",
-    "http://www.links-thelink.com/"},
-  {false, 1, {"SubFolder"},
-    L"Title",
-    "http://www.link.com/"},
-  {false, 0, {},
-    L"WithPortAndQuery",
-    "http://host:8080/cgi?q=query"},
-  {false, 1, {"a"},
-    L"\x4E2D\x6587",
-    "http://chinese-title-favorite/"},
-  {false, 0, {},
-    L"SubFolder",
-    "http://www.subfolder.com/"},
-};
+constexpr auto kIEBookmarks = std::to_array<BookmarkInfo>({
+    {true,
+     2,
+     {"Links", "SubFolderOfLinks"},
+     L"SubLink",
+     "http://www.links-sublink.com/"},
+    {true, 1, {"Links"}, L"TheLink", "http://www.links-thelink.com/"},
+    {false, 0, {}, L"Google Home Page", "http://www.google.com/"},
+    {false, 0, {}, L"TheLink", "http://www.links-thelink.com/"},
+    {false, 1, {"SubFolder"}, L"Title", "http://www.link.com/"},
+    {false, 0, {}, L"WithPortAndQuery", "http://host:8080/cgi?q=query"},
+    {false, 1, {"a"}, L"\x4E2D\x6587", "http://chinese-title-favorite/"},
+    {false, 0, {}, L"SubFolder", "http://www.subfolder.com/"},
+});
 
-const BookmarkInfo kIESortedBookmarks[] = {
-  {false, 0, {}, L"a", "http://www.google.com/0"},
-  {false, 1, {"b"}, L"a", "http://www.google.com/1"},
-  {false, 1, {"b"}, L"b", "http://www.google.com/2"},
-  {false, 0, {}, L"c", "http://www.google.com/3"},
-};
+constexpr auto kIESortedBookmarks = std::to_array<BookmarkInfo>({
+    {false, 0, {}, L"a", "http://www.google.com/0"},
+    {false, 1, {"b"}, L"a", "http://www.google.com/1"},
+    {false, 1, {"b"}, L"b", "http://www.google.com/2"},
+    {false, 0, {}, L"c", "http://www.google.com/3"},
+});
 
 const char16_t kIEIdentifyUrl[] =
     u"http://A79029D6-753E-4e27-B807-3D46AB1545DF.com:8080/path?key=value";
@@ -296,12 +284,12 @@ class TestObserver : public ProfileWriter,
   void AddBookmarks(
       const std::vector<user_data_importer::ImportedBookmarkEntry>& bookmarks,
       const std::u16string& top_level_folder_name) override {
-    ASSERT_LE(bookmark_count_ + bookmarks.size(), std::size(kIEBookmarks));
+    ASSERT_LE(bookmark_count_ + bookmarks.size(), kIEBookmarks.size());
     // Importer should import the IE Favorites folder the same as the list,
     // in the same order.
     for (size_t i = 0; i < bookmarks.size(); ++i) {
-      EXPECT_NO_FATAL_FAILURE(TestEqualBookmarkEntry(
-          bookmarks[i], UNSAFE_TODO(kIEBookmarks[bookmark_count_])))
+      EXPECT_NO_FATAL_FAILURE(
+          TestEqualBookmarkEntry(bookmarks[i], kIEBookmarks[bookmark_count_]))
           << i;
       ++bookmark_count_;
     }
@@ -378,11 +366,10 @@ class MalformedFavoritesRegistryTestObserver
   void AddBookmarks(
       const std::vector<user_data_importer::ImportedBookmarkEntry>& bookmarks,
       const std::u16string& top_level_folder_name) override {
-    ASSERT_LE(bookmark_count_ + bookmarks.size(),
-              std::size(kIESortedBookmarks));
+    ASSERT_LE(bookmark_count_ + bookmarks.size(), kIESortedBookmarks.size());
     for (size_t i = 0; i < bookmarks.size(); ++i) {
       EXPECT_NO_FATAL_FAILURE(TestEqualBookmarkEntry(
-          bookmarks[i], UNSAFE_TODO(kIESortedBookmarks[bookmark_count_])))
+          bookmarks[i], kIESortedBookmarks[bookmark_count_]))
           << i;
       ++bookmark_count_;
     }
