@@ -10,7 +10,6 @@
 #include "chrome/browser/devtools/devtools_ui_controller.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/ui/browser_window.h"  // nogncheck
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -24,6 +23,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/display/types/display_constants.h"
 #include "url/origin.h"
 
 DEFINE_USER_DATA(BrowserWindowModalDialogDelegate);
@@ -31,7 +31,9 @@ DEFINE_USER_DATA(BrowserWindowModalDialogDelegate);
 BrowserWindowModalDialogDelegate::BrowserWindowModalDialogDelegate(
     BrowserWindowInterface* browser)
     : browser_(browser),
-      scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this) {}
+      scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this) {
+  browser_->GetTabStripModel()->AddObserver(this);
+}
 
 BrowserWindowModalDialogDelegate::~BrowserWindowModalDialogDelegate() = default;
 
@@ -44,6 +46,10 @@ BrowserWindowModalDialogDelegate* BrowserWindowModalDialogDelegate::From(
 void BrowserWindowModalDialogDelegate::SetWebContentsBlocked(
     content::WebContents* web_contents,
     bool blocked) {
+  if (!blocked) {
+    fullscreen_blocks_.erase(web_contents);
+  }
+
   TabStripModel* tab_strip_model = browser_->GetTabStripModel();
   int index = tab_strip_model->GetIndexOfWebContents(web_contents);
   if (index == TabStripModel::kNoTab) {
@@ -59,38 +65,16 @@ void BrowserWindowModalDialogDelegate::SetWebContentsBlocked(
     return;
   }
 
-  // Drop HTML fullscreen to give users context for making informed decisions.
-  // Skip browser-fullscreen, which is more expressly user-initiated.
-  // Skip fullscreen-within-tab, which shows the browser frame.
   if (blocked) {
-    FullscreenController* const fullscreen_controller =
-        ExclusiveAccessManager::From(browser_)->fullscreen_controller();
-    content::FullscreenState fullscreen_state =
-        fullscreen_controller->GetFullscreenState(web_contents);
-    if (fullscreen_state.target_mode == content::FullscreenMode::kContent) {
-      // Skip origins with the automatic fullscreen content setting granted.
-      const url::Origin& requesting_origin =
-          fullscreen_controller->requesting_origin();
-      const GURL url = requesting_origin.GetURL();
-      const HostContentSettingsMap* const content_settings =
-          HostContentSettingsMapFactory::GetForProfile(
-              web_contents->GetBrowserContext());
-      if (requesting_origin.opaque() ||
-          requesting_origin !=
-              web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin() ||
-          content_settings->GetContentSetting(
-              url, url, ContentSettingsType::AUTOMATIC_FULLSCREEN) !=
-              CONTENT_SETTING_ALLOW) {
-        // Defer exiting fullscreen to prevent synchronous window management
-        // messages (e.g. direct WndProc calls on Windows) from destroying the
-        // WebContents or callers while modal dialog presentation is on the
-        // stack.
-        content::GetUIThreadTaskRunner({})->PostTask(
-            FROM_HERE, base::BindOnce(&content::WebContents::ExitFullscreen,
-                                      web_contents->GetWeakPtr(),
-                                      /*will_cause_resize=*/true));
-      }
-    }
+    // Defer exiting and blocking fullscreen to prevent synchronous window
+    // management messages (e.g. direct WndProc calls on Windows) from
+    // destroying the WebContents or callers while modal dialog presentation is
+    // on the stack.
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &BrowserWindowModalDialogDelegate::DropFullscreenForSecurity,
+            weak_ptr_factory_.GetWeakPtr(), web_contents->GetWeakPtr()));
   }
 
   tab_strip_model->SetTabBlocked(index, blocked);
@@ -106,6 +90,51 @@ void BrowserWindowModalDialogDelegate::SetWebContentsBlocked(
   }
 }
 
+void BrowserWindowModalDialogDelegate::DropFullscreenForSecurity(
+    base::WeakPtr<content::WebContents> web_contents) {
+  if (!web_contents) {
+    return;
+  }
+  TabStripModel* tab_strip_model = browser_->GetTabStripModel();
+  int index = tab_strip_model->GetIndexOfWebContents(web_contents.get());
+  if (index == TabStripModel::kNoTab || !tab_strip_model->IsTabBlocked(index)) {
+    return;
+  }
+
+  // Drop HTML fullscreen and prevent re-entry while a tab-modal dialog is
+  // showing, to give users context for making informed decisions.
+  // ForSecurityDropFullscreen() skips browser-fullscreen (more expressly
+  // user-initiated) and fullscreen-within-tab (shows the browser frame).
+  // Skip origins with the automatic fullscreen content setting granted.
+  FullscreenController* const fullscreen_controller =
+      ExclusiveAccessManager::From(browser_)->fullscreen_controller();
+  content::FullscreenState fullscreen_state =
+      fullscreen_controller->GetFullscreenState(web_contents.get());
+  const url::Origin primary_origin =
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+  const url::Origin& origin =
+      fullscreen_state.target_mode == content::FullscreenMode::kContent
+          ? fullscreen_controller->requesting_origin()
+          : primary_origin;
+  const GURL url = origin.GetURL();
+  const HostContentSettingsMap* const content_settings =
+      HostContentSettingsMapFactory::GetForProfile(
+          web_contents->GetBrowserContext());
+  if (origin.opaque() || origin != primary_origin ||
+      content_settings->GetContentSetting(
+          url, url, ContentSettingsType::AUTOMATIC_FULLSCREEN) !=
+          CONTENT_SETTING_ALLOW) {
+    auto block =
+        web_contents->ForSecurityDropFullscreen(display::kInvalidDisplayId);
+    if (!block) {
+      // `web_contents` was destroyed while exiting fullscreen.
+      fullscreen_blocks_.erase(web_contents.get());
+      return;
+    }
+    fullscreen_blocks_[web_contents.get()] = std::move(*block);
+  }
+}
+
 web_modal::WebContentsModalDialogHost*
 BrowserWindowModalDialogDelegate::GetWebContentsModalDialogHost(
     content::WebContents* web_contents) {
@@ -113,6 +142,19 @@ BrowserWindowModalDialogDelegate::GetWebContentsModalDialogHost(
   // tab and non-tab WebContents (e.g. DevTools) with correct fallback.
   return BrowserWindow::FromBrowser(browser_)->GetWebContentsModalDialogHostFor(
       web_contents);
+}
+
+void BrowserWindowModalDialogDelegate::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  if (change.type() == TabStripModelChange::kRemoved) {
+    for (const auto& contents : change.GetRemove()->contents) {
+      fullscreen_blocks_.erase(contents.contents);
+    }
+  } else if (change.type() == TabStripModelChange::kReplaced) {
+    fullscreen_blocks_.erase(change.GetReplace()->old_contents);
+  }
 }
 
 void BrowserWindowModalDialogDelegate::

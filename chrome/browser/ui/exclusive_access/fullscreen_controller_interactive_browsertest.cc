@@ -1026,6 +1026,28 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
 }
 
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
+                       BlockingContentsPreventsEnteringFullscreen) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  WebContents* tab = browser()->GetTabStripModel()->GetActiveWebContents();
+  ASSERT_FALSE(IsWindowFullscreenForTabOrPending());
+
+  // Blocking the tab for a modal dialog prevents entering tab fullscreen for
+  // the duration of the block.
+  BrowserWindowModalDialogDelegate::From(browser())->SetWebContentsBlocked(
+      tab, true);
+  EXPECT_FALSE(
+      content::ExecJs(tab, "document.documentElement.requestFullscreen()"));
+  EXPECT_FALSE(IsWindowFullscreenForTabOrPending());
+
+  // Unblocking allows entering tab fullscreen again.
+  BrowserWindowModalDialogDelegate::From(browser())->SetWebContentsBlocked(
+      tab, false);
+  EXPECT_TRUE(
+      content::ExecJs(tab, "document.documentElement.requestFullscreen()"));
+  EXPECT_TRUE(IsWindowFullscreenForTabOrPending());
+}
+
+IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
                        CapturedContentEntersFullscreenWithinTab) {
   SetDisableFullscreenWithinTab(false);
   // Simulate tab capture, as used by getDisplayMedia() content sharing.
