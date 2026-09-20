@@ -30,6 +30,7 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/view_utils.h"
 
 class HorizontalTabClosingHelperInteractiveUiTest

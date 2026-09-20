@@ -25,6 +25,7 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/buildflags.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/view.h"

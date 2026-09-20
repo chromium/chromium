@@ -8,12 +8,14 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "chrome/browser/ui/wallet/walletable_pass_consent_bubble_controller.h"
 #include "chrome/browser/ui/wallet/walletable_pass_consent_bubble_view.h"
 #include "chrome/browser/ui/wallet/walletable_pass_save_bubble_controller.h"
 #include "chrome/browser/ui/wallet/walletable_pass_save_bubble_view.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/bubble/bubble_anchor.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view.h"
 
 namespace wallet {

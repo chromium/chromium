@@ -46,6 +46,7 @@
 #include "ui/events/event_target.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_targeter.h"
 #include "ui/views/view_utils.h"

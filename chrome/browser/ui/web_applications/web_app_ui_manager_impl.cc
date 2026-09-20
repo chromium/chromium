@@ -141,6 +141,7 @@
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "ui/views/window/dialog_delegate.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace base {

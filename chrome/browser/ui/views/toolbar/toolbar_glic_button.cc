@@ -26,6 +26,7 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
+#include "ui/views/layout/box_layout.h"
 
 namespace {
 constexpr int kCloseButtonSize = 16;

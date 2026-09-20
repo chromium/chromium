@@ -84,6 +84,7 @@
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"

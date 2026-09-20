@@ -22,6 +22,7 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace {

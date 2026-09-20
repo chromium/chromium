@@ -66,6 +66,7 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
@@ -184,6 +185,7 @@
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/dialog_delegate.h"
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom-forward.h"
 #include "url/gurl.h"
 

@@ -62,6 +62,10 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/feature_list.h"
 #include "base/time/time.h"
+
+#if !BUILDFLAG(IS_MAC)
+#include "ui/views/controls/separator.h"
+#endif  // !BUILDFLAG(IS_MAC)
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace {

@@ -70,6 +70,7 @@
 #include "ui/compositor/presentation_time_recorder.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/events/event_observer.h"
 #include "ui/events/gestures/gesture_recognizer.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/rect.h"

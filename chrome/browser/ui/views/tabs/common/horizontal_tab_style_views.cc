@@ -36,6 +36,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/scoped_canvas.h"
+#include "ui/views/controls/separator.h"
 #include "ui/views/widget/widget.h"
 
 HorizontalTabStyleViews::HorizontalTabStyleViews(

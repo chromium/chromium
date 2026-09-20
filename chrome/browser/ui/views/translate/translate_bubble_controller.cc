@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/translate/translate_bubble_model_impl.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "chrome/browser/ui/views/translate/partial_translate_bubble_view.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/tabs/public/tab_interface.h"
@@ -40,6 +41,7 @@
 #include "ui/actions/actions.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_elider.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace {
 

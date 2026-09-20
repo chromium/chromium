@@ -28,6 +28,7 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+#include "ui/views/controls/separator.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "base/strings/stringprintf.h"

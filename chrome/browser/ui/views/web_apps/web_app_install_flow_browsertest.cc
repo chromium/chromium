@@ -45,6 +45,7 @@
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/checkbox.h"
+#include "ui/views/controls/progress_bar.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/dialog_test.h"

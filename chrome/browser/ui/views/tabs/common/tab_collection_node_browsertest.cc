@@ -30,6 +30,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/controls/separator.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 

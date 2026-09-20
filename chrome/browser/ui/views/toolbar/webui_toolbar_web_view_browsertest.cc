@@ -181,6 +181,7 @@
 #include "ui/snapshot/snapshot.h"
 #include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/accessibility/ax_update_observer.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/menu_runner_handler.h"

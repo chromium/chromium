@@ -16,6 +16,7 @@
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/window/dialog_delegate.h"
 
 namespace {
 

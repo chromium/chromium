@@ -61,6 +61,10 @@
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/test/base/scoped_channel_override.h"
+
+#if !BUILDFLAG(IS_CHROMEOS) || !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#endif  // !BUILDFLAG(IS_CHROMEOS) || !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS) || !BUILDFLAG(GOOGLE_CHROME_BRANDING)

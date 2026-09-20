@@ -32,6 +32,7 @@
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/events/types/event_type.h"
+#include "ui/views/event_monitor.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/view_subregion_anchor.h"
 #include "ui/views/widget/widget.h"
