@@ -5,6 +5,8 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 
 #include <optional>
+#include <string>
+#include <string_view>
 
 #include "ash/constants/ash_extension_constants.h"
 #include "ash/constants/ash_features.h"
@@ -93,22 +95,23 @@ constexpr char kSodaUnsupportedLocale[] = "af-ZA";
 
 // Dictation notification titles and descriptions. '*'s are used as placeholders
 // for languages, which are substituted in at a later time.
-std::u16string kDictationAllDlcsDownloadedTitle = u"* speech files downloaded";
-std::u16string kDictationAllDlcsDownloadedDesc =
+constexpr char16_t kDictationAllDlcsDownloadedTitle[] =
+    u"* speech files downloaded";
+constexpr char16_t kDictationAllDlcsDownloadedDesc[] =
     u"Speech is now processed locally and Dictation works offline";
-std::u16string kDictationNoDlcsDownloadedTitle =
+constexpr char16_t kDictationNoDlcsDownloadedTitle[] =
     u"Couldn't download * speech files";
-std::u16string kDictationNoDlcsDownloadedDesc =
+constexpr char16_t kDictationNoDlcsDownloadedDesc[] =
     u"Download will be attempted later. Speech will be sent to Google for "
     u"processing for now.";
-std::u16string kDicationOnlyPumpkinDownloadedTitle =
+constexpr char16_t kDicationOnlyPumpkinDownloadedTitle[] =
     u"* speech files partially downloaded";
-std::u16string kDicationOnlyPumpkinDownloadedDesc =
+constexpr char16_t kDicationOnlyPumpkinDownloadedDesc[] =
     u"Download will be attempted later. Speech will be sent to Google for "
     u"processing for now.";
-std::u16string kDictationOnlySodaDownloadedTitle =
+constexpr char16_t kDictationOnlySodaDownloadedTitle[] =
     u"* speech files partially downloaded";
-std::u16string kDictationOnlySodaDownloadedDesc =
+constexpr char16_t kDictationOnlySodaDownloadedDesc[] =
     u"Speech is processed locally and dictation works offline, but some voice "
     u"commands won’t work.";
 
@@ -405,11 +408,11 @@ std::optional<bool> GetDictationOfflineNudgePref(const std::string& locale) {
 }
 
 void AssertDictationNotificationShown(const std::u16string& display_language,
-                                      const std::u16string& title,
-                                      const std::u16string& description,
+                                      std::u16string_view title,
+                                      std::u16string_view description,
                                       bool is_critical) {
   // Replace the '*' placeholder in `title` with `display_name`.
-  std::u16string new_title = title;
+  std::u16string new_title(title);
   ASSERT_TRUE(
       base::ReplaceChars(new_title, u"*", display_language, &new_title));
 

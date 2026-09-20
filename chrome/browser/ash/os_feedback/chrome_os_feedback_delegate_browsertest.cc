@@ -90,7 +90,7 @@ constexpr char kFeedbackUserConsentKey[] = "feedbackUserCtlConsent";
 constexpr char kFeedbackUserConsentGrantedValue[] = "true";
 constexpr char kFeedbackUserConsentDeniedValue[] = "false";
 constexpr char kFeedbackBluetoothCategoryTag[] = "BluetoothReportWithLogs";
-const std::u16string kDescription = u"This is a fake description";
+constexpr char16_t kDescription[] = u"This is a fake description";
 constexpr int kPerformanceTraceId = 1;
 
 constexpr char kFakeKey[] = "fake key";

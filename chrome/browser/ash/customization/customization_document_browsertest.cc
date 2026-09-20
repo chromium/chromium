@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <array>
+
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_split.h"
@@ -130,82 +132,32 @@ constexpr const char* kVPDInitialLocales[] = {
     "pt-BR,pt-PT,ro,ru,sk,sl,sr,sv,ta,te,th,tr,vi,zh-CN,zh-TW",
 };
 
-const std::vector<std::string> languages_available = {
-    "ar",
-    "bg",
-    "bn",
-    "ca",
-    "cs",
-    "da",
-    "de",
-    "el",
-    "en-AU",
-    "en-CA",
-    "en-GB",
-    "en-NZ",
-    "en-US",
-    "en-ZA",
-    "es",
-    "es-419",
-    "et",
-    "fa",
-    "fi",
-    "fil",
-    "fr",
-    "fr-CA",
-    "gu",
-    "he",
-    "hi",
-    "hr",
-    "hu",
-    "id",
-    "it",
-    "ja",
-    "kn",
-    "ko",
-    "lt",
-    "lv",
-    "ml",
-    "mr",
-    "ms",
-    "nl",
-    "nb",
-    "pl",
-    "pt-BR",
-    "pt-PT",
-    "ro",
-    "ru",
-    "sk",
-    "sl",
-    "sr",
-    "sv",
-    "ta",
-    "te",
-    "th",
-    "tr",
-    "vi",
-    "zh-CN",
-    "zh-TW"
-};
+constexpr auto kLanguagesAvailable = std::to_array<const char*>(
+    {"ar",    "bg",    "bn",    "ca",    "cs",    "da",    "de",   "el",
+     "en-AU", "en-CA", "en-GB", "en-NZ", "en-US", "en-ZA", "es",   "es-419",
+     "et",    "fa",    "fi",    "fil",   "fr",    "fr-CA", "gu",   "he",
+     "hi",    "hr",    "hu",    "id",    "it",    "ja",    "kn",   "ko",
+     "lt",    "lv",    "ml",    "mr",    "ms",    "nl",    "nb",   "pl",
+     "pt-BR", "pt-PT", "ro",    "ru",    "sk",    "sl",    "sr",   "sv",
+     "ta",    "te",    "th",    "tr",    "vi",    "zh-CN", "zh-TW"});
 
 }  // anonymous namespace
 
 typedef InProcessBrowserTest CustomizationLocaleTest;
 
 IN_PROC_BROWSER_TEST_F(CustomizationLocaleTest, CheckAvailableLocales) {
-  for (size_t i = 0; i < languages_available.size(); ++i) {
+  for (const char* language : kLanguagesAvailable) {
     LanguageSwitchedWaiter waiter(base::BindOnce(&VerifyLanguageSwitched));
     locale_util::SwitchLanguage(
         g_browser_process->GetFeatures()->application_locale_storage(),
-        languages_available[i], true, true, waiter.Callback(),
+        language, true, true, waiter.Callback(),
         ProfileManager::GetActiveUserProfile());
     waiter.Wait();
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
-      EXPECT_THAT(l10n_util::CheckAndResolveLocale(languages_available[i]),
-                  Optional(StrEq(GetExpectedLanguage(languages_available[i]))))
-          << "CheckAndResolveLocale() failed for language='"
-          << languages_available[i] << "'";
+      EXPECT_THAT(l10n_util::CheckAndResolveLocale(language),
+                  Optional(StrEq(GetExpectedLanguage(language))))
+          << "CheckAndResolveLocale() failed for language='" << language << "'";
     }
   }
 }
