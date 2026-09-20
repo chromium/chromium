@@ -131,6 +131,10 @@ void ContextualTasksExtensionHandler::OnWebviewMessage(
   if (!contextual_tasks_page_.is_bound()) {
     return;
   }
+  constexpr size_t kMaxWebviewMessageBytes = 1024 * 1024;
+  if (message.size() > kMaxWebviewMessageBytes) {
+    return;
+  }
   lens::AimToClientMessage aim_to_client_message;
   if (!aim_to_client_message.ParseFromArray(message.data(), message.size())) {
     return;
@@ -138,18 +142,6 @@ void ContextualTasksExtensionHandler::OnWebviewMessage(
 
   if (aim_to_client_message.has_handshake_response()) {
     contextual_tasks_page_->OnHandshakeComplete();
-  } else if (aim_to_client_message.has_hide_input()) {
-    contextual_tasks_page_->HideInput();
-  } else if (aim_to_client_message.has_restore_input()) {
-    contextual_tasks_page_->RestoreInput();
-  } else if (aim_to_client_message.has_enter_basic_mode()) {
-    contextual_tasks_page_->EnterBasicMode();
-  } else if (aim_to_client_message.has_exit_basic_mode()) {
-    contextual_tasks_page_->ExitBasicMode();
-  } else if (aim_to_client_message.has_lock_input()) {
-    contextual_tasks_page_->LockInput();
-  } else if (aim_to_client_message.has_unlock_input()) {
-    contextual_tasks_page_->UnlockInput();
   }
 }
 

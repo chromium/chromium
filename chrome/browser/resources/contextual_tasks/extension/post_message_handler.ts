@@ -4,19 +4,29 @@
 
 import {ExtensionBrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import type {ExtensionBrowserProxy} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
-import {getArrayBufferFromBigBuffer, HANDSHAKE_INTERVAL_MS, isGoogleOrigin, MAX_HANDSHAKE_ATTEMPTS} from 'chrome://contextual-tasks/utils.js';
+import {getArrayBufferFromBigBuffer, HANDSHAKE_INTERVAL_MS, MAX_HANDSHAKE_ATTEMPTS} from 'chrome://contextual-tasks/utils.js';
 
-declare global {
-  interface Window {
-    // Exposes read-only handshake tracking state on window for test
-    // verification in extension_post_message_handler_test.ts and browser tests.
-    // Cleaned up on destroy().
-    stateForTesting?: {
-      targetOrigin: string|null,
-      handshakeCompleted: boolean,
-    };
+const MAX_MESSAGE_BYTES = 1024 * 1024;  // 1MB
+
+// LINT.IfChange(AllowedOrigins)
+export function urlMatchesAllowList(origin: string): boolean {
+  try {
+    const url = new URL(origin);
+    if (url.protocol !== 'https:') {
+      return false;
+    }
+    const host = url.hostname;
+    return host === 'google.com' || host === 'www.google.com' ||
+        host.endsWith('.borg.google.com') ||
+        host.endsWith('.corp.google.com') || host.endsWith('.prod.google.com');
+  } catch {
+    return false;
   }
 }
+// LINT.ThenChange(
+//   manifest.json:AllowedOrigins,
+//   manifest.json:WebAccessibleMatches
+// )
 
 export class ExtensionPostMessageHandler {
   private browserProxy_: ExtensionBrowserProxy;
@@ -34,16 +44,6 @@ export class ExtensionPostMessageHandler {
     this.initMojoListeners_();
     this.initWindowListener_();
     this.initHandshake();
-
-    const handler = this;
-    window.stateForTesting = {
-      get targetOrigin() {
-        return handler.targetOrigin_;
-      },
-      get handshakeCompleted() {
-        return handler.handshakeCompleted_;
-      },
-    };
   }
 
   get targetOrigin(): string|null {
@@ -77,7 +77,7 @@ export class ExtensionPostMessageHandler {
     if (referrer) {
       try {
         const url = new URL(referrer);
-        if (isGoogleOrigin(url.origin)) {
+        if (urlMatchesAllowList(url.origin)) {
           this.targetOrigin_ = url.origin;
         }
       } catch {
@@ -108,9 +108,13 @@ export class ExtensionPostMessageHandler {
         }
         return;
       }
+      if (!this.targetOrigin_) {
+        // Do not broadcast internal protocol messages if target origin cannot
+        // be authoritatively determined from referrer.
+        return;
+      }
       handshakeAttempts++;
-      const destOrigin = this.targetOrigin_ || '*';
-      window.parent.postMessage(messageArray, destOrigin);
+      window.parent.postMessage(messageArray, this.targetOrigin_);
     }, HANDSHAKE_INTERVAL_MS);
   }
 
@@ -120,7 +124,7 @@ export class ExtensionPostMessageHandler {
         return;
       }
 
-      if (!isGoogleOrigin(event.origin)) {
+      if (!urlMatchesAllowList(event.origin)) {
         console.warn('Rejected message from untrusted origin:', event.origin);
         return;
       }
@@ -146,6 +150,12 @@ export class ExtensionPostMessageHandler {
         dataBytes = event.data;
       } else {
         console.warn('Unexpected message data type:', typeof event.data);
+        return;
+      }
+
+      if (dataBytes.byteLength > MAX_MESSAGE_BYTES) {
+        console.warn(
+            'Message exceeds maximum allowed size:', dataBytes.byteLength);
         return;
       }
 
@@ -199,7 +209,6 @@ export class ExtensionPostMessageHandler {
           this.postAimMessageListenerId_);
       this.postAimMessageListenerId_ = null;
     }
-    delete window.stateForTesting;
   }
 }
 
@@ -221,9 +230,4 @@ export function resetExtensionPostMessagingForTesting() {
     instance.destroy();
     instance = null;
   }
-}
-
-// Auto-initialize when running inside an extension frame.
-if (window.location.protocol === 'chrome-extension:') {
-  initExtensionPostMessaging();
 }
