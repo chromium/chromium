@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 import type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
+import type {ComposeboxInputElement} from 'chrome://resources/cr_components/composebox/composebox_input.js';
 import type {ComposeboxVoiceSearchElement, VoiceSearchError, VoiceSearchMetricType} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {ContextUploadStatus, InputType, ModelMode, ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import type {TestComposeboxMixinElement} from './test_composebox_mixin.js';
 
@@ -279,4 +281,29 @@ export function createFile(
         supportsUnimodal: true,
       },
       override);
+}
+
+export function simulateUserTextInput(
+    inputElement: ComposeboxInputElement, value: string): Promise<void> {
+  inputElement.input = value;
+  inputElement.fire('input-input');
+  return microtasksFinished();
+}
+
+export function setSelectionOffset(input: HTMLElement, offset: number) {
+  if (input instanceof HTMLTextAreaElement) {
+    input.setSelectionRange(offset, offset);
+    return;
+  }
+  const range = document.createRange();
+  const sel = window.getSelection();
+  if (sel) {
+    const textNode = input.childNodes[0];
+    if (textNode && textNode.nodeType === Node.TEXT_NODE) {
+      range.setStart(textNode, offset);
+      range.collapse(true);
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+  }
 }

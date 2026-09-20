@@ -19,7 +19,7 @@ import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {$$, eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {assertStyle, installMock, MockInputState} from './composebox_test_utils.js';
+import {assertStyle, installMock, MockInputState, setSelectionOffset, simulateUserTextInput} from './composebox_test_utils.js';
 import type {TestComposeboxMixinElement} from './test_composebox_mixin.js';
 
 enum Attributes {
@@ -995,6 +995,190 @@ suite('ComposeboxAutocomplete', () => {
       assertFalse(
           !!$$<HTMLElement>(element.getInputElement(), '#smartCompose'));
     });
+
+    test('smartComposeInlineHint is sliced on sequential typing', async () => {
+      element = createTestElement({smartComposeEnabled: true});
+      await microtasksFinished();
+
+      element.input = 'hello';
+      element.smartComposeInlineHint = ' world';
+      await microtasksFinished();
+
+      const inputElem = element.getInputElement();
+      await simulateUserTextInput(inputElem, 'hello ');
+
+      assertEquals('world', element.smartComposeInlineHint);
+      assertEquals('hello ', element.input);
+
+      await simulateUserTextInput(inputElem, 'hello w');
+
+      assertEquals('orld', element.smartComposeInlineHint);
+    });
+
+    test(
+        'smartComposeInlineHint is cleared on non-matching typing',
+        async () => {
+          element = createTestElement({smartComposeEnabled: true});
+          await microtasksFinished();
+
+          element.input = 'hello';
+          element.smartComposeInlineHint = ' world';
+          await microtasksFinished();
+
+          const inputElem = element.getInputElement();
+          await simulateUserTextInput(inputElem, 'hello!');
+
+          assertEquals('', element.smartComposeInlineHint);
+        });
+
+    test('Smart Compose hint is hidden during backspacing', async () => {
+      element = createTestElement({smartComposeEnabled: true});
+      await microtasksFinished();
+
+      const inputElem = element.getInputElement();
+      const input = inputElem.inputElement;
+
+      await simulateUserTextInput(inputElem, 'tes');
+      element.smartComposeInlineHint = 't';
+      await element.updateComplete;
+
+      assertTrue(!!inputElem.shadowRoot.querySelector('#smartCompose'));
+
+      input.dispatchEvent(new KeyboardEvent('keydown', {key: 'Backspace'}));
+      await microtasksFinished();
+
+      assertFalse(!!inputElem.shadowRoot.querySelector('#smartCompose'));
+    });
+
+    test('Smart Compose hint is hidden when cursor is not at end', async () => {
+      element = createTestElement({smartComposeEnabled: true});
+      await microtasksFinished();
+
+      const inputElem = element.getInputElement();
+
+      await simulateUserTextInput(inputElem, 'test');
+      element.smartComposeInlineHint = 'a';
+      await element.updateComplete;
+
+      assertTrue(!!inputElem.shadowRoot.querySelector('#smartCompose'));
+
+      inputElem.inputElement.focus();
+      setSelectionOffset(inputElem.inputElement, 1);
+      inputElem.requestUpdate();
+      await microtasksFinished();
+
+      assertFalse(!!inputElem.shadowRoot.querySelector('#smartCompose'));
+    });
+
+    test(
+        'Smart Compose hint is hidden when it wraps in the middle of a word',
+        async () => {
+          element = createTestElement({smartComposeEnabled: true});
+          await microtasksFinished();
+
+          const inputElement = element.getInputElement();
+          const input = inputElement.inputElement as HTMLTextAreaElement;
+
+          const originalMeasureText =
+              CanvasRenderingContext2D.prototype.measureText;
+          try {
+            CanvasRenderingContext2D.prototype.measureText = function(
+                text: string) {
+              if (text.includes('wrap')) {
+                return {width: 150} as TextMetrics;
+              }
+              return {width: 50} as TextMetrics;
+            };
+            Object.defineProperty(
+                input, 'clientWidth', {configurable: true, get: () => 100});
+
+            await simulateUserTextInput(inputElement, 'tes.');
+            element.smartComposeInlineHint = 'wrap';
+            await element.updateComplete;
+
+            assertFalse(
+                !!inputElement.shadowRoot.querySelector('#smartCompose'));
+          } finally {
+            CanvasRenderingContext2D.prototype.measureText =
+                originalMeasureText;
+          }
+        });
+
+    test(
+        'Smart Compose hint is NOT hidden when only full hint wraps but first word fits',
+        async () => {
+          element = createTestElement({smartComposeEnabled: true});
+          await microtasksFinished();
+
+          const inputElement = element.getInputElement();
+          const input = inputElement.inputElement as HTMLTextAreaElement;
+
+          const originalMeasureText =
+              CanvasRenderingContext2D.prototype.measureText;
+          try {
+            CanvasRenderingContext2D.prototype.measureText = function(
+                text: string) {
+              if (text.includes('wraps')) {
+                return {width: 150} as TextMetrics;
+              }
+              return {width: 50} as TextMetrics;
+            };
+            Object.defineProperty(
+                input, 'clientWidth', {configurable: true, get: () => 100});
+
+            await simulateUserTextInput(inputElement, 'tes.');
+            element.smartComposeInlineHint = 'fits wraps';
+            await element.updateComplete;
+
+            assertTrue(
+                !!inputElement.shadowRoot.querySelector('#smartCompose'));
+          } finally {
+            CanvasRenderingContext2D.prototype.measureText =
+                originalMeasureText;
+          }
+        });
+
+    test(
+        'Tab key does not accept Smart Compose when hidden by wrapping',
+        async () => {
+          element = createTestElement({smartComposeEnabled: true});
+          await microtasksFinished();
+
+          const inputElement = element.getInputElement();
+          const input = inputElement.inputElement as HTMLTextAreaElement;
+
+          const originalMeasureText =
+              CanvasRenderingContext2D.prototype.measureText;
+          try {
+            CanvasRenderingContext2D.prototype.measureText = function(
+                text: string) {
+              if (text.includes('wrap')) {
+                return {width: 150} as TextMetrics;
+              }
+              return {width: 50} as TextMetrics;
+            };
+            Object.defineProperty(
+                input, 'clientWidth', {configurable: true, get: () => 100});
+
+            await simulateUserTextInput(inputElement, 'tes.');
+            element.smartComposeInlineHint = 'wrap';
+            await element.updateComplete;
+
+            element.setActiveElement(input);
+            const tabEvent = new KeyboardEvent('keydown', {
+              key: 'Tab',
+              bubbles: true,
+              cancelable: true,
+            });
+            element.getWrapperElement().dispatchEvent(tabEvent);
+            await element.updateComplete;
+
+            assertEquals('tes.', element.input);
+          } finally {
+            CanvasRenderingContext2D.prototype.measureText =
+                originalMeasureText;
+          }
+        });
   });
 
   suite('Querying', () => {
