@@ -1265,7 +1265,28 @@ class WebViewWebContentsInteractionTestUtil::WebViewData
     }
     context_ = views::ElementTrackerViews::GetContextForView(web_view_);
     CHECK(context_);
+    SubscribeToContext();
+  }
 
+  ui::ElementContext context() const { return context_; }
+
+  bool visible() const { return visible_; }
+
+  views::WebView* web_view() const { return web_view_; }
+
+ private:
+  struct MinimumSizeData {
+    ui::CustomElementEventType event_type;
+    gfx::Size webview_size;
+    DeepQuery element;
+    gfx::Size element_size;
+  };
+
+  // Listens for the tracked view being shown or hidden in `context_`, and
+  // picks up the element immediately if it is already present.
+  void SubscribeToContext() {
+    const ui::ElementIdentifier id =
+        web_view_->GetProperty(views::kElementIdentifierKey);
     shown_subscription_ =
         ui::ElementTracker::GetElementTracker()->AddElementShownCallback(
             id, context_,
@@ -1283,20 +1304,6 @@ class WebViewWebContentsInteractionTestUtil::WebViewData
       OnElementShown(element);
     }
   }
-
-  ui::ElementContext context() const { return context_; }
-
-  bool visible() const { return visible_; }
-
-  views::WebView* web_view() const { return web_view_; }
-
- private:
-  struct MinimumSizeData {
-    ui::CustomElementEventType event_type;
-    gfx::Size webview_size;
-    DeepQuery element;
-    gfx::Size element_size;
-  };
 
   void OnElementShown(ui::TrackedElement* element) {
     if (visible_) {
@@ -1325,6 +1332,20 @@ class WebViewWebContentsInteractionTestUtil::WebViewData
   }
 
   // views::ViewObserver:
+  void OnViewAddedToWidget(views::View* view) override {
+    // A tracked view can move between widgets; the omnibox popup, for example,
+    // discards and rebuilds its widget between shows while keeping the WebView
+    // and its WebContents alive. Each widget is its own element context, so
+    // re-target the subscriptions or the view would never be seen again.
+    const ui::ElementContext context =
+        views::ElementTrackerViews::GetContextForView(web_view_);
+    if (!context || context == context_) {
+      return;
+    }
+    context_ = context;
+    SubscribeToContext();
+  }
+
   void OnViewIsDeleting(views::View* view) override {
     visible_ = false;
     web_view_ = nullptr;

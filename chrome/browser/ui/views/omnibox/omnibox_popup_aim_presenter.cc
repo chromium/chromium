@@ -150,10 +150,16 @@ void OmniboxPopupAimPresenter::OnWidgetActivationChanged(views::Widget* widget,
 }
 
 void OmniboxPopupAimPresenter::WidgetDestroyed() {
+  // Drop the observation before the widget goes away; `Show()` re-establishes
+  // it against the new widget.
+  widget_observation_.Reset();
   // Update the popup state manager if widget was destroyed externally, e.g., by
-  // the OS. This ensures the popup state manager stays in sync.
-  if (controller()->popup_state_manager()->popup_state() ==
-      OmniboxPopupState::kAim) {
+  // the OS. This ensures the popup state manager stays in sync. Skip this when
+  // `Hide()` is discarding the widget on purpose, since clearing the state here
+  // would re-enter `Hide()`.
+  if (!is_destroying_widget() &&
+      controller()->popup_state_manager()->popup_state() ==
+          OmniboxPopupState::kAim) {
     controller()->popup_state_manager()->SetPopupState(
         OmniboxPopupState::kNone);
   }

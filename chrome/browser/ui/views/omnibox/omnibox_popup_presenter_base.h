@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string_view>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -203,6 +204,18 @@ class OmniboxPopupPresenterBase
 
   void EnsureWidgetCreated();
 
+  // Whether the widget should be torn down when the popup is hidden and rebuilt
+  // when it is shown again, rather than simply hidden and re-shown. Guards
+  // against the reshown native window presenting compositor content left over
+  // from the previous show.
+  bool ShouldDestroyWidgetOnHide() const;
+
+  // True only while `Hide()` is deliberately destroying the widget so that the
+  // next `Show()` rebuilds it. `WidgetDestroyed()` overrides must consult this
+  // before treating the destruction as external (e.g. by the OS) and tearing
+  // down popup state, which is already being torn down.
+  bool is_destroying_widget() const { return is_destroying_widget_; }
+
   // Called when the widget has just been destroyed.
   virtual void WidgetDestroyed() {}
 
@@ -212,8 +225,8 @@ class OmniboxPopupPresenterBase
       LocationBar* location_bar,
       bool forward_mouse_events);
 
-  // Returns the frame view of the widget if it exists. CHECKs if no widget
-  // created.
+  // Returns the frame view of the widget, or null if there is no widget. The
+  // widget is absent while hidden when `ShouldDestroyWidgetOnHide()` is on.
   RoundedOmniboxResultsFrame* GetResultsFrame() const;
 
   // Returns whether or not the popup should include the location bar cutout.
@@ -281,8 +294,16 @@ class OmniboxPopupPresenterBase
                           bool from_fallback,
                           bool success);
 
-  // Remove observation and reset widget, optionally requesting it to close.
+  // Closes the widget, extracting the WebUI container first so it survives.
+  // `widget_` is always cleared synchronously, but destroying the
+  // `views::Widget` object is always deferred, since a close can arrive from
+  // inside a `views::Widget` callback that still touches it after we return.
+  // The destructor drains the deferred widgets inline, so teardown there
+  // remains synchronous.
   void ReleaseWidget();
+
+  // Destroys the widgets handed off by `ReleaseWidget()`.
+  void DeletePendingWidgets();
 
   // The location bar that owns `this`.
   const raw_ptr<LocationBar> location_bar_;
@@ -296,15 +317,27 @@ class OmniboxPopupPresenterBase
   // The WebUI content WebView. Owned by the container.
   raw_ptr<OmniboxPopupWebUIBaseContent> omnibox_popup_webui_content_ = nullptr;
 
-  // The popup widget that contains this WebView. Created and closed by `this`;
-  // owned and destroyed by the OS.
+  // The popup widget that contains this WebView. Created, closed and owned by
+  // `this`; see `ReleaseWidget()` for how it is destroyed.
   std::unique_ptr<views::Widget> widget_;
+
+  // Widgets closed by `ReleaseWidget()` whose destruction was deferred to
+  // unwind the stack first. A queue rather than a single slot so that
+  // back-to-back closes within one task cannot destroy an earlier widget
+  // synchronously from inside a later one's teardown. Owned so the widgets are
+  // still destroyed if the presenter goes away before the posted deletion runs.
+  std::vector<std::unique_ptr<views::Widget>> widgets_pending_deletion_;
 
   const raw_ptr<OmniboxController> controller_;
 
   // True if `ShowWidget()` execution is currently being deferred until the
   // WebUI has produced a new frame.
   bool is_deferred_ = false;
+
+  // True only for the duration of the deliberate widget teardown performed by
+  // `Hide()` when `ShouldDestroyWidgetOnHide()` holds. See
+  // `is_destroying_widget()`.
+  bool is_destroying_widget_ = false;
 
   // Whether the first content ready metric of the popup has been logged.
   bool has_logged_first_content_ready_ = false;

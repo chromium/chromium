@@ -392,7 +392,10 @@ bool WebUILocationBar::ShouldCloseOmniboxPopup(ui::MouseEvent* event) {
     return false;
   }
 
-  if (omnibox_popup_view_->presenter()->GetOuterView()->Contains(view)) {
+  // The outer view may be null while the popup is hidden and its widget has
+  // been released, in which case the event can't have targeted the popup.
+  auto* const outer_view = omnibox_popup_view_->presenter()->GetOuterView();
+  if (outer_view && outer_view->Contains(view)) {
     return false;
   }
 

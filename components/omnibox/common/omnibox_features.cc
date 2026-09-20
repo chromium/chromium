@@ -228,7 +228,7 @@ BASE_FEATURE(kOmniboxWebUIDebounceResize, ENABLED);
 // When enabled, the AIM WebUI popup will debounce auto-resize events.
 BASE_FEATURE(kOmniboxAimDebounceResize, DISABLED);
 // When enabled, the Omnibox Full WebUI popup will debounce auto-resize events.
-BASE_FEATURE(kOmniboxFullWebUIDebounceResize, ENABLED);
+BASE_FEATURE(kOmniboxFullWebUIDebounceResize, DISABLED);
 // When enabled, height workarounds are applied for the Omnibox WebUI popup.
 BASE_FEATURE(kOmniboxWebUIHeightWorkarounds, ENABLED);
 // When enabled, height workarounds are applied for the AIM WebUI popup.
@@ -282,6 +282,15 @@ BASE_FEATURE(kOmniboxFullWebUISizeWebViewToPreferredHeight, DISABLED);
 // widget upon creation, preventing pre-warmed child widgets from inheriting
 // parent window visibility and locking compositor frames.
 BASE_FEATURE(kOmniboxWebUIPopupHideOnCreation, DISABLED);
+
+// When enabled, a WebUI omnibox popup destroys its widget when it is hidden
+// and builds a fresh one on the next show, so the new native window has no
+// previous compositor content to present. This is applied to every WebUI popup
+// presenter, including the AI Mode popup, but only takes effect when the full
+// WebUI omnibox is enabled. The WebUI container (and its WebContents) is
+// preserved across the swap, so this does not discard the pre-warmed renderer.
+BASE_FEATURE(kOmniboxFullWebUIDestroyWidgetOnHide, ENABLED);
+
 // When enabled, the WebUI searchbox will bypass OmniboxController and
 // OmniboxEditModel.
 BASE_FEATURE(kWebUISearchboxWithoutModelController, DISABLED);
