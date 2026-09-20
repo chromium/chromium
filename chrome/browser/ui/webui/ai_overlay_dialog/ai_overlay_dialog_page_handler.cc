@@ -449,10 +449,9 @@ void AiOverlayDialogPageHandler::StartStreamingSession() {
     return;
   }
   if (!ttc_mes_client_) {
-    ttc_mes_client_ =
-        std::make_unique<TtcMesClient>(browser_->GetProfile(), this);
+    ttc_mes_client_ = std::make_unique<TtcMesClient>(browser_->GetProfile());
   }
-  ttc_mes_client_->Connect();
+  ttc_mes_client_->Connect(this);
   SendToolSetUpdate();
 }
 

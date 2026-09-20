@@ -16,8 +16,7 @@
 namespace ttc {
 
 ConversationImpl::ConversationImpl(SessionController& session_controller)
-    : backend_(std::make_unique<TtcMesClient>(session_controller.GetProfile(),
-                                              this)),
+    : backend_(std::make_unique<TtcMesClient>(session_controller.GetProfile())),
       audio_controller_(std::make_unique<AudioController>(
           AudioController::GetDefaultAudioStreamFactoryBinder())),
       session_controller_(session_controller) {}
@@ -28,11 +27,7 @@ ConversationImpl::ConversationImpl(
     SessionController& session_controller)
     : backend_(std::move(backend)),
       audio_controller_(std::move(audio_controller)),
-      session_controller_(session_controller) {
-  if (backend_) {
-    backend_->set_observer(this);
-  }
-}
+      session_controller_(session_controller) {}
 
 ConversationImpl::~ConversationImpl() {
   Stop();
@@ -61,7 +56,7 @@ void ConversationImpl::Start() {
   }
 
   if (backend_) {
-    backend_->Connect();
+    backend_->Connect(this);
   }
 
   // TODO(b/562979451): This needs to be called once we've received a reply.

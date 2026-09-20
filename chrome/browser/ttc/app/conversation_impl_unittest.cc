@@ -34,7 +34,11 @@ namespace {
 class MockTtcBackend : public TtcBackend {
  public:
   MockTtcBackend() {
-    ON_CALL(*this, Connect()).WillByDefault([this]() { is_connected_ = true; });
+    ON_CALL(*this, Connect)
+        .WillByDefault([this](TtcBackend::Observer* observer) {
+          observer_ = observer;
+          is_connected_ = true;
+        });
     ON_CALL(*this, Close()).WillByDefault([this]() { is_connected_ = false; });
     ON_CALL(*this, is_connected()).WillByDefault([this]() {
       return is_connected_;
@@ -42,12 +46,10 @@ class MockTtcBackend : public TtcBackend {
   }
   ~MockTtcBackend() override = default;
 
-  void set_observer(TtcBackend::Observer* observer) override {
-    observer_ = observer;
-  }
+  // Returns the observer passed to the last Connect() call.
   TtcBackend::Observer* observer() const { return observer_; }
 
-  MOCK_METHOD(void, Connect, (), (override));
+  MOCK_METHOD(void, Connect, (TtcBackend::Observer*), (override));
   MOCK_METHOD(void, Close, (), (override));
   MOCK_METHOD(bool, is_connected, (), (const, override));
   MOCK_METHOD(void, SendAudioChunk, (base::span<const int16_t>), (override));
@@ -270,7 +272,7 @@ TEST_F(ConversationImplTest, StartAndStopWiring) {
                                 std::move(audio_controller),
                                 session_controller_);
 
-  EXPECT_CALL(*backend_ptr, Connect()).Times(1);
+  EXPECT_CALL(*backend_ptr, Connect(&conversation)).Times(1);
   conversation.Start();
   EXPECT_TRUE(audio_controller_ptr->is_capturing());
 

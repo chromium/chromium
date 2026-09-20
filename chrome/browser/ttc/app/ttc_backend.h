@@ -47,10 +47,9 @@ class TtcBackend {
 
   virtual ~TtcBackend() = default;
 
-  virtual void set_observer(Observer* observer) = 0;
-
-  // Starts the streaming session with the backend.
-  virtual void Connect() = 0;
+  // Starts the streaming session with the backend. `observer` must be non-null
+  // and must outlive the connection.
+  virtual void Connect(Observer* observer) = 0;
 
   // Sends dynamic tool definitions to the backend server.
   virtual void SendToolSetUpdate(const std::vector<ToolDefinition>& tools) = 0;

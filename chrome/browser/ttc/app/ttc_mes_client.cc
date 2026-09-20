@@ -75,26 +75,22 @@ base::DictValue ToResponseDict(ToolResponse response) {
 
 }  // namespace
 
-TtcMesClient::TtcMesClient() = default;
-
-TtcMesClient::TtcMesClient(Profile* profile, Observer* observer)
-    : profile_(profile), observer_(observer) {
+TtcMesClient::TtcMesClient(Profile* profile) : profile_(profile) {
   CHECK(profile_);
-  CHECK(observer_);
 }
 
 TtcMesClient::~TtcMesClient() {
   Close();
 }
 
-void TtcMesClient::set_observer(Observer* observer) {
-  observer_ = observer;
-}
+void TtcMesClient::Connect(Observer* observer) {
+  CHECK(observer);
 
-void TtcMesClient::Connect() {
   if (session_ && is_connected_) {
     return;
   }
+
+  observer_ = observer;
 
   OptimizationGuideKeyedService* opt_guide =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile_);
@@ -334,6 +330,7 @@ void TtcMesClient::Close() {
     session_->RemoveObserver(this);
     session_.reset();
   }
+  observer_ = nullptr;
   is_connected_ = false;
   session_id_.clear();
 }

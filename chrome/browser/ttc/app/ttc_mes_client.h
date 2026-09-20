@@ -33,15 +33,14 @@ class TtcMesClient
  public:
   using Observer = TtcBackend::Observer;
 
-  TtcMesClient(Profile* profile, Observer* observer);
+  explicit TtcMesClient(Profile* profile);
   ~TtcMesClient() override;
 
   TtcMesClient(const TtcMesClient&) = delete;
   TtcMesClient& operator=(const TtcMesClient&) = delete;
 
   // TtcBackend implementation:
-  void set_observer(Observer* observer) override;
-  void Connect() override;
+  void Connect(Observer* observer) override;
   void SendToolSetUpdate(const std::vector<ToolDefinition>& tools) override;
   void SendAudioChunk(base::span<const int16_t> audio_data) override;
   void SendTextInput(const std::string& text) override;
@@ -59,11 +58,8 @@ class TtcMesClient
       override;
 
  protected:
-  // Constructor for unit test mocks.
-  TtcMesClient();
-
   // Dispatches a decoded server frame to the observer. Protected so tests can
-  // feed frames without standing up a live MES session.
+  // feed frames without a server sending them.
   void HandleServerFrame(
       const optimization_guide::proto::TtcServerFrame& frame);
 
@@ -76,8 +72,9 @@ class TtcMesClient
                                ToolResponse response);
   void SendFrame(const optimization_guide::proto::TtcClientFrame& frame);
 
-  raw_ptr<Profile> profile_;
-  raw_ptr<Observer> observer_;
+  raw_ptr<Profile> profile_ = nullptr;
+  // Set by Connect(); null until then.
+  raw_ptr<Observer> observer_ = nullptr;
 
   std::unique_ptr<optimization_guide::RemoteModelExecutionSession> session_;
   bool is_connected_ = false;

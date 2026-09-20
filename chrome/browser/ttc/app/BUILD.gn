@@ -67,6 +67,7 @@ source_set("unit_tests") {
     ":app",
     ":impl",
     "//base/test:test_support",
+    "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/ttc/core",
     "//chrome/test:test_support",
     "//content/test:test_support",
