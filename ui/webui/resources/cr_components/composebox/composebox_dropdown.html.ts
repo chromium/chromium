@@ -26,7 +26,8 @@ export function getHtml(this: ComposeboxDropdownElement) {
                   aria-label="${this.computeAriaLabel_(match)}"
                   exportparts="match-text-container, match-container,
                       match-icon-container, match-focus-indicator,
-                      match-icon, match-remove-button"
+                      match-icon, match-remove-button, match-contents,
+                      match-description"
                   style="--loading-bar-animation-delay: ${index + 1};"
                   tabindex="0"
                   role="option"
@@ -53,7 +54,8 @@ export function getHtml(this: ComposeboxDropdownElement) {
                 aria-label="${this.computeAriaLabel_(item)}"
                 exportparts="match-text-container, match-container,
                     match-icon-container, match-focus-indicator,
-                    match-icon, match-remove-button"
+                    match-icon, match-remove-button, match-contents,
+                    match-description"
                 style="--loading-bar-animation-delay: ${index + 1};"
                 tabindex="0"
                 role="option"

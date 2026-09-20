@@ -45,6 +45,17 @@ export class ComposeboxMatchElement extends CrLitElement {
       // Public properties
       //========================================================================
 
+      /**
+       * Whether the match should be rendered in a two-row layout, i.e. with the
+       * description (secondary text) rendered below the contents (primary
+       * text). Mirrors `AutocompleteMatch::is_two_row_suggestion`, which the
+       * handler derives from `SuggestTemplateInfo::secondary_text_placement`.
+       */
+      isTwoRowSuggestion: {
+        type: Boolean,
+        reflect: true,
+      },
+
       match: {type: Object},
       overrideClampLineNum: {
         type: Number,
@@ -74,6 +85,7 @@ export class ComposeboxMatchElement extends CrLitElement {
     };
   }
 
+  accessor isTwoRowSuggestion: boolean = false;
   accessor match: AutocompleteMatch = createAutocompleteMatch();
   accessor overrideClampLineNum: number = -1;
 
@@ -125,11 +137,19 @@ export class ComposeboxMatchElement extends CrLitElement {
     }
   }
 
+  private computeIsTwoRowSuggestion_(): boolean {
+    // Rich image suggestions have their own (grid) layout and never render a
+    // second row of text.
+    return !this.isRichImage && this.match.isTwoRowSuggestion &&
+        !!this.match.description;
+  }
+
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
     if (changedProperties.has('match') ||
         changedProperties.has('richImageSuggestionsEnabled')) {
       this.suggestStyle = this.computeSuggestStyle_();
+      this.isTwoRowSuggestion = this.computeIsTwoRowSuggestion_();
     }
   }
 

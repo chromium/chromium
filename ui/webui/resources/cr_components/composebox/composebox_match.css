@@ -178,6 +178,72 @@
   padding-block: 10px;
 }
 
+/* ==========================================================================
+ * Two-row suggestions, i.e. suggestions whose secondary text is placed below
+ * the primary text (SuggestTemplateInfo.BELOW_PRIMARY_TEXT).
+ * ========================================================================== */
+
+/* The mock stacks a 24px primary line on a 20px secondary line inside 10px of
+ * block padding, i.e. 10 + 24 + 20 + 10. The single-row height of 44px above
+ * follows the same model (10 + 24 + 10), so the two agree. */
+:host([suggest-style='default'][is-two-row-suggestion]),
+:host([suggest-style='default'][is-two-row-suggestion]) .container {
+  height: auto;
+  min-height: var(--cr-composebox-match-two-row-height, 64px);
+}
+
+/* The deep search rules above give .container 10px of block padding, which
+ * would otherwise stack on top of the min-height. Note this is deliberately
+ * not applied to :host, whose padding-bottom is the gap between matches. */
+:host([suggest-style='default'][is-two-row-suggestion]) .container {
+  box-sizing: border-box;
+}
+
+:host([suggest-style='default'][is-two-row-suggestion]) #textContainer {
+  align-content: normal;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Embedders can override #textContainer's display via ::part(), and outer-tree
+ * declarations win over this one, so the rows are blockified to keep them
+ * stacked regardless of what the container ends up being. */
+:host([suggest-style='default'][is-two-row-suggestion]) #contents,
+:host([suggest-style='default'][is-two-row-suggestion]) #description {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Deemphasizes the secondary text. The mock calls for the on-surface-subtle
+ * role, which is what --color-searchbox-results-foreground-dimmed resolves to
+ * in the Material NTP mixer; the fallbacks cover embedders that don't define
+ * it. */
+:host([suggest-style='default'][is-two-row-suggestion]) #description {
+  color: var(--color-searchbox-results-foreground-dimmed,
+      var(--color-sys-on-surface-subtle,
+          var(--cr-fallback-color-on-surface-subtle)));
+  font-size: var(--cr-composebox-match-description-font-size, 13px);
+  line-height: var(--cr-composebox-match-description-line-height, 20px);
+}
+
+/* The clamping above is applied to #textContainer, which becomes a flex column
+ * for two-row suggestions, so it has to move to #contents instead. Enum 1 is
+ * deepSearch. The primary text keeps clamping to multiple lines, while the
+ * secondary text remains on a single line below it. */
+:host([suggest-style='default'][is-two-row-suggestion][tool-mode='1'])
+    #contents,
+:host([suggest-style='default'][is-two-row-suggestion]:not(
+    [override-clamp-line-num='-1']))
+    #contents {
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--clamp-line-num);
+  display: -webkit-box;
+  white-space: normal;
+}
+
 /* For co-browsing. Must be defined here since cannot be injected via ::part. */
 @keyframes loading-bar-color-change {
   0% {

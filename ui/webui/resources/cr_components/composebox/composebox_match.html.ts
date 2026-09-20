@@ -18,7 +18,12 @@ export function getHtml(this: ComposeboxMatchElement) {
     </div>
   </div>
   <div id="textContainer" part="match-text-container">
-    ${this.match.contents}
+    <span id="contents" part="match-contents">${this.match.contents}</span>
+    ${this.isTwoRowSuggestion ? html`
+      <span id="description" part="match-description">
+        ${this.match.description}
+      </span>
+    ` : ''}
   </div>
   <cr-icon-button id="remove" class="action-icon icon-clear"
     part="match-remove-button"
