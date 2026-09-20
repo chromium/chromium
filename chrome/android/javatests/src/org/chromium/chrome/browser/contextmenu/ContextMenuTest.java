@@ -176,6 +176,7 @@ public class ContextMenuTest {
     private String mTestUrl;
 
     private ContextMenuCoordinator mMenuCoordinator;
+    private TabModelSelectorObserver mTabModelSelectorObserver;
 
     private static final String FILENAME_GIF = "download.gif";
     private static final String FILENAME_PNG = "test_image.png";
@@ -227,6 +228,13 @@ public class ContextMenuTest {
                     if (mMenuCoordinator != null) {
                         mMenuCoordinator.dismiss();
                         mMenuCoordinator = null;
+                    }
+                    if (mTabModelSelectorObserver != null) {
+                        mActivityTestRule
+                                .getActivity()
+                                .getTabModelSelector()
+                                .removeObserver(mTabModelSelectorObserver);
+                        mTabModelSelectorObserver = null;
                     }
                 });
         DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(TriState.NOT_SET);
@@ -330,19 +338,19 @@ public class ContextMenuTest {
                 .when(mDataProtectionBridgeMock)
                 .verifyGenericCopyImageActionIsAllowedByPolicy(anyString(), any(), any());
 
+        mTabModelSelectorObserver =
+                new TabModelSelectorObserver() {
+                    @Override
+                    public void onNewTabCreated(Tab tab, @TabCreationState int creationState) {
+                        Assert.fail();
+                    }
+                };
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTestRule
                             .getActivity()
                             .getTabModelSelector()
-                            .addObserver(
-                                    new TabModelSelectorObserver() {
-                                        @Override
-                                        public void onNewTabCreated(
-                                                Tab tab, @TabCreationState int creationState) {
-                                            Assert.fail();
-                                        }
-                                    });
+                            .addObserver(mTabModelSelectorObserver);
                 });
 
         ContextMenuUtils.selectContextMenuItem(
@@ -364,19 +372,19 @@ public class ContextMenuTest {
                 .when(mDataProtectionBridgeMock)
                 .verifyGenericCopyImageActionIsAllowedByPolicy(anyString(), any(), any());
 
+        mTabModelSelectorObserver =
+                new TabModelSelectorObserver() {
+                    @Override
+                    public void onNewTabCreated(Tab tab, @TabCreationState int creationState) {
+                        Assert.fail();
+                    }
+                };
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTestRule
                             .getActivity()
                             .getTabModelSelector()
-                            .addObserver(
-                                    new TabModelSelectorObserver() {
-                                        @Override
-                                        public void onNewTabCreated(
-                                                Tab tab, @TabCreationState int creationState) {
-                                            Assert.fail();
-                                        }
-                                    });
+                            .addObserver(mTabModelSelectorObserver);
                 });
 
         ContextMenuUtils.selectContextMenuItem(
@@ -408,28 +416,25 @@ public class ContextMenuTest {
 
         final CallbackHelper newTabCallback = new CallbackHelper();
         final AtomicReference<Tab> newTab = new AtomicReference<>();
+        mTabModelSelectorObserver =
+                new TabModelSelectorObserver() {
+                    @Override
+                    public void onNewTabCreated(Tab tab, @TabCreationState int creationState) {
+                        if (tab.getParentId() != activityTab.getId()) {
+                            return;
+                        }
+                        newTab.set(tab);
+                        newTabCallback.notifyCalled();
+
+                        mActivityTestRule.getActivity().getTabModelSelector().removeObserver(this);
+                    }
+                };
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTestRule
                             .getActivity()
                             .getTabModelSelector()
-                            .addObserver(
-                                    new TabModelSelectorObserver() {
-                                        @Override
-                                        public void onNewTabCreated(
-                                                Tab tab, @TabCreationState int creationState) {
-                                            if (tab.getParentId() != activityTab.getId()) {
-                                                return;
-                                            }
-                                            newTab.set(tab);
-                                            newTabCallback.notifyCalled();
-
-                                            mActivityTestRule
-                                                    .getActivity()
-                                                    .getTabModelSelector()
-                                                    .removeObserver(this);
-                                        }
-                                    });
+                            .addObserver(mTabModelSelectorObserver);
                 });
 
         int callbackCount = newTabCallback.getCallCount();
