@@ -19,7 +19,6 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/color/color_provider.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -46,6 +45,7 @@ OmniboxHeaderView::OmniboxHeaderView(OmniboxPopupViewViews* popup_view)
   const gfx::FontList& font = views::TypographyProvider::Get().GetFont(
       CONTEXT_OMNIBOX_SECTION_HEADER, views::style::STYLE_PRIMARY);
   header_label_->SetFontList(font);
+  header_label_->SetEnabledColor(kColorOmniboxResultsTextDimmed);
 }
 
 void OmniboxHeaderView::SetHeader(const std::u16string& header_text) {
@@ -74,12 +74,6 @@ gfx::Insets OmniboxHeaderView::GetInsets() const {
 bool OmniboxHeaderView::OnMousePressed(const ui::MouseEvent& event) {
   // Needed to ensure that clicking the header doesn't close the Omnibox.
   return true;
-}
-
-void OmniboxHeaderView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  header_label_->SetEnabledColor(
-      GetColorProvider()->GetColor(kColorOmniboxResultsTextDimmed));
 }
 
 BEGIN_METADATA(OmniboxHeaderView)

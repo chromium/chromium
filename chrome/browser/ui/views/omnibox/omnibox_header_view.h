@@ -38,7 +38,6 @@ class OmniboxHeaderView : public views::View {
   // views::View:
   gfx::Insets GetInsets() const override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
-  void OnThemeChanged() override;
 
  private:
   // The parent view.
