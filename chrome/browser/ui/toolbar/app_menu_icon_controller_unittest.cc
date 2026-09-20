@@ -330,10 +330,14 @@ TEST_P(AppMenuIconControllerTest,
       // Set high upgrade annoyance level.
       BroadcastLevel(UpgradeDetector::UPGRADE_ANNOYANCE_HIGH);
 
+      const auto expected_unclamped_severity =
+          IsUnstableChannel() ? AppMenuIconController::Severity::kLow
+                              : AppMenuIconController::Severity::kHigh;
+
       auto state_before = controller.GetTypeAndSeverity();
       EXPECT_EQ(state_before.type,
                 AppMenuIconController::IconType::kUpgradeNotification);
-      EXPECT_EQ(state_before.severity, AppMenuIconController::Severity::kHigh);
+      EXPECT_EQ(state_before.severity, expected_unclamped_severity);
 
       // Activate Idle scheduled restart.
       manager->ScheduleRestartOnIdle();
@@ -358,9 +362,9 @@ TEST_P(AppMenuIconControllerTest,
       auto state_cancelled = controller.GetTypeAndSeverity();
       EXPECT_EQ(state_cancelled.type,
                 AppMenuIconController::IconType::kUpgradeNotification);
-      // Severity should unclamp back to kHigh upon schedule cancellation.
-      EXPECT_EQ(state_cancelled.severity,
-                AppMenuIconController::Severity::kHigh);
+      // Severity should unclamp back to its prior level upon schedule
+      // cancellation.
+      EXPECT_EQ(state_cancelled.severity, expected_unclamped_severity);
       EXPECT_NE(AppMenuIconController::GetIconLabel(state_cancelled.type,
                                                     state_cancelled.severity),
                 expected_label);
