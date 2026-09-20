@@ -43,8 +43,11 @@ void RouteWebPointerEvent(RenderWidgetHostViewBase* parent_view,
   gfx::Point root_origin = root_view->GetViewBounds().origin();
   gfx::PointF root_point =
       screen_point - gfx::Vector2dF(root_origin.x(), root_origin.y());
-  gfx::PointF parent_local_point =
-      parent_view->TransformRootPointToViewCoordSpace(root_point);
+  gfx::PointF parent_local_point;
+  if (!root_view->TransformPointToCoordSpaceForView(root_point, parent_view,
+                                                    &parent_local_point)) {
+    return;
+  }
   web_event.SetPositionInWidget(parent_local_point.x(), parent_local_point.y());
 
   if constexpr (std::is_same_v<EventType, blink::WebMouseEvent>) {

@@ -50,6 +50,7 @@
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "third_party/blink/public/mojom/frame/media_player_action.mojom.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-test-utils.h"
 #include "third_party/blink/public/mojom/widget/platform_widget.mojom-test-utils.h"
@@ -7588,5 +7589,138 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessDelegatedInkBrowserTest,
   EXPECT_TRUE(web_contents()->IsDelegatedInkRendererBoundForTest());
 }
 #endif  // USE_AURA
+
+namespace {
+
+void LoopVideoAt(RenderFrameHostImpl* rfh, const gfx::Point& root_point) {
+  rfh->ExecuteMediaPlayerActionAtLocation(
+      root_point, blink::mojom::MediaPlayerAction(
+                      blink::mojom::MediaPlayerActionType::kLoop, true));
+}
+
+// Returns the ID of the looping video in `rfh`, or empty string if none.
+// Reading this flushes pending LocalFrame messages since EvalJs shares the
+// pipe.
+std::string LoopingVideoIn(RenderFrameHostImpl* rfh) {
+  return EvalJs(rfh,
+                "[...document.querySelectorAll('video')]"
+                "    .filter(v => v.loop).map(v => v.id).join()")
+      .ExtractString();
+}
+
+void StopLoopingVideosIn(RenderFrameHostImpl* rfh) {
+  ASSERT_TRUE(ExecJs(
+      rfh, "document.querySelectorAll('video').forEach(v => v.loop = false)"));
+}
+
+}  // namespace
+
+// Ensures context menu actions in an OOPIF target the original clicked point,
+// even if the frame is moved or hidden while the menu is open
+// (crbug.com/553326035).
+IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
+                       ContextMenuActionUsesPointClickedInOopif) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/frame_tree/page_with_positioned_frame.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), main_url));
+
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  ASSERT_EQ(1U, root->child_count());
+  RenderFrameHostImpl* child_rfh = root->child_at(0)->current_frame_host();
+  WaitForHitTestData(child_rfh);
+
+  // Two videos allow verifying whether actions hit the original target
+  // (#corner) or the shifted position (#rest).
+  ASSERT_TRUE(ExecJs(child_rfh, R"(
+      document.body.style.margin = '0';
+      document.body.innerHTML = `
+        <style>
+          video { position: absolute; }
+          #corner { left: 0; top: 0; width: 20px; height: 20px; }
+          #rest { left: 20px; top: 20px; width: 80px; height: 80px; }
+        </style>
+        <video id="corner"></video>
+        <video id="rest"></video>
+      `;
+  )"));
+
+  RenderWidgetHostViewBase* root_view = static_cast<RenderWidgetHostViewBase*>(
+      root->current_frame_host()->GetRenderWidgetHost()->GetView());
+  RenderWidgetHostViewBase* child_view = static_cast<RenderWidgetHostViewBase*>(
+      child_rfh->GetRenderWidgetHost()->GetView());
+  ASSERT_TRUE(root_view);
+  ASSERT_TRUE(child_view);
+
+  // Keeps the shell from opening a real context menu window.
+  ContextMenuObserverDelegate context_menu_delegate;
+  web_contents()->SetDelegate(&context_menu_delegate);
+
+  constexpr gfx::Point kLocalPoint(10, 10);
+  gfx::PointF root_point_f;
+  ASSERT_TRUE(child_view->TransformPointToCoordSpaceForView(
+      gfx::PointF(kLocalPoint), root_view, &root_point_f));
+  const gfx::Point root_point = gfx::ToRoundedPoint(root_point_f);
+  ASSERT_NE(kLocalPoint, root_point);
+
+  blink::UntrustworthyContextMenuParams params;
+  params.x = kLocalPoint.x();
+  params.y = kLocalPoint.y();
+  child_rfh->ShowContextMenu(mojo::NullAssociatedRemote(), params);
+  EXPECT_EQ(root_point, gfx::Point(context_menu_delegate.getParams().x,
+                                   context_menu_delegate.getParams().y));
+
+  LoopVideoAt(child_rfh, root_point);
+  EXPECT_EQ("corner", LoopingVideoIn(child_rfh));
+  StopLoopingVideosIn(child_rfh);
+
+  // Move the frame so `root_point` maps to #rest; action still hits #corner.
+  {
+    HitTestRegionObserver observer(root_view->GetRootFrameSinkId());
+    observer.WaitForHitTestData();
+    ASSERT_TRUE(ExecJs(web_contents(),
+                       "const f = document.querySelector('iframe');"
+                       "f.style.left = '25px';"
+                       "f.style.top = '25px';"));
+    MainThreadFrameObserver frame_observer(
+        root->current_frame_host()->GetRenderWidgetHost());
+    frame_observer.Wait();
+    observer.WaitForHitTestDataChange();
+
+    gfx::PointF moved_local;
+    ASSERT_TRUE(root_view->TransformPointToCoordSpaceForView(
+        gfx::PointF(root_point), child_view, &moved_local));
+    ASSERT_NE(kLocalPoint, gfx::ToRoundedPoint(moved_local));
+
+    LoopVideoAt(child_rfh, root_point);
+    EXPECT_EQ("corner", LoopingVideoIn(child_rfh));
+    StopLoopingVideosIn(child_rfh);
+  }
+
+  // Hide the frame; action still hits #corner.
+  {
+    HitTestRegionObserver observer(root_view->GetRootFrameSinkId());
+    observer.WaitForHitTestData();
+    ASSERT_TRUE(ExecJs(
+        web_contents(),
+        "document.querySelector('iframe').style.visibility = 'hidden';"));
+    MainThreadFrameObserver frame_observer(
+        root->current_frame_host()->GetRenderWidgetHost());
+    frame_observer.Wait();
+    observer.WaitForHitTestDataChange();
+
+    gfx::PointF unused;
+    ASSERT_FALSE(root_view->TransformPointToCoordSpaceForView(
+        gfx::PointF(root_point), child_view, &unused));
+
+    LoopVideoAt(child_rfh, root_point);
+    EXPECT_EQ("corner", LoopingVideoIn(child_rfh));
+    StopLoopingVideosIn(child_rfh);
+
+    // Points not from this menu cannot be mapped for a hidden frame and are
+    // dropped.
+    LoopVideoAt(child_rfh, root_point + gfx::Vector2d(1, 1));
+    EXPECT_EQ("", LoopingVideoIn(child_rfh));
+  }
+}
 
 }  // namespace content

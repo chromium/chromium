@@ -352,6 +352,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
+#include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -3695,17 +3696,42 @@ void RenderFrameHostImpl::SetWantErrorMessageStackTrace() {
   GetMojomFrameInRenderer()->SetWantErrorMessageStackTrace();
 }
 
+std::optional<gfx::Point>
+RenderFrameHostImpl::TransformRootPointForContextMenuAction(
+    const gfx::Point& root_point) {
+  // Actions from this frame's menu act on the clicked point directly, so
+  // moving or hiding the frame cannot steer the action.
+  if (context_menu_location_ &&
+      context_menu_location_->root_point == root_point) {
+    return context_menu_location_->local_point;
+  }
+
+  RenderWidgetHostViewBase* view = GetView();
+  if (!view) {
+    return std::nullopt;
+  }
+  RenderWidgetHostViewBase* root_view = view->GetRootView();
+  gfx::PointF point_in_view;
+  if (!root_view || !root_view->TransformPointToCoordSpaceForView(
+                        gfx::PointF(root_point), view, &point_in_view)) {
+    return std::nullopt;
+  }
+  return gfx::ToRoundedPoint(point_in_view);
+}
+
 void RenderFrameHostImpl::ExecuteMediaPlayerActionAtLocation(
     const gfx::Point& location,
     const blink::mojom::MediaPlayerAction& action) {
+  std::optional<gfx::Point> point_in_view =
+      TransformRootPointForContextMenuAction(location);
+  if (!point_in_view) {
+    return;
+  }
   auto media_player_action = blink::mojom::MediaPlayerAction::New();
   media_player_action->type = action.type;
   media_player_action->enable = action.enable;
-  gfx::PointF point_in_view = GetView()->TransformRootPointToViewCoordSpace(
-      gfx::PointF(location.x(), location.y()));
   GetAssociatedLocalFrame()->MediaPlayerActionAt(
-      gfx::Point(point_in_view.x(), point_in_view.y()),
-      std::move(media_player_action));
+      *point_in_view, std::move(media_player_action));
 }
 
 void RenderFrameHostImpl::RequestVideoFrameAtWithBoundsHint(
@@ -3713,11 +3739,14 @@ void RenderFrameHostImpl::RequestVideoFrameAtWithBoundsHint(
     const gfx::Size& max_size,
     int max_area,
     base::OnceCallback<void(const SkBitmap&, const gfx::Rect&)> callback) {
-  gfx::PointF point_in_view = GetView()->TransformRootPointToViewCoordSpace(
-      gfx::PointF(location.x(), location.y()));
+  std::optional<gfx::Point> point_in_view =
+      TransformRootPointForContextMenuAction(location);
+  if (!point_in_view) {
+    std::move(callback).Run(SkBitmap(), gfx::Rect());
+    return;
+  }
   GetAssociatedLocalFrame()->RequestVideoFrameAtWithBoundsHint(
-      gfx::Point(point_in_view.x(), point_in_view.y()), max_size, max_area,
-      std::move(callback));
+      *point_in_view, max_size, max_area, std::move(callback));
 }
 
 bool RenderFrameHostImpl::CreateNetworkServiceDefaultFactory(
@@ -3960,23 +3989,30 @@ void RenderFrameHostImpl::ExecuteJavaScriptForTests(
 void RenderFrameHostImpl::ExecutePluginActionAtLocalLocation(
     const gfx::Point& location,
     blink::mojom::PluginActionType plugin_action) {
-  gfx::Point local_location = gfx::ToFlooredPoint(
-      GetView()->TransformRootPointToViewCoordSpace(gfx::PointF(location)));
-  GetAssociatedLocalFrame()->PluginActionAt(local_location, plugin_action);
+  std::optional<gfx::Point> point_in_view =
+      TransformRootPointForContextMenuAction(location);
+  if (!point_in_view) {
+    return;
+  }
+  GetAssociatedLocalFrame()->PluginActionAt(*point_in_view, plugin_action);
 }
 
 void RenderFrameHostImpl::CopyImageAt(int x, int y) {
-  gfx::PointF point_in_view =
-      GetView()->TransformRootPointToViewCoordSpace(gfx::PointF(x, y));
-  GetAssociatedLocalFrame()->CopyImageAt(
-      gfx::Point(point_in_view.x(), point_in_view.y()));
+  std::optional<gfx::Point> point_in_view =
+      TransformRootPointForContextMenuAction(gfx::Point(x, y));
+  if (!point_in_view) {
+    return;
+  }
+  GetAssociatedLocalFrame()->CopyImageAt(*point_in_view);
 }
 
 void RenderFrameHostImpl::SaveImageAt(int x, int y) {
-  gfx::PointF point_in_view =
-      GetView()->TransformRootPointToViewCoordSpace(gfx::PointF(x, y));
-  GetAssociatedLocalFrame()->SaveImageAt(
-      gfx::Point(point_in_view.x(), point_in_view.y()));
+  std::optional<gfx::Point> point_in_view =
+      TransformRootPointForContextMenuAction(gfx::Point(x, y));
+  if (!point_in_view) {
+    return;
+  }
+  GetAssociatedLocalFrame()->SaveImageAt(*point_in_view);
 }
 
 RenderViewHost* RenderFrameHostImpl::GetRenderViewHost() const {
@@ -10079,12 +10115,22 @@ void RenderFrameHostImpl::ShowContextMenu(
 
   // It is necessary to transform the coordinates to account for nested
   // RenderWidgetHosts, such as with out-of-process iframes.
-  gfx::Point original_point(validated_params.x, validated_params.y);
-  gfx::Point transformed_point =
-      static_cast<RenderWidgetHostViewBase*>(GetView())
-          ->TransformPointToRootCoordSpace(original_point);
-  validated_params.x = transformed_point.x();
-  validated_params.y = transformed_point.y();
+  RenderWidgetHostViewBase* view = GetView();
+  if (!view) {
+    return;
+  }
+  RenderWidgetHostViewBase* root_view = view->GetRootView();
+  const gfx::Point original_point(validated_params.x, validated_params.y);
+  gfx::PointF transformed_point_f;
+  // If hit-test data is unavailable, show the menu at the renderer's point
+  // rather than suppressing it, since most menu items do not use position.
+  if (root_view &&
+      view->TransformPointToCoordSpaceForView(
+          gfx::PointF(original_point), root_view, &transformed_point_f)) {
+    const gfx::Point root_point = gfx::ToRoundedPoint(transformed_point_f);
+    validated_params.x = root_point.x();
+    validated_params.y = root_point.y();
+  }
 
   if (validated_params.selection_start_offset < 0) {
     bad_message::ReceivedBadMessage(
@@ -10094,6 +10140,11 @@ void RenderFrameHostImpl::ShowContextMenu(
 
   validated_params.form_field_dom_node_id =
       GlobalDOMNodeId{GetWeakDocumentPtr(), validated_params.field_renderer_id};
+
+  // Cache coordinates so actions from this menu act where the user clicked.
+  context_menu_location_ = {
+      .root_point = gfx::Point(validated_params.x, validated_params.y),
+      .local_point = original_point};
 
   delegate_->ShowContextMenu(*this, std::move(context_menu_client),
                              validated_params);

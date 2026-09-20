@@ -207,6 +207,7 @@
 #include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/base/clipboard/clipboard_metadata.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
@@ -3487,6 +3488,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void OnSaveImageFromDataURL(const std::string& url_str);
   bool ValidateOutermostMainFrameWindowChange(std::string_view method_name);
 
+  // Maps `root_point` into this frame's view coordinates for actions like
+  // CopyImageAt(). Returns nullopt if the point cannot be mapped.
+  std::optional<gfx::Point> TransformRootPointForContextMenuAction(
+      const gfx::Point& root_point);
+
   // Computes the IsolationInfo for both navigations and subresources.
   //
   // For navigations, |frame_origin| is the origin being navigated to. For
@@ -5532,6 +5538,18 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // True if this rfh was created via a window creation with user activation.
   bool opener_had_user_gesture_ = false;
+
+  // Caches context menu coordinates so actions from that menu (e.g.
+  // CopyImageAt) act on `local_point` even if the frame moves or hides.
+  struct ContextMenuLocation {
+    // Menu location in root coordinates (or `local_point` if unmapped).
+    gfx::Point root_point;
+    // Click location in this frame's view coordinates.
+    gfx::Point local_point;
+  };
+
+  // Cached location from the last ShowContextMenu().
+  std::optional<ContextMenuLocation> context_menu_location_;
 
   // WeakPtrFactories are the last members, to ensure they are destroyed before
   // all other fields of `this`.
