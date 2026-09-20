@@ -453,15 +453,6 @@ class MEDIA_EXPORT H264Parser {
                                          size_t* offset,
                                          size_t* start_code_size);
 
-  // DEPRECATED: Use the above `base::span` variant to avoid unsafe buffer
-  // usage.
-  // TODO(https://crbug.com/40284755): Remove this once the callers are gone.
-  static bool FindStartCodeInClearRanges(const uint8_t* data,
-                                         off_t data_size,
-                                         const Ranges<const uint8_t*>& ranges,
-                                         off_t* offset,
-                                         off_t* start_code_size);
-
   static VideoCodecProfile ProfileIDCToVideoCodecProfile(int profile_idc);
 
   // Parses the input stream and returns all the NALUs through |nalus|. Returns

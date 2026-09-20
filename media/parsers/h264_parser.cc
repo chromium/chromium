@@ -448,22 +448,6 @@ bool H264Parser::FindStartCodeInClearRanges(
   return true;
 }
 
-bool H264Parser::FindStartCodeInClearRanges(
-    const uint8_t* data,
-    off_t data_size,
-    const Ranges<const uint8_t*>& ranges,
-    off_t* start_code_offset,
-    off_t* start_code_size) {
-  size_t offset = 0;
-  size_t size = 0;
-  bool result = FindStartCodeInClearRanges(
-      UNSAFE_TODO(base::span(data, base::checked_cast<size_t>(data_size))),
-      ranges, &offset, &size);
-  *start_code_offset = offset;
-  *start_code_size = size;
-  return result;
-}
-
 // static
 VideoCodecProfile H264Parser::ProfileIDCToVideoCodecProfile(int profile_idc) {
   switch (profile_idc) {
