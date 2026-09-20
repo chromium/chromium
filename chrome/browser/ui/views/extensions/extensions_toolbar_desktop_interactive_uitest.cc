@@ -73,6 +73,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"

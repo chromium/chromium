@@ -18,6 +18,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/permissions/chooser_controller.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/interaction/element_tracker_views.h"
 

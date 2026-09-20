@@ -29,6 +29,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/test/button_test_api.h"

@@ -32,6 +32,7 @@
 #include "components/live_caption/pref_names.h"
 #include "components/on_device_translation/buildflags/buildflags.h"
 #include "content/public/browser/navigation_controller.h"
+#include "ui/views/controls/scroll_view.h"
 
 #if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 #include "components/on_device_translation/public/language_pack.h"

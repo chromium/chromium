@@ -68,6 +68,7 @@
 #include "ui/display/display_switches.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/switches.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
