@@ -35,7 +35,6 @@ class AtMemoryBottomSheetViewBinder {
             PropertyModel model, AtMemoryBottomSheetView view, PropertyKey propertyKey) {
         if (propertyKey == VISIBLE) {
             if (model.get(VISIBLE)) {
-                view.clearSearchText();
                 view.focusSearchArea();
             }
         } else if (propertyKey == CURRENT_SCREEN) {
@@ -57,6 +56,8 @@ class AtMemoryBottomSheetViewBinder {
             PropertyModel model, AtMemoryHomeView view, PropertyKey propertyKey) {
         if (propertyKey == HomeProperties.SEARCH_BAR_DELEGATE) {
             view.setSearchBarDelegate(model.get(HomeProperties.SEARCH_BAR_DELEGATE));
+        } else if (propertyKey == HomeProperties.SEARCH_BAR_INITIAL_VALUE) {
+            view.setSearchText(model.get(HomeProperties.SEARCH_BAR_INITIAL_VALUE));
         } else if (propertyKey == HomeProperties.IS_LOADING) {
             view.setIsLoading(model.get(HomeProperties.IS_LOADING));
         } else if (propertyKey == HomeProperties.SHEET_ITEMS) {

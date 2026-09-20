@@ -79,6 +79,10 @@ public class AtMemoryHomeView extends LinearLayout {
         mRecyclerView.addItemDecoration(new AtMemoryDividerItemDecoration(getContext()));
     }
 
+    public void setSearchText(String text) {
+        mSearchBarView.setText(text);
+    }
+
     public void focusSearchArea() {
         mSearchBarView.focusSearchArea();
     }

@@ -51,6 +51,11 @@ class AtMemoryBottomSheetProperties {
         // Indicates whether the bottom sheet dialog should display a loading state.
         static final WritableBooleanPropertyKey IS_LOADING = new WritableBooleanPropertyKey();
 
+        // Initial value for the search bar. The previous query is preserved for a specific
+        // timeframe after the sheet is closed.
+        static final WritableObjectPropertyKey<String> SEARCH_BAR_INITIAL_VALUE =
+                new WritableObjectPropertyKey<>();
+
         static final ReadableObjectPropertyKey<AtMemorySearchBarView.Delegate> SEARCH_BAR_DELEGATE =
                 new ReadableObjectPropertyKey<>();
 
@@ -58,7 +63,9 @@ class AtMemoryBottomSheetProperties {
         static final ReadableObjectPropertyKey<ModelList> SHEET_ITEMS =
                 new ReadableObjectPropertyKey<>();
 
-        static final PropertyKey[] ALL_KEYS = {IS_LOADING, SEARCH_BAR_DELEGATE, SHEET_ITEMS};
+        static final PropertyKey[] ALL_KEYS = {
+            IS_LOADING, SEARCH_BAR_INITIAL_VALUE, SEARCH_BAR_DELEGATE, SHEET_ITEMS
+        };
 
         @IntDef({
             ItemType.SUGGESTION,

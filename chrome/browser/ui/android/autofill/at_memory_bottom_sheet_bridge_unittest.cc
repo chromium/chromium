@@ -65,7 +65,7 @@ TEST_F(AtMemoryBottomSheetBridgeTest, RequestShowContentWithChildren) {
   parent.children = {std::move(child)};
 
   EXPECT_CALL(*controller_, OnDismissed());
-  bridge_->RequestShowContent({parent});
+  bridge_->RequestShowContent({parent}, std::nullopt);
 }
 
 TEST_F(AtMemoryBottomSheetBridgeTest, RequestShowContentWithAtMemoryPayload) {
@@ -75,7 +75,7 @@ TEST_F(AtMemoryBottomSheetBridgeTest, RequestShowContentWithAtMemoryPayload) {
       Suggestion::AtMemoryPayload(u"Passport", MemoryDataType::kPassportNumber);
 
   EXPECT_CALL(*controller_, OnDismissed());
-  bridge_->RequestShowContent({suggestion});
+  bridge_->RequestShowContent({suggestion}, std::nullopt);
 }
 
 }  // namespace

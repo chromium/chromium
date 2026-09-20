@@ -8,6 +8,8 @@
 #include <jni.h>
 
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ref.h"
@@ -42,7 +44,9 @@ class AtMemoryBottomSheetBridge {
 
  public:
   // Requests to show the bottom sheet.
-  virtual void RequestShowContent(base::span<const Suggestion> suggestions);
+  virtual void RequestShowContent(
+      base::span<const Suggestion> suggestions,
+      std::optional<std::u16string> search_bar_initial_value);
 
   // Requests to hide the bottom sheet.
   void Hide();

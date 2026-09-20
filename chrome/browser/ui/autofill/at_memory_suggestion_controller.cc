@@ -149,7 +149,7 @@ void AtMemorySuggestionController::Show(
         web_contents_->GetTopLevelNativeWindow(),
         Profile::FromBrowserContext(web_contents_->GetBrowserContext()), this);
   }
-  bridge_->RequestShowContent(suggestions_);
+  bridge_->RequestShowContent(suggestions_, search_bar_initial_value);
 
   if (delegate_) {
     delegate_->OnSuggestionsShown(suggestions_, /*metadata=*/{});
@@ -254,7 +254,7 @@ void AtMemorySuggestionController::OnSuggestionDismissed(int position) {
   if (delegate_ && delegate_->RemoveSuggestion(suggestions_[position])) {
     suggestions_.erase(suggestions_.begin() + position);
     if (bridge_) {
-      bridge_->RequestShowContent(suggestions_);
+      bridge_->RequestShowContent(suggestions_, std::nullopt);
     }
   }
 }

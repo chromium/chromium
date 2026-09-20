@@ -61,8 +61,10 @@ public class AtMemoryBottomSheetBridge implements AtMemoryBottomSheetCoordinator
     }
 
     @CalledByNative
-    public void show(@JniType("std::vector") List<AutofillSuggestion> suggestions) {
-        mCoordinator.show(suggestions);
+    public void show(
+            @JniType("std::vector") List<AutofillSuggestion> suggestions,
+            @JniType("std::optional<std::u16string>") @Nullable String searchBarInitialValue) {
+        mCoordinator.show(suggestions, searchBarInitialValue);
     }
 
     // TODO(crbug.com/534668889): Refactor isAcceptable and hasDeactivatedStyle to enum.

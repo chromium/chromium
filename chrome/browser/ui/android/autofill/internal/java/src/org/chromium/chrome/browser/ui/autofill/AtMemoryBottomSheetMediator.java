@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.settings.PersonalContextSettingsLauncher;
 import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -94,12 +95,12 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
         return mFlyoutModel;
     }
 
-    void show(List<AutofillSuggestion> suggestions) {
-        applyScreenState(getScreenState(suggestions), suggestions);
+    void show(List<AutofillSuggestion> suggestions, @Nullable String searchBarInitialValue) {
+        applyScreenState(getScreenState(suggestions), suggestions, searchBarInitialValue);
     }
 
     void onDismissed() {
-        applyScreenState(AtMemoryScreenState.HIDDEN, List.of());
+        applyScreenState(AtMemoryScreenState.HIDDEN, List.of(), null);
 
         mDelegate.onDismissed();
     }
@@ -119,9 +120,14 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
     }
 
     private void applyScreenState(
-            AtMemoryScreenState screenState, List<AutofillSuggestion> suggestions) {
+            AtMemoryScreenState screenState,
+            List<AutofillSuggestion> suggestions,
+            @Nullable String searchBarInitialValue) {
         mModel.set(CURRENT_SCREEN, ScreenId.HOME_SCREEN);
         mHomeModel.set(HomeProperties.IS_LOADING, screenState.isLoading);
+        if (searchBarInitialValue != null) {
+            mHomeModel.set(HomeProperties.SEARCH_BAR_INITIAL_VALUE, searchBarInitialValue);
+        }
 
         ModelList sheetItems = mHomeModel.get(HomeProperties.SHEET_ITEMS);
         sheetItems.clear();

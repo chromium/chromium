@@ -46,7 +46,7 @@ class MockAtMemoryBottomSheetBridge : public AtMemoryBottomSheetBridge {
 
   MOCK_METHOD(void,
               RequestShowContent,
-              (base::span<const Suggestion>),
+              (base::span<const Suggestion>, std::optional<std::u16string>),
               (override));
 };
 
@@ -105,7 +105,9 @@ class AtMemorySuggestionControllerTest
     AutofillSuggestionControllerTestBase::TearDown();
   }
 
-  void ShowSuggestions(Manager& manager, std::vector<Suggestion> suggestions) {
+  void ShowSuggestions(Manager& manager,
+                       std::vector<Suggestion> suggestions,
+                       std::u16string search_bar_initial_value) {
     FocusWebContentsOnFrame(
         static_cast<ContentAutofillDriver&>(manager.driver())
             .render_frame_host());
@@ -114,8 +116,7 @@ class AtMemorySuggestionControllerTest
         std::move(suggestions),
         AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
         AutoselectFirstSuggestion(false),
-        AutofillSuggestionsIgnoreFocusLoss(false),
-        /*search_bar_initial_value=*/{});
+        AutofillSuggestionsIgnoreFocusLoss(false), search_bar_initial_value);
   }
 };
 
@@ -126,11 +127,30 @@ TEST_F(AtMemorySuggestionControllerTest, ShowSuggestions) {
 
   client().suggestion_controller(manager());
   EXPECT_CALL(*client().mock_bridge(),
-              RequestShowContent(ElementsAreArray(suggestions)));
+              RequestShowContent(ElementsAreArray(suggestions),
+                                 std::optional<std::u16string>(u"")));
   EXPECT_CALL(manager().external_delegate(),
               OnSuggestionsShown(ElementsAreArray(suggestions), _));
 
-  ShowSuggestions(manager(), suggestions);
+  ShowSuggestions(manager(), suggestions,
+                  /*search_bar_initial_value=*/u"");
+}
+
+// Tests that the controller forwards initial search query to bridge.
+TEST_F(AtMemorySuggestionControllerTest,
+       ShowSuggestionsWithInitialSearchQuery) {
+  std::vector<Suggestion> suggestions = {
+      Suggestion(u"test", SuggestionType::kAddressEntry)};
+
+  client().suggestion_controller(manager());
+  EXPECT_CALL(*client().mock_bridge(),
+              RequestShowContent(ElementsAreArray(suggestions),
+                                 std::optional<std::u16string>(u"query")));
+  EXPECT_CALL(manager().external_delegate(),
+              OnSuggestionsShown(ElementsAreArray(suggestions), _));
+
+  ShowSuggestions(manager(), suggestions,
+                  /*search_bar_initial_value=*/u"query");
 }
 
 // Tests that the controller dismisses the bridge and notifies the delegate.
@@ -138,7 +158,8 @@ TEST_F(AtMemorySuggestionControllerTest, HideSuggestions) {
   std::vector<Suggestion> suggestions = {
       Suggestion(u"test", SuggestionType::kAddressEntry)};
 
-  ShowSuggestions(manager(), suggestions);
+  ShowSuggestions(manager(), suggestions,
+                  /*search_bar_initial_value=*/u"");
 
   EXPECT_CALL(manager().external_delegate(),
               OnSuggestionsHidden(SuggestionHidingReason::kUserAborted));
@@ -153,7 +174,8 @@ TEST_F(AtMemorySuggestionControllerTest, IgnoreFocusLossAndEndEditing) {
   std::vector<Suggestion> suggestions = {
       Suggestion(u"test", SuggestionType::kAddressEntry)};
 
-  ShowSuggestions(manager(), suggestions);
+  ShowSuggestions(manager(), suggestions,
+                  /*search_bar_initial_value=*/u"");
 
   EXPECT_CALL(manager().external_delegate(), OnSuggestionsHidden).Times(0);
 
@@ -244,7 +266,8 @@ TEST_F(AtMemorySuggestionControllerTest, RecyclesControllerIfDelegateIsSame) {
 TEST_F(AtMemorySuggestionControllerTest, AcceptSuggestion) {
   std::vector<Suggestion> suggestions = {
       Suggestion(u"test", SuggestionType::kAddressEntry)};
-  ShowSuggestions(manager(), suggestions);
+  ShowSuggestions(manager(), suggestions,
+                  /*search_bar_initial_value=*/u"");
 
   EXPECT_CALL(
       manager().external_delegate(),
@@ -328,7 +351,8 @@ TEST_F(AtMemorySuggestionControllerTest, DelegateRouting) {
   // content.
   EXPECT_CALL(mock_delegate, RemoveSuggestion(parent))
       .WillOnce(testing::Return(true));
-  EXPECT_CALL(*bridge_ptr, RequestShowContent(testing::ElementsAre()));
+  EXPECT_CALL(*bridge_ptr,
+              RequestShowContent(testing::ElementsAre(), Eq(std::nullopt)));
   controller->OnSuggestionDismissed(0);
   EXPECT_TRUE(controller->GetSuggestions().empty());
 

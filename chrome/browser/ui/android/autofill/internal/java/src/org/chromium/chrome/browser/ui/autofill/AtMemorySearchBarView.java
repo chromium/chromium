@@ -90,6 +90,11 @@ public class AtMemorySearchBarView extends LinearLayout {
                 });
     }
 
+    public void setText(String text) {
+        mSearchEditText.setText(text);
+        mSearchEditText.setSelection(text.length());
+    }
+
     public void focusSearchArea() {
         // TODO(crbug.com/512802813): Fix cursor not blinking on subsequent openings of the bottom
         // sheet.

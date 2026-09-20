@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.autofill;
 import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -82,9 +83,9 @@ public class AtMemoryBottomSheetCoordinator {
         setUpModelChangeProcessors(view);
     }
 
-    public void show(List<AutofillSuggestion> suggestions) {
+    public void show(List<AutofillSuggestion> suggestions, @Nullable String searchBarInitialValue) {
         mBottomSheetController.addObserver(mBottomSheetObserver);
-        mMediator.show(suggestions);
+        mMediator.show(suggestions, searchBarInitialValue);
         if (mBottomSheetController.requestShowContent(mContent, /* animate= */ true)) {
             expand(/* expandInFullHeight= */ true);
         } else {

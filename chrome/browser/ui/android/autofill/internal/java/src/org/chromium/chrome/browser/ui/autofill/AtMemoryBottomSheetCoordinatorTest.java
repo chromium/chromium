@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.autofill;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -14,6 +15,7 @@ import static org.mockito.Mockito.when;
 
 import android.view.ContextThemeWrapper;
 import android.view.View;
+import android.widget.EditText;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -74,7 +76,7 @@ public class AtMemoryBottomSheetCoordinatorTest {
     public void testShow_Success() {
         when(mBottomSheetController.requestShowContent(any(), eq(true))).thenReturn(true);
 
-        mCoordinator.show(List.of());
+        mCoordinator.show(List.of(), /* searchBarInitialValue= */ null);
 
         verify(mBottomSheetController).requestShowContent(any(), eq(true));
     }
@@ -83,7 +85,7 @@ public class AtMemoryBottomSheetCoordinatorTest {
     public void testShow_Failed() {
         when(mBottomSheetController.requestShowContent(any(), eq(true))).thenReturn(false);
 
-        mCoordinator.show(List.of());
+        mCoordinator.show(List.of(), /* searchBarInitialValue= */ null);
 
         verify(mMockDelegate).onDismissed();
     }
@@ -103,7 +105,7 @@ public class AtMemoryBottomSheetCoordinatorTest {
         when(mBottomSheetController.getCurrentSheetContent())
                 .thenReturn(mCoordinator.getBottomSheetContentForTesting());
 
-        mCoordinator.show(List.of());
+        mCoordinator.show(List.of(), /* searchBarInitialValue= */ null);
         verify(mBottomSheetController).addObserver(observerCaptor.capture());
         observerCaptor.getValue().onSheetOpened(StateChangeReason.NONE);
 
@@ -111,6 +113,18 @@ public class AtMemoryBottomSheetCoordinatorTest {
         View searchInput = contentView.findViewById(R.id.search_query_input);
         assertNotNull(searchInput);
         assertTrue(searchInput.hasFocus());
+    }
+
+    @Test
+    public void testShow_PreservedQuery() {
+        when(mBottomSheetController.requestShowContent(any(), eq(true))).thenReturn(true);
+
+        mCoordinator.show(List.of(), /* searchBarInitialValue= */ "city");
+
+        View contentView = mCoordinator.getBottomSheetContentForTesting().getContentView();
+        EditText searchInput = contentView.findViewById(R.id.search_query_input);
+        assertNotNull(searchInput);
+        assertEquals("city", searchInput.getText().toString());
     }
 
     @Test

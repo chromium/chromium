@@ -102,7 +102,7 @@ public class AtMemoryBottomSheetViewTest {
     }
 
     @Test
-    public void testSearchTextIsClearedWhenVisible() {
+    public void testSearchTextIsNotClearedWhenVisible() {
         View contentView = mView.getContentView();
         EditText searchView = contentView.findViewById(R.id.search_query_input);
         assertNotNull(searchView);
@@ -115,7 +115,22 @@ public class AtMemoryBottomSheetViewTest {
         PropertyModelChangeProcessor.create(
                 model, mView, AtMemoryBottomSheetViewBinder::bindAtMemoryBottomSheetView);
 
-        assertEquals("", searchView.getText().toString());
+        assertEquals("some text", searchView.getText().toString());
+    }
+
+    @Test
+    public void testSetSearchBarInitialValueSetsText() {
+        PropertyModel model =
+                new PropertyModel.Builder(HomeProperties.ALL_KEYS)
+                        .with(HomeProperties.SEARCH_BAR_INITIAL_VALUE, "initial text")
+                        .build();
+        PropertyModelChangeProcessor.create(
+                model, mView.getHomeView(), AtMemoryBottomSheetViewBinder::bindAtMemoryHomeView);
+
+        View contentView = mView.getContentView();
+        EditText searchView = contentView.findViewById(R.id.search_query_input);
+        assertNotNull(searchView);
+        assertEquals("initial text", searchView.getText().toString());
     }
 
     @Test
