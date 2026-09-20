@@ -61,6 +61,7 @@
 #include "net/test/test_data_directory.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/test/test_event.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
