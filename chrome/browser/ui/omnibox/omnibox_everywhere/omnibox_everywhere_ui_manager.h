@@ -93,6 +93,8 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
     kShowShortcuts = 10,
     kCustomizeKeyboardShortcut = 11,
     kSettings = 12,
+    kMinimize = 13,
+    kClose = 14,
   };
 
   using ContentsWrapperFactory =
@@ -113,6 +115,12 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
 
   // Demotes the widget to normal Z-order and deactivates it without hiding.
   void Demote();
+
+#if BUILDFLAG(IS_WIN)
+  // Minimizes the widget to the taskbar. Unlike `Close()`, the widget and its
+  // WebContents are kept alive, and no FRE impression is recorded.
+  void Minimize();
+#endif  // BUILDFLAG(IS_WIN)
 
   // Synchronously closes the widget and destroys the WebContents during profile
   // shutdown.
@@ -327,6 +335,9 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   void BuildSelectionContextMenu(const content::ContextMenuParams& params);
   void BuildBackgroundContextMenu(const content::ContextMenuParams& params);
   void AppendSettingsContextMenu();
+#if BUILDFLAG(IS_WIN)
+  void AppendWindowControlsContextMenu();
+#endif  // BUILDFLAG(IS_WIN)
 
   void CleanUpWidget();
 

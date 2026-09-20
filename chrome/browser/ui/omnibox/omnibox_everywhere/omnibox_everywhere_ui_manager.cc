@@ -664,6 +664,19 @@ void OmniboxEverywhereUIManager::Demote() {
 #endif
 }
 
+#if BUILDFLAG(IS_WIN)
+// The delegate reports `CanMinimize() == false`, but that only gates the
+// `WS_MINIMIZEBOX` caption button and the `SC_MINIMIZE` system menu item, not
+// `HWNDMessageHandler::Minimize()`.
+void OmniboxEverywhereUIManager::Minimize() {
+  if (!widget_ || !widget_->IsVisible() || widget_->IsMinimized()) {
+    return;
+  }
+  CancelTransientUiState();
+  widget_->Minimize();
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 void OmniboxEverywhereUIManager::CleanUpWidget() {
   deactivation_task_.Cancel();
   hotkey_dropdown_deactivation_task_.Cancel();
@@ -822,7 +835,9 @@ void OmniboxEverywhereUIManager::OnContextMenuClosed() {
 }
 
 void OmniboxEverywhereUIManager::HandleWidgetDeactivated() {
-  if (is_closing_ || !widget_ || !widget_->IsVisible() || is_demoted_) {
+  // A minimized widget is deactivated but must stay alive to be restorable.
+  if (is_closing_ || !widget_ || !widget_->IsVisible() || is_demoted_ ||
+      widget_->IsMinimized()) {
     return;
   }
   if (last_shown_time_.has_value() &&
@@ -1225,6 +1240,10 @@ bool OmniboxEverywhereUIManager::HandleContextMenu(
     BuildBackgroundContextMenu(params);
   }
 
+#if BUILDFLAG(IS_WIN)
+  AppendWindowControlsContextMenu();
+#endif  // BUILDFLAG(IS_WIN)
+
   if (context_menu_model_->GetItemCount() == 0) {
     return true;
   }
@@ -1322,6 +1341,21 @@ void OmniboxEverywhereUIManager::AppendSettingsContextMenu() {
       kSettings, IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_SETTINGS);
 }
 
+#if BUILDFLAG(IS_WIN)
+// Window controls only apply to persistent mode. An ephemeral widget has no
+// taskbar entry to minimize to and is already dismissed on deactivation.
+void OmniboxEverywhereUIManager::AppendWindowControlsContextMenu() {
+  if (prefs::IsEphemeralModelEnabled()) {
+    return;
+  }
+  context_menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
+  context_menu_model_->AddItemWithStringId(
+      kMinimize, IDS_OMNIBOX_EVERYWHERE_CONTEXT_MENU_MINIMIZE);
+  context_menu_model_->AddItemWithStringId(
+      kClose, IDS_OMNIBOX_EVERYWHERE_CONTEXT_MENU_CLOSE);
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 // Forwards unhandled keyboard events from the renderer process (such as
 // keyboard shortcuts) to the Views FocusManager so that accelerators and focus
 // traversal work as expected.
@@ -1339,6 +1373,22 @@ bool OmniboxEverywhereUIManager::HandleKeyboardEvent(
 // to the WebContents and its focused frame input handler.
 void OmniboxEverywhereUIManager::ExecuteCommand(int command_id,
                                                 int event_flags) {
+#if BUILDFLAG(IS_WIN)
+  // Window controls act on the widget, not the page. Safe to run synchronously:
+  // `MenuRunnerImpl` clears `running_` before dispatching, so the re-entrant
+  // `Cancel()` in `Close()` is a no-op.
+  switch (command_id) {
+    case kMinimize:
+      Minimize();
+      return;
+    case kClose:
+      Close();
+      return;
+    default:
+      break;
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
   if (!web_contents()) {
     return;
   }
@@ -1459,6 +1509,11 @@ void OmniboxEverywhereUIManager::ExecuteCommand(int command_id,
 // requires a valid Profile with an active OmniboxEverywhereService. Cut / Copy
 // check for selected text in addition to Blink edit flags.
 bool OmniboxEverywhereUIManager::IsCommandIdEnabled(int command_id) const {
+#if BUILDFLAG(IS_WIN)
+  if (command_id == kMinimize || command_id == kClose) {
+    return widget_ != nullptr;
+  }
+#endif  // BUILDFLAG(IS_WIN)
   if (!web_contents()) {
     return false;
   }

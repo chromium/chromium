@@ -6,11 +6,13 @@
 
 #include <memory>
 #include <optional>
+#include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/base_paths.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -1365,6 +1367,13 @@ TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuModelEditableElement) {
                 kCustomizeKeyboardShortcut);
   EXPECT_EQ(model->GetCommandIdAt(index++),
             omnibox_everywhere::OmniboxEverywhereUIManager::kSettings);
+#if BUILDFLAG(IS_WIN)
+  EXPECT_EQ(model->GetTypeAt(index++), ui::MenuModel::ItemType::TYPE_SEPARATOR);
+  EXPECT_EQ(model->GetCommandIdAt(index++),
+            omnibox_everywhere::OmniboxEverywhereUIManager::kMinimize);
+  EXPECT_EQ(model->GetCommandIdAt(index++),
+            omnibox_everywhere::OmniboxEverywhereUIManager::kClose);
+#endif  // BUILDFLAG(IS_WIN)
   EXPECT_EQ(model->GetItemCount(), index);
 }
 
@@ -1386,7 +1395,11 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   const ui::SimpleMenuModel* model =
       ui_manager->context_menu_model_for_testing();
   ASSERT_TRUE(model);
+#if BUILDFLAG(IS_WIN)
+  EXPECT_EQ(model->GetItemCount(), 12u);
+#else
   EXPECT_EQ(model->GetItemCount(), 9u);
+#endif  // BUILDFLAG(IS_WIN)
   EXPECT_EQ(model->GetCommandIdAt(0),
             omnibox_everywhere::OmniboxEverywhereUIManager::kCopy);
   EXPECT_EQ(model->GetTypeAt(1), ui::MenuModel::ItemType::TYPE_SEPARATOR);
@@ -1404,6 +1417,13 @@ TEST_F(OmniboxEverywhereUIManagerTest,
                 kCustomizeKeyboardShortcut);
   EXPECT_EQ(model->GetCommandIdAt(8),
             omnibox_everywhere::OmniboxEverywhereUIManager::kSettings);
+#if BUILDFLAG(IS_WIN)
+  EXPECT_EQ(model->GetTypeAt(9), ui::MenuModel::ItemType::TYPE_SEPARATOR);
+  EXPECT_EQ(model->GetCommandIdAt(10),
+            omnibox_everywhere::OmniboxEverywhereUIManager::kMinimize);
+  EXPECT_EQ(model->GetCommandIdAt(11),
+            omnibox_everywhere::OmniboxEverywhereUIManager::kClose);
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuModelNonEditableBackground) {
@@ -1424,7 +1444,11 @@ TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuModelNonEditableBackground) {
   const ui::SimpleMenuModel* model =
       ui_manager->context_menu_model_for_testing();
   ASSERT_TRUE(model);
+#if BUILDFLAG(IS_WIN)
+  EXPECT_EQ(model->GetItemCount(), 8u);
+#else
   EXPECT_EQ(model->GetItemCount(), 5u);
+#endif  // BUILDFLAG(IS_WIN)
   EXPECT_EQ(
       model->GetCommandIdAt(0),
       omnibox_everywhere::OmniboxEverywhereUIManager::kManageSearchEngines);
@@ -1436,6 +1460,13 @@ TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuModelNonEditableBackground) {
                 kCustomizeKeyboardShortcut);
   EXPECT_EQ(model->GetCommandIdAt(4),
             omnibox_everywhere::OmniboxEverywhereUIManager::kSettings);
+#if BUILDFLAG(IS_WIN)
+  EXPECT_EQ(model->GetTypeAt(5), ui::MenuModel::ItemType::TYPE_SEPARATOR);
+  EXPECT_EQ(model->GetCommandIdAt(6),
+            omnibox_everywhere::OmniboxEverywhereUIManager::kMinimize);
+  EXPECT_EQ(model->GetCommandIdAt(7),
+            omnibox_everywhere::OmniboxEverywhereUIManager::kClose);
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest,
@@ -1455,7 +1486,11 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   const ui::SimpleMenuModel* model =
       ui_manager->context_menu_model_for_testing();
   ASSERT_TRUE(model);
+#if BUILDFLAG(IS_WIN)
+  EXPECT_EQ(model->GetItemCount(), 8u);
+#else
   EXPECT_EQ(model->GetItemCount(), 5u);
+#endif  // BUILDFLAG(IS_WIN)
   EXPECT_EQ(
       model->GetCommandIdAt(0),
       omnibox_everywhere::OmniboxEverywhereUIManager::kManageSearchEngines);
@@ -1467,7 +1502,105 @@ TEST_F(OmniboxEverywhereUIManagerTest,
                 kCustomizeKeyboardShortcut);
   EXPECT_EQ(model->GetCommandIdAt(4),
             omnibox_everywhere::OmniboxEverywhereUIManager::kSettings);
+#if BUILDFLAG(IS_WIN)
+  EXPECT_EQ(model->GetTypeAt(5), ui::MenuModel::ItemType::TYPE_SEPARATOR);
+  EXPECT_EQ(model->GetCommandIdAt(6),
+            omnibox_everywhere::OmniboxEverywhereUIManager::kMinimize);
+  EXPECT_EQ(model->GetCommandIdAt(7),
+            omnibox_everywhere::OmniboxEverywhereUIManager::kClose);
+#endif  // BUILDFLAG(IS_WIN)
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(OmniboxEverywhereUIManagerTest,
+       ContextMenuOmitsWindowControlsWhenEphemeral) {
+  base::ScopedClosureRunner reset_pref;
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, true);
+    reset_pref.ReplaceClosure(base::BindOnce([]() {
+      if (g_browser_process && g_browser_process->local_state()) {
+        g_browser_process->local_state()->ClearPref(
+            omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel);
+      }
+    }));
+  }
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->widget());
+
+  auto* rfh = ui_manager->contents_wrapper_for_testing()
+                  ->web_contents()
+                  ->GetPrimaryMainFrame();
+
+  content::ContextMenuParams params;
+  params.is_editable = false;
+  EXPECT_TRUE(ui_manager->HandleContextMenu(*rfh, params));
+
+  const ui::SimpleMenuModel* model =
+      ui_manager->context_menu_model_for_testing();
+  ASSERT_TRUE(model);
+  EXPECT_EQ(model->GetItemCount(), 5u);
+  EXPECT_EQ(model->GetCommandIdAt(4),
+            omnibox_everywhere::OmniboxEverywhereUIManager::kSettings);
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest, ExecuteCloseCommandHidesWidget) {
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->widget());
+  ASSERT_TRUE(ui_manager->IsVisible());
+
+  ui_manager->ExecuteCommand(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kClose, 0);
+
+  // Close hides the widget but keeps it reshowable via hotkey or tray icon.
+  EXPECT_TRUE(ui_manager->widget());
+  EXPECT_FALSE(ui_manager->IsVisible());
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest, ExecuteMinimizeCommandKeepsWidgetAlive) {
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->widget());
+  ASSERT_TRUE(ui_manager->IsVisible());
+
+  ui_manager->ExecuteCommand(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kMinimize, 0);
+
+  EXPECT_TRUE(ui_manager->widget());
+  EXPECT_TRUE(ui_manager->widget()->IsMinimized());
+  EXPECT_TRUE(ui_manager->web_contents());
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest, MinimizeDoesNotRecordFreImpression) {
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->widget());
+  ASSERT_TRUE(ui_manager->IsVisible());
+
+  // An impression bumps the counter for whichever FRE stage is active.
+  PrefService* prefs = profile_.GetPrefs();
+  auto fre_impression_counts = [prefs]() {
+    return std::make_tuple(
+        prefs->GetInteger(omnibox_everywhere::prefs::kFreIntroImpressionCount),
+        prefs->GetInteger(
+            omnibox_everywhere::prefs::kFreShortcutSetupImpressionCount),
+        prefs->GetInteger(
+            omnibox_everywhere::prefs::kFreShortcutReminderImpressionCount));
+  };
+  const auto counts_before = fre_impression_counts();
+
+  ui_manager->ExecuteCommand(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kMinimize, 0);
+  EXPECT_EQ(counts_before, fre_impression_counts());
+
+  // Close does record one, so the expectation above isn't vacuous.
+  ui_manager->ExecuteCommand(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kClose, 0);
+  EXPECT_NE(counts_before, fre_impression_counts());
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuCommandEnablement) {
   SetUpAimEligibilityService(/*is_fusebox_eligible=*/true);
@@ -1512,6 +1645,12 @@ TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuCommandEnablement) {
           kCustomizeKeyboardShortcut));
   EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
       omnibox_everywhere::OmniboxEverywhereUIManager::kSettings));
+#if BUILDFLAG(IS_WIN)
+  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kMinimize));
+  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kClose));
+#endif  // BUILDFLAG(IS_WIN)
 
   EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
       omnibox_everywhere::OmniboxEverywhereUIManager::kPaste));
