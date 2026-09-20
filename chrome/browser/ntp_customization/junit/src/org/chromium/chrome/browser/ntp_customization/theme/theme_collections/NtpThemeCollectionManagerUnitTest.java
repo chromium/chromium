@@ -132,7 +132,7 @@ public class NtpThemeCollectionManagerUnitTest {
         @ColorInt Integer primaryColor = captor.getValue().getPrimaryColor();
         assertNotNull(primaryColor);
         assertEquals(
-                primaryColor.intValue(),
+                primaryColor,
                 NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
     }
 

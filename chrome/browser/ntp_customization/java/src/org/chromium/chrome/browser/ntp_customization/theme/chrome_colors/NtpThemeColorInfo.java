@@ -55,8 +55,6 @@ public class NtpThemeColorInfo {
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:NtpThemeColorId)
 
-    public static final int COLOR_NOT_SET = -1;
-
     public @NtpThemeColorId int id;
     // Used as Google logo color.
     public @ColorRes int primaryColorResId;

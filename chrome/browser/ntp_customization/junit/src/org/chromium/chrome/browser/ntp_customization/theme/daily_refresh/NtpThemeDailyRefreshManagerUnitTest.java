@@ -242,7 +242,7 @@ public class NtpThemeDailyRefreshManagerUnitTest {
         NtpCustomizationUtils.setCustomBackgroundInfoToSharedPreference(customInfo);
 
         // Verify getters return regular info.
-        assertEquals(Color.RED, mManager.getNtpThemeColorForThemeCollection());
+        assertEquals(Integer.valueOf(Color.RED), mManager.getNtpThemeColorForThemeCollection());
         assertEquals(
                 imageInfo.getPortraitMatrix(),
                 mManager.getNtpBackgroundImageInfoForThemeCollection().getPortraitMatrix());
@@ -273,7 +273,7 @@ public class NtpThemeDailyRefreshManagerUnitTest {
         mManager.setDailyUpdateStatusForThemeCollection(TimeUtils.currentTimeMillis());
 
         // Verify getters return daily refresh info.
-        assertEquals(Color.BLUE, mManager.getNtpThemeColorForThemeCollection());
+        assertEquals(Integer.valueOf(Color.BLUE), mManager.getNtpThemeColorForThemeCollection());
         assertEquals(
                 dailyRefreshImageInfo.getPortraitMatrix(),
                 mManager.getNtpBackgroundImageInfoForThemeCollection().getPortraitMatrix());
@@ -309,7 +309,8 @@ public class NtpThemeDailyRefreshManagerUnitTest {
         // 5. Verify results.
         assertEquals(timeStamp, NtpCustomizationUtils.getDailyRefreshTimestampToSharedPreference());
         assertEquals(
-                Color.BLUE, NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
+                Integer.valueOf(Color.BLUE),
+                NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
         // Verify file was moved.
         assertTrue(NtpCustomizationUtils.createBackgroundImageFile().exists());
         assertFalse(dailyRefreshFile.exists());

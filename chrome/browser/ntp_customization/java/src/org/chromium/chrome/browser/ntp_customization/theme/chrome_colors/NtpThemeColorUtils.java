@@ -142,8 +142,7 @@ public class NtpThemeColorUtils {
         // have a prebuilt color id.
         if (primaryColorIndex == RecyclerView.NO_POSITION
                 && hasPrimaryColor
-                && primaryColorInfo instanceof NtpThemeColorFromHexInfo info
-                && info.backgroundColorLight != NtpThemeColorInfo.COLOR_NOT_SET) {
+                && primaryColorInfo instanceof NtpThemeColorFromHexInfo) {
             chromeColorsList.add(primaryColorInfo);
             return chromeColorsList.size() - 1;
         }

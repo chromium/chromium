@@ -77,7 +77,6 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManag
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorFromHexInfo;
-import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataCustomizedColor;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.PlatformType;
@@ -2044,8 +2043,7 @@ public class EdgeToEdgeControllerTest {
         NtpBackgroundDataCustomizedColor dataColor =
                 new NtpBackgroundDataCustomizedColor(
                         PlatformType.ANDROID,
-                        new NtpThemeColorFromHexInfo(
-                                mActivity, Color.RED, NtpThemeColorInfo.COLOR_NOT_SET));
+                        new NtpThemeColorFromHexInfo(mActivity, Color.RED, Color.TRANSPARENT));
 
         NtpCustomizationConfigManager configManager = NtpCustomizationConfigManager.getInstance();
         configManager.setNtpBackgroundDataForTesting(dataColor);

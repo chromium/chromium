@@ -371,7 +371,9 @@ public class NtpCustomizationUtils {
 
         NtpThemeDailyRefreshManager ntpThemeDailyRefreshManager =
                 NtpThemeDailyRefreshManager.getInstance();
-        @ColorInt int color;
+        @Nullable
+        @ColorInt
+        Integer color;
         if (imageType == NtpBackgroundType.CHROME_COLOR) {
             @NtpThemeColorId
             int colorId = ntpThemeDailyRefreshManager.getNtpThemeColorIdForChromeColorTheme();
@@ -397,7 +399,7 @@ public class NtpCustomizationUtils {
             color = getCustomizedPrimaryColorFromSharedPreference();
         }
 
-        return (color != NtpThemeColorInfo.COLOR_NOT_SET) ? color : null;
+        return color;
     }
 
     /**
@@ -432,13 +434,14 @@ public class NtpCustomizationUtils {
         }
 
         // For other types, a color value is saved in the SharedPreference.
-        @ColorInt int primaryColor = getCustomizedPrimaryColorFromSharedPreference();
-        if (primaryColor == NtpThemeColorInfo.COLOR_NOT_SET) return null;
+        @Nullable
+        @ColorInt
+        Integer primaryColor = getCustomizedPrimaryColorFromSharedPreference();
+        if (primaryColor == null) return null;
 
-        @ColorInt int backgroundColor = NtpThemeColorInfo.COLOR_NOT_SET;
+        @ColorInt int backgroundColor = NtpThemeColorUtils.getDefaultBackgroundColor(context);
         if (imageType == NtpBackgroundType.COLOR_FROM_HEX) {
-            backgroundColor =
-                    getBackgroundColorFromSharedPreference(NtpThemeColorInfo.COLOR_NOT_SET);
+            backgroundColor = getBackgroundColorFromSharedPreference(backgroundColor);
         }
         return new NtpThemeColorFromHexInfo(context, backgroundColor, primaryColor);
     }
@@ -975,18 +978,21 @@ public class NtpCustomizationUtils {
         prefsManager.writeInt(NTP_CUSTOMIZATION_PRIMARY_COLOR, color);
     }
 
-    /** Gets the customized primary color from the SharedPreference. */
-    public static @ColorInt int getCustomizedPrimaryColorFromSharedPreference() {
+    private static @Nullable @ColorInt Integer readNullableColorInt(String key) {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
-        return prefsManager.readInt(
-                NTP_CUSTOMIZATION_PRIMARY_COLOR, NtpThemeColorInfo.COLOR_NOT_SET);
+        return prefsManager.contains(key) ? prefsManager.readInt(key) : null;
     }
 
-    /** Gets the customized primary color in dark mode from the SharedPreference. */
-    public static @ColorInt int getCustomizedPrimaryColorDarkFromSharedPreference() {
-        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
-        return prefsManager.readInt(
-                NTP_CUSTOMIZATION_PRIMARY_COLOR_DARK, NtpThemeColorInfo.COLOR_NOT_SET);
+    /** Gets the customized primary color from the SharedPreference, or null if not set. */
+    public static @Nullable @ColorInt Integer getCustomizedPrimaryColorFromSharedPreference() {
+        return readNullableColorInt(NTP_CUSTOMIZATION_PRIMARY_COLOR);
+    }
+
+    /**
+     * Gets the customized primary color in dark mode from the SharedPreference, or null if not set.
+     */
+    public static @Nullable @ColorInt Integer getCustomizedPrimaryColorDarkFromSharedPreference() {
+        return readNullableColorInt(NTP_CUSTOMIZATION_PRIMARY_COLOR_DARK);
     }
 
     /**
@@ -1000,11 +1006,13 @@ public class NtpCustomizationUtils {
         prefsManager.writeInt(NTP_CUSTOMIZATION_PRIMARY_COLOR_FOR_DAILY_REFRESH, color);
     }
 
-    /** Gets the customized primary color for daily refresh from SharedPreferences. */
-    public static @ColorInt int getDailyRefreshCustomizedPrimaryColorFromSharedPreference() {
-        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
-        return prefsManager.readInt(
-                NTP_CUSTOMIZATION_PRIMARY_COLOR_FOR_DAILY_REFRESH, NtpThemeColorInfo.COLOR_NOT_SET);
+    /**
+     * Gets the customized primary color for daily refresh from SharedPreferences, or null if not
+     * set.
+     */
+    public static @Nullable @ColorInt Integer
+            getDailyRefreshCustomizedPrimaryColorFromSharedPreference() {
+        return readNullableColorInt(NTP_CUSTOMIZATION_PRIMARY_COLOR_FOR_DAILY_REFRESH);
     }
 
     /** Removes the customized primary color from the SharedPreference. */
@@ -1601,8 +1609,15 @@ public class NtpCustomizationUtils {
         if (dailyRefreshNtpBackgroundImageInfo != null) {
             updateBackgroundImageInfo(dailyRefreshNtpBackgroundImageInfo);
         }
-        setCustomizedPrimaryColorToSharedPreference(
-                getDailyRefreshCustomizedPrimaryColorFromSharedPreference());
+        @Nullable
+        @ColorInt
+        Integer dailyRefreshPrimaryColor =
+                getDailyRefreshCustomizedPrimaryColorFromSharedPreference();
+        if (dailyRefreshPrimaryColor != null) {
+            setCustomizedPrimaryColorToSharedPreference(dailyRefreshPrimaryColor);
+        } else {
+            removeCustomizedPrimaryColorFromSharedPreference();
+        }
         CustomBackgroundInfo dailyRefreshCustomBackgroundInfo =
                 getDailyRefreshCustomBackgroundInfoFromSharedPreference();
         if (dailyRefreshCustomBackgroundInfo != null) {

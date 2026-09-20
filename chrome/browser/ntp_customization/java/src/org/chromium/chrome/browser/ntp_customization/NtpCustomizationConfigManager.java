@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ntp_customization;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.CHROME_COLOR;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.COLOR_FROM_HEX;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.IMAGE_FROM_DISK;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.THEME_COLLECTION;
 
@@ -192,8 +193,9 @@ public class NtpCustomizationConfigManager {
         if (mBackgroundType == NtpBackgroundType.IMAGE_FROM_DISK) {
             mIsInitialized = true;
             BackgroundImageInfo imageInfo = NtpCustomizationUtils.readNtpBackgroundImageInfo();
+            @Nullable
             @ColorInt
-            int primaryColor =
+            Integer primaryColor =
                     NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference();
             mNtpBackgroundData =
                     new NtpBackgroundDataUploadImage(
@@ -214,8 +216,9 @@ public class NtpCustomizationConfigManager {
                     NtpThemeDailyRefreshManager.getInstance();
             BackgroundImageInfo imageInfo =
                     ntpThemeDailyRefreshManager.getNtpBackgroundImageInfoForThemeCollection();
+            @Nullable
             @ColorInt
-            int primaryColor = ntpThemeDailyRefreshManager.getNtpThemeColorForThemeCollection();
+            Integer primaryColor = ntpThemeDailyRefreshManager.getNtpThemeColorForThemeCollection();
             ntpThemeDailyRefreshManager.readNtpBackgroundImageForThemeCollection(
                     (bitmap) -> {
                         onBackgroundImageLoadedFromDisk(bitmap, imageInfo);
@@ -283,13 +286,19 @@ public class NtpCustomizationConfigManager {
                     /* oldType= */ NtpBackgroundType.DEFAULT);
 
         } else if (mBackgroundType == NtpBackgroundType.COLOR_FROM_HEX) {
+            @Nullable
+            @ColorInt
+            Integer primaryColor =
+                    NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference();
+            if (primaryColor == null) {
+                onBackgroundReset();
+                return;
+            }
+
             @ColorInt
             int backgroundColor =
                     NtpCustomizationUtils.getBackgroundColorFromSharedPreference(
                             NtpThemeColorUtils.getDefaultBackgroundColor(context));
-            @ColorInt
-            int primaryColor =
-                    NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference();
             mNtpBackgroundData =
                     new NtpBackgroundDataCustomizedColor(
                             PlatformType.ANDROID,
@@ -883,7 +892,7 @@ public class NtpCustomizationConfigManager {
         if (oldType == mBackgroundType) return;
 
         switch (oldType) {
-            case CHROME_COLOR -> cleanupChromeColors();
+            case CHROME_COLOR, COLOR_FROM_HEX -> cleanupChromeColors();
             case IMAGE_FROM_DISK, THEME_COLLECTION ->
                     cleanupBackgroundImage(!mIsNtpCustomizationSyncEnabled);
         }

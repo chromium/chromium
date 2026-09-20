@@ -215,9 +215,7 @@ public class NtpCustomizationConfigManagerUnitTest {
                         .readString(
                                 ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO,
                                 /* defaultValue= */ null));
-        assertNotEquals(
-                NtpThemeColorInfo.COLOR_NOT_SET,
-                NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
+        assertNotNull(NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
 
         // Verifies the listener was notified with the correct parameters.
         verify(mListener)
@@ -279,7 +277,7 @@ public class NtpCustomizationConfigManagerUnitTest {
             assertTrue(uploadImageData.isBitmapSaved());
         } else {
             assertEquals(
-                    primaryColor.intValue(),
+                    primaryColor,
                     NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
             assertFalse(uploadImageData.isBitmapSaved());
         }
@@ -349,6 +347,20 @@ public class NtpCustomizationConfigManagerUnitTest {
 
     @Test
     public void testAddListener_notifiesImmediatelyWithColorFromHex() {
+        // Uninitialized COLOR_FROM_HEX without primary color in SharedPreferences resets to
+        // DEFAULT.
+        mNtpCustomizationConfigManager.setBackgroundTypeForTesting(
+                NtpBackgroundType.COLOR_FROM_HEX);
+        mNtpCustomizationConfigManager.setIsInitializedForTesting(false);
+        NtpCustomizationUtils.removeCustomizedPrimaryColorFromSharedPreference();
+        mNtpCustomizationConfigManager.addListener(mListener, mContext, /* skipNotify= */ false);
+        assertEquals(NtpBackgroundType.DEFAULT, mNtpCustomizationConfigManager.getBackgroundType());
+        verify(mListener, never())
+                .onBackgroundColorChanged(any(), anyInt(), anyBoolean(), anyInt(), anyInt());
+        verify(mListener).onBackgroundReset(NtpBackgroundType.COLOR_FROM_HEX);
+        mNtpCustomizationConfigManager.removeListener(mListener);
+        clearInvocations(mListener);
+
         @ColorInt int primaryColor = Color.RED;
         @ColorInt int backgroundColor = Color.BLUE;
         NtpThemeColorFromHexInfo colorFromHexInfo =
@@ -521,7 +533,7 @@ public class NtpCustomizationConfigManagerUnitTest {
                 backgroundColor,
                 NtpCustomizationUtils.getBackgroundColorFromSharedPreference(Color.WHITE));
         assertEquals(
-                primaryColor,
+                Integer.valueOf(primaryColor),
                 NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
         verify(mListener)
                 .onBackgroundColorChanged(
@@ -776,13 +788,11 @@ public class NtpCustomizationConfigManagerUnitTest {
                                     FILE_ID_HASH)
                             .getAbsolutePath(),
                     NtpCustomizationUtils.getBackgroundImageFilePathFromSharedPreference());
-            assertNotEquals(
-                    NtpThemeColorInfo.COLOR_NOT_SET,
-                    NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
+            assertNotNull(NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
             assertTrue(backgroundData.isBitmapSaved());
         } else {
             assertEquals(
-                    primaryColor.intValue(),
+                    primaryColor,
                     NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
             assertTrue(
                     NtpCustomizationUtils.createThemeCollectionImageFileInDirForTesting(

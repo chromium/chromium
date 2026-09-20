@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.ntp_customization;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -38,7 +37,6 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_C
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_TYPE;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR;
-import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR_DARK;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR_FOR_DAILY_REFRESH;
 import static org.chromium.components.browser_ui.styles.SemanticColorUtils.getDefaultIconColor;
 
@@ -507,23 +505,21 @@ public class NtpCustomizationUtilsUnitTest {
 
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         assertEquals(
-                primaryColorLight,
-                prefsManager.readInt(
-                        NTP_CUSTOMIZATION_PRIMARY_COLOR, NtpThemeColorInfo.COLOR_NOT_SET));
+                Integer.valueOf(primaryColorLight),
+                NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
         assertEquals(
-                primaryColorDark,
-                prefsManager.readInt(
-                        NTP_CUSTOMIZATION_PRIMARY_COLOR_DARK, NtpThemeColorInfo.COLOR_NOT_SET));
+                Integer.valueOf(primaryColorDark),
+                NtpCustomizationUtils.getCustomizedPrimaryColorDarkFromSharedPreference());
         assertEquals(
                 backgroundColorLight,
                 prefsManager.readInt(
                         ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR,
-                        NtpThemeColorInfo.COLOR_NOT_SET));
+                        Color.TRANSPARENT));
         assertEquals(
                 backgroundColorDark,
                 prefsManager.readInt(
                         ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR_DARK,
-                        NtpThemeColorInfo.COLOR_NOT_SET));
+                        Color.TRANSPARENT));
     }
 
     @Test
@@ -610,14 +606,19 @@ public class NtpCustomizationUtilsUnitTest {
 
     @Test
     public void testUpdateCustomizedPrimaryColor() {
-        @ColorInt int color = Color.BLUE;
+        assertNull(NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
 
+        @ColorInt int color = Color.BLUE;
+        NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(color);
         assertEquals(
-                NtpThemeColorInfo.COLOR_NOT_SET,
+                Integer.valueOf(color),
                 NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
 
-        NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(color);
-        assertEquals(color, NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
+        // Verify Color.WHITE (-1) is preserved and not treated as unset.
+        NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(Color.WHITE);
+        assertEquals(
+                Integer.valueOf(Color.WHITE),
+                NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
     }
 
     @Test
@@ -770,6 +771,14 @@ public class NtpCustomizationUtilsUnitTest {
                 (int)
                         NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor(
                                 mContext, /* checkDailyRefresh= */ false));
+
+        // Verify Color.WHITE (-1) is returned properly and not filtered out as null.
+        NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(Color.WHITE);
+        assertEquals(
+                Color.WHITE,
+                (int)
+                        NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor(
+                                mContext, /* checkDailyRefresh= */ false));
     }
 
     @Test
@@ -897,7 +906,7 @@ public class NtpCustomizationUtilsUnitTest {
         assertTrue(info instanceof NtpThemeColorFromHexInfo);
         assertEquals(primaryColor, ((NtpThemeColorFromHexInfo) info).primaryColorLight);
         assertEquals(
-                NtpThemeColorInfo.COLOR_NOT_SET,
+                NtpThemeColorUtils.getDefaultBackgroundColor(mContext),
                 ((NtpThemeColorFromHexInfo) info).backgroundColorLight);
     }
 
@@ -1223,11 +1232,10 @@ public class NtpCustomizationUtilsUnitTest {
     public void testRemoveCustomizedPrimaryColorFromSharedPreference() {
         NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(Color.RED);
         assertEquals(
-                Color.RED, NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
-        NtpCustomizationUtils.removeCustomizedPrimaryColorFromSharedPreference();
-        assertEquals(
-                NtpThemeColorInfo.COLOR_NOT_SET,
+                Integer.valueOf(Color.RED),
                 NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
+        NtpCustomizationUtils.removeCustomizedPrimaryColorFromSharedPreference();
+        assertNull(NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
     }
 
     @Test
@@ -1414,12 +1422,10 @@ public class NtpCustomizationUtilsUnitTest {
 
         if (ntpBackgroundImageData.getPrimaryColor() != null) {
             assertEquals(
-                    ntpBackgroundImageData.getPrimaryColor().intValue(),
+                    ntpBackgroundImageData.getPrimaryColor(),
                     NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
         } else {
-            assertNotEquals(
-                    NtpThemeColorInfo.COLOR_NOT_SET,
-                    NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
+            assertNotNull(NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
         }
 
         BackgroundImageInfo restoredMatrices = NtpCustomizationUtils.readNtpBackgroundImageInfo();
@@ -1494,7 +1500,7 @@ public class NtpCustomizationUtilsUnitTest {
                 BackgroundImageInfo.matrixToString(mainImageInfo.getLandscapeMatrix()));
 
         assertEquals(
-                dailyRefreshColor,
+                Integer.valueOf(dailyRefreshColor),
                 NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
 
         CustomBackgroundInfo mainCustomInfo =
@@ -1505,14 +1511,18 @@ public class NtpCustomizationUtilsUnitTest {
 
         // Check that daily refresh preferences are removed.
         assertNull(NtpCustomizationUtils.readDailyRefreshNtpBackgroundImageInfo());
-        assertEquals(
-                NtpThemeColorInfo.COLOR_NOT_SET,
+        assertNull(
                 NtpCustomizationUtils.getDailyRefreshCustomizedPrimaryColorFromSharedPreference());
         assertNull(NtpCustomizationUtils.getDailyRefreshCustomBackgroundInfoFromSharedPreference());
 
         // Check file rename.
         assertTrue(mainFile.exists());
         assertFalse(dailyRefreshFile.exists());
+
+        // Verify committing when daily refresh primary color is unset clears the existing primary
+        // color.
+        NtpCustomizationUtils.commitThemeCollectionDailyRefresh();
+        assertNull(NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
     }
 
     @Test
@@ -1579,19 +1589,23 @@ public class NtpCustomizationUtilsUnitTest {
 
     @Test
     public void testDailyRefreshCustomizedPrimaryColor() {
-        assertEquals(
-                NtpThemeColorInfo.COLOR_NOT_SET,
+        assertNull(
                 NtpCustomizationUtils.getDailyRefreshCustomizedPrimaryColorFromSharedPreference());
 
         int color = Color.RED;
         NtpCustomizationUtils.setDailyRefreshCustomizedPrimaryColorToSharedPreference(color);
         assertEquals(
-                color,
+                Integer.valueOf(color),
+                NtpCustomizationUtils.getDailyRefreshCustomizedPrimaryColorFromSharedPreference());
+
+        // Verify Color.WHITE (-1) is preserved and not treated as unset.
+        NtpCustomizationUtils.setDailyRefreshCustomizedPrimaryColorToSharedPreference(Color.WHITE);
+        assertEquals(
+                Integer.valueOf(Color.WHITE),
                 NtpCustomizationUtils.getDailyRefreshCustomizedPrimaryColorFromSharedPreference());
 
         NtpCustomizationUtils.removeDailyRefreshCustomizedPrimaryColorFromSharedPreference();
-        assertEquals(
-                NtpThemeColorInfo.COLOR_NOT_SET,
+        assertNull(
                 NtpCustomizationUtils.getDailyRefreshCustomizedPrimaryColorFromSharedPreference());
     }
 
@@ -1628,8 +1642,7 @@ public class NtpCustomizationUtilsUnitTest {
         assertEquals(customBackgroundInfo.backgroundUrl, restoredInfo.backgroundUrl);
         assertEquals(customBackgroundInfo.collectionId, restoredInfo.collectionId);
 
-        assertNotEquals(
-                NtpThemeColorInfo.COLOR_NOT_SET,
+        assertNotNull(
                 NtpCustomizationUtils.getDailyRefreshCustomizedPrimaryColorFromSharedPreference());
 
         BackgroundImageInfo restoredMatrices =

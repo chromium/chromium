@@ -66,7 +66,7 @@ public class NtpThemeDailyRefreshManager {
      * Get the primary theme color for a theme collection. If a daily refresh has been applied, it
      * retrieves the color for the refreshed theme.
      */
-    public @ColorInt int getNtpThemeColorForThemeCollection() {
+    public @Nullable @ColorInt Integer getNtpThemeColorForThemeCollection() {
         if (mIsDailyUpdateApplied) {
             return NtpCustomizationUtils
                     .getDailyRefreshCustomizedPrimaryColorFromSharedPreference();
