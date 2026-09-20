@@ -186,17 +186,79 @@ TEST_F(OmniboxEverywhereShortcutWinTest, CreateStartMenuShortcutKeepsExisting) {
   base::ScopedPathOverride start_menu_override(base::DIR_START_MENU,
                                                start_menu_dir.GetPath());
 
-  // Stands in for an already-present shortcut. Only its presence is checked,
-  // so a sentinel file is enough to detect an unwanted rewrite.
+  OmniboxEverywhereShortcutHelperWin helper;
+  ASSERT_TRUE(helper.CreateStartMenuShortcut());
+
+  // Tags the up-to-date shortcut so that an unwanted rewrite is detectable;
+  // the description is not one of the properties compared against.
   const base::FilePath shortcut_path = ShortcutPathIn(start_menu_dir.GetPath());
-  ASSERT_TRUE(base::WriteFile(shortcut_path, "sentinel"));
+  base::win::ShortcutProperties tag;
+  tag.set_description(L"sentinel");
+  ASSERT_TRUE(base::win::CreateOrUpdateShortcutLink(
+      shortcut_path, tag, base::win::ShortcutOperation::kUpdateExisting));
+
+  EXPECT_TRUE(helper.CreateStartMenuShortcut());
+
+  base::win::ShortcutProperties properties;
+  ASSERT_TRUE(base::win::ResolveShortcutProperties(
+      shortcut_path, base::win::ShortcutProperties::PROPERTIES_DESCRIPTION,
+      &properties));
+  EXPECT_EQ(properties.description, L"sentinel");
+}
+
+TEST_F(OmniboxEverywhereShortcutWinTest, CreateStartMenuShortcutUpdatesStale) {
+  base::ScopedTempDir start_menu_dir;
+  ASSERT_TRUE(start_menu_dir.CreateUniqueTempDir());
+  base::ScopedPathOverride start_menu_override(base::DIR_START_MENU,
+                                               start_menu_dir.GetPath());
+
+  // Stands in for a shortcut left behind by an earlier install.
+  const base::FilePath shortcut_path = ShortcutPathIn(start_menu_dir.GetPath());
+  base::win::ShortcutProperties stale;
+  stale.set_target(
+      start_menu_dir.GetPath().Append(FILE_PATH_LITERAL("stale_target.exe")));
+  stale.set_arguments(L"--stale-switch");
+  stale.set_app_id(L"Stale.AppUserModelId");
+  ASSERT_TRUE(base::win::CreateOrUpdateShortcutLink(
+      shortcut_path, stale, base::win::ShortcutOperation::kCreateAlways));
 
   OmniboxEverywhereShortcutHelperWin helper;
   EXPECT_TRUE(helper.CreateStartMenuShortcut());
 
-  std::string contents;
-  ASSERT_TRUE(base::ReadFileToString(shortcut_path, &contents));
-  EXPECT_EQ(contents, "sentinel");
+  base::win::ShortcutProperties properties;
+  ASSERT_TRUE(base::win::ResolveShortcutProperties(
+      shortcut_path,
+      base::win::ShortcutProperties::PROPERTIES_TARGET |
+          base::win::ShortcutProperties::PROPERTIES_ARGUMENTS |
+          base::win::ShortcutProperties::PROPERTIES_APP_ID,
+      &properties));
+  EXPECT_NE(
+      properties.target.value().find(FILE_PATH_LITERAL("chrome_proxy.exe")),
+      std::wstring::npos);
+  EXPECT_NE(properties.arguments.find(L"--omnibox-everywhere"),
+            std::wstring::npos);
+  EXPECT_EQ(properties.app_id, GetAppUserModelId());
+}
+
+TEST_F(OmniboxEverywhereShortcutWinTest,
+       CreateStartMenuShortcutReplacesUnreadable) {
+  base::ScopedTempDir start_menu_dir;
+  ASSERT_TRUE(start_menu_dir.CreateUniqueTempDir());
+  base::ScopedPathOverride start_menu_override(base::DIR_START_MENU,
+                                               start_menu_dir.GetPath());
+
+  // A file that does not parse as a shortcut must not be mistaken for one.
+  const base::FilePath shortcut_path = ShortcutPathIn(start_menu_dir.GetPath());
+  ASSERT_TRUE(base::WriteFile(shortcut_path, "not a shortcut"));
+
+  OmniboxEverywhereShortcutHelperWin helper;
+  EXPECT_TRUE(helper.CreateStartMenuShortcut());
+
+  base::win::ShortcutProperties properties;
+  ASSERT_TRUE(base::win::ResolveShortcutProperties(
+      shortcut_path, base::win::ShortcutProperties::PROPERTIES_APP_ID,
+      &properties));
+  EXPECT_EQ(properties.app_id, GetAppUserModelId());
 }
 
 TEST_F(OmniboxEverywhereShortcutWinTest,
