@@ -6,20 +6,13 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/app/audio_controller.h"
-#include "chrome/browser/ttc/app/ttc_mes_client.h"
 #include "chrome/browser/ttc/core/session_controller.h"
 
 namespace ttc {
-
-ConversationImpl::ConversationImpl(SessionController& session_controller)
-    : backend_(std::make_unique<TtcMesClient>(session_controller.GetProfile())),
-      audio_controller_(std::make_unique<AudioController>(
-          AudioController::GetDefaultAudioStreamFactoryBinder())),
-      session_controller_(session_controller) {}
 
 ConversationImpl::ConversationImpl(
     std::unique_ptr<TtcBackend> backend,
@@ -27,7 +20,10 @@ ConversationImpl::ConversationImpl(
     SessionController& session_controller)
     : backend_(std::move(backend)),
       audio_controller_(std::move(audio_controller)),
-      session_controller_(session_controller) {}
+      session_controller_(session_controller) {
+  CHECK(backend_);
+  CHECK(audio_controller_);
+}
 
 ConversationImpl::~ConversationImpl() {
   Stop();
@@ -42,22 +38,18 @@ void ConversationImpl::RemoveObserver(Conversation::Observer* observer) {
 }
 
 void ConversationImpl::Start() {
-  if (audio_controller_) {
-    audio_capture_subscription_ =
-        audio_controller_->AddAudioCaptureListener(base::BindRepeating(
-            &ConversationImpl::OnCapturedAudio, base::Unretained(this)));
-    audio_energy_subscription_ =
-        audio_controller_->AddAudioEnergyListener(base::BindRepeating(
-            &ConversationImpl::OnAudioEnergy, base::Unretained(this)));
-    playback_completion_subscription_ =
-        audio_controller_->AddPlaybackCompletionListener(base::BindRepeating(
-            &ConversationImpl::OnPlaybackCompleted, base::Unretained(this)));
-    audio_controller_->StartCapture();
-  }
+  audio_capture_subscription_ =
+      audio_controller_->AddAudioCaptureListener(base::BindRepeating(
+          &ConversationImpl::OnCapturedAudio, base::Unretained(this)));
+  audio_energy_subscription_ =
+      audio_controller_->AddAudioEnergyListener(base::BindRepeating(
+          &ConversationImpl::OnAudioEnergy, base::Unretained(this)));
+  playback_completion_subscription_ =
+      audio_controller_->AddPlaybackCompletionListener(base::BindRepeating(
+          &ConversationImpl::OnPlaybackCompleted, base::Unretained(this)));
+  audio_controller_->StartCapture();
 
-  if (backend_) {
-    backend_->Connect(this);
-  }
+  backend_->Connect(this);
 
   // TODO(b/562979451): This needs to be called once we've received a reply.
   // Also audio playback/capture should be started only then too. Make this
@@ -70,33 +62,27 @@ void ConversationImpl::Stop() {
   audio_energy_subscription_ = {};
   playback_completion_subscription_ = {};
 
-  if (audio_controller_) {
-    audio_controller_->StopCapture();
-    audio_controller_->StopPlayback();
-  }
+  audio_controller_->StopCapture();
+  audio_controller_->StopPlayback();
 
-  if (backend_ && backend_->is_connected()) {
+  if (backend_->is_connected()) {
     backend_->Close();
   }
 }
 
 bool ConversationImpl::is_connected() const {
-  return backend_ && backend_->is_connected();
+  return backend_->is_connected();
 }
 
 void ConversationImpl::SendTextInput(const std::string& text) {
-  if (backend_) {
-    backend_->SendTextInput(text);
-  }
+  backend_->SendTextInput(text);
 }
 
 void ConversationImpl::SendContextUpdate(
     const GURL& url,
     const std::string& title,
     const optimization_guide::proto::AnnotatedPageContent& apc) {
-  if (backend_) {
-    backend_->SendContextUpdate(url, title, apc);
-  }
+  backend_->SendContextUpdate(url, title, apc);
 }
 
 void ConversationImpl::OnPageContextChanged() {
@@ -105,9 +91,6 @@ void ConversationImpl::OnPageContextChanged() {
 
 void ConversationImpl::OnCapturedAudio(base::span<const int16_t> pcm_data,
                                        const media::AudioParameters& params) {
-  if (!backend_) {
-    return;
-  }
   backend_->SendAudioChunk(pcm_data);
 }
 
@@ -116,9 +99,7 @@ void ConversationImpl::OnAudioEnergy(float energy) {
 }
 
 void ConversationImpl::OnPlaybackCompleted(int64_t sequence_number) {
-  if (backend_) {
-    backend_->ReportPlaybackStatus(sequence_number);
-  }
+  backend_->ReportPlaybackStatus(sequence_number);
 }
 
 void ConversationImpl::OnStreamingStateChanged(
@@ -152,15 +133,13 @@ void ConversationImpl::OnTranscriptions(
 
 void ConversationImpl::OnAudioOutput(base::span<const int16_t> audio_data,
                                      int64_t sequence_number) {
-  if (audio_controller_) {
-    audio_controller_->PlayAudio(audio_data, sequence_number);
-  }
+  audio_controller_->PlayAudio(audio_data, sequence_number);
 }
 
 void ConversationImpl::OnGenerationStateChanged(bool started,
                                                 bool completed,
                                                 bool interrupted) {
-  if (interrupted && audio_controller_) {
+  if (interrupted) {
     audio_controller_->ClearPlaybackQueue();
   }
   for (auto& observer : observers_) {

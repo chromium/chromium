@@ -77,7 +77,7 @@ class TtcKeyedServiceUnitTest : public testing::Test {
   }
   ~TtcKeyedServiceUnitTest() override = default;
 
-  std::unique_ptr<Conversation> CreateFakeConversation(Profile*) {
+  std::unique_ptr<Conversation> CreateFakeConversation(SessionController&) {
     return std::make_unique<FakeConversation>(
         base::BindRepeating(&TtcKeyedServiceUnitTest::OnConversationStopped,
                             base::Unretained(this)));

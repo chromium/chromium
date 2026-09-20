@@ -21,6 +21,8 @@
 
 namespace ttc {
 
+class SessionController;
+
 TtcInteractiveBrowserTestBase::TtcInteractiveBrowserTestBase() {
   scoped_feature_list_.InitAndEnableFeature(kTtc);
 }
@@ -36,7 +38,8 @@ void TtcInteractiveBrowserTestBase::SetUpBrowserContextKeyedServices(
                                        -> std::unique_ptr<KeyedService> {
         return std::make_unique<TtcKeyedService>(
             Profile::FromBrowserContext(context),
-            base::BindRepeating([](Profile*) -> std::unique_ptr<Conversation> {
+            base::BindRepeating([](SessionController&)
+                                    -> std::unique_ptr<Conversation> {
               return std::make_unique<testing::NiceMock<MockConversation>>();
             }));
       }));

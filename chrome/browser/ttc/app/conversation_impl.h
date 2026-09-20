@@ -37,7 +37,9 @@ class SessionController;
 // speech capture, audio playback, interruptions, transcripts, and tools.
 class ConversationImpl : public Conversation, public TtcBackend::Observer {
  public:
-  explicit ConversationImpl(SessionController& session_controller);
+  // `backend` and `audio_controller` are required and provided to enable
+  // dependency injection in tests. Use MakeConversationImpl() to create a
+  // conversation using the production versions of these.
   ConversationImpl(std::unique_ptr<TtcBackend> backend,
                    std::unique_ptr<AudioController> audio_controller,
                    SessionController& session_controller);

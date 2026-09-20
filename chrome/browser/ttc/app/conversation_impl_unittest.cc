@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ttc/app/audio_controller.h"
+#include "chrome/browser/ttc/app/test_utils.h"
 #include "chrome/browser/ttc/app/ttc_backend.h"
 #include "chrome/browser/ttc/core/session_controller.h"
 #include "chrome/test/base/testing_profile.h"
@@ -30,46 +31,6 @@
 namespace ttc {
 
 namespace {
-
-class MockTtcBackend : public TtcBackend {
- public:
-  MockTtcBackend() {
-    ON_CALL(*this, Connect)
-        .WillByDefault([this](TtcBackend::Observer* observer) {
-          observer_ = observer;
-          is_connected_ = true;
-        });
-    ON_CALL(*this, Close()).WillByDefault([this]() { is_connected_ = false; });
-    ON_CALL(*this, is_connected()).WillByDefault([this]() {
-      return is_connected_;
-    });
-  }
-  ~MockTtcBackend() override = default;
-
-  // Returns the observer passed to the last Connect() call.
-  TtcBackend::Observer* observer() const { return observer_; }
-
-  MOCK_METHOD(void, Connect, (TtcBackend::Observer*), (override));
-  MOCK_METHOD(void, Close, (), (override));
-  MOCK_METHOD(bool, is_connected, (), (const, override));
-  MOCK_METHOD(void, SendAudioChunk, (base::span<const int16_t>), (override));
-  MOCK_METHOD(void, SendTextInput, (const std::string&), (override));
-  MOCK_METHOD(void,
-              SendContextUpdate,
-              (const GURL&,
-               const std::string&,
-               const optimization_guide::proto::AnnotatedPageContent&),
-              (override));
-  MOCK_METHOD(void, ReportPlaybackStatus, (int64_t), (override));
-  MOCK_METHOD(void,
-              SendToolSetUpdate,
-              (const std::vector<ToolDefinition>&),
-              (override));
-
- private:
-  bool is_connected_ = false;
-  raw_ptr<TtcBackend::Observer> observer_ = nullptr;
-};
 
 class MockConversationObserver : public Conversation::Observer {
  public:
@@ -143,7 +104,40 @@ class ConversationImplTest : public testing::Test {
 
   ~ConversationImplTest() override { audio_manager_.Shutdown(); }
 
+  void TearDown() override {
+    // The AudioController must be destroyed before `audio_manager_` is shut
+    // down in the destructor.
+    conversation_.reset();
+  }
+
  protected:
+  // Creates the ConversationImpl under test, wired to a MockTtcBackend and an
+  // AudioController backed by `audio_manager_`. Both are reachable via
+  // backend() and audio_controller().
+  ConversationImpl& CreateConversation() {
+    conversation_ = std::make_unique<ConversationImpl>(
+        std::make_unique<MockTtcBackend>(),
+        std::make_unique<AudioController>(GetAudioStreamFactoryBinder(),
+                                          GetAudioSystemFactory()),
+        session_controller_);
+    return *conversation_;
+  }
+
+  MockTtcBackend& backend() {
+    return static_cast<MockTtcBackend&>(*conversation_->backend());
+  }
+
+  AudioController& audio_controller() {
+    return *conversation_->audio_controller();
+  }
+
+  // Returns a binder dropping the audio stream factory receiver, so that no
+  // real audio service is reached.
+  AudioController::AudioStreamFactoryBinder GetAudioStreamFactoryBinder() {
+    return base::BindLambdaForTesting(
+        [](mojo::PendingReceiver<media::mojom::AudioStreamFactory>) {});
+  }
+
   // Returns a factory handing out AudioSystems backed by `audio_manager_`.
   AudioController::AudioSystemFactory GetAudioSystemFactory() {
     return base::BindLambdaForTesting(
@@ -157,63 +151,46 @@ class ConversationImplTest : public testing::Test {
   FakeSessionController session_controller_{&profile_};
   media::MockAudioManager audio_manager_{
       std::make_unique<media::TestAudioThread>()};
+  std::unique_ptr<ConversationImpl> conversation_;
 };
 
-TEST_F(ConversationImplTest, DefaultConstructorInitializesComponents) {
-  ConversationImpl conversation(session_controller_);
+TEST_F(ConversationImplTest, ConstructorInitializesComponents) {
+  ConversationImpl& conversation = CreateConversation();
   EXPECT_FALSE(conversation.is_connected());
   EXPECT_NE(conversation.audio_controller(), nullptr);
   EXPECT_NE(conversation.backend(), nullptr);
 }
 
 TEST_F(ConversationImplTest, AudioOutputPlaysToAudioController) {
-  auto audio_controller = std::make_unique<AudioController>();
-  AudioController* audio_controller_ptr = audio_controller.get();
-  auto mock_backend = std::make_unique<MockTtcBackend>();
-
-  ConversationImpl conversation(std::move(mock_backend),
-                                std::move(audio_controller),
-                                session_controller_);
+  ConversationImpl& conversation = CreateConversation();
 
   std::vector<int16_t> audio_data(1600, 0x1515);
-  EXPECT_FALSE(audio_controller_ptr->is_playing());
+  EXPECT_FALSE(audio_controller().is_playing());
 
   conversation.OnAudioOutput(audio_data, /*sequence_number=*/1);
-  EXPECT_TRUE(audio_controller_ptr->is_playing());
+  EXPECT_TRUE(audio_controller().is_playing());
 
   auto bus = media::AudioBus::Create(1, 1600);
-  int frames = audio_controller_ptr->Render(base::TimeDelta(),
-                                            base::TimeTicks::Now(), {},
-                                            bus.get());
+  int frames = audio_controller().Render(base::TimeDelta(),
+                                         base::TimeTicks::Now(), {}, bus.get());
   EXPECT_EQ(frames, 1600);
 }
 
 TEST_F(ConversationImplTest, InterruptionClearsAudioQueue) {
-  auto audio_controller = std::make_unique<AudioController>();
-  AudioController* audio_controller_ptr = audio_controller.get();
-  auto mock_backend = std::make_unique<MockTtcBackend>();
-
-  ConversationImpl conversation(std::move(mock_backend),
-                                std::move(audio_controller),
-                                session_controller_);
+  ConversationImpl& conversation = CreateConversation();
 
   std::vector<int16_t> audio_data(1600, 0x2525);
   conversation.OnAudioOutput(audio_data, /*sequence_number=*/2);
-  EXPECT_TRUE(audio_controller_ptr->is_playing());
+  EXPECT_TRUE(audio_controller().is_playing());
 
   // Interruption triggers queue flush
   conversation.OnGenerationStateChanged(/*started=*/false, /*completed=*/false,
                                         /*interrupted=*/true);
-  EXPECT_FALSE(audio_controller_ptr->is_playing());
+  EXPECT_FALSE(audio_controller().is_playing());
 }
 
 TEST_F(ConversationImplTest, ObserverReceivesTranscriptionsAndState) {
-  auto audio_controller = std::make_unique<AudioController>();
-  auto mock_backend = std::make_unique<MockTtcBackend>();
-
-  ConversationImpl conversation(std::move(mock_backend),
-                                std::move(audio_controller),
-                                session_controller_);
+  ConversationImpl& conversation = CreateConversation();
 
   MockConversationObserver observer;
   conversation.AddObserver(&observer);
@@ -229,12 +206,7 @@ TEST_F(ConversationImplTest, ObserverReceivesTranscriptionsAndState) {
 }
 
 TEST_F(ConversationImplTest, ToolCallForwardedToSessionController) {
-  auto audio_controller = std::make_unique<AudioController>();
-  auto mock_backend = std::make_unique<MockTtcBackend>();
-
-  ConversationImpl conversation(std::move(mock_backend),
-                                std::move(audio_controller),
-                                session_controller_);
+  ConversationImpl& conversation = CreateConversation();
 
   ToolRequest tool_request;
   tool_request.name = "navigate";
@@ -259,37 +231,19 @@ TEST_F(ConversationImplTest, ToolCallForwardedToSessionController) {
 }
 
 TEST_F(ConversationImplTest, StartAndStopWiring) {
-  auto fake_binder = base::BindLambdaForTesting(
-      [](mojo::PendingReceiver<media::mojom::AudioStreamFactory>) {});
-  auto audio_controller =
-      std::make_unique<AudioController>(fake_binder, GetAudioSystemFactory());
-  AudioController* audio_controller_ptr = audio_controller.get();
+  ConversationImpl& conversation = CreateConversation();
 
-  auto mock_backend = std::make_unique<MockTtcBackend>();
-  MockTtcBackend* backend_ptr = mock_backend.get();
-
-  ConversationImpl conversation(std::move(mock_backend),
-                                std::move(audio_controller),
-                                session_controller_);
-
-  EXPECT_CALL(*backend_ptr, Connect(&conversation)).Times(1);
+  EXPECT_CALL(backend(), Connect(&conversation)).Times(1);
   conversation.Start();
-  EXPECT_TRUE(audio_controller_ptr->is_capturing());
+  EXPECT_TRUE(audio_controller().is_capturing());
 
-  EXPECT_CALL(*backend_ptr, Close()).Times(1);
+  EXPECT_CALL(backend(), Close()).Times(1);
   conversation.Stop();
-  EXPECT_FALSE(audio_controller_ptr->is_capturing());
+  EXPECT_FALSE(audio_controller().is_capturing());
 }
 
 TEST_F(ConversationImplTest, CapturedAudioRoutedToBackend) {
-  auto audio_controller = std::make_unique<AudioController>();
-  AudioController* audio_controller_ptr = audio_controller.get();
-  auto mock_backend = std::make_unique<MockTtcBackend>();
-  MockTtcBackend* backend_ptr = mock_backend.get();
-
-  ConversationImpl conversation(std::move(mock_backend),
-                                std::move(audio_controller),
-                                session_controller_);
+  ConversationImpl& conversation = CreateConversation();
   conversation.Start();
 
   // Use values that have exact representations in float:
@@ -297,7 +251,7 @@ TEST_F(ConversationImplTest, CapturedAudioRoutedToBackend) {
   std::vector<int16_t> samples = {4096, 8192, 16384};
 
   base::RunLoop run_loop;
-  EXPECT_CALL(*backend_ptr, SendAudioChunk(testing::ElementsAreArray(samples)))
+  EXPECT_CALL(backend(), SendAudioChunk(testing::ElementsAreArray(samples)))
       .WillOnce([&run_loop] { run_loop.Quit(); });
 
   auto bus = media::AudioBus::Create(1, samples.size());
@@ -305,56 +259,42 @@ TEST_F(ConversationImplTest, CapturedAudioRoutedToBackend) {
     bus->channel(0)[i] =
         media::SignedInt16SampleTypeTraits::ToFloat(samples[i]);
   }
-  audio_controller_ptr->Capture(bus.get(), base::TimeTicks::Now(), {}, 1.0);
+  audio_controller().Capture(bus.get(), base::TimeTicks::Now(), {}, 1.0);
   run_loop.Run();
 }
 
 TEST_F(ConversationImplTest, OnPlaybackCompletedReportsStatus) {
-  auto audio_controller = std::make_unique<AudioController>();
-  AudioController* audio_controller_ptr = audio_controller.get();
-  auto mock_backend = std::make_unique<MockTtcBackend>();
-  MockTtcBackend* backend_ptr = mock_backend.get();
-
-  ConversationImpl conversation(std::move(mock_backend),
-                                std::move(audio_controller),
-                                session_controller_);
+  ConversationImpl& conversation = CreateConversation();
   conversation.Start();
 
   base::RunLoop run_loop;
-  EXPECT_CALL(*backend_ptr, ReportPlaybackStatus(42)).WillOnce([&run_loop] {
+  EXPECT_CALL(backend(), ReportPlaybackStatus(42)).WillOnce([&run_loop] {
     run_loop.Quit();
   });
 
   std::vector<int16_t> samples(100, 1000);
-  audio_controller_ptr->PlayAudio(samples, /*sequence_number=*/42);
+  audio_controller().PlayAudio(samples, /*sequence_number=*/42);
 
   auto bus = media::AudioBus::Create(1, 100);
-  audio_controller_ptr->Render(base::TimeDelta(), base::TimeTicks::Now(), {},
-                               bus.get());
+  audio_controller().Render(base::TimeDelta(), base::TimeTicks::Now(), {},
+                            bus.get());
   run_loop.Run();
 }
 
 TEST_F(ConversationImplTest, SendTextInputForwardsToBackend) {
-  auto mock_backend = std::make_unique<MockTtcBackend>();
-  MockTtcBackend* backend_ptr = mock_backend.get();
+  ConversationImpl& conversation = CreateConversation();
 
-  ConversationImpl conversation(std::move(mock_backend), nullptr,
-                                session_controller_);
-  EXPECT_CALL(*backend_ptr, SendTextInput("hello world")).Times(1);
+  EXPECT_CALL(backend(), SendTextInput("hello world")).Times(1);
   conversation.SendTextInput("hello world");
 }
 
 TEST_F(ConversationImplTest, ConnectionSendsToolSetUpdate) {
-  auto mock_backend = std::make_unique<MockTtcBackend>();
-  MockTtcBackend* backend_ptr = mock_backend.get();
-
   session_controller_.AddToolDefinition("navigate");
 
-  ConversationImpl conversation(std::move(mock_backend), nullptr,
-                                session_controller_);
+  ConversationImpl& conversation = CreateConversation();
 
   std::vector<std::string> sent_tool_names;
-  EXPECT_CALL(*backend_ptr, SendToolSetUpdate(testing::_))
+  EXPECT_CALL(backend(), SendToolSetUpdate(testing::_))
       .WillOnce([&sent_tool_names](const std::vector<ToolDefinition>& tools) {
         for (const ToolDefinition& tool : tools) {
           sent_tool_names.push_back(tool.name);
@@ -365,30 +305,22 @@ TEST_F(ConversationImplTest, ConnectionSendsToolSetUpdate) {
 }
 
 TEST_F(ConversationImplTest, ConnectionWithoutSessionIdSkipsToolSetUpdate) {
-  auto mock_backend = std::make_unique<MockTtcBackend>();
-  MockTtcBackend* backend_ptr = mock_backend.get();
-
   session_controller_.AddToolDefinition("navigate");
 
-  ConversationImpl conversation(std::move(mock_backend), nullptr,
-                                session_controller_);
+  ConversationImpl& conversation = CreateConversation();
 
   // The backend reports the transport as connected before the server session
   // is set up, at which point there is no session to send the tool set for.
-  EXPECT_CALL(*backend_ptr, SendToolSetUpdate(testing::_)).Times(0);
+  EXPECT_CALL(backend(), SendToolSetUpdate(testing::_)).Times(0);
   conversation.OnStreamingStateChanged(/*connected=*/true, "", "");
 }
 
 TEST_F(ConversationImplTest, DisconnectionDoesNotSendToolSetUpdate) {
-  auto mock_backend = std::make_unique<MockTtcBackend>();
-  MockTtcBackend* backend_ptr = mock_backend.get();
-
   session_controller_.AddToolDefinition("navigate");
 
-  ConversationImpl conversation(std::move(mock_backend), nullptr,
-                                session_controller_);
+  ConversationImpl& conversation = CreateConversation();
 
-  EXPECT_CALL(*backend_ptr, SendToolSetUpdate(testing::_)).Times(0);
+  EXPECT_CALL(backend(), SendToolSetUpdate(testing::_)).Times(0);
   conversation.OnStreamingStateChanged(/*connected=*/false, "sess_123",
                                        "some error");
 }

@@ -21,6 +21,7 @@ namespace ttc {
 
 class Conversation;
 class MockConversation;
+class SessionController;
 class TtcKeyedService;
 
 // Base class for Ttc core browser tests with common settings and setup.
@@ -45,7 +46,8 @@ class TtcCoreBrowserTestBase : public PlatformBrowserTest {
   MockConversation* conversation();
 
  private:
-  static std::unique_ptr<Conversation> MakeMockConversation(Profile* profile);
+  static std::unique_ptr<Conversation> MakeMockConversation(
+      SessionController& session_controller);
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };

@@ -71,7 +71,7 @@ MockConversation* TtcCoreBrowserTestBase::conversation() {
 
 // static
 std::unique_ptr<Conversation> TtcCoreBrowserTestBase::MakeMockConversation(
-    Profile*) {
+    SessionController&) {
   return std::make_unique<testing::NiceMock<MockConversation>>();
 }
 

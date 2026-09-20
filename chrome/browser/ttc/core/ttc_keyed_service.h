@@ -31,7 +31,8 @@ class TtcKeyedService : public KeyedService {
  public:
   // Creates the Conversation used by a session.
   using ConversationFactory =
-      base::RepeatingCallback<std::unique_ptr<Conversation>(Profile*)>;
+      base::RepeatingCallback<std::unique_ptr<Conversation>(
+          SessionController&)>;
 
   static TtcKeyedService* Get(content::BrowserContext* context);
 

@@ -161,6 +161,7 @@ if (!is_android) {
       "//base/test:test_support",
       "//chrome/browser/actor",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/ttc/app:browser_tests",
       "//chrome/browser/ttc/app:public",
       "//chrome/browser/ui",
       "//chrome/common",
