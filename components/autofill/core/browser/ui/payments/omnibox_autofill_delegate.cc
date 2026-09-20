@@ -504,26 +504,27 @@ void OmniboxAutofillDelegate::OnFieldBecameVisible() {
           weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(
           [](base::WeakPtr<OmniboxAutofillDelegate> delegate,
+             FormGlobalId form_id, FieldGlobalId field_id,
              const Suggestion& suggestion) {
             if (delegate) {
-              delegate->DidSelectSuggestion(suggestion,
-                                            delegate->trigger_form_global_id_,
-                                            delegate->trigger_field_global_id_);
+              delegate->DidSelectSuggestion(suggestion, form_id, field_id);
             }
           },
-          weak_ptr_factory_.GetWeakPtr()),
+          weak_ptr_factory_.GetWeakPtr(), trigger_form_global_id_,
+          trigger_field_global_id_),
       base::BindRepeating(&OmniboxAutofillDelegate::ClearPreviewedForm,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(
           [](base::WeakPtr<OmniboxAutofillDelegate> delegate,
+             FormGlobalId form_id, FieldGlobalId field_id,
              const Suggestion& suggestion, const SuggestionMetadata& metadata) {
             if (delegate) {
-              delegate->DidAcceptSuggestion(suggestion, metadata,
-                                            delegate->trigger_form_global_id_,
-                                            delegate->trigger_field_global_id_);
+              delegate->DidAcceptSuggestion(suggestion, metadata, form_id,
+                                            field_id);
             }
           },
-          weak_ptr_factory_.GetWeakPtr()));
+          weak_ptr_factory_.GetWeakPtr(), trigger_form_global_id_,
+          trigger_field_global_id_));
 }
 
 void OmniboxAutofillDelegate::OnChipShown() {
