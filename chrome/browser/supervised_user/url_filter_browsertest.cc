@@ -26,6 +26,10 @@
 #include "ui/events/event_modifiers.h"
 #include "ui/views/widget/widget_utils.h"
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#include "ui/views/bubble/bubble_frame_view.h"
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
 namespace supervised_user {
 namespace {
 

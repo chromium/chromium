@@ -21,6 +21,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/menu_button_controller.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
 
 class BrowserWindowInterface;

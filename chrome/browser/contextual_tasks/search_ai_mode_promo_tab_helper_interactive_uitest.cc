@@ -44,6 +44,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/views/bubble/bubble_frame_view.h"
 
 namespace contextual_tasks {
 
