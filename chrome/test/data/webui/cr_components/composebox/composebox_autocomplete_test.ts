@@ -11,10 +11,11 @@ import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/c
 import type {ComposeboxVoiceSearchElement} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SuggestStyle} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {SuggestInventory} from 'chrome://resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
+import {InputMethod, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SuggestStyle} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {AutocompleteMatch, AutocompleteResult, PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {InputType} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {$$, eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -1414,6 +1415,169 @@ suite('ComposeboxAutocomplete', () => {
       assertEquals(searchboxHandler.getCallCount('stopAutocomplete'), 1);
       assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 3);
     });
+
+    test('queryAutocomplete passes cursor position', async () => {
+      element = createTestElement();
+      await microtasksFinished();
+
+      element.input = 'hello';
+      await microtasksFinished();
+
+      const inputElement = element.getInputElement();
+      (inputElement.inputElement as HTMLTextAreaElement).value = 'hello';
+      inputElement.inputElement.focus();
+      setSelectionOffset(inputElement.inputElement, 3);
+
+      searchboxHandler.resetResolver('queryAutocomplete');
+      element.queryAutocomplete(/*clearMatches=*/ false);
+
+      const args = await searchboxHandler.whenCalled('queryAutocomplete');
+      // queryId is 1 because queryId 0 was issued by the initial ZPS query on
+      // load.
+      assertDeepEquals(
+          [
+            1,
+            null,
+            'hello',
+            false,
+            3,
+            SuggestInventory.kDefault,
+            false,
+            '',
+            InputMethod.kKeyboard,
+          ],
+          args);
+    });
+
+    test(
+        'queryAutocomplete passes cursor position when input is out of sync',
+        async () => {
+          element = createTestElement();
+          await microtasksFinished();
+
+          element.input = 'hello';
+          await microtasksFinished();
+
+          const inputElement = element.getInputElement();
+          (inputElement.inputElement as HTMLTextAreaElement).value = 'hello';
+          inputElement.inputElement.focus();
+
+          // Simulate a programming update of the input as happens when, e.g.,
+          // the user closes the composebox. This update won't be immediately
+          // reflected in the DOM.
+          element.input = 'hello world';
+
+          // Clear the `queryAutocomplete` called for ZPS.
+          searchboxHandler.resetResolver('queryAutocomplete');
+          element.queryAutocomplete(/*clearMatches=*/ false);
+
+          const args = await searchboxHandler.whenCalled('queryAutocomplete');
+          // queryId is 1 because queryId 0 was issued by the initial ZPS query
+          // on load.
+          assertDeepEquals(
+              [
+                1,
+                null,
+                'hello world',
+                false,
+                11,
+                SuggestInventory.kDefault,
+                false,
+                '',
+                InputMethod.kKeyboard,
+              ],
+              args);
+        });
+
+    test(
+        'does not query autocomplete on load when queryZpsOnLoad is false',
+        async () => {
+          searchboxHandler.resetResolver('queryAutocomplete');
+          const freshComposebox =
+              document.createElement('test-composebox-mixin');
+          // queryZpsOnLoad is read in connectedCallback, so it must be set
+          // before the element connects. Contextual Tasks sets it false and
+          // drives autocomplete from its own zero-state logic instead.
+          freshComposebox.queryZpsOnLoad = false;
+          document.body.appendChild(freshComposebox);
+          await microtasksFinished();
+
+          assertEquals(0, searchboxHandler.getCallCount('queryAutocomplete'));
+        });
+
+    test('autocomplete matches are cleared on submit', async () => {
+      element = createTestElement();
+      await microtasksFinished();
+
+      element.input = 'Some text';
+      await microtasksFinished();
+
+      const event = new KeyboardEvent('keydown', {
+        key: 'Enter',
+        shiftKey: false,
+        bubbles: true,
+        cancelable: true,
+      });
+      element.setActiveElement(element.getInputElement().inputElement);
+      element.getWrapperElement().dispatchEvent(event);
+      await microtasksFinished();
+
+      const clearResult = await searchboxHandler.whenCalled('stopAutocomplete');
+      assertTrue(clearResult);
+      assertFalse(element.showDropdown);
+      assertEquals(null, element.result);
+      assertEquals('', element.lastQueriedInput);
+    });
+
+    test(
+        'activeQueryId is not reset to -1 when selection cleared and input' +
+            ' is empty',
+        async () => {
+          element = createTestElement();
+          await microtasksFinished();
+
+          element.input = '';
+          element.activeQueryId = 0;
+          element.lastQueriedInput = '';
+
+          const matches = [
+            {fillIntoEdit: 'match1', supportsDeletion: false} as
+                AutocompleteMatch,
+          ];
+          element.result = {input: '', matches} as AutocompleteResult;
+          element.selectedMatchIndex = 0;
+          await microtasksFinished();
+
+          element.selectedMatchIndex = -1;
+          await microtasksFinished();
+
+          assertEquals(0, element.activeQueryId);
+        });
+
+    test(
+        'activeQueryId is reset to -1 when selection cleared and input' +
+            ' is not empty',
+        async () => {
+          element = createTestElement();
+          await microtasksFinished();
+
+          element.input = 'Some text';
+          element.activeQueryId = 0;
+          element.lastQueriedInput = '';
+
+          const matches = [
+            {fillIntoEdit: 'match1', supportsDeletion: false} as
+                AutocompleteMatch,
+          ];
+          element.result = {input: '', matches} as AutocompleteResult;
+          element.selectedMatchIndex = 0;
+          await microtasksFinished();
+
+          element.selectedMatchIndex = -1;
+          await microtasksFinished();
+
+          assertEquals(-1, element.activeQueryId);
+        });
   });
 
   suite('VoiceSearch', () => {

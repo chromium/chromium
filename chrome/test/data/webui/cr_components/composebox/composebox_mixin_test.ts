@@ -17,7 +17,7 @@ import {createAutocompleteResultForTesting} from 'chrome://resources/cr_componen
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {InputSource, QueryActionOverride, SearchboxOverride, SuggestInventory} from 'chrome://resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
 import type {FuseboxAction} from 'chrome://resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
-import {DriveDisclaimerStatus, DriveUploadError, InputMethod, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {DriveDisclaimerStatus, DriveUploadError, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {AutocompleteMatch, AutocompleteResult, PageRemote as SearchboxPageRemote, SelectedFileInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ContextUploadStatus, InputType, ModelMode, ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
@@ -32,7 +32,7 @@ import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.
 import {getTrustedHtml} from 'chrome://webui-test/trusted_html.js';
 
 // </if>
-import {installMock, MockInputState, setSelectionOffset, simulateUserTextInput} from './composebox_test_utils.js';
+import {installMock, MockInputState, simulateUserTextInput} from './composebox_test_utils.js';
 import type {TestComposeboxMixinElement} from './test_composebox_mixin.js';
 
 async function pollUntil(
@@ -627,89 +627,6 @@ suite('ComposeboxMixinTest', () => {
         assertEquals(1, searchboxHandler.getCallCount('getRecentTabs'));
       });
 
-  test('queryAutocomplete passes cursor position', async () => {
-    element.input = 'hello';
-    await microtasksFinished();
-
-    const inputElement = element.getInputElement();
-    (inputElement.inputElement as HTMLTextAreaElement).value = 'hello';
-    inputElement.inputElement.focus();
-    setSelectionOffset(inputElement.inputElement, 3);
-
-    searchboxHandler.resetResolver('queryAutocomplete');
-    element.queryAutocomplete(/*clearMatches=*/ false);
-
-    const args = await searchboxHandler.whenCalled('queryAutocomplete');
-    assertDeepEquals(args, [
-      0,
-      null,
-      'hello',
-      false,
-      3,
-      SuggestInventory.kDefault,
-      false,
-      '',
-      InputMethod.kKeyboard,
-    ]);
-  });
-
-  test(
-      'queryAutocomplete passes cursor position when input is out of sync',
-      async () => {
-        element.input = 'hello';
-        await microtasksFinished();
-
-        const inputElement = element.getInputElement();
-        (inputElement.inputElement as HTMLTextAreaElement).value = 'hello';
-        inputElement.inputElement.focus();
-
-        // Simulate a programming update of the input as happens when, e.g., the
-        // user closes the composebox. This update won't be immediately
-        // reflected in the DOM.
-        element.input = 'hello world';
-
-        // Clear the `queryAutocomplete` called for ZPS.
-        searchboxHandler.resetResolver('queryAutocomplete');
-        element.queryAutocomplete(/*clearMatches=*/ false);
-
-        const args = await searchboxHandler.whenCalled('queryAutocomplete');
-        assertDeepEquals(args, [
-          0,
-          null,
-          'hello world',
-          false,
-          11,
-          SuggestInventory.kDefault,
-          false,
-          '',
-          InputMethod.kKeyboard,
-        ]);
-      });
-
-  test('queries autocomplete on load by default', async () => {
-    searchboxHandler.resetResolver('queryAutocomplete');
-    const freshComposebox = document.createElement('test-composebox-mixin');
-    document.body.appendChild(freshComposebox);
-    await microtasksFinished();
-
-    assertEquals(1, searchboxHandler.getCallCount('queryAutocomplete'));
-  });
-
-  test(
-      'does not query autocomplete on load when queryZpsOnLoad is false',
-      async () => {
-        searchboxHandler.resetResolver('queryAutocomplete');
-        const freshComposebox = document.createElement('test-composebox-mixin');
-        // queryZpsOnLoad is read in connectedCallback, so it must be set before
-        // the element connects. Contextual Tasks sets it false and drives
-        // autocomplete from its own zero-state logic instead.
-        freshComposebox.queryZpsOnLoad = false;
-        document.body.appendChild(freshComposebox);
-        await microtasksFinished();
-
-        assertEquals(0, searchboxHandler.getCallCount('queryAutocomplete'));
-      });
-
   test(
       'Shift+Enter allows inserting a newline when input is focused and not empty',
       async () => {
@@ -751,27 +668,6 @@ suite('ComposeboxMixinTest', () => {
 
         assertTrue(event.defaultPrevented);
       });
-
-  test('autocomplete matches are cleared on submit', async () => {
-    element.input = 'Some text';
-    await microtasksFinished();
-
-    const event = new KeyboardEvent('keydown', {
-      key: 'Enter',
-      shiftKey: false,
-      bubbles: true,
-      cancelable: true,
-    });
-    element.setActiveElement(element.getInputElement().inputElement);
-    element.getWrapperElement().dispatchEvent(event);
-    await microtasksFinished();
-
-    const clearResult = await searchboxHandler.whenCalled('stopAutocomplete');
-    assertTrue(clearResult);
-    assertFalse(element.showDropdown);
-    assertEquals(null, element.result);
-    assertEquals('', element.lastQueriedInput);
-  });
 
   test('routes suggestion actions on click only', async () => {
     const makeAction = (overrides: Partial<FuseboxAction> = {}) =>
@@ -934,42 +830,6 @@ suite('ComposeboxMixinTest', () => {
     } finally {
       element.handleFuseboxAction = originalHandler;
     }
-  });
-
-  test('activeQueryId is not reset to -1 when selection cleared and input is empty', async () => {
-    element.input = '';
-    element.activeQueryId = 0;
-    element.lastQueriedInput = '';
-
-    const matches = [
-      {fillIntoEdit: 'match1', supportsDeletion: false} as AutocompleteMatch,
-    ];
-    element.result = {input: '', matches} as AutocompleteResult;
-    element.selectedMatchIndex = 0;
-    await element.updateComplete;
-
-    element.selectedMatchIndex = -1;
-    await element.updateComplete;
-
-    assertEquals(0, element.activeQueryId);
-  });
-
-  test('activeQueryId is reset to -1 when selection cleared and input is not empty', async () => {
-    element.input = 'Some text';
-    element.activeQueryId = 0;
-    element.lastQueriedInput = '';
-
-    const matches = [
-      {fillIntoEdit: 'match1', supportsDeletion: false} as AutocompleteMatch,
-    ];
-    element.result = {input: '', matches} as AutocompleteResult;
-    element.selectedMatchIndex = 0;
-    await element.updateComplete;
-
-    element.selectedMatchIndex = -1;
-    await element.updateComplete;
-
-    assertEquals(-1, element.activeQueryId);
   });
 
   test('clearAutocompleteMatches preserves typed draft input', async () => {
