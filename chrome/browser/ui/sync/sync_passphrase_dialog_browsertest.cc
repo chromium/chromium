@@ -25,6 +25,7 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
+#include "ui/views/window/dialog_delegate.h"
 #include "url/gurl.h"
 
 namespace {

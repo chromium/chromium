@@ -45,6 +45,7 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/combobox/combobox.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/combobox_test_api.h"

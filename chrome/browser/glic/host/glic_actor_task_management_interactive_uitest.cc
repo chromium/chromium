@@ -18,6 +18,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
 #include "content/public/test/test_utils.h"
+#include "ui/views/window/dialog_delegate.h"
 
 #if BUILDFLAG(IS_LINUX)
 #include "ui/ozone/public/ozone_platform.h"

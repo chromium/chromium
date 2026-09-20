@@ -23,12 +23,13 @@
 #include "chrome/browser/ui/bookmarks/bookmark_bar.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/download_close_type.h"
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
-#include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
@@ -37,10 +38,10 @@
 #include "chrome/browser/ui/views/frame/shadow_overlay_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_background_blur_backdrop.h"
-#include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
 #include "chrome/common/buildflags.h"
+#include "components/apps/link_capturing/intent_picker_info.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/infobars/core/infobar_container.h"
 #include "components/user_education/common/feature_promo/feature_promo_handle.h"
@@ -571,7 +572,7 @@ class BrowserView : public BrowserWindow,
   BrowserView* AsBrowserView() override;
   void ShowUpdateChromeDialog() override;
   void ShowIntentPickerBubble(
-      std::vector<IntentPickerBubbleView::AppInfo> app_info,
+      std::vector<apps::IntentPickerAppInfo> app_info,
       bool show_stay_in_chrome,
       bool show_remember_selection,
       apps::IntentPickerBubbleType bubble_type,
@@ -592,7 +593,7 @@ class BrowserView : public BrowserWindow,
   DownloadBubbleUIController* GetDownloadBubbleUIController() override;
   void ConfirmBrowserCloseWithPendingDownloads(
       int download_count,
-      UnloadController::DownloadCloseType dialog_type,
+      DownloadCloseType dialog_type,
       base::OnceCallback<void(bool)> callback) override;
   void ShowAppMenu() override;
   content::KeyboardEventProcessingResult PreHandleKeyboardEvent(

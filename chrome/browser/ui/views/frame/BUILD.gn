@@ -502,6 +502,52 @@ source_set("contents_container_view") {
   ]
 }
 
+# browser_view.h is the concrete views implementation of BrowserWindow. It is
+# split out from //chrome/browser/ui:ui so that the many features which reach
+# into the browser view can depend on it without depending on :ui, which would
+# be circular for the many targets that :ui itself depends on.
+source_set("browser_view_header") {
+  public = [ "browser_view.h" ]
+  public_deps = [
+    ":browser_view_layout_params",
+    ":browser_widget",
+    ":contents_container_view",
+    ":contents_web_view",
+    ":frame",
+    ":shadow_overlay_view",
+    ":vertical_tab_strip_background_blur_backdrop",
+    "//base",
+    "//chrome/browser/ui:browser_window_header",
+    "//chrome/browser/ui:download_close_type",
+    "//chrome/browser/ui/bookmarks",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/immersive:immersive_mode_controller",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs:tab_strip_model_observer",
+    "//chrome/browser/ui/tabs/organizer",
+    "//chrome/browser/ui/translate",
+    "//chrome/browser/ui/user_education",
+    "//chrome/browser/ui/views/tabs:tab",
+    "//chrome/browser/ui/webui/tab_search:mojo_bindings",
+    "//chrome/common:buildflags",
+    "//components/apps/link_capturing",
+    "//components/enterprise/buildflags",
+    "//components/infobars/core",
+    "//components/user_education/common",
+    "//components/viz/common",
+    "//content/public/browser",
+    "//third_party/blink/public/common:headers",
+    "//ui/base",
+    "//ui/base/identifier",
+    "//ui/base/metadata",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/compositor",
+    "//ui/gfx",
+    "//ui/views",
+    "//ui/views/controls/webview",
+  ]
+}
+
 source_set("browser_view_layout_params") {
   public = [ "layout/browser_view_layout_params.h" ]
   sources = [ "layout/browser_view_layout_params.cc" ]
