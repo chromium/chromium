@@ -48,7 +48,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/flex_layout_view.h"
-#include "ui/views/test/widget_activation_waiter.h"
+#include "ui/views/test/mock_activation_controller.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -749,21 +749,21 @@ TEST_F(DocumentPipFrameViewTest, MouseInsideKeepsRenderActive) {
   EXPECT_FALSE(GetRenderActive(frame_view));
 }
 
-// TODO(crbug.com/515252142): Fails on linux wayland.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_MouseExitDeactivatesTopBarWhileWidgetActive \
-  DISABLED_MouseExitDeactivatesTopBarWhileWidgetActive
-#else
-#define MAYBE_MouseExitDeactivatesTopBarWhileWidgetActive \
-  MouseExitDeactivatesTopBarWhileWidgetActive
+class DocumentPipFrameViewActivationTest : public DocumentPipFrameViewTest {
+ private:
+#if defined(USE_MOCK_ACTIVATION_CONTROLLER)
+  // Emulate activation before SetUp creates any widgets; this unit test must
+  // not depend on the desktop compositor granting activation.
+  views::test::MockActivationController mock_activation_controller_;
 #endif
-TEST_F(DocumentPipFrameViewTest,
-       MAYBE_MouseExitDeactivatesTopBarWhileWidgetActive) {
+};
+
+TEST_F(DocumentPipFrameViewActivationTest,
+       MouseExitDeactivatesTopBarWhileWidgetActive) {
   auto* frame_view =
       CreatePipAndGetFrameView(/*disallow_return_to_opener=*/false);
   auto* widget = frame_view->GetWidget();
   widget->Activate();
-  views::test::WaitForWidgetActive(widget, true);
   ASSERT_TRUE(widget->IsActive());
 
   OnMouseEnteredOrExitedWindow(frame_view, /*entered=*/true);
