@@ -166,6 +166,9 @@ void OmniboxPopupWebUIBaseContent::ShowUI() {
   // the content URL and create a new renderer.
   if (contents_wrapper_->web_contents() &&
       contents_wrapper_->web_contents()->IsCrashed()) {
+    TRACE_EVENT1("omnibox",
+                 "OmniboxPopupWebUIBaseContent::ShowUI:RecoverFromCrash",
+                 "prefix", GetMetricPrefix());
     base::UmaHistogramBoolean(
         base::StrCat({GetMetricPrefix(), ".CrashRecovery"}), true);
     LoadContent();
@@ -463,6 +466,12 @@ void OmniboxPopupWebUIBaseContent::PrimaryMainFrameRenderProcessGone(
   if (browser_shutdown::HasShutdownStarted()) {
     return;
   }
+
+  TRACE_EVENT_INSTANT2(
+      "omnibox",
+      "OmniboxPopupWebUIBaseContent::PrimaryMainFrameRenderProcessGone",
+      TRACE_EVENT_SCOPE_GLOBAL, "status", static_cast<int>(status),
+      "was_shown", is_shown_);
 
   base::UmaHistogramEnumeration(
       base::StrCat({GetMetricPrefix(), ".RendererProcessGoneStatus"}), status,
