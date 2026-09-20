@@ -10,6 +10,7 @@ source_set("coordinator") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/intelligence/bwg/utils:feature_availability",
     "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/settings/manage_sync/coordinator",
     "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/settings/ui_bundled/bwg/ui",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
@@ -38,10 +39,15 @@ source_set("unit_tests") {
   deps = [
     ":coordinator",
     "//base/test:test_support",
+    "//components/sync:test_support",
     "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/settings/ui_bundled/bwg/ui",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",
   ]

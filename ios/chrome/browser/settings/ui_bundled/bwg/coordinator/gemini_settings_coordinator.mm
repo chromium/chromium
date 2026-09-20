@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/gemini_settings_coordinator.h"
 
 #import "base/apple/foundation_util.h"
+#import "ios/chrome/browser/settings/manage_sync/coordinator/manage_sync_settings_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/gemini_settings_mediator.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/ui/gemini_settings_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
@@ -17,7 +18,9 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
-@interface GeminiSettingsCoordinator () <GeminiSettingsDismissalDelegate>
+@interface GeminiSettingsCoordinator () <GeminiSettingsDismissalDelegate,
+                                         GeminiSettingsMediatorDelegate,
+                                         ManageSyncSettingsCoordinatorDelegate>
 @end
 
 @implementation GeminiSettingsCoordinator {
@@ -25,6 +28,8 @@
   GeminiSettingsViewController* _viewController;
   // Mediator used by this coordinator.
   GeminiSettingsMediator* _mediator;
+  // Coordinator for the Manage Sync Settings table view.
+  ManageSyncSettingsCoordinator* _manageSyncSettingsCoordinator;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -47,6 +52,7 @@
                               self.profile)
               prefService:self.profile->GetPrefs()
           identityManager:IdentityManagerFactory::GetForProfile(self.profile)];
+  _mediator.delegate = self;
   _mediator.sceneHandler = HandlerForProtocol(commandDispatcher, SceneCommands);
 
   _viewController = [[GeminiSettingsViewController alloc]
@@ -60,6 +66,8 @@
 }
 
 - (void)stop {
+  [_manageSyncSettingsCoordinator stop];
+  _manageSyncSettingsCoordinator = nil;
   [_mediator disconnect];
   _mediator = nil;
   _viewController = nil;
@@ -73,6 +81,34 @@
       base::apple::ObjCCast<SettingsNavigationController>(
           self.baseNavigationController);
   [settingsNav closeSettings];
+}
+
+#pragma mark - GeminiSettingsMediatorDelegate
+
+- (void)openSyncSettings {
+  if (_manageSyncSettingsCoordinator) {
+    return;
+  }
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForProfile(self.profile);
+  if (!authService || !authService->HasPrimaryIdentity() ||
+      !authService->SigninEnabled()) {
+    return;
+  }
+  _manageSyncSettingsCoordinator = [[ManageSyncSettingsCoordinator alloc]
+      initWithBaseNavigationController:self.baseNavigationController
+                               browser:self.browser];
+  _manageSyncSettingsCoordinator.delegate = self;
+  [_manageSyncSettingsCoordinator start];
+}
+
+#pragma mark - ManageSyncSettingsCoordinatorDelegate
+
+- (void)manageSyncSettingsCoordinatorWasRemoved:
+    (ManageSyncSettingsCoordinator*)coordinator {
+  DCHECK_EQ(_manageSyncSettingsCoordinator, coordinator);
+  [_manageSyncSettingsCoordinator stop];
+  _manageSyncSettingsCoordinator = nil;
 }
 
 @end

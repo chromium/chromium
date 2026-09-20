@@ -18,11 +18,20 @@ namespace signin {
 class IdentityManager;
 }  // namespace signin
 
+// Delegate for mediator to handle navigation or coordination actions.
+@protocol GeminiSettingsMediatorDelegate <NSObject>
+// Requests opening the Sync settings.
+- (void)openSyncSettings;
+@end
+
 // Gemini Mediator.
 @interface GeminiSettingsMediator : NSObject <GeminiSettingsMutator>
 
 // The scene commands handler for this mediator.
 @property(nonatomic, weak) id<SceneCommands> sceneHandler;
+
+// Delegate to handle coordination and navigation actions.
+@property(nonatomic, weak) id<GeminiSettingsMediatorDelegate> delegate;
 
 // Usually the view controller.
 @property(nonatomic, weak) id<GeminiSettingsConsumer> consumer;

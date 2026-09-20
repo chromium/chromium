@@ -14,6 +14,9 @@ class GURL;
 // Handles tap on learn about your choices.
 - (void)openNewTabWithURL:(const GURL&)URL;
 
+// Handles opening sync settings.
+- (void)openSyncSettings;
+
 // Returns whether the Image Remix feature is available for the current account.
 - (BOOL)isImageRemixAvailable;
 

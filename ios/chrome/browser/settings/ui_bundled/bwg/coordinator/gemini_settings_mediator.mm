@@ -167,6 +167,10 @@ const NSInteger kDynamicSettingsItemTypeOffset = 10000;
   [self.sceneHandler openURLInNewTab:command];
 }
 
+- (void)openSyncSettings {
+  [self.delegate openSyncSettings];
+}
+
 - (void)setPreciseLocationPref:(BOOL)value {
   _prefService->SetBoolean(prefs::kIOSBWGPreciseLocationSetting, value);
 }
