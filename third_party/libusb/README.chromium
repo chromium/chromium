@@ -38,3 +38,11 @@ Local Modifications:
   upstream's 8a05a3f4e7424eb2071e4dbe1796cff3b660a141
 - darwin-cfsource-null.patch has been applied, which is a backport of
   upstream's edd1a4bfe4b037e67b65e4538fd880123fb004f7
+- darwin-cached-device-leak.patch has been applied, which is a partial
+  backport of upstream's d26cc697ccaba5496b56903eac12dc2b5838af04. Only the
+  darwin_deref_cached_device call added to darwin_devices_detached is taken.
+  Upstream later widened the active_contexts_lock scope in 26dab3d6 and added
+  a libusb_unref_device call in 733ffffe, which made
+  usbi_get_device_by_session_id return a reference; this version does not, so
+  that call would over-release the device. The new block is therefore placed
+  before active_contexts_lock is taken, keeping the two locks non-nested.

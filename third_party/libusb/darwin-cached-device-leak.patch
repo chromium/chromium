@@ -1,0 +1,30 @@
+diff --git a/third_party/libusb/src/libusb/os/darwin_usb.c b/third_party/libusb/src/libusb/os/darwin_usb.c
+index de59b260e336c..a6c840f332548 100644
+--- a/third_party/libusb/src/libusb/os/darwin_usb.c
++++ b/third_party/libusb/src/libusb/os/darwin_usb.c
+@@ -274,6 +274,7 @@ static void darwin_devices_attached (void *ptr, io_iterator_t add_devices) {
+ static void darwin_devices_detached (void *ptr, io_iterator_t rem_devices) {
+   struct libusb_device *dev = NULL;
+   struct libusb_context *ctx;
++  struct darwin_cached_device *old_device;
+ 
+   io_service_t device;
+   UInt64 session;
+@@ -286,6 +287,17 @@ static void darwin_devices_detached (void *ptr, io_iterator_t rem_devices) {
+     if (!ret)
+       continue;
+ 
++    /* we need to match darwin_ref_cached_device call made in darwin_get_cached_device function
++       otherwise no cached device will ever get freed */
++    usbi_mutex_lock(&darwin_cached_devices_lock);
++    list_for_each_entry(old_device, &darwin_cached_devices, list, struct darwin_cached_device) {
++      if (old_device->session == session) {
++        darwin_deref_cached_device (old_device);
++        break;
++      }
++    }
++    usbi_mutex_unlock(&darwin_cached_devices_lock);
++
+     usbi_mutex_lock(&active_contexts_lock);
+ 
+     list_for_each_entry(ctx, &active_contexts_list, list, struct libusb_context) {
