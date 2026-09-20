@@ -36,7 +36,7 @@ export class OmniboxPopupContextualEntrypointButtonElement extends
         type: Boolean,
         reflect: true,
       },
-      hasPopupFocus: {
+      hasVirtualFocus: {
         type: Boolean,
         reflect: true,
       },
@@ -50,7 +50,7 @@ export class OmniboxPopupContextualEntrypointButtonElement extends
   accessor inputState: InputState|null = null;
   accessor applyContextButtonBackground: boolean = false;
   accessor isOblongShape: boolean = false;
-  accessor hasPopupFocus: boolean = false;
+  accessor hasVirtualFocus: boolean = false;
   protected accessor isMenuOpen_: boolean = false;
 
   private browserProxy_: BrowserProxy;
@@ -86,7 +86,7 @@ export class OmniboxPopupContextualEntrypointButtonElement extends
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
-    if (changedProperties.has('hasPopupFocus') && this.hasPopupFocus) {
+    if (changedProperties.has('hasVirtualFocus') && this.hasVirtualFocus) {
       this.announce_();
     }
 

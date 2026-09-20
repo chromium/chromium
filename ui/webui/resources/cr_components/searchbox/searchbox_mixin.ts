@@ -660,8 +660,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
         return true;
       }
 
-      if (this.selection.state ===
-          SelectionLineState.kFocusedButtonContextEntrypoint) {
+      if (this.isContextEntrypointVirtualFocused()) {
         e.preventDefault();
         this.openContextMenu();
         return true;

@@ -668,7 +668,7 @@ suite('OmniboxEverywhereOmniboxTest', () => {
         const entrypoint =
             omnibox.shadowRoot.querySelector<ContextualEntrypointButtonElement>(
                 '#context')!;
-        assertTrue(entrypoint.hasPopupFocus);
+        assertTrue(entrypoint.hasVirtualFocus);
       });
 
   test(

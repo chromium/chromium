@@ -7,7 +7,7 @@ import {OmniboxEscapeAction, omniboxPopupBrowserProxyFactory, OmniboxPopupPageHa
 import type {OmniboxInputState, OmniboxPopupContextualEntrypointButtonElement, OmniboxPopupPageRemote, OmniboxPopupSearchboxElement} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import {createAutocompleteResultForTesting, createMatchKeywordModelForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {KeywordType, RenderType, SelectionLineState, SideType} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {KeywordType, RenderType, SelectionDirection, SelectionLineState, SelectionStep, SideType} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -2812,5 +2812,176 @@ suite('OmniboxPopupSearchboxTest', function() {
 
        assertEquals(1, handler.getCallCount('showContextMenu'));
        assertEquals(0, testProxy.handler.getCallCount('openAutocompleteMatch'));
+     });
+
+ test('stepCyclesSelection always returns false', () => {
+   const selection = {
+     line: 0,
+     state: SelectionLineState.kNormal,
+     actionIndex: 0,
+   };
+   assertFalse(searchbox.stepCyclesSelection(
+       null, selection, SelectionDirection.kForward, SelectionStep.kWholeLine));
+   assertFalse(searchbox.stepCyclesSelection(
+       null, selection, SelectionDirection.kBackward,
+       SelectionStep.kWholeLine));
+
+   const contextSelection = {
+     line: -1,
+     state: SelectionLineState.kFocusedButtonContextEntrypoint,
+     actionIndex: 0,
+   };
+   assertFalse(searchbox.stepCyclesSelection(
+       null, contextSelection, SelectionDirection.kForward,
+       SelectionStep.kWholeLine));
+   assertFalse(searchbox.stepCyclesSelection(
+       null, contextSelection, SelectionDirection.kBackward,
+       SelectionStep.kWholeLine));
+ });
+
+ test(
+     'ShiftTabWithVirtualFocusCyclesBackwardsThroughMatchesAndContextualEntrypoint',
+     async () => {
+       document.body.innerHTML = window.trustedTypes!.emptyHTML;
+       loadTimeData.overrideValues({
+         realboxVirtualFocusNavigation: true,
+         hideClassicContextButton: false,
+         contextualMenuUsePecApi: false,
+         searchboxLayoutMode: 'TallBottomContext',
+       });
+       const localSearchbox = document.createElement('omnibox-popup-searchbox');
+       localSearchbox.dropdownIsVisible = true;
+       localSearchbox.virtualFocusEnabled = true;
+       document.body.appendChild(localSearchbox);
+       await microtasksFinished();
+
+       testProxy.initVisibilityPrefs();
+       testProxy.page.updateAimPopupEligibility(true);
+       await microtasksFinished();
+
+       const match1 = createSearchMatchForTesting({
+         allowedToBeDefaultMatch: true,
+         contents: 'match 1',
+       });
+       const match2 = createSearchMatchForTesting({
+         allowedToBeDefaultMatch: false,
+         contents: 'match 2',
+       });
+       localSearchbox.activeQueryId = 0;
+       localSearchbox.onAutocompleteResultChanged(
+           createAutocompleteResultForTesting({
+             queryId: 0,
+             input: 'test',
+             matches: [match1, match2],
+           }));
+       await microtasksFinished();
+
+       assertTrue(localSearchbox.showContextEntrypoint);
+       const entrypointButton = getContextualEntrypointButton(localSearchbox);
+       assertTrue(!!entrypointButton);
+       assertFalse(entrypointButton.hasVirtualFocus);
+
+       // Start at match 0 (the default match).
+       localSearchbox.setSelection({
+         line: 0,
+         state: SelectionLineState.kNormal,
+         actionIndex: 0,
+       });
+       await microtasksFinished();
+
+       // 1st Shift-Tab: cycles backward from match 0 to contextual entrypoint.
+       const shiftTab1 = new KeyboardEvent('keydown', {
+         key: 'Tab',
+         shiftKey: true,
+         cancelable: true,
+         bubbles: true,
+       });
+       await localSearchbox.handleKeyNavigation(shiftTab1);
+       await microtasksFinished();
+
+       assertTrue(shiftTab1.defaultPrevented);
+       assertEquals(-1, localSearchbox.selection.line);
+       assertEquals(
+           SelectionLineState.kFocusedButtonContextEntrypoint,
+           localSearchbox.selection.state);
+       assertTrue(localSearchbox.isContextEntrypointVirtualFocused());
+       assertTrue(entrypointButton.hasVirtualFocus);
+
+       // 2nd Shift-Tab: moves backward from contextual entrypoint to match 1.
+       const shiftTab2 = new KeyboardEvent('keydown', {
+         key: 'Tab',
+         shiftKey: true,
+         cancelable: true,
+         bubbles: true,
+       });
+       await localSearchbox.handleKeyNavigation(shiftTab2);
+       await microtasksFinished();
+
+       assertTrue(shiftTab2.defaultPrevented);
+       assertEquals(1, localSearchbox.selection.line);
+       assertEquals(SelectionLineState.kNormal, localSearchbox.selection.state);
+       assertFalse(localSearchbox.isContextEntrypointVirtualFocused());
+       assertFalse(entrypointButton.hasVirtualFocus);
+
+       // 3rd Shift-Tab: moves backward from match 1 to match 0.
+       const shiftTab3 = new KeyboardEvent('keydown', {
+         key: 'Tab',
+         shiftKey: true,
+         cancelable: true,
+         bubbles: true,
+       });
+       await localSearchbox.handleKeyNavigation(shiftTab3);
+       await microtasksFinished();
+
+       assertTrue(shiftTab3.defaultPrevented);
+       assertEquals(0, localSearchbox.selection.line);
+       assertEquals(SelectionLineState.kNormal, localSearchbox.selection.state);
+
+       // Forward Tab: moves forward from match 0 to match 1.
+       const tab1 = new KeyboardEvent('keydown', {
+         key: 'Tab',
+         shiftKey: false,
+         cancelable: true,
+         bubbles: true,
+       });
+       await localSearchbox.handleKeyNavigation(tab1);
+       await microtasksFinished();
+
+       assertTrue(tab1.defaultPrevented);
+       assertEquals(1, localSearchbox.selection.line);
+
+       // 2nd Forward Tab: moves forward from match 1 to contextual entrypoint.
+       const tab2 = new KeyboardEvent('keydown', {
+         key: 'Tab',
+         shiftKey: false,
+         cancelable: true,
+         bubbles: true,
+       });
+       await localSearchbox.handleKeyNavigation(tab2);
+       await microtasksFinished();
+
+       assertTrue(tab2.defaultPrevented);
+       assertEquals(-1, localSearchbox.selection.line);
+       assertEquals(
+           SelectionLineState.kFocusedButtonContextEntrypoint,
+           localSearchbox.selection.state);
+       assertTrue(localSearchbox.isContextEntrypointVirtualFocused());
+       assertTrue(entrypointButton.hasVirtualFocus);
+
+       // 3rd Forward Tab: wraps forward from contextual entrypoint to match 0.
+       const tab3 = new KeyboardEvent('keydown', {
+         key: 'Tab',
+         shiftKey: false,
+         cancelable: true,
+         bubbles: true,
+       });
+       await localSearchbox.handleKeyNavigation(tab3);
+       await microtasksFinished();
+
+       assertTrue(tab3.defaultPrevented);
+       assertEquals(0, localSearchbox.selection.line);
+       assertEquals(SelectionLineState.kNormal, localSearchbox.selection.state);
+       assertFalse(localSearchbox.isContextEntrypointVirtualFocused());
+       assertFalse(entrypointButton.hasVirtualFocus);
      });
 });
