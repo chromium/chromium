@@ -1,0 +1,21 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+
+component("dev_mode") {
+  output_name = "chromeos_ash_components_policy_dev_mode"
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_POLICY_IMPL" ]
+
+  public = [ "dev_mode_policy_util.h" ]
+
+  sources = [ "dev_mode_policy_util.cc" ]
+
+  public_deps = [ "//base" ]
+
+  deps = [
+    "//ash/constants",
+    "//components/policy/proto",
+  ]
+}

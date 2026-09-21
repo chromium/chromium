@@ -17,7 +17,6 @@ include_rules = [
   "+chrome/browser/ash/login",
   "+chrome/browser/ash/ownership",
   "+chrome/browser/ash/policy/core",
-  "+chrome/browser/ash/policy/dev_mode",
   "+chrome/browser/ash/policy/server_backed_state",
   "+chrome/browser/ash/settings",
   "+chrome/browser/enterprise/util",

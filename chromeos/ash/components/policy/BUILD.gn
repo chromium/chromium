@@ -13,6 +13,7 @@ component("policy") {
   sources = []
 
   public_deps = [
+    "dev_mode",
     "external_storage",
     "local_auth_factors",
     "restriction_schedule",

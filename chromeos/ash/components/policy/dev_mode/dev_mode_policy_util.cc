@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/dev_mode/dev_mode_policy_util.h"
+#include "chromeos/ash/components/policy/dev_mode/dev_mode_policy_util.h"
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"

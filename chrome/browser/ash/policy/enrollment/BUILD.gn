@@ -52,7 +52,6 @@ static_library("enrollment") {
     "//chrome/browser:browser_process",
     "//chrome/browser:browser_process_platform_part",
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/ash/policy/dev_mode",
     "//chrome/browser/ash/policy/enrollment/psm",
     "//chrome/browser/ash/tpm",
     "//chrome/browser/net",
@@ -65,6 +64,7 @@ static_library("enrollment") {
     "//chromeos/ash/components/dbus/device_management",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/dbus/upstart",
+    "//chromeos/ash/components/policy/dev_mode",
     "//chromeos/ash/components/system",
   ]
 

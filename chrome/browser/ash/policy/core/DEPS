@@ -22,7 +22,6 @@ include_rules = [
   "+chrome/browser/ash/login",
   "+chrome/browser/ash/notifications",
   "+chrome/browser/ash/ownership",
-  "+chrome/browser/ash/policy/dev_mode",
   "+chrome/browser/ash/policy/enrollment",
   "+chrome/browser/ash/policy/external_data",
   "+chrome/browser/ash/policy/handlers",
