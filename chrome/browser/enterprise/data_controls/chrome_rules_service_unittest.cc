@@ -72,7 +72,7 @@ class DataControlsRulesServiceTest : public testing::Test {
   const GURL google_url() const { return GURL("https://google.com"); }
 
   content::ClipboardEndpoint google_url_endpoint() {
-    return content::ClipboardEndpoint(
+    return content::ClipboardEndpoint::ForFrame(
         ui::DataTransferEndpoint(google_url()),
         base::BindLambdaForTesting([this]() -> content::BrowserContext* {
           return static_cast<content::BrowserContext*>(profile());
@@ -85,7 +85,7 @@ class DataControlsRulesServiceTest : public testing::Test {
   }
 
   content::ClipboardEndpoint incognito_endpoint() {
-    return content::ClipboardEndpoint(
+    return content::ClipboardEndpoint::ForFrame(
         ui::DataTransferEndpoint(GURL("http://foo.com")),
         base::BindLambdaForTesting([this]() -> content::BrowserContext* {
           return static_cast<content::BrowserContext*>(incognito_profile());
@@ -94,7 +94,7 @@ class DataControlsRulesServiceTest : public testing::Test {
   }
 
   content::ClipboardEndpoint other_profile_endpoint() {
-    return content::ClipboardEndpoint(
+    return content::ClipboardEndpoint::ForFrame(
         ui::DataTransferEndpoint(google_url()),
         base::BindLambdaForTesting([this]() -> content::BrowserContext* {
           return static_cast<content::BrowserContext*>(other_profile());

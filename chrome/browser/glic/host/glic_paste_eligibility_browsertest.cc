@@ -133,11 +133,12 @@ class GlicPasteEligibilityBrowserTest : public GlicBrowserTest {
     // sequence number.
     glic::SetClipboardEligibilitySeqnoForTesting(metadata.seqno);
 
-    content::ClipboardEndpoint destination(
-        ui::DataTransferEndpoint(glic_guest->GetLastCommittedURL()),
-        base::BindLambdaForTesting(
-            [glic_guest] { return glic_guest->GetBrowserContext(); }),
-        *glic_guest->GetPrimaryMainFrame());
+    content::ClipboardEndpoint destination =
+        content::ClipboardEndpoint::ForFrame(
+            ui::DataTransferEndpoint(glic_guest->GetLastCommittedURL()),
+            base::BindLambdaForTesting(
+                [glic_guest] { return glic_guest->GetBrowserContext(); }),
+            *glic_guest->GetPrimaryMainFrame());
 
     // Simulate what ChromeContentBrowserClient::IsClipboardPasteAllowedByPolicy
     // does for Glic.
@@ -173,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(GlicPasteEligibilityBrowserTest,
   content::WebContents* glic_guest = GetReadyGuest();
   ASSERT_TRUE(glic_guest);
 
-  content::ClipboardEndpoint source(
+  content::ClipboardEndpoint source = content::ClipboardEndpoint::ForFrame(
       ui::DataTransferEndpoint(url),
       base::BindLambdaForTesting(
           [source_contents] { return source_contents->GetBrowserContext(); }),
@@ -205,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(GlicPasteEligibilityBrowserTest,
   content::WebContents* glic_guest = GetReadyGuest();
   ASSERT_TRUE(glic_guest);
 
-  content::ClipboardEndpoint source(
+  content::ClipboardEndpoint source = content::ClipboardEndpoint::ForFrame(
       ui::DataTransferEndpoint(url),
       base::BindLambdaForTesting(
           [source_contents] { return source_contents->GetBrowserContext(); }),
@@ -258,12 +259,13 @@ IN_PROC_BROWSER_TEST_F(GlicPasteEligibilityBrowserTest,
       content::WebContents::Create(
           content::WebContents::CreateParams(GetProfile()));
 
-  content::ClipboardEndpoint source_non_tab(
-      ui::DataTransferEndpoint(GURL("https://example.com")),
-      base::BindLambdaForTesting([&non_tab_contents] {
-        return non_tab_contents->GetBrowserContext();
-      }),
-      *non_tab_contents->GetPrimaryMainFrame());
+  content::ClipboardEndpoint source_non_tab =
+      content::ClipboardEndpoint::ForFrame(
+          ui::DataTransferEndpoint(GURL("https://example.com")),
+          base::BindLambdaForTesting([&non_tab_contents] {
+            return non_tab_contents->GetBrowserContext();
+          }),
+          *non_tab_contents->GetPrimaryMainFrame());
   glic::OnBeforeClipboardCopy(source_non_tab);
 
   base::HistogramTester histogram_tester;
@@ -294,11 +296,12 @@ IN_PROC_BROWSER_TEST_F(GlicPasteEligibilityBrowserTest,
   content::WebContents* glic_guest = GetReadyGuest();
   ASSERT_TRUE(glic_guest);
 
-  content::ClipboardEndpoint captured_source(
-      ui::DataTransferEndpoint(ineligible_url),
-      base::BindLambdaForTesting(
-          [&]() { return source_contents->GetBrowserContext(); }),
-      *source_contents->GetPrimaryMainFrame());
+  content::ClipboardEndpoint captured_source =
+      content::ClipboardEndpoint::ForFrame(
+          ui::DataTransferEndpoint(ineligible_url),
+          base::BindLambdaForTesting(
+              [&]() { return source_contents->GetBrowserContext(); }),
+          *source_contents->GetPrimaryMainFrame());
   glic::OnBeforeClipboardCopy(captured_source);
 
   // Navigate the active tab to the eligible page in the outer sequence loop.
@@ -336,11 +339,12 @@ IN_PROC_BROWSER_TEST_F(GlicPasteEligibilityBrowserTest,
 #endif
   const GURL url = embedded_test_server()->GetURL("/title1.html");
   ASSERT_TRUE(content::NavigateToURL(source_contents, url));
-  content::ClipboardEndpoint captured_source(
-      ui::DataTransferEndpoint(url), base::BindLambdaForTesting([&]() {
-        return source_contents->GetBrowserContext();
-      }),
-      *source_contents->GetPrimaryMainFrame());
+  content::ClipboardEndpoint captured_source =
+      content::ClipboardEndpoint::ForFrame(
+          ui::DataTransferEndpoint(url), base::BindLambdaForTesting([&]() {
+            return source_contents->GetBrowserContext();
+          }),
+          *source_contents->GetPrimaryMainFrame());
   glic::OnBeforeClipboardCopy(captured_source);
 
   base::HistogramTester histogram_tester;
@@ -367,7 +371,7 @@ IN_PROC_BROWSER_TEST_F(
   content::WebContents* source_contents = active_tab->GetContents();
   content::WebContents* glic_guest = GetReadyGuest();
 
-  content::ClipboardEndpoint source(
+  content::ClipboardEndpoint source = content::ClipboardEndpoint::ForFrame(
       ui::DataTransferEndpoint(url),
       base::BindLambdaForTesting(
           [source_contents] { return source_contents->GetBrowserContext(); }),
@@ -380,7 +384,7 @@ IN_PROC_BROWSER_TEST_F(
   };
   glic::SetClipboardEligibilitySeqnoForTesting(metadata.seqno);
 
-  content::ClipboardEndpoint destination(
+  content::ClipboardEndpoint destination = content::ClipboardEndpoint::ForFrame(
       ui::DataTransferEndpoint(glic_guest->GetLastCommittedURL()),
       base::BindLambdaForTesting(
           [glic_guest] { return glic_guest->GetBrowserContext(); }),

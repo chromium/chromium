@@ -98,6 +98,23 @@ ClipboardEndpoint::ClipboardEndpoint(
       web_contents_(WebContents::FromRenderFrameHost(&rfh)->GetWeakPtr()),
       render_frame_host_id_(rfh.GetGlobalId()) {}
 
+// static
+ClipboardEndpoint ClipboardEndpoint::ForUnloadedTab(
+    base::optional_ref<const ui::DataTransferEndpoint> data_transfer_endpoint,
+    base::RepeatingCallback<BrowserContext*()> browser_context_fetcher) {
+  return ClipboardEndpoint(data_transfer_endpoint,
+                           std::move(browser_context_fetcher));
+}
+
+// static
+ClipboardEndpoint ClipboardEndpoint::ForFrame(
+    base::optional_ref<const ui::DataTransferEndpoint> data_transfer_endpoint,
+    base::RepeatingCallback<BrowserContext*()> browser_context_fetcher,
+    RenderFrameHost& rfh) {
+  return ClipboardEndpoint(data_transfer_endpoint,
+                           std::move(browser_context_fetcher), rfh);
+}
+
 ClipboardEndpoint::ClipboardEndpoint(const ClipboardEndpoint&) = default;
 ClipboardEndpoint& ClipboardEndpoint::operator=(const ClipboardEndpoint&) =
     default;
@@ -166,7 +183,7 @@ void OnReadSourceRFHToken(ui::ClipboardBuffer clipboard_buffer,
               }
             }
 
-            std::move(callback).Run(ClipboardEndpoint(
+            std::move(callback).Run(ClipboardEndpoint::ForFrame(
                 std::move(source_dte),
                 base::BindRepeating(
                     [](GlobalRenderFrameHostToken rfh_token)
@@ -225,7 +242,7 @@ std::optional<ui::DataTransferEndpoint> CreateDataEndpoint(
 }
 
 ClipboardEndpoint CreateClipboardEndpoint(RenderFrameHost& rfh) {
-  return ClipboardEndpoint(
+  return ClipboardEndpoint::ForFrame(
       CreateDataEndpoint(rfh),
       base::BindRepeating(
           [](GlobalRenderFrameHostId rfh_id) -> BrowserContext* {

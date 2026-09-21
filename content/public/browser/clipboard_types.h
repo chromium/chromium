@@ -83,19 +83,19 @@ class CONTENT_EXPORT ClipboardEndpoint {
   // from outside of Chrome's control, such as copying from a different
   // application. On CrOS, `data_transfer_endpoint` might still be populated
   // with relevant information.
+  // TODO(crbug.com/556407207): Nothing in production constructs one of these.
+  // Name it like the others or drop it once the tests no longer need it.
   explicit ClipboardEndpoint(base::optional_ref<const ui::DataTransferEndpoint>
                                  data_transfer_endpoint);
 
-  // This constructor should be called when the endpoint represents a Chrome tab
-  // that has yet to be loaded (i.e., has no render frame host or web contents,
-  // but may have a URL or profile).
-  ClipboardEndpoint(
+  // Endpoint for a Chrome tab that has yet to be loaded (i.e., has no render
+  // frame host or web contents, but may have a URL or profile).
+  static ClipboardEndpoint ForUnloadedTab(
       base::optional_ref<const ui::DataTransferEndpoint> data_transfer_endpoint,
       base::RepeatingCallback<BrowserContext*()> browser_context_fetcher);
 
-  // This constructor should be called when the endpoint represents a Chrome tab
-  // that is still alive.
-  ClipboardEndpoint(
+  // Endpoint for a Chrome tab that is still alive.
+  static ClipboardEndpoint ForFrame(
       base::optional_ref<const ui::DataTransferEndpoint> data_transfer_endpoint,
       base::RepeatingCallback<BrowserContext*()> browser_context_fetcher,
       RenderFrameHost& rfh);
@@ -129,6 +129,16 @@ class CONTENT_EXPORT ClipboardEndpoint {
   RenderFrameHost* render_frame_host() const;
 
  private:
+  // Reached through ForUnloadedTab() and ForFrame(), so callers have to say
+  // which kind of endpoint they mean.
+  ClipboardEndpoint(
+      base::optional_ref<const ui::DataTransferEndpoint> data_transfer_endpoint,
+      base::RepeatingCallback<BrowserContext*()> browser_context_fetcher);
+  ClipboardEndpoint(
+      base::optional_ref<const ui::DataTransferEndpoint> data_transfer_endpoint,
+      base::RepeatingCallback<BrowserContext*()> browser_context_fetcher,
+      RenderFrameHost& rfh);
+
   // The `ui::DataTransferEndpoint` corresponding to the clipboard interaction.
   // An empty value represents a copy from Chrome's omnibox, a copy from a
   // different desktop application (outside of CrOS), etc.

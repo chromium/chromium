@@ -532,7 +532,7 @@ void CopyPolicyTask::Start(base::OnceClosure done_callback) {
     return;
   }
 
-  content::ClipboardEndpoint source(
+  content::ClipboardEndpoint source = content::ClipboardEndpoint::ForFrame(
       ui::DataTransferEndpoint(
           source_rfh->GetMainFrame()->GetLastCommittedURL(),
           {.off_the_record =
@@ -584,7 +584,7 @@ PastePolicyTask::PastePolicyTask(
     return;
   }
 
-  content::ClipboardEndpoint source(
+  content::ClipboardEndpoint source = content::ClipboardEndpoint::ForFrame(
       ui::DataTransferEndpoint(
           source_rfh->GetMainFrame()->GetLastCommittedURL(),
           {.off_the_record =
@@ -620,7 +620,7 @@ void PastePolicyTask::Start(base::OnceClosure done_callback) {
     return;
   }
 
-  content::ClipboardEndpoint destination(
+  content::ClipboardEndpoint destination = content::ClipboardEndpoint::ForFrame(
       ui::DataTransferEndpoint(
           glic_rfh->GetLastCommittedURL(),
           {.off_the_record = glic_rfh->GetBrowserContext()->IsOffTheRecord()}),

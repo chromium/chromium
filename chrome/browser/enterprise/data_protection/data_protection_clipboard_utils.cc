@@ -854,7 +854,7 @@ void IsCopyRestrictedByDialog(
 content::ClipboardEndpoint MakeClipboardEndpoint(
     ui::DataTransferEndpoint dte,
     content::RenderFrameHost* rfh) {
-  return content::ClipboardEndpoint(
+  return content::ClipboardEndpoint::ForFrame(
       dte,
       base::BindRepeating(
           [](content::GlobalRenderFrameHostId rfh_id)
@@ -1458,19 +1458,20 @@ void CopyTextToClipboard(content::RenderFrameHost* rfh,
   ui::DataTransferEndpoint dte(
       GetSourceURL(rfh),
       {.off_the_record = rfh->GetBrowserContext()->IsOffTheRecord()});
-  content::ClipboardEndpoint clipboard_endpoint(
-      dte,
-      base::BindRepeating(
-          [](content::GlobalRenderFrameHostId rfh_id)
-              -> content::BrowserContext* {
-            auto* rfh = content::RenderFrameHost::FromID(rfh_id);
-            if (!rfh) {
-              return nullptr;
-            }
-            return rfh->GetBrowserContext();
-          },
-          rfh->GetGlobalId()),
-      *rfh);
+  content::ClipboardEndpoint clipboard_endpoint =
+      content::ClipboardEndpoint::ForFrame(
+          dte,
+          base::BindRepeating(
+              [](content::GlobalRenderFrameHostId rfh_id)
+                  -> content::BrowserContext* {
+                auto* rfh = content::RenderFrameHost::FromID(rfh_id);
+                if (!rfh) {
+                  return nullptr;
+                }
+                return rfh->GetBrowserContext();
+              },
+              rfh->GetGlobalId()),
+          *rfh);
 
   content::ClipboardPasteData data;
   data.text = text;

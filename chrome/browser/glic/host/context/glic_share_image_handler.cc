@@ -67,7 +67,7 @@ std::optional<content::ClipboardEndpoint> CreateSourceClipboardEndpoint(
     return std::nullopt;
   }
 
-  return content::ClipboardEndpoint(
+  return content::ClipboardEndpoint::ForFrame(
       ui::DataTransferEndpoint(
           rfh->GetMainFrame()->GetLastCommittedURL(),
           {.off_the_record = rfh->GetBrowserContext()->IsOffTheRecord()}),
@@ -354,12 +354,13 @@ bool GlicShareImageHandler::AreClipboardPolicyChecksRequired(
       enterprise_data_protection::IsCopyPolicyCheckRequired(*source, metadata);
 
   ui::DataTransferEndpoint dte(glic::GetGuestURL());
-  content::ClipboardEndpoint paste_destination(
-      dte, base::BindRepeating(
-               [](GlicKeyedService* service) -> content::BrowserContext* {
-                 return service->profile();
-               },
-               base::Unretained(&service_.get())));
+  content::ClipboardEndpoint paste_destination =
+      content::ClipboardEndpoint::ForUnloadedTab(
+          dte, base::BindRepeating(
+                   [](GlicKeyedService* service) -> content::BrowserContext* {
+                     return service->profile();
+                   },
+                   base::Unretained(&service_.get())));
 
   bool paste_check_required =
       enterprise_data_protection::IsPastePolicyCheckRequired(

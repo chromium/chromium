@@ -184,7 +184,7 @@ TEST_F(GlicShareImageHandlerTest,
   SetRenderFrameHostId(rfh->GetGlobalId());
   SetShareInProgress(true);
 
-  content::ClipboardEndpoint source(
+  content::ClipboardEndpoint source = content::ClipboardEndpoint::ForFrame(
       ui::DataTransferEndpoint(
           rfh->GetMainFrame()->GetLastCommittedURL(),
           {.off_the_record = rfh->GetBrowserContext()->IsOffTheRecord()}),
@@ -218,7 +218,7 @@ TEST_F(GlicShareImageHandlerTest,
   SetRenderFrameHostId(rfh->GetGlobalId());
   SetShareInProgress(true);
 
-  content::ClipboardEndpoint source(
+  content::ClipboardEndpoint source = content::ClipboardEndpoint::ForFrame(
       ui::DataTransferEndpoint(
           rfh->GetMainFrame()->GetLastCommittedURL(),
           {.off_the_record = rfh->GetBrowserContext()->IsOffTheRecord()}),

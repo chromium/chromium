@@ -123,7 +123,7 @@ class DataProtectionClipboardTest : public testing::Test {
   }
 
   content::ClipboardEndpoint SourceEndpoint() {
-    return content::ClipboardEndpoint(
+    return content::ClipboardEndpoint::ForFrame(
         ui::DataTransferEndpoint(GURL("https://source.com")),
         base::BindLambdaForTesting(
             [this]() { return contents()->GetBrowserContext(); }),
@@ -136,7 +136,7 @@ class DataProtectionClipboardTest : public testing::Test {
   }
 
   content::ClipboardEndpoint DestinationEndpoint() {
-    return content::ClipboardEndpoint(
+    return content::ClipboardEndpoint::ForFrame(
         ui::DataTransferEndpoint(GURL("https://destination.com")),
         base::BindLambdaForTesting(
             [this]() { return contents()->GetBrowserContext(); }),
@@ -144,11 +144,11 @@ class DataProtectionClipboardTest : public testing::Test {
   }
 
   content::ClipboardEndpoint CopyEndpoint(GURL url) {
-    return content::ClipboardEndpoint(ui::DataTransferEndpoint(std::move(url)),
-                                      base::BindLambdaForTesting([this]() {
-                                        return contents()->GetBrowserContext();
-                                      }),
-                                      *contents()->GetPrimaryMainFrame());
+    return content::ClipboardEndpoint::ForFrame(
+        ui::DataTransferEndpoint(std::move(url)),
+        base::BindLambdaForTesting(
+            [this]() { return contents()->GetBrowserContext(); }),
+        *contents()->GetPrimaryMainFrame());
   }
 
   void ExpectDragAllowed(
@@ -336,7 +336,7 @@ TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
   // always be returned even if no DC rule is set.
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
   auto source = SourceEndpoint();
-  auto destination = content::ClipboardEndpoint(
+  auto destination = content::ClipboardEndpoint::ForUnloadedTab(
       ui::DataTransferEndpoint(GURL("https://destination.com")),
       base::BindRepeating(
           [](Profile* profile) -> content::BrowserContext* { return profile; },

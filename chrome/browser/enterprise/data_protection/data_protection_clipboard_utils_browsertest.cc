@@ -278,11 +278,11 @@ class DataControlsClipboardUtilsBrowserTestBase
   }
 
   content::ClipboardEndpoint CreateURLClipboardEndpoint(const char* url) {
-    return content::ClipboardEndpoint(ui::DataTransferEndpoint(GURL(url)),
-                                      base::BindLambdaForTesting([this]() {
-                                        return contents()->GetBrowserContext();
-                                      }),
-                                      *contents()->GetPrimaryMainFrame());
+    return content::ClipboardEndpoint::ForFrame(
+        ui::DataTransferEndpoint(GURL(url)),
+        base::BindLambdaForTesting(
+            [this]() { return contents()->GetBrowserContext(); }),
+        *contents()->GetPrimaryMainFrame());
   }
 
   Profile* CreateAdditionalProfile() {
@@ -349,7 +349,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   GURL url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(content::NavigateToURL(contents(), url));
 
-  auto source = content::ClipboardEndpoint(
+  auto source = content::ClipboardEndpoint::ForFrame(
       ui::DataTransferEndpoint(url), base::BindLambdaForTesting([this]() {
         return contents()->GetBrowserContext();
       }),
@@ -892,19 +892,18 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   }
 
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
-  auto source = content::ClipboardEndpoint(
+  auto source = content::ClipboardEndpoint::ForFrame(
       ui::DataTransferEndpoint(GURL(test_url_0())),
       base::BindLambdaForTesting(
           [&source_profile]() -> content::BrowserContext* {
             return source_profile;
           }),
       *contents()->GetPrimaryMainFrame());
-  auto destination =
-      content::ClipboardEndpoint(ui::DataTransferEndpoint(GURL(test_url_1())),
-                                 base::BindLambdaForTesting([this]() {
-                                   return contents()->GetBrowserContext();
-                                 }),
-                                 *contents()->GetPrimaryMainFrame());
+  auto destination = content::ClipboardEndpoint::ForFrame(
+      ui::DataTransferEndpoint(GURL(test_url_1())),
+      base::BindLambdaForTesting(
+          [this]() { return contents()->GetBrowserContext(); }),
+      *contents()->GetPrimaryMainFrame());
   ui::ClipboardMetadata metadata = {
       .size = 1234,
       .format_type = ui::ClipboardFormatType::PlainTextType(),
@@ -987,19 +986,18 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   }
 
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
-  auto source = content::ClipboardEndpoint(
+  auto source = content::ClipboardEndpoint::ForFrame(
       ui::DataTransferEndpoint(GURL(test_url_0())),
       base::BindLambdaForTesting(
           [&source_profile]() -> content::BrowserContext* {
             return source_profile;
           }),
       *contents()->GetPrimaryMainFrame());
-  auto destination =
-      content::ClipboardEndpoint(ui::DataTransferEndpoint(GURL(test_url_1())),
-                                 base::BindLambdaForTesting([this]() {
-                                   return contents()->GetBrowserContext();
-                                 }),
-                                 *contents()->GetPrimaryMainFrame());
+  auto destination = content::ClipboardEndpoint::ForFrame(
+      ui::DataTransferEndpoint(GURL(test_url_1())),
+      base::BindLambdaForTesting(
+          [this]() { return contents()->GetBrowserContext(); }),
+      *contents()->GetPrimaryMainFrame());
   ui::ClipboardMetadata metadata = {
       .size = 1234,
       .format_type = ui::ClipboardFormatType::PlainTextType(),
@@ -1127,19 +1125,18 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   }
 
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
-  auto source = content::ClipboardEndpoint(
+  auto source = content::ClipboardEndpoint::ForFrame(
       ui::DataTransferEndpoint(GURL(test_url_0())),
       base::BindLambdaForTesting(
           [&source_profile]() -> content::BrowserContext* {
             return source_profile;
           }),
       *contents()->GetPrimaryMainFrame());
-  auto destination =
-      content::ClipboardEndpoint(ui::DataTransferEndpoint(GURL(test_url_1())),
-                                 base::BindLambdaForTesting([this]() {
-                                   return contents()->GetBrowserContext();
-                                 }),
-                                 *contents()->GetPrimaryMainFrame());
+  auto destination = content::ClipboardEndpoint::ForFrame(
+      ui::DataTransferEndpoint(GURL(test_url_1())),
+      base::BindLambdaForTesting(
+          [this]() { return contents()->GetBrowserContext(); }),
+      *contents()->GetPrimaryMainFrame());
   ui::ClipboardMetadata metadata = {
       .size = 1234,
       .format_type = ui::ClipboardFormatType::PlainTextType(),
@@ -1301,19 +1298,18 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   }
 
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
-  auto source = content::ClipboardEndpoint(
+  auto source = content::ClipboardEndpoint::ForFrame(
       ui::DataTransferEndpoint(GURL(test_url_0())),
       base::BindLambdaForTesting(
           [&source_profile]() -> content::BrowserContext* {
             return source_profile;
           }),
       *contents()->GetPrimaryMainFrame());
-  auto destination =
-      content::ClipboardEndpoint(ui::DataTransferEndpoint(GURL(test_url_1())),
-                                 base::BindLambdaForTesting([this]() {
-                                   return contents()->GetBrowserContext();
-                                 }),
-                                 *contents()->GetPrimaryMainFrame());
+  auto destination = content::ClipboardEndpoint::ForFrame(
+      ui::DataTransferEndpoint(GURL(test_url_1())),
+      base::BindLambdaForTesting(
+          [this]() { return contents()->GetBrowserContext(); }),
+      *contents()->GetPrimaryMainFrame());
   ui::ClipboardMetadata metadata = {
       .size = 1234,
       .format_type = ui::ClipboardFormatType::PlainTextType(),
@@ -1340,7 +1336,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest, CopyAllowed) {
   auto event_validator = event_report_validator_helper_->CreateValidator();
   event_validator.ExpectNoReport();
 
-  auto source = content::ClipboardEndpoint(
+  auto source = content::ClipboardEndpoint::ForFrame(
       ui::DataTransferEndpoint(GURL("https://google.com")),
       base::BindLambdaForTesting(
           [this]() { return contents()->GetBrowserContext(); }),
@@ -2621,7 +2617,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   GURL url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(content::NavigateToURL(contents(), url));
 
-  auto source = content::ClipboardEndpoint(
+  auto source = content::ClipboardEndpoint::ForFrame(
       ui::DataTransferEndpoint(url), base::BindLambdaForTesting([this]() {
         return contents()->GetBrowserContext();
       }),
@@ -2724,7 +2720,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   GURL url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(content::NavigateToURL(contents(), url));
 
-  auto source = content::ClipboardEndpoint(
+  auto source = content::ClipboardEndpoint::ForFrame(
       ui::DataTransferEndpoint(url), base::BindLambdaForTesting([this]() {
         return contents()->GetBrowserContext();
       }),
@@ -2838,7 +2834,7 @@ IN_PROC_BROWSER_TEST_P(
   GURL url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(content::NavigateToURL(contents(), url));
 
-  auto source = content::ClipboardEndpoint(
+  auto source = content::ClipboardEndpoint::ForFrame(
       ui::DataTransferEndpoint(url), base::BindLambdaForTesting([this]() {
         return contents()->GetBrowserContext();
       }),
@@ -2909,7 +2905,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   GURL url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(content::NavigateToURL(contents(), url));
 
-  auto source = content::ClipboardEndpoint(
+  auto source = content::ClipboardEndpoint::ForFrame(
       ui::DataTransferEndpoint(url), base::BindLambdaForTesting([this]() {
         return contents()->GetBrowserContext();
       }),
@@ -2990,7 +2986,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   GURL url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(content::NavigateToURL(contents(), url));
 
-  auto source = content::ClipboardEndpoint(
+  auto source = content::ClipboardEndpoint::ForFrame(
       ui::DataTransferEndpoint(url), base::BindLambdaForTesting([this]() {
         return contents()->GetBrowserContext();
       }),
@@ -3075,7 +3071,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   GURL url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(content::NavigateToURL(contents(), url));
 
-  auto source = content::ClipboardEndpoint(
+  auto source = content::ClipboardEndpoint::ForFrame(
       ui::DataTransferEndpoint(url), base::BindLambdaForTesting([this]() {
         return contents()->GetBrowserContext();
       }),
@@ -3158,7 +3154,7 @@ IN_PROC_BROWSER_TEST_P(
   GURL url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(content::NavigateToURL(contents(), url));
 
-  auto source = content::ClipboardEndpoint(
+  auto source = content::ClipboardEndpoint::ForFrame(
       ui::DataTransferEndpoint(url), base::BindLambdaForTesting([this]() {
         return contents()->GetBrowserContext();
       }),
@@ -3229,7 +3225,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   GURL url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(content::NavigateToURL(contents(), url));
 
-  auto source = content::ClipboardEndpoint(
+  auto source = content::ClipboardEndpoint::ForFrame(
       ui::DataTransferEndpoint(url), base::BindLambdaForTesting([this]() {
         return contents()->GetBrowserContext();
       }),
@@ -3306,7 +3302,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   GURL url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(content::NavigateToURL(contents(), url));
 
-  auto source = content::ClipboardEndpoint(
+  auto source = content::ClipboardEndpoint::ForFrame(
       ui::DataTransferEndpoint(url), base::BindLambdaForTesting([this]() {
         return contents()->GetBrowserContext();
       }),

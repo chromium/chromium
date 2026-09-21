@@ -152,7 +152,7 @@ class PasteAllowedRequestTest : public testing::Test {
   }
 
   content::ClipboardEndpoint main_endpoint() {
-    return content::ClipboardEndpoint(
+    return content::ClipboardEndpoint::ForFrame(
         ui::DataTransferEndpoint(GURL("https://google.com")),
         base::BindLambdaForTesting([this]() -> content::BrowserContext* {
           return static_cast<content::BrowserContext*>(profile_);
@@ -171,7 +171,7 @@ class PasteAllowedRequestTest : public testing::Test {
   }
 
   content::ClipboardEndpoint child_endpoint() {
-    return content::ClipboardEndpoint(
+    return content::ClipboardEndpoint::ForFrame(
         ui::DataTransferEndpoint(GURL("https://google.com")),
         base::BindLambdaForTesting([this]() -> content::BrowserContext* {
           return static_cast<content::BrowserContext*>(profile_);
@@ -192,7 +192,7 @@ class PasteAllowedRequestTest : public testing::Test {
   }
 
   content::ClipboardEndpoint secondary_endpoint() {
-    return content::ClipboardEndpoint(
+    return content::ClipboardEndpoint::ForFrame(
         ui::DataTransferEndpoint(GURL("https://google.com")),
         base::BindLambdaForTesting([this]() -> content::BrowserContext* {
           return static_cast<content::BrowserContext*>(profile_);

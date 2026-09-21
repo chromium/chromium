@@ -413,7 +413,7 @@ class ContentAnalysisDelegateBrowserTest
   }
 
   content::ClipboardEndpoint SourceEndpoint() {
-    return content::ClipboardEndpoint(
+    return content::ClipboardEndpoint::ForFrame(
         ui::DataTransferEndpoint(GURL("https://source.com")),
         base::BindLambdaForTesting([this]() {
           return static_cast<content::BrowserContext*>(browser()->GetProfile());
@@ -425,7 +425,7 @@ class ContentAnalysisDelegateBrowserTest
   }
 
   content::ClipboardEndpoint IncognitoSourceEndpoint() {
-    return content::ClipboardEndpoint(
+    return content::ClipboardEndpoint::ForFrame(
         ui::DataTransferEndpoint(GURL("https://source.com")),
         base::BindLambdaForTesting([this]() {
           return static_cast<content::BrowserContext*>(

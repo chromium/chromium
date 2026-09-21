@@ -60,11 +60,13 @@ std::u16string FindBarState::GetSearchPrepopulateText(
     return text;
   }
 
-  content::ClipboardEndpoint source(
-      source_dte,
-      base::BindRepeating(
-          [](Profile* profile) -> content::BrowserContext* { return profile; },
-          profile_.get()));
+  content::ClipboardEndpoint source =
+      content::ClipboardEndpoint::ForUnloadedTab(
+          source_dte, base::BindRepeating(
+                          [](Profile* profile) -> content::BrowserContext* {
+                            return profile;
+                          },
+                          profile_.get()));
 
   content::ClipboardEndpoint destination =
       content::CreateClipboardEndpoint(*web_contents->GetPrimaryMainFrame());

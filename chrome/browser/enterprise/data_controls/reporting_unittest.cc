@@ -103,7 +103,7 @@ class DataControlsReportingTest : public testing::Test {
   }
 
   content::ClipboardEndpoint managed_endpoint(GURL url) {
-    return content::ClipboardEndpoint(
+    return content::ClipboardEndpoint::ForFrame(
         ui::DataTransferEndpoint(url),
         base::BindLambdaForTesting([this]() -> content::BrowserContext* {
           return static_cast<content::BrowserContext*>(managed_profile_);
@@ -112,7 +112,7 @@ class DataControlsReportingTest : public testing::Test {
   }
 
   content::ClipboardEndpoint incognito_managed_endpoint(GURL url) {
-    return content::ClipboardEndpoint(
+    return content::ClipboardEndpoint::ForFrame(
         ui::DataTransferEndpoint(url),
         base::BindLambdaForTesting([this]() -> content::BrowserContext* {
           return static_cast<content::BrowserContext*>(
@@ -122,7 +122,7 @@ class DataControlsReportingTest : public testing::Test {
   }
 
   content::ClipboardEndpoint unmanaged_endpoint(GURL url) {
-    return content::ClipboardEndpoint(
+    return content::ClipboardEndpoint::ForFrame(
         ui::DataTransferEndpoint(url),
         base::BindLambdaForTesting([this]() -> content::BrowserContext* {
           return static_cast<content::BrowserContext*>(unmanaged_profile_);
@@ -131,7 +131,7 @@ class DataControlsReportingTest : public testing::Test {
   }
 
   content::ClipboardEndpoint incognito_unmanaged_endpoint(GURL url) {
-    return content::ClipboardEndpoint(
+    return content::ClipboardEndpoint::ForFrame(
         ui::DataTransferEndpoint(url),
         base::BindLambdaForTesting([this]() -> content::BrowserContext* {
           return static_cast<content::BrowserContext*>(
@@ -141,7 +141,7 @@ class DataControlsReportingTest : public testing::Test {
   }
 
   content::ClipboardEndpoint guest_endpoint(GURL url) {
-    return content::ClipboardEndpoint(
+    return content::ClipboardEndpoint::ForFrame(
         ui::DataTransferEndpoint(url),
         base::BindLambdaForTesting([this]() -> content::BrowserContext* {
           return static_cast<content::BrowserContext*>(guest_profile_);

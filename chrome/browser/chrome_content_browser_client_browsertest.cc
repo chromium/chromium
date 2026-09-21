@@ -1297,7 +1297,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, BitmapAllowed) {
   client()->IsClipboardPasteAllowedByPolicy(
       content::ClipboardEndpoint(
           ui::DataTransferEndpoint(GURL("https://google.com"))),
-      content::ClipboardEndpoint(
+      content::ClipboardEndpoint::ForFrame(
           ui::DataTransferEndpoint(GURL("https://google.com")),
           base::BindLambdaForTesting(
               [contents] { return contents->GetBrowserContext(); }),
@@ -1324,7 +1324,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, BitmapBlocked) {
   client()->IsClipboardPasteAllowedByPolicy(
       content::ClipboardEndpoint(
           ui::DataTransferEndpoint(GURL("https://google.com"))),
-      content::ClipboardEndpoint(
+      content::ClipboardEndpoint::ForFrame(
           ui::DataTransferEndpoint(GURL("https://google.com")),
           base::BindLambdaForTesting(
               [contents] { return contents->GetBrowserContext(); }),
@@ -1358,7 +1358,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, TextAllowed) {
   client()->IsClipboardPasteAllowedByPolicy(
       content::ClipboardEndpoint(
           ui::DataTransferEndpoint(GURL("https://google.com"))),
-      content::ClipboardEndpoint(
+      content::ClipboardEndpoint::ForFrame(
           ui::DataTransferEndpoint(GURL("https://google.com")),
           base::BindLambdaForTesting(
               [contents] { return contents->GetBrowserContext(); }),
@@ -1385,7 +1385,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, TextBlocked) {
   client()->IsClipboardPasteAllowedByPolicy(
       content::ClipboardEndpoint(
           ui::DataTransferEndpoint(GURL("https://google.com"))),
-      content::ClipboardEndpoint(
+      content::ClipboardEndpoint::ForFrame(
           ui::DataTransferEndpoint(GURL("https://google.com")),
           base::BindLambdaForTesting(
               [contents] { return contents->GetBrowserContext(); }),
@@ -1419,7 +1419,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, HtmlAllowed) {
   client()->IsClipboardPasteAllowedByPolicy(
       content::ClipboardEndpoint(
           ui::DataTransferEndpoint(GURL("https://google.com"))),
-      content::ClipboardEndpoint(
+      content::ClipboardEndpoint::ForFrame(
           ui::DataTransferEndpoint(GURL("https://google.com")),
           base::BindLambdaForTesting(
               [contents] { return contents->GetBrowserContext(); }),
@@ -1446,7 +1446,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, HtmlBlocked) {
   client()->IsClipboardPasteAllowedByPolicy(
       content::ClipboardEndpoint(
           ui::DataTransferEndpoint(GURL("https://google.com"))),
-      content::ClipboardEndpoint(
+      content::ClipboardEndpoint::ForFrame(
           ui::DataTransferEndpoint(GURL("https://google.com")),
           base::BindLambdaForTesting(
               [contents] { return contents->GetBrowserContext(); }),
@@ -1480,7 +1480,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, SvgAllowed) {
   client()->IsClipboardPasteAllowedByPolicy(
       content::ClipboardEndpoint(
           ui::DataTransferEndpoint(GURL("https://google.com"))),
-      content::ClipboardEndpoint(
+      content::ClipboardEndpoint::ForFrame(
           ui::DataTransferEndpoint(GURL("https://google.com")),
           base::BindLambdaForTesting(
               [contents] { return contents->GetBrowserContext(); }),
@@ -1507,7 +1507,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, SvgBlocked) {
   client()->IsClipboardPasteAllowedByPolicy(
       content::ClipboardEndpoint(
           ui::DataTransferEndpoint(GURL("https://google.com"))),
-      content::ClipboardEndpoint(
+      content::ClipboardEndpoint::ForFrame(
           ui::DataTransferEndpoint(GURL("https://google.com")),
           base::BindLambdaForTesting(
               [contents] { return contents->GetBrowserContext(); }),
@@ -1540,7 +1540,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, RtfAllowed) {
   client()->IsClipboardPasteAllowedByPolicy(
       content::ClipboardEndpoint(
           ui::DataTransferEndpoint(GURL("https://google.com"))),
-      content::ClipboardEndpoint(
+      content::ClipboardEndpoint::ForFrame(
           ui::DataTransferEndpoint(GURL("https://google.com")),
           base::BindLambdaForTesting(
               [contents] { return contents->GetBrowserContext(); }),
@@ -1567,7 +1567,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, RtfBlocked) {
   client()->IsClipboardPasteAllowedByPolicy(
       content::ClipboardEndpoint(
           ui::DataTransferEndpoint(GURL("https://google.com"))),
-      content::ClipboardEndpoint(
+      content::ClipboardEndpoint::ForFrame(
           ui::DataTransferEndpoint(GURL("https://google.com")),
           base::BindLambdaForTesting(
               [contents] { return contents->GetBrowserContext(); }),
@@ -1601,7 +1601,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, CustomDataAllowed) {
   client()->IsClipboardPasteAllowedByPolicy(
       content::ClipboardEndpoint(
           ui::DataTransferEndpoint(GURL("https://google.com"))),
-      content::ClipboardEndpoint(
+      content::ClipboardEndpoint::ForFrame(
           ui::DataTransferEndpoint(GURL("https://google.com")),
           base::BindLambdaForTesting(
               [contents] { return contents->GetBrowserContext(); }),
@@ -1632,7 +1632,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, CustomDataBlocked) {
   client()->IsClipboardPasteAllowedByPolicy(
       content::ClipboardEndpoint(
           ui::DataTransferEndpoint(GURL("https://google.com"))),
-      content::ClipboardEndpoint(
+      content::ClipboardEndpoint::ForFrame(
           ui::DataTransferEndpoint(GURL("https://google.com")),
           base::BindLambdaForTesting(
               [contents] { return contents->GetBrowserContext(); }),
@@ -1674,7 +1674,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, DISABLED_AllFilesAllowed) {
   client()->IsClipboardPasteAllowedByPolicy(
       content::ClipboardEndpoint(
           ui::DataTransferEndpoint(GURL("https://google.com"))),
-      content::ClipboardEndpoint(
+      content::ClipboardEndpoint::ForFrame(
           ui::DataTransferEndpoint(GURL("https://google.com")),
           base::BindLambdaForTesting(
               [contents] { return contents->GetBrowserContext(); }),
@@ -1706,7 +1706,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, DISABLED_AllFilesBlocked) {
   client()->IsClipboardPasteAllowedByPolicy(
       content::ClipboardEndpoint(
           ui::DataTransferEndpoint(GURL("https://google.com"))),
-      content::ClipboardEndpoint(
+      content::ClipboardEndpoint::ForFrame(
           ui::DataTransferEndpoint(GURL("https://google.com")),
           base::BindLambdaForTesting(
               [contents] { return contents->GetBrowserContext(); }),
@@ -1744,7 +1744,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, DISABLED_SomeFilesBlocked) {
   client()->IsClipboardPasteAllowedByPolicy(
       content::ClipboardEndpoint(
           ui::DataTransferEndpoint(GURL("https://google.com"))),
-      content::ClipboardEndpoint(
+      content::ClipboardEndpoint::ForFrame(
           ui::DataTransferEndpoint(GURL("https://google.com")),
           base::BindLambdaForTesting(
               [contents] { return contents->GetBrowserContext(); }),
@@ -1794,7 +1794,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest,
   // Initiates a copy request and verify that replacement is written as per the
   // policy.
   client()->IsClipboardCopyAllowedByPolicy(
-      /*source=*/content::ClipboardEndpoint(
+      /*source=*/content::ClipboardEndpoint::ForFrame(
           ui::DataTransferEndpoint(GURL("https://google.com")),
           base::BindLambdaForTesting(
               [&contents]() { return contents->GetBrowserContext(); }),
