@@ -8,9 +8,11 @@
 #include <string>
 
 #include "base/functional/callback_helpers.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "components/browser_actuator/internal/proto/transport_messages.pb.h"
 #include "components/browser_actuator/public/common.h"
+#include "components/browser_actuator/public/payload_type_mapping.h"
 #include "components/browser_actuator/public/transport_session.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -177,6 +179,12 @@ TEST(ControlTransportHandlerTest, FactoryOnNewSession) {
   handler->OnMessage(PayloadType::kControl, command.SerializeAsString());
 
   EXPECT_EQ(closed_session_id, "session_abc");
+}
+
+// Pins `ExpectedTypeUrl` to the generated proto; this layer may include it.
+TEST(ControlTransportHandlerTest, ExpectedTypeUrlMatchesControlCommand) {
+  EXPECT_EQ(ExpectedTypeUrl(PayloadType::kControl),
+            base::StrCat({kTypeUrlPrefix, ControlCommand().GetTypeName()}));
 }
 
 }  // namespace

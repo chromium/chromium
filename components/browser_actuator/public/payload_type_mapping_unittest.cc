@@ -4,6 +4,9 @@
 
 #include "components/browser_actuator/public/payload_type_mapping.h"
 
+#include <set>
+#include <string_view>
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace browser_actuator {
@@ -45,6 +48,23 @@ TEST(PayloadTypeMappingTest, RejectsUnknownWireEnum) {
   EXPECT_EQ(FromDownstreamProtoPayloadType(
                 static_cast<ActuatorDownstreamPayloadType>(999)),
             std::nullopt);
+}
+
+TEST(PayloadTypeMappingTest, ExpectedTypeUrlIsWellFormedForRoutableTypes) {
+  for (PayloadType payload_type : kRoutablePayloadTypes) {
+    std::string_view type_url = ExpectedTypeUrl(payload_type);
+    EXPECT_TRUE(type_url.starts_with(kTypeUrlPrefix)) << type_url;
+    // A prefix with nothing after it would match no message at all.
+    EXPECT_GT(type_url.size(), kTypeUrlPrefix.size()) << type_url;
+  }
+}
+
+TEST(PayloadTypeMappingTest, ExpectedTypeUrlIsUniquePerPayloadType) {
+  std::set<std::string_view> seen;
+  for (PayloadType payload_type : kRoutablePayloadTypes) {
+    EXPECT_TRUE(seen.insert(ExpectedTypeUrl(payload_type)).second)
+        << "Duplicate type_url: " << ExpectedTypeUrl(payload_type);
+  }
 }
 
 }  // namespace

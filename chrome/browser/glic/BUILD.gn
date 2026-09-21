@@ -818,6 +818,7 @@ source_set("unit_tests") {
     "//chrome/browser/sync",
     "//chrome/browser/ui:ui_features",
     "//chrome/test/base:chrome_test_scoped_utils",
+    "//components/browser_actuator/public:payload_type_mapping",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
     "//components/page_content_annotations/content",

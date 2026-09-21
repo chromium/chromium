@@ -25,6 +25,7 @@
 namespace browser_actuator {
 
 class ActuatorDownstreamMessage;
+class ActuatorDownstreamTypedPayload;
 class TransportChannel;
 class TransportHandler;
 
@@ -107,6 +108,10 @@ class TransportSessionImpl : public TransportSession {
   }
 
  private:
+  // Processes a single downstream typed payload.
+  // WARNING: may delete `this`, because a handler may destroy the session.
+  void ProcessTypedPayload(const ActuatorDownstreamTypedPayload& typed_payload);
+
   // Resolves and instantiates the handlers registered for a given
   // `payload_type`. If the factories for this payload type have not been
   // instantiated yet for this session, they are resolved from the registry,

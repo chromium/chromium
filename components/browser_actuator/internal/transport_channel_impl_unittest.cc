@@ -28,6 +28,7 @@
 #include "components/browser_actuator/internal/transport_session_impl.h"
 #include "components/browser_actuator/internal/transport_session_registry_impl.h"
 #include "components/browser_actuator/public/features.h"
+#include "components/browser_actuator/public/payload_type_mapping.h"
 #include "components/browser_actuator/public/transport_handler.h"
 #include "components/browser_actuator/public/transport_handler_factory.h"
 #include "components/browser_actuator/public/transport_handler_factory_registry.h"
@@ -293,6 +294,7 @@ TEST_F(TransportChannelImplTest,
 struct TestPayload {
   ActuatorDownstreamPayloadType type;
   std::string value;
+  std::string type_url;
 };
 
 std::string SerializedDownstreamMessage(
@@ -310,6 +312,7 @@ std::string SerializedDownstreamMessage(
     typed->set_payload_type(payload.type);
     typed->mutable_proto_payload()->set_value(payload.value.data(),
                                               payload.value.size());
+    typed->mutable_proto_payload()->set_type_url(payload.type_url);
   }
 
   return response.SerializeAsString();
@@ -335,6 +338,32 @@ TEST_F(TransportChannelImplTest, RoutesPayloadTypeToHandler) {
         command.SerializeAsString()}}));
 
   EXPECT_TRUE(message_handled);
+}
+
+// Regression test for crbug.com/560176806.
+TEST_F(TransportChannelImplTest, RoutesExperimentalTriggeringToHandler) {
+  std::string handled_payload;
+  bool message_handled = false;
+  FakeTransportHandlerFactory factory(
+      {PayloadType::kExperimentalTriggering},
+      base::BindLambdaForTesting(
+          [&](TransportSession*) -> std::unique_ptr<TransportHandler> {
+            return std::make_unique<FakeTransportHandler>(
+                base::BindLambdaForTesting([&](std::string_view payload) {
+                  message_handled = true;
+                  handled_payload = std::string(payload);
+                }));
+          }));
+  channel_->GetHandlerFactoryRegistry()->RegisterFactory(&factory);
+
+  fake_client_->Dispatch(SerializedDownstreamMessage(
+      "s1", 1,
+      {{ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING,
+        "triggering-bytes",
+        std::string(ExpectedTypeUrl(PayloadType::kExperimentalTriggering))}}));
+
+  EXPECT_TRUE(message_handled);
+  EXPECT_EQ(handled_payload, "triggering-bytes");
 }
 
 TEST_F(TransportChannelImplTest, SessionDestructionMidLoop) {

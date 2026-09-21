@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "components/browser_actuator/internal/proto/transport_messages.pb.h"
 #include "components/browser_actuator/internal/transport_handler_factory_registry_impl.h"
+#include "components/browser_actuator/public/payload_type_mapping.h"
 #include "components/browser_actuator/test_support/mock_transport_channel.h"
 #include "components/browser_actuator/test_support/mock_transport_handler.h"
 #include "components/browser_actuator/test_support/mock_transport_handler_factory.h"
@@ -24,6 +25,20 @@ namespace browser_actuator {
 namespace {
 
 constexpr std::string_view kTestPayload = "test-payload";
+
+ActuatorDownstreamMessage MakeDownstreamMessage(
+    ActuatorDownstreamPayloadType wire_type,
+    std::string_view type_url,
+    std::string_view value) {
+  ActuatorDownstreamMessage message;
+  message.set_session_id("test_session");
+  message.set_sequence_number(1);
+  auto* typed = message.add_typed_payloads();
+  typed->set_payload_type(wire_type);
+  typed->mutable_proto_payload()->set_type_url(std::string(type_url));
+  typed->mutable_proto_payload()->set_value(std::string(value));
+  return message;
+}
 
 TEST(TransportSessionImplTest, GetSessionId) {
   MockTransportChannel channel;
@@ -305,14 +320,147 @@ TEST(TransportSessionImplTest, ProcessDownstreamMessageRoutesControlCommand) {
   EXPECT_CALL(*handler_ptr,
               OnMessage(PayloadType::kControl, serialized_command));
 
+  session.ProcessDownstreamMessage(MakeDownstreamMessage(
+      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
+      ExpectedTypeUrl(PayloadType::kControl), serialized_command));
+}
+
+// Regression test for crbug.com/560176806.
+TEST(TransportSessionImplTest,
+     ProcessDownstreamMessageRoutesExperimentalTriggering) {
+  MockTransportChannel channel;
+  TransportHandlerFactoryRegistryImpl registry;
+
+  EXPECT_CALL(channel, GetHandlerFactoryRegistry())
+      .WillRepeatedly(testing::Return(&registry));
+
+  TransportSessionImpl session("test_session", channel.GetWeakPtr());
+
+  MockTransportHandlerFactory factory({PayloadType::kExperimentalTriggering});
+  registry.RegisterFactory(&factory);
+
+  auto handler = std::make_unique<MockTransportHandler>();
+  MockTransportHandler* handler_ptr = handler.get();
+
+  EXPECT_CALL(factory, OnNewSession(&session))
+      .WillOnce(testing::Return(std::move(handler)));
+  EXPECT_CALL(*handler_ptr,
+              OnMessage(PayloadType::kExperimentalTriggering, kTestPayload));
+
+  session.ProcessDownstreamMessage(MakeDownstreamMessage(
+      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING,
+      ExpectedTypeUrl(PayloadType::kExperimentalTriggering), kTestPayload));
+}
+
+TEST(TransportSessionImplTest,
+     ProcessDownstreamMessageRoutesMultiplePayloadTypes) {
+  MockTransportChannel channel;
+  TransportHandlerFactoryRegistryImpl registry;
+
+  EXPECT_CALL(channel, GetHandlerFactoryRegistry())
+      .WillRepeatedly(testing::Return(&registry));
+
+  TransportSessionImpl session("test_session", channel.GetWeakPtr());
+
+  MockTransportHandlerFactory control_factory({PayloadType::kControl},
+                                              FactoryId::kControl);
+  MockTransportHandlerFactory triggering_factory(
+      {PayloadType::kExperimentalTriggering},
+      FactoryId::kExperimentalTriggering);
+  registry.RegisterFactory(&control_factory);
+  registry.RegisterFactory(&triggering_factory);
+
+  auto control_handler = std::make_unique<MockTransportHandler>();
+  MockTransportHandler* control_handler_ptr = control_handler.get();
+  auto triggering_handler = std::make_unique<MockTransportHandler>();
+  MockTransportHandler* triggering_handler_ptr = triggering_handler.get();
+
+  EXPECT_CALL(control_factory, OnNewSession(&session))
+      .WillOnce(testing::Return(std::move(control_handler)));
+  EXPECT_CALL(triggering_factory, OnNewSession(&session))
+      .WillOnce(testing::Return(std::move(triggering_handler)));
+  EXPECT_CALL(*control_handler_ptr,
+              OnMessage(PayloadType::kControl, "control-bytes"));
+  EXPECT_CALL(
+      *triggering_handler_ptr,
+      OnMessage(PayloadType::kExperimentalTriggering, "triggering-bytes"));
+
   ActuatorDownstreamMessage message;
   message.set_session_id("test_session");
   message.set_sequence_number(1);
-  auto* typed = message.add_typed_payloads();
-  typed->set_payload_type(ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
-  typed->mutable_proto_payload()->set_value(serialized_command);
+  auto* control = message.add_typed_payloads();
+  control->set_payload_type(ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+  control->mutable_proto_payload()->set_value("control-bytes");
+  auto* triggering = message.add_typed_payloads();
+  triggering->set_payload_type(
+      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING);
+  triggering->mutable_proto_payload()->set_value("triggering-bytes");
 
   session.ProcessDownstreamMessage(message);
+}
+
+TEST(TransportSessionImplTest,
+     ProcessDownstreamMessageRejectsMismatchedTypeUrl) {
+  MockTransportChannel channel;
+  TransportHandlerFactoryRegistryImpl registry;
+
+  EXPECT_CALL(channel, GetHandlerFactoryRegistry())
+      .WillRepeatedly(testing::Return(&registry));
+
+  TransportSessionImpl session("test_session", channel.GetWeakPtr());
+
+  MockTransportHandlerFactory factory({PayloadType::kControl});
+  registry.RegisterFactory(&factory);
+
+  EXPECT_CALL(factory, OnNewSession).Times(0);
+
+  session.ProcessDownstreamMessage(MakeDownstreamMessage(
+      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
+      ExpectedTypeUrl(PayloadType::kExperimentalTriggering), kTestPayload));
+}
+
+TEST(TransportSessionImplTest, ProcessDownstreamMessageAcceptsEmptyTypeUrl) {
+  MockTransportChannel channel;
+  TransportHandlerFactoryRegistryImpl registry;
+
+  EXPECT_CALL(channel, GetHandlerFactoryRegistry())
+      .WillRepeatedly(testing::Return(&registry));
+
+  TransportSessionImpl session("test_session", channel.GetWeakPtr());
+
+  MockTransportHandlerFactory factory({PayloadType::kControl});
+  registry.RegisterFactory(&factory);
+
+  auto handler = std::make_unique<MockTransportHandler>();
+  MockTransportHandler* handler_ptr = handler.get();
+
+  EXPECT_CALL(factory, OnNewSession(&session))
+      .WillOnce(testing::Return(std::move(handler)));
+  EXPECT_CALL(*handler_ptr, OnMessage(PayloadType::kControl, kTestPayload));
+
+  session.ProcessDownstreamMessage(
+      MakeDownstreamMessage(ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
+                            /*type_url=*/"", kTestPayload));
+}
+
+TEST(TransportSessionImplTest,
+     ProcessDownstreamMessageIgnoresUnknownPayloadType) {
+  MockTransportChannel channel;
+  TransportHandlerFactoryRegistryImpl registry;
+
+  EXPECT_CALL(channel, GetHandlerFactoryRegistry())
+      .WillRepeatedly(testing::Return(&registry));
+
+  TransportSessionImpl session("test_session", channel.GetWeakPtr());
+
+  MockTransportHandlerFactory factory({PayloadType::kControl});
+  registry.RegisterFactory(&factory);
+
+  EXPECT_CALL(factory, OnNewSession).Times(0);
+
+  session.ProcessDownstreamMessage(
+      MakeDownstreamMessage(static_cast<ActuatorDownstreamPayloadType>(999),
+                            /*type_url=*/"", kTestPayload));
 }
 
 TEST(TransportSessionImplTest,

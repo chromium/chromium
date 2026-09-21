@@ -4,10 +4,16 @@
 
 #include "components/browser_actuator/internal/transport_session_impl.h"
 
+#include <optional>
+#include <string>
+#include <string_view>
+#include <tuple>
+
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "components/browser_actuator/internal/proto/transport_messages.pb.h"
+#include "components/browser_actuator/public/payload_type_mapping.h"
 #include "components/browser_actuator/public/transport_channel.h"
 #include "components/browser_actuator/public/transport_handler.h"
 #include "components/browser_actuator/public/transport_handler_factory.h"
@@ -171,28 +177,45 @@ void TransportSessionImpl::ProcessDownstreamMessage(
 
   base::WeakPtr<TransportSessionImpl> weak_this = GetWeakPtr();
   for (const auto& typed_payload : message.typed_payloads()) {
+    // A handler's OnMessage() may have synchronously destroyed this session.
     if (!weak_this) {
       break;
     }
-    // Map ActuatorDownstreamPayloadType to public PayloadType
-    switch (typed_payload.payload_type()) {
-      case ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND: {
-        auto result = ProcessPayload(PayloadType::kControl,
-                                     typed_payload.proto_payload().value());
-        if (!result.has_value()) {
-          DLOG(WARNING) << "Failed to process payload "
-                        << "error: " << static_cast<int>(result.error());
-        }
-        break;
-      }
+    ProcessTypedPayload(typed_payload);
+  }
+}
 
-      case ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_UNSPECIFIED:
-      default:
-        // Ignore unspecified or unknown payload types
-        DLOG(WARNING) << "Ignoring payload with unspecified or unknown type: "
-                      << typed_payload.payload_type();
-        continue;
-    }
+void TransportSessionImpl::ProcessTypedPayload(
+    const ActuatorDownstreamTypedPayload& typed_payload) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::optional<PayloadType> payload_type =
+      FromDownstreamProtoPayloadType(typed_payload.payload_type());
+  if (!payload_type.has_value()) {
+    DLOG(WARNING) << "Ignoring payload with unspecified or unknown type: "
+                  << typed_payload.payload_type();
+    return;
+  }
+
+  // `Any::Is<T>()` is unavailable for LITE_RUNTIME protos, so `type_url` is
+  // compared by hand. An empty value is accepted; the server does not always
+  // populate it.
+  // TODO(crbug.com/560176806): Require `type_url` once the server always sets
+  // it.
+  const std::string& type_url = typed_payload.proto_payload().type_url();
+  if (!type_url.empty() && type_url != ExpectedTypeUrl(*payload_type)) {
+    DLOG(WARNING) << "Ignoring payload with unexpected type_url: " << type_url
+                  << ", expected: " << ExpectedTypeUrl(*payload_type);
+    return;
+  }
+
+  auto result =
+      ProcessPayload(*payload_type, typed_payload.proto_payload().value());
+  // WARNING: `this` may have been deleted by a handler. Do not access any
+  // member variables here.
+  if (!result.has_value()) {
+    DLOG(WARNING) << "Failed to process payload "
+                  << "error: " << static_cast<int>(result.error());
   }
 }
 

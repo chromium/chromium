@@ -7,6 +7,7 @@
 
 #include <array>
 #include <optional>
+#include <string_view>
 
 #include "base/notreached.h"
 #include "components/browser_actuator/public/common.h"
@@ -42,6 +43,24 @@ inline ActuatorDownstreamPayloadType ToDownstreamProtoPayloadType(
   NOTREACHED();
 }
 // LINT.ThenChange(//components/browser_actuator/public/common.h:PayloadType)
+
+inline constexpr std::string_view kTypeUrlPrefix = "type.googleapis.com/";
+
+// Returns the expected `Any.type_url` for a downstream payload. Spelled as
+// literals because this layer cannot name concrete payload protos; each is
+// pinned to its proto by a test next to that proto's handler.
+inline std::string_view ExpectedTypeUrl(PayloadType payload_type) {
+  switch (payload_type) {
+    case PayloadType::kControl:
+      return "type.googleapis.com/browser_actuator.ControlCommand";
+    case PayloadType::kExperimentalTriggering:
+      return "type.googleapis.com/"
+             "components_sharing_message.GlicExperimentalTriggering";
+    case PayloadType::kUnspecified:
+      NOTREACHED();
+  }
+  NOTREACHED();
+}
 
 // Returns the payload type that `proto_type` routes to, or `std::nullopt` if it
 // is unspecified or not a value this client knows how to route. Callers must
