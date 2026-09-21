@@ -6,20 +6,20 @@ Verify that removal of one of the multiple projects, all of which are associated
 Adding urls
 top
   127.0.0.1:8000
-    devtools/resources
-      inspected-page.html
-  localhost:8080
-    LayoutTests/inspector/debugger/foo/bar
-      script.js
+    devtools
+      resources
+        inspected-page.html
+      sources/LayoutTests/inspector/debugger/foo/bar
+        script.js
 
 
 ================================================
 Removing contentScripts project
 top
   127.0.0.1:8000
-    devtools/resources
-      inspected-page.html
-  localhost:8080
-    LayoutTests/inspector/debugger/foo/bar
-      script.js
+    devtools
+      resources
+        inspected-page.html
+      sources/LayoutTests/inspector/debugger/foo/bar
+        script.js
 

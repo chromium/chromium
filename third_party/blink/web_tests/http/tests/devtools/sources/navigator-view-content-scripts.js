@@ -14,7 +14,7 @@ import * as Main from 'devtools/entrypoints/main/main.js';
       `Verify that removal of one of the multiple projects, all of which are associated with the same frame, doesn't lead navigator to discard the frame treenode.\n`);
   await TestRunner.showPanel('sources');
 
-  var rootURL = 'http://localhost:8080/LayoutTests/inspector/debugger/';
+  var rootURL = TestRunner.url('LayoutTests/inspector/debugger/');
   var sourcesNavigatorView = new Sources.SourcesNavigator.NetworkNavigatorView(Main.MainImpl.MainImpl.universeForTest.networkProjectManager);
   sourcesNavigatorView.show(UI.InspectorView.InspectorView.instance().element);
 

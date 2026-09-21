@@ -18,7 +18,7 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
         SourcesModule.TabbedEditorContainer.TabbedEditorContainer.prototype.titleForFile(uiSourceCode) + '".');
   }
 
-  const baseURL = 'http://localhost:8080/folder/';
+  const baseURL = TestRunner.url('folder/');
   await dumpUISourceCodeDisplayName(baseURL + 'filename?parameter=value&nnn=1');
   await dumpUISourceCodeDisplayName(baseURL + 'very-long-filename-123456?nn=1');
   await dumpUISourceCodeDisplayName(baseURL + 'too-long-filename-1234567890?nn=1');

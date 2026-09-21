@@ -26,13 +26,28 @@ import * as Main from 'devtools/entrypoints/main/main.js';
   const contentScriptsNavigatorView =
       createNavigatorView(Sources.SourcesNavigator.ContentScriptsNavigatorView);
 
-  var pageMock = new SDKTestRunner.PageMock('http://example.com');
-  pageMock.turnIntoWorker();
-  pageMock.connectAsMainTarget('mock-target-1');
+  var rootMock = new SDKTestRunner.PageMock('http://example.com');
+  rootMock.turnIntoWorker();
+  rootMock.connectAsMainTarget('mock-target-root');
+  rootMock.target.setInspectedURL(TestRunner.url(''));
+
+  const pageMocks = new Map();
+  function getPageMock(url) {
+    var parsedURL = new URL(url.startsWith('*') ? 'http://example.com' + url : url);
+    var origin = parsedURL.origin;
+    if (!pageMocks.has(origin)) {
+      var mock = new SDKTestRunner.PageMock(origin);
+      mock.turnIntoWorker();
+      mock.connectAsChildTarget('mock-target-' + pageMocks.size, rootMock);
+      mock.target.setInspectedURL(origin + '/');
+      pageMocks.set(origin, mock);
+    }
+    return pageMocks.get(origin);
+  }
 
   var uiSourceCodes = [];
   async function addUISourceCode(url, isContentScript) {
-    pageMock.evalScript(url, '', isContentScript);
+    getPageMock(url).evalScript(url, '', isContentScript);
     var uiSourceCode = await TestRunner.waitForUISourceCode(url);
     uiSourceCodes.push(uiSourceCode);
   }

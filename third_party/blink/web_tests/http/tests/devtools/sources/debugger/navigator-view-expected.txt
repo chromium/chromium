@@ -11,22 +11,22 @@ top
 Sources:
 -------- Setting mode: [frame/domain]
 top
-  localhost:8080
+  127.0.0.1:8000
     script.js
 Sources:
 -------- Setting mode: [frame/domain/folder]
 top
-  localhost:8080
-    LayoutTests/inspector/debugger/foo/bar
+  127.0.0.1:8000
+    devtools/sources/debugger/LayoutTests/inspector/debugger/foo/bar
       script.js
 Sources:
 -------- Setting mode: [domain]
-localhost:8080
+127.0.0.1:8000
   script.js
 Sources:
 -------- Setting mode: [domain/folder]
-localhost:8080
-  LayoutTests/inspector/debugger/foo/bar
+127.0.0.1:8000
+  devtools/sources/debugger/LayoutTests/inspector/debugger/foo/bar
     script.js
 
 
@@ -40,25 +40,25 @@ top
 Sources:
 -------- Setting mode: [frame/domain]
 top
-  localhost:8080
+  127.0.0.1:8000
     script.js
     script.js?a=2
 Sources:
 -------- Setting mode: [frame/domain/folder]
 top
-  localhost:8080
-    LayoutTests/inspector/debugger/foo/bar
+  127.0.0.1:8000
+    devtools/sources/debugger/LayoutTests/inspector/debugger/foo/bar
       script.js
       script.js?a=2
 Sources:
 -------- Setting mode: [domain]
-localhost:8080
+127.0.0.1:8000
   script.js
   script.js?a=2
 Sources:
 -------- Setting mode: [domain/folder]
-localhost:8080
-  LayoutTests/inspector/debugger/foo/bar
+127.0.0.1:8000
+  devtools/sources/debugger/LayoutTests/inspector/debugger/foo/bar
     script.js
     script.js?a=2
 
@@ -76,38 +76,38 @@ top
 Sources:
 -------- Setting mode: [frame/domain]
 top
-  localhost:8080
+  127.0.0.1:8000
     script.js
     script.js?a=2
   childframe (post-message-listener.html)
-    localhost:8080
+    127.0.0.1:8000
       script.js
       script.js?a=1
 Sources:
 -------- Setting mode: [frame/domain/folder]
 top
-  localhost:8080
-    LayoutTests/inspector/debugger/foo/bar
+  127.0.0.1:8000
+    devtools/sources/debugger/LayoutTests/inspector/debugger/foo/bar
       script.js
       script.js?a=2
   childframe (post-message-listener.html)
-    localhost:8080
-      LayoutTests/inspector/debugger/foo
+    127.0.0.1:8000
+      devtools/sources/debugger/LayoutTests/inspector/debugger/foo
         bar
           script.js?a=1
         baz
           script.js
 Sources:
 -------- Setting mode: [domain]
-localhost:8080
+127.0.0.1:8000
   script.js
   script.js
   script.js?a=1
   script.js?a=2
 Sources:
 -------- Setting mode: [domain/folder]
-localhost:8080
-  LayoutTests/inspector/debugger/foo
+127.0.0.1:8000
+  devtools/sources/debugger/LayoutTests/inspector/debugger/foo
     bar
       script.js
       script.js?a=1
@@ -133,11 +133,11 @@ script2.js
 Sources:
 -------- Setting mode: [frame/domain]
 top
-  localhost:8080
+  127.0.0.1:8000
     script.js
     script.js?a=2
   childframe (post-message-listener.html)
-    localhost:8080
+    127.0.0.1:8000
       script.js
       script.js?a=1
 script1.js
@@ -149,13 +149,13 @@ script2.js
 Sources:
 -------- Setting mode: [frame/domain/folder]
 top
-  localhost:8080
-    LayoutTests/inspector/debugger/foo/bar
+  127.0.0.1:8000
+    devtools/sources/debugger/LayoutTests/inspector/debugger/foo/bar
       script.js
       script.js?a=2
   childframe (post-message-listener.html)
-    localhost:8080
-      LayoutTests/inspector/debugger/foo
+    127.0.0.1:8000
+      devtools/sources/debugger/LayoutTests/inspector/debugger/foo
         bar
           script.js?a=1
         baz
@@ -170,7 +170,7 @@ script2.js
       script2.js
 Sources:
 -------- Setting mode: [domain]
-localhost:8080
+127.0.0.1:8000
   script.js
   script.js
   script.js?a=1
@@ -183,8 +183,8 @@ script2.js
     script2.js
 Sources:
 -------- Setting mode: [domain/folder]
-localhost:8080
-  LayoutTests/inspector/debugger/foo
+127.0.0.1:8000
+  devtools/sources/debugger/LayoutTests/inspector/debugger/foo
     bar
       script.js
       script.js?a=1
@@ -206,8 +206,8 @@ Adding content scripts and some random resources:
 Sources:
 -------- Setting mode: [frame]
 top
-  (index)
-  ?a=b
+  debugger/
+  debugger/?a=b
   foo?bar=100%&baz=a%20%2fb
   foo?bar=100&baz=a%20%2fb
   script.js
@@ -223,17 +223,16 @@ script2.js
 Sources:
 -------- Setting mode: [frame/domain]
 top
-  example.com
-    (index)
-    ?a=b
+  127.0.0.1:8000
+    debugger/
+    debugger/?a=b
     foo?bar=100%&baz=a%20%2fb
     foo?bar=100&baz=a%20%2fb
-    white space.html
-  localhost:8080
     script.js
     script.js?a=2
+    white space.html
   childframe (post-message-listener.html)
-    localhost:8080
+    127.0.0.1:8000
       script.js
       script.js?a=1
 script1.js
@@ -245,21 +244,21 @@ script2.js
 Sources:
 -------- Setting mode: [frame/domain/folder]
 top
-  example.com
-    path with spaces
-      white space.html
-    the/dir
-      foo?bar=100%&baz=a%20%2fb
-      foo?bar=100&baz=a%20%2fb
-    (index)
-    ?a=b
-  localhost:8080
-    LayoutTests/inspector/debugger/foo/bar
-      script.js
-      script.js?a=2
+  127.0.0.1:8000
+    devtools/sources/debugger
+      LayoutTests/inspector/debugger/foo/bar
+        script.js
+        script.js?a=2
+      path with spaces
+        white space.html
+      the/dir
+        foo?bar=100%&baz=a%20%2fb
+        foo?bar=100&baz=a%20%2fb
+      debugger/
+      debugger/?a=b
   childframe (post-message-listener.html)
-    localhost:8080
-      LayoutTests/inspector/debugger/foo
+    127.0.0.1:8000
+      devtools/sources/debugger/LayoutTests/inspector/debugger/foo
         bar
           script.js?a=1
         baz
@@ -274,17 +273,16 @@ script2.js
       script2.js
 Sources:
 -------- Setting mode: [domain]
-example.com
-  (index)
-  ?a=b
+127.0.0.1:8000
+  debugger/
+  debugger/?a=b
   foo?bar=100%&baz=a%20%2fb
   foo?bar=100&baz=a%20%2fb
-  white space.html
-localhost:8080
   script.js
   script.js
   script.js?a=1
   script.js?a=2
+  white space.html
 script1.js
   127.0.0.1:8000
     script1.js?a=3
@@ -293,22 +291,22 @@ script2.js
     script2.js
 Sources:
 -------- Setting mode: [domain/folder]
-example.com
-  path with spaces
-    white space.html
-  the/dir
-    foo?bar=100%&baz=a%20%2fb
-    foo?bar=100&baz=a%20%2fb
-  (index)
-  ?a=b
-localhost:8080
-  LayoutTests/inspector/debugger/foo
-    bar
-      script.js
-      script.js?a=1
-      script.js?a=2
-    baz
-      script.js
+127.0.0.1:8000
+  devtools/sources/debugger
+    LayoutTests/inspector/debugger/foo
+      bar
+        script.js
+        script.js?a=1
+        script.js?a=2
+      baz
+        script.js
+    path with spaces
+      white space.html
+    the/dir
+      foo?bar=100%&baz=a%20%2fb
+      foo?bar=100&baz=a%20%2fb
+    debugger/
+    debugger/?a=b
 script1.js
   127.0.0.1:8000
     devtools/sources/debugger/resources
@@ -326,28 +324,28 @@ top
 Content Scripts:
 -------- Setting mode: [frame/domain]
 top
-  localhost:8080
+  127.0.0.1:8000
     contentScript2.js?a=1
     contentScript.js?a=1
     contentScript.js?a=2
 Content Scripts:
 -------- Setting mode: [frame/domain/folder]
 top
-  localhost:8080
-    LayoutTests/inspector/debugger/foo/bar
+  127.0.0.1:8000
+    devtools/sources/debugger/LayoutTests/inspector/debugger/foo/bar
       contentScript2.js?a=1
       contentScript.js?a=1
       contentScript.js?a=2
 Content Scripts:
 -------- Setting mode: [domain]
-localhost:8080
+127.0.0.1:8000
   contentScript2.js?a=1
   contentScript.js?a=1
   contentScript.js?a=2
 Content Scripts:
 -------- Setting mode: [domain/folder]
-localhost:8080
-  LayoutTests/inspector/debugger/foo/bar
+127.0.0.1:8000
+  devtools/sources/debugger/LayoutTests/inspector/debugger/foo/bar
     contentScript2.js?a=1
     contentScript.js?a=1
     contentScript.js?a=2
@@ -358,8 +356,8 @@ Revealing first resource:
 Sources:
 -------- Setting mode: [frame]
 top
-  (index)
-  ?a=b
+  debugger/
+  debugger/?a=b
   foo?bar=100%&baz=a%20%2fb
   foo?bar=100&baz=a%20%2fb
   script.js
@@ -375,17 +373,16 @@ script2.js
 Sources:
 -------- Setting mode: [frame/domain]
 top
-  example.com
-    (index)
-    ?a=b
+  127.0.0.1:8000
+    debugger/
+    debugger/?a=b
     foo?bar=100%&baz=a%20%2fb
     foo?bar=100&baz=a%20%2fb
-    white space.html
-  localhost:8080
     script.js
     script.js?a=2
+    white space.html
   childframe (post-message-listener.html)
-    localhost:8080
+    127.0.0.1:8000
       script.js
       script.js?a=1
 script1.js
@@ -397,21 +394,21 @@ script2.js
 Sources:
 -------- Setting mode: [frame/domain/folder]
 top
-  example.com
-    path with spaces
-      white space.html
-    the/dir
-      foo?bar=100%&baz=a%20%2fb
-      foo?bar=100&baz=a%20%2fb
-    (index)
-    ?a=b
-  localhost:8080
-    LayoutTests/inspector/debugger/foo/bar
-      script.js
-      script.js?a=2
+  127.0.0.1:8000
+    devtools/sources/debugger
+      LayoutTests/inspector/debugger/foo/bar
+        script.js
+        script.js?a=2
+      path with spaces
+        white space.html
+      the/dir
+        foo?bar=100%&baz=a%20%2fb
+        foo?bar=100&baz=a%20%2fb
+      debugger/
+      debugger/?a=b
   childframe (post-message-listener.html)
-    localhost:8080
-      LayoutTests/inspector/debugger/foo
+    127.0.0.1:8000
+      devtools/sources/debugger/LayoutTests/inspector/debugger/foo
         bar
           script.js?a=1
         baz
@@ -426,17 +423,16 @@ script2.js
       script2.js
 Sources:
 -------- Setting mode: [domain]
-example.com
-  (index)
-  ?a=b
+127.0.0.1:8000
+  debugger/
+  debugger/?a=b
   foo?bar=100%&baz=a%20%2fb
   foo?bar=100&baz=a%20%2fb
-  white space.html
-localhost:8080
   script.js
   script.js
   script.js?a=1
   script.js?a=2
+  white space.html
 script1.js
   127.0.0.1:8000
     script1.js?a=3
@@ -445,22 +441,22 @@ script2.js
     script2.js
 Sources:
 -------- Setting mode: [domain/folder]
-example.com
-  path with spaces
-    white space.html
-  the/dir
-    foo?bar=100%&baz=a%20%2fb
-    foo?bar=100&baz=a%20%2fb
-  (index)
-  ?a=b
-localhost:8080
-  LayoutTests/inspector/debugger/foo
-    bar
-      script.js
-      script.js?a=1
-      script.js?a=2
-    baz
-      script.js
+127.0.0.1:8000
+  devtools/sources/debugger
+    LayoutTests/inspector/debugger/foo
+      bar
+        script.js
+        script.js?a=1
+        script.js?a=2
+      baz
+        script.js
+    path with spaces
+      white space.html
+    the/dir
+      foo?bar=100%&baz=a%20%2fb
+      foo?bar=100&baz=a%20%2fb
+    debugger/
+    debugger/?a=b
 script1.js
   127.0.0.1:8000
     devtools/sources/debugger/resources
@@ -476,8 +472,8 @@ Adding some resources to change the way debugger folder looks like, first:
 Sources:
 -------- Setting mode: [frame]
 top
-  (index)
-  ?a=b
+  debugger/
+  debugger/?a=b
   foo?bar=100%&baz=a%20%2fb
   foo?bar=100&baz=a%20%2fb
   script.js
@@ -494,18 +490,17 @@ script2.js
 Sources:
 -------- Setting mode: [frame/domain]
 top
-  example.com
-    (index)
-    ?a=b
+  127.0.0.1:8000
+    debugger/
+    debugger/?a=b
     foo?bar=100%&baz=a%20%2fb
     foo?bar=100&baz=a%20%2fb
-    white space.html
-  localhost:8080
     script.js
     script.js
     script.js?a=2
+    white space.html
   childframe (post-message-listener.html)
-    localhost:8080
+    127.0.0.1:8000
       script.js
       script.js?a=1
 script1.js
@@ -517,24 +512,24 @@ script2.js
 Sources:
 -------- Setting mode: [frame/domain/folder]
 top
-  example.com
-    path with spaces
-      white space.html
-    the/dir
-      foo?bar=100%&baz=a%20%2fb
-      foo?bar=100&baz=a%20%2fb
-    (index)
-    ?a=b
-  localhost:8080
-    LayoutTests/inspector
-      debugger2/foo/bar
-        script.js
-      debugger/foo/bar
-        script.js
-        script.js?a=2
+  127.0.0.1:8000
+    devtools/sources/debugger
+      LayoutTests/inspector
+        debugger2/foo/bar
+          script.js
+        debugger/foo/bar
+          script.js
+          script.js?a=2
+      path with spaces
+        white space.html
+      the/dir
+        foo?bar=100%&baz=a%20%2fb
+        foo?bar=100&baz=a%20%2fb
+      debugger/
+      debugger/?a=b
   childframe (post-message-listener.html)
-    localhost:8080
-      LayoutTests/inspector/debugger/foo
+    127.0.0.1:8000
+      devtools/sources/debugger/LayoutTests/inspector/debugger/foo
         bar
           script.js?a=1
         baz
@@ -549,18 +544,17 @@ script2.js
       script2.js
 Sources:
 -------- Setting mode: [domain]
-example.com
-  (index)
-  ?a=b
+127.0.0.1:8000
+  debugger/
+  debugger/?a=b
   foo?bar=100%&baz=a%20%2fb
   foo?bar=100&baz=a%20%2fb
-  white space.html
-localhost:8080
   script.js
   script.js
   script.js
   script.js?a=1
   script.js?a=2
+  white space.html
 script1.js
   127.0.0.1:8000
     script1.js?a=3
@@ -569,25 +563,25 @@ script2.js
     script2.js
 Sources:
 -------- Setting mode: [domain/folder]
-example.com
-  path with spaces
-    white space.html
-  the/dir
-    foo?bar=100%&baz=a%20%2fb
-    foo?bar=100&baz=a%20%2fb
-  (index)
-  ?a=b
-localhost:8080
-  LayoutTests/inspector
-    debugger2/foo/bar
-      script.js
-    debugger/foo
-      bar
+127.0.0.1:8000
+  devtools/sources/debugger
+    LayoutTests/inspector
+      debugger2/foo/bar
         script.js
-        script.js?a=1
-        script.js?a=2
-      baz
-        script.js
+      debugger/foo
+        bar
+          script.js
+          script.js?a=1
+          script.js?a=2
+        baz
+          script.js
+    path with spaces
+      white space.html
+    the/dir
+      foo?bar=100%&baz=a%20%2fb
+      foo?bar=100&baz=a%20%2fb
+    debugger/
+    debugger/?a=b
 script1.js
   127.0.0.1:8000
     devtools/sources/debugger/resources
@@ -603,8 +597,8 @@ Second:
 Sources:
 -------- Setting mode: [frame]
 top
-  (index)
-  ?a=b
+  debugger/
+  debugger/?a=b
   foo?bar=100%&baz=a%20%2fb
   foo?bar=100&baz=a%20%2fb
   script.js
@@ -622,19 +616,18 @@ script2.js
 Sources:
 -------- Setting mode: [frame/domain]
 top
-  example.com
-    (index)
-    ?a=b
+  127.0.0.1:8000
+    debugger/
+    debugger/?a=b
     foo?bar=100%&baz=a%20%2fb
     foo?bar=100&baz=a%20%2fb
+    script.js
+    script.js
+    script.js?a=2
+    script.js?a=2
     white space.html
-  localhost:8080
-    script.js
-    script.js
-    script.js?a=2
-    script.js?a=2
   childframe (post-message-listener.html)
-    localhost:8080
+    127.0.0.1:8000
       script.js
       script.js?a=1
 script1.js
@@ -646,25 +639,25 @@ script2.js
 Sources:
 -------- Setting mode: [frame/domain/folder]
 top
-  example.com
-    path with spaces
-      white space.html
-    the/dir
-      foo?bar=100%&baz=a%20%2fb
-      foo?bar=100&baz=a%20%2fb
-    (index)
-    ?a=b
-  localhost:8080
-    LayoutTests/inspector
-      debugger2/foo/bar
-        script.js
-        script.js?a=2
-      debugger/foo/bar
-        script.js
-        script.js?a=2
+  127.0.0.1:8000
+    devtools/sources/debugger
+      LayoutTests/inspector
+        debugger2/foo/bar
+          script.js
+          script.js?a=2
+        debugger/foo/bar
+          script.js
+          script.js?a=2
+      path with spaces
+        white space.html
+      the/dir
+        foo?bar=100%&baz=a%20%2fb
+        foo?bar=100&baz=a%20%2fb
+      debugger/
+      debugger/?a=b
   childframe (post-message-listener.html)
-    localhost:8080
-      LayoutTests/inspector/debugger/foo
+    127.0.0.1:8000
+      devtools/sources/debugger/LayoutTests/inspector/debugger/foo
         bar
           script.js?a=1
         baz
@@ -679,19 +672,18 @@ script2.js
       script2.js
 Sources:
 -------- Setting mode: [domain]
-example.com
-  (index)
-  ?a=b
+127.0.0.1:8000
+  debugger/
+  debugger/?a=b
   foo?bar=100%&baz=a%20%2fb
   foo?bar=100&baz=a%20%2fb
-  white space.html
-localhost:8080
   script.js
   script.js
   script.js
   script.js?a=1
   script.js?a=2
   script.js?a=2
+  white space.html
 script1.js
   127.0.0.1:8000
     script1.js?a=3
@@ -700,26 +692,26 @@ script2.js
     script2.js
 Sources:
 -------- Setting mode: [domain/folder]
-example.com
-  path with spaces
-    white space.html
-  the/dir
-    foo?bar=100%&baz=a%20%2fb
-    foo?bar=100&baz=a%20%2fb
-  (index)
-  ?a=b
-localhost:8080
-  LayoutTests/inspector
-    debugger2/foo/bar
-      script.js
-      script.js?a=2
-    debugger/foo
-      bar
+127.0.0.1:8000
+  devtools/sources/debugger
+    LayoutTests/inspector
+      debugger2/foo/bar
         script.js
-        script.js?a=1
         script.js?a=2
-      baz
-        script.js
+      debugger/foo
+        bar
+          script.js
+          script.js?a=1
+          script.js?a=2
+        baz
+          script.js
+    path with spaces
+      white space.html
+    the/dir
+      foo?bar=100%&baz=a%20%2fb
+      foo?bar=100&baz=a%20%2fb
+    debugger/
+    debugger/?a=b
 script1.js
   127.0.0.1:8000
     devtools/sources/debugger/resources
@@ -735,8 +727,8 @@ Others:
 Sources:
 -------- Setting mode: [frame]
 top
-  (index)
-  ?a=b
+  debugger/
+  debugger/?a=b
   foo?bar=100%&baz=a%20%2fb
   foo?bar=100&baz=a%20%2fb
   script.js
@@ -756,21 +748,20 @@ script2.js
 Sources:
 -------- Setting mode: [frame/domain]
 top
-  example.com
-    (index)
-    ?a=b
+  127.0.0.1:8000
+    debugger/
+    debugger/?a=b
     foo?bar=100%&baz=a%20%2fb
     foo?bar=100&baz=a%20%2fb
-    white space.html
-  localhost:8080
     script.js
     script.js
     script.js
     script.js?a=1
     script.js?a=2
     script.js?a=2
+    white space.html
   childframe (post-message-listener.html)
-    localhost:8080
+    127.0.0.1:8000
       script.js
       script.js?a=1
 script1.js
@@ -782,29 +773,29 @@ script2.js
 Sources:
 -------- Setting mode: [frame/domain/folder]
 top
-  example.com
-    path with spaces
-      white space.html
-    the/dir
-      foo?bar=100%&baz=a%20%2fb
-      foo?bar=100&baz=a%20%2fb
-    (index)
-    ?a=b
-  localhost:8080
-    LayoutTests/inspector
-      debugger2/foo
-        bar
+  127.0.0.1:8000
+    devtools/sources/debugger
+      LayoutTests/inspector
+        debugger2/foo
+          bar
+            script.js
+            script.js?a=1
+            script.js?a=2
+          baz
+            script.js
+        debugger/foo/bar
           script.js
-          script.js?a=1
           script.js?a=2
-        baz
-          script.js
-      debugger/foo/bar
-        script.js
-        script.js?a=2
+      path with spaces
+        white space.html
+      the/dir
+        foo?bar=100%&baz=a%20%2fb
+        foo?bar=100&baz=a%20%2fb
+      debugger/
+      debugger/?a=b
   childframe (post-message-listener.html)
-    localhost:8080
-      LayoutTests/inspector/debugger/foo
+    127.0.0.1:8000
+      devtools/sources/debugger/LayoutTests/inspector/debugger/foo
         bar
           script.js?a=1
         baz
@@ -819,21 +810,20 @@ script2.js
       script2.js
 Sources:
 -------- Setting mode: [domain]
-example.com
-  (index)
-  ?a=b
+127.0.0.1:8000
+  debugger/
+  debugger/?a=b
   foo?bar=100%&baz=a%20%2fb
   foo?bar=100&baz=a%20%2fb
+  script.js
+  script.js
+  script.js
+  script.js
+  script.js?a=1
+  script.js?a=1
+  script.js?a=2
+  script.js?a=2
   white space.html
-localhost:8080
-  script.js
-  script.js
-  script.js
-  script.js
-  script.js?a=1
-  script.js?a=1
-  script.js?a=2
-  script.js?a=2
 script1.js
   127.0.0.1:8000
     script1.js?a=3
@@ -842,30 +832,30 @@ script2.js
     script2.js
 Sources:
 -------- Setting mode: [domain/folder]
-example.com
-  path with spaces
-    white space.html
-  the/dir
-    foo?bar=100%&baz=a%20%2fb
-    foo?bar=100&baz=a%20%2fb
-  (index)
-  ?a=b
-localhost:8080
-  LayoutTests/inspector
-    debugger2/foo
-      bar
-        script.js
-        script.js?a=1
-        script.js?a=2
-      baz
-        script.js
-    debugger/foo
-      bar
-        script.js
-        script.js?a=1
-        script.js?a=2
-      baz
-        script.js
+127.0.0.1:8000
+  devtools/sources/debugger
+    LayoutTests/inspector
+      debugger2/foo
+        bar
+          script.js
+          script.js?a=1
+          script.js?a=2
+        baz
+          script.js
+      debugger/foo
+        bar
+          script.js
+          script.js?a=1
+          script.js?a=2
+        baz
+          script.js
+    path with spaces
+      white space.html
+    the/dir
+      foo?bar=100%&baz=a%20%2fb
+      foo?bar=100&baz=a%20%2fb
+    debugger/
+    debugger/?a=b
 script1.js
   127.0.0.1:8000
     devtools/sources/debugger/resources
@@ -880,8 +870,8 @@ script2.js
 Sources:
 -------- Setting mode: [frame]
 top
-  (index)
-  ?a=b
+  debugger/
+  debugger/?a=b
   foo.js
   foo.js
   foo.js
@@ -904,24 +894,23 @@ script2.js
 Sources:
 -------- Setting mode: [frame/domain]
 top
-  example.com
-    (index)
-    ?a=b
+  127.0.0.1:8000
+    debugger/
+    debugger/?a=b
+    foo.js
+    foo.js
+    foo.js
     foo?bar=100%&baz=a%20%2fb
     foo?bar=100&baz=a%20%2fb
-    white space.html
-  localhost:8080
-    foo.js
-    foo.js
-    foo.js
     script.js
     script.js
     script.js
     script.js?a=1
     script.js?a=2
     script.js?a=2
+    white space.html
   childframe (post-message-listener.html)
-    localhost:8080
+    127.0.0.1:8000
       script.js
       script.js?a=1
 script1.js
@@ -933,35 +922,35 @@ script2.js
 Sources:
 -------- Setting mode: [frame/domain/folder]
 top
-  example.com
-    path with spaces
-      white space.html
-    the/dir
-      foo?bar=100%&baz=a%20%2fb
-      foo?bar=100&baz=a%20%2fb
-    (index)
-    ?a=b
-  localhost:8080
-    LayoutTests/inspector
-      debugger2/foo
-        bar
-          script.js
-          script.js?a=1
-          script.js?a=2
-        baz
-          script.js
-      debugger3/hasOwnProperty
-        __proto__
-          constructor
+  127.0.0.1:8000
+    devtools/sources/debugger
+      LayoutTests/inspector
+        debugger2/foo
+          bar
+            script.js
+            script.js?a=1
+            script.js?a=2
+          baz
+            script.js
+        debugger3/hasOwnProperty
+          __proto__
+            constructor
+              foo.js
             foo.js
           foo.js
-        foo.js
-      debugger/foo/bar
-        script.js
-        script.js?a=2
+        debugger/foo/bar
+          script.js
+          script.js?a=2
+      path with spaces
+        white space.html
+      the/dir
+        foo?bar=100%&baz=a%20%2fb
+        foo?bar=100&baz=a%20%2fb
+      debugger/
+      debugger/?a=b
   childframe (post-message-listener.html)
-    localhost:8080
-      LayoutTests/inspector/debugger/foo
+    127.0.0.1:8000
+      devtools/sources/debugger/LayoutTests/inspector/debugger/foo
         bar
           script.js?a=1
         baz
@@ -976,24 +965,23 @@ script2.js
       script2.js
 Sources:
 -------- Setting mode: [domain]
-example.com
-  (index)
-  ?a=b
+127.0.0.1:8000
+  debugger/
+  debugger/?a=b
+  foo.js
+  foo.js
+  foo.js
   foo?bar=100%&baz=a%20%2fb
   foo?bar=100&baz=a%20%2fb
+  script.js
+  script.js
+  script.js
+  script.js
+  script.js?a=1
+  script.js?a=1
+  script.js?a=2
+  script.js?a=2
   white space.html
-localhost:8080
-  foo.js
-  foo.js
-  foo.js
-  script.js
-  script.js
-  script.js
-  script.js
-  script.js?a=1
-  script.js?a=1
-  script.js?a=2
-  script.js?a=2
 script1.js
   127.0.0.1:8000
     script1.js?a=3
@@ -1002,36 +990,36 @@ script2.js
     script2.js
 Sources:
 -------- Setting mode: [domain/folder]
-example.com
-  path with spaces
-    white space.html
-  the/dir
-    foo?bar=100%&baz=a%20%2fb
-    foo?bar=100&baz=a%20%2fb
-  (index)
-  ?a=b
-localhost:8080
-  LayoutTests/inspector
-    debugger2/foo
-      bar
-        script.js
-        script.js?a=1
-        script.js?a=2
-      baz
-        script.js
-    debugger3/hasOwnProperty
-      __proto__
-        constructor
+127.0.0.1:8000
+  devtools/sources/debugger
+    LayoutTests/inspector
+      debugger2/foo
+        bar
+          script.js
+          script.js?a=1
+          script.js?a=2
+        baz
+          script.js
+      debugger3/hasOwnProperty
+        __proto__
+          constructor
+            foo.js
           foo.js
         foo.js
-      foo.js
-    debugger/foo
-      bar
-        script.js
-        script.js?a=1
-        script.js?a=2
-      baz
-        script.js
+      debugger/foo
+        bar
+          script.js
+          script.js?a=1
+          script.js?a=2
+        baz
+          script.js
+    path with spaces
+      white space.html
+    the/dir
+      foo?bar=100%&baz=a%20%2fb
+      foo?bar=100&baz=a%20%2fb
+    debugger/
+    debugger/?a=b
 script1.js
   127.0.0.1:8000
     devtools/sources/debugger/resources
@@ -1047,8 +1035,8 @@ Revealing all resources:
 Sources:
 -------- Setting mode: [frame]
 top
-  (index)
-  ?a=b
+  debugger/
+  debugger/?a=b
   foo.js
   foo.js
   foo.js
@@ -1071,24 +1059,23 @@ script2.js
 Sources:
 -------- Setting mode: [frame/domain]
 top
-  example.com
-    (index)
-    ?a=b
+  127.0.0.1:8000
+    debugger/
+    debugger/?a=b
+    foo.js
+    foo.js
+    foo.js
     foo?bar=100%&baz=a%20%2fb
     foo?bar=100&baz=a%20%2fb
-    white space.html
-  localhost:8080
-    foo.js
-    foo.js
-    foo.js
     script.js
     script.js
     script.js
     script.js?a=1
     script.js?a=2
     script.js?a=2
+    white space.html
   childframe (post-message-listener.html)
-    localhost:8080
+    127.0.0.1:8000
       script.js
       script.js?a=1
 script1.js
@@ -1100,35 +1087,35 @@ script2.js
 Sources:
 -------- Setting mode: [frame/domain/folder]
 top
-  example.com
-    path with spaces
-      white space.html
-    the/dir
-      foo?bar=100%&baz=a%20%2fb
-      foo?bar=100&baz=a%20%2fb
-    (index)
-    ?a=b
-  localhost:8080
-    LayoutTests/inspector
-      debugger2/foo
-        bar
-          script.js
-          script.js?a=1
-          script.js?a=2
-        baz
-          script.js
-      debugger3/hasOwnProperty
-        __proto__
-          constructor
+  127.0.0.1:8000
+    devtools/sources/debugger
+      LayoutTests/inspector
+        debugger2/foo
+          bar
+            script.js
+            script.js?a=1
+            script.js?a=2
+          baz
+            script.js
+        debugger3/hasOwnProperty
+          __proto__
+            constructor
+              foo.js
             foo.js
           foo.js
-        foo.js
-      debugger/foo/bar
-        script.js
-        script.js?a=2
+        debugger/foo/bar
+          script.js
+          script.js?a=2
+      path with spaces
+        white space.html
+      the/dir
+        foo?bar=100%&baz=a%20%2fb
+        foo?bar=100&baz=a%20%2fb
+      debugger/
+      debugger/?a=b
   childframe (post-message-listener.html)
-    localhost:8080
-      LayoutTests/inspector/debugger/foo
+    127.0.0.1:8000
+      devtools/sources/debugger/LayoutTests/inspector/debugger/foo
         bar
           script.js?a=1
         baz
@@ -1143,24 +1130,23 @@ script2.js
       script2.js
 Sources:
 -------- Setting mode: [domain]
-example.com
-  (index)
-  ?a=b
+127.0.0.1:8000
+  debugger/
+  debugger/?a=b
+  foo.js
+  foo.js
+  foo.js
   foo?bar=100%&baz=a%20%2fb
   foo?bar=100&baz=a%20%2fb
+  script.js
+  script.js
+  script.js
+  script.js
+  script.js?a=1
+  script.js?a=1
+  script.js?a=2
+  script.js?a=2
   white space.html
-localhost:8080
-  foo.js
-  foo.js
-  foo.js
-  script.js
-  script.js
-  script.js
-  script.js
-  script.js?a=1
-  script.js?a=1
-  script.js?a=2
-  script.js?a=2
 script1.js
   127.0.0.1:8000
     script1.js?a=3
@@ -1169,36 +1155,36 @@ script2.js
     script2.js
 Sources:
 -------- Setting mode: [domain/folder]
-example.com
-  path with spaces
-    white space.html
-  the/dir
-    foo?bar=100%&baz=a%20%2fb
-    foo?bar=100&baz=a%20%2fb
-  (index)
-  ?a=b
-localhost:8080
-  LayoutTests/inspector
-    debugger2/foo
-      bar
-        script.js
-        script.js?a=1
-        script.js?a=2
-      baz
-        script.js
-    debugger3/hasOwnProperty
-      __proto__
-        constructor
+127.0.0.1:8000
+  devtools/sources/debugger
+    LayoutTests/inspector
+      debugger2/foo
+        bar
+          script.js
+          script.js?a=1
+          script.js?a=2
+        baz
+          script.js
+      debugger3/hasOwnProperty
+        __proto__
+          constructor
+            foo.js
           foo.js
         foo.js
-      foo.js
-    debugger/foo
-      bar
-        script.js
-        script.js?a=1
-        script.js?a=2
-      baz
-        script.js
+      debugger/foo
+        bar
+          script.js
+          script.js?a=1
+          script.js?a=2
+        baz
+          script.js
+    path with spaces
+      white space.html
+    the/dir
+      foo?bar=100%&baz=a%20%2fb
+      foo?bar=100&baz=a%20%2fb
+    debugger/
+    debugger/?a=b
 script1.js
   127.0.0.1:8000
     devtools/sources/debugger/resources
@@ -1216,28 +1202,28 @@ top
 Content Scripts:
 -------- Setting mode: [frame/domain]
 top
-  localhost:8080
+  127.0.0.1:8000
     contentScript2.js?a=1
     contentScript.js?a=1
     contentScript.js?a=2
 Content Scripts:
 -------- Setting mode: [frame/domain/folder]
 top
-  localhost:8080
-    LayoutTests/inspector/debugger/foo/bar
+  127.0.0.1:8000
+    devtools/sources/debugger/LayoutTests/inspector/debugger/foo/bar
       contentScript2.js?a=1
       contentScript.js?a=1
       contentScript.js?a=2
 Content Scripts:
 -------- Setting mode: [domain]
-localhost:8080
+127.0.0.1:8000
   contentScript2.js?a=1
   contentScript.js?a=1
   contentScript.js?a=2
 Content Scripts:
 -------- Setting mode: [domain/folder]
-localhost:8080
-  LayoutTests/inspector/debugger/foo/bar
+127.0.0.1:8000
+  devtools/sources/debugger/LayoutTests/inspector/debugger/foo/bar
     contentScript2.js?a=1
     contentScript.js?a=1
     contentScript.js?a=2
@@ -1248,8 +1234,8 @@ Removing all resources:
 Sources:
 -------- Setting mode: [frame]
 top
-  (index)
-  ?a=b
+  debugger/
+  debugger/?a=b
   foo.js
   foo.js
   foo.js
@@ -1268,38 +1254,84 @@ top
 Sources:
 -------- Setting mode: [frame/domain]
 top
-  example.com
-    (index)
-    ?a=b
+  127.0.0.1:8000
+    debugger/
+    debugger/?a=b
+    foo.js
+    foo.js
+    foo.js
     foo?bar=100%&baz=a%20%2fb
     foo?bar=100&baz=a%20%2fb
-    white space.html
-  localhost:8080
-    foo.js
-    foo.js
-    foo.js
     script.js
     script.js
     script.js
     script.js?a=1
     script.js?a=2
     script.js?a=2
+    white space.html
   childframe (post-message-listener.html)
-    localhost:8080
+    127.0.0.1:8000
       script.js
       script.js?a=1
 Sources:
 -------- Setting mode: [frame/domain/folder]
 top
-  example.com
-    path with spaces
-      white space.html
-    the/dir
-      foo?bar=100%&baz=a%20%2fb
-      foo?bar=100&baz=a%20%2fb
-    (index)
-    ?a=b
-  localhost:8080
+  127.0.0.1:8000
+    devtools/sources/debugger
+      LayoutTests/inspector
+        debugger2/foo
+          bar
+            script.js
+            script.js?a=1
+            script.js?a=2
+          baz
+            script.js
+        debugger3/hasOwnProperty
+          __proto__
+            constructor
+              foo.js
+            foo.js
+          foo.js
+        debugger/foo/bar
+          script.js
+          script.js?a=2
+      path with spaces
+        white space.html
+      the/dir
+        foo?bar=100%&baz=a%20%2fb
+        foo?bar=100&baz=a%20%2fb
+      debugger/
+      debugger/?a=b
+  childframe (post-message-listener.html)
+    127.0.0.1:8000
+      devtools/sources/debugger/LayoutTests/inspector/debugger/foo
+        bar
+          script.js?a=1
+        baz
+          script.js
+Sources:
+-------- Setting mode: [domain]
+127.0.0.1:8000
+  debugger/
+  debugger/?a=b
+  foo.js
+  foo.js
+  foo.js
+  foo?bar=100%&baz=a%20%2fb
+  foo?bar=100&baz=a%20%2fb
+  script.js
+  script.js
+  script.js
+  script.js
+  script.js?a=1
+  script.js?a=1
+  script.js?a=2
+  script.js?a=2
+  white space.html
+Sources:
+-------- Setting mode: [domain/folder]
+127.0.0.1:8000
+  devtools/sources/debugger
     LayoutTests/inspector
       debugger2/foo
         bar
@@ -1314,68 +1346,20 @@ top
             foo.js
           foo.js
         foo.js
-      debugger/foo/bar
-        script.js
-        script.js?a=2
-  childframe (post-message-listener.html)
-    localhost:8080
-      LayoutTests/inspector/debugger/foo
+      debugger/foo
         bar
+          script.js
           script.js?a=1
+          script.js?a=2
         baz
           script.js
-Sources:
--------- Setting mode: [domain]
-example.com
-  (index)
-  ?a=b
-  foo?bar=100%&baz=a%20%2fb
-  foo?bar=100&baz=a%20%2fb
-  white space.html
-localhost:8080
-  foo.js
-  foo.js
-  foo.js
-  script.js
-  script.js
-  script.js
-  script.js
-  script.js?a=1
-  script.js?a=1
-  script.js?a=2
-  script.js?a=2
-Sources:
--------- Setting mode: [domain/folder]
-example.com
-  path with spaces
-    white space.html
-  the/dir
-    foo?bar=100%&baz=a%20%2fb
-    foo?bar=100&baz=a%20%2fb
-  (index)
-  ?a=b
-localhost:8080
-  LayoutTests/inspector
-    debugger2/foo
-      bar
-        script.js
-        script.js?a=1
-        script.js?a=2
-      baz
-        script.js
-    debugger3/hasOwnProperty
-      __proto__
-        constructor
-          foo.js
-        foo.js
-      foo.js
-    debugger/foo
-      bar
-        script.js
-        script.js?a=1
-        script.js?a=2
-      baz
-        script.js
+    path with spaces
+      white space.html
+    the/dir
+      foo?bar=100%&baz=a%20%2fb
+      foo?bar=100&baz=a%20%2fb
+    debugger/
+    debugger/?a=b
 Content Scripts:
 -------- Setting mode: [frame]
 top
@@ -1385,28 +1369,28 @@ top
 Content Scripts:
 -------- Setting mode: [frame/domain]
 top
-  localhost:8080
+  127.0.0.1:8000
     contentScript2.js?a=1
     contentScript.js?a=1
     contentScript.js?a=2
 Content Scripts:
 -------- Setting mode: [frame/domain/folder]
 top
-  localhost:8080
-    LayoutTests/inspector/debugger/foo/bar
+  127.0.0.1:8000
+    devtools/sources/debugger/LayoutTests/inspector/debugger/foo/bar
       contentScript2.js?a=1
       contentScript.js?a=1
       contentScript.js?a=2
 Content Scripts:
 -------- Setting mode: [domain]
-localhost:8080
+127.0.0.1:8000
   contentScript2.js?a=1
   contentScript.js?a=1
   contentScript.js?a=2
 Content Scripts:
 -------- Setting mode: [domain/folder]
-localhost:8080
-  LayoutTests/inspector/debugger/foo/bar
+127.0.0.1:8000
+  devtools/sources/debugger/LayoutTests/inspector/debugger/foo/bar
     contentScript2.js?a=1
     contentScript.js?a=1
     contentScript.js?a=2

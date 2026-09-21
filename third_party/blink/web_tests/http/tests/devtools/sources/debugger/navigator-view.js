@@ -72,7 +72,7 @@ import * as Main from 'devtools/entrypoints/main/main.js';
     contentScriptsNavigatorView.revealUISourceCode(uiSourceCode);
   }
 
-  var rootURL = 'http://localhost:8080/LayoutTests/inspector/debugger/';
+  var rootURL = TestRunner.url('LayoutTests/inspector/debugger/');
 
   TestRunner.addResult('\n\n================================================');
   TestRunner.addResult('Adding first resource:');
@@ -102,15 +102,15 @@ import * as Main from 'devtools/entrypoints/main/main.js';
   await addUISourceCode(rootURL + 'foo/bar/contentScript2.js?a=1', true);
   await addUISourceCode(rootURL + 'foo/bar/contentScript.js?a=2', true);
   await addUISourceCode(rootURL + 'foo/bar/contentScript.js?a=1', true);
-  await addUISourceCode('http://example.com/', false);
-  await addUISourceCode('http://example.com/?a=b', false);
+  await addUISourceCode(TestRunner.url(''), false);
+  await addUISourceCode(TestRunner.url('?a=b'), false);
   await addUISourceCode(
-      'http://example.com/the%2fdir/foo?bar=100&baz=a%20%2fb', false);
+      TestRunner.url('the%2fdir/foo?bar=100&baz=a%20%2fb'), false);
   // Verify that adding invalid URL does not throw exception.
   await addUISourceCode(
-      'http://example.com/the%2fdir/foo?bar=100%&baz=a%20%2fb', false);
+      TestRunner.url('the%2fdir/foo?bar=100%&baz=a%20%2fb'), false);
   await addUISourceCode(
-      'http://example.com/path%20with%20spaces/white%20space.html', false);
+      TestRunner.url('path%20with%20spaces/white%20space.html'), false);
 
   SourcesTestRunner.dumpNavigatorViewInAllModes(sourcesNavigatorView);
   SourcesTestRunner.dumpNavigatorViewInAllModes(contentScriptsNavigatorView);
@@ -125,7 +125,7 @@ import * as Main from 'devtools/entrypoints/main/main.js';
   TestRunner.addResult('\n\n================================================');
   TestRunner.addResult(
       'Adding some resources to change the way debugger folder looks like, first:');
-  var rootURL2 = 'http://localhost:8080/LayoutTests/inspector/debugger2/';
+  var rootURL2 = TestRunner.url('LayoutTests/inspector/debugger2/');
   await addUISourceCode(rootURL2 + 'foo/bar/script.js', false);
   SourcesTestRunner.dumpNavigatorViewInAllModes(sourcesNavigatorView);
 
@@ -141,7 +141,7 @@ import * as Main from 'devtools/entrypoints/main/main.js';
   SourcesTestRunner.dumpNavigatorViewInAllModes(sourcesNavigatorView);
 
   TestRunner.addResult('\n\n================================================');
-  var rootURL3 = 'http://localhost:8080/LayoutTests/inspector/debugger3/';
+  var rootURL3 = TestRunner.url('LayoutTests/inspector/debugger3/');
   await addUISourceCode(
       rootURL3 + 'hasOwnProperty/__proto__/constructor/foo.js', false);
   await addUISourceCode(rootURL3 + 'hasOwnProperty/__proto__/foo.js', false);

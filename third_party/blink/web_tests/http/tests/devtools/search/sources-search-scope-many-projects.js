@@ -63,7 +63,7 @@ import * as Persistence from 'devtools/models/persistence/persistence.js';
     }
 
     jsNetworkUISourceCode =
-        await SourcesTestRunner.addScriptUISourceCode('http://localhost/search.js', resources['search.js']);
+        await SourcesTestRunner.addScriptUISourceCode(TestRunner.url('search.js'), resources['search.js']);
     TestRunner.runTestSuite(testSuite);
   }
 
