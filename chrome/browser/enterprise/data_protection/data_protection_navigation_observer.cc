@@ -145,7 +145,7 @@ void RunPendingNavigationCallback(
       MaybeTriggerUrlFilteringInterstitialEvent(
           web_contents, web_contents->GetLastCommittedURL(),
           /*threat_type=*/"", *user_data->rt_lookup_response(),
-          /*tab_title=*/base::UTF16ToUTF8(web_contents->GetTitle()));
+          /*tab_title=*/std::string());
     }
   }
 #endif

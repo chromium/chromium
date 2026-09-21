@@ -166,7 +166,7 @@ class TestSafeBrowsingBlockingPageFactory
       const GURL& main_frame_url,
       const SafeBrowsingBlockingPage::UnsafeResourceList& unsafe_resources)
       override {
-    NOTREACHED();
+    return nullptr;
   }
 
   security_interstitials::SecurityInterstitialPage* CreateEnterpriseBlockPage(
@@ -175,13 +175,20 @@ class TestSafeBrowsingBlockingPageFactory
       const GURL& main_frame_url,
       const SafeBrowsingBlockingPage::UnsafeResourceList& unsafe_resources)
       override {
-    NOTREACHED();
+    return nullptr;
   }
 };
 
 class TestSafeBrowsingUIManagerDelegate
     : public SafeBrowsingUIManager::Delegate {
  public:
+  struct UrlFilteringEventParams {
+    GURL page_url;
+    std::string threat_type;
+    safe_browsing::RTLookupResponse rt_lookup_response;
+    bool is_bypassing_interstitial = false;
+  };
+
   TestSafeBrowsingUIManagerDelegate() {
     safe_browsing::RegisterProfilePrefs(pref_service_.registry());
   }
@@ -204,7 +211,11 @@ class TestSafeBrowsingUIManagerDelegate
       content::WebContents* web_contents,
       const GURL& page_url,
       const std::string& threat_type,
-      safe_browsing::RTLookupResponse rt_lookup_response) override {}
+      safe_browsing::RTLookupResponse rt_lookup_response,
+      bool is_bypassing_interstitial) override {
+    url_filtering_event_params_.push_back(
+        {page_url, threat_type, rt_lookup_response, is_bypassing_interstitial});
+  }
   prerender::NoStatePrefetchContents* GetNoStatePrefetchContentsIfExists(
       content::WebContents* web_contents) override {
     return nullptr;
@@ -229,9 +240,15 @@ class TestSafeBrowsingUIManagerDelegate
     is_hosting_extension_ = is_hosting_extension;
   }
 
+  const std::vector<UrlFilteringEventParams>& url_filtering_event_params()
+      const {
+    return url_filtering_event_params_;
+  }
+
  private:
   bool is_hosting_extension_ = false;
   TestingPrefServiceSimple pref_service_;
+  std::vector<UrlFilteringEventParams> url_filtering_event_params_;
 };
 
 class SafeBrowsingUIManagerTest : public content::RenderViewHostTestHarness {
@@ -846,6 +863,56 @@ TEST_F(SafeBrowsingUIManagerTest,
   // 2. Verify backend command handling: CMD_PROCEED (1) must not allowlist URL.
   blocking_page.CommandReceived("1");
   EXPECT_FALSE(IsAllowlisted(resource));
+}
+
+// Tests that is_bypassing_interstitial is threaded correctly to the delegate
+// for each of the 3 URL filtering interstitial extension event call sites:
+// 1. OnBlockingPageDone after warning bypass (is_bypassing_interstitial=true)
+// 2. CreateBlockingPage for warning seen (is_bypassing_interstitial=false)
+// 3. CreateBlockingPage for block seen (is_bypassing_interstitial=false)
+TEST_F(SafeBrowsingUIManagerTest,
+       UrlFilteringInterstitialEventBypassingInterstitial) {
+  // Case 1: OnBlockingPageDone with MANAGED_POLICY_WARN and proceed=true ->
+  // ENTERPRISE_WARNED_BYPASS with is_bypassing_interstitial=true.
+  StartNavigation(kBadURL);
+  security_interstitials::UnsafeResource warn_resource =
+      MakeUnsafeResource(kBadURL, SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_WARN);
+  SimulateBlockingPageDone({warn_resource}, /*proceed=*/true);
+
+  ASSERT_EQ(1u, ui_manager_delegate()->url_filtering_event_params().size());
+  EXPECT_EQ("ENTERPRISE_WARNED_BYPASS",
+            ui_manager_delegate()->url_filtering_event_params()[0].threat_type);
+  EXPECT_TRUE(ui_manager_delegate()
+                  ->url_filtering_event_params()[0]
+                  .is_bypassing_interstitial);
+
+  // Case 2: CreateBlockingPage with MANAGED_POLICY_WARN ->
+  // ENTERPRISE_WARNED_SEEN with is_bypassing_interstitial=false.
+  ui_manager()->CreateBlockingPage(
+      web_contents(), GURL(kBadURL), warn_resource,
+      /*forward_extension_event=*/true,
+      /*blocked_page_shown_timestamp=*/std::nullopt);
+  ASSERT_EQ(2u, ui_manager_delegate()->url_filtering_event_params().size());
+  EXPECT_EQ("ENTERPRISE_WARNED_SEEN",
+            ui_manager_delegate()->url_filtering_event_params()[1].threat_type);
+  EXPECT_FALSE(ui_manager_delegate()
+                   ->url_filtering_event_params()[1]
+                   .is_bypassing_interstitial);
+
+  // Case 3: CreateBlockingPage with MANAGED_POLICY_BLOCK ->
+  // ENTERPRISE_BLOCKED_SEEN with is_bypassing_interstitial=false.
+  security_interstitials::UnsafeResource block_resource =
+      MakeUnsafeResource(kBadURL, SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_BLOCK);
+  ui_manager()->CreateBlockingPage(
+      web_contents(), GURL(kBadURL), block_resource,
+      /*forward_extension_event=*/true,
+      /*blocked_page_shown_timestamp=*/std::nullopt);
+  ASSERT_EQ(3u, ui_manager_delegate()->url_filtering_event_params().size());
+  EXPECT_EQ("ENTERPRISE_BLOCKED_SEEN",
+            ui_manager_delegate()->url_filtering_event_params()[2].threat_type);
+  EXPECT_FALSE(ui_manager_delegate()
+                   ->url_filtering_event_params()[2]
+                   .is_bypassing_interstitial);
 }
 
 }  // namespace safe_browsing
