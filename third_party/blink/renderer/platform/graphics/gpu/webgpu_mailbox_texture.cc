@@ -155,6 +155,7 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromCanvasResource(
     const gpu::SyncToken& sync_token,
     std::unique_ptr<WebGpuSharedImageLease> lease) {
   CHECK(shared_image);
+  CHECK(lease);
 
   gfx::Size size = shared_image->size();
 
@@ -173,9 +174,7 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromCanvasResource(
           sync_token = gpu::WebGPUTextureScopedAccess::EndAccess(
               std::move(scoped_access));
         }
-        if (lease) {
-          lease->WaitSyncToken(sync_token);
-        }
+        lease->WaitSyncToken(sync_token);
         return sync_token;
       },
       std::move(lease));
