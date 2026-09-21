@@ -119,10 +119,11 @@ class CORE_EXPORT StylePropertySerializer {
   String WhiteSpaceValue() const;
   String LineClampValue(bool is_webkit_line_clamp) const;
   String PositionTryValue(const StylePropertyShorthand&) const;
-  String GetPropertyText(const CSSPropertyName&,
-                         const String& value,
-                         bool is_important,
-                         bool is_not_first_decl) const;
+  void AppendPropertyText(StringBuilder& result,
+                          const CSSPropertyName&,
+                          const String& value,
+                          bool is_important,
+                          bool is_not_first_decl) const;
   bool IsPropertyShorthandAvailable(const StylePropertyShorthand&) const;
   bool ShorthandHasOnlyInitialOrInheritedValue(
       const StylePropertyShorthand&) const;
@@ -162,8 +163,9 @@ class CORE_EXPORT StylePropertySerializer {
     bool is_important_;
   };
 
-  String GetCustomPropertyText(const PropertyValueForSerializer&,
-                               bool is_not_first_decl) const;
+  void AppendCustomPropertyText(StringBuilder& result,
+                                const PropertyValueForSerializer&,
+                                bool is_not_first_decl) const;
 
   class CSSPropertyValueSetForSerializer final {
     DISALLOW_NEW();
