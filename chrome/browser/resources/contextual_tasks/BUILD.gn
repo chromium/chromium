@@ -37,6 +37,7 @@ build_webui("build") {
     "toolbar_app.ts",
     "toolbar_app.html.ts",
     "contextual_tasks_browser_proxy.ts",
+    "contextual_tasks_toolbar_browser_proxy.ts",
     "error_dialog.html.ts",
     "error_dialog.ts",
     "error_page.html.ts",
@@ -109,12 +110,22 @@ build_webui("build") {
     ]
   }
 
-  mojo_files_deps =
-      [ "//chrome/browser/contextual_tasks:mojo_bindings_ts__generator" ]
+  mojo_files_deps = [
+    "//chrome/browser/contextual_tasks:mojo_bindings_ts__generator",
+    "//components/browser_apis/browser_controls:mojom_data_model_ts__generator",
+    "//components/browser_apis/ui_controllers/toolbar:extensions_bar_data_model_mojom_ts__generator",
+    "//components/browser_apis/ui_controllers/toolbar:icon_handle_mojom_ts__generator",
+    "//components/browser_apis/ui_controllers/toolbar:mojom_data_model_ts__generator",
+  ]
   mojo_files = [
     "$root_gen_dir/chrome/browser/contextual_tasks/contextual_tasks.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/contextual_tasks/contextual_tasks_internals.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/contextual_tasks/contextual_tasks_toolbar.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/contextual_tasks/contextual_tasks_types.mojom-webui.ts",
+    "$root_gen_dir/components/browser_apis/browser_controls/browser_controls_api_data_model.mojom-webui.ts",
+    "$root_gen_dir/components/browser_apis/ui_controllers/toolbar/extensions_bar_data_model.mojom-webui.ts",
+    "$root_gen_dir/components/browser_apis/ui_controllers/toolbar/icon_handle.mojom-webui.ts",
+    "$root_gen_dir/components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom-webui.ts",
   ]
   if (!is_android || enable_webui_contextual_tasks_composebox) {
     mojo_files += [ "$root_gen_dir/ui/webui/resources/cr_components/composebox/composebox.mojom-webui.ts" ]
