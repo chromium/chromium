@@ -481,6 +481,13 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
                                               externalURL:externalURL
                                      forceApplicationMode:forceApplicationMode];
     params.postOpeningAction = START_GEMINI_AI_SUMMARIZATION;
+
+    std::string hashedUserIDString;
+    if (net::GetValueForKeyInQuery(net::GURLWithNSURL(completeURL),
+                                   "hashed_user_id", &hashedUserIDString)) {
+      params.appSwitcherHashedUserID =
+          base::SysUTF8ToNSString(hashedUserIDString);
+    }
   } else {
     action = IOSExternalAction::ACTION_INVALID;
     params = nil;
