@@ -345,16 +345,8 @@ export class OmniboxEverywhereOmniboxElement extends
     return false;
   }
 
-  isInputEmpty(): boolean {
-    // If this is called before first render, the input element will not exist.
-    if (!this.shadowRoot?.querySelector('#input') || !this.$.input) {
-      return true;
-    }
-    return !this.$.input.getInputValue().trim();
-  }
-
   protected showVoiceSearchButton_(): boolean {
-    return this.searchboxVoiceSearchEnabled_ && this.isInputEmpty();
+    return this.searchboxVoiceSearchEnabled_;
   }
 
   protected showLensSearchButton_(): boolean {
