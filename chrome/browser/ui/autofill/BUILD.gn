@@ -141,6 +141,7 @@ source_set("autofill") {
       "edit_address_profile_dialog_controller.h",
       "edit_address_profile_dialog_controller_impl.h",
       "edit_address_profile_view.h",
+      "email_verifier/email_verification_controller.h",
       "email_verifier/email_verification_popup_controller.h",
       "email_verifier/email_verified_toast_menu_model.h",
       "save_address_bubble_controller.h",
@@ -293,6 +294,7 @@ source_set("impl") {
       "bubble_manager_impl.cc",
       "delete_address_profile_dialog_controller_impl.cc",
       "edit_address_profile_dialog_controller_impl.cc",
+      "email_verifier/email_verification_controller.cc",
       "email_verifier/email_verification_popup_controller.cc",
       "email_verifier/email_verified_toast_menu_model.cc",
       "save_address_bubble_controller.cc",
@@ -321,6 +323,7 @@ source_set("impl") {
       "//components/autofill/core/browser",
       "//components/desktop_to_mobile_promos",
       "//components/password_manager/core/browser/features:password_features",
+      "//components/tabs:public",
       "//extensions/browser",
     ]
   }
@@ -488,6 +491,7 @@ source_set("test_support") {
       "autofill_ai/mock_autofill_ai_import_data_controller.cc",
       "autofill_ai/mock_autofill_ai_import_data_controller.h",
       "autofill_popup_controller_impl_test_api.h",
+      "email_verifier/email_verification_controller_test_api.h",
       "mock_autofill_popup_controller.cc",
       "mock_autofill_popup_controller.h",
       "mock_bubble_manager.cc",

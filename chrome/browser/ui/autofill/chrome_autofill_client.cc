@@ -217,8 +217,7 @@
 #include "chrome/browser/ui/autofill/autofill_ai/autofill_ai_import_data_controller.h"
 #include "chrome/browser/ui/autofill/autofill_field_promo_controller_impl.h"
 #include "chrome/browser/ui/autofill/delete_address_profile_dialog_controller_impl.h"
-#include "chrome/browser/ui/autofill/email_verifier/email_verification_popup_controller.h"
-#include "chrome/browser/ui/autofill/email_verifier/email_verified_toast_menu_model.h"
+#include "chrome/browser/ui/autofill/email_verifier/email_verification_controller.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller_impl.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -1368,6 +1367,17 @@ tabs::TabInterface* ChromeAutofillClient::GetTabInterface() {
   return tabs::TabInterface::MaybeGetFromContents(web_contents());
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+EmailVerificationController*
+ChromeAutofillClient::GetEmailVerificationController() {
+  if (!email_verification_controller_) {
+    email_verification_controller_ =
+        std::make_unique<EmailVerificationController>(web_contents());
+  }
+  return email_verification_controller_.get();
+}
+#endif
+
 void ChromeAutofillClient::ShowEmailVerifiedToast(const GURL& issuer) {
 #if BUILDFLAG(IS_ANDROID)
   GetAutofillMessageController()->Show(
@@ -1375,16 +1385,7 @@ void ChromeAutofillClient::ShowEmailVerifiedToast(const GURL& issuer) {
           issuer,
           base::BindOnce(&ShowAutofillProfileSettings, web_contents())));
 #else
-  // The toast is only supported on desktop for now, since Android uses
-  // snackbars instead.
-  if (ToastController* toast_controller = GetToastController()) {
-    ToastParams params(ToastId::kEmailVerified);
-    params.body_string_replacement_params.push_back(
-        base::UTF8ToUTF16(issuer.host()));
-    params.menu_model = std::make_unique<EmailVerifiedToastMenuModel>(
-        GetTabInterface()->GetBrowserWindowInterface());
-    toast_controller->MaybeShowToast(std::move(params));
-  }
+  GetEmailVerificationController()->ShowVerifiedToast(issuer);
 #endif
 }
 
@@ -1411,16 +1412,32 @@ void ChromeAutofillClient::ShowEmailVerificationPopup(
   email_verification_bottom_sheet_bridge_->RequestShowContent(
       base::UTF8ToUTF16(issuer_site.Serialize()), email, std::move(callback));
 #else
-  if (!email_verification_popup_controller_) {
-    email_verification_popup_controller_ =
-        std::make_unique<EmailVerificationPopupController>(web_contents());
-  }
   const gfx::Rect client_area = web_contents()->GetContainerBounds();
   const gfx::RectF element_bounds_in_screen_space =
       element_bounds + client_area.OffsetFromOrigin();
 
-  email_verification_popup_controller_->Show(
+  GetEmailVerificationController()->ShowPopup(
       element_bounds_in_screen_space, issuer_site, email, std::move(callback));
+#endif
+}
+
+void ChromeAutofillClient::HideEmailVerificationPopup() {
+#if !BUILDFLAG(IS_ANDROID)
+  if (email_verification_controller_) {
+    email_verification_controller_->HidePopup();
+  }
+#endif
+}
+
+void ChromeAutofillClient::ShowEmailVerificationLoadingToast() {
+#if !BUILDFLAG(IS_ANDROID)
+  GetEmailVerificationController()->ShowLoadingToast();
+#endif
+}
+
+void ChromeAutofillClient::ShowEmailVerificationErrorToast() {
+#if !BUILDFLAG(IS_ANDROID)
+  GetEmailVerificationController()->ShowErrorToast();
 #endif
 }
 

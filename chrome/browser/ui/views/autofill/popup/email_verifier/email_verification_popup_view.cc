@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/autofill/email_verifier/email_verification_popup_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
@@ -23,6 +24,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/color/color_id.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
@@ -30,8 +32,10 @@
 #include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/controls/button/md_text_button_with_spinner.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
@@ -147,7 +151,7 @@ EmailVerificationPopupView::EmailVerificationPopupView(
                                 kVerticalPadding, kHorizontalMargin)))
           .Build());
 
-  controls->AddChildView(
+  cancel_button_ = controls->AddChildView(
       views::Builder<views::MdTextButton>()
           .SetText(l10n_util::GetStringUTF16(
               IDS_AUTOFILL_EMAIL_VERIFIER_PROMPT_NOT_NOW))
@@ -157,8 +161,8 @@ EmailVerificationPopupView::EmailVerificationPopupView(
           .SetID(static_cast<int>(PopupViewId::kCancelButton))
           .Build());
 
-  controls->AddChildView(
-      views::Builder<views::MdTextButton>()
+  confirm_button_ = controls->AddChildView(
+      views::Builder<views::MdTextButtonWithSpinner>()
           .SetText(l10n_util::GetStringUTF16(
               IDS_AUTOFILL_EMAIL_VERIFIER_PROMPT_VERIFY))
           .SetStyle(ui::ButtonStyle::kProminent)
@@ -169,6 +173,24 @@ EmailVerificationPopupView::EmailVerificationPopupView(
 }
 
 EmailVerificationPopupView::~EmailVerificationPopupView() = default;
+
+void EmailVerificationPopupView::ShowLoadingState() {
+  if (confirm_button_) {
+    confirm_button_->SetEnabled(false);
+    confirm_button_->SetSpinnerVisible(true);
+    confirm_button_->GetViewAccessibility().AnnounceText(
+        l10n_util::GetStringUTF16(IDS_EMAIL_VERIFICATION_LOADING));
+  }
+  if (cancel_button_) {
+    cancel_button_->SetEnabled(false);
+  }
+}
+
+views::Throbber* EmailVerificationPopupView::throbber_for_testing() {
+  return confirm_button_ && confirm_button_->GetSpinnerVisible()
+             ? confirm_button_->GetSpinnerForTesting()
+             : nullptr;
+}
 
 void EmailVerificationPopupView::Hide() {
   weak_ptr_factory_.InvalidateWeakPtrs();

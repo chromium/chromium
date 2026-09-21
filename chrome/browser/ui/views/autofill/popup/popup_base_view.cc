@@ -113,16 +113,33 @@ class PopupBaseView::Widget : public views::Widget {
     params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
     params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
     params.activatable = activatable;
+#if BUILDFLAG(IS_OZONE)
+    // On Ozone platforms (particularly Wayland on Linux and ChromeOS), popups
+    // with desktop-level native widgets (accelerated widgets) are backed by
+    // Wayland subsurfaces or popup xdg surfaces. Wayland compositors (such as
+    // GNOME Mutter) do not deliver frame callbacks or dispatch continuous
+    // paint/animation events to subsurfaces when the parent window does not
+    // continuously commit new frames, causing interactive controls and
+    // animations (e.g. `views::Throbber`) in activatable popups to freeze.
+    // Setting `use_accelerated_widget_override = false` forces the widget to be
+    // hosted as an in-tree `NativeWidgetAura` composited directly within the
+    // browser window's main compositor tree, ensuring reliable event dispatch
+    // and smooth animations.
+    if (activatable == views::Widget::InitParams::Activatable::kYes) {
+      params.use_accelerated_widget_override = false;
+    }
+#endif
 
     // `kSecuritySurface` makes the popup display on top of all other windows
     // (including system ones, but the support among different OS, versions
     // and setups is not consistent). This is not required for regular
     // Autofill popup use, but it makes certain attacks (those based on the
     // popup being obscured) less practical.
-    if constexpr (BUILDFLAG(IS_CHROMEOS)) {
-      // On ChromeOS, `Activatable::kYes` and `kSecuritySurface` are
-      // incompatible because `kSecuritySurface` windows are assigned to the
-      // DragImageAndTooltipContainer, which does not support activation.
+    if constexpr (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) {
+      // On ChromeOS and Linux, `Activatable::kYes` and `kSecuritySurface` are
+      // incompatible because `kSecuritySurface` windows force accelerated
+      // desktop-level widgets (subsurfaces) which do not support reliable
+      // activation and repainting on Wayland compositors like Mutter.
       params.z_order =
           activatable == views::Widget::InitParams::Activatable::kYes
               ? ui::ZOrderLevel::kFloatingUIElement

@@ -340,7 +340,18 @@ void ToastService::RegisterToasts(
 
   toast_registry_->RegisterToast(
       ToastId::kEmailVerificationLoading,
-      ToastSpecification::Builder().SetHasThrobber().Build());
+      ToastSpecification::Builder(IDS_EMAIL_VERIFICATION_LOADING)
+          .SetHasThrobber()
+          .Build());
+
+  toast_registry_->RegisterToast(
+      ToastId::kEmailVerificationError,
+      ToastSpecification::Builder(features::IsRoundedIconsEnabled()
+                                      ? vector_icons::kErrorIcon
+                                      : vector_icons::kErrorOutlineOldIcon,
+                                  IDS_EMAIL_VERIFICATION_ERROR)
+          .AddCloseButton()
+          .Build());
 
   toast_registry_->RegisterToast(
       ToastId::kGlicShareImageFailed,

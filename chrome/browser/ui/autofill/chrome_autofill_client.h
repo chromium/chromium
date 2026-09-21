@@ -85,7 +85,7 @@ class EmailVerificationBottomSheetBridge;
 class ActorAutofillManager;
 class AutofillAiPersonalContextAccessManager;
 class AutofillOptimizationGuideDecider;
-class EmailVerificationPopupController;
+class EmailVerificationController;
 class EmailVerifierDelegate;
 class FormFieldData;
 class OtpFieldDetector;
@@ -318,6 +318,9 @@ class ChromeAutofillClient : public ContentAutofillClient {
       const std::u16string& email,
       base::OnceCallback<void(EmailVerificationPermissionUiStatus)> callback)
       final;
+  void HideEmailVerificationPopup() final;
+  void ShowEmailVerificationLoadingToast() final;
+  void ShowEmailVerificationErrorToast() final;
 
   // TODO(crbug.com/407666146): Create a test API.
   base::WeakPtr<AutofillSuggestionController>
@@ -395,6 +398,10 @@ class ChromeAutofillClient : public ContentAutofillClient {
   // Returns the ToastController for the current tab, if it exists.
   ToastController* GetToastController();
 
+#if !BUILDFLAG(IS_ANDROID)
+  EmailVerificationController* GetEmailVerificationController();
+#endif
+
   bool SupportsConsentlessExecution(const url::Origin& origin);
   void ShowAutofillSuggestionsImpl(
       SuggestionUiSessionId session_id,
@@ -452,8 +459,7 @@ class ChromeAutofillClient : public ContentAutofillClient {
 #else   // BUILDFLAG(IS_ANDROID)
   std::unique_ptr<AutofillFieldPromoController>
       autofill_field_promo_controller_;
-  std::unique_ptr<EmailVerificationPopupController>
-      email_verification_popup_controller_;
+  std::unique_ptr<EmailVerificationController> email_verification_controller_;
 #endif  // BUILDFLAG(IS_ANDROID)
   // Test addresses used to allow developers to test their forms.
   std::vector<AutofillProfile> test_addresses_;

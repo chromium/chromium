@@ -14,6 +14,7 @@
 #include "components/favicon_base/favicon_types.h"
 #include "net/base/schemeful_site.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/controls/button/md_text_button_with_spinner.h"
 #include "ui/views/input_event_activation_protector.h"
 
 namespace ui {
@@ -23,6 +24,8 @@ class Event;
 namespace views {
 class Widget;
 class ImageView;
+class MdTextButton;
+class Throbber;
 }  // namespace views
 
 namespace autofill {
@@ -67,6 +70,12 @@ class EmailVerificationPopupView : public PopupBaseView {
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
 
+  virtual void ShowLoadingState();
+
+  views::Throbber* throbber_for_testing();
+  views::MdTextButton* confirm_button_for_testing() { return confirm_button_; }
+  views::MdTextButton* cancel_button_for_testing() { return cancel_button_; }
+
   base::WeakPtr<EmailVerificationPopupView> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -79,6 +88,8 @@ class EmailVerificationPopupView : public PopupBaseView {
   base::OnceCallback<void(bool)> callback_;
   views::InputEventActivationProtector input_protector_;
   raw_ptr<views::ImageView> icon_view_ = nullptr;
+  raw_ptr<views::MdTextButtonWithSpinner> confirm_button_ = nullptr;
+  raw_ptr<views::MdTextButton> cancel_button_ = nullptr;
   base::CancelableTaskTracker favicon_task_tracker_;
   base::WeakPtrFactory<EmailVerificationPopupView> weak_ptr_factory_{this};
 };

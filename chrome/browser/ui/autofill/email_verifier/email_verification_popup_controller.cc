@@ -128,8 +128,67 @@ void EmailVerificationPopupController::Show(
           base::Unretained(this)));
 }
 
+// `Hide(reason)` is invoked by `AutofillPopupHideHelper` when window, focus,
+// or web contents events occur.
+// While actively waiting for the email verification response (`is_loading_`):
+// - Transient page and window interactions (such as clicking outside, field
+//   focus changes, text editing ending, scrolling, or window resizes) are
+//   suppressed so that the in-button spinner remains visible while token
+//   retrieval is in flight. The popup will be explicitly dismissed via
+//   `Dismiss()` by `EmailVerificationController` once token retrieval
+//   completes and the minimum loading display duration has elapsed.
+// - Fatal events where the tab or web contents is torn down or navigated
+//   (`kTabGone`, `kAttachInterstitialPage`) are NOT suppressed and proceed
+//   immediately to `HideImpl()` to tear down the popup.
 void EmailVerificationPopupController::Hide(SuggestionHidingReason reason) {
+  if (is_loading_) {
+    switch (reason) {
+      // Fatal events: proceed to teardown the popup immediately.
+      case SuggestionHidingReason::kTabGone:
+      case SuggestionHidingReason::kAttachInterstitialPage:
+        break;
+
+      // Transient or non-fatal events: suppressed so that the in-button spinner
+      // remains visible while token retrieval is in flight.
+      case SuggestionHidingReason::kAcceptSuggestion:
+      case SuggestionHidingReason::kContextMenuOpened:
+      case SuggestionHidingReason::kContentAreaMoved:
+      case SuggestionHidingReason::kElementOutsideOfContentArea:
+      case SuggestionHidingReason::kEndEditing:
+      case SuggestionHidingReason::kExpandedSuggestionCollapsedSubPopup:
+      case SuggestionHidingReason::kFadeTimerExpired:
+      case SuggestionHidingReason::kFieldValueChanged:
+      case SuggestionHidingReason::kFocusChanged:
+      case SuggestionHidingReason::kHiddenByCaller:
+      case SuggestionHidingReason::kInsufficientSpace:
+      case SuggestionHidingReason::kMouseLocked:
+      case SuggestionHidingReason::kNoFrameHasFocus:
+      case SuggestionHidingReason::kNoSuggestions:
+      case SuggestionHidingReason::kOverlappingWithAnotherPrompt:
+      case SuggestionHidingReason::kOverlappingWithAutofillContextMenu:
+      case SuggestionHidingReason::kOverlappingWithPasswordGenerationPopup:
+      case SuggestionHidingReason::kOverlappingWithPictureInPictureWindow:
+      case SuggestionHidingReason::kOverlappingWithTouchToFillSurface:
+      case SuggestionHidingReason::kRendererEvent:
+      case SuggestionHidingReason::kSearchBarFocusLost:
+      case SuggestionHidingReason::kStaleData:
+      case SuggestionHidingReason::kUserAborted:
+      case SuggestionHidingReason::kViewDestroyed:
+      case SuggestionHidingReason::kWidgetChanged:
+        return;
+    }
+  }
   HideImpl(MapReasonToStatus(reason));
+}
+
+void EmailVerificationPopupController::Dismiss() {
+  is_loading_ = false;
+  if (view_) {
+    view_->Hide();
+    view_ = nullptr;
+  }
+  popup_hide_helper_.reset();
+  weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void EmailVerificationPopupController::ViewDestroyed() {
@@ -163,17 +222,15 @@ EmailVerificationPopupController::GetElementTextDirection() const {
 
 void EmailVerificationPopupController::DidGetUserInteraction(
     const blink::WebInputEvent& event) {
+  if (is_loading_) {
+    return;
+  }
   HideImpl(EmailVerificationPermissionUiStatus::kUserAborted);
 }
 
 void EmailVerificationPopupController::HideImpl(
     AutofillClient::EmailVerificationPermissionUiStatus status) {
-  if (view_) {
-    view_->Hide();
-    view_ = nullptr;
-  }
-  popup_hide_helper_.reset();
-  weak_ptr_factory_.InvalidateWeakPtrs();
+  Dismiss();
 
   if (callback_) {
     base::UmaHistogramEnumeration("Blink.Evp.PermissionUi.Status", status);
@@ -187,7 +244,27 @@ bool EmailVerificationPopupController::OverlapsWithPictureInPictureWindow()
 }
 
 void EmailVerificationPopupController::OnConfirm() {
-  HideImpl(EmailVerificationPermissionUiStatus::kAllowed);
+  // Prevent re-entrancy if the verify button is pressed multiple times.
+  if (is_loading_) {
+    return;
+  }
+  is_loading_ = true;
+
+  // Transition the popup view to the loading state, displaying the circular
+  // animated spinner in the verify button and disabling the cancel button.
+  if (view_) {
+    view_->ShowLoadingState();
+  }
+
+  // Notify the delegate/controller immediately that the user granted permission
+  // so it can initiate background token retrieval and track the loading
+  // duration in parallel with the loading animation.
+  if (callback_) {
+    base::UmaHistogramEnumeration(
+        "Blink.Evp.PermissionUi.Status",
+        EmailVerificationPermissionUiStatus::kAllowed);
+    std::move(callback_).Run(EmailVerificationPermissionUiStatus::kAllowed);
+  }
 }
 
 void EmailVerificationPopupController::OnCancel() {

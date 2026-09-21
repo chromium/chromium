@@ -79,7 +79,8 @@ enum class ToastId {
   kDictationNoMicrophoneError = 56,
   kEmailVerificationLoading = 57,
   kScheduledRestartOnIdle = 58,
-  kMaxValue = kScheduledRestartOnIdle,
+  kEmailVerificationError = 59,
+  kMaxValue = kEmailVerificationError,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/toasts/enums.xml:ToastId)
 

@@ -8,6 +8,7 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/throbber.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace views {
 
@@ -45,6 +46,12 @@ class VIEWS_EXPORT MdTextButtonWithSpinner : public MdTextButton {
   bool spinner_visible_ = false;
 };
 
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, MdTextButtonWithSpinner, MdTextButton)
+VIEW_BUILDER_PROPERTY(bool, SpinnerVisible)
+END_VIEW_BUILDER
+
 }  // namespace views
+
+DEFINE_VIEW_BUILDER(VIEWS_EXPORT, MdTextButtonWithSpinner)
 
 #endif  // UI_VIEWS_CONTROLS_BUTTON_MD_TEXT_BUTTON_WITH_SPINNER_H_

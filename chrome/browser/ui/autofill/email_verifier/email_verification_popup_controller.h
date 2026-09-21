@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
-#include "components/autofill/core/common/unique_ids.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "net/base/schemeful_site.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -65,6 +64,12 @@ class EmailVerificationPopupController : public AutofillPopupViewDelegate,
   // content::WebContentsObserver:
   void DidGetUserInteraction(const blink::WebInputEvent& event) override;
 
+  // Immediately closes the popup view and cleans up controller state. Called by
+  // EmailVerificationController when the popup should be dismissed.
+  void Dismiss();
+
+  bool is_loading() const { return is_loading_; }
+
   base::WeakPtr<EmailVerificationPopupController> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -86,6 +91,9 @@ class EmailVerificationPopupController : public AutofillPopupViewDelegate,
   void OnCancel();
   void HideImpl(AutofillClient::EmailVerificationPermissionUiStatus status);
   bool OverlapsWithPictureInPictureWindow() const;
+
+  // Whether the popup is in the loading state waiting for token response.
+  bool is_loading_ = false;
 
   // The bounds of the element that triggered the popup.
   gfx::RectF element_bounds_;
