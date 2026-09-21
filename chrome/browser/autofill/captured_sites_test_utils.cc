@@ -160,6 +160,14 @@ std::string DocumentForLog(const content::RenderFrameHost& frame) {
       .spec();
 }
 
+// How many times a click action resolves its target and measures it before
+// giving up.
+constexpr int kMaxClickAttempts = 3;
+
+bool FrameIsActive(const content::RenderFrameHostWrapper& frame) {
+  return !frame.IsDestroyed() && frame->IsActive();
+}
+
 void PrintDebugInstructions(const base::FilePath& command_file_path) {
   const char msg[] = R"(
 
@@ -1473,30 +1481,52 @@ bool TestRecipeReplayer::ExecuteAutofillAction(base::DictValue action) {
 
 bool TestRecipeReplayer::ExecuteClickAction(base::DictValue action) {
   std::string xpath;
-  content::RenderFrameHost* frame;
-  if (!ExtractFrameAndVerifyElement(action, &xpath, &frame)) {
-    return false;
+
+  // Scrolling and measuring run scripts in the page, and a navigation can
+  // commit while they do, which destroys the frame this action targets. No
+  // click has been sent at that point, so resolve the target again and retry.
+  for (int attempt = 1; attempt <= kMaxClickAttempts; ++attempt) {
+    content::RenderFrameHost* frame = nullptr;
+    if (!ExtractFrameAndVerifyElement(action, &xpath, &frame)) {
+      return false;
+    }
+
+    content::RenderFrameHostWrapper scroll_target(frame);
+    if (!ScrollElementIntoView(xpath, frame)) {
+      if (FrameIsActive(scroll_target)) {
+        return false;
+      }
+      continue;
+    }
+
+    WaitTillPageIsIdle(scroll_wait_timeout);
+    if (!ExtractFrameAndVerifyElement(action, &xpath, &frame)) {
+      return false;
+    }
+
+    content::RenderFrameHostWrapper measure_target(frame);
+    gfx::Rect rect;
+    if (!GetBoundingRectOfTargetElement(xpath, frame, &rect)) {
+      if (FrameIsActive(measure_target)) {
+        return false;
+      }
+      continue;
+    }
+
+    // Keep the click last: a click must never be retried.
+    VLOG(1) << "Left mouse clicking `" << xpath << "` (attempt " << attempt
+            << ").";
+    if (!SimulateLeftMouseClickAt(rect.CenterPoint(), measure_target.get())) {
+      return false;
+    }
+
+    WaitTillPageIsIdle();
+    return true;
   }
 
-  VLOG(1) << "Left mouse clicking `" << xpath << "`.";
-  if (!ScrollElementIntoView(xpath, frame)) {
-    return false;
-  }
-  WaitTillPageIsIdle(scroll_wait_timeout);
-  if (!ExtractFrameAndVerifyElement(action, &xpath, &frame)) {
-    return false;
-  }
-
-  gfx::Rect rect;
-  if (!GetBoundingRectOfTargetElement(xpath, frame, &rect)) {
-    return false;
-  }
-  if (!SimulateLeftMouseClickAt(rect.CenterPoint(), frame)) {
-    return false;
-  }
-
-  WaitTillPageIsIdle();
-  return true;
+  ADD_FAILURE() << "Gave up clicking `" << xpath << "` after "
+                << kMaxClickAttempts << " attempts.";
+  return false;
 }
 
 bool TestRecipeReplayer::ExecuteClickIfNotSeenAction(base::DictValue action) {
