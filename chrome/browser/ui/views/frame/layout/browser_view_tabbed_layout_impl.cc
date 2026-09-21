@@ -84,8 +84,6 @@ constexpr double kVerticalTabStripOutlineFadeOnHover = 0.5;
 // enabled and expand-on-hover is active.
 constexpr double kGlassExpandOnHoverOpacity = 0.95;
 
-enum class OrganizerPanelLocation { kNone, kOrganizerTray, kVerticalTabStrip };
-
 // Increases the leading or trailing exclusion padding to `minimum`.
 void IncreasePaddingToMinimum(BrowserLayoutParams& params, int minimum) {
   // Default to increasing the trailing exclusion padding. On ChromeOS, the
@@ -549,18 +547,7 @@ BrowserViewTabbedLayoutImpl::CalculateOrganizerPanelAnimation() const {
                             OrganizerPanelAnimations::kVisibleWidth)
           .value_or(0.0);
   if (anim.reveal_amount > 0.0) {
-    auto* const host =
-        delegate().GetOrganizerPanelController()->GetCurrentHost();
-    if (views().organizer_tray &&
-        host == OrganizerPanelHost::FromView(views().organizer_tray)) {
-      anim.location = OrganizerPanelLocation::kOrganizerTray;
-    } else if (views().vertical_tab_strip_region_view &&
-               host == OrganizerPanelHost::FromView(
-                           views().vertical_tab_strip_region_view)) {
-      anim.location = OrganizerPanelLocation::kVerticalTabStrip;
-    } else {
-      anim.location = OrganizerPanelLocation::kNone;
-    }
+    anim.location = delegate().GetOrganizerPanelLocation();
   }
   return anim;
 }

@@ -12,6 +12,7 @@ source_set("organizer") {
 
   public_deps = [
     "//base",
+    "//chrome/browser/ui/views/tabs/organizer:organizer_panel_host",
     "//extensions/buildflags",
     "//ui/base/unowned_user_data",
   ]

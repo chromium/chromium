@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/tabs/features.h"
-#include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
@@ -23,6 +22,7 @@
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/glass_frame_service.h"
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
+#include "chrome/browser/ui/views/tabs/organizer/organizer_panel_host.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/common/buildflags.h"
@@ -212,9 +212,9 @@ BrowserViewLayoutDelegateImpl::GetExclusiveAccessBubble() const {
   return browser_view_->GetExclusiveAccessBubble();
 }
 
-OrganizerPanelController*
-BrowserViewLayoutDelegateImpl::GetOrganizerPanelController() const {
-  return OrganizerPanelController::From(browser_view_->browser());
+OrganizerPanelLocation
+BrowserViewLayoutDelegateImpl::GetOrganizerPanelLocation() const {
+  return OrganizerPanelHost::GetPreferredLocation(*browser_view_->browser());
 }
 
 bool BrowserViewLayoutDelegateImpl::IsTopControlsSlideBehaviorEnabled() const {

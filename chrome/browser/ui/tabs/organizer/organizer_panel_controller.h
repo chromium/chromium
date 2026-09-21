@@ -11,6 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/views/tabs/organizer/organizer_panel_host.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
@@ -20,7 +21,6 @@
 
 class BrowserView;
 class BrowserWindowInterface;
-class OrganizerPanelHost;
 
 namespace actions {
 class ActionItem;
@@ -48,7 +48,7 @@ class OrganizerPanelController {
 
   void SetOrganizerVisible(bool visible, bool immediate = false);
 
-  const OrganizerPanelHost* GetCurrentHost() const;
+  OrganizerPanelLocation GetCurrentOrganizerPanelLocation() const;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   void OpenForExtension(const extensions::ExtensionId& extension_id);

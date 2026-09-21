@@ -80,13 +80,30 @@ OrganizerPanelHost* OrganizerPanelHost::FromView(views::View* view) {
 }
 
 // static
-OrganizerPanelHost* OrganizerPanelHost::GetPreferredHost(
+OrganizerPanelLocation OrganizerPanelHost::GetPreferredLocation(
     BrowserWindowInterface& browser) {
-  if (DoesVerticalTabStripSupportEmbeddedOrganizerPanel(browser)) {
-    return GetVerticalTabStripHost(browser);
+  if (browser.GetType() != BrowserWindowInterface::TYPE_NORMAL ||
+      !organizer_panel::IsOrganizerPanelFeatureEnabled()) {
+    return OrganizerPanelLocation::kNone;
   }
-  // Default is to put the panel in the tray.
-  return GetOrganizerTrayHost(browser);
+  if (DoesVerticalTabStripSupportEmbeddedOrganizerPanel(browser)) {
+    return OrganizerPanelLocation::kVerticalTabStrip;
+  }
+  return OrganizerPanelLocation::kOrganizerTray;
+}
+
+// static
+OrganizerPanelHost* OrganizerPanelHost::GetHostForLocation(
+    BrowserWindowInterface& browser,
+    OrganizerPanelLocation location) {
+  switch (location) {
+    case OrganizerPanelLocation::kNone:
+      return nullptr;
+    case OrganizerPanelLocation::kVerticalTabStrip:
+      return GetVerticalTabStripHost(browser);
+    case OrganizerPanelLocation::kOrganizerTray:
+      return GetOrganizerTrayHost(browser);
+  }
 }
 
 OrganizerPanelHostView::OrganizerPanelHostView() = default;

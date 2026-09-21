@@ -12,6 +12,16 @@
 
 class BrowserWindowInterface;
 
+// Where the organizer panel appears in the browser window.
+enum class OrganizerPanelLocation {
+  // No organizer panel.
+  kNone,
+  // In a slide-out tray.
+  kOrganizerTray,
+  // In the vertical tab strip.
+  kVerticalTabStrip
+};
+
 // Object that hosts an organizer panel view.
 class OrganizerPanelHost {
  public:
@@ -29,8 +39,15 @@ class OrganizerPanelHost {
   // implementation, otherwise null.
   static OrganizerPanelHost* FromView(views::View* view);
 
-  // Returns the preferred panel host for the current state of `browser`.
-  static OrganizerPanelHost* GetPreferredHost(BrowserWindowInterface& browser);
+  // Get the preferred location for hosting the panel. This is used by
+  // `GetHostForLocation()` to retrieve the correct host.
+  static OrganizerPanelLocation GetPreferredLocation(
+      BrowserWindowInterface& browser);
+
+  // Returns the preferred panel host in `browser` for `location`.
+  static OrganizerPanelHost* GetHostForLocation(
+      BrowserWindowInterface& browser,
+      OrganizerPanelLocation location);
 };
 
 // Abstract View which implements `OrganizerPanelHost`. Not every implementation

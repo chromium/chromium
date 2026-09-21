@@ -107,45 +107,68 @@ class OrganizerPanelController::PanelViewManager {
   // Maybe moves the panel between hosts if the desired host has changed.
   // Returns true if changed, false otherwise.
   bool UpdatePanelViewHost() {
-    auto* const desired_host = OrganizerPanelHost::GetPreferredHost(*browser_);
-    auto* const actual_host = GetCurrentHost();
-    if (!actual_host) {
+    if (!panel_view_) {
       return false;
     }
+
+    // Determine where the panel should go.
+    const auto new_location =
+        OrganizerPanelHost::GetPreferredLocation(*browser_);
+    CHECK_NE(OrganizerPanelLocation::kNone, new_location)
+        << "No new host to move panel to.";
+    if (current_location_ == new_location) {
+      return false;
+    }
+
+    // Determine where the panel currently is.
+    auto* const current_host = OrganizerPanelHost::FromView(panel_view_.view());
+    CHECK(current_host) << "No current host to move panel from.";
+    DCHECK_EQ(
+        OrganizerPanelHost::GetHostForLocation(*browser_, current_location_),
+        current_host)
+        << "Sanity check failed: Current host is not expected host.";
+
+    // Find the new host.
+    auto* const desired_host =
+        OrganizerPanelHost::GetHostForLocation(*browser_, new_location);
     CHECK(desired_host) << "Browser has no panel host.";
-    if (desired_host != actual_host) {
-      desired_host->SetOrganizerPanelView(
-          actual_host->TakeOrganizerPanelView());
-      return true;
-    }
+    CHECK_NE(desired_host, current_host)
+        << "Location changed but host remained the same.";
 
-    return false;
+    // Move the panel.
+    current_location_ = new_location;
+    desired_host->SetOrganizerPanelView(current_host->TakeOrganizerPanelView());
+    return true;
   }
 
-  OrganizerPanelHost* GetCurrentHost() {
-    auto* const panel_view = panel_view_.view();
-    if (!panel_view) {
-      return nullptr;
-    }
-    CHECK(panel_view->parent());
-    auto* const host = OrganizerPanelHost::FromView(panel_view->parent());
-    CHECK(host);
-    return host;
-  }
+  OrganizerPanelLocation current_location() const { return current_location_; }
 
  private:
   // Removes the panel view from its current host.
   std::unique_ptr<views::View> RemovePanelView() {
-    auto* const old_host = GetCurrentHost();
-    return old_host ? old_host->TakeOrganizerPanelView() : nullptr;
+    auto* const panel_view = panel_view_.view();
+    panel_view_.SetView(nullptr);
+    current_location_ = OrganizerPanelLocation::kNone;
+    if (!panel_view) {
+      return nullptr;
+    }
+    auto* const old_host = OrganizerPanelHost::FromView(panel_view);
+    CHECK(old_host) << "Panel was present but not in a host.";
+    return old_host->TakeOrganizerPanelView();
   }
 
   // Adds the panel view to the correct host for the current browser state.
   void AddPanelView(std::unique_ptr<views::View> panel_view) {
+    CHECK(panel_view);
     CHECK(!panel_view_);
-    auto* const host = OrganizerPanelHost::GetPreferredHost(*browser_);
-    CHECK(host) << "Browser has no panel host.";
+    CHECK_EQ(OrganizerPanelLocation::kNone, current_location_);
+    current_location_ = OrganizerPanelHost::GetPreferredLocation(*browser_);
+    CHECK_NE(OrganizerPanelLocation::kNone, current_location_)
+        << "Browser has no panel host";
     panel_view_.SetView(panel_view.get());
+    auto* const host =
+        OrganizerPanelHost::GetHostForLocation(*browser_, current_location_);
+    CHECK(host) << "Panel host is missing.";
     host->SetOrganizerPanelView(std::move(panel_view));
   }
 
@@ -153,6 +176,7 @@ class OrganizerPanelController::PanelViewManager {
   const raw_ref<BrowserWindowInterface> browser_;
   std::vector<base::CallbackListSubscription> tab_strip_subscriptions_;
   views::ViewTracker panel_view_;
+  OrganizerPanelLocation current_location_ = OrganizerPanelLocation::kNone;
 };
 
 OrganizerPanelController::OrganizerPanelController(
@@ -223,8 +247,9 @@ void OrganizerPanelController::SetOrganizerVisible(bool visible,
   NotifyStateChanged();
 }
 
-const OrganizerPanelHost* OrganizerPanelController::GetCurrentHost() const {
-  return panel_view_manager_->GetCurrentHost();
+OrganizerPanelLocation
+OrganizerPanelController::GetCurrentOrganizerPanelLocation() const {
+  return panel_view_manager_->current_location();
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
