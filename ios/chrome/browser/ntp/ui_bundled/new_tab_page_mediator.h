@@ -45,6 +45,7 @@ class HomeBackgroundCustomizationService;
 @protocol NewTabPageConsumer;
 @protocol NewTabPageContentDelegate;
 @protocol NewTabPageHeaderConsumer;
+@protocol NewTabPageScrollConsumer;
 class PlaceholderService;
 class PrefService;
 @class SearchEngineLogoMediator;
@@ -99,6 +100,8 @@ class UserUploadedImageManager;
 @property(nonatomic, weak) FeedMetricsRecorder* feedMetricsRecorder;
 // Consumer for this mediator.
 @property(nonatomic, weak) id<NewTabPageConsumer> consumer;
+// Consumer for scroll and feed inset handling.
+@property(nonatomic, weak) id<NewTabPageScrollConsumer> scrollConsumer;
 // Consumer for NTP header model updates.
 @property(nonatomic, weak) id<NewTabPageHeaderConsumer> headerConsumer;
 // Delegate to update the identity disc image.

@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_consumer.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_consumer.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_consumer.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_delegate.h"
 
 @class ExtendedTouchTargetButton;
 @class LayoutGuideCenter;
@@ -29,7 +28,6 @@
                         FakeboxButtonsSnapshotProvider,
                         NewTabPageConsumer,
                         NewTabPageHeaderConsumer,
-                        NewTabPageHeaderViewDelegate,
                         SearchEngineLogoConsumer,
                         UserAccountImageUpdateDelegate>
 
@@ -94,9 +92,6 @@
 
 // Returns YES if the bottom sheet is scrolled to the top.
 - (BOOL)isScrolledToTop;
-
-// Indicates to the receiver to update its state to focus the omnibox.
-- (void)focusOmnibox;
 
 // Clears state and delegates.
 - (void)invalidate;

@@ -119,11 +119,6 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
 
 @interface NewTabPageRedesignViewController () <
     NewTabPageBottomSheetViewControllerDelegate>
-
-// Properties conformed to by `NewTabPageConsumer`
-@property(nonatomic, assign, readwrite) CGFloat collectionShiftingOffset;
-@property(nonatomic, assign, readwrite) BOOL scrolledToMinimumHeight;
-
 @end
 
 @implementation NewTabPageRedesignViewController {
@@ -151,6 +146,10 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
   NSString* _avatarName;
   NSString* _avatarEmail;
   BOOL _avatarImageLoaded;
+  BOOL _hasAccountError;
+  NSString* _accountErrorName;
+  NSString* _accountErrorEmail;
+  BOOL _accountErrorBadgeUpdated;
 
   // Layout constraints for top content.
   NSLayoutConstraint* _mvtTopConstraint;
@@ -442,6 +441,12 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
     }
   }
 
+  if (_accountErrorBadgeUpdated) {
+    [_identityDiscButton updateADPBadgeWithErrorFound:_hasAccountError
+                                                 name:_accountErrorName
+                                                email:_accountErrorEmail];
+  }
+
   // Add customization menu button.
   if (!IsOverflowMenuHomeCustomizationEntrypointEnabled()) {
     ExtendedTouchTargetButton* customizationButton =
@@ -664,10 +669,6 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
 
 #pragma mark - Public
 
-- (void)focusOmnibox {
-  [self.NTPContentDelegate focusOmnibox];
-}
-
 - (ExtendedTouchTargetButton*)customizationMenuButton {
   if (!_customizationMenuButton) {
     _customizationMenuButton =
@@ -727,7 +728,7 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
 #pragma mark - Action Targets
 
 - (void)fakeLocationBarTapped {
-  [self focusOmnibox];
+  [self.NTPContentDelegate focusOmnibox];
 }
 
 #pragma mark - NewTabPageBottomSheetViewControllerDelegate
@@ -903,38 +904,6 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
 }
 
 #pragma mark - NewTabPageConsumer
-
-- (void)omniboxDidBecomeFirstResponder {
-  // TODO(crbug.com/526677926): To be implemented in Phase 2/3.
-}
-
-- (void)omniboxWillResignFirstResponder {
-  // TODO(crbug.com/526677926): To be implemented in Phase 2/3.
-}
-
-- (void)omniboxDidEndEditing {
-  // TODO(crbug.com/526677926): To be implemented in Phase 2/3.
-}
-
-- (void)restoreScrollPosition:(CGFloat)scrollPosition {
-  // TODO(crbug.com/526677926): To be implemented in Phase 2/3.
-}
-
-- (void)restoreScrollPositionToTopOfFeed {
-  // TODO(crbug.com/526677926): To be implemented in Phase 2/3.
-}
-
-- (CGFloat)heightAboveFeed {
-  return 0.0;
-}
-
-- (CGFloat)scrollPosition {
-  return 0.0;
-}
-
-- (CGFloat)pinnedOffsetY {
-  return 0.0;
-}
 
 - (void)setBackgroundImage:(UIImage*)backgroundImage
         framingCoordinates:
@@ -1252,12 +1221,6 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
   }
 }
 
-#pragma mark - NewTabPageHeaderViewDelegate
-
-- (BOOL)shouldPinFakeOmnibox {
-  return NO;
-}
-
 #pragma mark - UserAccountImageUpdateDelegate
 
 - (void)setSignedOutAccountImage {
@@ -1265,6 +1228,10 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
   _avatarName = nil;
   _avatarEmail = nil;
   _avatarImageLoaded = YES;
+  _accountErrorBadgeUpdated = NO;
+  _hasAccountError = NO;
+  _accountErrorName = nil;
+  _accountErrorEmail = nil;
   if (_identityDiscButton) {
     [_identityDiscButton setSignedOutAccountImage];
   }
@@ -1390,14 +1357,18 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
   }
 }
 
-- (void)setFeedBottomInset:(CGFloat)bottomInset {
-  // No-op for redesign.
-}
-
 - (void)updateADPBadgeWithErrorFound:(BOOL)hasAccountError
                                 name:(NSString*)name
                                email:(NSString*)email {
-  // No-op for redesign.
+  _hasAccountError = hasAccountError;
+  _accountErrorName = name;
+  _accountErrorEmail = email;
+  _accountErrorBadgeUpdated = YES;
+  if (_identityDiscButton) {
+    [_identityDiscButton updateADPBadgeWithErrorFound:hasAccountError
+                                                 name:name
+                                                email:email];
+  }
 }
 
 #pragma mark - FakeboxButtonsSnapshotProvider

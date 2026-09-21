@@ -497,8 +497,14 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
     if (IsBottomOmniboxAvailable()) {
       [self.consumer setOmniboxInBottomPosition:_bottomOmniboxEnabled.value];
     }
-    if (IsFullscreenRefactoringEnabled() && _fullscreenBrowserAgent) {
-      [self.consumer
+  }
+}
+
+- (void)setScrollConsumer:(id<NewTabPageScrollConsumer>)scrollConsumer {
+  _scrollConsumer = scrollConsumer;
+  if (IsChromeNextIaEnabled()) {
+    if (_fullscreenBrowserAgent && IsFullscreenRefactoringEnabled()) {
+      [self.scrollConsumer
           setFeedBottomInset:_fullscreenBrowserAgent->max_insets().bottom];
     }
   }
@@ -641,7 +647,7 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
 }
 
 - (void)restoreNTPScrollPositionForWebState:(web::WebState*)webState {
-  [self.consumer
+  [self.scrollConsumer
       restoreScrollPosition:NewTabPageTabHelper::FromWebState(webState)
                                 ->GetNTPScrollPosition()];
 }
@@ -677,7 +683,7 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
 #pragma mark - FullscreenBrowserAgentObserving
 
 - (void)fullscreenDidUpdateObscuredInsetRange:(FullscreenBrowserAgent*)agent {
-  [self.consumer setFeedBottomInset:agent->max_insets().bottom];
+  [self.scrollConsumer setFeedBottomInset:agent->max_insets().bottom];
 }
 
 #pragma mark - BooleanObserver

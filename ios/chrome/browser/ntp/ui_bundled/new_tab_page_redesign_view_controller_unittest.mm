@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_commands.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_mutator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_shortcuts_handler.h"
+#import "ios/chrome/browser/ntp/ui_bundled/ntp_identity_disc_button.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
@@ -789,4 +790,23 @@ TEST_F(NewTabPageRedesignViewControllerTest,
   EXPECT_FLOAT_EQ(1.0, backdrop_blur.alpha);
   EXPECT_TRUE(backdrop_blur.userInteractionEnabled);
   EXPECT_OCMOCK_VERIFY(mock_content_delegate);
+}
+
+// Tests that updateADPBadgeWithErrorFound updates the identity disc button.
+TEST_F(NewTabPageRedesignViewControllerTest, TestUpdateADPBadgeWithErrorFound) {
+  [view_controller_ updateADPBadgeWithErrorFound:YES
+                                            name:@"John Doe"
+                                           email:@"john@example.com"];
+  // Load view so identity disc button is created.
+  [view_controller_ loadViewIfNeeded];
+  NTPIdentityDiscButton* identity_disc =
+      [view_controller_ valueForKey:@"_identityDiscButton"];
+  ASSERT_TRUE(identity_disc != nil);
+  EXPECT_TRUE([[identity_disc valueForKey:@"_hasAccountError"] boolValue]);
+
+  // Updating while view is loaded propagates immediately.
+  [view_controller_ updateADPBadgeWithErrorFound:NO
+                                            name:@"John Doe"
+                                           email:@"john@example.com"];
+  EXPECT_FALSE([[identity_disc valueForKey:@"_hasAccountError"] boolValue]);
 }

@@ -14,12 +14,6 @@
 // Handles updates to the NTP ViewController.
 @protocol NewTabPageConsumer <NSObject>
 
-// When the omnibox is focused, this value represents the scroll distance needed
-// to pin the omnibox to the top. It is 0 if no scrolling was done in order pin
-// the omnibox to the top (i.e. the NTP ScrollView was already scrolled far
-// enough down that the omnibo was already pinned to the top).
-@property(nonatomic, assign, readonly) CGFloat collectionShiftingOffset;
-
 // Whether the Most Visited module is visible on the NTP.
 @property(nonatomic, assign) BOOL mostVisitedVisible;
 
@@ -28,6 +22,30 @@
 
 // Collection of trait-specific override values for customizing NTP appearance
 @property(nonatomic, readonly) id<UITraitOverrides> traitOverrides;
+
+// Sets the background image of the NTP. Removes the current background image
+// if nil is passed. If framing coordinates are non-nil, they will be used to
+// position the image.
+- (void)setBackgroundImage:(UIImage*)backgroundImage
+        framingCoordinates:
+            (HomeCustomizationFramingCoordinates*)framingCoordinates;
+
+// Whether AIM is allowed.
+- (void)setAIMAllowed:(BOOL)allowed;
+
+// Sets whether the omnibox is in the bottom position.
+- (void)setOmniboxInBottomPosition:(BOOL)isBottomOmnibox;
+
+@end
+
+// Handles scroll-view and omnibox math specific to NewTabPageViewController.
+@protocol NewTabPageScrollConsumer
+
+// When the omnibox is focused, this value represents the scroll distance needed
+// to pin the omnibox to the top. It is 0 if no scrolling was done in order pin
+// the omnibox to the top (i.e. the NTP ScrollView was already scrolled far
+// enough down that the omnibo was already pinned to the top).
+@property(nonatomic, assign, readonly) CGFloat collectionShiftingOffset;
 
 // Indicates that the omnibox has become the first responder to the keyboard.
 - (void)omniboxDidBecomeFirstResponder;
@@ -57,19 +75,6 @@
 // Returns the Y value to use for the scroll view's contentOffset when scrolling
 // the omnibox to the top of the screen.
 - (CGFloat)pinnedOffsetY;
-
-// Sets the background image of the NTP. Removes the current background image
-// if nil is passed. If framing coordinates are non-nil, they will be used to
-// position the image.
-- (void)setBackgroundImage:(UIImage*)backgroundImage
-        framingCoordinates:
-            (HomeCustomizationFramingCoordinates*)framingCoordinates;
-
-// Whether AIM is allowed.
-- (void)setAIMAllowed:(BOOL)allowed;
-
-// Sets whether the omnibox is in the bottom position.
-- (void)setOmniboxInBottomPosition:(BOOL)isBottomOmnibox;
 
 // Sets the bottom inset for the feed to avoid overlap with bottom toolbars.
 - (void)setFeedBottomInset:(CGFloat)bottomInset;

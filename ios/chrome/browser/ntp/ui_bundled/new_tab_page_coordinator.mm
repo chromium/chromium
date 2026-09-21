@@ -97,6 +97,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_component_factory_protocol.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_consumer.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_content_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_controller_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_coordinator+Testing.h"
@@ -583,7 +584,7 @@
   if (!IsNTPRedesignEnabled()) {
     [self.NTPViewController focusOmnibox];
   } else if (self.NTPRedesignViewController) {
-    [self.NTPRedesignViewController focusOmnibox];
+    [self focusOmnibox];
   }
 }
 
@@ -603,25 +604,19 @@
 }
 
 - (void)locationBarDidBecomeFirstResponder {
-  if (IsNTPRedesignEnabled()) {
-    [self.NTPRedesignViewController omniboxDidBecomeFirstResponder];
-  } else {
+  if (!IsNTPRedesignEnabled()) {
     [self.NTPViewController omniboxDidBecomeFirstResponder];
   }
 }
 
 - (void)locationBarWillResignFirstResponder {
-  if (IsNTPRedesignEnabled()) {
-    [self.NTPRedesignViewController omniboxWillResignFirstResponder];
-  } else {
+  if (!IsNTPRedesignEnabled()) {
     [self.NTPViewController omniboxWillResignFirstResponder];
   }
 }
 
 - (void)locationBarDidResignFirstResponder {
-  if (IsNTPRedesignEnabled()) {
-    [self.NTPRedesignViewController omniboxDidEndEditing];
-  } else {
+  if (!IsNTPRedesignEnabled()) {
     [self.NTPViewController omniboxDidEndEditing];
   }
 }
@@ -923,6 +918,7 @@
   } else {
     NTPMediator.headerConsumer = self.headerView;
     NTPMediator.consumer = self.NTPViewController;
+    NTPMediator.scrollConsumer = self.NTPViewController;
   }
   PlaceholderService* placeholderService =
       ios::PlaceholderServiceFactory::GetForProfile(self.profile);
@@ -2085,7 +2081,7 @@
 // if necessary.
 - (void)restoreNTPScrollPosition {
   if ([self isStartSurface]) {
-    [self.NTPMediator.consumer restoreScrollPosition:-CGFLOAT_MAX];
+    [self.NTPMediator.scrollConsumer restoreScrollPosition:-CGFLOAT_MAX];
   } else {
     [self.NTPMediator restoreNTPScrollPositionForWebState:self.webState];
   }

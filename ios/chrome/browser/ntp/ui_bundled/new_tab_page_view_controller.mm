@@ -195,7 +195,7 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   CGFloat _feedBottomInset;
 }
 
-// Properties synthesized from NewTabPageConsumer.
+// Properties synthesized from NewTabPageScrollConsumer.
 @synthesize mostVisitedVisible = _mostVisitedVisible;
 @synthesize magicStackVisible = _magicStackVisible;
 
@@ -739,7 +739,7 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   return _moduleLayoutGuide;
 }
 
-#pragma mark - NewTabPageConsumer
+#pragma mark - NewTabPageScrollConsumer
 
 - (void)restoreScrollPosition:(CGFloat)scrollPosition {
   if (self.view.window) {

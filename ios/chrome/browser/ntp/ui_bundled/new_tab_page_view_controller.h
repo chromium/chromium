@@ -31,6 +31,7 @@ typedef NS_ENUM(NSInteger, FeedLayoutUpdateType);
 // non-incognito new tab page.
 @interface NewTabPageViewController
     : UIViewControllerWithDisplayTracing <NewTabPageConsumer,
+                                          NewTabPageScrollConsumer,
                                           NewTabPageHeaderViewDelegate,
                                           UIScrollViewDelegate>
 

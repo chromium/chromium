@@ -243,10 +243,10 @@ class NewTabPageMediatorTest : public PlatformTest {
   }
 
   id SetupNTPConsumerMock() {
-    id ntp_consumer = OCMProtocolMock(@protocol(NewTabPageConsumer));
+    id ntp_consumer = OCMProtocolMock(@protocol(NewTabPageScrollConsumer));
     [[[ntp_consumer expect] andReturnValue:[NSNumber numberWithDouble:0.0]]
         heightAboveFeed];
-    mediator_.consumer = ntp_consumer;
+    mediator_.scrollConsumer = ntp_consumer;
     return ntp_consumer;
   }
 
@@ -598,7 +598,7 @@ TEST_F(NewTabPageMediatorTest, TestFetchCustomBackground_NewURL) {
   [mediator_ fetchCustomBackground:background2];
 }
 
-// Tests that the consumer receives feed bottom inset updates from
+// Tests that the scroll consumer receives feed bottom inset updates from
 // FullscreenBrowserAgent when ChromeNextIa and FullscreenRefactoring are
 // enabled.
 TEST_F(NewTabPageMediatorTest, TestFeedBottomInsetWithChromeNextIa) {
@@ -611,11 +611,31 @@ TEST_F(NewTabPageMediatorTest, TestFeedBottomInsetWithChromeNextIa) {
   CreateMediator(/*with_aim_eligibility_service=*/false,
                  fullscreen_browser_agent);
 
-  id ntp_consumer = OCMProtocolMock(@protocol(NewTabPageConsumer));
-  OCMExpect([ntp_consumer
+  id scroll_consumer = OCMProtocolMock(@protocol(NewTabPageScrollConsumer));
+  OCMExpect([scroll_consumer
       setFeedBottomInset:fullscreen_browser_agent->max_insets().bottom]);
 
-  mediator_.consumer = ntp_consumer;
+  mediator_.scrollConsumer = scroll_consumer;
 
-  EXPECT_OCMOCK_VERIFY(ntp_consumer);
+  EXPECT_OCMOCK_VERIFY(scroll_consumer);
+}
+
+// Tests that the scroll consumer receives restoreScrollPosition updates when
+// restoreNTPScrollPositionForWebState is called.
+TEST_F(NewTabPageMediatorTest, TestRestoreNTPScrollPosition) {
+  CreateMediator(/*with_aim_eligibility_service=*/false);
+  std::unique_ptr<web::FakeWebState> web_state =
+      std::make_unique<web::FakeWebState>();
+  NewTabPageTabHelper::CreateForWebState(web_state.get());
+  constexpr CGFloat kTestScrollPosition = 123.0;
+  NewTabPageTabHelper::FromWebState(web_state.get())
+      ->SetNTPScrollPosition(kTestScrollPosition);
+
+  id scroll_consumer = OCMProtocolMock(@protocol(NewTabPageScrollConsumer));
+  OCMExpect([scroll_consumer restoreScrollPosition:kTestScrollPosition]);
+
+  mediator_.scrollConsumer = scroll_consumer;
+  [mediator_ restoreNTPScrollPositionForWebState:web_state.get()];
+
+  EXPECT_OCMOCK_VERIFY(scroll_consumer);
 }
