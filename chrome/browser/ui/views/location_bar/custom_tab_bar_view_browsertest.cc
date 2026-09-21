@@ -23,14 +23,17 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/omnibox/browser/location_bar_model.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/security_interstitials/content/settings_page_helper.h"
 #include "components/security_interstitials/core/metrics_helper.h"
+#include "components/security_state/core/security_state.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
@@ -178,6 +181,29 @@ class UrlHidingWebContentsObserver : public content::WebContentsObserver {
 
  private:
   bool install_interstitial_ = true;
+};
+
+// Runs the message loop until WebContents::DidChangeVisibleSecurityState fires
+// at least once.
+class SecurityStateWaiter : public content::WebContentsObserver {
+ public:
+  explicit SecurityStateWaiter(content::WebContents* contents)
+      : content::WebContentsObserver(contents) {}
+  void DidChangeVisibleSecurityState() override {
+    fired_ = true;
+    if (run_loop_.running()) {
+      run_loop_.Quit();
+    }
+  }
+  void Wait() {
+    if (!fired_) {
+      run_loop_.Run();
+    }
+  }
+
+ private:
+  bool fired_ = false;
+  base::RunLoop run_loop_;
 };
 
 }  // namespace
@@ -749,4 +775,62 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest, BlobUrlLocation) {
       app_browser_view->toolbar()->custom_tab_bar()->location_for_testing() +
           u"/",
       base::ASCIIToUTF16(embedded_https_test_server().GetURL("/").spec()));
+}
+
+// Check that the CustomTabBarView security chip updates when the visible
+// security state changes while the bar is already visible.
+IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
+                       SecurityChipUpdatesOnVisibleSecurityStateChange) {
+  const GURL app_url =
+      embedded_https_test_server().GetURL("app.com", "/ssl/google.html");
+  InstallPWA(app_url);
+  ASSERT_TRUE(app_browser_);
+  EXPECT_EQ(app_browser_->GetType(), BrowserWindowInterface::Type::TYPE_APP);
+
+  BrowserView* app_view = BrowserView::GetBrowserViewForBrowser(app_browser_);
+  CustomTabBarView* bar = app_view->toolbar()->custom_tab_bar();
+  ASSERT_TRUE(bar);
+  content::WebContents* contents = app_view->GetActiveWebContents();
+
+  // In-scope: custom tab bar is not shown.
+  EXPECT_FALSE(app_controller_->ShouldShowCustomTabBar());
+  EXPECT_FALSE(bar->GetVisible());
+
+  // Navigate off-scope to a secure HTTPS page. Custom tab bar becomes visible.
+  const GURL offscope_url = embedded_https_test_server().GetURL(
+      "example.com", "/ssl/blank_page.html");
+  NavigateAndWait(contents, offscope_url);
+
+  EXPECT_TRUE(app_controller_->ShouldShowCustomTabBar());
+  EXPECT_TRUE(bar->GetVisible());
+
+  LocationIconView* icon = bar->location_icon_view();
+  ASSERT_TRUE(icon);
+
+  // Baseline: model says SECURE, and displayed chip is in sync.
+  EXPECT_EQ(security_state::SECURE,
+            bar->GetLocationBarModel()->GetSecurityLevel());
+  EXPECT_FALSE(icon->HasSecurityStateChanged());
+  EXPECT_TRUE(icon->GetText().empty());
+  EXPECT_FALSE(icon->ShouldShowLabel());
+  EXPECT_FALSE(app_view->UpdateToolbarSecurityState());
+
+  // Trigger a visible security state change by loading mixed content.
+  SecurityStateWaiter sec_waiter(contents);
+  EXPECT_TRUE(content::ExecJs(contents, R"(
+      let img = document.createElement('img');
+      img.src = 'http://sample-image.test/img.png';
+      document.body.appendChild(img);
+    )"));
+  sec_waiter.Wait();
+
+  // The model now reports a non-SECURE security level.
+  const security_state::SecurityLevel new_level =
+      bar->GetLocationBarModel()->GetSecurityLevel();
+  EXPECT_NE(security_state::SECURE, new_level);
+
+  // The custom tab bar chip should update and remain in sync with the model.
+  EXPECT_FALSE(icon->HasSecurityStateChanged());
+  EXPECT_EQ(icon->GetShowText(), icon->ShouldShowLabel());
+  EXPECT_FALSE(app_view->UpdateToolbarSecurityState());
 }

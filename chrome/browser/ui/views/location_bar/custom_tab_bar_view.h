@@ -54,6 +54,13 @@ class CustomTabBarView : public views::AccessiblePaneView,
 
   LocationIconView* location_icon_view() { return location_icon_view_; }
 
+  // Returns true if the custom tab bar's security state does not match
+  // the currently visible state.
+  bool HasSecurityStateChanged() const;
+
+  // Populates child elements with page details from the current WebContents.
+  void UpdateContents();
+
   // views::AccessiblePaneView:
   gfx::Rect GetAnchorBoundsInScreen() const override;
   void SetVisible(bool visible) override;
@@ -122,9 +129,6 @@ class CustomTabBarView : public views::AccessiblePaneView,
   web_app::AppBrowserController* app_controller() const {
     return web_app::AppBrowserController::From(browser_);
   }
-
-  // Populates child elements with page details from the current WebContents.
-  void UpdateContents();
 
   bool GetShowTitle() const;
 

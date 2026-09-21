@@ -348,6 +348,11 @@ void CustomTabBarView::OnTabStripModelChanged(
   }
 }
 
+bool CustomTabBarView::HasSecurityStateChanged() const {
+  return GetVisible() && location_icon_view_ &&
+         location_icon_view_->HasSecurityStateChanged();
+}
+
 void CustomTabBarView::UpdateContents() {
   // If the toolbar should not be shown don't update the UI, as the toolbar may
   // be animating out and it looks messy.
@@ -364,8 +369,10 @@ void CustomTabBarView::UpdateContents() {
 
   content::NavigationEntry* entry = contents->GetController().GetVisibleEntry();
   std::u16string title, location;
-  title = WindowMetadataController::FormatTitleForDisplay(
-      entry->GetTitleForDisplay());
+  if (entry) {
+    title = WindowMetadataController::FormatTitleForDisplay(
+        entry->GetTitleForDisplay());
+  }
   if (ShouldDisplayUrl(contents)) {
     location = web_app::AppBrowserController::FormatUrlOrigin(
         contents->GetVisibleURL(), url_formatter::kFormatUrlOmitDefaults);

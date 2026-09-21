@@ -1175,7 +1175,9 @@ void ToolbarView::AnimationProgressed(const gfx::Animation* animation) {
 }
 
 void ToolbarView::Update(WebContents* tab) {
-  if (location_bar_) {
+  if (custom_tab_bar_) {
+    custom_tab_bar_->UpdateContents();
+  } else if (location_bar_) {
     location_bar_->Update(tab);
   }
 
@@ -1194,7 +1196,12 @@ void ToolbarView::Update(WebContents* tab) {
 }
 
 bool ToolbarView::UpdateSecurityState() {
-  if (location_bar_ && location_bar_->HasSecurityStateChanged()) {
+  const bool has_security_state_changed =
+      display_mode_ == DisplayMode::kCustomTab
+          ? (custom_tab_bar_ && custom_tab_bar_->HasSecurityStateChanged())
+          : (location_bar_ && location_bar_->HasSecurityStateChanged());
+
+  if (has_security_state_changed) {
     Update(nullptr);
     return true;
   }
