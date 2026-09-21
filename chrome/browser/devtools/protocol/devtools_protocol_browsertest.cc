@@ -32,8 +32,6 @@
 #include "chrome/browser/data_saver/data_saver.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
-#include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
-#include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.h"
 #include "chrome/browser/private_verification_tokens/private_verification_tokens_service.h"
@@ -46,7 +44,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_test_utils.h"
-#include "components/component_updater/installer_policies/first_party_sets_component_installer_policy.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
@@ -55,7 +52,6 @@
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
-#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_token.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "content/public/browser/btm_redirect.h"
@@ -2330,79 +2326,6 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAttestationsOverrideTest,
   EXPECT_FALSE(
       privacy_sandbox::PrivacySandboxAttestations::GetInstance()->IsOverridden(
           net::SchemefulSite(GURL(attestation_url))));
-}
-
-class DevToolsProtocolTest_RelatedWebsiteSets : public DevToolsProtocolTest {
- protected:
-  const char* kPrimarySite = "https://a.test";
-  const char* kAssociatedSite = "https://b.test";
-  const char* kServiceSite = "https://c.test";
-  const char* kPrimaryCcTLD = "https://a.cctld";
-
-  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
-    DevToolsProtocolTest::SetUpDefaultCommandLine(command_line);
-    command_line->RemoveSwitch(switches::kDisableComponentUpdate);
-  }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    DevToolsProtocolTest::SetUpInProcessBrowserTestFixture();
-    CHECK(component_dir_.CreateUniqueTempDir());
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    component_updater::FirstPartySetsComponentInstallerPolicy::
-        WriteComponentForTesting(
-            base::Version("1.2.3"), component_dir_.GetPath(),
-            base::StringPrintf(R"({"primary": "%s",)"
-                               R"("associatedSites": ["%s"],)"
-                               R"("serviceSites": ["%s"],)"
-                               R"("ccTLDs": {"%s": ["%s"]}})",
-                               kPrimarySite, kAssociatedSite, kServiceSite,
-                               kPrimarySite, kPrimaryCcTLD));
-  }
-
-  void SetUpOnMainThread() override {
-    DevToolsProtocolTest::SetUpOnMainThread();
-    browser()->GetProfile()->GetPrefs()->SetBoolean(
-        prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, true);
-
-    first_party_sets::FirstPartySetsPolicyService* service =
-        first_party_sets::FirstPartySetsPolicyServiceFactory::
-            GetForBrowserContext(browser()->GetProfile());
-    ASSERT_NE(service, nullptr);
-    base::test::TestFuture<void> future;
-    service->WaitForFirstInitCompleteForTesting(future.GetCallback());
-    ASSERT_TRUE(future.Wait());
-  }
-
- private:
-  base::ScopedTempDir component_dir_;
-};
-
-IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_RelatedWebsiteSets,
-                       GetRelatedWebsiteSets) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  const GURL url(embedded_test_server()->GetURL("/empty.html"));
-  ASSERT_TRUE(content::NavigateToURL(
-      chrome_test_utils::GetActiveWebContents(this), url));
-  Attach();
-
-  SendCommandSync("Storage.getRelatedWebsiteSets");
-
-  ASSERT_TRUE(result());
-  const base::ListValue* set_list = result()->FindList("sets");
-  ASSERT_TRUE(set_list);
-
-  base::ListValue expected =
-      base::ListValue()  //
-          .Append(
-              base::DictValue()
-                  .Set("associatedSites",
-                       base::ListValue().Append(kAssociatedSite))
-                  .Set("primarySites", base::ListValue()
-                                           .Append(kPrimaryCcTLD)
-                                           .Append(kPrimarySite))
-                  .Set("serviceSites", base::ListValue().Append(kServiceSite)));
-
-  EXPECT_EQ(*set_list, expected);
 }
 
 class DevToolsProtocolTest_PrivateVerificationTokens

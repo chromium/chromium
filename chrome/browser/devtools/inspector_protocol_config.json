@@ -49,9 +49,9 @@
             },
             {
                 "domain": "Storage",
-                "include": ["runBounceTrackingMitigations", "getRelatedWebsiteSets", "getPrivateVerificationTokens", "clearPrivateVerificationTokens", "deletePrivateVerificationToken", "setPrivateVerificationTokensTracking"],
+                "include": ["runBounceTrackingMitigations", "getPrivateVerificationTokens", "clearPrivateVerificationTokens", "deletePrivateVerificationToken", "setPrivateVerificationTokensTracking"],
                 "include_events": ["privateVerificationTokensUpdated"],
-                "async": ["runBounceTrackingMitigations", "getRelatedWebsiteSets", "getPrivateVerificationTokens", "clearPrivateVerificationTokens", "deletePrivateVerificationToken"]
+                "async": ["runBounceTrackingMitigations", "getPrivateVerificationTokens", "clearPrivateVerificationTokens", "deletePrivateVerificationToken"]
             },
             {
                 "domain": "SystemInfo",

@@ -321,19 +321,3 @@ experimental domain Storage
 
   # Private Verification Tokens have been stored or deleted.
   experimental event privateVerificationTokensUpdated
-
-  # A single Related Website Set object.
-  experimental type RelatedWebsiteSet extends object
-    properties
-      # The primary site of this set, along with the ccTLDs if there is any.
-      array of string primarySites
-      # The associated sites of this set, along with the ccTLDs if there is any.
-      array of string associatedSites
-      # The service sites of this set, along with the ccTLDs if there is any.
-      array of string serviceSites
-
-  # Returns the effective Related Website Sets in use by this profile for the browser
-  # session. The effective Related Website Sets will not change during a browser session.
-  experimental command getRelatedWebsiteSets
-    returns
-      array of RelatedWebsiteSet sets
