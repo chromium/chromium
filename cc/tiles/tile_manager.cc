@@ -2130,6 +2130,7 @@ void TileManager::CheckPendingGpuWorkAndIssueSignals() {
 
   std::vector<const ResourcePool::InUsePoolResource*> required_for_activation;
   std::vector<const ResourcePool::InUsePoolResource*> required_for_draw;
+  bool ready_tile_required_for_draw = false;
 
   for (auto it = pending_gpu_work_tiles_.begin();
        it != pending_gpu_work_tiles_.end();) {
@@ -2147,7 +2148,8 @@ void TileManager::CheckPendingGpuWorkAndIssueSignals() {
         raster_buffer_provider_->IsResourceReadyToDraw(resource)) {
       tile->draw_info().set_resource_ready_for_draw();
       client_->NotifyTileStateChanged(tile, /*update_damage=*/true,
-                                      /*set_needs_redraw=*/true);
+                                      /*set_needs_redraw=*/false);
+      ready_tile_required_for_draw |= tile->required_for_draw();
       it = pending_gpu_work_tiles_.erase(it);
       continue;
     }
@@ -2185,6 +2187,18 @@ void TileManager::CheckPendingGpuWorkAndIssueSignals() {
                 &TileManager::CheckPendingGpuWorkAndIssueSignals,
                 ready_to_draw_callback_weak_ptr_factory_.GetWeakPtr()),
             pending_required_for_draw_callback_id_);
+  }
+
+  // Similar to MarkTilesOutOfMemory(), if we trigger SetNeedsRedraw() while
+  // iterating pending_gpu_work_tiles_, we may end up triggering
+  // Scheduler::ProcessScheduledActions(), which is inefficient and may in turn
+  // trigger ActivateSyncTree() and other actions that remove tiles still
+  // referenced by the loop iterator and the resource lists above, leading to
+  // UAF (crbug.com/534956586). Defer the redraw until the iteration is
+  // complete and the resource lists have been consumed.
+  if (ready_tile_required_for_draw) {
+    client_->SetNeedsRedraw(/*animation_only=*/false,
+                            /*skip_if_inside_draw=*/true);
   }
 
   // Update our signals now that we know whether we have pending resources.

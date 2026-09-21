@@ -15,6 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -64,6 +65,7 @@
 #include "third_party/skia/include/core/SkSurface.h"
 
 using testing::_;
+using testing::NiceMock;
 using testing::Return;
 using testing::StrictMock;
 
@@ -1911,11 +1913,18 @@ class TileManagerDeferredRedrawTest : public TestLayerTreeHostBase {
     void NotifyTileStateChanged(const Tile* tile,
                                 bool update_damage,
                                 bool set_needs_redraw) override {
-      if (set_needs_redraw && tilings_to_remove_) {
+      if (!set_needs_redraw) {
+        return;
+      }
+      if (tilings_to_remove_) {
         ++notify_with_redraw_count_;
         PictureLayerTilingSet* tilings = tilings_to_remove_;
         tilings_to_remove_ = nullptr;
         tilings->RemoveAllTilings();
+      }
+      if (on_notify_with_redraw_) {
+        ++notify_with_redraw_count_;
+        std::move(on_notify_with_redraw_).Run(tile);
       }
     }
 
@@ -1927,11 +1936,16 @@ class TileManagerDeferredRedrawTest : public TestLayerTreeHostBase {
     void set_tilings_to_remove(PictureLayerTilingSet* tilings) {
       tilings_to_remove_ = tilings;
     }
+    void set_on_notify_with_redraw(
+        base::OnceCallback<void(const Tile*)> callback) {
+      on_notify_with_redraw_ = std::move(callback);
+    }
     int notify_with_redraw_count() const { return notify_with_redraw_count_; }
     int set_needs_redraw_count() const { return set_needs_redraw_count_; }
 
    private:
     raw_ptr<PictureLayerTilingSet> tilings_to_remove_ = nullptr;
+    base::OnceCallback<void(const Tile*)> on_notify_with_redraw_;
     int notify_with_redraw_count_ = 0;
     int set_needs_redraw_count_ = 0;
   };
@@ -3227,6 +3241,139 @@ TEST_F(TileManagerReadyToDrawTest, SetBackIsLikelyToRequireADrawToFalse) {
   EXPECT_TRUE(host_impl()->tile_manager()->IsReadyToDraw());
   host_impl()->tile_manager()->PrepareToDraw();
   EXPECT_FALSE(host_impl()->is_likely_to_require_a_draw());
+}
+
+// Combines TileManagerDeferredRedrawTest's re-entrant host impl with a mock
+// raster buffer provider so that tiles waiting on GPU work can be simulated.
+class TileManagerDeferredRedrawPendingGpuWorkTest
+    : public TileManagerDeferredRedrawTest {
+ public:
+  void SetUp() override {
+    TileManagerDeferredRedrawTest::SetUp();
+    host_impl()->tile_manager()->SetRasterBufferProviderForTesting(
+        &mock_raster_buffer_provider_);
+  }
+
+  void SetupActiveTreeWithTiles() {
+    host_impl()->SetTreePriority(SMOOTHNESS_TAKES_PRIORITY);
+    const gfx::Size layer_bounds(1000, 1000);
+    host_impl()->active_tree()->SetDeviceViewportRect(gfx::Rect(layer_bounds));
+    SetupDefaultTrees(layer_bounds);
+    // Activate so that only the active tree's tiles are rastered below.
+    ActivateTree();
+  }
+
+  // Rasters the active tree's tiles while IsResourceReadyToDraw() reports
+  // false, so that each of them ends up waiting on GPU work, and returns the
+  // ready-to-draw callback that TileManager registers to re-check them.
+  base::OnceClosure RasterTilesWithPendingGpuWork() {
+    base::OnceClosure ready_check;
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_raster_buffer_provider_, IsResourceReadyToDraw(_))
+        .WillRepeatedly(Return(false));
+    EXPECT_CALL(mock_raster_buffer_provider_, SetReadyToDrawCallback(_, _, _))
+        .WillRepeatedly(
+            [&](const std::vector<const ResourcePool::InUsePoolResource*>&,
+                base::OnceClosure callback, uint64_t) {
+              if (!ready_check) {
+                ready_check = std::move(callback);
+                run_loop.Quit();
+              }
+              return 1;
+            });
+    host_impl()->tile_manager()->PrepareTiles(host_impl()->global_tile_state());
+    run_loop.Run();
+    testing::Mock::VerifyAndClearExpectations(&mock_raster_buffer_provider_);
+    return ready_check;
+  }
+
+  MockReadyToDrawRasterBufferProviderImpl* mock_raster_buffer_provider() {
+    return &mock_raster_buffer_provider_;
+  }
+
+ private:
+  NiceMock<MockReadyToDrawRasterBufferProviderImpl>
+      mock_raster_buffer_provider_;
+};
+
+TEST_F(TileManagerDeferredRedrawPendingGpuWorkTest,
+       DeferRedrawWhileCheckingPendingGpuWork) {
+  SetupActiveTreeWithTiles();
+
+  base::OnceClosure ready_check = RasterTilesWithPendingGpuWork();
+  ASSERT_TRUE(ready_check);
+
+  PictureLayerTiling* tiling = active_layer()->HighResTiling();
+  ASSERT_GT(tiling->AllTilesForTesting().size(), 1u);
+
+  // On the next check, keep the first queried resource waiting on GPU work so
+  // that it is retained for the next ready-to-draw callback registration, and
+  // report every other resource as ready so that the client is notified of
+  // their tiles' state changes mid-iteration.
+  int ready_queries = 0;
+  EXPECT_CALL(*mock_raster_buffer_provider(), IsResourceReadyToDraw(_))
+      .WillRepeatedly([&ready_queries](const ResourcePool::InUsePoolResource&) {
+        return ++ready_queries > 1;
+      });
+
+  // A tile state change notification that requests a redraw mid-iteration may
+  // re-enter the client, which can evict any other tile - including the one
+  // whose resource is retained above.
+  reentrant_host_impl()->set_on_notify_with_redraw(
+      base::BindLambdaForTesting([&](const Tile* tile) {
+        gfx::Rect keep(tile->content_rect().CenterPoint(), gfx::Size(1, 1));
+        tiling->SetTilePriorityRectsForTesting(keep, keep, keep, keep,
+                                               /*evicts_tiles=*/true);
+      }));
+
+  // The resources handed to the ready-to-draw callback registration must all
+  // still be alive.
+  bool ready_to_draw_callback_set = false;
+  EXPECT_CALL(*mock_raster_buffer_provider(), SetReadyToDrawCallback(_, _, _))
+      .WillRepeatedly(
+          [&ready_to_draw_callback_set](
+              const std::vector<const ResourcePool::InUsePoolResource*>&
+                  resources,
+              base::OnceClosure, uint64_t) {
+            ready_to_draw_callback_set = true;
+            for (const ResourcePool::InUsePoolResource* in_use : resources) {
+              EXPECT_TRUE(in_use->backing()->mailbox_sync_token.HasData());
+            }
+            return 2;
+          });
+
+  const int redraw_count = reentrant_host_impl()->set_needs_redraw_count();
+  std::move(ready_check).Run();
+
+  // Tile state change notifications must not request a redraw while the tiles
+  // waiting on GPU work are being iterated; a single SetNeedsRedraw() should
+  // be issued afterwards instead.
+  EXPECT_EQ(0, reentrant_host_impl()->notify_with_redraw_count());
+  EXPECT_LT(redraw_count, reentrant_host_impl()->set_needs_redraw_count());
+  EXPECT_TRUE(ready_to_draw_callback_set);
+}
+
+TEST_F(TileManagerDeferredRedrawPendingGpuWorkTest,
+       DeferRedrawWhenAllPendingGpuWorkTilesBecomeReady) {
+  SetupActiveTreeWithTiles();
+
+  base::OnceClosure ready_check = RasterTilesWithPendingGpuWork();
+  ASSERT_TRUE(ready_check);
+  ASSERT_GT(active_layer()->HighResTiling()->AllTilesForTesting().size(), 1u);
+
+  // Every resource becomes ready on the next check. Arm the host impl to
+  // remove the active tilings if it observes a tile state change notification
+  // that requests a redraw while the tiles waiting on GPU work are being
+  // iterated.
+  EXPECT_CALL(*mock_raster_buffer_provider(), IsResourceReadyToDraw(_))
+      .WillRepeatedly(Return(true));
+  reentrant_host_impl()->set_tilings_to_remove(active_layer()->tilings());
+
+  const int redraw_count = reentrant_host_impl()->set_needs_redraw_count();
+  std::move(ready_check).Run();
+
+  EXPECT_EQ(0, reentrant_host_impl()->notify_with_redraw_count());
+  EXPECT_LT(redraw_count, reentrant_host_impl()->set_needs_redraw_count());
 }
 
 PaintImage MakeCheckerablePaintImage(const gfx::Size& size) {
