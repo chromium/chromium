@@ -1069,9 +1069,6 @@ IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest, Resize) {
 
 // Use arrow keys to select between various suggestions.
 IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest, NavigateSuggestions) {
-  FAILS_IN_MODE(Mode::kFull,
-                "Esc restore of default suggestion broken in full +"
-                " virtual focus; see crbug.com/559625534");
   RunTestSequence(
       InstrumentTab(kTabId), WaitForWebContentsReady(kTabId),
       InstrumentNonTabWebView(kWebUIToolbarId, GetToolbarWebView()),
