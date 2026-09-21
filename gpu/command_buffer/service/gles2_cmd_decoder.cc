@@ -12487,7 +12487,7 @@ bool GLES2DecoderImpl::ClearCompressedTextureLevel(Texture* texture,
     // Add extra scope to destroy zero and the object it owns right
     // after its usage.
     auto zero = base::HeapArray<char>::WithSize(bytes_required);
-    bool reset_base_level = workarounds().reset_base_level_for_astc_sub_image &&
+    bool reset_base_level = workarounds().reset_base_level_for_astc_image &&
                             IsASTCFormat(format) && texture->base_level() != 0;
     api()->glBindTextureFn(texture->target(), texture->service_id());
     if (reset_base_level) {
@@ -12541,7 +12541,7 @@ bool GLES2DecoderImpl::ClearCompressedTextureLevel3D(Texture* texture,
     // Add extra scope to destroy zero and the object it owns right
     // after its usage.
     auto zero = base::HeapArray<char>::WithSize(bytes_required);
-    bool reset_base_level = workarounds().reset_base_level_for_astc_sub_image &&
+    bool reset_base_level = workarounds().reset_base_level_for_astc_image &&
                             IsASTCFormat(format) && texture->base_level() != 0;
     api()->glBindTextureFn(texture->target(), texture->service_id());
     if (reset_base_level) {
@@ -13289,6 +13289,12 @@ error::Error GLES2DecoderImpl::DoCompressedTexImage(
           format_info->decompressed_type, decompressed_data.data());
     }
   } else {
+    bool reset_base_level = workarounds().reset_base_level_for_astc_image &&
+                            IsASTCFormat(internal_format) &&
+                            texture->base_level() != 0;
+    if (reset_base_level) {
+      api()->glTexParameteriFn(texture->target(), GL_TEXTURE_BASE_LEVEL, 0);
+    }
     if (dimension == ContextState::k2D) {
       bool handled = false;
       if (workarounds().upload_oversized_mip_levels_via_unpack_buffer &&
@@ -13335,6 +13341,10 @@ error::Error GLES2DecoderImpl::DoCompressedTexImage(
     } else {
       api()->glCompressedTexImage3DFn(target, level, internal_format, width,
                                       height, depth, border, image_size, data);
+    }
+    if (reset_base_level) {
+      api()->glTexParameteriFn(texture->target(), GL_TEXTURE_BASE_LEVEL,
+                               texture->base_level());
     }
   }
   GLenum error = LOCAL_PEEK_GL_ERROR(func_name);
@@ -13740,7 +13750,7 @@ error::Error GLES2DecoderImpl::DoCompressedTexSubImage(
                                decompressed_data.data());
     }
   } else {
-    bool reset_base_level = workarounds().reset_base_level_for_astc_sub_image &&
+    bool reset_base_level = workarounds().reset_base_level_for_astc_image &&
                             IsASTCFormat(format) && texture->base_level() != 0;
     if (reset_base_level) {
       api()->glTexParameteriFn(texture->target(), GL_TEXTURE_BASE_LEVEL, 0);
