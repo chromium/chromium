@@ -60,6 +60,7 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser/ui:test_support",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/test:test_support_ui",
     "//content/test:test_support",
     "//testing/gmock",

@@ -337,6 +337,8 @@ if (!is_android) {
     ]
 
     deps = [
+      # Inherits -Wno-sign-compare via fuzztest_public_config. See
+      # crbug.com/527094632.
       ":page_load_metrics",
       "//base",
       "//chrome/browser:after_startup_task_utils",
@@ -353,6 +355,7 @@ if (!is_android) {
       "//chrome/browser/ui:browser_live_tab_context",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/waap",
       "//chrome/browser/ui/waap:window_metrics_manager",
       "//chrome/browser/ui/webui:webui_util",
@@ -375,9 +378,6 @@ if (!is_android) {
       "//content/test:test_support",
       "//pdf:features",
       "//testing/gtest",
-
-      # Inherits -Wno-sign-compare via fuzztest_public_config. See
-      # crbug.com/527094632.
       "//third_party/fuzztest",
     ]
 

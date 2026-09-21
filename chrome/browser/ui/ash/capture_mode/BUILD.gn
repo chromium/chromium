@@ -92,6 +92,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/common",
     "//chrome/test:test_support",
     "//components/lens:enterprise_policy",

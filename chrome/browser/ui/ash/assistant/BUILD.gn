@@ -19,6 +19,7 @@ static_library("assistant") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/web_applications",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/browser_delegate",

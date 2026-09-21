@@ -805,6 +805,7 @@ if (!is_android) {
       "//chrome/browser/metrics/structured:test_support",
       "//chrome/browser/sync",
       "//chrome/browser/sync/test/integration:sync_integration_test_support",
+      "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/unified_consent",
       "//chrome/test:test_support_ui",
       "//chrome/test/base:tracing",

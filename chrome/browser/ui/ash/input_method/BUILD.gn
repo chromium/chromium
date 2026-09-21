@@ -140,6 +140,7 @@ source_set("browser_tests") {
     ":input_method",
     "//base",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/test:test_support",
     "//content/public/common",
     "//content/test:test_support",

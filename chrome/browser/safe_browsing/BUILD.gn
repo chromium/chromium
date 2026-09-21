@@ -140,6 +140,7 @@ static_library("safe_browsing") {
     deps += [
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:scoped_tabbed_browser_displayer",
+      "//chrome/browser/ui/views/frame:browser_view_header",
     ]
     public += [
       "generated_safe_browsing_pref.h",
@@ -1245,6 +1246,7 @@ source_set("browser_tests") {
     deps += [
       ":safe_browsing",
       "//chrome/browser/ui/omnibox",
+      "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/test:test_support",
       "//components/safe_browsing/content/browser/web_ui",
     ]

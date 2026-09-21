@@ -86,6 +86,7 @@ source_set("browser_tests") {
     "//chrome/browser/sharesheet",
     "//chrome/browser/sharesheet:test_support",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/test:test_support_ui",
     "//chromeos/components/sharesheet:constants",
     "//components/services/app_service/public/cpp:test_support",
