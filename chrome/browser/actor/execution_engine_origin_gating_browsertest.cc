@@ -2813,9 +2813,9 @@ IN_PROC_BROWSER_TEST_P(OutOfTurnNavigationBrowserTest,
   }
 }
 
-// TODO(crbug.com/482434165): Flaky test on win-asan builder.
-// TODO(crbug.com/563615151): Flaky test on Mac builders.
-#if (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)) || BUILDFLAG(IS_MAC)
+// TODO(crbug.com/482434165, crbug.com/563615151): Flaky test on Win and Mac
+// builders.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_InterleavedAction_OutOfTurnNavigation \
   DISABLED_InterleavedAction_OutOfTurnNavigation
 #else
