@@ -742,6 +742,7 @@ public class PageInfoViewTest {
     /** Tests clicking "Mark as safe" button on suspicious site warning. */
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/564369756")
     public void testSuspiciousSiteMarkAsSafeButtonClick() throws IOException {
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         ThreadUtils.runOnUiThreadBlocking(
