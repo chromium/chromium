@@ -191,6 +191,7 @@ source_set("autofill_field_promo_view_impl_impl") {
   deps = [
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/views/autofill/popup",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//content/public/browser",
     "//ui/base",
     "//ui/gfx",
@@ -221,6 +222,7 @@ source_set("at_memory_promo_bubble_view_impl") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/navigator",
     "//chrome/browser/ui/views:layout_provider",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
     "//chrome/browser/ui/views/user_education",
     "//components/personal_context/core",

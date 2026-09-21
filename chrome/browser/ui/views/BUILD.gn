@@ -107,6 +107,7 @@ source_set("bubble_anchor_util_views_impl") {
     "//chrome/browser/ui:bubble_anchor_util",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/immersive:immersive_mode_controller",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/frame:picture_in_picture_browser_frame_view",
     "//chrome/browser/ui/views/location_bar",
     "//chrome/browser/ui/views/payments",
@@ -130,6 +131,7 @@ source_set("browser_commands_views") {
     "//build:buildflag_header_h",
     "//chrome/app:command_ids",
     "//chrome/browser:primitives",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/tabs:tab_strip",
     "//ui/base:features",
     "//ui/display",
@@ -159,6 +161,7 @@ source_set("browser_dialogs_views") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/dialogs:browser_dialogs",
     "//chrome/browser/ui/views/bookmarks",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/select_audio_output",
     "//components/constrained_window",
     "//components/permissions",
@@ -333,6 +336,7 @@ if (is_win) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui:network_profile_bubble",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/common:constants",
       "//components/prefs",
@@ -522,6 +526,7 @@ if (use_aura) {
     deps = [
       "//base",
       "//chrome/browser/ui:accelerator_table",
+      "//chrome/browser/ui/views/frame:browser_view_header",
       "//ui/base",
     ]
     if (is_chromeos) {
@@ -793,6 +798,7 @@ if (use_aura) {
     deps = [
       ":javascript_app_modal_event_blocker",
       "//base",
+      "//chrome/browser/ui/views/frame:browser_view_header",
       "//ui/aura",
       "//ui/events",
       "//ui/wm",
@@ -1517,6 +1523,7 @@ source_set("find_bar_views") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/find_bar",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/user_education",
     "//components/find_in_page",
     "//components/strings:components_strings",
@@ -1543,6 +1550,7 @@ source_set("idle_bubble") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui:idle_bubble",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/interaction",
     "//chrome/browser/ui/views/toolbar",
     "//ui/base",
@@ -1593,6 +1601,7 @@ source_set("session_crashed_bubble_view") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:bubble_anchor_util",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/toolbar",
     "//chrome/installer/util:with_no_strings",
     "//components/strings:components_strings",
@@ -1688,6 +1697,7 @@ source_set("tab_search_bubble_host") {
     "//chrome/browser/ui/tabs:tab_group",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/tabs/organizer",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/tabs:tab_strip",
     "//chrome/browser/ui/views/tabs/organizer",
     "//chrome/common",
@@ -1705,7 +1715,7 @@ source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = []
-  deps = []
+  deps = [ "//chrome/browser/ui/views/frame:browser_view_header" ]
 
   if (is_chromeos) {
     sources += [ "intent_picker_bubble_view_browsertest_chromeos.cc" ]

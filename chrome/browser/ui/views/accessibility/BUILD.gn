@@ -51,6 +51,7 @@ source_set("impl") {
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/views:layout_provider",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/common:constants",
     "//components/constrained_window",
     "//components/prefs",
@@ -125,7 +126,10 @@ if (!is_android) {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = []
-    deps = [ ":accessibility" ]
+    deps = [
+      ":accessibility",
+      "//chrome/browser/ui/views/frame:browser_view_header",
+    ]
 
     if (!is_chromeos) {
       sources += [
@@ -170,6 +174,7 @@ if (!is_android) {
         "//chrome/browser/preloading:test_support",
         "//chrome/browser/ui",
         "//chrome/browser/ui:browser_window_header",
+        "//chrome/browser/ui/views/frame:browser_view_header",
         "//chrome/test:test_support_ui",
         "//components/live_caption:constants",
         "//components/on_device_translation/buildflags",

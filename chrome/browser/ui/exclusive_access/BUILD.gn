@@ -100,6 +100,7 @@ if (!is_android) {
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/browser_web_contents_delegate",
       "//chrome/browser/ui/views/exclusive_access",
+      "//chrome/browser/ui/views/frame:browser_view_header",
     ]
     if (!is_chromeos) {
       public_deps += [ "//chrome/browser:fullscreen" ]

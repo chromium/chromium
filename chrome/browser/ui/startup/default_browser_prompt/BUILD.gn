@@ -101,6 +101,10 @@ source_set("impl") {
       "//chrome/installer/util:with_no_strings",
     ]
   }
+
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/views/frame:browser_view_header" ]
+  }
 }
 
 source_set("unit_tests") {
@@ -203,5 +207,9 @@ source_set("interactive_ui_tests") {
       "//chrome/browser/ui/startup/default_browser_prompt/pin_infobar",
       "//chrome/browser/ui/startup/default_browser_prompt/pin_infobar:impl",
     ]
+  }
+
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/views/frame:browser_view_header" ]
   }
 }
