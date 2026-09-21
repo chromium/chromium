@@ -122,4 +122,12 @@
   <message name="IDS_ENTERPRISE_PROXY_OTHER_ERROR_PRIMARY_PARAGRAPH" desc="Description in the enterprise proxy error page when a site is unreachable.">
     Something went wrong with protections or policies set by your organization. Try again later or contact your administrator.
   </message>
+
+  <message name="IDS_ENTERPRISE_PROXY_AUTHZ_ERROR_HEADING" desc="Heading in the enterprise proxy error page when a site is blocked by authorization policy.">
+    Your organization blocked you from visiting the site ahead
+  </message>
+
+  <message name="IDS_ENTERPRISE_PROXY_AUTHZ_ERROR_PRIMARY_PARAGRAPH" desc="Description in the enterprise proxy error page when a site is blocked by authorization policy.">
+    You were blocked from visiting <ph name="URL">$1<ex>https://example.com</ex></ph> because of your organization's policies. If that's unexpected, contact your administrator.
+  </message>
 </grit-part>

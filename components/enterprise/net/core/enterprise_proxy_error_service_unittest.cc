@@ -386,15 +386,29 @@ TEST_F(EnterpriseProxyErrorServiceTest, GetErrorPageParams_ValidData) {
     EXPECT_EQ(test_case.expected_category_str,
               *params.FindString("error_category"));
 
-    EXPECT_EQ(
-        l10n_util::GetStringUTF8(IDS_ENTERPRISE_PROXY_OTHER_ERROR_HEADING),
-        *params.FindString("title"));
-    EXPECT_EQ(
-        l10n_util::GetStringUTF8(IDS_ENTERPRISE_PROXY_OTHER_ERROR_HEADING),
-        *params.FindString("heading"));
-    EXPECT_EQ(l10n_util::GetStringUTF8(
-                  IDS_ENTERPRISE_PROXY_OTHER_ERROR_PRIMARY_PARAGRAPH),
-              *params.FindString("primary_paragraph"));
+    if (test_case.category ==
+        EnterpriseProxyErrorData::ErrorCategory::kAuthorization) {
+      EXPECT_EQ(
+          l10n_util::GetStringUTF8(IDS_ENTERPRISE_PROXY_AUTHZ_ERROR_HEADING),
+          *params.FindString("title"));
+      EXPECT_EQ(
+          l10n_util::GetStringUTF8(IDS_ENTERPRISE_PROXY_AUTHZ_ERROR_HEADING),
+          *params.FindString("heading"));
+      EXPECT_EQ(l10n_util::GetStringFUTF8(
+                    IDS_ENTERPRISE_PROXY_AUTHZ_ERROR_PRIMARY_PARAGRAPH,
+                    u"https://target.example.com/page"),
+                *params.FindString("primary_paragraph"));
+    } else {
+      EXPECT_EQ(
+          l10n_util::GetStringUTF8(IDS_ENTERPRISE_PROXY_OTHER_ERROR_HEADING),
+          *params.FindString("title"));
+      EXPECT_EQ(
+          l10n_util::GetStringUTF8(IDS_ENTERPRISE_PROXY_OTHER_ERROR_HEADING),
+          *params.FindString("heading"));
+      EXPECT_EQ(l10n_util::GetStringUTF8(
+                    IDS_ENTERPRISE_PROXY_OTHER_ERROR_PRIMARY_PARAGRAPH),
+                *params.FindString("primary_paragraph"));
+    }
     EXPECT_EQ(l10n_util::GetStringUTF8(IDS_ENTERPRISE_BLOCK_GO_BACK),
               *params.FindString("button_text"));
 

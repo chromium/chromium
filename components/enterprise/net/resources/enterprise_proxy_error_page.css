@@ -21,3 +21,9 @@ button {
       url(images/1x/sad_tab.png) 1x,
       url(images/2x/sad_tab.png) 2x);
 }
+
+.category-authorization .icon {
+  background-image: image-set(
+      url(images/1x/warning.png) 1x,
+      url(images/2x/warning.png) 2x);
+}
