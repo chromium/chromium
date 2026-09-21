@@ -1,0 +1,45 @@
+From: Chromium Authors
+Subject: [cff] Validate operand type for charset and Encoding operators
+
+Enforce DICT_OPERAND_INTEGER for charset (case 15) and Encoding (case 16)
+operands in the CFF1 parser before checking predefined constants (first <= 2
+and first <= 1).
+
+Without this check, Binary Coded Decimal (BCD) operands, which OTS stores with
+a dummy integer value of 0 and DICT_OPERAND_REAL type, satisfy the predefined
+range check and skip CheckOffset, allowing unvalidated offsets to pass through.
+
+This is a subset of upstream commit
+5c681204ed7ec95971598b27d247247b3aa4d78b (PR #314), which introduces the
+Operand class; this change should be subsumed under a future OTS roll.
+
+Bug: 505807063
+---
+ src/cff.cc | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/src/cff.cc b/src/cff.cc
+index af54a4a..bc64136 100644
+--- a/src/cff.cc
++++ b/src/cff.cc
+@@ -778,6 +778,9 @@ bool ParseDictData(ots::Buffer& table, ots::Buffer& dict,
+         if (operands.size() != 1) {
+           return OTS_FAILURE();
+         }
++        if (operands.back().second != DICT_OPERAND_INTEGER) {
++          return OTS_FAILURE();
++        }
+         if (operands.back().first <= 2) {
+           // predefined charset, ISOAdobe, Expert or ExpertSubset, is used.
+           break;
+@@ -795,6 +798,9 @@ bool ParseDictData(ots::Buffer& table, ots::Buffer& dict,
+         if (operands.size() != 1) {
+           return OTS_FAILURE();
+         }
++        if (operands.back().second != DICT_OPERAND_INTEGER) {
++          return OTS_FAILURE();
++        }
+         if (operands.back().first <= 1) {
+           break;  // predefined encoding, "Standard" or "Expert", is used.
+         }
+-- 

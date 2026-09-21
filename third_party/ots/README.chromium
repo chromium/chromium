@@ -11,3 +11,9 @@ License File: LICENSE
 Local Modifications:
 - BUILD.gn: Added.
 - fuzz/: Added.
+- patches/0001-cff-bcd-operands.patch: Validate operand types for charset and
+  Encoding operators in CFF1 table to prevent BCD operand bypasses
+  (crbug.com/505807063). This is a subset of upstream commit
+  5c681204ed7ec95971598b27d247247b3aa4d78b (PR #314), which introduces the
+  Operand class; this change should be subsumed under a future OTS roll.
+
