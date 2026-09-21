@@ -45,7 +45,7 @@ WebGpuSharedImageLease::~WebGpuSharedImageLease() {
   }
 }
 
-void WebGpuSharedImageLease::WaitSyncToken(const gpu::SyncToken& sync_token) {
+void WebGpuSharedImageLease::SetSyncToken(const gpu::SyncToken& sync_token) {
   resource_.sync_token_ = sync_token;
   resource_.shared_image_->UpdateDestructionSyncToken(resource_.sync_token_);
 }

@@ -147,13 +147,9 @@ class PLATFORM_EXPORT WebGpuSharedImageLease final
   scoped_refptr<gpu::ClientSharedImage> GetSharedImage() const;
   gpu::SyncToken GetSyncToken() const;
 
-  void SetSyncToken(const gpu::SyncToken& sync_token) {
-    resource_.sync_token_ = sync_token;
-  }
+  void SetSyncToken(const gpu::SyncToken& sync_token);
   bool is_cleared() const { return resource_.is_cleared_; }
   void SetCleared() { resource_.is_cleared_ = true; }
-
-  void WaitSyncToken(const gpu::SyncToken& sync_token);
 
   // CanvasMemoryDumpClient implementation.
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override;
