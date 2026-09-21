@@ -22,19 +22,9 @@ namespace {
 class DetachableResourceFetcherPropertiesTest : public testing::Test {
  public:
   const FetchClientSettingsObjectSnapshot& CreateFetchClientSettingsObject() {
-    return *MakeGarbageCollected<FetchClientSettingsObjectSnapshot>(
+    return FetchClientSettingsObjectSnapshot::CreateForTesting(
         KURL("https://example.com/foo.html"),
-        KURL("https://example.com/foo.html"),
-        SecurityOrigin::Create(KURL("https://example.com/")),
-        []() {
-          auto policies = mojom::blink::PolicyContainerPolicies::New();
-          policies->referrer_policy = network::mojom::ReferrerPolicy::kDefault;
-          return policies;
-        }(),
-        "https://example.com/foo.html", HttpsState::kModern,
-        AllowedByNosniff::MimeTypeCheck::kStrict,
-        mojom::blink::InsecureRequestPolicy::kLeaveInsecureRequestsAlone,
-        FetchClientSettingsObject::InsecureNavigationsSet());
+        SecurityOrigin::Create(KURL("https://example.com/")));
   }
 };
 

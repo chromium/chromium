@@ -95,6 +95,10 @@ class PLATFORM_EXPORT FetchClientSettingsObjectSnapshot final
       mojom::blink::InsecureRequestPolicy,
       InsecureNavigationsSet);
 
+  static FetchClientSettingsObjectSnapshot& CreateForTesting(
+      const KURL& script_url,
+      scoped_refptr<const SecurityOrigin> origin);
+
   ~FetchClientSettingsObjectSnapshot() override = default;
 
   const KURL& GlobalObjectUrl() const override { return global_object_url_; }

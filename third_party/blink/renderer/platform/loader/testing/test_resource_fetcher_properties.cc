@@ -22,21 +22,9 @@ TestResourceFetcherProperties::TestResourceFetcherProperties()
 TestResourceFetcherProperties::TestResourceFetcherProperties(
     scoped_refptr<const SecurityOrigin> origin)
     : TestResourceFetcherProperties(
-          *MakeGarbageCollected<FetchClientSettingsObjectSnapshot>(
+          FetchClientSettingsObjectSnapshot::CreateForTesting(
               KURL(),
-              KURL(),
-              std::move(origin),
-              []() {
-                auto policies = mojom::blink::PolicyContainerPolicies::New();
-                policies->referrer_policy =
-                    network::mojom::ReferrerPolicy::kDefault;
-                return policies;
-              }(),
-              String(),
-              HttpsState::kNone,
-              AllowedByNosniff::MimeTypeCheck::kStrict,
-              mojom::blink::InsecureRequestPolicy::kLeaveInsecureRequestsAlone,
-              FetchClientSettingsObject::InsecureNavigationsSet())) {}
+              std::move(origin))) {}
 
 TestResourceFetcherProperties::TestResourceFetcherProperties(
     const FetchClientSettingsObject& fetch_client_settings_object)

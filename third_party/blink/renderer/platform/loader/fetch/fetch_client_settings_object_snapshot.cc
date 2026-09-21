@@ -55,4 +55,23 @@ FetchClientSettingsObjectSnapshot::FetchClientSettingsObjectSnapshot(
       insecure_requests_policy_(insecure_requests_policy),
       insecure_navigations_set_(std::move(insecure_navigations_set)) {}
 
+// static
+FetchClientSettingsObjectSnapshot&
+FetchClientSettingsObjectSnapshot::CreateForTesting(
+    const KURL& script_url,
+    scoped_refptr<const SecurityOrigin> origin) {
+  return *MakeGarbageCollected<FetchClientSettingsObjectSnapshot>(
+      /*global_object_url=*/script_url,
+      /*base_url=*/script_url, std::move(origin),
+      []() {
+        auto policies = mojom::blink::PolicyContainerPolicies::New();
+        policies->referrer_policy = network::mojom::ReferrerPolicy::kDefault;
+        return policies;
+      }(),
+      /*outgoing_referrer=*/script_url, HttpsState::kModern,
+      AllowedByNosniff::MimeTypeCheck::kStrict,
+      mojom::blink::InsecureRequestPolicy::kLeaveInsecureRequestsAlone,
+      InsecureNavigationsSet());
+}
+
 }  // namespace blink
