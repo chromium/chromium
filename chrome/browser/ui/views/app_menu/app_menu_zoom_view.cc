@@ -121,7 +121,10 @@ void AppMenuZoomView::BuildZoomChildControls(
       zoom_label_subscription_ =
           zoom_child->AddActionChangedCallback(base::BindRepeating(
               [](views::Label* label, actions::ActionItem* item) {
-                label->SetText(std::u16string(item->GetText()));
+                if (label->GetText() != item->GetText()) {
+                  label->SetText(std::u16string(item->GetText()));
+                  label->GetViewAccessibility().AnnounceAlert(item->GetText());
+                }
               },
               zoom_label_, zoom_child));
     } else {

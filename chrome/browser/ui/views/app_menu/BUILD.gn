@@ -218,6 +218,7 @@ if (toolkit_views) {
       "//ui/base",
       "//ui/base:test_support",
       "//ui/views",
+      "//ui/views:test_support",
     ]
   }
 

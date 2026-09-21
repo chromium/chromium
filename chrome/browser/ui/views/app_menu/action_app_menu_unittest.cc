@@ -74,10 +74,12 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #endif
+#include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
@@ -1163,6 +1165,63 @@ TEST_F(ActionAppMenuTest, ZoomLabelUpdatesOnZoomChange) {
 
   menu.CloseMenu();
 }
+
+// On macOS, accessibility announcements are dispatched through native Cocoa
+// VoiceOver APIs (NSAccessibilityAnnouncementRequestedNotification) rather than
+// Views' AXUpdateNotifier / ax::mojom::Event::kAlert event pipeline.
+#if !BUILDFLAG(IS_MAC)
+TEST_F(ActionAppMenuTest, ZoomLabelAccessibilityAnnouncementOnZoomChange) {
+  content::RenderViewHostTestEnabler rvh_test_enabler;
+  tabs::MockTabInterface mock_tab;
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_.get(),
+                                                        nullptr);
+  zoom::ZoomController::CreateForWebContents(web_contents.get());
+  auto* zoom_controller =
+      zoom::ZoomController::FromWebContents(web_contents.get());
+  ASSERT_TRUE(zoom_controller);
+
+  EXPECT_CALL(mock_window_interface_, GetActiveTabInterface())
+      .WillRepeatedly(testing::Return(&mock_tab));
+  EXPECT_CALL(mock_tab, GetContents())
+      .WillRepeatedly(testing::Return(web_contents.get()));
+
+  ActionAppMenu menu(&mock_window_interface_, base::DoNothing());
+  menu.RunMenu(button_->button_controller());
+  ASSERT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* const root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  views::MenuItemView* zoom_item = root->GetMenuItemByID(kActionZoomSubmenu);
+  ASSERT_TRUE(zoom_item);
+
+  auto* zoom_view =
+      views::AsViewClass<AppMenuZoomView>(zoom_item->children()[0]);
+  ASSERT_TRUE(zoom_view);
+
+  views::Label* const zoom_label = zoom_view->zoom_label_for_testing();
+  ASSERT_NE(zoom_label, nullptr);
+  EXPECT_EQ(zoom_label->GetText(), base::FormatPercent(100));
+
+  actions::ActionItem* normal_action =
+      actions::ActionManager::Get().FindAction(kActionZoomNormal);
+  ASSERT_TRUE(normal_action);
+
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
+  EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
+
+  normal_action->SetText(base::FormatPercent(200));
+  EXPECT_EQ(zoom_label->GetText(), base::FormatPercent(200));
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
+
+  // Setting the same zoom level should not trigger a duplicate announcement.
+  normal_action->SetText(base::FormatPercent(200));
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
+
+  menu.CloseMenu();
+}
+#endif  // !BUILDFLAG(IS_MAC)
 
 TEST_F(ActionAppMenuTest, SearchBarDisabledByDefault) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
