@@ -3124,8 +3124,32 @@ TEST_F(AutofillExternalDelegateTest, AcceptedOtpSuggestion) {
       FillOrPreviewForm(mojom::ActionPersistence::kFill, HasQueriedFormId(),
                         IsQueriedFieldId(), HasFillingPayload(otp_fill_data),
                         DefaultTriggerSource(), _));
+  EXPECT_CALL(autofill_client(),
+              HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
+                              Eq(std::nullopt)));
   external_delegate().DidAcceptSuggestion(
       CreateAutofillSuggestion(SuggestionType::kOneTimePasswordEntry,
+                               /*main_text_value=*/otp_value),
+      {.multi_index = {0}});
+}
+
+TEST_F(AutofillExternalDelegateTest, AcceptedGmailOtpSuggestion) {
+  IssueOnQuery();
+
+  std::u16string otp_value = u"123456";
+  OtpFillData otp_fill_data;
+  otp_fill_data[queried_field().global_id()] = otp_value;
+
+  EXPECT_CALL(
+      autofill_manager(),
+      FillOrPreviewForm(mojom::ActionPersistence::kFill, HasQueriedFormId(),
+                        IsQueriedFieldId(), HasFillingPayload(otp_fill_data),
+                        DefaultTriggerSource(), _));
+  EXPECT_CALL(autofill_client(),
+              HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
+                              Eq(std::nullopt)));
+  external_delegate().DidAcceptSuggestion(
+      CreateAutofillSuggestion(SuggestionType::kGmailOneTimePasswordEntry,
                                /*main_text_value=*/otp_value),
       {.multi_index = {0}});
 }

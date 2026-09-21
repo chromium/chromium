@@ -1166,6 +1166,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       }
       break;
     }
+    case SuggestionType::kGmailOneTimePasswordEntry:
     case SuggestionType::kOneTimePasswordEntry: {
       if (!form_structure || !autofill_field) {
         break;
@@ -1243,10 +1244,6 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       break;
     case SuggestionType::kAutofillAiSourceAttribution:
       // TODO(crbug.com/541184575): Implement navigation to source URL.
-      NOTIMPLEMENTED();
-      break;
-    case SuggestionType::kGmailOneTimePasswordEntry:
-      // TODO(crbug.com/556170554): Handle acceptance of Gmail OTP suggestion.
       NOTIMPLEMENTED();
       break;
     case SuggestionType::kOpenGmailForOtps:
