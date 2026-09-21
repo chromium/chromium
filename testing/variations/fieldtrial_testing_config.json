@@ -14545,7 +14545,7 @@
                 {
                     "name": "Enabled_4GB",
                     "params": {
-                        "PassageEmbedderMinRequiredRamMb ": "4096"
+                        "PassageEmbedderMinRequiredRamMb": "4096"
                     },
                     "enable_features": [
                         "OnDeviceCategoryClassifier",
