@@ -45,7 +45,6 @@ namespace autofill {
 class AddressDataManager;
 class AutofillDriver;
 class BrowserAutofillManager;
-class FormStructure;
 
 // Retrieves a copy of the profile that the `payload` refers to.
 std::optional<AutofillProfile> GetProfileFromPayload(
@@ -192,15 +191,6 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
                                    const SuggestionMetadata& metadata,
                                    const FormGlobalId& form_id,
                                    const FieldGlobalId& field_id);
-
-  // Returns the last Autofill triggering field. Derived from the `form` and
-  // `field` parameters of `OnQuery(). Returns nullptr if called before
-  // `OnQuery()` or if the `form` becomes outdated, see crbug.com/1117028.
-  const AutofillField* GetQueriedField() const;
-
-  // Returns the last Autofill triggering field and its form.
-  std::pair<const FormStructure*, const AutofillField*> GetQueriedFormAndField()
-      const;
 
   AutofillTriggerSource GetTriggerSource() const;
 

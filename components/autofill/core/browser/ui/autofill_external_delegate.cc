@@ -447,19 +447,8 @@ void AutofillExternalDelegate::OnQuery(
                                                   field.datalist_options());
 }
 
-const AutofillField* AutofillExternalDelegate::GetQueriedField() const {
-  return GetQueriedFormAndField().second;
-}
-
 FieldGlobalId AutofillExternalDelegate::GetQueriedFieldId() const {
   return last_query_.field_id;
-}
-
-std::pair<const FormStructure*, const AutofillField*>
-AutofillExternalDelegate::GetQueriedFormAndField() const {
-  auto [form, field] =
-      manager_->FindFormAndField(last_query_.form_id, last_query_.field_id);
-  return {form, field};
 }
 
 AutofillTriggerSource AutofillExternalDelegate::GetTriggerSource() const {
@@ -1841,15 +1830,13 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
 }
 
 bool AutofillExternalDelegate::ShouldShowPayNowPayLaterTabs() {
-  if (GetQueriedField()) {
-    return GetMainFillingProduct() == FillingProduct::kCreditCard &&
-           payments::ShouldShowBnplSuggestions(
-               manager_->client(),
-               GetQueriedField()->Type().GetCreditCardType()) &&
-           base::FeatureList::IsEnabled(
-               features::kAutofillEnablePayNowPayLaterTabs);
-  }
-  return false;
+  auto [form, field] =
+      manager_->FindFormAndField(last_query_.form_id, last_query_.field_id);
+  return field && GetMainFillingProduct() == FillingProduct::kCreditCard &&
+         payments::ShouldShowBnplSuggestions(
+             manager_->client(), field->Type().GetCreditCardType()) &&
+         base::FeatureList::IsEnabled(
+             features::kAutofillEnablePayNowPayLaterTabs);
 }
 
 }  // namespace autofill
