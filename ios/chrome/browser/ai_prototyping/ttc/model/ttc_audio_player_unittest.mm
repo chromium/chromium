@@ -44,6 +44,7 @@
 // Expose internal methods for testing.
 @interface TTCAudioPlayer (Testing)
 - (void)handleScheduledBufferCompletionForSession:(uint64_t)sessionId;
+@property(nonatomic, readonly) NSInteger pendingBuffersCount;
 @end
 
 class TTCAudioPlayerTest : public PlatformTest {
@@ -309,4 +310,53 @@ TEST_F(TTCAudioPlayerTest, TestPlayPCMBufferZeroSampleRateIgnored) {
     EXPECT_FALSE(player_.isPlaying);
     EXPECT_EQ(delegate_.startPlaybackCount, 0);
   }
+}
+
+// Test playPCMBuffer purges stale backlog if multiple buffers accumulate
+// without being consumed, preventing latency buildup.
+TEST_F(TTCAudioPlayerTest, TestPlayPCMBufferPurgesBacklogWhenStalled) {
+  AVAudioFormat* format16k =
+      [[AVAudioFormat alloc] initStandardFormatWithSampleRate:16000.0
+                                                     channels:1];
+  AVAudioPCMBuffer* buffer =
+      [[AVAudioPCMBuffer alloc] initWithPCMFormat:format16k frameCapacity:160];
+  buffer.frameLength = 160;
+
+  // Buffer 1 scheduled -> pending is 1.
+  [player_ playPCMBuffer:buffer];
+  EXPECT_EQ(player_.pendingBuffersCount, 1);
+
+  // Buffer 2 scheduled -> pending is 2.
+  [player_ playPCMBuffer:buffer];
+  EXPECT_EQ(player_.pendingBuffersCount, 2);
+
+  // Buffer 3 scheduled while previous 2 buffers were not completed (stalled
+  // output) -> purges backlog, pending resets and becomes 1 for the fresh
+  // buffer.
+  [player_ playPCMBuffer:buffer];
+  EXPECT_EQ(player_.pendingBuffersCount, 1);
+  EXPECT_TRUE(player_.isPlaying);
+
+  [player_ stopPlaybackImmediately];
+  EXPECT_EQ(player_.pendingBuffersCount, 0);
+}
+
+// Test playStreamingAudioChunk allows queuing multiple chunks for smooth
+// synthesized speech playback without purging.
+TEST_F(TTCAudioPlayerTest, TestPlayStreamingAudioChunkDoesNotPurge) {
+  const std::vector<int16_t> samples(240, 500);
+  NSData* pcmData = [NSData dataWithBytes:samples.data()
+                                   length:samples.size() * sizeof(int16_t)];
+
+  [player_ playStreamingAudioChunk:pcmData];
+  EXPECT_EQ(player_.pendingBuffersCount, 1);
+
+  [player_ playStreamingAudioChunk:pcmData];
+  EXPECT_EQ(player_.pendingBuffersCount, 2);
+
+  [player_ playStreamingAudioChunk:pcmData];
+  EXPECT_EQ(player_.pendingBuffersCount, 3);
+
+  [player_ stopPlaybackImmediately];
+  EXPECT_EQ(player_.pendingBuffersCount, 0);
 }

@@ -26,6 +26,15 @@ constexpr double kPlaybackSampleRate = 24000.0;
 // Extra frame capacity headroom allocated during sample rate conversion.
 constexpr AVAudioFrameCount kConverterFrameHeadroom = 16;
 
+// Maximum number of pending loopback audio buffers allowed in the player node
+// before purging stale backlog. In steady-state live loopback, double-buffering
+// maintains at most 2 buffers (1 playing, 1 queued). Any higher backlog
+// indicates output hardware stalling (e.g. during a route switch, Bluetooth
+// negotiation, or device selector change) and should be purged immediately so
+// loopback latency remains minimal (~128ms) rather than accumulating seconds of
+// lag.
+constexpr NSInteger kMaxPendingLoopbackBuffers = 1;
+
 // Error domain for TTCAudioPlayer errors.
 NSString* const kTTCAudioPlayerErrorDomain = @"org.chromium.ttc.player";
 
@@ -74,6 +83,10 @@ void ConvertInt16ToFloat32(base::span<const int16_t> source,
 
 - (BOOL)isPlaying {
   return _isPlaying;
+}
+
+- (NSInteger)pendingBuffersCount {
+  return _pendingBuffersCount;
 }
 
 - (instancetype)initWithPlayerNode:(AVAudioPlayerNode*)playerNode
@@ -185,6 +198,14 @@ void ConvertInt16ToFloat32(base::span<const int16_t> source,
     return;
   }
 
+  // Live mic loopback should never accumulate latency. If the output stalled
+  // (e.g. during a route switch, Bluetooth negotiation, or device selector
+  // change) and more than one buffer is already pending in the player queue,
+  // purge the stale backlog so latency remains minimal.
+  if (_pendingBuffersCount > kMaxPendingLoopbackBuffers) {
+    [self purgePendingBuffers];
+  }
+
   AVAudioPCMBuffer* playbackBuffer = buffer;
   if (![buffer.format isEqual:_playbackFormat]) {
     if (!_converter || ![_converter.inputFormat isEqual:buffer.format]) {
@@ -247,27 +268,9 @@ void ConvertInt16ToFloat32(base::span<const int16_t> source,
   if (web::WebThread::IsThreadInitialized(web::WebThread::UI)) {
     DCHECK_CURRENTLY_ON(web::WebThread::UI);
   }
-  _playbackSessionId++;
-  _pendingBuffersCount = 0;
   BOOL wasPlaying = _isPlaying || (_playerNode.engine && _playerNode.isPlaying);
   _isPlaying = NO;
-  if (_playerNode.engine) {
-    @try {
-      if (_playerNode.isPlaying) {
-        [_playerNode stop];
-      }
-      [_playerNode reset];
-    } @catch (NSException* exception) {
-      // Swallowing the exception is safe here: AVAudioPlayerNode can throw
-      // an NSInternalInconsistencyException if the underlying AVAudioEngine
-      // graph is stopped, in the middle of route reconfiguration, or if the
-      // node was already detached. In all of these cases, playback is already
-      // inactive or cannot continue, so ignoring the exception safely avoids
-      // crashing the process during teardown.
-      DLOG(WARNING) << "Ignoring exception while stopping player node: "
-                    << base::SysNSStringToUTF8(exception.reason ?: @"Unknown");
-    }
-  }
+  [self purgePendingBuffers];
 
   if (wasPlaying &&
       [self.delegate
@@ -294,9 +297,16 @@ void ConvertInt16ToFloat32(base::span<const int16_t> source,
   if (web::WebThread::IsThreadInitialized(web::WebThread::UI)) {
     DCHECK_CURRENTLY_ON(web::WebThread::UI);
   }
+  _isPlaying = NO;
+  [self purgePendingBuffers];
+  _converter = nil;
+}
+
+// Purges pending audio buffers from the player node, invalidating any queued
+// completion callbacks and resetting the pending buffer count.
+- (void)purgePendingBuffers {
   _playbackSessionId++;
   _pendingBuffersCount = 0;
-  _isPlaying = NO;
   if (_playerNode.engine) {
     @try {
       if (_playerNode.isPlaying) {
@@ -310,11 +320,10 @@ void ConvertInt16ToFloat32(base::span<const int16_t> source,
       // node was already detached. In all of these cases, playback is already
       // inactive or cannot continue, so ignoring the exception safely avoids
       // crashing the process during teardown.
-      DLOG(WARNING) << "Ignoring exception while resetting player node: "
+      DLOG(WARNING) << "Ignoring exception while purging player node: "
                     << base::SysNSStringToUTF8(exception.reason ?: @"Unknown");
     }
   }
-  _converter = nil;
 }
 
 - (void)setIsPlayingForTesting:(BOOL)isPlaying {
