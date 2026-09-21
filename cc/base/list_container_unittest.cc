@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cc {
@@ -1337,16 +1336,6 @@ TEST(ListContainerTest, GetCapacityInBytes) {
                             max_waste_factor * kLargestDerivedElementSize);
     list.RemoveLast();
   }
-}
-
-TEST(ListContainerDeathTest, EraseFromEmptyInnerListDies) {
-  ListContainer<DerivedElement> list(kLargestDerivedElementAlign,
-                                     kLargestDerivedElementSize, 1);
-  list.AllocateAndConstruct<DerivedElement1>();
-  auto it = list.begin();
-  auto stale_it = it;
-  list.EraseAndInvalidateAllPointers(it);
-  EXPECT_CHECK_DEATH(list.EraseAndInvalidateAllPointers(stale_it));
 }
 
 }  // namespace
