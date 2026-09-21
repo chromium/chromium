@@ -222,6 +222,7 @@ source_set("impl") {
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/views/permissions:permission_prompt_observer",
       "//chrome/browser/ui/webui:webui_util",
+      "//chrome/browser/ui/webui/cr_components/searchbox",
       "//components/policy/core/browser",
     ]
   }

@@ -16,9 +16,9 @@
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_page.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_handler.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -343,6 +343,78 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
 
   handler_->OnLensOverlayStateChanged(false);
   hide_run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
+                       GetRecentTabs) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.google.com/test"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  base::RunLoop run_loop;
+  static_cast<searchbox::mojom::PageHandler*>(handler_)->GetRecentTabs(
+      base::BindLambdaForTesting(
+          [&](std::vector<searchbox::mojom::TabInfoPtr> tabs) {
+            EXPECT_FALSE(tabs.empty());
+            EXPECT_EQ(tabs[0]->url, GURL("https://www.google.com/test"));
+            run_loop.Quit();
+          }));
+
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
+                       GetRecentTabs_MultipleTabs) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.google.com/test1"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.google.com/test2"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  base::RunLoop run_loop;
+  static_cast<searchbox::mojom::PageHandler*>(handler_)->GetRecentTabs(
+      base::BindLambdaForTesting(
+          [&](std::vector<searchbox::mojom::TabInfoPtr> tabs) {
+            EXPECT_GE(tabs.size(), 2u);
+            EXPECT_EQ(tabs[0]->url, GURL("https://www.google.com/test2"));
+            EXPECT_EQ(tabs[1]->url, GURL("https://www.google.com/test1"));
+            run_loop.Quit();
+          }));
+
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
+                       GetRecentTabs_NullWindowReturnsEmpty) {
+  EXPECT_TRUE(ContextualSearchboxHandler::GetRecentTabInfos(nullptr).empty());
+}
+
+class ContextualTasksExtensionHandlerNoTabsBrowserTest
+    : public ContextualTasksExtensionHandlerBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL(chrome::kChromeUIChromeURLsURL)));
+    ContextualTasksExtensionHandlerBrowserTest::SetUpOnMainThread();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerNoTabsBrowserTest,
+                       GetRecentTabs_NoEligibleTabs) {
+  base::RunLoop run_loop;
+  static_cast<searchbox::mojom::PageHandler*>(handler_)->GetRecentTabs(
+      base::BindLambdaForTesting(
+          [&](std::vector<searchbox::mojom::TabInfoPtr> tabs) {
+            EXPECT_TRUE(tabs.empty());
+            run_loop.Quit();
+          }));
+
+  run_loop.Run();
 }
 
 }  // namespace contextual_tasks

@@ -205,6 +205,11 @@ content::WebContents* GetActiveTabWebContents(
   }
   return web_contents;
 }
+
+struct TabTime {
+  raw_ptr<tabs::TabInterface> tab;
+  base::TimeTicks time;
+};
 }  // namespace
 
 // static
@@ -254,35 +259,21 @@ int ContextualSearchboxHandler::GetContextMenuMaxTabSuggestions() {
   return ntp_composebox::kContextMenuMaxTabSuggestions.Get();
 }
 
-void ContextualSearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
-  if (!IsContextualSearchTabSharingEligible()) {
-    std::move(callback).Run({});
-    return;
-  }
-
-  auto* browser_window_interface =
-      webui::GetBrowserWindowInterface(web_contents_);
+// static
+std::vector<searchbox::mojom::TabInfoPtr>
+ContextualSearchboxHandler::GetRecentTabInfos(
+    BrowserWindowInterface* browser_window_interface,
+    int max_tab_suggestions) {
   if (!browser_window_interface) {
-    std::move(callback).Run({});
-    return;
+    return {};
   }
 
   // Get tabs with recency only first, for the sort and cull step.
   auto* tab_list = TabListInterface::From(browser_window_interface);
   if (!tab_list) {
-    std::move(callback).Run({});
-    return;
+    return {};
   }
 
-  if (!tab_list_observation_.IsObservingSource(tab_list)) {
-    tab_list_observation_.Reset();
-    tab_list_observation_.Observe(tab_list);
-  }
-
-  struct TabTime {
-    raw_ptr<tabs::TabInterface> tab;
-    base::TimeTicks time;
-  };
   std::vector<TabTime> tab_times;
   tabs::TabInterface* active_tab_interface = tab_list->GetActiveTab();
   content::WebContents* active_web_contents =
@@ -296,7 +287,8 @@ void ContextualSearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
       continue;
     }
     bool is_internal_page = url.SchemeIs(content::kChromeUIScheme) ||
-                            url.SchemeIs(content::kChromeUIUntrustedScheme);
+                            url.SchemeIs(content::kChromeUIUntrustedScheme) ||
+                            url.SchemeIs("chrome-extension");
 
     if (!is_internal_page) {
       tab_times.push_back({
@@ -308,15 +300,14 @@ void ContextualSearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
 
   // Sort the tabs by last active time.
   auto cmp = [](const TabTime& a, const TabTime& b) { return a.time > b.time; };
-  if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
-    std::sort(tab_times.begin(), tab_times.end(), cmp);
+  if (max_tab_suggestions > 0) {
+    int count =
+        std::min(static_cast<int>(tab_times.size()), max_tab_suggestions);
+    std::partial_sort(tab_times.begin(), tab_times.begin() + count,
+                      tab_times.end(), cmp);
+    tab_times.resize(count);
   } else {
-    int max_tab_suggestions = std::min(static_cast<int>(tab_times.size()),
-                                       GetContextMenuMaxTabSuggestions());
-    std::partial_sort(tab_times.begin(),
-                      tab_times.begin() + max_tab_suggestions, tab_times.end(),
-                      cmp);
-    tab_times.resize(max_tab_suggestions);
+    std::sort(tab_times.begin(), tab_times.end(), cmp);
   }
 
   // Now that tabs have been culled, extract data for only this most recent
@@ -360,6 +351,42 @@ void ContextualSearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
     tab_data->last_active = tab_time.time;
     tabs.push_back(std::move(tab_data));
   }
+
+  return tabs;
+}
+
+void ContextualSearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
+  if (!IsContextualSearchTabSharingEligible()) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  auto* browser_window_interface =
+      webui::GetBrowserWindowInterface(web_contents_);
+  if (!browser_window_interface) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  // Get tabs with recency only first, for the sort and cull step.
+  auto* tab_list = TabListInterface::From(browser_window_interface);
+  if (!tab_list) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  if (!tab_list_observation_.IsObservingSource(tab_list)) {
+    tab_list_observation_.Reset();
+    tab_list_observation_.Observe(tab_list);
+  }
+
+  int max_tab_suggestions = -1;
+  if (!base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
+    max_tab_suggestions = GetContextMenuMaxTabSuggestions();
+  }
+
+  std::vector<searchbox::mojom::TabInfoPtr> tabs =
+      GetRecentTabInfos(browser_window_interface, max_tab_suggestions);
 
   if (auto* metrics_recorder = GetMetricsRecorder()) {
     // Count duplicate tab titles to record in an UMA histogram.
