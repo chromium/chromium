@@ -93,6 +93,7 @@
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/enterprise/data_controls/core/browser/test_utils.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_types.h"
@@ -998,6 +999,32 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, UpdateWindowTitle) {
             window_title.substr(0, user_title2.size()));
 }
 
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, AccessibleWindowTitleIncognito) {
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
+  EXPECT_TRUE(incognito_browser->GetProfile()->IsIncognitoProfile());
+  auto window_title = BrowserView::GetBrowserViewForBrowser(incognito_browser)
+                          ->GetAccessibleWindowTitle();
+  EXPECT_TRUE(window_title.contains(u"Incognito"));
+}
+
+class BrowserViewIsolatedTest : public BrowserViewTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    BrowserViewTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(
+        enterprise_isolated_mode::switches::
+            kForceEnterpriseIsolatedModeReplacesIncognito);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(BrowserViewIsolatedTest, AccessibleWindowTitleIsolated) {
+  BrowserWindowInterface* isolated_browser = CreateIncognitoBrowser();
+  EXPECT_TRUE(
+      isolated_browser->GetProfile()->IsEnterpriseIsolatedModeProfile());
+  auto window_title = BrowserView::GetBrowserViewForBrowser(isolated_browser)
+                          ->GetAccessibleWindowTitle();
+  EXPECT_TRUE(window_title.contains(u"Isolated"));
+}
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, WindowTitleOmitsLowMemoryUsage) {
   scoped_refptr<TabResourceUsage> tab_resource_usage =
       base::MakeRefCounted<TabResourceUsage>();

@@ -10999,6 +10999,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_ACCESSIBLE_INCOGNITO_WINDOW_TITLE_FORMAT" desc="The format for the accessible title of an Incognito window">
         <ph name="WINDOW_TITLE">$1</ph> (Incognito)
       </message>
+      <message name="IDS_ACCESSIBLE_ISOLATED_WINDOW_TITLE_FORMAT" desc="The format for the accessible title of an Isolated mode window">
+        <ph name="WINDOW_TITLE">$1</ph> (Isolated)
+      </message>
       <message name="IDS_ACCESSIBLE_GUEST_WINDOW_TITLE_FORMAT" desc="The format for the accessible title of a guest mode window">
         <ph name="WINDOW_TITLE">$1</ph> (Guest)
       </message>
