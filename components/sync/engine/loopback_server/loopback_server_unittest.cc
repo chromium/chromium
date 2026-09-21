@@ -362,4 +362,22 @@ TEST_F(LoopbackServerTest, CommitBookmarkUpdateWithClientTag) {
   EXPECT_FALSE(bookmarks[id].has_client_tag_hash());
 }
 
+TEST_F(LoopbackServerTest,
+       ShouldReplaceNonBookmarkServerEntityOnBookmarkCommit) {
+  // Ensure the permanent bookmark folders (e.g. `32904_bookmark_bar`, which is
+  // a PersistentPermanentEntity) are created on the server.
+  GetUpdatesForType(EntitySpecifics::kBookmarkFieldNumber);
+
+  // Committing a bookmark update when the existing server entity is not a
+  // PersistentBookmarkEntity should safely replace the previous entity without
+  // downcasting it to PersistentBookmarkEntity.
+  SyncEntity entity;
+  entity.set_id_string("32904_bookmark_bar");
+  entity.set_parent_id_string("32904_google_chrome_bookmarks");
+  entity.set_version(1);
+  entity.mutable_specifics()->mutable_bookmark()->set_url(kUrl1);
+
+  EXPECT_EQ("32904_bookmark_bar", CommitVerifySuccess(entity));
+}
+
 }  // namespace syncer

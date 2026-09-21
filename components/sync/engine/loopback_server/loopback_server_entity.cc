@@ -116,6 +116,14 @@ bool LoopbackServerEntity::IsPermanent() const {
   return false;
 }
 
+PersistentBookmarkEntity* LoopbackServerEntity::AsBookmarkEntity() {
+  return nullptr;
+}
+
+const PersistentBookmarkEntity* LoopbackServerEntity::AsBookmarkEntity() const {
+  return nullptr;
+}
+
 sync_pb::LoopbackServerEntity_Type
 LoopbackServerEntity::GetLoopbackServerEntityType() const {
   NOTREACHED();

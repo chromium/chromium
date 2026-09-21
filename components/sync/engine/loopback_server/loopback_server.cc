@@ -912,13 +912,14 @@ bool LoopbackServer::ModifyBookmarkEntity(
     const sync_pb::EntitySpecifics& updated_specifics) {
   EntityMap::const_iterator iter = entities_.find(id);
   if (iter == entities_.end() ||
-      iter->second->GetDataType() != syncer::BOOKMARKS ||
       GetDataTypeFromSpecifics(updated_specifics) != syncer::BOOKMARKS) {
     return false;
   }
 
-  PersistentBookmarkEntity* entity =
-      static_cast<PersistentBookmarkEntity*>(iter->second.get());
+  PersistentBookmarkEntity* entity = iter->second->AsBookmarkEntity();
+  if (!entity) {
+    return false;
+  }
 
   entity->SetParentId(parent_id);
   entity->SetSpecifics(updated_specifics);
@@ -962,9 +963,10 @@ bool LoopbackServer::DeSerializeState(
   for (int i = 0; i < proto.entities_size(); ++i) {
     std::unique_ptr<LoopbackServerEntity> entity =
         LoopbackServerEntity::CreateEntityFromProto(proto.entities(i));
-    // Silently drop entities that cannot be successfully deserialized.
-    if (entity) {
-      entities_[proto.entities(i).entity().id_string()] = std::move(entity);
+    // Silently drop entities that cannot be successfully deserialized or have
+    // a mismatched ID.
+    if (entity && entity->GetId() == proto.entities(i).entity().id_string()) {
+      entities_[entity->GetId()] = std::move(entity);
     }
   }
 

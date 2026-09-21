@@ -31,7 +31,7 @@ bool IsBookmark(const sync_pb::SyncEntity& client_entity) {
 PersistentBookmarkEntity::~PersistentBookmarkEntity() = default;
 
 // static
-std::unique_ptr<LoopbackServerEntity> PersistentBookmarkEntity::CreateNew(
+std::unique_ptr<PersistentBookmarkEntity> PersistentBookmarkEntity::CreateNew(
     const sync_pb::SyncEntity& client_entity,
     const string& parent_id,
     const string& originator_cache_guid,
@@ -60,7 +60,7 @@ std::unique_ptr<LoopbackServerEntity> PersistentBookmarkEntity::CreateNew(
 }
 
 // static
-std::unique_ptr<LoopbackServerEntity>
+std::unique_ptr<PersistentBookmarkEntity>
 PersistentBookmarkEntity::CreateUpdatedVersion(
     const sync_pb::SyncEntity& client_entity,
     const LoopbackServerEntity& current_server_entity,
@@ -80,24 +80,24 @@ PersistentBookmarkEntity::CreateUpdatedVersion(
   std::string originator_client_item_id;
   std::string client_tag_hash;
 
-  if (current_server_entity.IsDeleted()) {
-    // Handle undeletions.
+  if (const PersistentBookmarkEntity* current_bookmark_entity =
+          current_server_entity.AsBookmarkEntity()) {
+    // Regular case (non-undeletion).
+    originator_cache_guid = current_bookmark_entity->originator_cache_guid_;
+    originator_client_item_id =
+        current_bookmark_entity->originator_client_item_id_;
+    // Note that the client tag provided by the client in `client_entity` is
+    // ignored during non-creations updates, since it's meant to be immutable.
+    client_tag_hash = current_bookmark_entity->client_tag_hash_;
+  } else {
+    // Handle undeletions (or unexpected non-bookmark server entities) by
+    // replacing the entity using the committing client's metadata.
     originator_cache_guid = updating_client_cache_guid;
     originator_client_item_id =
         LoopbackServerEntity::GetInnerIdFromId(client_entity.id_string());
     // An undeletion is similar to a creation, so let's honor the client tag
     // provided by the client (if any).
     client_tag_hash = client_entity.client_tag_hash();
-  } else {
-    // Regular case (non-undeletion).
-    const PersistentBookmarkEntity& current_bookmark_entity =
-        static_cast<const PersistentBookmarkEntity&>(current_server_entity);
-    originator_cache_guid = current_bookmark_entity.originator_cache_guid_;
-    originator_client_item_id =
-        current_bookmark_entity.originator_client_item_id_;
-    // Note that the client tag provided by the client in `client_entity` is
-    // ignored during non-creations updates, since it's meant to be immutable.
-    client_tag_hash = current_bookmark_entity.client_tag_hash_;
   }
 
   // Using a version of 0 is okay here as it'll be updated before this entity is
@@ -111,7 +111,7 @@ PersistentBookmarkEntity::CreateUpdatedVersion(
 }
 
 // static
-std::unique_ptr<LoopbackServerEntity>
+std::unique_ptr<PersistentBookmarkEntity>
 PersistentBookmarkEntity::CreateFromEntity(
     const sync_pb::SyncEntity& client_entity) {
   if (!IsBookmark(client_entity)) {
@@ -212,6 +212,15 @@ void PersistentBookmarkEntity::SerializeAsProto(
 
 bool PersistentBookmarkEntity::IsFolder() const {
   return is_folder_;
+}
+
+PersistentBookmarkEntity* PersistentBookmarkEntity::AsBookmarkEntity() {
+  return this;
+}
+
+const PersistentBookmarkEntity* PersistentBookmarkEntity::AsBookmarkEntity()
+    const {
+  return this;
 }
 
 }  // namespace syncer
