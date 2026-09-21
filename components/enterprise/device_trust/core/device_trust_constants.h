@@ -28,6 +28,8 @@ extern const char kFailedToParseChallenge[];
 extern const char kFailedToCreateResponse[];
 extern const char kTooManyRequests[];
 extern const char kUrlNotAllowed[];
+extern const char kServiceUnavailable[];
+extern const char kInvalidOrigin[];
 
 }  // namespace errors
 
