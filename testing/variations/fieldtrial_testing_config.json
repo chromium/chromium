@@ -16618,21 +16618,6 @@
             ]
         }
     ],
-    "SessionRestoreAfterCrash": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SessionRestoreAfterCrash"
-                    ]
-                }
-            ]
-        }
-    ],
     "SettingsInTab": [
         {
             "platforms": [

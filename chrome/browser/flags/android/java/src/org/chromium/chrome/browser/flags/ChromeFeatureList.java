@@ -1393,10 +1393,7 @@ public abstract class ChromeFeatureList {
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sSessionRestoreAfterCrash =
-            newCachedFlag(
-                    SESSION_RESTORE_AFTER_CRASH,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
+            newCachedFlag(SESSION_RESTORE_AFTER_CRASH, true);
     // Do not use this flag directly. Use SettingsInTab.shouldOpenSettingsInTab(), which takes into
     // account both the feature flag and device form factor. defaultValueInTests is true to match
     // the value in fieldtrial_testing_config.json.
