@@ -30,6 +30,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/fakes/fake_enterprise_commands_handler.h"
 #import "ios/components/enterprise/analysis/features.h"
+#import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
@@ -408,6 +409,38 @@ TEST_F(CloudContentScanningHelperTest,
   web_state_ = nullptr;
   browser_.reset();
   profile_.reset();
+}
+
+// Tests that any pending decisions are dropped on corss-document navigation.
+TEST_F(CloudContentScanningHelperTest,
+       DeferredWarningDroppedAfterCrossOriginNavigation) {
+  base::test::TestFuture<bool> future;
+
+  // Tab is on evil.test and gets hidden while the DLP scan is in flight.
+  web_state_->SetCurrentURL(GURL("https://evil.test/poc.html"));
+  web_state_->WasHidden();
+  ASSERT_FALSE(web_state_->IsVisible());
+
+  // WARNING verdict arrives while hidden -> stashed in PendingScanDecision.
+  RequestHandlerResult result =
+      CreateResult(FinalContentAnalysisResult::WARNING);
+  HandleScanDecision(web_state_->GetWeakPtr(), TriggerType::kSavePrompt,
+                     future.GetCallback(), result);
+  ASSERT_TRUE(fake_commands_handler_->_callback.is_null());
+
+  // Attacker navigates the hidden tab cross-origin.
+  web::FakeNavigationContext context;
+  context.SetUrl(GURL("https://bank.example/"));
+  context.SetIsSameDocument(false);
+  web_state_->OnNavigationStarted(&context);
+  web_state_->SetCurrentURL(GURL("https://bank.example/"));
+
+  // User switches back to the tab.
+  web_state_->WasShown();
+
+  // EXPECTED (secure): pending warning was dropped on navigation -> no dialog
+  // dispatched, download blocked.
+  EXPECT_TRUE(fake_commands_handler_->_callback.is_null());
 }
 
 }  // namespace enterprise_connectors
