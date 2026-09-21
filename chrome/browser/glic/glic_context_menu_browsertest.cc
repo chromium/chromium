@@ -27,12 +27,18 @@
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/test/browser_test.h"
+#include "printing/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "ui/base/base_window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
+
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+#include "chrome/browser/printing/print_view_manager.h"
+#include "chrome/browser/printing/test_print_view_manager_for_request_preview.h"
+#endif
 
 namespace glic {
 
@@ -993,6 +999,43 @@ IN_PROC_BROWSER_TEST_P(GlicInternalContextMenuBrowserTest,
       WaitForWebUiContentsVisibility(instance, content::Visibility::VISIBLE));
   EXPECT_NE(initial_guest_contents, instance->host().web_client_contents());
 }
+
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+IN_PROC_BROWSER_TEST_P(GlicInternalContextMenuBrowserTest,
+                       GuestContextMenuPrintTriggersPrintPreview) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  ASSERT_OK(WaitForGlicClient(instance));
+  content::WebContents* guest_contents = instance->host().web_client_contents();
+  ASSERT_TRUE(guest_contents);
+
+  // Verify that PrintViewManager was attached to the guest WebContents.
+  ASSERT_NE(nullptr,
+            printing::PrintViewManager::FromWebContents(guest_contents));
+
+  printing::TestPrintViewManagerForRequestPreview::CreateForWebContents(
+      guest_contents);
+  auto* test_print_manager =
+      printing::TestPrintViewManagerForRequestPreview::FromWebContents(
+          guest_contents);
+  ASSERT_TRUE(test_print_manager);
+
+  base::RunLoop run_loop;
+  test_print_manager->set_quit_closure(run_loop.QuitClosure());
+
+  content::ContextMenuParams params;
+  params.page_url = guest_contents->GetVisibleURL();
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      *guest_contents->GetPrimaryMainFrame(), params);
+  menu->Init();
+
+  EXPECT_TRUE(menu->IsItemPresent(IDC_PRINT));
+  EXPECT_TRUE(menu->IsItemEnabled(IDC_PRINT));
+
+  menu->ExecuteCommand(IDC_PRINT, 0);
+
+  run_loop.Run();
+}
+#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
 class GlicNoWebviewOverlayContextMenuBrowserTest : public GlicBrowserTest {
  public:

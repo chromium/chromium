@@ -1105,7 +1105,10 @@ source_set("browser_tests") {
     deps += [ "//ui/ozone" ]
   }
   if (enable_print_preview) {
-    deps += [ "//chrome/browser/printing" ]
+    deps += [
+      "//chrome/browser/printing",
+      "//chrome/browser/printing:test_support",
+    ]
   }
   if (enable_pdf) {
     deps += [ "//chrome/browser/pdf:pdf_extension_test_utils" ]

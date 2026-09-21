@@ -70,6 +70,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/base/url_util.h"
 #include "pdf/buildflags.h"
+#include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
@@ -85,6 +86,10 @@
 #include "ui/base/clipboard/clipboard_observer.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_PRINTING)
+#include "chrome/browser/printing/printing_init.h"
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/device_info.h"
@@ -258,6 +263,15 @@ void PrepareGlicGuestWebContents(content::WebContents& guest_contents,
 
   PrefsTabHelper::CreateForWebContents(&guest_contents);
   ConfigureGuestZoom(guest_contents);
+
+#if BUILDFLAG(ENABLE_PRINTING)
+  // In <webview> mode, WebViewGuest attaches printing helpers via
+  // ChromeExtensionsAPIClient::AttachWebContentsHelpers. In NoWebview mode,
+  // initialize printing explicitly on the guest WebContents.
+  if (features::IsGlicNoWebviewEnabled()) {
+    printing::InitializePrintingForWebContents(&guest_contents);
+  }
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
   guest_contents.SetSupportsDraggableRegions(true);
