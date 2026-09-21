@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.content.WebAppLaunchHandlerHistogram.ClientModeAction;
 import org.chromium.chrome.browser.customtabs.content.WebAppLaunchHandlerHistogram.FailureReasonAction;
 import org.chromium.chrome.browser.customtabs.content.WebAppLaunchHandlerHistogram.FileHandlingAction;
+import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.renderer_host.ChromeNavigationUiData;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -530,17 +531,23 @@ public class WebAppLaunchHandler {
      * Verifies whether the calling application holds read permission for the specified URI.
      *
      * <p>On Android 15+ (API 35+), checks caller identity via {@link ComponentCaller}. On older
-     * Android versions, falls back to verifying URI permissions against the session UID.
+     * Android versions or when ComponentCaller is unavailable, falls back to verifying URI
+     * permissions against the client UID.
      *
-     * @param session The session holder associated with the launching client app.
+     * @param activity The activity context.
+     * @param caller The caller object (ComponentCaller on Android 15+).
+     * @param clientUid The UID of the launching client application (-1 if unknown).
+     * @param clientPid The PID of the launching client application (0 if unknown).
      * @param uri The Content URI to verify.
-     * @return True if the caller has explicit read permission for uri, false otherwise.
+     * @param requestedPermission The permission flag (e.g. FLAG_GRANT_READ_URI_PERMISSION).
+     * @return True if the caller has permission for uri, false otherwise.
      */
     @SuppressLint("NewApi")
     public static boolean doesCallerHavePermissionForUri(
             Activity activity,
             @Nullable Object caller,
-            @Nullable SessionHolder<?> session,
+            int clientUid,
+            int clientPid,
             Uri uri,
             int requestedPermission) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM && caller != null) {
@@ -549,8 +556,7 @@ public class WebAppLaunchHandler {
                 if (componentCaller.getUid() == Process.myUid()) {
                     Log.d(
                             TAG,
-                            "Caller is ourselves (trampoline launch). Falling back to session"
-                                    + " check.");
+                            "Caller is ourselves (trampoline launch). Falling back to UID check.");
                 } else {
                     return componentCaller.checkContentUriPermission(uri, requestedPermission)
                             == PackageManager.PERMISSION_GRANTED;
@@ -563,22 +569,43 @@ public class WebAppLaunchHandler {
             }
         }
 
-        // Fallback for Android versions prior to Android 15 (API < 35) or when ComponentCaller
-        // is unavailable. We check URI read permissions against the client UID and PID recorded
-        // when the TWA session was established.
-        if (session != null) {
-            int uid = CustomTabsConnection.getInstance().getClientUidForSession(session);
-            int pid = CustomTabsConnection.getInstance().getClientPidForSession(session);
-            if (uid != -1) {
-                try {
-                    return activity.checkUriPermission(uri, pid, uid, requestedPermission)
-                            == PackageManager.PERMISSION_GRANTED;
-                } catch (Exception e) {
-                    Log.w(TAG, "Failed to check URI permission for UID: " + uid, e);
-                }
+        if (clientUid != -1) {
+            try {
+                return activity.checkUriPermission(uri, clientPid, clientUid, requestedPermission)
+                        == PackageManager.PERMISSION_GRANTED;
+            } catch (Exception e) {
+                Log.w(TAG, "Failed to check URI permission for UID: " + clientUid, e);
             }
         }
         return false;
+    }
+
+    /**
+     * Convenience overload of {@link #doesCallerHavePermissionForUri(Activity, Object, int, int,
+     * Uri, int)} for callers with a {@link SessionHolder}. Resolves the client UID and PID from the
+     * session.
+     *
+     * @param activity The activity context.
+     * @param caller The caller object (ComponentCaller on Android 15+).
+     * @param session The session holder associated with the launching client app.
+     * @param uri The Content URI to verify.
+     * @param requestedPermission The permission flag (e.g. FLAG_GRANT_READ_URI_PERMISSION).
+     * @return True if the caller has permission for uri, false otherwise.
+     */
+    @SuppressLint("NewApi")
+    public static boolean doesCallerHavePermissionForUri(
+            Activity activity,
+            @Nullable Object caller,
+            @Nullable SessionHolder<?> session,
+            Uri uri,
+            int requestedPermission) {
+        int uid = -1;
+        int pid = 0;
+        if (session != null) {
+            uid = CustomTabsConnection.getInstance().getClientUidForSession(session);
+            pid = CustomTabsConnection.getInstance().getClientPidForSession(session);
+        }
+        return doesCallerHavePermissionForUri(activity, caller, uid, pid, uri, requestedPermission);
     }
 
     /**
@@ -732,6 +759,97 @@ public class WebAppLaunchHandler {
     }
 
     /**
+     * Checks caller permissions for any file URIs in a WebAPK share intent and stashes the verified
+     * results in targetIntent.
+     *
+     * @param activity The launcher activity.
+     * @param sourceIntent The incoming intent containing client extras.
+     * @param targetIntent The launch intent being prepared for WebappActivity.
+     * @param webApkPackageName The package name of the WebAPK.
+     */
+    @SuppressLint("NewApi")
+    public static void copyShareDataPermissionsForWebApk(
+            Activity activity,
+            Intent sourceIntent,
+            Intent targetIntent,
+            @Nullable String webApkPackageName) {
+        // Strip EXTRA_VERIFIED_SHARE_DATA if present on targetIntent so that it cannot be set
+        // by external client apps.
+        IntentUtils.safeRemoveExtra(
+                targetIntent, CustomTabIntentDataProvider.EXTRA_VERIFIED_SHARE_DATA);
+
+        ShareData shareData = extractWebApkShareData(sourceIntent);
+        if (shareData == null) {
+            return;
+        }
+
+        if (shareData.uris == null || shareData.uris.isEmpty()) {
+            targetIntent.putExtra(
+                    CustomTabIntentDataProvider.EXTRA_VERIFIED_SHARE_DATA, shareData.toBundle());
+            return;
+        }
+
+        Object caller = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            try {
+                caller = activity.getInitialCaller();
+            } catch (Exception e) {
+                Log.w(TAG, "Failed to get initial caller. Falling back.", e);
+            }
+        }
+
+        int webApkUid = -1;
+        if (!TextUtils.isEmpty(webApkPackageName)) {
+            try {
+                webApkUid = activity.getPackageManager().getPackageUid(webApkPackageName, 0);
+            } catch (PackageManager.NameNotFoundException e) {
+                Log.w(TAG, "WebAPK package not found: " + webApkPackageName, e);
+            }
+        }
+
+        List<Uri> verifiedUris = new ArrayList<>();
+        for (Uri uri : shareData.uris) {
+            if (!isValidLaunchUri(uri)) {
+                Log.w(TAG, "Invalid launch URI: " + uri);
+                continue;
+            }
+            if (!doesCallerHavePermissionForUri(
+                    activity,
+                    caller,
+                    webApkUid,
+                    /* clientPid= */ 0,
+                    uri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION)) {
+                Log.w(TAG, "Caller does not have read permission for share URI: " + uri);
+                continue;
+            }
+            verifiedUris.add(uri);
+        }
+
+        ShareData verifiedShareData = new ShareData(shareData.title, shareData.text, verifiedUris);
+        targetIntent.putExtra(
+                CustomTabIntentDataProvider.EXTRA_VERIFIED_SHARE_DATA,
+                verifiedShareData.toBundle());
+    }
+
+    private static @Nullable ShareData extractWebApkShareData(Intent intent) {
+        String subject = IntentUtils.safeGetStringExtra(intent, Intent.EXTRA_SUBJECT);
+        String text = IntentUtils.safeGetStringExtra(intent, Intent.EXTRA_TEXT);
+        List<Uri> files = IntentUtils.getParcelableArrayListExtra(intent, Intent.EXTRA_STREAM);
+        if (files == null) {
+            Uri file = IntentUtils.safeGetParcelableExtra(intent, Intent.EXTRA_STREAM);
+            if (file != null) {
+                files = new ArrayList<>();
+                files.add(file);
+            }
+        }
+        if (subject == null && text == null && files == null) {
+            return null;
+        }
+        return new ShareData(subject, text, files);
+    }
+
+    /**
      * Filters incoming share data to retain only URIs that the launching client app has permission
      * to access.
      *
@@ -767,6 +885,29 @@ public class WebAppLaunchHandler {
             return new ShareData(shareData.title, shareData.text, new ArrayList<>());
         }
 
+        // Resolve client UID: from CCT session for TWAs, or from WebAPK package for WebAPKs.
+        // For WebAPKs, this is a defense-in-depth fallback for cases where
+        // EXTRA_VERIFIED_SHARE_DATA was not stashed by WebappLauncherActivity.
+        // Note: caller is null when invoked by TwaSharingController, so on Android 15+ this falls
+        // back to checkUriPermission against clientUid.
+        int clientUid = -1;
+        int clientPid = 0;
+        SessionHolder session = intentDataProvider.getSession();
+        if (session != null) {
+            clientUid = CustomTabsConnection.getInstance().getClientUidForSession(session);
+            clientPid = CustomTabsConnection.getInstance().getClientPidForSession(session);
+        } else if (intentDataProvider.getActivityType() == ActivityType.WEB_APK
+                && intentDataProvider.getWebApkExtras() != null) {
+            String webApkPackage = intentDataProvider.getWebApkExtras().webApkPackageName;
+            if (webApkPackage != null) {
+                try {
+                    clientUid = activity.getPackageManager().getPackageUid(webApkPackage, 0);
+                } catch (PackageManager.NameNotFoundException e) {
+                    Log.w(TAG, "WebAPK package not found: " + webApkPackage, e);
+                }
+            }
+        }
+
         List<Uri> filteredUris = new ArrayList<>();
         for (Uri uri : shareData.uris) {
             if (!isValidLaunchUri(uri)) {
@@ -776,7 +917,8 @@ public class WebAppLaunchHandler {
             if (!doesCallerHavePermissionForUri(
                     activity,
                     caller,
-                    intentDataProvider.getSession(),
+                    clientUid,
+                    clientPid,
                     uri,
                     Intent.FLAG_GRANT_READ_URI_PERMISSION)) {
                 Log.w(TAG, "Caller does not have read permission for share URI: " + uri);

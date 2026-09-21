@@ -35,7 +35,9 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
+import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabLocator;
+import org.chromium.chrome.browser.customtabs.content.WebAppLaunchHandler;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -290,6 +292,16 @@ public class WebappLauncherActivity extends Activity {
             Activity launchingActivity, Intent intent, LaunchData launchData) {
         Intent launchIntent = createIntentToLaunchForWebapp(intent, launchData);
 
+        // Strip spoofed extra
+        IntentUtils.safeRemoveExtra(
+                launchIntent, CustomTabIntentDataProvider.EXTRA_VERIFIED_SHARE_DATA);
+
+        // Stash verified share data if present
+        if (launchData.isForWebApk && isShareIntent(intent)) {
+            WebAppLaunchHandler.copyShareDataPermissionsForWebApk(
+                    launchingActivity, intent, launchIntent, launchData.webApkPackageName);
+        }
+
         WarmupManager.getInstance()
                 .maybePrefetchDnsForUrlInBackground(launchingActivity, launchData.url);
 
@@ -421,5 +433,15 @@ public class WebappLauncherActivity extends Activity {
         new Handler()
                 .postDelayed(
                         () -> IntentUtils.safeStartActivity(appContext, intent), launchDelayMs);
+    }
+
+    private static boolean isShareIntent(Intent intent) {
+        return Intent.ACTION_SEND.equals(intent.getAction())
+                || Intent.ACTION_SEND_MULTIPLE.equals(intent.getAction())
+                || !TextUtils.isEmpty(
+                        IntentUtils.safeGetStringExtra(
+                                intent,
+                                WebApkConstants
+                                        .EXTRA_WEBAPK_SELECTED_SHARE_TARGET_ACTIVITY_CLASS_NAME));
     }
 }

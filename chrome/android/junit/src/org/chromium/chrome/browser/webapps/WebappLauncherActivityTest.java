@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.webapps;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -13,8 +14,10 @@ import static org.robolectric.Shadows.shadowOf;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.browser.trusted.sharing.ShareData;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
@@ -26,11 +29,15 @@ import org.robolectric.Shadows;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.webapk.lib.common.WebApkConstants;
 import org.chromium.webapk.test.WebApkTestHelper;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /** JUnit test for WebappLauncherActivity. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -139,5 +146,137 @@ public class WebappLauncherActivityTest {
     private Intent getNextStartedActivity() {
         return shadowOf((Application) ApplicationProvider.getApplicationContext())
                 .getNextStartedActivity();
+    }
+
+    @Test
+    public void testWebApkShareIntent_StashesVerifiedShareData() {
+        registerWebApk(WEBAPK_PACKAGE_NAME, START_URL);
+
+        Uri uri = Uri.parse("content://org.chromium.webapk.test/file.jpg");
+        Intent intent = WebApkTestHelper.createMinimalWebApkIntent(WEBAPK_PACKAGE_NAME, START_URL);
+        intent.setAction(Intent.ACTION_SEND);
+        intent.putExtra(
+                WebApkConstants.EXTRA_WEBAPK_SELECTED_SHARE_TARGET_ACTIVITY_CLASS_NAME,
+                "ShareActivity");
+        ArrayList<Uri> uris = new ArrayList<>();
+        uris.add(uri);
+        intent.putExtra(Intent.EXTRA_STREAM, uris);
+        intent.putExtra(Intent.EXTRA_SUBJECT, "title");
+        intent.putExtra(Intent.EXTRA_TEXT, "text");
+
+        Robolectric.buildActivity(WebappLauncherActivity.class, intent).create();
+
+        Intent launchIntent = getNextStartedActivity();
+        assertNotNull(launchIntent);
+        Bundle verifiedBundle =
+                launchIntent.getBundleExtra(CustomTabIntentDataProvider.EXTRA_VERIFIED_SHARE_DATA);
+        assertNotNull(verifiedBundle);
+        ShareData verifiedData = ShareData.fromBundle(verifiedBundle);
+        assertNotNull(verifiedData);
+        assertEquals("title", verifiedData.title);
+        assertEquals("text", verifiedData.text);
+        assertEquals(1, verifiedData.uris.size());
+        assertEquals(uri, verifiedData.uris.get(0));
+    }
+
+    @Test
+    public void testWebApkLaunch_StripsSpoofedVerifiedShareData() {
+        registerWebApk(WEBAPK_PACKAGE_NAME, START_URL);
+
+        Intent intent = WebApkTestHelper.createMinimalWebApkIntent(WEBAPK_PACKAGE_NAME, START_URL);
+        Bundle spoofedBundle =
+                new ShareData(
+                                "spoofed",
+                                "spoofed",
+                                Arrays.asList(Uri.parse("content://victim/secret")))
+                        .toBundle();
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_VERIFIED_SHARE_DATA, spoofedBundle);
+
+        Robolectric.buildActivity(WebappLauncherActivity.class, intent).create();
+
+        Intent launchIntent = getNextStartedActivity();
+        assertNotNull(launchIntent);
+        assertFalse(launchIntent.hasExtra(CustomTabIntentDataProvider.EXTRA_VERIFIED_SHARE_DATA));
+    }
+
+    @Test
+    public void testWebApkShareIntent_TextOnlyShare_StashesVerifiedShareData() {
+        registerWebApk(WEBAPK_PACKAGE_NAME, START_URL);
+
+        Intent intent = WebApkTestHelper.createMinimalWebApkIntent(WEBAPK_PACKAGE_NAME, START_URL);
+        intent.setAction(Intent.ACTION_SEND);
+        intent.putExtra(
+                WebApkConstants.EXTRA_WEBAPK_SELECTED_SHARE_TARGET_ACTIVITY_CLASS_NAME,
+                "ShareActivity");
+        intent.putExtra(Intent.EXTRA_SUBJECT, "title");
+        intent.putExtra(Intent.EXTRA_TEXT, "text");
+
+        Robolectric.buildActivity(WebappLauncherActivity.class, intent).create();
+
+        Intent launchIntent = getNextStartedActivity();
+        assertNotNull(launchIntent);
+        Bundle verifiedBundle =
+                launchIntent.getBundleExtra(CustomTabIntentDataProvider.EXTRA_VERIFIED_SHARE_DATA);
+        assertNotNull(verifiedBundle);
+        ShareData verifiedData = ShareData.fromBundle(verifiedBundle);
+        assertNotNull(verifiedData);
+        assertEquals("title", verifiedData.title);
+        assertEquals("text", verifiedData.text);
+        assertTrue(verifiedData.uris == null || verifiedData.uris.isEmpty());
+    }
+
+    @Test
+    public void testWebApkShareIntent_InvalidSchemeUri_FilteredOut() {
+        registerWebApk(WEBAPK_PACKAGE_NAME, START_URL);
+
+        Uri fileSchemeUri = Uri.parse("file:///sdcard/malicious.txt");
+        Intent intent = WebApkTestHelper.createMinimalWebApkIntent(WEBAPK_PACKAGE_NAME, START_URL);
+        intent.setAction(Intent.ACTION_SEND);
+        intent.putExtra(
+                WebApkConstants.EXTRA_WEBAPK_SELECTED_SHARE_TARGET_ACTIVITY_CLASS_NAME,
+                "ShareActivity");
+        ArrayList<Uri> uris = new ArrayList<>();
+        uris.add(fileSchemeUri);
+        intent.putExtra(Intent.EXTRA_STREAM, uris);
+
+        Robolectric.buildActivity(WebappLauncherActivity.class, intent).create();
+
+        Intent launchIntent = getNextStartedActivity();
+        assertNotNull(launchIntent);
+        Bundle verifiedBundle =
+                launchIntent.getBundleExtra(CustomTabIntentDataProvider.EXTRA_VERIFIED_SHARE_DATA);
+        assertNotNull(verifiedBundle);
+        ShareData verifiedData = ShareData.fromBundle(verifiedBundle);
+        assertNotNull(verifiedData);
+        assertTrue(verifiedData.uris.isEmpty());
+    }
+
+    @Test
+    public void testWebApkShareIntent_PartialFiltering_InvalidAndValidUri() {
+        registerWebApk(WEBAPK_PACKAGE_NAME, START_URL);
+
+        Uri fileSchemeUri = Uri.parse("file:///sdcard/malicious.txt");
+        Uri validContentUri = Uri.parse("content://org.chromium.webapk.test/valid.jpg");
+        Intent intent = WebApkTestHelper.createMinimalWebApkIntent(WEBAPK_PACKAGE_NAME, START_URL);
+        intent.setAction(Intent.ACTION_SEND);
+        intent.putExtra(
+                WebApkConstants.EXTRA_WEBAPK_SELECTED_SHARE_TARGET_ACTIVITY_CLASS_NAME,
+                "ShareActivity");
+        ArrayList<Uri> uris = new ArrayList<>();
+        uris.add(fileSchemeUri);
+        uris.add(validContentUri);
+        intent.putExtra(Intent.EXTRA_STREAM, uris);
+
+        Robolectric.buildActivity(WebappLauncherActivity.class, intent).create();
+
+        Intent launchIntent = getNextStartedActivity();
+        assertNotNull(launchIntent);
+        Bundle verifiedBundle =
+                launchIntent.getBundleExtra(CustomTabIntentDataProvider.EXTRA_VERIFIED_SHARE_DATA);
+        assertNotNull(verifiedBundle);
+        ShareData verifiedData = ShareData.fromBundle(verifiedBundle);
+        assertNotNull(verifiedData);
+        assertEquals(1, verifiedData.uris.size());
+        assertEquals(validContentUri, verifiedData.uris.get(0));
     }
 }
