@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtil
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.OnImageLoadedCallback;
-import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.BackgroundCollection;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -247,15 +246,10 @@ public class NtpThemeMediator {
         updateTrailingIconVisibilityForSectionType(imageType);
     }
 
-    /**
-     * Updates trailing icon visibility when the user selects a Chrome color.
-     *
-     * @param colorId The {@link NtpThemeColorId} of the selected Chrome color.
-     */
+    /** Updates trailing icon visibility when the user selects a Chrome color. */
     @VisibleForTesting
-    void onChromeColorSelected(@NtpThemeColorId int colorId) {
+    void onChromeColorSelected() {
         updateTrailingIconVisibilityForSectionType(CHROME_COLOR);
-        assert colorId > NtpThemeColorId.DEFAULT && colorId < NtpThemeColorId.NUM_ENTRIES;
         mNtpThemeCollectionManager.cancelPendingSelection();
     }
 

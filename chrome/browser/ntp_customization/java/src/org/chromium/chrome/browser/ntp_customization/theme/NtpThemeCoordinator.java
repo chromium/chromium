@@ -33,7 +33,6 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsCoordinator;
-import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.BackgroundCollection;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionManager;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionsCoordinator;
@@ -241,8 +240,8 @@ public class NtpThemeCoordinator {
     }
 
     @VisibleForTesting
-    void onChromeColorSelected(@NtpThemeColorId int colorId) {
-        mMediator.onChromeColorSelected(colorId);
+    void onChromeColorSelected() {
+        mMediator.onChromeColorSelected();
         notifyBottomSheetBackgroundTypeChanged();
     }
 

@@ -50,7 +50,6 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsCoordinator;
-import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.BackgroundCollection;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CollectionImage;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
@@ -249,9 +248,9 @@ public class NtpThemeCoordinatorUnitTest {
                 mock(NtpChromeColorsCoordinator.class);
         mCoordinator.setNtpChromeColorsCoordinatorForTesting(mockChromeColorsCoordinator);
         mCoordinator.addThemeBottomSheetObserverForTesting(mockChromeColorsCoordinator);
-        mCoordinator.onChromeColorSelected(NtpThemeColorId.NTP_COLORS_BLUE);
+        mCoordinator.onChromeColorSelected();
 
-        verify(mMediator).onChromeColorSelected(NtpThemeColorId.NTP_COLORS_BLUE);
+        verify(mMediator).onChromeColorSelected();
         // Verifies that notifyBottomSheetBackgroundTypeChanged() is called and triggers
         // onBackgroundTypeChanged() for all registered observers
         verify(mMockObserver).onBackgroundTypeChanged();

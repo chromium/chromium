@@ -305,7 +305,7 @@ public class NtpThemeMediatorUnitTest {
         createMediator(true);
         reset(mThemePropertyModel);
 
-        mMediator.onChromeColorSelected(2);
+        mMediator.onChromeColorSelected();
 
         verify(mThemePropertyModel)
                 .set(eq(IS_SECTION_SELECTED), eq(new Pair<>(CHROME_COLOR, true)));
