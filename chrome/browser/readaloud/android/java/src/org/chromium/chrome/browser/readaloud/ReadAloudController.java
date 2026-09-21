@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.readaloud;
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.PAUSED;
+import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.PLAYBACK_CREATION;
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.PLAYING;
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.STOPPED;
 
@@ -422,7 +423,8 @@ public class ReadAloudController
                             playback -> {
                                 assumeNonNull(mPlayerCoordinator);
                                 if (mPlaying) {
-                                    mPlayerCoordinator.playbackReady(playback, PLAYING);
+                                    mPlayerCoordinator.playbackReady(
+                                            playback, getInitialPlaybackState(playback));
                                     playback.play();
                                 } else {
                                     mPlayerCoordinator.playbackReady(playback, PAUSED);
@@ -1116,7 +1118,8 @@ public class ReadAloudController
         createOverviewPlaybackForUrl(new GURL(url), 0, mEntrypoint)
                 .then(
                         playback -> {
-                            assumeNonNull(mPlayerCoordinator).playbackReady(playback, PLAYING);
+                            assumeNonNull(mPlayerCoordinator)
+                                    .playbackReady(playback, getInitialPlaybackState(playback));
                             playback.play();
                             ReadAloudMetrics.recordPlaybackStarted();
                         },
@@ -1196,13 +1199,19 @@ public class ReadAloudController
                                 return;
                             }
                             mDateModified = dateModified;
-                            assumeNonNull(mPlayerCoordinator).playbackReady(playback, PLAYING);
+                            assumeNonNull(mPlayerCoordinator)
+                                    .playbackReady(playback, getInitialPlaybackState(playback));
                             playback.play();
                             ReadAloudMetrics.recordPlaybackStarted();
                         },
                         exception -> {
                             Log.d(TAG, "playTab failed: %s", assumeNonNull(exception).getMessage());
                         });
+    }
+
+    private static @PlaybackListener.State int getInitialPlaybackState(Playback playback) {
+        // Native starts asynchronously; keep loading screen until ready.
+        return playback instanceof NativePlayback ? PLAYBACK_CREATION : PLAYING;
     }
 
     private Promise<Long> extractDateModified(Tab tab) {

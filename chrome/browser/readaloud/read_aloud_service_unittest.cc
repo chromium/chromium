@@ -322,6 +322,10 @@ class ReadAloudServiceTest : public ChromeRenderViewHostTestHarness {
                 OnMetadataAvailable(expected_title, expected_publisher))
         .Times(1);
     EXPECT_CALL(*delegate,
+                OnPlaybackStateChanged(
+                    ReadAloudService::PlaybackState::kPlaybackCreation))
+        .Times(1);
+    EXPECT_CALL(*delegate,
                 OnPlaybackProgressUpdated(/*elapsed=*/base::Seconds(0),
                                           /*duration=*/base::Seconds(0)))
         .Times(1);
@@ -468,6 +472,10 @@ TEST_F(ReadAloudServiceTest,
       OnMetadataAvailable("Example Article - Example News", "example.com"))
       .Times(1);
   EXPECT_CALL(*delegate_ptr,
+              OnPlaybackStateChanged(
+                  ReadAloudService::PlaybackState::kPlaybackCreation))
+      .Times(1);
+  EXPECT_CALL(*delegate_ptr,
               OnPlaybackProgressUpdated(base::Seconds(0), base::Seconds(0)))
       .Times(1);
 
@@ -487,6 +495,10 @@ TEST_F(ReadAloudServiceTest,
   SetFakeController(std::make_unique<FakePlaybackController>());
 
   EXPECT_CALL(*delegate_ptr, OnMetadataAvailable("", "")).Times(1);
+  EXPECT_CALL(*delegate_ptr,
+              OnPlaybackStateChanged(
+                  ReadAloudService::PlaybackState::kPlaybackCreation))
+      .Times(1);
   EXPECT_CALL(*delegate_ptr,
               OnPlaybackProgressUpdated(/*elapsed=*/base::Seconds(0),
                                         /*duration=*/base::Seconds(0)))

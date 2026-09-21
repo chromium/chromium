@@ -41,7 +41,7 @@ class NativePlayback implements Playback {
     private final @Nullable WebContents mWebContents;
     private final PlaybackListener.PlaybackData mPlaybackData;
     private final ReadAloudNativeBridge mNativeBridge;
-    private @PlaybackListener.State int mState = PlaybackListener.State.BUFFERING;
+    private @PlaybackListener.State int mState = PlaybackListener.State.PLAYBACK_CREATION;
     private long mAbsolutePositionNanos;
     private long mTotalDurationNanos;
 

@@ -66,6 +66,7 @@ void ReadAloudService::Play(content::WebContents* new_web_contents) {
     utility_player_->Play();
   }
 
+  // TODO(b/562011435): Defer notifying kPlaying until playback is ready.
   // Notify the UI/client delegate if the playback state transitioned.
   PlaybackState current_state = GetCurrentPlaybackState();
   if (current_state != previous_state && delegate_) {
@@ -312,6 +313,7 @@ void ReadAloudService::Initialize(content::WebContents* new_web_contents) {
 
   ProvideInitialMetadata();
   if (delegate_) {
+    delegate_->OnPlaybackStateChanged(PlaybackState::kPlaybackCreation);
     delegate_->OnPlaybackProgressUpdated(base::Seconds(0), current_duration_);
   }
 

@@ -506,6 +506,9 @@ public class ReadAloudControllerUnitTest {
 
         // Verify Java playback hooks are bypassed when native playback is active.
         verify(mPlaybackHooks, never()).createPlayback(any(), any());
+        verify(mPlayerCoordinator)
+                .playbackReady(
+                        any(NativePlayback.class), eq(PlaybackListener.State.PLAYBACK_CREATION));
         verify(mNativeBridgeNatives).play(eq(12345L), eq(mWebContents));
     }
 
