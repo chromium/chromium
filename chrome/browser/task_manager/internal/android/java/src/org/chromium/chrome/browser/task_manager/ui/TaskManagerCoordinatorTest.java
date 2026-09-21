@@ -8,7 +8,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.ALL_COLUMN_KEYS;
@@ -26,13 +28,13 @@ import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.
 
 import android.app.Activity;
 import android.graphics.drawable.ColorDrawable;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.os.SystemClock;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
-import androidx.appcompat.widget.PopupMenu;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.junit.Before;
@@ -52,10 +54,14 @@ import org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.RowType
 import org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.SortDescriptor;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
+import org.chromium.ui.listmenu.ListItemType;
+import org.chromium.ui.listmenu.ListMenuCheckItemProperties;
+import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.ViewRectProvider;
 
 import java.util.List;
 
@@ -190,23 +196,42 @@ public class TaskManagerCoordinatorTest {
     }
 
     @Test
-    public void testOnCreateContextMenu() {
+    public void testContextMenuModelList() {
         mHeaderModel.set(COLUMNS, new PropertyKey[] {TASK_NAME, CPU});
 
-        // Get a real Menu instance.
-        Menu menu = new PopupMenu(mActivity, null).getMenu();
+        ModelList menuItems = mCoordinator.buildContextMenuModelList();
 
-        mCoordinator.onCreateContextMenuImpl(menu);
+        assertEquals(ALL_COLUMN_KEYS.length, menuItems.size());
 
-        assertEquals(ALL_COLUMN_KEYS.length, menu.size());
+        ListItem taskNameItem = menuItems.get(List.of(ALL_COLUMN_KEYS).indexOf(TASK_NAME));
+        assertEquals(ListItemType.MENU_ITEM_WITH_CHECKBOX, taskNameItem.type);
+        assertNotEquals("", taskNameItem.model.get(ListMenuItemProperties.TITLE));
+        assertTrue(taskNameItem.model.get(ListMenuCheckItemProperties.CHECKED));
 
-        MenuItem taskNameItem = menu.getItem(List.of(ALL_COLUMN_KEYS).indexOf(TASK_NAME));
-        assertNotEquals("", taskNameItem.getTitle());
-        assertTrue(taskNameItem.isCheckable());
-        assertTrue(taskNameItem.isChecked());
+        ListItem processIdItem = menuItems.get(List.of(ALL_COLUMN_KEYS).indexOf(PROCESS_ID));
+        assertEquals(ListItemType.MENU_ITEM_WITH_CHECKBOX, processIdItem.type);
+        assertFalse(processIdItem.model.get(ListMenuCheckItemProperties.CHECKED));
+    }
 
-        MenuItem processIdItem = menu.getItem(List.of(ALL_COLUMN_KEYS).indexOf(PROCESS_ID));
-        assertFalse(processIdItem.isChecked());
+    @Test
+    public void testShowContextMenu() {
+        assertNull(mCoordinator.getContextMenuPopupForTesting());
+
+        mCoordinator.showContextMenu(mHeaderView, new ViewRectProvider(mHeaderView));
+        assertNotNull(mCoordinator.getContextMenuPopupForTesting());
+        assertTrue(mCoordinator.getContextMenuPopupForTesting().isShowing());
+
+        View contentView = mCoordinator.getContextMenuPopupForTesting().getContentView();
+        ListView listView = contentView.findViewById(org.chromium.ui.R.id.menu_list);
+        assertNotNull(listView);
+
+        doReturn(true).when(mMediator).toggleColumnFiltering(TASK_NAME);
+        View firstItemView = listView.getAdapter().getView(0, null, listView);
+        firstItemView.performClick();
+        verify(mMediator).toggleColumnFiltering(TASK_NAME);
+
+        mCoordinator.getContextMenuPopupForTesting().dismiss();
+        assertNull(mCoordinator.getContextMenuPopupForTesting());
     }
 
     @Test
@@ -249,5 +274,28 @@ public class TaskManagerCoordinatorTest {
         assertFalse(tabsChip.isSelected());
         assertFalse(browserChip.isSelected());
         assertTrue(allChip.isSelected());
+    }
+
+    @Test
+    public void testRightClickOnRecyclerViewShowsContextMenu() {
+        assertNull(mCoordinator.getContextMenuPopupForTesting());
+
+        long now = SystemClock.uptimeMillis();
+        MotionEvent rightClickDown =
+                MotionEvent.obtain(
+                        now,
+                        now,
+                        MotionEvent.ACTION_DOWN,
+                        /* x= */ 10f,
+                        /* y= */ 10f,
+                        /* metaState= */ 0);
+        rightClickDown.setButtonState(MotionEvent.BUTTON_SECONDARY);
+
+        mRecyclerView.dispatchTouchEvent(rightClickDown);
+
+        assertNotNull(mCoordinator.getContextMenuPopupForTesting());
+        assertTrue(mCoordinator.getContextMenuPopupForTesting().isShowing());
+
+        mCoordinator.getContextMenuPopupForTesting().dismiss();
     }
 }
