@@ -566,7 +566,7 @@ def GroupTests(json_config, max_per_job):
 
     # Put largest shards first to prevent long shards from being scheduled right
     # at the end.
-    ret.sort(key=lambda x: -len(x.methods_by_class))
+    ret.sort(key=lambda x: -sum(len(m) for m in x.methods_by_class.values()))
     return ret
 
 
