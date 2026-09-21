@@ -596,6 +596,25 @@ TEST_F(DownloadListTableViewControllerTest, TestViewLifecycleMethods) {
   EXPECT_GT(controller_.tableView.numberOfSections, 0);
 }
 
+/// Tests that disconnecting the controller stops periodic updates, clears
+/// delegates/handlers, and prevents `viewWillAppear:` from resuming updates.
+TEST_F(DownloadListTableViewControllerTest, TestDisconnect) {
+  NSArray<DownloadListItem*>* items = CreateTestDownloadItems();
+  [controller_ setDownloadListItems:items];
+
+  [controller_ disconnect];
+
+  EXPECT_FALSE(controller_.mutator);
+  EXPECT_FALSE(controller_.actionDelegate);
+  EXPECT_FALSE(controller_.downloadListHandler);
+  EXPECT_FALSE(controller_.downloadRecordHandler);
+
+  // Simulate view will appear after disconnect - should not resume updates.
+  [controller_ viewWillAppear:NO];
+  [controller_ performPeriodicUpdate];
+  EXPECT_EQ(0, controller_.tableView.numberOfSections);
+}
+
 #pragma mark - Swipe-to-Delete Tests
 
 /// Tests swipe actions configuration for items with delete action.

@@ -31,6 +31,10 @@
 /// Delegate for handling download actions.
 @property(nonatomic, weak) id<DownloadListActionDelegate> actionDelegate;
 
+/// Disconnects the view controller, stopping periodic timer updates and
+/// clearing delegates.
+- (void)disconnect;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_DOWNLOAD_UI_DOWNLOAD_LIST_DOWNLOAD_LIST_TABLE_VIEW_CONTROLLER_H_

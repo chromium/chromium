@@ -99,6 +99,7 @@
                            completion:nil];
   }
 
+  [_downloadListViewController disconnect];
   _downloadListViewController = nil;
   _navigationController = nil;
   _shareActivityController = nil;

@@ -94,10 +94,21 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
   NSArray<DownloadListItem*>* _cachedDownloadItems;
   // Repeating timer for periodic UI updates.
   base::RepeatingTimer _updateTimer;
+  // YES after disconnect has been called.
+  BOOL _disconnected;
   // Height of the on-screen keyboard overlapping `self.view`. Used to keep
   // the empty-state illustration vertically centered within the visible
   // (un-occluded) area while the search keyboard is up.
   CGFloat _keyboardOverlap;
+}
+
+- (void)disconnect {
+  _disconnected = YES;
+  [self stopPeriodicUpdates];
+  self.mutator = nil;
+  self.actionDelegate = nil;
+  self.downloadListHandler = nil;
+  self.downloadRecordHandler = nil;
 }
 
 - (void)viewDidLoad {
@@ -293,6 +304,9 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
 
 /// Starts the periodic update timer.
 - (void)startPeriodicUpdates {
+  if (_disconnected) {
+    return;
+  }
   [self stopPeriodicUpdates];
 
   // Reset update counter

@@ -300,3 +300,48 @@ TEST_F(DownloadListCoordinatorTest, OpenFileWithDownloadRecordFileNotExists) {
   // Verify all mock expectations were met.
   [mockSceneCommands verify];
 }
+
+using DownloadListCoordinatorLifecycleTest = PlatformTest;
+
+// Tests that stopping the coordinator disconnects the download list view
+// controller so a late `viewWillAppear:` after `WebTaskEnvironment` teardown
+// does not restart periodic updates and crash.
+TEST_F(DownloadListCoordinatorLifecycleTest,
+       StopBeforePresentationTransitionFlushes) {
+  base::test::ScopedFeatureList feature_list(kDownloadList);
+  ScopedKeyWindow scoped_key_window;
+  UIViewController* base_view_controller = [[UIViewController alloc] init];
+  [scoped_key_window.Get() setRootViewController:base_view_controller];
+
+  UIViewController* download_list_view_controller = nil;
+  {
+    web::WebTaskEnvironment task_environment;
+    std::unique_ptr<TestProfileIOS> profile = TestProfileIOS::Builder().Build();
+    std::unique_ptr<TestBrowser> browser =
+        std::make_unique<TestBrowser>(profile.get());
+
+    DownloadListCoordinator* coordinator = [[DownloadListCoordinator alloc]
+        initWithBaseViewController:base_view_controller
+                           browser:browser.get()];
+    CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
+    MockDownloadListCommandsHandler* handler =
+        [[MockDownloadListCommandsHandler alloc] init];
+    handler.downloadListCoordinator = coordinator;
+    [dispatcher startDispatchingToTarget:handler
+                             forProtocol:@protocol(DownloadListCommands)];
+
+    [coordinator start];
+
+    UINavigationController* navigation_controller =
+        (UINavigationController*)base_view_controller.presentedViewController;
+    download_list_view_controller = navigation_controller.topViewController;
+    ASSERT_TRUE(download_list_view_controller);
+    [download_list_view_controller loadViewIfNeeded];
+
+    [dispatcher stopDispatchingForProtocol:@protocol(DownloadListCommands)];
+    [coordinator stop];
+    task_environment.RunUntilIdle();
+  }
+
+  [download_list_view_controller viewWillAppear:NO];
+}
