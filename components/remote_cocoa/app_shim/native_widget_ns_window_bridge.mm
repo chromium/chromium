@@ -612,6 +612,10 @@ void NativeWidgetNSWindowBridge::InitWindow(
              name:NSApplicationDidHideNotification
            object:nil];
 
+  // TODO(crbug.com/448692747): Remove this observer once
+  // `kThemeChangeOptimization` is enabled by default, as
+  // `NSSystemColorsDidChangeNotification` is handled centrally by
+  // `OsSettingsProviderMac`.
   [[NSNotificationCenter defaultCenter]
       addObserver:window_delegate_
          selector:@selector(onSystemColorsChanged:)

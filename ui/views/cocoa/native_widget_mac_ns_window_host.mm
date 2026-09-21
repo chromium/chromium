@@ -1198,6 +1198,7 @@ void NativeWidgetMacNSWindowHost::OnSpaceActivationChanged(
 void NativeWidgetMacNSWindowHost::OnWindowNativeThemeChanged() {
   if (base::FeatureList::IsEnabled(::features::kThemeChangeOptimization)) {
     if (Widget* widget = GetWidget()) {
+      widget->ResetLastColorProviderKey();
       widget->ScheduleThemeChanged();
     }
   } else {

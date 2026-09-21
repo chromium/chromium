@@ -15,7 +15,8 @@ namespace ui {
 class COMPONENT_EXPORT(NATIVE_THEME) OsSettingsProviderMac
     : public OsSettingsProvider {
  public:
-  OsSettingsProviderMac();
+  explicit OsSettingsProviderMac(
+      PriorityLevel priority_level = PriorityLevel::kProduction);
   OsSettingsProviderMac(const OsSettingsProviderMac&) = delete;
   OsSettingsProviderMac& operator=(const OsSettingsProviderMac&) = delete;
   ~OsSettingsProviderMac() override;

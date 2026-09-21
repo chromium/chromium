@@ -48,8 +48,10 @@
 #include "ui/events/test/event_generator.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
 #include "ui/gfx/native_ui_types.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_observer.h"
+#include "ui/native_theme/os_settings_provider_mac.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/cocoa/native_widget_mac_event_monitor.h"
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
@@ -3310,11 +3312,21 @@ class TestNativeThemeObserver : public ui::NativeThemeObserver {
 TEST_F(NativeWidgetMacTest, OnWindowNativeThemeChangedScopesToTargetWidget) {
   base::test::ScopedFeatureList feature_list(
       ::features::kThemeChangeOptimization);
+  ui::MockOsSettingsProvider os_settings_provider;
 
   Widget* widget1 = CreateTopLevelPlatformWidget();
   widget1->Show();
+  widget1->ThemeChanged();
   Widget* widget2 = CreateTopLevelPlatformWidget();
   widget2->Show();
+  widget2->ThemeChanged();
+
+  {
+    base::RunLoop run_loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
 
   ThemeChangeCountingWidgetObserver observer1(widget1);
   ThemeChangeCountingWidgetObserver observer2(widget2);
@@ -3322,14 +3334,55 @@ TEST_F(NativeWidgetMacTest, OnWindowNativeThemeChangedScopesToTargetWidget) {
       ui::NativeTheme::GetInstanceForNativeUi());
 
   BridgedNativeWidgetTestApi(widget1).OnSystemColorsChanged();
+  {
+    base::RunLoop run_loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
 
-  // Widget2 and process-wide NativeTheme should NOT have received
-  // notifications.
+  // Widget1 should have received a theme change, while Widget2 and process-wide
+  // NativeTheme should NOT have received notifications.
+  EXPECT_EQ(1, observer1.theme_changed_count());
   EXPECT_EQ(0, observer2.theme_changed_count());
   EXPECT_EQ(0, global_theme_observer.theme_updated_count());
 
+  // Subsequent OnSystemColorsChanged() should also trigger a theme change on
+  // widget1 even after last_color_provider_key_ is populated.
+  BridgedNativeWidgetTestApi(widget1).OnSystemColorsChanged();
+  {
+    base::RunLoop run_loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+  EXPECT_EQ(2, observer1.theme_changed_count());
+
   widget1->CloseNow();
   widget2->CloseNow();
+}
+
+TEST_F(NativeWidgetMacTest,
+       SystemColorsNotificationUpdatesGlobalThemeWhenEnabled) {
+  base::test::ScopedFeatureList feature_list(
+      ::features::kThemeChangeOptimization);
+  {
+    ui::OsSettingsProviderMac os_settings_provider(
+        ui::OsSettingsProvider::PriorityLevel::kTesting);
+
+    auto* const native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+    TestNativeThemeObserver global_theme_observer(native_theme);
+    const size_t initial_version = native_theme->system_color_version();
+
+    [[NSNotificationCenter defaultCenter]
+        postNotificationName:NSSystemColorsDidChangeNotification
+                      object:nil];
+
+    EXPECT_GT(global_theme_observer.theme_updated_count(), 0);
+    EXPECT_GT(native_theme->system_color_version(), initial_version);
+  }
+  // Restore default test settings on NativeTheme for subsequent tests.
+  ui::MockOsSettingsProvider reset_settings_provider;
 }
 
 TEST_F(NativeWidgetMacTest,
