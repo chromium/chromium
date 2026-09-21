@@ -77,7 +77,7 @@ class ServiceTestHelper {
                                   std::move(audio_thread_context_)));
   }
 
-  mojom::AudioService& service() { return *service_remote_.get(); }
+  mojom::AudioService& service() { return *service_remote_; }
 
  private:
   const raw_ptr<media::AudioManager> audio_manager_;

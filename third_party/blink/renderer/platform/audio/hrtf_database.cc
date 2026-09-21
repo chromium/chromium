@@ -77,7 +77,7 @@ HRTFDatabase::HRTFDatabase(float sample_rate)
     std::unique_ptr<HRTFElevation> hrtf_elevation =
         HRTFElevation::CreateForSubject(IDR_AUDIO_SPATIALIZATION_COMPOSITE,
                                         elevation, sample_rate);
-    DCHECK(hrtf_elevation.get());
+    DCHECK(hrtf_elevation);
 
     elevations_[elevation_index] = std::move(hrtf_elevation);
     elevation_index += kInterpolationFactor;
@@ -98,7 +98,7 @@ HRTFDatabase::HRTFDatabase(float sample_rate)
             static_cast<float>(jj) / static_cast<float>(kInterpolationFactor);
         elevations_[i + jj] = HRTFElevation::CreateByInterpolatingSlices(
             elevations_[i].get(), elevations_[j].get(), x);
-        DCHECK(elevations_[i + jj].get());
+        DCHECK(elevations_[i + jj]);
       }
     }
   }

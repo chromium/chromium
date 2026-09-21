@@ -171,7 +171,7 @@ class MockMixingGraph : public MixingGraph {
 
   void SimulateOnMoreData() {
     auto audio_bus = media::AudioBus::Create(2, 480);
-    on_more_data_cb_.Run(*audio_bus.get(), base::TimeDelta());
+    on_more_data_cb_.Run(*audio_bus, base::TimeDelta());
   }
 
  private:

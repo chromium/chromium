@@ -237,7 +237,7 @@ TEST_F(AudioDeviceListenerMacTest, SampleRateChangeSubscription) {
       /*monitor_default_input=*/false, /*monitor_addition_removal=*/false,
       /*monitor_sources*/ false);
 
-  AudioDeviceListenerMacUnderTest& system_audio_mock = *device_listener.get();
+  AudioDeviceListenerMacUnderTest& system_audio_mock = *device_listener;
 
   EXPECT_CALL(system_audio_mock, GetAllAudioDeviceIDs())
       .WillOnce(Return(std::vector<AudioObjectID>{1, 2, 3, 4}));
@@ -275,7 +275,7 @@ TEST_F(AudioDeviceListenerMacTest,
       /*monitor_default_input=*/false, /*monitor_addition_removal=*/false,
       /*monitor_sources*/ false);
 
-  AudioDeviceListenerMacUnderTest& system_audio_mock = *device_listener.get();
+  AudioDeviceListenerMacUnderTest& system_audio_mock = *device_listener;
 
   EXPECT_CALL(system_audio_mock, GetAllAudioDeviceIDs())
       .WillOnce(Return(std::vector<AudioObjectID>{1}))
@@ -327,7 +327,7 @@ TEST_F(AudioDeviceListenerMacTest,
       /*monitor_default_input=*/false, /*monitor_addition_removal=*/false,
       /*monitor_sources*/ false);
 
-  AudioDeviceListenerMacUnderTest& system_audio_mock = *device_listener.get();
+  AudioDeviceListenerMacUnderTest& system_audio_mock = *device_listener;
 
   EXPECT_CALL(system_audio_mock, GetAllAudioDeviceIDs())
       .WillOnce(Return(std::vector<AudioObjectID>{}))
@@ -393,7 +393,7 @@ TEST_F(AudioDeviceListenerMacTest,
       /*monitor_default_input=*/false, /*monitor_addition_removal=*/true,
       /*monitor_sources*/ true);
 
-  AudioDeviceListenerMacUnderTest& system_audio_mock = *device_listener.get();
+  AudioDeviceListenerMacUnderTest& system_audio_mock = *device_listener;
 
   EXPECT_CALL(system_audio_mock, GetAllAudioDeviceIDs())
       .WillOnce(Return(std::vector<AudioObjectID>{1}))
@@ -459,7 +459,7 @@ TEST_F(AudioDeviceListenerMacTest, SourceChangeNotifications) {
       /*monitor_default_input=*/false, /*monitor_addition_removal=*/true,
       /*monitor_sources*/ true);
 
-  AudioDeviceListenerMacUnderTest& system_audio_mock = *device_listener.get();
+  AudioDeviceListenerMacUnderTest& system_audio_mock = *device_listener;
 
   EXPECT_CALL(system_audio_mock, GetAllAudioDeviceIDs())
       .WillOnce(Return(std::vector<AudioObjectID>{1}))

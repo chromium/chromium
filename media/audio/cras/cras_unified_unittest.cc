@@ -81,7 +81,7 @@ class CrasUnifiedStreamTest : public testing::Test {
                                  AudioManager::LogCallback());
   }
 
-  MockAudioManagerCras& mock_manager() { return *(mock_manager_.get()); }
+  MockAudioManagerCras& mock_manager() { return *mock_manager_; }
 
   static const ChannelLayout kTestChannelLayout;
   static const int kTestSampleRate;

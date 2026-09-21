@@ -347,7 +347,7 @@ TEST_F(InputControllerTest, CreateAndCloseWithoutRecording) {
   EXPECT_CALL(event_handler_, OnCreated(_));
   CreateAudioController();
   task_environment_.RunUntilIdle();
-  ASSERT_TRUE(controller_.get());
+  ASSERT_TRUE(controller_);
 
   EXPECT_CALL(sync_writer_, Close());
   controller_->Close();
@@ -362,7 +362,7 @@ TEST_F(InputControllerTest, CreateAndCloseWithoutRecording) {
 TEST_F(SystemTimeInputControllerTest, CreateRecordAndClose) {
   EXPECT_CALL(event_handler_, OnCreated(_));
   CreateAudioController();
-  ASSERT_TRUE(controller_.get());
+  ASSERT_TRUE(controller_);
 
   base::HistogramTester histogram_tester;
   base::RunLoop loop;
@@ -400,7 +400,7 @@ TEST_F(InputControllerTestWithMockAudioManager, LoopbackMixinIsEngaged) {
 
   CreateAudioControllerWithMixin(
       media::AudioDeviceDescription::kLoopbackWithoutChromeId);
-  ASSERT_TRUE(controller_.get());
+  ASSERT_TRUE(controller_);
 
   EXPECT_CALL(mixin_verifier_, Start());
   controller_->Record();
@@ -430,7 +430,7 @@ TEST_F(InputControllerTestWithMockAudioManager, PropagatesGlitchInfo) {
   auto audio_bus = media::AudioBus::Create(params_);
 
   CreateAudioController();
-  ASSERT_TRUE(controller_.get());
+  ASSERT_TRUE(controller_);
   controller_->Record();
 
   ASSERT_TRUE(mock_stream.captured_callback_);
@@ -460,7 +460,7 @@ TEST_F(InputControllerTestWithMockAudioManager, LogsStatsInDestructor) {
   auto audio_bus = media::AudioBus::Create(params_);
 
   CreateAudioController();
-  ASSERT_TRUE(controller_.get());
+  ASSERT_TRUE(controller_);
   controller_->Record();
 
   ASSERT_TRUE(mock_stream.captured_callback_);
@@ -487,7 +487,7 @@ TEST_F(InputControllerTestWithMockAudioManager, LogsStatsInDestructor) {
 TEST_F(InputControllerTest, RecordTwice) {
   EXPECT_CALL(event_handler_, OnCreated(_));
   CreateAudioController();
-  ASSERT_TRUE(controller_.get());
+  ASSERT_TRUE(controller_);
 
   controller_->Record();
   controller_->Record();
@@ -499,7 +499,7 @@ TEST_F(InputControllerTest, RecordTwice) {
 TEST_F(InputControllerTest, CloseTwice) {
   EXPECT_CALL(event_handler_, OnCreated(_));
   CreateAudioController();
-  ASSERT_TRUE(controller_.get());
+  ASSERT_TRUE(controller_);
 
   controller_->Record();
 
@@ -516,7 +516,7 @@ TEST_F(InputControllerTest, TestOnmutedCallbackInitiallyUnmuted) {
 
   media::FakeAudioInputStream::SetGlobalMutedState(false);
   CreateAudioController();
-  ASSERT_TRUE(controller_.get());
+  ASSERT_TRUE(controller_);
   task_environment_.FastForwardBy(kOnMutePollInterval);
 
   testing::Mock::VerifyAndClearExpectations(&event_handler_);
@@ -538,7 +538,7 @@ TEST_F(InputControllerTest, TestOnmutedCallbackInitiallyMuted) {
 
   media::FakeAudioInputStream::SetGlobalMutedState(true);
   CreateAudioController();
-  ASSERT_TRUE(controller_.get());
+  ASSERT_TRUE(controller_);
   task_environment_.FastForwardBy(kOnMutePollInterval);
 
   testing::Mock::VerifyAndClearExpectations(&event_handler_);
@@ -731,7 +731,7 @@ TEST_F(InputControllerTestWithReferenceSignalProvider,
 
   CreateAudioController();
 
-  ASSERT_TRUE(controller_.get());
+  ASSERT_TRUE(controller_);
 
   base::RunLoop loop;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
@@ -756,7 +756,7 @@ TEST_F(InputControllerTestWithReferenceSignalProvider,
 
   CreateAudioController();
 
-  ASSERT_TRUE(controller_.get());
+  ASSERT_TRUE(controller_);
 
   base::RunLoop loop;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
@@ -781,7 +781,7 @@ TEST_F(InputControllerTestWithReferenceSignalProvider,
 
   CreateAudioController();
 
-  ASSERT_TRUE(controller_.get());
+  ASSERT_TRUE(controller_);
 
   EXPECT_TRUE(helper_->IsUsingProcessingThread());
 
@@ -800,7 +800,7 @@ TEST_F(
   SetupProcessingConfig(AudioProcessingType::kWithoutPlayoutReference);
   CreateAudioController();
 
-  ASSERT_TRUE(controller_.get());
+  ASSERT_TRUE(controller_);
 
   controller_->Record();
   controller_->SetOutputDeviceForAec(kOutputDeviceId);
@@ -830,7 +830,7 @@ TEST_F(InputControllerTestWithReferenceSignalProvider,
 
   CreateAudioController();
 
-  ASSERT_TRUE(controller_.get());
+  ASSERT_TRUE(controller_);
 
   controller_->Record();
   controller_->SetOutputDeviceForAec(kOutputDeviceId);
@@ -856,7 +856,7 @@ TEST_F(InputControllerTestWithReferenceSignalProvider,
   SetupProcessingConfig(AudioProcessingType::kWithPlayoutReference);
   CreateAudioController();
 
-  ASSERT_TRUE(controller_.get());
+  ASSERT_TRUE(controller_);
 
   controller_->SetOutputDeviceForAec(kOutputDeviceId);
   controller_->Record();
@@ -880,7 +880,7 @@ TEST_F(InputControllerTestWithReferenceSignalProvider, FifoSize) {
   SetupProcessingConfig(AudioProcessingType::kWithPlayoutReference);
   CreateAudioController();
 
-  ASSERT_TRUE(controller_.get());
+  ASSERT_TRUE(controller_);
 
   controller_->SetOutputDeviceForAec(kOutputDeviceId);
   controller_->Record();
@@ -914,7 +914,7 @@ TEST_F(InputControllerTestWithReferenceSignalProvider, ChangeOutputForAec) {
   SetupProcessingConfig(AudioProcessingType::kWithPlayoutReference);
   CreateAudioController();
 
-  ASSERT_TRUE(controller_.get());
+  ASSERT_TRUE(controller_);
 
   controller_->SetOutputDeviceForAec(kOutputDeviceId);
   controller_->Record();
@@ -947,7 +947,7 @@ TEST_F(SystemTimeInputControllerTestWithReferenceSignalProvider,
   helper_->AttachOnProcessedCallback(
       base::BindLambdaForTesting(verify_data_processed));
 
-  ASSERT_TRUE(controller_.get());
+  ASSERT_TRUE(controller_);
 
   base::RunLoop loop;
 
@@ -990,7 +990,7 @@ TEST_F(InputControllerTestWithReferenceSignalProvider, ReferenceStreamError) {
   SetupProcessingConfig(AudioProcessingType::kWithPlayoutReference);
   CreateAudioController();
 
-  ASSERT_TRUE(controller_.get());
+  ASSERT_TRUE(controller_);
 
   controller_->SetOutputDeviceForAec(kOutputDeviceId);
   controller_->Record();
@@ -1040,7 +1040,7 @@ TEST_P(ParameterizedInputControllerUmaDelayTest, CreateRecordAndClose) {
   helper_->AttachOnProcessedCallback(
       base::BindLambdaForTesting(verify_data_processed));
 
-  ASSERT_TRUE(controller_.get());
+  ASSERT_TRUE(controller_);
 
   base::HistogramTester histogram_tester;
   base::RunLoop loop;
@@ -1111,7 +1111,7 @@ void InputControllerTestWithReferenceSignalProvider::TestReferenceOpenError(
   SetupProcessingConfig(AudioProcessingType::kWithPlayoutReference);
   CreateAudioController();
 
-  ASSERT_TRUE(controller_.get());
+  ASSERT_TRUE(controller_);
 
   controller_->SetOutputDeviceForAec(kOutputDeviceId);
 
@@ -1166,7 +1166,7 @@ TEST_F(InputControllerTestWithReferenceSignalProvider,
   // the AudioProcessingConfig as null.
   CreateAudioController();
 
-  ASSERT_TRUE(controller_.get());
+  ASSERT_TRUE(controller_);
   controller_->Record();
 
   // We are not doing echo cancellation, so we are not using the fifo.
@@ -1181,7 +1181,7 @@ TEST_F(SystemTimeInputControllerTestWithReferenceSignalProvider,
   SetupProcessingConfig(AudioProcessingType::kWithPlayoutReference);
   EXPECT_CALL(event_handler_, OnCreated(_));
   CreateAudioController();
-  ASSERT_TRUE(controller_.get());
+  ASSERT_TRUE(controller_);
   EXPECT_FALSE(helper_->HasVoiceIsolation());
 
   base::RunLoop loop;
@@ -1203,7 +1203,7 @@ TEST_F(SystemTimeInputControllerTestWithReferenceSignalProvider,
   EXPECT_CALL(event_handler_, OnCreated(_));
 
   CreateAudioController();
-  ASSERT_TRUE(controller_.get());
+  ASSERT_TRUE(controller_);
   EXPECT_TRUE(helper_->HasVoiceIsolation());
 
   base::RunLoop loop;
@@ -1226,7 +1226,7 @@ TEST_F(SystemTimeInputControllerTestWithReferenceSignalProvider,
   EXPECT_CALL(event_handler_, OnError(InputController::STREAM_CREATE_ERROR));
 
   CreateAudioController();
-  EXPECT_TRUE(controller_.get());
+  EXPECT_TRUE(controller_);
   controller_->Close();
 }
 #endif  // BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)

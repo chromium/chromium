@@ -231,7 +231,7 @@ int FileSource::OnMoreData(base::TimeDelta /* delay */,
   if (load_failed_)
     return 0;
 
-  DCHECK(wav_audio_handler_.get());
+  DCHECK(wav_audio_handler_);
 
   if (wav_audio_handler_->AtEnd()) {
     if (looping_)

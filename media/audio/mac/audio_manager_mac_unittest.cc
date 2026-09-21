@@ -50,7 +50,7 @@ class AudioManagerMacTest : public ::testing::Test {
 // Input: DeviceID: 1, uniqueID: "F3-A2-14-A9-1D-F8:input"
 // Output: DeviceID: 2, uniqueID: "F3-A2-14-A9-1D-F8:output"
 TEST_F(AudioManagerMacTest, SameGroupIdForBluetoothInputAndOutputDevice) {
-  AudioManagerMacUnderTest& audio_manager_mock = *audio_manager_.get();
+  AudioManagerMacUnderTest& audio_manager_mock = *audio_manager_;
   EXPECT_CALL(audio_manager_mock, GetAllAudioDeviceIDs())
       .WillRepeatedly(Return(std::vector<AudioObjectID>{1, 2}));
   // DeviceID: 1
@@ -72,7 +72,7 @@ TEST_F(AudioManagerMacTest, SameGroupIdForBluetoothInputAndOutputDevice) {
 
 // This creates a test which mocks 2 related built-in audio devices.
 TEST_F(AudioManagerMacTest, SameGroupIdForNonBluetoothInputAndOutputDevice) {
-  AudioManagerMacUnderTest& audio_manager_mock = *audio_manager_.get();
+  AudioManagerMacUnderTest& audio_manager_mock = *audio_manager_;
   // DeviceID: 1
   EXPECT_CALL(audio_manager_mock, GetDeviceTransportType(/*device_id=*/1))
       .WillRepeatedly(Return(kAudioDeviceTransportTypeBuiltIn));
@@ -90,7 +90,7 @@ TEST_F(AudioManagerMacTest, SameGroupIdForNonBluetoothInputAndOutputDevice) {
 // Output: DeviceID: 2, uniqueID: "F3-A2-14-A9-1D-F8:output"
 TEST_F(AudioManagerMacTest,
        DifferentGroupIdForDifferentBluetoothInputAndOutputDevice) {
-  AudioManagerMacUnderTest& audio_manager_mock = *audio_manager_.get();
+  AudioManagerMacUnderTest& audio_manager_mock = *audio_manager_;
   EXPECT_CALL(audio_manager_mock, GetAllAudioDeviceIDs())
       .WillRepeatedly(Return(std::vector<AudioObjectID>{1, 2}));
   // DeviceID: 1
@@ -116,7 +116,7 @@ TEST_F(AudioManagerMacTest,
 // Input: DeviceID: 2, uniqueID: "default_input_device"
 // Output: DeviceID: 3, uniqueID: "inbuilt_output_device"
 TEST_F(AudioManagerMacTest, DifferentGroupIdForDifferentInputAndOutputDevices) {
-  AudioManagerMacUnderTest& audio_manager_mock = *audio_manager_.get();
+  AudioManagerMacUnderTest& audio_manager_mock = *audio_manager_;
   EXPECT_CALL(audio_manager_mock, GetAllAudioDeviceIDs())
       .WillRepeatedly(Return(std::vector<AudioObjectID>{1, 2, 3}));
   // DeviceID: 1

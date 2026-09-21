@@ -124,8 +124,8 @@ class CrasInputStreamTest : public testing::Test {
         params, mock_manager_.get(), AudioDeviceDescription::kDefaultDeviceId,
         AudioManager::LogCallback());
 
-    EXPECT_CALL(*mock_manager_.get(), RegisterSystemAecDumpSource(_));
-    EXPECT_CALL(*mock_manager_.get(), DeregisterSystemAecDumpSource(_));
+    EXPECT_CALL(*mock_manager_, RegisterSystemAecDumpSource(_));
+    EXPECT_CALL(*mock_manager_, DeregisterSystemAecDumpSource(_));
 
     EXPECT_EQ(test_stream->Open(), AudioInputStream::OpenOutcome::kSuccess);
 
@@ -241,8 +241,8 @@ TEST_F(CrasInputStreamTest, RestartedStreamKeepsCapturing) {
   CrasInputStream* test_stream = CreateStream(ChannelLayoutConfig::Mono());
   MockAudioInputCallback mock_callback;
 
-  EXPECT_CALL(*mock_manager_.get(), RegisterSystemAecDumpSource(_)).Times(3);
-  EXPECT_CALL(*mock_manager_.get(), DeregisterSystemAecDumpSource(_)).Times(3);
+  EXPECT_CALL(*mock_manager_, RegisterSystemAecDumpSource(_)).Times(3);
+  EXPECT_CALL(*mock_manager_, DeregisterSystemAecDumpSource(_)).Times(3);
 
   ASSERT_EQ(test_stream->Open(), AudioInputStream::OpenOutcome::kSuccess);
 

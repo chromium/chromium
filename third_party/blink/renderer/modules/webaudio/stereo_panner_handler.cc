@@ -57,7 +57,7 @@ StereoPannerHandler::~StereoPannerHandler() {
 void StereoPannerHandler::Process(uint32_t frames_to_process) {
   AudioBus* output_bus = Output(0).Bus();
 
-  if (!IsInitialized() || !Input(0).IsConnected() || !stereo_panner_.get()) {
+  if (!IsInitialized() || !Input(0).IsConnected() || !stereo_panner_) {
     output_bus->Zero();
     return;
   }

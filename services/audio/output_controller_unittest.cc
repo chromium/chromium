@@ -160,7 +160,7 @@ class MockAudioOutputStream : public AudioOutputStream,
   }
 
   void Start(AudioOutputStream::AudioSourceCallback* cb) override {
-    EXPECT_EQ(nullptr, callback_.get());
+    EXPECT_EQ(nullptr, callback_);
     callback_ = cb;
     if (impl_) {
       impl_->Start(this);

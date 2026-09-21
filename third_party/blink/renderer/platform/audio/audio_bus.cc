@@ -801,7 +801,7 @@ scoped_refptr<AudioBus> AudioBus::GetDataResource(int resource_id,
       resource.operator scoped_refptr<SharedBuffer>().get());
   scoped_refptr<AudioBus> audio_bus = DecodeAudioFileData(flat_data);
 
-  if (!audio_bus.get()) {
+  if (!audio_bus) {
     return nullptr;
   }
 
@@ -819,7 +819,7 @@ scoped_refptr<AudioBus> AudioBus::CreateBusFromInMemoryAudioFile(
     bool mix_to_mono,
     float sample_rate) {
   scoped_refptr<AudioBus> audio_bus = DecodeAudioFileData(base::as_chars(data));
-  if (!audio_bus.get()) {
+  if (!audio_bus) {
     return nullptr;
   }
 

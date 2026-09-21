@@ -160,7 +160,7 @@ class MEDIA_EXPORT WASAPIAudioOutputStream
   // as command-line flag and AUDCLNT_SHAREMODE_SHARED otherwise (default).
   static AUDCLNT_SHAREMODE GetShareMode();
 
-  bool started() const { return render_thread_.get() != NULL; }
+  bool started() const { return render_thread_ != nullptr; }
 
   // Handles glitch detection, buffer underrun checks, recovery grouping,
   // and reporting glitch metrics to UMA and text logs.

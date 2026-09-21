@@ -210,7 +210,7 @@ OutputController::OutputController(
   DCHECK(audio_manager);
   DCHECK(handler_);
   DCHECK(sync_reader_);
-  DCHECK(task_runner_.get());
+  DCHECK(task_runner_);
 }
 
 OutputController::~OutputController() {

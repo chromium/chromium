@@ -127,7 +127,7 @@ RealtimeAudioWorkletThread::~RealtimeAudioWorkletThread() {
 
 WorkerBackingThread& RealtimeAudioWorkletThread::GetWorkerBackingThread() {
   if (worker_backing_thread_) {
-    return *worker_backing_thread_.get();
+    return *worker_backing_thread_;
   }
 
   auto* shared_thread_instance =

@@ -315,7 +315,7 @@ TEST_F(AudioManagerTest, EnumerateInputDevicesPulseaudio) {
   ABORT_AUDIO_TEST_IF_NOT(InputDevicesAvailable());
 
   CreateAudioManagerForTesting<AudioManagerPulse>();
-  if (audio_manager_.get()) {
+  if (audio_manager_) {
     AudioDeviceDescriptions device_descriptions;
     device_info_accessor_->GetAudioInputDeviceDescriptions(
         &device_descriptions);
@@ -329,7 +329,7 @@ TEST_F(AudioManagerTest, EnumerateOutputDevicesPulseaudio) {
   ABORT_AUDIO_TEST_IF_NOT(OutputDevicesAvailable());
 
   CreateAudioManagerForTesting<AudioManagerPulse>();
-  if (audio_manager_.get()) {
+  if (audio_manager_) {
     AudioDeviceDescriptions device_descriptions;
     device_info_accessor_->GetAudioOutputDeviceDescriptions(
         &device_descriptions);

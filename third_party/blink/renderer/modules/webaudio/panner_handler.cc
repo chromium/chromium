@@ -174,7 +174,7 @@ void PannerHandler::Process(uint32_t frames_to_process) {
 
   AudioBus* destination = Output(0).Bus();
 
-  if (!IsInitialized() || !panner_.get()) {
+  if (!IsInitialized() || !panner_) {
     destination->Zero();
     return;
   }
@@ -391,7 +391,7 @@ bool PannerHandler::SetPanningModel(Panner::PanningModel model) {
     listener_handler_->CreateAndLoadHRTFDatabaseLoader(Context()->sampleRate());
   }
 
-  if (!panner_.get() || model != panning_model_) {
+  if (!panner_ || model != panning_model_) {
     // We need the graph lock to secure the panner backend because
     // BaseAudioContext::Handle{Pre,Post}RenderTasks() from the audio thread
     // can touch it.
