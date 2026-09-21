@@ -364,6 +364,7 @@ Canvas2DResourceProvider::ProduceCanvasResource() {
 
   if (resource_) {
     CHECK(resource_->CreatesAcceleratedTransferableResources());
+    CHECK(resource_->ContextProviderWrapper());
   }
 
   return resource_;
@@ -438,7 +439,6 @@ void Canvas2DResourceProvider::EndWriteAccess() {
   }
 
   current_resource_has_write_access_ = false;
-  CHECK(resource()->ContextProviderWrapper());
 }
 
 scoped_refptr<StaticBitmapImage> Canvas2DResourceProvider::Snapshot(
