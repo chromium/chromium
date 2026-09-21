@@ -49,6 +49,9 @@ class ContextualTasksLocationBar : public LocationBarStub,
   ContextualTasksPermissionDashboard* permission_dashboard() {
     return permission_dashboard_.get();
   }
+  const ContextualTasksPermissionDashboard* permission_dashboard() const {
+    return permission_dashboard_.get();
+  }
 
   // LocationBar overrides:
   // Returns the side panel's active content page, i.e. the page that

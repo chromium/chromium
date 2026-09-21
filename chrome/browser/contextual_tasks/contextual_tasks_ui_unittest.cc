@@ -177,10 +177,13 @@ std::unique_ptr<content::MockNavigationHandle> CreateMockNavigationHandle(
 class FakeContextualTasksPermissionController
     : public ContextualTasksPermissionController {
  public:
-  FakeContextualTasksPermissionController() = default;
+  explicit FakeContextualTasksPermissionController(
+      content::WebContents* web_contents)
+      : ContextualTasksPermissionController(web_contents,
+                                            /*browser_window=*/nullptr) {}
   ~FakeContextualTasksPermissionController() override = default;
 
-  toolbar_ui_api::mojom::PermissionDashboardStatePtr GetState() override {
+  toolbar_ui_api::mojom::PermissionDashboardStatePtr GetState() const override {
     auto state = toolbar_ui_api::mojom::PermissionDashboardState::New();
     state->indicator_chip = toolbar_ui_api::mojom::PermissionChipState::New();
     state->request_chip = toolbar_ui_api::mojom::PermissionChipState::New();
@@ -1781,7 +1784,8 @@ TEST_F(ContextualTasksUiTest, ContextualTasksToolbarUIServiceBindTest) {
   }
 
   // Binding with an active controller succeeds.
-  FakeContextualTasksPermissionController fake_controller;
+  FakeContextualTasksPermissionController fake_controller(
+      embedded_web_contents_.get());
   controller.set_controller(&fake_controller);
 
   {

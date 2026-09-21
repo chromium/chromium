@@ -26,6 +26,7 @@
 #include "chrome/browser/contextual_tasks/contextual_search_session_finder.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_host.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_permission_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_interface.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
@@ -184,7 +185,13 @@ std::unique_ptr<content::WebContents> CreateWebContents(
   // active WebContents through extensions::TabHelper and dereferences it
   // without a null check, so attach it explicitly.
   extensions::TabHelper::CreateForWebContents(web_contents.get());
+
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
+  // Attach the `ContextualTasksPermissionController` directly to the
+  // `WebContents`.
+  contextual_tasks::ContextualTasksPermissionController::CreateForWebContents(
+      web_contents.get(), browser_window);
 
   return web_contents;
 }
@@ -517,6 +524,15 @@ void ContextualTasksSidePanelCoordinator::TransferWebContentsFromTab(
   }
 
   SetBrowserWindowInterface(web_contents.get(), browser_window_);
+
+  // Unlike `CreateWebContents()`, no `PermissionRequestManager` needs to be
+  // created here: this `WebContents` comes from a tab, so it already has one
+  // attached via `TabHelpers::AttachTabHelpers()`.
+
+  // Attach the `ContextualTasksPermissionController` directly to the
+  // `WebContents`.
+  contextual_tasks::ContextualTasksPermissionController::CreateForWebContents(
+      web_contents.get(), browser_window_);
   auto it = task_id_to_web_contents_cache_.find(task_id);
   if (it == task_id_to_web_contents_cache_.end()) {
     task_id_to_web_contents_cache_[task_id] =
