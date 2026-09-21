@@ -196,8 +196,6 @@ message EntitySpecifics {
     EmptySpecifics managed_user_allowlist = 306060 [deprecated = true];
     EmptySpecifics accessibility_annotation = 1588764 [deprecated = true];
     AutofillOfferSpecifics autofill_offer = 774329 [deprecated = true];
-    EmptySpecifics plus_address = 1267844 [deprecated = true];
-    EmptySpecifics plus_address_setting = 1303742 [deprecated = true];
     EmptySpecifics web_apk = 1117170 [deprecated = true];
     TypedUrlSpecifics typed_url = 40781 [deprecated = true];
   }
@@ -217,6 +215,10 @@ message EntitySpecifics {
   reserved "segmentation";
   reserved 1073150;
   reserved "power_bookmark";
+  reserved 1267844;
+  reserved "plus_address";
+  reserved 1303742;
+  reserved "plus_address_setting";
 }
 
 message EmptySpecifics {}
