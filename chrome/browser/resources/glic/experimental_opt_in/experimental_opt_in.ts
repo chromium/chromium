@@ -137,8 +137,6 @@ export class ExperimentalOptInApp {
         'contentload', () => this.transitionToWebview_());
     this.webview_.addEventListener(
         'loadstop', () => this.transitionToWebview_());
-    this.webview_.addEventListener(
-        'loadcommit', () => this.transitionToWebview_());
 
     this.webview_.addEventListener('loadstart', () => {
       this.hasError_ = false;
