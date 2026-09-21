@@ -476,13 +476,10 @@ std::optional<ExternalTexture> CreateExternalTexture(
     return {};
   }
 
-  gpu::SyncToken sync_token = lease->GetSyncToken();
-
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
       WebGPUMailboxTexture::FromCanvasResource(
           device->GetDawnControlClient(), device->GetHandle(),
-          wgpu::TextureUsage::TextureBinding, std::move(shared_image),
-          sync_token, std::move(lease));
+          wgpu::TextureUsage::TextureBinding, std::move(lease));
   if (!mailbox_texture) {
     return {};
   }

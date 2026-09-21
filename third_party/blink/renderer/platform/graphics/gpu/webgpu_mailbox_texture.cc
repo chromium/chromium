@@ -139,11 +139,8 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
     return nullptr;
   }
 
-  gpu::SyncToken sync_token = lease->GetSyncToken();
-
   return WebGPUMailboxTexture::FromCanvasResource(
-      dawn_control_client, device, usage, std::move(dest_shared_image),
-      sync_token, std::move(lease));
+      dawn_control_client, device, usage, std::move(lease));
 }
 
 // static
@@ -151,11 +148,11 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromCanvasResource(
     scoped_refptr<DawnControlClientHolder> dawn_control_client,
     const wgpu::Device& device,
     wgpu::TextureUsage usage,
-    scoped_refptr<gpu::ClientSharedImage> shared_image,
-    const gpu::SyncToken& sync_token,
     std::unique_ptr<WebGpuSharedImageLease> lease) {
-  CHECK(shared_image);
   CHECK(lease);
+  scoped_refptr<gpu::ClientSharedImage> shared_image = lease->GetSharedImage();
+  CHECK(shared_image);
+  gpu::SyncToken sync_token = lease->GetSyncToken();
 
   gfx::Size size = shared_image->size();
 
