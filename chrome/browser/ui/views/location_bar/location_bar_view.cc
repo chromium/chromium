@@ -1994,9 +1994,7 @@ void LocationBarView::ClearInPopupStateTransition() {
   // Since there is a 100ms delay, the omnibox_view never gets repainted.
   // Ensure the omnibox view repaints to reflect potential placeholder text
   // visibility changes.
-  if (omnibox_view_ &&
-      base::FeatureList::IsEnabled(
-          omnibox::kOmniboxAimDeferShowUntilVisualStateReady)) {
+  if (omnibox_view_ && omnibox::ShouldDeferAimShowUntilVisualStateReady()) {
     omnibox_view_->SchedulePaint();
   }
 }

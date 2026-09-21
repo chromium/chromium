@@ -110,8 +110,7 @@ bool ShouldShowPlaceholderText(LocationBar* location_bar,
     return true;
   }
 
-  if (base::FeatureList::IsEnabled(
-          omnibox::kOmniboxAimDeferShowUntilVisualStateReady)) {
+  if (omnibox::ShouldDeferAimShowUntilVisualStateReady()) {
     // Suppress the hint text while the AIM popup is displayed or in deferred
     // transition.
     OmniboxPopupState state = controller->popup_state_manager()->popup_state();

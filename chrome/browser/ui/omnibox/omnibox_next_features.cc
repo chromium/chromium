@@ -291,6 +291,26 @@ bool ShouldDrawFullPopupShadowInWebUI() {
   return base::FeatureList::IsEnabled(kOmniboxFullWebUIShadow);
 }
 
+bool ShouldDeferAimShowUntilVisualStateReady() {
+  return base::FeatureList::IsEnabled(
+      IsWebUIOmniboxFullPopupEnabled()
+          ? kOmniboxAimDeferShowUntilVisualStateReadyWithFullWebUI
+          : kOmniboxAimDeferShowUntilVisualStateReady);
+}
+
+bool ShouldApplyAimHeightWorkarounds() {
+  return base::FeatureList::IsEnabled(
+      IsWebUIOmniboxFullPopupEnabled()
+          ? kOmniboxAimHeightWorkaroundsWithFullWebUI
+          : kOmniboxAimHeightWorkarounds);
+}
+
+bool ShouldAimEvictOnHide() {
+  return base::FeatureList::IsEnabled(IsWebUIOmniboxFullPopupEnabled()
+                                          ? kOmniboxAimEvictOnHideWithFullWebUI
+                                          : kOmniboxAimEvictOnHide);
+}
+
 bool IsAimPopupEnabled(Profile* profile) {
   if (!profile) {
     return false;

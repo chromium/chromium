@@ -159,6 +159,13 @@ bool IsAimPopupFeatureEnabled();
 bool ShouldDrawAimShadowInWebUI();
 bool ShouldDrawFullPopupShadowInWebUI();
 
+// Enables the use of separate flags for pre/post Full WebUI Omnibox. There
+// are new flicker issues with AIM + Full WebUI and these functions will allow
+// us to control the fixes independently of if Full WebUI is enabled.
+bool ShouldDeferAimShowUntilVisualStateReady();
+bool ShouldApplyAimHeightWorkarounds();
+bool ShouldAimEvictOnHide();
+
 // Returns true if the AIM Popup feature is fully enabled for the given
 // `profile`. This is the correct function for external code to use, as it
 // checks both the base::Feature flag and all other requirements like user
