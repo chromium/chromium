@@ -589,7 +589,7 @@ public class SigninPromoDelegateTest {
     }
 
     @Test
-    public void testNtpPromo_seamlessFlow_accountOnDevice_secondaryButtonShowsSnackbar() {
+    public void testNtpPromo_seamlessFlow_accountOnDevice_accountPickerShowsSnackbar() {
         doReturn(true).when(mSigninManager).isSigninAllowed();
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         doReturn(TestAccounts.ACCOUNT1)
@@ -600,7 +600,7 @@ public class SigninPromoDelegateTest {
                 TestDisplayableProfileData.profileDataOf(TestAccounts.ACCOUNT1));
         assertTrue(mDelegate.canShowPromo());
 
-        BottomSheetSigninAndHistorySyncConfig config = mDelegate.getConfigForSecondaryButtonClick();
+        BottomSheetSigninAndHistorySyncConfig config = mDelegate.getConfigForAccountPickerClick();
 
         assertEquals(
                 WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET, config.withAccountSigninMode);

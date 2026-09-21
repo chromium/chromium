@@ -115,52 +115,6 @@ public class SigninPromoMediatorTest {
     }
 
     @Test
-    public void testSecondaryButtonHiddenByDelegate() {
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        doReturn(true).when(mSigninManager).didAccountsFetchSucceed();
-        doReturn(true).when(mPromoDelegate).shouldHideSecondaryButton();
-        doReturn(true).when(mPromoDelegate).canShowPromo();
-        mIdentityManager.setPrimaryAccount(TestAccounts.ACCOUNT1);
-        createSigninPromoMediator(mPromoDelegate);
-
-        boolean isSecondaryButtonHidden =
-                mMediator.getModel().get(SigninPromoProperties.SHOULD_HIDE_SECONDARY_BUTTON);
-        assertTrue(isSecondaryButtonHidden);
-    }
-
-    @Test
-    public void testSecondaryButtonHiddenByNullProfileData() {
-        doReturn(true).when(mPromoDelegate).canShowPromo();
-        doReturn(true).when(mSigninManager).didAccountsFetchSucceed();
-        createSigninPromoMediator(mPromoDelegate);
-
-        boolean isSecondaryButtonHidden =
-                mMediator.getModel().get(SigninPromoProperties.SHOULD_HIDE_SECONDARY_BUTTON);
-        assertTrue(isSecondaryButtonHidden);
-    }
-
-    @Test
-    public void testSecondaryButtonShown_visibleAccountFromIdentityManager() {
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        mIdentityManager.setPrimaryAccount(TestAccounts.ACCOUNT1);
-        createSigninPromoMediator(mPromoDelegate);
-
-        boolean isSecondaryButtonHidden =
-                mMediator.getModel().get(SigninPromoProperties.SHOULD_HIDE_SECONDARY_BUTTON);
-        assertFalse(isSecondaryButtonHidden);
-    }
-
-    @Test
-    public void testSecondaryButtonShown_visibleAccountFromAccountManager() {
-        mAccountManagerTestRule.addAccount(TestAccounts.TEST_ACCOUNT_NO_NAME);
-        createSigninPromoMediator(mPromoDelegate);
-
-        boolean isSecondaryButtonHidden =
-                mMediator.getModel().get(SigninPromoProperties.SHOULD_HIDE_SECONDARY_BUTTON);
-        assertFalse(isSecondaryButtonHidden);
-    }
-
-    @Test
     public void testDefaultAccountRemoved() {
         doReturn(true).when(mSigninManager).didAccountsFetchSucceed();
         doReturn(true).when(mPromoDelegate).canShowPromo();
@@ -260,13 +214,11 @@ public class SigninPromoMediatorTest {
         String newTitle = "newTitle";
         String newDescription = "newDescription";
         String newPrimaryButtonText = "newPrimaryButtonText";
-        String newSecondaryButtonText = "newSecondaryButtonText";
         doReturn(true).when(mPromoDelegate).refreshPromoState(any());
         doReturn(false).when(mPromoDelegate).canBeDismissedPermanently();
         doReturn(newTitle).when(mPromoDelegate).getTitle();
         doReturn(newDescription).when(mPromoDelegate).getDescription(any());
         doReturn(newPrimaryButtonText).when(mPromoDelegate).getTextForPrimaryButton(any());
-        doReturn(newSecondaryButtonText).when(mPromoDelegate).getTextForSecondaryButton();
         // Remove the default account to trigger a promo content refresh.
         mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
         RobolectricUtil.runAllBackgroundAndUi();
@@ -278,13 +230,10 @@ public class SigninPromoMediatorTest {
         String description = mMediator.getModel().get(SigninPromoProperties.DESCRIPTION_TEXT);
         String primaryButtonText =
                 mMediator.getModel().get(SigninPromoProperties.PRIMARY_BUTTON_TEXT);
-        String secondaryButtonText =
-                mMediator.getModel().get(SigninPromoProperties.SECONDARY_BUTTON_TEXT);
         assertTrue(shouldHideDismissButton);
         assertEquals(newTitle, title);
         assertEquals(newDescription, description);
         assertEquals(newPrimaryButtonText, primaryButtonText);
-        assertEquals(newSecondaryButtonText, secondaryButtonText);
     }
 
     @Test
@@ -312,7 +261,6 @@ public class SigninPromoMediatorTest {
         assertEquals(
                 mContext.getString(R.string.sync_promo_continue),
                 mMediator.getModel().get(SigninPromoProperties.PRIMARY_BUTTON_TEXT));
-        assertTrue(mMediator.getModel().get(SigninPromoProperties.SHOULD_HIDE_SECONDARY_BUTTON));
     }
 
     @Test
@@ -341,10 +289,6 @@ public class SigninPromoMediatorTest {
                 mContext.getString(
                         R.string.sync_promo_continue_as, TestAccounts.ACCOUNT1.getGivenName()),
                 mMediator.getModel().get(SigninPromoProperties.PRIMARY_BUTTON_TEXT));
-        assertEquals(
-                mContext.getString(R.string.signin_promo_choose_another_account),
-                mMediator.getModel().get(SigninPromoProperties.SECONDARY_BUTTON_TEXT));
-        assertFalse(mMediator.getModel().get(SigninPromoProperties.SHOULD_HIDE_SECONDARY_BUTTON));
     }
 
     @Test

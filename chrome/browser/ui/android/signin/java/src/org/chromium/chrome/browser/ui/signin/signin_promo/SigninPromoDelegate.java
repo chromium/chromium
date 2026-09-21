@@ -24,8 +24,6 @@ import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLaunche
 import org.chromium.chrome.browser.ui.signin.SigninSurveyController;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
-import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.SigninFeatures;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -108,17 +106,13 @@ public abstract class SigninPromoDelegate {
 
     /** Returns whether this entry point supports seamless sign-in. */
     boolean isSeamlessSigninAllowed() {
-        return SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN);
+        return true;
     }
 
     AccountPickerBottomSheetStrings getBottomSheetStrings() {
         return new AccountPickerBottomSheetStrings.Builder(
                         mContext.getString(R.string.signin_account_picker_bottom_sheet_title))
                 .build();
-    }
-
-    boolean shouldHideSecondaryButton() {
-        return false;
     }
 
     boolean canBeDismissedPermanently() {
@@ -144,10 +138,6 @@ public abstract class SigninPromoDelegate {
             }
         }
         return mContext.getString(R.string.sync_promo_continue);
-    }
-
-    String getTextForSecondaryButton() {
-        return mContext.getString(R.string.signin_promo_choose_another_account);
     }
 
     @HistorySyncConfig.OptInMode
@@ -195,22 +185,6 @@ public abstract class SigninPromoDelegate {
         }
     }
 
-    /**
-     * This secondary button handler enables a signed-out user with an account on the device to
-     * choose a different account for sign-in. It is typically hidden for promos shown to signed-in
-     * users.
-     */
-    void onSecondaryButtonClicked() {
-        assert !shouldHideSecondaryButton();
-
-        @Nullable Intent intent =
-                mLauncher.createBottomSheetSigninIntentOrShowError(
-                        mContext, mProfile, getConfigForSecondaryButtonClick(), getAccessPoint());
-        if (intent != null) {
-            mContext.startActivity(intent);
-        }
-    }
-
     void onPromoVisibilityChange() {
         mOnPromoVisibilityChange.run();
     }
@@ -222,19 +196,12 @@ public abstract class SigninPromoDelegate {
         return null;
     }
 
-    // TODO(https://crbug.com/474294917): Remove this.
     /** Returns true if the delegate should handle the primary button click. */
     boolean shouldOverridePrimaryButtonClick() {
-        return !SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN);
+        return false;
     }
 
-    // TODO(https://crbug.com/474294917): Remove this.
-    /** Returns true if the delegate should handle the secondary button click. */
-    boolean shouldOverrideSecondaryButtonClick() {
-        return !SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN);
-    }
-
-    /** Returns the configuration for the flow started by the secondary button. */
+    /** Returns the configuration for the flow started by the primary button. */
     BottomSheetSigninAndHistorySyncConfig getConfigForPrimaryButtonClick(
             @Nullable DisplayableProfileData visibleAccount) {
         return isSeamlessSigninAllowed() && visibleAccount != null
@@ -242,8 +209,8 @@ public abstract class SigninPromoDelegate {
                 : getConfigForCollapsedBottomSheet();
     }
 
-    /** Returns the configuration for the flow started by the secondary button. */
-    BottomSheetSigninAndHistorySyncConfig getConfigForSecondaryButtonClick() {
+    /** Returns the configuration for the flow started when the account picker is clicked. */
+    BottomSheetSigninAndHistorySyncConfig getConfigForAccountPickerClick() {
         return getConfigForExpandedBottomSheet(isSeamlessSigninAllowed());
     }
 

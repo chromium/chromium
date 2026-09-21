@@ -102,13 +102,11 @@ final class SigninPromoMediator
                 SigninPromoProperties.createModel(
                         /* profileData= */ visibleAccount,
                         /* onPrimaryButtonClicked= */ CallbackUtils.emptyRunnable(),
-                        /* onSecondaryButtonClicked= */ CallbackUtils.emptyRunnable(),
+                        /* onAccountPickerClicked= */ CallbackUtils.emptyRunnable(),
                         /* onDismissButtonClicked= */ CallbackUtils.emptyRunnable(),
                         /* titleString= */ "",
                         /* descriptionString= */ "",
                         /* primaryButtonString= */ "",
-                        /* secondaryButtonString= */ "",
-                        /* shouldSuppressSecondaryButton= */ false,
                         /* shouldHideDismissButton= */ false,
                         /* shouldShowAccountPicker= */ true,
                         /* shouldShowHeaderWithAvatar= */ false,
@@ -232,13 +230,9 @@ final class SigninPromoMediator
         }
     }
 
-    private void onSecondaryButtonClicked() {
+    private void onAccountPickerClicked() {
         recordEventHistogram(Event.CONTINUED);
-        if (mPromoDelegate.shouldOverrideSecondaryButtonClick()) {
-            mPromoDelegate.onSecondaryButtonClicked();
-        } else {
-            mMediatorDelegate.startSigninFlow(mPromoDelegate.getConfigForSecondaryButtonClick());
-        }
+        mMediatorDelegate.startSigninFlow(mPromoDelegate.getConfigForAccountPickerClick());
     }
 
     private void onDismissButtonClicked() {
@@ -261,13 +255,9 @@ final class SigninPromoMediator
     private void updateModel(@Nullable DisplayableProfileData profileData) {
         mModel.set(SigninPromoProperties.PROFILE_DATA, profileData);
         mModel.set(
-                SigninPromoProperties.SHOULD_HIDE_SECONDARY_BUTTON,
-                profileData == null || mPromoDelegate.shouldHideSecondaryButton());
-        mModel.set(
                 SigninPromoProperties.ON_PRIMARY_BUTTON_CLICKED,
                 _ -> onPrimaryButtonClicked(profileData));
-        mModel.set(
-                SigninPromoProperties.ON_SECONDARY_BUTTON_CLICKED, _ -> onSecondaryButtonClicked());
+        mModel.set(SigninPromoProperties.ON_ACCOUNT_PICKER_CLICKED, _ -> onAccountPickerClicked());
         mModel.set(SigninPromoProperties.ON_DISMISS_BUTTON_CLICKED, _ -> onDismissButtonClicked());
         mModel.set(SigninPromoProperties.TITLE_TEXT, mPromoDelegate.getTitle());
         mModel.set(
@@ -278,9 +268,6 @@ final class SigninPromoMediator
                 SigninPromoProperties.PRIMARY_BUTTON_TEXT,
                 mPromoDelegate.getTextForPrimaryButton(profileData));
         mModel.set(
-                SigninPromoProperties.SECONDARY_BUTTON_TEXT,
-                mPromoDelegate.getTextForSecondaryButton());
-        mModel.set(
                 SigninPromoProperties.SHOULD_HIDE_DISMISS_BUTTON,
                 !mPromoDelegate.canBeDismissedPermanently());
         mModel.set(
@@ -289,19 +276,16 @@ final class SigninPromoMediator
         mModel.set(
                 SigninPromoProperties.SHOULD_SHOW_HEADER_WITH_AVATAR,
                 mPromoDelegate.shouldDisplaySignedInLayout());
-        if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)) {
-            mModel.set(
-                    SigninPromoProperties.SHOULD_SHOW_LOADING_STATE,
-                    mPromoDelegate.shouldDisplayLoadingState());
-            mModel.set(
-                    SigninPromoProperties.SELECTED_ACCOUNT_VIEW_BACKGROUND,
-                    mPromoDelegate.getAccountPickerBackgroundColor());
-        }
+        mModel.set(
+                SigninPromoProperties.SHOULD_SHOW_LOADING_STATE,
+                mPromoDelegate.shouldDisplayLoadingState());
+        mModel.set(
+                SigninPromoProperties.SELECTED_ACCOUNT_VIEW_BACKGROUND,
+                mPromoDelegate.getAccountPickerBackgroundColor());
     }
 
     private void updateLoadingState() {
-        if (!SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
-                || !mPromoDelegate.canShowPromo()) {
+        if (!mPromoDelegate.canShowPromo()) {
             return;
         }
         DisplayableProfileData profileData = getVisibleAccount();

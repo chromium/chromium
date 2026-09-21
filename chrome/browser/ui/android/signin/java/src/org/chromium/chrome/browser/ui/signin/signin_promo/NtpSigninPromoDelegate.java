@@ -27,8 +27,6 @@ import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.SigninSurveyController;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
@@ -206,8 +204,7 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
     }
 
     private @PromoState int computePromoState(@Nullable DisplayableProfileData visibleAccount) {
-        if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
-                && isPromoSuppressed()) {
+        if (isPromoSuppressed()) {
             return PromoState.NONE;
         }
         IdentityManager identityManager =

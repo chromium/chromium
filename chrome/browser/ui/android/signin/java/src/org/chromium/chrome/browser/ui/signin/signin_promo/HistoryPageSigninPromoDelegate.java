@@ -132,11 +132,6 @@ public class HistoryPageSigninPromoDelegate extends SigninPromoDelegate {
     }
 
     @Override
-    boolean shouldHideSecondaryButton() {
-        return true;
-    }
-
-    @Override
     String getTextForPrimaryButton(@Nullable DisplayableProfileData profileData) {
         return mContext.getString(R.string.signin_continue);
     }

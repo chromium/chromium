@@ -138,19 +138,6 @@ public class BookmarkSigninPromoDelegate extends SigninPromoDelegate {
     }
 
     @Override
-    boolean shouldHideSecondaryButton() {
-        switch (mPromoState) {
-            case PromoState.SIGNIN:
-                return false;
-            case PromoState.ACCOUNT_SETTINGS:
-                return true;
-            case PromoState.NONE:
-            default:
-                throw new IllegalStateException("Forbidden promo type: " + mPromoState);
-        }
-    }
-
-    @Override
     String getTextForPrimaryButton(@Nullable DisplayableProfileData profileData) {
         switch (mPromoState) {
             case PromoState.SIGNIN:
@@ -202,7 +189,7 @@ public class BookmarkSigninPromoDelegate extends SigninPromoDelegate {
 
     @Override
     boolean shouldOverridePrimaryButtonClick() {
-        return !isSeamlessSigninAllowed() || mPromoState != PromoState.SIGNIN;
+        return mPromoState != PromoState.SIGNIN;
     }
 
     @Override

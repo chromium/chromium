@@ -25,8 +25,6 @@ import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLaunche
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
@@ -136,21 +134,10 @@ public class RecentTabsSigninPromoDelegate extends SigninPromoDelegate {
     }
 
     @Override
-    boolean shouldHideSecondaryButton() {
-        if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)) {
-            return mPromoState != PromoState.SIGNIN;
-        }
-        return true;
-    }
-
-    @Override
     String getTextForPrimaryButton(@Nullable DisplayableProfileData profileData) {
         switch (mPromoState) {
             case PromoState.SIGNIN:
-                if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)) {
-                    return super.getTextForPrimaryButton(profileData);
-                }
-                return mContext.getString(R.string.signin_promo_turn_on);
+                return super.getTextForPrimaryButton(profileData);
             case PromoState.HISTORY_SYNC:
                 return mContext.getString(R.string.signin_promo_turn_on);
             case PromoState.NONE:
@@ -182,18 +169,12 @@ public class RecentTabsSigninPromoDelegate extends SigninPromoDelegate {
 
     @Override
     String getHistorySyncOptInTitle() {
-        if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)) {
-            return mContext.getString(R.string.history_sync_recent_tabs_title);
-        }
-        return super.getHistorySyncOptInTitle();
+        return mContext.getString(R.string.history_sync_recent_tabs_title);
     }
 
     @Override
     String getHistorySyncOptInSubtitle() {
-        if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)) {
-            return mContext.getString(R.string.history_sync_recent_tabs_subtitle);
-        }
-        return super.getHistorySyncOptInSubtitle();
+        return mContext.getString(R.string.history_sync_recent_tabs_subtitle);
     }
 
     @Override

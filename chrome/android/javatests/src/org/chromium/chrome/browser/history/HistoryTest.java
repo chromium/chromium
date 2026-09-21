@@ -177,7 +177,7 @@ public class HistoryTest {
         // Verify that the promo is shown.
         waitForView(withId(R.id.signin_promo_view_container));
         // Click on the promo CTA.
-        expectView(withId(R.id.sync_promo_signin_button)).click();
+        expectView(withId(R.id.signin_promo_primary_button)).click();
 
         // Verify that the history sync screen is shown.
         waitForView(withId(R.id.history_sync_illustration));
@@ -217,7 +217,7 @@ public class HistoryTest {
         // Verify that the promo is shown.
         waitForView(withId(R.id.signin_promo_view_container));
         // Click on the promo CTA.
-        expectView(withId(R.id.sync_promo_signin_button)).click();
+        expectView(withId(R.id.signin_promo_primary_button)).click();
 
         // Verify that the history sync screen is shown.
         waitForView(withId(R.id.history_sync_illustration));

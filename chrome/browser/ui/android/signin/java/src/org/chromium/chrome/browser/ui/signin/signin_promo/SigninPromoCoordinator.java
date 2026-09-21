@@ -55,49 +55,16 @@ public class SigninPromoCoordinator
     private final Context mContext;
     private final SigninPromoDelegate mDelegate;
     private final SigninPromoMediator mMediator;
-    private @Nullable ImpressionTracker mImpressionTracker;
-    private @Nullable PropertyModelChangeProcessor mPropertyModelChangeProcessor;
 
     // TODO(https://crbug.com/469778109): Remove nullability after launching Seamless sign-in.
     protected @Nullable BottomSheetSigninAndHistorySyncCoordinator mSigninCoordinator;
+    private @Nullable ImpressionTracker mImpressionTracker;
+    private @Nullable PropertyModelChangeProcessor mPropertyModelChangeProcessor;
 
     /** Disables promo in tests. */
     public static void disablePromoForTesting() {
         sPromoDisabledForTesting = true;
         ResettersForTesting.register(() -> sPromoDisabledForTesting = false);
-    }
-
-    /**
-     * Creates an instance of the {@link SigninPromoCoordinator}.
-     *
-     * @param context The Android {@link Context}.
-     * @param profile A {@link Profile} object to access identity services. This must be the
-     *     original profile, not the incognito one.
-     * @param delegate A {@link SigninPromoDelegate} to customize the view.
-     */
-    // TODO(https://crbug.com/448227402): Remove the constructor below.
-    @Deprecated
-    public SigninPromoCoordinator(Context context, Profile profile, SigninPromoDelegate delegate) {
-        mContext = context;
-        mDelegate = delegate;
-        IdentityManager identityManager =
-                IdentityServicesProvider.get().getIdentityManager(profile);
-        ProfileDataCache profileDataCache =
-                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
-                        mContext, assertNonNull(identityManager));
-        SyncService syncService = SyncServiceFactory.getForProfile(profile);
-        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
-        AccountPreviewDataService accountPreviewDataService =
-                IdentityServicesProvider.get().getAccountPreviewDataService(profile);
-        mMediator =
-                new SigninPromoMediator(
-                        identityManager,
-                        assertNonNull(signinManager),
-                        accountPreviewDataService,
-                        syncService,
-                        profileDataCache,
-                        delegate,
-                        this);
     }
 
     /**
@@ -126,26 +93,45 @@ public class SigninPromoCoordinator
             SnackbarManager snackbarManager,
             DeviceLockActivityLauncher deviceLockActivityLauncher,
             SigninPromoDelegate delegate) {
-        this(activity, profile, delegate);
+        mContext = activity;
+        mDelegate = delegate;
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(profile);
+        ProfileDataCache profileDataCache =
+                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                        mContext, assertNonNull(identityManager));
+        SyncService syncService = SyncServiceFactory.getForProfile(profile);
+        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
+        AccountPreviewDataService accountPreviewDataService =
+                IdentityServicesProvider.get().getAccountPreviewDataService(profile);
+        mMediator =
+                new SigninPromoMediator(
+                        identityManager,
+                        assertNonNull(signinManager),
+                        accountPreviewDataService,
+                        syncService,
+                        profileDataCache,
+                        delegate,
+                        this);
 
-        if (!SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)) {
-            return;
+        if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)) {
+            OneshotSupplierImpl<Profile> profileSupplier = new OneshotSupplierImpl<>();
+            profileSupplier.set(profile);
+            mSigninCoordinator =
+                    launcher.createBottomSheetSigninCoordinatorAndObserveAddAccountResult(
+                            windowAndroid,
+                            activity,
+                            activityResultTracker,
+                            this,
+                            deviceLockActivityLauncher,
+                            profileSupplier,
+                            bottomSheetController,
+                            SupplierUtils.of(modalDialogManager),
+                            SupplierUtils.of(snackbarManager),
+                            mDelegate.getAccessPoint());
+        } else {
+            mSigninCoordinator = null;
         }
-
-        OneshotSupplierImpl<Profile> profileSupplier = new OneshotSupplierImpl<>();
-        profileSupplier.set(profile);
-        mSigninCoordinator =
-                launcher.createBottomSheetSigninCoordinatorAndObserveAddAccountResult(
-                        windowAndroid,
-                        activity,
-                        activityResultTracker,
-                        this,
-                        deviceLockActivityLauncher,
-                        profileSupplier,
-                        bottomSheetController,
-                        SupplierUtils.of(modalDialogManager),
-                        SupplierUtils.of(snackbarManager),
-                        mDelegate.getAccessPoint());
     }
 
     public void destroy() {
