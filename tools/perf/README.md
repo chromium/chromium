@@ -36,7 +36,9 @@ determining the internal state of the benchmark. For more information, see
 [Pinpoint](https://pinpoint-dot-chromeperf.appspot.com/) wraps run_benchmark and
 provides the ability to remotely run A/B benchmarks using any platform available
 in our lab. It will run a benchmark for as many iterations as needed to get a
-statistically significant result, then visualize it.
+statistically significant result, then visualize it. You can interact with
+Pinpoint via the web dashboard or via the [`pp`](#pinpoint--pp) / `pinpoint`
+command-line tool.
 
 If your're trying to debug a test or figure out how the infrastructure works,
 the easiest way is to set up the debugger in VSCode (guide
@@ -103,3 +105,23 @@ recordings from live websites, replay those to make sure they work, upload them
 to cloud storage, and finally send a CL to review with the new recordings.
 
 [wpr]: https://chromium.googlesource.com/webpagereplay/+/HEAD/README.md#running-on-android
+
+## `cb` / `crossbench`
+
+A helper script to run [Crossbench](../../third_party/crossbench) benchmarks and tools
+directly with the bundled vpython environment.
+
+```
+./cb <benchmark> [options]
+```
+
+## `pinpoint` / `pp`
+
+A helper script to interact with [Pinpoint](https://pinpoint-dot-chromeperf.appspot.com/)
+via Crossbench's `pinpoint` subcommand. Supports starting jobs, checking status,
+listing jobs, and downloading results.
+
+```
+./pp list
+./pp start <benchmark> [options]
+```
