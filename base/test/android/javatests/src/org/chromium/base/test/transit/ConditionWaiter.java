@@ -563,7 +563,11 @@ public class ConditionWaiter {
 
                 boolean stillNeedsWait = wait.update(isPreCheck);
                 ElementFactory generator = mConditionsGuardingFactories.get(wait.mCondition);
-                if (!stillNeedsWait && generator != null) {
+                // update() also returns false when the Condition times out, so check that it was
+                // actually fulfilled. Fabricating elements from a Condition that never produced a
+                // result makes the factory read a value-less Element, which throws and masks the
+                // real reason the Transition failed.
+                if (!stillNeedsWait && wait.isFulfilled() && generator != null) {
                     // Remove from the map so that next time we check this wait
                     // we dont rerun the factory.
                     conditionsToRemoveFromFactoryMap.add(wait.mCondition);
