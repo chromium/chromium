@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
+import android.content.pm.webapp.WebAppManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Icon;
 import android.os.Build;
@@ -20,7 +21,6 @@ import androidx.annotation.WorkerThread;
 
 import org.jni_zero.CalledByNative;
 
-import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -273,12 +273,12 @@ public class WebappsUtils {
 
     @CalledByNative
     private static boolean isWebAppServiceEnabled() {
-        var aconfigFlaggedApiDelegate = AconfigFlaggedApiDelegate.getInstance();
-        if (aconfigFlaggedApiDelegate == null) {
-            Log.e(TAG, "Failed to get AconfigFlaggedApiDelegate in isWebAppServiceEnabled()");
-            return false;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
+            Context context = ContextUtils.getApplicationContext();
+            WebAppManager webAppManager = context.getSystemService(WebAppManager.class);
+            return webAppManager != null;
         }
-        return aconfigFlaggedApiDelegate.isWebAppServiceEnabled();
+        return false;
     }
 
     public static void isTwaInstallerPackage(String title, Callback<Boolean> callback) {
@@ -286,14 +286,7 @@ public class WebappsUtils {
             callback.onResult(sIsTwaInstallerPackage == TriState.TRUE);
             return;
         }
-        var aconfigFlaggedApiDelegate = AconfigFlaggedApiDelegate.getInstance();
-        if (aconfigFlaggedApiDelegate == null) {
-            Log.e(TAG, "Failed to get AconfigFlaggedApiDelegate in isWebAppServiceEnabled()");
-            callback.onResult(false);
-            return;
-        }
-
-        aconfigFlaggedApiDelegate.isInstalled(title).then(callback);
+        TwaInstaller.isInstalled(title).then(callback);
     }
 
     /**

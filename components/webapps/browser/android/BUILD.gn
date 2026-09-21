@@ -42,7 +42,6 @@ android_library("java") {
     ":java_resources",
     ":webapps_jni_headers_java",
     "//base:base_java",
-    "//base:flagged_apis_java",
     "//base:tristate_java",
     "//build/android:build_java",
     "//components/browser_ui/bottomsheet/android:java",
@@ -220,4 +219,3 @@ robolectric_library("junit") {
     "//url:url_java",
   ]
 }
-

@@ -4,13 +4,21 @@
 
 package org.chromium.components.webapps;
 
+import android.content.Context;
+import android.content.pm.webapp.WebAppInstallRequest;
+import android.content.pm.webapp.WebAppManager;
+import android.content.pm.webapp.WebAppQueryRequest;
+import android.os.Build;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.AconfigFlaggedApiDelegate;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.Promise;
+import org.chromium.base.task.PostTask;
 import org.chromium.build.annotations.NullMarked;
 
 /**
@@ -43,16 +51,9 @@ class TwaInstaller {
             return false;
         }
 
-        var aconfigFlaggedApiDelegate = AconfigFlaggedApiDelegate.getInstance();
-        if (aconfigFlaggedApiDelegate == null) {
-            Log.e(TAG, "Failed to get AconfigFlaggedApiDelegate to call installTwa()");
-            onFlowCompleted(AddToHomescreenEvent.INSTALL_FAILED);
-            return false;
-        }
-
         // TODO(crbug.com/468477882): Consider if we should also report INSTALL_STARTED and UI_SHOWN
         // events at some appropriate timing.
-        if (!aconfigFlaggedApiDelegate.installTwa(
+        if (!installTwa(
                 title,
                 manifestUrl,
                 /* installSucceededCallback= */ () -> {
@@ -65,10 +66,67 @@ class TwaInstaller {
                     onFlowCompleted(AddToHomescreenEvent.UI_CANCELLED);
                 })) {
             Log.e(TAG, "Failed to call installTwa()");
+            onFlowCompleted(AddToHomescreenEvent.INSTALL_FAILED);
             return false;
         }
 
         return true;
+    }
+
+    private static boolean installTwa(
+            String title,
+            String manifestUrl,
+            Runnable installSucceededCallback,
+            Runnable installFailedCallback,
+            Runnable installCancelledCallback) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.CINNAMON_BUN) {
+            return false;
+        }
+        Context context = ContextUtils.getApplicationContext();
+        WebAppManager webAppManager = context.getSystemService(WebAppManager.class);
+        if (webAppManager == null) {
+            Log.e(TAG, "Failed to get WebAppManager");
+            return false;
+        }
+
+        var request = new WebAppInstallRequest.Builder(title, manifestUrl).build();
+        webAppManager.install(
+                request,
+                PostTask.getUiUserVisibleExecutor(),
+                (packageName, resultCode) -> {
+                    switch (resultCode) {
+                        case WebAppInstallRequest.RESULT_SUCCESS:
+                            installSucceededCallback.run();
+                            break;
+                        case WebAppInstallRequest.RESULT_CANCELLED_BY_USER:
+                            installCancelledCallback.run();
+                            break;
+                        default:
+                            installFailedCallback.run();
+                            break;
+                    }
+                });
+        return true;
+    }
+
+    static Promise<Boolean> isInstalled(String title) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.CINNAMON_BUN) {
+            return Promise.fulfilled(false);
+        }
+        Context context = ContextUtils.getApplicationContext();
+        WebAppManager webAppManager = context.getSystemService(WebAppManager.class);
+        if (webAppManager == null) {
+            return Promise.fulfilled(false);
+        }
+        Promise<Boolean> promise = new Promise<>();
+        var request = new WebAppQueryRequest(title);
+        webAppManager.query(
+                request,
+                PostTask.getUiUserVisibleExecutor(),
+                (resultCode) -> {
+                    promise.fulfill(resultCode == WebAppQueryRequest.RESULT_INSTALLED);
+                });
+        return promise;
     }
 
     private void onFlowCompleted(@AddToHomescreenEvent int event) {
