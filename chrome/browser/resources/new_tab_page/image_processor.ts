@@ -7,8 +7,6 @@ import {checkTransparency} from './transparency.js';
 
 export const SUPPORTED_FILE_TYPES = [
   'image/bmp',
-  'image/heic',
-  'image/heif',
   'image/jpeg',
   'image/png',
   'image/tiff',
@@ -24,8 +22,6 @@ export const SUPPORTED_C2PA_FILE_TYPES = [
   'image/jpeg',
   'image/png',
   'image/webp',
-  'image/heic',
-  'image/heif',
 ];
 
 export async function hasC2paMetadata(file: File): Promise<boolean> {
@@ -42,10 +38,8 @@ const MIME_TYPE_TO_EXTENSION_MAP: ReadonlyMap<MimeType, string> =
       ['image/png', '.png'],
       ['image/webp', '.webp'],
       ['image/bmp', '.bmp'],
-      ['image/heif', '.heif'],
       ['image/jpeg', '.jpg'],
       ['image/tiff', '.tif'],
-      ['image/heic', '.heic'],
       ['image/x-icon', '.ico'],
     ]);
 

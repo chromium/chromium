@@ -116,6 +116,40 @@ suite('LensFormTest', () => {
         assertEquals(null, lastSubmit);
       });
 
+  test(
+      'select unsupported heic file type should fail with file type error',
+      async () => {
+        // Arrange.
+        lensForm.addEventListener('loading', loadingHandler);
+        const file = new File([], 'file-name.heic', {type: 'image/heic'});
+
+        // Act.
+        dispatchFileInputChange(file);
+        await microtasksFinished();
+
+        // Assert.
+        assertFalse(fileFormSubmitted);
+        assertEquals(LensErrorType.FILE_TYPE, lastError);
+        assertEquals(null, lastSubmit);
+      });
+
+  test(
+      'select unsupported heif file type should fail with file type error',
+      async () => {
+        // Arrange.
+        lensForm.addEventListener('loading', loadingHandler);
+        const file = new File([], 'file-name.heif', {type: 'image/heif'});
+
+        // Act.
+        dispatchFileInputChange(file);
+        await microtasksFinished();
+
+        // Assert.
+        assertFalse(fileFormSubmitted);
+        assertEquals(LensErrorType.FILE_TYPE, lastError);
+        assertEquals(null, lastSubmit);
+      });
+
   test('submit file should set entrypoint parameter', async () => {
     // Arrange.
     const file = new File([], 'file-name.png', {type: 'image/png'});
