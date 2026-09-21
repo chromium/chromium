@@ -542,7 +542,7 @@ BASE_FEATURE(kReportingApiEnableVariationsHeaders,
 BASE_FEATURE(kNetworkContextDirectReceiver, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool ShouldBindNetworkContextDirectReceiver() {
-  return base::CurrentIOThread::IsSet() &&
+  return mojo::IsDirectReceiverSupported() && base::CurrentIOThread::IsSet() &&
          base::FeatureList::IsEnabled(features::kNetworkContextDirectReceiver);
 }
 

@@ -60,7 +60,7 @@ WidgetInputHandlerImpl::WidgetInputHandlerImpl(
       frame_widget_input_handler_(std::move(frame_widget_input_handler)) {
   // NOTE: DirectReceiver must be bound on an IO thread, so input handlers which
   // live on the main thread (e.g. for popups) cannot use direct IPC for now.
-  if (base::CurrentIOThread::IsSet()) {
+  if (base::CurrentIOThread::IsSet() && mojo::IsDirectReceiverSupported()) {
     receiver_.emplace<DirectReceiver>(mojo::DirectReceiverKey{}, this);
   } else {
     receiver_.emplace<Receiver>(this);

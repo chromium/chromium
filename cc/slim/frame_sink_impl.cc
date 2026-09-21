@@ -113,7 +113,9 @@ bool FrameSinkImpl::BindToClient(FrameSinkImplClient* client) {
   frame_sink_remote_.set_disconnect_handler(
       base::BindOnce(&FrameSinkImpl::OnContextLost, base::Unretained(this)));
 
-  client_receiver_.emplace<DirectReceiver>(mojo::DirectReceiverKey{}, this);
+  if (mojo::IsDirectReceiverSupported()) {
+    client_receiver_.emplace<DirectReceiver>(mojo::DirectReceiverKey{}, this);
+  }
 
   std::visit(
       absl::Overload{[&](Receiver& receiver) {

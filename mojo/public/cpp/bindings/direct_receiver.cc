@@ -125,6 +125,7 @@ thread_local ThreadLocalNode* g_thread_local_node;
 }  // namespace
 
 ThreadLocalNode::ThreadLocalNode(base::PassKey<ThreadLocalNode>) {
+  CHECK(IsDirectReceiverSupported());
   CHECK(!g_thread_local_node);
   g_thread_local_node = this;
 
@@ -362,6 +363,10 @@ void ThreadLocalNode::OnTransferredPortalAvailable() {
 
 namespace mojo {
 
+bool IsDirectReceiverSupported() {
+  return true;
+}
+
 bool IsAsyncIOSupported() {
   if (!base::CurrentThread::IsSet()) {
     return false;
@@ -375,7 +380,9 @@ bool IsAsyncIOSupported() {
 void CreateDirectReceiverTransportBeforeSandbox() {
   CHECK(!internal::g_use_precreated_transport);
   internal::g_use_precreated_transport = true;
-  internal::TransportPairStorage::Get().CreateTransportPairBeforeSandbox();
+  if (IsDirectReceiverSupported()) {
+    internal::TransportPairStorage::Get().CreateTransportPairBeforeSandbox();
+  }
 }
 
 #endif  // BUILDFLAG(IS_WIN)
