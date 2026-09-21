@@ -111,6 +111,7 @@ public class ServiceWorkerPaymentAppBridge {
     public static void onOpeningPaymentAppWindow(
             WebContents paymentRequestWebContents, WebContents paymentHandlerWebContents) {
         if (paymentRequestWebContents == null || paymentRequestWebContents.isDestroyed()) return;
+        if (paymentHandlerWebContents == null || paymentHandlerWebContents.isDestroyed()) return;
         ServiceWorkerPaymentAppBridgeJni.get()
                 .onOpeningPaymentAppWindow(
                         /* paymentRequestWebContents= */ paymentRequestWebContents,
@@ -166,11 +167,14 @@ public class ServiceWorkerPaymentAppBridge {
                 @JniType("Profile*") Profile profile,
                 GetServiceWorkerPaymentAppsInfoCallback callback);
 
-        void onClosingPaymentAppWindow(WebContents paymentRequestWebContents, int reason);
+        void onClosingPaymentAppWindow(
+                @JniType("content::WebContents*") WebContents paymentRequestWebContents,
+                int reason);
 
         void onOpeningPaymentAppWindow(
-                WebContents paymentRequestWebContents, WebContents paymentHandlerWebContents);
+                @JniType("content::WebContents*") WebContents paymentRequestWebContents,
+                @JniType("content::WebContents*") WebContents paymentHandlerWebContents);
 
-        long getSourceIdForPaymentAppFromScope(GURL swScope);
+        long getSourceIdForPaymentAppFromScope(@JniType("GURL") GURL swScope);
     }
 }

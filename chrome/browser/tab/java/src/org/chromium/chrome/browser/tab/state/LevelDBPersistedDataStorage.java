@@ -9,6 +9,7 @@ import androidx.annotation.MainThread;
 import com.google.errorprone.annotations.CheckReturnValue;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -164,18 +165,24 @@ public class LevelDBPersistedDataStorage implements PersistedDataStorage {
 
         void save(
                 long nativePersistedStateDB,
-                String key,
+                @JniType("std::string") String key,
                 byte @Nullable [] data,
                 @Nullable Runnable onComplete);
 
-        void load(long nativePersistedStateDB, String key, Callback<byte @Nullable []> callback);
+        void load(
+                long nativePersistedStateDB,
+                @JniType("std::string") String key,
+                Callback<byte @Nullable []> callback);
 
-        void delete(long nativePersistedStateDB, String key, @Nullable Runnable onComplete);
+        void delete(
+                long nativePersistedStateDB,
+                @JniType("std::string") String key,
+                @Nullable Runnable onComplete);
 
         void performMaintenance(
                 long nativePersistedStateDB,
-                String[] keysToKeep,
-                String dataId,
+                @JniType("std::vector<std::string>") String[] keysToKeep,
+                @JniType("std::string") String dataId,
                 @Nullable Runnable onComplete);
     }
 }

@@ -129,8 +129,7 @@ class PasswordSettingsUpdaterMetricsRecorder {
         return mSetting;
     }
 
-    public static String getStoreType(String account) {
-        assert account == null || !account.isEmpty();
-        return account == null ? LOCAL_STORE_BACKEND_TYPE : ACCOUNT_STORE_BACKEND_TYPE;
+    public static String getStoreType(@Nullable String account) {
+        return TextUtils.isEmpty(account) ? LOCAL_STORE_BACKEND_TYPE : ACCOUNT_STORE_BACKEND_TYPE;
     }
 }

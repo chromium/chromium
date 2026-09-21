@@ -23,7 +23,9 @@ import org.chromium.url.GURL;
 public class PasswordStoreBridge {
     @CalledByNative
     private static PasswordStoreCredential createPasswordStoreCredential(
-            GURL url, String username, String password) {
+            @JniType("GURL") GURL url,
+            @JniType("std::u16string") String username,
+            @JniType("std::u16string") String password) {
         return new PasswordStoreCredential(url, username, password);
     }
 
@@ -73,9 +75,9 @@ public class PasswordStoreBridge {
     private static void insertCredential(
             PasswordStoreCredential[] credentials,
             int index,
-            GURL url,
-            String username,
-            String password) {
+            @JniType("GURL") GURL url,
+            @JniType("std::u16string") String username,
+            @JniType("std::u16string") String password) {
         credentials[index] = new PasswordStoreCredential(url, username, password);
     }
 
@@ -194,12 +196,13 @@ public class PasswordStoreBridge {
         void insertPasswordCredentialInAccountStoreForTesting(
                 long nativePasswordStoreBridge, PasswordStoreCredential credential);
 
-        void blocklistForTesting(long nativePasswordStoreBridge, String url);
+        void blocklistForTesting(
+                long nativePasswordStoreBridge, @JniType("std::string") String url);
 
         boolean editPassword(
                 long nativePasswordStoreBridge,
                 PasswordStoreCredential credential,
-                String newPassword);
+                @JniType("std::u16string") String newPassword);
 
         int getPasswordStoreCredentialsCountForAllStores(long nativePasswordStoreBridge);
 

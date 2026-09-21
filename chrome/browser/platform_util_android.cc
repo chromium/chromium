@@ -16,10 +16,8 @@
 #include "ui/android/window_android.h"
 #include "url/gurl.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/util/jni_headers/PlatformUtil_jni.h"
-
-using base::android::ScopedJavaLocalRef;
 
 namespace platform_util {
 namespace internal {
@@ -42,7 +40,7 @@ void ShowItemInFolder(Profile* profile, const base::FilePath& full_path) {
   if (!contentUri) {
     return;
   }
-  Java_PlatformUtil_showItemInFolder(env, contentUri->value());
+  PlatformUtilJni::showItemInFolder(env, contentUri->value());
 }
 
 void OpenItem(Profile* profile,
@@ -54,9 +52,7 @@ void OpenItem(Profile* profile,
 
 void OpenExternal(const GURL& url) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> j_url =
-      base::android::ConvertUTF8ToJavaString(env, url.spec());
-  Java_PlatformUtil_launchExternalProtocol(env, j_url);
+  PlatformUtilJni::launchExternalProtocol(env, url.spec());
 }
 
 gfx::NativeWindow GetTopLevel(gfx::NativeView view) {

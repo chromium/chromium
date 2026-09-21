@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.password_manager;
 import com.google.android.gms.common.api.ApiException;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -40,7 +41,7 @@ class PasswordSyncControllerDelegateBridgeImpl {
 
     /** Notifies credential manager of the currently syncing account. */
     @CalledByNative
-    void notifyCredentialManagerWhenSyncing(String accountEmail) {
+    void notifyCredentialManagerWhenSyncing(@JniType("std::string") String accountEmail) {
         mPasswordSyncControllerDelegate.notifyCredentialManagerWhenSyncing(
                 accountEmail,
                 () -> {

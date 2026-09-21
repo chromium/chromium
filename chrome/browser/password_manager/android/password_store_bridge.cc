@@ -20,7 +20,7 @@
 #include "components/password_manager/core/browser/password_string.h"
 #include "url/android/gurl_android.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/password_manager/android/jni_headers/PasswordStoreBridge_jni.h"
 #include "chrome/browser/password_manager/android/jni_headers/PasswordStoreCredential_jni.h"
 
@@ -35,19 +35,18 @@ PasswordForm ConvertJavaObjectToPasswordForm(
     const base::android::JavaRef<jobject>& credential) {
   PasswordForm form;
 
-  form.url = url::GURLAndroid::ToNativeGURL(
-      env, Java_PasswordStoreCredential_getUrl(env, credential));
+  form.url = Java_PasswordStoreCredential_getUrl(env, credential);
   form.signon_realm = password_manager::GetSignonRealm(form.url);
-  form.username_value = base::android::ConvertJavaStringToUTF16(
-      env, Java_PasswordStoreCredential_getUsername(env, credential));
-  form.password_value = PasswordString(base::android::ConvertJavaStringToUTF16(
-      env, Java_PasswordStoreCredential_getPassword(env, credential)));
+  form.username_value =
+      Java_PasswordStoreCredential_getUsername(env, credential);
+  form.password_value =
+      PasswordString(Java_PasswordStoreCredential_getPassword(env, credential));
 
   return form;
 }
 
 // IN-TEST
-PasswordForm Blocklist(JNIEnv* env, std::string url) {
+PasswordForm Blocklist(const std::string& url) {
   PasswordForm form;
   form.url = GURL(url);
   form.signon_realm = password_manager::GetSignonRealm(form.url);
@@ -102,22 +101,18 @@ void PasswordStoreBridge::InsertPasswordCredentialInAccountStoreForTesting(
       ConvertJavaObjectToPasswordForm(env, credential)));
 }
 
-void PasswordStoreBridge::BlocklistForTesting(
-    JNIEnv* env,
-    const base::android::JavaRef<jstring>& jurl) {
-  profile_store_->AddLogin(password_manager::FromPasswordForm(
-      Blocklist(env, base::android::ConvertJavaStringToUTF8(env, jurl))));
+void PasswordStoreBridge::BlocklistForTesting(const std::string& url) {
+  profile_store_->AddLogin(password_manager::FromPasswordForm(Blocklist(url)));
 }
 
 bool PasswordStoreBridge::EditPassword(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& credential,
-    const base::android::JavaRef<jstring>& new_password) {
+    const std::u16string& new_password) {
   password_manager::CredentialUIEntry original_credential(
       ConvertJavaObjectToPasswordForm(env, credential));
   password_manager::CredentialUIEntry updated_credential = original_credential;
-  updated_credential.password =
-      base::android::ConvertJavaStringToUTF16(env, new_password);
+  updated_credential.password = new_password;
   return saved_passwords_presenter_.EditSavedCredentials(original_credential,
                                                          updated_credential) ==
          password_manager::SavedPasswordsPresenter::EditResult::kSuccess;
@@ -154,10 +149,8 @@ void PasswordStoreBridge::GetAllCredentials(
   for (size_t i = 0; i < credentials.size(); ++i) {
     const auto& credential = credentials[i];
     Java_PasswordStoreBridge_insertCredential(
-        env, java_credentials, i,
-        url::GURLAndroid::FromNativeGURL(env, credential.GetURL()),
-        base::android::ConvertUTF16ToJavaString(env, credential.username),
-        base::android::ConvertUTF16ToJavaString(env, credential.password));
+        env, java_credentials, i, credential.GetURL(), credential.username,
+        credential.password);
   }
 }
 
@@ -191,9 +184,7 @@ void PasswordStoreBridge::OnEdited(
   Java_PasswordStoreBridge_onEditCredential(
       env, java_bridge_,
       Java_PasswordStoreBridge_createPasswordStoreCredential(
-          env, url::GURLAndroid::FromNativeGURL(env, credential.GetURL()),
-          base::android::ConvertUTF16ToJavaString(env, credential.username),
-          base::android::ConvertUTF16ToJavaString(env, credential.password)));
+          env, credential.GetURL(), credential.username, credential.password));
 }
 
 DEFINE_JNI(PasswordStoreBridge)

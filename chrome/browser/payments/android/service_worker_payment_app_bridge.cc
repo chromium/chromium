@@ -7,7 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
@@ -32,20 +31,15 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/android/chrome_jni_headers/ServiceWorkerPaymentAppBridge_jni.h"
 
 namespace {
 
-using ::base::android::AppendJavaStringArrayToStringVector;
 using ::base::android::AttachCurrentThread;
-using ::base::android::ConvertJavaStringToUTF8;
-using ::base::android::ConvertUTF8ToJavaString;
 using ::base::android::JavaRef;
 using ::base::android::ScopedJavaGlobalRef;
 using ::base::android::ScopedJavaLocalRef;
-using ::base::android::ToJavaArrayOfStrings;
-using ::base::android::ToJavaIntArray;
 using ::payments::mojom::BasicCardNetwork;
 using ::payments::mojom::CanMakePaymentEventData;
 using ::payments::mojom::CanMakePaymentEventDataPtr;
@@ -115,11 +109,8 @@ static void JNI_ServiceWorkerPaymentAppBridge_GetServiceWorkerPaymentAppsInfo(
 }
 
 static void JNI_ServiceWorkerPaymentAppBridge_OnClosingPaymentAppWindow(
-    JNIEnv* env,
-    const JavaRef<jobject>& payment_request_jweb_contents,
+    content::WebContents* payment_request_web_contents,
     int32_t reason) {
-  content::WebContents* payment_request_web_contents =
-      content::WebContents::FromJavaWebContents(payment_request_jweb_contents);
   DCHECK(payment_request_web_contents);  // Verified in Java before invoking
                                          // this function.
   content::PaymentAppProvider::GetOrCreateForWebContents(
@@ -129,13 +120,8 @@ static void JNI_ServiceWorkerPaymentAppBridge_OnClosingPaymentAppWindow(
 }
 
 static void JNI_ServiceWorkerPaymentAppBridge_OnOpeningPaymentAppWindow(
-    JNIEnv* env,
-    const JavaRef<jobject>& payment_request_jweb_contents,
-    const JavaRef<jobject>& payment_handler_jweb_contents) {
-  content::WebContents* payment_request_web_contents =
-      content::WebContents::FromJavaWebContents(payment_request_jweb_contents);
-  content::WebContents* payment_handler_web_contents =
-      content::WebContents::FromJavaWebContents(payment_handler_jweb_contents);
+    content::WebContents* payment_request_web_contents,
+    content::WebContents* payment_handler_web_contents) {
   DCHECK(payment_request_web_contents);  // Verified in Java before invoking
                                          // this function.
   DCHECK(payment_handler_web_contents);  // Verified in Java before invoking
@@ -147,15 +133,14 @@ static void JNI_ServiceWorkerPaymentAppBridge_OnOpeningPaymentAppWindow(
 
 static int64_t
 JNI_ServiceWorkerPaymentAppBridge_GetSourceIdForPaymentAppFromScope(
-    JNIEnv* env,
-    const JavaRef<jobject>& jscope) {
+    const GURL& scope) {
   // At this point we know that the payment handler window is open for the
   // payment app associated with this scope. Since this getter is called inside
   // PaymentApp::getUkmSourceId() function which in turn gets called for the
   // invoked app inside
   // ChromePaymentRequestService::openPaymentHandlerWindowInternal.
   return content::PaymentAppProviderUtil::GetSourceIdForPaymentAppFromScope(
-      url::GURLAndroid::ToNativeGURL(env, jscope).DeprecatedGetOriginAsURL());
+      scope.DeprecatedGetOriginAsURL());
 }
 
 DEFINE_JNI(ServiceWorkerPaymentAppBridge)

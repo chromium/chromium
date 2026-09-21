@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.policy;
 import android.text.TextUtils;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.build.annotations.NullMarked;
@@ -32,7 +33,7 @@ public class CloudManagementAndroidConnection {
     /* Returns the client ID to be used in the DM token generation. Once generated, the ID is saved
      * to Shared Preferences so it can be reused. */
     @CalledByNative
-    public String getClientId() {
+    public @JniType("std::string") String getClientId() {
         // Return the ID saved in Shared Preferences, if available.
         String clientId = CloudManagementSharedPreferences.readClientId();
         if (!clientId.isEmpty()) {

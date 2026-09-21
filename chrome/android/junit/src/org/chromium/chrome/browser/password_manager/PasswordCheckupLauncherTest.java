@@ -52,7 +52,7 @@ import java.util.Set;
 @RunWith(BaseRobolectricTestRunner.class)
 public class PasswordCheckupLauncherTest {
     private static final AccountInfo TEST_ACCOUNT = TestAccounts.ACCOUNT1;
-    private static final String TEST_NO_EMAIL_ADDRESS = null;
+    private static final String TEST_NO_EMAIL_ADDRESS = "";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

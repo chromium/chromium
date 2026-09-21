@@ -36,7 +36,7 @@ public class PlatformUtil {
     }
 
     @CalledByNative
-    private static void launchExternalProtocol(String url) {
+    private static void launchExternalProtocol(@JniType("std::string") String url) {
         Context context = ContextUtils.getApplicationContext();
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

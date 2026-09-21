@@ -99,7 +99,7 @@ public class PasswordStoreAndroidBackendDispatcherBridgeTest {
         final int kTestTaskId = 42069;
 
         // Ensure the backend is called with a valid failure callback.
-        mBackendDispatcherBridge.getAllLogins(kTestTaskId, null);
+        mBackendDispatcherBridge.getAllLogins(kTestTaskId, "");
         ArgumentCaptor<Callback<Exception>> failureCallback = MockitoHelper.callbackCaptor();
         verify(mBackendMock).getAllLogins(eq(Optional.empty()), any(), failureCallback.capture());
         assertNotNull(failureCallback.getValue());
@@ -133,7 +133,7 @@ public class PasswordStoreAndroidBackendDispatcherBridgeTest {
         final int kTestTaskId = 42069;
 
         // Ensure the backend is called with a valid failure callback.
-        mBackendDispatcherBridge.getAllLogins(kTestTaskId, null);
+        mBackendDispatcherBridge.getAllLogins(kTestTaskId, "");
         ArgumentCaptor<Callback<Exception>> failureCallback = MockitoHelper.callbackCaptor();
         verify(mBackendMock).getAllLogins(eq(Optional.empty()), any(), failureCallback.capture());
         assertNotNull(failureCallback.getValue());
@@ -188,7 +188,7 @@ public class PasswordStoreAndroidBackendDispatcherBridgeTest {
         final int kTestTaskId = 42069;
 
         // Ensure the backend is called with a valid failure callback.
-        mBackendDispatcherBridge.getAllLogins(kTestTaskId, null);
+        mBackendDispatcherBridge.getAllLogins(kTestTaskId, "");
         ArgumentCaptor<Callback<Exception>> failureCallback = MockitoHelper.callbackCaptor();
         verify(mBackendMock).getAllLogins(eq(Optional.empty()), any(), failureCallback.capture());
         assertNotNull(failureCallback.getValue());
@@ -207,7 +207,7 @@ public class PasswordStoreAndroidBackendDispatcherBridgeTest {
         final int kTestTaskId = 1337;
 
         // Ensure the backend is called with a valid success callback.
-        mBackendDispatcherBridge.getAutofillableLogins(kTestTaskId, null);
+        mBackendDispatcherBridge.getAutofillableLogins(kTestTaskId, "");
         ArgumentCaptor<Callback<byte[]>> successCallback = MockitoHelper.callbackCaptor();
         verify(mBackendMock)
                 .getAutofillableLogins(eq(Optional.empty()), successCallback.capture(), any());
@@ -241,7 +241,7 @@ public class PasswordStoreAndroidBackendDispatcherBridgeTest {
 
         // Ensure the backend is called with a valid success callback.
         mBackendDispatcherBridge.getLoginsForSignonRealm(
-                kTestTaskId, "https://test_signon_realm.com", null);
+                kTestTaskId, "https://test_signon_realm.com", "");
         ArgumentCaptor<Callback<byte[]>> successCallback = MockitoHelper.callbackCaptor();
         verify(mBackendMock)
                 .getLoginsForSignonRealm(
@@ -320,7 +320,7 @@ public class PasswordStoreAndroidBackendDispatcherBridgeTest {
 
         // Ensure the backend is called with a valid success callback.
         byte[] pwdWithLocalData = sTestPwdWithLocalData.build().toByteArray();
-        mBackendDispatcherBridge.addLogin(kTestTaskId, pwdWithLocalData, null);
+        mBackendDispatcherBridge.addLogin(kTestTaskId, pwdWithLocalData, "");
         verify(mBackendMock)
                 .addLogin(any(), eq(Optional.empty()), mSuccessCallback.capture(), any());
         assertNotNull(mSuccessCallback.getValue());
@@ -352,7 +352,7 @@ public class PasswordStoreAndroidBackendDispatcherBridgeTest {
 
         // Ensure the backend is called with a valid success callback.
         byte[] pwdWithLocalData = sTestPwdWithLocalData.build().toByteArray();
-        mBackendDispatcherBridge.updateLogin(kTestTaskId, pwdWithLocalData, null);
+        mBackendDispatcherBridge.updateLogin(kTestTaskId, pwdWithLocalData, "");
         verify(mBackendMock)
                 .updateLogin(any(), eq(Optional.empty()), mSuccessCallback.capture(), any());
         assertNotNull(mSuccessCallback.getValue());
@@ -384,7 +384,7 @@ public class PasswordStoreAndroidBackendDispatcherBridgeTest {
 
         // Ensure the backend is called with a valid success callback.
         byte[] pwdSpecificsData = sTestProfile.build().toByteArray();
-        mBackendDispatcherBridge.removeLogin(kTestTaskId, pwdSpecificsData, null);
+        mBackendDispatcherBridge.removeLogin(kTestTaskId, pwdSpecificsData, "");
         verify(mBackendMock)
                 .removeLogin(any(), eq(Optional.empty()), mSuccessCallback.capture(), any());
         assertNotNull(mSuccessCallback.getValue());

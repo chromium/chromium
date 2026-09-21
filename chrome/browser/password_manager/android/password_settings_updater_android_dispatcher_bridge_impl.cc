@@ -11,27 +11,12 @@
 #include "chrome/browser/password_manager/android/password_settings_updater_android_dispatcher_bridge.h"
 #include "chrome/browser/password_manager/android/password_settings_updater_android_receiver_bridge.h"
 #include "components/password_manager/core/browser/password_manager_setting.h"
+#include "third_party/jni_zero/default_conversions.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/password_manager/android/jni_headers/PasswordSettingsUpdaterDispatcherBridge_jni.h"
 
 namespace password_manager {
-
-namespace {
-
-using SyncingAccount =
-    PasswordSettingsUpdaterAndroidDispatcherBridgeImpl::SyncingAccount;
-
-base::android::ScopedJavaLocalRef<jstring> GetJavaStringFromAccount(
-    std::optional<SyncingAccount> account) {
-  if (!account.has_value()) {
-    return nullptr;
-  }
-  return base::android::ConvertUTF8ToJavaString(
-      base::android::AttachCurrentThread(), *account.value());
-}
-
-}  // namespace
 
 // static
 std::unique_ptr<PasswordSettingsUpdaterAndroidDispatcherBridge>
@@ -62,7 +47,8 @@ void PasswordSettingsUpdaterAndroidDispatcherBridgeImpl::
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   Java_PasswordSettingsUpdaterDispatcherBridge_getSettingValue(
       base::android::AttachCurrentThread(), java_object_,
-      GetJavaStringFromAccount(account), static_cast<int>(setting));
+      account ? account->value() : std::string(),
+      static_cast<int32_t>(setting));
 }
 
 void PasswordSettingsUpdaterAndroidDispatcherBridgeImpl::
@@ -72,7 +58,8 @@ void PasswordSettingsUpdaterAndroidDispatcherBridgeImpl::
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   Java_PasswordSettingsUpdaterDispatcherBridge_setSettingValue(
       base::android::AttachCurrentThread(), java_object_,
-      GetJavaStringFromAccount(account), static_cast<int>(setting), value);
+      account ? account->value() : std::string(),
+      static_cast<int32_t>(setting), value);
 }
 
 }  // namespace password_manager

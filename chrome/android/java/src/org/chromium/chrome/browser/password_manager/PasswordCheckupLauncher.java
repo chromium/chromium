@@ -6,9 +6,9 @@ package org.chromium.chrome.browser.password_manager;
 import static org.chromium.build.NullUtil.assertNonNull;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
 import org.chromium.chrome.browser.settings.SettingsCustomTabLauncherImpl;
@@ -24,8 +24,7 @@ public class PasswordCheckupLauncher {
             Profile profile,
             WindowAndroid windowAndroid,
             @PasswordCheckReferrer int passwordCheckReferrer,
-            @Nullable String accountEmail) {
-        assert accountEmail == null || !accountEmail.isEmpty();
+            @JniType("std::string") String accountEmail) {
         if (windowAndroid.getContext().get() == null) return; // Window not available yet/anymore.
         assert profile != null;
 
@@ -38,7 +37,7 @@ public class PasswordCheckupLauncher {
                 windowAndroid.getContext().get(),
                 passwordCheckReferrer,
                 () -> assertNonNull(windowAndroid.getModalDialogManager()),
-                accountEmail,
+                accountEmail.isEmpty() ? null : accountEmail,
                 new SettingsCustomTabLauncherImpl());
     }
 

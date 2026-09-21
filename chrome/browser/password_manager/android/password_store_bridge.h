@@ -7,7 +7,8 @@
 
 #include <jni.h>
 
-#include "base/android/jni_string.h"
+#include <string>
+
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -39,13 +40,12 @@ class PasswordStoreBridge
       JNIEnv* env,
       const base::android::JavaRef<jobject>& credential);
 
-  void BlocklistForTesting(JNIEnv* env,
-                           const base::android::JavaRef<jstring>& jurl);
+  void BlocklistForTesting(const std::string& url);
 
   // Called by Java to edit a credential.
   bool EditPassword(JNIEnv* env,
                     const base::android::JavaRef<jobject>& credential,
-                    const base::android::JavaRef<jstring>& new_password);
+                    const std::u16string& new_password);
 
   // Called by Java to get the number of stored credentials for both profile and
   // account stores.

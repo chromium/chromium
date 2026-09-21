@@ -11,15 +11,13 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/android/chrome_jni_headers/Credential_jni.h"
 
 base::android::ScopedJavaLocalRef<jobject> CreateNativeCredential(
     JNIEnv* env,
     const password_manager::PasswordForm& password_form,
     int position) {
-  using base::android::ConvertUTF16ToJavaString;
-  using base::android::ConvertUTF8ToJavaString;
   // Origin URL should be shown for the PSL, affiliated and grouped matches.
   std::string origin_url =
       password_manager_util::GetMatchType(password_form) ==

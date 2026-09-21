@@ -19,7 +19,7 @@
 #include "components/password_manager/core/browser/sync/password_proto_utils.h"
 #include "components/sync/protocol/deletion_origin.pb.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/password_manager/android/jni_headers/PasswordStoreAndroidBackendDispatcherBridgeImpl_jni.h"
 
 namespace password_manager {
@@ -27,17 +27,6 @@ namespace password_manager {
 namespace {
 
 using JobId = PasswordStoreAndroidBackendDispatcherBridge::JobId;
-
-base::android::ScopedJavaLocalRef<jstring> GetJavaStringFromAccount(
-    std::string account) {
-  if (account.empty()) {
-    // TODO(crbug.com/41483781): Ensure java is consistent with C++ in
-    // interpreting the empty string instead of relying on nullptr.
-    return nullptr;
-  }
-  return base::android::ConvertUTF8ToJavaString(
-      base::android::AttachCurrentThread(), std::move(account));
-}
 
 }  // namespace
 
@@ -69,7 +58,7 @@ void PasswordStoreAndroidBackendDispatcherBridgeImpl::GetAllLogins(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   Java_PasswordStoreAndroidBackendDispatcherBridgeImpl_getAllLogins(
       base::android::AttachCurrentThread(), java_object_, job_id.value(),
-      GetJavaStringFromAccount(std::move(account)));
+      account);
 }
 
 void PasswordStoreAndroidBackendDispatcherBridgeImpl::
@@ -77,7 +66,7 @@ void PasswordStoreAndroidBackendDispatcherBridgeImpl::
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   Java_PasswordStoreAndroidBackendDispatcherBridgeImpl_getAllLoginsWithBrandingInfo(
       base::android::AttachCurrentThread(), java_object_, job_id.value(),
-      GetJavaStringFromAccount(std::move(account)));
+      account);
 }
 
 void PasswordStoreAndroidBackendDispatcherBridgeImpl::GetAutofillableLogins(
@@ -86,7 +75,7 @@ void PasswordStoreAndroidBackendDispatcherBridgeImpl::GetAutofillableLogins(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   Java_PasswordStoreAndroidBackendDispatcherBridgeImpl_getAutofillableLogins(
       base::android::AttachCurrentThread(), java_object_, job_id.value(),
-      GetJavaStringFromAccount(std::move(account)));
+      account);
 }
 
 void PasswordStoreAndroidBackendDispatcherBridgeImpl::GetLoginsForSignonRealm(
@@ -96,9 +85,7 @@ void PasswordStoreAndroidBackendDispatcherBridgeImpl::GetLoginsForSignonRealm(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   Java_PasswordStoreAndroidBackendDispatcherBridgeImpl_getLoginsForSignonRealm(
       base::android::AttachCurrentThread(), java_object_, job_id.value(),
-      base::android::ConvertUTF8ToJavaString(
-          base::android::AttachCurrentThread(), signon_realm),
-      GetJavaStringFromAccount(std::move(account)));
+      signon_realm, account);
 }
 
 void PasswordStoreAndroidBackendDispatcherBridgeImpl::
@@ -108,9 +95,7 @@ void PasswordStoreAndroidBackendDispatcherBridgeImpl::
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   Java_PasswordStoreAndroidBackendDispatcherBridgeImpl_getAffiliatedLoginsForSignonRealm(
       base::android::AttachCurrentThread(), java_object_, job_id.value(),
-      base::android::ConvertUTF8ToJavaString(
-          base::android::AttachCurrentThread(), signon_realm),
-      GetJavaStringFromAccount(std::move(account)));
+      signon_realm, account);
 }
 
 void PasswordStoreAndroidBackendDispatcherBridgeImpl::AddLogin(
@@ -124,7 +109,7 @@ void PasswordStoreAndroidBackendDispatcherBridgeImpl::AddLogin(
       base::android::AttachCurrentThread(), java_object_, job_id.value(),
       base::android::ToJavaByteArray(base::android::AttachCurrentThread(),
                                      data.SerializeAsString()),
-      GetJavaStringFromAccount(std::move(account)));
+      account);
 }
 
 void PasswordStoreAndroidBackendDispatcherBridgeImpl::UpdateLogin(
@@ -138,7 +123,7 @@ void PasswordStoreAndroidBackendDispatcherBridgeImpl::UpdateLogin(
       base::android::AttachCurrentThread(), java_object_, job_id.value(),
       base::android::ToJavaByteArray(base::android::AttachCurrentThread(),
                                      data.SerializeAsString()),
-      GetJavaStringFromAccount(std::move(account)));
+      account);
 }
 
 void PasswordStoreAndroidBackendDispatcherBridgeImpl::RemoveLogin(
@@ -152,7 +137,7 @@ void PasswordStoreAndroidBackendDispatcherBridgeImpl::RemoveLogin(
       base::android::AttachCurrentThread(), java_object_, job_id.value(),
       base::android::ToJavaByteArray(base::android::AttachCurrentThread(),
                                      data.SerializeAsString()),
-      GetJavaStringFromAccount(std::move(account)));
+      account);
 }
 
 void PasswordStoreAndroidBackendDispatcherBridgeImpl::RemoveLogin(
@@ -169,7 +154,7 @@ void PasswordStoreAndroidBackendDispatcherBridgeImpl::RemoveLogin(
                                      data.SerializeAsString()),
       base::android::ToJavaByteArray(base::android::AttachCurrentThread(),
                                      deletion_origin.SerializeAsString()),
-      GetJavaStringFromAccount(std::move(account)));
+      account);
 }
 
 }  // namespace password_manager

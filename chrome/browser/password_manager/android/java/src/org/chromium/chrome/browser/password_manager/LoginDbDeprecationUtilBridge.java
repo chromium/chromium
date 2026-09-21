@@ -51,6 +51,7 @@ public class LoginDbDeprecationUtilBridge {
 
     @NativeMethods
     public interface Natives {
+        @JniType("std::string")
         String getAutoExportCsvFilePath(@JniType("Profile*") Profile profile);
     }
 }

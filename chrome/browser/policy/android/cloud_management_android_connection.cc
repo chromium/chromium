@@ -7,7 +7,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/policy/android/util_jni/CloudManagementAndroidConnection_jni.h"
 
 namespace policy {
@@ -15,9 +15,8 @@ namespace android {
 
 std::string GetClientId() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  return base::android::ConvertJavaStringToUTF8(
-      env, Java_CloudManagementAndroidConnection_getClientId(
-               env, Java_CloudManagementAndroidConnection_getInstance(env)));
+  return CloudManagementAndroidConnectionJni::getInstance(env)->getClientId(
+      env);
 }
 
 }  // namespace android

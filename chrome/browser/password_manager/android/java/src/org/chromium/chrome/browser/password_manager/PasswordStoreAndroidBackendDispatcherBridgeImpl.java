@@ -8,6 +8,7 @@ import android.accounts.Account;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -45,7 +46,7 @@ class PasswordStoreAndroidBackendDispatcherBridgeImpl {
     }
 
     @CalledByNative
-    void getAllLogins(@JobId int jobId, String syncingAccount) {
+    void getAllLogins(@JobId int jobId, @JniType("std::string") String syncingAccount) {
         mBackend.getAllLogins(
                 getAccount(syncingAccount),
                 passwords -> mBackendReceiverBridge.onCompleteWithLogins(jobId, passwords),
@@ -53,7 +54,8 @@ class PasswordStoreAndroidBackendDispatcherBridgeImpl {
     }
 
     @CalledByNative
-    void getAllLoginsWithBrandingInfo(@JobId int jobId, String syncingAccount) {
+    void getAllLoginsWithBrandingInfo(
+            @JobId int jobId, @JniType("std::string") String syncingAccount) {
         mBackend.getAllLoginsWithBrandingInfo(
                 getAccount(syncingAccount),
                 passwords -> mBackendReceiverBridge.onCompleteWithBrandedLogins(jobId, passwords),
@@ -61,7 +63,7 @@ class PasswordStoreAndroidBackendDispatcherBridgeImpl {
     }
 
     @CalledByNative
-    void getAutofillableLogins(@JobId int jobId, String syncingAccount) {
+    void getAutofillableLogins(@JobId int jobId, @JniType("std::string") String syncingAccount) {
         mBackend.getAutofillableLogins(
                 getAccount(syncingAccount),
                 passwords -> mBackendReceiverBridge.onCompleteWithLogins(jobId, passwords),
@@ -69,7 +71,10 @@ class PasswordStoreAndroidBackendDispatcherBridgeImpl {
     }
 
     @CalledByNative
-    void getLoginsForSignonRealm(@JobId int jobId, String signonRealm, String syncingAccount) {
+    void getLoginsForSignonRealm(
+            @JobId int jobId,
+            @JniType("std::string") String signonRealm,
+            @JniType("std::string") String syncingAccount) {
         mBackend.getLoginsForSignonRealm(
                 signonRealm,
                 getAccount(syncingAccount),
@@ -79,7 +84,9 @@ class PasswordStoreAndroidBackendDispatcherBridgeImpl {
 
     @CalledByNative
     void getAffiliatedLoginsForSignonRealm(
-            @JobId int jobId, String signonRealm, String syncingAccount) {
+            @JobId int jobId,
+            @JniType("std::string") String signonRealm,
+            @JniType("std::string") String syncingAccount) {
         mBackend.getAffiliatedLoginsForSignonRealm(
                 signonRealm,
                 getAccount(syncingAccount),
@@ -89,7 +96,10 @@ class PasswordStoreAndroidBackendDispatcherBridgeImpl {
     }
 
     @CalledByNative
-    void addLogin(@JobId int jobId, byte[] pwdWithLocalData, String syncingAccount) {
+    void addLogin(
+            @JobId int jobId,
+            byte[] pwdWithLocalData,
+            @JniType("std::string") String syncingAccount) {
         mBackend.addLogin(
                 pwdWithLocalData,
                 getAccount(syncingAccount),
@@ -98,7 +108,10 @@ class PasswordStoreAndroidBackendDispatcherBridgeImpl {
     }
 
     @CalledByNative
-    void updateLogin(@JobId int jobId, byte[] pwdWithLocalData, String syncingAccount) {
+    void updateLogin(
+            @JobId int jobId,
+            byte[] pwdWithLocalData,
+            @JniType("std::string") String syncingAccount) {
         mBackend.updateLogin(
                 pwdWithLocalData,
                 getAccount(syncingAccount),
@@ -107,7 +120,10 @@ class PasswordStoreAndroidBackendDispatcherBridgeImpl {
     }
 
     @CalledByNative
-    void removeLogin(@JobId int jobId, byte[] pwdSpecificsData, String syncingAccount) {
+    void removeLogin(
+            @JobId int jobId,
+            byte[] pwdSpecificsData,
+            @JniType("std::string") String syncingAccount) {
         mBackend.removeLogin(
                 pwdSpecificsData,
                 getAccount(syncingAccount),
@@ -120,7 +136,7 @@ class PasswordStoreAndroidBackendDispatcherBridgeImpl {
             @JobId int jobId,
             byte[] pwdSpecificsData,
             byte[] deletionOriginData,
-            String syncingAccount) {
+            @JniType("std::string") String syncingAccount) {
         mBackend.removeLogin(
                 pwdSpecificsData,
                 deletionOriginData,
@@ -140,7 +156,7 @@ class PasswordStoreAndroidBackendDispatcherBridgeImpl {
     }
 
     private Optional<Account> getAccount(String syncingAccount) {
-        if (syncingAccount == null) return Optional.empty();
+        if (syncingAccount.isEmpty()) return Optional.empty();
         return Optional.of(AccountUtils.createAccountFromEmail(syncingAccount));
     }
 }
