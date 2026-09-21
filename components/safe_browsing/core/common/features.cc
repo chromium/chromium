@@ -201,7 +201,7 @@ constexpr base::FeatureParam<int> kClientSideDetectionServerModelMaxScansPerDay{
     /*default_value=*/5};
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 BASE_FEATURE(kClientSideDetectionServerModelForScamDetectionDesktop,
              base::FEATURE_DISABLED_BY_DEFAULT);
 constexpr base::FeatureParam<int>
@@ -209,6 +209,11 @@ constexpr base::FeatureParam<int>
         &kClientSideDetectionServerModelForScamDetectionDesktop,
         "MaxIntelligentScansPerDayDesktop",
         /*default_value=*/5};
+#endif
+
+#if BUILDFLAG(IS_IOS)
+BASE_FEATURE(kClientSideDetectionServerModelForScamDetectionIos,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -220,12 +225,21 @@ constexpr base::FeatureParam<int>
         /*default_value=*/1000};
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 BASE_FEATURE(kClientSideDetectionServerModelRolloutDesktop,
              base::FEATURE_DISABLED_BY_DEFAULT);
 constexpr base::FeatureParam<int>
     kClientSideDetectionServerModelRolloutVersionDesktop{
         &kClientSideDetectionServerModelRolloutDesktop, "ModelVersion",
+        /*default_value=*/1000};
+#endif
+
+#if BUILDFLAG(IS_IOS)
+BASE_FEATURE(kClientSideDetectionServerModelRolloutIos,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+constexpr base::FeatureParam<int>
+    kClientSideDetectionServerModelRolloutVersionIos{
+        &kClientSideDetectionServerModelRolloutIos, "ModelVersion",
         /*default_value=*/1000};
 #endif
 

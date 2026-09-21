@@ -175,12 +175,17 @@ extern const base::FeatureParam<int>
     kClientSideDetectionServerModelMaxScansPerDay;
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Inquire the server-side model instead of the on-device model for scam
 // detection on Desktop.
 BASE_DECLARE_FEATURE(kClientSideDetectionServerModelForScamDetectionDesktop);
 extern const base::FeatureParam<int>
     kClientSideDetectionServerModelMaxScansPerDayDesktop;
+#endif
+
+#if BUILDFLAG(IS_IOS)
+// Controls whether scam detection via the server-side model is enabled on iOS.
+BASE_DECLARE_FEATURE(kClientSideDetectionServerModelForScamDetectionIos);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -195,7 +200,7 @@ extern const base::FeatureParam<int>
     kClientSideDetectionServerModelRolloutVersionAndroid;
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Dedicated long-lived feature flag to control future server model rollout and
 // set the model version for Desktop. This flag should not be cleaned up after
 // the server model is launched. See go/mes-config-rollouts#roll-out-via-finch
@@ -205,6 +210,18 @@ BASE_DECLARE_FEATURE(kClientSideDetectionServerModelRolloutDesktop);
 // the model version (e.g. 1001). Update go/slams-mapping accordingly.
 extern const base::FeatureParam<int>
     kClientSideDetectionServerModelRolloutVersionDesktop;
+#endif
+
+#if BUILDFLAG(IS_IOS)
+// Dedicated long-lived feature flag to control future server model rollout and
+// set the model version for iOS. This flag should not be cleaned up after
+// the server model is launched. See go/mes-config-rollouts#roll-out-via-finch
+// on the recommended way to control rollouts.
+BASE_DECLARE_FEATURE(kClientSideDetectionServerModelRolloutIos);
+// Note for future finch config: Set an arbitrary integer value associated with
+// the model version (e.g. 1001). Update go/slams-mapping accordingly.
+extern const base::FeatureParam<int>
+    kClientSideDetectionServerModelRolloutVersionIos;
 #endif
 
 BASE_DECLARE_FEATURE(kClientSideDetectionSkipErrorPage);
