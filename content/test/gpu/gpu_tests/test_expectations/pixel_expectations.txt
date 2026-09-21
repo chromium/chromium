@@ -573,7 +573,6 @@ crbug.com/286989320 [ linux nvidia ] Pixel_MeetEffects_rainbow_wig_and_eyelashes
 crbug.com/286989320 [ linux amd-0x7340 ] Pixel_MeetEffects_rainbow_wig_and_eyelashes [ Failure Slow ]
 crbug.com/286989320 [ mac no-clang-coverage no-asan  ] Pixel_MeetEffects_rainbow_wig_and_eyelashes [ Failure Slow ]
 crbug.com/545524954 [ win target-cpu-32 ] Pixel_MeetEffects_rainbow_wig_and_eyelashes [ Failure ]
-crbug.com/545524954 [ win target-cpu-64 nvidia ] Pixel_MeetEffects_rainbow_wig_and_eyelashes [ Failure Slow ]
 
 # Mac AMD flaky directory failures
 crbug.com/444653106 [ mac amd-0x7340 graphite-enabled angle-metal ] Pixel_CSSFilterEffects [ Slow ]
