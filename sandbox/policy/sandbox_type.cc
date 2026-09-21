@@ -40,15 +40,10 @@ constexpr char kPrintBackendSandbox[] = "print_backend";
 constexpr char kScreenAISandbox[] = "screen_ai";
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
-// The XR Device Service hosts the OpenXR runtime; it is sandboxed on Windows
-// and Linux.
-constexpr char kXrCompositingSandbox[] = "xr_compositing";
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
-
 #if BUILDFLAG(IS_WIN)
 constexpr char kNoneSandboxAndElevatedPrivileges[] = "none_and_elevated";
 constexpr char kPdfConversionSandbox[] = "pdf_conversion";
+constexpr char kXrCompositingSandbox[] = "xr_compositing";
 constexpr char kIconReaderSandbox[] = "icon_reader";
 constexpr char kMediaFoundationCdmSandbox[] = "mf_cdm";
 #endif  // BUILDFLAG(IS_WIN)
@@ -139,11 +134,9 @@ void SetCommandLineFlagsForSandboxType(base::CommandLine* command_line,
 #if BUILDFLAG(IS_FUCHSIA)
     case Sandbox::kVideoCapture:
 #endif
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
-    case Sandbox::kXrCompositing:
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #if BUILDFLAG(IS_WIN)
     case Sandbox::kNoSandboxAndElevatedPrivileges:
+    case Sandbox::kXrCompositing:
     case Sandbox::kPdfConversion:
     case Sandbox::kIconReader:
     case Sandbox::kMediaFoundationCdm:
@@ -279,11 +272,9 @@ std::string StringFromUtilitySandboxType(Sandbox sandbox_type) {
     case Sandbox::kOnDeviceTranslation:
       return kOnDeviceTranslationSandbox;
 #endif
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN)
     case Sandbox::kXrCompositing:
       return kXrCompositingSandbox;
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
-#if BUILDFLAG(IS_WIN)
     case Sandbox::kPdfConversion:
       return kPdfConversionSandbox;
     case Sandbox::kIconReader:
@@ -369,12 +360,10 @@ sandbox::mojom::Sandbox UtilitySandboxTypeFromString(
   if (sandbox_string == kPrintCompositorSandbox) {
     return Sandbox::kPrintCompositor;
   }
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN)
   if (sandbox_string == kXrCompositingSandbox) {
     return Sandbox::kXrCompositing;
   }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
-#if BUILDFLAG(IS_WIN)
   if (sandbox_string == kPdfConversionSandbox) {
     return Sandbox::kPdfConversion;
   }

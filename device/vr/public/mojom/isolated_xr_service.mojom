@@ -187,9 +187,9 @@ interface IsolatedXRRuntimeProvider {
   RequestDevices(pending_remote<IsolatedXRRuntimeProviderClient> client);
 };
 
-[EnableIf=is_win|is_linux]
+[EnableIf=is_win]
 const sandbox.mojom.Sandbox kXrSandbox = sandbox.mojom.Sandbox.kXrCompositing;
-[EnableIfNot=is_win|is_linux]
+[EnableIfNot=is_win]
 const sandbox.mojom.Sandbox kXrSandbox = sandbox.mojom.Sandbox.kUtility;
 
 // The main interface for the XR Device Service. Called from the browser
