@@ -23,6 +23,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.about_settings.AboutChromeSettings;
 import org.chromium.chrome.browser.about_settings.LegalInformationSettings;
 import org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragment;
+import org.chromium.chrome.browser.appearance.settings.BookmarkBarSettingsFragment;
 import org.chromium.chrome.browser.autofill.settings.AutofillAndPasswordsFragment;
 import org.chromium.chrome.browser.autofill.settings.AutofillAndPasswordsFragment.AutofillSettingsReferrer;
 import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsFragment;
@@ -71,6 +72,7 @@ public class SettingsFragmentRegistryTest {
         // Verify some notable mappings
         assertEquals(PrivacySettings.class, fragmentClassForPath("/privacy"));
         assertEquals(AppearanceSettingsFragment.class, fragmentClassForPath("/appearance"));
+        assertEquals(BookmarkBarSettingsFragment.class, fragmentClassForPath("/bookmarkBar"));
         assertEquals(ThemeSettingsFragment.class, fragmentClassForPath("/theme"));
         assertEquals(SafeBrowsingSettingsFragment.class, fragmentClassForPath("/safebrowsing"));
 
@@ -79,6 +81,7 @@ public class SettingsFragmentRegistryTest {
                 SettingsFragmentRegistry.sFragmentToPathMap;
         assertEquals("privacy", fragmentMap.get(PrivacySettings.class));
         assertEquals("appearance", fragmentMap.get(AppearanceSettingsFragment.class));
+        assertEquals("bookmarkBar", fragmentMap.get(BookmarkBarSettingsFragment.class));
         assertEquals("theme", fragmentMap.get(ThemeSettingsFragment.class));
     }
 
@@ -145,6 +148,9 @@ public class SettingsFragmentRegistryTest {
         assertEquals(
                 AppearanceSettingsFragment.class,
                 SettingsFragmentRegistry.getFragmentClassForUrl("chrome://settings/appearance"));
+        assertEquals(
+                BookmarkBarSettingsFragment.class,
+                SettingsFragmentRegistry.getFragmentClassForUrl("chrome://settings/bookmarkBar"));
         assertEquals(
                 ThemeSettingsFragment.class,
                 SettingsFragmentRegistry.getFragmentClassForUrl("chrome://settings/theme"));
@@ -316,6 +322,11 @@ public class SettingsFragmentRegistryTest {
                 "chrome://settings/appearance",
                 SettingsFragmentRegistry.createUrlForFragment(
                         AppearanceSettingsFragment.class, null));
+
+        assertEquals(
+                "chrome://settings/bookmarkBar",
+                SettingsFragmentRegistry.createUrlForFragment(
+                        BookmarkBarSettingsFragment.class, null));
 
         assertEquals(
                 "chrome://settings/theme",

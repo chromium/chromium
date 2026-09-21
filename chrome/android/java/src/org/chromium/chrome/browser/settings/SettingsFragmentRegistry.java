@@ -18,6 +18,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.about_settings.AboutChromeSettings;
 import org.chromium.chrome.browser.about_settings.LegalInformationSettings;
 import org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragment;
+import org.chromium.chrome.browser.appearance.settings.BookmarkBarSettingsFragment;
 import org.chromium.chrome.browser.autofill.settings.AndroidPaymentAppsFragment;
 import org.chromium.chrome.browser.autofill.settings.AutofillAndPasswordsFragment;
 import org.chromium.chrome.browser.autofill.settings.AutofillAndPasswordsFragment.AutofillSettingsReferrer;
@@ -286,6 +287,7 @@ public class SettingsFragmentRegistry {
 
         // Appearance
         registerMapping("/appearance", AppearanceSettingsFragment.class);
+        registerMapping("/bookmarkBar", BookmarkBarSettingsFragment.class);
         registerMapping("/theme", ThemeSettingsFragment.class)
                 // The page asserts on its entry point extra.
                 .withDefaults(
