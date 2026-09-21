@@ -4875,6 +4875,51 @@ TEST_P(PasswordFormManagerTest,
   EXPECT_CALL(client_, ShowPasswordManagerErrorMessage).Times(0);
   fetcher_->NotifyFetchCompleted();
 }
+
+TEST_P(PasswordFormManagerTest,
+       ClientShouldShowErrorMessageWithSaveFlowForSignUpForm) {
+  // Make `observed_form_` a sign-up form.
+  test_api(observed_form_).field(-1).set_autocomplete_attribute("new-password");
+  CreateFormManager(observed_form_);
+
+  fetcher_->SetProfileStoreBackendError(PasswordStoreBackendError(
+      PasswordStoreBackendErrorType::kAuthErrorResolvable));
+
+  EXPECT_CALL(client_,
+              ShowPasswordManagerErrorMessage(
+                  password_manager::ErrorMessageFlowType::kSaveFlow,
+                  PasswordStoreBackendErrorType::kAuthErrorResolvable));
+  fetcher_->NotifyFetchCompleted();
+}
+
+TEST_P(PasswordFormManagerTest,
+       ClientShouldShowErrorMessageWithSaveFlowForChangePasswordForm) {
+  // Make `observed_form_` a change password form (current and new password).
+  test_api(observed_form_)
+      .field(-1)
+      .set_autocomplete_attribute("current-password");
+  FormFieldData new_password_field;
+  new_password_field.set_name(u"new-password");
+  new_password_field.set_id_attribute(new_password_field.name());
+  new_password_field.set_name_attribute(new_password_field.name());
+  new_password_field.set_form_control_type(
+      autofill::FormControlType::kInputPassword);
+  new_password_field.set_autocomplete_attribute("new-password");
+  const FieldRendererId new_password_renderer_id(
+      observed_form_.fields().back().renderer_id().value() + 1);
+  new_password_field.set_renderer_id(new_password_renderer_id);
+  test_api(observed_form_).Append(std::move(new_password_field));
+  CreateFormManager(observed_form_);
+
+  fetcher_->SetProfileStoreBackendError(PasswordStoreBackendError(
+      PasswordStoreBackendErrorType::kAuthErrorResolvable));
+
+  EXPECT_CALL(client_,
+              ShowPasswordManagerErrorMessage(
+                  password_manager::ErrorMessageFlowType::kSaveFlow,
+                  PasswordStoreBackendErrorType::kAuthErrorResolvable));
+  fetcher_->NotifyFetchCompleted();
+}
 #endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
