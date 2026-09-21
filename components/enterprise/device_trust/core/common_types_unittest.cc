@@ -48,10 +48,6 @@ TEST(CommonTypes, DeviceTrustErrors) {
             "too_many_requests");
   EXPECT_EQ(DeviceTrustErrorToString(DeviceTrustError::kUrlNotAllowed),
             "url_not_allowed");
-  EXPECT_EQ(DeviceTrustErrorToString(DeviceTrustError::kServiceUnavailable),
-            "service_unavailable");
-  EXPECT_EQ(DeviceTrustErrorToString(DeviceTrustError::kInvalidOrigin),
-            "invalid_origin");
 }
 
 }  // namespace enterprise_connectors

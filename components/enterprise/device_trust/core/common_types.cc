@@ -55,10 +55,6 @@ const std::string DeviceTrustErrorToString(DeviceTrustError error) {
       return errors::kTooManyRequests;
     case DeviceTrustError::kUrlNotAllowed:
       return errors::kUrlNotAllowed;
-    case DeviceTrustError::kServiceUnavailable:
-      return errors::kServiceUnavailable;
-    case DeviceTrustError::kInvalidOrigin:
-      return errors::kInvalidOrigin;
   }
 }
 
