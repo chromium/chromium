@@ -9,6 +9,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "content/browser/bluetooth/bluetooth_adapter_factory_wrapper.h"
 #include "content/browser/bluetooth/web_bluetooth_service_impl.h"
@@ -158,14 +159,19 @@ class TestBluetoothDelegate : public BluetoothDelegate {
     return std::make_unique<FakeBluetoothChooser>(event_handler,
                                                   device_to_select_);
   }
+  void set_show_bluetooth_scanning_prompt_callback(base::OnceClosure callback) {
+    show_bluetooth_scanning_prompt_callback_ = std::move(callback);
+  }
+
   std::unique_ptr<BluetoothScanningPrompt> ShowBluetoothScanningPrompt(
       RenderFrameHost* frame,
       const BluetoothScanningPrompt::EventHandler& event_handler) override {
     showed_bluetooth_scanning_prompt_ = true;
     DCHECK_EQ(frame->GetLifecycleState(),
               RenderFrameHost::LifecycleState::kActive);
-    if (quit_on_scanning_prompt_)
-      std::move(quit_on_scanning_prompt_).Run();
+    if (show_bluetooth_scanning_prompt_callback_) {
+      std::move(show_bluetooth_scanning_prompt_callback_).Run();
+    }
     auto prompt =
         std::make_unique<FakeBluetoothScanningPrompt>(std::move(event_handler));
     prompt_ = prompt.get();
@@ -195,7 +201,7 @@ class TestBluetoothDelegate : public BluetoothDelegate {
     if (showed_bluetooth_scanning_prompt_)
       return;
     base::RunLoop run_loop;
-    quit_on_scanning_prompt_ = run_loop.QuitClosure();
+    show_bluetooth_scanning_prompt_callback_ = run_loop.QuitClosure();
     run_loop.Run();
   }
   void RunBluetoothScanningPromptEventCallback(
@@ -214,8 +220,8 @@ class TestBluetoothDelegate : public BluetoothDelegate {
 
  private:
   std::string device_to_select_;
+  base::OnceClosure show_bluetooth_scanning_prompt_callback_;
   raw_ptr<FakeBluetoothScanningPrompt, DanglingUntriaged> prompt_ = nullptr;
-  base::OnceClosure quit_on_scanning_prompt_;
   bool showed_bluetooth_scanning_prompt_ = false;
   bool checked_allow_web_bluetooth_ = false;
   bool block_globally_disabled_ = false;
@@ -675,4 +681,48 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplFencedFramesBrowserTest,
                               GetWebContents()->GetPrimaryMainFrame())));
 }
 
+IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
+                       FrameDetachDuringShowBluetoothScanningPrompt) {
+  EXPECT_CALL(*adapter(), AddObserver(_)).Times(testing::AnyNumber());
+  EXPECT_CALL(*adapter(), RemoveObserver(_)).Times(testing::AnyNumber());
+
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/simple_page.html")));
+
+  // Add an iframe and wait for it to load.
+  EXPECT_TRUE(ExecJs(GetWebContents(), R"(
+    new Promise(resolve => {
+      let iframe = document.createElement('iframe');
+      iframe.src = '/simple_page.html';
+      iframe.onload = resolve;
+      document.body.appendChild(iframe);
+    });
+  )"));
+
+  RenderFrameHost* child_rfh =
+      ChildFrameAt(GetWebContents()->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(child_rfh);
+
+  GetBluetoothDelegate()->set_show_bluetooth_scanning_prompt_callback(
+      base::BindLambdaForTesting([this]() {
+        // Synchronously detach the iframe during ShowBluetoothScanningPrompt.
+        EXPECT_TRUE(ExecJs(GetWebContents(),
+                           "document.querySelector('iframe').remove();"));
+      }));
+
+  auto result = content::EvalJs(child_rfh, R"(
+    (async() => {
+      try {
+        await navigator.bluetooth.requestLEScan(
+            {acceptAllAdvertisements: true});
+        return "";
+      } catch(e) {
+        return `${e.name}: ${e.message}`;
+      }
+    })()
+  )");
+  EXPECT_THAT(result,
+              EvalJsResult::ErrorIs(testing::HasSubstr("RenderFrame deleted")));
+  EXPECT_TRUE(GetBluetoothDelegate()->showed_bluetooth_scanning_prompt());
+}
 }  // namespace content
