@@ -252,7 +252,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
       std::optional<IsolatedOriginSource> source = std::nullopt,
       BrowserContext* browser_context = nullptr) override;
   void GetIsolatedOrigins_Cpp(std::optional<IsolatedOriginSource> source,
-                              BrowserContext* browser_context,
+                              const base::UnguessableToken& browser_context_id,
                               std::vector<url::Origin>* origins);
   bool IsIsolatedSiteFromSource(const url::Origin& origin,
                                 IsolatedOriginSource source) override;
@@ -1126,12 +1126,13 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
 
   // Internal helper used for adding a particular isolated origin.  See
   // IsolatedOriginEntry for descriptions of various parameters.
-  void AddIsolatedOriginInternal(BrowserContext* browser_context,
-                                 const url::Origin& origin,
-                                 bool applies_to_future_browsing_instances,
-                                 BrowsingInstanceId browsing_instance_id,
-                                 bool isolate_all_subdomains,
-                                 IsolatedOriginSource source)
+  void AddIsolatedOriginInternal(
+      const base::UnguessableToken& browser_context_id,
+      const url::Origin& origin,
+      bool applies_to_future_browsing_instances,
+      BrowsingInstanceId browsing_instance_id,
+      bool isolate_all_subdomains,
+      IsolatedOriginSource source)
       EXCLUSIVE_LOCKS_REQUIRED(isolated_origins_lock_);
   void AddIsolatedOriginInternal_Cpp(
       const base::UnguessableToken& browser_context_id,
