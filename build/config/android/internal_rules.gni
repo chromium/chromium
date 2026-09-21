@@ -4586,6 +4586,10 @@ if (enable_java_templates) {
             if (defined(invoker.jar_included_patterns)) {
               java_library_jar_included_patterns = invoker.jar_included_patterns
             }
+            if (defined(invoker.prevent_excluded_classes_from_classpath) &&
+                invoker.prevent_excluded_classes_from_classpath) {
+              java_library_prevent_excluded_classes_from_classpath = [ true ]
+            }
             if (defined(invoker.alternative_android_sdk_dep)) {
               java_library_android_sdk_dep =
                   [ invoker.alternative_android_sdk_dep ]

@@ -217,10 +217,11 @@ COMMON_FIELDS = {
     'context', 'type', 'gn_target', 'name', 'comment', 'visibility',
     'default_applicable_licenses', 'default_visibility', 'build_file_path',
     'allow_rebasing', 'gn_type', 'target', 'jni_zero_target_type',
-    'java_unfiltered_module', 'genrule_headers', 'genrule_srcs',
-    'genrule_shared_libs', 'genrule_header_libs', 'include_build_directory',
-    'apex_available', 'host_supported', 'host_cross_supported',
-    'device_supported', 'defaults', 'srcs', 'role'
+    'java_unfiltered_module', 'java_prevent_excluded_classes_from_classpath',
+    'genrule_headers', 'genrule_srcs', 'genrule_shared_libs',
+    'genrule_header_libs', 'include_build_directory', 'apex_available',
+    'host_supported', 'host_cross_supported', 'device_supported', 'defaults',
+    'srcs', 'role'
 }
 
 SKIP_IF_FALSY = {
@@ -280,6 +281,7 @@ class Module:
         self.allow_rebasing = False
         self.jni_zero_target_type = None
         self.java_unfiltered_module = None
+        self.java_prevent_excluded_classes_from_classpath = False
         self.include_build_directory = None
         self.apex_available = set()
         self.host_supported = False
@@ -523,10 +525,13 @@ class JavaModule(Module):
             # dependencies in some cases - see
             # https://crbug.com/400952169#comment4 - which means the direct
             # dependencies may not be enough.)
-            self.java_unfiltered_module.libs.add(
-                dep_module.java_unfiltered_module.name)
-            self.java_unfiltered_module.libs.update(
-                dep_module.java_unfiltered_module.libs)
+            if dep_module.java_prevent_excluded_classes_from_classpath:
+                self.java_unfiltered_module.libs.add(dep_module.name)
+            else:
+                self.java_unfiltered_module.libs.add(
+                    dep_module.java_unfiltered_module.name)
+                self.java_unfiltered_module.libs.update(
+                    dep_module.java_unfiltered_module.libs)
 
 
 class RustModule(Module):
