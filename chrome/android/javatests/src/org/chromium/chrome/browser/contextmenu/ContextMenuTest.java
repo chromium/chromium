@@ -322,7 +322,6 @@ public class ContextMenuTest {
     @Test
     @MediumTest
     @Feature({"Browser"})
-    @RequiresRestart
     public void testLongPressOnImage() throws TimeoutException {
         doAnswer(sCopyIsAllowedByPolicy)
                 .when(mDataProtectionBridgeMock)
