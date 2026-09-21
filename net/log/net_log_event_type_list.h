@@ -5198,6 +5198,8 @@ EVENT_TYPE(CORS_PREFLIGHT_CACHED_RESULT)
 //
 // It contains the following parameters:
 //  {
+//    "transport_info": <the TransportInfo of the resource>,
+//    "address_space_overrides": <active IP address space overrides>,
 //    "client_address_space": <the IP address space of the request client>,
 //    "resource_address_space": <the IP address space of the remote endpoint>,
 //    "result": <the result of the check>,
