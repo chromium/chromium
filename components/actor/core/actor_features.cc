@@ -195,14 +195,12 @@ BASE_FEATURE(kActorPageStability, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The overall observation timeout when waiting on a renderer tool to complete.
 const base::FeatureParam<base::TimeDelta> kActorPageStabilityTimeout{
-    &kActorPageStability, "glic-actor-page-stability-timeout",
-    base::Seconds(4)};
+    &kActorPageStability, "actor-page-stability-timeout", base::Seconds(4)};
 
 // The minimum amount of time to wait for page stability before invoking the
 // callback.
 const base::FeatureParam<base::TimeDelta> kActorPageStabilityMinWait{
-    &kActorPageStability, "glic-actor-page-stability-min-wait",
-    base::Seconds(1)};
+    &kActorPageStability, "actor-page-stability-min-wait", base::Seconds(1)};
 
 // Timeout controlling how long the paint stability monitor waits after the
 // initial contentful paint before considering the UI to have stabilized.
@@ -243,5 +241,24 @@ const base::FeatureParam<base::TimeDelta>
         "actor-observation-delay-autofill-predictions-timeout",
         base::Seconds(1)};
 // LINT.ThenChange(//ios/chrome/browser/intelligence/features/features.mm:kActorPageStabilityAutofillPredictionsTimeout)
+
+// Experiment with different tool execution delays and timeouts for Actor.
+BASE_FEATURE(kActorPageToolTimeout, base::FEATURE_ENABLED_BY_DEFAULT);
+
+const base::FeatureParam<base::TimeDelta> kActorPageToolTimeoutParam{
+    &kActorPageToolTimeout, "actor-page-tool-timeout", base::Seconds(30)};
+
+BASE_FEATURE(kActorClickDelay, base::FEATURE_ENABLED_BY_DEFAULT);
+
+const base::FeatureParam<base::TimeDelta> kActorClickDelayParam{
+    &kActorClickDelay, "actor-click-delay", base::Milliseconds(5)};
+
+BASE_FEATURE(kActorTypeToolEnterDelay, base::FEATURE_ENABLED_BY_DEFAULT);
+
+// If the TypeTool is invoked with followed_by_enter, the enter key is
+// dispatched with this delay.
+const base::FeatureParam<base::TimeDelta> kActorTypeToolEnterDelayParam{
+    &kActorTypeToolEnterDelay, "actor-type-tool-enter-delay",
+    base::Milliseconds(600)};
 
 }  // namespace actor

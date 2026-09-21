@@ -613,7 +613,7 @@ void PageTool::Invoke(ToolCallback callback) {
                      weak_ptr_factory_.GetWeakPtr()));
 
   timeout_timer_.Start(
-      FROM_HERE, features::kGlicActorPageToolTimeout.Get(),
+      FROM_HERE, kActorPageToolTimeoutParam.Get(),
       base::BindOnce(&PageTool::OnTimeout, weak_ptr_factory_.GetWeakPtr()));
 
   if (base::FeatureList::IsEnabled(kActorSendBrowserSignalForAction)) {

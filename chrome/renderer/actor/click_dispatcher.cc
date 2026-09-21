@@ -20,6 +20,7 @@
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/renderer/actor/tool_base.h"
+#include "components/actor/core/actor_features.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
@@ -133,7 +134,7 @@ void ClickDispatcher::DoMouseDown() {
   mouse_up_event_->SetType(WebInputEvent::Type::kMouseUp);
   mouse_up_event_->UpdateEventModifiersToMatchButton();
 
-  const base::TimeDelta delay = features::kGlicActorClickDelay.Get();
+  const base::TimeDelta delay = kActorClickDelayParam.Get();
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,

@@ -126,8 +126,8 @@ class ActorClickToolBrowserTest : public ActorToolsTest {
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {{::features::kGlicActor,
-          {{features::kGlicActorClickDelay.name, "200ms"},
-           {features::kGlicActorPolicyControlExemption.name, "true"}}},
+          {{features::kGlicActorPolicyControlExemption.name, "true"}}},
+         {kActorClickDelay, {{kActorClickDelayParam.name, "200ms"}}},
          {features::kGlicActorRejectInteractionDisallowedTargets, {}}},
         /*disabled_features=*/{});
   }
@@ -151,8 +151,8 @@ class ActorClickToolInteractionDisallowedTargetFeatureDisabledTest
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {{::features::kGlicActor,
-          {{features::kGlicActorClickDelay.name, "200ms"},
-           {features::kGlicActorPolicyControlExemption.name, "true"}}}},
+          {{features::kGlicActorPolicyControlExemption.name, "true"}}},
+         {kActorClickDelay, {{kActorClickDelayParam.name, "200ms"}}}},
         /*disabled_features=*/
         {features::kGlicActorRejectInteractionDisallowedTargets});
   }
@@ -835,7 +835,7 @@ IN_PROC_BROWSER_TEST_F(ActorClickToolBrowserTest, ClickTool_Delay) {
   const base::TimeDelta delta =
       base::Milliseconds(mouseup_timestamp - mousedown_timestamp);
 
-  EXPECT_GE(delta, features::kGlicActorClickDelay.Get());
+  EXPECT_GE(delta, kActorClickDelayParam.Get());
 }
 
 IN_PROC_BROWSER_TEST_F(ActorClickToolBrowserTest, UserInteractionTriggered) {

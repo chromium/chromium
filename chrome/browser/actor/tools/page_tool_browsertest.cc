@@ -27,6 +27,7 @@
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
+#include "components/actor/core/actor_features.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "content/public/browser/web_contents.h"
@@ -121,8 +122,8 @@ class ActorPageToolTimeoutBrowserTest : public ActorPageToolBrowserTest {
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {{features::kGlicActor,
-          {{"glic-actor-page-tool-timeout", "2s"},
-           {features::kGlicActorPolicyControlExemption.name, "true"}}},
+          {{features::kGlicActorPolicyControlExemption.name, "true"}}},
+         {kActorPageToolTimeout, {{kActorPageToolTimeoutParam.name, "2s"}}},
          {features::kGlicActorIncrementalTyping,
           {{"glic-actor-long-text-paste-threshold", "1000000000"},
            {"glic-actor-incremental-typing-long-text-threshold",
@@ -186,10 +187,12 @@ class ActorPageToolLongClickDelayBrowserTest
 
     enabled_features_and_params.push_back(
         {features::kGlicActor,
-         // Delay holding the mouse down before mouse up.
-         {{"glic-actor-click-delay", "2d"},
-          {"glic-actor-page-tool-timeout", "2d"},
-          {features::kGlicActorPolicyControlExemption.name, "true"}}});
+         {{features::kGlicActorPolicyControlExemption.name, "true"}}});
+    // Delay holding the mouse down before mouse up.
+    enabled_features_and_params.push_back(
+        {kActorClickDelay, {{kActorClickDelayParam.name, "2d"}}});
+    enabled_features_and_params.push_back(
+        {kActorPageToolTimeout, {{kActorPageToolTimeoutParam.name, "2d"}}});
 
     if (GetParam()) {
       enabled_features_and_params.push_back(
@@ -342,8 +345,8 @@ class ActorPageToolLongKeyDownDelayBrowserTest
         {{features::kGlicActor,
           // Delay holding down the keyboard key.
           {{"glic-actor-incremental-typing-key-down-duration", "2d"},
-           {"glic-actor-page-tool-timeout", "2d"},
-           {features::kGlicActorPolicyControlExemption.name, "true"}}}},
+           {features::kGlicActorPolicyControlExemption.name, "true"}}},
+         {kActorPageToolTimeout, {{kActorPageToolTimeoutParam.name, "2d"}}}},
         /*disabled_features=*/{});
   }
 

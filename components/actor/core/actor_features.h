@@ -162,6 +162,15 @@ extern const base::FeatureParam<base::TimeDelta>
     kActorObservationDelayAutofillPredictionsTimeout;
 
 // Tool execution delay and timeout parameters for Actor.
+BASE_DECLARE_FEATURE(kActorPageToolTimeout);
+extern const base::FeatureParam<base::TimeDelta> kActorPageToolTimeoutParam;
+
+BASE_DECLARE_FEATURE(kActorClickDelay);
+extern const base::FeatureParam<base::TimeDelta> kActorClickDelayParam;
+
+BASE_DECLARE_FEATURE(kActorTypeToolEnterDelay);
+extern const base::FeatureParam<base::TimeDelta> kActorTypeToolEnterDelayParam;
+
 }  // namespace actor
 
 #endif  // COMPONENTS_ACTOR_CORE_ACTOR_FEATURES_H_

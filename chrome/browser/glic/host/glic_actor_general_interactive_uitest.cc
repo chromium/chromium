@@ -879,8 +879,9 @@ class GlicActorCallbackOrderGeneralUiTest : public GlicActorGeneralUiTest {
     feature_list_.InitWithFeaturesAndParameters(
         {
             {features::kGlicActor,
-             {{features::kGlicActorClickDelay.name, "60000ms"},
-              {features::kGlicActorPolicyControlExemption.name, "true"}}},
+             {{features::kGlicActorPolicyControlExemption.name, "true"}}},
+            {actor::kActorClickDelay,
+             {{actor::kActorClickDelayParam.name, "60000ms"}}},
             {actor::kGlicPerformActionsReturnsBeforeStateChange, {}},
         },
         /*disabled_features=*/{});
