@@ -8,7 +8,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.MessageQueue;
 
-import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.BaseFeatureList;
 import org.chromium.base.BindingRequestQueue;
 import org.chromium.base.TraceEvent;
@@ -93,20 +92,11 @@ import org.chromium.build.annotations.Nullable;
 
         BindingRequestQueue queue;
         if (sBindingRequestQueueForTesting == null) {
-            AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
-            if (delegate == null || !delegate.isUpdateServiceBindingApiAvailable()) {
+            if (!RebindingChildServiceConnectionController.isEnabled()
+                    || !BaseFeatureList.sRebindServiceBatchApi.isEnabled()) {
                 return false;
             }
-            boolean isFeatureEnabled =
-                    BaseFeatureList.sRebindingChildServiceConnectionController.isEnabled()
-                            && BaseFeatureList.sRebindServiceBatchApi.isEnabled();
-            if (!isFeatureEnabled) {
-                return false;
-            }
-            queue = delegate.getBindingRequestQueue();
-            if (queue == null) {
-                return false;
-            }
+            queue = BindingRequestQueueImpl.getInstance();
         } else {
             queue = sBindingRequestQueueForTesting;
         }

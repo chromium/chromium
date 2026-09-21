@@ -5169,6 +5169,7 @@ if (is_android) {
     ]
     sources = [
       "android/java/src/org/chromium/base/process_launcher/BindService.java",
+      "android/java/src/org/chromium/base/process_launcher/BindingRequestQueueImpl.java",
       "android/java/src/org/chromium/base/process_launcher/ChildConnectionAllocator.java",
       "android/java/src/org/chromium/base/process_launcher/ChildProcessConnection.java",
       "android/java/src/org/chromium/base/process_launcher/ChildProcessConnectionState.java",

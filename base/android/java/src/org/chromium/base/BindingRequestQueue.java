@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(crbug.com/436110326): Move the implementation of this interface to
-// org.chromium.base.process_launcher when it is launched.
 package org.chromium.base;
 
 import android.content.Context;

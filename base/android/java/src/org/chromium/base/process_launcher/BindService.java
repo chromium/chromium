@@ -16,7 +16,6 @@ import android.os.UserHandle;
 
 import androidx.annotation.RequiresApi;
 
-import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.BindingRequestQueue;
 import org.chromium.base.ContextUtils;
 import org.chromium.build.BuildConfig;
@@ -138,9 +137,8 @@ public final class BindService {
             queue.rebind(connection, bindServiceFlags);
             return;
         }
-        final AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
-        if (delegate != null) {
-            delegate.rebindService(context, connection, bindServiceFlags);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
+            context.rebindService(connection, bindServiceFlags);
         }
     }
 

@@ -6,8 +6,10 @@ package org.chromium.base.process_launcher;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 
-import org.chromium.base.AconfigFlaggedApiDelegate;
+import androidx.annotation.ChecksSdkIntAtLeast;
+
 import org.chromium.base.BaseFeatureList;
 import org.chromium.base.ChildBindingState;
 import org.chromium.build.annotations.NullMarked;
@@ -49,10 +51,9 @@ import javax.annotation.concurrent.GuardedBy;
     @GuardedBy("mBindingStateLock")
     private @ChildBindingState int mBindingStateCurrentOrWhenDied;
 
+    @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.CINNAMON_BUN)
     public static boolean isEnabled() {
-        final AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
-        return delegate != null
-                && delegate.isUpdateServiceBindingApiAvailable()
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN
                 && BaseFeatureList.sRebindingChildServiceConnectionController.isEnabled();
     }
 
