@@ -577,6 +577,7 @@ public class NewTabPageCoordinatorUnitTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.NTP_AURORA + ":padding_style/0"})
     public void testSetSearchProviderTopMargin_WithLogo() {
         setupMockSubCoordinators();
         mCoordinator.setSearchProviderInfo(/* hasLogo= */ true, /* isGoogle= */ true);
@@ -680,6 +681,7 @@ public class NewTabPageCoordinatorUnitTest {
      * margin and hidden composeplate.
      */
     @Test
+    @EnableFeatures({ChromeFeatureList.NTP_AURORA + ":padding_style/0"})
     public void testSetSearchProviderInfo_ThirdPartyNoLogo() {
         int searchBoxTopMarginNoLogo =
                 mActivity
@@ -697,6 +699,7 @@ public class NewTabPageCoordinatorUnitTest {
      * margin and hidden composeplate.
      */
     @Test
+    @EnableFeatures({ChromeFeatureList.NTP_AURORA + ":padding_style/0"})
     public void testSetSearchProviderInfo_ThirdPartyWithLogo() {
         verifySetSearchProviderInfo(
                 /* targetHasLogo= */ true,
@@ -710,6 +713,7 @@ public class NewTabPageCoordinatorUnitTest {
      * visible composeplate button.
      */
     @Test
+    @EnableFeatures({ChromeFeatureList.NTP_AURORA + ":padding_style/0"})
     public void testSetSearchProviderInfo_GoogleWithLogo() {
         verifySetSearchProviderInfo(
                 /* targetHasLogo= */ true,
@@ -1154,6 +1158,7 @@ public class NewTabPageCoordinatorUnitTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.NTP_AURORA + ":padding_style/0"})
     public void testOnDisplayStyleChanged_Phone_NonDefault() {
         FeatureOverrides.overrideParam(
                 ChromeFeatureList.NTP_AURORA, "padding_style", NewTabPageUtils.PaddingStyle.MEDIUM);
@@ -1170,6 +1175,7 @@ public class NewTabPageCoordinatorUnitTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.NTP_AURORA + ":padding_style/0"})
     public void testOnDisplayStyleChanged_Phone_Default() {
         FeatureOverrides.overrideParam(
                 ChromeFeatureList.NTP_AURORA,
@@ -1181,6 +1187,7 @@ public class NewTabPageCoordinatorUnitTest {
 
     @Test
     @Config(qualifiers = "land")
+    @EnableFeatures({ChromeFeatureList.NTP_AURORA + ":padding_style/0"})
     public void testOnDisplayStyleChanged_Phone_Landscape_NonDefault() {
         FeatureOverrides.overrideParam(
                 ChromeFeatureList.NTP_AURORA, "padding_style", NewTabPageUtils.PaddingStyle.LARGE);
@@ -1197,6 +1204,7 @@ public class NewTabPageCoordinatorUnitTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.NTP_AURORA + ":padding_style/0"})
     public void testOnDisplayStyleChanged_Tablet() {
         createCoordinator(/* isLff= */ true);
         verify(mUiConfig).addObserver(mDisplayStyleObserverCaptor.capture());

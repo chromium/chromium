@@ -137,6 +137,8 @@ public class NewTabPageUtilUnitTest {
     @Test
     public void testGetPaddingStyleForAurora() {
         // Default should be DEFAULT.
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.NTP_AURORA, PADDING_STYLE_PARAM, PaddingStyle.DEFAULT);
         assertEquals(PaddingStyle.DEFAULT, NewTabPageUtils.getPaddingStyleForAurora());
 
         FeatureOverrides.overrideParam(
@@ -160,6 +162,8 @@ public class NewTabPageUtilUnitTest {
                 resources.getDimensionPixelSize(R.dimen.ntp_section_top_margin_small);
 
         // Default should be ntp_section_top_margin.
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.NTP_AURORA, PADDING_STYLE_PARAM, PaddingStyle.DEFAULT);
         assertEquals(expectedDefaultMargin, NewTabPageUtils.getNtpSectionPaddingPx(resources));
 
         FeatureOverrides.overrideParam(

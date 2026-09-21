@@ -34,6 +34,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -103,6 +105,7 @@ public class ComposeplateViewBinderUnitTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.NTP_AURORA + ":change_button_color/false"})
     public void testApplyWhiteBackground() {
         // Bind PropertyModel with mView.
         PropertyModelChangeProcessor.create(mPropertyModel, mView, ComposeplateViewBinder::bind);

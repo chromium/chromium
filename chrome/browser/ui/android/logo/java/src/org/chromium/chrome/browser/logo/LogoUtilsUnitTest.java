@@ -23,6 +23,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.logo.LogoUtils.DoodleSize;
 import org.chromium.chrome.browser.ntp.NewTabPageUtils.PaddingStyle;
@@ -41,6 +42,7 @@ public class LogoUtilsUnitTest {
 
     @SuppressWarnings("DirectInvocationOnMock")
     @Test
+    @EnableFeatures({ChromeFeatureList.NTP_AURORA + ":padding_style/0"})
     public void testSetLogoViewLayoutParamsForDoodle() {
         MarginLayoutParams layoutParams = new MarginLayoutParams(0, 0);
         when(mLogoView.getLayoutParams()).thenReturn(layoutParams);
@@ -79,6 +81,7 @@ public class LogoUtilsUnitTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.NTP_AURORA + ":padding_style/0"})
     public void testGetTopMarginForLogo_phone() {
         testGetTopMarginForLogoImpl();
     }
@@ -128,6 +131,7 @@ public class LogoUtilsUnitTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.NTP_AURORA + ":padding_style/0"})
     public void testGetTopMarginForDoodle_phone() {
         testGetTopMarginForDoodleImpl();
     }

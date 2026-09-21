@@ -210,7 +210,7 @@ public class ComposeplateUtilsUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.NTP_AURORA)
+    @EnableFeatures({ChromeFeatureList.NTP_AURORA + ":change_button_color/false"})
     public void testApplyComposeplateBackground_buttonColorDisabled_auroraEnabled() {
         // When Aurora is enabled but button color is disabled on customized image theme, apply pure
         // white.
