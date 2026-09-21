@@ -170,15 +170,9 @@ public class IncognitoDataTestUtils {
             FreshCtaTransitTestRule testRule, String url, boolean incognito) {
         List<Station<?>> stations = TrafficControl.getActiveStations();
         if (stations.isEmpty()) {
-            WebPageStation blankStation = testRule.startOnBlankPage();
-            if (incognito) {
-                return blankStation
-                        .openNewIncognitoTabOrWindowFast()
-                        .loadWebPageProgrammatically(url)
-                        .getTab();
-            } else {
-                return blankStation.loadWebPageProgrammatically(url).getTab();
-            }
+            WebPageStation blankStation =
+                    incognito ? testRule.startOnIncognitoBlankPage() : testRule.startOnBlankPage();
+            return blankStation.loadWebPageProgrammatically(url).getTab();
         }
 
         WebPageStation activeStation = null;
