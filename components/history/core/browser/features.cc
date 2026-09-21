@@ -136,7 +136,7 @@ BASE_FEATURE(kBrowsingHistorySimilarVisitsGrouping,
 // If enabled, improves hostname suffix matching for browsing history, so that
 // example.com matches example.com as well as subdomains like www.example.com.
 BASE_FEATURE(kBrowsingHistoryImprovedHostnameSuffixMatching,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables browser history filtering by device.
 BASE_FEATURE(kBrowsingHistoryFilterByDevice, base::FEATURE_DISABLED_BY_DEFAULT);
