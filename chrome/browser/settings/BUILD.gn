@@ -130,6 +130,7 @@ android_library("test_support_java") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/settings/SettingsActivityTestRule.java",
     "android/java/src/org/chromium/chrome/browser/settings/SettingsInTabTestActivity.java",
+    "android/java/src/org/chromium/chrome/browser/settings/SettingsTestFragmentFinder.java",
     "android/java/src/org/chromium/chrome/browser/settings/SettingsTestRule.java",
   ]
 

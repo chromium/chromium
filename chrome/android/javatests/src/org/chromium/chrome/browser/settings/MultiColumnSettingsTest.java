@@ -586,6 +586,52 @@ public class MultiColumnSettingsTest {
                 });
     }
 
+    /**
+     * Regression test for https://crbug.com/563146381. When settings is hosted in an activity
+     * rather than a tab, an intent naming MainSettings must not instantiate a second MainSettings
+     * for the detail pane, because the header pane already has one.
+     */
+    @Test
+    @SmallTest
+    public void testProcessPendingFragmentIntent_MainSettings_NotShownInTab() {
+        Intent intent = new Intent();
+        intent.putExtra(SettingsIntentUtil.EXTRA_SHOW_FRAGMENT, MainSettings.class.getName());
+
+        mBlankUiActivityTestRule.launchActivity(null);
+        BlankUiTestActivity activity = mBlankUiActivityTestRule.getActivity();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TestMultiColumnSettings settings = new TestMultiColumnSettings();
+                    settings.setPendingFragmentIntent(intent);
+
+                    // BlankUiTestActivity is not a SettingsHost, so settings is not shown in a
+                    // tab, which is how SettingsActivity hosts MultiColumnSettings.
+                    activity.getSupportFragmentManager()
+                            .beginTransaction()
+                            .add(android.R.id.content, settings)
+                            .commitNow();
+
+                    // PreferenceHeaderFragmentCompat already called this during onViewCreated().
+                    // TestMultiColumnSettings caches that result.
+                    Fragment detailFragment = settings.onCreateInitialDetailFragment();
+                    assertFalse(
+                            "MainSettings intent must not create a second MainSettings in the"
+                                    + " detail pane",
+                            detailFragment instanceof MainSettings);
+                    // The intent is handled as if it named no fragment at all, so the detail pane
+                    // falls back to the fragment of the first preference header.
+                    assertTrue(
+                            "Detail pane should fall back to the default detail fragment",
+                            detailFragment instanceof TestFragment);
+
+                    // Verify that MainSettings is still created as the header fragment.
+                    assertTrue(
+                            "Header fragment should be an instance of MainSettings",
+                            settings.onCreatePreferenceHeader() instanceof TestMainSettings);
+                });
+    }
+
     @Test
     @SmallTest
     @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})

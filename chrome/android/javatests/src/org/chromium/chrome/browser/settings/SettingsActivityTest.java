@@ -162,6 +162,36 @@ public class SettingsActivityTest {
         onView(withId(R.id.search_box)).perform(click());
     }
 
+    /**
+     * Regression test for https://crbug.com/563146381. Launching SettingsActivity with an intent
+     * that explicitly names MainSettings must create a single MainSettings, in the header pane.
+     */
+    @Test
+    @SmallTest
+    public void testMainSettingsIntentDoesNotDuplicateMainSettings() {
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        MultiColumnSettings multiColumnSettings = activity.getMultiColumnSettings();
+        assertNotNull("Multi-column settings should be enabled", multiColumnSettings);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    int mainSettingsCount = 0;
+                    var fragmentManager = multiColumnSettings.getChildFragmentManager();
+                    for (Fragment fragment : fragmentManager.getFragments()) {
+                        if (fragment instanceof MainSettings) ++mainSettingsCount;
+                    }
+                    assertEquals("Exactly one MainSettings should exist", 1, mainSettingsCount);
+
+                    assertNotNull(
+                            "MainSettings should be in the header pane",
+                            fragmentManager.findFragmentById(R.id.preferences_header));
+                });
+
+        // The root settings title should be unambiguous, i.e. only rendered once.
+        onViewWaiting(withText(R.string.search_engine_settings)).check(matches(isDisplayed()));
+    }
+
     /** Regression test for https://crbug.com/548848118. */
     @Test
     @MediumTest

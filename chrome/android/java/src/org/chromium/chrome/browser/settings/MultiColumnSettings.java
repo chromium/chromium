@@ -32,6 +32,7 @@ import androidx.slidingpanelayout.widget.SlidingPaneLayout;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -638,9 +639,24 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
         if (fragmentName == null) {
             return null;
         }
-        // Use a null fragment to indicate MainSettings.
-        if (mShownInTab && MainSettings.class.getName().equals(fragmentName)) {
-            return new FragmentData(null, addToBackStack, tag);
+        // An intent naming MainSettings means "show root settings", not "show MainSettings in the
+        // detail pane". MainSettings is always created for the header pane by
+        // onCreatePreferenceHeader(), so instantiating another one here would create a duplicate.
+        // https://crbug.com/563146381
+        if (MainSettings.class.getName().equals(fragmentName)) {
+            // When shown in a tab, root settings is MainSettings itself. Return a null fragment
+            // to prevent a duplicate MainSettings from being created in the detail pane.
+            if (mShownInTab) return new FragmentData(null, addToBackStack, tag);
+
+            // Outside of tab mode there is no such "root settings with no detail fragment" state,
+            // so behave as if the intent named no fragment at all. onCreateInitialDetailFragment()
+            // then falls back to super, which shows the default detail fragment.
+            //
+            // No production code path names MainSettings in EXTRA_SHOW_FRAGMENT today, only test
+            // rules do. Assert so we find out if that ever changes.
+            assert BuildConfig.IS_FOR_TEST
+                    : "SettingsActivity was given an intent naming MainSettings.";
+            return null;
         }
         // Use requireContext() instead of requireActivity() to include themed contexts used by
         // SettingsInTab.

@@ -87,7 +87,7 @@ public class SettingsActivityTestRule<T extends Fragment>
     public T getFragment() {
         Assert.assertNotNull("#getFragment is called before activity launch.", getActivity());
 
-        Fragment fragment = getActivity().getMainFragment();
+        Fragment fragment = SettingsTestFragmentFinder.find(getActivity(), mFragmentClass);
         Assert.assertNotNull(fragment);
         return (T) fragment;
     }
