@@ -14289,6 +14289,24 @@
             ]
         }
     ],
+    "PaymentHandlerCameraAccessUx": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PaymentHandlerCameraAccessUx"
+                    ]
+                }
+            ]
+        }
+    ],
     "PaymentHandlerDialogUseInitiatorInUrlLoadForAndroid": [
         {
             "platforms": [
