@@ -10,6 +10,7 @@
 #include <dawn/webgpu_cpp.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -2266,10 +2267,11 @@ TEST_P(D3DImageBackingFactoryTest, ReadbackAfterSkiaWrite) {
   ASSERT_TRUE(backing->ReadbackToMemory(pixmaps));
 
   // Verify every pixel is blue (RGBA: 0, 0, 255, 255).
-  const uint8_t kExpectedColor[] = {0, 0, 255, 255};  // Blue
+  constexpr auto kExpectedColor =
+      std::to_array<uint8_t>({0, 0, 255, 255});  // Blue
   for (size_t i = 0; i < num_pixels; ++i) {
     for (size_t j = 0; j < 4; ++j) {
-      ASSERT_EQ(readback_pixels[i * 4 + j], UNSAFE_TODO(kExpectedColor[j]))
+      ASSERT_EQ(readback_pixels[i * 4 + j], kExpectedColor[j])
           << "Mismatch at pixel " << i << " component " << j;
     }
   }

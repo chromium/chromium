@@ -4,6 +4,8 @@
 
 #include <stddef.h>
 
+#include <array>
+
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/strings/string_number_conversions.h"
@@ -186,39 +188,27 @@ TEST_P(GLES2DecoderWithShaderTest, BindBufferToDifferentTargetFails) {
 
 TEST_P(GLES2DecoderWithShaderTest, VertexAttribPointer) {
   SetupVertexBuffer();
-  static const GLenum types[] = {
+  static constexpr std::array<GLenum, 8> types = {
       GL_BYTE,  GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT,
       GL_FLOAT, GL_FIXED,         GL_INT,   GL_UNSIGNED_INT,
   };
-  static const GLsizei sizes[] = {
-      1, 1, 2, 2, 4, 4, 4, 4,
-  };
-  static const GLuint indices[] = {
-      0, 1, kNumVertexAttribs - 1, kNumVertexAttribs,
-  };
-  static const GLsizei offset_mult[] = {
-      0, 0, 1, 1, 2, 1000,
-  };
-  static const GLsizei offset_offset[] = {
-      0, 1, 0, 1, 0, 0,
-  };
-  static const GLsizei stride_mult[] = {
-      -1, 0, 0, 1, 1, 2, 1000,
-  };
-  static const GLsizei stride_offset[] = {
-      0, 0, 1, 0, 1, 0, 0,
-  };
-  for (size_t tt = 0; tt < std::size(types); ++tt) {
-    GLenum type = UNSAFE_TODO(types[tt]);
-    GLsizei num_bytes = UNSAFE_TODO(sizes[tt]);
+  static constexpr std::array<GLsizei, 8> sizes = {1, 1, 2, 2, 4, 4, 4, 4};
+  static constexpr std::array<GLuint, 4> indices = {0, 1, kNumVertexAttribs - 1,
+                                                    kNumVertexAttribs};
+  static constexpr std::array<GLsizei, 6> offset_mult = {0, 0, 1, 1, 2, 1000};
+  static constexpr std::array<GLsizei, 6> offset_offset = {0, 1, 0, 1, 0, 0};
+  static constexpr std::array<GLsizei, 7> stride_mult = {-1, 0, 0,   1,
+                                                         1,  2, 1000};
+  static constexpr std::array<GLsizei, 7> stride_offset = {0, 0, 1, 0, 1, 0, 0};
+  for (size_t tt = 0; tt < types.size(); ++tt) {
+    GLenum type = types[tt];
+    GLsizei num_bytes = sizes[tt];
     for (GLuint index : indices) {
       for (GLint size = 0; size < 5; ++size) {
-        for (size_t oo = 0; oo < std::size(offset_mult); ++oo) {
-          GLuint offset = num_bytes * UNSAFE_TODO(offset_mult[oo]) +
-                          UNSAFE_TODO(offset_offset[oo]);
-          for (size_t ss = 0; ss < std::size(stride_mult); ++ss) {
-            GLsizei stride = num_bytes * UNSAFE_TODO(stride_mult[ss]) +
-                             UNSAFE_TODO(stride_offset[ss]);
+        for (size_t oo = 0; oo < offset_mult.size(); ++oo) {
+          GLuint offset = num_bytes * offset_mult[oo] + offset_offset[oo];
+          for (size_t ss = 0; ss < stride_mult.size(); ++ss) {
+            GLsizei stride = num_bytes * stride_mult[ss] + stride_offset[ss];
             for (int normalize = 0; normalize < 2; ++normalize) {
               bool index_good = index < static_cast<GLuint>(kNumVertexAttribs);
               bool size_good = (size > 0 && size < 5);

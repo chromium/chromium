@@ -35,7 +35,8 @@ void StoreU32Unaligned(uint32_t v, void* ptr) {
 
 }  // namespace
 
-const CommonDecoder::CommandInfo CommonDecoder::command_info[] = {
+const std::array<CommonDecoder::CommandInfo, cmd::kNumCommands>
+    CommonDecoder::command_info = {{
 #define COMMON_COMMAND_BUFFER_CMD_OP(name)                       \
   {                                                              \
     &CommonDecoder::Handle##name, cmd::name::kArgFlags,          \
@@ -43,10 +44,9 @@ const CommonDecoder::CommandInfo CommonDecoder::command_info[] = {
         sizeof(cmd::name) / sizeof(CommandBufferEntry) - 1,      \
   }                                                              \
   ,  /* NOLINT */
-  COMMON_COMMAND_BUFFER_CMDS(COMMON_COMMAND_BUFFER_CMD_OP)
-  #undef COMMON_COMMAND_BUFFER_CMD_OP
-};
-
+        COMMON_COMMAND_BUFFER_CMDS(COMMON_COMMAND_BUFFER_CMD_OP)
+#undef COMMON_COMMAND_BUFFER_CMD_OP
+    }};
 
 CommonDecoder::Bucket::Bucket() : size_(0) {}
 
@@ -266,8 +266,8 @@ RETURN_TYPE GetImmediateDataAs(const volatile COMMAND_TYPE& pod) {
 error::Error CommonDecoder::DoCommonCommand(unsigned int command,
                                             unsigned int arg_count,
                                             const volatile void* cmd_data) {
-  if (command < std::size(command_info)) {
-    const CommandInfo& info = UNSAFE_TODO(command_info[command]);
+  if (command < command_info.size()) {
+    const CommandInfo& info = command_info[command];
     unsigned int info_arg_count = static_cast<unsigned int>(info.arg_count);
     if ((info.arg_flags == cmd::kFixed && arg_count == info_arg_count) ||
         (info.arg_flags == cmd::kAtLeastN && arg_count >= info_arg_count)) {

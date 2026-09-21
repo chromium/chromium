@@ -4,6 +4,8 @@
 
 #include <stdint.h>
 
+#include <array>
+
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/strings/string_number_conversions.h"
@@ -1794,16 +1796,18 @@ TEST_P(GLES2DecoderManualInitTest, DrawArraysClearsAfterTexImage2DNULLCubemap) {
   init.request_depth = true;
   InitDecoder(init);
 
-  static const GLenum faces[] = {
-      GL_TEXTURE_CUBE_MAP_POSITIVE_X, GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
-      GL_TEXTURE_CUBE_MAP_POSITIVE_Y, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
-      GL_TEXTURE_CUBE_MAP_POSITIVE_Z, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,
-  };
+  static constexpr auto faces = std::to_array<GLenum>({
+      GL_TEXTURE_CUBE_MAP_POSITIVE_X,
+      GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
+      GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
+      GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
+      GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
+      GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,
+  });
   SetupCubemapProgram();
   DoBindTexture(GL_TEXTURE_CUBE_MAP, client_texture_id_, kServiceTextureId);
   // Fill out all the faces for 2 levels, leave 2 uncleared.
-  for (int ii = 0; ii < 6; ++ii) {
-    GLenum face = UNSAFE_TODO(faces[ii]);
+  for (GLenum face : faces) {
     int32_t shm_id =
         (face == GL_TEXTURE_CUBE_MAP_NEGATIVE_Y) ? 0 : shared_memory_id_;
     uint32_t shm_offset =

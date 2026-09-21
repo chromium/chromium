@@ -699,15 +699,14 @@ TEST_P(GLES2DecoderTest2, ShaderSourceBucketInvalidHeader) {
   const char* kSource[] = {kSource0};
   const char kValidStrEnd = 0;
   const GLsizei kCount = static_cast<GLsizei>(std::size(kSource));
-  const GLsizei kTests[] = {
+  const auto kTests = std::to_array<GLsizei>({
       kCount + 1,
       0,
       std::numeric_limits<GLsizei>::max(),
       -1,
-  };
-  for (size_t ii = 0; ii < std::size(kTests); ++ii) {
-    SetBucketAsCStrings(kBucketId, 1, kSource, UNSAFE_TODO(kTests[ii]),
-                        kValidStrEnd);
+  });
+  for (GLsizei test : kTests) {
+    SetBucketAsCStrings(kBucketId, 1, kSource, test, kValidStrEnd);
     cmds::ShaderSourceBucket cmd;
     cmd.Init(client_shader_id_, kBucketId);
     EXPECT_EQ(error::kInvalidArguments, ExecuteCmd(cmd));
@@ -906,15 +905,14 @@ TEST_P(GLES3DecoderTest2, TransformFeedbackVaryingsBucketInvalidHeader) {
   const char* kSource[] = {kSource0};
   const char kValidStrEnd = 0;
   const GLsizei kCount = static_cast<GLsizei>(std::size(kSource));
-  const GLsizei kTests[] = {
+  const auto kTests = std::to_array<GLsizei>({
       kCount + 1,
       0,
       std::numeric_limits<GLsizei>::max(),
       -1,
-  };
-  for (size_t ii = 0; ii < std::size(kTests); ++ii) {
-    SetBucketAsCStrings(kBucketId, 1, kSource, UNSAFE_TODO(kTests[ii]),
-                        kValidStrEnd);
+  });
+  for (GLsizei test : kTests) {
+    SetBucketAsCStrings(kBucketId, 1, kSource, test, kValidStrEnd);
     cmds::TransformFeedbackVaryingsBucket cmd;
     cmd.Init(client_program_id_, kBucketId, GL_INTERLEAVED_ATTRIBS);
     EXPECT_EQ(error::kInvalidArguments, ExecuteCmd(cmd));

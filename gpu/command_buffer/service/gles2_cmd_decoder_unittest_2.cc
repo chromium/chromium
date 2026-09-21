@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <string_view>
 
 #include "base/command_line.h"

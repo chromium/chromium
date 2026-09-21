@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <string_view>
 
 #include "base/command_line.h"
@@ -1057,7 +1058,7 @@ TEST_P(GLES3DecoderWithShaderTest, GetUniformIndicesSucceeds) {
   const char* kNames[] = { kName0, kName1 };
   const size_t kCount = std::size(kNames);
   const char kValidStrEnd = 0;
-  const GLuint kIndices[] = { 1, 2 };
+  const auto kIndices = std::to_array<GLuint>({1, 2});
   SetBucketAsCStrings(kBucketId, kCount, kNames, kCount, kValidStrEnd);
   auto* result =
       static_cast<cmds::GetUniformIndices::Result*>(shared_memory_address_);
@@ -1065,7 +1066,7 @@ TEST_P(GLES3DecoderWithShaderTest, GetUniformIndicesSucceeds) {
   cmd.Init(client_program_id_, kBucketId, shared_memory_id_,
            kSharedMemoryOffset);
   EXPECT_CALL(*gl_, GetUniformIndices(kServiceProgramId, kCount, _, _))
-      .WillOnce(SetArrayArgument<3>(kIndices, UNSAFE_TODO(kIndices + kCount)))
+      .WillOnce(SetArrayArgument<3>(kIndices.begin(), kIndices.end()))
       .RetiresOnSaturation();
   EXPECT_CALL(*gl_, GetProgramiv(kServiceProgramId, GL_LINK_STATUS, _))
       .WillOnce(SetArgPointee<2>(GL_TRUE))
@@ -1078,7 +1079,7 @@ TEST_P(GLES3DecoderWithShaderTest, GetUniformIndicesSucceeds) {
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(kCount, static_cast<size_t>(result->GetNumResults()));
   for (size_t ii = 0; ii < kCount; ++ii) {
-    UNSAFE_TODO(EXPECT_EQ(kIndices[ii], result->GetData()[ii]));
+    EXPECT_EQ(kIndices[ii], UNSAFE_TODO(result->GetData()[ii]));
   }
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
 }
@@ -1183,10 +1184,10 @@ TEST_P(GLES3DecoderWithShaderTest, GetUniformIndicesBadSharedMemoryFails) {
 
 TEST_P(GLES3DecoderWithShaderTest, GetActiveUniformsivSucceeds) {
   const uint32_t kBucketId = 123;
-  const GLuint kIndices[] = { 1, 2 };
-  const GLint kResults[] = { 1976, 321 };
-  const size_t kCount = std::size(kIndices);
-  SetBucketData(kBucketId, kIndices, sizeof(GLuint) * kCount);
+  const auto kIndices = std::to_array<GLuint>({1, 2});
+  const auto kResults = std::to_array<GLint>({1976, 321});
+  const size_t kCount = kIndices.size();
+  SetBucketData(kBucketId, kIndices.data(), sizeof(GLuint) * kCount);
   auto* result =
       static_cast<cmds::GetActiveUniformsiv::Result*>(shared_memory_address_);
   cmds::GetActiveUniformsiv cmd;
@@ -1194,7 +1195,7 @@ TEST_P(GLES3DecoderWithShaderTest, GetActiveUniformsivSucceeds) {
            kSharedMemoryOffset);
   EXPECT_CALL(*gl_, GetActiveUniformsiv(kServiceProgramId, kCount, _,
                                         GL_UNIFORM_TYPE, _))
-      .WillOnce(SetArrayArgument<4>(kResults, UNSAFE_TODO(kResults + kCount)))
+      .WillOnce(SetArrayArgument<4>(kResults.begin(), kResults.end()))
       .RetiresOnSaturation();
   EXPECT_CALL(*gl_, GetProgramiv(kServiceProgramId, GL_LINK_STATUS, _))
       .WillOnce(SetArgPointee<2>(GL_TRUE))
@@ -1203,7 +1204,7 @@ TEST_P(GLES3DecoderWithShaderTest, GetActiveUniformsivSucceeds) {
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(kCount, static_cast<size_t>(result->GetNumResults()));
   for (size_t ii = 0; ii < kCount; ++ii) {
-    UNSAFE_TODO(EXPECT_EQ(kResults[ii], result->GetData()[ii]));
+    EXPECT_EQ(kResults[ii], UNSAFE_TODO(result->GetData()[ii]));
   }
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
 }

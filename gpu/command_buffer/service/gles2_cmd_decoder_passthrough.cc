@@ -936,8 +936,8 @@ GLES2Decoder::Error GLES2DecoderPassthroughImpl::DoCommandsImpl(
 
     const unsigned int arg_count = size - 1;
     unsigned int command_index = command - kFirstGLES2Command;
-    if (command_index < std::size(command_info)) {
-      const CommandInfo& info = UNSAFE_TODO(command_info[command_index]);
+    if (command_index < command_info.size()) {
+      const CommandInfo& info = command_info[command_index];
       unsigned int info_arg_count = static_cast<unsigned int>(info.arg_count);
       if ((info.arg_flags == cmd::kFixed && arg_count == info_arg_count) ||
           (info.arg_flags == cmd::kAtLeastN && arg_count >= info_arg_count)) {
@@ -2856,9 +2856,10 @@ bool GLES2DecoderPassthroughImpl::CheckErrorCallbackState() {
       sizeof(cmds::name) / sizeof(CommandBufferEntry) - 1, \
   }, /* NOLINT */
 
-constexpr GLES2DecoderPassthroughImpl::CommandInfo
-    GLES2DecoderPassthroughImpl::command_info[] = {
-        GLES2_COMMAND_LIST(GLES2_CMD_OP)};
+constexpr std::array<GLES2DecoderPassthroughImpl::CommandInfo,
+                     kNumCommands - kFirstGLES2Command>
+    GLES2DecoderPassthroughImpl::command_info = {
+        {GLES2_COMMAND_LIST(GLES2_CMD_OP)}};
 
 #undef GLES2_CMD_OP
 

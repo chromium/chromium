@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 
 #include "base/command_line.h"
@@ -1202,34 +1203,26 @@ TEST_P(GLES2DecoderRGBBackbufferTest, ReadPixelsNoAlphaBackbuffer) {
 }
 
 TEST_P(GLES2DecoderTest, ReadPixelsOutOfRange) {
-  static GLint tests[][4] = {
-      {
-       -2, -1, 9, 5,
-      },  // out of range on all sides
-      {
-       2, 1, 9, 5,
-      },  // out of range on right, bottom
-      {
-       -7, -4, 9, 5,
-      },  // out of range on left, top
-      {
-       0, -5, 9, 5,
-      },  // completely off top
-      {
-       0, 3, 9, 5,
-      },  // completely off bottom
-      {
-       -9, 0, 9, 5,
-      },  // completely off left
-      {
-       5, 0, 9, 5,
-      },  // completely off right
+  struct ReadPixelsTest {
+    GLint x;
+    GLint y;
+    GLsizei width;
+    GLsizei height;
   };
+  static constexpr auto tests = std::to_array<ReadPixelsTest>({
+      {-2, -1, 9, 5},  // out of range on all sides
+      {2, 1, 9, 5},    // out of range on right, bottom
+      {-7, -4, 9, 5},  // out of range on left, top
+      {0, -5, 9, 5},   // completely off top
+      {0, 3, 9, 5},    // completely off bottom
+      {-9, 0, 9, 5},   // completely off left
+      {5, 0, 9, 5},    // completely off right
+  });
 
-  for (size_t tt = 0; tt < std::size(tests); ++tt) {
-    CheckReadPixelsOutOfRange(
-        UNSAFE_TODO(tests[tt])[0], UNSAFE_TODO(tests[tt])[1],
-        UNSAFE_TODO(tests[tt])[2], UNSAFE_TODO(tests[tt])[3], tt == 0);
+  bool first = true;
+  for (const auto& test : tests) {
+    CheckReadPixelsOutOfRange(test.x, test.y, test.width, test.height, first);
+    first = false;
   }
 }
 

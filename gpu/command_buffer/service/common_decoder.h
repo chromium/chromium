@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <map>
 #include <memory>
 #include <optional>
@@ -274,7 +275,7 @@ class GPU_COMMAND_BUFFER_SERVICE_EXPORT CommonDecoder {
   };
 
   // A table of CommandInfo for all the commands.
-  static const CommandInfo command_info[];
+  static const std::array<CommandInfo, cmd::kNumCommands> command_info;
 };
 
 }  // namespace gpu

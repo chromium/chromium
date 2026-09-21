@@ -7,6 +7,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
+
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
@@ -105,19 +107,21 @@ TEST_P(GLES2DecoderTest, GetIntegervCached) {
     GLenum pname;
     GLint expected;
   };
-  TestInfo tests[] = {
+  constexpr auto tests = std::to_array<TestInfo>({
       {
-       GL_MAX_TEXTURE_SIZE, TestHelper::kMaxTextureSize,
+          GL_MAX_TEXTURE_SIZE,
+          TestHelper::kMaxTextureSize,
       },
       {
-       GL_MAX_CUBE_MAP_TEXTURE_SIZE, TestHelper::kMaxCubeMapTextureSize,
+          GL_MAX_CUBE_MAP_TEXTURE_SIZE,
+          TestHelper::kMaxCubeMapTextureSize,
       },
       {
-       GL_MAX_RENDERBUFFER_SIZE, TestHelper::kMaxRenderbufferSize,
+          GL_MAX_RENDERBUFFER_SIZE,
+          TestHelper::kMaxRenderbufferSize,
       },
-  };
-  for (size_t ii = 0; ii < sizeof(tests) / sizeof(tests[0]); ++ii) {
-    const TestInfo& test = UNSAFE_TODO(tests[ii]);
+  });
+  for (const TestInfo& test : tests) {
     auto* result =
         static_cast<cmds::GetIntegerv::Result*>(shared_memory_address_);
     EXPECT_CALL(*gl_, GetError())
@@ -1288,8 +1292,8 @@ TEST_P(GLES2DecoderTest, LoseContextCHROMIUMInvalidArgs1_0) {
 class GLES2DecoderDoCommandsTest : public GLES2DecoderTest {
  public:
   GLES2DecoderDoCommandsTest() {
-    for (int i = 0; i < 3; i++) {
-      UNSAFE_TODO(cmds_[i]).Init(GL_BLEND);
+    for (auto& cmd : cmds_) {
+      cmd.Init(GL_BLEND);
     }
     entries_per_cmd_ = ComputeNumEntries(cmds_[0].ComputeSize());
   }
@@ -1300,7 +1304,7 @@ class GLES2DecoderDoCommandsTest : public GLES2DecoderTest {
   }
 
  protected:
-  cmds::Enable cmds_[3];
+  std::array<cmds::Enable, 3> cmds_;
   int entries_per_cmd_;
 };
 
@@ -1432,9 +1436,9 @@ TEST_P(GLES3DecoderTest, GetTransformFeedbackBinding) {
 TEST_P(GLES2DecoderDoCommandsTest, DoCommandsOneOfZero) {
   int num_processed = -1;
   SetExpectationsForNCommands(0);
-  EXPECT_EQ(
-      error::kNoError,
-      decoder_->DoCommands(1, &cmds_, entries_per_cmd_ * 0, &num_processed));
+  EXPECT_EQ(error::kNoError,
+            decoder_->DoCommands(1, cmds_.data(), entries_per_cmd_ * 0,
+                                 &num_processed));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
   EXPECT_EQ(0, num_processed);
 }
@@ -1443,9 +1447,9 @@ TEST_P(GLES2DecoderDoCommandsTest, DoCommandsOneOfZero) {
 TEST_P(GLES2DecoderDoCommandsTest, DoCommandsOneOfOne) {
   int num_processed = -1;
   SetExpectationsForNCommands(1);
-  EXPECT_EQ(
-      error::kNoError,
-      decoder_->DoCommands(1, &cmds_, entries_per_cmd_ * 1, &num_processed));
+  EXPECT_EQ(error::kNoError,
+            decoder_->DoCommands(1, cmds_.data(), entries_per_cmd_ * 1,
+                                 &num_processed));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
   EXPECT_EQ(entries_per_cmd_, num_processed);
 }
@@ -1454,9 +1458,9 @@ TEST_P(GLES2DecoderDoCommandsTest, DoCommandsOneOfOne) {
 TEST_P(GLES2DecoderDoCommandsTest, DoCommandsThreeOfThree) {
   int num_processed = -1;
   SetExpectationsForNCommands(3);
-  EXPECT_EQ(
-      error::kNoError,
-      decoder_->DoCommands(3, &cmds_, entries_per_cmd_ * 3, &num_processed));
+  EXPECT_EQ(error::kNoError,
+            decoder_->DoCommands(3, cmds_.data(), entries_per_cmd_ * 3,
+                                 &num_processed));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
   EXPECT_EQ(entries_per_cmd_ * 3, num_processed);
 }
@@ -1465,9 +1469,9 @@ TEST_P(GLES2DecoderDoCommandsTest, DoCommandsThreeOfThree) {
 TEST_P(GLES2DecoderDoCommandsTest, DoCommandsTwoOfThree) {
   int num_processed = -1;
   SetExpectationsForNCommands(2);
-  EXPECT_EQ(
-      error::kNoError,
-      decoder_->DoCommands(2, &cmds_, entries_per_cmd_ * 3, &num_processed));
+  EXPECT_EQ(error::kNoError,
+            decoder_->DoCommands(2, cmds_.data(), entries_per_cmd_ * 3,
+                                 &num_processed));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
   EXPECT_EQ(entries_per_cmd_ * 2, num_processed);
 }
@@ -1477,9 +1481,9 @@ TEST_P(GLES2DecoderDoCommandsTest, DoCommandsZeroCmdSize) {
   cmds_[1].header.size = 0;
   int num_processed = -1;
   SetExpectationsForNCommands(1);
-  EXPECT_EQ(
-      error::kInvalidSize,
-      decoder_->DoCommands(2, &cmds_, entries_per_cmd_ * 2, &num_processed));
+  EXPECT_EQ(error::kInvalidSize,
+            decoder_->DoCommands(2, cmds_.data(), entries_per_cmd_ * 2,
+                                 &num_processed));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
   EXPECT_EQ(entries_per_cmd_, num_processed);
 }
@@ -1489,8 +1493,8 @@ TEST_P(GLES2DecoderDoCommandsTest, DoCommandsOutOfBounds) {
   int num_processed = -1;
   SetExpectationsForNCommands(1);
   EXPECT_EQ(error::kOutOfBounds,
-            decoder_->DoCommands(
-                2, &cmds_, entries_per_cmd_ * 2 - 1, &num_processed));
+            decoder_->DoCommands(2, cmds_.data(), entries_per_cmd_ * 2 - 1,
+                                 &num_processed));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
   EXPECT_EQ(entries_per_cmd_, num_processed);
 }
@@ -1501,8 +1505,8 @@ TEST_P(GLES2DecoderDoCommandsTest, DoCommandsBadArgSize) {
   int num_processed = -1;
   SetExpectationsForNCommands(1);
   EXPECT_EQ(error::kInvalidArguments,
-            decoder_->DoCommands(
-                2, &cmds_, entries_per_cmd_ * 2 + 1, &num_processed));
+            decoder_->DoCommands(2, cmds_.data(), entries_per_cmd_ * 2 + 1,
+                                 &num_processed));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
   // gpu::CommandHeader::size is a 21-bit field, so casting it to int is safe.
   // Without the explicit cast, Visual Studio ends up promoting the left hand

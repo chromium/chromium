@@ -5,6 +5,7 @@
 #include "gpu/command_buffer/service/webgpu_decoder_impl.h"
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <optional>
 #include <string_view>
@@ -324,7 +325,8 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   };
 
   // A table of CommandInfo for all the commands.
-  static const CommandInfo command_info[kNumCommands - kFirstWebGPUCommand];
+  static const std::array<CommandInfo, kNumCommands - kFirstWebGPUCommand>
+      command_info;
 
 // Generate a member function prototype for each command in an automated and
 // typesafe way.
@@ -1024,7 +1026,9 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   base::WeakPtrFactory<WebGPUDecoderImpl> weak_ptr_factory_{this};
 };
 
-constexpr WebGPUDecoderImpl::CommandInfo WebGPUDecoderImpl::command_info[] = {
+constexpr std::array<WebGPUDecoderImpl::CommandInfo,
+                     kNumCommands - kFirstWebGPUCommand>
+    WebGPUDecoderImpl::command_info = {{
 #define WEBGPU_CMD_OP(name)                                \
   {                                                        \
       &WebGPUDecoderImpl::Handle##name,                    \
@@ -1032,9 +1036,9 @@ constexpr WebGPUDecoderImpl::CommandInfo WebGPUDecoderImpl::command_info[] = {
       cmds::name::cmd_flags,                               \
       sizeof(cmds::name) / sizeof(CommandBufferEntry) - 1, \
   }, /* NOLINT */
-    WEBGPU_COMMAND_LIST(WEBGPU_CMD_OP)
+        WEBGPU_COMMAND_LIST(WEBGPU_CMD_OP)
 #undef WEBGPU_CMD_OP
-};
+    }};
 
 }  // namespace
 
@@ -1908,14 +1912,14 @@ error::Error WebGPUDecoderImpl::DoCommands(unsigned int num_commands,
 
     const unsigned int arg_count = size - 1;
     unsigned int command_index = command - kFirstWebGPUCommand;
-    if (command_index < std::size(command_info)) {
+    if (command_index < command_info.size()) {
       // Prevent all further WebGPU commands from being processed if the server
       // is destroyed.
       if (destroyed_) {
         result = error::kLostContext;
         break;
       }
-      const CommandInfo& info = UNSAFE_TODO(command_info[command_index]);
+      const CommandInfo& info = command_info[command_index];
       unsigned int info_arg_count = static_cast<unsigned int>(info.arg_count);
       if ((info.arg_flags == cmd::kFixed && arg_count == info_arg_count) ||
           (info.arg_flags == cmd::kAtLeastN && arg_count >= info_arg_count)) {

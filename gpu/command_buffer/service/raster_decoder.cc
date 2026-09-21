@@ -847,7 +847,8 @@ class RasterDecoderImpl final : public RasterDecoder,
   };
 
   // A table of CommandInfo for all the commands.
-  static const CommandInfo command_info[kNumCommands - kFirstRasterCommand];
+  static const std::array<CommandInfo, kNumCommands - kFirstRasterCommand>
+      command_info;
 
   const int raster_decoder_id_;
 
@@ -924,7 +925,9 @@ class RasterDecoderImpl final : public RasterDecoder,
   base::WeakPtrFactory<DecoderContext> weak_ptr_factory_{this};
 };
 
-constexpr RasterDecoderImpl::CommandInfo RasterDecoderImpl::command_info[] = {
+constexpr std::array<RasterDecoderImpl::CommandInfo,
+                     kNumCommands - kFirstRasterCommand>
+    RasterDecoderImpl::command_info = {{
 #define RASTER_CMD_OP(name)                                \
   {                                                        \
       &RasterDecoderImpl::Handle##name,                    \
@@ -932,9 +935,9 @@ constexpr RasterDecoderImpl::CommandInfo RasterDecoderImpl::command_info[] = {
       cmds::name::cmd_flags,                               \
       sizeof(cmds::name) / sizeof(CommandBufferEntry) - 1, \
   }, /* NOLINT */
-    RASTER_COMMAND_LIST(RASTER_CMD_OP)
+        RASTER_COMMAND_LIST(RASTER_CMD_OP)
 #undef RASTER_CMD_OP
-};
+    }};
 
 // static
 std::unique_ptr<RasterDecoder> RasterDecoder::Create(
@@ -1477,8 +1480,8 @@ error::Error RasterDecoderImpl::DoCommandsImpl(unsigned int num_commands,
 
     const unsigned int arg_count = size - 1;
     unsigned int command_index = command - kFirstRasterCommand;
-    if (command_index < std::size(command_info)) {
-      const CommandInfo& info = UNSAFE_TODO(command_info[command_index]);
+    if (command_index < command_info.size()) {
+      const CommandInfo& info = command_info[command_index];
       if (sk_surface_) {
         if (!AllowedBetweenBeginEndRaster(command)) {
           LOCAL_SET_GL_ERROR(

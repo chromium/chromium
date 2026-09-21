@@ -4021,14 +4021,14 @@ TEST_P(%(test_name)s, %(name)sInvalidHeader) {
   const char* kSource[] = { kSource0 };
   const char kValidStrEnd = 0;
   const GLsizei kCount = static_cast<GLsizei>(std::size(kSource));
-  const GLsizei kTests[] = {
+  const auto kTests = std::to_array<GLsizei>({
       kCount + 1,
       0,
       std::numeric_limits<GLsizei>::max(),
       -1,
-  };
-  for (size_t ii = 0; ii < std::size(kTests); ++ii) {
-    SetBucketAsCStrings(kBucketId, 1, kSource, UNSAFE_TODO(kTests[ii]),
+  });
+  for (GLsizei test : kTests) {
+    SetBucketAsCStrings(kBucketId, 1, kSource, test,
                         kValidStrEnd);
     cmds::%(name)s cmd;
     cmd.Init(%(cmd_args)s);

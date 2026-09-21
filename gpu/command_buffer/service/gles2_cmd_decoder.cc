@@ -2515,7 +2515,8 @@ class GLES2DecoderImpl : public GLES2Decoder, public ErrorStateClient {
   };
 
   // A table of CommandInfo for all the commands.
-  static const CommandInfo command_info[kNumCommands - kFirstGLES2Command];
+  static const std::array<CommandInfo, kNumCommands - kFirstGLES2Command>
+      command_info;
 
   // Most recent generation of the TextureManager.  If this no longer matches
   // the current generation when our context becomes current, then we'll rebind
@@ -2531,7 +2532,9 @@ class GLES2DecoderImpl : public GLES2Decoder, public ErrorStateClient {
   base::WeakPtrFactory<GLES2DecoderImpl> weak_ptr_factory_{this};
 };
 
-constexpr GLES2DecoderImpl::CommandInfo GLES2DecoderImpl::command_info[] = {
+constexpr std::array<GLES2DecoderImpl::CommandInfo,
+                     kNumCommands - kFirstGLES2Command>
+    GLES2DecoderImpl::command_info = {{
 #define GLES2_CMD_OP(name)                                   \
   {                                                          \
     &GLES2DecoderImpl::Handle##name, cmds::name::kArgFlags,  \
@@ -2539,9 +2542,9 @@ constexpr GLES2DecoderImpl::CommandInfo GLES2DecoderImpl::command_info[] = {
         sizeof(cmds::name) / sizeof(CommandBufferEntry) - 1, \
   }                                                          \
   , /* NOLINT */
-    GLES2_COMMAND_LIST(GLES2_CMD_OP)
+        GLES2_COMMAND_LIST(GLES2_CMD_OP)
 #undef GLES2_CMD_OP
-};
+    }};
 
 ScopedGLErrorSuppressor::ScopedGLErrorSuppressor(
     const char* function_name, ErrorState* error_state)
@@ -4948,8 +4951,8 @@ error::Error GLES2DecoderImpl::DoCommandsImpl(unsigned int num_commands,
 
     const unsigned int arg_count = size - 1;
     unsigned int command_index = command - kFirstGLES2Command;
-    if (command_index < std::size(command_info)) {
-      const CommandInfo& info = UNSAFE_TODO(command_info[command_index]);
+    if (command_index < command_info.size()) {
+      const CommandInfo& info = command_info[command_index];
       unsigned int info_arg_count = static_cast<unsigned int>(info.arg_count);
       if ((info.arg_flags == cmd::kFixed && arg_count == info_arg_count) ||
           (info.arg_flags == cmd::kAtLeastN && arg_count >= info_arg_count)) {

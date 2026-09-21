@@ -502,7 +502,8 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl : public GLES2Decoder {
   };
 
   // A table of CommandInfo for all the commands.
-  static const CommandInfo command_info[kNumCommands - kFirstGLES2Command];
+  static const std::array<CommandInfo, kNumCommands - kFirstGLES2Command>
+      command_info;
 
   // The GLApi to make the gl calls on.
   raw_ptr<gl::GLApi> api_ = nullptr;
