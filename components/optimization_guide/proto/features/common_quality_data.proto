@@ -247,7 +247,10 @@ message AnnotatedPageContent {
   // Content.
   // TODO(crbug.com/484011242): This should be moved out of AnnotatedPageContent because
   // it does not semantically belong here.
-  GeminiInChromePageMetadata gemini_in_chrome_page_metadata = 10 [features = { field_presence: EXPLICIT }];
+  GeminiInChromePageMetadata gemini_in_chrome_page_metadata = 10 [
+    deprecated = true,
+    features = { field_presence: EXPLICIT }
+  ];
 }
 
 // The ContentNode tree is a sparse representation of the DOM tree for a web
@@ -1075,7 +1078,10 @@ message AutofillInformation {
 // Next ID: 2
 message GeminiInChromePageMetadata {
   // Information about the associated screenshot.
-  ScreenshotInfo screenshot_info = 1 [features = { field_presence: EXPLICIT }];
+  ScreenshotInfo screenshot_info = 1 [
+    deprecated = true,
+    features = { field_presence: EXPLICIT }
+  ];
 }
 
 // The screenshot information for the page. While the screenshot is not
