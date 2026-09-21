@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -659,10 +660,17 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
          toSectionWithIdentifier:settingIdentifier];
 
     if (newItem.metadata.subtitle) {
+      GURL linkURL;
+      StringWithTags parsedSubtitle =
+          ParseStringWithLinks(newItem.metadata.subtitle);
+      if (!parsedSubtitle.ranges.empty() &&
+          newItem.metadata.context == GeminiSettingsContextGeminiAppsActivity) {
+        linkURL = GURL(kGeminiAppActivityURL);
+      }
       TableViewLinkHeaderFooterItem* settingFooterItem =
           [self headerFooterItemWithType:ItemTypeAppActivityFooter
                                     text:newItem.metadata.subtitle
-                                 linkURL:GURL()];
+                                 linkURL:linkURL];
       [self.tableViewModel setFooter:settingFooterItem
             forSectionWithIdentifier:settingIdentifier];
     }
