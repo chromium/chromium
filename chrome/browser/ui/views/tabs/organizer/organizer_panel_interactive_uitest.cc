@@ -24,7 +24,20 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/buildflags/buildflags.h"
+#include "extensions/common/extension_id.h"
+#include "ui/views/controls/separator.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "base/strings/stringprintf.h"
+#include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/ui/extensions/extension_side_panel_utils.h"
+#include "extensions/common/extension.h"
+#include "extensions/test/test_extension_dir.h"
+#endif
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/compositor/layer.h"
@@ -309,5 +322,193 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelInteractiveUiTest,
               views::Separator::kThickness,
           /*should_have_rounded_corners=*/false));
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+class OrganizerPanelExtensionInteractiveUiTest
+    : public InteractiveBrowserTestMixin<extensions::ExtensionBrowserTest> {
+ public:
+  OrganizerPanelExtensionInteractiveUiTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {organizer_panel::kOrganizerPanel,
+         organizer_panel::kShowExtensionsSidePanelUiInOrganizerPanel},
+        {});
+  }
+
+  void SetUpOnMainThread() override {
+    InteractiveBrowserTestMixin<
+        extensions::ExtensionBrowserTest>::SetUpOnMainThread();
+
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
+        prefs::kTabSearchPinnedToTabstrip, true);
+
+    browser()->GetWindow()->SetBounds(
+        gfx::Rect(0, 0, kBrowserWindowWidth, kBrowserWindowHeight));
+
+    tabs::VerticalTabStripStateController::From(browser())
+        ->SetVerticalTabsEnabled(true);
+    RunScheduledLayouts();
+
+    animation_subscription_ = SubscribeToAnimations(browser());
+  }
+
+  void TearDownOnMainThread() override {
+    animation_subscription_ = base::CallbackListSubscription();
+    InteractiveBrowserTestMixin::TearDownOnMainThread();
+  }
+
+  const extensions::Extension* LoadExtensionWithSidePanel(
+      const std::string& name = "Test Extension") {
+    auto dir = std::make_unique<extensions::TestExtensionDir>();
+    constexpr std::string_view kManifest =
+        R"({
+             "name": "%s",
+             "version": "0.1",
+             "manifest_version": 3,
+             "side_panel": {
+               "default_path": "side_panel.html"
+             }
+           })";
+    dir->WriteManifest(base::StringPrintf(kManifest, name.c_str()));
+    dir->WriteFile(FILE_PATH_LITERAL("side_panel.html"),
+                   "<html><body>Side Panel Content</body></html>");
+    const extensions::Extension* extension = LoadExtension(dir->UnpackedPath());
+    extension_dirs_.push_back(std::move(dir));
+    return extension;
+  }
+
+  auto WaitForPanelOpen() {
+    return InParallel(RunSubsequence(WaitForEvent(kBrowserViewElementId,
+                                                  kShowAnimationComplete)),
+                      RunSubsequence(WaitForShow(kOrganizerPanelViewElementId)))
+        .SetDescription("WaitForPanelOpen()");
+  }
+
+  auto WaitForPanelClose() {
+    return InParallel(RunSubsequence(WaitForEvent(kBrowserViewElementId,
+                                                  kHideAnimationComplete)),
+                      RunSubsequence(WaitForHide(kOrganizerPanelViewElementId)))
+        .SetDescription("WaitForPanelClose()");
+  }
+
+  auto CheckControllerState(
+      bool visible,
+      const extensions::ExtensionId& id = extensions::ExtensionId()) {
+    auto steps = Steps(CheckResult(
+        [this]() {
+          return organizer_panel_controller()->IsOrganizerPanelVisible();
+        },
+        visible));
+    if (!id.empty()) {
+      steps += CheckResult(
+          [this]() {
+            return organizer_panel_controller()->active_extension_id();
+          },
+          id);
+    }
+    AddDescriptionPrefix(steps, "CheckControllerState()");
+    return steps;
+  }
+
+  OrganizerPanelController* organizer_panel_controller() {
+    return OrganizerPanelController::From(browser());
+  }
+
+  BrowserView* browser_view() {
+    return BrowserView::GetBrowserViewForBrowser(browser());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::vector<std::unique_ptr<extensions::TestExtensionDir>> extension_dirs_;
+  base::CallbackListSubscription animation_subscription_;
+};
+
+IN_PROC_BROWSER_TEST_F(OrganizerPanelExtensionInteractiveUiTest,
+                       OpensExtensionSidePanelInOrganizerPanel) {
+  const extensions::Extension* extension = LoadExtensionWithSidePanel();
+  ASSERT_TRUE(extension);
+
+  RunTestSequence(CheckControllerState(false), Do([this, extension]() {
+                    extensions::side_panel_util::OpenGlobalExtensionSidePanel(
+                        *browser(), /*web_contents=*/nullptr, extension->id());
+                  }),
+                  WaitForPanelOpen(),
+                  CheckControllerState(true, extension->id()),
+                  WaitForShow(OrganizerPanelView::kWebViewElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(OrganizerPanelExtensionInteractiveUiTest,
+                       TogglesExtensionSidePanelInOrganizerPanel) {
+  const extensions::Extension* extension = LoadExtensionWithSidePanel();
+  ASSERT_TRUE(extension);
+
+  RunTestSequence(
+      // Toggle to open.
+      Do([this, extension]() {
+        extensions::side_panel_util::ToggleExtensionSidePanel(browser(),
+                                                              extension->id());
+      }),
+      WaitForPanelOpen(), CheckControllerState(true, extension->id()),
+      // Toggle to close.
+      Do([this, extension]() {
+        extensions::side_panel_util::ToggleExtensionSidePanel(browser(),
+                                                              extension->id());
+      }),
+      WaitForPanelClose(), CheckControllerState(false));
+}
+
+IN_PROC_BROWSER_TEST_F(OrganizerPanelExtensionInteractiveUiTest,
+                       ClosesExtensionSidePanelInOrganizerPanel) {
+  const extensions::Extension* extension = LoadExtensionWithSidePanel();
+  ASSERT_TRUE(extension);
+
+  RunTestSequence(Do([this, extension]() {
+                    extensions::side_panel_util::OpenGlobalExtensionSidePanel(
+                        *browser(), /*web_contents=*/nullptr, extension->id());
+                  }),
+                  WaitForPanelOpen(),
+                  CheckControllerState(true, extension->id()),
+                  Do([this, extension]() {
+                    extensions::side_panel_util::CloseGlobalExtensionSidePanel(
+                        browser(), extension->id());
+                  }),
+                  WaitForPanelClose(), CheckControllerState(false));
+}
+
+IN_PROC_BROWSER_TEST_F(OrganizerPanelExtensionInteractiveUiTest,
+                       SwitchesBetweenExtensionsInOrganizerPanel) {
+  const extensions::Extension* ext1 = LoadExtensionWithSidePanel("Ext 1");
+  const extensions::Extension* ext2 = LoadExtensionWithSidePanel("Ext 2");
+  ASSERT_TRUE(ext1);
+  ASSERT_TRUE(ext2);
+
+  RunTestSequence(
+      // Open extension 1.
+      Do([this, ext1]() {
+        extensions::side_panel_util::OpenGlobalExtensionSidePanel(
+            *browser(), /*web_contents=*/nullptr, ext1->id());
+      }),
+      WaitForPanelOpen(), CheckControllerState(true, ext1->id()),
+      // Open extension 2 (should switch content seamlessly).
+      Do([this, ext2]() {
+        extensions::side_panel_util::OpenGlobalExtensionSidePanel(
+            *browser(), /*web_contents=*/nullptr, ext2->id());
+      }),
+      CheckControllerState(true, ext2->id()),
+      WaitForShow(OrganizerPanelView::kWebViewElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(OrganizerPanelExtensionInteractiveUiTest,
+                       OpensDefaultExtensionWhenOpenedWithoutExtensionId) {
+  const extensions::Extension* extension = LoadExtensionWithSidePanel();
+  ASSERT_TRUE(extension);
+
+  RunTestSequence(
+      // Open organizer panel without specifying an extension ID.
+      Do([this]() { organizer_panel_controller()->SetOrganizerVisible(true); }),
+      WaitForPanelOpen(), WaitForShow(OrganizerPanelView::kWebViewElementId));
+}
+
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace base::test
