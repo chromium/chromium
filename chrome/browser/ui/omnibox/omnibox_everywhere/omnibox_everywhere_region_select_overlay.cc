@@ -5,10 +5,8 @@
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_region_select_overlay.h"
 
 #include <algorithm>
-#include <cmath>
 #include <cstddef>
 #include <cstdint>
-#include <limits>
 #include <memory>
 #include <utility>
 
@@ -16,7 +14,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -61,6 +58,8 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/display/win/screen_win.h"
+#include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/point_f.h"
 #endif
 
 #if defined(USE_AURA)
@@ -80,6 +79,8 @@ constexpr SkColor kChromnientSlateScrim = SkColorSetA(kSlateBaseColor, 165);
 constexpr SkColor kToastBackgroundColor = SkColorSetA(kSlateBaseColor, 220);
 
 constexpr float kSelectionRectStrokeWidth = 2.5f;
+constexpr int kSelectionStrokeOutset = 4;
+constexpr int kSelectionCornerRadius = 14;
 
 constexpr float kGlifGradientWashAlpha = 0.18f;
 
@@ -325,9 +326,13 @@ class RegionSelectOverlayView : public views::View {
  public:
   RegionSelectOverlayView(OmniboxEverywhereRegionSelectOverlay& coordinator,
                           const SkBitmap& screenshot,
-                          const gfx::Rect& display_bounds)
+                          const display::Display& display)
       : coordinator_(coordinator),
-        display_bounds_(display_bounds),
+        display_(display),
+#if BUILDFLAG(IS_WIN)
+        display_physical_offset_(
+            GetDisplayPhysicalBounds(display).OffsetFromOrigin()),
+#endif
         bitmap_(screenshot),
         image_(!bitmap_.empty() ? gfx::ImageSkia::CreateFromBitmap(bitmap_, 1.f)
                                 : gfx::ImageSkia()) {
@@ -346,13 +351,30 @@ class RegionSelectOverlayView : public views::View {
   RegionSelectOverlayView& operator=(const RegionSelectOverlayView&) = delete;
   ~RegionSelectOverlayView() override = default;
 
-  gfx::Point GetGlobalPoint(const gfx::Point& local_point) const {
-    return display_bounds_.origin() + local_point.OffsetFromOrigin();
+  // Returns `event`'s location in the virtual desktop's DIP coordinate space,
+  // i.e. the same space as `display::Display::bounds()`.
+  //
+  // A mouse drag holds pointer capture and can therefore travel onto a monitor
+  // other than the one hosting this widget. So simply offsetting it by this
+  // widget's display origin would drift further from true cursor position.
+  gfx::Point GetScreenPointForEvent(const ui::LocatedEvent& event) const {
+#if BUILDFLAG(IS_WIN)
+    if (!GetLocalBounds().Contains(event.location())) {
+      if (const auto* screen_win = display::win::GetScreenWin();
+          screen_win && display::Screen::Get() == screen_win) {
+        const gfx::PointF phys_pt =
+            gfx::ScalePoint(event.location_f(),
+                            display_.device_scale_factor()) +
+            display_physical_offset_;
+        return gfx::ToRoundedPoint(screen_win->ScreenToDIPPoint(phys_pt));
+      }
+    }
+#endif
+    return display_.bounds().origin() + event.location().OffsetFromOrigin();
   }
 
   gfx::Rect GetGlobalSelectionRect(const ui::LocatedEvent& event) const {
-    return gfx::BoundingRect(drag_start_screen_,
-                             GetGlobalPoint(event.location()));
+    return gfx::BoundingRect(drag_start_screen_, GetScreenPointForEvent(event));
   }
 
   void HideToastChip() {
@@ -371,11 +393,12 @@ class RegionSelectOverlayView : public views::View {
     gfx::Rect new_rect;
     if (!global_rect.IsEmpty()) {
       new_rect = global_rect;
-      new_rect.Offset(-display_bounds_.OffsetFromOrigin());
+      new_rect.Offset(-display_.bounds().OffsetFromOrigin());
       // Cull selections that do not intersect this display widget's bounds to
-      // prevent scheduling invalidations on non-intersecting monitors.
+      // prevent scheduling invalidations on non-intersecting monitors. The
+      // outset keeps the sliver of border that spills across a monitor seam.
       gfx::Rect visible_bounds = GetLocalBounds();
-      visible_bounds.Outset(base::ClampCeil(kSelectionRectStrokeWidth + 1.0f));
+      visible_bounds.Outset(kSelectionStrokeOutset);
       if (!new_rect.Intersects(visible_bounds)) {
         new_rect = gfx::Rect();
       }
@@ -418,10 +441,7 @@ class RegionSelectOverlayView : public views::View {
     // 1. Draw base un-dimmed screenshot.
     DrawScreenshotImage(canvas);
 
-    gfx::Rect stroke_bounds = selection_rect_;
-    stroke_bounds.Outset(2);
-    const bool has_selection = !selection_rect_.IsEmpty() &&
-                               stroke_bounds.Intersects(GetLocalBounds());
+    const bool has_selection = !selection_rect_.IsEmpty();
 
     if (has_selection) {
       canvas->Save();
@@ -461,7 +481,7 @@ class RegionSelectOverlayView : public views::View {
   bool OnMousePressed(const ui::MouseEvent& event) override {
     if (event.IsOnlyLeftMouseButton()) {
       is_dragging_ = true;
-      drag_start_screen_ = GetGlobalPoint(event.location());
+      drag_start_screen_ = GetScreenPointForEvent(event);
       if (cursor_chip_) {
         cursor_chip_->SetVisible(false);
       }
@@ -509,7 +529,7 @@ class RegionSelectOverlayView : public views::View {
         break;
       case ui::EventType::kGestureScrollBegin:
         is_dragging_ = true;
-        drag_start_screen_ = GetGlobalPoint(event->location());
+        drag_start_screen_ = GetScreenPointForEvent(*event);
         if (cursor_chip_) {
           cursor_chip_->SetVisible(false);
         }
@@ -621,10 +641,11 @@ class RegionSelectOverlayView : public views::View {
     if (selection_rect_.IsEmpty()) {
       return SkPath();
     }
-    constexpr float kIdealCornerRadius = 14.0f;
-    const float corner_radius =
-        std::min({kIdealCornerRadius, selection_rect_.width() / 2.0f,
-                  selection_rect_.height() / 2.0f});
+    const float corner_radius = std::min({
+        static_cast<float>(kSelectionCornerRadius),
+        selection_rect_.width() / 2.0f,
+        selection_rect_.height() / 2.0f,
+    });
 
     SkRect sk_sel_rect =
         SkRect::MakeXYWH(selection_rect_.x(), selection_rect_.y(),
@@ -663,14 +684,19 @@ class RegionSelectOverlayView : public views::View {
     gfx::Rect damage_rect = gfx::UnionRects(selection_rect_, new_rect);
     // Expand by stroke width plus anti-aliasing margin so the perimeter
     // border is completely cleared and redrawn.
-    constexpr float kDamageRectOutset = kSelectionRectStrokeWidth + 0.5f;
-    damage_rect.Outset(base::ClampCeil(kDamageRectOutset));
+    damage_rect.Outset(kSelectionStrokeOutset);
+    // The selection can extend past this monitor; only invalidate what is
+    // actually painted.
+    damage_rect.Intersect(GetLocalBounds());
     selection_rect_ = new_rect;
     SchedulePaintInRect(damage_rect);
   }
 
   const raw_ref<OmniboxEverywhereRegionSelectOverlay> coordinator_;
-  const gfx::Rect display_bounds_;
+  const display::Display display_;
+#if BUILDFLAG(IS_WIN)
+  const gfx::Vector2d display_physical_offset_;
+#endif
   SkBitmap bitmap_;
   gfx::ImageSkia image_;
   raw_ptr<InstructionToastChipView> toast_chip_ = nullptr;
@@ -889,8 +915,8 @@ OmniboxEverywhereRegionSelectOverlay::CreateWidgetForDisplay(
                                              wm::ANIMATE_NONE);
 #endif
 
-  auto contents_view = std::make_unique<RegionSelectOverlayView>(
-      *this, display_bitmap, display.bounds());
+  auto contents_view =
+      std::make_unique<RegionSelectOverlayView>(*this, display_bitmap, display);
   widget->SetContentsView(std::move(contents_view));
 
   return widget;
