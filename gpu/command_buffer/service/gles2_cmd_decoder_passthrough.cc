@@ -249,6 +249,7 @@ constexpr const char* kRequiredFunctionalityExtensions[] = {
     "GL_EXT_semaphore_fd",
     "GL_KHR_debug",
     "GL_NV_fence",
+    "GL_EXT_EGL_image_array",
     "GL_EXT_EGL_image_storage",
     "GL_OES_EGL_image",
     "GL_OES_EGL_image_external",

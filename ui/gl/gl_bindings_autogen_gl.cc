@@ -387,6 +387,8 @@ void DriverGL::InitializeDynamicBindings(GLGetProcAddressProc get_proc_address,
       gfx::HasExtension(extensions, "GL_CHROMIUM_gles_depth_binding_hack");
   ext.b_GL_CHROMIUM_glgetstringi_hack =
       gfx::HasExtension(extensions, "GL_CHROMIUM_glgetstringi_hack");
+  ext.b_GL_EXT_EGL_image_array =
+      gfx::HasExtension(extensions, "GL_EXT_EGL_image_array");
   ext.b_GL_EXT_EGL_image_storage =
       gfx::HasExtension(extensions, "GL_EXT_EGL_image_storage");
   ext.b_GL_EXT_base_instance =

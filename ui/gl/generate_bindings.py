@@ -2292,6 +2292,7 @@ FUNCTION_SETS = [
       "GL_ANGLE_renderability_validation",
       "GL_ANGLE_robust_resource_initialization",
       "GL_ANGLE_webgl_compatibility",
+      "GL_EXT_EGL_image_array",
       "GL_EXT_texture_swizzle",
       "GL_EXT_texture_format_BGRA8888",
       "GL_EXT_unpack_subimage",

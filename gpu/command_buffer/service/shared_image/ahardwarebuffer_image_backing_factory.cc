@@ -138,13 +138,21 @@ GLuint CreateAndBindTexture(EGLImage image, GLenum target) {
   gl::ScopedTextureBinder texture_binder(target, service_id);
 
   if (target == GL_TEXTURE_2D_ARRAY) {
-    if (!gl::g_current_gl_driver ||
-        !gl::g_current_gl_driver->fn.glEGLImageTargetTexStorageEXTFn) {
-      LOG(ERROR) << "glEGLImageTargetTexStorageEXT is not supported";
+    if (gl::g_current_gl_driver &&
+        gl::g_current_gl_driver->ext.b_GL_EXT_EGL_image_storage &&
+        gl::g_current_gl_driver->fn.glEGLImageTargetTexStorageEXTFn) {
+      api->glEGLImageTargetTexStorageEXTFn(target, image, nullptr);
+    } else if (gl::g_current_gl_driver &&
+               gl::g_current_gl_driver->ext.b_GL_EXT_EGL_image_array &&
+               gl::g_current_gl_driver->fn.glEGLImageTargetTexture2DOESFn) {
+      api->glEGLImageTargetTexture2DOESFn(target, image);
+    } else {
+      LOG(ERROR) << "Neither glEGLImageTargetTexStorageEXT nor "
+                    "glEGLImageTargetTexture2DOES is supported for "
+                    "GL_TEXTURE_2D_ARRAY";
       api->glDeleteTexturesFn(1, &service_id);
       return 0;
     }
-    api->glEGLImageTargetTexStorageEXTFn(target, image, nullptr);
     api->glTexParameteriFn(target, GL_TEXTURE_BASE_LEVEL, 0);
     api->glTexParameteriFn(target, GL_TEXTURE_MAX_LEVEL, 0);
   } else {
@@ -896,8 +904,15 @@ AHardwareBufferImageBackingFactory::AHardwareBufferImageBackingFactory(
   // Vulkan mode, we should only need this with GLES2.
   gl::GLApi* api = gl::g_current_gl_context;
   api->glGetIntegervFn(GL_MAX_TEXTURE_SIZE, &max_gl_texture_size_);
-  if (gl::g_current_gl_driver &&
-      gl::g_current_gl_driver->fn.glEGLImageTargetTexStorageEXTFn) {
+  const bool has_egl_image_array =
+      gl::g_current_gl_driver &&
+      gl::g_current_gl_driver->ext.b_GL_EXT_EGL_image_array &&
+      gl::g_current_gl_driver->fn.glEGLImageTargetTexture2DOESFn;
+  const bool has_egl_image_storage =
+      gl::g_current_gl_driver &&
+      gl::g_current_gl_driver->ext.b_GL_EXT_EGL_image_storage &&
+      gl::g_current_gl_driver->fn.glEGLImageTargetTexStorageEXTFn;
+  if (has_egl_image_array || has_egl_image_storage) {
     api->glGetIntegervFn(GL_MAX_ARRAY_TEXTURE_LAYERS,
                          &max_gl_array_texture_layers_);
     max_gl_array_texture_layers_ = std::max(1, max_gl_array_texture_layers_);

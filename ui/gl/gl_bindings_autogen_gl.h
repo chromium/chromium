@@ -1531,6 +1531,7 @@ struct ExtensionsGL {
   bool b_GL_CHROMIUM_copy_texture;
   bool b_GL_CHROMIUM_gles_depth_binding_hack;
   bool b_GL_CHROMIUM_glgetstringi_hack;
+  bool b_GL_EXT_EGL_image_array;
   bool b_GL_EXT_EGL_image_storage;
   bool b_GL_EXT_base_instance;
   bool b_GL_EXT_blend_func_extended;
