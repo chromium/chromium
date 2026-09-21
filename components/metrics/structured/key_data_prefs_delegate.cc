@@ -72,15 +72,15 @@ void KeyDataPrefsDelegate::LoadKeysFromPrefs() {
   auto* proto_keys = proto_.mutable_keys();
 
   for (const auto [project_name, project_keys] : keys_pref) {
-    std::optional<const ProjectValidator*> project_validator =
+    const ProjectValidator* project_validator =
         validators->GetProjectValidator(project_name);
 
     // Check if a project was found for the name.
-    if (!project_validator.has_value()) {
+    if (!project_validator) {
       continue;
     }
 
-    const uint64_t project_hash = (*project_validator)->project_hash();
+    const uint64_t project_hash = project_validator->project_hash();
     const base::DictValue* value_dict = project_keys.GetIfDict();
     if (!value_dict) {
       LOG(ERROR) << "Key Pref value was expected to be a dict.";

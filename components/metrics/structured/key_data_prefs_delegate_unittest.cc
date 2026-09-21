@@ -364,4 +364,32 @@ TEST_F(KeyDataPrefsDelegateTest, Purge) {
   EXPECT_EQ(keys_dict.size(), 0ul);
 }
 
+TEST_F(KeyDataPrefsDelegateTest, IgnoresUnknownProjects) {
+  const base::TimeDelta start_day = Today();
+  ASSERT_TRUE(SetupKey(kProjectOneHash, kKey, start_day, kKeyRotationPeriod));
+
+  // Write an unrecognized project name into the test pref dictionary.
+  {
+    KeyProto unknown_proto;
+    unknown_proto.set_key(kKey);
+    unknown_proto.set_last_rotation(start_day.InDays());
+    unknown_proto.set_rotation_period(kKeyRotationPeriod.InDays());
+
+    ScopedDictPrefUpdate pref_updater(&prefs_, kTestPrefName);
+    pref_updater.Get().Set("UnknownProject",
+                           util::CreateValueFromKeyProto(unknown_proto));
+  }
+
+  // Instantiating KeyDataPrefsDelegate should succeed without crashing.
+  CreateKeyData();
+
+  // Verify that valid projects continue to load normally.
+  const KeyProto* key_proto = delegate_->GetKey(kProjectOneHash);
+  ASSERT_NE(key_proto, nullptr);
+  EXPECT_EQ(key_proto->key(), kKey);
+
+  key_data_->Id(kProjectOneHash, kKeyRotationPeriod);
+  ExpectKeyValidation(/*valid=*/1, /*created=*/0, /*rotated=*/0);
+}
+
 }  // namespace metrics::structured
