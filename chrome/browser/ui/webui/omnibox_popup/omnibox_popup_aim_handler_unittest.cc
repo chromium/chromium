@@ -105,10 +105,8 @@ TEST_F(OmniboxPopupAimHandlerTest, ShowContextMenu) {
 
 TEST_F(OmniboxPopupAimHandlerTest, RequestClose) {
   EXPECT_FALSE(embedder_->ui_closed());
-  EXPECT_EQ("", handler_->cached_draft_text());
-  handler_->RequestClose("live search query");
+  handler_->RequestClose();
   EXPECT_TRUE(embedder_->ui_closed());
-  EXPECT_EQ("live search query", handler_->cached_draft_text());
 }
 
 TEST_F(OmniboxPopupAimHandlerTest, OnPopupShown) {

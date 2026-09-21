@@ -45,17 +45,12 @@ class OmniboxAimPopupWebUIContent : public OmniboxPopupWebUIBaseContent {
   //    b. OmniboxPopupWebUIBaseContent::Detach() (Detaches WebContents
   //       and breaks recursion loops).
   //    c. OmniboxAimPopupWebUIContent::ApplyInputAndCleanup() (Resets the
-  //       OmniboxView text and, under Full WebUI, restores focus). Skipped on
-  //       a tab switch or when `CloseUI()` already applied the draft.
-  //
-  // Step 5c is where drafts from native closes reach the omnibox. WebUI closes
-  // run `CloseUI()` first, which applies the draft and then triggers this same
-  // flow via the popup state change; `draft_applied_on_close_` skips 5c.
+  //       OmniboxView text).
   void Clear() override;
   void OnContextMenuClosed() override;
 
-  // Hands `input` to the omnibox, replacing its text. Under
-  // Full WebUI this also restores focus by reopening the full popup.
+  // Called from the browser after popup has already closed. `input` is
+  // the possibly empty input that should replace the omnibox text.
   void ApplyInputAndCleanup(const std::string& input);
 
   // Focuses the input element inside the WebUI AIM popup via Mojo.
@@ -78,7 +73,6 @@ class OmniboxAimPopupWebUIContent : public OmniboxPopupWebUIBaseContent {
   // <escape>, presses the 'x' button, or moves focus out of the popup.
   void CloseUI() override;
   void ShowUI() override;
-  bool EscClosesUI() const override;
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
 
@@ -91,14 +85,8 @@ class OmniboxAimPopupWebUIContent : public OmniboxPopupWebUIBaseContent {
 
   FRIEND_TEST_ALL_PREFIXES(OmniboxAimPopupBrowserTest,
                            DraftTextPreservedOnTabSwitch);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxAimPopupFullWebUIBrowserTest,
-                           CloseUISetsPopupStateToFull);
 
   base::WeakPtr<content::WebContents> active_web_contents_;
-
-  // Prevents `OnClearCallback()` from re-applying a draft that `CloseUI()`
-  // already transferred.
-  bool draft_applied_on_close_ = false;
 
   base::WeakPtrFactory<OmniboxAimPopupWebUIContent> weak_factory_{this};
 };

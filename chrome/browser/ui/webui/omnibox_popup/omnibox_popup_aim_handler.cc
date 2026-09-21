@@ -39,8 +39,7 @@ OmniboxPopupAimHandler::OmniboxPopupAimHandler(
 
 OmniboxPopupAimHandler::~OmniboxPopupAimHandler() = default;
 
-void OmniboxPopupAimHandler::RequestClose(const std::string& input) {
-  cached_draft_text_ = input;
+void OmniboxPopupAimHandler::RequestClose() {
   if (auto* aim_popup_content = GetAimPopupContent()) {
     // For screen readers, focus the location bar since the user requested a
     // manual close of the popup, as opposed to the popup closing because the

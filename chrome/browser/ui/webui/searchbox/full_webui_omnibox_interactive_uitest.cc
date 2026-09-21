@@ -25,9 +25,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
@@ -66,7 +64,6 @@
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPopupWebView);
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kAimPopupWebView);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab1);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab2);
 
@@ -81,16 +78,6 @@ const DeepQuery kFirstSuggestionMatch = {
 const DeepQuery kFirstSuggestionMatchContents = {
     "omnibox-full-app", "omnibox-popup-searchbox", "cr-searchbox-dropdown",
     "cr-searchbox-match[match-index='1']", "#contents"};
-const DeepQuery kComposeButton = {"omnibox-full-app", "omnibox-popup-searchbox",
-                                  "cr-searchbox-compose-button",
-                                  "#composeButton"};
-
-const DeepQuery kAimInput = {"omnibox-aim-app", "#composebox",
-                             "cr-composebox-input", "#input"};
-const DeepQuery kCancelIcon = {"omnibox-aim-app", "#composebox",
-                               "cr-composebox-input", "#cancelIcon"};
-const DeepQuery kAimSubmit = {"omnibox-aim-app", "#composebox",
-                              "cr-composebox-submit", "#submitContainer"};
 }  // namespace
 
 class FullWebUIOmniboxInteractiveTestBase
@@ -1778,198 +1765,7 @@ class FullWebUIOmniboxAimInteractiveTestBase
     return SearchboxInteractiveTestMixin::WaitForOmniboxAimStateReady(
         omnibox_context_entrypoint_contents_id, kPopupSearchbox);
   }
-
-  auto GetActiveAimPopupWebView() {
-    return base::BindLambdaForTesting([this]() -> views::View* {
-      auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-      if (!browser_view || !browser_view->GetLocationBarView()) {
-        return nullptr;
-      }
-      auto* aim_presenter =
-          browser_view->GetLocationBarView()->GetOmniboxPopupAimPresenter();
-      if (!aim_presenter) {
-        return nullptr;
-      }
-      return aim_presenter->GetWebUIContent();
-    });
-  }
-
-  auto WaitForPopupState(OmniboxPopupState expected_state) {
-    return PollUntil(
-        [this, expected_state]() -> bool {
-          auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-          if (!browser_view || !browser_view->GetLocationBarView() ||
-              !browser_view->GetLocationBarView()->GetOmniboxController()) {
-            return false;
-          }
-          auto current_state = browser_view->GetLocationBarView()
-                                   ->GetOmniboxController()
-                                   ->popup_state_manager()
-                                   ->popup_state();
-          return current_state == expected_state;
-        },
-        "WaitForPopupState");
-  }
-
-  auto WaitForAimPopupReady() {
-    return Steps(
-        WaitForPopupState(OmniboxPopupState::kAim),
-        PollUntil(
-            [this]() -> bool {
-              auto* browser_view =
-                  BrowserView::GetBrowserViewForBrowser(browser());
-              if (!browser_view || !browser_view->GetLocationBarView()) {
-                return false;
-              }
-              auto* aim_presenter = browser_view->GetLocationBarView()
-                                        ->GetOmniboxPopupAimPresenter();
-              auto* widget =
-                  aim_presenter ? aim_presenter->GetWidget() : nullptr;
-              auto* content =
-                  aim_presenter ? aim_presenter->GetWebUIContent() : nullptr;
-              return aim_presenter && aim_presenter->IsShown() && widget &&
-                     widget->IsVisible() && content && content->GetVisible() &&
-                     content->IsDrawn();
-            },
-            "WaitForAimPopupViewDrawn"),
-        InAnyContext(InstrumentNonTabWebView(kAimPopupWebView,
-                                             GetActiveAimPopupWebView())),
-        InSameContext(WaitForWebContentsReady(
-            kAimPopupWebView, GURL(chrome::kChromeUIOmniboxPopupAimURL))));
-  }
-
-  auto WaitForAimPopupHidden() {
-    return Steps(
-        PollUntil(
-            [this]() -> bool {
-              auto* browser_view =
-                  BrowserView::GetBrowserViewForBrowser(browser());
-              if (!browser_view || !browser_view->GetLocationBarView() ||
-                  !browser_view->GetLocationBarView()->GetOmniboxController()) {
-                return true;
-              }
-              auto state = browser_view->GetLocationBarView()
-                               ->GetOmniboxController()
-                               ->popup_state_manager()
-                               ->popup_state();
-              return state != OmniboxPopupState::kAim;
-            },
-            "WaitForAimPopupHidden"),
-        UninstrumentWebContents(kAimPopupWebView));
-  }
-
-  auto WaitForAimInputValue(const ui::ElementIdentifier& contents_id,
-                            const DeepQuery& element,
-                            const std::string& expected_value) {
-    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kAimInputValueChanged);
-    StateChange value_changed;
-    value_changed.event = kAimInputValueChanged;
-    value_changed.where = element;
-    value_changed.test_function =
-        base::StringPrintf("(el) => el.value === '%s'", expected_value.c_str());
-    value_changed.continue_across_navigation = true;
-    return WaitForStateChange(contents_id, value_changed);
-  }
-
-  auto WaitForAimSubmitEnabled(const ui::ElementIdentifier& contents_id) {
-    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kAimSubmitEnabled);
-    StateChange submit_enabled;
-    submit_enabled.event = kAimSubmitEnabled;
-    submit_enabled.where = DeepQuery{"omnibox-aim-app", "#composebox"};
-    submit_enabled.test_function = "(el) => el && el.canSubmitFilesAndInput";
-    submit_enabled.continue_across_navigation = true;
-    return Steps(WaitForElementToRender(contents_id, kAimSubmit),
-                 WaitForStateChange(contents_id, submit_enabled));
-  }
-
-  auto InputAimPopupText(const std::string& text) {
-    return Steps(
-        InSameContext(ExecuteJsAt(kAimPopupWebView, kAimInput,
-                                  base::StringPrintf(R"(el => {
-              const fullText = '%s';
-              for (let i = 0; i < fullText.length; i++) {
-                el.value = fullText.substring(0, i + 1);
-                el.dispatchEvent(
-                    new Event('input', {bubbles: true, composed: true}));
-              }
-            })",
-                                                     text.c_str()))),
-        InAnyContext(WaitForAimInputValue(kAimPopupWebView, kAimInput, text)),
-        InAnyContext(WaitForAimSubmitEnabled(kAimPopupWebView)));
-  }
-
-  auto OpenAimPopup() {
-    return Steps(
-        SetAimEligibleResponse(),
-        OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
-        InAnyContext(WaitForOmniboxAimStateReady(kPopupWebView)),
-        InAnyContext(WaitForElementToRender(kPopupWebView, kComposeButton)),
-        InSameContext(ClickElement(kPopupWebView, kComposeButton)),
-        WaitForAimPopupReady(),
-        InAnyContext(WaitForElementToRender(kAimPopupWebView, kAimInput)));
-  }
 };
-
-// TODO(b/559141815): Fix this suite on Mac and Windows.
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
-class FullWebUIOmniboxAimInteractiveTest
-    : public FullWebUIOmniboxAimInteractiveTestBase {
- public:
-  FullWebUIOmniboxAimInteractiveTest() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features =
-        GetEnabledFeatures(/*force_enable_aim=*/true);
-    enabled_features.emplace_back(omnibox::kAimUsePecApi,
-                                  base::FieldTrialParams());
-    feature_list_.InitWithFeaturesAndParameters(
-        enabled_features, {omnibox::internal::kWebUIOmniboxPopup,
-                           omnibox::kAimServerEligibilityEnabled,
-                           omnibox::kAimFuseboxEligibilityCheckEnabled});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Dismissing the AIM popup with Escape should hand the composebox draft back
-// to the omnibox along with focus.
-IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxAimInteractiveTest,
-                       ExitAimRestoresFocusAndInput_Escape) {
-  RunTestSequence(OpenAimPopup(), InputAimPopupText("my test query"),
-                  InAnyContext(SendKeyPress(kBrowserViewElementId,
-                                            ui::VKEY_ESCAPE, ui::EF_NONE)),
-                  WaitForAimPopupHidden(),
-                  WaitForWebUIInputValue("my test query"),
-                  InAnyContext(CheckWebUIInputFocus(true)));
-}
-
-// Dismissing the AIM popup with the "X" button when there is no input in the
-// composebox should return to the omnibox to its original state.
-IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxAimInteractiveTest,
-                       ExitAimRestoresFocusAndInput_CancelIcon) {
-  RunTestSequence(
-      OpenAimPopup(),
-      InAnyContext(WaitForElementToRender(kAimPopupWebView, kCancelIcon)),
-      InSameContext(ClickElement(kAimPopupWebView, kCancelIcon)),
-      WaitForAimPopupHidden(), WaitForWebUIInputValue("chrome://version"),
-      InAnyContext(CheckWebUIInputFocus(true)));
-}
-
-// Dismissing the AIM popup by clicking outside should hand the composebox
-// draft back to the omnibox along with focus.
-IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxAimInteractiveTest,
-                       ExitAimRestoresFocusAndInput_ClickOutside) {
-  RunTestSequence(
-      OpenAimPopup(), InputAimPopupText("my test query"),
-      // Dismiss the popup by clicking outside of it, on the webpage body.
-      ClickWebPageBody(kTab1), WaitForAimPopupHidden(),
-      // The draft must land in the omnibox rather than being dropped, and
-      // focus must come back with it.
-      WaitForOmniboxText(u"my test query"),
-      WaitForPopupState(OmniboxPopupState::kFull),
-      WaitForWebUIInputValue("my test query"),
-      InAnyContext(CheckWebUIInputFocus(true)));
-}
-#endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 
 class FullWebUIOmniboxSimplificationInteractiveTest
     : public FullWebUIOmniboxAimInteractiveTestBase {

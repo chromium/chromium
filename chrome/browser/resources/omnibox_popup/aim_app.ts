@@ -61,7 +61,6 @@ export class OmniboxAimAppElement extends CrLitElement {
       contextManagementInComposeboxEnabled_: {type: Boolean},
       isOblongShape_: {type: Boolean},
       webuiOmniboxSimplificationEnabled_: {type: Boolean},
-      webuiOmniboxFullPopupEnabled_: {type: Boolean},
       smartComposeEnabled_: {type: Boolean},
       webuiShadowEnabled_: {
         type: Boolean,
@@ -98,8 +97,6 @@ export class OmniboxAimAppElement extends CrLitElement {
       loadTimeData.getBoolean('contextButtonShapeIsOblong');
   protected accessor webuiOmniboxSimplificationEnabled_: boolean =
       loadTimeData.getBoolean('webuiOmniboxSimplificationEnabled');
-  protected accessor webuiOmniboxFullPopupEnabled_: boolean =
-      loadTimeData.getBoolean('webuiOmniboxFullPopupEnabled');
   protected accessor smartComposeEnabled_: boolean =
       loadTimeData.getBoolean('composeboxSmartComposeEnabled');
   // When true, this page paints the popup's background, rounded corners and
@@ -218,13 +215,8 @@ export class OmniboxAimAppElement extends CrLitElement {
       }
     }
   }
-
-  /**
-   * Forwards close requests along with the active composebox input text so the
-   * browser can transfer any typed draft back to the Omnibox.
-   */
-  protected onCloseComposebox_(e: CustomEvent<{composeboxText: string}>) {
-    this.browserProxy_.handler.requestClose(e.detail.composeboxText);
+  protected onCloseComposebox_() {
+    this.browserProxy_.handler.requestClose();
   }
 
   protected setPreserveContextOnClose_(preserveContextOnClose: boolean) {

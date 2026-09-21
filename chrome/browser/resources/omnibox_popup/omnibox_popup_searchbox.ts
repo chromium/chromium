@@ -1374,9 +1374,7 @@ export class OmniboxPopupSearchboxElement extends
   }
 
   protected onComposeClick_(e: CustomEvent<ComposeClickEventDetail>) {
-    // Clear autocomplete matches so they don't resurface when transitioning
-    // back from the AIM popup to the full popup.
-    this.clearAutocompleteMatches();
+    this.dropdownIsVisible = false;
     this.popupPageHandler_.openAimPopup(e.detail?.viaKeyboard || false);
   }
 

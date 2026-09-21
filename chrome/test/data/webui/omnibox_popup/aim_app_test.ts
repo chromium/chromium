@@ -31,7 +31,6 @@ suite('AimAppTest', function() {
       voiceSearchCoherenceCobrowsingComposeboxEnabled: false,
       contextButtonShapeIsOblong: false,
       webuiOmniboxSimplificationEnabled: false,
-      webuiOmniboxFullPopupEnabled: false,
       composeboxSmartTabSharingVisible: false,
       contextManagementInComposeboxEnabled: false,
       contextualMenuUsePecApi: false,
@@ -423,7 +422,6 @@ suite('AimAppTest', function() {
           searchboxLayoutMode: 'TallBottomContext',
           contextButtonShapeIsOblong: true,
           webuiOmniboxSimplificationEnabled: true,
-          webuiOmniboxFullPopupEnabled: true,
           voiceSearchCoherenceComposeboxesEnabled: true,
         });
         const app = document.createElement('omnibox-aim-app');
@@ -442,7 +440,6 @@ suite('AimAppTest', function() {
         assertEquals('forward', composebox.submitButtonIconType);
         assertTrue(composebox.isOblongShape);
         assertTrue(composebox.webuiOmniboxSimplificationEnabled);
-        assertTrue(composebox.closeOnEscape);
         assertTrue(composebox.showVoiceSearch);
         assertFalse(composebox.disableVoiceSearchAnimation);
         assertFalse(composebox.showMenuOnClick);
@@ -461,23 +458,6 @@ suite('AimAppTest', function() {
     await microtasksFinished();
 
     assertFalse(app.$.composebox.submitting);
-  });
-
-  test('PassesInputToRequestCloseOnCloseComposebox', async function() {
-    const app = document.createElement('omnibox-aim-app');
-    document.body.appendChild(app);
-    await microtasksFinished();
-
-    app.$.composebox.input = 'test draft text';
-    app.$.composebox.dispatchEvent(new CustomEvent('close-composebox', {
-      bubbles: true,
-      composed: true,
-      detail: {composeboxText: 'test draft text'},
-    }));
-    await microtasksFinished();
-
-    assertEquals(1, handler.getCallCount('requestClose'));
-    assertEquals('test draft text', handler.getArgs('requestClose')[0]);
   });
 });
 

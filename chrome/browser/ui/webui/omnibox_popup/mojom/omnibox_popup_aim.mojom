@@ -17,11 +17,9 @@ interface PageHandlerFactory {
 
 // The browser-side handler for the Omnibox AIM Popup.
 interface PageHandler {
-  // Notifies the handler to close the popup. `input` is the current composebox
-  // text, which the browser transfers back to the omnibox. Note that not every
-  // close action goes through this path as C++/Views code is responsible for
-  // presentation.
-  RequestClose(string input);
+  // Notifies the handler to close the popup, note that not every close action
+  // goes through this path as C++/Views code is responsible for presentation.
+  RequestClose();
 
   // Opens context menu.
   ShowContextMenu(gfx.mojom.Point point);
