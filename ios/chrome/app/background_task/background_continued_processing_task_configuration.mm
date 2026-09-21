@@ -12,12 +12,14 @@
 #pragma mark - Initializer
 
 - (instancetype)initWithTitle:(NSString*)title
+                     subtitle:(NSString*)subtitle
             expirationHandler:(ProceduralBlock)expirationHandler {
   CHECK(title.length > 0);
   CHECK(expirationHandler);
 
   if ((self = [super init])) {
     _title = [title copy];
+    _subtitle = [subtitle copy] ?: @"";
     _expirationHandler = [expirationHandler copy];
     _totalUnits = kDefaultTotalUnitsOfProgress;
     _expectedStepCount = kDefaultExpectedStepCount;
@@ -34,6 +36,10 @@
 - (void)setTitle:(NSString*)title {
   CHECK(title.length > 0);
   _title = [title copy];
+}
+
+- (void)setSubtitle:(NSString*)subtitle {
+  _subtitle = [subtitle copy] ?: @"";
 }
 
 - (void)setTotalUnits:(int64_t)totalUnits {

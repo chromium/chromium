@@ -803,6 +803,7 @@ TEST_F(ActorServiceTest,
   BackgroundContinuedProcessingTaskConfiguration* dummy_config =
       [[BackgroundContinuedProcessingTaskConfiguration alloc]
               initWithTitle:@"Dummy"
+                   subtitle:@""
           expirationHandler:^{
           }];
   BackgroundContinuedProcessingTaskContext* mock_context =

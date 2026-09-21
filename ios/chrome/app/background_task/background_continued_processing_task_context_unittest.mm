@@ -45,8 +45,8 @@ class BackgroundContinuedProcessingTaskContextTest : public PlatformTest {
     BackgroundContinuedProcessingTaskConfiguration* config =
         [[BackgroundContinuedProcessingTaskConfiguration alloc]
                 initWithTitle:kTestTaskTitle
+                     subtitle:kTestTaskSubtitle
             expirationHandler:expirationHandler];
-    config.subtitle = kTestTaskSubtitle;
     return [[BackgroundContinuedProcessingTaskContext alloc]
         initWithTaskIdentifier:taskId
                  configuration:config
@@ -150,23 +150,45 @@ TEST_F(BackgroundContinuedProcessingTaskContextTest, TestPostCompletionSafety) {
   EXPECT_EQ(failureContext.completedUnits, 0);
 }
 
-// Tests that setting an empty title fails.
-TEST_F(BackgroundContinuedProcessingTaskContextTest, TestEmptyTitleFails) {
+// Tests that setting an empty title fails, while setting a nil subtitle
+// defaults to an empty string.
+TEST_F(BackgroundContinuedProcessingTaskContextTest,
+       TestEmptyTitleFailsAndNilSubtitleDefaultsToEmpty) {
   BackgroundContinuedProcessingTaskContext* context =
       CreateTestContext(@"empty.title.test.id");
 
+  NSString* nilString = nil;
   EXPECT_DEATH_IF_SUPPORTED(context.title = @"", "");
   EXPECT_DEATH_IF_SUPPORTED([context updateTitle:@"" subtitle:@"Bar"], "");
+
+  context.subtitle = nilString;
+  EXPECT_NSEQ(context.subtitle, @"");
+
+  [context updateTitle:@"Foo" subtitle:@"NonEmpty"];
+  EXPECT_NSEQ(context.subtitle, @"NonEmpty");
+
+  [context updateTitle:@"Foo" subtitle:nilString];
+  EXPECT_NSEQ(context.subtitle, @"");
 }
 
-// Tests that configuring invalid progress invariants triggers a crash.
+// Tests that configuring invalid progress invariants triggers a crash, while
+// nil subtitles default to an empty string.
 TEST_F(BackgroundContinuedProcessingTaskContextTest,
-       TestInvalidConfigurationFails) {
+       TestConfigurationInvariantsAndSubtitleDefaulting) {
+  NSString* nilString = nil;
   BackgroundContinuedProcessingTaskConfiguration* config =
       [[BackgroundContinuedProcessingTaskConfiguration alloc]
               initWithTitle:kTestTaskTitle
+                   subtitle:nilString
           expirationHandler:^{
           }];
+  EXPECT_NSEQ(config.subtitle, @"");
+
+  config.subtitle = kTestTaskSubtitle;
+  EXPECT_NSEQ(config.subtitle, kTestTaskSubtitle);
+
+  config.subtitle = nilString;
+  EXPECT_NSEQ(config.subtitle, @"");
 
   EXPECT_DEATH_IF_SUPPORTED(config.totalUnits = 0, "");
   EXPECT_DEATH_IF_SUPPORTED(config.totalUnits = -1, "");
@@ -183,6 +205,7 @@ TEST_F(BackgroundContinuedProcessingTaskContextTest,
     BackgroundContinuedProcessingTaskConfiguration* config =
         [[BackgroundContinuedProcessingTaskConfiguration alloc]
                 initWithTitle:kTestTaskTitle
+                     subtitle:kTestTaskSubtitle
             expirationHandler:^{
             }];
     config.totalUnits = 1;
@@ -207,6 +230,7 @@ TEST_F(BackgroundContinuedProcessingTaskContextTest,
     BackgroundContinuedProcessingTaskConfiguration* config =
         [[BackgroundContinuedProcessingTaskConfiguration alloc]
                 initWithTitle:kTestTaskTitle
+                     subtitle:kTestTaskSubtitle
             expirationHandler:^{
             }];
     config.totalUnits = 2;
@@ -236,6 +260,7 @@ TEST_F(BackgroundContinuedProcessingTaskContextTest,
     BackgroundContinuedProcessingTaskConfiguration* config =
         [[BackgroundContinuedProcessingTaskConfiguration alloc]
                 initWithTitle:kTestTaskTitle
+                     subtitle:kTestTaskSubtitle
             expirationHandler:^{
             }];
     config.totalUnits = 10;
@@ -359,6 +384,7 @@ TEST_F(BackgroundContinuedProcessingTaskContextTest,
   BackgroundContinuedProcessingTaskConfiguration* config =
       [[BackgroundContinuedProcessingTaskConfiguration alloc]
               initWithTitle:kTestTaskTitle
+                   subtitle:kTestTaskSubtitle
           expirationHandler:^{
           }];
   config.expectedStepCount = 10;
@@ -386,6 +412,7 @@ TEST_F(BackgroundContinuedProcessingTaskContextTest,
     BackgroundContinuedProcessingTaskConfiguration* singleStepConfig =
         [[BackgroundContinuedProcessingTaskConfiguration alloc]
                 initWithTitle:kTestTaskTitle
+                     subtitle:kTestTaskSubtitle
             expirationHandler:^{
             }];
     singleStepConfig.expectedStepCount = 1;
@@ -416,6 +443,7 @@ TEST_F(BackgroundContinuedProcessingTaskContextTest,
   BackgroundContinuedProcessingTaskConfiguration* config =
       [[BackgroundContinuedProcessingTaskConfiguration alloc]
               initWithTitle:kTestTaskTitle
+                   subtitle:kTestTaskSubtitle
           expirationHandler:^{
           }];
   config.totalUnits = kCustomTotalUnits;

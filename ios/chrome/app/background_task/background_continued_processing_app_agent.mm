@@ -80,13 +80,16 @@ NSString* FullTaskIdentifierForIdentifier(NSString* task_identifier) {
   CHECK(identifier.length > 0);
   CHECK(configuration);
   CHECK(configuration.title.length > 0);
+  CHECK(configuration.subtitle);
   CHECK(configuration.expirationHandler);
 
-  // Continued processing tasks must be initiated from an active foreground
-  // scene.
-  if (!self.appState.foregroundActiveScene) {
-    DLOG(WARNING) << "Cannot request continued processing task without an "
-                     "active foreground scene.";
+  // iOS requires `BGContinuedProcessingTaskRequest` to be submitted before the
+  // app finishes entering the background (i.e. while at least one scene is in
+  // `SceneActivationLevelForegroundActive` or
+  // `SceneActivationLevelForegroundInactive`).
+  if (self.appState.foregroundScenes.count == 0) {
+    DLOG(WARNING) << "Cannot request continued processing task without a "
+                     "foreground scene.";
     return nil;
   }
 

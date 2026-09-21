@@ -24,16 +24,17 @@
 // immediately updates the cached title and propagates the update to the system.
 @property(nonatomic, copy) NSString* title;
 
-// Subtitle displayed in the system-provided Live Activity. Setting this
-// property immediately updates the cached subtitle and propagates the update
-// to the system.
+// Subtitle displayed in the system-provided Live Activity. Defaults to an
+// empty string if set to nil. Setting this property immediately updates the
+// cached subtitle and propagates the update to the system.
 @property(nonatomic, copy) NSString* subtitle;
 
 // Whether the task has already been completed or expired.
 @property(nonatomic, readonly, getter=isCompleted) BOOL completed;
 
 // Updates both the title and subtitle simultaneously in the system-provided
-// Live Activity.
+// Live Activity. `title` must not be empty. `subtitle` defaults to an empty
+// string if nil.
 - (void)updateTitle:(NSString*)title subtitle:(NSString*)subtitle;
 
 // The fraction of work completed (from 0.0 to 1.0).

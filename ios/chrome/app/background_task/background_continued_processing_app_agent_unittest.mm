@@ -30,9 +30,11 @@ NSString* const kTestTaskSubtitle = @"Bar";
 
 }  // namespace
 
-// Helper object to dynamically configure the mock app state's active scene.
+// Helper object to dynamically configure the mock app state's active and
+// foreground scenes.
 @interface DynamicMockAppStateHelper : NSObject
 @property(nonatomic, strong) id foregroundActiveScene;
+@property(nonatomic, copy) NSArray<SceneState*>* foregroundScenes;
 @end
 
 @implementation DynamicMockAppStateHelper
@@ -47,6 +49,7 @@ class BackgroundContinuedProcessingAppAgentTest : public PlatformTest {
     mock_scene_state_ = OCMClassMock([SceneState class]);
     app_state_helper_ = [[DynamicMockAppStateHelper alloc] init];
     app_state_helper_.foregroundActiveScene = mock_scene_state_;
+    app_state_helper_.foregroundScenes = @[ mock_scene_state_ ];
 
     DynamicMockAppStateHelper* helper = app_state_helper_;
     OCMStub([mock_app_state_ foregroundActiveScene])
@@ -54,6 +57,10 @@ class BackgroundContinuedProcessingAppAgentTest : public PlatformTest {
           id scene = helper.foregroundActiveScene;
           [inv setReturnValue:&scene];
         });
+    OCMStub([mock_app_state_ foregroundScenes]).andDo(^(NSInvocation* inv) {
+      NSArray<SceneState*>* scenes = helper.foregroundScenes;
+      [inv setReturnValue:&scenes];
+    });
     OCMStub([mock_app_state_ addObserver:[OCMArg any]]);
     OCMStub([mock_app_state_ removeObserver:[OCMArg any]]);
 
@@ -78,8 +85,8 @@ class BackgroundContinuedProcessingAppAgentTest : public PlatformTest {
     BackgroundContinuedProcessingTaskConfiguration* config =
         [[BackgroundContinuedProcessingTaskConfiguration alloc]
                 initWithTitle:kTestTaskTitle
+                     subtitle:kTestTaskSubtitle
             expirationHandler:expiration_handler];
-    config.subtitle = kTestTaskSubtitle;
     return config;
   }
 
@@ -134,15 +141,37 @@ TEST_F(BackgroundContinuedProcessingAppAgentTest,
             nil);
 }
 
-// Tests that requesting a task returns nil when there is no active foreground
-// scene.
+// Tests that requesting a task returns nil when all scenes are in the
+// background (`foregroundScenes` is empty).
 TEST_F(BackgroundContinuedProcessingAppAgentTest,
-       TestRequestTaskFailsWhenNoForegroundActiveScene) {
+       TestRequestTaskFailsWhenInBackground) {
   app_state_helper_.foregroundActiveScene = nil;
+  app_state_helper_.foregroundScenes = @[];
 
   EXPECT_EQ([agent_ requestTaskWithIdentifier:kTestTaskId
                                 configuration:CreateTestConfiguration()],
             nil);
+}
+
+// Tests that requesting a task succeeds when a scene is in
+// `SceneActivationLevelForegroundInactive` (`foregroundActiveScene` is nil,
+// while `foregroundScenes` still contains the resigning scene).
+TEST_F(BackgroundContinuedProcessingAppAgentTest,
+       TestRequestTaskSucceedsWhenSceneForegroundInactive) {
+  if (!@available(iOS 26.0, *)) {
+    GTEST_SKIP() << "BGContinuedProcessingTask requires iOS 26.0+.";
+  } else {
+    app_state_helper_.foregroundActiveScene = nil;
+    app_state_helper_.foregroundScenes = @[ mock_scene_state_ ];
+    OCMStub([mock_scheduler_ cancelTaskRequestWithIdentifier:[OCMArg any]]);
+    StubScheduler();
+
+    BackgroundContinuedProcessingTaskContext* context =
+        [agent_ requestTaskWithIdentifier:kTestTaskId
+                            configuration:CreateTestConfiguration()];
+    ASSERT_NE(context, nil);
+    [context setTaskCompletedWithSuccess:YES];
+  }
 }
 
 // Tests that requesting a task returns nil if system registration fails.
@@ -440,6 +469,9 @@ TEST_F(BackgroundContinuedProcessingAppAgentTest,
       id local_app_state = OCMClassMock([AppState class]);
       OCMStub([local_app_state foregroundActiveScene])
           .andReturn(mock_scene_state_);
+      OCMStub([local_app_state foregroundScenes]).andReturn(@[
+        mock_scene_state_
+      ]);
 
       auto* local_agent = [[BackgroundContinuedProcessingAppAgent alloc] init];
       local_agent.appState = local_app_state;
@@ -473,6 +505,9 @@ TEST_F(BackgroundContinuedProcessingAppAgentTest,
       id local_app_state = OCMClassMock([AppState class]);
       OCMStub([local_app_state foregroundActiveScene])
           .andReturn(mock_scene_state_);
+      OCMStub([local_app_state foregroundScenes]).andReturn(@[
+        mock_scene_state_
+      ]);
 
       auto* local_agent = [[BackgroundContinuedProcessingAppAgent alloc] init];
       local_agent.appState = local_app_state;

@@ -117,6 +117,7 @@ int64_t LinearStepForUnits(int64_t units, double stepRatio) {
   CHECK(taskIdentifier.length > 0);
   CHECK(configuration);
   CHECK(configuration.title.length > 0);
+  CHECK(configuration.subtitle);
   CHECK(configuration.expirationHandler);
   CHECK_GT(configuration.totalUnits, 0);
   CHECK_GT(configuration.expectedStepCount, 0);
@@ -168,7 +169,7 @@ int64_t LinearStepForUnits(int64_t units, double stepRatio) {
     return;
   }
   _title = [title copy];
-  _subtitle = [subtitle copy];
+  _subtitle = [subtitle copy] ?: @"";
   [self updateUnderlyingTaskTitleAndSubtitle];
 }
 

@@ -965,6 +965,7 @@ TEST_F(ActorTaskTest, BackgroundTaskProgressIncrementsOnToolExecution) {
   BackgroundContinuedProcessingTaskConfiguration* config =
       [[BackgroundContinuedProcessingTaskConfiguration alloc]
               initWithTitle:@"Test Task"
+                   subtitle:@""
           expirationHandler:^{
           }];
   BackgroundContinuedProcessingTaskContext* context =
@@ -999,6 +1000,7 @@ TEST_F(ActorTaskTest, BackgroundTaskStoppedByUser) {
   BackgroundContinuedProcessingTaskConfiguration* config =
       [[BackgroundContinuedProcessingTaskConfiguration alloc]
               initWithTitle:@"Test Task"
+                   subtitle:@""
           expirationHandler:^{
           }];
   BackgroundContinuedProcessingTaskContext* context =
@@ -1030,6 +1032,7 @@ TEST_F(ActorTaskTest, BackgroundTaskSubtitleUpdate) {
   BackgroundContinuedProcessingTaskConfiguration* config =
       [[BackgroundContinuedProcessingTaskConfiguration alloc]
               initWithTitle:@"Test Task"
+                   subtitle:@""
           expirationHandler:^{
           }];
   TestBackgroundContinuedProcessingTaskContext* context =
@@ -1114,6 +1117,7 @@ TEST_F(ActorTaskTest, BackgroundTaskStoppedWithShutdown) {
   BackgroundContinuedProcessingTaskConfiguration* config =
       [[BackgroundContinuedProcessingTaskConfiguration alloc]
               initWithTitle:@"Test Task"
+                   subtitle:@""
           expirationHandler:^{
           }];
   BackgroundContinuedProcessingTaskContext* context =
@@ -1147,6 +1151,7 @@ TEST_F(ActorTaskTest, DestructorFinalizesBackgroundTask) {
   BackgroundContinuedProcessingTaskConfiguration* config =
       [[BackgroundContinuedProcessingTaskConfiguration alloc]
               initWithTitle:@"Test Task"
+                   subtitle:@""
           expirationHandler:^{
           }];
   BackgroundContinuedProcessingTaskContext* context =
