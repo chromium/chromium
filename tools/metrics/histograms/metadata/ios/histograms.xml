@@ -6606,7 +6606,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ReaderMode.DeactivationReason"
-    enum="ReaderModeDeactivationReason" expires_after="2026-02-22">
+    enum="ReaderModeDeactivationReason" expires_after="2027-02-22">
   <owner>fernandex@google.com</owner>
   <owner>qpubert@google.com</owner>
   <owner>bling-squid-squad@google.com</owner>
