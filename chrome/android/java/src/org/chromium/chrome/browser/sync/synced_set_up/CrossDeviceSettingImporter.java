@@ -16,14 +16,17 @@ import static org.chromium.chrome.browser.ui.messages.snackbar.Snackbar.UMA_CROS
 import static org.chromium.chrome.browser.ui.messages.snackbar.Snackbar.UMA_CROSS_DEVICE_SETTING_REDO;
 import static org.chromium.chrome.browser.ui.messages.snackbar.Snackbar.UMA_CROSS_DEVICE_SETTING_UNDO;
 
+import android.app.Activity;
 import android.content.Context;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -36,6 +39,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
+import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeStateProvider;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.CrossDeviceThemeTracker;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataColor;
@@ -122,6 +126,19 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
             return mTheme;
         }
 
+        SyncedSetupSettings rebindContext(Context context) {
+            if (mTheme instanceof NtpBackgroundDataColor color) {
+                return new SyncedSetupSettings(
+                        mPrefs,
+                        new NtpBackgroundDataColor(
+                                context,
+                                color.getPlatformType(),
+                                color.getThemeColorId(),
+                                color.isChromeColorDailyRefreshEnabled()));
+            }
+            return this;
+        }
+
         @Override
         public boolean equals(@Nullable Object o) {
             if (this == o) return true;
@@ -138,6 +155,96 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         public String toString() {
             return "SyncedSetupSettings{prefs=" + mPrefs + ", theme=" + mTheme + "}";
         }
+    }
+
+    @VisibleForTesting static final int INVALID_TASK_ID = -1;
+
+    /**
+     * Data record ("recipe") for rebuilding an active Undo or Redo {@link Snackbar} if the hosting
+     * {@link Activity} is destroyed and recreated while the snackbar is on screen.
+     *
+     * <p>Why this data type is needed:
+     *
+     * <ul>
+     *   <li>Applying or undoing an NTP theme calls {@link Activity#recreate()} (via {@link
+     *       NtpThemeStateProvider#notifyApplyThemeChanges()}) immediately after the Undo/Redo
+     *       snackbar is shown, which destroys the current {@link Activity}, its {@link
+     *       SnackbarManager}, and the live {@link Snackbar} UI view.
+     *   <li>We cannot simply keep the live {@link Snackbar} instance across {@link
+     *       Activity#recreate()} because its {@link SnackbarManager.SnackbarController} closure
+     *       captures the destroyed {@link Activity}'s {@link Context} and {@link
+     *       CrossDeviceSettingImporter} instance.
+     *   <li>We also cannot rely on the new {@link Activity} re-running the import from scratch,
+     *       because {@link #applySettings} has already marked {@code CROSS_DEVICE_IMPORTED_*} as
+     *       {@code true} in {@link SharedPreferencesManager} and overwritten the user's prior
+     *       preferences/theme (`previousSettings`).
+     * </ul>
+     *
+     * <p>Lifecycle:
+     *
+     * <ul>
+     *   <li>Stored on the current instance in {@link #mActivePendingSnackbar} alongside the live
+     *       {@link Snackbar} when {@link #showActionSnackbarAfterDialogs} shows an Undo or Redo
+     *       snackbar.
+     *   <li>If the snackbar finishes normally on the current {@link Activity} (user clicks the
+     *       action button or the timeout expires without an activity recreate), {@link
+     *       #mActivePendingSnackbar} is discarded.
+     *   <li>Only if the {@link Activity} terminates due to a configuration change or {@link
+     *       Activity#recreate()} ({@link #isActivityTerminatingForConfigurationChange()}) does
+     *       {@link #handleSnackbarDismissOrImporterDestroy()} promote {@link
+     *       #mActivePendingSnackbar} to static {@link #sPendingSnackbar}, allowing the recreated
+     *       {@link Activity} to rebuild and re-show the snackbar in {@link
+     *       #maybeShowPendingSnackbar}.
+     * </ul>
+     */
+    @VisibleForTesting
+    static class PendingSnackbar {
+        public final boolean isRedo;
+        public final @Nullable SyncedSetupSettings previousSettings;
+        public final SyncedSetupSettings settingsToApply;
+        public final boolean hadThemeChange;
+        public final boolean nonNtp;
+        public final int taskId;
+
+        /**
+         * @param isRedo If true, this is a redo snackbar; otherwise, an undo snackbar.
+         * @param previousSettings The settings before the import was applied, or null if redo.
+         * @param settingsToApply The settings that will be applied.
+         * @param hadThemeChange Whether the imported settings included a theme change.
+         * @param nonNtp Whether only settings that affect non-NTP pages should be considered.
+         * @param taskId The task ID of the activity where the snackbar was scheduled.
+         */
+        PendingSnackbar(
+                boolean isRedo,
+                @Nullable SyncedSetupSettings previousSettings,
+                SyncedSetupSettings settingsToApply,
+                boolean hadThemeChange,
+                boolean nonNtp,
+                int taskId) {
+            this.isRedo = isRedo;
+            this.previousSettings = previousSettings;
+            this.settingsToApply = settingsToApply;
+            this.hadThemeChange = hadThemeChange;
+            this.nonNtp = nonNtp;
+            this.taskId = taskId;
+        }
+    }
+
+    private static @Nullable PendingSnackbar sPendingSnackbar;
+
+    private static void setPendingSnackbar(@Nullable PendingSnackbar pendingSnackbar) {
+        sPendingSnackbar = pendingSnackbar;
+        if (pendingSnackbar != null) {
+            ResettersForTesting.register(() -> sPendingSnackbar = null);
+        }
+    }
+
+    static @Nullable PendingSnackbar getPendingSnackbarForTesting() {
+        return sPendingSnackbar;
+    }
+
+    static void setPendingSnackbarForTesting(@Nullable PendingSnackbar pendingSnackbar) {
+        setPendingSnackbar(pendingSnackbar);
     }
 
     // The ServiceStatuses where we need to wait for data to come in.
@@ -182,6 +289,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
     private CrossDeviceThemeTracker.@Nullable Observer mThemeTrackerObserver;
     private @Nullable ModalDialogManager mModalDialogManagerBeingObserved;
     private @Nullable ModalDialogManagerObserver mModalDialogObserver;
+    private @Nullable PendingSnackbar mActivePendingSnackbar;
 
     private final Callback<@Nullable Tab> mTabChangeCallback =
             (tab) -> {
@@ -255,6 +363,64 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         mModalDialogManagerBeingObserved = null;
     }
 
+    @VisibleForTesting
+    int getTaskId() {
+        if (mContext instanceof Activity activity) {
+            return ApplicationStatus.getTaskId(activity);
+        }
+        return INVALID_TASK_ID;
+    }
+
+    @VisibleForTesting
+    boolean matchesCurrentTask(int pendingTaskId) {
+        int currentTaskId = getTaskId();
+        if (pendingTaskId == INVALID_TASK_ID || currentTaskId == INVALID_TASK_ID) {
+            return false;
+        }
+        return pendingTaskId == currentTaskId;
+    }
+
+    /**
+     * Returns whether the current activity is being terminated due to a configuration change.
+     *
+     * <p>In Android, {@link Activity#isChangingConfigurations()} returns true whenever the activity
+     * is being destroyed and recreated due to configuration changes (such as screen rotation,
+     * display size/foldable state changes, or UI mode changes) as well as programmatic {@link
+     * Activity#recreate()} calls (such as applying or undoing a dynamic theme change).
+     */
+    private boolean isActivityTerminatingForConfigurationChange() {
+        return mContext instanceof Activity activity && activity.isChangingConfigurations();
+    }
+
+    /**
+     * Checks if a snackbar presentation is pending after an activity recreation and displays it.
+     *
+     * @param profile The current active {@link Profile}.
+     * @return Whether a pending snackbar was restored and displayed.
+     */
+    @VisibleForTesting
+    boolean maybeShowPendingSnackbar(Profile profile) {
+        if (sPendingSnackbar == null) return false;
+        if (!matchesCurrentTask(sPendingSnackbar.taskId)) return false;
+        SnackbarManager snackbarManager = mSnackbarManagerSupplier.get();
+        if (mModalDialogManagerSupplier.get() == null || snackbarManager == null) {
+            return false;
+        }
+
+        PendingSnackbar pending = sPendingSnackbar;
+        setPendingSnackbar(null);
+        SyncedSetupSettings settingsToApply = pending.settingsToApply.rebindContext(mContext);
+        if (pending.isRedo) {
+            showOfferRedoSnackbarAfterDialogs(
+                    profile, settingsToApply, pending.hadThemeChange, pending.nonNtp);
+        } else if (pending.previousSettings != null) {
+            SyncedSetupSettings previousSettings = pending.previousSettings.rebindContext(mContext);
+            showOfferUndoSnackbarAfterDialogs(
+                    profile, previousSettings, settingsToApply, pending.nonNtp);
+        }
+        return true;
+    }
+
     /**
      * Called when the current tab changes or gains focus.
      *
@@ -270,6 +436,30 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
 
         @Nullable Profile profile = currentTab.getProfile();
         if (profile == null || profile.isOffTheRecord()) return;
+
+        if (sPendingSnackbar != null && matchesCurrentTask(sPendingSnackbar.taskId)) {
+            boolean wasNonNtp = sPendingSnackbar.nonNtp;
+            // Show the pending snackbar if the task ID matches.
+            //
+            // It is safe to restore the pending snackbar before checking tracker dependencies:
+            // the snackbar payload is already preserved in memory in PendingSnackbar, and
+            // process/profile-scoped dependencies (native prefs, sync trackers) remain initialized
+            // across activity restarts.
+            if (!maybeShowPendingSnackbar(profile)) {
+                return;
+            }
+            boolean isCurrentTabNtp = UrlUtilities.isNtpUrl(currentTab.getUrl());
+            boolean needsNtpImport =
+                    isCurrentTabNtp
+                            && wasNonNtp
+                            && !ChromeSharedPreferences.getInstance()
+                                    .readBoolean(
+                                            ChromePreferenceKeys.CROSS_DEVICE_IMPORTED_ALL_SETTINGS,
+                                            /* defaultValue= */ true);
+            if (!needsNtpImport) {
+                return;
+            }
+        }
 
         boolean localStateReady = LocalStatePrefs.areNativePrefsLoaded();
 
@@ -571,20 +761,65 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         }
     }
 
-    /** Helper to construct and display an action snackbar after active modal dialogs dismiss. */
+    /**
+     * Constructs and displays an action {@link Snackbar} on the current {@link Activity} (waiting
+     * for any active modal dialogs to dismiss first), while optionally arming a {@link
+     * PendingSnackbar} backup recipe in {@link #mActivePendingSnackbar} in case the current {@link
+     * Activity} is recreated before the snackbar finishes.
+     *
+     * <p>Why both a live {@link Snackbar} and {@code pendingSnackbar} are used:
+     *
+     * <ul>
+     *   <li>If no {@link Activity} recreation occurs (e.g. when only non-theme preferences such as
+     *       omnibox position or NTP cards are applied), the live {@link Snackbar} created here
+     *       stays on screen for its normal duration and {@code pendingSnackbar} is discarded when
+     *       it dismisses.
+     *   <li>If an {@link Activity} recreation occurs while the snackbar is active (either
+     *       immediately when {@link #applyThemeSettings} calls {@link Activity#recreate()}, or
+     *       later if the user rotates the device), the live {@link Snackbar} is destroyed along
+     *       with the old {@link Activity}. The {@link SnackbarManager.SnackbarController} below
+     *       detects {@link #isActivityTerminatingForConfigurationChange()} inside {@link
+     *       #handleSnackbarDismissOrImporterDestroy()} and promotes {@code pendingSnackbar} to
+     *       {@link #sPendingSnackbar} so the new {@link Activity} can construct a fresh {@link
+     *       Snackbar}.
+     * </ul>
+     *
+     * @param messageResId String resource ID for the snackbar body text.
+     * @param actionResId String resource ID for the snackbar action button ("Apply", "Undo",
+     *     "Redo").
+     * @param umaIdentifier UMA snackbar identifier.
+     * @param onAction Callback invoked when the user clicks the snackbar action button.
+     * @param nonNtp Whether this snackbar is scoped to non-NTP settings.
+     * @param pendingSnackbar Backup state recipe for rebuilding this snackbar if the {@link
+     *     Activity} is recreated while it is showing, or {@code null} (used for the "Apply"
+     *     snackbar, which does not need a backup recipe because settings have not yet been marked
+     *     imported in {@link SharedPreferencesManager}).
+     */
     private void showActionSnackbarAfterDialogs(
             @StringRes int messageResId,
             @StringRes int actionResId,
             int umaIdentifier,
             Runnable onAction,
-            boolean nonNtp) {
+            boolean nonNtp,
+            @Nullable PendingSnackbar pendingSnackbar) {
+        if (mModalDialogManagerSupplier.get() == null || mSnackbarManagerSupplier.get() == null) {
+            return;
+        }
+        mActivePendingSnackbar = pendingSnackbar;
         Snackbar snackbar =
                 Snackbar.make(
                         mContext.getString(messageResId),
                         new SnackbarManager.SnackbarController() {
                             @Override
                             public void onAction(@Nullable Object actionData) {
+                                mActivePendingSnackbar = null;
+                                setPendingSnackbar(null);
                                 onAction.run();
+                            }
+
+                            @Override
+                            public void onDismissNoAction(@Nullable Object actionData) {
+                                handleSnackbarDismissOrImporterDestroy();
                             }
                         },
                         TYPE_ACTION,
@@ -624,7 +859,8 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
                     recordAction(nonNtp, "Apply");
                     applyAndNotifySettingImport(profile, settingsToApply, nonNtp);
                 },
-                nonNtp);
+                nonNtp,
+                /* pendingSnackbar= */ null);
     }
 
     @VisibleForTesting
@@ -655,12 +891,29 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         }
     }
 
+    private Context getContextForPendingSnackbar() {
+        Context appContext = mContext.getApplicationContext();
+        return appContext != null ? appContext : mContext;
+    }
+
     @VisibleForTesting
     void showOfferUndoSnackbarAfterDialogs(
             Profile profile,
             SyncedSetupSettings currentSettings,
             SyncedSetupSettings settingsToApply,
             boolean nonNtp) {
+        int taskId = getTaskId();
+        Context contextToRebind = getContextForPendingSnackbar();
+        @Nullable PendingSnackbar pendingSnackbar =
+                taskId != INVALID_TASK_ID
+                        ? new PendingSnackbar(
+                                /* isRedo= */ false,
+                                currentSettings.rebindContext(contextToRebind),
+                                settingsToApply.rebindContext(contextToRebind),
+                                /* hadThemeChange= */ false,
+                                nonNtp,
+                                taskId)
+                        : null;
         showActionSnackbarAfterDialogs(
                 R.string.synced_set_up_snackbar_applied_confirmation,
                 R.string.undo,
@@ -681,9 +934,6 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
                     } else {
                         applyUserPrefSettings(profile, currentSettings.getPrefs());
                         applyLocalStateSettings(currentSettings.getPrefs());
-                    }
-                    if (hadThemeChange) {
-                        applyThemeSettings(currentSettings.getTheme());
                     }
 
                     // If the imported theme was from another Android device (same
@@ -709,8 +959,12 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
                     recordAction(nonNtp, "Undo");
                     showOfferRedoSnackbarAfterDialogs(
                             profile, settingsToApply, hadThemeChange, nonNtp);
+                    if (hadThemeChange) {
+                        applyThemeSettings(currentSettings.getTheme());
+                    }
                 },
-                nonNtp);
+                nonNtp,
+                pendingSnackbar);
     }
 
     /**
@@ -723,11 +977,24 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
      * @param nonNtp Whether only settings that affect non-NTP pages should be considered (see
      *     askToApplySettingImportIfNeeded documentation above).
      */
-    private void showOfferRedoSnackbarAfterDialogs(
+    @VisibleForTesting
+    void showOfferRedoSnackbarAfterDialogs(
             Profile profile,
             SyncedSetupSettings settingsToApply,
             boolean hadThemeChange,
             boolean nonNtp) {
+        int taskId = getTaskId();
+        Context contextToRebind = getContextForPendingSnackbar();
+        @Nullable PendingSnackbar pendingSnackbar =
+                taskId != INVALID_TASK_ID
+                        ? new PendingSnackbar(
+                                /* isRedo= */ true,
+                                /* previousSettings= */ null,
+                                settingsToApply.rebindContext(contextToRebind),
+                                hadThemeChange,
+                                nonNtp,
+                                taskId)
+                        : null;
         showActionSnackbarAfterDialogs(
                 R.string.synced_set_up_snackbar_removed_confirmation,
                 R.string.redo,
@@ -752,7 +1019,8 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
                     }
                     applyAndNotifySettingImport(profile, settingsToApply, nonNtp);
                 },
-                nonNtp);
+                nonNtp,
+                pendingSnackbar);
     }
 
     /** Returns the user's current settings (including preferences and NTP theme). */
@@ -984,7 +1252,8 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
      * Applies {@param themeToApply} to the NTP customization manager and persists selection. If
      * {@param themeToApply} is null, clears custom background data back to the default NTP theme.
      */
-    private void applyThemeSettings(@Nullable NtpBackgroundDataBase themeToApply) {
+    @VisibleForTesting
+    void applyThemeSettings(@Nullable NtpBackgroundDataBase themeToApply) {
         Log.i(
                 TAG,
                 "applyThemeSettings: themeToApply=%s, isThemeImportSnackbarEnabled=%s",
@@ -995,6 +1264,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         NtpCustomizationConfigManager configManager = NtpCustomizationConfigManager.getInstance();
         if (themeToApply == null) {
             configManager.onBackgroundDataChanged(mContext, null);
+            notifyApplyThemeChanges();
             return;
         }
 
@@ -1003,6 +1273,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
             // Persist the user's selected background type so the imported theme survives app
             // restarts.
             configManager.maybeSaveUserSelectedBackgroundTypeToSharedPreference(mContext);
+            notifyApplyThemeChanges();
         } else if (themeToApply instanceof NtpBackgroundDataImageBase imageBase) {
             // If the bitmap is null (e.g. from CrossDeviceThemeTracker before downloading),
             // do not write null to configManager. That would clobber the NTP background with
@@ -1015,8 +1286,13 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
             if (imageBase.getBitmap() != null) {
                 configManager.onBackgroundDataChanged(mContext, themeToApply);
                 configManager.maybeSaveUserSelectedBackgroundTypeToSharedPreference(mContext);
+                notifyApplyThemeChanges();
             }
         }
+    }
+
+    private void notifyApplyThemeChanges() {
+        NtpThemeStateProvider.getInstance().notifyApplyThemeChanges();
     }
 
     /**
@@ -1149,8 +1425,47 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
                 CrossDeviceSettingImportOutcome.NUM_ENTRIES);
     }
 
-    /** Destroys the {@link CrossDeviceSettingImporter}. */
+    /**
+     * Updates pending snackbar state when either:
+     *
+     * <ol>
+     *   <li>The active {@link Snackbar} is dismissed without its action button being clicked
+     *       ({@link SnackbarManager.SnackbarController#onDismissNoAction}), or
+     *   <li>This {@link CrossDeviceSettingImporter} is destroyed ({@link #destroy()}).
+     * </ol>
+     *
+     * <p>Why both events share this handler: during an {@link Activity} termination or recreation,
+     * {@link SnackbarManager} (which dismisses active snackbars during {@code Activity#onStop}) and
+     * {@link ActivityLifecycleDispatcher} (which calls {@link #destroy()} on this importer during
+     * {@code Activity#onDestroy}) may fire in either order—or {@link #destroy()} may run while a
+     * snackbar is still queued behind a modal dialog before {@link SnackbarManager} ever shows it.
+     *
+     * <ul>
+     *   <li>If the {@link Activity} is terminating for a configuration change or {@link
+     *       Activity#recreate()} ({@link #isActivityTerminatingForConfigurationChange()}),
+     *       whichever caller runs first promotes {@link #mActivePendingSnackbar} to static {@link
+     *       #sPendingSnackbar} and clears {@link #mActivePendingSnackbar}. The second caller sees
+     *       {@code mActivePendingSnackbar == null} and is a safe no-op.
+     *   <li>If the {@link Activity} is <em>not</em> terminating for a configuration change (normal
+     *       snackbar timeout dismissal or normal non-recreate {@link Activity} destruction), both
+     *       {@link #mActivePendingSnackbar} and any task-matching {@link #sPendingSnackbar} are
+     *       cleared.
+     * </ul>
+     */
+    private void handleSnackbarDismissOrImporterDestroy() {
+        if (isActivityTerminatingForConfigurationChange()) {
+            if (mActivePendingSnackbar != null) {
+                setPendingSnackbar(mActivePendingSnackbar);
+            }
+        } else if (sPendingSnackbar != null && matchesCurrentTask(sPendingSnackbar.taskId)) {
+            setPendingSnackbar(null);
+        }
+        mActivePendingSnackbar = null;
+    }
+
+    /** Destroys this {@link CrossDeviceSettingImporter} and cleans up its observers. */
     public void destroy() {
+        handleSnackbarDismissOrImporterDestroy();
         mActivityLifecycleDispatcher.unregister(this);
         mActivityTabSupplier.removeObserver(mTabChangeCallback);
         if (mObservedTab != null) {
