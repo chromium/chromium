@@ -36,6 +36,7 @@ enum class UserRemovalReason : int32_t {
   MISCONFIGURED_USER = 6,
   DEVICE_LOCAL_ACCOUNT_UPDATED = 7,
   DEMO_ACCOUNT_CLEAN_UP = 8,
+  DEVICE_MAX_USERS_EXCEEDED = 9,
 };
 
 // Interface for UserManagerImpl - that provides base implementation for
@@ -321,6 +322,19 @@ class USER_MANAGER_EXPORT UserManager {
   // Returns true if any user is removed.
   // This can be called only when no user is logged in.
   virtual bool RemoveStaleEphemeralUsers() = 0;
+
+  // Sets the maximum number of user profiles allowed on the device.
+  // std::nullopt or values <= 0 mean unlimited.
+  // Note that this does not automatically trigger the `TrimExcessUsers()`
+  // call. It has to be called separately.
+  virtual void SetMaxUserProfiles(std::optional<int> max_user_profiles) = 0;
+  virtual std::optional<int> GetMaxUserProfiles() const = 0;
+
+  // Prunes the least recently used regular users to satisfy the limit set by
+  // `SetMaxUserProfiles()`. The device owner is never removed.
+  // Returns true if any user is removed.
+  // This can be called only when no user is logged in.
+  virtual bool TrimExcessUsers() = 0;
 
   // Removes the user from the device in case when user's cryptohome is lost
   // for some reason to ensure that user is correctly re-created.

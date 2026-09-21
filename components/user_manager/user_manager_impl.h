@@ -166,6 +166,9 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
   void RemoveUserFromList(const AccountId& account_id) override;
   void RemoveUserFromListForRecreation(const AccountId& account_id) override;
   bool RemoveStaleEphemeralUsers() override;
+  void SetMaxUserProfiles(std::optional<int> max_user_profiles) override;
+  std::optional<int> GetMaxUserProfiles() const override;
+  bool TrimExcessUsers() override;
   void CleanStaleUserInformationFor(const AccountId& account_id) override;
   bool IsKnownUser(const AccountId& account_id) const override;
   const User* FindUser(const AccountId& account_id) const override;
@@ -492,6 +495,9 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
   // Cached name of device owner. Defaults to empty if the value has not
   // been read from trusted device policy yet.
   std::optional<AccountId> owner_account_id_ = std::nullopt;
+
+  // Maximum number of user profiles allowed on the device.
+  std::optional<int> max_user_profiles_ = std::nullopt;
 
   mutable base::OnceCallbackList<void(const AccountId&)>
       pending_owner_callbacks_;

@@ -117,6 +117,11 @@ PolicyUserManagerController::PolicyUserManagerController(
           &PolicyUserManagerController::RetrieveTrustedDevicePolicies,
           weak_factory_.GetWeakPtr())));
   cros_settings_subscriptions_.push_back(cros_settings_->AddSettingsObserver(
+      kAccountsPrefDeviceMaxUserProfiles,
+      base::BindRepeating(
+          &PolicyUserManagerController::RetrieveTrustedDevicePolicies,
+          weak_factory_.GetWeakPtr())));
+  cros_settings_subscriptions_.push_back(cros_settings_->AddSettingsObserver(
       kAccountsPrefDeviceLocalAccounts,
       base::BindRepeating(
           &PolicyUserManagerController::RetrieveTrustedDevicePolicies,
@@ -202,6 +207,16 @@ void PolicyUserManagerController::RetrieveTrustedDevicePolicies() {
 
   user_manager_->SetEphemeralModeConfig(
       CreateEphemeralModeConfig(cros_settings_));
+
+  int max_user_profiles = 0;
+  if (cros_settings_->GetInteger(kAccountsPrefDeviceMaxUserProfiles,
+                                 &max_user_profiles) &&
+      max_user_profiles > 0) {
+    user_manager_->SetMaxUserProfiles(max_user_profiles);
+  } else {
+    user_manager_->SetMaxUserProfiles(std::nullopt);
+  }
+
   UpdateOwnerId();
   UpdateGuestSessionAllowed();
   UpdateShowUsersOnSignIn();
@@ -221,9 +236,11 @@ void PolicyUserManagerController::RetrieveTrustedDevicePolicies() {
   bool changed = user_manager_->UpdateDeviceLocalAccountUser(
       device_local_account_info_list);
 
-  // Remove ephemeral regular users (except the owner) when on the login screen.
+  // Remove ephemeral regular users (except the owner) and excess users when on
+  // the login screen.
   if (!user_manager_->IsUserLoggedIn()) {
     changed |= user_manager_->RemoveStaleEphemeralUsers();
+    changed |= user_manager_->TrimExcessUsers();
   }
 
   if (changed) {
