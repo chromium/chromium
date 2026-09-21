@@ -34,6 +34,7 @@ namespace ui {
 //
 // #if BUILDFLAG(IS_WIN)
 // int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE, wchar_t*, int) {
+//   base::CommandLine::Init(0, nullptr);
 //   sandbox::SandboxInterfaceInfo sandbox_info = {nullptr};
 //   content::InitializeSandboxInfo(&sandbox_info);
 //   ui::ViewsContentClient params(instance, &sandbox_info);

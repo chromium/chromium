@@ -118,6 +118,11 @@ source_set("sandbox_helper_win") {
       "public/app/sandbox_helper_win.h",
     ]
 
-    deps = [ "//sandbox" ]
+    deps = [
+      "//base",
+      "//sandbox",
+      "//sandbox/policy",
+      "//sandbox/policy/mojom",
+    ]
   }
 }

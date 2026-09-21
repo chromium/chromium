@@ -3540,6 +3540,7 @@ test("content_unittests") {
   }
   if (is_win) {
     sources += [
+      "../app/sandbox_helper_win_unittest.cc",
       "../browser/child_process_sandbox_support_win_unittest.cc",
       "../browser/device_posture/device_posture_registry_watcher_win_unittest.cc",
       "../browser/haptics/haptics_manager_impl_win_unittest.cc",
@@ -3556,6 +3557,7 @@ test("content_unittests") {
     deps += [
       "//components/services/font_data/public/mojom",
       "//components/stylus_handwriting/win",
+      "//content:sandbox_helper_win",
       "//sandbox/policy:sandbox_test_utils",
       "//sandbox/win:sandbox",
       "//third_party/blink/public/common",

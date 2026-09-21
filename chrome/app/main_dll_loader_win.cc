@@ -54,8 +54,6 @@
 #include "components/version_info/channel.h"
 #include "content/public/app/sandbox_helper_win.h"
 #include "content/public/common/content_switches.h"
-#include "sandbox/policy/mojom/sandbox.mojom.h"
-#include "sandbox/policy/sandbox_type.h"
 #include "sandbox/win/src/sandbox.h"
 
 namespace {
@@ -259,22 +257,10 @@ int MainDllLoader::Launch(HINSTANCE instance,
 
   // Initialize the sandbox services.
   sandbox::SandboxInterfaceInfo sandbox_info = {nullptr};
-  const bool is_browser = process_type_.empty();
-  // IsUnsandboxedSandboxType() can't be used here because its result can be
-  // gated behind a feature flag, which are not yet initialized.
-  const bool is_sandboxed =
-      sandbox::policy::SandboxTypeFromCommandLine(cmd_line) !=
-      sandbox::mojom::Sandbox::kNoSandbox;
-
-  if (is_browser || is_sandboxed) {
-    // For child processes that are running as --no-sandbox, don't initialize
-    // the sandbox info, otherwise they'll be treated as brokers (as if they
-    // were the browser).
-    content::InitializeSandboxInfo(
-        &sandbox_info, IsExtensionPointDisableSet()
-                           ? sandbox::MITIGATION_EXTENSION_POINT_DISABLE
-                           : 0);
-  }
+  content::InitializeSandboxInfo(
+      &sandbox_info, IsExtensionPointDisableSet()
+                         ? sandbox::MITIGATION_EXTENSION_POINT_DISABLE
+                         : 0);
 
   base::TimeTicks preread_begin_ticks;
   base::TimeTicks preread_end_ticks;
@@ -287,6 +273,7 @@ int MainDllLoader::Launch(HINSTANCE instance,
     SetLLVMProfileProcessType(*module_properties.profile_type);
   }
 
+  const bool is_browser = process_type_.empty();
   base::FilePath file;
   dll_ = Load(&file, module_properties.module_name, cmd_line, is_browser,
               preread_begin_ticks, preread_end_ticks);

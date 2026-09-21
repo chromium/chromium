@@ -4,6 +4,10 @@
 
 #include "content/public/app/sandbox_helper_win.h"
 
+#include "base/command_line.h"
+#include "sandbox/policy/mojom/sandbox.mojom-shared.h"
+#include "sandbox/policy/sandbox_type.h"
+#include "sandbox/policy/switches.h"
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/sandbox_factory.h"
 
@@ -11,6 +15,19 @@ namespace content {
 
 void InitializeSandboxInfo(sandbox::SandboxInterfaceInfo* info,
                            sandbox::MitigationFlags starting_mitigations) {
+  const auto& command_line = *base::CommandLine::ForCurrentProcess();
+  *info = {};
+  const bool is_browser =
+      command_line.GetSwitchValueASCII(sandbox::policy::switches::kProcessType)
+          .empty();
+  const bool is_sandboxed =
+      sandbox::policy::SandboxTypeFromCommandLine(command_line) !=
+      sandbox::mojom::Sandbox::kNoSandbox;
+  // Unsandboxed children would otherwise be treated as brokers.
+  if (!is_browser && !is_sandboxed) {
+    return;
+  }
+
   info->broker_services = sandbox::SandboxFactory::GetBrokerServices();
   if (info->broker_services) {
     info->broker_services->SetStartingMitigations(starting_mitigations);

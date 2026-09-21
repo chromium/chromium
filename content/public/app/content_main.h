@@ -47,7 +47,7 @@ struct CONTENT_EXPORT ContentMainParams {
   HINSTANCE instance = nullptr;
 
   // |sandbox_info| should be initialized using InitializeSandboxInfo from
-  // content_main_win.h
+  // sandbox_helper_win.h
   raw_ptr<sandbox::SandboxInterfaceInfo> sandbox_info = nullptr;
 #elif !BUILDFLAG(IS_ANDROID)
   int argc = 0;

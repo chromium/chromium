@@ -7,6 +7,7 @@
 #include "content/shell/app/shell_main_delegate.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "base/command_line.h"
 #include "base/win/dark_mode_support.h"
 #include "base/win/win_util.h"
 #include "content/public/app/sandbox_helper_win.h"
@@ -37,6 +38,9 @@ int main() {
   // for the app if available.
   base::win::PinUser32();
   base::win::AllowDarkModeForApp(true);
+
+  // Sandbox initialization needs the command line before ContentMain().
+  base::CommandLine::Init(0, nullptr);
   sandbox::SandboxInterfaceInfo sandbox_info = {nullptr};
   content::InitializeSandboxInfo(&sandbox_info);
   content::ShellMainDelegate delegate;

@@ -13,10 +13,12 @@ struct SandboxInterfaceInfo;
 
 namespace content {
 
-// Initialize the sandbox code Note: This function
-// must be *statically* linked into the executable (along with the static
-// sandbox library); it will not work correctly if it is exported from a
-// DLL and linked in.
+// Initializes sandbox services for the current process. Requires
+// base::CommandLine::Init() to have been called. Children with sandbox type
+// kNoSandbox receive null service pointers.
+//
+// This function must be *statically* linked into the executable along with the
+// sandbox library; it will not work correctly if exported from a DLL.
 // starting_mitigations are the mitigations which were applied early in
 // startup, but not at startup. If a wrong value is sent in, additional
 // mitigations may fail to be applied.
