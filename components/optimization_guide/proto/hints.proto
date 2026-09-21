@@ -426,6 +426,13 @@ enum OptimizationType {
   // Autofill AtMemory feature.
   AUTOFILL_AT_MEMORY_BLOCKED = 132;
   FILTER_EXECUTION_STRATEGY = 133;
+  // This optimization provides information about merchant URLs on which
+  // payment QR code detection should run. This allowlist uses page pattern
+  // matching to perform regex match against entire URLs. It is kept separate
+  // from PIX_MERCHANT_ORIGINS_ALLOWLIST so that QR code detection and Pix
+  // clipboard detection can be expanded to different sets of merchants
+  // independently.
+  PAYMENT_QR_CODE_MERCHANT_URL_REGEX_ALLOWLIST = 134;
 }
 
 // Presents semantics for how page load URLs should be matched.

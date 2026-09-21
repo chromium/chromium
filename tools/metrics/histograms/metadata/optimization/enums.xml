@@ -842,6 +842,7 @@ chromium-metrics-reviews@google.com.
   <int value="131" label="FILTER_EXTRACT_ATTRIBUTES"/>
   <int value="132" label="AUTOFILL_AT_MEMORY_BLOCKED"/>
   <int value="133" label="FILTER_EXECUTION_STRATEGY"/>
+  <int value="134" label="PAYMENT_QR_CODE_MERCHANT_URL_REGEX_ALLOWLIST"/>
 </enum>
 
 <enum name="PageContentAnnotationsStorageStatus">

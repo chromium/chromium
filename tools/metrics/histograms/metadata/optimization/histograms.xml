@@ -559,6 +559,9 @@ chromium-metrics-reviews@google.com.
   <variant name="PageInsights"
       summary="This optimization provides helpful context and insights about
                a page."/>
+  <variant name="PaymentQrCodeMerchantUrlRegexAllowlist"
+      summary="This optimization provides information about merchant URLs on
+               which payment QR code detection should run."/>
   <variant name="PerformanceHints"
       summary="Provides aggregated performance information about the page"/>
   <variant name="PixMerchantOriginsAllowlist"
