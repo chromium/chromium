@@ -8889,6 +8889,10 @@ void RenderFrameHostImpl::NotifyDocumentInteractive() {
   }
 }
 
+void RenderFrameHostImpl::SuppressXSLTDeprecationBanner() {
+  GetContentClient()->browser()->SuppressXSLTDeprecationBanner(this);
+}
+
 void RenderFrameHostImpl::RegisterProtocolHandler(const std::string& scheme,
                                                   const GURL& url,
                                                   bool user_gesture) {

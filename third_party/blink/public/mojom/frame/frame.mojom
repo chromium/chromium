@@ -832,6 +832,19 @@ interface LocalFrameHost {
       pending_associated_receiver<UnboundedSurfaceHost> host,
       pending_associated_remote<UnboundedSurfaceClient> client,
       gfx.mojom.Rect bounds);
+
+  // Sent when the user dismisses the XSLT deprecation warning banner with the
+  // "Never show this warning" checkbox checked. The embedder persists this, and
+  // sends it back to the renderer as
+  // `WebPreferences::is_xslt_deprecation_banner_suppressed`.
+  // This is not security sensitive: the banner is injected into the page's own
+  // DOM, so a page can already hide it. A compromised renderer can therefore
+  // only suppress a deprecation warning.
+  // TODO(crbug.com/560233256): This message is temporary, and is only required
+  // before XSLT is disabled by default in M158. It can be removed in M158, or
+  // whenever XSLT is disabled by default (other than for origin trials and
+  // enterprise policy).
+  SuppressXSLTDeprecationBanner();
 };
 
 // Implemented in Browser, this interface defines frame-specific methods

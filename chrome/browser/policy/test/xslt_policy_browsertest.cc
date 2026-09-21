@@ -66,11 +66,15 @@ class XSLTPolicyBrowserTest : public PolicyTest,
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     FeatureState feature_state = std::get<1>(GetParam());
+    // The banner feature is "experimental", so it is off unless enabled here.
     if (feature_state == FeatureState::kEnabled) {
-      feature_list_.InitWithFeatures({blink::features::kXSLT},
-                                     {blink::features::kXSLTSpecialTrial});
+      feature_list_.InitWithFeatures(
+          {blink::features::kXSLT, blink::features::kGenerateXSLTWarningBanner},
+          {blink::features::kXSLTSpecialTrial});
     } else {
-      feature_list_.InitWithFeatures({}, {blink::features::kXSLT});
+      feature_list_.InitWithFeatures(
+          {blink::features::kGenerateXSLTWarningBanner},
+          {blink::features::kXSLT});
     }
     // The test public key, see:
     // https://chromium.googlesource.com/chromium/src/+/main/docs/origin_trials_integration.md

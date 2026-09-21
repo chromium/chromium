@@ -10,16 +10,41 @@
       #banner {
         background-color: #d9534f;
         color: white;
-        padding: 12px;
+        padding: 12px 44px;
         margin-bottom: 20px;
         font-size: 16px;
         font-weight: bold;
         text-align: center;
         font-family: sans-serif;
+        position: relative;
       }
       .banner_link {
         color: white;
         text-decoration: underline;
+      }
+      #banner_dismiss {
+        display: block;
+        margin-top: 8px;
+        font-size: 14px;
+        font-weight: normal;
+        cursor: pointer;
+      }
+      #banner_dismiss input {
+        vertical-align: middle;
+        margin-right: 6px;
+      }
+      #banner_close {
+        position: absolute;
+        top: 6px;
+        right: 8px;
+        background: transparent;
+        border: none;
+        color: inherit;
+        font: inherit;
+        font-size: 20px;
+        line-height: 1;
+        padding: 4px 8px;
+        cursor: pointer;
       }
     </style>
     <div id=banner>
@@ -28,6 +53,8 @@
       no longer display correctly. You might be able to <a class=banner_link>install
       a browser extension</a> that allows you to continue viewing it. Otherwise,
       you should contact the maintainer of the site for further information.
+      <label id=banner_dismiss><input type=checkbox>Never show this warning</label>
+      <button id=banner_close type=button aria-label="Close" title="Close">&#x00D7;</button>
     </div>
     <!-- ============================================================ -->
 

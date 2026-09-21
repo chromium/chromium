@@ -77,4 +77,53 @@ test(() => {
   assert_true(resultDoc.documentElement.textContent.includes("This site uses XSLT"),
       "Document produced by transformToDocument should contain the deprecation warning banner");
 }, "XSLT deprecation warning banner on XSLTProcessor.transformToDocument");
+
+promise_test(async () => {
+  // This test is only for XSLT enabled, since the warning banner only shows up for XSLT transforms.
+  if (!internals.runtimeFlags.xsltEnabled) {
+    return;
+  }
+
+  const frame = await createFrame("resources/non-cap-transform.xml");
+  const doc = frame.contentDocument;
+  const banner = doc.body.firstElementChild;
+  assert_true(banner.textContent.includes("This site uses XSLT"),
+      "The banner should be the first child of the body");
+
+  const checkbox = banner.querySelector('input[type="checkbox"]');
+  assert_not_equals(checkbox, null, "The banner should contain a checkbox");
+  assert_false(checkbox.checked, "The checkbox should default to unchecked");
+
+  const closeButton = banner.querySelector('button');
+  assert_not_equals(closeButton, null, "The banner should contain a close button");
+  assert_equals(closeButton.getAttribute('aria-label'), "Close",
+      "The close button should be labeled for assistive technology");
+
+  closeButton.click();
+  assert_equals(banner.parentNode, null, "Clicking close should remove the banner");
+  assert_false(doc.documentElement.textContent.includes("This site uses XSLT"),
+      "The warning text should be gone once the banner is closed");
+}, "XSLT deprecation warning banner can be closed");
+
+promise_test(async () => {
+  // This test is only for XSLT enabled, since the warning banner only shows up for XSLT transforms.
+  if (!internals.runtimeFlags.xsltEnabled) {
+    return;
+  }
+
+  // Checking "Never show this warning" asks the browser to persist the
+  // suppression. Web tests can't observe the browser-side preference, so this
+  // just checks that the banner still closes. See
+  // chrome/browser/xslt_deprecation_banner_browsertest.cc for the persistence
+  // coverage.
+  const frame = await createFrame("resources/cap-alert-transform.xml");
+  const doc = frame.contentDocument;
+  const banner = doc.body.firstElementChild;
+  assert_true(banner.textContent.includes("This CAP alert"),
+      "The CAP alert banner should also have dismiss controls");
+
+  banner.querySelector('input[type="checkbox"]').checked = true;
+  banner.querySelector('button').click();
+  assert_equals(banner.parentNode, null, "Clicking close should remove the banner");
+}, "XSLT deprecation warning banner 'Never show this warning' checkbox");
 </script>

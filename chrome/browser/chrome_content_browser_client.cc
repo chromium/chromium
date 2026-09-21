@@ -1670,6 +1670,7 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kPartitionedBlobUrlUsage, true);
 
   registry->RegisterBooleanPref(policy::policy_prefs::kXSLTEnabled, false);
+  registry->RegisterBooleanPref(prefs::kXSLTDeprecationBannerSuppressed, false);
 
   registry->RegisterBooleanPref(
       policy::policy_prefs::kCSSCustomStateDeprecatedSyntaxEnabled,
@@ -4943,6 +4944,9 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
 
   web_prefs->clipboard_focus_exempt = IsClipboardFocusExemptOrigin(
       web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+
+  web_prefs->is_xslt_deprecation_banner_suppressed =
+      prefs->GetBoolean(prefs::kXSLTDeprecationBannerSuppressed);
 }
 
 bool ChromeContentBrowserClientParts::OverrideWebPreferencesAfterNavigation(
@@ -8423,6 +8427,20 @@ void ChromeContentBrowserClient::OnFetchKeepAliveRequestDestroyed(
   fetch_keepalive_process_manager_->OnRequestDestroyed(
       *Profile::FromBrowserContext(&browser_context));
 #endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+void ChromeContentBrowserClient::SuppressXSLTDeprecationBanner(
+    content::RenderFrameHost* render_frame_host) {
+  Profile* profile =
+      Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
+  if (!profile) {
+    return;
+  }
+  // Intentionally not scoped to the document's origin: the user asked not to
+  // see this banner again anywhere. Changing the pref triggers a WebPreferences
+  // update (see PrefWatcher), so already-open renderers pick it up too.
+  profile->GetPrefs()->SetBoolean(prefs::kXSLTDeprecationBannerSuppressed,
+                                  true);
 }
 
 #if BUILDFLAG(IS_MAC)

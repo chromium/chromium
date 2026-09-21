@@ -2553,6 +2553,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void DraggableRegionsChanged(
       std::vector<blink::mojom::DraggableRegionPtr> regions) override;
   void NotifyDocumentInteractive() override;
+  void SuppressXSLTDeprecationBanner() override;
   void OnFirstContentfulPaint(base::TimeTicks presentation_time) override;
   void OnLargestContentfulPaint(base::TimeTicks presentation_time) override;
   void SetStorageAccessApiStatus(net::StorageAccessApiStatus status) override;

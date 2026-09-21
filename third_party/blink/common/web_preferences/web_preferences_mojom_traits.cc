@@ -256,6 +256,9 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
 
   out->is_indigo_onboarding = data.is_indigo_onboarding();
 
+  out->is_xslt_deprecation_banner_suppressed =
+      data.is_xslt_deprecation_banner_suppressed();
+
   return true;
 }
 

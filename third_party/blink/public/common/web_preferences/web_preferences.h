@@ -490,6 +490,16 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // Consumed only in chrome/renderer/ (not by Blink).
   bool is_indigo_onboarding = false;
 
+  // True if the user dismissed the XSLT deprecation warning banner with the
+  // "Never show this warning" checkbox checked. The banner is injected into the
+  // document by the renderer, so this state has to be sent from the embedder,
+  // which stores it as a profile preference.
+  // TODO(crbug.com/560233256): This preference is temporary, and is only
+  // required before XSLT is disabled by default in M158. It can be removed in
+  // M158, or whenever XSLT is disabled by default (other than for origin
+  // trials and enterprise policy).
+  bool is_xslt_deprecation_banner_suppressed = false;
+
   // We try to keep the default values the same as the default values in
   // chrome, except for the cases where it would require lots of extra work for
   // the embedder to use the same default value.

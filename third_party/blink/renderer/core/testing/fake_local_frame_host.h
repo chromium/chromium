@@ -226,6 +226,7 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
           client,
       const gfx::Rect& bounds) override {}
   void NotifyDocumentInteractive() override;
+  void SuppressXSLTDeprecationBanner() override;
 
  private:
   void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle);

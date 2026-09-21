@@ -540,4 +540,13 @@ struct WebPreferences {
   // should be able to set the onboarding result. Note that this is separately
   // verified when it sets the result.
   bool is_indigo_onboarding = false;
+
+  // True if the user dismissed the XSLT deprecation warning banner with the
+  // "Never show this warning" checkbox checked. Suppression is global: it applies
+  // to every site, not just the one the banner was dismissed on.
+  // TODO(crbug.com/560233256): This preference is temporary, and is only
+  // required before XSLT is disabled by default in M158. It can be removed in
+  // M158, or whenever XSLT is disabled by default (other than for origin
+  // trials and enterprise policy).
+  bool is_xslt_deprecation_banner_suppressed = false;
 };

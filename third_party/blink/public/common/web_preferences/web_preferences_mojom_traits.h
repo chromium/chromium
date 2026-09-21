@@ -860,6 +860,11 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.is_indigo_onboarding;
   }
 
+  static bool is_xslt_deprecation_banner_suppressed(
+      const blink::web_pref::WebPreferences& r) {
+    return r.is_xslt_deprecation_banner_suppressed;
+  }
+
   static bool Read(blink::mojom::WebPreferencesDataView r,
                    blink::web_pref::WebPreferences* out);
 };

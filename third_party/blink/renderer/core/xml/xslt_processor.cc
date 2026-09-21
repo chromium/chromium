@@ -26,20 +26,26 @@
 #include "base/notreached.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/switches.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_encoding_data.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/dom/ignore_opens_during_unload_count_incrementer.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/dom/transform_source.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -154,6 +160,106 @@ XSLTProcessor::XSLTProcessor(PassKey,
 XSLTProcessor::~XSLTProcessor() = default;
 
 namespace {
+
+// The banner lives in the transformed document, whose stylesheets are not
+// under our control, so everything is styled inline.
+constexpr char kBannerStyle[] =
+    "background-color: #d9534f; color: white; padding: 12px 44px; "
+    "margin-bottom: 20px; font-size: 16px; font-weight: bold; "
+    "text-align: center; font-family: sans-serif; position: relative; "
+    "z-index: 2147483647;";
+constexpr char kLinkStyle[] = "color: white; text-decoration: underline;";
+constexpr char kCloseButtonStyle[] =
+    "position: absolute; top: 6px; right: 8px; background: transparent; "
+    "border: none; color: inherit; font: inherit; font-size: 20px; "
+    "line-height: 1; padding: 4px 8px; cursor: pointer;";
+constexpr char kDismissLabelStyle[] =
+    "display: block; margin-top: 8px; font-size: 14px; font-weight: normal; "
+    "cursor: pointer;";
+constexpr char kDismissCheckboxStyle[] =
+    "vertical-align: middle; margin-right: 6px;";
+
+// Tracks whether the "Never show this warning" checkbox was checked by the
+// user. The banner lives in the page's own DOM, so page script can toggle the
+// checkbox itself, either by dispatching a synthetic click or by setting
+// `checked` directly. Neither should affect the persisted setting.
+class BannerCheckboxListener final : public NativeEventListener {
+ public:
+  explicit BannerCheckboxListener(HTMLInputElement* checkbox)
+      : checkbox_(checkbox) {}
+
+  // Two independent signals have to agree: the user's own clicks must have
+  // left the box checked, and the box must still be displaying as checked.
+  // Neither is trustworthy alone. Script can assign to `checked` without
+  // firing any event, so the displayed state can drift from what the user
+  // did; and script can assign to `checked` from a capture-phase listener
+  // that runs before Invoke() below, so the displayed state during dispatch
+  // isn't necessarily the user's doing either. Requiring both means script
+  // tampering can only ever keep the setting from being persisted, which is
+  // harmless, and never force it on.
+  bool CheckedByUser() const {
+    return toggled_on_by_user_ && checkbox_->Checked();
+  }
+
+  void Invoke(ExecutionContext*, Event* event) override {
+    if (!event || !event->isTrusted()) {
+      return;
+    }
+    // Deliberately does not read `checked`: by the time this runs, a
+    // capture-phase listener in the page may have changed it. A trusted
+    // click toggles the checkbox, so just track the toggles. If the page
+    // cancels the click, the toggle is reverted after dispatch and this
+    // count goes out of step with the checkbox, but then the two signals
+    // above disagree and the setting isn't persisted.
+    toggled_on_by_user_ = !toggled_on_by_user_;
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(checkbox_);
+    NativeEventListener::Trace(visitor);
+  }
+
+ private:
+  Member<HTMLInputElement> checkbox_;
+  bool toggled_on_by_user_ = false;
+};
+
+// Handles clicks on the banner's close button: removes the banner, and, if the
+// user checked the "Never show this warning" checkbox, asks the browser to
+// stop showing the banner on any site from now on.
+class BannerCloseListener final : public NativeEventListener {
+ public:
+  BannerCloseListener(Element* banner, BannerCheckboxListener* checkbox_state)
+      : banner_(banner), checkbox_state_(checkbox_state) {}
+
+  void Invoke(ExecutionContext*, Event* event) override {
+    // The banner lives in the page's own DOM, so page script can call
+    // `close_button.click()` or dispatch a synthetic click. Only a real user
+    // click may suppress the banner globally for this profile. Untrusted
+    // clicks still dismiss the banner, which is harmless: script could just
+    // as well remove the element itself.
+    if (event && event->isTrusted() && checkbox_state_->CheckedByUser()) {
+      // The frame is looked up through the banner rather than captured up
+      // front, so that this still does the right thing if the transformed
+      // document was adopted into a different frame.
+      if (LocalFrame* frame = banner_->GetDocument().GetFrame()) {
+        frame->GetLocalFrameHostRemote().SuppressXSLTDeprecationBanner();
+      }
+    }
+    banner_->remove();
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(banner_);
+    visitor->Trace(checkbox_state_);
+    NativeEventListener::Trace(visitor);
+  }
+
+ private:
+  Member<Element> banner_;
+  Member<BannerCheckboxListener> checkbox_state_;
+};
+
 static Element* CreateBannerLink(Document& document,
                                  const String& href,
                                  const String& text) {
@@ -162,10 +268,50 @@ static Element* CreateBannerLink(Document& document,
   link->setAttribute(html_names::kHrefAttr, AtomicString(href));
   link->setAttribute(html_names::kTargetAttr, AtomicString("_blank"));
   link->setAttribute(html_names::kRelAttr, AtomicString("noopener noreferrer"));
-  link->setAttribute(html_names::kStyleAttr,
-                     AtomicString("color: white; text-decoration: underline;"));
+  link->setAttribute(html_names::kStyleAttr, AtomicString(kLinkStyle));
   link->appendChild(document.createTextNode(text));
   return link;
+}
+
+// Appends the "Never show this warning" checkbox and the close button. The
+// checkbox state is only acted on when the close button is clicked.
+static void AppendDismissControls(Document& document, Element* banner) {
+  auto* checkbox = To<HTMLInputElement>(document.CreateRawElement(
+      html_names::kInputTag, CreateElementFlags::ByCreateElement()));
+  checkbox->setAttribute(html_names::kTypeAttr, AtomicString("checkbox"));
+  checkbox->setAttribute(html_names::kStyleAttr,
+                         AtomicString(kDismissCheckboxStyle));
+  auto* checkbox_state = MakeGarbageCollected<BannerCheckboxListener>(checkbox);
+  checkbox->addEventListener(event_type_names::kClick, checkbox_state);
+
+  Element* label = document.CreateRawElement(
+      html_names::kLabelTag, CreateElementFlags::ByCreateElement());
+  label->setAttribute(html_names::kStyleAttr, AtomicString(kDismissLabelStyle));
+  label->appendChild(checkbox);
+  label->appendChild(document.createTextNode("Never show this warning"));
+  banner->appendChild(label);
+
+  Element* close_button = document.CreateRawElement(
+      html_names::kButtonTag, CreateElementFlags::ByCreateElement());
+  close_button->setAttribute(html_names::kTypeAttr, AtomicString("button"));
+  close_button->setAttribute(html_names::kStyleAttr,
+                             AtomicString(kCloseButtonStyle));
+  close_button->setAttribute(html_names::kAriaLabelAttr, AtomicString("Close"));
+  close_button->setAttribute(html_names::kTitleAttr, AtomicString("Close"));
+  // Content attributes survive cloning; addEventListener() listeners do not.
+  // This keeps the close button working when a page clones the banner, e.g.
+  // via importNode() on a transformToDocument() result. Note that this will not
+  // pass CSP/trusted types, so it's not a perfect solution.
+  close_button->setAttribute(
+      html_names::kOnclickAttr,
+      AtomicString("this.parentElement.style.setProperty('display','none',"
+                   "'important')"));
+  // U+00D7 MULTIPLICATION SIGN.
+  close_button->appendChild(document.createTextNode(String(u"\u00D7")));
+  close_button->addEventListener(
+      event_type_names::kClick,
+      MakeGarbageCollected<BannerCloseListener>(banner, checkbox_state));
+  banner->appendChild(close_button);
 }
 
 template <typename Callback>
@@ -180,14 +326,9 @@ static void CreateAndAppendBanner(Document& document, Callback build_banner) {
 
   Element* banner = document.CreateRawElement(
       html_names::kDivTag, CreateElementFlags::ByCreateElement());
-  banner->setAttribute(
-      html_names::kStyleAttr,
-      AtomicString(
-          "background-color: #d9534f; color: white; padding: 12px; "
-          "margin-bottom: 20px; font-size: 16px; font-weight: bold; "
-          "text-align: center; font-family: sans-serif; position: relative; "
-          "z-index: 2147483647;"));
+  banner->setAttribute(html_names::kStyleAttr, AtomicString(kBannerStyle));
   build_banner(banner);
+  AppendDismissControls(document, banner);
   target->insertBefore(banner, target->firstChild());
 }
 
@@ -234,11 +375,29 @@ static bool SourceHasPolyfillScript(Document& owner_document) {
   return false;
 }
 
+// Document::GetSettings() returns null for a frameless document, which is what
+// XSLTProcessor.transformToDocument() produces, so the caller can't use it.
+// The execution context is the window that created the document, which does
+// have a frame, and therefore settings.
+static const Settings* SettingsForBanner(ExecutionContext* context) {
+  auto* window = DynamicTo<LocalDOMWindow>(context);
+  if (!window) {
+    return nullptr;
+  }
+  LocalFrame* frame = window->GetFrame();
+  return frame ? frame->GetSettings() : nullptr;
+}
+
 static void InjectXSLTWarningBanner(bool is_cap_alert_xslt,
                                     bool source_has_polyfill_script,
                                     Document& document) {
   ExecutionContext* context = document.GetExecutionContext();
   if (!RuntimeEnabledFeatures::GenerateXSLTWarningBannerEnabled(context)) {
+    return;
+  }
+  const Settings* settings = SettingsForBanner(context);
+  if (settings && settings->GetXSLTDeprecationBannerSuppressed()) {
+    // The user checked "Never show this warning" and closed a previous banner.
     return;
   }
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(

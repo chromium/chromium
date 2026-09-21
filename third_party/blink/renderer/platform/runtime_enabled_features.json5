@@ -3368,7 +3368,7 @@
       // Killswitch for the visible deprecation warning banner shown on
       // XSLT-transformed documents.
       name: "GenerateXSLTWarningBanner",
-      status: "stable",
+      status: "experimental",
     },
     {
       // Tracking bug for the implementation: https://crbug.com/430204832

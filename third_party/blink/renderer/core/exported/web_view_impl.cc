@@ -1963,6 +1963,11 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
     RuntimeEnabledFeatures::SetAIWriterAPIEnabled(true);
   }
 
+  // Set on the core Settings directly: this is Blink-internal, and does not
+  // need to be part of the public WebSettings API.
+  web_view_impl->GetPage()->GetSettings().SetXSLTDeprecationBannerSuppressed(
+      prefs.is_xslt_deprecation_banner_suppressed);
+
 #if BUILDFLAG(IS_MAC) && BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
   const bool use_external_popups = !prefs.should_disable_external_popups;
   if (web_view_impl->GetChromeClient().UseExternalPopupMenus() !=

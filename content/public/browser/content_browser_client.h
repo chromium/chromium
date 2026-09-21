@@ -2779,6 +2779,17 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual void OnFetchKeepAliveRequestDestroyed(
       BrowserContext& browser_context);
 
+  // Called when the user dismissed the XSLT deprecation warning banner with
+  // the "don't show this again" checkbox checked. Embedders that support it
+  // should persist this, and report it back to renderers through
+  // `WebPreferences::is_xslt_deprecation_banner_suppressed`.
+  // TODO(crbug.com/560233256): This method is temporary, and is only required
+  // before XSLT is disabled by default in M158. It can be removed in M158, or
+  // whenever XSLT is disabled by default (other than for origin trials and
+  // enterprise policy).
+  virtual void SuppressXSLTDeprecationBanner(
+      RenderFrameHost* render_frame_host);
+
 #if BUILDFLAG(IS_MAC)
   // Sets up the embedder sandbox parameters for the given sandbox type. Returns
   // true if parameters were successfully set up or false if no additional

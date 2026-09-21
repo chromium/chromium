@@ -1182,6 +1182,15 @@ inline constexpr char kDataUrlInSvgUseEnabled[] =
 inline constexpr char kPartitionedBlobUrlUsage[] =
     "profile.content_settings.partitioned_blob_url_usage";
 
+// Boolean indicating that the user dismissed the XSLT deprecation warning
+// banner with the "don't show this again" checkbox checked.
+// TODO(crbug.com/560233256): This pref is temporary, and is only required
+// before XSLT is disabled by default in M158. It can be removed in M158, or
+// whenever XSLT is disabled by default (other than for origin trials and
+// enterprise policy).
+inline constexpr char kXSLTDeprecationBannerSuppressed[] =
+    "profile.xslt_deprecation_banner_suppressed";
+
 // Boolean value indicating if the Reduce Accept-Language feature should be
 // enabled. Defaults to network::features::kReduceAcceptLanguage field trial.
 inline constexpr char kReduceAcceptLanguageEnabled[] =

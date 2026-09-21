@@ -975,6 +975,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   void OnFetchKeepAliveRequestDestroyed(
       content::BrowserContext& browser_context) override;
 
+  void SuppressXSLTDeprecationBanner(
+      content::RenderFrameHost* render_frame_host) override;
+
 #if BUILDFLAG(IS_MAC)
   bool SetupEmbedderSandboxParameters(
       sandbox::mojom::Sandbox sandbox_type,

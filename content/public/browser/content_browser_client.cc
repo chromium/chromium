@@ -1636,6 +1636,8 @@ void ContentBrowserClient::OnFetchKeepAliveRequestCreated(BrowserContext&) {}
 
 void ContentBrowserClient::OnFetchKeepAliveRequestDestroyed(BrowserContext&) {}
 
+void ContentBrowserClient::SuppressXSLTDeprecationBanner(RenderFrameHost*) {}
+
 #if BUILDFLAG(IS_MAC)
 bool ContentBrowserClient::SetupEmbedderSandboxParameters(
     sandbox::mojom::Sandbox sandbox_type,

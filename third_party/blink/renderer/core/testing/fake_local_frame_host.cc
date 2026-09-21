@@ -308,4 +308,6 @@ void FakeLocalFrameHost::InitializeCrashReportContext(
 
 void FakeLocalFrameHost::NotifyDocumentInteractive() {}
 
+void FakeLocalFrameHost::SuppressXSLTDeprecationBanner() {}
+
 }  // namespace blink
