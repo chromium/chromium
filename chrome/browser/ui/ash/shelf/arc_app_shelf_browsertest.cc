@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
@@ -17,6 +19,7 @@
 #include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -171,18 +174,24 @@ TestParameter build_test_parameter[] = {
     TestParameter(TEST_ACTION_START, true),
 };
 
-std::string CreateIntentUriWithShelfGroup(const std::string& shelf_group_id) {
-  return base::StringPrintf("#Intent;S.org.chromium.arc.shelf_group_id=%s;end",
-                            shelf_group_id.c_str());
+std::string CreateIntentUriWithShelfGroup(std::string_view shelf_group_id) {
+  return base::StrCat({
+      "#Intent;S.org.chromium.arc.shelf_group_id=",
+      shelf_group_id,
+      ";end",
+  });
 }
 
 std::string CreateIntentUriWithShelfGroupAndLogicalWindow(
-    const std::string& shelf_group_id,
-    const std::string& logical_window_id) {
-  return base::StringPrintf(
-      "#Intent;S.org.chromium.arc.logical_window_id=%s;"
-      "S.org.chromium.arc.shelf_group_id=%s;end",
-      logical_window_id.c_str(), shelf_group_id.c_str());
+    std::string_view shelf_group_id,
+    std::string_view logical_window_id) {
+  return base::StrCat({
+      "#Intent;S.org.chromium.arc.logical_window_id=",
+      logical_window_id,
+      ";S.org.chromium.arc.shelf_group_id=",
+      shelf_group_id,
+      ";end",
+  });
 }
 
 ash::ShelfItemDelegate::AppMenuItems GetAppMenuItems(
@@ -355,6 +364,14 @@ class ArcAppShelfBrowserTest : public extensions::ExtensionBrowserTest {
   }
 
   arc::FakeAppInstance* arc_instance() { return app_instance_.get(); }
+
+  void SetTaskDescription(int32_t task_id, std::string_view label) {
+    app_host()->OnTaskDescriptionChanged(
+        task_id, std::string(label),
+        arc_instance()->GenerateIconResponse(kGeneratedIconSize,
+                                             /*app_icon=*/false),
+        0, 0);
+  }
 
  private:
   std::unique_ptr<arc::FakeAppInstance> app_instance_;
@@ -685,30 +702,36 @@ IN_PROC_BROWSER_TEST_F(ArcAppShelfBrowserTest, LogicalWindow) {
 
   // We will use the following 7 windows. Index 0 is skipped because task_ids
   // start at 1.
-  const char* kTestWindowTitles[8] = {"",
-                                      kTestWindowTitle,
-                                      kTestWindowTitle2,
-                                      kTestWindowTitle,
-                                      kTestWindowTitle2,
-                                      kTestWindowTitle3,
-                                      kTestWindowTitle,
-                                      kTestWindowTitle2};
-  const char* kTestShelfGroups[8] = {"",
-                                     kTestShelfGroup,
-                                     kTestShelfGroup,
-                                     kTestShelfGroup,
-                                     kTestShelfGroup,
-                                     kTestShelfGroup,
-                                     kTestShelfGroup2,
-                                     kTestShelfGroup2};
-  const char* kTestLogicalWindows[8] = {"",
-                                        kTestLogicalWindow,
-                                        kTestLogicalWindow,
-                                        kTestLogicalWindow2,
-                                        kTestLogicalWindow2,
-                                        kTestLogicalWindow2,
-                                        kTestLogicalWindow,
-                                        kTestLogicalWindow};
+  constexpr std::array<std::string_view, 8> kTestWindowTitles = {
+      "",
+      kTestWindowTitle,
+      kTestWindowTitle2,
+      kTestWindowTitle,
+      kTestWindowTitle2,
+      kTestWindowTitle3,
+      kTestWindowTitle,
+      kTestWindowTitle2,
+  };
+  constexpr std::array<std::string_view, 8> kTestShelfGroups = {
+      "",
+      kTestShelfGroup,
+      kTestShelfGroup,
+      kTestShelfGroup,
+      kTestShelfGroup,
+      kTestShelfGroup,
+      kTestShelfGroup2,
+      kTestShelfGroup2,
+  };
+  constexpr std::array<std::string_view, 8> kTestLogicalWindows = {
+      "",
+      kTestLogicalWindow,
+      kTestLogicalWindow,
+      kTestLogicalWindow2,
+      kTestLogicalWindow2,
+      kTestLogicalWindow2,
+      kTestLogicalWindow,
+      kTestLogicalWindow,
+  };
   // Create windows that will be associated with the tasks. Without this,
   // GetAppMenuItems() will only return an empty list.
   std::vector<std::unique_ptr<exo::ClientControlledShellSurface>> test_windows;
@@ -733,11 +756,7 @@ IN_PROC_BROWSER_TEST_F(ArcAppShelfBrowserTest, LogicalWindow) {
                             0 /* session_id */);
   arc_instance()->set_icon_response_type(
       arc::FakeAppInstance::IconResponseType::ICON_RESPONSE_SEND_EMPTY);
-  app_host()->OnTaskDescriptionChanged(
-      1, kTestWindowTitles[1],
-      arc_instance()->GenerateIconResponse(kGeneratedIconSize,
-                                           false /* app_icon */),
-      0, 0);
+  SetTaskDescription(1, kTestWindowTitles[1]);
   WaitForDecompressTask();
   ash::ShelfItemDelegate* delegate1 = GetShelfItemDelegate(shelf_id1);
 
@@ -749,11 +768,7 @@ IN_PROC_BROWSER_TEST_F(ArcAppShelfBrowserTest, LogicalWindow) {
                             CreateIntentUriWithShelfGroupAndLogicalWindow(
                                 kTestShelfGroups[2], kTestLogicalWindows[2]),
                             0 /* session_id */);
-  app_host()->OnTaskDescriptionChanged(
-      2, kTestWindowTitles[2],
-      arc_instance()->GenerateIconResponse(kGeneratedIconSize,
-                                           false /* app_icon */),
-      0, 0);
+  SetTaskDescription(2, kTestWindowTitles[2]);
 
   WaitForDecompressTask();
   ASSERT_EQ(delegate1, GetShelfItemDelegate(shelf_id1));
@@ -762,17 +777,12 @@ IN_PROC_BROWSER_TEST_F(ArcAppShelfBrowserTest, LogicalWindow) {
 
   // Second logical window
   for (int task_id = 3; task_id <= 5; task_id++) {
-    app_host()->OnTaskCreated(task_id, info->package_name, info->activity,
-                              info->name,
-                              CreateIntentUriWithShelfGroupAndLogicalWindow(
-                                  UNSAFE_TODO(kTestShelfGroups[task_id]),
-                                  UNSAFE_TODO(kTestLogicalWindows[task_id])),
-                              0 /* session_id */);
-    app_host()->OnTaskDescriptionChanged(
-        task_id, UNSAFE_TODO(kTestWindowTitles[task_id]),
-        arc_instance()->GenerateIconResponse(kGeneratedIconSize,
-                                             false /* app_icon */),
-        0, 0);
+    app_host()->OnTaskCreated(
+        task_id, info->package_name, info->activity, info->name,
+        CreateIntentUriWithShelfGroupAndLogicalWindow(
+            kTestShelfGroups[task_id], kTestLogicalWindows[task_id]),
+        0 /* session_id */);
+    SetTaskDescription(task_id, kTestWindowTitles[task_id]);
   }
 
   WaitForDecompressTask();
@@ -786,11 +796,7 @@ IN_PROC_BROWSER_TEST_F(ArcAppShelfBrowserTest, LogicalWindow) {
                             CreateIntentUriWithShelfGroupAndLogicalWindow(
                                 kTestShelfGroups[6], kTestLogicalWindows[6]),
                             0 /* session_id */);
-  app_host()->OnTaskDescriptionChanged(
-      6, kTestWindowTitles[6],
-      arc_instance()->GenerateIconResponse(kGeneratedIconSize,
-                                           false /* app_icon */),
-      0, 0);
+  SetTaskDescription(6, kTestWindowTitles[6]);
   ash::ShelfItemDelegate* delegate2 = GetShelfItemDelegate(shelf_id2);
 
   WaitForDecompressTask();
@@ -803,11 +809,7 @@ IN_PROC_BROWSER_TEST_F(ArcAppShelfBrowserTest, LogicalWindow) {
                             CreateIntentUriWithShelfGroupAndLogicalWindow(
                                 kTestShelfGroups[7], kTestLogicalWindows[7]),
                             0 /* session_id */);
-  app_host()->OnTaskDescriptionChanged(
-      7, kTestWindowTitles[7],
-      arc_instance()->GenerateIconResponse(kGeneratedIconSize,
-                                           false /* app_icon */),
-      0, 0);
+  SetTaskDescription(7, kTestWindowTitles[7]);
 
   WaitForDecompressTask();
   ASSERT_EQ(delegate2, GetShelfItemDelegate(shelf_id2));

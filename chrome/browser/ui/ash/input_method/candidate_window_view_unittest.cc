@@ -6,7 +6,9 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <string>
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
@@ -23,16 +25,22 @@ namespace ui {
 namespace ime {
 
 namespace {
-const char16_t* kSampleCandidate[] = {
-    u"Sample Candidate 1", u"Sample Candidate 2", u"Sample Candidate 3"};
-const char16_t* kSampleAnnotation[] = {
-    u"Sample Annotation 1", u"Sample Annotation 2", u"Sample Annotation 3"};
-const char16_t* kSampleDescriptionTitle[] = {
+constexpr std::array<std::u16string_view, 3> kSampleCandidate = {
+    u"Sample Candidate 1",
+    u"Sample Candidate 2",
+    u"Sample Candidate 3",
+};
+constexpr std::array<std::u16string_view, 3> kSampleAnnotation = {
+    u"Sample Annotation 1",
+    u"Sample Annotation 2",
+    u"Sample Annotation 3",
+};
+constexpr std::array<std::u16string_view, 3> kSampleDescriptionTitle = {
     u"Sample Description Title 1",
     u"Sample Description Title 2",
     u"Sample Description Title 3",
 };
-const char16_t* kSampleDescriptionBody[] = {
+constexpr std::array<std::u16string_view, 3> kSampleDescriptionBody = {
     u"Sample Description Body 1",
     u"Sample Description Body 2",
     u"Sample Description Body 3",
@@ -106,9 +114,9 @@ class CandidateWindowViewTest : public views::ViewsTestBase {
     candidate_window_view_->MaybeInitializeCandidateViews(candidate_window);
   }
 
-  void ExpectLabels(const std::u16string& shortcut,
-                    const std::u16string& candidate,
-                    const std::u16string& annotation,
+  void ExpectLabels(std::u16string_view shortcut,
+                    std::u16string_view candidate,
+                    std::u16string_view annotation,
                     const CandidateView* row) {
     EXPECT_EQ(shortcut, row->shortcut_label_->GetText());
     EXPECT_EQ(candidate, row->candidate_label_->GetText());
@@ -198,9 +206,18 @@ TEST_F(CandidateWindowViewTest, SelectCandidateAtTest) {
 }
 
 TEST_F(CandidateWindowViewTest, ShortcutSettingTest) {
-  const char16_t* kEmptyLabel = u"";
-  const char16_t* kCustomizedLabel[] = {u"a", u"s", u"d"};
-  const char16_t* kExpectedHorizontalCustomizedLabel[] = {u"a.", u"s.", u"d."};
+  constexpr std::u16string_view kEmptyLabel = u"";
+  constexpr std::array<std::u16string_view, 3> kCustomizedLabel = {
+      u"a",
+      u"s",
+      u"d",
+  };
+  constexpr std::array<std::u16string_view, 3>
+      kExpectedHorizontalCustomizedLabel = {
+          u"a.",
+          u"s.",
+          u"d.",
+      };
 
   {
     SCOPED_TRACE("candidate_views allocation test");
@@ -221,10 +238,10 @@ TEST_F(CandidateWindowViewTest, ShortcutSettingTest) {
     candidate_window.set_orientation(ui::CandidateWindow::VERTICAL);
     for (size_t i = 0; i < kPageSize; ++i) {
       ui::CandidateWindow::Entry entry;
-      entry.value = UNSAFE_TODO(kSampleCandidate[i]);
-      entry.annotation = UNSAFE_TODO(kSampleAnnotation[i]);
-      entry.description_title = UNSAFE_TODO(kSampleDescriptionTitle[i]);
-      entry.description_body = UNSAFE_TODO(kSampleDescriptionBody[i]);
+      entry.value = kSampleCandidate[i];
+      entry.annotation = kSampleAnnotation[i];
+      entry.description_title = kSampleDescriptionTitle[i];
+      entry.description_body = kSampleDescriptionBody[i];
       entry.label = kEmptyLabel;
       candidate_window.mutable_candidates()->push_back(entry);
     }
@@ -233,8 +250,8 @@ TEST_F(CandidateWindowViewTest, ShortcutSettingTest) {
 
     ASSERT_EQ(kPageSize, GetCandidatesSize());
     for (size_t i = 0; i < kPageSize; ++i) {
-      ExpectLabels(kEmptyLabel, UNSAFE_TODO(kSampleCandidate[i]),
-                   UNSAFE_TODO(kSampleAnnotation[i]), GetCandidateAt(i));
+      ExpectLabels(kEmptyLabel, kSampleCandidate[i], kSampleAnnotation[i],
+                   GetCandidateAt(i));
     }
   }
   {
@@ -247,10 +264,10 @@ TEST_F(CandidateWindowViewTest, ShortcutSettingTest) {
     candidate_window.set_orientation(ui::CandidateWindow::HORIZONTAL);
     for (size_t i = 0; i < kPageSize; ++i) {
       ui::CandidateWindow::Entry entry;
-      entry.value = UNSAFE_TODO(kSampleCandidate[i]);
-      entry.annotation = UNSAFE_TODO(kSampleAnnotation[i]);
-      entry.description_title = UNSAFE_TODO(kSampleDescriptionTitle[i]);
-      entry.description_body = UNSAFE_TODO(kSampleDescriptionBody[i]);
+      entry.value = kSampleCandidate[i];
+      entry.annotation = kSampleAnnotation[i];
+      entry.description_title = kSampleDescriptionTitle[i];
+      entry.description_body = kSampleDescriptionBody[i];
       entry.label = kEmptyLabel;
       candidate_window.mutable_candidates()->push_back(entry);
     }
@@ -260,8 +277,8 @@ TEST_F(CandidateWindowViewTest, ShortcutSettingTest) {
     ASSERT_EQ(kPageSize, GetCandidatesSize());
     // Confirm actual labels not containing ".".
     for (size_t i = 0; i < kPageSize; ++i) {
-      ExpectLabels(kEmptyLabel, UNSAFE_TODO(kSampleCandidate[i]),
-                   UNSAFE_TODO(kSampleAnnotation[i]), GetCandidateAt(i));
+      ExpectLabels(kEmptyLabel, kSampleCandidate[i], kSampleAnnotation[i],
+                   GetCandidateAt(i));
     }
   }
   {
@@ -273,11 +290,11 @@ TEST_F(CandidateWindowViewTest, ShortcutSettingTest) {
     candidate_window.set_orientation(ui::CandidateWindow::VERTICAL);
     for (size_t i = 0; i < kPageSize; ++i) {
       ui::CandidateWindow::Entry entry;
-      entry.value = UNSAFE_TODO(kSampleCandidate[i]);
-      entry.annotation = UNSAFE_TODO(kSampleAnnotation[i]);
-      entry.description_title = UNSAFE_TODO(kSampleDescriptionTitle[i]);
-      entry.description_body = UNSAFE_TODO(kSampleDescriptionBody[i]);
-      entry.label = UNSAFE_TODO(kCustomizedLabel[i]);
+      entry.value = kSampleCandidate[i];
+      entry.annotation = kSampleAnnotation[i];
+      entry.description_title = kSampleDescriptionTitle[i];
+      entry.description_body = kSampleDescriptionBody[i];
+      entry.label = kCustomizedLabel[i];
       candidate_window.mutable_candidates()->push_back(entry);
     }
 
@@ -286,9 +303,8 @@ TEST_F(CandidateWindowViewTest, ShortcutSettingTest) {
     ASSERT_EQ(kPageSize, GetCandidatesSize());
     // Confirm actual labels not containing ".".
     for (size_t i = 0; i < kPageSize; ++i) {
-      ExpectLabels(UNSAFE_TODO(kCustomizedLabel[i]),
-                   UNSAFE_TODO(kSampleCandidate[i]),
-                   UNSAFE_TODO(kSampleAnnotation[i]), GetCandidateAt(i));
+      ExpectLabels(kCustomizedLabel[i], kSampleCandidate[i],
+                   kSampleAnnotation[i], GetCandidateAt(i));
     }
   }
   {
@@ -300,11 +316,11 @@ TEST_F(CandidateWindowViewTest, ShortcutSettingTest) {
     candidate_window.set_orientation(ui::CandidateWindow::HORIZONTAL);
     for (size_t i = 0; i < kPageSize; ++i) {
       ui::CandidateWindow::Entry entry;
-      entry.value = UNSAFE_TODO(kSampleCandidate[i]);
-      entry.annotation = UNSAFE_TODO(kSampleAnnotation[i]);
-      entry.description_title = UNSAFE_TODO(kSampleDescriptionTitle[i]);
-      entry.description_body = UNSAFE_TODO(kSampleDescriptionBody[i]);
-      entry.label = UNSAFE_TODO(kCustomizedLabel[i]);
+      entry.value = kSampleCandidate[i];
+      entry.annotation = kSampleAnnotation[i];
+      entry.description_title = kSampleDescriptionTitle[i];
+      entry.description_body = kSampleDescriptionBody[i];
+      entry.label = kCustomizedLabel[i];
       candidate_window.mutable_candidates()->push_back(entry);
     }
 
@@ -313,9 +329,8 @@ TEST_F(CandidateWindowViewTest, ShortcutSettingTest) {
     ASSERT_EQ(kPageSize, GetCandidatesSize());
     // Confirm actual labels not containing ".".
     for (size_t i = 0; i < kPageSize; ++i) {
-      ExpectLabels(UNSAFE_TODO(kExpectedHorizontalCustomizedLabel[i]),
-                   UNSAFE_TODO(kSampleCandidate[i]),
-                   UNSAFE_TODO(kSampleAnnotation[i]), GetCandidateAt(i));
+      ExpectLabels(kExpectedHorizontalCustomizedLabel[i], kSampleCandidate[i],
+                   kSampleAnnotation[i], GetCandidateAt(i));
     }
   }
 }

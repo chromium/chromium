@@ -6,11 +6,13 @@
 // stdout.
 
 #include <algorithm>
+#include <array>
 #include <functional>
 #include <iomanip>
 #include <ios>
 #include <iostream>
 #include <string>
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
@@ -22,10 +24,10 @@
 
 namespace {
 // clang-format off
-const char* enum_names[] = {
+constexpr auto enum_names = std::to_array<std::string_view>({
   ACTION_IDS
   CHROME_ACTION_IDS
-};
+});
 // clang-format on
 }  // namespace
 
@@ -35,7 +37,7 @@ const char* enum_names[] = {
 
 int main(int argc, const char* argv[]) {
   const size_t longest_name =
-      strlen(std::ranges::max(enum_names, std::ranges::less(), strlen)) + 1;
+      std::ranges::max(enum_names, {}, &std::string_view::size).size() + 1;
 
   std::cout << std::setfill(' ') << std::left;
   std::cout << std::setw(longest_name) << "ID";
@@ -47,7 +49,7 @@ int main(int argc, const char* argv[]) {
   for (actions::ActionId id = actions::kActionsStart; id < kChromeActionsEnd;
        ++id) {
     std::cout << std::setfill(' ') << std::left;
-    std::cout << std::setw(longest_name) << UNSAFE_TODO(enum_names[id]) << '\n';
+    std::cout << std::setw(longest_name) << enum_names[id] << '\n';
   }
 
   std::cout.flush();
