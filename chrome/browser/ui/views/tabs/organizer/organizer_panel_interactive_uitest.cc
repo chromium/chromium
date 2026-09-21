@@ -71,7 +71,9 @@ namespace base::test {
 class OrganizerPanelInteractiveUiTest : public InteractiveBrowserTest {
  public:
   OrganizerPanelInteractiveUiTest() {
-    scoped_feature_list_.InitAndEnableFeature(organizer_panel::kOrganizerPanel);
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        organizer_panel::kOrganizerPanel,
+        {{organizer_panel::kOrganizerPanelInVerticalTabStrip.name, "false"}});
     animation_mode_reset_ = gfx::AnimationTestApi::SetRichAnimationRenderMode(
         gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
   }

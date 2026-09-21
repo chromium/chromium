@@ -4354,14 +4354,6 @@ const FeatureEntry::FeatureVariation kNtpCustomizeChromeAutoOpenVariations[] = {
     {"- First NTP only", kNtpCustomizeChromeAutoOpenOnFirstNTPOnly, nullptr},
     {"- IPH only", kNtpCustomizeChromeAutoOpenIPHOnly, nullptr}};
 
-const FeatureEntry::FeatureParam kOrganizerPanelTrayOnly[] = {
-    {"OrganizerPanelInVerticalTabStrip", "false"}};
-const FeatureEntry::FeatureParam kOrganizerPanelEmbedInVerticalTabStrip[] = {
-    {"OrganizerPanelInVerticalTabStrip", "true"}};
-const FeatureEntry::FeatureVariation kOrganizerPanelVariations[] = {
-    {"Tray Only", kOrganizerPanelTrayOnly, nullptr},
-    {"In Vertical Tab Strip", kOrganizerPanelEmbedInVerticalTabStrip, nullptr}};
-
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
         // BUILDFLAG(IS_CHROMEOS)
 
@@ -12514,9 +12506,8 @@ const FeatureEntry kFeatureEntries[] = {
     BUILDFLAG(IS_CHROMEOS)
     {"organizer-panel", flag_descriptions::kOrganizerPanelName,
      flag_descriptions::kOrganizerPanelDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(organizer_panel::kOrganizerPanel,
-                                    kOrganizerPanelVariations,
-                                    "OrganizerPanel")},
+     FEATURE_VALUE_TYPE(organizer_panel::kOrganizerPanel)},
+
     {"sync-ai-threads", flag_descriptions::kSyncAIThreadsName,
      flag_descriptions::kSyncAIThreadsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(syncer::kSyncAIThread)},

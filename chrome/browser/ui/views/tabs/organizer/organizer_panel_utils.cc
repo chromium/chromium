@@ -14,7 +14,7 @@ BASE_FEATURE(kShowExtensionsSidePanelUiInOrganizerPanel,
 BASE_FEATURE_PARAM(bool,
                    kOrganizerPanelInVerticalTabStrip,
                    &kOrganizerPanel,
-                   false);
+                   true);
 
 bool IsOrganizerPanelFeatureEnabled() {
   return base::FeatureList::IsEnabled(kOrganizerPanel);

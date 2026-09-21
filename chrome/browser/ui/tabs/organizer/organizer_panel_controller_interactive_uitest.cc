@@ -37,7 +37,9 @@ class OrganizerPanelControllerInteractiveUiTest
     : public InteractiveBrowserTest {
  public:
   OrganizerPanelControllerInteractiveUiTest() {
-    scoped_feature_list_.InitAndEnableFeature(organizer_panel::kOrganizerPanel);
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        organizer_panel::kOrganizerPanel,
+        {{organizer_panel::kOrganizerPanelInVerticalTabStrip.name, "false"}});
   }
   ~OrganizerPanelControllerInteractiveUiTest() override = default;
 

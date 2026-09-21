@@ -60,9 +60,10 @@ class OrganizerPanelExtensionInteractiveUiTest
     : public InteractiveBrowserTestMixin<extensions::ExtensionBrowserTest> {
  public:
   OrganizerPanelExtensionInteractiveUiTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {organizer_panel::kOrganizerPanel,
-         organizer_panel::kShowExtensionsSidePanelUiInOrganizerPanel},
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{organizer_panel::kOrganizerPanel,
+          {{organizer_panel::kOrganizerPanelInVerticalTabStrip.name, "false"}}},
+         {organizer_panel::kShowExtensionsSidePanelUiInOrganizerPanel, {}}},
         {});
   }
 
