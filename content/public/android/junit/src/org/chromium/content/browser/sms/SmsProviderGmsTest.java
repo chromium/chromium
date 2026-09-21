@@ -13,9 +13,13 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -26,21 +30,18 @@ import java.lang.ref.WeakReference;
 /** Unit tests for SmsProviderGms. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SmsProviderGmsTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private WindowAndroid mWindowAndroid;
+    @Mock private SmsUserConsentReceiver mUserConsentReceiver;
+    @Mock private SmsVerificationReceiver mVerificationReceiver;
     private Context mContext;
     private SmsProviderGms mProvider;
-    private SmsUserConsentReceiver mUserConsentReceiver;
-    private SmsVerificationReceiver mVerificationReceiver;
-    private WindowAndroid mWindowAndroid;
 
     @Before
     public void setUp() {
         mContext = RuntimeEnvironment.application;
 
-        mWindowAndroid = Mockito.mock(WindowAndroid.class);
         when(mWindowAndroid.getContext()).thenReturn(new WeakReference<Context>(mContext));
-
-        mUserConsentReceiver = Mockito.mock(SmsUserConsentReceiver.class);
-        mVerificationReceiver = Mockito.mock(SmsVerificationReceiver.class);
     }
 
     private void createSmsProviderGms(@GmsBackend int backend) {

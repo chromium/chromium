@@ -9,7 +9,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -62,6 +61,8 @@ public class SmartSelectionProviderTest {
     @Mock private TextClassifier mTextClassifier;
     @Mock private WebContents mWebContents;
     @Mock private WindowAndroid mWindowAndroid;
+    @Mock private LibraryLoader mLibraryLoader;
+    @Mock private FeatureList.Natives mFeatureListNatives;
     @Captor private ArgumentCaptor<SelectionClient.Result> mResultCaptor;
 
     private SmartSelectionProvider mProvider;
@@ -69,14 +70,12 @@ public class SmartSelectionProviderTest {
     @Before
     public void setUp() {
         // Mock LibraryLoader to say native is loaded.
-        LibraryLoader libraryLoader = mock(LibraryLoader.class);
-        when(libraryLoader.isInitialized()).thenReturn(true);
-        LibraryLoader.setLibraryLoaderForTesting(libraryLoader);
+        when(mLibraryLoader.isInitialized()).thenReturn(true);
+        LibraryLoader.setLibraryLoaderForTesting(mLibraryLoader);
 
         // Mock FeatureListJni to say FeatureList is initialized.
-        FeatureList.Natives featureListNatives = mock(FeatureList.Natives.class);
-        when(featureListNatives.isInitialized()).thenReturn(true);
-        FeatureListJni.setInstanceForTesting(featureListNatives);
+        when(mFeatureListNatives.isInitialized()).thenReturn(true);
+        FeatureListJni.setInstanceForTesting(mFeatureListNatives);
 
         FeatureOverrides.overrideParam(
                 ContentFeatures.TEXT_CLASSIFIER_TIMEOUT, "timeout_ms", "200");

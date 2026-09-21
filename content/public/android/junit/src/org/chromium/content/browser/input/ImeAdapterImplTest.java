@@ -15,7 +15,6 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNotNull;
 import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -91,6 +90,9 @@ public class ImeAdapterImplTest {
     @Mock private AutocorrectManager mAutocorrectManager;
     @Mock private InputMethodManagerWrapper mInputMethodManagerWrapper;
     @Mock private EventForwarder mEventForwarder;
+    @Mock private RenderFrameHost mRenderFrameHost;
+    @Mock private RenderCoordinatesImpl mRenderCoordinatesImpl;
+    @Mock private WindowInsetsController mWindowInsetsController;
 
     @Before
     public void setUp() {
@@ -494,9 +496,8 @@ public class ImeAdapterImplTest {
 
     @Test
     public void testCommitContent() {
-        RenderFrameHost rfh = Mockito.mock(RenderFrameHost.class);
-        when(mWebContentsImpl.getFocusedFrame()).thenReturn(rfh);
-        when(mImeAdapterImplJni.insertMediaFromBytes(anyLong(), eq(rfh), any(), any()))
+        when(mWebContentsImpl.getFocusedFrame()).thenReturn(mRenderFrameHost);
+        when(mImeAdapterImplJni.insertMediaFromBytes(anyLong(), eq(mRenderFrameHost), any(), any()))
                 .thenReturn(true);
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
@@ -509,10 +510,13 @@ public class ImeAdapterImplTest {
 
         Assert.assertTrue(
                 adapter.commitContent(
-                        rfh, /* bytes= */ new byte[] {1, 2, 3}, /* extension= */ "png"));
+                        mRenderFrameHost,
+                        /* bytes= */ new byte[] {1, 2, 3},
+                        /* extension= */ "png"));
 
         verify(mImeAdapterImplJni)
-                .insertMediaFromBytes(anyLong(), eq(rfh), eq(new byte[] {1, 2, 3}), eq("png"));
+                .insertMediaFromBytes(
+                        anyLong(), eq(mRenderFrameHost), eq(new byte[] {1, 2, 3}), eq("png"));
         watcher.assertExpected();
     }
 
@@ -537,9 +541,8 @@ public class ImeAdapterImplTest {
 
     @Test
     public void testCommitContent_Failure() {
-        RenderFrameHost rfh = Mockito.mock(RenderFrameHost.class);
-        when(mWebContentsImpl.getFocusedFrame()).thenReturn(rfh);
-        when(mImeAdapterImplJni.insertMediaFromBytes(anyLong(), eq(rfh), any(), any()))
+        when(mWebContentsImpl.getFocusedFrame()).thenReturn(mRenderFrameHost);
+        when(mImeAdapterImplJni.insertMediaFromBytes(anyLong(), eq(mRenderFrameHost), any(), any()))
                 .thenReturn(false);
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
@@ -551,7 +554,8 @@ public class ImeAdapterImplTest {
         ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
         adapter.onConnectedToRenderProcess();
 
-        Assert.assertFalse(adapter.commitContent(rfh, new byte[] {1, 2, 3}, "unknown_ext"));
+        Assert.assertFalse(
+                adapter.commitContent(mRenderFrameHost, new byte[] {1, 2, 3}, "unknown_ext"));
         watcher.assertExpected();
     }
 
@@ -886,10 +890,9 @@ public class ImeAdapterImplTest {
     }
 
     private void doUpdateCursorAnchorInfoTest(boolean shouldExpectRequestRectangleOnScreen) {
-        RenderCoordinatesImpl renderCoordinates = mock(RenderCoordinatesImpl.class);
-        when(mWebContentsImpl.getRenderCoordinates()).thenReturn(renderCoordinates);
-        when(renderCoordinates.getDeviceScaleFactor()).thenReturn(1.0f);
-        when(renderCoordinates.getContentOffsetYPixInt()).thenReturn(0);
+        when(mWebContentsImpl.getRenderCoordinates()).thenReturn(mRenderCoordinatesImpl);
+        when(mRenderCoordinatesImpl.getDeviceScaleFactor()).thenReturn(1.0f);
+        when(mRenderCoordinatesImpl.getContentOffsetYPixInt()).thenReturn(0);
 
         when(mContainerView.getLocalVisibleRect(any(Rect.class)))
                 .thenAnswer(
@@ -1045,11 +1048,9 @@ public class ImeAdapterImplTest {
         adapter.onConnectedToRenderProcess();
 
         when(mWebContentsImpl.isFullscreenForCurrentTab()).thenReturn(false);
-
-        WindowInsetsController insetsController = mock(WindowInsetsController.class);
-        when(insetsController.getSystemBarsBehavior())
+        when(mWindowInsetsController.getSystemBarsBehavior())
                 .thenReturn(BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
-        when(mContainerView.getWindowInsetsController()).thenReturn(insetsController);
+        when(mContainerView.getWindowInsetsController()).thenReturn(mWindowInsetsController);
 
         // Simulate touch down inside gesture insets
         when(mEventForwarder.hasTouchOriginatingInGestureInsets(mContainerView)).thenReturn(true);

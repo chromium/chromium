@@ -12,7 +12,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -51,6 +50,8 @@ public class SelectActionMenuHelperTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private SelectActionMenuHelper.TextSelectionCapabilitiesDelegate mDelegate;
     @Mock private Context mContext;
+    @Mock private TypedArray mTypedArray;
+    @Mock private PackageManager mPackageManager;
 
     private static class TestSelectionActionMenuDelegate implements SelectionActionMenuDelegate {
 
@@ -101,9 +102,8 @@ public class SelectActionMenuHelperTest {
     @Before
     public void setUp() {
         // Used to mock out getting menu item icons.
-        TypedArray a = mock(TypedArray.class);
-        when(mContext.obtainStyledAttributes(any(int[].class))).thenReturn(a);
-        when(a.getResourceId(anyInt(), anyInt())).thenReturn(0);
+        when(mContext.obtainStyledAttributes(any(int[].class))).thenReturn(mTypedArray);
+        when(mTypedArray.getResourceId(anyInt(), anyInt())).thenReturn(0);
 
         when(mDelegate.canCut()).thenReturn(true);
         when(mDelegate.canCopy()).thenReturn(true);
@@ -333,9 +333,8 @@ public class SelectActionMenuHelperTest {
         List<ResolveInfo> list2 = new ArrayList<>();
         ResolveInfo resolveInfo2 = createResolveInfoWithActivityInfo("ProcessTextActivity2", true);
         list2.add(resolveInfo2);
-        PackageManager pm = mock(PackageManager.class);
-        doReturn(pm).when(mContext).getPackageManager();
-        when(pm.queryIntentActivities(any(Intent.class), anyInt())).thenReturn(list2);
+        doReturn(mPackageManager).when(mContext).getPackageManager();
+        when(mPackageManager.queryIntentActivities(any(Intent.class), anyInt())).thenReturn(list2);
         SelectionActionMenuDelegate selectionActionMenuDelegate =
                 new TestSelectionActionMenuDelegate();
         List<SelectionMenuItem> textProcessingItems =

@@ -32,6 +32,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -52,6 +53,10 @@ public class ImageHandlerTest {
 
     @Mock private ImageHandler.Delegate mDelegate;
     @Mock private ImageReader mImageReader;
+    @Mock private Image mImage;
+    @Mock private Plane mPlane;
+    @Captor private ArgumentCaptor<Runnable> mReleaseCbCaptor;
+    @Captor private ArgumentCaptor<Runnable> mReleaseCbCaptor2;
 
     private ImageHandler mImageHandler;
     private Handler mHandler;
@@ -109,18 +114,17 @@ public class ImageHandlerTest {
         // Acquire an `Image`.
         onImageAvailable(image);
 
-        final ArgumentCaptor<Runnable> releaseCb = ArgumentCaptor.forClass(Runnable.class);
         verify(mDelegate)
                 .onRgbaFrameAvailable(
                         eq(mImageHandler),
-                        releaseCb.capture(),
+                        mReleaseCbCaptor.capture(),
                         eq(TEST_TIMESTAMP),
                         eq(plane),
                         eq(TEST_CROP_RECT));
         assertEquals(1, mImageHandler.getAcquiredImageCountForTesting());
 
         // Run the release callback.
-        releaseCb.getValue().run();
+        mReleaseCbCaptor.getValue().run();
 
         // Image should be closed now.
         verify(image).close();
@@ -143,11 +147,10 @@ public class ImageHandlerTest {
 
         onImageAvailable(image);
 
-        final ArgumentCaptor<Runnable> releaseCb = ArgumentCaptor.forClass(Runnable.class);
         verify(mDelegate)
                 .onRgbaFrameAvailable(
                         eq(mImageHandler),
-                        releaseCb.capture(),
+                        mReleaseCbCaptor.capture(),
                         eq(TEST_TIMESTAMP),
                         eq(plane),
                         eq(TEST_CROP_RECT));
@@ -161,7 +164,7 @@ public class ImageHandlerTest {
         verify(mDelegate, never()).onClose(any());
 
         // Release the image, we should close now.
-        releaseCb.getValue().run();
+        mReleaseCbCaptor.getValue().run();
 
         verify(image).close();
         verify(mImageReader).close();
@@ -176,20 +179,18 @@ public class ImageHandlerTest {
         final Image image2 = createMockImage(/* timestamp= */ 2L);
         final Plane plane1 = image1.getPlanes()[0];
         final Plane plane2 = image2.getPlanes()[0];
-        final ArgumentCaptor<Runnable> releaseCb1 = ArgumentCaptor.forClass(Runnable.class);
-        final ArgumentCaptor<Runnable> releaseCb2 = ArgumentCaptor.forClass(Runnable.class);
 
         // Acquire two images.
         onImageAvailable(image1);
         verify(mDelegate)
                 .onRgbaFrameAvailable(
-                        eq(mImageHandler), releaseCb1.capture(), eq(1L), eq(plane1), any());
+                        eq(mImageHandler), mReleaseCbCaptor.capture(), eq(1L), eq(plane1), any());
         assertEquals(1, mImageHandler.getAcquiredImageCountForTesting());
 
         onImageAvailable(image2);
         verify(mDelegate)
                 .onRgbaFrameAvailable(
-                        eq(mImageHandler), releaseCb2.capture(), eq(2L), eq(plane2), any());
+                        eq(mImageHandler), mReleaseCbCaptor2.capture(), eq(2L), eq(plane2), any());
         assertEquals(2, mImageHandler.getAcquiredImageCountForTesting());
 
         // Try to close the ImageHandler. We should not close until all have been released.
@@ -200,7 +201,7 @@ public class ImageHandlerTest {
         verify(mDelegate, never()).onClose(any());
 
         // Release the second image.
-        releaseCb2.getValue().run();
+        mReleaseCbCaptor2.getValue().run();
 
         verify(image2).close();
         assertEquals(1, mImageHandler.getAcquiredImageCountForTesting());
@@ -212,7 +213,7 @@ public class ImageHandlerTest {
         verify(mImageReader, times(2)).acquireLatestImage();
 
         // Release the first image.
-        releaseCb1.getValue().run();
+        mReleaseCbCaptor.getValue().run();
 
         // We should close the ImageHandler now.
         verify(image1).close();
@@ -226,13 +227,11 @@ public class ImageHandlerTest {
     public void testOnImageAvailableWhileClosingDoesNotAcquire() throws Exception {
         final Image image1 = createMockImage(/* timestamp= */ 1L);
         final Plane plane1 = image1.getPlanes()[0];
-        final ArgumentCaptor<Runnable> releaseCb1 = ArgumentCaptor.forClass(Runnable.class);
-
         // Acquire one image.
         onImageAvailable(image1);
         verify(mDelegate)
                 .onRgbaFrameAvailable(
-                        eq(mImageHandler), releaseCb1.capture(), eq(1L), eq(plane1), any());
+                        eq(mImageHandler), mReleaseCbCaptor.capture(), eq(1L), eq(plane1), any());
         assertEquals(1, mImageHandler.getAcquiredImageCountForTesting());
 
         // Close the ImageHandler.
@@ -248,7 +247,7 @@ public class ImageHandlerTest {
         assertEquals(1, mImageHandler.getAcquiredImageCountForTesting());
 
         // Release the held image and the ImageHandler should close immediately.
-        releaseCb1.getValue().run();
+        mReleaseCbCaptor.getValue().run();
         verify(image1).close();
         verify(mImageReader).close();
         verify(mDelegate).onClose(eq(mImageHandler));
@@ -264,11 +263,10 @@ public class ImageHandlerTest {
         // Acquire an `Image`.
         onImageAvailable(image);
 
-        final ArgumentCaptor<Runnable> releaseCb = ArgumentCaptor.forClass(Runnable.class);
         verify(mDelegate)
                 .onRgbaFrameAvailable(
                         eq(mImageHandler),
-                        releaseCb.capture(),
+                        mReleaseCbCaptor.capture(),
                         eq(TEST_TIMESTAMP),
                         eq(plane),
                         eq(TEST_CROP_RECT));
@@ -364,18 +362,17 @@ public class ImageHandlerTest {
         // Acquire the first image.
         mImageHandler.onImageAvailable(mImageReader);
 
-        final ArgumentCaptor<Runnable> releaseCb = ArgumentCaptor.forClass(Runnable.class);
         verify(mDelegate)
                 .onRgbaFrameAvailable(
                         eq(mImageHandler),
-                        releaseCb.capture(),
+                        mReleaseCbCaptor.capture(),
                         eq(1L),
                         eq(plane1),
                         eq(TEST_CROP_RECT));
         assertEquals(1, mImageHandler.getAcquiredImageCountForTesting());
 
         // Release. This should trigger an attempt to acquire another image.
-        releaseCb.getValue().run();
+        mReleaseCbCaptor.getValue().run();
         shadowOf(Looper.getMainLooper()).idle();
 
         verify(image1).close();
@@ -402,18 +399,17 @@ public class ImageHandlerTest {
 
         onImageAvailable(image);
 
-        final ArgumentCaptor<Runnable> releaseCb = ArgumentCaptor.forClass(Runnable.class);
         verify(mDelegate)
                 .onI420FrameAvailable(
                         eq(mImageHandler),
-                        releaseCb.capture(),
+                        mReleaseCbCaptor.capture(),
                         eq(TEST_TIMESTAMP),
                         eq(planes),
                         eq(TEST_CROP_RECT));
         verify(mDelegate, never()).onRgbaFrameAvailable(any(), any(), anyLong(), any(), any());
         assertEquals(1, mImageHandler.getAcquiredImageCountForTesting());
 
-        releaseCb.getValue().run();
+        mReleaseCbCaptor.getValue().run();
 
         verify(image).close();
         assertEquals(0, mImageHandler.getAcquiredImageCountForTesting());
@@ -439,20 +435,17 @@ public class ImageHandlerTest {
 
     @Test(expected = AssertionError.class)
     public void testInvalidYuvImageThrowsAssertionError() throws Exception {
-        final Image image = mock(Image.class);
-        final Plane plane = mock(Plane.class);
-        when(image.getPlanes()).thenReturn(new Plane[] {plane});
-        when(image.getFormat()).thenReturn(ImageFormat.YUV_420_888);
+        when(mImage.getPlanes()).thenReturn(new Plane[] {mPlane});
+        when(mImage.getFormat()).thenReturn(ImageFormat.YUV_420_888);
 
         // This should throw an AssertionError because the plane count is not 3.
-        onImageAvailable(image);
+        onImageAvailable(mImage);
     }
 
     @Test(expected = IllegalStateException.class)
     public void testUnexpectedImageFormatThrowsIllegalStateException() {
-        final Image image = mock(Image.class);
-        when(image.getFormat()).thenReturn(ImageFormat.JPEG);
-        onImageAvailable(image);
+        when(mImage.getFormat()).thenReturn(ImageFormat.JPEG);
+        onImageAvailable(mImage);
     }
 
     @Test
@@ -499,17 +492,16 @@ public class ImageHandlerTest {
         // Acquire the first image.
         mImageHandler.onImageAvailable(mImageReader);
 
-        final ArgumentCaptor<Runnable> releaseCb = ArgumentCaptor.forClass(Runnable.class);
         verify(mDelegate)
                 .onRgbaFrameAvailable(
                         eq(mImageHandler),
-                        releaseCb.capture(),
+                        mReleaseCbCaptor.capture(),
                         eq(1L),
                         eq(plane1),
                         eq(TEST_CROP_RECT));
 
         // Release schedules a posted task on mHandler.
-        releaseCb.getValue().run();
+        mReleaseCbCaptor.getValue().run();
         verify(image1).close();
 
         // Call closeNow() before the posted task executes on mHandler.
@@ -533,11 +525,10 @@ public class ImageHandlerTest {
         // Acquire an image so mAcquiredImageCount == 1.
         mImageHandler.onImageAvailable(mImageReader);
 
-        final ArgumentCaptor<Runnable> releaseCb = ArgumentCaptor.forClass(Runnable.class);
         verify(mDelegate)
                 .onRgbaFrameAvailable(
                         eq(mImageHandler),
-                        releaseCb.capture(),
+                        mReleaseCbCaptor.capture(),
                         eq(1L),
                         eq(plane1),
                         eq(TEST_CROP_RECT));
@@ -553,7 +544,7 @@ public class ImageHandlerTest {
 
         // 3. Pending release callback finally runs; image1 should be closed, but closeNow()
         // and mDelegate.onClose() must not be invoked a second time.
-        releaseCb.getValue().run();
+        mReleaseCbCaptor.getValue().run();
         verify(image1, times(1)).close();
         verify(mImageReader, times(1)).close();
         verify(mDelegate, times(1)).onClose(eq(mImageHandler));

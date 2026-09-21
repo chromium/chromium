@@ -9,7 +9,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -34,6 +33,8 @@ public class WebContentsImplTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private NavigationController mNavigationController;
     @Mock private WebContentsImpl.Natives mWebContentsJniMock;
+    @Mock private EventForwarder mEventForwarder;
+    @Mock private StylusWritingHandler mStylusWritingHandler;
 
     private WebContentsImpl mWebContentsImpl;
     private final long mNativeWebContentsAndroid = 1;
@@ -52,7 +53,7 @@ public class WebContentsImplTest {
     @Test
     @Feature({"Stylus Handwriting"})
     public void testSetAndGetStylusWritingHandler() {
-        mWebContentsImpl.setStylusWritingHandler(mock(StylusWritingHandler.class));
+        mWebContentsImpl.setStylusWritingHandler(mStylusWritingHandler);
         verify(mWebContentsJniMock).setStylusHandwritingEnabled(mNativeWebContentsAndroid, true);
         assertNotNull(mWebContentsImpl.getStylusWritingHandler());
 
@@ -65,7 +66,7 @@ public class WebContentsImplTest {
     @Feature({"Stylus Handwriting"})
     public void testSetAndGetStylusWritingHandler_nativeCleared() {
         mWebContentsImpl.clearNativePtr();
-        mWebContentsImpl.setStylusWritingHandler(mock(StylusWritingHandler.class));
+        mWebContentsImpl.setStylusWritingHandler(mStylusWritingHandler);
         verify(mWebContentsJniMock, never())
                 .setStylusHandwritingEnabled(mNativeWebContentsAndroid, true);
         assertNotNull(mWebContentsImpl.getStylusWritingHandler());
@@ -79,11 +80,10 @@ public class WebContentsImplTest {
     @Test
     @Feature({"Stylus Handwriting"})
     public void testSetStylusWritingDelegate() {
-        EventForwarder eventForwarder = mock(EventForwarder.class);
-        doReturn(eventForwarder)
+        doReturn(mEventForwarder)
                 .when(mWebContentsJniMock)
                 .getOrCreateEventForwarder(mNativeWebContentsAndroid);
-        assertEquals(eventForwarder, mWebContentsImpl.getEventForwarder());
-        verify(eventForwarder).setStylusWritingDelegate(any());
+        assertEquals(mEventForwarder, mWebContentsImpl.getEventForwarder());
+        verify(mEventForwarder).setStylusWritingDelegate(any());
     }
 }

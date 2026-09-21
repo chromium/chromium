@@ -49,6 +49,8 @@ public class GestureListenerManagerImplUnitTest {
     @Mock ViewGroup mViewGroup;
     @Mock GestureListenerManagerImpl.Natives mMockJniGestureListenerManager;
     @Mock GestureStateListener mGestureStateListener;
+    @Mock private GestureStateListener mListener1;
+    @Mock private GestureStateListener mListener2;
 
     private GestureListenerManagerImpl mGestureManager;
 
@@ -65,17 +67,14 @@ public class GestureListenerManagerImplUnitTest {
 
     @Test
     public void verticalScrollDirectionChanged() {
-        GestureStateListener listener1 = Mockito.mock(GestureStateListener.class);
-        GestureStateListener listener2 = Mockito.mock(GestureStateListener.class);
-
-        mGestureManager.addListener(listener1);
-        mGestureManager.addListener(listener2);
+        mGestureManager.addListener(mListener1);
+        mGestureManager.addListener(mListener2);
 
         // Verify all listener gets the update.
         mGestureManager.onVerticalScrollDirectionChanged(true, 0.1f);
         verify(mGestureStateListener).onVerticalScrollDirectionChanged(true, 0.1f);
-        verify(listener1).onVerticalScrollDirectionChanged(true, 0.1f);
-        verify(listener2).onVerticalScrollDirectionChanged(true, 0.1f);
+        verify(mListener1).onVerticalScrollDirectionChanged(true, 0.1f);
+        verify(mListener2).onVerticalScrollDirectionChanged(true, 0.1f);
     }
 
     @Test

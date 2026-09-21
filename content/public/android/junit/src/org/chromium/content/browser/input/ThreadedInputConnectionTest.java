@@ -34,7 +34,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -56,26 +55,24 @@ import java.util.concurrent.Callable;
 public class ThreadedInputConnectionTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock ImeAdapterImpl mImeAdapter;
+    @Mock CorrectionInfo mCorrectionInfo;
+    @Mock private Context mContext;
+    @Mock private InputContentInfo mInputContentInfo;
+    @Mock private View mView;
+    @Mock private InputMethodManager mInputMethodManager;
 
     ThreadedInputConnection mConnection;
     InOrder mInOrder;
-    View mView;
-    Context mContext;
     boolean mRunningOnUiThread;
-    @Mock CorrectionInfo mCorrectionInfo;
 
     @Before
     public void setUp() {
-
-        mImeAdapter = Mockito.mock(ImeAdapterImpl.class);
         mInOrder = inOrder(mImeAdapter);
 
         // Mocks required to create a ThreadedInputConnection object
-        mView = Mockito.mock(View.class);
-        mContext = Mockito.mock(Context.class);
         when(mView.getContext()).thenReturn(mContext);
         when(mContext.getSystemService(Context.INPUT_METHOD_SERVICE))
-                .thenReturn(Mockito.mock(InputMethodManager.class));
+                .thenReturn(mInputMethodManager);
         // Let's create Handler for test thread and pretend that it is running on IME thread.
         mConnection =
                 new ThreadedInputConnection(mView, mImeAdapter, new Handler()) {
@@ -407,8 +404,7 @@ public class ThreadedInputConnectionTest {
     @Feature({"TextInput"})
     @DisableFeatures(ContentFeatures.ANDROID_MEDIA_INSERTION)
     public void testCommitContent_FeatureDisabled() {
-        InputContentInfo contentInfo = Mockito.mock(InputContentInfo.class);
-        assertFalse(mConnection.commitContent(contentInfo, 0, null));
+        assertFalse(mConnection.commitContent(mInputContentInfo, 0, null));
     }
 
     @Test
@@ -416,7 +412,6 @@ public class ThreadedInputConnectionTest {
     @EnableFeatures(ContentFeatures.ANDROID_MEDIA_INSERTION)
     public void testCommitContent_NullTargetFrame() {
         when(mImeAdapter.getFocusedFrame()).thenReturn(null);
-        InputContentInfo contentInfo = Mockito.mock(InputContentInfo.class);
-        assertFalse(mConnection.commitContent(contentInfo, 0, null));
+        assertFalse(mConnection.commitContent(mInputContentInfo, 0, null));
     }
 }

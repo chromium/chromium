@@ -51,7 +51,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InOrder;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
@@ -84,6 +86,7 @@ import org.chromium.content_public.browser.SelectionMenuItem.ItemGroupOffset;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.selection.SelectionActionMenuDelegate;
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
+import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate.ItemClickListener;
 import org.chromium.content_public.browser.test.util.TestSelectionDropdownMenuDelegate;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.ViewAndroidDelegate;
@@ -111,25 +114,30 @@ import java.util.List;
 @Features.DisableFeatures({ContentFeatures.NO_SELECTION_MENU_CACHING})
 public class SelectionPopupControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    private MenuModelBridge mMenuModelBridge;
+    @Mock private Context mContext;
+    @Mock private TypedArray mTypedArray;
+    @Mock private WindowAndroid mWindowAndroid;
+    @Mock private WebContentsImpl mWebContents;
+    @Mock private ViewGroup mView;
+    @Mock private ActionMode mActionMode;
+    @Mock private PackageManager mPackageManager;
+    @Mock private RenderWidgetHostViewImpl mRenderWidgetHostViewImpl;
+    @Mock private RenderFrameHost mRenderFrameHost;
+    @Mock private RenderCoordinatesImpl mRenderCoordinates;
+    @Mock private PopupController mPopupController;
+    @Mock private GestureListenerManagerImpl mGestureStateListenerManager;
+    @Mock private MenuModelBridge mMenuModelBridge;
+    @Mock private ActionModeCallback mActionModeCallback;
+    @Mock private MagnifierAnimator mMagnifierAnimator;
+    @Mock private View mWindowReadbackView;
+    @Mock private SelectionActionMenuDelegate mSelectionActionMenuDelegate;
+    @Mock private WindowAndroid mNewWindowAndroid;
+    @Mock private SmartSelectionEventProcessor mLogger;
+    @Captor private ArgumentCaptor<ItemClickListener> mClickListenerCaptor;
     private SelectionPopupControllerImpl mController;
-    private Context mContext;
     private WeakReference<Context> mWeakContext;
-    private TypedArray mTypedArray;
-    private WindowAndroid mWindowAndroid;
-    private WebContentsImpl mWebContents;
-    private ViewGroup mView;
     private ViewAndroidDelegate mViewAndroidDelegate;
-    private ActionMode mActionMode;
-    private PackageManager mPackageManager;
-    private SmartSelectionEventProcessor mLogger;
-    private RenderWidgetHostViewImpl mRenderWidgetHostViewImpl;
-    private RenderCoordinatesImpl mRenderCoordinates;
     private ContentResolver mContentResolver;
-    private PopupController mPopupController;
-    private GestureListenerManagerImpl mGestureStateListenerManager;
-    private RenderFrameHost mRenderFrameHost;
-    private ActionModeCallback mActionModeCallback;
     private @Spy TestSelectionClient mTestSelectionClient = new TestSelectionClient();
 
     private static final String MOUNTAIN_FULL = "585 Franklin Street, Mountain View, CA 94041";
@@ -188,24 +196,8 @@ public class SelectionPopupControllerTest {
 
     @Before
     public void setUp() {
-
-        mContext = Mockito.mock(Context.class);
         mWeakContext = new WeakReference<Context>(mContext);
-        mTypedArray = Mockito.mock(TypedArray.class);
-        mWindowAndroid = Mockito.mock(WindowAndroid.class);
-        mWebContents = Mockito.mock(WebContentsImpl.class);
-        mView = Mockito.mock(ViewGroup.class);
         mViewAndroidDelegate = ViewAndroidDelegate.createBasicDelegate(mView);
-        mActionMode = Mockito.mock(ActionMode.class);
-        mPackageManager = Mockito.mock(PackageManager.class);
-        mRenderWidgetHostViewImpl = Mockito.mock(RenderWidgetHostViewImpl.class);
-        mRenderFrameHost = Mockito.mock(RenderFrameHost.class);
-        mRenderCoordinates = Mockito.mock(RenderCoordinatesImpl.class);
-        mLogger = Mockito.mock(SmartSelectionEventProcessor.class);
-        mPopupController = Mockito.mock(PopupController.class);
-        mGestureStateListenerManager = Mockito.mock(GestureListenerManagerImpl.class);
-        mMenuModelBridge = Mockito.mock(MenuModelBridge.class);
-        mActionModeCallback = Mockito.mock(ActionModeCallback.class);
 
         setDropdownMenuFeatureEnabled(false);
 
@@ -518,58 +510,55 @@ public class SelectionPopupControllerTest {
     @Test
     @Feature({"TextInput", "Magnifier"})
     public void testHandleObserverSelectionHandle() {
-        MagnifierAnimator magnifierAnimator = Mockito.mock(MagnifierAnimator.class);
-        InOrder order = inOrder(magnifierAnimator);
-        mController.setMagnifierAnimator(magnifierAnimator);
+        InOrder order = inOrder(mMagnifierAnimator);
+        mController.setMagnifierAnimator(mMagnifierAnimator);
 
         // Selection handles shown.
         mController.onSelectionEvent(SelectionEventType.SELECTION_HANDLES_SHOWN, 0, 0, 1, 1);
 
         // Selection handles drag started.
         mController.onDragUpdate(TouchSelectionDraggableType.TOUCH_HANDLE, 0.f, 0.f);
-        order.verify(magnifierAnimator).handleDragStartedOrMoved(0.f, 0.f);
+        order.verify(mMagnifierAnimator).handleDragStartedOrMoved(0.f, 0.f);
 
         // Moving.
         mController.onDragUpdate(TouchSelectionDraggableType.TOUCH_HANDLE, 5.f, 5.f);
-        order.verify(magnifierAnimator).handleDragStartedOrMoved(5.f, 5.f);
+        order.verify(mMagnifierAnimator).handleDragStartedOrMoved(5.f, 5.f);
 
         // Selection handle drag stopped.
         mController.onSelectionEvent(SelectionEventType.SELECTION_HANDLE_DRAG_STOPPED, 0, 0, 1, 1);
-        order.verify(magnifierAnimator).handleDragStopped();
+        order.verify(mMagnifierAnimator).handleDragStopped();
     }
 
     @Test
     @Feature({"TextInput", "Magnifier"})
     public void testHandleObserverInsertionHandle() {
-        MagnifierAnimator magnifierAnimator = Mockito.mock(MagnifierAnimator.class);
-        InOrder order = inOrder(magnifierAnimator);
-        mController.setMagnifierAnimator(magnifierAnimator);
+        InOrder order = inOrder(mMagnifierAnimator);
+        mController.setMagnifierAnimator(mMagnifierAnimator);
 
         // Insertion handle shown.
         mController.onSelectionEvent(SelectionEventType.INSERTION_HANDLE_SHOWN, 0, 0, 1, 1);
 
         // Insertion handle drag started.
         mController.onDragUpdate(TouchSelectionDraggableType.TOUCH_HANDLE, 0.f, 0.f);
-        order.verify(magnifierAnimator).handleDragStartedOrMoved(0.f, 0.f);
+        order.verify(mMagnifierAnimator).handleDragStartedOrMoved(0.f, 0.f);
 
         // Moving.
         mController.onDragUpdate(TouchSelectionDraggableType.TOUCH_HANDLE, 5.f, 5.f);
-        order.verify(magnifierAnimator).handleDragStartedOrMoved(5.f, 5.f);
+        order.verify(mMagnifierAnimator).handleDragStartedOrMoved(5.f, 5.f);
 
         // Insertion handle drag stopped.
         mController.onSelectionEvent(SelectionEventType.INSERTION_HANDLE_DRAG_STOPPED, 0, 0, 1, 1);
-        order.verify(magnifierAnimator).handleDragStopped();
+        order.verify(mMagnifierAnimator).handleDragStopped();
     }
 
     @Test
     @Feature({"TextInput", "Magnifier"})
     public void testSetUseWindowReadbackView() {
-        View windowReadbackView = Mockito.mock(View.class);
-        when(mWindowAndroid.getReadbackView()).thenReturn(windowReadbackView);
+        when(mWindowAndroid.getReadbackView()).thenReturn(mWindowReadbackView);
         SelectionPopupControllerImpl.setShouldGetReadbackViewFromWindowAndroid();
 
         // Default: sShouldGetReadbackViewFromWindowAndroid is true, so returns windowReadbackView.
-        assertEquals(windowReadbackView, mController.getReadbackViewCallback().getReadbackView());
+        assertEquals(mWindowReadbackView, mController.getReadbackViewCallback().getReadbackView());
 
         // When useWindowReadbackView is explicitly set to false, it overrides to mView.
         mController.setUseWindowReadbackView(false);
@@ -577,7 +566,7 @@ public class SelectionPopupControllerTest {
 
         // When useWindowReadbackView is explicitly set to true, it returns windowReadbackView.
         mController.setUseWindowReadbackView(true);
-        assertEquals(windowReadbackView, mController.getReadbackViewCallback().getReadbackView());
+        assertEquals(mWindowReadbackView, mController.getReadbackViewCallback().getReadbackView());
     }
 
     @Test
@@ -923,7 +912,7 @@ public class SelectionPopupControllerTest {
         mController.getPendingSelectionMenu(MenuType.FLOATING);
         Assert.assertNotNull(mController.getSelectionMenuCachedResultForTesting());
 
-        mController.onWindowAndroidChanged(Mockito.mock(WindowAndroid.class));
+        mController.onWindowAndroidChanged(mNewWindowAndroid);
 
         Assert.assertNull(mController.getSelectionMenuCachedResultForTesting());
     }
@@ -1030,10 +1019,9 @@ public class SelectionPopupControllerTest {
     @Test
     public void testMenuIsProcessedForSameSelectionStateIfCachingNotEnabledByDelegate() {
         Assert.assertNull(mController.getSelectionMenuCachedResultForTesting());
-        SelectionActionMenuDelegate delegate = Mockito.mock(SelectionActionMenuDelegate.class);
-        mController.setSelectionActionMenuDelegate(delegate);
-        when(delegate.canReuseCachedSelectionMenu(anyInt())).thenReturn(false);
-        when(delegate.getDefaultMenuItemOrder(anyInt()))
+        mController.setSelectionActionMenuDelegate(mSelectionActionMenuDelegate);
+        when(mSelectionActionMenuDelegate.canReuseCachedSelectionMenu(anyInt())).thenReturn(false);
+        when(mSelectionActionMenuDelegate.getDefaultMenuItemOrder(anyInt()))
                 .thenReturn(SelectionActionMenuDelegate.getDefaultMenuItemOrder());
 
         // Called twice to check the selection menu has been cached properly.
@@ -1057,10 +1045,9 @@ public class SelectionPopupControllerTest {
     @Test
     public void testMenuIsCachedForSameSelectionStateIfCachingEnabledByDelegate() {
         Assert.assertNull(mController.getSelectionMenuCachedResultForTesting());
-        SelectionActionMenuDelegate delegate = Mockito.mock(SelectionActionMenuDelegate.class);
-        mController.setSelectionActionMenuDelegate(delegate);
-        when(delegate.canReuseCachedSelectionMenu(anyInt())).thenReturn(true);
-        when(delegate.getDefaultMenuItemOrder(anyInt()))
+        mController.setSelectionActionMenuDelegate(mSelectionActionMenuDelegate);
+        when(mSelectionActionMenuDelegate.canReuseCachedSelectionMenu(anyInt())).thenReturn(true);
+        when(mSelectionActionMenuDelegate.getDefaultMenuItemOrder(anyInt()))
                 .thenReturn(SelectionActionMenuDelegate.getDefaultMenuItemOrder());
 
         // Called twice to check the selection menu has been cached properly.
@@ -1275,18 +1262,16 @@ public class SelectionPopupControllerTest {
                 AMPHITHEATRE_FULL,
                 /* selectionStartOffset= */ 0,
                 MenuSourceType.MOUSE);
-        ArgumentCaptor<SelectionDropdownMenuDelegate.ItemClickListener> clickListenerCaptor =
-                ArgumentCaptor.forClass(SelectionDropdownMenuDelegate.ItemClickListener.class);
         Mockito.verify(dropdownMenuDelegate, times(1))
                 .show(
                         any(),
                         any(),
                         any(),
-                        clickListenerCaptor.capture(),
+                        mClickListenerCaptor.capture(),
                         any(),
                         anyInt(),
                         anyInt());
-        SelectionDropdownMenuDelegate.ItemClickListener listener = clickListenerCaptor.getValue();
+        SelectionDropdownMenuDelegate.ItemClickListener listener = mClickListenerCaptor.getValue();
 
         // Click on the main menu item with submenu, menu should not be dismissed.
         listener.onItemClick(mainListItem.model);
