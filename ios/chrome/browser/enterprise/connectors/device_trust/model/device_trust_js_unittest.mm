@@ -199,24 +199,6 @@ TEST_F(DeviceTrustJsAPIEnabledTest, RejectsTooLargeChallenge) {
   EXPECT_EQ(handler_.receivedMessageCount, 0u);
 }
 
-// Verifies that concurrency limits (max 3 concurrent requests) are strictly
-// enforced.
-TEST_F(DeviceTrustJsAPIEnabledTest, EnforcesConcurrencyLimits) {
-  ASSERT_TRUE([web::test::ExecuteJavaScript(
-      web_view(),
-      @"window.chrome.enterprise.deviceTrust.getAttestation('challenge_1');"
-      @"window.chrome.enterprise.deviceTrust.getAttestation('challenge_2');"
-      @"window.chrome.enterprise.deviceTrust.getAttestation('challenge_3');"
-      @"window.chrome.enterprise.deviceTrust.getAttestation('challenge_4')."
-      @"catch(e => "
-      @"window.testError = e.code);"
-      @"true;") boolValue]);
-
-  EXPECT_TRUE(WaitForMessageCount(3));
-  EXPECT_NSEQ(@"TOO_MANY_REQUESTS", GetJsVar(@"window.testError"));
-  EXPECT_EQ(handler_.receivedMessageCount, 3u);
-}
-
 // Verifies that a valid challenge resolves with the signed payload returned
 // from native code.
 TEST_F(DeviceTrustJsAPIEnabledTest, ResolvesSuccessfully) {
@@ -311,16 +293,20 @@ TEST_F(DeviceTrustJsAPIEnabledTest, RejectsNativeBridgeError) {
   EXPECT_NSEQ(@"INTERNAL_ERROR", GetJsVar(@"window.testError"));
 }
 
-// Verifies that requests time out after the configured timeout period.
+// Verifies that native ATTESTATION_TIMEOUT error replies reject the promise
+// with ATTESTATION_TIMEOUT.
 TEST_F(DeviceTrustJsAPIEnabledTest, TimeoutBehavior) {
   ASSERT_TRUE([web::test::ExecuteJavaScript(
       web_view(),
-      @"const originalSetTimeout = window.setTimeout;"
-      @"window.setTimeout = (fn, delay) => originalSetTimeout(fn, 0);"
       @"window.chrome.enterprise.deviceTrust.getAttestation('valid_challenge')."
       @"catch(e => window.testError = e.code);"
-      @"window.setTimeout = originalSetTimeout;"
       @"true;") boolValue]);
+
+  ASSERT_TRUE(WaitForMessageCount(1));
+  [handler_ replyToNextMessage:@{
+    @"errorCode" : @"ATTESTATION_TIMEOUT",
+    @"errorMessage" : @"Timed out waiting for device attestation response.",
+  }];
 
   EXPECT_TRUE(WaitForJsString(@"window.testError"));
   EXPECT_NSEQ(@"ATTESTATION_TIMEOUT", GetJsVar(@"window.testError"));

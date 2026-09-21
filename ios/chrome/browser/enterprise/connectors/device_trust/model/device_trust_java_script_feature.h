@@ -11,6 +11,12 @@
 #include "base/no_destructor.h"
 #include "ios/web/public/js_messaging/java_script_feature.h"
 
+namespace url {
+class Origin;
+}  // namespace url
+
+class GURL;
+
 namespace web {
 class ScriptMessage;
 class WebFrame;
@@ -18,7 +24,7 @@ class WebState;
 }  // namespace web
 
 // JavaScriptFeature that loads the Device Trust support script,
-// installs the public API on native request, and receives
+// installs the public API on browser-side request, and receives
 // `getAttestation()` requests.
 class DeviceTrustJavaScriptFeature : public web::JavaScriptFeature {
  public:
@@ -39,25 +45,18 @@ class DeviceTrustJavaScriptFeature : public web::JavaScriptFeature {
       const web::ScriptMessage& message,
       ScriptMessageReplyCallback callback) override;
 
-  // Handles a validated attestation request. Virtual for test interception.
-  virtual void HandleAttestationRequest(web::WebState* web_state,
-                                        const std::string& challenge_request,
-                                        ScriptMessageReplyCallback callback);
-
-  // Resolves the originating JS promise with the signed payload.
-  void ResolveAttestationRequest(ScriptMessageReplyCallback callback,
-                                 const std::string& signed_payload);
-
-  // Rejects the originating JS promise with an error code and message.
-  void RejectAttestationRequest(ScriptMessageReplyCallback callback,
-                                const std::string& error_message,
-                                const std::string& error_code);
-
   DeviceTrustJavaScriptFeature();
   ~DeviceTrustJavaScriptFeature() override;
 
  private:
   friend class base::NoDestructor<DeviceTrustJavaScriptFeature>;
+
+  // Handles a validated attestation request.
+  void HandleAttestationRequest(web::WebState* web_state,
+                                const url::Origin& security_origin,
+                                const std::optional<GURL>& request_url,
+                                const std::string& challenge_request,
+                                ScriptMessageReplyCallback callback);
 };
 
 #endif  // IOS_CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_MODEL_DEVICE_TRUST_JAVA_SCRIPT_FEATURE_H_

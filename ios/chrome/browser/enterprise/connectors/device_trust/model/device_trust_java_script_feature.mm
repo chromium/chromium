@@ -6,10 +6,15 @@
 
 #import <utility>
 
+#import "base/functional/bind.h"
 #import "base/values.h"
+#import "components/enterprise/device_trust/core/common_types.h"
+#import "ios/chrome/browser/enterprise/connectors/device_trust/model/device_trust_challenge_tab_helper.h"
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/web_state.h"
+#import "url/gurl.h"
+#import "url/origin.h"
 
 namespace {
 constexpr char kScriptHandlerName[] = "DeviceTrustMessageHandler";
@@ -17,6 +22,85 @@ constexpr char kDeviceTrustAPIName[] = "device_trust";
 // LINT.IfChange(MaxChallengeRequestLength)
 constexpr size_t kMaxChallengeRequestLength = 1024;
 // LINT.ThenChange(//ios/chrome/browser/enterprise/connectors/device_trust/model/resources/device_trust.ts:MaxChallengeRequestLength)
+
+using ReplyCallback =
+    base::OnceCallback<void(const base::Value* reply, NSString* error)>;
+
+// Resolves the originating JS promise with the signed payload.
+void ResolveAttestationRequest(ReplyCallback callback,
+                               const std::string& signed_payload) {
+  base::DictValue reply;
+  reply.Set("signedPayload", signed_payload);
+  base::Value reply_value(std::move(reply));
+  std::move(callback).Run(&reply_value, nil);
+}
+
+// Returns the JavaScript error code for a DeviceTrustError.
+const char* DeviceTrustErrorToJsErrorCode(
+    enterprise_connectors::DeviceTrustError error) {
+  switch (error) {
+    case enterprise_connectors::DeviceTrustError::kFailedToParseChallenge:
+      return "INVALID_CHALLENGE_REQUEST";
+    case enterprise_connectors::DeviceTrustError::kTooManyRequests:
+      return "TOO_MANY_REQUESTS";
+    case enterprise_connectors::DeviceTrustError::kTimeout:
+      return "ATTESTATION_TIMEOUT";
+    case enterprise_connectors::DeviceTrustError::kUrlNotAllowed:
+      return "URL_NOT_ALLOWED";
+    case enterprise_connectors::DeviceTrustError::kUnknown:
+    case enterprise_connectors::DeviceTrustError::kFailedToCreateResponse:
+      return "INTERNAL_ERROR";
+  }
+}
+
+// Returns the default JavaScript error message for a DeviceTrustError.
+const char* DeviceTrustErrorToJsErrorMessage(
+    enterprise_connectors::DeviceTrustError error) {
+  switch (error) {
+    case enterprise_connectors::DeviceTrustError::kFailedToParseChallenge:
+      return "Failed to parse challenge.";
+    case enterprise_connectors::DeviceTrustError::kTooManyRequests:
+      return "Too many pending device attestation requests.";
+    case enterprise_connectors::DeviceTrustError::kTimeout:
+      return "Timed out waiting for attestation response.";
+    case enterprise_connectors::DeviceTrustError::kUrlNotAllowed:
+      return "The requesting URL is not allowed for device attestation.";
+    case enterprise_connectors::DeviceTrustError::kUnknown:
+    case enterprise_connectors::DeviceTrustError::kFailedToCreateResponse:
+      return "Device attestation is not available.";
+  }
+}
+
+// Rejects the originating JS promise with an error code and message.
+void RejectAttestationRequest(ReplyCallback callback,
+                              enterprise_connectors::DeviceTrustError error) {
+  base::DictValue reply;
+  reply.Set("errorCode", DeviceTrustErrorToJsErrorCode(error));
+  reply.Set("errorMessage", DeviceTrustErrorToJsErrorMessage(error));
+  base::Value reply_value(std::move(reply));
+  std::move(callback).Run(&reply_value, nil);
+}
+
+// Converts an attestation result to a JavaScript reply callback invocation.
+void OnAttestationResponse(
+    ReplyCallback callback,
+    const enterprise_connectors::DeviceTrustResponse& response) {
+  if (response.error.has_value()) {
+    RejectAttestationRequest(std::move(callback), *response.error);
+    return;
+  }
+
+  if (response.challenge_response.empty()) {
+    // An empty response with no error indicates an unexpected internal failure,
+    // appropriately represented by kUnknown.
+    RejectAttestationRequest(std::move(callback),
+                             enterprise_connectors::DeviceTrustError::kUnknown);
+    return;
+  }
+
+  ResolveAttestationRequest(std::move(callback), response.challenge_response);
+}
+
 }  // namespace
 
 DeviceTrustJavaScriptFeature* DeviceTrustJavaScriptFeature::GetInstance() {
@@ -59,10 +143,19 @@ void DeviceTrustJavaScriptFeature::ScriptMessageReceivedWithReply(
     web::WebState* web_state,
     const web::ScriptMessage& message,
     ScriptMessageReplyCallback callback) {
-  if (!message.is_main_frame() || !message.legacy_body() ||
-      !message.legacy_body()->is_dict()) {
-    RejectAttestationRequest(std::move(callback), "Invalid challenge request.",
-                             "INVALID_CHALLENGE_REQUEST");
+  // TODO(crbug.com/563331507): Return a dedicated JS validation error instead
+  // of reusing kFailedToParseChallenge.
+  if (!message.is_main_frame()) {
+    RejectAttestationRequest(
+        std::move(callback),
+        enterprise_connectors::DeviceTrustError::kFailedToParseChallenge);
+    return;
+  }
+
+  if (!message.legacy_body() || !message.legacy_body()->is_dict()) {
+    RejectAttestationRequest(
+        std::move(callback),
+        enterprise_connectors::DeviceTrustError::kFailedToParseChallenge);
     return;
   }
 
@@ -70,42 +163,34 @@ void DeviceTrustJavaScriptFeature::ScriptMessageReceivedWithReply(
       message.legacy_body()->GetDict().FindString("challengeRequest");
   if (!challenge || challenge->empty() ||
       challenge->size() > kMaxChallengeRequestLength) {
-    RejectAttestationRequest(std::move(callback), "Invalid challenge request.",
-                             "INVALID_CHALLENGE_REQUEST");
+    RejectAttestationRequest(
+        std::move(callback),
+        enterprise_connectors::DeviceTrustError::kFailedToParseChallenge);
     return;
   }
 
-  HandleAttestationRequest(web_state, *challenge, std::move(callback));
+  HandleAttestationRequest(web_state, message.security_origin(),
+                           message.request_url(), *challenge,
+                           std::move(callback));
 }
 
 void DeviceTrustJavaScriptFeature::HandleAttestationRequest(
     web::WebState* web_state,
+    const url::Origin& security_origin,
+    const std::optional<GURL>& request_url,
     const std::string& challenge_request,
     ScriptMessageReplyCallback callback) {
-  // TODO(crbug.com/517112324): Route to the Device Trust attestation flow
-  // (TabHelper) in a follow up CL. Until then, reject so that callers fail
-  // fast.
-  RejectAttestationRequest(std::move(callback),
-                           "Device attestation is not available.",
-                           "INTERNAL_ERROR");
-}
+  DeviceTrustChallengeTabHelper* tab_helper =
+      DeviceTrustChallengeTabHelper::FromWebState(web_state);
+  if (!tab_helper) {
+    // TODO(crbug.com/563331507): Return a specific error code instead of
+    // kUnknown when the tab helper is missing.
+    RejectAttestationRequest(std::move(callback),
+                             enterprise_connectors::DeviceTrustError::kUnknown);
+    return;
+  }
 
-void DeviceTrustJavaScriptFeature::ResolveAttestationRequest(
-    ScriptMessageReplyCallback callback,
-    const std::string& signed_payload) {
-  base::DictValue reply;
-  reply.Set("signedPayload", signed_payload);
-  base::Value reply_value(std::move(reply));
-  std::move(callback).Run(&reply_value, nil);
-}
-
-void DeviceTrustJavaScriptFeature::RejectAttestationRequest(
-    ScriptMessageReplyCallback callback,
-    const std::string& error_message,
-    const std::string& error_code) {
-  base::DictValue reply;
-  reply.Set("errorCode", error_code);
-  reply.Set("errorMessage", error_message);
-  base::Value reply_value(std::move(reply));
-  std::move(callback).Run(&reply_value, nil);
+  tab_helper->BuildChallengeResponse(
+      security_origin, request_url, challenge_request,
+      base::BindOnce(&OnAttestationResponse, std::move(callback)));
 }

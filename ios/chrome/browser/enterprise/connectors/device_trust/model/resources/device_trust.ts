@@ -6,14 +6,10 @@ import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.j
 import {sendWebKitMessageWithReply, trim} from '//ios/web/public/js_messaging/resources/utils.js';
 
 const MESSAGE_HANDLER_NAME = 'DeviceTrustMessageHandler';
-const REQUEST_TIMEOUT_MS = 30000;
 
 // LINT.IfChange(MaxChallengeRequestLength)
 const MAX_CHALLENGE_REQUEST_LENGTH = 1024;
 // LINT.ThenChange(//ios/chrome/browser/enterprise/connectors/device_trust/model/device_trust_java_script_feature.mm:MaxChallengeRequestLength)
-const MAX_CONCURRENT_REQUESTS = 3;
-
-let pendingRequestCount = 0;
 
 interface AttestationReply {
   signedPayload?: unknown;
@@ -68,28 +64,10 @@ const DeviceTrustAPI = {
           'INVALID_CHALLENGE_REQUEST', 'challengeRequest is too large.');
     }
 
-    if (pendingRequestCount >= MAX_CONCURRENT_REQUESTS) {
-      throw new DeviceTrustError(
-          'TOO_MANY_REQUESTS', 'Too many pending device attestation requests.');
-    }
-
-    pendingRequestCount++;
-
-    const browserRequest = sendWebKitMessageWithReply(MESSAGE_HANDLER_NAME, {
-      challengeRequest: challengeRequest,
-    });
-
-    let timeoutId = 0;
-    const timeout = new Promise<never>((_, reject) => {
-      timeoutId = window.setTimeout(() => {
-        reject(new DeviceTrustError(
-            'ATTESTATION_TIMEOUT',
-            'Timed out waiting for device attestation response.'));
-      }, REQUEST_TIMEOUT_MS);
-    });
-
     try {
-      const reply = await Promise.race([browserRequest, timeout]);
+      const reply = await sendWebKitMessageWithReply(MESSAGE_HANDLER_NAME, {
+        challengeRequest: challengeRequest,
+      });
       return parseAttestationReply(reply);
     } catch (error: unknown) {
       if (error instanceof DeviceTrustError) {
@@ -97,9 +75,6 @@ const DeviceTrustAPI = {
       }
       throw new DeviceTrustError(
           'INTERNAL_ERROR', 'Unknown internal error occurred.');
-    } finally {
-      clearTimeout(timeoutId);
-      pendingRequestCount--;
     }
   },
 };
