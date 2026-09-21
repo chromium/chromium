@@ -163,15 +163,7 @@ class OrganizerPanelInteractiveUiTest : public InteractiveBrowserTest {
 };
 
 // This test checks that the organizer panel closes when clicking outside.
-// TODO(https://crbug.com/563448217): Re-enable when we use the event's
-// location to determine whether it is in the panel on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_CloseOnClickOutside DISABLED_CloseOnClickOutside
-#else
-#define MAYBE_CloseOnClickOutside CloseOnClickOutside
-#endif
-IN_PROC_BROWSER_TEST_F(OrganizerPanelInteractiveUiTest,
-                       MAYBE_CloseOnClickOutside) {
+IN_PROC_BROWSER_TEST_F(OrganizerPanelInteractiveUiTest, CloseOnClickOutside) {
   RunTestSequence(
       // Verify Vertical Tabs is showing.
       WaitForShow(kVerticalTabStripTopContainerElementId),
@@ -195,15 +187,7 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelInteractiveUiTest, GrabsFocusOnOpen) {
 
 // This test checks that the organizer panel closes when focus is switched to
 // another UI element like the omnibox.
-// TODO(https://crbug.com/563448217): Re-enable when the behavior is re-enabled
-// on mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ClosesOnFocusLost DISABLED_ClosesOnFocusLost
-#else
-#define MAYBE_ClosesOnFocusLost ClosesOnFocusLost
-#endif
-IN_PROC_BROWSER_TEST_F(OrganizerPanelInteractiveUiTest,
-                       MAYBE_ClosesOnFocusLost) {
+IN_PROC_BROWSER_TEST_F(OrganizerPanelInteractiveUiTest, ClosesOnFocusLost) {
   RunTestSequence(OpenOrganizerPanel(),
                   // Focus the omnibox.
                   FocusElement(kOmniboxElementId),
@@ -244,15 +228,8 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelInteractiveUiTest, RestoresFocusOnClose) {
 
 // This is a regression test that checks that the panel stays open when clicking
 // inside (but not on a button or other interactive element).
-// TODO(https://crbug.com/563448217): Re-enable when we use the event's
-// location to determine whether it is in the panel on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_StaysOpenOnClickInside DISABLED_StaysOpenOnClickInside
-#else
-#define MAYBE_StaysOpenOnClickInside StaysOpenOnClickInside
-#endif
 IN_PROC_BROWSER_TEST_F(OrganizerPanelInteractiveUiTest,
-                       MAYBE_StaysOpenOnClickInside) {
+                       StaysOpenOnClickInside) {
   RunTestSequence(
       // Verify Vertical Tabs is showing.
       WaitForShow(kVerticalTabStripTopContainerElementId),

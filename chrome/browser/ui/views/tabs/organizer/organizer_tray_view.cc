@@ -73,16 +73,12 @@ class OrganizerTrayView::EventObserver : public ui::EventObserver,
       return;
     }
 
-    const auto point_in_screen =
+    // On Aura platforms, the root_location is the point in the screen.
+    auto point_in_screen = event.AsLocatedEvent()->root_location();
 #if BUILDFLAG(IS_MAC)
-        // This approach is more reliable on Mac.
-        // TODO(https://crbug.com/563448217): figure out how to make this work
-        // using the event's location or root_location so tests can be re-
-        // enabled.
-        event_monitor_->GetLastMouseLocation();
-#else
-        // This should work for all Aura platforms.
-        event.AsLocatedEvent()->root_location();
+    // On Mac, the root_location is instead the point in the window.
+    point_in_screen +=
+        tray_->GetWidget()->GetWindowBoundsInScreen().OffsetFromOrigin();
 #endif
     const auto point_in_view =
         views::View::ConvertPointFromScreen(&*tray_, point_in_screen);
@@ -93,7 +89,10 @@ class OrganizerTrayView::EventObserver : public ui::EventObserver,
 
   void OnDidChangeFocus(views::View* focused_before,
                         views::View* focused_now) override {
-    if (!tray_->GetVisible() || tray_->Contains(focused_now)) {
+    // On some platforms, transitions go old_view -> none, none -> new_view, so
+    // check for a null focused view. Don't hide the panel until a view outside
+    // the tray is actually focused.
+    if (!focused_now || !tray_->GetVisible() || tray_->Contains(focused_now)) {
       return;
     }
 
@@ -102,11 +101,7 @@ class OrganizerTrayView::EventObserver : public ui::EventObserver,
     // was opened should not be refocused.
     tray_->last_focused_view_before_opening_.SetView(nullptr);
 
-    // TODO(https://crbug.com/563448217): Mac has issues with focus and overlaid
-    // WebContents. Re-enable this after fixing the issue.
-#if !BUILDFLAG(IS_MAC)
     tray_->ClosePanel();
-#endif
   }
 
  private:
@@ -123,11 +118,6 @@ OrganizerTrayView::OrganizerTrayView(BrowserWindowInterface& browser,
                                      BrowserView* browser_view)
     : browser_(browser),
       focus_search_(this, /*cycle=*/true, /*accessibility_mode=*/true) {
-  // TODO(dfried): Remove once we actually set this value.
-#if BUILDFLAG(IS_MAC)
-  top_leading_exclusion_ = gfx::Size(target_width_ / 2, 0);
-#endif
-
   SetProperty(views::kElementIdentifierKey, kTrayElementId);
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
