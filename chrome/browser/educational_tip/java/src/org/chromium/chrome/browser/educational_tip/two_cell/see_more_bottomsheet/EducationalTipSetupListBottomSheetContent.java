@@ -11,10 +11,14 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.educational_tip.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
 
 /** Bottom sheet content of the educational tip two-cell layout. */
 @NullMarked
 public class EducationalTipSetupListBottomSheetContent implements BottomSheetContent {
+    private static final BottomSheetType BOTTOM_SHEET_TYPE =
+            new BottomSheetType.Builder().setUserInitiated(true).build();
+
     private final View mContentView;
     private final Context mContext;
 
@@ -54,6 +58,11 @@ public class EducationalTipSetupListBottomSheetContent implements BottomSheetCon
     @Override
     public float getFullHeightRatio() {
         return HeightMode.WRAP_CONTENT;
+    }
+
+    @Override
+    public BottomSheetType getSheetType() {
+        return BOTTOM_SHEET_TYPE;
     }
 
     @Override
