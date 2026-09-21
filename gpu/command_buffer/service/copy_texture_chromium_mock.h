@@ -5,9 +5,10 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_COPY_TEXTURE_CHROMIUM_MOCK_H_
 #define GPU_COMMAND_BUFFER_SERVICE_COPY_TEXTURE_CHROMIUM_MOCK_H_
 
+#include <optional>
+
 #include "gpu/command_buffer/service/gles2_cmd_copy_tex_image.h"
 #include "gpu/command_buffer/service/gles2_cmd_copy_texture_chromium.h"
-
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace gpu {
@@ -123,7 +124,16 @@ class MockCopyTextureResourceManager final
       bool premultiply_alpha,
       bool unpremultiply_alpha,
       CopyTextureMethod method,
-      CopyTexImageResourceManager* luma_emulation_blitter) override {}
+      CopyTexImageResourceManager* luma_emulation_blitter) override {
+    last_copy_sub_texture_method_ = method;
+  }
+
+  std::optional<CopyTextureMethod> last_copy_sub_texture_method() const {
+    return last_copy_sub_texture_method_;
+  }
+
+ private:
+  std::optional<CopyTextureMethod> last_copy_sub_texture_method_;
 };
 
 }  // namespace gles2

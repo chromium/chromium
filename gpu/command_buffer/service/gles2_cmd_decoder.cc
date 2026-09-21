@@ -16462,7 +16462,8 @@ void GLES2DecoderImpl::CopySubTextureHelper(const char* function_name,
 
   // Use DRAW instead of COPY if the workaround is enabled.
   if (method == CopyTextureMethod::DIRECT_COPY &&
-      workarounds().prefer_draw_to_copy) {
+      workarounds().prefer_draw_to_copy &&
+      (dest_level == 0 || feature_info_->IsWebGL2OrES3Context())) {
     method = CopyTextureMethod::DIRECT_DRAW;
   }
 

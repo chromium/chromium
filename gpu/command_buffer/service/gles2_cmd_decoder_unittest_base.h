@@ -534,6 +534,10 @@ class GLES2DecoderTestBase : public ::testing::TestWithParam<bool>,
 
   GLvoid* BufferOffset(unsigned i) { return reinterpret_cast<GLvoid*>(i); }
 
+  MockCopyTextureResourceManager* copy_texture_manager() const {
+    return copy_texture_manager_;
+  }
+
   template <typename Command, typename Result>
   bool IsObjectHelper(GLuint client_id) {
     Result* result = static_cast<Result*>(shared_memory_address_);

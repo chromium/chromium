@@ -19,6 +19,7 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/service/context_state.h"
+#include "gpu/command_buffer/service/copy_texture_chromium_mock.h"
 #include "gpu/command_buffer/service/gl_surface_mock.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder_unittest.h"
@@ -4488,6 +4489,65 @@ TEST_P(GLES2DecoderTest, CopySubTextureCHROMIUMTwiceClearsUnclearedTexture) {
   ASSERT_TRUE(texture_ref != nullptr);
   Texture* texture = texture_ref->texture();
   EXPECT_TRUE(texture->SafeToRenderFrom());
+}
+
+TEST_P(GLES2DecoderManualInitTest,
+       CopySubTextureCHROMIUMPreferDrawToCopyDestLevel) {
+  InitState init;
+  init.gl_version = "OpenGL ES 2.0";
+  init.has_alpha = true;
+  init.has_depth = true;
+  init.request_alpha = true;
+  init.request_depth = true;
+  gpu::GpuDriverBugWorkarounds workarounds;
+  workarounds.prefer_draw_to_copy = true;
+  InitDecoderWithWorkarounds(init, workarounds);
+  SetupDefaultProgram();
+
+  // Create dest texture with level 0 (4x4) and level 1 (2x2).
+  DoBindTexture(GL_TEXTURE_2D, client_texture_id_, kServiceTextureId);
+  DoTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 4, 4, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0,
+               0);
+  DoTexImage2D(GL_TEXTURE_2D, 1, GL_RGBA, 2, 2, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0,
+               0);
+
+  // Create source texture with level 0 (2x2).
+  EXPECT_CALL(*gl_, GenTextures(1, _))
+      .WillOnce(SetArgPointee<1>(kNewServiceId))
+      .RetiresOnSaturation();
+  GenHelper<cmds::GenTexturesImmediate>(kNewClientId);
+  DoBindTexture(GL_TEXTURE_2D, kNewClientId, kNewServiceId);
+  DoTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0,
+               0);
+
+  // Set destination texture level 1 as cleared so ClearTextureLevel is not
+  // needed.
+  TextureRef* dest_texture_ref =
+      group().texture_manager()->GetTexture(client_texture_id_);
+  ASSERT_TRUE(dest_texture_ref != nullptr);
+  group().texture_manager()->SetLevelCleared(dest_texture_ref, GL_TEXTURE_2D, 1,
+                                             true);
+
+  // Set source texture level 0 as cleared.
+  TextureRef* src_texture_ref =
+      group().texture_manager()->GetTexture(kNewClientId);
+  ASSERT_TRUE(src_texture_ref != nullptr);
+  group().texture_manager()->SetLevelCleared(src_texture_ref, GL_TEXTURE_2D, 0,
+                                             true);
+
+  EXPECT_CALL(*gl_, GetError()).WillRepeatedly(Return(GL_NO_ERROR));
+
+  cmds::CopySubTextureCHROMIUM cmd;
+  cmd.Init(kNewClientId /* source_id */, 0 /* source_level */,
+           GL_TEXTURE_2D /* dest_target */, client_texture_id_ /* dest_id */,
+           1 /* dest_level */, 0 /* xoffset */, 0 /* yoffset */, 0 /* x */,
+           0 /* y */, 2 /* width */, 2 /* height */, false /* unpack_flip_y */,
+           false /* unpack_premultiply_alpha */,
+           false /* unpack_unmultiply_alpha */);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+  EXPECT_EQ(CopyTextureMethod::DIRECT_COPY,
+            copy_texture_manager()->last_copy_sub_texture_method());
 }
 
 TEST_P(GLES3DecoderTest, ImmutableTextureBaseLevelMaxLevelClamping) {
