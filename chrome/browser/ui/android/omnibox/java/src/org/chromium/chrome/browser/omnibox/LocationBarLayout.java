@@ -483,7 +483,7 @@ public class LocationBarLayout extends ConstraintLayout {
             int fakeSearchBoxStartPadding =
                     getResources()
                             .getDimensionPixelSize(
-                                    ChromeFeatureList.sNtpAurora.isEnabled()
+                                    ChromeFeatureList.isEnabled(ChromeFeatureList.NTP_AURORA)
                                             ? R.dimen.fake_search_box_start_padding
                                             : R.dimen.fake_search_box_start_padding_legacy);
             translationX +=

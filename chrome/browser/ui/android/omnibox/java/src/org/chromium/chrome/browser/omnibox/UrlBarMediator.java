@@ -512,7 +512,7 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
     void setUrlBarHintTextColorForNtp() {
         mIsHintTextFixedForNtp = true;
         final @ColorInt int hintTextColor =
-                ChromeFeatureList.sNtpAurora.isEnabled()
+                ChromeFeatureList.isEnabled(ChromeFeatureList.NTP_AURORA)
                         ? MaterialColors.getColor(mContext, R.attr.colorOutline, TAG)
                         : SemanticColorUtils.getDefaultTextColor(mContext);
         mModel.set(UrlBarProperties.HINT_TEXT_COLOR, hintTextColor);

@@ -76,7 +76,8 @@ public class NewTabPageUtils {
 
     /** Returns the {@link PaddingStyle} for NTP Aurora. */
     public static @PaddingStyle int getPaddingStyleForAurora() {
-        return ChromeFeatureList.sNtpAuroraPaddingStyle.getValue();
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.NTP_AURORA, ChromeFeatureList.NTP_AURORA_PADDING_STYLE);
     }
 
     /** Returns the space in pixels for NTP sections based on the Aurora padding style. */
@@ -90,11 +91,14 @@ public class NewTabPageUtils {
 
     /** Returns whether the Aurora layout is enabled. */
     public static boolean isNtpAuroraEnabled() {
-        return ChromeFeatureList.sNtpAurora.isEnabled();
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.NTP_AURORA);
     }
 
     /** Returns whether the Aurora layout with updated button colors is enabled. */
     public static boolean isNtpAuroraButtonColorEnabled() {
-        return isNtpAuroraEnabled() && ChromeFeatureList.sNtpAuroraChangeButtonColor.getValue();
+        return isNtpAuroraEnabled()
+                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.NTP_AURORA,
+                        ChromeFeatureList.NTP_AURORA_CHANGE_BUTTON_COLOR);
     }
 }

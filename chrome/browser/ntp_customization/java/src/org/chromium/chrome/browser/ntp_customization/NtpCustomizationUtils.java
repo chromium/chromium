@@ -1726,7 +1726,7 @@ public class NtpCustomizationUtils {
         // TODO(https://crbug.com/534357676): sets the height in the layout file after the feature
         // flag is fully launched.
         int searchBoxHeight =
-                showSearchBoxTall || ChromeFeatureList.sNtpAurora.isEnabled()
+                showSearchBoxTall || ChromeFeatureList.isEnabled(ChromeFeatureList.NTP_AURORA)
                         ? resources.getDimensionPixelSize(R.dimen.ntp_search_box_height_tall)
                         : resources.getDimensionPixelSize(R.dimen.ntp_search_box_height);
         return searchBoxHeight;

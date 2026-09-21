@@ -934,6 +934,9 @@ public abstract class ChromeFeatureList {
                             Map.entry(ACCOUNT_FOR_SUPPRESSED_KEYBOARD_INSETS, true),
                             Map.entry(ANDROID_THEME_MODULE, true),
                             Map.entry(ANDROID_THEME_RESOURCE_PROVIDER, false),
+                            Map.entry(GMSCORE_BIND_SERVICE_OPTIMIZATION, true),
+                            Map.entry(NTP_AURORA, true),
+                            Map.entry(NTP_AURORA_V2, false),
                             Map.entry(UNIVERSAL_KEYBOARD_HANDLING, true));
 
     // keep-sorted start group_prefixes=["public static final CachedFlag"]
@@ -1259,9 +1262,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(GLIC_BACKGROUND_ACTUATION_TAB_GROUP_SYNC, /* defaultValue= */ false);
     public static final CachedFlag sGlicBackgroundTriggering =
             newCachedFlag(GLIC_BACKGROUND_TRIGGERING, false);
-    public static final CachedFlag sGmscoreBindServiceOptimization =
-            newCachedFlag(
-                    GMSCORE_BIND_SERVICE_OPTIMIZATION, false, /* defaultValueInTests= */ true);
     public static final CachedFlag sGridTabSwitcherSurfaceColorUpdate =
             newCachedFlag(
                     GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
@@ -1338,10 +1338,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(NOTIFICATION_TRAMPOLINE, false);
     public static final CachedFlag sNotificationTrampolineNoNewTask =
             newCachedFlag(NOTIFICATION_TRAMPOLINE_NO_NEW_TASK, true);
-    public static final CachedFlag sNtpAurora =
-            newCachedFlag(NTP_AURORA, /* defaultValue= */ false, /* defaultValueInTests= */ true);
-    public static final CachedFlag sNtpAuroraV2 =
-            newCachedFlag(NTP_AURORA_V2, /* defaultValue= */ false);
     public static final CachedFlag sNtpMvcRefactor =
             newCachedFlag(NTP_MVC_REFACTOR, /* defaultValue= */ false);
     public static final CachedFlag sNtpVision =
@@ -1647,7 +1643,6 @@ public abstract class ChromeFeatureList {
                     sGlicBackgroundActuation,
                     sGlicBackgroundActuationTabGroupSync,
                     sGlicBackgroundTriggering,
-                    sGmscoreBindServiceOptimization,
                     sGridTabSwitcherSurfaceColorUpdate,
                     sHistoryPaneAndroid,
                     sHomeButtonRemoval,
@@ -1668,8 +1663,6 @@ public abstract class ChromeFeatureList {
                     sNewTabPageCustomizationV2,
                     sNotificationTrampoline,
                     sNotificationTrampolineNoNewTask,
-                    sNtpAurora,
-                    sNtpAuroraV2,
                     sNtpMvcRefactor,
                     sNtpVision,
                     sOnStartupWindowPolicy,
@@ -1896,6 +1889,10 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_THEME_MODULE_FORCE_DEPENDENCIES =
             "force_theme_module_dependencies";
     public static final String ANDROID_THEME_RESOURCE_PROVIDER_FORCE_LIGHT = "force_light_theme";
+    public static final String NTP_AURORA_CHANGE_BUTTON_COLOR = "change_button_color";
+    public static final String NTP_AURORA_PADDING_STYLE = "padding_style";
+    public static final String NTP_AURORA_V2_ACTION_CHIPS = "action_chips";
+    public static final String NTP_AURORA_V2_LAYOUT_TYPE = "layout_type";
     public static final String XPLAT_SYNCED_SETUP_THEMES_OBSERVATION_ONLY = "observation_only";
 
     // keep-sorted end
@@ -1918,6 +1915,16 @@ public abstract class ChromeFeatureList {
                     Map.entry(
                             ANDROID_THEME_RESOURCE_PROVIDER,
                             Map.of(ANDROID_THEME_RESOURCE_PROVIDER_FORCE_LIGHT, "false")),
+                    Map.entry(
+                            NTP_AURORA,
+                            Map.ofEntries(
+                                    Map.entry(NTP_AURORA_CHANGE_BUTTON_COLOR, "false"),
+                                    Map.entry(NTP_AURORA_PADDING_STYLE, "0"))),
+                    Map.entry(
+                            NTP_AURORA_V2,
+                            Map.ofEntries(
+                                    Map.entry(NTP_AURORA_V2_ACTION_CHIPS, "0"),
+                                    Map.entry(NTP_AURORA_V2_LAYOUT_TYPE, "0"))),
                     Map.entry(
                             XPLAT_SYNCED_SETUP_THEMES,
                             Map.of(XPLAT_SYNCED_SETUP_THEMES_OBSERVATION_ONLY, "false")));
@@ -1942,6 +1949,16 @@ public abstract class ChromeFeatureList {
                             Map.entry(
                                     ANDROID_THEME_RESOURCE_PROVIDER,
                                     Map.of(ANDROID_THEME_RESOURCE_PROVIDER_FORCE_LIGHT, "false")),
+                            Map.entry(
+                                    NTP_AURORA,
+                                    Map.ofEntries(
+                                            Map.entry(NTP_AURORA_CHANGE_BUTTON_COLOR, "true"),
+                                            Map.entry(NTP_AURORA_PADDING_STYLE, "3"))),
+                            Map.entry(
+                                    NTP_AURORA_V2,
+                                    Map.ofEntries(
+                                            Map.entry(NTP_AURORA_V2_ACTION_CHIPS, "0"),
+                                            Map.entry(NTP_AURORA_V2_LAYOUT_TYPE, "0"))),
                             Map.entry(
                                     XPLAT_SYNCED_SETUP_THEMES,
                                     Map.of(XPLAT_SYNCED_SETUP_THEMES_OBSERVATION_ONLY, "false")));
@@ -2268,14 +2285,6 @@ public abstract class ChromeFeatureList {
     public static final IntCachedFeatureParam sNotificationTrampolineTimeoutPriorNativeInitMs =
             newIntCachedFeatureParam(
                     NOTIFICATION_TRAMPOLINE, "timeout_in_millis_prior_native_init", 5 * 1000);
-    public static final IntCachedFeatureParam sNtpAuroraPaddingStyle =
-            newIntCachedFeatureParam(NTP_AURORA, "padding_style", 0);
-    public static final BooleanCachedFeatureParam sNtpAuroraChangeButtonColor =
-            newBooleanCachedFeatureParam(NTP_AURORA, "change_button_color", false);
-    public static final IntCachedFeatureParam sNtpAuroraV2ActionChips =
-            newIntCachedFeatureParam(NTP_AURORA_V2, "action_chips", 0);
-    public static final IntCachedFeatureParam sNtpAuroraV2LayoutType =
-            newIntCachedFeatureParam(NTP_AURORA_V2, "layout_type", 0);
     public static final IntCachedFeatureParam sOmahaMinSdkVersionMinSdkVersion =
             newIntCachedFeatureParam(OMAHA_MIN_SDK_VERSION_ANDROID, "min_sdk_version", -1);
 
@@ -2440,10 +2449,6 @@ public abstract class ChromeFeatureList {
                     sNotificationTrampolineLongJobDurationMs,
                     sNotificationTrampolineNormalJobDurationMs,
                     sNotificationTrampolineTimeoutPriorNativeInitMs,
-                    sNtpAuroraChangeButtonColor,
-                    sNtpAuroraPaddingStyle,
-                    sNtpAuroraV2ActionChips,
-                    sNtpAuroraV2LayoutType,
                     sOmahaMinSdkVersionMinSdkVersion,
                     sPCctMinimumHeightRatio,
                     sPriceChangeModuleSkipShoppingPersistedTabDataDelayedInit,
