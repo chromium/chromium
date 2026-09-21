@@ -213,7 +213,7 @@ public class SiteSettingsTestHelper {
                             preferences.findPreference(SingleCategorySettings.TRI_STATE_TOGGLE_KEY);
                     preferences.onPreferenceChange(triStateToggle, newValue);
                 });
-        settingsActivity.finish();
+        ApplicationTestUtils.finishActivity(settingsActivity);
     }
 
     /**
@@ -233,7 +233,7 @@ public class SiteSettingsTestHelper {
         }
 
         checkPreferencesForSettingsActivity(settingsActivity, expectedKeys);
-        settingsActivity.finish();
+        ApplicationTestUtils.finishActivity(settingsActivity);
     }
 
     public static void checkPreferencesForSettingsActivity(
@@ -320,7 +320,7 @@ public class SiteSettingsTestHelper {
 
                         doTest(singleCategorySettings);
                     });
-            mSettingsActivity.finish();
+            ApplicationTestUtils.finishActivity(mSettingsActivity);
         }
 
         protected void doTest(SingleCategorySettings singleCategorySettings) {
@@ -447,7 +447,7 @@ public class SiteSettingsTestHelper {
             int id = R.string.website_settings_site_data_page_block_confirm_dialog_confirm_button;
             onViewWaiting(withText(id)).perform(click());
         }
-        settingsActivity.finish();
+        ApplicationTestUtils.finishActivity(settingsActivity);
     }
 
     public static final String[] BINARY_RADIO_BUTTON_AND_INFO_TEXT =
