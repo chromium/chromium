@@ -913,7 +913,6 @@ robolectric_library("ui_android_junit_tests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//base:flagged_apis_java",
     "//base:holder_java",
     "//base/test:test_support_java",
     "//build/android:build_java",

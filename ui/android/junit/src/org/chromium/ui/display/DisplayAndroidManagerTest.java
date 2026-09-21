@@ -32,7 +32,6 @@ import org.robolectric.shadows.ShadowDisplay;
 import org.robolectric.shadows.ShadowDisplayManager;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -49,7 +48,7 @@ import java.util.HashSet;
 public class DisplayAndroidManagerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private AconfigFlaggedApiDelegate mAconfigFlaggedApiDelegate;
+    @Mock private DisplayAndroidManager.DisplayTopologyDelegate mDisplayTopologyDelegate;
 
     private final DisplayManager mDisplayManager =
             (DisplayManager)
@@ -66,12 +65,10 @@ public class DisplayAndroidManagerTest {
 
         mBounds.put(Display.DEFAULT_DISPLAY, new RectF(0, 0, 1920, 1080));
 
-        AconfigFlaggedApiDelegate.setInstanceForTesting(mAconfigFlaggedApiDelegate);
-        doReturn(true).when(mAconfigFlaggedApiDelegate).isDisplayTopologyAvailable(mDisplayManager);
+        DisplayAndroidManager.setDisplayTopologyDelegateForTesting(mDisplayTopologyDelegate);
+        doReturn(true).when(mDisplayTopologyDelegate).isDisplayTopologyAvailable(mDisplayManager);
 
-        doReturn(mBounds.clone())
-                .when(mAconfigFlaggedApiDelegate)
-                .getAbsoluteBounds(mDisplayManager);
+        doReturn(mBounds.clone()).when(mDisplayTopologyDelegate).getAbsoluteBounds(mDisplayManager);
     }
 
     @After
@@ -121,9 +118,7 @@ public class DisplayAndroidManagerTest {
                 addDisplay(3840, 2160, DisplayMetrics.DENSITY_HIGH, "firstExternalDisplay");
         mBounds.put(firstExternalDisplayId, new RectF(0, -1440, 2560, 0));
 
-        doReturn(mBounds.clone())
-                .when(mAconfigFlaggedApiDelegate)
-                .getAbsoluteBounds(mDisplayManager);
+        doReturn(mBounds.clone()).when(mDisplayTopologyDelegate).getAbsoluteBounds(mDisplayManager);
 
         final DisplayAndroidManager displayAndroidManager = DisplayAndroidManager.getInstance();
 
@@ -173,9 +168,7 @@ public class DisplayAndroidManagerTest {
                 addDisplay(3840, 2160, DisplayMetrics.DENSITY_HIGH, "externalDisplay");
         mBounds.put(externalDisplayId, new RectF(0, -1440, 2560, 0));
 
-        doReturn(mBounds.clone())
-                .when(mAconfigFlaggedApiDelegate)
-                .getAbsoluteBounds(mDisplayManager);
+        doReturn(mBounds.clone()).when(mDisplayTopologyDelegate).getAbsoluteBounds(mDisplayManager);
 
         final DisplayAndroidManager displayAndroidManager = DisplayAndroidManager.getInstance();
 
@@ -228,17 +221,15 @@ public class DisplayAndroidManagerTest {
                         .build();
 
         // ANDROID_USE_DISPLAY_TOPOLOGY is enabled and
-        // mAconfigFlaggedApiDelegate.isDisplayTopologyAvailable() is true
+        // mDisplayTopologyDelegate.isDisplayTopologyAvailable() is true
         DisplayAndroidManager displayAndroidManager = DisplayAndroidManager.getInstance();
 
         DisplayAndroidManager.resetInstanceForTesting();
         DisplayAndroidManager.resetIsDisplayTopologyAvailableForTesting();
-        doReturn(false)
-                .when(mAconfigFlaggedApiDelegate)
-                .isDisplayTopologyAvailable(mDisplayManager);
+        doReturn(false).when(mDisplayTopologyDelegate).isDisplayTopologyAvailable(mDisplayManager);
 
         // ANDROID_USE_DISPLAY_TOPOLOGY is enabled, but
-        // mAconfigFlaggedApiDelegate.isDisplayTopologyAvailable() is false
+        // mDisplayTopologyDelegate.isDisplayTopologyAvailable() is false
         displayAndroidManager = DisplayAndroidManager.getInstance();
 
         histogramWatcher.assertExpected("Incorrect histogram values.");

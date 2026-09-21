@@ -12,6 +12,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.DisplayManager.DisplayListener;
+import android.hardware.display.DisplayTopology;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -25,7 +26,6 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
@@ -36,6 +36,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.UiAndroidFeatureList;
 
 import java.util.HashSet;
+import java.util.concurrent.Executor;
+import java.util.function.Consumer;
 
 /** DisplayAndroidManager is a class that informs its observers Display changes. */
 @JNINamespace("ui")
@@ -83,20 +85,28 @@ public class DisplayAndroidManager {
         }
     }
 
+    /** Interface used to interact with DisplayTopology APIs and allow testing. */
+    @VisibleForTesting
+    interface DisplayTopologyDelegate {
+        boolean isDisplayTopologyAvailable(DisplayManager displayManager);
+
+        @Nullable SparseArray<RectF> getAbsoluteBounds(DisplayManager displayManager);
+
+        default void registerTopologyListener(
+                DisplayManager displayManager,
+                Executor executor,
+                DisplayTopologyListenerBackend listener) {}
+    }
+
     /**
      * DisplayTopologyListenerBackend is used to handle the actual listening of display topology
      * changes. It handles it via the Android Display Manager API.
      */
-    class DisplayTopologyListenerBackend
-            implements AconfigFlaggedApiDelegate.DisplayTopologyListener {
+    class DisplayTopologyListenerBackend {
         public void startListening() {
-            assumeNonNull(AconfigFlaggedApiDelegate.getInstance())
-                    .registerTopologyListener(
-                            getDisplayManager(), getContext().getMainExecutor(), this);
+            registerTopologyListener(getDisplayManager(), getContext().getMainExecutor(), this);
         }
 
-        // AconfigFlaggedApiDelegate.DisplayTopologyListener implementation:
-        @Override
         public void onDisplayTopologyChanged(SparseArray<RectF> absoluteBounds) {
             updateDisplayTopology(absoluteBounds);
         }
@@ -104,6 +114,7 @@ public class DisplayAndroidManager {
 
     private static @Nullable DisplayAndroidManager sDisplayAndroidManager;
     private static @Nullable Display sDefaultDisplayForContextForTesting;
+    private static @Nullable DisplayTopologyDelegate sDisplayTopologyDelegateForTesting;
 
     private static boolean sDisableHdrSdkRatioCallback;
     private static @Nullable Boolean sIsDisplayTopologyAvailable;
@@ -174,11 +185,61 @@ public class DisplayAndroidManager {
         if (sIsDisplayTopologyAvailable == null) {
             sIsDisplayTopologyAvailable =
                     UiAndroidFeatureList.sAndroidUseDisplayTopology.isEnabled()
-                            && AconfigFlaggedApiDelegate.getInstance() != null
-                            && AconfigFlaggedApiDelegate.getInstance()
-                                    .isDisplayTopologyAvailable(getDisplayManager());
+                            && isDisplayTopologyAvailable(getDisplayManager());
         }
         return sIsDisplayTopologyAvailable;
+    }
+
+    private static @Nullable DisplayTopology getDisplayTopology(DisplayManager displayManager) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA
+                && Build.VERSION.SDK_INT_FULL >= Build.VERSION_CODES_FULL.BAKLAVA_1) {
+            try {
+                return displayManager.getDisplayTopology();
+            } catch (Exception e) {
+                Log.w(TAG, e);
+            }
+        }
+        return null;
+    }
+
+    private static boolean isDisplayTopologyAvailable(DisplayManager displayManager) {
+        if (sDisplayTopologyDelegateForTesting != null) {
+            return sDisplayTopologyDelegateForTesting.isDisplayTopologyAvailable(displayManager);
+        }
+        return getDisplayTopology(displayManager) != null;
+    }
+
+    private static @Nullable SparseArray<RectF> getAbsoluteBounds(DisplayManager displayManager) {
+        if (sDisplayTopologyDelegateForTesting != null) {
+            return sDisplayTopologyDelegateForTesting.getAbsoluteBounds(displayManager);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA
+                && Build.VERSION.SDK_INT_FULL >= Build.VERSION_CODES_FULL.BAKLAVA_1) {
+            DisplayTopology displayTopology = getDisplayTopology(displayManager);
+            return displayTopology != null ? displayTopology.getAbsoluteBounds() : null;
+        }
+        return null;
+    }
+
+    private static void registerTopologyListener(
+            DisplayManager displayManager,
+            Executor executor,
+            DisplayTopologyListenerBackend displayTopologyListener) {
+        if (sDisplayTopologyDelegateForTesting != null) {
+            sDisplayTopologyDelegateForTesting.registerTopologyListener(
+                    displayManager, executor, displayTopologyListener);
+            return;
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA
+                && Build.VERSION.SDK_INT_FULL >= Build.VERSION_CODES_FULL.BAKLAVA_1
+                && isDisplayTopologyAvailable(displayManager)) {
+            Consumer<DisplayTopology> displayTopologyConsumer =
+                    displayTopology -> {
+                        displayTopologyListener.onDisplayTopologyChanged(
+                                displayTopology.getAbsoluteBounds());
+                    };
+            displayManager.registerTopologyListener(executor, displayTopologyConsumer);
+        }
     }
 
     /* package */ static Display getGlobalDefaultDisplay() {
@@ -244,10 +305,7 @@ public class DisplayAndroidManager {
                 IS_DISPLAY_TOPOLOGY_AVAILABLE_HISTOGRAM_NAME, isDisplayTopologyAvailable());
 
         if (isDisplayTopologyAvailable()) {
-            mDisplaysAbsoluteCoordinates =
-                    assumeNonNull(
-                            assumeNonNull(AconfigFlaggedApiDelegate.getInstance())
-                                    .getAbsoluteBounds(getDisplayManager()));
+            mDisplaysAbsoluteCoordinates = assumeNonNull(getAbsoluteBounds(getDisplayManager()));
             for (int i = 0; i < mDisplaysAbsoluteCoordinates.size(); ++i) {
                 int sdkDisplayId = mDisplaysAbsoluteCoordinates.keyAt(i);
                 addDisplayById(sdkDisplayId, mDisplaysAbsoluteCoordinates.valueAt(i));
@@ -467,5 +525,11 @@ public class DisplayAndroidManager {
 
     public static void resetIsDisplayTopologyAvailableForTesting() {
         sIsDisplayTopologyAvailable = null;
+    }
+
+    public static void setDisplayTopologyDelegateForTesting(
+            @Nullable DisplayTopologyDelegate displayTopologyDelegate) {
+        sDisplayTopologyDelegateForTesting = displayTopologyDelegate;
+        ResettersForTesting.register(() -> sDisplayTopologyDelegateForTesting = null);
     }
 }
