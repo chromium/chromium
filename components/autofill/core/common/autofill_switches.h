@@ -15,7 +15,7 @@ namespace switches {
 extern const char kAutofillAPIKey[];
 extern const char kAutofillServerURL[];
 extern const char kAutofillUploadThrottlingPeriodInDays[];
-extern const char kAutoGrantEmailVerificationPermission[];
+extern const char kAutoGrantEmailVerificationPermissionForTesting[];
 extern const char kIgnoreAutocompleteOffForAutofill[];
 extern const char kShowAutofillTypePredictions[];
 extern const char kShowAutofillSignatures[];

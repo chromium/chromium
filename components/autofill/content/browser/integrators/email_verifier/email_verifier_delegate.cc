@@ -756,12 +756,8 @@ void EmailVerifierDelegate::TriggerVerification(AutofillManager& manager,
   const base::DictValue& state =
       prefs->GetDict(prefs::kAutofillEmailVerificationState);
   const base::DictValue* email_data = state.FindDict(normalized_email);
-  const bool auto_grant =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kAutoGrantEmailVerificationPermission) ||
-      base::GetFieldTrialParamByFeatureAsBool(
-          ::features::kEmailVerificationProtocol, "auto_grant_permission",
-          false);
+  const bool auto_grant = base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kAutoGrantEmailVerificationPermissionForTesting);
   const bool already_allowed =
       auto_grant ||
       (email_data && email_data->FindBool("allowed").value_or(false));
