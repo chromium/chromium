@@ -123,7 +123,8 @@ void ExclusiveAccessBubbleAndroid::Update(
          params.has_download);
   bool already_shown = IsVisible();
   if (params_.type == params.type && params_.origin == params.origin &&
-      !params.force_update && (already_shown || was_shown_)) {
+      params_.has_download == params.has_download && !params.force_update &&
+      (already_shown || was_shown_)) {
     return;
   }
   was_shown_ = true;
@@ -137,9 +138,13 @@ void ExclusiveAccessBubbleAndroid::Update(
   //    or the previous notification was about an override itself.
   // If both the previous and current notifications have a download, but
   // neither is an override, then we don't need to show an override.
-  notify_overridden_ =
-      already_shown &&
-      (notify_overridden_ || (params.has_download ^ params_.has_download));
+  if (!params.has_download && !params.origin.opaque()) {
+    notify_overridden_ = false;
+  } else {
+    notify_overridden_ =
+        already_shown &&
+        (notify_overridden_ || (params.has_download ^ params_.has_download));
+  }
   params_.has_download = params.has_download || notify_overridden_;
 
   // Bubble maybe be reused after timeout.
@@ -147,10 +152,10 @@ void ExclusiveAccessBubbleAndroid::Update(
 
   first_hide_callback_ = std::move(first_hide_callback);
 
-  params_.origin = params.origin;
-  // When a request to notify about a download is made, the bubble type
-  // should be preserved from the old value, and not be updated.
+  // When a request to notify about a download is made, the bubble type and
+  // origin should be preserved from the old value, and not be updated.
   if (!params.has_download) {
+    params_.origin = params.origin;
     params_.type = params.type;
   }
   UpdateBubbleContent(params_.type);

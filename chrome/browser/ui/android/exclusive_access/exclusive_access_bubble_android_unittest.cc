@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/ui/android/exclusive_access/exclusive_access_context_android.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/url_formatter/elide_url.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -258,6 +259,57 @@ TEST_F(ExclusiveAccessBubbleAndroidTest,
 
   context.OnExclusiveAccessUserInput();
   testing::Mock::VerifyAndClearExpectations(mock_bridge_ptr);
+}
+
+TEST_F(ExclusiveAccessBubbleAndroidTest,
+       DownloadCompletionRestoresOriginInNotice) {
+  url::Origin origin = url::Origin::Create(GURL("https://example.com"));
+  auto format_text = [&](bool has_download) {
+    return exclusive_access_bubble::GetInstructionTextForTypeTouchBased(
+        EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION,
+        url_formatter::FormatOriginForSecurityDisplay(
+            origin, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC),
+        has_download, /*notify_overridden=*/has_download);
+  };
+
+  ExclusiveAccessBubbleParams params;
+  params.type = EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION;
+  params.origin = origin;
+
+  auto mock_bridge = std::make_unique<MockBridge>();
+  auto* mock_bridge_ptr = mock_bridge.get();
+  EXPECT_CALL(*mock_bridge_ptr, IsKeyboardConnected())
+      .WillRepeatedly(Return(false));
+
+  EXPECT_CALL(*mock_bridge_ptr, IsVisible()).WillOnce(Return(false));
+  EXPECT_CALL(*mock_bridge_ptr, Update(format_text(false))).Times(1);
+  EXPECT_CALL(*mock_bridge_ptr, Show()).Times(1);
+  ExclusiveAccessBubbleAndroid bubble(params, base::DoNothing(),
+                                      std::move(mock_bridge));
+
+  // Download starts while in fullscreen (DownloadDisplayController passes an
+  // empty/opaque origin), overriding the notice.
+  params.type = EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE;
+  params.origin = url::Origin();
+  params.has_download = true;
+  params.force_update = true;
+  EXPECT_CALL(*mock_bridge_ptr, IsVisible()).WillOnce(Return(true));
+  EXPECT_CALL(*mock_bridge_ptr, Update(format_text(true))).Times(1);
+  EXPECT_CALL(*mock_bridge_ptr, Show()).Times(1);
+  bubble.Update(params, base::DoNothing());
+  EXPECT_TRUE(bubble.params().has_download);
+
+  // Subsequent update with a non-opaque origin unlatches override and restores
+  // the origin in the notice.
+  params.type = EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION;
+  params.origin = origin;
+  params.has_download = false;
+  params.force_update = false;
+  EXPECT_CALL(*mock_bridge_ptr, IsVisible()).WillOnce(Return(true));
+  EXPECT_CALL(*mock_bridge_ptr, Update(format_text(false))).Times(1);
+  EXPECT_CALL(*mock_bridge_ptr, Show()).Times(1);
+  bubble.Update(params, base::DoNothing());
+  EXPECT_FALSE(bubble.params().has_download);
 }
 
 }  // namespace

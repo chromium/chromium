@@ -199,7 +199,8 @@ void ExclusiveAccessBubbleViews::Update(
          params.has_download);
   bool already_shown = IsShowing() || IsVisible();
   if (params_.type == params.type && params_.origin == params.origin &&
-      !params.force_update && already_shown) {
+      params_.has_download == params.has_download && !params.force_update &&
+      already_shown) {
     return;
   }
 
@@ -209,9 +210,13 @@ void ExclusiveAccessBubbleViews::Update(
   //    or the previous notification was about an override itself.
   // If both the previous and current notifications have a download, but
   // neither is an override, then we don't need to show an override.
-  notify_overridden_ =
-      already_shown &&
-      (notify_overridden_ || (params.has_download ^ params_.has_download));
+  if (!params.has_download && !params.origin.opaque()) {
+    notify_overridden_ = false;
+  } else {
+    notify_overridden_ =
+        already_shown &&
+        (notify_overridden_ || (params.has_download ^ params_.has_download));
+  }
   params_.has_download = params.has_download || notify_overridden_;
 
   // Bubble maybe be re-used after timeout.
@@ -222,10 +227,10 @@ void ExclusiveAccessBubbleViews::Update(
   const bool entering_tab_fullscreen =
       !IsTabFullscreenType(params_.type) && IsTabFullscreenType(params.type);
 
-  params_.origin = params.origin;
-  // When a request to notify about a download is made, the bubble type
-  // should be preserved from the old value, and not be updated.
+  // When a request to notify about a download is made, the bubble type and
+  // origin should be preserved from the old value, and not be updated.
   if (!params.has_download) {
+    params_.origin = params.origin;
     params_.type = params.type;
   }
   UpdateViewContent(params_.type);
