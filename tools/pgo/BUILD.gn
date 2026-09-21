@@ -25,96 +25,76 @@ python_library("generate_profile_webview_py") {
 }
 
 template("generate_profile_test") {
-  not_needed(invoker, "*")
-
   script_test(target_name) {
     script = "//tools/pgo/generate_profile.py"
 
-    if (is_android) {
-      # Stream logcat from device (doesn't seem to fully work yet).
-      enable_android_wrapper = true
-    }
+    # Stream logcat from device (doesn't seem to fully work yet).
+    enable_android_wrapper = true
 
     args = [
       # Assume that we are running this script from the output directory.
       "--builddir",
       ".",
+      "--android-browser",
+      invoker.browser_name,
       "--target-arch",
-      target_cpu,
+      invoker.arch,
     ]
-
-    if (is_android) {
-      args += [
-        "--android-browser",
-        invoker.browser_name,
-      ]
-    }
 
     deps = [ ":generate_profile_py" ]
 
     data_deps = [
       # From performance_test_suite_template_base:
+      "//chrome/test:telemetry_perf_tests${invoker.suffix}",
+
+      # From performance_test_suite_template_android:
       "//components:components_perftests",
       "//testing:run_perf_test",
       "//third_party/dawn/src/tint/cmd/bench:bench_cmd",
+
+      # Needed by the browser wrapper script to install bundles, see
+      # add_java_to_path in generate_profile.py.
+      "//third_party/jdk:java_data",
     ]
 
-    if (is_android) {
-      data_deps += [
-        "//chrome/test:telemetry_perf_tests${invoker.suffix}",
-
-        # Needed by the browser wrapper script to install bundles, see
-        # add_java_to_path in generate_profile.py.
-        "//third_party/jdk:java_data",
-      ]
-    } else {
-      data_deps += [ "//chrome/test:telemetry_perf_tests" ]
-    }
-
     # This avoids generate_profile.py attempting to download it on demand.
-    if (is_win) {
-      data = [ "${clang_base_path}/bin/llvm-profdata.exe" ]
-    } else {
-      data = [ "${clang_base_path}/bin/llvm-profdata" ]
-    }
+    data = [ "${clang_base_path}/bin/llvm-profdata" ]
   }
 }
 
-if (is_android) {
-  generate_profile_test("generate_profile_android_chrome_bundle") {
-    browser_name = "android-chromium-bundle"
-    suffix = "_android_chrome_bundle"
-  }
+generate_profile_test("generate_profile_android_chrome_bundle") {
+  browser_name = "android-chromium-bundle"
+  suffix = "_android_chrome_bundle"
+  arch = target_cpu
+}
 
-  if (defined(android_app_secondary_abi)) {
-    script_test("generate_profile_android_webview_64") {
-      script = "//tools/pgo/generate_profile_webview.py"
+if (defined(android_app_secondary_abi)) {
+  script_test("generate_profile_android_webview_64") {
+    script = "//tools/pgo/generate_profile_webview.py"
 
-      # Stream logcat from device (doesn't seem to fully work yet).
-      enable_android_wrapper = true
+    # Stream logcat from device (doesn't seem to fully work yet).
+    enable_android_wrapper = true
 
-      args = [
-        # Assume that we are running this script from the output directory.
-        "--builddir",
-        ".",
+    args = [
+      # Assume that we are running this script from the output directory.
+      "--builddir",
+      ".",
+    ]
+
+    deps = [ ":generate_profile_webview_py" ]
+
+    data_deps = []
+    if (enable_chrome_android_internal) {
+      data_deps += [
+        "//chrome/test:telemetry_perf_tests_android_clank_webview_64_32_bundle",
       ]
-
-      deps = [ ":generate_profile_webview_py" ]
-
-      data_deps = []
-      if (enable_chrome_android_internal) {
-        data_deps += [ "//chrome/test:telemetry_perf_tests_android_clank_webview_64_32_bundle" ]
-      } else {
-        data_deps +=
-            [ "//chrome/test:telemetry_perf_tests_android_webview_bundle" ]
-      }
-
-      # This avoids generate_profile_webview.py attempting to download it on
-      # demand.
-      data = [ "${clang_base_path}/bin/llvm-profdata" ]
+    } else {
+      data_deps +=
+          [ "//chrome/test:telemetry_perf_tests_android_webview_bundle" ]
     }
-  }
-} else {
-  generate_profile_test("generate_profile") {
+
+    # This avoids generate_profile_webview.py attempting to download it on
+    # demand.
+    data = [ "${clang_base_path}/bin/llvm-profdata" ]
   }
 }
