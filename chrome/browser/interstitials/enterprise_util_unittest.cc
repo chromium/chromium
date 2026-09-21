@@ -18,8 +18,11 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/connectors/core/reporting_test_utils.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
+#include "components/enterprise/isolated_mode/prefs.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
+#include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -181,6 +184,59 @@ class InterstitialEnterpriseUtilTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+enum class OtrProfileType {
+  kGuest,
+  kEnterpriseIsolatedMode,
+};
+
+class InterstitialEnterpriseUtilOtrTest
+    : public InterstitialEnterpriseUtilTest,
+      public testing::WithParamInterface<OtrProfileType> {
+ public:
+  void SetUp() override {
+    InterstitialEnterpriseUtilTest::SetUp();
+    std::vector<base::test::FeatureRef> enabled_features = {
+        safe_browsing::kEnhancedFieldsForSecOps};
+    if (GetParam() == OtrProfileType::kEnterpriseIsolatedMode) {
+      enabled_features.push_back(
+          enterprise_isolated_mode::kEnableEnterpriseIsolatedMode);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, {});
+  }
+
+  Profile* CreateOtrProfile() {
+    switch (GetParam()) {
+      case OtrProfileType::kGuest:
+        return profile_manager_.CreateGuestProfile()->GetPrimaryOTRProfile(
+            /*create_if_needed=*/true);
+      case OtrProfileType::kEnterpriseIsolatedMode: {
+        TestingProfile* original_profile =
+            profile_manager_.CreateTestingProfile("isolated_mode_parent");
+        original_profile->GetPrefs()->SetInteger(
+            enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
+            static_cast<int>(
+                enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
+        return original_profile->GetPrimaryOTRProfile(
+            /*create_if_needed=*/true);
+      }
+    }
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    InterstitialEnterpriseUtilOtrTest,
+    testing::Values(OtrProfileType::kGuest,
+                    OtrProfileType::kEnterpriseIsolatedMode),
+    [](const testing::TestParamInfo<OtrProfileType>& info) {
+      switch (info.param) {
+        case OtrProfileType::kGuest:
+          return "Guest";
+        case OtrProfileType::kEnterpriseIsolatedMode:
+          return "EnterpriseIsolatedMode";
+      }
+    });
+
 TEST_F(InterstitialEnterpriseUtilTest, RouterEventDisabledInIncognitoMode) {
   scoped_feature_list_.InitAndEnableFeature(
       safe_browsing::kEnhancedFieldsForSecOps);
@@ -198,17 +254,13 @@ TEST_F(InterstitialEnterpriseUtilTest, RouterEventDisabledInIncognitoMode) {
       /*net_error_code=*/0, "");
 }
 
-TEST_F(InterstitialEnterpriseUtilTest,
-       SecurityInterstitialShownEventSentInGuestMode) {
-  scoped_feature_list_.InitAndEnableFeature(
-      safe_browsing::kEnhancedFieldsForSecOps);
-  Profile* guest_profile =
-      profile_manager_.CreateGuestProfile()->GetPrimaryOTRProfile(
-          /*create_if_needed=*/true);
-  EnableReportingPolicy(guest_profile);
+TEST_P(InterstitialEnterpriseUtilOtrTest,
+       SecurityInterstitialShownEventSentInAllowedOtrMode) {
+  Profile* otr_profile = CreateOtrProfile();
+  EnableReportingPolicy(otr_profile);
 
   ASSERT_TRUE(safe_browsing::SafeBrowsingNavigationObserverManagerFactory::
-                  GetForBrowserContext(guest_profile));
+                  GetForBrowserContext(otr_profile));
   safe_browsing::ReferrerChain expected_referrer_chain;
   expected_referrer_chain.Add(
       enterprise_connectors::test::MakeReferrerChainEntry());
@@ -232,7 +284,7 @@ TEST_F(InterstitialEnterpriseUtilTest,
           });
 
   MaybeTriggerSecurityInterstitialShownEvent(
-      web_contents_factory_.CreateWebContents(guest_profile),
+      web_contents_factory_.CreateWebContents(otr_profile),
       GURL("https://phishing.com/"), "reason",
       /*net_error_code=*/0, "");
   run_loop.Run();
@@ -240,17 +292,13 @@ TEST_F(InterstitialEnterpriseUtilTest,
   ValidateReferrerChainForInterstitialEvent(event_request);
 }
 
-TEST_F(InterstitialEnterpriseUtilTest,
-       SecurityInterstitialProceededEventSentInGuestMode) {
-  scoped_feature_list_.InitAndEnableFeature(
-      safe_browsing::kEnhancedFieldsForSecOps);
-  Profile* guest_profile =
-      profile_manager_.CreateGuestProfile()->GetPrimaryOTRProfile(
-          /*create_if_needed=*/true);
-  EnableReportingPolicy(guest_profile);
+TEST_P(InterstitialEnterpriseUtilOtrTest,
+       SecurityInterstitialProceededEventSentInAllowedOtrMode) {
+  Profile* otr_profile = CreateOtrProfile();
+  EnableReportingPolicy(otr_profile);
 
   ASSERT_TRUE(safe_browsing::SafeBrowsingNavigationObserverManagerFactory::
-                  GetForBrowserContext(guest_profile));
+                  GetForBrowserContext(otr_profile));
   safe_browsing::ReferrerChain expected_referrer_chain;
   expected_referrer_chain.Add(
       enterprise_connectors::test::MakeReferrerChainEntry());
@@ -274,7 +322,7 @@ TEST_F(InterstitialEnterpriseUtilTest,
           });
 
   MaybeTriggerSecurityInterstitialProceededEvent(
-      web_contents_factory_.CreateWebContents(guest_profile),
+      web_contents_factory_.CreateWebContents(otr_profile),
       GURL("https://phishing.com/"), "reason",
       /*net_error_code=*/0, "");
   run_loop.Run();
@@ -282,17 +330,13 @@ TEST_F(InterstitialEnterpriseUtilTest,
   ValidateReferrerChainForInterstitialEvent(event_request);
 }
 
-TEST_F(InterstitialEnterpriseUtilTest,
-       UrlFilteringInterstitialEventSentInGuestMode) {
-  scoped_feature_list_.InitAndEnableFeature(
-      safe_browsing::kEnhancedFieldsForSecOps);
-  Profile* guest_profile =
-      profile_manager_.CreateGuestProfile()->GetPrimaryOTRProfile(
-          /*create_if_needed=*/true);
-  EnableReportingPolicy(guest_profile);
+TEST_P(InterstitialEnterpriseUtilOtrTest,
+       UrlFilteringInterstitialEventSentInAllowedOtrMode) {
+  Profile* otr_profile = CreateOtrProfile();
+  EnableReportingPolicy(otr_profile);
 
   ASSERT_TRUE(safe_browsing::SafeBrowsingNavigationObserverManagerFactory::
-                  GetForBrowserContext(guest_profile));
+                  GetForBrowserContext(otr_profile));
   safe_browsing::RTLookupResponse response;
   auto* threat_info = response.add_threat_info();
   threat_info->set_verdict_type(
@@ -325,7 +369,7 @@ TEST_F(InterstitialEnterpriseUtilTest,
           });
 
   MaybeTriggerUrlFilteringInterstitialEvent(
-      web_contents_factory_.CreateWebContents(guest_profile),
+      web_contents_factory_.CreateWebContents(otr_profile),
       GURL("https://phishing.com/"), "ENTERPRISE_WARNED_SEEN", response, "");
   run_loop.Run();
 

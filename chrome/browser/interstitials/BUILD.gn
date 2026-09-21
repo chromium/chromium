@@ -124,6 +124,7 @@ if (enterprise_cloud_content_analysis || is_android) {
       "//chrome/browser/safe_browsing",
       "//chrome/test:test_support",
       "//components/enterprise/connectors/core:test_support",
+      "//components/enterprise/isolated_mode",
       "//components/policy/core/common:test_support",
       "//components/safe_browsing/content/browser",
       "//components/safe_browsing/core/browser:referrer_chain_provider",
