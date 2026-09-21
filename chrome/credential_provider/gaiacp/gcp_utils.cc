@@ -16,6 +16,7 @@
 #include <stdlib.h>
 
 #include <algorithm>
+#include <array>
 #include <iomanip>
 #include <memory>
 #include <string>
@@ -451,8 +452,8 @@ HRESULT WaitForProcess(base::win::ScopedHandle::Handle process_handle,
   HANDLE output_handle = parent_handles.hstdout_read.get();
 
   for (bool is_done = false; !is_done;) {
-    char buffer[80];
-    DWORD length = std::size(buffer) - 1;
+    std::array<char, 80> buffer;
+    DWORD length = buffer.size() - 1;
     HRESULT hr = S_OK;
 
     const DWORD kThreeMinutesInMs = 3 * 60 * 1000;
@@ -462,13 +463,14 @@ HRESULT WaitForProcess(base::win::ScopedHandle::Handle process_handle,
       case WAIT_OBJECT_0: {
         int index = ret - WAIT_OBJECT_0;
         LOGFN(VERBOSE) << "WAIT_OBJECT_" << index;
-        if (!::ReadFile(output_handle, buffer, length, &length, nullptr)) {
+        if (!::ReadFile(output_handle, buffer.data(), length, &length,
+                        nullptr)) {
           hr = HRESULT_FROM_WIN32(::GetLastError());
           if (hr != HRESULT_FROM_WIN32(ERROR_BROKEN_PIPE))
             LOGFN(ERROR) << "ReadFile(" << index << ") hr=" << putHR(hr);
         } else {
           LOGFN(VERBOSE) << "ReadFile(" << index << ") length=" << length;
-          UNSAFE_TODO(buffer[length]) = 0;
+          buffer[length] = 0;
         }
         break;
       }
@@ -498,7 +500,7 @@ HRESULT WaitForProcess(base::win::ScopedHandle::Handle process_handle,
       LOGFN(VERBOSE) << "Stop waiting for output buffer";
       break;
     } else {
-      UNSAFE_TODO(strcat_s(output_buffer, buffer_size, buffer));
+      UNSAFE_TODO(strcat_s(output_buffer, buffer_size, buffer.data()));
     }
   }
 

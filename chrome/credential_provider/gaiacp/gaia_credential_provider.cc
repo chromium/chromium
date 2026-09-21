@@ -8,6 +8,7 @@
 #include <shlguid.h>
 
 #include <algorithm>
+#include <array>
 #include <iomanip>
 #include <map>
 #include <string>
@@ -39,18 +40,19 @@ namespace credential_provider {
 
 #define W2CW(p) const_cast<wchar_t*>(p)
 
-static const CREDENTIAL_PROVIDER_FIELD_DESCRIPTOR g_field_desc[] = {
-    {FID_DESCRIPTION, CPFT_LARGE_TEXT, W2CW(L"Description"), GUID_NULL},
-    {FID_CURRENT_PASSWORD_FIELD, CPFT_PASSWORD_TEXT, W2CW(L"Windows Password"),
-     GUID_NULL},
-    {FID_SUBMIT, CPFT_SUBMIT_BUTTON, W2CW(L"Submit button"), GUID_NULL},
-    {FID_FORGOT_PASSWORD_LINK, CPFT_COMMAND_LINK, W2CW(L"Forgot Password"),
-     GUID_NULL},
-    {FID_PROVIDER_LOGO, CPFT_TILE_IMAGE, W2CW(L"Provider logo"),
-     CPFG_CREDENTIAL_PROVIDER_LOGO},
-    {FID_PROVIDER_LABEL, CPFT_LARGE_TEXT, W2CW(L"Provider label"),
-     CPFG_CREDENTIAL_PROVIDER_LABEL},
-};
+static const auto g_field_desc =
+    std::to_array<CREDENTIAL_PROVIDER_FIELD_DESCRIPTOR>({
+        {FID_DESCRIPTION, CPFT_LARGE_TEXT, W2CW(L"Description"), GUID_NULL},
+        {FID_CURRENT_PASSWORD_FIELD, CPFT_PASSWORD_TEXT,
+         W2CW(L"Windows Password"), GUID_NULL},
+        {FID_SUBMIT, CPFT_SUBMIT_BUTTON, W2CW(L"Submit button"), GUID_NULL},
+        {FID_FORGOT_PASSWORD_LINK, CPFT_COMMAND_LINK, W2CW(L"Forgot Password"),
+         GUID_NULL},
+        {FID_PROVIDER_LOGO, CPFT_TILE_IMAGE, W2CW(L"Provider logo"),
+         CPFG_CREDENTIAL_PROVIDER_LOGO},
+        {FID_PROVIDER_LABEL, CPFT_LARGE_TEXT, W2CW(L"Provider label"),
+         CPFG_CREDENTIAL_PROVIDER_LABEL},
+    });
 
 static_assert(std::size(g_field_desc) == FIELD_COUNT,
               "g_field_desc does not match FIELDID enum");
@@ -803,7 +805,7 @@ HRESULT CGaiaCredentialProvider::GetFieldDescriptorAt(
     *ppcpfd = reinterpret_cast<CREDENTIAL_PROVIDER_FIELD_DESCRIPTOR*>(
         ::CoTaskMemAlloc(sizeof(**ppcpfd)));
     if (*ppcpfd) {
-      **ppcpfd = UNSAFE_TODO(g_field_desc[index]);
+      **ppcpfd = g_field_desc[index];
       // The password field has special greyed out text that is not set through
       // calls to ICredentialProviderCredential::GetStringValue so we need to
       // localize it manually here.

@@ -2,13 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/process/launch.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "base/win/windows_version.h"
@@ -172,18 +177,19 @@ std::string GcpUsingChromeTest::RunProcessAndExtractOutput(
 
   constexpr DWORD kTimeout = 1000;
   std::string output_from_process;
-  char buffer[1024];
+  std::array<char, 1024> buffer;
   for (bool is_done = false; !is_done;) {
-    DWORD length = std::size(buffer) - 1;
+    DWORD length = 0;
 
     DWORD ret = ::WaitForSingleObject(read_handle.get(), kTimeout);
     if (ret == WAIT_OBJECT_0) {
-      if (!::ReadFile(read_handle.get(), buffer, length, &length, nullptr)) {
+      if (!::ReadFile(read_handle.get(), buffer.data(), buffer.size(), &length,
+                      nullptr)) {
         break;
       }
 
-      UNSAFE_TODO(buffer[length]) = 0;
-      output_from_process += buffer;
+      output_from_process.append(
+          base::as_string_view(base::span(buffer).first(length)));
     } else if (ret != WAIT_IO_COMPLETION) {
       break;
     }

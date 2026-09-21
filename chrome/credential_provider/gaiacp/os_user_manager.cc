@@ -14,8 +14,10 @@
 #include <userenv.h>   // For GetUserProfileDirectory()
 #include <wincrypt.h>  // For CryptXXX()
 
+#include <array>
 #include <iomanip>
 #include <memory>
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
@@ -102,7 +104,7 @@ HRESULT OSUserManager::GenerateRandomPassword(wchar_t* password, int length) {
   // is for this machine in order to create one that adheres correctly.  For
   // now will generate a random password that fits typical strong password
   // policies on windows.
-  const unsigned char kValidPasswordChars[] =
+  constexpr std::string_view kValidPasswordChars =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
       "abcdefghijklmnopqrstuvwxyz"
       "`1234567890-="
@@ -144,8 +146,7 @@ HRESULT OSUserManager::GenerateRandomPassword(wchar_t* password, int length) {
         return hr;
       }
 
-      unsigned char c = UNSAFE_TODO(
-          kValidPasswordChars[r % (std::size(kValidPasswordChars) - 1)]);
+      unsigned char c = kValidPasswordChars[r % kValidPasswordChars.size()];
       UNSAFE_TODO(*p++ = c);
       ++cur_length;
       --remaining_length;
