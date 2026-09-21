@@ -40,6 +40,10 @@ bool TestCueTarget::SupportsIntrusivenessImpl(
   return supported_intrusiveness.contains(intrusiveness);
 }
 
+bool TestCueTarget::IsPersistent() const {
+  return is_persistent;
+}
+
 bool TestCueTarget::IsEligible() const {
   return eligible;
 }
