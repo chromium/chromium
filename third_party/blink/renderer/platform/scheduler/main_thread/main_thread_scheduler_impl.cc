@@ -90,7 +90,12 @@ namespace scheduler {
 
 // When within 500ms of a committed load, busy loop more aggressively.
 BASE_FEATURE(kBusyLoopAggressiveAfterCommittedLoad,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 namespace {
 constexpr base::TimeDelta kBusyLoopAggressiveTime = base::Milliseconds(500);

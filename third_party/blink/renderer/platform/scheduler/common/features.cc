@@ -105,7 +105,12 @@ BASE_FEATURE_PARAM(base::TimeDelta,
 // Prevent scaling BusyLoopOnMainThread to its maximum value during compositor
 // driven gestures.
 BASE_FEATURE(kBusyLoopLessWhenCompositorGesture,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 }  // namespace scheduler
 }  // namespace blink
