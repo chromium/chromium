@@ -452,6 +452,7 @@
     "Aim3pEntrypoint": [
         {
             "platforms": [
+                "android",
                 "chromeos",
                 "linux",
                 "mac",

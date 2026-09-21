@@ -990,13 +990,13 @@ const FeatureEntry::FeatureVariation
         {"without holdback", kSearchPrefetchWithoutHoldback, nullptr},
         {"with holdback", kSearchPrefetchWithHoldback, nullptr}};
 
-#if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kAim3pEntrypointDebugEnabled[] = {
     {"Aim3pEntrypointDebug", "true"}};
 
 const FeatureEntry::FeatureVariation kAim3pEntrypointVariations[] = {
     {"with debug config", kAim3pEntrypointDebugEnabled, nullptr}};
 
+#if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kWebUIOmniboxDynamicAiModeButton_AnimOnly[] = {
     {"Omnibox_DynamicAnimation", "true"},
     {"Omnibox_DynamicColorScheme", "false"}};
@@ -9601,13 +9601,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(external_intents::kExternalNavigationDebugLogs)},
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
     {"aim-3p-entrypoint", flag_descriptions::kAim3pEntrypointName,
-     flag_descriptions::kAim3pEntrypointDescription, kOsDesktop,
+     flag_descriptions::kAim3pEntrypointDescription, kOsDesktop | kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kAim3pEntrypoint,
                                     kAim3pEntrypointVariations,
                                     "Aim3pEntrypoint")},
 
+#if !BUILDFLAG(IS_ANDROID)
     {"aim-entry-point-direct-navigation",
      flag_descriptions::kAiModeEntryPointAlwaysNavigatesName,
      flag_descriptions::kAiModeEntryPointAlwaysNavigatesDescription, kOsDesktop,

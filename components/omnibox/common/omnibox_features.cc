@@ -204,8 +204,9 @@ BASE_FEATURE(kOmniboxFuseboxPopupVariations, DISABLED);
 // attached.
 BASE_FEATURE(kOmniboxDisableTabsForCanvas, ENABLED);
 
-// Enables the AIM entrypoint for third party search engines.
-BASE_FEATURE(kAim3pEntrypoint, ENABLED);
+// Enables the AIM entrypoint for third party search engines. Held dark on
+// Android until the Android entrypoint UI is implemented.
+BASE_FEATURE(kAim3pEntrypoint, enable_if(!IS_ANDROID));
 const base::FeatureParam<bool> kAim3pEntrypointDebug{
     &kAim3pEntrypoint, "Aim3pEntrypointDebug", false};
 
@@ -644,6 +645,7 @@ static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kOmniboxFuseboxPopupVariations,
       &kServeJavaCachedZeroSuggest,
       &kAIMSuppressVerbatimMatch,
+      &kAim3pEntrypoint,
       &kResetSuggestionsScroll,
       &kExactMatchFavicons,
       &kStarterPackExpansion,
