@@ -7,15 +7,18 @@
 #include <algorithm>
 #include <atomic>
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/features.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_param_associator.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -283,6 +286,22 @@ std::string CreateCommandLineArgumentFromFeatureList(
   return JoinString(features, ",");
 }
 
+// Returns the synthetic field trial name used to identify a runtime mutation
+// simulated by ScopedFeatureList. In production, this name comes from the
+// runtime-mutable study in the variations seed.
+// TODO(crbug.com/536851701): Let callers specify the study and group names, as
+// well as the params, of the simulated mutation.
+std::string RuntimeMutationTrialName(const Feature& feature) {
+  return StrCat({"RuntimeMutationStudy", feature.name});
+}
+
+// Returns the synthetic group name used for a simulated runtime mutation. In
+// production, this name comes from the experiment within the runtime-mutable
+// study in the variations seed.
+std::string RuntimeMutationGroupName(bool enable) {
+  return enable ? "RuntimeMutationEnabled" : "RuntimeMutationDisabled";
+}
+
 }  // namespace
 
 FeatureRefAndParams::FeatureRefAndParams(const Feature& feature,
@@ -457,6 +476,105 @@ void ScopedFeatureList::InitWithFeatureStates(
     }
   }
   InitWithFeaturesImpl(enabled_features, {}, disabled_features);
+}
+
+// static
+void ScopedFeatureList::MutateRuntimeMutableFeatures(
+    const std::vector<FeatureRef>& features_to_enable,
+    const std::vector<FeatureRef>& features_to_disable) {
+  FeatureList* feature_list = FeatureList::GetInstance();
+  CHECK(feature_list) << "A FeatureList must be registered before mutating "
+                         "runtime-mutable features.";
+
+  // Execution fence required while modifying FeatureList, as in Reset(). It
+  // covers the callbacks as well as the state updates, so that no ThreadPool
+  // task observes the feature state while the batch is only partially applied.
+  TaskEnvironment::ParallelExecutionFence fence(
+      "ScopedFeatureList must mutate features from the test main thread");
+
+  std::vector<FeatureList::RuntimeMutableFeatureUpdate> updates;
+  updates.reserve(features_to_enable.size() + features_to_disable.size());
+
+  // Prepares an update for each requested feature. Anything that would make the
+  // FeatureList decline the mutation is a test setup error, so it is diagnosed
+  // here rather than being silently skipped (as it would be in production).
+  flat_set<FeatureRef> seen_features;
+  auto prepare_updates = [&](const std::vector<FeatureRef>& features,
+                             bool enable) {
+    for (const FeatureRef& feature : features) {
+      CHECK(seen_features.insert(feature).second)
+          << feature->name
+          << " is specified more than once in the same runtime mutation. A "
+             "feature cannot be in both the enable and disable lists, nor "
+             "listed twice in the same list.";
+      CHECK(feature->IsRuntimeMutable())
+          << feature->name
+          << " is not declared as a runtime-mutable feature. Use "
+             "BASE_RUNTIME_MUTABLE_FEATURE() to declare it as one.";
+      CHECK(
+          feature_list->HasRuntimeMutabilityEnabledByFeatureName(feature->name))
+          << feature->name
+          << " does not have runtime mutability enabled. Call "
+             "FeatureList::EnableRuntimeMutability() on a FeatureList and "
+             "install it with InitWithFeatureList() before mutating the "
+             "feature.";
+      CHECK(!feature_list->IsFeatureOverriddenFromCommandLine(feature->name))
+          << feature->name
+          << " is overridden from the command line, which takes precedence "
+             "over runtime mutations. Remove the override (e.g. the enclosing "
+             "ScopedFeatureList::InitWithFeatures() call) to mutate the "
+             "feature at runtime.";
+      // TODO(crbug.com/536851701): Remove this check once runtime mutability
+      // supports enabling features.
+      CHECK(!enable) << "Runtime mutability does not support enabling features "
+                        "yet, so "
+                     << feature->name << " cannot be enabled at runtime.";
+
+      std::optional<FeatureList::RuntimeMutableFeatureUpdate> update =
+          feature_list->PrepareRuntimeMutableFeatureStateUpdate(
+              PassKey(), RuntimeMutationTrialName(*feature),
+              RuntimeMutationGroupName(enable), feature->name,
+              enable ? FeatureList::OVERRIDE_ENABLE_FEATURE
+                     : FeatureList::OVERRIDE_DISABLE_FEATURE);
+      CHECK(update.has_value())
+          << "Failed to prepare a runtime mutation for " << feature->name;
+      updates.push_back(std::move(update).value());
+    }
+  };
+  prepare_updates(features_to_enable, /*enable=*/true);
+  prepare_updates(features_to_disable, /*enable=*/false);
+
+  if (updates.empty()) {
+    return;
+  }
+
+  // Apply the batch in the same 3 phases as
+  // VariationsService::SimulateAndApplyRuntimeMutableChanges(): all
+  // pre-mutation callbacks, then all mutations, then all post-mutation
+  // callbacks. This way, callbacks observe a consistent state: no feature has
+  // been mutated yet during the pre-mutation phase, and all of them have been
+  // mutated during the post-mutation phase.
+  for (auto& update : updates) {
+    update.RunPreMutationCallback();
+  }
+
+  for (auto& update : updates) {
+    update.UpdateState();
+  }
+
+  for (auto& update : updates) {
+    update.RunPostMutationCallback();
+  }
+}
+
+// static
+void ScopedFeatureList::MutateRuntimeMutableFeature(const Feature& feature,
+                                                    bool enabled) {
+  if (enabled) {
+    MutateRuntimeMutableFeatures({feature}, {});
+  } else {
+    MutateRuntimeMutableFeatures({}, {feature});
+  }
 }
 
 void ScopedFeatureList::InitWithFeaturesImpl(

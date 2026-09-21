@@ -608,6 +608,27 @@ FeatureList::PrepareRuntimeMutableFeatureStateUpdate(
     std::string_view group_name,
     std::string_view feature_name,
     OverrideState override_state) {
+  return PrepareRuntimeMutableFeatureStateUpdateImpl(
+      field_trial_name, group_name, feature_name, override_state);
+}
+
+std::optional<FeatureList::RuntimeMutableFeatureUpdate>
+FeatureList::PrepareRuntimeMutableFeatureStateUpdate(
+    base::PassKey<base::test::ScopedFeatureList>,
+    std::string_view field_trial_name,
+    std::string_view group_name,
+    std::string_view feature_name,
+    OverrideState override_state) {
+  return PrepareRuntimeMutableFeatureStateUpdateImpl(
+      field_trial_name, group_name, feature_name, override_state);
+}
+
+std::optional<FeatureList::RuntimeMutableFeatureUpdate>
+FeatureList::PrepareRuntimeMutableFeatureStateUpdateImpl(
+    std::string_view field_trial_name,
+    std::string_view group_name,
+    std::string_view feature_name,
+    OverrideState override_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // For V0 of runtime mutability, we only support disabling of features. This

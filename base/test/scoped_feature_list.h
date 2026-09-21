@@ -184,6 +184,45 @@ class ScopedFeatureList final {
   //                    `true` for force-enabled).
   void InitWithFeatureStates(const flat_map<FeatureRef, bool>& feature_states);
 
+  // Simulates a mid-session mutation of runtime-mutable features, the way the
+  // variations service does in production when a newly fetched seed changes
+  // the state of a runtime-mutable feature. This is meant for authors of
+  // runtime-mutable features to exercise their feature's behavior when its
+  // state flips while the process is running.
+  //
+  // `features_to_enable` and `features_to_disable` are applied as a single
+  // batch, mirroring production ordering:
+  //   1. All pre-mutation callbacks are run (features still report their old
+  //      state).
+  //   2. All feature states are mutated.
+  //   3. All post-mutation callbacks are run (features report their new state).
+  //
+  // CHECK-fails if any requested mutation cannot be applied, i.e. if:
+  //  - a feature is listed more than once, e.g. in both `features_to_enable`
+  //    and `features_to_disable`;
+  //  - the feature was not declared with BASE_RUNTIME_MUTABLE_FEATURE;
+  //  - the feature was not registered via
+  //    `FeatureList::EnableRuntimeMutability()` before the FeatureList was set
+  //    as the global instance (in tests, typically by building a FeatureList
+  //    manually and passing it to `InitWithFeatureList()`);
+  //  - the feature's state is pinned by a command-line override, which takes
+  //    precedence over runtime mutations;
+  //  - the requested state is not supported yet (only disabling features is
+  //    supported at the moment, so `features_to_enable` must be empty).
+  //
+  // Note: unlike production, this does not simulate the corresponding
+  // `base::RuntimeFieldTrialOverrides` update; only the feature state (and its
+  // associated runtime trial name) is mutated.
+  //
+  // TODO(crbug.com/536851701): Support specifying field trial params for the
+  // features being mutated, once runtime mutability supports params.
+  static void MutateRuntimeMutableFeatures(
+      const std::vector<FeatureRef>& features_to_enable,
+      const std::vector<FeatureRef>& features_to_disable);
+
+  // Convenience wrapper around the above for mutating a single feature.
+  static void MutateRuntimeMutableFeature(const Feature& feature, bool enabled);
+
  private:
   using PassKey = base::PassKey<ScopedFeatureList>;
 

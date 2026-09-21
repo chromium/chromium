@@ -4,14 +4,22 @@
 
 #include "base/test/scoped_feature_list.h"
 
+#include <functional>
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/features.h"
+#include "base/functional/callback.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/strcat.h"
+#include "base/test/bind.h"
+#include "base/test/gtest_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base::test {
@@ -21,6 +29,12 @@ namespace {
 BASE_FEATURE(kTestFeature1, FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kTestFeature2, FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kTestFeature3, FEATURE_ENABLED_BY_DEFAULT);
+
+// Features used to test simulating runtime mutations.
+BASE_RUNTIME_MUTABLE_FEATURE(kTestRuntimeMutableFeature1,
+                             FEATURE_ENABLED_BY_DEFAULT);
+BASE_RUNTIME_MUTABLE_FEATURE(kTestRuntimeMutableFeature2,
+                             FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(bool,
                    kTestFeatureParam1,
@@ -660,7 +674,9 @@ TEST_F(ScopedFeatureListTest, ScopedFeatureListIsNoopWhenNotInitialized) {
 
   // A ScopedFeatureList on which Init() is not called should not reset things
   // when going out of scope.
-  { test::ScopedFeatureList feature_list2; }
+  {
+    test::ScopedFeatureList feature_list2;
+  }
 
   ExpectFeatures("*TestFeature1", std::string());
 }
@@ -742,6 +758,145 @@ TEST_F(ScopedFeatureListTest, FeatureParameterCache) {
   feature_list_to_override_cached_parameter.InitAndEnableFeatureWithParameters(
       kTestFeature1, {{kTestFeatureParam1.name, "true"}});
   ASSERT_TRUE(kTestFeatureParam1.Get());
+}
+
+TEST_F(ScopedFeatureListTest, MutateRuntimeMutableFeatures) {
+  // Records "<phase> <feature> <state observed by the callback>" for each
+  // callback invocation, in the order they are run.
+  std::vector<std::string> events;
+  auto record_callback = [&events](const char* phase) {
+    return BindLambdaForTesting(
+        [&events, phase](std::reference_wrapper<const Feature> feature,
+                         std::string_view trial_name,
+                         std::string_view group_name,
+                         FeatureList::OverrideState state) {
+          // Every callback is passed the synthetic study/group identifying the
+          // simulated mutation, along with the state being applied.
+          EXPECT_EQ(StrCat({"RuntimeMutationStudy", feature.get().name}),
+                    trial_name);
+          EXPECT_EQ("RuntimeMutationDisabled", group_name);
+          EXPECT_EQ(FeatureList::OVERRIDE_DISABLE_FEATURE, state);
+
+          events.push_back(
+              StrCat({phase, " ", feature.get().name, " ",
+                      FeatureList::IsEnabled(feature.get()) ? "on" : "off"}));
+        });
+  };
+
+  ScopedFeatureList scoped_feature_list;
+  {
+    auto feature_list = std::make_unique<FeatureList>();
+    feature_list->EnableRuntimeMutability(kTestRuntimeMutableFeature1,
+                                          record_callback("pre"),
+                                          record_callback("post"));
+    feature_list->EnableRuntimeMutability(kTestRuntimeMutableFeature2,
+                                          record_callback("pre"),
+                                          record_callback("post"));
+    scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+  }
+
+  ASSERT_TRUE(FeatureList::IsEnabled(kTestRuntimeMutableFeature1));
+  ASSERT_TRUE(FeatureList::IsEnabled(kTestRuntimeMutableFeature2));
+
+  ScopedFeatureList::MutateRuntimeMutableFeatures(
+      /*features_to_enable=*/{},
+      /*features_to_disable=*/{kTestRuntimeMutableFeature1,
+                               kTestRuntimeMutableFeature2});
+
+  EXPECT_FALSE(FeatureList::IsEnabled(kTestRuntimeMutableFeature1));
+  EXPECT_FALSE(FeatureList::IsEnabled(kTestRuntimeMutableFeature2));
+
+  // As in production, the whole batch is applied in 3 phases: all pre-mutation
+  // callbacks run before any feature is mutated (so both features still report
+  // "on"), and all post-mutation callbacks run after every feature has been
+  // mutated (so both features report "off").
+  EXPECT_THAT(events,
+              ::testing::ElementsAre("pre TestRuntimeMutableFeature1 on",
+                                     "pre TestRuntimeMutableFeature2 on",
+                                     "post TestRuntimeMutableFeature1 off",
+                                     "post TestRuntimeMutableFeature2 off"));
+}
+
+TEST_F(ScopedFeatureListTest, MutateRuntimeMutableFeature) {
+  ScopedFeatureList scoped_feature_list;
+  {
+    auto feature_list = std::make_unique<FeatureList>();
+    feature_list->EnableRuntimeMutability(
+        kTestRuntimeMutableFeature1,
+        FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+    scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+  }
+
+  ASSERT_TRUE(FeatureList::IsEnabled(kTestRuntimeMutableFeature1));
+
+  ScopedFeatureList::MutateRuntimeMutableFeature(kTestRuntimeMutableFeature1,
+                                                 /*enabled=*/false);
+  EXPECT_FALSE(FeatureList::IsEnabled(kTestRuntimeMutableFeature1));
+}
+
+TEST_F(ScopedFeatureListTest, MutateRuntimeMutableFeatureWithoutMutability) {
+  ScopedFeatureList scoped_feature_list;
+  {
+    // Note: runtime mutability is intentionally not enabled for the feature.
+    scoped_feature_list.InitWithFeatureList(std::make_unique<FeatureList>());
+  }
+
+  EXPECT_CHECK_DEATH(ScopedFeatureList::MutateRuntimeMutableFeature(
+      kTestRuntimeMutableFeature1, /*enabled=*/false));
+}
+
+TEST_F(ScopedFeatureListTest, MutateRuntimeMutableFeatureOverriddenOnCmdLine) {
+  ScopedFeatureList scoped_feature_list;
+  {
+    auto feature_list = std::make_unique<FeatureList>();
+    feature_list->InitFromCommandLine(kTestRuntimeMutableFeature1.name, "");
+    feature_list->EnableRuntimeMutability(
+        kTestRuntimeMutableFeature1,
+        FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+    scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+  }
+
+  // The command-line override takes precedence over runtime mutations, so the
+  // mutation would silently have no effect.
+  EXPECT_CHECK_DEATH(ScopedFeatureList::MutateRuntimeMutableFeature(
+      kTestRuntimeMutableFeature1, /*enabled=*/false));
+}
+
+TEST_F(ScopedFeatureListTest, MutateRuntimeMutableFeatureEnableUnsupported) {
+  ScopedFeatureList scoped_feature_list;
+  {
+    auto feature_list = std::make_unique<FeatureList>();
+    feature_list->EnableRuntimeMutability(
+        kTestRuntimeMutableFeature1,
+        FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+    scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+  }
+
+  // Runtime mutability only supports disabling features for now.
+  EXPECT_CHECK_DEATH(ScopedFeatureList::MutateRuntimeMutableFeature(
+      kTestRuntimeMutableFeature1, /*enabled=*/true));
+}
+
+TEST_F(ScopedFeatureListTest, MutateRuntimeMutableFeatureListedTwice) {
+  ScopedFeatureList scoped_feature_list;
+  {
+    auto feature_list = std::make_unique<FeatureList>();
+    feature_list->EnableRuntimeMutability(
+        kTestRuntimeMutableFeature1,
+        FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+    scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+  }
+
+  // A feature cannot be both enabled and disabled by the same mutation.
+  EXPECT_CHECK_DEATH(ScopedFeatureList::MutateRuntimeMutableFeatures(
+      /*features_to_enable=*/{kTestRuntimeMutableFeature1},
+      /*features_to_disable=*/{kTestRuntimeMutableFeature1}));
+
+  // ... nor listed twice within the same list.
+  EXPECT_CHECK_DEATH(ScopedFeatureList::MutateRuntimeMutableFeatures(
+      /*features_to_enable=*/{},
+      /*features_to_disable=*/{kTestRuntimeMutableFeature1,
+                               kTestRuntimeMutableFeature1}));
 }
 
 }  // namespace base::test

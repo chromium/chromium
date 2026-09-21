@@ -49,6 +49,10 @@ namespace internal {
 struct RuntimeMutableFeatureState;
 }  // namespace internal
 
+namespace test {
+class ScopedFeatureList;
+}  // namespace test
+
 #if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 // DCHECKs have been built-in, and are configurable at run-time to be fatal, or
 // not, via a DcheckIsFatal feature. We define the Feature here since it is
@@ -360,6 +364,19 @@ class BASE_EXPORT FeatureList {
   [[nodiscard]] std::optional<RuntimeMutableFeatureUpdate>
   PrepareRuntimeMutableFeatureStateUpdate(
       base::PassKey<variations::VariationsService>,
+      std::string_view field_trial_name,
+      std::string_view group_name,
+      std::string_view feature_name,
+      OverrideState override_state);
+
+  // Same as above, but for tests that simulate runtime mutations without
+  // running the real variations machinery. Tests should not call this directly;
+  // use `base::test::ScopedFeatureList::MutateRuntimeMutableFeatures()`, which
+  // runs the same 3-phase sequence that the variations service does in
+  // production.
+  [[nodiscard]] std::optional<RuntimeMutableFeatureUpdate>
+  PrepareRuntimeMutableFeatureStateUpdate(
+      base::PassKey<base::test::ScopedFeatureList>,
       std::string_view field_trial_name,
       std::string_view group_name,
       std::string_view feature_name,
@@ -687,6 +704,14 @@ class BASE_EXPORT FeatureList {
   std::optional<OverrideState> MaybeGetRuntimeOverrideState(
       const Feature& feature,
       Feature::FeatureStateCache current_cached_value) const;
+
+  // Common implementation for the PassKey-gated
+  // PrepareRuntimeMutableFeatureStateUpdate() overloads.
+  [[nodiscard]] std::optional<RuntimeMutableFeatureUpdate>
+  PrepareRuntimeMutableFeatureStateUpdateImpl(std::string_view field_trial_name,
+                                              std::string_view group_name,
+                                              std::string_view feature_name,
+                                              OverrideState override_state);
 
   // Returns the non-runtime override state for the given |feature_name|,
   // without falling back to any default state associated with the feature.
