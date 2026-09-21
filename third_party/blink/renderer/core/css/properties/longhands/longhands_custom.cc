@@ -935,6 +935,7 @@ void BackdropFilter::ApplyValue(StyleResolverState& state,
   state.StyleBuilder().SetBackdropFilter(
       StyleBuilderConverter::ConvertFilterOperations(state, value,
                                                      PropertyID()));
+  state.StyleBuilder().ClearAnimatedSource(CSSPropertyID::kBackdropFilter);
 }
 
 bool BackdropFilter::IsAffectedByCurrentColor(
@@ -4181,6 +4182,7 @@ void Filter::ApplyValue(StyleResolverState& state,
                         ValueModeFlags) const {
   state.StyleBuilder().SetFilter(StyleBuilderConverter::ConvertFilterOperations(
       state, value, PropertyID()));
+  state.StyleBuilder().ClearAnimatedSource(CSSPropertyID::kFilter);
 }
 
 bool Filter::IsAffectedByCurrentColor(const ComputedStyle& style) const {

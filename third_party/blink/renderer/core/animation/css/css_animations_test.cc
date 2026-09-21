@@ -3694,6 +3694,14 @@ TEST_F(AnimatedSourceTest, RezoomedInheritHasUntrackedDependencies) {
   EXPECT_TRUE(source.has_untracked_dependencies);
 }
 
+// The style adjuster drops backdrop-filter on the root element.
+TEST_F(AnimatedSourceTest, RootElementBackdropFilterHasNoSource) {
+  Element* root = GetDocument().documentElement();
+  Animate(root, CSSPropertyID::kBackdropFilter, "invert(1)");
+  EXPECT_FALSE(SourceFor(root, CSSPropertyID::kBackdropFilter)
+                   .animated_source.IsValid());
+}
+
 TEST_P(CSSAnimationsTest, AttrTaintedRegisteredPropertyNeutralKeyframe) {
   SetBodyInnerHTML(R"HTML(
     <style>

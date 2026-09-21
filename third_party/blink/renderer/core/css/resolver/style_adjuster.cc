@@ -1238,6 +1238,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     if (is_document_element && builder.HasBackdropFilter() &&
         element->GetDocument().IsInMainFrame()) {
       builder.SetBackdropFilter(FilterOperations());
+      builder.ClearAnimatedSource(CSSPropertyID::kBackdropFilter);
     }
   }
 
