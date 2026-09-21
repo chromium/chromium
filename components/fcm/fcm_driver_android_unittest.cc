@@ -43,7 +43,7 @@ class FcmDriverAndroidTest : public ::testing::Test {
   ~FcmDriverAndroidTest() override = default;
 
  protected:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   NiceMock<MockFcmAppHandler> handler_;
 };
 
