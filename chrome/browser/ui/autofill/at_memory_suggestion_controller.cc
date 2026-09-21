@@ -135,8 +135,6 @@ void AtMemorySuggestionController::Show(
     AutoselectFirstSuggestion autoselect_first_suggestion,
     AutofillSuggestionsIgnoreFocusLoss ignore_focus_loss,
     std::u16string search_bar_initial_value) {
-  // TODO(crbug.com/535486238): Plumb search_bar_initial_value through to the
-  // UI.
   ui_session_id_ = session_id;
   suggestions_ = std::move(suggestions);
   trigger_source_ = trigger_source;
