@@ -63,6 +63,12 @@ impl AssociatedState {
         }))
     }
 
+    /// Returns true if the peer endpoint is still alive (either pending or
+    /// bound).
+    fn peer_is_alive(&self, shared: &SharedAssociatedState) -> bool {
+        Arc::strong_count(shared) > 1 || Arc::strong_count(&self.router) > 1
+    }
+
     /// Register a new interface ID with the router, and store a handle for
     /// that ID in the shared state.
     ///
@@ -70,25 +76,29 @@ impl AssociatedState {
     /// endpoint. It updates the shared state, meaning that the _other_ endpoint
     /// will be the recipient of the newly created handle.
     ///
-    /// Returns the interface ID of the newly created handle, to be serialized.
+    /// Returns the interface ID of the newly created handle, to be serialized,
+    /// or `None` if the other endpoint has already been closed.
     pub(crate) fn register_with_router(
         shared_state: SharedAssociatedState,
         router_ref: &impl Registrar,
-    ) -> InterfaceId {
+    ) -> Option<InterfaceId> {
+        let mut guard = shared_state.lock().unwrap();
+        if !guard.peer_is_alive(&shared_state) {
+            return None;
+        }
         // This removes the endpoint info from the shared state. This is fine:
         // 1. If it was present, the other side is already finished with the
         //    shared state
         // 2. If it was absent, we lost nothing (and the other side will see
         //    that `router` is present so it won't try to set it later).
-        let mut shared_state = shared_state.lock().unwrap();
         let handle = router_ref
-            .register_new_endpoint(None, shared_state.endpoint_info.take())
+            .register_new_endpoint(None, guard.endpoint_info.take())
             .expect("Multiplex router should never fail to register if we don't provide an ID");
         let interface_id = handle.interface_id();
-        shared_state.router.set(handle).unwrap_or_else(|_| {
+        guard.router.set(handle).unwrap_or_else(|_| {
             panic!("Exactly one endpoint in each pair should be sent in a message, not both")
         });
-        return interface_id;
+        Some(interface_id)
     }
 }
 
@@ -153,17 +163,15 @@ where
         );
     }
 
-    /// Create a new pair of C++-managed associated endpoints where one half is
-    /// managed by Rust and the other half is passed to C++.
+    /// Create a new pair of associated endpoints where one half is managed by
+    /// Rust and the other half can be passed to C++.
     ///
-    /// Unlike `new_pair`, which creates two unassociated Rust endpoints,
+    /// Unlike `new_pair`, which creates two Rust endpoints,
     /// `new_pair_cpp` creates a pair of entangled C++ endpoints.
     ///
-    /// The left one is wrapped in a Rust type and can be treated like any other
-    /// `PendingAssociatedEndpoint`, except that it cannot be serialized.
-    ///
-    /// The right one is meant to be serialized in a Mojo message that's sent
-    /// via a C++-managed pipe.
+    /// The left endpoint is wrapped in a Rust `PendingAssociatedEndpoint`.
+    /// The right endpoint is returned as a C++ pointer so it can be passed
+    /// to C++.
     pub fn new_pair_cpp() -> (Self, UniquePtr<CxxPendingAssociatedEndpoint>) {
         let mut rust_adapter = UniquePtr::null();
         let mut cpp_adapter = UniquePtr::null();
@@ -179,7 +187,6 @@ where
     /// Create a new pending endpoint backed by a C++ pipe endpoint.
     ///
     /// Panics if `cpp_endpoint` is null.
-    /// The endpoint returned from this function cannot be serialized.
     pub fn from_cpp(cpp_endpoint: UniquePtr<CxxPendingAssociatedEndpoint>) -> Self {
         let cpp_handle =
             CppRouterHandle::new(cpp_endpoint).expect("Null CxxPendingAssociatedEndpoint");
@@ -194,7 +201,7 @@ where
     /// messages) will panic.
     pub fn ready_for_messages(&self) -> bool {
         match &self.state {
-            AssociatedEndpointState::Singleton(_) => true,
+            AssociatedEndpointState::Singleton(handle) => handle.ready_for_messages(),
             AssociatedEndpointState::Shared(shared_state) => {
                 shared_state.lock().unwrap().router.get().is_some()
             }

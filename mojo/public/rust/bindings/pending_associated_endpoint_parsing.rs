@@ -48,7 +48,7 @@ use crate::pending_associated_endpoint::{
 /// `RouterHandle`, since sometimes during parsing/desparsing we don't
 /// have an actual handle but we still have enough information to register an
 /// endpoint.
-pub trait Registrar: Send + Sync {
+pub trait Registrar: Send {
     // The trait needs to be public so we can name it in generated bindings code
     // (as part of `MojomParse<dyn Registrar>`), but we don't actually need to
     // expose any more information about it than the name.
@@ -121,11 +121,25 @@ where
         // Specifically, we need to register our peer endpoint with the router,
         // and get back the interface ID that was assigned to it so we can
         // register ourselves on the other side of the pipe.
-        let AssociatedEndpointState::Shared(shared_state) = self.state else {
-            panic!("Cannot serialize an associated interface which has already been sent through a message pipe.")
+        let interface_id = match self.state {
+            AssociatedEndpointState::Shared(shared_state) => {
+                // TODO(crbug.com/556744520): Handle failure gracefully. Simply
+                // sending a disconnect notification now is
+                // wrong because it will be sent too early
+                // and arrive _before_ the interface that's supposed to be
+                // disconnected.
+                AssociatedState::register_with_router(shared_state, context).expect(
+                    "Cannot serialize an associated endpoint whose peer was already dropped",
+                )
+            }
+            AssociatedEndpointState::Singleton(AssociatedRouterHandle::Cpp(_)) => {
+                panic!("Cannot serialize an associated endpoint that is already associated with a message pipe")
+            }
+            AssociatedEndpointState::Singleton(AssociatedRouterHandle::Rust(_)) => {
+                panic!("Cannot serialize an associated endpoint that is already associated with a message pipe")
+            }
         };
 
-        let interface_id = AssociatedState::register_with_router(shared_state, context);
         // The primary interface ID will never be associated, and
         // `INVALID_INTERFACE_ID` used as a sentinel.
         assert!(
