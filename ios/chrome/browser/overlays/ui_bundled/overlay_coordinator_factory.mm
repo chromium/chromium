@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/translate/translate_infobar_modal_overlay_coordinator.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_coordinator.h"
 #import "ios/chrome/browser/overlays/ui_bundled/web_content_area/alerts/alert_overlay_coordinator.h"
+#import "ios/chrome/browser/overlays/ui_bundled/web_content_area/spinners/spinning_overlay_coordinator.h"
 
 @implementation OverlayRequestCoordinatorFactory {
   raw_ptr<Browser> _browser;
@@ -80,6 +81,10 @@
       // converted to no longer use enums.
       NOTREACHED() << "Received unsupported modality.";
     case OverlayModality::kWebContentArea:
+      if ([SpinningOverlayCoordinator requestSupport]->IsRequestSupported(
+              request)) {
+        return [SpinningOverlayCoordinator class];
+      }
       return [AlertOverlayCoordinator class];
     case OverlayModality::kWatermark:
       NOTIMPLEMENTED();

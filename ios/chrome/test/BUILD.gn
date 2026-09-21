@@ -485,6 +485,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/overlays/ui_bundled/infobar_modal/translate:unit_tests",
     "//ios/chrome/browser/overlays/ui_bundled/test_modality:unit_tests",
     "//ios/chrome/browser/overlays/ui_bundled/web_content_area/alerts:unit_tests",
+    "//ios/chrome/browser/overlays/ui_bundled/web_content_area/spinners:unit_tests",
     "//ios/chrome/browser/overscroll_actions/model:unit_tests",
     "//ios/chrome/browser/page_info/certificate/model:unit_tests",
     "//ios/chrome/browser/page_info/coordinator:unit_tests",
