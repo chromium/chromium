@@ -26,7 +26,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-REQUIRED_CDDLCONV_VERSION = "0.1.10"
+REQUIRED_CDDLCONV_VERSION = "0.1.12"
 
 SPECS = [
     {
@@ -181,8 +181,8 @@ def run_cddlconv_and_write(cddl_path: Path, output_path: Path, format_type: str 
         if format_type == "zod":
             if "EmptyResultSchema" in content:
                 content = content.replace(
-                    "import z from 'zod';",
-                    "import z from 'zod';\nimport {EmptyResultSchema} from './webdriver-bidi.js';",
+                    "import * as z from 'zod';",
+                    "import * as z from 'zod';\nimport {EmptyResultSchema} from './webdriver-bidi.js';",
                 )
         else:
             if "EmptyResult" in content:
