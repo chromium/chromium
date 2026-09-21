@@ -75,4 +75,14 @@ suite('TabGroupsDelegateTest', () => {
     assertFalse(dot.filled);
     assertEquals(TabGroupDotSize.LARGE, dot.size);
   });
+
+  test('opens tab group when item is clicked', async () => {
+    const items = await delegate.getItems();
+    assertEquals(3, items.length);
+
+    delegate.onItemClick(items[1]!);
+
+    assertEquals(1, mockHandler.getCallCount('openTabGroup'));
+    assertEquals(sampleGroups[1]!.id, mockHandler.getArgs('openTabGroup')[0]);
+  });
 });

@@ -109,7 +109,7 @@ void OrganizerPanelUI::CreatePageHandler(
         receiver) {
   tab_groups_organizer_page_handler_ =
       std::make_unique<TabGroupsOrganizerPageHandler>(
-          std::move(receiver), Profile::FromWebUI(web_ui()));
+          std::move(receiver), web_ui()->GetWebContents());
 }
 
 void OrganizerPanelUI::CreatePageHandler(

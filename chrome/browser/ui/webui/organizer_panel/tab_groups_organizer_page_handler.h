@@ -10,7 +10,9 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-class Profile;
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace tab_groups {
 class TabGroupSyncService;
@@ -22,7 +24,7 @@ class TabGroupsOrganizerPageHandler
   TabGroupsOrganizerPageHandler(
       mojo::PendingReceiver<
           organizer_panel::mojom::TabGroupsOrganizerPageHandler> receiver,
-      Profile* profile);
+      content::WebContents* web_contents);
   TabGroupsOrganizerPageHandler(const TabGroupsOrganizerPageHandler&) = delete;
   TabGroupsOrganizerPageHandler& operator=(
       const TabGroupsOrganizerPageHandler&) = delete;
@@ -30,10 +32,12 @@ class TabGroupsOrganizerPageHandler
 
   // organizer_panel::mojom::TabGroupsOrganizerPageHandler:
   void GetTabGroups(GetTabGroupsCallback callback) override;
+  void OpenTabGroup(const base::Uuid& id) override;
 
  private:
   mojo::Receiver<organizer_panel::mojom::TabGroupsOrganizerPageHandler>
       receiver_;
+  raw_ptr<content::WebContents> web_contents_;
   raw_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service_;
 };
 

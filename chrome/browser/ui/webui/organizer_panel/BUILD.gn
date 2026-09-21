@@ -44,6 +44,7 @@ source_set("organizer_panel") {
     "//chrome/browser/ui/tabs/saved_tab_groups",
     "//chrome/browser/ui/webui:favicon_source",
     "//chrome/browser/ui/webui:theme_source",
+    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/metrics_reporter",
     "//chrome/browser/ui/webui/tab_search",
     "//chrome/common",

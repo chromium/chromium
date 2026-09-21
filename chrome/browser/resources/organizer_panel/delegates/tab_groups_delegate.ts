@@ -5,6 +5,7 @@
 import '/tab_group_shared/tab_group_dot.js';
 
 import {CrUrlListItemSize} from '//resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
+import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import {TabGroupDotSize} from '/tab_group_shared/tab_group_dot.js';
@@ -29,7 +30,11 @@ export class TabGroupsDelegate implements
     return tabGroups.map(group => this.tabGroupToSectionItem_(group));
   }
 
-  onItemClick(_item: OrganizerListSectionItem<TabGroup>) {}
+  onItemClick(item: OrganizerListSectionItem<TabGroup>) {
+    const data = item.data;
+    assert(data);
+    this.browserProxy_.handler.openTabGroup(data.id);
+  }
 
   private tabGroupToSectionItem_(group: TabGroup):
       OrganizerListSectionItem<TabGroup> {

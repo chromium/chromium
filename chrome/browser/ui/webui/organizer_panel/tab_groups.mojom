@@ -19,6 +19,10 @@ struct TabGroup {
 interface TabGroupsOrganizerPageHandler {
   // Get the list of tab groups that should be displayed in the organizer panel.
   GetTabGroups() => (array<TabGroup> tab_groups);
+
+  // Open the tab group with the given ID in the tab strip, or highlight it if
+  // already open.
+  OpenTabGroup(mojo_base.mojom.Uuid id);
 };
 
 // Factory interface to bootstrap communication between WebUI and browser.
