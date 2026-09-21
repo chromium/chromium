@@ -176,6 +176,13 @@ void DisplayAdElementMonitor::DidFinishLifecycleUpdate(
 
   LocalFrame* frame = element_->GetDocument().GetFrame();
   DCHECK(frame);
+  const LocalFrame& local_root_main_frame = frame->LocalFrameRoot();
+
+  if (PaintTiming::From(*(local_root_main_frame.GetDocument()))
+          .FirstContentfulPaint()
+          .is_null()) {
+    return;
+  }
 
   // We use this lifecycle update to check the "Highlight ads" settings, which
   // are toggled via the internals page and DevTools. If the combined state
@@ -190,14 +197,6 @@ void DisplayAdElementMonitor::DidFinishLifecycleUpdate(
     if (auto* layout_object = element_->GetLayoutObject()) {
       layout_object->SetShouldDoFullPaintInvalidation();
     }
-  }
-
-  const LocalFrame& local_root_main_frame = frame->LocalFrameRoot();
-
-  if (PaintTiming::From(*(local_root_main_frame.GetDocument()))
-          .FirstContentfulPaint()
-          .is_null()) {
-    return;
   }
 
   gfx::Rect rect_to_report;

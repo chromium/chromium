@@ -111,8 +111,8 @@ class CORE_EXPORT DisplayAdElementMonitor final
   std::optional<StickyAdMeasurement> sticky_ad_measurement_;
 
   // Caches the last known value of the DevTools "Highlight ads" setting. This
-  // value remains `false` if the element is not eligible for monitoring (e.g.,
-  // a nested ad).
+  // value remains `false` prior to First Contentful Paint or if the element is
+  // not eligible for monitoring (e.g., a nested ad).
   bool should_highlight_ = false;
 
   base::TimeTicks last_overlay_check_time_;

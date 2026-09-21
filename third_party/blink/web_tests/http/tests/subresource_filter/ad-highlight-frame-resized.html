@@ -1,18 +1,21 @@
 <!DOCTYPE html>
 <html>
 <meta name=fuzzy content="maxDifference=0-3; totalPixels=0-3000">
-<head><script src="resources/ad-iframe-writer.js"></script></head>
+<head><script src="resources/ad-testharness.js"></script></head>
 <body>
+<div style="position:fixed; top:0; left:0; color:white; z-index:-1;">FCP</div>
 <script type="text/javascript">
 if (window.testRunner) {
   testRunner.setHighlightAds();
 }
 
-ad_frame = createAdFrame();
+ad_frame = appendAdFrameTo(document.body);
 ad_frame.width = 100;
 ad_frame.height = 200;
 
-ad_frame.onload = function () {
+ad_frame.onload = async function () {
+  await waitForFirstContentfulPaint();
+
   // Resize the frame to verify that the highlight is also resized.
   ad_frame.width = 300;
 

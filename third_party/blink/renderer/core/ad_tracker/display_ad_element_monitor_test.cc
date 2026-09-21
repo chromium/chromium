@@ -907,4 +907,32 @@ TEST_F(DisplayAdElementMonitorTest,
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kStickyVideoAdDetected));
 }
 
+TEST_F(DisplayAdElementMonitorTest, HighlightAdsRequiresFirstContentfulPaint) {
+  frame_test_helpers::LoadHTMLString(helper_.LocalMainFrame(), R"(
+    <img id="ad" style="position:absolute; left:100px; top:10px; width:300px; height:250px;">
+  )",
+                                     WebURL(KURL("https://example.com")));
+  UpdateLifecycle();
+
+  auto* ad =
+      To<HTMLImageElement>(GetDocument().getElementById(AtomicString("ad")));
+
+  EXPECT_CALL(MockClient(),
+              OnMainFrameAdRectangleChanged(testing::_, testing::_))
+      .Times(testing::AnyNumber());
+
+  ad->SetIsAdRelated(NoProvenance{});
+  GetDocument().GetPage()->GetSettings().SetHighlightAds(true);
+  UpdateLifecycle();
+
+  // Prior to First Contentful Paint, the ad should not be highlighted.
+  EXPECT_FALSE(ad->ShouldHighlightAd());
+
+  // Once First Contentful Paint occurs, the ad should be highlighted.
+  MarkFirstContentfulPaint();
+  UpdateLifecycle();
+
+  EXPECT_TRUE(ad->ShouldHighlightAd());
+}
+
 }  // namespace blink

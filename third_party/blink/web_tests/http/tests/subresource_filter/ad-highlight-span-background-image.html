@@ -1,7 +1,11 @@
 <!DOCTYPE html>
 <html>
 <meta name=fuzzy content="maxDifference=0-3; totalPixels=0-15000">
+<head>
+<script src="resources/ad-testharness.js"></script>
+</head>
 <body>
+<div style="position:fixed; top:0; left:0; color:white; z-index:-1;">FCP</div>
 <script type="text/javascript">
 if (window.testRunner) {
   testRunner.setHighlightAds();
@@ -15,7 +19,7 @@ const preloader = new Image();
 
 // Define the onload callback for the preloader.
 // This fires when the image is downloaded and decoded.
-preloader.onload = function () {
+preloader.onload = async function () {
   // Now that the image is loaded, create the span.
   const span = document.createElement('span');
 
@@ -25,6 +29,8 @@ preloader.onload = function () {
   span.style.backgroundImage = "url(resources/alpha.png)";
 
   document.body.appendChild(span);
+
+  await waitForFirstContentfulPaint();
 
   // Finish the test after the ad highlight is drawn.
   requestAnimationFrame(function() {
@@ -37,6 +43,8 @@ preloader.onload = function () {
 
 preloader.src = "resources/alpha.png";
 
+if (window.testRunner)
+  testRunner.waitUntilDone();
 </script>
 </body>
 </html>

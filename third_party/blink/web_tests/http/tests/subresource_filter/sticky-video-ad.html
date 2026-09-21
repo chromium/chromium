@@ -15,6 +15,7 @@ p {
 </style>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
+<script src="resources/ad-testharness.js"></script>
 </head>
 <body marginwidth="0" marginheight="0">
 <!-- To trigger the first contentful paint at the very start -->
@@ -22,27 +23,6 @@ p {
 <!-- To be positioned further down in the main page to make the page scrollable -->
 <div class="bottom"></div>
 <script>
-const kStickyVideoAdDetected = 6023;
-
-function waitForFirstContentfulPaint() {
-  return new Promise(resolve => {
-    if (performance.getEntriesByName('first-contentful-paint').length > 0) {
-      resolve();
-    } else {
-      new PerformanceObserver((list, observer) => {
-        if (list.getEntriesByName('first-contentful-paint').length > 0) {
-          observer.disconnect();
-          resolve();
-        }
-      }).observe({type: 'paint', buffered: true});
-    }
-  });
-}
-
-function forceLayoutUpdate() {
-  return new Promise((resolve) => requestAnimationFrame(() => { setTimeout(() => { resolve(); }) }));
-}
-
 function waitForVideoMetadata(video) {
   return new Promise((resolve, reject) => {
     if (video.readyState >= 1) {
