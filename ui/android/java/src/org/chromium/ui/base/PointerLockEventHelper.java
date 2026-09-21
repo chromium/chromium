@@ -105,10 +105,10 @@ public final class PointerLockEventHelper {
                             && event.getActionMasked() != MotionEvent.ACTION_POINTER_UP
                             && event.getActionMasked() != MotionEvent.ACTION_POINTER_DOWN);
         } else if (event.isFromSource(InputDevice.SOURCE_MOUSE_RELATIVE)) {
-            // Captured mouse events report this source, and contain relative (delta) coordinates.
+            // Captured mouse events report relative (delta) coordinates.
             float scale = getScaleFactor();
-            offsetX = event.getX() * scale;
-            offsetY = event.getY() * scale;
+            offsetX = getAccumulatedRelativeDelta(event, MotionEvent.AXIS_X) * scale;
+            offsetY = getAccumulatedRelativeDelta(event, MotionEvent.AXIS_Y) * scale;
         } else {
             // Unexpected source
             return event;
@@ -304,6 +304,22 @@ public final class PointerLockEventHelper {
             case Surface.ROTATION_270 -> offsetX;
             default -> offsetY; // unreachable
         };
+    }
+
+    // High-polling-rate mice can produce several samples before Android dispatches one
+    // MotionEvent. Earlier samples are stored in the event's history and each one is an
+    // independent delta, so include all of them before converting the event to an absolute mouse
+    // position.
+    private static float getAccumulatedRelativeDelta(MotionEvent event, int axis) {
+        if (!UiAndroidFeatureList.sPointerLockMouseScaling.isEnabled()) {
+            return event.getAxisValue(axis);
+        }
+
+        float delta = 0.0f;
+        for (int h = 0; h < event.getHistorySize(); h++) {
+            delta += event.getHistoricalAxisValue(axis, /* pointerIndex= */ 0, h);
+        }
+        return delta + event.getAxisValue(axis);
     }
 
     // Scaling multiplier for captured physical mouse movement (https://crbug.com/490206349). When
