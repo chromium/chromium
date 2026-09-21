@@ -1121,6 +1121,12 @@ BASE_FEATURE(kAutofillUseNegativePatternForAllAttributes,
 // issues.
 BASE_FEATURE(kAutofillUseOriginalPayloadIos, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Kill switch: If enabled, use the FormGlobalId and FieldGlobalId passed to
+// AutofillExternalDelegate::Did{Select,Accept}Suggestion() instead of
+// `last_query_`.
+BASE_FEATURE(kAutofillUsePassedFormAndFieldIds,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Replaces the secondary signature with the structural signature for Uploads.
 // For Queries still only the secondary (alternative) signature is used.
 // TODO(crbug.com/431737839): Clean up when roll out finishes successfully.
