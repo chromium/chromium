@@ -8,7 +8,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_web_view.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_location_bar.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "content/public/browser/web_contents.h"
@@ -80,13 +80,11 @@ toolbar_ui_api::mojom::PermissionAction GetMojoPermissionAction(
 }  // namespace
 
 ContextualTasksPermissionChip::ContextualTasksPermissionChip(
-    LocationBar* location_bar,
-    WebViewCallback web_view_callback,
+    ContextualTasksLocationBar* location_bar,
     ui::ElementIdentifier element_id,
     base::RepeatingClosure update_state_callback,
     AnnounceAlertCallback announce_alert_callback)
     : location_bar_(location_bar),
-      web_view_callback_(std::move(web_view_callback)),
       element_id_(element_id),
       update_state_callback_(std::move(update_state_callback)),
       announce_alert_callback_(std::move(announce_alert_callback)) {}
@@ -294,19 +292,17 @@ void ContextualTasksPermissionChip::SetPressedCallback(
 }
 
 views::BubbleAnchor ContextualTasksPermissionChip::GetAnchor() {
-  ContextualTasksWebView* web_view =
-      web_view_callback_ ? web_view_callback_.Run() : nullptr;
-
   // TODO(crbug.com/558978384): Rethink where the permission bubble should be
   // anchored in the side panel. In the original design, it was anchored to the
   // Super G button, but that button is hidden when a permission chip is shown.
   // Instead, attempt to anchor to the WebUI permission chip element or fall
-  // back to the toolbar (kContextualTasksWebUIToolbarElementId) or native web
-  // view.
+  // back to the toolbar (kContextualTasksWebUIToolbarElementId) or location
+  // bar.
 
-  // Get web contents from location bar, falling back to web_view if needed.
+  // The chip's DOM element lives in the side panel's WebUI toolbar document,
+  // which is a different WebContents from the panel's content page.
   content::WebContents* webui_contents =
-      location_bar_ ? location_bar_->GetWebContents() : nullptr;
+      location_bar_ ? location_bar_->GetToolbarWebContents() : nullptr;
 
   if (webui_contents && webui_contents->GetPrimaryMainFrame()) {
     auto handler = ui::TrackedElementHandlerDocumentSingleton::GetOrCreate(
@@ -326,14 +322,10 @@ views::BubbleAnchor ContextualTasksPermissionChip::GetAnchor() {
     }
   }
 
-  // Fallback anchor to prevent crashes during asynchronous race conditions
-  // (e.g. before the WebUI element has finished registering over Mojo).
-  if (web_view && web_view->toolbar_web_view()) {
-    return views::BubbleAnchor(web_view->toolbar_web_view());
+  if (location_bar_) {
+    return views::BubbleAnchor(location_bar_->GetAnchorOrNull());
   }
-  if (web_view) {
-    return views::BubbleAnchor(web_view);
-  }
+
   return views::BubbleAnchor();
 }
 

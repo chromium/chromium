@@ -11,8 +11,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_location_bar.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_view.h"
-#include "chrome/browser/contextual_tasks/location_bar_stub.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -47,8 +47,7 @@ class ContextualTasksPermissionChipTest : public testing::Test {
  public:
   void SetUp() override {
     chip_ = std::make_unique<ContextualTasksPermissionChip>(
-        &location_bar_, ContextualTasksPermissionChip::WebViewCallback(),
-        kTestChipElementId,
+        &location_bar_, kTestChipElementId,
         base::BindLambdaForTesting([this]() { ++update_state_count_; }));
   }
 
@@ -56,7 +55,7 @@ class ContextualTasksPermissionChipTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  LocationBarStub location_bar_;
+  ContextualTasksLocationBar location_bar_{nullptr};
   int update_state_count_ = 0;
   std::unique_ptr<ContextualTasksPermissionChip> chip_;
 };
@@ -169,6 +168,13 @@ TEST_F(ContextualTasksPermissionChipTest, GetAnchorIsNullWithoutWebView) {
   EXPECT_TRUE(chip_->GetAnchor().IsNull());
 }
 
+class MockContextualTasksLocationBar : public ContextualTasksLocationBar {
+ public:
+  explicit MockContextualTasksLocationBar(BrowserWindowInterface* browser)
+      : ContextualTasksLocationBar(browser) {}
+  MOCK_METHOD(ui::TrackedElement*, GetAnchorOrNull, (), (override));
+};
+
 // Tests for GetAnchor()'s fallback behavior, which requires a real
 // ContextualTasksWebView to anchor to.
 class ContextualTasksPermissionChipAnchorTestBase : public testing::Test {
@@ -199,14 +205,18 @@ class ContextualTasksPermissionChipAnchorTestBase : public testing::Test {
         .WillByDefault(ReturnRef(unowned_user_data_host_));
 
     web_view_ = std::make_unique<ContextualTasksWebView>(browser_window_.get());
-    chip_ = std::make_unique<ContextualTasksPermissionChip>(
-        &location_bar_,
-        base::BindLambdaForTesting([this]() { return web_view_.get(); }),
-        kTestChipElementId);
+    location_bar_ =
+        std::make_unique<testing::NiceMock<MockContextualTasksLocationBar>>(
+            browser_window_.get());
+    chip_ = std::make_unique<ContextualTasksPermissionChip>(location_bar_.get(),
+                                                            kTestChipElementId);
   }
 
   void TearDown() override {
+    // Destroy in reverse creation order: the chip and the location bar hold
+    // raw pointers to the location bar and the browser window respectively.
     chip_.reset();
+    location_bar_.reset();
     web_view_.reset();
     browser_window_.reset();
     profile_ = nullptr;
@@ -223,7 +233,8 @@ class ContextualTasksPermissionChipAnchorTestBase : public testing::Test {
   BrowserWindowFeatures browser_window_features_;
   ui::UnownedUserDataHost unowned_user_data_host_;
   std::unique_ptr<NiceMock<MockBrowserWindowInterface>> browser_window_;
-  LocationBarStub location_bar_;
+  std::unique_ptr<testing::NiceMock<MockContextualTasksLocationBar>>
+      location_bar_;
   std::unique_ptr<ContextualTasksWebView> web_view_;
   std::unique_ptr<ContextualTasksPermissionChip> chip_;
 };
@@ -245,26 +256,23 @@ class ContextualTasksPermissionChipNoToolbarAnchorTest
 };
 
 TEST_F(ContextualTasksPermissionChipAnchorTest,
-       GetAnchorFallsBackToToolbarWebView) {
-  ASSERT_NE(web_view_->toolbar_web_view(), nullptr);
+       GetAnchorFallsBackToLocationBarAnchor) {
+  EXPECT_CALL(*location_bar_, GetAnchorOrNull())
+      .WillOnce(testing::Return(nullptr));
 
-  // No WebUI tracked element is registered, so the chip falls back to the
-  // toolbar container view.
   views::BubbleAnchor anchor = chip_->GetAnchor();
 
-  EXPECT_EQ(anchor.GetIfElement(), nullptr);
-  EXPECT_EQ(anchor.GetIfView(), web_view_->toolbar_web_view());
+  EXPECT_TRUE(anchor.IsNull());
 }
 
 TEST_F(ContextualTasksPermissionChipNoToolbarAnchorTest,
-       GetAnchorFallsBackToWebView) {
-  ASSERT_EQ(web_view_->toolbar_web_view(), nullptr);
+       GetAnchorFallsBackToLocationBarAnchor) {
+  EXPECT_CALL(*location_bar_, GetAnchorOrNull())
+      .WillOnce(testing::Return(nullptr));
 
-  // Without a toolbar WebView, the chip anchors to the side panel web view.
   views::BubbleAnchor anchor = chip_->GetAnchor();
 
-  EXPECT_EQ(anchor.GetIfElement(), nullptr);
-  EXPECT_EQ(anchor.GetIfView(), web_view_.get());
+  EXPECT_TRUE(anchor.IsNull());
 }
 
 }  // namespace

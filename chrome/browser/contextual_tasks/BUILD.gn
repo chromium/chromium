@@ -256,8 +256,10 @@ source_set("ui") {
   } else {
     sources += [
       "contextual_tasks_ghost_loader_view.h",
+      "contextual_tasks_location_bar.h",
       "contextual_tasks_panel_host_desktop.h",
       "contextual_tasks_permission_chip.h",
+      "contextual_tasks_permission_dashboard.h",
       "contextual_tasks_web_view.h",
       "location_bar_stub.h",
     ]
@@ -312,6 +314,7 @@ source_set("ui") {
   } else {
     public_deps += [
       "//chrome/browser/glic/browser_ui",
+      "//chrome/browser/ui/content_settings",
       "//chrome/browser/ui/location_bar",
       "//chrome/browser/ui/side_panel:side_panel_views_dependent",
       "//chrome/browser/ui/tabs:tab_strip",
@@ -450,8 +453,10 @@ source_set("ui_impl") {
   } else {
     sources += [
       "contextual_tasks_ghost_loader_view.cc",
+      "contextual_tasks_location_bar.cc",
       "contextual_tasks_panel_host_desktop.cc",
       "contextual_tasks_permission_chip.cc",
+      "contextual_tasks_permission_dashboard.cc",
       "contextual_tasks_web_view.cc",
       "location_bar_stub.cc",
     ]
