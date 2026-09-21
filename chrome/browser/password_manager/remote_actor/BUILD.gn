@@ -25,6 +25,7 @@ source_set("remote_actor") {
 
   deps = [
     "//base",
+    "//chrome/browser/glic",
     "//chrome/browser/password_manager",
     "//chrome/browser/password_manager/factories",
     "//chrome/browser/password_manager/remote_actor/protos",
@@ -40,6 +41,7 @@ source_set("remote_actor") {
     "//components/password_manager/core/browser/actor_login:actor_login_service_impl",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/browser/sync",
+    "//components/prefs",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/sync/base",
@@ -65,6 +67,7 @@ source_set("unit_tests") {
   deps = [
     ":remote_actor",
     "//base/test:test_support",
+    "//chrome/browser/glic",
     "//chrome/browser/password_manager",
     "//chrome/browser/password_manager:test_support",
     "//chrome/browser/password_manager/factories",

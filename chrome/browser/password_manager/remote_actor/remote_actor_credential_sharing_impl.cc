@@ -11,6 +11,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/factories/account_password_store_factory.h"
 #include "chrome/browser/password_manager/factories/profile_password_store_factory.h"
@@ -29,6 +31,7 @@
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/browser/sync/password_proto_utils.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/protocol/password_specifics.pb.h"
@@ -137,6 +140,12 @@ void RemoteActorCredentialSharingImpl::RequestAgentAuthentication(
 
   Profile* profile =
       Profile::FromBrowserContext(render_frame_host().GetBrowserContext());
+
+  if (!IsAllowedByPolicy(profile)) {
+    LogResult(RemoteActorCredentialSharingResult::kBlockedByPolicy);
+    RespondWithError(std::move(callback));
+    return;
+  }
 
   if (!VerifyUserIdentityAndSyncState(profile, gaia_id)) {
     LogResult(
@@ -310,6 +319,32 @@ bool RemoteActorCredentialSharingImpl::ValidateRequestPreconditions(
     receiver_.ReportBadMessage(
         "RemoteActorCredentialSharing: Argument length limit exceeded");
     return false;
+  }
+
+  return true;
+}
+
+bool RemoteActorCredentialSharingImpl::IsAllowedByPolicy(Profile* profile) {
+  CHECK(profile);
+  PrefService* prefs = profile->GetPrefs();
+  CHECK(prefs);
+
+  // Check whether the browser, device, or account is enterprise-managed, or if
+  // the preference is explicitly set by enterprise policy.
+  bool is_managed =
+      glic::GlicEnabling::IsBrowserManaged(profile) ||
+      glic::GlicEnabling::IsDeviceManaged() ||
+      glic::GlicEnabling::IsEnterpriseAccount(profile) ||
+      prefs->IsManagedPreference(glic::prefs::kGlicSparkPolicySettings);
+
+  // Apply policy if managed, unless it's a dogfood client (matching Glic
+  // policy behavior).
+  if (is_managed && !glic::GlicEnabling::IsLikelyDogfoodClient()) {
+    auto policy_state = static_cast<glic::prefs::GlicSparkPolicyState>(
+        prefs->GetInteger(glic::prefs::kGlicSparkPolicySettings));
+    if (policy_state != glic::prefs::GlicSparkPolicyState::kEnabled) {
+      return false;
+    }
   }
 
   return true;

@@ -50,7 +50,8 @@ enum class RemoteActorCredentialSharingResult {
   kSharingServiceUnavailable = 7,
   kSharingFailed = 8,
   kRequestAlreadyInProgress = 9,
-  kMaxValue = kRequestAlreadyInProgress,
+  kBlockedByPolicy = 10,
+  kMaxValue = kBlockedByPolicy,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/password/enums.xml:RemoteActorCredentialSharingResult)
 
@@ -131,6 +132,10 @@ class RemoteActorCredentialSharingImpl
   bool ValidateRequestPreconditions(const std::string& gaia_id,
                                     const std::string& domain,
                                     const std::string& task_id);
+
+  // Checks if enterprise policy (GeminiSparkSettings) permits remote actor
+  // credential sharing.
+  bool IsAllowedByPolicy(Profile* profile);
 
   // Verifies the GAIA ID matches the signed-in user and sync is not in error.
   bool VerifyUserIdentityAndSyncState(Profile* profile,

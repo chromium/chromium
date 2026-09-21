@@ -1884,6 +1884,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Sharing service unavailable"/>
   <int value="8" label="Sharing failed"/>
   <int value="9" label="Request already in progress"/>
+  <int value="10" label="Blocked by policy"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/password_manager/remote_actor/remote_actor_credential_sharing_impl.h:RemoteActorCredentialSharingResult) -->
