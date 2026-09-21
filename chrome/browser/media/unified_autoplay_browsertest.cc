@@ -146,9 +146,16 @@ class UnifiedAutoplayBrowserTest : public InProcessBrowserTest {
     content::Referrer referrer(active_contents->GetLastCommittedURL(),
                                network::mojom::ReferrerPolicy::kAlways);
 
-    content::OpenURLParams open_url_params(
-        url, referrer, disposition, ui::PAGE_TRANSITION_LINK,
-        is_renderer_initiated, from_context_menu);
+    content::OpenURLParams open_url_params =
+        is_renderer_initiated
+            ? content::OpenURLParams::CreateRendererInitiated(
+                  url, disposition, ui::PAGE_TRANSITION_LINK, referrer,
+                  active_contents->GetPrimaryMainFrame()
+                      ->GetCurrentInitiatorNavigationState(),
+                  from_context_menu)
+            : content::OpenURLParams::CreateBrowserInitiated(
+                  url, disposition, ui::PAGE_TRANSITION_LINK, referrer,
+                  from_context_menu);
 
     open_url_params.initiator_origin =
         active_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();

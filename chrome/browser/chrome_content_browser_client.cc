@@ -4438,9 +4438,11 @@ bool ChromeContentBrowserClient::CanCreateWindow(
       contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
           profile);
   if (contextual_tasks::IsContextualTasksUIEnabled()) {
-    content::OpenURLParams url_params(
-        target_url, referrer, disposition,
-        ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL, true);
+    content::OpenURLParams url_params =
+        content::OpenURLParams::CreateRendererInitiated(
+            target_url, disposition,
+            ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL, referrer,
+            opener->GetCurrentInitiatorNavigationState());
     url_params.user_gesture = user_gesture;
     content::WebContents* responsible_web_contents =
         web_contents->GetResponsibleWebContents();

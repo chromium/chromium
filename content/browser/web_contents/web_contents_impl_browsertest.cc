@@ -587,9 +587,11 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, OpenURLSubframe) {
 
   // Navigate with the subframe's FrameTreeNode ID.
   const GURL url(embedded_test_server()->GetURL("/title1.html"));
-  OpenURLParams params(url, Referrer(), frame_tree_node_id,
-                       WindowOpenDisposition::CURRENT_TAB,
-                       ui::PAGE_TRANSITION_LINK, true);
+  OpenURLParams params = OpenURLParams::CreateRendererInitiated(
+      url, WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_LINK,
+      Referrer(),
+      wc->GetPrimaryMainFrame()->GetCurrentInitiatorNavigationState(),
+      /*started_from_context_menu=*/false, frame_tree_node_id);
   params.initiator_origin = wc->GetPrimaryMainFrame()->GetLastCommittedOrigin();
   shell()->web_contents()->OpenURL(params, /*navigation_handle_callback=*/{});
 
@@ -614,9 +616,11 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, OpenURLNonExistentSubframe) {
 
   // Navigate with the invalid FrameTreeNode ID.
   const GURL url(embedded_test_server()->GetURL("/title2.html"));
-  OpenURLParams params(url, Referrer(), frame_tree_node_id,
-                       WindowOpenDisposition::CURRENT_TAB,
-                       ui::PAGE_TRANSITION_LINK, true);
+  OpenURLParams params = OpenURLParams::CreateRendererInitiated(
+      url, WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_LINK,
+      Referrer(),
+      wc->GetPrimaryMainFrame()->GetCurrentInitiatorNavigationState(),
+      /*started_from_context_menu=*/false, frame_tree_node_id);
   params.initiator_origin = wc->GetPrimaryMainFrame()->GetLastCommittedOrigin();
   WebContents* new_web_contents = shell()->web_contents()->OpenURL(
       params, /*navigation_handle_callback=*/{});

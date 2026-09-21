@@ -84,10 +84,19 @@ void MaybeCreateAndAddWebViewSidePanelThrottle(
                   return;
                 }
 
-                content::OpenURLParams params(
-                    next_url, content::Referrer(handle->GetReferrer()),
-                    WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                    handle->GetPageTransition(), handle->IsRendererInitiated());
+                content::OpenURLParams params =
+                    handle->IsRendererInitiated()
+                        ? content::OpenURLParams::CreateRendererInitiated(
+                              next_url,
+                              WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                              handle->GetPageTransition(),
+                              content::Referrer(handle->GetReferrer()),
+                              handle->GetInitiatorNavigationState())
+                        : content::OpenURLParams::CreateBrowserInitiated(
+                              next_url,
+                              WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                              handle->GetPageTransition(),
+                              content::Referrer(handle->GetReferrer()));
                 params.initiator_origin = handle->GetInitiatorOrigin();
                 params.initiator_base_url = handle->GetInitiatorBaseUrl();
                 data->delegate()->OpenUrlInBrowser(params);

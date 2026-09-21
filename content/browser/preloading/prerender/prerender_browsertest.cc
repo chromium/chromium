@@ -7037,10 +7037,12 @@ IN_PROC_BROWSER_TEST_P(PrerenderTargetAgnosticBrowserTest, SuppressOpenURL) {
       test::PrerenderTestHelper::GetPrerenderedMainFrameHost(
           *prerender_web_contents, host_id);
   EXPECT_EQ(GetRequestCount(prerendering_url), 1);
-  OpenURLParams params(second_url, Referrer(),
-                       prerendered_render_frame_host->GetFrameTreeNodeId(),
-                       WindowOpenDisposition::NEW_WINDOW,
-                       ui::PAGE_TRANSITION_LINK, true);
+  OpenURLParams params = OpenURLParams::CreateRendererInitiated(
+      second_url, WindowOpenDisposition::NEW_WINDOW, ui::PAGE_TRANSITION_LINK,
+      Referrer(),
+      prerendered_render_frame_host->GetCurrentInitiatorNavigationState(),
+      /*started_from_context_menu=*/false,
+      prerendered_render_frame_host->GetFrameTreeNodeId());
   params.initiator_origin =
       prerendered_render_frame_host->GetLastCommittedOrigin();
   params.source_render_process_id =

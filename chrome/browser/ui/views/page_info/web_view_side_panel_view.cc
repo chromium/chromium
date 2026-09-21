@@ -144,12 +144,19 @@ void WebViewSidePanelView::DidOpenRequestedURL(
     ui::PageTransition transition,
     bool started_from_context_menu,
     bool renderer_initiated) {
-  content::OpenURLParams params(url, referrer, disposition, transition,
-                                renderer_initiated);
+  // Renderer-initiated navigations have a 'source_renderframe_host'.
+  CHECK(!renderer_initiated || source_render_frame_host);
+  content::OpenURLParams params =
+      renderer_initiated
+          ? content::OpenURLParams::CreateRendererInitiated(
+                url, disposition, transition, referrer,
+                source_render_frame_host->GetCurrentInitiatorNavigationState())
+          : content::OpenURLParams::CreateBrowserInitiated(
+                url, disposition, transition, referrer);
 
   // If the navigation is initiated by the renderer process, we must set an
   // initiator origin.
-  if (renderer_initiated && source_render_frame_host) {
+  if (renderer_initiated) {
     params.initiator_origin =
         source_render_frame_host->GetLastCommittedOrigin();
     params.initiator_frame_token = source_render_frame_host->GetFrameToken();

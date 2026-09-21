@@ -1469,9 +1469,12 @@ TEST_F(ContextualTasksUiServiceTest, Navigation_ToNewTab_Allowed) {
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
       .Times(0);
   content::Referrer referrer;
-  content::OpenURLParams params(navigated_url, referrer,
-                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                ui::PAGE_TRANSITION_AUTO_TOPLEVEL, true);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateRendererInitiated(
+          navigated_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_AUTO_TOPLEVEL, referrer,
+          web_contents->GetPrimaryMainFrame()
+              ->GetCurrentInitiatorNavigationState());
   EXPECT_FALSE(service_for_nav_->HandleNavigationImpl(
       std::move(params), web_contents.get(), &tab,
       /*is_from_embedded_page=*/true,

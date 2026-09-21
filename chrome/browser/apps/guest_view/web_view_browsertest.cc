@@ -3164,10 +3164,11 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, OpenURLFromTab_CurrentTab_Abort) {
   ExtensionTestMessageListener load_listener("WebViewTest.LOADSTOP");
 
   // Navigating to a file URL is forbidden inside a <webview>.
-  content::OpenURLParams params(GURL("file://foo"), content::Referrer(),
-                                WindowOpenDisposition::CURRENT_TAB,
-                                ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
-                                true /* is_renderer_initiated */);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateRendererInitiated(
+          GURL("file://foo"), WindowOpenDisposition::CURRENT_TAB,
+          ui::PAGE_TRANSITION_AUTO_TOPLEVEL, content::Referrer(),
+          GetGuestRenderFrameHost()->GetCurrentInitiatorNavigationState());
   params.source_render_frame_id = GetGuestRenderFrameHost()->GetRoutingID();
   params.source_render_process_id =
       GetGuestRenderFrameHost()->GetProcess()->GetID().GetUnsafeValue();
@@ -3290,10 +3291,11 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, OpenURLFromTab_NewWindow_Abort) {
   ExtensionTestMessageListener new_window_listener("WebViewTest.NEWWINDOW");
 
   // Navigating to a file URL is forbidden inside a <webview>.
-  content::OpenURLParams params(GURL("file://foo"), content::Referrer(),
-                                WindowOpenDisposition::NEW_BACKGROUND_TAB,
-                                ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
-                                true /* is_renderer_initiated */);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateRendererInitiated(
+          GURL("file://foo"), WindowOpenDisposition::NEW_BACKGROUND_TAB,
+          ui::PAGE_TRANSITION_AUTO_TOPLEVEL, content::Referrer(),
+          GetGuestRenderFrameHost()->GetCurrentInitiatorNavigationState());
   params.source_render_frame_id = GetGuestRenderFrameHost()->GetRoutingID();
   params.source_render_process_id =
       GetGuestRenderFrameHost()->GetProcess()->GetID().GetUnsafeValue();

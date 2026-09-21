@@ -405,9 +405,11 @@ content::WebContents* MimeHandlerViewGuest::CreateCustomWebContents(
     content::SessionStorageNamespaceHandle* session_storage_namespace) {
   CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
 
-  content::OpenURLParams open_params(target_url, content::Referrer(),
-                                     WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                     ui::PAGE_TRANSITION_LINK, true);
+  content::OpenURLParams open_params =
+      content::OpenURLParams::CreateRendererInitiated(
+          target_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_LINK, content::Referrer(),
+          opener->GetCurrentInitiatorNavigationState());
   open_params.initiator_origin = opener->GetLastCommittedOrigin();
   open_params.source_site_instance = source_site_instance;
 

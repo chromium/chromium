@@ -584,10 +584,13 @@ IN_PROC_BROWSER_TEST_F(
 
   // Open a new background tab from the scope-extension page, as the renderer
   // does for e.g. a middle-click on a link.
-  content::OpenURLParams params(
-      GURL("https://example.com/destination"), content::Referrer(),
-      WindowOpenDisposition::NEW_BACKGROUND_TAB, ui::PAGE_TRANSITION_LINK,
-      /*is_renderer_initiated=*/true);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateRendererInitiated(
+          GURL("https://example.com/destination"),
+          WindowOpenDisposition::NEW_BACKGROUND_TAB, ui::PAGE_TRANSITION_LINK,
+          content::Referrer(),
+          opener_contents->GetPrimaryMainFrame()
+              ->GetCurrentInitiatorNavigationState());
   params.initiator_origin = scope_extension_origin;
   params.source_site_instance =
       opener_contents->GetPrimaryMainFrame()->GetSiteInstance();

@@ -522,10 +522,11 @@ TEST_F(DocumentPipHostTest, OpenURLFromTab_CurrentTabClosesPipWindow) {
   content::WebContents* child = host->GetChildWebContents();
   content::WebContentsDestroyedWatcher child_destroyed_watcher(child);
 
-  content::OpenURLParams params(
-      GURL("https://example.test/"), content::Referrer(),
-      WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_LINK,
-      /*is_renderer_initiated=*/true);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateRendererInitiated(
+          GURL("https://example.test/"), WindowOpenDisposition::CURRENT_TAB,
+          ui::PAGE_TRANSITION_LINK, content::Referrer(),
+          child->GetPrimaryMainFrame()->GetCurrentInitiatorNavigationState());
   EXPECT_EQ(nullptr, host->OpenURLFromTab(child, params, base::NullCallback()));
 
   EXPECT_EQ(0, opener_delegate.call_count());
@@ -550,10 +551,11 @@ TEST_F(DocumentPipHostTest, OpenURLFromTab_NewForegroundTabRoutesToOpener) {
   content::WebContents* child = host->GetChildWebContents();
   const GURL url("https://example.test/");
 
-  content::OpenURLParams params(url, content::Referrer(),
-                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                ui::PAGE_TRANSITION_LINK,
-                                /*is_renderer_initiated=*/true);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateRendererInitiated(
+          url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_LINK, content::Referrer(),
+          child->GetPrimaryMainFrame()->GetCurrentInitiatorNavigationState());
   EXPECT_EQ(opener(),
             host->OpenURLFromTab(child, params, base::NullCallback()));
 

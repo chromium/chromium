@@ -227,9 +227,11 @@ TEST_F(SafeBrowsingTriggeredPopupBlockerTest,
   // only going to look at the triggering event info. It will only block the
   // popup if we know the triggering event is untrusted.
   GURL popup_url("https://example.popup/");
-  content::OpenURLParams params(
-      popup_url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui::PAGE_TRANSITION_LINK, true /* is_renderer_initiated */);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateRendererInitiated(
+          popup_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_LINK, content::Referrer(),
+          main_rfh()->GetCurrentInitiatorNavigationState());
   params.user_gesture = true;
   params.triggering_event_info =
       blink::mojom::TriggeringEventInfo::kFromUntrustedEvent;
@@ -255,9 +257,11 @@ TEST_F(SafeBrowsingTriggeredPopupBlockerTest,
   // only going to look at the triggering event info. It will only block the
   // popup if we know the triggering event is untrusted.
   GURL popup_url("https://example.popup/");
-  content::OpenURLParams params(
-      popup_url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui::PAGE_TRANSITION_LINK, true /* is_renderer_initiated */);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateRendererInitiated(
+          popup_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_LINK, content::Referrer(),
+          main_rfh()->GetCurrentInitiatorNavigationState());
   params.user_gesture = true;
   params.triggering_event_info =
       blink::mojom::TriggeringEventInfo::kFromTrustedEvent;

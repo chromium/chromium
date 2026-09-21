@@ -1121,9 +1121,10 @@ void Navigator::RequestOpenURL(
              RenderFrameHostLifecycleStateImpl::kPrerendering ||
          frame_tree_node_id);
 
-  OpenURLParams params(url, referrer, frame_tree_node_id, disposition,
-                       ui::PAGE_TRANSITION_LINK,
-                       true /* is_renderer_initiated */);
+  OpenURLParams params = OpenURLParams::CreateRendererInitiated(
+      url, disposition, ui::PAGE_TRANSITION_LINK, referrer,
+      initiator_navigation_state, /*started_from_context_menu=*/false,
+      frame_tree_node_id);
   params.post_data = post_body;
   params.extra_headers = extra_headers;
   if (redirect_chain.size() > 0)
@@ -1135,7 +1136,6 @@ void Navigator::RequestOpenURL(
   params.initiator_base_url = initiator_base_url;
   params.initiator_frame_token = base::OptionalFromPtr(initiator_frame_token);
   params.initiator_process_id = initiator_process_id;
-  params.initiator_navigation_state = initiator_navigation_state;
   params.started_by_ad = started_by_ad;
 
   // RequestOpenURL is used only for local frames, so we can get here only if
