@@ -228,6 +228,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -1068,14 +1069,11 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu,
 
 RenderViewContextMenu::RenderViewContextMenu(
     content::RenderFrameHost& render_frame_host,
-    const content::ContextMenuParams& params,
-    bool is_paste_enabled,
+    const content::ContextMenuParams& params, bool is_paste_enabled,
     bool is_paste_and_match_style_enabled)
     : RenderViewContextMenuBase(render_frame_host, params),
       extension_items_(
-          browser_context_,
-          this,
-          &menu_model_,
+          browser_context_, this, &menu_model_,
           base::BindRepeating(
               extensions::context_menu_helpers::MenuItemMatchesParams,
               params_)),
@@ -1092,7 +1090,8 @@ RenderViewContextMenu::RenderViewContextMenu(
       embedder_web_contents_(GetWebContentsToUse(&render_frame_host)),
       autofill_context_menu_manager_(this, &menu_model_),
       is_paste_enabled_(is_paste_enabled),
-      is_paste_and_match_style_enabled_(is_paste_and_match_style_enabled) {
+      is_paste_and_match_style_enabled_(is_paste_and_match_style_enabled),
+      source_document_at_menu_open_(render_frame_host.GetWeakDocumentPtr()) {
   if (!g_custom_id_ranges_initialized) {
     g_custom_id_ranges_initialized = true;
     SetContentCustomCommandIdRange(IDC_CONTENT_CONTEXT_CUSTOM_FIRST,
@@ -5164,12 +5163,22 @@ void RenderViewContextMenu::ExecSaveAs() {
 }
 
 void RenderViewContextMenu::ExecGlic() {
+  // Context menus remain open across navigations on Views platforms. Bail out
+  // if the originating document is no longer the active primary page to avoid
+  // cross-navigation selection leaks, eligibility bypasses, or null-derefs.
+  content::RenderFrameHost* source_frame =
+      source_document_at_menu_open_.AsRenderFrameHostIfValid();
+  if (!source_frame ||
+      &source_frame->GetPage() != &source_web_contents_->GetPrimaryPage()) {
+    return;
+  }
+
   if (glic::GlicEnabling::IsContextualMenuItemEnabled(GetProfile(),
                                                       params_.selection_text)) {
     glic_item_executed_ = true;
     glic::GlicContextMenuInvocationHelper::HandleContextualMenuClick(
         tabs::TabInterface::MaybeGetFromContents(source_web_contents_),
-        params_.selection_text, GetRenderFrameHost()->GetGlobalId());
+        params_.selection_text, source_frame->GetGlobalId());
   }
 }
 

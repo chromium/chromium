@@ -28,6 +28,7 @@
 #include "components/renderer_context_menu/render_view_context_menu_proxy.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "content/public/browser/context_menu_params.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/common/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -634,6 +635,10 @@ class RenderViewContextMenu
   //  Used for CTR metrics of menu item for opening Glic.
   bool glic_item_shown_ = false;
   bool glic_item_executed_ = false;
+
+  // Tracks the originating document at menu-open time so Glic actions can bail
+  // out if the tab navigated while the menu was open.
+  const content::WeakDocumentPtr source_document_at_menu_open_;
 
   base::WeakPtrFactory<RenderViewContextMenu> weak_pointer_factory_{this};
 };

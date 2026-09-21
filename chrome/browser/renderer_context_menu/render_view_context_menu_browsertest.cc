@@ -856,6 +856,103 @@ IN_PROC_BROWSER_TEST_F(GlicContextMenuMetricsBrowserTest,
   histogram_tester.ExpectBucketCount("Glic.WebContentsContextMenu.Page", 0, 1);
 }
 
+// Regression tests for crbug.com/556213889: the context menu is not dismissed
+// when the underlying tab navigates, so ExecGlic() must not ship a selection
+// snapshotted from a document that is no longer the tab's primary page.
+class GlicContextMenuStaleDocumentBrowserTest
+    : public ContextMenuBrowserTestBase {
+ protected:
+  GlicContextMenuStaleDocumentBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {
+            features::kGlic,
+            features::kGlicContextMenu,
+        },
+        {});
+  }
+
+  static constexpr char kTextSelectionHistogram[] =
+      "Glic.WebContentsContextMenu.TextSelection";
+
+  void SummonMenuNavigateAndActivateGlic(const std::u16string& selection_text,
+                                         const GURL& navigate_to) {
+    std::unique_ptr<TestRenderViewContextMenu> menu =
+        CreateContextMenuForTextInWebContents(selection_text);
+    menu->OnMenuWillShow(const_cast<ui::SimpleMenuModel*>(&menu->menu_model()));
+
+    if (!navigate_to.is_empty()) {
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), navigate_to));
+    }
+
+    menu->ExecuteCommand(IDC_CONTENT_CONTEXT_GLIC, 0);
+    menu->MenuClosed(const_cast<ui::SimpleMenuModel*>(&menu->menu_model()));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicContextMenuStaleDocumentBrowserTest,
+                       SelectionNotSentAfterNavigationWithDocumentCached) {
+  glic::GlicEnabling::ScopedBypassEnablementChecksForTesting scoped_glic_bypass;
+  ASSERT_TRUE(embedded_test_server()->Start());
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("a.test", "/title1.html")));
+
+  ASSERT_NO_FATAL_FAILURE(SummonMenuNavigateAndActivateGlic(
+      u"secret selection from page A",
+      embedded_test_server()->GetURL("b.test", "/title2.html")));
+
+  histogram_tester.ExpectUniqueSample(kTextSelectionHistogram, 0, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicContextMenuStaleDocumentBrowserTest,
+                       SelectionNotSentAfterNavigationWithDocumentDestroyed) {
+  glic::GlicEnabling::ScopedBypassEnablementChecksForTesting scoped_glic_bypass;
+  ASSERT_TRUE(embedded_test_server()->Start());
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("a.test", "/title1.html")));
+
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  content::RenderFrameHostWrapper source_frame(
+      web_contents->GetPrimaryMainFrame());
+
+  std::unique_ptr<TestRenderViewContextMenu> menu =
+      CreateContextMenuForTextInWebContents(u"secret selection from page A");
+  menu->OnMenuWillShow(const_cast<ui::SimpleMenuModel*>(&menu->menu_model()));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("b.test", "/title2.html")));
+
+  web_contents->GetController().GetBackForwardCache().Flush();
+  ASSERT_TRUE(source_frame.WaitUntilRenderFrameDeleted());
+
+  menu->ExecuteCommand(IDC_CONTENT_CONTEXT_GLIC, 0);
+  menu->MenuClosed(const_cast<ui::SimpleMenuModel*>(&menu->menu_model()));
+
+  histogram_tester.ExpectUniqueSample(kTextSelectionHistogram, 0, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicContextMenuStaleDocumentBrowserTest,
+                       SelectionSentWhenDocumentUnchanged) {
+  glic::GlicEnabling::ScopedBypassEnablementChecksForTesting scoped_glic_bypass;
+  ASSERT_TRUE(embedded_test_server()->Start());
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("a.test", "/title1.html")));
+
+  ASSERT_NO_FATAL_FAILURE(
+      SummonMenuNavigateAndActivateGlic(u"selection", GURL()));
+
+  histogram_tester.ExpectUniqueSample(kTextSelectionHistogram, 1, 1);
+}
+
 // TODO(crbug.com/455524503): De-flake and re-enable on ChromeOS.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_SaveLinkAsEntryIsDisabledForBlockedUrls \
