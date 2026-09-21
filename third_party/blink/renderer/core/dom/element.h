@@ -174,6 +174,7 @@ class StyleRecalcContext;
 class StyleScopeData;
 class TextVisitor;
 class TrustedHTMLParserOptions;
+class UIEvent;
 class V8UnionBooleanOrScrollIntoViewOptions;
 class V8UnionCSSPseudoElementOrDocumentOrElementOrText;
 class V8UnionKeyframeAnimationOptionsOrUnrestrictedDouble;
@@ -1400,7 +1401,8 @@ class CORE_EXPORT Element : public ContainerNode {
     return false;
   }
   virtual bool HandleCommandInternal(HTMLElement& invoker,
-                                     CommandEventType command) {
+                                     CommandEventType command,
+                                     UIEvent* activate_event) {
     CHECK(command != CommandEventType::kCustom &&
           command != CommandEventType::kNone);
 

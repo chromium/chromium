@@ -49,6 +49,7 @@ class HTMLFormElement;
 class KeyboardEvent;
 class PointerEvent;
 class TextControlElement;
+class UIEvent;
 class V8UnionStringLegacyNullToEmptyStringOrTrustedScript;
 class V8UnionBooleanOrTogglePopoverOptions;
 class ShowPopoverOptions;
@@ -392,7 +393,8 @@ class CORE_EXPORT HTMLElement : public Element {
                              CommandEventType command) override;
   bool IsValidBuiltinPopoverCommand(CommandEventType command);
   bool HandleCommandInternal(HTMLElement& invoker,
-                             CommandEventType command) override;
+                             CommandEventType command,
+                             UIEvent* activate_event) override;
   // This is true if this element *can* be a command invoker: it is an element
   // type that supports command invokers (e.g. buttons and menuitems), and the
   // element isn't in a state that disqualifies it (e.g. a disabled state). This
@@ -401,7 +403,7 @@ class CORE_EXPORT HTMLElement : public Element {
   virtual bool CanBeCommandInvoker() const;
   static CommandEventType GetCommandEventType(const AtomicString& type,
                                               ExecutionContext*);
-  virtual bool HandleCommandForActivation();
+  virtual bool HandleCommandForActivation(UIEvent* activate_event);
   Element* commandForElement() const;
   AtomicString command() const;
   void setCommand(const AtomicString& type);

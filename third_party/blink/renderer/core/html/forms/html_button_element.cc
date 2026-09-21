@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/events/command_event.h"
+#include "third_party/blink/renderer/core/events/ui_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
@@ -261,7 +262,7 @@ void HTMLButtonElement::DefaultEventHandler(Event& event) {
       }
     }
 
-    if (HandleCommandForActivation()) {
+    if (HandleCommandForActivation(To<UIEvent>(&event))) {
       return;
     }
   }

@@ -13,6 +13,7 @@ namespace blink {
 
 class HTMLMenuListElement;
 class HTMLMenuOwnerElement;
+class UIEvent;
 
 class CORE_EXPORT HTMLMenuItemElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
@@ -64,6 +65,7 @@ class CORE_EXPORT HTMLMenuItemElement final : public HTMLElement {
           UpdateBehavior::kStyleAndLayout) const override;
 
   void DefaultEventHandler(Event&) override;
+  static bool IsActivationFromKeyboard(UIEvent* activate_event);
 
   bool MatchesDefaultPseudoClass() const override;
   bool MatchesEnabledPseudoClass() const override;
@@ -89,7 +91,12 @@ class CORE_EXPORT HTMLMenuItemElement final : public HTMLElement {
   // such menulist, which (via popover close behavior) closes the tree.
   Element* CloseOutermostContainingMenuList();
   HTMLMenuListElement* FindOutermostContainingMenuList();
-  void ActivateMenuItem();
+  enum class ActivationKeyboardEventType {
+    kNotKeyboard,
+    kUntrustedKeyboard,
+    kTrustedKeyboard,
+  };
+  void ActivateMenuItem(ActivationKeyboardEventType);
   void HandleMenuPointerEvents(Event&);
   void HandleMenuKeyboardEvents(Event&);
   bool HasOwnerMenuList() const;

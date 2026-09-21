@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/command_event.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
+#include "third_party/blink/renderer/core/events/ui_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
@@ -484,7 +485,8 @@ void HTMLFormControlElement::DefaultEventHandler(Event& event) {
       }
 
       CHECK(popover.popover->IsValidBuiltinCommand(*this, action));
-      popover.popover->HandleCommandInternal(*this, action);
+      popover.popover->HandleCommandInternal(*this, action,
+                                             To<UIEvent>(&event));
     }
   }
 }

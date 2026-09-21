@@ -89,6 +89,7 @@
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/events/toggle_event.h"
+#include "third_party/blink/renderer/core/events/ui_event.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -3254,11 +3255,12 @@ bool HTMLElement::IsValidBuiltinCommand(HTMLElement& invoker,
 }
 
 bool HTMLElement::HandleCommandInternal(HTMLElement& invoker,
-                                        CommandEventType command) {
+                                        CommandEventType command,
+                                        UIEvent* activate_event) {
   if (!IsValidBuiltinCommand(invoker, command)) {
     return false;
   }
-  if (Element::HandleCommandInternal(invoker, command)) {
+  if (Element::HandleCommandInternal(invoker, command, activate_event)) {
     return true;
   }
 
@@ -3389,7 +3391,7 @@ bool HTMLElement::CanBeCommandInvoker() const {
   return false;
 }
 
-bool HTMLElement::HandleCommandForActivation() {
+bool HTMLElement::HandleCommandForActivation(UIEvent* activate_event) {
   if (!CanBeCommandInvoker()) {
     return false;
   }
@@ -3429,7 +3431,8 @@ bool HTMLElement::HandleCommandForActivation() {
   command_target->DispatchEvent(*command_event);
   if (!command_event->defaultPrevented() &&
       command_event_type != CommandEventType::kCustom) {
-    command_target->HandleCommandInternal(*this, command_event_type);
+    command_target->HandleCommandInternal(*this, command_event_type,
+                                          activate_event);
   }
   return true;
 }
@@ -4205,7 +4208,7 @@ void HTMLElement::DefaultEventHandler(Event& event) {
       return;
     }
 
-    if (HandleCommandForActivation()) {
+    if (HandleCommandForActivation(To<UIEvent>(&event))) {
       return;
     }
   }

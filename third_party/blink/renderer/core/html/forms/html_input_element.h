@@ -53,6 +53,7 @@ class KURL;
 class ListAttributeTargetObserver;
 class RadioButtonGroupScope;
 class ScriptObject;
+class UIEvent;
 struct DateTimeChooserParameters;
 
 class CORE_EXPORT HTMLInputElement
@@ -426,7 +427,8 @@ class CORE_EXPORT HTMLInputElement
   bool IsValidBuiltinCommand(HTMLElement& invoker,
                              CommandEventType command) override;
   bool HandleCommandInternal(HTMLElement& invoker,
-                             CommandEventType command) override;
+                             CommandEventType command,
+                             UIEvent* activate_event) override;
 
   void SetFocused(bool is_focused,
                   mojom::blink::FocusType,

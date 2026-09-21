@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/events/command_event.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
+#include "third_party/blink/renderer/core/events/ui_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -26,7 +27,6 @@
 #include "third_party/blink/renderer/core/html/html_sub_menu_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
-#include "third_party/blink/renderer/core/input/keyboard_event_manager.h"
 #include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -231,7 +231,8 @@ bool HTMLMenuItemElement::setChecked(bool checked) {
   }
 }
 
-void HTMLMenuItemElement::ActivateMenuItem() {
+void HTMLMenuItemElement::ActivateMenuItem(
+    ActivationKeyboardEventType activation_type) {
   // A menu item's checkability and ability to invoke a command are
   // exclusive. If the item is checkable, that takes precedence, and the sub-
   // menu invoker will NOT be respected.
@@ -248,13 +249,13 @@ void HTMLMenuItemElement::ActivateMenuItem() {
 
     submenu->InvokePopover(*this, PopoverInvokedVia::kCommand);
 
-    bool handling_keyboard_event = false;
-    if (LocalFrame* frame = GetDocument().GetFrame()) {
-      handling_keyboard_event = frame->GetEventHandler().IsHandlingKeyEvent();
-    }
     if (submenu->popoverOpen()) {
-      if (handling_keyboard_event) {
-        submenu->FocusFirstItem();
+      if (activation_type != ActivationKeyboardEventType::kNotKeyboard) {
+        FocusTrigger trigger =
+            activation_type == ActivationKeyboardEventType::kTrustedKeyboard
+                ? FocusTrigger::kUserGesture
+                : FocusTrigger::kScript;
+        submenu->FocusFirstItem(trigger);
       } else {
         // If this is resulting from a click, this is happening *before* that
         // click has had a chance to focus this menuitem.  However, we should
@@ -311,7 +312,10 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
     return;
   }
 
-  FocusParams focus_params(FocusTrigger::kUserGesture);
+  CHECK(event.IsFullyTrusted())
+      << "FocusTrigger::kUserGesture depends on trusted events";
+  FocusTrigger key_focus_trigger = FocusTrigger::kUserGesture;
+  FocusParams focus_params(key_focus_trigger);
   const AtomicString key(keyboard_event->key());
 
   // Nothing else below does anything if we're not inside an owner menu that has
@@ -530,12 +534,12 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
       if (auto* invoked_menulist = GetInvokedSubmenu()) {
         invoked_menulist->InvokePopover(*this, PopoverInvokedVia::kCommand);
         if (key == keywords::kArrowDown) {
-          if (invoked_menulist->FocusFirstItem()) {
+          if (invoked_menulist->FocusFirstItem(key_focus_trigger)) {
             event.SetDefaultHandled();
             return;
           }
         } else if (key == keywords::kArrowUp) {
-          if (invoked_menulist->FocusLastItem()) {
+          if (invoked_menulist->FocusLastItem(key_focus_trigger)) {
             event.SetDefaultHandled();
             return;
           }
@@ -592,7 +596,7 @@ void HTMLMenuItemElement::HandleMenuPointerEvents(Event& event) {
     if (!activate_menu_item) {
       return;
     }
-    ActivateMenuItem();
+    ActivateMenuItem(ActivationKeyboardEventType::kNotKeyboard);
   } else {
     DCHECK_EQ(event.type(), event_type_names::kMousedown);
     GetDocument().SetPopoverPickerPointerdown(
@@ -600,16 +604,30 @@ void HTMLMenuItemElement::HandleMenuPointerEvents(Event& event) {
     if (GetInvokedSubmenu()) {
       // Activate sub-menus on mouse *down*, so that the user can drag and
       // release to choose a sub-menu item.
-      ActivateMenuItem();
+      ActivateMenuItem(ActivationKeyboardEventType::kNotKeyboard);
     }
   }
+}
+
+// static
+bool HTMLMenuItemElement::IsActivationFromKeyboard(UIEvent* activate_event) {
+  const Event* underlying_key_event =
+      activate_event->UnderlyingEvent()->UnderlyingEvent();
+  return underlying_key_event && underlying_key_event->IsKeyboardEvent();
 }
 
 void HTMLMenuItemElement::DefaultEventHandler(Event& event) {
   if (event.type() == event_type_names::kDOMActivate) {
     // HTMLElement::DefaultEventHandler() will take care of command invokers,
     // so we can't early-return here.
-    ActivateMenuItem();
+    ActivationKeyboardEventType activation_type =
+        ActivationKeyboardEventType::kNotKeyboard;
+    if (IsActivationFromKeyboard(To<UIEvent>(&event))) {
+      activation_type = event.IsFullyTrusted()
+                            ? ActivationKeyboardEventType::kTrustedKeyboard
+                            : ActivationKeyboardEventType::kUntrustedKeyboard;
+    }
+    ActivateMenuItem(activation_type);
   }
   if (HandleKeyboardActivation(event)) {
     return;

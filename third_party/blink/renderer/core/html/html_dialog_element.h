@@ -39,6 +39,7 @@ namespace blink {
 class Document;
 class ExceptionState;
 class PointerEvent;
+class UIEvent;
 
 enum class ClosedByState {
   kAny,
@@ -130,7 +131,8 @@ class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
   bool IsValidBuiltinCommand(HTMLElement& invoker,
                              CommandEventType command) override;
   bool HandleCommandInternal(HTMLElement& invoker,
-                             CommandEventType command) override;
+                             CommandEventType command,
+                             UIEvent* activate_event) override;
 
   void AttributeChanged(const AttributeModificationParams&) override;
   void ParseAttribute(const AttributeModificationParams&) override;

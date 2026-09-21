@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_MENU_LIST_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_MENU_LIST_ELEMENT_H_
 
+#include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_menu_owner_element.h"
 
@@ -19,7 +20,8 @@ class CORE_EXPORT HTMLMenuListElement final : public HTMLMenuOwnerElement {
     return ElementType::kHTMLMenuListElement;
   }
   bool HandleCommandInternal(HTMLElement& invoker,
-                             CommandEventType command) override;
+                             CommandEventType command,
+                             UIEvent* activate_event) override;
 
   // InvokingMenuItem returns the menuitem element which invoked this menulist
   // element, if this menulist is currently open and was opened by a menuitem.
@@ -34,8 +36,8 @@ class CORE_EXPORT HTMLMenuListElement final : public HTMLMenuOwnerElement {
   // These methods focus either the first or last of their descendant menuitem
   // elements, and return true if such a focusable menuitem was found and
   // focused.
-  bool FocusFirstItem();
-  bool FocusLastItem();
+  bool FocusFirstItem(FocusTrigger focus_trigger);
+  bool FocusLastItem(FocusTrigger focus_trigger);
 };
 
 }  // namespace blink

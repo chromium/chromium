@@ -2629,10 +2629,11 @@ bool HTMLInputElement::IsValidBuiltinCommand(HTMLElement& invoker,
 }
 
 bool HTMLInputElement::HandleCommandInternal(HTMLElement& invoker,
-                                             CommandEventType command) {
+                                             CommandEventType command,
+                                             UIEvent* activate_event) {
   CHECK(IsValidBuiltinCommand(invoker, command));
 
-  if (HTMLElement::HandleCommandInternal(invoker, command)) {
+  if (HTMLElement::HandleCommandInternal(invoker, command, activate_event)) {
     return true;
   }
 

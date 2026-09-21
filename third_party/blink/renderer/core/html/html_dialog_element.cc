@@ -383,11 +383,12 @@ bool HTMLDialogElement::IsValidBuiltinCommand(HTMLElement& invoker,
 }
 
 bool HTMLDialogElement::HandleCommandInternal(HTMLElement& invoker,
-                                              CommandEventType command) {
+                                              CommandEventType command,
+                                              UIEvent* activate_event) {
   if (!IsValidBuiltinCommand(invoker, command)) {
     return false;
   }
-  if (HTMLElement::HandleCommandInternal(invoker, command)) {
+  if (HTMLElement::HandleCommandInternal(invoker, command, activate_event)) {
     return true;
   }
 

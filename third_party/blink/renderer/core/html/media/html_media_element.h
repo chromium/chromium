@@ -107,6 +107,7 @@ class TextTrackList;
 class TimeRanges;
 class VideoTrack;
 class VideoTrackList;
+class UIEvent;
 class V8CanPlayTypeResult;
 class V8TextTrackKind;
 
@@ -447,7 +448,8 @@ class CORE_EXPORT HTMLMediaElement
   bool IsValidBuiltinCommand(HTMLElement& invoker,
                              CommandEventType command) override;
   bool HandleCommandInternal(HTMLElement& invoker,
-                             CommandEventType command) override;
+                             CommandEventType command,
+                             UIEvent* activate_event) override;
 
   // media::RemotePlaybackClientWrapper overrides:
   std::string GetActivePresentationId() override;

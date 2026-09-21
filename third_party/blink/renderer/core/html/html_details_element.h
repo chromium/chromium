@@ -27,6 +27,8 @@
 
 namespace blink {
 
+class UIEvent;
+
 class HTMLDetailsElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -49,7 +51,8 @@ class HTMLDetailsElement final : public HTMLElement {
   bool IsValidBuiltinCommand(HTMLElement& invoker,
                              CommandEventType command) override;
   bool HandleCommandInternal(HTMLElement& invoker,
-                             CommandEventType command) override;
+                             CommandEventType command,
+                             UIEvent* activate_event) override;
 
   // The name attribute for grouping of related details; empty string
   // means no grouping.
