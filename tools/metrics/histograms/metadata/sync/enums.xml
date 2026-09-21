@@ -389,7 +389,7 @@ chromium-metrics-reviews@google.com.
   <int value="115" label="PrefTranslateRecentTargets"/>
   <int value="116" label="BookmarkBarVisibilityState"/>
   <int value="117" label="SyncableAccountScopedPrefForTesting"/>
-  <int value="118" label="AutofillAtMemoryTriggerInfo"/>
+  <int value="118" label="(obsolete) AutofillAtMemoryTriggerInfo"/>
   <int value="119" label="AutofillGmailOtpFillingEnabled"/>
   <int value="120" label="AutofillGmailOtpFillingActivationDismissalTimestamp"/>
   <int value="121" label="DriveConsentState"/>

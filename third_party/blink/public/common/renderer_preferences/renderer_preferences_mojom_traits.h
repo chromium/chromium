@@ -274,10 +274,6 @@ struct BLINK_COMMON_EXPORT
     return data.autofill_shortcut_modifiers;
   }
 
-  static const std::u16string& autofill_trigger_string(
-      const ::blink::RendererPreferences& data) {
-    return data.autofill_trigger_string;
-  }
 
   static bool autofill_at_memory_double_ctrl_trigger_enabled(
       const ::blink::RendererPreferences& data) {

@@ -111,7 +111,6 @@ class AtMemoryHandlerTest : public test::AutofillRendererTest {
   void SetShortcutTrigger(ui::KeyboardCode key_code, int modifiers) {
     blink::RendererPreferences prefs =
         GetMainRenderFrame()->GetWebView()->GetRendererPreferences();
-    prefs.autofill_trigger_string = u"";
     prefs.autofill_shortcut_key_code = key_code;
     prefs.autofill_shortcut_modifiers = modifiers;
     GetMainRenderFrame()->GetWebView()->SetRendererPreferences(prefs);

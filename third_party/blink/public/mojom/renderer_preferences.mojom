@@ -193,12 +193,10 @@ struct RendererPreferences {
   bool uses_platform_autofill = false;
 
   // Triggers for the Autofill AtMemory UI.
-  // Typing the trigger string or pressing keyboard shortcut in an editable DOM
-  // element (e.g., <input> or <div contenteditable>) opens a UI that lets the
-  // user search for and fill values into the field.
+  // Pressing keyboard shortcut in an editable DOM element (e.g., <input> or
+  // <div contenteditable>) opens a UI that lets the user search for and fill
+  // values into the field.
   //
-  // An arbitrary string, e.g., "@@".
-  mojo_base.mojom.String16 autofill_trigger_string;
   // A `ui::KeyboardCode`.
   int32 autofill_shortcut_key_code = 0;
   // A `ui::EventFlags` bitmask.

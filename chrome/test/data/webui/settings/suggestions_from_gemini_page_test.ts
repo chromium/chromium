@@ -49,8 +49,6 @@ suite('SuggestionsFromGeminiPage', function() {
         document.createElement('settings-suggestions-from-gemini-page');
 
     page.prefs = settingsPrefs.prefs!;
-    page.setPrefValue(
-        'autofill.at_memory.trigger_info', {is_shortcut: false, trigger: '@@'});
     page.setPrefValue('autofill.at_memory.double_ctrl_trigger_enabled', false);
     page.setPrefValue('autofill.at_memory.shortcut', '');
     page.setPrefValue('generated.find_and_fill_with_gemini', true);

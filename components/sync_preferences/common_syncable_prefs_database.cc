@@ -165,7 +165,7 @@ enum {
   kPrefTranslateRecentTargets = 115,
   kBookmarkBarVisibilityState = 116,
   kSyncableAccountScopedPrefForTesting = 117,  // For tests.
-  kAutofillAtMemoryTriggerInfo = 118,
+  // kAutofillAtMemoryTriggerInfo = 118, (deprecated)
   kAutofillGmailOtpFillingEnabled = 119,
   kAutofillGmailOtpFillingActivationDismissalTimestamp = 120,
   kDriveConsentState = 121,
@@ -548,10 +548,6 @@ constexpr auto kCommonSyncablePrefsAllowlist =
           syncer::PRIORITY_PREFERENCES,
           PrefSensitivity::kExemptFromUserControlWhileSignedIn,
           MergeBehavior::kNone, WriteBehavior::kWriteToBoth}},
-        {autofill::prefs::kAutofillAtMemoryTriggerInfo,
-         {syncable_prefs_ids::kAutofillAtMemoryTriggerInfo, syncer::PREFERENCES,
-          PrefSensitivity::kNone, MergeBehavior::kNone,
-          WriteBehavior::kWriteToBoth}},
         {autofill::prefs::kAutofillGmailOtpFillingEnabled,
          {syncable_prefs_ids::kAutofillGmailOtpFillingEnabled,
           syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone,

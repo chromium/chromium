@@ -136,17 +136,6 @@ TEST_F(RendererPreferencesUtilTest, WebRTCIPHandlingURLValidEntries) {
             blink::mojom::WebRtcIpHandlingPolicy::kDefault);
 }
 
-TEST_F(RendererPreferencesUtilTest, AutofillAtMemoryTriggerString) {
-  blink::RendererPreferences renderer_preferences;
-  renderer_preferences_util::UpdateFromSystemSettings(&renderer_preferences,
-                                                      &profile_);
-  if constexpr (BUILDFLAG(IS_ANDROID)) {
-    EXPECT_TRUE(renderer_preferences.autofill_trigger_string.empty());
-  } else {
-    EXPECT_EQ(renderer_preferences.autofill_trigger_string, u"@@");
-  }
-}
-
 TEST_F(RendererPreferencesUtilTest, AutofillAtMemoryShortcut) {
   blink::RendererPreferences renderer_preferences;
   renderer_preferences_util::UpdateFromSystemSettings(&renderer_preferences,
@@ -154,11 +143,15 @@ TEST_F(RendererPreferencesUtilTest, AutofillAtMemoryShortcut) {
   EXPECT_EQ(renderer_preferences.autofill_shortcut_key_code, ui::VKEY_UNKNOWN);
   EXPECT_EQ(renderer_preferences.autofill_shortcut_modifiers, 0);
 
-  if constexpr (!BUILDFLAG(IS_ANDROID)) {
-    pref_service_->SetString(autofill::prefs::kAutofillAtMemoryShortcut,
-                             "Ctrl+Shift+Y");
-    renderer_preferences_util::UpdateFromSystemSettings(&renderer_preferences,
-                                                        &profile_);
+  pref_service_->SetString(autofill::prefs::kAutofillAtMemoryShortcut,
+                           "Ctrl+Shift+Y");
+  renderer_preferences_util::UpdateFromSystemSettings(&renderer_preferences,
+                                                      &profile_);
+  if constexpr (BUILDFLAG(IS_ANDROID)) {
+    EXPECT_EQ(renderer_preferences.autofill_shortcut_key_code,
+              ui::VKEY_UNKNOWN);
+    EXPECT_EQ(renderer_preferences.autofill_shortcut_modifiers, 0);
+  } else {
     EXPECT_EQ(renderer_preferences.autofill_shortcut_key_code, ui::VKEY_Y);
     EXPECT_EQ(renderer_preferences.autofill_shortcut_modifiers,
               ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
