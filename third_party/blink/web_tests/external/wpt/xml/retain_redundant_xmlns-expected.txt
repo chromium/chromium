@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Non-prefixed: xmlns attribute is retained when same default namespace is already in scope on parent
+  assert_true: child should have 'xmlns' attribute expected true got false
+[FAIL] Non-prefixed: xmlns attribute is retained when intermediate element has no explicit namespace declaration
+  assert_true: child should have 'xmlns' attribute expected true got false
+[FAIL] Prefixed: xmlns:p attribute is retained when same prefix namespace is already in scope on parent
+  assert_true: child should have 'xmlns:p' attribute expected true got false
+Harness: the test ran to completion.
+
