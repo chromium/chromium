@@ -11,7 +11,9 @@ export function getHtml(this: TabGroupDotElement) {
   return html`<!--_html_template_start_-->
 <svg id="groupSvg" viewBox="${this.getViewBox_()}"
     xmlns="http://www.w3.org/2000/svg">
-  <circle id="groupDot" cx="0" cy="0" r="${this.getRadius_()}"></circle>
+  <circle id="groupDot" cx="0" cy="0" r="${this.getRadius_()}"
+      stroke-width="${this.getStrokeWidth_()}">
+  </circle>
 </svg>
 <!--_html_template_end_-->`;
   // clang-format on

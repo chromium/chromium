@@ -47,7 +47,8 @@ IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
                                     id1, /*position=*/0);
   tab_groups::SavedTabGroup group1(
       u"Group 1", tab_groups::TabGroupColorId::kBlue, {tab1},
-      /*position=*/std::nullopt, id1, /*local_group_id=*/std::nullopt,
+      /*position=*/std::nullopt, id1,
+      /*local_group_id=*/tab_groups::TabGroupId::GenerateNew(),
       /*creator_cache_guid=*/std::nullopt,
       /*last_updater_cache_guid=*/std::nullopt,
       /*created_before_syncing_tab_groups=*/false,

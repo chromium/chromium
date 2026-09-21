@@ -6,7 +6,7 @@ import {Color, TabGroupDotSize, tabGroupsBrowserProxyFactory, TabGroupsDelegate,
 import type {TabGroup} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {render} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 suite('TabGroupsDelegateTest', () => {
@@ -19,16 +19,19 @@ suite('TabGroupsDelegateTest', () => {
       id: {value: '00000000-0000-0000-0000-000000000001'},
       color: Color.kBlue,
       title: 'Sample Group 1',
+      isOpen: true,
     },
     {
       id: {value: '00000000-0000-0000-0000-000000000002'},
       color: Color.kRed,
       title: 'Sample Group 2',
+      isOpen: false,
     },
     {
       id: {value: '00000000-0000-0000-0000-000000000003'},
       color: Color.kGreen,
       title: 'Sample Group 3',
+      isOpen: true,
     },
   ];
 
@@ -59,9 +62,17 @@ suite('TabGroupsDelegateTest', () => {
     const container = document.createElement('div');
     document.body.appendChild(container);
     render(items[0]!.prefixIcon!.element!, container);
-    const dot = container.querySelector('tab-group-dot');
+    let dot = container.querySelector('tab-group-dot');
     assertTrue(!!dot);
     assertEquals(Color.kBlue, dot.color);
+    assertTrue(dot.filled);
+    assertEquals(TabGroupDotSize.LARGE, dot.size);
+
+    render(items[1]!.prefixIcon!.element!, container);
+    dot = container.querySelector('tab-group-dot');
+    assertTrue(!!dot);
+    assertEquals(Color.kRed, dot.color);
+    assertFalse(dot.filled);
     assertEquals(TabGroupDotSize.LARGE, dot.size);
   });
 });

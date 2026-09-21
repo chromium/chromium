@@ -37,6 +37,7 @@ export class TabGroupsDelegate implements
       title: [group.title],
       prefixIcon: {
         element: html`<tab-group-dot .color="${group.color}"
+            .filled="${group.isOpen}"
             .size="${TabGroupDotSize.LARGE}"></tab-group-dot>`,
       },
       size: CrUrlListItemSize.COMPACT,

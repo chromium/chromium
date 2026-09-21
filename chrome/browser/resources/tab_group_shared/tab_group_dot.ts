@@ -33,6 +33,10 @@ export class TabGroupDotElement extends CrLitElement {
   static override get properties() {
     return {
       color: {type: Number},
+      filled: {
+        type: Boolean,
+        reflect: true,
+      },
       size: {
         type: String,
         reflect: true,
@@ -42,6 +46,7 @@ export class TabGroupDotElement extends CrLitElement {
   }
 
   accessor color: Color = Color.kGrey;
+  accessor filled: boolean = true;
   accessor size: TabGroupDotSize = TabGroupDotSize.SMALL;
   accessor tabGroupColorRefresh_: boolean =
       loadTimeData.valueExists('useTabGroupColorRefresh') ?
@@ -68,8 +73,23 @@ export class TabGroupDotElement extends CrLitElement {
                                                  '-5 -5 10 10';
   }
 
-  protected getRadius_(): number {
+  protected getOuterRadius_(): number {
     return this.size === TabGroupDotSize.LARGE ? 8 : 4;
+  }
+
+  protected getRadius_(): number {
+    const outerRadius = this.getOuterRadius_();
+    if (this.filled) {
+      return outerRadius;
+    }
+    return outerRadius - this.getStrokeWidth_() / 2;
+  }
+
+  protected getStrokeWidth_(): number {
+    if (this.filled) {
+      return 0;
+    }
+    return this.getOuterRadius_() * 0.25;
   }
 }
 

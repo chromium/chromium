@@ -33,3 +33,9 @@ svg {
 circle {
   fill: var(--group-dot-color);
 }
+
+:host(:not([filled])) #groupDot,
+:host(:not([filled])) circle {
+  fill: none;
+  stroke: var(--group-dot-color);
+}

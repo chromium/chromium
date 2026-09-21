@@ -12,6 +12,7 @@ struct TabGroup {
   mojo_base.mojom.Uuid id;
   tab_groups.mojom.Color color;
   string title;
+  bool is_open;
 };
 
 // Browser-side handler for requests from WebUI page.

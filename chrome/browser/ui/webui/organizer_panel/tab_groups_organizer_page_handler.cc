@@ -66,6 +66,7 @@ void TabGroupsOrganizerPageHandler::GetTabGroups(
     tab_group->title = base::UTF16ToUTF8(
         tab_groups::TabGroupMenuUtils::GetMenuTextForGroup(group));
     tab_group->color = group.color();
+    tab_group->is_open = group.local_group_id().has_value();
     tab_groups.push_back(std::move(tab_group));
   }
 

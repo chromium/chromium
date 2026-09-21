@@ -23,6 +23,7 @@ suite('TabGroupDotTest', () => {
 
   test('renders svg and circle', () => {
     assertEquals(TabGroupDotSize.SMALL, dot.size);
+    assertTrue(dot.filled);
     const svg = dot.shadowRoot.querySelector('svg');
     assertTrue(!!svg);
     assertEquals('-5 -5 10 10', svg.getAttribute('viewBox'));
@@ -34,6 +35,30 @@ suite('TabGroupDotTest', () => {
     assertEquals('0', circle.getAttribute('cx'));
     assertEquals('0', circle.getAttribute('cy'));
     assertEquals('4', circle.getAttribute('r'));
+    assertEquals('0', circle.getAttribute('stroke-width'));
+  });
+
+  test('sets filled', async () => {
+    const circle = dot.shadowRoot.querySelector('circle');
+    assertTrue(!!circle);
+
+    dot.filled = false;
+    await microtasksFinished();
+
+    assertEquals('3.5', circle.getAttribute('r'));
+    assertEquals('1', circle.getAttribute('stroke-width'));
+
+    dot.size = TabGroupDotSize.LARGE;
+    await microtasksFinished();
+
+    assertEquals('7', circle.getAttribute('r'));
+    assertEquals('2', circle.getAttribute('stroke-width'));
+
+    dot.filled = true;
+    await microtasksFinished();
+
+    assertEquals('8', circle.getAttribute('r'));
+    assertEquals('0', circle.getAttribute('stroke-width'));
   });
 
   test('sets size', async () => {
