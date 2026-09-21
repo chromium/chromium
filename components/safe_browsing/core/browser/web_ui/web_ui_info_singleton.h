@@ -136,6 +136,13 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
   // Clear the list of sent hash-prefix real-time pings and responses.
   void ClearHPRTLookupPings();
 
+  // V5GetHashProtocolManager::WebUIDelegate:
+  // Adds the completed V5 get-hash network check and sends it to all the open
+  // chrome://safe-browsing tabs.
+  //  - `lookup`: the details of the network check and its outcome.
+  void AddToV5GetHashLookups(
+      const V5GetHashProtocolManager::V5GetHashLookup& lookup) override;
+
   // Log an arbitrary message. Frequently used for debugging.
   void LogMessage(const std::string& message);
 

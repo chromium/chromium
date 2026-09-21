@@ -297,6 +297,11 @@ void WebUIInfoSingleton::ClearHPRTLookupPings() {
   std::map<int, V5::SearchHashesResponse>().swap(hprt_lookup_responses_);
 }
 
+void WebUIInfoSingleton::AddToV5GetHashLookups(
+    const V5GetHashProtocolManager::V5GetHashLookup& lookup) {
+  // TODO(crbug.com/362791941): implement
+}
+
 void WebUIInfoSingleton::LogMessage(const std::string& message) {
   if (!HasListener()) {
     return;

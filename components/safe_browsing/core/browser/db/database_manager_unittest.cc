@@ -83,6 +83,8 @@ class TestClient : public SafeBrowsingDatabaseManager::Client {
 class TestWebUIDelegate : public V5GetHashProtocolManager::WebUIDelegate {
  public:
   bool HasListener() const override { return has_listener_; }
+  void AddToV5GetHashLookups(
+      const V5GetHashProtocolManager::V5GetHashLookup& lookup) override {}
   void set_has_listener(bool has_listener) { has_listener_ = has_listener; }
 
  private:
