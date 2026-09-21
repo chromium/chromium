@@ -26,11 +26,13 @@ import type {EntryAnnotationsUpdatedDetail} from './memory_banks_edit_dialog.js'
 import {computeSuggestions, matchesMemoryBankEntry, parseSearchQuery} from './memory_banks_search.js';
 import type {SearchSuggestion} from './memory_banks_search.js';
 
-function downloadFile(filename: string, content: string) {
+function downloadFile(
+    filename: string, content: string,
+    mimeType: string = 'text/plain;charset=utf-8') {
   if (!content) {
     return;
   }
-  const blob = new Blob([content], {type: 'text/plain;charset=utf-8'});
+  const blob = new Blob([content], {type: mimeType});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
@@ -400,7 +402,9 @@ export class MemoryBanksElement extends CrLitElement {
   }
 
   protected onDownloadGeminiResponseClick_() {
-    downloadFile('gemini_response.txt', this.geminiResponse_);
+    downloadFile(
+        'gemini_response.md', this.geminiResponse_,
+        'text/markdown;charset=utf-8');
   }
 
   protected async onDeleteClick_() {

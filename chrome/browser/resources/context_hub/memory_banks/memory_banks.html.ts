@@ -119,12 +119,6 @@ export function getHtml(this: MemoryBanksElement) {
                         @click="${this.onQuickOptionClick_}">
                       Compare
                     </cr-button>
-                    <cr-button class="chip"
-                        data-option="Create an itinerary from selected memories"
-                        ?disabled="${this.isAskingGemini_}"
-                        @click="${this.onQuickOptionClick_}">
-                      Create an itinerary
-                    </cr-button>
                   </div>
                   ${
                                           this.geminiResponse_ ? html`
