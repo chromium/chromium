@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/magic_boost/magic_boost_controller.h"
 
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_metrics.h"
@@ -20,8 +21,11 @@ namespace ash {
 
 namespace {
 
-const std::string kHistogramName = kMagicBoostDisclaimerViewHistogram;
 constexpr char kTestUrl[] = "https://www.google.com";
+
+std::string HistogramName(std::string_view suffix) {
+  return base::StrCat({kMagicBoostDisclaimerViewHistogram, suffix});
+}
 
 }  // namespace
 
@@ -72,8 +76,8 @@ TEST_F(MagicBoostControllerTest, DisclaimerWidget) {
   EXPECT_FALSE(controller.disclaimer_widget_for_test());
 
   auto histogram_tester = std::make_unique<base::HistogramTester>();
-  histogram_tester->ExpectTotalCount(kHistogramName + "Total", 0);
-  histogram_tester->ExpectTotalCount(kHistogramName + "OrcaAndHmr", 0);
+  histogram_tester->ExpectTotalCount(HistogramName("Total"), 0);
+  histogram_tester->ExpectTotalCount(HistogramName("OrcaAndHmr"), 0);
 
   controller.ShowDisclaimerUi(display::Screen::Get()->GetPrimaryDisplay().id(),
                               magic_boost::TransitionAction::kDoNothing,
@@ -86,18 +90,18 @@ TEST_F(MagicBoostControllerTest, DisclaimerWidget) {
   EXPECT_FALSE(controller.disclaimer_widget_for_test());
 
   // Records the `kShow` metrics.
-  histogram_tester->ExpectTotalCount(kHistogramName + "Total", 1);
-  histogram_tester->ExpectTotalCount(kHistogramName + "OrcaAndHmr", 1);
-  histogram_tester->ExpectBucketCount(kHistogramName + "OrcaAndHmr",
+  histogram_tester->ExpectTotalCount(HistogramName("Total"), 1);
+  histogram_tester->ExpectTotalCount(HistogramName("OrcaAndHmr"), 1);
+  histogram_tester->ExpectBucketCount(HistogramName("OrcaAndHmr"),
                                       DisclaimerViewAction::kShow, 1);
-  histogram_tester->ExpectBucketCount(kHistogramName + "Total",
+  histogram_tester->ExpectBucketCount(HistogramName("Total"),
                                       DisclaimerViewAction::kShow, 1);
 }
 
 TEST_F(MagicBoostControllerTest, OnDisclaimerAcceptButtonPressed) {
   auto histogram_tester = std::make_unique<base::HistogramTester>();
-  histogram_tester->ExpectTotalCount(kHistogramName + "Total", 0);
-  histogram_tester->ExpectTotalCount(kHistogramName + "HmrOnly", 0);
+  histogram_tester->ExpectTotalCount(HistogramName("Total"), 0);
+  histogram_tester->ExpectTotalCount(HistogramName("HmrOnly"), 0);
 
   const int64_t display_id = display::Screen::Get()->GetPrimaryDisplay().id();
   controller.ShowDisclaimerUi(display_id,
@@ -117,20 +121,19 @@ TEST_F(MagicBoostControllerTest, OnDisclaimerAcceptButtonPressed) {
   EXPECT_FALSE(controller.disclaimer_widget_for_test());
 
   // Records the `kAcceptButtonPressed` metrics.
-  histogram_tester->ExpectTotalCount(kHistogramName + "Total", 2);
-  histogram_tester->ExpectBucketCount(kHistogramName + "HmrOnly",
+  histogram_tester->ExpectTotalCount(HistogramName("Total"), 2);
+  histogram_tester->ExpectBucketCount(HistogramName("HmrOnly"),
                                       DisclaimerViewAction::kShow, 1);
   histogram_tester->ExpectBucketCount(
-      kHistogramName + "HmrOnly", DisclaimerViewAction::kAcceptButtonPressed,
-      1);
+      HistogramName("HmrOnly"), DisclaimerViewAction::kAcceptButtonPressed, 1);
   histogram_tester->ExpectBucketCount(
-      kHistogramName + "Total", DisclaimerViewAction::kAcceptButtonPressed, 1);
+      HistogramName("Total"), DisclaimerViewAction::kAcceptButtonPressed, 1);
 }
 
 TEST_F(MagicBoostControllerTest, OnDisclaimerAcceptButtonPressedIncludeOrca) {
   auto histogram_tester = std::make_unique<base::HistogramTester>();
-  histogram_tester->ExpectTotalCount(kHistogramName + "Total", 0);
-  histogram_tester->ExpectTotalCount(kHistogramName + "OrcaAndHmr", 0);
+  histogram_tester->ExpectTotalCount(HistogramName("Total"), 0);
+  histogram_tester->ExpectTotalCount(HistogramName("OrcaAndHmr"), 0);
 
   const int64_t display_id = display::Screen::Get()->GetPrimaryDisplay().id();
   controller.ShowDisclaimerUi(display_id,
@@ -150,14 +153,14 @@ TEST_F(MagicBoostControllerTest, OnDisclaimerAcceptButtonPressedIncludeOrca) {
   EXPECT_FALSE(controller.disclaimer_widget_for_test());
 
   // Records the `kAcceptButtonPressed` metrics.
-  histogram_tester->ExpectTotalCount(kHistogramName + "Total", 2);
-  histogram_tester->ExpectBucketCount(kHistogramName + "OrcaAndHmr",
+  histogram_tester->ExpectTotalCount(HistogramName("Total"), 2);
+  histogram_tester->ExpectBucketCount(HistogramName("OrcaAndHmr"),
                                       DisclaimerViewAction::kShow, 1);
   histogram_tester->ExpectBucketCount(
-      kHistogramName + "OrcaAndHmr", DisclaimerViewAction::kAcceptButtonPressed,
+      HistogramName("OrcaAndHmr"), DisclaimerViewAction::kAcceptButtonPressed,
       1);
   histogram_tester->ExpectBucketCount(
-      kHistogramName + "Total", DisclaimerViewAction::kAcceptButtonPressed, 1);
+      HistogramName("Total"), DisclaimerViewAction::kAcceptButtonPressed, 1);
 }
 
 TEST_F(MagicBoostControllerTest,
@@ -189,8 +192,8 @@ TEST_F(MagicBoostControllerTest,
 
 TEST_F(MagicBoostControllerTest, OnDisclaimerDeclineButtonPressed) {
   auto histogram_tester = std::make_unique<base::HistogramTester>();
-  histogram_tester->ExpectTotalCount(kHistogramName + "Total", 0);
-  histogram_tester->ExpectTotalCount(kHistogramName + "HmrOnly", 0);
+  histogram_tester->ExpectTotalCount(HistogramName("Total"), 0);
+  histogram_tester->ExpectTotalCount(HistogramName("HmrOnly"), 0);
 
   controller.ShowDisclaimerUi(display::Screen::Get()->GetPrimaryDisplay().id(),
                               magic_boost::TransitionAction::kDoNothing,
@@ -210,20 +213,19 @@ TEST_F(MagicBoostControllerTest, OnDisclaimerDeclineButtonPressed) {
   EXPECT_FALSE(controller.disclaimer_widget_for_test());
 
   // Records the `kDeclineButtonPressed` metrics.
-  histogram_tester->ExpectTotalCount(kHistogramName + "Total", 2);
-  histogram_tester->ExpectBucketCount(kHistogramName + "HmrOnly",
+  histogram_tester->ExpectTotalCount(HistogramName("Total"), 2);
+  histogram_tester->ExpectBucketCount(HistogramName("HmrOnly"),
                                       DisclaimerViewAction::kShow, 1);
   histogram_tester->ExpectBucketCount(
-      kHistogramName + "HmrOnly", DisclaimerViewAction::kDeclineButtonPressed,
-      1);
+      HistogramName("HmrOnly"), DisclaimerViewAction::kDeclineButtonPressed, 1);
   histogram_tester->ExpectBucketCount(
-      kHistogramName + "Total", DisclaimerViewAction::kDeclineButtonPressed, 1);
+      HistogramName("Total"), DisclaimerViewAction::kDeclineButtonPressed, 1);
 }
 
 TEST_F(MagicBoostControllerTest, OnDisclaimerDeclineButtonPressedIncludeOrca) {
   auto histogram_tester = std::make_unique<base::HistogramTester>();
-  histogram_tester->ExpectTotalCount(kHistogramName + "Total", 0);
-  histogram_tester->ExpectTotalCount(kHistogramName + "OrcaAndHmr", 0);
+  histogram_tester->ExpectTotalCount(HistogramName("Total"), 0);
+  histogram_tester->ExpectTotalCount(HistogramName("OrcaAndHmr"), 0);
 
   controller.ShowDisclaimerUi(display::Screen::Get()->GetPrimaryDisplay().id(),
                               magic_boost::TransitionAction::kDoNothing,
@@ -243,14 +245,14 @@ TEST_F(MagicBoostControllerTest, OnDisclaimerDeclineButtonPressedIncludeOrca) {
   EXPECT_FALSE(controller.disclaimer_widget_for_test());
 
   // Records the `kDeclineButtonPressed` metrics.
-  histogram_tester->ExpectTotalCount(kHistogramName + "Total", 2);
-  histogram_tester->ExpectBucketCount(kHistogramName + "OrcaAndHmr",
+  histogram_tester->ExpectTotalCount(HistogramName("Total"), 2);
+  histogram_tester->ExpectBucketCount(HistogramName("OrcaAndHmr"),
                                       DisclaimerViewAction::kShow, 1);
   histogram_tester->ExpectBucketCount(
-      kHistogramName + "OrcaAndHmr",
-      DisclaimerViewAction::kDeclineButtonPressed, 1);
+      HistogramName("OrcaAndHmr"), DisclaimerViewAction::kDeclineButtonPressed,
+      1);
   histogram_tester->ExpectBucketCount(
-      kHistogramName + "Total", DisclaimerViewAction::kDeclineButtonPressed, 1);
+      HistogramName("Total"), DisclaimerViewAction::kDeclineButtonPressed, 1);
 }
 
 TEST_F(MagicBoostControllerTest, ClickingOnLinkClosesWidget) {
