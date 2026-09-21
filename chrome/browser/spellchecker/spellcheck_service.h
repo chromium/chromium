@@ -295,10 +295,8 @@ class SpellcheckService : public KeyedService,
   void InitializePlatformLanguageMacWithLanguage(
       const std::string& platform_lang);
 
-  // Callback for when the platform language has been retrieved on a background
-  // thread. Sets the platform language and then performs the deferred
-  // custom dictionary load and Hunspell dictionary initialization.
-  void InitMacDeferredSpellcheck(const std::string& platform_lang);
+  // Orchestrates deferred startup initialization for macOS spellchecking.
+  void InitMacDeferredSpellcheck();
 #endif
 
   // WindowsSpellChecker must be created before the dictionary instantiation and
