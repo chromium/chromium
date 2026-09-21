@@ -6,6 +6,7 @@
 #include "skia/ext/convolver.h"
 
 #include <algorithm>
+#include <array>
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
@@ -483,15 +484,14 @@ void BGRAConvolve2D(const unsigned char* source_data,
       if (simd.convolve_4rows_horizontally &&
           next_x_row + 3 < last_filter_offset + last_filter_length -
           avoid_simd_rows) {
-        const unsigned char* src[4];
-        unsigned char* out_row[4];
+        std::array<const unsigned char*, 4> src;
+        std::array<unsigned char*, 4> out_row;
         for (int i = 0; i < 4; ++i) {
-          UNSAFE_TODO({
-            src[i] = &source_data[(next_x_row + i) * source_byte_row_stride];
-            out_row[i] = row_buffer.AdvanceRow();
-          });
+          src[i] = UNSAFE_TODO(
+              &source_data[(next_x_row + i) * source_byte_row_stride]);
+          out_row[i] = row_buffer.AdvanceRow();
         }
-        simd.convolve_4rows_horizontally(src, filter_x, out_row);
+        simd.convolve_4rows_horizontally(src.data(), filter_x, out_row.data());
         next_x_row += 4;
       } else {
         // Check if we need to avoid SSE2 for this row.

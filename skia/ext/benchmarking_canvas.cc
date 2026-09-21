@@ -7,9 +7,10 @@
 #include <array>
 #include <memory>
 #include <sstream>
+#include <string_view>
 #include <utility>
 
-#include "base/check_op.h"
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -125,10 +126,10 @@ base::Value AsValue(SkBlendMode mode) {
 }
 
 base::Value AsValue(SkCanvas::PointMode mode) {
-  static const char* gModeStrings[] = { "Points", "Lines", "Polygon" };
-  DCHECK_LT(static_cast<size_t>(mode), std::size(gModeStrings));
+  static constexpr auto gModeStrings =
+      std::to_array<std::string_view>({"Points", "Lines", "Polygon"});
 
-  return base::Value(UNSAFE_TODO(gModeStrings[mode]));
+  return base::Value(gModeStrings[mode]);
 }
 
 base::Value AsValue(const SkColorFilter& filter) {
@@ -141,11 +142,11 @@ base::Value AsValue(const SkColorFilter& filter) {
     val.Set("flags", builder.str());
   }
 
-  SkScalar color_matrix[20];
-  if (filter.asAColorMatrix(color_matrix)) {
+  std::array<SkScalar, 20> color_matrix;
+  if (filter.asAColorMatrix(color_matrix.data())) {
     base::ListValue color_matrix_val;
-    for (unsigned i = 0; i < 20; ++i) {
-      color_matrix_val.Append(AsValue(UNSAFE_TODO(color_matrix[i])));
+    for (SkScalar m : color_matrix) {
+      color_matrix_val.Append(AsValue(m));
     }
 
     val.Set("color_matrix", std::move(color_matrix_val));
@@ -175,10 +176,9 @@ base::Value AsValue(const SkPaint& paint) {
     val.Set("Color", AsValue(paint.getColor()));
 
   if (paint.getStyle() != default_paint.getStyle()) {
-    static const char* gStyleStrings[] = { "Fill", "Stroke", "StrokeFill" };
-    DCHECK_LT(static_cast<size_t>(paint.getStyle()),
-              std::size(gStyleStrings));
-    val.Set("Style", UNSAFE_TODO(gStyleStrings[paint.getStyle()]));
+    static constexpr auto gStyleStrings =
+        std::to_array<std::string_view>({"Fill", "Stroke", "StrokeFill"});
+    val.Set("Style", gStyleStrings[paint.getStyle()]);
   }
 
   if (paint.asBlendMode() != default_paint.asBlendMode()) {
@@ -207,16 +207,15 @@ base::Value SaveLayerFlagsAsValue(SkCanvas::SaveLayerFlags flags) {
 }
 
 base::Value AsValue(SkClipOp op) {
-  static const char* gOpStrings[] = { "Difference",
-                                      "Intersect",
-                                      "Union",
-                                      "XOR",
-                                      "ReverseDifference",
-                                      "Replace"
-                                    };
-  size_t index = static_cast<size_t>(op);
-  DCHECK_LT(index, std::size(gOpStrings));
-  return base::Value(UNSAFE_TODO(gOpStrings[index]));
+  static constexpr auto gOpStrings = std::to_array<std::string_view>({
+      "Difference",
+      "Intersect",
+      "Union",
+      "XOR",
+      "ReverseDifference",
+      "Replace",
+  });
+  return base::Value(gOpStrings[static_cast<size_t>(op)]);
 }
 
 base::Value AsValue(const SkRegion& region) {
@@ -243,45 +242,36 @@ base::Value AsValue(const SkTextBlob& blob) {
 base::Value AsValue(const SkPath& path) {
   base::DictValue val;
 
-  static const char* gFillStrings[] =
-      { "winding", "even-odd", "inverse-winding", "inverse-even-odd" };
-  size_t index = static_cast<size_t>(path.getFillType());
-  DCHECK_LT(index, std::size(gFillStrings));
-  val.Set("fill-type", UNSAFE_TODO(gFillStrings[index]));
+  static constexpr auto gFillStrings = std::to_array<std::string_view>(
+      {"winding", "even-odd", "inverse-winding", "inverse-even-odd"});
+  val.Set("fill-type", gFillStrings[static_cast<size_t>(path.getFillType())]);
   val.Set("convex", path.isConvex());
   val.Set("is-rect", path.isRect(nullptr));
   val.Set("bounds", AsValue(path.getBounds()));
 
-  static const char* gVerbStrings[] =
-      { "move", "line", "quad", "conic", "cubic", "close", "done" };
-  static const int gPtsPerVerb[] = { 1, 1, 2, 2, 3, 0, 0 };
-  static const int gPtOffsetPerVerb[] = { 0, 1, 1, 1, 1, 0, 0 };
+  static constexpr auto gVerbStrings = std::to_array<std::string_view>(
+      {"move", "line", "quad", "conic", "cubic", "close", "done"});
+  static constexpr auto gPtsPerVerb = std::to_array<int>({1, 1, 2, 2, 3, 0, 0});
+  static constexpr auto gPtOffsetPerVerb =
+      std::to_array<int>({0, 1, 1, 1, 1, 0, 0});
   static_assert(
-      std::size(gVerbStrings) == static_cast<size_t>(SkPath::kDone_Verb + 1),
+      gVerbStrings.size() == static_cast<size_t>(SkPath::kDone_Verb + 1),
       "gVerbStrings size mismatch");
-  static_assert(
-      std::size(gVerbStrings) == std::size(gPtsPerVerb),
-      "gPtsPerVerb size mismatch");
-  static_assert(
-      std::size(gVerbStrings) == std::size(gPtOffsetPerVerb),
-      "gPtOffsetPerVerb size mismatch");
 
   base::ListValue verbs_val;
   SkPath::RawIter iter(const_cast<SkPath&>(path));
-  SkPoint points[4];
+  std::array<SkPoint, 4> points;
 
-  for (SkPath::Verb verb = iter.next(points); verb != SkPath::kDone_Verb;
-       verb = iter.next(points)) {
-    DCHECK_LT(static_cast<size_t>(verb), std::size(gVerbStrings));
-
+  for (SkPath::Verb verb = iter.next(points.data()); verb != SkPath::kDone_Verb;
+       verb = iter.next(points.data())) {
     base::DictValue verb_val;
     base::ListValue pts_val;
 
-    for (int i = 0; i < UNSAFE_TODO(gPtsPerVerb[verb]); ++i) {
-      pts_val.Append(AsValue(UNSAFE_TODO(points[i + gPtOffsetPerVerb[verb]])));
+    for (int i = 0; i < gPtsPerVerb[verb]; ++i) {
+      pts_val.Append(AsValue(points[i + gPtOffsetPerVerb[verb]]));
     }
 
-    verb_val.Set(UNSAFE_TODO(gVerbStrings[verb]), std::move(pts_val));
+    verb_val.Set(gVerbStrings[verb], std::move(pts_val));
 
     if (SkPath::kConic_Verb == verb)
       verb_val.Set("weight", AsValue(iter.conicWeight()));

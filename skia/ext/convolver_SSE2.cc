@@ -5,13 +5,15 @@
 #include "skia/ext/convolver_SSE2.h"
 
 #include <algorithm>
+#include <array>
 
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "skia/ext/convolver.h"
 #include "third_party/skia/include/core/SkTypes.h"
 
-#include <emmintrin.h>  // ARCH_CPU_X86_FAMILY was defined in build/config.h
+// ARCH_CPU_X86_FAMILY was defined in build_config.h
+#include <emmintrin.h>
 
 namespace skia {
 
@@ -25,13 +27,15 @@ void ConvolveHorizontally_SSE2(const unsigned char* src_data,
 
   int filter_offset, filter_length;
   __m128i zero = _mm_setzero_si128();
-  __m128i mask[4];
   // |mask| will be used to decimate all extra filter coefficients that are
   // loaded by SIMD when |filter_length| is not divisible by 4.
   // mask[0] is not used in following algorithm.
-  mask[1] = _mm_set_epi16(0, 0, 0, 0, 0, 0, 0, -1);
-  mask[2] = _mm_set_epi16(0, 0, 0, 0, 0, 0, -1, -1);
-  mask[3] = _mm_set_epi16(0, 0, 0, 0, 0, -1, -1, -1);
+  const auto mask = std::to_array<__m128i>({
+      _mm_setzero_si128(),
+      _mm_set_epi16(0, 0, 0, 0, 0, 0, 0, -1),
+      _mm_set_epi16(0, 0, 0, 0, 0, 0, -1, -1),
+      _mm_set_epi16(0, 0, 0, 0, 0, -1, -1, -1),
+  });
 
   // Output one pixel each iteration, calculating all channels (RGBA) together.
   for (int out_x = 0; out_x < num_values; out_x++) {
@@ -105,7 +109,7 @@ void ConvolveHorizontally_SSE2(const unsigned char* src_data,
       __m128i coeff, coeff16;
       coeff = _mm_loadl_epi64(reinterpret_cast<const __m128i*>(filter_values));
       // Mask out extra filter taps.
-      coeff = _mm_and_si128(coeff, UNSAFE_TODO(mask[r]));
+      coeff = _mm_and_si128(coeff, mask[r]);
       coeff16 = _mm_shufflelo_epi16(coeff, _MM_SHUFFLE(1, 1, 0, 0));
       coeff16 = _mm_unpacklo_epi16(coeff16, coeff16);
 
@@ -154,13 +158,15 @@ void Convolve4RowsHorizontally_SSE2(const unsigned char* src_data[4],
 
   int filter_offset, filter_length;
   __m128i zero = _mm_setzero_si128();
-  __m128i mask[4];
   // |mask| will be used to decimate all extra filter coefficients that are
   // loaded by SIMD when |filter_length| is not divisible by 4.
   // mask[0] is not used in following algorithm.
-  mask[1] = _mm_set_epi16(0, 0, 0, 0, 0, 0, 0, -1);
-  mask[2] = _mm_set_epi16(0, 0, 0, 0, 0, 0, -1, -1);
-  mask[3] = _mm_set_epi16(0, 0, 0, 0, 0, -1, -1, -1);
+  const auto mask = std::to_array<__m128i>({
+      _mm_setzero_si128(),
+      _mm_set_epi16(0, 0, 0, 0, 0, 0, 0, -1),
+      _mm_set_epi16(0, 0, 0, 0, 0, 0, -1, -1),
+      _mm_set_epi16(0, 0, 0, 0, 0, -1, -1, -1),
+  });
 
   // Output one pixel each iteration, calculating all channels (RGBA) together.
   for (int out_x = 0; out_x < num_values; out_x++) {
@@ -221,7 +227,7 @@ void Convolve4RowsHorizontally_SSE2(const unsigned char* src_data[4],
       __m128i coeff;
       coeff = _mm_loadl_epi64(reinterpret_cast<const __m128i*>(filter_values));
       // Mask out extra filter taps.
-      coeff = _mm_and_si128(coeff, UNSAFE_TODO(mask[r]));
+      coeff = _mm_and_si128(coeff, mask[r]);
 
       __m128i coeff16lo = _mm_shufflelo_epi16(coeff, _MM_SHUFFLE(1, 1, 0, 0));
       /* c1 c1 c1 c1 c0 c0 c0 c0 */
