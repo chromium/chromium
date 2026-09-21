@@ -57,7 +57,6 @@ bool RemoteActorSelectionDialogController::ShouldShowTopIllustration() const {
 }
 
 std::u16string RemoteActorSelectionDialogController::GetTitle() const {
-  // TODO(crbug.com/558163687): Enable translations closer to launch.
   std::u16string formatted_domain = url_formatter::FormatUrlForSecurityDisplay(
       GURL(credential_domain_),
       url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
@@ -66,7 +65,6 @@ std::u16string RemoteActorSelectionDialogController::GetTitle() const {
 }
 
 std::u16string RemoteActorSelectionDialogController::GetSubtitle() const {
-  // TODO(crbug.com/558163687): Enable translations closer to launch.
   std::vector<size_t> offsets;
   std::u16string subtitle = l10n_util::GetStringFUTF16(
       IDS_REMOTE_ACTOR_SHARING_DIALOG_SUBTITLE,
@@ -96,7 +94,6 @@ void RemoteActorSelectionDialogController::OnSubtitleLinkClicked() {
 }
 
 std::u16string RemoteActorSelectionDialogController::GetOkButtonLabel() const {
-  // TODO(crbug.com/558163687): Enable translations closer to launch.
   return l10n_util::GetStringUTF16(
       IDS_REMOTE_ACTOR_SHARING_DIALOG_ALLOW_BUTTON);
 }

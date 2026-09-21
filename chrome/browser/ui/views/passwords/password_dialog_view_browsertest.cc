@@ -691,12 +691,12 @@ void PasswordDialogViewTest::ShowUi(const std::string& name) {
     EXPECT_CALL(*remote_actor_mock_controller_, ShouldShowTopIllustration())
         .WillRepeatedly(Return(true));
     EXPECT_CALL(*remote_actor_mock_controller_, GetTitle())
-        .WillRepeatedly(Return(
-            u"Allow Gemini Spark to sign in to terracottaand.co for you?"));
+        .WillRepeatedly(
+            Return(u"Allow Gemini to sign in to terracottaand.co for you?"));
     std::u16string subtitle =
-        u"Spark can use Google Password Manager to sign in "
-        u"for you. Learn how Spark handles your data.";
-    std::u16string link_text = u"Learn how Spark handles your data.";
+        u"Gemini can use Google Password Manager to sign in "
+        u"for you. Learn how Gemini handles your data.";
+    std::u16string link_text = u"Learn how Gemini handles your data.";
     size_t link_start = subtitle.find(link_text);
     gfx::Range link_range(link_start, link_start + link_text.length());
     EXPECT_CALL(*remote_actor_mock_controller_, GetSubtitle())
@@ -1102,10 +1102,10 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
   EXPECT_CALL(mock_controller, OnCloseDialog());
 
   std::u16string expected_title =
-      u"Allow Gemini Spark to sign in to terracottaand.co for you?";
+      u"Allow Gemini to sign in to terracottaand.co for you?";
   std::u16string expected_subtitle =
-      u"Spark can use Google Password Manager to sign in for you. Because "
-      u"Spark is experimental, this carries security risks.";
+      u"Gemini can use Google Password Manager to sign in for you. Learn how "
+      u"Gemini handles your data.";
   std::u16string expected_ok_button = u"Allow this time";
 
   EXPECT_CALL(mock_controller, GetTitle())
@@ -1191,10 +1191,10 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
   EXPECT_CALL(mock_controller, OnCloseDialog());
 
   std::u16string expected_title =
-      u"Allow Gemini Spark to sign in to terracottaand.co for you?";
+      u"Allow Gemini to sign in to terracottaand.co for you?";
   std::u16string expected_subtitle =
-      u"Spark can use Google Password Manager to sign in for you. Because "
-      u"Spark is experimental, this carries security risks.";
+      u"Gemini can use Google Password Manager to sign in for you. Learn how "
+      u"Gemini handles your data.";
   std::u16string expected_ok_button = u"Allow this time";
 
   EXPECT_CALL(mock_controller, GetTitle())
@@ -1301,10 +1301,10 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
   EXPECT_CALL(mock_controller, OnCloseDialog());
 
   std::u16string expected_title =
-      u"Allow Gemini Spark to sign in to terracottaand.co for you?";
+      u"Allow Gemini to sign in to terracottaand.co for you?";
   std::u16string expected_subtitle =
-      u"Spark can use Google Password Manager to sign in for you. Because "
-      u"Spark is experimental, this carries security risks.";
+      u"Gemini can use Google Password Manager to sign in for you. Learn how "
+      u"Gemini handles your data.";
   std::u16string expected_ok_button = u"Allow this time";
 
   EXPECT_CALL(mock_controller, GetTitle())

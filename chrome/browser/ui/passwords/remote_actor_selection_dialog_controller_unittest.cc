@@ -68,10 +68,17 @@ TEST_F(RemoteActorSelectionDialogControllerTest, Properties) {
   EXPECT_EQ(controller.GetDisplayType(),
             PasswordCombinedSelectorController::DisplayType::kRemoteActor);
   EXPECT_TRUE(controller.ShouldShowTopIllustration());
-  EXPECT_FALSE(controller.GetTitle().empty());
-  EXPECT_FALSE(controller.GetSubtitle().empty());
-  EXPECT_FALSE(controller.GetSubtitleLinkRange().is_empty());
-  EXPECT_FALSE(controller.GetOkButtonLabel().empty());
+  EXPECT_EQ(controller.GetTitle(),
+            u"Allow Gemini to sign in to example.com for you?");
+  EXPECT_EQ(controller.GetSubtitle(),
+            u"Gemini can use Google Password Manager to sign in for you. Learn "
+            u"how Gemini handles your data");
+  gfx::Range link_range = controller.GetSubtitleLinkRange();
+  ASSERT_FALSE(link_range.is_empty());
+  EXPECT_EQ(controller.GetSubtitle().substr(link_range.start(),
+                                            link_range.length()),
+            u"Learn how Gemini handles your data");
+  EXPECT_EQ(controller.GetOkButtonLabel(), u"Allow this time");
 
   EXPECT_THAT(controller.GetLocalForms(), ElementsAre(Pointee(GetLocalForm())));
 }
