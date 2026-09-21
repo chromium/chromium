@@ -291,6 +291,9 @@ bool HTMLCanvasElement::PrepareTransferableResource(
     return false;
   }
 
+  CHECK(!frame->CreatesAcceleratedTransferableResources() ||
+        frame->ContextProviderWrapper());
+
   auto exported_resource =
       base::MakeRefCounted<ExportedCanvasResource>(std::move(frame));
 
