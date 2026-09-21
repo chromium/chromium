@@ -2,21 +2,34 @@
 <html dir="$i18n{textdirection}" lang="$i18n{language}">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#fff">
+  <meta name="viewport"
+      content="initial-scale=1, minimum-scale=1, width=device-width">
   <title>$i18n{title}</title>
-  <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+  <link rel="stylesheet" href="../../../security_interstitials/core/common/resources/interstitial_core.css">
+  <link rel="stylesheet" href="../../../security_interstitials/core/common/resources/interstitial_common.css">
   <link rel="stylesheet" href="enterprise_proxy_error_page.css">
 </head>
-<body>
-  <h1>Enterprise Proxy Error</h1>
-  <p>Destination URL: <span id="destination-url">$i18n{destination_url}</span></p>
-  <p>Proxy URL: <span id="proxy-url">$i18n{proxy_url}</span></p>
-  <p>Disguised Error Code: <span id="error-code">$i18n{error_code}</span></p>
-  <p>Error Category: <span id="error-category">$i18n{error_category}</span></p>
-  <div class="action-buttons">
-    <button id="goback-button" hidden>Go back</button>
-    <button id="signin-button" hidden>Continue</button>
+<body id="body" class="enterprise-proxy-error" <if expr="is_ios">style="font-size: $i18n{fontsize}"</if>>
+  <div class="interstitial-wrapper">
+    <div id="main-content">
+      <div class="icon" id="icon"></div>
+      <div id="main-message">
+        <h1>$i18nRaw{heading}</h1>
+        <p>$i18nRaw{primary_paragraph}</p>
+        <div id="debugging">
+          <div id="error-code" class="error-code"></div>
+          <div id="error-debugging-info" class="hidden"></div>
+        </div>
+      </div>
+    </div>
+    <div class="nav-wrapper">
+      <button id="goback-button" class="primary-button" hidden>$i18n{button_text}</button>
+      <button id="signin-button" class="primary-button" hidden>Continue</button>
+    </div>
   </div>
+  <div id="error-category" hidden>$i18n{error_category}</div>
   <script src="enterprise_proxy_error_page.js"></script>
 </body>
 </html>

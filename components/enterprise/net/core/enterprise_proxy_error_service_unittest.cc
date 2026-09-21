@@ -26,6 +26,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/strings/grit/components_strings.h"
 #include "net/base/auth.h"
 #include "net/log/net_log.h"
 #include "net/log/test_net_log.h"
@@ -33,6 +34,7 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace enterprise_net {
 
@@ -383,6 +385,18 @@ TEST_F(EnterpriseProxyErrorServiceTest, GetErrorPageParams_ValidData) {
               *params.FindString("error_code"));
     EXPECT_EQ(test_case.expected_category_str,
               *params.FindString("error_category"));
+
+    EXPECT_EQ(
+        l10n_util::GetStringUTF8(IDS_ENTERPRISE_PROXY_OTHER_ERROR_HEADING),
+        *params.FindString("title"));
+    EXPECT_EQ(
+        l10n_util::GetStringUTF8(IDS_ENTERPRISE_PROXY_OTHER_ERROR_HEADING),
+        *params.FindString("heading"));
+    EXPECT_EQ(l10n_util::GetStringUTF8(
+                  IDS_ENTERPRISE_PROXY_OTHER_ERROR_PRIMARY_PARAGRAPH),
+              *params.FindString("primary_paragraph"));
+    EXPECT_EQ(l10n_util::GetStringUTF8(IDS_ENTERPRISE_BLOCK_GO_BACK),
+              *params.FindString("button_text"));
 
     histogram_tester.ExpectUniqueSample(
         "Enterprise.Proxy.DisguisedErrorPage.ErrorCode", test_case.error_code,

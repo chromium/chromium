@@ -113,4 +113,13 @@
   <message name="IDS_ENTERPRISE_CONTENT_ANALYSIS_PASTE_WARN_TITLE" desc="Text displayed at the top of a dialog telling the user that pasting the content is not recommended.">
     Pasting not recommended
   </message>
+
+  <!-- Enterprise Proxy Error Page strings -->
+  <message name="IDS_ENTERPRISE_PROXY_OTHER_ERROR_HEADING" desc="Heading in the enterprise proxy error page when a site is unreachable.">
+    This site couldn't be reached
+  </message>
+
+  <message name="IDS_ENTERPRISE_PROXY_OTHER_ERROR_PRIMARY_PARAGRAPH" desc="Description in the enterprise proxy error page when a site is unreachable.">
+    Something went wrong with protections or policies set by your organization. Try again later or contact your administrator.
+  </message>
 </grit-part>

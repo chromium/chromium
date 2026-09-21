@@ -28,19 +28,37 @@ document.addEventListener('DOMContentLoaded', () => {
     signinButton.addEventListener('click', signinButtonClicked);
   }
 
+  // TODO(crbug.com/563039777): Set the Learn More link URL once available.
+  const learnMoreLink = document.getElementById('learn-more-link');
+  if (learnMoreLink) {
+    learnMoreLink.addEventListener('click', (e) => {
+      e.preventDefault();
+    });
+  }
+
   const categoryElem = document.getElementById('error-category');
   if (categoryElem) {
     const category = categoryElem.textContent.trim();
     // Category 0 is kAuthentication -> show Continue (Sign In) button.
     // Category 1 (kAuthorization) and 2 (kOther) -> show Go back button.
     if (category === '0') {
+      document.body.classList.add('category-authentication');
       if (gobackButton) {
         gobackButton.hidden = true;
       }
       if (signinButton) {
         signinButton.hidden = false;
       }
+    } else if (category === '1') {
+      document.body.classList.add('category-authorization');
+      if (signinButton) {
+        signinButton.hidden = true;
+      }
+      if (gobackButton) {
+        gobackButton.hidden = false;
+      }
     } else {
+      document.body.classList.add('category-other');
       if (signinButton) {
         signinButton.hidden = true;
       }

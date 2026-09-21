@@ -3,13 +3,21 @@
  * found in the LICENSE file. */
 
 body {
-  margin: 24px;
-  color: #202124;
+  font-family: $i18nRaw{fontfamily};
+  font-size: $i18n{fontsize};
 }
 
-@media (prefers-color-scheme: dark) {
-  body {
-    background-color: #202124;
-    color: #e8eaed;
-  }
+button {
+  font-family: $i18nRaw{fontfamily};
+}
+
+.enterprise-proxy-error button {
+  background: var(--primary-button-fill-color);
+}
+
+.enterprise-proxy-error .icon,
+.category-other .icon {
+  background-image: image-set(
+      url(images/1x/sad_tab.png) 1x,
+      url(images/2x/sad_tab.png) 2x);
 }
