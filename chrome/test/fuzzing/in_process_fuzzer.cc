@@ -175,6 +175,9 @@ class InternalsObjectFrameInjector : public content::RenderFrameObserver {
 
 class InternalsObjectRendererInjector : public ChromeContentRendererClient {
  public:
+  InternalsObjectRendererInjector()
+      : ChromeContentRendererClient(/*create_extensions_client=*/false) {}
+
   void RenderFrameCreated(content::RenderFrame* render_frame) override {
     new InternalsObjectFrameInjector(render_frame);
   }
