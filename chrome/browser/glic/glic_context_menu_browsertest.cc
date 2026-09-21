@@ -924,11 +924,9 @@ INSTANTIATE_TEST_SUITE_P(All,
 IN_PROC_BROWSER_TEST_P(GlicInternalContextMenuBrowserTest,
                        GuestContextMenuShowsCustomItemsAndSuppressesPageItems) {
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
-  content::WebContents* guest_contents = nullptr;
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    guest_contents = instance->host().web_client_contents();
-    return guest_contents != nullptr;
-  }));
+  ASSERT_OK(WaitForGlicClient(instance));
+  content::WebContents* guest_contents = instance->host().web_client_contents();
+  ASSERT_TRUE(guest_contents);
 
   content::ContextMenuParams params;
   params.page_url = guest_contents->GetVisibleURL();
@@ -955,11 +953,9 @@ IN_PROC_BROWSER_TEST_P(GlicInternalContextMenuBrowserTest,
 IN_PROC_BROWSER_TEST_P(GlicInternalContextMenuBrowserTest,
                        GuestLinkContextMenuShowsCopyLinkOnly) {
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
-  content::WebContents* guest_contents = nullptr;
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    guest_contents = instance->host().web_client_contents();
-    return guest_contents != nullptr;
-  }));
+  ASSERT_OK(WaitForGlicClient(instance));
+  content::WebContents* guest_contents = instance->host().web_client_contents();
+  ASSERT_TRUE(guest_contents);
 
   content::ContextMenuParams params;
   params.page_url = guest_contents->GetVisibleURL();
@@ -971,6 +967,31 @@ IN_PROC_BROWSER_TEST_P(GlicInternalContextMenuBrowserTest,
 
   EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_COPYLINKLOCATION));
   EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB));
+}
+
+IN_PROC_BROWSER_TEST_P(GlicInternalContextMenuBrowserTest,
+                       GuestContextMenuReloadReloadsContents) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  ASSERT_OK(WaitForGlicClient(instance));
+  content::WebContents* initial_guest_contents =
+      instance->host().web_client_contents();
+  ASSERT_TRUE(initial_guest_contents);
+
+  content::ContextMenuParams params;
+  params.page_url = initial_guest_contents->GetVisibleURL();
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      *initial_guest_contents->GetPrimaryMainFrame(), params);
+  menu->Init();
+  ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_RELOAD_GLIC));
+
+  GlicClientConnectionObserver connection_observer(instance);
+  menu->ExecuteCommand(IDC_CONTENT_CONTEXT_RELOAD_GLIC, 0);
+
+  ASSERT_OK(connection_observer.WaitForDisconnected());
+  ASSERT_OK(connection_observer.WaitForConnected());
+  EXPECT_OK(
+      WaitForWebUiContentsVisibility(instance, content::Visibility::VISIBLE));
+  EXPECT_NE(initial_guest_contents, instance->host().web_client_contents());
 }
 
 class GlicNoWebviewOverlayContextMenuBrowserTest : public GlicBrowserTest {

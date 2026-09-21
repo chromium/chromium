@@ -111,6 +111,7 @@ void Host::HibernateImpl(bool is_destroying) {
   page_handler_ = nullptr;
   contents_changed_subscription_ = {};
   contents_.reset();
+  web_contents_visibility_ = content::Visibility::HIDDEN;
 }
 
 void Host::Hibernate() {
@@ -123,14 +124,16 @@ bool Host::IsAwake() const {
 
 bool Host::IsWebContentPresentAndMatches(
     content::RenderFrameHost* render_frame_host) {
-  auto* contents = webui_contents();
-  if (contents && contents->GetPrimaryMainFrame() == render_frame_host) {
-    return true;
+  if (!render_frame_host) {
+    return false;
   }
-  if (GetGuestMainFrame() == render_frame_host) {
-    return true;
+  content::WebContents* rfh_contents =
+      content::WebContents::FromRenderFrameHost(render_frame_host);
+  if (!rfh_contents) {
+    return false;
   }
-  return false;
+  return rfh_contents == webui_contents() ||
+         rfh_contents == web_client_contents();
 }
 
 void Host::NotifyActorTaskListRowClicked(int32_t task_id) {
@@ -198,6 +201,7 @@ void Host::Awaken() {
       contents_->RegisterWebContentsChangedCallback(base::BindRepeating(
           &Host::OnActiveWebContentsChanged, base::Unretained(this)));
   contents_->AttachToHost(this);
+  UpdateVisibility();
 }
 
 void Host::OnActiveWebContentsChanged(content::WebContents* new_contents) {
