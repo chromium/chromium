@@ -25,6 +25,18 @@ body > div::selection, body > div div::selection {
     color: rgb(235, 235, 235);
 }
 
+/* Border images only paint on borders with a border-style (crbug.com/559258),
+   so give all scrollbar parts a solid style with zero default width; the
+   part-specific rules below override the widths where images are used. */
+::-webkit-scrollbar,
+::-webkit-scrollbar-thumb,
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-track-piece,
+::-webkit-scrollbar-button {
+    border-style: solid;
+    border-width: 0;
+}
+
 ::-webkit-scrollbar {
     width: 13px;
     height: 13px;

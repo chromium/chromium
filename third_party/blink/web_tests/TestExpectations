@@ -1417,7 +1417,6 @@ crbug.com/415952276 [ Mac ] external/wpt/screen-capture/getdisplaymedia-restrict
 
 # Ref tests that needs investigation.
 crbug.com/404597 [ Mac ] fast/forms/long-text-in-input.html [ Crash Failure Pass Timeout ]
-crbug.com/552494 virtual/prefer_compositing_to_lcd_text/scrollbars/overflow-scrollbar-combinations.html [ Failure Pass ]
 
 crbug.com/745905 external/wpt/css/css-overflow/text-overflow-scroll-001.html [ Failure ]
 crbug.com/745905 external/wpt/css/css-overflow/text-overflow-scroll-rtl-001.html [ Failure ]
@@ -5133,10 +5132,6 @@ crbug.com/333787229 http/tests/devtools/sources/debugger/anonymous-script-with-s
 
 crbug.com/1137228 [ Mac ] external/wpt/infrastructure/testdriver/click_iframe_crossorigin.sub.html [ Failure Pass ]
 crbug.com/1137228 [ Win ] external/wpt/infrastructure/testdriver/click_iframe_crossorigin.sub.html [ Failure Pass ]
-
-#Sheriff 2020-10-21
-crbug.com/1141206 scrollbars/overflow-scrollbar-combinations.html [ Failure Pass ]
-
 
 #Sheriff 2020-11-24
 crbug.com/1087242 crbug.com/1271141 http/tests/inspector-protocol/service-worker/network-extrainfo-main-request.js [ Pass Timeout ]
