@@ -178,7 +178,9 @@ void ActorTask::Act(std::vector<std::unique_ptr<ActorToolRequest>> actions,
                     ActCallback callback) {
   // TODO(crbug.com/503054406): Check for invalid states.
   SetState(ActorTaskState::kActing);
-  last_task_update_ = task_update;
+  if (!task_update.empty()) {
+    last_task_update_ = task_update;
+  }
 
 #if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
   UpdateBackgroundTaskSubtitle(task_update);
@@ -353,6 +355,7 @@ bool ActorTask::allow_incognito_web_states() const {
 void ActorTask::SetBackgroundTaskContext(
     BackgroundContinuedProcessingTaskContext* background_task_context) {
   background_task_context_ = background_task_context;
+  UpdateBackgroundTaskSubtitle(last_task_update_);
 }
 #endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
@@ -527,9 +530,14 @@ void ActorTask::PruneDestroyedWebStates(web::WebState* destroying_web_state) {
 
 #if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 void ActorTask::UpdateBackgroundTaskSubtitle(const std::string& task_update) {
-  if (background_task_context_) {
-    background_task_context_.subtitle = base::SysUTF8ToNSString(task_update);
+  if (!background_task_context_ || task_update.empty()) {
+    return;
   }
+  NSString* subtitle = base::SysUTF8ToNSString(task_update);
+  if ([background_task_context_.subtitle isEqualToString:subtitle]) {
+    return;
+  }
+  background_task_context_.subtitle = subtitle;
 }
 
 void ActorTask::UpdateBackgroundTaskProgress() {

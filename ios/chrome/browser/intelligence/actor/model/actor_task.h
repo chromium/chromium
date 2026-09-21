@@ -145,7 +145,8 @@ class ActorTask : public web::WebStateObserver,
   bool allow_incognito_web_states() const;
 
 #if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
-  // Sets the background continued processing task context.
+  // Sets the background continued processing task context and updates its
+  // subtitle with the latest cached task update, if any.
   void SetBackgroundTaskContext(
       BackgroundContinuedProcessingTaskContext* background_task_context);
 #endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
@@ -204,7 +205,8 @@ class ActorTask : public web::WebStateObserver,
 
 #if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
   // Updates the subtitle of the background continued processing task to match
-  // the latest `task_update`.
+  // `task_update`. Does nothing if `task_update` is empty or identical to the
+  // current value.
   void UpdateBackgroundTaskSubtitle(const std::string& task_update);
 
   // Advances the background task progress by one discrete step using the
@@ -284,7 +286,7 @@ class ActorTask : public web::WebStateObserver,
   // executing the Act callback.
   base::OneShotTimer load_timeout_timer_;
 
-  // The latest task update string.
+  // The latest non-empty task update string.
   std::string last_task_update_;
 
   // List of registered observers notified of task state changes and tool
