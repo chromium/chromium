@@ -20,6 +20,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
+#include "components/contextual_search/contextual_search_types.h"
 #include "components/contextual_search/input_state_model.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_overlay_dismissal_source.h"
@@ -301,12 +302,17 @@ void ContextualTasksExtensionHandler::NotifySessionAbandoned() {}
 void ContextualTasksExtensionHandler::AddFileContext(
     searchbox::mojom::SelectedFileInfoPtr file_info,
     mojo_base::BigBuffer file_bytes,
-    AddFileContextCallback callback) {}
+    AddFileContextCallback callback) {
+  std::move(callback).Run(base::unexpected(
+      contextual_search::ContextUploadErrorType::kBrowserProcessingError));
+}
 void ContextualTasksExtensionHandler::AddTabContext(
     int32_t tab_id,
     bool delay_upload,
     searchbox::mojom::TabAttachmentSource source,
-    AddTabContextCallback callback) {}
+    AddTabContextCallback callback) {
+  std::move(callback).Run(base::ok(base::UnguessableToken::Create()));
+}
 void ContextualTasksExtensionHandler::DeleteContext(
     const base::UnguessableToken& file_token,
     bool from_automatic_chip) {}
@@ -364,7 +370,9 @@ void ContextualTasksExtensionHandler::GetDriveDisclaimerStatus(
 }
 void ContextualTasksExtensionHandler::OnDriveDisclaimerAccepted() {}
 void ContextualTasksExtensionHandler::OnDriveUploadClicked(
-    OnDriveUploadClickedCallback callback) {}
+    OnDriveUploadClickedCallback callback) {
+  NOTREACHED();
+}
 void ContextualTasksExtensionHandler::OpenProfilePicker() {}
 void ContextualTasksExtensionHandler::ShowScreenshotMenu(
     const gfx::Rect& anchor_rect) {}
