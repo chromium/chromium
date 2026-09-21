@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeStateProvider
 import org.chromium.chrome.browser.ntp_customization.theme_sync.CrossDeviceThemeTracker;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataColor;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataCustomizedColor;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataImageBase;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.PlatformType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -135,6 +136,17 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
                                 color.getPlatformType(),
                                 color.getThemeColorId(),
                                 color.isChromeColorDailyRefreshEnabled()));
+            }
+            if (mTheme instanceof NtpBackgroundDataCustomizedColor customColor) {
+                return new SyncedSetupSettings(
+                        mPrefs,
+                        new NtpBackgroundDataCustomizedColor(
+                                context,
+                                customColor.getPlatformType(),
+                                customColor.getPrimaryColorLight(),
+                                customColor.getPrimaryColorDark(),
+                                customColor.getNtpBackgroundColorLight(),
+                                customColor.getNtpBackgroundColorDark()));
             }
             return this;
         }
@@ -1211,6 +1223,9 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         if (!isThemeFeatureEnabled() || candidateTheme == null) {
             return false;
         }
+        // TODO(crbug.com/517615321): Compare theme visual content ignoring mPlatformType (e.g.
+        // compare NtpBackgroundDataCustomizedColor#getNtpThemeColorFromHexInfo() for
+        // NtpBackgroundDataCustomizedColor, getThemeColorId() for NtpBackgroundDataColor, etc.).
         return !Objects.equals(candidateTheme, currentTheme);
     }
 
@@ -1261,34 +1276,23 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
                 isThemeImportSnackbarEnabled());
         if (!isThemeImportSnackbarEnabled()) return;
 
-        NtpCustomizationConfigManager configManager = NtpCustomizationConfigManager.getInstance();
-        if (themeToApply == null) {
-            configManager.onBackgroundDataChanged(mContext, null);
-            notifyApplyThemeChanges();
+        // If the bitmap is null (e.g. from CrossDeviceThemeTracker before downloading),
+        // do not write null to configManager. That would clobber the NTP background with
+        // null and break rendering. NtpSyncedThemeManager handles the asynchronous download
+        // and application of the image.
+        if (themeToApply instanceof NtpBackgroundDataImageBase imageBase
+                && imageBase.getBitmap() == null) {
             return;
         }
 
-        if (themeToApply instanceof NtpBackgroundDataColor) {
-            configManager.onBackgroundDataChanged(mContext, themeToApply);
-            // Persist the user's selected background type so the imported theme survives app
-            // restarts.
+        NtpCustomizationConfigManager configManager = NtpCustomizationConfigManager.getInstance();
+        configManager.onBackgroundDataChanged(mContext, themeToApply);
+        // Persist the user's selected background type so the imported theme survives app
+        // restarts.
+        if (themeToApply != null) {
             configManager.maybeSaveUserSelectedBackgroundTypeToSharedPreference(mContext);
-            notifyApplyThemeChanges();
-        } else if (themeToApply instanceof NtpBackgroundDataImageBase imageBase) {
-            // If the bitmap is null (e.g. from CrossDeviceThemeTracker before downloading),
-            // do not write null to configManager. That would clobber the NTP background with
-            // null and break rendering. NtpSyncedThemeManager handles the asynchronous download
-            // and application of the image.
-            // TODO(crbug.com/517615321): Figure out how to handle when the image is downloaded.
-            // Currently, when the background image arrives, NtpCustomizationConfigManager triggers
-            // an Activity recreate to apply dynamic color theme changes, which causes the active
-            // undo/redo snackbar to disappear.
-            if (imageBase.getBitmap() != null) {
-                configManager.onBackgroundDataChanged(mContext, themeToApply);
-                configManager.maybeSaveUserSelectedBackgroundTypeToSharedPreference(mContext);
-                notifyApplyThemeChanges();
-            }
         }
+        notifyApplyThemeChanges();
     }
 
     private void notifyApplyThemeChanges() {
