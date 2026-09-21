@@ -29,6 +29,7 @@
 #include <memory>
 
 #include "base/containers/adapters.h"
+#include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
 #include "third_party/blink/renderer/core/css/css_counter_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_font_palette_values_rule.h"
@@ -2171,11 +2172,12 @@ void InspectorStyleSheet::InnerSetText(const String& text,
   if (mark_as_locally_modified) {
     Element* element = OwnerStyleElement();
     if (element) {
-      resource_container_->StoreStyleElementContent(element->GetDomNodeId(),
-                                                    text);
+      resource_container_->StoreStyleElementContent(
+          DOMNodeIdType(element->GetDomNodeId()), text);
     } else if (origin_ == protocol::CSS::StyleSheetOriginEnum::Inspector) {
       resource_container_->StoreStyleElementContent(
-          page_style_sheet_->OwnerDocument()->GetDomNodeId(), text);
+          DOMNodeIdType(page_style_sheet_->OwnerDocument()->GetDomNodeId()),
+          text);
     } else {
       resource_container_->StoreStyleSheetContent(FinalURL(), text);
     }
@@ -3016,7 +3018,7 @@ bool InspectorStyleSheet::InlineStyleSheetText(String* out) {
   }
 
   result = resource_container_->LoadStyleElementContent(
-      owner_element->GetDomNodeId(), out);
+      DOMNodeIdType(owner_element->GetDomNodeId()), out);
 
   if (!result) {
     *out = owner_element->textContent();
@@ -3039,7 +3041,8 @@ bool InspectorStyleSheet::InspectorStyleSheetText(String* result) {
     return false;
   }
   if (resource_container_->LoadStyleElementContent(
-          page_style_sheet_->OwnerDocument()->GetDomNodeId(), result)) {
+          DOMNodeIdType(page_style_sheet_->OwnerDocument()->GetDomNodeId()),
+          result)) {
     return true;
   }
   *result = "";

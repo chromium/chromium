@@ -29,6 +29,7 @@
 #include <utility>
 
 #include "base/check_deref.h"
+#include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/renderer/core/animation/animation_utils.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation.h"
@@ -5119,7 +5120,8 @@ void InspectorCSSAgent::SetCoverageEnabled(bool enabled) {
 }
 
 void InspectorCSSAgent::WillChangeStyleElement(Element* element) {
-  resource_container_->EraseStyleElementContent(element->GetDomNodeId());
+  resource_container_->EraseStyleElementContent(
+      DOMNodeIdType(element->GetDomNodeId()));
 }
 
 protocol::Response InspectorCSSAgent::startRuleUsageTracking() {

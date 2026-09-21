@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_RESOURCE_CONTAINER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_RESOURCE_CONTAINER_H_
 
+#include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
+#include "third_party/blink/renderer/platform/graphics/dom_node_id_traits.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -34,15 +35,15 @@ class CORE_EXPORT InspectorResourceContainer final
   void StoreStyleSheetContent(const String& url, const String& content);
   bool LoadStyleSheetContent(const String& url, String* content);
 
-  void StoreStyleElementContent(DOMNodeId backend_node_id,
+  void StoreStyleElementContent(DOMNodeIdType backend_node_id,
                                 const String& content);
-  bool LoadStyleElementContent(DOMNodeId backend_node_id, String* content);
-  void EraseStyleElementContent(DOMNodeId backend_node_id);
+  bool LoadStyleElementContent(DOMNodeIdType backend_node_id, String* content);
+  void EraseStyleElementContent(DOMNodeIdType backend_node_id);
 
  private:
   Member<InspectedFrames> inspected_frames_;
   HashMap<String, String> style_sheet_contents_;
-  HashMap<DOMNodeId, String> style_element_contents_;
+  HashMap<DOMNodeIdType, String> style_element_contents_;
 };
 
 }  // namespace blink
