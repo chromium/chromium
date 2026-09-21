@@ -1102,8 +1102,9 @@ void GlicSelectionObserver::SendAdditionalContextToPanel(
     return;
   }
 
-  GlicInvokeOptions options(glic::Target(*tab_interface, DefaultConversation()),
+  GlicInvokeOptions options(glic::Target(*tab_interface),
                             mojom::InvocationSource::kTextSelectionWidget);
+  options.preserve_active_surface = true;
   options.additional_context = AdditionalTabContext(
       CreateAdditionalContext(web_contents(), selected_text),
       content::GlobalRenderFrameHostId(), PolicyCheck::kNone);
