@@ -110,6 +110,9 @@ public class ContentViewPointerTypeTest {
     }
 
     private void checkPointerTypeForNode(final String nodeId, final int type) throws Throwable {
+        // Wait for initial DOM parsing and layout so the node exists with non-zero bounds before
+        // querying its coordinates for cursor dispatch.
+        DOMUtils.waitForNonZeroNodeBounds(mActivityTestRule.getWebContents(), nodeId);
         final Rect rect = DOMUtils.getNodeBounds(mActivityTestRule.getWebContents(), nodeId);
         OnCursorUpdateHelperImpl onCursorUpdateHelper =
                 (OnCursorUpdateHelperImpl) mActivityTestRule.getOnCursorUpdateHelper();
