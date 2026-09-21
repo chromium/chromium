@@ -241,11 +241,10 @@ TEST_F(DeviceAuthorizationServiceImplTest,
   EXPECT_EQ(stored->keys().keys(0).key(), kKeyBytes);
 }
 
-// Test that a concurrent call to `GetOrFetchKeys` while a fetch is already in
-// progress fails immediately with `kError`, while the in-flight fetch
-// completes successfully.
+// Test that concurrent calls to `GetOrFetchKeys` for the same GaiaId are
+// coalesced into a single network request, and all callers receive the result.
 TEST_F(DeviceAuthorizationServiceImplTest,
-       TestGetOrFetchKeysConcurrentCallReturnsError) {
+       TestGetOrFetchKeysConcurrentCallsCoalesced) {
   SignInPrimaryAccount();
   SetResponseForEndpoint(CreateSuccessResponse());
 
@@ -253,11 +252,11 @@ TEST_F(DeviceAuthorizationServiceImplTest,
   TestFuture<DeviceAuthFetchResult> future2;
 
   service_->GetOrFetchKeys(future1.GetCallback());
-
-  // Second call fails immediately because a fetch is already in progress.
   service_->GetOrFetchKeys(future2.GetCallback());
-  ASSERT_TRUE(future2.IsReady());
-  EXPECT_EQ(future2.Get().status(), DeviceAuthFetchResult::Status::kError);
+
+  // Both should still be waiting on the single in-flight network request.
+  EXPECT_FALSE(future1.IsReady());
+  EXPECT_FALSE(future2.IsReady());
 
   // First call finishes successfully when the response arrives.
   const DeviceAuthFetchResult& result1 = future1.Get();
@@ -265,6 +264,16 @@ TEST_F(DeviceAuthorizationServiceImplTest,
   ASSERT_TRUE(result1.keys());
   EXPECT_THAT(result1.keys()->keys(), SizeIs(1));
   EXPECT_EQ(result1.keys()->keys(0).key(), kKeyBytes);
+
+  // Second coalesced call also finishes successfully with identical result.
+  const DeviceAuthFetchResult& result2 = future2.Get();
+  EXPECT_EQ(result2.status(), DeviceAuthFetchResult::Status::kSuccess);
+  ASSERT_TRUE(result2.keys());
+  EXPECT_THAT(result2.keys()->keys(), SizeIs(1));
+  EXPECT_EQ(result2.keys()->keys(0).key(), kKeyBytes);
+
+  // Only one network request should have been dispatched.
+  EXPECT_EQ(test_url_loader_factory_.total_requests(), 1u);
 }
 
 // Test that if the server returns `re_auth_params`, the service reports
@@ -374,6 +383,53 @@ TEST_F(DeviceAuthorizationServiceImplTest,
   TestFuture<DeviceAuthFetchResult> future;
   service_->GetOrFetchKeys(future.GetCallback());
 
+  const DeviceAuthFetchResult& result = future.Get();
+  EXPECT_EQ(result.status(), DeviceAuthFetchResult::Status::kError);
+}
+
+// Test that a network failure returns Status::kError.
+TEST_F(DeviceAuthorizationServiceImplTest,
+       TestGetOrFetchKeysNetworkErrorReturnsNetworkError) {
+  SignInPrimaryAccount();
+  test_url_loader_factory_.AddResponse(
+      GURL(kDeviceAuthorizationKeyEndpointUrl),
+      network::mojom::URLResponseHead::New(), "",
+      network::URLLoaderCompletionStatus(net::ERR_CONNECTION_FAILED));
+
+  TestFuture<DeviceAuthFetchResult> future;
+  service_->GetOrFetchKeys(future.GetCallback());
+
+  const DeviceAuthFetchResult& result = future.Get();
+  EXPECT_EQ(result.status(), DeviceAuthFetchResult::Status::kError);
+}
+
+// Test that unparsable response proto returns Status::kError.
+TEST_F(DeviceAuthorizationServiceImplTest,
+       TestGetOrFetchKeysProtoParseErrorReturnsProtoParseError) {
+  SignInPrimaryAccount();
+  test_url_loader_factory_.AddResponse(kDeviceAuthorizationKeyEndpointUrl,
+                                       "invalid_not_a_proto");
+
+  TestFuture<DeviceAuthFetchResult> future;
+  service_->GetOrFetchKeys(future.GetCallback());
+
+  const DeviceAuthFetchResult& result = future.Get();
+  EXPECT_EQ(result.status(), DeviceAuthFetchResult::Status::kError);
+}
+
+// Test that shutting down the service during an in-flight fetch invokes pending
+// callbacks with Status::kError.
+TEST_F(DeviceAuthorizationServiceImplTest,
+       TestShutdownReturnsServiceShutdownError) {
+  SignInPrimaryAccount();
+
+  TestFuture<DeviceAuthFetchResult> future;
+  service_->GetOrFetchKeys(future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+
+  client_ = nullptr;
+  service_->Shutdown();
+  ASSERT_TRUE(future.IsReady());
   const DeviceAuthFetchResult& result = future.Get();
   EXPECT_EQ(result.status(), DeviceAuthFetchResult::Status::kError);
 }

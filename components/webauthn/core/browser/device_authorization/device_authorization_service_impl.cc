@@ -38,10 +38,11 @@ DeviceAuthorizationServiceImpl::~DeviceAuthorizationServiceImpl() {
 
 void DeviceAuthorizationServiceImpl::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  is_fetching_ = false;
   weak_ptr_factory_.InvalidateWeakPtrs();
-  if (pending_callback_) {
-    std::move(pending_callback_).Run(DeviceAuthFetchResult{});
+  for (auto& [_, callbacks] : std::exchange(pending_callbacks_, {})) {
+    for (FetchDeviceAuthKeysCallback& callback : callbacks) {
+      std::move(callback).Run(DeviceAuthFetchResult{});
+    }
   }
   fetcher_.reset();
   client_.reset();
@@ -67,13 +68,6 @@ void DeviceAuthorizationServiceImpl::FetchKeysImpl(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(callback);
 
-  // TODO(crbug.com/405036154): Consider caching multiple requests for same
-  // gaia_id.
-  if (is_fetching_) {
-    std::move(callback).Run(DeviceAuthFetchResult{});
-    return;
-  }
-
   if (!identity_manager_ ||
       !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     std::move(callback).Run(DeviceAuthFetchResult{});
@@ -83,18 +77,22 @@ void DeviceAuthorizationServiceImpl::FetchKeysImpl(
   const GaiaId gaia_id =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .gaia;
+  auto [it, inserted] = pending_callbacks_.try_emplace(gaia_id);
+  it->second.push_back(std::move(callback));
+
+  // There is already an in-flight fetch for this `gaia_id`. The callback was
+  // cached above and will be notified when the in-flight fetch completes.
+  if (!inserted) {
+    return;
+  }
 
   if (!reauth_proof_token.has_value()) {
     client_->GetCachedKeys(
         gaia_id,
         base::BindOnce(&DeviceAuthorizationServiceImpl::OnCachedKeysFetched,
-                       weak_ptr_factory_.GetWeakPtr(), gaia_id,
-                       std::move(callback)));
+                       weak_ptr_factory_.GetWeakPtr(), gaia_id));
     return;
   }
-
-  is_fetching_ = true;
-  pending_callback_ = std::move(callback);
 
   sync_pb::GetDeviceAuthorizationKeyRequest request;
   request.set_reauth_proof_token(*std::move(reauth_proof_token));
@@ -107,24 +105,15 @@ void DeviceAuthorizationServiceImpl::FetchKeysImpl(
 
 void DeviceAuthorizationServiceImpl::OnCachedKeysFetched(
     const GaiaId& gaia_id,
-    FetchDeviceAuthKeysCallback callback,
     std::optional<CachedDeviceAuthorizationKeys> cached_keys) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (cached_keys.has_value() &&
       cached_keys->cache_version() ==
           features::kDeviceAuthorizationKeyCacheVersion.Get() &&
       cached_keys->keys().keys_size() > 0) {
-    std::move(callback).Run(DeviceAuthFetchResult{cached_keys->keys()});
+    NotifyPendingCallbacks(gaia_id, DeviceAuthFetchResult{cached_keys->keys()});
     return;
   }
-
-  if (is_fetching_) {
-    std::move(callback).Run(DeviceAuthFetchResult{});
-    return;
-  }
-
-  is_fetching_ = true;
-  pending_callback_ = std::move(callback);
 
   client_->PopulatePlatformData(
       gaia_id, sync_pb::GetDeviceAuthorizationKeyRequest{},
@@ -136,32 +125,24 @@ void DeviceAuthorizationServiceImpl::OnPlatformDataPopulated(
     const GaiaId& gaia_id,
     sync_pb::GetDeviceAuthorizationKeyRequest request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(crbug.com/405036154): Ensure fetch is made for `gaia_id`.
   fetcher_->FetchDeviceAuthorizationKeys(
       std::move(request), url_loader_factory_, identity_manager_,
       base::BindOnce(&DeviceAuthorizationServiceImpl::OnFetchCompleted,
                      weak_ptr_factory_.GetWeakPtr(), gaia_id));
 }
 
-// TODO(crbug.com/405036154): Ensure account switch mid-request is handled.
 void DeviceAuthorizationServiceImpl::OnFetchCompleted(
     const GaiaId& gaia_id,
     base::expected<sync_pb::GetDeviceAuthorizationKeyResponse,
                    DeviceAuthorizationKeysFetcher::Error> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  is_fetching_ = false;
-  FetchDeviceAuthKeysCallback callback = std::move(pending_callback_);
-  if (!callback) {
-    return;
-  }
-
   if (!response.has_value()) {
-    std::move(callback).Run(DeviceAuthFetchResult{});
+    NotifyPendingCallbacks(gaia_id, DeviceAuthFetchResult{});
     return;
   }
 
   if (response->has_device_authorization_keys()) {
-    // TODO(crbug.com/405036154): Check if `gaia_id` is still the identity
-    // manager's current primary account gaia_id before storing keys.
     // TODO(crbug.com/405036154): Handle key validation (e.g. expected count).
     DeviceAuthorizationKeys keys = response->device_authorization_keys();
     CachedDeviceAuthorizationKeys cached_keys;
@@ -171,30 +152,47 @@ void DeviceAuthorizationServiceImpl::OnFetchCompleted(
     client_->StoreKeys(
         gaia_id, cached_keys,
         base::BindOnce(&DeviceAuthorizationServiceImpl::OnKeysStored,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                       weak_ptr_factory_.GetWeakPtr(), gaia_id,
                        std::move(keys)));
     return;
   }
 
   if (response->has_re_auth_params()) {
-    std::move(callback).Run(DeviceAuthFetchResult{response->re_auth_params()});
+    NotifyPendingCallbacks(gaia_id,
+                           DeviceAuthFetchResult{response->re_auth_params()});
     return;
   }
 
-  std::move(callback).Run(DeviceAuthFetchResult{});
+  NotifyPendingCallbacks(gaia_id, DeviceAuthFetchResult{});
 }
 
-void DeviceAuthorizationServiceImpl::OnKeysStored(
-    FetchDeviceAuthKeysCallback callback,
-    DeviceAuthorizationKeys keys,
-    bool success) {
+void DeviceAuthorizationServiceImpl::OnKeysStored(const GaiaId& gaia_id,
+                                                  DeviceAuthorizationKeys keys,
+                                                  bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!success) {
-    std::move(callback).Run(DeviceAuthFetchResult{});
+    NotifyPendingCallbacks(gaia_id, DeviceAuthFetchResult{});
     return;
   }
 
-  std::move(callback).Run(DeviceAuthFetchResult{std::move(keys)});
+  NotifyPendingCallbacks(gaia_id, DeviceAuthFetchResult{std::move(keys)});
+}
+
+void DeviceAuthorizationServiceImpl::NotifyPendingCallbacks(
+    const GaiaId& gaia_id,
+    const DeviceAuthFetchResult& result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto it = pending_callbacks_.find(gaia_id);
+  if (it == pending_callbacks_.end()) {
+    return;
+  }
+
+  std::vector<FetchDeviceAuthKeysCallback> callbacks = std::move(it->second);
+  pending_callbacks_.erase(it);
+
+  for (FetchDeviceAuthKeysCallback& callback : callbacks) {
+    std::move(callback).Run(result);
+  }
 }
 
 }  // namespace webauthn

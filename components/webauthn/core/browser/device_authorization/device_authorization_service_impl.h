@@ -8,7 +8,9 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -17,8 +19,7 @@
 #include "components/webauthn/core/browser/device_authorization/device_authorization_client.h"
 #include "components/webauthn/core/browser/device_authorization/device_authorization_keys_fetcher.h"
 #include "components/webauthn/core/browser/device_authorization/device_authorization_service.h"
-
-class GaiaId;
+#include "google_apis/gaia/gaia_id.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -65,7 +66,6 @@ class DeviceAuthorizationServiceImpl : public DeviceAuthorizationService {
   // Callback invoked when local cached keys have been retrieved.
   void OnCachedKeysFetched(
       const GaiaId& gaia_id,
-      FetchDeviceAuthKeysCallback callback,
       std::optional<CachedDeviceAuthorizationKeys> cached_keys);
 
   // Callback invoked when the client finishes populating platform data.
@@ -80,9 +80,13 @@ class DeviceAuthorizationServiceImpl : public DeviceAuthorizationService {
                      DeviceAuthorizationKeysFetcher::Error> response);
 
   // Callback invoked when keys have been stored in the local cache.
-  void OnKeysStored(FetchDeviceAuthKeysCallback callback,
+  void OnKeysStored(const GaiaId& gaia_id,
                     DeviceAuthorizationKeys keys,
                     bool success);
+
+  // Invokes all pending callbacks for `gaia_id` with `result` and clears them.
+  void NotifyPendingCallbacks(const GaiaId& gaia_id,
+                              const DeviceAuthFetchResult& result);
 
   // Used to obtain the primary account and authenticate requests.
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
@@ -96,11 +100,9 @@ class DeviceAuthorizationServiceImpl : public DeviceAuthorizationService {
   // Executes network requests to retrieve the keys from the server.
   std::unique_ptr<DeviceAuthorizationKeysFetcher> fetcher_;
 
-  // True if a network fetch is currently in flight.
-  bool is_fetching_ = false;
-
-  // Callback to invoke when the in-flight fetch completes.
-  FetchDeviceAuthKeysCallback pending_callback_;
+  // Pending callbacks keyed by GaiaId for coalesced requests.
+  base::flat_map<GaiaId, std::vector<FetchDeviceAuthKeysCallback>>
+      pending_callbacks_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<DeviceAuthorizationServiceImpl> weak_ptr_factory_{this};
