@@ -5,21 +5,24 @@
 #ifndef CHROME_BROWSER_BADGING_BADGE_MANAGER_H_
 #define CHROME_BROWSER_BADGING_BADGE_MANAGER_H_
 
+#include <stdint.h>
+
 #include <map>
 #include <memory>
 #include <optional>
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/webapps/common/web_app_id.h"
-#include "content/public/browser/service_worker_version_base_info.h"
+#include "content/public/browser/global_routing_id.h"
+#include "content/public/common/child_process_id.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/badging/badging.mojom.h"
-#include "third_party/blink/public/mojom/service_worker/service_worker_ancestor_frame_type.mojom.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -31,6 +34,7 @@ class Clock;
 namespace content {
 class RenderFrameHost;
 class RenderProcessHost;
+struct ServiceWorkerVersionBaseInfo;
 }  // namespace content
 
 namespace ukm {
@@ -89,7 +93,7 @@ class BadgeManager : public KeyedService, public blink::mojom::BadgeService {
 
   // Binds a remote ServiceWorkerGlobalScope to a badge service.  After
   // receiving a badge update from a ServiceWorkerGlobalScope, the badge
-  // service must update the badge for each app under `service_worker_scope`.
+  // service must update the badge for each app under `info.scope`.
   static void BindServiceWorkerReceiverIfAllowed(
       content::RenderProcessHost* service_worker_process_host,
       const content::ServiceWorkerVersionBaseInfo& info,
@@ -128,8 +132,8 @@ class BadgeManager : public KeyedService, public blink::mojom::BadgeService {
   // The BindingContext for Window execution contexts.
   class FrameBindingContext final : public BindingContext {
    public:
-    FrameBindingContext(int process_id, int frame_id)
-        : process_id_(process_id), frame_id_(frame_id) {}
+    explicit FrameBindingContext(content::GlobalRenderFrameHostId frame_id)
+        : frame_id_(frame_id) {}
     ~FrameBindingContext() override = default;
 
     // Returns the AppId that matches the frame's URL.  Returns either 0 or 1
@@ -138,14 +142,13 @@ class BadgeManager : public KeyedService, public blink::mojom::BadgeService {
         const override;
 
    private:
-    int process_id_;
-    int frame_id_;
+    const content::GlobalRenderFrameHostId frame_id_;
   };
 
   // The BindingContext for ServiceWorkerGlobalScope execution contexts.
   class ServiceWorkerBindingContext final : public BindingContext {
    public:
-    ServiceWorkerBindingContext(int process_id,
+    ServiceWorkerBindingContext(content::ChildProcessId process_id,
                                 const GURL& scope,
                                 const blink::StorageKey& storage_key)
         : process_id_(process_id), scope_(scope), storage_key_(storage_key) {}
@@ -157,9 +160,9 @@ class BadgeManager : public KeyedService, public blink::mojom::BadgeService {
         const override;
 
    private:
-    int process_id_;
-    GURL scope_;
-    blink::StorageKey storage_key_;
+    const content::ChildProcessId process_id_;
+    const GURL scope_;
+    const blink::StorageKey storage_key_;
   };
 
   // Updates the badge for |app_id| to be |value|, if it is not std::nullopt.
@@ -177,9 +180,9 @@ class BadgeManager : public KeyedService, public blink::mojom::BadgeService {
 
   raw_ptr<const base::Clock> clock_;
 
-  // All the mojo receivers for the BadgeManager. Keeps track of the
-  // render_frame the binding is associated with, so as to not have to rely
-  // on the renderer passing it in.
+  // All the mojo receivers for the BadgeManager. Keeps track of each binding's
+  // frame or service worker context without relying on renderer-supplied
+  // identity.
   mojo::ReceiverSet<blink::mojom::BadgeService, std::unique_ptr<BindingContext>>
       receivers_;
 
