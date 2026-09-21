@@ -17,10 +17,6 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 /** The properties associated with rendering the default suggestion view. */
 @NullMarked
 public @interface SuggestionViewProperties {
-    /** Whether suggestions can wrap-around long search query to second line. */
-    @VisibleForTesting
-    WritableBooleanPropertyKey ALLOW_WRAP_AROUND = new WritableBooleanPropertyKey();
-
     /** The custom content description for the suggestion view. */
     @VisibleForTesting
     WritableObjectPropertyKey<String> CONTENT_DESCRIPTION = new WritableObjectPropertyKey<>();
@@ -33,18 +29,27 @@ public @interface SuggestionViewProperties {
     WritableObjectPropertyKey<SuggestionSpannable> TEXT_LINE_1_TEXT =
             new WritableObjectPropertyKey<>();
 
+    /** Whether suggestions can wrap-around long search query to second line. */
+    @VisibleForTesting
+    WritableBooleanPropertyKey TEXT_LINE_1_WRAP = new WritableBooleanPropertyKey();
+
     /** The actual text content for the second line of text. */
     @VisibleForTesting
     WritableObjectPropertyKey<SuggestionSpannable> TEXT_LINE_2_TEXT =
             new WritableObjectPropertyKey<>();
 
+    /** Whether suggestions can wrap-around secondary text to second line. */
+    @VisibleForTesting
+    WritableBooleanPropertyKey TEXT_LINE_2_WRAP = new WritableBooleanPropertyKey();
+
     PropertyKey[] ALL_UNIQUE_KEYS =
             new PropertyKey[] {
-                ALLOW_WRAP_AROUND,
                 CONTENT_DESCRIPTION,
                 IS_SEARCH_SUGGESTION,
                 TEXT_LINE_1_TEXT,
-                TEXT_LINE_2_TEXT
+                TEXT_LINE_1_WRAP,
+                TEXT_LINE_2_TEXT,
+                TEXT_LINE_2_WRAP
             };
 
     PropertyKey[] ALL_KEYS =

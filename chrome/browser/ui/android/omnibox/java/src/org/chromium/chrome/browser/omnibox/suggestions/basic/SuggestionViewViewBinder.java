@@ -24,14 +24,7 @@ public class SuggestionViewViewBinder extends BaseSuggestionViewBinder<View> {
      */
     @Override
     protected void bindContent(PropertyModel model, View view, PropertyKey propertyKey) {
-        if (propertyKey == SuggestionViewProperties.ALLOW_WRAP_AROUND) {
-            final boolean allowWrapAround = model.get(SuggestionViewProperties.ALLOW_WRAP_AROUND);
-            TextView tv = view.findViewById(R.id.line_1);
-            int maxLines = allowWrapAround ? 2 : 1;
-            if (tv.getMaxLines() != maxLines) {
-                tv.setMaxLines(maxLines);
-            }
-        } else if (propertyKey == SuggestionViewProperties.CONTENT_DESCRIPTION) {
+        if (propertyKey == SuggestionViewProperties.CONTENT_DESCRIPTION) {
             view.setContentDescription(model.get(SuggestionViewProperties.CONTENT_DESCRIPTION));
         } else if (propertyKey == SuggestionViewProperties.IS_SEARCH_SUGGESTION) {
             // https://crbug.com/40084252: ensure URLs are always composed LTR and that their
@@ -45,6 +38,10 @@ public class SuggestionViewViewBinder extends BaseSuggestionViewBinder<View> {
             tv.setText(model.get(SuggestionViewProperties.TEXT_LINE_1_TEXT));
             int minHeight = getResourceProvider(model).getSuggestionMinHeight(tv.getLineCount());
             view.setMinimumHeight(minHeight);
+        } else if (propertyKey == SuggestionViewProperties.TEXT_LINE_1_WRAP) {
+            updateMaxLines(
+                    view.findViewById(R.id.line_1),
+                    model.get(SuggestionViewProperties.TEXT_LINE_1_WRAP));
         } else if (propertyKey == SuggestionViewProperties.TEXT_LINE_2_TEXT) {
             TextView tv = view.findViewById(R.id.line_2);
             final SuggestionSpannable span = model.get(SuggestionViewProperties.TEXT_LINE_2_TEXT);
@@ -56,6 +53,17 @@ public class SuggestionViewViewBinder extends BaseSuggestionViewBinder<View> {
                 tv.setVisibility(View.GONE);
                 view.setMinimumHeight(getResourceProvider(model).getSuggestionMinHeight(1));
             }
+        } else if (propertyKey == SuggestionViewProperties.TEXT_LINE_2_WRAP) {
+            updateMaxLines(
+                    view.findViewById(R.id.line_2),
+                    model.get(SuggestionViewProperties.TEXT_LINE_2_WRAP));
+        }
+    }
+
+    private void updateMaxLines(TextView tv, boolean allowWrapAround) {
+        int maxLines = allowWrapAround ? 2 : 1;
+        if (tv.getMaxLines() != maxLines) {
+            tv.setMaxLines(maxLines);
         }
     }
 }

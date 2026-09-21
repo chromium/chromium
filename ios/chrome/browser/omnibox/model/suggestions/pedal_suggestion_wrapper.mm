@@ -61,6 +61,10 @@
   return 1;
 }
 
+- (BOOL)wrapSecondaryText {
+  return NO;
+}
+
 - (NSAttributedString*)text {
   return [[NSAttributedString alloc]
       initWithString:self.pedal.title

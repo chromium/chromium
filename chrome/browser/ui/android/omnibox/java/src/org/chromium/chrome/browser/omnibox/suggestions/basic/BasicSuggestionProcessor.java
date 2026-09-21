@@ -260,7 +260,8 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
         }
 
         model.set(SuggestionViewProperties.IS_SEARCH_SUGGESTION, isSearchSuggestion);
-        model.set(SuggestionViewProperties.ALLOW_WRAP_AROUND, isSearchSuggestion);
+        model.set(SuggestionViewProperties.TEXT_LINE_1_WRAP, isSearchSuggestion);
+        model.set(SuggestionViewProperties.TEXT_LINE_2_WRAP, suggestion.shouldWrapSecondaryText());
         model.set(SuggestionViewProperties.TEXT_LINE_1_TEXT, textLine1);
         model.set(SuggestionViewProperties.TEXT_LINE_2_TEXT, textLine2);
 

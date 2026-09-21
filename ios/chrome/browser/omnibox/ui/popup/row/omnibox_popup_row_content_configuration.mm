@@ -100,9 +100,11 @@ const CGFloat kOmniboxPopupCellMinimumHeight = 58;
 
   // Secondary Text.
   _secondaryText = _suggestion.detailText;
+  const BOOL allowsMultilineSecondary =
+      _suggestion.hasAnswer || _suggestion.wrapSecondaryText;
   _secondaryTextNumberOfLines =
-      _suggestion.hasAnswer ? _suggestion.numberOfLines : 1;
-  _secondaryTextFading = !_suggestion.hasAnswer;
+      allowsMultilineSecondary ? _suggestion.numberOfLines : 1;
+  _secondaryTextFading = !allowsMultilineSecondary;
   _secondaryTextDisplayAsURL = _suggestion.isURL;
 
   // Trailing Button.

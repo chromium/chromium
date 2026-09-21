@@ -50,4 +50,16 @@ public class EntitySuggestionViewBinderUnitTest {
         mModel.set(SuggestionViewProperties.TEXT_LINE_1_TEXT, new SuggestionSpannable("abc"));
         assertEquals("abc", mView.<TextView>findViewById(R.id.line_1).getText().toString());
     }
+
+    @Test
+    public void bind_line2MaxLines() {
+        TextView line2 = mView.findViewById(R.id.line_2);
+        assertEquals(1, line2.getMaxLines());
+
+        mModel.set(SuggestionViewProperties.TEXT_LINE_2_WRAP, true);
+        assertEquals(2, line2.getMaxLines());
+
+        mModel.set(SuggestionViewProperties.TEXT_LINE_2_WRAP, false);
+        assertEquals(1, line2.getMaxLines());
+    }
 }
