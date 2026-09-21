@@ -741,7 +741,21 @@ export class AppElement extends CrLitElement {
     }
 
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+      // On Android, enabling echoCancellation activates the platform
+      // ECHO_CANCELLER effect, which puts Android into VoIP communication mode
+      // (MODE_IN_COMMUNICATION / AAUDIO_INPUT_PRESET_VOICE_COMMUNICATION) and
+      // causes Android AudioPolicy to silence concurrent microphone streams
+      // (such as Screen Recorder). Disabling echoCancellation keeps Android in
+      // MODE_NORMAL while still allowing WebRTC software noiseSuppression and
+      // autoGainControl.
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: this.isAndroidBackend() ? {
+          echoCancellation: false,
+          noiseSuppression: true,
+          autoGainControl: true,
+        } :
+                                         true,
+      });
       return new MicrophoneAudioCapturer(stream);
     } catch (e) {
       log(FILE, 'No Microphone Found', e);
