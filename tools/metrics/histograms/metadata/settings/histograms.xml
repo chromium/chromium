@@ -332,9 +332,9 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram name="Settings.HoverCards.MemoryUsage.Enabled" enum="BooleanEnabled"
-    expires_after="2026-10-30">
+    expires_after="2027-03-30">
   <owner>dominicaustria@chromium.org</owner>
-  <owner>emshack@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
     Logged whether the hover card memory usage bar is enabled or disabled when
     it is toggled in chrome://settings/appearance. Record for desktop only.
