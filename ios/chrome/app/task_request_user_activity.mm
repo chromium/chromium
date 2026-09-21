@@ -682,6 +682,9 @@ void OpenSpotlightURL(NSURL* webpage_url,
       sceneState:(SceneState*)sceneState
       targetMode:(ApplicationModeForTabOpening)targetMode
       completion:(CallbackWithBrowser)callback;
+
+// Records metrics for the user activity.
+- (void)recordMetrics;
 @end
 
 // Subclass handling siri shortcuts, passkey import and handoff.
@@ -734,6 +737,7 @@ void OpenSpotlightURL(NSURL* webpage_url,
 }
 
 - (void)execute {
+  [self recordMetrics];
   // Ignore invalid user activities.
   if (_userActivityType == UserActivityType::kInvalid) {
     return;
@@ -757,6 +761,11 @@ void OpenSpotlightURL(NSURL* webpage_url,
 }
 
 - (void)handleUserActivityWithSceneState:(SceneState*)sceneState {
+  // This method must be overridden by subclasses.
+  NOTREACHED();
+}
+
+- (void)recordMetrics {
   // This method must be overridden by subclasses.
   NOTREACHED();
 }
@@ -826,16 +835,9 @@ void OpenSpotlightURL(NSURL* webpage_url,
 
 @implementation TaskRequestForUserActivitySimple
 
-- (instancetype)initWithUserActivity:(NSUserActivity*)userActivity
-                          sceneState:(SceneState*)sceneState
-                         isColdStart:(BOOL)isColdStart {
-  if ((self = [super initWithUserActivity:userActivity
-                               sceneState:sceneState
-                              isColdStart:isColdStart])) {
-    RecordMetrics(self.userActivityType, SpotlightActionType::kUnknown,
-                  userActivity);
-  }
-  return self;
+- (void)recordMetrics {
+  RecordMetrics(self.userActivityType, SpotlightActionType::kUnknown,
+                self.userActivity);
 }
 
 - (void)handleUserActivityWithSceneState:(SceneState*)sceneState {
@@ -1025,9 +1027,12 @@ void OpenSpotlightURL(NSURL* webpage_url,
                                sceneState:sceneState
                               isColdStart:isColdStart])) {
     _spotlightActionType = spotlightActionType;
-    RecordMetrics(self.userActivityType, _spotlightActionType, userActivity);
   }
   return self;
+}
+
+- (void)recordMetrics {
+  RecordMetrics(self.userActivityType, _spotlightActionType, self.userActivity);
 }
 
 - (void)handleUserActivityWithSceneState:(SceneState*)sceneState {
