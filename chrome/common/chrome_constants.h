@@ -43,6 +43,9 @@ inline constexpr base::FilePath::CharType kRendererDll[] =
     FILE_PATH_LITERAL("chrome_renderer.dll");
 inline constexpr base::FilePath::CharType kStatusTrayWindowClass[] =
     FILE_PATH_LITERAL("Chrome_StatusTrayWindow");
+#else
+inline constexpr base::FilePath::CharType kRendererProcessExecutableName[] =
+    FILE_PATH_LITERAL("chrome_renderer");
 #endif  // BUILDFLAG(IS_WIN)
 
 inline constexpr char kInitialProfile[] = "Default";

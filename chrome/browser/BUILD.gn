@@ -1285,6 +1285,7 @@ source_set("core") {
       "//chrome/browser/apps/app_service/publishers",
       "//chrome/browser/apps/link_capturing",
       "//chrome/browser/badging",
+      "//chrome/browser/child_module",
       "//chrome/browser/device_api",
       "//chrome/browser/device_api:impl",
       "//chrome/browser/dictation",

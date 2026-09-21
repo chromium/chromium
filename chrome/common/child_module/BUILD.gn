@@ -1,0 +1,28 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_android,
+       "Child module updates are only supported on desktop platforms.")
+
+source_set("child_module") {
+  public = [ "child_module_helper.h" ]
+
+  sources = [ "child_module_helper.cc" ]
+
+  public_deps = [ "//base" ]
+
+  deps = [ "//chrome/common:constants" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "child_module_helper_unittest.cc" ]
+
+  deps = [
+    ":child_module",
+    "//base",
+    "//chrome/common:constants",
+    "//testing/gtest",
+  ]
+}

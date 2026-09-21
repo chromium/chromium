@@ -64,6 +64,9 @@ class ApplicationAdvancedProtectionStatusDetector;
 }  // namespace safe_browsing
 
 #if !BUILDFLAG(IS_ANDROID)
+namespace child_module {
+class ChildModuleManager;
+}  // namespace child_module
 class ProfileLaunchObserver;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -226,6 +229,10 @@ class GlobalFeatures {
   GetUserDataFactoryForTesting();
 
 #if !BUILDFLAG(IS_ANDROID)
+  child_module::ChildModuleManager* child_module_manager() {
+    return child_module_manager_.get();
+  }
+
   // Prefer using ProfileLaunchObserver::GetInstance() over calling this method
   // directly.
   ProfileLaunchObserver* profile_launch_observer() {
@@ -339,6 +346,8 @@ class GlobalFeatures {
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
 #if !BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<child_module::ChildModuleManager> child_module_manager_;
+
   std::unique_ptr<on_device_translation::OnDeviceTranslationInstaller>
       on_device_translation_installer_;
 

@@ -5548,6 +5548,7 @@ test("unit_tests") {
   if (!is_android) {
     deps += [
       "//chrome/browser/background:unit_tests",
+      "//chrome/browser/child_module:unit_tests",
       "//chrome/browser/dictation:unit_tests",
       "//chrome/browser/feedback/report_unsafe_site:unit_tests",
       "//chrome/browser/glic/selection:unit_tests",
@@ -5569,6 +5570,7 @@ test("unit_tests") {
       "//chrome/browser/webapps:desktop",
       "//chrome/browser/webapps:desktop_impl",
       "//chrome/browser/webapps/installable:unit_tests",
+      "//chrome/common/child_module:unit_tests",
     ]
   }
 
