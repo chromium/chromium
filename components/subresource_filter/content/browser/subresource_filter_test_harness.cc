@@ -37,6 +37,7 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_navigation_throttle_inserter.h"
 #include "content/public/test/test_renderer_host.h"
+#include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -154,10 +155,26 @@ SubresourceFilterTestHarness::SimulateNavigateAndCommit(
   auto simulator =
       content::NavigationSimulator::CreateRendererInitiated(url, rfh);
   simulator->Commit();
-  return simulator->GetLastThrottleCheckResult().action() ==
-                 content::NavigationThrottle::PROCEED
-             ? simulator->GetFinalRenderFrameHost()
-             : nullptr;
+  content::NavigationThrottle::ThrottleCheckResult result =
+      simulator->GetLastThrottleCheckResult();
+  if (result.action() == content::NavigationThrottle::PROCEED) {
+    return simulator->GetFinalRenderFrameHost();
+  }
+
+  // A blocked navigation commits an error page, which needs to be simulated
+  // for the navigation to finish. Otherwise the navigation would stay pending,
+  // since the error page may commit in a different RenderFrameHost that
+  // outlives the simulator (e.g. with error page isolation).
+  //
+  // Navigations that fail with net::ERR_ABORTED are the exception: they are
+  // cancelled without committing an error page (see
+  // NavigationRequest::MaybeCancelFailedNavigation()) and have already
+  // finished at this point. This covers the CANCEL and CANCEL_AND_IGNORE
+  // throttle actions.
+  if (result.net_error_code() != net::ERR_ABORTED) {
+    simulator->CommitErrorPage();
+  }
+  return nullptr;
 }
 
 // Returns the frame host the navigation commit in, or nullptr if it did not
