@@ -357,7 +357,7 @@ const gfx::VectorIcon& GetMechanismIcon(
             if (show_modal_provider_icons) {
               switch (credential.value().source) {
                 case AuthenticatorType::kICloudKeychain:
-                  return kIcloudKeychainColorCustomIcon;
+                  return kApplePasswordsColorCustomIcon;
                 case AuthenticatorType::kEnclave:
                   return GooglePasswordManagerVectorIcon();
                 case AuthenticatorType::kWinNative:
@@ -383,8 +383,8 @@ const gfx::VectorIcon& GetMechanismIcon(
             return GetTransportIcon(*effective_transport);
           },
           [](const Mechanism::ICloudKeychain&) -> const gfx::VectorIcon& {
-            // Always use the standard iCloud Keychain icon here.
-            return kIcloudKeychainCustomIcon;
+            // Always use the standard Apple Passwords icon here.
+            return kApplePasswordsCustomIcon;
           },
           [](const Mechanism::Hybrid&) -> const gfx::VectorIcon& {
             return kQrcodeGeneratorCustomIcon;
@@ -1289,7 +1289,7 @@ void AuthenticatorRequestDialogController::OnUserConsentDenied() {
   if (ephemeral_state_.dispatched_platform_authenticator_type_ ==
       AuthenticatorType::kICloudKeychain) {
     webauthn::user_actions::RecordICloudCancelled();
-    // If we dispatched automatically to iCloud Keychain and the
+    // If we dispatched automatically to Apple Passwords and the
     // user clicked cancel, give them the option to try something else.
     bool did_trigger_automatically =
         ephemeral_state_.did_invoke_platform_despite_no_priority_mechanism_;
@@ -2046,7 +2046,7 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
   }
 
   if (transport_availability_.has_icloud_keychain && allow_icloud_keychain_ &&
-      // The mechanism for iCloud Keychain only appears for create(), or if
+      // The mechanism for Apple Passwords only appears for create(), or if
       // Chrome doesn't have permission to enumerate credentials and thus the
       // user needs a generic mechanism to trigger it.
       (!is_get_assertion ||
