@@ -18,7 +18,8 @@ import {getTrustedHTML} from '//resources/js/static_types.js';
 
 // LINT.IfChange(SearchboxConfigIcons)
 const div = document.createElement('div');
-if (document.documentElement.hasAttribute('webui-rounded-icons')) {
+if (document.documentElement.hasAttribute('webui-rounded-icons') ||
+    document.documentElement.hasAttribute('rounded-icons')) {
   div.innerHTML = getTrustedHTML`
 <cr-iconset name="searchbox_config">
   <svg>
@@ -98,7 +99,19 @@ if (document.documentElement.hasAttribute('webui-rounded-icons')) {
 
       <!-- IconResourceIds::DRIVE (proto ID: 103) -->
       <g id="103" viewBox="0 0 20 20">
-        <path d="M4.958 16h10.084l1.916-3.312L11.896 4H8.104l-5.062 8.688Zm0 1.5q-.416 0-.76-.198-.344-.198-.552-.552L1.75 13.438q-.188-.355-.198-.75-.01-.396.198-.75L6.792 3.25q.187-.354.541-.552.355-.198.771-.198h3.792q.396 0 .75.198t.562.552l5.042 8.688q.167.354.177.75.011.395-.177.75l-1.896 3.312q-.229.354-.573.552-.343.198-.739.198Zm1.292-3.562-.562-1 3.604-6.292h1.416l3.604 6.292-.562 1Zm1.438-1.48h4.624L10 8.417Z" fill="currentColor"/>
+        <path d="M5.938 17a3.447 3.447 0 0 1-1.75-.469 3.507 3.507 0 0
+          1-1.293-1.281 3.416 3.416 0 0 1-.477-1.75c0-.625.16-1.207.477-1.75
+          l4.085-7a3.505 3.505 0 0 1 1.282-1.281A3.384 3.384 0 0 1 10 3c.625 0
+          1.203.156 1.738.469.535.312.965.738 1.282 1.281l4.085 7c.317.543
+          .477 1.125.477 1.75s-.16 1.207-.477 1.75c-.32.543-.75.969-1.293
+          1.281a3.447 3.447 0 0 1-1.75.469Zm0-1.5h4.125l-2.876-5H5.356l-1.168
+          2c-.18.32-.269.652-.269 1s.09.68.27 1c.18.32.425.566.738.738.312
+          .176.652.262 1.011.262ZM10 12.395l1.082-1.895H8.918Zm1.793
+          3.105h2.27c.359 0 .699-.086 1.011-.262.313-.172.559-.418.739-.738
+          .18-.32.269-.652.269-1s-.09-.68-.27-1L13.73 8.918l-2.875
+          4.977ZM6.23 9h5.707l.918-1.582L11.73 5.5a1.923 1.923 0 0
+          0-.73-.738 1.971 1.971 0 0 0-1-.262c-.36 0-.695.086-1 .262a1.923
+          1.923 0 0 0-.73.738Zm0 0"></path>
       </g>
 
       <!-- IconResourceIds::ATTACH_FILE (proto ID: 92) -->
