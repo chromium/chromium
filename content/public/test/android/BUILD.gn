@@ -29,7 +29,6 @@ android_library("content_java_test_support") {
     "//mojo/public/java:bindings_java",
     "//net/android:net_java",
     "//net/android:net_java_test_support",
-    "//services/service_manager/public/java:service_manager_java",
     "//third_party/android_deps:espresso_java",
     "//third_party/android_deps:guava_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -87,7 +86,6 @@ android_library("content_transit_java") {
   deps = [
     "//base:base_java",
     "//base:base_java_test_support",
-    "//base:base_java_test_support_uncommon",
     "//base/test:public_transit_java",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
