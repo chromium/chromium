@@ -861,6 +861,7 @@ public class ArchivedTabsDialogCoordinatorTest {
     @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/445994927
     // Flaky in automotive, https://crbug.com/462785937
+    @DisabledTest(message = "https://crbug.com/564429611")
     @Feature({"RenderTest"})
     public void testIphMessageResizedOnTablet() throws IOException {
         ChromeTabbedActivity cta = mCtaTestRule.getActivity();
