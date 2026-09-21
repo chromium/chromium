@@ -587,6 +587,11 @@
         {HOURS, plural, =1 {Active 1 hour ago} other {Active # hours ago}}
       </message>
 
+      <!-- NTP Tiles -->
+      <message name="IDS_NTP_TILES_AI_MODE_TITLE" desc="Title for the virtual AI Mode shortcut tile shown on the New Tab Page.">
+        AI Mode
+      </message>
+
       <!-- Desktop-to-Mobile Promo Notifications (Unbranded) -->
       <if expr="not is_android">
         <message name="IDS_IOS_DESKTOP_PRICE_TRACKING_PROMO_NOTIFICATION_TITLE" desc="The title for the iOS desktop Price Tracking promo notification.">

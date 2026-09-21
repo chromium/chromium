@@ -40,6 +40,9 @@ class GURL;
 @property(nonatomic, weak) id<ContentSuggestionsActionsProvider>
     actionsProvider;
 
+// Whether this tile represents the virtual AI Mode tile.
+- (BOOL)isAIMTile;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_MOST_VISITED_TILES_UI_MOST_VISITED_ITEM_H_

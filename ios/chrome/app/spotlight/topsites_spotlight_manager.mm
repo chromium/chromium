@@ -177,7 +177,7 @@ class SpotlightTopSitesBridge : public history::TopSitesObserver {
 - (void)onMostVisitedURLsAvailable:
     (const history::MostVisitedURLList&)top_sites {
   NSUInteger sitesToIndex =
-      MIN(top_sites.size(), kContentSuggestionsMostVisitedTilesMax);
+      MIN(top_sites.size(), MaximumMostVisitedTilesCount());
   for (size_t i = 0; i < sitesToIndex; i++) {
     const GURL& URL = top_sites[i].url;
 

@@ -5,14 +5,29 @@
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_item.h"
 
 #import "base/check.h"
+#import "components/ntp_tiles/constants.h"
+#import "components/ntp_tiles/features.h"
 #import "components/ntp_tiles/tile_source.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tile_view.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "url/gurl.h"
 
 @implementation MostVisitedItem
 
 - (BOOL)isPinned {
   return self.source == ntp_tiles::TileSource::CUSTOM_LINKS;
+}
+
+#pragma mark - Public
+
+- (BOOL)isAIMTile {
+  if (ntp_tiles::GetAimButtonRefactorArm() !=
+          ntp_tiles::AimButtonRefactorArm::kAimAsMvt ||
+      !IsAimEnabledInNtp()) {
+    // No AIM tile exists among the MVTs.
+    return NO;
+  }
+  return self.URL == GURL(ntp_tiles::kAiModeTileUrl);
 }
 
 #pragma mark - UIContentConfiguration

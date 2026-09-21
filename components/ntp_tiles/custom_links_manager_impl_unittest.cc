@@ -19,10 +19,12 @@
 #include "components/ntp_tiles/constants.h"
 #include "components/ntp_tiles/pref_names.h"
 #include "components/search/ntp_features.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 
 using Link = ntp_tiles::CustomLinksManager::Link;
 using sync_preferences::TestingPrefServiceSyncable;
@@ -132,6 +134,25 @@ class CustomLinksManagerImplTest : public testing::Test {
     custom_links_ = std::make_unique<CustomLinksManagerImpl>(
         CustomLinksManagerImpl::Options{
             .prefs = &prefs_, .history_service = history_service_.get()});
+  }
+
+  std::unique_ptr<CustomLinksManagerImpl> CreateCustomLinksManager(
+      bool enable_ai_mode_tile = false) {
+    return std::make_unique<CustomLinksManagerImpl>(
+        CustomLinksManagerImpl::Options{
+            .prefs = &prefs_,
+            .history_service = history_service_.get(),
+            .max_links = enable_ai_mode_tile ? kMaxNumCustomLinks + 1
+                                             : kMaxNumCustomLinks,
+            .enable_ai_mode_tile = enable_ai_mode_tile});
+  }
+
+  int GetAiModeTileIndex(const CustomLinksManagerImpl* manager) const {
+    return manager->GetAiModeTileIndex();
+  }
+
+  void SetAiModeTileIndex(CustomLinksManagerImpl* manager, int index) {
+    manager->SetAiModeTileIndex(index);
   }
 
  protected:
@@ -898,5 +919,181 @@ TEST_F(CustomLinksManagerImplTest, CustomMaxLinksLimit) {
   EXPECT_THAT(custom_links_limit_3->GetLinks(),
               testing::ElementsAreArray(expected));
 }
+
+// Test that the AI Mode virtual link is inserted when enabled, is not stored
+// in persistent storage, that reordering updates the preference correctly,
+// and that updating the virtual link is rejected.
+TEST_F(CustomLinksManagerImplTest, AiModeLinkInsertionAndReorder) {
+  auto custom_links_aim =
+      CreateCustomLinksManager(/*enable_ai_mode_tile=*/true);
+
+  // Set AI mode link index to 1.
+  SetAiModeTileIndex(custom_links_aim.get(), 1);
+
+  // Initialize with test tiles (size 2).
+  NTPTilesVector tiles = FillTestTiles(kTestCase2);
+  ASSERT_TRUE(custom_links_aim->Initialize(tiles));
+
+  const std::u16string ai_mode_title =
+      l10n_util::GetStringUTF16(IDS_NTP_TILES_AI_MODE_TITLE);
+
+  // The AI mode link should be inserted at index 1.
+  std::vector<Link> expected_links = {
+      Link{GURL(kTestCase2[0].url), kTestCase2[0].title, true},
+      Link{GURL(kAiModeTileUrl), ai_mode_title, false},
+      Link{GURL(kTestCase2[1].url), kTestCase2[1].title, true},
+  };
+  EXPECT_EQ(expected_links, custom_links_aim->GetLinks());
+
+  // Verify that it is NOT stored in the preferences (retrieving links directly
+  // from the store should not contain chrome://ai-mode).
+  CustomLinksStore store(&prefs_);
+  std::vector<Link> stored_links = store.RetrieveLinks();
+  EXPECT_EQ(FillTestLinks(kTestCase2), stored_links);
+  EXPECT_EQ(1, prefs_.GetInteger(prefs::kCustomLinksAiModeTileIndex));
+
+  // Reordering the AI mode link should update the preference.
+  EXPECT_TRUE(custom_links_aim->ReorderLink(GURL(kAiModeTileUrl), 0));
+  EXPECT_EQ(0, GetAiModeTileIndex(custom_links_aim.get()));
+  EXPECT_EQ(0, prefs_.GetInteger(prefs::kCustomLinksAiModeTileIndex));
+
+  std::vector<Link> reordered_links = {
+      Link{GURL(kAiModeTileUrl), ai_mode_title, false},
+      Link{GURL(kTestCase2[0].url), kTestCase2[0].title, true},
+      Link{GURL(kTestCase2[1].url), kTestCase2[1].title, true},
+  };
+  EXPECT_EQ(reordered_links, custom_links_aim->GetLinks());
+  EXPECT_EQ(FillTestLinks(kTestCase2), store.RetrieveLinks());
+
+  // Updating the virtual AI mode link should be rejected.
+  EXPECT_FALSE(custom_links_aim->UpdateLink(
+      GURL(kAiModeTileUrl), GURL("http://new-url.com"), u"New Title"));
+  EXPECT_EQ(0, GetAiModeTileIndex(custom_links_aim.get()));
+  EXPECT_EQ(0, prefs_.GetInteger(prefs::kCustomLinksAiModeTileIndex));
+  EXPECT_EQ(reordered_links, custom_links_aim->GetLinks());
+  EXPECT_EQ(FillTestLinks(kTestCase2), store.RetrieveLinks());
+}
+
+// Test that deleting the AI Mode virtual link unpins it, sets the preference
+// to -1, and removes it from the links list.
+TEST_F(CustomLinksManagerImplTest, AiModeLinkDeletion) {
+  auto custom_links_aim =
+      CreateCustomLinksManager(/*enable_ai_mode_tile=*/true);
+
+  // Set AI mode link index to 0.
+  SetAiModeTileIndex(custom_links_aim.get(), 0);
+
+  NTPTilesVector tiles = FillTestTiles(kTestCase1);
+  ASSERT_TRUE(custom_links_aim->Initialize(tiles));
+
+  const std::u16string ai_mode_title =
+      l10n_util::GetStringUTF16(IDS_NTP_TILES_AI_MODE_TITLE);
+
+  // The AI mode link should be inserted at index 0.
+  std::vector<Link> expected_links = {
+      Link{GURL(kAiModeTileUrl), ai_mode_title, false},
+      Link{GURL(kTestCase1[0].url), kTestCase1[0].title, true},
+  };
+  EXPECT_EQ(expected_links, custom_links_aim->GetLinks());
+
+  // Deleting the AI mode link should set the index to -1 and remove it.
+  EXPECT_TRUE(custom_links_aim->DeleteLink(GURL(kAiModeTileUrl)));
+  EXPECT_EQ(-1, GetAiModeTileIndex(custom_links_aim.get()));
+  EXPECT_EQ(-1, prefs_.GetInteger(prefs::kCustomLinksAiModeTileIndex));
+  EXPECT_EQ(FillTestLinks(kTestCase1), custom_links_aim->GetLinks());
+
+  CustomLinksStore store(&prefs_);
+  EXPECT_EQ(FillTestLinks(kTestCase1), store.RetrieveLinks());
+
+  // A new instance should not restore the AI mode link when unpinned (-1).
+  auto custom_links_reloaded =
+      CreateCustomLinksManager(/*enable_ai_mode_tile=*/true);
+  EXPECT_EQ(FillTestLinks(kTestCase1), custom_links_reloaded->GetLinks());
+  EXPECT_EQ(-1, GetAiModeTileIndex(custom_links_reloaded.get()));
+}
+
+// Test that when the feature is disabled after being enabled, the AI Mode link
+// is removed, and when re-enabled later, it is restored at its previous index.
+TEST_F(CustomLinksManagerImplTest,
+       AiModeLinkDisabledAndReenabledPositionPreserved) {
+  // Initially enabled.
+  auto custom_links_enabled =
+      CreateCustomLinksManager(/*enable_ai_mode_tile=*/true);
+
+  NTPTilesVector tiles = FillTestTiles(kTestCase2);
+  ASSERT_TRUE(custom_links_enabled->Initialize(tiles));
+
+  const std::u16string ai_mode_title =
+      l10n_util::GetStringUTF16(IDS_NTP_TILES_AI_MODE_TITLE);
+
+  // Move AIM link to index 1.
+  EXPECT_TRUE(custom_links_enabled->ReorderLink(GURL(kAiModeTileUrl), 1));
+  EXPECT_EQ(1, GetAiModeTileIndex(custom_links_enabled.get()));
+  EXPECT_EQ(1, prefs_.GetInteger(prefs::kCustomLinksAiModeTileIndex));
+  std::vector<Link> expected_links_enabled = {
+      Link{GURL(kTestCase2[0].url), kTestCase2[0].title, true},
+      Link{GURL(kAiModeTileUrl), ai_mode_title, false},
+      Link{GURL(kTestCase2[1].url), kTestCase2[1].title, true},
+  };
+  EXPECT_EQ(expected_links_enabled, custom_links_enabled->GetLinks());
+
+  // Feature disabled (e.g. user turned off AimAsMvt).
+  auto custom_links_disabled =
+      CreateCustomLinksManager(/*enable_ai_mode_tile=*/false);
+
+  // The AIM link must not be present when disabled.
+  EXPECT_EQ(FillTestLinks(kTestCase2), custom_links_disabled->GetLinks());
+  // The saved index must be preserved.
+  EXPECT_EQ(1, GetAiModeTileIndex(custom_links_disabled.get()));
+  EXPECT_EQ(1, prefs_.GetInteger(prefs::kCustomLinksAiModeTileIndex));
+
+  // Feature re-enabled.
+  auto custom_links_reenabled =
+      CreateCustomLinksManager(/*enable_ai_mode_tile=*/true);
+
+  // The AIM link must be restored at its previous index (1).
+  EXPECT_EQ(expected_links_enabled, custom_links_reenabled->GetLinks());
+  EXPECT_EQ(1, GetAiModeTileIndex(custom_links_reenabled.get()));
+  EXPECT_EQ(1, prefs_.GetInteger(prefs::kCustomLinksAiModeTileIndex));
+}
+
+#if BUILDFLAG(IS_IOS)
+// Test that there are 9 links managed when the AI mode tile is enabled.
+TEST_F(CustomLinksManagerImplTest, AiModeLinkNineLinksWhenEnabled) {
+  // When AI mode tile is disabled with a max of 8 links, limit is 8.
+  auto custom_links_disabled =
+      CreateCustomLinksManager(/*enable_ai_mode_tile=*/false);
+  EXPECT_EQ(8u, custom_links_disabled->GetMaxLinks());
+
+  auto custom_links_enabled =
+      CreateCustomLinksManager(/*enable_ai_mode_tile=*/true);
+  EXPECT_EQ(9u, custom_links_enabled->GetMaxLinks());
+
+  // Initialize with 8 tiles. The AI mode tile is inserted, making 9 links.
+  NTPTilesVector tiles = FillTestTiles(base::span(kTestCaseMax).first(8u));
+  ASSERT_TRUE(custom_links_enabled->Initialize(tiles));
+  EXPECT_EQ(9u, custom_links_enabled->GetLinks().size());
+
+  // Attempting to add a 10th link should fail because the capacity is 9.
+  EXPECT_FALSE(
+      custom_links_enabled->AddLink(GURL("http://overflow.com/"), u"Overflow"));
+  EXPECT_EQ(9u, custom_links_enabled->GetLinks().size());
+
+  // Persistent storage should only contain the 8 non-virtual custom links.
+  CustomLinksStore store(&prefs_);
+  EXPECT_EQ(8u, store.RetrieveLinks().size());
+
+  // Deleting a custom link frees up a slot, allowing a new link to be added
+  // up to the 9 link limit again.
+  EXPECT_TRUE(custom_links_enabled->DeleteLink(GURL(kTestCaseMax[0].url)));
+  EXPECT_EQ(8u, custom_links_enabled->GetLinks().size());
+
+  EXPECT_TRUE(custom_links_enabled->AddLink(GURL("http://replacement.com/"),
+                                            u"Replacement"));
+  EXPECT_EQ(9u, custom_links_enabled->GetLinks().size());
+  EXPECT_FALSE(custom_links_enabled->AddLink(GURL("http://overflow2.com/"),
+                                             u"Overflow2"));
+}
+#endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace ntp_tiles

@@ -9,6 +9,9 @@
 
 namespace ntp_tiles {
 
+// URL for AI Mode on the search results page.
+inline constexpr char kAiModeTileUrl[] = "http://google.com/aimode";
+
 // Maximum number of custom links that can be set by the user. Used on desktop.
 extern const size_t kMaxNumCustomLinks;
 

@@ -70,6 +70,11 @@ inline constexpr char kEnterpriseShortcutsUserList[] =
 inline constexpr char kCustomLinksForPreinstalledAppsRemoved[] =
     "custom_links.preinstalledremoved";
 
+// Pref that stores the index of the virtual AI Mode link in custom links.
+// Defaults to 0; set to -1 if deleted/unpinned by the user.
+inline constexpr char kCustomLinksAiModeTileIndex[] =
+    "custom_links.ai_mode_tile_index";
+
 // The pref that stores if the Tab Resumption Home Module is enabled.
 inline constexpr char kTabResumptionHomeModuleEnabled[] =
     "home.module.tab_resumption.enabled";

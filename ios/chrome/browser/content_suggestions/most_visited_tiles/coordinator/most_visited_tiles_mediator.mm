@@ -17,6 +17,7 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/history/core/browser/history_service.h"
+#import "components/ntp_tiles/constants.h"
 #import "components/ntp_tiles/features.h"
 #import "components/ntp_tiles/metrics.h"
 #import "components/ntp_tiles/most_visited_sites.h"
@@ -167,7 +168,7 @@ GURL GetValidUrl(NSString* urlString) {
             .with_top_sites(true)
             .with_custom_links(true));
     _mostVisitedSites->AddMostVisitedURLsObserver(
-        _mostVisitedBridge.get(), kContentSuggestionsMostVisitedTilesMax,
+        _mostVisitedBridge.get(), MaximumMostVisitedTilesCount(),
         kMaxNumNonCustomMostVisitedTiles);
   }
   return self;
@@ -216,14 +217,37 @@ GURL GetValidUrl(NSString* urlString) {
 
 - (void)mostVisitedSites:(ntp_tiles::MostVisitedSites*)mostVisitedSites
           didUpdateTiles:(const ntp_tiles::NTPTilesVector&)tiles {
-  // This is used by the shortcuts widget.
-  content_suggestions_tile_saver::SaveMostVisitedToDisk(
-      tiles, _mostVisitedAttributesProvider,
-      app_group::ShortcutsWidgetFaviconsFolder(), _accountManagerService);
+  if (ntp_tiles::GetAimButtonRefactorArm() ==
+          ntp_tiles::AimButtonRefactorArm::kAimAsMvt &&
+      IsAimEnabledInNtp()) {
+    ntp_tiles::NTPTilesVector shortcuts_widget_tiles;
+    const GURL aimURL(ntp_tiles::kAiModeTileUrl);
+    for (const ntp_tiles::NTPTile& tile : tiles) {
+      if (tile.url != aimURL) {
+        shortcuts_widget_tiles.push_back(tile);
+      }
+    }
+    // This saves tiles displayed in the shortcuts widget. The AI Mode tile is
+    // not eligible.
+    content_suggestions_tile_saver::SaveMostVisitedToDisk(
+        shortcuts_widget_tiles, _mostVisitedAttributesProvider,
+        app_group::ShortcutsWidgetFaviconsFolder(), _accountManagerService);
+  } else {
+    // This saves tiles displayed in the shortcuts widget.
+    content_suggestions_tile_saver::SaveMostVisitedToDisk(
+        tiles, _mostVisitedAttributesProvider,
+        app_group::ShortcutsWidgetFaviconsFolder(), _accountManagerService);
+  }
 
   _freshMostVisitedItems = [NSMutableArray array];
   int index = 0;
+  const GURL aimURL(ntp_tiles::kAiModeTileUrl);
   for (const ntp_tiles::NTPTile& tile : tiles) {
+    if (tile.url == aimURL) {
+      CHECK(IsAimEnabledInNtp());
+      CHECK_EQ(ntp_tiles::GetAimButtonRefactorArm(),
+               ntp_tiles::AimButtonRefactorArm::kAimAsMvt);
+    }
     MostVisitedItem* item = [self convertNTPTile:tile];
     item.commandHandler = self;
     item.incognitoAvailable = _incognitoAvailable;
@@ -495,6 +519,7 @@ GURL GetValidUrl(NSString* urlString) {
 - (NSArray<UIAction*>*)actionsForItem:(MostVisitedItem*)item
                              fromView:(UIView*)view {
   CHECK(self.actionFactory);
+
   NSMutableArray<UIAction*>* actions = [[NSMutableArray alloc] init];
 
   CGPoint centerPoint = [view.superview convertPoint:view.center toView:nil];
@@ -539,10 +564,12 @@ GURL GetValidUrl(NSString* urlString) {
                                                   fromView:view];
            }]];
   if (item.isPinned) {
-    [actions addObject:[self.actionFactory
-                           actionToEditPinnedSiteOnMostVisitedTileWithBlock:^{
-                             [weakSelf openModalToEditPinnedSite:item];
-                           }]];
+    if (![item isAIMTile]) {
+      [actions addObject:[self.actionFactory
+                             actionToEditPinnedSiteOnMostVisitedTileWithBlock:^{
+                               [weakSelf openModalToEditPinnedSite:item];
+                             }]];
+    }
     [actions addObject:[self.actionFactory
                            actionToUnpinSiteFromMostVisitedTileWithBlock:^{
                              [weakSelf pinOrUnpinMostVisited:item];
@@ -670,7 +697,15 @@ GURL GetValidUrl(NSString* urlString) {
 - (MostVisitedItem*)convertNTPTile:(const ntp_tiles::NTPTile&)tile {
   MostVisitedItem* suggestion = [[MostVisitedItem alloc] init];
 
-  suggestion.title = base::SysUTF16ToNSString(tile.title);
+  const GURL aimURL(ntp_tiles::kAiModeTileUrl);
+  if (tile.url == aimURL) {
+    CHECK(IsAimEnabledInNtp());
+    CHECK_EQ(ntp_tiles::GetAimButtonRefactorArm(),
+             ntp_tiles::AimButtonRefactorArm::kAimAsMvt);
+    suggestion.title = l10n_util::GetNSString(IDS_NTP_TILES_AI_MODE_TITLE);
+  } else {
+    suggestion.title = base::SysUTF16ToNSString(tile.title);
+  }
   suggestion.URL = tile.url;
   suggestion.source = tile.source;
   suggestion.titleSource = tile.title_source;
