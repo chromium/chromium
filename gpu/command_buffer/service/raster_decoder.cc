@@ -2761,7 +2761,7 @@ class TransferCacheDeserializeHelperImpl final
   ~TransferCacheDeserializeHelperImpl() override = default;
 
   void CreateLocalEntry(
-      uint32_t id,
+      uint64_t id,
       std::unique_ptr<cc::ServiceTransferCacheEntry> entry) override {
     auto type = entry->Type();
     transfer_cache_->CreateLocalEntry(
@@ -2772,7 +2772,7 @@ class TransferCacheDeserializeHelperImpl final
  private:
   cc::ServiceTransferCacheEntry* GetEntryInternal(
       cc::TransferCacheEntryType entry_type,
-      uint32_t entry_id) override {
+      uint64_t entry_id) override {
     return transfer_cache_->GetEntry(ServiceTransferCache::EntryKey(
         raster_decoder_id_, entry_type, entry_id));
   }

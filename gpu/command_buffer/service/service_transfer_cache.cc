@@ -493,7 +493,7 @@ bool ServiceTransferCache::OnMemoryDump(
 
 ServiceTransferCache::EntryKey::EntryKey(int decoder_id,
                                          cc::TransferCacheEntryType entry_type,
-                                         uint32_t entry_id)
+                                         uint64_t entry_id)
     : decoder_id(decoder_id), entry_type(entry_type), entry_id(entry_id) {}
 
 }  // namespace gpu

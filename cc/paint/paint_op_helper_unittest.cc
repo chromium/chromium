@@ -622,7 +622,8 @@ TEST(PaintOpHelperFilters, ShaderPaintFilter) {
       "local_matrix=(nil), center=[0.000,0.000], tile=[0.000,0.000 "
       "0.000x0.000], start_point=[0.000,0.000], end_point=[0.000,0.000], "
       "start_degrees=0, end_degrees=0, image=<paint image>, record=(nil), "
-      "id=4294967295, tile_scale=(nil), colors=(nil), positions=(nil)], "
+      "id=18446744073709551615, tile_scale=(nil), colors=(nil), "
+      "positions=(nil)], "
       "alpha=1.000, filter_quality=kMedium_SkFilterQuality, dither=kYes, "
       "crop_rect=[0.000,0.000 100.000x100.000])");
 }

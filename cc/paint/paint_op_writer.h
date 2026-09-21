@@ -248,6 +248,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
   void Write(uint8_t data) { WriteSimple(data); }
   void Write(uint16_t data) { WriteSimple(data); }
   void Write(uint32_t data) { WriteSimple(data); }
+  void Write(uint64_t data);
   void Write(int32_t data) { WriteSimple(data); }
   void Write(const SkPoint& point) { WriteSimple(point); }
   void Write(const SkRect& rect) { WriteSimple(rect); }

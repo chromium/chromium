@@ -289,6 +289,14 @@ void PaintOpWriter::WriteSizeAt(base::span<uint8_t> memory, size_t size) {
       static_cast<uint32_t>(static_cast<uint64_t>(size) >> 32);
 }
 
+void PaintOpWriter::Write(uint64_t data) {
+  // uint64_t is serialized as two uint32_ts to meet the 4-byte minimum
+  // alignment requirement of PaintOpWriter (https://crbug.com/1429994 and
+  // https://crbug.com/1440013).
+  Write(static_cast<uint32_t>(data));
+  Write(static_cast<uint32_t>(data >> 32));
+}
+
 void PaintOpWriter::Write(const SkPath& path, UsePaintCache use_paint_cache) {
   auto id = path.getGenerationID();
   Write(id);

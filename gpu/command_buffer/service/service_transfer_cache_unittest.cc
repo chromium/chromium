@@ -135,6 +135,34 @@ TEST(ServiceTransferCache, MultipleDecoderUse) {
                                      decoder2, kEntryType, entry_id)));
 }
 
+TEST(ServiceTransferCache, EntryIdsBeyond32Bits) {
+  ServiceTransferCache cache{GpuPreferences(), base::RepeatingClosure()};
+  const size_t entry_size = 1024u;
+
+  // Two entry ids that only match in the low 32 bits address distinct
+  // entries.
+  const uint64_t low_entry_id = 7u;
+  const uint64_t high_entry_id = low_entry_id + (uint64_t{1} << 32);
+
+  auto low_entry = CreateEntry(entry_size);
+  auto* low_entry_ptr = low_entry.get();
+  cache.CreateLocalEntry(
+      ServiceTransferCache::EntryKey(kDecoderId, kEntryType, low_entry_id),
+      std::move(low_entry));
+
+  auto high_entry = CreateEntry(entry_size);
+  auto* high_entry_ptr = high_entry.get();
+  cache.CreateLocalEntry(
+      ServiceTransferCache::EntryKey(kDecoderId, kEntryType, high_entry_id),
+      std::move(high_entry));
+
+  EXPECT_EQ(cache.entries_count_for_testing(), 2u);
+  EXPECT_EQ(low_entry_ptr, cache.GetEntry(ServiceTransferCache::EntryKey(
+                               kDecoderId, kEntryType, low_entry_id)));
+  EXPECT_EQ(high_entry_ptr, cache.GetEntry(ServiceTransferCache::EntryKey(
+                                kDecoderId, kEntryType, high_entry_id)));
+}
+
 TEST(ServiceTransferCache, DeleteEntriesForDecoder) {
   ServiceTransferCache cache{GpuPreferences(), base::RepeatingClosure()};
   const size_t entry_size = 1024u;

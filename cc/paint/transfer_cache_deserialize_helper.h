@@ -26,7 +26,7 @@ class CC_PAINT_EXPORT TransferCacheDeserializeHelper {
   // Type safe access to an entry in the transfer cache. Returns null if the
   // entry is missing or of the wrong type.
   template <typename T>
-  T* GetEntryAs(uint32_t id) {
+  T* GetEntryAs(uint64_t id) {
     // There is a bit of a weirdness if we use T::kType directly in the DCHECK
     // below. Specifically, the linker can't seem to find that symbol ¯\_(ツ)_/¯
     // so instead save off the type into a local variable and use that.
@@ -46,7 +46,7 @@ class CC_PAINT_EXPORT TransferCacheDeserializeHelper {
 
   // Creates an entry directly.  If an entry exists, it will be clobbered.
   virtual void CreateLocalEntry(
-      uint32_t id,
+      uint64_t id,
       std::unique_ptr<ServiceTransferCacheEntry> entry) = 0;
 
   size_t GetTotalEntrySizes() const { return total_size_; }
@@ -54,7 +54,7 @@ class CC_PAINT_EXPORT TransferCacheDeserializeHelper {
  private:
   virtual ServiceTransferCacheEntry* GetEntryInternal(
       TransferCacheEntryType entry_type,
-      uint32_t entry_id) = 0;
+      uint64_t entry_id) = 0;
 
   size_t total_size_ = 0;
 };
