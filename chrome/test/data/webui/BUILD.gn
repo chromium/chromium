@@ -60,6 +60,7 @@ source_set("browser_tests") {
   if (!is_android) {
     deps += [
       "//chrome/browser/ui:browser_window_header",
+      "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/webui/net_internals:test_support",
     ]
   }
@@ -444,6 +445,7 @@ source_set("interactive_ui_tests") {
     ]
 
     deps += [
+      "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/views/frame:multi_contents_view_mini_toolbar",
       "//chrome/test/data/webui:composebox_pixel_test_support",
     ]
@@ -1034,6 +1036,7 @@ if (!is_android) {
       "webui_composebox_pixel_test.h",
     ]
     deps = [
+      "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/test:test_support",
       "//ui/native_theme:test_support",
     ]

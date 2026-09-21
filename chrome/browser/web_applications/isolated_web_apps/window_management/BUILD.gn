@@ -93,6 +93,7 @@ if (toolkit_views) {
     # Excluded on Mac: cannot reliably check window focus on this platform.
     if (!is_mac) {
       sources += [ "isolated_web_apps_focus_window_browsertest.cc" ]
+      deps += [ "//chrome/browser/ui/views/frame:browser_view_header" ]
     }
 
     if (use_aura) {

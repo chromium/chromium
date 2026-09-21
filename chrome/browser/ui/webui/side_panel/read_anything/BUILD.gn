@@ -85,6 +85,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/side_panel",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
     "//chrome/browser/ui/user_education",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/translate",
     "//chrome/browser/user_education",
     "//chrome/test:test_support",

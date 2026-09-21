@@ -801,6 +801,7 @@ if (!is_android) {
       "//chrome/browser/themes",
       "//chrome/browser/ui",
       "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/webui/webui_toolbar:impl",
       "//chrome/common:chrome_features",
       "//content/public/browser",

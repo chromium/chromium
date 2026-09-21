@@ -24,6 +24,7 @@ source_set("customize_toolbar") {
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/tabs:features",
     "//chrome/browser/ui/toolbar/pinned_toolbar",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/util",
     "//components/contextual_tasks/public:feature_list",

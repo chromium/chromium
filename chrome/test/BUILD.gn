@@ -4356,6 +4356,7 @@ if (!is_android) {
         "//chrome/browser/ui:breadcrumb_manager_browser_agent",
         "//chrome/browser/ui:browser_instant_controller",
         "//chrome/browser/ui:chrome_pages",
+        "//chrome/browser/ui/views/frame:browser_view_header",
       ]
     }
   }
@@ -7784,6 +7785,7 @@ if (!is_android) {
       "//chrome/browser/ui/startup",
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/views/autofill/payments:card_unmask_prompt_views",
+      "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/views/location_bar",
       "//chrome/browser/ui/views/page_action",
       "//chrome/browser/ui/views/page_info",
@@ -8995,7 +8997,10 @@ if (!is_android && !is_chromeos_device) {
     }
 
     if (!is_android) {
-      deps += [ "//chrome/browser/metrics/desktop_session_duration:interactive_ui_tests" ]
+      deps += [
+        "//chrome/browser/metrics/desktop_session_duration:interactive_ui_tests",
+        "//chrome/browser/ui/views/frame:browser_view_header",
+      ]
     }
 
     if (is_linux) {

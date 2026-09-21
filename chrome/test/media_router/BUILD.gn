@@ -64,6 +64,10 @@ source_set("browser_tests") {
     ":browser_test_resources",
     ":e2e_test_resources",
   ]
+
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/views/frame:browser_view_header" ]
+  }
 }
 
 copy("browser_test_resources") {

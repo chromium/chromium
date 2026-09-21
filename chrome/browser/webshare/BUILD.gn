@@ -138,6 +138,7 @@ if (is_win || is_chromeos || is_mac) {
       "//base/test:test_support",
       "//chrome/browser",
       "//chrome/browser/safe_browsing:test_support",
+      "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/test:test_support",
       "//components/safe_browsing/content/common:file_type_policies_test_support",
       "//components/safe_browsing/core/browser/db:test_database_manager",

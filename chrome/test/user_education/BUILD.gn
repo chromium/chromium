@@ -36,6 +36,7 @@ source_set("impl") {
     "//chrome/browser/feature_engagement",
     "//chrome/browser/search_engine_choice",
     "//chrome/browser/ui/views/frame",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/user_education",
     "//components/keyed_service/content",
     "//components/user_education/views",

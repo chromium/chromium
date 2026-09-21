@@ -65,6 +65,7 @@ source_set("impl") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/prefs",
     "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/webui:log_web_ui_url",
     "//chrome/common",
     "//components/performance_manager",
