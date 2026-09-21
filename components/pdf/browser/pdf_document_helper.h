@@ -64,7 +64,17 @@ class PDFDocumentHelper
       content::RenderFrameHost* rfh,
       std::unique_ptr<PDFDocumentHelperClient> client);
 
+  // Returns the PDFDocumentHelper associated with any frame in `contents`.
+  // WARNING: This searches across all frames, including subframes/iframes. If
+  // the caller only intends to operate on top-level full-page PDF documents,
+  // use `MaybeGetForFullPagePdf()` instead to avoid cross-origin data leaks.
   static PDFDocumentHelper* MaybeGetForWebContents(
+      content::WebContents& contents);
+
+  // Returns the PDFDocumentHelper associated with `contents` for a full-page
+  // PDF. Returns nullptr if the top-level document is not a PDF, or if no
+  // PDFDocumentHelper exists.
+  static PDFDocumentHelper* MaybeGetForFullPagePdf(
       content::WebContents& contents);
 
   // content::RenderWidgetHostObserver:

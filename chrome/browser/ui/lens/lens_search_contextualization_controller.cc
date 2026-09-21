@@ -207,7 +207,7 @@ void LensSearchContextualizationController::GetPageContextualization(
   // calling MaybeGetPdfBytes or else the `callback` will have been moved but
   // not called.
   pdf::PDFDocumentHelper* pdf_helper =
-      pdf::PDFDocumentHelper::MaybeGetForWebContents(
+      pdf::PDFDocumentHelper::MaybeGetForFullPagePdf(
           *lens_search_controller_->GetTabInterface()->GetContents());
   if (pdf_helper) {
     // Fetch the PDF bytes then run the callback.
@@ -273,7 +273,7 @@ void LensSearchContextualizationController::
         uint32_t page_count,
         PdfPartialPageTextRetrievedCallback callback) {
   pdf::PDFDocumentHelper* pdf_helper =
-      pdf::PDFDocumentHelper::MaybeGetForWebContents(
+      pdf::PDFDocumentHelper::MaybeGetForFullPagePdf(
           *lens_search_controller_->GetTabInterface()->GetContents());
   if (!pdf_helper ||
       lens::features::GetLensOverlayPdfSuggestCharacterTarget() == 0 ||
@@ -455,7 +455,7 @@ void LensSearchContextualizationController::UpdatePageContextualizationPart2(
 
 #if BUILDFLAG(ENABLE_PDF)
   pdf::PDFDocumentHelper* pdf_helper =
-      pdf::PDFDocumentHelper::MaybeGetForWebContents(
+      pdf::PDFDocumentHelper::MaybeGetForFullPagePdf(
           *lens_search_controller_->GetTabInterface()->GetContents());
   if (pdf_helper) {
     pdf_helper->GetMostVisiblePageIndex(base::BindOnce(
@@ -816,7 +816,7 @@ void LensSearchContextualizationController::GetPartialPdfTextCallback(
       std::numeric_limits<uint32_t>::max());
 
   pdf::PDFDocumentHelper* pdf_helper =
-      pdf::PDFDocumentHelper::MaybeGetForWebContents(
+      pdf::PDFDocumentHelper::MaybeGetForFullPagePdf(
           *lens_search_controller_->GetTabInterface()->GetContents());
 
   // Stop the loop if the character limit is reached or if the page index is
@@ -1195,7 +1195,7 @@ void LensSearchContextualizationController::GetPdfCurrentPage(
 
 #if BUILDFLAG(ENABLE_PDF)
   pdf::PDFDocumentHelper* pdf_helper =
-      pdf::PDFDocumentHelper::MaybeGetForWebContents(
+      pdf::PDFDocumentHelper::MaybeGetForFullPagePdf(
           *lens_search_controller_->GetTabInterface()->GetContents());
   if (pdf_helper) {
     pdf_helper->GetMostVisiblePageIndex(base::BindOnce(

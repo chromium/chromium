@@ -203,6 +203,27 @@ IN_PROC_BROWSER_TEST_F(TabContextualizationControllerBrowserTest,
   EXPECT_TRUE(data->is_page_context_eligible.has_value());
   EXPECT_FALSE(data->is_page_context_eligible.value());
 }
+
+IN_PROC_BROWSER_TEST_F(TabContextualizationControllerBrowserTest,
+                       GetPageContextForEmbeddedPdfIframe) {
+  auto* controller = GetTabContextualizationController();
+
+  GURL url(embedded_test_server()->GetURL("/pdf/test-iframe.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  base::test::TestFuture<std::unique_ptr<lens::ContextualInputData>> future;
+  controller->GetPageContext(future.GetCallback());
+  auto data = future.Take();
+
+  ASSERT_TRUE(data);
+  EXPECT_TRUE(data->tab_session_id.has_value());
+  EXPECT_EQ(data->page_url, url);
+  EXPECT_TRUE(data->page_title.has_value());
+  EXPECT_EQ(data->primary_content_type, lens::MimeType::kAnnotatedPageContent);
+  ASSERT_EQ(data->context_input->size(), 1u);
+  EXPECT_EQ((*data->context_input)[0].content_type_,
+            lens::MimeType::kAnnotatedPageContent);
+}
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 IN_PROC_BROWSER_TEST_F(TabContextualizationControllerBrowserTest,

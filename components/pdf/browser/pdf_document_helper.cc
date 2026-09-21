@@ -12,6 +12,7 @@
 #include "components/pdf/browser/pdf_document_helper_client.h"
 #include "components/pdf/browser/pdf_first_content_paint_registry.h"
 #include "components/pdf/browser/pdf_frame_util.h"
+#include "components/pdf/common/constants.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -112,6 +113,15 @@ PDFDocumentHelper* PDFDocumentHelper::MaybeGetForWebContents(
       });
 
   return pdf_helper;
+}
+
+// static
+PDFDocumentHelper* PDFDocumentHelper::MaybeGetForFullPagePdf(
+    content::WebContents& contents) {
+  if (contents.GetContentsMimeType() != pdf::kPDFMimeType) {
+    return nullptr;
+  }
+  return MaybeGetForWebContents(contents);
 }
 
 PDFDocumentHelper::PDFDocumentHelper(
