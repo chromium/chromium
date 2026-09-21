@@ -255,7 +255,6 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaPowerExperiment);
 // around hardware decoders that don't handle non-IDR keyframes (some older
 // Intel/AMD devices mishandle SEI + SPS/PPS); see https://crbug.com/451536366.
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaSourceSeiRecoveryPointKeyframe);
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaStreamAccurateDroppedFrameCount);
 // If enabled, chrome would inform Glic once it starts trasncribing, if Glic
 // requested to be informed.
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaTrasncriptsFlagInPageMetadata);

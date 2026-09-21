@@ -821,11 +821,6 @@ BASE_FEATURE(kMediaPowerExperiment, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kMediaSourceSeiRecoveryPointKeyframe,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables accurate dropped frame count for MediaStreamVideoSource.
-// TODO(crbug.com/432367602): Remove after M143.
-BASE_FEATURE(kMediaStreamAccurateDroppedFrameCount,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, chrome would inform Glic once it starts transcribing, if Glic
 // requested to be informed.
 BASE_FEATURE(kMediaTrasncriptsFlagInPageMetadata,

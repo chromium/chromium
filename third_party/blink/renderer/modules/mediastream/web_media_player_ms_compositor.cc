@@ -12,7 +12,6 @@
 #include <string>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -26,7 +25,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "cc/paint/skia_paint_canvas.h"
-#include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
@@ -508,13 +506,8 @@ void WebMediaPlayerMSCompositor::EnqueueFrame(
     //
     // Use std::max to prevent |dropped_frame_count_| from integer underflow
     // when frames_queued() is 0.
-    if (base::FeatureList::IsEnabled(
-            media::kMediaStreamAccurateDroppedFrameCount)) {
-      dropped_frame_count_ +=
-          std::max<size_t>(rendering_frame_buffer_->frames_queued(), 1u) - 1;
-    } else {
-      dropped_frame_count_ += rendering_frame_buffer_->frames_queued() - 1;
-    }
+    dropped_frame_count_ +=
+        std::max<size_t>(rendering_frame_buffer_->frames_queued(), 1u) - 1;
     rendering_frame_buffer_->Reset();
     pending_frames_info_.clear();
     RenderWithoutAlgorithm(frame, is_copy);
@@ -993,16 +986,9 @@ void WebMediaPlayerMSCompositor::SetCurrentFrame(
   TRACE_EVENT_INSTANT("media", "WebMediaPlayerMSCompositor::SetCurrentFrame",
                       "Timestamp", frame->timestamp().InMicroseconds());
 
-  if (base::FeatureList::IsEnabled(
-          media::kMediaStreamAccurateDroppedFrameCount)) {
-    // Check if there was a previous frame that wasn't rendered
-    if (current_frame_ && !current_frame_rendered_) {
-      ++dropped_frame_count_;
-    }
-  } else {
-    if (!current_frame_rendered_) {
-      ++dropped_frame_count_;
-    }
+  // Count the previous frame as dropped if it was never rendered.
+  if (current_frame_ && !current_frame_rendered_) {
+    ++dropped_frame_count_;
   }
   current_frame_rendered_ = false;
 
