@@ -112,6 +112,7 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
         reflect: true,
         attribute: 'small-loomnibox',
       },
+      hideTitle_: {type: Boolean},
       freStage_: {type: Number},
       hotkeyTokens_: {type: Array},
       isActive_: {
@@ -152,6 +153,8 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
       loadTimeData.getBoolean('omniboxEverywhereMostVisitedEnabled');
   protected accessor smallLoomnibox_: boolean =
       loadTimeData.getBoolean('smallLoomnibox');
+  protected accessor hideTitle_: boolean =
+      loadTimeData.getBoolean('omniboxEverywhereMostVisitedHideTitle');
   protected accessor hasMostVisitedTiles_: boolean = false;
   protected accessor freStage_: FreStage =
       (loadTimeData.valueExists('initialFreStage') ?

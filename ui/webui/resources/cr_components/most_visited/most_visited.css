@@ -229,11 +229,12 @@ cr-policy-indicator {
   border-radius: calc(var(--title-height) / 2 + 2px);
   color: var(--most-visited-text-color);
   display: flex;
+  font-size: var(--most-visited-title-font-size, inherit);
   height: var(--title-height);
-  line-height: calc(var(--title-height) / 2);
-  margin-top: 6px;
-  padding: 2px 8px;
+  line-height: var(--most-visited-title-line-height, calc(var(--title-height) / 2));
+  margin-top: var(--most-visited-title-margin-top, 6px);
   max-width: calc(var(--tile-size) - 10px);
+  padding: 2px 8px;
 }
 
 .tile-title span {
@@ -261,7 +262,8 @@ cr-policy-indicator {
   direction: ltr;
 }
 
-:host([hide-title]) #container {
+:host([hide-title]) #container,
+:host([non-editable]) #container {
   margin-bottom: 0;
   padding: 0;
   width: var(--content-width);
