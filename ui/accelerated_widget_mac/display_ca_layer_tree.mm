@@ -80,9 +80,10 @@ void DisplayCALayerTree::UpdateCALayerTree(gfx::CALayerParams ca_layer_params) {
   }
 #endif
 
-#if BUILDFLAG(IS_MAC)
   // Remote layers are the most common case.
   if (ca_layer_params.ca_context_id) {
+    // kCAContextMaxFencePorts is only declared for the Mac port.
+#if BUILDFLAG(IS_MAC)
     if (ca_layer_params.ca_context_fence_mach_port.is_valid()) {
       ca_context_fence_mach_ports_.push_back(
           std::move(ca_layer_params.ca_context_fence_mach_port));
@@ -98,10 +99,10 @@ void DisplayCALayerTree::UpdateCALayerTree(gfx::CALayerParams ca_layer_params) {
         ca_context_fence_mach_ports_.pop_front();
       }
     }
+#endif
     GotCALayerFrame(ca_layer_params.ca_context_id);
     return;
   }
-#endif
 
   // IOSurfaces can be sent from software compositing, or if remote layers are
   // manually disabled.
