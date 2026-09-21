@@ -108,6 +108,10 @@ void CreateMediaDrmStorage(
 
   Profile* profile = Profile::FromBrowserContext(browser_context);
   DCHECK(profile) << "Profile not available.";
+  if (profile->IsOffTheRecord()) {
+    DVLOG(1) << __func__ << ": MediaDrm storage not available off the record.";
+    return;
+  }
 
   PrefService* pref_service = profile->GetPrefs();
   DCHECK(pref_service) << "PrefService not available.";
