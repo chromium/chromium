@@ -419,7 +419,14 @@ public class PermissionTestRule implements TestRule {
      */
     public void verifyNoPageInfoPermissionsRow(int permissionNameId) {
         String permissionName = getActivity().getString(permissionNameId);
-        onView(withText(permissionName)).check(doesNotExist());
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    try {
+                        onView(withText(permissionName)).check(doesNotExist());
+                    } catch (AssertionError e) {
+                        throw new CriteriaNotSatisfiedException(e);
+                    }
+                });
     }
 
     /**
