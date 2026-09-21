@@ -705,14 +705,11 @@ enum class ItemIdentifier {
   configuration.subtitleNumberOfLines = 1;
   configuration.subtitleLineBreakMode = NSLineBreakByTruncatingTail;
 
-  if (itemIdentifier.icon) {
-    ColorfulSymbolContentConfiguration* symbolConfiguration =
-        [[ColorfulSymbolContentConfiguration alloc] init];
-    symbolConfiguration.symbolImage = itemIdentifier.icon;
-    symbolConfiguration.symbolTintColor =
-        [UIColor colorNamed:kTextSecondaryColor];
-    configuration.leadingConfiguration = symbolConfiguration;
-  }
+  ColorfulSymbolContentConfiguration* symbolConfiguration =
+      [[ColorfulSymbolContentConfiguration alloc] init];
+  symbolConfiguration.symbolImage = itemIdentifier.icon;
+  symbolConfiguration.symbolTintColor = [UIColor colorNamed:kTextPrimaryColor];
+  configuration.leadingConfiguration = symbolConfiguration;
 
   UITableViewCell* cell =
       [TableViewCellContentConfiguration dequeueTableViewCell:tableView];

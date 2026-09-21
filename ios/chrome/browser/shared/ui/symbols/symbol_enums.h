@@ -58,6 +58,7 @@ typedef NS_ENUM(NSInteger, Symbol) {
   SymbolChromeProduct,
   SymbolCloudAndArrowUp,
   SymbolCloudSlash,
+  SymbolCreditCardSpark,
   SymbolCustomShield,
   SymbolDangerousOmnibox,
   SymbolDeepSearch,

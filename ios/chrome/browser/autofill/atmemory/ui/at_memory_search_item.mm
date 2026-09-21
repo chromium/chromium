@@ -5,8 +5,10 @@
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_item.h"
 
 #import <optional>
+#import <variant>
 
 #import "base/apple/foundation_util.h"
+#import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #import "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
@@ -14,25 +16,50 @@
 #import "components/autofill/core/browser/suggestions/suggestion.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_constants.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_ui_util.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 
 namespace {
 
 using autofill::Suggestion;
 
-// TODO(crbug.com/545708069): Update GetAtMemorySearchItemIcon to provide the
-// icon for non-AI entities.
-UIImage* GetAtMemorySearchItemIcon(autofill::MemoryDataType entity_type,
-                                   bool is_personal_context) {
-  std::optional<autofill::AttributeType> attribute_type =
-      autofill::ToAttributeType(entity_type);
-  if (!attribute_type) {
-    return nil;
+// Returns the icon to display for `suggestion`, resolving Autofill AI entity
+// icons from the payload and falling back to `suggestion.icon` for other
+// types.
+UIImage* GetAtMemorySearchItemIcon(const Suggestion& suggestion) {
+  if (const auto* payload =
+          std::get_if<Suggestion::AtMemoryPayload>(&suggestion.payload)) {
+    if (std::optional<autofill::AttributeType> attribute_type =
+            autofill::ToAttributeType(payload->memory_data_type)) {
+      return autofill::DefaultIconForAutofillAiEntityType(
+          attribute_type->entity_type().name(),
+          payload->is_personal_context_sourced, kIconPointSize,
+          /*tint_color=*/nil);
+    }
   }
-  return autofill::DefaultIconForAutofillAiEntityType(
-      attribute_type->entity_type().name(), is_personal_context, kIconPointSize,
-      /*tint_color=*/nil);
+
+  Symbol symbol;
+  switch (suggestion.icon) {
+    case Suggestion::Icon::kLocation:
+      symbol = SymbolLocation;
+      break;
+    case Suggestion::Icon::kLocationSpark:
+      symbol = SymbolLocationSpark;
+      break;
+    case Suggestion::Icon::kCardGenericVector:
+      symbol = SymbolCreditCard;
+      break;
+    case Suggestion::Icon::kCardGenericSpark:
+      symbol = SymbolCreditCardSpark;
+      break;
+    default:
+      symbol = SymbolTextSpark;
+      break;
+  }
+
+  return SymbolWithPointSize(symbol, kIconPointSize);
 }
 
+// Returns the subtitle string for `suggestion`.
 std::u16string GetSubtitleFromSuggestion(const Suggestion& suggestion) {
   std::vector<std::u16string> label_pieces;
   for (const auto& row : suggestion.labels) {
@@ -62,10 +89,9 @@ std::u16string GetSubtitleFromSuggestion(const Suggestion& suggestion) {
   if (self) {
     _title = base::SysUTF16ToNSString(suggestion.main_text.value);
     _subtitle = base::SysUTF16ToNSString(GetSubtitleFromSuggestion(suggestion));
+    _icon = GetAtMemorySearchItemIcon(suggestion);
     if (const auto* payload =
             std::get_if<Suggestion::AtMemoryPayload>(&suggestion.payload)) {
-      _icon = GetAtMemorySearchItemIcon(payload->memory_data_type,
-                                        payload->is_personal_context_sourced);
       _isPersonalContextSourced = payload->is_personal_context_sourced;
     }
     _index = index;

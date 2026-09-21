@@ -15,7 +15,7 @@ inline constexpr CGFloat kDefaultCellAlpha = 1.0;
 inline constexpr CGFloat kDisabledCellAlpha = 0.5;
 
 // The symbol point size for cell icons.
-inline constexpr CGFloat kIconPointSize = 24;
+inline constexpr CGFloat kIconPointSize = 20;
 
 // Accessibility identifier for the AtMemory close button.
 extern NSString* const kAtMemoryCloseButtonAccessibilityIdentifier;

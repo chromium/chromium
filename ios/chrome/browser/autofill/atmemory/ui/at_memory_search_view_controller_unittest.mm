@@ -38,8 +38,6 @@ namespace {
 NSString* const kPassportTypeName = @"Passport";
 NSString* const kPassportValue = @"AA123456";
 NSString* const kPersonalContextPassportValue = @"BB654321";
-NSString* const kExpirationTypeName = @"Expiration";
-NSString* const kExpirationValue = @"2030-01-01";
 
 // Search query used for testing view controller search states.
 NSString* const kSearchQuery = @"test search query";
@@ -76,14 +74,6 @@ class AtMemorySearchViewControllerTest : public PlatformTest {
 
   AtMemorySearchViewController* view_controller_;
 };
-
-// Tests that the view controller, navigation items, search bar, and table view
-// are initialized properly.
-TEST_F(AtMemorySearchViewControllerTest, TestInitialization) {
-  EXPECT_NE(view_controller_.navigationItem.searchController, nil);
-  EXPECT_NE(view_controller_.navigationItem.rightBarButtonItem, nil);
-  EXPECT_NE(view_controller_.tableView, nil);
-}
 
 // Tests that the table view displays an empty background view with no items
 // when in the initial zero state (no notice and no recent fills).

@@ -87,6 +87,8 @@ SymbolInfo InfoForSymbol(Symbol symbol) {
       return {@"cloud_and_arrow_up", SymbolType::kCustom};
     case SymbolCloudSlash:
       return {@"cloud_slash", SymbolType::kCustom};
+    case SymbolCreditCardSpark:
+      return {@"creditcard_spark", SymbolType::kCustom};
     case SymbolCustomShield:
       return {@"shield", SymbolType::kCustom};
     case SymbolDangerousOmnibox:
