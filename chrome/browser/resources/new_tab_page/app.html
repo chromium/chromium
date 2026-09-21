@@ -14,8 +14,7 @@ import {SubmitButtonIconType} from '//resources/cr_components/composebox/compose
           <div id="oneGoogleBarScrim" ?hidden="${!this.showBackgroundImage_}"
               ?fixed="${this.scrolledToTop_}"></div>
           <ntp-iframe id="oneGoogleBar" src="${this.oneGoogleBarIframePath_}"
-              ?hidden="${!this.oneGoogleBarLoaded_}"
-              allow="camera ${this.oneGoogleBarIframeOrigin_}; display-capture ${this.oneGoogleBarIframeOrigin_}"> <!-- presubmit: ignore-long-line -->
+              ?hidden="${!this.oneGoogleBarLoaded_}">
           </ntp-iframe>
         </div>
         ` :
@@ -23,8 +22,7 @@ import {SubmitButtonIconType} from '//resources/cr_components/composebox/compose
         <div id="oneGoogleBarScrim" ?hidden="${!this.showBackgroundImage_}"
             ?fixed="${this.scrolledToTop_}"></div>
         <ntp-iframe id="oneGoogleBar" src="${this.oneGoogleBarIframePath_}"
-            ?hidden="${!this.oneGoogleBarLoaded_}"
-            allow="camera ${this.oneGoogleBarIframeOrigin_}; display-capture ${this.oneGoogleBarIframeOrigin_}"> <!-- presubmit: ignore-long-line -->
+            ?hidden="${!this.oneGoogleBarLoaded_}">
         </ntp-iframe>
         `
     ) : ''}
