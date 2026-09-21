@@ -106,13 +106,14 @@ class LoginStateChecker : public content::WebContentsObserver {
       LoginCheckResult::Status result,
       std::unique_ptr<
           optimization_guide::proto::PasswordChangeSubmissionLoggingData>
-          logging_data = nullptr) {
+          logging_data = nullptr,
+      std::optional<LoginCheckResult::LoginCheckError> error = std::nullopt) {
     if (result == LoginCheckResult::Status::kLoggedIn) {
       timer_.Stop();
     }
     result_check_callback_.Run(LoginCheckResult(
         result, state_checks_count_, base::Time::Now() - creation_time_,
-        std::move(logging_data)));
+        std::move(logging_data), error));
   }
 #endif
 

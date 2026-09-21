@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/password_change_delegate.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/password_change_service_interface.h"
 #include "components/password_manager/core/browser/password_form.h"
 
@@ -93,9 +94,10 @@ class ChromePasswordChangeService
   ~ChromePasswordChangeService() override;
 
   // Indicates that password change will be proposed to the user for a given
-  // `credentials`. `originator` belongs to a tab which initiated the process.
-  virtual void OfferPasswordChangeUi(password_manager::PasswordForm credentials,
-                                     content::WebContents* originator);
+  // `details`. `originator` belongs to a tab which initiated the process.
+  virtual void OfferPasswordChangeUi(
+      password_manager::LeakedPasswordDetails details,
+      content::WebContents* originator);
 
   // Responds with PasswordChangeDelegate for a given `web_contents`.
   // The same object is returned for a tab which initiated password change and a
@@ -133,6 +135,8 @@ class ChromePasswordChangeService
  private:
   // PasswordChangeDelegate::Observer impl.
   void OnPasswordChangeStopped(PasswordChangeDelegate* delegate) override;
+  void OnLoginCheckFailedWithServerError(
+      PasswordChangeDelegate* delegate) override;
 
   // KeyedService impl.
   void Shutdown() override;
@@ -154,8 +158,13 @@ class ChromePasswordChangeService
       settings_service_;
   std::unique_ptr<password_manager::PasswordFeatureManager> feature_manager_;
 
-  std::vector<std::unique_ptr<PasswordChangeDelegate>>
-      password_change_delegates_;
+  struct PasswordChangeData {
+    std::unique_ptr<PasswordChangeDelegate> delegate;
+    base::WeakPtr<content::WebContents> originator;
+    password_manager::LeakedPasswordDetails details;
+  };
+
+  std::vector<PasswordChangeData> password_change_data_;
 
   // The router for logs. Maybe be null in tests.
   const raw_ptr<autofill::LogRouter> log_router_;

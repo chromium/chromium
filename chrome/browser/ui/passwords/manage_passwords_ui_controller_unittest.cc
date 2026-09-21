@@ -333,7 +333,7 @@ class MockPasswordChangeService : public ChromePasswordChangeService {
 
   MOCK_METHOD(void,
               OfferPasswordChangeUi,
-              (password_manager::PasswordForm, content::WebContents*),
+              (password_manager::LeakedPasswordDetails, content::WebContents*),
               (override));
   MOCK_METHOD(PasswordChangeDelegate*,
               GetPasswordChangeDelegate,
@@ -2620,11 +2620,18 @@ TEST_F(ManagePasswordsUIControllerTest, AutomatedPasswordChangeOffered) {
       PasswordChangeServiceFactory::GetForProfile(profile()));
   EXPECT_CALL(*password_change_service, GetPasswordChangeDelegate)
       .WillRepeatedly(Return(nullptr));
-  EXPECT_CALL(
-      *password_change_service,
-      OfferPasswordChangeUi(
-          CreatePasswordForm(kExampleUrl, kExampleUsername, kExamplePassword),
-          web_contents()));
+  EXPECT_CALL(*password_change_service,
+              OfferPasswordChangeUi(
+                  password_manager::LeakedPasswordDetails(
+                      password_manager::CreateLeakType(
+                          password_manager::IsSaved(true),
+                          password_manager::IsReused(false),
+                          password_manager::IsSyncing(false),
+                          password_manager::HasChangePasswordUrl(true)),
+                      CreatePasswordForm(kExampleUrl, kExampleUsername,
+                                         kExamplePassword),
+                      /*in_account_store=*/false),
+                  web_contents()));
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
 
   // The old leak check dialog is not offered.
