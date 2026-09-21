@@ -344,6 +344,7 @@ group("gn_all") {
     if (!is_android && !is_ios && !is_fuchsia) {
       deps += [
         "//components/sync:sync_full_proto_unittests",
+        "//tools/pgo:generate_profile",
         "//ui/webui/examples:webui_examples",
       ]
     }
@@ -1560,6 +1561,7 @@ group("chromium_builder_perf") {
       data_deps += [
         "//chrome/test:load_library_perf_tests",
         "//chrome/test:performance_test_suite",
+        "//tools/pgo:generate_profile",
       ]
     }
 
