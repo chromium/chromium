@@ -3003,7 +3003,8 @@ void ShowIncognitoHistoryDisclaimerDialog(BrowserWindowInterface* browser) {
 bool ShouldInterceptChromeURLNavigationInIncognito(
     BrowserWindowInterface* browser,
     const GURL& url) {
-  if (!browser || !browser->GetProfile()->IsIncognitoProfile()) {
+  if (!browser ||
+      !browser->GetProfile()->IsPrimaryOTRProfileWithRegularParent()) {
     return false;
   }
 

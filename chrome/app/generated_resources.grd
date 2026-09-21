@@ -18593,6 +18593,31 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Got it
     </message>
 
+    <!-- Isolated Delete Browsing Data dialog bubble. -->
+    <message name="IDS_ISOLATED_CLEAR_BROWSING_DATA_DIALOG_PRIMARY_TEXT" desc="The primary text of the delete browsing data dialog which is shown in Isolated Mode when a user invokes a delete browsing data action in Isolated Mode. The text describes how Isolated Mode users can delete the browsing data by closing all Isolated Mode windows.">
+      To delete data, close all Isolated windows
+    </message>
+    <message name="IDS_ISOLATED_CLEAR_BROWSING_DATA_DIALOG_SECONDARY_TEXT" desc="The secondary text of the clear browsing data dialog which is shown in Isolated Mode when a user invokes a clear browsing data action in Isolated Mode. The text describes how the clear browsing data action affects only the Isolated Mode windows.">
+      This only affects Isolated windows
+    </message>
+    <message name="IDS_ISOLATED_CLEAR_BROWSING_DATA_DIALOG_CLOSE_WINDOWS_BUTTON" desc="The text of the button offering to close all Isolated windows in the dialog.">
+      Close windows
+    </message>
+
+    <!-- Isolated History Disclaimer dialog bubble. -->
+    <message name="IDS_ISOLATED_HISTORY_BUBBLE_PRIMARY_TEXT" desc="Header in bubble view that states visited sites aren't saved in Isolated mode.">
+      Sites you visit aren’t saved in Isolated
+    </message>
+    <message name="IDS_ISOLATED_HISTORY_BUBBLE_SECONDARY_TEXT" desc="Description in bubble view that states closing all Isolated tabs is necessary to delete Isolated browsing history from the device.">
+      To delete Isolated browsing history from your device, close all Isolated tabs
+    </message>
+    <message name="IDS_ISOLATED_HISTORY_BUBBLE_CLOSE_ISOLATED_BUTTON_TEXT" desc="Text of button in bubble view for calling to the close all Isolated tabs action.">
+      Close Isolated
+    </message>
+    <message name="IDS_ISOLATED_HISTORY_BUBBLE_CANCEL_BUTTON_TEXT" desc="Text of button in bubble view for calling to the close the bubble action.">
+      Got it
+    </message>
+
     <message name="IDS_NOTIFICATION_DEFAULT_HELPFUL_BUTTON_TEXT" desc="Text body for the helpful button in notifications sent from notification scheduler.">
       Helpful
     </message>

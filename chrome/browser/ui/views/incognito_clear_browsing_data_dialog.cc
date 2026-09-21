@@ -30,7 +30,7 @@ IncognitoClearBrowsingDataDialog::IncognitoClearBrowsingDataDialog(
       dialog_type_(type),
       incognito_profile_(incognito_profile) {
   DCHECK(incognito_profile_);
-  DCHECK(incognito_profile_->IsIncognitoProfile());
+  DCHECK(incognito_profile_->IsPrimaryOTRProfileWithRegularParent());
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetShowCloseButton(true);
 
@@ -48,6 +48,7 @@ IncognitoClearBrowsingDataDialog::IncognitoClearBrowsingDataDialog(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 
   // Header art
+  // TODO(b:559535312): Add Enterprise Mode Isolated Profile header art
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
   auto image_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
       *bundle.GetImageSkiaNamed(IDR_INCOGNITO_DATA_NOT_SAVED_HEADER_LIGHT),
@@ -65,12 +66,17 @@ IncognitoClearBrowsingDataDialog::IncognitoClearBrowsingDataDialog(
 }
 
 void IncognitoClearBrowsingDataDialog::SetDialogForDefaultBubbleType() {
+  const bool is_isolated =
+      incognito_profile_->IsEnterpriseIsolatedModeProfile();
+
   // Text
   const auto& typography_provider = views::TypographyProvider::Get();
   AddChildView(
       views::Builder<views::Label>()
           .SetText(l10n_util::GetStringUTF16(
-              IDS_INCOGNITO_CLEAR_BROWSING_DATA_DIALOG_PRIMARY_TEXT))
+              is_isolated
+                  ? IDS_ISOLATED_CLEAR_BROWSING_DATA_DIALOG_PRIMARY_TEXT
+                  : IDS_INCOGNITO_CLEAR_BROWSING_DATA_DIALOG_PRIMARY_TEXT))
           .SetFontList(typography_provider.GetFont(
               views::style::CONTEXT_LABEL, views::style::STYLE_EMPHASIZED))
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
@@ -80,7 +86,9 @@ void IncognitoClearBrowsingDataDialog::SetDialogForDefaultBubbleType() {
   AddChildView(
       views::Builder<views::Label>()
           .SetText(l10n_util::GetStringUTF16(
-              IDS_INCOGNITO_CLEAR_BROWSING_DATA_DIALOG_SECONDARY_TEXT))
+              is_isolated
+                  ? IDS_ISOLATED_CLEAR_BROWSING_DATA_DIALOG_SECONDARY_TEXT
+                  : IDS_INCOGNITO_CLEAR_BROWSING_DATA_DIALOG_SECONDARY_TEXT))
           .SetFontList(typography_provider.GetFont(
               views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY))
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
@@ -93,7 +101,9 @@ void IncognitoClearBrowsingDataDialog::SetDialogForDefaultBubbleType() {
   SetButtonLabel(
       ui::mojom::DialogButton::kOk,
       l10n_util::GetStringUTF16(
-          IDS_INCOGNITO_CLEAR_BROWSING_DATA_DIALOG_CLOSE_WINDOWS_BUTTON));
+          is_isolated
+              ? IDS_ISOLATED_CLEAR_BROWSING_DATA_DIALOG_CLOSE_WINDOWS_BUTTON
+              : IDS_INCOGNITO_CLEAR_BROWSING_DATA_DIALOG_CLOSE_WINDOWS_BUTTON));
 
   SetAcceptCallback(base::BindOnce(
       &IncognitoClearBrowsingDataDialog::OnCloseWindowsButtonClicked,
@@ -105,12 +115,16 @@ void IncognitoClearBrowsingDataDialog::SetDialogForDefaultBubbleType() {
 
 void IncognitoClearBrowsingDataDialog::
     SetDialogForHistoryDisclaimerBubbleType() {
+  const bool is_isolated =
+      incognito_profile_->IsEnterpriseIsolatedModeProfile();
+
   // Text
   const auto& typography_provider = views::TypographyProvider::Get();
   AddChildView(
       views::Builder<views::Label>()
           .SetText(l10n_util::GetStringUTF16(
-              IDS_INCOGNITO_HISTORY_BUBBLE_PRIMARY_TEXT))
+              is_isolated ? IDS_ISOLATED_HISTORY_BUBBLE_PRIMARY_TEXT
+                          : IDS_INCOGNITO_HISTORY_BUBBLE_PRIMARY_TEXT))
           .SetFontList(typography_provider.GetFont(
               views::style::CONTEXT_LABEL, views::style::STYLE_EMPHASIZED))
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
@@ -119,7 +133,8 @@ void IncognitoClearBrowsingDataDialog::
   views::Label* label = AddChildView(
       views::Builder<views::Label>()
           .SetText(l10n_util::GetStringUTF16(
-              IDS_INCOGNITO_HISTORY_BUBBLE_SECONDARY_TEXT))
+              is_isolated ? IDS_ISOLATED_HISTORY_BUBBLE_SECONDARY_TEXT
+                          : IDS_INCOGNITO_HISTORY_BUBBLE_SECONDARY_TEXT))
           .SetFontList(typography_provider.GetFont(
               views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY))
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
@@ -131,12 +146,17 @@ void IncognitoClearBrowsingDataDialog::
   // Buttons
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk) |
              static_cast<int>(ui::mojom::DialogButton::kCancel));
-  SetButtonLabel(ui::mojom::DialogButton::kOk,
-                 l10n_util::GetStringUTF16(
-                     IDS_INCOGNITO_HISTORY_BUBBLE_CANCEL_BUTTON_TEXT));
-  SetButtonLabel(ui::mojom::DialogButton::kCancel,
-                 l10n_util::GetStringUTF16(
-                     IDS_INCOGNITO_HISTORY_BUBBLE_CLOSE_INCOGNITO_BUTTON_TEXT));
+  SetButtonLabel(
+      ui::mojom::DialogButton::kOk,
+      l10n_util::GetStringUTF16(
+          is_isolated ? IDS_ISOLATED_HISTORY_BUBBLE_CANCEL_BUTTON_TEXT
+                      : IDS_INCOGNITO_HISTORY_BUBBLE_CANCEL_BUTTON_TEXT));
+  SetButtonLabel(
+      ui::mojom::DialogButton::kCancel,
+      l10n_util::GetStringUTF16(
+          is_isolated
+              ? IDS_ISOLATED_HISTORY_BUBBLE_CLOSE_ISOLATED_BUTTON_TEXT
+              : IDS_INCOGNITO_HISTORY_BUBBLE_CLOSE_INCOGNITO_BUTTON_TEXT));
 
   SetAcceptCallback(
       base::BindOnce(&IncognitoClearBrowsingDataDialog::OnCancelButtonClicked,
