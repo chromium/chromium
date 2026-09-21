@@ -11,3 +11,6 @@ BASE_FEATURE(kMetrickitDeferRegistration, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsMetrickitDeferRegistrationEnabled() {
   return base::FeatureList::IsEnabled(kMetrickitDeferRegistration);
 }
+
+BASE_FEATURE(kMetrickitSwiftReportSubscriber,
+             base::FEATURE_DISABLED_BY_DEFAULT);

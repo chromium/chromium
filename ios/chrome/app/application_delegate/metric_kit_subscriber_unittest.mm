@@ -14,11 +14,13 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/crash/core/app/crashpad.h"
 #import "components/crash/core/common/reporter_running_ios.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "ios/chrome/app/application_delegate/mock_metrickit_metric_payload.h"
+#import "ios/chrome/browser/crash_report/model/features.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/crashpad/crashpad/client/crash_report_database.h"
@@ -292,4 +294,67 @@ TEST_F(MetricKitSubscriberTest, EnableDisable) {
   EXPECT_OCMOCK_VERIFY(mock_manager);
 
   [mock_manager stopMocking];
+}
+
+// Tests that delivering an `MXMetricPayload` whose `MXSignpostIntervalData`
+// has `averageMemory.averageMeasurement = nil` to all registered MetricKit
+// subscribers does not crash (crbug.com/557114418).
+// Passing this test is a pre-condition to enabling the
+// MetrickitSwiftReportSubscriber feature flag
+TEST_F(MetricKitSubscriberTest,
+       NilSignpostAverageMemoryMeasurementDoesNotCrash) {
+  if (@available(iOS 27.0, *)) {
+    MetricKitSubscriber* subscriber = [MetricKitSubscriber sharedInstance];
+    [subscriber setEnabled:YES];
+
+    MXAverage* average_memory = [[MXAverage alloc] init];
+    [average_memory setValue:nil forKey:@"averageMeasurement"];
+
+    MXSignpostIntervalData* interval_data =
+        [[MXSignpostIntervalData alloc] init];
+    MXHistogram* durations_histogram = [[MXHistogram alloc] init];
+    [interval_data setValue:durations_histogram
+                     forKey:@"histogrammedSignpostDuration"];
+    [interval_data setValue:average_memory forKey:@"averageMemory"];
+
+    MXSignpostMetric* signpost_metric = [[MXSignpostMetric alloc] init];
+    [signpost_metric setValue:@"TestSignpost" forKey:@"signpostName"];
+    [signpost_metric setValue:@"TestCategory" forKey:@"signpostCategory"];
+    [signpost_metric setValue:@1 forKey:@"totalCount"];
+    [signpost_metric setValue:interval_data forKey:@"signpostIntervalData"];
+
+    MXMetricPayload* payload = [[MXMetricPayload alloc] init];
+    NSDate* now = [NSDate date];
+    [payload setValue:now forKey:@"timeStampBegin"];
+    [payload setValue:now forKey:@"timeStampEnd"];
+    [payload setValue:@[ signpost_metric ] forKey:@"signpostMetrics"];
+
+    // Allow any asynchronous Swift `MetricKitReportSubscriber` task (if
+    // enabled) to register its `MetricKit.MetricManagerSubscription` with
+    // `+[MXMetricManager stateAwareSharedManager]`, then deliver `payload` to
+    // all registered subscribers.
+    for (int i = 0; i < 20; ++i) {
+      [[NSRunLoop currentRunLoop]
+          runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.01]];
+    }
+
+    SEL did_receive_sel = @selector(didReceiveMetricPayloads:);
+    SEL state_manager_sel = NSSelectorFromString(@"stateAwareSharedManager");
+    if ([[MXMetricManager class] respondsToSelector:state_manager_sel]) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+      id state_manager =
+          [[MXMetricManager class] performSelector:state_manager_sel];
+      NSArray* subscribers = [[state_manager valueForKey:@"subscribers"] copy];
+      for (id sub in subscribers) {
+        if ([sub respondsToSelector:did_receive_sel]) {
+          [sub performSelector:did_receive_sel withObject:@[ payload ]];
+        }
+      }
+#pragma clang diagnostic pop
+    }
+    [subscriber didReceiveMetricPayloads:@[ payload ]];
+
+    [subscriber setEnabled:NO];
+  }
 }
