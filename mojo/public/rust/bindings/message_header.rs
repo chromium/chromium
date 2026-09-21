@@ -33,7 +33,7 @@ use helper_functions_cxx::ffi as cxx_helpers;
 /// - The payload of the message is of the type indicated by the `name` field.
 /// - The flags are correct.
 /// - If this is a response, then the request_id matches the one in the request.
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct MessageHeader {
     /// The version of the header.
     version: u32,
@@ -228,7 +228,7 @@ impl MessageHeader {
 bitflags::bitflags! {
     /// Flags that can be set for a Mojom message.
     /// Only the first two flags are supported in Rust at the moment.
-    #[derive(Clone, Copy, Default, Debug)]
+    #[derive(Clone, Copy, Default, Debug, PartialEq, Eq)]
     #[repr(transparent)]
     pub struct MessageHeaderFlags: u32 {
         const EXPECTS_RESPONSE = 1 << 0;
@@ -236,6 +236,21 @@ bitflags::bitflags! {
         const IS_SYNC = 1 << 2;
         const NO_INTERRUPT = 1 << 3;
         const IS_URGENT = 1 << 4;
+    }
+}
+
+impl MessageHeaderFlags {
+    /// Validate the response flags on a request: it should not itself be a
+    /// response, and should only request one if we expect it to.
+    pub fn is_valid_request(&self, expects_response: bool) -> bool {
+        !self.contains(Self::IS_RESPONSE)
+            && self.contains(Self::EXPECTS_RESPONSE) == expects_response
+    }
+
+    /// Validate the response flags on a response: it should be a response
+    /// (obviously), and should not request one.
+    pub fn is_valid_response(&self) -> bool {
+        self.contains(Self::IS_RESPONSE) && !self.contains(Self::EXPECTS_RESPONSE)
     }
 }
 
