@@ -693,6 +693,7 @@ if (enable_dice_support) {
       "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/signin",
+      "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/common:constants",
       "//components/input",
@@ -705,10 +706,6 @@ if (enable_dice_support) {
       "//ui/views",
       "//ui/views/controls/webview",
     ]
-
-    if (!is_android) {
-      deps += [ "//chrome/browser/ui/views/frame:browser_view_header" ]
-    }
   }
 
   source_set("profile_picker_toolbar") {
@@ -1005,6 +1002,7 @@ if (enable_dice_support) {
       "//chrome/browser/signin",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/signin",
+      "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/views/frame:toolbar_button_provider",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/web_applications",
@@ -1017,10 +1015,6 @@ if (enable_dice_support) {
       "//ui/events",
       "//ui/views",
     ]
-
-    if (!is_android) {
-      deps += [ "//chrome/browser/ui/views/frame:browser_view_header" ]
-    }
   }
 
   source_set("profile_picker_glic_flow_controller") {
@@ -1177,6 +1171,7 @@ if (enable_dice_support) {
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/profiles",
       "//chrome/browser/ui/signin",
+      "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/webui/signin",
       "//chrome/browser/ui/webui/signin:signin_ui_error",
       "//chrome/common:constants",
@@ -1184,10 +1179,6 @@ if (enable_dice_support) {
       "//components/signin/public/base",
       "//net",
     ]
-
-    if (!is_android) {
-      deps += [ "//chrome/browser/ui/views/frame:browser_view_header" ]
-    }
   }
 
   source_set("first_run_flow_controller") {
@@ -1232,6 +1223,7 @@ if (enable_dice_support) {
       "//chrome/browser/ui:singleton_tabs",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/hats",
+      "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/views/profiles/feature_showcase",
       "//chrome/browser/ui/webui",
       "//chrome/browser/ui/webui/feature_showcase",
@@ -1252,10 +1244,6 @@ if (enable_dice_support) {
     ]
     if (is_win) {
       deps += [ "//chrome/browser/win" ]
-    }
-
-    if (!is_android) {
-      deps += [ "//chrome/browser/ui/views/frame:browser_view_header" ]
     }
   }
 }

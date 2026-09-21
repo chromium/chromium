@@ -23,6 +23,7 @@ source_set("impl") {
   deps = [
     ":renderer_context_menu",
     "//chrome/app:command_ids",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/side_panel",
     "//chrome/common:non_code_constants",
     "//components/lens:buildflags",
@@ -42,10 +43,6 @@ source_set("impl") {
   # Reach it via browser_public_dependencies; the reverse edge is the
   # allow_circular_includes_from entry on //chrome/browser/ui:ui.
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
-  if (!is_android) {
-    deps += [ "//chrome/browser/ui/views/frame:browser_view_header" ]
-  }
 }
 
 source_set("browser_tests") {

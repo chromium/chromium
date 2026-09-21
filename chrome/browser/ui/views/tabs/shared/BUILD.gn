@@ -57,6 +57,7 @@ source_set("impl") {
     "//chrome/browser/ui/views/bookmarks",
     "//chrome/browser/ui/views/bookmarks/saved_tab_groups",
     "//chrome/browser/ui/views/frame",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/tabs/organizer",
     "//chrome/browser/ui/views/toolbar",
     "//chrome/browser/ui/webui/tab_search",
@@ -70,10 +71,6 @@ source_set("impl") {
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
-  if (!is_android) {
-    deps += [ "//chrome/browser/ui/views/frame:browser_view_header" ]
-  }
 }
 
 source_set("interactive_ui_tests") {

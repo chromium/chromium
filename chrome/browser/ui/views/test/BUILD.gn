@@ -38,8 +38,6 @@ if (!is_android) {
       "//ui/base/interaction:test_support",
     ]
 
-    if (!is_android) {
-      deps = [ "//chrome/browser/ui/views/frame:browser_view_header" ]
-    }
+    deps = [ "//chrome/browser/ui/views/frame:browser_view_header" ]
   }
 }

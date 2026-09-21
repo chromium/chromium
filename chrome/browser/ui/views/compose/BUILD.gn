@@ -35,12 +35,9 @@ source_set("impl") {
     "//chrome/browser/renderer_context_menu",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/dialogs:browser_dialogs",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//components/compose/core/browser",
     "//components/strings:components_strings",
     "//content/public/browser",
   ]
-
-  if (!is_android) {
-    deps += [ "//chrome/browser/ui/views/frame:browser_view_header" ]
-  }
 }

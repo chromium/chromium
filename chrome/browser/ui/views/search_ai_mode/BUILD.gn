@@ -31,14 +31,11 @@ source_set("impl") {
     "//chrome/browser/signin",
     "//chrome/browser/ui/signin",
     "//chrome/browser/ui/views:layout_provider",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
     "//chrome/browser/ui/views/toolbar",
     "//components/omnibox/common",
   ]
-
-  if (!is_android) {
-    deps += [ "//chrome/browser/ui/views/frame:browser_view_header" ]
-  }
 }
 
 source_set("browser_tests") {
@@ -50,14 +47,11 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui/test:dialog",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
     "//chrome/browser/ui/views/profiles:profiles_pixel_test_utils",
     "//chrome/browser/ui/views/toolbar",
     "//chrome/test:test_support",
     "//components/omnibox/common",
   ]
-
-  if (!is_android) {
-    deps += [ "//chrome/browser/ui/views/frame:browser_view_header" ]
-  }
 }

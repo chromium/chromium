@@ -141,9 +141,7 @@ source_set("test_support") {
     "//ui/views:test_support",
   ]
 
-  if (!is_android) {
-    deps = [ "//chrome/browser/ui/views/frame:browser_view_header" ]
-  }
+  deps = [ "//chrome/browser/ui/views/frame:browser_view_header" ]
 }
 
 source_set("browser_tests") {

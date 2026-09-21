@@ -67,6 +67,7 @@ source_set("impl") {
     "//chrome/browser/ui/tabs/organizer:impl",
     "//chrome/browser/ui/tabs/saved_tab_groups",
     "//chrome/browser/ui/views/animations",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/frame:custom_corners_background",
     "//chrome/browser/ui/views/frame:shadow",
     "//chrome/browser/ui/views/interaction",
@@ -93,10 +94,6 @@ source_set("impl") {
       "//extensions/browser",
       "//extensions/common",
     ]
-  }
-
-  if (!is_android) {
-    deps += [ "//chrome/browser/ui/views/frame:browser_view_header" ]
   }
 }
 
@@ -170,6 +167,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/tabs/organizer",
     "//chrome/browser/ui/views/animations",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/test:test_support",
     "//components/omnibox/browser:test_support",
     "//components/saved_tab_groups/public",
@@ -187,9 +185,5 @@ source_set("interactive_ui_tests") {
       "//extensions/browser",
       "//extensions/common",
     ]
-  }
-
-  if (!is_android) {
-    deps += [ "//chrome/browser/ui/views/frame:browser_view_header" ]
   }
 }

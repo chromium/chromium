@@ -32,12 +32,9 @@ source_set("browser_tests") {
     ":interaction",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/toolbar",
     "//chrome/test:test_support_ui",
     "//content/test:test_support",
   ]
-
-  if (!is_android) {
-    deps += [ "//chrome/browser/ui/views/frame:browser_view_header" ]
-  }
 }

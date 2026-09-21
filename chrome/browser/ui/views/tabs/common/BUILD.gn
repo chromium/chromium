@@ -114,6 +114,7 @@ source_set("impl") {
     "//chrome/browser/ui/user_education",
     "//chrome/browser/ui/views:layout_provider",
     "//chrome/browser/ui/views/frame",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/frame:glass_frame_service",
     "//chrome/browser/ui/views/frame:themed_background",
     "//chrome/browser/ui/views/tabs:base",
@@ -166,10 +167,6 @@ source_set("impl") {
     "//chrome/browser/ui/tabs/alert:tab_alert",
     "//chrome/browser/ui/views/tabs/dragging",
   ]
-
-  if (!is_android) {
-    deps += [ "//chrome/browser/ui/views/frame:browser_view_header" ]
-  }
 }
 
 source_set("browser_tests") {
@@ -202,6 +199,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/tabs:tab_menu",
     "//chrome/browser/ui/tabs/tab_strip_api",
     "//chrome/browser/ui/views/animations",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/tabs:tab_strip",
     "//chrome/browser/ui/views/tabs:tab_style_views",
     "//chrome/browser/ui/views/tabs/hovercard",
@@ -218,10 +216,6 @@ source_set("browser_tests") {
 
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
-  }
-
-  if (!is_android) {
-    deps += [ "//chrome/browser/ui/views/frame:browser_view_header" ]
   }
 }
 
@@ -267,6 +261,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/ui",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_menu",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/tabs/horizontal",
     "//chrome/browser/ui/views/tabs/hovercard",
     "//chrome/browser/ui/views/tabs/shared",
@@ -280,8 +275,4 @@ source_set("interactive_ui_tests") {
     "//ui/base:ozone_buildflags",
     "//ui/views",
   ]
-
-  if (!is_android) {
-    deps += [ "//chrome/browser/ui/views/frame:browser_view_header" ]
-  }
 }
