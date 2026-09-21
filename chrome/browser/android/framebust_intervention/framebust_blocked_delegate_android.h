@@ -21,6 +21,7 @@
 class HostContentSettingsMap;
 
 namespace content {
+class InitiatorNavigationState;
 class WebContents;
 }  // namespace content
 
@@ -48,6 +49,8 @@ class FramebustBlockedMessageDelegate
 
   bool ShowMessage(const GURL& blocked_url,
                    const std::optional<url::Origin>& initiator_origin,
+                   scoped_refptr<content::InitiatorNavigationState>
+                       initiator_navigation_state,
                    HostContentSettingsMap* settings_map,
                    OutcomeCallback intervention_callback);
 
@@ -75,6 +78,7 @@ class FramebustBlockedMessageDelegate
   std::unique_ptr<messages::MessageWrapper> message_;
   GURL blocked_url_;
   std::optional<url::Origin> initiator_origin_;
+  scoped_refptr<content::InitiatorNavigationState> initiator_navigation_state_;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 

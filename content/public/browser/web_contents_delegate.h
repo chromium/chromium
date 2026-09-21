@@ -111,6 +111,7 @@ class ColorChooser;
 #endif
 class EyeDropperListener;
 class FileSelectListener;
+class InitiatorNavigationState;
 class JavaScriptDialogManager;
 class RenderFrameHost;
 class RenderWidgetHost;
@@ -723,6 +724,7 @@ class CONTENT_EXPORT WebContentsDelegate {
       const GURL& blocked_url,
       const GURL& initiator_url,
       const url::Origin& initiator_origin,
+      scoped_refptr<InitiatorNavigationState> initiator_navigation_state,
       blink::mojom::NavigationBlockedReason reason) {}
 
   // Reports that passive mixed content was found at the specified url.

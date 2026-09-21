@@ -9030,7 +9030,8 @@ void RenderFrameHostImpl::DidBlockNavigation(
   process->FilterURL(/*empty_allowed=*/false, &validated_blocked_url);
 
   delegate_->OnDidBlockNavigation(validated_blocked_url, GetLastCommittedURL(),
-                                  GetLastCommittedOrigin(), reason);
+                                  GetLastCommittedOrigin(),
+                                  GetCurrentInitiatorNavigationState(), reason);
 }
 
 void RenderFrameHostImpl::DidChangeLoadProgress(double load_progress) {
@@ -11476,7 +11477,7 @@ void RenderFrameHostImpl::IssueKeepAliveHandle(
 }
 
 scoped_refptr<InitiatorNavigationState>
-RenderFrameHostImpl::GetCurrentInitiatorNavigationState() {
+RenderFrameHostImpl::GetCurrentInitiatorNavigationState() const {
   return current_navigation_state_;
 }
 

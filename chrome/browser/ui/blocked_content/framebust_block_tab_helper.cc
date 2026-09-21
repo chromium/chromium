@@ -7,6 +7,8 @@
 #include "base/check_op.h"
 #include "chrome/browser/content_settings/chrome_content_settings_utils.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/initiator_navigation_state.h"
+#include "content/public/browser/page_navigator.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -15,12 +17,15 @@ FramebustBlockTabHelper::~FramebustBlockTabHelper() = default;
 void FramebustBlockTabHelper::AddBlockedUrl(
     const GURL& blocked_url,
     const std::optional<url::Origin>& initiator_origin,
+    scoped_refptr<content::InitiatorNavigationState> initiator_navigation_state,
     ClickCallback click_callback) {
   blocked_urls_.push_back(blocked_url);
   initiator_origins_.push_back(initiator_origin);
+  initiator_navigation_states_.push_back(initiator_navigation_state);
   callbacks_.push_back(std::move(click_callback));
   DCHECK_EQ(blocked_urls_.size(), callbacks_.size());
   DCHECK_EQ(blocked_urls_.size(), initiator_origins_.size());
+  DCHECK_EQ(blocked_urls_.size(), initiator_navigation_states_.size());
 
   manager_.NotifyObservers(0 /* id */, blocked_url);
   content_settings::UpdateLocationBarUiForWebContents(web_contents());
@@ -37,10 +42,10 @@ void FramebustBlockTabHelper::OnBlockedUrlClicked(size_t index) {
   if (!callbacks_[index].is_null()) {
     std::move(callbacks_[index]).Run(url, index, total_size);
   }
-  content::OpenURLParams params(url, content::Referrer(),
-                                WindowOpenDisposition::CURRENT_TAB,
-                                ui::PAGE_TRANSITION_LINK,
-                                /*is_renderer_initiated=*/true);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateRendererInitiated(
+          url, WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_LINK,
+          content::Referrer(), initiator_navigation_states_[index]);
   params.initiator_origin = initiator_origins_[index];
   web_contents()->OpenURL(params, /*navigation_handle_callback=*/{});
 }
@@ -62,6 +67,7 @@ FramebustBlockTabHelper* FramebustBlockTabHelper::From(
 void FramebustBlockTabHelper::PrimaryPageChanged(content::Page& page) {
   blocked_urls_.clear();
   initiator_origins_.clear();
+  initiator_navigation_states_.clear();
   callbacks_.clear();
 
   content_settings::UpdateLocationBarUiForWebContents(web_contents());

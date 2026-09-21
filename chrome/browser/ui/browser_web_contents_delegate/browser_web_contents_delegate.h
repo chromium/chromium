@@ -101,6 +101,8 @@ class BrowserWebContentsDelegate : public content::WebContentsDelegate {
       const GURL& blocked_url,
       const GURL& initiator_url,
       const url::Origin& initiator_origin,
+      scoped_refptr<content::InitiatorNavigationState>
+          initiator_navigation_state,
       blink::mojom::NavigationBlockedReason reason) override;
   bool IsBackForwardCacheSupported(content::WebContents& web_contents) override;
 

@@ -112,9 +112,10 @@ bool FramebustBlockedMessageDelegateTest::EnqueueMessage(GURL url) {
       .WillOnce(testing::Return(true));
   auto intervention_outcome =
       [](FramebustBlockedMessageDelegate::InterventionOutcome outcome) {};
-  return GetDelegate()->ShowMessage(url, url::Origin::Create(url),
-                                    settings_map(),
-                                    base::BindOnce(intervention_outcome));
+  return GetDelegate()->ShowMessage(
+      url, url::Origin::Create(url),
+      main_rfh()->GetCurrentInitiatorNavigationState(), settings_map(),
+      base::BindOnce(intervention_outcome));
 }
 
 void FramebustBlockedMessageDelegateTest::TriggerActionClick() {
@@ -151,6 +152,7 @@ TEST_F(FramebustBlockedMessageDelegateTest, MessagePropertyValues) {
   // #EnqueueMessage ensure message is enqueued only once.
   GetDelegate()->ShowMessage(GURL("b.test"),
                              url::Origin::Create(GURL("b.test")),
+                             main_rfh()->GetCurrentInitiatorNavigationState(),
                              settings_map(), base::NullCallback());
   EXPECT_EQ(
       url_formatter::FormatUrlForSecurityDisplay(

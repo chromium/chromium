@@ -161,6 +161,7 @@ void TabUnderNavigationThrottle::ShowUI() {
               web_contents);
   framebust_blocked_message_delegate->ShowMessage(
       url, navigation_handle()->GetInitiatorOrigin(),
+      navigation_handle()->GetInitiatorNavigationState(),
       HostContentSettingsMapFactory::GetForProfile(
           web_contents->GetBrowserContext()),
       base::NullCallback());
@@ -168,8 +169,10 @@ void TabUnderNavigationThrottle::ShowUI() {
   tabs::TabInterface* tab =
       tabs::TabInterface::MaybeGetFromContents(web_contents);
   if (auto* tab_helper = tab ? FramebustBlockTabHelper::From(tab) : nullptr) {
-    tab_helper->AddBlockedUrl(url, navigation_handle()->GetInitiatorOrigin(),
-                              base::NullCallback());
+    tab_helper->AddBlockedUrl(
+        url, navigation_handle()->GetInitiatorOrigin(),
+        navigation_handle()->GetInitiatorNavigationState(),
+        base::NullCallback());
   }
 #endif
 }

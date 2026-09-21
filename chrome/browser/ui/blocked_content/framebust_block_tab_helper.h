@@ -9,11 +9,16 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/blocked_content/url_list_manager.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+namespace content {
+class InitiatorNavigationState;
+}
 
 namespace tabs {
 class TabInterface;
@@ -48,6 +53,8 @@ class FramebustBlockTabHelper : public content::WebContentsObserver {
   // will be called (if it is non-null) if the blocked URL is ever clicked.
   void AddBlockedUrl(const GURL& blocked_url,
                      const std::optional<url::Origin>& initiator_origin,
+                     scoped_refptr<content::InitiatorNavigationState>
+                         initiator_navigation_state,
                      ClickCallback click_callback);
 
   // Returns true if at least one Framebust was blocked on this page.
@@ -74,6 +81,10 @@ class FramebustBlockTabHelper : public content::WebContentsObserver {
 
   // Remembers the initiator origins for the currently blocked URLs.
   std::vector<std::optional<url::Origin>> initiator_origins_;
+
+  // Remembers the initiator navigation states for the currently blocked URLs.
+  std::vector<scoped_refptr<content::InitiatorNavigationState>>
+      initiator_navigation_states_;
 
   // Callbacks associated with |blocked_urls_|. Separate vector to allow easy
   // distribution of the URLs in blocked_urls().

@@ -21,6 +21,7 @@
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/editable_level.h"
 #include "content/public/browser/frame_tree_node_id.h"
+#include "content/public/browser/initiator_navigation_state.h"
 #include "content/public/browser/web_exposed_isolation_level.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/extra_mojo_js_features.mojom.h"
@@ -1271,6 +1272,12 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener {
   CreateDownloadUrlParameters(
       const GURL& url,
       const net::NetworkTrafficAnnotationTag& traffic_annotation) const = 0;
+
+  // Returns a record of the current state of the document hosted in the
+  // RenderFrameHost. This should be passed to all navigations started by this
+  // RenderFrameHost.
+  virtual scoped_refptr<InitiatorNavigationState>
+  GetCurrentInitiatorNavigationState() const = 0;
 
  private:
   // This interface should only be implemented inside content.

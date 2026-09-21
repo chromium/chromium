@@ -75,6 +75,20 @@ struct CONTENT_EXPORT OpenURLParams {
       bool started_from_context_menu = false,
       FrameTreeNodeId frame_tree_node_id = FrameTreeNodeId());
 
+  // Creates OpenURLParams for a renderer-initiated navigation.
+  // `initiator_navigation_state` should be non-null.
+  // TODO(crbug.com/510258191): Enforce that `initiator_navigation_state` be
+  // non-null, once we enforce that all renderer-initiated NavigationHandles
+  // have a non-null InitiatorNavigationState.
+  static OpenURLParams CreateRendererInitiated(
+      const GURL& url,
+      WindowOpenDisposition disposition,
+      ui::PageTransition transition,
+      const Referrer& referrer,
+      scoped_refptr<InitiatorNavigationState> initiator_navigation_state,
+      bool started_from_context_menu = false,
+      FrameTreeNodeId frame_tree_node_id = FrameTreeNodeId());
+
 #if DCHECK_IS_ON()
   // Returns true if the contents of this struct are considered valid and
   // satisfy dependencies between fields (e.g. about:blank URLs require

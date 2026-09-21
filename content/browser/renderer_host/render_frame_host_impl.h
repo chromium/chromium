@@ -2564,6 +2564,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const GURL& url,
       const net::NetworkTrafficAnnotationTag& traffic_annotation)
       const override;
+  scoped_refptr<InitiatorNavigationState> GetCurrentInitiatorNavigationState()
+      const override;
 
   // Dispatches the first contentful paint notification to the delegate when
   // this is the primary main frame. Split from the OnFirstContentfulPaint()
@@ -3195,10 +3197,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // existence of the MockRenderProcessHost.
   void SetPrerenderStateChangedCallback(
       PrerenderStateChangedCallback prerender_state_callback);
-
-  // Records the current navigation state of this RFH. It should be passed to
-  // NavigationRequests initiated by this RFH.
-  scoped_refptr<InitiatorNavigationState> GetCurrentInitiatorNavigationState();
 
   // Used in tests. This bypasses normal lifecycle security checks around
   // setting a PolicyContainerHost and generating an InitiatorNavigationState.

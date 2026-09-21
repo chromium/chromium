@@ -22,6 +22,7 @@
 class GURL;
 
 namespace content {
+class InitiatorNavigationState;
 class WebContents;
 class WebContentsDelegate;
 class NavigationHandle;
@@ -130,6 +131,8 @@ class WebContentsDelegateAndroid : public content::WebContentsDelegate {
       const GURL& blocked_url,
       const GURL& initiator_url,
       const url::Origin& initiator_origin,
+      scoped_refptr<content::InitiatorNavigationState>
+          initiator_navigation_state,
       blink::mojom::NavigationBlockedReason reason) override;
   int GetTopControlsHeight() override;
   int GetTopControlsMinHeight() override;

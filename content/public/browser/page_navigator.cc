@@ -107,6 +107,28 @@ OpenURLParams OpenURLParams::CreateBrowserInitiated(
   return params;
 }
 
+// static
+OpenURLParams OpenURLParams::CreateRendererInitiated(
+    const GURL& url,
+    WindowOpenDisposition disposition,
+    ui::PageTransition transition,
+    const Referrer& referrer,
+    scoped_refptr<InitiatorNavigationState> initiator_navigation_state,
+    bool started_from_context_menu,
+    FrameTreeNodeId frame_tree_node_id) {
+  // TODO(crbug.com/510258191): Check that the `initiator_navigation_state` is
+  // not null. This can only be done once we also enforce that all
+  // NavigationHandles for a renderer-initiated navigation have a non-null
+  // InitiatorNavigationState because some callers of
+  // OpenURLParams::CreateRendererInitiated will pass an
+  // InitiatorNavigationState retrieved from a NavigationHandle.
+  OpenURLParams params(url, referrer, frame_tree_node_id, disposition,
+                       transition, /*is_renderer_initiated=*/true);
+  params.started_from_context_menu = started_from_context_menu;
+  params.initiator_navigation_state = initiator_navigation_state;
+  return params;
+}
+
 #if DCHECK_IS_ON()
 bool OpenURLParams::Valid() const {
   // Make sure URLs that result in an opaque origin have their initiator

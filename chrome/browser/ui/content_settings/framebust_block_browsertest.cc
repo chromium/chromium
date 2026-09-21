@@ -180,6 +180,9 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, ModelAllowsRedirection) {
   auto* helper = GetFramebustTabHelper();
   for (const GURL& url : blocked_urls) {
     helper->AddBlockedUrl(url, url::Origin::Create(url),
+                          GetWebContents()
+                              ->GetPrimaryMainFrame()
+                              ->GetCurrentInitiatorNavigationState(),
                           base::BindOnce(&FramebustBlockBrowserTest::OnClick,
                                          base::Unretained(this)));
   }
@@ -283,6 +286,7 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, AllowRadioButtonSelected) {
   // Signal that a blocked redirection happened.
   auto* helper = GetFramebustTabHelper();
   helper->AddBlockedUrl(url, url::Origin::Create(url),
+                        /*initiator_navigation_state=*/nullptr,
                         base::BindOnce(&FramebustBlockBrowserTest::OnClick,
                                        base::Unretained(this)));
   EXPECT_TRUE(helper->HasBlockedUrls());
@@ -315,6 +319,7 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, DisallowRadioButtonSelected) {
   // Signal that a blocked redirection happened.
   auto* helper = GetFramebustTabHelper();
   helper->AddBlockedUrl(url, url::Origin::Create(url),
+                        /*initiator_navigation_state=*/nullptr,
                         base::BindOnce(&FramebustBlockBrowserTest::OnClick,
                                        base::Unretained(this)));
   EXPECT_TRUE(helper->HasBlockedUrls());
@@ -358,6 +363,7 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, MAYBE_ManageButtonClicked) {
   // Signal that a blocked redirection happened.
   auto* helper = GetFramebustTabHelper();
   helper->AddBlockedUrl(url, url::Origin::Create(url),
+                        /*initiator_navigation_state=*/nullptr,
                         base::BindOnce(&FramebustBlockBrowserTest::OnClick,
                                        base::Unretained(this)));
   EXPECT_TRUE(helper->HasBlockedUrls());

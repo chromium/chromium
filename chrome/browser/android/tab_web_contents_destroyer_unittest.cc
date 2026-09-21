@@ -15,6 +15,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #include "content/public/browser/javascript_dialog_manager.h"
+#include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
@@ -220,10 +221,12 @@ TEST_F(TabWebContentsDestroyerTest, NavigationSuppressionAndInterception) {
   ASSERT_NE(nullptr, delegate);
 
   // OpenURLFromTab should be suppressed (return nullptr).
-  content::OpenURLParams params(
-      GURL("https://example.com"), content::Referrer(),
-      WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_LINK,
-      /*is_renderer_initiated=*/true);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateRendererInitiated(
+          GURL("https://example.com"), WindowOpenDisposition::CURRENT_TAB,
+          ui::PAGE_TRANSITION_LINK, content::Referrer(),
+          raw_web_contents->GetPrimaryMainFrame()
+              ->GetCurrentInitiatorNavigationState());
   EXPECT_EQ(nullptr, delegate->OpenURLFromTab(raw_web_contents, params,
                                               base::DoNothing()));
 

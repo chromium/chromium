@@ -69,6 +69,7 @@
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
 #include "content/public/browser/file_select_listener.h"
+#include "content/public/browser/initiator_navigation_state.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
@@ -140,9 +141,12 @@ JNI_TabWebContentsDelegateAndroidImpl_CreateJavaPictureInPictureWindowOptions(
           env, bounds, options.disallow_return_to_opener));
 }
 
-void ShowFramebustBlockMessageInternal(content::WebContents* web_contents,
-                                       const GURL& url,
-                                       const url::Origin& initiator_origin) {
+void ShowFramebustBlockMessageInternal(
+    content::WebContents* web_contents,
+    const GURL& url,
+    const url::Origin& initiator_origin,
+    scoped_refptr<content::InitiatorNavigationState>
+        initiator_navigation_state) {
   blocked_content::FramebustBlockedMessageDelegate::CreateForWebContents(
       web_contents);
   blocked_content::FramebustBlockedMessageDelegate*
@@ -150,7 +154,7 @@ void ShowFramebustBlockMessageInternal(content::WebContents* web_contents,
           blocked_content::FramebustBlockedMessageDelegate::FromWebContents(
               web_contents);
   framebust_blocked_message_delegate->ShowMessage(
-      url, initiator_origin,
+      url, initiator_origin, std::move(initiator_navigation_state),
       HostContentSettingsMapFactory::GetForProfile(
           web_contents->GetBrowserContext()),
       base::NullCallback());
@@ -503,9 +507,10 @@ void TabWebContentsDelegateAndroid::OnDidBlockNavigation(
     const GURL& blocked_url,
     const GURL& initiator_url,
     const url::Origin& initiator_origin,
+    scoped_refptr<content::InitiatorNavigationState> initiator_navigation_state,
     blink::mojom::NavigationBlockedReason reason) {
-  ShowFramebustBlockMessageInternal(web_contents, blocked_url,
-                                    initiator_origin);
+  ShowFramebustBlockMessageInternal(web_contents, blocked_url, initiator_origin,
+                                    std::move(initiator_navigation_state));
 }
 
 void TabWebContentsDelegateAndroid::UpdateUserGestureCarryoverInfo(

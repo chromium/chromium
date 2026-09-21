@@ -229,6 +229,7 @@ class BlockedNavigationDelegate : public WebContentsDelegate {
       const GURL& blocked_url,
       const GURL& initiator_url,
       const url::Origin& initiator_origin,
+      scoped_refptr<InitiatorNavigationState> initiator_navigation_state,
       blink::mojom::NavigationBlockedReason reason) override {
     ++blocked_navigation_count_;
   }
