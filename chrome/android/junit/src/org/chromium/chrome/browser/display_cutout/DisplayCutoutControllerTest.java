@@ -501,6 +501,62 @@ public class DisplayCutoutControllerTest {
     }
 
     @Test
+    public void testCutoutModeChangeRedispatchesInsets() {
+        // The cutout mode feeds WindowInsetsUtils#shouldPadDisplayCutout, which decides whether the
+        // edge-to-edge layout pads content away from the cutout. Changing the mode has to re-run
+        // the inset pass, otherwise the layout keeps the decision made under the previous mode and
+        // a page that switched from viewport-fit=cover to a fitted value keeps rendering
+        // underneath the cutout.
+        when(mDelegate.getDisplayMode()).thenReturn(DisplayMode.STANDALONE);
+        when(mDelegate.isShortEdgesCutoutModeEnabled()).thenReturn(true);
+        when(mDelegate.getInsetObserver()).thenReturn(mInsetObserver);
+        when(mDelegate.getAttachedActivity()).thenReturn(mChromeActivity);
+
+        LayoutParams attributes = new LayoutParams();
+        when(mWindow.getAttributes()).thenReturn(attributes);
+
+        DisplayCutoutController controller = new DisplayCutoutController(mDelegate);
+        controller.onActivityAttachmentChanged(mWindowAndroid);
+
+        // A cover page draws under the cutout via short edges mode.
+        controller.setViewportFit(ViewportFit.COVER);
+        Assert.assertEquals(
+                LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES,
+                attributes.layoutInDisplayCutoutMode);
+        clearInvocations(mInsetObserver);
+
+        // Switching to a fitted value demotes the window out of short edges mode.
+        controller.setViewportFit(ViewportFit.AUTO);
+
+        Assert.assertEquals(
+                "Fitted page should leave short edges mode.",
+                LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT,
+                attributes.layoutInDisplayCutoutMode);
+        verify(mInsetObserver).retriggerOnApplyWindowInsets();
+    }
+
+    @Test
+    public void testCutoutModeUnchangedDoesNotRedispatchInsets() {
+        when(mDelegate.getDisplayMode()).thenReturn(DisplayMode.STANDALONE);
+        when(mDelegate.isShortEdgesCutoutModeEnabled()).thenReturn(true);
+        when(mDelegate.getInsetObserver()).thenReturn(mInsetObserver);
+        when(mDelegate.getAttachedActivity()).thenReturn(mChromeActivity);
+
+        LayoutParams attributes = new LayoutParams();
+        when(mWindow.getAttributes()).thenReturn(attributes);
+
+        DisplayCutoutController controller = new DisplayCutoutController(mDelegate);
+        controller.onActivityAttachmentChanged(mWindowAndroid);
+        controller.setViewportFit(ViewportFit.COVER);
+        clearInvocations(mInsetObserver);
+
+        // Already in short edges mode for cover, so nothing changes and no work is needed.
+        controller.maybeUpdateLayout();
+
+        verify(mInsetObserver, never()).retriggerOnApplyWindowInsets();
+    }
+
+    @Test
     public void testLayoutOnInteractability_True() {
         // In this test we are checking for a side effect of maybeUpdateLayout.
         // This is because the tab observer holds a reference to the original

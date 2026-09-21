@@ -664,6 +664,16 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
 
         attributes.layoutInDisplayCutoutMode = displayCutoutMode;
         setWindowAttributes(attributes);
+
+        // The cutout mode is an input to WindowInsetsUtils#shouldPadDisplayCutout, which decides
+        // whether the edge-to-edge layout pads the content away from the display cutout. Changing
+        // the window attributes does not dispatch window insets, so without this the layout keeps
+        // the padding decision it made under the previous mode: a page switching from
+        // viewport-fit=cover to a fitted value stays unpadded and keeps rendering underneath the
+        // cutout until something else happens to re-dispatch insets.
+        if (mInsetObserver != null) {
+            mInsetObserver.retriggerOnApplyWindowInsets();
+        }
     }
 
     /** Should be called when the associated UI surface is attached or detached to an activity. */
