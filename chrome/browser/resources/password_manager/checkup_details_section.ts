@@ -213,51 +213,81 @@ export class CheckupDetailsSectionElement extends
     Router.getInstance().navigateTo(Page.CHECKUP);
   }
 
+  private compareCredentialsByGroup_ =
+      (lhs: chrome.passwordsPrivate.PasswordUiEntry,
+       rhs: chrome.passwordsPrivate.PasswordUiEntry): number => {
+        const lhsName = this.getCurrentGroup_(lhs.id)?.name || '';
+        const rhsName = this.getCurrentGroup_(rhs.id)?.name || '';
+        if (lhsName === rhsName) {
+          return 0;
+        }
+        return lhsName > rhsName ? 1 : -1;
+      };
+
+  private matchesInsecurityType_(
+      credential: chrome.passwordsPrivate.PasswordUiEntry,
+      types: chrome.passwordsPrivate.CompromiseType[]): boolean {
+    assert(credential.compromisedInfo);
+    return credential.compromisedInfo.compromiseTypes.some(
+        t => types.includes(t));
+  }
+
+  private getCredentialsForCurrentType_():
+      chrome.passwordsPrivate.PasswordUiEntry[] {
+    const types = this.getInsecurityType_();
+
+    return (this.allInsecureCredentials_ || [])
+        .filter(cred => this.matchesInsecurityType_(cred, types));
+  }
+
   private async updateShownCredentials_() {
     if (!this.insecurityType_ || !this.allInsecureCredentials_) {
       return;
     }
-    const insecureCredentialsForThisType = this.allInsecureCredentials_.filter(
-        cred => cred.compromisedInfo!.compromiseTypes.some(type => {
-          return this.getInsecurityType_().includes(type);
-        }));
-    const insuecureCredentialsSorter =
-        (lhs: chrome.passwordsPrivate.PasswordUiEntry,
-         rhs: chrome.passwordsPrivate.PasswordUiEntry) => {
-          if ((this.getCurrentGroup_(lhs.id)?.name || '') >
-              (this.getCurrentGroup_(rhs.id)?.name || '')) {
-            return 1;
-          }
-          return -1;
-        };
 
+    const currentTypeCredentials = this.getCredentialsForCurrentType_();
+    // 1. Compromised subpage (Leaked / Phished)
     if (this.isCompromisedType()) {
       // Compromised credentials can be muted. Show muted credentials
       // separately.
-      this.mutedCompromisedCredentials_ = insecureCredentialsForThisType.filter(
-          cred => cred.compromisedInfo!.isMuted);
-      this.shownInsecureCredentials_ = insecureCredentialsForThisType.filter(
-          cred => !cred.compromisedInfo!.isMuted);
-    } else {
-      insecureCredentialsForThisType.sort(insuecureCredentialsSorter);
-      this.shownInsecureCredentials_ = insecureCredentialsForThisType;
+      this.mutedCompromisedCredentials_ =
+          currentTypeCredentials.filter(cred => cred.compromisedInfo!.isMuted);
+      this.shownInsecureCredentials_ =
+          currentTypeCredentials.filter(cred => !cred.compromisedInfo!.isMuted);
+      return;
     }
 
+    // 2. Reused subpage
     if (this.isReusedType()) {
+      const requestedType = this.insecurityType_;
+      this.shownInsecureCredentials_ = currentTypeCredentials;
       const allReusedCredentials = await PasswordManagerImpl.getInstance()
                                        .getCredentialsWithReusedPassword();
-      this.credentialsWithReusedPassword_ =
+      if (this.insecurityType_ !== requestedType) {
+        return;
+      }
+      const credentialsWithReusedPassword =
           await Promise.all(allReusedCredentials.map(
               async(credentials): Promise<ReusedPasswordInfo> => {
                 const reuseInfo = new ReusedPasswordInfo(
-                    credentials.entries.sort(insuecureCredentialsSorter));
+                    credentials.entries.sort(this.compareCredentialsByGroup_));
                 await reuseInfo.init();
                 return reuseInfo;
               }));
-      this.credentialsWithReusedPassword_.sort(
+      if (this.insecurityType_ !== requestedType) {
+        return;
+      }
+      this.credentialsWithReusedPassword_ = credentialsWithReusedPassword.sort(
           (lhs, rhs) =>
-              (lhs.credentials.length > rhs.credentials.length ? -1 : 1));
+              (lhs.credentials.length === rhs.credentials.length ?
+                   0 :
+                   (lhs.credentials.length > rhs.credentials.length ? -1 : 1)));
+      return;
     }
+
+    // 3. Weak subpage
+    this.shownInsecureCredentials_ =
+        currentTypeCredentials.sort(this.compareCredentialsByGroup_);
   }
 
   private async onCredentialsChanged_() {
@@ -366,7 +396,7 @@ export class CheckupDetailsSectionElement extends
 
   private getCurrentGroup_(id: number): chrome.passwordsPrivate.CredentialGroup
       |undefined {
-    return this.groups_.find(
+    return this.groups_?.find(
         group => group.entries.some(entry => entry.id === id));
   }
 
