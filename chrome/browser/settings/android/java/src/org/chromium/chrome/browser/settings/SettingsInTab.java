@@ -10,7 +10,9 @@ import android.content.res.Configuration;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.display.DisplayUtil;
@@ -18,6 +20,8 @@ import org.chromium.ui.display.DisplayUtil;
 /** Utility class for checking if Settings in Tab feature is enabled. */
 @NullMarked
 public class SettingsInTab {
+    private static @Nullable Boolean sShouldOpenSettingsInTabForTesting;
+
     /**
      * Returns whether the Settings in Tab feature flags are enabled, without considering the device
      * form factor or the screen size.
@@ -53,6 +57,10 @@ public class SettingsInTab {
      * hosted, use {@link SettingsHost#isShownInTab()}, usually via {@link SettingsHostUtil}.
      */
     public static boolean shouldOpenSettingsInTab() {
+        if (sShouldOpenSettingsInTabForTesting != null) {
+            return sShouldOpenSettingsInTabForTesting;
+        }
+
         if (!isFeatureEnabled()) return false;
 
         // DeviceInfo.isDesktop() is checked in addition to isNonMultiDisplayContextOnTablet()
@@ -75,5 +83,14 @@ public class SettingsInTab {
             }
         }
         return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
+    }
+
+    /**
+     * Overrides the return value of {@link #shouldOpenSettingsInTab()} for tests, so that they can
+     * simulate the state that depends on the screen width without resizing the screen.
+     */
+    public static void setShouldOpenSettingsInTabForTesting(boolean shouldOpenSettingsInTab) {
+        sShouldOpenSettingsInTabForTesting = shouldOpenSettingsInTab;
+        ResettersForTesting.register(() -> sShouldOpenSettingsInTabForTesting = null);
     }
 }

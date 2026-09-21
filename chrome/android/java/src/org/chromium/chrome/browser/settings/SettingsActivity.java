@@ -615,7 +615,18 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
      * @param args Arguments to pass to Fragment.instantiate(), or null.
      */
     public void startSettings(@Nullable String fragmentClass, @Nullable Bundle args) {
-        Intent intent = SettingsIntentUtil.createIntent(this, fragmentClass, args);
+        // Pass this host's isShownInTab() rather than letting SettingsIntentUtil consult the
+        // global SettingsInTab state. Settings hosted by this activity must keep navigating
+        // within the activity, even if the global state changed (e.g. the device was unfolded)
+        // after settings was opened. See crbug.com/562619494.
+        Intent intent =
+                SettingsIntentUtil.createIntent(
+                        this,
+                        fragmentClass,
+                        args,
+                        /* addToBackStack= */ false,
+                        /* tag= */ null,
+                        /* useSettingsInTab= */ isShownInTab());
         startActivity(intent);
     }
 
