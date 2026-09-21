@@ -111,7 +111,9 @@ bool SynchronousCompositorSyncCallBridge::SetFrameFutureOnUIThread(
   // can be at most 2 pending frames. Here, we rely on Android to do the
   // necessary blocking, which allows more parallelism without increasing
   // latency. But DCHECK Android blocking is working.
-  CHECK_LT(frame_futures_.size(), 2u, base::NotFatalUntil::M159);
+  // TODO(crbug.com/563133377): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_LT(frame_futures_.size(), 2u);
   frame_futures_.emplace_back(std::move(frame_future));
   return true;
 }
