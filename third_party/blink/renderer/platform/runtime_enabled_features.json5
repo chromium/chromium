@@ -1365,7 +1365,7 @@
     },
     {
       name: "ConstructableStylesheetCache",
-      status: "stable",
+      status: "test",
     },
     {
       name: "ContactsManager",
