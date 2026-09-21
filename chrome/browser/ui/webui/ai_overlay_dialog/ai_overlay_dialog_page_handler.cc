@@ -238,7 +238,7 @@ void AiOverlayDialogPageHandler::DidChangePage(
                         : std::nullopt,
       content);
 
-  if (ttc_mes_client_ && ttc_mes_client_->is_connected()) {
+  if (ttc_mes_client_ && ttc_mes_client_->is_transport_connected()) {
     PageContextMonitor* pcm =
         untrusted_ui_ ? untrusted_ui_->page_context_monitor() : nullptr;
     if (pcm && pcm->last_page_content().has_value()) {
@@ -557,7 +557,7 @@ void AiOverlayDialogPageHandler::SendToolSetUpdate() {
 }
 
 void AiOverlayDialogPageHandler::SendAudioChunk(mojo_base::BigBuffer pcm_data) {
-  if (ttc_mes_client_ && ttc_mes_client_->is_connected()) {
+  if (ttc_mes_client_ && ttc_mes_client_->is_transport_connected()) {
     // The renderer sends signed PCM16 samples packed as little-endian bytes.
     // The buffer length is renderer-controlled, so validate it holds a whole
     // number of samples before reinterpreting; reinterpret_span() would
@@ -573,14 +573,14 @@ void AiOverlayDialogPageHandler::SendAudioChunk(mojo_base::BigBuffer pcm_data) {
 }
 
 void AiOverlayDialogPageHandler::SendTextInput(const std::string& text) {
-  if (ttc_mes_client_ && ttc_mes_client_->is_connected()) {
+  if (ttc_mes_client_ && ttc_mes_client_->is_transport_connected()) {
     ttc_mes_client_->SendTextInput(text);
   }
 }
 
 void AiOverlayDialogPageHandler::ReportPlaybackStatus(
     int64_t last_played_sequence_number) {
-  if (ttc_mes_client_ && ttc_mes_client_->is_connected()) {
+  if (ttc_mes_client_ && ttc_mes_client_->is_transport_connected()) {
     ttc_mes_client_->ReportPlaybackStatus(last_played_sequence_number);
   }
 }
@@ -591,7 +591,7 @@ void AiOverlayDialogPageHandler::StopStreamingSession() {
   }
 }
 
-void AiOverlayDialogPageHandler::OnStreamingStateChanged(
+void AiOverlayDialogPageHandler::OnTransportStateChanged(
     bool connected,
     const std::string& session_id,
     const std::string& error_message) {

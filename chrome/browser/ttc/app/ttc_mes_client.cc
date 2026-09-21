@@ -86,7 +86,7 @@ TtcMesClient::~TtcMesClient() {
 void TtcMesClient::Connect(Observer* observer) {
   CHECK(observer);
 
-  if (session_ && is_connected_) {
+  if (session_ && is_transport_connected_) {
     return;
   }
 
@@ -95,7 +95,7 @@ void TtcMesClient::Connect(Observer* observer) {
   OptimizationGuideKeyedService* opt_guide =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile_);
   if (!opt_guide) {
-    observer_->OnStreamingStateChanged(
+    observer_->OnTransportStateChanged(
         false, "", "OptimizationGuideKeyedService unavailable");
     return;
   }
@@ -109,7 +109,7 @@ void TtcMesClient::Connect(Observer* observer) {
                           weak_factory_.GetWeakPtr()));
 
   if (!session_) {
-    observer_->OnStreamingStateChanged(
+    observer_->OnTransportStateChanged(
         false, "", "Failed to create RemoteModelExecutionSession");
     return;
   }
@@ -129,15 +129,16 @@ void TtcMesClient::Connect(Observer* observer) {
 
 void TtcMesClient::OnConnectionStateChanged(
     optimization_guide::RemoteModelExecutionSession::ConnectionState state) {
-  is_connected_ = (state == optimization_guide::RemoteModelExecutionSession::
-                                ConnectionState::kConnected);
-  observer_->OnStreamingStateChanged(is_connected_, session_id_, "");
+  is_transport_connected_ =
+      (state == optimization_guide::RemoteModelExecutionSession::
+                    ConnectionState::kConnected);
+  observer_->OnTransportStateChanged(is_transport_connected_, session_id_, "");
 }
 
 void TtcMesClient::OnStreamingResult(
     optimization_guide::OptimizationGuideModelStreamingResult result) {
   if (!result.response.has_value()) {
-    observer_->OnStreamingStateChanged(false, session_id_,
+    observer_->OnTransportStateChanged(false, session_id_,
                                        base::NumberToString(static_cast<int>(
                                            result.response.error().error())));
     return;
@@ -155,7 +156,7 @@ void TtcMesClient::HandleServerFrame(
     const optimization_guide::proto::TtcServerFrame& frame) {
   if (frame.has_session_status()) {
     session_id_ = frame.session_status().server_session_id();
-    observer_->OnStreamingStateChanged(true, session_id_, "");
+    observer_->OnTransportStateChanged(true, session_id_, "");
   }
 
   if (frame.has_server_content()) {
@@ -201,7 +202,7 @@ void TtcMesClient::HandleServerFrame(
   }
 
   if (frame.has_server_error()) {
-    observer_->OnStreamingStateChanged(false, session_id_,
+    observer_->OnTransportStateChanged(false, session_id_,
                                        frame.server_error().error_message());
   }
 
@@ -331,12 +332,12 @@ void TtcMesClient::Close() {
     session_.reset();
   }
   observer_ = nullptr;
-  is_connected_ = false;
+  is_transport_connected_ = false;
   session_id_.clear();
 }
 
-bool TtcMesClient::is_connected() const {
-  return is_connected_;
+bool TtcMesClient::is_transport_connected() const {
+  return is_transport_connected_;
 }
 
 }  // namespace ttc

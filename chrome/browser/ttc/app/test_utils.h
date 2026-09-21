@@ -21,7 +21,7 @@
 namespace ttc {
 
 // A TtcBackend that records the connection state set by Connect()/Close() so
-// that is_connected() behaves like the real thing by default.
+// that is_transport_connected() behaves like the real thing by default.
 class MockTtcBackend : public TtcBackend {
  public:
   MockTtcBackend();
@@ -32,7 +32,7 @@ class MockTtcBackend : public TtcBackend {
 
   MOCK_METHOD(void, Connect, (TtcBackend::Observer*), (override));
   MOCK_METHOD(void, Close, (), (override));
-  MOCK_METHOD(bool, is_connected, (), (const, override));
+  MOCK_METHOD(bool, is_transport_connected, (), (const, override));
   MOCK_METHOD(void, SendAudioChunk, (base::span<const int16_t>), (override));
   MOCK_METHOD(void, SendTextInput, (const std::string&), (override));
   MOCK_METHOD(void,
@@ -48,7 +48,7 @@ class MockTtcBackend : public TtcBackend {
               (override));
 
  private:
-  bool is_connected_ = false;
+  bool is_transport_connected_ = false;
   raw_ptr<TtcBackend::Observer> observer_ = nullptr;
 };
 

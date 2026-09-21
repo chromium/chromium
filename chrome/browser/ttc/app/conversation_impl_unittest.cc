@@ -32,33 +32,25 @@ namespace ttc {
 
 namespace {
 
-class MockConversationObserver : public Conversation::Observer {
- public:
-  MOCK_METHOD(void,
-              OnConversationStateChanged,
-              (bool connected,
-               const std::string& session_id,
-               const std::string& error_message),
-              (override));
-  MOCK_METHOD(void,
-              OnTranscriptions,
-              (const std::string& input_transcription,
-               const std::string& output_transcription),
-              (override));
-  MOCK_METHOD(void,
-              OnGenerationStateChanged,
-              (bool started, bool completed, bool interrupted),
-              (override));
-};
-
 class FakeSessionController : public SessionController {
  public:
+  struct ConnectionState {
+    bool connected = false;
+    std::string session_id;
+    std::string error_message;
+  };
+
   explicit FakeSessionController(Profile* profile) : profile_(profile) {}
   ~FakeSessionController() override = default;
 
   // SessionController overrides:
   void GetPageContext(FetchCompleteCallback callback) override {}
   Profile* GetProfile() override { return profile_; }
+  void OnTransportStateChanged(bool connected,
+                               const std::string& session_id,
+                               const std::string& error_message) override {
+    connection_state_ = {connected, session_id, error_message};
+  }
   void ProcessToolCall(const ToolRequest& tool_request,
                        ToolResponseCallback tool_response) override {
     last_request_.name = tool_request.name;
@@ -77,6 +69,8 @@ class FakeSessionController : public SessionController {
 
   const ToolRequest& last_request() const { return last_request_; }
 
+  const ConnectionState& connection_state() const { return connection_state_; }
+
   void AddToolDefinition(const std::string& name) {
     ToolDefinition tool;
     tool.name = name;
@@ -87,6 +81,7 @@ class FakeSessionController : public SessionController {
   raw_ptr<Profile> profile_;
   ToolRequest last_request_;
   std::vector<ToolDefinition> tools_;
+  ConnectionState connection_state_;
 };
 
 }  // namespace
@@ -156,9 +151,9 @@ class ConversationImplTest : public testing::Test {
 
 TEST_F(ConversationImplTest, ConstructorInitializesComponents) {
   ConversationImpl& conversation = CreateConversation();
-  EXPECT_FALSE(conversation.is_connected());
   EXPECT_NE(conversation.audio_controller(), nullptr);
-  EXPECT_NE(conversation.backend(), nullptr);
+  ASSERT_NE(conversation.backend(), nullptr);
+  EXPECT_FALSE(conversation.backend()->is_transport_connected());
 }
 
 TEST_F(ConversationImplTest, AudioOutputPlaysToAudioController) {
@@ -189,20 +184,13 @@ TEST_F(ConversationImplTest, InterruptionClearsAudioQueue) {
   EXPECT_FALSE(audio_controller().is_playing());
 }
 
-TEST_F(ConversationImplTest, ObserverReceivesTranscriptionsAndState) {
+TEST_F(ConversationImplTest, ForwardsConnectionStateToSessionController) {
   ConversationImpl& conversation = CreateConversation();
 
-  MockConversationObserver observer;
-  conversation.AddObserver(&observer);
-
-  EXPECT_CALL(observer, OnTranscriptions("hello", "world")).Times(1);
-  conversation.OnTranscriptions("hello", "world");
-
-  EXPECT_CALL(observer, OnConversationStateChanged(true, "sess_123", ""))
-      .Times(1);
-  conversation.OnStreamingStateChanged(true, "sess_123", "");
-
-  conversation.RemoveObserver(&observer);
+  conversation.OnTransportStateChanged(true, "sess_123", "");
+  EXPECT_TRUE(session_controller_.connection_state().connected);
+  EXPECT_EQ(session_controller_.connection_state().session_id, "sess_123");
+  EXPECT_EQ(session_controller_.connection_state().error_message, "");
 }
 
 TEST_F(ConversationImplTest, ToolCallForwardedToSessionController) {
@@ -300,7 +288,7 @@ TEST_F(ConversationImplTest, ConnectionSendsToolSetUpdate) {
           sent_tool_names.push_back(tool.name);
         }
       });
-  conversation.OnStreamingStateChanged(/*connected=*/true, "sess_123", "");
+  conversation.OnTransportStateChanged(/*connected=*/true, "sess_123", "");
   EXPECT_THAT(sent_tool_names, testing::ElementsAre("navigate"));
 }
 
@@ -312,7 +300,7 @@ TEST_F(ConversationImplTest, ConnectionWithoutSessionIdSkipsToolSetUpdate) {
   // The backend reports the transport as connected before the server session
   // is set up, at which point there is no session to send the tool set for.
   EXPECT_CALL(backend(), SendToolSetUpdate(testing::_)).Times(0);
-  conversation.OnStreamingStateChanged(/*connected=*/true, "", "");
+  conversation.OnTransportStateChanged(/*connected=*/true, "", "");
 }
 
 TEST_F(ConversationImplTest, DisconnectionDoesNotSendToolSetUpdate) {
@@ -321,7 +309,7 @@ TEST_F(ConversationImplTest, DisconnectionDoesNotSendToolSetUpdate) {
   ConversationImpl& conversation = CreateConversation();
 
   EXPECT_CALL(backend(), SendToolSetUpdate(testing::_)).Times(0);
-  conversation.OnStreamingStateChanged(/*connected=*/false, "sess_123",
+  conversation.OnTransportStateChanged(/*connected=*/false, "sess_123",
                                        "some error");
 }
 

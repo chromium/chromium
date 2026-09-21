@@ -8,8 +8,6 @@
 #include <string>
 
 #include "base/functional/callback.h"
-#include "base/observer_list.h"
-#include "base/observer_list_types.h"
 #include "url/gurl.h"
 
 namespace optimization_guide::proto {
@@ -24,22 +22,7 @@ namespace ttc {
 // tools.
 class Conversation {
  public:
-  class Observer : public base::CheckedObserver {
-   public:
-    virtual void OnConversationStateChanged(bool connected,
-                                            const std::string& session_id,
-                                            const std::string& error_message) {}
-    virtual void OnTranscriptions(const std::string& input_transcription,
-                                  const std::string& output_transcription) {}
-    virtual void OnGenerationStateChanged(bool started,
-                                          bool completed,
-                                          bool interrupted) {}
-  };
-
   virtual ~Conversation() = default;
-
-  virtual void AddObserver(Observer* observer) = 0;
-  virtual void RemoveObserver(Observer* observer) = 0;
 
   // Starts the conversation session: connects to backend and begins mic
   // capture.
@@ -47,8 +30,6 @@ class Conversation {
 
   // Stops the conversation session: closes backend connection and stops audio.
   virtual void Stop() = 0;
-
-  virtual bool is_connected() const = 0;
 
   // Sends user text, context, or tool messages to the model.
   virtual void SendTextInput(const std::string& text) = 0;

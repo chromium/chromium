@@ -28,7 +28,7 @@ class TtcBackend {
   class Observer {
    public:
     virtual ~Observer() = default;
-    virtual void OnStreamingStateChanged(bool connected,
+    virtual void OnTransportStateChanged(bool connected,
                                          const std::string& session_id,
                                          const std::string& error_message) = 0;
     virtual void OnTranscriptions(const std::string& input_transcription,
@@ -72,7 +72,7 @@ class TtcBackend {
   // Closes the active session gracefully.
   virtual void Close() = 0;
 
-  virtual bool is_connected() const = 0;
+  virtual bool is_transport_connected() const = 0;
 };
 
 }  // namespace ttc

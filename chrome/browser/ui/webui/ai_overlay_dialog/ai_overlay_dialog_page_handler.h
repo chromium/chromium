@@ -67,7 +67,7 @@ class AiOverlayDialogPageHandler : public ai_overlay_dialog::mojom::PageHandler,
   void StopStreamingSession() override;
 
   // TtcMesClient::Observer
-  void OnStreamingStateChanged(bool connected,
+  void OnTransportStateChanged(bool connected,
                                const std::string& session_id,
                                const std::string& error_message) override;
   void OnTranscriptions(const std::string& input_transcription,

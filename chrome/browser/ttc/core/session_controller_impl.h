@@ -27,8 +27,7 @@ class SessionView;
 class TtcKeyedService;
 
 class SessionControllerImpl : public SessionController,
-                              public SessionViewDelegate,
-                              public Conversation::Observer {
+                              public SessionViewDelegate {
  public:
   explicit SessionControllerImpl(TtcKeyedService& service);
   ~SessionControllerImpl() override;
@@ -40,6 +39,9 @@ class SessionControllerImpl : public SessionController,
 
   // SessionController implementation:
   void OnSessionInitialized() override;
+  void OnTransportStateChanged(bool connected,
+                               const std::string& session_id,
+                               const std::string& error_message) override;
   void GetPageContext(FetchCompleteCallback callback) override;
   void ProcessToolCall(const ToolRequest& tool_request,
                        ToolResponseCallback tool_response_callback) override;
@@ -48,11 +50,6 @@ class SessionControllerImpl : public SessionController,
 
   // SessionViewDelegate implementation:
   void EndSessionAsync() override;
-
-  // Conversation::Observer implementation:
-  void OnConversationStateChanged(bool connected,
-                                  const std::string& session_id,
-                                  const std::string& error_message) override;
 
   // TODO(bokan): Android doesn't yet have a session_view so calling
   // this will crash there.

@@ -27,12 +27,6 @@ class FakeConversation : public Conversation {
       : on_stopped_(std::move(on_stopped)) {}
   ~FakeConversation() override = default;
 
-  void AddObserver(Observer* observer) override {
-    observers_.AddObserver(observer);
-  }
-  void RemoveObserver(Observer* observer) override {
-    observers_.RemoveObserver(observer);
-  }
   void Start() override { is_started_ = true; }
   void Stop() override {
     is_started_ = false;
@@ -40,7 +34,6 @@ class FakeConversation : public Conversation {
       on_stopped_.Run();
     }
   }
-  bool is_connected() const override { return is_started_; }
   void SendTextInput(const std::string& text) override {}
   void SendContextUpdate(
       const GURL& url,
@@ -49,19 +42,9 @@ class FakeConversation : public Conversation {
   void OnPageContextChanged() override {}
 
   bool is_started() const { return is_started_; }
-  const base::ObserverList<Observer>& observers() const { return observers_; }
-
-  void NotifyStateChanged(bool connected,
-                          const std::string& session_id,
-                          const std::string& error_message) {
-    for (auto& observer : observers_) {
-      observer.OnConversationStateChanged(connected, session_id, error_message);
-    }
-  }
 
  private:
   bool is_started_ = false;
-  base::ObserverList<Observer> observers_;
   base::RepeatingClosure on_stopped_;
 };
 }  // namespace
@@ -145,13 +128,10 @@ TEST_F(TtcKeyedServiceUnitTest, ConversationErrorEndsSession) {
   service_->StartSession();
   SessionController* controller = service_->session_controller();
   ASSERT_NE(controller, nullptr);
-  auto* conversation = static_cast<FakeConversation*>(
-      &static_cast<SessionControllerImpl*>(controller)->conversation());
-  ASSERT_NE(conversation, nullptr);
 
   // When disconnected (with or without an error message), SessionController
   // should post a task to end the session.
-  conversation->NotifyStateChanged(
+  controller->OnTransportStateChanged(
       /*connected=*/false, /*session_id=*/"",
       /*error_message=*/"");
 

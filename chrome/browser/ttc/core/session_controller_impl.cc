@@ -65,19 +65,17 @@ SessionControllerImpl::SessionControllerImpl(TtcKeyedService& service)
   }
 
   if (conversation_) {
-    conversation_->AddObserver(this);
     conversation_->Start();
   }
 }
 
 SessionControllerImpl::~SessionControllerImpl() {
   if (conversation_) {
-    conversation_->RemoveObserver(this);
     conversation_->Stop();
   }
 }
 
-void SessionControllerImpl::OnConversationStateChanged(
+void SessionControllerImpl::OnTransportStateChanged(
     bool connected,
     const std::string& session_id,
     const std::string& error_message) {

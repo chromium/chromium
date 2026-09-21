@@ -29,14 +29,6 @@ ConversationImpl::~ConversationImpl() {
   Stop();
 }
 
-void ConversationImpl::AddObserver(Conversation::Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void ConversationImpl::RemoveObserver(Conversation::Observer* observer) {
-  observers_.RemoveObserver(observer);
-}
-
 void ConversationImpl::Start() {
   audio_capture_subscription_ =
       audio_controller_->AddAudioCaptureListener(base::BindRepeating(
@@ -65,13 +57,9 @@ void ConversationImpl::Stop() {
   audio_controller_->StopCapture();
   audio_controller_->StopPlayback();
 
-  if (backend_->is_connected()) {
+  if (backend_->is_transport_connected()) {
     backend_->Close();
   }
-}
-
-bool ConversationImpl::is_connected() const {
-  return backend_->is_connected();
 }
 
 void ConversationImpl::SendTextInput(const std::string& text) {
@@ -102,7 +90,7 @@ void ConversationImpl::OnPlaybackCompleted(int64_t sequence_number) {
   backend_->ReportPlaybackStatus(sequence_number);
 }
 
-void ConversationImpl::OnStreamingStateChanged(
+void ConversationImpl::OnTransportStateChanged(
     bool connected,
     const std::string& session_id,
     const std::string& error_message) {
@@ -118,17 +106,14 @@ void ConversationImpl::OnStreamingStateChanged(
     backend_->SendToolSetUpdate(session_controller_->GetToolDefinitions());
   }
 
-  for (auto& observer : observers_) {
-    observer.OnConversationStateChanged(connected, session_id, error_message);
-  }
+  session_controller_->OnTransportStateChanged(connected, session_id,
+                                               error_message);
 }
 
 void ConversationImpl::OnTranscriptions(
     const std::string& input_transcription,
     const std::string& output_transcription) {
-  for (auto& observer : observers_) {
-    observer.OnTranscriptions(input_transcription, output_transcription);
-  }
+  NOTIMPLEMENTED();
 }
 
 void ConversationImpl::OnAudioOutput(base::span<const int16_t> audio_data,
@@ -141,9 +126,6 @@ void ConversationImpl::OnGenerationStateChanged(bool started,
                                                 bool interrupted) {
   if (interrupted) {
     audio_controller_->ClearPlaybackQueue();
-  }
-  for (auto& observer : observers_) {
-    observer.OnGenerationStateChanged(started, completed, interrupted);
   }
 }
 

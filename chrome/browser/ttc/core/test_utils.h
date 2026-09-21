@@ -21,11 +21,8 @@ class MockConversation : public Conversation {
   MockConversation();
   ~MockConversation() override;
 
-  MOCK_METHOD(void, AddObserver, (Observer*), (override));
-  MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
   MOCK_METHOD(void, Start, (), (override));
   MOCK_METHOD(void, Stop, (), (override));
-  MOCK_METHOD(bool, is_connected, (), (const, override));
   MOCK_METHOD(void, SendTextInput, (const std::string&), (override));
   MOCK_METHOD(void,
               SendContextUpdate,

@@ -9,11 +9,13 @@ namespace ttc {
 MockTtcBackend::MockTtcBackend() {
   ON_CALL(*this, Connect).WillByDefault([this](TtcBackend::Observer* observer) {
     observer_ = observer;
-    is_connected_ = true;
+    is_transport_connected_ = true;
   });
-  ON_CALL(*this, Close()).WillByDefault([this]() { is_connected_ = false; });
-  ON_CALL(*this, is_connected()).WillByDefault([this]() {
-    return is_connected_;
+  ON_CALL(*this, Close()).WillByDefault([this]() {
+    is_transport_connected_ = false;
+  });
+  ON_CALL(*this, is_transport_connected()).WillByDefault([this]() {
+    return is_transport_connected_;
   });
 }
 

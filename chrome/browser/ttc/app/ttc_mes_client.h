@@ -50,7 +50,7 @@ class TtcMesClient
       const optimization_guide::proto::AnnotatedPageContent& apc) override;
   void ReportPlaybackStatus(int64_t last_played_sequence_number) override;
   void Close() override;
-  bool is_connected() const override;
+  bool is_transport_connected() const override;
 
   // optimization_guide::RemoteModelExecutionSession::Observer:
   void OnConnectionStateChanged(
@@ -77,7 +77,8 @@ class TtcMesClient
   raw_ptr<Observer> observer_ = nullptr;
 
   std::unique_ptr<optimization_guide::RemoteModelExecutionSession> session_;
-  bool is_connected_ = false;
+  bool is_transport_connected_ = false;
+
   std::string session_id_;
 
   base::WeakPtrFactory<TtcMesClient> weak_factory_{this};

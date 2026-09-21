@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_TTC_CORE_SESSION_CONTROLLER_H_
 #define CHROME_BROWSER_TTC_CORE_SESSION_CONTROLLER_H_
 
+#include <string>
+
 #include "chrome/browser/ttc/app/public/tool_types.h"
 #include "chrome/browser/ttc/core/page_context.h"
 
@@ -23,6 +25,13 @@ class SessionController {
 
   // Called when the backend is connected and the session is interactive.
   virtual void OnSessionInitialized() = 0;
+
+  // Called when the connection state of the backend transport changes.
+  // `session_id` identifies the established session and `error_message`
+  // describes why the connection was lost, if known.
+  virtual void OnTransportStateChanged(bool connected,
+                                       const std::string& session_id,
+                                       const std::string& error_message) = 0;
 
   // Fetches the context of the page this session is operating on, invoking
   // `callback` with the result.
