@@ -5894,11 +5894,6 @@
       status: "stable",
     },
     {
-      // See crbug.com/502616235.
-      name: "SkipViewTransitionSnapshotResumeRendering",
-      status: "stable",
-    },
-    {
       name: "SmallerViewportUnits",
       status: "stable",
     },
