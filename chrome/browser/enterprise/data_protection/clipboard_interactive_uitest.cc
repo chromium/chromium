@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/enterprise/data_controls/core/browser/features.h"
@@ -75,12 +76,11 @@ class DataProtectionClipboardBrowserTest : public InteractiveBrowserTest {
   }
 
   void FocusWebContents(content::WebContents* web_contents = nullptr) {
-#if BUILDFLAG(IS_MAC)
-    content::HandleMissingKeyWindow();
-#endif
     if (!web_contents) {
       web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
     }
+    ASSERT_TRUE(ui_test_utils::ShowAndFocusNativeWindow(
+        web_contents->GetTopLevelNativeWindow()));
     web_contents->Focus();
     views::test::WaitForWidgetActive(
         views::Widget::GetWidgetForNativeWindow(

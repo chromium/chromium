@@ -74,9 +74,6 @@ class NavigationEntryRemoverTest : public InProcessBrowserTest {
         browser, urls[0], WindowOpenDisposition::NEW_WINDOW,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
     BrowserWindowInterface* new_browser = browser_created_observer.Wait();
-#if BUILDFLAG(IS_MAC)
-    content::HandleMissingKeyWindow();
-#endif
     ui_test_utils::WaitUntilBrowserBecomeActive(new_browser);
     AddNavigations(new_browser, {urls.begin() + 1, urls.end()});
     return new_browser;

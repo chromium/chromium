@@ -164,11 +164,6 @@ void WaitForViewFocus(BrowserWindowInterface* browser,
 #if BUILDFLAG(IS_MAC)
 // Clear pressed modifier keys and report true if any key modifiers were down.
 bool ClearKeyEventModifiers();
-
-// Ensures that if no key window is set (can happen in apps that are not
-// frontmost), we simulate the frontmost window becoming key, which triggers
-// any logic that would normally run in this case.
-void HandleMissingKeyWindow();
 #endif
 
 namespace internal {

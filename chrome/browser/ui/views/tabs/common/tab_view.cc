@@ -1367,7 +1367,9 @@ const tabs::TabInterface* TabView::GetTabInterface() const {
 
 void TabView::UpdateHoverCard(HoverCardAnchorTarget* target,
                               int hover_card_update_type) {
-  CHECK(collection_node_);
+  if (!collection_node_ || !collection_node_->GetController()) {
+    return;
+  }
 
   if (TabHoverCardController* hover_card_controller =
           collection_node_->GetController()->GetHoverCardController()) {

@@ -1129,7 +1129,10 @@ static_library("browsertest_support") {
       "../public/test/content_browser_test_utils_mac.mm",
       "content_browser_test_utils_internal_mac.mm",
     ]
-    deps += [ "//ui/base/mojom" ]
+    deps += [
+      "//ui/base:test_support",
+      "//ui/base/mojom",
+    ]
   }
 
   configs += [ "//v8:external_startup_data" ]

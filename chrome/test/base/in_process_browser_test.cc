@@ -110,6 +110,7 @@
 #include "base/apple/scoped_nsautorelease_pool.h"
 #include "chrome/test/base/scoped_bundle_swizzler_mac.h"
 #include "components/os_crypt/common/os_crypt_switches.h"
+#include "ui/base/test/scoped_fake_nswindow_focus.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -501,6 +502,9 @@ void InProcessBrowserTest::SetUp() {
   // block.
 #if BUILDFLAG(IS_MAC)
   command_line->AppendSwitch(os_crypt::switches::kUseMockKeychain);
+  if (!ui_controls::IsUIControlsEnabled()) {
+    fake_window_focus_ = std::make_unique<ui::test::ScopedFakeNSWindowFocus>();
+  }
 #endif
 #if BUILDFLAG(IS_LINUX)
   // On Linux, verify that a password store backend is specified - it's either
@@ -595,6 +599,10 @@ void InProcessBrowserTest::TearDown() {
   com_initializer_.reset();
 #endif
   BrowserTestBase::TearDown();
+
+#if BUILDFLAG(IS_MAC)
+  fake_window_focus_.reset();
+#endif
 
   if (embedded_https_test_server().Started()) {
     ASSERT_TRUE(embedded_https_test_server().ShutdownAndWaitUntilComplete());

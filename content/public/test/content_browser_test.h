@@ -36,11 +36,16 @@
 #include "content/public/test/browser_test_base.h"
 
 #if BUILDFLAG(IS_MAC)
+#include <memory>
 #include <optional>
 
 #include "base/apple/scoped_nsautorelease_pool.h"
 #include "base/memory/stack_allocated.h"
 #include "base/test/scoped_path_override.h"
+
+namespace ui::test {
+class ScopedFakeNSWindowFocus;
+}
 #endif
 
 namespace content {
@@ -102,6 +107,7 @@ class ContentBrowserTest : public BrowserTestBase {
   std::optional<base::apple::ScopedNSAutoreleasePool> pool_;
 
   std::optional<base::ScopedPathOverride> file_exe_override_;
+  std::unique_ptr<ui::test::ScopedFakeNSWindowFocus> fake_window_focus_;
 #endif
 
   // Used to detect incorrect overriding of PreRunTestOnMainThread() with

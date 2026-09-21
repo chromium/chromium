@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -125,9 +126,7 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
       script_executing_frame =
           ChildFrameAt(script_executing_frame, subframe_index.value());
     }
-#if BUILDFLAG(IS_MAC)
-    content::HandleMissingKeyWindow();
-#endif
+    ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
     script_executing_frame->GetView()->Focus();
 
     TestClipboardObserver observer;

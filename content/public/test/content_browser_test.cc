@@ -31,6 +31,7 @@
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/foundation_util.h"
 #include "content/shell/app/paths_apple.h"
+#include "ui/base/test/scoped_fake_nswindow_focus.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX)
@@ -106,6 +107,8 @@ void ContentBrowserTest::SetUp() {
   OverrideChildProcessPath();
   OverrideSourceRootPath();
   OverrideBundleID();
+
+  fake_window_focus_ = std::make_unique<ui::test::ScopedFakeNSWindowFocus>();
 #endif
 
 #if defined(USE_AURA) && defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_CASTOS)
@@ -133,6 +136,10 @@ void ContentBrowserTest::SetUp() {
 
 void ContentBrowserTest::TearDown() {
   BrowserTestBase::TearDown();
+
+#if BUILDFLAG(IS_MAC)
+  fake_window_focus_.reset();
+#endif
 
   if (embedded_https_test_server().Started()) {
     ASSERT_TRUE(embedded_https_test_server().ShutdownAndWaitUntilComplete());

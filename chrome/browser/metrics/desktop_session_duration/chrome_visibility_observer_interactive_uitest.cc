@@ -117,10 +117,6 @@ class ChromeVisibilityObserverInteractiveTest : public InProcessBrowserTest {
   // one that sets it back to true. In production, this is accounted for with
   // ChromeVisibilityObserver::visibility_gap_timeout_.
   void WaitForActive(bool active) {
-#if BUILDFLAG(IS_MAC)
-    content::HandleMissingKeyWindow();
-#endif
-
     for (size_t i = 0; is_active() != active && i < 3; ++i) {
       base::RunLoop run_loop;
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -146,6 +142,7 @@ class ChromeVisibilityObserverInteractiveTest : public InProcessBrowserTest {
 // separate sessions or not.
 IN_PROC_BROWSER_TEST_F(ChromeVisibilityObserverInteractiveTest,
                        VisibilityTest) {
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   // Observer should now be active as there is one active browser.
   WaitForActive(/*active=*/true);
 

@@ -33,6 +33,10 @@ class ScopedFakeNSWindowFocus {
   std::unique_ptr<base::apple::ScopedObjCClassSwizzler> make_key_swizzler_;
   std::unique_ptr<base::apple::ScopedObjCClassSwizzler> resign_key_swizzler_;
   std::unique_ptr<base::apple::ScopedObjCClassSwizzler> order_out_swizzler_;
+  std::unique_ptr<base::apple::ScopedObjCClassSwizzler>
+      app_key_window_swizzler_;
+  std::unique_ptr<base::apple::ScopedObjCClassSwizzler>
+      app_main_window_swizzler_;
 };
 
 }  // namespace ui::test

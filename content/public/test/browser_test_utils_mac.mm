@@ -21,23 +21,4 @@ bool EnableNativeWindowActivation() {
              : false;
 }
 
-void HandleMissingKeyWindow() {
-  if ([NSApp keyWindow]) {
-    return;
-  }
-
-  for (NSWindow* window in [NSApp orderedWindows]) {
-    if (![[window delegate]
-            respondsToSelector:@selector(windowDidBecomeKey:)]) {
-      continue;
-    }
-
-    NSNotification* notification =
-        [NSNotification notificationWithName:NSWindowDidBecomeKeyNotification
-                                      object:window];
-    [[window delegate] windowDidBecomeKey:notification];
-
-    break;
-  }
-}
 }  // namespace content

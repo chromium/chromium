@@ -93,6 +93,22 @@ void ClearFocus() {
 
 @end
 
+// Donates testing implementations of NSApplication methods.
+@interface FakeNSApplicationFocusDonor : NSObject
+@end
+
+@implementation FakeNSApplicationFocusDonor
+
+- (NSWindow*)keyWindow {
+  return g_fake_focused_window;
+}
+
+- (NSWindow*)mainWindow {
+  return g_fake_focused_window;
+}
+
+@end
+
 namespace ui::test {
 
 ScopedFakeNSWindowFocus::ScopedFakeNSWindowFocus()
@@ -123,7 +139,15 @@ ScopedFakeNSWindowFocus::ScopedFakeNSWindowFocus()
       order_out_swizzler_(
           new ScopedObjCClassSwizzler([NSWindow class],
                                       [FakeNSWindowFocusDonor class],
-                                      @selector(orderOut:))) {
+                                      @selector(orderOut:))),
+      app_key_window_swizzler_(
+          new ScopedObjCClassSwizzler([NSApplication class],
+                                      [FakeNSApplicationFocusDonor class],
+                                      @selector(keyWindow))),
+      app_main_window_swizzler_(
+          new ScopedObjCClassSwizzler([NSApplication class],
+                                      [FakeNSApplicationFocusDonor class],
+                                      @selector(mainWindow))) {
   g_order_out_swizzler = order_out_swizzler_.get();
 }
 

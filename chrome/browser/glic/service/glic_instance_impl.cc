@@ -469,6 +469,11 @@ void GlicInstanceImpl::Show(ShowOptions options) {
     return;
   }
 
+  if (is_in_show_) {
+    return;
+  }
+  base::AutoReset<bool> in_show_reset(&is_in_show_, true);
+
   if (const auto* side_panel_options =
           std::get_if<SidePanelShowOptions>(&options.embedder_options);
       side_panel_options) {
@@ -1038,6 +1043,9 @@ glic::mojom::ConversationInfoPtr GlicInstanceImpl::GetConversationInfo() const {
 // The floating UI is a more deliberate user choice, and we don't want a
 // tab switch to unexpectedly close the floating UI.
 bool GlicInstanceImpl::ShouldDoAutomaticActivation() const {
+  if (is_in_show_) {
+    return false;
+  }
   return !active_embedder_key_.has_value() ||
          !std::holds_alternative<FloatingEmbedderKey>(
              active_embedder_key_.value());

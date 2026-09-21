@@ -491,6 +491,11 @@ class GlicInstanceImpl : public GlicInstance,
   // when the user clicks a link inside the Glic panel.
   bool is_creating_tab_from_glic_panel_link_click_ = false;
 
+  // True while Show() is executing. Used to prevent re-entrant calls to Show()
+  // and suppress automatic activations triggered by synchronous side effects
+  // (e.g. window activation changes during embedder transitions).
+  bool is_in_show_ = false;
+
   // True if we should suppress showing the panel when a tab is added to a task.
   bool suppress_show_on_tab_added_to_task_ = false;
 

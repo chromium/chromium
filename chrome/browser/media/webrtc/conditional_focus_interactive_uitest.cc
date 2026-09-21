@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
@@ -73,6 +74,7 @@ class ConditionalFocusInteractiveUiTest : public WebRtcTestBase {
 
   void SetUpOnMainThread() override {
     WebRtcTestBase::SetUpOnMainThread();
+    ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
 
     base::RunLoop run_loop;
     content::GetIOThreadTaskRunner({})->PostTaskAndReply(

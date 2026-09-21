@@ -28,6 +28,10 @@
 #include "base/apple/scoped_nsautorelease_pool.h"
 #include "base/memory/stack_allocated.h"
 #include "ui/base/test/scoped_fake_full_keyboard_access.h"
+
+namespace ui::test {
+class ScopedFakeNSWindowFocus;
+}
 #endif
 
 namespace base {
@@ -430,6 +434,7 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // more consistent with other platforms, where most views are focusable by
   // default.
   ui::test::ScopedFakeFullKeyboardAccess faked_full_keyboard_access_;
+  std::unique_ptr<ui::test::ScopedFakeNSWindowFocus> fake_window_focus_;
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
