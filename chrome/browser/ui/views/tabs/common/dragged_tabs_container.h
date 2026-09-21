@@ -178,6 +178,12 @@ class DraggedTabsContainer : public TabDragTarget,
   // the last drag point.
   void UpdateDraggingViewTransforms(const gfx::Point& point_in_container);
 
+  // Updates the transformation applied to a single dragging view, according to
+  // the bounding box of all dragged views.
+  void UpdateDraggingViewTransform(views::View* dragged_view,
+                                   const DraggedViewVisualData& visual_data,
+                                   const gfx::Rect& bounding_box_for_point);
+
   bool IsHorizontalDragSupported() const;
   bool IsVerticalDragSupported() const;
 
@@ -264,6 +270,9 @@ class DraggedTabsContainer : public TabDragTarget,
       std::nullopt;
 
   base::OnceClosureList on_will_destroy_callback_list_;
+
+  // True while resetting drag state in ResetDragState().
+  bool is_resetting_drag_state_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_COMMON_DRAGGED_TABS_CONTAINER_H_

@@ -444,11 +444,7 @@ views::ProposedLayout PinnedTabContainerView::CalculateVerticalLayout(
     }
 
     bounds.set_y(drag_data ? drag_data->offset.y() : y);
-    int child_x = drag_data ? drag_data->offset.x() : x;
-    if (drag_data && base::i18n::IsRTL()) {
-      child_x = size_bounds.width().value() - child_x - child_width;
-    }
-    bounds.set_x(child_x);
+    bounds.set_x(drag_data ? drag_data->offset.x() : x);
 
     if (row_index != 0) {
       bounds.set_x(bounds.x() + kTabPadding);

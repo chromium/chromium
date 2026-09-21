@@ -5,8 +5,6 @@
 #include "chrome/browser/ui/views/tabs/common/tab_group_view_layout.h"
 
 #include <algorithm>
-#include <vector>
-
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/tabs/common/split_tab_view.h"

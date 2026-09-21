@@ -314,6 +314,7 @@ DraggedTabsContainer& UnpinnedTabContainerView::GetTabDragTarget(
       }
     }
 
+    const gfx::Rect group_bounds = GetMirroredRect(layout.bounds);
     if (dragging_view_bounds) {
       const auto header_size = is_horizontal
                                    ? group_view->group_header()->width()
@@ -321,7 +322,7 @@ DraggedTabsContainer& UnpinnedTabContainerView::GetTabDragTarget(
       const auto required_overlap_amount =
           header_size * kMinHeaderHeightPctForGroupEntry;
       if (HasMinimumOverlap(
-              *dragging_view_bounds, layout.bounds,
+              *dragging_view_bounds, group_bounds,
               is_horizontal ? std::make_optional(required_overlap_amount)
                             : std::nullopt,
               is_horizontal ? std::nullopt
@@ -329,10 +330,10 @@ DraggedTabsContainer& UnpinnedTabContainerView::GetTabDragTarget(
         return *group_view;
       }
     } else if (is_horizontal
-                   ? (layout.bounds.x() <= point_in_container.x() &&
-                      layout.bounds.right() >= point_in_container.x())
-                   : (layout.bounds.y() <= point_in_container.y() &&
-                      layout.bounds.bottom() >= point_in_container.y())) {
+                   ? (group_bounds.x() <= point_in_container.x() &&
+                      group_bounds.right() >= point_in_container.x())
+                   : (group_bounds.y() <= point_in_container.y() &&
+                      group_bounds.bottom() >= point_in_container.y())) {
       // If neither the group or this container are handling a drag and the drag
       // point falls in the group (e.g. when starting the drag), then use the
       // group.
@@ -376,7 +377,7 @@ bool UnpinnedTabContainerView::ShouldDragRemainInGroup(
       dragging_size - (header_size * kMinHeaderHeightPctForGroupExit);
 
   return HasMinimumOverlap(
-      dragging_view_bounds_from_group, proposed_group_bounds,
+      dragging_view_bounds_from_group, GetMirroredRect(proposed_group_bounds),
       is_horizontal ? std::make_optional(required_overlap_amount)
                     : std::nullopt,
       is_horizontal ? std::nullopt

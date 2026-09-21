@@ -84,8 +84,10 @@ int UnpinnedTabContainerViewLayout::GetUnconstrainedPreferredWidth(
   // accommodate the dragged tab's position. This allows TabStripView and parent
   // layouts to allocate space for the drag.
   if (host->IsHandlingDrag()) {
-    unconstrained_width =
-        std::max(unconstrained_width, host->GetDraggingViewsBounds().right());
+    const gfx::Rect dragging_bounds = host->GetDraggingViewsBounds();
+    const int dragged_view_right =
+        host->GetMirroredXForRect(dragging_bounds) + dragging_bounds.width();
+    unconstrained_width = std::max(unconstrained_width, dragged_view_right);
   }
   return unconstrained_width;
 }
@@ -153,6 +155,22 @@ views::ProposedLayout UnpinnedTabContainerViewLayout::CalculateHorizontalLayout(
       collection.total_preferred_width, collection.total_crossover_width,
       collection.total_min_width);
 
+  // If a tab is being dragged, expand the host size to accommodate the dragged
+  // tab's position, clamped to the available bounded width.
+  int dragged_view_right = 0;
+  if (tab_container_view->IsHandlingDrag()) {
+    const gfx::Rect dragging_bounds =
+        tab_container_view->GetDraggingViewsBounds();
+    dragged_view_right =
+        tab_container_view->GetMirroredXForRect(dragging_bounds) +
+        dragging_bounds.width();
+    if (size_bounds.width().is_bounded()) {
+      dragged_view_right =
+          std::min(dragged_view_right, size_bounds.width().value());
+    }
+  }
+
+  const int host_width = std::max(computed_width, dragged_view_right);
   int x = 0;
   size_t visible_index = 0;
 
@@ -170,8 +188,8 @@ views::ProposedLayout UnpinnedTabContainerViewLayout::CalculateHorizontalLayout(
     }
 
     int child_width = allocated_widths[visible_index];
-    int child_x = drag_data ? drag_data->offset.x() : x;
-    gfx::Rect bounds(child_x, 0, child_width, container_height);
+    gfx::Rect bounds(drag_data ? drag_data->offset.x() : x, 0, child_width,
+                     container_height);
 
     layouts.child_layouts.emplace_back(child, true, bounds);
 
@@ -189,19 +207,7 @@ views::ProposedLayout UnpinnedTabContainerViewLayout::CalculateHorizontalLayout(
     visible_index++;
   }
 
-  // If a tab is being dragged, expand the host size to accommodate the dragged
-  // tab's position, clamped to the available bounded width.
-  int dragged_view_right = 0;
-  if (tab_container_view->IsHandlingDrag()) {
-    dragged_view_right = tab_container_view->GetDraggingViewsBounds().right();
-    if (size_bounds.width().is_bounded()) {
-      dragged_view_right =
-          std::min(dragged_view_right, size_bounds.width().value());
-    }
-  }
-
-  layouts.host_size =
-      gfx::Size(std::max(x, dragged_view_right), container_height);
+  layouts.host_size = gfx::Size(host_width, container_height);
   return layouts;
 }
 
