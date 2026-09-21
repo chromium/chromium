@@ -21,7 +21,6 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
-#include "components/sessions/core/command_storage_features.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
@@ -186,8 +185,6 @@ class CookieEncryptionProviderBrowserTest
 #endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
         disabled_features.push_back(features::kDbusSecretPortal);
-        // TODO(crbug.com/479420496): Resolve session encryptor issues.
-        disabled_features.push_back(sessions::kEncryptSessionStorage);
 #endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
         break;
 #if BUILDFLAG(IS_WIN)
@@ -221,8 +218,6 @@ class CookieEncryptionProviderBrowserTest
         enabled_features.push_back(features::kDbusSecretPortal);
         enabled_features.push_back(
             features::kSecretPortalKeyProviderUseForEncryption);
-        // TODO(crbug.com/479420496): Resolve session encryptor issues.
-        disabled_features.push_back(sessions::kEncryptSessionStorage);
         break;
 #endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
     }
