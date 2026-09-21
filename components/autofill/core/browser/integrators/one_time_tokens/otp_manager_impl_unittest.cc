@@ -939,6 +939,209 @@ TEST_F(OtpManagerImplTest,
   EXPECT_FALSE(test_api(otp_manager).SelectMostRecentToken().has_value());
 }
 
+// Tests that `GetOtpSuggestions` synchronously serves a cached Gmail OTP token
+// if present in memory, while still renewing subscriptions.
+TEST_F(OtpManagerImplTest,
+       GetOtpSuggestions_CachedGmailOtpServedSynchronously) {
+  const FormStructure* form = AddFormWithOtpField();
+  ASSERT_TRUE(form);
+
+  one_time_tokens::OneTimeToken gmail_otp(
+      one_time_tokens::OneTimeTokenType::kGmail, "654321",
+      base::TimeTicks::Now(), "sender@example.com");
+
+  NiceMock<one_time_tokens::MockOneTimeTokenService> mock_service;
+  ON_CALL(mock_service, GetCachedOneTimeTokens)
+      .WillByDefault(
+          Return(std::vector<one_time_tokens::OneTimeToken>{gmail_otp}));
+
+  OtpManagerImpl otp_manager(autofill_manager(), &mock_service);
+
+  EXPECT_CALL(mock_service, GetRecentOneTimeTokens).Times(1);
+  EXPECT_CALL(mock_service,
+              Subscribe(one_time_tokens::OneTimeTokenSource::kOnDeviceSms, _,
+                        _, _))
+      .Times(1);
+  EXPECT_CALL(mock_service,
+              SubscribeToTickles(one_time_tokens::OneTimeTokenSource::kGmail,
+                                 _, _))
+      .Times(1);
+  EXPECT_CALL(otp_phish_guard_delegate(), StartOtpPhishGuardCheck)
+      .WillOnce(RunOnceCallback<1>(/*is_phishing=*/false));
+
+  base::test::TestFuture<const std::vector<std::string>> future;
+  otp_manager.GetOtpSuggestions(*form, test_field_, future.GetCallback());
+
+  EXPECT_TRUE(future.IsReady());
+  ASSERT_EQ(future.Get().size(), 1u);
+  EXPECT_EQ(future.Get()[0], "654321");
+  EXPECT_TRUE(autofill_manager()
+                  .GetOtpFormEventLogger()
+                  .HasLoggedDataToFillAvailableForTesting());
+  histogram_tester_.ExpectUniqueSample(
+      kPhishGuardCheckPerformedHistogram, true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kPhishGuardVerdictHistogram,
+      OneTimeTokensPhishGuardVerdict::kNotPhishing, 1);
+}
+
+// Tests that `GetOtpSuggestions` suppresses delivery of cached Gmail OTPs
+// when PhishGuard identifies a phishing risk, while still renewing subscriptions.
+TEST_F(OtpManagerImplTest,
+       GetOtpSuggestions_CachedGmailOtpSuppressedWhenPhishing) {
+  const FormStructure* form = AddFormWithOtpField();
+  ASSERT_TRUE(form);
+
+  one_time_tokens::OneTimeToken gmail_otp(
+      one_time_tokens::OneTimeTokenType::kGmail, "654321",
+      base::TimeTicks::Now(), "sender@example.com");
+
+  NiceMock<one_time_tokens::MockOneTimeTokenService> mock_service;
+  ON_CALL(mock_service, GetCachedOneTimeTokens)
+      .WillByDefault(
+          Return(std::vector<one_time_tokens::OneTimeToken>{gmail_otp}));
+
+  OtpManagerImpl otp_manager(autofill_manager(), &mock_service);
+
+  EXPECT_CALL(mock_service, GetRecentOneTimeTokens).Times(1);
+  EXPECT_CALL(otp_phish_guard_delegate(), StartOtpPhishGuardCheck)
+      .WillOnce(RunOnceCallback<1>(/*is_phishing=*/true));
+
+  base::test::TestFuture<const std::vector<std::string>> future;
+  otp_manager.GetOtpSuggestions(*form, test_field_, future.GetCallback());
+
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_TRUE(future.Get().empty());
+  EXPECT_TRUE(autofill_manager()
+                  .GetOtpFormEventLogger()
+                  .HasLoggedDataToFillAvailableForTesting());
+  histogram_tester_.ExpectUniqueSample(
+      kPhishGuardCheckPerformedHistogram, true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kPhishGuardVerdictHistogram,
+      OneTimeTokensPhishGuardVerdict::kPhishing, 1);
+}
+
+// Tests that subsequent tokens returned by `GetRecentOneTimeTokens` do not
+// overwrite or duplicate a cached Gmail OTP that was already served.
+TEST_F(OtpManagerImplTest,
+       GetOtpSuggestions_SubsequentBackendTokensDoNotOverwriteCachedGmailOtp) {
+  const FormStructure* form = AddFormWithOtpField();
+  ASSERT_TRUE(form);
+
+  one_time_tokens::OneTimeToken gmail_otp(
+      one_time_tokens::OneTimeTokenType::kGmail, "654321",
+      base::TimeTicks::Now(), "sender@example.com");
+  one_time_tokens::OneTimeToken backend_sms_otp(
+      one_time_tokens::OneTimeTokenType::kSmsOtp, "999999",
+      base::TimeTicks::Now());
+
+  NiceMock<one_time_tokens::MockOneTimeTokenService> mock_service;
+  ON_CALL(mock_service, GetCachedOneTimeTokens)
+      .WillByDefault(
+          Return(std::vector<one_time_tokens::OneTimeToken>{gmail_otp}));
+  ON_CALL(mock_service, GetRecentOneTimeTokens)
+      .WillByDefault(
+          [&](one_time_tokens::OneTimeTokenService::Callback callback) {
+            callback.Run(one_time_tokens::OneTimeTokenSource::kOnDeviceSms,
+                         base::ok(backend_sms_otp));
+          });
+
+  OtpManagerImpl otp_manager(autofill_manager(), &mock_service);
+
+  EXPECT_CALL(otp_phish_guard_delegate(), StartOtpPhishGuardCheck)
+      .WillOnce(RunOnceCallback<1>(/*is_phishing=*/false));
+
+  base::test::TestFuture<const std::vector<std::string>> future;
+  otp_manager.GetOtpSuggestions(*form, test_field_, future.GetCallback());
+
+  EXPECT_TRUE(future.IsReady());
+  ASSERT_EQ(future.Get().size(), 1u);
+  EXPECT_EQ(future.Get()[0], "654321");
+}
+
+// Tests that `GetOtpSuggestions` does not synchronously serve cached non-Gmail
+// OTP tokens, falling back to querying the backend.
+TEST_F(OtpManagerImplTest,
+       GetOtpSuggestions_CachedSmsOtpNotServedSynchronously) {
+  const FormStructure* form = AddFormWithOtpField();
+  ASSERT_TRUE(form);
+
+  one_time_tokens::OneTimeToken sms_otp(
+      one_time_tokens::OneTimeTokenType::kSmsOtp, "123456",
+      base::TimeTicks::Now());
+
+  NiceMock<one_time_tokens::MockOneTimeTokenService> mock_service;
+  ON_CALL(mock_service, GetCachedOneTimeTokens)
+      .WillByDefault(Return(
+          std::vector<one_time_tokens::OneTimeToken>{sms_otp}));
+
+  OtpManagerImpl otp_manager(autofill_manager(), &mock_service);
+
+  EXPECT_CALL(mock_service, GetRecentOneTimeTokens).Times(1);
+
+  base::test::TestFuture<const std::vector<std::string>> future;
+  otp_manager.GetOtpSuggestions(*form, test_field_, future.GetCallback());
+
+  EXPECT_FALSE(future.IsReady());
+}
+
+// Tests that `GetOtpSuggestions` falls back to querying the backend when the
+// cached Gmail OTP token is expired.
+TEST_F(OtpManagerImplTest,
+       GetOtpSuggestions_ExpiredCachedGmailOtpFallsBackToBackend) {
+  const FormStructure* form = AddFormWithOtpField();
+  ASSERT_TRUE(form);
+
+  one_time_tokens::OneTimeToken expired_gmail_otp(
+      one_time_tokens::OneTimeTokenType::kGmail, "654321",
+      base::TimeTicks::Now() - base::Minutes(4), "sender@example.com");
+
+  NiceMock<one_time_tokens::MockOneTimeTokenService> mock_service;
+  ON_CALL(mock_service, GetCachedOneTimeTokens)
+      .WillByDefault(Return(
+          std::vector<one_time_tokens::OneTimeToken>{expired_gmail_otp}));
+
+  OtpManagerImpl otp_manager(autofill_manager(), &mock_service);
+
+  EXPECT_CALL(mock_service, GetRecentOneTimeTokens).Times(1);
+
+  base::test::TestFuture<const std::vector<std::string>> future;
+  otp_manager.GetOtpSuggestions(*form, test_field_, future.GetCallback());
+
+  EXPECT_FALSE(future.IsReady());
+}
+
+// Tests that `GetOtpSuggestions` falls back to querying the backend if a newer
+// SMS OTP token exists in cache, rather than serving an older Gmail OTP.
+TEST_F(OtpManagerImplTest,
+       GetOtpSuggestions_NewerSmsOtpPreventsServingOlderGmailOtp) {
+  const FormStructure* form = AddFormWithOtpField();
+  ASSERT_TRUE(form);
+
+  base::TimeTicks now = base::TimeTicks::Now();
+  one_time_tokens::OneTimeToken older_gmail_otp(
+      one_time_tokens::OneTimeTokenType::kGmail, "654321",
+      now - base::Seconds(20), "sender@example.com");
+  one_time_tokens::OneTimeToken newer_sms_otp(
+      one_time_tokens::OneTimeTokenType::kSmsOtp, "123456",
+      now - base::Seconds(10));
+
+  NiceMock<one_time_tokens::MockOneTimeTokenService> mock_service;
+  ON_CALL(mock_service, GetCachedOneTimeTokens)
+      .WillByDefault(Return(std::vector<one_time_tokens::OneTimeToken>{
+          older_gmail_otp, newer_sms_otp}));
+
+  OtpManagerImpl otp_manager(autofill_manager(), &mock_service);
+
+  EXPECT_CALL(mock_service, GetRecentOneTimeTokens).Times(1);
+
+  base::test::TestFuture<const std::vector<std::string>> future;
+  otp_manager.GetOtpSuggestions(*form, test_field_, future.GetCallback());
+
+  EXPECT_FALSE(future.IsReady());
+}
+
 // Tests that when `kAutofillRestrictOtpToSameTldPlusOne` is enabled, no query
 // is issued to the SMS backend if the OTP field is in a cross-origin iframe
 // with mismatched TLD+1.

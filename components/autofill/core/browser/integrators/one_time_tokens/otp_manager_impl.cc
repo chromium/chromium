@@ -115,6 +115,15 @@ void OtpManagerImpl::GetOtpSuggestions(
   last_pending_frame_token_ = field.host_frame();
   last_pending_get_suggestions_callback_ = std::move(callback);
 
+  if (std::optional<OneTimeToken> token = SelectMostRecentToken();
+      token && token->type() == OneTimeTokenType::kGmail &&
+      !token->value().empty()) {
+    LOG_AF(owner_->client().GetCurrentLogManager())
+        << LoggingScope::kOneTimeTokens
+        << "Evaluating cached Gmail OTP suggestion for delivery.";
+    OnOneTimeTokenReceived(OneTimeTokenSource::kGmail, std::move(*token));
+  }
+
   // This queries OTPs from the backend and calls `OnOneTimeTokenReceived` to
   // deliver the OTP to `last_pending_get_suggestions_callback_`.
   GetRecentOtpsAndRenewSubscription();

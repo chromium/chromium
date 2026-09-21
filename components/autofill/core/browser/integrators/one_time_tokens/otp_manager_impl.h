@@ -59,8 +59,9 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   ~OtpManagerImpl() override;
 
   // OtpManager:
-  // Returns any cached OTPs (if they exist) and renews a subscription so that
-  // incoming OTPs can be reported.
+  // Evaluates in-memory cached Gmail OTPs for immediate delivery (subject
+  // to PhishGuard verification), queries recent OTPs from the backend, and
+  // renews subscriptions for incoming OTPs.
   void GetOtpSuggestions(const FormStructure& form,
                          const FormFieldData& field,
                          GetOtpSuggestionsCallback callback) override;
