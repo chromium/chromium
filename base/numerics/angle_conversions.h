@@ -13,13 +13,13 @@ namespace base {
 template <typename T>
   requires std::floating_point<T>
 constexpr T DegToRad(T deg) {
-  return deg * std::numbers::pi_v<T> / 180;
+  return deg * (std::numbers::pi_v<T> / 180);
 }
 
 template <typename T>
   requires std::floating_point<T>
 constexpr T RadToDeg(T rad) {
-  return rad * 180 / std::numbers::pi_v<T>;
+  return rad * (180 / std::numbers::pi_v<T>);
 }
 
 }  // namespace base
