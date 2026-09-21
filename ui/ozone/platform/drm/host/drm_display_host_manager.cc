@@ -8,7 +8,9 @@
 #include <stddef.h>
 #include <xf86drm.h>
 
+#include <array>
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -56,7 +58,7 @@ const int kLogAuthFailDelayMs = 1000;
 // With kAuthFailSleepMs = 100, 10 attempts corresponds to ~1 second.
 constexpr int kMaxAuthAttempts = 10;
 
-constexpr const char* kDisplayActionString[] = {
+constexpr std::array<std::string_view, 3> kDisplayActionString = {
     "ADD",
     "REMOVE",
     "CHANGE",
@@ -458,9 +460,8 @@ void DrmDisplayHostManager::ProcessEvent() {
     const std::string seqnum = seqnum_it == event.display_event_props.end()
                                    ? ""
                                    : ("(SEQNUM:" + seqnum_it->second + ")");
-    VLOG(1) << "Got display event "
-            << UNSAFE_TODO(kDisplayActionString[event.action_type]) << seqnum
-            << " for " << event.path.value();
+    VLOG(1) << "Got display event " << kDisplayActionString[event.action_type]
+            << seqnum << " for " << event.path.value();
     switch (event.action_type) {
       case DeviceEvent::ADD:
         if (drm_devices_.find(event.path) == drm_devices_.end()) {

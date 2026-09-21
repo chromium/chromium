@@ -11,10 +11,12 @@
 #include <xf86drmMode.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -37,8 +39,8 @@ using DrmEventHandler =
                                  uint64_t /* id */)>;
 
 bool ProcessDrmEvent(int fd, const DrmEventHandler& callback) {
-  char buffer[1024];
-  int len = read(fd, buffer, sizeof(buffer));
+  std::array<char, 1024> buffer;
+  int len = read(fd, buffer.data(), buffer.size());
   if (len == 0)
     return false;
 
@@ -51,12 +53,16 @@ bool ProcessDrmEvent(int fd, const DrmEventHandler& callback) {
   while (idx < len) {
     DCHECK_LE(static_cast<int>(sizeof(drm_event)), len - idx);
     drm_event event;
-    UNSAFE_TODO(memcpy(&event, &buffer[idx], sizeof(event)));
+    base::byte_span_from_ref(event).copy_from(
+        base::as_byte_span(buffer).subspan(static_cast<size_t>(idx),
+                                           sizeof(event)));
     switch (event.type) {
       case DRM_EVENT_FLIP_COMPLETE: {
         DCHECK_LE(static_cast<int>(sizeof(drm_event_vblank)), len - idx);
         drm_event_vblank vblank;
-        UNSAFE_TODO(memcpy(&vblank, &buffer[idx], sizeof(vblank)));
+        base::byte_span_from_ref(vblank).copy_from(
+            base::as_byte_span(buffer).subspan(static_cast<size_t>(idx),
+                                               sizeof(vblank)));
         std::unique_ptr<base::trace_event::TracedValue> drm_data(
             new base::trace_event::TracedValue());
         drm_data->SetInteger("frame_count", 1);

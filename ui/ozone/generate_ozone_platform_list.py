@@ -88,6 +88,8 @@ def GeneratePlatformListHeader(out, platforms):
   out.write('#ifndef UI_OZONE_PLATFORM_LIST_H_\n')
   out.write('#define UI_OZONE_PLATFORM_LIST_H_\n')
   out.write('\n')
+  out.write('#include <array>\n')
+  out.write('\n')
 
   out.write('namespace ui {\n')
   out.write('\n')
@@ -102,7 +104,9 @@ def GeneratePlatformListHeader(out, platforms):
   out.write('\n')
 
   # Declaration for names list.
-  out.write('extern const char* kPlatformNames[kPlatformCount];\n')
+  out.write(
+      'extern const std::array<const char*, kPlatformCount> kPlatformNames;\n'
+  )
   out.write('\n')
 
   out.write('}  // namespace ui\n')
@@ -120,12 +124,16 @@ def GeneratePlatformListSource(out, platforms):
 
   out.write('#include "ui/ozone/platform_list.h"\n')
   out.write('\n')
+  out.write('#include <array>\n')
+  out.write('\n')
 
   out.write('namespace ui {\n')
   out.write('\n')
 
   # Definition of names list.
-  out.write('const char* kPlatformNames[] = {\n')
+  out.write(
+      'const std::array<const char*, kPlatformCount> kPlatformNames = {\n'
+  )
 
   # Prototypes for platform initializers.
   for plat_name in platforms:

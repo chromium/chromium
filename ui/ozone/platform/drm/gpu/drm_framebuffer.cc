@@ -5,6 +5,7 @@
 #include "ui/ozone/platform/drm/gpu/drm_framebuffer.h"
 
 #include <algorithm>
+#include <array>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -49,10 +50,10 @@ DrmFramebuffer::AddFramebufferParams::~AddFramebufferParams() = default;
 scoped_refptr<DrmFramebuffer> DrmFramebuffer::AddFramebuffer(
     scoped_refptr<DrmDevice> drm_device,
     DrmFramebuffer::AddFramebufferParams params) {
-  uint64_t modifiers[4] = {};
+  std::array<uint64_t, 4> modifiers = {};
   if (params.modifier != DRM_FORMAT_MOD_INVALID) {
     for (size_t i = 0; i < params.num_planes; ++i)
-      UNSAFE_TODO(modifiers[i]) = params.modifier;
+      modifiers[i] = params.modifier;
   }
 
   const auto si_format = GetSharedImageFormatFromFourCCFormat(params.format);
@@ -64,9 +65,9 @@ scoped_refptr<DrmFramebuffer> DrmFramebuffer::AddFramebuffer(
 
   uint32_t framebuffer_id = 0;
   if (!drm_device->AddFramebuffer2(params.width, params.height, drm_format,
-                                   params.handles, params.strides,
-                                   params.offsets, modifiers, &framebuffer_id,
-                                   params.flags)) {
+                                   params.handles.data(), params.strides.data(),
+                                   params.offsets.data(), modifiers.data(),
+                                   &framebuffer_id, params.flags)) {
     VLOG(4) << "AddFramebuffer2:" << "size=" << params.width << "x"
             << params.height << " drm_format=" << DrmFormatToString(drm_format)
             << " fb_id=" << framebuffer_id << " flags=" << params.flags;
@@ -76,8 +77,8 @@ scoped_refptr<DrmFramebuffer> DrmFramebuffer::AddFramebuffer(
   uint32_t opaque_framebuffer_id = 0;
   if (opaque_format != drm_format &&
       !drm_device->AddFramebuffer2(params.width, params.height, opaque_format,
-                                   params.handles, params.strides,
-                                   params.offsets, modifiers,
+                                   params.handles.data(), params.strides.data(),
+                                   params.offsets.data(), modifiers.data(),
                                    &opaque_framebuffer_id, params.flags)) {
     VLOG(4) << "AddFramebuffer2:" << "size=" << params.width << "x"
             << params.height << " drm_format=" << DrmFormatToString(drm_format)
@@ -109,9 +110,9 @@ scoped_refptr<DrmFramebuffer> DrmFramebuffer::AddFramebuffer(
   params.is_original_buffer = is_original_buffer;
   params.preferred_modifiers = preferred_modifiers;
   for (size_t i = 0; i < params.num_planes; ++i) {
-    UNSAFE_TODO(params.handles[i]) = buffer->GetPlaneHandle(i);
-    UNSAFE_TODO(params.strides[i]) = buffer->GetPlaneStride(i);
-    UNSAFE_TODO(params.offsets[i]) = buffer->GetPlaneOffset(i);
+    params.handles[i] = buffer->GetPlaneHandle(i);
+    params.strides[i] = buffer->GetPlaneStride(i);
+    params.offsets[i] = buffer->GetPlaneOffset(i);
   }
 
   // AddFramebuffer2 only considers the modifiers if addfb_flags has

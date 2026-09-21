@@ -7,6 +7,8 @@
 
 #include <drm_fourcc.h>
 #include <stdint.h>
+
+#include <array>
 #include <vector>
 
 #include "base/memory/ref_counted.h"
@@ -34,9 +36,9 @@ class DrmFramebuffer : public base::RefCountedThreadSafe<DrmFramebuffer> {
     uint32_t width = 0;
     uint32_t height = 0;
     size_t num_planes = 0;
-    uint32_t handles[4] = {};
-    uint32_t strides[4] = {};
-    uint32_t offsets[4] = {};
+    std::array<uint32_t, 4> handles = {};
+    std::array<uint32_t, 4> strides = {};
+    std::array<uint32_t, 4> offsets = {};
   };
 
   static scoped_refptr<DrmFramebuffer> AddFramebuffer(
