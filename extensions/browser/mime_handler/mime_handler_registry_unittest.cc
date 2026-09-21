@@ -97,6 +97,14 @@ class MimeHandlerRegistryTest : public ExtensionsTest {
     return MimeHandlerRegistry::Get(browser_context());
   }
 
+  // Returns the highest-precedence candidate for `mime_type`, or an empty
+  // id when the registry holds none.
+  ExtensionId GetHandlerForMimeType(const std::string& mime_type) {
+    base::span<const ExtensionId> handlers =
+        registry()->GetHandlersForMimeType(mime_type);
+    return handlers.empty() ? ExtensionId() : handlers.front();
+  }
+
  private:
   // Channel "trunk" is represented as UNKNOWN in the feature system.
   // Required because the dict-format mime_types_handler manifest key
@@ -110,7 +118,7 @@ TEST_F(MimeHandlerRegistryTest, RegisterAndLookup) {
       CreateMimeHandlerExtension("PDF Handler", kPdfMimeType, kViewerUrl);
   LoadExtension(ext.get());
 
-  EXPECT_EQ(ext->id(), registry()->GetHandlerForMimeType(kPdfMimeType));
+  EXPECT_EQ(ext->id(), GetHandlerForMimeType(kPdfMimeType));
 }
 
 TEST_F(MimeHandlerRegistryTest, UnregisterRemovesMapping) {
@@ -119,7 +127,7 @@ TEST_F(MimeHandlerRegistryTest, UnregisterRemovesMapping) {
   LoadExtension(ext.get());
   UnloadExtension(ext.get());
 
-  EXPECT_TRUE(registry()->GetHandlerForMimeType(kPdfMimeType).empty());
+  EXPECT_TRUE(GetHandlerForMimeType(kPdfMimeType).empty());
 }
 
 TEST_F(MimeHandlerRegistryTest, MostRecentlyInstalledWins) {
@@ -138,19 +146,19 @@ TEST_F(MimeHandlerRegistryTest, MostRecentlyInstalledWins) {
   LoadExtension(ext_b.get());
   LoadExtension(ext_c.get());
 
-  EXPECT_EQ(ext_b->id(), registry()->GetHandlerForMimeType(kPdfMimeType));
+  EXPECT_EQ(ext_b->id(), GetHandlerForMimeType(kPdfMimeType));
 
   // Unload ext_b; ext_c (next-newest install) becomes active.
   UnloadExtension(ext_b.get());
-  EXPECT_EQ(ext_c->id(), registry()->GetHandlerForMimeType(kPdfMimeType));
+  EXPECT_EQ(ext_c->id(), GetHandlerForMimeType(kPdfMimeType));
 
   // Unload ext_c; ext_a (oldest install) becomes active.
   UnloadExtension(ext_c.get());
-  EXPECT_EQ(ext_a->id(), registry()->GetHandlerForMimeType(kPdfMimeType));
+  EXPECT_EQ(ext_a->id(), GetHandlerForMimeType(kPdfMimeType));
 }
 
 TEST_F(MimeHandlerRegistryTest, NoHandlerReturnsEmpty) {
-  EXPECT_TRUE(registry()->GetHandlerForMimeType(kPdfMimeType).empty());
+  EXPECT_TRUE(GetHandlerForMimeType(kPdfMimeType).empty());
 }
 
 TEST_F(MimeHandlerRegistryTest, PublicHandlerSupersedesAllowlisted) {
@@ -168,7 +176,7 @@ TEST_F(MimeHandlerRegistryTest, PublicHandlerSupersedesAllowlisted) {
   LoadExtension(allowlisted.get());
 
   // Public handlers supersede allowlisted ones, regardless of install time.
-  EXPECT_EQ(public_ext->id(), registry()->GetHandlerForMimeType(kPdfMimeType));
+  EXPECT_EQ(public_ext->id(), GetHandlerForMimeType(kPdfMimeType));
 }
 
 TEST_F(MimeHandlerRegistryTest, AllowlistArrayIndexBreaksTies) {
@@ -187,7 +195,7 @@ TEST_F(MimeHandlerRegistryTest, AllowlistArrayIndexBreaksTies) {
   LoadExtension(pdf.get());
 
   // Expected: qoffice wins by array index, even though pdf is newer.
-  EXPECT_EQ(qoffice->id(), registry()->GetHandlerForMimeType(kPdfMimeType));
+  EXPECT_EQ(qoffice->id(), GetHandlerForMimeType(kPdfMimeType));
 }
 
 TEST_F(MimeHandlerRegistryTest, GetHandlersByMimeTypeReturnsAllTypes) {
@@ -275,9 +283,9 @@ TEST_F(MimeHandlerRegistryTest, MultipleMimeTypesWithOverlap) {
   LoadExtension(public_pdf.get());
 
   // PDF: public beats allowlisted.
-  EXPECT_EQ(public_pdf->id(), registry()->GetHandlerForMimeType(kPdfMimeType));
+  EXPECT_EQ(public_pdf->id(), GetHandlerForMimeType(kPdfMimeType));
   // msword: only the allowlisted extension registers for it.
-  EXPECT_EQ(allowlisted->id(), registry()->GetHandlerForMimeType(kDocMimeType));
+  EXPECT_EQ(allowlisted->id(), GetHandlerForMimeType(kDocMimeType));
 
   base::span<const ExtensionId> pdf_candidates =
       registry()->GetHandlersForMimeType(kPdfMimeType);
@@ -298,7 +306,7 @@ TEST_F(MimeHandlerRegistryTest, AllowlistedExtensionRegisteredWhenUsingDict) {
                           R"({"handler_url": "viewer.html"}})")
                  .Build();
   LoadExtension(ext.get());
-  EXPECT_EQ(ext->id(), registry()->GetHandlerForMimeType(kPdfMimeType));
+  EXPECT_EQ(ext->id(), GetHandlerForMimeType(kPdfMimeType));
 }
 
 TEST_F(MimeHandlerRegistryTest, FlagDisabledRegistrationByChannel) {
@@ -315,7 +323,7 @@ TEST_F(MimeHandlerRegistryTest, FlagDisabledRegistrationByChannel) {
         std::string(version_info::GetChannelString(channel)), kPdfMimeType,
         kViewerUrl);
     LoadExtension(ext.get());
-    EXPECT_TRUE(registry()->GetHandlerForMimeType(kPdfMimeType).empty());
+    EXPECT_TRUE(GetHandlerForMimeType(kPdfMimeType).empty());
     UnloadExtension(ext.get());
   }
 }
@@ -339,9 +347,9 @@ TEST_F(MimeHandlerRegistryTest, FlagDefaultRegistrationByChannel) {
     LoadExtension(ext.get());
 
     if (ExpectHandlerRegistered(channel)) {
-      EXPECT_EQ(ext->id(), registry()->GetHandlerForMimeType(kPdfMimeType));
+      EXPECT_EQ(ext->id(), GetHandlerForMimeType(kPdfMimeType));
     } else {
-      EXPECT_TRUE(registry()->GetHandlerForMimeType(kPdfMimeType).empty());
+      EXPECT_TRUE(GetHandlerForMimeType(kPdfMimeType).empty());
     }
 
     UnloadExtension(ext.get());
@@ -362,7 +370,7 @@ TEST_F(MimeHandlerRegistryTest, FlagEnabledRegistrationByChannel) {
         std::string(version_info::GetChannelString(channel)), kPdfMimeType,
         kViewerUrl);
     LoadExtension(ext.get());
-    EXPECT_EQ(ext->id(), registry()->GetHandlerForMimeType(kPdfMimeType));
+    EXPECT_EQ(ext->id(), GetHandlerForMimeType(kPdfMimeType));
     UnloadExtension(ext.get());
   }
 }
@@ -374,20 +382,20 @@ TEST_F(MimeHandlerRegistryTest, EnabledByDefaultUntilDisabled) {
 
   // Default: enabled, present in every accessor.
   EXPECT_TRUE(registry()->IsEnabledForMimeType(ext->id(), kPdfMimeType));
-  EXPECT_EQ(ext->id(), registry()->GetHandlerForMimeType(kPdfMimeType));
+  EXPECT_EQ(ext->id(), GetHandlerForMimeType(kPdfMimeType));
   EXPECT_EQ(registry()->GetHandlersForMimeType(kPdfMimeType).size(), 1u);
   EXPECT_EQ(registry()->GetHandlersByMimeType().count(kPdfMimeType), 1u);
 
   // After disabling: gone from every accessor.
   registry()->SetEnabledForMimeType(ext->id(), kPdfMimeType, false);
   EXPECT_FALSE(registry()->IsEnabledForMimeType(ext->id(), kPdfMimeType));
-  EXPECT_TRUE(registry()->GetHandlerForMimeType(kPdfMimeType).empty());
+  EXPECT_TRUE(GetHandlerForMimeType(kPdfMimeType).empty());
   EXPECT_TRUE(registry()->GetHandlersForMimeType(kPdfMimeType).empty());
   EXPECT_EQ(registry()->GetHandlersByMimeType().count(kPdfMimeType), 0u);
 
   // Re-enable: comes back.
   registry()->SetEnabledForMimeType(ext->id(), kPdfMimeType, true);
-  EXPECT_EQ(ext->id(), registry()->GetHandlerForMimeType(kPdfMimeType));
+  EXPECT_EQ(ext->id(), GetHandlerForMimeType(kPdfMimeType));
 }
 
 TEST_F(MimeHandlerRegistryTest, DisableRollsBackToPreviouslyInstalledHandler) {
@@ -402,14 +410,14 @@ TEST_F(MimeHandlerRegistryTest, DisableRollsBackToPreviouslyInstalledHandler) {
   SetFirstInstallTime(ext_new.get(), t0 + base::Hours(1));
   LoadExtension(ext_old.get());
   LoadExtension(ext_new.get());
-  ASSERT_EQ(ext_new->id(), registry()->GetHandlerForMimeType(kPdfMimeType));
+  ASSERT_EQ(ext_new->id(), GetHandlerForMimeType(kPdfMimeType));
 
   registry()->SetEnabledForMimeType(ext_new->id(), kPdfMimeType, false);
-  EXPECT_EQ(ext_old->id(), registry()->GetHandlerForMimeType(kPdfMimeType));
+  EXPECT_EQ(ext_old->id(), GetHandlerForMimeType(kPdfMimeType));
 
   // Re-enable: ext_new wins again (newer install time beats ext_old).
   registry()->SetEnabledForMimeType(ext_new->id(), kPdfMimeType, true);
-  EXPECT_EQ(ext_new->id(), registry()->GetHandlerForMimeType(kPdfMimeType));
+  EXPECT_EQ(ext_new->id(), GetHandlerForMimeType(kPdfMimeType));
 }
 
 TEST_F(MimeHandlerRegistryTest, SetEnabledForUnclaimedMimeTypeDoesNotRegister) {
@@ -430,7 +438,7 @@ TEST_F(MimeHandlerRegistryTest, SetEnabledForUnclaimedMimeTypeDoesNotRegister) {
 
   // Sanity: extension is the active handler for the MIME type it claims,
   // and `image/png` has no registered handler.
-  ASSERT_EQ(ext->id(), registry()->GetHandlerForMimeType(kPdfMimeType));
+  ASSERT_EQ(ext->id(), GetHandlerForMimeType(kPdfMimeType));
   ASSERT_TRUE(registry()->GetHandlersForMimeType(kPngMimeType).empty());
 
   // Call for a MIME type the manifest does not claim. The pref write

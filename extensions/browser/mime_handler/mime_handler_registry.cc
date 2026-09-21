@@ -98,12 +98,6 @@ MimeHandlerRegistry::MimeHandlerRegistry(content::BrowserContext* context)
 
 MimeHandlerRegistry::~MimeHandlerRegistry() = default;
 
-ExtensionId MimeHandlerRegistry::GetHandlerForMimeType(
-    const std::string& mime_type) const {
-  base::span<const ExtensionId> candidates = GetHandlersForMimeType(mime_type);
-  return candidates.empty() ? ExtensionId() : candidates.front();
-}
-
 base::span<const ExtensionId> MimeHandlerRegistry::GetHandlersForMimeType(
     const std::string& mime_type) const {
   auto it = handlers_by_type_.find(mime_type);

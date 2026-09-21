@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -50,6 +51,7 @@
 #include "extensions/browser/mime_handler/stream_container.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handlers/mime_types_handler.h"
 #include "extensions/test/result_catcher.h"
 #include "net/dns/mock_host_resolver.h"
@@ -140,6 +142,16 @@ class GenericMimeHandlerBrowserTest : public ExtensionApiTest {
     ASSERT_TRUE(StartEmbeddedTestServer());
   }
 
+  // Returns the highest-precedence candidate for `mime_type`, or an empty
+  // id when the registry holds none.
+  ExtensionId GetHandlerForMimeType(const std::string& mime_type) {
+    MimeHandlerRegistry* registry = MimeHandlerRegistry::Get(profile());
+    CHECK(registry);
+    base::span<const ExtensionId> handlers =
+        registry->GetHandlersForMimeType(mime_type);
+    return handlers.empty() ? ExtensionId() : handlers.front();
+  }
+
   // Returns the RFH identified by `MimeHandlerStreamManager` as the MIME
   // handler extension host in the active tab, or nullptr if none.
   content::RenderFrameHost* FindMimeHandlerExtensionFrame() {
@@ -200,11 +212,9 @@ IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest, GetStreamInfo) {
   // Verify the extension registered as a generic MIME handler.
   const MimeTypesHandler* handler = MimeTypesHandler::Get(*extension);
   ASSERT_TRUE(handler);
-  auto* registry = MimeHandlerRegistry::Get(profile());
-  ASSERT_TRUE(registry);
   ASSERT_FALSE(handler->IsPluginExtension());
   ASSERT_TRUE(handler->CanEmbedMimeType(kPdfMimeType));
-  ASSERT_EQ(extension->id(), registry->GetHandlerForMimeType(kPdfMimeType));
+  ASSERT_EQ(extension->id(), GetHandlerForMimeType(kPdfMimeType));
 
   // Set up ResultCatcher before navigation so it catches the extension's
   // chrome.test.succeed() call.
@@ -391,7 +401,7 @@ IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest,
   // Before disable: extension is the active handler along both paths.
   auto* registry = MimeHandlerRegistry::Get(profile());
   ASSERT_TRUE(registry);
-  ASSERT_EQ(extension->id(), registry->GetHandlerForMimeType(kPdfMimeType));
+  ASSERT_EQ(extension->id(), GetHandlerForMimeType(kPdfMimeType));
   ASSERT_EQ(extension->id(),
             PluginUtils::GetExtensionIdForMimeType(profile(), kPdfMimeType,
                                                    /*embedded=*/false));
@@ -402,8 +412,7 @@ IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest,
   // Both lookup paths now skip this handler and fall through to the
   // built-in PDF extension, which is always registered for
   // application/pdf in this browsertest profile.
-  EXPECT_EQ(extension_misc::kPdfExtensionId,
-            registry->GetHandlerForMimeType(kPdfMimeType));
+  EXPECT_EQ(extension_misc::kPdfExtensionId, GetHandlerForMimeType(kPdfMimeType));
   EXPECT_EQ(extension_misc::kPdfExtensionId,
             PluginUtils::GetExtensionIdForMimeType(profile(), kPdfMimeType,
                                                    /*embedded=*/false));
@@ -437,7 +446,7 @@ IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest,
 
   auto* registry = MimeHandlerRegistry::Get(profile());
   ASSERT_TRUE(registry);
-  ASSERT_EQ(extension->id(), registry->GetHandlerForMimeType(kPdfMimeType));
+  ASSERT_EQ(extension->id(), GetHandlerForMimeType(kPdfMimeType));
 
   // First navigation: /test.pdf?action=disable. handler.js branches
   // to calling chrome.mimeHandler.setMimeHandlerOptions and then
@@ -455,8 +464,7 @@ IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest,
   // Both lookup paths now skip this handler and fall through to the
   // built-in PDF extension, which is always registered for
   // application/pdf in this browsertest profile.
-  EXPECT_EQ(extension_misc::kPdfExtensionId,
-            registry->GetHandlerForMimeType(kPdfMimeType));
+  EXPECT_EQ(extension_misc::kPdfExtensionId, GetHandlerForMimeType(kPdfMimeType));
   EXPECT_EQ(extension_misc::kPdfExtensionId,
             PluginUtils::GetExtensionIdForMimeType(profile(), kPdfMimeType,
                                                    /*embedded=*/false));
