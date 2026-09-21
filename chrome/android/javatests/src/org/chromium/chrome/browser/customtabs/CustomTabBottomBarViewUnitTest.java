@@ -29,6 +29,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.PayloadCallbackHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -96,6 +97,7 @@ public class CustomTabBottomBarViewUnitTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/563056275")
     public void testSwipeUp() {
         onView(withChild(withId(R.id.stub))).perform(swipeUp());
         assertEquals(
