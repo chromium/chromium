@@ -62,7 +62,7 @@ class OmahaServiceTest : public PlatformTest {
         need_update_(false) {
     GetApplicationContext()->GetLocalState()->SetInt64(
         metrics::prefs::kInstallDate, kUnknownInstallDate);
-    OmahaService::ClearPersistentStateForTests();
+    OmahaService::ClearPersistentStateForTests(base::Version());
   }
 
   OmahaServiceTest(const OmahaServiceTest&) = delete;
@@ -110,20 +110,6 @@ class OmahaServiceTest : public PlatformTest {
            "</app></response>";
   }
 
-  void CleanService(OmahaService* service,
-                    const std::string& last_sent_version) {
-    service->ClearInstallRetryRequestId();
-    service->number_of_tries_ = 0;
-    if (last_sent_version.length() == 0) {
-      service->last_sent_version_ = base::Version("0.0.0.0");
-    } else {
-      service->last_sent_version_ = base::Version(last_sent_version);
-    }
-    service->current_ping_time_ = base::Time();
-    service->last_sent_time_ = base::Time();
-    service->locale_lang_ = std::string();
-  }
-
   base::TimeDelta TimerRemainingTime(OmahaService* service) {
     return service->timer_.desired_run_time() - base::TimeTicks::Now();
   }
@@ -156,7 +142,7 @@ class OmahaServiceTest : public PlatformTest {
 };
 
 TEST_F(OmahaServiceTest, PingMessageTest) {
-  const char* expectedResult =
+  static constexpr char expectedResult[] =
       "<request protocol=\"3.0\" updater=\"iOS\" updaterversion=\"[^\"]*\""
       " updaterchannel=\"[^\"]*\" ismachine=\"1\" requestid=\"requestId\""
       " sessionid=\"sessionId\" hardware_class=\"[^\"]*\">"
@@ -185,7 +171,7 @@ TEST_F(OmahaServiceTest, PingMessageTest) {
 }
 
 TEST_F(OmahaServiceTest, PingMessageTestWithUnknownInstallDate) {
-  const char* expectedResult =
+  static constexpr char expectedResult[] =
       "<request protocol=\"3.0\" updater=\"iOS\" updaterversion=\"[^\"]*\""
       " updaterchannel=\"[^\"]*\" ismachine=\"1\" requestid=\"requestId\""
       " sessionid=\"sessionId\" hardware_class=\"[^\"]*\">"
@@ -227,50 +213,61 @@ TEST_F(OmahaServiceTest, InstallEventMessageTest) {
       "<ping active=\"1\" ad=\"-2\" rd=\"-2\"/>"
       "</app></request>";
 
-  // First install.
-  OmahaService service(false);
-  service.StartInternal(GetPendingSharedURLLoaderFactoryCallback(),
-                        base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
-                                            base::Unretained(this)));
+  struct TestCase {
+    std::string_view previous_version;
+    int expected_install_age;
+    int expected_event_type;
+  };
 
-  CleanService(&service, "");
-  std::string content = service.GetPingContent(
-      "requestId", "sessionId", std::string(version_info::GetVersionNumber()),
-      GetChannelString(), base::Time::Now(), OmahaPingEvent::kInstallEvent);
-  regmatch_t matches[2];
-  regex_t regex;
-  std::string expected_result =
-      base::StringPrintf(kExpectedResultFormat, "" /* previous version */,
-                         -1 /* install age */, 2 /* event type */);
-  regcomp(&regex, expected_result.c_str(), REG_EXTENDED);
-  int result = regexec(&regex, content.c_str(), std::size(matches), matches, 0);
-  regfree(&regex);
-  EXPECT_EQ(0, result) << "Actual contents: " << content;
-  EXPECT_FALSE(NeedUpdate());
+  constexpr auto kTestCases = std::to_array<TestCase>({
+      {
+          // First install.
+          .previous_version = "",
+          .expected_install_age = -1,
+          .expected_event_type = 2,
+      },
+      {
+          // Update install.
+          .previous_version = "0.5",
+          .expected_install_age = 0,
+          .expected_event_type = 3,
+      },
+  });
 
-  // Update install.
-  const char* kPreviousVersion = "0.5";
-  CleanService(&service, kPreviousVersion);
-  content = service.GetPingContent(
-      "requestId", "sessionId", std::string(version_info::GetVersionNumber()),
-      GetChannelString(), base::Time::Now(), OmahaPingEvent::kInstallEvent);
-  expected_result = base::StringPrintf(kExpectedResultFormat, kPreviousVersion,
-                                       0 /* install age */, 3 /* event type */);
-  regcomp(&regex, expected_result.c_str(), REG_EXTENDED);
-  result = regexec(&regex, content.c_str(), std::size(matches), matches, 0);
-  regfree(&regex);
-  EXPECT_EQ(0, result) << "Actual contents: " << content;
-  EXPECT_FALSE(NeedUpdate());
+  for (const TestCase& test_case : kTestCases) {
+    OmahaService::ClearPersistentStateForTests(
+        base::Version(test_case.previous_version));
+
+    OmahaService service(false);
+    service.StartInternal(GetPendingSharedURLLoaderFactoryCallback(),
+                          base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
+                                              base::Unretained(this)));
+
+    std::string content = service.GetPingContent(
+        "requestId", "sessionId", std::string(version_info::GetVersionNumber()),
+        GetChannelString(), base::Time::Now(), OmahaPingEvent::kInstallEvent);
+    regmatch_t matches[2];
+    regex_t regex;
+    std::string expected_result = base::StringPrintf(
+        kExpectedResultFormat, test_case.previous_version,
+        test_case.expected_install_age, test_case.expected_event_type);
+    regcomp(&regex, expected_result.c_str(), REG_EXTENDED);
+    int result =
+        regexec(&regex, content.c_str(), std::size(matches), matches, 0);
+    regfree(&regex);
+    EXPECT_EQ(0, result) << "Actual contents: " << content;
+    EXPECT_FALSE(NeedUpdate());
+  }
 }
 
 TEST_F(OmahaServiceTest, SendPingSuccess) {
+  OmahaService::ClearPersistentStateForTests(version_info::GetVersion());
+
   base::Time now = base::Time::Now();
   OmahaService service(false);
   service.StartInternal(GetPendingSharedURLLoaderFactoryCallback(),
                         base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
                                             base::Unretained(this)));
-
-  CleanService(&service, std::string(version_info::GetVersionNumber()));
 
   service.SendPing();
 
@@ -293,12 +290,12 @@ TEST_F(OmahaServiceTest, SendPingSuccess) {
 }
 
 TEST_F(OmahaServiceTest, PingUpToDateUpdatesUserDefaults) {
+  OmahaService::ClearPersistentStateForTests(version_info::GetVersion());
+
   OmahaService service(false);
   service.StartInternal(GetPendingSharedURLLoaderFactoryCallback(),
                         base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
                                             base::Unretained(this)));
-
-  CleanService(&service, std::string(version_info::GetVersionNumber()));
 
   service.SendPing();
 
@@ -313,12 +310,12 @@ TEST_F(OmahaServiceTest, PingUpToDateUpdatesUserDefaults) {
 }
 
 TEST_F(OmahaServiceTest, PingOutOfDateUpdatesUserDefaults) {
+  OmahaService::ClearPersistentStateForTests(version_info::GetVersion());
+
   OmahaService service(false);
   service.StartInternal(GetPendingSharedURLLoaderFactoryCallback(),
                         base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
                                             base::Unretained(this)));
-
-  CleanService(&service, std::string(version_info::GetVersionNumber()));
 
   service.SendPing();
 
@@ -352,13 +349,13 @@ TEST_F(OmahaServiceTest, PingOutOfDateUpdatesUserDefaults) {
 }
 
 TEST_F(OmahaServiceTest, CallbackForScheduledNotUsedOnErrorResponse) {
+  OmahaService::ClearPersistentStateForTests(version_info::GetVersion());
+
   base::Time now = base::Time::Now();
   OmahaService service(false);
   service.StartInternal(GetPendingSharedURLLoaderFactoryCallback(),
                         base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
                                             base::Unretained(this)));
-
-  CleanService(&service, std::string(version_info::GetVersionNumber()));
 
   service.SendPing();
 
@@ -384,13 +381,14 @@ TEST_F(OmahaServiceTest, CallbackForScheduledNotUsedOnErrorResponse) {
 }
 
 TEST_F(OmahaServiceTest, OneOffSuccess) {
+  OmahaService::ClearPersistentStateForTests(version_info::GetVersion());
+
   base::Time now = base::Time::Now();
   OmahaService service(false);
   service.StartInternal(GetPendingSharedURLLoaderFactoryCallback(),
                         base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
                                             base::Unretained(this)));
 
-  CleanService(&service, std::string(version_info::GetVersionNumber()));
   service.CheckNowOnIOThread(
       base::BindOnce(&OmahaServiceTest::OneOffCheck, base::Unretained(this)));
 
@@ -413,13 +411,13 @@ TEST_F(OmahaServiceTest, OneOffSuccess) {
 }
 
 TEST_F(OmahaServiceTest, OngoingPingOneOffCallbackUsed) {
+  OmahaService::ClearPersistentStateForTests(version_info::GetVersion());
+
   base::Time now = base::Time::Now();
   OmahaService service(false);
   service.StartInternal(GetPendingSharedURLLoaderFactoryCallback(),
                         base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
                                             base::Unretained(this)));
-
-  CleanService(&service, std::string(version_info::GetVersionNumber()));
 
   service.SendPing();
 
@@ -447,13 +445,14 @@ TEST_F(OmahaServiceTest, OngoingPingOneOffCallbackUsed) {
 }
 
 TEST_F(OmahaServiceTest, OneOffCallbackUsedOnlyOnce) {
+  OmahaService::ClearPersistentStateForTests(version_info::GetVersion());
+
   base::Time now = base::Time::Now();
   OmahaService service(false);
   service.StartInternal(GetPendingSharedURLLoaderFactoryCallback(),
                         base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
                                             base::Unretained(this)));
 
-  CleanService(&service, std::string(version_info::GetVersionNumber()));
   service.CheckNowOnIOThread(
       base::BindOnce(&OmahaServiceTest::OneOffCheck, base::Unretained(this)));
 
@@ -485,13 +484,14 @@ TEST_F(OmahaServiceTest, OneOffCallbackUsedOnlyOnce) {
 }
 
 TEST_F(OmahaServiceTest, ScheduledPingDuringOneOffDropped) {
+  OmahaService::ClearPersistentStateForTests(version_info::GetVersion());
+
   base::Time now = base::Time::Now();
   OmahaService service(false);
   service.StartInternal(GetPendingSharedURLLoaderFactoryCallback(),
                         base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
                                             base::Unretained(this)));
 
-  CleanService(&service, std::string(version_info::GetVersionNumber()));
   service.CheckNowOnIOThread(
       base::BindOnce(&OmahaServiceTest::OneOffCheck, base::Unretained(this)));
 
@@ -522,12 +522,12 @@ TEST_F(OmahaServiceTest, ScheduledPingDuringOneOffDropped) {
 }
 
 TEST_F(OmahaServiceTest, ParseAndEchoLastServerDate) {
+  OmahaService::ClearPersistentStateForTests(version_info::GetVersion());
+
   OmahaService service(false);
   service.StartInternal(GetPendingSharedURLLoaderFactoryCallback(),
                         base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
                                             base::Unretained(this)));
-
-  CleanService(&service, std::string(version_info::GetVersionNumber()));
 
   service.SendPing();
 
@@ -566,8 +566,6 @@ TEST_F(OmahaServiceTest, SendInstallEventSuccess) {
                         base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
                                             base::Unretained(this)));
 
-  CleanService(&service, "");
-
   service.SendPing();
 
   EXPECT_EQ(1, service.number_of_tries_);
@@ -594,13 +592,13 @@ TEST_F(OmahaServiceTest, SendInstallEventSuccess) {
 }
 
 TEST_F(OmahaServiceTest, SendPingReceiveUpdate) {
+  OmahaService::ClearPersistentStateForTests(version_info::GetVersion());
+
   base::Time now = base::Time::Now();
   OmahaService service(false);
   service.StartInternal(GetPendingSharedURLLoaderFactoryCallback(),
                         base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
                                             base::Unretained(this)));
-
-  CleanService(&service, std::string(version_info::GetVersionNumber()));
 
   service.SendPing();
 
@@ -640,13 +638,13 @@ TEST_F(OmahaServiceTest, SendPingReceiveUpdate) {
 }
 
 TEST_F(OmahaServiceTest, SendPingFailure) {
+  OmahaService::ClearPersistentStateForTests(version_info::GetVersion());
+
   base::Time now = base::Time::Now();
   OmahaService service(false);
   service.StartInternal(GetPendingSharedURLLoaderFactoryCallback(),
                         base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
                                             base::Unretained(this)));
-
-  CleanService(&service, std::string(version_info::GetVersionNumber()));
 
   service.SendPing();
 
@@ -691,7 +689,6 @@ TEST_F(OmahaServiceTest, SendPingFailure) {
 }
 
 TEST_F(OmahaServiceTest, PersistStatesTest) {
-  std::string version_string(version_info::GetVersionNumber());
   base::Time now = base::Time::Now();
   OmahaService service(false);
   service.StartInternal(GetPendingSharedURLLoaderFactoryCallback(),
@@ -704,7 +701,7 @@ TEST_F(OmahaServiceTest, PersistStatesTest) {
   service.last_sent_time_ = now - base::Seconds(1);
   service.next_tries_time_ = now + base::Seconds(2);
   service.current_ping_time_ = now + base::Seconds(3);
-  service.last_sent_version_ = base::Version(version_string);
+  service.last_sent_version_ = version_info::GetVersion();
   service.PersistStates();
   base::test::ios::SpinRunLoopWithMinDelay(base::Milliseconds(1));
 
@@ -719,7 +716,7 @@ TEST_F(OmahaServiceTest, PersistStatesTest) {
   EXPECT_EQ(service2.last_sent_time_, now - base::Seconds(1));
   EXPECT_EQ(service2.next_tries_time_, now + base::Seconds(2));
   EXPECT_EQ(service2.current_ping_time_, now + base::Seconds(3));
-  EXPECT_EQ(service.last_sent_version_.GetString(), version_string);
+  EXPECT_EQ(service.last_sent_version_, version_info::GetVersion());
 }
 
 TEST_F(OmahaServiceTest, BackoffTest) {
@@ -741,8 +738,6 @@ TEST_F(OmahaServiceTest, ActivePingAfterInstallEventTest) {
   service.StartInternal(GetPendingSharedURLLoaderFactoryCallback(),
                         base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
                                             base::Unretained(this)));
-
-  CleanService(&service, "");
 
   service.SendPing();
 
@@ -772,13 +767,13 @@ TEST_F(OmahaServiceTest, ActivePingAfterInstallEventTest) {
 
 // Tests that active pings are not sent in rapid succession.
 TEST_F(OmahaServiceTest, NonSpammingTest) {
+  OmahaService::ClearPersistentStateForTests(version_info::GetVersion());
+
   base::Time now = base::Time::Now();
   OmahaService service(false);
   service.StartInternal(GetPendingSharedURLLoaderFactoryCallback(),
                         base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
                                             base::Unretained(this)));
-
-  CleanService(&service, std::string(version_info::GetVersionNumber()));
 
   service.SendPing();
 
@@ -812,8 +807,6 @@ TEST_F(OmahaServiceTest, InstallRetryTest) {
                         base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
                                             base::Unretained(this)));
 
-  CleanService(&service, "");
-
   EXPECT_FALSE(service.IsNextPingInstallRetry());
   std::string id1 = service.GetNextPingRequestId(OmahaPingEvent::kInstallEvent);
   EXPECT_TRUE(service.IsNextPingInstallRetry());
@@ -839,12 +832,12 @@ TEST_F(OmahaServiceTest, InstallRetryTest) {
 }
 
 TEST_F(OmahaServiceTest, ResyncTimerAfterSystemSuspend) {
+  OmahaService::ClearPersistentStateForTests(version_info::GetVersion());
+
   OmahaService service(true);
   service.StartInternal(GetPendingSharedURLLoaderFactoryCallback(),
                         base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
                                             base::Unretained(this)));
-
-  CleanService(&service, std::string(version_info::GetVersionNumber()));
 
   {
     base::subtle::ScopedTimeClockOverrides clock_overrides(

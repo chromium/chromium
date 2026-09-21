@@ -194,8 +194,10 @@ class OmahaService {
   // called after a successful installation/update ping.
   void ClearInstallRetryRequestId();
 
-  // Clears the all persistent state. Should only be used for testing.
-  static void ClearPersistentStateForTests();
+  // Clears the all persistent state. Should only be used for testing. The
+  // `last_version_sent` will be used to initialize the corresponding state.
+  static void ClearPersistentStateForTests(
+      const base::Version& last_sent_version);
 
   // To communicate with the Omaha server.
   std::unique_ptr<network::SimpleURLLoader> url_loader_;

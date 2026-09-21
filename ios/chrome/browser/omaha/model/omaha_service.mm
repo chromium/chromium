@@ -616,7 +616,8 @@ void OmahaService::ClearInstallRetryRequestId() {
   [defaults synchronize];
 }
 
-void OmahaService::ClearPersistentStateForTests() {
+void OmahaService::ClearPersistentStateForTests(
+    const base::Version& last_sent_version) {
   DCHECK_CURRENTLY_ON(web::WebThread::IO);
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   [defaults removeObjectForKey:kNextTriesTimesKey];
@@ -627,4 +628,9 @@ void OmahaService::ClearPersistentStateForTests() {
   [defaults removeObjectForKey:kRetryRequestIdKey];
   [defaults removeObjectForKey:kLastServerDateKey];
   [defaults removeObjectForKey:kIOSChromeUpToDateKey];
+  if (last_sent_version.IsValid() &&
+      last_sent_version != base::Version(kDefaultLastSentVersion)) {
+    [defaults setObject:base::SysUTF8ToNSString(last_sent_version.GetString())
+                 forKey:kLastSentVersionKey];
+  }
 }
