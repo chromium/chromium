@@ -244,9 +244,11 @@ class MessageBannerCoordinator {
      * @param isShowing Whether the message is visible. {@code true} if shown, {@code false} if
      *     hidden.
      */
-    private void sendPaneChangeAccessibilityEvent(boolean isShowing) {
+    @VisibleForTesting
+    void sendPaneChangeAccessibilityEvent(boolean isShowing) {
         AccessibilityEvent event =
                 AccessibilityEvent.obtain(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED);
+        event.setSource(mView);
         if (isShowing) {
             event.setContentChangeTypes(AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_APPEARED);
         } else {
