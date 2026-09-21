@@ -8,11 +8,14 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/favicon_base/favicon_types.h"
 
 namespace favicon {
+
+BASE_DECLARE_FEATURE(kDontCacheNullFavicons);
 
 // The C++ counterpart to Java's LargeIconBridge. Together these classes expose
 // LargeIconService to Java.

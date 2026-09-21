@@ -1,5 +1,7 @@
 include_rules = [
+  "+components/embedder_support",
   "+components/favicon_base",
+  "+content/public/android",
   "+third_party/blink/public/mojom/manifest",
   "+ui/base",
   "+ui/gfx",

@@ -7,6 +7,7 @@ package org.chromium.components.favicon;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.graphics.Bitmap;
+import android.text.TextUtils;
 import android.util.LruCache;
 
 import androidx.annotation.VisibleForTesting;
@@ -18,7 +19,9 @@ import org.jni_zero.NativeMethods;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.util.ConversionUtils;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.NetworkTrafficAnnotationTag;
 import org.chromium.url.GURL;
 
@@ -176,6 +179,11 @@ public class LargeIconBridge {
         assert mNativeLargeIconBridge != 0;
         assert callback != null;
 
+        if ((pageUrl.isEmpty() || !pageUrl.isValid() || isNtpOrAboutBlank(pageUrl))
+                && isDontCacheNullFaviconsEnabled()) {
+            return false;
+        }
+
         if (mFaviconCache == null) {
             return LargeIconBridgeJni.get()
                     .getLargeIconForURL(
@@ -205,10 +213,15 @@ public class LargeIconBridge {
                                 boolean isFallbackColorDefault,
                                 @IconType int iconType) {
                             assumeNonNull(mFaviconCache);
-                            mFaviconCache.put(
-                                    pageUrl,
-                                    new CachedFavicon(
-                                            icon, fallbackColor, isFallbackColorDefault, iconType));
+                            if (icon != null || !isDontCacheNullFaviconsEnabled()) {
+                                mFaviconCache.put(
+                                        pageUrl,
+                                        new CachedFavicon(
+                                                icon,
+                                                fallbackColor,
+                                                isFallbackColorDefault,
+                                                iconType));
+                            }
                             callback.onLargeIconAvailable(
                                     icon, fallbackColor, isFallbackColorDefault, iconType);
                         }
@@ -222,6 +235,13 @@ public class LargeIconBridge {
                             desiredSizePx,
                             callbackWrapper);
         }
+    }
+
+    private boolean isNtpOrAboutBlank(GURL pageUrl) {
+        String urlString = pageUrl.getValidSpecOrEmpty();
+        return UrlUtilities.isNtpUrl(pageUrl)
+                || TextUtils.equals(urlString, ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL)
+                || TextUtils.equals(urlString, ContentUrlConstants.ABOUT_BLANK_URL);
     }
 
     /**
@@ -270,11 +290,18 @@ public class LargeIconBridge {
         mFaviconCache.remove(url);
     }
 
+    /** Returns whether LargeIconBridge should skip caching null favicons. */
+    public static boolean isDontCacheNullFaviconsEnabled() {
+        return LargeIconBridgeJni.get().isDontCacheNullFaviconsEnabled();
+    }
+
     @NativeMethods
     public interface Natives {
         long init();
 
         void destroy(long nativeLargeIconBridge);
+
+        boolean isDontCacheNullFaviconsEnabled();
 
         boolean getLargeIconForURL(
                 long nativeLargeIconBridge,
