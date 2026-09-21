@@ -137,6 +137,8 @@ public class BrowserControlsManagerUnitTest {
         when(mTab.isUserInteractable()).thenReturn(true);
         when(mTab.isInitialized()).thenReturn(true);
         when(mTab.getUserDataHost()).thenReturn(mUserDataHost);
+        mUserDataHost.setUserData(
+                TabBrowserControlsOffsetHelper.USER_DATA_KEY, mTabBrowserControlsOffsetHelper);
         when(mTab.getContentView()).thenReturn(mContentView);
         doNothing().when(mContentView).removeOnHierarchyChangeListener(any());
         doNothing().when(mContentView).removeOnSystemUiVisibilityChangeListener(any());
@@ -1070,5 +1072,105 @@ public class BrowserControlsManagerUnitTest {
         remakeWithoutSpy();
         mBrowserControlsManager.releaseAndroidControlsHidingToken(TokenHolder.INVALID_TOKEN);
         assertFalse(mBrowserControlsManager.hasHidingTokens());
+    }
+
+    @Test
+    public void testGetTopControlOffsetClampedWhenTopControlsHeightDecreases() {
+        remakeWithoutSpy();
+        notifyAddTab(mTab);
+        mActivityTabProvider.setForTesting(mTab);
+
+        mBrowserControlsManager
+                .getTabControlsObserverForTesting()
+                .onBrowserControlsOffsetChanged(mTab, -TOOLBAR_HEIGHT, 0, 0, 0, 0);
+        assertEquals(-TOOLBAR_HEIGHT, mBrowserControlsManager.getTopControlOffset());
+        assertEquals(0f, mBrowserControlsManager.getTopVisibleContentOffset(), MathUtils.EPSILON);
+        assertEquals(1.0f, mBrowserControlsManager.getTopControlHiddenRatio(), MathUtils.EPSILON);
+
+        final int reducedHeight = 20;
+        mBrowserControlsManager.setTopControlsHeight(reducedHeight, 0);
+
+        assertEquals(-reducedHeight, mBrowserControlsManager.getTopControlOffset());
+        assertEquals(0f, mBrowserControlsManager.getTopVisibleContentOffset(), MathUtils.EPSILON);
+        assertEquals(1.0f, mBrowserControlsManager.getTopControlHiddenRatio(), MathUtils.EPSILON);
+        assertEquals(1.0f, mBrowserControlsManager.getBrowserControlHiddenRatio(), 0.0f);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.BROWSER_CONTROLS_RENDER_DRIVEN_SHOW_CONSTRAINT)
+    public void testOnConstraintsChangedShownSynchronizesWhenRendererAlreadyAtZeroOffset() {
+        remakeWithoutSpy();
+        notifyAddTab(mTab);
+        mActivityTabProvider.setForTesting(mTab);
+
+        mControlsDelegate.set(BrowserControlsState.BOTH);
+
+        mBrowserControlsManager
+                .getTabControlsObserverForTesting()
+                .onBrowserControlsOffsetChanged(mTab, -TOOLBAR_HEIGHT, 0, 0, 0, 0);
+        assertEquals(-TOOLBAR_HEIGHT, mBrowserControlsManager.getTopControlOffset());
+
+        when(mTabBrowserControlsOffsetHelper.offsetInitialized()).thenReturn(true);
+        when(mTabBrowserControlsOffsetHelper.topControlsOffset()).thenReturn(0);
+        when(mTabBrowserControlsOffsetHelper.bottomControlsOffset()).thenReturn(0);
+
+        mControlsDelegate.set(BrowserControlsState.SHOWN);
+
+        assertEquals(0, mBrowserControlsManager.getTopControlOffset());
+        assertEquals(
+                (float) TOOLBAR_HEIGHT,
+                mBrowserControlsManager.getTopVisibleContentOffset(),
+                MathUtils.EPSILON);
+    }
+
+    @Test
+    public void testOnContentChangedSynchronizesCachedOffsetsAfterNativePage() {
+        remakeWithoutSpy();
+        notifyAddTab(mTab);
+        mActivityTabProvider.setForTesting(mTab);
+
+        mBrowserControlsManager
+                .getTabControlsObserverForTesting()
+                .onBrowserControlsOffsetChanged(mTab, -TOOLBAR_HEIGHT, 0, 0, 0, 0);
+        assertEquals(-TOOLBAR_HEIGHT, mBrowserControlsManager.getTopControlOffset());
+
+        when(mTab.isNativePage()).thenReturn(false);
+        when(mTabBrowserControlsOffsetHelper.offsetInitialized()).thenReturn(true);
+        when(mTabBrowserControlsOffsetHelper.topControlsOffset()).thenReturn(0);
+        when(mTabBrowserControlsOffsetHelper.bottomControlsOffset()).thenReturn(0);
+        when(mTabBrowserControlsOffsetHelper.contentOffset()).thenReturn(TOOLBAR_HEIGHT);
+        when(mTabBrowserControlsOffsetHelper.topControlsMinHeightOffset()).thenReturn(0);
+        when(mTabBrowserControlsOffsetHelper.bottomControlsMinHeightOffset()).thenReturn(0);
+
+        mBrowserControlsManager.getTabControlsObserverForTesting().onContentChanged(mTab);
+
+        assertEquals(0, mBrowserControlsManager.getTopControlOffset());
+        assertEquals(TOOLBAR_HEIGHT, mBrowserControlsManager.getContentOffset());
+        assertEquals(
+                (float) TOOLBAR_HEIGHT,
+                mBrowserControlsManager.getTopVisibleContentOffset(),
+                MathUtils.EPSILON);
+    }
+
+    @Test
+    public void testOnInteractabilityChangedShowsControlsOnNativePageWhenOffsetInitialized() {
+        remakeWithoutSpy();
+        notifyAddTab(mTab);
+        mActivityTabProvider.setForTesting(mTab);
+
+        mBrowserControlsManager
+                .getTabControlsObserverForTesting()
+                .onBrowserControlsOffsetChanged(mTab, -TOOLBAR_HEIGHT, 0, 0, 0, 0);
+        assertEquals(-TOOLBAR_HEIGHT, mBrowserControlsManager.getTopControlOffset());
+
+        when(mTab.isNativePage()).thenReturn(true);
+        when(mTabBrowserControlsOffsetHelper.offsetInitialized()).thenReturn(true);
+        when(mTabBrowserControlsOffsetHelper.topControlsOffset()).thenReturn(-TOOLBAR_HEIGHT);
+
+        mBrowserControlsManager
+                .getTabControlsObserverForTesting()
+                .onInteractabilityChanged(mTab, true);
+
+        assertEquals(0, mBrowserControlsManager.getTopControlOffset());
     }
 }
