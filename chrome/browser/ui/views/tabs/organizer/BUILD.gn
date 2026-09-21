@@ -177,6 +177,7 @@ source_set("interactive_ui_tests") {
     "//ui/views",
   ]
   if (enable_extensions) {
+    sources += [ "organizer_panel_extension_view_interactive_uitest.cc" ]
     deps += [
       "//chrome/browser/extensions",
       "//chrome/browser/extensions:test_support",
