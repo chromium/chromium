@@ -168,7 +168,9 @@ def load_plugin_from_path(file_path: str):
     return module
 
 
-def handle_grouped_mode(candidates, batch_size: int):
+def handle_grouped_mode(
+    candidates, batch_size: int, selected_subsystem: str = None
+):
     """Groups file-level candidates by subsystem and prints a batch."""
     subsystem_map = collections.defaultdict(list)
     for c in candidates:
@@ -181,23 +183,28 @@ def handle_grouped_mode(candidates, batch_size: int):
         print("No candidates found.")
         return
 
-    # Pick a subsystem using threshold-based random selection to prevent collisions between users
-    min_count = 3
-    good_subsystems = [
-        sub for sub, files in subsystem_map.items() if len(files) >= min_count
-    ]
-
-    if good_subsystems:
-        selected_subsystem = random.choice(good_subsystems)
-    else:
-        # Fall back to picking the absolute maximum if nothing meets the threshold
-        max_count = max(len(files) for files in subsystem_map.values())
-        top_subsystems = [
+    if not selected_subsystem:
+        # Prioritize full batches: if any subsystem reached batch_size, pick randomly among full ones
+        full_subsystems = [
             sub
             for sub, files in subsystem_map.items()
-            if len(files) == max_count
+            if len(files) >= batch_size
         ]
-        selected_subsystem = random.choice(top_subsystems)
+        if full_subsystems:
+            selected_subsystem = random.choice(full_subsystems)
+        else:
+            # Pick a subsystem using threshold-based random selection to prevent collisions between users
+            min_count = 3
+            good_subsystems = [
+                sub
+                for sub, files in subsystem_map.items()
+                if len(files) >= min_count
+            ]
+
+            if good_subsystems:
+                selected_subsystem = random.choice(good_subsystems)
+            else:
+                selected_subsystem = random.choice(list(subsystem_map.keys()))
 
     batch_candidates = subsystem_map[selected_subsystem]
 
@@ -308,23 +315,40 @@ def main():
 
         abs_search_root = os.path.abspath(search_root)
         has_check_directory = hasattr(plugin, "check_directory")
+        seen_files = set()
+        visited_dirs = set()
 
-        for directory, files_in_dir in dirs_with_files:
+        def scan_dir(directory, files_in_dir):
+            nonlocal scanned
+            new_candidates = []
             if has_check_directory:
                 results = plugin.check_directory(
                     directory, files_in_dir, abs_search_root
                 )
                 if results:
-                    candidates_list.extend(results)
+                    for r in results:
+                        f = r.get("file")
+                        if f and f not in seen_files:
+                            seen_files.add(f)
+                            new_candidates.append(r)
             else:
                 for f in files_in_dir:
+                    if f in seen_files:
+                        continue
                     metadata = plugin.check_file(f, abs_search_root)
                     if metadata:
-                        candidates_list.append({"file": f, **metadata})
-
+                        seen_files.add(f)
+                        new_candidates.append({"file": f, **metadata})
             scanned += len(files_in_dir)
+            visited_dirs.add(directory)
+            return new_candidates
 
-            # Check adaptive exit conditions
+        # Stage 1: Global Discovery (stop at batch_size matches or ~1,000 files scanned)
+        for directory, files_in_dir in dirs_with_files:
+            results = scan_dir(directory, files_in_dir)
+            if results:
+                candidates_list.extend(results)
+
             if candidates_list:
                 subsystems = [
                     get_subsystem_prefix(c["file"]) for c in candidates_list
@@ -332,24 +356,82 @@ def main():
                 counts = collections.Counter(subsystems)
                 max_count = max(counts.values())
 
-                # Tier 1: Full batch found
+                # Stop early if ANY subsystem reaches full batch_size
                 if max_count >= args.batch_size:
                     break
 
-                # Tier 2: Scanned >= 1000 files and found a decent batch (>= 50% of target)
-                if scanned >= 1000 and max_count >= max(
-                    3, args.batch_size // 2
-                ):
-                    break
-
-                # Tier 3: Scanned >= 2500 files and found a small batch (>= 3)
-                if scanned >= 2500 and max_count >= 3:
+                # Stop broad discovery after 1,000 files if at least one candidate found
+                if scanned >= 1000 and max_count >= 1:
                     break
 
             if scanned >= 5000:
                 break
 
-        handle_grouped_mode(candidates_list, args.batch_size)
+        if not candidates_list:
+            print("No candidates found.")
+            return
+
+        # Map candidates by subsystem
+        subsystem_map = collections.defaultdict(list)
+        for c in candidates_list:
+            filepath = c.get("file")
+            if filepath:
+                subsystem = get_subsystem_prefix(filepath)
+                subsystem_map[subsystem].append(c)
+
+        # Stage 2: Subsystem Selection
+        full_subsystems = [
+            sub
+            for sub, files in subsystem_map.items()
+            if len(files) >= args.batch_size
+        ]
+        if full_subsystems:
+            selected_subsystem = random.choice(full_subsystems)
+        else:
+            min_count = 3
+            good_subsystems = [
+                sub
+                for sub, files in subsystem_map.items()
+                if len(files) >= min_count
+            ]
+            if good_subsystems:
+                selected_subsystem = random.choice(good_subsystems)
+            else:
+                selected_subsystem = random.choice(list(subsystem_map.keys()))
+
+        # Stage 3: Targeted Deep-Fill if batch is not full yet
+        current_subsystem_candidates = subsystem_map[selected_subsystem]
+        if len(current_subsystem_candidates) < args.batch_size:
+            # Filter remaining unvisited directories for selected_subsystem
+            # NOTE: Always use get_subsystem_prefix(files[0]) to avoid directory-path parsing asymmetry
+            remaining_subsystem_dirs = [
+                (d, files)
+                for d, files in dirs_with_files
+                if d not in visited_dirs
+                and files
+                and get_subsystem_prefix(files[0]) == selected_subsystem
+            ]
+
+            stage2_scanned = 0
+            for directory, files_in_dir in remaining_subsystem_dirs:
+                if len(current_subsystem_candidates) >= args.batch_size:
+                    break
+                if (
+                    stage2_scanned >= 500
+                ):  # Safety budget to avoid runaway latency
+                    break
+
+                results = scan_dir(directory, files_in_dir)
+                stage2_scanned += len(files_in_dir)
+                if results:
+                    candidates_list.extend(results)
+                    current_subsystem_candidates.extend(results)
+                    if len(current_subsystem_candidates) >= args.batch_size:
+                        break
+
+        handle_grouped_mode(
+            candidates_list, args.batch_size, selected_subsystem
+        )
     else:
         handle_atomic_mode(plugin, args.count, get_repo_root())
 

@@ -4,6 +4,9 @@
       "path": "agents/projects/code-health/accessibility-cleanup"
     },
     {
+      "path": "agents/projects/code-health/fix-outdated-javadocs"
+    },
+    {
       "path": "agents/projects/code-health/histogram-cleanup"
     },
     {
