@@ -11,7 +11,9 @@ export function getHtml(this: OrganizerListSectionItemTitleElement) {
   return html`<!--_html_template_start_-->
 <div id="titleParts" class="title-parts">
   ${this.titleParts.map((titlePart, index) => html`
-    ${index > 0 ? html`<div class="separator">|</div>` : ''}
+    ${index > 0 ? html`
+      <div class="separator">|</div>
+    ` : ''}
     <div class="title-part" title="${titlePart}">
       ${this.renderTitlePart_(titlePart, index)}
     </div>

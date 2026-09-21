@@ -9,8 +9,7 @@ import type {OrganizerListSectionItemElement} from './organizer_list_section_ite
 export function getHtml(this: OrganizerListSectionItemElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<cr-url-list-item id="crUrlListItem"
-    .itemAriaLabel="${this.getAriaLabel_()}"
+<cr-url-list-item id="crUrlListItem" .itemAriaLabel="${this.getAriaLabel_()}"
     .itemAriaDescription="${this.getAriaDescription_() || nothing}"
     .url="${this.item.prefixIcon?.url || nothing}"
     ?always-show-suffix="${this.hasSuffix_()}"
