@@ -528,6 +528,9 @@
   <message name="IDS_HTTPS_ONLY_MODE_FOR_INCOGNITO_PRIMARY_PARAGRAPH" desc="Main paragrpah of the HTTPS-Only Mode warning. This warning is shown when the browser tries to upgrade a navigation to a site to HTTPS but the site does not support HTTPS. The user is seeing this warning because they are browsing in Incognito mode.">
     You are seeing this warning because this site does not support HTTPS and you are in Incognito mode. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more about this warning<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
   </message>
+  <message name="IDS_HTTPS_ONLY_MODE_FOR_ISOLATED_MODE_PRIMARY_PARAGRAPH" desc="Main paragraph of the HTTPS-Only Mode warning. This warning is shown when the browser tries to upgrade a navigation to a site to HTTPS but the site does not support HTTPS. The user is seeing this warning because they are browsing in Isolated Mode, an enterprise browsing mode that replaces Incognito mode.">
+    You are seeing this warning because this site does not support HTTPS and you are in Isolated Mode. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more about this warning<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
+  </message>
 
   <message name="IDS_HTTPS_ONLY_MODE_BACK_BUTTON" desc="Text for the button in the HTTPS-only mode warning that takes the user back to the previous page">
     Go back
@@ -560,6 +563,9 @@
   </message>
   <message name="IDS_ABH_PROMPT_INCOGNITO_PRIMARY_PARAGRAPH" desc="Main paragrpah of the Ask-before-HTTP warning dialog. This warning is shown when the browser tries to upgrade a navigation to a site to HTTPS but the site does not support HTTPS. The user is seeing this warning because they are browsing in Incognito mode.">
     You are seeing this warning because this site does not support HTTPS and you are in Incognito mode. <ph name="LEARN_MORE">$1<ex>Learn more about this warning</ex></ph>
+  </message>
+  <message name="IDS_ABH_PROMPT_ISOLATED_MODE_PRIMARY_PARAGRAPH" desc="Main paragraph of the Ask-before-HTTP warning dialog. This warning is shown when the browser tries to upgrade a navigation to a site to HTTPS but the site does not support HTTPS. The user is seeing this warning because they are browsing in Isolated Mode, an enterprise browsing mode that replaces Incognito mode.">
+    You are seeing this warning because this site does not support HTTPS and you are in Isolated Mode. <ph name="LEARN_MORE">$1<ex>Learn more about this warning</ex></ph>
   </message>
   <if expr="not is_android">
     <message name="IDS_ABH_PROMPT_ADVANCED_PROTECTION_PRIMARY_PARAGRAPH" desc="Main paragraph of the Ask-before-HTTP warning dialog. This warning is shown when the browser tries to upgrade a navigation to a site to HTTPS but the site does not support HTTPS. The user also has Advanced Protection enabled.">

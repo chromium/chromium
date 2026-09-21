@@ -191,6 +191,10 @@ struct HttpInterstitialState {
   // (when HFM-in-Incognito is enabled).
   bool enabled_by_incognito = false;
 
+  // Whether HTTPS-First Mode is enabled because the navigation is in
+  // Enterprise Isolated Mode (when HFM-in-Incognito is enabled).
+  bool enabled_by_isolated_mode = false;
+
   // Whether HTTPS-First Mode is enabled for the current site due to the
   // site engagement heuristic.
   bool enabled_by_engagement_heuristic = false;
@@ -260,8 +264,11 @@ enum class InterstitialReason {
   kBalanced = 6,
   // The interstitial was shown because HFM was enabled via ESB pairing.
   kEsbPairing = 7,
+  // The interstitial was shown because of HTTPS-First Mode in Enterprise
+  // Isolated Mode.
+  kIsolatedMode = 8,
 
-  kMaxValue = kEsbPairing,
+  kMaxValue = kIsolatedMode,
 };
 
 InterstitialReason GetInterstitialReason(

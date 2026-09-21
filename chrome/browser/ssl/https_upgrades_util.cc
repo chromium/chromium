@@ -77,9 +77,12 @@ ComputeInterstitialState(content::WebContents* web_contents, const GURL& url) {
   interstitial_state.enabled_by_pref =
       prefs && prefs->GetBoolean(prefs::kHttpsOnlyModeEnabled);
 
-  if (base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito)) {
-    if (profile->IsIncognitoProfile() && prefs &&
-        prefs->GetBoolean(prefs::kHttpsFirstModeIncognito)) {
+  if (base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito) &&
+      profile->IsPrimaryOTRProfileWithRegularParent() && prefs &&
+      prefs->GetBoolean(prefs::kHttpsFirstModeIncognito)) {
+    if (profile->IsEnterpriseIsolatedModeProfile()) {
+      interstitial_state.enabled_by_isolated_mode = true;
+    } else {
       interstitial_state.enabled_by_incognito = true;
     }
   }
@@ -168,7 +171,7 @@ bool IsInterstitialEnabled(const HttpInterstitialState& state) {
   if (IsStrictInterstitialEnabled(state)) {
     return true;
   }
-  if (state.enabled_by_incognito) {
+  if (state.enabled_by_incognito || state.enabled_by_isolated_mode) {
     return true;
   }
   if (IsBalancedModeAvailable() && state.enabled_in_balanced_mode) {

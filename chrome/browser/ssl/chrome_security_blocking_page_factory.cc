@@ -328,6 +328,8 @@ ChromeSecurityBlockingPageFactory::CreateHttpsOnlyModeBlockingPage(
       interstitial_state.enabled_by_typically_secure_browsing = true;
     } else if (*url_type_param == "incognito") {
       interstitial_state.enabled_by_incognito = true;
+    } else if (*url_type_param == "isolated_mode") {
+      interstitial_state.enabled_by_isolated_mode = true;
     }
   } else {
     interstitial_state.enabled_by_advanced_protection =

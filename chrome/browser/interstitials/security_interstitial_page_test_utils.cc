@@ -101,6 +101,9 @@ HFMInterstitialType GetHFMInterstitialType(content::WebContents* tab) {
               kIncognito:
             return HFMInterstitialType::kIncognito;
           case security_interstitials::https_only_mode::InterstitialReason::
+              kIsolatedMode:
+            return HFMInterstitialType::kIsolatedMode;
+          case security_interstitials::https_only_mode::InterstitialReason::
               kPref:
           case security_interstitials::https_only_mode::InterstitialReason::
               kBalanced:
@@ -125,6 +128,11 @@ HFMInterstitialType GetHFMInterstitialType(content::WebContents* tab) {
                                    "this site does not support HTTPS and "
                                    "you are in Incognito mode")) {
     return HFMInterstitialType::kIncognito;
+  }
+  if (IsInterstitialDisplayingText(tab->GetPrimaryMainFrame(),
+                                   "this site does not support HTTPS and "
+                                   "you are in Isolated Mode")) {
+    return HFMInterstitialType::kIsolatedMode;
   }
   if (IsInterstitialDisplayingText(tab->GetPrimaryMainFrame(),
                                    "doesn’t support a secure connection")) {

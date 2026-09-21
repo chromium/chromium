@@ -166,6 +166,10 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="kEsbPairing">
     The interstitial was shown because HFM was enabled via ESB pairing.
   </int>
+  <int value="8" label="kIsolatedMode">
+    The interstitial was shown because the user was in Enterprise Isolated Mode
+    and HTTPS-First Mode in Incognito was enabled.
+  </int>
 </enum>
 
 <enum name="HttpsFirstModeNavigationEvent">

@@ -106,6 +106,9 @@ InterstitialReason GetInterstitialReason(
   if (interstitial_state.enabled_by_incognito) {
     return InterstitialReason::kIncognito;
   }
+  if (interstitial_state.enabled_by_isolated_mode) {
+    return InterstitialReason::kIsolatedMode;
+  }
   return InterstitialReason::kUnknown;
 }
 

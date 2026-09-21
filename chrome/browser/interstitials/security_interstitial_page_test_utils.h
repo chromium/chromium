@@ -22,6 +22,8 @@ enum class HFMInterstitialType {
   kStandard,
   // The incognito interstitial is being displayed.
   kIncognito,
+  // The Enterprise Isolated Mode interstitial is being displayed.
+  kIsolatedMode,
   // The interstitial is being displayed due to the Typically Secure User
   // heuristic.
   kTypicallySecure,

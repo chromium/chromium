@@ -49,6 +49,9 @@ void PopulateHttpsOnlyModeStringsForBlockingPage(
         IDS_HTTPS_ONLY_MODE_FOR_TYPICALLY_SECURE_BROWSING_PRIMARY_PARAGRAPH;
   } else if (reason == InterstitialReason::kIncognito) {
     primary_paragraph_id = IDS_HTTPS_ONLY_MODE_FOR_INCOGNITO_PRIMARY_PARAGRAPH;
+  } else if (reason == InterstitialReason::kIsolatedMode) {
+    primary_paragraph_id =
+        IDS_HTTPS_ONLY_MODE_FOR_ISOLATED_MODE_PRIMARY_PARAGRAPH;
   }
 
   // TODO(crbug.com/349860796): Consider customizing interstitial strings for

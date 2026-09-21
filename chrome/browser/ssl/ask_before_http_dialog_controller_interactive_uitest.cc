@@ -24,6 +24,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/core/features.h"
 #include "components/tabs/public/tab_interface.h"
@@ -65,6 +66,10 @@ enum class AskBeforeHttpDialogControllerTestType {
   // window.
   kHttpsFirstModeIncognito,
 
+  // Enables HFM in Enterprise Isolated Mode. Runs testcases inside an Isolated
+  // Mode window.
+  kHttpsFirstModeIsolatedMode,
+
   // Enables HFM in balanced mode.
   kHttpsFirstBalancedMode,
 
@@ -96,6 +101,8 @@ class AskBeforeHttpDialogControllerUiTest
         break;
 
       case AskBeforeHttpDialogControllerTestType::kHttpsFirstModeIncognito:
+      case AskBeforeHttpDialogControllerTestType::kHttpsFirstModeIsolatedMode:
+        // Isolated Mode shares the HFM-in-Incognito feature flag and pref.
         feature_list_.InitWithFeatures(
             /*enabled_features=*/{security_interstitials::features::
                                       kHttpsFirstDialogUi,
@@ -166,7 +173,9 @@ class AskBeforeHttpDialogControllerUiTest
     // window, and then should behave like kHttpsFirstMode type tests but
     // without enabling the full HFM pref.
     if (test_type() ==
-        AskBeforeHttpDialogControllerTestType::kHttpsFirstModeIncognito) {
+            AskBeforeHttpDialogControllerTestType::kHttpsFirstModeIncognito ||
+        test_type() == AskBeforeHttpDialogControllerTestType::
+                           kHttpsFirstModeIsolatedMode) {
       UseIncognitoBrowser();
       SetPref(false);
     }
@@ -205,6 +214,12 @@ class AskBeforeHttpDialogControllerUiTest
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     mock_cert_verifier_.SetUpCommandLine(command_line);
+    if (test_type() ==
+        AskBeforeHttpDialogControllerTestType::kHttpsFirstModeIsolatedMode) {
+      command_line->AppendSwitch(
+          enterprise_isolated_mode::switches::
+              kForceEnterpriseIsolatedModeReplacesIncognito);
+    }
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -292,6 +307,7 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         AskBeforeHttpDialogControllerTestType::kHttpsFirstModeOnly,
         AskBeforeHttpDialogControllerTestType::kHttpsFirstModeIncognito,
+        AskBeforeHttpDialogControllerTestType::kHttpsFirstModeIsolatedMode,
         AskBeforeHttpDialogControllerTestType::kHttpsFirstBalancedMode,
         AskBeforeHttpDialogControllerTestType::kAll),
     // Map param to a human-readable string for better test output.
@@ -302,6 +318,8 @@ INSTANTIATE_TEST_SUITE_P(
           return "HttpsFirstModeOnly";
         case AskBeforeHttpDialogControllerTestType::kHttpsFirstModeIncognito:
           return "HttpsFirstModeIncognito";
+        case AskBeforeHttpDialogControllerTestType::kHttpsFirstModeIsolatedMode:
+          return "HttpsFirstModeIsolatedMode";
         case AskBeforeHttpDialogControllerTestType::kHttpsFirstBalancedMode:
           return "HttpsFirstBalancedMode";
         case AskBeforeHttpDialogControllerTestType::kAll:
@@ -375,6 +393,10 @@ IN_PROC_BROWSER_TEST_P(AskBeforeHttpDialogControllerUiTest,
     case AskBeforeHttpDialogControllerTestType::kHttpsFirstModeIncognito:
       histograms()->ExpectBucketCount(kInterstitialReasonHistogram,
                                       InterstitialReason::kIncognito, 1);
+      break;
+    case AskBeforeHttpDialogControllerTestType::kHttpsFirstModeIsolatedMode:
+      histograms()->ExpectBucketCount(kInterstitialReasonHistogram,
+                                      InterstitialReason::kIsolatedMode, 1);
       break;
   }
 

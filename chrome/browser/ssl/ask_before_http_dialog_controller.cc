@@ -96,6 +96,13 @@ void AddAskBeforeHttpDialogText(ui::DialogModel::Builder& dialog_model,
         description_text, /*header=*/u"",
         AskBeforeHttpDialogController::kDescriptionTextId);
     return;
+  } else if (warning_reason == HttpWarningReason::kIsolatedMode) {
+    auto description_text = ui::DialogModelLabel::CreateWithReplacement(
+        IDS_ABH_PROMPT_ISOLATED_MODE_PRIMARY_PARAGRAPH, link);
+    dialog_model.AddParagraph(
+        description_text, /*header=*/u"",
+        AskBeforeHttpDialogController::kDescriptionTextId);
+    return;
   } else if (warning_reason == HttpWarningReason::kPref ||
              warning_reason == HttpWarningReason::kBalanced) {
 #if !BUILDFLAG(IS_ANDROID)
