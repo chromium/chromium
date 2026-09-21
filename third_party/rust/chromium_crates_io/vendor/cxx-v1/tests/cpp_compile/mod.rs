@@ -95,13 +95,13 @@ impl Test {
 
         // Set info required by the `cc` crate.
         //
-        // The correct host triple during execution of this test is the target
-        // triple from the Rust compilation of this test -- not the Rust host
-        // triple.
+        // The correct host tuple during execution of this test is the target
+        // tuple from the Rust compilation of this test -- not the Rust host
+        // tuple.
         build
             .opt_level(3)
-            .host(target_triple::TARGET)
-            .target(target_triple::TARGET);
+            .host(target_tuple::TARGET)
+            .target(target_tuple::TARGET);
 
         // The `cc` crate does not currently expose the `Command` for building a
         // single C++ source file. Work around that by passing `-c <file.cc>`.

@@ -1,6 +1,6 @@
-From 0840fb817026498bb2c5d6dccc0a92f3b0491411 Mon Sep 17 00:00:00 2001
-From: Daniel Cheng <dcheng@chromium.org>
-Date: Fri, 5 Sep 2025 12:37:49 -0700
+From 8700a32ee081c7256f7e87979ae818e7353e4904 Mon Sep 17 00:00:00 2001
+From: Jing Ying Qiu <jingyingqiu@google.com>
+Date: Wed, 16 Sep 2026 09:20:59 +0000
 Subject: [PATCH] Define exported cxx symbols
 
 Change-Id: I05c0cd24c607c543856ed0b021fe037fd8186b1f
@@ -9,10 +9,10 @@ Change-Id: I05c0cd24c607c543856ed0b021fe037fd8186b1f
  1 file changed, 99 insertions(+), 78 deletions(-)
 
 diff --git a/third_party/rust/chromium_crates_io/vendor/cxx-v1/src/cxx.cc b/third_party/rust/chromium_crates_io/vendor/cxx-v1/src/cxx.cc
-index f93d46b89da4e..f79cf34adf827 100644
+index 9251c946e15d5..8bb23260a983b 100644
 --- a/third_party/rust/chromium_crates_io/vendor/cxx-v1/src/cxx.cc
 +++ b/third_party/rust/chromium_crates_io/vendor/cxx-v1/src/cxx.cc
-@@ -29,71 +29,90 @@
+@@ -34,71 +34,90 @@
  #pragma clang diagnostic ignored "-Wdollar-in-identifier-extension"
  #endif
  
@@ -142,7 +142,7 @@ index f93d46b89da4e..f79cf34adf827 100644
  } // extern "C"
  
  namespace rust {
-@@ -509,7 +528,8 @@ static const char *errorCopy(const char *ptr, std::size_t len) {
+@@ -521,7 +540,8 @@ static const char *errorCopy(const char *ptr, std::size_t len) {
  }
  
  extern "C" {
@@ -152,7 +152,7 @@ index f93d46b89da4e..f79cf34adf827 100644
    return errorCopy(ptr, len);
  }
  } // extern "C"
-@@ -569,7 +589,7 @@ struct PtrLen final {
+@@ -581,7 +601,7 @@ struct PtrLen final {
  } // namespace repr
  
  extern "C" {
@@ -161,7 +161,7 @@ index f93d46b89da4e..f79cf34adf827 100644
  }
  
  namespace detail {
-@@ -620,23 +640,24 @@ void destroy(T *ptr) {
+@@ -632,23 +652,24 @@ void destroy(T *ptr) {
  } // namespace
  
  extern "C" {
@@ -192,7 +192,7 @@ index f93d46b89da4e..f79cf34adf827 100644
      std::unique_ptr<std::string> *ptr) noexcept {
    ptr->~unique_ptr();
  }
-@@ -651,77 +672,77 @@ static_assert(sizeof(std::string) <= kMaxExpectedWordsInString * sizeof(void *),
+@@ -663,77 +684,77 @@ static_assert(sizeof(std::string) <= kMaxExpectedWordsInString * sizeof(void *),
  } // namespace
  
  #define STD_VECTOR_OPS(RUST_TYPE, CXX_TYPE)                                    \
@@ -206,7 +206,7 @@ index f93d46b89da4e..f79cf34adf827 100644
      return s.size();                                                           \
    }                                                                            \
 -  std::size_t cxxbridge1$std$vector$##RUST_TYPE##$capacity(                    \
-+  CXX_RS_EXPORT std::size_t cxxbridge1$std$vector$##RUST_TYPE##$capacity(                   \
++  CXX_RS_EXPORT std::size_t cxxbridge1$std$vector$##RUST_TYPE##$capacity(                    \
        const std::vector<CXX_TYPE> &s) noexcept {                               \
      return s.capacity();                                                       \
    }                                                                            \
@@ -231,16 +231,16 @@ index f93d46b89da4e..f79cf34adf827 100644
        std::vector<CXX_TYPE> *raw) noexcept {                                   \
      new (ptr) std::unique_ptr<std::vector<CXX_TYPE>>(raw);                     \
    }                                                                            \
--  const std::vector<CXX_TYPE>                                                  \
-+  CXX_RS_EXPORT const std::vector<CXX_TYPE>                                                  \
-       *cxxbridge1$unique_ptr$std$vector$##RUST_TYPE##$get(                     \
-           const std::unique_ptr<std::vector<CXX_TYPE>> &ptr) noexcept {        \
+-  const std::vector<CXX_TYPE> *                                                \
++  CXX_RS_EXPORT const std::vector<CXX_TYPE> *                                                \
+   cxxbridge1$unique_ptr$std$vector$##RUST_TYPE##$get(                          \
+       const std::unique_ptr<std::vector<CXX_TYPE>> &ptr) noexcept {            \
      return ptr.get();                                                          \
    }                                                                            \
--  std::vector<CXX_TYPE>                                                        \
-+  CXX_RS_EXPORT std::vector<CXX_TYPE>                                                        \
-       *cxxbridge1$unique_ptr$std$vector$##RUST_TYPE##$release(                 \
-           std::unique_ptr<std::vector<CXX_TYPE>> &ptr) noexcept {              \
+-  std::vector<CXX_TYPE> *                                                      \
++  CXX_RS_EXPORT std::vector<CXX_TYPE> *                                                      \
+   cxxbridge1$unique_ptr$std$vector$##RUST_TYPE##$release(                      \
+       std::unique_ptr<std::vector<CXX_TYPE>> &ptr) noexcept {                  \
      return ptr.release();                                                      \
    }                                                                            \
 -  void cxxbridge1$unique_ptr$std$vector$##RUST_TYPE##$drop(                    \
@@ -290,7 +290,7 @@ index f93d46b89da4e..f79cf34adf827 100644
                                                    std::size_t len) noexcept;
  
  #define RUST_VEC_OPS(RUST_TYPE, CXX_TYPE)                                      \
-@@ -761,56 +782,56 @@ static_assert(sizeof(std::string) <= kMaxExpectedWordsInString * sizeof(void *),
+@@ -773,56 +794,56 @@ static_assert(sizeof(std::string) <= kMaxExpectedWordsInString * sizeof(void *),
  #define SHARED_PTR_OPS(RUST_TYPE, CXX_TYPE)                                    \
    static_assert(sizeof(std::shared_ptr<CXX_TYPE>) == 2 * sizeof(void *), "");  \
    static_assert(alignof(std::shared_ptr<CXX_TYPE>) == alignof(void *), "");    \
@@ -359,5 +359,5 @@ index f93d46b89da4e..f79cf34adf827 100644
      self->~weak_ptr();                                                         \
    }
 -- 
-2.51.0.355.g5224444f11-goog
+2.55.0.1032.g73a4cd73de-goog
 

@@ -9,13 +9,16 @@ bazel_dep(name = "bazel_features", version = "1.50.0")
 bazel_dep(name = "bazel_skylib", version = "1.8.2")
 bazel_dep(name = "platforms", version = "1.1.0")
 bazel_dep(name = "rules_cc", version = "0.2.17")
-bazel_dep(name = "rules_rust", version = "0.73.0")
+bazel_dep(name = "rules_rust", version = "0.74.0")
 
-rust = use_extension("@rules_rust//rust:extensions.bzl", "rust")
-rust.toolchain(versions = ["1.97.1"])
+rust = use_extension("@rules_rust//rust:extensions.bzl", "rust", dev_dependency = True)
+rust.toolchain(versions = ["1.98.1"])
 use_repo(rust, "rust_toolchains")
 
-register_toolchains("@rust_toolchains//:all")
+register_toolchains(
+    "@rust_toolchains//:all",
+    dev_dependency = True,
+)
 
 crate_repositories = use_extension("//tools/bazel:extension.bzl", "crate_repositories")
 use_repo(crate_repositories, "crates.io", "vendor")

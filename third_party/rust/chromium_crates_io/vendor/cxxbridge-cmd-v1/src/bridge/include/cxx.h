@@ -277,12 +277,6 @@ private:
   void *pos;
   std::size_t stride;
 };
-
-#if __cplusplus >= 202002L
-static_assert(std::ranges::contiguous_range<rust::Slice<const uint8_t>>);
-static_assert(std::contiguous_iterator<rust::Slice<const uint8_t>::iterator>);
-#endif
-
 #endif // CXXBRIDGE1_RUST_SLICE
 
 #ifndef CXXBRIDGE1_RUST_BOX
@@ -1147,3 +1141,14 @@ struct IsRelocatable
 
 } // namespace cxxbridge1
 } // namespace rust
+
+#if __cplusplus >= 202002L
+namespace std {
+namespace ranges {
+template <typename T>
+constexpr bool enable_borrowed_range<rust::Slice<T>> = true;
+template <typename T>
+constexpr bool enable_view<rust::Slice<T>> = true;
+} // namespace ranges
+} // namespace std
+#endif

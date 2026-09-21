@@ -115,14 +115,12 @@ headers `include!`'d by your cxx::bridge.
 The template signature is required to be:
 
 ```cpp
-namespace rust {
-namespace behavior {
+namespace rust::behavior {
 
 template <typename Try, typename Fail>
 static void trycatch(Try &&func, Fail &&fail) noexcept;
 
-} // namespace behavior
-} // namespace rust
+} // namespace rust::behavior
 ```
 
 The default `trycatch` used by CXX if you have not provided your own is the
@@ -133,8 +131,7 @@ you'd like for the Rust error to have.
 ```cpp,hidelines=...
 ...#include <exception>
 ...
-...namespace rust {
-...namespace behavior {
+...namespace rust::behavior {
 ...
 template <typename Try, typename Fail>
 static void trycatch(Try &&func, Fail &&fail) noexcept try {
@@ -143,6 +140,5 @@ static void trycatch(Try &&func, Fail &&fail) noexcept try {
   fail(e.what());
 }
 ...
-...} // namespace behavior
-...} // namespace rust
+...} // namespace rust::behavior
 ```
