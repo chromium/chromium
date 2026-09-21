@@ -380,6 +380,11 @@
 #include "content/browser/renderer_host/popup_menu_helper_mac.h"
 #endif
 
+#if BUILDFLAG(IS_POSIX)
+#include <signal.h>
+#include <sys/wait.h>
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
 #endif
@@ -17611,9 +17616,20 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
         reason = "oom";
       } else if (is_unresponsive) {
         reason = "unresponsive";
+      } else if (exit_code == RESULT_CODE_KILLED_BAD_MESSAGE
+#if BUILDFLAG(IS_POSIX)
+                 || (WIFSIGNALED(exit_code) && WTERMSIG(exit_code) == SIGKILL)
+#endif
+      ) {
+        // On POSIX, bad-message kills, kernel OOM kills, and
+        // GetKnownDeadTerminationStatus() races terminate the process with
+        // SIGKILL (mapping to TERMINATION_STATUS_PROCESS_WAS_KILLED). Report
+        // these as generic crashes with no reason.
       } else {
-        // A kill that is neither OOM nor unresponsive is an intentional
-        // termination and should not be reported.
+        // A kill that is neither OOM, unresponsive, nor a forced SIGKILL /
+        // bad-message termination (such as a manual kill via the Task Manager,
+        // which sends SIGTERM on POSIX or RESULT_CODE_KILLED on Windows) is an
+        // intentional termination and should not be reported.
         return;
       }
       break;
@@ -17621,6 +17637,9 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
     case base::TERMINATION_STATUS_EVICTED_FOR_MEMORY:
 #if BUILDFLAG(IS_CHROMEOS)
     case base::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM:
+      if (exit_code == RESULT_CODE_KILLED_BAD_MESSAGE) {
+        break;
+      }
 #endif
 #if BUILDFLAG(IS_ANDROID)
     case base::TERMINATION_STATUS_OOM_PROTECTED:

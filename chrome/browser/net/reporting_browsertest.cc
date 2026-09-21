@@ -16,12 +16,15 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
+#include "chrome/browser/task_manager/task_manager_browsertest_util.h"
+#include "chrome/browser/task_manager/task_manager_tester.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -815,6 +818,176 @@ IN_PROC_BROWSER_TEST_P(CrashReportingBrowserTest,
   EXPECT_EQ(reason, nullptr);
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+IN_PROC_BROWSER_TEST_P(CrashReportingBrowserTest,
+                       DISABLED_ON_ASAN(CrashReportKilledBadMessage)) {
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  GURL main_url = server()->GetURL(
+      kReportingHost, "/set-header?" + GetAppropriateReportingHeader());
+  EXPECT_TRUE(NavigateToURL(contents, main_url));
+
+  content::RenderFrameHost* frame = contents->GetPrimaryMainFrame();
+  ASSERT_TRUE(frame);
+
+  content::RenderProcessHost* rph = frame->GetProcess();
+  content::RenderProcessHostWatcher watcher(
+      rph, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+
+  content::ScopedAllowRendererCrashes allow_renderer_crashes(contents);
+  EXPECT_TRUE(rph->Shutdown(content::RESULT_CODE_KILLED_BAD_MESSAGE));
+  watcher.Wait();
+  EXPECT_FALSE(watcher.did_exit_normally());
+  EXPECT_TRUE(contents->IsCrashed());
+
+  upload_response()->WaitForRequest();
+  base::ListValue response =
+      ParseReportUpload(upload_response()->http_request()->content);
+  ASSERT_FALSE(response.empty());
+  upload_response()->Send("HTTP/1.1 200 OK\r\n");
+  upload_response()->Send("\r\n");
+  upload_response()->Done();
+
+  // Verify that the crash report was generated with no reason.
+  const base::DictValue& report = response.begin()->GetDict();
+  const std::string* type = report.FindString("type");
+  const std::string* url = report.FindString("url");
+  const base::DictValue* body = report.FindDict("body");
+  ASSERT_NE(body, nullptr);
+  const std::string* reason = body->FindString("reason");
+
+  ASSERT_NE(type, nullptr);
+  EXPECT_EQ("crash", *type);
+
+  ASSERT_NE(url, nullptr);
+  EXPECT_EQ(*url, main_url.spec());
+
+  EXPECT_EQ(reason, nullptr);
+}
+
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_P(CrashReportingBrowserTest,
+                       DISABLED_ON_ASAN(CrashReportProcessWasKilledBySigkill)) {
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  GURL main_url = server()->GetURL(
+      kReportingHost, "/set-header?" + GetAppropriateReportingHeader());
+  EXPECT_TRUE(NavigateToURL(contents, main_url));
+
+  content::RenderFrameHost* frame = contents->GetPrimaryMainFrame();
+  ASSERT_TRUE(frame);
+
+  content::RenderProcessHost* rph = frame->GetProcess();
+  content::RenderProcessHostWatcher watcher(
+      rph, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+
+  content::ScopedAllowRendererCrashes allow_renderer_crashes(contents);
+  ASSERT_EQ(0, kill(rph->GetProcess().Pid(), SIGKILL));
+  watcher.Wait();
+  EXPECT_FALSE(watcher.did_exit_normally());
+  EXPECT_TRUE(contents->IsCrashed());
+
+  upload_response()->WaitForRequest();
+  base::ListValue response =
+      ParseReportUpload(upload_response()->http_request()->content);
+  ASSERT_FALSE(response.empty());
+  upload_response()->Send("HTTP/1.1 200 OK\r\n");
+  upload_response()->Send("\r\n");
+  upload_response()->Done();
+
+  // Verify that the crash report was generated with no reason.
+  const base::DictValue& report = response.begin()->GetDict();
+  const std::string* type = report.FindString("type");
+  const std::string* url = report.FindString("url");
+  const base::DictValue* body = report.FindDict("body");
+  ASSERT_NE(body, nullptr);
+  const std::string* reason = body->FindString("reason");
+
+  ASSERT_NE(type, nullptr);
+  EXPECT_EQ("crash", *type);
+
+  ASSERT_NE(url, nullptr);
+  EXPECT_EQ(*url, main_url.spec());
+
+  EXPECT_EQ(reason, nullptr);
+}
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_CHROMEOS)
+
+IN_PROC_BROWSER_TEST_P(CrashReportingBrowserTest,
+                       DISABLED_ON_ASAN(NoCrashReportForTaskManagerKill)) {
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  GURL killed_url = server()->GetURL(
+      kReportingHost,
+      "/set-header?" + GetAppropriateReportingHeader() + "&killed");
+  EXPECT_TRUE(NavigateToURL(contents, killed_url));
+
+  auto tester =
+      task_manager::TaskManagerTester::Create(base::RepeatingClosure());
+  ASSERT_NO_FATAL_FAILURE(
+      task_manager::browsertest_util::WaitForTaskManagerRows(
+          1, task_manager::browsertest_util::MatchAnyTab()));
+
+  SessionID tab_id = sessions::SessionTabHelper::IdForTab(contents);
+  std::optional<size_t> tab_row;
+  for (size_t i = 0; i < tester->GetRowCount(); ++i) {
+    if (tester->GetTabId(i) == tab_id) {
+      tab_row = i;
+      break;
+    }
+  }
+  ASSERT_TRUE(tab_row.has_value());
+
+  content::RenderProcessHost* rph =
+      contents->GetPrimaryMainFrame()->GetProcess();
+  content::RenderProcessHostWatcher watcher(
+      rph, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+
+  content::ScopedAllowRendererCrashes allow_renderer_crashes(contents);
+  tester->Kill(*tab_row);
+  watcher.Wait();
+  EXPECT_FALSE(watcher.did_exit_normally());
+  EXPECT_TRUE(contents->IsCrashed());
+
+  // Crash report delivery is asynchronous across the NetworkContext Mojo pipe
+  // and the subsequent HTTP POST to `upload_response()`, so asserting
+  // immediately after `watcher.Wait()` could pass before a queued report
+  // arrives, while calling `upload_response()->WaitForRequest()` directly would
+  // hang when no report is sent.
+  //
+  // To deterministically flush the reporting pipeline without arbitrary sleeps,
+  // navigate to a second reporting-enabled page on the same endpoint and
+  // trigger a real crash. Any report queued for `killed_url` would either
+  // arrive at `upload_response()` first or be batched into the same upload
+  // payload.
+  GURL crashed_url = server()->GetURL(
+      kReportingHost,
+      "/set-header?" + GetAppropriateReportingHeader() + "&crashed");
+  EXPECT_TRUE(NavigateToURL(contents, crashed_url));
+
+  content::SimulateOOMPrimaryMainFrameAndWaitForExit(contents);
+
+  upload_response()->WaitForRequest();
+  base::ListValue response =
+      ParseReportUpload(upload_response()->http_request()->content);
+  ASSERT_EQ(1u, response.size());
+  upload_response()->Send("HTTP/1.1 200 OK\r\n");
+  upload_response()->Send("\r\n");
+  upload_response()->Done();
+
+  const base::DictValue& report = response.begin()->GetDict();
+  const std::string* type = report.FindString("type");
+  const std::string* url = report.FindString("url");
+
+  ASSERT_NE(type, nullptr);
+  EXPECT_EQ("crash", *type);
+
+  ASSERT_NE(url, nullptr);
+  EXPECT_EQ(crashed_url.spec(), *url);
+}
 
 IN_PROC_BROWSER_TEST_P(
     CrashReportingBrowserTest,
