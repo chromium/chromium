@@ -17,6 +17,7 @@
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(AppMenuActionItem::DisplayType)
 DEFINE_UI_CLASS_PROPERTY_TYPE(AppMenuActionItem::ItemHeight)
+DEFINE_UI_CLASS_PROPERTY_TYPE(const base::Feature*)
 DEFINE_UI_CLASS_PROPERTY_TYPE(ui::ImageModel*)
 DEFINE_UI_CLASS_PROPERTY_TYPE(ui::MenuSeparatorType)
 
@@ -36,6 +37,9 @@ DEFINE_UI_CLASS_PROPERTY_KEY(bool, kAppMenuIsCheckableInternal, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(AppMenuActionItem::ItemHeight,
                              kAppMenuItemHeightInternal,
                              AppMenuActionItem::ItemHeight::kDefault)
+DEFINE_UI_CLASS_PROPERTY_KEY(const base::Feature*,
+                             kAppMenuNewBadgeFeatureInternal,
+                             nullptr)
 
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::u16string, kAppMenuTextOverrideInternal)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ui::ImageModel, kAppMenuIconOverrideInternal)
@@ -73,6 +77,9 @@ const ui::ClassProperty<bool>* const AppMenuActionItem::kIsCheckableKey =
 const ui::ClassProperty<AppMenuActionItem::ItemHeight>* const
     AppMenuActionItem::kItemHeightKey = kAppMenuItemHeightInternal;
 
+const ui::ClassProperty<const base::Feature*>* const
+    AppMenuActionItem::kNewBadgeFeatureKey = kAppMenuNewBadgeFeatureInternal;
+
 std::unique_ptr<actions::IndirectActionItem> AppMenuActionItem::CreateIndirect(
     actions::ActionId action_id,
     actions::ActionItem* scope,
@@ -97,6 +104,8 @@ std::unique_ptr<actions::IndirectActionItem> AppMenuActionItem::CreateIndirect(
   if (params.item_height.has_value()) {
     action->SetProperty(kItemHeightKey, params.item_height.value());
   }
+
+  action->SetProperty(kNewBadgeFeatureKey, params.new_badge_feature.get());
 
   auto item = std::make_unique<actions::IndirectActionItem>(action);
 

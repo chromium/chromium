@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/app_menu/action_app_menu.h"
 
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_action_properties.h"
 #include "chrome/browser/ui/browser_actions.h"
@@ -11,6 +12,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_block_view.h"
@@ -19,6 +21,7 @@
 #include "chrome/browser/ui/views/app_menu/app_menu_search_bar_view.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_zoom_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/user_education/user_education_service.h"
 #include "ui/actions/actions.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
@@ -52,6 +55,16 @@ ui::ImageModel StandardizeMenuIconSize(const ui::ImageModel& icon) {
     }
   }
   return icon;
+}
+
+bool ShouldShowNewBadge(BrowserWindowInterface* browser_window_interface,
+                        const base::Feature& feature) {
+  if (auto* const user_education =
+          BrowserUserEducationInterface::From(browser_window_interface)) {
+    return user_education->MaybeShowNewBadgeFor(feature);
+  }
+  return UserEducationService::MaybeShowNewBadge(
+      browser_window_interface->GetProfile(), feature);
 }
 
 bool ShouldRoundBottomCorners(size_t index,
@@ -373,6 +386,15 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
   if (std::u16string* chip_text =
           child_base->GetProperty(AppMenuActionItem::kChipTextKey)) {
     AppMenuChipView::AttachTo(menu_item, *chip_text);
+  }
+
+  if (const base::Feature* new_badge_feature =
+          action_item->GetProperty(AppMenuActionItem::kNewBadgeFeatureKey)) {
+    const bool show_new_badge =
+        ShouldShowNewBadge(browser_window_interface_, *new_badge_feature);
+    menu_item->set_new_badge_type(
+        show_new_badge ? std::make_optional(ui::NewBadgeType::kNew)
+                       : std::nullopt);
   }
 
   const auto* provider = ChromeLayoutProvider::Get();

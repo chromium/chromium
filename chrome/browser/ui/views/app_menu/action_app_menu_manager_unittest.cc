@@ -12,6 +12,8 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
+#include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/mock_vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_test_base.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
 #include "chrome/grit/branded_strings.h"
@@ -533,5 +535,40 @@ TEST_F(ActionAppMenuManagerTest, NotificationHeaderDefaultBrowserPrompt) {
             ui::kColorAppMenuUpgradeRowBackground);
 }
 #endif
+
+TEST_F(ActionAppMenuManagerTest, VerticalTabsNewBadgeProperty) {
+  tabs::test::MockVerticalTabStripStateController vertical_tabs_controller(
+      mock_window_interface_);
+
+  EXPECT_CALL(vertical_tabs_controller, ShouldDisplayVerticalTabs())
+      .WillOnce(testing::Return(false));
+
+  ActionAppMenuManager menu_manager(&mock_window_interface_);
+  menu_manager.CreateMenuHierarchy();
+
+  actions::ActionItem* root = menu_manager.GetAppMenuRoot();
+  ASSERT_NE(root, nullptr);
+
+  actions::ActionItem* toggle_vertical_tabs =
+      actions::ActionManager::Get().FindAction(kActionToggleVerticalTabs, root);
+  ASSERT_NE(toggle_vertical_tabs, nullptr);
+  EXPECT_EQ(
+      toggle_vertical_tabs->GetProperty(AppMenuActionItem::kNewBadgeFeatureKey),
+      &tabs::kVerticalTabsNewBadge);
+
+  // When vertical tabs are already displayed, the new badge feature should not
+  // be set.
+  root->ResetActionList();
+  EXPECT_CALL(vertical_tabs_controller, ShouldDisplayVerticalTabs())
+      .WillOnce(testing::Return(true));
+  menu_manager.CreateMenuHierarchy();
+
+  toggle_vertical_tabs =
+      actions::ActionManager::Get().FindAction(kActionToggleVerticalTabs, root);
+  ASSERT_NE(toggle_vertical_tabs, nullptr);
+  EXPECT_EQ(
+      toggle_vertical_tabs->GetProperty(AppMenuActionItem::kNewBadgeFeatureKey),
+      nullptr);
+}
 
 }  // namespace

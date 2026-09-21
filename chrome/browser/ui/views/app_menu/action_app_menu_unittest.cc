@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_test_base.h"
@@ -43,6 +44,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/user_education/mock_browser_user_education_interface.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/common/bookmark_bar_visibility_state.h"
@@ -1850,10 +1852,42 @@ TEST_F(ActionAppMenuTest, DefaultBrowserNotificationHiddenWhenInvisible) {
   ASSERT_TRUE(block_margins);
   EXPECT_EQ(*block_margins, ChromeLayoutProvider::Get()->GetInsetsMetric(
                                 INSETS_ACTION_APP_MENU_BLOCK_MARGIN));
+}
+#endif
+
+TEST_F(ActionAppMenuTest, MenuItemNewBadgeProperty) {
+  MockBrowserUserEducationInterface user_education(&mock_window_interface_);
+  EXPECT_CALL(user_education,
+              MaybeShowNewBadgeFor(testing::Ref(tabs::kVerticalTabsNewBadge)))
+      .WillOnce(testing::Return(
+          user_education::DisplayNewBadge::create_for_test(true)));
+
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  actions::ActionItem* print_action = actions::ActionManager::Get().FindAction(
+      kActionPrint, browser_actions_->root_action_item());
+  ASSERT_NE(print_action, nullptr);
+  print_action->SetProperty(AppMenuActionItem::kNewBadgeFeatureKey,
+                            &tabs::kVerticalTabsNewBadge);
+
+  menu.RunMenu(button_->button_controller());
+  EXPECT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  views::MenuItemView* print_item = root->GetMenuItemByID(kActionPrint);
+  ASSERT_TRUE(print_item);
+  EXPECT_EQ(print_item->new_badge_type(), ui::NewBadgeType::kNew);
+
+  views::MenuItemView* downloads_item =
+      root->GetMenuItemByID(kActionShowDownloadsPage);
+  ASSERT_TRUE(downloads_item);
+  EXPECT_EQ(downloads_item->new_badge_type(), std::nullopt);
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
 }
-#endif
 
 }  // namespace

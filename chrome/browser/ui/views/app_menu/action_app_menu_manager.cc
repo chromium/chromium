@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
@@ -63,12 +64,14 @@
 #include "chrome/browser/ui/views/app_menu/tab_group_dynamic_menu.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/common/bookmark_bar_visibility_state.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
+#include "components/lens/lens_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "components/send_tab_to_self/entry_point_display_reason.h"
@@ -244,10 +247,13 @@ class AppMenuBuilder {
       actions::ActionId id,
       actions::BaseAction::PopulateChildActions populate_callback,
       std::optional<base::FunctionRef<void(AppMenuBuilder&)>> build_submenu =
-          std::nullopt) {
-    auto item = AppMenuActionItem::CreateIndirect(
-        id, scope_,
-        {.display_type = default_display_type_, .container_color = bg_color_});
+          std::nullopt,
+      AppMenuActionItem::ActionParams params = {}) {
+    if (!params.container_color.has_value()) {
+      params.container_color = bg_color_;
+    }
+    auto item =
+        AppMenuActionItem::CreateIndirect(id, scope_, std::move(params));
     if (!item || !parent_) {
       return *this;
     }
@@ -557,13 +563,17 @@ void ActionAppMenuManager::AddToolsAndActionsActions(
         Profile* profile = browser_window_interface_->GetProfile();
 
         if (glic::GlicEnabling::IsEnabledForProfile(profile)) {
-          section.AddAction(kActionOpenGlic);
+          section.AddAction(
+              kActionOpenGlic,
+              {.new_badge_feature = &features::kGlicAppMenuNewBadge});
         }
 
         if (auto* controller = lens::LensOverlayEntryPointController::From(
                 browser_window_interface_);
             controller && controller->IsEnabled()) {
-          section.AddAction(kActionShowLensOverlayFromAppMenu);
+          section.AddAction(
+              kActionShowLensOverlayFromAppMenu,
+              {.new_badge_feature = &lens::features::kLensOverlay});
         }
 
         section.AddAction(kActionShowTranslate);
@@ -647,7 +657,11 @@ void ActionAppMenuManager::AddToolsAndActionsActions(
                         base::BindRepeating(
                             &SendTabToSelfDynamicMenu::
                                 BuildSendTabToSelfActions,
-                            send_tab_to_self_menu_->GetWeakPtr()));
+                            send_tab_to_self_menu_->GetWeakPtr()),
+                        /*build_submenu=*/std::nullopt,
+                        {.new_badge_feature =
+                             &send_tab_to_self::
+                                 kSendTabToSelfEnhancedDesktopUIv2});
                   } else {
                     sub.AddAction(kActionSendTabToSelf);
                   }
@@ -718,7 +732,8 @@ void ActionAppMenuManager::AddToolsAndActionsActions(
                                                   ? kDockToRightIcon
                                                   : kDockToLeftOldIcon),
                        ui::kColorMenuIcon,
-                       ui::SimpleMenuModel::kDefaultIconSize)});
+                       ui::SimpleMenuModel::kDefaultIconSize),
+                   .new_badge_feature = &tabs::kVerticalTabsNewBadge});
             }
           }
 
