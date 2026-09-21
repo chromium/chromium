@@ -25,7 +25,8 @@ class StreamInfo {
  public:
   StreamInfo(const std::string& embed_internal_id,
              std::unique_ptr<StreamContainer> stream_container,
-             std::unique_ptr<MimeHandlerStreamDelegate> delegate);
+             std::unique_ptr<MimeHandlerStreamDelegate> delegate,
+             int64_t navigation_id);
 
   StreamInfo(const StreamInfo&) = delete;
   StreamInfo& operator=(const StreamInfo&) = delete;
@@ -35,6 +36,8 @@ class StreamInfo {
   ~StreamInfo();
 
   const std::string& internal_id() const { return internal_id_; }
+
+  int64_t navigation_id() const { return navigation_id_; }
 
   StreamContainer* stream() { return stream_.get(); }
   const StreamContainer* stream() const { return stream_.get(); }
@@ -95,6 +98,9 @@ class StreamInfo {
 
   // Non-null. MIME-type-specific delegate for this stream.
   const std::unique_ptr<MimeHandlerStreamDelegate> delegate_;
+
+  // Navigation whose intercepted response created this stream.
+  const int64_t navigation_id_;
 
   // True if the extension host has finished navigating to the
   // extension URL.

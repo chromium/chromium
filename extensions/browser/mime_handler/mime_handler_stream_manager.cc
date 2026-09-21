@@ -196,7 +196,8 @@ void MimeHandlerStreamManager::AddStreamContainer(
     content::FrameTreeNodeId frame_tree_node_id,
     const std::string& internal_id,
     std::unique_ptr<StreamContainer> stream_container,
-    std::unique_ptr<MimeHandlerStreamDelegate> delegate) {
+    std::unique_ptr<MimeHandlerStreamDelegate> delegate,
+    int64_t navigation_id) {
   CHECK(stream_container);
   CHECK(delegate);
 
@@ -209,7 +210,8 @@ void MimeHandlerStreamManager::AddStreamContainer(
   // handler refreshes or navigates to another handled URL.
   auto embedder_host_info = GetUnclaimedEmbedderHostInfo(frame_tree_node_id);
   stream_infos_[embedder_host_info] = std::make_unique<extensions::StreamInfo>(
-      internal_id, std::move(stream_container), std::move(delegate));
+      internal_id, std::move(stream_container), std::move(delegate),
+      navigation_id);
 }
 
 base::WeakPtr<StreamContainer> MimeHandlerStreamManager::GetStreamContainer(

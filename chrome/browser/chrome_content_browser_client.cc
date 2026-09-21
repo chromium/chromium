@@ -6112,8 +6112,15 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
   }
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-  result.push_back(std::make_unique<PluginResponseInterceptorURLLoaderThrottle>(
-      request.destination, frame_tree_node_id));
+  // MIME handler interception replaces the response with a document load,
+  // so only a navigation request may be intercepted; the navigation ID is
+  // present exactly for those. Browser-side preloads and other
+  // non-navigation requests pass through untouched.
+  if (navigation_id.has_value()) {
+    result.push_back(
+        std::make_unique<PluginResponseInterceptorURLLoaderThrottle>(
+            request.destination, frame_tree_node_id, navigation_id.value()));
+  }
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

@@ -135,12 +135,19 @@ class NoopURLLoader final : public network::mojom::URLLoader {
 PluginResponseInterceptorURLLoaderThrottle::
     PluginResponseInterceptorURLLoaderThrottle(
         network::mojom::RequestDestination request_destination,
-        content::FrameTreeNodeId frame_tree_node_id)
+        content::FrameTreeNodeId frame_tree_node_id,
+        int64_t navigation_id)
     : request_destination_(request_destination),
-      frame_tree_node_id_(frame_tree_node_id) {}
+      frame_tree_node_id_(frame_tree_node_id),
+      navigation_id_(navigation_id) {}
 
 PluginResponseInterceptorURLLoaderThrottle::
     ~PluginResponseInterceptorURLLoaderThrottle() = default;
+
+const char* PluginResponseInterceptorURLLoaderThrottle::
+    NameForLoggingWillProcessResponse() {
+  return "PluginResponseInterceptorURLLoaderThrottle";
+}
 
 void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
     const GURL& response_url,
@@ -420,8 +427,8 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
       base::BindOnce(
           &extensions::mime_handlers::SendExecuteMimeTypeHandlerEvent,
           extension_id, stream_id, embedded, frame_tree_node_id_,
-          std::move(transferrable_loader), response_url, internal_id,
-          original_mime_type, std::move(body_cache)));
+          navigation_id_, std::move(transferrable_loader), response_url,
+          internal_id, original_mime_type, std::move(body_cache)));
 
   if (use_oopif_path) {
     // Schedule `ResumeLoad()` for after the SendExecuteMimeTypeHandlerEvent()

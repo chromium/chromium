@@ -14,10 +14,12 @@ namespace extensions {
 
 StreamInfo::StreamInfo(const std::string& embed_internal_id,
                        std::unique_ptr<StreamContainer> stream_container,
-                       std::unique_ptr<MimeHandlerStreamDelegate> delegate)
+                       std::unique_ptr<MimeHandlerStreamDelegate> delegate,
+                       int64_t navigation_id)
     : internal_id_(embed_internal_id),
       stream_(std::move(stream_container)),
-      delegate_(std::move(delegate)) {
+      delegate_(std::move(delegate)),
+      navigation_id_(navigation_id) {
   CHECK(delegate_);
   // Make sure 0 is never used because some APIs
   // (particularly WebRequest) have special meaning for 0 IDs.

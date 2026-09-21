@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_MIME_HANDLERS_DISPATCH_MIME_HANDLER_EVENT_H_
 #define CHROME_BROWSER_EXTENSIONS_API_MIME_HANDLERS_DISPATCH_MIME_HANDLER_EVENT_H_
 
+#include <cstdint>
 #include <memory>
 #include <string>
 
@@ -24,8 +25,10 @@ namespace mime_handlers {
 // per-type URLs for generic (third-party) handlers. A non-empty `stream_id`
 // identifies the created stream for legacy GuestView-based handlers.
 // `embedded` indicates whether the document is embedded, and
-// `frame_tree_node_id` identifies the target frame. `body_cache`, when
-// non-null, is attached to the resulting StreamContainer so a later
+// `frame_tree_node_id` identifies the target frame. `navigation_id`
+// identifies the navigation whose response was intercepted and is recorded
+// on the stream. `body_cache`, when non-null, is attached to the resulting
+// StreamContainer so a later
 // chrome.mimeHandler.abortAndFallbackToNativeHandler() call can replay the
 // cached response body on reload instead of reading it from the network.
 void SendExecuteMimeTypeHandlerEvent(
@@ -33,6 +36,7 @@ void SendExecuteMimeTypeHandlerEvent(
     const std::string& stream_id,
     bool embedded,
     content::FrameTreeNodeId frame_tree_node_id,
+    int64_t navigation_id,
     blink::mojom::TransferrableURLLoaderPtr transferrable_loader,
     const GURL& original_url,
     const std::string& internal_id,

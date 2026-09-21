@@ -162,7 +162,8 @@ TEST_F(ChromePermissionsClientMimeHandlerTest,
       embedder->GetFrameTreeNodeId(), "internal_id",
       extensions::mime_handler::GenerateSampleStreamContainer(1),
       std::make_unique<testing::NiceMock<
-          extensions::mime_handler::MockMimeHandlerStreamDelegate>>());
+          extensions::mime_handler::MockMimeHandlerStreamDelegate>>(),
+      extensions::mime_handler::kFakeNavigationId);
   manager->ClaimStreamInfoForTesting(embedder);
   manager->SetExtensionFrameTreeNodeIdForTesting(
       embedder, extension_host->GetFrameTreeNodeId());

@@ -146,7 +146,8 @@ class MimeHandlerStreamManagerTest : public content::RenderViewHostTestHarness {
     manager->AddStreamContainer(
         embedder_host->GetFrameTreeNodeId(), "internal_id",
         GenerateSampleStreamContainer(container_number, embedded),
-        std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
+        std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>(),
+        kFakeNavigationId);
     manager->ClaimStreamInfoForTesting(embedder_host);
   }
 
@@ -193,7 +194,8 @@ TEST_F(MimeHandlerStreamManagerTest, AddAndGetStreamContainer) {
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(
       frame_tree_node_id, "internal_id", GenerateSampleStreamContainer(1),
-      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>(),
+      kFakeNavigationId);
   EXPECT_TRUE(manager->ContainsUnclaimedStreamInfo(frame_tree_node_id));
   manager->ClaimStreamInfoForTesting(embedder_host);
 
@@ -225,7 +227,7 @@ TEST_F(MimeHandlerStreamManagerTest, ShouldFilterResponseHeadersForHandler) {
     MimeHandlerStreamManager* manager = mime_handler_stream_manager();
     manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
                                 "internal_id", GenerateSampleStreamContainer(1),
-                                std::move(delegate));
+                                std::move(delegate), kFakeNavigationId);
     manager->ClaimStreamInfoForTesting(embedder_host);
 
     EXPECT_EQ(should_filter,
@@ -245,7 +247,7 @@ TEST_F(MimeHandlerStreamManagerTest, ExtensionFrameGetsFilteredResponseHead) {
   manager->AddStreamContainer(
       embedder_host->GetFrameTreeNodeId(), "internal_id",
       MakeStreamContainerWithAuthTokenHeader(),
-      std::make_unique<GenericMimeHandlerStreamDelegate>());
+      std::make_unique<GenericMimeHandlerStreamDelegate>(), kFakeNavigationId);
   manager->ClaimStreamInfoForTesting(embedder_host);
   manager->SetExtensionFrameTreeNodeIdForTesting(
       embedder_host, extension_host->GetFrameTreeNodeId());
@@ -290,7 +292,7 @@ TEST_F(MimeHandlerStreamManagerTest, FilteredStreamNeverReachesContentFrame) {
   manager->AddStreamContainer(
       embedder_host->GetFrameTreeNodeId(), "internal_id",
       MakeStreamContainerWithAuthTokenHeader(),
-      std::make_unique<GenericMimeHandlerStreamDelegate>());
+      std::make_unique<GenericMimeHandlerStreamDelegate>(), kFakeNavigationId);
   manager->ClaimStreamInfoForTesting(embedder_host);
 
   NiceMock<content::MockNavigationHandle> navigation_handle(GURL(kOriginalUrl1),
@@ -312,10 +314,12 @@ TEST_F(MimeHandlerStreamManagerTest,
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(
       frame_tree_node_id, "internal_id1", GenerateSampleStreamContainer(1),
-      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>(),
+      kFakeNavigationId);
   manager->AddStreamContainer(
       frame_tree_node_id, "internal_id2", GenerateSampleStreamContainer(2),
-      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>(),
+      kFakeNavigationId);
   manager->ClaimStreamInfoForTesting(embedder_host);
 
   base::WeakPtr<StreamContainer> result =
@@ -563,7 +567,8 @@ TEST_F(MimeHandlerStreamManagerTest, DeleteUnclaimedStreamInfo) {
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(
       frame_tree_node_id, "internal_id", GenerateSampleStreamContainer(1),
-      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>(),
+      kFakeNavigationId);
   EXPECT_FALSE(manager->GetStreamContainer(unclaimed_embedder_host));
 
   manager->DeleteUnclaimedStreamInfo(frame_tree_node_id);
@@ -601,7 +606,8 @@ TEST_F(MimeHandlerStreamManagerTest, RenderFrameDeletedWithUnclaimedStream) {
   manager->AddStreamContainer(
       actual_host->GetFrameTreeNodeId(), "internal_id",
       GenerateSampleStreamContainer(1),
-      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>(),
+      kFakeNavigationId);
 
   // The stream hasn't been claimed, so the stream container can't be retrieved.
   ASSERT_FALSE(manager->GetStreamContainer(actual_host));
@@ -773,7 +779,7 @@ TEST_F(MimeHandlerStreamManagerTest,
   auto* delegate_ptr = delegate.get();
   manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
                               "internal_id", GenerateSampleStreamContainer(1),
-                              std::move(delegate));
+                              std::move(delegate), kFakeNavigationId);
   manager->ClaimStreamInfoForTesting(embedder_host);
   manager->SetExtensionFrameTreeNodeIdForTesting(
       embedder_host, extension_host->GetFrameTreeNodeId());
@@ -865,12 +871,13 @@ TEST_F(MimeHandlerStreamManagerTest,
   extensions::StreamInfo* captured_stream_info = nullptr;
   EXPECT_CALL(*delegate_ptr, OnStreamClaimed(embedder_host, _))
       .WillOnce(SaveArg<1>(&captured_stream_info));
-  manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
-                              "internal_id", GenerateSampleStreamContainer(1),
-                              std::move(delegate));
 
   NiceMock<content::MockNavigationHandle> navigation_handle;
   navigation_handle.set_render_frame_host(embedder_host);
+  manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
+                              "internal_id", GenerateSampleStreamContainer(1),
+                              std::move(delegate),
+                              navigation_handle.GetNavigationId());
   manager->ReadyToCommitNavigation(&navigation_handle);
 
   auto* stream_info = manager->GetClaimedStreamInfoForTesting(embedder_host);
@@ -888,12 +895,13 @@ TEST_F(MimeHandlerStreamManagerTest,
   auto delegate = std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>();
   auto* delegate_ptr = delegate.get();
   EXPECT_CALL(*delegate_ptr, OnStreamClaimed(_, _)).Times(0);
-  manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
-                              "internal_id", GenerateSampleStreamContainer(1),
-                              std::move(delegate));
 
   NiceMock<content::MockNavigationHandle> navigation_handle;
   navigation_handle.set_render_frame_host(unrelated_host);
+  manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
+                              "internal_id", GenerateSampleStreamContainer(1),
+                              std::move(delegate),
+                              navigation_handle.GetNavigationId());
   manager->ReadyToCommitNavigation(&navigation_handle);
 
   EXPECT_TRUE(manager->ContainsUnclaimedStreamInfo(
@@ -905,14 +913,15 @@ TEST_F(MimeHandlerStreamManagerTest, ReadyToCommitNavigationClaimAndReplace) {
   content::RenderFrameHost* embedder_host =
       NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
+  NiceMock<content::MockNavigationHandle> navigation_handle1;
+  navigation_handle1.set_render_frame_host(embedder_host);
+
   manager->AddStreamContainer(
       embedder_host->GetFrameTreeNodeId(), "internal_id",
       GenerateSampleStreamContainer(1),
-      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>(),
+      navigation_handle1.GetNavigationId());
   EXPECT_FALSE(manager->GetStreamContainer(embedder_host));
-
-  NiceMock<content::MockNavigationHandle> navigation_handle1;
-  navigation_handle1.set_render_frame_host(embedder_host);
 
   // The initial load should cause the embedder host to claim the stream.
   manager->ReadyToCommitNavigation(&navigation_handle1);
@@ -936,14 +945,15 @@ TEST_F(MimeHandlerStreamManagerTest, ReadyToCommitNavigationClaimAndReplace) {
   EXPECT_EQ(original_stream.get(), same_stream.get());
   EXPECT_TRUE(mime_handler_stream_manager());
 
+  NiceMock<content::MockNavigationHandle> navigation_handle3;
+  navigation_handle3.set_render_frame_host(embedder_host);
+
   // Re-add a duplicate stream.
   manager->AddStreamContainer(
       embedder_host->GetFrameTreeNodeId(), "internal_id",
       GenerateSampleStreamContainer(1),
-      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
-
-  NiceMock<content::MockNavigationHandle> navigation_handle3;
-  navigation_handle3.set_render_frame_host(embedder_host);
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>(),
+      navigation_handle3.GetNavigationId());
 
   // If a new stream exists for the same frame tree node ID, allow claiming the
   // new stream. This can occur if a full page MIME handler refreshes.
@@ -963,7 +973,7 @@ TEST_F(MimeHandlerStreamManagerTest,
   auto* delegate_ptr = delegate.get();
   manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
                               "internal_id", GenerateSampleStreamContainer(1),
-                              std::move(delegate));
+                              std::move(delegate), kFakeNavigationId);
   manager->ClaimStreamInfoForTesting(embedder_host);
   manager->SetExtensionFrameTreeNodeIdForTesting(
       embedder_host, extension_host->GetFrameTreeNodeId());
@@ -997,7 +1007,7 @@ TEST_P(MimeHandlerStreamManagerPostMessageTest,
   auto* delegate_ptr = delegate.get();
   manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
                               "internal_id", GenerateSampleStreamContainer(1),
-                              std::move(delegate));
+                              std::move(delegate), kFakeNavigationId);
   manager->ClaimStreamInfoForTesting(embedder_host);
   manager->SetContentFrameTreeNodeIdForTesting(
       embedder_host, content_host->GetFrameTreeNodeId());
@@ -1053,7 +1063,7 @@ TEST_F(MimeHandlerStreamManagerTest, PluginCanSave) {
   });
   manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
                               "internal_id", GenerateSampleStreamContainer(1),
-                              std::move(delegate));
+                              std::move(delegate), kFakeNavigationId);
   manager->ClaimStreamInfoForTesting(embedder_host);
   ASSERT_TRUE(manager->GetStreamContainer(embedder_host));
 
@@ -1087,7 +1097,7 @@ TEST_F(MimeHandlerStreamManagerTest, PluginCanSaveUnknownHost) {
   });
   manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
                               "internal_id", GenerateSampleStreamContainer(1),
-                              std::move(delegate));
+                              std::move(delegate), kFakeNavigationId);
   manager->ClaimStreamInfoForTesting(embedder_host);
   ASSERT_TRUE(manager->GetStreamContainer(embedder_host));
 
@@ -1116,7 +1126,7 @@ TEST_F(MimeHandlerStreamManagerTest, PluginCanSaveViaDelegate) {
   });
   manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
                               "internal_id", GenerateSampleStreamContainer(1),
-                              std::move(delegate));
+                              std::move(delegate), kFakeNavigationId);
   manager->ClaimStreamInfoForTesting(embedder_host);
   ASSERT_TRUE(manager->GetStreamContainer(embedder_host));
 
@@ -1138,7 +1148,7 @@ TEST_F(MimeHandlerStreamManagerTest, AddStreamContainerWithDelegate) {
   auto* delegate_ptr = delegate.get();
   manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
                               "internal_id", GenerateSampleStreamContainer(1),
-                              std::move(delegate));
+                              std::move(delegate), kFakeNavigationId);
   manager->ClaimStreamInfoForTesting(embedder_host);
 
   auto* stream_info = manager->GetClaimedStreamInfoForTesting(embedder_host);
@@ -1158,15 +1168,16 @@ TEST_F(MimeHandlerStreamManagerTest,
 
   auto delegate = std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>();
   auto* delegate_ptr = delegate.get();
+  NiceMock<content::MockNavigationHandle> claim_handle;
+  claim_handle.set_render_frame_host(embedder_host);
   manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
                               "internal_id", GenerateSampleStreamContainer(1),
-                              std::move(delegate));
+                              std::move(delegate),
+                              claim_handle.GetNavigationId());
 
   // The embedder's own commit (top-level, no parent frame) claims the
   // stream and must not dispatch to the extension-frame hook.
   EXPECT_CALL(*delegate_ptr, OnExtensionFrameReadyToCommit(_, _)).Times(0);
-  NiceMock<content::MockNavigationHandle> claim_handle;
-  claim_handle.set_render_frame_host(embedder_host);
   manager->ReadyToCommitNavigation(&claim_handle);
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 
@@ -1316,7 +1327,8 @@ TEST_F(MimeHandlerStreamManagerTest,
   auto* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(
       embedder_ftn, "internal_id", std::move(stream),
-      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>(),
+      kFakeNavigationId);
   manager->ClaimStreamInfoForTesting(embedder_host);
   auto* stream_info = manager->GetClaimedStreamInfoForTesting(embedder_host);
   ASSERT_TRUE(stream_info);
@@ -1372,7 +1384,8 @@ TEST_F(MimeHandlerStreamManagerTest,
   auto* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(
       embedder_ftn, "internal_id", std::move(stream),
-      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>(),
+      kFakeNavigationId);
   manager->ClaimStreamInfoForTesting(embedder_host);
   auto* stream_info = manager->GetClaimedStreamInfoForTesting(embedder_host);
   ASSERT_TRUE(stream_info);
@@ -1494,7 +1507,8 @@ TEST_F(MimeHandlerStreamManagerTest, UnloadErasesUnclaimedStream) {
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(
       frame_tree_node_id, "internal_id", std::move(stream_container),
-      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>(),
+      kFakeNavigationId);
   ASSERT_TRUE(manager->ContainsUnclaimedStreamInfo(frame_tree_node_id));
 
   TriggerOnExtensionUnloaded(extension_id, UnloadedExtensionReason::TERMINATE);

@@ -5,6 +5,8 @@
 #ifndef EXTENSIONS_BROWSER_MIME_HANDLER_MIME_HANDLER_TEST_HELPERS_H_
 #define EXTENSIONS_BROWSER_MIME_HANDLER_MIME_HANDLER_TEST_HELPERS_H_
 
+#include <cstdint>
+#include <limits>
 #include <memory>
 #include <string>
 
@@ -16,6 +18,12 @@ class StreamContainer;
 }  // namespace extensions
 
 namespace extensions::mime_handler {
+
+// A fake navigation ID that stands for a navigation that does not exist.
+// int64_t max is the safest value that is still a valid ID: no real
+// navigation is expected to carry it.
+inline constexpr int64_t kFakeNavigationId =
+    std::numeric_limits<int64_t>::max();
 
 // Generates a sample `extensions::StreamContainer` for unit tests.
 // `container_number` is used as the tab ID and appended to the extension ID

@@ -25,6 +25,7 @@
 #include "extensions/browser/mime_handler/generic_mime_handler_stream_delegate.h"
 #include "extensions/browser/mime_handler/mime_handler_stream_delegate.h"
 #include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
+#include "extensions/browser/mime_handler/mime_handler_test_helpers.h"
 #include "extensions/browser/mime_handler/mock_mime_handler_stream_delegate.h"
 #include "extensions/browser/mime_handler/stream_container.h"
 #include "extensions/common/extension.h"
@@ -119,9 +120,9 @@ ClaimedStreamSetup CreateAndSetUpClaimedStream(
       Extension::GetResourceURL(
           Extension::GetBaseURLFromExtensionId(extension_id), kHandlerPage),
       extension_id, std::move(transferrable_loader), original_url);
-  result.manager->AddStreamContainer(result.embedder->GetFrameTreeNodeId(),
-                                     "internal_id", std::move(stream),
-                                     std::move(delegate));
+  result.manager->AddStreamContainer(
+      result.embedder->GetFrameTreeNodeId(), "internal_id", std::move(stream),
+      std::move(delegate), mime_handler::kFakeNavigationId);
   result.manager->ClaimStreamInfoForTesting(result.embedder);
   return result;
 }

@@ -160,7 +160,8 @@ class PdfViewerPrivateApiUnitTest : public ChromeRenderViewHostTestHarness {
     manager->AddStreamContainer(
         embedder_host->GetFrameTreeNodeId(), "internal_id",
         extensions::mime_handler::GenerateSampleStreamContainer(1),
-        std::make_unique<pdf::PdfHandlerStreamDelegate>());
+        std::make_unique<pdf::PdfHandlerStreamDelegate>(),
+        mime_handler::kFakeNavigationId);
     manager->ClaimStreamInfoForTesting(embedder_host);
 
     // After navigation, the extension host needs to be appended again.
