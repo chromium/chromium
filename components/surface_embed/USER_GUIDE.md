@@ -8,37 +8,43 @@ directly.
 
 ---
 
-## 1. Setup in C++ (Browser Process)
+## 1. Setup in C++
 
 ### 1.1. Allow Your Frame to Use Surface-Embed
 Currently, surface-embed is only enabled for `chrome://webui-browser`. If you
 wish to allow another frame or WebUI domain to use surface-embed, you must:
 
-1. Enable the feature flag [kSurfaceEmbed](https://source.chromium.org/chromium/chromium/src/+/main:components/surface_embed/common/features.h;l=17;drc=3d12ee18ff8660d03d307fcfc4d7cfca9c793e46).
-2. Register the binder for `SurfaceEmbedHost` in [chrome_browser_interface_binders_webui_parts_desktop.cc](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/chrome_browser_interface_binders_webui_parts_desktop.cc;l=521;drc=3d12ee18ff8660d03d307fcfc4d7cfca9c793e46):
+1. Register the binder for `SurfaceEmbedHost` in
+   [chrome_content_browser_client_receiver_bindings.cc](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/chrome_content_browser_client_receiver_bindings.cc;l=426;drc=8600f0c44d101f10c0989b1d618205475f4b6aba):
    ```cpp
    #include "components/surface_embed/common/features.h"
    #include "components/surface_embed/browser/surface_embed_host.h"
 
    // ...
    if (base::FeatureList::IsEnabled(surface_embed::features::kSurfaceEmbed)) {
-     map->Add<surface_embed::mojom::SurfaceEmbedHost>(base::BindRepeating(
-         [](content::RenderFrameHost* render_frame_host,
-            mojo::PendingReceiver<surface_embed::mojom::SurfaceEmbedHost> receiver) {
-           auto* web_ui = render_frame_host->GetWebUI();
-           // Security check: only allow surface-embed in WebUIBrowserUI.
-           // Add your WebUIController here.
-           if (!web_ui || !web_ui->GetController()->GetAs<WebUIBrowserUI>()) {
-             return;
-           }
-           surface_embed::SurfaceEmbedHost::Create(render_frame_host, std::move(receiver));
-         }));
+     associated_registry.AddInterface<surface_embed::mojom::SurfaceEmbedHost>(
+         base::BindRepeating(
+             [](content::RenderFrameHost* render_frame_host,
+                mojo::PendingAssociatedReceiver<
+                    surface_embed::mojom::SurfaceEmbedHost> receiver) {
+               auto* web_ui = render_frame_host->GetWebUI();
+               // Security check: only allow surface-embed in WebUIBrowserUI.
+               // Add your WebUIController here.
+               if (!web_ui ||
+                   !web_ui->GetController()->GetAs<WebUIBrowserUI>()) {
+                 return;
+               }
+               surface_embed::SurfaceEmbedHost::Create(render_frame_host,
+                                                       std::move(receiver));
+             },
+             &render_frame_host));
    }
    ```
-3. Update [ChromeContentRendererClient::OverrideCreatePlugin](https://source.chromium.org/chromium/chromium/src/+/main:chrome/renderer/chrome_content_renderer_client.cc;l=905-906;drc=a2f4b912ddca2b52a816da8603fe23fa5d1bf5a6)
-to recognize your WebUI URL/host and allow the creation of the plugin:
+2. Update [ChromeContentRendererClient::OverrideCreatePlugin](https://source.chromium.org/chromium/chromium/src/+/main:chrome/renderer/chrome_content_renderer_client.cc;l=971;drc=6f467ee465ea6f7403464161c86e42afcb15e0ee)
+   to recognize your WebUI URL and allow the creation of the plugin:
    ```cpp
-   if (url.host() == chrome::kChromeUIYourCustomHost) {
+   if (url.SchemeIs(content::kChromeUIScheme) &&
+       url.host() == chrome::kChromeUIYourCustomHost) {
      if (surface_embed::MaybeCreatePlugin(render_frame, params, plugin)) {
        return true;
      }
@@ -58,7 +64,7 @@ To embed a guest `content::WebContents`, the frontend needs a unique identifier
 corresponding to that guest. This is managed by [GuestContentsHandle](https://source.chromium.org/chromium/chromium/src/+/main:components/guest_contents/browser/guest_contents_handle.h;l=28;drc=d60f66038e8386eeee7708012e9b61c7ff8afb8d).
 
 On the C++ side, associate a handle with the guest `WebContents` and retrieve
-its assigned UUID (`GuestId` / `base::UnguessableToken`):
+its assigned unique ID token (`GuestId` / `base::UnguessableToken`):
 ```cpp
 #include "components/guest_contents/browser/guest_contents_handle.h"
 
@@ -73,8 +79,11 @@ std::string content_id = guest_handle->id().ToString();
 
 Surface Embed does not manage the lifecycle of `WebContents`. If the child
 WebContents is destroyed, the `<embed>` will become blank. If the `<embed>` is
-removed or set to a different `content-id`, the previously attached
-`WebContents` will be detached.
+removed, the previously attached `WebContents` will be detached. Changing
+`data-content-id` on an existing plugin is not currently supported
+([crbug.com/561637127](https://crbug.com/561637127)). To embed different
+contents, update `data-content-id`, then remove and restore the `type` attribute
+to force the plugin to be recreated with the new content ID.
 
 ---
 
@@ -104,7 +113,3 @@ which is `"application/x-chromium-surface-embed"`.
 * **`data-content-id`**: Must contain the serialized string representation of
 the `guest_contents::GuestContentsHandle` token corresponding to the nested
 `WebContents` (the `content_id` retrieved in Section 1.3).
-
-When the `data-content-id` attribute changes, the custom plugin automatically
-notices, parses the identifier, and communicates with the browser host to swap
-the nested visual frame/surface instantly.

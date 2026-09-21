@@ -476,9 +476,9 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTestNoHost, NoCrash) {
   // Check that the sad plugin page got rendered.
   EXPECT_TRUE(CheckHasPixelInColor(SkColors::kGray.toSkColor()));
 
-  // Try attaching a new child. Still shouldn't crash.
-  // (Handling data-content-id changes isn't implemented yet, but once it is,
-  //  this should help make sure we don't get confused).
+  // Changing data-content-id after plugin creation must not crash.
+  // TODO(crbug.com/561637127): Handling data-content-id changes isn't
+  // implemented yet.
   auto child_contents2 = CreateChildWebContents();
   NavigateChildToUrl(child_contents2.get(), kBlueBoxUrl);
   guest_contents::GuestContentsHandle* guest_handle2 =
