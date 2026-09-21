@@ -440,12 +440,12 @@ void TestAXNodeWrapper::ReplaceTreeDataTextSelection(int32_t anchor_node_id,
   tree_->UpdateDataForTesting(new_tree_data);
 }
 
-std::optional<int> TestAXNodeWrapper::GetTableRowCount() const {
-  return node_->GetTableRowCount();
+std::optional<int> TestAXNodeWrapper::GetTableDomRowCount() const {
+  return node_->GetTableDomRowCount();
 }
 
-std::optional<int> TestAXNodeWrapper::GetTableColCount() const {
-  return node_->GetTableColCount();
+std::optional<int> TestAXNodeWrapper::GetTableDomColCount() const {
+  return node_->GetTableDomColCount();
 }
 
 std::optional<int> TestAXNodeWrapper::GetTableAriaRowCount() const {
@@ -494,20 +494,20 @@ std::optional<int> TestAXNodeWrapper::GetTableCellIndex() const {
   return node_->GetTableCellIndex();
 }
 
-std::optional<int> TestAXNodeWrapper::GetTableCellColIndex() const {
-  return node_->GetTableCellColIndex();
+std::optional<int> TestAXNodeWrapper::GetTableCellDomColIndex() const {
+  return node_->GetTableCellDomColIndex();
 }
 
-std::optional<int> TestAXNodeWrapper::GetTableCellRowIndex() const {
-  return node_->GetTableCellRowIndex();
+std::optional<int> TestAXNodeWrapper::GetTableCellDomRowIndex() const {
+  return node_->GetTableCellDomRowIndex();
 }
 
-std::optional<int> TestAXNodeWrapper::GetTableCellColSpan() const {
-  return node_->GetTableCellColSpan();
+std::optional<int> TestAXNodeWrapper::GetTableCellDomColSpan() const {
+  return node_->GetTableCellDomColSpan();
 }
 
-std::optional<int> TestAXNodeWrapper::GetTableCellRowSpan() const {
-  return node_->GetTableCellRowSpan();
+std::optional<int> TestAXNodeWrapper::GetTableCellDomRowSpan() const {
+  return node_->GetTableCellDomRowSpan();
 }
 
 std::optional<int> TestAXNodeWrapper::GetTableCellAriaColIndex() const {

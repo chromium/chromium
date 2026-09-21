@@ -175,8 +175,8 @@ TEST_F(AXTableInfoTest, SimpleTable) {
   EXPECT_TRUE(table->IsTable());
   EXPECT_FALSE(table->IsTableRow());
   EXPECT_FALSE(table->IsTableCellOrHeader());
-  EXPECT_OPTIONAL_EQ(2, table->GetTableColCount());
-  EXPECT_OPTIONAL_EQ(2, table->GetTableRowCount());
+  EXPECT_OPTIONAL_EQ(2, table->GetTableDomColCount());
+  EXPECT_OPTIONAL_EQ(2, table->GetTableDomRowCount());
 
   ASSERT_TRUE(table->GetTableCellFromCoords(0, 0));
   EXPECT_EQ(4, table->GetTableCellFromCoords(0, 0)->id());
@@ -210,19 +210,19 @@ TEST_F(AXTableInfoTest, SimpleTable) {
   EXPECT_FALSE(cell_0_0->IsTableRow());
   EXPECT_TRUE(cell_0_0->IsTableCellOrHeader());
   EXPECT_OPTIONAL_EQ(0, cell_0_0->GetTableCellIndex());
-  EXPECT_OPTIONAL_EQ(0, cell_0_0->GetTableCellColIndex());
-  EXPECT_OPTIONAL_EQ(0, cell_0_0->GetTableCellRowIndex());
-  EXPECT_OPTIONAL_EQ(1, cell_0_0->GetTableCellColSpan());
-  EXPECT_OPTIONAL_EQ(1, cell_0_0->GetTableCellRowSpan());
+  EXPECT_OPTIONAL_EQ(0, cell_0_0->GetTableCellDomColIndex());
+  EXPECT_OPTIONAL_EQ(0, cell_0_0->GetTableCellDomRowIndex());
+  EXPECT_OPTIONAL_EQ(1, cell_0_0->GetTableCellDomColSpan());
+  EXPECT_OPTIONAL_EQ(1, cell_0_0->GetTableCellDomRowSpan());
 
   AXNode* cell_1_1 = tree.GetFromId(7);
   EXPECT_FALSE(cell_1_1->IsTable());
   EXPECT_FALSE(cell_1_1->IsTableRow());
   EXPECT_TRUE(cell_1_1->IsTableCellOrHeader());
   EXPECT_OPTIONAL_EQ(3, cell_1_1->GetTableCellIndex());
-  EXPECT_OPTIONAL_EQ(1, cell_1_1->GetTableCellRowIndex());
-  EXPECT_OPTIONAL_EQ(1, cell_1_1->GetTableCellColSpan());
-  EXPECT_OPTIONAL_EQ(1, cell_1_1->GetTableCellRowSpan());
+  EXPECT_OPTIONAL_EQ(1, cell_1_1->GetTableCellDomRowIndex());
+  EXPECT_OPTIONAL_EQ(1, cell_1_1->GetTableCellDomColSpan());
+  EXPECT_OPTIONAL_EQ(1, cell_1_1->GetTableCellDomRowSpan());
 
   std::vector<AXNode*> col_headers;
   cell_1_1->GetTableCellColHeaders(&col_headers);
@@ -769,8 +769,8 @@ TEST_F(AXTableInfoTest, TableWithNoRows) {
   EXPECT_TRUE(table->IsTable());
   EXPECT_FALSE(table->IsTableRow());
   EXPECT_FALSE(table->IsTableCellOrHeader());
-  EXPECT_EQ(2, table->GetTableColCount());
-  EXPECT_EQ(2, table->GetTableRowCount());
+  EXPECT_EQ(2, table->GetTableDomColCount());
+  EXPECT_EQ(2, table->GetTableDomRowCount());
 
   EXPECT_EQ(11, table->GetTableCellFromCoords(0, 0)->id());
   EXPECT_EQ(12, table->GetTableCellFromCoords(0, 1)->id());
@@ -787,17 +787,17 @@ TEST_F(AXTableInfoTest, TableWithNoRows) {
   EXPECT_EQ(nullptr, table->GetTableCellFromIndex(4));
 
   AXNode* cell_0_0 = tree.GetFromId(11);
-  EXPECT_EQ(0, cell_0_0->GetTableCellRowIndex());
-  EXPECT_EQ(0, cell_0_0->GetTableCellColIndex());
+  EXPECT_EQ(0, cell_0_0->GetTableCellDomRowIndex());
+  EXPECT_EQ(0, cell_0_0->GetTableCellDomColIndex());
   AXNode* cell_0_1 = tree.GetFromId(12);
-  EXPECT_EQ(0, cell_0_1->GetTableCellRowIndex());
-  EXPECT_EQ(1, cell_0_1->GetTableCellColIndex());
+  EXPECT_EQ(0, cell_0_1->GetTableCellDomRowIndex());
+  EXPECT_EQ(1, cell_0_1->GetTableCellDomColIndex());
   AXNode* cell_1_0 = tree.GetFromId(13);
-  EXPECT_EQ(1, cell_1_0->GetTableCellRowIndex());
-  EXPECT_EQ(0, cell_1_0->GetTableCellColIndex());
+  EXPECT_EQ(1, cell_1_0->GetTableCellDomRowIndex());
+  EXPECT_EQ(0, cell_1_0->GetTableCellDomColIndex());
   AXNode* cell_1_1 = tree.GetFromId(14);
-  EXPECT_EQ(1, cell_1_1->GetTableCellRowIndex());
-  EXPECT_EQ(1, cell_1_1->GetTableCellColIndex());
+  EXPECT_EQ(1, cell_1_1->GetTableCellDomRowIndex());
+  EXPECT_EQ(1, cell_1_1->GetTableCellDomColIndex());
 }
 
 TEST_F(AXTableInfoTest, TableWithNoRowsAndNegativeRowIndex) {
@@ -814,17 +814,17 @@ TEST_F(AXTableInfoTest, TableWithNoRowsAndNegativeRowIndex) {
   AXNode* table = tree.root();
 
   EXPECT_TRUE(table->IsTable());
-  EXPECT_EQ(2, table->GetTableColCount());
-  EXPECT_EQ(1, table->GetTableRowCount());
+  EXPECT_EQ(2, table->GetTableDomColCount());
+  EXPECT_EQ(1, table->GetTableDomRowCount());
   EXPECT_EQ(11, table->GetTableCellFromCoords(0, 0)->id());
   EXPECT_EQ(12, table->GetTableCellFromCoords(0, 1)->id());
 
   AXNode* cell_0_0 = tree.GetFromId(11);
-  EXPECT_EQ(0, cell_0_0->GetTableCellRowIndex());
-  EXPECT_EQ(0, cell_0_0->GetTableCellColIndex());
+  EXPECT_EQ(0, cell_0_0->GetTableCellDomRowIndex());
+  EXPECT_EQ(0, cell_0_0->GetTableCellDomColIndex());
   AXNode* cell_0_1 = tree.GetFromId(12);
-  EXPECT_EQ(0, cell_0_1->GetTableCellRowIndex());
-  EXPECT_EQ(1, cell_0_1->GetTableCellColIndex());
+  EXPECT_EQ(0, cell_0_1->GetTableCellDomRowIndex());
+  EXPECT_EQ(1, cell_0_1->GetTableCellDomColIndex());
 }
 
 TEST_F(AXTableInfoTest, TableWithNoIndices) {
@@ -855,8 +855,8 @@ TEST_F(AXTableInfoTest, TableWithNoIndices) {
   EXPECT_TRUE(table->IsTable());
   EXPECT_FALSE(table->IsTableRow());
   EXPECT_FALSE(table->IsTableCellOrHeader());
-  EXPECT_EQ(2, table->GetTableColCount());
-  EXPECT_EQ(2, table->GetTableRowCount());
+  EXPECT_EQ(2, table->GetTableDomColCount());
+  EXPECT_EQ(2, table->GetTableDomRowCount());
 
   EXPECT_EQ(2u, table->GetTableRowNodeIds().size());
   EXPECT_EQ(2, table->GetTableRowNodeIds()[0]);
@@ -877,17 +877,17 @@ TEST_F(AXTableInfoTest, TableWithNoIndices) {
   EXPECT_EQ(nullptr, table->GetTableCellFromIndex(4));
 
   AXNode* cell_0_0 = tree.GetFromId(4);
-  EXPECT_EQ(0, cell_0_0->GetTableCellRowIndex());
-  EXPECT_EQ(0, cell_0_0->GetTableCellColIndex());
+  EXPECT_EQ(0, cell_0_0->GetTableCellDomRowIndex());
+  EXPECT_EQ(0, cell_0_0->GetTableCellDomColIndex());
   AXNode* cell_0_1 = tree.GetFromId(5);
-  EXPECT_EQ(0, cell_0_1->GetTableCellRowIndex());
-  EXPECT_EQ(1, cell_0_1->GetTableCellColIndex());
+  EXPECT_EQ(0, cell_0_1->GetTableCellDomRowIndex());
+  EXPECT_EQ(1, cell_0_1->GetTableCellDomColIndex());
   AXNode* cell_1_0 = tree.GetFromId(6);
-  EXPECT_EQ(1, cell_1_0->GetTableCellRowIndex());
-  EXPECT_EQ(0, cell_1_0->GetTableCellColIndex());
+  EXPECT_EQ(1, cell_1_0->GetTableCellDomRowIndex());
+  EXPECT_EQ(0, cell_1_0->GetTableCellDomColIndex());
   AXNode* cell_1_1 = tree.GetFromId(7);
-  EXPECT_EQ(1, cell_1_1->GetTableCellRowIndex());
-  EXPECT_EQ(1, cell_1_1->GetTableCellColIndex());
+  EXPECT_EQ(1, cell_1_1->GetTableCellDomRowIndex());
+  EXPECT_EQ(1, cell_1_1->GetTableCellDomColIndex());
 }
 
 TEST_F(AXTableInfoTest, TableWithPartialIndices) {
@@ -916,21 +916,21 @@ TEST_F(AXTableInfoTest, TableWithPartialIndices) {
   AXTree tree(initial_state);
   AXNode* table = tree.root();
 
-  EXPECT_EQ(2, table->GetTableColCount());
-  EXPECT_EQ(2, table->GetTableRowCount());
+  EXPECT_EQ(2, table->GetTableDomColCount());
+  EXPECT_EQ(2, table->GetTableDomRowCount());
 
   AXNode* cell_0_0 = tree.GetFromId(4);
-  EXPECT_EQ(0, cell_0_0->GetTableCellRowIndex());
-  EXPECT_EQ(0, cell_0_0->GetTableCellColIndex());
+  EXPECT_EQ(0, cell_0_0->GetTableCellDomRowIndex());
+  EXPECT_EQ(0, cell_0_0->GetTableCellDomColIndex());
   AXNode* cell_0_1 = tree.GetFromId(5);
-  EXPECT_EQ(0, cell_0_1->GetTableCellRowIndex());
-  EXPECT_EQ(1, cell_0_1->GetTableCellColIndex());
+  EXPECT_EQ(0, cell_0_1->GetTableCellDomRowIndex());
+  EXPECT_EQ(1, cell_0_1->GetTableCellDomColIndex());
   AXNode* cell_1_0 = tree.GetFromId(6);
-  EXPECT_EQ(1, cell_1_0->GetTableCellRowIndex());
-  EXPECT_EQ(0, cell_1_0->GetTableCellColIndex());
+  EXPECT_EQ(1, cell_1_0->GetTableCellDomRowIndex());
+  EXPECT_EQ(0, cell_1_0->GetTableCellDomColIndex());
   AXNode* cell_1_1 = tree.GetFromId(7);
-  EXPECT_EQ(1, cell_1_1->GetTableCellRowIndex());
-  EXPECT_EQ(1, cell_1_1->GetTableCellColIndex());
+  EXPECT_EQ(1, cell_1_1->GetTableCellDomRowIndex());
+  EXPECT_EQ(1, cell_1_1->GetTableCellDomColIndex());
 
   AXTreeUpdate update = initial_state;
   update.nodes[0].AddIntAttribute(ax::mojom::IntAttribute::kTableColumnCount,
@@ -948,11 +948,11 @@ TEST_F(AXTableInfoTest, TableWithPartialIndices) {
 
   // The largest column index in the table is 2, but the
   // table claims it has a column count of 5. That's allowed.
-  EXPECT_EQ(5, table->GetTableColCount());
+  EXPECT_EQ(5, table->GetTableDomColCount());
 
   // While the table claims it has a row count of 2, the
   // last row has an index of 2, so the correct row count is 3.
-  EXPECT_EQ(3, table->GetTableRowCount());
+  EXPECT_EQ(3, table->GetTableDomRowCount());
 
   EXPECT_EQ(2u, table->GetTableRowNodeIds().size());
   EXPECT_EQ(2, table->GetTableRowNodeIds()[0]);
@@ -960,14 +960,14 @@ TEST_F(AXTableInfoTest, TableWithPartialIndices) {
 
   // All of the specified row and cell indices are legal
   // so they're respected.
-  EXPECT_EQ(0, cell_0_0->GetTableCellRowIndex());
-  EXPECT_EQ(0, cell_0_0->GetTableCellColIndex());
-  EXPECT_EQ(0, cell_0_1->GetTableCellRowIndex());
-  EXPECT_EQ(1, cell_0_1->GetTableCellColIndex());
-  EXPECT_EQ(2, cell_1_0->GetTableCellRowIndex());
-  EXPECT_EQ(0, cell_1_0->GetTableCellColIndex());
-  EXPECT_EQ(2, cell_1_1->GetTableCellRowIndex());
-  EXPECT_EQ(2, cell_1_1->GetTableCellColIndex());
+  EXPECT_EQ(0, cell_0_0->GetTableCellDomRowIndex());
+  EXPECT_EQ(0, cell_0_0->GetTableCellDomColIndex());
+  EXPECT_EQ(0, cell_0_1->GetTableCellDomRowIndex());
+  EXPECT_EQ(1, cell_0_1->GetTableCellDomColIndex());
+  EXPECT_EQ(2, cell_1_0->GetTableCellDomRowIndex());
+  EXPECT_EQ(0, cell_1_0->GetTableCellDomColIndex());
+  EXPECT_EQ(2, cell_1_1->GetTableCellDomRowIndex());
+  EXPECT_EQ(2, cell_1_1->GetTableCellDomColIndex());
 
   // Fetching cells by coordinates works.
   EXPECT_EQ(4, table->GetTableCellFromCoords(0, 0)->id());
@@ -1004,25 +1004,25 @@ TEST_F(AXTableInfoTest, BadRowIndicesIgnored) {
   AXTree tree(initial_state);
   AXNode* table = tree.root();
 
-  EXPECT_EQ(2, table->GetTableColCount());
-  EXPECT_EQ(4, table->GetTableRowCount());
+  EXPECT_EQ(2, table->GetTableDomColCount());
+  EXPECT_EQ(4, table->GetTableDomRowCount());
 
   EXPECT_EQ(2u, table->GetTableRowNodeIds().size());
   EXPECT_EQ(2, table->GetTableRowNodeIds()[0]);
   EXPECT_EQ(3, table->GetTableRowNodeIds()[1]);
 
   AXNode* cell_id_4 = tree.GetFromId(4);
-  EXPECT_EQ(2, cell_id_4->GetTableCellRowIndex());
-  EXPECT_EQ(0, cell_id_4->GetTableCellColIndex());
+  EXPECT_EQ(2, cell_id_4->GetTableCellDomRowIndex());
+  EXPECT_EQ(0, cell_id_4->GetTableCellDomColIndex());
   AXNode* cell_id_5 = tree.GetFromId(5);
-  EXPECT_EQ(2, cell_id_5->GetTableCellRowIndex());
-  EXPECT_EQ(1, cell_id_5->GetTableCellColIndex());
+  EXPECT_EQ(2, cell_id_5->GetTableCellDomRowIndex());
+  EXPECT_EQ(1, cell_id_5->GetTableCellDomColIndex());
   AXNode* cell_id_6 = tree.GetFromId(6);
-  EXPECT_EQ(3, cell_id_6->GetTableCellRowIndex());
-  EXPECT_EQ(0, cell_id_6->GetTableCellColIndex());
+  EXPECT_EQ(3, cell_id_6->GetTableCellDomRowIndex());
+  EXPECT_EQ(0, cell_id_6->GetTableCellDomColIndex());
   AXNode* cell_id_7 = tree.GetFromId(7);
-  EXPECT_EQ(3, cell_id_7->GetTableCellRowIndex());
-  EXPECT_EQ(1, cell_id_7->GetTableCellColIndex());
+  EXPECT_EQ(3, cell_id_7->GetTableCellDomRowIndex());
+  EXPECT_EQ(1, cell_id_7->GetTableCellDomColIndex());
 }
 
 TEST_F(AXTableInfoTest, BadColIndicesIgnored) {
@@ -1045,25 +1045,25 @@ TEST_F(AXTableInfoTest, BadColIndicesIgnored) {
   AXTree tree(initial_state);
   AXNode* table = tree.root();
 
-  EXPECT_EQ(4, table->GetTableColCount());
-  EXPECT_EQ(2, table->GetTableRowCount());
+  EXPECT_EQ(4, table->GetTableDomColCount());
+  EXPECT_EQ(2, table->GetTableDomRowCount());
 
   EXPECT_EQ(2u, table->GetTableRowNodeIds().size());
   EXPECT_EQ(2, table->GetTableRowNodeIds()[0]);
   EXPECT_EQ(3, table->GetTableRowNodeIds()[1]);
 
   AXNode* cell_id_4 = tree.GetFromId(4);
-  EXPECT_EQ(0, cell_id_4->GetTableCellRowIndex());
-  EXPECT_EQ(1, cell_id_4->GetTableCellColIndex());
+  EXPECT_EQ(0, cell_id_4->GetTableCellDomRowIndex());
+  EXPECT_EQ(1, cell_id_4->GetTableCellDomColIndex());
   AXNode* cell_id_5 = tree.GetFromId(5);
-  EXPECT_EQ(0, cell_id_5->GetTableCellRowIndex());
-  EXPECT_EQ(2, cell_id_5->GetTableCellColIndex());
+  EXPECT_EQ(0, cell_id_5->GetTableCellDomRowIndex());
+  EXPECT_EQ(2, cell_id_5->GetTableCellDomColIndex());
   AXNode* cell_id_6 = tree.GetFromId(6);
-  EXPECT_EQ(1, cell_id_6->GetTableCellRowIndex());
-  EXPECT_EQ(2, cell_id_6->GetTableCellColIndex());
+  EXPECT_EQ(1, cell_id_6->GetTableCellDomRowIndex());
+  EXPECT_EQ(2, cell_id_6->GetTableCellDomColIndex());
   AXNode* cell_id_7 = tree.GetFromId(7);
-  EXPECT_EQ(1, cell_id_7->GetTableCellRowIndex());
-  EXPECT_EQ(3, cell_id_7->GetTableCellColIndex());
+  EXPECT_EQ(1, cell_id_7->GetTableCellDomRowIndex());
+  EXPECT_EQ(3, cell_id_7->GetTableCellDomColIndex());
 }
 
 TEST_F(AXTableInfoTest, AriaIndicesInferred) {

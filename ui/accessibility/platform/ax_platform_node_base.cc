@@ -928,11 +928,11 @@ std::optional<int> AXPlatformNodeBase::GetTableCellIndex() const {
 }
 
 std::optional<int> AXPlatformNodeBase::GetTableColumn() const {
-  return GetDelegate()->GetTableCellColIndex();
+  return GetDelegate()->GetTableCellDomColIndex();
 }
 
 std::optional<int> AXPlatformNodeBase::GetTableColumnCount() const {
-  return GetDelegate()->GetTableColCount();
+  return GetDelegate()->GetTableDomColCount();
 }
 
 std::optional<int> AXPlatformNodeBase::GetTableAriaColumnCount() const {
@@ -940,7 +940,7 @@ std::optional<int> AXPlatformNodeBase::GetTableAriaColumnCount() const {
 }
 
 std::optional<int> AXPlatformNodeBase::GetTableColumnSpan() const {
-  return GetDelegate()->GetTableCellColSpan();
+  return GetDelegate()->GetTableCellDomColSpan();
 }
 
 std::optional<int> AXPlatformNodeBase::GetTableRow() const {
@@ -949,13 +949,13 @@ std::optional<int> AXPlatformNodeBase::GetTableRow() const {
     return delegate->GetTableRowRowIndex();
   }
   if (delegate->IsTableCellOrHeader()) {
-    return delegate->GetTableCellRowIndex();
+    return delegate->GetTableCellDomRowIndex();
   }
   return std::nullopt;
 }
 
 std::optional<int> AXPlatformNodeBase::GetTableRowCount() const {
-  return GetDelegate()->GetTableRowCount();
+  return GetDelegate()->GetTableDomRowCount();
 }
 
 std::optional<int> AXPlatformNodeBase::GetTableAriaRowCount() const {
@@ -963,7 +963,7 @@ std::optional<int> AXPlatformNodeBase::GetTableAriaRowCount() const {
 }
 
 std::optional<int> AXPlatformNodeBase::GetTableRowSpan() const {
-  return GetDelegate()->GetTableCellRowSpan();
+  return GetDelegate()->GetTableCellDomRowSpan();
 }
 
 std::optional<float> AXPlatformNodeBase::GetFontSizeInPoints() const {
@@ -1345,8 +1345,8 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
   // Expose aria-colcount and aria-rowcount in a table, grid or treegrid if they
   // are different from its physical dimensions.
   if (IsTableLike(GetRole()) &&
-      (delegate->GetTableAriaRowCount() != delegate->GetTableRowCount() ||
-       delegate->GetTableAriaColCount() != delegate->GetTableColCount())) {
+      (delegate->GetTableAriaRowCount() != delegate->GetTableDomRowCount() ||
+       delegate->GetTableAriaColCount() != delegate->GetTableDomColCount())) {
     AddAttributeToList(ax::mojom::IntAttribute::kAriaColumnCount, "colcount",
                        attributes);
     AddAttributeToList(ax::mojom::IntAttribute::kAriaRowCount, "rowcount",
@@ -1360,9 +1360,9 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
     // are 0 based, so we subtract aria-col/rowindex by 1 to compare with
     // table's physical coordinates.
     std::optional<int> aria_rowindex = delegate->GetTableCellAriaRowIndex();
-    std::optional<int> physical_rowindex = delegate->GetTableCellRowIndex();
+    std::optional<int> physical_rowindex = delegate->GetTableCellDomRowIndex();
     std::optional<int> aria_colindex = delegate->GetTableCellAriaColIndex();
-    std::optional<int> physical_colindex = delegate->GetTableCellColIndex();
+    std::optional<int> physical_colindex = delegate->GetTableCellDomColIndex();
 
     if (aria_rowindex && physical_rowindex &&
         aria_rowindex.value() - 1 != physical_rowindex.value()) {

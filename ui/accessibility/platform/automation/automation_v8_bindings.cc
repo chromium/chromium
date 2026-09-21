@@ -1363,16 +1363,18 @@ void AutomationV8Bindings::AddV8Routes() {
       base::BindRepeating(
           [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
              AutomationAXTreeWrapper* tree_wrapper, AXNode* node) {
-            if (node->GetTableColCount())
-              result.Set(*node->GetTableColCount());
+            if (node->GetTableDomColCount()) {
+              result.Set(*node->GetTableDomColCount());
+            }
           }));
   RouteNodeIDFunction(
       "GetTableRowCount",
       base::BindRepeating(
           [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
              AutomationAXTreeWrapper* tree_wrapper, AXNode* node) {
-            if (node->GetTableRowCount())
-              result.Set(*node->GetTableRowCount());
+            if (node->GetTableDomRowCount()) {
+              result.Set(*node->GetTableDomRowCount());
+            }
           }));
   RouteNodeIDFunction(
       "GetTableCellColumnHeaders",
@@ -1413,16 +1415,18 @@ void AutomationV8Bindings::AddV8Routes() {
       base::BindRepeating(
           [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
              AutomationAXTreeWrapper* tree_wrapper, AXNode* node) {
-            if (node->GetTableCellColIndex())
-              result.Set(*node->GetTableCellColIndex());
+            if (node->GetTableCellDomColIndex()) {
+              result.Set(*node->GetTableCellDomColIndex());
+            }
           }));
   RouteNodeIDFunction(
       "GetTableCellRowIndex",
       base::BindRepeating(
           [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
              AutomationAXTreeWrapper* tree_wrapper, AXNode* node) {
-            if (node->GetTableCellRowIndex())
-              result.Set(*node->GetTableCellRowIndex());
+            if (node->GetTableCellDomRowIndex()) {
+              result.Set(*node->GetTableCellDomRowIndex());
+            }
           }));
   RouteNodeIDFunction(
       "GetTableCellAriaColumnIndex",

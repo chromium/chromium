@@ -3198,7 +3198,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     return nil;
   }
 
-  std::optional<int> column = delegate->GetTableCellColIndex();
+  std::optional<int> column = delegate->GetTableCellDomColIndex();
   if (!column) {
     return nil;
   }
@@ -3265,7 +3265,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   }
 
   ui::AXPlatformNodeDelegate* delegate = _node->GetDelegate();
-  std::optional<int> count = delegate->GetTableColCount();
+  std::optional<int> count = delegate->GetTableDomColCount();
   if (count.has_value()) {
     return *count;
   }
@@ -3283,7 +3283,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   }
 
   ui::AXPlatformNodeDelegate* delegate = _node->GetDelegate();
-  std::optional<int> count = delegate->GetTableRowCount();
+  std::optional<int> count = delegate->GetTableDomRowCount();
   if (count.has_value()) {
     return *count;
   }
@@ -3319,7 +3319,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   ui::AXPlatformNodeDelegate* tableDelegate = tableNode->GetDelegate();
 
   // A table with no row headers.
-  if (isTableLike && !tableDelegate->GetTableRowCount().has_value()) {
+  if (isTableLike && !tableDelegate->GetTableDomRowCount().has_value()) {
     return nil;
   }
 
@@ -3329,7 +3329,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     // Return the table's row headers.
     std::set<int32_t> headerIds;
 
-    int numberOfRows = tableDelegate->GetTableRowCount().value();
+    int numberOfRows = tableDelegate->GetTableDomRowCount().value();
 
     // Rows can have more than one row header cell. Also, we apparently need
     // to guard against duplicate row header ids. Storing in a set dedups.
@@ -3832,8 +3832,8 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     return NSMakeRange(0, 0);
   }
 
-  std::optional<int> column = [self nodeDelegate]->GetTableCellColIndex();
-  std::optional<int> columnSpan = [self nodeDelegate]->GetTableCellColSpan();
+  std::optional<int> column = [self nodeDelegate]->GetTableCellDomColIndex();
+  std::optional<int> columnSpan = [self nodeDelegate]->GetTableCellDomColSpan();
   if (column && columnSpan) {
     return NSMakeRange(*column, *columnSpan);
   }
@@ -3845,8 +3845,8 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     return NSMakeRange(0, 0);
   }
 
-  std::optional<int> row = [self nodeDelegate]->GetTableCellRowIndex();
-  std::optional<int> rowSpan = [self nodeDelegate]->GetTableCellRowSpan();
+  std::optional<int> row = [self nodeDelegate]->GetTableCellDomRowIndex();
+  std::optional<int> rowSpan = [self nodeDelegate]->GetTableCellDomRowSpan();
   if (row && rowSpan) {
     return NSMakeRange(*row, *rowSpan);
   }

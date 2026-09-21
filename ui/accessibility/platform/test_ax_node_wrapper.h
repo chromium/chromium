@@ -116,8 +116,8 @@ class TestAXNodeWrapper : public AXPlatformNodeDelegate, public AXTreeObserver {
   AXPlatformNode* GetFromTreeIDAndNodeID(const AXTreeID& ax_tree_id,
                                          int32_t id) override;
   std::optional<size_t> GetIndexInParent() const override;
-  std::optional<int> GetTableRowCount() const override;
-  std::optional<int> GetTableColCount() const override;
+  std::optional<int> GetTableDomRowCount() const override;
+  std::optional<int> GetTableDomColCount() const override;
   std::optional<int> GetTableAriaColCount() const override;
   std::optional<int> GetTableAriaRowCount() const override;
   std::optional<int> GetTableCellCount() const override;
@@ -129,10 +129,10 @@ class TestAXNodeWrapper : public AXPlatformNodeDelegate, public AXTreeObserver {
   std::optional<int> GetTableRowRowIndex() const override;
   bool IsTableCellOrHeader() const override;
   std::optional<int> GetTableCellIndex() const override;
-  std::optional<int> GetTableCellColIndex() const override;
-  std::optional<int> GetTableCellRowIndex() const override;
-  std::optional<int> GetTableCellColSpan() const override;
-  std::optional<int> GetTableCellRowSpan() const override;
+  std::optional<int> GetTableCellDomColIndex() const override;
+  std::optional<int> GetTableCellDomRowIndex() const override;
+  std::optional<int> GetTableCellDomColSpan() const override;
+  std::optional<int> GetTableCellDomRowSpan() const override;
   std::optional<int> GetTableCellAriaColIndex() const override;
   std::optional<int> GetTableCellAriaRowIndex() const override;
   std::optional<int32_t> GetCellId(int row_index, int col_index) const override;

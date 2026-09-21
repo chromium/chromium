@@ -1008,15 +1008,15 @@ bool AXPlatformNodeDelegate::IsTable() const {
   return ui::IsTableLike(GetRole());
 }
 
-std::optional<int> AXPlatformNodeDelegate::GetTableRowCount() const {
+std::optional<int> AXPlatformNodeDelegate::GetTableDomRowCount() const {
   if (node_)
-    return node_->GetTableRowCount();
+    return node_->GetTableDomRowCount();
   return GetIntAttribute(ax::mojom::IntAttribute::kTableRowCount);
 }
 
-std::optional<int> AXPlatformNodeDelegate::GetTableColCount() const {
+std::optional<int> AXPlatformNodeDelegate::GetTableDomColCount() const {
   if (node_)
-    return node_->GetTableColCount();
+    return node_->GetTableDomColCount();
   return GetIntAttribute(ax::mojom::IntAttribute::kTableColumnCount);
 }
 
@@ -1114,27 +1114,27 @@ std::optional<int> AXPlatformNodeDelegate::GetTableCellIndex() const {
   return std::nullopt;
 }
 
-std::optional<int> AXPlatformNodeDelegate::GetTableCellColIndex() const {
+std::optional<int> AXPlatformNodeDelegate::GetTableCellDomColIndex() const {
   if (node_)
-    return node_->GetTableCellColIndex();
+    return node_->GetTableCellDomColIndex();
   return GetIntAttribute(ax::mojom::IntAttribute::kTableCellColumnIndex);
 }
 
-std::optional<int> AXPlatformNodeDelegate::GetTableCellRowIndex() const {
+std::optional<int> AXPlatformNodeDelegate::GetTableCellDomRowIndex() const {
   if (node_)
-    return node_->GetTableCellRowIndex();
+    return node_->GetTableCellDomRowIndex();
   return GetIntAttribute(ax::mojom::IntAttribute::kTableCellRowIndex);
 }
 
-std::optional<int> AXPlatformNodeDelegate::GetTableCellColSpan() const {
+std::optional<int> AXPlatformNodeDelegate::GetTableCellDomColSpan() const {
   if (node_)
-    return node_->GetTableCellColSpan();
+    return node_->GetTableCellDomColSpan();
   return GetIntAttribute(ax::mojom::IntAttribute::kTableCellColumnSpan);
 }
 
-std::optional<int> AXPlatformNodeDelegate::GetTableCellRowSpan() const {
+std::optional<int> AXPlatformNodeDelegate::GetTableCellDomRowSpan() const {
   if (node_)
-    return node_->GetTableCellRowSpan();
+    return node_->GetTableCellDomRowSpan();
   return GetIntAttribute(ax::mojom::IntAttribute::kTableCellRowSpan);
 }
 

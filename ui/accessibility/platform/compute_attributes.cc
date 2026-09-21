@@ -22,13 +22,13 @@ std::optional<int32_t> GetCellAttribute(const AXPlatformNodeDelegate* delegate,
     case ax::mojom::IntAttribute::kAriaCellRowIndex:
       return delegate->GetTableCellAriaRowIndex();
     case ax::mojom::IntAttribute::kTableCellColumnIndex:
-      return delegate->GetTableCellColIndex();
+      return delegate->GetTableCellDomColIndex();
     case ax::mojom::IntAttribute::kTableCellRowIndex:
-      return delegate->GetTableCellRowIndex();
+      return delegate->GetTableCellDomRowIndex();
     case ax::mojom::IntAttribute::kTableCellColumnSpan:
-      return delegate->GetTableCellColSpan();
+      return delegate->GetTableCellDomColSpan();
     case ax::mojom::IntAttribute::kTableCellRowSpan:
-      return delegate->GetTableCellRowSpan();
+      return delegate->GetTableCellDomRowSpan();
     default:
       return std::nullopt;
   }
@@ -46,9 +46,9 @@ std::optional<int32_t> GetTableAttribute(const AXPlatformNodeDelegate* delegate,
                                          ax::mojom::IntAttribute attribute) {
   switch (attribute) {
     case ax::mojom::IntAttribute::kTableColumnCount:
-      return delegate->GetTableColCount();
+      return delegate->GetTableDomColCount();
     case ax::mojom::IntAttribute::kTableRowCount:
-      return delegate->GetTableRowCount();
+      return delegate->GetTableDomRowCount();
     case ax::mojom::IntAttribute::kAriaColumnCount:
       return delegate->GetTableAriaColCount();
     case ax::mojom::IntAttribute::kAriaRowCount:

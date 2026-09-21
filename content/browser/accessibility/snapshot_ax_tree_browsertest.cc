@@ -543,7 +543,7 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest, SnapshotPDFMode) {
   ui::AXNode* td = tr->GetUnignoredChildAtIndex(0);
   ASSERT_TRUE(td);
   ASSERT_EQ(ax::mojom::Role::kCell, td->GetRole());
-  EXPECT_EQ(2, *td->GetTableCellColSpan());
+  EXPECT_EQ(2, *td->GetTableCellDomColSpan());
 }
 
 IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest, MaxNodes) {

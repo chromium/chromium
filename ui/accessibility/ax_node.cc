@@ -1430,7 +1430,7 @@ bool AXNode::IsTable() const {
   return IsTableLike(GetRole());
 }
 
-std::optional<int> AXNode::GetTableColCount() const {
+std::optional<int> AXNode::GetTableDomColCount() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
   const AXTableInfo* table_info = GetAncestorTableInfo();
   if (!table_info)
@@ -1438,7 +1438,7 @@ std::optional<int> AXNode::GetTableColCount() const {
   return static_cast<int>(table_info->col_count);
 }
 
-std::optional<int> AXNode::GetTableRowCount() const {
+std::optional<int> AXNode::GetTableDomRowCount() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
   const AXTableInfo* table_info = GetAncestorTableInfo();
   if (!table_info)
@@ -1745,7 +1745,7 @@ std::optional<int> AXNode::GetTableCellIndex() const {
   return std::nullopt;
 }
 
-std::optional<int> AXNode::GetTableCellColIndex() const {
+std::optional<int> AXNode::GetTableCellDomColIndex() const {
   const AXTableInfo* table_info = GetAncestorTableInfo();
   if (!table_info)
     return std::nullopt;
@@ -1757,7 +1757,7 @@ std::optional<int> AXNode::GetTableCellColIndex() const {
   return static_cast<int>(table_info->cell_data_vector[*index].col_index);
 }
 
-std::optional<int> AXNode::GetTableCellRowIndex() const {
+std::optional<int> AXNode::GetTableCellDomRowIndex() const {
   const AXTableInfo* table_info = GetAncestorTableInfo();
   if (!table_info)
     return std::nullopt;
@@ -1765,7 +1765,7 @@ std::optional<int> AXNode::GetTableCellRowIndex() const {
   // If it's a table row, use the first cell within.
   if (IsTableRow()) {
     if (const AXNode* first_cell = table_info->GetFirstCellInRow(this)) {
-      return first_cell->GetTableCellRowIndex();
+      return first_cell->GetTableCellDomRowIndex();
     }
     return std::nullopt;
   }
@@ -1777,7 +1777,7 @@ std::optional<int> AXNode::GetTableCellRowIndex() const {
   return static_cast<int>(table_info->cell_data_vector[*index].row_index);
 }
 
-std::optional<int> AXNode::GetTableCellColSpan() const {
+std::optional<int> AXNode::GetTableCellDomColSpan() const {
   // If it's not a table cell, don't return a col span.
   if (!IsTableCellOrHeader())
     return std::nullopt;
@@ -1792,7 +1792,7 @@ std::optional<int> AXNode::GetTableCellColSpan() const {
   return 1;
 }
 
-std::optional<int> AXNode::GetTableCellRowSpan() const {
+std::optional<int> AXNode::GetTableCellDomRowSpan() const {
   // If it's not a table cell, don't return a row span.
   if (!IsTableCellOrHeader())
     return std::nullopt;
@@ -1855,7 +1855,7 @@ std::vector<AXNodeID> AXNode::GetTableCellColHeaderNodeIds() const {
     return std::vector<AXNodeID>();
 
   // If this node is not a cell, then return the headers for the first column.
-  int col_index = GetTableCellColIndex().value_or(0);
+  int col_index = GetTableCellDomColIndex().value_or(0);
 
   return std::vector<AXNodeID>(table_info->col_headers[col_index]);
 }
@@ -1873,7 +1873,7 @@ std::vector<AXNodeID> AXNode::GetTableCellRowHeaderNodeIds() const {
     return std::vector<AXNodeID>();
 
   // If this node is not a cell, then return the headers for the first row.
-  int row_index = GetTableCellRowIndex().value_or(0);
+  int row_index = GetTableCellDomRowIndex().value_or(0);
 
   return std::vector<AXNodeID>(table_info->row_headers[row_index]);
 }

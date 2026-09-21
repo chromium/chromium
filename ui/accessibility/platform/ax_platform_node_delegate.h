@@ -101,10 +101,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   // Virtually all of the information could be obtained from this structure
   // (role, state, name, cursor position, etc.) However, please prefer using
   // specific accessor methods, such as `GetStringAttribute` or
-  // `GetTableCellRowIndex`, instead of directly accessing this structure,
-  // because any attributes that could automatically be computed in the browser
-  // process would also be returned. The browser process would try to correct
-  // missing or erroneous information too.
+  // `GetTableCellDomRowIndex`, instead of directly accessing this
+  // structure, because any attributes that could automatically be computed in
+  // the browser process would also be returned. The browser process would try
+  // to correct missing or erroneous information too.
   virtual const AXNodeData& GetData() const;
 
   // Get some extra data about the accessibility tree that contains this node.
@@ -563,8 +563,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   // Please note that aria has 1-based rows and columns.
   //
   bool IsTable() const;
-  virtual std::optional<int> GetTableColCount() const;
-  virtual std::optional<int> GetTableRowCount() const;
+  virtual std::optional<int> GetTableDomColCount() const;
+  virtual std::optional<int> GetTableDomRowCount() const;
   virtual std::optional<int> GetTableAriaColCount() const;
   virtual std::optional<int> GetTableAriaRowCount() const;
   virtual std::optional<int> GetTableCellCount() const;
@@ -587,10 +587,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   //
   virtual bool IsTableCellOrHeader() const;
   virtual std::optional<int> GetTableCellIndex() const;
-  virtual std::optional<int> GetTableCellColIndex() const;
-  virtual std::optional<int> GetTableCellRowIndex() const;
-  virtual std::optional<int> GetTableCellColSpan() const;
-  virtual std::optional<int> GetTableCellRowSpan() const;
+  virtual std::optional<int> GetTableCellDomColIndex() const;
+  virtual std::optional<int> GetTableCellDomRowIndex() const;
+  virtual std::optional<int> GetTableCellDomColSpan() const;
+  virtual std::optional<int> GetTableCellDomRowSpan() const;
   virtual std::optional<int> GetTableCellAriaColIndex() const;
   virtual std::optional<int> GetTableCellAriaRowIndex() const;
   virtual std::optional<int32_t> GetCellId(int row_index, int col_index) const;

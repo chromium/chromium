@@ -87,8 +87,8 @@ ax::mojom::IntAttribute GetInterestingTableAttribute(unsigned char byte) {
 // to make sure none of these crash or hang.
 void TestTableAPIs(const ui::AXNode* node) {
   std::ignore = node->IsTable();
-  std::ignore = node->GetTableColCount();
-  std::ignore = node->GetTableRowCount();
+  std::ignore = node->GetTableDomColCount();
+  std::ignore = node->GetTableDomRowCount();
   std::ignore = node->GetTableAriaColCount();
   std::ignore = node->GetTableAriaRowCount();
   std::ignore = node->GetTableCellCount();
@@ -114,10 +114,10 @@ void TestTableAPIs(const ui::AXNode* node) {
 #endif
   std::ignore = node->IsTableCellOrHeader();
   std::ignore = node->GetTableCellIndex();
-  std::ignore = node->GetTableCellColIndex();
-  std::ignore = node->GetTableCellRowIndex();
-  std::ignore = node->GetTableCellColSpan();
-  std::ignore = node->GetTableCellRowSpan();
+  std::ignore = node->GetTableCellDomColIndex();
+  std::ignore = node->GetTableCellDomRowIndex();
+  std::ignore = node->GetTableCellDomColSpan();
+  std::ignore = node->GetTableCellDomRowSpan();
   std::ignore = node->GetTableCellAriaColIndex();
   std::ignore = node->GetTableCellAriaRowIndex();
   std::ignore = node->GetTableCellColHeaderNodeIds();

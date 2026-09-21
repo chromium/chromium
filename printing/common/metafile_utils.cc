@@ -359,13 +359,13 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
   }
 
   if (ui::IsCellOrTableHeader(ax_node->GetRole())) {
-    std::optional<int> row_span = ax_node->GetTableCellRowSpan();
+    std::optional<int> row_span = ax_node->GetTableCellDomRowSpan();
     if (row_span.has_value()) {
       tag->fAttributes.appendInt(chrome_pdf::kPDFTableAttributeOwner,
                                  chrome_pdf::kPDFTableCellRowSpanAttribute,
                                  row_span.value());
     }
-    std::optional<int> col_span = ax_node->GetTableCellColSpan();
+    std::optional<int> col_span = ax_node->GetTableCellDomColSpan();
     if (col_span.has_value()) {
       tag->fAttributes.appendInt(chrome_pdf::kPDFTableAttributeOwner,
                                  chrome_pdf::kPDFTableCellColSpanAttribute,

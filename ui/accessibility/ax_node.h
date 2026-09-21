@@ -568,8 +568,8 @@ class AX_EXPORT AXNode final {
   // The below methods return std::nullopt if the AXNode they are called on is
   // not inside a table.
   bool IsTable() const;
-  std::optional<int> GetTableColCount() const;
-  std::optional<int> GetTableRowCount() const;
+  std::optional<int> GetTableDomColCount() const;
+  std::optional<int> GetTableDomRowCount() const;
   std::optional<int> GetTableAriaColCount() const;
   std::optional<int> GetTableAriaRowCount() const;
   std::optional<int> GetTableCellCount() const;
@@ -613,11 +613,11 @@ class AX_EXPORT AXNode final {
   // Table cell-like nodes.
   bool IsTableCellOrHeader() const;
   std::optional<int> GetTableCellIndex() const;
-  std::optional<int> GetTableCellColIndex() const;
+  std::optional<int> GetTableCellDomColIndex() const;
   // The row index of a cell. If a row is passed in, use the first cell.
-  std::optional<int> GetTableCellRowIndex() const;
-  std::optional<int> GetTableCellColSpan() const;
-  std::optional<int> GetTableCellRowSpan() const;
+  std::optional<int> GetTableCellDomRowIndex() const;
+  std::optional<int> GetTableCellDomColSpan() const;
+  std::optional<int> GetTableCellDomRowSpan() const;
   std::optional<int> GetTableCellAriaColIndex() const;
   // The ARIA row index of a cell. If a row is passed in, use the first cell.
   std::optional<int> GetTableCellAriaRowIndex() const;

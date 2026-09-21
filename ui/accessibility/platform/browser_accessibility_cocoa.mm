@@ -865,8 +865,8 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
   if (![self instanceActive])
     return nil;
 
-  std::optional<int> column = _owner->node()->GetTableCellColIndex();
-  std::optional<int> colspan = _owner->node()->GetTableCellColSpan();
+  std::optional<int> column = _owner->node()->GetTableCellDomColIndex();
+  std::optional<int> colspan = _owner->node()->GetTableCellDomColSpan();
   if (column && colspan)
     return [NSValue valueWithRange:NSMakeRange(*column, *colspan)];
   return nil;
@@ -1461,7 +1461,7 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
   }
 
   // A table with no row headers.
-  if (isTableLike && !table->GetTableRowCount().has_value()) {
+  if (isTableLike && !table->GetTableDomRowCount().has_value()) {
     return nil;
   }
 
@@ -1471,7 +1471,7 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
     // Return the table's row headers.
     std::set<int32_t> headerIds;
 
-    int numberOfRows = table->GetTableRowCount().value();
+    int numberOfRows = table->GetTableDomRowCount().value();
 
     // Rows can have more than one row header cell. Also, we apparently need
     // to guard against duplicate row header ids. Storing in a set dedups.
@@ -1507,8 +1507,8 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
   if (![self instanceActive])
     return nil;
 
-  std::optional<int> row = _owner->node()->GetTableCellRowIndex();
-  std::optional<int> rowspan = _owner->node()->GetTableCellRowSpan();
+  std::optional<int> row = _owner->node()->GetTableCellDomRowIndex();
+  std::optional<int> rowspan = _owner->node()->GetTableCellDomRowSpan();
   if (row && rowspan)
     return [NSValue valueWithRange:NSMakeRange(*row, *rowspan)];
   return nil;
