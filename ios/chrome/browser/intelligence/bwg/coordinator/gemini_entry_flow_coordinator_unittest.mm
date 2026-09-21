@@ -177,6 +177,47 @@ TEST_F(GeminiEntryFlowCoordinatorTest, ColdStartPolicyCheckPending) {
   EXPECT_EQ(kGeminiEntryFlowResultSuccess, flow_result_);
 }
 
+// Tests that intermediate capability updates while the policy check is
+// still pending do not cause re-entrant routing or complete prematurely.
+TEST_F(GeminiEntryFlowCoordinatorTest,
+       IntermediateUpdateWhilePolicyCheckPendingDoesNotComplete) {
+  SignIn([FakeSystemIdentity fakeIdentity1]);
+  fake_gemini_service_->SetIsEligible(true);
+  fake_gemini_service_->SetWorkspacePolicyCheckPending(true);
+
+  GeminiStartupState* startup_state = [[GeminiStartupState alloc]
+      initWithEntryPoint:gemini::EntryPoint::ExternalAppStoreEvent];
+
+  coordinator_ = [[GeminiEntryFlowCoordinator alloc]
+      initWithBaseViewController:root_view_controller_
+                         browser:browser_.get()
+                    startupState:startup_state
+        showSnackbarOnCompletion:YES
+                      completion:^(GeminiEntryFlowResult result) {
+                        flow_result_ = result;
+                        flow_completed_ = true;
+                      }];
+
+  [coordinator_ start];
+
+  EXPECT_FALSE(flow_completed_);
+
+  // Trigger an intermediate eligibility change (e.g. from account capability
+  // update) while the enterprise check is still pending.
+  fake_gemini_service_->SetIsEligible(false);
+
+  // The coordinator should ignore the intermediate change while pending and
+  // not complete.
+  EXPECT_FALSE(flow_completed_);
+
+  // Now resolve the enterprise policy check.
+  fake_gemini_service_->SetIsEligible(true);
+  fake_gemini_service_->SetWorkspacePolicyCheckPending(false);
+
+  EXPECT_TRUE(flow_completed_);
+  EXPECT_EQ(kGeminiEntryFlowResultSuccess, flow_result_);
+}
+
 // Tests that a signed-in eligible user completes the entry flow successfully.
 TEST_F(GeminiEntryFlowCoordinatorTest, ColdStartSignedInEligible) {
   SignIn([FakeSystemIdentity fakeIdentity1]);
