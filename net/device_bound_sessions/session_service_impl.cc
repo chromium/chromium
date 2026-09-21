@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -113,7 +114,7 @@ bool SessionMatchesFilter(
 class DebugHeaderBuilder {
  public:
   void AddSkippedSession(SessionKey key, RefreshResult result) {
-    structured_headers::Item item;
+    std::string_view token;
     switch (result) {
       case RefreshResult::kRefreshed:
       // TODO(crbug.com/417401759): Add "transient_signing_error" as a supported
@@ -126,16 +127,13 @@ class DebugHeaderBuilder {
       case RefreshResult::kInitializedService:
         NOTREACHED();
       case RefreshResult::kUnreachable:
-        item = structured_headers::Item(structured_headers::Item::token,
-                                        "unreachable");
+        token = "unreachable";
         break;
       case RefreshResult::kServerError:
-        item = structured_headers::Item(structured_headers::Item::token,
-                                        "server_error");
+        token = "server_error";
         break;
       case RefreshResult::kSigningQuotaExceeded:
-        item = structured_headers::Item(structured_headers::Item::token,
-                                        "quota_exceeded");
+        token = "quota_exceeded";
         break;
     }
 
@@ -143,7 +141,9 @@ class DebugHeaderBuilder {
         {"session_identifier",
          structured_headers::Item(structured_headers::Item::string,
                                   key.id.value())}};
-    skipped_sessions_.emplace_back(std::move(item), std::move(params));
+    skipped_sessions_.emplace_back(
+        structured_headers::Item(structured_headers::Item::token, token),
+        std::move(params));
   }
 
   std::optional<std::string> Build() {
@@ -151,7 +151,7 @@ class DebugHeaderBuilder {
       return std::nullopt;
     }
 
-    return structured_headers::SerializeList(std::move(skipped_sessions_));
+    return structured_headers::SerializeList(skipped_sessions_);
   }
 
  private:
