@@ -12,6 +12,11 @@ Supplementary engineering information for the WebApps/PWA product area.
 
 [Central Hub & Directory Map](/components/webapps/AGENTS.md)
 
+## Development Procedures & Gotchas
+
+- Always use the `cl-description` when uploading a patch to gerrit, as it has
+  useful guidance and tools.
+
 ## Testing Procedures & Gotchas
 
 Generally always prefer `tools/autotest.py` because it automatically maps source
