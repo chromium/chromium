@@ -10,6 +10,7 @@
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -21,6 +22,7 @@
 #define GFX_VECTOR_ICONS_UNSAFE
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/gfx/vector_icon_utils.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
@@ -35,6 +37,10 @@
 #endif
 
 namespace {
+
+// Size used when the icon file declares no CANVAS_DIMENSIONS and the user did
+// not pass --size.
+constexpr int kFallbackIconSize = 128;
 
 std::optional<SkColor> ParseHexColor(const std::string& color_str) {
   std::string lower_color_str = base::ToLowerASCII(color_str);
@@ -96,6 +102,26 @@ class DynamicVectorIcon {
   std::vector<gfx::VectorIconRep> reps_;
   std::unique_ptr<gfx::VectorIcon> icon_;
 };
+
+// Returns the size declared by the icon's CANVAS_DIMENSIONS command, or
+// std::nullopt if the icon does not declare one.
+//
+// gfx::GetDefaultSizeOfVectorIcon() cannot be used directly here because it
+// DCHECKs that the last representation begins with CANVAS_DIMENSIONS. That
+// holds for generated icons, but a hand-written .icon file is free to omit it
+// (by convention the 48dip representation does), and this tool must render
+// whatever file the user points it at rather than crash.
+std::optional<int> GetDeclaredSize(const gfx::VectorIcon& icon) {
+  if (icon.is_empty()) {
+    return std::nullopt;
+  }
+  const base::span<const gfx::PathElement>& path = icon.reps.back().path;
+  if (path.size() < 2 || path[0].command != gfx::CANVAS_DIMENSIONS) {
+    return std::nullopt;
+  }
+  return gfx::GetDefaultSizeOfVectorIcon(icon);
+}
+
 class VectorIconViewerExample : public views::examples::ExampleBase {
  public:
   VectorIconViewerExample(const std::string& icon_source,
@@ -103,7 +129,9 @@ class VectorIconViewerExample : public views::examples::ExampleBase {
                           std::optional<SkColor> icon_color,
                           std::optional<SkColor> bg_color)
       : ExampleBase("Vector Icon Viewer"),
-        dynamic_icon_(views::examples::CleanUpContents(icon_source)),
+        dynamic_icon_(
+            views::examples::CleanUpContents(icon_source,
+                                             /*first_icon_only=*/false)),
         custom_size_(std::move(custom_size)),
         icon_color_(icon_color),
         bg_color_(bg_color) {}
@@ -130,10 +158,13 @@ class VectorIconViewerExample : public views::examples::ExampleBase {
       image_view->SetPreferredSize(gfx::Size(*custom_size_, *custom_size_));
     }
 
-    int size = custom_size_.value_or(
-        gfx::GetDefaultSizeOfVectorIcon(dynamic_icon_.GetVectorIcon()));
+    // Falls back to a large default when neither --size nor the icon file
+    // declares a size, so that the icon is still visible.
+    int size =
+        custom_size_.value_or(GetDeclaredSize(dynamic_icon_.GetVectorIcon())
+                                  .value_or(kFallbackIconSize));
     if (size <= 0) {
-      size = 128;
+      size = kFallbackIconSize;
     }
 
     image_view->SetImage(ui::ImageModel::FromImageSkia(

@@ -12,9 +12,12 @@
 namespace views::examples {
 
 // Takes a string of the format expected of .icon files and strips out comments
-// and extra whitespace.
+// and extra whitespace. If `first_icon_only` is true, only the first icon
+// representation in the file is returned, which is required by
+// gfx::CreateVectorIconFromSource(); pass false to keep every representation.
 VIEWS_EXAMPLES_EXPORT std::string CleanUpContents(
-    const std::string& file_content);
+    const std::string& file_content,
+    bool first_icon_only = true);
 
 class VIEWS_EXAMPLES_EXPORT VectorExample : public ExampleBase {
  public:
