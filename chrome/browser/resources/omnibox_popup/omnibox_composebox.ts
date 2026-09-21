@@ -251,7 +251,6 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
         null;
   }
 
-
   override shouldShowDivider(): boolean {
     if (!this.shouldHideDropdown() && this.hasGridSuggestionsGroup_()) {
       return true;
@@ -262,6 +261,10 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
     }
 
     return super.shouldShowDivider();
+  }
+
+  override shouldHandleSuggestionFuseboxActions(): boolean {
+    return true;
   }
 
   addSearchContext(context: SearchContext|null) {
