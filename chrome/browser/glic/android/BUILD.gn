@@ -351,6 +351,7 @@ android_library("javatests") {
     "java/src/org/chromium/chrome/browser/glic/GlicActorLoginPermissionsFragmentRenderTest.java",
     "java/src/org/chromium/chrome/browser/glic/GlicAndroidMojoIntegrationTest.java",
     "java/src/org/chromium/chrome/browser/glic/GlicMicPermissionDialogRenderTest.java",
+    "java/src/org/chromium/chrome/browser/glic/GlicTaskMenuRenderTest.java",
     "java/src/org/chromium/chrome/browser/glic/GlicToolbarButtonRenderTest.java",
   ]
   deps = [
@@ -358,6 +359,7 @@ android_library("javatests") {
     ":java",
     ":java_resources",
     ":jni_headers_java",
+    ":menu_java",
     ":test_support_java",
     "//base:base_java",
     "//base:base_java_test_support",
@@ -371,6 +373,7 @@ android_library("javatests") {
     "//chrome/browser/settings:factory_java",
     "//chrome/browser/settings:java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/toolbar:adaptive_features_java",
     "//chrome/browser/ui/android/toolbar:optional_button_java",
     "//chrome/test/android:chrome_java_integration_test_support",
@@ -388,6 +391,7 @@ android_library("javatests") {
     "//net/android:net_java",
     "//net/android:net_java_test_support",
     "//third_party/android_deps:espresso_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",

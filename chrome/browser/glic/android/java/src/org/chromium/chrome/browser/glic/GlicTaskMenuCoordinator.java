@@ -70,6 +70,7 @@ public class GlicTaskMenuCoordinator {
     private final @ButtonSource int mButtonSource;
     private @Nullable AnchoredPopupWindow mMenuWindow;
     private @Nullable OnDismissListener mOnDismiss;
+    private int mMenuWidthPx;
 
     /**
      * Sets a listener to be called when the task menu is dismissed.
@@ -181,12 +182,25 @@ public class GlicTaskMenuCoordinator {
         return mMenuWindow != null && mMenuWindow.isShowing();
     }
 
-    private void showInternal(RectProvider rectProvider, View rootView, ModelList modelList) {
-        dismiss();
-        if (modelList.isEmpty()) {
-            return;
-        }
+    /**
+     * Creates and returns the content view for the task menu list from a list of actor tasks.
+     *
+     * @param tasks The collection of active actor tasks to list.
+     * @return The populated menu {@link View}.
+     */
+    @VisibleForTesting
+    View createContentView(List<ActorTask> tasks) {
+        return createContentView(buildModelList(tasks));
+    }
 
+    /**
+     * Creates and returns the content view for the task menu list from a model list.
+     *
+     * @param modelList The {@link ModelList} of menu items.
+     * @return The populated menu {@link View}.
+     */
+    @VisibleForTesting
+    View createContentView(ModelList modelList) {
         ListMenu.Delegate delegate =
                 new ListMenu.Delegate() {
                     @Override
@@ -203,18 +217,34 @@ public class GlicTaskMenuCoordinator {
                 BrowserUiListMenuUtils.getBasicListMenu(mContext, modelList, delegate);
         View contentView = listMenu.getContentView();
 
+        int maxWidthPx = AttrUtils.getDimensionPixelSize(mContext, R.attr.glicTaskMenuMaxWidth);
+        if (mButtonSource == ButtonSource.TAB_STRIP) {
+            mMenuWidthPx = maxWidthPx;
+        } else {
+            int lateralPadding = contentView.getPaddingLeft() + contentView.getPaddingRight();
+            mMenuWidthPx = Math.min(listMenu.getMaxItemWidth() + lateralPadding, maxWidthPx);
+        }
+
+        return contentView;
+    }
+
+    /** Returns the desired menu width in pixels for testing. */
+    int getMenuWidthPxForTesting() {
+        return mMenuWidthPx;
+    }
+
+    private void showInternal(RectProvider rectProvider, View rootView, ModelList modelList) {
+        dismiss();
+        if (modelList.isEmpty()) {
+            return;
+        }
+
+        View contentView = createContentView(modelList);
+
         // Add gap to the right of the menu so it is not at the right edge of the screen.
         int endOffsetPx =
                 mContext.getResources().getDimensionPixelSize(R.dimen.glic_task_menu_end_offset);
         int maxWidthPx = AttrUtils.getDimensionPixelSize(mContext, R.attr.glicTaskMenuMaxWidth);
-        int widthPx;
-
-        if (mButtonSource == ButtonSource.TAB_STRIP) {
-            widthPx = maxWidthPx;
-        } else {
-            int lateralPadding = contentView.getPaddingLeft() + contentView.getPaddingRight();
-            widthPx = Math.min(listMenu.getMaxItemWidth() + lateralPadding, maxWidthPx);
-        }
 
         mMenuWindow =
                 new AnchoredPopupWindow.Builder(
@@ -230,7 +260,7 @@ public class GlicTaskMenuCoordinator {
                         .setVerticalOverlapAnchor(false)
                         .setPreferredHorizontalOrientation(
                                 AnchoredPopupWindow.HorizontalOrientation.LAYOUT_DIRECTION)
-                        .setDesiredContentWidth(widthPx)
+                        .setDesiredContentWidth(mMenuWidthPx)
                         .setMaxWidth(maxWidthPx)
                         .setMargin(endOffsetPx)
                         .setAnimateFromAnchor(true)
@@ -355,9 +385,12 @@ public class GlicTaskMenuCoordinator {
         }
 
         int endIconRes = getEndIconRes(needsReview, mButtonSource == ButtonSource.TAB_STRIP);
+        boolean shouldTintEndIcon =
+                endIconRes != R.drawable.glic_menu_dot
+                        && endIconRes != R.drawable.glic_menu_end_icon_needs_review;
         builder.withEndIconWidth(endIconWidthPx)
                 .withEndIconRes(endIconRes)
-                .withShouldTintEndIcon(endIconRes != R.drawable.glic_menu_dot);
+                .withShouldTintEndIcon(shouldTintEndIcon);
 
         return builder.build();
     }
