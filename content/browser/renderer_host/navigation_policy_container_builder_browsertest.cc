@@ -21,6 +21,7 @@
 #include "services/network/public/cpp/ip_address_space_overrides_test_utils.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "services/network/public/mojom/web_sandbox_flags.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/url_constants.h"
@@ -252,8 +253,12 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
 }
 
 // Verifies that when the URL of the document to commit is `about:srcdoc`, and
-// when a navigation entry with policies is given, then the parent's policies
-// are ignored in favor of the policies from the entry.
+// when a navigation entry with policies is given, then the entry's policies
+// are ignored in favor of the parent's policies with delivered policies merged
+// in. The document body for `about:srcdoc` is loaded from the iframe element's
+// current `srcdoc` attribute rather than restored from history, so the
+// policies must reflect the current state of the parent and the iframe's `csp`
+// attribute rather than the historical state.
 IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
                        FinalPoliciesAboutSrcDocWithParentAndHistory) {
   // First navigate to a local scheme with non-default policies. To do that, we
@@ -282,12 +287,13 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
 
   EXPECT_NE(*builder.HistoryPolicies(), *builder.ParentPolicies());
 
-  PolicyContainerPolicies history_policies = builder.HistoryPolicies()->Clone();
+  PolicyContainerPolicies expected_policies = builder.ParentPolicies()->Clone();
 
   // Deliver a Content Security Policy via `AddContentSecurityPolicy`. This
-  // policy should not be incorporated in the final policies, since the builder
-  // is using the history policies.
-  builder.AddContentSecurityPolicy(MakeTestCSP());
+  // policy should be incorporated in the final policies together with the
+  // parent's policies, ignoring the history policies.
+  network::mojom::ContentSecurityPolicyPtr test_csp = MakeTestCSP();
+  builder.AddContentSecurityPolicy(test_csp.Clone());
 
   MockNavigationHandle navigation_handle(AboutSrcdocUrl(), nullptr);
   builder.ComputePolicies(&navigation_handle, /*initiator_policies=*/nullptr,
@@ -295,7 +301,8 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
                           /*is_credentialless=*/false,
                           /*is_secure_context_root=*/false);
 
-  EXPECT_EQ(builder.FinalPolicies(), history_policies);
+  expected_policies.content_security_policies.push_back(std::move(test_csp));
+  EXPECT_EQ(builder.FinalPolicies(), expected_policies);
 }
 
 // Verifies that history policies are ignored in the case of error pages.
@@ -517,6 +524,86 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
 
   initiator_policies.content_security_policies.push_back(std::move(test_csp));
   EXPECT_EQ(builder.FinalPolicies(), initiator_policies);
+}
+
+// Verifies that when a subframe is navigated back to an `about:srcdoc` history
+// entry, the policies applied to the resulting document reflect the current
+// `csp` attribute of the iframe element. The document body loaded on such a
+// navigation is taken from the current `srcdoc` attribute rather than restored
+// from history, so the policies must correspond to the current attributes as
+// well.
+IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
+                       SrcdocHistoryNavigationAppliesCurrentCspAttribute) {
+  EXPECT_TRUE(NavigateToURL(shell()->web_contents(), LoopbackUrl()));
+  NavigationController& controller = shell()->web_contents()->GetController();
+
+  // Create a srcdoc iframe with no `csp` attribute.
+  {
+    TestNavigationObserver observer(shell()->web_contents());
+    EXPECT_TRUE(ExecJs(root_frame_host(), R"(
+      const iframe = document.createElement('iframe');
+      iframe.id = 'child';
+      iframe.srcdoc = '<p>initial</p>';
+      document.body.appendChild(iframe);
+    )"));
+    observer.Wait();
+  }
+
+  ASSERT_EQ(1u, root_frame_host()->child_count());
+  FrameTreeNode* child = root_frame_host()->child_at(0);
+  EXPECT_TRUE(child->current_url().IsAboutSrcdoc());
+  EXPECT_FALSE(child->current_frame_host()->GetLastCommittedOrigin().opaque());
+  EXPECT_EQ(network::mojom::WebSandboxFlags::kNone,
+            GetPolicies(child->current_frame_host()).sandbox_flags);
+  ASSERT_EQ(1, controller.GetEntryCount());
+
+  // Navigate the child away so that a distinct `about:srcdoc` history entry
+  // remains in session history for it to return to later.
+  {
+    TestNavigationObserver observer(shell()->web_contents());
+    EXPECT_TRUE(ExecJs(child->current_frame_host(),
+                       JsReplace("location.href = $1;", LoopbackUrl())));
+    observer.Wait();
+  }
+  ASSERT_EQ(2, controller.GetEntryCount());
+
+  // Add a `csp` attribute containing a `sandbox` directive to the iframe
+  // element and update its `srcdoc`. The resulting navigation applies the
+  // required CSP and commits with an opaque origin.
+  {
+    TestNavigationObserver observer(shell()->web_contents());
+    EXPECT_TRUE(ExecJs(root_frame_host(), R"(
+      const iframe = document.getElementById('child');
+      iframe.setAttribute('csp', 'sandbox allow-scripts');
+      iframe.srcdoc = '<p>updated</p>';
+    )"));
+    observer.Wait();
+  }
+
+  ASSERT_TRUE(child->csp_attribute());
+  EXPECT_TRUE(child->current_url().IsAboutSrcdoc());
+  EXPECT_TRUE(child->current_frame_host()->GetLastCommittedOrigin().opaque());
+  EXPECT_NE(network::mojom::WebSandboxFlags::kNone,
+            GetPolicies(child->current_frame_host()).sandbox_flags &
+                network::mojom::WebSandboxFlags::kOrigin);
+  ASSERT_EQ(3, controller.GetEntryCount());
+
+  // Navigate the child back to its earlier `about:srcdoc` history entry.
+  ASSERT_TRUE(HistoryGoToIndex(shell()->web_contents(), 0));
+
+  // The child loads the current `srcdoc` value, not the value that was set
+  // when the target history entry was originally committed.
+  child = root_frame_host()->child_at(0);
+  EXPECT_TRUE(child->current_url().IsAboutSrcdoc());
+  EXPECT_EQ("updated",
+            EvalJs(child->current_frame_host(), "document.body.textContent"));
+
+  // The child must therefore commit with the required CSP taken from the
+  // current `csp` attribute, resulting in an opaque origin.
+  EXPECT_TRUE(child->current_frame_host()->GetLastCommittedOrigin().opaque());
+  EXPECT_NE(network::mojom::WebSandboxFlags::kNone,
+            GetPolicies(child->current_frame_host()).sandbox_flags &
+                network::mojom::WebSandboxFlags::kOrigin);
 }
 
 }  // namespace content

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] iframe-srcdoc-history-inheritance
+  promise_test: Unhandled rejection with value: object "Error: The srcdoc iframe's img has been blocked by the new CSP. It means it was different and wasn't restored from history"
+Harness: the test ran to completion.
+

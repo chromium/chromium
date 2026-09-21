@@ -292,13 +292,20 @@ PolicyContainerPolicies NavigationPolicyContainerBuilder::ComputeFinalPolicies(
   const GURL& url = navigation_handle->GetURL();
   if (!url.SchemeIsLocal()) {
     policies = delivered_policies_.Clone();
-  } else if (history_policies_) {
+  } else if (history_policies_ && !url.IsAboutSrcdoc()) {
     // For a local scheme, history policies should not incorporate delivered
     // ones as this may lead to duplication of some policies already stored in
     // history. For example, consider the following HTML:
     //    <iframe src="about:blank" csp="something">
     // This will store CSP: something in history. The next time we have a
     // history navigation we will have CSP: something twice.
+    //
+    // `about:srcdoc` is an exception here: for `about:srcdoc` we ignore history
+    // policies because its document body is loaded from the iframe element's
+    // current `srcdoc` attribute rather than restored from history, so its
+    // policies must be computed from the current state of the parent document
+    // and the iframe element's `csp` attribute (contained in
+    // `delivered_policies_`) as well.
     policies = history_policies_->Clone();
   } else {
     policies = ComputeInheritedPolicies(url, initiator_policies);
