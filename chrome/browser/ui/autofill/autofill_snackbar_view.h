@@ -12,6 +12,8 @@ namespace autofill {
 class AutofillSnackbarView {
  public:
   virtual void Show() = 0;
+  // Dismisses the snackbar and destroys `this`. The caller must not dereference
+  // the view pointer after calling `Dismiss()`.
   virtual void Dismiss() = 0;
 
   // Factory function for creating the view.

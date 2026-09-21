@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -42,6 +43,12 @@ class AutofillSnackbarControllerImplTest
         mock_payment_method_controller_.AsWeakPtr(),
         mock_at_memory_controller_.AsWeakPtr(),
         std::make_unique<NiceMock<MockManualFillingView>>());
+  }
+
+  void TearDown() override {
+    delete controller_;
+    controller_ = nullptr;
+    ChromeRenderViewHostTestHarness::TearDown();
   }
 
   AutofillSnackbarControllerImpl* controller() {
@@ -97,12 +104,14 @@ TEST_F(AutofillSnackbarControllerImplTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.Snackbar.VirtualCard.ActionClicked", 1, 0);
 
-  // Attempt to show another dialog without dismissing the previous one.
+  // Attempt to show another dialog without explicitly dismissing the previous
+  // one.
   controller()->Show(AutofillSnackbarType::kVirtualCard, base::DoNothing());
 
-  // Verify that the count for both Shown is not incremented.
+  // Rapid replacement dismisses the previous snackbar and shows the new one,
+  // incrementing the Shown count to 2.
   histogram_tester.ExpectUniqueSample("Autofill.Snackbar.VirtualCard.Shown", 1,
-                                      1);
+                                      2);
 }
 
 TEST_F(AutofillSnackbarControllerImplTest, Metrics_ShowMandatoryReauth) {
@@ -423,6 +432,171 @@ TEST_F(AutofillSnackbarControllerImplTest,
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_AI_SUPPRESSION_UNDO_SNACKBAR_ACTION));
   controller()->OnDismissed();
+}
+
+TEST_F(AutofillSnackbarControllerImplTest,
+       Dismiss_PublicApiClosesActiveSnackbar) {
+  base::MockCallback<base::OnceClosure> on_dismiss_callback;
+  controller()->ShowWithDurationAndCallback(
+      AutofillSnackbarType::kSaveCardSuccess,
+      AutofillSnackbarControllerImpl::kDefaultSnackbarDuration,
+      base::DoNothing(), on_dismiss_callback.Get());
+
+  EXPECT_CALL(on_dismiss_callback, Run);
+  controller()->Dismiss();
+
+  // Subsequent call to Dismiss when no snackbar is active should be a safe
+  // no-op.
+  controller()->Dismiss();
+}
+
+TEST_F(AutofillSnackbarControllerImplTest,
+       ShowWithDurationAndCallback_RapidReplacement) {
+  base::MockCallback<base::OnceClosure> first_dismiss_callback;
+  controller()->ShowWithDurationAndCallback(
+      AutofillSnackbarType::kVirtualCard,
+      AutofillSnackbarControllerImpl::kDefaultSnackbarDuration,
+      base::DoNothing(), first_dismiss_callback.Get());
+
+  // Rapidly showing a second snackbar should trigger dismissal of the first.
+  EXPECT_CALL(first_dismiss_callback, Run);
+
+  base::MockCallback<base::OnceClosure> second_dismiss_callback;
+  controller()->ShowWithDurationAndCallback(
+      AutofillSnackbarType::kSaveCardSuccess,
+      AutofillSnackbarControllerImpl::kDefaultSnackbarDuration,
+      base::DoNothing(), second_dismiss_callback.Get());
+
+  EXPECT_EQ(controller()->GetSnackbarType(),
+            AutofillSnackbarType::kSaveCardSuccess);
+
+  EXPECT_CALL(second_dismiss_callback, Run);
+  controller()->Dismiss();
+}
+
+TEST_F(AutofillSnackbarControllerImplTest,
+       OnActionClicked_ReentrantDismissDoesNotCrash) {
+  base::MockCallback<base::OnceClosure> dismiss_callback;
+  controller()->ShowWithDurationAndCallback(
+      AutofillSnackbarType::kVirtualCard,
+      AutofillSnackbarControllerImpl::kDefaultSnackbarDuration,
+      base::BindLambdaForTesting([&]() { controller()->Dismiss(); }),
+      dismiss_callback.Get());
+
+  EXPECT_CALL(dismiss_callback, Run);
+  controller()->OnActionClicked();
+}
+
+TEST_F(AutofillSnackbarControllerImplTest,
+       OnActionClicked_ReentrantShowDoesNotCorruptState) {
+  base::MockCallback<base::OnceClosure> first_dismiss_callback;
+  base::MockCallback<base::OnceClosure> second_dismiss_callback;
+
+  controller()->ShowWithDurationAndCallback(
+      AutofillSnackbarType::kVirtualCard,
+      AutofillSnackbarControllerImpl::kDefaultSnackbarDuration,
+      base::BindLambdaForTesting([&]() {
+        controller()->ShowWithDurationAndCallback(
+            AutofillSnackbarType::kSaveCardSuccess,
+            AutofillSnackbarControllerImpl::kDefaultSnackbarDuration,
+            base::DoNothing(), second_dismiss_callback.Get());
+      }),
+      first_dismiss_callback.Get());
+
+  EXPECT_CALL(first_dismiss_callback, Run);
+  controller()->OnActionClicked();
+
+  EXPECT_EQ(controller()->GetSnackbarType(),
+            AutofillSnackbarType::kSaveCardSuccess);
+
+  EXPECT_CALL(second_dismiss_callback, Run);
+  controller()->Dismiss();
+}
+
+TEST_F(AutofillSnackbarControllerImplTest, OnDismissed_ReentrancyGuard) {
+  base::MockCallback<base::OnceClosure> second_dismiss_callback;
+
+  controller()->ShowWithDurationAndCallback(
+      AutofillSnackbarType::kVirtualCard,
+      AutofillSnackbarControllerImpl::kDefaultSnackbarDuration,
+      base::DoNothing(), base::BindLambdaForTesting([&]() {
+        controller()->ShowWithDurationAndCallback(
+            AutofillSnackbarType::kSaveCardSuccess,
+            AutofillSnackbarControllerImpl::kDefaultSnackbarDuration,
+            base::DoNothing(), second_dismiss_callback.Get());
+      }));
+
+  controller()->OnDismissed();
+
+  // The second dismiss callback must be preserved and not cleared by the outer
+  // OnDismissed.
+  EXPECT_EQ(controller()->GetSnackbarType(),
+            AutofillSnackbarType::kSaveCardSuccess);
+  EXPECT_CALL(second_dismiss_callback, Run);
+  controller()->Dismiss();
+}
+
+TEST_F(AutofillSnackbarControllerImplTest,
+       Destructor_ClearsCallbacksBeforeDismiss) {
+  base::MockCallback<base::OnceClosure> dismiss_callback;
+  base::MockCallback<base::OnceClosure> action_callback;
+  auto local_controller =
+      std::make_unique<AutofillSnackbarControllerImpl>(web_contents());
+  local_controller->ShowWithDurationAndCallback(
+      AutofillSnackbarType::kVirtualCard,
+      AutofillSnackbarControllerImpl::kDefaultSnackbarDuration,
+      action_callback.Get(), dismiss_callback.Get());
+
+  // Destroying the controller must suppress dismiss and action callbacks.
+  EXPECT_CALL(dismiss_callback, Run).Times(0);
+  EXPECT_CALL(action_callback, Run).Times(0);
+  local_controller.reset();
+}
+
+TEST_F(AutofillSnackbarControllerImplTest,
+       ShowPaymentsSnackbar_ReplacesActiveSnackbarWithoutCrash) {
+  controller()->Show(AutofillSnackbarType::kVirtualCard, base::DoNothing());
+
+  CreditCard bnpl_card;
+  bnpl_card.set_is_bnpl_card(true);
+  bnpl_card.SetNickname(u"Affirm");
+  controller()->ShowPaymentsSnackbar(AutofillSnackbarType::kBnpl, bnpl_card,
+                                     base::DoNothing());
+
+  EXPECT_EQ(controller()->GetSnackbarType(), AutofillSnackbarType::kBnpl);
+  EXPECT_FALSE(controller()->GetMessageText().empty());
+}
+
+TEST_F(AutofillSnackbarControllerImplTest,
+       Dismiss_ReentrantShowHandledCleanly) {
+  base::MockCallback<base::OnceClosure> c_dismiss_callback;
+  controller()->ShowWithDurationAndCallback(
+      AutofillSnackbarType::kVirtualCard,
+      AutofillSnackbarControllerImpl::kDefaultSnackbarDuration,
+      base::DoNothing(), base::BindLambdaForTesting([&]() {
+        controller()->ShowWithDurationAndCallback(
+            AutofillSnackbarType::kMandatoryReauth,
+            AutofillSnackbarControllerImpl::kDefaultSnackbarDuration,
+            base::DoNothing(), c_dismiss_callback.Get());
+      }));
+
+  // Replacing with SaveCardSuccess should dismiss VirtualCard, which triggers
+  // MandatoryReauth re-entrantly, which is also dismissed before
+  // SaveCardSuccess becomes active.
+  EXPECT_CALL(c_dismiss_callback, Run);
+  controller()->Show(AutofillSnackbarType::kSaveCardSuccess, base::DoNothing());
+  EXPECT_EQ(controller()->GetSnackbarType(),
+            AutofillSnackbarType::kSaveCardSuccess);
+}
+
+TEST_F(AutofillSnackbarControllerImplTest,
+       OnActionClicked_CallbackDestroysControllerDoesNotCrash) {
+  auto local_controller =
+      std::make_unique<AutofillSnackbarControllerImpl>(web_contents());
+  local_controller->Show(
+      AutofillSnackbarType::kVirtualCard,
+      base::BindLambdaForTesting([&]() { local_controller.reset(); }));
+  local_controller->OnActionClicked();
 }
 
 }  // namespace autofill

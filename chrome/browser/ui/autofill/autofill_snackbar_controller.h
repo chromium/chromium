@@ -21,6 +21,10 @@ class AutofillSnackbarController {
   // The snackbar was dismissed without any user interaction.
   virtual void OnDismissed() = 0;
 
+  // Dismisses the snackbar if it is showing. Calling Dismiss without calling
+  // Show is a no-op.
+  virtual void Dismiss() = 0;
+
   // Returns the text to be displayed in the message area of the snackbar.
   virtual std::u16string GetMessageText() const = 0;
   // Returns the text to be displayed in the action button of the snackbar.

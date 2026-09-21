@@ -51,18 +51,18 @@ void AutofillSnackbarViewAndroid::Dismiss() {
   JNIEnv* env = base::android::AttachCurrentThread();
   if (!java_object_.is_null()) {
     Java_AutofillSnackbarController_dismiss(env, java_object_);
-  } else {
-    OnDismissed(env);
   }
+  delete this;
 }
 
 void AutofillSnackbarViewAndroid::OnActionClicked(JNIEnv* env) {
-  controller_->OnActionClicked();
+  AutofillSnackbarController* const controller = controller_;
+  controller->OnActionClicked();
 }
 
 void AutofillSnackbarViewAndroid::OnDismissed(JNIEnv* env) {
-  controller_->OnDismissed();
-  delete this;
+  AutofillSnackbarController* const controller = controller_;
+  controller->OnDismissed();
 }
 
 AutofillSnackbarViewAndroid::~AutofillSnackbarViewAndroid() = default;

@@ -55,6 +55,7 @@ class AutofillSnackbarControllerImpl : public AutofillSnackbarController {
   // AutofillSnackbarController:
   void OnActionClicked() override;
   void OnDismissed() override;
+  void Dismiss() override;
   std::u16string GetMessageText() const override;
   std::u16string GetActionButtonText() const override;
   base::TimeDelta GetDuration() const override;
@@ -62,9 +63,11 @@ class AutofillSnackbarControllerImpl : public AutofillSnackbarController {
   AutofillSnackbarType GetSnackbarType() const override;
 
  private:
-  // Dismisses the snackbar if it is showing. Calling Dismiss without calling
-  // Show is no-op.
-  void Dismiss();
+  // Resets internal state after dismissal or action click.
+  void ResetState();
+
+  // Atomically extracts and runs `on_dismiss_callback_` if set.
+  void RunDismissCallbackIfAny();
 
   // Map the snackbar type to the corresponding UMA variant name for histogram.
   std::string GetSnackbarTypeForLogging() const;

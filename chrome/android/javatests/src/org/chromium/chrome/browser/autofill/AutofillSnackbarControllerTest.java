@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.autofill;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.widget.Button;
@@ -122,7 +124,7 @@ public class AutofillSnackbarControllerTest {
         dismissSnackbar();
 
         assertNull(getCurrentSnackbar());
-        verify(mNativeMock).onDismissed(NATIVE_AUTOFILL_SNACKBAR_VIEW);
+        verify(mNativeMock, never()).onDismissed(anyLong());
     }
 
     @Test
@@ -133,7 +135,7 @@ public class AutofillSnackbarControllerTest {
         clickSnackbarAction();
 
         verify(mNativeMock).onActionClicked(NATIVE_AUTOFILL_SNACKBAR_VIEW);
-        verify(mNativeMock).onDismissed(NATIVE_AUTOFILL_SNACKBAR_VIEW);
+        verify(mNativeMock, never()).onDismissed(anyLong());
     }
 
     @Test
