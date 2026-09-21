@@ -795,10 +795,24 @@ void NativeWidgetAura::Show(ui::mojom::WindowShowState show_state,
     disabler.emplace(window_);
   }
 
+  // `window_->Show()` and `Activate()` below fan out to aura::Window
+  // observers, which are explicitly permitted to synchronously destroy
+  // `window_` (see Window::NotifyWindowVisibilityChangedAtReceiver()). When
+  // that happens under NATIVE_WIDGET_OWNS_WIDGET or CLIENT_OWNS_WIDGET
+  // ownership, OnWindowDestroyed() deletes `this`, so the rest of this method
+  // must not run.
+  auto weak_this = weak_factory.GetWeakPtr();
+
   window_->Show();
+  if (!weak_this || !window_) {
+    return;
+  }
   if (delegate_->CanActivate()) {
     if (show_state != ui::mojom::WindowShowState::kInactive) {
       Activate();
+      if (!weak_this || !window_) {
+        return;
+      }
     }
     // SetInitialFocus() should be always be called, even for
     // SHOW_STATE_INACTIVE. If the window has to stay inactive, the method will
