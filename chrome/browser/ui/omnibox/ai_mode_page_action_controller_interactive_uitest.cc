@@ -265,6 +265,9 @@ IN_PROC_BROWSER_TEST_F(
                   CheckChipVisible(true),
                   // Type a URL.
                   EnterText(kOmniboxElementId, u"https://google.com"),
+                  CheckChipVisible(false),
+                  // Press Escape to close popup.
+                  SendKeyPress(GetTargetElementId(), ui::VKEY_ESCAPE),
                   CheckChipVisible(false));
 }
 
@@ -310,6 +313,9 @@ IN_PROC_BROWSER_TEST_F(
                   CheckChipVisible(true),
                   // Type a URL.
                   EnterText(kOmniboxElementId, u"https://google.com"),
+                  CheckChipVisible(false),
+                  // Press Escape to close popup.
+                  SendKeyPress(GetTargetElementId(), ui::VKEY_ESCAPE),
                   CheckChipVisible(false));
 }
 

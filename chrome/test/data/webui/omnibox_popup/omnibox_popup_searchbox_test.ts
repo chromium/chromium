@@ -1516,6 +1516,71 @@ suite('OmniboxPopupSearchboxTest', function() {
    }
  });
 
+ test('EscapeStagedUnwindingWithVirtualFocus', async () => {
+   loadTimeData.overrideValues({realboxVirtualFocusNavigation: true});
+   searchbox.virtualFocusEnabled = true;
+
+   // Stage 1 (`kRevertTemporaryText`):
+   searchbox.getInputElement().inputElement.value = 'a';
+   searchbox.lastQueriedInput = 'a';
+   searchbox.activeQueryId = 0;
+   testProxy.page.autocompleteResultChanged(createAutocompleteResultForTesting({
+     input: 'a',
+     matches: [
+       createSearchMatchForTesting({
+         allowedToBeDefaultMatch: true,
+         fillIntoEdit: 'a',
+         inlineAutocompletion: '',
+       }),
+       createSearchMatchForTesting({
+         allowedToBeDefaultMatch: false,
+         fillIntoEdit: 'suggestion-1',
+       }),
+     ],
+   }));
+   await microtasksFinished();
+   assertTrue(searchbox.dropdownIsVisible);
+
+   searchbox.setSelection({
+     line: 1,
+     state: SelectionLineState.kNormal,
+     actionIndex: 0,
+   });
+   searchbox.getInputElement().inputElement.value = 'suggestion-1';
+   await microtasksFinished();
+
+   await searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
+     key: 'Escape',
+     cancelable: true,
+   }));
+   await microtasksFinished();
+
+   assertEquals('a', searchbox.getInputElement().inputElement.value);
+   assertEquals(0, searchbox.selection.line);
+   assertTrue(searchbox.dropdownIsVisible);
+   assertEquals(1, handler.getCallCount('logEscapeAction'));
+   assertEquals(
+       OmniboxEscapeAction.kRevertTemporaryText,
+       handler.getArgs('logEscapeAction')[0]);
+
+   handler.reset();
+   testProxy.handler.reset();
+
+   // Stage 2 (`kClosePopup`):
+   await searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
+     key: 'Escape',
+     cancelable: true,
+   }));
+   await microtasksFinished();
+
+   assertFalse(searchbox.dropdownIsVisible);
+   assertEquals(1, testProxy.handler.getCallCount('stopAutocomplete'));
+   assertTrue(testProxy.handler.getArgs('stopAutocomplete')[0]);
+   assertEquals(1, handler.getCallCount('logEscapeAction'));
+   assertEquals(
+       OmniboxEscapeAction.kClosePopup, handler.getArgs('logEscapeAction')[0]);
+ });
+
  test('EscapeStagedUnwinding_ClearedInputNonEmptyUrl', async () => {
    // Input was manually cleared ('') on a page with a non-empty permanent URL.
    // ESC should restore the permanent URL ('example.com') without closing UI.

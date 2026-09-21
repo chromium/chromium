@@ -222,8 +222,8 @@ bool AiModePageActionController::ShouldShowPageAction(
   }
 
   // If the feature is enabled to hide the AIM entrypoint for URL suggestions,
-  // don't show the AIM entrypoint if the current selected match is a URL
-  // suggestion.
+  // don't show the AIM entrypoint if the current selected match or typed input
+  // is a URL suggestion.
   if (base::FeatureList::IsEnabled(
           omnibox::kHideAimEntrypointForUrlSuggestions) ||
       base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxDynamicAiModeButton)) {
@@ -231,9 +231,14 @@ bool AiModePageActionController::ShouldShowPageAction(
         omnibox_controller->autocomplete_controller()->result();
     const OmniboxPopupSelection selection = edit_model->GetPopupSelection();
     if (selection.line != OmniboxPopupSelection::kNoMatch &&
-        selection.line < result.size() &&
-        !AutocompleteMatch::IsSearchType(
-            result.match_at(selection.line).type)) {
+        selection.line < result.size()) {
+      if (!AutocompleteMatch::IsSearchType(
+              result.match_at(selection.line).type)) {
+        return false;
+      }
+    } else if (edit_model->user_input_in_progress() &&
+               !AutocompleteMatch::IsSearchType(
+                   edit_model->CurrentMatch().type)) {
       return false;
     }
   }
