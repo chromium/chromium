@@ -115,7 +115,7 @@ NSString* DetailTextForSetting(ContentSetting setting) {
            detailItemWithType:kCamera
                          text:l10n_util::GetNSString(IDS_IOS_PERMISSIONS_CAMERA)
                    detailText:DetailTextForSetting(_cameraSetting)
-                       symbol:SymbolCamera
+                       symbol:SymbolVideo
       accessibilityIdentifier:kSiteSettingsCameraCellId];
   [model addItem:_cameraItem toSectionWithIdentifier:kSettings];
 
@@ -202,17 +202,17 @@ NSString* DetailTextForSetting(ContentSetting setting) {
     case kMicrophone:
       [self.delegate
           siteSettingsTableViewController:self
-                     didSelectSettingType:ContentSettingsType::MEDIASTREAM_MIC];
+                        didSelectCategory:SiteSettingsCategory::kMicrophone];
       break;
     case kCamera:
-      [self.delegate siteSettingsTableViewController:self
-                                didSelectSettingType:ContentSettingsType::
-                                                         MEDIASTREAM_CAMERA];
+      [self.delegate
+          siteSettingsTableViewController:self
+                        didSelectCategory:SiteSettingsCategory::kCamera];
       break;
     case kLocation:
       [self.delegate
           siteSettingsTableViewController:self
-                     didSelectSettingType:ContentSettingsType::GEOLOCATION];
+                        didSelectCategory:SiteSettingsCategory::kLocation];
       break;
   }
 }

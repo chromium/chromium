@@ -4,6 +4,10 @@
 
 source_set("coordinator") {
   sources = [
+    "site_settings_category_detail_coordinator.h",
+    "site_settings_category_detail_coordinator.mm",
+    "site_settings_category_detail_mediator.h",
+    "site_settings_category_detail_mediator.mm",
     "site_settings_coordinator.h",
     "site_settings_coordinator.mm",
     "site_settings_coordinator_delegate.h",
@@ -14,25 +18,44 @@ source_set("coordinator") {
     "//base",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
+    "//components/url_formatter",
     "//ios/chrome/browser/content_settings/model",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/settings/site_settings/public",
     "//ios/chrome/browser/settings/site_settings/ui",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/favicon:favicon_constants",
+    "//url",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "site_settings_mediator_unittest.mm" ]
+  sources = [
+    "site_settings_category_detail_coordinator_unittest.mm",
+    "site_settings_category_detail_mediator_unittest.mm",
+    "site_settings_mediator_unittest.mm",
+  ]
   deps = [
     ":coordinator",
     "//base",
+    "//base/test:test_support",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
     "//ios/chrome/browser/content_settings/model",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/settings/site_settings/public",
     "//ios/chrome/browser/settings/site_settings/ui",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/test/fakes",
     "//ios/web/public/test",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }

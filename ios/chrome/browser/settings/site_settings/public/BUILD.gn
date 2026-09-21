@@ -3,5 +3,12 @@
 # found in the LICENSE file.
 
 source_set("public") {
-  sources = [ "site_settings_constants.h" ]
+  sources = [
+    "site_settings_constants.h",
+    "site_settings_constants.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/content_settings/core/common",
+  ]
 }

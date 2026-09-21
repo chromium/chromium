@@ -95,7 +95,7 @@ TEST_F(SiteSettingsTableViewControllerTest, TestCategoriesAndSubtitles) {
 }
 
 // Tests that selecting each permission row notifies the delegate with the
-// corresponding content settings type.
+// corresponding category.
 TEST_F(SiteSettingsTableViewControllerTest, TestRowSelection) {
   CreateController();
   CheckController();
@@ -106,7 +106,7 @@ TEST_F(SiteSettingsTableViewControllerTest, TestRowSelection) {
 
   OCMExpect([delegate_
       siteSettingsTableViewController:controller
-                 didSelectSettingType:ContentSettingsType::MEDIASTREAM_MIC]);
+                    didSelectCategory:SiteSettingsCategory::kMicrophone]);
   [controller.tableView.delegate tableView:controller.tableView
       performPrimaryActionForRowAtIndexPath:[NSIndexPath indexPathForRow:0
                                                                inSection:0]];
@@ -114,7 +114,7 @@ TEST_F(SiteSettingsTableViewControllerTest, TestRowSelection) {
 
   OCMExpect([delegate_
       siteSettingsTableViewController:controller
-                 didSelectSettingType:ContentSettingsType::MEDIASTREAM_CAMERA]);
+                    didSelectCategory:SiteSettingsCategory::kCamera]);
   [controller.tableView.delegate tableView:controller.tableView
       performPrimaryActionForRowAtIndexPath:[NSIndexPath indexPathForRow:1
                                                                inSection:0]];
@@ -122,7 +122,7 @@ TEST_F(SiteSettingsTableViewControllerTest, TestRowSelection) {
 
   OCMExpect([delegate_
       siteSettingsTableViewController:controller
-                 didSelectSettingType:ContentSettingsType::GEOLOCATION]);
+                    didSelectCategory:SiteSettingsCategory::kLocation]);
   [controller.tableView.delegate tableView:controller.tableView
       performPrimaryActionForRowAtIndexPath:[NSIndexPath indexPathForRow:2
                                                                inSection:0]];

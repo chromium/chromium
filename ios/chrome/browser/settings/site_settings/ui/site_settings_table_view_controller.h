@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SETTINGS_SITE_SETTINGS_UI_SITE_SETTINGS_TABLE_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_SETTINGS_SITE_SETTINGS_UI_SITE_SETTINGS_TABLE_VIEW_CONTROLLER_H_
 
-#import "components/content_settings/core/common/content_settings_types.h"
+#import "ios/chrome/browser/settings/site_settings/public/site_settings_constants.h"
 #import "ios/chrome/browser/settings/site_settings/ui/site_settings_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller.h"
 
@@ -18,10 +18,10 @@
 - (void)siteSettingsTableViewControllerWasRemoved:
     (SiteSettingsTableViewController*)controller;
 
-// Notifies the delegate that a setting type was selected.
+// Notifies the delegate that a category was selected.
 - (void)siteSettingsTableViewController:
             (SiteSettingsTableViewController*)controller
-                   didSelectSettingType:(ContentSettingsType)type;
+                      didSelectCategory:(SiteSettingsCategory)category;
 
 @end
 
