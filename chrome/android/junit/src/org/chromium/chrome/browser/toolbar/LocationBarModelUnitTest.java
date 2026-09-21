@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizerJni;
 import org.chromium.components.security_state.ConnectionMaliciousContentStatus;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
@@ -165,6 +166,16 @@ public class LocationBarModelUnitTest {
     @After
     public void tearDown() {
         mLocationBarModel.destroy();
+    }
+
+    private void setUpLoadingHttpOrHttpsPage() {
+        mLocationBarModel.initializeWithNative();
+        doReturn(true).when(mRegularTabMock).isInitialized();
+        doReturn(true).when(mRegularTabMock).isLoading();
+        doReturn(mExampleGurl)
+                .when(mLocationBarModelJni)
+                .getUrlOfVisibleNavigationEntry(Mockito.anyLong());
+        mLocationBarModel.setTab(mRegularTabMock, mRegularProfileMock);
     }
 
     @Test
@@ -478,7 +489,6 @@ public class LocationBarModelUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR})
     public void
             getSecurityIconResource_connectionNone_nonHttpOrHttps_returnsOmniboxInfoEvenWhenLoading() {
         mLocationBarModel.initializeWithNative();
@@ -509,18 +519,41 @@ public class LocationBarModelUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR})
-    public void getSecurityIconResource_connectionNone_httpOrHttps_suppressesIconDuringLoading() {
-        mLocationBarModel.initializeWithNative();
-        doReturn(true).when(mRegularTabMock).isInitialized();
-        doReturn(true).when(mRegularTabMock).isLoading();
-        doReturn(new GURL("https://example.com"))
-                .when(mLocationBarModelJni)
-                .getUrlOfVisibleNavigationEntry(Mockito.anyLong());
-        mLocationBarModel.setTab(mRegularTabMock, mRegularProfileMock);
+    public void getSecurityIconResource_suppressesIconDuringLoading() {
+        setUpLoadingHttpOrHttpsPage();
 
+        // NONE level -> icon suppressed.
         assertResourceIdIs(
                 Resources.ID_NULL,
+                ConnectionSecurityLevel.NONE,
+                ConnectionMaliciousContentStatus.NONE);
+        // WARNING level -> icon not suppressed.
+        assertResourceIdIs(
+                R.drawable.omnibox_not_secure_warning,
+                ConnectionSecurityLevel.WARNING,
+                ConnectionMaliciousContentStatus.NONE);
+        // DANGEROUS level -> icon not suppressed.
+        assertResourceIdIs(
+                R.drawable.omnibox_dangerous,
+                ConnectionSecurityLevel.DANGEROUS,
+                ConnectionMaliciousContentStatus.NONE);
+        // SECURE level -> icon not suppressed.
+        assertResourceIdIs(
+                R.drawable.omnibox_https_valid_page_info,
+                ConnectionSecurityLevel.SECURE,
+                ConnectionMaliciousContentStatus.NONE);
+    }
+
+    @Test
+    @DisableFeatures({
+        OmniboxFeatureList.SUPPRESS_STATUS_ICON_DURING_HTTP_NAVIGATION,
+        ChromeFeatureList.ANDROID_BOTTOM_BAR
+    })
+    public void getSecurityIconResource_connectionNone_httpOrHttps_notSuppressedWhenDisabled() {
+        setUpLoadingHttpOrHttpsPage();
+
+        assertResourceIdIs(
+                R.drawable.omnibox_info,
                 ConnectionSecurityLevel.NONE,
                 ConnectionMaliciousContentStatus.NONE);
     }

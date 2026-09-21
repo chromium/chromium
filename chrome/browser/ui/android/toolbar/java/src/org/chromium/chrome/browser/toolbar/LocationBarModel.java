@@ -52,6 +52,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AutocompleteSchemeClassifier;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
 import org.chromium.components.omnibox.SecurityStatusIcon;
 import org.chromium.components.security_state.ConnectionMaliciousContentStatus;
@@ -865,12 +866,11 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         }
 
         // Suppress neutral/info icon during page load to avoid transition jank before
-        // SSL state is resolved for HTTP/HTTPS URLs if the toolbar refactor is enabled.
+        // SSL state is resolved for HTTP/HTTPS URLs.
         // Non-HTTP(S) schemes (e.g. chrome://, file://) never transition to SECURE and
         // should show their neutral icon immediately.
-        // TODO(crbug.com/553488661): We are now doing suppression by default in
-        // LocationBarMediator#updateLocationBarIcon. See about removing suppression here then.
-        if (ToolbarVariationUtils.isToolbarUiRefactorEnabled(mContext)
+        if ((ToolbarVariationUtils.isToolbarUiRefactorEnabled(mContext)
+                        || OmniboxFeatures.sSuppressStatusIconDuringHttpNavigation.isEnabled())
                 && securityLevel == ConnectionSecurityLevel.NONE
                 && isLoading()
                 && UrlUtilities.isHttpOrHttps(getCurrentGurl())) {

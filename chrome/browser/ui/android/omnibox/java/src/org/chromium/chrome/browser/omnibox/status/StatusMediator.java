@@ -52,7 +52,6 @@ import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.components.browser_ui.util.DrawableUtils;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsObserver;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
@@ -605,8 +604,6 @@ public class StatusMediator
                         || displayState == DisplayState.DRAFTING
                         || displayState == DisplayState.DRAFTING_NO_FOCUS;
 
-        boolean showBlankIcon = false;
-
         if (PageClassificationUtils.isHubOrTabSearch(
                 mLocationBarDataProvider.getPageClassification(/* prefetch= */ false))) {
             mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ false);
@@ -645,13 +642,6 @@ public class StatusMediator
             clickListener = mFuseboxOnPlusButtonClicked;
             descRes = R.string.accessibility_omnibox_open_context_popup;
             doubleTapDescriptionRes = Resources.ID_NULL;
-        } else if (OmniboxFeatures.sSuppressStatusIconDuringHttpNavigation.isEnabled()
-                && hasPendingHttpOrHttpsNavigation()) {
-            // Prevent jank due to the info (i) icon appearing during page navigation. But if the
-            // destination page isn't http, then it's fine to show the info icon, because that's
-            // what it'll end up being anyway.
-            mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ false);
-            showBlankIcon = true;
         } else if (maybeUpdateStatusIconForSearchEngineIcon()) {
             mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ true);
             // No need to proceed further if we've already updated it for the search engine icon.
@@ -690,9 +680,7 @@ public class StatusMediator
         }
 
         StatusIconResource statusIcon = null;
-        if (showBlankIcon) {
-            statusIcon = null;
-        } else if (customDrawable != null) {
+        if (customDrawable != null) {
             statusIcon = new StatusIconResource(customDrawable);
         } else if (bitmap != null) {
             statusIcon = new StatusIconResource(/* iconIdentifier= */ null, bitmap, tintRes);
@@ -810,11 +798,6 @@ public class StatusMediator
     private boolean hasPendingNonNtpNavigation() {
         GURL url = getPendingUrl();
         return url != null && !OmniboxUrlUtils.isNtpUrl(url);
-    }
-
-    private boolean hasPendingHttpOrHttpsNavigation() {
-        GURL url = getPendingUrl();
-        return url != null && UrlUtilities.isHttpOrHttps(url);
     }
 
     /** Returns status icon resource for the user-selected default search engine. */
