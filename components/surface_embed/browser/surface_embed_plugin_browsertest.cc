@@ -891,6 +891,30 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,
+                       ChildDestroyedBeforeEmbedAttachment) {
+  NavigateToAttachHarness();
+
+  auto child_contents = CreateChildWebContents();
+  guest_contents::GuestContentsHandle* guest_handle =
+      guest_contents::GuestContentsHandle::CreateForWebContents(
+          child_contents.get());
+  ASSERT_NE(guest_handle, nullptr);
+  const std::string stale_content_id = guest_handle->id().ToString();
+  child_contents.reset();
+
+  ASSERT_TRUE(content::ExecJs(web_contents(),
+                              "createEmbed('" + stale_content_id + "');"));
+  WaitForHostCount(kSingleEmbedCount);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return GetHost(0)->HasReceivedAttachConnectorForTesting(); }));
+  EXPECT_EQ(0u, GetAttachedHostCount());
+
+  // Verify that processing the stale attachment did not terminate the parent
+  // renderer or browser.
+  EXPECT_EQ(kSingleEmbedCount, CountEmbedElementsInPage());
+}
+
 IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, EmbedTagRemovedDestroysHost) {
   auto child_contents = SetupHarnessAndChild();
   AttachChildToEmbed(child_contents.get());

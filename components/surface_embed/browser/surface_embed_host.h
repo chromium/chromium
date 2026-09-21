@@ -83,6 +83,9 @@ class SurfaceEmbedHost : public mojom::SurfaceEmbedHost,
   bool HasReceivedParentAccessibilityInfoForTesting() const {
     return container_accessibility_node_id_ != ui::kInvalidAXNodeID;
   }
+  bool HasReceivedAttachConnectorForTesting() const {
+    return has_received_attach_connector_for_testing_;
+  }
 
  private:
   friend class SurfaceEmbedHostCollection;
@@ -109,6 +112,7 @@ class SurfaceEmbedHost : public mojom::SurfaceEmbedHost,
   base::WeakPtr<content::WebContents> child_contents_ = nullptr;
 
   bool pending_request_focus_on_embed_element_ = false;
+  bool has_received_attach_connector_for_testing_ = false;
 
   ui::AXNodeID container_accessibility_node_id_ = ui::kInvalidAXNodeID;
 

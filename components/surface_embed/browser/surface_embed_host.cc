@@ -113,6 +113,8 @@ void SurfaceEmbedHost::SetSurfaceEmbed(
 
 void SurfaceEmbedHost::AttachConnector(const base::UnguessableToken& content_id,
                                        bool is_embed_element_focused) {
+  has_received_attach_connector_for_testing_ = true;
+
   // Should never call attach without having a valid SurfaceEmbed remote already
   // bound.
   CHECK(surface_embed_);
@@ -120,7 +122,11 @@ void SurfaceEmbedHost::AttachConnector(const base::UnguessableToken& content_id,
   CHECK(!content_id.is_empty());
   guest_contents::GuestContentsHandle* guest_handle =
       guest_contents::GuestContentsHandle::FromID(content_id);
-  CHECK(guest_handle);
+  if (!guest_handle) {
+    // The child may have been destroyed while the renderer was asynchronously
+    // creating the embed element.
+    return;
+  }
 
   content::WebContents* web_contents_to_attach = guest_handle->web_contents();
   CHECK(web_contents_to_attach);
