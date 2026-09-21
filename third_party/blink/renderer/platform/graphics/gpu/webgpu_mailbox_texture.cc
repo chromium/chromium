@@ -139,12 +139,13 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
     return nullptr;
   }
 
-  return WebGPUMailboxTexture::FromCanvasResource(
+  return WebGPUMailboxTexture::FromWebGpuSharedImageLease(
       dawn_control_client, device, usage, std::move(lease));
 }
 
 // static
-scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromCanvasResource(
+scoped_refptr<WebGPUMailboxTexture>
+WebGPUMailboxTexture::FromWebGpuSharedImageLease(
     scoped_refptr<DawnControlClientHolder> dawn_control_client,
     const wgpu::Device& device,
     wgpu::TextureUsage usage,
