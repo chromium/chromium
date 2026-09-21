@@ -9,6 +9,7 @@
 
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -50,7 +51,6 @@
 #include "components/search_engines/ai_mode_button_service.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "content/public/browser/file_select_listener.h"
-#include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
@@ -577,6 +577,7 @@ void OmniboxEverywhereUIManager::ActivateAndFocus() {
   widget_->MoveToActiveFullscreenSpace();
 #endif
   widget_->Show();
+  capture_release_timer_.Stop();
   widget_->Activate();
 
   if (widget_->GetContentsView()) {
@@ -659,6 +660,20 @@ void OmniboxEverywhereUIManager::Close() {
       omnibox_everywhere::DisassociatePopupOnMac(widget_->GetNativeWindow());
     }
 #endif
+    if (widget_->IsVisible() && web_contents()) {
+      // Temporarily keep the WebContents painting (`kHiddenButPainting`) across
+      // `widget_->Hide()` so Blink finishes collapsing the dropdown and
+      // running AutoResize offscreen before entering `kHidden`.
+      if (capture_release_timer_.IsRunning()) {
+        capture_release_timer_.Reset();
+      } else {
+        capture_release_timer_.Start(
+            FROM_HERE, kPostHideCaptureDuration,
+            base::DoNothingWithBoundArgs(web_contents()->IncrementCapturerCount(
+                gfx::Size(), /*stay_hidden=*/true, /*stay_awake=*/false,
+                /*is_activity=*/false)));
+      }
+    }
     widget_->Hide();
   }
   ReleaseKeepAlives();
@@ -703,6 +718,7 @@ void OmniboxEverywhereUIManager::Minimize() {
 #endif  // BUILDFLAG(IS_WIN)
 
 void OmniboxEverywhereUIManager::CleanUpWidget() {
+  capture_release_timer_.Stop();
   deactivation_task_.Cancel();
   hotkey_dropdown_deactivation_task_.Cancel();
   if (disclosure_dialog_widget_) {

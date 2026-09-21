@@ -3250,4 +3250,49 @@ TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringHotkeyDropdown) {
   ui_manager->Shutdown();
 }
 
+TEST_F(OmniboxEverywhereUIManagerTest,
+       CapturerCountMaintainedWhileHiddenForAutoResize) {
+  auto ui_manager = CreateUIManager();
+
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+  ASSERT_TRUE(ui_manager->web_contents());
+  EXPECT_FALSE(ui_manager->web_contents()->IsBeingCaptured());
+
+  // Simulate widget expanding due to autocomplete matches.
+  ui_manager->ResizeDueToAutoResize(ui_manager->web_contents(),
+                                    gfx::Size(728, 300));
+  EXPECT_EQ(widget->GetSize().height(), 300);
+
+  // Close hides the widget immediately while temporarily keeping the
+  // WebContents captured (`kHiddenButPainting`) so Blink AutoResize continues
+  // offscreen.
+  ui_manager->Close();
+  EXPECT_FALSE(widget->IsVisible());
+  EXPECT_TRUE(ui_manager->web_contents()->IsBeingCaptured());
+  EXPECT_FALSE(ui_manager->web_contents()->IsBeingVisiblyCaptured());
+
+  // Simulate Blink AutoResize collapsing the dropdown back to resting height
+  // (56px) while the widget is hidden.
+  ui_manager->ResizeDueToAutoResize(ui_manager->web_contents(),
+                                    gfx::Size(728, 56));
+  EXPECT_EQ(widget->GetSize().height(), 56);
+
+  // Once the post-hide capture window expires, the capture lock is released so
+  // the WebContents enters `kHidden` with zero idle overhead.
+  task_environment()->FastForwardBy(
+      OmniboxEverywhereUIManager::kPostHideCaptureDuration);
+  EXPECT_FALSE(ui_manager->web_contents()->IsBeingCaptured());
+  EXPECT_EQ(widget->GetSize().height(), 56);
+
+  // Re-showing the widget presents it at the collapsed height without flash.
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  EXPECT_TRUE(widget->IsVisible());
+  EXPECT_EQ(widget->GetSize().height(), 56);
+
+  ui_manager->Shutdown();
+  EXPECT_FALSE(ui_manager->web_contents());
+}
+
 }  // namespace omnibox_everywhere
