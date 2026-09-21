@@ -14,7 +14,7 @@ GuestOpenerUserData::~GuestOpenerUserData() = default;
 // static
 bool GuestOpenerUserData::IsGuestOpener(
     const content::WebContents* web_contents) {
-  return FromWebContents(web_contents) != nullptr;
+  return web_contents && FromWebContents(web_contents) != nullptr;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(GuestOpenerUserData);

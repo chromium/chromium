@@ -12,6 +12,7 @@
 #include "chrome/browser/autocomplete/aim_eligibility_refresh_navigation_throttle.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_navigation_throttle.h"
+#include "chrome/browser/contextual_tasks/guest_opener_user_data.h"
 #include "chrome/browser/custom_handlers/chrome_protocol_handler_navigation_throttle.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/data_sharing/data_sharing_navigation_throttle.h"
@@ -483,7 +484,9 @@ void CreateAndAddChromeThrottlesForNavigation(
 
   if (contextual_tasks::IsContextualTasksUIEnabled() ||
       base::FeatureList::IsEnabled(
-          contextual_tasks::kContextualTasksUrlRedirectToAimUrl)) {
+          contextual_tasks::kContextualTasksUrlRedirectToAimUrl) ||
+      contextual_tasks::GuestOpenerUserData::IsGuestOpener(
+          registry.GetNavigationHandle().GetWebContents())) {
     contextual_tasks::ContextualTasksNavigationThrottle::MaybeCreateAndAdd(
         registry);
   }
@@ -638,6 +641,12 @@ void CreateAndAddChromeThrottlesForNavigation(
 
 void CreateAndAddChromeThrottlesForCommitWithoutUrlLoader(
     content::NavigationThrottleRegistry& registry) {
+  if (contextual_tasks::GuestOpenerUserData::IsGuestOpener(
+          registry.GetNavigationHandle().GetWebContents())) {
+    contextual_tasks::ContextualTasksNavigationThrottle::MaybeCreateAndAdd(
+        registry);
+  }
+
   // PwcNavigationThrottle must also cancel off-allowlist main-frame
   // navigations that commit without a URL loader (e.g. a subframe navigating
   // the main frame to about:blank), which never reach WillStartRequest().

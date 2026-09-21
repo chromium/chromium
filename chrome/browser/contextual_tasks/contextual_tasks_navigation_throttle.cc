@@ -15,6 +15,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/contextual_tasks/guest_opener_user_data.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/features.h"
@@ -52,14 +53,27 @@ ThrottleCheckResult ContextualTasksNavigationThrottle::WillRedirectRequest() {
   return ProcessNavigation();
 }
 
+ThrottleCheckResult
+ContextualTasksNavigationThrottle::WillCommitWithoutUrlLoader() {
+  return ProcessNavigation();
+}
+
 ThrottleCheckResult ContextualTasksNavigationThrottle::ProcessNavigation() {
+  content::WebContents* web_contents = navigation_handle()->GetWebContents();
+  if (GuestOpenerUserData::IsGuestOpener(web_contents)) {
+    if (navigation_handle()->IsRendererInitiated() ||
+        !navigation_handle()->GetURL().IsAboutBlank()) {
+      return CANCEL_AND_IGNORE;
+    }
+    return PROCEED;
+  }
+
   // Do not intercept about:blank or data: URLs.
   if (navigation_handle()->GetURL().IsAboutBlank() ||
       navigation_handle()->GetURL().SchemeIs(url::kDataScheme)) {
     return PROCEED;
   }
 
-  auto* web_contents = navigation_handle()->GetWebContents();
   content::OpenURLParams url_params =
       content::OpenURLParams::FromNavigationHandle(navigation_handle());
 
@@ -153,9 +167,15 @@ ThrottleCheckResult ContextualTasksNavigationThrottle::ProcessNavigation() {
 // static
 void ContextualTasksNavigationThrottle::MaybeCreateAndAdd(
     content::NavigationThrottleRegistry& registry) {
+  content::NavigationHandle& nav_handle = registry.GetNavigationHandle();
+  if (GuestOpenerUserData::IsGuestOpener(nav_handle.GetWebContents())) {
+    registry.AddThrottle(
+        std::make_unique<ContextualTasksNavigationThrottle>(registry));
+    return;
+  }
+
   // Ignore navigations that aren't in the outermost main frame and not in a
   // prerender frame.
-  content::NavigationHandle& nav_handle = registry.GetNavigationHandle();
   if (!nav_handle.IsInOutermostMainFrame() ||
       nav_handle.IsInPrerenderedMainFrame()) {
     return;
