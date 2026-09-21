@@ -4,15 +4,13 @@
 
 import 'chrome://settings/settings.js';
 
-import {EntityDataManagerProxyImpl, FeatureOptInState, SettingsAiPageFeaturePrefName as PrefName} from 'chrome://settings/lazy_load.js';
+import {FeatureOptInState, SettingsAiPageFeaturePrefName as PrefName} from 'chrome://settings/lazy_load.js';
 import type {CrLinkRowElement, SettingsAiPageElement} from 'chrome://settings/settings.js';
 import {AiPageInteractions, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrefsBrowserProxy, PrefService, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
-import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
+import {isChildVisible, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestEntityDataManagerProxy} from './test_entity_data_manager_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 
@@ -36,7 +34,6 @@ suite('AiPage', function() {
   let openWindowProxy: TestOpenWindowProxy;
   let page: SettingsAiPageElement;
   let prefService: PrefService;
-  let entityDataManager: TestEntityDataManagerProxy;
 
   suiteSetup(function() {
     metricsBrowserProxy = new TestMetricsBrowserProxy();
@@ -57,9 +54,6 @@ suite('AiPage', function() {
     PrefService.resetInstanceForTesting();
     prefService = PrefService.getInstance();
     await prefService.whenInitialized();
-
-    entityDataManager = new TestEntityDataManagerProxy();
-    EntityDataManagerProxyImpl.setInstance(entityDataManager);
   });
 
   teardown(function() {
@@ -68,12 +62,11 @@ suite('AiPage', function() {
     openWindowProxy.reset();
   });
 
-  async function createPage() {
+  function createPage() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-ai-page');
     Router.getInstance().navigateTo(routes.AI);
     document.body.appendChild(page);
-    return flushTasks();
   }
 
   async function verifyFeatureVisibilityMetrics(
@@ -106,7 +99,7 @@ suite('AiPage', function() {
       showGoogleSearchAiModeWorkspaceControl: true,
     });
     resetRouterForTesting();
-    await createPage();
+    createPage();
 
     assertEquals(6, metricsBrowserProxy.getCallCount('recordBooleanHistogram'));
 
@@ -152,7 +145,7 @@ suite('AiPage', function() {
       showGoogleSearchAiModeWorkspaceControl: false,
     });
     resetRouterForTesting();
-    await createPage();
+    createPage();
     assertEquals(6, metricsBrowserProxy.getCallCount('recordBooleanHistogram'));
 
     assertTrue(isChildVisible(page, '#historySearchRowV2'));
@@ -193,28 +186,31 @@ suite('AiPage', function() {
       showHistorySearchControl: true,
     });
     resetRouterForTesting();
-    await createPage();
+    createPage();
 
     const historySearchRow =
-        page.shadowRoot!.querySelector<CrLinkRowElement>('#historySearchRowV2');
+        page.shadowRoot.querySelector<CrLinkRowElement>('#historySearchRowV2');
 
     assertTrue(!!historySearchRow);
     assertTrue(isVisible(historySearchRow));
 
     await prefService.setPrefValue(
         PrefName.HISTORY_SEARCH, FeatureOptInState.NOT_INITIALIZED);
+    await microtasksFinished();
     assertEquals(
         loadTimeData.getString('historySearchSublabelOff'),
         historySearchRow.subLabel);
 
     await prefService.setPrefValue(
         PrefName.HISTORY_SEARCH, FeatureOptInState.DISABLED);
+    await microtasksFinished();
     assertEquals(
         loadTimeData.getString('historySearchSublabelOff'),
         historySearchRow.subLabel);
 
     await prefService.setPrefValue(
         PrefName.HISTORY_SEARCH, FeatureOptInState.ENABLED);
+    await microtasksFinished();
     assertEquals(
         loadTimeData.getString('historySearchSublabelOn'),
         historySearchRow.subLabel);
@@ -235,10 +231,10 @@ suite('AiPage', function() {
       showComposeControl: true,
     });
     resetRouterForTesting();
-    await createPage();
+    createPage();
 
     const composeRow =
-        page.shadowRoot!.querySelector<HTMLElement>('#composeRowV2');
+        page.shadowRoot.querySelector<HTMLElement>('#composeRowV2');
 
     assertTrue(!!composeRow);
     assertTrue(isVisible(composeRow));
@@ -256,10 +252,10 @@ suite('AiPage', function() {
     loadTimeData.overrideValues({
       showPasswordChangeControl: true,
     });
-    await createPage();
+    createPage();
 
     const passwordChangeRow =
-        page.shadowRoot!.querySelector<HTMLElement>('#passwordChangeRowV2');
+        page.shadowRoot.querySelector<HTMLElement>('#passwordChangeRowV2');
     assertTrue(!!passwordChangeRow);
     assertTrue(isVisible(passwordChangeRow));
 
@@ -272,14 +268,14 @@ suite('AiPage', function() {
     assertEquals(url, loadTimeData.getString('passwordChangeSettingsUrl'));
   });
 
-  test('NoPasswordChangeRowWhenFeatureDisabled', async () => {
+  test('NoPasswordChangeRowWhenFeatureDisabled', () => {
     loadTimeData.overrideValues({
       showPasswordChangeControl: false,
     });
-    await createPage();
+    createPage();
 
     const passwordChangeRow =
-        page.shadowRoot!.querySelector<HTMLElement>('#passwordChangeRowV2');
+        page.shadowRoot.querySelector<HTMLElement>('#passwordChangeRowV2');
     assertTrue(!!passwordChangeRow);
     assertFalse(isVisible(passwordChangeRow));
   });
@@ -289,9 +285,9 @@ suite('AiPage', function() {
       showIndigoControl: true,
       indigoSavedUrl: 'https://example.com/custom_saved',
     });
-    await createPage();
+    createPage();
 
-    const indigoRow = page.shadowRoot!.querySelector<HTMLElement>('#indigoRow');
+    const indigoRow = page.shadowRoot.querySelector<HTMLElement>('#indigoRow');
     assertTrue(!!indigoRow);
     assertTrue(isVisible(indigoRow));
 
@@ -304,13 +300,13 @@ suite('AiPage', function() {
     assertEquals(url, 'https://example.com/custom_saved');
   });
 
-  test('NoIndigoRowWhenFeatureDisabled', async () => {
+  test('NoIndigoRowWhenFeatureDisabled', () => {
     loadTimeData.overrideValues({
       showIndigoControl: false,
     });
-    await createPage();
+    createPage();
 
-    const indigoRow = page.shadowRoot!.querySelector<HTMLElement>('#indigoRow');
+    const indigoRow = page.shadowRoot.querySelector<HTMLElement>('#indigoRow');
     assertTrue(!!indigoRow);
     assertFalse(isVisible(indigoRow));
   });
@@ -321,10 +317,10 @@ suite('AiPage', function() {
       showAiSuggestionsControl: true,
     });
     resetRouterForTesting();
-    await createPage();
+    createPage();
 
     const aiSuggestionsRow =
-        page.shadowRoot!.querySelector<HTMLElement>('#aiSuggestionsRow');
+        page.shadowRoot.querySelector<HTMLElement>('#aiSuggestionsRow');
 
     assertTrue(!!aiSuggestionsRow);
     assertTrue(isVisible(aiSuggestionsRow));
@@ -344,10 +340,10 @@ suite('AiPage', function() {
       showInlineCueMenuControl: true,
     });
     resetRouterForTesting();
-    await createPage();
+    createPage();
 
     const inlineCueMenuRow =
-        page.shadowRoot!.querySelector<HTMLElement>('#inlineCueMenuRow');
+        page.shadowRoot.querySelector<HTMLElement>('#inlineCueMenuRow');
 
     assertTrue(!!inlineCueMenuRow);
     assertTrue(isVisible(inlineCueMenuRow));
@@ -361,15 +357,15 @@ suite('AiPage', function() {
     assertEquals(routes.AI, currentRoute.parent);
   });
 
-  test('skillsRow', async () => {
+  test('skillsRow', () => {
     loadTimeData.overrideValues({
       showAiPage: true,
       showSkillsSettingPage: true,
     });
     resetRouterForTesting();
-    await createPage();
+    createPage();
 
-    const skillsRow = page.shadowRoot!.querySelector<HTMLElement>('#skillsRow');
+    const skillsRow = page.shadowRoot.querySelector<HTMLElement>('#skillsRow');
 
     assertTrue(!!skillsRow);
     assertTrue(isVisible(skillsRow));
@@ -384,9 +380,9 @@ suite('AiPage', function() {
     loadTimeData.overrideValues({
       showGoogleSearchAiModeWorkspaceControl: true,
     });
-    await createPage();
+    createPage();
 
-    const row = page.shadowRoot!.querySelector<HTMLElement>(
+    const row = page.shadowRoot.querySelector<HTMLElement>(
         '#googleSearchAiModeWorkspaceRow');
     assertTrue(!!row);
     assertTrue(isVisible(row));
@@ -405,9 +401,9 @@ suite('AiPage', function() {
     loadTimeData.overrideValues({
       showGoogleSearchAiModeWorkspaceControl: true,
     });
-    await createPage();
+    createPage();
 
-    const row = page.shadowRoot!.querySelector<HTMLElement>(
+    const row = page.shadowRoot.querySelector<HTMLElement>(
         '#googleSearchAiModeWorkspaceRow');
     assertTrue(!!row);
     assertTrue(isVisible(row));
@@ -423,13 +419,13 @@ suite('AiPage', function() {
         loadTimeData.getString('googleSearchAiModeRestrictedUrl'), url);
   });
 
-  test('NoGoogleSearchAiModeRowWhenFeatureDisabled', async () => {
+  test('NoGoogleSearchAiModeRowWhenFeatureDisabled', () => {
     loadTimeData.overrideValues({
       showGoogleSearchAiModeWorkspaceControl: false,
     });
-    await createPage();
+    createPage();
 
-    const row = page.shadowRoot!.querySelector<HTMLElement>(
+    const row = page.shadowRoot.querySelector<HTMLElement>(
         '#googleSearchAiModeWorkspaceRow');
     assertTrue(!!row);
     assertFalse(isVisible(row));

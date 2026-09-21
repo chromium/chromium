@@ -1,100 +1,84 @@
-<style include="settings-shared">
-  cr-view-manager [hidden-by-search],
-  cr-view-manager[show-all] [slot=view][data-parent-view-id] {
-    display: none;
-  }
-
-  /* Necessary to display multiple cr-view-manager views (in this case "cards")
-     at the same time. */
-  cr-view-manager [slot=view]:not(.closing) {
-    position: initial;
-  }
-</style>
-
 <cr-view-manager id="viewManager" class="cr-centered-card-container"
-    show-all$="[[shouldShowAll]]">
+    ?show-all="${this.shouldShowAll}">
   <settings-ai-info-card slot="view" id="aiInfoCard"></settings-ai-info-card>
 
-  <template is="dom-if" if="[[enableAiModeSearchSetting_]]">
+  ${this.enableAiModeSearchSetting_ ? html`
     <settings-ai-mode-search-page slot="view" id="aiModeSearch">
     </settings-ai-mode-search-page>
-  </template>
+  ` : ''}
 
-  <template is="dom-if" if="[[showGlicSettings_]]">
+  ${this.showGlicSettings_ ? html`
     <settings-glic-page slot="view" id="glic">
     </settings-glic-page>
 
     <settings-glic-subpage slot="view" id="gemini"
         data-parent-view-id="glic"
-        route-path$="[[routes_.GEMINI.path]]">
+        route-path="${this.routes_.GEMINI.path}">
     </settings-glic-subpage>
-  </template>
+  ` : ''}
 
-  <template is="dom-if" if="[[showGeicSettings_]]">
+  ${this.showGeicSettings_ ? html`
     <settings-geic-page slot="view" id="geic">
     </settings-geic-page>
-  </template>
 
-  <template is="dom-if" if="[[showGeicSettings_]]">
     <settings-geic-subpage slot="view" id="geminiEnterprise"
         data-parent-view-id="geic"
-        route-path$="[[routes_.GEMINI_ENTERPRISE.path]]">
+        route-path="${this.routes_.GEMINI_ENTERPRISE.path}">
     </settings-geic-subpage>
-  </template>
+  ` : ''}
 
-   <template is="dom-if" if="[[shouldShowPermissionsPage_(showGlicSettings_,
-        actorLoginFederatedLoginSupportEnabled_)]]">
+  ${this.shouldShowPermissionsPage_() ? html`
     <settings-glic-login-permissions-page slot="view"
         id="geminiLoginPermissions"
         data-parent-view-id="gemini"
-        route-path$="[[routes_.GEMINI_LOGIN.path]]">
+        route-path="${this.routes_.GEMINI_LOGIN.path}">
     </settings-glic-login-permissions-page>
-  </template>
+  ` : ''}
 
-  <template is="dom-if" if="[[showAiPageAiFeatureSection_]]">
+  ${this.showAiPageAiFeatureSection_ ? html`
     <settings-ai-page slot="view" id="parent">
     </settings-ai-page>
-  </template>
+  ` : ''}
 
-  <template is="dom-if" if="[[showHistorySearchControl_]]">
+  ${this.showHistorySearchControl_ ? html`
     <settings-history-search-page slot="view" id="historySearch"
         data-parent-view-id="parent"
-        route-path$="[[routes_.HISTORY_SEARCH.path]]">
+        route-path="${this.routes_.HISTORY_SEARCH.path}">
     </settings-history-search-page>
-  </template>
+  ` : ''}
 
-  <template is="dom-if" if="[[showComposeControl_]]">
+  ${this.showComposeControl_ ? html`
     <settings-offer-writing-help-page slot="view" id="compose"
         data-parent-view-id="parent"
-        route-path$="[[routes_.OFFER_WRITING_HELP.path]]">
+        route-path="${this.routes_.OFFER_WRITING_HELP.path}">
     </settings-offer-writing-help-page>
-  </template>
+  ` : ''}
 
-  <template is="dom-if" if="[[showAiSuggestionsControl_]]">
+  ${this.showAiSuggestionsControl_ ? html`
     <settings-ai-suggestions-page slot="view" id="aiSuggestions"
         data-parent-view-id="parent"
-        route-path$="[[routes_.AI_SUGGESTIONS.path]]">
+        route-path="${this.routes_.AI_SUGGESTIONS.path}">
     </settings-ai-suggestions-page>
-  </template>
+  ` : ''}
 
-  <template is="dom-if" if="[[showInlineCueMenuControl_]]">
+  ${this.showInlineCueMenuControl_ ? html`
     <settings-inline-cue-menu-page slot="view" id="inlineCueMenu"
         data-parent-view-id="parent"
-        route-path$="[[routes_.INLINE_CUE_MENU.path]]">
+        route-path="${this.routes_.INLINE_CUE_MENU.path}">
     </settings-inline-cue-menu-page>
-  </template>
+  ` : ''}
 
-  <template is="dom-if" if="[[showSkillsSettingPage_]]">
+  ${this.showSkillsSettingPage_ ? html`
     <settings-skills-page slot="view" id="skills"
         data-parent-view-id="parent"
-        route-path$="[[routes_.SKILLS.path]]">
+        route-path="${this.routes_.SKILLS.path}">
     </settings-skills-page>
-  </template>
+  ` : ''}
 
-  <template is="dom-if" if="[[showDictationControl_]]">
+  ${this.showDictationControl_ ? html`
     <settings-dictation-page slot="view" id="dictation"
         data-parent-view-id="parent"
-        route-path$="[[routes_.DICTATION.path]]">
+        route-path="${this.routes_.DICTATION.path}">
     </settings-dictation-page>
-  </template>
+  ` : ''}
 </cr-view-manager>

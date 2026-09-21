@@ -4,11 +4,10 @@
 
 /**
  * @fileoverview
- * 'settings-ai-page-index' is the settings page containing settings for
- * passwords, payment methods and addresses.
+ * 'settings-ai-page-index' is the settings page containing settings for ai
+ * features.
  */
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
-import '/shared/settings/prefs/prefs.js';
 import './ai_info_card.js';
 import './ai_mode_search_page.js';
 import './ai_page.js';
@@ -20,16 +19,17 @@ import './inline_cue_menu_page.js';
 
 import type {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
-import {RouteObserverMixin} from '../router.js';
+import {RouteObserverMixinLit} from '../router.js';
 import type {Route, SettingsRoutes} from '../router.js';
 import type {SettingsPlugin} from '../settings_main/settings_plugin.js';
-import {SearchableViewContainerMixin} from '../settings_page/searchable_view_container_mixin.js';
+import {SearchableViewContainerMixinLit} from '../settings_page/searchable_view_container_mixin_lit.js';
 
-import {getTemplate} from './ai_page_index.html.js';
+import {getCss} from './ai_page_index.css.js';
+import {getHtml} from './ai_page_index.html.js';
 
 
 export interface SettingsAiPageIndexElement {
@@ -39,7 +39,7 @@ export interface SettingsAiPageIndexElement {
 }
 
 const SettingsAiPageIndexElementBase =
-    SearchableViewContainerMixin(RouteObserverMixin(PolymerElement));
+    SearchableViewContainerMixinLit(RouteObserverMixinLit(CrLitElement));
 
 export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
     implements SettingsPlugin {
@@ -47,90 +47,54 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
     return 'settings-ai-page-index';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      prefs: Object,
-
-      routes_: {
-        type: Object,
-        value: () => routes,
-      },
-
-      showGlicSettings_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('showGlicSettings'),
-      },
-
-      showGeicSettings_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('showGeicSettings'),
-      },
-
-      showAiPageAiFeatureSection_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('showAiPageAiFeatureSection'),
-      },
-
-      showComposeControl_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('showComposeControl'),
-      },
-
-      showHistorySearchControl_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('showHistorySearchControl'),
-      },
-
-      enableAiModeSearchSetting_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('enableAiModeSearchSetting'),
-      },
-
-      actorLoginFederatedLoginSupportEnabled_: {
-        type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('actorLoginFederatedLoginSupportEnabled'),
-      },
-
-      showAiSuggestionsControl_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('showAiSuggestionsControl'),
-      },
-
-      showInlineCueMenuControl_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('showInlineCueMenuControl'),
-      },
-
-      showSkillsSettingPage_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('showSkillsSettingPage'),
-      },
-
-      showDictationControl_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('showDictationControl'),
-      },
+      routes_: {type: Object},
+      showGlicSettings_: {type: Boolean},
+      showGeicSettings_: {type: Boolean},
+      showAiPageAiFeatureSection_: {type: Boolean},
+      showComposeControl_: {type: Boolean},
+      showHistorySearchControl_: {type: Boolean},
+      enableAiModeSearchSetting_: {type: Boolean},
+      actorLoginFederatedLoginSupportEnabled_: {type: Boolean},
+      showAiSuggestionsControl_: {type: Boolean},
+      showInlineCueMenuControl_: {type: Boolean},
+      showSkillsSettingPage_: {type: Boolean},
+      showDictationControl_: {type: Boolean},
     };
   }
 
-  declare prefs: Record<string, unknown>;
-  declare private routes_: SettingsRoutes;
-  declare private showGlicSettings_: boolean;
-  declare private showGeicSettings_: boolean;
-  declare private showAiPageAiFeatureSection_: boolean;
-  declare private showComposeControl_: boolean;
-  declare private showHistorySearchControl_: boolean;
-  declare private enableAiModeSearchSetting_: boolean;
-  declare private actorLoginFederatedLoginSupportEnabled_: boolean;
-  declare private showAiSuggestionsControl_: boolean;
-  declare private showInlineCueMenuControl_: boolean;
-  declare private showSkillsSettingPage_: boolean;
-  declare private showDictationControl_: boolean;
+  protected accessor routes_: SettingsRoutes = routes;
+  protected accessor showGlicSettings_: boolean =
+      loadTimeData.getBoolean('showGlicSettings');
+  protected accessor showGeicSettings_: boolean =
+      loadTimeData.getBoolean('showGeicSettings');
+  protected accessor showAiPageAiFeatureSection_: boolean =
+      loadTimeData.getBoolean('showAiPageAiFeatureSection');
+  protected accessor showComposeControl_: boolean =
+      loadTimeData.getBoolean('showComposeControl');
+  protected accessor showHistorySearchControl_: boolean =
+      loadTimeData.getBoolean('showHistorySearchControl');
+  protected accessor enableAiModeSearchSetting_: boolean =
+      loadTimeData.getBoolean('enableAiModeSearchSetting');
+  protected accessor actorLoginFederatedLoginSupportEnabled_: boolean =
+      loadTimeData.getBoolean('actorLoginFederatedLoginSupportEnabled');
+  protected accessor showAiSuggestionsControl_: boolean =
+      loadTimeData.getBoolean('showAiSuggestionsControl');
+  protected accessor showInlineCueMenuControl_: boolean =
+      loadTimeData.getBoolean('showInlineCueMenuControl');
+  protected accessor showSkillsSettingPage_: boolean =
+      loadTimeData.getBoolean('showSkillsSettingPage');
+  protected accessor showDictationControl_: boolean =
+      loadTimeData.getBoolean('showDictationControl');
 
   private showDefaultViews_() {
     const defaultViews: string[] = ['aiInfoCard'];
@@ -155,7 +119,7 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
         defaultViews, 'no-animation', 'no-animation');
   }
 
-  private shouldShowPermissionsPage_(): boolean {
+  protected shouldShowPermissionsPage_(): boolean {
     return this.showGlicSettings_ &&
         this.actorLoginFederatedLoginSupportEnabled_;
   }
@@ -229,6 +193,8 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
     });
   }
 }
+
+export type AiPageIndexElement = SettingsAiPageIndexElement;
 
 declare global {
   interface HTMLElementTagNameMap {

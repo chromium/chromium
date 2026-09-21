@@ -534,6 +534,8 @@ build_webui("build") {
     "ai_page/ai_info_card.css",
     "ai_page/ai_logging_info_bullet.css",
     "ai_page/ai_mode_search_page.css",
+    "ai_page/ai_page.css",
+    "ai_page/ai_page_index.css",
     "ai_page/ai_policy_indicator.css",
     "ai_page/ai_site_add_dialog.css",
     "ai_page/ai_suggestions_page.css",

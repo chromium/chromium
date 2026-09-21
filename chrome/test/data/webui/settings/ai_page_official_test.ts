@@ -6,12 +6,14 @@ import 'chrome://settings/lazy_load.js';
 import 'chrome://settings/settings.js';
 
 import type {OnDeviceAiBrowserProxy, OnDeviceAiEnabled} from 'chrome://settings/lazy_load.js';
-import {OnDeviceAiBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import {loadTimeData} from 'chrome://settings/settings.js';
+import {FeatureOptInState, OnDeviceAiBrowserProxyImpl, SettingsAiPageFeaturePrefName} from 'chrome://settings/lazy_load.js';
+import {loadTimeData, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import type {SettingsAiPageElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 
 class TestOnDeviceAiBrowserProxy extends TestBrowserProxy implements
     OnDeviceAiBrowserProxy {
@@ -57,6 +59,16 @@ suite('settings ai page official', function() {
   }
 
   setup(function() {
+    const prefsBrowserProxy = new TestPrefsBrowserProxy([
+      {
+        key: SettingsAiPageFeaturePrefName.HISTORY_SEARCH,
+        type: chrome.settingsPrivate.PrefType.NUMBER,
+        value: FeatureOptInState.NOT_INITIALIZED,
+      },
+    ]);
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+
     testBrowserProxy = new TestOnDeviceAiBrowserProxy();
     OnDeviceAiBrowserProxyImpl.setInstance(testBrowserProxy);
     loadTimeData.overrideValues({
@@ -67,7 +79,7 @@ suite('settings ai page official', function() {
 
   function queryOnDeviceAiToggle(): SettingsToggleButtonElement|null {
     // Toggle is conditionally rendered, so retrieve it via `querySelector`.
-    return aiPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+    return aiPage.shadowRoot.querySelector<SettingsToggleButtonElement>(
         '#onDeviceAiToggle');
   }
 
