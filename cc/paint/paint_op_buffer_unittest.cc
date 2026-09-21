@@ -2421,6 +2421,59 @@ TEST(PaintOpSerializationTest,
   EXPECT_EQ(buffer.size(), i);
 }
 
+TEST(PaintOpSerializationTest, DrawSlugDeserializationUsesScratchBuffer) {
+  PaintOpBuffer buffer;
+  SkFont font;
+  font.setTypeface(skia::DefaultTypeface());
+  SkTextBlobBuilder builder;
+  constexpr size_t kGlyphCount = 5u;
+  const auto& run = builder.allocRun(font, kGlyphCount, 1.2f, 2.3f);
+  // allocRun() allocates only the glyph buffer.
+  // SAFETY: SkTextBlobBuilder::allocRun allocates a glyph buffer of size
+  // kGlyphCount.
+  std::ranges::fill(UNSAFE_BUFFERS(base::span(run.glyphs, kGlyphCount)), 0);
+  buffer.push<DrawTextBlobOp>(builder.make(), 0.f, 0.f, PaintFlags());
+
+  size_t output_size = kSerializedBytesPerOp * buffer.size();
+  auto output = AllocateSerializedBuffer(output_size);
+  base::span<uint8_t> output_span = output.as_span();
+  TestOptionsProvider options_provider;
+  SimpleBufferSerializer serializer(output_span,
+                                    options_provider.serialize_options());
+  serializer.Serialize(buffer);
+
+  std::vector<uint8_t> strike_data;
+  options_provider.strike_server()->writeStrikeData(&strike_data);
+  if (!strike_data.empty()) {
+    options_provider.strike_client()->readStrikeData(strike_data.data(),
+                                                     strike_data.size());
+  }
+
+  // Deserialize with a caller-owned scratch buffer. Serialized slug data must
+  // be staged into the scratch buffer and parsed from there, like other
+  // externally-defined complex types (e.g. SkPath, SkColorSpace), rather than
+  // being parsed in place from the input buffer, whose backing memory may
+  // change while it is being parsed.
+  std::vector<uint8_t> scratch_buffer;
+  PaintOp::DeserializeOptions options{
+      .transfer_cache = options_provider.transfer_cache_helper(),
+      .paint_cache = options_provider.service_paint_cache(),
+      .strike_client = options_provider.strike_client(),
+      .scratch_buffer = scratch_buffer,
+      .is_privileged = true};
+
+  size_t deserialized_count = 0;
+  for (const PaintOp& base_written :
+       DeserializerIterator(output_span.first(serializer.written()), options)) {
+    ASSERT_EQ(PaintOpType::kDrawSlug, base_written.GetType());
+    EXPECT_TRUE(static_cast<const DrawSlugOp&>(base_written).slug);
+    ++deserialized_count;
+  }
+
+  EXPECT_EQ(buffer.size(), deserialized_count);
+  EXPECT_FALSE(scratch_buffer.empty());
+}
+
 TEST(PaintOpSerializationTest, SerializesNestedRecords) {
   PaintOpBuffer sub_buffer;
   sub_buffer.push<ScaleOp>(0.5f, 0.75f);

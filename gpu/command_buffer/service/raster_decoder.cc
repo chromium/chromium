@@ -2969,16 +2969,16 @@ void RasterDecoderImpl::DoRasterCHROMIUM(GLuint raster_shm_id,
   }
   DCHECK(transfer_cache());
 
-  auto paint_buffer_opt =
-      GetSharedMemoryAsSpan(raster_shm_id, raster_shm_offset, raster_shm_size);
+  auto paint_buffer_opt = GetSharedMemoryAsSpan<volatile uint8_t>(
+      raster_shm_id, raster_shm_offset, raster_shm_size);
   if (paint_buffer_opt.value_or({}).empty()) {
     LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glRasterCHROMIUM",
                        "Can not read paint buffer.");
     return;
   }
-  base::span<uint8_t> paint_buffer = *paint_buffer_opt;
+  base::span<volatile uint8_t> paint_buffer = *paint_buffer_opt;
 
-  if (!base::IsAligned(paint_buffer.data(), 16u)) {
+  if (!base::IsAligned(reinterpret_cast<uintptr_t>(paint_buffer.data()), 16u)) {
     LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glRasterCHROMIUM",
                        "Buffer is not aligned with 16 bytes.");
     return;
