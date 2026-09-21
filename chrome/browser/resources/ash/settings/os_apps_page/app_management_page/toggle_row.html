@@ -17,10 +17,10 @@
 
 <div id="left-content" class="horizontal-align">
   <template is="dom-if" if="[[icon]]">
-    <iron-icon id="icon" icon="[[icon]]"></iron-icon>
+    <iron-icon id="icon" icon="[[icon]]" aria-hidden="true"></iron-icon>
   </template>
   <div class="vertical-align">
-    <div id="label">[[label]]</div>
+    <div id="label" aria-hidden="true">[[label]]</div>
     <div id="description" class="secondary-text">
       [[description]]
       <slot name="description"></slot>
@@ -39,6 +39,7 @@
       role="button"
       tabindex="0"
       aria-pressed="[[value]]"
-      aria-label="[[label]]">
+      aria-label="[[label]]"
+      aria-describedby="description">
   </cr-toggle>
 </div>

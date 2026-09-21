@@ -107,6 +107,17 @@ suite('AppManagementPermissionItemTest', function() {
     assertEquals(metricData[1], AppManagementUserAction.LOCATION_TURNED_ON);
   });
 
+  test('Toggle row label is aria-hidden to avoid nested navigation', () => {
+    const toggleRow = permissionItem.shadowRoot!.querySelector('#toggle-row');
+    assertTrue(!!toggleRow);
+    const label = toggleRow.shadowRoot!.querySelector('#label');
+    assertTrue(!!label);
+    assertEquals('true', label.getAttribute('aria-hidden'));
+    const toggle = toggleRow.shadowRoot!.querySelector('#toggle');
+    assertTrue(!!toggle);
+    assertEquals('description', toggle.getAttribute('aria-describedby'));
+  });
+
   function getPermissionDescriptionString(): string {
     return permissionItem.shadowRoot!
         .querySelector<LocalizedLinkElement>(

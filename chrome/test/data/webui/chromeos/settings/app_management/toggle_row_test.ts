@@ -5,7 +5,7 @@
 import 'chrome://os-settings/os_settings.js';
 
 import type {AppManagementToggleRowElement} from 'chrome://os-settings/os_settings.js';
-import {assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {replaceBody} from './test_util.js';
@@ -49,5 +49,23 @@ suite('<app-management-toggle-row', () => {
     toggleRow.click();
     await flushTasks();
     assertFalse(toggleRow.isChecked());
+  });
+
+  test('A11y attributes avoid nested navigation', async () => {
+    toggleRow.label = 'Test label';
+    toggleRow.icon = 'cr:check';
+    await flushTasks();
+
+    const label = toggleRow.shadowRoot!.querySelector('#label');
+    assertTrue(!!label);
+    assertEquals('true', label.getAttribute('aria-hidden'));
+
+    const icon = toggleRow.shadowRoot!.querySelector('#icon');
+    assertTrue(!!icon);
+    assertEquals('true', icon.getAttribute('aria-hidden'));
+
+    const crToggle = toggleRow.shadowRoot!.querySelector('cr-toggle');
+    assertTrue(!!crToggle);
+    assertEquals('description', crToggle.getAttribute('aria-describedby'));
   });
 });
