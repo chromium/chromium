@@ -61,6 +61,11 @@ table.expandable-events td {
   vertical-align: top;
 }
 
+table.request-response td {
+  vertical-align: top;
+  white-space: pre-wrap;
+}
+
 .expander::before {
   content: '▶';
   cursor: pointer;
