@@ -3387,17 +3387,12 @@ TEST_F(RenderWidgetHostViewAuraTest, DiscardDelegatedFrames) {
   gfx::Size size2(200, 200);
   views[1]->SetSize(size2);
   // Show it, it should block until we give it a frame.
-  UNSAFE_TODO(views[1])->ShowWithVisibility(PageVisibilityState::kVisible);
-  ASSERT_TRUE(UNSAFE_TODO(views[1])
-                  ->window_->layer()
-                  ->AsSurface()
-                  ->GetOldestAcceptableFallback());
+  views[1]->ShowWithVisibility(PageVisibilityState::kVisible);
+  ASSERT_TRUE(
+      views[1]->window_->layer()->AsSurface()->GetOldestAcceptableFallback());
   EXPECT_EQ(
-      *UNSAFE_TODO(views[1])
-           ->window_->layer()
-           ->AsSurface()
-           ->GetOldestAcceptableFallback(),
-      *UNSAFE_TODO(views[1])->window_->layer()->AsSurface()->GetSurfaceId());
+      *views[1]->window_->layer()->AsSurface()->GetOldestAcceptableFallback(),
+      *views[1]->window_->layer()->AsSurface()->GetSurfaceId());
 
   for (size_t i = 0; i < renderer_count; ++i)
     views[i]->DestroyOrDefer();
