@@ -395,9 +395,6 @@ declare_args() {
 media_subcomponent_deps = [
   "//media/audio",
   "//media/base",
-
-  # TODO(crbug.com/41237623): These files should not be in //media/base.
-  "//media/base/android",
   "//media/capabilities",
   "//media/cdm",
   "//media/device_monitors",
@@ -408,6 +405,11 @@ media_subcomponent_deps = [
   "//media/renderers",
   "//media/video",
 ]
+
+if (is_android) {
+  # TODO(crbug.com/41237623): These files should not be in //media/base.
+  media_subcomponent_deps += [ "//media/base/android" ]
+}
 
 if (is_fuchsia) {
   media_subcomponent_deps += [ "//media/fuchsia/common" ]

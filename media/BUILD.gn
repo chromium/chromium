@@ -171,7 +171,6 @@ source_set("test_support") {
     ":media",
     "//media/audio:test_support",
     "//media/base:test_support",
-    "//media/base/android:test_support",
     "//media/filters:test_support",
     "//media/formats:test_support",
     "//media/mojo/services:test_support",
@@ -179,6 +178,11 @@ source_set("test_support") {
     "//media/renderers:test_support",
     "//media/video:test_support",
   ]
+
+  if (is_android) {
+    # TODO(crbug.com/41237623): These files should not be in //media/base.
+    public_deps += [ "//media/base/android:test_support" ]
+  }
 }
 
 if (is_ios) {
