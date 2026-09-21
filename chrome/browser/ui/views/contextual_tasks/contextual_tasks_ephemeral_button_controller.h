@@ -108,7 +108,11 @@ class ContextualTasksEphemeralButtonController
   bool is_hiding_contextual_tasks_panel_ = false;
   raw_ptr<AimEligibilityService> aim_eligibility_service_;
 
-  std::vector<base::Uuid> ephemeral_button_eligible_tasks_;
+  // Tabs associated to a task whose side panel was dismissed by the user. All
+  // of the task's tabs are recorded rather than the task itself, because a
+  // zero-state task with no thread is destroyed as soon as it loses its last
+  // tab, which would otherwise take the button down with it.
+  std::vector<SessionID> ephemeral_button_eligible_tabs_;
   base::ScopedObservation<SidePanelEntry, SidePanelEntryObserver>
       contextual_task_entry_observation_{this};
   raw_ptr<BrowserWindowInterface> browser_window_interface_ = nullptr;
