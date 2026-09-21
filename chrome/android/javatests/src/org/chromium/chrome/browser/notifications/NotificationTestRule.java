@@ -11,15 +11,19 @@ import org.junit.Assert;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy.NotificationEntry;
+import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -42,6 +46,16 @@ public class NotificationTestRule extends ChromeTabbedActivityTestRule {
     private MockNotificationManagerProxy mMockNotificationManager;
 
     private void setUp() {
+        // Ensure startup notification channels (such as ChannelId.BROWSER) exist in the real
+        // Android NotificationManager so foreground services calling Service.startForeground() do
+        // not crash with RemoteServiceException ("invalid channel for service notification") when
+        // BaseNotificationManagerProxyFactory is overridden with MockNotificationManagerProxy.
+        new ChannelsInitializer(
+                        NotificationManagerProxyImpl.getInstance(),
+                        ChromeChannelDefinitions.getInstance(),
+                        ContextUtils.getApplicationContext().getResources())
+                .initializeStartupChannels();
+
         // The NotificationPlatformBridge must be overriden prior to the browser process starting.
         mMockNotificationManager = new MockNotificationManagerProxy();
         BaseNotificationManagerProxyFactory.setInstanceForTesting(mMockNotificationManager);
