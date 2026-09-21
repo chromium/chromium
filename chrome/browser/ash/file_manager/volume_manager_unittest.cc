@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <optional>
 #include <set>
@@ -79,9 +80,9 @@ using ::ash::disks::FakeDiskMountManager;
 using base::FilePath;
 using ::testing::UnorderedElementsAre;
 
-std::vector<std::string> arc_volume_ids = {
-    arc::kImagesRootId, arc::kVideosRootId, arc::kAudioRootId,
-    arc::kDocumentsRootId, "android_files:0"};
+constexpr auto kArcVolumeIds = std::to_array<const char*>(
+    {arc::kImagesRootId, arc::kVideosRootId, arc::kAudioRootId,
+     arc::kDocumentsRootId, "android_files:0"});
 
 const char kAllowlistedVendorId[] = "A123";
 const char kAllowlistedProductId[] = "456B";
@@ -1382,10 +1383,10 @@ TEST_F(VolumeManagerArcTest, OnArcPlayStoreEnabledChanged_Enabled) {
     EXPECT_EQ(LoggingObserver::Event::VOLUME_MOUNTED, event.type());
     EXPECT_EQ(ash::MountError::kSuccess, event.mount_error());
     if (index < 4) {
-      EXPECT_EQ(arc::GetMediaViewVolumeId(arc_volume_ids[index]),
+      EXPECT_EQ(arc::GetMediaViewVolumeId(kArcVolumeIds[index]),
                 event.volume_id());
     } else {
-      EXPECT_EQ(arc_volume_ids[index], event.volume_id());
+      EXPECT_EQ(kArcVolumeIds[index], event.volume_id());
     }
     index++;
   }
@@ -1407,10 +1408,10 @@ TEST_F(VolumeManagerArcTest, OnArcPlayStoreEnabledChanged_Disabled) {
     EXPECT_EQ(LoggingObserver::Event::VOLUME_UNMOUNTED, event.type());
     EXPECT_EQ(ash::MountError::kSuccess, event.mount_error());
     if (index < 4) {
-      EXPECT_EQ(arc::GetMediaViewVolumeId(arc_volume_ids[index]),
+      EXPECT_EQ(arc::GetMediaViewVolumeId(kArcVolumeIds[index]),
                 event.volume_id());
     } else {
-      EXPECT_EQ(arc_volume_ids[index], event.volume_id());
+      EXPECT_EQ(kArcVolumeIds[index], event.volume_id());
     }
     index++;
   }
@@ -1433,10 +1434,10 @@ TEST_F(VolumeManagerArcTest, ShouldAlwaysMountAndroidVolumesInFilesForTesting) {
     EXPECT_EQ(LoggingObserver::Event::VOLUME_MOUNTED, event.type());
     EXPECT_EQ(ash::MountError::kSuccess, event.mount_error());
     if (index < 4) {
-      EXPECT_EQ(arc::GetMediaViewVolumeId(arc_volume_ids[index]),
+      EXPECT_EQ(arc::GetMediaViewVolumeId(kArcVolumeIds[index]),
                 event.volume_id());
     } else {
-      EXPECT_EQ(arc_volume_ids[index], event.volume_id());
+      EXPECT_EQ(kArcVolumeIds[index], event.volume_id());
     }
     index++;
   }

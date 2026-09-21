@@ -223,10 +223,6 @@ static_library("file_manager") {
     "//chrome/browser/ash/guest_os/public",
     "//chrome/browser/ash/policy/dlp",
   ]
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 static_library("test_support") {
@@ -396,10 +392,6 @@ source_set("unit_tests") {
     "//ui/shell_dialogs",
     "//url",
   ]
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("browser_tests") {
@@ -587,10 +579,6 @@ source_set("browser_tests") {
   if (enable_pdf) {
     deps += [ "//pdf:features" ]
   }
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (!is_chromeos_device) {

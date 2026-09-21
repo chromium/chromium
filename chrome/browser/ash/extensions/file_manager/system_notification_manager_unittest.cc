@@ -172,8 +172,11 @@ class DeviceEventRouterImpl : public DeviceEventRouter {
 };
 
 constexpr char kDevicePath[] = "/device/test";
+constexpr char kDeviceLabel[] = "MyUSB";
 constexpr char kMountPath[] = "/mnt/media/sda1";
-std::u16string kRemovableDeviceTitle = u"Removable device detected";
+constexpr char16_t kRemovableDeviceTitle[] = u"Removable device detected";
+constexpr char16_t kFormatTitle[] = u"Format MyUSB";
+constexpr char16_t kGoogleDrive[] = u"Google Drive";
 
 }  // namespace
 
@@ -328,9 +331,6 @@ TEST_F(SystemNotificationManagerTest, ExternalStorageDisabled) {
       kNotificationShowHistogramName,
       DeviceNotificationUmaType::DEVICE_EXTERNAL_STORAGE_DISABLED, 1);
 }
-
-constexpr char kDeviceLabel[] = "MyUSB";
-std::u16string kFormatTitle = u"Format MyUSB";
 
 TEST_F(SystemNotificationManagerTest, FormatStart) {
   base::HistogramTester histogram_tester;
@@ -1105,8 +1105,6 @@ TEST_F(SystemNotificationManagerTest, HandleIOTaskProgressPolicyScanning) {
   // Notification should disappear.
   ASSERT_EQ(0u, GetNotificationCount());
 }
-
-std::u16string kGoogleDrive = u"Google Drive";
 
 // Tests the bulk-pinning notifications.
 TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {

@@ -5,9 +5,9 @@
 #include "chrome/browser/ash/file_manager/cloud_upload_prompt_prefs_handler.h"
 
 #include <memory>
-#include <vector>
 
 #include "ash/constants/ash_pref_names.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
@@ -35,7 +35,7 @@ struct PrefInfo {
   ash::cloud_upload::CloudProvider cloud_provider;
 };
 
-const std::vector<PrefInfo> kCloudUploadPrefs = {
+constexpr PrefInfo kCloudUploadPrefs[] = {
     {ash::prefs::kOfficeFilesAlwaysMoveToDrive,
      ash::prefs::kOfficeFilesAlwaysMoveToDriveSyncable,
      ash::cloud_upload::CloudProvider::kGoogleDrive},
@@ -109,7 +109,7 @@ void MaybeLogMismatchedValues(Profile* profile, const PrefInfo& pref_info) {
 // Initializes syncable prefs with local pref values if uninitialized,
 // otherwise logs unexpected mismatches.
 void InitializeSyncablePrefs(Profile* profile,
-                             const std::vector<PrefInfo>& prefs) {
+                             base::span<const PrefInfo> prefs) {
   for (const PrefInfo& pref_info : prefs) {
     const PrefService::Preference* pref =
         profile->GetPrefs()->FindPreference(pref_info.syncable_pref);

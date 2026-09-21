@@ -9,7 +9,6 @@
 #include "ash/webui/file_manager/resources/grit/file_manager_swa_resources_map.h"
 #include "ash/webui/file_manager/url_constants.h"
 #include "base/check_deref.h"
-#include "base/lazy_instance.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/file_manager/file_manager_string_util.h"
@@ -33,18 +32,25 @@
 
 namespace {
 
+GURL TestResourceUrl() {
+  return GURL(content::GetWebUIURLString("webui-test"));
+}
+
+}  // namespace
+
 // WebUIProvider to attach the URLDataSource for the test URL during tests.
 // Used to start the unittest from a chrome:// URL which allows unittest files
 // (HTML/JS/CSS) to load other resources from WebUI URLs chrome://*.
-class TestWebUIProvider
+class FileManagerTestWebUIProvider
     : public TestChromeWebUIControllerFactory::WebUIProvider {
  public:
-  TestWebUIProvider() = default;
+  FileManagerTestWebUIProvider() = default;
 
-  TestWebUIProvider(const TestWebUIProvider&) = delete;
-  TestWebUIProvider& operator=(const TestWebUIProvider&) = delete;
+  FileManagerTestWebUIProvider(const FileManagerTestWebUIProvider&) = delete;
+  FileManagerTestWebUIProvider& operator=(const FileManagerTestWebUIProvider&) =
+      delete;
 
-  ~TestWebUIProvider() override = default;
+  ~FileManagerTestWebUIProvider() override = default;
 
   std::unique_ptr<content::WebUIController> NewWebUI(content::WebUI* web_ui,
                                                      const GURL& url) override {
@@ -104,16 +110,6 @@ class TestWebUIProvider
   base::DictValue dict_;
 };
 
-base::LazyInstance<TestWebUIProvider>::DestructorAtExit test_webui_provider_ =
-    LAZY_INSTANCE_INITIALIZER;
-
-static const GURL TestResourceUrl() {
-  static GURL url(content::GetWebUIURLString("webui-test"));
-  return url;
-}
-
-}  // namespace
-
 FileManagerJsTestBase::FileManagerJsTestBase(const base::FilePath& base_path)
     : base_path_(base_path) {}
 
@@ -165,6 +161,7 @@ void FileManagerJsTestBase::SetUpOnMainThread() {
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
       pak_path, ui::kScaleFactorNone);
 
+  test_webui_provider_ = std::make_unique<FileManagerTestWebUIProvider>();
   webui_controller_factory_ =
       std::make_unique<TestChromeWebUIControllerFactory>();
   webui_controller_factory_registration_ =
@@ -172,7 +169,7 @@ void FileManagerJsTestBase::SetUpOnMainThread() {
           webui_controller_factory_.get(),
           ChromeWebUIControllerFactory::GetInstance());
   webui_controller_factory_->AddFactoryOverride(TestResourceUrl().GetHost(),
-                                                test_webui_provider_.Pointer());
+                                                test_webui_provider_.get());
   Profile* profile = browser()->GetProfile();
   file_manager::test::AddDefaultComponentExtensionsOnMainThread(profile);
 
