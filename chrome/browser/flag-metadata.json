@@ -393,13 +393,13 @@
   },
   {
     "name": "android-desktop-ua-platform",
-    "owners": [ "victortan@chromium.org", "miketaylr@chromium.org" ],
-    "expiry_milestone": 155
+    "owners": [ "victortan@chromium.org", "miketaylr@chromium.org", "skavuluru@google.com" ],
+    "expiry_milestone": 165
   },
   {
     "name": "android-desktop-ua-spoof-as-chromeos",
-    "owners": [ "sxm@chromium.org", "victortan@chromium.org", "miketaylr@chromium.org" ],
-    "expiry_milestone": 155
+    "owners": [ "sxm@chromium.org", "victortan@chromium.org", "miketaylr@chromium.org", "skavuluru@google.com" ],
+    "expiry_milestone": 165
   },
   {
     "name": "android-desktop-webprefs-large-display",
