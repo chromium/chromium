@@ -239,15 +239,21 @@ impl MultiplexRouter {
     /// Optionally the user may provide a disconnect handler, which will be run
     /// if the endpoint can no longer receive messages from the other side of
     /// the pipe.
-    pub(super) fn bind_interface(&self, interface_id: InterfaceId, endpoint_info: EndpointInfo) {
+    pub(crate) fn bind_interface(&self, interface_id: InterfaceId, endpoint_info: EndpointInfo) {
         {
             let mut shared_state = self.shared_state.lock().unwrap();
-            shared_state
-                .registry
-                .endpoint_map
-                .get_mut(&interface_id)
-                .map(|info_opt| *info_opt = Some(endpoint_info))
-                .expect("bind_interface should only be called for real interface IDs");
+            // TODO(crbug.com/524990003): It's sometimes valid for the interface
+            // ID to not yet be in the map; figure out the specific conditions
+            // and document/check for them.
+            let previous =
+                shared_state.registry.endpoint_map.insert(interface_id, Some(endpoint_info));
+            // Overwriting an entry is always a bug: either the endpoint was
+            // already bound (and we just threw away its handlers),
+            // or it was removed because it was disconnected.
+            assert!(
+                !matches!(previous, Some(Some(_))),
+                "Endpoint {interface_id} was already bound to this router"
+            );
             // If the router's underlying pipe has been disconnected, we should
             // immediately schedule the disconnect router for this endpoint.
             // Note that if any messages have already arrived for
@@ -277,8 +283,13 @@ impl MultiplexRouter {
     /// entire pipe is closed, so instead we send disconnect messages to all
     /// the _associated_ interfaces on this side. The other endpoint's router
     /// will handle the notification to the interfaces on the other side.
-    pub(super) fn notify_dropped(&self, interface_id: InterfaceId) {
-        let _ = self.shared_state.lock().unwrap().registry.endpoint_map.remove(&interface_id);
+    pub(crate) fn notify_dropped(&self, interface_id: InterfaceId) {
+        // If the interface was already removed, no need to do anything
+        let previous =
+            self.shared_state.lock().unwrap().registry.endpoint_map.remove(&interface_id);
+        if previous.is_none() {
+            return;
+        }
         if interface_id == PRIMARY_INTERFACE_ID {
             // If the primary interface is being dropped, then we don't need to
             // notify it of anything, but we do need to alert all the associated
@@ -374,6 +385,12 @@ impl MultiplexRouter {
                     // _yet_ registered, because you can't
                     // send messages until one side is bound to a pipe, and that
                     // process registers both sides.
+                    // TODO(crbug.com/524990003): It actually is possible to get
+                    // a _disconnect_ notification for an
+                    // ID which we haven't yet registered. In that case we'll
+                    // need to mark it as "preemptively disconnected" and run
+                    // the disconnect handler if it ever
+                    // gets bound, rather than blocking everything.
                     unscheduled_tasks.pop_front();
                     continue;
                 }
@@ -382,7 +399,10 @@ impl MultiplexRouter {
                     // to anything yet. We can't handle this
                     // message until that happens. To preserve FIFO ordering,
                     // we can't process any later messages either, so we're done
-                    // for now.
+                    // for now. TODO(crbug.com/524990003):
+                    // Actually, maybe this shouldn't block future
+                    // messages, and instead it should also mark as
+                    // "preemptively disconnected".
                     return;
                 }
                 Some(Some(endpoint_info)) => endpoint_info,

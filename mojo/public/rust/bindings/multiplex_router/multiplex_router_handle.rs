@@ -27,10 +27,11 @@ use super::multiplex_router::{InterfaceId, MultiplexRouter, PRIMARY_INTERFACE_ID
 /// the corresponding disconnect handler.
 pub(crate) struct MultiplexRouterHandle {
     interface_id: InterfaceId,
-    // This is a strong reference because the router may still need to process
-    // tasks for associated interfaces even after the primary interface closes
-    // (if there were messages that haven't yet been delivered). So we need to
-    // make sure it remains open.
+    // This holds a strong reference to the router's shared state, which ensures
+    // that the router can still process queued tasks for associated interfaces
+    // even after the primary interface closes (if there were messages that
+    // haven't yet been delivered). The endpoint watcher only has a strong ref
+    // for the primary interface, which owns it.
     router: MultiplexRouter,
 }
 
@@ -110,7 +111,7 @@ impl MultiplexRouterHandle {
         endpoint_info: Option<EndpointInfo>,
     ) -> Option<Self> {
         let interface_id = self.router.add_associated_interface(interface_id, endpoint_info)?;
-        Some(Self { interface_id, router: self.router.clone() })
+        Some(Self { interface_id, router: self.router.clone_and_downgrade() })
     }
 
     /// Inform the `MultiplexRouter` that this endpoint has been bound to a
