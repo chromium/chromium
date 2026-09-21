@@ -54,6 +54,7 @@ cast_source_set("unittests") {
     "base/demuxer_stream_for_test.h",
     "base/multi_demuxer_stream_adapter_unittest.cc",
     "pipeline/audio_video_pipeline_impl_unittest.cc",
+    "pipeline/backend_decryptor_unittest.cc",
     "pipeline/media_pipeline_impl_unittest.cc",
   ]
 
