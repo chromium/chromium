@@ -1,0 +1,444 @@
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Skills Test Client (V2)</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      font-size: 13px;
+    }
+
+    .draggable {
+      -webkit-app-region: drag;
+    }
+
+    .not-draggable {
+      -webkit-app-region: no-drag;
+    }
+
+    #pageHeader {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 10px;
+      background: lightgray;
+    }
+
+    #pageHeader.connected {
+      background: green;
+      color: white;
+    }
+
+    #pageHeader h1 {
+      margin: 0;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header-controls {
+      display: flex;
+      gap: 6px;
+    }
+
+    .status-badge {
+      font-size: 11px;
+      padding: 2px 6px;
+      background: white;
+      color: black;
+    }
+
+    .status-badge.connected {
+      color: green;
+      font-weight: bold;
+    }
+
+    #content {
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .section {
+      border: 1px solid gray;
+      padding: 8px;
+    }
+
+    .section h2 {
+      margin: 0 0 8px 0;
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid lightgray;
+      padding-bottom: 4px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 8px;
+    }
+
+    .form-row {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      margin-bottom: 6px;
+    }
+
+    .form-row.inline {
+      flex-direction: row;
+      align-items: center;
+      gap: 6px;
+    }
+
+    label {
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    textarea,
+    select {
+      width: 100%;
+    }
+
+    textarea {
+      min-height: 40px;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 4px;
+    }
+
+    button.danger {
+      color: red;
+    }
+
+    .info-box {
+      background: whitesmoke;
+      border: 1px solid gray;
+      padding: 6px;
+      font-family: monospace;
+      font-size: 11px;
+      word-break: break-all;
+    }
+
+    .log-container {
+      max-height: 150px;
+      overflow-y: auto;
+      border: 1px solid gray;
+      padding: 4px;
+      font-family: monospace;
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .log-entry {
+      border-bottom: 1px solid #eee;
+      white-space: pre-wrap;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 1px 4px;
+      font-size: 11px;
+      background: #eee;
+      border: 1px solid gray;
+      font-family: monospace;
+    }
+
+    #status {
+      font-size: 11px;
+      color: gray;
+    }
+  </style>
+</head>
+<body>
+  <div id="pageHeader" class="draggable">
+    <h1>
+      <span>Skills Test Client (V2)</span>
+      <span id="connectionStatus" class="status-badge not-draggable">Waiting for Handshake...</span>
+    </h1>
+    <div class="header-controls not-draggable">
+      <button id="refreshBtn" class="small secondary" title="Reload page">🔄 Reload</button>
+      <button id="closeDialogHeaderBtn" class="small danger" title="Close Dialog">✕ Close</button>
+    </div>
+  </div>
+
+  <div id="content">
+    <!-- Page & Route Info -->
+    <div class="section">
+      <h2>Page & Route Status</h2>
+      <div class="form-row">
+        <div>Path: <span id="currentPath" class="pill">/chromeskills/browse</span></div>
+        <div style="margin-top: 4px;">Query Params: <span id="queryParamsDisplay" class="pill">(none)</span></div>
+      </div>
+      <div class="button-row">
+        <button id="navBrowseBtn" class="secondary small">Browse (/chromeskills/browse)</button>
+        <button id="navYourSkillsBtn" class="secondary small">Your Skills (/chromeskills/yourSkills)</button>
+        <button id="navAddDialogBtn" class="secondary small">Add Dialog (/chromeskills/dialog)</button>
+        <button id="navEditDialogBtn" class="secondary small">Edit Dialog</button>
+        <button id="navEditorBtn" class="secondary small">Full Page Editor (/chromeskills/editor)</button>
+      </div>
+      <div class="form-row inline" style="margin-top: 8px;">
+        <input type="text" id="customNavPathInput" placeholder="/chromeskills/yourSkills?hl=en" style="max-width: 300px;" />
+        <button id="customNavBtn" class="secondary small">Simulate Path Change</button>
+      </div>
+    </div>
+
+    <!-- Received from Host -->
+    <div class="section">
+      <h2>Received from Chrome Host</h2>
+      <div class="form-row">
+        <label for="geminiPromptReceived">Gemini Prompt (skills-gemini-prompt):</label>
+        <textarea id="geminiPromptReceived" readonly placeholder="No prompt received yet..."></textarea>
+        <div class="button-row">
+          <button id="copyGeminiPromptBtn" class="secondary small">Copy to Prompt Input</button>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label>Skill Dialog Info (skills-dialog-info):</label>
+        <div class="info-box">
+          <div>Icon: <span id="dialogInfoIcon">(none)</span></div>
+          <div>Name: <span id="dialogInfoName">(none)</span></div>
+          <div>Description: <span id="dialogInfoDescription">(none)</span></div>
+          <div>Instructions: <span id="dialogInfoInstructions">(none)</span></div>
+        </div>
+        <div class="button-row">
+          <button id="copyDialogInfoBtn" class="secondary small">Copy to Editor Inputs</button>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div><strong>Undo Status:</strong> <span id="undoStatus" class="pill">No undo event received</span></div>
+        <div style="margin-top: 4px;"><strong>Toast Closed Status:</strong> <span id="toastClosedStatus" class="pill">No toast closed event received</span></div>
+      </div>
+    </div>
+
+    <!-- Provided Skills -->
+    <div class="section">
+      <h2>
+        <span>Provided Skills (Enterprise / Configured)</span>
+        <span id="providedSkillsCount" class="pill">(0 skills)</span>
+      </h2>
+      <div class="form-row">
+        <label>Available Provided Skills (send-provided-skills):</label>
+        <div id="providedSkillsList" class="log-container" style="max-height: 150px; padding: 6px;">
+          <div style="color: gray; padding: 4px;">No provided skills loaded yet...</div>
+        </div>
+      </div>
+
+      <div class="form-row" style="margin-top: 10px;">
+        <label for="getProvidedSkillIdInput">Fetch Provided Skill Details (get-provided-skill):</label>
+        <div class="form-row inline">
+          <input type="text" id="getProvidedSkillIdInput" placeholder="Enter Skill ID" style="max-width: 250px;" />
+          <button id="getProvidedSkillBtn">Fetch Skill Details</button>
+        </div>
+      </div>
+
+      <div class="form-row" style="margin-top: 8px;">
+        <label>Provided Skill Details (provided-skill-info):</label>
+        <div id="providedSkillDetailInfo" class="info-box">
+          <div>ID: <span id="providedSkillDetailId">(none)</span></div>
+          <div>Name: <span id="providedSkillDetailName">(none)</span></div>
+          <div>Icon: <span id="providedSkillDetailIcon">(none)</span></div>
+          <div>Category: <span id="providedSkillDetailCategory">(none)</span></div>
+          <div>Curated By: <span id="providedSkillDetailCuratedBy">(none)</span></div>
+          <div>Description: <span id="providedSkillDetailDescription">(none)</span></div>
+        </div>
+      </div>
+
+      <div class="form-row" style="margin-top: 8px;">
+        <label for="providedSkillPrompt">Skill Prompt / Instructions:</label>
+        <textarea id="providedSkillPrompt" readonly placeholder="No prompt loaded yet..."></textarea>
+        <div class="button-row">
+          <button id="copyProvidedSkillPromptBtn" class="secondary small">Copy to Main Prompt Input</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="section">
+      <h2>Toast Notifications (show-toast)</h2>
+      <div class="form-grid">
+        <div class="form-row">
+          <label for="toastSkillIdInput">Skill ID:</label>
+          <input type="text" id="toastSkillIdInput" value="skill_sample_01" />
+        </div>
+        <div class="form-row">
+          <label for="toastSkillNameInput">Skill Name:</label>
+          <input type="text" id="toastSkillNameInput" value="Research Assistant" />
+        </div>
+        <div class="form-row">
+          <label for="toastSkillIconInput">Skill Icon (Emoji):</label>
+          <input type="text" id="toastSkillIconInput" value="🔍" />
+        </div>
+      </div>
+      <div class="button-row">
+        <button id="showSaveToastBtn">Show Save Toast</button>
+        <button id="showSaveAndInvokeToastBtn">Show Save &amp; Invoke Toast</button>
+      </div>
+
+      <div class="form-row" style="margin-top: 12px;">
+        <label for="deleteToastSkillIdInput">Delete Toast Skill ID:</label>
+        <div class="form-row inline">
+          <input type="text" id="deleteToastSkillIdInput" value="skill_sample_01" style="max-width: 250px;" />
+          <button id="showDeleteToastBtn" class="danger">Show Delete Toast (with Undo)</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Skill Invocation -->
+    <div class="section">
+      <h2>Skill Invocation (invoke-skill)</h2>
+      <div class="form-grid">
+        <div class="form-row">
+          <label for="invokeSkillIdInput">Skill ID:</label>
+          <input type="text" id="invokeSkillIdInput" value="skill_sample_01" />
+        </div>
+        <div class="form-row">
+          <label for="invokeSkillNameInput">Skill Name:</label>
+          <input type="text" id="invokeSkillNameInput" value="Translate to French" />
+        </div>
+        <div class="form-row">
+          <label for="invokeSkillIconInput">Skill Icon:</label>
+          <input type="text" id="invokeSkillIconInput" value="🇫🇷" />
+        </div>
+      </div>
+      <div class="button-row">
+        <button id="invokeSkillBtn">Invoke Skill</button>
+      </div>
+    </div>
+
+    <!-- Send Prompt -->
+    <div class="section">
+      <h2>Send Prompt (send-prompt)</h2>
+      <div class="form-row">
+        <label for="promptInput">Prompt content to send to host:</label>
+        <textarea id="promptInput">Explain the concept of WebViews in Chromium.</textarea>
+      </div>
+      <div class="button-row">
+        <button id="sendPromptBtn">Send Prompt to Host</button>
+      </div>
+    </div>
+
+    <!-- Full Page Editor & Open URL -->
+    <div class="section">
+      <h2>Full Page Editor &amp; URL Linkout</h2>
+      <div class="form-grid">
+        <div class="form-row">
+          <label for="editorUrlInput">Editor URL:</label>
+          <input type="text" id="editorUrlInput" value="/chromeskills/yourSkills" />
+        </div>
+        <div class="form-row">
+          <label for="editorSkillIconInput">Skill Icon:</label>
+          <input type="text" id="editorSkillIconInput" value="🤖" />
+        </div>
+        <div class="form-row">
+          <label for="editorSkillNameInput">Skill Name:</label>
+          <input type="text" id="editorSkillNameInput" value="Code Refactorer" />
+        </div>
+        <div class="form-row">
+          <label for="editorSkillDescInput">Skill Description:</label>
+          <input type="text" id="editorSkillDescInput" value="Refactor code for clarity and performance." />
+        </div>
+      </div>
+      <div class="form-row">
+        <label for="editorSkillInstructionsInput">Skill Instructions:</label>
+        <textarea id="editorSkillInstructionsInput">Refactor the selected code snippet following Chromium C++ style guidelines.</textarea>
+      </div>
+      <div class="button-row">
+        <button id="openEditorBtn">Open Full Page Editor</button>
+      </div>
+
+      <div class="form-row" style="margin-top: 12px;">
+        <label for="openUrlInput">Open URL (open-url in new tab):</label>
+        <div class="form-row inline">
+          <input type="text" id="openUrlInput" value="https://www.google.com" style="max-width: 300px;" />
+          <button id="openUrlBtn" class="secondary">Open in New Tab</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Performance Metrics -->
+    <div class="section">
+      <h2>Performance Metrics Logging (log-metric)</h2>
+      <div class="form-grid">
+        <div class="form-row">
+          <label for="metricFrameworkLoadTime">Framework Load Time (ms):</label>
+          <div class="form-row inline">
+            <input type="number" id="metricFrameworkLoadTime" value="120" />
+            <button id="sendFrameworkMetricBtn" class="secondary small">Send</button>
+          </div>
+        </div>
+        <div class="form-row">
+          <label for="metricWebClientLoadTime">Web Client Load Time (ms):</label>
+          <div class="form-row inline">
+            <input type="number" id="metricWebClientLoadTime" value="250" />
+            <button id="sendWebClientMetricBtn" class="secondary small">Send</button>
+          </div>
+        </div>
+        <div class="form-row">
+          <label for="metricDataFetchTime">Data Fetch Time (ms):</label>
+          <div class="form-row inline">
+            <input type="number" id="metricDataFetchTime" value="300" />
+            <button id="sendDataFetchMetricBtn" class="secondary small">Send</button>
+          </div>
+        </div>
+        <div class="form-row">
+          <label for="metricDataSaveTime">Data Save Time (ms):</label>
+          <div class="form-row inline">
+            <input type="number" id="metricDataSaveTime" value="450" />
+            <button id="sendDataSaveMetricBtn" class="secondary small">Send</button>
+          </div>
+        </div>
+      </div>
+      <div class="button-row">
+        <button id="sendAllMetricsBtn">Log All Performance Metrics</button>
+      </div>
+    </div>
+
+    <!-- Dialog Controls -->
+    <div class="section">
+      <h2>Dialog Controls (close-dialog)</h2>
+      <div class="button-row">
+        <button id="closeDialogBtn" class="danger">Close Dialog</button>
+      </div>
+    </div>
+
+    <!-- Message & Event Log -->
+    <div class="section">
+      <h2>
+        <span>Event &amp; Message Log</span>
+        <button id="clearLogBtn" class="secondary small">Clear Log</button>
+      </h2>
+      <div id="eventLog" class="log-container"></div>
+      <div id="status"></div>
+    </div>
+  </div>
+
+  <script src="./test_client.js" type="module"></script>
+</body>
+</html>

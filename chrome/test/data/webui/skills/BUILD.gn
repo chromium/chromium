@@ -1,4 +1,46 @@
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/typescript/ts_library.gni")
 import("../build_webui_tests.gni")
+
+out_dir = target_gen_dir
+
+group("generate_test_files") {
+  data_deps = [
+    ":build_extra_ts",
+    ":move_html",
+    ":move_md",
+  ]
+}
+
+ts_library("build_extra_ts") {
+  out_dir = out_dir
+  in_files = [
+    "test_client/client.ts",
+    "test_client/test_client.ts",
+    "test_client/page_element_types.ts",
+  ]
+  deps = [ "//chrome/browser/resources/skills:build_ts" ]
+
+  definitions = [
+    "//tools/typescript/definitions/chrome_event.d.ts",
+    "//tools/typescript/definitions/webview_tag.d.ts",
+  ]
+
+  path_mappings = [ "chrome://skills/*|" + rebase_path(
+                        "$root_gen_dir/chrome/browser/resources/skills/tsc/*",
+                        target_gen_dir) ]
+  tsconfig_base = "tsconfig.base.json"
+}
+
+preprocess_if_expr("move_html") {
+  in_files = [ "test_client/index.html" ]
+  out_folder = out_dir
+}
+
+preprocess_if_expr("move_md") {
+  in_files = [ "test_client/README.md" ]
+  out_folder = out_dir
+}
 
 build_webui_tests("build") {
   cc_test_files = [ "skills_browsertest.cc" ]

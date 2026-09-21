@@ -1,0 +1,3 @@
+{
+  "extends": "../../../../../tools/typescript/tsconfig_base.json"
+}

@@ -119,10 +119,14 @@ if (!is_android) {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-    sources = [ "skills_page_interactive_uitest.cc" ]
+    sources = [
+      "skills_page_interactive_uitest.cc",
+      "skills_webview_v2_interactive_uitest.cc",
+    ]
     deps = [
       ":skills",
       "//chrome/browser/glic",
+      "//chrome/browser/glic/test_support",
       "//chrome/browser/optimization_guide",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/signin",
@@ -134,6 +138,7 @@ if (!is_android) {
       "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/common",
       "//chrome/test:test_support",
+      "//chrome/test/data/webui/skills:generate_test_files",
       "//components/keyed_service/content",
       "//components/signin/public/identity_manager",
       "//components/signin/public/identity_manager:test_support",
@@ -145,6 +150,7 @@ if (!is_android) {
       "//components/sync/model",
       "//components/zoom",
       "//content/test:test_support",
+      "//net:test_support",
       "//ui/base/interaction",
       "//ui/native_theme",
     ]
