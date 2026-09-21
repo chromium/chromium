@@ -453,6 +453,20 @@ In summary:
   - [`@Batch(PER_CLASS)`] for integration tests
   - [`@DoNotBatch`] for when each test method requires an app restart
 
+### Style and Conventions
+
+- **Mocks and Captors**: Tests should prefer `@Mock Foo mFoo` over
+  `Mockito.mock(Foo.class)`, and `@Captor ArgumentCaptor<Foo> mFooCaptor` over
+  `ArgumentCaptor.forClass(Foo.class)`. The annotations make it easy to see
+  which objects are mocks or captors, and encourage reusing them between test
+  cases. Inline mock creation (e.g. `Mockito.mock(Foo.class)`) should only be
+  used when a variable number of mocks are needed.
+- **Static Imports**: Tests should typically use static imports for functions
+  from `org.junit.Assert`, `org.mockito.Mockito`, and
+  `org.mockito.ArgumentMatchers` as this helps keep code terse and more
+  readable. There is not much ambiguity about which classes these commonly used
+  functions come from.
+
 ### Test-only Code
 
 Functions and fields used only for testing should have `ForTesting` as a suffix
