@@ -1008,13 +1008,6 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 
 - (void)didAcceptManagedConfirmationWithBrowsingDataSeparate:
     (BOOL)browsingDataSeparate {
-  // Only show the dialog once per account.
-  signin::GaiaIdHash gaiaIDHash =
-      signin::GaiaIdHash::FromGaiaId(_identityToSignIn.gaiaId);
-  syncer::SetAccountKeyedPrefValue([self prefs],
-                                   prefs::kSigninHasAcceptedManagementDialog,
-                                   gaiaIDHash, base::Value(true));
-
   _shouldConvertPersonalProfileToManaged = !browsingDataSeparate;
 
   // When we show the managed profile screen, the profile is a new one, ensure

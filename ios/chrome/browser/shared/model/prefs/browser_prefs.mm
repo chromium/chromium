@@ -226,6 +226,10 @@ inline constexpr char kHomeCustomizationMagicStackSetUpListEnabled[] =
 inline constexpr char kNTPFollowingFeedSortType[] =
     "ios.ntp.following_feed.sort_type";
 
+// Deprecated 09/2026.
+inline constexpr char kSigninHasAcceptedManagementDialog[] =
+    "ios.signin.has_accepted_management_dialog";
+
 // Renames a boolean pref within a PrefService.
 void RenameBooleanPref(std::string_view target_pref_name,
                        std::string_view source_pref_name,
@@ -947,6 +951,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(kHomeCustomizationMagicStackSetUpListEnabled,
                                 false);
   registry->RegisterIntegerPref(kNTPFollowingFeedSortType, 0);
+
+  // Deprecated 09/2026.
+  registry->RegisterDictionaryPref(kSigninHasAcceptedManagementDialog);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1042,6 +1049,9 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   prefs->ClearPref(kMigratedToQuickDeletePrefValues);
   prefs->ClearPref(kHomeCustomizationMagicStackSetUpListEnabled);
   prefs->ClearPref(kNTPFollowingFeedSortType);
+
+  // Deprecated 09/2026.
+  prefs->ClearPref(kSigninHasAcceptedManagementDialog);
 }
 
 void MigrateObsoleteUserDefault() {

@@ -855,9 +855,6 @@ void AuthenticationService::ClearAccountSettingsPrefsOfRemovedAccounts() {
   }
   sync_service_->GetUserSettings()->KeepAccountSettingsPrefsOnlyForUsers(
       available_gaia_ids);
-  syncer::KeepAccountKeyedPrefValuesOnlyForUsers(
-      pref_service_, prefs::kSigninHasAcceptedManagementDialog,
-      base::ToVector(available_gaia_ids, &signin::GaiaIdHash::FromGaiaId));
 }
 
 bool AuthenticationService::IsPersonalProfile() {

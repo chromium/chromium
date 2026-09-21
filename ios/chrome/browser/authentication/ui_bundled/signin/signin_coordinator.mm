@@ -73,7 +73,6 @@ using signin_metrics::PromoAction;
 + (void)registerProfilePrefs:(user_prefs::PrefRegistrySyncable*)registry {
   // ConsistencyPromoSigninCoordinator.
   registry->RegisterIntegerPref(prefs::kSigninWebSignDismissalCount, 0);
-  registry->RegisterDictionaryPref(prefs::kSigninHasAcceptedManagementDialog);
 }
 
 + (SigninCoordinator*)signinCoordinatorWithCommand:(ShowSigninCommand*)command
