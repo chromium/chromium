@@ -292,6 +292,18 @@ void PlatformNotificationContextImpl::CreateService(
     RenderProcessHost::NotificationServiceCreatorType creator_type,
     mojo::PendingReceiver<blink::mojom::NotificationService> receiver) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+
+  // The BrowserContext is going away: Shutdown() has already cleared
+  // `browser_context_` and destroyed the services owned by this context.
+  // Requests can still arrive here because renderer pipes stay connected until
+  // the `RenderProcessHost` instances are torn down, which happens *after*
+  // storage partition shutdown (see
+  // BrowserContextImpl::NotifyWillBeDestroyed()). Drop the receiver; the
+  // renderer treats the closed pipe as "notifications unavailable".
+  if (has_shutdown_.load(std::memory_order_relaxed)) {
+    return;
+  }
+
   services_.push_back(std::make_unique<BlinkNotificationServiceImpl>(
       this, browser_context_, service_worker_context_, render_process_host,
       storage_key, document_url, weak_document_ptr, creator_type,

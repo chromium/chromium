@@ -20,15 +20,20 @@
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/public/browser/notification_database_data.h"
 #include "content/public/browser/permission_result.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_permission_manager.h"
+#include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/mock_platform_notification_service.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/notifications/notification_resources.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/notifications/notification_service.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
@@ -735,6 +740,37 @@ TEST_F(PlatformNotificationContextTest, DestroyOnDiskDatabase) {
 
   // The database's directory should be empty at this point.
   EXPECT_TRUE(IsDirectoryEmpty(database_dir.GetPath()));
+}
+
+TEST_F(PlatformNotificationContextTest,
+       CreateServiceAfterShutdownDropsReceiver) {
+  scoped_refptr<PlatformNotificationContextImpl> context =
+      CreatePlatformNotificationContext();
+  MockRenderProcessHost render_process_host(browser_context());
+  GURL origin("https://example.com");
+  context->Shutdown();
+
+  // Bind before setting the handler: set_disconnect_handler() requires a bound
+  // Remote (it calls is_connected(), which DCHECKs is_bound()).
+  mojo::Remote<blink::mojom::NotificationService> remote;
+  auto receiver = remote.BindNewPipeAndPassReceiver();
+  base::RunLoop run_loop;
+  remote.set_disconnect_handler(run_loop.QuitClosure());
+
+  // Mirrors an in-flight BrowserInterfaceBroker request dispatched after the
+  // storage partition has been shut down but before the RenderProcessHost is
+  // torn down.
+  context->CreateService(
+      &render_process_host,
+      blink::StorageKey::CreateFromStringForTesting(origin.spec()), origin,
+      WeakDocumentPtr(),
+      RenderProcessHost::NotificationServiceCreatorType::kDocument,
+      std::move(receiver));
+
+  // The request must be dropped rather than bound to a service with a null
+  // BrowserContext.
+  run_loop.Run();
+  EXPECT_FALSE(remote.is_connected());
 }
 
 TEST_F(PlatformNotificationContextTest, DestroyCorruptedDatabase) {
