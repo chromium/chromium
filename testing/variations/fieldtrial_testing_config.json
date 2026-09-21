@@ -11258,6 +11258,21 @@
             ]
         }
     ],
+    "IOSAutofillIgnoreTabIndexForFocusability": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillIgnoreTabIndexForFocusabilityIos"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSBackendPromoCustomUI": [
         {
             "platforms": [
