@@ -716,6 +716,8 @@ class GameDashboardMainMenuView::GameControlsDetailsRow : public views::Button {
     // Initiate pulse layer if it starts to pulse for the first time.
     if (pulse_count == 0) {
       gc_setup_button_pulse_layer_ = std::make_unique<ui::LayerSolidColor>();
+      gc_setup_button_pulse_layer_->SetName(
+          "GameDashboardMainMenuView:SetupButtonPulse");
       widget->GetLayer()->Add(gc_setup_button_pulse_layer_.get());
       gc_setup_button_pulse_layer_->SetColor(
           SkColor4f::FromColor(widget->GetColorProvider()->GetColor(

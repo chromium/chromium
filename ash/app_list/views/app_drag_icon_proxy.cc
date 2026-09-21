@@ -102,6 +102,7 @@ AppDragIconProxy::AppDragIconProxy(
     blurred_background_layer_ =
         std::make_unique<ui::LayerOwner>(std::make_unique<ui::LayerTextured>());
     ui::Layer* const blurred_layer = blurred_background_layer_->layer();
+    blurred_layer->SetName("AppDragIconProxy:BlurredBackground");
     drag_image->AddLayerToRegion(blurred_layer, views::LayerRegion::kBelow);
     blurred_layer->SetBounds(shadow_->GetContentBounds());
     const float corner_radius = shadow_->GetContentBounds().width() / 2.0f;

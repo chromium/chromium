@@ -332,17 +332,20 @@ class CursorWindowDelegate : public aura::WindowDelegate {
 
     if (cursor_window_ && use_inverted_cursor_) {
       invert_layer_ = std::make_unique<ui::LayerSolidColor>();
+      invert_layer_->SetName("CursorWindowController:Invert");
       invert_layer_->SetColor(SkColors::kTransparent);
       invert_layer_->SetBackgroundInverted(true);
       invert_layer_->SetBounds(gfx::Rect(size_));
 
       mask_layer_ = std::make_unique<ui::LayerTextured>();
+      mask_layer_->SetName("CursorWindowController:Mask");
       mask_layer_->set_delegate(&mask_delegate_);
       mask_layer_->SetFillsBoundsOpaquely(false);
       mask_layer_->SetBounds(gfx::Rect(size_));
       invert_layer_->SetMaskLayer(mask_layer_.get());
 
       overlay_layer_ = std::make_unique<ui::LayerTextured>();
+      overlay_layer_->SetName("CursorWindowController:Overlay");
       overlay_layer_->set_delegate(&overlay_delegate_);
       overlay_layer_->SetFillsBoundsOpaquely(false);
       overlay_layer_->SetBounds(gfx::Rect(size_));

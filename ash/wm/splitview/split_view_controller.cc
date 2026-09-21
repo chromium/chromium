@@ -1916,6 +1916,7 @@ void SplitViewController::UpdateBlackScrim(
   if (!black_scrim_layer_) {
     // Create an invisible black scrim layer.
     black_scrim_layer_ = std::make_unique<ui::LayerSolidColor>();
+    black_scrim_layer_->SetName("SplitView:BlackScrim");
     const SkColor default_color =
         StyleUtil::GetColorProviderForNativeTheme()->GetColor(
             kColorAshShieldAndBaseOpaque);
@@ -1968,6 +1969,7 @@ void SplitViewController::UpdateResizeBackdrop() {
   // Creates a backdrop layer. It is stacked below the snapped window.
   auto create_backdrop = [](aura::Window* window) {
     auto resize_backdrop_layer = std::make_unique<ui::LayerSolidColor>();
+    resize_backdrop_layer->SetName("SplitView:ResizeBackdrop");
 
     ui::Layer* parent = window->layer()->parent();
     ui::Layer* stacking_target = window->layer();

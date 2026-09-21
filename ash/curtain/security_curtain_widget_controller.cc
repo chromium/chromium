@@ -26,10 +26,12 @@ std::vector<std::unique_ptr<ui::Layer>> InitWidgetLayers(
   // To prevent the widget from being transparent in this case, we add a
   // solid color layer.
   auto solid_color_layer = std::make_unique<ui::LayerSolidColor>();
+  solid_color_layer->SetName("SecurityCurtainWidget:SolidColor");
   solid_color_layer->SetColor(SkColors::kLtGray);
   root_layer.Add(solid_color_layer.get());
 
   auto textured_layer = std::make_unique<ui::LayerTextured>();
+  textured_layer->SetName("SecurityCurtainWidget:Textured");
   root_layer.Add(textured_layer.get());
   root_layer.StackAtTop(textured_layer.get());
 

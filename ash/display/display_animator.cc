@@ -208,6 +208,7 @@ void DisplayAnimator::ClearHidingLayers() {
 std::unique_ptr<ui::LayerSolidColor> DisplayAnimator::AddHidingLayer(
     aura::Window* root_window) {
   auto layer = std::make_unique<ui::LayerSolidColor>();
+  layer->SetName("DisplayAnimator:Hiding");
   layer->SetColor(SkColors::kBlack);
   layer->SetBounds(root_window->bounds());
 

@@ -131,6 +131,7 @@ class PagedAppsGridView::BackgroundCardLayer : public ui::LayerOwner,
   explicit BackgroundCardLayer(PagedAppsGridView* paged_apps_grid_view)
       : LayerOwner(std::make_unique<ui::LayerTextured>()),
         paged_apps_grid_view_(paged_apps_grid_view) {
+    layer()->SetName("PagedAppsGridView:BackgroundCard");
     layer()->SetFillsBoundsOpaquely(false);
     layer()->set_delegate(this);
   }

@@ -195,6 +195,7 @@ void MagnifierGlass::CreateMagnifierWindow(aura::Window* root_window,
   const gfx::Rect window_bounds = gfx::Rect(window_size);
 
   zoom_layer_ = std::make_unique<ui::LayerSolidColor>();
+  zoom_layer_->SetName("MagnifierGlass:Zoom");
   zoom_layer_->SetBounds(window_bounds);
   zoom_layer_->SetBackgroundZoom(params_.scale, kZoomInset);
   root_layer->Add(zoom_layer_.get());
@@ -210,6 +211,7 @@ void MagnifierGlass::CreateMagnifierWindow(aura::Window* root_window,
   zoom_layer_->SetClipRect(clip_rect);
 
   border_layer_ = std::make_unique<ui::LayerTextured>();
+  border_layer_->SetName("MagnifierGlass:Border");
   border_layer_->SetBounds(window_bounds);
   border_renderer_ = std::make_unique<BorderRenderer>(window_bounds, params_);
   border_layer_->set_delegate(border_renderer_.get());

@@ -171,6 +171,7 @@ void RootWindowDeskSwitchAnimator::TakeStartingDeskScreenshot() {
     // We don't take a screenshot of the soon-to-be-removed desk, we use an
     // empty black solid color layer.
     auto black_layer = std::make_unique<ui::LayerSolidColor>();
+    black_layer->SetName("RootWindowDeskSwitchAnimator:RemovedDeskBlack");
     black_layer->SetColor(SkColors::kBlack);
     CompleteAnimationPhase1WithLayer(std::move(black_layer));
     return;

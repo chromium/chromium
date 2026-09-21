@@ -735,6 +735,7 @@ void HomeButton::AnimateNudgeRipple(views::AnimationBuilder& builder) {
   // Create the ripple layer and its delegate for the nudge animation.
   nudge_ripple_layer_.Reset(std::make_unique<ui::LayerTextured>());
   ui::Layer* ripple_layer = nudge_ripple_layer_.layer();
+  ripple_layer->SetName("HomeButton:NudgeRipple");
 
   float ripple_diameter =
       ShelfControlButton::CalculatePreferredSize({}).width();

@@ -1074,6 +1074,7 @@ void TrayBackgroundView::UpdateBackgroundColor(bool active) {
 
 void TrayBackgroundView::AddRippleLayer() {
   ripple_layer_ = std::make_unique<ui::LayerSolidColor>();
+  ripple_layer_->SetName("TrayBackgroundView:Ripple");
   ripple_layer_->SetColor(SkColor4f::FromColor(
       GetColorProvider()->GetColor(cros_tokens::kCrosSysOnPrimaryContainer)));
   layer()->parent()->Add(ripple_layer_.get());
