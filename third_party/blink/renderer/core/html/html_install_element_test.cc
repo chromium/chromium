@@ -15,14 +15,18 @@
 #include "third_party/blink/public/mojom/web_install/web_install.mojom-blink.h"
 #include "third_party/blink/public/strings/grit/permission_element_strings.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_install_result.h"
+#include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/html/html_permission_element_test_helper.h"
 #include "third_party/blink/renderer/core/html/install_result_event.h"
+#include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
@@ -48,6 +52,9 @@ namespace {
 constexpr char kInstallString[] = "Install";
 constexpr char kLaunchString[] = "Launch";
 constexpr char kExampleSite[] = "https://site.example/app.manifest";
+constexpr double kInitialFontSizePx = 16;
+constexpr double kScaleFactor = 2;
+constexpr double kGeometryTolerance = 0.01;
 
 // Result strings for InstallResultEvent.
 constexpr char kResultSuccess[] = "success";
@@ -244,6 +251,106 @@ TEST_F(HTMLInstallElementTestBase, RenderedText) {
   WaitForElementRegistration(element);
 
   CheckInnerText(element, kInstallString);
+}
+
+TEST_F(HTMLInstallElementTestBase, InstallIconScalesWithFontSize) {
+  // Configure the element with an initial font size.
+  HTMLInstallElement* element =
+      MakeGarbageCollected<HTMLInstallElement>(GetDocument());
+  element->SetInlineStyleProperty(CSSPropertyID::kFontSize, kInitialFontSizePx,
+                                  CSSPrimitiveValue::UnitType::kPixels);
+  WaitForElementRegistration(element);
+
+  // Grab the shadow root and permission icon elements.
+  ShadowRoot* shadow_root = element->UserAgentShadowRoot();
+  ASSERT_TRUE(shadow_root);
+  Element* permission_icon =
+      shadow_root->getElementById(shadow_element_names::kIdPermissionIcon);
+  ASSERT_TRUE(permission_icon);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return permission_icon->firstElementChild(); }));
+  Element* svg = permission_icon->firstElementChild();
+
+  // Verify the initial dimensions.
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  DOMRect* initial_icon_rect = permission_icon->GetBoundingClientRect();
+  DOMRect* initial_svg_rect = svg->GetBoundingClientRect();
+  EXPECT_GT(initial_svg_rect->width(), 0);
+  EXPECT_GT(initial_svg_rect->height(), 0);
+  EXPECT_NEAR(initial_icon_rect->width(), initial_svg_rect->width(),
+              kGeometryTolerance);
+  EXPECT_NEAR(initial_icon_rect->height(), initial_svg_rect->height(),
+              kGeometryTolerance);
+
+  // Scale the font size and verify that the icon scales accordingly.
+  element->SetInlineStyleProperty(CSSPropertyID::kFontSize,
+                                  kInitialFontSizePx * kScaleFactor,
+                                  CSSPrimitiveValue::UnitType::kPixels);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  DOMRect* scaled_icon_rect = permission_icon->GetBoundingClientRect();
+  DOMRect* scaled_svg_rect = svg->GetBoundingClientRect();
+  EXPECT_NEAR(scaled_icon_rect->width(), scaled_svg_rect->width(),
+              kGeometryTolerance);
+  EXPECT_NEAR(scaled_icon_rect->height(), scaled_svg_rect->height(),
+              kGeometryTolerance);
+  EXPECT_NEAR(initial_svg_rect->width() * kScaleFactor,
+              scaled_svg_rect->width(), kGeometryTolerance);
+  EXPECT_NEAR(initial_svg_rect->height() * kScaleFactor,
+              scaled_svg_rect->height(), kGeometryTolerance);
+}
+
+TEST_F(HTMLInstallElementTestBase, LaunchIconScalesWithFontSize) {
+  // Configure the element with an initial font size.
+  HTMLInstallElement* element =
+      MakeGarbageCollected<HTMLInstallElement>(GetDocument());
+  element->SetInlineStyleProperty(CSSPropertyID::kFontSize, kInitialFontSizePx,
+                                  CSSPrimitiveValue::UnitType::kPixels);
+  WaitForElementRegistration(element);
+
+  // Grab the shadow root and permission icon elements.
+  ShadowRoot* shadow_root = element->UserAgentShadowRoot();
+  ASSERT_TRUE(shadow_root);
+  Element* permission_icon =
+      shadow_root->getElementById(shadow_element_names::kIdPermissionIcon);
+  ASSERT_TRUE(permission_icon);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return permission_icon->firstElementChild(); }));
+  Element* install_svg = permission_icon->firstElementChild();
+
+  // Trigger the installed state and wait for the launch icon.
+  element->OnIsInstalledResult(true);
+  CheckInnerText(element, kLaunchString);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return permission_icon->firstElementChild() != install_svg; }));
+  ASSERT_TRUE(element->show_as_launch());
+
+  // Verify the initial dimensions of the launch icon.
+  Element* launch_svg = permission_icon->firstElementChild();
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  DOMRect* initial_icon_rect = permission_icon->GetBoundingClientRect();
+  DOMRect* initial_svg_rect = launch_svg->GetBoundingClientRect();
+  EXPECT_GT(initial_svg_rect->width(), 0);
+  EXPECT_GT(initial_svg_rect->height(), 0);
+  EXPECT_NEAR(initial_icon_rect->width(), initial_svg_rect->width(),
+              kGeometryTolerance);
+  EXPECT_NEAR(initial_icon_rect->height(), initial_svg_rect->height(),
+              kGeometryTolerance);
+
+  // Scale the font size and verify that the launch icon scales accordingly.
+  element->SetInlineStyleProperty(CSSPropertyID::kFontSize,
+                                  kInitialFontSizePx * kScaleFactor,
+                                  CSSPrimitiveValue::UnitType::kPixels);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  DOMRect* scaled_icon_rect = permission_icon->GetBoundingClientRect();
+  DOMRect* scaled_svg_rect = launch_svg->GetBoundingClientRect();
+  EXPECT_NEAR(scaled_icon_rect->width(), scaled_svg_rect->width(),
+              kGeometryTolerance);
+  EXPECT_NEAR(scaled_icon_rect->height(), scaled_svg_rect->height(),
+              kGeometryTolerance);
+  EXPECT_NEAR(initial_svg_rect->width() * kScaleFactor,
+              scaled_svg_rect->width(), kGeometryTolerance);
+  EXPECT_NEAR(initial_svg_rect->height() * kScaleFactor,
+              scaled_svg_rect->height(), kGeometryTolerance);
 }
 
 TEST_F(HTMLInstallElementTestBase, InstalledStateHiddenInCanvasSubtree) {

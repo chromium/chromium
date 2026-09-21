@@ -54,6 +54,8 @@ class CORE_EXPORT HTMLInstallElement : public HTMLCapabilityElementBase {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(HTMLInstallElementTestBase,
+                           LaunchIconScalesWithFontSize);
+  FRIEND_TEST_ALL_PREFIXES(HTMLInstallElementTestBase,
                            InstalledStateHiddenInCanvasSubtree);
   FRIEND_TEST_ALL_PREFIXES(HTMLInstallElementTestBase,
                            InstalledStateClearedWhenMovedIntoCanvasSubtree);
