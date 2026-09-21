@@ -119,7 +119,6 @@ class CONTENT_EXPORT ImeAdapterAndroid : public RenderWidgetHostConnector {
       const gfx::Rect& caret_bounds);
 
   bool InsertMediaFromBytes(JNIEnv* env,
-                            RenderFrameHost* target_rfh,
                             const base::android::JavaRef<jbyteArray>& bytes,
                             const base::android::JavaRef<jstring>& extension);
 

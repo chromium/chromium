@@ -43,7 +43,6 @@ import org.chromium.blink.mojom.StylusWritingGestureData;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.ContentFeatureMap;
-import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.net.MimeTypeFilter;
 
@@ -869,11 +868,6 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
             return false;
         }
 
-        final RenderFrameHost targetRenderFrameHost = mImeAdapter.getFocusedFrame();
-        if (targetRenderFrameHost == null) {
-            return false;
-        }
-
         final String mimeType = inputContentInfo.getDescription().getMimeType(0);
 
         if (!new MimeTypeFilter(
@@ -904,8 +898,7 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
                         PostTask.postTask(
                                 TaskTraits.UI_DEFAULT,
                                 () -> {
-                                    mImeAdapter.commitContent(
-                                            targetRenderFrameHost, bytes, extension);
+                                    mImeAdapter.commitContent(bytes, extension);
                                 });
                     } catch (Exception e) {
                         Log.e(TAG, "Failed to commit rich content.", e);

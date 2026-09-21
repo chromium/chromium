@@ -81,7 +81,6 @@ import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.ImeEventObserver;
 import org.chromium.content_public.browser.InputMethodManagerWrapper;
-import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.StylusWritingImeCallback;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContents.UserDataFactory;
@@ -700,11 +699,6 @@ public class ImeAdapterImpl
     /** Retrieves the supported MIME types of the current input field. */
     public String[] getSupportedMimeTypes() {
         return mSupportedMimeTypes;
-    }
-
-    /** Retrieves the focused RenderFrameHost, or null if none is focused. */
-    public @Nullable RenderFrameHost getFocusedFrame() {
-        return mWebContents != null ? mWebContents.getFocusedFrame() : null;
     }
 
     /**
@@ -1759,25 +1753,18 @@ public class ImeAdapterImpl
     }
 
     /**
-     * Sends rich content into the target text field, if currently focused.
+     * Sends rich content into the current focused text field
      *
-     * @param targetRenderFrameHost the render frame host targeted for media insertion
-     * @param bytes binary data of the rich content to be inserted
+     * @param bytes binary data of therich content to be inserted
      * @param extension the file extension of the rich content to be inserted
      * @return whether the insertion is successful.
      */
-    boolean commitContent(
-            @Nullable RenderFrameHost targetRenderFrameHost, byte[] bytes, String extension) {
+    boolean commitContent(byte[] bytes, String extension) {
         onImeEvent();
         boolean result =
                 isValid()
-                        && targetRenderFrameHost != null
                         && ImeAdapterImplJni.get()
-                                .insertMediaFromBytes(
-                                        mNativeImeAdapterAndroid,
-                                        targetRenderFrameHost,
-                                        bytes,
-                                        extension);
+                                .insertMediaFromBytes(mNativeImeAdapterAndroid, bytes, extension);
         ImeMetricsUtils.recordCommitContentSuccess(extension, result);
         return result;
     }
@@ -2279,11 +2266,7 @@ public class ImeAdapterImpl
                 String textStr,
                 int newCursorPosition);
 
-        boolean insertMediaFromBytes(
-                long nativeImeAdapterAndroid,
-                @JniType("content::RenderFrameHost*") RenderFrameHost targetRfh,
-                byte[] bytes,
-                String extension);
+        boolean insertMediaFromBytes(long nativeImeAdapterAndroid, byte[] bytes, String extension);
 
         void finishComposingText(long nativeImeAdapterAndroid);
 

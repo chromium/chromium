@@ -59,7 +59,6 @@ import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ImeEventObserver;
 import org.chromium.content_public.browser.InputMethodManagerWrapper;
-import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.accessibility.AccessibilityFeatures;
@@ -90,7 +89,6 @@ public class ImeAdapterImplTest {
     @Mock private AutocorrectManager mAutocorrectManager;
     @Mock private InputMethodManagerWrapper mInputMethodManagerWrapper;
     @Mock private EventForwarder mEventForwarder;
-    @Mock private RenderFrameHost mRenderFrameHost;
     @Mock private RenderCoordinatesImpl mRenderCoordinatesImpl;
     @Mock private WindowInsetsController mWindowInsetsController;
 
@@ -496,9 +494,7 @@ public class ImeAdapterImplTest {
 
     @Test
     public void testCommitContent() {
-        when(mWebContentsImpl.getFocusedFrame()).thenReturn(mRenderFrameHost);
-        when(mImeAdapterImplJni.insertMediaFromBytes(anyLong(), eq(mRenderFrameHost), any(), any()))
-                .thenReturn(true);
+        when(mImeAdapterImplJni.insertMediaFromBytes(anyLong(), any(), any())).thenReturn(true);
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
@@ -509,41 +505,16 @@ public class ImeAdapterImplTest {
         adapter.onConnectedToRenderProcess();
 
         Assert.assertTrue(
-                adapter.commitContent(
-                        mRenderFrameHost,
-                        /* bytes= */ new byte[] {1, 2, 3},
-                        /* extension= */ "png"));
+                adapter.commitContent(/* bytes= */ new byte[] {1, 2, 3}, /* extension= */ "png"));
 
         verify(mImeAdapterImplJni)
-                .insertMediaFromBytes(
-                        anyLong(), eq(mRenderFrameHost), eq(new byte[] {1, 2, 3}), eq("png"));
-        watcher.assertExpected();
-    }
-
-    @Test
-    public void testCommitContent_NullTargetFrame() {
-        HistogramWatcher watcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                "Input.CommitContent.Failure", ImeMetricsUtils.ExtensionFormat.PNG)
-                        .build();
-
-        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
-        adapter.onConnectedToRenderProcess();
-
-        Assert.assertFalse(
-                adapter.commitContent(
-                        null, /* bytes= */ new byte[] {1, 2, 3}, /* extension= */ "png"));
-
-        verify(mImeAdapterImplJni, never()).insertMediaFromBytes(anyLong(), any(), any(), any());
+                .insertMediaFromBytes(anyLong(), eq(new byte[] {1, 2, 3}), eq("png"));
         watcher.assertExpected();
     }
 
     @Test
     public void testCommitContent_Failure() {
-        when(mWebContentsImpl.getFocusedFrame()).thenReturn(mRenderFrameHost);
-        when(mImeAdapterImplJni.insertMediaFromBytes(anyLong(), eq(mRenderFrameHost), any(), any()))
-                .thenReturn(false);
+        when(mImeAdapterImplJni.insertMediaFromBytes(anyLong(), any(), any())).thenReturn(false);
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
@@ -554,8 +525,7 @@ public class ImeAdapterImplTest {
         ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
         adapter.onConnectedToRenderProcess();
 
-        Assert.assertFalse(
-                adapter.commitContent(mRenderFrameHost, new byte[] {1, 2, 3}, "unknown_ext"));
+        Assert.assertFalse(adapter.commitContent(new byte[] {1, 2, 3}, "unknown_ext"));
         watcher.assertExpected();
     }
 
