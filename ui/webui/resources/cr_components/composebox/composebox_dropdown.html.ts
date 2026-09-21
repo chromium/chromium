@@ -33,6 +33,7 @@ export function getHtml(this: ComposeboxDropdownElement) {
                   role="option"
                   .match="${match}"
                   .matchIndex="${index}"
+                  .resultSequenceId="${this.result?.sequenceId ?? 0}"
                   .toolMode="${this.toolMode}"
                   .overrideClampLineNum="${this.overrideClampLineNum}"
                   .richImageSuggestionsEnabled="${
