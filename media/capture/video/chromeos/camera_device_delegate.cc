@@ -127,48 +127,6 @@ std::pair<int32_t, int32_t> GetTargetFrameRateRange(
   return std::make_pair(result_min, result_max);
 }
 
-// The result of max_width and max_height could be zero if the stream
-// is not in the pre-defined configuration.
-void GetStreamResolutions(const cros::mojom::CameraMetadataPtr& static_metadata,
-                          cros::mojom::Camera3StreamType stream_type,
-                          cros::mojom::HalPixelFormat stream_format,
-                          std::vector<gfx::Size>* resolutions) {
-  const cros::mojom::CameraMetadataEntryPtr* stream_configurations =
-      GetMetadataEntry(static_metadata,
-                       cros::mojom::CameraMetadataTag::
-                           ANDROID_SCALER_AVAILABLE_STREAM_CONFIGURATIONS);
-  DCHECK(stream_configurations);
-  // The available stream configurations are stored as tuples of four int32s:
-  // (hal_pixel_format, width, height, type) x n
-  const size_t kStreamFormatOffset = 0;
-  const size_t kStreamWidthOffset = 1;
-  const size_t kStreamHeightOffset = 2;
-  const size_t kStreamTypeOffset = 3;
-  const size_t kStreamConfigurationSize = 4;
-  int32_t* iter = UNSAFE_TODO(
-      reinterpret_cast<int32_t*>((*stream_configurations)->data.data()));
-  for (size_t i = 0; i < (*stream_configurations)->count;
-       i += kStreamConfigurationSize) {
-    auto format = static_cast<cros::mojom::HalPixelFormat>(
-        UNSAFE_TODO(iter[kStreamFormatOffset]));
-    int32_t width = UNSAFE_TODO(iter[kStreamWidthOffset]);
-    int32_t height = UNSAFE_TODO(iter[kStreamHeightOffset]);
-    auto type = static_cast<cros::mojom::Camera3StreamType>(
-        UNSAFE_TODO(iter[kStreamTypeOffset]));
-    UNSAFE_TODO(iter += kStreamConfigurationSize);
-
-    if (type != stream_type || format != stream_format) {
-      continue;
-    }
-
-    resolutions->emplace_back(width, height);
-  }
-
-  std::sort(resolutions->begin(), resolutions->end(),
-            [](const gfx::Size& a, const gfx::Size& b) -> bool {
-              return a.width() * a.height() < b.width() * b.height();
-            });
-}
 
 // VideoCaptureDevice::TakePhotoCallback is given by the application and is used
 // to return the captured JPEG blob buffer.  The second base::OnceClosure is
@@ -1294,14 +1252,52 @@ void CameraDeviceDelegate::OnConstructedDefaultPortraitModeRequestSettings(
   }
 }
 
+// static
+std::vector<gfx::Size> CameraDeviceDelegate::GetStreamResolutions(
+    const cros::mojom::CameraMetadataPtr& static_metadata,
+    cros::mojom::Camera3StreamType stream_type,
+    cros::mojom::HalPixelFormat stream_format) {
+  std::vector<gfx::Size> resolutions;
+  auto stream_configurations = GetMetadataEntryAsSpan<int32_t>(
+      static_metadata, cros::mojom::CameraMetadataTag::
+                           ANDROID_SCALER_AVAILABLE_STREAM_CONFIGURATIONS);
+  // The available stream configurations are stored as tuples of four int32s:
+  // (hal_pixel_format, width, height, type) x n
+  constexpr size_t kStreamFormatOffset = 0;
+  constexpr size_t kStreamWidthOffset = 1;
+  constexpr size_t kStreamHeightOffset = 2;
+  constexpr size_t kStreamTypeOffset = 3;
+  constexpr size_t kStreamConfigurationSize = 4;
+  while (stream_configurations.size() >= kStreamConfigurationSize) {
+    auto config = stream_configurations.take_first<kStreamConfigurationSize>();
+    auto format =
+        static_cast<cros::mojom::HalPixelFormat>(config[kStreamFormatOffset]);
+    int32_t width = config[kStreamWidthOffset];
+    int32_t height = config[kStreamHeightOffset];
+    auto type =
+        static_cast<cros::mojom::Camera3StreamType>(config[kStreamTypeOffset]);
+
+    if (type != stream_type || format != stream_format) {
+      continue;
+    }
+
+    resolutions.emplace_back(width, height);
+  }
+
+  std::sort(resolutions.begin(), resolutions.end(),
+            [](const gfx::Size& a, const gfx::Size& b) -> bool {
+              return a.width() * a.height() < b.width() * b.height();
+            });
+  return resolutions;
+}
+
 gfx::Size CameraDeviceDelegate::GetBlobResolution(
     std::optional<gfx::Size> new_blob_resolution) {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
 
-  std::vector<gfx::Size> blob_resolutions;
-  GetStreamResolutions(
+  std::vector<gfx::Size> blob_resolutions = GetStreamResolutions(
       static_metadata_, cros::mojom::Camera3StreamType::CAMERA3_STREAM_OUTPUT,
-      cros::mojom::HalPixelFormat::HAL_PIXEL_FORMAT_BLOB, &blob_resolutions);
+      cros::mojom::HalPixelFormat::HAL_PIXEL_FORMAT_BLOB);
   if (blob_resolutions.empty()) {
     return {};
   }
@@ -1670,10 +1666,9 @@ void CameraDeviceDelegate::DoGetPhotoState(
     return;
   }
 
-  std::vector<gfx::Size> blob_resolutions;
-  GetStreamResolutions(
+  std::vector<gfx::Size> blob_resolutions = GetStreamResolutions(
       static_metadata_, cros::mojom::Camera3StreamType::CAMERA3_STREAM_OUTPUT,
-      cros::mojom::HalPixelFormat::HAL_PIXEL_FORMAT_BLOB, &blob_resolutions);
+      cros::mojom::HalPixelFormat::HAL_PIXEL_FORMAT_BLOB);
   if (blob_resolutions.empty()) {
     std::move(callback).Run(std::move(photo_state));
     return;

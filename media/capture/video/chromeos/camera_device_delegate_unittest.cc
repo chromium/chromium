@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
@@ -814,6 +815,47 @@ TEST_F(CameraDeviceDelegateTest, DoubleStopAndDeAllocate) {
   DoLoop();
 
   ResetDevice();
+}
+
+// Tests that GetStreamResolutions only parses stream configurations backed by
+// actual data when the entry's element count disagrees with its data buffer
+// size, and safely ignores trailing incomplete tuples.
+TEST_F(CameraDeviceDelegateTest,
+       GetStreamResolutionsWithInconsistentCountAndTrailingData) {
+  auto metadata = cros::mojom::CameraMetadata::New();
+  metadata->entries = std::vector<cros::mojom::CameraMetadataEntryPtr>();
+
+  auto entry = cros::mojom::CameraMetadataEntry::New();
+  entry->tag = cros::mojom::CameraMetadataTag::
+      ANDROID_SCALER_AVAILABLE_STREAM_CONFIGURATIONS;
+  entry->type = cros::mojom::EntryType::TYPE_INT32;
+  // Claim far more elements than actually present in the data buffer.
+  entry->count = 100000;
+
+  // Provide only one valid BLOB configuration (4 int32s = 16 bytes) plus an
+  // incomplete trailing tuple (1 int32) to verify both bounds and partial-tuple
+  // handling.
+  constexpr int32_t kValidWidth = 1280;
+  constexpr int32_t kValidHeight = 720;
+  std::vector<int32_t> data = {
+      static_cast<int32_t>(cros::mojom::HalPixelFormat::HAL_PIXEL_FORMAT_BLOB),
+      kValidWidth,
+      kValidHeight,
+      static_cast<int32_t>(
+          cros::mojom::Camera3StreamType::CAMERA3_STREAM_OUTPUT),
+      // Incomplete tuple (only 1 int32 instead of 4):
+      static_cast<int32_t>(cros::mojom::HalPixelFormat::HAL_PIXEL_FORMAT_BLOB),
+  };
+  entry->data = base::ToVector(base::as_byte_span(data));
+  metadata->entries->push_back(std::move(entry));
+
+  std::vector<gfx::Size> resolutions =
+      CameraDeviceDelegate::GetStreamResolutions(
+          metadata, cros::mojom::Camera3StreamType::CAMERA3_STREAM_OUTPUT,
+          cros::mojom::HalPixelFormat::HAL_PIXEL_FORMAT_BLOB);
+
+  EXPECT_THAT(resolutions,
+              testing::ElementsAre(gfx::Size(kValidWidth, kValidHeight)));
 }
 
 }  // namespace media

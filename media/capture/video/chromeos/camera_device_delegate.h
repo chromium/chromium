@@ -189,6 +189,13 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
   void OnCameraEffectsChanged(cros::mojom::EffectsConfigPtr new_effects);
   void OnAutoFramingStateChanged(cros::mojom::CameraAutoFramingState state);
 
+  // Returns sorted resolutions for the given `stream_type` and `stream_format`
+  // from `static_metadata`.
+  static std::vector<gfx::Size> GetStreamResolutions(
+      const cros::mojom::CameraMetadataPtr& static_metadata,
+      cros::mojom::Camera3StreamType stream_type,
+      cros::mojom::HalPixelFormat stream_format);
+
  private:
   class StreamCaptureInterfaceImpl;
 

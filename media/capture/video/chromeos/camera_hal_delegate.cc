@@ -511,7 +511,7 @@ void CameraHalDelegate::GetSupportedFormats(
   constexpr size_t kStreamHeightOffset = 2;
   constexpr size_t kStreamDurationOffset = 3;
   constexpr size_t kStreamDurationSize = 4;
-  while (!min_frame_durations.empty()) {
+  while (min_frame_durations.size() >= kStreamDurationSize) {
     auto frame_duration = min_frame_durations.take_first<kStreamDurationSize>();
     auto hal_format = static_cast<cros::mojom::HalPixelFormat>(
         frame_duration[kStreamFormatOffset]);
