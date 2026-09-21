@@ -666,6 +666,27 @@ class IdlSchemaTest(unittest.TestCase):
     schema = idl_schema.Load('test/idl_properties.idl')[0]
     self.assertIsNone(schema.get('manifest_keys'))
 
+  def testNonAsciiCharacter(self):
+    with self.assertRaises(UnicodeEncodeError):
+      idl_schema.Process('// non-ascii \xa0', 'test.idl')
+
+  def testParseErrorExits(self):
+    err_out = idl_schema.idl_parser.ErrOut
+    err_out.SetConsole(False)
+    err_out.SetCapture(True)
+    try:
+      with self.assertRaises(SystemExit):
+        idl_schema.Process(
+          '//\nnamespace test { dictionary { DOMString s; }; };', 'test.idl'
+        )
+      self.assertIn(
+        'Unexpected "{" after keyword "dictionary".',
+        '\n'.join(err_out.DrainLog()),
+      )
+    finally:
+      err_out.SetConsole(True)
+      err_out.SetCapture(False)
+
 
 if __name__ == '__main__':
   unittest.main()

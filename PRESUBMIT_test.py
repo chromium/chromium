@@ -14,6 +14,7 @@ import io
 import os.path
 import subprocess
 import sys
+import tempfile
 import textwrap
 import unittest
 from unittest import mock
@@ -775,6 +776,25 @@ class JSONParsingTest(unittest.TestCase):
 
 class IDLParsingTest(unittest.TestCase):
 
+    def setUp(self):
+        self._temp_dir = tempfile.TemporaryDirectory()
+
+    def tearDown(self):
+        self._temp_dir.cleanup()
+
+    def _WriteTempFile(self, filename, contents):
+        full_path = os.path.join(self._temp_dir.name, filename)
+        os.makedirs(os.path.dirname(full_path), exist_ok=True)
+        with open(full_path, 'w', encoding='utf-8', newline='') as f:
+            f.write('\n'.join(contents))
+        return full_path
+
+    def _RunIDLParse(self, input_api, filename):
+        output_api = MockOutputApi()
+        results = input_api.RunTests(
+            [PRESUBMIT._GetIDLParseCommand(input_api, output_api, filename)])
+        return results[0].message if results else None
+
     def testSuccess(self):
         input_api = MockInputApi()
         filename = 'valid_idl_basics.idl'
@@ -798,8 +818,8 @@ class IDLParsingTest(unittest.TestCase):
             '    static void onFoo2(MyType1 arg);',
             '    static void onFoo3(EnumType type);', '  };', '};'
         ]
-        input_api.files = [MockFile(filename, contents)]
-        self.assertIsNone(PRESUBMIT._GetIDLParseError(input_api, filename))
+        full_path = self._WriteTempFile(filename, contents)
+        self.assertIsNone(self._RunIDLParse(input_api, full_path))
 
     def testFailure(self):
         input_api = MockInputApi()
@@ -807,7 +827,7 @@ class IDLParsingTest(unittest.TestCase):
             ('invalid_idl_1.idl', [
                 '//', 'namespace test {', '  dictionary {', '    DOMString s;',
                 '  };', '};'
-            ], 'Unexpected "{" after keyword "dictionary".\n'),
+            ], 'Unexpected "{" after keyword "dictionary".'),
             # TODO(yoz): Disabled because it causes the IDL parser to hang.
             # See crbug.com/363830.
             # ('invalid_idl_2.idl',
@@ -845,16 +865,49 @@ class IDLParsingTest(unittest.TestCase):
                 '//', 'namespace test {', '  interface {',
                 '    static void function1();', '  };', '};'
             ], 'Interface missing name.'),
+            ('invalid_idl_non_ascii.idl', [
+                '// Non-ascii \xa0 char', 'namespace test {};'
+            ], 'UnicodeEncodeError'),
         ]
 
-        input_api.files = [
-            MockFile(filename, contents)
-            for (filename, contents, _) in test_data
-        ]
-
-        for (filename, _, expected_error) in test_data:
-            actual_error = PRESUBMIT._GetIDLParseError(input_api, filename)
+        for (filename, contents, expected_error) in test_data:
+            full_path = self._WriteTempFile(filename, contents)
+            actual_error = self._RunIDLParse(input_api, full_path)
             self.assertIn(expected_error, str(actual_error))
+
+    def testCheckParseErrors(self):
+        input_api = MockInputApi()
+        output_api = MockOutputApi()
+        valid_path = 'extensions/common/api/valid.idl'
+        invalid_path = 'extensions/common/api/invalid.idl'
+        valid_contents = [
+            '// Valid comment.',
+            'namespace valid_ns {',
+            '  dictionary MyDict { DOMString a; };',
+            '};',
+        ]
+        invalid_contents = [
+            '// Invalid comment.',
+            'namespace invalid_ns {',
+            '  dictionary { DOMString s; };',
+            '};',
+        ]
+        self._WriteTempFile(valid_path, valid_contents)
+        self._WriteTempFile(invalid_path, invalid_contents)
+        input_api.files = [
+            MockAffectedFile(valid_path,
+                             valid_contents,
+                             local_root=self._temp_dir.name),
+            MockAffectedFile(invalid_path,
+                             invalid_contents,
+                             local_root=self._temp_dir.name),
+        ]
+        results = PRESUBMIT.CheckParseErrors(input_api, output_api)
+        self.assertEqual(1, len(results))
+        self.assertIn(invalid_path, results[0].message)
+        self.assertIn('Unexpected "{" after keyword "dictionary".',
+                      results[0].message)
+
 
 
 class UserMetricsActionTest(unittest.TestCase):

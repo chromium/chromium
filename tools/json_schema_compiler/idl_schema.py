@@ -628,8 +628,14 @@ def Process(contents, filename):
   in a format that the JSON schema compiler expects to see. (Separate from
   Load primarily for testing purposes.)
   '''
+  if not contents.isascii():
+    # Throws an exception describing the invalid character and its position.
+    contents.encode('ascii')
 
-  idl = idl_parser.IDLParser().ParseData(contents, filename)
+  parser = idl_parser.IDLParser()
+  idl = parser.ParseData(contents, filename)
+  if parser.parse_errors + parser.lex_errors > 0:
+    sys.exit(1)
   idl_schema = IDLSchema(idl)
   return idl_schema.process()
 
@@ -645,14 +651,7 @@ def Main():
       print(json.dumps(schema, indent=2))
   else:
     contents = sys.stdin.read()
-    for i, char in enumerate(contents):
-      if not char.isascii():
-        raise Exception(
-          'Non-ascii character "%s" (ord %d) found at offset %d.'
-          % (char, ord(char), i)
-        )
-    idl = idl_parser.IDLParser().ParseData(contents, '<stdin>')
-    schema = IDLSchema(idl).process()
+    schema = Process(contents, '<stdin>')
     print(json.dumps(schema, indent=2))
 
 

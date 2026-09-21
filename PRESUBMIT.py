@@ -4537,33 +4537,31 @@ def _GetJSONParseError(input_api, filename, eat_comments=True):
     return None
 
 
-def _GetIDLParseError(input_api, filename):
-    try:
-        contents = input_api.ReadFile(filename)
-        for i, char in enumerate(contents):
-            if not char.isascii():
-                return (
-                    'Non-ascii character "%s" (ord %d) found at offset %d.' %
-                    (char, ord(char), i))
-        idl_schema = input_api.os_path.join(input_api.PresubmitLocalPath(),
-                                            'tools', 'json_schema_compiler',
-                                            'idl_schema.py')
-        process = input_api.subprocess.Popen(
-            [input_api.python3_executable, idl_schema],
-            stdin=input_api.subprocess.PIPE,
-            stdout=input_api.subprocess.PIPE,
-            stderr=input_api.subprocess.PIPE,
-            universal_newlines=True)
-        (_, error) = process.communicate(input=contents)
-        return error or None
-    except ValueError as e:
-        return e
+def _GetIDLParseCommand(input_api, output_api, filename, display_path=None):
+    display_path = display_path or filename
+    idl_schema = input_api.os_path.join(input_api.PresubmitLocalPath(),
+                                        'tools', 'json_schema_compiler',
+                                        'idl_schema.py')
+    cmd = [input_api.python3_executable, idl_schema, filename]
+
+    def parse_output(returncode, stdout, stderr):
+        if returncode != 0:
+            return [
+                output_api.PresubmitError('%s could not be parsed: %s' %
+                                          (display_path, stderr))
+            ]
+        return None
+
+    return input_api.Command(name='idl_schema: %s' % display_path,
+                             cmd=cmd,
+                             kwargs={},
+                             output_parser=parse_output)
 
 
 def CheckParseErrors(input_api, output_api):
     """Check that IDL and JSON files do not contain syntax errors."""
     actions = {
-        '.idl': _GetIDLParseError,
+        '.idl': _GetIDLParseCommand,
         '.json': _GetJSONParseError,
     }
     # Most JSON files are preprocessed and support comments, but these do not.
@@ -4590,7 +4588,7 @@ def CheckParseErrors(input_api, output_api):
                         _KNOWN_TEST_DATA_AND_INVALID_JSON_FILE_PATTERNS, path):
             return False
 
-        if (action == _GetIDLParseError
+        if (action == _GetIDLParseCommand
                 and not _MatchesFile(input_api, idl_included_patterns, path)):
             return False
         return True
@@ -4599,19 +4597,24 @@ def CheckParseErrors(input_api, output_api):
     for affected_file in input_api.AffectedFiles(file_filter=FilterFile,
                                                  include_deletes=False):
         action = get_action(affected_file)
-        kwargs = {}
-        if (action == _GetJSONParseError
-                and _MatchesFile(input_api, json_no_comments_patterns,
-                                 affected_file.UnixLocalPath())):
-            kwargs['eat_comments'] = False
-        parse_error = action(input_api, affected_file.AbsoluteLocalPath(),
-                             **kwargs)
-        if parse_error:
+        if action == _GetIDLParseCommand:
             results.append(
-                output_api.PresubmitError(
-                    '%s could not be parsed: %s' %
-                    (affected_file.LocalPath(), parse_error)))
-    return results
+                action(input_api, output_api,
+                       affected_file.AbsoluteLocalPath(),
+                       affected_file.LocalPath()))
+        else:
+            kwargs = {}
+            if _MatchesFile(input_api, json_no_comments_patterns,
+                            affected_file.UnixLocalPath()):
+                kwargs['eat_comments'] = False
+            parse_error = action(input_api, affected_file.AbsoluteLocalPath(),
+                                 **kwargs)
+            if parse_error:
+                results.append(
+                    output_api.PresubmitError(
+                        '%s could not be parsed: %s' %
+                        (affected_file.LocalPath(), parse_error)))
+    return input_api.RunTests(results)
 
 
 def CheckJavaStyle(input_api, output_api):

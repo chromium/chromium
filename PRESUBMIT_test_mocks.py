@@ -4,6 +4,7 @@
 
 from collections import defaultdict
 import fnmatch
+import inspect
 import json
 import os
 import re
@@ -214,6 +215,60 @@ class MockInputApi(object):
         # Otherwise, file is not in our mock API.
         raise IOError("No such file or directory: '%s'" % filename)
 
+    class Command(object):
+
+        def __init__(self,
+                     name,
+                     cmd,
+                     kwargs,
+                     message=None,
+                     python3=True,
+                     output_parser=None):
+            self.name = name
+            self.cmd = cmd
+            self.stdin = kwargs.get('stdin')
+            self.kwargs = kwargs.copy()
+            self.kwargs['stdout'] = subprocess.PIPE
+            if output_parser and len(
+                    inspect.signature(output_parser).parameters) == 3:
+                self.kwargs['stderr'] = subprocess.PIPE
+            else:
+                self.kwargs['stderr'] = subprocess.STDOUT
+            self.kwargs['stdin'] = subprocess.PIPE
+            self.message = message
+            self.output_parser = output_parser
+
+    def RunTests(self, tests_mix, parallel=True):
+        results = []
+        for test in tests_mix:
+            if not hasattr(test, 'cmd'):
+                if test:
+                    results.append(test)
+                continue
+            kwargs = test.kwargs.copy()
+            if not kwargs.get('cwd'):
+                kwargs['cwd'] = self.PresubmitLocalPath()
+            p = self.subprocess.Popen(test.cmd, **kwargs)
+            stdout, stderr = p.communicate(input=test.stdin)
+            returncode = p.returncode
+            stdout = stdout.decode('utf-8', 'ignore')
+            if test.output_parser:
+                if stderr is not None:
+                    stderr = stderr.decode('utf-8', 'ignore')
+                    res = test.output_parser(returncode, stdout, stderr)
+                else:
+                    res = test.output_parser(returncode, stdout)
+                if res:
+                    if isinstance(res, (list, tuple)):
+                        results.extend(res)
+                    else:
+                        results.append(res)
+            elif returncode != 0 and test.message:
+                results.append(
+                    test.message('%s failed\n%s' % (test.name, stdout)))
+        return results
+
+
 
 class MockOutputApi(object):
     """Mock class for the OutputApi class.
@@ -283,8 +338,10 @@ class MockFile(object):
                  new_contents,
                  old_contents=None,
                  action='A',
-                 scm_diff=None):
+                 scm_diff=None,
+                 local_root=None):
         self._local_path = local_path
+        self._local_root = local_root or _REPO_ROOT
         self._new_contents = new_contents
         self._changed_contents = [(i + 1, l)
                                   for i, l in enumerate(new_contents)]
@@ -323,7 +380,9 @@ class MockFile(object):
         return self._local_path
 
     def AbsoluteLocalPath(self):
-        return os.path.join(_REPO_ROOT, self._local_path)
+        if os.path.isabs(self._local_path):
+            return self._local_path
+        return os.path.join(self._local_root, self._local_path)
 
     # This method must be functionally identical to
     # AffectedFile.UnixLocalPath(), but must normalize Windows-style
