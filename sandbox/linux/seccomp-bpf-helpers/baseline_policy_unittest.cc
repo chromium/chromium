@@ -631,6 +631,34 @@ BPF_DEATH_TEST_C(BaselinePolicy,
               MFD_CLOEXEC | MFD_HUGETLB);
 }
 
+#if defined(__i386__)
+// On i386, __NR_mmap is the legacy sys_old_mmap, which takes a single pointer
+// to an argument struct whose contents cannot be filtered. The policy rejects
+// the syscall with ENOSYS so callers use __NR_mmap2 instead.
+BPF_TEST_C(BaselinePolicy, OldMmapEnosys, BaselinePolicy) {
+  struct {
+    unsigned long addr;
+    unsigned long len;
+    unsigned long prot;
+    unsigned long flags;
+    unsigned long fd;
+    unsigned long offset;
+  } args = {0,
+            4096,
+            PROT_READ | PROT_WRITE,
+            MAP_ANONYMOUS | MAP_PRIVATE | MAP_POPULATE,
+            static_cast<unsigned long>(-1),
+            0};
+  errno = 0;
+  // The fourth register is not part of this syscall's ABI; load it with a
+  // value that RestrictMmapFlags() would accept to ensure the rejection is
+  // unconditional.
+  long ret = syscall(__NR_mmap, &args, 0, 0, MAP_ANONYMOUS | MAP_PRIVATE, 0, 0);
+  BPF_ASSERT_EQ(-1, ret);
+  BPF_ASSERT_EQ(ENOSYS, errno);
+}
+#endif  // defined(__i386__)
+
 }  // namespace
 
 }  // namespace sandbox

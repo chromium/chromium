@@ -580,6 +580,21 @@ bool SyscallSets::IsAllowedAddressSpaceAccess(int sysno) {
   }
 }
 
+bool SyscallSets::IsMmap(int sysno) {
+  switch (sysno) {
+#if defined(__i386__) || defined(__x86_64__) || defined(__mips__) || \
+    defined(__aarch64__)
+    case __NR_mmap:
+#endif
+#if !defined(__LP64__)
+    case __NR_mmap2:
+#endif
+      return true;
+    default:
+      return false;
+  }
+}
+
 bool SyscallSets::IsAllowedGeneralIo(int sysno) {
   switch (sysno) {
     case __NR_lseek:

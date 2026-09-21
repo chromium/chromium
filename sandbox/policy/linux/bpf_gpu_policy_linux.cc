@@ -83,6 +83,8 @@ ResultExpr GpuProcessPolicy::EvaluateSyscall(int sysno) const {
 #if defined(__i386__) || defined(__x86_64__) || defined(__mips__)
     // The Nvidia driver uses flags not in the baseline policy
     // (MAP_LOCKED | MAP_EXECUTABLE | MAP_32BIT)
+    // TODO(crbug.com/502376419): Use SyscallSets::IsMmap() and
+    // RestrictMmapFlags() with extra_allowed_mask instead of Allow().
     case __NR_mmap:
       return Allow();
 #endif

@@ -28,6 +28,7 @@
 #include "sandbox/linux/bpf_dsl/policy.h"
 #include "sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.h"
 #include "sandbox/linux/seccomp-bpf-helpers/syscall_parameters_restrictions.h"
+#include "sandbox/linux/seccomp-bpf-helpers/syscall_sets.h"
 #include "sandbox/linux/seccomp-bpf/bpf_tests.h"
 #include "sandbox/linux/system_headers/linux_syscalls.h"
 #include "sandbox/linux/tests/unit_tests.h"
@@ -70,6 +71,12 @@ TEST(SpeechRecognitionPolicyMmapBypass, PolicyReturnsConditionalForMmap) {
   // program for __NR_mmap is no longer an unconditional Allow().
   EXPECT_FALSE(mmap_expr->IsAllow());
 
+#if !defined(__LP64__) && defined(__NR_mmap2)
+  ResultExpr mmap2_expr = speech_policy.EvaluateSyscall(__NR_mmap2);
+  ASSERT_TRUE(mmap2_expr);
+  EXPECT_FALSE(mmap2_expr->IsAllow());
+#endif
+
   // Control 1: the else-branch the author *intended* to fall through to.
   // BPFBasePolicy::EvaluateSyscall(__NR_mmap) chains to RestrictMmapFlags(),
   // which is an If/Else node — NOT an unconditional Allow.
@@ -102,7 +109,7 @@ class SpeechRecognitionMmapPolicyWrapper : public bpf_dsl::Policy {
   ~SpeechRecognitionMmapPolicyWrapper() override = default;
 
   ResultExpr EvaluateSyscall(int sysno) const override {
-    if (sysno == __NR_mmap) {
+    if (SyscallSets::IsMmap(sysno)) {
       // Exercise the production code path. This is the same ResultExpr that
       // ships in the kSpeechRecognition seccomp filter.
       return real_policy_.EvaluateSyscall(sysno);
@@ -120,9 +127,9 @@ class BaselineMmapPolicyWrapper : public bpf_dsl::Policy {
   ~BaselineMmapPolicyWrapper() override = default;
 
   ResultExpr EvaluateSyscall(int sysno) const override {
-    if (sysno == __NR_mmap) {
+    if (SyscallSets::IsMmap(sysno)) {
       // The else-branch the author intended.
-      return RestrictMmapFlags();
+      return RestrictMmapFlags(sysno);
     }
     return Allow();
   }

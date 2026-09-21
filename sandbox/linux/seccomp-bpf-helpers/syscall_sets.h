@@ -57,6 +57,7 @@ class SANDBOX_EXPORT SyscallSets {
 #endif
 
   static bool IsAllowedAddressSpaceAccess(int sysno);
+  static bool IsMmap(int sysno);
   static bool IsAllowedGeneralIo(int sysno);
   static bool IsSockSendOneMsg(int sysno);
   static bool IsPrctl(int sysno);

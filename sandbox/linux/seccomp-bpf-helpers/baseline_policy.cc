@@ -258,17 +258,9 @@ ResultExpr EvaluateSyscallImpl(int fs_denied_errno,
         .Else(Error(EPERM));
   }
 
-  // TODO(crbug.com/40528912): should i386 really be in this list?
-#if defined(__i386__) || defined(__x86_64__) || defined(__mips__) || \
-    defined(__aarch64__)
-  if (sysno == __NR_mmap)
-    return RestrictMmapFlags();
-#endif
-
-#if !defined(__LP64__)
-  if (sysno == __NR_mmap2)
-    return RestrictMmapFlags();
-#endif
+  if (SyscallSets::IsMmap(sysno)) {
+    return RestrictMmapFlags(sysno);
+  }
 
   if (sysno == __NR_mprotect || sysno == __NR_pkey_mprotect) {
     // pkey_mprotect is identical to mprotect except for the additional (last)
