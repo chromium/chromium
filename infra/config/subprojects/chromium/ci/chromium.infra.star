@@ -155,6 +155,7 @@ packager_builder(
     schedule = "0 7,14,22 * * * *",
     triggered_by = [],
     pool = "luci.chromium.provenance.ci",
+    ssd = True,
     gardener_rotations = gardener_rotations.ANDROID,
     console_view_entry = consoles.console_view_entry(
         category = "packager|android",
