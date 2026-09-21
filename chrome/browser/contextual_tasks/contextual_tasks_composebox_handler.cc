@@ -494,23 +494,23 @@ void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
   // Kick off the on-submit contextualization flow to upload delayed tabs and
   // recontextualize the active tab.
   recontextualization_pending_count_++;
-  // It is safe to use base::Unretained(this) here because `recontextualizer_`
-  // is owned by `this` and will be destroyed when `this` is destroyed,
-  // cancelling any pending callbacks.
   auto callback = base::BindOnce(
-      [](ContextualTasksComposeboxHandler* handler, std::string query,
-         std::optional<base::Uuid> task_id,
+      [](base::WeakPtr<ContextualTasksComposeboxHandler> handler,
+         std::string query, std::optional<base::Uuid> task_id,
          std::optional<base::UnguessableToken> token, bool voice,
          std::map<std::string, std::string> cgi_params,
          base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
              handle) {
+        if (!handler) {
+          return;
+        }
         // The session handle is accessed via GetContextualSessionHandle(),
         // so we ignore it here.
         handler->ContinueCreateAndSendQueryMessage(query, task_id, token, voice,
                                                    std::move(cgi_params));
       },
-      base::Unretained(this), query, task_id, overlay_token, is_voice_search,
-      additional_cgi_params);
+      weak_factory_.GetWeakPtr(), query, task_id, overlay_token,
+      is_voice_search, additional_cgi_params);
 
   contextual_tasks::QueryContextualizer::ContextualizeParams params;
   params.task_id = task_id;
@@ -519,11 +519,11 @@ void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
   params.auto_suggested_chip_tabs = tabs_to_force_contextualize;
   params.on_ineligible_callback = base::BindRepeating(
       &ContextualTasksComposeboxHandler::OnPageContextIneligible,
-      base::Unretained(this));
+      weak_factory_.GetWeakPtr());
   params.on_processed_callback =
       base::BindRepeating(&ContextualTasksComposeboxHandler::
                               OnTabProcessedForQueryContextualization,
-                          base::Unretained(this));
+                          weak_factory_.GetWeakPtr());
   params.complete_callback = std::move(callback);
   params.enable_smart_tab_selection = IsSmartTabSharingActive();
   recontextualizer_->Contextualize(std::move(params));
