@@ -1,0 +1,40 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Jordan Bayles <jophba@chromium.org>
+Date: Fri, 18 Sep 2026 12:00:00 -0700
+Subject: [PATCH] layer3: Allow block_type mismatch between channels in joint stereo
+
+Currently, `stereo.rs` requires both channels in a joint stereo frame to
+share the same `block_type`.
+
+However, the MPEG-1 Layer 3 specification stores block types per channel
+in the side information. Real-world encoders (such as Zoom H1n handheld
+recorders and LAME) can select different window types for each channel
+(e.g., using a short window for a transient on one channel while keeping
+a long window on the other) even when using Mid-Side stereo.
+
+Because Mid-Side stereo decorrelation simply operates on frequency bins
+before each channel runs its own antialiasing, IMDCT, and windowing, the
+channels' block types don't need to match. Removing this check allows
+these bitstreams to decode without errors.
+Upstream issue: https://github.com/pdeljanov/Symphonia/issues/556
+Upstream PR: https://github.com/pdeljanov/Symphonia/pull/557
+Chromium bug: https://issues.chromium.org/issues/563087658
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/symphonia-bundle-mp3-v0_6/src/layer3/stereo.rs b/third_party/rust/chromium_crates_io/vendor/symphonia-bundle-mp3-v0_6/src/layer3/stereo.rs
+index 65a747355321e..400ebcf6e2b7a 100644
+--- a/third_party/rust/chromium_crates_io/vendor/symphonia-bundle-mp3-v0_6/src/layer3/stereo.rs
++++ b/third_party/rust/chromium_crates_io/vendor/symphonia-bundle-mp3-v0_6/src/layer3/stereo.rs
+@@ -499,11 +499,6 @@ pub(super) fn stereo(
+         _ => return Ok(()),
+     };
+ 
+-    // The block types must be the same.
+-    if granule.channels[0].block_type != granule.channels[1].block_type {
+-        return decode_error("mpa: stereo channel pair block_type mismatch");
+-    }
+-
+     // Split the sample buffer into two channels.
+     let (ch0, ch1) = {
+         let (ch0, ch1) = match ch.split_first_mut() {
+-- 
+2.42.0.869.gea05f2083d-goog

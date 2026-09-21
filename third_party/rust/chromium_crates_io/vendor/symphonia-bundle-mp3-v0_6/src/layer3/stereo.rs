@@ -499,11 +499,6 @@ pub(super) fn stereo(
         _ => return Ok(()),
     };
 
-    // The block types must be the same.
-    if granule.channels[0].block_type != granule.channels[1].block_type {
-        return decode_error("mpa: stereo channel pair block_type mismatch");
-    }
-
     // Split the sample buffer into two channels.
     let (ch0, ch1) = {
         let (ch0, ch1) = match ch.split_first_mut() {

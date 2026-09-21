@@ -270,6 +270,11 @@ TEST_P(AudioFileReaderTest, CorruptMP3) {
           base::Microseconds(1018801), 44930, 44928);
 }
 
+TEST_P(AudioFileReaderTest, ReproMinimalMP3) {
+  RunTest("repro-minimal.mp3", "-0.84,-0.32,-0.75,-0.41,-0.93,0.29,", 2, 44100,
+          base::Microseconds(2220409), 97921, 97391);
+}
+
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 TEST_P(AudioFileReaderTest, AAC) {
   RunTest("sfx.m4a", "0.79,2.31,4.15,4.92,4.04,1.44,", 1, 44100,

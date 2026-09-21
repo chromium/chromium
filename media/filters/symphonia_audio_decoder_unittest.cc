@@ -24,6 +24,11 @@
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/base/sample_format.h"
+#include "media/base/test_data_util.h"
+#include "media/ffmpeg/ffmpeg_common.h"
+#include "media/ffmpeg/scoped_av_packet.h"
+#include "media/filters/audio_file_reader.h"
+#include "media/filters/in_memory_url_protocol.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -246,6 +251,58 @@ TEST(SymphoniaAudioDecoderTest, ToMediaAudioBufferValidation) {
     EXPECT_NE(audio_buf->channel_layout(), CHANNEL_LAYOUT_NONE);
     EXPECT_NE(audio_buf->channel_layout(), CHANNEL_LAYOUT_UNSUPPORTED);
   }
+}
+
+TEST(SymphoniaAudioDecoderTest, DecodeMp3WithBlockTypeMismatchSucceeds) {
+  base::test::TaskEnvironment task_environment;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kSymphoniaAudioDecoding, kSymphoniaMp3Decoding}, {});
+
+  scoped_refptr<DecoderBuffer> data = ReadTestDataFile("repro-minimal.mp3");
+  InMemoryUrlProtocol protocol(*data, false);
+  AudioFileReader reader(&protocol);
+  ASSERT_TRUE(reader.OpenDemuxerForTesting());
+
+  NullMediaLog media_log;
+  auto decoder = std::make_unique<SymphoniaAudioDecoder>(
+      task_environment.GetMainThreadTaskRunner(), &media_log);
+
+  AudioDecoderConfig config(AudioCodec::kMP3, kSampleFormatF32,
+                            ChannelLayoutConfig::Stereo(), 44100,
+                            EmptyExtraData(), EncryptionScheme::kUnencrypted);
+
+  base::test::TestFuture<DecoderStatus> init_future;
+  size_t output_buffer_count = 0;
+  decoder->Initialize(
+      config, nullptr, init_future.GetCallback(),
+      base::BindRepeating(
+          [](size_t* count, scoped_refptr<AudioBuffer> buffer) { (*count)++; },
+          &output_buffer_count),
+      base::DoNothing());
+  EXPECT_TRUE(init_future.Get().is_ok());
+
+  auto packet = ScopedAVPacket::Allocate();
+  while (reader.ReadPacketForTesting(packet.get())) {
+    auto buffer = DecoderBuffer::CopyFrom(AVPacketData(*packet));
+    buffer->set_timestamp(ConvertStreamTimestamp(
+        reader.GetAVStreamForTesting()->time_base, packet->pts));
+    buffer->set_duration(ConvertStreamTimestamp(
+        reader.GetAVStreamForTesting()->time_base, packet->duration));
+    if (packet->flags & AV_PKT_FLAG_KEY) {
+      buffer->set_is_key_frame(true);
+    }
+    av_packet_unref(packet.get());
+
+    base::test::TestFuture<DecoderStatus> decode_future;
+    decoder->Decode(std::move(buffer), decode_future.GetCallback());
+    EXPECT_TRUE(decode_future.Get().is_ok());
+  }
+
+  base::test::TestFuture<DecoderStatus> eos_future;
+  decoder->Decode(DecoderBuffer::CreateEOSBuffer(), eos_future.GetCallback());
+  EXPECT_TRUE(eos_future.Get().is_ok());
+  EXPECT_GT(output_buffer_count, 0u);
 }
 
 }  // namespace media

@@ -210,8 +210,8 @@ MEDIA_EXPORT const char* GetAllowedAudioDecoders();
 
 // Converts an FFmpeg timestamp in the given `time_base` to a `base::TimeDelta`.
 // This function is a convenience wrapper around `ConvertFromTimeBase`.
-base::TimeDelta ConvertStreamTimestamp(const AVRational& time_base,
-                                       int64_t timestamp);
+MEDIA_EXPORT base::TimeDelta ConvertStreamTimestamp(const AVRational& time_base,
+                                                    int64_t timestamp);
 
 // Parses discard padding information from the side data of an `AVPacket`.
 // Discard padding is used to specify the number of samples to discard from the
