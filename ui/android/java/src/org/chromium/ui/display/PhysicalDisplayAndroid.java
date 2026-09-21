@@ -19,13 +19,13 @@ import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.util.DisplayMetrics;
 import android.view.Display;
+import android.view.FrameRateVelocityPoint;
 import android.view.WindowInsets;
 import android.view.WindowManager;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.os.BuildCompat;
 
-import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
@@ -439,10 +439,9 @@ import java.util.function.Consumer;
                 suggestedFrameRateHigh =
                         display.getSuggestedFrameRate(Display.FRAME_RATE_CATEGORY_HIGH);
             }
-            List<AconfigFlaggedApiDelegate.FrameRateVelocityPoint> velocityMapping = null;
-            AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
-            if (delegate != null) {
-                velocityMapping = delegate.getFrameRateVelocityMapping(display);
+            List<FrameRateVelocityPoint> velocityMapping = null;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
+                velocityMapping = display.getFrameRateVelocityMapping();
             }
             arrInfo =
                     new AdaptiveRefreshRateInfo(

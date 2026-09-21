@@ -7,9 +7,9 @@ package org.chromium.ui.display;
 import android.content.Context;
 import android.graphics.Rect;
 import android.view.Display;
+import android.view.FrameRateVelocityPoint;
 import android.view.Surface;
 
-import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -70,13 +70,12 @@ public class DisplayAndroid {
     public static final class AdaptiveRefreshRateInfo {
         public final boolean supportsAdaptiveRefreshRate;
         public final float suggestedFrameRateHigh;
-        public final @Nullable List<AconfigFlaggedApiDelegate.FrameRateVelocityPoint>
-                velocityMapping;
+        public final @Nullable List<FrameRateVelocityPoint> velocityMapping;
 
         public AdaptiveRefreshRateInfo(
                 boolean supportsAdaptiveRefreshRate,
                 float suggestedFrameRateHigh,
-                @Nullable List<AconfigFlaggedApiDelegate.FrameRateVelocityPoint> velocityMapping) {
+                @Nullable List<FrameRateVelocityPoint> velocityMapping) {
             this.supportsAdaptiveRefreshRate = supportsAdaptiveRefreshRate;
             this.suggestedFrameRateHigh = suggestedFrameRateHigh;
             this.velocityMapping = velocityMapping;

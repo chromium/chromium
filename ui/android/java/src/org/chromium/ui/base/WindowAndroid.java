@@ -28,6 +28,7 @@ import android.os.SystemClock;
 import android.util.ArraySet;
 import android.util.TypedValue;
 import android.view.Display;
+import android.view.FrameRateVelocityPoint;
 import android.view.KeyEvent;
 import android.view.Surface;
 import android.view.View;
@@ -1521,16 +1522,17 @@ public class WindowAndroid
     @Override
     public void onAdaptiveRefreshRateInfoChanged(DisplayAndroid.AdaptiveRefreshRateInfo arrInfo) {
         if (mNativeWindowAndroid == 0) return;
-        int velocityArraySize =
-                arrInfo.velocityMapping == null ? 0 : arrInfo.velocityMapping.size();
+        List<FrameRateVelocityPoint> velocityMapping = arrInfo.velocityMapping;
+        int velocityArraySize = velocityMapping == null ? 0 : velocityMapping.size();
         float[] framePerSecondArray = new float[velocityArraySize];
         float[] dpPerSecondArray = new float[velocityArraySize];
-        if (arrInfo.velocityMapping != null) {
-            int index = 0;
-            for (AconfigFlaggedApiDelegate.FrameRateVelocityPoint point : arrInfo.velocityMapping) {
-                framePerSecondArray[index] = point.getFramePerSecond();
-                dpPerSecondArray[index] = point.getDpPerSecond();
-                ++index;
+
+        // getFramePerSecond() added in CINNAMON_BUN. Check needed for Android Lint.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN && velocityMapping != null) {
+            for (int i = 0; i < velocityArraySize; ++i) {
+                FrameRateVelocityPoint point = velocityMapping.get(i);
+                framePerSecondArray[i] = point.getFramePerSecond();
+                dpPerSecondArray[i] = point.getDpPerSecond();
             }
         }
         WindowAndroidJni.get()
