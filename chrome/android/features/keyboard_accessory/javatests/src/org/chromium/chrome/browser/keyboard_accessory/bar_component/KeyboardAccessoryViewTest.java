@@ -132,6 +132,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /** View tests for the keyboard accessory component. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562626278
 @SuppressWarnings("DoNotMock") // Mocks GURL
 public class KeyboardAccessoryViewTest {
     private static final String CUSTOM_ICON_URL = "https://www.example.com/image.png";
@@ -737,7 +738,6 @@ public class KeyboardAccessoryViewTest {
     @Test
     @MediumTest
     @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/40263973")
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562626278
     public void testDismissesSwipingEducationBubbleOnTap() throws InterruptedException {
         TestTracker tracker =
                 new TestTracker(FeatureConstants.KEYBOARD_ACCESSORY_BAR_SWIPING_FEATURE) {
@@ -774,7 +774,6 @@ public class KeyboardAccessoryViewTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562626278
     public void testDismissesPaymentOfferEducationBubbleOnFilling() throws InterruptedException {
         AutofillBarItem itemWithIph =
                 new AutofillBarItem(
@@ -1103,7 +1102,6 @@ public class KeyboardAccessoryViewTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562626278
     public void testDismissesAtMemoryEducationBubbleOnTap() throws InterruptedException {
         TestTracker tracker =
                 new TestTracker(FeatureConstants.KEYBOARD_ACCESSORY_AT_MEMORY_FEATURE);

@@ -64,6 +64,7 @@ import java.util.concurrent.TimeoutException;
     ChromeFeatureList.SETTINGS_MULTI_COLUMN,
     ChromeFeatureList.ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER
 })
+@DisableIf.Device(DeviceFormFactor.PHONE) // https://crbug.com/562626005
 public class SiteSettingsRenderTest {
 
     private static void createAndSetRwsCookieInfo(Website owner, List<Website> websiteList) {
@@ -210,7 +211,6 @@ public class SiteSettingsRenderTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @DisableIf.Device(DeviceFormFactor.PHONE) // https://crbug.com/562626005
     public void testRenderCookiesPageWithFps() throws Exception {
         SiteSettingsTestHelper.createCookieExceptions();
         renderCategoryPage(

@@ -78,6 +78,7 @@ import java.util.Collections;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562626839
 public class TouchToFillPasswordManagerIntegrationTest {
     private static GURL sExampleUrl;
     private static final String MOBILE_URL = "https://m.example.xyz";
@@ -251,7 +252,6 @@ public class TouchToFillPasswordManagerIntegrationTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562626839
     public void testClickingManagePasswordsTriggersCallback() {
         runOnUiThreadBlocking(
                 () -> {
@@ -283,7 +283,6 @@ public class TouchToFillPasswordManagerIntegrationTest {
     @Test
     @MediumTest
     @Restriction({RESTRICTION_TYPE_NON_AUTO}) // Flaky test: https://crbug.com/465185902
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562626839
     public void testClickingHybridButtonTriggersCallback() {
         runOnUiThreadBlocking(
                 () -> {
