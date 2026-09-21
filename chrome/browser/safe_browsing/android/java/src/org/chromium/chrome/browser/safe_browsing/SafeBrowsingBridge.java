@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.safe_browsing;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -93,22 +94,24 @@ public final class SafeBrowsingBridge {
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
-        int umaValueForFile(String path);
+        int umaValueForFile(@JniType("std::string") String path);
 
-        boolean getSafeBrowsingExtendedReportingEnabled(Profile profile);
+        boolean getSafeBrowsingExtendedReportingEnabled(@JniType("Profile*") Profile profile);
 
-        void setSafeBrowsingExtendedReportingEnabled(Profile profile, boolean enabled);
+        void setSafeBrowsingExtendedReportingEnabled(
+                @JniType("Profile*") Profile profile, boolean enabled);
 
-        boolean getSafeBrowsingExtendedReportingManaged(Profile profile);
+        boolean getSafeBrowsingExtendedReportingManaged(@JniType("Profile*") Profile profile);
 
         @SafeBrowsingState
-        int getSafeBrowsingState(Profile profile);
+        int getSafeBrowsingState(@JniType("Profile*") Profile profile);
 
-        void setSafeBrowsingState(Profile profile, @SafeBrowsingState int state);
+        void setSafeBrowsingState(
+                @JniType("Profile*") Profile profile, @SafeBrowsingState int state);
 
-        void enableSafeBrowsingSettingSetLocallyPref(Profile profile);
+        void enableSafeBrowsingSettingSetLocallyPref(@JniType("Profile*") Profile profile);
 
-        boolean isSafeBrowsingManaged(Profile profile);
+        boolean isSafeBrowsingManaged(@JniType("Profile*") Profile profile);
 
         boolean isHashRealTimeLookupEligibleInSession();
     }

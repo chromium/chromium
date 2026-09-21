@@ -181,7 +181,7 @@ public interface SiteSettingsDelegate {
      * @param memberOrigin RWS member origin.
      * @return A string containing the owner hostname, null if it doesn't exist.
      */
-    String getRelatedWebsiteSetOwner(String memberOrigin);
+    @Nullable String getRelatedWebsiteSetOwner(String memberOrigin);
 
     /**
      * Returns whether the current implementation of the delegate is able to launch the Clear

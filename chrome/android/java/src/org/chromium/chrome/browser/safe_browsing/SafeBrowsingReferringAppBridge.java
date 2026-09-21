@@ -107,7 +107,7 @@ public class SafeBrowsingReferringAppBridge {
     @CalledByNative
     @VisibleForTesting
     public static ReferringAppInfo getReferringAppInfo(
-            WindowAndroid windowAndroid, boolean getWebApkInfo) {
+            @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid, boolean getWebApkInfo) {
         Activity activity = windowAndroid.getActivity().get();
         if (activity == null) {
             return getEmptyReferringInfo();

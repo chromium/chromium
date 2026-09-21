@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.readaloud;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -130,17 +131,22 @@ public class ReadAloudPrefs {
      * @param prefs PrefService where the random salt used to generate the ID is stored.
      */
     public static long getReliabilityLoggingId(PrefService prefs) {
-        if (prefs == null) return 0L;
         return ReadAloudPrefsJni.get()
                 .getReliabilityLoggingId(prefs, ReadAloudFeatures.getMetricsId());
     }
 
     @NativeMethods
     public interface Natives {
-        void getVoices(PrefService prefService, Map<String, String> output);
+        void getVoices(
+                @JniType("PrefService*") PrefService prefService, Map<String, String> output);
 
-        void setVoice(PrefService prefService, String language, String voiceId);
+        void setVoice(
+                @JniType("PrefService*") PrefService prefService,
+                @JniType("std::string") String language,
+                @JniType("std::string") String voiceId);
 
-        long getReliabilityLoggingId(PrefService prefService, String metricsId);
+        long getReliabilityLoggingId(
+                @JniType("PrefService*") PrefService prefService,
+                @JniType("std::string") String metricsId);
     }
 }

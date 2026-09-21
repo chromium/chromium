@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.policy;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -21,7 +22,7 @@ public class CloudManagementSharedPreferences {
      * @param dmToken The token provided by the DM server when browser registration succeeds.
      */
     @CalledByNative
-    public static void saveDmToken(String dmToken) {
+    public static void saveDmToken(@JniType("std::string") String dmToken) {
         ChromeSharedPreferences.getInstance()
                 .writeString(ChromePreferenceKeys.CLOUD_MANAGEMENT_DM_TOKEN, dmToken);
     }
@@ -34,11 +35,11 @@ public class CloudManagementSharedPreferences {
     }
 
     /**
-     * Returns the value of the "Cloud management DM token" preference, which is non-empty
-     * if browser registration succeeded.
+     * Returns the value of the "Cloud management DM token" preference, which is non-empty if
+     * browser registration succeeded.
      */
     @CalledByNative
-    public static String readDmToken() {
+    public static @JniType("std::string") String readDmToken() {
         return ChromeSharedPreferences.getInstance()
                 .readString(ChromePreferenceKeys.CLOUD_MANAGEMENT_DM_TOKEN, "");
     }

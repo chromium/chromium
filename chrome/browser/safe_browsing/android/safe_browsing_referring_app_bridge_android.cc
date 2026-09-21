@@ -11,11 +11,10 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/android/chrome_jni_headers/SafeBrowsingReferringAppBridge_jni.h"
 
-using base::android::ConvertJavaStringToUTF8;
-using base::android::ScopedJavaLocalRef;
+using jni_zero::ScopedJavaLocalRef;
 using ReferringAppSource = safe_browsing::ReferringAppInfo::ReferringAppSource;
 
 namespace {
@@ -42,8 +41,7 @@ internal::ReferringAppInfo GetReferringAppInfo(
 
   ScopedJavaLocalRef<jobject> j_info =
       Java_SafeBrowsingReferringAppBridge_getReferringAppInfo(
-          env, window_android->GetJavaObject(),
-          static_cast<bool>(get_webapk_info));
+          env, window_android, get_webapk_info);
   info.referring_app_source =
       IntToReferringAppSource(Java_ReferringAppInfo_getSource(env, j_info));
   info.referring_app_name = Java_ReferringAppInfo_getName(env, j_info);

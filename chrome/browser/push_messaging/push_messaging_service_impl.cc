@@ -83,17 +83,14 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "chrome/android/chrome_jni_headers/PushMessagingServiceBridge_jni.h"
-#include "chrome/android/chrome_jni_headers/PushMessagingServiceObserver_jni.h"
 #include "chrome/browser/android/shortcut_helper.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/permissions/android/android_permission_util.h"
-#endif
 
-#if BUILDFLAG(IS_ANDROID)
-using base::android::ConvertJavaStringToUTF8;
-using base::android::JavaRef;
+// Must come after headers that provide symbols used by @JniType.
+#include "chrome/android/chrome_jni_headers/PushMessagingServiceBridge_jni.h"
+#include "chrome/android/chrome_jni_headers/PushMessagingServiceObserver_jni.h"
 #endif
 
 using instance_id::InstanceID;
@@ -944,7 +941,6 @@ void PushMessagingServiceImpl::RegisterPrefs(PrefRegistrySimple* registry) {
 
 static void
 JNI_PushMessagingServiceBridge_VerifyAndRevokeNotificationsPermission(
-    JNIEnv* env,
     const std::string& origin,
     const std::string& profile_id,
     bool app_level_notifications_enabled) {

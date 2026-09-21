@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.readaloud;
 import com.google.common.collect.ImmutableList;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.FeatureList;
@@ -192,10 +193,12 @@ public final class ReadAloudFeatures {
     @NativeMethods
     public interface Natives {
         // Get metrics client ID or empty string if it isn't available.
+        @JniType("std::string")
         String getMetricsId();
 
         // Returns a string to include with requests to the Read Aloud service to activate
         // experimental features.
+        @JniType("std::string")
         String getServerExperimentFlag();
 
         // Returns true if ReadAloudServerSynthesizer or ReadAloudNative is enabled.

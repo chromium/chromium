@@ -266,7 +266,7 @@ inline ui::WindowAndroid* FromJniType<ui::WindowAndroid*>(
 template <>
 inline ScopedJavaLocalRef<jobject> ToJniType(JNIEnv* env,
                                              ui::WindowAndroid* obj) {
-  return obj->GetJavaObject();
+  return obj ? obj->GetJavaObject() : nullptr;
 }
 }  // namespace jni_zero
 

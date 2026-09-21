@@ -11,9 +11,11 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/test/bind.h"
-#include "chrome/browser/regional_capabilities/android/test_utils_jni_headers/RegionalCapabilitiesServiceTestUtil_jni.h"
 #include "components/country_codes/country_codes.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+// Must come after headers that provide symbols used by @JniType.
+#include "chrome/browser/regional_capabilities/android/test_utils_jni_headers/RegionalCapabilitiesServiceTestUtil_jni.h"
 
 namespace regional_capabilities {
 namespace {
@@ -41,8 +43,7 @@ class TestSupportAndroid {
   void ReturnDeviceCountry(const std::string& device_country) {
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_RegionalCapabilitiesServiceTestUtil_returnDeviceCountry(
-        env, java_test_util_ref_,
-        base::android::ConvertUTF8ToJavaString(env, device_country));
+        env, java_test_util_ref_, device_country);
   }
 
   void TriggerDeviceCountryFailure() {

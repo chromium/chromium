@@ -335,7 +335,7 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     }
 
     @Override
-    public String getRelatedWebsiteSetOwner(String memberOrigin) {
+    public @Nullable String getRelatedWebsiteSetOwner(String memberOrigin) {
         return mPrivacySandboxBridge.getRelatedWebsiteSetOwner(memberOrigin);
     }
 

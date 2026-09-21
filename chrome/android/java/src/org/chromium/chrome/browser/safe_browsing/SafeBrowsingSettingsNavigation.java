@@ -7,9 +7,11 @@ import android.content.Context;
 import android.content.Intent;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
@@ -24,7 +26,8 @@ public class SafeBrowsingSettingsNavigation {
 
     @CalledByNative
     private static void showSafeBrowsingSettings(
-            WindowAndroid window, @SettingsAccessPoint int accessPoint) {
+            @JniType("ui::WindowAndroid*") @Nullable WindowAndroid window,
+            @SettingsAccessPoint int accessPoint) {
         if (window == null) return;
         Context currentContext = window.getContext().get();
         assert currentContext != null;
@@ -37,7 +40,8 @@ public class SafeBrowsingSettingsNavigation {
     }
 
     @CalledByNative
-    private static void showAdvancedProtectionSettings(WindowAndroid window) {
+    private static void showAdvancedProtectionSettings(
+            @JniType("ui::WindowAndroid*") @Nullable WindowAndroid window) {
         if (window == null) return;
         Context currentContext = window.getContext().get();
 

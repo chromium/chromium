@@ -2,47 +2,36 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/android/scoped_java_ref.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "components/metrics/metrics_service.h"
 #include "ui/accessibility/accessibility_features.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/readaloud/android/features_jni_headers/ReadAloudFeatures_jni.h"
-
-using base::android::ConvertJavaStringToUTF8;
-using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaRef;
-using base::android::ScopedJavaLocalRef;
 
 namespace readaloud {
 
-static ScopedJavaLocalRef<jstring> JNI_ReadAloudFeatures_GetMetricsId(
-    JNIEnv* env) {
+static std::string JNI_ReadAloudFeatures_GetMetricsId() {
   if (g_browser_process && g_browser_process->metrics_service()) {
-    return ConvertUTF8ToJavaString(
-        env, g_browser_process->metrics_service()->GetClientId());
+    return g_browser_process->metrics_service()->GetClientId();
   }
-  return jni_zero::g_empty_string.AsLocalRef(env);
+  return "";
 }
 
-static ScopedJavaLocalRef<jstring>
-JNI_ReadAloudFeatures_GetServerExperimentFlag(JNIEnv* env) {
+static std::string JNI_ReadAloudFeatures_GetServerExperimentFlag() {
   base::FieldTrial* trial =
       base::FeatureList::GetInstance()->GetAssociatedFieldTrialByFeatureName(
           chrome::android::kReadAloudServerExperiments.name);
   if (!trial) {
-    return jni_zero::g_empty_string.AsLocalRef(env);
+    return "";
   }
-  return ConvertUTF8ToJavaString(
-      env, base::StrCat({trial->trial_name(), "_", trial->group_name()}));
+  return base::StrCat({trial->trial_name(), "_", trial->group_name()});
 }
 
-static bool JNI_ReadAloudFeatures_IsServerSynthesizerEnabled(JNIEnv* env) {
+static bool JNI_ReadAloudFeatures_IsServerSynthesizerEnabled() {
   return features::IsReadAloudServerSynthesizerEnabled();
 }
 

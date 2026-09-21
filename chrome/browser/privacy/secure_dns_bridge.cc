@@ -33,12 +33,11 @@
 #include "net/dns/public/doh_provider_entry.h"
 #include "net/dns/public/secure_dns_mode.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/privacy/jni_headers/SecureDnsBridge_jni.h"
 
-using base::android::JavaRef;
-using base::android::ScopedJavaLocalRef;
 using chrome_browser_net::DnsProbeRunner;
+using jni_zero::ScopedJavaLocalRef;
 
 namespace secure_dns = chrome_browser_net::secure_dns;
 
@@ -80,7 +79,7 @@ void RunProbe(base::WaitableEvent* waiter,
 
 }  // namespace
 
-static int32_t JNI_SecureDnsBridge_GetMode(JNIEnv* env) {
+static int32_t JNI_SecureDnsBridge_GetMode() {
   return static_cast<int>(
       SystemNetworkContextManager::GetStubResolverConfigReader()
           ->GetSecureDnsConfiguration(
@@ -88,14 +87,14 @@ static int32_t JNI_SecureDnsBridge_GetMode(JNIEnv* env) {
           .mode());
 }
 
-static void JNI_SecureDnsBridge_SetMode(JNIEnv* env, int32_t mode) {
+static void JNI_SecureDnsBridge_SetMode(int32_t mode) {
   PrefService* local_state = g_browser_process->local_state();
   local_state->SetString(
       prefs::kDnsOverHttpsMode,
       SecureDnsConfig::ModeToString(static_cast<net::SecureDnsMode>(mode)));
 }
 
-static bool JNI_SecureDnsBridge_IsModeManaged(JNIEnv* env) {
+static bool JNI_SecureDnsBridge_IsModeManaged() {
   PrefService* local_state = g_browser_process->local_state();
   return local_state->IsManagedPreference(prefs::kDnsOverHttpsMode);
 }
@@ -116,16 +115,13 @@ static ScopedJavaLocalRef<jobjectArray> JNI_SecureDnsBridge_GetProviders(
   return base::android::ToJavaArrayOfStringArray(env, ret);
 }
 
-static ScopedJavaLocalRef<jstring> JNI_SecureDnsBridge_GetConfig(JNIEnv* env) {
+static std::string JNI_SecureDnsBridge_GetConfig() {
   PrefService* local_state = g_browser_process->local_state();
-  return base::android::ConvertUTF8ToJavaString(
-      env, local_state->GetString(prefs::kDnsOverHttpsTemplates));
+  return local_state->GetString(prefs::kDnsOverHttpsTemplates);
 }
 
-static bool JNI_SecureDnsBridge_SetConfig(JNIEnv* env,
-                                          const JavaRef<jstring>& jconfig) {
+static bool JNI_SecureDnsBridge_SetConfig(const std::string& config) {
   PrefService* local_state = g_browser_process->local_state();
-  std::string config = base::android::ConvertJavaStringToUTF8(jconfig);
   if (config.empty()) {
     local_state->ClearPref(prefs::kDnsOverHttpsTemplates);
     return true;
@@ -139,7 +135,7 @@ static bool JNI_SecureDnsBridge_SetConfig(JNIEnv* env,
   return false;
 }
 
-static int32_t JNI_SecureDnsBridge_GetManagementMode(JNIEnv* env) {
+static int32_t JNI_SecureDnsBridge_GetManagementMode() {
   return static_cast<int>(
       SystemNetworkContextManager::GetStubResolverConfigReader()
           ->GetSecureDnsConfiguration(
@@ -147,14 +143,11 @@ static int32_t JNI_SecureDnsBridge_GetManagementMode(JNIEnv* env) {
           .management_mode());
 }
 
-static void JNI_SecureDnsBridge_UpdateValidationHistogram(JNIEnv* env,
-                                                          bool valid) {
+static void JNI_SecureDnsBridge_UpdateValidationHistogram(bool valid) {
   secure_dns::UpdateValidationHistogram(valid);
 }
 
-static bool JNI_SecureDnsBridge_ProbeConfig(
-    JNIEnv* env,
-    const JavaRef<jstring>& doh_config) {
+static bool JNI_SecureDnsBridge_ProbeConfig(const std::string& doh_config) {
   // Android recommends converting async functions to blocking when using JNI:
   // https://developer.android.com/training/articles/perf-jni.
   // This function converts the DnsProbeRunner, which can only be created and
@@ -164,9 +157,7 @@ static bool JNI_SecureDnsBridge_ProbeConfig(
   base::WaitableEvent waiter;
   bool success;
   bool posted = content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(RunProbe, &waiter, &success,
-                     base::android::ConvertJavaStringToUTF8(doh_config)));
+      FROM_HERE, base::BindOnce(RunProbe, &waiter, &success, doh_config));
   DCHECK(posted);
   waiter.Wait();
 

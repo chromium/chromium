@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /** Java implementation of PrivacySandboxBridge for testing. */
@@ -29,7 +30,7 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     public void setRelatedWebsiteSetsDataAccessEnabled(Profile profile, boolean enabled) {}
 
     @Override
-    public String getRelatedWebsiteSetOwner(Profile profile, String memberOrigin) {
+    public @Nullable String getRelatedWebsiteSetOwner(Profile profile, String memberOrigin) {
         return null;
     }
 

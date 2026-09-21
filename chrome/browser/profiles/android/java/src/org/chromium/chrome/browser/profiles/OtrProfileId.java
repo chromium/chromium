@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.profiles;
 import android.text.TextUtils;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -22,13 +23,13 @@ public class OtrProfileId {
     private static final String INCOGNITO_CCT_OTR_PROFILE_ID_PREFIX = "CCT:Incognito";
 
     @CalledByNative
-    public OtrProfileId(String profileId) {
+    public OtrProfileId(@JniType("std::string") String profileId) {
         assert profileId != null;
         mProfileId = profileId;
     }
 
     @CalledByNative
-    private String getProfileId() {
+    private @JniType("std::string") String getProfileId() {
         return mProfileId;
     }
 
@@ -53,7 +54,8 @@ public class OtrProfileId {
      * @return A string that represents the given otrProfileId.
      */
     @CalledByNative
-    public static @Nullable String serialize(@Nullable OtrProfileId otrProfileId) {
+    public static @JniType("std::string") @Nullable String serialize(
+            @Nullable OtrProfileId otrProfileId) {
         // The OtrProfileId might be null, if it represents the regular profile.
         if (otrProfileId == null) return null;
 
@@ -94,7 +96,8 @@ public class OtrProfileId {
      * @return An OtrProfileId instance.
      */
     @CalledByNative
-    public static @Nullable OtrProfileId deserializeWithoutVerify(@Nullable String value) {
+    public static @Nullable OtrProfileId deserializeWithoutVerify(
+            @JniType("std::string") @Nullable String value) {
         // The value might be null, if it represents the regular profile.
         if (TextUtils.isEmpty(value)) return null;
 
@@ -188,7 +191,7 @@ public class OtrProfileId {
 
     @NativeMethods
     public interface Natives {
-        OtrProfileId createUniqueOtrProfileId(String profileIdPrefix);
+        OtrProfileId createUniqueOtrProfileId(@JniType("std::string") String profileIdPrefix);
 
         OtrProfileId getPrimaryId();
     }

@@ -7,7 +7,7 @@
 #include "base/android/jni_android.h"
 #include "ui/android/window_android.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/android/chrome_jni_headers/SafeBrowsingSettingsNavigation_jni.h"
 
 namespace safe_browsing {
@@ -15,13 +15,13 @@ namespace safe_browsing {
 void ShowSafeBrowsingSettings(ui::WindowAndroid* window,
                               SettingsAccessPoint access_point) {
   Java_SafeBrowsingSettingsNavigation_showSafeBrowsingSettings(
-      base::android::AttachCurrentThread(), window->GetJavaObject(),
+      base::android::AttachCurrentThread(), window,
       static_cast<int>(access_point));
 }
 
 void ShowAdvancedProtectionSettings(ui::WindowAndroid* window) {
   Java_SafeBrowsingSettingsNavigation_showAdvancedProtectionSettings(
-      base::android::AttachCurrentThread(), window->GetJavaObject());
+      base::android::AttachCurrentThread(), window);
 }
 
 }  // namespace safe_browsing

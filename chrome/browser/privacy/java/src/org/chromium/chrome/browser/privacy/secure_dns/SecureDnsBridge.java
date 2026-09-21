@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.privacy.secure_dns;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -132,15 +133,16 @@ class SecureDnsBridge {
 
         String[][] getProviders();
 
+        @JniType("std::string")
         String getConfig();
 
-        boolean setConfig(String config);
+        boolean setConfig(@JniType("std::string") String config);
 
         @SecureDnsManagementMode
         int getManagementMode();
 
         void updateValidationHistogram(boolean valid);
 
-        boolean probeConfig(String dohConfig);
+        boolean probeConfig(@JniType("std::string") String dohConfig);
     }
 }

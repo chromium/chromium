@@ -4,9 +4,7 @@
 
 #include "chrome/browser/readaloud/android/prefs.h"
 
-#include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/android/scoped_java_ref.h"
 #include "base/hash/hash.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
@@ -19,11 +17,10 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "third_party/jni_zero/jni_zero.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/readaloud/android/jni_headers/ReadAloudPrefs_jni.h"
 
-using base::android::ConvertJavaStringToUTF8;
-using base::android::JavaRef;
+using jni_zero::JavaRef;
 
 namespace readaloud {
 namespace {
@@ -51,38 +48,28 @@ void RegisterLocalPrefs(PrefRegistrySimple* registry) {
 }
 
 static void JNI_ReadAloudPrefs_GetVoices(JNIEnv* env,
-                                         const JavaRef<jobject>& j_pref_service,
+                                         PrefService* prefs,
                                          const JavaRef<jobject>& j_output_map) {
-  PrefService* prefs =
-      PrefServiceAndroid::FromPrefServiceAndroid(j_pref_service);
-
   const base::DictValue& dict = prefs->GetDict(prefs::kReadAloudVoiceSettings);
   for (auto [language, value] : dict) {
     jni_zero::MapPut(env, j_output_map, language, value.GetString());
   }
 }
 
-static void JNI_ReadAloudPrefs_SetVoice(JNIEnv* env,
-                                        const JavaRef<jobject>& j_pref_service,
-                                        const JavaRef<jstring>& j_language,
-                                        const JavaRef<jstring>& j_voice_id) {
-  ScopedDictPrefUpdate(
-      PrefServiceAndroid::FromPrefServiceAndroid(j_pref_service),
-      prefs::kReadAloudVoiceSettings)
-      ->Set(ConvertJavaStringToUTF8(env, j_language),
-            ConvertJavaStringToUTF8(env, j_voice_id));
+static void JNI_ReadAloudPrefs_SetVoice(PrefService* prefs,
+                                        const std::string& language,
+                                        const std::string& voice_id) {
+  ScopedDictPrefUpdate(prefs, prefs::kReadAloudVoiceSettings)
+      ->Set(language, voice_id);
 }
 
 static int64_t JNI_ReadAloudPrefs_GetReliabilityLoggingId(
-    JNIEnv* env,
-    const JavaRef<jobject>& j_pref_service,
-    const JavaRef<jstring>& j_metrics_id) {
-  PrefService* prefs =
-      PrefServiceAndroid::FromPrefServiceAndroid(j_pref_service);
+    PrefService* prefs,
+    const std::string& metrics_id) {
   if (!prefs) {
     return 0L;
   }
-  return GetReliabilityLoggingId(*prefs, ConvertJavaStringToUTF8(j_metrics_id));
+  return GetReliabilityLoggingId(*prefs, metrics_id);
 }
 
 uint64_t GetReliabilityLoggingId(PrefService& prefs,

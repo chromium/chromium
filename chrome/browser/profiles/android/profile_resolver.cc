@@ -22,13 +22,12 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_paths.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/profiles/android/jni_headers/ProfileResolver_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
-using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaRef;
-using base::android::ScopedJavaLocalRef;
+using jni_zero::JavaRef;
+using jni_zero::ScopedJavaLocalRef;
 
 namespace profile_resolver {
 
@@ -183,8 +182,7 @@ static void JNI_ProfileResolver_ResolveProfile(
     const JavaRef<jstring>& j_token,
     const JavaRef<jobject>& j_callback) {
   if (!j_token.obj()) {
-    base::android::RunObjectCallbackAndroid(j_callback,
-                                            ScopedJavaLocalRef<jobject>());
+    base::android::RunObjectCallbackAndroid(j_callback, nullptr);
     return;
   }
 
@@ -200,8 +198,7 @@ static void JNI_ProfileResolver_ResolveProfileKey(
     const JavaRef<jstring>& j_token,
     const JavaRef<jobject>& j_callback) {
   if (!j_token.obj()) {
-    base::android::RunObjectCallbackAndroid(j_callback,
-                                            ScopedJavaLocalRef<jobject>());
+    base::android::RunObjectCallbackAndroid(j_callback, nullptr);
     return;
   }
 
@@ -212,18 +209,15 @@ static void JNI_ProfileResolver_ResolveProfileKey(
                      base::android::ScopedJavaGlobalRef<jobject>(j_callback)));
 }
 
-static ScopedJavaLocalRef<jstring> JNI_ProfileResolver_TokenizeProfile(
-    JNIEnv* env,
-    Profile* profile) {
-  return ConvertUTF8ToJavaString(env, TokenizeProfile(profile));
+static std::string JNI_ProfileResolver_TokenizeProfile(Profile* profile) {
+  return TokenizeProfile(profile);
 }
 
-static ScopedJavaLocalRef<jstring> JNI_ProfileResolver_TokenizeProfileKey(
-    JNIEnv* env,
+static std::string JNI_ProfileResolver_TokenizeProfileKey(
     const JavaRef<jobject>& j_profile_key) {
   ProfileKey* profile_key =
       ProfileKeyAndroid::FromProfileKeyAndroid(j_profile_key);
-  return ConvertUTF8ToJavaString(env, TokenizeProfileKey(profile_key));
+  return TokenizeProfileKey(profile_key);
 }
 
 }  // namespace profile_resolver

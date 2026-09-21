@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.Looper;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.mockito.Mockito;
 
 import org.chromium.base.Promise;
@@ -51,7 +52,7 @@ final class RegionalCapabilitiesServiceTestUtil {
      * @param deviceCountry the result of the device country request.
      */
     @CalledByNative
-    public void returnDeviceCountry(String deviceCountry) {
+    public void returnDeviceCountry(@JniType("std::string") String deviceCountry) {
         mDeviceCountry.fulfill(deviceCountry);
         // `Promise` posts callback tasks on Android Looper which is not integrated with native
         // RunLoop in NativeTest. Run these tasks synchronously now.

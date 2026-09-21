@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /** Bridge, providing access to the native-side Privacy Sandbox configuration. */
@@ -41,20 +43,23 @@ public class PrivacySandboxBridge {
      * @param memberOrigin RWS member origin.
      * @return A string containing the owner hostname, null if it doesn't exist.
      */
-    public String getRelatedWebsiteSetOwner(String memberOrigin) {
+    public @Nullable String getRelatedWebsiteSetOwner(String memberOrigin) {
         return PrivacySandboxBridgeJni.get().getRelatedWebsiteSetOwner(mProfile, memberOrigin);
     }
 
     @NativeMethods
     public interface Natives {
-        boolean isRelatedWebsiteSetsDataAccessEnabled(Profile profile);
+        boolean isRelatedWebsiteSetsDataAccessEnabled(@JniType("Profile*") Profile profile);
 
-        boolean isRelatedWebsiteSetsDataAccessManaged(Profile profile);
+        boolean isRelatedWebsiteSetsDataAccessManaged(@JniType("Profile*") Profile profile);
 
-        boolean isPartOfManagedRelatedWebsiteSet(Profile profile, String origin);
+        boolean isPartOfManagedRelatedWebsiteSet(
+                @JniType("Profile*") Profile profile, @JniType("std::string") String origin);
 
-        void setRelatedWebsiteSetsDataAccessEnabled(Profile profile, boolean enabled);
+        void setRelatedWebsiteSetsDataAccessEnabled(
+                @JniType("Profile*") Profile profile, boolean enabled);
 
-        String getRelatedWebsiteSetOwner(Profile profile, String memberOrigin);
+        @Nullable String getRelatedWebsiteSetOwner(
+                @JniType("Profile*") Profile profile, @JniType("std::string") String memberOrigin);
     }
 }

@@ -7,7 +7,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/policy/android/util_jni/CloudManagementSharedPreferences_jni.h"
 
 namespace policy {
@@ -15,8 +15,7 @@ namespace android {
 
 void SaveDmTokenInSharedPreferences(const std::string& dm_token) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_CloudManagementSharedPreferences_saveDmToken(
-      env, base::android::ConvertUTF8ToJavaString(env, dm_token));
+  Java_CloudManagementSharedPreferences_saveDmToken(env, dm_token);
 }
 
 void DeleteDmTokenFromSharedPreferences() {
@@ -26,8 +25,7 @@ void DeleteDmTokenFromSharedPreferences() {
 
 std::string ReadDmTokenFromSharedPreferences() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  return base::android::ConvertJavaStringToUTF8(
-      env, Java_CloudManagementSharedPreferences_readDmToken(env));
+  return Java_CloudManagementSharedPreferences_readDmToken(env);
 }
 
 }  // namespace android

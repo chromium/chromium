@@ -14,7 +14,7 @@
 #include "components/variations/service/variations_service.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/regional_capabilities/android/jni_headers/RegionalCapabilitiesServiceClientAndroid_jni.h"
 
 using ::country_codes::CountryId;
@@ -45,9 +45,8 @@ void RegionalCapabilitiesServiceClientAndroid::FetchCountryId(
 
 static void
 JNI_RegionalCapabilitiesServiceClientAndroid_ProcessDeviceCountryResponse(
-    JNIEnv* env,
     int64_t ptr_to_native_callback,
-    const base::android::JavaRef<jstring>& j_device_country) {
+    const std::string& device_country) {
   // Using base::WrapUnique ensures that the callback is deleted when this goes
   // out of scope.
   using CountryIdCallback =
@@ -55,12 +54,10 @@ JNI_RegionalCapabilitiesServiceClientAndroid_ProcessDeviceCountryResponse(
   std::unique_ptr<CountryIdCallback> heap_callback = base::WrapUnique(
       reinterpret_cast<CountryIdCallback*>(ptr_to_native_callback));
   CHECK(heap_callback);
-  if (!j_device_country) {
+  if (device_country.empty()) {
     return;
   }
-  std::string device_country_code = base::ToUpperASCII(
-      base::android::ConvertJavaStringToUTF8(env, j_device_country));
-  std::move(*heap_callback).Run(CountryId(device_country_code));
+  std::move(*heap_callback).Run(CountryId(base::ToUpperASCII(device_country)));
 }
 
 Program RegionalCapabilitiesServiceClientAndroid::GetDeviceProgram() {
