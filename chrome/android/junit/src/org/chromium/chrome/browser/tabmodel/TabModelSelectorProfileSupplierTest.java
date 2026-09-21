@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -34,6 +33,8 @@ public class TabModelSelectorProfileSupplierTest {
     @Mock Profile mIncognitoProfile;
     @Mock Callback<Profile> mProfileCallback1;
     @Mock Callback<Profile> mProfileCallback2;
+    @Mock private Profile mProfile2;
+    @Mock private Profile mIncognitoProfile2;
 
     SettableMonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier =
             ObservableSuppliers.createMonotonic();
@@ -156,28 +157,26 @@ public class TabModelSelectorProfileSupplierTest {
         mSelector.markTabStateInitialized();
         Assert.assertEquals(mProfile, mSupplier.get());
 
-        Profile profile2 = mock(Profile.class);
-        Profile incognitoProfile2 = mock(Profile.class);
-        doReturn(true).when(incognitoProfile2).isOffTheRecord();
+        doReturn(true).when(mIncognitoProfile2).isOffTheRecord();
         MockTabModelSelector selector2 =
-                new MockTabModelSelector(profile2, incognitoProfile2, 0, 0, null);
-        MockTabModel normalModel2 = new MockTabModel(profile2, null);
-        MockTabModel incognitoModel2 = new MockTabModel(incognitoProfile2, null);
+                new MockTabModelSelector(mProfile2, mIncognitoProfile2, 0, 0, null);
+        MockTabModel normalModel2 = new MockTabModel(mProfile2, null);
+        MockTabModel incognitoModel2 = new MockTabModel(mIncognitoProfile2, null);
         selector2.initializeTabModels(normalModel2, incognitoModel2);
         selector2.markTabStateInitialized();
         mTabModelSelectorSupplier.set(selector2);
 
-        Assert.assertEquals(profile2, mSupplier.get());
+        Assert.assertEquals(mProfile2, mSupplier.get());
 
         // Change the model on the no longer registered selector and ensure the profile does not
         // change.
         mSelector.selectModel(true);
-        Assert.assertEquals(profile2, mSupplier.get());
+        Assert.assertEquals(mProfile2, mSupplier.get());
         mSelector.selectModel(false);
-        Assert.assertEquals(profile2, mSupplier.get());
+        Assert.assertEquals(mProfile2, mSupplier.get());
 
         // Change the model on the registered selector and ensure the profile changes.
         selector2.selectModel(true);
-        Assert.assertEquals(incognitoProfile2, mSupplier.get());
+        Assert.assertEquals(mIncognitoProfile2, mSupplier.get());
     }
 }

@@ -23,7 +23,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -48,6 +47,10 @@ public class PdfFragmentViewTrackerImplUnitTest {
     @Mock private View mPdfViewerFragmentView1;
     @Mock private View mPdfViewerFragmentView2;
     @Mock private View mPdfViewerFragmentView3;
+    @Mock private ViewGroup mViewGroup;
+    @Mock private Tab mTab;
+    @Mock private NativePage mNativePage;
+    @Mock private FragmentActivity mFragmentActivity;
 
     private PdfFragmentViewTrackerImpl mPdfFragmentViewTracker;
 
@@ -81,53 +84,48 @@ public class PdfFragmentViewTrackerImplUnitTest {
         pdfFragmentViews.add(mPdfViewerFragmentView3);
 
         mPdfFragmentViewTracker =
-                new PdfFragmentViewTrackerImpl(
-                        mTabModelSelector, Mockito.mock(FragmentActivity.class));
+                new PdfFragmentViewTrackerImpl(mTabModelSelector, mFragmentActivity);
         mPdfFragmentViewTracker.setFragmentSupplierForTesting(() -> pdfFragmentViews);
     }
 
     @Test
     public void test_maybeRelocatedViews_removeMismatchedView() {
-        ViewGroup container = Mockito.mock(ViewGroup.class);
-        when(container.getChildCount()).thenReturn(2);
-        when(container.getChildAt(eq(0))).thenReturn(mPdfViewerFragmentView1);
-        when(container.getChildAt(eq(1))).thenReturn(mPdfViewerFragmentView2);
+        when(mViewGroup.getChildCount()).thenReturn(2);
+        when(mViewGroup.getChildAt(eq(0))).thenReturn(mPdfViewerFragmentView1);
+        when(mViewGroup.getChildAt(eq(1))).thenReturn(mPdfViewerFragmentView2);
         assertEquals(3, mPdfFragmentViewTracker.getViewsForTesting().size());
 
         String tabId = String.valueOf(TAB_ID1);
-        mPdfFragmentViewTracker.maybeRelocateViews(container, tabId);
+        mPdfFragmentViewTracker.maybeRelocateViews(mViewGroup, tabId);
 
-        verify(container).removeView(eq(mPdfViewerFragmentView2));
+        verify(mViewGroup).removeView(eq(mPdfViewerFragmentView2));
         assertEquals(2, mPdfFragmentViewTracker.getViewsForTesting().size());
     }
 
     @Test
     public void test_maybeRelocatedViews_placeMatchedView() {
-        ViewGroup container = Mockito.mock(ViewGroup.class);
-        when(container.getChildCount()).thenReturn(0);
+        when(mViewGroup.getChildCount()).thenReturn(0);
         assertEquals(3, mPdfFragmentViewTracker.getViewsForTesting().size());
 
         String tabId = String.valueOf(TAB_ID1);
-        mPdfFragmentViewTracker.maybeRelocateViews(container, tabId);
+        mPdfFragmentViewTracker.maybeRelocateViews(mViewGroup, tabId);
 
-        verify(container).addView(eq(mPdfViewerFragmentView1));
+        verify(mViewGroup).addView(eq(mPdfViewerFragmentView1));
         assertEquals(2, mPdfFragmentViewTracker.getViewsForTesting().size());
         assertFalse(mPdfFragmentViewTracker.getViewsForTesting().contains(mPdfViewerFragmentView1));
     }
 
     @Test
     public void testDestroy_removeViews() {
-        Tab tab = Mockito.mock(Tab.class);
-        NativePage pdfPage = Mockito.mock(NativePage.class);
-        when(tab.getId()).thenReturn(TAB_ID3);
-        when(tab.getNativePage()).thenReturn(pdfPage);
-        when(pdfPage.isPdf()).thenReturn(true);
+        when(mTab.getId()).thenReturn(TAB_ID3);
+        when(mTab.getNativePage()).thenReturn(mNativePage);
+        when(mNativePage.isPdf()).thenReturn(true);
 
         assertTrue(mPdfFragmentViewTracker.getViewsForTesting().contains(mPdfViewerFragmentView3));
 
         // Verifies that destroying a PDF Tab removes the matching PdfViewerFragment View
         // from the tracker.
-        mPdfFragmentViewTracker.destroyPdfTabForTesting(tab);
+        mPdfFragmentViewTracker.destroyPdfTabForTesting(mTab);
         assertFalse(mPdfFragmentViewTracker.getViewsForTesting().contains(mPdfViewerFragmentView3));
     }
 }

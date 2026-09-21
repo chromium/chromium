@@ -26,6 +26,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -75,6 +76,7 @@ public class CustomTabDelegateFactoryUnitTest {
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mTabModel;
     @Mock private WindowAndroid mWindowAndroid;
+    @Captor private ArgumentCaptor<Intent> mIntentCaptor;
 
     private CustomTabDelegateFactory mFactory;
 
@@ -151,10 +153,9 @@ public class CustomTabDelegateFactoryUnitTest {
         delegate.activateContents();
 
         // Intercept and verify the Intent.
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(mActivity).startActivity(intentCaptor.capture());
+        verify(mActivity).startActivity(mIntentCaptor.capture());
 
-        Intent intent = intentCaptor.getValue();
+        Intent intent = mIntentCaptor.getValue();
         Assert.assertNotNull(intent);
 
         ComponentName component = intent.getComponent();
@@ -196,10 +197,9 @@ public class CustomTabDelegateFactoryUnitTest {
         delegate.activateContents();
 
         // Intercept and verify the Intent.
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(mActivity).startActivity(intentCaptor.capture());
+        verify(mActivity).startActivity(mIntentCaptor.capture());
 
-        Intent intent = intentCaptor.getValue();
+        Intent intent = mIntentCaptor.getValue();
         Assert.assertNotNull(intent);
 
         ComponentName component = intent.getComponent();

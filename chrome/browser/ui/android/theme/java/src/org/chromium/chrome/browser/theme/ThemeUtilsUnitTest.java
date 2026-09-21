@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.theme;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -15,8 +14,12 @@ import android.view.ContextThemeWrapper;
 import androidx.core.content.ContextCompat;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -27,6 +30,8 @@ import org.chromium.ui.util.ColorUtils;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class ThemeUtilsUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private Tab mTab;
     private Context mContext;
 
     @Before
@@ -141,19 +146,17 @@ public class ThemeUtilsUnitTest {
 
     @Test
     public void getBackgroundColor_tabHasColor() {
-        Tab tab = mock(Tab.class);
-        when(tab.getBackgroundColor()).thenReturn(Color.RED);
+        when(mTab.getBackgroundColor()).thenReturn(Color.RED);
 
-        assertEquals(Color.RED, ThemeUtils.getBackgroundColor(tab));
+        assertEquals(Color.RED, ThemeUtils.getBackgroundColor(mTab));
     }
 
     @Test
     public void getBackgroundColor_defaultFallback() {
-        Tab tab = mock(Tab.class);
-        when(tab.getBackgroundColor()).thenReturn(Color.TRANSPARENT);
-        when(tab.getContext()).thenReturn(mContext);
+        when(mTab.getBackgroundColor()).thenReturn(Color.TRANSPARENT);
+        when(mTab.getContext()).thenReturn(mContext);
 
         int expected = ChromeColors.getDefaultThemeColor(mContext, /* isIncognito= */ false);
-        assertEquals(expected, ThemeUtils.getBackgroundColor(tab));
+        assertEquals(expected, ThemeUtils.getBackgroundColor(mTab));
     }
 }

@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_TYPE;
@@ -57,6 +56,7 @@ public class TabListEmptyCoordinatorUnitTest {
 
     @Mock private TabListRecyclerView mRecyclerView;
     @Mock private Callback<Runnable> mRunOnItemAnimatorFinished;
+    @Mock private View mView;
 
     private FrameLayout mRootView;
     private Activity mContext;
@@ -167,10 +167,9 @@ public class TabListEmptyCoordinatorUnitTest {
                         .build();
         mModel.add(new ListItem(MESSAGE, messageModel));
 
-        View mockMsgCard = mock(View.class);
-        when(mockMsgCard.getMeasuredHeight()).thenReturn(MESSAGE_CARD_HEIGHT);
-        when(mockMsgCard.getTop()).thenReturn(MESSAGE_CARD_TOP);
-        when(mRecyclerView.getChildAt(0)).thenReturn(mockMsgCard);
+        when(mView.getMeasuredHeight()).thenReturn(MESSAGE_CARD_HEIGHT);
+        when(mView.getTop()).thenReturn(MESSAGE_CARD_TOP);
+        when(mRecyclerView.getChildAt(0)).thenReturn(mView);
 
         mCoordinator.setIsTabSwitcherShowing(true);
         assertEquals(View.VISIBLE, emptyView.getVisibility());

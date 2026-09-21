@@ -9,7 +9,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -36,16 +35,16 @@ import java.lang.ref.WeakReference;
 /** Unit tests for {@link LensOverlayImageHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class LensOverlayImageHelperUnitTest {
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    private static final int SCREEN_WIDTH = 2000;
+    private static final int SCREEN_HEIGHT = 1000;
+    private static final Rect WINDOW_BOUNDS = new Rect(100, 0, 1100, 1000);
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private DisplayAndroid mDisplayAndroid;
     @Mock private Context mContext;
     @Mock private WindowManager mWindowManager;
-
-    private static final int SCREEN_WIDTH = 2000;
-    private static final int SCREEN_HEIGHT = 1000;
-    private static final Rect WINDOW_BOUNDS = new Rect(100, 0, 1100, 1000);
+    @Mock private WindowMetrics mWindowMetrics;
 
     @Before
     public void setUp() {
@@ -61,9 +60,8 @@ public class LensOverlayImageHelperUnitTest {
     @Config(sdk = android.os.Build.VERSION_CODES.R)
     public void getScreenMetrics_Success_Api30Plus() {
         // Mock API 30+ behavior.
-        WindowMetrics mockMetrics = mock(WindowMetrics.class);
-        when(mWindowManager.getCurrentWindowMetrics()).thenReturn(mockMetrics);
-        when(mockMetrics.getBounds()).thenReturn(WINDOW_BOUNDS);
+        when(mWindowManager.getCurrentWindowMetrics()).thenReturn(mWindowMetrics);
+        when(mWindowMetrics.getBounds()).thenReturn(WINDOW_BOUNDS);
 
         LensOverlayImageHelper.LensOverlayScreenMetrics metrics =
                 LensOverlayImageHelper.getScreenMetrics(mWindowAndroid);

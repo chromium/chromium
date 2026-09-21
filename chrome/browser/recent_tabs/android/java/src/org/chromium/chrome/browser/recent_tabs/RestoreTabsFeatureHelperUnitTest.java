@@ -10,7 +10,6 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -71,6 +70,8 @@ public class RestoreTabsFeatureHelperUnitTest {
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private Supplier<Integer> mGTSTabListModelSizeSupplier;
     @Mock private Callback<Integer> mScrollGTSToRestoredTabsCallback;
+    @Mock private TabCreator mTabCreator;
+    @Mock private Tab mTab;
     private SharedPreferencesManager mSharedPreferencesManager;
 
     private Activity mActivity;
@@ -280,12 +281,10 @@ public class RestoreTabsFeatureHelperUnitTest {
     @Test
     public void testOpenForeignSessionTabsAsBackgroundTabs_nonEmptyList() {
         ForeignSessionHelper foreignSessionHelper = new ForeignSessionHelper(mProfile);
-        TabCreator tabCreator = mock(TabCreator.class);
-        Tab newTab = mock(Tab.class);
-        when(mTabCreatorManager.getTabCreator(/* incognito= */ false)).thenReturn(tabCreator);
-        when(tabCreator.createNewTab(
+        when(mTabCreatorManager.getTabCreator(/* incognito= */ false)).thenReturn(mTabCreator);
+        when(mTabCreator.createNewTab(
                         any(LoadUrlParams.class), eq(TabLaunchType.FROM_RESTORE_TABS_UI), isNull()))
-                .thenReturn(newTab);
+                .thenReturn(mTab);
 
         ForeignSessionTab tab1 =
                 new ForeignSessionTab(JUnitTestGURLs.URL_1, "title1", 32L, 32L, 101);
@@ -302,7 +301,7 @@ public class RestoreTabsFeatureHelperUnitTest {
                         FormFactor.PHONE);
 
         when(mForeignSessionHelperJniMock.openForeignSessionTabsAsBackgroundTabs(
-                        eq(1L), eq(newTab), eq(new int[] {101, 102}), eq("test_tag")))
+                        eq(1L), eq(mTab), eq(new int[] {101, 102}), eq("test_tag")))
                 .thenReturn(2);
 
         var userActionTester = new UserActionTester();
@@ -316,15 +315,14 @@ public class RestoreTabsFeatureHelperUnitTest {
 
         verify(mForeignSessionHelperJniMock)
                 .openForeignSessionTabsAsBackgroundTabs(
-                        eq(1L), eq(newTab), eq(new int[] {101, 102}), eq("test_tag"));
+                        eq(1L), eq(mTab), eq(new int[] {101, 102}), eq("test_tag"));
     }
 
     @Test
     public void testOpenForeignSessionTabsAsBackgroundTabs_nullTab() {
         ForeignSessionHelper foreignSessionHelper = new ForeignSessionHelper(mProfile);
-        TabCreator tabCreator = mock(TabCreator.class);
-        when(mTabCreatorManager.getTabCreator(/* incognito= */ false)).thenReturn(tabCreator);
-        when(tabCreator.createNewTab(
+        when(mTabCreatorManager.getTabCreator(/* incognito= */ false)).thenReturn(mTabCreator);
+        when(mTabCreator.createNewTab(
                         any(LoadUrlParams.class), eq(TabLaunchType.FROM_RESTORE_TABS_UI), isNull()))
                 .thenReturn(null);
 

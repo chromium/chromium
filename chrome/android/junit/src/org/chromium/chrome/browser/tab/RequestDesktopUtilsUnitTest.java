@@ -19,6 +19,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -59,6 +60,7 @@ public class RequestDesktopUtilsUnitTest {
     @Mock private Profile mProfile;
     @Mock private Tracker mTracker;
     @Mock private UserPrefs.Natives mUserPrefsJni;
+    @Captor private ArgumentCaptor<PropertyModel> mMessageCaptor;
 
     private SharedPreferencesManager mSharedPreferencesManager;
     private Resources mResources;
@@ -93,24 +95,23 @@ public class RequestDesktopUtilsUnitTest {
         RequestDesktopUtils.maybeShowDefaultEnableGlobalSettingMessage(
                 mProfile, mMessageDispatcher, mActivity);
 
-        ArgumentCaptor<PropertyModel> message = ArgumentCaptor.forClass(PropertyModel.class);
-        verify(mMessageDispatcher).enqueueWindowScopedMessage(message.capture(), eq(false));
+        verify(mMessageDispatcher).enqueueWindowScopedMessage(mMessageCaptor.capture(), eq(false));
         Assert.assertEquals(
                 "Message identifier should match.",
                 MessageIdentifier.DESKTOP_SITE_GLOBAL_DEFAULT_OPT_OUT,
-                message.getValue().get(MessageBannerProperties.MESSAGE_IDENTIFIER));
+                mMessageCaptor.getValue().get(MessageBannerProperties.MESSAGE_IDENTIFIER));
         Assert.assertEquals(
                 "Message title should match.",
                 mResources.getString(R.string.rds_global_default_on_message_title),
-                message.getValue().get(MessageBannerProperties.TITLE));
+                mMessageCaptor.getValue().get(MessageBannerProperties.TITLE));
         Assert.assertEquals(
                 "Message primary button text should match.",
                 mResources.getString(R.string.rds_global_default_on_message_button),
-                message.getValue().get(MessageBannerProperties.PRIMARY_BUTTON_TEXT));
+                mMessageCaptor.getValue().get(MessageBannerProperties.PRIMARY_BUTTON_TEXT));
         Assert.assertEquals(
                 "Message icon resource ID should match.",
                 R.drawable.ic_desktop_windows,
-                message.getValue().get(MessageBannerProperties.ICON_RESOURCE_ID));
+                mMessageCaptor.getValue().get(MessageBannerProperties.ICON_RESOURCE_ID));
     }
 
     @Test

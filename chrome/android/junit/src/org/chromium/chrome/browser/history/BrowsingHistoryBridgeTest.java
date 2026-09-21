@@ -9,7 +9,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import org.junit.Before;
@@ -41,6 +40,8 @@ public class BrowsingHistoryBridgeTest {
 
     @Mock private Profile mProfile;
 
+    @Mock private HistoryContentManager mHistoryContentManager;
+
     BrowsingHistoryBridge mBrowsingHistoryBridge;
 
     @Before
@@ -65,10 +66,9 @@ public class BrowsingHistoryBridgeTest {
     public void testAppIdPropagatesForDeletion() {
         // Ensure the app ID passed from BrowsingHistoryBridge is stored in the item
         // object, and later gets passed down when marking the item for removal.
-        HistoryContentManager contentManager = mock(HistoryContentManager.class);
         HistoryAdapter adapter =
                 new HistoryAdapter(
-                        contentManager,
+                        mHistoryContentManager,
                         mBrowsingHistoryBridge,
                         mHistorySyncPromoCoordinator,
                         /* shouldClusterByDomain= */ false,

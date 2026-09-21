@@ -12,7 +12,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -30,6 +29,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -83,6 +85,16 @@ public class TabBottomSheetManagerTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private BottomSheetController mMockBottomSheetController;
+    @Mock private OneshotSupplier<LayoutStateProvider> mOneshotSupplier;
+    @Mock private TouchEventProvider mTouchEventProvider;
+    @Mock private Runnable mRunnable;
+    @Mock private NativeInterfaceDelegate mNativeInterfaceDelegate;
+    @Mock private BottomSheetContent mBottomSheetContent;
+    @Mock private NativeInterfaceDelegate mMockDelegate1;
+    @Mock private NativeInterfaceDelegate mMockDelegate2;
 
     private WebPageStation mInitialStation;
     private final NativeInterfaceDelegate mDelegate =
@@ -186,14 +198,8 @@ public class TabBottomSheetManagerTest {
 
     @Test
     @SmallTest
-    @SuppressWarnings("unchecked") // mock(OneshotSupplier.class) returns raw OneshotSupplier.
     public void testTryToShowBottomSheet_Failed_HideContentCalled() {
-        BottomSheetController mockBottomSheetController = mock(BottomSheetController.class);
-        OneshotSupplier<LayoutStateProvider> mockLayoutStateProviderSupplier =
-                mock(OneshotSupplier.class);
-        TouchEventProvider mockTouchEventProvider = mock(TouchEventProvider.class);
-
-        when(mockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(false);
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(false);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -203,9 +209,9 @@ public class TabBottomSheetManagerTest {
                             new TabBottomSheetManagerImpl(
                                     mActivity,
                                     mWindowAndroid,
-                                    mockBottomSheetController,
-                                    mockLayoutStateProviderSupplier,
-                                    mockTouchEventProvider,
+                                    mMockBottomSheetController,
+                                    mOneshotSupplier,
+                                    mTouchEventProvider,
                                     ObservableSuppliers.createNonNull(false));
 
                     manager.tryToShowBottomSheet(
@@ -219,19 +225,14 @@ public class TabBottomSheetManagerTest {
                     TabBottomSheetUtils.attachManagerToWindow(mWindowAndroid, oldManager);
                 });
 
-        verify(mockBottomSheetController).hideContent(any(), anyBoolean(), anyInt());
+        verify(mMockBottomSheetController).hideContent(any(), anyBoolean(), anyInt());
     }
 
     @Test
     @SmallTest
-    @SuppressWarnings("unchecked")
     public void testOmniboxFocusChangeDoesNotCloseShowingSheet() {
-        BottomSheetController mockBottomSheetController = mock(BottomSheetController.class);
-        OneshotSupplier<LayoutStateProvider> mockLayoutStateProviderSupplier =
-                mock(OneshotSupplier.class);
-        TouchEventProvider mockTouchEventProvider = mock(TouchEventProvider.class);
         // requestShowContent returns true to simulate successful display
-        when(mockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -243,9 +244,9 @@ public class TabBottomSheetManagerTest {
                             new TabBottomSheetManagerImpl(
                                     mActivity,
                                     mWindowAndroid,
-                                    mockBottomSheetController,
-                                    mockLayoutStateProviderSupplier,
-                                    mockTouchEventProvider,
+                                    mMockBottomSheetController,
+                                    mOneshotSupplier,
+                                    mTouchEventProvider,
                                     omniboxFocusSupplier);
 
                     // Show the bottom sheet. State becomes SHOWING.
@@ -256,9 +257,9 @@ public class TabBottomSheetManagerTest {
                             /* startsExpanded= */ true);
 
                     // Verify it requested show.
-                    verify(mockBottomSheetController, times(1))
+                    verify(mMockBottomSheetController, times(1))
                             .requestShowContent(any(), anyBoolean());
-                    verify(mockBottomSheetController, never())
+                    verify(mMockBottomSheetController, never())
                             .hideContent(any(), anyBoolean(), anyInt());
 
                     // Simulate Omnibox losing focus (hasFocus = false).
@@ -268,7 +269,7 @@ public class TabBottomSheetManagerTest {
                     omniboxFocusSupplier.set(false);
 
                     // Verify that hideContent was NEVER called during the focus change.
-                    verify(mockBottomSheetController, never())
+                    verify(mMockBottomSheetController, never())
                             .hideContent(any(), anyBoolean(), anyInt());
 
                     manager.destroy();
@@ -461,11 +462,8 @@ public class TabBottomSheetManagerTest {
     public void testReadAloudClosedOnBottomSheetShown() {
         SettableNullableObservableSupplier<Tab> readAloudTabSupplier =
                 ThreadUtils.runOnUiThreadBlocking(() -> ObservableSuppliers.createNullable());
-        Runnable mockStopPlaybackCallback = mock(Runnable.class);
         ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        mManager.initReadAloudIntegrationForTesting(
-                                readAloudTabSupplier, mockStopPlaybackCallback));
+                () -> mManager.initReadAloudIntegrationForTesting(readAloudTabSupplier, mRunnable));
 
         // Start read aloud
         ThreadUtils.runOnUiThreadBlocking(
@@ -482,43 +480,40 @@ public class TabBottomSheetManagerTest {
                 });
 
         // Verify that stop playback callback was called
-        verify(mockStopPlaybackCallback).run();
+        verify(mRunnable).run();
     }
 
     @Test
     @SmallTest
     public void testSheetEventsCallback_onBottomSheetOpened() {
-        NativeInterfaceDelegate mockDelegate = mock(NativeInterfaceDelegate.class);
         showBottomSheetAndBlockUntilReady(
-                mockDelegate, /* animate= */ false, /* startsExpanded= */ false);
+                mNativeInterfaceDelegate, /* animate= */ false, /* startsExpanded= */ false);
 
         ThreadUtils.runOnUiThreadBlocking(() -> mManager.setSheetExpanded(true));
 
         CriteriaHelper.pollUiThread(
-                () -> verify(mockDelegate, atLeastOnce()).onBottomSheetOpened(true));
+                () -> verify(mNativeInterfaceDelegate, atLeastOnce()).onBottomSheetOpened(true));
     }
 
     @Test
     @SmallTest
     public void testSheetEventsCallback_onBottomSheetClosed_NativeClose() {
-        NativeInterfaceDelegate mockDelegate = mock(NativeInterfaceDelegate.class);
-        showBottomSheetAndBlockUntilReady(mockDelegate);
+        showBottomSheetAndBlockUntilReady(mNativeInterfaceDelegate);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mManager.tryToCloseBottomSheet(/* animate= */ false));
 
-        verify(mockDelegate).onBottomSheetClosed();
+        verify(mNativeInterfaceDelegate).onBottomSheetClosed();
     }
 
     @Test
     @SmallTest
     public void testSheetEventsCallback_onBottomSheetClosed_Suppressed() {
-        NativeInterfaceDelegate mockDelegate = mock(NativeInterfaceDelegate.class);
-        showBottomSheetAndBlockUntilReady(mockDelegate);
+        showBottomSheetAndBlockUntilReady(mNativeInterfaceDelegate);
 
         RegularTabSwitcherStation tabSwitcher = mInitialStation.openRegularTabSwitcher();
 
-        verify(mockDelegate).onBottomSheetSuppressed();
+        verify(mNativeInterfaceDelegate).onBottomSheetSuppressed();
 
         tabSwitcher.leaveHubToPreviousTabViaBack(WebPageStation.newBuilder());
     }
@@ -547,8 +542,7 @@ public class TabBottomSheetManagerTest {
     @Test
     @SmallTest
     public void testTryToCloseBottomSheet_WhenSuppressed() {
-        NativeInterfaceDelegate mockDelegate = mock(NativeInterfaceDelegate.class);
-        showBottomSheetAndBlockUntilReady(mockDelegate);
+        showBottomSheetAndBlockUntilReady(mNativeInterfaceDelegate);
 
         RegularTabSwitcherStation tabSwitcher = mInitialStation.openRegularTabSwitcher();
         CriteriaHelper.pollUiThread(() -> !mManager.isSheetShowing());
@@ -556,7 +550,7 @@ public class TabBottomSheetManagerTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mManager.tryToCloseBottomSheet(/* animate= */ false));
 
-        verify(mockDelegate).onBottomSheetClosed();
+        verify(mNativeInterfaceDelegate).onBottomSheetClosed();
 
         tabSwitcher.leaveHubToPreviousTabViaBack(WebPageStation.newBuilder());
     }
@@ -564,56 +558,54 @@ public class TabBottomSheetManagerTest {
     @Test
     @SmallTest
     public void testTryToCloseBottomSheet_WhenSuppressedByAnotherBottomSheet() {
-        NativeInterfaceDelegate mockDelegate = mock(NativeInterfaceDelegate.class);
-        showBottomSheetAndBlockUntilReady(mockDelegate);
+        showBottomSheetAndBlockUntilReady(mNativeInterfaceDelegate);
 
         // Create and show another bottom sheet content of higher priority.
-        BottomSheetContent otherContent = mock(BottomSheetContent.class);
-        when(otherContent.getPriority()).thenReturn(BottomSheetContent.ContentPriority.HIGH);
-        when(otherContent.allowInSheetContentSnackbars()).thenReturn(true);
+        when(mBottomSheetContent.getPriority()).thenReturn(BottomSheetContent.ContentPriority.HIGH);
+        when(mBottomSheetContent.allowInSheetContentSnackbars()).thenReturn(true);
         var alwaysFalse =
                 ThreadUtils.runOnUiThreadBlocking(() -> ObservableSuppliers.alwaysFalse());
-        when(otherContent.getBackPressStateChangedSupplier()).thenReturn(alwaysFalse);
+        when(mBottomSheetContent.getBackPressStateChangedSupplier()).thenReturn(alwaysFalse);
         View otherView = ThreadUtils.runOnUiThreadBlocking(() -> new View(mActivity));
-        when(otherContent.getContentView()).thenReturn(otherView);
-        when(otherContent.getSheetClosedAccessibilityStringId())
+        when(mBottomSheetContent.getContentView()).thenReturn(otherView);
+        when(mBottomSheetContent.getSheetClosedAccessibilityStringId())
                 .thenReturn(R.string.tab_bottom_sheet_closed);
-        when(otherContent.getSheetHiddenAccessibilityStringId())
+        when(mBottomSheetContent.getSheetHiddenAccessibilityStringId())
                 .thenReturn(R.string.tab_bottom_sheet_closed);
-        when(otherContent.getSheetHalfHeightAccessibilityStringId())
+        when(mBottomSheetContent.getSheetHalfHeightAccessibilityStringId())
                 .thenReturn(R.string.tab_bottom_sheet_half_height);
-        when(otherContent.getSheetFullHeightAccessibilityStringId())
+        when(mBottomSheetContent.getSheetFullHeightAccessibilityStringId())
                 .thenReturn(R.string.tab_bottom_sheet_full_height);
 
         // Request showing the other content. This will suppress the Tab Bottom Sheet.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mBottomSheetController.requestShowContent(otherContent, /* animate= */ false);
+                    mBottomSheetController.requestShowContent(
+                            mBottomSheetContent, /* animate= */ false);
                 });
 
         // Verify the Tab Bottom Sheet is suppressed and no longer showing.
         CriteriaHelper.pollUiThread(() -> !mManager.isSheetShowing());
-        verify(mockDelegate).onBottomSheetSuppressed();
+        verify(mNativeInterfaceDelegate).onBottomSheetSuppressed();
 
         // While suppressed, close the Tab Bottom Sheet via the manager.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mManager.tryToCloseBottomSheet(/* animate= */ false));
 
         // Verify that native got onBottomSheetClosed.
-        verify(mockDelegate).onBottomSheetClosed();
+        verify(mNativeInterfaceDelegate).onBottomSheetClosed();
 
         // Close the other bottom sheet.
         ThreadUtils.runOnUiThreadBlocking(
-                () -> mBottomSheetController.hideContent(otherContent, /* animate= */ false));
+                () ->
+                        mBottomSheetController.hideContent(
+                                mBottomSheetContent, /* animate= */ false));
     }
 
     @Test
     @SmallTest
     public void testTryToShowBottomSheet_WhenAlreadyShowing() {
-        NativeInterfaceDelegate mockDelegate1 = mock(NativeInterfaceDelegate.class);
-        NativeInterfaceDelegate mockDelegate2 = mock(NativeInterfaceDelegate.class);
-
-        showBottomSheetAndBlockUntilReady(mockDelegate1);
+        showBottomSheetAndBlockUntilReady(mMockDelegate1);
 
         CoBrowseViews coBrowseViews2 =
                 ThreadUtils.runOnUiThreadBlocking(
@@ -631,7 +623,7 @@ public class TabBottomSheetManagerTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mManager.tryToShowBottomSheet(
-                            mockDelegate2,
+                            mMockDelegate2,
                             coBrowseViews2,
                             /* animate= */ false,
                             /* startsExpanded= */ true);
@@ -641,8 +633,8 @@ public class TabBottomSheetManagerTest {
         CriteriaHelper.pollUiThread(() -> coBrowseViews2.getView().isAttachedToWindow());
         ThreadUtils.runOnUiThreadBlocking(() -> {});
 
-        verify(mockDelegate1).onBottomSheetClosed();
-        assertEquals(mManager.getNativeInterfaceDelegateForTesting(), mockDelegate2);
+        verify(mMockDelegate1).onBottomSheetClosed();
+        assertEquals(mManager.getNativeInterfaceDelegateForTesting(), mMockDelegate2);
 
         ThreadUtils.runOnUiThreadBlocking(() -> coBrowseViews2.destroy());
     }
@@ -650,14 +642,13 @@ public class TabBottomSheetManagerTest {
     @Test
     @SmallTest
     public void testTabSwitcherSuppression_OnlyOneObserverActive() {
-        NativeInterfaceDelegate mockDelegate = mock(NativeInterfaceDelegate.class);
-        showBottomSheetAndBlockUntilReady(mockDelegate);
+        showBottomSheetAndBlockUntilReady(mNativeInterfaceDelegate);
 
         // 1. Open tab switcher (First suppression)
         RegularTabSwitcherStation tabSwitcher = mInitialStation.openRegularTabSwitcher();
 
         // Verify it was suppressed once
-        verify(mockDelegate, times(1)).onBottomSheetSuppressed();
+        verify(mNativeInterfaceDelegate, times(1)).onBottomSheetSuppressed();
 
         // 2. Close tab switcher (Return to tab)
         WebPageStation pageStation =
@@ -668,7 +659,7 @@ public class TabBottomSheetManagerTest {
         tabSwitcher = pageStation.openRegularTabSwitcher();
 
         // Verify that it was called exactly 2 times in total.
-        verify(mockDelegate, times(2)).onBottomSheetSuppressed();
+        verify(mNativeInterfaceDelegate, times(2)).onBottomSheetSuppressed();
 
         // Clean up by leaving the tab switcher
         tabSwitcher.leaveHubToPreviousTabViaBack(WebPageStation.newBuilder());
@@ -801,8 +792,7 @@ public class TabBottomSheetManagerTest {
     @Test
     @SmallTest
     public void testBottomSheetSuppressedOnOmniboxFocus() {
-        NativeInterfaceDelegate mockDelegate = mock(NativeInterfaceDelegate.class);
-        showBottomSheetAndBlockUntilReady(mockDelegate);
+        showBottomSheetAndBlockUntilReady(mNativeInterfaceDelegate);
 
         SettableNonNullObservableSupplier<Boolean> supplier =
                 (SettableNonNullObservableSupplier<Boolean>)
@@ -813,7 +803,7 @@ public class TabBottomSheetManagerTest {
 
         // Verify the sheet is closed (suppressed)
         CriteriaHelper.pollUiThread(() -> !mManager.isSheetShowing());
-        verify(mockDelegate).onBottomSheetSuppressed();
+        verify(mNativeInterfaceDelegate).onBottomSheetSuppressed();
 
         // Unfocus the omnibox (restoration)
         ThreadUtils.runOnUiThreadBlocking(() -> supplier.set(false));
@@ -825,18 +815,16 @@ public class TabBottomSheetManagerTest {
     @Test
     @SmallTest
     public void testTryToShowBottomSheet_ReuseExistingSheetAndExpand() {
-        NativeInterfaceDelegate mockDelegate = mock(NativeInterfaceDelegate.class);
-
         // 1. Show the bottom sheet starting in peek mode.
         showBottomSheetAndBlockUntilReady(
-                mockDelegate, /* animate= */ false, /* startsExpanded= */ false);
+                mNativeInterfaceDelegate, /* animate= */ false, /* startsExpanded= */ false);
         CriteriaHelper.pollUiThread(() -> mManager.isInPeekMode());
 
         // 2. Call tryToShowBottomSheet again with the same delegate to expand the sheet.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mManager.tryToShowBottomSheet(
-                            mockDelegate,
+                            mNativeInterfaceDelegate,
                             mCoBrowseViews,
                             /* animate= */ false,
                             /* startsExpanded= */ true);
@@ -848,7 +836,7 @@ public class TabBottomSheetManagerTest {
 
         // 4. Crucially, verify that the delegate's onBottomSheetClosed() was NEVER called,
         // confirming we reused the sheet instead of tearing it down.
-        verify(mockDelegate, times(0)).onBottomSheetClosed();
+        verify(mNativeInterfaceDelegate, times(0)).onBottomSheetClosed();
     }
 
     private static class TestManualFillingComponent extends EmptyManualFillingComponent {

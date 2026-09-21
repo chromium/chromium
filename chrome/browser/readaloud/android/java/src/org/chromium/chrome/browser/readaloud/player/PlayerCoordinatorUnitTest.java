@@ -55,8 +55,8 @@ import org.chromium.components.prefs.PrefService;
 @RunWith(BaseRobolectricTestRunner.class)
 public class PlayerCoordinatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock ReadAloudMiniPlayerSceneLayer.Natives mSceneLayerNativeMock;
 
+    @Mock ReadAloudMiniPlayerSceneLayer.Natives mSceneLayerNativeMock;
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private BottomControlsStacker mBottomControlsStacker;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
@@ -64,13 +64,13 @@ public class PlayerCoordinatorUnitTest {
     @Mock private Player.Observer mObserver;
     @Mock private PlayerMediator mMediator;
     @Mock private MiniPlayerCoordinator mMiniPlayer;
-    private MockPrefServiceHelper mMockPrefServiceHelper;
-
-    private PlayerCoordinator mPlayerCoordinator;
-
     @Mock private Player.Delegate mDelegate;
     @Mock private ExpandedPlayerCoordinator mExpandedPlayer;
+    @Mock private ViewStub mViewStub;
+    @Mock private LayoutManager mLayoutManager;
 
+    private MockPrefServiceHelper mMockPrefServiceHelper;
+    private PlayerCoordinator mPlayerCoordinator;
     private Activity mActivity;
 
     @Before
@@ -94,14 +94,13 @@ public class PlayerCoordinatorUnitTest {
         // Need to set theme before inflating layout.
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
-        ViewStub mockMiniPlayerStub = Mockito.mock(ViewStub.class);
-        MiniPlayerCoordinator.setViewStubForTesting(mockMiniPlayerStub);
+        MiniPlayerCoordinator.setViewStubForTesting(mViewStub);
         var miniPlayerLayout =
                 (MiniPlayerLayout)
                         mActivity
                                 .getLayoutInflater()
                                 .inflate(R.layout.readaloud_mini_player_layout, null);
-        doReturn(miniPlayerLayout).when(mockMiniPlayerStub).inflate();
+        doReturn(miniPlayerLayout).when(mViewStub).inflate();
 
         doReturn(mBottomSheetController).when(mDelegate).getBottomSheetController();
 
@@ -109,7 +108,7 @@ public class PlayerCoordinatorUnitTest {
         PrefService prefs = mMockPrefServiceHelper.getPrefService();
         ReadAloudPrefs.setSpeed(prefs, 2f);
         doReturn(prefs).when(mDelegate).getPrefService();
-        doReturn(Mockito.mock(LayoutManager.class)).when(mDelegate).getLayoutManager();
+        doReturn(mLayoutManager).when(mDelegate).getLayoutManager();
         doReturn(ObservableSuppliers.alwaysNull())
                 .when(mDelegate)
                 .getCurrentLanguageVoicesSupplier();
@@ -128,7 +127,7 @@ public class PlayerCoordinatorUnitTest {
         mPlayerCoordinator = new PlayerCoordinator(mDelegate);
 
         // Mini player should be inflated and attached.
-        verify(mockMiniPlayerStub).inflate();
+        verify(mViewStub).inflate();
         // User prefs should be read into the model.
         verify(prefs).getDouble(eq("readaloud.speed"));
     }

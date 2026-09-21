@@ -26,6 +26,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -60,27 +61,29 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = BaseRobolectricTestRunner.MIN_SDK)
 public class TabbedNavigationBarColorControllerUnitTest {
-    public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
-
     private static final int NAV_DIVIDER_COLOR = Color.LTGRAY;
     private static final int NUM_UNIQUE_ANIMATION_COLORS = 5;
 
-    private TabbedNavigationBarColorController mNavColorController;
-    private Context mContext;
+    public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
+
     @Mock private TabModelSelector mTabModelSelector;
-    private SettableMonotonicObservableSupplier<LayoutManager> mLayoutManagerSupplier;
     @Mock private LayoutManager mLayoutManager;
     @Mock private FullscreenManager mFullscreenManager;
-    private SettableMonotonicObservableSupplier<EdgeToEdgeController>
-            mEdgeToEdgeControllerObservableSupplier;
-    private SettableMonotonicObservableSupplier<Integer> mOverviewColorSupplier;
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
     @Mock private BottomAttachedUiObserver mBottomAttachedUiObserver;
     @Mock private TabModel mTabModel;
     @Mock private Tab mTab;
     @Mock private NavigationBarColorProvider.Observer mObserver;
     @Mock private EdgeToEdgeSystemBarColorHelper mEdgeToEdgeSystemBarColorHelper;
+    @Captor private ArgumentCaptor<Integer> mColorsCaptor;
+    @Captor private ArgumentCaptor<LayoutStateObserver> mLayoutStateObserverCaptor;
 
+    private TabbedNavigationBarColorController mNavColorController;
+    private Context mContext;
+    private SettableMonotonicObservableSupplier<LayoutManager> mLayoutManagerSupplier;
+    private SettableMonotonicObservableSupplier<EdgeToEdgeController>
+            mEdgeToEdgeControllerObservableSupplier;
+    private SettableMonotonicObservableSupplier<Integer> mOverviewColorSupplier;
     private final SettableMonotonicObservableSupplier<TabModel> mTabModelSupplier =
             ObservableSuppliers.createMonotonic();
     private final SettableNullableObservableSupplier<Tab> mTabSupplier =
@@ -310,11 +313,10 @@ public class TabbedNavigationBarColorControllerUnitTest {
         mNavColorController.onBottomAttachedColorChanged(Color.RED, false, false);
         runColorUpdateAnimation();
         // Capture all of the animation colors.
-        ArgumentCaptor<Integer> colorsArgumentCaptor = ArgumentCaptor.forClass(Integer.class);
         verify(mEdgeToEdgeSystemBarColorHelper, atLeastOnce())
-                .setNavigationBarColor(colorsArgumentCaptor.capture());
+                .setNavigationBarColor(mColorsCaptor.capture());
 
-        verifyColorAnimationSteps(colorsArgumentCaptor.getAllValues());
+        verifyColorAnimationSteps(mColorsCaptor.getAllValues());
     }
 
     @Test
@@ -334,11 +336,10 @@ public class TabbedNavigationBarColorControllerUnitTest {
         mNavColorController.onBottomAttachedColorChanged(Color.RED, false, false);
         runColorUpdateAnimation();
         // Capture all of the animation colors.
-        ArgumentCaptor<Integer> colorsArgumentCaptor = ArgumentCaptor.forClass(Integer.class);
         verify(mEdgeToEdgeSystemBarColorHelper, atLeastOnce())
-                .setNavigationBarColor(colorsArgumentCaptor.capture());
+                .setNavigationBarColor(mColorsCaptor.capture());
 
-        verifyColorAnimationSteps(colorsArgumentCaptor.getAllValues());
+        verifyColorAnimationSteps(mColorsCaptor.getAllValues());
     }
 
     @Test
@@ -347,13 +348,10 @@ public class TabbedNavigationBarColorControllerUnitTest {
         mNavColorController.setIsBottomChinEnabledForTesting(true);
         Mockito.clearInvocations(mEdgeToEdgeSystemBarColorHelper);
 
-        ArgumentCaptor<LayoutStateObserver> argumentCaptor =
-                ArgumentCaptor.forClass(LayoutStateObserver.class);
-
         // mLayoutManagerSupplier.set(mLayoutManager) in this file should trigger setLayoutManager.
-        verify(mLayoutManager).addObserver(argumentCaptor.capture());
+        verify(mLayoutManager).addObserver(mLayoutStateObserverCaptor.capture());
 
-        LayoutStateObserver layoutStateObserver = argumentCaptor.getValue();
+        LayoutStateObserver layoutStateObserver = mLayoutStateObserverCaptor.getValue();
 
         // Simulate omnibox swipe.
         layoutStateObserver.onStartedShowing(LayoutType.TOOLBAR_SWIPE);
@@ -400,10 +398,8 @@ public class TabbedNavigationBarColorControllerUnitTest {
 
         mOverviewColorSupplier.set(Color.BLUE);
 
-        ArgumentCaptor<LayoutStateObserver> captor =
-                ArgumentCaptor.forClass(LayoutStateObserver.class);
-        verify(mLayoutManager).addObserver(captor.capture());
-        LayoutStateObserver observer = captor.getValue();
+        verify(mLayoutManager).addObserver(mLayoutStateObserverCaptor.capture());
+        LayoutStateObserver observer = mLayoutStateObserverCaptor.getValue();
 
         Mockito.clearInvocations(mEdgeToEdgeSystemBarColorHelper);
 
@@ -422,10 +418,8 @@ public class TabbedNavigationBarColorControllerUnitTest {
         mOverviewColorSupplier.set(Color.BLUE);
         runColorUpdateAnimation();
 
-        ArgumentCaptor<LayoutStateObserver> captor =
-                ArgumentCaptor.forClass(LayoutStateObserver.class);
-        verify(mLayoutManager).addObserver(captor.capture());
-        LayoutStateObserver observer = captor.getValue();
+        verify(mLayoutManager).addObserver(mLayoutStateObserverCaptor.capture());
+        LayoutStateObserver observer = mLayoutStateObserverCaptor.getValue();
 
         Mockito.clearInvocations(mEdgeToEdgeSystemBarColorHelper);
 

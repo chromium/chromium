@@ -9,7 +9,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
@@ -30,8 +29,12 @@ import androidx.core.graphics.Insets;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
@@ -47,11 +50,12 @@ import java.util.List;
 /** Unit tests for {@link DocumentPictureInPictureHeaderViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class DocumentPictureInPictureHeaderViewBinderUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private ImageView mSecurityIcon;
+    @Mock private ImageView mBackToTabButton;
+    @Mock private TextView mUrlBar;
     private Context mContext;
     private ViewGroup mHeaderView;
-    private ImageView mBackToTabButton;
-    private ImageView mSecurityIcon;
-    private TextView mUrlBar;
     private PropertyModel mModel;
 
     @Before
@@ -64,9 +68,6 @@ public class DocumentPictureInPictureHeaderViewBinderUnitTest {
         mHeaderView.setLayoutParams(
                 new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0));
 
-        mSecurityIcon = mock(ImageView.class);
-        mBackToTabButton = mock(ImageView.class);
-        mUrlBar = mock(TextView.class);
         doReturn(mSecurityIcon)
                 .when(mHeaderView)
                 .findViewById(R.id.document_picture_in_picture_header_security_icon);

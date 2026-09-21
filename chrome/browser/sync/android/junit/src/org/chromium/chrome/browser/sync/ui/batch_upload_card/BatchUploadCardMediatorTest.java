@@ -21,8 +21,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.ParameterizedRobolectricTestRunner;
@@ -64,11 +64,6 @@ public class BatchUploadCardMediatorTest {
     @Rule(order = Rule.DEFAULT_ORDER - 1)
     public final BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
 
-    @Parameters(name = "{index}_isIdentityMgr={0}")
-    public static Collection parameters() {
-        return Arrays.asList(false, true);
-    }
-
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
@@ -83,6 +78,14 @@ public class BatchUploadCardMediatorTest {
     @Mock private SyncService mSyncService;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private IdentityManager mIdentityManager;
+    @Mock private LifecycleOwner mLifecycleOwner;
+    @Mock private Lifecycle mLifecycle;
+    @Captor private ArgumentCaptor<LifecycleObserver> mObserverCaptor;
+
+    @Parameters(name = "{index}_isIdentityMgr={0}")
+    public static Collection parameters() {
+        return Arrays.asList(false, true);
+    }
 
     private BatchUploadCardMediator mMediator;
     private final boolean mIsIdentityManagerSourceOfAccounts;
@@ -450,9 +453,7 @@ public class BatchUploadCardMediatorTest {
 
     @Test
     public void testDestroyRemovesLifecycleObserver() {
-        LifecycleOwner mockLifecycleOwner = Mockito.mock(LifecycleOwner.class);
-        Lifecycle mockLifecycle = Mockito.mock(Lifecycle.class);
-        doReturn(mockLifecycle).when(mockLifecycleOwner).getLifecycle();
+        doReturn(mLifecycle).when(mLifecycleOwner).getLifecycle();
 
         mActivityScenarioRule
                 .getScenario()
@@ -461,7 +462,7 @@ public class BatchUploadCardMediatorTest {
                             mMediator =
                                     new BatchUploadCardMediator(
                                             activity,
-                                            mockLifecycleOwner,
+                                            mLifecycleOwner,
                                             mModalDialogManager,
                                             mProfile,
                                             mModel,
@@ -470,12 +471,10 @@ public class BatchUploadCardMediatorTest {
                                             EntryPoint.BOOKMARK_MANAGER);
                         });
 
-        ArgumentCaptor<LifecycleObserver> observerCaptor =
-                ArgumentCaptor.forClass(LifecycleObserver.class);
-        verify(mockLifecycle).addObserver(observerCaptor.capture());
+        verify(mLifecycle).addObserver(mObserverCaptor.capture());
 
         mMediator.destroy();
 
-        verify(mockLifecycle).removeObserver(observerCaptor.getValue());
+        verify(mLifecycle).removeObserver(mObserverCaptor.getValue());
     }
 }

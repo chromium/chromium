@@ -67,15 +67,11 @@ import java.util.List;
 /** Unit tests for {@link PinnedTabStripMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class PinnedTabStripMediatorTest {
-
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
-
-    private final SettableMonotonicObservableSupplier<TabModel> mTabModelSupplier =
-            ObservableSuppliers.createMonotonic();
 
     @Mock private GridLayoutManager mLayoutManager;
     @Mock private TabListCoordinator mTabListCoordinator;
@@ -93,9 +89,11 @@ public class PinnedTabStripMediatorTest {
     @Mock private View mMockView;
     @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
     @Mock private TabActionListener mContextClickListener;
-
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
+    @Captor private ArgumentCaptor<TabListItemSizeChangedObserver> mObserverCaptor;
 
+    private final SettableMonotonicObservableSupplier<TabModel> mTabModelSupplier =
+            ObservableSuppliers.createMonotonic();
     private final MonotonicObservableSupplier<TabBookmarker> mTabBookmarkerSupplier =
             ObservableSuppliers.alwaysNull();
     private TabListModel mTabListModel;
@@ -141,10 +139,8 @@ public class PinnedTabStripMediatorTest {
                         mModalDialogManager,
                         mOnTabGroupCreation);
 
-        ArgumentCaptor<TabListItemSizeChangedObserver> observerCaptor =
-                ArgumentCaptor.forClass(TabListItemSizeChangedObserver.class);
-        verify(mTabListCoordinator).addTabListItemSizeChangedObserver(observerCaptor.capture());
-        mTabListItemSizeChangedObserver = observerCaptor.getValue();
+        verify(mTabListCoordinator).addTabListItemSizeChangedObserver(mObserverCaptor.capture());
+        mTabListItemSizeChangedObserver = mObserverCaptor.getValue();
         when(mLayoutManager.getSpanCount()).thenReturn(2);
 
         mMediator.setContextMenuCoordinatorForTesting(mMenuCoordinator);

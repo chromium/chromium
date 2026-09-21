@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.bookmarks.bar;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -56,7 +55,11 @@ public class BookmarkBarPopupCoordinatorTest {
     @Mock private BookmarkBar mBookmarkBarView;
     @Mock private View mAnchorView;
     @Mock private ChromePopupWindow mMockPopupWindow;
+    @Mock private AnchoredPopupWindow mFolderPopup;
+    @Mock private AnchoredPopupWindow mContextMenuPopup;
+    @Mock private View mView;
     @Captor private ArgumentCaptor<Drawable> mDrawableCaptor;
+    @Captor private ArgumentCaptor<PopupWindow.OnDismissListener> mDismissListenerCaptor;
 
     private Activity mActivity;
     private BookmarkBarPopupCoordinator mCoordinator;
@@ -115,14 +118,11 @@ public class BookmarkBarPopupCoordinatorTest {
         // Verify anchorView is selected when popup is shown.
         verify(mAnchorView).setSelected(true);
 
-        ArgumentCaptor<PopupWindow.OnDismissListener> dismissListenerCaptor =
-                ArgumentCaptor.forClass(PopupWindow.OnDismissListener.class);
-
         // Verify that the dismiss listener is registered on the popup window.
-        verify(mMockPopupWindow).setOnDismissListener(dismissListenerCaptor.capture());
+        verify(mMockPopupWindow).setOnDismissListener(mDismissListenerCaptor.capture());
 
         // Trigger the dismiss listener.
-        dismissListenerCaptor.getValue().onDismiss();
+        mDismissListenerCaptor.getValue().onDismiss();
 
         // Verify anchorView is deselected when popup is dismissed.
         verify(mAnchorView).setSelected(false);
@@ -131,14 +131,12 @@ public class BookmarkBarPopupCoordinatorTest {
     @Test
     @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
     public void testDismiss_dismissesBothPopups() {
-        AnchoredPopupWindow folderPopup = mock(AnchoredPopupWindow.class);
-        AnchoredPopupWindow contextMenuPopup = mock(AnchoredPopupWindow.class);
-        mCoordinator.mFolderPopup.setPopupWindowForTesting(folderPopup);
-        mCoordinator.mContextMenuPopup.setPopupWindowForTesting(contextMenuPopup);
+        mCoordinator.mFolderPopup.setPopupWindowForTesting(mFolderPopup);
+        mCoordinator.mContextMenuPopup.setPopupWindowForTesting(mContextMenuPopup);
 
         mCoordinator.dismiss();
-        verify(folderPopup).dismiss();
-        verify(contextMenuPopup).dismiss();
+        verify(mFolderPopup).dismiss();
+        verify(mContextMenuPopup).dismiss();
     }
 
     @Test
@@ -149,27 +147,23 @@ public class BookmarkBarPopupCoordinatorTest {
         when(mAnchorView.getRootView()).thenReturn(rootView);
         when(mAnchorView.getViewTreeObserver()).thenReturn(rootView.getViewTreeObserver());
 
-        View subitemView = mock(View.class);
-        when(subitemView.getRootView()).thenReturn(rootView);
-        when(subitemView.getViewTreeObserver()).thenReturn(rootView.getViewTreeObserver());
+        when(mView.getRootView()).thenReturn(rootView);
+        when(mView.getViewTreeObserver()).thenReturn(rootView.getViewTreeObserver());
 
         mCoordinator.showFolderItemsPopup(mAnchorView, new ModelList(), /* isIncognito= */ false);
 
         mCoordinator.showContextMenuPopup(
-                new ModelList(), subitemView, new Point(0, 0), /* isIncognito= */ false);
+                new ModelList(), mView, new Point(0, 0), /* isIncognito= */ false);
 
-        verify(subitemView).setSelected(true);
-
-        ArgumentCaptor<PopupWindow.OnDismissListener> dismissListenerCaptor =
-                ArgumentCaptor.forClass(PopupWindow.OnDismissListener.class);
+        verify(mView).setSelected(true);
 
         verify(mMockPopupWindow, atLeastOnce())
-                .setOnDismissListener(dismissListenerCaptor.capture());
+                .setOnDismissListener(mDismissListenerCaptor.capture());
 
         // Trigger the dismiss listener for context menu.
-        dismissListenerCaptor.getValue().onDismiss();
+        mDismissListenerCaptor.getValue().onDismiss();
 
-        verify(subitemView).setSelected(false);
+        verify(mView).setSelected(false);
     }
 
     @Test

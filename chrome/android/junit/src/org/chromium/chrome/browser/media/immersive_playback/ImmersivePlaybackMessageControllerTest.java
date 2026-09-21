@@ -22,6 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
@@ -59,6 +60,10 @@ public class ImmersivePlaybackMessageControllerTest {
     @Mock private FullscreenManager mFullscreenManager;
     @Mock private ImmersivePlaybackConfirmationCallback mCallback;
     @Mock private WebContents mWebContents;
+    @Captor private ArgumentCaptor<PropertyModel> mMessageCaptor;
+    @Captor private ArgumentCaptor<PropertyModel> mDialogCaptor;
+    @Captor private ArgumentCaptor<TabObserver> mTabCaptor;
+    @Captor private ArgumentCaptor<FullscreenManager.Observer> mFsCaptor;
 
     private Context mContext;
     private ImmersivePlaybackMessageController mController;
@@ -94,11 +99,13 @@ public class ImmersivePlaybackMessageControllerTest {
     @Test
     public void testShow_EnqueuesMessageWithIcon() {
         mController.show(mCallback, ImmersiveStereoMode.MONO, ImmersiveProjectionType.QUAD);
-        ArgumentCaptor<PropertyModel> messageCaptor = ArgumentCaptor.forClass(PropertyModel.class);
         verify(mMessageDispatcher)
                 .enqueueMessage(
-                        messageCaptor.capture(), any(), eq(MessageScopeType.NAVIGATION), eq(false));
-        PropertyModel messageModel = messageCaptor.getValue();
+                        mMessageCaptor.capture(),
+                        any(),
+                        eq(MessageScopeType.NAVIGATION),
+                        eq(false));
+        PropertyModel messageModel = mMessageCaptor.getValue();
         Assert.assertEquals(
                 R.drawable.ic_panorama_horizontal_24dp,
                 messageModel.get(MessageBannerProperties.ICON_RESOURCE_ID));
@@ -108,11 +115,13 @@ public class ImmersivePlaybackMessageControllerTest {
     public void testActionClicks_OpensDialog() {
         mController.show(mCallback, ImmersiveStereoMode.MONO, ImmersiveProjectionType.QUAD);
 
-        ArgumentCaptor<PropertyModel> messageCaptor = ArgumentCaptor.forClass(PropertyModel.class);
         verify(mMessageDispatcher)
                 .enqueueMessage(
-                        messageCaptor.capture(), any(), eq(MessageScopeType.NAVIGATION), eq(false));
-        PropertyModel messageModel = messageCaptor.getValue();
+                        mMessageCaptor.capture(),
+                        any(),
+                        eq(MessageScopeType.NAVIGATION),
+                        eq(false));
+        PropertyModel messageModel = mMessageCaptor.getValue();
 
         Supplier<Integer> primaryAction =
                 messageModel.get(MessageBannerProperties.ON_PRIMARY_ACTION);
@@ -132,22 +141,23 @@ public class ImmersivePlaybackMessageControllerTest {
     public void testDialogSelection_ConfirmsOption() {
         mController.show(mCallback, ImmersiveStereoMode.MONO, ImmersiveProjectionType.QUAD);
 
-        ArgumentCaptor<PropertyModel> messageCaptor = ArgumentCaptor.forClass(PropertyModel.class);
         verify(mMessageDispatcher)
                 .enqueueMessage(
-                        messageCaptor.capture(), any(), eq(MessageScopeType.NAVIGATION), eq(false));
-        PropertyModel messageModel = messageCaptor.getValue();
+                        mMessageCaptor.capture(),
+                        any(),
+                        eq(MessageScopeType.NAVIGATION),
+                        eq(false));
+        PropertyModel messageModel = mMessageCaptor.getValue();
 
         var unused = messageModel.get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
 
-        ArgumentCaptor<PropertyModel> dialogCaptor = ArgumentCaptor.forClass(PropertyModel.class);
         verify(mModalDialogManager)
                 .showDialog(
-                        dialogCaptor.capture(),
+                        mDialogCaptor.capture(),
                         eq(ModalDialogManager.ModalDialogType.APP),
                         eq(true));
 
-        PropertyModel dialogModel = dialogCaptor.getValue();
+        PropertyModel dialogModel = mDialogCaptor.getValue();
         ImmersiveVideoFormatRadioGroup radioGroup =
                 (ImmersiveVideoFormatRadioGroup) dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
         Assert.assertNotNull(radioGroup);
@@ -172,11 +182,13 @@ public class ImmersivePlaybackMessageControllerTest {
         mController.show(
                 mCallback, ImmersiveStereoMode.SIDE_BY_SIDE, ImmersiveProjectionType.HEMISPHERE);
 
-        ArgumentCaptor<PropertyModel> messageCaptor = ArgumentCaptor.forClass(PropertyModel.class);
         verify(mMessageDispatcher)
                 .enqueueMessage(
-                        messageCaptor.capture(), any(), eq(MessageScopeType.NAVIGATION), eq(false));
-        PropertyModel messageModel = messageCaptor.getValue();
+                        mMessageCaptor.capture(),
+                        any(),
+                        eq(MessageScopeType.NAVIGATION),
+                        eq(false));
+        PropertyModel messageModel = mMessageCaptor.getValue();
 
         Supplier<Integer> primaryAction =
                 messageModel.get(MessageBannerProperties.ON_PRIMARY_ACTION);
@@ -198,11 +210,13 @@ public class ImmersivePlaybackMessageControllerTest {
     public void testDismissNoAction_Declines() {
         mController.show(mCallback, ImmersiveStereoMode.MONO, ImmersiveProjectionType.QUAD);
 
-        ArgumentCaptor<PropertyModel> messageCaptor = ArgumentCaptor.forClass(PropertyModel.class);
         verify(mMessageDispatcher)
                 .enqueueMessage(
-                        messageCaptor.capture(), any(), eq(MessageScopeType.NAVIGATION), eq(false));
-        PropertyModel messageModel = messageCaptor.getValue();
+                        mMessageCaptor.capture(),
+                        any(),
+                        eq(MessageScopeType.NAVIGATION),
+                        eq(false));
+        PropertyModel messageModel = mMessageCaptor.getValue();
 
         Callback<Integer> dismissCallback = messageModel.get(MessageBannerProperties.ON_DISMISSED);
         dismissCallback.onResult(DismissReason.TIMER);
@@ -229,11 +243,13 @@ public class ImmersivePlaybackMessageControllerTest {
     @Test
     public void testDismiss_DismissesDialog() {
         mController.show(mCallback, ImmersiveStereoMode.MONO, ImmersiveProjectionType.QUAD);
-        ArgumentCaptor<PropertyModel> messageCaptor = ArgumentCaptor.forClass(PropertyModel.class);
         verify(mMessageDispatcher)
                 .enqueueMessage(
-                        messageCaptor.capture(), any(), eq(MessageScopeType.NAVIGATION), eq(false));
-        PropertyModel messageModel = messageCaptor.getValue();
+                        mMessageCaptor.capture(),
+                        any(),
+                        eq(MessageScopeType.NAVIGATION),
+                        eq(false));
+        PropertyModel messageModel = mMessageCaptor.getValue();
         Supplier<Integer> primaryAction =
                 messageModel.get(MessageBannerProperties.ON_PRIMARY_ACTION);
 
@@ -282,30 +298,26 @@ public class ImmersivePlaybackMessageControllerTest {
 
     @Test
     public void testObservers_TriggerEvents_DismissesMessage() {
-        ArgumentCaptor<TabObserver> tabCaptor = ArgumentCaptor.forClass(TabObserver.class);
-        ArgumentCaptor<FullscreenManager.Observer> fsCaptor =
-                ArgumentCaptor.forClass(FullscreenManager.Observer.class);
-
         // 1. Test page load started
         mController.show(mCallback, ImmersiveStereoMode.MONO, ImmersiveProjectionType.QUAD);
-        verify(mTab).addObserver(tabCaptor.capture());
+        verify(mTab).addObserver(mTabCaptor.capture());
         clearInvocations(mMessageDispatcher);
-        tabCaptor.getValue().onPageLoadStarted(mTab, null);
+        mTabCaptor.getValue().onPageLoadStarted(mTab, null);
         verify(mMessageDispatcher)
                 .dismissMessage(any(PropertyModel.class), eq(DismissReason.DISMISSED_BY_FEATURE));
 
         // 2. Test content changed
         mController.show(mCallback, ImmersiveStereoMode.MONO, ImmersiveProjectionType.QUAD);
         clearInvocations(mMessageDispatcher);
-        tabCaptor.getValue().onContentChanged(mTab);
+        mTabCaptor.getValue().onContentChanged(mTab);
         verify(mMessageDispatcher)
                 .dismissMessage(any(PropertyModel.class), eq(DismissReason.DISMISSED_BY_FEATURE));
 
         // 3. Test exit fullscreen
         mController.show(mCallback, ImmersiveStereoMode.MONO, ImmersiveProjectionType.QUAD);
-        verify(mFullscreenManager, times(3)).addObserver(fsCaptor.capture());
+        verify(mFullscreenManager, times(3)).addObserver(mFsCaptor.capture());
         clearInvocations(mMessageDispatcher);
-        fsCaptor.getValue().onExitFullscreen(mTab);
+        mFsCaptor.getValue().onExitFullscreen(mTab);
         verify(mMessageDispatcher)
                 .dismissMessage(any(PropertyModel.class), eq(DismissReason.DISMISSED_BY_FEATURE));
     }

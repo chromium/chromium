@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -46,6 +45,7 @@ public class ArchivedTabModelOrchestratorUnitTest {
     @Mock private TabModelSelectorBase mMockTabModelSelector;
     @Mock private TabPersistencePolicy mMockTabPersistencePolicy;
     @Mock private Profile mMockProfile;
+    @Mock private TabbedModeTabModelOrchestrator mTabbedModeTabModelOrchestrator;
 
     private ArchivedTabModelOrchestrator mOrchestrator;
 
@@ -236,12 +236,9 @@ public class ArchivedTabModelOrchestratorUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ARCHIVED_TABS_TEARDOWN)
     public void testRescueArchivedTabs_DuplicateCall_CompletesOrchestrator() {
-        TabbedModeTabModelOrchestrator mockOrchestrator =
-                mock(TabbedModeTabModelOrchestrator.class);
-
         mOrchestrator.setRescueTabsCalledForTesting(/* called= */ true);
-        mOrchestrator.rescueArchivedTabs(mockOrchestrator);
+        mOrchestrator.rescueArchivedTabs(mTabbedModeTabModelOrchestrator);
 
-        verify(mockOrchestrator).onRescueArchivedTabsCompleted();
+        verify(mTabbedModeTabModelOrchestrator).onRescueArchivedTabsCompleted();
     }
 }

@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.firstrun;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -54,13 +53,24 @@ import org.chromium.components.sync.SyncService;
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_FRE)
 public class FirstRunFlowSequencerTest {
-
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
     /** Testing version of FirstRunFlowSequencer that allows us to override all needed checks. */
+    @Mock private IdentityManager mIdentityManagerMock;
+
+    @Mock private SyncService mSyncServiceMock;
+    @Mock private HistorySyncHelper mHistorySyncHelperMock;
+    @Mock private Profile mProfile;
+    @Mock private ProfileProvider mProfileProvider;
+    @Mock private IdentityServicesProvider mIdentityServicesProvider;
+
+    private ActivityController<Activity> mActivityController;
+    private Activity mActivity;
+    private OneshotSupplierImpl<ProfileProvider> mProfileSupplier;
+
     private static class TestFirstRunFlowSequencerDelegate
             extends FirstRunFlowSequencer.FirstRunFlowSequencerDelegate {
         private final boolean mShouldShowSearchEnginePage;
@@ -100,21 +110,10 @@ public class FirstRunFlowSequencerTest {
         }
     }
 
-    @Mock private IdentityManager mIdentityManagerMock;
-    @Mock private SyncService mSyncServiceMock;
-    @Mock private HistorySyncHelper mHistorySyncHelperMock;
-
-    private ActivityController<Activity> mActivityController;
-    private Activity mActivity;
-    private OneshotSupplierImpl<ProfileProvider> mProfileSupplier;
-
     @Before
     public void setUp() {
-        Profile profile = mock(Profile.class);
-        ProfileProvider profileProvider = mock(ProfileProvider.class);
-
-        IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
-        when(IdentityServicesProvider.get().getIdentityManager(profile))
+        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
+        when(IdentityServicesProvider.get().getIdentityManager(mProfile))
                 .thenReturn(mIdentityManagerMock);
         when(mIdentityManagerMock.hasPrimaryAccount()).thenReturn(false);
 
@@ -124,8 +123,8 @@ public class FirstRunFlowSequencerTest {
         mActivityController = Robolectric.buildActivity(Activity.class);
         mActivity = mActivityController.setup().get();
         mProfileSupplier = new OneshotSupplierImpl<>();
-        when(profileProvider.getOriginalProfile()).thenReturn(profile);
-        mProfileSupplier.set(profileProvider);
+        when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
+        mProfileSupplier.set(mProfileProvider);
     }
 
     @After

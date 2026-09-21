@@ -15,7 +15,6 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -177,6 +176,7 @@ public class AutofillLocalCardEditorTest {
     @Mock private CreditCardScannerManager mMockScannerManager;
     @Mock private ProfileManagerUtilsJni mMockProfileManagerUtilsJni;
     @Mock private ActorKeyedService mMockActorKeyedService;
+    @Mock private MenuItem mMenuItem;
 
     private UserActionTester mActionTester;
 
@@ -292,9 +292,8 @@ public class AutofillLocalCardEditorTest {
     private void openDeletePaymentMethodConfirmationDialog(ModalDialogManager modalDialogManager) {
         mCardEditor.setModalDialogManagerSupplier(() -> modalDialogManager);
 
-        MenuItem deleteButton = mock(MenuItem.class);
-        when(deleteButton.getItemId()).thenReturn(R.id.delete_menu_id);
-        mCardEditor.onOptionsItemSelected(deleteButton);
+        when(mMenuItem.getItemId()).thenReturn(R.id.delete_menu_id);
+        mCardEditor.onOptionsItemSelected(mMenuItem);
     }
 
     /**

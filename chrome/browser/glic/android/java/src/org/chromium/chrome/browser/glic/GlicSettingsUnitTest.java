@@ -36,6 +36,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -47,6 +48,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.glic.GlicKeyedService.ExperimentalTriggeringObserver;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.prefs.LocalStatePrefs;
@@ -80,9 +82,6 @@ public class GlicSettingsUnitTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    private TestActivity mActivity;
-    private UserActionTester mUserActionTester;
-
     @Mock private Profile mProfileMock;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
     @Mock private PrefService mPrefServiceMock;
@@ -94,6 +93,12 @@ public class GlicSettingsUnitTest {
     @Mock private LocalStatePrefs.Natives mLocalStatePrefsJniMock;
     @Mock private PrefService mLocalPrefServiceMock;
     @Mock private SettingsIndexData mSearchIndexDataMock;
+
+    @Captor
+    private ArgumentCaptor<ExperimentalTriggeringObserver> mExperimentalTriggeringObserverCaptor;
+
+    private TestActivity mActivity;
+    private UserActionTester mUserActionTester;
 
     @Before
     public void setUp() {
@@ -434,12 +439,13 @@ public class GlicSettingsUnitTest {
                 fragment.findPreference("glic_permissions_spark_auto_browse");
         assertFalse(preference.isChecked());
 
-        ArgumentCaptor<GlicKeyedService.ExperimentalTriggeringObserver> captor =
-                ArgumentCaptor.forClass(GlicKeyedService.ExperimentalTriggeringObserver.class);
-        verify(mGlicKeyedServiceMock).addExperimentalTriggeringObserver(captor.capture());
+        verify(mGlicKeyedServiceMock)
+                .addExperimentalTriggeringObserver(mExperimentalTriggeringObserverCaptor.capture());
 
         // Simulate a native-side change; the toggle should follow.
-        captor.getValue().onExperimentalTriggeringEnabledChanged(true);
+        mExperimentalTriggeringObserverCaptor
+                .getValue()
+                .onExperimentalTriggeringEnabledChanged(true);
         assertTrue(preference.isChecked());
     }
 
@@ -448,12 +454,13 @@ public class GlicSettingsUnitTest {
         when(mGlicEnablingJniMock.shouldShowExperimentalTriggeringToggle(any())).thenReturn(true);
         GlicSettings fragment = launchFragment();
 
-        ArgumentCaptor<GlicKeyedService.ExperimentalTriggeringObserver> captor =
-                ArgumentCaptor.forClass(GlicKeyedService.ExperimentalTriggeringObserver.class);
-        verify(mGlicKeyedServiceMock).addExperimentalTriggeringObserver(captor.capture());
+        verify(mGlicKeyedServiceMock)
+                .addExperimentalTriggeringObserver(mExperimentalTriggeringObserverCaptor.capture());
 
         mActivityScenarioRule.getScenario().moveToState(State.DESTROYED);
-        verify(mGlicKeyedServiceMock).removeExperimentalTriggeringObserver(captor.getValue());
+        verify(mGlicKeyedServiceMock)
+                .removeExperimentalTriggeringObserver(
+                        mExperimentalTriggeringObserverCaptor.getValue());
     }
 
     @Test

@@ -19,7 +19,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
@@ -50,15 +53,19 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class TabbedPaintPreviewTest {
+    private static final String TEST_URL = "/chrome/test/data/android/about.html";
+
+    /** Implementation of {@link PlayerCompositorDelegate.Factory} for tests. */
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
-    private static final String TEST_URL = "/chrome/test/data/android/about.html";
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private PaintPreviewTabService mPaintPreviewTabService;
 
     private WebPageStation mPage;
 
-    /** Implementation of {@link PlayerCompositorDelegate.Factory} for tests. */
     public static class TestCompositorDelegateFactory implements PlayerCompositorDelegate.Factory {
         @Override
         public PlayerCompositorDelegate create(
@@ -94,9 +101,8 @@ public class TabbedPaintPreviewTest {
 
     @Before
     public void setUp() {
-        PaintPreviewTabService mockService = Mockito.mock(PaintPreviewTabService.class);
-        Mockito.doReturn(true).when(mockService).hasCaptureForTab(Mockito.anyInt());
-        TabbedPaintPreview.overridePaintPreviewTabServiceForTesting(mockService);
+        Mockito.doReturn(true).when(mPaintPreviewTabService).hasCaptureForTab(Mockito.anyInt());
+        TabbedPaintPreview.overridePaintPreviewTabServiceForTesting(mPaintPreviewTabService);
         PlayerManager.overrideCompositorDelegateFactoryForTesting(
                 new TestCompositorDelegateFactory());
         mPage = mActivityTestRule.startOnTestServerUrl(TEST_URL);

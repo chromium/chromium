@@ -17,7 +17,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -44,6 +43,7 @@ public class ContentGestureListenerTest {
     @Mock private ContentView mTabContentView;
     @Mock private WebContents mWebContents;
     @Mock private MotionEvent mEventSrc;
+    @Mock private MotionEvent mMotionEvent;
 
     private ContentGestureListener mListener;
     private MotionEvent mEventTo;
@@ -55,7 +55,7 @@ public class ContentGestureListenerTest {
         when(mTab.getContentView()).thenReturn(mTabContentView);
         when(mTab.getWebContents()).thenReturn(mWebContents);
 
-        mListener.onDown(Mockito.mock(MotionEvent.class));
+        mListener.onDown(mMotionEvent);
         RenderCoordinatesImpl.setInstanceForTesting(mRenderCoordinates);
         mEventTo = MotionEvent.obtain(0, 0, MotionEvent.ACTION_MOVE, 0, 0, 0);
     }

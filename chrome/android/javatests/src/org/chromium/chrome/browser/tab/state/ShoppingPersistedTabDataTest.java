@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tab.state;
 
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -64,6 +63,8 @@ public class ShoppingPersistedTabDataTest {
     @Mock private ShoppingPersistedTabDataService mShoppingPersistedTabDataService;
 
     @Mock ShoppingService mShoppingService;
+    @Mock private NavigationHandle mNavigationHandle1;
+    @Mock private Tab mTab;
 
     @Before
     public void setUp() {
@@ -373,7 +374,6 @@ public class ShoppingPersistedTabDataTest {
                         ShoppingPersistedTabDataTestUtils.TAB_ID, mProfileMock);
         ShoppingPersistedTabDataTestUtils.mockShoppingServiceResponse(
                 mShoppingService, tab.getUrl(), ShoppingServiceResponse.NONE);
-        NavigationHandle navigationHandle = mock(NavigationHandle.class);
         for (boolean isSameDocument : new boolean[] {false, true}) {
             ShoppingPersistedTabData shoppingPersistedTabData = new ShoppingPersistedTabData(tab);
             shoppingPersistedTabData.setPriceMicros(42_000_000L);
@@ -382,10 +382,10 @@ public class ShoppingPersistedTabDataTest {
             shoppingPersistedTabData.setPriceDropGurl(
                     ShoppingPersistedTabDataTestUtils.DEFAULT_GURL);
             Assert.assertNotNull(shoppingPersistedTabData.getPriceDrop());
-            doReturn(isSameDocument).when(navigationHandle).isSameDocument();
+            doReturn(isSameDocument).when(mNavigationHandle1).isSameDocument();
             shoppingPersistedTabData
                     .getUrlUpdatedObserverForTesting()
-                    .onDidStartNavigationInPrimaryMainFrame(tab, navigationHandle);
+                    .onDidStartNavigationInPrimaryMainFrame(tab, mNavigationHandle1);
             if (!isSameDocument) {
                 Assert.assertNull(shoppingPersistedTabData.getPriceDrop());
             } else {
@@ -403,13 +403,12 @@ public class ShoppingPersistedTabDataTest {
                         ShoppingPersistedTabDataTestUtils.TAB_ID, mProfileMock);
         ShoppingPersistedTabDataTestUtils.mockShoppingServiceResponse(
                 mShoppingService, tab.getUrl(), ShoppingServiceResponse.NONE);
-        NavigationHandle navigationHandle = mock(NavigationHandle.class);
-        doReturn(true).when(navigationHandle).isInPrimaryMainFrame();
-        doReturn(false).when(navigationHandle).isSameDocument();
+        doReturn(true).when(mNavigationHandle1).isInPrimaryMainFrame();
+        doReturn(false).when(mNavigationHandle1).isSameDocument();
         GURL gurl1 = new GURL("https://foo.com");
         GURL gurl2 = new GURL("https://bar.com");
         tab.setGurlOverrideForTesting(gurl1);
-        doReturn(gurl1).when(navigationHandle).getUrl();
+        doReturn(gurl1).when(mNavigationHandle1).getUrl();
         ShoppingPersistedTabData shoppingPersistedTabData = new ShoppingPersistedTabData(tab);
         shoppingPersistedTabData.setPriceMicros(42_000_000L);
         shoppingPersistedTabData.setPreviousPriceMicros(60_000_000L);
@@ -418,12 +417,12 @@ public class ShoppingPersistedTabDataTest {
         Assert.assertNotNull(shoppingPersistedTabData.getPriceDrop());
         shoppingPersistedTabData
                 .getUrlUpdatedObserverForTesting()
-                .onDidStartNavigationInPrimaryMainFrame(tab, navigationHandle);
+                .onDidStartNavigationInPrimaryMainFrame(tab, mNavigationHandle1);
         Assert.assertNotNull(shoppingPersistedTabData.getPriceDrop());
-        doReturn(gurl2).when(navigationHandle).getUrl();
+        doReturn(gurl2).when(mNavigationHandle1).getUrl();
         shoppingPersistedTabData
                 .getUrlUpdatedObserverForTesting()
-                .onDidStartNavigationInPrimaryMainFrame(tab, navigationHandle);
+                .onDidStartNavigationInPrimaryMainFrame(tab, mNavigationHandle1);
         Assert.assertNull(shoppingPersistedTabData.getPriceDrop());
     }
 
@@ -436,12 +435,11 @@ public class ShoppingPersistedTabDataTest {
                         ShoppingPersistedTabDataTestUtils.TAB_ID, mProfileMock);
         ShoppingPersistedTabDataTestUtils.mockShoppingServiceResponse(
                 mShoppingService, tab.getUrl(), ShoppingServiceResponse.NONE);
-        NavigationHandle navigationHandle = mock(NavigationHandle.class);
-        doReturn(false).when(navigationHandle).isSameDocument();
-        doReturn(false).when(navigationHandle).isValidSearchFormUrl();
-        doReturn(true).when(navigationHandle).hasCommitted();
+        doReturn(false).when(mNavigationHandle1).isSameDocument();
+        doReturn(false).when(mNavigationHandle1).isValidSearchFormUrl();
+        doReturn(true).when(mNavigationHandle1).hasCommitted();
         int reloadFromAddressBar = PageTransition.FROM_ADDRESS_BAR | PageTransition.RELOAD;
-        doReturn(reloadFromAddressBar).when(navigationHandle).pageTransition();
+        doReturn(reloadFromAddressBar).when(mNavigationHandle1).pageTransition();
         ShoppingPersistedTabData shoppingPersistedTabData = new ShoppingPersistedTabData(tab);
         shoppingPersistedTabData.setPriceMicros(42_000_000L);
         shoppingPersistedTabData.setPreviousPriceMicros(60_000_000L);
@@ -451,7 +449,7 @@ public class ShoppingPersistedTabDataTest {
         Assert.assertNotNull(shoppingPersistedTabData.getPriceDrop());
         shoppingPersistedTabData
                 .getUrlUpdatedObserverForTesting()
-                .onDidFinishNavigationInPrimaryMainFrame(tab, navigationHandle);
+                .onDidFinishNavigationInPrimaryMainFrame(tab, mNavigationHandle1);
         Assert.assertNull(shoppingPersistedTabData.getPriceDrop());
     }
 
@@ -655,13 +653,12 @@ public class ShoppingPersistedTabDataTest {
     @SmallTest
     @Test
     public void testIncognitoTabDisabled() throws TimeoutException {
-        Tab tab = mock(Tab.class);
-        doReturn(true).when(tab).isIncognito();
+        doReturn(true).when(mTab).isIncognito();
         CallbackHelper callbackHelper = new CallbackHelper();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ShoppingPersistedTabData.from(
-                            tab,
+                            mTab,
                             (res) -> {
                                 Assert.assertNull(res);
                                 callbackHelper.notifyCalled();
@@ -673,13 +670,12 @@ public class ShoppingPersistedTabDataTest {
     @SmallTest
     @Test
     public void testCustomTabsDisabled() throws TimeoutException {
-        Tab tab = mock(Tab.class);
-        doReturn(true).when(tab).isCustomTab();
+        doReturn(true).when(mTab).isCustomTab();
         CallbackHelper callbackHelper = new CallbackHelper();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ShoppingPersistedTabData.from(
-                            tab,
+                            mTab,
                             (res) -> {
                                 Assert.assertNull(res);
                                 callbackHelper.notifyCalled();
@@ -939,14 +935,13 @@ public class ShoppingPersistedTabDataTest {
     @SmallTest
     @Test
     public void testDestroyedTab() throws TimeoutException {
-        Tab tab = mock(Tab.class);
-        doReturn(true).when(tab).isDestroyed();
+        doReturn(true).when(mTab).isDestroyed();
         CallbackHelper helper = new CallbackHelper();
         int count = helper.getCallCount();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ShoppingPersistedTabData.from(
-                            tab,
+                            mTab,
                             (res) -> {
                                 Assert.assertNull(res);
                                 helper.notifyCalled();

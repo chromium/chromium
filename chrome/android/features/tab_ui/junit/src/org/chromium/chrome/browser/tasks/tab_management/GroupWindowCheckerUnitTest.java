@@ -13,7 +13,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -37,6 +36,9 @@ public class GroupWindowCheckerUnitTest {
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private TabModel mTabModel;
     @Mock private TabList mComprehensiveModel;
+    @Mock private Tab mTab;
+    @Mock private Tab mTab1;
+    @Mock private Tab mTab2;
 
     private GroupWindowChecker mChecker;
 
@@ -64,10 +66,9 @@ public class GroupWindowCheckerUnitTest {
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"sync1"});
         when(mTabGroupSyncService.getGroup("sync1")).thenReturn(group);
 
-        Tab tab = Mockito.mock(Tab.class);
-        when(tab.getTabGroupId()).thenReturn(currentGroupId);
-        when(tab.isClosing()).thenReturn(false);
-        when(mComprehensiveModel.iterator()).thenReturn(List.of(tab).iterator());
+        when(mTab.getTabGroupId()).thenReturn(currentGroupId);
+        when(mTab.isClosing()).thenReturn(false);
+        when(mComprehensiveModel.iterator()).thenReturn(List.of(mTab).iterator());
 
         assertFalse(mChecker.hasOtherGroups(currentGroupId));
     }
@@ -83,15 +84,13 @@ public class GroupWindowCheckerUnitTest {
         when(mTabGroupSyncService.getGroup("sync1")).thenReturn(group1);
         when(mTabGroupSyncService.getGroup("sync2")).thenReturn(group2);
 
-        Tab tab1 = Mockito.mock(Tab.class);
-        when(tab1.getTabGroupId()).thenReturn(currentGroupId);
-        when(tab1.isClosing()).thenReturn(false);
+        when(mTab1.getTabGroupId()).thenReturn(currentGroupId);
+        when(mTab1.isClosing()).thenReturn(false);
 
-        Tab tab2 = Mockito.mock(Tab.class);
-        when(tab2.getTabGroupId()).thenReturn(otherGroupId);
-        when(tab2.isClosing()).thenReturn(false);
+        when(mTab2.getTabGroupId()).thenReturn(otherGroupId);
+        when(mTab2.isClosing()).thenReturn(false);
 
-        when(mComprehensiveModel.iterator()).thenReturn(List.of(tab1, tab2).iterator());
+        when(mComprehensiveModel.iterator()).thenReturn(List.of(mTab1, mTab2).iterator());
 
         assertTrue(mChecker.hasOtherGroups(currentGroupId));
         assertTrue(mChecker.hasOtherGroups(/* currentGroupId= */ null));

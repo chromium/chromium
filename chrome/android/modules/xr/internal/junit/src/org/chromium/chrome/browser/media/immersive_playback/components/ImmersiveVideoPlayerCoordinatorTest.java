@@ -18,6 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
@@ -48,6 +49,7 @@ public class ImmersiveVideoPlayerCoordinatorTest {
     @Mock private XrResizableComponent mResizableComponent;
     @Mock private XrMovableComponent mMovableComponent;
     @Mock private XrPanelEntityHolder mMainPanelEntity;
+    @Captor private ArgumentCaptor<View.AccessibilityDelegate> mDelegateCaptor;
 
     private Activity mActivity;
     private ImmersiveVideoPlayerCoordinator mCoordinator;
@@ -125,10 +127,8 @@ public class ImmersiveVideoPlayerCoordinatorTest {
     public void testAccessibilityClick_NotifiesDelegate() {
         mCoordinator.show();
 
-        ArgumentCaptor<View.AccessibilityDelegate> delegateCaptor =
-                ArgumentCaptor.forClass(View.AccessibilityDelegate.class);
-        verify(mSurfaceEntityView).setAccessibilityDelegate(delegateCaptor.capture());
-        View.AccessibilityDelegate accessibilityDelegate = delegateCaptor.getValue();
+        verify(mSurfaceEntityView).setAccessibilityDelegate(mDelegateCaptor.capture());
+        View.AccessibilityDelegate accessibilityDelegate = mDelegateCaptor.getValue();
         assertNotNull(accessibilityDelegate);
 
         AccessibilityNodeInfo nodeInfo = AccessibilityNodeInfo.obtain();

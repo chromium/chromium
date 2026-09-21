@@ -42,6 +42,7 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -145,22 +146,9 @@ import java.util.concurrent.atomic.AtomicReference;
 @Batch(Batch.PER_CLASS)
 @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288174
 public class ContextMenuTest {
-
-    @Mock private TabContextMenuItemDelegate mItemDelegate;
-    @Mock private ShareDelegate mShareDelegate;
-    @Mock private PrintingControllerImpl mPrintingController;
-    @Mock private DataProtectionBridge.Natives mDataProtectionBridgeMock;
-    @Mock private MenuModelBridge mMenuModelBridge;
-
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
     public final AutoResetCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.fastAutoResetCtaActivityRule();
     public final DownloadTestRule mDownloadTestRule = new DownloadTestRule();
-
-    @Rule
-    public final RuleChain mRuleChain =
-            RuleChain.outerRule(mActivityTestRule).around(mDownloadTestRule);
 
     private static final String TEST_PATH =
             "/chrome/test/data/android/contextmenu/context_menu_test.html";
@@ -199,6 +187,21 @@ public class ContextMenuTest {
                 callback.onResult(false);
                 return null;
             };
+
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Rule
+    public final RuleChain mRuleChain =
+            RuleChain.outerRule(mActivityTestRule).around(mDownloadTestRule);
+
+    @Mock private TabContextMenuItemDelegate mItemDelegate;
+    @Mock private ShareDelegate mShareDelegate;
+    @Mock private PrintingControllerImpl mPrintingController;
+    @Mock private DataProtectionBridge.Natives mDataProtectionBridgeMock;
+    @Mock private MenuModelBridge mMenuModelBridge;
+    @Captor private ArgumentCaptor<ShareParams> mShareParamsCaptor;
+    @Captor private ArgumentCaptor<ChromeShareExtras> mChromeExtrasCaptor;
+    @Captor private ArgumentCaptor<Printable> mPrintableCaptor;
 
     @Before
     public void setUp() {
@@ -1151,21 +1154,18 @@ public class ContextMenuTest {
                     R.id.contextmenu_share_image);
         }
 
-        ArgumentCaptor<ShareParams> shareParamsCaptor = ArgumentCaptor.forClass(ShareParams.class);
-        ArgumentCaptor<ChromeShareExtras> chromeExtrasCaptor =
-                ArgumentCaptor.forClass(ChromeShareExtras.class);
         verify(mShareDelegate)
                 .share(
-                        shareParamsCaptor.capture(),
-                        chromeExtrasCaptor.capture(),
+                        mShareParamsCaptor.capture(),
+                        mChromeExtrasCaptor.capture(),
                         eq(ShareOrigin.CONTEXT_MENU));
 
         Assert.assertTrue(
                 "Content being shared is expected to be image.",
-                shareParamsCaptor.getValue().getFileContentType().startsWith("image"));
+                mShareParamsCaptor.getValue().getFileContentType().startsWith("image"));
         Assert.assertTrue(
                 "Share with share sheet expect to record the last used.",
-                chromeExtrasCaptor.getValue().saveLastUsed());
+                mChromeExtrasCaptor.getValue().saveLastUsed());
     }
 
     @Test
@@ -1185,21 +1185,18 @@ public class ContextMenuTest {
 
         verify(mShareDelegate).share(any(), any(), eq(ShareOrigin.CONTEXT_MENU));
 
-        ArgumentCaptor<ShareParams> shareParamsCaptor = ArgumentCaptor.forClass(ShareParams.class);
-        ArgumentCaptor<ChromeShareExtras> chromeExtrasCaptor =
-                ArgumentCaptor.forClass(ChromeShareExtras.class);
         verify(mShareDelegate)
                 .share(
-                        shareParamsCaptor.capture(),
-                        chromeExtrasCaptor.capture(),
+                        mShareParamsCaptor.capture(),
+                        mChromeExtrasCaptor.capture(),
                         eq(ShareOrigin.CONTEXT_MENU));
 
         Assert.assertFalse(
                 "Link being shared is empty.",
-                TextUtils.isEmpty(shareParamsCaptor.getValue().getUrl()));
+                TextUtils.isEmpty(mShareParamsCaptor.getValue().getUrl()));
         Assert.assertTrue(
                 "Share with share sheet expect to record the last used.",
-                chromeExtrasCaptor.getValue().saveLastUsed());
+                mChromeExtrasCaptor.getValue().saveLastUsed());
     }
 
     @Test
@@ -1222,25 +1219,22 @@ public class ContextMenuTest {
                 "testEmptySpace",
                 R.id.contextmenu_share_page);
 
-        ArgumentCaptor<ShareParams> shareParamsCaptor = ArgumentCaptor.forClass(ShareParams.class);
-        ArgumentCaptor<ChromeShareExtras> chromeExtrasCaptor =
-                ArgumentCaptor.forClass(ChromeShareExtras.class);
         verify(mShareDelegate)
                 .share(
-                        shareParamsCaptor.capture(),
-                        chromeExtrasCaptor.capture(),
+                        mShareParamsCaptor.capture(),
+                        mChromeExtrasCaptor.capture(),
                         eq(ShareOrigin.CONTEXT_MENU));
 
         Assert.assertFalse(
                 "Link being shared is empty.",
-                TextUtils.isEmpty(shareParamsCaptor.getValue().getUrl()));
+                TextUtils.isEmpty(mShareParamsCaptor.getValue().getUrl()));
         Assert.assertEquals(
                 "Link being shared is not the test page url.",
                 mTestUrl,
-                shareParamsCaptor.getValue().getUrl());
+                mShareParamsCaptor.getValue().getUrl());
         Assert.assertTrue(
                 "Share with share sheet expect to record the last used.",
-                chromeExtrasCaptor.getValue().saveLastUsed());
+                mChromeExtrasCaptor.getValue().saveLastUsed());
     }
 
     @Test
@@ -1262,25 +1256,22 @@ public class ContextMenuTest {
                 "testEmptySpace",
                 R.id.contextmenu_share_page);
 
-        ArgumentCaptor<ShareParams> shareParamsCaptor = ArgumentCaptor.forClass(ShareParams.class);
-        ArgumentCaptor<ChromeShareExtras> chromeExtrasCaptor =
-                ArgumentCaptor.forClass(ChromeShareExtras.class);
         verify(mShareDelegate)
                 .share(
-                        shareParamsCaptor.capture(),
-                        chromeExtrasCaptor.capture(),
+                        mShareParamsCaptor.capture(),
+                        mChromeExtrasCaptor.capture(),
                         eq(ShareOrigin.CONTEXT_MENU));
 
         Assert.assertFalse(
                 "Link being shared is empty.",
-                TextUtils.isEmpty(shareParamsCaptor.getValue().getUrl()));
+                TextUtils.isEmpty(mShareParamsCaptor.getValue().getUrl()));
         Assert.assertEquals(
                 "Link being shared is not the test page url.",
                 mTestUrl,
-                shareParamsCaptor.getValue().getUrl());
+                mShareParamsCaptor.getValue().getUrl());
         Assert.assertTrue(
                 "Share with share sheet expect to record the last used.",
-                chromeExtrasCaptor.getValue().saveLastUsed());
+                mChromeExtrasCaptor.getValue().saveLastUsed());
     }
 
     @Test
@@ -1308,9 +1299,8 @@ public class ContextMenuTest {
                 R.id.contextmenu_print_page);
 
         // Check that the started print job has the same title as the current tab.
-        ArgumentCaptor<Printable> printableCaptor = ArgumentCaptor.forClass(Printable.class);
-        verify(mPrintingController).startPrint(printableCaptor.capture(), any());
-        Assert.assertEquals(tab.getTitle(), printableCaptor.getValue().getTitle());
+        verify(mPrintingController).startPrint(mPrintableCaptor.capture(), any());
+        Assert.assertEquals(tab.getTitle(), mPrintableCaptor.getValue().getTitle());
     }
 
     @Test
@@ -1353,9 +1343,8 @@ public class ContextMenuTest {
                 R.id.contextmenu_print_page);
 
         // Check that the started print job has the same title as the current tab.
-        ArgumentCaptor<Printable> printableCaptor = ArgumentCaptor.forClass(Printable.class);
-        verify(mPrintingController).startPrint(printableCaptor.capture(), any());
-        Assert.assertEquals(tab.getTitle(), printableCaptor.getValue().getTitle());
+        verify(mPrintingController).startPrint(mPrintableCaptor.capture(), any());
+        Assert.assertEquals(tab.getTitle(), mPrintableCaptor.getValue().getTitle());
     }
 
     private void switchToDesktopUserAgent(Tab tab) {

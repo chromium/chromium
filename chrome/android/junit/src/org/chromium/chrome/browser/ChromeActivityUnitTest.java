@@ -14,7 +14,6 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -97,7 +96,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.TestActivity;
-import org.chromium.ui.theme.ThemeResourceWrapper;
+import org.chromium.ui.theme.ThemeResourceWrapper.ThemeObserver;
 import org.chromium.ui.theme.ThemeResourceWrapperProvider;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -105,7 +104,6 @@ import org.chromium.url.JUnitTestGURLs;
 @RunWith(BaseRobolectricTestRunner.class)
 public class ChromeActivityUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    Activity mActivity;
 
     @Mock RootUiCoordinator mRootUiCoordinatorMock;
     @Mock TabModel mTabModel;
@@ -122,8 +120,15 @@ public class ChromeActivityUnitTest {
     @Mock DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
     @Mock private TabStateThemeResourceProvider mThemeResourceProvider;
     @Mock LayoutManagerImpl mLayoutManagerMock;
+    @Mock private WebContents mWebContents;
+    @Mock private ThemeObserver mThemeObserver;
+    @Mock private Tab mTab;
+    @Mock private RenderFrameHost mRenderFrameHost;
+    @Mock private OnBackInvokedDispatcher mOnBackInvokedDispatcher;
+    @Mock private SettingsPage mSettingsPage;
     @Captor ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
 
+    Activity mActivity;
     private final SettableMonotonicObservableSupplier<ReadAloudController>
             mReadAloudControllerSupplier = ObservableSuppliers.createMonotonic();
 
@@ -296,9 +301,8 @@ public class ChromeActivityUnitTest {
         chromeActivity.getActivityTabProvider().setForTesting(mActivityTab);
         when(chromeActivity.getActivityTab()).thenReturn(mActivityTab);
         when(mActivityTab.getUrl()).thenReturn(JUnitTestGURLs.GOOGLE_URL);
-        WebContents webContents = mock(WebContents.class);
-        when(webContents.getMainFrame()).thenReturn(mock(RenderFrameHost.class));
-        when(mActivityTab.getWebContents()).thenReturn(webContents);
+        when(mWebContents.getMainFrame()).thenReturn(mRenderFrameHost);
+        when(mActivityTab.getWebContents()).thenReturn(mWebContents);
         UkmRecorderJni.setInstanceForTesting(mUkmRecorderJniMock);
 
         // Set enterprise info to report as enterprise owned.
@@ -371,9 +375,7 @@ public class ChromeActivityUnitTest {
     public void testThemeResourceProvider_enabled() {
         TestChromeActivity chromeActivity = Mockito.spy(new TestChromeActivity());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
-            doReturn(Mockito.mock(OnBackInvokedDispatcher.class))
-                    .when(chromeActivity)
-                    .getOnBackInvokedDispatcher();
+            doReturn(mOnBackInvokedDispatcher).when(chromeActivity).getOnBackInvokedDispatcher();
         }
         chromeActivity.onPreCreate();
         assertNotNull(
@@ -386,9 +388,7 @@ public class ChromeActivityUnitTest {
     public void testThemeResourceProvider_disabled() {
         TestChromeActivity chromeActivity = Mockito.spy(new TestChromeActivity());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
-            doReturn(Mockito.mock(OnBackInvokedDispatcher.class))
-                    .when(chromeActivity)
-                    .getOnBackInvokedDispatcher();
+            doReturn(mOnBackInvokedDispatcher).when(chromeActivity).getOnBackInvokedDispatcher();
         }
         chromeActivity.onPreCreate();
         assertNull(
@@ -401,9 +401,7 @@ public class ChromeActivityUnitTest {
     public void testThemeResourceProvider_wrongActivityType() {
         TestChromeActivity chromeActivity = Mockito.spy(new TestChromeActivity());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
-            doReturn(Mockito.mock(OnBackInvokedDispatcher.class))
-                    .when(chromeActivity)
-                    .getOnBackInvokedDispatcher();
+            doReturn(mOnBackInvokedDispatcher).when(chromeActivity).getOnBackInvokedDispatcher();
         }
         doReturn(ActivityType.CUSTOM_TAB).when(chromeActivity).getActivityType();
         chromeActivity.onPreCreate();
@@ -446,13 +444,11 @@ public class ChromeActivityUnitTest {
         TestChromeActivity chromeActivity = new TestChromeActivity();
         chromeActivity.setThemeResourceProviderForTesting(mThemeResourceProvider);
 
-        ThemeResourceWrapper.ThemeObserver observer =
-                mock(ThemeResourceWrapper.ThemeObserver.class);
-        chromeActivity.attachThemeObserver(observer);
-        verify(mThemeResourceProvider).addObserver(observer);
+        chromeActivity.attachThemeObserver(mThemeObserver);
+        verify(mThemeResourceProvider).addObserver(mThemeObserver);
 
-        chromeActivity.detachThemeObserver(observer);
-        verify(mThemeResourceProvider).removeObserver(observer);
+        chromeActivity.detachThemeObserver(mThemeObserver);
+        verify(mThemeResourceProvider).removeObserver(mThemeObserver);
     }
 
     @Test
@@ -492,11 +488,12 @@ public class ChromeActivityUnitTest {
                 chromeActivity.onMenuOrKeyboardAction(R.id.preferences_id, /* fromMenu= */ true));
 
         // Verify that createNewTab was called with the settings URL.
-        ArgumentCaptor<LoadUrlParams> paramsCaptor = ArgumentCaptor.forClass(LoadUrlParams.class);
         verify(mTabCreator)
                 .createNewTab(
-                        paramsCaptor.capture(), eq(TabLaunchType.FROM_CHROME_UI), eq(mActivityTab));
-        assertEquals(UrlConstants.SETTINGS_URL, paramsCaptor.getValue().getUrl());
+                        mLoadUrlParamsCaptor.capture(),
+                        eq(TabLaunchType.FROM_CHROME_UI),
+                        eq(mActivityTab));
+        assertEquals(UrlConstants.SETTINGS_URL, mLoadUrlParamsCaptor.getValue().getUrl());
     }
 
     @Test
@@ -513,11 +510,10 @@ public class ChromeActivityUnitTest {
         doReturn(mTabModelSelector).when(chromeActivity).getTabModelSelector();
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
 
-        Tab settingsTab = mock(Tab.class);
-        when(settingsTab.getNativePage()).thenReturn(mock(SettingsPage.class));
+        when(mTab.getNativePage()).thenReturn(mSettingsPage);
         when(mTabModel.getCount()).thenReturn(1);
-        when(mTabModel.getTabAt(0)).thenReturn(settingsTab);
-        when(mTabModel.indexOf(settingsTab)).thenReturn(0);
+        when(mTabModel.getTabAt(0)).thenReturn(mTab);
+        when(mTabModel.indexOf(mTab)).thenReturn(0);
 
         assertTrue(
                 chromeActivity.onMenuOrKeyboardAction(R.id.preferences_id, /* fromMenu= */ true));
@@ -604,11 +600,12 @@ public class ChromeActivityUnitTest {
                 chromeActivity.onMenuOrKeyboardAction(R.id.preferences_id, /* fromMenu= */ true));
 
         // Verify that createNewTab was called with the settings URL.
-        ArgumentCaptor<LoadUrlParams> paramsCaptor = ArgumentCaptor.forClass(LoadUrlParams.class);
         verify(mTabCreator)
                 .createNewTab(
-                        paramsCaptor.capture(), eq(TabLaunchType.FROM_CHROME_UI), eq(mActivityTab));
-        assertEquals(UrlConstants.SETTINGS_URL, paramsCaptor.getValue().getUrl());
+                        mLoadUrlParamsCaptor.capture(),
+                        eq(TabLaunchType.FROM_CHROME_UI),
+                        eq(mActivityTab));
+        assertEquals(UrlConstants.SETTINGS_URL, mLoadUrlParamsCaptor.getValue().getUrl());
     }
 
     @Test
@@ -676,12 +673,11 @@ public class ChromeActivityUnitTest {
         when(mTabModel.getProfile()).thenReturn(mProfile);
 
         int tabId = 123;
-        Tab targetTab = mock(Tab.class);
-        when(targetTab.getId()).thenReturn(tabId);
+        when(mTab.getId()).thenReturn(tabId);
 
         when(mTabModelSelector.getModelForTabId(tabId)).thenReturn(mTabModel);
-        when(mTabModel.getTabById(tabId)).thenReturn(targetTab);
-        when(mTabModel.indexOf(targetTab)).thenReturn(1);
+        when(mTabModel.getTabById(tabId)).thenReturn(mTab);
+        when(mTabModel.indexOf(mTab)).thenReturn(1);
 
         Bundle menuItemData = new Bundle();
         menuItemData.putInt(AppMenuPropertiesDelegateImpl.TAB_ID_BUNDLE_KEY, tabId);

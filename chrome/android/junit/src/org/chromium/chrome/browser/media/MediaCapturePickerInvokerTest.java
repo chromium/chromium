@@ -40,6 +40,21 @@ import org.chromium.ui.base.TestActivity;
 /** Tests for MediaCapturePickerInvoker. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class MediaCapturePickerInvokerTest {
+    private static MediaCapturePickerManager.Params mediaCaptureParams() {
+        return new MediaCapturePickerManager.Params(
+                mock(WebContents.class),
+                "",
+                "",
+                /* requestAudio= */ false,
+                /* excludeSystemAudio= */ false,
+                /* windowAudioPreference= */ 0,
+                /* preferredDisplaySurface= */ 0,
+                true,
+                /* excludeSelfBrowserSurface= */ false,
+                /* excludeMonitorTypeSurfaces= */ false,
+                AllowedScreenCaptureLevel.DESKTOP);
+    }
+
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
@@ -48,6 +63,7 @@ public class MediaCapturePickerInvokerTest {
 
     @Mock private Delegate mDelegate;
     @Mock private WebContents mTabWebContents;
+    @Mock private Tab mTab;
 
     private Activity mActivity;
     private FakeMediaCapturePickerDelegate mPickerDelegate;
@@ -95,21 +111,6 @@ public class MediaCapturePickerInvokerTest {
         }
     }
 
-    private static MediaCapturePickerManager.Params mediaCaptureParams() {
-        return new MediaCapturePickerManager.Params(
-                mock(WebContents.class),
-                "",
-                "",
-                /* requestAudio= */ false,
-                /* excludeSystemAudio= */ false,
-                /* windowAudioPreference= */ 0,
-                /* preferredDisplaySurface= */ 0,
-                true,
-                /* excludeSelfBrowserSurface= */ false,
-                /* excludeMonitorTypeSurfaces= */ false,
-                AllowedScreenCaptureLevel.DESKTOP);
-    }
-
     @Before
     public void setUp() {
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
@@ -138,35 +139,33 @@ public class MediaCapturePickerInvokerTest {
 
     @Test
     public void testShow_tabWithAudio() {
-        Tab tab = mock(Tab.class);
-        doReturn(mTabWebContents).when(tab).getWebContents();
+        doReturn(mTabWebContents).when(mTab).getWebContents();
 
         mPickerDelegate.setIntent(new Intent());
-        mPickerDelegate.setPickedTab(tab);
+        mPickerDelegate.setPickedTab(mTab);
         mPickerDelegate.setShouldShareAudio(true);
         MediaCapturePickerInvoker.show(mActivity, mediaCaptureParams(), mDelegate);
         MediaCapturePickerHeadlessFragment fragment =
                 MediaCapturePickerHeadlessFragment.getInstance((FragmentActivity) mActivity);
         fragment.mNextDelegate.onPicked(
                 CaptureAction.CAPTURE_WINDOW, new ActivityResult(Activity.RESULT_OK, new Intent()));
-        verify(tab).loadIfNeeded(/* forceBackingSize= */ true);
+        verify(mTab).loadIfNeeded(/* forceBackingSize= */ true);
         verify(mDelegate).onPickTab(mTabWebContents, true);
     }
 
     @Test
     public void testShow_tabWithoutAudio() {
-        Tab tab = mock(Tab.class);
-        doReturn(mTabWebContents).when(tab).getWebContents();
+        doReturn(mTabWebContents).when(mTab).getWebContents();
 
         mPickerDelegate.setIntent(new Intent());
-        mPickerDelegate.setPickedTab(tab);
+        mPickerDelegate.setPickedTab(mTab);
         mPickerDelegate.setShouldShareAudio(false);
         MediaCapturePickerInvoker.show(mActivity, mediaCaptureParams(), mDelegate);
         MediaCapturePickerHeadlessFragment fragment =
                 MediaCapturePickerHeadlessFragment.getInstance((FragmentActivity) mActivity);
         fragment.mNextDelegate.onPicked(
                 CaptureAction.CAPTURE_WINDOW, new ActivityResult(Activity.RESULT_OK, new Intent()));
-        verify(tab).loadIfNeeded(/* forceBackingSize= */ true);
+        verify(mTab).loadIfNeeded(/* forceBackingSize= */ true);
         verify(mDelegate).onPickTab(mTabWebContents, false);
     }
 

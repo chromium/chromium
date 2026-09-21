@@ -7,7 +7,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -72,6 +71,8 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
     @Mock private Tab mTab;
     @Mock private TabWindowManager mTabWindowManager;
     @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
+    @Mock private TabModelSelector mTabModelSelector;
+    @Mock private TabModel mDestTabModel;
 
     private final Token mToken = Token.createRandom();
     private Context mContext;
@@ -254,11 +255,9 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
 
         when(mTabModel.tabGroupExists(mToken)).thenReturn(false);
         when(mTabWindowManager.findWindowIdForTabGroup(mToken)).thenReturn(2);
-        TabModelSelector destSelector = mock(TabModelSelector.class);
-        TabModel destTabModel = mock(TabModel.class);
-        when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(destSelector);
-        when(destSelector.getModel(false)).thenReturn(destTabModel);
-        when(destTabModel.getGroupLastShownTabId(mToken)).thenReturn(TEST_LOCAL_ID);
+        when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mTabModelSelector);
+        when(mTabModelSelector.getModel(false)).thenReturn(mDestTabModel);
+        when(mDestTabModel.getGroupLastShownTabId(mToken)).thenReturn(TEST_LOCAL_ID);
 
         PropertyModel model = mMediator.getModel();
         Runnable clickRunnable = model.get(TabGroupRowProperties.ROW_CLICK_RUNNABLE);
@@ -282,11 +281,9 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
 
         when(mTabModel.tabGroupExists(mToken)).thenReturn(false);
         when(mTabWindowManager.findWindowIdForTabGroup(mToken)).thenReturn(2);
-        TabModelSelector destSelector = mock(TabModelSelector.class);
-        TabModel destTabModel = mock(TabModel.class);
-        when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(destSelector);
-        when(destSelector.getModel(false)).thenReturn(destTabModel);
-        when(destTabModel.getGroupLastShownTabId(mToken)).thenReturn(TEST_LOCAL_ID);
+        when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mTabModelSelector);
+        when(mTabModelSelector.getModel(false)).thenReturn(mDestTabModel);
+        when(mDestTabModel.getGroupLastShownTabId(mToken)).thenReturn(TEST_LOCAL_ID);
         when(mTabModel.isTabInTabGroup(mTab)).thenReturn(true);
 
         PropertyModel model = mMediator.getModel();

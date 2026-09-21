@@ -77,6 +77,7 @@ public class ChromeActionModeHandlerUnitTest {
     @Mock private WeakReference<Activity> mWeakActivityRef;
     @Mock private Activity mActivity;
     @Mock private DataProtectionBridge.Natives mDataProtectionBridgeJniMock;
+    @Mock private MenuItem mMenuItem;
 
     private class TestChromeActionModeCallback
             extends ChromeActionModeHandler.ChromeActionModeCallback {
@@ -187,9 +188,8 @@ public class ChromeActionModeHandlerUnitTest {
 
         LocaleManager.getInstance().setDelegateForTest(delegate);
 
-        MenuItem shareItem = Mockito.mock(MenuItem.class);
-        Mockito.when(shareItem.getItemId()).thenReturn(R.id.select_action_menu_web_search);
-        mActionModeCallback.onActionItemClicked(mActionMode, shareItem);
+        Mockito.when(mMenuItem.getItemId()).thenReturn(R.id.select_action_menu_web_search);
+        mActionModeCallback.onActionItemClicked(mActionMode, mMenuItem);
 
         Mockito.verify(delegate).showSearchEnginePromoIfNeeded(Mockito.any(), Mockito.any());
     }
@@ -253,9 +253,8 @@ public class ChromeActionModeHandlerUnitTest {
     @Test
     public void testShare() {
         Mockito.when(mActionModeCallbackHelper.isActionModeValid()).thenReturn(true);
-        MenuItem shareItem = Mockito.mock(MenuItem.class);
-        Mockito.when(shareItem.getItemId()).thenReturn(R.id.select_action_menu_share);
-        mActionModeCallback.onActionItemClicked(mActionMode, shareItem);
+        Mockito.when(mMenuItem.getItemId()).thenReturn(R.id.select_action_menu_share);
+        mActionModeCallback.onActionItemClicked(mActionMode, mMenuItem);
 
         Mockito.verify(mShareDelegate).share(any(), any(), eq(ShareOrigin.MOBILE_ACTION_MODE));
         Mockito.verify(mActionModeCallbackHelper, times(0)).onActionItemClicked(any(), any());
@@ -266,21 +265,19 @@ public class ChromeActionModeHandlerUnitTest {
         mShareDelegate = null;
 
         Mockito.when(mActionModeCallbackHelper.isActionModeValid()).thenReturn(true);
-        MenuItem shareItem = Mockito.mock(MenuItem.class);
-        Mockito.when(shareItem.getItemId()).thenReturn(R.id.select_action_menu_share);
-        mActionModeCallback.onActionItemClicked(mActionMode, shareItem);
+        Mockito.when(mMenuItem.getItemId()).thenReturn(R.id.select_action_menu_share);
+        mActionModeCallback.onActionItemClicked(mActionMode, mMenuItem);
 
-        Mockito.verify(mActionModeCallbackHelper).onActionItemClicked(any(), eq(shareItem));
+        Mockito.verify(mActionModeCallbackHelper).onActionItemClicked(any(), eq(mMenuItem));
     }
 
     @Test
     public void testMaybePauseReadAloudOnActionItemClicked() {
         Mockito.when(mActionModeCallbackHelper.isActionModeValid()).thenReturn(true);
-        MenuItem item = Mockito.mock(MenuItem.class);
         Intent intent = new Intent();
-        doReturn(intent).when(item).getIntent();
+        doReturn(intent).when(mMenuItem).getIntent();
 
-        mActionModeCallback.onActionItemClicked(mActionMode, item);
+        mActionModeCallback.onActionItemClicked(mActionMode, mMenuItem);
         verify(mReadAloudController).maybePauseForOutgoingIntent(eq(intent));
     }
 

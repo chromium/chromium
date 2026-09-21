@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -26,6 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -55,6 +55,8 @@ public class BottomBarHubColorMixerAdapterUnitTest {
     @Mock private HubColorMixer mHubColorMixer;
     @Mock private Tab mRegularTab;
     @Mock private Tab mIncognitoTab;
+    @Mock private HubColorMixerRegistrationHelper mHubColorMixerRegistrationHelper;
+    @Captor private ArgumentCaptor<HubViewColorBlend> mHubViewColorBlendCaptor;
 
     private ActivityController<TestActivity> mActivityController;
     private Activity mActivity;
@@ -102,34 +104,31 @@ public class BottomBarHubColorMixerAdapterUnitTest {
     @Test
     public void testRegisteredBlendsCount() {
         mAdapter = createAdapter();
-        ArgumentCaptor<HubViewColorBlend> captor = ArgumentCaptor.forClass(HubViewColorBlend.class);
-        verify(mHubColorMixer, times(5)).registerBlend(captor.capture());
-        assertEquals(5, captor.getAllValues().size());
+        verify(mHubColorMixer, times(5)).registerBlend(mHubViewColorBlendCaptor.capture());
+        assertEquals(5, mHubViewColorBlendCaptor.getAllValues().size());
     }
 
     @Test
     public void testInjectedRegistrationHelper() {
-        HubColorMixerRegistrationHelper helper = mock(HubColorMixerRegistrationHelper.class);
         mAdapter =
                 new BottomBarHubColorMixerAdapter(
                         mBottomBarView,
                         mHubColorMixer,
-                        helper,
+                        mHubColorMixerRegistrationHelper,
                         mCurrentTabSupplier,
                         mIsHidingSupplier);
-        verify(helper, times(5)).registerBlend(any());
-        verify(helper).setColorMixer(mHubColorMixer);
+        verify(mHubColorMixerRegistrationHelper, times(5)).registerBlend(any());
+        verify(mHubColorMixerRegistrationHelper).setColorMixer(mHubColorMixer);
 
         mAdapter.destroy();
-        verify(helper).destroy();
+        verify(mHubColorMixerRegistrationHelper).destroy();
     }
 
     @Test
     public void testColorMixer_registeredBlendsUpdateColors() {
         mAdapter = createAdapter();
-        ArgumentCaptor<HubViewColorBlend> captor = ArgumentCaptor.forClass(HubViewColorBlend.class);
-        verify(mHubColorMixer, times(5)).registerBlend(captor.capture());
-        List<HubViewColorBlend> blends = captor.getAllValues();
+        verify(mHubColorMixer, times(5)).registerBlend(mHubViewColorBlendCaptor.capture());
+        List<HubViewColorBlend> blends = mHubViewColorBlendCaptor.getAllValues();
         assertEquals(5, blends.size());
 
         // Update progress midway between DEFAULT and INCOGNITO
@@ -204,9 +203,8 @@ public class BottomBarHubColorMixerAdapterUnitTest {
     @Test
     public void testDestroy_resetsToBaselineColorSchemeAndRemovesObservers() {
         mAdapter = createAdapter();
-        ArgumentCaptor<HubViewColorBlend> captor = ArgumentCaptor.forClass(HubViewColorBlend.class);
-        verify(mHubColorMixer, times(5)).registerBlend(captor.capture());
-        List<HubViewColorBlend> blends = captor.getAllValues();
+        verify(mHubColorMixer, times(5)).registerBlend(mHubViewColorBlendCaptor.capture());
+        List<HubViewColorBlend> blends = mHubViewColorBlendCaptor.getAllValues();
         for (HubViewColorBlend blend : blends) {
             blend.updateProgress(HubColorScheme.DEFAULT, HubColorScheme.INCOGNITO, 1.0f);
         }

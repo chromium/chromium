@@ -84,6 +84,7 @@ public class NtpThemeMediatorUnitTest {
     @Mock private NtpThemeDelegate mNtpThemeDelegate;
     @Mock private NtpThemeCollectionManager mNtpThemeCollectionManager;
     @Mock private ImageFetcher mImageFetcher;
+    @Mock private Runnable mRunnable;
 
     private PropertyModel mBottomSheetPropertyModel;
     private PropertyModel mThemePropertyModel;
@@ -349,14 +350,13 @@ public class NtpThemeMediatorUnitTest {
     public void testCreateBitmapCallback() {
         createMediator(true);
         Bitmap[] bitmaps = new Bitmap[1];
-        Runnable runnable = mock(Runnable.class);
-        Callback<Bitmap> callback = mMediator.createBitmapCallback(bitmaps, 0, runnable);
+        Callback<Bitmap> callback = mMediator.createBitmapCallback(bitmaps, 0, mRunnable);
 
         Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
         callback.onResult(bitmap);
 
         assertEquals(bitmap, bitmaps[0]);
-        verify(runnable).run();
+        verify(mRunnable).run();
     }
 
     @Test

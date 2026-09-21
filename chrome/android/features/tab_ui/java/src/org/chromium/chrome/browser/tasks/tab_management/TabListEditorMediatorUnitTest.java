@@ -8,7 +8,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -81,6 +80,8 @@ public final class TabListEditorMediatorUnitTest {
     @Mock private Profile mProfile;
     @Mock private NavigationProvider mNavigationProvider;
     @Mock private SnackbarManager mSnackbarManager;
+    @Mock private AppHeaderState mAppHeaderState;
+    @Mock private Tab mTab;
 
     private final SettableNonNullObservableSupplier<Boolean> mEnableDoneButtonSupplier =
             ObservableSuppliers.createNonNull(false);
@@ -130,14 +131,12 @@ public final class TabListEditorMediatorUnitTest {
         setupMediator(CreationMode.FULL_SCREEN);
     }
 
-    // Mockito.reset() has a generic varargs parameter.
-    @SuppressWarnings("unchecked")
     private void setupMediator(@CreationMode int mode) {
         if (mMediator != null) {
             mMediator.destroy();
         }
         mModel = new PropertyModel.Builder(TabListEditorProperties.ALL_KEYS).build();
-        reset(mSelectionDelegate);
+        reset((Object) mSelectionDelegate);
 
         ItemPickerSelectionHandler itemPickerSelectionHandler =
                 mode == CreationMode.ITEM_PICKER ? mItemPickerSelectionHandler : null;
@@ -174,10 +173,9 @@ public final class TabListEditorMediatorUnitTest {
 
     @Test
     public void testTopMarginOnAppHeaderStateChange() {
-        AppHeaderState state = mock(AppHeaderState.class);
-        when(state.getAppHeaderHeight()).thenReturn(10);
+        when(mAppHeaderState.getAppHeaderHeight()).thenReturn(10);
 
-        mMediator.onAppHeaderStateChanged(state);
+        mMediator.onAppHeaderStateChanged(mAppHeaderState);
 
         assertEquals(10, mModel.get(TabListEditorProperties.TOP_MARGIN));
     }
@@ -256,7 +254,7 @@ public final class TabListEditorMediatorUnitTest {
         TabModelObserver observer = mTabModelObserverCaptor.getValue();
 
         mMediator.setTabActionState(TabActionState.SELECTABLE);
-        observer.willCloseTab(mock(Tab.class), false);
+        observer.willCloseTab(mTab, false);
         verify(mNavigationProvider).goBack();
     }
 
@@ -267,7 +265,7 @@ public final class TabListEditorMediatorUnitTest {
         TabModelObserver observer = mTabModelObserverCaptor.getValue();
 
         mMediator.setTabActionState(TabActionState.SELECTABLE);
-        observer.willCloseTabs(List.of(mock(Tab.class)), false, false);
+        observer.willCloseTabs(List.of(mTab), false, false);
         verify(mNavigationProvider).goBack();
     }
 
@@ -278,7 +276,7 @@ public final class TabListEditorMediatorUnitTest {
         TabModelObserver observer = mTabModelObserverCaptor.getValue();
 
         mMediator.setTabActionState(TabActionState.CLOSABLE);
-        observer.willCloseTab(mock(Tab.class), false);
+        observer.willCloseTab(mTab, false);
         verify(mNavigationProvider, never()).goBack();
     }
 
@@ -289,7 +287,7 @@ public final class TabListEditorMediatorUnitTest {
         TabModelObserver observer = mTabModelObserverCaptor.getValue();
 
         mMediator.setTabActionState(TabActionState.CLOSABLE);
-        observer.willCloseTabs(List.of(mock(Tab.class)), false, false);
+        observer.willCloseTabs(List.of(mTab), false, false);
         verify(mNavigationProvider, never()).goBack();
     }
 }

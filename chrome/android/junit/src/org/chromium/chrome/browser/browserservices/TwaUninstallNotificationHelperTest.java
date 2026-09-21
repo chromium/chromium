@@ -19,6 +19,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -47,6 +48,7 @@ public class TwaUninstallNotificationHelperTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private NotificationManagerProxy mNotificationManager;
+    @Captor private ArgumentCaptor<NotificationWrapper> mNotificationWrapperCaptor;
 
     private Context mContext;
 
@@ -118,11 +120,9 @@ public class TwaUninstallNotificationHelperTest {
         TwaUninstallNotificationHelper.showNotification(
                 mContext, PACKAGE_NAME, APP_NAME, domains, origins);
 
-        ArgumentCaptor<NotificationWrapper> captor =
-                ArgumentCaptor.forClass(NotificationWrapper.class);
-        verify(mNotificationManager).notify(captor.capture());
+        verify(mNotificationManager).notify(mNotificationWrapperCaptor.capture());
 
-        NotificationWrapper wrapper = captor.getValue();
+        NotificationWrapper wrapper = mNotificationWrapperCaptor.getValue();
         assertEquals(PACKAGE_NAME, wrapper.getMetadata().tag);
         assertEquals(PACKAGE_NAME.hashCode(), wrapper.getMetadata().id);
     }

@@ -17,6 +17,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -28,6 +29,8 @@ import org.chromium.content_public.browser.WebContentsObserver;
 /** Unit tests for {@link TabSharingUiBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabSharingUiBridgeTest {
+    private static final long NATIVE_PTR = 12345L;
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private TabSharingUiBridge.Natives mNativeMock;
@@ -40,8 +43,8 @@ public class TabSharingUiBridgeTest {
 
     @Mock private TabSharingUiManager.Observer mManagerObserver;
     @Mock private MediaCaptureDevicesDispatcherAndroid.Natives mMediaCaptureJniMock;
+    @Captor private ArgumentCaptor<WebContentsObserver> mWebContentsObserverCaptor;
 
-    private static final long NATIVE_PTR = 12345L;
     private TabSharingUiBridge mBridge;
 
     @Before
@@ -88,12 +91,11 @@ public class TabSharingUiBridgeTest {
 
     @Test
     public void testWebContentsDestroyedTriggersStopSharing() {
-        ArgumentCaptor<WebContentsObserver> captor =
-                ArgumentCaptor.forClass(WebContentsObserver.class);
-        verify((WebContentsObserver.Observable) mCapturer).addObserver(captor.capture());
+        verify((WebContentsObserver.Observable) mCapturer)
+                .addObserver(mWebContentsObserverCaptor.capture());
         verify((WebContentsObserver.Observable) mCapturee).addObserver(any());
 
-        WebContentsObserver observer = captor.getValue();
+        WebContentsObserver observer = mWebContentsObserverCaptor.getValue();
         assertNotNull(observer);
 
         // Simulating capturer destruction should trigger stopSharing().

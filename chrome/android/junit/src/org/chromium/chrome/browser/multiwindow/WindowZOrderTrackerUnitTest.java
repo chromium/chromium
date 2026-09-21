@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.multiwindow;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -39,6 +38,9 @@ import java.util.concurrent.TimeUnit;
 /** Unit tests for {@link WindowZOrderTracker}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class WindowZOrderTrackerUnitTest {
+    private static final int DISPLAY_ID_1 = 1;
+    private static final int DISPLAY_ID_2 = 2;
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Runnable mCallback;
@@ -48,10 +50,10 @@ public class WindowZOrderTrackerUnitTest {
     @Mock private ActivityWindowAndroid mWindowAndroid2;
     @Mock private DisplayAndroid mDisplay1;
     @Mock private DisplayAndroid mDisplay2;
+    @Mock private Activity mActivity;
+    @Mock private ActivityWindowAndroid mActivityWindowAndroid;
 
     private WindowZOrderTracker mTracker;
-    private static final int DISPLAY_ID_1 = 1;
-    private static final int DISPLAY_ID_2 = 2;
 
     @Before
     public void setUp() {
@@ -285,11 +287,9 @@ public class WindowZOrderTrackerUnitTest {
 
     @Test
     public void testPeriodicMetrics() {
-        Activity activity3 = mock(Activity.class);
-        ActivityWindowAndroid window3 = mock(ActivityWindowAndroid.class);
-        when(window3.getActivity()).thenReturn(new WeakReference<>(activity3));
-        when(window3.getDisplay()).thenReturn(mDisplay1);
-        when(window3.getActivityState()).thenReturn(ActivityState.RESUMED);
+        when(mActivityWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
+        when(mActivityWindowAndroid.getDisplay()).thenReturn(mDisplay1);
+        when(mActivityWindowAndroid.getActivityState()).thenReturn(ActivityState.RESUMED);
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -300,9 +300,10 @@ public class WindowZOrderTrackerUnitTest {
                         .build();
 
         mTracker.track(mWindowAndroid1); // on display 1 (top)
-        mTracker.track(window3); // on display 1 (bottom)
+        mTracker.track(mActivityWindowAndroid); // on display 1 (bottom)
         simulateTopResumed(
-                window3, true); // promotes window3 (resumed count = 1, promotion count = 1)
+                mActivityWindowAndroid,
+                true); // promotes window3 (resumed count = 1, promotion count = 1)
         simulateTopResumed(
                 mWindowAndroid1, true); // promotes window1 (resumed count = 2, promotion count = 2)
 

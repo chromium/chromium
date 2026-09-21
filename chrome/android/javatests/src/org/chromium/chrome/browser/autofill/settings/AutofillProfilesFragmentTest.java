@@ -34,7 +34,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -72,6 +71,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -232,6 +232,9 @@ public class AutofillProfilesFragmentTest {
     @Mock private SyncService mSyncService;
     @Mock private ReauthenticatorBridge mMockReauthenticatorBridge;
     @Mock private EntityDataManager mEntityDataManager;
+    @Mock private SettingsIndexData mSettingsIndexData;
+    @Captor private ArgumentCaptor<Runnable> mLocalSaveFallbackCaptor;
+    @Captor private ArgumentCaptor<EntityDataManagerObserver> mEntityDataManagerObserverCaptor;
 
     private AutofillTestHelper mHelper;
     private UserActionTester mUserActionTester;
@@ -1504,15 +1507,14 @@ public class AutofillProfilesFragmentTest {
         // Click the "Done" button and trigger the local save fallback snackbar. Verify that the
         // snackbar is displayed.
         onView(withText("Done")).perform(click());
-        ArgumentCaptor<Runnable> localSaveFallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
         verify(mEntityDataManager)
                 .addOrUpdateEntityInstance(
                         any(),
                         eq(R.string.autofill_ai_save_or_update_entity_in_wallet_source_notice),
                         eq(R.string.done),
-                        localSaveFallbackCaptor.capture());
+                        mLocalSaveFallbackCaptor.capture());
 
-        ThreadUtils.runOnUiThreadBlocking(() -> localSaveFallbackCaptor.getValue().run());
+        ThreadUtils.runOnUiThreadBlocking(() -> mLocalSaveFallbackCaptor.getValue().run());
 
         String snackbarMessage =
                 mSettingsTestRule
@@ -1566,15 +1568,14 @@ public class AutofillProfilesFragmentTest {
         // Click the "Done" button and trigger the local save fallback snackbar. Verify that the
         // snackbar is displayed.
         onView(withText("Done")).perform(click());
-        ArgumentCaptor<Runnable> localSaveFallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
         verify(mEntityDataManager)
                 .addOrUpdateEntityInstance(
                         any(),
                         eq(R.string.autofill_ai_save_or_update_entity_in_wallet_source_notice),
                         eq(R.string.done),
-                        localSaveFallbackCaptor.capture());
+                        mLocalSaveFallbackCaptor.capture());
 
-        ThreadUtils.runOnUiThreadBlocking(() -> localSaveFallbackCaptor.getValue().run());
+        ThreadUtils.runOnUiThreadBlocking(() -> mLocalSaveFallbackCaptor.getValue().run());
 
         String snackbarMessage =
                 mSettingsTestRule
@@ -1938,10 +1939,9 @@ public class AutofillProfilesFragmentTest {
         EntityDataManagerFactory.setInstanceForTesting(mEntityDataManager);
 
         // Capture the observer registered by the fragment.
-        ArgumentCaptor<EntityDataManagerObserver> captor =
-                ArgumentCaptor.forClass(EntityDataManagerObserver.class);
-        verify(mEntityDataManager, atLeastOnce()).registerDataObserver(captor.capture());
-        EntityDataManagerObserver observer = captor.getValue();
+        verify(mEntityDataManager, atLeastOnce())
+                .registerDataObserver(mEntityDataManagerObserverCaptor.capture());
+        EntityDataManagerObserver observer = mEntityDataManagerObserverCaptor.getValue();
 
         // Initially check that the entity is rendered.
         ThreadUtils.runOnUiThreadBlocking(() -> observer.onEntityInstancesChanged());
@@ -2925,17 +2925,16 @@ public class AutofillProfilesFragmentTest {
     @EnableFeatures(ChromeFeatureList.EMAIL_VERIFICATION_PROTOCOL)
     public void testSearchIndexWhenEmailVerificationEnabled() {
         mSettingsTestRule.startSettingsActivity();
-        SettingsIndexData indexDataMock = mock(SettingsIndexData.class);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AutofillProfilesFragment.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
                             mSettingsTestRule.getActivity(),
-                            indexDataMock,
+                            mSettingsIndexData,
                             mSettingsTestRule.getFragment().getProfile());
                 });
 
-        verify(indexDataMock, atLeastOnce())
+        verify(mSettingsIndexData, atLeastOnce())
                 .addEntryForKey(
                         eq(AutofillProfilesFragment.class.getName()),
                         eq(AutofillProfilesFragment.PREF_EMAIL_VERIFICATION),
@@ -2947,17 +2946,16 @@ public class AutofillProfilesFragmentTest {
     @DisableFeatures(ChromeFeatureList.EMAIL_VERIFICATION_PROTOCOL)
     public void testSearchIndexWhenEmailVerificationDisabled() {
         mSettingsTestRule.startSettingsActivity();
-        SettingsIndexData indexDataMock = mock(SettingsIndexData.class);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AutofillProfilesFragment.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
                             mSettingsTestRule.getActivity(),
-                            indexDataMock,
+                            mSettingsIndexData,
                             mSettingsTestRule.getFragment().getProfile());
                 });
 
-        verify(indexDataMock, never())
+        verify(mSettingsIndexData, never())
                 .addEntryForKey(
                         eq(AutofillProfilesFragment.class.getName()),
                         eq(AutofillProfilesFragment.PREF_EMAIL_VERIFICATION),

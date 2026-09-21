@@ -29,6 +29,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -50,6 +51,7 @@ public class NoPasskeysBottomSheetModuleTest {
     @Mock private NoPasskeysBottomSheetBridge.Natives mNativeMock;
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private MotionEvent mMotionEvent;
+    @Captor private ArgumentCaptor<NoPasskeysBottomSheetContent> mContentCaptor;
 
     private final Context mContext =
             new ContextThemeWrapper(
@@ -87,58 +89,51 @@ public class NoPasskeysBottomSheetModuleTest {
 
     @Test
     public void dismissOnClickingOk() {
-        var contentCaptor = ArgumentCaptor.forClass(NoPasskeysBottomSheetContent.class);
-
         mBridge.show(TEST_ORIGIN);
-        verify(mBottomSheetController).requestShowContent(contentCaptor.capture(), eq(true));
+        verify(mBottomSheetController).requestShowContent(mContentCaptor.capture(), eq(true));
 
-        findOkButton(contentCaptor.getValue()).performClick();
+        findOkButton(mContentCaptor.getValue()).performClick();
         verify(mNativeMock).onDismissed(TEST_NATIVE);
     }
 
     @Test
     public void dismissOnUseAnotherAndInvokeFlow() {
-        var contentCaptor = ArgumentCaptor.forClass(NoPasskeysBottomSheetContent.class);
-
         mBridge.show(TEST_ORIGIN);
-        verify(mBottomSheetController).requestShowContent(contentCaptor.capture(), eq(true));
+        verify(mBottomSheetController).requestShowContent(mContentCaptor.capture(), eq(true));
 
-        findUseOtherDeviceButton(contentCaptor.getValue()).performClick();
+        findUseOtherDeviceButton(mContentCaptor.getValue()).performClick();
         verify(mNativeMock).onDismissed(TEST_NATIVE);
     }
 
     @Test
     public void dismissOnHide() {
-        var contentCaptor = ArgumentCaptor.forClass(NoPasskeysBottomSheetContent.class);
-
         mBridge.show(TEST_ORIGIN);
-        verify(mBottomSheetController).requestShowContent(contentCaptor.capture(), eq(true));
+        verify(mBottomSheetController).requestShowContent(mContentCaptor.capture(), eq(true));
 
         // {@code destroy()} is called when a sheet gets dismissed by action, tabs, or layouting.
-        contentCaptor.getValue().destroy();
+        mContentCaptor.getValue().destroy();
         verify(mNativeMock).onDismissed(TEST_NATIVE);
     }
 
     @Test
     public void testConsumesGenericMotionEventsToPreventMouseClicksThroughSheet() {
-        var contentCaptor = ArgumentCaptor.forClass(NoPasskeysBottomSheetContent.class);
-
         mBridge.show(TEST_ORIGIN);
-        verify(mBottomSheetController).requestShowContent(contentCaptor.capture(), eq(true));
+        verify(mBottomSheetController).requestShowContent(mContentCaptor.capture(), eq(true));
 
         assertTrue(
-                contentCaptor.getValue().getContentView().dispatchGenericMotionEvent(mMotionEvent));
+                mContentCaptor
+                        .getValue()
+                        .getContentView()
+                        .dispatchGenericMotionEvent(mMotionEvent));
     }
 
     @Test
     public void originIsBold() {
-        var contentCaptor = ArgumentCaptor.forClass(NoPasskeysBottomSheetContent.class);
-
         mBridge.show(TEST_ORIGIN);
-        verify(mBottomSheetController).requestShowContent(contentCaptor.capture(), eq(true));
+        verify(mBottomSheetController).requestShowContent(mContentCaptor.capture(), eq(true));
 
         TextView view =
-                contentCaptor
+                mContentCaptor
                         .getValue()
                         .getContentView()
                         .findViewById(R.id.no_passkeys_sheet_subtitle);

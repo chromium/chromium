@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.safety_promo;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
@@ -17,8 +16,12 @@ import android.widget.TextView;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.widget.ButtonCompat;
@@ -26,6 +29,8 @@ import org.chromium.ui.widget.ButtonCompat;
 /** Unit tests for {@link SafetyPromoCarouselView}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SafetyPromoCarouselViewUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private View.OnClickListener mViewOnClickListener;
     private Context mContext;
     private SafetyPromoCarouselView mView;
 
@@ -68,12 +73,11 @@ public class SafetyPromoCarouselViewUnitTest {
 
     @Test
     public void testSetContinueButtonOnClickListener() {
-        View.OnClickListener mockListener = mock(View.OnClickListener.class);
-        mView.setContinueButtonOnClickListener(mockListener);
+        mView.setContinueButtonOnClickListener(mViewOnClickListener);
 
         ButtonCompat continueButton = mView.findViewById(R.id.fre_continue_button);
         continueButton.performClick();
 
-        verify(mockListener).onClick(continueButton);
+        verify(mViewOnClickListener).onClick(continueButton);
     }
 }

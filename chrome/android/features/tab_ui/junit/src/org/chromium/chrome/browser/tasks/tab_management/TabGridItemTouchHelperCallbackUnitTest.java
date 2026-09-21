@@ -121,6 +121,12 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     @Mock private TabGroupColorViewProvider mTabGroupColorViewProvider;
 
     @Mock private TabGridItemLongPressOrchestrator mTabGridItemLongPressOrchestrator;
+    @Mock private PropertyModel mPropertyModel;
+    @Mock private MotionEvent mMouseEvent;
+    @Mock private MotionEvent mTouchEvent;
+    @Mock private MotionEvent mUpEvent;
+    @Mock private MotionEvent mUpEvent2;
+    @Mock private MotionEvent mDownEvent;
 
     private final SettableMonotonicObservableSupplier<TabModel> mTabModelSupplier =
             ObservableSuppliers.createMonotonic();
@@ -911,10 +917,9 @@ public class TabGridItemTouchHelperCallbackUnitTest {
 
     @Test
     public void messageItemSwipeable_archivedTabsMessageNotSwipeable() {
-        PropertyModel model = mock(PropertyModel.class);
-        when(model.get(MESSAGE_TYPE)).thenReturn(MessageType.ARCHIVED_TABS_MESSAGE);
+        when(mPropertyModel.get(MESSAGE_TYPE)).thenReturn(MessageType.ARCHIVED_TABS_MESSAGE);
         when(mMockViewHolder1.getItemViewType()).thenReturn(UiType.ARCHIVED_TABS_MESSAGE);
-        mMockViewHolder1.model = model;
+        mMockViewHolder1.model = mPropertyModel;
 
         setupItemTouchHelperCallback(false);
         assertFalse(
@@ -1680,10 +1685,9 @@ public class TabGridItemTouchHelperCallbackUnitTest {
                         mItemTouchHelperCallback);
 
         // Test mouse input source.
-        MotionEvent mouseEvent = mock(MotionEvent.class);
-        when(mouseEvent.getSource()).thenReturn(InputDevice.SOURCE_MOUSE);
+        when(mMouseEvent.getSource()).thenReturn(InputDevice.SOURCE_MOUSE);
 
-        assertFalse(listener.onInterceptTouchEvent(mRecyclerView, mouseEvent));
+        assertFalse(listener.onInterceptTouchEvent(mRecyclerView, mMouseEvent));
         // Verify that the callback has mIsMouseInputSource set to true.
         // We can verify this via getMovementFlags() which disables swiping for mouse.
         mItemTouchHelperCallback.getMovementFlags(mRecyclerView, mMockViewHolder1);
@@ -1691,10 +1695,9 @@ public class TabGridItemTouchHelperCallbackUnitTest {
                 mItemTouchHelperCallback.hasSwipeFlagForTesting(mRecyclerView, mMockViewHolder1));
 
         // Test touch screen input source.
-        MotionEvent touchEvent = mock(MotionEvent.class);
-        when(touchEvent.getSource()).thenReturn(InputDevice.SOURCE_TOUCHSCREEN);
+        when(mTouchEvent.getSource()).thenReturn(InputDevice.SOURCE_TOUCHSCREEN);
 
-        assertFalse(listener.onInterceptTouchEvent(mRecyclerView, touchEvent));
+        assertFalse(listener.onInterceptTouchEvent(mRecyclerView, mTouchEvent));
         // Verify that the callback has mIsMouseInputSource set to false.
         // Swipe flag should be enabled now.
         mItemTouchHelperCallback.getMovementFlags(mRecyclerView, mMockViewHolder1);
@@ -1712,22 +1715,19 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         mItemTouchHelperCallback.setShouldBlockActionForTesting(true);
 
         // Test ACTION_UP is intercepted/blocked.
-        MotionEvent upEvent = mock(MotionEvent.class);
-        when(upEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_UP);
+        when(mUpEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_UP);
 
-        assertTrue(listener.onInterceptTouchEvent(mRecyclerView, upEvent));
+        assertTrue(listener.onInterceptTouchEvent(mRecyclerView, mUpEvent));
 
         // The block bit is consumed single-use, so subsequent actions should not be blocked.
-        MotionEvent upEvent2 = mock(MotionEvent.class);
-        when(upEvent2.getActionMasked()).thenReturn(MotionEvent.ACTION_UP);
+        when(mUpEvent2.getActionMasked()).thenReturn(MotionEvent.ACTION_UP);
 
-        assertFalse(listener.onInterceptTouchEvent(mRecyclerView, upEvent2));
+        assertFalse(listener.onInterceptTouchEvent(mRecyclerView, mUpEvent2));
 
         // Test ACTION_DOWN is NOT blocked even if block is enabled.
         mItemTouchHelperCallback.setShouldBlockActionForTesting(true);
-        MotionEvent downEvent = mock(MotionEvent.class);
-        when(downEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
+        when(mDownEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
 
-        assertFalse(listener.onInterceptTouchEvent(mRecyclerView, downEvent));
+        assertFalse(listener.onInterceptTouchEvent(mRecyclerView, mDownEvent));
     }
 }

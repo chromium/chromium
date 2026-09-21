@@ -18,9 +18,13 @@ import androidx.test.core.app.ActivityScenario;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
@@ -59,22 +63,23 @@ import java.util.NoSuchElementException;
     BaseSwitches.DISABLE_NATIVE_INITIALIZATION
 })
 public class OptionalNewTabButtonControllerActivityTest {
-
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private Profile mOriginalProfile;
+    @Mock private GlicKeyedService mGlicKeyedService;
+    @Mock private WebContents mWebContents;
     private ActivityScenario<ChromeTabbedActivity> mActivityScenario;
     private AdaptiveToolbarButtonController mAdaptiveButtonController;
     private MockTab mTab;
 
     @Before
     public void setUp() {
-        Profile originalProfile = Mockito.mock(Profile.class);
         Profile incognitoProfile = Mockito.mock(Profile.class);
-        when(originalProfile.getOriginalProfile()).thenReturn(originalProfile);
+        when(mOriginalProfile.getOriginalProfile()).thenReturn(mOriginalProfile);
         when(incognitoProfile.isOffTheRecord()).thenReturn(true);
 
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
 
-        GlicKeyedService glicKeyedService = Mockito.mock(GlicKeyedService.class);
-        GlicKeyedServiceFactory.setForTesting(glicKeyedService);
+        GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
         GlicEnabling.setEnabledForTesting(false);
 
         // Avoid leaking state from the previous test.
@@ -86,14 +91,14 @@ public class OptionalNewTabButtonControllerActivityTest {
                 new Pair<>(true, List.of(AdaptiveToolbarButtonVariant.NEW_TAB)));
         MockTabModelSelector tabModelSelector =
                 new MockTabModelSelector(
-                        originalProfile,
+                        mOriginalProfile,
                         incognitoProfile,
                         /* tabCount= */ 1,
                         /* incognitoTabCount= */ 0,
                         (id, incognito) -> {
-                            Profile profile = incognito ? incognitoProfile : originalProfile;
+                            Profile profile = incognito ? incognitoProfile : mOriginalProfile;
                             MockTab tab = spy(MockTab.createAndInitialize(id, profile));
-                            doReturn(Mockito.mock(WebContents.class)).when(tab).getWebContents();
+                            doReturn(mWebContents).when(tab).getWebContents();
                             return tab;
                         });
         OptionalNewTabButtonController.setActiveTabSupplierForTesting(
@@ -108,7 +113,7 @@ public class OptionalNewTabButtonControllerActivityTest {
                 activity -> {
                     mAdaptiveButtonController =
                             getAdaptiveButton(getOptionalButtonController(activity));
-                    mAdaptiveButtonController.setProfile(originalProfile);
+                    mAdaptiveButtonController.setProfile(mOriginalProfile);
                 });
     }
 

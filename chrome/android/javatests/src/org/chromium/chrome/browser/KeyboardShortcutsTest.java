@@ -14,7 +14,6 @@ import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.description;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -80,7 +79,6 @@ import java.util.Set;
     ContentFeatureList.ANDROID_DEV_TOOLS_FRONTEND
 })
 public class KeyboardShortcutsTest {
-
     private static final int TAB_ID = 0;
     // Want this to be less than 8 so we can test that "go to tab" keyboard shortcut is not called.
     private static final int SMALL_NUMBER_OF_TABS = 7;
@@ -88,7 +86,6 @@ public class KeyboardShortcutsTest {
     private static final int LARGE_NUMBER_OF_TABS = 11;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    private PinnedTabClosureManager mPinnedTabCloseManager;
 
     @Mock private MenuOrKeyboardActionController mMenuOrKeyboardActionController;
     @Mock private Tab mTab;
@@ -99,9 +96,11 @@ public class KeyboardShortcutsTest {
     @Mock private ToolbarManager mToolbarManager;
     @Mock private WebContents mWebContents;
     @Mock private Profile mProfile;
-
     @Mock private HomepageManager mHomepageManager;
     @Mock private FeedbackPolicyManager mFeedbackPolicyManager;
+    @Mock private View mView;
+
+    private PinnedTabClosureManager mPinnedTabCloseManager;
 
     @Before
     public void setUp() {
@@ -717,12 +716,11 @@ public class KeyboardShortcutsTest {
     @Test
     @SmallTest
     public void testFocusAppMenuButton() {
-        View mockMenuButton = mock(View.class);
-        when(mToolbarManager.getMenuButtonView()).thenReturn(mockMenuButton);
+        when(mToolbarManager.getMenuButtonView()).thenReturn(mView);
 
         assertTrue(keyDown(KeyEvent.KEYCODE_F10, 0, true));
         verify(mToolbarManager, times(1)).getMenuButtonView();
-        verify(mockMenuButton, times(1)).requestFocus();
+        verify(mView, times(1)).requestFocus();
     }
 
     /** Test that pressing F7 triggers the caret browsing dialog. */

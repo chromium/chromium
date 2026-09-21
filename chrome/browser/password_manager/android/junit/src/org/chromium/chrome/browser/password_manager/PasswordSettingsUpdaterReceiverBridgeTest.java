@@ -4,7 +4,6 @@
 package org.chromium.chrome.browser.password_manager;
 
 import static org.mockito.Mockito.isNull;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -34,7 +33,7 @@ public class PasswordSettingsUpdaterReceiverBridgeTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private PasswordSettingsUpdaterReceiverBridge.Natives mReceiverBridgeJniMock;
     @Mock private PasswordSettingsUpdaterMetricsRecorder mMetricsRecorderMock;
-
+    @Mock private PendingIntent mPendingIntent;
     private PasswordSettingsUpdaterReceiverBridge mReceiverBridge;
 
     @Before
@@ -110,17 +109,16 @@ public class PasswordSettingsUpdaterReceiverBridgeTest {
     @Test
     public void testResolutionNotLaunchedOnResolvableFetchingError()
             throws PendingIntent.CanceledException {
-        PendingIntent pendingIntentMock = mock(PendingIntent.class);
         Exception expectedException =
                 new ResolvableApiException(
-                        new Status(CommonStatusCodes.RESOLUTION_REQUIRED, "", pendingIntentMock));
+                        new Status(CommonStatusCodes.RESOLUTION_REQUIRED, "", mPendingIntent));
 
         mReceiverBridge.handleFetchingException(
                 PasswordManagerSetting.OFFER_TO_SAVE_PASSWORDS,
                 expectedException,
                 mMetricsRecorderMock);
 
-        verify(pendingIntentMock, never()).send();
+        verify(mPendingIntent, never()).send();
         verify(mReceiverBridgeJniMock)
                 .onSettingFetchingError(
                         sFakeNativePointer,
@@ -133,17 +131,16 @@ public class PasswordSettingsUpdaterReceiverBridgeTest {
     @Test
     public void testResolutionNotLaunchedOnResolvableSettingError()
             throws PendingIntent.CanceledException {
-        PendingIntent pendingIntentMock = mock(PendingIntent.class);
         Exception expectedException =
                 new ResolvableApiException(
-                        new Status(CommonStatusCodes.RESOLUTION_REQUIRED, "", pendingIntentMock));
+                        new Status(CommonStatusCodes.RESOLUTION_REQUIRED, "", mPendingIntent));
 
         mReceiverBridge.handleSettingException(
                 PasswordManagerSetting.OFFER_TO_SAVE_PASSWORDS,
                 expectedException,
                 mMetricsRecorderMock);
 
-        verify(pendingIntentMock, never()).send();
+        verify(mPendingIntent, never()).send();
         verify(mReceiverBridgeJniMock)
                 .onFailedSettingChange(
                         sFakeNativePointer,
@@ -156,10 +153,9 @@ public class PasswordSettingsUpdaterReceiverBridgeTest {
     @Test
     public void testResolutionNotLaunchedOnResolvableFetchingErrorIfDestroyed()
             throws PendingIntent.CanceledException {
-        PendingIntent pendingIntentMock = mock(PendingIntent.class);
         Exception expectedException =
                 new ResolvableApiException(
-                        new Status(CommonStatusCodes.RESOLUTION_REQUIRED, "", pendingIntentMock));
+                        new Status(CommonStatusCodes.RESOLUTION_REQUIRED, "", mPendingIntent));
 
         // Simulate native bridge destruction. No resolution or native bridge interaction should
         // happen after this.
@@ -170,7 +166,7 @@ public class PasswordSettingsUpdaterReceiverBridgeTest {
                 expectedException,
                 mMetricsRecorderMock);
 
-        verify(pendingIntentMock, never()).send();
+        verify(mPendingIntent, never()).send();
         verify(mReceiverBridgeJniMock, never())
                 .onSettingFetchingError(
                         sFakeNativePointer,
@@ -183,10 +179,9 @@ public class PasswordSettingsUpdaterReceiverBridgeTest {
     @Test
     public void testResolutionNotLaunchedOnResolvableSettingErrorIfDestroyed()
             throws PendingIntent.CanceledException {
-        PendingIntent pendingIntentMock = mock(PendingIntent.class);
         Exception expectedException =
                 new ResolvableApiException(
-                        new Status(CommonStatusCodes.RESOLUTION_REQUIRED, "", pendingIntentMock));
+                        new Status(CommonStatusCodes.RESOLUTION_REQUIRED, "", mPendingIntent));
 
         // Simulate native bridge destruction. No resolution or native bridge interaction should
         // happen after this.
@@ -197,7 +192,7 @@ public class PasswordSettingsUpdaterReceiverBridgeTest {
                 expectedException,
                 mMetricsRecorderMock);
 
-        verify(pendingIntentMock, never()).send();
+        verify(mPendingIntent, never()).send();
         verify(mReceiverBridgeJniMock, never())
                 .onFailedSettingChange(
                         sFakeNativePointer,

@@ -13,7 +13,6 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -60,7 +59,6 @@ public final class OptionalNewTabButtonControllerUnitTest {
     private static final int WIDTH_DELTA = 50;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    private Context mContext;
 
     @Mock private Tab mTab;
     @Mock private Drawable mDrawable;
@@ -70,10 +68,11 @@ public final class OptionalNewTabButtonControllerUnitTest {
     @Mock private Supplier<Tab> mTabSupplier;
     @Mock private Tracker mTracker;
     @Mock private ButtonDataProvider.ButtonDataObserver mButtonDataObserver;
+    @Mock private View mView;
 
+    private Context mContext;
     private final SettableMonotonicObservableSupplier<Integer> mTabStripVisibilitySupplier =
             ObservableSuppliers.createMonotonic();
-
     private final Configuration mConfiguration = new Configuration();
     private OptionalNewTabButtonController mOptionalNewTabButtonController;
 
@@ -133,12 +132,11 @@ public final class OptionalNewTabButtonControllerUnitTest {
                         FeatureConstants
                                 .ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_NEW_TAB_FEATURE);
 
-        View view = mock(View.class);
         mOptionalNewTabButtonController
                 .get(mTab)
                 .getButtonSpec()
                 .getOnClickListener()
-                .onClick(view);
+                .onClick(mView);
 
         verify(mTracker, times(1))
                 .notifyEvent(EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_NEW_TAB_OPENED);

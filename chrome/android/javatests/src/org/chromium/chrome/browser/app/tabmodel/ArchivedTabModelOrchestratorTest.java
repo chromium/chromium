@@ -38,6 +38,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -124,6 +125,7 @@ public class ArchivedTabModelOrchestratorTest {
     @Mock private TabModelSelectorBase mTabModelSelector;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private VersioningMessageController mVersioningMessageController;
+    @Captor private ArgumentCaptor<TabModelSelectorObserver> mObserverCaptor;
 
     private Profile mProfile;
     private FakeDeferredStartupHandler mDeferredStartupHandler;
@@ -486,8 +488,6 @@ public class ArchivedTabModelOrchestratorTest {
         runOnUiThreadBlocking(
                 () -> {
                     when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
-                    ArgumentCaptor<TabModelSelectorObserver> observerCaptor =
-                            ArgumentCaptor.forClass(TabModelSelectorObserver.class);
                     mOrchestrator.setTabModelSelectorForTesting(mTabModelSelector);
                     mOrchestrator.doDeclutterPass(
                             (TabbedModeTabModelOrchestrator)
@@ -498,8 +498,8 @@ public class ArchivedTabModelOrchestratorTest {
                     // Destroying this after a task has been queued should destroy the callback
                     // controller and skip the declutter process.
                     ArchivedTabModelOrchestrator.destroyProfileKeyedMap();
-                    verify(mTabModelSelector).addObserver(observerCaptor.capture());
-                    observerCaptor.getValue().onTabStateInitialized();
+                    verify(mTabModelSelector).addObserver(mObserverCaptor.capture());
+                    mObserverCaptor.getValue().onTabStateInitialized();
                 });
 
         assertEquals(2, getTabCountOnUiThread(mRegularTabModel));

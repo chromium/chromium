@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.suggestions;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import org.junit.Before;
@@ -37,6 +36,8 @@ public class SuggestionsImageFetcherTest {
 
     @Mock private ThumbnailProvider mThumbnailProvider;
     @Mock private LargeIconBridge mLargeIconBridge;
+    @Mock private Profile mProfile;
+    @Mock private LargeIconCallback mLargeIconCallback;
 
     @Before
     public void setUp() {
@@ -47,9 +48,9 @@ public class SuggestionsImageFetcherTest {
 
     @Test
     public void testLargeIconFetch() {
-        ImageFetcher imageFetcher = new ImageFetcher(mock(Profile.class));
+        ImageFetcher imageFetcher = new ImageFetcher(mProfile);
 
-        imageFetcher.makeLargeIconRequest(URL, IMAGE_SIZE_PX, mock(LargeIconCallback.class));
+        imageFetcher.makeLargeIconRequest(URL, IMAGE_SIZE_PX, mLargeIconCallback);
 
         verify(mLargeIconBridge)
                 .getLargeIconForUrl(eq(URL), eq(IMAGE_SIZE_PX), any(LargeIconCallback.class));

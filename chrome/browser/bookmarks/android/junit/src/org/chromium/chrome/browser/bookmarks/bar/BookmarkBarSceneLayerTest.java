@@ -30,11 +30,14 @@ import org.chromium.ui.resources.ResourceManager;
 /** Unit tests for {BookmarkBarSceneLayer}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class BookmarkBarSceneLayerTest {
+    private static final long NATIVE_PTR = 123L;
+
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private BookmarkBarSceneLayerJni mSceneLayerJni;
     @Mock private ResourceManager mResourceManager;
+    @Mock private SceneLayer mContentTree;
 
-    private static final long NATIVE_PTR = 123L;
     private BookmarkBarSceneLayer mSceneLayer;
 
     @Before
@@ -68,9 +71,8 @@ public class BookmarkBarSceneLayerTest {
 
     @Test
     public void testSetContentTree() {
-        SceneLayer contentTree = Mockito.mock(SceneLayer.class);
-        mSceneLayer.setContentTree(contentTree);
+        mSceneLayer.setContentTree(mContentTree);
 
-        verify(mSceneLayerJni).setContentTree(eq(NATIVE_PTR), eq(contentTree));
+        verify(mSceneLayerJni).setContentTree(eq(NATIVE_PTR), eq(mContentTree));
     }
 }

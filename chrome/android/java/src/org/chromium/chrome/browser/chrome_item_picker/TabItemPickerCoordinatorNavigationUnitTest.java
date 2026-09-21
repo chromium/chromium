@@ -90,6 +90,9 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
     @Mock private OffscreenRenderingManager mOffscreenRenderingManager;
     @Mock private WebContents mWebContents;
     @Mock private RenderWidgetHostView mRenderWidgetHostView;
+    @Mock private ViewGroup mRootView;
+    @Mock private ViewGroup mContainerView;
+    @Mock private SnackbarManager mSnackbarManager;
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
     @Captor private ArgumentCaptor<Callback<Bitmap>> mCallbackCaptor;
 
@@ -103,17 +106,14 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
     public void setUp() {
         TabLoadingService.getInstance().clearForTesting();
         OneshotSupplierImpl<Profile> profileSupplierImpl = new OneshotSupplierImpl<>();
-        ViewGroup rootView = Mockito.mock(ViewGroup.class);
-        ViewGroup containerView = Mockito.mock(ViewGroup.class);
-        SnackbarManager snackbarManager = Mockito.mock(SnackbarManager.class);
         TabItemPickerCoordinator realCoordinator =
                 new TabItemPickerCoordinator(
                         profileSupplierImpl,
                         WINDOW_ID,
                         mActivity,
-                        snackbarManager,
-                        rootView,
-                        containerView,
+                        mSnackbarManager,
+                        mRootView,
+                        mContainerView,
                         new ArrayList<Integer>(),
                         TabListEditorCoordinator.UNLIMITED_SELECTION,
                         false);
@@ -568,9 +568,7 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
         OPTIMIZATION_CANCEL_AND_FIRST_PAINT
     })
     public void testOffscreenRendering_StartedOnSelectionAndStoppedOnCaptureComplete() {
-        OffscreenRenderingManager mockOffscreenManager =
-                Mockito.mock(OffscreenRenderingManager.class);
-        OffscreenRenderingManager.setInstanceForTesting(mockOffscreenManager);
+        OffscreenRenderingManager.setInstanceForTesting(mOffscreenRenderingManager);
 
         int tabId = 101;
         Tab tab = mockTabActiveState(tabId, false);
@@ -578,9 +576,8 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
         when(tab.loadIfNeeded(anyBoolean())).thenReturn(true);
         when(tab.isLoading()).thenReturn(true);
 
-        WebContents webContents = Mockito.mock(WebContents.class);
-        when(tab.getWebContents()).thenReturn(webContents);
-        when(webContents.isDestroyed()).thenReturn(false);
+        when(tab.getWebContents()).thenReturn(mWebContents);
+        when(mWebContents.isDestroyed()).thenReturn(false);
 
         captureAndSpyNavigationProvider();
 
@@ -590,7 +587,7 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
 
         mNavigationProvider.onSelectionStateChange(selection);
 
-        verify(mockOffscreenManager).startOffscreenRendering(eq(tab), anyInt(), anyInt());
+        verify(mOffscreenRenderingManager).startOffscreenRendering(eq(tab), anyInt(), anyInt());
 
         verify(tab).addObserver(mTabObserverCaptor.capture());
         TabObserver observer = mTabObserverCaptor.getValue();
@@ -599,10 +596,10 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
 
         verify(mTabContentManager)
                 .cacheTabThumbnailWithCallback(eq(tab), eq(true), mCallbackCaptor.capture());
-        verify(mockOffscreenManager, never()).stopOffscreenRendering(tab);
+        verify(mOffscreenRenderingManager, never()).stopOffscreenRendering(tab);
 
         mCallbackCaptor.getValue().onResult(null);
-        verify(mockOffscreenManager).stopOffscreenRendering(tab);
+        verify(mOffscreenRenderingManager).stopOffscreenRendering(tab);
     }
 
     @Test
@@ -611,9 +608,7 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
         ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION
     })
     public void testOffscreenRendering_StoppedOnLoadFailure() {
-        OffscreenRenderingManager mockOffscreenManager =
-                Mockito.mock(OffscreenRenderingManager.class);
-        OffscreenRenderingManager.setInstanceForTesting(mockOffscreenManager);
+        OffscreenRenderingManager.setInstanceForTesting(mOffscreenRenderingManager);
 
         int tabId = 101;
         Tab tab = mockTabActiveState(tabId, false);
@@ -621,9 +616,8 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
         when(tab.loadIfNeeded(anyBoolean())).thenReturn(true);
         when(tab.isLoading()).thenReturn(true);
 
-        WebContents webContents = Mockito.mock(WebContents.class);
-        when(tab.getWebContents()).thenReturn(webContents);
-        when(webContents.isDestroyed()).thenReturn(false);
+        when(tab.getWebContents()).thenReturn(mWebContents);
+        when(mWebContents.isDestroyed()).thenReturn(false);
 
         captureAndSpyNavigationProvider();
 
@@ -633,14 +627,14 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
 
         mNavigationProvider.onSelectionStateChange(selection);
 
-        verify(mockOffscreenManager).startOffscreenRendering(eq(tab), anyInt(), anyInt());
+        verify(mOffscreenRenderingManager).startOffscreenRendering(eq(tab), anyInt(), anyInt());
 
         verify(tab).addObserver(mTabObserverCaptor.capture());
         TabObserver observer = mTabObserverCaptor.getValue();
 
         observer.onPageLoadFailed(tab, 500);
 
-        verify(mockOffscreenManager).stopOffscreenRendering(tab);
+        verify(mOffscreenRenderingManager).stopOffscreenRendering(tab);
         verify(mTabContentManager, never())
                 .cacheTabThumbnailWithCallback(any(), anyBoolean(), any());
     }
@@ -651,9 +645,7 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
         ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION
     })
     public void testOffscreenRendering_CleanedUpOnDestroy() {
-        OffscreenRenderingManager mockOffscreenManager =
-                Mockito.mock(OffscreenRenderingManager.class);
-        OffscreenRenderingManager.setInstanceForTesting(mockOffscreenManager);
+        OffscreenRenderingManager.setInstanceForTesting(mOffscreenRenderingManager);
 
         int tabId = 101;
         Tab tab = mockTabActiveState(tabId, false);
@@ -661,9 +653,8 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
         when(tab.loadIfNeeded(anyBoolean())).thenReturn(true);
         when(tab.isLoading()).thenReturn(true);
 
-        WebContents webContents = Mockito.mock(WebContents.class);
-        when(tab.getWebContents()).thenReturn(webContents);
-        when(webContents.isDestroyed()).thenReturn(false);
+        when(tab.getWebContents()).thenReturn(mWebContents);
+        when(mWebContents.isDestroyed()).thenReturn(false);
 
         captureAndSpyNavigationProvider();
 
@@ -673,19 +664,19 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
 
         mNavigationProvider.onSelectionStateChange(selection);
 
-        verify(mockOffscreenManager).startOffscreenRendering(eq(tab), anyInt(), anyInt());
+        verify(mOffscreenRenderingManager).startOffscreenRendering(eq(tab), anyInt(), anyInt());
 
         verify(tab).addObserver(mTabObserverCaptor.capture());
         TabObserver observer = mTabObserverCaptor.getValue();
 
         // Load finishes and thumbnail capture is in flight.
         observer.didFirstVisuallyNonEmptyPaint(tab);
-        verify(mockOffscreenManager, never()).stopOffscreenRendering(tab);
+        verify(mOffscreenRenderingManager, never()).stopOffscreenRendering(tab);
 
         // Picker destroyed while thumbnail capture is in flight.
         mNavigationProvider.destroy();
 
-        verify(mockOffscreenManager).stopOffscreenRendering(tab);
+        verify(mOffscreenRenderingManager).stopOffscreenRendering(tab);
     }
 
     @Test

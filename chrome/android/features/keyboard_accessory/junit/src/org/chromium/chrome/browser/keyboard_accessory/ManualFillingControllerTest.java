@@ -119,6 +119,8 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog;
+import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.ConfirmationDialogHandler;
+import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.ConfirmationDialogParams;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.DialogHandle;
 import org.chromium.components.browser_ui.widget.StrictButtonPressController.ButtonClickResult;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -154,15 +156,15 @@ public class ManualFillingControllerTest {
     private static final int sAccessoryHeightDp = 48;
     private static final int sDynamicPositioningMaxWidthPx = 100;
 
+    /**
+     * Helper class that provides shortcuts to providing and observing AccessorySheetData and
+     * Actions.
+     */
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Captor ArgumentCaptor<FullscreenManager.Observer> mFullscreenObserverCaptor;
-    @Captor private ArgumentCaptor<KeyboardAccessoryStyle> mStyleCaptor;
 
     @Mock private ChromeWindow mMockWindow;
     @Mock private ChromeActivity mMockActivity;
     @Mock private Window mMockActivityWindow;
-    private WebContents mLastMockWebContents;
     @Mock private Profile mMockProfile;
     @Mock private Profile.Natives mProfileJniMock;
     @Mock private ContentView mMockContentView;
@@ -181,7 +183,23 @@ public class ManualFillingControllerTest {
     @Mock private MultiWindowModeStateDispatcher mMockMultiWindowModeStateDispatcher;
     @Mock private BrowserControlsManager mMockBrowserControlsManager;
     @Mock private ManualFillingComponentBridge.Natives mManualFillingComponentBridgeJniMock;
+    @Mock private ActionConfirmationDialog mActionConfirmationDialog;
+    @Mock private Runnable mConfirmedCallback;
+    @Mock private Runnable mDeclinedCallback;
+    @Mock private SettingsNavigation mSettingsNavigation;
+    @Mock private ActionConfirmationDialog.DismissHandler mActionConfirmationDialogDismissHandler;
+    @Mock private UpdateAccessorySheetDelegate mFirstSheetUpdater;
+    @Mock private UpdateAccessorySheetDelegate mSecondSheetUpdater;
+    @Mock private UpdateAccessorySheetDelegate mUpdateAccessorySheetDelegate;
+    @Mock private DialogHandle mDialogHandle;
+    @Mock private DialogHandle mMockHandle1;
+    @Mock private DialogHandle mMockHandle2;
+    @Captor ArgumentCaptor<FullscreenManager.Observer> mFullscreenObserverCaptor;
+    @Captor private ArgumentCaptor<KeyboardAccessoryStyle> mStyleCaptor;
+    @Captor private ArgumentCaptor<ConfirmationDialogParams> mParamsCaptor;
+    @Captor private ArgumentCaptor<ConfirmationDialogHandler> mHandlerCaptor;
 
+    private WebContents mLastMockWebContents;
     private final ManualFillingCoordinator mController = new ManualFillingCoordinator();
     private final ManualFillingMediator mMediator = mController.getMediatorForTesting();
     private final ManualFillingStateCache mCache = mMediator.getStateCacheForTesting();
@@ -196,13 +214,8 @@ public class ManualFillingControllerTest {
             mMockEdgeToEdgeControllerSupplier = ObservableSuppliers.createNullable();
     private final SettableMonotonicObservableSupplier<TabModel> mMockTabModelSupplier =
             ObservableSuppliers.createMonotonic();
-
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
 
-    /**
-     * Helper class that provides shortcuts to providing and observing AccessorySheetData and
-     * Actions.
-     */
     private static class SheetProviderHelper {
         private final Provider<Action[]> mActionListProvider =
                 new Provider<>(GENERATE_PASSWORD_AUTOMATIC);
@@ -468,76 +481,57 @@ public class ManualFillingControllerTest {
 
     @Test
     public void testShowAutofillAiSuggestionDetailsDeclines() {
-        ActionConfirmationDialog mockDialog = mock(ActionConfirmationDialog.class);
-        mMediator.setActionConfirmationDialogForTesting(mockDialog);
-
-        Runnable confirmedCallback = mock(Runnable.class);
-        Runnable declinedCallback = mock(Runnable.class);
+        mMediator.setActionConfirmationDialogForTesting(mActionConfirmationDialog);
 
         mController.showAutofillAiSuggestionDetails(
                 "Remove this info?",
                 "Your info was suggested by Gemini.",
                 "Remove",
                 "Got it",
-                confirmedCallback,
-                declinedCallback);
+                mConfirmedCallback,
+                mDeclinedCallback);
 
-        ArgumentCaptor<ActionConfirmationDialog.ConfirmationDialogParams> paramsCaptor =
-                ArgumentCaptor.forClass(ActionConfirmationDialog.ConfirmationDialogParams.class);
-        ArgumentCaptor<ActionConfirmationDialog.ConfirmationDialogHandler> handlerCaptor =
-                ArgumentCaptor.forClass(ActionConfirmationDialog.ConfirmationDialogHandler.class);
-
-        verify(mockDialog).show(paramsCaptor.capture(), handlerCaptor.capture());
+        verify(mActionConfirmationDialog).show(mParamsCaptor.capture(), mHandlerCaptor.capture());
 
         // Clicking positive button (Got it) should trigger declinedCallback
-        handlerCaptor
+        mHandlerCaptor
                 .getValue()
                 .onDialogInteracted(
-                        mock(ActionConfirmationDialog.DismissHandler.class),
+                        mActionConfirmationDialogDismissHandler,
                         ButtonClickResult.POSITIVE,
                         /* stopShowing= */ false);
-        verify(declinedCallback).run();
-        verify(confirmedCallback, never()).run();
+        verify(mDeclinedCallback).run();
+        verify(mConfirmedCallback, never()).run();
     }
 
     @Test
     public void testShowAutofillAiSuggestionDetailsConfirms() {
-        ActionConfirmationDialog mockDialog = mock(ActionConfirmationDialog.class);
-        mMediator.setActionConfirmationDialogForTesting(mockDialog);
-
-        Runnable confirmedCallback = mock(Runnable.class);
-        Runnable declinedCallback = mock(Runnable.class);
+        mMediator.setActionConfirmationDialogForTesting(mActionConfirmationDialog);
 
         mController.showAutofillAiSuggestionDetails(
                 "Remove this info?",
                 "Your info was suggested by Gemini.",
                 "Remove",
                 "Got it",
-                confirmedCallback,
-                declinedCallback);
+                mConfirmedCallback,
+                mDeclinedCallback);
 
-        ArgumentCaptor<ActionConfirmationDialog.ConfirmationDialogParams> paramsCaptor =
-                ArgumentCaptor.forClass(ActionConfirmationDialog.ConfirmationDialogParams.class);
-        ArgumentCaptor<ActionConfirmationDialog.ConfirmationDialogHandler> handlerCaptor =
-                ArgumentCaptor.forClass(ActionConfirmationDialog.ConfirmationDialogHandler.class);
-
-        verify(mockDialog).show(paramsCaptor.capture(), handlerCaptor.capture());
+        verify(mActionConfirmationDialog).show(mParamsCaptor.capture(), mHandlerCaptor.capture());
 
         // Clicking negative button (Remove) should trigger confirmedCallback
-        handlerCaptor
+        mHandlerCaptor
                 .getValue()
                 .onDialogInteracted(
-                        mock(ActionConfirmationDialog.DismissHandler.class),
+                        mActionConfirmationDialogDismissHandler,
                         ButtonClickResult.NEGATIVE,
                         /* stopShowing= */ false);
-        verify(confirmedCallback).run();
-        verify(declinedCallback, never()).run();
+        verify(mConfirmedCallback).run();
+        verify(mDeclinedCallback, never()).run();
     }
 
     @Test
     public void testFormatAutofillAiSuppressionMessageWithMultipleLinks() {
-        SettingsNavigation mockSettingsNavigation = mock(SettingsNavigation.class);
-        SettingsNavigationFactory.setInstanceForTesting(mockSettingsNavigation);
+        SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
 
         String rawBody =
                 "Suggested by Gemini · <src_link>View sources</src_link>\n\n"
@@ -566,23 +560,21 @@ public class ManualFillingControllerTest {
 
         // Trigger settings click
         spans[1].onClick(null);
-        verify(mockSettingsNavigation).startSettings(eq(mMockActivity), any(), any(), eq(true));
+        verify(mSettingsNavigation).startSettings(eq(mMockActivity), any(), any(), eq(true));
     }
 
     @Test
     public void testDestroyDismissesActiveConfirmationDialog() {
-        ActionConfirmationDialog mockDialog = mock(ActionConfirmationDialog.class);
-        ActionConfirmationDialog.DismissHandler mockDismissHandler =
-                mock(ActionConfirmationDialog.DismissHandler.class);
-        when(mockDialog.show(any(), any())).thenReturn(mockDismissHandler);
-        mMediator.setActionConfirmationDialogForTesting(mockDialog);
+        when(mActionConfirmationDialog.show(any(), any()))
+                .thenReturn(mActionConfirmationDialogDismissHandler);
+        mMediator.setActionConfirmationDialogForTesting(mActionConfirmationDialog);
 
         mController.showAutofillAiSuggestionDetails(
                 "Title", "Body", "Remove", "Got it", () -> {}, () -> {});
-        verify(mockDialog).show(any(), any());
+        verify(mActionConfirmationDialog).show(any(), any());
 
         mMediator.destroy();
-        verify(mockDismissHandler).dismiss(DialogDismissalCause.UNKNOWN);
+        verify(mActionConfirmationDialogDismissHandler).dismiss(DialogDismissalCause.UNKNOWN);
     }
 
     @Test
@@ -633,8 +625,6 @@ public class ManualFillingControllerTest {
     public void testPasswordItemsPersistAfterSwitchingBrowserTabs() {
         SheetProviderHelper firstTabHelper = new SheetProviderHelper();
         SheetProviderHelper secondTabHelper = new SheetProviderHelper();
-        UpdateAccessorySheetDelegate firstSheetUpdater = mock(UpdateAccessorySheetDelegate.class);
-        UpdateAccessorySheetDelegate secondSheetUpdater = mock(UpdateAccessorySheetDelegate.class);
 
         // Simulate opening a new tab which automatically triggers the registration:
         Tab firstTab = addBrowserTab(mMediator, 1111, null);
@@ -642,7 +632,7 @@ public class ManualFillingControllerTest {
                 mLastMockWebContents,
                 AccessoryTabType.PASSWORDS,
                 firstTabHelper.getSheetDataProvider());
-        mController.registerSheetUpdateDelegate(mLastMockWebContents, firstSheetUpdater);
+        mController.registerSheetUpdateDelegate(mLastMockWebContents, mFirstSheetUpdater);
         getStateForBrowserTab()
                 .getSheetDataProvider(AccessoryTabType.PASSWORDS)
                 .addSyncObserverAndPostIfNonNull(firstTabHelper::record);
@@ -655,7 +645,7 @@ public class ManualFillingControllerTest {
                 mLastMockWebContents,
                 AccessoryTabType.PASSWORDS,
                 secondTabHelper.getSheetDataProvider());
-        mController.registerSheetUpdateDelegate(mLastMockWebContents, secondSheetUpdater);
+        mController.registerSheetUpdateDelegate(mLastMockWebContents, mSecondSheetUpdater);
         getStateForBrowserTab()
                 .getSheetDataProvider(AccessoryTabType.PASSWORDS)
                 .addSyncObserverAndPostIfNonNull(secondTabHelper::record);
@@ -665,14 +655,14 @@ public class ManualFillingControllerTest {
         // Simulate switching back to the first tab:
         switchBrowserTab(mMediator, /* from= */ secondTab, /* to= */ firstTab);
         // Wiring affects the same sheet only and is triggered after switching
-        verify(firstSheetUpdater).requestSheet(AccessoryTabType.PASSWORDS);
+        verify(mFirstSheetUpdater).requestSheet(AccessoryTabType.PASSWORDS);
         firstTabHelper.providePasswordSheet("FirstPassword");
         assertThat(firstTabHelper.getFirstRecordedPassword(), is("FirstPassword"));
 
         // And back to the second:
         switchBrowserTab(mMediator, /* from= */ firstTab, /* to= */ secondTab);
         // Wiring affects the same sheet only and is triggered after switching
-        verify(secondSheetUpdater).requestSheet(AccessoryTabType.PASSWORDS);
+        verify(mSecondSheetUpdater).requestSheet(AccessoryTabType.PASSWORDS);
         secondTabHelper.providePasswordSheet("SecondPassword");
         assertThat(secondTabHelper.getFirstRecordedPassword(), is("SecondPassword"));
     }
@@ -893,7 +883,6 @@ public class ManualFillingControllerTest {
         reset(mMockAccessorySheet);
         SheetProviderHelper firstTabHelper = new SheetProviderHelper();
         SheetProviderHelper secondTabHelper = new SheetProviderHelper();
-        UpdateAccessorySheetDelegate secondSheetUpdater = mock(UpdateAccessorySheetDelegate.class);
 
         // Simulate opening a new tab:
         Tab firstTab = addBrowserTab(mMediator, 1111, null);
@@ -916,7 +905,8 @@ public class ManualFillingControllerTest {
                 mLastMockWebContents,
                 AccessoryTabType.PASSWORDS,
                 secondTabHelper.getSheetDataProvider());
-        mController.registerSheetUpdateDelegate(mLastMockWebContents, secondSheetUpdater);
+        mController.registerSheetUpdateDelegate(
+                mLastMockWebContents, mUpdateAccessorySheetDelegate);
         mController.registerActionProvider(
                 mLastMockWebContents, secondTabHelper.getActionListProvider());
         getStateForBrowserTab()
@@ -937,7 +927,7 @@ public class ManualFillingControllerTest {
 
         // The current tab should not be influenced by the destruction...
         // Wiring affects the same sheet only and is triggered after switching
-        verify(secondSheetUpdater).requestSheet(AccessoryTabType.PASSWORDS);
+        verify(mUpdateAccessorySheetDelegate).requestSheet(AccessoryTabType.PASSWORDS);
         secondTabHelper.providePasswordSheet("SecondPassword");
         assertThat(secondTabHelper.getFirstRecordedPassword(), is("SecondPassword"));
         assertThat(
@@ -2264,55 +2254,47 @@ public class ManualFillingControllerTest {
 
     @Test
     public void testConfirmDeletionOperation() {
-        ActionConfirmationDialog mockDialog = mock(ActionConfirmationDialog.class);
-        mMediator.setActionConfirmationDialogForTesting(mockDialog);
-
-        Runnable confirmedCallback = mock(Runnable.class);
-        Runnable declinedCallback = mock(Runnable.class);
+        mMediator.setActionConfirmationDialogForTesting(mActionConfirmationDialog);
 
         mController.confirmDeletionOperation(
                 "Delete title",
                 "Delete message",
                 "",
                 "Delete",
-                confirmedCallback,
-                declinedCallback);
+                mConfirmedCallback,
+                mDeclinedCallback);
 
-        ArgumentCaptor<ActionConfirmationDialog.ConfirmationDialogParams> paramsCaptor =
-                ArgumentCaptor.forClass(ActionConfirmationDialog.ConfirmationDialogParams.class);
-        ArgumentCaptor<ActionConfirmationDialog.ConfirmationDialogHandler> handlerCaptor =
-                ArgumentCaptor.forClass(ActionConfirmationDialog.ConfirmationDialogHandler.class);
-
-        verify(mockDialog).show(paramsCaptor.capture(), handlerCaptor.capture());
+        verify(mActionConfirmationDialog).show(mParamsCaptor.capture(), mHandlerCaptor.capture());
 
         // For standard dialog, positive button triggers confirmedCallback
-        handlerCaptor
+        mHandlerCaptor
                 .getValue()
                 .onDialogInteracted(
                         mock(ActionConfirmationDialog.DismissHandler.class),
                         ButtonClickResult.POSITIVE,
                         /* stopShowing= */ false);
-        verify(confirmedCallback).run();
-        verify(declinedCallback, never()).run();
+        verify(mConfirmedCallback).run();
+        verify(mDeclinedCallback, never()).run();
 
         // For standard dialog, negative button triggers declinedCallback
-        reset(confirmedCallback, declinedCallback);
+        reset(mConfirmedCallback, mDeclinedCallback);
         mController.confirmDeletionOperation(
                 "Delete title",
                 "Delete message",
                 "",
                 "Delete",
-                confirmedCallback,
-                declinedCallback);
-        verify(mockDialog, times(2)).show(paramsCaptor.capture(), handlerCaptor.capture());
-        handlerCaptor
+                mConfirmedCallback,
+                mDeclinedCallback);
+        verify(mActionConfirmationDialog, times(2))
+                .show(mParamsCaptor.capture(), mHandlerCaptor.capture());
+        mHandlerCaptor
                 .getValue()
                 .onDialogInteracted(
                         mock(ActionConfirmationDialog.DismissHandler.class),
                         ButtonClickResult.NEGATIVE,
                         /* stopShowing= */ false);
-        verify(declinedCallback).run();
-        verify(confirmedCallback, never()).run();
+        verify(mDeclinedCallback).run();
+        verify(mConfirmedCallback, never()).run();
     }
 
     @Test
@@ -2337,10 +2319,8 @@ public class ManualFillingControllerTest {
 
     @Test
     public void testDismissConfirmationDialogOnDestroy() {
-        ActionConfirmationDialog mockDialog = mock(ActionConfirmationDialog.class);
-        DialogHandle mockHandle = mock(DialogHandle.class);
-        when(mockDialog.show(any(), any())).thenReturn(mockHandle);
-        mMediator.setActionConfirmationDialogForTesting(mockDialog);
+        when(mActionConfirmationDialog.show(any(), any())).thenReturn(mDialogHandle);
+        mMediator.setActionConfirmationDialogForTesting(mActionConfirmationDialog);
 
         mController.confirmDeletionOperation(
                 "Delete title",
@@ -2349,20 +2329,18 @@ public class ManualFillingControllerTest {
                 "Delete",
                 mock(Runnable.class),
                 mock(Runnable.class));
-        assertThat(mMediator.getConfirmationDialogDismissHandlerForTesting(), is(mockHandle));
+        assertThat(mMediator.getConfirmationDialogDismissHandlerForTesting(), is(mDialogHandle));
 
         mController.destroy();
 
-        verify(mockHandle).dismiss(DialogDismissalCause.UNKNOWN);
+        verify(mDialogHandle).dismiss(DialogDismissalCause.UNKNOWN);
         assertThat(mMediator.getConfirmationDialogDismissHandlerForTesting(), is(nullValue()));
     }
 
     @Test
     public void testDismissConfirmationDialogOnPause() {
-        ActionConfirmationDialog mockDialog = mock(ActionConfirmationDialog.class);
-        DialogHandle mockHandle = mock(DialogHandle.class);
-        when(mockDialog.show(any(), any())).thenReturn(mockHandle);
-        mMediator.setActionConfirmationDialogForTesting(mockDialog);
+        when(mActionConfirmationDialog.show(any(), any())).thenReturn(mDialogHandle);
+        mMediator.setActionConfirmationDialogForTesting(mActionConfirmationDialog);
 
         mController.confirmDeletionOperation(
                 "Delete title",
@@ -2371,21 +2349,18 @@ public class ManualFillingControllerTest {
                 "Delete",
                 mock(Runnable.class),
                 mock(Runnable.class));
-        assertThat(mMediator.getConfirmationDialogDismissHandlerForTesting(), is(mockHandle));
+        assertThat(mMediator.getConfirmationDialogDismissHandlerForTesting(), is(mDialogHandle));
 
         mMediator.pause();
 
-        verify(mockHandle).dismiss(DialogDismissalCause.UNKNOWN);
+        verify(mDialogHandle).dismiss(DialogDismissalCause.UNKNOWN);
         assertThat(mMediator.getConfirmationDialogDismissHandlerForTesting(), is(nullValue()));
     }
 
     @Test
     public void testRepeatedConfirmDeletionOperationDismissesActiveDialog() {
-        ActionConfirmationDialog mockDialog = mock(ActionConfirmationDialog.class);
-        DialogHandle mockHandle1 = mock(DialogHandle.class);
-        DialogHandle mockHandle2 = mock(DialogHandle.class);
-        when(mockDialog.show(any(), any())).thenReturn(mockHandle1, mockHandle2);
-        mMediator.setActionConfirmationDialogForTesting(mockDialog);
+        when(mActionConfirmationDialog.show(any(), any())).thenReturn(mMockHandle1, mMockHandle2);
+        mMediator.setActionConfirmationDialogForTesting(mActionConfirmationDialog);
 
         mController.confirmDeletionOperation(
                 "Delete title 1",
@@ -2394,7 +2369,7 @@ public class ManualFillingControllerTest {
                 "Delete",
                 mock(Runnable.class),
                 mock(Runnable.class));
-        assertThat(mMediator.getConfirmationDialogDismissHandlerForTesting(), is(mockHandle1));
+        assertThat(mMediator.getConfirmationDialogDismissHandlerForTesting(), is(mMockHandle1));
 
         mController.confirmDeletionOperation(
                 "Delete title 2",
@@ -2404,7 +2379,7 @@ public class ManualFillingControllerTest {
                 mock(Runnable.class),
                 mock(Runnable.class));
 
-        verify(mockHandle1).dismiss(DialogDismissalCause.UNKNOWN);
-        assertThat(mMediator.getConfirmationDialogDismissHandlerForTesting(), is(mockHandle2));
+        verify(mMockHandle1).dismiss(DialogDismissalCause.UNKNOWN);
+        assertThat(mMediator.getConfirmationDialogDismissHandlerForTesting(), is(mMockHandle2));
     }
 }

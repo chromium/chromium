@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.ntp_customization.feed;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.FEED_SWITCH_ON_CHECKED_CHANGE_LISTENER;
@@ -31,7 +30,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -57,6 +55,10 @@ public class FeedSettingsCoordinatorUnitTest {
     @Mock private Profile mProfile;
     @Mock private PrefChangeRegistrar mPrefChangeRegistrar;
     @Mock private PrefService mPrefService;
+    @Mock private FeedSettingsMediator mFeedSettingsMediator;
+    @Mock private OnCheckedChangeListener mOnCheckedChangeListener;
+    @Mock private View.OnClickListener mViewOnClickListener;
+    @Mock private BottomSheetDelegate mBottomSheetDelegate;
 
     private Context mContext;
     private PropertyModel mPropertyModel;
@@ -71,9 +73,7 @@ public class FeedSettingsCoordinatorUnitTest {
         FeedServiceBridgeJni.setInstanceForTesting(mFeedServiceBridgeJniMock);
         FeedSettingsMediator.setPrefForTesting(mPrefChangeRegistrar, mPrefService);
 
-        mCoordinator =
-                new FeedSettingsCoordinator(
-                        mContext, Mockito.mock(BottomSheetDelegate.class), mProfile);
+        mCoordinator = new FeedSettingsCoordinator(mContext, mBottomSheetDelegate, mProfile);
         mPropertyModel = new PropertyModel(NtpCustomizationViewProperties.FEED_SETTINGS_KEYS);
     }
 
@@ -84,11 +84,10 @@ public class FeedSettingsCoordinatorUnitTest {
 
     @Test
     public void testDestroy() {
-        FeedSettingsMediator mediator = mock(FeedSettingsMediator.class);
-        mCoordinator.setMediatorForTesting(mediator);
+        mCoordinator.setMediatorForTesting(mFeedSettingsMediator);
 
         mCoordinator.destroy();
-        verify(mediator).destroy();
+        verify(mFeedSettingsMediator).destroy();
     }
 
     @Test
@@ -110,14 +109,13 @@ public class FeedSettingsCoordinatorUnitTest {
                 FeedSettingsCoordinator::bindFeedSettingsBottomSheet);
 
         // Verifies the on checked change listener is added to the feed bottom sheet's feed switch.
-        OnCheckedChangeListener onCheckedChangeListener = mock(OnCheckedChangeListener.class);
-        mPropertyModel.set(FEED_SWITCH_ON_CHECKED_CHANGE_LISTENER, onCheckedChangeListener);
+        mPropertyModel.set(FEED_SWITCH_ON_CHECKED_CHANGE_LISTENER, mOnCheckedChangeListener);
         MaterialSwitchWithText feedSwitch = feedBottomSheet.findViewById(R.id.feed_switch_button);
         feedSwitch.setChecked(true);
-        verify(onCheckedChangeListener)
+        verify(mOnCheckedChangeListener)
                 .onCheckedChanged(feedSwitch.findViewById(R.id.switch_widget), true);
         feedSwitch.setChecked(false);
-        verify(onCheckedChangeListener)
+        verify(mOnCheckedChangeListener)
                 .onCheckedChanged(feedSwitch.findViewById(R.id.switch_widget), false);
 
         // Verifies the feed switch will get updated timely.
@@ -135,11 +133,10 @@ public class FeedSettingsCoordinatorUnitTest {
         Assert.assertEquals(View.GONE, feedListItemsTitle.getVisibility());
 
         // Verifies that the onClickListener is added to the learn-more button on feed bottom sheet.
-        View.OnClickListener onClickListener = mock(View.OnClickListener.class);
-        mPropertyModel.set(LEARN_MORE_BUTTON_CLICK_LISTENER, onClickListener);
+        mPropertyModel.set(LEARN_MORE_BUTTON_CLICK_LISTENER, mViewOnClickListener);
         ImageView learnMoreButton = feedBottomSheet.findViewById(R.id.learn_more_button);
         learnMoreButton.performClick();
-        verify(onClickListener).onClick(eq(learnMoreButton));
+        verify(mViewOnClickListener).onClick(eq(learnMoreButton));
 
         // Verifies the feed switch's content description will get updated timely.
         final String contentDescription = "test content description";

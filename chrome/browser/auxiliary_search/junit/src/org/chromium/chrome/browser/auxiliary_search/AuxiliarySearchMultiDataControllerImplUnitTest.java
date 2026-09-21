@@ -48,11 +48,11 @@ import java.util.List;
 /** Unit tests for {@link AuxiliarySearchMultiDataControllerImpl} */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AuxiliarySearchMultiDataControllerImplUnitTest {
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    public @Rule FakeTimeTestRule mFakeTime = new FakeTimeTestRule();
-
     private static final int TAB_ID_1 = 1;
     private static final int TAB_ID_2 = 2;
+
+    public @Rule FakeTimeTestRule mFakeTime = new FakeTimeTestRule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Context mContext;
     @Mock private Resources mResources;
@@ -63,6 +63,8 @@ public class AuxiliarySearchMultiDataControllerImplUnitTest {
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private AuxiliarySearchHooks mHooks;
     @Mock private AuxiliarySearchTopSiteProviderBridge mAuxiliarySearchTopSiteProviderBridge;
+    @Mock private Runnable mRunnable;
+    @Mock private ActivityLifecycleDispatcher mDispatcher;
 
     @Captor
     private ArgumentCaptor<Callback<List<AuxiliarySearchDataEntry>>> mEntryReadyCallbackCaptor;
@@ -91,7 +93,6 @@ public class AuxiliarySearchMultiDataControllerImplUnitTest {
 
     @Test
     public void testOnNonSensitiveHistoryDataAvailable_EmptyList() {
-        Runnable runnableMock = Mockito.mock(Runnable.class);
         long now = TimeUtils.uptimeMillis();
         int timeDelta = 50;
         var histogramWatcher =
@@ -106,12 +107,12 @@ public class AuxiliarySearchMultiDataControllerImplUnitTest {
         mAuxiliarySearchMultiDataControllerImpl.setExpectDonatingForTesting(false);
         assertFalse(mAuxiliarySearchMultiDataControllerImpl.getExpectDonatingForTesting());
         mAuxiliarySearchMultiDataControllerImpl.onNonSensitiveHistoryDataAvailable(
-                entries, now, runnableMock);
+                entries, now, mRunnable);
 
         histogramWatcher.assertExpected();
         verify(mAuxiliarySearchDonor, never())
                 .donateEntries(eq(entries), any(int[].class), MockitoHelper.anyCallback());
-        verify(runnableMock).run();
+        verify(mRunnable).run();
     }
 
     @Test
@@ -255,16 +256,15 @@ public class AuxiliarySearchMultiDataControllerImplUnitTest {
 
     @Test
     public void testOnDestroyCalledByMultipleActivities() {
-        ActivityLifecycleDispatcher dispatcher = Mockito.mock(ActivityLifecycleDispatcher.class);
         mAuxiliarySearchMultiDataControllerImpl.register(mActivityLifecycleDispatcher);
-        mAuxiliarySearchMultiDataControllerImpl.register(dispatcher);
+        mAuxiliarySearchMultiDataControllerImpl.register(mDispatcher);
         mAuxiliarySearchMultiDataControllerImpl.onDeferredStartup();
         verify(mAuxiliarySearchTopSiteProviderBridge)
                 .setObserver(eq(mAuxiliarySearchMultiDataControllerImpl));
 
         // Verifies that the controller doesn't destroy the native bridge when there is reference
         // to it.
-        mAuxiliarySearchMultiDataControllerImpl.destroy(dispatcher);
+        mAuxiliarySearchMultiDataControllerImpl.destroy(mDispatcher);
         verify(mAuxiliarySearchTopSiteProviderBridge, never()).destroy();
 
         // Verifies that the controller will destroy the native bridge when there isn't any

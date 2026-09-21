@@ -18,7 +18,6 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -136,6 +135,7 @@ import java.util.Set;
 @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
 public final class ToolbarTabletUnitTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
+
     @Mock private LocationBarCoordinator mLocationBar;
     @Mock private LocationBarCoordinatorTablet mLocationBarTablet;
     @Mock private ToggleTabStackButtonCoordinator mTabSwitcherButtonCoordinator;
@@ -156,8 +156,6 @@ public final class ToolbarTabletUnitTest {
     @Mock private ThemeColorProvider mThemeColorProvider;
     @Mock private IncognitoStateProvider mIncognitoStateProvider;
     @Mock private UserEducationHelper mUserEducationHelper;
-    private final SettableMonotonicObservableSupplier<Tracker> mTrackerSupplier =
-            ObservableSuppliers.createMonotonic();
     @Mock private Tracker mTracker;
     @Mock private NavigationPopup.HistoryDelegate mHistoryDelegate;
     @Mock private ToolbarWidthConsumer mLocationBarBookmarkButtonWidthConsumer;
@@ -166,7 +164,12 @@ public final class ToolbarTabletUnitTest {
     @Mock private ToolbarWidthConsumer mLocationBarLensButtonWidthConsumer;
     @Mock private ToolbarWidthConsumer mLocationBarZoomButtonWidthConsumer;
     @Mock private WindowAndroid mWindowAndroid;
+    @Mock private Tab mTab;
+    @Mock private View.OnClickListener mViewOnClickListener;
+    @Mock private View.OnLongClickListener mViewOnLongClickListener;
 
+    private final SettableMonotonicObservableSupplier<Tracker> mTrackerSupplier =
+            ObservableSuppliers.createMonotonic();
     private Activity mActivity;
     private ToolbarTablet mToolbarTablet;
     private LinearLayout mToolbarTabletLayout;
@@ -181,7 +184,6 @@ public final class ToolbarTabletUnitTest {
     private final SettableNonNullObservableSupplier<Integer> mFuseboxStateSupplier =
             ObservableSuppliers.createNonNull(FuseboxState.DISABLED);
     private final MarginLayoutParams mLayoutParams = new MarginLayoutParams(100, 100);
-
     private final Answer<Object> mAddIncognitoObserverInIncognitoMode =
             (invocation) -> {
                 IncognitoStateProvider.IncognitoStateObserver observer = invocation.getArgument(0);
@@ -640,14 +642,13 @@ public final class ToolbarTabletUnitTest {
         assertFalse("Button should not be enabled", btn.isEnabled());
         assertFalse("Button should not be focused", btn.isFocusable());
 
-        Tab tab = mock(Tab.class);
-        doReturn(false).when(tab).canGoForward();
-        doReturn(tab).when(mToolbarDataProvider).getTab();
+        doReturn(false).when(mTab).canGoForward();
+        doReturn(mTab).when(mToolbarDataProvider).getTab();
         mToolbarTablet.updateButtonVisibility();
         assertFalse("Button should not be enabled", btn.isEnabled());
         assertFalse("Button should not be focused", btn.isFocusable());
 
-        doReturn(true).when(tab).canGoForward();
+        doReturn(true).when(mTab).canGoForward();
         mToolbarTablet.updateButtonVisibility();
         assertTrue("Button should be enabled", btn.isEnabled());
         assertTrue("Button should be focused", btn.isFocusable());
@@ -1476,13 +1477,11 @@ public final class ToolbarTabletUnitTest {
 
     @Test
     public void testSetGlicActionChipVisibility_ListenersAndVisibility() {
-        View.OnClickListener mockClickListener = mock(View.OnClickListener.class);
-        View.OnLongClickListener mockLongClickListener = mock(View.OnLongClickListener.class);
-        when(mockLongClickListener.onLongClick(any())).thenReturn(true);
+        when(mViewOnLongClickListener.onLongClick(any())).thenReturn(true);
 
         // Show the action chip and set listeners.
         mToolbarTablet.setGlicActionChipVisibility(
-                /* visible= */ true, mockClickListener, mockLongClickListener);
+                /* visible= */ true, mViewOnClickListener, mViewOnLongClickListener);
 
         View actionChip = mToolbarTablet.getGlicActionChipView();
         assertNotNull("Glic action chip should be inflated and non-null.", actionChip);
@@ -1491,15 +1490,15 @@ public final class ToolbarTabletUnitTest {
 
         // Perform long click and verify longClickListener is called.
         actionChip.performLongClick();
-        verify(mockLongClickListener).onLongClick(actionChip);
+        verify(mViewOnLongClickListener).onLongClick(actionChip);
 
         // Perform context click (right-click) and verify longClickListener is called again.
         actionChip.performContextClick();
-        verify(mockLongClickListener, Mockito.times(2)).onLongClick(actionChip);
+        verify(mViewOnLongClickListener, Mockito.times(2)).onLongClick(actionChip);
 
         // Hide the action chip and verify visibility.
         mToolbarTablet.setGlicActionChipVisibility(
-                /* visible= */ false, mockClickListener, mockLongClickListener);
+                /* visible= */ false, mViewOnClickListener, mViewOnLongClickListener);
         assertEquals("Glic action chip should be hidden.", View.GONE, actionChip.getVisibility());
     }
 
@@ -1517,12 +1516,9 @@ public final class ToolbarTabletUnitTest {
                         BrandedColorScheme.APP_DEFAULT,
                         /* isActivityFocused= */ false);
 
-        View.OnClickListener mockClickListener = mock(View.OnClickListener.class);
-        View.OnLongClickListener mockLongClickListener = mock(View.OnLongClickListener.class);
-
         // 1. Show the Glic action chip and set initial focused tint.
         mToolbarTablet.setGlicActionChipVisibility(
-                /* visible= */ true, mockClickListener, mockLongClickListener);
+                /* visible= */ true, mViewOnClickListener, mViewOnLongClickListener);
         ImageView glicChip = mToolbarTablet.findViewById(R.id.glic_icon);
         assertNotNull("Glic icon should be inflated and non-null.", glicChip);
 
@@ -1545,12 +1541,9 @@ public final class ToolbarTabletUnitTest {
 
     @Test
     public void testSetGlicPanelIsOpen_updatesTooltipAndContentDescription() {
-        View.OnClickListener mockClickListener = mock(View.OnClickListener.class);
-        View.OnLongClickListener mockLongClickListener = mock(View.OnLongClickListener.class);
-
         // Show the Glic action chip.
         mToolbarTablet.setGlicActionChipVisibility(
-                /* visible= */ true, mockClickListener, mockLongClickListener);
+                /* visible= */ true, mViewOnClickListener, mViewOnLongClickListener);
 
         View glicChip = mToolbarTablet.getGlicActionChipView();
         assertNotNull("Glic action chip should be inflated and non-null.", glicChip);
@@ -1587,15 +1580,12 @@ public final class ToolbarTabletUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testSetGlicActionChipVisibility_invokesOnWidthConsumerVisibilityChanged() {
-        View.OnClickListener mockClickListener = mock(View.OnClickListener.class);
-        View.OnLongClickListener mockLongClickListener = mock(View.OnLongClickListener.class);
-
         mToolbarTablet.setGlicActionChipVisibility(
-                /* visible= */ true, mockClickListener, mockLongClickListener);
+                /* visible= */ true, mViewOnClickListener, mViewOnLongClickListener);
         verify(mToolbarTablet).onWidthConsumerVisibilityChanged();
 
         mToolbarTablet.setGlicActionChipVisibility(
-                /* visible= */ false, mockClickListener, mockLongClickListener);
+                /* visible= */ false, mViewOnClickListener, mViewOnLongClickListener);
         verify(mToolbarTablet, Mockito.times(2)).onWidthConsumerVisibilityChanged();
     }
 

@@ -8,7 +8,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.clearInvocations;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -57,6 +56,8 @@ public class TabBottomSheetSuppressionControllerUnitTest {
     @Mock private Tab mTab;
     @Mock private ManualFillingComponent mManualFillingComponent;
     @Mock private NavigationHandle mNavigationHandle;
+    @Mock private TabModel mNormalModel;
+    @Mock private Runnable mRunnable;
 
     @Captor private ArgumentCaptor<LayoutStateObserver> mLayoutStateObserverCaptor;
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
@@ -158,9 +159,8 @@ public class TabBottomSheetSuppressionControllerUnitTest {
         assertTrue(mController.isInternallySuppressed());
         verify(mDelegate).onSuppressionStarted();
 
-        TabModel normalModel = mock(TabModel.class);
-        when(normalModel.isIncognito()).thenReturn(false);
-        mTabModelSupplier.set(normalModel);
+        when(mNormalModel.isIncognito()).thenReturn(false);
+        mTabModelSupplier.set(mNormalModel);
 
         assertFalse(mController.isInternallySuppressed());
         verify(mDelegate).onSuppressionEnded();
@@ -192,17 +192,16 @@ public class TabBottomSheetSuppressionControllerUnitTest {
 
     @Test
     public void testHandleReadAloudStopPlayback() {
-        Runnable stopCallback = mock(Runnable.class);
-        mController.initReadAloudIntegrationForTesting(mActivePlaybackTabSupplier, stopCallback);
+        mController.initReadAloudIntegrationForTesting(mActivePlaybackTabSupplier, mRunnable);
 
         // When not suppressed by read aloud, callback is not run.
         mController.handleReadAloudStopPlayback();
-        verify(stopCallback, never()).run();
+        verify(mRunnable, never()).run();
 
         // Suppress by read aloud.
         mActivePlaybackTabSupplier.set(mTab);
         mController.handleReadAloudStopPlayback();
-        verify(stopCallback).run();
+        verify(mRunnable).run();
     }
 
     @Test

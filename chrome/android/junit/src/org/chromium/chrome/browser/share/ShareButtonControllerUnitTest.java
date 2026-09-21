@@ -9,7 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -54,7 +53,6 @@ public final class ShareButtonControllerUnitTest {
     private static final int WIDTH_DELTA = 50;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    private Context mContext;
 
     @Mock private UkmRecorder.Natives mUkmRecorderJniMock;
     @Mock private Tab mTab;
@@ -64,7 +62,10 @@ public final class ShareButtonControllerUnitTest {
     @Mock private GURL mMockGurl;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private Tracker mTracker;
+    @Mock private View mView;
+    @Mock private WebContents mWebContents;
 
+    private Context mContext;
     private SettableMonotonicObservableSupplier<ShareDelegate> mShareDelegateSupplier;
     private final Configuration mConfiguration = new Configuration();
     private ShareButtonController mShareButtonController;
@@ -82,7 +83,7 @@ public final class ShareButtonControllerUnitTest {
         doReturn(mContext).when(mTab).getContext();
         mConfiguration.screenWidthDp = AdaptiveToolbarFeatures.DEFAULT_MIN_WIDTH_DP + WIDTH_DELTA;
 
-        doReturn(mock(WebContents.class)).when(mTab).getWebContents();
+        doReturn(mWebContents).when(mTab).getWebContents();
         doReturn("https").when(mMockGurl).getScheme();
         doReturn(mMockGurl).when(mTab).getUrl();
 
@@ -123,8 +124,7 @@ public final class ShareButtonControllerUnitTest {
                         FeatureConstants
                                 .ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_SHARE_FEATURE);
 
-        View view = mock(View.class);
-        mShareButtonController.get(mTab).getButtonSpec().getOnClickListener().onClick(view);
+        mShareButtonController.get(mTab).getButtonSpec().getOnClickListener().onClick(mView);
 
         verify(mTracker, times(1))
                 .notifyEvent(EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_SHARE_OPENED);

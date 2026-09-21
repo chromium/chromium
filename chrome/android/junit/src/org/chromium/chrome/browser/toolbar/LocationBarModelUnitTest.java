@@ -97,6 +97,8 @@ public class LocationBarModelUnitTest {
 
     @Mock private TabbedPaintPreview mTabbedPaintPreview;
     @Mock private WebContents mWebContentsMock;
+    @Mock private Tab mTab;
+    @Mock private WebContents mWebContents;
 
     private final UserDataHost mUserDataHost = new UserDataHost();
     private static final @ConnectionSecurityLevel int[] SECURITY_LEVELS = {
@@ -241,12 +243,11 @@ public class LocationBarModelUnitTest {
 
         // Setting to another new tab with a different url
         GURL exampleGurl3 = new GURL("http://www.example3.com/");
-        Tab regularTabMock2 = Mockito.mock(Tab.class);
-        when(regularTabMock2.getProfile()).thenReturn(mRegularProfileMock);
+        when(mTab.getProfile()).thenReturn(mRegularProfileMock);
         doReturn(exampleGurl3)
                 .when(mLocationBarModelJni)
                 .getUrlOfVisibleNavigationEntry(Mockito.anyLong());
-        mLocationBarModel.setTab(regularTabMock2, mRegularProfileMock);
+        mLocationBarModel.setTab(mTab, mRegularProfileMock);
         verify(mLocationBarDataObserver).onTabChanged(mRegularTabMock);
         verify(mLocationBarDataObserver, times(2)).onUrlChanged(true);
 
@@ -540,14 +541,13 @@ public class LocationBarModelUnitTest {
     public void getSecurityIconResource_connectionWarning_httpsFirstWarning_returnsNoEncryption() {
         mLocationBarModel.initializeWithNative();
 
-        WebContents webContentsMock = Mockito.mock(WebContents.class);
-        when(mRegularTabMock.getWebContents()).thenReturn(webContentsMock);
+        when(mRegularTabMock.getWebContents()).thenReturn(mWebContents);
         doReturn(true).when(mRegularTabMock).isInitialized();
         doReturn(mExampleGurl)
                 .when(mLocationBarModelJni)
                 .getUrlOfVisibleNavigationEntry(Mockito.anyLong());
         mLocationBarModel.setTab(mRegularTabMock, mRegularProfileMock);
-        when(mSecurityStateModelJni.isHttpsOnlyModeUpgradedForWebContents(webContentsMock))
+        when(mSecurityStateModelJni.isHttpsOnlyModeUpgradedForWebContents(mWebContents))
                 .thenReturn(true);
 
         assertResourceIdIs(

@@ -37,7 +37,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ObserverList;
@@ -101,6 +104,13 @@ public class MultiColumnSettingsTest {
     @Rule
     public BaseActivityTestRule<BlankUiTestActivity> mBlankUiActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private SigninManager mSigninManager;
+    @Mock private TemplateUrlService mTemplateUrlService;
+    @Mock private SyncService mSyncService;
+    @Mock private SettingsNavigation mSettingsNavigation;
+    @Mock private PreferenceFragmentCompat mPreferenceFragmentCompat;
 
     @After
     public void tearDown() {
@@ -169,16 +179,12 @@ public class MultiColumnSettingsTest {
                 SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS,
                 mIsIdentityManagerSourceOfAccounts);
 
-        SigninManager mockSigninManager = Mockito.mock(SigninManager.class);
-        TemplateUrlService mockTemplateUrlService = Mockito.mock(TemplateUrlService.class);
-        SyncService mockSyncService = Mockito.mock(SyncService.class);
-
-        IdentityServicesProvider.setSigninManagerForTesting(mockSigninManager);
-        TemplateUrlServiceFactory.setInstanceForTesting(mockTemplateUrlService);
-        SyncServiceFactory.setInstanceForTesting(mockSyncService);
+        IdentityServicesProvider.setSigninManagerForTesting(mSigninManager);
+        TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
 
         ResettersForTesting.register(
-                () -> Mockito.reset(mockSigninManager, mockTemplateUrlService, mockSyncService));
+                () -> Mockito.reset(mSigninManager, mTemplateUrlService, mSyncService));
     }
 
     // Creation of fragments (specifically, ObservableSupplierImpl) requires
@@ -862,8 +868,7 @@ public class MultiColumnSettingsTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    SettingsNavigation mockNavigation = Mockito.mock(SettingsNavigation.class);
-                    SettingsNavigationFactory.setInstanceForTesting(mockNavigation);
+                    SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
 
                     MultiColumnSettings settings = new TestMultiColumnSettings();
                     addSettingsInTab(activity, android.R.id.content, settings);
@@ -873,11 +878,12 @@ public class MultiColumnSettingsTest {
                     Bundle extras = preference.getExtras();
                     extras.putString("test_key", "test_value");
 
-                    PreferenceFragmentCompat caller = Mockito.mock(PreferenceFragmentCompat.class);
-                    boolean handled = settings.onPreferenceStartFragment(caller, preference);
+                    boolean handled =
+                            settings.onPreferenceStartFragment(
+                                    mPreferenceFragmentCompat, preference);
 
                     assertTrue("Preference start fragment should be handled", handled);
-                    Mockito.verify(mockNavigation)
+                    Mockito.verify(mSettingsNavigation)
                             .startSettings(settings.getContext(), TestFragment.class, extras);
                 });
     }
@@ -893,8 +899,7 @@ public class MultiColumnSettingsTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    SettingsNavigation mockNavigation = Mockito.mock(SettingsNavigation.class);
-                    SettingsNavigationFactory.setInstanceForTesting(mockNavigation);
+                    SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
 
                     MultiColumnSettings settings = new TestMultiColumnSettings();
                     addSettingsInTab(activity, android.R.id.content, settings);
@@ -902,10 +907,9 @@ public class MultiColumnSettingsTest {
                     Preference preference = new Preference(settings.requireContext());
                     preference.setFragment(TestFragment.class.getName());
 
-                    PreferenceFragmentCompat caller = Mockito.mock(PreferenceFragmentCompat.class);
-                    settings.onPreferenceStartFragment(caller, preference);
+                    settings.onPreferenceStartFragment(mPreferenceFragmentCompat, preference);
 
-                    Mockito.verifyNoInteractions(mockNavigation);
+                    Mockito.verifyNoInteractions(mSettingsNavigation);
                 });
     }
 
@@ -919,8 +923,7 @@ public class MultiColumnSettingsTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    SettingsNavigation mockNavigation = Mockito.mock(SettingsNavigation.class);
-                    SettingsNavigationFactory.setInstanceForTesting(mockNavigation);
+                    SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
 
                     MultiColumnSettings settings = new TestMultiColumnSettings();
                     addSettingsInTab(activity, android.R.id.content, settings);
@@ -928,11 +931,12 @@ public class MultiColumnSettingsTest {
                     Preference preference = new Preference(settings.requireContext());
                     preference.setFragment(null);
 
-                    PreferenceFragmentCompat caller = Mockito.mock(PreferenceFragmentCompat.class);
-                    boolean handled = settings.onPreferenceStartFragment(caller, preference);
+                    boolean handled =
+                            settings.onPreferenceStartFragment(
+                                    mPreferenceFragmentCompat, preference);
 
                     assertFalse("Null fragment should not be handled by URL navigation", handled);
-                    Mockito.verifyNoInteractions(mockNavigation);
+                    Mockito.verifyNoInteractions(mSettingsNavigation);
                 });
     }
 
@@ -946,8 +950,7 @@ public class MultiColumnSettingsTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    SettingsNavigation mockNavigation = Mockito.mock(SettingsNavigation.class);
-                    SettingsNavigationFactory.setInstanceForTesting(mockNavigation);
+                    SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
 
                     MultiColumnSettings settings = new TestMultiColumnSettings();
                     addSettingsInTab(activity, android.R.id.content, settings);
@@ -955,10 +958,9 @@ public class MultiColumnSettingsTest {
                     Preference preference = new Preference(settings.requireContext());
                     preference.setFragment("invalid.fragment.class.Name");
 
-                    PreferenceFragmentCompat caller = Mockito.mock(PreferenceFragmentCompat.class);
-                    settings.onPreferenceStartFragment(caller, preference);
+                    settings.onPreferenceStartFragment(mPreferenceFragmentCompat, preference);
 
-                    Mockito.verifyNoInteractions(mockNavigation);
+                    Mockito.verifyNoInteractions(mSettingsNavigation);
                 });
     }
 

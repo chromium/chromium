@@ -8,7 +8,6 @@ import static android.app.Activity.RESULT_OK;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
 
@@ -50,11 +49,11 @@ public class PasswordCsvDownloadDialogTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private PasswordCsvDownloadDialogController mController;
-
-    private FragmentActivity mActivity;
-
     @Mock private SettingsCustomTabLauncher mSettingsCustomTabLauncher;
+    @Mock private Runnable mRunnable;
+
+    private PasswordCsvDownloadDialogController mController;
+    private FragmentActivity mActivity;
 
     @Before
     public void setUp() {
@@ -144,12 +143,11 @@ public class PasswordCsvDownloadDialogTest {
 
     @Test
     public void testPositiveButtonClick() {
-        Runnable positiveButtonCalback = mock(Runnable.class);
         mController =
                 new PasswordCsvDownloadDialogController(
                         mActivity,
                         false,
-                        positiveButtonCalback,
+                        mRunnable,
                         () -> {},
                         mSettingsCustomTabLauncher,
                         (Uri uri) -> {});
@@ -158,18 +156,17 @@ public class PasswordCsvDownloadDialogTest {
 
         Dialog dialog = ShadowDialog.getLatestDialog();
         dialog.findViewById(R.id.positive_button).performClick();
-        verify(positiveButtonCalback).run();
+        verify(mRunnable).run();
     }
 
     @Test
     public void testNegativeButtonClick() {
-        Runnable negativeButtonCalback = mock(Runnable.class);
         mController =
                 new PasswordCsvDownloadDialogController(
                         mActivity,
                         false,
                         () -> {},
-                        negativeButtonCalback,
+                        mRunnable,
                         mSettingsCustomTabLauncher,
                         (Uri uri) -> {});
         mController.showDialog();
@@ -177,7 +174,7 @@ public class PasswordCsvDownloadDialogTest {
 
         Dialog dialog = ShadowDialog.getLatestDialog();
         dialog.findViewById(R.id.negative_button).performClick();
-        verify(negativeButtonCalback).run();
+        verify(mRunnable).run();
     }
 
     @Test

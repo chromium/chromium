@@ -18,7 +18,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -50,11 +49,12 @@ public class ChromeSurveyControllerTest {
     @Mock Activity mActivity;
     @Mock Profile mProfile;
     @Mock MessageDispatcher mMessageDispatcher;
+    @Mock private Resources mResources;
 
     @Before
     public void before() {
         ChromeSurveyController.setEnableForTesting();
-        doReturn(Mockito.mock(Resources.class)).when(mActivity).getResources();
+        doReturn(mResources).when(mActivity).getResources();
         ProfileManager.setLastUsedProfileForTesting(mProfile);
         UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefServiceMock);

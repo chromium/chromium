@@ -53,22 +53,20 @@ public class PriceTrackingNotificationBridgeUnitTest {
     private static final String ACTION_TEXT_0 = "Visit site";
     private static final String ACTION_TEXT_1 = "Untrack price";
 
-    private PriceTrackingNotificationBridge mPriceTrackingNotificationBridge;
-
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock PriceDropNotifier mNotifier;
     @Mock PriceDropNotificationManager mPriceDropNotificationManager;
-
+    @Mock private CurrencyFormatter.Natives mCurrencyFormatterNatives;
     @Captor ArgumentCaptor<PriceDropNotifier.NotificationData> mNotificationDataCaptor;
+
+    private PriceTrackingNotificationBridge mPriceTrackingNotificationBridge;
 
     @Before
     public void setUp() {
-        CurrencyFormatter.Natives currencyFormatterJniMock =
-                Mockito.mock(CurrencyFormatter.Natives.class);
-        CurrencyFormatterJni.setInstanceForTesting(currencyFormatterJniMock);
+        CurrencyFormatterJni.setInstanceForTesting(mCurrencyFormatterNatives);
         Mockito.doReturn("$1.00")
-                .when(currencyFormatterJniMock)
+                .when(mCurrencyFormatterNatives)
                 .format(Mockito.anyLong(), Mockito.anyString());
         mPriceTrackingNotificationBridge =
                 new PriceTrackingNotificationBridge(0, mNotifier, mPriceDropNotificationManager);

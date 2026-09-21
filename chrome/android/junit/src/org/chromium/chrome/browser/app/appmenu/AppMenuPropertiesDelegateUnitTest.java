@@ -14,7 +14,6 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -306,7 +305,7 @@ public class AppMenuPropertiesDelegateUnitTest {
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(true);
         doReturn(true).when(mBookmarkModel).isEditBookmarksEnabled();
 
-        doReturn(mock(BookmarkId.class)).when(mBookmarkModel).getUserBookmarkIdForTab(any());
+        doReturn(mBookmarkId).when(mBookmarkModel).getUserBookmarkIdForTab(any());
         PowerBookmarkMeta meta =
                 PowerBookmarkMeta.newBuilder()
                         .setShoppingSpecifics(
@@ -363,10 +362,9 @@ public class AppMenuPropertiesDelegateUnitTest {
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(true);
         doReturn(true).when(mBookmarkModel).isEditBookmarksEnabled();
 
-        BookmarkId bookmarkId = mock(BookmarkId.class);
         List<BookmarkId> allBookmarks = new ArrayList<>();
-        allBookmarks.add(bookmarkId);
-        doReturn(bookmarkId).when(mBookmarkModel).getUserBookmarkIdForTab(any());
+        allBookmarks.add(mBookmarkId);
+        doReturn(mBookmarkId).when(mBookmarkModel).getUserBookmarkIdForTab(any());
         doReturn(allBookmarks)
                 .when(mBookmarkModel)
                 .getBookmarksOfType(eq(PowerBookmarkType.SHOPPING));
@@ -404,8 +402,7 @@ public class AppMenuPropertiesDelegateUnitTest {
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(false);
         doReturn(true).when(mBookmarkModel).isEditBookmarksEnabled();
 
-        BookmarkId bookmarkId = mock(BookmarkId.class);
-        doReturn(bookmarkId).when(mBookmarkModel).getUserBookmarkIdForTab(any());
+        doReturn(mBookmarkId).when(mBookmarkModel).getUserBookmarkIdForTab(any());
         doReturn(new ArrayList<>())
                 .when(mBookmarkModel)
                 .getBookmarksOfType(eq(PowerBookmarkType.SHOPPING));
@@ -458,6 +455,9 @@ public class AppMenuPropertiesDelegateUnitTest {
     }
 
     @Mock private BottomSheetController mBottomSheetControllerMock;
+    @Mock private BookmarkId mBookmarkId;
+    @Mock private WebappRegistry mWebappRegistry;
+    @Mock private WindowAndroid mWindowAndroid;
 
     @Test
     public void testPageZoomMenuItem_hiddenWhenBottomSheetOpen() {
@@ -467,7 +467,7 @@ public class AppMenuPropertiesDelegateUnitTest {
         PageZoomUtils.setShouldShowMenuItemForTesting(TriState.TRUE);
 
         // Stub dependent tab setup
-        when(mTab.getWindowAndroid()).thenReturn(mock(WindowAndroid.class));
+        when(mTab.getWindowAndroid()).thenReturn(mWindowAndroid);
         doReturn(true)
                 .when(mAppMenuPropertiesDelegate)
                 .shouldShowWebContentsDependentMenuItem(any());
@@ -484,7 +484,7 @@ public class AppMenuPropertiesDelegateUnitTest {
         PageZoomUtils.setShouldShowMenuItemForTesting(TriState.TRUE);
 
         // Stub dependent tab setup
-        when(mTab.getWindowAndroid()).thenReturn(mock(WindowAndroid.class));
+        when(mTab.getWindowAndroid()).thenReturn(mWindowAndroid);
         doReturn(true)
                 .when(mAppMenuPropertiesDelegate)
                 .shouldShowWebContentsDependentMenuItem(any());
@@ -512,9 +512,10 @@ public class AppMenuPropertiesDelegateUnitTest {
         doReturn("Example App").when(mTab).getTitle();
 
         // Mock WebappRegistry to return a package, so it looks like a WebAPK is installed
-        WebappRegistry mockRegistry = mock(WebappRegistry.class);
-        WebappRegistry.setInstanceForTests(mockRegistry);
-        doReturn("org.chromium.webapk.example").when(mockRegistry).findWebApkWithManifestId(any());
+        WebappRegistry.setInstanceForTests(mWebappRegistry);
+        doReturn("org.chromium.webapk.example")
+                .when(mWebappRegistry)
+                .findWebApkWithManifestId(any());
 
         var item =
                 mAppMenuPropertiesDelegate.buildAddToHomescreenListItem(mTab, /* showIcon= */ true);

@@ -12,7 +12,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -27,6 +27,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 public class BasicBookmarkQueryHandlerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private BookmarkUiPrefs mBookmarkUiPrefs;
 
     private FakeBookmarkModel mBookmarkModel;
     private BasicBookmarkQueryHandler mHandler;
@@ -37,7 +38,7 @@ public class BasicBookmarkQueryHandlerUnitTest {
         mHandler =
                 new BasicBookmarkQueryHandler(
                         mBookmarkModel,
-                        Mockito.mock(BookmarkUiPrefs.class),
+                        mBookmarkUiPrefs,
                         /* rootFolderForceVisibleMask= */ BookmarkNodeMaskBit.NONE);
     }
 

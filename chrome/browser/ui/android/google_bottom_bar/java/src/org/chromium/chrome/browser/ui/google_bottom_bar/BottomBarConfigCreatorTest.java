@@ -9,7 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
@@ -79,6 +78,8 @@ public class BottomBarConfigCreatorTest {
     @Mock private CustomButtonParams mCustomButtonParams;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private Profile mProfile;
+    @Mock private Drawable mDrawable;
+    @Mock private PendingIntent mPendingIntent;
 
     private BottomBarConfigCreator mConfigCreator;
     private Context mContext;
@@ -235,9 +236,8 @@ public class BottomBarConfigCreatorTest {
 
     @Test
     public void createButtonConfigList_withCustomButtonParamsList() {
-        Drawable drawable = mock(Drawable.class);
         when(mCustomButtonParams.getId()).thenReturn(100); // SAVE
-        when(mCustomButtonParams.getIcon(mContext)).thenReturn(drawable);
+        when(mCustomButtonParams.getIcon(mContext)).thenReturn(mDrawable);
         List<Integer> buttonIdList =
                 List.of(
                         PIH_BASIC, PIH_BASIC, SHARE, SAVE, ADD_NOTES,
@@ -265,11 +265,9 @@ public class BottomBarConfigCreatorTest {
 
     @Test
     public void withCorrectCustomParams_hasCorrectButtonConfig() {
-        Drawable drawable = mock(Drawable.class);
         when(mCustomButtonParams.getId()).thenReturn(100); // SAVE
-        when(mCustomButtonParams.getIcon(mContext)).thenReturn(drawable);
-        var pendingIntent = mock(PendingIntent.class);
-        when(mCustomButtonParams.getPendingIntent()).thenReturn(pendingIntent);
+        when(mCustomButtonParams.getIcon(mContext)).thenReturn(mDrawable);
+        when(mCustomButtonParams.getPendingIntent()).thenReturn(mPendingIntent);
         // PIH_BASIC, SHARE, SAVE, REFRESH
         GoogleBottomBarIntentParams params =
                 GoogleBottomBarIntentParams.newBuilder()
@@ -279,16 +277,14 @@ public class BottomBarConfigCreatorTest {
         BottomBarConfig buttonConfig = mConfigCreator.create(params, List.of(mCustomButtonParams));
 
         // the button has the expected custom button params set
-        assertEquals(pendingIntent, buttonConfig.getButtonList().get(2).getPendingIntent());
+        assertEquals(mPendingIntent, buttonConfig.getButtonList().get(2).getPendingIntent());
     }
 
     @Test
     public void hasPageInsightsCustomParams_usesChromePageInsightsIconInButtonConfig() {
-        Drawable drawable = mock(Drawable.class);
         when(mCustomButtonParams.getId()).thenReturn(103); // PAGE INSIGHTS
-        when(mCustomButtonParams.getIcon(mContext)).thenReturn(drawable);
-        var pendingIntent = mock(PendingIntent.class);
-        when(mCustomButtonParams.getPendingIntent()).thenReturn(pendingIntent);
+        when(mCustomButtonParams.getIcon(mContext)).thenReturn(mDrawable);
+        when(mCustomButtonParams.getPendingIntent()).thenReturn(mPendingIntent);
         // PIH_BASIC, SHARE, SAVE
         GoogleBottomBarIntentParams params =
                 GoogleBottomBarIntentParams.newBuilder()
@@ -310,11 +306,9 @@ public class BottomBarConfigCreatorTest {
 
     @Test
     public void hasSearchCustomParams_usesChromeSearchIconInButtonConfig() {
-        Drawable drawable = mock(Drawable.class);
         when(mCustomButtonParams.getId()).thenReturn(106); // SEARCH
-        when(mCustomButtonParams.getIcon(mContext)).thenReturn(drawable);
-        var pendingIntent = mock(PendingIntent.class);
-        when(mCustomButtonParams.getPendingIntent()).thenReturn(pendingIntent);
+        when(mCustomButtonParams.getIcon(mContext)).thenReturn(mDrawable);
+        when(mCustomButtonParams.getPendingIntent()).thenReturn(mPendingIntent);
         // SEARCH, SHARE, SAVE
         GoogleBottomBarIntentParams params =
                 GoogleBottomBarIntentParams.newBuilder()
@@ -336,11 +330,9 @@ public class BottomBarConfigCreatorTest {
 
     @Test
     public void hasHomeCustomParams_usesChromeHomeIconInButtonConfig() {
-        Drawable drawable = mock(Drawable.class);
         when(mCustomButtonParams.getId()).thenReturn(107); // HOME
-        when(mCustomButtonParams.getIcon(mContext)).thenReturn(drawable);
-        var pendingIntent = mock(PendingIntent.class);
-        when(mCustomButtonParams.getPendingIntent()).thenReturn(pendingIntent);
+        when(mCustomButtonParams.getIcon(mContext)).thenReturn(mDrawable);
+        when(mCustomButtonParams.getPendingIntent()).thenReturn(mPendingIntent);
         // HOME, SHARE, SAVE
         GoogleBottomBarIntentParams params =
                 GoogleBottomBarIntentParams.newBuilder()
@@ -610,11 +602,9 @@ public class BottomBarConfigCreatorTest {
     @Test
     @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
     public void create_singleDecker_withEmptyList_hasCorrectBottomBarConfig() {
-        Drawable drawable = mock(Drawable.class);
         when(mCustomButtonParams.getId()).thenReturn(105); // CUSTOM
-        when(mCustomButtonParams.getIcon(mContext)).thenReturn(drawable);
-        var pendingIntent = mock(PendingIntent.class);
-        when(mCustomButtonParams.getPendingIntent()).thenReturn(pendingIntent);
+        when(mCustomButtonParams.getIcon(mContext)).thenReturn(mDrawable);
+        when(mCustomButtonParams.getPendingIntent()).thenReturn(mPendingIntent);
         GoogleBottomBarIntentParams params =
                 GoogleBottomBarIntentParams.newBuilder()
                         .addAllEncodedButton(List.of(0, SAVE, SHARE, CUSTOM))

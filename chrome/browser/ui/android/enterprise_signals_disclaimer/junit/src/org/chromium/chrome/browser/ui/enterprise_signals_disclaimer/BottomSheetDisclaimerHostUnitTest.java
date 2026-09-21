@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.ui.enterprise_signals_disclaimer;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -42,16 +41,6 @@ import java.util.function.Consumer;
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(BlockJUnit4RunnerDelegate.class)
 public class BottomSheetDisclaimerHostUnitTest {
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Mock private BottomSheetController mBottomSheetController;
-    @Mock private EnterpriseSignalsDisclaimerBottomSheetView mSheetContent;
-    @Mock private Consumer<@DismissalCause Integer> mSheetDismissedCallback;
-
-    @Captor private ArgumentCaptor<Runnable> mDestroyedCallbackCaptor;
-
-    private BottomSheetDisclaimerHost mHost;
-
     public static class NonUserActionReasonsParams implements ParameterProvider {
         @Override
         public List<ParameterSet> getParameters() {
@@ -64,6 +53,16 @@ public class BottomSheetDisclaimerHostUnitTest {
                     new ParameterSet().value(StateChangeReason.OMNIBOX_FOCUS).name("OmniboxFocus"));
         }
     }
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private BottomSheetController mBottomSheetController;
+    @Mock private EnterpriseSignalsDisclaimerBottomSheetView mSheetContent;
+    @Mock private Consumer<@DismissalCause Integer> mSheetDismissedCallback;
+    @Mock private BottomSheetContent mBottomSheetContent;
+    @Captor private ArgumentCaptor<Runnable> mDestroyedCallbackCaptor;
+
+    private BottomSheetDisclaimerHost mHost;
 
     @Before
     public void setUp() {
@@ -157,8 +156,7 @@ public class BottomSheetDisclaimerHostUnitTest {
 
     @Test
     public void testOtherSheetOpens() {
-        BottomSheetContent otherContent = mock(BottomSheetContent.class);
-        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(otherContent);
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mBottomSheetContent);
 
         mHost.onSheetOpened(StateChangeReason.NONE);
         mHost.onSheetClosed(StateChangeReason.SWIPE);

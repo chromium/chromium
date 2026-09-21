@@ -9,7 +9,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -68,6 +67,8 @@ public class SettingsPageUnitTest {
     @Mock private BackPressHandler mBackPressHandler;
     @Mock private BackPressHandlerRegistry mBackPressHandlerRegistry;
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
+    @Mock private BackPressHandlerRegistry mRegistry;
+    @Mock private BackPressHandler mHandler;
 
     @Captor private ArgumentCaptor<EdgeToEdgePadAdjuster> mPadAdjusterCaptor;
 
@@ -165,18 +166,16 @@ public class SettingsPageUnitTest {
 
     @Test
     public void testSetBackPressHandler() {
-        BackPressHandlerRegistry registry = mock(BackPressHandlerRegistry.class);
-        BackPressHandler handler = mock(BackPressHandler.class);
         SettingsPage page =
                 new SettingsPage(
                         mActivity,
                         mProfile,
                         mNativePageHost,
                         mFragmentDelegate,
-                        handler,
-                        registry,
+                        mHandler,
+                        mRegistry,
                         UrlConstants.SETTINGS_URL);
         mActivity.setContentView(page.getView());
-        verify(registry).addHandler(eq(handler), eq(BackPressHandler.Type.NATIVE_PAGE));
+        verify(mRegistry).addHandler(eq(mHandler), eq(BackPressHandler.Type.NATIVE_PAGE));
     }
 }

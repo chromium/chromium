@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -64,6 +63,7 @@ public class ArchivedTabModelSelectorImplTest {
     @Mock private Profile mProfile;
     @Mock private Profile mIncognitoProfile;
     @Mock private Context mContext;
+    @Mock private WindowAndroid mWindowAndroid;
 
     private ArchivedTabModelSelectorImpl mTabModelSelector;
     private MockTabCreatorManager mTabCreatorManager;
@@ -199,11 +199,10 @@ public class ArchivedTabModelSelectorImplTest {
         mTabModelSelector
                 .getModel(false)
                 .addTab(tab, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        WindowAndroid window = mock(WindowAndroid.class);
         WeakReference<Context> weakContext = new WeakReference<>(mContext);
-        when(window.getContext()).thenReturn(weakContext);
-        doReturn(ObservableSuppliers.alwaysFalse()).when(window).getOcclusionSupplier();
-        tab.updateAttachment(window, mTabDelegateFactory);
+        when(mWindowAndroid.getContext()).thenReturn(weakContext);
+        doReturn(ObservableSuppliers.alwaysFalse()).when(mWindowAndroid).getOcclusionSupplier();
+        tab.updateAttachment(mWindowAndroid, mTabDelegateFactory);
 
         Assert.assertEquals(
                 "moving a tab between windows shouldn't remove it from the model",

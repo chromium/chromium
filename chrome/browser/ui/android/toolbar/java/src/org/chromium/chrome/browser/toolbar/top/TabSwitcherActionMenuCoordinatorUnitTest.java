@@ -27,7 +27,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -80,6 +79,8 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
     @Mock private Tracker mTracker;
     @Mock private Tab mTab;
     @Mock private TabWindowManager mTabWindowManager;
+    @Mock private TabModelSelector mAnotherSelector;
+    @Mock private TabModel mTabModel;
 
     private Context mContext;
     private final SettableMonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier =
@@ -282,15 +283,13 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
         when(mNormalTabModel.getTabGroupCount()).thenReturn(0);
         when(mNormalTabModel.isTabModelRestored()).thenReturn(true);
 
-        TabModelSelector anotherSelector = Mockito.mock(TabModelSelector.class);
-        TabModel anotherTabModel = Mockito.mock(TabModel.class);
-        when(anotherTabModel.isIncognito()).thenReturn(false);
-        when(anotherSelector.getCurrentModel()).thenReturn(anotherTabModel);
-        when(anotherSelector.getModel(false)).thenReturn(anotherTabModel);
-        when(anotherTabModel.getTabGroupCount()).thenReturn(1);
+        when(mTabModel.isIncognito()).thenReturn(false);
+        when(mAnotherSelector.getCurrentModel()).thenReturn(mTabModel);
+        when(mAnotherSelector.getModel(false)).thenReturn(mTabModel);
+        when(mTabModel.getTabGroupCount()).thenReturn(1);
 
         when(mTabWindowManager.getAllTabModelSelectors())
-                .thenReturn(Arrays.asList(mTabModelSelector, anotherSelector));
+                .thenReturn(Arrays.asList(mTabModelSelector, mAnotherSelector));
 
         ModelList items = mCoordinator.buildMenuItems();
 
@@ -312,15 +311,13 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
         when(mNormalTabModel.getTabGroupCount()).thenReturn(0);
         when(mNormalTabModel.isTabModelRestored()).thenReturn(true);
 
-        TabModelSelector anotherSelector = Mockito.mock(TabModelSelector.class);
-        TabModel anotherTabModel = Mockito.mock(TabModel.class);
-        when(anotherTabModel.isIncognito()).thenReturn(false);
-        when(anotherSelector.getCurrentModel()).thenReturn(anotherTabModel);
-        when(anotherSelector.getModel(false)).thenReturn(anotherTabModel);
-        when(anotherTabModel.getTabGroupCount()).thenReturn(1);
+        when(mTabModel.isIncognito()).thenReturn(false);
+        when(mAnotherSelector.getCurrentModel()).thenReturn(mTabModel);
+        when(mAnotherSelector.getModel(false)).thenReturn(mTabModel);
+        when(mTabModel.getTabGroupCount()).thenReturn(1);
 
         when(mTabWindowManager.getAllTabModelSelectors())
-                .thenReturn(Arrays.asList(mTabModelSelector, anotherSelector));
+                .thenReturn(Arrays.asList(mTabModelSelector, mAnotherSelector));
 
         ModelList items = mCoordinator.buildMenuItems();
 

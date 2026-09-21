@@ -95,11 +95,13 @@ import java.util.concurrent.TimeoutException;
 @EnableFeatures({ChromeFeatureList.SUBMENUS_IN_APP_MENU})
 @Batch(Batch.PER_CLASS)
 public class AppMenuTest {
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
     public RenderTestRule mRenderTestRule =
@@ -107,7 +109,19 @@ public class AppMenuTest {
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_MOBILE_APP_MENU)
                     .build();
 
-    private static Activity sActivity;
+    @Mock private Canvas mCanvas;
+    @Mock private WindowAndroid mWindowAndroid;
+    @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
+    @Mock private KeyboardVisibilityDelegate mKeyboardDelegate;
+    @Mock private AppMenuHandlerImpl mMockAppMenuHandler;
+    @Mock private AppMenu mMockAppMenu;
+    @Mock private ToastManager mToastManager;
+
+    @Captor
+    private ArgumentCaptor<KeyboardVisibilityDelegate.KeyboardVisibilityListener>
+            mKeyboardListenerCaptor;
+
+    @Captor private ArgumentCaptor<Toast> mToastCaptor;
 
     private AppMenuCoordinatorImpl mAppMenuCoordinator;
     private AppMenuHandlerImpl mAppMenuHandler;
@@ -116,17 +130,6 @@ public class AppMenuTest {
     private TestAppMenuObserver mMenuObserver;
     private TestActivityLifecycleDispatcher mLifecycleDispatcher;
     private MenuButtonDelegate mTestMenuButtonDelegate;
-
-    @Mock private Canvas mCanvas;
-    @Mock private WindowAndroid mWindowAndroid;
-    @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
-    @Mock private KeyboardVisibilityDelegate mKeyboardDelegate;
-    @Mock private AppMenuHandlerImpl mMockAppMenuHandler;
-    @Mock private AppMenu mMockAppMenu;
-
-    @Captor
-    private ArgumentCaptor<KeyboardVisibilityDelegate.KeyboardVisibilityListener>
-            mKeyboardListenerCaptor;
 
     @BeforeClass
     public static void setupSuite() {
@@ -452,8 +455,7 @@ public class AppMenuTest {
         mPropertiesDelegate.enableAppIconRow = true;
         showMenuAndAssert(mAppMenuHandler);
 
-        ToastManager toastManager = Mockito.mock(ToastManager.class);
-        ToastManager.setInstanceForTesting(toastManager);
+        ToastManager.setInstanceForTesting(mToastManager);
 
         View testView = new View(sActivity);
         ThreadUtils.runOnUiThreadBlocking(
@@ -462,9 +464,8 @@ public class AppMenuTest {
                             mAppMenuCoordinator, R.id.icon_one, testView);
                 });
 
-        ArgumentCaptor<Toast> toastCaptor = ArgumentCaptor.forClass(Toast.class);
-        Mockito.verify(toastManager, Mockito.times(1)).requestShow(toastCaptor.capture());
-        Assert.assertEquals("Icon One", toastCaptor.getValue().getText());
+        Mockito.verify(mToastManager, Mockito.times(1)).requestShow(mToastCaptor.capture());
+        Assert.assertEquals("Icon One", mToastCaptor.getValue().getText());
     }
 
     @Test
@@ -473,8 +474,7 @@ public class AppMenuTest {
         mPropertiesDelegate.enableAppIconRow = true;
         showMenuAndAssert(mAppMenuHandler);
 
-        ToastManager toastManager = Mockito.mock(ToastManager.class);
-        ToastManager.setInstanceForTesting(toastManager);
+        ToastManager.setInstanceForTesting(mToastManager);
 
         View testView = new View(sActivity);
         ThreadUtils.runOnUiThreadBlocking(
@@ -483,9 +483,8 @@ public class AppMenuTest {
                             mAppMenuCoordinator, R.id.icon_two, testView);
                 });
 
-        ArgumentCaptor<Toast> toastCaptor = ArgumentCaptor.forClass(Toast.class);
-        Mockito.verify(toastManager, Mockito.times(1)).requestShow(toastCaptor.capture());
-        Assert.assertEquals("2", toastCaptor.getValue().getText());
+        Mockito.verify(mToastManager, Mockito.times(1)).requestShow(mToastCaptor.capture());
+        Assert.assertEquals("2", mToastCaptor.getValue().getText());
     }
 
     @Test
@@ -494,8 +493,7 @@ public class AppMenuTest {
         mPropertiesDelegate.enableAppIconRow = true;
         showMenuAndAssert(mAppMenuHandler);
 
-        ToastManager toastManager = Mockito.mock(ToastManager.class);
-        ToastManager.setInstanceForTesting(toastManager);
+        ToastManager.setInstanceForTesting(mToastManager);
 
         View testView = new View(sActivity);
         ThreadUtils.runOnUiThreadBlocking(
@@ -504,7 +502,7 @@ public class AppMenuTest {
                             mAppMenuCoordinator, R.id.icon_three, testView);
                 });
 
-        Mockito.verify(toastManager, Mockito.times(0)).requestShow(Mockito.any(Toast.class));
+        Mockito.verify(mToastManager, Mockito.times(0)).requestShow(Mockito.any(Toast.class));
     }
 
     @Test

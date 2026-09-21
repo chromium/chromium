@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.ntp;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -40,6 +39,8 @@ public class NewTabPageLayoutViewBinderUnitTest {
 
     @Mock private NewTabPageLayout mView;
     @Mock private NewTabPageLayout.Delegate mDelegate;
+    @Mock private View mSearchBoxView;
+    @Mock private View.OnLayoutChangeListener mViewOnLayoutChangeListener;
 
     private PropertyModel mModel;
 
@@ -68,9 +69,8 @@ public class NewTabPageLayoutViewBinderUnitTest {
 
     @Test
     public void testSearchBoxView() {
-        View searchBoxView = mock(View.class);
-        mModel.set(SEARCH_BOX_VIEW, searchBoxView);
-        verify(mView).setSearchBoxView(eq(searchBoxView));
+        mModel.set(SEARCH_BOX_VIEW, mSearchBoxView);
+        verify(mView).setSearchBoxView(eq(mSearchBoxView));
     }
 
     @Test
@@ -82,14 +82,14 @@ public class NewTabPageLayoutViewBinderUnitTest {
 
     @Test
     public void testOnLayoutChangeListener() {
-        View.OnLayoutChangeListener listener = mock(View.OnLayoutChangeListener.class);
-        mModel.set(ON_LAYOUT_CHANGE_LISTENER, listener);
-        verify(mView).addOnLayoutChangeListener(eq(listener));
+        mModel.set(ON_LAYOUT_CHANGE_LISTENER, mViewOnLayoutChangeListener);
+        verify(mView).addOnLayoutChangeListener(eq(mViewOnLayoutChangeListener));
 
-        when(mView.getTag(R.id.ntp_view_layout_change_listener_tag)).thenReturn(listener);
+        when(mView.getTag(R.id.ntp_view_layout_change_listener_tag))
+                .thenReturn(mViewOnLayoutChangeListener);
         clearInvocations(mView);
         mModel.set(ON_LAYOUT_CHANGE_LISTENER, null);
-        verify(mView).removeOnLayoutChangeListener(eq(listener));
+        verify(mView).removeOnLayoutChangeListener(eq(mViewOnLayoutChangeListener));
         verify(mView, never()).addOnLayoutChangeListener(any(View.OnLayoutChangeListener.class));
     }
 }

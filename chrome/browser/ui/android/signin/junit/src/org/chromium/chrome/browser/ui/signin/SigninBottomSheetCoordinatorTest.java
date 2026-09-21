@@ -19,6 +19,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -69,6 +70,7 @@ public class SigninBottomSheetCoordinatorTest {
     @Mock private IdentityManager mIdentityManagerMock;
     @Mock private AccountPreviewDataService mAccountPreviewDataServiceMock;
     @Mock private ModalDialogManager mModalDialogManagerMock;
+    @Captor private ArgumentCaptor<PropertyModel> mModelCaptor;
 
     private Activity mActivity;
     private SigninBottomSheetCoordinator mCoordinator;
@@ -193,15 +195,14 @@ public class SigninBottomSheetCoordinatorTest {
                 SigninAccessPoint.WEB_SIGNIN,
                 TestAccounts.ACCOUNT1.getId());
 
-        ArgumentCaptor<PropertyModel> modelCaptor = ArgumentCaptor.forClass(PropertyModel.class);
         verify(mModalDialogManagerMock)
-                .showDialog(modelCaptor.capture(), eq(ModalDialogManager.ModalDialogType.APP));
+                .showDialog(mModelCaptor.capture(), eq(ModalDialogManager.ModalDialogType.APP));
 
         mCoordinator.destroy();
 
         verify(mModalDialogManagerMock)
                 .dismissDialog(
-                        eq(modelCaptor.getValue()), eq(DialogDismissalCause.ACTION_ON_CONTENT));
+                        eq(mModelCaptor.getValue()), eq(DialogDismissalCause.ACTION_ON_CONTENT));
     }
 
     @Test
@@ -222,11 +223,10 @@ public class SigninBottomSheetCoordinatorTest {
                 SigninAccessPoint.WEB_SIGNIN,
                 TestAccounts.ACCOUNT1.getId());
 
-        ArgumentCaptor<PropertyModel> modelCaptor = ArgumentCaptor.forClass(PropertyModel.class);
         verify(mModalDialogManagerMock)
-                .showDialog(modelCaptor.capture(), eq(ModalDialogManager.ModalDialogType.APP));
+                .showDialog(mModelCaptor.capture(), eq(ModalDialogManager.ModalDialogType.APP));
 
-        PropertyModel model = modelCaptor.getValue();
+        PropertyModel model = mModelCaptor.getValue();
         ModalDialogProperties.Controller controller = model.get(ModalDialogProperties.CONTROLLER);
         controller.onDismiss(model, DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
 
@@ -254,11 +254,10 @@ public class SigninBottomSheetCoordinatorTest {
                 SigninAccessPoint.WEB_SIGNIN,
                 TestAccounts.ACCOUNT1.getId());
 
-        ArgumentCaptor<PropertyModel> modelCaptor = ArgumentCaptor.forClass(PropertyModel.class);
         verify(mModalDialogManagerMock)
-                .showDialog(modelCaptor.capture(), eq(ModalDialogManager.ModalDialogType.APP));
+                .showDialog(mModelCaptor.capture(), eq(ModalDialogManager.ModalDialogType.APP));
 
-        PropertyModel model = modelCaptor.getValue();
+        PropertyModel model = mModelCaptor.getValue();
         ModalDialogProperties.Controller controller = model.get(ModalDialogProperties.CONTROLLER);
         controller.onDismiss(model, DialogDismissalCause.ACTION_ON_CONTENT);
 

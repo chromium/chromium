@@ -45,6 +45,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -97,6 +98,9 @@ public class LaunchIntentDispatcherTest {
     @Mock private ChromeBrowserInitializer mChromeBrowserInitializer;
     @Mock private Profile mProfile;
     @Mock private GlicEnabling.Natives mGlicEnablingJniMock;
+    @Mock private IBinder mIBinder;
+    @Mock private ComponentCaller mComponentCaller;
+    @Captor private ArgumentCaptor<Intent> mIntentCaptor;
 
     private Activity mActivity;
 
@@ -176,8 +180,7 @@ public class LaunchIntentDispatcherTest {
         Uri fileUri = Uri.parse("content://com.example/file.txt");
         FileHandlingData fileHandlingData = new FileHandlingData(Arrays.asList(fileUri));
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
-        IBinder sessionBinder = mock(IBinder.class);
-        intent.putExtra(CustomTabsIntent.EXTRA_SESSION, sessionBinder);
+        intent.putExtra(CustomTabsIntent.EXTRA_SESSION, mIBinder);
         intent.putExtra(
                 TrustedWebActivityIntentBuilder.EXTRA_FILE_HANDLING_DATA,
                 fileHandlingData.toBundle());
@@ -186,17 +189,16 @@ public class LaunchIntentDispatcherTest {
 
         Activity spyActivity = spy(mActivity);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-            ComponentCaller mockCaller = mock(ComponentCaller.class);
-            doReturn(Process.myUid() + 1).when(mockCaller).getUid();
+            doReturn(Process.myUid() + 1).when(mComponentCaller).getUid();
             doReturn(PackageManager.PERMISSION_GRANTED)
-                    .when(mockCaller)
+                    .when(mComponentCaller)
                     .checkContentUriPermission(
                             eq(fileUri), eq(Intent.FLAG_GRANT_READ_URI_PERMISSION));
             doReturn(PackageManager.PERMISSION_GRANTED)
-                    .when(mockCaller)
+                    .when(mComponentCaller)
                     .checkContentUriPermission(
                             eq(fileUri), eq(Intent.FLAG_GRANT_WRITE_URI_PERMISSION));
-            doReturn(mockCaller).when(spyActivity).getInitialCaller();
+            doReturn(mComponentCaller).when(spyActivity).getInitialCaller();
         } else {
             mockSessionUid();
             // Grant read and write permissions
@@ -220,9 +222,8 @@ public class LaunchIntentDispatcherTest {
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
 
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(intentCaptor.capture(), any());
-        Intent launchedIntent = intentCaptor.getValue();
+        verify(spyActivity).startActivity(mIntentCaptor.capture(), any());
+        Intent launchedIntent = mIntentCaptor.getValue();
 
         // Verify stashed data
         Bundle stashedBundle =
@@ -244,8 +245,7 @@ public class LaunchIntentDispatcherTest {
         Uri fileUri = Uri.parse("content://com.example/file.txt");
         FileHandlingData fileHandlingData = new FileHandlingData(Arrays.asList(fileUri));
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
-        IBinder sessionBinder = mock(IBinder.class);
-        intent.putExtra(CustomTabsIntent.EXTRA_SESSION, sessionBinder);
+        intent.putExtra(CustomTabsIntent.EXTRA_SESSION, mIBinder);
         intent.putExtra(
                 TrustedWebActivityIntentBuilder.EXTRA_FILE_HANDLING_DATA,
                 fileHandlingData.toBundle());
@@ -254,17 +254,16 @@ public class LaunchIntentDispatcherTest {
 
         Activity spyActivity = spy(mActivity);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-            ComponentCaller mockCaller = mock(ComponentCaller.class);
-            doReturn(Process.myUid() + 1).when(mockCaller).getUid();
+            doReturn(Process.myUid() + 1).when(mComponentCaller).getUid();
             doReturn(PackageManager.PERMISSION_GRANTED)
-                    .when(mockCaller)
+                    .when(mComponentCaller)
                     .checkContentUriPermission(
                             eq(fileUri), eq(Intent.FLAG_GRANT_READ_URI_PERMISSION));
             doReturn(PackageManager.PERMISSION_DENIED)
-                    .when(mockCaller)
+                    .when(mComponentCaller)
                     .checkContentUriPermission(
                             eq(fileUri), eq(Intent.FLAG_GRANT_WRITE_URI_PERMISSION));
-            doReturn(mockCaller).when(spyActivity).getInitialCaller();
+            doReturn(mComponentCaller).when(spyActivity).getInitialCaller();
         } else {
             mockSessionUid();
             // Grant read but deny write
@@ -286,9 +285,8 @@ public class LaunchIntentDispatcherTest {
 
         LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
 
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(intentCaptor.capture(), any());
-        Intent launchedIntent = intentCaptor.getValue();
+        verify(spyActivity).startActivity(mIntentCaptor.capture(), any());
+        Intent launchedIntent = mIntentCaptor.getValue();
 
         Bundle stashedBundle =
                 launchedIntent.getBundleExtra(
@@ -309,8 +307,7 @@ public class LaunchIntentDispatcherTest {
         Uri fileUri = Uri.parse("content://com.example/file.txt");
         FileHandlingData fileHandlingData = new FileHandlingData(Arrays.asList(fileUri));
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
-        IBinder sessionBinder = mock(IBinder.class);
-        intent.putExtra(CustomTabsIntent.EXTRA_SESSION, sessionBinder);
+        intent.putExtra(CustomTabsIntent.EXTRA_SESSION, mIBinder);
         intent.putExtra(
                 TrustedWebActivityIntentBuilder.EXTRA_FILE_HANDLING_DATA,
                 fileHandlingData.toBundle());
@@ -319,13 +316,12 @@ public class LaunchIntentDispatcherTest {
 
         Activity spyActivity = spy(mActivity);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-            ComponentCaller mockCaller = mock(ComponentCaller.class);
-            doReturn(Process.myUid() + 1).when(mockCaller).getUid();
+            doReturn(Process.myUid() + 1).when(mComponentCaller).getUid();
             doReturn(PackageManager.PERMISSION_DENIED)
-                    .when(mockCaller)
+                    .when(mComponentCaller)
                     .checkContentUriPermission(
                             eq(fileUri), eq(Intent.FLAG_GRANT_READ_URI_PERMISSION));
-            doReturn(mockCaller).when(spyActivity).getInitialCaller();
+            doReturn(mComponentCaller).when(spyActivity).getInitialCaller();
         } else {
             mockSessionUid();
             // Deny read
@@ -340,9 +336,8 @@ public class LaunchIntentDispatcherTest {
 
         LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
 
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(intentCaptor.capture(), any());
-        Intent launchedIntent = intentCaptor.getValue();
+        verify(spyActivity).startActivity(mIntentCaptor.capture(), any());
+        Intent launchedIntent = mIntentCaptor.getValue();
 
         Bundle stashedBundle =
                 launchedIntent.getBundleExtra(
@@ -367,9 +362,8 @@ public class LaunchIntentDispatcherTest {
 
         LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
 
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(intentCaptor.capture(), any());
-        Intent launchedIntent = intentCaptor.getValue();
+        verify(spyActivity).startActivity(mIntentCaptor.capture(), any());
+        Intent launchedIntent = mIntentCaptor.getValue();
 
         assertEquals(
                 false,
@@ -398,9 +392,8 @@ public class LaunchIntentDispatcherTest {
 
         LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
 
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(intentCaptor.capture(), any());
-        Intent launchedIntent = intentCaptor.getValue();
+        verify(spyActivity).startActivity(mIntentCaptor.capture(), any());
+        Intent launchedIntent = mIntentCaptor.getValue();
 
         assertEquals(
                 false,
@@ -438,9 +431,8 @@ public class LaunchIntentDispatcherTest {
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
 
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(mSessionHandler).handleIntent(intentCaptor.capture());
-        Intent deliveredIntent = intentCaptor.getValue();
+        verify(mSessionHandler).handleIntent(mIntentCaptor.capture());
+        Intent deliveredIntent = mIntentCaptor.getValue();
 
         assertFalse(
                 deliveredIntent.hasExtra(
@@ -457,21 +449,19 @@ public class LaunchIntentDispatcherTest {
         Uri fileUri = Uri.parse("content://com.example/shared_file.jpg");
         ShareData shareData = new ShareData("share_title", "share_text", Arrays.asList(fileUri));
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
-        IBinder sessionBinder = mock(IBinder.class);
-        intent.putExtra(CustomTabsIntent.EXTRA_SESSION, sessionBinder);
+        intent.putExtra(CustomTabsIntent.EXTRA_SESSION, mIBinder);
         intent.putExtra(TrustedWebActivityIntentBuilder.EXTRA_SHARE_DATA, shareData.toBundle());
 
         doReturn(null).when(mSessionDataHolder).getActiveHandlerForIntent(any());
 
         Activity spyActivity = spy(mActivity);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-            ComponentCaller mockCaller = mock(ComponentCaller.class);
-            doReturn(Process.myUid() + 1).when(mockCaller).getUid();
+            doReturn(Process.myUid() + 1).when(mComponentCaller).getUid();
             doReturn(PackageManager.PERMISSION_GRANTED)
-                    .when(mockCaller)
+                    .when(mComponentCaller)
                     .checkContentUriPermission(
                             eq(fileUri), eq(Intent.FLAG_GRANT_READ_URI_PERMISSION));
-            doReturn(mockCaller).when(spyActivity).getInitialCaller();
+            doReturn(mComponentCaller).when(spyActivity).getInitialCaller();
         } else {
             mockSessionUid();
             doReturn(PackageManager.PERMISSION_GRANTED)
@@ -485,9 +475,8 @@ public class LaunchIntentDispatcherTest {
 
         LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
 
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(intentCaptor.capture(), any());
-        Intent launchedIntent = intentCaptor.getValue();
+        verify(spyActivity).startActivity(mIntentCaptor.capture(), any());
+        Intent launchedIntent = mIntentCaptor.getValue();
 
         Bundle stashedBundle =
                 launchedIntent.getBundleExtra(
@@ -504,21 +493,19 @@ public class LaunchIntentDispatcherTest {
         Uri fileUri = Uri.parse("content://com.example/secret_file.pdf");
         ShareData shareData = new ShareData("share_title", "share_text", Arrays.asList(fileUri));
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
-        IBinder sessionBinder = mock(IBinder.class);
-        intent.putExtra(CustomTabsIntent.EXTRA_SESSION, sessionBinder);
+        intent.putExtra(CustomTabsIntent.EXTRA_SESSION, mIBinder);
         intent.putExtra(TrustedWebActivityIntentBuilder.EXTRA_SHARE_DATA, shareData.toBundle());
 
         doReturn(null).when(mSessionDataHolder).getActiveHandlerForIntent(any());
 
         Activity spyActivity = spy(mActivity);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-            ComponentCaller mockCaller = mock(ComponentCaller.class);
-            doReturn(Process.myUid() + 1).when(mockCaller).getUid();
+            doReturn(Process.myUid() + 1).when(mComponentCaller).getUid();
             doReturn(PackageManager.PERMISSION_DENIED)
-                    .when(mockCaller)
+                    .when(mComponentCaller)
                     .checkContentUriPermission(
                             eq(fileUri), eq(Intent.FLAG_GRANT_READ_URI_PERMISSION));
-            doReturn(mockCaller).when(spyActivity).getInitialCaller();
+            doReturn(mComponentCaller).when(spyActivity).getInitialCaller();
         } else {
             mockSessionUid();
             doReturn(PackageManager.PERMISSION_DENIED)
@@ -532,9 +519,8 @@ public class LaunchIntentDispatcherTest {
 
         LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
 
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(intentCaptor.capture(), any());
-        Intent launchedIntent = intentCaptor.getValue();
+        verify(spyActivity).startActivity(mIntentCaptor.capture(), any());
+        Intent launchedIntent = mIntentCaptor.getValue();
 
         Bundle stashedBundle =
                 launchedIntent.getBundleExtra(
@@ -556,9 +542,8 @@ public class LaunchIntentDispatcherTest {
 
         LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
 
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(intentCaptor.capture(), any());
-        Intent launchedIntent = intentCaptor.getValue();
+        verify(spyActivity).startActivity(mIntentCaptor.capture(), any());
+        Intent launchedIntent = mIntentCaptor.getValue();
 
         assertEquals(
                 false,
@@ -580,9 +565,8 @@ public class LaunchIntentDispatcherTest {
 
         LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
 
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(intentCaptor.capture(), any());
-        Intent launchedIntent = intentCaptor.getValue();
+        verify(spyActivity).startActivity(mIntentCaptor.capture(), any());
+        Intent launchedIntent = mIntentCaptor.getValue();
 
         assertEquals(
                 false,
@@ -612,9 +596,8 @@ public class LaunchIntentDispatcherTest {
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
 
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(mSessionHandler).handleIntent(intentCaptor.capture());
-        Intent deliveredIntent = intentCaptor.getValue();
+        verify(mSessionHandler).handleIntent(mIntentCaptor.capture());
+        Intent deliveredIntent = mIntentCaptor.getValue();
 
         assertFalse(
                 deliveredIntent.hasExtra(CustomTabIntentDataProvider.EXTRA_VERIFIED_SHARE_DATA));
@@ -628,25 +611,23 @@ public class LaunchIntentDispatcherTest {
         ShareData shareData =
                 new ShareData("share_title", "share_text", Arrays.asList(grantedUri, deniedUri));
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
-        IBinder sessionBinder = mock(IBinder.class);
-        intent.putExtra(CustomTabsIntent.EXTRA_SESSION, sessionBinder);
+        intent.putExtra(CustomTabsIntent.EXTRA_SESSION, mIBinder);
         intent.putExtra(TrustedWebActivityIntentBuilder.EXTRA_SHARE_DATA, shareData.toBundle());
 
         doReturn(null).when(mSessionDataHolder).getActiveHandlerForIntent(any());
 
         Activity spyActivity = spy(mActivity);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-            ComponentCaller mockCaller = mock(ComponentCaller.class);
-            doReturn(Process.myUid() + 1).when(mockCaller).getUid();
+            doReturn(Process.myUid() + 1).when(mComponentCaller).getUid();
             doReturn(PackageManager.PERMISSION_GRANTED)
-                    .when(mockCaller)
+                    .when(mComponentCaller)
                     .checkContentUriPermission(
                             eq(grantedUri), eq(Intent.FLAG_GRANT_READ_URI_PERMISSION));
             doReturn(PackageManager.PERMISSION_DENIED)
-                    .when(mockCaller)
+                    .when(mComponentCaller)
                     .checkContentUriPermission(
                             eq(deniedUri), eq(Intent.FLAG_GRANT_READ_URI_PERMISSION));
-            doReturn(mockCaller).when(spyActivity).getInitialCaller();
+            doReturn(mComponentCaller).when(spyActivity).getInitialCaller();
         } else {
             mockSessionUid();
             doReturn(PackageManager.PERMISSION_GRANTED)
@@ -667,9 +648,8 @@ public class LaunchIntentDispatcherTest {
 
         LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
 
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(intentCaptor.capture(), any());
-        Intent launchedIntent = intentCaptor.getValue();
+        verify(spyActivity).startActivity(mIntentCaptor.capture(), any());
+        Intent launchedIntent = mIntentCaptor.getValue();
 
         Bundle stashedBundle =
                 launchedIntent.getBundleExtra(
@@ -702,20 +682,18 @@ public class LaunchIntentDispatcherTest {
         ShareData shareData =
                 new ShareData("share_title", "share_text", Arrays.asList(fileUri, internalUri));
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
-        IBinder sessionBinder = mock(IBinder.class);
-        intent.putExtra(CustomTabsIntent.EXTRA_SESSION, sessionBinder);
+        intent.putExtra(CustomTabsIntent.EXTRA_SESSION, mIBinder);
         intent.putExtra(TrustedWebActivityIntentBuilder.EXTRA_SHARE_DATA, shareData.toBundle());
 
         doReturn(null).when(mSessionDataHolder).getActiveHandlerForIntent(any());
 
         Activity spyActivity = spy(mActivity);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-            ComponentCaller mockCaller = mock(ComponentCaller.class);
-            doReturn(Process.myUid() + 1).when(mockCaller).getUid();
+            doReturn(Process.myUid() + 1).when(mComponentCaller).getUid();
             doReturn(PackageManager.PERMISSION_GRANTED)
-                    .when(mockCaller)
+                    .when(mComponentCaller)
                     .checkContentUriPermission(any(), eq(Intent.FLAG_GRANT_READ_URI_PERMISSION));
-            doReturn(mockCaller).when(spyActivity).getInitialCaller();
+            doReturn(mComponentCaller).when(spyActivity).getInitialCaller();
         } else {
             mockSessionUid();
             doReturn(PackageManager.PERMISSION_GRANTED)
@@ -726,9 +704,8 @@ public class LaunchIntentDispatcherTest {
 
         LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
 
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(intentCaptor.capture(), any());
-        Intent launchedIntent = intentCaptor.getValue();
+        verify(spyActivity).startActivity(mIntentCaptor.capture(), any());
+        Intent launchedIntent = mIntentCaptor.getValue();
 
         Bundle stashedBundle =
                 launchedIntent.getBundleExtra(
@@ -827,9 +804,8 @@ public class LaunchIntentDispatcherTest {
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
         verify(spyActivity).setResult(Activity.RESULT_OK);
 
-        ArgumentCaptor<Intent> serviceIntentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(mForegroundServiceUtils).startForegroundService(serviceIntentCaptor.capture());
-        Intent serviceIntent = serviceIntentCaptor.getValue();
+        verify(mForegroundServiceUtils).startForegroundService(mIntentCaptor.capture());
+        Intent serviceIntent = mIntentCaptor.getValue();
         assertEquals(START_ACTOR_FOREGROUND_SERVICE, serviceIntent.getAction());
         assertEquals(
                 org.chromium.chrome.browser.actor.ActorForegroundService.class.getName(),
@@ -890,11 +866,10 @@ public class LaunchIntentDispatcherTest {
         int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
-        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(captor.capture());
+        verify(spyActivity).startActivity(mIntentCaptor.capture());
         assertEquals(
                 ChromeTabbedActivity.class.getName(),
-                captor.getValue().getComponent().getClassName());
+                mIntentCaptor.getValue().getComponent().getClassName());
         assertEquals(1, userActionTester.getActionCount("CustomTabs.AlwaysOpenInBrowserOverride"));
         userActionTester.tearDown();
     }
@@ -912,10 +887,10 @@ public class LaunchIntentDispatcherTest {
         int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
-        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(captor.capture(), any());
+        verify(spyActivity).startActivity(mIntentCaptor.capture(), any());
         assertEquals(
-                CustomTabActivity.class.getName(), captor.getValue().getComponent().getClassName());
+                CustomTabActivity.class.getName(),
+                mIntentCaptor.getValue().getComponent().getClassName());
     }
 
     @Test
@@ -931,10 +906,10 @@ public class LaunchIntentDispatcherTest {
         int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
-        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(captor.capture(), any());
+        verify(spyActivity).startActivity(mIntentCaptor.capture(), any());
         assertEquals(
-                CustomTabActivity.class.getName(), captor.getValue().getComponent().getClassName());
+                CustomTabActivity.class.getName(),
+                mIntentCaptor.getValue().getComponent().getClassName());
     }
 
     @Test
@@ -952,10 +927,10 @@ public class LaunchIntentDispatcherTest {
         int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
-        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(captor.capture(), any());
+        verify(spyActivity).startActivity(mIntentCaptor.capture(), any());
         assertEquals(
-                CustomTabActivity.class.getName(), captor.getValue().getComponent().getClassName());
+                CustomTabActivity.class.getName(),
+                mIntentCaptor.getValue().getComponent().getClassName());
     }
 
     @Test
@@ -971,10 +946,10 @@ public class LaunchIntentDispatcherTest {
         int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
-        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(captor.capture(), any());
+        verify(spyActivity).startActivity(mIntentCaptor.capture(), any());
         assertEquals(
-                CustomTabActivity.class.getName(), captor.getValue().getComponent().getClassName());
+                CustomTabActivity.class.getName(),
+                mIntentCaptor.getValue().getComponent().getClassName());
     }
 
     @Test
@@ -991,10 +966,10 @@ public class LaunchIntentDispatcherTest {
         int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
-        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(captor.capture(), any());
+        verify(spyActivity).startActivity(mIntentCaptor.capture(), any());
         assertEquals(
-                CustomTabActivity.class.getName(), captor.getValue().getComponent().getClassName());
+                CustomTabActivity.class.getName(),
+                mIntentCaptor.getValue().getComponent().getClassName());
     }
 
     @Test
@@ -1015,10 +990,10 @@ public class LaunchIntentDispatcherTest {
         int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
-        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(captor.capture(), any());
+        verify(spyActivity).startActivity(mIntentCaptor.capture(), any());
         assertEquals(
-                CustomTabActivity.class.getName(), captor.getValue().getComponent().getClassName());
+                CustomTabActivity.class.getName(),
+                mIntentCaptor.getValue().getComponent().getClassName());
     }
 
     @Test
@@ -1035,10 +1010,10 @@ public class LaunchIntentDispatcherTest {
         int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
-        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(captor.capture(), any());
+        verify(spyActivity).startActivity(mIntentCaptor.capture(), any());
         assertEquals(
-                CustomTabActivity.class.getName(), captor.getValue().getComponent().getClassName());
+                CustomTabActivity.class.getName(),
+                mIntentCaptor.getValue().getComponent().getClassName());
     }
 
     @Test
@@ -1056,10 +1031,10 @@ public class LaunchIntentDispatcherTest {
         int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
-        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(captor.capture(), any());
+        verify(spyActivity).startActivity(mIntentCaptor.capture(), any());
         assertEquals(
-                CustomTabActivity.class.getName(), captor.getValue().getComponent().getClassName());
+                CustomTabActivity.class.getName(),
+                mIntentCaptor.getValue().getComponent().getClassName());
     }
 
     @Test
@@ -1105,11 +1080,12 @@ public class LaunchIntentDispatcherTest {
 
         LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
 
-        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(captor.capture(), any());
+        verify(spyActivity).startActivity(mIntentCaptor.capture(), any());
         assertEquals(
                 "com.foo.bar",
-                captor.getValue().getStringExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE));
+                mIntentCaptor
+                        .getValue()
+                        .getStringExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE));
     }
 
     @Test
@@ -1122,8 +1098,10 @@ public class LaunchIntentDispatcherTest {
 
         LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
 
-        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(captor.capture(), any());
-        assertNull(captor.getValue().getStringExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE));
+        verify(spyActivity).startActivity(mIntentCaptor.capture(), any());
+        assertNull(
+                mIntentCaptor
+                        .getValue()
+                        .getStringExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE));
     }
 }

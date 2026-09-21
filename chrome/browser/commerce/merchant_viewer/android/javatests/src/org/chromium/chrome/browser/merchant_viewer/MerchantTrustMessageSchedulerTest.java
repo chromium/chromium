@@ -9,7 +9,6 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -46,8 +45,8 @@ import java.util.concurrent.TimeoutException;
 public class MerchantTrustMessageSchedulerTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private MessageDispatcher mMockMessageDispatcher;
 
+    @Mock private MessageDispatcher mMockMessageDispatcher;
     @Mock private WebContents mMockWebContents;
 
     @Mock private MerchantTrustMetrics mMockMetrics;
@@ -56,6 +55,8 @@ public class MerchantTrustMessageSchedulerTest {
     @Mock private Tab mMockTab;
 
     @Mock private WebContents mMockWebContents2;
+    @Mock private PropertyModel mPropertyModel;
+    @Mock private MerchantTrustMessageContext mMerchantTrustMessageContext;
 
     private final SettableMonotonicObservableSupplier<Tab> mMockTabProvider =
             ObservableSuppliers.createMonotonic();
@@ -78,20 +79,22 @@ public class MerchantTrustMessageSchedulerTest {
         MerchantTrustSignalsCallbackHelper callbackHelper =
                 new MerchantTrustSignalsCallbackHelper();
         MerchantTrustMessageScheduler scheduler = getSchedulerUnderTest();
-        PropertyModel mockPropteryModel = mock(PropertyModel.class);
         doReturn(false).when(mMockWebContents).isDestroyed();
 
-        MerchantTrustMessageContext mockMessagesContext = mock(MerchantTrustMessageContext.class);
-        doReturn(true).when(mockMessagesContext).isValid();
-        doReturn(mMockWebContents).when(mockMessagesContext).getWebContents();
+        doReturn(true).when(mMerchantTrustMessageContext).isValid();
+        doReturn(mMockWebContents).when(mMerchantTrustMessageContext).getWebContents();
         doReturn(mMockWebContents).when(mMockTab).getWebContents();
-        doReturn("fake_host").when(mockMessagesContext).getHostName();
+        doReturn("fake_host").when(mMerchantTrustMessageContext).getHostName();
 
         scheduler.setHandlerForTesting(mMockHandler);
 
         int callCount = callbackHelper.getCallCount();
         scheduler.schedule(
-                mockPropteryModel, 4.7, mockMessagesContext, 2000, callbackHelper::notifyCalled);
+                mPropertyModel,
+                4.7,
+                mMerchantTrustMessageContext,
+                2000,
+                callbackHelper::notifyCalled);
         callbackHelper.waitForCallback(callCount);
 
         Assert.assertNotNull(callbackHelper.getResult());
@@ -99,7 +102,7 @@ public class MerchantTrustMessageSchedulerTest {
         verify(mMockHandler, times(1)).postDelayed(any(Runnable.class), eq(2000L));
         verify(mMockMessageDispatcher, times(1))
                 .enqueueMessage(
-                        eq(mockPropteryModel),
+                        eq(mPropertyModel),
                         eq(mMockWebContents),
                         eq(MessageScopeType.NAVIGATION),
                         eq(false));
@@ -118,20 +121,22 @@ public class MerchantTrustMessageSchedulerTest {
         MerchantTrustSignalsCallbackHelper callbackHelper =
                 new MerchantTrustSignalsCallbackHelper();
         MerchantTrustMessageScheduler scheduler = getSchedulerUnderTest();
-        PropertyModel mockPropteryModel = mock(PropertyModel.class);
         doReturn(false).when(mMockWebContents).isDestroyed();
 
-        MerchantTrustMessageContext mockMessagesContext = mock(MerchantTrustMessageContext.class);
-        doReturn(true).when(mockMessagesContext).isValid();
-        doReturn(mMockWebContents).when(mockMessagesContext).getWebContents();
+        doReturn(true).when(mMerchantTrustMessageContext).isValid();
+        doReturn(mMockWebContents).when(mMerchantTrustMessageContext).getWebContents();
         doReturn(mMockWebContents).when(mMockTab).getWebContents();
-        doReturn("fake_host").when(mockMessagesContext).getHostName();
+        doReturn("fake_host").when(mMerchantTrustMessageContext).getHostName();
 
         scheduler.setHandlerForTesting(mMockHandler);
 
         int callCount = callbackHelper.getCallCount();
         scheduler.schedule(
-                mockPropteryModel, 4.7, mockMessagesContext, 2000, callbackHelper::notifyCalled);
+                mPropertyModel,
+                4.7,
+                mMerchantTrustMessageContext,
+                2000,
+                callbackHelper::notifyCalled);
         callbackHelper.waitForCallback(callCount);
 
         Assert.assertNotNull(callbackHelper.getResult());
@@ -139,7 +144,7 @@ public class MerchantTrustMessageSchedulerTest {
         verify(mMockHandler, times(1)).postDelayed(any(Runnable.class), eq(2000L));
         verify(mMockMessageDispatcher, times(0))
                 .enqueueMessage(
-                        eq(mockPropteryModel),
+                        eq(mPropertyModel),
                         eq(mMockWebContents),
                         eq(MessageScopeType.NAVIGATION),
                         eq(false));
@@ -155,19 +160,17 @@ public class MerchantTrustMessageSchedulerTest {
         MerchantTrustSignalsCallbackHelper callbackHelper =
                 new MerchantTrustSignalsCallbackHelper();
         MerchantTrustMessageScheduler scheduler = getSchedulerUnderTest();
-        PropertyModel mockPropteryModel = mock(PropertyModel.class);
         doReturn(false).when(mMockWebContents).isDestroyed();
 
-        MerchantTrustMessageContext mockMessagesContext = mock(MerchantTrustMessageContext.class);
-        doReturn(false).when(mockMessagesContext).isValid();
-        doReturn(mMockWebContents).when(mockMessagesContext).getWebContents();
+        doReturn(false).when(mMerchantTrustMessageContext).isValid();
+        doReturn(mMockWebContents).when(mMerchantTrustMessageContext).getWebContents();
         doReturn(mMockWebContents).when(mMockTab).getWebContents();
 
         scheduler.setHandlerForTesting(mMockHandler);
 
         int callCount = callbackHelper.getCallCount();
         scheduler.schedule(
-                mockPropteryModel, mockMessagesContext, 2000, callbackHelper::notifyCalled);
+                mPropertyModel, mMerchantTrustMessageContext, 2000, callbackHelper::notifyCalled);
         callbackHelper.waitForCallback(callCount);
 
         Assert.assertNull(callbackHelper.getResult());
@@ -177,7 +180,7 @@ public class MerchantTrustMessageSchedulerTest {
                         eq(MessageClearReason.MESSAGE_CONTEXT_NO_LONGER_VALID));
         verify(mMockMessageDispatcher, never())
                 .enqueueMessage(
-                        eq(mockPropteryModel),
+                        eq(mPropertyModel),
                         eq(mMockWebContents),
                         eq(MessageScopeType.NAVIGATION),
                         eq(false));
@@ -189,19 +192,17 @@ public class MerchantTrustMessageSchedulerTest {
         MerchantTrustSignalsCallbackHelper callbackHelper =
                 new MerchantTrustSignalsCallbackHelper();
         MerchantTrustMessageScheduler scheduler = getSchedulerUnderTest();
-        PropertyModel mockPropteryModel = mock(PropertyModel.class);
         doReturn(false).when(mMockWebContents).isDestroyed();
 
-        MerchantTrustMessageContext mockMessagesContext = mock(MerchantTrustMessageContext.class);
-        doReturn(true).when(mockMessagesContext).isValid();
-        doReturn(mMockWebContents).when(mockMessagesContext).getWebContents();
+        doReturn(true).when(mMerchantTrustMessageContext).isValid();
+        doReturn(mMockWebContents).when(mMerchantTrustMessageContext).getWebContents();
         doReturn(mMockWebContents2).when(mMockTab).getWebContents();
 
         scheduler.setHandlerForTesting(mMockHandler);
 
         int callCount = callbackHelper.getCallCount();
         scheduler.schedule(
-                mockPropteryModel, mockMessagesContext, 2000, callbackHelper::notifyCalled);
+                mPropertyModel, mMerchantTrustMessageContext, 2000, callbackHelper::notifyCalled);
         callbackHelper.waitForCallback(callCount);
 
         Assert.assertNull(callbackHelper.getResult());
@@ -211,7 +212,7 @@ public class MerchantTrustMessageSchedulerTest {
                         eq(MessageClearReason.SWITCH_TO_DIFFERENT_WEBCONTENTS));
         verify(mMockMessageDispatcher, never())
                 .enqueueMessage(
-                        eq(mockPropteryModel),
+                        eq(mPropertyModel),
                         eq(mMockWebContents),
                         eq(MessageScopeType.NAVIGATION),
                         eq(false));
@@ -223,12 +224,10 @@ public class MerchantTrustMessageSchedulerTest {
         MerchantTrustSignalsCallbackHelper callbackHelper =
                 new MerchantTrustSignalsCallbackHelper();
         MerchantTrustMessageScheduler scheduler = getSchedulerUnderTest();
-        PropertyModel mockPropteryModel = mock(PropertyModel.class);
         doReturn(false).when(mMockWebContents).isDestroyed();
 
-        MerchantTrustMessageContext mockMessagesContext = mock(MerchantTrustMessageContext.class);
-        doReturn(true).when(mockMessagesContext).isValid();
-        doReturn(mMockWebContents).when(mockMessagesContext).getWebContents();
+        doReturn(true).when(mMerchantTrustMessageContext).isValid();
+        doReturn(mMockWebContents).when(mMerchantTrustMessageContext).getWebContents();
         doReturn(mMockWebContents).when(mMockTab).getWebContents();
 
         // Use a new supplier that is null to trigger the clear reason.
@@ -239,7 +238,7 @@ public class MerchantTrustMessageSchedulerTest {
 
         int callCount = callbackHelper.getCallCount();
         schedulerWithNullTab.schedule(
-                mockPropteryModel, mockMessagesContext, 2000, callbackHelper::notifyCalled);
+                mPropertyModel, mMerchantTrustMessageContext, 2000, callbackHelper::notifyCalled);
         callbackHelper.waitForCallback(callCount);
 
         Assert.assertNull(callbackHelper.getResult());
@@ -248,7 +247,7 @@ public class MerchantTrustMessageSchedulerTest {
                 .recordMetricsForMessageCleared(eq(MessageClearReason.UNKNOWN));
         verify(mMockMessageDispatcher, never())
                 .enqueueMessage(
-                        eq(mockPropteryModel),
+                        eq(mPropertyModel),
                         eq(mMockWebContents),
                         eq(MessageScopeType.NAVIGATION),
                         eq(false));
@@ -258,19 +257,17 @@ public class MerchantTrustMessageSchedulerTest {
     @Test
     public void testClear() throws TimeoutException {
         MerchantTrustMessageScheduler scheduler = getSchedulerUnderTest();
-        PropertyModel mockPropteryModel = mock(PropertyModel.class);
         doReturn(false).when(mMockWebContents).isDestroyed();
 
-        MerchantTrustMessageContext mockMessagesContext = mock(MerchantTrustMessageContext.class);
-        doReturn(true).when(mockMessagesContext).isValid();
-        doReturn(mMockWebContents).when(mockMessagesContext).getWebContents();
+        doReturn(true).when(mMerchantTrustMessageContext).isValid();
+        doReturn(mMockWebContents).when(mMerchantTrustMessageContext).getWebContents();
 
-        scheduler.setScheduledMessage(new Pair<>(mockMessagesContext, mockPropteryModel));
+        scheduler.setScheduledMessage(new Pair<>(mMerchantTrustMessageContext, mPropertyModel));
         Assert.assertNotNull(scheduler.getScheduledMessageContext());
         scheduler.clear(MessageClearReason.UNKNOWN);
         Assert.assertNull(scheduler.getScheduledMessageContext());
         verify(mMockMessageDispatcher, times(1))
-                .dismissMessage(eq(mockPropteryModel), eq(DismissReason.SCOPE_DESTROYED));
+                .dismissMessage(eq(mPropertyModel), eq(DismissReason.SCOPE_DESTROYED));
         verify(mMockMetrics, times(1))
                 .recordMetricsForMessageCleared(eq(MessageClearReason.UNKNOWN));
     }

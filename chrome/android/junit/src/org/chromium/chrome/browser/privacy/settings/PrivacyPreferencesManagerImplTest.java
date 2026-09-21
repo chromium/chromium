@@ -16,8 +16,12 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.policy.PolicyServiceFactory;
@@ -47,12 +51,14 @@ public class PrivacyPreferencesManagerImplTest {
 
     private static final boolean CRASH_NETWORK_AVAILABLE = true;
     private static final boolean CRASH_NETWORK_UNAVAILABLE = false;
-
-    private PrivacyPreferencesManagerImpl.Natives mNativeMock;
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private PrivacyPreferencesManagerImpl.Natives mNativeMock;
+    @Mock private Context mContext;
+    @Mock private PolicyService mPolicyService;
+    @Mock private PrivacyPreferencesManagerImpl.Natives mPrivacyPreferencesManagerImplNatives;
 
     @org.junit.Before
     public void setUp() {
-        mNativeMock = mock(PrivacyPreferencesManagerImpl.Natives.class);
         PrivacyPreferencesManagerImplJni.setInstanceForTesting(mNativeMock);
     }
 
@@ -100,45 +106,39 @@ public class PrivacyPreferencesManagerImplTest {
 
     @Test
     public void testUsageAndCrashReportingPermittedByPolicy_PreNative() {
-        Context context = mock(Context.class);
         PrivacyPreferencesManagerImpl preferenceManager =
-                new TestPrivacyPreferencesManager(context);
+                new TestPrivacyPreferencesManager(mContext);
 
         assertTrue(preferenceManager.isUsageAndCrashReportingPermittedByPolicy());
     }
 
     @Test
     public void testUsageAndCrashReportingPermittedByPolicy_PostNativePrePolicy() {
-        Context context = mock(Context.class);
         PrivacyPreferencesManagerImpl preferenceManager =
-                new TestPrivacyPreferencesManager(context);
+                new TestPrivacyPreferencesManager(mContext);
 
         // Mock policy service not yet initialized.
-        PolicyService policyService = mock(PolicyService.class);
-        when(policyService.isInitializationComplete()).thenReturn(false);
-        PolicyServiceFactory.setPolicyServiceForTest(policyService);
+        when(mPolicyService.isInitializationComplete()).thenReturn(false);
+        PolicyServiceFactory.setPolicyServiceForTest(mPolicyService);
 
-        PrivacyPreferencesManagerImpl.Natives preferenceManagerNatives =
-                mock(PrivacyPreferencesManagerImpl.Natives.class);
-        PrivacyPreferencesManagerImplJni.setInstanceForTesting(preferenceManagerNatives);
+        PrivacyPreferencesManagerImplJni.setInstanceForTesting(
+                mPrivacyPreferencesManagerImplNatives);
 
         // Simulate native initialization notification call.
         preferenceManager.onNativeInitialized();
 
-        verify(policyService).addObserver(any());
+        verify(mPolicyService).addObserver(any());
         assertTrue(preferenceManager.isUsageAndCrashReportingPermittedByPolicy());
     }
 
     @Test
     public void testUsageAndCrashReportingPermittedByPolicy_PostNativePostPolicy_Enabled() {
-        Context context = mock(Context.class);
         PrivacyPreferencesManagerImpl preferenceManager =
-                new TestPrivacyPreferencesManager(context);
+                new TestPrivacyPreferencesManager(mContext);
 
         // Mock policy service initialized.
-        PolicyService policyService = mock(PolicyService.class);
-        when(policyService.isInitializationComplete()).thenReturn(true);
-        PolicyServiceFactory.setPolicyServiceForTest(policyService);
+        when(mPolicyService.isInitializationComplete()).thenReturn(true);
+        PolicyServiceFactory.setPolicyServiceForTest(mPolicyService);
 
         // Mock MetricsReportingEnabled=true.
         when(mNativeMock.isMetricsReportingDisabledByPolicy()).thenReturn(false);
@@ -146,20 +146,18 @@ public class PrivacyPreferencesManagerImplTest {
         // Simulate native initialization notification call.
         preferenceManager.onNativeInitialized();
 
-        verify(policyService).addObserver(any());
+        verify(mPolicyService).addObserver(any());
         assertTrue(preferenceManager.isUsageAndCrashReportingPermittedByPolicy());
     }
 
     @Test
     public void testUsageAndCrashReportingPermittedByPolicy_PostNativePostPolicy_Disabled() {
-        Context context = mock(Context.class);
         PrivacyPreferencesManagerImpl preferenceManager =
-                new TestPrivacyPreferencesManager(context);
+                new TestPrivacyPreferencesManager(mContext);
 
         // Mock policy service initialized.
-        PolicyService policyService = mock(PolicyService.class);
-        when(policyService.isInitializationComplete()).thenReturn(true);
-        PolicyServiceFactory.setPolicyServiceForTest(policyService);
+        when(mPolicyService.isInitializationComplete()).thenReturn(true);
+        PolicyServiceFactory.setPolicyServiceForTest(mPolicyService);
 
         // Mock MetricsReportingEnabled=false.
         when(mNativeMock.isMetricsReportingDisabledByPolicy()).thenReturn(true);
@@ -167,15 +165,14 @@ public class PrivacyPreferencesManagerImplTest {
         // Simulate native initialization notification call.
         preferenceManager.onNativeInitialized();
 
-        verify(policyService).addObserver(any());
+        verify(mPolicyService).addObserver(any());
         assertFalse(preferenceManager.isUsageAndCrashReportingPermittedByPolicy());
     }
 
     @Test
     public void testShouldUseMetricsChoiceRestructure() {
-        Context context = mock(Context.class);
         PrivacyPreferencesManagerImpl preferenceManager =
-                new TestPrivacyPreferencesManager(context);
+                new TestPrivacyPreferencesManager(mContext);
 
         // 1. Test when native is NOT initialized: returns value from SharedPreferences
         preferenceManager.setNativeInitializedForTesting(false);

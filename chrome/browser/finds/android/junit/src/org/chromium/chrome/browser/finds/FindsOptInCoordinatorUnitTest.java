@@ -30,6 +30,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -64,6 +65,7 @@ public class FindsOptInCoordinatorUnitTest {
     @Mock private BaseNotificationManagerProxy mNotificationManagerProxy;
     @Mock private Profile mProfile;
     @Mock private PrefService mPrefService;
+    @Captor private ArgumentCaptor<BottomSheetObserver> mObserverCaptor;
 
     private FindsOptInCoordinator mCoordinator;
     private Activity mActivity;
@@ -84,10 +86,8 @@ public class FindsOptInCoordinatorUnitTest {
                 new FindsOptInCoordinator(
                         mActivity, mProfile, mBottomSheetController, mSnackbarManager);
 
-        ArgumentCaptor<BottomSheetObserver> observerCaptor =
-                ArgumentCaptor.forClass(BottomSheetObserver.class);
-        verify(mBottomSheetController).addObserver(observerCaptor.capture());
-        mBottomSheetObserver = observerCaptor.getValue();
+        verify(mBottomSheetController).addObserver(mObserverCaptor.capture());
+        mBottomSheetObserver = mObserverCaptor.getValue();
     }
 
     private void simulateSheetClosed(@StateChangeReason int reason) {

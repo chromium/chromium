@@ -41,8 +41,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
@@ -71,6 +71,7 @@ import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.CompositorModelChangeProcessor;
 import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.page_image_service.ImageServiceBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -119,7 +120,9 @@ public class BookmarkBarCoordinatorTest {
 
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private LayoutManager mLayoutManager;
-    @Mock private CompositorModelChangeProcessor mChangeProcessor;
+
+    @Mock private CompositorModelChangeProcessor<SceneLayer> mChangeProcessor;
+
     @Mock private Runnable mLayoutManagerRequestUpdate;
     @Mock private FullscreenManager mFullscreenManager;
     @Mock private ResourceManager mResourceManager;
@@ -138,6 +141,9 @@ public class BookmarkBarCoordinatorTest {
     @Mock private TabObscuringHandler mTabObscuringHandler;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private SnackbarManager mSnackbarManager;
+    @Mock private Profile mProfile1;
+    @Captor private ArgumentCaptor<BrowserControlsStateProvider.Observer> mObsCaptor;
+    @Captor private ArgumentCaptor<SideUiObserver> mObserverCaptor;
 
     private ShadowLooper mShadowLooper;
     private BookmarkBarCoordinator mCoordinator;
@@ -175,7 +181,6 @@ public class BookmarkBarCoordinatorTest {
         when(mSideUiStateProvider.getCurrentSideUiSpecs()).thenReturn(sideUiSpecs);
     }
 
-    @SuppressWarnings("unchecked") // Raw CompositorModelChangeProcessor mock.
     private void setupLayoutManagerMock() {
         when(mLayoutManager.createCompositorMCP(any(), any(), any())).thenReturn(mChangeProcessor);
     }
@@ -475,7 +480,7 @@ public class BookmarkBarCoordinatorTest {
                     // Test case: profile w/ populated model.
                     itemIds = setItemsWithinDesktopFolder(List.of("Item 3", "Item 4"));
                     BookmarkModel.setInstanceForTesting(mModel);
-                    mProfileSupplier.set(Mockito.mock(Profile.class));
+                    mProfileSupplier.set(mProfile1);
                     Robolectric.flushForegroundThreadScheduler();
                     assertItemsRenderedCount(2);
                     assertItemRenderedAtIndex(itemIds.get(0), 0);
@@ -525,9 +530,9 @@ public class BookmarkBarCoordinatorTest {
                 .thenAnswer(invocation -> topControlOffset.get());
 
         // Simulate top controls offset changed to non-zero value.
-        final var obs = ArgumentCaptor.forClass(BrowserControlsStateProvider.Observer.class);
-        verify(mBrowserControlsManager).addObserver(obs.capture());
-        obs.getValue()
+        verify(mBrowserControlsManager).addObserver(mObsCaptor.capture());
+        mObsCaptor
+                .getValue()
                 .onControlsOffsetChanged(
                         mBrowserControlsManager.getTopControlOffset(),
                         mBrowserControlsManager.getTopControlsMinHeightOffset(),
@@ -545,7 +550,8 @@ public class BookmarkBarCoordinatorTest {
 
         // Simulate top controls offset changed to zero value.
         topControlOffset.set(0);
-        obs.getValue()
+        mObsCaptor
+                .getValue()
                 .onControlsOffsetChanged(
                         mBrowserControlsManager.getTopControlOffset(),
                         mBrowserControlsManager.getTopControlsMinHeightOffset(),
@@ -660,12 +666,10 @@ public class BookmarkBarCoordinatorTest {
         mSideUiStateProviderSupplier.set(mSideUiStateProvider);
         mShadowLooper.idle();
 
-        ArgumentCaptor<SideUiObserver> observerCaptor =
-                ArgumentCaptor.forClass(SideUiObserver.class);
-        verify(mSideUiStateProvider).addObserver(observerCaptor.capture());
+        verify(mSideUiStateProvider).addObserver(mObserverCaptor.capture());
 
         mCoordinator.destroy();
-        verify(mSideUiStateProvider).removeObserver(observerCaptor.getValue());
+        verify(mSideUiStateProvider).removeObserver(mObserverCaptor.getValue());
     }
 
     @Test
@@ -678,10 +682,8 @@ public class BookmarkBarCoordinatorTest {
         mSideUiStateProviderSupplier.set(mSideUiStateProvider);
         mShadowLooper.idle();
 
-        ArgumentCaptor<SideUiObserver> observerCaptor =
-                ArgumentCaptor.forClass(SideUiObserver.class);
-        verify(mSideUiStateProvider).addObserver(observerCaptor.capture());
-        SideUiObserver observer = observerCaptor.getValue();
+        verify(mSideUiStateProvider).addObserver(mObserverCaptor.capture());
+        SideUiObserver observer = mObserverCaptor.getValue();
 
         SideUiSpecs specs = new SideUiSpecs(100, 200);
         observer.onSideUiSpecsChanged(specs);

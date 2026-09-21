@@ -19,6 +19,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -37,6 +38,7 @@ public class DataSharingAvatarProviderUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private DataSharingUIDelegate mDataSharingUIDelegate;
     @Mock private Callback<Drawable> mAvatarCallback;
+    @Captor private ArgumentCaptor<DataSharingAvatarBitmapConfig> mCallbackCaptor;
     private final Bitmap mBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
     private Context mContext;
     private DataSharingAvatarProvider mAvatarProvider;
@@ -52,13 +54,10 @@ public class DataSharingAvatarProviderUnitTest {
 
     @Test
     public void testFetchAvatar() {
-        ArgumentCaptor<DataSharingAvatarBitmapConfig> callbackCaptor =
-                ArgumentCaptor.forClass(DataSharingAvatarBitmapConfig.class);
-
         GroupMember groupMember = SharedGroupTestHelper.GROUP_MEMBER1;
         mAvatarProvider.getAvatarBitmap(groupMember, mAvatarCallback);
-        verify(mDataSharingUIDelegate).getAvatarBitmap(callbackCaptor.capture());
-        DataSharingAvatarBitmapConfig config = callbackCaptor.getValue();
+        verify(mDataSharingUIDelegate).getAvatarBitmap(mCallbackCaptor.capture());
+        DataSharingAvatarBitmapConfig config = mCallbackCaptor.getValue();
         config.getDataSharingAvatarCallback().onAvatarLoaded(mBitmap);
         verify(mAvatarCallback).onResult(notNull());
     }

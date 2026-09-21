@@ -10,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -24,6 +23,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -45,15 +45,19 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 public class ChromeActivitySnackbarHelperUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private SettableMonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
-
     @Mock private Activity mActivity;
     @Mock private EdgeToEdgeController mEdgeToEdgeController1;
     @Mock private EdgeToEdgeController mEdgeToEdgeController2;
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private BottomControlsLayer mBottomControlsLayer;
+    @Mock private ViewGroup mViewGroup;
+    @Mock private BottomSheetContent mBottomSheetContent;
+    @Mock private BottomSheetContent mMockContent;
+    @Mock private BottomSheetContent mMockContent2;
+    @Captor private ArgumentCaptor<BottomSheetObserver> mObserverCaptor;
 
+    private SettableMonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     private ChromeActivitySnackbarHelper mSnackbarHelper;
 
     @Before
@@ -97,11 +101,9 @@ public class ChromeActivitySnackbarHelperUnitTest {
         assertEquals(100, (int) mSnackbarHelper.getBottomMarginSupplier().get());
 
         // Test that BottomSheetObserver.onSheetOffsetChanged updates the supplier.
-        ArgumentCaptor<BottomSheetObserver> observerCaptor =
-                ArgumentCaptor.forClass(BottomSheetObserver.class);
-        verify(mBottomSheetController).addObserver(observerCaptor.capture());
+        verify(mBottomSheetController).addObserver(mObserverCaptor.capture());
         when(mBottomSheetController.getCurrentOffset()).thenReturn(50);
-        observerCaptor.getValue().onSheetOffsetChanged(0.5f, 50.0f);
+        mObserverCaptor.getValue().onSheetOffsetChanged(0.5f, 50.0f);
 
         assertEquals(150, (int) mSnackbarHelper.getBottomMarginSupplier().get());
 
@@ -121,9 +123,7 @@ public class ChromeActivitySnackbarHelperUnitTest {
         verify(mBottomSheetController).addObserver(any(BottomSheetObserver.class));
         assertEquals(100, (int) mSnackbarHelper.getBottomMarginSupplier().get());
 
-        ArgumentCaptor<BottomSheetObserver> observerCaptor =
-                ArgumentCaptor.forClass(BottomSheetObserver.class);
-        verify(mBottomSheetController).addObserver(observerCaptor.capture());
+        verify(mBottomSheetController).addObserver(mObserverCaptor.capture());
 
         doReturn(100).when(mBottomSheetController).getCurrentOffset();
         doReturn(50).when(mBottomControlsLayer).getHeight();
@@ -133,7 +133,7 @@ public class ChromeActivitySnackbarHelperUnitTest {
         assertEquals(150, (int) mSnackbarHelper.getBottomMarginSupplier().get());
 
         doReturn(50).when(mBottomSheetController).getCurrentOffset();
-        observerCaptor.getValue().onSheetOffsetChanged(0.5f, 50.0f);
+        mObserverCaptor.getValue().onSheetOffsetChanged(0.5f, 50.0f);
 
         assertEquals(100, (int) mSnackbarHelper.getBottomMarginSupplier().get());
     }
@@ -209,19 +209,14 @@ public class ChromeActivitySnackbarHelperUnitTest {
 
     @Test
     public void testBottomSheetStateChanged() {
-        ArgumentCaptor<BottomSheetObserver> observerCaptor =
-                ArgumentCaptor.forClass(BottomSheetObserver.class);
-        verify(mBottomSheetController).addObserver(observerCaptor.capture());
-        BottomSheetObserver observer = observerCaptor.getValue();
+        verify(mBottomSheetController).addObserver(mObserverCaptor.capture());
+        BottomSheetObserver observer = mObserverCaptor.getValue();
 
-        ViewGroup mockContainer = mock(ViewGroup.class);
-        when(mActivity.findViewById(R.id.bottom_sheet_snackbar_container))
-                .thenReturn(mockContainer);
+        when(mActivity.findViewById(R.id.bottom_sheet_snackbar_container)).thenReturn(mViewGroup);
 
-        BottomSheetContent mockContent = mock(BottomSheetContent.class);
-        when(mockContent.allowInSheetContentSnackbars()).thenReturn(true);
-        when(mockContent.hasCustomScrimLifecycle()).thenReturn(false);
-        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mockContent);
+        when(mBottomSheetContent.allowInSheetContentSnackbars()).thenReturn(true);
+        when(mBottomSheetContent.hasCustomScrimLifecycle()).thenReturn(false);
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mBottomSheetContent);
 
         // HALF state -> push override
         observer.onSheetStateChanged(BottomSheetController.SheetState.HALF, 0);
@@ -246,19 +241,14 @@ public class ChromeActivitySnackbarHelperUnitTest {
 
     @Test
     public void testBottomSheetStateChanged_NotAllowed() {
-        ArgumentCaptor<BottomSheetObserver> observerCaptor =
-                ArgumentCaptor.forClass(BottomSheetObserver.class);
-        verify(mBottomSheetController).addObserver(observerCaptor.capture());
-        BottomSheetObserver observer = observerCaptor.getValue();
+        verify(mBottomSheetController).addObserver(mObserverCaptor.capture());
+        BottomSheetObserver observer = mObserverCaptor.getValue();
 
-        ViewGroup mockContainer = mock(ViewGroup.class);
-        when(mActivity.findViewById(R.id.bottom_sheet_snackbar_container))
-                .thenReturn(mockContainer);
+        when(mActivity.findViewById(R.id.bottom_sheet_snackbar_container)).thenReturn(mViewGroup);
 
-        BottomSheetContent mockContent = mock(BottomSheetContent.class);
-        when(mockContent.allowInSheetContentSnackbars()).thenReturn(false);
-        when(mockContent.hasCustomScrimLifecycle()).thenReturn(true);
-        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mockContent);
+        when(mBottomSheetContent.allowInSheetContentSnackbars()).thenReturn(false);
+        when(mBottomSheetContent.hasCustomScrimLifecycle()).thenReturn(true);
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mBottomSheetContent);
 
         // HALF state -> should not push override because not allowed
         observer.onSheetStateChanged(BottomSheetController.SheetState.HALF, 0);
@@ -269,30 +259,24 @@ public class ChromeActivitySnackbarHelperUnitTest {
 
     @Test
     public void testBottomSheetContentChanged() {
-        ArgumentCaptor<BottomSheetObserver> observerCaptor =
-                ArgumentCaptor.forClass(BottomSheetObserver.class);
-        verify(mBottomSheetController).addObserver(observerCaptor.capture());
-        BottomSheetObserver observer = observerCaptor.getValue();
+        verify(mBottomSheetController).addObserver(mObserverCaptor.capture());
+        BottomSheetObserver observer = mObserverCaptor.getValue();
 
-        ViewGroup mockContainer = mock(ViewGroup.class);
-        when(mActivity.findViewById(R.id.bottom_sheet_snackbar_container))
-                .thenReturn(mockContainer);
+        when(mActivity.findViewById(R.id.bottom_sheet_snackbar_container)).thenReturn(mViewGroup);
 
-        BottomSheetContent mockContent = mock(BottomSheetContent.class);
-        when(mockContent.hasCustomScrimLifecycle()).thenReturn(true);
-        when(mockContent.allowInSheetContentSnackbars()).thenReturn(true);
+        when(mMockContent.hasCustomScrimLifecycle()).thenReturn(true);
+        when(mMockContent.allowInSheetContentSnackbars()).thenReturn(true);
         when(mBottomSheetController.getSheetState())
                 .thenReturn(BottomSheetController.SheetState.HALF);
 
-        observer.onSheetContentChanged(mockContent);
+        observer.onSheetContentChanged(mMockContent);
         verify(mSnackbarManager)
                 .pushParentViewOverride(eq(ParentOverrideSlot.BOTTOM_SHEET), any(), any());
 
         // Switch to not allowed content -> pop override
-        BottomSheetContent mockContent2 = mock(BottomSheetContent.class);
-        when(mockContent2.hasCustomScrimLifecycle()).thenReturn(true);
-        when(mockContent2.allowInSheetContentSnackbars()).thenReturn(false);
-        observer.onSheetContentChanged(mockContent2);
+        when(mMockContent2.hasCustomScrimLifecycle()).thenReturn(true);
+        when(mMockContent2.allowInSheetContentSnackbars()).thenReturn(false);
+        observer.onSheetContentChanged(mMockContent2);
         verify(mSnackbarManager).popParentViewOverride(eq(ParentOverrideSlot.BOTTOM_SHEET));
         verify(mSnackbarManager, times(0)).dismissAllSnackbars();
     }

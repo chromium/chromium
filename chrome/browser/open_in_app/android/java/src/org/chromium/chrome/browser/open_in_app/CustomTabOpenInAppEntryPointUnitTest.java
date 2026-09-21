@@ -30,6 +30,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
@@ -70,6 +71,7 @@ public class CustomTabOpenInAppEntryPointUnitTest {
     @Mock private PackageManager mPackageManager;
     @Spy private Context mContext;
     @Mock private TabModelSelector mTabModelSelector;
+    @Captor private ArgumentCaptor<WebContentsObserver> mWebContentsObserverCaptor;
 
     private SettableNullableObservableSupplier<Tab> mTabSupplier;
     private CustomTabOpenInAppEntryPoint mEntryPoint;
@@ -110,9 +112,11 @@ public class CustomTabOpenInAppEntryPointUnitTest {
     public void getOpenInAppInfoForMenuItem() {
         OpenInAppDelegate delegate = OpenInAppDelegate.from(mTab);
 
-        var captor = ArgumentCaptor.forClass(WebContentsObserver.class);
-        verify(((WebContentsObserver.Observable) mWebContents)).addObserver(captor.capture());
-        captor.getValue().didFinishNavigationInPrimaryMainFrame(mNavigationHandle);
+        verify(((WebContentsObserver.Observable) mWebContents))
+                .addObserver(mWebContentsObserverCaptor.capture());
+        mWebContentsObserverCaptor
+                .getValue()
+                .didFinishNavigationInPrimaryMainFrame(mNavigationHandle);
 
         // Initial state after navigation: app info should be null.
         assertNull(mEntryPoint.getOpenInAppInfoForMenuItem());

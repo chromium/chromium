@@ -17,7 +17,6 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -33,6 +32,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -79,6 +79,10 @@ public class TabArchiverUnitTest {
     private @Mock TabGroupSyncService mTabGroupSyncService;
     private @Mock TabRemover mTabRemover;
     private @Mock TabRemover mIncogTabRemover;
+    @Mock private TabArchiver.Observer mTabArchiverObserver;
+    @Mock private TabCreator mTabCreator;
+    @Mock private MockTab mMockTab;
+    @Captor private ArgumentCaptor<TabState> mTabStateCaptor;
 
     private MockTabModelSelector mTabModelSelector;
     private TabArchiverImpl mTabArchiver;
@@ -225,12 +229,11 @@ public class TabArchiverUnitTest {
             tab.setTimestampMillis(TimeUnit.HOURS.toMillis(2)); // Same as clock
         }
 
-        TabArchiver.Observer observer = mock(TabArchiver.Observer.class);
-        mTabArchiver.addObserver(observer);
+        mTabArchiver.addObserver(mTabArchiverObserver);
 
         mTabArchiver.doArchivePass(mTabModelSelector);
         shadowOf(Looper.getMainLooper()).idle();
-        verify(observer).onArchivePersistedTabDataCreated();
+        verify(mTabArchiverObserver).onArchivePersistedTabDataCreated();
     }
 
     @Test
@@ -414,18 +417,16 @@ public class TabArchiverUnitTest {
 
         TabStateExtractor.setTabStateForTesting(tab.getId(), null);
 
-        TabCreator regularTabCreator = mock(TabCreator.class);
-
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher("Tabs.ArchivedTabRestored.TabCount", 0);
 
         mTabArchiver.unarchiveAndRestoreTabs(
-                regularTabCreator,
+                mTabCreator,
                 Collections.singletonList(tab),
                 /* updateTimestamp= */ true,
                 /* areTabsBeingOpened= */ false);
 
-        verify(regularTabCreator, never()).createFrozenTab(any(), anyInt(), anyInt());
+        verify(mTabCreator, never()).createFrozenTab(any(), anyInt(), anyInt());
         assertEquals(12345L, tab.getTimestampMillis());
         verify(mTabRemover)
                 .closeTabs(
@@ -444,19 +445,18 @@ public class TabArchiverUnitTest {
         tabState.contentsState = mWebContentsState;
         TabStateExtractor.setTabStateForTesting(tab.getId(), tabState);
 
-        TabCreator regularTabCreator = mock(TabCreator.class);
-        doReturn(null).when(regularTabCreator).createFrozenTab(any(), eq(tab.getId()), anyInt());
+        doReturn(null).when(mTabCreator).createFrozenTab(any(), eq(tab.getId()), anyInt());
 
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher("Tabs.ArchivedTabRestored.TabCount", 0);
 
         mTabArchiver.unarchiveAndRestoreTabs(
-                regularTabCreator,
+                mTabCreator,
                 Collections.singletonList(tab),
                 /* updateTimestamp= */ true,
                 /* areTabsBeingOpened= */ false);
 
-        verify(regularTabCreator).createFrozenTab(any(), eq(tab.getId()), anyInt());
+        verify(mTabCreator).createFrozenTab(any(), eq(tab.getId()), anyInt());
         verify(mTabRemover)
                 .closeTabs(
                         argThat(params -> params.tabs != null && params.tabs.isEmpty()),
@@ -474,28 +474,22 @@ public class TabArchiverUnitTest {
         tabState.contentsState = mWebContentsState;
         TabStateExtractor.setTabStateForTesting(tab.getId(), tabState);
 
-        TabCreator regularTabCreator = mock(TabCreator.class);
-        MockTab restoredTab = mock(MockTab.class);
-        doReturn(restoredTab)
-                .when(regularTabCreator)
-                .createFrozenTab(any(), eq(tab.getId()), anyInt());
+        doReturn(mMockTab).when(mTabCreator).createFrozenTab(any(), eq(tab.getId()), anyInt());
 
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher("Tabs.ArchivedTabRestored.TabCount", 1);
 
         mTabArchiver.unarchiveAndRestoreTabs(
-                regularTabCreator,
+                mTabCreator,
                 Collections.singletonList(tab),
                 /* updateTimestamp= */ true,
                 /* areTabsBeingOpened= */ false);
 
         assertEquals(12345L, tab.getTimestampMillis());
-        ArgumentCaptor<TabState> tabStateCaptor = ArgumentCaptor.forClass(TabState.class);
-        verify(regularTabCreator)
-                .createFrozenTab(tabStateCaptor.capture(), eq(tab.getId()), anyInt());
-        assertEquals(CURRENT_TIMESTAMP, tabStateCaptor.getValue().timestampMillis);
-        verify(restoredTab).setTimestampMillis(eq(CURRENT_TIMESTAMP));
-        verify(restoredTab).onTabRestoredFromArchivedTabModel();
+        verify(mTabCreator).createFrozenTab(mTabStateCaptor.capture(), eq(tab.getId()), anyInt());
+        assertEquals(CURRENT_TIMESTAMP, mTabStateCaptor.getValue().timestampMillis);
+        verify(mMockTab).setTimestampMillis(eq(CURRENT_TIMESTAMP));
+        verify(mMockTab).onTabRestoredFromArchivedTabModel();
         verify(mTabRemover)
                 .closeTabs(
                         argThat(params -> params.tabs != null && params.tabs.contains(tab)),
@@ -520,13 +514,10 @@ public class TabArchiverUnitTest {
         restoredTab.setWebContentsState(mWebContentsState);
         restoredTab.setLastNavigationCommittedTimestampMillis(TimeUnit.HOURS.toMillis(1));
 
-        TabCreator regularTabCreator = mock(TabCreator.class);
-        doReturn(restoredTab)
-                .when(regularTabCreator)
-                .createFrozenTab(any(), eq(tab.getId()), anyInt());
+        doReturn(restoredTab).when(mTabCreator).createFrozenTab(any(), eq(tab.getId()), anyInt());
 
         mTabArchiver.unarchiveAndRestoreTabs(
-                regularTabCreator,
+                mTabCreator,
                 Collections.singletonList(tab),
                 /* updateTimestamp= */ true,
                 /* areTabsBeingOpened= */ false);
@@ -563,13 +554,10 @@ public class TabArchiverUnitTest {
         restoredTab.setTimestampMillis(0L);
         restoredTab.setLastNavigationCommittedTimestampMillis(TimeUnit.HOURS.toMillis(1));
 
-        TabCreator regularTabCreator = mock(TabCreator.class);
-        doReturn(restoredTab)
-                .when(regularTabCreator)
-                .createFrozenTab(any(), eq(tab.getId()), anyInt());
+        doReturn(restoredTab).when(mTabCreator).createFrozenTab(any(), eq(tab.getId()), anyInt());
 
         mTabArchiver.unarchiveAndRestoreTabs(
-                regularTabCreator,
+                mTabCreator,
                 Collections.singletonList(tab),
                 /* updateTimestamp= */ false,
                 /* areTabsBeingOpened= */ false);

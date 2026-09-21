@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -58,24 +57,26 @@ import java.util.concurrent.TimeUnit;
 /** Unit tests for {@link SendTabToSelfTabLabeller}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SendTabToSelfTabLabellerUnitTest {
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
     private static final int TAB_ID = 1;
     private static final int TAB_ID_2 = 2;
     private static final String SENDER_DEVICE_NAME = "Example Phone";
+
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private TabListNotificationHandler mTabListNotificationHandler;
     @Mock private TabModel mTabModel;
     @Mock private Tab mTab;
     @Mock private Profile mProfile;
     @Mock private SendTabToSelfTabCardLabelData.Natives mSendTabToSelfTabCardLabelDataNatives;
-
+    @Mock private Tab mOtherTab;
+    @Mock private Tab mTabB;
+    @Mock private TabModel mNewTabModel;
+    @Mock private Tab mNewTab;
     @Captor private ArgumentCaptor<Map<Integer, TabCardLabelData>> mLabelDataCaptor;
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
 
     private final SettableNullableObservableSupplier<TabModel> mTabModelSupplier =
             ObservableSuppliers.createNullable();
-
     private Context mContext;
     private UserDataHost mUserDataHost;
     private SendTabToSelfTabLabeller mLabeller;
@@ -253,9 +254,8 @@ public class SendTabToSelfTabLabellerUnitTest {
         verifyTabCardLabelUpdated("From Example Phone", 1);
 
         // Simulate user interaction on a different tab. mTab's label data remains active.
-        Tab otherTab = mock(Tab.class);
-        when(otherTab.getUserDataHost()).thenReturn(new UserDataHost());
-        mTabObserverCaptor.getValue().onShown(otherTab, TabSelectionType.FROM_USER);
+        when(mOtherTab.getUserDataHost()).thenReturn(new UserDataHost());
+        mTabObserverCaptor.getValue().onShown(mOtherTab, TabSelectionType.FROM_USER);
 
         // Re-run showAll. mTab's label is perfectly preserved.
         mLabeller.showAll(Collections.singletonList(mTab));
@@ -327,16 +327,15 @@ public class SendTabToSelfTabLabellerUnitTest {
         createAndSetLabelData();
 
         // Set up tabB (ID=2) with no STTS data.
-        Tab tabB = mock(Tab.class);
         UserDataHost userDataHostB = new UserDataHost();
-        when(tabB.getId()).thenReturn(TAB_ID_2);
-        when(tabB.isInitialized()).thenReturn(true);
-        when(tabB.getUserDataHost()).thenReturn(userDataHostB);
+        when(mTabB.getId()).thenReturn(TAB_ID_2);
+        when(mTabB.isInitialized()).thenReturn(true);
+        when(mTabB.getUserDataHost()).thenReturn(userDataHostB);
 
         // Update tab model to contain both tabs.
         when(mTabModel.getCount()).thenReturn(2);
         when(mTabModel.getTabAt(0)).thenReturn(mTab);
-        when(mTabModel.getTabAt(1)).thenReturn(tabB);
+        when(mTabModel.getTabAt(1)).thenReturn(mTabB);
 
         // Call showAll(null) to process all tabs in the model.
         mLabeller.showAll(null);
@@ -364,16 +363,15 @@ public class SendTabToSelfTabLabellerUnitTest {
         mUserDataHost.removeUserData(SendTabToSelfTabCardLabelData.class);
 
         // Set up Tab B (ID=2) with no STTS data (restarted/removed from memory).
-        Tab tabB = mock(Tab.class);
         UserDataHost userDataHostB = new UserDataHost();
-        when(tabB.getId()).thenReturn(TAB_ID_2);
-        when(tabB.isInitialized()).thenReturn(true);
-        when(tabB.getUserDataHost()).thenReturn(userDataHostB);
+        when(mTabB.getId()).thenReturn(TAB_ID_2);
+        when(mTabB.isInitialized()).thenReturn(true);
+        when(mTabB.getUserDataHost()).thenReturn(userDataHostB);
 
         // Update tab model to contain both tabs.
         when(mTabModel.getCount()).thenReturn(2);
         when(mTabModel.getTabAt(0)).thenReturn(mTab);
-        when(mTabModel.getTabAt(1)).thenReturn(tabB);
+        when(mTabModel.getTabAt(1)).thenReturn(mTabB);
 
         // Call showAll(null) to process all tabs in the model (triggers async DB load for both).
         mLabeller.showAll(null);
@@ -417,24 +415,22 @@ public class SendTabToSelfTabLabellerUnitTest {
     @Test
     public void testOnTabModelChange() {
         // Create a new TabModel with a new Tab (ID 2).
-        TabModel newTabModel = mock(TabModel.class);
-        Tab newTab = mock(Tab.class);
-        when(newTab.getId()).thenReturn(TAB_ID_2);
-        when(newTab.isInitialized()).thenReturn(true);
+        when(mNewTab.getId()).thenReturn(TAB_ID_2);
+        when(mNewTab.isInitialized()).thenReturn(true);
         UserDataHost newUserDataHost = new UserDataHost();
-        when(newTab.getUserDataHost()).thenReturn(newUserDataHost);
+        when(mNewTab.getUserDataHost()).thenReturn(newUserDataHost);
 
         // Associate label data with the new tab.
         SendTabToSelfTabCardLabelData sttsData =
                 new SendTabToSelfTabCardLabelData(
-                        newTab, "test_guid2", "New Phone", System.currentTimeMillis());
+                        mNewTab, "test_guid2", "New Phone", System.currentTimeMillis());
         newUserDataHost.setUserData(SendTabToSelfTabCardLabelData.class, sttsData);
 
-        when(newTabModel.getCount()).thenReturn(1);
-        when(newTabModel.getTabAt(0)).thenReturn(newTab);
+        when(mNewTabModel.getCount()).thenReturn(1);
+        when(mNewTabModel.getTabAt(0)).thenReturn(mNewTab);
 
         // Switch the supplier to the new model.
-        mTabModelSupplier.set(newTabModel);
+        mTabModelSupplier.set(mNewTabModel);
 
         // Trigger showAll(null) which should fetch tabs from the current active model.
         mLabeller.showAll(null);

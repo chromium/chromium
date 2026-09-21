@@ -12,7 +12,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -57,9 +56,6 @@ import java.util.Map;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class SearchActivityUtilsUnitTest {
-    // Placeholder Activity class that guarantees the PackageName is valid for IntentUtils.
-    private static class TestActivity extends Activity {}
-
     private static final GURL GOOD_URL = new GURL("https://abc.xyz");
     private static final GURL EMPTY_URL = GURL.emptyGURL();
     private static final OmniboxLoadUrlParams LOAD_URL_PARAMS_NULL_URL =
@@ -71,15 +67,20 @@ public class SearchActivityUtilsUnitTest {
     private static final ComponentName COMPONENT_UNTRUSTED =
             new ComponentName("com.some.package", "com.some.package.test.Activity");
 
-    private final Activity mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
-    private final SearchActivityClientImpl mClient =
-            new SearchActivityClientImpl(mActivity, IntentOrigin.CUSTOM_TAB);
-
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private @Mock ResourceRequestBody.Natives mResourceRequestBodyJni;
     private @Mock TabModelSelector mTabModelSelector;
     private @Mock TabModel mTabModel;
     private @Mock Tab mTab;
+    @Mock private TabModel mDifferentModel;
+
+    private final Activity mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
+    private final SearchActivityClientImpl mClient =
+            new SearchActivityClientImpl(mActivity, IntentOrigin.CUSTOM_TAB);
+
+    // Placeholder Activity class that guarantees the PackageName is valid for IntentUtils.
+    private static class TestActivity extends Activity {}
 
     @Before
     public void setUp() {
@@ -661,8 +662,7 @@ public class SearchActivityUtilsUnitTest {
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
         int tabId = 123;
         when(mTab.getId()).thenReturn(tabId);
-        TabModel differentModel = mock(TabModel.class);
-        when(mTabModelSelector.getCurrentModel()).thenReturn(differentModel);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mDifferentModel);
 
         TabWindowInfo tabWindowInfo = new TabWindowInfo(2, mTabModelSelector, mTabModel, mTab);
         boolean[] callbackCalled = new boolean[1];

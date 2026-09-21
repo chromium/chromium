@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -43,14 +42,15 @@ import java.util.function.Supplier;
 @RunWith(BaseRobolectricTestRunner.class)
 public final class OpenInBrowserButtonControllerUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    private Context mContext;
 
     @Mock private Tab mTab;
     @Mock private Drawable mDrawable;
     @Mock private Supplier<Tab> mTabSupplier;
     @Mock private Runnable mOpenInBrowserRunnable;
     @Mock private Tracker mTracker;
+    @Mock private View mView;
 
+    private Context mContext;
     private OpenInBrowserButtonController mOpenInBrowserButtonController;
     private UserActionTester mActionTester;
 
@@ -103,8 +103,11 @@ public final class OpenInBrowserButtonControllerUnitTest {
                         .ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_OPEN_IN_BROWSER_FEATURE;
         doReturn(true).when(mTracker).shouldTriggerHelpUi(feature);
 
-        View view = mock(View.class);
-        mOpenInBrowserButtonController.get(mTab).getButtonSpec().getOnClickListener().onClick(view);
+        mOpenInBrowserButtonController
+                .get(mTab)
+                .getButtonSpec()
+                .getOnClickListener()
+                .onClick(mView);
 
         verify(mTracker, times(1))
                 .notifyEvent(EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_OPEN_IN_BROWSER_OPENED);

@@ -9,7 +9,6 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -70,6 +69,9 @@ public class LogoCoordinatorUnitTest {
     @Mock private LogoMediator mLogoMediator;
     @Mock private NtpCustomizationConfigManager mNtpCustomizationConfigManager;
     @Mock private Supplier<Boolean> mIsInMultiWindowModeSupplier;
+    @Mock private ViewStub mViewStub;
+    @Mock private NtpCustomizationPolicyManager mNtpCustomizationPolicyManager;
+    @Mock private BackgroundImageInfo mBackgroundImageInfo;
 
     @Captor
     private ArgumentCaptor<NtpCustomizationConfigManager.HomepageStateListener>
@@ -87,8 +89,7 @@ public class LogoCoordinatorUnitTest {
         NtpCustomizationConfigManager.setInstanceForTesting(mNtpCustomizationConfigManager);
         when(mParentView.findViewById(R.id.logo_container_view)).thenReturn(mLogoContainerView);
         when(mIsInMultiWindowModeSupplier.get()).thenReturn(false);
-        ViewStub mockStub = mock(ViewStub.class);
-        when(mParentView.findViewById(R.id.logo_view_stub)).thenReturn(mockStub);
+        when(mParentView.findViewById(R.id.logo_view_stub)).thenReturn(mViewStub);
     }
 
     @Test
@@ -101,9 +102,8 @@ public class LogoCoordinatorUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
     public void testMaybeInitHomepageStateListener_disabledByPolicy() {
-        NtpCustomizationPolicyManager policyManager = mock(NtpCustomizationPolicyManager.class);
-        NtpCustomizationPolicyManager.setInstanceForTesting(policyManager);
-        when(policyManager.isNtpCustomBackgroundEnabled()).thenReturn(false);
+        NtpCustomizationPolicyManager.setInstanceForTesting(mNtpCustomizationPolicyManager);
+        when(mNtpCustomizationPolicyManager.isNtpCustomBackgroundEnabled()).thenReturn(false);
 
         createLogoCoordinator();
         verify(mNtpCustomizationConfigManager, never()).addListener(any(), any(), anyBoolean());
@@ -121,7 +121,6 @@ public class LogoCoordinatorUnitTest {
     @EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
     public void testHomepageStateListener_GoogleLogoNotShown() {
         Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
-        BackgroundImageInfo backgroundImageInfo = mock(BackgroundImageInfo.class);
 
         when(mLogoMediator.isDefaultGoogleLogoShown()).thenReturn(false);
         createLogoCoordinator();
@@ -132,7 +131,7 @@ public class LogoCoordinatorUnitTest {
                 .getValue()
                 .onBackgroundImageChanged(
                         bitmap,
-                        backgroundImageInfo,
+                        mBackgroundImageInfo,
                         false,
                         NtpBackgroundType.DEFAULT,
                         NtpBackgroundType.IMAGE_FROM_DISK);
@@ -144,7 +143,6 @@ public class LogoCoordinatorUnitTest {
     @EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
     public void testHomepageStateListener_onBackgroundImageChanged() {
         Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
-        BackgroundImageInfo backgroundImageInfo = mock(BackgroundImageInfo.class);
 
         when(mLogoMediator.isDefaultGoogleLogoShown()).thenReturn(true);
         createLogoCoordinator();
@@ -155,7 +153,7 @@ public class LogoCoordinatorUnitTest {
                 .getValue()
                 .onBackgroundImageChanged(
                         bitmap,
-                        backgroundImageInfo,
+                        mBackgroundImageInfo,
                         false,
                         NtpBackgroundType.DEFAULT,
                         NtpBackgroundType.IMAGE_FROM_DISK);
@@ -168,7 +166,7 @@ public class LogoCoordinatorUnitTest {
                 .getValue()
                 .onBackgroundImageChanged(
                         Bitmap.createBitmap(20, 20, Bitmap.Config.ARGB_8888),
-                        backgroundImageInfo,
+                        mBackgroundImageInfo,
                         false,
                         NtpBackgroundType.IMAGE_FROM_DISK,
                         NtpBackgroundType.THEME_COLLECTION);
@@ -249,7 +247,6 @@ public class LogoCoordinatorUnitTest {
     @EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
     public void testHomepageStateListener_onBackgroundReset() {
         Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
-        BackgroundImageInfo backgroundImageInfo = mock(BackgroundImageInfo.class);
 
         when(mLogoMediator.isDefaultGoogleLogoShown()).thenReturn(true);
         createLogoCoordinator();
@@ -260,7 +257,7 @@ public class LogoCoordinatorUnitTest {
                 .getValue()
                 .onBackgroundImageChanged(
                         bitmap,
-                        backgroundImageInfo,
+                        mBackgroundImageInfo,
                         false,
                         NtpBackgroundType.DEFAULT,
                         NtpBackgroundType.IMAGE_FROM_DISK);

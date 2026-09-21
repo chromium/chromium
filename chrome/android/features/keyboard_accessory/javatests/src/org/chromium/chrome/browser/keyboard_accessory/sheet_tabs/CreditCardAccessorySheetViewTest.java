@@ -14,7 +14,6 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.graphics.Bitmap;
@@ -79,10 +78,6 @@ public class CreditCardAccessorySheetViewTest {
     private static final Bitmap TEST_CARD_ART_IMAGE =
             Bitmap.createBitmap(100, 200, Bitmap.Config.ARGB_8888);
 
-    private WebPageStation mPage;
-    private AccessorySheetTabItemsModel mModel;
-    private final AtomicReference<RecyclerView> mView = new AtomicReference<>();
-
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
@@ -90,6 +85,11 @@ public class CreditCardAccessorySheetViewTest {
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Mock AutofillImageFetcher mMockImageFetcher;
+    @Mock private GURL mGURL;
+
+    private WebPageStation mPage;
+    private AccessorySheetTabItemsModel mModel;
+    private final AtomicReference<RecyclerView> mView = new AtomicReference<>();
 
     @Before
     public void setUp() throws InterruptedException {
@@ -215,9 +215,8 @@ public class CreditCardAccessorySheetViewTest {
     @Test
     @MediumTest
     public void testAddingUserInfoWithIconUrl_iconCachedInImageFetcher() throws ExecutionException {
-        GURL iconUrl = mock(GURL.class);
-        when(iconUrl.isValid()).thenReturn(true);
-        when(iconUrl.getSpec()).thenReturn(CUSTOM_ICON_URL);
+        when(mGURL.isValid()).thenReturn(true);
+        when(mGURL.getSpec()).thenReturn(CUSTOM_ICON_URL);
         // Return the cached image when AutofillImageFetcher.getImageIfAvailable is called for the
         // above url.
         when(mMockImageFetcher.getImageIfAvailable(any(), any())).thenReturn(TEST_CARD_ART_IMAGE);
@@ -233,7 +232,7 @@ public class CreditCardAccessorySheetViewTest {
                                             "2034",
                                             "Kirby Puckett",
                                             "123",
-                                            iconUrl,
+                                            mGURL,
                                             new AtomicBoolean()),
                                     AccessorySheetDataPiece.Type.CREDIT_CARD_INFO));
                     mModel.add(
@@ -262,9 +261,8 @@ public class CreditCardAccessorySheetViewTest {
     @MediumTest
     public void testAddingUserInfoWithIconUrl_iconNotCachedInAutofillImageFetcher()
             throws ExecutionException {
-        GURL iconUrl = mock(GURL.class);
-        when(iconUrl.isValid()).thenReturn(true);
-        when(iconUrl.getSpec()).thenReturn(CUSTOM_ICON_URL);
+        when(mGURL.isValid()).thenReturn(true);
+        when(mGURL.getSpec()).thenReturn(CUSTOM_ICON_URL);
         // Return null to AutofillImageFetcher.getImageIfAvailable to indicate that the image is not
         // present in the cache.
         when(mMockImageFetcher.getImageIfAvailable(any(), any())).thenReturn(null);
@@ -280,7 +278,7 @@ public class CreditCardAccessorySheetViewTest {
                                             "2034",
                                             "Kirby Puckett",
                                             "123",
-                                            iconUrl,
+                                            mGURL,
                                             new AtomicBoolean()),
                                     AccessorySheetDataPiece.Type.CREDIT_CARD_INFO));
                     mModel.add(

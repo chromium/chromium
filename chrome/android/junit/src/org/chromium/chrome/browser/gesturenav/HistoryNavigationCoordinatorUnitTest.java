@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.gesturenav;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -44,8 +43,6 @@ import org.chromium.ui.insets.InsetObserver;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class HistoryNavigationCoordinatorUnitTest {
-    private HistoryNavigationCoordinator mHistoryNavigationCoordinator;
-
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
@@ -65,8 +62,10 @@ public class HistoryNavigationCoordinatorUnitTest {
     @Mock private Tab mTab;
     @Mock private GestureNavigationUtils.Natives mGestureNavigationUtilsJni;
     @Mock private SideUiStateProvider mSideUiStateProvider;
-
+    @Mock private SideUiStateProvider mNewProvider;
     @Captor private ArgumentCaptor<FullscreenManager.Observer> mFullscreenObserverCaptor;
+
+    private HistoryNavigationCoordinator mHistoryNavigationCoordinator;
 
     @Before
     public void setup() {
@@ -208,9 +207,8 @@ public class HistoryNavigationCoordinatorUnitTest {
         verify(mSideUiStateProvider, times(1)).addObserver(any());
 
         // Setting a different provider should remove the observer from the old one.
-        SideUiStateProvider newProvider = mock(SideUiStateProvider.class);
-        mHistoryNavigationCoordinator.setSideUiStateProvider(newProvider);
+        mHistoryNavigationCoordinator.setSideUiStateProvider(mNewProvider);
         verify(mSideUiStateProvider).removeObserver(any());
-        verify(newProvider).addObserver(any());
+        verify(mNewProvider).addObserver(any());
     }
 }

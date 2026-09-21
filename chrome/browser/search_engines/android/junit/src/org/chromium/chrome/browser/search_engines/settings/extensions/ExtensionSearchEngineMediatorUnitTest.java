@@ -18,6 +18,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -59,6 +60,7 @@ public class ExtensionSearchEngineMediatorUnitTest {
     @Mock private ModelList mModelList;
     @Mock private SettingsCustomTabLauncher mSettingsCustomTabLauncher;
     @Mock private ExtensionControlHandler mMockExtensionControlHandler;
+    @Captor private ArgumentCaptor<ListItem> mItemCaptor;
 
     private Context mContext;
     private ExtensionSearchEngineMediator mMediator;
@@ -98,10 +100,9 @@ public class ExtensionSearchEngineMediatorUnitTest {
 
         verify(mModelList).clear();
         verify(mTemplateUrlService).getTemplateUrlsByCategory(TemplateUrlCategory.EXTENSION);
-        ArgumentCaptor<ListItem> itemCaptor = ArgumentCaptor.forClass(ListItem.class);
-        verify(mModelList).add(itemCaptor.capture());
+        verify(mModelList).add(mItemCaptor.capture());
 
-        ListItem item = itemCaptor.getValue();
+        ListItem item = mItemCaptor.getValue();
         assertEquals(SiteSearchProperties.ViewType.SEARCH_ENGINE, item.type);
         assertEquals("extension", item.model.get(SiteSearchProperties.SITE_NAME));
         assertEquals("keyword", item.model.get(SiteSearchProperties.SITE_SHORTCUT));
@@ -125,10 +126,9 @@ public class ExtensionSearchEngineMediatorUnitTest {
         // Trigger the refreshList() to call mModelList.add().
         mMediator.onTemplateURLServiceChanged();
 
-        ArgumentCaptor<ListItem> itemCaptor = ArgumentCaptor.forClass(ListItem.class);
-        verify(mModelList).add(itemCaptor.capture());
+        verify(mModelList).add(mItemCaptor.capture());
 
-        PropertyModel model = itemCaptor.getValue().model;
+        PropertyModel model = mItemCaptor.getValue().model;
         ListMenuDelegate delegate = model.get(SiteSearchProperties.MENU_DELEGATE);
 
         assertNotNull(delegate);

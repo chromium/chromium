@@ -39,7 +39,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -100,6 +99,9 @@ public class ReturnToChromeUtilUnitTest {
     @Mock private Bundle mSaveInstanceState;
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     @Mock private HomepageManager mHomepageManager;
+    @Mock private Tab mTab;
+    @Mock private NewTabPage mActiveNtp;
+    @Mock private FrozenNativePage mFrozenNativePage;
 
     @Before
     public void setUp() {
@@ -313,19 +315,15 @@ public class ReturnToChromeUtilUnitTest {
         doReturn(mNewTabPage).when(mNtpTab).getNativePage();
         doReturn(mNtpTab).when(mCurrentTabModel).getTabAt(1);
 
-        Tab activeNtpTab = Mockito.mock(Tab.class);
-        NewTabPage activeNtp = Mockito.mock(NewTabPage.class);
-        doReturn(JUnitTestGURLs.NTP_NATIVE_URL).when(activeNtpTab).getUrl();
-        doReturn(true).when(activeNtpTab).isNativePage();
-        doReturn(activeNtp).when(activeNtpTab).getNativePage();
-        doReturn(activeNtpTab).when(mCurrentTabModel).getTabAt(2);
-        doAnswer(inv -> List.of(mTab1, mNtpTab, activeNtpTab).iterator())
-                .when(mCurrentTabModel)
-                .iterator();
+        doReturn(JUnitTestGURLs.NTP_NATIVE_URL).when(mTab).getUrl();
+        doReturn(true).when(mTab).isNativePage();
+        doReturn(mActiveNtp).when(mTab).getNativePage();
+        doReturn(mTab).when(mCurrentTabModel).getTabAt(2);
+        doAnswer(inv -> List.of(mTab1, mNtpTab, mTab).iterator()).when(mCurrentTabModel).iterator();
 
         // Set the active NTP tab as the last Tab, and has a tracking Tab.
         doReturn(2).when(mCurrentTabModel).index();
-        doReturn(true).when(mHomeSurfaceTracker).canShowHomeSurface(activeNtpTab);
+        doReturn(true).when(mHomeSurfaceTracker).canShowHomeSurface(mTab);
 
         // Verifies that the first found NTP isn't the active NTP Tab.
         Assert.assertEquals(
@@ -347,7 +345,7 @@ public class ReturnToChromeUtilUnitTest {
         verify(mNewTabPage, never()).showHomeSurfaceUiOnNtp(any());
 
         // Set the last active NTP doesn't have a tracking Tab.
-        doReturn(false).when(mHomeSurfaceTracker).canShowHomeSurface(activeNtpTab);
+        doReturn(false).when(mHomeSurfaceTracker).canShowHomeSurface(mTab);
         histogram =
                 HistogramWatcher.newBuilder()
                         .expectBooleanRecord(HOME_SURFACE_SHOWN_AT_STARTUP_UMA, true)
@@ -506,9 +504,8 @@ public class ReturnToChromeUtilUnitTest {
         ReturnToChromeUtil.showHomeSurfaceUiOnNtp(mNtpTab, mTab1, mHomeSurfaceTracker);
         histogram.assertExpected();
 
-        FrozenNativePage frozenNativePage = Mockito.mock(FrozenNativePage.class);
-        doReturn(true).when(frozenNativePage).isFrozen();
-        doReturn(frozenNativePage).when(mNtpTab).getNativePage();
+        doReturn(true).when(mFrozenNativePage).isFrozen();
+        doReturn(mFrozenNativePage).when(mNtpTab).getNativePage();
         histogram =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(

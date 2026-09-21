@@ -50,6 +50,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -173,7 +174,6 @@ public class ChromeContextMenuPopulatorTest {
     @Mock private Activity mActivity;
     @Mock private TabContextMenuItemDelegate mItemDelegate;
     @Mock private Tab mTab;
-    private UserDataHost mUserDataHost;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private ShareDelegate mShareDelegate;
     @Mock private ExternalAuthUtils mExternalAuthUtils;
@@ -190,7 +190,9 @@ public class ChromeContextMenuPopulatorTest {
     @Mock private ChromeContextMenuPopulator.PendingIntentSender mMockPendingIntentSender;
     @Mock private ForcedSigninStatusProvider mMockForcedSigninStatusProvider;
     @Mock private TranslateBridge.Natives mTranslateBridgeMock;
+    @Captor private ArgumentCaptor<Intent> mIntentCaptor;
 
+    private UserDataHost mUserDataHost;
     private ChromeContextMenuPopulator mPopulator;
 
     @Before
@@ -3091,11 +3093,10 @@ public class ChromeContextMenuPopulatorTest {
                         ChromeContextMenuPopulator.getCustomMenuItemIdStartForTesting()));
         linkHistogramWatcher.assertExpected();
 
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
         verify(mMockPendingIntentSender)
-                .send(eq(mockPendingIntent), any(Context.class), eq(0), intentCaptor.capture());
+                .send(eq(mockPendingIntent), any(Context.class), eq(0), mIntentCaptor.capture());
 
-        Intent capturedIntent = intentCaptor.getValue();
+        Intent capturedIntent = mIntentCaptor.getValue();
         assertEquals(
                 "The intent extra for the triggered action id should be the same as the link action"
                         + " id ("
@@ -3209,11 +3210,10 @@ public class ChromeContextMenuPopulatorTest {
                         ChromeContextMenuPopulator.getCustomMenuItemIdStartForTesting()));
         imageHistogramWatcher.assertExpected();
 
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
         verify(mMockPendingIntentSender)
-                .send(eq(mockPendingIntent), any(Context.class), eq(0), intentCaptor.capture());
+                .send(eq(mockPendingIntent), any(Context.class), eq(0), mIntentCaptor.capture());
 
-        Intent capturedIntent = intentCaptor.getValue();
+        Intent capturedIntent = mIntentCaptor.getValue();
         assertEquals(
                 "The intent extra for the triggered action id should be the same as the image"
                         + " action id ("
@@ -3340,11 +3340,10 @@ public class ChromeContextMenuPopulatorTest {
                         ChromeContextMenuPopulator.getCustomMenuItemIdStartForTesting()));
         imageHistogramWatcher.assertExpected();
 
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
         verify(mMockPendingIntentSender)
-                .send(eq(mockPendingIntent), any(Context.class), eq(0), intentCaptor.capture());
+                .send(eq(mockPendingIntent), any(Context.class), eq(0), mIntentCaptor.capture());
 
-        Intent capturedIntent = intentCaptor.getValue();
+        Intent capturedIntent = mIntentCaptor.getValue();
         assertEquals(
                 "The page uri should be set for image-link items.",
                 PAGE_URL,

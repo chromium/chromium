@@ -103,6 +103,7 @@ public class HomepageSettingsUnitTest {
     @Mock public HomepagePolicyManager mMockHomepagePolicyManager;
     @Mock public PartnerBrowserCustomizations mMockPartnerBrowserCustomizations;
     @Mock public Profile mProfile;
+    @Mock private PrefService mPrefService;
 
     private ActivityScenario<TestActivity> mActivityScenario;
     private TestActivity mActivity;
@@ -129,7 +130,7 @@ public class HomepageSettingsUnitTest {
                 });
         mActionTester = new UserActionTester();
         ProfileManager.setLastUsedProfileForTesting(mProfile);
-        HomepagePolicyManager.setPrefServiceForTesting(Mockito.mock(PrefService.class));
+        HomepagePolicyManager.setPrefServiceForTesting(mPrefService);
     }
 
     @After

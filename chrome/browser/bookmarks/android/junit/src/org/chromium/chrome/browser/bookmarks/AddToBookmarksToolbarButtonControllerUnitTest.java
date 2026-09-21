@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -61,7 +60,11 @@ public class AddToBookmarksToolbarButtonControllerUnitTest {
     @Mock private TabBookmarker mTabBookmarker;
     @Mock private BookmarkModel mBookmarkModel;
     @Mock private ActivityLifecycleDispatcherImpl mActivityLifecycleDispatcher;
+    @Mock private Tab mAnotherTab;
+    @Mock private ButtonDataObserver mButtonDataObserver;
     @Captor private ArgumentCaptor<ConfigurationChangedObserver> mConfigurationChangedObserver;
+    @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
+    @Captor private ArgumentCaptor<BookmarkModelObserver> mBookmarkModelObserverCaptor;
 
     private final SettableNullableObservableSupplier<Tab> mTabSupplier =
             ObservableSuppliers.createNullable();
@@ -201,19 +204,17 @@ public class AddToBookmarksToolbarButtonControllerUnitTest {
                 .getScenario()
                 .onActivity(
                         activity -> {
-                            Tab anotherTab = mock(Tab.class);
                             when(mTab.getContext()).thenReturn(activity);
-                            when(anotherTab.getContext()).thenReturn(activity);
+                            when(mAnotherTab.getContext()).thenReturn(activity);
                             // Set the current tab as not bookmarked, and a second tab as
                             // bookmarked.
                             when(mBookmarkModel.hasBookmarkIdForTab(mTab)).thenReturn(false);
-                            when(mBookmarkModel.hasBookmarkIdForTab(anotherTab)).thenReturn(true);
+                            when(mBookmarkModel.hasBookmarkIdForTab(mAnotherTab)).thenReturn(true);
                             AddToBookmarksToolbarButtonController
                                     addToBookmarksToolbarButtonController =
                                             createController(activity);
 
-                            ButtonDataObserver mockButtonObserver = mock(ButtonDataObserver.class);
-                            addToBookmarksToolbarButtonController.addObserver(mockButtonObserver);
+                            addToBookmarksToolbarButtonController.addObserver(mButtonDataObserver);
 
                             ButtonData buttonData = addToBookmarksToolbarButtonController.get(mTab);
 
@@ -222,9 +223,9 @@ public class AddToBookmarksToolbarButtonControllerUnitTest {
                                     buttonData.getButtonSpec().getContentDescription();
 
                             // Change the active tab to the one already bookmarked.
-                            mTabSupplier.set(anotherTab);
+                            mTabSupplier.set(mAnotherTab);
 
-                            buttonData = addToBookmarksToolbarButtonController.get(anotherTab);
+                            buttonData = addToBookmarksToolbarButtonController.get(mAnotherTab);
 
                             // The icon and description should be different.
                             Assert.assertNotEquals(
@@ -233,7 +234,7 @@ public class AddToBookmarksToolbarButtonControllerUnitTest {
                             Assert.assertNotEquals(
                                     originalDrawable, buttonData.getButtonSpec().getDrawable());
                             // The provider should have notified of a change.
-                            verify(mockButtonObserver).buttonDataChanged(true);
+                            verify(mButtonDataObserver).buttonDataChanged(true);
                         });
     }
 
@@ -243,8 +244,6 @@ public class AddToBookmarksToolbarButtonControllerUnitTest {
                 .getScenario()
                 .onActivity(
                         activity -> {
-                            ArgumentCaptor<TabObserver> tabObserverCaptor =
-                                    ArgumentCaptor.forClass(TabObserver.class);
                             when(mTab.getContext()).thenReturn(activity);
                             // Set the current tab as not bookmarked.
                             when(mBookmarkModel.hasBookmarkIdForTab(mTab)).thenReturn(false);
@@ -257,10 +256,9 @@ public class AddToBookmarksToolbarButtonControllerUnitTest {
                             // to ensure all Observable suppliers raise their events.
                             Shadows.shadowOf(Looper.getMainLooper()).idle();
 
-                            verify(mTab).addObserver(tabObserverCaptor.capture());
+                            verify(mTab).addObserver(mTabObserverCaptor.capture());
 
-                            ButtonDataObserver mockButtonObserver = mock(ButtonDataObserver.class);
-                            addToBookmarksToolbarButtonController.addObserver(mockButtonObserver);
+                            addToBookmarksToolbarButtonController.addObserver(mButtonDataObserver);
 
                             ButtonData buttonData = addToBookmarksToolbarButtonController.get(mTab);
 
@@ -271,7 +269,7 @@ public class AddToBookmarksToolbarButtonControllerUnitTest {
                             // Set the current tab as bookmarked.
                             when(mBookmarkModel.hasBookmarkIdForTab(mTab)).thenReturn(true);
                             // Send an event notifying that the URL changed on the current tab.
-                            tabObserverCaptor.getValue().onUrlUpdated(mTab);
+                            mTabObserverCaptor.getValue().onUrlUpdated(mTab);
 
                             buttonData = addToBookmarksToolbarButtonController.get(mTab);
 
@@ -282,7 +280,7 @@ public class AddToBookmarksToolbarButtonControllerUnitTest {
                             Assert.assertNotEquals(
                                     originalDrawable, buttonData.getButtonSpec().getDrawable());
                             // The provider should have notified of a change.
-                            verify(mockButtonObserver).buttonDataChanged(true);
+                            verify(mButtonDataObserver).buttonDataChanged(true);
                         });
     }
 
@@ -292,8 +290,6 @@ public class AddToBookmarksToolbarButtonControllerUnitTest {
                 .getScenario()
                 .onActivity(
                         activity -> {
-                            ArgumentCaptor<BookmarkModelObserver> bookmarkModelObserverCaptor =
-                                    ArgumentCaptor.forClass(BookmarkModelObserver.class);
                             when(mTab.getContext()).thenReturn(activity);
                             // Set the current tab as not bookmarked.
                             when(mBookmarkModel.hasBookmarkIdForTab(mTab)).thenReturn(false);
@@ -307,10 +303,9 @@ public class AddToBookmarksToolbarButtonControllerUnitTest {
                             Shadows.shadowOf(Looper.getMainLooper()).idle();
 
                             verify(mBookmarkModel)
-                                    .addObserver(bookmarkModelObserverCaptor.capture());
+                                    .addObserver(mBookmarkModelObserverCaptor.capture());
 
-                            ButtonDataObserver mockButtonObserver = mock(ButtonDataObserver.class);
-                            addToBookmarksToolbarButtonController.addObserver(mockButtonObserver);
+                            addToBookmarksToolbarButtonController.addObserver(mButtonDataObserver);
 
                             ButtonData buttonData = addToBookmarksToolbarButtonController.get(mTab);
 
@@ -321,7 +316,7 @@ public class AddToBookmarksToolbarButtonControllerUnitTest {
                             when(mBookmarkModel.hasBookmarkIdForTab(mTab)).thenReturn(true);
                             // Send and event notifying that something changed in the bookmark
                             // model.
-                            bookmarkModelObserverCaptor.getValue().bookmarkModelChanged();
+                            mBookmarkModelObserverCaptor.getValue().bookmarkModelChanged();
 
                             buttonData = addToBookmarksToolbarButtonController.get(mTab);
 
@@ -332,7 +327,7 @@ public class AddToBookmarksToolbarButtonControllerUnitTest {
                             Assert.assertNotEquals(
                                     originalDrawable, buttonData.getButtonSpec().getDrawable());
                             // The provider should have notified of a change.
-                            verify(mockButtonObserver).buttonDataChanged(true);
+                            verify(mButtonDataObserver).buttonDataChanged(true);
                         });
     }
 }

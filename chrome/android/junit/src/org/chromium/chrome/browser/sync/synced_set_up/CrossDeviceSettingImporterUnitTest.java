@@ -131,6 +131,7 @@ public class CrossDeviceSettingImporterUnitTest {
     @Captor private ArgumentCaptor<Snackbar> mSnackbarCaptor;
     @Captor private ArgumentCaptor<CrossDevicePrefTrackerObserver> mPrefTrackerObserverCaptor;
     @Captor private ArgumentCaptor<CrossDeviceThemeTracker.Observer> mThemeTrackerObserverCaptor;
+    @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
 
     private final SettableNullableObservableSupplier<Tab> mActivityTabSupplier =
             ObservableSuppliers.createNullable();
@@ -860,11 +861,10 @@ public class CrossDeviceSettingImporterUnitTest {
         initializeCrossDeviceSettingImporter();
         RobolectricUtil.runAllBackgroundAndUi();
 
-        ArgumentCaptor<TabObserver> tabObserverCaptor = ArgumentCaptor.forClass(TabObserver.class);
-        verify(mTab).addObserver(tabObserverCaptor.capture());
+        verify(mTab).addObserver(mTabObserverCaptor.capture());
 
-        tabObserverCaptor.getValue().onDestroyed(mTab);
-        verify(mTab).removeObserver(tabObserverCaptor.getValue());
+        mTabObserverCaptor.getValue().onDestroyed(mTab);
+        verify(mTab).removeObserver(mTabObserverCaptor.getValue());
     }
 
     @Test

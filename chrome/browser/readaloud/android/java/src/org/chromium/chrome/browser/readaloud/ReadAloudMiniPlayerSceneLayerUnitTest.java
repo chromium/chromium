@@ -21,7 +21,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -38,6 +37,7 @@ public class ReadAloudMiniPlayerSceneLayerUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private ReadAloudMiniPlayerSceneLayerJni mSceneLayerJni;
+    @Mock private SceneLayer mContentTree;
 
     private ReadAloudMiniPlayerSceneLayer mSceneLayer;
 
@@ -100,10 +100,9 @@ public class ReadAloudMiniPlayerSceneLayerUnitTest {
 
     @Test
     public void testSetContentTree() {
-        SceneLayer contentTree = Mockito.mock(SceneLayer.class);
-        mSceneLayer.setContentTree(contentTree);
+        mSceneLayer.setContentTree(mContentTree);
 
-        verify(mSceneLayerJni).setContentTree(anyLong(), eq(contentTree));
+        verify(mSceneLayerJni).setContentTree(anyLong(), eq(mContentTree));
     }
 
     @Test

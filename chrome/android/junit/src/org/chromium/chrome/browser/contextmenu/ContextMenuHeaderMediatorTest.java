@@ -24,7 +24,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -47,7 +46,6 @@ import org.chromium.url.JUnitTestGURLs;
 /** Unit tests for the context menu header mediator. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ContextMenuHeaderMediatorTest {
-
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
@@ -57,12 +55,11 @@ public class ContextMenuHeaderMediatorTest {
     @Mock LargeIconBridge.Natives mMockLargeIconBridgeJni;
     @Mock ContextMenuNativeDelegate mNativeDelegate;
     @Mock private MenuModelBridge mMenuModelBridge;
-
-    private Activity mActivity;
-    private final Profile mProfile = Mockito.mock(Profile.class);
-
+    @Mock private Profile mProfile;
     @Captor ArgumentCaptor<Callback<Bitmap>> mRetrieveImageCallbackCaptor;
     @Captor ArgumentCaptor<LargeIconBridge.LargeIconCallback> mLargeIconCallbackCaptor;
+
+    private Activity mActivity;
 
     @Before
     public void setUpTest() {

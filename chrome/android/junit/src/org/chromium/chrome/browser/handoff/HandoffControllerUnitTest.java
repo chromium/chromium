@@ -66,6 +66,8 @@ public class HandoffControllerUnitTest {
     @Mock private Tab mTab;
     @Mock private HandoffController.Delegate mDelegate;
     @Mock private ExternalIntentUrlChecker.Natives mExternalIntentUrlCheckerJni;
+    @Mock private Tab mTabB;
+    @Mock private Tab mIncognitoTab;
 
     private SettableNullableObservableSupplier<Tab> mCurrentTabSupplier;
     private ActivityTabProvider mActivityTabProvider;
@@ -168,14 +170,13 @@ public class HandoffControllerUnitTest {
         when(mDelegate.isHandoffEnabled(mActivity)).thenReturn(false);
         clearInvocations(mDelegate);
 
-        Tab tabB = mock(Tab.class);
-        when(tabB.isIncognitoBranded()).thenReturn(false);
-        when(tabB.getUrl()).thenReturn(new GURL("https://google.com"));
+        when(mTabB.isIncognitoBranded()).thenReturn(false);
+        when(mTabB.getUrl()).thenReturn(new GURL("https://google.com"));
 
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher("Android.Handoff.Enabled.TabSwitch", true);
 
-        mActivityTabProvider.setForTesting(tabB);
+        mActivityTabProvider.setForTesting(mTabB);
         ShadowLooper.idleMainLooper();
 
         verify(mDelegate, atLeastOnce()).setHandoffEnabled(eq(mActivity), eq(true));
@@ -336,10 +337,9 @@ public class HandoffControllerUnitTest {
         clearInvocations(mDelegate);
 
         // 2. Switch to Tab B (URL: google.com)
-        Tab tabB = mock(Tab.class);
-        when(tabB.getUrl()).thenReturn(new GURL("https://google.com"));
+        when(mTabB.getUrl()).thenReturn(new GURL("https://google.com"));
 
-        mActivityTabProvider.setForTesting(tabB);
+        mActivityTabProvider.setForTesting(mTabB);
         ShadowLooper.idleMainLooper();
 
         // Verify toggle - Force a state reset by toggling to false before re-enabling Handoff.
@@ -352,7 +352,7 @@ public class HandoffControllerUnitTest {
         // 3. onUrlUpdated fires for Tab B.
         // It should be deduplicated because onObservingDifferentTab already set mTabLastUrlSeen to
         // google.com.
-        mController.getActiveTabObserverForTesting().onUrlUpdated(tabB);
+        mController.getActiveTabObserverForTesting().onUrlUpdated(mTabB);
         verifyNoMoreInteractions(mDelegate);
     }
 
@@ -385,17 +385,16 @@ public class HandoffControllerUnitTest {
     public void testOnUrlUpdated_InIncognito_NotTriggered() {
         initializeController();
         // 1. Setup an incognito tab
-        Tab incognitoTab = mock(Tab.class);
-        when(incognitoTab.isIncognitoBranded()).thenReturn(true);
-        when(incognitoTab.getUrl()).thenReturn(new GURL("https://incognito.com"));
+        when(mIncognitoTab.isIncognitoBranded()).thenReturn(true);
+        when(mIncognitoTab.getUrl()).thenReturn(new GURL("https://incognito.com"));
 
         // 2. Switch to it (this will call onObservingDifferentTab and disable handoff)
-        mActivityTabProvider.setForTesting(incognitoTab);
+        mActivityTabProvider.setForTesting(mIncognitoTab);
         ShadowLooper.idleMainLooper();
         clearInvocations(mDelegate);
 
         // 3. Trigger URL update on the incognito tab
-        mController.getActiveTabObserverForTesting().onUrlUpdated(incognitoTab);
+        mController.getActiveTabObserverForTesting().onUrlUpdated(mIncognitoTab);
 
         // 4. Verify that updateHandoffState was NEVER called
         verifyNoMoreInteractions(mDelegate);

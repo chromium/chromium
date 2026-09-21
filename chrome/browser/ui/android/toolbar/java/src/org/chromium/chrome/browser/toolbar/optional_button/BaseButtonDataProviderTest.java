@@ -8,7 +8,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -44,6 +43,15 @@ import java.util.function.Supplier;
 /** Unit test for {@link BaseButtonDataProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class BaseButtonDataProviderTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private Tab mMockTab;
+    @Mock private ModalDialogManager mMockModalDialogManager;
+    @Mock private Drawable mDrawable;
+
+    private Activity mActivity;
+    private SettableMonotonicObservableSupplier<Tab> mMockTabSupplier;
+
     private static class TestButtonDataProvider extends BaseButtonDataProvider {
         public TestButtonDataProvider(
                 Supplier<Tab> activeTabSupplier,
@@ -77,12 +85,6 @@ public class BaseButtonDataProviderTest {
         public void onClick(View view) {}
     }
 
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    private Activity mActivity;
-    private SettableMonotonicObservableSupplier<Tab> mMockTabSupplier;
-    @Mock private Tab mMockTab;
-    @Mock private ModalDialogManager mMockModalDialogManager;
-
     @Before
     public void setUp() {
         FeatureOverrides.newBuilder().apply();
@@ -102,7 +104,7 @@ public class BaseButtonDataProviderTest {
                 new TestButtonDataProvider(
                         mMockTabSupplier,
                         mMockModalDialogManager,
-                        mock(Drawable.class),
+                        mDrawable,
                         mActivity.getString(R.string.enable_price_tracking_menu_item),
                         /* actionChipLabelResId= */ R.string.enable_price_tracking_menu_item,
                         /* supportsTinting= */ true,
@@ -122,7 +124,7 @@ public class BaseButtonDataProviderTest {
                 new TestButtonDataProvider(
                         mMockTabSupplier,
                         mMockModalDialogManager,
-                        mock(Drawable.class),
+                        mDrawable,
                         mActivity.getString(R.string.enable_price_tracking_menu_item),
                         /* actionChipLabelResId= */ R.string.enable_price_tracking_menu_item,
                         /* supportsTinting= */ true,
@@ -139,7 +141,7 @@ public class BaseButtonDataProviderTest {
                 new TestButtonDataProvider(
                         mMockTabSupplier,
                         mMockModalDialogManager,
-                        mock(Drawable.class),
+                        mDrawable,
                         mActivity.getString(R.string.enable_price_tracking_menu_item),
                         /* actionChipLabelResId= */ R.string.enable_price_tracking_menu_item,
                         /* supportsTinting= */ true,
@@ -158,7 +160,7 @@ public class BaseButtonDataProviderTest {
                 new TestButtonDataProvider(
                         mMockTabSupplier,
                         mMockModalDialogManager,
-                        mock(Drawable.class),
+                        mDrawable,
                         mActivity.getString(R.string.enable_price_tracking_menu_item),
                         /* actionChipLabelResId= */ R.string.enable_price_tracking_menu_item,
                         /* supportsTinting= */ true,

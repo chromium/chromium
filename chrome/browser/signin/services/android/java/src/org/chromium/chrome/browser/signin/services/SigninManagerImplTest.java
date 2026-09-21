@@ -13,7 +13,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.times;
@@ -44,6 +43,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
@@ -83,6 +83,7 @@ public class SigninManagerImplTest {
     @Mock private ExternalAuthUtils mExternalAuthUtils;
     @Mock private SigninManager.SignInStateObserver mSignInStateObserver;
     @Mock private SigninManagerImpl.Natives mNativeMock;
+    @Mock private SignInCallback mSignInCallback;
 
     private SigninManager mSigninManager;
     private IdentityManagerImpl mIdentityManager;
@@ -124,15 +125,16 @@ public class SigninManagerImplTest {
     public void testSignin() {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
 
-        SigninManager.SignInCallback callback = mock(SigninManager.SignInCallback.class);
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mSigninManager.signin(
-                                TestAccounts.ACCOUNT1, SigninAccessPoint.WEB_SIGNIN, callback));
+                                TestAccounts.ACCOUNT1,
+                                SigninAccessPoint.WEB_SIGNIN,
+                                mSignInCallback));
 
         // Signin should be complete and callback should be invoked.
-        verify(callback).onSignInComplete();
-        verify(callback, never()).onSignInAborted();
+        verify(mSignInCallback).onSignInComplete();
+        verify(mSignInCallback, never()).onSignInAborted();
 
         // The primary account is now present and consented to sign in.
         assertNotNull(mSigninTestRule.getPrimaryAccount());
@@ -182,15 +184,15 @@ public class SigninManagerImplTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.Android.AccountManagementAcceptedBeforeUserPolicyFetch", false);
 
-        SigninManager.SignInCallback callback = mock(SigninManager.SignInCallback.class);
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mSigninManager.signin(
                                 TestAccounts.MANAGED_ACCOUNT,
                                 SigninAccessPoint.WEB_SIGNIN,
-                                callback));
+                                mSignInCallback));
 
-        verify(callback, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL)).onSignInComplete();
+        verify(mSignInCallback, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+                .onSignInComplete();
         histogramWatcher.assertExpected();
     }
 
@@ -207,15 +209,15 @@ public class SigninManagerImplTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.Android.AccountManagementAcceptedBeforeUserPolicyFetch", false);
 
-        SigninManager.SignInCallback callback = mock(SigninManager.SignInCallback.class);
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mSigninManager.signin(
                                 TestAccounts.MANAGED_ACCOUNT,
                                 SigninAccessPoint.WEB_SIGNIN,
-                                callback));
+                                mSignInCallback));
 
-        verify(callback, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL)).onSignInComplete();
+        verify(mSignInCallback, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+                .onSignInComplete();
         histogramWatcher.assertExpected();
     }
 
@@ -232,15 +234,15 @@ public class SigninManagerImplTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.Android.AccountManagementAcceptedBeforeUserPolicyFetch", true);
 
-        SigninManager.SignInCallback callback = mock(SigninManager.SignInCallback.class);
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mSigninManager.signin(
                                 TestAccounts.MANAGED_ACCOUNT,
                                 SigninAccessPoint.WEB_SIGNIN,
-                                callback));
+                                mSignInCallback));
 
-        verify(callback, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL)).onSignInComplete();
+        verify(mSignInCallback, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+                .onSignInComplete();
         histogramWatcher.assertExpected();
     }
 
@@ -260,8 +262,6 @@ public class SigninManagerImplTest {
                                 "Signin.Android.AccountManagementAcceptedBeforeUserPolicyFetch")
                         .build();
 
-        SigninManager.SignInCallback callback = mock(SigninManager.SignInCallback.class);
-
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertThrows(
@@ -270,10 +270,10 @@ public class SigninManagerImplTest {
                                     mSigninManager.signin(
                                             TestAccounts.MANAGED_ACCOUNT,
                                             SigninAccessPoint.WEB_SIGNIN,
-                                            callback));
+                                            mSignInCallback));
                 });
 
-        verify(callback, never()).onSignInComplete();
+        verify(mSignInCallback, never()).onSignInComplete();
         histogramWatcher.assertExpected();
     }
 

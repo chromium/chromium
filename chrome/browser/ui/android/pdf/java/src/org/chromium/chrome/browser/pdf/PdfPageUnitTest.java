@@ -32,6 +32,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -71,6 +72,15 @@ import java.io.File;
             PdfCoordinatorUnitTest.ShadowEditablePdfViewerFragment.class
         })
 public class PdfPageUnitTest {
+    private static final String DEFAULT_TAB_TITLE = "Loading PDF…";
+    private static final int TAB_ID = 123;
+    private static final String CONTENT_URL = "content://media/external/downloads/1000000022";
+    private static final String FILE_URL = "file:///media/external/downloads/sample.pdf";
+    private static final String PDF_LINK = "https://www.foo.com/testfiles/pdf/sample.pdf";
+    private static final String PDF_BLOB_URL = "blob:https://www.foo.com/abc";
+    private static final String FILE_PATH = "/media/external/downloads/sample.pdf";
+    private static final String FILE_NAME = "sample.pdf";
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
@@ -82,6 +92,8 @@ public class PdfPageUnitTest {
     @Mock private Destroyable mMarginSupplier;
     @Mock private PdfFragmentViewTracker mPdfFragmentViewTracker;
     @Mock private Tab mMockTab;
+    @Captor private ArgumentCaptor<LoadUrlParams> mParamsCaptor;
+    @Captor private ArgumentCaptor<Boolean> mIncognitoCaptor;
 
     private Activity mActivity;
     private UserDataHost mUserDataHost;
@@ -89,15 +101,6 @@ public class PdfPageUnitTest {
     private String mPdfPageUrl;
     private String mPdfPageBlobUrl;
     private UserActionTester mUserActionTester;
-
-    private static final String DEFAULT_TAB_TITLE = "Loading PDF…";
-    private static final int TAB_ID = 123;
-    private static final String CONTENT_URL = "content://media/external/downloads/1000000022";
-    private static final String FILE_URL = "file:///media/external/downloads/sample.pdf";
-    private static final String PDF_LINK = "https://www.foo.com/testfiles/pdf/sample.pdf";
-    private static final String PDF_BLOB_URL = "blob:https://www.foo.com/abc";
-    private static final String FILE_PATH = "/media/external/downloads/sample.pdf";
-    private static final String FILE_NAME = "sample.pdf";
 
     @Before
     public void setUp() {
@@ -818,16 +821,14 @@ public class PdfPageUnitTest {
                 mUserActionTester.getActions().contains("Android.Pdf.DiscardAnnotations"));
 
         // Now verify loadUrl WAS called
-        ArgumentCaptor<LoadUrlParams> paramsCaptor = ArgumentCaptor.forClass(LoadUrlParams.class);
-        ArgumentCaptor<Boolean> incognitoCaptor = ArgumentCaptor.forClass(Boolean.class);
-        verify(mMockNativePageHost).loadUrl(paramsCaptor.capture(), incognitoCaptor.capture());
+        verify(mMockNativePageHost).loadUrl(mParamsCaptor.capture(), mIncognitoCaptor.capture());
 
-        LoadUrlParams capturedParams = paramsCaptor.getValue();
+        LoadUrlParams capturedParams = mParamsCaptor.getValue();
         Assert.assertEquals("Should load original PDF link", PDF_LINK, capturedParams.getUrl());
         Assert.assertTrue(
                 "Should replace current entry", capturedParams.getShouldReplaceCurrentEntry());
         Assert.assertEquals(
-                "Incognito state should match", false, incognitoCaptor.getValue().booleanValue());
+                "Incognito state should match", false, mIncognitoCaptor.getValue().booleanValue());
 
         // Simulate download complete after reload
         pdfPage.onDownloadComplete(tempFileName, tempFilePath, true);

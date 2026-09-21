@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.segmentation_platform;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -45,14 +44,16 @@ import java.util.function.Supplier;
 @EnableFeatures({ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS})
 public class ContextualPageActionControllerUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    private SettableMonotonicObservableSupplier<Profile> mProfileSupplier;
-    private SettableNullableObservableSupplier<Tab> mTabSupplier;
-    private UserDataHost mTabUserDataHost;
 
     @Mock private Profile mMockProfile;
     @Mock private Tab mMockTab;
     @Mock private AdaptiveToolbarButtonController mMockAdaptiveToolbarController;
     @Mock private ContextualPageActionController.Natives mMockControllerJni;
+    @Mock private GroupSuggestionsButtonController mGroupSuggestionsButtonController;
+
+    private SettableMonotonicObservableSupplier<Profile> mProfileSupplier;
+    private SettableNullableObservableSupplier<Tab> mTabSupplier;
+    private UserDataHost mTabUserDataHost;
 
     @Before
     public void setUp() {
@@ -142,9 +143,8 @@ public class ContextualPageActionControllerUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_TAB_GROUPING})
     public void tabGroupingControllerIsCreatedWithFlag() {
-        var groupSuggestionButtonController = mock(GroupSuggestionsButtonController.class);
         GroupSuggestionsButtonControllerFactory.setControllerForTesting(
-                groupSuggestionButtonController);
+                mGroupSuggestionsButtonController);
 
         var cpaController =
                 new ContextualPageActionController(
@@ -163,9 +163,8 @@ public class ContextualPageActionControllerUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_TAB_GROUPING})
     public void testDestroy() {
-        var groupSuggestionButtonController = mock(GroupSuggestionsButtonController.class);
         GroupSuggestionsButtonControllerFactory.setControllerForTesting(
-                groupSuggestionButtonController);
+                mGroupSuggestionsButtonController);
 
         var cpaController =
                 new ContextualPageActionController(
@@ -177,6 +176,6 @@ public class ContextualPageActionControllerUnitTest {
 
         mProfileSupplier.set(mMockProfile);
         cpaController.destroy();
-        verify(groupSuggestionButtonController).destroy();
+        verify(mGroupSuggestionsButtonController).destroy();
     }
 }

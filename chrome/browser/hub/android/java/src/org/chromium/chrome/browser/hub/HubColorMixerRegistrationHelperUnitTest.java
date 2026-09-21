@@ -4,32 +4,32 @@
 
 package org.chromium.chrome.browser.hub;
 
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Unit tests for {@link HubColorMixerRegistrationHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class HubColorMixerRegistrationHelperUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private HubColorMixer mColorMixer1;
+    @Mock private HubColorMixer mColorMixer2;
+    @Mock private HubViewColorBlend mBlend1;
+    @Mock private HubViewColorBlend mBlend2;
     private HubColorMixerRegistrationHelper mHelper;
-    private HubColorMixer mColorMixer1;
-    private HubColorMixer mColorMixer2;
-    private HubViewColorBlend mBlend1;
-    private HubViewColorBlend mBlend2;
 
     @Before
     public void setUp() {
         mHelper = new HubColorMixerRegistrationHelper();
-        mColorMixer1 = mock(HubColorMixer.class);
-        mColorMixer2 = mock(HubColorMixer.class);
-        mBlend1 = mock(HubViewColorBlend.class);
-        mBlend2 = mock(HubViewColorBlend.class);
     }
 
     @Test

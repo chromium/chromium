@@ -13,7 +13,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -37,6 +36,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkOpener;
 import org.chromium.chrome.browser.bookmarks.FakeBookmarkModel;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBar.EmptySpaceContextMenuCallback;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarContextMenuMetrics.BookmarkBarContextMenuGesture;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarItemsProvider.ObservationId;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -115,6 +116,20 @@ public class BookmarkBarMediatorTest {
     @Mock private PrefService mPrefService;
     @Mock private ImageServiceBridgeJni mImageServiceBridgeJni;
     @Mock private FaviconHelperJni mFaviconHelperJni;
+    @Mock private MotionEvent mDownEvent;
+    @Mock private MotionEvent mReleaseEvent;
+    @Mock private MotionEvent mMotionEvent;
+    @Mock private View mView;
+    @Mock private FrameLayout mFrameLayout;
+    @Mock private Profile mNewProfile;
+    @Captor private ArgumentCaptor<ListItem> mListItemCaptor;
+
+    @Captor
+    private ArgumentCaptor<EmptySpaceContextMenuCallback> mEmptySpaceContextMenuCallbackCaptor;
+
+    @Captor private ArgumentCaptor<Snackbar> mSnackbarCaptor;
+    @Captor private ArgumentCaptor<ClickWithMetaStateCallback> mClickCallbackCaptor;
+    @Captor private ArgumentCaptor<Runnable> mCallbackCaptor;
 
     private final SettableNonNullObservableSupplier<Boolean> mItemsOverflowSupplier =
             ObservableSuppliers.createNonNull(false);
@@ -308,9 +323,8 @@ public class BookmarkBarMediatorTest {
         mMediator.onBookmarkItemAdded(ObservationId.LOCAL, folderItem, 0);
 
         // Verify that mItemsModel.add() was called, and save the ListItem that was passed.
-        ArgumentCaptor<ListItem> listItemCaptor = ArgumentCaptor.forClass(ListItem.class);
-        verify(mItemsModel).add(eq(0), listItemCaptor.capture());
-        PropertyModel itemModel = listItemCaptor.getValue().model;
+        verify(mItemsModel).add(eq(0), mListItemCaptor.capture());
+        PropertyModel itemModel = mListItemCaptor.getValue().model;
 
         assertEquals(
                 "New item should have the light text style",
@@ -337,9 +351,8 @@ public class BookmarkBarMediatorTest {
 
         mMediator.onBookmarkItemAdded(ObservationId.LOCAL, bookmarkItem, 0);
 
-        ArgumentCaptor<ListItem> listItemCaptor = ArgumentCaptor.forClass(ListItem.class);
-        verify(mItemsModel).add(eq(0), listItemCaptor.capture());
-        PropertyModel itemModel = listItemCaptor.getValue().model;
+        verify(mItemsModel).add(eq(0), mListItemCaptor.capture());
+        PropertyModel itemModel = mListItemCaptor.getValue().model;
 
         ClickWithMetaStateCallback clickCallback =
                 itemModel.get(BookmarkBarButtonProperties.CLICK_CALLBACK);
@@ -370,16 +383,14 @@ public class BookmarkBarMediatorTest {
         View placeholderView = new View(mActivity);
 
         // Simulate ACTION_DOWN
-        MotionEvent downEvent = mock(MotionEvent.class);
-        when(downEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
-        when(downEvent.getButtonState()).thenReturn(MotionEvent.BUTTON_TERTIARY);
-        assertTrue(touchListener.onTouch(placeholderView, downEvent));
+        when(mDownEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
+        when(mDownEvent.getButtonState()).thenReturn(MotionEvent.BUTTON_TERTIARY);
+        assertTrue(touchListener.onTouch(placeholderView, mDownEvent));
 
         // Simulate ACTION_BUTTON_RELEASE with BUTTON_TERTIARY
-        MotionEvent releaseEvent = mock(MotionEvent.class);
-        when(releaseEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_BUTTON_RELEASE);
-        when(releaseEvent.getActionButton()).thenReturn(MotionEvent.BUTTON_TERTIARY);
-        assertTrue(touchListener.onTouch(placeholderView, releaseEvent));
+        when(mReleaseEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_BUTTON_RELEASE);
+        when(mReleaseEvent.getActionButton()).thenReturn(MotionEvent.BUTTON_TERTIARY);
+        assertTrue(touchListener.onTouch(placeholderView, mReleaseEvent));
 
         verifyNoInteractions(mBookmarkOpener);
     }
@@ -399,10 +410,9 @@ public class BookmarkBarMediatorTest {
         assertNotNull(listener);
 
         View placeholderView = new View(mActivity);
-        MotionEvent releaseEvent = mock(MotionEvent.class);
-        when(releaseEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_BUTTON_RELEASE);
-        when(releaseEvent.getActionButton()).thenReturn(MotionEvent.BUTTON_TERTIARY);
-        assertTrue(listener.onGenericMotion(placeholderView, releaseEvent));
+        when(mMotionEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_BUTTON_RELEASE);
+        when(mMotionEvent.getActionButton()).thenReturn(MotionEvent.BUTTON_TERTIARY);
+        assertTrue(listener.onGenericMotion(placeholderView, mMotionEvent));
 
         verify(mBookmarkOpener)
                 .openBookmarksInNewTabs(
@@ -423,12 +433,11 @@ public class BookmarkBarMediatorTest {
         ListItem listItem = modelList.get(0);
 
         // Simulate Ctrl Key active in Touch events to fake state
-        MotionEvent downEvent = mock(MotionEvent.class);
-        when(downEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
-        when(downEvent.getMetaState()).thenReturn(KeyEvent.META_CTRL_ON);
+        when(mMotionEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
+        when(mMotionEvent.getMetaState()).thenReturn(KeyEvent.META_CTRL_ON);
         listItem.model
                 .get(ListMenuItemProperties.TOUCH_LISTENER)
-                .onTouch(new View(mActivity), downEvent);
+                .onTouch(new View(mActivity), mMotionEvent);
 
         View.OnClickListener listener = listItem.model.get(ListMenuItemProperties.CLICK_LISTENER);
         listener.onClick(new View(mActivity));
@@ -452,12 +461,11 @@ public class BookmarkBarMediatorTest {
         ListItem listItem = modelList.get(0); // Should be the Test Folder
 
         // Simulate Ctrl Key active
-        MotionEvent downEvent = mock(MotionEvent.class);
-        when(downEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
-        when(downEvent.getMetaState()).thenReturn(KeyEvent.META_CTRL_ON);
+        when(mMotionEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
+        when(mMotionEvent.getMetaState()).thenReturn(KeyEvent.META_CTRL_ON);
         listItem.model
                 .get(ListMenuItemProperties.TOUCH_LISTENER)
-                .onTouch(new View(mActivity), downEvent);
+                .onTouch(new View(mActivity), mMotionEvent);
 
         View.OnClickListener listener = listItem.model.get(ListMenuItemProperties.CLICK_LISTENER);
         listener.onClick(new View(mActivity));
@@ -480,12 +488,11 @@ public class BookmarkBarMediatorTest {
         ListItem listItem = modelList.get(0);
 
         // Simulate Shift Key active in Touch events to fake state
-        MotionEvent downEvent = mock(MotionEvent.class);
-        when(downEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
-        when(downEvent.getMetaState()).thenReturn(KeyEvent.META_SHIFT_ON);
+        when(mMotionEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
+        when(mMotionEvent.getMetaState()).thenReturn(KeyEvent.META_SHIFT_ON);
         listItem.model
                 .get(ListMenuItemProperties.TOUCH_LISTENER)
-                .onTouch(new View(mActivity), downEvent);
+                .onTouch(new View(mActivity), mMotionEvent);
 
         View.OnClickListener listener = listItem.model.get(ListMenuItemProperties.CLICK_LISTENER);
         listener.onClick(new View(mActivity));
@@ -505,12 +512,11 @@ public class BookmarkBarMediatorTest {
         ListItem listItem = modelList.get(0); // Should be the Test Folder
 
         // Simulate Shift Key active
-        MotionEvent downEvent = mock(MotionEvent.class);
-        when(downEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
-        when(downEvent.getMetaState()).thenReturn(KeyEvent.META_SHIFT_ON);
+        when(mMotionEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
+        when(mMotionEvent.getMetaState()).thenReturn(KeyEvent.META_SHIFT_ON);
         listItem.model
                 .get(ListMenuItemProperties.TOUCH_LISTENER)
-                .onTouch(new View(mActivity), downEvent);
+                .onTouch(new View(mActivity), mMotionEvent);
 
         View.OnClickListener listener = listItem.model.get(ListMenuItemProperties.CLICK_LISTENER);
         listener.onClick(new View(mActivity));
@@ -535,22 +541,21 @@ public class BookmarkBarMediatorTest {
         View placeholderView = new View(mActivity);
 
         // Simulate ACTION_DOWN with primary button (or touch).
-        MotionEvent downEvent = mock(MotionEvent.class);
-        when(downEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
-        when(downEvent.getButtonState()).thenReturn(MotionEvent.BUTTON_PRIMARY);
+        when(mMotionEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
+        when(mMotionEvent.getButtonState()).thenReturn(MotionEvent.BUTTON_PRIMARY);
 
         assertFalse(
                 "ACTION_DOWN for primary click should not be consumed so tooltips can work",
-                touchListener.onTouch(placeholderView, downEvent));
+                touchListener.onTouch(placeholderView, mMotionEvent));
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
     public void testEmptySpaceRightClick_ContextMenuEnabled() {
-        ArgumentCaptor<BookmarkBar.EmptySpaceContextMenuCallback> captor =
-                ArgumentCaptor.forClass(BookmarkBar.EmptySpaceContextMenuCallback.class);
-        verify(mBookmarkBarView).setEmptySpaceContextMenuCallback(captor.capture());
-        BookmarkBar.EmptySpaceContextMenuCallback callback = captor.getValue();
+        verify(mBookmarkBarView)
+                .setEmptySpaceContextMenuCallback(mEmptySpaceContextMenuCallbackCaptor.capture());
+        BookmarkBar.EmptySpaceContextMenuCallback callback =
+                mEmptySpaceContextMenuCallbackCaptor.getValue();
         assertNotNull(callback);
 
         var histogramWatcher =
@@ -571,10 +576,10 @@ public class BookmarkBarMediatorTest {
     @Test
     @DisableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
     public void testEmptySpaceRightClick_ContextMenuDisabled() {
-        ArgumentCaptor<BookmarkBar.EmptySpaceContextMenuCallback> captor =
-                ArgumentCaptor.forClass(BookmarkBar.EmptySpaceContextMenuCallback.class);
-        verify(mBookmarkBarView).setEmptySpaceContextMenuCallback(captor.capture());
-        BookmarkBar.EmptySpaceContextMenuCallback callback = captor.getValue();
+        verify(mBookmarkBarView)
+                .setEmptySpaceContextMenuCallback(mEmptySpaceContextMenuCallbackCaptor.capture());
+        BookmarkBar.EmptySpaceContextMenuCallback callback =
+                mEmptySpaceContextMenuCallbackCaptor.getValue();
         assertNotNull(callback);
 
         var histogramWatcher =
@@ -592,10 +597,10 @@ public class BookmarkBarMediatorTest {
     @Test
     @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
     public void testEmptySpaceLongClick_ContextMenuEnabled() {
-        ArgumentCaptor<BookmarkBar.EmptySpaceContextMenuCallback> captor =
-                ArgumentCaptor.forClass(BookmarkBar.EmptySpaceContextMenuCallback.class);
-        verify(mBookmarkBarView).setEmptySpaceContextMenuCallback(captor.capture());
-        BookmarkBar.EmptySpaceContextMenuCallback callback = captor.getValue();
+        verify(mBookmarkBarView)
+                .setEmptySpaceContextMenuCallback(mEmptySpaceContextMenuCallbackCaptor.capture());
+        BookmarkBar.EmptySpaceContextMenuCallback callback =
+                mEmptySpaceContextMenuCallbackCaptor.getValue();
         assertNotNull(callback);
 
         var histogramWatcher =
@@ -616,10 +621,10 @@ public class BookmarkBarMediatorTest {
     @Test
     @DisableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
     public void testEmptySpaceLongClick_ContextMenuDisabled() {
-        ArgumentCaptor<BookmarkBar.EmptySpaceContextMenuCallback> captor =
-                ArgumentCaptor.forClass(BookmarkBar.EmptySpaceContextMenuCallback.class);
-        verify(mBookmarkBarView).setEmptySpaceContextMenuCallback(captor.capture());
-        BookmarkBar.EmptySpaceContextMenuCallback callback = captor.getValue();
+        verify(mBookmarkBarView)
+                .setEmptySpaceContextMenuCallback(mEmptySpaceContextMenuCallbackCaptor.capture());
+        BookmarkBar.EmptySpaceContextMenuCallback callback =
+                mEmptySpaceContextMenuCallbackCaptor.getValue();
         assertNotNull(callback);
 
         var histogramWatcher =
@@ -644,16 +649,14 @@ public class BookmarkBarMediatorTest {
 
         mMediator.onBookmarkItemAdded(ObservationId.LOCAL, bookmarkItem, 0);
 
-        ArgumentCaptor<ListItem> listItemCaptor = ArgumentCaptor.forClass(ListItem.class);
-        verify(mItemsModel).add(eq(0), listItemCaptor.capture());
-        PropertyModel itemModel = listItemCaptor.getValue().model;
+        verify(mItemsModel).add(eq(0), mListItemCaptor.capture());
+        PropertyModel itemModel = mListItemCaptor.getValue().model;
 
         ClickWithMetaStateCallback clickCallback =
                 itemModel.get(BookmarkBarButtonProperties.CLICK_CALLBACK);
         assertNotNull(clickCallback);
 
-        View mockView = mock(View.class);
-        RecyclerView.ViewHolder viewHolder = new RecyclerView.ViewHolder(mockView) {};
+        RecyclerView.ViewHolder viewHolder = new RecyclerView.ViewHolder(mView) {};
         when(mItemsRecyclerView.findViewHolderForAdapterPosition(0)).thenReturn(viewHolder);
 
         var histogramWatcher =
@@ -666,7 +669,7 @@ public class BookmarkBarMediatorTest {
 
         clickCallback.onClickWithMeta(0, MotionEvent.BUTTON_SECONDARY);
 
-        verify(mPopupCoordinator).showContextMenuPopup(any(), eq(mockView), any(), eq(false));
+        verify(mPopupCoordinator).showContextMenuPopup(any(), eq(mView), any(), eq(false));
         histogramWatcher.assertExpected();
     }
 
@@ -680,16 +683,14 @@ public class BookmarkBarMediatorTest {
 
         mMediator.onBookmarkItemAdded(ObservationId.LOCAL, bookmarkItem, 0);
 
-        ArgumentCaptor<ListItem> listItemCaptor = ArgumentCaptor.forClass(ListItem.class);
-        verify(mItemsModel).add(eq(0), listItemCaptor.capture());
-        PropertyModel itemModel = listItemCaptor.getValue().model;
+        verify(mItemsModel).add(eq(0), mListItemCaptor.capture());
+        PropertyModel itemModel = mListItemCaptor.getValue().model;
 
         ClickWithMetaStateCallback clickCallback =
                 itemModel.get(BookmarkBarButtonProperties.CLICK_CALLBACK);
         assertNotNull(clickCallback);
 
-        View mockView = mock(View.class);
-        RecyclerView.ViewHolder viewHolder = new RecyclerView.ViewHolder(mockView) {};
+        RecyclerView.ViewHolder viewHolder = new RecyclerView.ViewHolder(mView) {};
         when(mItemsRecyclerView.findViewHolderForAdapterPosition(0)).thenReturn(viewHolder);
 
         var histogramWatcher =
@@ -715,16 +716,14 @@ public class BookmarkBarMediatorTest {
 
         mMediator.onBookmarkItemAdded(ObservationId.LOCAL, bookmarkItem, 0);
 
-        ArgumentCaptor<ListItem> listItemCaptor = ArgumentCaptor.forClass(ListItem.class);
-        verify(mItemsModel).add(eq(0), listItemCaptor.capture());
-        PropertyModel itemModel = listItemCaptor.getValue().model;
+        verify(mItemsModel).add(eq(0), mListItemCaptor.capture());
+        PropertyModel itemModel = mListItemCaptor.getValue().model;
 
         View.OnLongClickListener longClickListener =
                 itemModel.get(BookmarkBarButtonProperties.LONG_CLICK_LISTENER);
         assertNotNull(longClickListener);
 
-        View mockView = mock(View.class);
-        RecyclerView.ViewHolder viewHolder = new RecyclerView.ViewHolder(mockView) {};
+        RecyclerView.ViewHolder viewHolder = new RecyclerView.ViewHolder(mView) {};
         when(mItemsRecyclerView.findViewHolderForAdapterPosition(0)).thenReturn(viewHolder);
 
         Callback<Point> pointCallback = itemModel.get(BookmarkBarButtonProperties.POINT_CALLBACK);
@@ -739,10 +738,10 @@ public class BookmarkBarMediatorTest {
                                 true)
                         .build();
 
-        assertTrue(longClickListener.onLongClick(mockView));
+        assertTrue(longClickListener.onLongClick(mView));
 
         verify(mPopupCoordinator)
-                .showContextMenuPopup(any(), eq(mockView), eq(new Point(10, 20)), eq(false));
+                .showContextMenuPopup(any(), eq(mView), eq(new Point(10, 20)), eq(false));
         histogramWatcher.assertExpected();
     }
 
@@ -756,16 +755,14 @@ public class BookmarkBarMediatorTest {
 
         mMediator.onBookmarkItemAdded(ObservationId.LOCAL, bookmarkItem, 0);
 
-        ArgumentCaptor<ListItem> listItemCaptor = ArgumentCaptor.forClass(ListItem.class);
-        verify(mItemsModel).add(eq(0), listItemCaptor.capture());
-        PropertyModel itemModel = listItemCaptor.getValue().model;
+        verify(mItemsModel).add(eq(0), mListItemCaptor.capture());
+        PropertyModel itemModel = mListItemCaptor.getValue().model;
 
         View.OnLongClickListener longClickListener =
                 itemModel.get(BookmarkBarButtonProperties.LONG_CLICK_LISTENER);
         assertNotNull(longClickListener);
 
-        View mockView = mock(View.class);
-        RecyclerView.ViewHolder viewHolder = new RecyclerView.ViewHolder(mockView) {};
+        RecyclerView.ViewHolder viewHolder = new RecyclerView.ViewHolder(mView) {};
         when(mItemsRecyclerView.findViewHolderForAdapterPosition(0)).thenReturn(viewHolder);
 
         var histogramWatcher =
@@ -775,7 +772,7 @@ public class BookmarkBarMediatorTest {
                                         + ".LongPress.Opened")
                         .build();
 
-        assertFalse(longClickListener.onLongClick(mockView));
+        assertFalse(longClickListener.onLongClick(mView));
 
         verify(mPopupCoordinator, never()).showContextMenuPopup(any(), any(), any(), anyBoolean());
         histogramWatcher.assertExpected();
@@ -792,11 +789,10 @@ public class BookmarkBarMediatorTest {
         ListItem listItem = modelList.get(0);
         View placeholderView = new View(mActivity);
 
-        MotionEvent downEvent = mock(MotionEvent.class);
-        when(downEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
-        when(downEvent.getButtonState()).thenReturn(MotionEvent.BUTTON_SECONDARY);
-        when(downEvent.getX()).thenReturn(50f);
-        when(downEvent.getY()).thenReturn(60f);
+        when(mMotionEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
+        when(mMotionEvent.getButtonState()).thenReturn(MotionEvent.BUTTON_SECONDARY);
+        when(mMotionEvent.getX()).thenReturn(50f);
+        when(mMotionEvent.getY()).thenReturn(60f);
 
         OnTouchListener touchListener = listItem.model.get(ListMenuItemProperties.TOUCH_LISTENER);
         assertNotNull(touchListener);
@@ -808,7 +804,7 @@ public class BookmarkBarMediatorTest {
                                 true)
                         .build();
 
-        assertTrue(touchListener.onTouch(placeholderView, downEvent));
+        assertTrue(touchListener.onTouch(placeholderView, mMotionEvent));
 
         verify(mPopupCoordinator)
                 .showContextMenuPopup(any(), eq(placeholderView), eq(new Point(50, 60)), eq(false));
@@ -826,11 +822,10 @@ public class BookmarkBarMediatorTest {
         ListItem listItem = modelList.get(0);
         View placeholderView = new View(mActivity);
 
-        MotionEvent downEvent = mock(MotionEvent.class);
-        when(downEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
-        when(downEvent.getButtonState()).thenReturn(MotionEvent.BUTTON_SECONDARY);
-        when(downEvent.getX()).thenReturn(50f);
-        when(downEvent.getY()).thenReturn(60f);
+        when(mMotionEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
+        when(mMotionEvent.getButtonState()).thenReturn(MotionEvent.BUTTON_SECONDARY);
+        when(mMotionEvent.getX()).thenReturn(50f);
+        when(mMotionEvent.getY()).thenReturn(60f);
 
         OnTouchListener touchListener = listItem.model.get(ListMenuItemProperties.TOUCH_LISTENER);
         assertNotNull(touchListener);
@@ -841,7 +836,7 @@ public class BookmarkBarMediatorTest {
                                 "Bookmarks.BookmarkBar.ContextMenu.PopupItem.RightClick.Opened")
                         .build();
 
-        assertFalse(touchListener.onTouch(placeholderView, downEvent));
+        assertFalse(touchListener.onTouch(placeholderView, mMotionEvent));
 
         verify(mPopupCoordinator, never()).showContextMenuPopup(any(), any(), any(), anyBoolean());
         histogramWatcher.assertExpected();
@@ -858,14 +853,13 @@ public class BookmarkBarMediatorTest {
         ListItem listItem = modelList.get(0);
         View placeholderView = new View(mActivity);
 
-        MotionEvent downEvent = mock(MotionEvent.class);
-        when(downEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
-        when(downEvent.getX()).thenReturn(50f);
-        when(downEvent.getY()).thenReturn(60f);
+        when(mMotionEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
+        when(mMotionEvent.getX()).thenReturn(50f);
+        when(mMotionEvent.getY()).thenReturn(60f);
 
         OnTouchListener touchListener = listItem.model.get(ListMenuItemProperties.TOUCH_LISTENER);
         assertNotNull(touchListener);
-        touchListener.onTouch(placeholderView, downEvent);
+        touchListener.onTouch(placeholderView, mMotionEvent);
 
         View.OnLongClickListener longClickListener =
                 listItem.model.get(ListMenuItemProperties.LONG_CLICK_LISTENER);
@@ -1073,9 +1067,8 @@ public class BookmarkBarMediatorTest {
         ShadowLooper.idleMainLooper();
         mMediator.deleteBookmark(bookmarkId);
 
-        ArgumentCaptor<Snackbar> snackbarCaptor = ArgumentCaptor.forClass(Snackbar.class);
-        verify(mSnackbarManager).showSnackbar(snackbarCaptor.capture());
-        Snackbar snackbar = snackbarCaptor.getValue();
+        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
+        Snackbar snackbar = mSnackbarCaptor.getValue();
         assertNotNull(snackbar);
     }
 
@@ -1139,12 +1132,12 @@ public class BookmarkBarMediatorTest {
 
     @Test
     public void testOnAllBookmarksButtonClick() {
-        ArgumentCaptor<ClickWithMetaStateCallback> clickCallbackCaptor =
-                ArgumentCaptor.forClass(ClickWithMetaStateCallback.class);
         verify(mAllBookmarksButtonModel)
-                .set(eq(BookmarkBarButtonProperties.CLICK_CALLBACK), clickCallbackCaptor.capture());
+                .set(
+                        eq(BookmarkBarButtonProperties.CLICK_CALLBACK),
+                        mClickCallbackCaptor.capture());
 
-        ClickWithMetaStateCallback clickCallback = clickCallbackCaptor.getValue();
+        ClickWithMetaStateCallback clickCallback = mClickCallbackCaptor.getValue();
         assertNotNull(clickCallback);
 
         clickCallback.onClickWithMeta(0, 0);
@@ -1160,12 +1153,12 @@ public class BookmarkBarMediatorTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT)
     public void testOnAllBookmarksButtonClick_desktopLayoutEnabled() {
-        ArgumentCaptor<ClickWithMetaStateCallback> clickCallbackCaptor =
-                ArgumentCaptor.forClass(ClickWithMetaStateCallback.class);
         verify(mAllBookmarksButtonModel)
-                .set(eq(BookmarkBarButtonProperties.CLICK_CALLBACK), clickCallbackCaptor.capture());
+                .set(
+                        eq(BookmarkBarButtonProperties.CLICK_CALLBACK),
+                        mClickCallbackCaptor.capture());
 
-        ClickWithMetaStateCallback clickCallback = clickCallbackCaptor.getValue();
+        ClickWithMetaStateCallback clickCallback = mClickCallbackCaptor.getValue();
         assertNotNull(clickCallback);
 
         clickCallback.onClickWithMeta(0, 0);
@@ -1181,12 +1174,12 @@ public class BookmarkBarMediatorTest {
     @Test
     @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
     public void testOnAllBookmarksButtonClick_RightClickOrLongPress_NoContextMenu() {
-        ArgumentCaptor<ClickWithMetaStateCallback> clickCallbackCaptor =
-                ArgumentCaptor.forClass(ClickWithMetaStateCallback.class);
         verify(mAllBookmarksButtonModel)
-                .set(eq(BookmarkBarButtonProperties.CLICK_CALLBACK), clickCallbackCaptor.capture());
+                .set(
+                        eq(BookmarkBarButtonProperties.CLICK_CALLBACK),
+                        mClickCallbackCaptor.capture());
 
-        ClickWithMetaStateCallback clickCallback = clickCallbackCaptor.getValue();
+        ClickWithMetaStateCallback clickCallback = mClickCallbackCaptor.getValue();
         assertNotNull(clickCallback);
 
         View allBookmarksButton = new View(mActivity);
@@ -1204,22 +1197,20 @@ public class BookmarkBarMediatorTest {
 
     @Test
     public void testOnOverflowButtonClick() {
-        ArgumentCaptor<Runnable> callbackCaptor = ArgumentCaptor.forClass(Runnable.class);
         verify(mPropertyModel)
                 .set(
                         eq(BookmarkBarProperties.OVERFLOW_BUTTON_CLICK_CALLBACK),
-                        callbackCaptor.capture());
+                        mCallbackCaptor.capture());
 
-        Runnable callback = callbackCaptor.getValue();
+        Runnable callback = mCallbackCaptor.getValue();
         assertNotNull(callback);
 
-        FrameLayout overflowButtonView = mock(FrameLayout.class);
-        when(mBookmarkBarView.getOverflowButton()).thenReturn(overflowButtonView);
+        when(mBookmarkBarView.getOverflowButton()).thenReturn(mFrameLayout);
 
         callback.run();
 
         verify(mPopupCoordinator)
-                .showFolderItemsPopup(eq(overflowButtonView), any(ModelList.class), eq(false));
+                .showFolderItemsPopup(eq(mFrameLayout), any(ModelList.class), eq(false));
     }
 
     @Test
@@ -1233,11 +1224,10 @@ public class BookmarkBarMediatorTest {
 
         mMediator.deleteBookmark(bookmarkId);
 
-        Profile newProfile = mock(Profile.class);
-        when(newProfile.getOriginalProfile()).thenReturn(newProfile);
-        when(mUserPrefsJni.get(newProfile)).thenReturn(mPrefService);
+        when(mNewProfile.getOriginalProfile()).thenReturn(mNewProfile);
+        when(mUserPrefsJni.get(mNewProfile)).thenReturn(mPrefService);
 
-        mProfileSupplier.set(newProfile);
+        mProfileSupplier.set(mNewProfile);
         ShadowLooper.idleMainLooper();
 
         assertNull(mBookmarkModel.getBookmarkById(bookmarkId));

@@ -111,6 +111,8 @@ public class ExtensionsMenuMediatorTest {
     @Captor
     private ArgumentCaptor<List<ExtensionsMenuTypes.HostAccessRequest>> mHostAccessRequestsCaptor;
 
+    @Captor private ArgumentCaptor<CompoundButton.OnCheckedChangeListener> mListenerCaptor;
+
     private final SettableNullableObservableSupplier<Tab> mCurrentTabSupplier =
             ObservableSuppliers.createNullable();
     // This is the reference to the list that the mediator holds and modifies.
@@ -1418,14 +1420,12 @@ public class ExtensionsMenuMediatorTest {
                 .set(SitePermissionsPageProperties.SHOW_REQUESTS_TOGGLE_CHECKED, true);
 
         // Verify toggle click listener.
-        ArgumentCaptor<CompoundButton.OnCheckedChangeListener> listenerCaptor =
-                ArgumentCaptor.forClass(CompoundButton.OnCheckedChangeListener.class);
         verify(mSitePermissionsPropertyModel)
                 .set(
                         eq(SitePermissionsPageProperties.SHOW_REQUESTS_TOGGLE_CLICK_LISTENER),
-                        listenerCaptor.capture());
+                        mListenerCaptor.capture());
 
-        listenerCaptor.getValue().onCheckedChanged(null, false);
+        mListenerCaptor.getValue().onCheckedChanged(null, false);
         verify(mExtensionsMenuBridgeJniMock)
                 .onShowRequestsTogglePressed(EXTENSIONS_MENU_BRIDGE_POINTER, "id_a", false);
     }

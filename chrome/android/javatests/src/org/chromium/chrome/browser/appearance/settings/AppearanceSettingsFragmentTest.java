@@ -8,7 +8,6 @@ import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -89,6 +88,7 @@ public class AppearanceSettingsFragmentTest {
     @Mock private PrefService mPrefService;
     @Mock private Profile mProfile;
     @Mock private UserPrefs.Natives mUserPrefsJni;
+    @Mock private SettingsIndexData mSettingsIndexData;
 
     private Set<PrefObserver> mBookmarkBarSettingObserverCache;
     private SettableNonNullObservableSupplier<Boolean> mBookmarkBarSettingSupplier;
@@ -405,15 +405,14 @@ public class AppearanceSettingsFragmentTest {
     @SmallTest
     public void testSearchIndex_BookmarkBarNotCompatible() {
         BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(false);
-        SettingsIndexData indexData = mock(SettingsIndexData.class);
         var context = ContextUtils.getApplicationContext();
         String prefFragment = AppearanceSettingsFragment.class.getName();
 
         AppearanceSettingsFragment.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
-                context, indexData, mProfile);
+                context, mSettingsIndexData, mProfile);
 
-        verify(indexData).removeEntryForKey(prefFragment, PREF_BOOKMARK_BAR);
-        verify(indexData).removeEntryForKey(prefFragment, PREF_BOOKMARK_BAR_SWITCH);
+        verify(mSettingsIndexData).removeEntryForKey(prefFragment, PREF_BOOKMARK_BAR);
+        verify(mSettingsIndexData).removeEntryForKey(prefFragment, PREF_BOOKMARK_BAR_SWITCH);
     }
 
     @Test
@@ -421,16 +420,15 @@ public class AppearanceSettingsFragmentTest {
     @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
     public void testSearchIndex_BookmarkBarCompatible_SubpageEnabled() {
         BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
-        SettingsIndexData indexData = mock(SettingsIndexData.class);
         var context = ContextUtils.getApplicationContext();
         String prefFragment = AppearanceSettingsFragment.class.getName();
 
         AppearanceSettingsFragment.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
-                context, indexData, mProfile);
+                context, mSettingsIndexData, mProfile);
 
-        verify(indexData).removeEntryForKey(prefFragment, PREF_BOOKMARK_BAR_SWITCH);
-        verify(indexData, never()).removeEntryForKey(prefFragment, PREF_BOOKMARK_BAR);
-        verify(indexData)
+        verify(mSettingsIndexData).removeEntryForKey(prefFragment, PREF_BOOKMARK_BAR_SWITCH);
+        verify(mSettingsIndexData, never()).removeEntryForKey(prefFragment, PREF_BOOKMARK_BAR);
+        verify(mSettingsIndexData)
                 .updateEntrySummaryForKey(
                         prefFragment, PREF_BOOKMARK_BAR, R.string.bookmark_bar_setting_always_hide);
     }
@@ -440,15 +438,15 @@ public class AppearanceSettingsFragmentTest {
     @DisableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
     public void testSearchIndex_BookmarkBarCompatible_SubpageDisabled() {
         BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
-        SettingsIndexData indexData = mock(SettingsIndexData.class);
         var context = ContextUtils.getApplicationContext();
         String prefFragment = AppearanceSettingsFragment.class.getName();
 
         AppearanceSettingsFragment.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
-                context, indexData, mProfile);
+                context, mSettingsIndexData, mProfile);
 
-        verify(indexData).removeEntryForKey(prefFragment, PREF_BOOKMARK_BAR);
-        verify(indexData, never()).removeEntryForKey(prefFragment, PREF_BOOKMARK_BAR_SWITCH);
+        verify(mSettingsIndexData).removeEntryForKey(prefFragment, PREF_BOOKMARK_BAR);
+        verify(mSettingsIndexData, never())
+                .removeEntryForKey(prefFragment, PREF_BOOKMARK_BAR_SWITCH);
     }
 
     private Preference assertSettingsExists(String prefKey, Class settingsFragmentClass)

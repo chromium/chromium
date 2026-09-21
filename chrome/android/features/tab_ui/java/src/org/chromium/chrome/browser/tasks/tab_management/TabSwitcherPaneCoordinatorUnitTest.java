@@ -47,6 +47,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -168,6 +169,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     @Mock private TabListGroupMenuCoordinator mTabListGroupMenuCoordinator;
     @Mock private PriceWelcomeMessageController mPriceWelcomeMessageController;
     @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
+    @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
     private final SettableNonNullObservableSupplier<Boolean> mHubSearchBoxVisibilitySupplier =
             ObservableSuppliers.createNonNull(false);
@@ -294,10 +296,8 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         verify(mMessageManager).registerMessageHostDelegate(any());
         verify(mMessageManager).bind(any(), any(), any(), any());
 
-        ArgumentCaptor<TabModelObserver> tabModelObserverCaptor =
-                ArgumentCaptor.forClass(TabModelObserver.class);
-        verify(mTabModel, atLeastOnce()).addObserver(tabModelObserverCaptor.capture());
-        mTabModelObserver = tabModelObserverCaptor.getValue();
+        verify(mTabModel, atLeastOnce()).addObserver(mTabModelObserverCaptor.capture());
+        mTabModelObserver = mTabModelObserverCaptor.getValue();
     }
 
     DialogController showTabGridDialogWithTabs() {

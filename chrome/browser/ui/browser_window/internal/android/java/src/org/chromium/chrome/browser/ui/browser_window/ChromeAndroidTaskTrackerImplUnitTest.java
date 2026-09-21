@@ -39,6 +39,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -65,7 +67,10 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public FakeTimeTestRule mFakeTime = new FakeTimeTestRule();
-
+    @Mock private DisplayAndroid mDisplayAndroid;
+    @Mock private DisplayAndroid mMockDisplay;
+    @Mock private ChromeAndroidTaskTrackerObserver mChromeAndroidTaskTrackerObserver;
+    @Captor private ArgumentCaptor<Bundle> mExtrasCaptor;
     private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
 
     private Context mContext;
@@ -78,9 +83,8 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         mContext = spy(ApplicationProvider.getApplicationContext());
         ContextUtils.initApplicationContextForTests(mContext);
 
-        DisplayAndroid mockDisplay = mock(DisplayAndroid.class);
-        when(mockDisplay.getDipScale()).thenReturn(1.0f);
-        DisplayAndroid.setNonMultiDisplayForTesting(mockDisplay);
+        when(mDisplayAndroid.getDipScale()).thenReturn(1.0f);
+        DisplayAndroid.setNonMultiDisplayForTesting(mDisplayAndroid);
 
         ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowNatives();
 
@@ -154,11 +158,10 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         assertNull(task.getId());
         assertEquals(mockParams.getWindowType(), pendingTaskInfo.mCreateParams.getWindowType());
 
-        var extrasCaptor = ArgumentCaptor.forClass(Bundle.class);
         verify(PopupCreatorFactory.getInstance())
-                .createNewPopup(any(), anyBoolean(), any(), extrasCaptor.capture(), any());
+                .createNewPopup(any(), anyBoolean(), any(), mExtrasCaptor.capture(), any());
 
-        Bundle extras = extrasCaptor.getValue();
+        Bundle extras = mExtrasCaptor.getValue();
         assertNotNull(extras);
         assertTrue(extras.containsKey(EXTRA_PENDING_BROWSER_WINDOW_TASK_ID));
         assertEquals(
@@ -282,19 +285,15 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         // Assert.
         assertNotNull(pendingTask);
 
-        var intentExtrasBundleCaptor = ArgumentCaptor.forClass(Bundle.class);
         verify(mMultiInstanceOrchestrator)
                 .createNewWindow(
                         any(),
                         eq(false),
-                        intentExtrasBundleCaptor.capture(),
+                        mExtrasCaptor.capture(),
                         any(),
                         eq(NewWindowAppSource.BROWSER_WINDOW_CREATOR));
-        assertNonNull(intentExtrasBundleCaptor.getValue());
-        assertTrue(
-                intentExtrasBundleCaptor
-                        .getValue()
-                        .containsKey(EXTRA_PENDING_BROWSER_WINDOW_TASK_ID));
+        assertNonNull(mExtrasCaptor.getValue());
+        assertTrue(mExtrasCaptor.getValue().containsKey(EXTRA_PENDING_BROWSER_WINDOW_TASK_ID));
     }
 
     @Test
@@ -310,16 +309,15 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         createPendingTaskWithExistingTask(mockParams);
 
         // Assert.
-        var bundleCaptor = ArgumentCaptor.forClass(Bundle.class);
         verify(mMultiInstanceOrchestrator)
                 .createNewWindow(
                         any(),
                         eq(false),
                         any(),
-                        bundleCaptor.capture(),
+                        mExtrasCaptor.capture(),
                         eq(NewWindowAppSource.BROWSER_WINDOW_CREATOR));
         Rect capturedBounds =
-                bundleCaptor.getValue().getParcelable(ActivityOptions.KEY_LAUNCH_BOUNDS);
+                mExtrasCaptor.getValue().getParcelable(ActivityOptions.KEY_LAUNCH_BOUNDS);
         assertEquals(mockParams.getInitialBoundsInDp(), capturedBounds);
     }
 
@@ -327,9 +325,8 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
     public void createPendingTask_convertsDpToPx() {
         // Arrange.
         float dipScale = 2.0f;
-        DisplayAndroid mockDisplay = mock(DisplayAndroid.class);
-        when(mockDisplay.getDipScale()).thenReturn(dipScale);
-        DisplayAndroid.setNonMultiDisplayForTesting(mockDisplay);
+        when(mMockDisplay.getDipScale()).thenReturn(dipScale);
+        DisplayAndroid.setNonMultiDisplayForTesting(mMockDisplay);
 
         Rect boundsInDp = new Rect(10, 20, 800, 600);
         var mockParams =
@@ -342,16 +339,15 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         createPendingTaskWithExistingTask(mockParams);
 
         // Assert.
-        var bundleCaptor = ArgumentCaptor.forClass(Bundle.class);
         verify(mMultiInstanceOrchestrator)
                 .createNewWindow(
                         any(),
                         eq(false),
                         any(),
-                        bundleCaptor.capture(),
+                        mExtrasCaptor.capture(),
                         eq(NewWindowAppSource.BROWSER_WINDOW_CREATOR));
         Rect capturedBounds =
-                bundleCaptor.getValue().getParcelable(ActivityOptions.KEY_LAUNCH_BOUNDS);
+                mExtrasCaptor.getValue().getParcelable(ActivityOptions.KEY_LAUNCH_BOUNDS);
 
         Rect expectedBoundsInPx =
                 new Rect(
@@ -693,8 +689,7 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
     @Test
     public void obtainAndRemoveTask_observerNotified() {
         // Arrange.
-        var observer = mock(ChromeAndroidTaskTrackerObserver.class);
-        mChromeAndroidTaskTracker.addObserver(observer);
+        mChromeAndroidTaskTracker.addObserver(mChromeAndroidTaskTrackerObserver);
 
         // Act (add new task).
         var activityScopedObjects =
@@ -704,7 +699,7 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
                         BrowserWindowType.NORMAL, activityScopedObjects, /* pendingId= */ null);
 
         // Assert (add new task).
-        verify(observer).onTaskAdded(chromeAndroidTask);
+        verify(mChromeAndroidTaskTrackerObserver).onTaskAdded(chromeAndroidTask);
 
         // Act (add pending task).
         var pendingTask =
@@ -720,22 +715,22 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
                         BrowserWindowType.NORMAL, activityScopedObjects, pendingTask.getId());
 
         // Assert (add pending task).
-        verify(observer).onTaskAdded(chromeAndroidPendingTask);
+        verify(mChromeAndroidTaskTrackerObserver).onTaskAdded(chromeAndroidPendingTask);
 
         // Act (remove pending task).
         mChromeAndroidTaskTracker.remove(assertNonNull(chromeAndroidPendingTask.getId()));
 
         // Assert (remove pending task).
-        verify(observer).onTaskRemoved(chromeAndroidPendingTask);
+        verify(mChromeAndroidTaskTrackerObserver).onTaskRemoved(chromeAndroidPendingTask);
 
         // Act (remove new task).
         mChromeAndroidTaskTracker.remove(assertNonNull(chromeAndroidTask.getId()));
 
         // Assert (remove new task).
-        verify(observer).onTaskRemoved(chromeAndroidTask);
+        verify(mChromeAndroidTaskTrackerObserver).onTaskRemoved(chromeAndroidTask);
 
         // Cleanup.
-        mChromeAndroidTaskTracker.removeObserver(observer);
+        mChromeAndroidTaskTracker.removeObserver(mChromeAndroidTaskTrackerObserver);
     }
 
     @Test

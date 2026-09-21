@@ -47,10 +47,15 @@ import androidx.core.widget.ImageViewCompat;
 
 import org.hamcrest.Matchers;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InOrder;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -74,6 +79,16 @@ import java.util.function.BooleanSupplier;
 /** Unit tests for OptionalButtonView. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class OptionalButtonViewTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private BooleanSupplier mMockAnimationChecker;
+    @Mock private ViewGroup mMockTransitionRoot;
+    @Mock private OnClickListener mOnClickListener;
+    @Mock private OnLongClickListener mOnLongClickListener;
+    @Mock private Runnable mBeforeDelayedTransitionCallback;
+    @Mock private Runnable mBeforeShowTransitionCallback;
+    @Mock private Runnable mBeforeHideTransitionCallback;
+    @Mock private Transition mTransition;
+    @Captor private ArgumentCaptor<Transition> mTransitionCaptor;
     private Context mActivity;
 
     private OptionalButtonView mOptionalButtonView;
@@ -81,9 +96,7 @@ public class OptionalButtonViewTest {
     private TextView mActionChipLabel;
     private ImageView mButtonBackground;
     private ShadowLooper mShadowLooper;
-    private BooleanSupplier mMockAnimationChecker;
     private Callback<Transition> mMockBeginDelayedTransition;
-    private ViewGroup mMockTransitionRoot;
     private ListMenuButton mButton;
     private ImageView mAnimationView;
 
@@ -93,7 +106,6 @@ public class OptionalButtonViewTest {
                 new ContextThemeWrapper(
                         Robolectric.setupActivity(Activity.class),
                         R.style.Theme_BrowserUI_DayNight);
-        mMockAnimationChecker = mock(BooleanSupplier.class);
         when(mMockAnimationChecker.getAsBoolean()).thenReturn(true);
 
         mOptionalButtonView =
@@ -107,7 +119,6 @@ public class OptionalButtonViewTest {
 
         mMockBeginDelayedTransition = MockitoHelper.mockCallback();
 
-        mMockTransitionRoot = mock(ViewGroup.class);
         when(mMockTransitionRoot.isLaidOut()).thenReturn(true);
         when(mMockTransitionRoot.isAttachedToWindow()).thenReturn(true);
         mOptionalButtonView.setTransitionRoot(mMockTransitionRoot);
@@ -591,15 +602,13 @@ public class OptionalButtonViewTest {
                 mActionChipLabel.getText());
 
         Drawable iconDrawable = AppCompatResources.getDrawable(mActivity, R.drawable.new_tab_icon);
-        OnClickListener clickListener = mock(OnClickListener.class);
-        OnLongClickListener longClickListener = mock(OnLongClickListener.class);
         String contentDescription = mActivity.getString(R.string.actionbar_share);
         int actionChipLabelResId = R.string.adaptive_toolbar_button_preference_voice_search;
 
         ButtonSpec buttonSpec =
                 new ButtonSpec.Builder(iconDrawable, contentDescription, true)
-                        .setOnClickListener(clickListener)
-                        .setOnLongClickListener(longClickListener)
+                        .setOnClickListener(mOnClickListener)
+                        .setOnLongClickListener(mOnLongClickListener)
                         .setButtonVariant(AdaptiveToolbarButtonVariant.READER_MODE)
                         .setActionChipLabelResId(actionChipLabelResId)
                         .build();
@@ -715,23 +724,20 @@ public class OptionalButtonViewTest {
         ButtonData secondButton = getDataForReaderModeIconButton();
         ButtonData actionChipButton = getDataForReaderModeActionChip();
 
-        Runnable beforeDelayedTransitionCallback = mock(Runnable.class);
-        Runnable beforeShowTransitionCallback = mock(Runnable.class);
-        Runnable beforeHideTransitionCallback = mock(Runnable.class);
         Callback<Integer> transitionStartedCallback = MockitoHelper.mockCallback();
         Callback<Integer> transitionFinishedCallback = MockitoHelper.mockCallback();
 
         mOptionalButtonView.setTransitionStartedCallback(transitionStartedCallback);
         mOptionalButtonView.setTransitionFinishedCallback(transitionFinishedCallback);
-        mOptionalButtonView.setOnBeforeDelayedTransitionCallback(beforeDelayedTransitionCallback);
-        mOptionalButtonView.setOnBeforeShowTransitionCallback(beforeShowTransitionCallback);
-        mOptionalButtonView.setOnBeforeHideTransitionCallback(beforeHideTransitionCallback);
+        mOptionalButtonView.setOnBeforeDelayedTransitionCallback(mBeforeDelayedTransitionCallback);
+        mOptionalButtonView.setOnBeforeShowTransitionCallback(mBeforeShowTransitionCallback);
+        mOptionalButtonView.setOnBeforeHideTransitionCallback(mBeforeHideTransitionCallback);
 
         InOrder inOrder =
                 inOrder(
-                        beforeDelayedTransitionCallback,
-                        beforeShowTransitionCallback,
-                        beforeHideTransitionCallback,
+                        mBeforeDelayedTransitionCallback,
+                        mBeforeShowTransitionCallback,
+                        mBeforeHideTransitionCallback,
                         transitionStartedCallback,
                         transitionFinishedCallback);
 
@@ -768,24 +774,24 @@ public class OptionalButtonViewTest {
         mOptionalButtonView.onTransitionEnd(null);
 
         // Verify that callbacks are called in the expected order with the right arguments.
-        inOrder.verify(beforeDelayedTransitionCallback).run();
-        inOrder.verify(beforeShowTransitionCallback).run();
+        inOrder.verify(mBeforeDelayedTransitionCallback).run();
+        inOrder.verify(mBeforeShowTransitionCallback).run();
         inOrder.verify(transitionStartedCallback).onResult(TransitionType.SHOWING);
         inOrder.verify(transitionFinishedCallback).onResult(TransitionType.SHOWING);
-        inOrder.verify(beforeDelayedTransitionCallback).run();
+        inOrder.verify(mBeforeDelayedTransitionCallback).run();
         inOrder.verify(transitionStartedCallback).onResult(TransitionType.SWAPPING);
         inOrder.verify(transitionFinishedCallback).onResult(TransitionType.SWAPPING);
-        inOrder.verify(beforeDelayedTransitionCallback).run();
+        inOrder.verify(mBeforeDelayedTransitionCallback).run();
         inOrder.verify(transitionStartedCallback).onResult(TransitionType.SWAPPING);
         inOrder.verify(transitionFinishedCallback).onResult(TransitionType.SWAPPING);
-        inOrder.verify(beforeDelayedTransitionCallback).run();
+        inOrder.verify(mBeforeDelayedTransitionCallback).run();
         inOrder.verify(transitionStartedCallback).onResult(TransitionType.EXPANDING_ACTION_CHIP);
         inOrder.verify(transitionFinishedCallback).onResult(TransitionType.EXPANDING_ACTION_CHIP);
-        inOrder.verify(beforeDelayedTransitionCallback).run();
+        inOrder.verify(mBeforeDelayedTransitionCallback).run();
         inOrder.verify(transitionStartedCallback).onResult(TransitionType.COLLAPSING_ACTION_CHIP);
         inOrder.verify(transitionFinishedCallback).onResult(TransitionType.COLLAPSING_ACTION_CHIP);
-        inOrder.verify(beforeDelayedTransitionCallback).run();
-        inOrder.verify(beforeHideTransitionCallback).run();
+        inOrder.verify(mBeforeDelayedTransitionCallback).run();
+        inOrder.verify(mBeforeHideTransitionCallback).run();
         inOrder.verify(transitionStartedCallback).onResult(TransitionType.HIDING);
         inOrder.verify(transitionFinishedCallback).onResult(TransitionType.HIDING);
     }
@@ -797,23 +803,20 @@ public class OptionalButtonViewTest {
         ButtonData actionChipButton = getDataForReaderModeActionChip();
         when(mMockAnimationChecker.getAsBoolean()).thenReturn(false);
 
-        Runnable beforeDelayedTransitionCallback = mock(Runnable.class);
-        Runnable beforeShowTransitionCallback = mock(Runnable.class);
-        Runnable beforeHideTransitionCallback = mock(Runnable.class);
         Callback<Integer> transitionStartedCallback = MockitoHelper.mockCallback();
         Callback<Integer> transitionFinishedCallback = MockitoHelper.mockCallback();
 
         mOptionalButtonView.setTransitionStartedCallback(transitionStartedCallback);
         mOptionalButtonView.setTransitionFinishedCallback(transitionFinishedCallback);
-        mOptionalButtonView.setOnBeforeDelayedTransitionCallback(beforeDelayedTransitionCallback);
-        mOptionalButtonView.setOnBeforeShowTransitionCallback(beforeShowTransitionCallback);
-        mOptionalButtonView.setOnBeforeHideTransitionCallback(beforeHideTransitionCallback);
+        mOptionalButtonView.setOnBeforeDelayedTransitionCallback(mBeforeDelayedTransitionCallback);
+        mOptionalButtonView.setOnBeforeShowTransitionCallback(mBeforeShowTransitionCallback);
+        mOptionalButtonView.setOnBeforeHideTransitionCallback(mBeforeHideTransitionCallback);
 
         InOrder inOrder =
                 inOrder(
-                        beforeDelayedTransitionCallback,
-                        beforeShowTransitionCallback,
-                        beforeHideTransitionCallback,
+                        mBeforeDelayedTransitionCallback,
+                        mBeforeShowTransitionCallback,
+                        mBeforeHideTransitionCallback,
                         transitionStartedCallback,
                         transitionFinishedCallback);
 
@@ -836,24 +839,24 @@ public class OptionalButtonViewTest {
 
         // Verify that callbacks are called in the expected order with the right arguments,
         // non-animated updates use either SHOWING or HIDING.
-        inOrder.verify(beforeDelayedTransitionCallback).run();
-        inOrder.verify(beforeShowTransitionCallback).run();
+        inOrder.verify(mBeforeDelayedTransitionCallback).run();
+        inOrder.verify(mBeforeShowTransitionCallback).run();
         inOrder.verify(transitionStartedCallback).onResult(TransitionType.SHOWING);
         inOrder.verify(transitionFinishedCallback).onResult(TransitionType.SHOWING);
-        inOrder.verify(beforeDelayedTransitionCallback).run();
-        inOrder.verify(beforeShowTransitionCallback).run();
+        inOrder.verify(mBeforeDelayedTransitionCallback).run();
+        inOrder.verify(mBeforeShowTransitionCallback).run();
         inOrder.verify(transitionStartedCallback).onResult(TransitionType.SHOWING);
         inOrder.verify(transitionFinishedCallback).onResult(TransitionType.SHOWING);
-        inOrder.verify(beforeDelayedTransitionCallback).run();
-        inOrder.verify(beforeShowTransitionCallback).run();
+        inOrder.verify(mBeforeDelayedTransitionCallback).run();
+        inOrder.verify(mBeforeShowTransitionCallback).run();
         inOrder.verify(transitionStartedCallback).onResult(TransitionType.SHOWING);
         inOrder.verify(transitionFinishedCallback).onResult(TransitionType.SHOWING);
-        inOrder.verify(beforeDelayedTransitionCallback).run();
-        inOrder.verify(beforeShowTransitionCallback).run();
+        inOrder.verify(mBeforeDelayedTransitionCallback).run();
+        inOrder.verify(mBeforeShowTransitionCallback).run();
         inOrder.verify(transitionStartedCallback).onResult(TransitionType.SHOWING);
         inOrder.verify(transitionFinishedCallback).onResult(TransitionType.SHOWING);
-        inOrder.verify(beforeDelayedTransitionCallback).run();
-        inOrder.verify(beforeHideTransitionCallback).run();
+        inOrder.verify(mBeforeDelayedTransitionCallback).run();
+        inOrder.verify(mBeforeHideTransitionCallback).run();
         inOrder.verify(transitionStartedCallback).onResult(TransitionType.HIDING);
         inOrder.verify(transitionFinishedCallback).onResult(TransitionType.HIDING);
     }
@@ -1083,8 +1086,6 @@ public class OptionalButtonViewTest {
 
     @Test
     public void testUpdateButton_sameVariantUpdatesShouldNotBeAnimated() {
-        ArgumentCaptor<Transition> transitionArgumentCaptor =
-                ArgumentCaptor.forClass(Transition.class);
         // Create two ButtonData objects for the same variant (NEW_TAB) with different icons.
         ButtonDataImpl newTabButtonData =
                 getDataForStaticNewTabIconButton(
@@ -1096,9 +1097,9 @@ public class OptionalButtonViewTest {
         // First show the first icon.
         mOptionalButtonView.updateButtonWithAnimation(newTabButtonData);
 
-        verify(mMockBeginDelayedTransition).onResult(transitionArgumentCaptor.capture());
+        verify(mMockBeginDelayedTransition).onResult(mTransitionCaptor.capture());
         // Going from no button to a button should be animated.
-        assertNotEquals(0, transitionArgumentCaptor.getValue().getDuration());
+        assertNotEquals(0, mTransitionCaptor.getValue().getDuration());
         mOptionalButtonView.onTransitionStart(null);
         mOptionalButtonView.onTransitionEnd(null);
 
@@ -1110,17 +1111,15 @@ public class OptionalButtonViewTest {
 
         // Now hide the button.
         mOptionalButtonView.updateButtonWithAnimation(null);
-        verify(mMockBeginDelayedTransition, times(2)).onResult(transitionArgumentCaptor.capture());
+        verify(mMockBeginDelayedTransition, times(2)).onResult(mTransitionCaptor.capture());
         // Hiding the button should be animated.
-        assertNotEquals(0, transitionArgumentCaptor.getValue().getDuration());
+        assertNotEquals(0, mTransitionCaptor.getValue().getDuration());
         mOptionalButtonView.onTransitionStart(null);
         mOptionalButtonView.onTransitionEnd(null);
     }
 
     @Test
     public void testUpdateButton_differentVariantUpdatesShouldBeAnimated() {
-        ArgumentCaptor<Transition> transitionArgumentCaptor =
-                ArgumentCaptor.forClass(Transition.class);
         // Create two ButtonData objects with different variants.
         ButtonData newTabButtonData = getDataForStaticNewTabIconButton();
         ButtonData readerModeButtonData = getDataForReaderModeIconButton();
@@ -1128,18 +1127,18 @@ public class OptionalButtonViewTest {
         // First show the new tab variant.
         mOptionalButtonView.updateButtonWithAnimation(newTabButtonData);
 
-        verify(mMockBeginDelayedTransition).onResult(transitionArgumentCaptor.capture());
+        verify(mMockBeginDelayedTransition).onResult(mTransitionCaptor.capture());
         // Going from no button to a button should be animated.
-        assertNotEquals(0, transitionArgumentCaptor.getValue().getDuration());
+        assertNotEquals(0, mTransitionCaptor.getValue().getDuration());
         mOptionalButtonView.onTransitionStart(null);
         mOptionalButtonView.onTransitionEnd(null);
 
         // Now show the reader mode button.
         mOptionalButtonView.updateButtonWithAnimation(readerModeButtonData);
 
-        verify(mMockBeginDelayedTransition, times(2)).onResult(transitionArgumentCaptor.capture());
+        verify(mMockBeginDelayedTransition, times(2)).onResult(mTransitionCaptor.capture());
         // Changing variants should be animated.
-        assertNotEquals(0, transitionArgumentCaptor.getValue().getDuration());
+        assertNotEquals(0, mTransitionCaptor.getValue().getDuration());
         mOptionalButtonView.onTransitionStart(null);
         mOptionalButtonView.onTransitionEnd(null);
     }
@@ -1345,15 +1344,14 @@ public class OptionalButtonViewTest {
         assertEquals(contentDescriptionString, mButton.getContentDescription());
 
         // Simulate transition start with a 0-duration transition.
-        Transition transition = mock(Transition.class);
-        when(transition.getDuration()).thenReturn(0L);
-        mOptionalButtonView.onTransitionStart(transition);
+        when(mTransition.getDuration()).thenReturn(0L);
+        mOptionalButtonView.onTransitionStart(mTransition);
 
         // Content description should NOT be cleared to null.
         assertEquals(contentDescriptionString, mButton.getContentDescription());
 
         // Simulate transition end.
-        mOptionalButtonView.onTransitionEnd(transition);
+        mOptionalButtonView.onTransitionEnd(mTransition);
 
         // Content description should still be correct.
         assertEquals(contentDescriptionString, mButton.getContentDescription());
@@ -1374,15 +1372,14 @@ public class OptionalButtonViewTest {
         assertEquals(contentDescriptionString, mButton.getContentDescription());
 
         // Simulate transition start with an animated transition (duration > 0).
-        Transition transition = mock(Transition.class);
-        when(transition.getDuration()).thenReturn(225L);
-        mOptionalButtonView.onTransitionStart(transition);
+        when(mTransition.getDuration()).thenReturn(225L);
+        mOptionalButtonView.onTransitionStart(mTransition);
 
         // Content description should be cleared to null during transition.
         assertNull(mButton.getContentDescription());
 
         // Simulate transition end.
-        mOptionalButtonView.onTransitionEnd(transition);
+        mOptionalButtonView.onTransitionEnd(mTransition);
 
         // Content description should be restored.
         assertEquals(contentDescriptionString, mButton.getContentDescription());

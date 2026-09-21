@@ -15,7 +15,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -37,6 +36,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
@@ -104,6 +104,8 @@ public class ImmersiveVideoPlaybackCoordinatorTest {
     @Mock private XrPanelEntityHolder mControlPanelHolder;
     @Mock private XrInteractableComponent mInteractableComponent;
     @Mock private XrEntityHolder mActivitySpaceEntity;
+    @Mock private XrPanelEntityHolder mXrPanelEntityHolder;
+    @Captor private ArgumentCaptor<XrPose> mPlayerPoseCaptor;
     private final SettableNullableObservableSupplier<XrPose> mHeadPoseSupplier =
             ObservableSuppliers.createNullable();
 
@@ -401,20 +403,19 @@ public class ImmersiveVideoPlaybackCoordinatorTest {
     @Test
     @UiThreadTest
     public void testFormatPanelAccessibilityFocusLoss_DismissesPanel() {
-        XrPanelEntityHolder formatPanelHolder = mock(XrPanelEntityHolder.class);
-        when(formatPanelHolder.getEntitySize()).thenReturn(new SizeF(1f, 1f));
+        when(mXrPanelEntityHolder.getEntitySize()).thenReturn(new SizeF(1f, 1f));
         when(mControlPanelHolder.getParent()).thenReturn(mControlPanelHolder);
-        when(formatPanelHolder.getParent()).thenReturn(formatPanelHolder);
+        when(mXrPanelEntityHolder.getParent()).thenReturn(mXrPanelEntityHolder);
         when(mXrSceneCoreSessionManager.createPanelEntity(any(), any()))
-                .thenReturn(formatPanelHolder);
+                .thenReturn(mXrPanelEntityHolder);
 
         mCoordinator.onFormatClicked();
         assertTrue(mCoordinator.getFormatCoordinatorForTesting().isShowing());
 
         mCoordinator.onFormatPanelAccessibilityFocusChanged(false);
 
-        verify(formatPanelHolder).setEntityEnabled(false);
-        verify(formatPanelHolder).setParent(null);
+        verify(mXrPanelEntityHolder).setEntityEnabled(false);
+        verify(mXrPanelEntityHolder).setParent(null);
     }
 
     /**
@@ -424,10 +425,9 @@ public class ImmersiveVideoPlaybackCoordinatorTest {
     @Test
     @UiThreadTest
     public void testDisposalHierarchyOrder() {
-        XrPanelEntityHolder formatPanelHolder = mock(XrPanelEntityHolder.class);
-        when(formatPanelHolder.getEntitySize()).thenReturn(new SizeF(1f, 1f));
+        when(mXrPanelEntityHolder.getEntitySize()).thenReturn(new SizeF(1f, 1f));
         when(mXrSceneCoreSessionManager.createPanelEntity(any(), any()))
-                .thenReturn(formatPanelHolder);
+                .thenReturn(mXrPanelEntityHolder);
 
         mCoordinator.onFormatClicked();
 
@@ -442,7 +442,7 @@ public class ImmersiveVideoPlaybackCoordinatorTest {
         doAnswer(
                         invocation -> {
                             markAsDisposed.accept(mControlPanelHolder);
-                            markAsDisposed.accept(formatPanelHolder);
+                            markAsDisposed.accept(mXrPanelEntityHolder);
                             return null;
                         })
                 .when(mSurfaceEntityHolder)
@@ -451,14 +451,14 @@ public class ImmersiveVideoPlaybackCoordinatorTest {
         // 2. Disposing Control Panel entity disposes its child (Format Panel).
         doAnswer(
                         invocation -> {
-                            markAsDisposed.accept(formatPanelHolder);
+                            markAsDisposed.accept(mXrPanelEntityHolder);
                             return null;
                         })
                 .when(mControlPanelHolder)
                 .dispose();
 
         mCoordinator.dispose();
-        verify(formatPanelHolder).dispose();
+        verify(mXrPanelEntityHolder).dispose();
         verify(mControlPanelHolder).dispose();
         verify(mSurfaceEntityHolder).dispose();
     }
@@ -618,14 +618,13 @@ public class ImmersiveVideoPlaybackCoordinatorTest {
         mHeadPoseSupplier.set(ANCHOR_POSE);
         ShadowLooper.idleMainLooper();
 
-        ArgumentCaptor<XrPose> playerPoseCaptor = ArgumentCaptor.forClass(XrPose.class);
         verify(mSurfaceEntityHolder)
-                .setEntityPose(playerPoseCaptor.capture(), eq(XrSpace.ACTIVITY));
+                .setEntityPose(mPlayerPoseCaptor.capture(), eq(XrSpace.ACTIVITY));
         XrPose expectedPlayerPose =
                 XrPose.create(
                         ANCHOR_POSE.transformPoint(XrVector3.create(0f, 0f, -1.5f)),
                         ANCHOR_POSE.getRotation());
-        assertPoseEquals(expectedPlayerPose, playerPoseCaptor.getValue());
+        assertPoseEquals(expectedPlayerPose, mPlayerPoseCaptor.getValue());
     }
 
     /** Tests that head pose tracking automatically times out and unregisters after 500ms. */
@@ -658,10 +657,9 @@ public class ImmersiveVideoPlaybackCoordinatorTest {
         ShadowLooper.idleMainLooper();
 
         verify(mXrSceneCoreSessionManager).getHeadPoseInActivitySpace();
-        ArgumentCaptor<XrPose> playerPoseCaptor = ArgumentCaptor.forClass(XrPose.class);
         verify(mSurfaceEntityHolder)
-                .setEntityPose(playerPoseCaptor.capture(), eq(XrSpace.ACTIVITY));
-        assertEquals(ANCHOR_POSE.getTranslation(), playerPoseCaptor.getValue().getTranslation());
+                .setEntityPose(mPlayerPoseCaptor.capture(), eq(XrSpace.ACTIVITY));
+        assertEquals(ANCHOR_POSE.getTranslation(), mPlayerPoseCaptor.getValue().getTranslation());
     }
 
     /** Tests that reshowing control panel in curved mode fetches head pose to update anchor. */

@@ -24,6 +24,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -53,14 +54,15 @@ import org.chromium.components.browser_ui.notifications.NotificationWrapper;
     NotificationFeatureMap.CACHE_NOTIIFICATIONS_ENABLED
 })
 public class NotificationManagerTest {
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    private static final String GUID = "test_guid";
+    private static final String URL = "https://www.example.com";
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private SendTabToSelfAndroidBridge.Natives mBridgeMock;
     @Mock private SendTabToSelfMetricsRecorder.Natives mMetricsMock;
     @Mock private BaseNotificationManagerProxy mNotificationManagerProxy;
     @Mock private Profile mProfile;
-    private static final String GUID = "test_guid";
-    private static final String URL = "https://www.example.com";
+    @Captor private ArgumentCaptor<NotificationWrapper> mNotificationWrapperCaptor;
 
     @Before
     public void setUp() {
@@ -385,14 +387,13 @@ public class NotificationManagerTest {
                         pageContextBytes);
         Assert.assertTrue(shown);
 
-        ArgumentCaptor<NotificationWrapper> captor =
-                ArgumentCaptor.forClass(NotificationWrapper.class);
-        verify(mNotificationManagerProxy).notify(captor.capture());
+        verify(mNotificationManagerProxy).notify(mNotificationWrapperCaptor.capture());
 
-        Intent tapIntent = getRealIntent(captor.getValue().getNotification().contentIntent);
+        Intent tapIntent =
+                getRealIntent(
+                        mNotificationWrapperCaptor.getValue().getNotification().contentIntent);
         Assert.assertNotNull(tapIntent);
-        Assert.assertEquals(
-                NotificationManager.NOTIFICATION_ACTION_TAP, tapIntent.getAction());
+        Assert.assertEquals(NotificationManager.NOTIFICATION_ACTION_TAP, tapIntent.getAction());
         Assert.assertEquals(
                 GUID, tapIntent.getStringExtra(NotificationManager.NOTIFICATION_GUID_EXTRA));
         Assert.assertArrayEquals(
@@ -418,11 +419,11 @@ public class NotificationManagerTest {
                         null);
         Assert.assertTrue(shown);
 
-        ArgumentCaptor<NotificationWrapper> captor =
-                ArgumentCaptor.forClass(NotificationWrapper.class);
-        verify(mNotificationManagerProxy).notify(captor.capture());
+        verify(mNotificationManagerProxy).notify(mNotificationWrapperCaptor.capture());
 
-        Intent tapIntent = getRealIntent(captor.getValue().getNotification().contentIntent);
+        Intent tapIntent =
+                getRealIntent(
+                        mNotificationWrapperCaptor.getValue().getNotification().contentIntent);
         Assert.assertNotNull(tapIntent);
         Assert.assertNull(
                 tapIntent.getByteArrayExtra(IntentHandler.EXTRA_SEND_TAB_TO_SELF_PAGE_CONTEXT));
@@ -463,11 +464,9 @@ public class NotificationManagerTest {
                         null);
         Assert.assertTrue(shown);
 
-        ArgumentCaptor<NotificationWrapper> captor =
-                ArgumentCaptor.forClass(NotificationWrapper.class);
-        verify(mNotificationManagerProxy).notify(captor.capture());
+        verify(mNotificationManagerProxy).notify(mNotificationWrapperCaptor.capture());
 
-        Notification notification = captor.getValue().getNotification();
+        Notification notification = mNotificationWrapperCaptor.getValue().getNotification();
         Assert.assertEquals(
                 "www.example.com - Sent from My Phone",
                 notification.extras.getString(Notification.EXTRA_TEXT));
@@ -509,11 +508,9 @@ public class NotificationManagerTest {
                         null);
         Assert.assertTrue(shown);
 
-        ArgumentCaptor<NotificationWrapper> captor =
-                ArgumentCaptor.forClass(NotificationWrapper.class);
-        verify(mNotificationManagerProxy).notify(captor.capture());
+        verify(mNotificationManagerProxy).notify(mNotificationWrapperCaptor.capture());
 
-        Notification notification = captor.getValue().getNotification();
+        Notification notification = mNotificationWrapperCaptor.getValue().getNotification();
         Assert.assertEquals(
                 "Open in Example App - Sent from My Phone",
                 notification.extras.getString(Notification.EXTRA_TEXT));

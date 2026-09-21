@@ -12,7 +12,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.refEq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -76,6 +75,9 @@ public class TabHoverCardViewUnitTest {
     @Mock private Tab mHoveredTab;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabContentManager mTabContentManager;
+    @Mock private Runnable mRunnable;
+    @Mock private TabModel mStandardTabModel;
+    @Mock private TabModel mIncognitoTabModel;
 
     private final SettableMonotonicObservableSupplier<TabContentManager>
             mTabContentManagerSupplier = ObservableSuppliers.createMonotonic();
@@ -213,8 +215,7 @@ public class TabHoverCardViewUnitTest {
         when(mHoveredTab.getUrl()).thenReturn(url);
         when(mHoveredTab.getId()).thenReturn(1);
 
-        Runnable heightChangedCallback = mock(Runnable.class);
-        mTabHoverCardView.setOnCardHeightChangedCallback(heightChangedCallback);
+        mTabHoverCardView.setOnCardHeightChangedCallback(mRunnable);
 
         mTabHoverCardView.show(mHoveredTab, 10f, 20f);
 
@@ -235,7 +236,7 @@ public class TabHoverCardViewUnitTest {
                 "Memory usage view should be visible.",
                 View.VISIBLE,
                 mMemoryUsageView.getVisibility());
-        verify(heightChangedCallback).run();
+        verify(mRunnable).run();
     }
 
     @Test
@@ -472,20 +473,18 @@ public class TabHoverCardViewUnitTest {
 
     @Test
     public void currentTabModelObserver_OnTabModelSelected() {
-        var standardTabModel = mock(TabModel.class);
-        var incognitoTabModel = mock(TabModel.class);
-        when(standardTabModel.isIncognitoBranded()).thenReturn(false);
-        when(incognitoTabModel.isIncognitoBranded()).thenReturn(true);
+        when(mStandardTabModel.isIncognitoBranded()).thenReturn(false);
+        when(mIncognitoTabModel.isIncognitoBranded()).thenReturn(true);
 
         // Assume standard tab model.
         when(mTabModelSelector.isIncognitoSelected()).thenReturn(false);
 
         // Switch to the incognito tab model.
-        mTabModelSupplier.set(incognitoTabModel);
+        mTabModelSupplier.set(mIncognitoTabModel);
         verify(mTabHoverCardView).updateHoverCardColors(true);
 
         // Switch to the standard tab model.
-        mTabModelSupplier.set(standardTabModel);
+        mTabModelSupplier.set(mStandardTabModel);
         // Invoked in #initialize() in setup and in test.
         verify(mTabHoverCardView, times(2)).updateHoverCardColors(false);
     }
@@ -523,8 +522,7 @@ public class TabHoverCardViewUnitTest {
         when(mHoveredTab.getId()).thenReturn(1);
         when(mHoveredTab.getAlertState()).thenReturn(TabAlert.NONE);
 
-        Runnable heightChangedCallback = mock(Runnable.class);
-        mTabHoverCardView.setOnCardHeightChangedCallback(heightChangedCallback);
+        mTabHoverCardView.setOnCardHeightChangedCallback(mRunnable);
 
         mTabHoverCardView.show(mHoveredTab, 10f, 20f);
         verify(mHoveredTab).addObserver(mTabObserverCaptor.capture());
@@ -545,7 +543,7 @@ public class TabHoverCardViewUnitTest {
                 "Alert status text is incorrect after update.",
                 mContext.getString(R.string.tooltip_tab_alert_state_glic_accessing),
                 mAlertStatusView.getText().toString());
-        verify(heightChangedCallback).run();
+        verify(mRunnable).run();
 
         // Live update title.
         when(mHoveredTab.getTitle()).thenReturn("Updated Title");

@@ -9,7 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -42,8 +41,10 @@ public class PinnedTabClosureManagerUnitTest {
 
     @Mock private TabModelSelector mSelector;
     @Mock private Tab mTab;
-    private Context mContext;
+    @Mock private Tab mTab2;
     @Spy private PinnedTabClosureManager mPinnedTabClosureManager;
+
+    private Context mContext;
 
     @Before
     public void setUp() {
@@ -95,11 +96,10 @@ public class PinnedTabClosureManagerUnitTest {
 
     @Test
     public void testClosePinnedTabByKeyboardShortcut_multipleTabs_showPluralToast() {
-        Tab tab2 = mock(Tab.class);
-        when(tab2.getId()).thenReturn(2);
-        when(tab2.getIsPinned()).thenReturn(true);
+        when(mTab2.getId()).thenReturn(2);
+        when(mTab2.getIsPinned()).thenReturn(true);
 
-        assertFalse(mPinnedTabClosureManager.shouldCloseTab(mSelector, mTab, List.of(mTab, tab2)));
+        assertFalse(mPinnedTabClosureManager.shouldCloseTab(mSelector, mTab, List.of(mTab, mTab2)));
 
         // Verify toast is showing with count 2.
         verify(mPinnedTabClosureManager).showToast(any(), eq(2));
@@ -145,12 +145,11 @@ public class PinnedTabClosureManagerUnitTest {
 
     @Test
     public void testClosePinnedTabByKeyboardShortcut_multiselect_tabShouldClose() {
-        Tab tab2 = mock(Tab.class);
-        when(tab2.getId()).thenReturn(2);
-        when(tab2.getIsPinned()).thenReturn(false);
+        when(mTab2.getId()).thenReturn(2);
+        when(mTab2.getIsPinned()).thenReturn(false);
 
         // Verify first close attempt should close bulk tabs.
-        assertTrue(mPinnedTabClosureManager.shouldCloseTab(mSelector, mTab, List.of(mTab, tab2)));
+        assertTrue(mPinnedTabClosureManager.shouldCloseTab(mSelector, mTab, List.of(mTab, mTab2)));
 
         // Verify no entry in the pending tabs map.
         HashMap<TabModelSelector, Integer> pendingPinnedTabs =

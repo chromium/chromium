@@ -20,6 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -63,6 +64,7 @@ public class CustomTabHistoryIphControllerUnitTest {
     @Mock private Tab mTab;
 
     @Mock private Activity mActivity;
+    @Captor private ArgumentCaptor<IphCommand> mIphCommandCaptor;
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private CustomTabHistoryIphController mController;
 
@@ -91,9 +93,8 @@ public class CustomTabHistoryIphControllerUnitTest {
     public void testShowsIphOnPageLoad() {
         var tabObserver = mController.getTabObserverForTesting();
         tabObserver.onPageLoadFinished(mTab, JUnitTestGURLs.EXAMPLE_URL);
-        var captor = ArgumentCaptor.forClass(IphCommand.class);
-        verify(mUserEducationHelper).requestShowIph(captor.capture());
-        var cmd = captor.getValue();
+        verify(mUserEducationHelper).requestShowIph(mIphCommandCaptor.capture());
+        IphCommand cmd = mIphCommandCaptor.getValue();
         assertEquals(FeatureConstants.CCT_HISTORY_FEATURE, cmd.featureName);
         assertEquals(R.string.custom_tab_history_iph_bubble_text, cmd.stringId);
         assertEquals(R.string.custom_tab_history_iph_bubble_text, cmd.accessibilityStringId);

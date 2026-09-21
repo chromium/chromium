@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -86,12 +85,11 @@ public class ImprovedBookmarkRowTest {
     @Mock Runnable mPopupListener;
     @Mock Runnable mOpenBookmarkCallback;
     @Mock LazyOneshotSupplier<Drawable> mMockDrawableSupplier;
-
-    RoundedCornerImageView mStartImageView;
+    @Mock private View.AccessibilityDelegate mViewAccessibilityDelegate;
     @Spy ViewPropertyAnimator mStartImageViewAnimator;
-
     @Captor ArgumentCaptor<Callback<Drawable>> mDrawableCallbackCaptor;
 
+    RoundedCornerImageView mStartImageView;
     Activity mActivity;
     ImprovedBookmarkRow mImprovedBookmarkRow;
     PropertyModel mModel;
@@ -505,67 +503,65 @@ public class ImprovedBookmarkRowTest {
 
     @Test
     public void testSendAccessibilityEvent_onSelectionActiveChanged() {
-        View.AccessibilityDelegate delegate = mock(View.AccessibilityDelegate.class);
-        mImprovedBookmarkRow.setAccessibilityDelegate(delegate);
+        mImprovedBookmarkRow.setAccessibilityDelegate(mViewAccessibilityDelegate);
 
         // Transition false -> true: event should be sent.
         mModel.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, true);
-        verify(delegate, times(1))
+        verify(mViewAccessibilityDelegate, times(1))
                 .sendAccessibilityEvent(
                         mImprovedBookmarkRow, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
 
         // Setting true -> true (!changed): event should NOT be sent again.
         mModel.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, true);
-        verify(delegate, times(1))
+        verify(mViewAccessibilityDelegate, times(1))
                 .sendAccessibilityEvent(
                         mImprovedBookmarkRow, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
 
         // Transition true -> false: event should be sent.
         mModel.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, false);
-        verify(delegate, times(2))
+        verify(mViewAccessibilityDelegate, times(2))
                 .sendAccessibilityEvent(
                         mImprovedBookmarkRow, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
 
         // Setting false -> false (!changed): event should NOT be sent again.
         mModel.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, false);
-        verify(delegate, times(2))
+        verify(mViewAccessibilityDelegate, times(2))
                 .sendAccessibilityEvent(
                         mImprovedBookmarkRow, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
     }
 
     @Test
     public void testSendAccessibilityEvent_onSelectedChanged() {
-        View.AccessibilityDelegate delegate = mock(View.AccessibilityDelegate.class);
-        mImprovedBookmarkRow.setAccessibilityDelegate(delegate);
+        mImprovedBookmarkRow.setAccessibilityDelegate(mViewAccessibilityDelegate);
 
         // When SELECTION_ACTIVE is false, changing SELECTED should NOT send event.
         mModel.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, false);
         mModel.set(ImprovedBookmarkRowProperties.SELECTED, true);
-        verify(delegate, never())
+        verify(mViewAccessibilityDelegate, never())
                 .sendAccessibilityEvent(
                         mImprovedBookmarkRow, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
 
         // Enable SELECTION_ACTIVE.
         mModel.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, true);
-        verify(delegate, times(1))
+        verify(mViewAccessibilityDelegate, times(1))
                 .sendAccessibilityEvent(
                         mImprovedBookmarkRow, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
 
         // Toggling SELECTED (true -> false) while SELECTION_ACTIVE is true should send event.
         mModel.set(ImprovedBookmarkRowProperties.SELECTED, false);
-        verify(delegate, times(2))
+        verify(mViewAccessibilityDelegate, times(2))
                 .sendAccessibilityEvent(
                         mImprovedBookmarkRow, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
 
         // Re-setting SELECTED to false (!changed) should NOT send event.
         mModel.set(ImprovedBookmarkRowProperties.SELECTED, false);
-        verify(delegate, times(2))
+        verify(mViewAccessibilityDelegate, times(2))
                 .sendAccessibilityEvent(
                         mImprovedBookmarkRow, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
 
         // Toggling SELECTED (false -> true) should send event.
         mModel.set(ImprovedBookmarkRowProperties.SELECTED, true);
-        verify(delegate, times(3))
+        verify(mViewAccessibilityDelegate, times(3))
                 .sendAccessibilityEvent(
                         mImprovedBookmarkRow, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
     }

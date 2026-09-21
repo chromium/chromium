@@ -96,6 +96,7 @@ public class IncognitoTabSwitcherPaneUnitTest {
     @Mock private UserEducationHelper mUserEducationHelper;
     @Mock private Profile mProfile;
     @Mock private TabGroupCreationUiDelegate mUiFlow;
+    @Mock private Tab mTab;
 
     @Captor private ArgumentCaptor<IncognitoTabModelObserver> mIncognitoTabModelObserverCaptor;
     @Captor private ArgumentCaptor<IncognitoReauthCallback> mIncognitoReauthCallbackCaptor;
@@ -142,7 +143,7 @@ public class IncognitoTabSwitcherPaneUnitTest {
                         any(),
                         any());
 
-        mTabList = List.of(mock(Tab.class));
+        mTabList = List.of(mTab);
         when(mIncognitoTabModel.getRepresentativeTabList()).thenReturn(mTabList);
         when(mIncognitoTabModel.isTabModelRestored()).thenReturn(true);
         when(mTabSwitcherPaneCoordinator.getIsRecyclerViewAnimatorRunning())

@@ -21,7 +21,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -41,9 +41,11 @@ import org.chromium.components.browser_ui.widget.displaystyle.VerticalDisplaySty
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class NewTabPageUtilUnitTest {
+    private static final String PADDING_STYLE_PARAM = "padding_style";
+
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private static final String PADDING_STYLE_PARAM = "padding_style";
+    @Mock private UiConfig mUiConfig;
 
     private Context mContext;
     private View mView;
@@ -60,25 +62,23 @@ public class NewTabPageUtilUnitTest {
 
     @Test
     public void testIsInNarrowWindowOnLff() {
-        UiConfig uiConfig = Mockito.mock(UiConfig.class);
-
         UiConfig.DisplayStyle displayStyleWide =
                 new DisplayStyle(HorizontalDisplayStyle.WIDE, VerticalDisplayStyle.REGULAR);
-        when(uiConfig.getCurrentDisplayStyle()).thenReturn(displayStyleWide);
+        when(mUiConfig.getCurrentDisplayStyle()).thenReturn(displayStyleWide);
 
         assertFalse(
                 "It isn't a narrow window on LFF when displayStyleWide =="
                         + " HorizontalDisplayStyle.WIDE.",
-                NtpCustomizationUtils.isInNarrowWindowOnLff(true, uiConfig));
+                NtpCustomizationUtils.isInNarrowWindowOnLff(true, mUiConfig));
 
         UiConfig.DisplayStyle displayStyleRegular =
                 new DisplayStyle(HorizontalDisplayStyle.REGULAR, VerticalDisplayStyle.REGULAR);
-        when(uiConfig.getCurrentDisplayStyle()).thenReturn(displayStyleRegular);
+        when(mUiConfig.getCurrentDisplayStyle()).thenReturn(displayStyleRegular);
         assertFalse(
                 "It isn't a narrow window on LFF when |isLff| is false.",
-                NtpCustomizationUtils.isInNarrowWindowOnLff(false, uiConfig));
+                NtpCustomizationUtils.isInNarrowWindowOnLff(false, mUiConfig));
 
-        assertTrue(NtpCustomizationUtils.isInNarrowWindowOnLff(true, uiConfig));
+        assertTrue(NtpCustomizationUtils.isInNarrowWindowOnLff(true, mUiConfig));
     }
 
     @Test

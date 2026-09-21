@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.ntp_customization;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.BACK_PRESS_HANDLER;
@@ -22,6 +21,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -33,6 +33,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 @RunWith(BaseRobolectricTestRunner.class)
 public class BottomSheetViewBinderUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private View.OnClickListener mViewOnClickListener;
 
     private Context mContext;
     private View mContentView;
@@ -66,11 +67,10 @@ public class BottomSheetViewBinderUnitTest {
         // is set when BACK_PRESS_HANDLER is not null.
         PropertyModelChangeProcessor.create(
                 mPropertyModel, ntpCardsBottomSheet, BottomSheetViewBinder::bind);
-        View.OnClickListener backPressHandler = mock(View.OnClickListener.class);
-        mPropertyModel.set(BACK_PRESS_HANDLER, backPressHandler);
+        mPropertyModel.set(BACK_PRESS_HANDLER, mViewOnClickListener);
         View backButton = mContentView.findViewById(R.id.back_button);
         backButton.performClick();
-        verify(backPressHandler).onClick(backButton);
+        verify(mViewOnClickListener).onClick(backButton);
 
         // Verifies that the back button is removed from the bottom sheet when BACK_PRESS_HANDLER
         // is set to null.
@@ -92,11 +92,10 @@ public class BottomSheetViewBinderUnitTest {
         // is set when the given back press handler is not null.
         PropertyModelChangeProcessor.create(
                 mPropertyModel, feedBottomSheet, BottomSheetViewBinder::bind);
-        View.OnClickListener backPressHandler = mock(View.OnClickListener.class);
-        mPropertyModel.set(BACK_PRESS_HANDLER, backPressHandler);
+        mPropertyModel.set(BACK_PRESS_HANDLER, mViewOnClickListener);
         View backButton = mContentView.findViewById(R.id.back_button);
         backButton.performClick();
-        verify(backPressHandler).onClick(backButton);
+        verify(mViewOnClickListener).onClick(backButton);
 
         // Verifies that the back button is removed from the bottom sheet when BACK_PRESS_HANDLER
         // is set to null.

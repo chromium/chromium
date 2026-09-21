@@ -12,7 +12,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
@@ -77,7 +76,6 @@ public class PasswordCsvDownloadFlowControllerTest {
             "name,url,username,password,note\n"
                     + "example.com,https://example.com/,Someone,Secret,\"Note Line 1\n"
                     + "\"Note Line 2\"";
-
     private static final String NO_GMS_DOWNLOAD_FLOW_LAST_STEP_HISTOGRAM =
             "PasswordManager.UPM.NoGms.DownloadCsvFlowLastStep";
     private static final String OLD_GMS_DOWNLOAD_FLOW_LAST_STEP_HISTOGRAM =
@@ -87,13 +85,15 @@ public class PasswordCsvDownloadFlowControllerTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private PasswordCsvDownloadFlowController mController;
-    private FragmentActivity mActivity;
     @Mock Runnable mEndOfFlowCallback;
     @Mock Profile mProfile;
     @Mock ReauthenticatorBridge mReauthenticatorBridge;
     @Mock LoginDbDeprecationUtilBridge.Natives mLoginDbDeprecationUtilBridge;
     @Mock SettingsCustomTabLauncher mSettingsCustomTabLauncher;
+    @Mock private InputStream mInputStream;
+
+    private PasswordCsvDownloadFlowController mController;
+    private FragmentActivity mActivity;
 
     @Before
     public void setUp() {
@@ -255,11 +255,10 @@ public class PasswordCsvDownloadFlowControllerTest {
         destinationFile.deleteOnExit();
 
         // Mock the input stream to simulate an error
-        InputStream inputStream = mock(InputStream.class);
         ShadowContentResolver shadowContentResolver =
                 shadowOf(ContextUtils.getApplicationContext().getContentResolver());
-        shadowContentResolver.registerInputStream(Uri.fromFile(sourceFile), inputStream);
-        when(inputStream.read(any())).thenThrow(new IOException());
+        shadowContentResolver.registerInputStream(Uri.fromFile(sourceFile), mInputStream);
+        when(mInputStream.read(any())).thenThrow(new IOException());
 
         // Return the result of the create document intent (the file name).
         shadowActivity.receiveResult(

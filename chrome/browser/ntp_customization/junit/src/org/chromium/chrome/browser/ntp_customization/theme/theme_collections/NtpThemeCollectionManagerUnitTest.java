@@ -63,6 +63,10 @@ public class NtpThemeCollectionManagerUnitTest {
 
     @Captor private ArgumentCaptor<Callback<Bitmap>> mBitmapCallbackCaptor;
 
+    @Captor
+    private ArgumentCaptor<NtpBackgroundDataThemeCollection>
+            mNtpBackgroundDataThemeCollectionCaptor;
+
     private NtpCustomizationConfigManager mNtpCustomizationConfigManager;
     private NtpThemeCollectionManager mNtpThemeCollectionManager;
     private Context mContext;
@@ -114,13 +118,13 @@ public class NtpThemeCollectionManagerUnitTest {
         RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mOnThemeImageSelectedCallback).onResult(eq(bitmap));
-        ArgumentCaptor<NtpBackgroundDataThemeCollection> captor =
-                ArgumentCaptor.forClass(NtpBackgroundDataThemeCollection.class);
         verify(mNtpCustomizationConfigManager)
-                .onBackgroundDataChanged(eq(mContext), captor.capture());
-        assertEquals(bitmap, captor.getValue().getBitmap());
-        assertEquals(info, captor.getValue().getCustomBackgroundInfo());
-        assertNotNull(captor.getValue().getBackgroundImageInfo());
+                .onBackgroundDataChanged(
+                        eq(mContext), mNtpBackgroundDataThemeCollectionCaptor.capture());
+        assertEquals(bitmap, mNtpBackgroundDataThemeCollectionCaptor.getValue().getBitmap());
+        assertEquals(
+                info, mNtpBackgroundDataThemeCollectionCaptor.getValue().getCustomBackgroundInfo());
+        assertNotNull(mNtpBackgroundDataThemeCollectionCaptor.getValue().getBackgroundImageInfo());
         // Verifying side effects of
         // NtpCustomizationUtils.saveBackgroundInfoForThemeCollectionOrUploadedImage
         assertTrue(NtpCustomizationUtils.createBackgroundImageFile().exists());
@@ -129,7 +133,8 @@ public class NtpThemeCollectionManagerUnitTest {
                 NtpCustomizationUtils.getCustomBackgroundInfoFromSharedPreference().collectionId);
         assertNotNull(NtpCustomizationUtils.readNtpBackgroundImageInfo());
         // Verifies primary color is picked and saved immediately.
-        @ColorInt Integer primaryColor = captor.getValue().getPrimaryColor();
+        @ColorInt
+        Integer primaryColor = mNtpBackgroundDataThemeCollectionCaptor.getValue().getPrimaryColor();
         assertNotNull(primaryColor);
         assertEquals(
                 primaryColor,
@@ -214,13 +219,13 @@ public class NtpThemeCollectionManagerUnitTest {
 
         // 3. Verify the theme was set for today.
         verify(mOnThemeImageSelectedCallback).onResult(eq(bitmap));
-        ArgumentCaptor<NtpBackgroundDataThemeCollection> captor =
-                ArgumentCaptor.forClass(NtpBackgroundDataThemeCollection.class);
         verify(mNtpCustomizationConfigManager)
-                .onBackgroundDataChanged(eq(mContext), captor.capture());
-        assertEquals(bitmap, captor.getValue().getBitmap());
-        assertEquals(info, captor.getValue().getCustomBackgroundInfo());
-        assertNotNull(captor.getValue().getBackgroundImageInfo());
+                .onBackgroundDataChanged(
+                        eq(mContext), mNtpBackgroundDataThemeCollectionCaptor.capture());
+        assertEquals(bitmap, mNtpBackgroundDataThemeCollectionCaptor.getValue().getBitmap());
+        assertEquals(
+                info, mNtpBackgroundDataThemeCollectionCaptor.getValue().getCustomBackgroundInfo());
+        assertNotNull(mNtpBackgroundDataThemeCollectionCaptor.getValue().getBackgroundImageInfo());
         assertTrue(NtpCustomizationUtils.createBackgroundImageFile().exists());
 
         // 4. Verify the runnable was executed to fetch the next image for tomorrow.

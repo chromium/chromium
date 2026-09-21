@@ -14,6 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -32,7 +33,6 @@ import org.chromium.ui.base.WindowAndroid;
 @RunWith(BaseRobolectricTestRunner.class)
 public class FindToolbarManagerTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    private FindToolbarManager mFindToolbarManager;
 
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private Tab mTab;
@@ -43,6 +43,11 @@ public class FindToolbarManagerTest {
     @Mock private View mAnchorView;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private SideUiStateProvider mSideUiStateProvider;
+    @Mock private FindToolbarObserver mObserver1;
+    @Mock private FindToolbarObserver mObserver2;
+    @Captor private ArgumentCaptor<FindToolbarObserver> mFindToolbarObserverCaptor;
+
+    private FindToolbarManager mFindToolbarManager;
 
     @Before
     public void setUp() {
@@ -64,32 +69,27 @@ public class FindToolbarManagerTest {
 
     @Test
     public void testObserverMethods() {
-        FindToolbarObserver observer1 = Mockito.mock(FindToolbarObserver.class);
-        FindToolbarObserver observer2 = Mockito.mock(FindToolbarObserver.class);
-
-        mFindToolbarManager.addObserver(observer1);
-        mFindToolbarManager.addObserver(observer2);
+        mFindToolbarManager.addObserver(mObserver1);
+        mFindToolbarManager.addObserver(mObserver2);
         mFindToolbarManager.showToolbar();
 
-        ArgumentCaptor<FindToolbarObserver> captor =
-                ArgumentCaptor.forClass(FindToolbarObserver.class);
-        Mockito.verify(mFindToolbar).setObserver(captor.capture());
+        Mockito.verify(mFindToolbar).setObserver(mFindToolbarObserverCaptor.capture());
 
-        FindToolbarObserver aggObserver = captor.getValue();
+        FindToolbarObserver aggObserver = mFindToolbarObserverCaptor.getValue();
         aggObserver.onFindToolbarHidden();
-        Mockito.verify(observer1).onFindToolbarHidden();
-        Mockito.verify(observer2).onFindToolbarHidden();
+        Mockito.verify(mObserver1).onFindToolbarHidden();
+        Mockito.verify(mObserver2).onFindToolbarHidden();
         aggObserver.onFindToolbarShown();
-        Mockito.verify(observer1).onFindToolbarShown();
-        Mockito.verify(observer2).onFindToolbarShown();
+        Mockito.verify(mObserver1).onFindToolbarShown();
+        Mockito.verify(mObserver2).onFindToolbarShown();
 
-        mFindToolbarManager.removeObserver(observer2);
+        mFindToolbarManager.removeObserver(mObserver2);
         aggObserver.onFindToolbarHidden();
-        Mockito.verify(observer1, Mockito.times(2)).onFindToolbarHidden();
-        Mockito.verify(observer2, Mockito.times(1)).onFindToolbarHidden();
+        Mockito.verify(mObserver1, Mockito.times(2)).onFindToolbarHidden();
+        Mockito.verify(mObserver2, Mockito.times(1)).onFindToolbarHidden();
         aggObserver.onFindToolbarShown();
-        Mockito.verify(observer1, Mockito.times(2)).onFindToolbarShown();
-        Mockito.verify(observer2, Mockito.times(1)).onFindToolbarShown();
+        Mockito.verify(mObserver1, Mockito.times(2)).onFindToolbarShown();
+        Mockito.verify(mObserver2, Mockito.times(1)).onFindToolbarShown();
     }
 
     @Test

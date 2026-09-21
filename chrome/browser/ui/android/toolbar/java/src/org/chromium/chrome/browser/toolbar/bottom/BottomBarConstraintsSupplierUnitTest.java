@@ -13,6 +13,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -36,13 +37,14 @@ import org.chromium.url.JUnitTestGURLs;
 public class BottomBarConstraintsSupplierUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Mock private Tab mTab;
+    @Mock private NativePage mNativePage;
+    @Captor private ArgumentCaptor<TabObserver> mObserverCaptor;
+
     private BottomBarConstraintsSupplier mSupplier;
     private SettableNullableObservableSupplier<@BrowserControlsState Integer> mConstraintsSupplier;
     private SettableNullableObservableSupplier<Tab> mCurrentTabSupplier;
     private TestActivity mActivity;
-
-    @Mock private Tab mTab;
-    @Mock private NativePage mNativePage;
 
     @Before
     public void setUp() {
@@ -93,14 +95,13 @@ public class BottomBarConstraintsSupplierUnitTest {
         assertEquals(Integer.valueOf(BrowserControlsState.SHOWN), mSupplier.get());
 
         // Capture the observer
-        ArgumentCaptor<TabObserver> observerCaptor = ArgumentCaptor.forClass(TabObserver.class);
-        verify(mTab).addObserver(observerCaptor.capture());
+        verify(mTab).addObserver(mObserverCaptor.capture());
 
         // Simulate navigation to NTP
         when(mTab.getNativePage()).thenReturn(mNativePage);
         when(mNativePage.getHost()).thenReturn("newtab");
         when(mTab.isNativePage()).thenReturn(true);
-        observerCaptor.getValue().onContentChanged(mTab);
+        mObserverCaptor.getValue().onContentChanged(mTab);
 
         // Verify state is updated to BOTH
         assertEquals(Integer.valueOf(BrowserControlsState.BOTH), mSupplier.get());

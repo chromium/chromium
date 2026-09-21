@@ -15,7 +15,6 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -164,6 +163,11 @@ public class NewTabPageCoordinatorUnitTest {
     @Mock private View mMockSearchBoxView;
     @Mock private BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
     @Mock private RecyclerView mRecyclerView;
+    @Mock private TabRemover mTabRemover;
+    @Mock private NtpCustomizationCoordinatorFactory mNtpCustomizationCoordinatorFactory;
+    @Mock private NtpCustomizationCoordinator mNtpCustomizationCoordinator;
+    @Mock private SearchBoxCoordinator mSearchBoxCoordinator;
+    @Mock private View mView;
     @Captor private ArgumentCaptor<DisplayStyleObserver> mDisplayStyleObserverCaptor;
 
     private Activity mActivity;
@@ -265,13 +269,12 @@ public class NewTabPageCoordinatorUnitTest {
     @Test
     public void testOnTabSelected() {
         int tabId = 123;
-        TabRemover tabRemover = mock(TabRemover.class);
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
-        when(mTabModel.getTabRemover()).thenReturn(tabRemover);
+        when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
 
         mCoordinator.onTabSelected(tabId);
 
-        verify(tabRemover).closeTabs(any(), /* allowDialog= */ eq(false));
+        verify(mTabRemover).closeTabs(any(), /* allowDialog= */ eq(false));
         verify(mHomeSurfaceTracker).updateHomeSurfaceAndTrackingTabs(eq(null), eq(null));
     }
 
@@ -349,17 +352,16 @@ public class NewTabPageCoordinatorUnitTest {
 
     @Test
     public void testTriggerCustomizationBottomSheet() {
-        NtpCustomizationCoordinatorFactory factory = mock(NtpCustomizationCoordinatorFactory.class);
-        NtpCustomizationCoordinatorFactory.setInstanceForTesting(factory);
-        NtpCustomizationCoordinator customizationCoordinator =
-                mock(NtpCustomizationCoordinator.class);
-        when(factory.create(any(), any(), any(), anyInt(), any(), any(), any()))
-                .thenReturn(customizationCoordinator);
+        NtpCustomizationCoordinatorFactory.setInstanceForTesting(
+                mNtpCustomizationCoordinatorFactory);
+        when(mNtpCustomizationCoordinatorFactory.create(
+                        any(), any(), any(), anyInt(), any(), any(), any()))
+                .thenReturn(mNtpCustomizationCoordinator);
         assertFalse(NtpCustomizationUtils.isThemeTipBottomSheetShownFromSharedPreference());
 
         mCoordinator.triggerCustomizationBottomSheet();
 
-        verify(customizationCoordinator).showBottomSheet();
+        verify(mNtpCustomizationCoordinator).showBottomSheet();
         assertTrue(NtpCustomizationUtils.isThemeTipBottomSheetShownFromSharedPreference());
 
         NtpCustomizationUtils.resetSharedPreferenceForTesting();
@@ -665,9 +667,8 @@ public class NewTabPageCoordinatorUnitTest {
         createCoordinator();
         assertNull(mCoordinator.getComposeplateCoordinatorForTesting());
 
-        SearchBoxCoordinator mockSearchBox = mock(SearchBoxCoordinator.class);
-        when(mockSearchBox.getView()).thenReturn(mock(View.class));
-        mCoordinator.setSearchBoxCoordinatorForTesting(mockSearchBox);
+        when(mSearchBoxCoordinator.getView()).thenReturn(mView);
+        mCoordinator.setSearchBoxCoordinatorForTesting(mSearchBoxCoordinator);
 
         mCoordinator.initializeComposeplate();
 
@@ -731,10 +732,8 @@ public class NewTabPageCoordinatorUnitTest {
 
         // Setup mock SearchBoxCoordinator to verify side effect of
         // setSearchBoxHeightBoundsVerticalInset().
-        SearchBoxCoordinator mockSearchBox = mock(SearchBoxCoordinator.class);
-        View mockView = mock(View.class);
-        when(mockSearchBox.getView()).thenReturn(mockView);
-        mCoordinator.setSearchBoxCoordinatorForTesting(mockSearchBox);
+        when(mSearchBoxCoordinator.getView()).thenReturn(mView);
+        mCoordinator.setSearchBoxCoordinatorForTesting(mSearchBoxCoordinator);
 
         // Enables composeplate eligibility so it is ready to be initialized.
         when(mMockComposeplateUtilsJni.isAimEntrypointEligible(mProfile)).thenReturn(true);
@@ -747,7 +746,7 @@ public class NewTabPageCoordinatorUnitTest {
         assertNotNull(mCoordinator.getComposeplateCoordinatorForTesting());
 
         // Verifies setSearchBoxHeightBoundsVerticalInset() side effect on SearchBoxCoordinator.
-        verify(mockSearchBox, atLeastOnce()).setHeight(anyInt());
+        verify(mSearchBoxCoordinator, atLeastOnce()).setHeight(anyInt());
 
         // Verifies that calling setSearchProviderInfo() a second time with the same Google
         // search provider does not crash or re-inflate the ViewStub.

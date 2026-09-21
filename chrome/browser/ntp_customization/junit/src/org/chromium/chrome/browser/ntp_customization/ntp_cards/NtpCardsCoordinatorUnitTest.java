@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.ntp_customization.ntp_cards;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
@@ -43,6 +42,7 @@ public class NtpCardsCoordinatorUnitTest {
     @Mock private NtpCardsMediator mMediator;
     @Mock private HomeModulesConfigManager mHomeModulesConfigManager;
     @Mock private ModuleRegistry mModuleRegistry;
+    @Mock private NtpCardsMediator mNtpCardsMediator;
     @Captor private ArgumentCaptor<HomeModulesStateListener> mListener;
 
     private NtpCardsCoordinator mCoordinator;
@@ -90,23 +90,21 @@ public class NtpCardsCoordinatorUnitTest {
 
     @Test
     public void testDestroy() {
-        NtpCardsMediator mediator = mock(NtpCardsMediator.class);
-        mCoordinator.setMediatorForTesting(mediator);
+        mCoordinator.setMediatorForTesting(mNtpCardsMediator);
 
         mCoordinator.destroy();
-        verify(mediator).destroy();
+        verify(mNtpCardsMediator).destroy();
     }
 
     @Test
     public void testOnAllCardsConfigChanged() {
-        NtpCardsMediator mediator = mock(NtpCardsMediator.class);
-        mCoordinator.setMediatorForTesting(mediator);
+        mCoordinator.setMediatorForTesting(mNtpCardsMediator);
 
         mCoordinator.onAllCardsConfigChanged(true);
-        verify(mediator).onAllCardsConfigChanged(true);
+        verify(mNtpCardsMediator).onAllCardsConfigChanged(true);
 
         mCoordinator.onAllCardsConfigChanged(false);
-        verify(mediator).onAllCardsConfigChanged(false);
+        verify(mNtpCardsMediator).onAllCardsConfigChanged(false);
     }
 
     @Test

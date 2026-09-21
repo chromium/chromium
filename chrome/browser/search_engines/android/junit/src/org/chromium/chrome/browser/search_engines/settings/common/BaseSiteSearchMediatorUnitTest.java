@@ -25,6 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -69,6 +70,10 @@ public class BaseSiteSearchMediatorUnitTest {
     @Mock private AimEligibilityServiceFactory.Natives mAimEligibilityNativesMock;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
     @Mock private PrefService mPrefServiceMock;
+    @Mock private TemplateUrl mNormalEngine;
+    @Mock private TemplateUrl mAimEngine;
+    @Mock private TemplateUrl mGeminiEngine;
+    @Captor private ArgumentCaptor<Runnable> mRunnableCaptor;
 
     private Context mContext;
     private ModelList mModelList;
@@ -105,10 +110,9 @@ public class BaseSiteSearchMediatorUnitTest {
 
         verify(mTemplateUrlService).addObserver(mMediator);
 
-        ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
-        verify(mTemplateUrlService).runWhenLoaded(runnableCaptor.capture());
+        verify(mTemplateUrlService).runWhenLoaded(mRunnableCaptor.capture());
 
-        runnableCaptor.getValue().run();
+        mRunnableCaptor.getValue().run();
         verify(mMediator).refreshList();
     }
 
@@ -204,34 +208,30 @@ public class BaseSiteSearchMediatorUnitTest {
     public void testFilterTemplateUrls_AimStarterPackDisabled() {
         doReturn(false).when(mAimEligibilityNativesMock).isAimStarterPackEnabled(mProfile);
 
-        TemplateUrl normalEngine = mock(TemplateUrl.class);
-        doReturn(StarterPackId.NONE).when(normalEngine).getStarterPackId();
+        doReturn(StarterPackId.NONE).when(mNormalEngine).getStarterPackId();
 
-        TemplateUrl aimEngine = mock(TemplateUrl.class);
-        doReturn(StarterPackId.AI_MODE).when(aimEngine).getStarterPackId();
+        doReturn(StarterPackId.AI_MODE).when(mAimEngine).getStarterPackId();
 
-        List<TemplateUrl> urls = List.of(normalEngine, aimEngine);
+        List<TemplateUrl> urls = List.of(mNormalEngine, mAimEngine);
         List<TemplateUrl> filtered = mMediator.filterTemplateUrls(urls);
 
         assertEquals(1, filtered.size());
-        assertEquals(normalEngine, filtered.get(0));
+        assertEquals(mNormalEngine, filtered.get(0));
     }
 
     @Test
     @EnableFeatures(OmniboxFeatureList.STARTER_PACK_EXPANSION)
     public void testFilterTemplateUrls_AimStarterPackEnabled() {
-        TemplateUrl normalEngine = mock(TemplateUrl.class);
-        doReturn(StarterPackId.NONE).when(normalEngine).getStarterPackId();
+        doReturn(StarterPackId.NONE).when(mNormalEngine).getStarterPackId();
 
-        TemplateUrl aimEngine = mock(TemplateUrl.class);
-        doReturn(StarterPackId.AI_MODE).when(aimEngine).getStarterPackId();
+        doReturn(StarterPackId.AI_MODE).when(mAimEngine).getStarterPackId();
 
-        List<TemplateUrl> urls = List.of(normalEngine, aimEngine);
+        List<TemplateUrl> urls = List.of(mNormalEngine, mAimEngine);
         List<TemplateUrl> filtered = mMediator.filterTemplateUrls(urls);
 
         assertEquals(2, filtered.size());
-        assertEquals(normalEngine, filtered.get(0));
-        assertEquals(aimEngine, filtered.get(1));
+        assertEquals(mNormalEngine, filtered.get(0));
+        assertEquals(mAimEngine, filtered.get(1));
     }
 
     @Test
@@ -239,17 +239,15 @@ public class BaseSiteSearchMediatorUnitTest {
     public void testFilterTemplateUrls_GeminiStarterPackDisabled_FeatureFlag() {
         doReturn(0).when(mPrefServiceMock).getInteger(Pref.GEMINI_SETTINGS);
 
-        TemplateUrl normalEngine = mock(TemplateUrl.class);
-        doReturn(StarterPackId.NONE).when(normalEngine).getStarterPackId();
+        doReturn(StarterPackId.NONE).when(mNormalEngine).getStarterPackId();
 
-        TemplateUrl geminiEngine = mock(TemplateUrl.class);
-        doReturn(StarterPackId.GEMINI).when(geminiEngine).getStarterPackId();
+        doReturn(StarterPackId.GEMINI).when(mGeminiEngine).getStarterPackId();
 
-        List<TemplateUrl> urls = List.of(normalEngine, geminiEngine);
+        List<TemplateUrl> urls = List.of(mNormalEngine, mGeminiEngine);
         List<TemplateUrl> filtered = mMediator.filterTemplateUrls(urls);
 
         assertEquals(1, filtered.size());
-        assertEquals(normalEngine, filtered.get(0));
+        assertEquals(mNormalEngine, filtered.get(0));
     }
 
     @Test
@@ -258,17 +256,15 @@ public class BaseSiteSearchMediatorUnitTest {
         // Disable via pref (non-zero value).
         doReturn(1).when(mPrefServiceMock).getInteger(Pref.GEMINI_SETTINGS);
 
-        TemplateUrl normalEngine = mock(TemplateUrl.class);
-        doReturn(StarterPackId.NONE).when(normalEngine).getStarterPackId();
+        doReturn(StarterPackId.NONE).when(mNormalEngine).getStarterPackId();
 
-        TemplateUrl geminiEngine = mock(TemplateUrl.class);
-        doReturn(StarterPackId.GEMINI).when(geminiEngine).getStarterPackId();
+        doReturn(StarterPackId.GEMINI).when(mGeminiEngine).getStarterPackId();
 
-        List<TemplateUrl> urls = List.of(normalEngine, geminiEngine);
+        List<TemplateUrl> urls = List.of(mNormalEngine, mGeminiEngine);
         List<TemplateUrl> filtered = mMediator.filterTemplateUrls(urls);
 
         assertEquals(1, filtered.size());
-        assertEquals(normalEngine, filtered.get(0));
+        assertEquals(mNormalEngine, filtered.get(0));
     }
 
     @Test
@@ -277,17 +273,15 @@ public class BaseSiteSearchMediatorUnitTest {
         // Enable via pref (0 value).
         doReturn(0).when(mPrefServiceMock).getInteger(Pref.GEMINI_SETTINGS);
 
-        TemplateUrl normalEngine = mock(TemplateUrl.class);
-        doReturn(StarterPackId.NONE).when(normalEngine).getStarterPackId();
+        doReturn(StarterPackId.NONE).when(mNormalEngine).getStarterPackId();
 
-        TemplateUrl geminiEngine = mock(TemplateUrl.class);
-        doReturn(StarterPackId.GEMINI).when(geminiEngine).getStarterPackId();
+        doReturn(StarterPackId.GEMINI).when(mGeminiEngine).getStarterPackId();
 
-        List<TemplateUrl> urls = List.of(normalEngine, geminiEngine);
+        List<TemplateUrl> urls = List.of(mNormalEngine, mGeminiEngine);
         List<TemplateUrl> filtered = mMediator.filterTemplateUrls(urls);
 
         assertEquals(2, filtered.size());
-        assertEquals(normalEngine, filtered.get(0));
-        assertEquals(geminiEngine, filtered.get(1));
+        assertEquals(mNormalEngine, filtered.get(0));
+        assertEquals(mGeminiEngine, filtered.get(1));
     }
 }

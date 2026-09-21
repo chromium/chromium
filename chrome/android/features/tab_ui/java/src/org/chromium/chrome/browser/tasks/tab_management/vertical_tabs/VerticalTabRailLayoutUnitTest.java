@@ -9,7 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -68,6 +67,8 @@ public class VerticalTabRailLayoutUnitTest {
     @Mock private View.OnClickListener mIncognitoClickListener;
     @Mock private View.OnClickListener mCollapseClickListener;
     @Mock private VerticalTabRailLayout.KeyEventListener mKeyEventListener;
+    @Mock private DragEvent mExitEvent;
+    @Mock private DragEvent mEndEvent;
 
     private Activity mActivity;
     private VerticalTabRailLayout mRailLayout;
@@ -303,14 +304,12 @@ public class VerticalTabRailLayoutUnitTest {
 
     @Test
     public void testOnDragEvent_CollapsesRailOnDragExitedOrEnded() {
-        DragEvent exitEvent = mock(DragEvent.class);
-        when(exitEvent.getAction()).thenReturn(DragEvent.ACTION_DRAG_EXITED);
-        mRailLayout.onDragEvent(exitEvent);
+        when(mExitEvent.getAction()).thenReturn(DragEvent.ACTION_DRAG_EXITED);
+        mRailLayout.onDragEvent(mExitEvent);
         verify(mMockHoverListener).onResult(RailCollapseState.COLLAPSED);
 
-        DragEvent endEvent = mock(DragEvent.class);
-        when(endEvent.getAction()).thenReturn(DragEvent.ACTION_DRAG_ENDED);
-        mRailLayout.onDragEvent(endEvent);
+        when(mEndEvent.getAction()).thenReturn(DragEvent.ACTION_DRAG_ENDED);
+        mRailLayout.onDragEvent(mEndEvent);
         verify(mMockHoverListener, times(2)).onResult(RailCollapseState.COLLAPSED);
     }
 

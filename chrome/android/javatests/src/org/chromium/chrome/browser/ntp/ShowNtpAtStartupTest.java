@@ -40,7 +40,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
@@ -91,6 +94,10 @@ import java.io.IOException;
 public class ShowNtpAtStartupTest {
     private static final int RENDER_TEST_REVISION = 2;
 
+    private static final String TAB_URL = "https://foo.com/";
+    private static final String TAB_URL_1 = "https://bar.com/";
+    private static final int MIN_DISPLAYED_PERCENTAGE = 10;
+
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
@@ -102,15 +109,13 @@ public class ShowNtpAtStartupTest {
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_START)
                     .build();
 
-    private static final String TAB_URL = "https://foo.com/";
-    private static final String TAB_URL_1 = "https://bar.com/";
-    private static final int MIN_DISPLAYED_PERCENTAGE = 10;
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private SetupListManager mSetupListManager;
 
     @Before
     public void setUp() {
-        SetupListManager setupListManager = Mockito.mock(SetupListManager.class);
-        Mockito.when(setupListManager.isSetupListActive()).thenReturn(false);
-        SetupListManager.setInstanceForTesting(setupListManager);
+        Mockito.when(mSetupListManager.isSetupListActive()).thenReturn(false);
+        SetupListManager.setInstanceForTesting(mSetupListManager);
 
         EducationalTipModuleUtils.setEducationalTipActiveForTesting(false);
         // TODO(https://crbug.com/454091341): Enable incognito mode on this test suite.

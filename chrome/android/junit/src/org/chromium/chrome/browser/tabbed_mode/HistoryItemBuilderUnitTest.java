@@ -19,7 +19,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -65,7 +64,6 @@ import java.util.List;
 public class HistoryItemBuilderUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private Context mContext;
     @Mock private AppMenuItemTheme mAppMenuItemTheme;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private Profile mProfile;
@@ -73,8 +71,10 @@ public class HistoryItemBuilderUnitTest {
     @Mock private ForeignSessionHelper mForeignSessionHelperMock;
     @Mock private RoundedIconGenerator mRoundedIconGenerator;
     @Mock private FaviconHelper.DefaultFaviconHelper mDefaultFaviconHelper;
-    private FaviconHelper mFaviconHelper;
+    @Mock private TabModel mTabModel;
 
+    private Context mContext;
+    private FaviconHelper mFaviconHelper;
     private HistoryItemBuilder mHistoryItemBuilder;
 
     @Before
@@ -83,9 +83,8 @@ public class HistoryItemBuilderUnitTest {
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
 
-        TabModel tabModel = Mockito.mock(TabModel.class);
-        when(mTabModelSelector.getCurrentModel()).thenReturn(tabModel);
-        when(tabModel.getProfile()).thenReturn(mProfile);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
+        when(mTabModel.getProfile()).thenReturn(mProfile);
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
 
         mHistoryItemBuilder =

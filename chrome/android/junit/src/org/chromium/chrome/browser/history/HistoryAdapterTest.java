@@ -36,14 +36,16 @@ import java.util.concurrent.TimeUnit;
 @RunWith(BaseRobolectricTestRunner.class)
 public class HistoryAdapterTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    private StubbedHistoryProvider mHistoryProvider;
-    private HistoryAdapter mAdapter;
 
     @Mock private MoreProgressButton mMockButton;
     @Mock private HistoryContentManager mContentManager;
     @Mock private ChipView mAppFilterChip;
     @Mock private TextView mTextView;
     @Mock private SigninPromoCoordinator mHistorySyncPromoCoordinator;
+    @Mock private HistoryProvider mMockProvider;
+
+    private StubbedHistoryProvider mHistoryProvider;
+    private HistoryAdapter mAdapter;
 
     @Before
     public void setUp() {
@@ -627,11 +629,10 @@ public class HistoryAdapterTest {
 
     @Test
     public void testSearch_SetsIsLoadingItems() {
-        HistoryProvider mockProvider = Mockito.mock(HistoryProvider.class);
         mAdapter =
                 new HistoryAdapter(
                         mContentManager,
-                        mockProvider,
+                        mMockProvider,
                         mHistorySyncPromoCoordinator,
                         /* shouldClusterByDomain= */ false,
                         /* snackbarManager= */ null,
@@ -641,7 +642,7 @@ public class HistoryAdapterTest {
 
         mAdapter.search("query");
 
-        Mockito.verify(mockProvider).queryHistory("query", null);
+        Mockito.verify(mMockProvider).queryHistory("query", null);
         // While the query is ongoing, no more items can be loaded.
         Assert.assertFalse(mAdapter.canLoadMoreItems());
 

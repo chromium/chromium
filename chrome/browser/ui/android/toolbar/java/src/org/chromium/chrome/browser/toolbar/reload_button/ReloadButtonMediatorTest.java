@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
@@ -64,6 +63,9 @@ public class ReloadButtonMediatorTest {
     @Mock public Resources mResources;
     @Mock public Context mContext;
     @Mock public Profile mProfile;
+    @Mock private ColorStateList mTint;
+    @Mock private ColorStateList mFocusTint;
+    @Mock private ColorStateList mColorStateList;
     private MockTab mTab;
     private MockTab mNtpTab;
     private SettableNullableObservableSupplier<Tab> mTabSupplier;
@@ -197,20 +199,17 @@ public class ReloadButtonMediatorTest {
 
     @Test
     public void testActivityFocusChanged_shouldUpdateFocusTint() {
-        var tint = mock(ColorStateList.class);
-        var focusTint = mock(ColorStateList.class);
-        mMediator.onTintChanged(tint, focusTint, BrandedColorScheme.APP_DEFAULT);
+        mMediator.onTintChanged(mTint, mFocusTint, BrandedColorScheme.APP_DEFAULT);
 
         assertEquals(
                 "Activity focus tint list should be used, but was another tint",
                 mModel.get(ReloadButtonProperties.TINT_LIST),
-                focusTint);
+                mFocusTint);
     }
 
     @Test
     public void testThemeChangedToAppDefault_shouldSetDefaultRippleBackground() {
-        var tint = mock(ColorStateList.class);
-        mMediator.onTintChanged(tint, tint, BrandedColorScheme.APP_DEFAULT);
+        mMediator.onTintChanged(mColorStateList, mColorStateList, BrandedColorScheme.APP_DEFAULT);
 
         assertEquals(
                 "Background ripple effect should be default",
@@ -220,8 +219,8 @@ public class ReloadButtonMediatorTest {
 
     @Test
     public void testThemeChangedToLightTheme_shouldSetDefaultRippleBackground() {
-        var tint = mock(ColorStateList.class);
-        mMediator.onTintChanged(tint, tint, BrandedColorScheme.DARK_BRANDED_THEME);
+        mMediator.onTintChanged(
+                mColorStateList, mColorStateList, BrandedColorScheme.DARK_BRANDED_THEME);
 
         assertEquals(
                 "Background ripple effect should be default",
@@ -231,8 +230,8 @@ public class ReloadButtonMediatorTest {
 
     @Test
     public void testThemeChangedToDarkTheme_shouldSetDefaultRippleBackground() {
-        var tint = mock(ColorStateList.class);
-        mMediator.onTintChanged(tint, tint, BrandedColorScheme.DARK_BRANDED_THEME);
+        mMediator.onTintChanged(
+                mColorStateList, mColorStateList, BrandedColorScheme.DARK_BRANDED_THEME);
 
         assertEquals(
                 "Background ripple effect should be default",
@@ -242,8 +241,7 @@ public class ReloadButtonMediatorTest {
 
     @Test
     public void testThemeChangedToIncognito_shouldSetIncognitoRipple() {
-        var tint = mock(ColorStateList.class);
-        mMediator.onTintChanged(tint, tint, BrandedColorScheme.INCOGNITO);
+        mMediator.onTintChanged(mColorStateList, mColorStateList, BrandedColorScheme.INCOGNITO);
 
         assertEquals(
                 "Background ripple effect should be incognito",

@@ -23,6 +23,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -55,6 +56,7 @@ public class VerticalTabGroupSpineDecorationUnitTest {
     @Mock private RecyclerView mParent;
     @Mock private Runnable mInvalidationTrigger;
     @Mock private RecyclerView.State mState;
+    @Captor private ArgumentCaptor<TabGroupObserver> mTabGroupObserverCaptor;
 
     private TabListModel mModel;
     private VerticalTabGroupSpineDecoration mSpineDecoration;
@@ -89,10 +91,9 @@ public class VerticalTabGroupSpineDecorationUnitTest {
 
         mSpineDecoration.onDraw(mCanvas, mParent, mState);
 
-        ArgumentCaptor<TabGroupObserver> captor = ArgumentCaptor.forClass(TabGroupObserver.class);
-        verify(mTabModel).addTabGroupObserver(captor.capture());
+        verify(mTabModel).addTabGroupObserver(mTabGroupObserverCaptor.capture());
 
-        captor.getValue().didChangeTabGroupColor(groupId, 0);
+        mTabGroupObserverCaptor.getValue().didChangeTabGroupColor(groupId, 0);
 
         verify(mInvalidationTrigger).run();
     }

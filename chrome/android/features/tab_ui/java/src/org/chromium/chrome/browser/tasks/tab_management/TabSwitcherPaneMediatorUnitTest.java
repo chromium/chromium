@@ -100,6 +100,7 @@ public class TabSwitcherPaneMediatorUnitTest {
     @Mock private TabIndexLookup mTabIndexLookup;
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private LinearLayout mSupplementaryDataContainer;
+    @Mock private Resources mResources;
 
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     @Captor private ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
@@ -134,12 +135,11 @@ public class TabSwitcherPaneMediatorUnitTest {
     @Before
     public void setUp() {
         mContext = Mockito.spy(ContextUtils.getApplicationContext());
-        Resources resources = Mockito.mock(Resources.class);
         Configuration configuration = new Configuration();
         configuration.screenWidthDp = 400; // phone
-        when(mContext.getResources()).thenReturn(resources);
-        when(resources.getConfiguration()).thenReturn(configuration);
-        when(resources.getDimensionPixelSize(R.dimen.hub_search_box_gap)).thenReturn(20);
+        when(mContext.getResources()).thenReturn(mResources);
+        when(mResources.getConfiguration()).thenReturn(configuration);
+        when(mResources.getDimensionPixelSize(R.dimen.hub_search_box_gap)).thenReturn(20);
 
         when(mProfile.isOffTheRecord()).thenReturn(false);
         when(mTabIndexLookup.getNthTabIndexInModel(anyInt())).thenAnswer(i -> i.getArguments()[0]);

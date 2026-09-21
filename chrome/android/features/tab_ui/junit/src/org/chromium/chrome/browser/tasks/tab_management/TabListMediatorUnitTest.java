@@ -257,8 +257,6 @@ import java.util.function.Supplier;
     ChromeFeatureList.GLIC
 })
 public class TabListMediatorUnitTest {
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
-
     private static final String TAB1_TITLE = "Tab1";
     private static final String TAB2_TITLE = "Tab2";
     private static final String TAB3_TITLE = "Tab3";
@@ -301,7 +299,6 @@ public class TabListMediatorUnitTest {
             TabListEditorItemSelectionId.createTabId(TAB3_ID);
     private static final TabListEditorItemSelectionId ITEM4_ID =
             TabListEditorItemSelectionId.createTabGroupSyncId(SYNC_GROUP_ID1);
-
     public static final PropertyKey[] TAB_GRID_SELECTABLE_KEYS =
             new PropertyKey[] {
                 TabProperties.TAB_ACTION_BUTTON_DATA,
@@ -309,7 +306,6 @@ public class TabListMediatorUnitTest {
                 TabProperties.TAB_LONG_CLICK_LISTENER,
                 TabProperties.IS_SELECTED,
             };
-
     public static final PropertyKey[] TAB_GRID_CLOSABLE_KEYS =
             new PropertyKey[] {
                 TabProperties.TAB_ACTION_BUTTON_DATA,
@@ -319,12 +315,10 @@ public class TabListMediatorUnitTest {
                 TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER,
                 TabProperties.IS_SELECTED,
             };
-
     private static final BuyableProduct BUYABLE_PRODUCT_PROTO_INITIAL =
             BuyableProduct.newBuilder()
                     .setCurrentPrice(createProductPrice(123456789012345L, "USD"))
                     .build();
-
     private static final PriceTrackingData PRICE_TRACKING_BUYABLE_PRODUCT_INITIAL =
             PriceTrackingData.newBuilder().setBuyableProduct(BUYABLE_PRODUCT_PROTO_INITIAL).build();
     private static final Any ANY_BUYABLE_PRODUCT_INITIAL =
@@ -349,9 +343,11 @@ public class TabListMediatorUnitTest {
         int VERTICAL_TABS = 3;
     }
 
-    @Mock TabContentManager mTabContentManager;
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
+
     @Spy TabModel mTabModel;
     @Spy TabModel mIncognitoTabModel;
+    @Mock TabContentManager mTabContentManager;
     @Mock TabListFaviconProvider mTabListFaviconProvider;
     @Mock TabListFaviconProvider.TabFaviconFetcher mTabFaviconFetcher;
     @Mock RecyclerView mRecyclerView;
@@ -412,7 +408,8 @@ public class TabListMediatorUnitTest {
     @Mock SimpleRecyclerViewAdapter.ViewHolder mViewHolder1;
     @Mock SimpleRecyclerViewAdapter.ViewHolder mViewHolder2;
     @Mock TabUnderlineManager mTabUnderlineManager;
-
+    @Mock private AccessibilityNodeInfo mNodeInfo2;
+    @Mock private OnLongPressTabItemEventListener mOnLongPressTabItemEventListener;
     @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     @Captor ArgumentCaptor<TabObserver> mTabObserverCaptor;
     @Captor ArgumentCaptor<Callback<TabFavicon>> mCallbackCaptor;
@@ -424,10 +421,11 @@ public class TabListMediatorUnitTest {
     ArgumentCaptor<TemplateUrlService.TemplateUrlServiceObserver> mTemplateUrlServiceObserver;
 
     @Captor ArgumentCaptor<TabUnderlineManager.Observer> mTabUnderlineObserverCaptor;
+    @Captor private ArgumentCaptor<AccessibilityAction> mActionCaptor;
+    @Captor private ArgumentCaptor<ActorUiTabController.Observer> mObserverCaptor;
 
     private final SettableMonotonicObservableSupplier<TabModel> mCurrentTabModelSupplier =
             ObservableSuppliers.createMonotonic();
-
     private Tab mTab1;
     private Tab mTab2;
     private TabListMediator mMediator;
@@ -3537,11 +3535,9 @@ public class TabListMediatorUnitTest {
                     AccessibilityNodeInfoCompat.wrap(mAccessibilityNodeInfo).getExpandedState());
         }
 
-        ArgumentCaptor<AccessibilityAction> actionCaptor =
-                ArgumentCaptor.forClass(AccessibilityAction.class);
-        verify(mAccessibilityNodeInfo, atLeastOnce()).addAction(actionCaptor.capture());
+        verify(mAccessibilityNodeInfo, atLeastOnce()).addAction(mActionCaptor.capture());
         boolean hasCustomContextMenuAction =
-                actionCaptor.getAllValues().stream()
+                mActionCaptor.getAllValues().stream()
                         .anyMatch(
                                 a ->
                                         a.getId() == R.id.tab_context_menu
@@ -3551,16 +3547,15 @@ public class TabListMediatorUnitTest {
 
         // Toggle to expanded.
         model0.set(TabProperties.IS_COLLAPSED, false);
-        AccessibilityNodeInfo nodeInfo2 = Mockito.mock(AccessibilityNodeInfo.class);
-        when(nodeInfo2.getExtras()).thenReturn(new Bundle());
-        delegate.onInitializeAccessibilityNodeInfo(mItemView1, nodeInfo2);
-        verify(nodeInfo2).addAction(eq(AccessibilityAction.ACTION_COLLAPSE));
+        when(mNodeInfo2.getExtras()).thenReturn(new Bundle());
+        delegate.onInitializeAccessibilityNodeInfo(mItemView1, mNodeInfo2);
+        verify(mNodeInfo2).addAction(eq(AccessibilityAction.ACTION_COLLAPSE));
         if (Build.VERSION.SDK_INT >= 36) {
-            verify(nodeInfo2).setExpandedState(eq(AccessibilityNodeInfo.EXPANDED_STATE_FULL));
+            verify(mNodeInfo2).setExpandedState(eq(AccessibilityNodeInfo.EXPANDED_STATE_FULL));
         } else {
             assertEquals(
                     AccessibilityNodeInfoCompat.EXPANDED_STATE_FULL,
-                    AccessibilityNodeInfoCompat.wrap(nodeInfo2).getExpandedState());
+                    AccessibilityNodeInfoCompat.wrap(mNodeInfo2).getExpandedState());
         }
     }
 
@@ -3628,25 +3623,25 @@ public class TabListMediatorUnitTest {
         when(mItemView1.getParent()).thenReturn(mRecyclerView);
         when(mRecyclerView.getChildAdapterPosition(mItemView1)).thenReturn(0);
 
-        OnLongPressTabItemEventListener listener =
-                Mockito.mock(OnLongPressTabItemEventListener.class);
-        mMediator.setOnLongPressTabItemEventListener(listener);
+        mMediator.setOnLongPressTabItemEventListener(mOnLongPressTabItemEventListener);
         mMediator.setupAccessibilityDelegate(mTabGridAccessibilityHelper);
         View.AccessibilityDelegate delegate = mMediator.getAccessibilityDelegateForTesting();
         assertNotNull(delegate);
 
         assertTrue(delegate.performAccessibilityAction(mItemView1, R.id.tab_context_menu, mBundle));
-        verify(listener).onLongPressEvent(eq(TAB1_ID), eq(mItemView1));
+        verify(mOnLongPressTabItemEventListener).onLongPressEvent(eq(TAB1_ID), eq(mItemView1));
 
         assertTrue(
                 delegate.performAccessibilityAction(
                         mItemView1, AccessibilityAction.ACTION_LONG_CLICK.getId(), mBundle));
-        verify(listener, times(2)).onLongPressEvent(eq(TAB1_ID), eq(mItemView1));
+        verify(mOnLongPressTabItemEventListener, times(2))
+                .onLongPressEvent(eq(TAB1_ID), eq(mItemView1));
 
         assertTrue(
                 delegate.performAccessibilityAction(
                         mItemView1, AccessibilityAction.ACTION_CONTEXT_CLICK.getId(), mBundle));
-        verify(listener, times(3)).onLongPressEvent(eq(TAB1_ID), eq(mItemView1));
+        verify(mOnLongPressTabItemEventListener, times(3))
+                .onLongPressEvent(eq(TAB1_ID), eq(mItemView1));
     }
 
     @Test
@@ -6297,14 +6292,12 @@ public class TabListMediatorUnitTest {
 
         PropertyModel model = mModelList.get(0).model;
 
-        ArgumentCaptor<ActorUiTabController.Observer> observerCaptor =
-                ArgumentCaptor.forClass(ActorUiTabController.Observer.class);
-        verify(mActorUiTabController).addObserver(observerCaptor.capture());
+        verify(mActorUiTabController).addObserver(mObserverCaptor.capture());
 
         setUpActorState(mTab1, TabIndicatorStatus.DYNAMIC);
         UiTabState newState =
                 new UiTabState(TAB1_ID, null, null, TabIndicatorStatus.DYNAMIC, false);
-        observerCaptor.getValue().onUiTabStateChanged(newState);
+        mObserverCaptor.getValue().onUiTabStateChanged(newState);
         assertEquals(
                 TabIndicatorStatus.DYNAMIC, model.get(TabProperties.ACTOR_UI_STATE).tabIndicator);
     }
@@ -6362,9 +6355,7 @@ public class TabListMediatorUnitTest {
         assertNotNull(model.get(TabProperties.ACTOR_UI_STATE));
         assertEquals(
                 TabIndicatorStatus.DYNAMIC, model.get(TabProperties.ACTOR_UI_STATE).tabIndicator);
-        ArgumentCaptor<ActorUiTabController.Observer> observerCaptor =
-                ArgumentCaptor.forClass(ActorUiTabController.Observer.class);
-        verify(mActorUiTabController).addObserver(observerCaptor.capture());
+        verify(mActorUiTabController).addObserver(mObserverCaptor.capture());
 
         setUpActorState(mTab1, TabIndicatorStatus.NONE);
         UiTabState finishedState =
@@ -6374,7 +6365,7 @@ public class TabListMediatorUnitTest {
                         mHandoffButtonState,
                         TabIndicatorStatus.NONE,
                         false);
-        observerCaptor.getValue().onUiTabStateChanged(finishedState);
+        mObserverCaptor.getValue().onUiTabStateChanged(finishedState);
         assertNull(model.get(TabProperties.ACTOR_UI_STATE));
     }
 
@@ -6401,10 +6392,8 @@ public class TabListMediatorUnitTest {
         PropertyModel groupModel = mModelList.get(0).model;
         assertNull(groupModel.get(TabProperties.ACTOR_UI_STATE));
 
-        ArgumentCaptor<ActorUiTabController.Observer> observerCaptor =
-                ArgumentCaptor.forClass(ActorUiTabController.Observer.class);
-        verify(mActorUiTabController, atLeastOnce()).addObserver(observerCaptor.capture());
-        ActorUiTabController.Observer actorObserver = observerCaptor.getValue();
+        verify(mActorUiTabController, atLeastOnce()).addObserver(mObserverCaptor.capture());
+        ActorUiTabController.Observer actorObserver = mObserverCaptor.getValue();
 
         // Set actor state on Tab 2 (hidden tab).
         setUpActorState(mTab2, TabIndicatorStatus.DYNAMIC);
@@ -6442,11 +6431,9 @@ public class TabListMediatorUnitTest {
         PropertyModel child1Model = mModelList.get(1).model;
         assertNull(child1Model.get(TabProperties.ACTOR_UI_STATE));
 
-        ArgumentCaptor<ActorUiTabController.Observer> observerCaptor =
-                ArgumentCaptor.forClass(ActorUiTabController.Observer.class);
         // addObserver is called for mTab1 and tab3 during resetWithListOfTabs.
-        verify(mActorUiTabController, atLeastOnce()).addObserver(observerCaptor.capture());
-        ActorUiTabController.Observer actorObserver = observerCaptor.getValue();
+        verify(mActorUiTabController, atLeastOnce()).addObserver(mObserverCaptor.capture());
+        ActorUiTabController.Observer actorObserver = mObserverCaptor.getValue();
 
         // Set actor state on Tab 1 (child tab).
         setUpActorState(mTab1, TabIndicatorStatus.DYNAMIC);

@@ -15,7 +15,6 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -117,10 +116,59 @@ public class FeedSurfaceCoordinatorTest {
     private static final long SURFACE_CREATION_TIME_NS = 1234L;
     private static final String FILE_ID_HASH = "fileIdHash";
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    // Mocked Direct dependencies.
+    @Mock private SnackbarManager mSnackbarManager;
+    @Mock private BottomSheetController mBottomSheetController;
+    @Mock private SnapScrollHelper mSnapHelper;
+    @Mock private WindowAndroid mWindowAndroid;
+    @Mock private ModalDialogManager mModalDialogManager;
+    @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
+    @Mock private FeedActionDelegate mFeedActionDelegate;
+    // Mocked JNI.
+    @Mock private FeedSurfaceRendererBridge.Natives mFeedSurfaceRendererBridgeJniMock;
+    @Mock private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
+    @Mock private FeedProcessScopeDependencyProvider.Natives mProcessScopeJniMock;
+    @Mock private FeedReliabilityLoggingBridge.Natives mFeedReliabilityLoggingBridgeJniMock;
+    @Mock private UserPrefs.Natives mUserPrefsJniMock;
+    // Mocked xSurface setup.
+    @Mock private ProcessScope mProcessScope;
+    @Mock private FeedSurfaceScope mSurfaceScope;
+    @Mock private HybridListRenderer mRenderer;
+    @Captor private ArgumentCaptor<FeedListContentManager> mContentManagerCaptor;
+    // Mocked indirect dependencies.
+    @Mock private Profile mProfileMock;
+    @Mock private IdentityServicesProvider mIdentityService;
+    @Mock private SigninManager mSigninManager;
+    @Mock private IdentityManager mIdentityManager;
+    @Mock private PrefChangeRegistrar mPrefChangeRegistrar;
+    @Mock private PrefService mPrefService;
+    @Mock private TemplateUrlService mUrlService;
+    @Mock private RecyclerView.Adapter<?> mAdapter;
+    @Mock private FeedLaunchReliabilityLogger mLaunchReliabilityLogger;
+    @Mock private PrivacyPreferencesManagerImpl mPrivacyPreferencesManager;
+    @Mock private Tracker mTracker;
+    @Mock private ScrollableContainerDelegate mScrollableContainerDelegate;
+    @Mock private EdgeToEdgeController mEdgeToEdgeController;
+    @Mock private ModuleRegistry mModuleRegistry;
+    @Mock private NtpCustomizationPolicyManager mNtpCustomizationPolicyManager;
+    @Mock private FeedSwipeRefreshLayout mFeedSwipeRefreshLayout;
+    @Captor private ArgumentCaptor<EdgeToEdgePadAdjuster> mEdgePadAdjusterCaptor;
+    @Mock private NtpBackgroundImageCoordinator mBackgroundImageCoordinator;
+
     private BackgroundImageInfo mBackgroundImageInfo;
     private Bitmap mBitmap;
-
-    @Mock private NtpBackgroundImageCoordinator mBackgroundImageCoordinator;
+    private FeedSurfaceCoordinator mCoordinator;
+    private Activity mActivity;
+    private RecyclerView mRecyclerView;
+    private LinearLayoutManager mLayoutManager;
+    private final SettableNonNullObservableSupplier<Integer> mTabStripHeightSupplier =
+            ObservableSuppliers.createNonNull(0);
+    private FeedSurfaceMediator mMediatorSpy;
+    private int mTabStripHeight;
+    private final SettableMonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier =
+            ObservableSuppliers.createMonotonic();
 
     private static class TestLifecycleManager extends FeedSurfaceLifecycleManager {
         public TestLifecycleManager(Activity activity, FeedSurfaceCoordinator coordinator) {
@@ -150,60 +198,6 @@ public class FeedSurfaceCoordinatorTest {
             return false;
         }
     }
-
-    private FeedSurfaceCoordinator mCoordinator;
-
-    private Activity mActivity;
-    private RecyclerView mRecyclerView;
-    private LinearLayoutManager mLayoutManager;
-
-    // Mocked Direct dependencies.
-    @Mock private SnackbarManager mSnackbarManager;
-    @Mock private BottomSheetController mBottomSheetController;
-    @Mock private SnapScrollHelper mSnapHelper;
-    @Mock private WindowAndroid mWindowAndroid;
-    @Mock private ModalDialogManager mModalDialogManager;
-    @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
-    @Mock private FeedActionDelegate mFeedActionDelegate;
-
-    // Mocked JNI.
-    @Mock private FeedSurfaceRendererBridge.Natives mFeedSurfaceRendererBridgeJniMock;
-    @Mock private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
-    @Mock private FeedProcessScopeDependencyProvider.Natives mProcessScopeJniMock;
-    @Mock private FeedReliabilityLoggingBridge.Natives mFeedReliabilityLoggingBridgeJniMock;
-    @Mock private UserPrefs.Natives mUserPrefsJniMock;
-
-    // Mocked xSurface setup.
-    @Mock private ProcessScope mProcessScope;
-    @Mock private FeedSurfaceScope mSurfaceScope;
-    @Mock private HybridListRenderer mRenderer;
-    @Captor private ArgumentCaptor<FeedListContentManager> mContentManagerCaptor;
-
-    // Mocked indirect dependencies.
-    @Mock private Profile mProfileMock;
-    @Mock private IdentityServicesProvider mIdentityService;
-    @Mock private SigninManager mSigninManager;
-    @Mock private IdentityManager mIdentityManager;
-    @Mock private PrefChangeRegistrar mPrefChangeRegistrar;
-    @Mock private PrefService mPrefService;
-    @Mock private TemplateUrlService mUrlService;
-    @Mock private RecyclerView.Adapter<?> mAdapter;
-    @Mock private FeedLaunchReliabilityLogger mLaunchReliabilityLogger;
-    @Mock private PrivacyPreferencesManagerImpl mPrivacyPreferencesManager;
-    @Mock private Tracker mTracker;
-    @Mock private ScrollableContainerDelegate mScrollableContainerDelegate;
-    @Mock private EdgeToEdgeController mEdgeToEdgeController;
-    @Mock private ModuleRegistry mModuleRegistry;
-    @Captor private ArgumentCaptor<EdgeToEdgePadAdjuster> mEdgePadAdjusterCaptor;
-
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    private final SettableNonNullObservableSupplier<Integer> mTabStripHeightSupplier =
-            ObservableSuppliers.createNonNull(0);
-    private FeedSurfaceMediator mMediatorSpy;
-    private int mTabStripHeight;
-    private final SettableMonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier =
-            ObservableSuppliers.createMonotonic();
 
     @Before
     @SuppressWarnings("DirectInvocationOnMock")
@@ -478,9 +472,8 @@ public class FeedSurfaceCoordinatorTest {
         assertNotNull(mCoordinator.getNtpBackgroundImageCoordinatorForTesting());
         mCoordinator.destroy();
 
-        NtpCustomizationPolicyManager policyManager = mock(NtpCustomizationPolicyManager.class);
-        NtpCustomizationPolicyManager.setInstanceForTesting(policyManager);
-        when(policyManager.isNtpCustomBackgroundEnabled()).thenReturn(false);
+        NtpCustomizationPolicyManager.setInstanceForTesting(mNtpCustomizationPolicyManager);
+        when(mNtpCustomizationPolicyManager.isNtpCustomBackgroundEnabled()).thenReturn(false);
 
         mCoordinator = createCoordinator(mRecyclerView);
         assertNull(mCoordinator.getNtpBackgroundImageCoordinatorForTesting());
@@ -569,8 +562,7 @@ public class FeedSurfaceCoordinatorTest {
     public void testDestroy_WithSwipeRefreshLayout() {
         mCoordinator.destroy();
 
-        FeedSwipeRefreshLayout swipeRefreshLayout = mock(FeedSwipeRefreshLayout.class);
-        when(swipeRefreshLayout.isRefreshing()).thenReturn(true);
+        when(mFeedSwipeRefreshLayout.isRefreshing()).thenReturn(true);
         mCoordinator =
                 new FeedSurfaceCoordinator(
                         mActivity,
@@ -588,7 +580,7 @@ public class FeedSurfaceCoordinatorTest {
                         mPrivacyPreferencesManager,
                         SupplierUtils.ofNull(),
                         SURFACE_CREATION_TIME_NS,
-                        swipeRefreshLayout,
+                        mFeedSwipeRefreshLayout,
                         /* overScrollDisabled= */ false,
                         () -> mFeedActionDelegate,
                         mTabStripHeightSupplier,
@@ -597,9 +589,9 @@ public class FeedSurfaceCoordinatorTest {
 
         mCoordinator.destroy();
 
-        verify(swipeRefreshLayout).setRefreshing(false);
-        verify(swipeRefreshLayout).removeOnRefreshListener(mCoordinator);
-        verify(swipeRefreshLayout).disableSwipe();
+        verify(mFeedSwipeRefreshLayout).setRefreshing(false);
+        verify(mFeedSwipeRefreshLayout).removeOnRefreshListener(mCoordinator);
+        verify(mFeedSwipeRefreshLayout).disableSwipe();
 
         mCoordinator = null;
     }

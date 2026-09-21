@@ -36,6 +36,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -86,6 +87,7 @@ public class IncognitoIndicatorCoordinatorUnitTest {
     @Mock private Context mContext;
     @Mock private Resources mResources;
     @Mock private ViewTreeObserver mViewTreeObserver;
+    @Captor private ArgumentCaptor<IphCommand> mIphCommandCaptor;
 
     private Activity mActivity;
     private IncognitoIndicatorCoordinator mCoordinator;
@@ -307,9 +309,8 @@ public class IncognitoIndicatorCoordinatorUnitTest {
         // Show coordinator. This should trigger IPH.
         mCoordinator.setVisibility(/* visible= */ true);
 
-        ArgumentCaptor<IphCommand> captor = ArgumentCaptor.forClass(IphCommand.class);
-        verify(mUserEducationHelper).requestShowIph(captor.capture());
-        IphCommand command = captor.getValue();
+        verify(mUserEducationHelper).requestShowIph(mIphCommandCaptor.capture());
+        IphCommand command = mIphCommandCaptor.getValue();
         assertEquals(
                 FeatureConstants.IPH_INCOGNITO_INDICATOR_CLOSE_ALL_WINDOWS, command.featureName);
         assertEquals(mIncognitoIndicatorView, command.anchorView);

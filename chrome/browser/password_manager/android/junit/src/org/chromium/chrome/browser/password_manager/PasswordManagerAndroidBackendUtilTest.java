@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.password_manager;
 
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -18,8 +17,12 @@ import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.common.api.Status;
 
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.password_manager.PasswordStoreAndroidBackend.BackendException;
@@ -30,6 +33,8 @@ import org.chromium.chrome.browser.password_manager.PasswordStoreAndroidBackend.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class PasswordManagerAndroidBackendUtilTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private PendingIntent mPendingIntent;
 
     @Test
     public void testUtilsForBackendException() {
@@ -89,22 +94,19 @@ public class PasswordManagerAndroidBackendUtilTest {
 
     @Test
     public void testUtilsForResolvableApiExceptionAuth() throws CanceledException {
-        PendingIntent pendingIntentMock = mock(PendingIntent.class);
         ResolvableApiException apiException =
                 new ResolvableApiException(
-                        new Status(
-                                ChromeSyncStatusCode.AUTH_ERROR_RESOLVABLE, "", pendingIntentMock));
+                        new Status(ChromeSyncStatusCode.AUTH_ERROR_RESOLVABLE, "", mPendingIntent));
         PasswordManagerAndroidBackendUtil.handleResolvableApiException(apiException);
-        verify(pendingIntentMock, never()).send();
+        verify(mPendingIntent, never()).send();
     }
 
     @Test
     public void testUtilsForResolvableApiExceptionNonAuth() throws CanceledException {
-        PendingIntent pendingIntentMock = mock(PendingIntent.class);
         ResolvableApiException apiException =
                 new ResolvableApiException(
-                        new Status(CommonStatusCodes.RESOLUTION_REQUIRED, "", pendingIntentMock));
+                        new Status(CommonStatusCodes.RESOLUTION_REQUIRED, "", mPendingIntent));
         PasswordManagerAndroidBackendUtil.handleResolvableApiException(apiException);
-        verify(pendingIntentMock).send();
+        verify(mPendingIntent).send();
     }
 }

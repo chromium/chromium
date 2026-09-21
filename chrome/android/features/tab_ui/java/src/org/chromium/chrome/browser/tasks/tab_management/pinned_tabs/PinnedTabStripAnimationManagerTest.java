@@ -21,6 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -42,6 +43,7 @@ public class PinnedTabStripAnimationManagerTest {
     @Mock private AnimationHandler mAnimationHandler;
     @Mock private View mView;
     @Mock private ViewGroup.LayoutParams mLayoutParams;
+    @Captor private ArgumentCaptor<ValueAnimator> mAnimatorCaptor;
 
     private PinnedTabStripAnimationManager mAnimationManager;
     private SettableNonNullObservableSupplier<Boolean> mAnimationRunningSupplier;
@@ -149,12 +151,11 @@ public class PinnedTabStripAnimationManagerTest {
         when(mView.getScaleX()).thenReturn(1.0f);
         when(mView.getAlpha()).thenReturn(1.0f);
 
-        ArgumentCaptor<ValueAnimator> animatorCaptor = ArgumentCaptor.forClass(ValueAnimator.class);
         PinnedTabStripAnimationManager.animateItemZoom(
                 mView, ItemState.SELECTED, mAnimationHandler);
-        verify(mAnimationHandler).startAnimation(animatorCaptor.capture());
+        verify(mAnimationHandler).startAnimation(mAnimatorCaptor.capture());
 
-        ValueAnimator animator = animatorCaptor.getValue();
+        ValueAnimator animator = mAnimatorCaptor.getValue();
         assertNotNull(animator);
 
         // Test at 50% animation progress
@@ -177,12 +178,11 @@ public class PinnedTabStripAnimationManagerTest {
         when(mView.getScaleX()).thenReturn(0.8f);
         when(mView.getAlpha()).thenReturn(0.8f);
 
-        ArgumentCaptor<ValueAnimator> animatorCaptor = ArgumentCaptor.forClass(ValueAnimator.class);
         PinnedTabStripAnimationManager.animateItemZoom(
                 mView, ItemState.UNSELECTED, mAnimationHandler);
-        verify(mAnimationHandler).startAnimation(animatorCaptor.capture());
+        verify(mAnimationHandler).startAnimation(mAnimatorCaptor.capture());
 
-        ValueAnimator animator = animatorCaptor.getValue();
+        ValueAnimator animator = mAnimatorCaptor.getValue();
         assertNotNull(animator);
 
         // Test at 30% animation progress

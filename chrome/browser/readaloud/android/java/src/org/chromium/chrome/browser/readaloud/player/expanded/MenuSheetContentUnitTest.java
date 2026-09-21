@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.readaloud.player.expanded;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -36,9 +35,13 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 @RunWith(BaseRobolectricTestRunner.class)
 public class MenuSheetContentUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private ExpandedPlayerSheetContent mBottomSheetContent;
+    @Mock private BottomSheetContent mNewContent;
+
     private Activity mActivity;
+    private MenuSheetContent mContent;
 
     static class TestMenuSheetContent extends MenuSheetContent {
         TestMenuSheetContent(
@@ -63,8 +66,6 @@ public class MenuSheetContentUnitTest {
             return context.getString(R.string.readaloud_options_menu_description);
         }
     }
-
-    private MenuSheetContent mContent;
 
     @Before
     public void setUp() {
@@ -161,8 +162,7 @@ public class MenuSheetContentUnitTest {
 
     @Test
     public void testCanBeSuppressed() {
-        BottomSheetContent newContent = mock(BottomSheetContent.class);
-        when(newContent.getPriority()).thenReturn(BottomSheetContent.ContentPriority.HIGH);
-        assertTrue(mContent.canBeSuppressed(newContent));
+        when(mNewContent.getPriority()).thenReturn(BottomSheetContent.ContentPriority.HIGH);
+        assertTrue(mContent.canBeSuppressed(mNewContent));
     }
 }

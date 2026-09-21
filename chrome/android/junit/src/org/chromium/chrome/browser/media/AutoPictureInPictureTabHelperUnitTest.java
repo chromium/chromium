@@ -35,11 +35,11 @@ public class AutoPictureInPictureTabHelperUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private PictureInPictureBoundsCacheBridge.Natives mMockNatives;
+    @Mock private WindowAndroid mWindow;
+    @Mock private DisplayAndroid mDisplay;
 
     private WebContents mWebContents;
     private AutoPictureInPictureTabHelper mHelper;
-    private WindowAndroid mWindow;
-    private DisplayAndroid mDisplay;
 
     @Before
     public void setUp() {
@@ -51,8 +51,6 @@ public class AutoPictureInPictureTabHelperUnitTest {
                         withSettings().extraInterfaces(WebContentsObserver.Observable.class));
         mHelper = new AutoPictureInPictureTabHelper(mWebContents);
 
-        mWindow = mock(WindowAndroid.class);
-        mDisplay = mock(DisplayAndroid.class);
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
         when(mWindow.getDisplay()).thenReturn(mDisplay);
         when(mDisplay.getDisplayId()).thenReturn(1);

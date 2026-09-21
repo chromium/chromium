@@ -33,7 +33,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -47,8 +46,9 @@ import java.util.Locale;
 /** Unit tests for {@link CirclePagerIndicatorDecoration}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class CirclePagerIndicatorDecorationUnitTest {
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private static final Locale DEFAULT_LOCALE = Locale.getDefault();
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Canvas mCanvas;
     @Mock private RecyclerView mRecyclerView;
@@ -57,12 +57,12 @@ public class CirclePagerIndicatorDecorationUnitTest {
     @Mock private RecyclerView.State mState;
     @Mock private View mView1;
     @Mock private View mView2;
+    @Mock private View mView;
+    @Mock private State mState1;
 
     private int mIndicatorHeight;
-
     private float mIndicatorItemDiameter;
     private float mIndicatorRadius;
-
     private int mIndicatorItemPadding;
     private int mParentViewWidth;
     private int mParentHeight;
@@ -288,12 +288,10 @@ public class CirclePagerIndicatorDecorationUnitTest {
         mDecoration = create(/* isTablet= */ false);
 
         Rect rect = new Rect();
-        View view = Mockito.mock(View.class);
-        RecyclerView.State state = Mockito.mock(State.class);
         when(mAdapter.getItemCount()).thenReturn(3);
-        when(mRecyclerView.getChildAdapterPosition(view)).thenReturn(1);
+        when(mRecyclerView.getChildAdapterPosition(mView)).thenReturn(1);
 
-        mDecoration.getItemOffsetsImpl(rect, view, mRecyclerView, state);
+        mDecoration.getItemOffsetsImpl(rect, mView, mRecyclerView, mState1);
         // Verifies that the page indicator is shown, but no extra padding is added to any view.
         assertEquals(mIndicatorHeight, rect.bottom);
         assertEquals(0, rect.left);
@@ -304,8 +302,6 @@ public class CirclePagerIndicatorDecorationUnitTest {
         mDecoration = create(/* isTablet= */ true);
 
         Rect rect = new Rect();
-        View view = Mockito.mock(View.class);
-        RecyclerView.State state = Mockito.mock(State.class);
 
         // The recyclerview has only 1 item shown.
         int itemCount = 1;
@@ -314,7 +310,7 @@ public class CirclePagerIndicatorDecorationUnitTest {
         // Sets the tablet as a wide screen.
         int itemPerScreen = 2;
         mDecoration.onDisplayStyleChanged(0, itemPerScreen);
-        mDecoration.getItemOffsetsImpl(rect, view, mRecyclerView, state);
+        mDecoration.getItemOffsetsImpl(rect, mView, mRecyclerView, mState1);
         // Verifies that the space of the indicators are removed when the itemCount is less than the
         // itemPerScreen.
         assertEquals(0, rect.bottom);
@@ -323,7 +319,7 @@ public class CirclePagerIndicatorDecorationUnitTest {
         itemCount = 2;
         when(mAdapter.getItemCount()).thenReturn(itemCount);
         mDecoration.onDisplayStyleChanged(0, itemPerScreen);
-        mDecoration.getItemOffsetsImpl(rect, view, mRecyclerView, state);
+        mDecoration.getItemOffsetsImpl(rect, mView, mRecyclerView, mState1);
         // Verifies that the space of the indicators are removed when the itemCount equals to the
         // itemPerScreen.
         assertEquals(0, rect.bottom);
@@ -335,8 +331,6 @@ public class CirclePagerIndicatorDecorationUnitTest {
         mDecoration = create(/* isTablet= */ true);
 
         Rect rect = new Rect();
-        View view = Mockito.mock(View.class);
-        RecyclerView.State state = Mockito.mock(State.class);
         // The recyclerview has 3 items shown.
         int itemCount = 3;
         when(mAdapter.getItemCount()).thenReturn(itemCount);
@@ -344,15 +338,15 @@ public class CirclePagerIndicatorDecorationUnitTest {
         // Sets the tablet as a wide screen.
         int itemPerScreen = 2;
         mDecoration.onDisplayStyleChanged(0, itemPerScreen);
-        mDecoration.getItemOffsetsImpl(rect, view, mRecyclerView, state);
+        mDecoration.getItemOffsetsImpl(rect, mView, mRecyclerView, mState1);
         // Verifies that the page indicator is shown when all of the items can't fit in one screen.
         assertEquals(mIndicatorHeight, rect.bottom);
         // Verifies that no extra padding is added for the first child view.
         assertEquals(0, rect.left);
 
         // Sets the view not be the first child.
-        when(mRecyclerView.getChildAdapterPosition(view)).thenReturn(1);
-        mDecoration.getItemOffsetsImpl(rect, view, mRecyclerView, state);
+        when(mRecyclerView.getChildAdapterPosition(mView)).thenReturn(1);
+        mDecoration.getItemOffsetsImpl(rect, mView, mRecyclerView, mState1);
         // Verifies that an extra padding is added on the left side of the view.
         assertEquals(mIndicatorHeight, rect.bottom);
         assertEquals(mIndicatorItemPadding, rect.left);

@@ -18,6 +18,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -31,9 +32,12 @@ import org.chromium.content_public.browser.WebContentsObserver;
 public class MediaCaptureDevicesDispatcherAndroidTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private WebContents mWebContents;
     @Mock private MediaCaptureDevicesDispatcherAndroid.Observer mObserver;
     @Mock private MediaCaptureDevicesDispatcherAndroid.Natives mNativeMock;
+    @Mock private TabSharingUiBridge mTabSharingUiBridge;
+    @Captor private ArgumentCaptor<WebContentsObserver> mWebContentsObserverCaptor;
+
+    private WebContents mWebContents;
 
     @Before
     public void setUp() {
@@ -86,16 +90,14 @@ public class MediaCaptureDevicesDispatcherAndroidTest {
                         WebContents.class,
                         withSettings().extraInterfaces(WebContentsObserver.Observable.class));
 
-        ArgumentCaptor<WebContentsObserver> captor =
-                ArgumentCaptor.forClass(WebContentsObserver.class);
-
         MediaCaptureDevicesDispatcherAndroid.setSourceSwitchingInProgress(mockWebContents, true);
         assertTrue(
                 MediaCaptureDevicesDispatcherAndroid.isSourceSwitchingInProgress(mockWebContents));
-        verify((WebContentsObserver.Observable) mockWebContents).addObserver(captor.capture());
+        verify((WebContentsObserver.Observable) mockWebContents)
+                .addObserver(mWebContentsObserverCaptor.capture());
 
         // When capturer is destroyed mid-switch, state is cleared.
-        captor.getValue().webContentsDestroyed();
+        mWebContentsObserverCaptor.getValue().webContentsDestroyed();
         assertFalse(
                 MediaCaptureDevicesDispatcherAndroid.isSourceSwitchingInProgress(mockWebContents));
     }
@@ -118,13 +120,12 @@ public class MediaCaptureDevicesDispatcherAndroidTest {
     public void testNotifyTabCapturingStopped_WithActiveBridge() {
         TabSharingUiManager manager = new TabSharingUiManager();
         TabSharingUiManager.setInstanceForTesting(manager);
-        TabSharingUiBridge bridge = mock(TabSharingUiBridge.class);
-        when(bridge.getCapturer()).thenReturn(mWebContents);
-        manager.addBridge(bridge);
+        when(mTabSharingUiBridge.getCapturer()).thenReturn(mWebContents);
+        manager.addBridge(mTabSharingUiBridge);
 
         MediaCaptureDevicesDispatcherAndroid.notifyTabCapturingStopped(mWebContents);
 
-        verify(bridge).stopSharing();
+        verify(mTabSharingUiBridge).stopSharing();
         verify(mNativeMock, never()).notifyDisplayMediaStopped(mWebContents);
     }
 

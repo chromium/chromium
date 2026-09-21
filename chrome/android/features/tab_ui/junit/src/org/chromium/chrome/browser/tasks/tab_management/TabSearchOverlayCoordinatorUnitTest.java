@@ -123,11 +123,6 @@ import java.util.concurrent.TimeUnit;
 public class TabSearchOverlayCoordinatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private Activity mActivity;
-    private TabSearchOverlayCoordinator mCoordinator;
-    private View mPanelContainer;
-    private View mScrim;
-
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private SearchUiCoordinator mSearchUiCoordinator;
@@ -155,25 +150,27 @@ public class TabSearchOverlayCoordinatorUnitTest {
     @Mock private FuseboxControls mFuseboxControls;
     @Mock private AutocompleteCoordinator mAutocompleteCoordinator;
     @Mock private TabWindowManager mTabWindowManager;
+    @Captor private ArgumentCaptor<OverrideUrlLoadingDelegate> mOverrideUrlLoadingDelegateCaptor;
+    @Captor private ArgumentCaptor<Callback<String>> mBringTabGroupToFrontCallbackCaptor;
+    @Captor private ArgumentCaptor<OmniboxActionDelegateImpl> mOmniboxActionDelegateCaptor;
+    @Captor private ArgumentCaptor<MotionEvent> mEventCaptor;
+    @Captor private ArgumentCaptor<View.OnKeyListener> mUrlBarKeyListenerCaptor;
 
+    private Activity mActivity;
+    private TabSearchOverlayCoordinator mCoordinator;
+    private View mPanelContainer;
+    private View mScrim;
     private final OneshotSupplierImpl<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier =
             new OneshotSupplierImpl<>();
-
     private final SettableNonNullObservableSupplier<Boolean> mSuggestionsListNonEmptySupplier =
             ObservableSuppliers.createNonNull(false);
-
     private final SettableMonotonicObservableSupplier<Profile> mProfileSupplier =
             ObservableSuppliers.createMonotonic();
     private final SettableMonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier =
             ObservableSuppliers.createMonotonic();
     private final TabObscuringHandler mTabObscuringHandler = new TabObscuringHandler();
 
-    @Captor private ArgumentCaptor<OverrideUrlLoadingDelegate> mOverrideUrlLoadingDelegateCaptor;
-    @Captor private ArgumentCaptor<Callback<String>> mBringTabGroupToFrontCallbackCaptor;
-    @Captor private ArgumentCaptor<OmniboxActionDelegateImpl> mOmniboxActionDelegateCaptor;
-
     @Before
-    @SuppressWarnings("unchecked")
     public void setUp() {
         ActivityController<Activity> controller = Robolectric.buildActivity(Activity.class);
         mActivity = controller.setup().get();
@@ -852,10 +849,9 @@ public class TabSearchOverlayCoordinatorUnitTest {
                 MotionEvent.obtain(0, 0, MotionEvent.ACTION_SCROLL, 100f, 150f, 0);
         mScrim.dispatchGenericMotionEvent(scrollEvent);
 
-        ArgumentCaptor<MotionEvent> eventCaptor = ArgumentCaptor.forClass(MotionEvent.class);
-        verify(mCompositorViewHolder).dispatchGenericMotionEvent(eventCaptor.capture());
+        verify(mCompositorViewHolder).dispatchGenericMotionEvent(mEventCaptor.capture());
 
-        MotionEvent forwardedEvent = eventCaptor.getValue();
+        MotionEvent forwardedEvent = mEventCaptor.getValue();
         assertEquals(100f, forwardedEvent.getX(), 0.01f);
         assertEquals(150f, forwardedEvent.getY(), 0.01f);
         scrollEvent.recycle();
@@ -902,9 +898,8 @@ public class TabSearchOverlayCoordinatorUnitTest {
         MotionEvent moveEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_MOVE, 200f, 150f, 0);
         mScrim.dispatchTouchEvent(moveEvent);
 
-        ArgumentCaptor<MotionEvent> touchCaptor = ArgumentCaptor.forClass(MotionEvent.class);
-        verify(mCompositorViewHolder, times(2)).dispatchTouchEvent(touchCaptor.capture());
-        List<MotionEvent> forwardedEvents = touchCaptor.getAllValues();
+        verify(mCompositorViewHolder, times(2)).dispatchTouchEvent(mEventCaptor.capture());
+        List<MotionEvent> forwardedEvents = mEventCaptor.getAllValues();
         assertEquals(MotionEvent.ACTION_DOWN, forwardedEvents.get(0).getActionMasked());
         assertEquals(100f, forwardedEvents.get(0).getX(), 0.01f);
         assertEquals(150f, forwardedEvents.get(0).getY(), 0.01f);
@@ -917,8 +912,8 @@ public class TabSearchOverlayCoordinatorUnitTest {
         MotionEvent upEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 200f, 150f, 0);
         mScrim.dispatchTouchEvent(upEvent);
 
-        verify(mCompositorViewHolder).dispatchTouchEvent(touchCaptor.capture());
-        assertEquals(MotionEvent.ACTION_UP, touchCaptor.getValue().getActionMasked());
+        verify(mCompositorViewHolder).dispatchTouchEvent(mEventCaptor.capture());
+        assertEquals(MotionEvent.ACTION_UP, mEventCaptor.getValue().getActionMasked());
 
         downEvent.recycle();
         moveEvent.recycle();
@@ -977,9 +972,8 @@ public class TabSearchOverlayCoordinatorUnitTest {
                 MotionEvent.obtain(0, 0, MotionEvent.ACTION_CANCEL, 200f, 150f, 0);
         mScrim.dispatchTouchEvent(cancelEvent);
 
-        ArgumentCaptor<MotionEvent> touchCaptor = ArgumentCaptor.forClass(MotionEvent.class);
-        verify(mCompositorViewHolder).dispatchTouchEvent(touchCaptor.capture());
-        assertEquals(MotionEvent.ACTION_CANCEL, touchCaptor.getValue().getActionMasked());
+        verify(mCompositorViewHolder).dispatchTouchEvent(mEventCaptor.capture());
+        assertEquals(MotionEvent.ACTION_CANCEL, mEventCaptor.getValue().getActionMasked());
 
         downEvent.recycle();
         moveEvent.recycle();
@@ -1401,10 +1395,8 @@ public class TabSearchOverlayCoordinatorUnitTest {
         ImageButton closeButton = mPanelContainer.findViewById(R.id.tab_search_close_button);
         assertNotNull(closeButton);
 
-        ArgumentCaptor<View.OnKeyListener> urlBarKeyListenerCaptor =
-                ArgumentCaptor.forClass(View.OnKeyListener.class);
-        verify(mUrlBar).setKeyDownListener(urlBarKeyListenerCaptor.capture());
-        View.OnKeyListener urlBarKeyListener = urlBarKeyListenerCaptor.getValue();
+        verify(mUrlBar).setKeyDownListener(mUrlBarKeyListenerCaptor.capture());
+        View.OnKeyListener urlBarKeyListener = mUrlBarKeyListenerCaptor.getValue();
         assertNotNull(urlBarKeyListener);
 
         KeyEvent shiftTabEvent =

@@ -35,6 +35,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
@@ -83,6 +84,10 @@ public class TabbedCrashRecoveryDelegateUnitTest {
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private ChromeTabbedActivity mHostActivity;
     @Mock private Resources mResources;
+    @Captor private ArgumentCaptor<Intent> mIntentCaptor1;
+    @Captor private ArgumentCaptor<Intent> mIntentCaptor2;
+    @Captor private ArgumentCaptor<Intent> mIntentCaptor3;
+    @Captor private ArgumentCaptor<PropertyModel> mModelCaptor;
 
     private TabbedCrashRecoveryDelegate mDelegate;
     private SettableMonotonicObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
@@ -526,15 +531,12 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         mDelegate.restoreWindows(mHostActivity, MultiWindowUtils.getAppTasksById(mHostActivity));
 
         // Verify.
-        ArgumentCaptor<Intent> intentCaptor1 = ArgumentCaptor.forClass(Intent.class);
-        ArgumentCaptor<Intent> intentCaptor2 = ArgumentCaptor.forClass(Intent.class);
-        ArgumentCaptor<Intent> intentCaptor3 = ArgumentCaptor.forClass(Intent.class);
 
         InOrder inOrderVerifier = inOrder(mHostActivity);
 
         // Verify: Non-visible window is restored first.
-        inOrderVerifier.verify(mHostActivity).startActivity(intentCaptor1.capture());
-        Intent intent1 = intentCaptor1.getValue();
+        inOrderVerifier.verify(mHostActivity).startActivity(mIntentCaptor1.capture());
+        Intent intent1 = mIntentCaptor1.getValue();
         assertEquals(1, intent1.getIntExtra(IntentHandler.EXTRA_WINDOW_ID, -1));
         assertEquals(
                 NewWindowAppSource.CRASH_RECOVERY,
@@ -542,8 +544,8 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(1));
 
         // Verify: Window from default display is restored.
-        inOrderVerifier.verify(mHostActivity).startActivity(intentCaptor2.capture());
-        Intent intent2 = intentCaptor2.getValue();
+        inOrderVerifier.verify(mHostActivity).startActivity(mIntentCaptor2.capture());
+        Intent intent2 = mIntentCaptor2.getValue();
         assertEquals(2, intent2.getIntExtra(IntentHandler.EXTRA_WINDOW_ID, -1));
         assertEquals(
                 NewWindowAppSource.CRASH_RECOVERY,
@@ -551,8 +553,8 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(2));
 
         // Verify: Window from non-default display is restored.
-        inOrderVerifier.verify(mHostActivity).startActivity(intentCaptor3.capture());
-        Intent intent3 = intentCaptor3.getValue();
+        inOrderVerifier.verify(mHostActivity).startActivity(mIntentCaptor3.capture());
+        Intent intent3 = mIntentCaptor3.getValue();
         assertEquals(3, intent3.getIntExtra(IntentHandler.EXTRA_WINDOW_ID, -1));
         assertEquals(
                 NewWindowAppSource.CRASH_RECOVERY,
@@ -580,38 +582,34 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         AppTask liveTask1 = mPreRecoveryAppTasks.get(1);
         AppTask liveTask3 = mPreRecoveryAppTasks.get(2);
 
-        ArgumentCaptor<Intent> intentCaptor1 = ArgumentCaptor.forClass(Intent.class);
-        ArgumentCaptor<Intent> intentCaptor2 = ArgumentCaptor.forClass(Intent.class);
-        ArgumentCaptor<Intent> intentCaptor3 = ArgumentCaptor.forClass(Intent.class);
-
         InOrder inOrderVerifier = inOrder(mHostActivity, liveTask1, liveTask3);
 
         // Verify: Non-visible window (windowId=1) task is finished and then restored.
         inOrderVerifier.verify(liveTask1).finishAndRemoveTask();
-        inOrderVerifier.verify(mHostActivity).startActivity(intentCaptor1.capture());
-        assertEquals(1, intentCaptor1.getValue().getIntExtra(IntentHandler.EXTRA_WINDOW_ID, -1));
+        inOrderVerifier.verify(mHostActivity).startActivity(mIntentCaptor1.capture());
+        assertEquals(1, mIntentCaptor1.getValue().getIntExtra(IntentHandler.EXTRA_WINDOW_ID, -1));
         assertEquals(
                 NewWindowAppSource.CRASH_RECOVERY,
-                intentCaptor1
+                mIntentCaptor1
                         .getValue()
                         .getIntExtra(IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE, -1));
 
         // Verify: Visible window (windowId=2) is restored (no task to finish).
-        inOrderVerifier.verify(mHostActivity).startActivity(intentCaptor2.capture());
-        assertEquals(2, intentCaptor2.getValue().getIntExtra(IntentHandler.EXTRA_WINDOW_ID, -1));
+        inOrderVerifier.verify(mHostActivity).startActivity(mIntentCaptor2.capture());
+        assertEquals(2, mIntentCaptor2.getValue().getIntExtra(IntentHandler.EXTRA_WINDOW_ID, -1));
         assertEquals(
                 NewWindowAppSource.CRASH_RECOVERY,
-                intentCaptor2
+                mIntentCaptor2
                         .getValue()
                         .getIntExtra(IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE, -1));
 
         // Verify: Visible window (windowId=3) task is finished and then restored.
         inOrderVerifier.verify(liveTask3).finishAndRemoveTask();
-        inOrderVerifier.verify(mHostActivity).startActivity(intentCaptor3.capture());
-        assertEquals(3, intentCaptor3.getValue().getIntExtra(IntentHandler.EXTRA_WINDOW_ID, -1));
+        inOrderVerifier.verify(mHostActivity).startActivity(mIntentCaptor3.capture());
+        assertEquals(3, mIntentCaptor3.getValue().getIntExtra(IntentHandler.EXTRA_WINDOW_ID, -1));
         assertEquals(
                 NewWindowAppSource.CRASH_RECOVERY,
-                intentCaptor3
+                mIntentCaptor3
                         .getValue()
                         .getIntExtra(IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE, -1));
 
@@ -647,11 +645,10 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         verify(liveTask, never()).finishAndRemoveTask();
 
         // Verify: Only the visible window (windowId=2) should be started.
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(mHostActivity).startActivity(intentCaptor.capture());
+        verify(mHostActivity).startActivity(mIntentCaptor1.capture());
         mDelegate.registerRecovery(2);
 
-        Intent intent = intentCaptor.getValue();
+        Intent intent = mIntentCaptor1.getValue();
         assertNotNull(intent);
         assertEquals(2, intent.getIntExtra(IntentHandler.EXTRA_WINDOW_ID, -1));
         assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(1));
@@ -731,9 +728,8 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         var userActionTester = new UserActionTester();
         setupAndShowCrashRecoveryDialog();
 
-        ArgumentCaptor<PropertyModel> modelCaptor = ArgumentCaptor.forClass(PropertyModel.class);
-        verify(mModalDialogManager).showDialog(modelCaptor.capture(), anyInt());
-        PropertyModel model = modelCaptor.getValue();
+        verify(mModalDialogManager).showDialog(mModelCaptor.capture(), anyInt());
+        PropertyModel model = mModelCaptor.getValue();
 
         assertTrue(
                 userActionTester
@@ -767,10 +763,9 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         setupAndShowCrashRecoveryDialog();
 
         // Capture the dialog model and controller.
-        ArgumentCaptor<PropertyModel> modelCaptor = ArgumentCaptor.forClass(PropertyModel.class);
         verify(mModalDialogManager)
-                .showDialog(modelCaptor.capture(), eq(ModalDialogManager.ModalDialogType.APP));
-        PropertyModel model = modelCaptor.getValue();
+                .showDialog(mModelCaptor.capture(), eq(ModalDialogManager.ModalDialogType.APP));
+        PropertyModel model = mModelCaptor.getValue();
         ModalDialogProperties.Controller controller = model.get(ModalDialogProperties.CONTROLLER);
 
         // Verify: Positive button text is correctly set.
@@ -809,9 +804,8 @@ public class TabbedCrashRecoveryDelegateUnitTest {
 
         setupAndShowCrashRecoveryDialog();
 
-        ArgumentCaptor<PropertyModel> modelCaptor = ArgumentCaptor.forClass(PropertyModel.class);
-        verify(mModalDialogManager).showDialog(modelCaptor.capture(), anyInt());
-        PropertyModel model = modelCaptor.getValue();
+        verify(mModalDialogManager).showDialog(mModelCaptor.capture(), anyInt());
+        PropertyModel model = mModelCaptor.getValue();
         ModalDialogProperties.Controller controller = model.get(ModalDialogProperties.CONTROLLER);
 
         assertTrue(
@@ -843,9 +837,8 @@ public class TabbedCrashRecoveryDelegateUnitTest {
 
         setupAndShowCrashRecoveryDialog();
 
-        ArgumentCaptor<PropertyModel> modelCaptor = ArgumentCaptor.forClass(PropertyModel.class);
-        verify(mModalDialogManager).showDialog(modelCaptor.capture(), anyInt());
-        PropertyModel model = modelCaptor.getValue();
+        verify(mModalDialogManager).showDialog(mModelCaptor.capture(), anyInt());
+        PropertyModel model = mModelCaptor.getValue();
         ModalDialogProperties.Controller controller = model.get(ModalDialogProperties.CONTROLLER);
 
         assertTrue(
@@ -898,9 +891,8 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         AppTask liveTask2 = mPreRecoveryAppTasks.get(1); // Index 1 is window 2.
         verify(liveTask2).finishAndRemoveTask();
 
-        ArgumentCaptor<PropertyModel> modelCaptor = ArgumentCaptor.forClass(PropertyModel.class);
-        verify(mModalDialogManager).showDialog(modelCaptor.capture(), anyInt());
-        PropertyModel model = modelCaptor.getValue();
+        verify(mModalDialogManager).showDialog(mModelCaptor.capture(), anyInt());
+        PropertyModel model = mModelCaptor.getValue();
         ModalDialogProperties.Controller controller = model.get(ModalDialogProperties.CONTROLLER);
 
         // Act: Simulate dismissal of the dialog (Cancel).

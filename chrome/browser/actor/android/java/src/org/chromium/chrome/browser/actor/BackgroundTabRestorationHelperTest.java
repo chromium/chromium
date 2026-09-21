@@ -12,7 +12,6 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -65,6 +64,12 @@ public class BackgroundTabRestorationHelperTest {
     private @Mock BackgroundPoolTab mBackgroundPoolTab;
     private @Mock Tab mTab;
     private @Mock WebContentsState mWebContentsState;
+    @Mock private BackgroundPoolTab mColdTab1;
+    @Mock private BackgroundPoolTab mColdTab2;
+    @Mock private Tab mRestoredTab1;
+    @Mock private Tab mRestoredTab2;
+    @Mock private LiveBackgroundTab mLiveBackgroundTab;
+    @Mock private Tab mExistingTab;
 
     @Before
     public void setUp() {
@@ -548,22 +553,18 @@ public class BackgroundTabRestorationHelperTest {
     @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
     public void testRestoreRemainingBackgroundTabs_success() {
         BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
-        BackgroundPoolTab coldTab1 = mock(BackgroundPoolTab.class);
-        BackgroundPoolTab coldTab2 = mock(BackgroundPoolTab.class);
-        Tab restoredTab1 = mock(Tab.class);
-        Tab restoredTab2 = mock(Tab.class);
-        when(restoredTab1.getId()).thenReturn(1);
-        when(restoredTab2.getId()).thenReturn(2);
+        when(mRestoredTab1.getId()).thenReturn(1);
+        when(mRestoredTab2.getId()).thenReturn(2);
 
         when(mNormalTabModel.getTabById(1)).thenReturn(null);
         when(mNormalTabModel.getTabById(2)).thenReturn(null);
         when(mBackgroundTabPool.getLiveTab(1)).thenReturn(null);
         when(mBackgroundTabPool.getLiveTab(2)).thenReturn(null);
-        when(mBackgroundTabPool.loadTabByOriginalId(1)).thenReturn(coldTab1);
-        when(mBackgroundTabPool.loadTabByOriginalId(2)).thenReturn(coldTab2);
+        when(mBackgroundTabPool.loadTabByOriginalId(1)).thenReturn(mColdTab1);
+        when(mBackgroundTabPool.loadTabByOriginalId(2)).thenReturn(mColdTab2);
         when(mNormalTabModel.getCount()).thenReturn(0).thenReturn(1);
-        when(coldTab1.attachTab(eq(mNormalTabModel), eq(0))).thenReturn(restoredTab1);
-        when(coldTab2.attachTab(eq(mNormalTabModel), eq(1))).thenReturn(restoredTab2);
+        when(mColdTab1.attachTab(eq(mNormalTabModel), eq(0))).thenReturn(mRestoredTab1);
+        when(mColdTab2.attachTab(eq(mNormalTabModel), eq(1))).thenReturn(mRestoredTab2);
 
         List<Tab> restoredTabs =
                 BackgroundTabRestorationHelper.restoreRemainingBackgroundTabs(
@@ -573,12 +574,12 @@ public class BackgroundTabRestorationHelperTest {
                         /* isAuthoritativeStore= */ true);
 
         assertEquals(2, restoredTabs.size());
-        assertEquals(restoredTab1, restoredTabs.get(0));
-        assertEquals(restoredTab2, restoredTabs.get(1));
+        assertEquals(mRestoredTab1, restoredTabs.get(0));
+        assertEquals(mRestoredTab2, restoredTabs.get(1));
         verify(mBackgroundTabPool).loadTabByOriginalId(1);
         verify(mBackgroundTabPool).loadTabByOriginalId(2);
-        verify(coldTab1).attachTab(mNormalTabModel, 0);
-        verify(coldTab2).attachTab(mNormalTabModel, 1);
+        verify(mColdTab1).attachTab(mNormalTabModel, 0);
+        verify(mColdTab2).attachTab(mNormalTabModel, 1);
         verify(mBackgroundTabPool).cleanupPostRestore();
     }
 
@@ -635,8 +636,7 @@ public class BackgroundTabRestorationHelperTest {
     public void testRestoreRemainingBackgroundTabs_assertsNoLiveTabs() {
         BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
         when(mNormalTabModel.getTabById(5)).thenReturn(null);
-        LiveBackgroundTab liveTab = mock(LiveBackgroundTab.class);
-        when(mBackgroundTabPool.getLiveTab(5)).thenReturn(liveTab);
+        when(mBackgroundTabPool.getLiveTab(5)).thenReturn(mLiveBackgroundTab);
 
         Set<Integer> tabIds = Set.of(5);
         assertThrows(
@@ -653,8 +653,7 @@ public class BackgroundTabRestorationHelperTest {
     @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
     public void testRestoreRemainingBackgroundTabs_tabAlreadyInModel() {
         BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
-        Tab existingTab = mock(Tab.class);
-        when(mNormalTabModel.getTabById(10)).thenReturn(existingTab);
+        when(mNormalTabModel.getTabById(10)).thenReturn(mExistingTab);
 
         List<Tab> restoredTabs =
                 BackgroundTabRestorationHelper.restoreRemainingBackgroundTabs(

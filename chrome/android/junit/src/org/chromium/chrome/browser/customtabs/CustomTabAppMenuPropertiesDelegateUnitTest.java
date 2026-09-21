@@ -12,7 +12,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -103,6 +102,13 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
     @Mock private ShoppingServiceFactory.Natives mShoppingServiceFactoryJniMock;
 
     @Mock private Verifier mVerifier;
+    @Mock private ContextualPageActionController mContextualPageActionController;
+    @Mock private ExtensionUiBackend mExtensionUiBackend;
+    @Mock private TabModel mTabModel;
+    @Mock private WebAppHeaderLayoutCoordinator mWebAppHeaderLayoutCoordinator;
+    @Mock private ExtensionsToolbarCoordinator mExtensionsToolbarCoordinator;
+    @Mock private AppMenuHandler mAppMenuHandler;
+    @Mock private BookmarkId mBookmarkId;
 
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private final SettableMonotonicObservableSupplier<BookmarkModel> mBookmarkModelSupplier =
@@ -130,7 +136,7 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(true);
         CommerceFeatureUtilsJni.setInstanceForTesting(mCommerceFeatureUtilsJniMock);
         doReturn(true).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
-        doReturn(mock(BookmarkId.class)).when(mBookmarkModel).getUserBookmarkIdForTab(any());
+        doReturn(mBookmarkId).when(mBookmarkModel).getUserBookmarkIdForTab(any());
         doReturn(true).when(mBookmarkModel).isEditBookmarksEnabled();
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
@@ -181,8 +187,7 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
 
     @Test
     public void enablePriceInsightsMenu() {
-        ContextualPageActionController cpac = mock(ContextualPageActionController.class);
-        doReturn(true).when(cpac).hasPriceInsights();
+        doReturn(true).when(mContextualPageActionController).hasPriceInsights();
 
         Context context =
                 new ContextThemeWrapper(
@@ -207,7 +212,7 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
                         /* isOffTheRecord= */ false,
                         /* isStartIconMenu= */ true,
                         mReadAloudControllerSupplier,
-                        () -> cpac,
+                        () -> mContextualPageActionController,
                         /* hasClientPackage= */ false,
                         /* pageZoomManager= */ null,
                         /* openInAppMenuItemProvider= */ null,
@@ -305,17 +310,11 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
     @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
     @EnableFeatures({ChromeFeatureList.SUBMENUS_IN_APP_MENU})
     public void testExtensionsMenuItem_TwaWithExtensionsEnabled() {
-        ExtensionUiBackend backend = mock(ExtensionUiBackend.class);
-        when(backend.isEnabled(any())).thenReturn(true);
-        ExtensionUi.setBackendForTesting(backend);
+        when(mExtensionUiBackend.isEnabled(any())).thenReturn(true);
+        ExtensionUi.setBackendForTesting(mExtensionUiBackend);
 
-        TabModel tabModel = mock(TabModel.class);
-        when(tabModel.getProfile()).thenReturn(mProfile);
-        when(mTabModelSelector.getModel(false)).thenReturn(tabModel);
-
-        WebAppHeaderLayoutCoordinator headerCoordinator = mock(WebAppHeaderLayoutCoordinator.class);
-        ExtensionsToolbarCoordinator extensionsToolbarCoordinator =
-                mock(ExtensionsToolbarCoordinator.class);
+        when(mTabModel.getProfile()).thenReturn(mProfile);
+        when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
 
         Context context =
                 new ContextThemeWrapper(
@@ -352,7 +351,7 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
 
         // 2. When header coordinator exists, but extensions toolbar coordinator is null -> not
         // shown.
-        when(headerCoordinator.getExtensionsToolbarCoordinator()).thenReturn(null);
+        when(mWebAppHeaderLayoutCoordinator.getExtensionsToolbarCoordinator()).thenReturn(null);
         var delegateNoExtensionsToolbar =
                 new CustomTabAppMenuPropertiesDelegate(
                         context,
@@ -377,15 +376,16 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
                         /* hasClientPackage= */ false,
                         /* pageZoomManager= */ null,
                         /* openInAppMenuItemProvider= */ null,
-                        /* webAppHeaderLayoutCoordinatorSupplier= */ () -> headerCoordinator);
+                        /* webAppHeaderLayoutCoordinatorSupplier= */ () ->
+                                mWebAppHeaderLayoutCoordinator);
         assertFalse(
                 isMenuItemPresent(
                         delegateNoExtensionsToolbar.getMenuItems(),
                         R.id.extensions_parent_menu_id));
 
         // 3. When both header coordinator and extensions toolbar coordinator exist -> shown.
-        when(headerCoordinator.getExtensionsToolbarCoordinator())
-                .thenReturn(extensionsToolbarCoordinator);
+        when(mWebAppHeaderLayoutCoordinator.getExtensionsToolbarCoordinator())
+                .thenReturn(mExtensionsToolbarCoordinator);
         var delegateWithExtensions =
                 new CustomTabAppMenuPropertiesDelegate(
                         context,
@@ -410,7 +410,8 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
                         /* hasClientPackage= */ false,
                         /* pageZoomManager= */ null,
                         /* openInAppMenuItemProvider= */ null,
-                        /* webAppHeaderLayoutCoordinatorSupplier= */ () -> headerCoordinator);
+                        /* webAppHeaderLayoutCoordinatorSupplier= */ () ->
+                                mWebAppHeaderLayoutCoordinator);
         assertTrue(
                 isMenuItemPresent(
                         delegateWithExtensions.getMenuItems(), R.id.extensions_parent_menu_id));
@@ -422,13 +423,11 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
     @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     @EnableFeatures({ChromeFeatureList.SUBMENUS_IN_APP_MENU})
     public void testExtensionsMenuItem_PreVanillaIceCream_NotShown() {
-        ExtensionUiBackend backend = mock(ExtensionUiBackend.class);
-        when(backend.isEnabled(any())).thenReturn(true);
-        ExtensionUi.setBackendForTesting(backend);
+        when(mExtensionUiBackend.isEnabled(any())).thenReturn(true);
+        ExtensionUi.setBackendForTesting(mExtensionUiBackend);
 
-        TabModel tabModel = mock(TabModel.class);
-        when(tabModel.getProfile()).thenReturn(mProfile);
-        when(mTabModelSelector.getModel(false)).thenReturn(tabModel);
+        when(mTabModel.getProfile()).thenReturn(mProfile);
+        when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
 
         Context context =
                 new ContextThemeWrapper(
@@ -503,15 +502,14 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
     public void testBuildFooterViewClickable_flagEnabled() {
         var delegate = createPropertiesDelegate(CustomTabsUiType.TRUSTED_WEB_ACTIVITY);
 
-        AppMenuHandler appMenuHandler = mock(AppMenuHandler.class);
-        View footer = delegate.buildFooterView(appMenuHandler);
+        View footer = delegate.buildFooterView(mAppMenuHandler);
         assertNotNull(footer);
         assertTrue(footer.hasOnClickListeners());
         assertTrue(footer.isClickable());
         assertTrue(footer.isFocusable());
 
         footer.performClick();
-        verify(appMenuHandler).hideAppMenu();
+        verify(mAppMenuHandler).hideAppMenu();
 
         ShadowApplication shadowApplication =
                 Shadows.shadowOf((Application) ApplicationProvider.getApplicationContext());
@@ -532,8 +530,7 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
     public void testBuildFooterViewClickable_flagDisabled() {
         var delegate = createPropertiesDelegate(CustomTabsUiType.TRUSTED_WEB_ACTIVITY);
 
-        AppMenuHandler appMenuHandler = mock(AppMenuHandler.class);
-        View footer = delegate.buildFooterView(appMenuHandler);
+        View footer = delegate.buildFooterView(mAppMenuHandler);
         assertNotNull(footer);
         assertFalse(footer.hasOnClickListeners());
         assertFalse(footer.isClickable());
@@ -546,8 +543,7 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
     public void testBuildFooterViewClickable_phoneFormFactor() {
         var delegate = createPropertiesDelegate(CustomTabsUiType.TRUSTED_WEB_ACTIVITY);
 
-        AppMenuHandler appMenuHandler = mock(AppMenuHandler.class);
-        View footer = delegate.buildFooterView(appMenuHandler);
+        View footer = delegate.buildFooterView(mAppMenuHandler);
         assertNotNull(footer);
         assertFalse(footer.hasOnClickListeners());
         assertFalse(footer.isClickable());

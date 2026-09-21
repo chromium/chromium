@@ -9,7 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
@@ -35,7 +34,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.DeviceInfo;
-
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -67,8 +65,11 @@ import java.util.Set;
 public class ToggleTabStackButtonCoordinatorTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public final ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+
+    @Rule
+    public final ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
+
     @Mock private LayoutStateProvider mLayoutStateProvider;
     @Mock private ToggleTabStackButton mToggleTabStackButton;
     @Mock private UserEducationHelper mUserEducationHelper;
@@ -80,6 +81,7 @@ public class ToggleTabStackButtonCoordinatorTest {
     @Mock private TopUiThemeColorProvider mTopUIThemeProvider;
     @Mock private IncognitoStateProvider mIncognitoStateProvider;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
+    @Mock private ToggleTabStackButton mButton;
 
     @Captor private ArgumentCaptor<IphCommand> mIphCommandCaptor;
 
@@ -475,9 +477,8 @@ public class ToggleTabStackButtonCoordinatorTest {
     @EnableFeatures(ChromeFeatureList.DISABLE_GRID_TAB_SWITCHER)
     public void testConstructor_disabledOnDesktop_setsVisibilityGone() {
         DeviceInfo.setIsDesktopForTesting(true);
-        ToggleTabStackButton button = mock(ToggleTabStackButton.class);
-        ToggleTabStackButtonCoordinator coordinator = newToggleTabStackButtonCoordinator(button);
+        ToggleTabStackButtonCoordinator coordinator = newToggleTabStackButtonCoordinator(mButton);
         assertFalse(coordinator.hasSpaceToShow());
-        verify(button).setVisibility(View.GONE);
+        verify(mButton).setVisibility(View.GONE);
     }
 }

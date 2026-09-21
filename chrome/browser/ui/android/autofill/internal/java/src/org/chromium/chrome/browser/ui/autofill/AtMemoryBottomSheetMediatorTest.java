@@ -34,6 +34,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -85,6 +86,7 @@ public class AtMemoryBottomSheetMediatorTest {
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
     @Mock private PrefService mPrefService;
     @Mock private Profile mProfile;
+    @Captor private ArgumentCaptor<Bundle> mBundleCaptor;
 
     private PropertyModel mModel;
     private PropertyModel mHomeModel;
@@ -605,16 +607,15 @@ public class AtMemoryBottomSheetMediatorTest {
                         .getActions()
                         .contains("PersonalContext.AtMemory.Notice.SettingsLinkClick"));
 
-        ArgumentCaptor<Bundle> bundleCaptor = ArgumentCaptor.forClass(Bundle.class);
         verify(mSettingsNavigation)
                 .startSettings(
                         eq(ApplicationProvider.getApplicationContext()),
                         eq(AutofillOptionsFragment.class),
-                        bundleCaptor.capture(),
+                        mBundleCaptor.capture(),
                         eq(true));
         assertEquals(
                 AutofillOptionsReferrer.PERSONAL_CONTEXT_ATMEMORY_NOTICE,
-                bundleCaptor.getValue().getInt(AutofillOptionsFragment.AUTOFILL_OPTIONS_REFERRER));
+                mBundleCaptor.getValue().getInt(AutofillOptionsFragment.AUTOFILL_OPTIONS_REFERRER));
     }
 
     @Test

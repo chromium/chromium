@@ -6,13 +6,13 @@ package org.chromium.chrome.browser.media;
 
 import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.ActivityManager.AppTask;
 import android.app.PictureInPictureParams;
 import android.content.ComponentName;
 import android.content.Context;
@@ -56,21 +56,23 @@ import java.util.concurrent.TimeUnit;
 @Config(shadows = {ShadowPackageManager.class, ShadowSystemClock.class})
 public class FullscreenVideoPictureInPictureControllerUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private Activity mActivity;
     @Mock private FullscreenManager mFullscreenManager;
     @Mock private Tab mTab;
     @Mock private MockWebContents mWebContents;
     @Mock private MediaSession mMediaSession;
     @Mock private PowerManager mPowerManager;
+    @Mock private ActivityManager mActivityManager;
+    @Mock private AppTask mAppTask;
+    @Captor private ArgumentCaptor<FullscreenManager.Observer> mFullscreenObserverCaptor;
+    @Captor private ArgumentCaptor<WebContentsObserver> mWebContentsObserverCaptor;
+    @Captor private ArgumentCaptor<PictureInPictureParams> mPictureInPictureParamsCaptor;
 
     // Not a mock, since it's just a container and `final` anyway.
     private final UserDataHost mUserDataHost = new UserDataHost();
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
-
     private FullscreenVideoPictureInPictureController mController;
-
-    @Captor private ArgumentCaptor<FullscreenManager.Observer> mFullscreenObserverCaptor;
-    @Captor private ArgumentCaptor<WebContentsObserver> mWebContentsObserverCaptor;
 
     /** Class to be tested, extended to allow us to provide some hooks. */
     class FullscreenVideoPictureInPictureControllerWithOverrides
@@ -153,14 +155,12 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
         String testActivityName = "org.chromium.chrome.browser.media.TestNoPipActivity";
         FullscreenVideoPictureInPictureController.registerNoPipComponentName(testActivityName);
 
-        ActivityManager activityManager = mock(ActivityManager.class);
-        ActivityManager.AppTask appTask = mock(ActivityManager.AppTask.class);
         ActivityManager.RecentTaskInfo taskInfo = new ActivityManager.RecentTaskInfo();
         taskInfo.topActivity =
                 new ComponentName(ContextUtils.getApplicationContext(), testActivityName);
-        when(appTask.getTaskInfo()).thenReturn(taskInfo);
-        when(activityManager.getAppTasks()).thenReturn(List.of(appTask));
-        when(mActivity.getSystemService(Context.ACTIVITY_SERVICE)).thenReturn(activityManager);
+        when(mAppTask.getTaskInfo()).thenReturn(taskInfo);
+        when(mActivityManager.getAppTasks()).thenReturn(List.of(mAppTask));
+        when(mActivity.getSystemService(Context.ACTIVITY_SERVICE)).thenReturn(mActivityManager);
 
         mController.attemptPictureInPicture();
         verify(mActivity, times(0)).enterPictureInPictureMode(any());
@@ -171,10 +171,8 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
     @Config(sdk = Build.VERSION_CODES.TIRAMISU)
     public void disableAutoPictureInPicture() {
         FullscreenVideoPictureInPictureController.disableAutoPictureInPicture(mActivity);
-        ArgumentCaptor<PictureInPictureParams> captor =
-                ArgumentCaptor.forClass(PictureInPictureParams.class);
-        verify(mActivity).setPictureInPictureParams(captor.capture());
-        assertFalse(captor.getValue().isAutoEnterEnabled());
+        verify(mActivity).setPictureInPictureParams(mPictureInPictureParamsCaptor.capture());
+        assertFalse(mPictureInPictureParamsCaptor.getValue().isAutoEnterEnabled());
     }
 
     /** After starting pip, dismiss should move the task to back if it's been long enough. */

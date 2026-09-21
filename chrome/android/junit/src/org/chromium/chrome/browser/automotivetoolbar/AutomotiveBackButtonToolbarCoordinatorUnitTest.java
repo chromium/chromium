@@ -18,7 +18,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
@@ -43,11 +42,6 @@ public class AutomotiveBackButtonToolbarCoordinatorUnitTest {
     private static final int ANIMATION_DURATION_MS = 400;
     private static final int ON_SWIPE_TOOLBAR_DURATION_MS = 10000;
 
-    private AutomotiveBackButtonToolbarCoordinator mAutomotiveBackButtonToolbarCoordinator;
-    private View mAutomotiveToolbar;
-    private View mOnSwipeAutomotiveToolbar;
-    private FullscreenManager.Observer mFullscreenObserver;
-
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
@@ -58,6 +52,13 @@ public class AutomotiveBackButtonToolbarCoordinatorUnitTest {
     @Mock private BackPressManager mBackPressManager;
     @Mock private TouchEventProvider mTouchEventProvider;
     @Mock private EdgeSwipeGestureDetector mEdgeSwipeGestureDetector;
+    @Mock private Tab mTab;
+    @Mock private FullscreenOptions mFullscreenOptions;
+
+    private AutomotiveBackButtonToolbarCoordinator mAutomotiveBackButtonToolbarCoordinator;
+    private View mAutomotiveToolbar;
+    private View mOnSwipeAutomotiveToolbar;
+    private FullscreenManager.Observer mFullscreenObserver;
 
     @Before
     public void setup() {
@@ -163,11 +164,9 @@ public class AutomotiveBackButtonToolbarCoordinatorUnitTest {
 
     @Test
     public void testOnSwipe_handleSwipe() {
-        Tab tab = Mockito.mock(Tab.class);
-        FullscreenOptions fullscreenOptions = Mockito.mock(FullscreenOptions.class);
         mAutomotiveBackButtonToolbarCoordinator
                 .getFullscreenObserverForTesting()
-                .onEnterFullscreen(tab, fullscreenOptions);
+                .onEnterFullscreen(mTab, mFullscreenOptions);
         mOnSwipeAutomotiveToolbar.setVisibility(View.GONE);
         mAutomotiveBackButtonToolbarCoordinator.getOnSwipeCallbackForTesting().handleSwipe();
 
@@ -185,11 +184,9 @@ public class AutomotiveBackButtonToolbarCoordinatorUnitTest {
 
     @Test
     public void testOnBackSwipe_handleBackSwipe() {
-        Tab tab = Mockito.mock(Tab.class);
-        FullscreenOptions fullscreenOptions = Mockito.mock(FullscreenOptions.class);
         mAutomotiveBackButtonToolbarCoordinator
                 .getFullscreenObserverForTesting()
-                .onEnterFullscreen(tab, fullscreenOptions);
+                .onEnterFullscreen(mTab, mFullscreenOptions);
         mOnSwipeAutomotiveToolbar.setVisibility(View.VISIBLE);
         mAutomotiveBackButtonToolbarCoordinator.getOnSwipeCallbackForTesting().handleBackSwipe();
         ShadowLooper.idleMainLooper(ANIMATION_DURATION_MS, TimeUnit.MILLISECONDS);
@@ -201,11 +198,9 @@ public class AutomotiveBackButtonToolbarCoordinatorUnitTest {
 
     @Test
     public void testMultipleSwipes_handleForwardSwipe() {
-        Tab tab = Mockito.mock(Tab.class);
-        FullscreenOptions fullscreenOptions = Mockito.mock(FullscreenOptions.class);
         mAutomotiveBackButtonToolbarCoordinator
                 .getFullscreenObserverForTesting()
-                .onEnterFullscreen(tab, fullscreenOptions);
+                .onEnterFullscreen(mTab, mFullscreenOptions);
         mOnSwipeAutomotiveToolbar.setVisibility(View.GONE);
         mAutomotiveBackButtonToolbarCoordinator.getOnSwipeCallbackForTesting().handleSwipe();
         mAutomotiveBackButtonToolbarCoordinator.getOnSwipeCallbackForTesting().handleBackSwipe();
@@ -218,7 +213,7 @@ public class AutomotiveBackButtonToolbarCoordinatorUnitTest {
 
         mAutomotiveBackButtonToolbarCoordinator
                 .getFullscreenObserverForTesting()
-                .onEnterFullscreen(tab, fullscreenOptions);
+                .onEnterFullscreen(mTab, mFullscreenOptions);
         mOnSwipeAutomotiveToolbar.setVisibility(View.GONE);
         mAutomotiveBackButtonToolbarCoordinator.getOnSwipeCallbackForTesting().handleSwipe();
         mAutomotiveBackButtonToolbarCoordinator.getOnSwipeCallbackForTesting().handleBackSwipe();
@@ -233,11 +228,9 @@ public class AutomotiveBackButtonToolbarCoordinatorUnitTest {
 
     @Test
     public void testMultipleSwipes_handleBackSwipe() {
-        Tab tab = Mockito.mock(Tab.class);
-        FullscreenOptions fullscreenOptions = Mockito.mock(FullscreenOptions.class);
         mAutomotiveBackButtonToolbarCoordinator
                 .getFullscreenObserverForTesting()
-                .onEnterFullscreen(tab, fullscreenOptions);
+                .onEnterFullscreen(mTab, mFullscreenOptions);
         mOnSwipeAutomotiveToolbar.setVisibility(View.VISIBLE);
         mAutomotiveBackButtonToolbarCoordinator.getOnSwipeCallbackForTesting().handleBackSwipe();
         mAutomotiveBackButtonToolbarCoordinator.getOnSwipeCallbackForTesting().handleSwipe();
@@ -250,7 +243,7 @@ public class AutomotiveBackButtonToolbarCoordinatorUnitTest {
 
         mAutomotiveBackButtonToolbarCoordinator
                 .getFullscreenObserverForTesting()
-                .onEnterFullscreen(tab, fullscreenOptions);
+                .onEnterFullscreen(mTab, mFullscreenOptions);
         mOnSwipeAutomotiveToolbar.setVisibility(View.VISIBLE);
         mAutomotiveBackButtonToolbarCoordinator.getOnSwipeCallbackForTesting().handleBackSwipe();
         mAutomotiveBackButtonToolbarCoordinator.getOnSwipeCallbackForTesting().handleSwipe();

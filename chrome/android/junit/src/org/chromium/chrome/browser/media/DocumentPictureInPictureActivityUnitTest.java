@@ -10,7 +10,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -67,6 +66,9 @@ public class DocumentPictureInPictureActivityUnitTest {
     @Mock private AppTask mAppTask;
     @Mock private DisplayAndroidManager mDisplayAndroidManager;
     @Mock private DocumentPictureInPictureActivity.Natives mMockActivityNatives;
+    @Mock private WebContents mWebContents;
+    @Mock private AutoPictureInPictureTabHelper mAutoPictureInPictureTabHelper;
+    @Mock private RenderFrameHost mRenderFrameHost;
 
     private DocumentPictureInPictureActivity mActivity;
 
@@ -160,14 +162,12 @@ public class DocumentPictureInPictureActivityUnitTest {
     public void testSaveBoundsToCache() {
         when(mDisplayAndroid.getDipScale()).thenReturn(2.0f);
 
-        WebContents parentWebContents = mock(WebContents.class);
-        AutoPictureInPictureTabHelper helper = mock(AutoPictureInPictureTabHelper.class);
-        when(parentWebContents.isDestroyed()).thenReturn(false);
-        when(parentWebContents.getOrSetUserData(
+        when(mWebContents.isDestroyed()).thenReturn(false);
+        when(mWebContents.getOrSetUserData(
                         eq(AutoPictureInPictureTabHelper.USER_DATA_KEY), isNull()))
-                .thenReturn(helper);
+                .thenReturn(mAutoPictureInPictureTabHelper);
 
-        mActivity.setParentWebContentsOnInstanceForTesting(parentWebContents);
+        mActivity.setParentWebContentsOnInstanceForTesting(mWebContents);
 
         when(mContentLayout.getWidth()).thenReturn(200);
         when(mContentLayout.getHeight()).thenReturn(200);
@@ -185,7 +185,7 @@ public class DocumentPictureInPictureActivityUnitTest {
 
         verify(mMockNatives)
                 .updateCachedBounds(
-                        eq(parentWebContents),
+                        eq(mWebContents),
                         eq(50), // 100 / 2.0
                         eq(50), // 100 / 2.0
                         eq(150), // 300 / 2.0
@@ -289,9 +289,8 @@ public class DocumentPictureInPictureActivityUnitTest {
     @Test
     @Config(sdk = Build.VERSION_CODES.S)
     public void testSaveBoundsToCache_SkipsIfPromptEnlargementActive() {
-        WebContents parentWebContents = mock(WebContents.class);
-        when(parentWebContents.getTopLevelNativeWindow()).thenReturn(mActivityWindowAndroid);
-        mActivity.setParentWebContentsOnInstanceForTesting(parentWebContents);
+        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mActivityWindowAndroid);
+        mActivity.setParentWebContentsOnInstanceForTesting(mWebContents);
 
         PictureInPictureWindowOptions windowOptions =
                 new PictureInPictureWindowOptions(
@@ -328,9 +327,8 @@ public class DocumentPictureInPictureActivityUnitTest {
         when(mMockActivityNatives.registerJavaActivity(any(), any())).thenReturn(false);
 
         // Setup mock WebContents to prevent crashes during early setup.
-        WebContents webContents = mock(WebContents.class);
-        when(webContents.isDestroyed()).thenReturn(false);
-        DocumentPictureInPictureActivity.setWebContentsForTesting(webContents);
+        when(mWebContents.isDestroyed()).thenReturn(false);
+        DocumentPictureInPictureActivity.setWebContentsForTesting(mWebContents);
 
         mActivity.performPreInflationStartup();
 
@@ -377,10 +375,9 @@ public class DocumentPictureInPictureActivityUnitTest {
         intent.putExtra(
                 DocumentPictureInPictureActivity.INITIAL_OPENER_ORIGIN_KEY,
                 Origin.create(url).toString());
-        WebContents parentWebContents = mock(WebContents.class);
-        when(parentWebContents.getLastCommittedUrl()).thenReturn(url);
+        when(mWebContents.getLastCommittedUrl()).thenReturn(url);
 
-        Assert.assertTrue(mActivity.verifyOpenerOrigin(intent, parentWebContents));
+        Assert.assertTrue(mActivity.verifyOpenerOrigin(intent, mWebContents));
     }
 
     @Test
@@ -388,10 +385,9 @@ public class DocumentPictureInPictureActivityUnitTest {
     public void testVerifyOpenerOrigin_OpaqueInitialOrigin_ReturnsFalse() {
         Intent intent = new Intent();
         intent.putExtra(DocumentPictureInPictureActivity.INITIAL_OPENER_ORIGIN_KEY, "null");
-        WebContents parentWebContents = mock(WebContents.class);
-        when(parentWebContents.getLastCommittedUrl()).thenReturn(new GURL("about:blank#fragment"));
+        when(mWebContents.getLastCommittedUrl()).thenReturn(new GURL("about:blank#fragment"));
 
-        Assert.assertFalse(mActivity.verifyOpenerOrigin(intent, parentWebContents));
+        Assert.assertFalse(mActivity.verifyOpenerOrigin(intent, mWebContents));
     }
 
     @Test
@@ -400,10 +396,9 @@ public class DocumentPictureInPictureActivityUnitTest {
         Intent intent = new Intent();
         intent.putExtra(
                 DocumentPictureInPictureActivity.INITIAL_OPENER_ORIGIN_KEY, "https://example.com");
-        WebContents parentWebContents = mock(WebContents.class);
-        when(parentWebContents.getLastCommittedUrl()).thenReturn(new GURL("about:blank"));
+        when(mWebContents.getLastCommittedUrl()).thenReturn(new GURL("about:blank"));
 
-        Assert.assertFalse(mActivity.verifyOpenerOrigin(intent, parentWebContents));
+        Assert.assertFalse(mActivity.verifyOpenerOrigin(intent, mWebContents));
     }
 
     @Test
@@ -412,22 +407,18 @@ public class DocumentPictureInPictureActivityUnitTest {
         Intent intent = new Intent();
         intent.putExtra(
                 DocumentPictureInPictureActivity.INITIAL_OPENER_ORIGIN_KEY, "https://example.com");
-        WebContents parentWebContents = mock(WebContents.class);
-        when(parentWebContents.getLastCommittedUrl())
-                .thenReturn(new GURL("https://attacker.com/page"));
+        when(mWebContents.getLastCommittedUrl()).thenReturn(new GURL("https://attacker.com/page"));
 
-        Assert.assertFalse(mActivity.verifyOpenerOrigin(intent, parentWebContents));
+        Assert.assertFalse(mActivity.verifyOpenerOrigin(intent, mWebContents));
     }
 
     @Test
     @Config(sdk = Build.VERSION_CODES.S)
     public void testVerifyOpenerOrigin_MissingInitialOriginExtra_ReturnsFalse() {
         Intent intent = new Intent(); // No INITIAL_OPENER_ORIGIN_KEY extra
-        WebContents parentWebContents = mock(WebContents.class);
-        when(parentWebContents.getLastCommittedUrl())
-                .thenReturn(new GURL("https://example.com/page"));
+        when(mWebContents.getLastCommittedUrl()).thenReturn(new GURL("https://example.com/page"));
 
-        Assert.assertFalse(mActivity.verifyOpenerOrigin(intent, parentWebContents));
+        Assert.assertFalse(mActivity.verifyOpenerOrigin(intent, mWebContents));
     }
 
     @Test
@@ -446,16 +437,13 @@ public class DocumentPictureInPictureActivityUnitTest {
         Intent intent = new Intent();
         intent.putExtra(
                 DocumentPictureInPictureActivity.INITIAL_OPENER_ORIGIN_KEY, "https://example.com");
-        WebContents parentWebContents = mock(WebContents.class);
-        RenderFrameHost openerFrame = mock(RenderFrameHost.class);
-        when(parentWebContents.getMainFrame()).thenReturn(openerFrame);
+        when(mWebContents.getMainFrame()).thenReturn(mRenderFrameHost);
         // Sandboxed frame: URL is https://example.com, but frame origin is opaque
-        when(parentWebContents.getLastCommittedUrl())
-                .thenReturn(new GURL("https://example.com/page"));
+        when(mWebContents.getLastCommittedUrl()).thenReturn(new GURL("https://example.com/page"));
         Origin opaqueOrigin = Origin.create(new GURL("about:blank"));
-        when(openerFrame.getLastCommittedOrigin()).thenReturn(opaqueOrigin);
+        when(mRenderFrameHost.getLastCommittedOrigin()).thenReturn(opaqueOrigin);
 
-        Assert.assertFalse(mActivity.verifyOpenerOrigin(intent, parentWebContents));
+        Assert.assertFalse(mActivity.verifyOpenerOrigin(intent, mWebContents));
     }
 
     @Test
@@ -466,11 +454,9 @@ public class DocumentPictureInPictureActivityUnitTest {
         intent.putExtra(
                 DocumentPictureInPictureActivity.INITIAL_OPENER_ORIGIN_KEY,
                 Origin.create(url).toString());
-        WebContents parentWebContents = mock(WebContents.class);
-        RenderFrameHost openerFrame = mock(RenderFrameHost.class);
-        when(parentWebContents.getMainFrame()).thenReturn(openerFrame);
-        when(openerFrame.getLastCommittedOrigin()).thenReturn(Origin.create(url));
+        when(mWebContents.getMainFrame()).thenReturn(mRenderFrameHost);
+        when(mRenderFrameHost.getLastCommittedOrigin()).thenReturn(Origin.create(url));
 
-        Assert.assertTrue(mActivity.verifyOpenerOrigin(intent, parentWebContents));
+        Assert.assertTrue(mActivity.verifyOpenerOrigin(intent, mWebContents));
     }
 }

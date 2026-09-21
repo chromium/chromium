@@ -10,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -27,6 +26,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -128,6 +128,8 @@ public class TopToolbarCoordinatorUnitTest {
     @Mock private Resources mResources;
     @Mock private CoordinatorLayout.LayoutParams mCoordinatorLayoutParams;
     @Mock private View.OnLongClickListener mGlicLongClickListener;
+    @Mock private View mView;
+    @Captor private ArgumentCaptor<OnLongClickListener> mOnLongClickListenerCaptor;
 
     private final MonotonicObservableSupplier<AppMenuButtonHelper> mAppMenuButtonHelperSupplier =
             ObservableSuppliers.createMonotonic();
@@ -386,16 +388,14 @@ public class TopToolbarCoordinatorUnitTest {
 
         // Verify long-click listener was passed to mToolbarLayout and forwards correctly when
         // triggered.
-        ArgumentCaptor<OnLongClickListener> captor =
-                ArgumentCaptor.forClass(View.OnLongClickListener.class);
         // When isGlicPinnedSupplier.set(true) is called, #onGlicVisibilityNeedsUpdate ->
         // #setGlicActionChipVisibility gets triggered.
-        verify(mToolbarLayout).setGlicActionChipVisibility(eq(true), any(), captor.capture());
-        View mockView = mock(View.class);
+        verify(mToolbarLayout)
+                .setGlicActionChipVisibility(eq(true), any(), mOnLongClickListenerCaptor.capture());
         // Simulate a long-press with the captured listener object.
-        captor.getValue().onLongClick(mockView);
+        mOnLongClickListenerCaptor.getValue().onLongClick(mView);
         // Verify that the long-press event was delegated to mGlicLongClickListener.
-        verify(mGlicLongClickListener).onLongClick(mockView);
+        verify(mGlicLongClickListener).onLongClick(mView);
 
         // In incognito mode, button should still show if VT is active and Glic is pinned.
         when(mTabModelSelector.isIncognitoSelected()).thenReturn(true);

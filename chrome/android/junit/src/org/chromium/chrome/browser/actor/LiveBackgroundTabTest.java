@@ -21,6 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -58,6 +59,7 @@ public class LiveBackgroundTabTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private TabDelegateFactory mTabDelegateFactory;
     @Mock private WebContentsState mPlaceholderContentsState;
+    @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
 
     private LiveBackgroundTab mLiveBackgroundTab;
 
@@ -213,11 +215,10 @@ public class LiveBackgroundTabTest {
 
     @Test
     public void testTabDestruction_evictsFromPool() {
-        ArgumentCaptor<TabObserver> captor = ArgumentCaptor.forClass(TabObserver.class);
         mLiveBackgroundTab = new LiveBackgroundTab(mPool, mTab, PLACEHOLDER_TAB_ID, TASK_ID);
 
-        verify(mTab).addObserver(captor.capture());
-        TabObserver observer = captor.getValue();
+        verify(mTab).addObserver(mTabObserverCaptor.capture());
+        TabObserver observer = mTabObserverCaptor.getValue();
 
         observer.onDestroyed(mTab);
         verify(mPool).removeTabById(TAB_ID);
@@ -226,11 +227,10 @@ public class LiveBackgroundTabTest {
 
     @Test
     public void testAttachToForeground_unregistersDestructionObserver() {
-        ArgumentCaptor<TabObserver> captor = ArgumentCaptor.forClass(TabObserver.class);
         mLiveBackgroundTab = new LiveBackgroundTab(mPool, mTab, PLACEHOLDER_TAB_ID, TASK_ID);
 
-        verify(mTab).addObserver(captor.capture());
-        TabObserver observer = captor.getValue();
+        verify(mTab).addObserver(mTabObserverCaptor.capture());
+        TabObserver observer = mTabObserverCaptor.getValue();
 
         when(mTabModel.indexOf(mTab)).thenReturn(TabModel.INVALID_TAB_INDEX);
         when(mTabModel.getTabById(PLACEHOLDER_TAB_ID)).thenReturn(mPlaceholderTab);

@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.share.scroll_capture;
 
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.view.View;
@@ -30,13 +29,16 @@ import org.chromium.chrome.browser.tab.Tab;
 /** Tests for the ScreenshotBoundsManager */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ScrollCaptureManagerTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
     @Mock private Tab mTab;
     @Mock private ScrollCaptureManagerDelegate mScrollCaptureManagerDelegateMock;
+    @Mock private Tab mTab1;
+    @Mock private View mView;
+    @Mock private View mAnotherView;
 
     private SettableNullableObservableSupplier<Tab> mTabSupplier;
     private ScrollCaptureManager mScrollCaptureManager;
-
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Before
     public void setUp() {
@@ -51,59 +53,56 @@ public class ScrollCaptureManagerTest {
 
     @Test
     public void testObserveTab() {
-        Tab tab = mock(Tab.class);
-        InOrder inOrder = Mockito.inOrder(mTab, tab, mScrollCaptureManagerDelegateMock);
+        InOrder inOrder = Mockito.inOrder(mTab, mTab1, mScrollCaptureManagerDelegateMock);
 
         mTabSupplier.set(mTab);
         inOrder.verify(mScrollCaptureManagerDelegateMock).setCurrentTab(mTab);
         inOrder.verify(mTab).addObserver(mScrollCaptureManager);
         inOrder.verify(mTab).getView();
 
-        mTabSupplier.set(tab);
+        mTabSupplier.set(mTab1);
         inOrder.verify(mTab).removeObserver(mScrollCaptureManager);
-        inOrder.verify(mScrollCaptureManagerDelegateMock).setCurrentTab(tab);
-        inOrder.verify(tab).addObserver(mScrollCaptureManager);
-        inOrder.verify(tab).getView();
+        inOrder.verify(mScrollCaptureManagerDelegateMock).setCurrentTab(mTab1);
+        inOrder.verify(mTab1).addObserver(mScrollCaptureManager);
+        inOrder.verify(mTab1).getView();
         inOrder.verifyNoMoreInteractions();
     }
 
     @Test
     public void testContentChange() {
-        View view = mock(View.class);
-        View anotherView = mock(View.class);
         InOrder inOrder = Mockito.inOrder(mScrollCaptureManagerDelegateMock);
 
         // No view available
         mScrollCaptureManager.onContentChanged(mTab);
 
         // View is set
-        when(mTab.getView()).thenReturn(view);
+        when(mTab.getView()).thenReturn(mView);
         mScrollCaptureManager.onContentChanged(mTab);
-        inOrder.verify(mScrollCaptureManagerDelegateMock).addScrollCaptureBindings(eq(view));
+        inOrder.verify(mScrollCaptureManagerDelegateMock).addScrollCaptureBindings(eq(mView));
 
         // Content change
-        when(mTab.getView()).thenReturn(anotherView);
+        when(mTab.getView()).thenReturn(mAnotherView);
         mScrollCaptureManager.onContentChanged(mTab);
-        inOrder.verify(mScrollCaptureManagerDelegateMock).removeScrollCaptureBindings(eq(view));
-        inOrder.verify(mScrollCaptureManagerDelegateMock).addScrollCaptureBindings(eq(anotherView));
+        inOrder.verify(mScrollCaptureManagerDelegateMock).removeScrollCaptureBindings(eq(mView));
+        inOrder.verify(mScrollCaptureManagerDelegateMock)
+                .addScrollCaptureBindings(eq(mAnotherView));
 
         // Test when native page
         when(mTab.isNativePage()).thenReturn(true);
         mScrollCaptureManager.onContentChanged(mTab);
         inOrder.verify(mScrollCaptureManagerDelegateMock)
-                .removeScrollCaptureBindings(eq(anotherView));
+                .removeScrollCaptureBindings(eq(mAnotherView));
         inOrder.verifyNoMoreInteractions();
     }
 
     @Test
     public void testDestroy() {
-        View view = mock(View.class);
         InOrder inOrder = Mockito.inOrder(mTab, mScrollCaptureManagerDelegateMock);
 
-        when(mTab.getView()).thenReturn(view);
+        when(mTab.getView()).thenReturn(mView);
         mTabSupplier.set(mTab);
         mScrollCaptureManager.destroy();
         inOrder.verify(mTab).removeObserver(mScrollCaptureManager);
-        inOrder.verify(mScrollCaptureManagerDelegateMock).removeScrollCaptureBindings(eq(view));
+        inOrder.verify(mScrollCaptureManagerDelegateMock).removeScrollCaptureBindings(eq(mView));
     }
 }

@@ -62,6 +62,7 @@ public class RecentTabsPageUnitTest {
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
 
     @Captor ArgumentCaptor<EdgeToEdgePadAdjuster> mPadAdjusterCaptor;
+    @Captor private ArgumentCaptor<RecentTabsManager.UpdatedCallback> mCallbackCaptor;
 
     private RecentTabsPage mRecentTabsPage;
     private final SettableMonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier =
@@ -143,9 +144,6 @@ public class RecentTabsPageUnitTest {
         when(mRecentTabsManager.isRecentlyClosedTabsCollapsed()).thenReturn(true);
         when(mRecentTabsManager.isPromoCollapsed()).thenReturn(true);
 
-        ArgumentCaptor<RecentTabsManager.UpdatedCallback> callbackCaptor =
-                ArgumentCaptor.forClass(RecentTabsManager.UpdatedCallback.class);
-
         // Open page with deep-link fragment for session_2.
         String url = UrlConstants.RECENT_TABS_URL + "#session_2";
         RecentTabsPage page =
@@ -158,8 +156,8 @@ public class RecentTabsPageUnitTest {
                         mEdgeToEdgeSupplier,
                         url);
 
-        verify(mRecentTabsManager).setUpdatedCallback(callbackCaptor.capture());
-        RecentTabsManager.UpdatedCallback callback = callbackCaptor.getValue();
+        verify(mRecentTabsManager).setUpdatedCallback(mCallbackCaptor.capture());
+        RecentTabsManager.UpdatedCallback callback = mCallbackCaptor.getValue();
 
         // Trigger sync data load.
         callback.onUpdated();
@@ -186,9 +184,6 @@ public class RecentTabsPageUnitTest {
         when(mRecentTabsManager.isRecentlyClosedTabsCollapsed()).thenReturn(true);
         when(mRecentTabsManager.isPromoCollapsed()).thenReturn(true);
 
-        ArgumentCaptor<RecentTabsManager.UpdatedCallback> callbackCaptor =
-                ArgumentCaptor.forClass(RecentTabsManager.UpdatedCallback.class);
-
         // Construct page without a fragment.
         RecentTabsPage page =
                 new RecentTabsPage(
@@ -200,8 +195,8 @@ public class RecentTabsPageUnitTest {
                         mEdgeToEdgeSupplier,
                         UrlConstants.RECENT_TABS_URL);
 
-        verify(mRecentTabsManager).setUpdatedCallback(callbackCaptor.capture());
-        RecentTabsManager.UpdatedCallback callback = callbackCaptor.getValue();
+        verify(mRecentTabsManager).setUpdatedCallback(mCallbackCaptor.capture());
+        RecentTabsManager.UpdatedCallback callback = mCallbackCaptor.getValue();
 
         // Load sync data first.
         callback.onUpdated();
@@ -237,9 +232,6 @@ public class RecentTabsPageUnitTest {
         when(mRecentTabsManager.isRecentlyClosedTabsCollapsed()).thenReturn(true);
         when(mRecentTabsManager.isPromoCollapsed()).thenReturn(true);
 
-        ArgumentCaptor<RecentTabsManager.UpdatedCallback> callbackCaptor =
-                ArgumentCaptor.forClass(RecentTabsManager.UpdatedCallback.class);
-
         // Construct page without a fragment.
         RecentTabsPage page =
                 new RecentTabsPage(
@@ -251,8 +243,8 @@ public class RecentTabsPageUnitTest {
                         mEdgeToEdgeSupplier,
                         UrlConstants.RECENT_TABS_URL);
 
-        verify(mRecentTabsManager).setUpdatedCallback(callbackCaptor.capture());
-        RecentTabsManager.UpdatedCallback callback = callbackCaptor.getValue();
+        verify(mRecentTabsManager).setUpdatedCallback(mCallbackCaptor.capture());
+        RecentTabsManager.UpdatedCallback callback = mCallbackCaptor.getValue();
 
         // Update URL with deep-link fragment BEFORE data loads.
         page.updateForUrl(UrlConstants.RECENT_TABS_URL + "#session_2");
@@ -288,9 +280,6 @@ public class RecentTabsPageUnitTest {
         when(mRecentTabsManager.isRecentlyClosedTabsCollapsed()).thenReturn(true);
         when(mRecentTabsManager.isPromoCollapsed()).thenReturn(true);
 
-        ArgumentCaptor<RecentTabsManager.UpdatedCallback> callbackCaptor =
-                ArgumentCaptor.forClass(RecentTabsManager.UpdatedCallback.class);
-
         // Start with a URL deep-linked to session_2.
         String url = UrlConstants.RECENT_TABS_URL + "#session_2";
         RecentTabsPage page =
@@ -303,8 +292,8 @@ public class RecentTabsPageUnitTest {
                         mEdgeToEdgeSupplier,
                         url);
 
-        verify(mRecentTabsManager).setUpdatedCallback(callbackCaptor.capture());
-        RecentTabsManager.UpdatedCallback callback = callbackCaptor.getValue();
+        verify(mRecentTabsManager).setUpdatedCallback(mCallbackCaptor.capture());
+        RecentTabsManager.UpdatedCallback callback = mCallbackCaptor.getValue();
 
         // Navigate away to a URL without a fragment. This should clear the target scroll
         // destination.

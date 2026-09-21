@@ -49,6 +49,9 @@ public class GlicTaskMenuCoordinatorUnitTest {
 
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private GlicButtonDelegate mToggleGlicCallback;
+    @Mock private ActorTask mTask1;
+    @Mock private ActorTask mActorTask;
+    @Mock private GlicSplitButtonDelegateBridge mGlicSplitButtonDelegateBridge;
 
     private Context mContext;
     private GlicTaskMenuCoordinator mCoordinator;
@@ -67,11 +70,10 @@ public class GlicTaskMenuCoordinatorUnitTest {
                         GlicKeyedService.GlicInvocationSource.TOP_CHROME_BUTTON,
                         GlicTaskMenuCoordinator.ButtonSource.TOOLBAR);
 
-        ActorTask task1 = mock(ActorTask.class);
-        doReturn("Task One").when(task1).getTitle();
+        doReturn("Task One").when(mTask1).getTitle();
         ActorTask task2 = mock(ActorTask.class);
         doReturn("Task Two").when(task2).getTitle();
-        mTasks = Arrays.asList(task1, task2);
+        mTasks = Arrays.asList(mTask1, task2);
     }
 
     @Test
@@ -151,9 +153,8 @@ public class GlicTaskMenuCoordinatorUnitTest {
 
     @Test
     public void testBuildModelList_TabStripSource_NeedsReview() {
-        ActorTask reviewTask = mock(ActorTask.class);
-        doReturn("Review Task").when(reviewTask).getTitle();
-        doReturn(ActorTaskState.WAITING_ON_USER).when(reviewTask).getState();
+        doReturn("Review Task").when(mActorTask).getTitle();
+        doReturn(ActorTaskState.WAITING_ON_USER).when(mActorTask).getState();
 
         GlicTaskMenuCoordinator tabStripCoordinator =
                 new GlicTaskMenuCoordinator(
@@ -163,7 +164,7 @@ public class GlicTaskMenuCoordinatorUnitTest {
                         GlicKeyedService.GlicInvocationSource.TOP_CHROME_BUTTON,
                         GlicTaskMenuCoordinator.ButtonSource.TAB_STRIP);
         ModelList modelList =
-                tabStripCoordinator.buildModelList(Collections.singletonList(reviewTask));
+                tabStripCoordinator.buildModelList(Collections.singletonList(mActorTask));
 
         assertEquals(1, modelList.size());
         ListItem item = modelList.get(0);
@@ -191,12 +192,11 @@ public class GlicTaskMenuCoordinatorUnitTest {
 
     @Test
     public void testClickActorTask_TriggersTabSwitchAndCallbackWithTrue() {
-        ActorTask task = mock(ActorTask.class);
-        doReturn("Task Title").when(task).getTitle();
+        doReturn("Task Title").when(mActorTask).getTitle();
         Set<Integer> tabIds = new HashSet<>(Arrays.asList(123));
-        doReturn(tabIds).when(task).getLastActedTabs();
+        doReturn(tabIds).when(mActorTask).getLastActedTabs();
 
-        ModelList modelList = mCoordinator.buildModelList(Arrays.asList(task));
+        ModelList modelList = mCoordinator.buildModelList(Arrays.asList(mActorTask));
         ListItem taskItem = modelList.get(0);
 
         View.OnClickListener clickListener =
@@ -211,11 +211,10 @@ public class GlicTaskMenuCoordinatorUnitTest {
 
     @Test
     public void testClickActorTask_EmptyTabs_DoesNotOpenNewTab() {
-        ActorTask task = mock(ActorTask.class);
-        doReturn("Task Title").when(task).getTitle();
-        doReturn(Collections.emptySet()).when(task).getLastActedTabs();
+        doReturn("Task Title").when(mActorTask).getTitle();
+        doReturn(Collections.emptySet()).when(mActorTask).getLastActedTabs();
 
-        ModelList modelList = mCoordinator.buildModelList(Arrays.asList(task));
+        ModelList modelList = mCoordinator.buildModelList(Arrays.asList(mActorTask));
         ListItem taskItem = modelList.get(0);
 
         View.OnClickListener clickListener =
@@ -230,12 +229,11 @@ public class GlicTaskMenuCoordinatorUnitTest {
 
     @Test
     public void testClickActorTask_CompletedTaskClosedTab_OpensNewTab() {
-        ActorTask task = mock(ActorTask.class);
-        doReturn("Task Title").when(task).getTitle();
-        doReturn(Collections.emptySet()).when(task).getLastActedTabs();
-        doReturn(true).when(task).isCompleted();
+        doReturn("Task Title").when(mActorTask).getTitle();
+        doReturn(Collections.emptySet()).when(mActorTask).getLastActedTabs();
+        doReturn(true).when(mActorTask).isCompleted();
 
-        ModelList modelList = mCoordinator.buildModelList(Arrays.asList(task));
+        ModelList modelList = mCoordinator.buildModelList(Arrays.asList(mActorTask));
         ListItem taskItem = modelList.get(0);
 
         View.OnClickListener clickListener =
@@ -270,13 +268,12 @@ public class GlicTaskMenuCoordinatorUnitTest {
 
     @Test
     public void testBuildModelListFromRowData_ClickCallsBridge() {
-        GlicSplitButtonDelegateBridge bridge = mock(GlicSplitButtonDelegateBridge.class);
         GlicTaskMenuCoordinator coordinator =
                 new GlicTaskMenuCoordinator(
                         mContext,
                         () -> mTabModelSelector,
                         mToggleGlicCallback,
-                        bridge,
+                        mGlicSplitButtonDelegateBridge,
                         GlicKeyedService.GlicInvocationSource.TOP_CHROME_BUTTON,
                         GlicTaskMenuCoordinator.ButtonSource.TAB_STRIP);
 
@@ -299,6 +296,6 @@ public class GlicTaskMenuCoordinatorUnitTest {
                 .onClick(
                         /* preventClose= */ true,
                         GlicKeyedService.GlicInvocationSource.TOP_CHROME_BUTTON);
-        verify(bridge).onTaskRowClicked(42);
+        verify(mGlicSplitButtonDelegateBridge).onTaskRowClicked(42);
     }
 }

@@ -93,12 +93,11 @@ public class TabWindowManagerImplUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private final NextTabPolicySupplier mNextTabPolicySupplier = () -> NextTabPolicy.HIERARCHICAL;
-
     @Mock private ProfileProvider mProfileProvider;
     @Mock private TabCreatorManager mTabCreatorManager;
     @Mock private MismatchedIndicesHandler mMismatchedIndicesHandler0;
     @Mock private MismatchedIndicesHandler mMismatchedIndicesHandler1;
+    @Mock private MismatchedIndicesHandler mMismatchedIndicesHandler2;
     @Mock private Profile mProfile;
     @Mock private Profile mIncognitoProfile;
     @Mock private TabModelSelector mArchivedTabModelSelector;
@@ -111,7 +110,9 @@ public class TabWindowManagerImplUnitTest {
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private Tab mClosingTab;
     @Mock private TabList mComprehensiveModel;
+    @Mock private TabWindowManager.Observer mTabWindowManagerObserver;
 
+    private final NextTabPolicySupplier mNextTabPolicySupplier = () -> NextTabPolicy.HIERARCHICAL;
     private OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier;
     private AsyncTabParamsManager mAsyncTabParamsManager;
     private TabWindowManager mSubject;
@@ -511,7 +512,6 @@ public class TabWindowManagerImplUnitTest {
 
         ActivityController<Activity> activityController2 = createActivity();
         Activity activity2 = activityController2.get();
-        MismatchedIndicesHandler handler = mock(MismatchedIndicesHandler.class);
         Pair<@WindowId Integer, TabModelSelector> assignment2 =
                 mSubject.requestSelector(
                         activity2,
@@ -519,7 +519,7 @@ public class TabWindowManagerImplUnitTest {
                         mProfileProviderSupplier,
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
-                        handler,
+                        mMismatchedIndicesHandler2,
                         1,
                         SupportedProfileType.MIXED);
 
@@ -1381,11 +1381,10 @@ public class TabWindowManagerImplUnitTest {
 
         MockTabModelSelector selector0 = (MockTabModelSelector) assignment0.second;
 
-        TabWindowManager.Observer observer = mock(TabWindowManager.Observer.class);
-        mSubject.addObserver(observer);
+        mSubject.addObserver(mTabWindowManagerObserver);
 
         assertFalse(mSubject.isAllTabStateInitialized());
-        verify(observer, never()).onAllTabModelStateInitialized();
+        verify(mTabWindowManagerObserver, never()).onAllTabModelStateInitialized();
 
         mSubject.keepAllTabModelsLoaded(Set.of(0), mProfile, selector0);
         selector0.markTabStateInitialized();
@@ -1393,7 +1392,7 @@ public class TabWindowManagerImplUnitTest {
         doReturn(true).when(mArchivedTabModelSelector).isTabStateInitialized();
         mSubject.setArchivedTabModelSelector(mArchivedTabModelSelector);
         assertTrue(mSubject.isAllTabStateInitialized());
-        verify(observer).onAllTabModelStateInitialized();
+        verify(mTabWindowManagerObserver).onAllTabModelStateInitialized();
 
         destroyActivity(activityController0);
     }

@@ -12,7 +12,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -84,6 +83,8 @@ public class LocationBarDragDropHandlerUnitTest {
     @Mock private ContentProvider mContentProvider;
     @Mock private Intent mIntent;
     @Mock private PackageManager mPackageManager;
+    @Mock private ClipData.Item mItem1;
+    @Mock private ClipData.Item mItem2;
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
     @Captor private ArgumentCaptor<OmniboxLoadUrlParams> mLoadUrlParamsCaptor;
@@ -442,20 +443,17 @@ public class LocationBarDragDropHandlerUnitTest {
 
     @Test
     public void testHasContentUri() {
-        ClipData.Item item1 = mock(ClipData.Item.class);
-        ClipData.Item item2 = mock(ClipData.Item.class);
-
         when(mClipData.getItemCount()).thenReturn(2);
-        when(mClipData.getItemAt(0)).thenReturn(item1);
-        when(mClipData.getItemAt(1)).thenReturn(item2);
+        when(mClipData.getItemAt(0)).thenReturn(mItem1);
+        when(mClipData.getItemAt(1)).thenReturn(mItem2);
 
         // No content URIs
-        when(item1.getUri()).thenReturn(Uri.parse("file:///path/to/file.txt"));
-        when(item2.getUri()).thenReturn(null);
+        when(mItem1.getUri()).thenReturn(Uri.parse("file:///path/to/file.txt"));
+        when(mItem2.getUri()).thenReturn(null);
         assertFalse(mHandler.hasContentUri(mClipData));
 
         // One content URI
-        when(item2.getUri()).thenReturn(Uri.parse("content://com.example/doc"));
+        when(mItem2.getUri()).thenReturn(Uri.parse("content://com.example/doc"));
         assertTrue(mHandler.hasContentUri(mClipData));
     }
 
@@ -475,25 +473,22 @@ public class LocationBarDragDropHandlerUnitTest {
     @Test
     @DisableFeatures(UiAndroidFeatures.CLIPBOARD_CONFUSED_DEPUTY_DEFENSE_FILES)
     public void testFindUriToLoad() {
-        ClipData.Item item1 = mock(ClipData.Item.class);
-        ClipData.Item item2 = mock(ClipData.Item.class);
-
         when(mClipData.getItemCount()).thenReturn(2);
-        when(mClipData.getItemAt(0)).thenReturn(item1);
-        when(mClipData.getItemAt(1)).thenReturn(item2);
+        when(mClipData.getItemAt(0)).thenReturn(mItem1);
+        when(mClipData.getItemAt(1)).thenReturn(mItem2);
 
         // Item 1 is unacceptable, Item 2 is acceptable file
         Uri fileUri1 = Uri.parse("file:///path/to/video.mp4");
         Uri fileUri2 = Uri.parse("file:///path/to/image.png");
-        when(item1.getUri()).thenReturn(fileUri1);
-        when(item2.getUri()).thenReturn(fileUri2);
+        when(mItem1.getUri()).thenReturn(fileUri1);
+        when(mItem2.getUri()).thenReturn(fileUri2);
 
         assertEquals(fileUri2, mHandler.findUriToLoad(mContext, mClipData, mClipDescription));
 
         // Single item, getMimeType returns null, fallback to desc
         when(mClipData.getItemCount()).thenReturn(1);
         Uri contentUri = Uri.parse("content://com.example/doc");
-        when(item1.getUri()).thenReturn(contentUri);
+        when(mItem1.getUri()).thenReturn(contentUri);
         when(mContentProvider.getType(contentUri)).thenReturn(null);
         ShadowContentResolver.registerProviderInternal("com.example", mContentProvider);
 

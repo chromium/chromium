@@ -9,14 +9,17 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
@@ -26,6 +29,8 @@ import org.chromium.chrome.browser.contextualsearch.ContextualSearchInternalStat
 /** Tests for the {@link ContextualSearchInternalStateController} class. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ContextualSearchInternalStateTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private ContextualSearchPolicy mMockedPolicy;
     private ContextualSearchInternalStateController mInternalStateController;
 
     private class ContextualSearchInternalStateHandlerStub
@@ -113,7 +118,6 @@ public class ContextualSearchInternalStateTest {
     }
 
     private ContextualSearchInternalStateHandlerStub mHandlerStub;
-    private ContextualSearchPolicy mMockedPolicy;
 
     private boolean mDidHide;
     private boolean mDidShow;
@@ -140,7 +144,6 @@ public class ContextualSearchInternalStateTest {
     @Before
     public void setup() {
         reset();
-        mMockedPolicy = mock(ContextualSearchPolicy.class);
         mHandlerStub = new ContextualSearchInternalStateHandlerStub();
         mInternalStateController =
                 new ContextualSearchInternalStateController(mMockedPolicy, mHandlerStub);

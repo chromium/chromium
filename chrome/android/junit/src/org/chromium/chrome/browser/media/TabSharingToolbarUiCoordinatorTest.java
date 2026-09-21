@@ -21,7 +21,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
@@ -48,12 +47,13 @@ public class TabSharingToolbarUiCoordinatorTest {
     @Mock private Tab mTab;
     @Mock private Profile mWindowProfile;
     @Mock private TabSharingUiBridge mBridge;
-    private WebContents mCapturer;
     @Mock private WebContents mCapturee;
     @Mock private Profile mSessionProfile;
     @Mock private UrlFormatter.Natives mUrlFormatterJniMock;
     @Mock private MediaCaptureDevicesDispatcherAndroid.Natives mMediaCaptureJniMock;
+    @Mock private TabSharingUiBridge mTabSharingUiBridge;
 
+    private WebContents mCapturer;
     private final ActivityTabProvider mTabProvider = new ActivityTabProvider();
     private FrameLayout mParentView;
     private TabSharingToolbarUiCoordinator mCoordinator;
@@ -185,11 +185,10 @@ public class TabSharingToolbarUiCoordinatorTest {
         mCoordinator.onSharingSessionStopped(mBridge);
 
         // Start multiple sessions and destroy coordinator directly
-        TabSharingUiBridge bridge2 = Mockito.mock(TabSharingUiBridge.class);
-        when(bridge2.getCapturer()).thenReturn(mCapturer);
-        when(bridge2.getCapturee()).thenReturn(mCapturee);
+        when(mTabSharingUiBridge.getCapturer()).thenReturn(mCapturer);
+        when(mTabSharingUiBridge.getCapturee()).thenReturn(mCapturee);
         mCoordinator.onSharingSessionStarted(mBridge);
-        mCoordinator.onSharingSessionStarted(bridge2);
+        mCoordinator.onSharingSessionStarted(mTabSharingUiBridge);
         mCoordinator.destroy();
     }
 
@@ -214,16 +213,15 @@ public class TabSharingToolbarUiCoordinatorTest {
         assertEquals(originalView, container.getChildAt(0));
 
         // The new session starts: the toolbar is swapped in place, still a single child.
-        TabSharingUiBridge newBridge = Mockito.mock(TabSharingUiBridge.class);
-        when(newBridge.getCapturer()).thenReturn(mCapturer);
-        when(newBridge.getCapturee()).thenReturn(mCapturee);
-        mCoordinator.onSharingSessionStarted(newBridge);
+        when(mTabSharingUiBridge.getCapturer()).thenReturn(mCapturer);
+        when(mTabSharingUiBridge.getCapturee()).thenReturn(mCapturee);
+        mCoordinator.onSharingSessionStarted(mTabSharingUiBridge);
         assertEquals(1, container.getChildCount());
         org.junit.Assert.assertNotSame(originalView, container.getChildAt(0));
 
         // Ending the (non-switching) session now removes the toolbar normally.
         MediaCaptureDevicesDispatcherAndroid.setSourceSwitchingInProgress(mCapturer, false);
-        mCoordinator.onSharingSessionStopped(newBridge);
+        mCoordinator.onSharingSessionStopped(mTabSharingUiBridge);
         assertEquals(0, container.getChildCount());
     }
 

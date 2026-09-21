@@ -23,6 +23,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -99,6 +100,13 @@ public class CollaborationControllerDelegateImplUnitTest {
     private CollaborationControllerDelegateImpl.Natives
             mCollaborationControllerDelegateImplNativeMock;
 
+    @Captor private ArgumentCaptor<Runnable> mOnTabSwitcherShownRunnableCaptor;
+    @Captor private ArgumentCaptor<IntentCallback> mIntentCallbackCaptor;
+    @Captor private ArgumentCaptor<PropertyModel> mPropertyModelCaptor;
+    @Captor private ArgumentCaptor<DataSharingJoinUiConfig.JoinCallback> mJoinCallbackCaptor;
+    @Captor private ArgumentCaptor<DataSharingManageUiConfig.ManageCallback> mManageCallbackCaptor;
+    @Captor private ArgumentCaptor<DataSharingCreateUiConfig.CreateCallback> mCreateCallbackCaptor;
+
     private CollaborationControllerDelegateImpl mCollaborationControllerDelegateImpl;
     private Activity mActivity;
 
@@ -163,14 +171,12 @@ public class CollaborationControllerDelegateImplUnitTest {
 
         long resultCallback = 1;
         long exitCallback = 2;
-        ArgumentCaptor<Runnable> onTabSwitcherShownRunnableCaptor =
-                ArgumentCaptor.forClass(Runnable.class);
         mCollaborationControllerDelegateImpl.prepareFlowUI(exitCallback, resultCallback);
-        verify(mSwitchToTabSwitcherCallback).onResult(onTabSwitcherShownRunnableCaptor.capture());
+        verify(mSwitchToTabSwitcherCallback).onResult(mOnTabSwitcherShownRunnableCaptor.capture());
         verify(mCollaborationControllerDelegateImplNativeMock, never())
                 .runResultCallback(anyInt(), eq(resultCallback));
 
-        onTabSwitcherShownRunnableCaptor.getValue().run();
+        mOnTabSwitcherShownRunnableCaptor.getValue().run();
         verify(mCollaborationControllerDelegateImplNativeMock)
                 .runResultCallback(eq(Outcome.SUCCESS), eq(resultCallback));
     }
@@ -190,11 +196,9 @@ public class CollaborationControllerDelegateImplUnitTest {
                         eq(SigninAccessPoint.COLLABORATION_JOIN_TAB_GROUP));
 
         mCollaborationControllerDelegateImpl.showAuthenticationUi(resultCallback);
-        ArgumentCaptor<IntentCallback> intentCallbackCaptor =
-                ArgumentCaptor.forClass(IntentCallback.class);
         verify(mWindowAndroid)
-                .showCancelableIntent(eq(intent), intentCallbackCaptor.capture(), eq(null));
-        intentCallbackCaptor.getValue().onIntentCompleted(Activity.RESULT_OK, null);
+                .showCancelableIntent(eq(intent), mIntentCallbackCaptor.capture(), eq(null));
+        mIntentCallbackCaptor.getValue().onIntentCompleted(Activity.RESULT_OK, null);
         verify(mCollaborationControllerDelegateImplNativeMock)
                 .runResultCallback(eq(Outcome.SUCCESS), eq(resultCallback));
     }
@@ -236,17 +240,15 @@ public class CollaborationControllerDelegateImplUnitTest {
         mCollaborationControllerDelegateImpl.showAuthenticationUi(resultCallback);
         verify(mLoadingFullscreenCoordinator).closeLoadingScreen();
 
-        ArgumentCaptor<PropertyModel> propertyModelCaptor =
-                ArgumentCaptor.forClass(PropertyModel.class);
-        verify(mModalDialogManager).showDialog(propertyModelCaptor.capture(), anyInt());
+        verify(mModalDialogManager).showDialog(mPropertyModelCaptor.capture(), anyInt());
 
         ModalDialogProperties.Controller controller =
-                propertyModelCaptor.getValue().get(ModalDialogProperties.CONTROLLER);
-        controller.onClick(propertyModelCaptor.getValue(), ButtonType.POSITIVE);
+                mPropertyModelCaptor.getValue().get(ModalDialogProperties.CONTROLLER);
+        controller.onClick(mPropertyModelCaptor.getValue(), ButtonType.POSITIVE);
         verify(mModalDialogManager).dismissDialog(any(), anyInt());
         verify(mSettingsNavigation).startSettings(eq(mActivity), anyInt());
 
-        controller.onDismiss(propertyModelCaptor.getValue(), DialogDismissalCause.NAVIGATE);
+        controller.onDismiss(mPropertyModelCaptor.getValue(), DialogDismissalCause.NAVIGATE);
         verify(mCollaborationControllerDelegateImplNativeMock)
                 .runResultCallback(eq(Outcome.CANCEL), eq(resultCallback));
     }
@@ -266,11 +268,9 @@ public class CollaborationControllerDelegateImplUnitTest {
                         eq(SigninAccessPoint.COLLABORATION_SHARE_TAB_GROUP));
 
         mCollaborationControllerDelegateImpl.showAuthenticationUi(resultCallback);
-        ArgumentCaptor<IntentCallback> intentCallbackCaptor =
-                ArgumentCaptor.forClass(IntentCallback.class);
         verify(mWindowAndroid)
-                .showCancelableIntent(eq(intent), intentCallbackCaptor.capture(), eq(null));
-        intentCallbackCaptor.getValue().onIntentCompleted(Activity.RESULT_OK, null);
+                .showCancelableIntent(eq(intent), mIntentCallbackCaptor.capture(), eq(null));
+        mIntentCallbackCaptor.getValue().onIntentCompleted(Activity.RESULT_OK, null);
         verify(mCollaborationControllerDelegateImplNativeMock)
                 .runResultCallback(eq(Outcome.SUCCESS), eq(resultCallback));
     }
@@ -373,21 +373,19 @@ public class CollaborationControllerDelegateImplUnitTest {
 
         mCollaborationControllerDelegateImpl.showJoinDialog(token, previewData, resultCallback);
 
-        ArgumentCaptor<DataSharingJoinUiConfig.JoinCallback> joinCallbackCaptor =
-                ArgumentCaptor.forClass(DataSharingJoinUiConfig.JoinCallback.class);
         verify(mDataSharingTabManager)
                 .showJoinScreenWithPreview(
                         eq(mActivity),
                         eq(token),
                         eq(previewData),
                         anyLong(),
-                        joinCallbackCaptor.capture());
+                        mJoinCallbackCaptor.capture());
 
-        joinCallbackCaptor.getValue().onGroupJoinedWithWait(groupData, null);
+        mJoinCallbackCaptor.getValue().onGroupJoinedWithWait(groupData, null);
         verify(mCollaborationControllerDelegateImplNativeMock)
                 .runResultCallback(eq(Outcome.SUCCESS), eq(resultCallback));
 
-        joinCallbackCaptor.getValue().onSessionFinished();
+        mJoinCallbackCaptor.getValue().onSessionFinished();
         verify(mCollaborationControllerDelegateImplNativeMock, never())
                 .runResultCallback(eq(Outcome.CANCEL), eq(resultCallback));
     }
@@ -403,17 +401,15 @@ public class CollaborationControllerDelegateImplUnitTest {
 
         mCollaborationControllerDelegateImpl.showJoinDialog(token, previewData, resultCallback);
 
-        ArgumentCaptor<DataSharingJoinUiConfig.JoinCallback> joinCallbackCaptor =
-                ArgumentCaptor.forClass(DataSharingJoinUiConfig.JoinCallback.class);
         verify(mDataSharingTabManager)
                 .showJoinScreenWithPreview(
                         eq(mActivity),
                         eq(token),
                         eq(previewData),
                         anyLong(),
-                        joinCallbackCaptor.capture());
+                        mJoinCallbackCaptor.capture());
 
-        joinCallbackCaptor.getValue().onSessionFinished();
+        mJoinCallbackCaptor.getValue().onSessionFinished();
         verify(mCollaborationControllerDelegateImplNativeMock)
                 .runResultCallback(eq(Outcome.CANCEL), eq(resultCallback));
     }
@@ -431,14 +427,12 @@ public class CollaborationControllerDelegateImplUnitTest {
 
         doReturn(savedGroup).when(mDataSharingTabManager).getSavedTabGroupForEitherId(syncId, null);
         mCollaborationControllerDelegateImpl.showManageDialog(syncId, null, resultCallback);
-        ArgumentCaptor<DataSharingManageUiConfig.ManageCallback> manageCallbackCaptor =
-                ArgumentCaptor.forClass(DataSharingManageUiConfig.ManageCallback.class);
 
         verify(mDataSharingTabManager)
                 .showManageSharing(
-                        eq(mActivity), eq(collaborationId), manageCallbackCaptor.capture());
+                        eq(mActivity), eq(collaborationId), mManageCallbackCaptor.capture());
 
-        manageCallbackCaptor.getValue().onSessionFinished();
+        mManageCallbackCaptor.getValue().onSessionFinished();
         verify(mCollaborationControllerDelegateImplNativeMock)
                 .runResultCallback(eq(Outcome.SUCCESS), eq(resultCallback));
     }
@@ -462,12 +456,10 @@ public class CollaborationControllerDelegateImplUnitTest {
         doReturn(savedGroup)
                 .when(mDataSharingTabManager)
                 .getSavedTabGroupForEitherId(null, localId);
-        ArgumentCaptor<DataSharingCreateUiConfig.CreateCallback> createCallbackCaptor =
-                ArgumentCaptor.forClass(DataSharingCreateUiConfig.CreateCallback.class);
         doReturn(sessionId)
                 .when(mDataSharingTabManager)
                 .showShareDialog(
-                        eq(mActivity), eq(title), eq(savedGroup), createCallbackCaptor.capture());
+                        eq(mActivity), eq(title), eq(savedGroup), mCreateCallbackCaptor.capture());
 
         mCollaborationControllerDelegateImpl.showShareDialog(null, localId, resultCallback);
         GroupData groupData =
@@ -476,7 +468,7 @@ public class CollaborationControllerDelegateImplUnitTest {
                         .setAccessToken(accessToken)
                         .build();
 
-        createCallbackCaptor.getValue().onGroupCreatedWithWait(groupData, mCloseScreenCallback);
+        mCreateCallbackCaptor.getValue().onGroupCreatedWithWait(groupData, mCloseScreenCallback);
         verify(mCollaborationControllerDelegateImplNativeMock)
                 .runResultWithGroupTokenCallback(
                         eq(Outcome.SUCCESS),
@@ -512,16 +504,14 @@ public class CollaborationControllerDelegateImplUnitTest {
                 Type.UNKNOWN, title, message, resultCallback);
         verify(mLoadingFullscreenCoordinator).closeLoadingScreen();
 
-        ArgumentCaptor<PropertyModel> propertyModelCaptor =
-                ArgumentCaptor.forClass(PropertyModel.class);
-        verify(mModalDialogManager).showDialog(propertyModelCaptor.capture(), anyInt());
+        verify(mModalDialogManager).showDialog(mPropertyModelCaptor.capture(), anyInt());
 
         ModalDialogProperties.Controller controller =
-                propertyModelCaptor.getValue().get(ModalDialogProperties.CONTROLLER);
-        controller.onClick(propertyModelCaptor.getValue(), ButtonType.POSITIVE);
+                mPropertyModelCaptor.getValue().get(ModalDialogProperties.CONTROLLER);
+        controller.onClick(mPropertyModelCaptor.getValue(), ButtonType.POSITIVE);
         verify(mModalDialogManager).dismissDialog(any(), anyInt());
 
-        controller.onDismiss(propertyModelCaptor.getValue(), DialogDismissalCause.NAVIGATE);
+        controller.onDismiss(mPropertyModelCaptor.getValue(), DialogDismissalCause.NAVIGATE);
         verify(mCollaborationControllerDelegateImplNativeMock)
                 .runResultCallback(eq(Outcome.SUCCESS), eq(resultCallback));
     }
@@ -541,13 +531,11 @@ public class CollaborationControllerDelegateImplUnitTest {
                 .getSavedTabGroupForEitherId(null, localId);
 
         mCollaborationControllerDelegateImpl.showLeaveDialog(null, localId, resultCallback);
-        ArgumentCaptor<PropertyModel> propertyModelCaptor =
-                ArgumentCaptor.forClass(PropertyModel.class);
-        verify(mModalDialogManager).showDialog(propertyModelCaptor.capture(), anyInt());
+        verify(mModalDialogManager).showDialog(mPropertyModelCaptor.capture(), anyInt());
 
         ModalDialogProperties.Controller controller =
-                propertyModelCaptor.getValue().get(ModalDialogProperties.CONTROLLER);
-        controller.onClick(propertyModelCaptor.getValue(), ButtonType.NEGATIVE);
+                mPropertyModelCaptor.getValue().get(ModalDialogProperties.CONTROLLER);
+        controller.onClick(mPropertyModelCaptor.getValue(), ButtonType.NEGATIVE);
         verify(mCollaborationControllerDelegateImplNativeMock)
                 .runResultCallback(eq(Outcome.CANCEL), eq(resultCallback));
     }
@@ -567,13 +555,11 @@ public class CollaborationControllerDelegateImplUnitTest {
                 .getSavedTabGroupForEitherId(null, localId);
 
         mCollaborationControllerDelegateImpl.showLeaveDialog(null, localId, resultCallback);
-        ArgumentCaptor<PropertyModel> propertyModelCaptor =
-                ArgumentCaptor.forClass(PropertyModel.class);
-        verify(mModalDialogManager).showDialog(propertyModelCaptor.capture(), anyInt());
+        verify(mModalDialogManager).showDialog(mPropertyModelCaptor.capture(), anyInt());
 
         ModalDialogProperties.Controller controller =
-                propertyModelCaptor.getValue().get(ModalDialogProperties.CONTROLLER);
-        controller.onClick(propertyModelCaptor.getValue(), ButtonType.POSITIVE);
+                mPropertyModelCaptor.getValue().get(ModalDialogProperties.CONTROLLER);
+        controller.onClick(mPropertyModelCaptor.getValue(), ButtonType.POSITIVE);
         verify(mCollaborationControllerDelegateImplNativeMock)
                 .runResultCallback(eq(Outcome.SUCCESS), eq(resultCallback));
     }

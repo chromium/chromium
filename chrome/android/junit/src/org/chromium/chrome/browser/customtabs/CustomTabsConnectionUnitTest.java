@@ -100,6 +100,8 @@ public class CustomTabsConnectionUnitTest {
     @Mock private PrivacyPreferencesManagerImpl mPrivacyPreferencesManager;
     @Mock private EngagementSignalsCallback mEngagementSignalsCallback;
     @Mock private Tab mTab;
+    @Mock private PendingIntent mPendingIntent;
+    @Mock private Network mNetwork;
 
     private CustomTabsConnection mConnection;
     private SessionHolder mSessionHolder;
@@ -129,11 +131,11 @@ public class CustomTabsConnectionUnitTest {
     @Test
     public void updateVisuals_BottomBarSwipeUpGesture() {
         var bundle = new Bundle();
-        var pendingIntent = mock(PendingIntent.class);
         bundle.putParcelable(
-                CustomTabIntentDataProvider.EXTRA_SECONDARY_TOOLBAR_SWIPE_UP_ACTION, pendingIntent);
+                CustomTabIntentDataProvider.EXTRA_SECONDARY_TOOLBAR_SWIPE_UP_ACTION,
+                mPendingIntent);
         mConnection.updateVisuals(mSession, bundle);
-        verify(mSessionHandler).updateSecondaryToolbarSwipeUpPendingIntent(eq(pendingIntent));
+        verify(mSessionHandler).updateSecondaryToolbarSwipeUpPendingIntent(eq(mPendingIntent));
     }
 
     @Test
@@ -259,22 +261,20 @@ public class CustomTabsConnectionUnitTest {
     @Test
     public void extractTargetNetwork_hasPermission() {
         initSession();
-        Network network = mock(Network.class);
         Intent intent = new Intent();
-        intent.putExtra(CustomTabsIntent.EXTRA_NETWORK, network);
+        intent.putExtra(CustomTabsIntent.EXTRA_NETWORK, mNetwork);
 
         var app = RuntimeEnvironment.getApplication();
         shadowOf(app).grantPermissions("android.permission.MAINLINE_NETWORK_STACK");
 
-        assertEquals(network, mConnection.extractTargetNetwork(intent, mSessionHolder));
+        assertEquals(mNetwork, mConnection.extractTargetNetwork(intent, mSessionHolder));
     }
 
     @Test
     public void extractTargetNetwork_lacksPermission() {
         initSession();
-        Network network = mock(Network.class);
         Intent intent = new Intent();
-        intent.putExtra(CustomTabsIntent.EXTRA_NETWORK, network);
+        intent.putExtra(CustomTabsIntent.EXTRA_NETWORK, mNetwork);
 
         assertNull(mConnection.extractTargetNetwork(intent, mSessionHolder));
     }

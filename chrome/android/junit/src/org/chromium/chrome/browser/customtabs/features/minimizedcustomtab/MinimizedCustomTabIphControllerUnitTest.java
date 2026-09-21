@@ -22,6 +22,7 @@ import org.junit.rules.ExternalResource;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -77,6 +78,7 @@ public class MinimizedCustomTabIphControllerUnitTest {
     @Mock private Profile mProfile;
     @Mock private Tracker mTracker;
     @Mock private Tab mTab;
+    @Captor private ArgumentCaptor<IphCommand> mIphCommandCaptor;
 
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private Supplier<Profile> mProfileSupplier;
@@ -106,9 +108,8 @@ public class MinimizedCustomTabIphControllerUnitTest {
     public void testShowsIphOnPageLoad() {
         var tabObserver = mController.getTabObserverForTesting();
         tabObserver.onPageLoadFinished(mTab, JUnitTestGURLs.EXAMPLE_URL);
-        var captor = ArgumentCaptor.forClass(IphCommand.class);
-        verify(mUserEducationHelper).requestShowIph(captor.capture());
-        var cmd = captor.getValue();
+        verify(mUserEducationHelper).requestShowIph(mIphCommandCaptor.capture());
+        IphCommand cmd = mIphCommandCaptor.getValue();
         assertEquals(FeatureConstants.CCT_MINIMIZED_FEATURE, cmd.featureName);
         assertEquals(R.string.custom_tab_minimize_button_iph_bubble_text, cmd.stringId);
         assertEquals(

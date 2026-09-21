@@ -21,6 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -44,7 +45,6 @@ import java.util.concurrent.TimeUnit;
 
 /** Tests for screenshot capture inside {@link CustomTabObserver}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("unchecked")
 public class CustomTabObserverUnitTest {
     private static final String TEST_URL = "https://example.com/test";
     private static final String TEST_TITLE = "Test Page Title";
@@ -55,6 +55,7 @@ public class CustomTabObserverUnitTest {
     @Mock private WebContents mWebContents;
     @Mock private RenderWidgetHostView mRenderWidgetHostView;
     @Mock private CustomTabsConnection mCustomTabsConnection;
+    @Captor private ArgumentCaptor<Callback<String>> mCallbackCaptor;
 
     private final SessionHolder mSession =
             SessionHolder.of(CustomTabsSessionToken.createMockSessionTokenForTesting());
@@ -103,13 +104,12 @@ public class CustomTabObserverUnitTest {
         ShadowLooper.idleMainLooper(2, TimeUnit.SECONDS);
 
         // Verify screenshot capture is initiated on the RenderWidgetHostView
-        ArgumentCaptor<Callback<String>> callbackCaptor = ArgumentCaptor.forClass(Callback.class);
         verify(mRenderWidgetHostView)
                 .writeContentBitmapToDiskAsync(
-                        anyInt(), anyInt(), anyString(), callbackCaptor.capture());
+                        anyInt(), anyInt(), anyString(), mCallbackCaptor.capture());
 
         // Invoke callback with an empty path to trigger synchronous result on the same thread
-        callbackCaptor.getValue().onResult("");
+        mCallbackCaptor.getValue().onResult("");
         ShadowLooper.idleMainLooper();
 
         // Verify connection's sendNavigationInfo is invoked

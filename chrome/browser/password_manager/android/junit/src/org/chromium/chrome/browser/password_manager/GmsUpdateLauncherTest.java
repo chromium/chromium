@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.password_manager;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -15,23 +14,30 @@ import android.net.Uri;
 
 import com.google.android.gms.common.GoogleApiAvailability;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class GmsUpdateLauncherTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private Context mContext;
+    @Captor private ArgumentCaptor<Intent> mIntentCaptor;
+
     @Test
     public void testSendsIntentOnLaunchGmsUpdate() {
-        Context mockContext = mock(Context.class);
-        when(mockContext.getPackageName()).thenReturn("org.chromium.chrome");
+        when(mContext.getPackageName()).thenReturn("org.chromium.chrome");
 
-        GmsUpdateLauncher.launch(mockContext);
-        ArgumentCaptor<Intent> intentArgumentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(mockContext).startActivity(intentArgumentCaptor.capture());
-        Intent intent = intentArgumentCaptor.getValue();
+        GmsUpdateLauncher.launch(mContext);
+        verify(mContext).startActivity(mIntentCaptor.capture());
+        Intent intent = mIntentCaptor.getValue();
 
         assertEquals(Intent.ACTION_VIEW, intent.getAction());
         assertEquals("com.android.vending", intent.getPackage());

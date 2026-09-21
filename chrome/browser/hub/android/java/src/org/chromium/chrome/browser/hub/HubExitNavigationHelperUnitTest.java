@@ -18,6 +18,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -49,6 +50,7 @@ public class HubExitNavigationHelperUnitTest {
     @Mock private LayoutStateProvider mLayoutStateProvider;
     @Mock private HubManager mHubManager;
     @Mock private Tab mTab;
+    @Captor private ArgumentCaptor<HubExitNavigationHelper> mHubExitNavigationHelperCaptor;
 
     private final TestRunnable mAction = new TestRunnable();
     private HubExitNavigationHelper mHelper;
@@ -75,12 +77,10 @@ public class HubExitNavigationHelperUnitTest {
         assertEquals(0, mAction.getCallCount());
         verify(mHubManager).selectTabAndHideHub(1);
 
-        ArgumentCaptor<HubExitNavigationHelper> captor =
-                ArgumentCaptor.forClass(HubExitNavigationHelper.class);
-        verify(mLayoutStateProvider).addObserver(captor.capture());
+        verify(mLayoutStateProvider).addObserver(mHubExitNavigationHelperCaptor.capture());
 
         // Assert deferred completion via onFinishedHiding
-        captor.getValue().onFinishedHiding(LayoutType.HUB);
+        mHubExitNavigationHelperCaptor.getValue().onFinishedHiding(LayoutType.HUB);
         assertEquals(1, mAction.getCallCount());
     }
 
@@ -97,11 +97,9 @@ public class HubExitNavigationHelperUnitTest {
         verify(mLayoutStateProvider, times(1)).addObserver(any(HubExitNavigationHelper.class));
         verify(mHubManager, times(1)).selectTabAndHideHub(1);
 
-        ArgumentCaptor<HubExitNavigationHelper> captor =
-                ArgumentCaptor.forClass(HubExitNavigationHelper.class);
-        verify(mLayoutStateProvider).addObserver(captor.capture());
+        verify(mLayoutStateProvider).addObserver(mHubExitNavigationHelperCaptor.capture());
 
-        captor.getValue().onFinishedHiding(LayoutType.HUB);
+        mHubExitNavigationHelperCaptor.getValue().onFinishedHiding(LayoutType.HUB);
         assertEquals(0, mAction.getCallCount());
         assertEquals(1, secondAction.getCallCount());
     }
@@ -112,11 +110,9 @@ public class HubExitNavigationHelperUnitTest {
 
         mHelper.runOrDefer(mTab, mAction);
 
-        ArgumentCaptor<HubExitNavigationHelper> captor =
-                ArgumentCaptor.forClass(HubExitNavigationHelper.class);
-        verify(mLayoutStateProvider).addObserver(captor.capture());
+        verify(mLayoutStateProvider).addObserver(mHubExitNavigationHelperCaptor.capture());
 
-        captor.getValue().onFinishedHiding(LayoutType.BROWSING);
+        mHubExitNavigationHelperCaptor.getValue().onFinishedHiding(LayoutType.BROWSING);
         assertEquals(0, mAction.getCallCount());
     }
 
@@ -126,9 +122,7 @@ public class HubExitNavigationHelperUnitTest {
 
         mHelper.runOrDefer(mTab, mAction);
 
-        ArgumentCaptor<HubExitNavigationHelper> captor =
-                ArgumentCaptor.forClass(HubExitNavigationHelper.class);
-        verify(mLayoutStateProvider).addObserver(captor.capture());
+        verify(mLayoutStateProvider).addObserver(mHubExitNavigationHelperCaptor.capture());
 
         mHelper.destroy();
         mHelper.destroy();
@@ -136,7 +130,7 @@ public class HubExitNavigationHelperUnitTest {
         verify(mLayoutStateProvider, times(2)).removeObserver(mHelper);
 
         // If we fire onFinishedHiding now, action should not run because it was nulled out.
-        captor.getValue().onFinishedHiding(LayoutType.HUB);
+        mHubExitNavigationHelperCaptor.getValue().onFinishedHiding(LayoutType.HUB);
         assertEquals(0, mAction.getCallCount());
     }
 
@@ -153,11 +147,9 @@ public class HubExitNavigationHelperUnitTest {
 
         mHelper.runOrDefer(mTab, reentrantAction);
 
-        ArgumentCaptor<HubExitNavigationHelper> captor =
-                ArgumentCaptor.forClass(HubExitNavigationHelper.class);
-        verify(mLayoutStateProvider).addObserver(captor.capture());
+        verify(mLayoutStateProvider).addObserver(mHubExitNavigationHelperCaptor.capture());
 
-        captor.getValue().onFinishedHiding(LayoutType.HUB);
+        mHubExitNavigationHelperCaptor.getValue().onFinishedHiding(LayoutType.HUB);
         assertEquals(1, secondAction.getCallCount());
     }
 
@@ -172,11 +164,9 @@ public class HubExitNavigationHelperUnitTest {
         assertEquals(0, mAction.getCallCount());
         verify(mHubManager, never()).selectTabAndHideHub(anyInt());
 
-        ArgumentCaptor<HubExitNavigationHelper> captor =
-                ArgumentCaptor.forClass(HubExitNavigationHelper.class);
-        verify(mLayoutStateProvider).addObserver(captor.capture());
+        verify(mLayoutStateProvider).addObserver(mHubExitNavigationHelperCaptor.capture());
 
-        captor.getValue().onFinishedHiding(LayoutType.HUB);
+        mHubExitNavigationHelperCaptor.getValue().onFinishedHiding(LayoutType.HUB);
         assertEquals(1, mAction.getCallCount());
     }
 
@@ -196,11 +186,9 @@ public class HubExitNavigationHelperUnitTest {
         verify(mHubManager, times(1)).selectTabAndHideHub(1);
         verify(mLayoutStateProvider, times(1)).addObserver(any(HubExitNavigationHelper.class));
 
-        ArgumentCaptor<HubExitNavigationHelper> captor =
-                ArgumentCaptor.forClass(HubExitNavigationHelper.class);
-        verify(mLayoutStateProvider).addObserver(captor.capture());
+        verify(mLayoutStateProvider).addObserver(mHubExitNavigationHelperCaptor.capture());
 
-        captor.getValue().onFinishedHiding(LayoutType.HUB);
+        mHubExitNavigationHelperCaptor.getValue().onFinishedHiding(LayoutType.HUB);
         assertEquals(0, firstAction.getCallCount());
         assertEquals(0, secondAction.getCallCount());
         assertEquals(1, thirdAction.getCallCount());

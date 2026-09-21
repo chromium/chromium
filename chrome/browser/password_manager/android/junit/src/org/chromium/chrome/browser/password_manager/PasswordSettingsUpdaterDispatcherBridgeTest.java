@@ -18,6 +18,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -41,6 +42,7 @@ public class PasswordSettingsUpdaterDispatcherBridgeTest {
 
     @Mock private PasswordSettingsAccessor mAccessorMock;
     @Mock private PasswordSettingsUpdaterReceiverBridge mReceiverBridgeMock;
+    @Captor private ArgumentCaptor<PasswordSettingsUpdaterMetricsRecorder> mMetricsRecorderCaptor;
 
     private PasswordSettingsUpdaterDispatcherBridge mDispatcherBridge;
 
@@ -66,18 +68,17 @@ public class PasswordSettingsUpdaterDispatcherBridgeTest {
 
         successCallback.getValue().onResult(Optional.of(true));
 
-        ArgumentCaptor<PasswordSettingsUpdaterMetricsRecorder> metricsRecorder =
-                ArgumentCaptor.forClass(PasswordSettingsUpdaterMetricsRecorder.class);
         verify(mReceiverBridgeMock)
                 .onSettingValueFetched(
                         eq(PasswordManagerSetting.OFFER_TO_SAVE_PASSWORDS),
                         eq(true),
-                        metricsRecorder.capture());
+                        mMetricsRecorderCaptor.capture());
 
-        assertEquals("GetSettingValue", metricsRecorder.getValue().getFunctionSuffixForTesting());
+        assertEquals(
+                "GetSettingValue", mMetricsRecorderCaptor.getValue().getFunctionSuffixForTesting());
         assertEquals(
                 PasswordManagerSetting.OFFER_TO_SAVE_PASSWORDS,
-                metricsRecorder.getValue().getSettingForTesting());
+                mMetricsRecorderCaptor.getValue().getSettingForTesting());
     }
 
     @Test
@@ -93,18 +94,17 @@ public class PasswordSettingsUpdaterDispatcherBridgeTest {
 
         successCallback.getValue().onResult(Optional.empty());
 
-        ArgumentCaptor<PasswordSettingsUpdaterMetricsRecorder> metricsRecorder =
-                ArgumentCaptor.forClass(PasswordSettingsUpdaterMetricsRecorder.class);
         verify(mReceiverBridgeMock)
                 .onSettingValueFetched(
                         eq(PasswordManagerSetting.OFFER_TO_SAVE_PASSWORDS),
                         eq(null),
-                        metricsRecorder.capture());
+                        mMetricsRecorderCaptor.capture());
 
-        assertEquals("GetSettingValue", metricsRecorder.getValue().getFunctionSuffixForTesting());
+        assertEquals(
+                "GetSettingValue", mMetricsRecorderCaptor.getValue().getFunctionSuffixForTesting());
         assertEquals(
                 PasswordManagerSetting.OFFER_TO_SAVE_PASSWORDS,
-                metricsRecorder.getValue().getSettingForTesting());
+                mMetricsRecorderCaptor.getValue().getSettingForTesting());
     }
 
     @Test
@@ -120,18 +120,17 @@ public class PasswordSettingsUpdaterDispatcherBridgeTest {
         Exception expectedException = new Exception("Sample failure");
         failureCallback.getValue().onResult(expectedException);
 
-        ArgumentCaptor<PasswordSettingsUpdaterMetricsRecorder> metricsRecorder =
-                ArgumentCaptor.forClass(PasswordSettingsUpdaterMetricsRecorder.class);
         verify(mReceiverBridgeMock)
                 .handleFetchingException(
                         eq(PasswordManagerSetting.OFFER_TO_SAVE_PASSWORDS),
                         eq(expectedException),
-                        metricsRecorder.capture());
+                        mMetricsRecorderCaptor.capture());
 
-        assertEquals("GetSettingValue", metricsRecorder.getValue().getFunctionSuffixForTesting());
+        assertEquals(
+                "GetSettingValue", mMetricsRecorderCaptor.getValue().getFunctionSuffixForTesting());
         assertEquals(
                 PasswordManagerSetting.OFFER_TO_SAVE_PASSWORDS,
-                metricsRecorder.getValue().getSettingForTesting());
+                mMetricsRecorderCaptor.getValue().getSettingForTesting());
     }
 
     @Test
@@ -145,18 +144,17 @@ public class PasswordSettingsUpdaterDispatcherBridgeTest {
 
         successCallback.getValue().onResult(Optional.of(true));
 
-        ArgumentCaptor<PasswordSettingsUpdaterMetricsRecorder> metricsRecorder =
-                ArgumentCaptor.forClass(PasswordSettingsUpdaterMetricsRecorder.class);
         verify(mReceiverBridgeMock)
                 .onSettingValueFetched(
                         eq(PasswordManagerSetting.AUTO_SIGN_IN),
                         eq(true),
-                        metricsRecorder.capture());
+                        mMetricsRecorderCaptor.capture());
 
-        assertEquals("GetSettingValue", metricsRecorder.getValue().getFunctionSuffixForTesting());
+        assertEquals(
+                "GetSettingValue", mMetricsRecorderCaptor.getValue().getFunctionSuffixForTesting());
         assertEquals(
                 PasswordManagerSetting.AUTO_SIGN_IN,
-                metricsRecorder.getValue().getSettingForTesting());
+                mMetricsRecorderCaptor.getValue().getSettingForTesting());
     }
 
     @Test
@@ -170,18 +168,17 @@ public class PasswordSettingsUpdaterDispatcherBridgeTest {
 
         successCallback.getValue().onResult(Optional.empty());
 
-        ArgumentCaptor<PasswordSettingsUpdaterMetricsRecorder> metricsRecorder =
-                ArgumentCaptor.forClass(PasswordSettingsUpdaterMetricsRecorder.class);
         verify(mReceiverBridgeMock)
                 .onSettingValueFetched(
                         eq(PasswordManagerSetting.AUTO_SIGN_IN),
                         eq(null),
-                        metricsRecorder.capture());
+                        mMetricsRecorderCaptor.capture());
 
-        assertEquals("GetSettingValue", metricsRecorder.getValue().getFunctionSuffixForTesting());
+        assertEquals(
+                "GetSettingValue", mMetricsRecorderCaptor.getValue().getFunctionSuffixForTesting());
         assertEquals(
                 PasswordManagerSetting.AUTO_SIGN_IN,
-                metricsRecorder.getValue().getSettingForTesting());
+                mMetricsRecorderCaptor.getValue().getSettingForTesting());
     }
 
     @Test
@@ -195,18 +192,17 @@ public class PasswordSettingsUpdaterDispatcherBridgeTest {
         Exception expectedException = new Exception("Sample failure");
         failureCallback.getValue().onResult(expectedException);
 
-        ArgumentCaptor<PasswordSettingsUpdaterMetricsRecorder> metricsRecorder =
-                ArgumentCaptor.forClass(PasswordSettingsUpdaterMetricsRecorder.class);
         verify(mReceiverBridgeMock)
                 .handleFetchingException(
                         eq(PasswordManagerSetting.AUTO_SIGN_IN),
                         eq(expectedException),
-                        metricsRecorder.capture());
+                        mMetricsRecorderCaptor.capture());
 
-        assertEquals("GetSettingValue", metricsRecorder.getValue().getFunctionSuffixForTesting());
+        assertEquals(
+                "GetSettingValue", mMetricsRecorderCaptor.getValue().getFunctionSuffixForTesting());
         assertEquals(
                 PasswordManagerSetting.AUTO_SIGN_IN,
-                metricsRecorder.getValue().getSettingForTesting());
+                mMetricsRecorderCaptor.getValue().getSettingForTesting());
     }
 
     @Test
@@ -221,17 +217,16 @@ public class PasswordSettingsUpdaterDispatcherBridgeTest {
 
         successCallback.getValue().onResult(null);
 
-        ArgumentCaptor<PasswordSettingsUpdaterMetricsRecorder> metricsRecorder =
-                ArgumentCaptor.forClass(PasswordSettingsUpdaterMetricsRecorder.class);
         verify(mReceiverBridgeMock)
                 .onSettingValueSet(
                         eq(PasswordManagerSetting.OFFER_TO_SAVE_PASSWORDS),
-                        metricsRecorder.capture());
+                        mMetricsRecorderCaptor.capture());
 
-        assertEquals("SetSettingValue", metricsRecorder.getValue().getFunctionSuffixForTesting());
+        assertEquals(
+                "SetSettingValue", mMetricsRecorderCaptor.getValue().getFunctionSuffixForTesting());
         assertEquals(
                 PasswordManagerSetting.OFFER_TO_SAVE_PASSWORDS,
-                metricsRecorder.getValue().getSettingForTesting());
+                mMetricsRecorderCaptor.getValue().getSettingForTesting());
     }
 
     @Test
@@ -247,18 +242,17 @@ public class PasswordSettingsUpdaterDispatcherBridgeTest {
         Exception expectedException = new Exception("Sample failure");
         failureCallback.getValue().onResult(expectedException);
 
-        ArgumentCaptor<PasswordSettingsUpdaterMetricsRecorder> metricsRecorder =
-                ArgumentCaptor.forClass(PasswordSettingsUpdaterMetricsRecorder.class);
         verify(mReceiverBridgeMock)
                 .handleSettingException(
                         eq(PasswordManagerSetting.OFFER_TO_SAVE_PASSWORDS),
                         eq(expectedException),
-                        metricsRecorder.capture());
+                        mMetricsRecorderCaptor.capture());
 
-        assertEquals("SetSettingValue", metricsRecorder.getValue().getFunctionSuffixForTesting());
+        assertEquals(
+                "SetSettingValue", mMetricsRecorderCaptor.getValue().getFunctionSuffixForTesting());
         assertEquals(
                 PasswordManagerSetting.OFFER_TO_SAVE_PASSWORDS,
-                metricsRecorder.getValue().getSettingForTesting());
+                mMetricsRecorderCaptor.getValue().getSettingForTesting());
     }
 
     @Test
@@ -273,16 +267,15 @@ public class PasswordSettingsUpdaterDispatcherBridgeTest {
 
         successCallback.getValue().onResult(null);
 
-        ArgumentCaptor<PasswordSettingsUpdaterMetricsRecorder> metricsRecorder =
-                ArgumentCaptor.forClass(PasswordSettingsUpdaterMetricsRecorder.class);
         verify(mReceiverBridgeMock)
                 .onSettingValueSet(
-                        eq(PasswordManagerSetting.AUTO_SIGN_IN), metricsRecorder.capture());
+                        eq(PasswordManagerSetting.AUTO_SIGN_IN), mMetricsRecorderCaptor.capture());
 
-        assertEquals("SetSettingValue", metricsRecorder.getValue().getFunctionSuffixForTesting());
+        assertEquals(
+                "SetSettingValue", mMetricsRecorderCaptor.getValue().getFunctionSuffixForTesting());
         assertEquals(
                 PasswordManagerSetting.AUTO_SIGN_IN,
-                metricsRecorder.getValue().getSettingForTesting());
+                mMetricsRecorderCaptor.getValue().getSettingForTesting());
     }
 
     @Test
@@ -298,18 +291,17 @@ public class PasswordSettingsUpdaterDispatcherBridgeTest {
         Exception expectedException = new Exception("Sample failure");
         failureCallback.getValue().onResult(expectedException);
 
-        ArgumentCaptor<PasswordSettingsUpdaterMetricsRecorder> metricsRecorder =
-                ArgumentCaptor.forClass(PasswordSettingsUpdaterMetricsRecorder.class);
         verify(mReceiverBridgeMock)
                 .handleSettingException(
                         eq(PasswordManagerSetting.AUTO_SIGN_IN),
                         eq(expectedException),
-                        metricsRecorder.capture());
+                        mMetricsRecorderCaptor.capture());
 
-        assertEquals("SetSettingValue", metricsRecorder.getValue().getFunctionSuffixForTesting());
+        assertEquals(
+                "SetSettingValue", mMetricsRecorderCaptor.getValue().getFunctionSuffixForTesting());
         assertEquals(
                 PasswordManagerSetting.AUTO_SIGN_IN,
-                metricsRecorder.getValue().getSettingForTesting());
+                mMetricsRecorderCaptor.getValue().getSettingForTesting());
     }
 
     @Test
@@ -323,18 +315,17 @@ public class PasswordSettingsUpdaterDispatcherBridgeTest {
 
         successCallback.getValue().onResult(Optional.of(true));
 
-        ArgumentCaptor<PasswordSettingsUpdaterMetricsRecorder> metricsRecorder =
-                ArgumentCaptor.forClass(PasswordSettingsUpdaterMetricsRecorder.class);
         verify(mReceiverBridgeMock)
                 .onSettingValueFetched(
                         eq(PasswordManagerSetting.BIOMETRIC_REAUTH_BEFORE_PWD_FILLING),
                         eq(true),
-                        metricsRecorder.capture());
+                        mMetricsRecorderCaptor.capture());
 
-        assertEquals("GetSettingValue", metricsRecorder.getValue().getFunctionSuffixForTesting());
+        assertEquals(
+                "GetSettingValue", mMetricsRecorderCaptor.getValue().getFunctionSuffixForTesting());
         assertEquals(
                 PasswordManagerSetting.BIOMETRIC_REAUTH_BEFORE_PWD_FILLING,
-                metricsRecorder.getValue().getSettingForTesting());
+                mMetricsRecorderCaptor.getValue().getSettingForTesting());
     }
 
     @Test
@@ -348,18 +339,17 @@ public class PasswordSettingsUpdaterDispatcherBridgeTest {
 
         successCallback.getValue().onResult(Optional.empty());
 
-        ArgumentCaptor<PasswordSettingsUpdaterMetricsRecorder> metricsRecorder =
-                ArgumentCaptor.forClass(PasswordSettingsUpdaterMetricsRecorder.class);
         verify(mReceiverBridgeMock)
                 .onSettingValueFetched(
                         eq(PasswordManagerSetting.BIOMETRIC_REAUTH_BEFORE_PWD_FILLING),
                         eq(null),
-                        metricsRecorder.capture());
+                        mMetricsRecorderCaptor.capture());
 
-        assertEquals("GetSettingValue", metricsRecorder.getValue().getFunctionSuffixForTesting());
+        assertEquals(
+                "GetSettingValue", mMetricsRecorderCaptor.getValue().getFunctionSuffixForTesting());
         assertEquals(
                 PasswordManagerSetting.BIOMETRIC_REAUTH_BEFORE_PWD_FILLING,
-                metricsRecorder.getValue().getSettingForTesting());
+                mMetricsRecorderCaptor.getValue().getSettingForTesting());
     }
 
     @Test
@@ -373,17 +363,16 @@ public class PasswordSettingsUpdaterDispatcherBridgeTest {
         Exception expectedException = new Exception("Sample failure");
         failureCallback.getValue().onResult(expectedException);
 
-        ArgumentCaptor<PasswordSettingsUpdaterMetricsRecorder> metricsRecorder =
-                ArgumentCaptor.forClass(PasswordSettingsUpdaterMetricsRecorder.class);
         verify(mReceiverBridgeMock)
                 .handleFetchingException(
                         eq(PasswordManagerSetting.BIOMETRIC_REAUTH_BEFORE_PWD_FILLING),
                         eq(expectedException),
-                        metricsRecorder.capture());
+                        mMetricsRecorderCaptor.capture());
 
-        assertEquals("GetSettingValue", metricsRecorder.getValue().getFunctionSuffixForTesting());
+        assertEquals(
+                "GetSettingValue", mMetricsRecorderCaptor.getValue().getFunctionSuffixForTesting());
         assertEquals(
                 PasswordManagerSetting.BIOMETRIC_REAUTH_BEFORE_PWD_FILLING,
-                metricsRecorder.getValue().getSettingForTesting());
+                mMetricsRecorderCaptor.getValue().getSettingForTesting());
     }
 }

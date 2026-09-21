@@ -9,7 +9,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -67,6 +66,7 @@ public class TabListFaviconProviderTest {
     @Mock private FaviconHelper.Natives mFaviconHelperJniMock;
     @Mock private FaviconHelper mMockFaviconHelper;
     @Mock private TabWebContentsFaviconDelegate mTabWebContentsFaviconDelegate;
+    @Mock private Tab mTab;
 
     @Captor private ArgumentCaptor<FaviconImageCallback> mFaviconImageCallbackCaptor;
 
@@ -171,16 +171,15 @@ public class TabListFaviconProviderTest {
 
     @Test
     public void testFaviconForTabFetcher_WebContentsFavicon() {
-        Tab tab = mock(Tab.class);
-        when(tab.getUrl()).thenReturn(mUrl1);
+        when(mTab.getUrl()).thenReturn(mUrl1);
         Bitmap bitmap = newBitmap();
-        when(mTabWebContentsFaviconDelegate.getBitmap(tab)).thenReturn(bitmap);
-        TabFaviconFetcher fetcher = mTabListFaviconProvider.getFaviconForTabFetcher(tab);
+        when(mTabWebContentsFaviconDelegate.getBitmap(mTab)).thenReturn(bitmap);
+        TabFaviconFetcher fetcher = mTabListFaviconProvider.getFaviconForTabFetcher(mTab);
         TabFavicon favicon =
                 (UrlTabFavicon)
                         doFetchFavicon(
                                 () -> {
-                                    verify(mTabWebContentsFaviconDelegate).getBitmap(tab);
+                                    verify(mTabWebContentsFaviconDelegate).getBitmap(mTab);
                                     verify(mMockFaviconHelper, never())
                                             .getForeignFaviconImageForURL(
                                                     any(), any(), anyInt(), anyBoolean(), any());
@@ -194,16 +193,15 @@ public class TabListFaviconProviderTest {
 
     @Test
     public void testFaviconForTabFetcher_Foreign() {
-        Tab tab = mock(Tab.class);
-        when(tab.getUrl()).thenReturn(mUrl1);
-        when(tab.getTabGroupId()).thenReturn(new Token(1L, 3L));
-        TabFaviconFetcher fetcher = mTabListFaviconProvider.getFaviconForTabFetcher(tab);
+        when(mTab.getUrl()).thenReturn(mUrl1);
+        when(mTab.getTabGroupId()).thenReturn(new Token(1L, 3L));
+        TabFaviconFetcher fetcher = mTabListFaviconProvider.getFaviconForTabFetcher(mTab);
         TabFavicon favicon =
                 (UrlTabFavicon)
                         doFetchFavicon(
                                 () -> {
                                     // Returns null.
-                                    verify(mTabWebContentsFaviconDelegate).getBitmap(tab);
+                                    verify(mTabWebContentsFaviconDelegate).getBitmap(mTab);
                                     verify(mMockFaviconHelper)
                                             .getForeignFaviconImageForURL(
                                                     eq(mProfile),
@@ -224,17 +222,16 @@ public class TabListFaviconProviderTest {
 
     @Test
     public void testFaviconForTabFetcher_Local_IncognitoGroup() {
-        Tab tab = mock(Tab.class);
-        when(tab.getUrl()).thenReturn(mUrl1);
-        when(tab.getTabGroupId()).thenReturn(new Token(1L, 3L));
-        when(tab.isIncognitoBranded()).thenReturn(true);
-        TabFaviconFetcher fetcher = mTabListFaviconProvider.getFaviconForTabFetcher(tab);
+        when(mTab.getUrl()).thenReturn(mUrl1);
+        when(mTab.getTabGroupId()).thenReturn(new Token(1L, 3L));
+        when(mTab.isIncognitoBranded()).thenReturn(true);
+        TabFaviconFetcher fetcher = mTabListFaviconProvider.getFaviconForTabFetcher(mTab);
         TabFavicon favicon =
                 (UrlTabFavicon)
                         doFetchFavicon(
                                 () -> {
                                     // Returns null.
-                                    verify(mTabWebContentsFaviconDelegate).getBitmap(tab);
+                                    verify(mTabWebContentsFaviconDelegate).getBitmap(mTab);
                                     verify(mMockFaviconHelper, never())
                                             .getForeignFaviconImageForURL(
                                                     any(), any(), anyInt(), anyBoolean(), any());
@@ -255,15 +252,14 @@ public class TabListFaviconProviderTest {
 
     @Test
     public void testFaviconForTabFetcher_Local() {
-        Tab tab = mock(Tab.class);
-        when(tab.getUrl()).thenReturn(mUrl1);
-        TabFaviconFetcher fetcher = mTabListFaviconProvider.getFaviconForTabFetcher(tab);
+        when(mTab.getUrl()).thenReturn(mUrl1);
+        TabFaviconFetcher fetcher = mTabListFaviconProvider.getFaviconForTabFetcher(mTab);
         TabFavicon favicon =
                 (UrlTabFavicon)
                         doFetchFavicon(
                                 () -> {
                                     // Returns null.
-                                    verify(mTabWebContentsFaviconDelegate).getBitmap(tab);
+                                    verify(mTabWebContentsFaviconDelegate).getBitmap(mTab);
                                     verify(mMockFaviconHelper, never())
                                             .getForeignFaviconImageForURL(
                                                     any(), any(), anyInt(), anyBoolean(), any());

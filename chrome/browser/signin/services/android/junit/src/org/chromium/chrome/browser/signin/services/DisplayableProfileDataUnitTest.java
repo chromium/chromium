@@ -5,13 +5,16 @@
 package org.chromium.chrome.browser.signin.services;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -23,7 +26,8 @@ import org.chromium.google_apis.gaia.GaiaId;
 public class DisplayableProfileDataUnitTest {
     private static final String EMAIL = "test@gmail.com";
     private static final CoreAccountId ACCOUNT_ID = new CoreAccountId(new GaiaId("gaia-id-123"));
-    private final Drawable mMockDrawable = mock(Drawable.class);
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private Drawable mMockDrawable;
 
     private DisplayableProfileData createProfileData(String fullName, String givenName) {
         return new DisplayableProfileData(

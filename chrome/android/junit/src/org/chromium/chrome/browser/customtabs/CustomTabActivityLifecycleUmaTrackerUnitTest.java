@@ -16,8 +16,12 @@ import android.text.TextUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowSystemClock;
 
@@ -41,6 +45,8 @@ public class CustomTabActivityLifecycleUmaTrackerUnitTest {
     private static final String REFERRER_B = "android-app://" + PACKAGE_B;
     private static final int TASK_ID_123 = 123;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private Activity mActivity;
     private SharedPreferencesManager mPref;
 
     @Before
@@ -164,7 +170,7 @@ public class CustomTabActivityLifecycleUmaTrackerUnitTest {
     @Test
     public void testGetReferrer_InvalidInputs() {
         Assert.assertTrue(TextUtils.isEmpty(getReferrer(null)));
-        Assert.assertTrue(TextUtils.isEmpty(getReferrer(mock(Activity.class))));
+        Assert.assertTrue(TextUtils.isEmpty(getReferrer(mActivity)));
 
         Activity activityWithNoReferral = buildMockActivity(null, null, null);
         Assert.assertTrue(TextUtils.isEmpty(getReferrer(activityWithNoReferral)));

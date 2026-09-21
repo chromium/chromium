@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -69,6 +68,9 @@ public class AtMemoryBottomSheetViewTest {
     @Mock private Runnable mMockBackClickListener;
     @Mock private Callback<Integer> mMockSuggestionClickListener;
     @Mock private BottomSheetController mBottomSheetController;
+    @Mock private Runnable mOkClicked;
+    @Mock private Runnable mSettingsClicked;
+    @Mock private Runnable mRunnable;
 
     private Context mContext;
     private AtMemoryBottomSheetView mView;
@@ -198,18 +200,16 @@ public class AtMemoryBottomSheetViewTest {
                 android.view.LayoutInflater.from(mContext)
                         .inflate(R.layout.at_memory_bottom_sheet_notice_item, null);
 
-        Runnable okClicked = mock(Runnable.class);
-        Runnable settingsClicked = mock(Runnable.class);
         PropertyModel model =
                 new PropertyModel.Builder(
                                 AtMemoryBottomSheetProperties.NoticeItemProperties.ALL_KEYS)
                         .with(
                                 AtMemoryBottomSheetProperties.NoticeItemProperties.ON_OK_CLICKED,
-                                okClicked)
+                                mOkClicked)
                         .with(
                                 AtMemoryBottomSheetProperties.NoticeItemProperties
                                         .ON_SETTINGS_CLICKED,
-                                settingsClicked)
+                                mSettingsClicked)
                         .build();
 
         PropertyModelChangeProcessor.create(
@@ -220,7 +220,7 @@ public class AtMemoryBottomSheetViewTest {
         View noticeOkButton = noticeView.findViewById(R.id.notice_ok_button);
         assertNotNull(noticeOkButton);
         noticeOkButton.performClick();
-        verify(okClicked).run();
+        verify(mOkClicked).run();
     }
 
     @Test
@@ -231,7 +231,6 @@ public class AtMemoryBottomSheetViewTest {
                                 R.layout.at_memory_bottom_sheet_text_with_clickable_link_item,
                                 null);
 
-        Runnable linkClicked = mock(Runnable.class);
         PropertyModel model =
                 new PropertyModel.Builder(
                                 AtMemoryBottomSheetProperties.TextWithClickableLinkProperties
@@ -242,7 +241,7 @@ public class AtMemoryBottomSheetViewTest {
                         .with(
                                 AtMemoryBottomSheetProperties.TextWithClickableLinkProperties
                                         .ON_LINK_CLICKED,
-                                linkClicked)
+                                mRunnable)
                         .build();
 
         PropertyModelChangeProcessor.create(
@@ -261,7 +260,6 @@ public class AtMemoryBottomSheetViewTest {
                 android.view.LayoutInflater.from(mContext)
                         .inflate(R.layout.at_memory_bottom_sheet_notice_item, null);
 
-        Runnable settingsClicked = mock(Runnable.class);
         PropertyModel model =
                 new PropertyModel.Builder(
                                 AtMemoryBottomSheetProperties.NoticeItemProperties.ALL_KEYS)
@@ -272,7 +270,7 @@ public class AtMemoryBottomSheetViewTest {
                         .with(
                                 AtMemoryBottomSheetProperties.NoticeItemProperties
                                         .ON_SETTINGS_CLICKED,
-                                settingsClicked)
+                                mRunnable)
                         .build();
 
         PropertyModelChangeProcessor.create(
@@ -295,7 +293,6 @@ public class AtMemoryBottomSheetViewTest {
                 android.view.LayoutInflater.from(mContext)
                         .inflate(R.layout.at_memory_bottom_sheet_notice_item, null);
 
-        Runnable settingsClicked = mock(Runnable.class);
         PropertyModel model =
                 new PropertyModel.Builder(
                                 AtMemoryBottomSheetProperties.NoticeItemProperties.ALL_KEYS)
@@ -306,7 +303,7 @@ public class AtMemoryBottomSheetViewTest {
                         .with(
                                 AtMemoryBottomSheetProperties.NoticeItemProperties
                                         .ON_SETTINGS_CLICKED,
-                                settingsClicked)
+                                mRunnable)
                         .build();
 
         PropertyModelChangeProcessor.create(

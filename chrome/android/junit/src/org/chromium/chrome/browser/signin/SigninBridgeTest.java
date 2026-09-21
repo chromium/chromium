@@ -32,6 +32,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -88,6 +89,7 @@ import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.base.WindowAndroid.IntentCallback;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
@@ -151,6 +153,7 @@ public class SigninBridgeTest {
 
     @Mock private AccountPreviewDataService mAccountPreviewDataServiceMock;
     @Mock private ModalDialogManager mModalDialogManagerMock;
+    @Captor private ArgumentCaptor<IntentCallback> mIntentCaptor;
 
     private final SettableMonotonicObservableSupplier<BottomSheetSigninAndHistorySyncCoordinator>
             mWebSigninAndHistorySyncCoordinatorSupplier = ObservableSuppliers.createMonotonic();
@@ -521,10 +524,8 @@ public class SigninBridgeTest {
     })
     public void testBottomSheetInvokedAfterAddAccountFlow_legacy() {
         Assume.assumeTrue(mIsWebSignin);
-        ArgumentCaptor<WindowAndroid.IntentCallback> intentCaptor =
-                ArgumentCaptor.forClass(WindowAndroid.IntentCallback.class);
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
-        when(mWindowAndroidMock.showIntent(any(Intent.class), intentCaptor.capture(), any()))
+        when(mWindowAndroidMock.showIntent(any(Intent.class), mIntentCaptor.capture(), any()))
                 .thenReturn(true);
         FakeAccountManagerFacade fakeAccountManagerFacade =
                 (FakeAccountManagerFacade) AccountManagerFacadeProvider.getInstance();
@@ -539,7 +540,7 @@ public class SigninBridgeTest {
                 "");
 
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
-        intentCaptor.getValue().onIntentCompleted(Activity.RESULT_OK, null);
+        mIntentCaptor.getValue().onIntentCompleted(Activity.RESULT_OK, null);
 
         verify(mAccountPickerBottomSheetCoordinatorFactoryMock)
                 .create(
@@ -565,10 +566,8 @@ public class SigninBridgeTest {
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
     })
     public void testBottomSheetInvokedAfterAddAccountFlow() {
-        ArgumentCaptor<WindowAndroid.IntentCallback> intentCaptor =
-                ArgumentCaptor.forClass(WindowAndroid.IntentCallback.class);
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
-        when(mWindowAndroidMock.showIntent(any(Intent.class), intentCaptor.capture(), any()))
+        when(mWindowAndroidMock.showIntent(any(Intent.class), mIntentCaptor.capture(), any()))
                 .thenReturn(true);
 
         SigninBridge.startAddAccountFlow(
@@ -579,7 +578,7 @@ public class SigninBridgeTest {
                 mExtensionName);
 
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
-        intentCaptor.getValue().onIntentCompleted(Activity.RESULT_OK, null);
+        mIntentCaptor.getValue().onIntentCompleted(Activity.RESULT_OK, null);
 
         verifyNoInteractions(mAccountPickerBottomSheetCoordinatorFactoryMock);
         verifyBottomSheetStartSigninFlow(TestAccounts.ACCOUNT2.getId());

@@ -10,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.clearInvocations;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -24,6 +23,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.shadows.ShadowLooper;
@@ -37,6 +37,8 @@ import java.util.concurrent.TimeUnit;
 @RunWith(BaseRobolectricTestRunner.class)
 public class ImmersiveVideoControlMediatorTest {
     @Mock private ImmersiveVideoControlCoordinator.Delegate mDelegate;
+    @Mock private Handler mHandler;
+    @Captor private ArgumentCaptor<Runnable> mTaskCaptor;
 
     private PropertyModel mModel;
     private ImmersiveVideoControlMediator mMediator;
@@ -103,8 +105,7 @@ public class ImmersiveVideoControlMediatorTest {
     @Test
     public void testReshowSchedulesExactlyOneSeekbarLoop() {
         mMediator.destroy();
-        Handler handler = mock(Handler.class);
-        mMediator = new ImmersiveVideoControlMediator(mModel, mDelegate, handler);
+        mMediator = new ImmersiveVideoControlMediator(mModel, mDelegate, mHandler);
         mMediator.setVisible(true);
         mMediator.updateMediaPosition(
                 /* durationMs= */ 60_000, /* positionMs= */ 1_000, /* playbackRate= */ 1.0);
@@ -112,19 +113,18 @@ public class ImmersiveVideoControlMediatorTest {
         mMediator.setVisible(false);
         mMediator.updateMediaPosition(
                 /* durationMs= */ 60_000, /* positionMs= */ 10_000, /* playbackRate= */ 1.0);
-        clearInvocations(handler);
+        clearInvocations(mHandler);
 
         mMediator.setVisible(true);
         mMediator.setVisible(true);
 
-        ArgumentCaptor<Runnable> taskCaptor = ArgumentCaptor.forClass(Runnable.class);
-        verify(handler, times(1)).post(taskCaptor.capture());
-        Runnable seekbarTask = taskCaptor.getValue();
+        verify(mHandler, times(1)).post(mTaskCaptor.capture());
+        Runnable seekbarTask = mTaskCaptor.getValue();
 
-        clearInvocations(handler);
+        clearInvocations(mHandler);
         seekbarTask.run();
 
-        verify(handler, times(1)).postDelayed(same(seekbarTask), eq(50L));
+        verify(mHandler, times(1)).postDelayed(same(seekbarTask), eq(50L));
     }
 
     @Test

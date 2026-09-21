@@ -26,6 +26,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -51,6 +52,8 @@ public class OfflineIndicatorControllerV2UnitTest {
     @Mock private Handler mHandler;
     @Mock private Supplier<Boolean> mCanAnimateNativeBrowserControls;
     @Mock private OfflineIndicatorMetricsDelegate mMetricsDelegate;
+    @Captor private ArgumentCaptor<Runnable> mEndAnimationCaptor;
+    @Captor private ArgumentCaptor<Runnable> mHideCaptor;
 
     private Context mContext;
     private final SettableNonNullObservableSupplier<Boolean> mIsUrlBarFocusedSupplier =
@@ -110,7 +113,6 @@ public class OfflineIndicatorControllerV2UnitTest {
         changeConnectionState(false);
         // When hiding, the indicator will get an #updateContent() call, then #hide() 2 seconds
         // after that. First, verify the #updateContent() call.
-        final ArgumentCaptor<Runnable> endAnimationCaptor = ArgumentCaptor.forClass(Runnable.class);
         verify(mStatusIndicator)
                 .updateContent(
                         eq(mOnlineString),
@@ -118,16 +120,15 @@ public class OfflineIndicatorControllerV2UnitTest {
                         anyInt(),
                         anyInt(),
                         anyInt(),
-                        endAnimationCaptor.capture());
+                        mEndAnimationCaptor.capture());
         // Simulate browser controls animation ending.
-        endAnimationCaptor.getValue().run();
+        mEndAnimationCaptor.getValue().run();
         // This should post a runnable to hide w/ a delay.
-        final ArgumentCaptor<Runnable> hideCaptor = ArgumentCaptor.forClass(Runnable.class);
         verify(mHandler)
                 .postDelayed(
-                        hideCaptor.capture(), eq(STATUS_INDICATOR_WAIT_BEFORE_HIDE_DURATION_MS));
+                        mHideCaptor.capture(), eq(STATUS_INDICATOR_WAIT_BEFORE_HIDE_DURATION_MS));
         // Let's see if the Runnable we captured actually hides the indicator.
-        hideCaptor.getValue().run();
+        mHideCaptor.getValue().run();
         verify(mStatusIndicator).hide();
     }
 
@@ -144,15 +145,14 @@ public class OfflineIndicatorControllerV2UnitTest {
         // Cool-down should prevent it from hiding and post a runnable for after the time is up.
         verify(mStatusIndicator, never())
                 .updateContent(any(), any(), anyInt(), anyInt(), anyInt(), any(Runnable.class));
-        final ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
         verify(mHandler)
                 .postDelayed(
-                        captor.capture(),
+                        mHideCaptor.capture(),
                         eq(STATUS_INDICATOR_COOLDOWN_BEFORE_NEXT_ACTION_MS - 3000L));
 
         // Advance the time and simulate the |Handler| running the posted runnable.
         advanceTimeByMs(2000);
-        captor.getValue().run();
+        mHideCaptor.getValue().run();
         // #updateContent() should be called since the cool-down is complete.
         verify(mStatusIndicator)
                 .updateContent(
@@ -183,15 +183,14 @@ public class OfflineIndicatorControllerV2UnitTest {
         // times(1) because it's been already called once above, no new calls.
         verify(mStatusIndicator, times(1))
                 .show(eq(mOfflineString), any(), anyInt(), anyInt(), anyInt());
-        final ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
         verify(mHandler)
                 .postDelayed(
-                        captor.capture(),
+                        mHideCaptor.capture(),
                         eq(STATUS_INDICATOR_COOLDOWN_BEFORE_NEXT_ACTION_MS - 1000L));
 
         // Advance the time and simulate the |Handler| running the posted runnable.
         advanceTimeByMs(4000);
-        captor.getValue().run();
+        mHideCaptor.getValue().run();
         // #show() should be called since the cool-down is complete.
         verify(mStatusIndicator, times(2))
                 .show(eq(mOfflineString), any(), anyInt(), anyInt(), anyInt());
@@ -214,21 +213,20 @@ public class OfflineIndicatorControllerV2UnitTest {
         // times(1) because it's been already called once above, no new calls.
         verify(mStatusIndicator, times(1))
                 .show(eq(mOfflineString), any(), anyInt(), anyInt(), anyInt());
-        final ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
         verify(mHandler)
                 .postDelayed(
-                        captor.capture(),
+                        mHideCaptor.capture(),
                         eq(STATUS_INDICATOR_COOLDOWN_BEFORE_NEXT_ACTION_MS - 1000L));
         // Callbacks to show/hide are removed every time the connectivity changes. We use this to
         // capture the callback.
-        verify(mHandler, times(3)).removeCallbacks(captor.getValue());
+        verify(mHandler, times(3)).removeCallbacks(mHideCaptor.getValue());
         // Advance time and change connection.
         advanceTimeByMs(2000);
         changeConnectionState(false);
 
         // Since we're back online, the posted runnable won't show the indicator.
         advanceTimeByMs(2000);
-        captor.getValue().run();
+        mHideCaptor.getValue().run();
         // Still times(1), no new call after the last one.
         verify(mStatusIndicator, times(1))
                 .show(eq(mOfflineString), any(), anyInt(), anyInt(), anyInt());
@@ -288,17 +286,16 @@ public class OfflineIndicatorControllerV2UnitTest {
         // times(1) because it's been already called once above, no new calls.
         verify(mStatusIndicator, times(1))
                 .show(eq(mOfflineString), any(), anyInt(), anyInt(), anyInt());
-        final ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
         verify(mHandler)
                 .postDelayed(
-                        captor.capture(),
+                        mHideCaptor.capture(),
                         eq(STATUS_INDICATOR_COOLDOWN_BEFORE_NEXT_ACTION_MS - 1000L));
 
         // Now, simulate focusing the omnibox.
         mIsUrlBarFocusedSupplier.set(true);
         // Then advance the time and run the runnable.
         advanceTimeByMs(4000);
-        captor.getValue().run();
+        mHideCaptor.getValue().run();
         // Still times(1), no new calls. The indicator shouldn't show since the omnibox is focused.
         verify(mStatusIndicator, times(1))
                 .show(eq(mOfflineString), any(), anyInt(), anyInt(), anyInt());

@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.autofill.editors.autofill_ai;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -14,6 +13,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -33,6 +33,8 @@ public class EntityEditorViewTest {
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
+
+    @Mock private Runnable mRunnable;
 
     private TestActivity mActivity;
     private EntityEditorView mEditorView;
@@ -60,26 +62,24 @@ public class EntityEditorViewTest {
     public void clickDoneButton() {
         createEditorView();
 
-        Runnable doneRunnable = mock(Runnable.class);
-        mEditorView.setDoneRunnable(doneRunnable);
+        mEditorView.setDoneRunnable(mRunnable);
 
         mEditorView.getContainerView().findViewById(R.id.editor_dialog_done_button).performClick();
 
-        verify(doneRunnable).run();
+        verify(mRunnable).run();
     }
 
     @Test
     public void clickCancelButton() {
         createEditorView();
 
-        Runnable cancelRunnable = mock(Runnable.class);
-        mEditorView.setCancelRunnable(cancelRunnable);
+        mEditorView.setCancelRunnable(mRunnable);
 
         mEditorView
                 .getContainerView()
                 .findViewById(R.id.payments_edit_cancel_button)
                 .performClick();
 
-        verify(cancelRunnable).run();
+        verify(mRunnable).run();
     }
 }

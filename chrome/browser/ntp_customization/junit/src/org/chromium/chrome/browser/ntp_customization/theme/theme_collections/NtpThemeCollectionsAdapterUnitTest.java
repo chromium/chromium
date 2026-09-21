@@ -11,7 +11,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.clearInvocations;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -30,6 +29,7 @@ import android.widget.ImageView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
@@ -65,7 +65,9 @@ public class NtpThemeCollectionsAdapterUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private ImageFetcher mImageFetcher;
+    @Mock private AdapterDataObserver mAdapterDataObserver;
     @Captor private ArgumentCaptor<Callback<Bitmap>> mCallbackCaptor;
+    @Captor private ArgumentCaptor<ImageFetcher.Params> mParamsCaptor;
 
     private Context mContext;
     private FrameLayout mParent;
@@ -156,10 +158,8 @@ public class NtpThemeCollectionsAdapterUnitTest {
         assertFalse(viewHolder.itemView.isActivated());
         assertFalse(viewHolder.itemView.isSelected());
 
-        ArgumentCaptor<ImageFetcher.Params> paramsCaptor =
-                ArgumentCaptor.forClass(ImageFetcher.Params.class);
-        verify(mImageFetcher).fetchImage(paramsCaptor.capture(), any());
-        assertEquals(PREVIEW_IMAGE_URL.getSpec(), paramsCaptor.getValue().url);
+        verify(mImageFetcher).fetchImage(mParamsCaptor.capture(), any());
+        assertEquals(PREVIEW_IMAGE_URL.getSpec(), mParamsCaptor.getValue().url);
     }
 
     @Test
@@ -184,10 +184,8 @@ public class NtpThemeCollectionsAdapterUnitTest {
                 "Attribution 1, Attribution 2",
                 viewHolder.mView.getContentDescription().toString());
 
-        ArgumentCaptor<ImageFetcher.Params> paramsCaptor =
-                ArgumentCaptor.forClass(ImageFetcher.Params.class);
-        verify(mImageFetcher).fetchImage(paramsCaptor.capture(), any());
-        assertEquals(PREVIEW_IMAGE_URL.getSpec(), paramsCaptor.getValue().url);
+        verify(mImageFetcher).fetchImage(mParamsCaptor.capture(), any());
+        assertEquals(PREVIEW_IMAGE_URL.getSpec(), mParamsCaptor.getValue().url);
     }
 
     @Test
@@ -496,27 +494,26 @@ public class NtpThemeCollectionsAdapterUnitTest {
         NtpThemeCollectionsAdapter adapter =
                 new NtpThemeCollectionsAdapter(
                         mCollectionItems, THEME_COLLECTIONS_ITEM, mOnClickListener, mImageFetcher);
-        RecyclerView.AdapterDataObserver observer = mock(RecyclerView.AdapterDataObserver.class);
-        adapter.registerAdapterDataObserver(observer);
+        adapter.registerAdapterDataObserver(mAdapterDataObserver);
 
         // Select the second item.
         adapter.setSelection(mCollectionItems.get(1).id, /* imageUrl= */ null);
 
         // Verify that notifyItemChanged was called for the selected item.
-        verify(observer)
+        verify(mAdapterDataObserver)
                 .onItemRangeChanged(
                         /* positionStart= */ 1, /* itemCount= */ 1, /* payload= */ null);
 
         // Select the first item.
-        clearInvocations(observer);
+        clearInvocations(mAdapterDataObserver);
         adapter.setSelection(mCollectionItems.get(0).id, /* imageUrl= */ null);
 
         // Verify that notifyItemChanged was called for the previously selected item (to deselect)
         // and the newly selected item (to select).
-        verify(observer)
+        verify(mAdapterDataObserver)
                 .onItemRangeChanged(
                         /* positionStart= */ 1, /* itemCount= */ 1, /* payload= */ null);
-        verify(observer)
+        verify(mAdapterDataObserver)
                 .onItemRangeChanged(
                         /* positionStart= */ 0, /* itemCount= */ 1, /* payload= */ null);
     }

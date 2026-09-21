@@ -9,7 +9,6 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
 
 import android.app.Notification;
 import android.content.Context;
@@ -17,8 +16,12 @@ import android.content.Context;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -32,15 +35,15 @@ import java.util.List;
 /** Unit tests for DisplayAgent. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class DisplayAgentUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private BaseNotificationManagerProxy mMockNotificationManager;
     private Context mContext;
-    private BaseNotificationManagerProxy mMockNotificationManager;
     private final List<NotificationWrapper> mNotificationsShown = new ArrayList<>();
 
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
         ContextUtils.initApplicationContextForTests(mContext);
-        mMockNotificationManager = mock(BaseNotificationManagerProxy.class);
         BaseNotificationManagerProxyFactory.setInstanceForTesting(mMockNotificationManager);
 
         mNotificationsShown.clear();

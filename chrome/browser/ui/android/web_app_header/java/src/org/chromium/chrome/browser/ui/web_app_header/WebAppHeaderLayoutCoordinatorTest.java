@@ -12,7 +12,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -125,6 +124,18 @@ public class WebAppHeaderLayoutCoordinatorTest {
     @Mock public TabModelSelector mTabModelSelector;
     @Mock public TabCreator mTabCreator;
     @Mock public ModalDialogManager mModalDialogManager;
+    @Mock private NavigationHandle mNavigationHandle;
+    @Mock private ColorStateList mColorStateList;
+    @Mock private Tab mTab1;
+    @Mock private Tab mTab2;
+    @Mock private TabModel mTabModel2;
+    @Mock private ChromeAndroidTask mChromeAndroidTask1;
+    @Mock private ExtensionsToolbarCoordinator mMockToolbarCoordinator;
+    @Mock private TabModel mTabModel;
+    @Mock private ChromeAndroidTask mChromeAndroidTask;
+    @Mock private ExtensionsToolbarCoordinator mExtensionsToolbarCoordinator;
+    @Mock private TabModel mTabModel1;
+    @Mock private ChromeAndroidTask mTask;
 
     private WebAppHeaderLayoutCoordinator mCoordinator;
     private Activity mActivity;
@@ -844,10 +855,9 @@ public class WebAppHeaderLayoutCoordinatorTest {
         createCoordinator();
         mShadowLooper.idle();
 
-        NavigationHandle navigationHandle = mock(NavigationHandle.class);
-        when(navigationHandle.getUrl()).thenReturn(testUrl);
+        when(mNavigationHandle.getUrl()).thenReturn(testUrl);
         // Simulate finished navigation.
-        mCoordinator.onDidFinishNavigationInPrimaryMainFrame(mTab, navigationHandle);
+        mCoordinator.onDidFinishNavigationInPrimaryMainFrame(mTab, mNavigationHandle);
 
         TextView originTextView = mActivity.findViewById(R.id.origin);
         assertNotNull("Origin TextView should not be null", originTextView);
@@ -877,10 +887,9 @@ public class WebAppHeaderLayoutCoordinatorTest {
         createCoordinator();
         mShadowLooper.idle();
 
-        NavigationHandle navigationHandle = mock(NavigationHandle.class);
-        when(navigationHandle.getUrl()).thenReturn(testUrl);
+        when(mNavigationHandle.getUrl()).thenReturn(testUrl);
         // Simulate finished navigation.
-        mCoordinator.onDidFinishNavigationInPrimaryMainFrame(mTab, navigationHandle);
+        mCoordinator.onDidFinishNavigationInPrimaryMainFrame(mTab, mNavigationHandle);
 
         TextView originTextView = mActivity.findViewById(R.id.origin);
         assertNotNull("Origin TextView should not be null", originTextView);
@@ -909,10 +918,9 @@ public class WebAppHeaderLayoutCoordinatorTest {
         createCoordinator();
         mShadowLooper.idle();
 
-        NavigationHandle navigationHandle = mock(NavigationHandle.class);
-        when(navigationHandle.getUrl()).thenReturn(testUrl);
+        when(mNavigationHandle.getUrl()).thenReturn(testUrl);
         // Simulate finished navigation.
-        mCoordinator.onDidFinishNavigationInPrimaryMainFrame(mTab, navigationHandle);
+        mCoordinator.onDidFinishNavigationInPrimaryMainFrame(mTab, mNavigationHandle);
 
         TextView originTextView = mActivity.findViewById(R.id.origin);
         assertNotNull("Origin TextView should not be null", originTextView);
@@ -938,10 +946,9 @@ public class WebAppHeaderLayoutCoordinatorTest {
         createCoordinator();
         mShadowLooper.idle();
 
-        NavigationHandle navigationHandle = mock(NavigationHandle.class);
-        when(navigationHandle.getUrl()).thenReturn(testUrl);
+        when(mNavigationHandle.getUrl()).thenReturn(testUrl);
         // Simulate finished navigation.
-        mCoordinator.onDidFinishNavigationInPrimaryMainFrame(mTab, navigationHandle);
+        mCoordinator.onDidFinishNavigationInPrimaryMainFrame(mTab, mNavigationHandle);
 
         TextView originTextView = mActivity.findViewById(R.id.origin);
         assertNotNull("Origin TextView should not be null", originTextView);
@@ -955,12 +962,12 @@ public class WebAppHeaderLayoutCoordinatorTest {
         setupTab(/* isLoading= */ false, /* canGoBack= */ false);
         createCoordinator();
 
-        var tint = mock(ColorStateList.class);
-        mCoordinator.onTintChanged(tint, tint, BrandedColorScheme.APP_DEFAULT);
+        mCoordinator.onTintChanged(
+                mColorStateList, mColorStateList, BrandedColorScheme.APP_DEFAULT);
         assertEquals(
                 "Tint change should be propagated to the toggle button",
                 mCoordinator.getToggleButtonImageTintList(),
-                tint);
+                mColorStateList);
     }
 
     @Test
@@ -978,33 +985,31 @@ public class WebAppHeaderLayoutCoordinatorTest {
 
     @Test
     public void testTabObserverClearedOnTabChangeAndDestroy() {
-        Tab tab1 = mock(Tab.class);
-        Tab tab2 = mock(Tab.class);
-        doReturn(mWindowAndroid).when(tab1).getWindowAndroid();
-        doReturn(mWindowAndroid).when(tab2).getWindowAndroid();
+        doReturn(mWindowAndroid).when(mTab1).getWindowAndroid();
+        doReturn(mWindowAndroid).when(mTab2).getWindowAndroid();
 
         // 1. Initial Tab Setup
-        mTabSupplier.set(tab1);
+        mTabSupplier.set(mTab1);
         createCoordinator();
         mShadowLooper.idle();
 
         // Verify observer added to tab1
-        verify(tab1).addObserver(mCoordinator);
+        verify(mTab1).addObserver(mCoordinator);
 
         // 2. Tab Change
-        mTabSupplier.set(tab2);
+        mTabSupplier.set(mTab2);
         mShadowLooper.idle();
 
         // Verify observer removed from tab1 and added to tab2
-        verify(tab1).removeObserver(mCoordinator);
-        verify(tab2).addObserver(mCoordinator);
+        verify(mTab1).removeObserver(mCoordinator);
+        verify(mTab2).addObserver(mCoordinator);
 
         // 3. Coordinator Destroy
         mCoordinator.destroy();
         mShadowLooper.idle();
 
         // Verify observer removed from tab2
-        verify(tab2).removeObserver(mCoordinator);
+        verify(mTab2).removeObserver(mCoordinator);
     }
 
     @Test
@@ -1014,9 +1019,8 @@ public class WebAppHeaderLayoutCoordinatorTest {
         setupDisplayMode(DisplayMode.STANDALONE);
         setupTab(/* isLoading= */ false, /* canGoBack= */ false);
 
-        TabModel tabModel = mock(TabModel.class);
-        when(tabModel.getProfile()).thenReturn(mProfile);
-        when(mTabModelSelector.getCurrentModel()).thenReturn(tabModel);
+        when(mTabModel2.getProfile()).thenReturn(mProfile);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel2);
 
         createCoordinator();
         mShadowLooper.idle();
@@ -1025,16 +1029,13 @@ public class WebAppHeaderLayoutCoordinatorTest {
         assertNull(mCoordinator.getExtensionsToolbarCoordinator());
 
         // Provide ChromeAndroidTask.
-        ChromeAndroidTask task = mock(ChromeAndroidTask.class);
-        ExtensionsToolbarCoordinator mockToolbarCoordinator =
-                mock(ExtensionsToolbarCoordinator.class);
-        when(task.addFeature(any(), any())).thenReturn(mockToolbarCoordinator);
-        mChromeAndroidTaskSupplier.set(task);
+        when(mChromeAndroidTask1.addFeature(any(), any())).thenReturn(mMockToolbarCoordinator);
+        mChromeAndroidTaskSupplier.set(mChromeAndroidTask1);
         mShadowLooper.idle();
 
         // Verify ExtensionsToolbarCoordinator is initialized.
         assertNotNull(mCoordinator.getExtensionsToolbarCoordinator());
-        assertEquals(mockToolbarCoordinator, mCoordinator.getExtensionsToolbarCoordinator());
+        assertEquals(mMockToolbarCoordinator, mCoordinator.getExtensionsToolbarCoordinator());
     }
 
     @Test
@@ -1044,19 +1045,17 @@ public class WebAppHeaderLayoutCoordinatorTest {
         setupDisplayMode(DisplayMode.STANDALONE);
         setupTab(/* isLoading= */ false, /* canGoBack= */ false);
 
-        TabModel tabModel = mock(TabModel.class);
-        when(tabModel.getProfile()).thenReturn(mProfile);
-        when(mTabModelSelector.getCurrentModel()).thenReturn(tabModel);
+        when(mTabModel2.getProfile()).thenReturn(mProfile);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel2);
 
         createCoordinator();
         mShadowLooper.idle();
 
-        ChromeAndroidTask task = mock(ChromeAndroidTask.class);
-        mChromeAndroidTaskSupplier.set(task);
+        mChromeAndroidTaskSupplier.set(mChromeAndroidTask1);
         mShadowLooper.idle();
 
         assertNull(mCoordinator.getExtensionsToolbarCoordinator());
-        verify(task, never()).addFeature(any(), any());
+        verify(mChromeAndroidTask1, never()).addFeature(any(), any());
     }
 
     @Test
@@ -1066,19 +1065,17 @@ public class WebAppHeaderLayoutCoordinatorTest {
         setupDisplayMode(DisplayMode.STANDALONE);
         setupTab(/* isLoading= */ false, /* canGoBack= */ false);
 
-        TabModel tabModel = mock(TabModel.class);
-        when(tabModel.getProfile()).thenReturn(mProfile);
-        when(mTabModelSelector.getCurrentModel()).thenReturn(tabModel);
+        when(mTabModel2.getProfile()).thenReturn(mProfile);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel2);
 
         createCoordinator();
         mShadowLooper.idle();
 
-        ChromeAndroidTask task = mock(ChromeAndroidTask.class);
-        mChromeAndroidTaskSupplier.set(task);
+        mChromeAndroidTaskSupplier.set(mChromeAndroidTask1);
         mShadowLooper.idle();
 
         assertNull(mCoordinator.getExtensionsToolbarCoordinator());
-        verify(task, never()).addFeature(any(), any());
+        verify(mChromeAndroidTask1, never()).addFeature(any(), any());
     }
 
     @Test
@@ -1088,19 +1085,17 @@ public class WebAppHeaderLayoutCoordinatorTest {
         setupDisplayMode(DisplayMode.STANDALONE);
         setupTab(/* isLoading= */ false, /* canGoBack= */ false);
 
-        TabModel tabModel = mock(TabModel.class);
-        when(tabModel.getProfile()).thenReturn(null);
-        when(mTabModelSelector.getCurrentModel()).thenReturn(tabModel);
+        when(mTabModel2.getProfile()).thenReturn(null);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel2);
 
         createCoordinator();
         mShadowLooper.idle();
 
-        ChromeAndroidTask task = mock(ChromeAndroidTask.class);
-        mChromeAndroidTaskSupplier.set(task);
+        mChromeAndroidTaskSupplier.set(mChromeAndroidTask1);
         mShadowLooper.idle();
 
         assertNull(mCoordinator.getExtensionsToolbarCoordinator());
-        verify(task, never()).addFeature(any(), any());
+        verify(mChromeAndroidTask1, never()).addFeature(any(), any());
     }
 
     private void testExtensionsToolbarCoordinator_InitializedInDisplayMode(
@@ -1110,25 +1105,21 @@ public class WebAppHeaderLayoutCoordinatorTest {
         setupDisplayMode(displayMode);
         setupTab(/* isLoading= */ false, /* canGoBack= */ false);
 
-        TabModel tabModel = mock(TabModel.class);
-        when(tabModel.getProfile()).thenReturn(mProfile);
-        when(mTabModelSelector.getCurrentModel()).thenReturn(tabModel);
+        when(mTabModel.getProfile()).thenReturn(mProfile);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
 
         createCoordinator();
         mShadowLooper.idle();
 
-        ChromeAndroidTask task = mock(ChromeAndroidTask.class);
-        ExtensionsToolbarCoordinator mockToolbarCoordinator =
-                mock(ExtensionsToolbarCoordinator.class);
-        when(task.addFeature(any(), any())).thenReturn(mockToolbarCoordinator);
-        mChromeAndroidTaskSupplier.set(task);
+        when(mChromeAndroidTask.addFeature(any(), any())).thenReturn(mExtensionsToolbarCoordinator);
+        mChromeAndroidTaskSupplier.set(mChromeAndroidTask);
         mShadowLooper.idle();
 
         assertNotNull(
                 "ExtensionsToolbarCoordinator should be initialized for display mode "
                         + displayMode,
                 mCoordinator.getExtensionsToolbarCoordinator());
-        assertEquals(mockToolbarCoordinator, mCoordinator.getExtensionsToolbarCoordinator());
+        assertEquals(mExtensionsToolbarCoordinator, mCoordinator.getExtensionsToolbarCoordinator());
     }
 
     private void testExtensionsToolbarCoordinator_NotInitializedInDisplayMode(
@@ -1138,22 +1129,20 @@ public class WebAppHeaderLayoutCoordinatorTest {
         setupDisplayMode(displayMode);
         setupTab(/* isLoading= */ false, /* canGoBack= */ false);
 
-        TabModel tabModel = mock(TabModel.class);
-        when(tabModel.getProfile()).thenReturn(mProfile);
-        when(mTabModelSelector.getCurrentModel()).thenReturn(tabModel);
+        when(mTabModel1.getProfile()).thenReturn(mProfile);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel1);
 
         createCoordinator();
         mShadowLooper.idle();
 
-        ChromeAndroidTask task = mock(ChromeAndroidTask.class);
-        mChromeAndroidTaskSupplier.set(task);
+        mChromeAndroidTaskSupplier.set(mTask);
         mShadowLooper.idle();
 
         assertNull(
                 "ExtensionsToolbarCoordinator should not be initialized for display mode "
                         + displayMode,
                 mCoordinator.getExtensionsToolbarCoordinator());
-        verify(task, never()).addFeature(any(), any());
+        verify(mTask, never()).addFeature(any(), any());
     }
 
     @Test
@@ -1205,24 +1194,20 @@ public class WebAppHeaderLayoutCoordinatorTest {
         setupDisplayMode(DisplayMode.STANDALONE);
         setupTab(/* isLoading= */ false, /* canGoBack= */ false);
 
-        TabModel tabModel = mock(TabModel.class);
-        when(tabModel.getProfile()).thenReturn(mProfile);
-        when(mTabModelSelector.getCurrentModel()).thenReturn(tabModel);
+        when(mTabModel2.getProfile()).thenReturn(mProfile);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel2);
 
         createCoordinator();
         mShadowLooper.idle();
 
-        ChromeAndroidTask task = mock(ChromeAndroidTask.class);
-        ExtensionsToolbarCoordinator mockToolbarCoordinator =
-                mock(ExtensionsToolbarCoordinator.class);
-        when(task.addFeature(any(), any())).thenReturn(mockToolbarCoordinator);
-        mChromeAndroidTaskSupplier.set(task);
+        when(mChromeAndroidTask1.addFeature(any(), any())).thenReturn(mMockToolbarCoordinator);
+        mChromeAndroidTaskSupplier.set(mChromeAndroidTask1);
         mShadowLooper.idle();
 
-        assertEquals(mockToolbarCoordinator, mCoordinator.getExtensionsToolbarCoordinator());
+        assertEquals(mMockToolbarCoordinator, mCoordinator.getExtensionsToolbarCoordinator());
 
         mCoordinator.destroy();
-        verify(mockToolbarCoordinator).destroy();
+        verify(mMockToolbarCoordinator).destroy();
         assertNull(mCoordinator.getExtensionsToolbarCoordinator());
     }
 

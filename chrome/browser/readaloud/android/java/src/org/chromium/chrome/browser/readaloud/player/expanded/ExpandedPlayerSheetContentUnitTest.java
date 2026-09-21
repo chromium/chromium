@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -59,6 +58,7 @@ public class ExpandedPlayerSheetContentUnitTest {
     @Mock private OptionsMenuSheetContent mOptionsMenu;
     @Mock private SpeedMenuSheetContent mSpeedMenu;
     @Mock private PlaybackModeIphController mPlaybackModeIphController;
+    @Mock private BottomSheetContent mBottomSheetContent;
 
     private Context mContext;
     private ExpandedPlayerSheetContent mContent;
@@ -299,9 +299,8 @@ public class ExpandedPlayerSheetContentUnitTest {
 
     @Test
     public void testCanBeSuppressed() {
-        BottomSheetContent newContent = mock(BottomSheetContent.class);
-        when(newContent.getPriority()).thenReturn(BottomSheetContent.ContentPriority.HIGH);
-        assertTrue(mContent.canBeSuppressed(newContent));
+        when(mBottomSheetContent.getPriority()).thenReturn(BottomSheetContent.ContentPriority.HIGH);
+        assertTrue(mContent.canBeSuppressed(mBottomSheetContent));
     }
 
     @Test

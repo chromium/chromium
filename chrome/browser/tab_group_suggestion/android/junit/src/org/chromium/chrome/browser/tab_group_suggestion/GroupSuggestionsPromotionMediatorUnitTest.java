@@ -14,7 +14,6 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -60,8 +59,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class GroupSuggestionsPromotionMediatorUnitTest {
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
     private static final int SUGGESTION_ID_1 = 135;
     private static final int SUGGESTION_ID_2 = 642;
     private static final String SUGGESTION_NAME_1 = "suggestion_name_1";
@@ -74,9 +71,10 @@ public class GroupSuggestionsPromotionMediatorUnitTest {
     private static final int TAB_2_ID = 654;
     private static final int INVALID_TAB_ID_1 = 357;
     private static final int INVALID_TAB_ID_2 = 987;
-
     private static final String TAB_1_TITLE = "Tab 1 title";
     private static final String TAB_2_TITLE = "Tab 2 title";
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock GroupSuggestionsService mGroupSuggestionsService;
     @Mock BottomSheetController mBottomSheetController;
@@ -84,7 +82,7 @@ public class GroupSuggestionsPromotionMediatorUnitTest {
     @Mock TabModel mTabModel;
     @Mock Tab mTab1;
     @Mock Tab mTab2;
-
+    @Mock private View mView;
     @Captor ArgumentCaptor<BottomSheetObserver> mBottomSheetObserver;
 
     private PropertyModel mModel;
@@ -224,8 +222,7 @@ public class GroupSuggestionsPromotionMediatorUnitTest {
         GroupSuggestionsBottomSheetContent currentContent = mMediator.getCurrentSheetContent();
         assertNotNull(currentContent);
 
-        mModel.get(GroupSuggestionsPromotionProperties.ACCEPT_BUTTON_LISTENER)
-                .onClick(mock(View.class));
+        mModel.get(GroupSuggestionsPromotionProperties.ACCEPT_BUTTON_LISTENER).onClick(mView);
 
         verify(mTabModel)
                 .mergeListOfTabsToGroup(
@@ -263,8 +260,7 @@ public class GroupSuggestionsPromotionMediatorUnitTest {
         GroupSuggestionsBottomSheetContent currentContent = mMediator.getCurrentSheetContent();
         assertNotNull(currentContent);
 
-        mModel.get(GroupSuggestionsPromotionProperties.REJECT_BUTTON_LISTENER)
-                .onClick(mock(View.class));
+        mModel.get(GroupSuggestionsPromotionProperties.REJECT_BUTTON_LISTENER).onClick(mView);
 
         verify(mTabModel, never()).mergeListOfTabsToGroup(anyList(), any(Tab.class), anyInt());
         verify(mBottomSheetController).hideContent(eq(currentContent), eq(true));

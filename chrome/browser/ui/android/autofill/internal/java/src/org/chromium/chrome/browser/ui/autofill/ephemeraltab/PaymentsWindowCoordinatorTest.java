@@ -48,6 +48,7 @@ public class PaymentsWindowCoordinatorTest {
     @Mock private Profile.Natives mProfileNatives;
     @Mock private PaymentsWindowBridge mPaymentsWindowBridge;
     @Captor private ArgumentCaptor<EphemeralTabObserver> mEphemeralTabObserverCaptor;
+    @Captor private ArgumentCaptor<Runnable> mCallbackCaptor;
 
     private PaymentsWindowCoordinator mCoordinator;
 
@@ -100,7 +101,6 @@ public class PaymentsWindowCoordinatorTest {
         EphemeralTabCoordinatorSupplier.setInstanceForTesting(mEphemeralTabCoordinator);
         ProfileJni.setInstanceForTesting(mProfileNatives);
         when(mProfileNatives.fromWebContents(eq(mMerchantWebContents))).thenReturn(mProfile);
-        ArgumentCaptor<Runnable> callbackCaptor = ArgumentCaptor.forClass(Runnable.class);
 
         mCoordinator.openEphemeralTab(ISSUER_URL, TAB_TITLE, mMerchantWebContents);
 
@@ -114,9 +114,9 @@ public class PaymentsWindowCoordinatorTest {
                         /* shouldHaveContextMenu= */ eq(false),
                         /* initiatorOrigin= */ any(),
                         /* additionalNavigationParams= */ any(),
-                        callbackCaptor.capture());
+                        mCallbackCaptor.capture());
 
-        callbackCaptor.getValue().run();
+        mCallbackCaptor.getValue().run();
         verify(mPaymentsWindowBridge).onUserDeniedTabOpening();
     }
 

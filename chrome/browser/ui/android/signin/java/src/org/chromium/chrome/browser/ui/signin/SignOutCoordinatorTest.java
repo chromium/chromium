@@ -30,6 +30,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -83,6 +84,7 @@ public class SignOutCoordinatorTest {
     @Mock private SyncService mSyncService;
     @Mock private Runnable mOnSignOut;
     @Mock private BrowsingDataBridge.Natives mBrowsingDataBridgeJniMock;
+    @Captor private ArgumentCaptor<Integer> mTimePeriodCaptor;
 
     private final Set<Integer> mUnsyncedDataTypes = new HashSet<>();
     private SnackbarManager mSnackbarManager;
@@ -535,13 +537,12 @@ public class SignOutCoordinatorTest {
         verifySignOutAndSnackbar();
 
         ArgumentCaptor<int[]> dataTypesCaptor = ArgumentCaptor.forClass(int[].class);
-        ArgumentCaptor<Integer> timePeriodCaptor = ArgumentCaptor.forClass(Integer.class);
         verify(mBrowsingDataBridgeJniMock)
                 .clearBrowsingData(
                         eq(mProfile),
                         any(),
                         dataTypesCaptor.capture(),
-                        timePeriodCaptor.capture(),
+                        mTimePeriodCaptor.capture(),
                         any(),
                         any());
 
@@ -555,7 +556,7 @@ public class SignOutCoordinatorTest {
             BrowsingDataType.TABS
         };
         Assert.assertArrayEquals(expectedBrowsingDatatypes, dataTypesCaptor.getValue());
-        Assert.assertEquals(TimePeriod.ALL_TIME, (int) timePeriodCaptor.getValue());
+        Assert.assertEquals(TimePeriod.ALL_TIME, (int) mTimePeriodCaptor.getValue());
     }
 
     @Test

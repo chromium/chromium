@@ -10,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.mock;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -99,6 +98,7 @@ public class SigninPromoDelegateTest {
     private @Mock SigninManager mSigninManager;
     private @Mock SyncService mSyncService;
     private @Mock HistorySyncHelper mHistorySyncHelper;
+    @Mock private Drawable mDrawable;
 
     private Context mContext;
     private SigninPromoDelegate mDelegate;
@@ -158,7 +158,7 @@ public class SigninPromoDelegateTest {
                 new DisplayableProfileData(
                         new CoreAccountId(new GaiaId("accountId")),
                         "testemail@gmail.com",
-                        mock(Drawable.class),
+                        mDrawable,
                         "TestName LastName",
                         "TestName",
                         /* hasDisplayableEmailAddress= */ true,

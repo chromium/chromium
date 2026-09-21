@@ -55,17 +55,19 @@ public class CustomTabActivityLaunchHandlerTest {
     public final CustomTabActivityContentTestEnvironment env =
             new CustomTabActivityContentTestEnvironment();
 
-    protected CustomTabActivityTabController mTabController;
-    protected CustomTabIntentHandler mIntentHandler;
     @Mock CustomTabActivityNavigationController mNavigationController;
     @Mock WebAppLaunchHandler.Natives mWebAppLaunchHandlerJniMock;
     @Mock private UserPrefsJni mMockUserPrefsJni;
+    @Mock private PrefService mPrefService;
+
+    protected CustomTabActivityTabController mTabController;
+    protected CustomTabIntentHandler mIntentHandler;
 
     @Before
     public void setUp() {
         WebAppLaunchHandlerJni.setInstanceForTesting(mWebAppLaunchHandlerJniMock);
         UserPrefsJni.setInstanceForTesting(mMockUserPrefsJni);
-        doReturn(mock(PrefService.class)).when(mMockUserPrefsJni).get(any());
+        doReturn(mPrefService).when(mMockUserPrefsJni).get(any());
 
         // Ensure the test can read the Autofill pref. Assume it's turned off by default.
         AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting(

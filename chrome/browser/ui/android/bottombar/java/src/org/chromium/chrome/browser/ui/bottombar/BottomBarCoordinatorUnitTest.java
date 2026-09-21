@@ -12,7 +12,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -89,6 +88,7 @@ public class BottomBarCoordinatorUnitTest {
     @Mock private Tab mTab;
     @Mock private LayoutStateProvider mLayoutStateProvider;
     @Mock private GlicKeyedService mGlicKeyedService;
+    @Mock private GlicEnabling.Natives mGlicEnablingNatives;
 
     private final SettableNullableObservableSupplier<Tab> mTabSupplier =
             ObservableSuppliers.createNullable();
@@ -225,9 +225,8 @@ public class BottomBarCoordinatorUnitTest {
 
     @Test
     public void testExtraButton_bindsEligibleActionTooltipAndLongPress_withoutClobbering() {
-        GlicEnabling.Natives glicEnablingMock = mock(GlicEnabling.Natives.class);
-        GlicEnablingJni.setInstanceForTesting(glicEnablingMock);
-        when(glicEnablingMock.isEnabledForProfile(any())).thenReturn(true);
+        GlicEnablingJni.setInstanceForTesting(mGlicEnablingNatives);
+        when(mGlicEnablingNatives.isEnabledForProfile(any())).thenReturn(true);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
 
         AtomicBoolean glicLongClicked = new AtomicBoolean(false);
@@ -372,9 +371,8 @@ public class BottomBarCoordinatorUnitTest {
 
         when(mTracker.shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_PROMO_DIALOG))
                 .thenReturn(true);
-        GlicEnabling.Natives glicEnablingMock = mock(GlicEnabling.Natives.class);
-        GlicEnablingJni.setInstanceForTesting(glicEnablingMock);
-        when(glicEnablingMock.isEnabledForProfile(any())).thenReturn(true);
+        GlicEnablingJni.setInstanceForTesting(mGlicEnablingNatives);
+        when(mGlicEnablingNatives.isEnabledForProfile(any())).thenReturn(true);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
 
         assertTrue(mCoordinator.maybeShowPromoDialog(mProfile));
@@ -389,9 +387,8 @@ public class BottomBarCoordinatorUnitTest {
 
         when(mTracker.shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_PROMO_DIALOG))
                 .thenReturn(true);
-        GlicEnabling.Natives glicEnablingMock = mock(GlicEnabling.Natives.class);
-        GlicEnablingJni.setInstanceForTesting(glicEnablingMock);
-        when(glicEnablingMock.isEnabledForProfile(any())).thenReturn(true);
+        GlicEnablingJni.setInstanceForTesting(mGlicEnablingNatives);
+        when(mGlicEnablingNatives.isEnabledForProfile(any())).thenReturn(true);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
 
         assertFalse(mCoordinator.maybeShowPromoDialog(mProfile));
@@ -406,9 +403,8 @@ public class BottomBarCoordinatorUnitTest {
 
         when(mTracker.shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_PROMO_DIALOG))
                 .thenReturn(true);
-        GlicEnabling.Natives glicEnablingMock = mock(GlicEnabling.Natives.class);
-        GlicEnablingJni.setInstanceForTesting(glicEnablingMock);
-        when(glicEnablingMock.isEnabledForProfile(any())).thenReturn(true);
+        GlicEnablingJni.setInstanceForTesting(mGlicEnablingNatives);
+        when(mGlicEnablingNatives.isEnabledForProfile(any())).thenReturn(true);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
 
         assertFalse(mCoordinator.maybeShowPromoDialog(mProfile));

@@ -19,7 +19,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
@@ -51,6 +50,7 @@ public class SurveyUiDelegateBridgeUnitTest {
     @Mock private ManagedMessageDispatcher mMockMessageDispatcher;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private InsetObserver mInsetObserver;
+    @Mock private SurveyUiDelegate mSurveyUiDelegate;
 
     private Activity mActivity;
     private WindowAndroid mWindow;
@@ -96,18 +96,17 @@ public class SurveyUiDelegateBridgeUnitTest {
 
     @Test
     public void createBridgeFromMessage_Success() {
-        SurveyUiDelegate mockDelegate = Mockito.mock(SurveyUiDelegate.class);
-        SurveyUiDelegateBridge.setDelegateForTesting(mockDelegate);
+        SurveyUiDelegateBridge.setDelegateForTesting(mSurveyUiDelegate);
         MessageWrapper wrapper = MessageWrapper.create(1L, /*MessageIdentifier.INVALID_MESSAGE*/ 0);
         SurveyUiDelegateBridge delegate =
                 SurveyUiDelegateBridge.createFromMessage(TEST_NATIVE_POINTER, wrapper, mWindow);
         assertNotNull(delegate);
 
         delegate.showSurveyInvitation(() -> {}, () -> {}, () -> {});
-        verify(mockDelegate).showSurveyInvitation(notNull(), notNull(), notNull());
+        verify(mSurveyUiDelegate).showSurveyInvitation(notNull(), notNull(), notNull());
 
         delegate.dismiss();
-        verify(mockDelegate).dismiss();
+        verify(mSurveyUiDelegate).dismiss();
 
         verifyNoInteractions(mMockSurveyUiDelegateBridge);
     }

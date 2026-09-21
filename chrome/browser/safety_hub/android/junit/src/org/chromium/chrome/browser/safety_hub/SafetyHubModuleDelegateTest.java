@@ -9,7 +9,6 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -27,6 +26,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -76,6 +76,8 @@ public class SafetyHubModuleDelegateTest {
     @Mock private Intent mSigninIntent;
     @Mock private Context mContext;
     @Mock private SettingsCustomTabLauncher mSettingsCustomTabLauncher;
+    @Mock private ModalDialogManager.Presenter mModalDialogManagerPresenter;
+    @Captor private ArgumentCaptor<BottomSheetSigninAndHistorySyncConfig> mConfigCaptor;
 
     private SafetyHubModuleDelegate mSafetyHubModuleDelegate;
     private Profile mProfile;
@@ -92,8 +94,7 @@ public class SafetyHubModuleDelegateTest {
 
         mModalDialogManager =
                 new ModalDialogManager(
-                        mock(ModalDialogManager.Presenter.class),
-                        ModalDialogManager.ModalDialogType.APP);
+                        mModalDialogManagerPresenter, ModalDialogManager.ModalDialogType.APP);
 
         OneshotSupplierImpl<WindowAndroid> windowAndroidSupplier = new OneshotSupplierImpl<>();
         OneshotSupplierImpl<SnackbarManager> snackbarManagerSupplier = new OneshotSupplierImpl<>();
@@ -171,15 +172,13 @@ public class SafetyHubModuleDelegateTest {
 
         mSafetyHubModuleDelegate.launchSigninPromo(mContext);
 
-        ArgumentCaptor<BottomSheetSigninAndHistorySyncConfig> configCaptor =
-                ArgumentCaptor.forClass(BottomSheetSigninAndHistorySyncConfig.class);
         verify(mSigninLauncher)
                 .createBottomSheetSigninIntentOrShowError(
                         eq(mContext),
                         eq(mProfile),
-                        configCaptor.capture(),
+                        mConfigCaptor.capture(),
                         eq(SigninAccessPoint.SAFETY_CHECK));
-        BottomSheetSigninAndHistorySyncConfig config = configCaptor.getValue();
+        BottomSheetSigninAndHistorySyncConfig config = mConfigCaptor.getValue();
         assertEquals(NoAccountSigninMode.BOTTOM_SHEET, config.noAccountSigninMode);
         assertEquals(
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET, config.withAccountSigninMode);
@@ -196,10 +195,8 @@ public class SafetyHubModuleDelegateTest {
 
         mSafetyHubModuleDelegate.launchSigninPromo(mContext);
 
-        ArgumentCaptor<BottomSheetSigninAndHistorySyncConfig> configCaptor =
-                ArgumentCaptor.forClass(BottomSheetSigninAndHistorySyncConfig.class);
-        verify(mSigninCoordinator).startSigninFlow(configCaptor.capture());
-        BottomSheetSigninAndHistorySyncConfig config = configCaptor.getValue();
+        verify(mSigninCoordinator).startSigninFlow(mConfigCaptor.capture());
+        BottomSheetSigninAndHistorySyncConfig config = mConfigCaptor.getValue();
         assertEquals(NoAccountSigninMode.BOTTOM_SHEET, config.noAccountSigninMode);
         assertEquals(
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET, config.withAccountSigninMode);

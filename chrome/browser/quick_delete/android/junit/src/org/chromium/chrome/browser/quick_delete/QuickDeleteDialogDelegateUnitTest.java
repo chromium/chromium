@@ -22,6 +22,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -57,6 +58,7 @@ public class QuickDeleteDialogDelegateUnitTest {
     @Mock private Tab mTabMock;
     @Mock private SettingsNavigation mSettingsNavigationMock;
     @Mock private TimePeriodChangeObserver mTimePeriodChangeObserverMock;
+    @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
 
     private FakeModalDialogManager mModalDialogManager;
 
@@ -159,13 +161,16 @@ public class QuickDeleteDialogDelegateUnitTest {
         assertEquals(2, searchHistoryDisambiguation.getClickableSpans().length);
         searchHistoryDisambiguation.getClickableSpans()[0].onClick(searchHistoryDisambiguation);
 
-        ArgumentCaptor<LoadUrlParams> argument = ArgumentCaptor.forClass(LoadUrlParams.class);
-
         histogramWatcher.assertExpected();
         verify(mTabModelSelectorMock, times(1))
                 .openNewTab(
-                        argument.capture(), eq(TabLaunchType.FROM_LINK), eq(mTabMock), eq(false));
-        assertEquals(UrlConstants.GOOGLE_SEARCH_HISTORY_URL_IN_QD, argument.getValue().getUrl());
+                        mLoadUrlParamsCaptor.capture(),
+                        eq(TabLaunchType.FROM_LINK),
+                        eq(mTabMock),
+                        eq(false));
+        assertEquals(
+                UrlConstants.GOOGLE_SEARCH_HISTORY_URL_IN_QD,
+                mLoadUrlParamsCaptor.getValue().getUrl());
         verify(mOnDismissCallbackMock, times(1)).onResult(DialogDismissalCause.ACTION_ON_CONTENT);
     }
 
@@ -190,13 +195,14 @@ public class QuickDeleteDialogDelegateUnitTest {
         assertEquals(2, searchHistoryDisambiguation.getClickableSpans().length);
         searchHistoryDisambiguation.getClickableSpans()[1].onClick(searchHistoryDisambiguation);
 
-        ArgumentCaptor<LoadUrlParams> argument = ArgumentCaptor.forClass(LoadUrlParams.class);
-
         histogramWatcher.assertExpected();
         verify(mTabModelSelectorMock, times(1))
                 .openNewTab(
-                        argument.capture(), eq(TabLaunchType.FROM_LINK), eq(mTabMock), eq(false));
-        assertEquals(UrlConstants.MY_ACTIVITY_URL_IN_QD, argument.getValue().getUrl());
+                        mLoadUrlParamsCaptor.capture(),
+                        eq(TabLaunchType.FROM_LINK),
+                        eq(mTabMock),
+                        eq(false));
+        assertEquals(UrlConstants.MY_ACTIVITY_URL_IN_QD, mLoadUrlParamsCaptor.getValue().getUrl());
         verify(mOnDismissCallbackMock, times(1)).onResult(DialogDismissalCause.ACTION_ON_CONTENT);
     }
 }

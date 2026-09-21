@@ -14,7 +14,6 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -103,6 +102,10 @@ public class NtpCustomizationMediatorUnitTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private SnackbarManager mSnackbarManager;
+    @Mock private NtpThemeStateProvider mNtpThemeStateProvider;
+    @Mock private View.OnClickListener mNtpListener;
+    @Mock private View.OnClickListener mFeedsListener;
+    @Mock private View.OnClickListener mViewOnClickListener;
     private NtpCustomizationMediator mMediator;
     private final Runnable mShowMainBottomSheetRunnable = () -> mMediator.showBottomSheet(MAIN);
     private Map<Integer, Integer> mViewFlipperMap;
@@ -362,24 +365,23 @@ public class NtpCustomizationMediatorUnitTest {
     @Test
     public void testBottomSheetObserver_notifyApplyThemeChanges() {
         BottomSheetObserver observer = mMediator.getBottomSheetObserverForTesting();
-        NtpThemeStateProvider ntpThemeStateProvider = mock(NtpThemeStateProvider.class);
-        NtpThemeStateProvider.setInstanceForTesting(ntpThemeStateProvider);
+        NtpThemeStateProvider.setInstanceForTesting(mNtpThemeStateProvider);
 
         // Verifies notifyApplyThemeChanges() is called when a different theme color is selected.
         mMediator.onNewColorSelected(/* isDifferentColor= */ true);
         observer.onSheetClosed(2);
-        verify(ntpThemeStateProvider).notifyApplyThemeChanges();
+        verify(mNtpThemeStateProvider).notifyApplyThemeChanges();
         verify(mConfigManager).maybeSaveUserSelectedBackgroundTypeToSharedPreference(eq(mContext));
         assertTrue(NtpCustomizationUtils.getLastApplyThemeTimestampFromSharedPreference() > 0);
 
-        clearInvocations(ntpThemeStateProvider);
+        clearInvocations(mNtpThemeStateProvider);
         clearInvocations(mConfigManager);
         NtpCustomizationUtils.setLastApplyThemeTimestampToSharedPreference(0);
 
         // Verifies notifyApplyThemeChanges() is NOT called when theme color isn't changed.
         mMediator.onNewColorSelected(/* isDifferentColor= */ false);
         observer.onSheetClosed(2);
-        verify(ntpThemeStateProvider, never()).notifyApplyThemeChanges();
+        verify(mNtpThemeStateProvider, never()).notifyApplyThemeChanges();
         verify(mConfigManager, never())
                 .maybeSaveUserSelectedBackgroundTypeToSharedPreference(any());
         assertEquals(0, NtpCustomizationUtils.getLastApplyThemeTimestampFromSharedPreference());
@@ -399,19 +401,16 @@ public class NtpCustomizationMediatorUnitTest {
         // Verifies the listener returned from the delegate is in mTypeToListeners map.
         Map<Integer, View.OnClickListener> typeToListenerMap =
                 mMediator.getTypeToListenersForTesting();
-        View.OnClickListener ntpListener = mock(View.OnClickListener.class);
-        View.OnClickListener feedsListener = mock(View.OnClickListener.class);
-        typeToListenerMap.put(NTP_CARDS, ntpListener);
-        typeToListenerMap.put(FEED, feedsListener);
-        assertEquals(ntpListener, mListDelegate.getListener(NTP_CARDS));
-        assertEquals(feedsListener, mListDelegate.getListener(FEED));
+        typeToListenerMap.put(NTP_CARDS, mNtpListener);
+        typeToListenerMap.put(FEED, mFeedsListener);
+        assertEquals(mNtpListener, mListDelegate.getListener(NTP_CARDS));
+        assertEquals(mFeedsListener, mListDelegate.getListener(FEED));
     }
 
     @Test
     public void testRegisterClickListener() {
-        View.OnClickListener listener = mock(View.OnClickListener.class);
-        mMediator.registerClickListener(10, listener);
-        assertEquals(listener, mMediator.getTypeToListenersForTesting().get(10));
+        mMediator.registerClickListener(10, mViewOnClickListener);
+        assertEquals(mViewOnClickListener, mMediator.getTypeToListenersForTesting().get(10));
     }
 
     @Test
@@ -802,8 +801,7 @@ public class NtpCustomizationMediatorUnitTest {
                         mSnackbarManager,
                         mShowMainBottomSheetRunnable);
 
-        NtpThemeStateProvider ntpThemeStateProvider = mock(NtpThemeStateProvider.class);
-        NtpThemeStateProvider.setInstanceForTesting(ntpThemeStateProvider);
+        NtpThemeStateProvider.setInstanceForTesting(mNtpThemeStateProvider);
 
         // When the bottom sheet is closed and recreates the activity, verifies the Snackbar isn't
         // shown immediately, but state transitioned to PENDING_ON_RECREATE and taskId is set before

@@ -14,7 +14,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -57,11 +60,13 @@ public class HubLayoutPublicTransitTest {
     public AutoResetCtaTransitTestRule mCtaTestRule =
             ChromeTransitTestRules.autoResetCtaActivityRule();
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private SetupListManager mSetupListManager;
+
     @Before
     public void setUp() {
-        SetupListManager setupListManager = Mockito.mock(SetupListManager.class);
-        Mockito.when(setupListManager.isSetupListActive()).thenReturn(false);
-        SetupListManager.setInstanceForTesting(setupListManager);
+        Mockito.when(mSetupListManager.isSetupListActive()).thenReturn(false);
+        SetupListManager.setInstanceForTesting(mSetupListManager);
         EducationalTipModuleUtils.setEducationalTipActiveForTesting(false);
     }
 

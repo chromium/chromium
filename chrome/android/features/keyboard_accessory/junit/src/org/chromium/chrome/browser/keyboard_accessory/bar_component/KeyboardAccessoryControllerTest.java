@@ -58,6 +58,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
@@ -153,6 +154,10 @@ public class KeyboardAccessoryControllerTest {
     @Mock private Runnable mMockDismissRunnable;
     @Mock private Runnable mMockAtMemoryCallback;
     @Mock private ModalDialogManager mModalDialogManager;
+    @Mock private EntityInstance mEntityInstance;
+    @Mock private EntityType mEntityType;
+    @Mock private AutofillSuggestion mAutofillSuggestion;
+    @Captor private ArgumentCaptor<PropertyModel> mModelCaptor;
 
     private final KeyboardAccessoryData.Tab mTestTab =
             new KeyboardAccessoryData.Tab("Passwords", 0, null, 0, 0, null);
@@ -551,14 +556,12 @@ public class KeyboardAccessoryControllerTest {
 
     private void verifyLongPressOnPersonalContextSuggestionOpensSettings(
             @EntityTypeName int entityTypeName) {
-        EntityInstance entityInstance = mock(EntityInstance.class);
-        when(entityInstance.getRecordType())
+        when(mEntityInstance.getRecordType())
                 .thenReturn(
                         org.chromium.components.autofill.autofill_ai.RecordType.PERSONAL_CONTEXT);
-        EntityType entityType = mock(EntityType.class);
-        when(entityType.getTypeName()).thenReturn(entityTypeName);
-        when(entityInstance.getEntityType()).thenReturn(entityType);
-        when(mMockEntityDataManager.getEntityInstance("guid")).thenReturn(entityInstance);
+        when(mEntityType.getTypeName()).thenReturn(entityTypeName);
+        when(mEntityInstance.getEntityType()).thenReturn(mEntityType);
+        when(mMockEntityDataManager.getEntityInstance("guid")).thenReturn(mEntityInstance);
 
         AutofillSuggestion suggestion =
                 new AutofillSuggestion.Builder()
@@ -577,9 +580,8 @@ public class KeyboardAccessoryControllerTest {
         // Simulate a long press on the suggestion.
         barItems.get(0).getAction().getLongPressCallback().run();
 
-        ArgumentCaptor<PropertyModel> modelCaptor = ArgumentCaptor.forClass(PropertyModel.class);
-        verify(mModalDialogManager).showDialog(modelCaptor.capture(), anyInt());
-        PropertyModel model = modelCaptor.getValue();
+        verify(mModalDialogManager).showDialog(mModelCaptor.capture(), anyInt());
+        PropertyModel model = mModelCaptor.getValue();
         assertThat(model.get(ModalDialogProperties.TITLE), equalTo("Order * Water"));
         TextView description =
                 model.get(ModalDialogProperties.CUSTOM_VIEW)
@@ -623,10 +625,9 @@ public class KeyboardAccessoryControllerTest {
 
     @Test
     public void testLongPressOnRegularSuggestionDeletesSuggestion() {
-        EntityInstance entityInstance = mock(EntityInstance.class);
-        when(entityInstance.getRecordType())
+        when(mEntityInstance.getRecordType())
                 .thenReturn(org.chromium.components.autofill.autofill_ai.RecordType.LOCAL);
-        when(mMockEntityDataManager.getEntityInstance("guid")).thenReturn(entityInstance);
+        when(mMockEntityDataManager.getEntityInstance("guid")).thenReturn(mEntityInstance);
 
         AutofillSuggestion suggestion =
                 new AutofillSuggestion.Builder()
@@ -943,7 +944,7 @@ public class KeyboardAccessoryControllerTest {
 
     @Test
     public void testModelChangesUpdatesTheContentDescription() {
-        mCoordinator.setSuggestions(List.of(mock(AutofillSuggestion.class)), mMockAutofillDelegate);
+        mCoordinator.setSuggestions(List.of(mAutofillSuggestion), mMockAutofillDelegate);
 
         assertTrue(mModel.get(HAS_SUGGESTIONS));
 
@@ -1009,7 +1010,7 @@ public class KeyboardAccessoryControllerTest {
     public void testAndroidDesktopHasDismissButton() {
         DeviceInfo.setIsDesktopForTesting(true);
 
-        mCoordinator.setSuggestions(List.of(mock(AutofillSuggestion.class)), mMockAutofillDelegate);
+        mCoordinator.setSuggestions(List.of(mAutofillSuggestion), mMockAutofillDelegate);
 
         assertThat(mModel.get(BAR_ITEMS), contains(instanceOf(AutofillBarItem.class)));
         assertThat(
@@ -1021,7 +1022,7 @@ public class KeyboardAccessoryControllerTest {
     public void testAndroidDesktopDynamicPositioningHasNoDismissButton() {
         DeviceInfo.setIsDesktopForTesting(true);
 
-        mCoordinator.setSuggestions(List.of(mock(AutofillSuggestion.class)), mMockAutofillDelegate);
+        mCoordinator.setSuggestions(List.of(mAutofillSuggestion), mMockAutofillDelegate);
 
         assertThat(mModel.get(BAR_ITEMS), contains(instanceOf(AutofillBarItem.class)));
 

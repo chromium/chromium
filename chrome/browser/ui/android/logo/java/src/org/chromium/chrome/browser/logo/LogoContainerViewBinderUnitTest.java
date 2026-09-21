@@ -11,7 +11,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -54,21 +53,22 @@ import org.chromium.ui.widget.LoadingView;
 /** Unit tests for the {@link LogoContainerViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class LogoContainerViewBinderUnitTest {
+    private static final double DELTA = 1e-5;
+    private static final String ANIMATED_LOGO_URL =
+            "https://www.gstatic.com/chrome/ntp/doodle_test/ddljson_android4.json";
+
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private LogoContainerView mMockLogoView;
+    @Mock LogoBridge mLogoBridge;
+    @Mock ImageFetcher mImageFetcher;
+    @Mock private AnimatedImageDrawable mAnimatedImageDrawable;
+
     private Activity mActivity;
     private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
     private PropertyModel mLogoModel;
     private LogoContainerView mLogoContainerView;
     private LogoMediator mLogoMediator;
-    private static final double DELTA = 1e-5;
-    private static final String ANIMATED_LOGO_URL =
-            "https://www.gstatic.com/chrome/ntp/doodle_test/ddljson_android4.json";
-
-    @Mock private LogoContainerView mMockLogoView;
-
-    @Mock LogoBridge mLogoBridge;
-
-    @Mock ImageFetcher mImageFetcher;
 
     static class TestObserver implements LoadingView.Observer {
         public final CallbackHelper showLoadingCallback = new CallbackHelper();
@@ -287,7 +287,7 @@ public class LogoContainerViewBinderUnitTest {
     @Test
     public void testLoadingViewWithAnimatedImageDrawable() {
         mLogoContainerView.setLoadingViewVisibilityForTesting(View.INVISIBLE);
-        mLogoModel.set(LogoProperties.ANIMATED_LOGO, mock(AnimatedImageDrawable.class));
+        mLogoModel.set(LogoProperties.ANIMATED_LOGO, mAnimatedImageDrawable);
         assertEquals(View.GONE, mLogoContainerView.getLoadingViewVisibilityForTesting());
     }
 

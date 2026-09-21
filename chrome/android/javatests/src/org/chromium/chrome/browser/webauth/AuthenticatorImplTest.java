@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -92,6 +93,9 @@ public class AuthenticatorImplTest {
 
     @Mock UkmRecorder.Natives mUkmRecorderJniMock;
     @Mock WebauthnBrowserBridge.Natives mWebauthnBrowserBridgeNativesMock;
+    @Mock private CreateConfirmationUiDelegate mCreateConfirmationUiDelegate;
+    @Mock private Fido2CredentialRequest mFido2CredentialRequest;
+    @Captor private ArgumentCaptor<Runnable> mRejectCaptor;
 
     private Context mContext;
     private WebauthnTestUtils.MockIntentSender mIntentSender;
@@ -479,10 +483,8 @@ public class AuthenticatorImplTest {
     @Test
     @SmallTest
     public void testAuthenticatorImplMakeCredential_CloseBeforeBottomSheetCallback_NoCrash() {
-        CreateConfirmationUiDelegate createConfirmationUiDelegate =
-                Mockito.mock(CreateConfirmationUiDelegate.class);
         Mockito.when(
-                        createConfirmationUiDelegate.show(
+                        mCreateConfirmationUiDelegate.show(
                                 ArgumentMatchers.any(), ArgumentMatchers.any()))
                 .thenReturn(true);
 
@@ -491,7 +493,7 @@ public class AuthenticatorImplTest {
                         mContext,
                         mWebContents,
                         mIntentSender,
-                        createConfirmationUiDelegate,
+                        mCreateConfirmationUiDelegate,
                         mFrameHost,
                         mOrigin);
 
@@ -503,15 +505,14 @@ public class AuthenticatorImplTest {
                                     mCallback.onRegisterResponse(status, response));
                 });
 
-        ArgumentCaptor<Runnable> rejectCaptor = ArgumentCaptor.forClass(Runnable.class);
-        Mockito.verify(createConfirmationUiDelegate)
-                .show(ArgumentMatchers.any(), rejectCaptor.capture());
+        Mockito.verify(mCreateConfirmationUiDelegate)
+                .show(ArgumentMatchers.any(), mRejectCaptor.capture());
 
         // Simulate the race condition: Close the authenticator (e.g. tab closed)
         ThreadUtils.runOnUiThreadBlocking(authenticator::close);
 
         // Now simulate the bottom sheet being dismissed/cancelled
-        ThreadUtils.runOnUiThreadBlocking(rejectCaptor.getValue());
+        ThreadUtils.runOnUiThreadBlocking(mRejectCaptor.getValue());
     }
 
     @Test
@@ -573,9 +574,7 @@ public class AuthenticatorImplTest {
     public void testAuthenticatorImplGetAssertion_webContentsNotVisibleConditional_notRejected() {
         MockWebContents spyWebContents = Mockito.spy(mWebContents);
         doReturn(Visibility.HIDDEN).when(spyWebContents).getVisibility();
-        Fido2CredentialRequest mockFido2CredentialRequest =
-                Mockito.mock(Fido2CredentialRequest.class);
-        AuthenticatorImpl.overrideFido2CredentialRequestForTesting(mockFido2CredentialRequest);
+        AuthenticatorImpl.overrideFido2CredentialRequestForTesting(mFido2CredentialRequest);
 
         AuthenticatorImpl authenticator =
                 new AuthenticatorImpl(
@@ -593,7 +592,7 @@ public class AuthenticatorImplTest {
                 () -> {
                     authenticator.getCredential(requestOptions, (getCredentialResponse) -> {});
                 });
-        verify(mockFido2CredentialRequest, times(1))
+        verify(mFido2CredentialRequest, times(1))
                 .handleGetCredentialRequest(any(), any(), any(), any());
     }
 }

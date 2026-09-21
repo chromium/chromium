@@ -23,6 +23,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -62,7 +63,6 @@ public class GestureUserEducationIphControllerUnitTest {
 
     @Mock private BackPressManager mBackPressManager;
     @Mock private ScrimManager mScrimManager;
-    private ViewGroup mAnchorView;
     @Mock private Tab mTab;
     @Mock private Tracker mTracker;
     @Mock private Profile mProfile;
@@ -71,10 +71,11 @@ public class GestureUserEducationIphControllerUnitTest {
     @Mock private NavigationController mNavigationController;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private Window mWindow;
+    @Captor private ArgumentCaptor<PropertyModel> mScrimPropertyModelCaptor;
+
+    private ViewGroup mAnchorView;
     private Activity mActivity;
-
     private GestureUserEducationIphController mController;
-
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
 
     @Before
@@ -192,13 +193,11 @@ public class GestureUserEducationIphControllerUnitTest {
         tabObserver.onPageLoadFinished(mTab, JUnitTestGURLs.EXAMPLE_URL);
         ShadowLooper.idleMainLooper(PAGE_LOAD_DELAY, TimeUnit.MILLISECONDS);
 
-        ArgumentCaptor<PropertyModel> scrimPropertyModelCaptor =
-                ArgumentCaptor.forClass(PropertyModel.class);
-        verify(mScrimManager).showScrim(scrimPropertyModelCaptor.capture());
+        verify(mScrimManager).showScrim(mScrimPropertyModelCaptor.capture());
         Assert.assertEquals(
                 "Layout should be present before hiding", 1, mAnchorView.getChildCount());
 
-        scrimPropertyModelCaptor
+        mScrimPropertyModelCaptor
                 .getValue()
                 .get(ScrimProperties.GESTURE_DETECTOR)
                 .onTouchEvent(MotionEventTestUtils.getTrackpadTouchDownEventNoClick());

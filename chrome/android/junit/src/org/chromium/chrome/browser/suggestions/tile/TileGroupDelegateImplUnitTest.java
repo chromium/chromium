@@ -25,6 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -63,6 +64,7 @@ public class TileGroupDelegateImplUnitTest {
     @Mock private SuggestionsNavigationDelegate mNavigationDelegate;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private TemplateUrlService mTemplateUrlService;
+    @Captor private ArgumentCaptor<Snackbar> mSnackbarCaptor;
 
     private Context mContext;
     private TileGroupDelegateImpl mTileGroupDelegateImpl;
@@ -154,11 +156,10 @@ public class TileGroupDelegateImplUnitTest {
         mTileGroupDelegateImpl.removeMostVisitedItem(makeTile("Foo", NON_SEARCH_URL, 0));
 
         verify(mMostVisitedSites).addBlocklistedUrl(NON_SEARCH_URL);
-        ArgumentCaptor<Snackbar> snackbarCaptor = ArgumentCaptor.forClass(Snackbar.class);
-        verify(mSnackbarManager).showSnackbar(snackbarCaptor.capture());
+        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
         Assert.assertEquals(
                 mContext.getString(R.string.most_visited_item_removed),
-                snackbarCaptor.getValue().getTextForTesting());
+                mSnackbarCaptor.getValue().getTextForTesting());
     }
 
     @Test
@@ -168,11 +169,10 @@ public class TileGroupDelegateImplUnitTest {
         // `showTileUnpinSnackbar()`, rather than the full unpin flow.
         mTileGroupDelegateImpl.showTileUnpinSnackbar(() -> {});
 
-        ArgumentCaptor<Snackbar> snackbarCaptor = ArgumentCaptor.forClass(Snackbar.class);
-        verify(mSnackbarManager).showSnackbar(snackbarCaptor.capture());
+        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
         Assert.assertEquals(
                 mContext.getString(R.string.custom_tile_unpinned),
-                snackbarCaptor.getValue().getTextForTesting());
+                mSnackbarCaptor.getValue().getTextForTesting());
     }
 
     private Tile makeTile(String title, GURL url, int index) {

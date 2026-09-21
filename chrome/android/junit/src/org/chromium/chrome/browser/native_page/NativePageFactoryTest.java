@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.native_page;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -50,16 +49,21 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 /** Tests public methods in NativePageFactory. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class NativePageFactoryTest {
+    private static final String PDF_LINK = "https://www.foo.com/testfiles/pdf/sample.pdf";
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private PdfPage mPdfPage;
     @Mock private NativePage mCandidatePage;
     @Mock private Tab mTab;
     @Mock private BrowserControlsManager mBrowserControlsManager;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private Activity mActivity;
+    @Mock private TabModel mTabModel;
+    @Mock private Tab mTab1;
+
     private NativePageFactory mNativePageFactory;
     private PdfInfo mPdfInfo;
-    private static final String PDF_LINK = "https://www.foo.com/testfiles/pdf/sample.pdf";
 
     private static class MockNativePage implements NativePage {
         public final @NativePageType int type;
@@ -420,19 +424,18 @@ public class NativePageFactoryTest {
     public void testTabShim_SelectTab_SwitchesTab() {
         int tabId = 123;
         when(mTab.getId()).thenReturn(tabId);
-        when(mTabModelSelector.getCurrentTab()).thenReturn(mock(Tab.class));
+        when(mTabModelSelector.getCurrentTab()).thenReturn(mTab1);
 
-        TabModel model = mock(TabModel.class);
-        when(mTabModelSelector.getModelForTabId(tabId)).thenReturn(model);
-        when(model.isIncognito()).thenReturn(false);
-        when(model.getTabById(tabId)).thenReturn(mTab);
-        when(model.indexOf(mTab)).thenReturn(2);
+        when(mTabModelSelector.getModelForTabId(tabId)).thenReturn(mTabModel);
+        when(mTabModel.isIncognito()).thenReturn(false);
+        when(mTabModel.getTabById(tabId)).thenReturn(mTab);
+        when(mTabModel.indexOf(mTab)).thenReturn(2);
 
         TabShim tabShim = new TabShim(mTab, mBrowserControlsManager, mTabModelSelector, null);
 
         tabShim.selectTab();
 
         verify(mTabModelSelector).selectModel(false);
-        verify(model).setIndex(2, TabSelectionType.FROM_USER);
+        verify(mTabModel).setIndex(2, TabSelectionType.FROM_USER);
     }
 }

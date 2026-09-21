@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.multiwindow;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -26,6 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -34,6 +34,9 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class InstanceSwitcherCoordinatorUnitTest {
+    private static final int MIN_COMMAND_ITEM_HEIGHT_PX = 64;
+    private static final int ITEM_PADDING_HEIGHT_PX = 2;
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private View mDialogView;
     @Mock private TabLayout mTabHeaderRow;
@@ -43,15 +46,15 @@ public class InstanceSwitcherCoordinatorUnitTest {
     @Mock private View mCommandItem;
     @Mock private RecyclerView.Adapter mActiveListAdapter;
     @Mock private RecyclerView.Adapter mInactiveListAdapter;
-
-    private static final int MIN_COMMAND_ITEM_HEIGHT_PX = 64;
-    private static final int ITEM_PADDING_HEIGHT_PX = 2;
+    @Mock private ViewTreeObserver mViewTreeObserver;
+    @Captor private ArgumentCaptor<LayoutParams> mParamsCaptor;
+    @Captor private ArgumentCaptor<View.OnLayoutChangeListener> mListenerCaptor;
 
     @Before
     public void setup() {
         when(mDialogView.getPaddingTop()).thenReturn(16);
         when(mTabHeaderRow.getMeasuredHeight()).thenReturn(50);
-        when(mInstanceListContainer.getViewTreeObserver()).thenReturn(mock(ViewTreeObserver.class));
+        when(mInstanceListContainer.getViewTreeObserver()).thenReturn(mViewTreeObserver);
         when(mCommandItem.getVisibility()).thenReturn(View.VISIBLE);
         when(mCommandItem.getMeasuredHeight()).thenReturn(64);
         when(mActiveInstancesList.getAdapter()).thenReturn(mActiveListAdapter);
@@ -115,11 +118,10 @@ public class InstanceSwitcherCoordinatorUnitTest {
         listener.onGlobalLayout();
 
         // Verify layout params.
-        ArgumentCaptor<LayoutParams> paramsCaptor = ArgumentCaptor.forClass(LayoutParams.class);
-        verify(mInstanceListContainer).setLayoutParams(paramsCaptor.capture());
+        verify(mInstanceListContainer).setLayoutParams(mParamsCaptor.capture());
         assertEquals(
-                "Height is incorrect.", LayoutParams.WRAP_CONTENT, paramsCaptor.getValue().height);
-        assertEquals("Weight is incorrect.", 0, paramsCaptor.getValue().weight, 0);
+                "Height is incorrect.", LayoutParams.WRAP_CONTENT, mParamsCaptor.getValue().height);
+        assertEquals("Weight is incorrect.", 0, mParamsCaptor.getValue().weight, 0);
     }
 
     @Test
@@ -148,9 +150,8 @@ public class InstanceSwitcherCoordinatorUnitTest {
                         /* registerResizeListener= */ false);
         listener.onGlobalLayout();
         // Verify layout params.
-        ArgumentCaptor<LayoutParams> paramsCaptor = ArgumentCaptor.forClass(LayoutParams.class);
-        verify(mInstanceListContainer).setLayoutParams(paramsCaptor.capture());
-        LayoutParams capturedParams = paramsCaptor.getValue();
+        verify(mInstanceListContainer).setLayoutParams(mParamsCaptor.capture());
+        LayoutParams capturedParams = mParamsCaptor.getValue();
         assertEquals("Height is incorrect.", LayoutParams.WRAP_CONTENT, capturedParams.height);
         assertEquals("Weight is incorrect.", 0, capturedParams.weight, 0);
 
@@ -173,9 +174,9 @@ public class InstanceSwitcherCoordinatorUnitTest {
         listener.onGlobalLayout();
 
         // Verify layout params.
-        verify(mInstanceListContainer, times(2)).setLayoutParams(paramsCaptor.capture());
-        assertEquals("Height is incorrect.", 0, paramsCaptor.getValue().height);
-        assertEquals("Weight is incorrect.", 1, paramsCaptor.getValue().weight, 0);
+        verify(mInstanceListContainer, times(2)).setLayoutParams(mParamsCaptor.capture());
+        assertEquals("Height is incorrect.", 0, mParamsCaptor.getValue().height);
+        assertEquals("Weight is incorrect.", 1, mParamsCaptor.getValue().weight, 0);
     }
 
     @Test
@@ -204,11 +205,10 @@ public class InstanceSwitcherCoordinatorUnitTest {
         listener.onGlobalLayout();
 
         // Verify layout params
-        ArgumentCaptor<LayoutParams> paramsCaptor = ArgumentCaptor.forClass(LayoutParams.class);
-        verify(mInstanceListContainer).setLayoutParams(paramsCaptor.capture());
+        verify(mInstanceListContainer).setLayoutParams(mParamsCaptor.capture());
         assertEquals(
-                "Height is incorrect.", LayoutParams.WRAP_CONTENT, paramsCaptor.getValue().height);
-        assertEquals("Weight is incorrect.", 0, paramsCaptor.getValue().weight, 0);
+                "Height is incorrect.", LayoutParams.WRAP_CONTENT, mParamsCaptor.getValue().height);
+        assertEquals("Weight is incorrect.", 0, mParamsCaptor.getValue().weight, 0);
     }
 
     @Test
@@ -274,10 +274,8 @@ public class InstanceSwitcherCoordinatorUnitTest {
                 /* registerResizeListener= */ true);
 
         // Verify listener was added and capture it
-        ArgumentCaptor<View.OnLayoutChangeListener> listenerCaptor =
-                ArgumentCaptor.forClass(View.OnLayoutChangeListener.class);
-        verify(mDialogView).addOnLayoutChangeListener(listenerCaptor.capture());
-        View.OnLayoutChangeListener listener = listenerCaptor.getValue();
+        verify(mDialogView).addOnLayoutChangeListener(mListenerCaptor.capture());
+        View.OnLayoutChangeListener listener = mListenerCaptor.getValue();
 
         // Simulate a height change (e.g., bottom changes from 300 to 600)
         listener.onLayoutChange(mDialogView, 0, 0, 100, 800, 0, 0, 100, 400);

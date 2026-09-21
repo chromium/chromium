@@ -20,6 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -38,7 +39,7 @@ public class DisclosurePersistentSnackbarTest {
     @Mock public ActivityLifecycleDispatcher mLifecycleDispatcher;
     @Mock public SnackbarManager mSnackbarManager;
     @Mock public TrustedWebActivityModel.DisclosureEventsCallback mCallback;
-
+    @Captor private ArgumentCaptor<Snackbar> mSnackbarCaptor;
     private final TrustedWebActivityModel mModel = new TrustedWebActivityModel();
     private DisclosurePersistentSnackbar mSnackbar;
 
@@ -63,10 +64,9 @@ public class DisclosurePersistentSnackbarTest {
     public void displaysSnackbar() {
         mModel.set(DISCLOSURE_STATE, DISCLOSURE_STATE_SHOWN);
 
-        ArgumentCaptor<Snackbar> captor = ArgumentCaptor.forClass(Snackbar.class);
-        verify(mSnackbarManager).showSnackbar(captor.capture());
+        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
 
-        Snackbar snackbar = captor.getValue();
+        Snackbar snackbar = mSnackbarCaptor.getValue();
 
         assertEquals(Snackbar.UMA_TWA_PRIVACY_DISCLOSURE, snackbar.getIdentifierForTesting());
 
@@ -85,10 +85,9 @@ public class DisclosurePersistentSnackbarTest {
     @Test
     public void dismissesSnackbar() {
         mModel.set(DISCLOSURE_STATE, DISCLOSURE_STATE_SHOWN);
-        ArgumentCaptor<Snackbar> snackbar = ArgumentCaptor.forClass(Snackbar.class);
-        verify(mSnackbarManager).showSnackbar(snackbar.capture());
+        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
 
-        SnackbarManager.SnackbarController controller = snackbar.getValue().getController();
+        SnackbarManager.SnackbarController controller = mSnackbarCaptor.getValue().getController();
 
         mModel.set(DISCLOSURE_STATE, DISCLOSURE_STATE_NOT_SHOWN);
         verify(mSnackbarManager).dismissSnackbars(eq(controller));
@@ -97,10 +96,9 @@ public class DisclosurePersistentSnackbarTest {
     @Test
     public void snackbarAction() {
         mModel.set(DISCLOSURE_STATE, DISCLOSURE_STATE_SHOWN);
-        ArgumentCaptor<Snackbar> snackbar = ArgumentCaptor.forClass(Snackbar.class);
-        verify(mSnackbarManager).showSnackbar(snackbar.capture());
+        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
 
-        SnackbarManager.SnackbarController controller = snackbar.getValue().getController();
+        SnackbarManager.SnackbarController controller = mSnackbarCaptor.getValue().getController();
         controller.onAction(null);
 
         verify(mCallback).onDisclosureAccepted();

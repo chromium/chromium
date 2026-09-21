@@ -11,7 +11,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -71,6 +70,8 @@ import java.util.List;
 /** Unit tests for {@link NtpThemeCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class NtpThemeCoordinatorUnitTest {
+    private static final String FILE_ID_HASH = "test_file_id_hash";
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private BottomSheetDelegate mBottomSheetDelegate;
@@ -83,13 +84,15 @@ public class NtpThemeCoordinatorUnitTest {
     @Mock private NtpThemeCollectionsCoordinator mNtpThemeCollectionsCoordinator;
     @Mock private ImageFetcher mImageFetcher;
     @Captor private ArgumentCaptor<Callback<Bitmap>> mBitmapCallbackCaptor;
-
-    private static final String FILE_ID_HASH = "test_file_id_hash";
+    @Mock private ThemeBottomSheetObserver mMockObserver;
+    @Mock private ThemeBottomSheetObserver mObserver1;
+    @Mock private ThemeBottomSheetObserver mObserver2;
+    @Mock private ThemeBottomSheetObserver mObserver3;
+    @Mock private NtpChromeColorsCoordinator mNtpChromeColorsCoordinator;
 
     private Context mContext;
     private NtpThemeCoordinator mCoordinator;
     private NtpThemeMediator mMediator;
-    @Mock private ThemeBottomSheetObserver mMockObserver;
 
     @Before
     public void setUp() {
@@ -228,34 +231,28 @@ public class NtpThemeCoordinatorUnitTest {
 
     @Test
     public void testNotifyBottomSheetBackgroundTypeChanged() {
-        ThemeBottomSheetObserver observer1 = mock(ThemeBottomSheetObserver.class);
-        ThemeBottomSheetObserver observer2 = mock(ThemeBottomSheetObserver.class);
-        ThemeBottomSheetObserver observer3 = mock(ThemeBottomSheetObserver.class);
-
-        mCoordinator.addThemeBottomSheetObserverForTesting(observer1);
-        mCoordinator.addThemeBottomSheetObserverForTesting(observer2);
-        mCoordinator.addThemeBottomSheetObserverForTesting(observer3);
+        mCoordinator.addThemeBottomSheetObserverForTesting(mObserver1);
+        mCoordinator.addThemeBottomSheetObserverForTesting(mObserver2);
+        mCoordinator.addThemeBottomSheetObserverForTesting(mObserver3);
 
         mCoordinator.notifyBottomSheetBackgroundTypeChanged();
 
-        verify(observer1).onBackgroundTypeChanged();
-        verify(observer2).onBackgroundTypeChanged();
-        verify(observer3).onBackgroundTypeChanged();
+        verify(mObserver1).onBackgroundTypeChanged();
+        verify(mObserver2).onBackgroundTypeChanged();
+        verify(mObserver3).onBackgroundTypeChanged();
     }
 
     @Test
     public void testOnChromeColorSelected() {
-        NtpChromeColorsCoordinator mockChromeColorsCoordinator =
-                mock(NtpChromeColorsCoordinator.class);
-        mCoordinator.setNtpChromeColorsCoordinatorForTesting(mockChromeColorsCoordinator);
-        mCoordinator.addThemeBottomSheetObserverForTesting(mockChromeColorsCoordinator);
+        mCoordinator.setNtpChromeColorsCoordinatorForTesting(mNtpChromeColorsCoordinator);
+        mCoordinator.addThemeBottomSheetObserverForTesting(mNtpChromeColorsCoordinator);
         mCoordinator.onChromeColorSelected(NtpThemeColorId.NTP_COLORS_BLUE);
 
         verify(mMediator).onChromeColorSelected(NtpThemeColorId.NTP_COLORS_BLUE);
         // Verifies that notifyBottomSheetBackgroundTypeChanged() is called and triggers
         // onBackgroundTypeChanged() for all registered observers
         verify(mMockObserver).onBackgroundTypeChanged();
-        verify(mockChromeColorsCoordinator).onBackgroundTypeChanged();
+        verify(mNtpChromeColorsCoordinator).onBackgroundTypeChanged();
     }
 
     @Test

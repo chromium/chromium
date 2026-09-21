@@ -14,6 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -35,6 +36,7 @@ public class TabModelSelectorTabModelObserverUnitTest {
     @Mock private TabModelSelector mSelector;
 
     @Mock private TabModel mTabModel;
+    @Captor private ArgumentCaptor<TabModelSelectorTabModelObserver> mArgCaptor;
 
     private List<TabModel> mTabModels = new ArrayList<>();
     private SettableMonotonicObservableSupplier<TabModel> mTabModelSupplier;
@@ -52,8 +54,6 @@ public class TabModelSelectorTabModelObserverUnitTest {
         // ARRANGE
         mTabModels.add(mTabModel);
         mTabModelSupplier.set(mTabModel);
-        ArgumentCaptor<TabModelSelectorTabModelObserver> arg1 =
-                ArgumentCaptor.forClass(TabModelSelectorTabModelObserver.class);
 
         // ACT
         final CallbackHelper registrationCompleteCallback = new CallbackHelper();
@@ -68,16 +68,14 @@ public class TabModelSelectorTabModelObserverUnitTest {
         // ASSERT
         RobolectricUtil.runAllBackgroundAndUi();
         registrationCompleteCallback.waitForCallback(0);
-        verify(mTabModel).addObserver(arg1.capture());
+        verify(mTabModel).addObserver(mArgCaptor.capture());
         assertEquals(1, mTabModels.size());
-        assertSame(observer, arg1.getValue());
+        assertSame(observer, mArgCaptor.getValue());
     }
 
     @Test
     public void testUninitializedSelector() throws TimeoutException {
         // ARRANGE
-        ArgumentCaptor<TabModelSelectorTabModelObserver> arg2 =
-                ArgumentCaptor.forClass(TabModelSelectorTabModelObserver.class);
 
         // ACT
         final CallbackHelper registrationCompleteCallback = new CallbackHelper();
@@ -94,9 +92,9 @@ public class TabModelSelectorTabModelObserverUnitTest {
         // ASSERT
         RobolectricUtil.runAllBackgroundAndUi();
         registrationCompleteCallback.waitForCallback(0);
-        verify(mTabModel).addObserver(arg2.capture());
+        verify(mTabModel).addObserver(mArgCaptor.capture());
         assertEquals(1, mTabModels.size());
-        assertSame(observer, arg2.getValue());
+        assertSame(observer, mArgCaptor.getValue());
     }
 
     @Test

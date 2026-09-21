@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -56,6 +55,10 @@ public class GlicBottomSheetContentUnitTest {
     @Mock private ActorKeyedService mActorKeyedService;
     @Mock private BottomSheetContent mNextContent;
     @Mock private ActorKeyedServiceFactory.Natives mActorKeyedServiceFactoryJni;
+    @Mock private ActorTask mActorTask;
+    @Mock private ActorTask mFinishedTask;
+    @Mock private ActorTask mPassiveTask;
+    @Mock private ActorTask mActiveTask;
 
     private Context mContext;
     private View mContentView;
@@ -122,50 +125,44 @@ public class GlicBottomSheetContentUnitTest {
 
     @Test
     public void testCanBeSuppressed_ActiveTaskUnderActorControl() {
-        ActorTask mockTask = mock(ActorTask.class);
-        when(mockTask.isUnderActorControl()).thenReturn(true);
-        when(mockTask.isCompleted()).thenReturn(false);
+        when(mActorTask.isUnderActorControl()).thenReturn(true);
+        when(mActorTask.isCompleted()).thenReturn(false);
 
-        when(mActorKeyedService.getActiveTasks()).thenReturn(Arrays.asList(mockTask));
+        when(mActorKeyedService.getActiveTasks()).thenReturn(Arrays.asList(mActorTask));
         assertFalse(mContent.canBeSuppressed(mNextContent));
     }
 
     @Test
     public void testCanBeSuppressed_ActiveTaskCompleted() {
-        ActorTask mockTask = mock(ActorTask.class);
-        when(mockTask.isUnderActorControl()).thenReturn(true);
-        when(mockTask.isCompleted()).thenReturn(true);
+        when(mActorTask.isUnderActorControl()).thenReturn(true);
+        when(mActorTask.isCompleted()).thenReturn(true);
 
-        when(mActorKeyedService.getActiveTasks()).thenReturn(Arrays.asList(mockTask));
+        when(mActorKeyedService.getActiveTasks()).thenReturn(Arrays.asList(mActorTask));
         assertTrue(mContent.canBeSuppressed(mNextContent));
     }
 
     @Test
     public void testCanBeSuppressed_ActiveTaskNotUnderActorControl() {
-        ActorTask mockTask = mock(ActorTask.class);
-        when(mockTask.isUnderActorControl()).thenReturn(false);
-        when(mockTask.isCompleted()).thenReturn(false);
+        when(mActorTask.isUnderActorControl()).thenReturn(false);
+        when(mActorTask.isCompleted()).thenReturn(false);
 
-        when(mActorKeyedService.getActiveTasks()).thenReturn(Arrays.asList(mockTask));
+        when(mActorKeyedService.getActiveTasks()).thenReturn(Arrays.asList(mActorTask));
         assertTrue(mContent.canBeSuppressed(mNextContent));
     }
 
     @Test
     public void testCanBeSuppressed_MixedTasks_SuppressedIfAnyUnderActorControl() {
-        ActorTask finishedTask = mock(ActorTask.class);
-        when(finishedTask.isUnderActorControl()).thenReturn(true);
-        when(finishedTask.isCompleted()).thenReturn(true);
+        when(mFinishedTask.isUnderActorControl()).thenReturn(true);
+        when(mFinishedTask.isCompleted()).thenReturn(true);
 
-        ActorTask passiveTask = mock(ActorTask.class);
-        when(passiveTask.isUnderActorControl()).thenReturn(false);
-        when(passiveTask.isCompleted()).thenReturn(false);
+        when(mPassiveTask.isUnderActorControl()).thenReturn(false);
+        when(mPassiveTask.isCompleted()).thenReturn(false);
 
-        ActorTask activeTask = mock(ActorTask.class);
-        when(activeTask.isUnderActorControl()).thenReturn(true);
-        when(activeTask.isCompleted()).thenReturn(false);
+        when(mActiveTask.isUnderActorControl()).thenReturn(true);
+        when(mActiveTask.isCompleted()).thenReturn(false);
 
         when(mActorKeyedService.getActiveTasks())
-                .thenReturn(Arrays.asList(finishedTask, passiveTask, activeTask));
+                .thenReturn(Arrays.asList(mFinishedTask, mPassiveTask, mActiveTask));
         assertFalse(mContent.canBeSuppressed(mNextContent));
     }
 

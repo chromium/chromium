@@ -8,16 +8,22 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Tests for the methods of {@link PasswordSettingsAccessorFactory}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class PasswordSettingsAccessorFactoryTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private PasswordSettingsAccessorFactory mPasswordSettingsAccessorFactory;
+
     @Test
     public void testGetOrCreateReusesExistingFactory() {
         PasswordSettingsAccessorFactory firstFactoryInstance =
@@ -29,10 +35,8 @@ public class PasswordSettingsAccessorFactoryTest {
 
     @Test
     public void testSetupFactoryForTestingUsesTheTestingFactory() {
-        PasswordSettingsAccessorFactory passwordSettingsAccessorFactory =
-                mock(PasswordSettingsAccessorFactory.class);
-        PasswordSettingsAccessorFactory.setupFactoryForTesting(passwordSettingsAccessorFactory);
+        PasswordSettingsAccessorFactory.setupFactoryForTesting(mPasswordSettingsAccessorFactory);
         assertEquals(
-                PasswordSettingsAccessorFactory.getOrCreate(), passwordSettingsAccessorFactory);
+                PasswordSettingsAccessorFactory.getOrCreate(), mPasswordSettingsAccessorFactory);
     }
 }

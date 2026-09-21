@@ -27,6 +27,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -50,6 +51,8 @@ public class TaskManagerMediatorTest {
     @Mock private TaskManagerServiceBridge.Natives mBridge;
     @Mock private Callback<Boolean> mOnHasKillableSelectedTaskChanged;
     @Mock private Bitmap mBitmap;
+    @Captor private ArgumentCaptor<TaskManagerObserver> mObserverCaptor;
+    @Captor private ArgumentCaptor<Integer> mRefreshTypeCaptor;
 
     private PropertyModel mHeader;
     private ModelList mTasks;
@@ -66,19 +69,15 @@ public class TaskManagerMediatorTest {
         mMediator.onHasKillableSelectedTaskChanged(mOnHasKillableSelectedTaskChanged);
         mMediator.startObserving();
 
-        ArgumentCaptor<TaskManagerObserver> observerCaptor =
-                ArgumentCaptor.forClass(TaskManagerObserver.class);
-        ArgumentCaptor<Integer> refreshTypeCaptor = ArgumentCaptor.forClass(Integer.class);
-
         verify(mBridge)
-                .addObserver(observerCaptor.capture(), eq(1000), refreshTypeCaptor.capture());
+                .addObserver(mObserverCaptor.capture(), eq(1000), mRefreshTypeCaptor.capture());
 
         assertEquals(
                 RefreshType.MEMORY_FOOTPRINT,
-                refreshTypeCaptor.getValue() & RefreshType.MEMORY_FOOTPRINT);
-        assertEquals(RefreshType.CPU, refreshTypeCaptor.getValue() & RefreshType.CPU);
+                mRefreshTypeCaptor.getValue() & RefreshType.MEMORY_FOOTPRINT);
+        assertEquals(RefreshType.CPU, mRefreshTypeCaptor.getValue() & RefreshType.CPU);
 
-        mObserver = observerCaptor.getValue();
+        mObserver = mObserverCaptor.getValue();
     }
 
     @Test

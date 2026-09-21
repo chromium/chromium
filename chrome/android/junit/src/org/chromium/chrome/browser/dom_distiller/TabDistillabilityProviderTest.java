@@ -43,6 +43,7 @@ public class TabDistillabilityProviderTest {
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
     @Mock private Profile mProfile;
+    @Mock private WebContents mWebContents1;
 
     private TabDistillabilityProvider mProvider;
 
@@ -111,8 +112,7 @@ public class TabDistillabilityProviderTest {
 
     @Test
     public void differentWebContentsReregistersDelegate() {
-        WebContents webContents = Mockito.mock(WebContents.class);
-        when(mTab.getWebContents()).thenReturn(webContents);
+        when(mTab.getWebContents()).thenReturn(mWebContents1);
         when(mTab.getUrl()).thenReturn(URL_2);
         mProvider.onDidFinishNavigationInPrimaryMainFrame(mTab, null);
         verify(mDistillablePageUtilsJni).setDelegate(any(), eq(mProvider));

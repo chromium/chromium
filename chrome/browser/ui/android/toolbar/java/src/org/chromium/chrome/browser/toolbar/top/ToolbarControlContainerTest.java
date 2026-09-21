@@ -17,7 +17,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -158,9 +157,14 @@ public class ToolbarControlContainerTest {
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
     @Mock private TopControlsStacker mTopControlsStacker;
     @Mock private Callback<Integer> mRightMarginCallback;
+    @Mock private Canvas mCanvas;
+    @Mock private SwipeHandler mSwipeHandler;
+    @Mock private ViewResourceAdapter mViewResourceAdapter;
+    @Mock private ButtonData mButtonData;
     @Captor private ArgumentCaptor<CoordinatorLayout.LayoutParams> mToolbarLayoutParamsCaptor;
     @Captor private ArgumentCaptor<CoordinatorLayout.LayoutParams> mHairlineLayoutParamsCaptor;
     @Captor private ArgumentCaptor<ViewTreeObserver.OnPreDrawListener> mOnPreDrawCaptor;
+    @Captor private ArgumentCaptor<Paint> mPaintCaptor;
 
     private final Supplier<Tab> mTabSupplier = () -> mTab;
     private final SettableNonNullObservableSupplier<Boolean> mCompositorInMotionSupplier =
@@ -1145,27 +1149,25 @@ public class ToolbarControlContainerTest {
         mControlContainer.setBackground(null);
 
         Context context = mControlContainer.getContext();
-        Canvas canvas = mock(Canvas.class);
-        ArgumentCaptor<Paint> paintCaptor = ArgumentCaptor.forClass(Paint.class);
 
         // Switch to incognito model.
         mControlContainer.onTabOrModelChanged(/* incognito= */ true);
-        overlayView.draw(canvas);
-        verify(canvas, atLeastOnce()).drawPath(any(), paintCaptor.capture());
+        overlayView.draw(mCanvas);
+        verify(mCanvas, atLeastOnce()).drawPath(any(), mPaintCaptor.capture());
         assertEquals(
                 "Corner overlay should draw with incognito tab strip background color",
                 TabUiThemeUtil.getTabStripBackgroundColor(context, true),
-                paintCaptor.getValue().getColor());
+                mPaintCaptor.getValue().getColor());
 
         // Switch back to regular model.
-        clearInvocations(canvas);
+        clearInvocations(mCanvas);
         mControlContainer.onTabOrModelChanged(/* incognito= */ false);
-        overlayView.draw(canvas);
-        verify(canvas, atLeastOnce()).drawPath(any(), paintCaptor.capture());
+        overlayView.draw(mCanvas);
+        verify(mCanvas, atLeastOnce()).drawPath(any(), mPaintCaptor.capture());
         assertEquals(
                 "Corner overlay should draw with regular tab strip background color",
                 TabUiThemeUtil.getTabStripBackgroundColor(context, false),
-                paintCaptor.getValue().getColor());
+                mPaintCaptor.getValue().getColor());
     }
 
     @Test
@@ -1306,7 +1308,7 @@ public class ToolbarControlContainerTest {
                 controlContainer.findViewById(R.id.toolbar_container);
         toolbarContainer.setVisibility(View.VISIBLE);
         toolbarContainer.layout(0, 0, 1000, 100);
-        controlContainer.setSwipeHandler(mock(SwipeHandler.class));
+        controlContainer.setSwipeHandler(mSwipeHandler);
 
         // Click within the toolbar container.
         MotionEvent toolbarClickEvent =
@@ -1346,8 +1348,7 @@ public class ToolbarControlContainerTest {
                 null,
                 mTopControlsStacker);
 
-        SwipeHandler swipeHandler = mock(SwipeHandler.class);
-        controlContainer.setSwipeHandler(swipeHandler);
+        controlContainer.setSwipeHandler(mSwipeHandler);
         doReturn(100).when(mToolbar).getTabStripHeight();
 
         // ACTION_DOWN on the tab strip (y <= 100) should return false so that the tab strip
@@ -1564,22 +1565,21 @@ public class ToolbarControlContainerTest {
     @Test
     public void testDoSynchronousLayout() {
         initControlContainer(R.layout.toolbar_phone);
-        ViewResourceAdapter mockAdapter = mock(ViewResourceAdapter.class);
 
         ToolbarControlContainer spyContainer = spy(mControlContainer);
-        doReturn(mockAdapter).when(spyContainer).getToolbarResourceAdapter();
+        doReturn(mViewResourceAdapter).when(spyContainer).getToolbarResourceAdapter();
 
         // Test with forceCaptureAfterLayout = false
         spyContainer.doSynchronousLayout(false);
         verify(spyContainer).measure(anyInt(), anyInt());
         verify(spyContainer).layout(anyInt(), anyInt(), anyInt(), anyInt());
-        verify(mockAdapter, never()).invalidate(null);
-        verify(mockAdapter, never()).triggerBitmapCapture();
+        verify(mViewResourceAdapter, never()).invalidate(null);
+        verify(mViewResourceAdapter, never()).triggerBitmapCapture();
 
         // Test with forceCaptureAfterLayout = true
         spyContainer.doSynchronousLayout(true);
-        verify(mockAdapter).invalidate(null);
-        verify(mockAdapter).triggerBitmapCapture();
+        verify(mViewResourceAdapter).invalidate(null);
+        verify(mViewResourceAdapter).triggerBitmapCapture();
     }
 
     @Test
@@ -1608,10 +1608,9 @@ public class ToolbarControlContainerTest {
         toolbarPhone.setThemeColorProvider(mThemeColorProvider);
         toolbarPhone.setOptionalButtonCoordinatorForTesting(mOptionalButtonCoordinator);
 
-        ButtonData buttonData = mock(ButtonData.class);
-        toolbarPhone.updateOptionalButton(buttonData);
+        toolbarPhone.updateOptionalButton(mButtonData);
 
-        verify(mOptionalButtonCoordinator).updateButton(eq(buttonData), anyBoolean());
+        verify(mOptionalButtonCoordinator).updateButton(eq(mButtonData), anyBoolean());
     }
 
     @Test
@@ -1624,10 +1623,9 @@ public class ToolbarControlContainerTest {
 
         // NOTE: In this test mOptionalButtonCoordinator is never created.
 
-        ButtonData buttonData = mock(ButtonData.class);
-        toolbarPhone.updateOptionalButton(buttonData);
+        toolbarPhone.updateOptionalButton(mButtonData);
 
-        verify(mLocationBarCoordinator).updateOptionalButton(eq(buttonData));
+        verify(mLocationBarCoordinator).updateOptionalButton(eq(mButtonData));
         verify(mOptionalButtonCoordinator, never()).updateButton(any(), anyBoolean());
 
         toolbarPhone.hideOptionalButton();
@@ -1649,12 +1647,11 @@ public class ToolbarControlContainerTest {
         doReturn(true).when(mNewTabPageDelegate).isCurrentlyVisible();
         toolbarPhone.mVisualState = ToolbarPhone.VisualState.NEW_TAB_NORMAL;
 
-        ButtonData buttonData = mock(ButtonData.class);
-        toolbarPhone.updateOptionalButton(buttonData);
+        toolbarPhone.updateOptionalButton(mButtonData);
 
         verify(mLocationBarCoordinator, never()).updateOptionalButton(any());
         verify(mLocationBarCoordinator).hideOptionalButton();
-        verify(mOptionalButtonCoordinator).updateButton(eq(buttonData), anyBoolean());
+        verify(mOptionalButtonCoordinator).updateButton(eq(mButtonData), anyBoolean());
 
         toolbarPhone.hideOptionalButton();
 

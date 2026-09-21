@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -32,16 +31,20 @@ import java.util.List;
 /** Unit tests for {@link AuxiliarySearchTopSiteProviderBridge} */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AuxiliarySearchTopSiteProviderBridgeUnitTest {
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
     // Arbitrary non-0 value.
     private static final long NATIVE_BRIDGE = 10L;
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock
     private AuxiliarySearchTopSiteProviderBridge.Natives
             mMockAuxiliarySearchTopSiteProviderBridgeJni;
 
     @Mock private Profile mProfile;
+
+    @Mock
+    private AuxiliarySearchTopSiteProviderBridge.Observer
+            mAuxiliarySearchTopSiteProviderBridgeObserver;
 
     private AuxiliarySearchTopSiteProviderBridge mBridge;
 
@@ -59,21 +62,16 @@ public class AuxiliarySearchTopSiteProviderBridgeUnitTest {
 
     @Test
     public void testSetObserver() {
-        AuxiliarySearchTopSiteProviderBridge.Observer observer =
-                mock(AuxiliarySearchTopSiteProviderBridge.Observer.class);
-
-        mBridge.setObserver(observer);
-        assertEquals(observer, mBridge.getObserverForTesting());
+        mBridge.setObserver(mAuxiliarySearchTopSiteProviderBridgeObserver);
+        assertEquals(
+                mAuxiliarySearchTopSiteProviderBridgeObserver, mBridge.getObserverForTesting());
         verify(mMockAuxiliarySearchTopSiteProviderBridgeJni)
                 .setObserverAndTrigger(eq(NATIVE_BRIDGE), eq(mBridge));
     }
 
     @Test
     public void testDestroy() {
-        AuxiliarySearchTopSiteProviderBridge.Observer observer =
-                mock(AuxiliarySearchTopSiteProviderBridge.Observer.class);
-
-        mBridge.setObserver(observer);
+        mBridge.setObserver(mAuxiliarySearchTopSiteProviderBridgeObserver);
         assertNotNull(mBridge.getObserverForTesting());
 
         Mockito.reset(mMockAuxiliarySearchTopSiteProviderBridgeJni);
@@ -90,25 +88,22 @@ public class AuxiliarySearchTopSiteProviderBridgeUnitTest {
 
     @Test
     public void testOnMostVisitedSitesURLsAvailable() {
-        AuxiliarySearchTopSiteProviderBridge.Observer observer =
-                mock(AuxiliarySearchTopSiteProviderBridge.Observer.class);
-        mBridge.setObserver(observer);
+        mBridge.setObserver(mAuxiliarySearchTopSiteProviderBridgeObserver);
 
         List<AuxiliarySearchDataEntry> entryList =
                 AuxiliarySearchTestHelper.createAuxiliarySearchDataEntries_TopSite(
                         TimeUtils.uptimeMillis());
         mBridge.onMostVisitedSitesURLsAvailable(entryList);
-        verify(observer).onSiteSuggestionsAvailable(eq(entryList));
+        verify(mAuxiliarySearchTopSiteProviderBridgeObserver)
+                .onSiteSuggestionsAvailable(eq(entryList));
     }
 
     @Test
     public void testOnIconMadeAvailable() {
-        AuxiliarySearchTopSiteProviderBridge.Observer observer =
-                mock(AuxiliarySearchTopSiteProviderBridge.Observer.class);
-        mBridge.setObserver(observer);
+        mBridge.setObserver(mAuxiliarySearchTopSiteProviderBridgeObserver);
 
         GURL url = JUnitTestGURLs.URL_1;
         mBridge.onIconMadeAvailable(url);
-        verify(observer).onIconMadeAvailable(eq(url));
+        verify(mAuxiliarySearchTopSiteProviderBridgeObserver).onIconMadeAvailable(eq(url));
     }
 }

@@ -15,7 +15,6 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -115,7 +114,6 @@ public class AutofillOptionsTest {
             new ComponentName("com.service.example", "com.service.example.autofill.service.One");
     private static final ComponentName OTHER_SERVICE_PACKAGE =
             new ComponentName("com.another.example", "com.another.example.autofill.service.Two");
-
     // Shorthand for frequent enums that can't be static imports.
     private static final @RadioButtonGroupThirdPartyPreference.ThirdPartyOption int DEFAULT =
             RadioButtonGroupThirdPartyPreference.ThirdPartyOption.DEFAULT;
@@ -137,11 +135,13 @@ public class AutofillOptionsTest {
     @Mock private ReauthenticatorBridge mMockReauthenticatorBridge;
     @Mock private SettingsIndexData mSearchIndexDataMock;
     @Mock private SettingsCustomTabLauncher mMockCustomTabLauncher;
-    private ShadowAutofillManager mShadowAutofillManager;
-    private UserActionTester mActionTester;
-
+    @Mock private Menu mMenu;
+    @Mock private MenuItem mMenuItem;
+    @Mock private MenuInflater mMenuInflater;
     @Captor ArgumentCaptor<PropertyModel> mRestartConfirmationDialogModelCaptor;
 
+    private ShadowAutofillManager mShadowAutofillManager;
+    private UserActionTester mActionTester;
     private AutofillOptionsFragment mFragment;
     private FragmentScenario<AutofillOptionsFragment> mScenario;
 
@@ -496,20 +496,18 @@ public class AutofillOptionsTest {
     public void injectedHelpTriggersAutofillHelp() {
         AutofillHelpMenuProvider menuProvider = new AutofillHelpMenuProvider(mFragment);
 
-        Menu helpMenu = mock(Menu.class);
-        MenuItem helpItem = mock(MenuItem.class);
-        doReturn(helpItem)
-                .when(helpMenu)
+        doReturn(mMenuItem)
+                .when(mMenu)
                 .add(Menu.NONE, R.id.menu_id_targeted_help, Menu.NONE, R.string.menu_help);
-        doReturn(R.id.menu_id_targeted_help).when(helpItem).getItemId();
+        doReturn(R.id.menu_id_targeted_help).when(mMenuItem).getItemId();
 
         // Create completely replaces the menu with only the help icon.
-        menuProvider.onCreateMenu(helpMenu, mock(MenuInflater.class));
-        verify(helpMenu).clear();
-        verify(helpItem).setIcon(R.drawable.ic_help_24dp);
+        menuProvider.onCreateMenu(mMenu, mMenuInflater);
+        verify(mMenu).clear();
+        verify(mMenuItem).setIcon(R.drawable.ic_help_24dp);
 
         // Trigger the help as it would happen on tap.
-        assertTrue(menuProvider.onMenuItemSelected(helpItem));
+        assertTrue(menuProvider.onMenuItemSelected(mMenuItem));
         verify(mHelpAndFeedbackLauncher)
                 .show(mFragment.getActivity(), getString(R.string.help_context_autofill), null);
     }

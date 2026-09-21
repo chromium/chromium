@@ -26,7 +26,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
@@ -137,8 +136,6 @@ public class KeyboardAccessoryViewTest {
     private static final String CUSTOM_ICON_URL = "https://www.example.com/image.png";
     private static final Bitmap TEST_CARD_ART_IMAGE =
             Bitmap.createBitmap(100, 200, Bitmap.Config.ARGB_8888);
-    private PropertyModel mModel;
-    private BlockingQueue<KeyboardAccessoryView> mKeyboardAccessoryView;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -147,7 +144,10 @@ public class KeyboardAccessoryViewTest {
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Mock AutofillImageFetcher mMockImageFetcher;
+    @Mock private GURL mGURL;
 
+    private PropertyModel mModel;
+    private BlockingQueue<KeyboardAccessoryView> mKeyboardAccessoryView;
     private Profile mProfile;
     private WebPageStation mPage;
 
@@ -913,18 +913,15 @@ public class KeyboardAccessoryViewTest {
     @MediumTest
     public void testCustomIconUrlSet_imageReturnedByImageFetcher_customIconSetOnChipView()
             throws InterruptedException {
-        GURL customIconUrl = mock(GURL.class);
-        when(customIconUrl.isValid()).thenReturn(true);
-        when(customIconUrl.getSpec()).thenReturn(CUSTOM_ICON_URL);
+        when(mGURL.isValid()).thenReturn(true);
+        when(mGURL.getSpec()).thenReturn(CUSTOM_ICON_URL);
         // Return the cached image when AutofillImageFetcher.getImageIfAvailable is called for the
         // above url.
         when(mMockImageFetcher.getImageIfAvailable(any(), any())).thenReturn(TEST_CARD_ART_IMAGE);
         // Create an autofill suggestion and set the `customIconUrl`.
         AutofillBarItem customIconItem =
                 new AutofillBarItem(
-                        getDefaultAutofillSuggestionBuilder()
-                                .setCustomIconUrl(customIconUrl)
-                                .build(),
+                        getDefaultAutofillSuggestionBuilder().setCustomIconUrl(mGURL).build(),
                         new Action(AUTOFILL_SUGGESTION, () -> {}),
                         mProfile);
 
@@ -955,17 +952,14 @@ public class KeyboardAccessoryViewTest {
     @MediumTest
     public void testCustomIconUrlSet_imageNotCachedInImageFetcher_defaultIconSetOnChipView()
             throws InterruptedException {
-        GURL customIconUrl = mock(GURL.class);
-        when(customIconUrl.isValid()).thenReturn(true);
-        when(customIconUrl.getSpec()).thenReturn(CUSTOM_ICON_URL);
+        when(mGURL.isValid()).thenReturn(true);
+        when(mGURL.getSpec()).thenReturn(CUSTOM_ICON_URL);
         // Return the response of PersonalDataManager.getImageIfAvailable
         // to null to indicate that the image is not present in the cache.
         when(mMockImageFetcher.getImageIfAvailable(any(), any())).thenReturn(null);
         AutofillBarItem customIconItem =
                 new AutofillBarItem(
-                        getDefaultAutofillSuggestionBuilder()
-                                .setCustomIconUrl(customIconUrl)
-                                .build(),
+                        getDefaultAutofillSuggestionBuilder().setCustomIconUrl(mGURL).build(),
                         new Action(AUTOFILL_SUGGESTION, () -> {}),
                         mProfile);
 

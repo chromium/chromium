@@ -23,7 +23,6 @@ import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -121,7 +120,12 @@ public class TabUnitTest {
     @Mock private SecurityStateModel.Natives mSecurityStateModelNatives;
     @Mock private SelectionPopupControllerImpl mSelectionPopupController;
     @Mock private WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
-
+    @Mock private NativePage mNewNativePage;
+    @Mock private ViewStructure mViewStructure;
+    @Mock private SettingsNavigation mSettingsNavigation;
+    @Mock private NativePage mFrozenNativePage;
+    @Mock private NativePage mLiveNativePage;
+    @Mock private BeforeUnloadCallback mBeforeUnloadCallback;
     private final SettableLookAheadObservableSupplier<Tab> mTabSupplier =
             new SettableLookAheadObservableSupplier<>();
     private TabImpl mTab;
@@ -556,16 +560,15 @@ public class TabUnitTest {
     public void testUpdateAttachment_reattachHiddenReloadsWhenViewHasParent() {
         TabImplJni.setInstanceForTesting(mNativeMock);
 
-        NativePage newNativePage = mock(NativePage.class);
-        doReturn(false).when(newNativePage).isFrozen();
+        doReturn(false).when(mNewNativePage).isFrozen();
         View newView = new View(ContextUtils.getApplicationContext());
-        doReturn(newView).when(newNativePage).getView();
+        doReturn(newView).when(mNewNativePage).getView();
 
         doReturn(mTabWebContentsDelegateAndroid)
                 .when(mDelegateFactory)
                 .createWebContentsDelegate(any(Tab.class));
         doReturn(mNativePage)
-                .doReturn(newNativePage)
+                .doReturn(mNewNativePage)
                 .when(mDelegateFactory)
                 .createNativePage(any(String.class), any(), any(Tab.class), any());
         doReturn(false).when(mNativePage).isFrozen();
@@ -645,7 +648,7 @@ public class TabUnitTest {
                         eq(mTab),
                         /* pdfInfo= */ isNull());
         verify(mNativePage).destroy();
-        assertEquals(newNativePage, mTab.getNativePage());
+        assertEquals(mNewNativePage, mTab.getNativePage());
     }
 
     @Test
@@ -663,7 +666,7 @@ public class TabUnitTest {
         assertFalse(mTab.providesAutofillStructure());
         mTab.setAutofillProvider(null);
 
-        mTab.onProvideAutofillVirtualStructure(mock(ViewStructure.class), 0);
+        mTab.onProvideAutofillVirtualStructure(mViewStructure, 0);
         verify(mAutofillProvider, never()).onProvideAutoFillVirtualStructure(any(), anyInt());
 
         mTab.autofill(new SparseArray<>());
@@ -676,12 +679,11 @@ public class TabUnitTest {
         when(mProfile.isNativeInitialized()).thenReturn(true);
         assertTrue(mTab.providesAutofillStructure());
 
-        ViewStructure structure = mock(ViewStructure.class);
         mTab.onProvideAutofillVirtualStructure(
-                structure, View.AUTOFILL_FLAG_INCLUDE_NOT_IMPORTANT_VIEWS);
+                mViewStructure, View.AUTOFILL_FLAG_INCLUDE_NOT_IMPORTANT_VIEWS);
         verify(mAutofillProvider)
                 .onProvideAutoFillVirtualStructure(
-                        structure, View.AUTOFILL_FLAG_INCLUDE_NOT_IMPORTANT_VIEWS);
+                        mViewStructure, View.AUTOFILL_FLAG_INCLUDE_NOT_IMPORTANT_VIEWS);
 
         SparseArray<AutofillValue> values = new SparseArray<>();
         mTab.autofill(values);
@@ -734,9 +736,8 @@ public class TabUnitTest {
         tab.updateAutofillProviderState();
 
         // 3. User interacts with Tab 1 (calls onProvideAutofillVirtualStructure)
-        ViewStructure structure = mock(ViewStructure.class);
         tab.onProvideAutofillVirtualStructure(
-                structure, View.AUTOFILL_FLAG_INCLUDE_NOT_IMPORTANT_VIEWS);
+                mViewStructure, View.AUTOFILL_FLAG_INCLUDE_NOT_IMPORTANT_VIEWS);
 
         // 4. Assert that Tab 1 has recovered and instantiated an AutofillProvider!
         assertTrue(tab.providesAutofillStructure());
@@ -991,8 +992,7 @@ public class TabUnitTest {
     @EnableFeatures({ChromeFeatureList.ANDROID_SETTINGS_URL, ChromeFeatureList.SETTINGS_IN_TAB})
     public void testOnUpdateUrl_IncognitoProfile_Settings_CallsStartSettings() {
         assertTrue(SettingsInTab.shouldOpenSettingsInTab());
-        SettingsNavigation mockSettingsNavigation = mock(SettingsNavigation.class);
-        SettingsNavigationFactory.setInstanceForTesting(mockSettingsNavigation);
+        SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
         when(mProfile.isOffTheRecord()).thenReturn(true);
 
         TabImpl tab =
@@ -1010,7 +1010,7 @@ public class TabUnitTest {
         GURL settingsUrl = new GURL("chrome://settings");
         handleDidFinishNavigation(tab, settingsUrl);
 
-        verify(mockSettingsNavigation).startSettings(any());
+        verify(mSettingsNavigation).startSettings(any());
     }
 
     @Test
@@ -1018,8 +1018,7 @@ public class TabUnitTest {
     @EnableFeatures({ChromeFeatureList.ANDROID_SETTINGS_URL, ChromeFeatureList.SETTINGS_IN_TAB})
     public void testOnUpdateUrl_RegularProfile_Settings_DoesNotCallStartSettings() {
         assertTrue(SettingsInTab.shouldOpenSettingsInTab());
-        SettingsNavigation mockSettingsNavigation = mock(SettingsNavigation.class);
-        SettingsNavigationFactory.setInstanceForTesting(mockSettingsNavigation);
+        SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
         when(mProfile.isOffTheRecord()).thenReturn(false);
 
         TabImpl tab =
@@ -1034,7 +1033,7 @@ public class TabUnitTest {
         GURL settingsUrl = new GURL("chrome://settings");
         handleDidFinishNavigation(tab, settingsUrl);
 
-        verify(mockSettingsNavigation, never()).startSettings(any());
+        verify(mSettingsNavigation, never()).startSettings(any());
     }
 
     @Test
@@ -1043,8 +1042,7 @@ public class TabUnitTest {
     public void testOnUpdateUrl_RegularProfile_SettingsOnPhone_DoesNotCallStartSettings() {
         assertFalse(SettingsInTab.shouldOpenSettingsInTab());
         assertTrue(SettingsInTab.isFeatureEnabled());
-        SettingsNavigation mockSettingsNavigation = mock(SettingsNavigation.class);
-        SettingsNavigationFactory.setInstanceForTesting(mockSettingsNavigation);
+        SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
         when(mProfile.isOffTheRecord()).thenReturn(false);
 
         TabImpl tab =
@@ -1059,7 +1057,7 @@ public class TabUnitTest {
         GURL settingsUrl = new GURL("chrome://settings");
         handleDidFinishNavigation(tab, settingsUrl);
 
-        verify(mockSettingsNavigation, never()).startSettings(any());
+        verify(mSettingsNavigation, never()).startSettings(any());
     }
 
     @Test
@@ -1068,8 +1066,7 @@ public class TabUnitTest {
     public void testOnUpdateUrl_IncognitoProfile_SettingsOnPhone_CallsStartSettings() {
         assertFalse(SettingsInTab.shouldOpenSettingsInTab());
         assertTrue(SettingsInTab.isFeatureEnabled());
-        SettingsNavigation mockSettingsNavigation = mock(SettingsNavigation.class);
-        SettingsNavigationFactory.setInstanceForTesting(mockSettingsNavigation);
+        SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
         when(mProfile.isOffTheRecord()).thenReturn(true);
 
         TabImpl tab =
@@ -1087,7 +1084,7 @@ public class TabUnitTest {
         GURL settingsUrl = new GURL("chrome://settings");
         handleDidFinishNavigation(tab, settingsUrl);
 
-        verify(mockSettingsNavigation).startSettings(any());
+        verify(mSettingsNavigation).startSettings(any());
     }
 
     @Test
@@ -1096,13 +1093,12 @@ public class TabUnitTest {
         doReturn(mActivity).when(mWeakReferenceContext).get();
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
 
-        NativePage frozenNativePage = mock(NativePage.class);
-        when(frozenNativePage.isFrozen()).thenReturn(true);
-        when(frozenNativePage.getUrl()).thenReturn("chrome://history");
+        when(mFrozenNativePage.isFrozen()).thenReturn(true);
+        when(mFrozenNativePage.getUrl()).thenReturn("chrome://history");
 
         mTab =
                 new TabImpl(TAB1_ID, mProfile, TabLaunchType.FROM_CHROME_UI) {
-                    private NativePage mCurrentNativePage = frozenNativePage;
+                    private NativePage mCurrentNativePage = mFrozenNativePage;
 
                     @Override
                     public boolean isInitialized() {
@@ -1132,13 +1128,12 @@ public class TabUnitTest {
         mTab.setNativePtrForTesting(1);
         mTab.updateAttachment(mWindowAndroid, mDelegateFactory);
 
-        NativePage liveNativePage = mock(NativePage.class);
         when(mDelegateFactory.createNativePage(
                         eq("chrome://history"),
                         /* candidatePage= */ isNull(),
                         eq(mTab),
                         /* pdfInfo= */ isNull()))
-                .thenReturn(liveNativePage);
+                .thenReturn(mLiveNativePage);
 
         assertFalse(mTab.isHidden());
         assertTrue(mTab.getNativePage().isFrozen());
@@ -1152,7 +1147,7 @@ public class TabUnitTest {
                         /* candidatePage= */ isNull(),
                         eq(mTab),
                         /* pdfInfo= */ isNull());
-        assertEquals(liveNativePage, mTab.getNativePage());
+        assertEquals(mLiveNativePage, mTab.getNativePage());
         assertFalse(mTab.getNativePage().isFrozen());
     }
 
@@ -1243,11 +1238,10 @@ public class TabUnitTest {
         when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
         mTab.setWebContentsForTesting(mWebContents);
 
-        BeforeUnloadCallback callback = mock(BeforeUnloadCallback.class);
-        mTab.getUserDataHost().setUserData(BeforeUnloadCallback.class, callback);
+        mTab.getUserDataHost().setUserData(BeforeUnloadCallback.class, mBeforeUnloadCallback);
 
         mTab.goBack();
-        verify(callback, never()).handleBeforeUnload(any(), any());
+        verify(mBeforeUnloadCallback, never()).handleBeforeUnload(any(), any());
         verify(mNavigationController, never()).goBack();
     }
 
@@ -1291,11 +1285,10 @@ public class TabUnitTest {
         when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
         mTab.setWebContentsForTesting(mWebContents);
 
-        BeforeUnloadCallback callback = mock(BeforeUnloadCallback.class);
-        mTab.getUserDataHost().setUserData(BeforeUnloadCallback.class, callback);
+        mTab.getUserDataHost().setUserData(BeforeUnloadCallback.class, mBeforeUnloadCallback);
 
         mTab.goForward();
-        verify(callback, never()).handleBeforeUnload(any(), any());
+        verify(mBeforeUnloadCallback, never()).handleBeforeUnload(any(), any());
         verify(mNavigationController, never()).goForward();
     }
 

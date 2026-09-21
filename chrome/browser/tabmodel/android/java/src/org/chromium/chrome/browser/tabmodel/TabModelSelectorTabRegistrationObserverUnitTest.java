@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tabmodel;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -42,6 +41,10 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
 
     @Mock private Profile mProfile;
     @Mock private Profile mIncognitoProfile;
+
+    @Mock
+    private TabModelSelectorTabRegistrationObserver.Observer
+            mTabModelSelectorTabRegistrationObserverObserver;
 
     private TabModelSelector mTabModelSelector;
     private TabModelSelectorTabRegistrationObserver mTabRegistrationObserver;
@@ -115,9 +118,8 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
 
     @Test
     public void testOnTabRegistered_NewlyAddedTabs() {
-        TabModelSelectorTabRegistrationObserver.Observer observer =
-                mock(TabModelSelectorTabRegistrationObserver.Observer.class);
-        mTabRegistrationObserver.addObserverAndNotifyExistingTabRegistration(observer);
+        mTabRegistrationObserver.addObserverAndNotifyExistingTabRegistration(
+                mTabModelSelectorTabRegistrationObserverObserver);
 
         Tab normalTab1 = MockTab.createAndInitialize(1, mProfile);
         Tab normalTab2 = MockTab.createAndInitialize(2, mProfile);
@@ -144,9 +146,9 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
                         TabLaunchType.FROM_LINK,
                         TabCreationState.LIVE_IN_FOREGROUND);
 
-        verify(observer).onTabRegistered(normalTab1);
-        verify(observer).onTabRegistered(normalTab2);
-        verify(observer).onTabRegistered(incognitoTab1);
+        verify(mTabModelSelectorTabRegistrationObserverObserver).onTabRegistered(normalTab1);
+        verify(mTabModelSelectorTabRegistrationObserverObserver).onTabRegistered(normalTab2);
+        verify(mTabModelSelectorTabRegistrationObserverObserver).onTabRegistered(incognitoTab1);
     }
 
     @Test
@@ -176,13 +178,12 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
                         TabLaunchType.FROM_LINK,
                         TabCreationState.LIVE_IN_FOREGROUND);
 
-        TabModelSelectorTabRegistrationObserver.Observer observer =
-                mock(TabModelSelectorTabRegistrationObserver.Observer.class);
-        mTabRegistrationObserver.addObserverAndNotifyExistingTabRegistration(observer);
+        mTabRegistrationObserver.addObserverAndNotifyExistingTabRegistration(
+                mTabModelSelectorTabRegistrationObserverObserver);
 
-        verify(observer).onTabRegistered(normalTab1);
-        verify(observer).onTabRegistered(normalTab2);
-        verify(observer).onTabRegistered(incognitoTab1);
+        verify(mTabModelSelectorTabRegistrationObserverObserver).onTabRegistered(normalTab1);
+        verify(mTabModelSelectorTabRegistrationObserverObserver).onTabRegistered(normalTab2);
+        verify(mTabModelSelectorTabRegistrationObserverObserver).onTabRegistered(incognitoTab1);
     }
 
     @Test
@@ -208,11 +209,10 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
                 .getTabRemover()
                 .removeTab(normalTab1, /* allowDialog= */ false);
 
-        TabModelSelectorTabRegistrationObserver.Observer observer =
-                mock(TabModelSelectorTabRegistrationObserver.Observer.class);
-        mTabRegistrationObserver.addObserverAndNotifyExistingTabRegistration(observer);
-        verify(observer).onTabRegistered(normalTab2);
-        verifyNoMoreInteractions(observer);
+        mTabRegistrationObserver.addObserverAndNotifyExistingTabRegistration(
+                mTabModelSelectorTabRegistrationObserverObserver);
+        verify(mTabModelSelectorTabRegistrationObserverObserver).onTabRegistered(normalTab2);
+        verifyNoMoreInteractions(mTabModelSelectorTabRegistrationObserverObserver);
     }
 
     @Test
@@ -226,25 +226,23 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
                         TabLaunchType.FROM_LINK,
                         TabCreationState.LIVE_IN_FOREGROUND);
 
-        TabModelSelectorTabRegistrationObserver.Observer observer =
-                mock(TabModelSelectorTabRegistrationObserver.Observer.class);
-        mTabRegistrationObserver.addObserverAndNotifyExistingTabRegistration(observer);
+        mTabRegistrationObserver.addObserverAndNotifyExistingTabRegistration(
+                mTabModelSelectorTabRegistrationObserverObserver);
 
-        verify(observer).onTabRegistered(normalTab1);
+        verify(mTabModelSelectorTabRegistrationObserverObserver).onTabRegistered(normalTab1);
 
         mTabModelSelector
                 .getModel(false)
                 .getTabRemover()
                 .removeTab(normalTab1, /* allowDialog= */ false);
 
-        verify(observer).onTabUnregistered(normalTab1);
+        verify(mTabModelSelectorTabRegistrationObserverObserver).onTabUnregistered(normalTab1);
     }
 
     @Test
     public void testOnTabUnRegistered_NewAddedTab() {
-        TabModelSelectorTabRegistrationObserver.Observer observer =
-                mock(TabModelSelectorTabRegistrationObserver.Observer.class);
-        mTabRegistrationObserver.addObserverAndNotifyExistingTabRegistration(observer);
+        mTabRegistrationObserver.addObserverAndNotifyExistingTabRegistration(
+                mTabModelSelectorTabRegistrationObserverObserver);
 
         Tab normalTab1 = MockTab.createAndInitialize(1, mProfile);
         mTabModelSelector
@@ -254,20 +252,19 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
                         0,
                         TabLaunchType.FROM_LINK,
                         TabCreationState.LIVE_IN_FOREGROUND);
-        verify(observer).onTabRegistered(normalTab1);
+        verify(mTabModelSelectorTabRegistrationObserverObserver).onTabRegistered(normalTab1);
 
         mTabModelSelector
                 .getModel(false)
                 .getTabRemover()
                 .removeTab(normalTab1, /* allowDialog= */ false);
-        verify(observer).onTabUnregistered(normalTab1);
+        verify(mTabModelSelectorTabRegistrationObserverObserver).onTabUnregistered(normalTab1);
     }
 
     @Test
     public void testOnTabUnRegistered_PendingClosure() {
-        TabModelSelectorTabRegistrationObserver.Observer observer =
-                mock(TabModelSelectorTabRegistrationObserver.Observer.class);
-        mTabRegistrationObserver.addObserverAndNotifyExistingTabRegistration(observer);
+        mTabRegistrationObserver.addObserverAndNotifyExistingTabRegistration(
+                mTabModelSelectorTabRegistrationObserverObserver);
 
         Tab normalTab1 = MockTab.createAndInitialize(1, mProfile);
         mTabModelSelector
@@ -277,7 +274,7 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
                         0,
                         TabLaunchType.FROM_LINK,
                         TabCreationState.LIVE_IN_FOREGROUND);
-        verify(observer).onTabRegistered(normalTab1);
+        verify(mTabModelSelectorTabRegistrationObserverObserver).onTabRegistered(normalTab1);
 
         mTabModelSelector
                 .getModel(false)
@@ -286,14 +283,13 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
                         TabClosureParams.closeTab(normalTab1).allowUndo(true).build(),
                         /* allowDialog= */ false);
         mTabModelSelector.getModel(false).commitTabClosure(normalTab1.getId());
-        verify(observer).onTabUnregistered(normalTab1);
+        verify(mTabModelSelectorTabRegistrationObserverObserver).onTabUnregistered(normalTab1);
     }
 
     @Test
     public void testRemoveObserver() {
-        TabModelSelectorTabRegistrationObserver.Observer observer =
-                mock(TabModelSelectorTabRegistrationObserver.Observer.class);
-        mTabRegistrationObserver.addObserverAndNotifyExistingTabRegistration(observer);
+        mTabRegistrationObserver.addObserverAndNotifyExistingTabRegistration(
+                mTabModelSelectorTabRegistrationObserverObserver);
 
         Tab normalTab1 = MockTab.createAndInitialize(1, mProfile);
         mTabModelSelector
@@ -303,9 +299,9 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
                         0,
                         TabLaunchType.FROM_LINK,
                         TabCreationState.LIVE_IN_FOREGROUND);
-        verify(observer).onTabRegistered(normalTab1);
+        verify(mTabModelSelectorTabRegistrationObserverObserver).onTabRegistered(normalTab1);
 
-        mTabRegistrationObserver.removeObserver(observer);
+        mTabRegistrationObserver.removeObserver(mTabModelSelectorTabRegistrationObserverObserver);
 
         Tab normalTab2 = MockTab.createAndInitialize(2, mProfile);
         mTabModelSelector
@@ -320,14 +316,13 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
                 .getTabRemover()
                 .removeTab(normalTab1, /* allowDialog= */ false);
 
-        verifyNoMoreInteractions(observer);
+        verifyNoMoreInteractions(mTabModelSelectorTabRegistrationObserverObserver);
     }
 
     @Test
     public void testDestroy() {
-        TabModelSelectorTabRegistrationObserver.Observer observer =
-                mock(TabModelSelectorTabRegistrationObserver.Observer.class);
-        mTabRegistrationObserver.addObserverAndNotifyExistingTabRegistration(observer);
+        mTabRegistrationObserver.addObserverAndNotifyExistingTabRegistration(
+                mTabModelSelectorTabRegistrationObserverObserver);
 
         Tab normalTab1 = MockTab.createAndInitialize(1, mProfile);
         Tab normalTab2 = MockTab.createAndInitialize(2, mProfile);
@@ -345,12 +340,12 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
                         0,
                         TabLaunchType.FROM_LINK,
                         TabCreationState.LIVE_IN_FOREGROUND);
-        verify(observer).onTabRegistered(normalTab1);
-        verify(observer).onTabRegistered(normalTab2);
+        verify(mTabModelSelectorTabRegistrationObserverObserver).onTabRegistered(normalTab1);
+        verify(mTabModelSelectorTabRegistrationObserverObserver).onTabRegistered(normalTab2);
 
         mTabRegistrationObserver.destroy();
-        verify(observer).onTabUnregistered(normalTab1);
-        verify(observer).onTabUnregistered(normalTab2);
+        verify(mTabModelSelectorTabRegistrationObserverObserver).onTabUnregistered(normalTab1);
+        verify(mTabModelSelectorTabRegistrationObserverObserver).onTabUnregistered(normalTab2);
 
         Tab normalTab3 = MockTab.createAndInitialize(3, mProfile);
         mTabModelSelector
@@ -365,7 +360,7 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
                 .getTabRemover()
                 .removeTab(normalTab1, /* allowDialog= */ false);
 
-        verifyNoMoreInteractions(observer);
+        verifyNoMoreInteractions(mTabModelSelectorTabRegistrationObserverObserver);
     }
 
     private static class TestTabModelSelector extends TabModelSelectorBase {

@@ -18,6 +18,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -77,6 +78,7 @@ public class ActorOverlayViewRenderTest {
     @Mock private Profile mProfile;
     @Mock private ActorKeyedService mActorKeyedService;
     @Mock private SideUiStateProvider mSideUiStateProvider;
+    @Captor private ArgumentCaptor<SideUiObserver> mSideUiObserverCaptor;
     private TestBrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
 
     private TabObscuringHandler mTabObscuringHandler;
@@ -150,15 +152,13 @@ public class ActorOverlayViewRenderTest {
     @Feature({"RenderTest"})
     @DisabledTest(message = "b/559848887")
     public void testActorOverlay_accountsForSideUi() throws Exception {
-        ArgumentCaptor<SideUiObserver> sideUiObserverCaptor =
-                ArgumentCaptor.forClass(SideUiObserver.class);
-        verify(mSideUiStateProvider).addObserver(sideUiObserverCaptor.capture());
+        verify(mSideUiStateProvider).addObserver(mSideUiObserverCaptor.capture());
 
         SideUiSpecs sideUiSpecs =
                 new SideUiSpecs(/* leftContainerWidth= */ 50, /* rightContainerWidth= */ 250);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    sideUiObserverCaptor.getValue().onSideUiSpecsChanged(sideUiSpecs);
+                    mSideUiObserverCaptor.getValue().onSideUiSpecsChanged(sideUiSpecs);
                     mCoordinator.getMediator().setOverlayVisible(true);
                 });
 

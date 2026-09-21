@@ -20,9 +20,13 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -82,6 +86,8 @@ public class BookmarkEditTest {
                     if (newState == ActivityState.DESTROYED) sDestroyedCallback.notifyCalled();
                 }
             };
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private MenuItem mMenuItem;
     private final CallbackHelper mModelChangedCallback = new CallbackHelper();
 
     @Before
@@ -271,9 +277,9 @@ public class BookmarkEditTest {
     @Feature({"Bookmark"})
     @RequiresRestart("tests destruction of BookmarkEditActivity")
     public void testEditActivityHomeButton() throws ExecutionException, TimeoutException {
-        MenuItem item = Mockito.mock(MenuItem.class);
-        Mockito.when(item.getItemId()).thenReturn(android.R.id.home);
-        ThreadUtils.runOnUiThreadBlocking(() -> sBookmarkEditActivity.onOptionsItemSelected(item));
+        Mockito.when(mMenuItem.getItemId()).thenReturn(android.R.id.home);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> sBookmarkEditActivity.onOptionsItemSelected(mMenuItem));
 
         Assert.assertTrue(
                 "BookmarkActivity should be finishing or destroyed.",

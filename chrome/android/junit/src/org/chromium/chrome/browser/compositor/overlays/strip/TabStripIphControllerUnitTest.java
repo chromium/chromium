@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -25,6 +24,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -66,6 +66,9 @@ public class TabStripIphControllerUnitTest {
 
     @Mock
     private StripLayoutGroupTitle.StripLayoutGroupTitleDelegate mStripLayoutGroupTitleDelegate;
+
+    @Mock private CompositorButton mCompositorButton;
+    @Captor private ArgumentCaptor<IphCommand> mIphCommandCaptor;
 
     private StripLayoutGroupTitle mGroupTitle;
     private StripLayoutTab mTab;
@@ -117,9 +120,8 @@ public class TabStripIphControllerUnitTest {
     public void testIphProperties_TabGroupSync() {
         mController.showIphOnTabStrip(
                 mGroupTitle, null, mContainerView, IphType.TAB_GROUP_SYNC, TAB_STRIP_HEIGHT, false);
-        var captor = ArgumentCaptor.forClass(IphCommand.class);
-        verify(mUserEducationHelper).requestShowIph(captor.capture());
-        var cmd = captor.getValue();
+        verify(mUserEducationHelper).requestShowIph(mIphCommandCaptor.capture());
+        IphCommand cmd = mIphCommandCaptor.getValue();
 
         // Assert: feature name and iph string.
         assertEquals(FeatureConstants.TAB_GROUP_SYNC_ON_STRIP_FEATURE, cmd.featureName);
@@ -147,9 +149,8 @@ public class TabStripIphControllerUnitTest {
                 IphType.GROUP_TITLE_NOTIFICATION_BUBBLE,
                 TAB_STRIP_HEIGHT,
                 false);
-        var captor = ArgumentCaptor.forClass(IphCommand.class);
-        verify(mUserEducationHelper).requestShowIph(captor.capture());
-        var cmd = captor.getValue();
+        verify(mUserEducationHelper).requestShowIph(mIphCommandCaptor.capture());
+        IphCommand cmd = mIphCommandCaptor.getValue();
 
         // Assert: feature name and iph string.
         assertEquals(
@@ -181,9 +182,8 @@ public class TabStripIphControllerUnitTest {
                 IphType.GROUP_TITLE_NOTIFICATION_BUBBLE,
                 TAB_STRIP_HEIGHT,
                 false);
-        var captor = ArgumentCaptor.forClass(IphCommand.class);
-        verify(mUserEducationHelper).requestShowIph(captor.capture());
-        var cmd = captor.getValue();
+        verify(mUserEducationHelper).requestShowIph(mIphCommandCaptor.capture());
+        IphCommand cmd = mIphCommandCaptor.getValue();
 
         // Assert: feature name and iph string.
         assertEquals(
@@ -213,9 +213,8 @@ public class TabStripIphControllerUnitTest {
                 IphType.TAB_NOTIFICATION_BUBBLE,
                 TAB_STRIP_HEIGHT,
                 false);
-        var captor = ArgumentCaptor.forClass(IphCommand.class);
-        verify(mUserEducationHelper).requestShowIph(captor.capture());
-        var cmd = captor.getValue();
+        verify(mUserEducationHelper).requestShowIph(mIphCommandCaptor.capture());
+        IphCommand cmd = mIphCommandCaptor.getValue();
 
         // Assert: feature name and iph string.
         assertEquals(
@@ -246,9 +245,8 @@ public class TabStripIphControllerUnitTest {
                 IphType.TAB_NOTIFICATION_BUBBLE,
                 TAB_STRIP_HEIGHT,
                 false);
-        var captor = ArgumentCaptor.forClass(IphCommand.class);
-        verify(mUserEducationHelper).requestShowIph(captor.capture());
-        var cmd = captor.getValue();
+        verify(mUserEducationHelper).requestShowIph(mIphCommandCaptor.capture());
+        IphCommand cmd = mIphCommandCaptor.getValue();
 
         // Assert: feature name and iph string.
         assertEquals(
@@ -272,9 +270,8 @@ public class TabStripIphControllerUnitTest {
     public void testIphProperties_TabTearingXr() {
         mController.showIphOnTabStrip(
                 null, mTab, mContainerView, IphType.TAB_TEARING_XR, TAB_STRIP_HEIGHT, true);
-        var captor = ArgumentCaptor.forClass(IphCommand.class);
-        verify(mUserEducationHelper).requestShowIph(captor.capture());
-        var cmd = captor.getValue();
+        verify(mUserEducationHelper).requestShowIph(mIphCommandCaptor.capture());
+        IphCommand cmd = mIphCommandCaptor.getValue();
 
         // Assert: feature name and snooze mode.
         assertEquals(FeatureConstants.IPH_TAB_TEARING_XR, cmd.featureName);
@@ -283,7 +280,6 @@ public class TabStripIphControllerUnitTest {
 
     @Test
     public void testIphProperties_Glic() {
-        CompositorButton button = mock(CompositorButton.class);
         Rect anchorRect = new Rect(10, 20, 30, 40);
         doAnswer(
                         invocation -> {
@@ -291,15 +287,17 @@ public class TabStripIphControllerUnitTest {
                             out.set(anchorRect);
                             return null;
                         })
-                .when(button)
+                .when(mCompositorButton)
                 .getAnchorRect(any());
 
         mController.showIphOnCompositorButton(
-                button, mContainerView, IphType.GLIC_PROMO, /* enableSnoozeMode= */ false);
+                mCompositorButton,
+                mContainerView,
+                IphType.GLIC_PROMO,
+                /* enableSnoozeMode= */ false);
 
-        var captor = ArgumentCaptor.forClass(IphCommand.class);
-        verify(mUserEducationHelper).requestShowIph(captor.capture());
-        var cmd = captor.getValue();
+        verify(mUserEducationHelper).requestShowIph(mIphCommandCaptor.capture());
+        IphCommand cmd = mIphCommandCaptor.getValue();
 
         // Assert: feature name and iph string.
         assertEquals(FeatureConstants.GLIC_PROMO_ANDROID_FEATURE, cmd.featureName);
@@ -316,9 +314,8 @@ public class TabStripIphControllerUnitTest {
     public void testIphProperties_VerticalTabsPromo() {
         mController.showIphOnTabStrip(
                 null, mTab, mContainerView, IphType.VERTICAL_TABS_PROMO, TAB_STRIP_HEIGHT, false);
-        var captor = ArgumentCaptor.forClass(IphCommand.class);
-        verify(mUserEducationHelper).requestShowIph(captor.capture());
-        var cmd = captor.getValue();
+        verify(mUserEducationHelper).requestShowIph(mIphCommandCaptor.capture());
+        IphCommand cmd = mIphCommandCaptor.getValue();
 
         // Assert: feature name and iph string.
         assertEquals(FeatureConstants.ANDROID_VERTICAL_TABS_PROMO_FEATURE, cmd.featureName);

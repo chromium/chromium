@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -46,6 +45,7 @@ public class TabBottomSheetUtilsUnitTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private TabBottomSheetManager mManager;
     @Mock private CoBrowseViewFactory mFactory;
+    @Mock private Activity mActivity;
 
     private UnownedUserDataHost mUnownedUserDataHost;
 
@@ -242,19 +242,18 @@ public class TabBottomSheetUtilsUnitTest {
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(null));
         assertTrue(TabBottomSheetUtils.isActivityFinishingOrDestroyed(mWindowAndroid));
 
-        Activity activity = mock(Activity.class);
-        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(activity));
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
 
-        when(activity.isFinishing()).thenReturn(true);
-        when(activity.isDestroyed()).thenReturn(false);
+        when(mActivity.isFinishing()).thenReturn(true);
+        when(mActivity.isDestroyed()).thenReturn(false);
         assertTrue(TabBottomSheetUtils.isActivityFinishingOrDestroyed(mWindowAndroid));
 
-        when(activity.isFinishing()).thenReturn(false);
-        when(activity.isDestroyed()).thenReturn(true);
+        when(mActivity.isFinishing()).thenReturn(false);
+        when(mActivity.isDestroyed()).thenReturn(true);
         assertTrue(TabBottomSheetUtils.isActivityFinishingOrDestroyed(mWindowAndroid));
 
-        when(activity.isFinishing()).thenReturn(false);
-        when(activity.isDestroyed()).thenReturn(false);
+        when(mActivity.isFinishing()).thenReturn(false);
+        when(mActivity.isDestroyed()).thenReturn(false);
         assertFalse(TabBottomSheetUtils.isActivityFinishingOrDestroyed(mWindowAndroid));
     }
 

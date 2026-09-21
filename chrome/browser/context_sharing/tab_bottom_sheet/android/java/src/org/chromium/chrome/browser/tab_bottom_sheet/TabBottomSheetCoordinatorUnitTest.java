@@ -127,6 +127,10 @@ public class TabBottomSheetCoordinatorUnitTest {
             mKeyboardVisibilityListenerCaptor;
 
     @Mock private ModalDialogManager mMockModalDialogManager;
+    @Mock private PeekViewManager mPeekViewManager;
+    @Mock private ResizingStrategy mResizingStrategy;
+    @Mock private BottomSheetContent mBottomSheetContent;
+    @Mock private View mView1;
     @Captor private ArgumentCaptor<ModalDialogManagerObserver> mModalDialogManagerObserverCaptor;
 
     private CoBrowseViews mCoBrowseViews;
@@ -276,7 +280,7 @@ public class TabBottomSheetCoordinatorUnitTest {
         verify(mMockBottomSheetController, times(1)).addObserver(any(BottomSheetObserver.class));
 
         // Simulate suppression by setting mIsShowingTabBottomSheet to false via callback.
-        observer.onSheetContentChanged(mock(BottomSheetContent.class));
+        observer.onSheetContentChanged(mBottomSheetContent);
         assertFalse(mCoordinator.isSheetCurrentlyManagedForTesting());
 
         // Try to show again.
@@ -300,11 +304,10 @@ public class TabBottomSheetCoordinatorUnitTest {
 
     @Test
     public void testDestroy_TearsDownPeekViewManagerThroughCoBrowseViews() {
-        PeekViewManager peekViewManager = mock(PeekViewManager.class);
-        when(peekViewManager.getModel())
-                .thenReturn(new PropertyModel.Builder(TabBottomSheetPeekProperties.ALL_KEYS)
-                        .build());
-        doReturn(peekViewManager).when(mCoBrowseViews).getOrCreatePeekViewManager();
+        when(mPeekViewManager.getModel())
+                .thenReturn(
+                        new PropertyModel.Builder(TabBottomSheetPeekProperties.ALL_KEYS).build());
+        doReturn(mPeekViewManager).when(mCoBrowseViews).getOrCreatePeekViewManager();
         simulateShowSuccessAndGetObserver();
 
         mCoordinator.destroy();
@@ -759,8 +762,7 @@ public class TabBottomSheetCoordinatorUnitTest {
         ChromeFeatureList.TAB_BOTTOM_SHEET_RESIZE_WEBVIEW
     })
     public void testOnSheetStateChanged_Scrolling_NotSmallScreen_ResizingStatusTrue() {
-        ResizingStrategy mockStrategy = mock(ResizingStrategy.class);
-        ResizingStrategyFactory.setForTesting(mockStrategy);
+        ResizingStrategyFactory.setForTesting(mResizingStrategy);
         createCoordinator();
         BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
 
@@ -768,7 +770,7 @@ public class TabBottomSheetCoordinatorUnitTest {
 
         observer.onSheetStateChanged(SheetState.SCROLLING, StateChangeReason.NONE);
 
-        verify(mockStrategy).onSheetResizingStatusChanged(true);
+        verify(mResizingStrategy).onSheetResizingStatusChanged(true);
     }
 
     @Test
@@ -777,8 +779,7 @@ public class TabBottomSheetCoordinatorUnitTest {
         ChromeFeatureList.TAB_BOTTOM_SHEET_RESIZE_WEBVIEW
     })
     public void testOnSheetStateChanged_Scrolling_SmallScreen_ResizingStatusFalse() {
-        ResizingStrategy mockStrategy = mock(ResizingStrategy.class);
-        ResizingStrategyFactory.setForTesting(mockStrategy);
+        ResizingStrategyFactory.setForTesting(mResizingStrategy);
         createCoordinator();
         BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
 
@@ -786,7 +787,7 @@ public class TabBottomSheetCoordinatorUnitTest {
 
         observer.onSheetStateChanged(SheetState.SCROLLING, StateChangeReason.NONE);
 
-        verify(mockStrategy).onSheetResizingStatusChanged(false);
+        verify(mResizingStrategy).onSheetResizingStatusChanged(false);
     }
 
     @Test
@@ -795,8 +796,7 @@ public class TabBottomSheetCoordinatorUnitTest {
         ChromeFeatureList.TAB_BOTTOM_SHEET_RESIZE_WEBVIEW
     })
     public void testOnSheetStateChanged_NotScrolling_ResizingStatusFalse() {
-        ResizingStrategy mockStrategy = mock(ResizingStrategy.class);
-        ResizingStrategyFactory.setForTesting(mockStrategy);
+        ResizingStrategyFactory.setForTesting(mResizingStrategy);
         createCoordinator();
         BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
 
@@ -804,33 +804,32 @@ public class TabBottomSheetCoordinatorUnitTest {
 
         // HALF state: not scrolling -> onSheetResizingStatusChanged(false)
         observer.onSheetStateChanged(SheetState.HALF, StateChangeReason.NONE);
-        verify(mockStrategy).onSheetResizingStatusChanged(false);
+        verify(mResizingStrategy).onSheetResizingStatusChanged(false);
 
-        clearInvocations(mockStrategy);
+        clearInvocations(mResizingStrategy);
 
         // FULL state: not scrolling -> onSheetResizingStatusChanged(false)
         observer.onSheetStateChanged(SheetState.FULL, StateChangeReason.NONE);
-        verify(mockStrategy).onSheetResizingStatusChanged(false);
+        verify(mResizingStrategy).onSheetResizingStatusChanged(false);
 
-        clearInvocations(mockStrategy);
+        clearInvocations(mResizingStrategy);
 
         // PEEK state: not scrolling -> onSheetResizingStatusChanged(false)
         observer.onSheetStateChanged(SheetState.PEEK, StateChangeReason.NONE);
-        verify(mockStrategy).onSheetResizingStatusChanged(false);
+        verify(mResizingStrategy).onSheetResizingStatusChanged(false);
 
-        clearInvocations(mockStrategy);
+        clearInvocations(mResizingStrategy);
 
         // Small screen and not scrolling -> onSheetResizingStatusChanged(false)
         when(mMockBottomSheetController.isSmallScreen()).thenReturn(true);
         observer.onSheetStateChanged(SheetState.FULL, StateChangeReason.NONE);
-        verify(mockStrategy).onSheetResizingStatusChanged(false);
+        verify(mResizingStrategy).onSheetResizingStatusChanged(false);
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET)
     public void testOnSheetStateChanged_ResizingDisabled_ResizingStrategyNotCalled() {
-        ResizingStrategy mockStrategy = mock(ResizingStrategy.class);
-        ResizingStrategyFactory.setForTesting(mockStrategy);
+        ResizingStrategyFactory.setForTesting(mResizingStrategy);
         createCoordinator();
         BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
 
@@ -838,7 +837,7 @@ public class TabBottomSheetCoordinatorUnitTest {
 
         observer.onSheetStateChanged(SheetState.SCROLLING, StateChangeReason.NONE);
 
-        verify(mockStrategy, never()).onSheetResizingStatusChanged(anyBoolean());
+        verify(mResizingStrategy, never()).onSheetResizingStatusChanged(anyBoolean());
     }
 
     @Test
@@ -854,16 +853,15 @@ public class TabBottomSheetCoordinatorUnitTest {
         assertNull(mCoordinator.getResizingStrategyForTesting());
 
         clearInvocations(mMockBottomSheetController);
-        ResizingStrategy mockStrategy = mock(ResizingStrategy.class);
-        ResizingStrategyFactory.setForTesting(mockStrategy);
+        ResizingStrategyFactory.setForTesting(mResizingStrategy);
         createCoordinator();
         assertNull(mCoordinator.getResizingStrategyForTesting());
         simulateShowSuccessAndGetObserver();
-        assertEquals(mockStrategy, mCoordinator.getResizingStrategyForTesting());
+        assertEquals(mResizingStrategy, mCoordinator.getResizingStrategyForTesting());
 
         mCoordinator.destroy();
 
-        verify(mockStrategy).destroy();
+        verify(mResizingStrategy).destroy();
         assertNull(mCoordinator.getResizingStrategyForTesting());
     }
 
@@ -1031,7 +1029,7 @@ public class TabBottomSheetCoordinatorUnitTest {
         when(mMockModalDialogManager.getCurrentType()).thenReturn(ModalDialogType.TAB);
 
         // Trigger observer
-        observer.onDialogShown(mock(View.class));
+        observer.onDialogShown(mView1);
 
         // Verify sheet collapse is called (via bottom sheet controller)
         verify(mMockBottomSheetController).collapseSheet(eq(true));
@@ -1047,7 +1045,7 @@ public class TabBottomSheetCoordinatorUnitTest {
         when(mMockModalDialogManager.getCurrentType()).thenReturn(ModalDialogType.APP);
 
         // Trigger observer
-        observer.onDialogShown(mock(View.class));
+        observer.onDialogShown(mView1);
 
         // Verify collapse is NOT triggered
         verify(mMockBottomSheetController, never()).collapseSheet(anyBoolean());
@@ -1333,17 +1331,15 @@ public class TabBottomSheetCoordinatorUnitTest {
 
     @Test
     public void testTryToShowBottomSheet_startsExpanded_ignoresTransientPeek() {
-        ArgumentCaptor<BottomSheetObserver> observerCaptor =
-                ArgumentCaptor.forClass(BottomSheetObserver.class);
-
         when(mMockBottomSheetController.requestShowContent(
                         any(BottomSheetContent.class), anyBoolean()))
                 .thenReturn(true);
 
         mCoordinator.tryToShowBottomSheet(/* animate= */ true, /* startsExpanded= */ true);
 
-        verify(mMockBottomSheetController).addObserver(observerCaptor.capture());
-        BottomSheetObserver observer = observerCaptor.getValue();
+        verify(mMockBottomSheetController)
+                .addObserver(mBottomSheetObserverArgumentCaptor.capture());
+        BottomSheetObserver observer = mBottomSheetObserverArgumentCaptor.getValue();
         assertNotNull(observer);
 
         verify(mMockSheetEventsCallback, times(1)).onBottomSheetOpened(true);
@@ -1365,9 +1361,6 @@ public class TabBottomSheetCoordinatorUnitTest {
 
     @Test
     public void testTryToShowBottomSheet_startsExpanded_heightInsufficient_fallsBackToPeek() {
-        ArgumentCaptor<BottomSheetObserver> observerCaptor =
-                ArgumentCaptor.forClass(BottomSheetObserver.class);
-
         when(mMockBottomSheetController.requestShowContent(
                         any(BottomSheetContent.class), anyBoolean()))
                 .thenReturn(true);
@@ -1375,8 +1368,9 @@ public class TabBottomSheetCoordinatorUnitTest {
 
         mCoordinator.tryToShowBottomSheet(/* animate= */ true, /* startsExpanded= */ true);
 
-        verify(mMockBottomSheetController).addObserver(observerCaptor.capture());
-        BottomSheetObserver observer = observerCaptor.getValue();
+        verify(mMockBottomSheetController)
+                .addObserver(mBottomSheetObserverArgumentCaptor.capture());
+        BottomSheetObserver observer = mBottomSheetObserverArgumentCaptor.getValue();
 
         verify(mMockSheetEventsCallback, times(1)).onBottomSheetOpened(true);
 

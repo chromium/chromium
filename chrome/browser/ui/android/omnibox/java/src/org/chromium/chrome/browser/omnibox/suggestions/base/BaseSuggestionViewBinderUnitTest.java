@@ -11,7 +11,6 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -71,6 +70,9 @@ public class BaseSuggestionViewBinderUnitTest {
 
     @Mock private Runnable mRunnable;
     @Mock private View mView;
+    @Mock private Runnable mCall1;
+    @Mock private Runnable mCall2;
+    @Mock private Runnable mCall3;
     @Captor private ArgumentCaptor<Drawable> mBackgroundCaptor;
     private Context mBareContext;
     private Context mContext;
@@ -171,27 +173,23 @@ public class BaseSuggestionViewBinderUnitTest {
 
     @Test
     public void actionIcon_showMultipleIcons() {
-        Runnable call1 = mock(Runnable.class);
-        Runnable call2 = mock(Runnable.class);
-        Runnable call3 = mock(Runnable.class);
-
         List<Action> list =
                 Arrays.asList(
                         new Action(
                                 mContext,
                                 OmniboxDrawableState.forColor(0),
                                 R.string.accessibility_omnibox_btn_refine,
-                                call1),
+                                mCall1),
                         new Action(
                                 mContext,
                                 OmniboxDrawableState.forColor(0),
                                 R.string.accessibility_omnibox_btn_refine,
-                                call2),
+                                mCall2),
                         new Action(
                                 mContext,
                                 OmniboxDrawableState.forColor(0),
                                 R.string.accessibility_omnibox_btn_refine,
-                                call3));
+                                mCall3));
         mModel.set(BaseSuggestionViewProperties.ACTION_BUTTONS, list);
 
         List<ActionButtonView> actionButtons = mBaseView.getActionButtons();
@@ -209,11 +207,11 @@ public class BaseSuggestionViewBinderUnitTest {
         assertEquals(list.get(2).icon.drawable, actionButtons.get(2).getDrawable());
 
         assertTrue(actionButtons.get(0).performClick());
-        verify(call1).run();
+        verify(mCall1).run();
         assertTrue(actionButtons.get(1).performClick());
-        verify(call2).run();
+        verify(mCall2).run();
         assertTrue(actionButtons.get(2).performClick());
-        verify(call3).run();
+        verify(mCall3).run();
     }
 
     @Test

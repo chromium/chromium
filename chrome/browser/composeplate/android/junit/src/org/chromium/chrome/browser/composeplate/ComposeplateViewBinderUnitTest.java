@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.composeplate;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -46,6 +45,7 @@ public class ComposeplateViewBinderUnitTest {
     @Mock private ImageView mIncognitoButtonView;
     @Mock private View mComposeplateButtonView;
     @Mock private OnClickListener mOnClickListener;
+    @Mock private ColorStateList mColorStateList;
 
     private Context mContext;
     private PropertyModel mPropertyModel;
@@ -124,9 +124,8 @@ public class ComposeplateViewBinderUnitTest {
 
     @Test
     public void testSetColorStateList_withMockView() {
-        ColorStateList colorStateList = mock(ColorStateList.class);
-        mPropertyModel.set(ComposeplateProperties.COLOR_STATE_LIST, colorStateList);
-        verify(mViewMock).setColorStateList(eq(colorStateList));
+        mPropertyModel.set(ComposeplateProperties.COLOR_STATE_LIST, mColorStateList);
+        verify(mViewMock).setColorStateList(eq(mColorStateList));
     }
 
     @Test

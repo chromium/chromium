@@ -21,6 +21,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -78,6 +79,7 @@ public class TabCollectionTabModelImplUnitTest {
     @Mock private ScopedStorageBatch mScopedStorageBatch;
     @Mock private TabModelObserver mTabModelObserver;
     @Mock private PendingTabClosureManager mPendingTabClosureManager;
+    @Mock private TabList mTabList;
 
     private TabCollectionTabModelImpl mTabModel;
     private List<Tab> mTabs;
@@ -606,7 +608,7 @@ public class TabCollectionTabModelImplUnitTest {
         @TabId int tabId = 789;
         MockTab tab = createMockTab(tabId, mProfile);
         tab.setIsInitialized(true);
-        when(mPendingTabClosureManager.getRewoundList()).thenReturn(mock(TabList.class));
+        when(mPendingTabClosureManager.getRewoundList()).thenReturn(mTabList);
         mTabModel.setPendingTabClosureManagerForTesting(mPendingTabClosureManager);
 
         mTabModel.addTab(tab, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);

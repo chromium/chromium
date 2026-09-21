@@ -9,7 +9,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.clearInvocations;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -21,6 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -56,8 +56,6 @@ import java.util.Set;
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.GLIC)
 public class ActorControlCoordinatorTest {
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
     private static final int TASK_ID = 123;
     private static final int TAB_ID = 456;
     private static final String CONVERSATION_ID_1 = "conversation_1";
@@ -65,6 +63,8 @@ public class ActorControlCoordinatorTest {
     private static final String TASK_TITLE = "Test Task Title";
     private static final String CONVERSATION_TITLE_1 = "Test Conversation Title 1";
     private static final String CONVERSATION_TITLE_2 = "Test Conversation Title 2";
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private TabBottomSheetManager mTabBottomSheetManager;
     @Mock private Profile mProfile;
@@ -74,6 +74,13 @@ public class ActorControlCoordinatorTest {
     @Mock private Tab mTab;
     @Mock private ActorTask mActorTask;
     @Mock private TabSelectionDelegate mTabSelectionDelegate;
+    @Mock private Tab mTab2;
+    @Mock private GlicInstanceHelper mHelper2;
+    @Mock private Tab mIncognitoTab;
+    @Mock private ActorTask mTask1;
+    @Mock private ActorTask mTask2;
+    @Mock private Tab mTab3;
+    @Captor private ArgumentCaptor<GlicInstanceHelper.Observer> mGlicInstanceHelperObserverCaptor;
 
     private Activity mActivity;
     private ActorControlStateTracker mStateTracker;
@@ -322,12 +329,10 @@ public class ActorControlCoordinatorTest {
         mProfileSupplier.set(mProfile);
         mTabSupplier.set(mTab);
 
-        ArgumentCaptor<GlicInstanceHelper.Observer> captor =
-                ArgumentCaptor.forClass(GlicInstanceHelper.Observer.class);
-        verify(mGlicInstanceHelper).addObserver(captor.capture());
+        verify(mGlicInstanceHelper).addObserver(mGlicInstanceHelperObserverCaptor.capture());
         when(mGlicInstanceHelper.getConversationTitle()).thenReturn(CONVERSATION_TITLE_2);
 
-        captor.getValue().onInstanceChanged();
+        mGlicInstanceHelperObserverCaptor.getValue().onInstanceChanged();
 
         assertEquals(CONVERSATION_TITLE_2, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
     }
@@ -487,15 +492,13 @@ public class ActorControlCoordinatorTest {
         setUpForOnTaskStateChanged();
         when(mTabBottomSheetManager.isSheetShowing()).thenReturn(false);
 
-        Tab tab2 = mock(Tab.class);
-        when(tab2.getId()).thenReturn(999);
-        GlicInstanceHelper helper2 = mock(GlicInstanceHelper.class);
-        when(helper2.getConversationId()).thenReturn(CONVERSATION_ID_1);
-        when(helper2.getTaskId()).thenReturn(TASK_ID);
-        when(mGlicInstanceHelperNatives.getForTab(tab2)).thenReturn(helper2);
+        when(mTab2.getId()).thenReturn(999);
+        when(mHelper2.getConversationId()).thenReturn(CONVERSATION_ID_1);
+        when(mHelper2.getTaskId()).thenReturn(TASK_ID);
+        when(mGlicInstanceHelperNatives.getForTab(mTab2)).thenReturn(mHelper2);
 
         // Switch active tab to tab2 (id 999) while acting tab is TAB_ID (456).
-        mTabSupplier.set(tab2);
+        mTabSupplier.set(mTab2);
 
         mStateTracker.onTaskStateChanged(TASK_ID, ActorTaskState.FINISHED);
 
@@ -834,17 +837,14 @@ public class ActorControlCoordinatorTest {
         verify(helper1).addObserver(mStateTracker);
         assertEquals(CONVERSATION_TITLE_1, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
 
-        Tab tab2 = mock(Tab.class);
+        when(mHelper2.getConversationId()).thenReturn(CONVERSATION_ID_2);
+        when(mHelper2.getConversationTitle()).thenReturn(CONVERSATION_TITLE_2);
+        when(mGlicInstanceHelperNatives.getForTab(mTab2)).thenReturn(mHelper2);
 
-        GlicInstanceHelper helper2 = mock(GlicInstanceHelper.class);
-        when(helper2.getConversationId()).thenReturn(CONVERSATION_ID_2);
-        when(helper2.getConversationTitle()).thenReturn(CONVERSATION_TITLE_2);
-        when(mGlicInstanceHelperNatives.getForTab(tab2)).thenReturn(helper2);
-
-        mTabSupplier.set(tab2);
+        mTabSupplier.set(mTab2);
 
         verify(helper1).removeObserver(mStateTracker);
-        verify(helper2).addObserver(mStateTracker);
+        verify(mHelper2).addObserver(mStateTracker);
 
         assertEquals(CONVERSATION_TITLE_2, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
     }
@@ -854,12 +854,11 @@ public class ActorControlCoordinatorTest {
         expectValidProfile();
         mProfileSupplier.set(mProfile);
 
-        Tab incognitoTab = mock(Tab.class);
-        when(incognitoTab.isOffTheRecord()).thenReturn(true);
+        when(mIncognitoTab.isOffTheRecord()).thenReturn(true);
 
-        mTabSupplier.set(incognitoTab);
+        mTabSupplier.set(mIncognitoTab);
 
-        verify(mGlicInstanceHelperNatives, never()).getForTab(incognitoTab);
+        verify(mGlicInstanceHelperNatives, never()).getForTab(mIncognitoTab);
 
         assertEquals("", mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
         assertEquals(PeekViewUiState.DEFAULT, mCoordinator.getPeekViewUiStateForTesting());
@@ -871,24 +870,22 @@ public class ActorControlCoordinatorTest {
         when(mGlicInstanceHelper.getTaskId()).thenReturn(101);
 
         // Task 1 on Conversation 1
-        ActorTask task1 = mock(ActorTask.class);
-        when(task1.getId()).thenReturn(101);
-        when(task1.getTitle()).thenReturn("Task 1");
-        when(task1.getState()).thenReturn(ActorTaskState.ACTING);
+        when(mTask1.getId()).thenReturn(101);
+        when(mTask1.getTitle()).thenReturn("Task 1");
+        when(mTask1.getState()).thenReturn(ActorTaskState.ACTING);
 
         // Task 2 on Conversation 2
-        ActorTask task2 = mock(ActorTask.class);
-        when(task2.getId()).thenReturn(102);
-        when(task2.getTitle()).thenReturn("Task 2");
-        when(task2.getState()).thenReturn(ActorTaskState.PAUSED_BY_USER);
+        when(mTask2.getId()).thenReturn(102);
+        when(mTask2.getTitle()).thenReturn("Task 2");
+        when(mTask2.getState()).thenReturn(ActorTaskState.PAUSED_BY_USER);
 
         // Mock active tasks list
         List<ActorTask> activeTasks = new ArrayList<>();
-        activeTasks.add(task1);
-        activeTasks.add(task2);
+        activeTasks.add(mTask1);
+        activeTasks.add(mTask2);
         when(mActorKeyedService.getActiveTasks()).thenReturn(activeTasks);
-        when(mActorKeyedService.getTask(101)).thenReturn(task1);
-        when(mActorKeyedService.getTask(102)).thenReturn(task2);
+        when(mActorKeyedService.getTask(101)).thenReturn(mTask1);
+        when(mActorKeyedService.getTask(102)).thenReturn(mTask2);
 
         // 1. We are on Tab 1 (Conversation 1).
         // Simulate Task 1 starting. This should register the mapping 101 -> Conversation 1.
@@ -899,15 +896,13 @@ public class ActorControlCoordinatorTest {
         assertEquals(PeekViewUiState.ACTING, mCoordinator.getPeekViewUiStateForTesting());
 
         // 2. Switch to Tab 2 (Conversation 2)
-        Tab tab2 = mock(Tab.class);
-        when(tab2.getId()).thenReturn(2);
-        GlicInstanceHelper helper2 = mock(GlicInstanceHelper.class);
-        when(helper2.getConversationId()).thenReturn(CONVERSATION_ID_2);
-        when(helper2.getConversationTitle()).thenReturn(CONVERSATION_TITLE_2);
-        when(helper2.getTaskId()).thenReturn(102);
-        when(mGlicInstanceHelperNatives.getForTab(tab2)).thenReturn(helper2);
+        when(mTab2.getId()).thenReturn(2);
+        when(mHelper2.getConversationId()).thenReturn(CONVERSATION_ID_2);
+        when(mHelper2.getConversationTitle()).thenReturn(CONVERSATION_TITLE_2);
+        when(mHelper2.getTaskId()).thenReturn(102);
+        when(mGlicInstanceHelperNatives.getForTab(mTab2)).thenReturn(mHelper2);
 
-        mTabSupplier.set(tab2); // Triggers onInstanceChanged -> mActiveGlicConversationId =
+        mTabSupplier.set(mTab2); // Triggers onInstanceChanged -> mActiveGlicConversationId =
         // CONVERSATION_ID_2
 
         // Simulate Task 2 starting on Conversation 2.
@@ -923,12 +918,11 @@ public class ActorControlCoordinatorTest {
         assertEquals(PeekViewUiState.ACTING, mCoordinator.getPeekViewUiStateForTesting());
 
         // 4. Open Tab 3 and switch to Conversation 1 -> should also show Task 1
-        Tab tab3 = mock(Tab.class);
-        when(tab3.getId()).thenReturn(3);
+        when(mTab3.getId()).thenReturn(3);
         // We reuse helper1 (mGlicInstanceHelper) which has CONVERSATION_ID_1
-        when(mGlicInstanceHelperNatives.getForTab(tab3)).thenReturn(mGlicInstanceHelper);
+        when(mGlicInstanceHelperNatives.getForTab(mTab3)).thenReturn(mGlicInstanceHelper);
 
-        mTabSupplier.set(tab3);
+        mTabSupplier.set(mTab3);
         assertEquals("Task 1", mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
         assertEquals(PeekViewUiState.ACTING, mCoordinator.getPeekViewUiStateForTesting());
     }

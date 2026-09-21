@@ -33,6 +33,7 @@ public class PaymentHandlerToolbarMediatorTest {
 
     @Mock private MockWebContents mMockWebContents;
     @Mock private PaymentHandlerToolbarMediatorDelegate mMockDelegate;
+    @Mock private NavigationHandle mNavigationHandle;
 
     private PropertyModel mModel;
     private PaymentHandlerToolbarMediator mMediator;
@@ -72,10 +73,9 @@ public class PaymentHandlerToolbarMediatorTest {
                 .when(mMockDelegate)
                 .getSecurityIconContentDescription(ConnectionSecurityLevel.NONE);
 
-        NavigationHandle navigation = Mockito.mock(NavigationHandle.class);
-        Mockito.when(navigation.isSameDocument()).thenReturn(false);
+        Mockito.when(mNavigationHandle.isSameDocument()).thenReturn(false);
 
-        mMediator.didStartNavigationInPrimaryMainFrame(navigation);
+        mMediator.didStartNavigationInPrimaryMainFrame(mNavigationHandle);
 
         Assert.assertEquals(123, mModel.get(PaymentHandlerToolbarProperties.SECURITY_ICON));
         Assert.assertEquals(

@@ -17,7 +17,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -69,22 +68,6 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
 public class AutofillLocalIbanEditorTest {
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Mock private Profile mMockProfile;
-    @Mock private ChromeBrowserInitializer mMockInitializer;
-    @Mock private PersonalDataManager mMockPersonalDataManager;
-    @Mock private ProfileManagerUtilsJni mMockProfileManagerUtilsJni;
-    @Mock private ActorKeyedService mMockActorKeyedService;
-
-    private ActivityScenario<SettingsActivity> mActivityScenario;
-    private SettingsActivity mSettingsActivity;
-    private AutofillLocalIbanEditor mIbanEditor;
-
-    private Button mDoneButton;
-    private EditText mNickname;
-    private EditText mValue;
-
     private static final Iban VALID_BELGIUM_IBAN =
             new Iban.Builder()
                     .setLabel("")
@@ -92,6 +75,22 @@ public class AutofillLocalIbanEditorTest {
                     .setRecordType(IbanRecordType.UNKNOWN)
                     .setValue("BE71096123456769")
                     .build();
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private Profile mMockProfile;
+    @Mock private ChromeBrowserInitializer mMockInitializer;
+    @Mock private PersonalDataManager mMockPersonalDataManager;
+    @Mock private ProfileManagerUtilsJni mMockProfileManagerUtilsJni;
+    @Mock private ActorKeyedService mMockActorKeyedService;
+    @Mock private MenuItem mMenuItem;
+
+    private ActivityScenario<SettingsActivity> mActivityScenario;
+    private SettingsActivity mSettingsActivity;
+    private AutofillLocalIbanEditor mIbanEditor;
+    private Button mDoneButton;
+    private EditText mNickname;
+    private EditText mValue;
 
     @Before
     public void setUp() {
@@ -165,9 +164,8 @@ public class AutofillLocalIbanEditorTest {
 
     private void openDeletePaymentMethodConfirmationDialog(ModalDialogManager modalDialogManager) {
         mIbanEditor.setModalDialogManagerSupplier(() -> modalDialogManager);
-        MenuItem deleteButton = mock(MenuItem.class);
-        when(deleteButton.getItemId()).thenReturn(R.id.delete_menu_id);
-        mIbanEditor.onOptionsItemSelected(deleteButton);
+        when(mMenuItem.getItemId()).thenReturn(R.id.delete_menu_id);
+        mIbanEditor.onOptionsItemSelected(mMenuItem);
     }
 
     @Test

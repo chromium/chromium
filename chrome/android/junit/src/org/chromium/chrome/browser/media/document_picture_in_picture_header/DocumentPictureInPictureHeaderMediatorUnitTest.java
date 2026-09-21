@@ -32,6 +32,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -64,19 +65,6 @@ import java.util.List;
 /** Unit tests for {@link DocumentPictureInPictureHeaderMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class DocumentPictureInPictureHeaderMediatorUnitTest {
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
-    @Mock private AppHeaderState mAppHeaderState;
-    @Mock private ThemeColorProvider mThemeColorProvider;
-    @Mock private DocumentPictureInPictureHeaderDelegate mDelegate;
-    @Mock private SecurityStateModel.Natives mSecurityStateModelNatives;
-    @Mock private DisplayAndroid mDisplayAndroid;
-    @Mock private UrlFormatter.Natives mUrlFormatterJniMock;
-
-    private WebContents mOpenerWebContents;
-    private WebContents mWebContents;
-
     private static final int DEFAULT_THEME_COLOR = Color.BLUE;
     private static final ColorStateList DEFAULT_FOCUS_TINT = ColorStateList.valueOf(Color.RED);
     private static final @BrandedColorScheme int DEFAULT_BRANDED_COLOR_SCHEME =
@@ -86,6 +74,20 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
     private static final GURL CONTENT_URL = new GURL("content://media/external/images/media/1");
 
     private Context mContext;
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
+    @Mock private AppHeaderState mAppHeaderState;
+    @Mock private ThemeColorProvider mThemeColorProvider;
+    @Mock private DocumentPictureInPictureHeaderDelegate mDelegate;
+    @Mock private SecurityStateModel.Natives mSecurityStateModelNatives;
+    @Mock private DisplayAndroid mDisplayAndroid;
+    @Mock private UrlFormatter.Natives mUrlFormatterJniMock;
+    @Captor private ArgumentCaptor<WebContentsObserver> mWebContentsObserverCaptor;
+
+    private WebContents mOpenerWebContents;
+    private WebContents mWebContents;
     private PropertyModel mModel;
     private DocumentPictureInPictureHeaderMediator mMediator;
 
@@ -542,9 +544,9 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
         // Capture the WebContentsObserver created by the mediator.
         // The mediator creates a new WebContentsObserver, which registers itself to the
         // WebContents.
-        var captor = ArgumentCaptor.forClass(WebContentsObserver.class);
-        verify((WebContentsObserver.Observable) mWebContents).addObserver(captor.capture());
-        var observer = captor.getValue();
+        verify((WebContentsObserver.Observable) mWebContents)
+                .addObserver(mWebContentsObserverCaptor.capture());
+        WebContentsObserver observer = mWebContentsObserverCaptor.getValue();
 
         // Simulate a security state change.
         int securityLevel = ConnectionSecurityLevel.DANGEROUS;

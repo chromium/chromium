@@ -11,9 +11,13 @@ import android.content.res.AssetManager;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
@@ -34,32 +38,28 @@ public class HostBrowserClassLoaderTest {
     private static final int REMOTE_DEX_VERSION = 1;
     private static final int REMOTE_VERSION_CODE = 5;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private AssetManager mRemoteAssetManager;
+    @Mock private Context mRemoteContext;
+    @Mock private DexLoader mMockDexLoader;
     private Context mContext;
-    private Context mRemoteContext;
-    private AssetManager mRemoteAssetManager;
     private PackageManager mPackageManager;
 
     /**
      * Stub DexLoader. Used to verify the version of the runtime library dex which is used to build
      * the ClassLoader.
      */
-    private DexLoader mMockDexLoader;
-
     @Before
     public void setUp() throws Exception {
         mContext = RuntimeEnvironment.application;
         mPackageManager = mContext.getPackageManager();
         setRemoteVersionCode(REMOTE_VERSION_CODE);
 
-        mRemoteAssetManager = Mockito.mock(AssetManager.class);
         setRemoteDexVersion(REMOTE_DEX_VERSION);
 
-        mRemoteContext = Mockito.mock(Context.class);
         Mockito.when(mRemoteContext.getAssets()).thenReturn(mRemoteAssetManager);
         Mockito.when(mRemoteContext.getPackageName()).thenReturn(REMOTE_PACKAGE_NAME);
         Mockito.when(mRemoteContext.getPackageManager()).thenReturn(mPackageManager);
-
-        mMockDexLoader = Mockito.mock(DexLoader.class);
     }
 
     /** Test upgrading to a new runtime dex version. */

@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.document;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -25,6 +24,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -53,8 +53,6 @@ import java.util.List;
 /** Unit tests for {@link ChromeLauncherActivity}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ChromeLauncherActivityTest {
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
     private static final int TEST_TAB_ID = 100;
     private static final int TEST_WINDOW_ID = 2;
 
@@ -66,6 +64,16 @@ public class ChromeLauncherActivityTest {
             "Android.Intent.LaunchInInstance.AppTaskStartActivity.Result";
 
     // We use a real subclass so we can attach it to ApplicationStatus
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private TabModelSelector mTabModelSelector;
+    @Mock private Tab mTab;
+    @Mock private ActivityManager mActivityManager;
+    @Mock private TabWindowManager mTabWindowManager;
+    @Mock private TabModel mTabModel;
+    @Mock private AppTask mAppTask;
+    @Captor private ArgumentCaptor<Intent> mIntentCaptor;
+
     public static class MockChromeTabbedActivity extends ChromeTabbedActivity {
         public TabModelSelector mTabModelSelector;
         public boolean mAreTabModelsInitialized = true;
@@ -113,12 +121,6 @@ public class ChromeLauncherActivityTest {
     }
 
     private MockChromeTabbedActivity mTabbedActivity;
-
-    @Mock private TabModelSelector mTabModelSelector;
-    @Mock private Tab mTab;
-    @Mock private ActivityManager mActivityManager;
-    @Mock private TabWindowManager mTabWindowManager;
-    @Mock private TabModel mTabModel;
 
     public static class TestChromeLauncherActivity extends ChromeLauncherActivity {}
 
@@ -256,11 +258,10 @@ public class ChromeLauncherActivityTest {
         when(mTabWindowManager.getIdForWindow(any())).thenReturn(TEST_WINDOW_ID);
 
         // Mock an AppTask for the target activity.
-        AppTask mockTask = mock(AppTask.class);
         ActivityManager.RecentTaskInfo taskInfo = new ActivityManager.RecentTaskInfo();
         taskInfo.taskId = mTabbedActivity.getTaskId();
-        when(mockTask.getTaskInfo()).thenReturn(taskInfo);
-        when(mActivityManager.getAppTasks()).thenReturn(List.of(mockTask));
+        when(mAppTask.getTaskInfo()).thenReturn(taskInfo);
+        when(mActivityManager.getAppTasks()).thenReturn(List.of(mAppTask));
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -275,9 +276,8 @@ public class ChromeLauncherActivityTest {
         ChromeLauncherActivity launcherActivity = launcherActivityController.create().get();
 
         // Verify startActivity was called on the AppTask
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(mockTask).startActivity(any(), intentCaptor.capture(), any());
-        Assert.assertEquals(0, intentCaptor.getValue().getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK);
+        verify(mAppTask).startActivity(any(), mIntentCaptor.capture(), any());
+        Assert.assertEquals(0, mIntentCaptor.getValue().getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK);
 
         // Verify fallback was NOT called
         Assert.assertFalse(mTabbedActivity.mOnNewIntentCalled);
@@ -303,13 +303,12 @@ public class ChromeLauncherActivityTest {
         when(mTabWindowManager.getIdForWindow(any())).thenReturn(TEST_WINDOW_ID);
 
         // Mock an AppTask that throws an exception.
-        AppTask mockTask = mock(AppTask.class);
         ActivityManager.RecentTaskInfo taskInfo = new ActivityManager.RecentTaskInfo();
         taskInfo.taskId = mTabbedActivity.getTaskId();
-        when(mockTask.getTaskInfo()).thenReturn(taskInfo);
-        when(mActivityManager.getAppTasks()).thenReturn(List.of(mockTask));
+        when(mAppTask.getTaskInfo()).thenReturn(taskInfo);
+        when(mActivityManager.getAppTasks()).thenReturn(List.of(mAppTask));
         doThrow(new RuntimeException("API failure"))
-                .when(mockTask)
+                .when(mAppTask)
                 .startActivity(any(), any(), any());
 
         var histogramWatcher =

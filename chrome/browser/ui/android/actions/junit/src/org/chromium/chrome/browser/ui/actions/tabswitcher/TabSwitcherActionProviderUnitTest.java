@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -47,6 +46,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
+import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider.IncognitoStateObserver;
 import org.chromium.chrome.browser.tabmodel.OverridableTabCount;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -71,15 +71,14 @@ import org.chromium.ui.modelutil.PropertyObservable;
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({ChromeFeatureList.DATA_SHARING})
 public class TabSwitcherActionProviderUnitTest {
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
     private static final String TAB_SWITCHER_LABEL = "Tabs";
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private UserPrefsJni mMockUserPrefsJni;
     @Mock private PrefService mPrefService;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private VersioningMessageController mVersioningMessageController;
-
     @Mock private ActionRegistry mActionRegistry;
     @Mock private ActionRegistry mUninitializedActionRegistry;
     @Mock private UserEducationHelper mUserEducationHelper;
@@ -87,10 +86,7 @@ public class TabSwitcherActionProviderUnitTest {
     @Mock private TabModelSelector mUninitializedTabModelSelector;
     @Mock private IncognitoStateProvider mIncognitoStateProvider;
     @Mock private OverridableTabCount mOverridableTabCount;
-    private SettableNonNullObservableSupplier<Integer> mTabCountSupplier;
-    private SettableNonNullObservableSupplier<TabModelDotInfo> mNotificationDotSupplier;
     @Mock private OneshotSupplier<Boolean> mPromoShownOneshotSupplier;
-    private SettableNonNullObservableSupplier<Integer> mArchivedTabCountSupplier;
     @Mock private OneshotSupplier<LayoutStateProvider> mLayoutStateProviderSupplier;
     @Mock private Runnable mOnTabSwitcherClicked;
     @Mock private Callback<View> mOnTabSwitcherLongClicked;
@@ -100,7 +96,10 @@ public class TabSwitcherActionProviderUnitTest {
     @Mock private PropertyObservable.PropertyObserver<PropertyKey> mPropertyObserver;
     @Mock private Context mContext;
     @Mock private Resources mResources;
-
+    @Mock private Profile mProfile;
+    @Mock private TabModel mTabModel;
+    @Mock private TabModel mStandardModel;
+    @Mock private TabModel mIncognitoModel;
     @Captor private ArgumentCaptor<PropertyModel> mModelCaptor;
     @Captor private ArgumentCaptor<PropertyModel> mUninitializedModelCaptor;
     @Captor private ArgumentCaptor<TabModelSelectorObserver> mSelectorObserverCaptor;
@@ -109,6 +108,11 @@ public class TabSwitcherActionProviderUnitTest {
     @Captor
     private ArgumentCaptor<Callback<LayoutStateProvider>> mLayoutStateProviderCallbackCaptor;
 
+    @Captor private ArgumentCaptor<IncognitoStateObserver> mObserverCaptor;
+
+    private SettableNonNullObservableSupplier<Integer> mTabCountSupplier;
+    private SettableNonNullObservableSupplier<TabModelDotInfo> mNotificationDotSupplier;
+    private SettableNonNullObservableSupplier<Integer> mArchivedTabCountSupplier;
     private TabSwitcherActionProvider mProvider;
     private PropertyModel mModel;
 
@@ -191,11 +195,9 @@ public class TabSwitcherActionProviderUnitTest {
 
     @Test
     public void testIncognitoStateChange() {
-        ArgumentCaptor<IncognitoStateProvider.IncognitoStateObserver> observerCaptor =
-                ArgumentCaptor.forClass(IncognitoStateProvider.IncognitoStateObserver.class);
         verify(mIncognitoStateProvider)
-                .addIncognitoStateObserverAndTrigger(observerCaptor.capture());
-        IncognitoStateProvider.IncognitoStateObserver observer = observerCaptor.getValue();
+                .addIncognitoStateObserverAndTrigger(mObserverCaptor.capture());
+        IncognitoStateProvider.IncognitoStateObserver observer = mObserverCaptor.getValue();
 
         // Trigger incognito change
         observer.onIncognitoStateChanged(true);
@@ -229,11 +231,9 @@ public class TabSwitcherActionProviderUnitTest {
         when(mIncognitoStateProvider.isIncognitoSelected()).thenReturn(false);
 
         // Mock profile
-        Profile profile = mock(Profile.class);
-        TabModel tabModel = mock(TabModel.class);
-        when(mTabModelSelector.getCurrentModel()).thenReturn(tabModel);
-        when(tabModel.getProfile()).thenReturn(profile);
-        when(tabModel.isIncognitoBranded()).thenReturn(false);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
+        when(mTabModel.getProfile()).thenReturn(mProfile);
+        when(mTabModel.isIncognitoBranded()).thenReturn(false);
 
         mProvider.handlePageLoadFinished();
 
@@ -248,16 +248,13 @@ public class TabSwitcherActionProviderUnitTest {
         when(mPromoShownOneshotSupplier.get()).thenReturn(false);
         when(mIncognitoStateProvider.isIncognitoSelected()).thenReturn(true);
 
-        ArgumentCaptor<IncognitoStateProvider.IncognitoStateObserver> observerCaptor =
-                ArgumentCaptor.forClass(IncognitoStateProvider.IncognitoStateObserver.class);
         verify(mIncognitoStateProvider)
-                .addIncognitoStateObserverAndTrigger(observerCaptor.capture());
-        observerCaptor.getValue().onIncognitoStateChanged(true);
+                .addIncognitoStateObserverAndTrigger(mObserverCaptor.capture());
+        mObserverCaptor.getValue().onIncognitoStateChanged(true);
 
         // Mock profile
-        TabModel tabModel = mock(TabModel.class);
-        when(mTabModelSelector.getCurrentModel()).thenReturn(tabModel);
-        when(tabModel.isIncognitoBranded()).thenReturn(true);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
+        when(mTabModel.isIncognitoBranded()).thenReturn(true);
 
         mProvider.handlePageLoadFinished();
 
@@ -271,11 +268,9 @@ public class TabSwitcherActionProviderUnitTest {
         when(mIncognitoStateProvider.isIncognitoSelected()).thenReturn(false);
 
         // Mock profile
-        Profile profile = mock(Profile.class);
-        TabModel tabModel = mock(TabModel.class);
-        when(mTabModelSelector.getCurrentModel()).thenReturn(tabModel);
-        when(tabModel.getProfile()).thenReturn(profile);
-        when(tabModel.isIncognitoBranded()).thenReturn(false);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
+        when(mTabModel.getProfile()).thenReturn(mProfile);
+        when(mTabModel.isIncognitoBranded()).thenReturn(false);
 
         mProvider.handlePageLoadFinished();
 
@@ -301,12 +296,10 @@ public class TabSwitcherActionProviderUnitTest {
         when(mPromoShownOneshotSupplier.get()).thenReturn(false);
 
         // Standard model with incognito tabs - show switch into incognito IPH.
-        TabModel standardModel = mock(TabModel.class);
-        TabModel incognitoModel = mock(TabModel.class);
-        when(mTabModelSelector.getCurrentModel()).thenReturn(standardModel);
-        when(mTabModelSelector.getModel(true)).thenReturn(incognitoModel);
-        when(standardModel.isIncognitoBranded()).thenReturn(false);
-        when(incognitoModel.getCount()).thenReturn(1);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mStandardModel);
+        when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoModel);
+        when(mStandardModel.isIncognitoBranded()).thenReturn(false);
+        when(mIncognitoModel.getCount()).thenReturn(1);
 
         mProvider.handlePageLoadFinished();
 
@@ -315,8 +308,8 @@ public class TabSwitcherActionProviderUnitTest {
                 mModel.get(ActionProperties.IPH_INTENT).getFeatureNameForTesting());
 
         // Incognito model - show switch out of incognito IPH.
-        when(mTabModelSelector.getCurrentModel()).thenReturn(incognitoModel);
-        when(incognitoModel.isIncognitoBranded()).thenReturn(true);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mIncognitoModel);
+        when(mIncognitoModel.isIncognitoBranded()).thenReturn(true);
 
         mProvider.handlePageLoadFinished();
 
@@ -352,10 +345,9 @@ public class TabSwitcherActionProviderUnitTest {
 
         provider.handlePageLoadFinished();
 
-        ArgumentCaptor<PropertyModel> modelCaptor = ArgumentCaptor.forClass(PropertyModel.class);
         verify(mActionRegistry, times(2))
-                .register(eq(ActionId.TAB_SWITCHER), modelCaptor.capture());
-        PropertyModel model = modelCaptor.getAllValues().get(1);
+                .register(eq(ActionId.TAB_SWITCHER), mUninitializedModelCaptor.capture());
+        PropertyModel model = mUninitializedModelCaptor.getAllValues().get(1);
 
         assertNull(model.get(ActionProperties.IPH_INTENT));
     }
@@ -365,11 +357,9 @@ public class TabSwitcherActionProviderUnitTest {
         DeviceInfo.setIsXrForTesting(true);
         when(mIncognitoStateProvider.isIncognitoSelected()).thenReturn(true);
 
-        ArgumentCaptor<IncognitoStateProvider.IncognitoStateObserver> observerCaptor =
-                ArgumentCaptor.forClass(IncognitoStateProvider.IncognitoStateObserver.class);
         verify(mIncognitoStateProvider)
-                .addIncognitoStateObserverAndTrigger(observerCaptor.capture());
-        observerCaptor.getValue().onIncognitoStateChanged(true);
+                .addIncognitoStateObserverAndTrigger(mObserverCaptor.capture());
+        mObserverCaptor.getValue().onIncognitoStateChanged(true);
 
         mTabCountSupplier.set(3);
 

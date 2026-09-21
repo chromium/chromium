@@ -17,7 +17,6 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -58,6 +57,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
@@ -89,13 +91,17 @@ import java.util.concurrent.BlockingQueue;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class AccessorySheetViewTest {
-    private WebPageStation mPage;
-    private PropertyModel mModel;
-    private BlockingQueue<AccessorySheetView> mViewPager;
-
     @Rule
     public AutoResetCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.fastAutoResetCtaActivityRule();
+
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private Runnable mRunnable;
+
+    private WebPageStation mPage;
+    private PropertyModel mModel;
+    private BlockingQueue<AccessorySheetView> mViewPager;
 
     @Before
     public void setUp() throws InterruptedException {
@@ -347,19 +353,17 @@ public class AccessorySheetViewTest {
     @MediumTest
     @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511287120
     public void testHeader() {
-        Runnable runnable = mock(Runnable.class);
-
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.get(TABS).add(createTestTabWithTextView("Header"));
                     mModel.set(ACTIVE_TAB_INDEX, 0);
-                    mModel.set(SHOW_KEYBOARD_CALLBACK, runnable);
+                    mModel.set(SHOW_KEYBOARD_CALLBACK, mRunnable);
                     mModel.set(VISIBLE, true);
                 });
 
         onViewWaiting(withId(R.id.show_keyboard)).perform(click());
 
-        verify(runnable, times(1)).run();
+        verify(mRunnable, times(1)).run();
 
         onView(withId(R.id.sheet_title)).check(matches(withText("Passwords")));
         onViewWaiting(withId(R.id.sheet_header_shadow));
@@ -369,19 +373,17 @@ public class AccessorySheetViewTest {
     @MediumTest
     @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID})
     public void testProcessesTouchesWhenObscured() {
-        Runnable runnable = mock(Runnable.class);
-
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.get(TABS).add(createTestTabWithTextView("Header"));
                     mModel.set(ACTIVE_TAB_INDEX, 0);
-                    mModel.set(SHOW_KEYBOARD_CALLBACK, runnable);
+                    mModel.set(SHOW_KEYBOARD_CALLBACK, mRunnable);
                     mModel.set(VISIBLE, true);
                 });
 
         onViewWaiting(withId(R.id.show_keyboard))
                 .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
-        verify(runnable, times(1)).run();
+        verify(mRunnable, times(1)).run();
     }
 
     @Test
@@ -389,24 +391,22 @@ public class AccessorySheetViewTest {
     @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID})
     @DisableFeatures({ChromeFeatureList.HOME_BUTTON_REMOVAL})
     public void testFiltersTouchesWhenObscured() {
-        Runnable runnable = mock(Runnable.class);
-
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.get(TABS).add(createTestTabWithTextView("Header"));
                     mModel.set(ACTIVE_TAB_INDEX, 0);
-                    mModel.set(SHOW_KEYBOARD_CALLBACK, runnable);
+                    mModel.set(SHOW_KEYBOARD_CALLBACK, mRunnable);
                     mModel.set(VISIBLE, true);
                 });
 
         // Any clicks should be ignored when the sheet view is fully of partially obscured.
         onViewWaiting(withId(R.id.show_keyboard))
                 .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
-        verify(runnable, times(0)).run();
+        verify(mRunnable, times(0)).run();
 
         onViewWaiting(withId(R.id.show_keyboard))
                 .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED));
-        verify(runnable, times(0)).run();
+        verify(mRunnable, times(0)).run();
     }
 
     private Tab createTestTabWithTextView(String textViewCaption) {

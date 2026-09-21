@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.contextual_tasks;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -21,6 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -44,6 +44,10 @@ import java.lang.ref.WeakReference;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class ContextualTasksBridgeUnitTest {
+    private static final String TEST_URL = "https://example.com";
+    private static final long TEST_NATIVE_BROWSER_WINDOW_INTERFACE_PTR = 5678L;
+    private static final long TEST_NATIVE_BRIDGE_PTR = 1234L;
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Profile mProfile;
@@ -54,13 +58,12 @@ public class ContextualTasksBridgeUnitTest {
     @Mock private Activity mMockActivity;
     @Mock private WebContents mWebContents;
     @Mock private FeedbackPolicyManager mFeedbackPolicyManager;
+    @Mock private Tab mTab;
+    @Mock private Callback<String> mCallback;
+    @Captor private ArgumentCaptor<Snackbar> mSnackbarCaptor;
 
     private ContextualTasksBridge mBridge;
     private final UnownedUserDataHost mUserDataHost = new UnownedUserDataHost();
-
-    private static final String TEST_URL = "https://example.com";
-    private static final long TEST_NATIVE_BROWSER_WINDOW_INTERFACE_PTR = 5678L;
-    private static final long TEST_NATIVE_BRIDGE_PTR = 1234L;
 
     @Before
     public void setUp() {
@@ -99,10 +102,9 @@ public class ContextualTasksBridgeUnitTest {
 
         mBridge.showUndoSnackbar();
 
-        ArgumentCaptor<Snackbar> snackbarCaptor = ArgumentCaptor.forClass(Snackbar.class);
-        verify(mSnackbarManager).showSnackbar(snackbarCaptor.capture());
+        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
 
-        Snackbar snackbar = snackbarCaptor.getValue();
+        Snackbar snackbar = mSnackbarCaptor.getValue();
         snackbar.getController().onAction(snackbar.getActionData());
 
         verify(mMockJni).undoClose(eq(TEST_NATIVE_BRIDGE_PTR));
@@ -132,9 +134,8 @@ public class ContextualTasksBridgeUnitTest {
         mBridge.onFeatureRemoved();
 
         // Trigger action after clearing.
-        ArgumentCaptor<Snackbar> snackbarCaptor = ArgumentCaptor.forClass(Snackbar.class);
-        verify(mSnackbarManager).showSnackbar(snackbarCaptor.capture());
-        Snackbar snackbar = snackbarCaptor.getValue();
+        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
+        Snackbar snackbar = mSnackbarCaptor.getValue();
         snackbar.getController().onAction(snackbar.getActionData());
 
         // Should NOT call native.
@@ -142,14 +143,11 @@ public class ContextualTasksBridgeUnitTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testGetTaskTitleForTab() {
-        Tab tab = mock(Tab.class);
-        when(tab.getWebContents()).thenReturn(mWebContents);
-        Callback<String> callback = mock(Callback.class);
+        when(mTab.getWebContents()).thenReturn(mWebContents);
 
-        ContextualTasksBridge.getTaskTitleForTab(tab, callback);
+        ContextualTasksBridge.getTaskTitleForTab(mTab, mCallback);
 
-        verify(mMockJni).getTaskTitleForTab(eq(mWebContents), eq(callback));
+        verify(mMockJni).getTaskTitleForTab(eq(mWebContents), eq(mCallback));
     }
 }

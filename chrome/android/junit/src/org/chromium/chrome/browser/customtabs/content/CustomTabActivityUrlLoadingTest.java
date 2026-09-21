@@ -57,19 +57,21 @@ public class CustomTabActivityUrlLoadingTest {
     public final CustomTabActivityContentTestEnvironment env =
             new CustomTabActivityContentTestEnvironment();
 
-    private CustomTabActivityTabController mTabController;
-    private CustomTabActivityNavigationController mNavigationController;
-    private CustomTabIntentHandler mIntentHandler;
-
     @Mock private UserPrefsJni mMockUserPrefsJni;
     @Mock IntentHandler.Natives mIntentHandlerNativeMock;
     @Mock ExternalIntentUrlChecker.Natives mExternalIntentUrlCheckerNativeMock;
+    @Mock private Tab mTab;
+    @Mock private PrefService mPrefService;
+
+    private CustomTabActivityTabController mTabController;
+    private CustomTabActivityNavigationController mNavigationController;
+    private CustomTabIntentHandler mIntentHandler;
 
     @Before
     public void setUp() {
         Origin.setOpaqueOriginFactoryForTesting(SupplierUtils.ofNull());
         UserPrefsJni.setInstanceForTesting(mMockUserPrefsJni);
-        doReturn(mock(PrefService.class)).when(mMockUserPrefsJni).get(any());
+        doReturn(mPrefService).when(mMockUserPrefsJni).get(any());
 
         ExternalIntentUrlCheckerJni.setInstanceForTesting(mExternalIntentUrlCheckerNativeMock);
         doReturn(true).when(mExternalIntentUrlCheckerNativeMock).validateUrl(any());
@@ -98,10 +100,9 @@ public class CustomTabActivityUrlLoadingTest {
         mTabController.finishNativeInitialization();
         clearInvocations(env.tabFromFactory);
 
-        Tab newTab = mock(Tab.class);
-        env.changeTab(newTab);
+        env.changeTab(mTab);
 
-        verify(newTab, never()).loadUrl(any());
+        verify(mTab, never()).loadUrl(any());
         verify(env.tabFromFactory, never()).loadUrl(any());
     }
 
@@ -109,13 +110,12 @@ public class CustomTabActivityUrlLoadingTest {
     public void loadsUrlInNewTab_IfTabChanges() {
         mTabController.setUpInitialTab(null);
         mTabController.finishNativeInitialization();
-        Tab newTab = mock(Tab.class);
-        env.changeTab(newTab);
+        env.changeTab(mTab);
 
         clearInvocations(env.tabFromFactory);
         LoadUrlParams params = new LoadUrlParams(OTHER_URL);
         mNavigationController.navigate(params, new Intent());
-        verify(newTab).loadUrl(any());
+        verify(mTab).loadUrl(any());
         verify(env.tabFromFactory, never()).loadUrl(any());
     }
 

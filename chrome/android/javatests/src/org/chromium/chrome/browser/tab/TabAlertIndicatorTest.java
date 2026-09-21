@@ -25,7 +25,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
@@ -76,10 +78,6 @@ import java.util.concurrent.TimeoutException;
 })
 @Batch(Batch.PER_CLASS)
 public class TabAlertIndicatorTest {
-    @Rule
-    public FreshCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.freshChromeTabbedActivityRule();
-
     private static final String TEST_PATH = "/chrome/test/data/media/tab_media_indicator.html";
     private static final String GOOGLE_PATH = "/chrome/test/data/android/google.html";
     private static final String VIDEO_ID = "video";
@@ -95,6 +93,14 @@ public class TabAlertIndicatorTest {
 
     /** Extra time allowed on top of the default poll timeout when waiting for a title change. */
     private static final long TITLE_TIMEOUT_SLACK_MS = 2000;
+
+    @Rule
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private ForegroundServiceUtils mForegroundServiceUtils;
 
     private WebPageStation mPage;
     private TabModel mTabModel;
@@ -142,7 +148,7 @@ public class TabAlertIndicatorTest {
 
         grantRecordingPermissions();
 
-        ForegroundServiceUtils.setInstanceForTesting(Mockito.mock(ForegroundServiceUtils.class));
+        ForegroundServiceUtils.setInstanceForTesting(mForegroundServiceUtils);
 
         mMediaPickerDelegate = new MockMediaCapturePickerDelegate();
         ServiceLoaderUtil.setInstanceForTesting(

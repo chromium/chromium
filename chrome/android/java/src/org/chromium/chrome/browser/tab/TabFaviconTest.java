@@ -13,7 +13,6 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
@@ -28,6 +27,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -37,6 +37,7 @@ import org.chromium.base.Promise;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
+import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.JUnitTestGURLs;
@@ -53,6 +54,8 @@ public class TabFaviconTest {
     @Mock private Resources mResources;
     @Mock private WebContents mWebContents;
     @Mock private FaviconHelper mFaviconHelper;
+    @Mock private TabImpl mTabImpl;
+    @Captor private ArgumentCaptor<FaviconImageCallback> mCallbackCaptor;
 
     private UserDataHost mUserDataHost;
     private TabFavicon mTabFavicon;
@@ -217,19 +220,17 @@ public class TabFaviconTest {
     @Test
     public void testGetFaviconOrFallback_AsyncDBFetch() {
         mTabFavicon.mFaviconHelper = mFaviconHelper;
-        ArgumentCaptor<FaviconHelper.FaviconImageCallback> callbackCaptor =
-                ArgumentCaptor.forClass(FaviconHelper.FaviconImageCallback.class);
         doReturn(true)
                 .when(mFaviconHelper)
                 .getLocalFaviconImageForURL(
-                        any(), any(), anyInt(), anyBoolean(), callbackCaptor.capture());
+                        any(), any(), anyInt(), anyBoolean(), mCallbackCaptor.capture());
 
         Promise<Bitmap> promise = mTabFavicon.getFaviconOrFallback();
         assertNotNull(promise);
         assertTrue(promise.isPending());
 
         Bitmap fallbackBitmap = makeBitmap(IDEAL_SIZE, Color.BLUE);
-        callbackCaptor.getValue().onFaviconAvailable(fallbackBitmap, JUnitTestGURLs.EXAMPLE_URL);
+        mCallbackCaptor.getValue().onFaviconAvailable(fallbackBitmap, JUnitTestGURLs.EXAMPLE_URL);
 
         assertTrue(promise.isFulfilled());
         Bitmap result = promise.getResult();
@@ -274,12 +275,10 @@ public class TabFaviconTest {
         doReturn(JUnitTestGURLs.URL_1).when(mTab).getUrl();
 
         // Mock DB fetch to return null (no favicon)
-        ArgumentCaptor<FaviconHelper.FaviconImageCallback> callbackCaptor =
-                ArgumentCaptor.forClass(FaviconHelper.FaviconImageCallback.class);
         doReturn(true)
                 .when(mFaviconHelper)
                 .getLocalFaviconImageForURL(
-                        any(), any(), anyInt(), anyBoolean(), callbackCaptor.capture());
+                        any(), any(), anyInt(), anyBoolean(), mCallbackCaptor.capture());
 
         // 3. Call getFaviconOrFallback
         Promise<Bitmap> promise = mTabFavicon.getFaviconOrFallback();
@@ -287,7 +286,7 @@ public class TabFaviconTest {
         assertTrue(promise.isPending());
 
         // Trigger DB callback with null (no favicon found)
-        callbackCaptor.getValue().onFaviconAvailable(null, null);
+        mCallbackCaptor.getValue().onFaviconAvailable(null, null);
 
         // 4. Verify promise is rejected (should NOT return the green favicon)
         assertTrue(promise.isRejected());
@@ -298,12 +297,10 @@ public class TabFaviconTest {
         mTabFavicon.mFaviconHelper = mFaviconHelper;
 
         // Mock DB fetch to capture callback
-        ArgumentCaptor<FaviconHelper.FaviconImageCallback> callbackCaptor =
-                ArgumentCaptor.forClass(FaviconHelper.FaviconImageCallback.class);
         doReturn(true)
                 .when(mFaviconHelper)
                 .getLocalFaviconImageForURL(
-                        any(), any(), anyInt(), anyBoolean(), callbackCaptor.capture());
+                        any(), any(), anyInt(), anyBoolean(), mCallbackCaptor.capture());
 
         // 1. Call getFaviconOrFallback while at EXAMPLE_URL
         Promise<Bitmap> promise = mTabFavicon.getFaviconOrFallback();
@@ -315,7 +312,7 @@ public class TabFaviconTest {
 
         // 3. Trigger DB callback with a valid image (e.g. Blue)
         Bitmap dbBitmap = makeBitmap(IDEAL_SIZE, Color.BLUE);
-        callbackCaptor.getValue().onFaviconAvailable(dbBitmap, JUnitTestGURLs.EXAMPLE_URL);
+        mCallbackCaptor.getValue().onFaviconAvailable(dbBitmap, JUnitTestGURLs.EXAMPLE_URL);
 
         // 4. Verify promise is rejected due to URL change
         assertTrue(promise.isRejected());
@@ -326,26 +323,24 @@ public class TabFaviconTest {
 
     @Test
     public void testGetNativePtrForTab_CreatesInstanceIfNeeded() {
-        TabImpl newTab = mock(TabImpl.class);
         UserDataHost newUserDataHost = new UserDataHost();
-        doReturn(newUserDataHost).when(newTab).getUserDataHost();
-        doReturn(mContext).when(newTab).getContext();
+        doReturn(newUserDataHost).when(mTabImpl).getUserDataHost();
+        doReturn(mContext).when(mTabImpl).getContext();
         doReturn(mResources).when(mContext).getResources();
         doReturn(IDEAL_SIZE).when(mResources).getDimensionPixelSize(anyInt());
-        doReturn(true).when(newTab).isInitialized();
+        doReturn(true).when(mTabImpl).isInitialized();
 
-        long nativePtr = TabFavicon.getNativePtrForTab(newTab);
+        long nativePtr = TabFavicon.getNativePtrForTab(mTabImpl);
         assertEquals(12345L, nativePtr);
     }
 
     @Test
     public void testGetBitmapWithFallback_NoInstanceReturnsNull() {
-        TabImpl newTab = mock(TabImpl.class);
         UserDataHost newUserDataHost = new UserDataHost();
-        doReturn(newUserDataHost).when(newTab).getUserDataHost();
-        doReturn(true).when(newTab).isInitialized();
+        doReturn(newUserDataHost).when(mTabImpl).getUserDataHost();
+        doReturn(true).when(mTabImpl).isInitialized();
 
-        assertNull(TabFavicon.getBitmapWithFallback(newTab, false));
+        assertNull(TabFavicon.getBitmapWithFallback(mTabImpl, false));
     }
 
     @Test

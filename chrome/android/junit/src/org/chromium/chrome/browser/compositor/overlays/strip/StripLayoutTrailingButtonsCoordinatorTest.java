@@ -122,6 +122,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
     @Mock private Callback<Boolean> mGlicPanelStateObserver;
 
     @Captor private ArgumentCaptor<List<Animator>> mAnimatorsListCaptor;
+    @Captor private ArgumentCaptor<SideUiObserver> mObserverCaptor;
 
     private final OneshotSupplierImpl<SideUiStateProvider> mSideUiStateProviderSupplier =
             new OneshotSupplierImpl<>();
@@ -1349,10 +1350,8 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         when(mSideUiStateProvider.canShowSideUi(SideUiId.SIDE_PANEL)).thenReturn(false);
 
         // Notify observer of updates
-        ArgumentCaptor<SideUiObserver> observerCaptor =
-                ArgumentCaptor.forClass(SideUiObserver.class);
-        verify(mSideUiStateProvider).addObserver(observerCaptor.capture());
-        observerCaptor
+        verify(mSideUiStateProvider).addObserver(mObserverCaptor.capture());
+        mObserverCaptor
                 .getValue()
                 .onShowableSideUisUpdated(
                         new SideUiShowability(List.of(), List.of(SideUiId.SIDE_PANEL)));

@@ -60,7 +60,11 @@ import org.chromium.url.JUnitTestGURLs;
 @RunWith(BaseRobolectricTestRunner.class)
 @Features.EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
 public class NtpSyncedThemeManagerUnitTest {
+    private static final String TEST_COLLECTION_ID = "collectionId";
+    private static final String TEST_HASH = "hash";
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private Profile mProfile;
     @Mock private ImageFetcher mImageFetcher;
     @Mock private NtpSyncedThemeBridge.Natives mNatives;
@@ -68,9 +72,7 @@ public class NtpSyncedThemeManagerUnitTest {
     @Mock private Callback<@Nullable NtpBackgroundDataThemeCollection> mDownloadCallback;
     @Captor private ArgumentCaptor<NtpSyncedThemeBridge> mBridgeCaptor;
     @Captor private ArgumentCaptor<Callback<Bitmap>> mBitmapCallbackCaptor;
-
-    private static final String TEST_COLLECTION_ID = "collectionId";
-    private static final String TEST_HASH = "hash";
+    @Captor private ArgumentCaptor<NtpBackgroundDataThemeCollection> mDataCaptor;
 
     private NtpSyncedThemeManager mNtpSyncedThemeManager;
     private Context mContext;
@@ -223,11 +225,9 @@ public class NtpSyncedThemeManagerUnitTest {
 
         RobolectricUtil.runAllBackgroundAndUi();
 
-        ArgumentCaptor<NtpBackgroundDataThemeCollection> themeCollectionCaptor =
-                ArgumentCaptor.forClass(NtpBackgroundDataThemeCollection.class);
         verify(configManagerSpy)
-                .onSyncedThemeCollectionImageChanged(eq(mContext), themeCollectionCaptor.capture());
-        NtpBackgroundDataThemeCollection themeCollectionData = themeCollectionCaptor.getValue();
+                .onSyncedThemeCollectionImageChanged(eq(mContext), mDataCaptor.capture());
+        NtpBackgroundDataThemeCollection themeCollectionData = mDataCaptor.getValue();
         assertNotNull(themeCollectionData);
         assertEquals(
                 NtpCustomizationUtils.getContentBasedSeedColor(bitmap),
@@ -303,12 +303,10 @@ public class NtpSyncedThemeManagerUnitTest {
         Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
         mBitmapCallbackCaptor.getValue().onResult(bitmap);
 
-        ArgumentCaptor<NtpBackgroundDataThemeCollection> dataCaptor =
-                ArgumentCaptor.forClass(NtpBackgroundDataThemeCollection.class);
-        verify(mDownloadCallback).onResult(dataCaptor.capture());
+        verify(mDownloadCallback).onResult(mDataCaptor.capture());
         assertFalse(mNtpSyncedThemeManager.isImageDownloading());
-        assertNotNull(dataCaptor.getValue());
-        assertEquals(bitmap, dataCaptor.getValue().getBitmap());
+        assertNotNull(mDataCaptor.getValue());
+        assertEquals(bitmap, mDataCaptor.getValue().getBitmap());
     }
 
     @Test

@@ -10,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -38,14 +37,15 @@ import java.util.List;
 /** Unit tests for {@link AuxiliarySearchBridge} */
 @RunWith(BaseRobolectricTestRunner.class)
 public final class AuxiliarySearchBridgeUnitTest {
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
     private static final int TAB_ID_1 = 1;
     // Arbitrary non-0 value.
     private static final long NATIVE_BRIDGE = 10L;
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private AuxiliarySearchBridge.Natives mMockAuxiliarySearchBridgeJni;
     @Mock private Profile mProfile;
+    @Mock private Tab mTab;
 
     private AuxiliarySearchDataEntry mDataEntry1;
     private AuxiliarySearchBridge mBridge;
@@ -70,9 +70,8 @@ public final class AuxiliarySearchBridgeUnitTest {
         when(mProfile.isOffTheRecord()).thenReturn(true);
         mBridge = new AuxiliarySearchBridge(mProfile);
 
-        Tab tab = mock(Tab.class);
         List<Tab> tabList = new ArrayList<>();
-        tabList.add(tab);
+        tabList.add(mTab);
         Callback<List<Tab>> callback = MockitoHelper.mockCallback();
         ThreadUtils.runOnUiThreadBlocking(() -> mBridge.getNonSensitiveTabs(tabList, callback));
 

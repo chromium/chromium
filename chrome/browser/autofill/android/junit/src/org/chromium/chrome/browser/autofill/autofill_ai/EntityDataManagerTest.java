@@ -10,7 +10,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -24,6 +23,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager.EntityDataManagerObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.autofill_ai.AutofillAiOptInStatus;
 import org.chromium.components.autofill.autofill_ai.DetailsForUpsertPass;
@@ -42,15 +42,17 @@ import java.util.List;
 /** Unit tests for {@link EntityDataManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class EntityDataManagerTest {
+    private static final long NATIVE_PTR = 12345L;
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private EntityDataManager.Natives mEntityDataManagerJniMock;
     @Mock private Profile mProfile;
     @Mock private EntityInstance mEntityInstance;
     @Mock private Callback<DetailsForUpsertPass> mGetDetailsForUpsertPassCallback;
+    @Mock private EntityDataManagerObserver mEntityDataManagerObserver;
 
     private EntityDataManager mEntityDataManager;
-    private static final long NATIVE_PTR = 12345L;
 
     @Before
     public void setUp() {
@@ -334,13 +336,11 @@ public class EntityDataManagerTest {
 
     @Test
     public void testObservers() {
-        EntityDataManager.EntityDataManagerObserver observer =
-                mock(EntityDataManager.EntityDataManagerObserver.class);
-        mEntityDataManager.registerDataObserver(observer);
+        mEntityDataManager.registerDataObserver(mEntityDataManagerObserver);
 
         mEntityDataManager.onEntityInstancesChanged();
-        verify(observer).onEntityInstancesChanged();
+        verify(mEntityDataManagerObserver).onEntityInstancesChanged();
 
-        mEntityDataManager.unregisterDataObserver(observer);
+        mEntityDataManager.unregisterDataObserver(mEntityDataManagerObserver);
     }
 }

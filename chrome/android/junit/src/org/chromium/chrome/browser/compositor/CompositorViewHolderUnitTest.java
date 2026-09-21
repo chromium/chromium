@@ -18,7 +18,6 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
@@ -203,8 +202,19 @@ public class CompositorViewHolderUnitTest {
     @Mock private InsetObserver mInsetObserver;
     @Mock private ToolbarThemeColorProvider mToolbarThemeColorProvider;
     @Mock private SideUiStateProvider mSideUiStateProvider;
+    @Mock private IBinder mIBinder;
+    @Mock private View mView;
+    @Mock private TouchEventObserver mTouchEventObserver;
+    @Mock private TouchEventObserver mObserver1;
+    @Mock private TouchEventObserver mObserver2;
+    @Mock private TouchEventObserver mObserver3;
+    @Mock private VirtualView mVirtualView;
+    @Mock private WebContents mBgWebContents;
+    @Mock private ContentView mNewContentView;
+    @Mock private WebContents mNewWebContents;
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
+    @Captor private ArgumentCaptor<Integer> mResizedHeightCaptor;
 
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private Context mContext;
@@ -324,9 +334,8 @@ public class CompositorViewHolderUnitTest {
         when(mWindow.getDecorView()).thenReturn(mDecorView);
         when(mDecorView.getFitsSystemWindows()).thenReturn(true);
 
-        IBinder windowToken = mock(IBinder.class);
-        when(mContainerView.getWindowToken()).thenReturn(windowToken);
-        when(mContentView.getWindowToken()).thenReturn(windowToken);
+        when(mContainerView.getWindowToken()).thenReturn(mIBinder);
+        when(mContentView.getWindowToken()).thenReturn(mIBinder);
         ViewAndroidDelegate viewDelegate = ViewAndroidDelegate.createBasicDelegate(mContentView);
         when(mWebContents.getViewAndroidDelegate()).thenReturn(viewDelegate);
     }
@@ -900,10 +909,9 @@ public class CompositorViewHolderUnitTest {
         mKeyboardInsetSupplier.set(32);
         mCompositorViewHolder.updateWebContentsSize(mTab);
 
-        ArgumentCaptor<Integer> resizedHeightCaptor = ArgumentCaptor.forClass(Integer.class);
         verify(mWebContents, atLeast(1))
-                .setSize(eq(fullViewportWidth), resizedHeightCaptor.capture());
-        for (int observedHeight : resizedHeightCaptor.getAllValues()) {
+                .setSize(eq(fullViewportWidth), mResizedHeightCaptor.capture());
+        for (int observedHeight : mResizedHeightCaptor.getAllValues()) {
             Assert.assertTrue(
                     "Unexpected transient overshoot: "
                             + observedHeight
@@ -938,10 +946,9 @@ public class CompositorViewHolderUnitTest {
         when(mCompositorViewHolder.getHeight()).thenReturn(intermediateViewportHeight);
         mCompositorViewHolder.updateWebContentsSize(mTab);
 
-        ArgumentCaptor<Integer> resizedHeightCaptor = ArgumentCaptor.forClass(Integer.class);
         verify(mWebContents, atLeast(1))
-                .setSize(eq(fullViewportWidth), resizedHeightCaptor.capture());
-        for (int observedHeight : resizedHeightCaptor.getAllValues()) {
+                .setSize(eq(fullViewportWidth), mResizedHeightCaptor.capture());
+        for (int observedHeight : mResizedHeightCaptor.getAllValues()) {
             Assert.assertTrue(
                     "Unexpected transient undershoot: "
                             + observedHeight
@@ -987,15 +994,14 @@ public class CompositorViewHolderUnitTest {
         int fullViewportWidth = 1080;
         int adjustedHeight = fullViewportHeight - KEYBOARD_HEIGHT;
 
-        View rootView = mock(View.class);
-        when(mCompositorViewHolder.getRootView()).thenReturn(rootView);
+        when(mCompositorViewHolder.getRootView()).thenReturn(mView);
         doAnswer(
                         invocation -> {
                             Rect appRect = invocation.getArgument(0);
                             appRect.set(17, 23, 17 + fullViewportWidth, 23 + fullViewportHeight);
                             return null;
                         })
-                .when(rootView)
+                .when(mView)
                 .getWindowVisibleDisplayFrame(any(Rect.class));
 
         when(mMockKeyboard.isKeyboardShowing(any())).thenReturn(true);
@@ -1327,31 +1333,29 @@ public class CompositorViewHolderUnitTest {
 
     @Test
     public void testActiveTouchInterceptors() {
-        TouchEventObserver observer = mock(TouchEventObserver.class);
-        when(observer.mayInterceptTouchSequenceInWebContents()).thenReturn(true);
+        when(mTouchEventObserver.mayInterceptTouchSequenceInWebContents()).thenReturn(true);
 
-        mCompositorViewHolder.addTouchEventObserver(observer);
+        mCompositorViewHolder.addTouchEventObserver(mTouchEventObserver);
         verify(mCompositorView).setHasActiveTouchInterceptors(eq(true));
         reset(mCompositorView);
 
-        mCompositorViewHolder.removeTouchEventObserver(observer);
+        mCompositorViewHolder.removeTouchEventObserver(mTouchEventObserver);
         verify(mCompositorView).setHasActiveTouchInterceptors(eq(false));
     }
 
     @Test
     public void testAsymmetricTouchInterceptors() {
-        TouchEventObserver observer = mock(TouchEventObserver.class);
-        when(observer.mayInterceptTouchSequenceInWebContents()).thenReturn(true);
+        when(mTouchEventObserver.mayInterceptTouchSequenceInWebContents()).thenReturn(true);
 
         mCompositorViewHolder.addTouchEventObserver(null);
         verify(mCompositorView, never()).setHasActiveTouchInterceptors(anyBoolean());
         reset(mCompositorView);
 
-        mCompositorViewHolder.addTouchEventObserver(observer);
+        mCompositorViewHolder.addTouchEventObserver(mTouchEventObserver);
         verify(mCompositorView).setHasActiveTouchInterceptors(eq(true));
         reset(mCompositorView);
 
-        mCompositorViewHolder.addTouchEventObserver(observer);
+        mCompositorViewHolder.addTouchEventObserver(mTouchEventObserver);
         verify(mCompositorView, never()).setHasActiveTouchInterceptors(anyBoolean());
         reset(mCompositorView);
 
@@ -1359,45 +1363,42 @@ public class CompositorViewHolderUnitTest {
         verify(mCompositorView, never()).setHasActiveTouchInterceptors(anyBoolean());
         reset(mCompositorView);
 
-        mCompositorViewHolder.removeTouchEventObserver(observer);
+        mCompositorViewHolder.removeTouchEventObserver(mTouchEventObserver);
         verify(mCompositorView).setHasActiveTouchInterceptors(eq(false));
         reset(mCompositorView);
 
-        mCompositorViewHolder.removeTouchEventObserver(observer);
+        mCompositorViewHolder.removeTouchEventObserver(mTouchEventObserver);
         verify(mCompositorView, never()).setHasActiveTouchInterceptors(anyBoolean());
         reset(mCompositorView);
     }
 
     @Test
     public void testMultipleActiveTouchInterceptors() {
-        TouchEventObserver observer1 = mock(TouchEventObserver.class);
-        when(observer1.mayInterceptTouchSequenceInWebContents()).thenReturn(true);
-        TouchEventObserver observer2 = mock(TouchEventObserver.class);
-        when(observer2.mayInterceptTouchSequenceInWebContents()).thenReturn(true);
-        TouchEventObserver observer3 = mock(TouchEventObserver.class);
-        when(observer3.mayInterceptTouchSequenceInWebContents()).thenReturn(false);
+        when(mObserver1.mayInterceptTouchSequenceInWebContents()).thenReturn(true);
+        when(mObserver2.mayInterceptTouchSequenceInWebContents()).thenReturn(true);
+        when(mObserver3.mayInterceptTouchSequenceInWebContents()).thenReturn(false);
 
-        mCompositorViewHolder.addTouchEventObserver(observer1);
+        mCompositorViewHolder.addTouchEventObserver(mObserver1);
         verify(mCompositorView).setHasActiveTouchInterceptors(eq(true));
         reset(mCompositorView);
 
-        mCompositorViewHolder.addTouchEventObserver(observer2);
+        mCompositorViewHolder.addTouchEventObserver(mObserver2);
         verify(mCompositorView, never()).setHasActiveTouchInterceptors(anyBoolean());
         reset(mCompositorView);
 
-        mCompositorViewHolder.addTouchEventObserver(observer3);
+        mCompositorViewHolder.addTouchEventObserver(mObserver3);
         verify(mCompositorView, never()).setHasActiveTouchInterceptors(anyBoolean());
         reset(mCompositorView);
 
-        mCompositorViewHolder.removeTouchEventObserver(observer3);
+        mCompositorViewHolder.removeTouchEventObserver(mObserver3);
         verify(mCompositorView, never()).setHasActiveTouchInterceptors(anyBoolean());
         reset(mCompositorView);
 
-        mCompositorViewHolder.removeTouchEventObserver(observer2);
+        mCompositorViewHolder.removeTouchEventObserver(mObserver2);
         verify(mCompositorView, never()).setHasActiveTouchInterceptors(anyBoolean());
         reset(mCompositorView);
 
-        mCompositorViewHolder.removeTouchEventObserver(observer1);
+        mCompositorViewHolder.removeTouchEventObserver(mObserver1);
         verify(mCompositorView).setHasActiveTouchInterceptors(eq(false));
     }
 
@@ -1419,7 +1420,6 @@ public class CompositorViewHolderUnitTest {
     public void testAccessibilityNode_boundsAreCorrect() {
         mContext.getResources().getDisplayMetrics().density = 1.375f;
 
-        var virtualView = mock(VirtualView.class);
         // Values in this test case are real numbers captured from clank running
         // in a maximized window.
         RectF dpRect = new RectF(100.36364f, 2.18182f, 337.36365f, 42.18182f);
@@ -1428,13 +1428,13 @@ public class CompositorViewHolderUnitTest {
                             ((RectF) invocation.getArgument(0)).set(dpRect);
                             return null;
                         })
-                .when(virtualView)
+                .when(mVirtualView)
                 .getTouchTarget(any(RectF.class));
-        when(virtualView.getAccessibilityDescription()).thenReturn("test-node");
+        when(mVirtualView.getAccessibilityDescription()).thenReturn("test-node");
         doAnswer(
                         invocation -> {
                             List<VirtualView> list = invocation.getArgument(0);
-                            list.add(virtualView);
+                            list.add(mVirtualView);
                             return null;
                         })
                 .when(mLayoutManager)
@@ -1722,14 +1722,13 @@ public class CompositorViewHolderUnitTest {
         when(mPrefService.getBoolean(any())).thenReturn(false);
 
         // Active foreground tab
-        when(mContentView.getWindowToken()).thenReturn(mock(IBinder.class));
+        when(mContentView.getWindowToken()).thenReturn(mIBinder);
         when(mWebContents.isBeingCaptured()).thenReturn(false);
 
         // Add a background captured tab
         MockTab bgTab = mTabModelSelector.addMockTab();
-        WebContents bgWebContents = mock(WebContents.class);
-        when(bgTab.getWebContents()).thenReturn(bgWebContents);
-        when(bgWebContents.isBeingCaptured()).thenReturn(true);
+        when(bgTab.getWebContents()).thenReturn(mBgWebContents);
+        when(mBgWebContents.isBeingCaptured()).thenReturn(true);
 
         int width = 1080;
         int height = 1920;
@@ -1741,7 +1740,7 @@ public class CompositorViewHolderUnitTest {
                 .onPhysicalBackingSizeChanged(eq(mWebContents), eq(width), eq(height));
         // Background captured tab is ALSO updated
         verify(mCompositorView, times(1))
-                .onPhysicalBackingSizeChanged(eq(bgWebContents), eq(width), eq(height));
+                .onPhysicalBackingSizeChanged(eq(mBgWebContents), eq(width), eq(height));
     }
 
     @Test
@@ -1751,14 +1750,13 @@ public class CompositorViewHolderUnitTest {
         when(mPrefService.getBoolean(any())).thenReturn(false);
 
         // Active foreground tab
-        when(mContentView.getWindowToken()).thenReturn(mock(IBinder.class));
+        when(mContentView.getWindowToken()).thenReturn(mIBinder);
         when(mWebContents.isBeingCaptured()).thenReturn(false);
 
         // Add a background non-captured tab
         MockTab bgTab = mTabModelSelector.addMockTab();
-        WebContents bgWebContents = mock(WebContents.class);
-        when(bgTab.getWebContents()).thenReturn(bgWebContents);
-        when(bgWebContents.isBeingCaptured()).thenReturn(false);
+        when(bgTab.getWebContents()).thenReturn(mBgWebContents);
+        when(mBgWebContents.isBeingCaptured()).thenReturn(false);
 
         int width = 1080;
         int height = 1920;
@@ -1770,7 +1768,7 @@ public class CompositorViewHolderUnitTest {
                 .onPhysicalBackingSizeChanged(eq(mWebContents), eq(width), eq(height));
         // Background non-captured tab is NOT updated
         verify(mCompositorView, never())
-                .onPhysicalBackingSizeChanged(eq(bgWebContents), anyInt(), anyInt());
+                .onPhysicalBackingSizeChanged(eq(mBgWebContents), anyInt(), anyInt());
     }
 
     @Test
@@ -1790,11 +1788,9 @@ public class CompositorViewHolderUnitTest {
 
         // 2. Add a new tab and switch to it.
         Tab newTab = mTabModelSelector.addMockTab();
-        ContentView newContentView = mock(ContentView.class);
-        WebContents newWebContents = mock(WebContents.class);
-        when(newTab.getWebContents()).thenReturn(newWebContents);
-        when(newTab.getContentView()).thenReturn(newContentView);
-        when(newTab.getView()).thenReturn(newContentView);
+        when(newTab.getWebContents()).thenReturn(mNewWebContents);
+        when(newTab.getContentView()).thenReturn(mNewContentView);
+        when(newTab.getView()).thenReturn(mNewContentView);
 
         when(mCompositorViewHolder.getCurrentTab()).thenReturn(newTab);
 
@@ -1817,14 +1813,14 @@ public class CompositorViewHolderUnitTest {
         newTabObserver.onTouchDown();
 
         // It should call setDeferKeepScreenOnChanges(true) for the new touch sequence.
-        verify(newContentView).setDeferKeepScreenOnChanges(true);
-        reset(newContentView);
+        verify(mNewContentView).setDeferKeepScreenOnChanges(true);
+        reset(mNewContentView);
 
         // 4. Simulate user interaction ending on the new tab (touch up).
         newTabObserver.onTouchUp();
 
         // It should correctly release the deferral now.
-        verify(newContentView).setDeferKeepScreenOnChanges(false);
+        verify(mNewContentView).setDeferKeepScreenOnChanges(false);
         assertFalse(mCompositorViewHolder.getInMotionSupplier().get());
     }
 

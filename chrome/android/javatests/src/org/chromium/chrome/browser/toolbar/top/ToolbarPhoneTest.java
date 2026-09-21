@@ -130,6 +130,7 @@ public class ToolbarPhoneTest {
     @Mock OptionalButtonCoordinator mOptionalButtonCoordinator;
     @Mock SigninButtonCoordinator mSigninButtonCoordinator;
     @Mock private SearchEngineService mSearchEngineService;
+    @Mock private BackButtonCoordinator mBackButtonCoordinator;
 
     private final Canvas mCanvas = new Canvas();
     private ToolbarPhone mToolbar;
@@ -225,15 +226,14 @@ public class ToolbarPhoneTest {
     })
     public void testBackButtonVisibility_ntp() {
         ToolbarPhone toolbarSpy = Mockito.spy(mToolbar);
-        BackButtonCoordinator mockBackButtonCoordinator = Mockito.mock(BackButtonCoordinator.class);
-        toolbarSpy.setBackButtonCoordinatorForTesting(mockBackButtonCoordinator);
+        toolbarSpy.setBackButtonCoordinatorForTesting(mBackButtonCoordinator);
 
         doReturn(true).when(toolbarSpy).isLocationBarShownInNtp();
         doReturn(false).when(toolbarSpy).urlHasFocus();
 
         ThreadUtils.runOnUiThreadBlocking(() -> toolbarSpy.updateButtonVisibility());
 
-        verify(mockBackButtonCoordinator).setVisibility(false);
+        verify(mBackButtonCoordinator).setVisibility(false);
     }
 
     @Test
@@ -244,15 +244,14 @@ public class ToolbarPhoneTest {
     })
     public void testBackButtonVisibility_regularPage() {
         ToolbarPhone toolbarSpy = Mockito.spy(mToolbar);
-        BackButtonCoordinator mockBackButtonCoordinator = Mockito.mock(BackButtonCoordinator.class);
-        toolbarSpy.setBackButtonCoordinatorForTesting(mockBackButtonCoordinator);
+        toolbarSpy.setBackButtonCoordinatorForTesting(mBackButtonCoordinator);
 
         doReturn(false).when(toolbarSpy).isLocationBarShownInNtp();
         doReturn(false).when(toolbarSpy).urlHasFocus();
 
         ThreadUtils.runOnUiThreadBlocking(() -> toolbarSpy.updateButtonVisibility());
 
-        verify(mockBackButtonCoordinator).setVisibility(true);
+        verify(mBackButtonCoordinator).setVisibility(true);
     }
 
     @Test
@@ -263,15 +262,14 @@ public class ToolbarPhoneTest {
     })
     public void testBackButtonVisibility_focused() {
         ToolbarPhone toolbarSpy = Mockito.spy(mToolbar);
-        BackButtonCoordinator mockBackButtonCoordinator = Mockito.mock(BackButtonCoordinator.class);
-        toolbarSpy.setBackButtonCoordinatorForTesting(mockBackButtonCoordinator);
+        toolbarSpy.setBackButtonCoordinatorForTesting(mBackButtonCoordinator);
 
         doReturn(false).when(toolbarSpy).isLocationBarShownInNtp();
         doReturn(true).when(toolbarSpy).urlHasFocus();
 
         ThreadUtils.runOnUiThreadBlocking(() -> toolbarSpy.updateButtonVisibility());
 
-        verify(mockBackButtonCoordinator).setVisibility(false);
+        verify(mBackButtonCoordinator).setVisibility(false);
     }
 
     @Test
@@ -281,16 +279,15 @@ public class ToolbarPhoneTest {
         ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_home_button_in_toolbar/false"
     })
     public void testBackButtonVisibility_urlExpansion() {
-        BackButtonCoordinator mockBackButtonCoordinator = Mockito.mock(BackButtonCoordinator.class);
-        mToolbar.setBackButtonCoordinatorForTesting(mockBackButtonCoordinator);
-        when(mockBackButtonCoordinator.isVisible()).thenReturn(true);
+        mToolbar.setBackButtonCoordinatorForTesting(mBackButtonCoordinator);
+        when(mBackButtonCoordinator.isVisible()).thenReturn(true);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mToolbar.onUrlFocusChange(true);
                 });
 
-        verify(mockBackButtonCoordinator, atLeastOnce()).setVisibility(false);
+        verify(mBackButtonCoordinator, atLeastOnce()).setVisibility(false);
     }
 
     @Test

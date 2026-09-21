@@ -11,7 +11,6 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -43,8 +42,6 @@ import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-
-import java.util.List;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -62,12 +59,14 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.util.List;
+
 @RunWith(BaseRobolectricTestRunner.class)
 public class SuggestionEventObserverUnitTest {
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
     private static final int TAB_ID = 123;
     private static final GURL TEST_URL = JUnitTestGURLs.EXAMPLE_URL;
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock Profile mProfile;
     @Mock TabModel mTabModel;
@@ -82,7 +81,8 @@ public class SuggestionEventObserverUnitTest {
     @Mock NavigationController mNavigationController;
     @Mock NavigationHistory mNavigationHistory;
     @Mock NavigationEntry mNavigationEntry;
-
+    @Mock private Tab mTab2;
+    @Mock private Tab mIncognitoTab;
     @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
     private SuggestionEventObserver mSuggestionEventObserver;
@@ -202,8 +202,7 @@ public class SuggestionEventObserverUnitTest {
                 new SuggestionEventObserver(mTabModelSelector, mHubManagerSupplier);
 
         // Later current tab changes will be ignored
-        Tab tab2 = mock(Tab.class);
-        currentTabSupplier.set(tab2);
+        currentTabSupplier.set(mTab2);
 
         verify(mGroupSuggestionsService, times(1))
                 .didSelectTab(
@@ -254,13 +253,12 @@ public class SuggestionEventObserverUnitTest {
 
     @Test
     public void testTabNavigation_IncognitoTab() {
-        Tab incognitoTab = mock(Tab.class);
-        when(incognitoTab.isIncognitoBranded()).thenReturn(true);
+        when(mIncognitoTab.isIncognitoBranded()).thenReturn(true);
 
         when(mNavigationEntry.getTransition()).thenReturn(PageTransition.LINK);
         mSuggestionEventObserver
                 .getTabModelSelectorTabObserverForTesting()
-                .onDidFinishNavigationInPrimaryMainFrame(incognitoTab, mNavigationHandle);
+                .onDidFinishNavigationInPrimaryMainFrame(mIncognitoTab, mNavigationHandle);
 
         verify(mGroupSuggestionsService, never()).onDidFinishNavigation(anyInt(), anyInt());
     }

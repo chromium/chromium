@@ -80,30 +80,38 @@ public class PlayerMediatorUnitTest {
     private static final String PUBLISHER = "Publisher";
     private static final long POSITION_NS = 1_000_000_000L; // one second
     private static final long DURATION_NS = 10_000_000_000L; // ten seconds
+
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    /** FakeClock for setting the time. */
+    @Mock private Player.Delegate mDelegate;
+
+    @Mock private Playback mPreviewPlayback;
+    @Mock private Playback.Metadata mMetadata;
     @Mock ReadAloudPrefs.Natives mPrefsNative;
     @Mock private PlayerCoordinator mPlayerCoordinator;
     @Mock private Playback mPlayback;
     @Mock private Playback.Metadata mPlaybackMetadata;
     @Mock private SeekBar mSeekbar;
     @Mock private BottomControlsStacker mBottomControlsStacker;
+    @Captor private ArgumentCaptor<PlaybackListener> mPlaybackListenerCaptor;
+
     private MockPrefServiceHelper mMockPrefServiceHelper;
     private OnSeekBarChangeListener mOnSeekBarChangeListener;
     private final PlaybackVoice mPlaybackVoiceA = new PlaybackVoice("en", "a", "");
-
     private SettableNonNullObservableSupplier<List<PlaybackVoice>> mVoicesSupplier;
     private SettableNonNullObservableSupplier<String> mSelectedVoiceIdSupplier;
     private SettableNonNullObservableSupplier<Boolean> mHighlightingEnabledSupplier;
     private SettableNonNullObservableSupplier<PlaybackModeSelectionEnablementStatus>
             mPlaybackModeSelectorEnabledSupplier;
     private SettableNonNullObservableSupplier<FeedbackType> mFeedbackTypeSupplier;
-    @Captor private ArgumentCaptor<PlaybackListener> mPlaybackListenerCaptor;
     public UserActionTester mUserActionTester;
-
     private PropertyModel mModel;
     private FakeClock mClock;
+    private Promise<Playback> mPreviewPromise;
+    private TestPlaybackData mPlaybackData;
+    private PlayerMediator mMediator;
 
-    /** FakeClock for setting the time. */
     static class FakeClock implements PlayerMediator.Clock {
         private long mCurrentTimeMillis;
 
@@ -160,13 +168,6 @@ public class PlayerMediatorUnitTest {
             return mTotalDurationNanos;
         }
     }
-
-    private TestPlaybackData mPlaybackData;
-    @Mock private Player.Delegate mDelegate;
-    private Promise<Playback> mPreviewPromise;
-    @Mock private Playback mPreviewPlayback;
-
-    private PlayerMediator mMediator;
 
     @Before
     public void setUp() {
@@ -264,10 +265,9 @@ public class PlayerMediatorUnitTest {
         mMediator.setPlayback(mPlayback);
         verify(mPlayback).addListener(mPlaybackListenerCaptor.capture());
 
-        Playback.Metadata metadata = Mockito.mock(Playback.Metadata.class);
-        doReturn("New Title").when(metadata).title();
-        doReturn("New Publisher").when(metadata).publisher();
-        mPlaybackListenerCaptor.getValue().onMetadataChanged(metadata);
+        doReturn("New Title").when(mMetadata).title();
+        doReturn("New Publisher").when(mMetadata).publisher();
+        mPlaybackListenerCaptor.getValue().onMetadataChanged(mMetadata);
 
         assertEquals("New Title", mModel.get(PlayerProperties.TITLE));
         assertEquals("New Publisher", mModel.get(PlayerProperties.PUBLISHER));

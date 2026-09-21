@@ -13,7 +13,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -33,6 +32,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.ItemAnimator;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
@@ -108,6 +108,8 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
     @Mock private Tab mTab1;
     @Mock private Tab mTab2;
     @Mock private Tab mTab3;
+    @Mock private Runnable mRunnable;
+    @Mock private ItemAnimator mItemAnimator;
 
     private TabListModel mModel;
     private SimpleRecyclerViewAdapter.ViewHolder mViewHolder;
@@ -716,8 +718,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         RecyclerView.OnItemTouchListener listener =
                 mCallback.createMouseDragDetector(mItemTouchHelper);
 
-        Runnable dragStartCallback = Mockito.mock(Runnable.class);
-        mCallback.setOnDragStartCallback(dragStartCallback);
+        mCallback.setOnDragStartCallback(mRunnable);
 
         // 1. ACTION_DOWN.
         MotionEvent downEvent = createMouseEvent(MotionEvent.ACTION_DOWN, 10f, 10f);
@@ -737,7 +738,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
         assertFalse(listener.onInterceptTouchEvent(mRecyclerView, moveEvent));
         verify(mItemTouchHelper).startDrag(mViewHolder);
-        verify(dragStartCallback).run();
+        verify(mRunnable).run();
 
         downEvent.recycle();
         moveEvent.recycle();
@@ -745,8 +746,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
     @Test
     public void testOnChildDraw_TriggersDragStartCallbackOnDisplacement() {
-        Runnable dragStartCallback = Mockito.mock(Runnable.class);
-        mCallback.setOnDragStartCallback(dragStartCallback);
+        mCallback.setOnDragStartCallback(mRunnable);
         mCallback.setTabGridItemLongPressOrchestratorForTesting(mOrchestrator);
 
         // Displacement within threshold (e.g. 1dp <= threshold).
@@ -758,7 +758,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
                 /* dY= */ 1f,
                 ItemTouchHelper.ACTION_STATE_DRAG,
                 /* isCurrentlyActive= */ true);
-        verify(dragStartCallback, never()).run();
+        verify(mRunnable, never()).run();
 
         // Displacement exceeding threshold (> cancel threshold).
         float largeDisplacement = mCallback.getLongPressDpCancelThresholdForTesting() + 5f;
@@ -770,7 +770,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
                 /* dY= */ largeDisplacement,
                 ItemTouchHelper.ACTION_STATE_DRAG,
                 /* isCurrentlyActive= */ true);
-        verify(dragStartCallback).run();
+        verify(mRunnable).run();
 
         // Subsequent onChildDraw calls should not re-trigger the callback (one-shot latch).
         mCallback.onChildDraw(
@@ -781,7 +781,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
                 /* dY= */ largeDisplacement + 10f,
                 ItemTouchHelper.ACTION_STATE_DRAG,
                 /* isCurrentlyActive= */ true);
-        verify(dragStartCallback, times(1)).run();
+        verify(mRunnable, times(1)).run();
     }
 
     @Test
@@ -3056,8 +3056,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
     @Test
     public void testCollapseViewHolder_EndsRunningItemAnimations() {
-        RecyclerView.ItemAnimator itemAnimator = mock(RecyclerView.ItemAnimator.class);
-        when(mRecyclerView.getItemAnimator()).thenReturn(itemAnimator);
+        when(mRecyclerView.getItemAnimator()).thenReturn(mItemAnimator);
 
         Token groupId = new Token(10L, 20L);
         SimpleRecyclerViewAdapter.ViewHolder headerHolder =
@@ -3066,6 +3065,6 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
         mCallback.collapseDraggedItem(headerHolder);
 
-        verify(itemAnimator).endAnimation(headerHolder);
+        verify(mItemAnimator).endAnimation(headerHolder);
     }
 }

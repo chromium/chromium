@@ -24,6 +24,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -45,15 +46,16 @@ import java.util.List;
 /** Unit test for {@link SharedImageTilesCoordinator} */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SharedImageTilesCoordinatorUnitTest {
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
     private static final String COLLABORATION_ID = "collaboration_id";
     private static final String EMAIL = "test@test.com";
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private DataSharingService mDataSharingService;
     @Mock private CollaborationService mCollaborationService;
     @Mock private DataSharingUIDelegate mDataSharingUiDelegate;
     @Mock private Bitmap mAvatarBitmap;
+    @Captor private ArgumentCaptor<DataSharingAvatarBitmapConfig> mConfigCaptor;
 
     private Activity mActivity;
     private SharedImageTilesCoordinator mSharedImageTilesCoordinator;
@@ -165,13 +167,10 @@ public class SharedImageTilesCoordinatorUnitTest {
         mSharedImageTilesCoordinator.fetchImagesForCollaborationId(
                 COLLABORATION_ID, mockFinishedCallback);
 
-        ArgumentCaptor<DataSharingAvatarBitmapConfig> configCaptor =
-                ArgumentCaptor.forClass(DataSharingAvatarBitmapConfig.class);
-
-        verify(mDataSharingUiDelegate, times(2)).getAvatarBitmap(configCaptor.capture());
+        verify(mDataSharingUiDelegate, times(2)).getAvatarBitmap(mConfigCaptor.capture());
 
         // Finished callback is not triggered if we are waiting for more bitmaps.
-        configCaptor
+        mConfigCaptor
                 .getAllValues()
                 .get(0)
                 .getDataSharingAvatarCallback()
@@ -180,7 +179,7 @@ public class SharedImageTilesCoordinatorUnitTest {
         verify(mockFinishedCallback, never()).onResult(anyBoolean());
 
         // Finished callback should only be called when all bitmaps returns.
-        configCaptor
+        mConfigCaptor
                 .getAllValues()
                 .get(1)
                 .getDataSharingAvatarCallback()
@@ -225,38 +224,36 @@ public class SharedImageTilesCoordinatorUnitTest {
                         /* role= */ 0,
                         /* avatarUrl= */ null,
                         /* givenName= */ null);
-        ArgumentCaptor<DataSharingAvatarBitmapConfig> configCaptor =
-                ArgumentCaptor.forClass(DataSharingAvatarBitmapConfig.class);
 
         // Two members.
         int count = 2;
         mSharedImageTilesCoordinator.onGroupMembersChanged(
                 COLLABORATION_ID, List.of(memberValid1, memberValid2));
-        verify(mDataSharingUiDelegate, times(count)).getAvatarBitmap(configCaptor.capture());
+        verify(mDataSharingUiDelegate, times(count)).getAvatarBitmap(mConfigCaptor.capture());
         verifyViews(View.GONE, /* iconViewCount= */ 2, View.GONE);
 
         // No members.
         mSharedImageTilesCoordinator.onGroupMembersChanged(COLLABORATION_ID, /* members= */ null);
-        verify(mDataSharingUiDelegate, times(count)).getAvatarBitmap(configCaptor.capture());
+        verify(mDataSharingUiDelegate, times(count)).getAvatarBitmap(mConfigCaptor.capture());
         verifyViews(View.GONE, /* iconViewCount= */ 0, View.GONE);
 
         // Two members.
         count += 2;
         mSharedImageTilesCoordinator.onGroupMembersChanged(
                 COLLABORATION_ID, List.of(memberValid1, memberValid2));
-        verify(mDataSharingUiDelegate, times(count)).getAvatarBitmap(configCaptor.capture());
+        verify(mDataSharingUiDelegate, times(count)).getAvatarBitmap(mConfigCaptor.capture());
         verifyViews(View.GONE, /* iconViewCount= */ 2, View.GONE);
 
         // No group.
         mSharedImageTilesCoordinator.onGroupMembersChanged(
                 /* collaborationId= */ null, /* members= */ null);
-        verify(mDataSharingUiDelegate, times(count)).getAvatarBitmap(configCaptor.capture());
+        verify(mDataSharingUiDelegate, times(count)).getAvatarBitmap(mConfigCaptor.capture());
         verifyViews(View.GONE, /* iconViewCount= */ 0, View.GONE);
 
         // 1 member + manage icon.
         count += 1;
         mSharedImageTilesCoordinator.onGroupMembersChanged(COLLABORATION_ID, List.of(memberValid1));
-        verify(mDataSharingUiDelegate, times(count)).getAvatarBitmap(configCaptor.capture());
+        verify(mDataSharingUiDelegate, times(count)).getAvatarBitmap(mConfigCaptor.capture());
         verifyViews(View.GONE, /* iconViewCount= */ 1, View.VISIBLE);
     }
 }

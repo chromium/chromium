@@ -33,6 +33,8 @@ public class ProfileKeyedMapTest {
     @Mock private Profile mIncognitoProfile1;
     @Mock private Profile mProfile2;
     @Mock private Profile mProfile3;
+    @Mock private Destroyable mDestroyable1;
+    @Mock private Destroyable mDestroyable2;
 
     @Before
     public void setUp() {
@@ -102,18 +104,15 @@ public class ProfileKeyedMapTest {
     public void testDestroyableMap() {
         ProfileKeyedMap<Destroyable> map = ProfileKeyedMap.createMapOfDestroyables();
 
-        Destroyable destroyable1 = Mockito.mock(Destroyable.class);
-        Destroyable destroyable2 = Mockito.mock(Destroyable.class);
+        map.getForProfile(mProfile1, (profile) -> mDestroyable1);
+        map.getForProfile(mProfile2, (profile) -> mDestroyable2);
 
-        map.getForProfile(mProfile1, (profile) -> destroyable1);
-        map.getForProfile(mProfile2, (profile) -> destroyable2);
-
-        Assert.assertEquals(destroyable1, map.getForProfile(mProfile1, (profile) -> null));
-        Assert.assertEquals(destroyable2, map.getForProfile(mProfile2, (profile) -> null));
+        Assert.assertEquals(mDestroyable1, map.getForProfile(mProfile1, (profile) -> null));
+        Assert.assertEquals(mDestroyable2, map.getForProfile(mProfile2, (profile) -> null));
 
         map.destroy();
-        Mockito.verify(destroyable1).destroy();
-        Mockito.verify(destroyable2).destroy();
+        Mockito.verify(mDestroyable1).destroy();
+        Mockito.verify(mDestroyable2).destroy();
     }
 
     @Test

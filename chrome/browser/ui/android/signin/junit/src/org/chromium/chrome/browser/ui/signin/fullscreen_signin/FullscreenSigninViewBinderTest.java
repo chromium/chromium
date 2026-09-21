@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.ui.signin.fullscreen_signin;
 
 import static org.junit.Assert.assertFalse;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -34,6 +33,8 @@ public class FullscreenSigninViewBinderTest {
 
     @Mock private FullscreenSigninView mView;
     @Mock private LottieAnimationView mAnimationView;
+    @Mock private Drawable mDrawable;
+    @Mock private ImageView mImageView;
 
     @Test
     public void testCreateModel_animationInitiallyHidden() {
@@ -78,14 +79,12 @@ public class FullscreenSigninViewBinderTest {
 
     @Test
     public void testBindProfilePicture() {
-        Drawable drawable = mock(Drawable.class);
-        ImageView iconView = mock(ImageView.class);
-        when(mView.getIcon()).thenReturn(iconView);
+        when(mView.getIcon()).thenReturn(mImageView);
         PropertyModel model =
                 new PropertyModel.Builder(FullscreenSigninProperties.ALL_KEYS)
-                        .with(FullscreenSigninProperties.PROFILE_PICTURE, drawable)
+                        .with(FullscreenSigninProperties.PROFILE_PICTURE, mDrawable)
                         .build();
         FullscreenSigninViewBinder.bind(model, mView, FullscreenSigninProperties.PROFILE_PICTURE);
-        verify(iconView).setImageDrawable(drawable);
+        verify(mImageView).setImageDrawable(mDrawable);
     }
 }

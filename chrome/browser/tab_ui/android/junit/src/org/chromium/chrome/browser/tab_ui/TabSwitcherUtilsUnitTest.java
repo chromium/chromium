@@ -9,7 +9,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -62,6 +61,7 @@ public class TabSwitcherUtilsUnitTest {
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private TabGroupUiActionHandler mTabGroupUiActionHandler;
     @Mock private Callback<Integer> mRequestOpenTabGroupDialog;
+    @Mock private Runnable mRunnable;
 
     @Before
     public void setUp() {
@@ -189,11 +189,10 @@ public class TabSwitcherUtilsUnitTest {
     public void testNavigateToTabSwitcher_disabledOnDesktop_runsCallbackAndDoesNotShowHub() {
         DeviceInfo.setIsDesktopForTesting(true);
         when(mLayoutManager.isLayoutVisible(LayoutType.HUB)).thenReturn(false);
-        Runnable callback = mock(Runnable.class);
 
-        TabSwitcherUtils.navigateToTabSwitcher(mLayoutManager, /* animate= */ false, callback);
+        TabSwitcherUtils.navigateToTabSwitcher(mLayoutManager, /* animate= */ false, mRunnable);
 
-        verify(callback).run();
+        verify(mRunnable).run();
         verify(mLayoutManager, never()).showLayout(eq(LayoutType.HUB), anyBoolean());
     }
 
@@ -201,12 +200,11 @@ public class TabSwitcherUtilsUnitTest {
     public void testNavigateToTabSwitcher_enabledOnPhone_showsHub() {
         DeviceInfo.setIsDesktopForTesting(false);
         when(mLayoutManager.isLayoutVisible(LayoutType.HUB)).thenReturn(false);
-        Runnable callback = mock(Runnable.class);
 
-        TabSwitcherUtils.navigateToTabSwitcher(mLayoutManager, /* animate= */ false, callback);
+        TabSwitcherUtils.navigateToTabSwitcher(mLayoutManager, /* animate= */ false, mRunnable);
 
         verify(mLayoutManager).showLayout(eq(LayoutType.HUB), eq(false));
-        verify(callback, never()).run();
+        verify(mRunnable, never()).run();
     }
 
     @Test

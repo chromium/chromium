@@ -117,6 +117,23 @@ public class TabPersistentStoreUnitTest {
     @Mock private Tab mTab;
     @Mock private Profile mProfile;
     @Mock private BackgroundTabPool mBackgroundTabPool;
+    @Mock private Tab mEmptyNtpTab;
+    @Mock private Tab mEmptyNtp;
+    @Mock private Tab mTabToReparent;
+    @Mock private WebContentsState mWebContentsState;
+    @Mock private Tab mTab1;
+    @Mock private Tab mRegularTab1;
+    @Mock private Tab mRegularTab2;
+    @Mock private Tab mRealizedTab;
+    @Mock private BackgroundPoolTab mBackgroundPoolTab;
+    @Mock private Tab mNewTab;
+    @Mock private Tab mRestoredTab;
+    @Mock private Tab mFallbackTab;
+    @Mock private Tab mTab2;
+    @Mock private BackgroundPoolTab mPlaceholderTab101;
+    @Mock private Tab mRestoredTab101;
+    @Mock private BackgroundPoolTab mRemainingTab201;
+    @Mock private Tab mRestoredTab201;
 
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
@@ -188,17 +205,16 @@ public class TabPersistentStoreUnitTest {
                     }
                 };
 
-        Tab emptyNtpTab = mock(Tab.class);
         UserDataHost emptyNtpTabUserDataHost = new UserDataHost();
-        when(emptyNtpTab.getUserDataHost()).thenReturn(emptyNtpTabUserDataHost);
+        when(mEmptyNtpTab.getUserDataHost()).thenReturn(emptyNtpTabUserDataHost);
         TabStateAttributesRegistry.createAttributesForTab(
-                emptyNtpTab, TabPersistentStoreImpl.class, TabCreationState.FROZEN_ON_RESTORE);
-        when(emptyNtpTab.getUrl()).thenReturn(new GURL(getOriginalNativeNtpUrl()));
-        TabStateAttributesRegistry.getAttributesFor(emptyNtpTab, TabPersistentStoreImpl.class)
+                mEmptyNtpTab, TabPersistentStoreImpl.class, TabCreationState.FROZEN_ON_RESTORE);
+        when(mEmptyNtpTab.getUrl()).thenReturn(new GURL(getOriginalNativeNtpUrl()));
+        TabStateAttributesRegistry.getAttributesFor(mEmptyNtpTab, TabPersistentStoreImpl.class)
                 .setStateForTesting(DirtinessState.DIRTY);
 
-        mPersistentStore.addTabToSaveQueue(emptyNtpTab);
-        assertTrue(mPersistentStore.isTabPendingSave(emptyNtpTab));
+        mPersistentStore.addTabToSaveQueue(mEmptyNtpTab);
+        assertTrue(mPersistentStore.isTabPendingSave(mEmptyNtpTab));
     }
 
     @Test
@@ -219,10 +235,9 @@ public class TabPersistentStoreUnitTest {
 
         LoadUrlParamsUrlMatcher paramsMatcher =
                 new LoadUrlParamsUrlMatcher(getOriginalNativeNtpUrl());
-        Tab emptyNtp = mock(Tab.class);
         when(mNormalTabCreator.createNewTab(
                         argThat(paramsMatcher), eq(TabLaunchType.FROM_RESTORE), isNull()))
-                .thenReturn(emptyNtp);
+                .thenReturn(mEmptyNtp);
 
         TabRestoreDetails emptyNtpDetails =
                 new TabRestoreDetails(1, 0, TriState.FALSE, getOriginalNativeNtpUrl(), false);
@@ -257,10 +272,9 @@ public class TabPersistentStoreUnitTest {
 
         LoadUrlParamsUrlMatcher paramsMatcher =
                 new LoadUrlParamsUrlMatcher(getOriginalNativeNtpUrl());
-        Tab emptyNtp = mock(Tab.class);
         when(mNormalTabCreator.createNewTab(
                         argThat(paramsMatcher), eq(TabLaunchType.FROM_RESTORE), isNull()))
-                .thenReturn(emptyNtp);
+                .thenReturn(mEmptyNtp);
 
         TabRestoreDetails emptyNtpDetails =
                 new TabRestoreDetails(1, 0, TriState.FALSE, getOriginalNativeNtpUrl(), false);
@@ -295,10 +309,9 @@ public class TabPersistentStoreUnitTest {
 
         LoadUrlParamsUrlMatcher paramsMatcher =
                 new LoadUrlParamsUrlMatcher(getOriginalNativeNtpUrl());
-        Tab emptyNtp = mock(Tab.class);
         when(mNormalTabCreator.createNewTab(
                         argThat(paramsMatcher), eq(TabLaunchType.FROM_RESTORE), isNull()))
-                .thenReturn(emptyNtp);
+                .thenReturn(mEmptyNtp);
 
         TabRestoreDetails emptyNtpDetails =
                 new TabRestoreDetails(1, 0, TriState.FALSE, getOriginalNativeNtpUrl(), true);
@@ -366,10 +379,9 @@ public class TabPersistentStoreUnitTest {
 
         LoadUrlParamsUrlMatcher paramsMatcher =
                 new LoadUrlParamsUrlMatcher(getOriginalNativeNtpUrl());
-        Tab emptyNtp = mock(Tab.class);
         when(mIncognitoTabCreator.createNewTab(
                         argThat(paramsMatcher), eq(TabLaunchType.FROM_RESTORE), isNull()))
-                .thenReturn(emptyNtp);
+                .thenReturn(mEmptyNtp);
 
         TabRestoreDetails emptyNtpDetails =
                 new TabRestoreDetails(1, 0, TriState.TRUE, getOriginalNativeNtpUrl(), false);
@@ -387,16 +399,15 @@ public class TabPersistentStoreUnitTest {
     @Feature("TabPersistentStore")
     public void testReparentedTabNotIgnoredDuringRestore() {
         String url = "https://test.com";
-        Tab tabToReparent = mock(Tab.class);
-        when(tabToReparent.getId()).thenReturn(1);
-        when(tabToReparent.getUrl()).thenReturn(new GURL(url));
+        when(mTabToReparent.getId()).thenReturn(1);
+        when(mTabToReparent.getUrl()).thenReturn(new GURL(url));
         TabState expectedTabState = new TabState();
         TabStateExtractor.setTabStateForTesting(1, expectedTabState);
         AsyncTabParamsManagerSingleton.getInstance()
-                .add(1, new TabReparentingParams(tabToReparent, /* finalizeCallback= */ null));
+                .add(1, new TabReparentingParams(mTabToReparent, /* finalizeCallback= */ null));
         when(mNormalTabCreator.isReparenting(1)).thenReturn(true);
         when(mNormalTabCreator.createFrozenTab(eq(expectedTabState), eq(1), eq(0)))
-                .thenReturn(tabToReparent);
+                .thenReturn(mTabToReparent);
         mPersistentStore =
                 new TabPersistentStoreImpl(
                         TabOrchestratorType.TABBED,
@@ -442,16 +453,14 @@ public class TabPersistentStoreUnitTest {
                 /* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ false);
 
         TabState tabState = new TabState();
-        WebContentsState contentsState = mock(WebContentsState.class);
-        tabState.contentsState = contentsState;
+        tabState.contentsState = mWebContentsState;
         File legacyFile = new File("legacy_file");
         tabState.legacyFileToDelete = legacyFile;
         tabState.shouldMigrate = true;
 
-        Tab tab = mock(Tab.class);
-        when(tab.getId()).thenReturn(1);
-        when(tab.getUrl()).thenReturn(new GURL(url));
-        when(mNormalTabCreator.createFrozenTab(eq(tabState), eq(1), eq(0))).thenReturn(tab);
+        when(mTab1.getId()).thenReturn(1);
+        when(mTab1.getUrl()).thenReturn(new GURL(url));
+        when(mNormalTabCreator.createFrozenTab(eq(tabState), eq(1), eq(0))).thenReturn(mTab1);
 
         TabRestoreDetails details =
                 new TabRestoreDetails(1, 0, TriState.FALSE, url, /* fromMerge= */ false);
@@ -461,24 +470,23 @@ public class TabPersistentStoreUnitTest {
         mPersistentStore.restoreTab(details, tabState, /* setAsActive= */ false);
         watcher2.assertExpected();
 
-        assertEquals(contentsState, tabState.contentsState);
+        assertEquals(mWebContentsState, tabState.contentsState);
         assertNull(tabState.legacyFileToDelete);
         assertTrue(
                 mPersistentStore.getLegacyTabStateFilesToDeleteForTesting().contains(legacyFile));
         verify(mNormalTabCreator).createFrozenTab(eq(tabState), eq(1), eq(0));
-        assertTrue(mPersistentStore.getTabsToMigrateForTesting().contains(tab));
+        assertTrue(mPersistentStore.getTabsToMigrateForTesting().contains(mTab1));
     }
 
     @Test
     @Feature("TabPersistentStore")
     public void testReparentedIncognitoTabNotIgnoredDuringRestore() {
         String url = "https://test.com";
-        Tab tabToReparent = mock(Tab.class);
-        when(tabToReparent.getId()).thenReturn(1);
+        when(mTabToReparent.getId()).thenReturn(1);
         TabState expectedTabState = new TabState();
         TabStateExtractor.setTabStateForTesting(1, expectedTabState);
         AsyncTabParamsManagerSingleton.getInstance()
-                .add(1, new TabReparentingParams(tabToReparent, /* finalizeCallback= */ null));
+                .add(1, new TabReparentingParams(mTabToReparent, /* finalizeCallback= */ null));
         when(mIncognitoTabCreator.isReparenting(1)).thenReturn(true);
         mPersistentStore =
                 new TabPersistentStoreImpl(
@@ -752,19 +760,17 @@ public class TabPersistentStoreUnitTest {
     public void testSerializeTabModelSelector_closingTabsSkipped() {
         when(mNormalTabModel.getCount()).thenReturn(2);
         when(mNormalTabModel.index()).thenReturn(1);
-        Tab regularTab1 = mock(Tab.class);
-        when(regularTab1.getId()).thenReturn(11);
-        when(regularTab1.getUrl()).thenReturn(new GURL(REGULAR_TAB_STRING_1));
-        when(regularTab1.isClosing()).thenReturn(false);
-        when(mNormalTabModel.getTabAtChecked(0)).thenReturn(regularTab1);
-        Tab regularTab2 = mock(Tab.class);
-        when(regularTab2.getId()).thenReturn(22);
-        when(regularTab2.getUrl()).thenReturn(new GURL(RESTORE_TAB_STRING_2));
-        when(regularTab2.isClosing()).thenReturn(true);
-        when(mNormalTabModel.getTabAtChecked(1)).thenReturn(regularTab2);
+        when(mRegularTab1.getId()).thenReturn(11);
+        when(mRegularTab1.getUrl()).thenReturn(new GURL(REGULAR_TAB_STRING_1));
+        when(mRegularTab1.isClosing()).thenReturn(false);
+        when(mNormalTabModel.getTabAtChecked(0)).thenReturn(mRegularTab1);
+        when(mRegularTab2.getId()).thenReturn(22);
+        when(mRegularTab2.getUrl()).thenReturn(new GURL(RESTORE_TAB_STRING_2));
+        when(mRegularTab2.isClosing()).thenReturn(true);
+        when(mNormalTabModel.getTabAtChecked(1)).thenReturn(mRegularTab2);
         when(mTabModelSelector.getTotalTabCount()).thenReturn(2);
         when(mNormalTabModel.iterator())
-                .thenAnswer(inv -> List.of(regularTab1, regularTab2).iterator());
+                .thenAnswer(inv -> List.of(mRegularTab1, mRegularTab2).iterator());
 
         TabModelSelectorMetadata metadata =
                 TabPersistentStoreImpl.extractTabMetadataFromSelector(
@@ -916,11 +922,10 @@ public class TabPersistentStoreUnitTest {
         mPersistentStore.onNativeLibraryReady();
         verify(mNormalTabModel).addObserver(mTabModelObserverCaptor.capture());
 
-        Tab tab = mock(Tab.class);
-        when(tab.isIncognito()).thenReturn(true);
+        when(mTab1.isIncognito()).thenReturn(true);
         mTabModelObserverCaptor
                 .getValue()
-                .willCloseTabs(List.of(tab), /* isAllTabs= */ true, /* allowUndo= */ false);
+                .willCloseTabs(List.of(mTab1), /* isAllTabs= */ true, /* allowUndo= */ false);
 
         TabRestoreDetails details =
                 new TabRestoreDetails(1, 0, TriState.TRUE, getOriginalNativeNtpUrl(), false);
@@ -1384,13 +1389,11 @@ public class TabPersistentStoreUnitTest {
         TabRestoreDetails details =
                 new TabRestoreDetails(
                         101, 0, TriState.FALSE, "https://google.com/", /* fromMerge= */ false);
-        Tab realizedTab = mock(Tab.class);
-        when(realizedTab.getId()).thenReturn(101);
+        when(mRealizedTab.getId()).thenReturn(101);
         when(mBackgroundTabPool.getAllPlaceholderTabIds()).thenReturn(Set.of(101));
-        BackgroundPoolTab backgroundPoolTab = mock(BackgroundPoolTab.class);
-        when(mBackgroundTabPool.loadTabByPlaceholderId(101)).thenReturn(backgroundPoolTab);
-        when(backgroundPoolTab.attachTab(eq(mNormalTabModel), eq(0))).thenReturn(realizedTab);
-        when(mNormalTabModel.indexOf(realizedTab)).thenReturn(0);
+        when(mBackgroundTabPool.loadTabByPlaceholderId(101)).thenReturn(mBackgroundPoolTab);
+        when(mBackgroundPoolTab.attachTab(eq(mNormalTabModel), eq(0))).thenReturn(mRealizedTab);
+        when(mNormalTabModel.indexOf(mRealizedTab)).thenReturn(0);
 
         mPersistentStore =
                 new TabPersistentStoreImpl(
@@ -1410,7 +1413,7 @@ public class TabPersistentStoreUnitTest {
 
         verify(mBackgroundTabPool).getAllPlaceholderTabIds();
         verify(mBackgroundTabPool).loadTabByPlaceholderId(101);
-        verify(backgroundPoolTab).attachTab(eq(mNormalTabModel), eq(0));
+        verify(mBackgroundPoolTab).attachTab(eq(mNormalTabModel), eq(0));
         verify(mNormalTabCreator, never()).createNewTab(any(), anyInt(), any(), anyInt());
     }
 
@@ -1420,10 +1423,9 @@ public class TabPersistentStoreUnitTest {
         BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
         TabRestoreDetails details =
                 new TabRestoreDetails(101, 0, TriState.FALSE, "https://google.com/", false);
-        Tab newTab = mock(Tab.class);
-        when(newTab.getId()).thenReturn(101);
-        when(mNormalTabCreator.createNewTab(any(), anyInt(), any(), anyInt())).thenReturn(newTab);
-        when(mNormalTabModel.indexOf(newTab)).thenReturn(0);
+        when(mNewTab.getId()).thenReturn(101);
+        when(mNormalTabCreator.createNewTab(any(), anyInt(), any(), anyInt())).thenReturn(mNewTab);
+        when(mNormalTabModel.indexOf(mNewTab)).thenReturn(0);
         when(mBackgroundTabPool.getAllPlaceholderTabIds()).thenReturn(Set.of(101));
 
         mPersistentStore =
@@ -1453,11 +1455,9 @@ public class TabPersistentStoreUnitTest {
         BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
         TabRestoreDetails details =
                 new TabRestoreDetails(101, 0, TriState.FALSE, "https://google.com/", false);
-        BackgroundPoolTab backgroundPoolTab = mock(BackgroundPoolTab.class);
-        Tab restoredTab = mock(Tab.class);
-        when(restoredTab.getId()).thenReturn(101);
-        when(backgroundPoolTab.attachTab(eq(mNormalTabModel), eq(0))).thenReturn(restoredTab);
-        when(mBackgroundTabPool.loadTabByPlaceholderId(101)).thenReturn(backgroundPoolTab);
+        when(mRestoredTab.getId()).thenReturn(101);
+        when(mBackgroundPoolTab.attachTab(eq(mNormalTabModel), eq(0))).thenReturn(mRestoredTab);
+        when(mBackgroundTabPool.loadTabByPlaceholderId(101)).thenReturn(mBackgroundPoolTab);
         when(mBackgroundTabPool.getAllPlaceholderTabIds()).thenReturn(Set.of(101));
 
         mPersistentStore =
@@ -1492,10 +1492,9 @@ public class TabPersistentStoreUnitTest {
         TabRestoreDetails details =
                 new TabRestoreDetails(
                         101, 0, TriState.FALSE, "https://google.com/", /* fromMerge= */ false);
-        Tab newTab = mock(Tab.class);
-        when(newTab.getId()).thenReturn(101);
-        when(mNormalTabCreator.createNewTab(any(), anyInt(), any(), anyInt())).thenReturn(newTab);
-        when(mNormalTabModel.indexOf(newTab)).thenReturn(0);
+        when(mNewTab.getId()).thenReturn(101);
+        when(mNormalTabCreator.createNewTab(any(), anyInt(), any(), anyInt())).thenReturn(mNewTab);
+        when(mNormalTabModel.indexOf(mNewTab)).thenReturn(0);
         when(mBackgroundTabPool.getAllPlaceholderTabIds()).thenReturn(Set.of(101));
 
         mPersistentStore =
@@ -1526,10 +1525,9 @@ public class TabPersistentStoreUnitTest {
         TabRestoreDetails details =
                 new TabRestoreDetails(
                         101, 0, TriState.FALSE, "https://google.com/", /* fromMerge= */ false);
-        Tab newTab = mock(Tab.class);
-        when(newTab.getId()).thenReturn(101);
-        when(mNormalTabCreator.createNewTab(any(), anyInt(), any(), anyInt())).thenReturn(newTab);
-        when(mNormalTabModel.indexOf(newTab)).thenReturn(0);
+        when(mNewTab.getId()).thenReturn(101);
+        when(mNormalTabCreator.createNewTab(any(), anyInt(), any(), anyInt())).thenReturn(mNewTab);
+        when(mNormalTabModel.indexOf(mNewTab)).thenReturn(0);
 
         mPersistentStore =
                 new TabPersistentStoreImpl(
@@ -1559,12 +1557,11 @@ public class TabPersistentStoreUnitTest {
         TabRestoreDetails details =
                 new TabRestoreDetails(
                         101, 0, TriState.TRUE, "https://google.com/", /* fromMerge= */ false);
-        Tab tab = mock(Tab.class);
-        when(tab.getId()).thenReturn(101);
+        when(mTab1.getId()).thenReturn(101);
         TabState tabState = new TabState();
         tabState.isIncognito = true;
-        when(mIncognitoTabCreator.createFrozenTab(eq(tabState), eq(101), eq(0))).thenReturn(tab);
-        when(mIncognitoTabModel.indexOf(tab)).thenReturn(0);
+        when(mIncognitoTabCreator.createFrozenTab(eq(tabState), eq(101), eq(0))).thenReturn(mTab1);
+        when(mIncognitoTabModel.indexOf(mTab1)).thenReturn(0);
 
         mPersistentStore =
                 new TabPersistentStoreImpl(
@@ -1597,12 +1594,11 @@ public class TabPersistentStoreUnitTest {
                 new TabRestoreDetails(
                         101, 0, TriState.FALSE, "https://google.com/", /* fromMerge= */ false);
         TabState tabState = new TabState();
-        Tab fallbackTab = mock(Tab.class);
-        when(fallbackTab.getId()).thenReturn(101);
-        when(fallbackTab.getUrl()).thenReturn(new GURL("https://google.com/"));
+        when(mFallbackTab.getId()).thenReturn(101);
+        when(mFallbackTab.getUrl()).thenReturn(new GURL("https://google.com/"));
         when(mNormalTabCreator.createFrozenTab(eq(tabState), eq(101), eq(0)))
-                .thenReturn(fallbackTab);
-        when(mNormalTabModel.indexOf(fallbackTab)).thenReturn(0);
+                .thenReturn(mFallbackTab);
+        when(mNormalTabModel.indexOf(mFallbackTab)).thenReturn(0);
 
         mPersistentStore =
                 new TabPersistentStoreImpl(
@@ -1659,13 +1655,11 @@ public class TabPersistentStoreUnitTest {
         mPersistentStore.addTabToRestoreForTesting(details1);
         mPersistentStore.addTabToRestoreForTesting(details2);
 
-        Tab tab1 = mock(Tab.class);
-        when(tab1.getId()).thenReturn(1);
-        Tab tab2 = mock(Tab.class);
-        when(tab2.getId()).thenReturn(2);
+        when(mTab1.getId()).thenReturn(1);
+        when(mTab2.getId()).thenReturn(2);
         when(mNormalTabCreator.createNewTab(
                         any(), eq(TabLaunchType.FROM_RESTORE), isNull(), anyInt()))
-                .thenReturn(tab1, tab2);
+                .thenReturn(mTab1, mTab2);
         when(mNormalTabModel.indexOf(any())).thenReturn(0);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mNormalTabModel);
 
@@ -1728,12 +1722,10 @@ public class TabPersistentStoreUnitTest {
         BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
         when(mBackgroundTabPool.claimTabIdsWithoutPlaceholders()).thenReturn(Set.of(201));
         when(mBackgroundTabPool.getLiveTab(201)).thenReturn(null);
-        BackgroundPoolTab remainingTab = mock(BackgroundPoolTab.class);
-        Tab restoredTab = mock(Tab.class);
-        when(restoredTab.getId()).thenReturn(201);
-        when(mBackgroundTabPool.loadTabByOriginalId(201)).thenReturn(remainingTab);
+        when(mRestoredTab.getId()).thenReturn(201);
+        when(mBackgroundTabPool.loadTabByOriginalId(201)).thenReturn(mBackgroundPoolTab);
         when(mNormalTabModel.getCount()).thenReturn(2);
-        when(remainingTab.attachTab(eq(mNormalTabModel), eq(2))).thenReturn(restoredTab);
+        when(mBackgroundPoolTab.attachTab(eq(mNormalTabModel), eq(2))).thenReturn(mRestoredTab);
 
         mPersistentStore =
                 new TabPersistentStoreImpl(
@@ -1752,7 +1744,7 @@ public class TabPersistentStoreUnitTest {
 
         verify(mBackgroundTabPool).claimTabIdsWithoutPlaceholders();
         verify(mBackgroundTabPool).loadTabByOriginalId(201);
-        verify(remainingTab).attachTab(eq(mNormalTabModel), eq(2));
+        verify(mBackgroundPoolTab).attachTab(eq(mNormalTabModel), eq(2));
         verify(mBackgroundTabPool).cleanupPostRestore();
     }
 
@@ -1765,19 +1757,15 @@ public class TabPersistentStoreUnitTest {
         when(mBackgroundTabPool.getLiveTab(201)).thenReturn(null);
 
         // Placeholder tab for 101
-        BackgroundPoolTab placeholderTab101 = mock(BackgroundPoolTab.class);
-        Tab restoredTab101 = mock(Tab.class);
-        when(restoredTab101.getId()).thenReturn(101);
-        when(mBackgroundTabPool.loadTabByPlaceholderId(101)).thenReturn(placeholderTab101);
-        when(placeholderTab101.attachTab(eq(mNormalTabModel), eq(0))).thenReturn(restoredTab101);
+        when(mRestoredTab101.getId()).thenReturn(101);
+        when(mBackgroundTabPool.loadTabByPlaceholderId(101)).thenReturn(mPlaceholderTab101);
+        when(mPlaceholderTab101.attachTab(eq(mNormalTabModel), eq(0))).thenReturn(mRestoredTab101);
 
         // Remaining tab for 201
-        BackgroundPoolTab remainingTab201 = mock(BackgroundPoolTab.class);
-        Tab restoredTab201 = mock(Tab.class);
-        when(restoredTab201.getId()).thenReturn(201);
-        when(mBackgroundTabPool.loadTabByOriginalId(201)).thenReturn(remainingTab201);
+        when(mRestoredTab201.getId()).thenReturn(201);
+        when(mBackgroundTabPool.loadTabByOriginalId(201)).thenReturn(mRemainingTab201);
         when(mNormalTabModel.getCount()).thenReturn(1).thenReturn(2);
-        when(remainingTab201.attachTab(eq(mNormalTabModel), eq(1))).thenReturn(restoredTab201);
+        when(mRemainingTab201.attachTab(eq(mNormalTabModel), eq(1))).thenReturn(mRestoredTab201);
 
         mPersistentStore =
                 new TabPersistentStoreImpl(
@@ -1801,12 +1789,12 @@ public class TabPersistentStoreUnitTest {
 
         verify(mBackgroundTabPool).getAllPlaceholderTabIds();
         verify(mBackgroundTabPool).loadTabByPlaceholderId(101);
-        verify(placeholderTab101).attachTab(eq(mNormalTabModel), eq(0));
+        verify(mPlaceholderTab101).attachTab(eq(mNormalTabModel), eq(0));
 
         // Remaining tab 201 claimed and restored at end of restore
         verify(mBackgroundTabPool).claimTabIdsWithoutPlaceholders();
         verify(mBackgroundTabPool).loadTabByOriginalId(201);
-        verify(remainingTab201).attachTab(eq(mNormalTabModel), eq(1));
+        verify(mRemainingTab201).attachTab(eq(mNormalTabModel), eq(1));
 
         // Calling restoreTab with 201 should be ignored because it is in mSeenTabIds
         TabRestoreDetails details201 =

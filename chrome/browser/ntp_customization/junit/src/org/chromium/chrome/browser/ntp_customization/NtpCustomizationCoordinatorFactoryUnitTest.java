@@ -8,7 +8,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -53,6 +52,7 @@ public class NtpCustomizationCoordinatorFactoryUnitTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private ModuleRegistry mModuleRegistry;
     @Mock private SnackbarManager mSnackbarManager;
+    @Mock private NtpCustomizationCoordinator mNtpCustomizationCoordinator;
 
     private Context mContext;
     private NtpCustomizationCoordinatorFactory mFactory;
@@ -115,8 +115,7 @@ public class NtpCustomizationCoordinatorFactoryUnitTest {
 
     @Test
     public void testCreate_withExistingCoordinator_dismissesOldAndCreatesNew() {
-        NtpCustomizationCoordinator coordinator = mock(NtpCustomizationCoordinator.class);
-        mFactory.setCoordinatorForTesting(coordinator);
+        mFactory.setCoordinatorForTesting(mNtpCustomizationCoordinator);
         mFactory.create(
                 mContext,
                 mMockBottomSheetController,
@@ -126,10 +125,10 @@ public class NtpCustomizationCoordinatorFactoryUnitTest {
                 mModuleRegistry,
                 mSnackbarManager);
 
-        verify(coordinator).dismissBottomSheet();
+        verify(mNtpCustomizationCoordinator).dismissBottomSheet();
         assertNotSame(
                 "A new coordinator instance should have been created",
-                coordinator,
+                mNtpCustomizationCoordinator,
                 mFactory.getCoordinatorForTesting());
     }
 

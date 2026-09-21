@@ -9,7 +9,6 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -43,6 +42,9 @@ public class HomeModulesRecyclerViewUnitTest {
 
     @Mock private View mView;
     @Mock private View mView1;
+    @Mock private View mFocused;
+    @Mock private View mNextFocus;
+    @Mock private View mModuleView;
 
     private Activity mActivity;
     private HomeModulesRecyclerView mRecyclerView;
@@ -143,25 +145,21 @@ public class HomeModulesRecyclerViewUnitTest {
         mRecyclerView.initialize(/* isTablet= */ false, startMarginPx, itemPerScreen);
         mRecyclerViewSpy = spy(mRecyclerView);
 
-        View focused = mock(View.class);
-        View nextFocus = mock(View.class);
-        View moduleView = mock(View.class);
-
         // Mock findContainingItemView to return currentItemView.
-        doReturn(moduleView).when(mRecyclerViewSpy).findContainingItemView(focused);
+        doReturn(mModuleView).when(mRecyclerViewSpy).findContainingItemView(mFocused);
 
         // Verify FOCUS_FORWARD exhausts the current card and triggers the escape sequence.
-        View result = mRecyclerViewSpy.focusSearch(focused, View.FOCUS_FORWARD);
-        assertEquals(focused, result);
+        View result = mRecyclerViewSpy.focusSearch(mFocused, View.FOCUS_FORWARD);
+        assertEquals(mFocused, result);
 
         // Verify descendant focusability was temporarily blocked during the escape.
         verify(mRecyclerViewSpy).setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
 
         // Verify unrestricted directions (e.g. FOCUS_RIGHT) fall back to the default
         // implementation.
-        doReturn(nextFocus).when(mRecyclerViewSpy).focusSearch(focused, View.FOCUS_RIGHT);
-        result = mRecyclerViewSpy.focusSearch(focused, View.FOCUS_RIGHT);
-        assertEquals(nextFocus, result);
+        doReturn(mNextFocus).when(mRecyclerViewSpy).focusSearch(mFocused, View.FOCUS_RIGHT);
+        result = mRecyclerViewSpy.focusSearch(mFocused, View.FOCUS_RIGHT);
+        assertEquals(mNextFocus, result);
     }
 
     @Test

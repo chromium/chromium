@@ -95,6 +95,8 @@ public class TabGroupsPaneUnitTest {
     @Mock TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJniMock;
     @Mock EdgeToEdgeController mEdgeToEdgeController;
     @Mock Tab mTab;
+    @Mock private EdgeToEdgeController mController2;
+    @Mock private View mView;
 
     private final OneshotSupplierImpl<ProfileProvider> mProfileSupplier =
             new OneshotSupplierImpl<>();
@@ -199,9 +201,8 @@ public class TabGroupsPaneUnitTest {
         mEdgeToEdgeSupplier.set(mEdgeToEdgeController);
         verify(mEdgeToEdgeController).registerAdjuster(notNull());
 
-        EdgeToEdgeController controller2 = mock(EdgeToEdgeController.class);
-        mEdgeToEdgeSupplier.set(controller2);
-        verify(controller2).registerAdjuster(notNull());
+        mEdgeToEdgeSupplier.set(mController2);
+        verify(mController2).registerAdjuster(notNull());
         verify(mEdgeToEdgeController).unregisterAdjuster(notNull());
     }
 
@@ -223,8 +224,7 @@ public class TabGroupsPaneUnitTest {
         assertNotNull(actionButtonData);
 
         assertTrue(actionButtonData.canPress());
-        View mockView = mock(View.class);
-        actionButtonData.onPress(mockView);
+        actionButtonData.onPress(mView);
 
         verify(mTabCreator).createNewTab(any(), anyInt(), any());
         verify(mTabModel).createSingleTabGroup(mTab);

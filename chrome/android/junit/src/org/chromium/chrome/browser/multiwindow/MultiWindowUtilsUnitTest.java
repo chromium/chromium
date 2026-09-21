@@ -39,6 +39,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -97,14 +98,6 @@ import java.util.Set;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = 31)
 public class MultiWindowUtilsUnitTest {
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Rule
-    public OverrideContextWrapperTestRule mOverrideContextWrapperTestRule =
-            new OverrideContextWrapperTestRule();
-
-    @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
-
     private static final int INSTANCE_ID_0 = 0;
     private static final int INSTANCE_ID_1 = 1;
     private static final int INSTANCE_ID_2 = 2;
@@ -118,7 +111,14 @@ public class MultiWindowUtilsUnitTest {
     private static final GURL TEST_GURL = new GURL("https://youtube.com/");
 
     private MultiWindowUtils mUtils;
-    private boolean mIsInMultiDisplayMode;
+
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Rule
+    public OverrideContextWrapperTestRule mOverrideContextWrapperTestRule =
+            new OverrideContextWrapperTestRule();
+
+    @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
     @Mock TabModelSelector mTabModelSelector;
     @Mock TabModel mNormalTabModel;
@@ -130,7 +130,12 @@ public class MultiWindowUtilsUnitTest {
     @Mock Tab mTab2;
     @Mock Tab mTab3;
     @Mock TabWindowManager mTabWindowManager;
+    @Mock private ChromeTabbedActivity mChromeTabbedActivity;
+    @Mock private MessageDispatcher mMessageDispatcher;
+    @Mock private Activity mActivity;
+    @Captor private ArgumentCaptor<PropertyModel> mMessageCaptor;
 
+    private boolean mIsInMultiDisplayMode;
     private SettableMonotonicObservableSupplier<TabModel> mTabModelSupplier;
 
     @Before
@@ -607,33 +612,30 @@ public class MultiWindowUtilsUnitTest {
     @Test
     public void testIsLinkNavigationToOtherWindowSupported_preApi31_invalidParams() {
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(false);
-        ChromeTabbedActivity tabbedActivity = mock(ChromeTabbedActivity.class);
 
         // No support when not in multi-window or multi-display mode.
-        when(tabbedActivity.isInMultiWindowMode()).thenReturn(false);
+        when(mChromeTabbedActivity.isInMultiWindowMode()).thenReturn(false);
         mIsInMultiDisplayMode = false;
-        assertFalse(mUtils.isLinkNavigationToOtherWindowSupported(tabbedActivity));
+        assertFalse(mUtils.isLinkNavigationToOtherWindowSupported(mChromeTabbedActivity));
 
         // No support when other window activity is null.
-        when(tabbedActivity.isInMultiWindowMode()).thenReturn(true);
-        assertFalse(mUtils.isLinkNavigationToOtherWindowSupported(mock(Activity.class)));
+        when(mChromeTabbedActivity.isInMultiWindowMode()).thenReturn(true);
+        assertFalse(mUtils.isLinkNavigationToOtherWindowSupported(mActivity));
     }
 
     @Test
     public void testIsLinkNavigationToOtherWindowSupported_preApi31_inMultiWindowMode() {
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(false);
-        ChromeTabbedActivity tabbedActivity = mock(ChromeTabbedActivity.class);
-        when(tabbedActivity.isInMultiWindowMode()).thenReturn(true);
-        assertTrue(mUtils.isLinkNavigationToOtherWindowSupported(tabbedActivity));
+        when(mChromeTabbedActivity.isInMultiWindowMode()).thenReturn(true);
+        assertTrue(mUtils.isLinkNavigationToOtherWindowSupported(mChromeTabbedActivity));
     }
 
     @Test
     public void testIsLinkNavigationToOtherWindowSupported_preApi31_inMultiDisplayMode() {
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(false);
-        ChromeTabbedActivity tabbedActivity = mock(ChromeTabbedActivity.class);
-        when(tabbedActivity.isInMultiWindowMode()).thenReturn(false);
+        when(mChromeTabbedActivity.isInMultiWindowMode()).thenReturn(false);
         mIsInMultiDisplayMode = true;
-        assertTrue(mUtils.isLinkNavigationToOtherWindowSupported(tabbedActivity));
+        assertTrue(mUtils.isLinkNavigationToOtherWindowSupported(mChromeTabbedActivity));
     }
 
     @Test
@@ -783,33 +785,30 @@ public class MultiWindowUtilsUnitTest {
     @Config(sdk = BaseRobolectricTestRunner.MIN_SDK)
     public void
             testIsMoveOtherWindowSupported_InstanceSwitcherDisabledAndInMultiWindowMode_ReturnsTrue() {
-        ChromeTabbedActivity tabbedActivity = mock(ChromeTabbedActivity.class);
         when(mTabModelSelector.getTotalTabCount()).thenReturn(2);
-        when(tabbedActivity.isInMultiWindowMode()).thenReturn(true);
+        when(mChromeTabbedActivity.isInMultiWindowMode()).thenReturn(true);
         assertTrue(
                 "Should return true on Android Q with multiple tabs.",
-                mUtils.isMoveToOtherWindowSupported(tabbedActivity, mTabModelSelector));
+                mUtils.isMoveToOtherWindowSupported(mChromeTabbedActivity, mTabModelSelector));
     }
 
     @Test
     public void testIsMoveOtherWindowSupported_HasOneTabWithHomePageDisabled_ReturnsTrue() {
-        ChromeTabbedActivity tabbedActivity = mock(ChromeTabbedActivity.class);
         when(mHomepageManager.isHomepageEnabled()).thenReturn(false);
         when(mTabModelSelector.getTotalTabCount()).thenReturn(1);
-        when(tabbedActivity.isInMultiWindowMode()).thenReturn(true);
+        when(mChromeTabbedActivity.isInMultiWindowMode()).thenReturn(true);
         assertTrue(
                 "Should return true when called for last tab with homepage disabled.",
-                mUtils.isMoveToOtherWindowSupported(tabbedActivity, mTabModelSelector));
+                mUtils.isMoveToOtherWindowSupported(mChromeTabbedActivity, mTabModelSelector));
     }
 
     @Test
     public void testIsMoveOtherWindowSupported_HasOneTabWithHomePageEnabledAsNtp_ReturnsTrue() {
-        ChromeTabbedActivity tabbedActivity = mock(ChromeTabbedActivity.class);
         when(mTabModelSelector.getTotalTabCount()).thenReturn(1);
-        when(tabbedActivity.isInMultiWindowMode()).thenReturn(true);
+        when(mChromeTabbedActivity.isInMultiWindowMode()).thenReturn(true);
         assertTrue(
                 "Should return true when called for last tab with homepage enabled as NTP.",
-                mUtils.isMoveToOtherWindowSupported(tabbedActivity, mTabModelSelector));
+                mUtils.isMoveToOtherWindowSupported(mChromeTabbedActivity, mTabModelSelector));
     }
 
     @Test
@@ -936,9 +935,9 @@ public class MultiWindowUtilsUnitTest {
     public void launchIntentInMaybeClosedWindow_NewWindow() {
         MultiWindowTestUtils.enableMultiInstance();
         Intent intent = new Intent();
-        ChromeTabbedActivity activity = mock(ChromeTabbedActivity.class);
-        MultiWindowUtils.launchIntentInMaybeClosedWindow(activity, intent, INSTANCE_ID_0);
-        verify(activity).startActivity(intent, null);
+        MultiWindowUtils.launchIntentInMaybeClosedWindow(
+                mChromeTabbedActivity, intent, INSTANCE_ID_0);
+        verify(mChromeTabbedActivity).startActivity(intent, null);
         assertEquals(
                 INSTANCE_ID_0,
                 intent.getIntExtra(IntentHandler.EXTRA_WINDOW_ID, INVALID_WINDOW_ID));
@@ -952,8 +951,8 @@ public class MultiWindowUtilsUnitTest {
                         addActivity(/* windowId= */ INSTANCE_ID_0, /* tabbedActivity= */ true);
 
         Intent intent = new Intent();
-        ChromeTabbedActivity activity2 = mock(ChromeTabbedActivity.class);
-        MultiWindowUtils.launchIntentInMaybeClosedWindow(activity2, intent, INSTANCE_ID_0);
+        MultiWindowUtils.launchIntentInMaybeClosedWindow(
+                mChromeTabbedActivity, intent, INSTANCE_ID_0);
         verify(activity1).onNewIntent(intent);
     }
 
@@ -1344,7 +1343,7 @@ public class MultiWindowUtilsUnitTest {
 
         // Total instances is maxInstances + 1. Active instances is maxInstances - 1. Returns
         // INVALID_WINDOW_ID to allow for new window creation.
-        int instanceId = MultiWindowUtils.getInstanceIdForLinkIntent(mock(Activity.class));
+        int instanceId = MultiWindowUtils.getInstanceIdForLinkIntent(mActivity);
         assertEquals(
                 "Should return INVALID_WINDOW_ID to allow for new window creation.",
                 TabWindowManager.INVALID_WINDOW_ID,
@@ -1513,7 +1512,6 @@ public class MultiWindowUtilsUnitTest {
     @Test
     public void testInstanceCreationLimitMessage() {
         MultiWindowUtils.setMaxInstancesForTesting(3);
-        MessageDispatcher messageDispatcher = mock(MessageDispatcher.class);
         Context context = ApplicationProvider.getApplicationContext();
         CallbackHelper primaryActionCallbackHelper = new CallbackHelper();
         int primaryActionClickCount = primaryActionCallbackHelper.getCallCount();
@@ -1521,45 +1519,45 @@ public class MultiWindowUtilsUnitTest {
         int dismissClickCount = dismissCallbackHelper.getCallCount();
 
         MultiWindowUtils.showInstanceCreationLimitMessage(
-                messageDispatcher,
+                mMessageDispatcher,
                 context,
                 primaryActionCallbackHelper::notifyCalled,
                 dismissCallbackHelper::notifyCalled);
 
-        ArgumentCaptor<PropertyModel> message = ArgumentCaptor.forClass(PropertyModel.class);
-        verify(messageDispatcher).enqueueWindowScopedMessage(message.capture(), eq(false));
+        verify(mMessageDispatcher).enqueueWindowScopedMessage(mMessageCaptor.capture(), eq(false));
 
         Resources resources = context.getResources();
         Assert.assertEquals(
                 "Message identifier should match.",
                 MessageIdentifier.MULTI_INSTANCE_CREATION_LIMIT,
-                message.getValue().get(MessageBannerProperties.MESSAGE_IDENTIFIER));
+                mMessageCaptor.getValue().get(MessageBannerProperties.MESSAGE_IDENTIFIER));
         Assert.assertEquals(
                 "Message title should match.",
                 resources.getString(R.string.multi_instance_creation_limit_message_title, 3),
-                message.getValue().get(MessageBannerProperties.TITLE));
+                mMessageCaptor.getValue().get(MessageBannerProperties.TITLE));
         Assert.assertEquals(
                 "Message description should match.",
                 resources.getString(R.string.multi_instance_creation_limit_message_description),
-                message.getValue().get(MessageBannerProperties.DESCRIPTION));
+                mMessageCaptor.getValue().get(MessageBannerProperties.DESCRIPTION));
         Assert.assertEquals(
                 "Message primary button text should match.",
                 resources.getString(R.string.multi_instance_message_button),
-                message.getValue().get(MessageBannerProperties.PRIMARY_BUTTON_TEXT));
+                mMessageCaptor.getValue().get(MessageBannerProperties.PRIMARY_BUTTON_TEXT));
         Assert.assertEquals(
                 "Message icon resource ID should match.",
                 R.drawable.ic_chrome,
-                message.getValue().get(MessageBannerProperties.ICON_RESOURCE_ID));
+                mMessageCaptor.getValue().get(MessageBannerProperties.ICON_RESOURCE_ID));
 
         // Simulate and verify primary button click.
-        var _ = message.getValue().get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
+        int unused = mMessageCaptor.getValue().get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
         assertEquals(
                 "Primary action callback was not called.",
                 primaryActionClickCount + 1,
                 primaryActionCallbackHelper.getCallCount());
 
         // Simulate and verify dismiss.
-        message.getValue()
+        mMessageCaptor
+                .getValue()
                 .get(MessageBannerProperties.ON_DISMISSED)
                 .onResult(DismissReason.GESTURE);
         assertEquals(

@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.price_tracking;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -25,7 +24,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
@@ -46,7 +44,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
-import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataProvider.ButtonDataObserver;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -63,13 +60,8 @@ import java.util.function.Supplier;
 /** Unit test for {@link PriceTrackingButtonController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class PriceTrackingButtonControllerUnitTest {
-
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    private Activity mActivity;
-    private NonNullObservableSupplier<Profile> mProfileSupplier;
-    private NonNullObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
-    private SettableNullableObservableSupplier<Tab> mTabSupplier;
-    private SettableNonNullObservableSupplier<Boolean> mPriceTrackingStateSupplier;
+
     @Mock private Tab mMockTab;
     @Mock private Supplier<TabBookmarker> mMockTabBookmarkerSupplier;
     @Mock private TabBookmarker mMockTabBookmarker;
@@ -79,7 +71,16 @@ public class PriceTrackingButtonControllerUnitTest {
     @Mock private Profile mMockProfile;
     @Mock private BookmarkModel mMockBookmarkModel;
     @Mock PriceTrackingUtils.Natives mMockPriceTrackingUtilsJni;
+    @Mock private ButtonDataObserver mButtonDataObserver;
+    @Mock private View mView;
+    @Mock private Resources mResources;
     @Captor private ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
+
+    private Activity mActivity;
+    private NonNullObservableSupplier<Profile> mProfileSupplier;
+    private NonNullObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
+    private SettableNullableObservableSupplier<Tab> mTabSupplier;
+    private SettableNonNullObservableSupplier<Boolean> mPriceTrackingStateSupplier;
 
     @Before
     public void setUp() {
@@ -110,14 +111,13 @@ public class PriceTrackingButtonControllerUnitTest {
 
     @Test
     public void testButtonShouldUpdateOnPriceTrackingChange() {
-        ButtonDataObserver mockButtonObserver = mock(ButtonDataObserver.class);
         PriceTrackingButtonController priceTrackingButtonController = createButtonController();
-        priceTrackingButtonController.addObserver(mockButtonObserver);
+        priceTrackingButtonController.addObserver(mButtonDataObserver);
 
         ButtonSpec originalButtonSpec = priceTrackingButtonController.get(mMockTab).getButtonSpec();
 
         mPriceTrackingStateSupplier.set(true);
-        verify(mockButtonObserver).buttonDataChanged(true);
+        verify(mButtonDataObserver).buttonDataChanged(true);
         Shadows.shadowOf(Looper.getMainLooper()).idle();
 
         ButtonSpec updatedButtonSpec = priceTrackingButtonController.get(mMockTab).getButtonSpec();
@@ -140,9 +140,7 @@ public class PriceTrackingButtonControllerUnitTest {
 
     @Test
     public void testPriceTrackingButtonClick_shouldRemoveTrackingWhenAlreadyTracking() {
-        View mockView = Mockito.mock(View.class);
-        Resources mockResources = Mockito.mock(Resources.class);
-        when(mockView.getResources()).thenReturn(mockResources);
+        when(mView.getResources()).thenReturn(mResources);
 
         BookmarkId bookmarkId = new BookmarkId(1234, BookmarkType.NORMAL);
         when(mMockBookmarkModel.getUserBookmarkIdForTab(mMockTab)).thenReturn(bookmarkId);
@@ -154,7 +152,7 @@ public class PriceTrackingButtonControllerUnitTest {
 
         ButtonData buttonData = priceTrackingButtonController.get(mMockTab);
 
-        buttonData.getButtonSpec().getOnClickListener().onClick(mockView);
+        buttonData.getButtonSpec().getOnClickListener().onClick(mView);
 
         verify(mMockTabBookmarker, never()).startOrModifyPriceTracking(mMockTab);
         verify(mMockPriceTrackingUtilsJni)
@@ -173,9 +171,7 @@ public class PriceTrackingButtonControllerUnitTest {
     @Test
     public void testPriceTrackingButton_IsDisabledWhenBottomSheetAppears() {
         PriceTrackingButtonController priceTrackingButtonController = createButtonController();
-        ButtonDataProvider.ButtonDataObserver buttonDataObserver =
-                Mockito.mock(ButtonDataProvider.ButtonDataObserver.class);
-        priceTrackingButtonController.addObserver(buttonDataObserver);
+        priceTrackingButtonController.addObserver(mButtonDataObserver);
         ButtonData buttonData = priceTrackingButtonController.get(mMockTab);
 
         // The controller should have registered an observer to listen to bottom sheet events.
@@ -186,16 +182,14 @@ public class PriceTrackingButtonControllerUnitTest {
                 .onSheetStateChanged(SheetState.FULL, StateChangeReason.NONE);
 
         Assert.assertFalse(buttonData.isEnabled());
-        verify(buttonDataObserver).buttonDataChanged(true);
+        verify(mButtonDataObserver).buttonDataChanged(true);
     }
 
     @Test
     public void testPriceTrackingButton_IsReenabledWhenBottomSheetDismissed() {
         PriceTrackingButtonController priceTrackingButtonController = createButtonController();
 
-        ButtonDataProvider.ButtonDataObserver buttonDataObserver =
-                Mockito.mock(ButtonDataProvider.ButtonDataObserver.class);
-        priceTrackingButtonController.addObserver(buttonDataObserver);
+        priceTrackingButtonController.addObserver(mButtonDataObserver);
         ButtonData buttonData = priceTrackingButtonController.get(mMockTab);
 
         // The controller should have registered an observer to listen to bottom sheet events.
@@ -214,7 +208,7 @@ public class PriceTrackingButtonControllerUnitTest {
         // After the bottom sheet is closed the button should be enabled.
         Assert.assertTrue(buttonData.isEnabled());
         // We should have notified of changes twice (when disabled and when enabled again).
-        verify(buttonDataObserver, times(2)).buttonDataChanged(true);
+        verify(mButtonDataObserver, times(2)).buttonDataChanged(true);
     }
 
     @Test

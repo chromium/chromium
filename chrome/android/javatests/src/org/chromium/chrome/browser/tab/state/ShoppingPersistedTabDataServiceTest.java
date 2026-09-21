@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tab.state;
 
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.PRICE_TRACKING_IDS_FOR_TABS_WITH_PRICE_DROP;
 import static org.chromium.chrome.browser.tab.state.ShoppingPersistedTabDataService.isDataEligibleForPriceDrop;
@@ -51,14 +50,15 @@ import java.util.concurrent.TimeoutException;
 @RunWith(BaseJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 public class ShoppingPersistedTabDataServiceTest {
+    static final long ONE_SECOND = 1000;
+    static final long HALF_SECOND = 500;
+
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock ShoppingService mShoppingService;
-
     @Mock protected Profile mProfileMock;
-
-    static final long ONE_SECOND = 1000;
-    static final long HALF_SECOND = 500;
+    @Mock private Profile mProfile;
+    @Mock private Tab mTab;
 
     private ShoppingPersistedTabDataService mService;
     private SharedPreferencesManager mSharedPrefsManager;
@@ -87,11 +87,10 @@ public class ShoppingPersistedTabDataServiceTest {
     @UiThreadTest
     @SmallTest
     public void testGetService() {
-        Profile anotherProfile = mock(Profile.class);
         ShoppingPersistedTabDataService serviceOne =
                 ShoppingPersistedTabDataService.getForProfile(mProfileMock);
         ShoppingPersistedTabDataService serviceTwo =
-                ShoppingPersistedTabDataService.getForProfile(anotherProfile);
+                ShoppingPersistedTabDataService.getForProfile(mProfile);
         Assert.assertNotEquals(serviceOne, serviceTwo);
     }
 
@@ -131,9 +130,8 @@ public class ShoppingPersistedTabDataServiceTest {
     public void testNotifyPriceDropStatus() {
         Tab tab1 = new MockTab(123, mProfileMock);
         Tab tab2 = new MockTab(456, mProfileMock);
-        Tab tab3 = mock(Tab.class);
-        doReturn(true).when(tab3).isDestroyed();
-        doReturn(789).when(tab3).getId();
+        doReturn(true).when(mTab).isDestroyed();
+        doReturn(789).when(mTab).getId();
 
         Assert.assertFalse(mService.isInitialized());
         Assert.assertEquals(new HashSet<>(), mService.getTabsWithPriceDropForTesting());
@@ -143,7 +141,7 @@ public class ShoppingPersistedTabDataServiceTest {
 
         mService.notifyPriceDropStatus(tab1, true);
         mService.notifyPriceDropStatus(tab2, true);
-        mService.notifyPriceDropStatus(tab3, true);
+        mService.notifyPriceDropStatus(mTab, true);
         Assert.assertEquals(
                 new HashSet<>(Arrays.asList(tab1, tab2)),
                 mService.getTabsWithPriceDropForTesting());
