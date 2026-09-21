@@ -1110,4 +1110,17 @@ suite('Extensions', function() {
     assertEquals('action-1', moveCalls[0]!.extensionId);
     assertEquals(1, moveCalls[0]!.index);
   });
+
+  test('Extensions menu button has an empty data-key', () => {
+    const actionElements =
+        container.shadowRoot.querySelectorAll('webui-toolbar-extension');
+    assertEquals(3, actionElements.length);
+
+    // The container outline CSS distinguishes the extensions menu button (the
+    // puzzle icon) from the pinned actions via `:not([data-key=''])`, which
+    // relies on the menu button being the action with an empty id.
+    assertEquals('action-1', actionElements[0]!.getAttribute('data-key'));
+    assertEquals('action-2', actionElements[1]!.getAttribute('data-key'));
+    assertEquals('', actionElements[2]!.getAttribute('data-key'));
+  });
 });

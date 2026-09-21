@@ -18,6 +18,69 @@
   --fast-out-slow-in-3-cubic-bezier: cubic-bezier(0.2, 0, 0, 1);
 }
 
+:host(webui-toolbar-extensions) {
+  align-self: center;
+  height: var(--toolbar-button-height);
+  position: relative;
+
+  /* Right-edge inset offset for the container outline box (::after).
+   * Derivation:
+   * 1. --toolbar-divider-width: Width of the vertical toolbar divider line.
+   * 2. 2 * (--toolbar-divider-spacing - --toolbar-icon-default-margin): Total
+   *    spacing surrounding the divider on both left and right sides.
+   * 3. + 1px: Inward shift to align the outline arc apex with the extensions menu
+   *    button's hover circle. */
+  --extensions-container-divider-offset: calc(
+      var(--toolbar-divider-width) +
+      2 * (var(--toolbar-divider-spacing) - var(--toolbar-icon-default-margin)) +
+      1px);
+}
+
+:host(webui-toolbar-extensions)::after {
+  border: 1px solid transparent;
+  border-radius: 9999px;
+  box-sizing: border-box;
+  content: '';
+  inset-block: 0;
+  inset-inline-end: var(--extensions-container-divider-offset);
+  inset-inline-start: 0;
+  pointer-events: none;
+  position: absolute;
+  transition: border-color 150ms ease-in-out;
+}
+
+/* Mirrors views::ToolbarIconContainerView::GetHighlighted(), which highlights
+ * the container while it is hovered *except* over the main item (the extensions
+ * menu button), so that only the menu button's own hover circle is shown there.
+ * Matching on the pinned actions themselves - rather than on the host with
+ * exceptions carved out - keeps the menu button, the divider, and all of the
+ * spacing around them outside the hover region by construction. The extensions
+ * menu button is the action with an empty id, so :not([data-key='']) selects
+ * exactly the pinned actions. */
+:host(webui-toolbar-extensions):has(
+                webui-toolbar-extension:not([data-key='']):hover)::after {
+  border-color: var(--color-toolbar-icon-container-border,
+                    var(--color-toolbar-button-border));
+}
+
+/* A pinned action's margin is not part of its box and so does not respond to
+ * :hover, which would leave the gaps between pinned actions - and the gap
+ * before the menu button - outside the hover region. Extend each pinned
+ * action's hit area across the gap that follows it. The strip starts at the
+ * action's trailing edge so that it never overlays the action itself. */
+:host(webui-toolbar-extensions) webui-toolbar-extension:not([data-key='']) {
+  position: relative;
+}
+
+:host(webui-toolbar-extensions)
+                webui-toolbar-extension:not([data-key=''])::before {
+  content: '';
+  inset-block: 0;
+  inset-inline-start: 100%;
+  position: absolute;
+  width: var(--toolbar-icon-default-margin);
+}
+
 /* Disable transitions during the initial load of the container. This prevents
  * all existing items from animating in when the page is first rendered. */
 :host(.initial-load) pinned-toolbar-action,
