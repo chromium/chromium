@@ -167,6 +167,7 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
 
   GURL _onClickUrl;
   GURL _animatedUrl;
+  GURL _darkAnimatedUrl;
 
   scoped_refptr<network::SharedURLLoaderFactory> _sharedURLLoaderFactory;
   std::unique_ptr<image_fetcher::IOSImageDataFetcherWrapper> _imageFetcher;
@@ -387,7 +388,8 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
 
 // Handler for taps on the doodle. Navigates the to the doodle's URL.
 - (void)handleDoodleTapped {
-  BOOL tapWillAnimate = _animatedUrl.is_valid() && _ctaTapped == NO;
+  BOOL isURLValid = _darkAnimatedUrl.is_valid() || _animatedUrl.is_valid();
+  BOOL tapWillAnimate = isURLValid && _ctaTapped == NO;
   BOOL tapWillNavigate = _onClickUrl.is_valid();
   if (!tapWillAnimate && !tapWillNavigate) {
     return;
@@ -455,6 +457,23 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
       CGColorSpaceCreateDeviceRGB());
   UIImage* doodle = skia::SkBitmapToUIImageWithColorSpace(
       logo->image, 1 /* scale */, color_space.get());
+  if (doodle && !logo->dark_image.empty()) {
+    UIImage* darkDoodle = skia::SkBitmapToUIImageWithColorSpace(
+        logo->dark_image, /* scale= */ 1, color_space.get());
+    if (darkDoodle) {
+      UIImageAsset* imageAsset = [[UIImageAsset alloc] init];
+      [imageAsset registerImage:doodle
+            withTraitCollection:[UITraitCollection
+                                    traitCollectionWithUserInterfaceStyle:
+                                        UIUserInterfaceStyleLight]];
+      [imageAsset registerImage:darkDoodle
+            withTraitCollection:[UITraitCollection
+                                    traitCollectionWithUserInterfaceStyle:
+                                        UIUserInterfaceStyleDark]];
+      doodle = [imageAsset
+          imageWithTraitCollection:self.containerView.traitCollection];
+    }
+  }
 
   self.logoState = SearchEngineLogoState::kNone;
   switch (logo->metadata.type) {
@@ -492,10 +511,8 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
           }];
 
   _onClickUrl = logo->metadata.on_click_url;
-
-  if (!logo->metadata.animated_url.is_empty()) {
-    _animatedUrl = logo->metadata.animated_url;
-  }
+  _animatedUrl = logo->metadata.animated_url;
+  _darkAnimatedUrl = logo->metadata.dark_animated_url;
 
   self.containerView.doodleAltText =
       base::SysUTF8ToNSString(logo->metadata.alt_text);
@@ -590,7 +607,11 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
               ^(NSData* data, const image_fetcher::RequestMetadata&) {
                 [weakSelf onFetchAnimatedDoodleCompleteWithData:data];
               })));
-  _imageFetcher->FetchImageDataWebpDecoded(_animatedUrl, callback);
+  BOOL isDark = self.containerView.traitCollection.userInterfaceStyle ==
+                UIUserInterfaceStyleDark;
+  const GURL& animatedUrl =
+      (isDark && _darkAnimatedUrl.is_valid()) ? _darkAnimatedUrl : _animatedUrl;
+  _imageFetcher->FetchImageDataWebpDecoded(animatedUrl, callback);
 }
 
 // Callback to receive the animated doodle information on the main thread.

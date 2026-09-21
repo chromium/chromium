@@ -49,9 +49,15 @@ void GoogleLogoService::SetCachedLogo(const search_provider_logos::Logo* logo) {
       logo->image.readPixels(cached_image_.info(), cached_image_.getPixels(),
                              cached_image_.rowBytes(), 0, 0);
     }
+    if (cached_dark_image_.tryAllocPixels(logo->dark_image.info())) {
+      logo->dark_image.readPixels(cached_dark_image_.info(),
+                                  cached_dark_image_.getPixels(),
+                                  cached_dark_image_.rowBytes(), 0, 0);
+    }
     cached_metadata_ = logo->metadata;
   } else {
     cached_image_ = SkBitmap();
+    cached_dark_image_ = SkBitmap();
     cached_metadata_ = empty_metadata;
   }
 }
@@ -59,6 +65,7 @@ void GoogleLogoService::SetCachedLogo(const search_provider_logos::Logo* logo) {
 search_provider_logos::Logo GoogleLogoService::GetCachedLogo() {
   search_provider_logos::Logo logo;
   logo.image = cached_image_;
+  logo.dark_image = cached_dark_image_;
   logo.metadata = cached_metadata_;
   return logo;
 }

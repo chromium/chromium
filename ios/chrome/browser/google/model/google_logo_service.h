@@ -42,6 +42,7 @@ class GoogleLogoService : public search_provider_logos::LogoServiceImpl {
 
  private:
   SkBitmap cached_image_;
+  SkBitmap cached_dark_image_;
   search_provider_logos::LogoMetadata cached_metadata_;
   const search_provider_logos::LogoMetadata empty_metadata;
 };
