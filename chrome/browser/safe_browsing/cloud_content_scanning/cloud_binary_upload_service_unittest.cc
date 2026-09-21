@@ -15,6 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
@@ -32,6 +33,7 @@
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/connectors/core/features.h"
+#include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/test/browser_task_environment.h"
@@ -235,10 +237,12 @@ class CloudBinaryUploadServiceTest : public ::testing::Test {
 
   void ReceiveResponseFromUpload(BinaryUploadRequest::Id request_id,
                                  bool success,
-                                 const std::string& response) {
-    service_->OnUploadComplete(request_id, success,
-                               success ? net::HTTP_OK : net::HTTP_BAD_REQUEST,
-                               response);
+                                 const std::string& response,
+                                 int http_status = -1) {
+    if (http_status == -1) {
+      http_status = success ? net::HTTP_OK : net::HTTP_BAD_REQUEST;
+    }
+    service_->OnUploadComplete(request_id, success, http_status, response);
   }
 
   std::unique_ptr<MockRequest> MakeRequest(
@@ -1538,5 +1542,83 @@ TEST_F(CloudBinaryUploadServiceTest, SkipMalwareScanForLargeFiles) {
   EXPECT_EQ(scanning_result,
             enterprise_connectors::ScanRequestUploadResult::kSuccess);
 }
+
+struct LogResponseDebugInfoTestCase {
+  int http_status;
+  std::string response_data;
+  std::string expected_status;
+};
+
+class CloudBinaryUploadServiceDebugInfoTest
+    : public CloudBinaryUploadServiceTest,
+      public testing::WithParamInterface<LogResponseDebugInfoTestCase> {};
+
+// Tests that LogResponseDebugInfo appends the HTTP status code and response
+// body when an upload fails after some HTTP activity, and that it appends
+// nothing when there was no HTTP activity at all.
+TEST_P(CloudBinaryUploadServiceDebugInfoTest,
+       LogResponseDebugInfo_OnUploadFailure) {
+  WebUIContentInfoSingleton::GetInstance()->AddListenerForTesting();
+
+  enterprise_connectors::ScanRequestUploadResult scanning_result;
+  enterprise_connectors::ContentAnalysisResponse scanning_response;
+  std::unique_ptr<MockRequest> request = MakeRequest(
+      &scanning_result, &scanning_response, /*is_advanced_protection=*/false);
+
+  // Do not automatically complete the upload in Start() so we can supply the
+  // raw response string via ReceiveResponseFromUpload.
+  ExpectNetworkResponse(/*should_succeed=*/false, std::nullopt);
+
+  MockRequest* raw_request = request.get();
+  UploadForDeepScanning(std::move(request));
+  BinaryUploadRequest::Id request_id = raw_request->id();
+  std::string token = raw_request->request_token();
+  content::RunAllTasksUntilIdle();
+
+  ReceiveResponseFromUpload(request_id, /*success=*/false,
+                            GetParam().response_data, GetParam().http_status);
+
+  const auto& requests =
+      WebUIContentInfoSingleton::GetInstance()->deep_scan_requests();
+  ASSERT_TRUE(requests.contains(token));
+  EXPECT_EQ(requests.at(token).response_status, GetParam().expected_status);
+
+  WebUIContentInfoSingleton::GetInstance()->ClearDeepScans();
+  WebUIContentInfoSingleton::GetInstance()->ClearListenerForTesting();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    CloudBinaryUploadServiceDebugInfoTest,
+    testing::Values(
+        // The server returned an error status and a text/HTML body.
+        LogResponseDebugInfoTestCase{
+            .http_status = net::HTTP_SERVICE_UNAVAILABLE,
+            .response_data = "Service Unavailable",
+            .expected_status =
+                "UPLOAD_FAILURE (HTTP 503): Service Unavailable"},
+        // The server returned an error status but no body.
+        LogResponseDebugInfoTestCase{
+            .http_status = net::HTTP_SERVICE_UNAVAILABLE,
+            .response_data = "",
+            .expected_status =
+                "UPLOAD_FAILURE (HTTP 503): No response to show"},
+        // Long bodies are truncated to `kMaxResponseDataLength`.
+        LogResponseDebugInfoTestCase{
+            .http_status = net::HTTP_SERVICE_UNAVAILABLE,
+            .response_data = std::string(2000, 'a'),
+            .expected_status = base::StrCat(
+                {"UPLOAD_FAILURE (HTTP 503): ", std::string(1024, 'a')})},
+        // No HTTP status and no body, e.g. a failure with no server response
+        // at all. Nothing meaningful can be appended to the status.
+        LogResponseDebugInfoTestCase{.http_status = 0,
+                                     .response_data = "",
+                                     .expected_status = "UPLOAD_FAILURE"},
+        // A body arrived without a usable HTTP status, so it is still logged.
+        LogResponseDebugInfoTestCase{
+            .http_status = 0,
+            .response_data = "Connection reset",
+            .expected_status =
+                "UPLOAD_FAILURE (HTTP 0): Connection reset"}));
 
 }  // namespace safe_browsing

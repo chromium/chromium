@@ -4,8 +4,12 @@
 
 #include "components/enterprise/connectors/core/cloud_content_scanning/cloud_binary_upload_service_base.h"
 
+#include <string_view>
+
 #include "base/base64.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
@@ -361,17 +365,33 @@ void CloudBinaryUploadServiceBase::LogResponseDebugInfo(
     const std::string& upload_info,
     ScanRequestUploadResult result,
     BinaryUploadRequest* request,
-    const ContentAnalysisResponse& response) {
+    const ContentAnalysisResponse& response,
+    int http_status,
+    const std::string& response_data) {
 #if !BUILDFLAG(IS_IOS)
   safe_browsing::WebUIContentInfoSingleton::GetInstance()
       ->AddToDeepScanRequests(request->per_profile_request(),
                               request->access_token(), upload_info,
                               request->GetUrlWithParams().spec(),
                               request->content_analysis_request());
+  std::string status = ScanRequestUploadResultToString(result);
+  bool upload_failed = result != ScanRequestUploadResult::kSuccess;
+  bool has_http_activity = http_status != 0 || !response_data.empty();
+  // On kSuccess, `response_data` contains raw binary protobuf bytes which are
+  // already parsed into `response` and serialized to JSON. Only append raw
+  // `response_data` on failure, where the server/proxy returns text/HTML.
+  if (upload_failed && has_http_activity) {
+    // Maximum number of characters of the raw response body appended to the
+    // deep scan status shown on chrome://safe-browsing.
+    constexpr size_t kMaxResponseDataLength = 1024;
+    status = base::StrCat(
+        {status, " (HTTP ", base::NumberToString(http_status), "): ",
+         response_data.empty() ? std::string_view("No response to show")
+                               : std::string_view(response_data)
+                                     .substr(0, kMaxResponseDataLength)});
+  }
   safe_browsing::WebUIContentInfoSingleton::GetInstance()
-      ->AddToDeepScanResponses(active_tokens_[request->id()],
-                               ScanRequestUploadResultToString(result),
-                               response);
+      ->AddToDeepScanResponses(active_tokens_[request->id()], status, response);
 #endif
 }
 
@@ -449,7 +469,9 @@ void CloudBinaryUploadServiceBase::ResetAuthorizationData(const GURL& url) {
 void CloudBinaryUploadServiceBase::FinishRequest(
     BinaryUploadRequest* request,
     ScanRequestUploadResult result,
-    ContentAnalysisResponse response) {
+    ContentAnalysisResponse response,
+    int http_status,
+    const std::string& response_data) {
   RecordRequestMetrics(request->id(), result, response);
   std::string upload_info = "None";
   if (!request->IsAuthRequest()) {
@@ -461,7 +483,8 @@ void CloudBinaryUploadServiceBase::FinishRequest(
 
   // Always record deep scan request here to ensure it is invoked after http
   // headers are attached.
-  LogResponseDebugInfo(upload_info, result, request, response);
+  LogResponseDebugInfo(upload_info, result, request, response, http_status,
+                       response_data);
 
   request->FinishRequest(result, response);
 }
@@ -469,8 +492,10 @@ void CloudBinaryUploadServiceBase::FinishRequest(
 void CloudBinaryUploadServiceBase::FinishAndCleanupRequest(
     BinaryUploadRequest* request,
     ScanRequestUploadResult result,
-    ContentAnalysisResponse response) {
-  FinishRequest(request, result, response);
+    ContentAnalysisResponse response,
+    int http_status,
+    const std::string& response_data) {
+  FinishRequest(request, result, response, http_status, response_data);
   CleanupRequest(request);
 }
 
@@ -655,26 +680,26 @@ void CloudBinaryUploadServiceBase::OnGetContentAnalysisResponse(
 
   if (http_status == net::HTTP_UNAUTHORIZED) {
     FinishRequest(request, ScanRequestUploadResult::kUnauthorized,
-                  ContentAnalysisResponse());
+                  ContentAnalysisResponse(), http_status, response_data);
     return;
   }
 
   if (http_status == net::HTTP_TOO_MANY_REQUESTS) {
     FinishRequest(request, ScanRequestUploadResult::kTooManyRequests,
-                  ContentAnalysisResponse());
+                  ContentAnalysisResponse(), http_status, response_data);
     return;
   }
 
   if (!success) {
     FinishRequest(request, ScanRequestUploadResult::kUploadFailure,
-                  ContentAnalysisResponse());
+                  ContentAnalysisResponse(), http_status, response_data);
     return;
   }
 
   ContentAnalysisResponse response;
   if (!response.ParseFromString(response_data)) {
     FinishRequest(request, ScanRequestUploadResult::kUploadFailure,
-                  ContentAnalysisResponse());
+                  ContentAnalysisResponse(), http_status, response_data);
     return;
   }
 

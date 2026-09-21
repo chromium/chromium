@@ -593,12 +593,16 @@ function addDeepScan(result: DeepScanResult) {
 // Exports the data currently displayed in the Deep Scan tab as a JSON file.
 function exportDeepScanData(): void {
   const exportData = Array.from(deepScanData.values()).map(entry => {
+    const response = JSON.parse(entry.response);
+    if (entry.response_status && entry.response_status !== 'SUCCESS') {
+      response['status'] = entry.response_status;
+    }
     return {
       'request_time': new Date(entry.request_time).toLocaleString(),
       'http_headers': entry.http_headers,
       'request': JSON.parse(entry.request),
       'response_time': new Date(entry.response_time).toLocaleString(),
-      'response': JSON.parse(entry.response),
+      'response': response,
     };
   });
 

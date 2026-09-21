@@ -123,11 +123,15 @@ class CloudBinaryUploadServiceBase : public BinaryUploadService {
 
   void FinishRequest(BinaryUploadRequest* request,
                      ScanRequestUploadResult result,
-                     ContentAnalysisResponse response);
+                     ContentAnalysisResponse response,
+                     int http_status = 0,
+                     const std::string& response_data = "");
 
   void FinishAndCleanupRequest(BinaryUploadRequest* request,
                                ScanRequestUploadResult result,
-                               ContentAnalysisResponse response);
+                               ContentAnalysisResponse response,
+                               int http_status = 0,
+                               const std::string& response_data = "");
 
  private:
   friend class ::safe_browsing::CloudBinaryUploadServiceTest;
@@ -144,7 +148,9 @@ class CloudBinaryUploadServiceBase : public BinaryUploadService {
   void LogResponseDebugInfo(const std::string& upload_info,
                             ScanRequestUploadResult result,
                             BinaryUploadRequest* request,
-                            const ContentAnalysisResponse& response);
+                            const ContentAnalysisResponse& response,
+                            int http_status = 0,
+                            const std::string& response_data = "");
 
   // Resets `can_upload_data_`. Called every 24 hour by `timer_`.
   void ResetAuthorizationData(const GURL& url);
