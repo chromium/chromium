@@ -22,7 +22,6 @@ import androidx.test.espresso.Root;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.ViewAssertion;
 import androidx.test.espresso.ViewInteraction;
-import androidx.test.espresso.action.ViewActions;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matcher;
@@ -159,25 +158,14 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> implements V
         return mViewSpec.ancestor(viewClass, viewMatcher);
     }
 
-    // TODO(crbug.com/536995089): The ViewActions.click()/longClick() branches below do not
-    // tolerate AppNotIdleException the way ForgivingClickAction does, so they still fail when a
-    // continuously animating window keeps the main looper from ever looking idle to Espresso.
     @Override
     public TripBuilder clickTo() {
-        if (mOptions.mDisplayedPercentageRequired <= 90) {
-            return performViewActionTo(ForgivingClickAction.forgivingClick());
-        } else {
-            return performViewActionTo(ViewActions.click());
-        }
+        return performViewActionTo(ForgivingClickAction.forgivingClick());
     }
 
     @Override
     public TripBuilder longPressTo() {
-        if (mOptions.mDisplayedPercentageRequired <= 90) {
-            return performViewActionTo(ForgivingClickAction.forgivingLongClick());
-        } else {
-            return performViewActionTo(ViewActions.longClick());
-        }
+        return performViewActionTo(ForgivingClickAction.forgivingLongClick());
     }
 
     @Override
