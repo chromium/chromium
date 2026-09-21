@@ -120,8 +120,7 @@ bool operator==(const TransportSecurityState::STSState& lhs,
 
 bool operator==(const TransportSecurityState::PKPState& lhs,
                 const TransportSecurityState::PKPState& rhs) {
-  return lhs.last_observed == rhs.last_observed && lhs.expiry == rhs.expiry &&
-         lhs.spki_hashes == rhs.spki_hashes &&
+  return lhs.expiry == rhs.expiry && lhs.spki_hashes == rhs.spki_hashes &&
          lhs.bad_spki_hashes == rhs.bad_spki_hashes &&
          lhs.include_subdomains == rhs.include_subdomains &&
          lhs.domain == rhs.domain;

@@ -158,10 +158,6 @@ class NET_EXPORT TransportSecurityState {
     PKPState(const PKPState& other);
     ~PKPState();
 
-    // The absolute time (UTC) when the |spki_hashes| (and other state) were
-    // observed.
-    base::Time last_observed;
-
     // The absolute time (UTC) when the |spki_hashes| expire.
     base::Time expiry;
 
@@ -452,19 +448,14 @@ class NET_EXPORT TransportSecurityState {
   // changed.
   void DirtyNotify();
 
-  // Adds HSTS and HPKP state for |host|. The new state supercedes
-  // any previous state for the |host|, including static entries.
+  // Adds HSTS state for |host|. The new state supercedes any previous state
+  // for the |host|, including static entries.
   //
   // The new state for |host| is persisted using the Delegate (if any).
   void AddHSTSInternal(std::string_view host,
                        STSState::UpgradeMode upgrade_mode,
                        base::Time expiry,
                        bool include_subdomains);
-  void AddHPKPInternal(std::string_view host,
-                       base::Time last_observed,
-                       base::Time expiry,
-                       bool include_subdomains,
-                       const HashValueVector& hashes);
 
   // Returns true if a request with the given SubjectPublicKeyInfo |hashes|
   // satisfies the pins in |pkp_state|, and false otherwise.

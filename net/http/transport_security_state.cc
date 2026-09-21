@@ -434,11 +434,10 @@ void TransportSecurityState::AddHSTSInternal(
   DirtyNotify();
 }
 
-void TransportSecurityState::AddHPKPInternal(std::string_view host,
-                                             base::Time last_observed,
-                                             base::Time expiry,
-                                             bool include_subdomains,
-                                             const HashValueVector& hashes) {
+void TransportSecurityState::AddHPKP(std::string_view host,
+                                     base::Time expiry,
+                                     bool include_subdomains,
+                                     const HashValueVector& hashes) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   const std::vector<uint8_t> canonicalized_host = CanonicalizeHost(host);
   if (canonicalized_host.empty()) {
@@ -448,7 +447,6 @@ void TransportSecurityState::AddHPKPInternal(std::string_view host,
   PKPState pkp_state;
   // No need to store |pkp_state.domain| since it is redundant.
   // (|canonicalized_host| is the map key.)
-  pkp_state.last_observed = last_observed;
   pkp_state.expiry = expiry;
   pkp_state.include_subdomains = include_subdomains;
   for (const auto& hash : hashes) {
@@ -583,14 +581,6 @@ void TransportSecurityState::AddHSTS(std::string_view host,
   AddHSTSInternal(host, STSState::MODE_FORCE_HTTPS, expiry, include_subdomains);
 }
 
-void TransportSecurityState::AddHPKP(std::string_view host,
-                                     base::Time expiry,
-                                     bool include_subdomains,
-                                     const HashValueVector& hashes) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  AddHPKPInternal(host, base::Time::Now(), expiry, include_subdomains, hashes);
-}
-
 size_t TransportSecurityState::num_sts_entries() const {
   return enabled_sts_hosts_.size();
 }
@@ -678,7 +668,6 @@ bool TransportSecurityState::GetStaticPKPState(std::string_view host,
       if (iter != host_pins_->end() &&
           (iter->second.second || search_hostname == normalized_host)) {
         pkp_result->domain = std::string(search_hostname);
-        pkp_result->last_observed = key_pins_list_last_update_time_;
         pkp_result->include_subdomains = iter->second.second;
         const PinSet* pinset = iter->second.first;
         for (const auto& hash : pinset->static_spki_hashes()) {
@@ -713,10 +702,6 @@ bool TransportSecurityState::GetStaticPKPState(std::string_view host,
     if (pin &&
         (pin->include_subdomains || search_hostname == normalized_host)) {
       pkp_result->domain = std::string(search_hostname);
-      // TODO(crbug.com/497882860): using GetBuildTime() here matches the
-      // pre-existing behavior of this code, but shouldn't this be
-      // kPinsListTimestamp? Don't know if anything actually cares.
-      pkp_result->last_observed = base::GetBuildTime();
       pkp_result->include_subdomains = pin->include_subdomains;
       for (const SHA256HashValue* hash : pin->pinset->accepted_pins) {
         pkp_result->spki_hashes.insert(*hash);
