@@ -109,7 +109,8 @@ public class FuseboxPopupUnitTest {
                         mContentView,
                         mDynamicRectProvider,
                         /* isBottomSheet= */ false,
-                        /* useCarousel= */ false);
+                        /* useCarousel= */ false,
+                        /* useScrollableCarousel= */ false);
     }
 
     @After
@@ -124,7 +125,8 @@ public class FuseboxPopupUnitTest {
                 });
     }
 
-    private void recreateFuseboxPopup(boolean isBottomSheet, boolean useCarousel) {
+    private void recreateFuseboxPopup(
+            boolean isBottomSheet, boolean useCarousel, boolean useScrollableCarousel) {
         mContentView = LayoutInflater.from(mActivity).inflate(R.layout.fusebox_context_popup, null);
         mActivity.setContentView(mContentView);
         mFuseboxPopup =
@@ -135,7 +137,8 @@ public class FuseboxPopupUnitTest {
                         mContentView,
                         mDynamicRectProvider,
                         isBottomSheet,
-                        useCarousel);
+                        useCarousel,
+                        useScrollableCarousel);
     }
 
     private void setupMultiWindowMetrics(
@@ -260,7 +263,10 @@ public class FuseboxPopupUnitTest {
         OmniboxFeatures.setShowBottomSheetPopupForTesting(false);
 
         // Re-create content view and popup to trigger new inflation logic
-        recreateFuseboxPopup(/* isBottomSheet= */ false, /* useCarousel= */ false);
+        recreateFuseboxPopup(
+                /* isBottomSheet= */ false,
+                /* useCarousel= */ false,
+                /* useScrollableCarousel= */ false);
 
         // Verify that we can find the elements
         assertNotNull(mFuseboxPopup.mAddCurrentTab);
@@ -277,7 +283,10 @@ public class FuseboxPopupUnitTest {
         OmniboxFeatures.setShowBottomSheetPopupForTesting(true);
 
         // Re-create content view and popup to trigger new inflation logic
-        recreateFuseboxPopup(/* isBottomSheet= */ true, /* useCarousel= */ true);
+        recreateFuseboxPopup(
+                /* isBottomSheet= */ true,
+                /* useCarousel= */ true,
+                /* useScrollableCarousel= */ true);
 
         // Verify that we can find the elements
         assertNotNull(mFuseboxPopup.mAddCurrentTab);
@@ -331,7 +340,10 @@ public class FuseboxPopupUnitTest {
 
     @Test
     public void testFlingDismissesPopup_whenBottomSheet() {
-        recreateFuseboxPopup(/* isBottomSheet= */ true, /* useCarousel= */ false);
+        recreateFuseboxPopup(
+                /* isBottomSheet= */ true,
+                /* useCarousel= */ false,
+                /* useScrollableCarousel= */ false);
 
         // Call onFling directly on the exposed listener to avoid flaky MotionEvents.
         int minFlingVelocity = ViewConfiguration.get(mActivity).getScaledMinimumFlingVelocity();
@@ -368,7 +380,10 @@ public class FuseboxPopupUnitTest {
                     mActivity.getResources().updateConfiguration(config, null);
                 });
 
-        recreateFuseboxPopup(/* isBottomSheet= */ false, /* useCarousel= */ false);
+        recreateFuseboxPopup(
+                /* isBottomSheet= */ false,
+                /* useCarousel= */ false,
+                /* useScrollableCarousel= */ false);
 
         RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(View.LAYOUT_DIRECTION_RTL, mFuseboxPopup.mScrollView.getLayoutDirection());
@@ -385,7 +400,10 @@ public class FuseboxPopupUnitTest {
         config.setLayoutDirection(Locale.getDefault());
         mActivity.getResources().updateConfiguration(config, null);
 
-        recreateFuseboxPopup(/* isBottomSheet= */ false, /* useCarousel= */ false);
+        recreateFuseboxPopup(
+                /* isBottomSheet= */ false,
+                /* useCarousel= */ false,
+                /* useScrollableCarousel= */ false);
 
         RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(View.LAYOUT_DIRECTION_LTR, mFuseboxPopup.mScrollView.getLayoutDirection());
@@ -393,7 +411,10 @@ public class FuseboxPopupUnitTest {
 
     @Test
     public void testUpdateInsets_BottomSheet_MultiWindow_Top() {
-        recreateFuseboxPopup(/* isBottomSheet= */ true, /* useCarousel= */ true);
+        recreateFuseboxPopup(
+                /* isBottomSheet= */ true,
+                /* useCarousel= */ true,
+                /* useScrollableCarousel= */ true);
         mFuseboxPopup.setPopupState(PopupState.BOTTOM);
         doReturn(true).when(mPopupWindow).isShowing();
 
@@ -408,7 +429,10 @@ public class FuseboxPopupUnitTest {
 
     @Test
     public void testUpdateInsets_BottomSheet_MultiWindow_Bottom() {
-        recreateFuseboxPopup(/* isBottomSheet= */ true, /* useCarousel= */ true);
+        recreateFuseboxPopup(
+                /* isBottomSheet= */ true,
+                /* useCarousel= */ true,
+                /* useScrollableCarousel= */ true);
         mFuseboxPopup.setPopupState(PopupState.BOTTOM);
         doReturn(true).when(mPopupWindow).isShowing();
 

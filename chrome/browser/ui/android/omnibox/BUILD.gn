@@ -442,6 +442,7 @@ android_resources("java_resources") {
     "java/res/layout/fusebox_context_popup.xml",
     "java/res/layout/fusebox_horizontal_attachment_item.xml",
     "java/res/layout/fusebox_horizontal_attachments.xml",
+    "java/res/layout/fusebox_horizontal_scrollable_attachments.xml",
     "java/res/layout/fusebox_image_attachment_layout.xml",
     "java/res/layout/fusebox_layout.xml",
     "java/res/layout/fusebox_list_item.xml",

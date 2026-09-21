@@ -126,7 +126,8 @@ public class FuseboxViewBinderUnitTest {
                         popupView,
                         mDynamicRectProvider,
                         /* isBottomSheet= */ false,
-                        /* useCarousel= */ false);
+                        /* useCarousel= */ false,
+                        /* useScrollableCarousel= */ false);
         mViewHolder = new FuseboxViewHolder(parent, mPopup);
 
         // Initialize workable defaults.
@@ -183,7 +184,8 @@ public class FuseboxViewBinderUnitTest {
                         popupView,
                         mDynamicRectProvider,
                         /* isBottomSheet= */ true,
-                        /* useCarousel= */ true);
+                        /* useCarousel= */ true,
+                        /* useScrollableCarousel= */ true);
         return new FuseboxViewHolder(mViewHolder.parentView, popup);
     }
 

@@ -105,7 +105,8 @@ class FuseboxPopup {
             View contentView,
             DynamicRectProvider dynamicRectProvider,
             boolean isBottomSheet,
-            boolean useCarousel) {
+            boolean useCarousel,
+            boolean useScrollableCarousel) {
         mActivity = activity;
         mPopupWindow = popupWindow;
         mPopupWindow.setClippingEnabled(false);
@@ -137,7 +138,9 @@ class FuseboxPopup {
         ViewStub stub = contentView.findViewById(R.id.fusebox_attachments_stub);
         stub.setLayoutResource(
                 useCarousel
-                        ? R.layout.fusebox_horizontal_attachments
+                        ? useScrollableCarousel
+                                ? R.layout.fusebox_horizontal_scrollable_attachments
+                                : R.layout.fusebox_horizontal_attachments
                         : R.layout.fusebox_vertical_attachments);
         stub.inflate();
 

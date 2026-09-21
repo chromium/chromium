@@ -269,7 +269,8 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                         popupView,
                         dynamicRectProvider,
                         OmniboxFeatures.shouldShowBottomSheetPopup(),
-                        OmniboxFeatures.shouldUseCarousel());
+                        OmniboxFeatures.shouldUseCarousel(),
+                        OmniboxFeatures.shouldUseScrollableCarousel());
 
         mViewHolder = new FuseboxViewHolder(mParent, popup);
 

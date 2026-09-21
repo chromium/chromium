@@ -44,6 +44,17 @@ found in the LICENSE file.
         <item name="android:accessibilityHeading">true</item>
     </style>
 
+    <style name="Fusebox.CarouselItem">
+        <item name="android:layout_width">@dimen/fusebox_carousel_item_width</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginHorizontal">@dimen/fusebox_carousel_padding_horizontal</item>
+    </style>
+
+    <style name="Fusebox.CarouselItem.Weighted">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
     <style name="OmniboxIcon" parent="LocationBarButton">
         <item name="android:layout_width">
             @dimen/location_bar_status_icon_width
