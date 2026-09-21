@@ -39,6 +39,11 @@ CloudBinaryUploadServiceFactory::CloudBinaryUploadServiceFactory()
               // TODO(crbug.com/41488885): Check if this service is needed for
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOwnInstance)
+              // Unlike Incognito mode, this service needs an access token from
+              // the primary account in Isolated mode. It's available for
+              // the original profile only, and the service does not need any
+              // specific data from the Isolated profile.
+              .WithIsolatedMode(ProfileSelection::kRedirectedToOriginal)
               .Build()) {}
 
 std::unique_ptr<KeyedService>

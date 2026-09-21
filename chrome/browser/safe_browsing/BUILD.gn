@@ -791,6 +791,7 @@ source_set("unit_tests") {
       "chrome_ui_manager_delegate_unittest.cc",
       "chrome_user_population_helper_unittest.cc",
       "client_side_detection_host_unittest.cc",
+      "cloud_content_scanning/cloud_binary_upload_service_factory_unittest.cc",
       "download_protection/download_item_metadata_unittest.cc",
       "download_protection/download_protection_service_unittest.cc",
       "download_protection/download_protection_unittest_util.cc",
