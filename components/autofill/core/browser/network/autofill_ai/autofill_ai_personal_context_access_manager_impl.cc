@@ -197,7 +197,6 @@ PersonalContextPrefetchEntityValidationResult ValidateAmbientAutofillEntity(
     const auto& payload =
         std::get<EntityInstance::PersonalContextRecordTypePayload>(
             entity.record_type_data());
-    // TODO(crbug.com/541184524): Check for valid source URLs.
     if (payload.sources.empty()) {
       return PersonalContextPrefetchEntityValidationResult::
           kFailedMissingSource;

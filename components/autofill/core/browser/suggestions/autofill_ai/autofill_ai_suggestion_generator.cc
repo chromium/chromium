@@ -533,7 +533,7 @@ base::flat_map<SourceType, std::vector<GURL>> GroupSourcesByApp(
     base::span<const EntityPayload::Source> payload_sources) {
   base::flat_map<SourceType, std::vector<GURL>> app_urls;
   for (const EntityPayload::Source& source : payload_sources) {
-    if (GURL(source.url).is_valid()) {
+    if (source.url.is_valid()) {
       app_urls[source.type()].emplace_back(source.url);
     }
   }

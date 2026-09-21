@@ -47,7 +47,7 @@ BOOL EntityHasValidSources(const autofill::EntityInstance& entity) {
     return NO;
   }
   return std::ranges::any_of(payload->sources, [](const auto& source) {
-    return GURL(source.url).is_valid();
+    return source.url.is_valid();
   });
 }
 
@@ -67,8 +67,7 @@ NSArray<AutofillAiSourceGroup*>* ExtractSourcesFromEntity(
   size_t photo_index = 1;
 
   for (const auto& source : payload->sources) {
-    GURL url(source.url);
-    if (!url.is_valid()) {
+    if (!source.url.is_valid()) {
       continue;
     }
     switch (source.type()) {
@@ -87,7 +86,7 @@ NSArray<AutofillAiSourceGroup*>* ExtractSourcesFromEntity(
         AutofillAiSourceItem* item =
             [[AutofillAiSourceItem alloc] initWithTitle:title
                                                subtitle:nil
-                                                    URL:url
+                                                    URL:source.url
                                                    type:source.type()
                                                    icon:GetGmailSourceIcon()];
         [gmail_items addObject:item];
@@ -101,7 +100,7 @@ NSArray<AutofillAiSourceGroup*>* ExtractSourcesFromEntity(
         AutofillAiSourceItem* item =
             [[AutofillAiSourceItem alloc] initWithTitle:title
                                                subtitle:nil
-                                                    URL:url
+                                                    URL:source.url
                                                    type:source.type()
                                                    icon:GetPhotosSourceIcon()];
         [photos_items addObject:item];

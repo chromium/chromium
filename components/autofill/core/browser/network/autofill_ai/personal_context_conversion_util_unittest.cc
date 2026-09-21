@@ -16,6 +16,7 @@
 #include "components/personal_context/proto/features/common_data.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace autofill {
 
@@ -419,7 +420,7 @@ TEST(AutofillAiPersonalContextConverters, ConvertEntityWithGmailSource) {
   const EntityInstance& result = opt_result.value();
   EntityInstance::PersonalContextRecordTypePayload payload{
       .sources = {
-          Source{.url = "https://mail.google.com/mail/u/0/#inbox/123",
+          Source{.url = GURL("https://mail.google.com/mail/u/0/#inbox/123"),
                  .data = GmailSource{.title = "Passport Information"}}}};
   EXPECT_EQ(std::get<EntityInstance::PersonalContextRecordTypePayload>(
                 result.record_type_data()),
@@ -444,8 +445,9 @@ TEST(AutofillAiPersonalContextConverters,
   ASSERT_TRUE(opt_result.has_value());
   const EntityInstance& result = opt_result.value();
   EntityInstance::PersonalContextRecordTypePayload payload{
-      .sources = {Source{.url = "https://mail.google.com/mail/u/0/#inbox/123",
-                         .data = GmailSource{.title = ""}}}};
+      .sources = {
+          Source{.url = GURL("https://mail.google.com/mail/u/0/#inbox/123"),
+                 .data = GmailSource{.title = ""}}}};
   EXPECT_EQ(std::get<EntityInstance::PersonalContextRecordTypePayload>(
                 result.record_type_data()),
             payload);
@@ -468,7 +470,7 @@ TEST(AutofillAiPersonalContextConverters, ConvertEntityWithPhotosSource) {
   ASSERT_TRUE(opt_result.has_value());
   const EntityInstance& result = opt_result.value();
   EntityInstance::PersonalContextRecordTypePayload payload{
-      .sources = {Source{.url = "https://photos.google.com/photo/abc",
+      .sources = {Source{.url = GURL("https://photos.google.com/photo/abc"),
                          .data = PhotosSource{}}}};
   EXPECT_EQ(std::get<EntityInstance::PersonalContextRecordTypePayload>(
                 result.record_type_data()),
@@ -492,6 +494,11 @@ TEST(AutofillAiPersonalContextConverters, ConvertEntityWithMultipleSources) {
   photos_source->mutable_photos()->set_photos_url(
       "https://photos.google.com/photo/abc");
 
+  // Add source with invalid URL.
+  personal_context::proto::SourceReference* invalid_url_source =
+      entity.add_source_references();
+  invalid_url_source->mutable_gmail()->set_message_url("not-a-valid-url");
+
   // Add empty source.
   entity.add_source_references();
 
@@ -501,10 +508,11 @@ TEST(AutofillAiPersonalContextConverters, ConvertEntityWithMultipleSources) {
   ASSERT_TRUE(opt_result.has_value());
   const EntityInstance& result = opt_result.value();
   EntityInstance::PersonalContextRecordTypePayload payload{
-      .sources = {Source{.url = "https://mail.google.com/mail/u/0/#inbox/123",
-                         .data = GmailSource{.title = ""}},
-                  Source{.url = "https://photos.google.com/photo/abc",
-                         .data = PhotosSource{}}}};
+      .sources = {
+          Source{.url = GURL("https://mail.google.com/mail/u/0/#inbox/123"),
+                 .data = GmailSource{.title = ""}},
+          Source{.url = GURL("https://photos.google.com/photo/abc"),
+                 .data = PhotosSource{}}}};
   EXPECT_EQ(std::get<EntityInstance::PersonalContextRecordTypePayload>(
                 result.record_type_data()),
             payload);

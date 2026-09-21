@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/personal_context/proto/features/common_data.pb.h"
+#include "url/gurl.h"
 
 namespace autofill {
 
@@ -103,20 +104,28 @@ PersonalContextSourceReferenceToSource(
   using PhotosSource =
       EntityInstance::PersonalContextRecordTypePayload::PhotosSource;
   using Source = EntityInstance::PersonalContextRecordTypePayload::Source;
+  std::optional<EntityInstance::PersonalContextRecordTypePayload::Source>
+      source;
   switch (source_reference.source_reference_case()) {
     case personal_context::proto::SourceReference::kGmail:
-      return Source{
-          .url = std::string(source_reference.gmail().message_url()),
-          .data = GmailSource{
-              .title = std::string(source_reference.gmail().subject())}};
+      source =
+          Source{.url = GURL(source_reference.gmail().message_url()),
+                 .data = GmailSource{
+                     .title = std::string(source_reference.gmail().subject())}};
+      break;
     case personal_context::proto::SourceReference::kPhotos:
-      return Source{.url = std::string(source_reference.photos().photos_url()),
-                    .data = PhotosSource{}};
+      source = Source{.url = GURL(source_reference.photos().photos_url()),
+                      .data = PhotosSource{}};
+      break;
     case personal_context::proto::SourceReference::kDrive:
     case personal_context::proto::SourceReference::SOURCE_REFERENCE_NOT_SET:
       return std::nullopt;
   }
-  return std::nullopt;
+
+  if (source.has_value() && !source->url.is_valid()) {
+    return std::nullopt;
+  }
+  return source;
 }
 
 EntityInstance::PersonalContextRecordTypePayload

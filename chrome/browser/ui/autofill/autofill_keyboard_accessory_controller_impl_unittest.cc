@@ -33,6 +33,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/pointer/pointer_device.h"
+#include "url/gurl.h"
 
 namespace autofill {
 namespace {
@@ -135,7 +136,7 @@ class AutofillKeyboardAccessoryControllerImplTest
         .guid = "00000000-0000-4000-8000-000000000000",
         .record_type =
             EntityInstance::PersonalContextRecordTypePayload{
-                .sources = {Source{.url = "https://mail.google.com",
+                .sources = {Source{.url = GURL("https://mail.google.com"),
                                    .data = GmailSource{}}}},
     });
   }

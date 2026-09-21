@@ -32,6 +32,7 @@
 #include "components/autofill/core/browser/field_type_util.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/network/autofill_ai/autofill_ai_personal_context_access_manager_impl.h"
+#include "url/gurl.h"
 
 namespace autofill {
 
@@ -233,17 +234,18 @@ GetPersonalContextSourcesFromDict(const base::DictValue& dict) {
       continue;
     }
     const std::string* title_str = src_dict.FindString(kKeySourceTitle);
+    GURL url(*url_str);
     switch (*type) {
       case Source::Type::kGmail:
         sources.push_back(
-            {.url = *url_str,
+            {.url = std::move(url),
              .data =
                  EntityInstance::PersonalContextRecordTypePayload::GmailSource{
                      .title = title_str ? *title_str : ""}});
         break;
       case Source::Type::kPhotos:
         sources.push_back(
-            {.url = *url_str,
+            {.url = std::move(url),
              .data = EntityInstance::PersonalContextRecordTypePayload::
                  PhotosSource{}});
         break;

@@ -34,6 +34,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/is_required.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
+#include "url/gurl.h"
 
 namespace sync_pb {
 class AutofillValuableSpecifics;
@@ -335,7 +336,7 @@ class EntityInstance final {
         kPhotos,
       };
 
-      std::string url;
+      GURL url;
       SourceData data;
 
       // Derived from `data` so type and payload can never get out of sync.

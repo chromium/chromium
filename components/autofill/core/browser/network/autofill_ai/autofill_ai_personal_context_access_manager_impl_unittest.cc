@@ -2455,7 +2455,16 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   drive_order.add_source_references()->mutable_drive();
   *response.add_entities() = std::move(drive_order);
 
-  // 3. Order with a valid Gmail source reference -> kValid
+  // 3. Order with an invalid source URL -> kFailedMissingSource
+  personal_context::proto::Entity invalid_url_order =
+      CreateOrderProto({.id = u"INVALID_URL_SOURCE",
+                        .date = u"2025-06-01",
+                        .merchant_name = u"Store"});
+  invalid_url_order.add_source_references()->mutable_gmail()->set_message_url(
+      "invalid_url");
+  *response.add_entities() = std::move(invalid_url_order);
+
+  // 4. Order with a valid Gmail source reference -> kValid
   personal_context::proto::Entity valid_order =
       CreateOrderProto({.id = u"VALID_SOURCE",
                         .date = u"2025-06-01",
@@ -2481,14 +2490,14 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
 
   histogram_tester().ExpectBucketCount(kBaseMetric, Result::kValid, 1);
   histogram_tester().ExpectBucketCount(kBaseMetric,
-                                       Result::kFailedMissingSource, 2);
-  histogram_tester().ExpectTotalCount(kBaseMetric, 3);
+                                       Result::kFailedMissingSource, 3);
+  histogram_tester().ExpectTotalCount(kBaseMetric, 4);
 
   histogram_tester().ExpectBucketCount(base::StrCat({kBaseMetric, ".Order"}),
                                        Result::kValid, 1);
   histogram_tester().ExpectBucketCount(base::StrCat({kBaseMetric, ".Order"}),
-                                       Result::kFailedMissingSource, 2);
-  histogram_tester().ExpectTotalCount(base::StrCat({kBaseMetric, ".Order"}), 3);
+                                       Result::kFailedMissingSource, 3);
+  histogram_tester().ExpectTotalCount(base::StrCat({kBaseMetric, ".Order"}), 4);
 }
 
 }  // namespace

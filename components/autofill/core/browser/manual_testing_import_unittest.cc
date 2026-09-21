@@ -34,6 +34,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace autofill {
 namespace {
@@ -420,13 +421,14 @@ TEST_F(ManualTestingImportTest, LoadEntitiesFromFile_PersonalContext_Sources) {
   const auto* payload =
       std::get_if<PersonalContextRecordTypePayload>(&entity.record_type_data());
   ASSERT_TRUE(payload);
-  EXPECT_EQ(*payload, (PersonalContextRecordTypePayload{
-                          .sources = {
-                              Source{.url = "https://photos.google.com/sample",
-                                     .data = PhotosSource{}},
-                              Source{.url = "https://mail.google.com/sample",
-                                     .data = GmailSource{}},
-                          }}));
+  EXPECT_EQ(*payload,
+            (PersonalContextRecordTypePayload{
+                .sources = {
+                    Source{.url = GURL("https://photos.google.com/sample"),
+                           .data = PhotosSource{}},
+                    Source{.url = GURL("https://mail.google.com/sample"),
+                           .data = GmailSource{}},
+                }}));
 }
 
 // Tests that the WalletRecordTypePayload is read correctly.
