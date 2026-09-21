@@ -2345,6 +2345,12 @@ base::DictValue DevToolsUIBindings::GetHostConfigDictionary(Profile* profile) {
           GetFeatureStateForDevTools(::features::kDevToolsNetworkBackendLinking,
                                      enabled_by_flags, disabled_by_flags)));
 
+  response_dict.Set(
+      "devToolsPrivateVerificationTokens",
+      base::DictValue().Set(
+          "enabled", base::FeatureList::IsEnabled(
+                         net::features::kEnablePrivateVerificationTokens)));
+
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // We check AreExtensionsOnExtensionURLsAllowed() here because this is used to
   // restrict access to chrome-extension:// URLs, and that helper covers both
