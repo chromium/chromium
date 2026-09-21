@@ -7,14 +7,19 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "chrome/browser/media/webrtc/desktop_media_list_layout_config.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/enterprise/buildflags/buildflags.h"
+#include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -71,6 +76,10 @@ class TabListModel : public ui::TableModel,
   size_t RowCount() const override;
   std::u16string GetText(size_t row, int column) const override;
   ui::ImageModel GetIcon(size_t row) const override;
+  std::u16string GetTooltip(size_t row) const override;
+  std::u16string GetAXNameForRow(
+      size_t row,
+      const std::vector<int>& visible_column_ids) const override;
   void SetObserver(ui::TableModelObserver* observer) override;
 
   // DesktopMediaListController::SourceListListener:
@@ -108,9 +117,56 @@ std::u16string TabListModel::GetText(size_t row, int column) const {
 
 ui::ImageModel TabListModel::GetIcon(size_t row) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return controller_ ? ui::ImageModel::FromImageSkia(
-                           controller_->GetSource(row).thumbnail)
-                     : ui::ImageModel();
+  if (!controller_) {
+    return ui::ImageModel();
+  }
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+  if (base::FeatureList::IsEnabled(
+          enterprise_data_protection::kEnableTabSharingProtection) &&
+      controller_->GetSource(row).is_sharing_blocked) {
+    return ui::ImageModel::FromVectorIcon(
+        features::IsRoundedIconsEnabled() ? vector_icons::kDomainIcon
+                                          : vector_icons::kBusinessOldIcon,
+        ui::kColorIcon, ui::TableModel::kIconSize);
+  }
+#endif
+  return ui::ImageModel::FromImageSkia(controller_->GetSource(row).thumbnail);
+}
+
+std::u16string TabListModel::GetTooltip(size_t row) const {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+  if (controller_ &&
+      base::FeatureList::IsEnabled(
+          enterprise_data_protection::kEnableTabSharingProtection)) {
+    const DesktopMediaList::Source& source = controller_->GetSource(row);
+    if (source.is_sharing_blocked) {
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_SCREEN_SHARE_BLOCKED_TITLE);
+    }
+  }
+#endif
+  return std::u16string();
+}
+
+std::u16string TabListModel::GetAXNameForRow(
+    size_t row,
+    const std::vector<int>& visible_column_ids) const {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  std::u16string ax_name =
+      ui::TableModel::GetAXNameForRow(row, visible_column_ids);
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+  if (controller_ &&
+      base::FeatureList::IsEnabled(
+          enterprise_data_protection::kEnableTabSharingProtection)) {
+    const DesktopMediaList::Source& source = controller_->GetSource(row);
+    if (source.is_sharing_blocked) {
+      ax_name += u", " + l10n_util::GetStringUTF16(
+                             IDS_POLICY_DLP_SCREEN_SHARE_BLOCKED_TITLE);
+    }
+  }
+#endif
+  return ax_name;
 }
 
 void TabListModel::SetObserver(ui::TableModelObserver* observer) {
@@ -144,6 +200,7 @@ void TabListModel::OnSourceNameChanged(size_t index) {
 void TabListModel::OnSourceThumbnailChanged(size_t index) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   observer_->OnItemsChanged(index, 1);
+  preview_updated_callback_.Run(index);
 }
 
 void TabListModel::OnSourcePreviewChanged(size_t index) {
@@ -376,8 +433,22 @@ void DesktopMediaTabList::ClearPreview() {
   preview_label_->SetText(u"");
   preview_->SetImage(ui::ImageModel());
   preview_->SetVisible(false);
+  empty_preview_label_->SetText(
+      l10n_util::GetStringUTF16(IDS_DESKTOP_MEDIA_PICKER_EMPTY_PREVIEW));
   empty_preview_label_->SetVisible(true);
 }
+
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+void DesktopMediaTabList::ShowBlockedPreview(
+    const DesktopMediaList::Source& source) {
+  preview_->SetImage(ui::ImageModel());
+  preview_->SetVisible(false);
+  empty_preview_label_->SetText(
+      l10n_util::GetStringUTF16(IDS_DESKTOP_MEDIA_PICKER_BLOCKED_PREVIEW));
+  empty_preview_label_->SetVisible(true);
+  preview_label_->SetText(source.name.substr(0, kMaxPreviewTitleLength));
+}
+#endif
 
 void DesktopMediaTabList::OnSelectionChanged() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -397,19 +468,12 @@ void DesktopMediaTabList::OnSelectionChanged() {
 
   RecordSourceDiscardedStatus(source);
 
-  const std::u16string truncated_title =
-      source.name.substr(0, kMaxPreviewTitleLength);
-  preview_label_->SetText(truncated_title);
-
   // Trigger a preview update to either show a previous snapshot for this source
   // if we have one, or clear it if we don't.
   OnPreviewUpdated(row.value());
 
   // Update the source for which previews are generated.
   controller_->SetPreviewedSource(source.id);
-
-  preview_->SetVisible(true);
-  empty_preview_label_->SetVisible(false);
 }
 
 void DesktopMediaTabList::ClearPreviewImageIfUnchanged(
@@ -430,6 +494,20 @@ void DesktopMediaTabList::OnPreviewUpdated(size_t index) {
   }
 
   const DesktopMediaList::Source& source = controller_->GetSource(index);
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+  if (base::FeatureList::IsEnabled(
+          enterprise_data_protection::kEnableTabSharingProtection) &&
+      source.is_sharing_blocked) {
+    ShowBlockedPreview(source);
+    return;
+  }
+#endif
+
+  empty_preview_label_->SetText(
+      l10n_util::GetStringUTF16(IDS_DESKTOP_MEDIA_PICKER_EMPTY_PREVIEW));
+  preview_->SetVisible(true);
+  empty_preview_label_->SetVisible(false);
+
   if (!source.preview.isNull()) {
     preview_->SetImage(ui::ImageModel::FromImageSkia(source.preview));
     ++preview_set_count_;

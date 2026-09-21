@@ -17,6 +17,7 @@
 #include "base/strings/strcat.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_controller.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_manager.h"
@@ -35,6 +36,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -1277,9 +1279,24 @@ std::u16string DesktopMediaPickerDialogView::GetWindowTitle() const {
 
 bool DesktopMediaPickerDialogView::IsDialogButtonEnabled(
     ui::mojom::DialogButton button) const {
-  return button != ui::mojom::DialogButton::kOk ||
-         GetSelectedController()->GetSelection().has_value() ||
-         accepted_source_.has_value();
+  if (button != ui::mojom::DialogButton::kOk) {
+    return true;
+  }
+  const DesktopMediaListController* controller = GetSelectedController();
+  std::optional<content::DesktopMediaID> selection =
+      accepted_source_.has_value() ? accepted_source_
+                                   : controller->GetSelection();
+  if (!selection.has_value()) {
+    return false;
+  }
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+  if (base::FeatureList::IsEnabled(
+          enterprise_data_protection::kEnableTabSharingProtection) &&
+      controller->IsSourceSharingBlocked(*selection)) {
+    return false;
+  }
+#endif
+  return true;
 }
 
 views::View* DesktopMediaPickerDialogView::GetInitiallyFocusedView() {
@@ -1347,12 +1364,30 @@ void DesktopMediaPickerDialogView::OnSelectionChanged() {
 }
 
 void DesktopMediaPickerDialogView::AcceptSource() {
-  // This will call Accept() and close the dialog.
-  AcceptDialog();
+  if (IsDialogButtonEnabled(ui::mojom::DialogButton::kOk)) {
+    // This will call Accept() and close the dialog.
+    AcceptDialog();
+  }
 }
 
 void DesktopMediaPickerDialogView::AcceptSpecificSource(
     const DesktopMediaID& source) {
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+  if (base::FeatureList::IsEnabled(
+          enterprise_data_protection::kEnableTabSharingProtection)) {
+    // Only the category matching `source.type` can own `source`; the other
+    // controllers would scan their full source list only to report no match.
+    for (const auto& category : categories_) {
+      if (AsDesktopMediaIdType(category.type) != source.type) {
+        continue;
+      }
+      if (category.controller->IsSourceSharingBlocked(source)) {
+        return;
+      }
+      break;
+    }
+  }
+#endif
   VLOG(1) << "DMPDV::AcceptSpecificSource: source_id = " << source.id;
 
   if (tabbed_pane_) {

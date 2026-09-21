@@ -6,17 +6,23 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/fake_desktop_media_list.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_picker_views.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_picker_views_test_api.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/views/chrome_test_views_delegate.h"
+#include "components/enterprise/buildflags/buildflags.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/table/table_view.h"
 #include "ui/views/test/scoped_views_test_helper.h"
@@ -66,6 +72,7 @@ class DesktopMediaTabListTest : public testing::Test {
     list_ = tab_list_->table_;
     preview_ = tab_list_->preview_;
     preview_label_ = tab_list_->preview_label_;
+    empty_preview_label_ = tab_list_->empty_preview_label_;
 
     widget_destroyed_waiter_ =
         std::make_unique<views::test::WidgetDestroyedWaiter>(
@@ -91,6 +98,7 @@ class DesktopMediaTabListTest : public testing::Test {
   ~DesktopMediaTabListTest() override = default;
 
   void TearDown() override {
+    empty_preview_label_ = nullptr;
     if (GetPickerDialogView()) {
       GetPickerDialogView()->GetWidget()->CloseNow();
     }
@@ -112,6 +120,7 @@ class DesktopMediaTabListTest : public testing::Test {
   raw_ptr<views::ImageView, DanglingUntriaged> preview_;
   raw_ptr<views::TableView, DanglingUntriaged> list_;
   raw_ptr<views::Label, DanglingUntriaged> preview_label_;
+  raw_ptr<views::Label> empty_preview_label_ = nullptr;
   std::unique_ptr<views::test::WidgetDestroyedWaiter> widget_destroyed_waiter_;
 
   gfx::ImageSkia preview_0_;
@@ -196,3 +205,67 @@ TEST_F(DesktopMediaTabListTest, LongPageTitle) {
 
   EXPECT_EQ(preview_label_->GetText(), short_title);
 }
+
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+class DesktopMediaTabListProtectionTest : public DesktopMediaTabListTest {
+ public:
+  DesktopMediaTabListProtectionTest() {
+    feature_list_.InitAndEnableFeature(
+        enterprise_data_protection::kEnableTabSharingProtection);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(DesktopMediaTabListProtectionTest, BlockedSourceIconTooltipAndAXName) {
+  content::DesktopMediaID blocked_id(
+      content::DesktopMediaID::Type::TYPE_WEB_CONTENTS, 2);
+  media_list_->AddSourceByFullMediaID(blocked_id);
+  media_list_->SetSourceName(2, u"blocked_source");
+  media_list_->SetSourceSharingBlocked(2, true);
+  media_list_->SetSourceThumbnail(0);
+  media_list_->SetSourceThumbnail(2);
+
+  EXPECT_TRUE(list_->model()->GetIcon(0).IsImage());
+  EXPECT_FALSE(list_->model()->GetIcon(0).IsVectorIcon());
+  EXPECT_TRUE(list_->model()->GetIcon(2).IsVectorIcon());
+
+  EXPECT_TRUE(list_->model()->GetTooltip(0).empty());
+
+  const std::u16string blocked_tooltip =
+      l10n_util::GetStringUTF16(IDS_POLICY_DLP_SCREEN_SHARE_BLOCKED_TITLE);
+  EXPECT_EQ(list_->model()->GetTooltip(2), blocked_tooltip);
+  EXPECT_NE(list_->model()->GetAXNameForRow(2, {0}).find(blocked_tooltip),
+            std::u16string::npos);
+}
+
+TEST_F(DesktopMediaTabListProtectionTest, BlockedSourcePreviewMessage) {
+  content::DesktopMediaID blocked_id(
+      content::DesktopMediaID::Type::TYPE_WEB_CONTENTS, 2);
+  media_list_->AddSourceByFullMediaID(blocked_id);
+  media_list_->SetSourceName(2, u"blocked_source");
+  media_list_->SetSourceSharingBlocked(2, true);
+
+  // Initially empty preview label has default text.
+  EXPECT_EQ(empty_preview_label_->GetText(),
+            l10n_util::GetStringUTF16(IDS_DESKTOP_MEDIA_PICKER_EMPTY_PREVIEW));
+
+  // Select the blocked source.
+  test_api_.PressMouseOnSourceAtIndex(2);
+
+  // Preview should be hidden, and empty preview label visible with blocked
+  // message.
+  EXPECT_FALSE(preview_->GetVisible());
+  EXPECT_TRUE(empty_preview_label_->GetVisible());
+  EXPECT_EQ(
+      empty_preview_label_->GetText(),
+      l10n_util::GetStringUTF16(IDS_DESKTOP_MEDIA_PICKER_BLOCKED_PREVIEW));
+
+  // Clearing selection restores the default empty preview message.
+  tab_list_->ClearSelection();
+  EXPECT_TRUE(empty_preview_label_->GetVisible());
+  EXPECT_EQ(empty_preview_label_->GetText(),
+            l10n_util::GetStringUTF16(IDS_DESKTOP_MEDIA_PICKER_EMPTY_PREVIEW));
+}
+#endif  // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
