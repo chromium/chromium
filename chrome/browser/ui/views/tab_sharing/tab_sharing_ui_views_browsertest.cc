@@ -543,8 +543,14 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest,
 #endif
 }
 
+// TODO(b/564471336): Test is flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CloseTabInIncognitoBrowser DISABLED_CloseTabInIncognitoBrowser
+#else
+#define MAYBE_CloseTabInIncognitoBrowser CloseTabInIncognitoBrowser
+#endif
 IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest,
-                       CloseTabInIncognitoBrowser) {
+                       MAYBE_CloseTabInIncognitoBrowser) {
   AddTabs(browser(), 2);
   ASSERT_EQ(browser()->GetTabStripModel()->count(), 3);
 
