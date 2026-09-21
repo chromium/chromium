@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -106,6 +107,20 @@ class OmniboxEverywhereBrowserTest : public InteractiveBrowserTest {
                                  temp_start_menu_dir_.GetPath());
 #endif
     InteractiveBrowserTest::SetUp();
+  }
+
+  void TearDownOnMainThread() override {
+    // If Chrome was launched without a browser window (e.g. via
+    // --omnibox-everywhere) or all browser windows closed while background mode
+    // was enabled, trigger a clean shutdown while the message loop is still
+    // running so keep-alives are released before
+    // BrowserProcessImpl::StartTearDown.
+    if (GlobalBrowserCollection::GetInstance()->IsEmpty() &&
+        !browser_shutdown::IsTryingToQuit()) {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(&chrome::CloseAllBrowsersAndQuit));
+    }
+    InteractiveBrowserTest::TearDownOnMainThread();
   }
 
   // Simulates triggering the global hotkey to show or dismiss the Omnibox

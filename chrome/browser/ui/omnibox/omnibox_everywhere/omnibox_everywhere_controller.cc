@@ -407,6 +407,21 @@ void OmniboxEverywhereController::OnInvoke(InvocationSource source,
       break;
   }
 
+  // Enable background mode/launch on startup the first time this is invoked.
+  if (g_browser_process && g_browser_process->local_state()) {
+    PrefService* local_state = g_browser_process->local_state();
+    const PrefService::Preference* bg_mode_pref =
+        local_state->FindPreference(prefs::kOmniboxEverywhereBackgroundMode);
+    if (bg_mode_pref && bg_mode_pref->IsDefaultValue()) {
+      local_state->SetBoolean(prefs::kOmniboxEverywhereBackgroundMode, true);
+    }
+    const PrefService::Preference* launch_on_startup_pref =
+        local_state->FindPreference(prefs::kOmniboxEverywhereLaunchOnStartup);
+    if (launch_on_startup_pref && launch_on_startup_pref->IsDefaultValue()) {
+      local_state->SetBoolean(prefs::kOmniboxEverywhereLaunchOnStartup, true);
+    }
+  }
+
   base::UmaHistogramEnumeration("OmniboxEverywhere.InvocationSource", source);
 
   ui_manager_->ShowForProfile(profile, context);
