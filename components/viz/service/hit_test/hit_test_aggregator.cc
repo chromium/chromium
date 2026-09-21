@@ -185,11 +185,12 @@ HitTestAggregator::AppendRegion(size_t region_index,
       reasons |= AsyncHitTestReasons::kRegionNotActive;
     } else {
       // Rather than add a node in the tree for this hit_test_region_list
-      // element we can simplify the tree by merging the flags and transform
-      // into the kHitTestChildSurface element.
-      if (!hit_test_region_list->transform.IsIdentity())
-        transform.PreConcat(hit_test_region_list->transform);
-
+      // element we can simplify the tree by merging the flags into the
+      // kHitTestChildSurface element. The list-level transform is not
+      // merged: the mapping from the embedder's space into the embedded
+      // surface is defined by the embedder-submitted `region`, and a
+      // list-level transform is only applied for the surface that
+      // aggregation starts from (see AppendRoot()).
       flags |= hit_test_region_list->flags;
       reasons |= hit_test_region_list->async_hit_test_reasons;
 

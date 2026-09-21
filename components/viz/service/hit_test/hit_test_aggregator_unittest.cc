@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "components/viz/common/hit_test/hit_test_query.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/surface_id.h"
@@ -1280,6 +1281,169 @@ TEST_F(HitTestAggregatorTest, InvalidChildFrameSinkIdRejected) {
   EXPECT_FALSE(post_aggregation_list->regions.empty());
   EXPECT_EQ(1u, post_aggregation_list->regions.size());
   EXPECT_EQ(sibling_id, post_aggregation_list->regions[0].frame_sink_id);
+}
+
+// One embedder with two embedded surfaces, where c1 submits a
+// HitTestRegionList with a non-identity list-level transform. The mapping
+// from the embedder's space into an embedded surface is defined by the
+// embedder's HitTestRegion, so the embedded surface's list-level transform
+// must not be folded into its aggregated region: events over c2 and over the
+// embedder keep routing there.
+//
+//  +e-------------+
+//  | +c1-+        |
+//  | +---+        |
+//  |       +c2--+ |
+//  |       +----+ |
+//  +--------------+
+//
+TEST_F(HitTestAggregatorTest, EmbeddedSurfaceListTransformIgnored) {
+  TestHitTestAggregator* aggregator = hit_test_aggregator();
+  EXPECT_EQ(aggregator->GetRegionCount(), 0);
+
+  SurfaceId e_surface_id = MakeSurfaceId(kDisplayClientId);
+  SurfaceId c1_surface_id = MakeSurfaceId(kDisplayClientId + 1);
+  SurfaceId c2_surface_id = MakeSurfaceId(kDisplayClientId + 2);
+
+  frame_sink_manager()->RegisterFrameSinkHierarchy(
+      e_surface_id.frame_sink_id(), c1_surface_id.frame_sink_id());
+  frame_sink_manager()->RegisterFrameSinkHierarchy(
+      e_surface_id.frame_sink_id(), c2_surface_id.frame_sink_id());
+
+  HitTestRegionList e_hit_test_region_list;
+  e_hit_test_region_list.flags = HitTestRegionFlags::kHitTestMine |
+                                 HitTestRegionFlags::kHitTestMouse |
+                                 HitTestRegionFlags::kHitTestTouch;
+  e_hit_test_region_list.bounds.SetRect(0, 0, 1024, 768);
+
+  HitTestRegion e_hit_test_region_c1;
+  e_hit_test_region_c1.flags = HitTestRegionFlags::kHitTestChildSurface |
+                               HitTestRegionFlags::kHitTestMouse |
+                               HitTestRegionFlags::kHitTestTouch;
+  e_hit_test_region_c1.frame_sink_id = c1_surface_id.frame_sink_id();
+  e_hit_test_region_c1.rect = gfx::RRectF(gfx::RectF(0, 0, 333, 222));
+
+  HitTestRegion e_hit_test_region_c2;
+  e_hit_test_region_c2.flags = HitTestRegionFlags::kHitTestChildSurface |
+                               HitTestRegionFlags::kHitTestMouse |
+                               HitTestRegionFlags::kHitTestTouch;
+  e_hit_test_region_c2.frame_sink_id = c2_surface_id.frame_sink_id();
+  e_hit_test_region_c2.rect = gfx::RRectF(gfx::RectF(0, 0, 300, 200));
+  e_hit_test_region_c2.transform.Translate(-500, -400);
+
+  e_hit_test_region_list.regions.push_back(std::move(e_hit_test_region_c1));
+  e_hit_test_region_list.regions.push_back(std::move(e_hit_test_region_c2));
+
+  // c1 claims a list-level transform that collapses any point in the
+  // embedder onto its own region.
+  HitTestRegionList c1_hit_test_region_list;
+  c1_hit_test_region_list.flags = HitTestRegionFlags::kHitTestMine |
+                                  HitTestRegionFlags::kHitTestMouse |
+                                  HitTestRegionFlags::kHitTestTouch;
+  c1_hit_test_region_list.bounds.SetRect(0, 0, 333, 222);
+  c1_hit_test_region_list.transform.Scale(0.000001, 0.000001);
+
+  HitTestRegionList c2_hit_test_region_list;
+  c2_hit_test_region_list.flags = HitTestRegionFlags::kHitTestMine |
+                                  HitTestRegionFlags::kHitTestMouse |
+                                  HitTestRegionFlags::kHitTestTouch;
+  c2_hit_test_region_list.bounds.SetRect(0, 0, 300, 200);
+
+  auto support2 = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, frame_sink_manager(), c1_surface_id.frame_sink_id(),
+      false /* is_root */);
+  support2->SubmitCompositorFrame(c1_surface_id.local_surface_id(),
+                                  MakeDefaultCompositorFrame(),
+                                  std::move(c1_hit_test_region_list));
+  local_surface_id_lookup_delegate()->SetSurfaceIdMap(c1_surface_id);
+  auto support3 = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, frame_sink_manager(), c2_surface_id.frame_sink_id(),
+      false /* is_root */);
+  support3->SubmitCompositorFrame(c2_surface_id.local_surface_id(),
+                                  MakeDefaultCompositorFrame(),
+                                  std::move(c2_hit_test_region_list));
+  local_surface_id_lookup_delegate()->SetSurfaceIdMap(c2_surface_id);
+  support()->SubmitCompositorFrame(e_surface_id.local_surface_id(),
+                                   MakeDefaultCompositorFrame(),
+                                   std::move(e_hit_test_region_list));
+  local_surface_id_lookup_delegate()->SetSurfaceIdMap(e_surface_id);
+
+  aggregator->Aggregate(e_surface_id);
+
+  EXPECT_EQ(aggregator->GetRegionCount(), 3);
+
+  AggregatedHitTestRegion region = host_regions()[0];
+  EXPECT_EQ(region.frame_sink_id, e_surface_id.frame_sink_id());
+  EXPECT_EQ(region.child_count, 2);
+
+  // The aggregated region for c1 keeps the transform its embedder authored.
+  region = host_regions()[1];
+  EXPECT_EQ(HitTestRegionFlags::kHitTestChildSurface |
+                HitTestRegionFlags::kHitTestMine |
+                HitTestRegionFlags::kHitTestMouse |
+                HitTestRegionFlags::kHitTestTouch,
+            region.flags);
+  EXPECT_EQ(region.frame_sink_id, c1_surface_id.frame_sink_id());
+  EXPECT_EQ(region.rect, gfx::RRectF(gfx::RectF(0, 0, 333, 222)));
+  EXPECT_EQ(gfx::Transform(), region.transform);
+
+  region = host_regions()[2];
+  EXPECT_EQ(region.frame_sink_id, c2_surface_id.frame_sink_id());
+  gfx::Transform expected_c2_transform;
+  expected_c2_transform.Translate(-500, -400);
+  EXPECT_EQ(expected_c2_transform, region.transform);
+
+  // Targeting is unaffected by the list-level transform c1 submitted.
+  HitTestQuery query{std::nullopt};
+  query.OnAggregatedHitTestRegionListUpdated(host_regions());
+
+  // A point over c2 routes to c2, in c2's local coordinates.
+  Target target =
+      query.FindTargetForLocation(EventSource::MOUSE, gfx::PointF(650, 500));
+  EXPECT_EQ(target.frame_sink_id, c2_surface_id.frame_sink_id());
+  EXPECT_EQ(target.location_in_target, gfx::PointF(150, 100));
+
+  // A point over c1 routes to c1.
+  target =
+      query.FindTargetForLocation(EventSource::MOUSE, gfx::PointF(100, 50));
+  EXPECT_EQ(target.frame_sink_id, c1_surface_id.frame_sink_id());
+  EXPECT_EQ(target.location_in_target, gfx::PointF(100, 50));
+
+  // A point over neither embedded surface routes to the embedder.
+  target =
+      query.FindTargetForLocation(EventSource::MOUSE, gfx::PointF(900, 700));
+  EXPECT_EQ(target.frame_sink_id, e_surface_id.frame_sink_id());
+  EXPECT_EQ(target.location_in_target, gfx::PointF(900, 700));
+}
+
+// The list-level transform of the surface that aggregation starts from is
+// applied to the root region, e.g. the external draw transform used by
+// Android WebView.
+TEST_F(HitTestAggregatorTest, RootSurfaceListTransformApplied) {
+  TestHitTestAggregator* aggregator = hit_test_aggregator();
+  EXPECT_EQ(aggregator->GetRegionCount(), 0);
+
+  SurfaceId display_surface_id = MakeSurfaceId(kDisplayClientId);
+
+  HitTestRegionList hit_test_region_list;
+  hit_test_region_list.flags = HitTestRegionFlags::kHitTestMine;
+  hit_test_region_list.bounds.SetRect(0, 0, 1024, 768);
+  hit_test_region_list.transform.Translate(-10, -20);
+
+  support()->SubmitCompositorFrame(display_surface_id.local_surface_id(),
+                                   MakeDefaultCompositorFrame(),
+                                   std::move(hit_test_region_list));
+  local_surface_id_lookup_delegate()->SetSurfaceIdMap(display_surface_id);
+  aggregator->Aggregate(display_surface_id);
+
+  EXPECT_EQ(aggregator->GetRegionCount(), 1);
+
+  AggregatedHitTestRegion region = host_regions()[0];
+  EXPECT_EQ(region.frame_sink_id, display_surface_id.frame_sink_id());
+  EXPECT_EQ(region.rect, gfx::RRectF(gfx::RectF(0, 0, 1024, 768)));
+  gfx::Transform expected_transform;
+  expected_transform.Translate(-10, -20);
+  EXPECT_EQ(expected_transform, region.transform);
 }
 
 TEST_F(HitTestAggregatorTest, RoundedCornersPropagate) {

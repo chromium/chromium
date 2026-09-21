@@ -96,7 +96,11 @@ struct VIZ_COMMON_EXPORT HitTestRegionList {
   // The bounds of the surface.
   gfx::Rect bounds;
 
-  // The transform applied to all regions in this surface.
+  // The transform applied to all regions in this surface. Only used for the
+  // surface that hit-test aggregation starts from, e.g. the external draw
+  // transform used by Android WebView. For an embedded surface the mapping
+  // into the surface is defined by the embedder's HitTestRegion, and this
+  // transform is ignored.
   gfx::Transform transform;
 
   // The list of sub-regions in front to back order.
