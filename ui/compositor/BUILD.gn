@@ -120,6 +120,7 @@ component("compositor") {
 
   public_deps = [
     "//cc",
+    "//ui/base/interaction",
     "//ui/gfx:animation_scale",
   ]
   deps = [

@@ -186,9 +186,9 @@ class LayerWithRealCompositorTest
     compositor_host_.reset();
   }
 
-  template <typename T = Layer>
-  std::unique_ptr<T> CreateLayer(LayerType type = T::kType) {
-    return std::unique_ptr<T>(static_cast<T*>(Layer::Create(type).release()));
+  template <typename T>
+  std::unique_ptr<T> CreateLayer() {
+    return std::make_unique<T>();
   }
 
   std::unique_ptr<Layer> CreateColorLayer(SkColor color,
@@ -587,9 +587,9 @@ class LayerWithDelegateTest
 
   Compositor* compositor() { return compositor_host_->GetCompositor(); }
 
-  template <typename T = Layer>
-  std::unique_ptr<T> CreateLayer(LayerType type = T::kType) {
-    return std::unique_ptr<T>(static_cast<T*>(Layer::Create(type).release()));
+  template <typename T>
+  std::unique_ptr<T> CreateLayer() {
+    return std::make_unique<T>();
   }
 
   std::unique_ptr<Layer> CreateColorLayer(SkColor color,
@@ -1192,10 +1192,9 @@ class LayerWithNullDelegateTest : public LayerWithDelegateTest {
     default_layer_delegate_ = std::make_unique<NullLayerDelegate>();
   }
 
-  template <typename T = Layer>
-  std::unique_ptr<T> CreateLayer(LayerType type = T::kType) {
-    auto layer =
-        std::unique_ptr<T>(static_cast<T*>(Layer::Create(type).release()));
+  template <typename T>
+  std::unique_ptr<T> CreateLayer() {
+    auto layer = std::make_unique<T>();
     layer->set_delegate(default_layer_delegate_.get());
     return layer;
   }

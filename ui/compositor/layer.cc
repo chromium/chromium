@@ -179,51 +179,51 @@ std::unique_ptr<Layer> Layer::Create(LayerType type) {
 }
 
 LayerTextured* Layer::AsTextured() {
-  return As<LayerTextured>();
+  return AsA<LayerTextured>();
 }
 
 const LayerTextured* Layer::AsTextured() const {
-  return As<LayerTextured>();
+  return AsA<LayerTextured>();
 }
 
 LayerSolidColor* Layer::AsSolidColor() {
-  return As<LayerSolidColor>();
+  return AsA<LayerSolidColor>();
 }
 
 const LayerSolidColor* Layer::AsSolidColor() const {
-  return As<LayerSolidColor>();
+  return AsA<LayerSolidColor>();
 }
 
 LayerNinePatch* Layer::AsNinePatch() {
-  return As<LayerNinePatch>();
+  return AsA<LayerNinePatch>();
 }
 
 const LayerNinePatch* Layer::AsNinePatch() const {
-  return As<LayerNinePatch>();
+  return AsA<LayerNinePatch>();
 }
 
 LayerSurface* Layer::AsSurface() {
-  return As<LayerSurface>();
+  return AsA<LayerSurface>();
 }
 
 const LayerSurface* Layer::AsSurface() const {
-  return As<LayerSurface>();
+  return AsA<LayerSurface>();
 }
 
 LayerWithExternalTexture* Layer::AsWithExternalTexture() {
-  return As<LayerWithExternalTexture>();
+  return AsA<LayerWithExternalTexture>();
 }
 
 const LayerWithExternalTexture* Layer::AsWithExternalTexture() const {
-  return As<LayerWithExternalTexture>();
+  return AsA<LayerWithExternalTexture>();
 }
 
 LayerNotDrawn* Layer::AsNotDrawn() {
-  return As<LayerNotDrawn>();
+  return AsA<LayerNotDrawn>();
 }
 
 const LayerNotDrawn* Layer::AsNotDrawn() const {
-  return As<LayerNotDrawn>();
+  return AsA<LayerNotDrawn>();
 }
 
 Layer::Layer(LayerType type)

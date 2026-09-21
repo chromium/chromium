@@ -19,6 +19,8 @@
 
 namespace ui {
 
+DEFINE_SAFE_CAST_TARGET(LayerTextured)
+
 LayerTextured::LayerTextured() : Layer(LAYER_TEXTURED) {
   content_layer_ = cc::PictureLayer::Create(this);
   cc_layer_ = content_layer_.get();

@@ -12,7 +12,6 @@
 #include "cc/layers/content_layer_client.h"
 #include "ui/compositor/compositor_export.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/layer_type.h"
 
 namespace cc {
 class DisplayItemList;
@@ -28,7 +27,7 @@ class LayerTestApi;
 class COMPOSITOR_EXPORT LayerTextured : public Layer,
                                         public cc::ContentLayerClient {
  public:
-  static constexpr LayerType kType = LAYER_TEXTURED;
+  DECLARE_SAFE_CAST_TARGET()
 
   LayerTextured();
 

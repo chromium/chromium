@@ -11,6 +11,8 @@
 
 namespace ui {
 
+DEFINE_SAFE_CAST_TARGET(LayerNotDrawn)
+
 LayerNotDrawn::LayerNotDrawn() : Layer(LAYER_NOT_DRAWN) {
   content_layer_ = cc::PictureLayer::Create(this);
   cc_layer_ = content_layer_.get();

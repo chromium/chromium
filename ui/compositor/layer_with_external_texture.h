@@ -13,7 +13,6 @@
 #include "components/viz/common/resources/transferable_resource.h"
 #include "ui/compositor/compositor_export.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/layer_type.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace cc {
@@ -28,7 +27,7 @@ class COMPOSITOR_EXPORT LayerWithExternalTexture
     : public Layer,
       public cc::TextureLayerClient {
  public:
-  static constexpr LayerType kType = LAYER_WITH_EXTERNAL_TEXTURE;
+  DECLARE_SAFE_CAST_TARGET()
 
   LayerWithExternalTexture();
 

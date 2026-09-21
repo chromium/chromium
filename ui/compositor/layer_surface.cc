@@ -14,6 +14,8 @@
 
 namespace ui {
 
+DEFINE_SAFE_CAST_TARGET(LayerSurface)
+
 LayerSurface::LayerSurface() : Layer(LAYER_SURFACE) {
   surface_layer_ = cc::SurfaceLayer::Create();
   cc_layer_ = surface_layer_.get();

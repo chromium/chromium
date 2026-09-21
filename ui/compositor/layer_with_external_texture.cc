@@ -15,6 +15,8 @@
 
 namespace ui {
 
+DEFINE_SAFE_CAST_TARGET(LayerWithExternalTexture)
+
 LayerWithExternalTexture::LayerWithExternalTexture()
     : Layer(LAYER_WITH_EXTERNAL_TEXTURE) {
   texture_layer_ = cc::TextureLayer::Create(this);

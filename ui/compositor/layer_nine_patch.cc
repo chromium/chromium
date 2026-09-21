@@ -12,6 +12,8 @@
 
 namespace ui {
 
+DEFINE_SAFE_CAST_TARGET(LayerNinePatch)
+
 LayerNinePatch::LayerNinePatch() : Layer(LAYER_NINE_PATCH) {
   nine_patch_layer_ = cc::NinePatchLayer::Create();
   cc_layer_ = nine_patch_layer_.get();

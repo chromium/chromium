@@ -8,7 +8,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "ui/compositor/compositor_export.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/layer_type.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -22,7 +21,7 @@ namespace ui {
 // and center aperture, backed by a cc::NinePatchLayer.
 class COMPOSITOR_EXPORT LayerNinePatch : public Layer {
  public:
-  static constexpr LayerType kType = LAYER_NINE_PATCH;
+  DECLARE_SAFE_CAST_TARGET()
 
   LayerNinePatch();
 

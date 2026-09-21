@@ -23,6 +23,7 @@
 #include "cc/paint/filter_operation.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/interaction/safe_castable.h"
 #include "ui/compositor/compositor_export.h"
 #include "ui/compositor/layer_animation_delegate.h"
 #include "ui/compositor/layer_type.h"
@@ -74,7 +75,8 @@ class LayerThreadedAnimationDelegate;
 // NOTE: Unlike Views, each Layer does *not* own its child Layers. If you
 // delete a Layer and it has children, the parent of each child Layer is set to
 // NULL, but the children are not deleted.
-class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate {
+class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
+                                public SafeCastable {
   // TODO(crbug.com/453831486): Remove this macro once the bug gets fixed.
   ADVANCED_MEMORY_SAFETY_CHECKS();
 
@@ -84,19 +86,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate {
   // Creates a Layer of the given type.
   static std::unique_ptr<Layer> Create(LayerType type);
 
-  // Casts the layer to the specified layer type `T`. Returns a pointer to the
-  // typed layer if this layer is of the requested type, otherwise returns null.
-  template <typename T>
-  const T* As() const {
-    return this->type() == T::kType ? static_cast<const T*>(this) : nullptr;
-  }
-
-  template <typename T>
-  T* As() {
-    return this->type() == T::kType ? static_cast<T*>(this) : nullptr;
-  }
-
-  // Helper wrappers for As<T>().
+  // Helper wrappers for AsA<T>().
   LayerTextured* AsTextured();
   const LayerTextured* AsTextured() const;
   LayerSolidColor* AsSolidColor();

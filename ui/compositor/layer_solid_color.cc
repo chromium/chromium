@@ -18,6 +18,8 @@
 
 namespace ui {
 
+DEFINE_SAFE_CAST_TARGET(LayerSolidColor)
+
 LayerSolidColor::LayerSolidColor() : Layer(LAYER_SOLID_COLOR) {
   solid_color_layer_ = cc::SolidColorLayer::Create();
   cc_layer_ = solid_color_layer_.get();

@@ -12,7 +12,6 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/compositor_export.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/layer_type.h"
 
 namespace cc {
 class MirrorLayer;
@@ -27,7 +26,7 @@ class LayerTestApi;
 // or mirrors a reflected subtree (via cc::MirrorLayer).
 class COMPOSITOR_EXPORT LayerSolidColor : public Layer {
  public:
-  static constexpr LayerType kType = LAYER_SOLID_COLOR;
+  DECLARE_SAFE_CAST_TARGET()
 
   LayerSolidColor();
 

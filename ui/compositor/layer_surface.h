@@ -12,7 +12,6 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/compositor_export.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/layer_type.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace cc {
@@ -29,7 +28,7 @@ namespace ui {
 // process or display compositor), backed by a cc::SurfaceLayer.
 class COMPOSITOR_EXPORT LayerSurface : public Layer {
  public:
-  static constexpr LayerType kType = LAYER_SURFACE;
+  DECLARE_SAFE_CAST_TARGET()
 
   LayerSurface();
 
