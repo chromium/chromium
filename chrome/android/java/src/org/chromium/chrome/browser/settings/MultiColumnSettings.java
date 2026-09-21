@@ -1381,9 +1381,10 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
                             }
                         });
 
-        // For SettingsInTabUrlNav, rely on the Chrome Navigation Stack to handle detailFragment
-        // loading.
-        if (!ChromeFeatureList.sSettingsInTabUrlNav.isEnabled()) {
+        // In a tab under SettingsInTabUrlNav, back presses are routed through the Chrome
+        // navigation stack, which loads the detail fragment. An activity has no such stack,
+        // so it keeps handling back presses here.
+        if (!mShownInTab || !ChromeFeatureList.sSettingsInTabUrlNav.isEnabled()) {
             requireActivity()
                     .getOnBackPressedDispatcher()
                     .addCallback(this, mOnBackPressedCallback);
