@@ -326,7 +326,18 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
             }
             mLastUrl = navigation.getUrl();
 
-            if (!navigation.hasCommitted()) return;
+            if (!navigation.hasCommitted()) {
+                // A navigation that started but never committed (e.g. a same-document
+                // traversal cancelled from the Navigation API's 'navigate' event) must
+                // still tell observers the navigation is over. Otherwise
+                // LocationBarModel's same-document debounce stays latched and silently
+                // drops later URL and security state updates.
+                observers.rewind();
+                while (observers.hasNext()) {
+                    observers.next().onDidFinishNavigationEnd();
+                }
+                return;
+            }
 
             mTab.updateTitle();
             mTab.handleDidFinishNavigation(

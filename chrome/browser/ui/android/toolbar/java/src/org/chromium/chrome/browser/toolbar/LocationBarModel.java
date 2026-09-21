@@ -308,6 +308,9 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
         boolean isTabChanging = mTab != tab;
         Tab previousTab = mTab;
+        if (isTabChanging) {
+            resetSameDocNavFlags();
+        }
         mTab = tab;
         mProfile = profile;
         performProfileDependentInitializationIfRequired();
