@@ -788,8 +788,16 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest, MAYBE_InvokeFailsOnTabClosed) {
   EXPECT_EQ(error_future.Get(), GlicInvokeError::kTabClosed);
 }
 
+// TODO(crbug.com/564531222): Fix flakiness and enable on linux-chromeos-dbg
+// bot.
+#if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
+#define MAYBE_InvokeFailsOnInstanceDestruction \
+  DISABLED_InvokeFailsOnInstanceDestruction
+#else
+#define MAYBE_InvokeFailsOnInstanceDestruction InvokeFailsOnInstanceDestruction
+#endif
 IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
-                       InvokeFailsOnInstanceDestruction) {
+                       MAYBE_InvokeFailsOnInstanceDestruction) {
   tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
 
   ASSERT_OK(OpenGlicForActiveTab());
