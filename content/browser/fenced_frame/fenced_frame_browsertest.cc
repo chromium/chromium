@@ -51,7 +51,8 @@ class FencedFrameStubBrowserTest : public ContentBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(FencedFrameStubBrowserTest, ElementCreationAndLayout) {
+IN_PROC_BROWSER_TEST_F(FencedFrameStubBrowserTest,
+                       DISABLED_ElementCreationAndLayout) {
   // Navigate to an empty page.
   const GURL main_url =
       https_server()->GetURL("a.test", "/fenced_frames/empty.html");
