@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/send_tab_to_self/model/ios_send_tab_to_self_infobar_delegate.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_load_navigation_user_data.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_tab_card_label_data.h"
+#import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_text_fragment_selector_generator.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -50,15 +51,39 @@
 #import "url/gurl.h"
 
 using send_tab_to_self::FakeSendTabToSelfModel;
+using send_tab_to_self::ScrollPositionGenerationOutcome;
 using send_tab_to_self::SendTabToSelfEntry;
 using send_tab_to_self::SendTabToSelfResult;
 using send_tab_to_self::ShareEntryPoint;
 
+namespace send_tab_to_self {
 namespace {
 
 constexpr char kBlankURL[] = "about:blank";
 constexpr char kExampleURL[] = "https://www.example.com/";
+constexpr char kOtherURL[] = "https://www.other.com/";
 constexpr char kDeviceID[] = "device_id";
+constexpr char kTitle[] = "title";
+constexpr char kDeviceName[] = "Device";
+constexpr char kSampleText[] = "sample";
+
+constexpr char kGenerationOutcomeHistogram[] =
+    "Sharing.SendTabToSelf.ScrollPosition.GenerationOutcome";
+constexpr char kGenerationTimeHistogram[] =
+    "Sharing.SendTabToSelf.ScrollPosition.GenerationTime";
+constexpr char kSelectorLengthHistogram[] =
+    "Sharing.SendTabToSelf.ScrollPosition.SelectorLength";
+
+SendTabToSelfTextFragment CreateTextFragment(
+    TextFragmentGenerationStatus status,
+    std::string text_start = "") {
+  SendTabToSelfTextFragment fragment;
+  fragment.status = status;
+  fragment.text_start = std::move(text_start);
+  return fragment;
+}
+
+}  // namespace
 
 class SendTabToSelfBrowserAgentTest : public PlatformTest {
  public:
@@ -947,4 +972,255 @@ TEST_F(SendTabToSelfBrowserAgentToastDisabledTest,
   EXPECT_OCMOCK_VERIFY(mock_snackbar_commands);
 }
 
-}  // anonymous namespace
+class SendTabToSelfBrowserAgentScrollPositionTestBase
+    : public SendTabToSelfBrowserAgentTest {
+ public:
+  using SendTabToSelfBrowserAgentTest::SendTabToSelfBrowserAgentTest;
+
+ protected:
+  void HandleTextFragmentGenerated(
+      const GURL& url,
+      const std::string& title,
+      const std::string& target_guid,
+      const std::string& target_device_name,
+      send_tab_to_self::ShareEntryPoint entry_point,
+      send_tab_to_self::PageContext page_context,
+      SendTabToSelfBrowserAgent::SendResultCallback send_result_callback,
+      std::optional<base::TimeTicks> start_time,
+      std::optional<SendTabToSelfTextFragment> text_fragment) {
+    agent_->HandleTextFragmentGeneratedForTesting(
+        url, title, target_guid, target_device_name, entry_point,
+        std::move(page_context), std::move(send_result_callback), start_time,
+        std::move(text_fragment));
+  }
+
+  const GURL url_{kExampleURL};
+  const GURL other_url_{kOtherURL};
+  base::HistogramTester histogram_tester_;
+};
+
+class SendTabToSelfBrowserAgentScrollPositionDisabledTest
+    : public SendTabToSelfBrowserAgentScrollPositionTestBase {
+ public:
+  SendTabToSelfBrowserAgentScrollPositionDisabledTest()
+      : SendTabToSelfBrowserAgentScrollPositionTestBase(
+            /*enabled_features=*/{},
+            /*disabled_features=*/{
+                send_tab_to_self::kSendTabToSelfPropagateScrollPosition}) {}
+};
+
+class SendTabToSelfBrowserAgentScrollPositionTest
+    : public SendTabToSelfBrowserAgentScrollPositionTestBase {
+ public:
+  SendTabToSelfBrowserAgentScrollPositionTest()
+      : SendTabToSelfBrowserAgentScrollPositionTestBase(
+            {send_tab_to_self::kSendTabToSelfPropagateScrollPosition}) {}
+};
+
+// Tests that no scroll position metrics are recorded when the feature flag is
+// disabled.
+TEST_F(SendTabToSelfBrowserAgentScrollPositionDisabledTest,
+       FeatureDisabledDoesNotRecordMetrics) {
+  AppendNewWebState(url_);
+
+  agent_->SendTabToTargetDevice(url_, kTitle, kDeviceID, kDeviceName,
+                                ShareEntryPoint::kShareSheet);
+
+  histogram_tester_.ExpectTotalCount(kGenerationOutcomeHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kGenerationTimeHistogram, 0);
+}
+
+// Tests that `kMainFrameUnavailable` is recorded when there is no active
+// WebState.
+TEST_F(SendTabToSelfBrowserAgentScrollPositionTest,
+       MainFrameUnavailableRecordedWhenNoWebState) {
+  // Do not append any WebState so that the active WebState is null.
+  agent_->SendTabToTargetDevice(url_, kTitle, kDeviceID, kDeviceName,
+                                ShareEntryPoint::kShareSheet);
+
+  histogram_tester_.ExpectUniqueSample(
+      kGenerationOutcomeHistogram,
+      ScrollPositionGenerationOutcome::kMainFrameUnavailable, 1);
+  histogram_tester_.ExpectTotalCount(kGenerationTimeHistogram, 0);
+}
+
+// Tests that `kMainFrameUnavailable` is recorded when the active WebState is
+// still loading.
+TEST_F(SendTabToSelfBrowserAgentScrollPositionTest,
+       MainFrameUnavailableRecordedWhenWebStateLoading) {
+  web::FakeWebState* web_state = AppendNewWebState(url_);
+  web_state->SetLoading(true);
+
+  agent_->SendTabToTargetDevice(url_, kTitle, kDeviceID, kDeviceName,
+                                ShareEntryPoint::kShareSheet);
+
+  histogram_tester_.ExpectUniqueSample(
+      kGenerationOutcomeHistogram,
+      ScrollPositionGenerationOutcome::kMainFrameUnavailable, 1);
+  histogram_tester_.ExpectTotalCount(kGenerationTimeHistogram, 0);
+}
+
+// Tests that `kMainFrameChanged` is recorded when the active WebState's URL
+// does not match the target URL.
+TEST_F(SendTabToSelfBrowserAgentScrollPositionTest,
+       MainFrameChangedRecordedWhenUrlMismatch) {
+  AppendNewWebState(other_url_);
+
+  agent_->SendTabToTargetDevice(url_, kTitle, kDeviceID, kDeviceName,
+                                ShareEntryPoint::kShareSheet);
+
+  histogram_tester_.ExpectUniqueSample(
+      kGenerationOutcomeHistogram,
+      ScrollPositionGenerationOutcome::kMainFrameChanged, 1);
+  histogram_tester_.ExpectTotalCount(kGenerationTimeHistogram, 0);
+}
+
+// Tests that `kSuccess`, generation time, and selector length are recorded
+// when text fragment generation succeeds with non-empty text.
+TEST_F(SendTabToSelfBrowserAgentScrollPositionTest,
+       SuccessRecordedWhenFragmentHasText) {
+  AppendNewWebState(url_);
+
+  HandleTextFragmentGenerated(
+      url_, kTitle, kDeviceID, kDeviceName, ShareEntryPoint::kShareSheet,
+      send_tab_to_self::PageContext(), base::DoNothing(),
+      base::TimeTicks::Now() - base::Milliseconds(100),
+      CreateTextFragment(TextFragmentGenerationStatus::kSuccess, kSampleText));
+
+  histogram_tester_.ExpectUniqueSample(
+      kGenerationOutcomeHistogram, ScrollPositionGenerationOutcome::kSuccess,
+      1);
+  histogram_tester_.ExpectTotalCount(kGenerationTimeHistogram, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kSelectorLengthHistogram, std::string_view(kSampleText).length(), 1);
+}
+
+// Tests that `kEmptySelector` is recorded when generation returns `kSuccess`
+// but the text start string is empty.
+TEST_F(SendTabToSelfBrowserAgentScrollPositionTest,
+       EmptySelectorRecordedWhenSuccessWithoutText) {
+  AppendNewWebState(url_);
+
+  HandleTextFragmentGenerated(
+      url_, kTitle, kDeviceID, kDeviceName, ShareEntryPoint::kShareSheet,
+      send_tab_to_self::PageContext(), base::DoNothing(),
+      base::TimeTicks::Now() - base::Milliseconds(100),
+      CreateTextFragment(TextFragmentGenerationStatus::kSuccess, ""));
+
+  histogram_tester_.ExpectUniqueSample(
+      kGenerationOutcomeHistogram,
+      ScrollPositionGenerationOutcome::kEmptySelector, 1);
+  histogram_tester_.ExpectTotalCount(kGenerationTimeHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kSelectorLengthHistogram, 0);
+}
+
+// Tests that `kRendererTimeout` is recorded when no fragment is returned.
+TEST_F(SendTabToSelfBrowserAgentScrollPositionTest,
+       RendererTimeoutRecordedWhenFragmentNullopt) {
+  AppendNewWebState(url_);
+
+  HandleTextFragmentGenerated(
+      url_, kTitle, kDeviceID, kDeviceName, ShareEntryPoint::kShareSheet,
+      send_tab_to_self::PageContext(), base::DoNothing(),
+      base::TimeTicks::Now() - base::Milliseconds(100), std::nullopt);
+
+  histogram_tester_.ExpectUniqueSample(
+      kGenerationOutcomeHistogram,
+      ScrollPositionGenerationOutcome::kRendererTimeout, 1);
+  histogram_tester_.ExpectTotalCount(kGenerationTimeHistogram, 1);
+}
+
+// Tests that `kRendererTimeout` is recorded when the fragment status is
+// `kTimeout`.
+TEST_F(SendTabToSelfBrowserAgentScrollPositionTest,
+       RendererTimeoutRecordedWhenStatusTimeout) {
+  AppendNewWebState(url_);
+
+  HandleTextFragmentGenerated(
+      url_, kTitle, kDeviceID, kDeviceName, ShareEntryPoint::kShareSheet,
+      send_tab_to_self::PageContext(), base::DoNothing(),
+      base::TimeTicks::Now() - base::Milliseconds(100),
+      CreateTextFragment(TextFragmentGenerationStatus::kTimeout));
+
+  histogram_tester_.ExpectUniqueSample(
+      kGenerationOutcomeHistogram,
+      ScrollPositionGenerationOutcome::kRendererTimeout, 1);
+  histogram_tester_.ExpectTotalCount(kGenerationTimeHistogram, 1);
+}
+
+// Tests that `kLinkGenerationError` is recorded when the fragment status is
+// `kInvalidSelection`.
+TEST_F(SendTabToSelfBrowserAgentScrollPositionTest,
+       LinkGenerationErrorRecordedWhenInvalidSelection) {
+  AppendNewWebState(url_);
+
+  HandleTextFragmentGenerated(
+      url_, kTitle, kDeviceID, kDeviceName, ShareEntryPoint::kShareSheet,
+      send_tab_to_self::PageContext(), base::DoNothing(),
+      base::TimeTicks::Now() - base::Milliseconds(100),
+      CreateTextFragment(TextFragmentGenerationStatus::kInvalidSelection));
+
+  histogram_tester_.ExpectUniqueSample(
+      kGenerationOutcomeHistogram,
+      ScrollPositionGenerationOutcome::kLinkGenerationError, 1);
+  histogram_tester_.ExpectTotalCount(kGenerationTimeHistogram, 1);
+}
+
+// Tests that `kLinkGenerationError` is recorded when the fragment status is
+// `kAmbiguous`.
+TEST_F(SendTabToSelfBrowserAgentScrollPositionTest,
+       LinkGenerationErrorRecordedWhenAmbiguous) {
+  AppendNewWebState(url_);
+
+  HandleTextFragmentGenerated(
+      url_, kTitle, kDeviceID, kDeviceName, ShareEntryPoint::kShareSheet,
+      send_tab_to_self::PageContext(), base::DoNothing(),
+      base::TimeTicks::Now() - base::Milliseconds(100),
+      CreateTextFragment(TextFragmentGenerationStatus::kAmbiguous));
+
+  histogram_tester_.ExpectUniqueSample(
+      kGenerationOutcomeHistogram,
+      ScrollPositionGenerationOutcome::kLinkGenerationError, 1);
+  histogram_tester_.ExpectTotalCount(kGenerationTimeHistogram, 1);
+}
+
+// Tests that `kLinkGenerationError` is recorded when the fragment status is
+// `kExecutionFailed`.
+TEST_F(SendTabToSelfBrowserAgentScrollPositionTest,
+       LinkGenerationErrorRecordedWhenExecutionFailed) {
+  AppendNewWebState(url_);
+
+  HandleTextFragmentGenerated(
+      url_, kTitle, kDeviceID, kDeviceName, ShareEntryPoint::kShareSheet,
+      send_tab_to_self::PageContext(), base::DoNothing(),
+      base::TimeTicks::Now() - base::Milliseconds(100),
+      CreateTextFragment(TextFragmentGenerationStatus::kExecutionFailed));
+
+  histogram_tester_.ExpectUniqueSample(
+      kGenerationOutcomeHistogram,
+      ScrollPositionGenerationOutcome::kLinkGenerationError, 1);
+  histogram_tester_.ExpectTotalCount(kGenerationTimeHistogram, 1);
+}
+
+// Tests that `kMainFrameChanged` is recorded when the active WebState
+// navigates to a different URL before fragment generation completes.
+TEST_F(SendTabToSelfBrowserAgentScrollPositionTest,
+       MainFrameChangedWhenNavigatedDuringGeneration) {
+  web::FakeWebState* web_state = AppendNewWebState(url_);
+
+  // Simulate navigating to another URL while generation was pending.
+  web_state->SetCurrentURL(other_url_);
+
+  HandleTextFragmentGenerated(
+      url_, kTitle, kDeviceID, kDeviceName, ShareEntryPoint::kShareSheet,
+      send_tab_to_self::PageContext(), base::DoNothing(),
+      base::TimeTicks::Now() - base::Milliseconds(100),
+      CreateTextFragment(TextFragmentGenerationStatus::kSuccess, kSampleText));
+
+  histogram_tester_.ExpectUniqueSample(
+      kGenerationOutcomeHistogram,
+      ScrollPositionGenerationOutcome::kMainFrameChanged, 1);
+  histogram_tester_.ExpectTotalCount(kGenerationTimeHistogram, 1);
+}
+
+}  // namespace send_tab_to_self

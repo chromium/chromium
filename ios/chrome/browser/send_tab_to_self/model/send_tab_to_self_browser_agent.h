@@ -17,6 +17,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/scoped_observation.h"
+#import "base/time/time.h"
 #import "components/send_tab_to_self/entry_point_display_reason.h"
 #import "components/send_tab_to_self/metrics_util.h"
 #import "components/send_tab_to_self/page_context.h"
@@ -80,6 +81,18 @@ class SendTabToSelfBrowserAgent
                               const std::string& target_device_name,
                               send_tab_to_self::SendTabToSelfResult result);
 
+  // Test-only wrapper to simulate completion of text fragment generation.
+  void HandleTextFragmentGeneratedForTesting(
+      const GURL& url,
+      const std::string& title,
+      const std::string& target_guid,
+      const std::string& target_device_name,
+      send_tab_to_self::ShareEntryPoint entry_point,
+      send_tab_to_self::PageContext page_context,
+      SendResultCallback send_result_callback,
+      std::optional<base::TimeTicks> start_time,
+      std::optional<SendTabToSelfTextFragment> text_fragment);
+
   // SendTabToSelfModelObserver::
   void OnEntriesAddedRemotely(
       base::span<const send_tab_to_self::SendTabToSelfEntry* const> new_entries)
@@ -118,8 +131,8 @@ class SendTabToSelfBrowserAgent
 
   // Callback invoked when text fragment generation completes for a shared URL.
   // Enriches `page_context` with scroll position fragment data if present,
-  // inserts the Send Tab to Self entry into the model, and dispatches snackbar
-  // notifications.
+  // records scroll position metrics, inserts the Send Tab to Self entry into
+  // the model, and dispatches snackbar notifications.
   void HandleTextFragmentGenerated(
       const GURL& url,
       const std::string& title,
@@ -128,6 +141,7 @@ class SendTabToSelfBrowserAgent
       send_tab_to_self::ShareEntryPoint entry_point,
       send_tab_to_self::PageContext page_context,
       SendResultCallback send_result_callback,
+      std::optional<base::TimeTicks> start_time,
       std::optional<SendTabToSelfTextFragment> text_fragment);
 
   // Callback invoked when an entry is sent to the target device.

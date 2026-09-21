@@ -180,6 +180,71 @@ void ShowPostSendSnackbar(
   [snackbar_commands showSnackbarMessage:message];
 }
 
+// Records the scroll position generation outcome and selector length based on
+// the generator result, mirroring the metrics recorded on Blink platforms
+// (`SendTabToSelfPageHandler::ProcessSelectorGenerationResult`).
+//
+// Matches Blink metrics for:
+// - `kMainFrameChanged`: WebState navigated or changed URL during generation.
+// - `kRendererTimeout`: Generator timed out or returned no fragment.
+// - `kEmptySelector`: Generation succeeded but produced an empty selector.
+// - `kLinkGenerationError`: Polyfill reported invalid selection, ambiguous
+//   match, or execution failure.
+// - `kSuccess`: Valid text fragment was generated.
+//
+// Differences from Blink:
+// - `kBrowserTimeout`: Not recorded on iOS because selector generation is
+//   handled directly via JavaScript execution rather than a separate
+//   browser-side timeout timer; timeouts map to `kRendererTimeout`.
+// - `kInvalidSelector`: Not recorded on iOS because the polyfill produces a
+//   structured `SendTabToSelfTextFragment` rather than an escaped string that
+//   requires parsing.
+// - Selector length: Recorded as the combined length of text fragment
+//   components rather than the raw serialized directive string.
+void RecordScrollPositionResult(
+    web::WebState* active_web_state,
+    const GURL& expected_url,
+    const std::optional<SendTabToSelfTextFragment>& fragment) {
+  if (!active_web_state ||
+      active_web_state->GetLastCommittedURL() != expected_url) {
+    send_tab_to_self::RecordScrollPositionGenerationOutcome(
+        send_tab_to_self::ScrollPositionGenerationOutcome::kMainFrameChanged);
+    return;
+  }
+
+  if (!fragment) {
+    send_tab_to_self::RecordScrollPositionGenerationOutcome(
+        send_tab_to_self::ScrollPositionGenerationOutcome::kRendererTimeout);
+    return;
+  }
+
+  switch (fragment->status) {
+    case TextFragmentGenerationStatus::kSuccess:
+      if (fragment->text_start.empty()) {
+        send_tab_to_self::RecordScrollPositionGenerationOutcome(
+            send_tab_to_self::ScrollPositionGenerationOutcome::kEmptySelector);
+        return;
+      }
+      send_tab_to_self::RecordScrollPositionGenerationOutcome(
+          send_tab_to_self::ScrollPositionGenerationOutcome::kSuccess);
+      send_tab_to_self::RecordScrollPositionSelectorLength(
+          fragment->text_start.length() + fragment->text_end.length() +
+          fragment->prefix.length() + fragment->suffix.length());
+      return;
+    case TextFragmentGenerationStatus::kTimeout:
+      send_tab_to_self::RecordScrollPositionGenerationOutcome(
+          send_tab_to_self::ScrollPositionGenerationOutcome::kRendererTimeout);
+      return;
+    case TextFragmentGenerationStatus::kInvalidSelection:
+    case TextFragmentGenerationStatus::kAmbiguous:
+    case TextFragmentGenerationStatus::kExecutionFailed:
+      send_tab_to_self::RecordScrollPositionGenerationOutcome(
+          send_tab_to_self::ScrollPositionGenerationOutcome::
+              kLinkGenerationError);
+      return;
+  }
+}
+
 }  // namespace
 
 SendTabToSelfBrowserAgent::SendTabToSelfBrowserAgent(Browser* browser)
@@ -533,22 +598,44 @@ void SendTabToSelfBrowserAgent::SendTabToTargetDevice(
     page_context = send_tab_to_self::ExtractFormFieldsFromWebState(web_state);
   }
 
-  if (!web_state || web_state->IsLoading() ||
-      web_state->GetLastCommittedURL() != url ||
-      !base::FeatureList::IsEnabled(
+  if (!base::FeatureList::IsEnabled(
           send_tab_to_self::kSendTabToSelfPropagateScrollPosition)) {
     HandleTextFragmentGenerated(url, title, target_guid, target_device_name,
                                 entry_point, std::move(page_context),
-                                std::move(send_result_callback), std::nullopt);
+                                std::move(send_result_callback),
+                                /*start_time=*/std::nullopt, std::nullopt);
     return;
   }
 
+  std::optional<send_tab_to_self::ScrollPositionGenerationOutcome>
+      failure_outcome;
+  if (!web_state) {
+    failure_outcome = send_tab_to_self::ScrollPositionGenerationOutcome::
+        kMainFrameUnavailable;
+  } else if (web_state->GetLastCommittedURL() != url) {
+    failure_outcome =
+        send_tab_to_self::ScrollPositionGenerationOutcome::kMainFrameChanged;
+  } else if (web_state->IsLoading()) {
+    failure_outcome = send_tab_to_self::ScrollPositionGenerationOutcome::
+        kMainFrameUnavailable;
+  }
+
+  if (failure_outcome) {
+    send_tab_to_self::RecordScrollPositionGenerationOutcome(*failure_outcome);
+    HandleTextFragmentGenerated(url, title, target_guid, target_device_name,
+                                entry_point, std::move(page_context),
+                                std::move(send_result_callback),
+                                /*start_time=*/std::nullopt, std::nullopt);
+    return;
+  }
+
+  base::TimeTicks start_time = base::TimeTicks::Now();
   SendTabToSelfTextFragmentSelectorGenerator::GetInstance()->GetTextFragment(
       web_state,
       base::BindOnce(&SendTabToSelfBrowserAgent::HandleTextFragmentGenerated,
                      weak_ptr_factory_.GetWeakPtr(), url, title, target_guid,
                      target_device_name, entry_point, std::move(page_context),
-                     std::move(send_result_callback)));
+                     std::move(send_result_callback), start_time));
 }
 
 void SendTabToSelfBrowserAgent::HandleTextFragmentGenerated(
@@ -559,9 +646,18 @@ void SendTabToSelfBrowserAgent::HandleTextFragmentGenerated(
     send_tab_to_self::ShareEntryPoint entry_point,
     send_tab_to_self::PageContext page_context,
     SendResultCallback send_result_callback,
+    std::optional<base::TimeTicks> start_time,
     std::optional<SendTabToSelfTextFragment> fragment) {
   if (!browser_) {
     return;
+  }
+
+  if (start_time.has_value()) {
+    send_tab_to_self::RecordScrollPositionGenerationTime(
+        base::TimeTicks::Now() - *start_time);
+    web::WebState* active_web_state =
+        browser_->GetWebStateList()->GetActiveWebState();
+    RecordScrollPositionResult(active_web_state, url, fragment);
   }
 
   send_tab_to_self::SendTabToSelfSyncService* service =
@@ -627,6 +723,22 @@ void SendTabToSelfBrowserAgent::HandleEntrySentForTest(
     send_tab_to_self::SendTabToSelfResult result) {
   HandleEntrySent(snackbar_commands, target_device_name, base::NullCallback(),
                   result);
+}
+
+void SendTabToSelfBrowserAgent::HandleTextFragmentGeneratedForTesting(
+    const GURL& url,
+    const std::string& title,
+    const std::string& target_guid,
+    const std::string& target_device_name,
+    send_tab_to_self::ShareEntryPoint entry_point,
+    send_tab_to_self::PageContext page_context,
+    SendResultCallback send_result_callback,
+    std::optional<base::TimeTicks> start_time,
+    std::optional<SendTabToSelfTextFragment> text_fragment) {
+  HandleTextFragmentGenerated(url, title, target_guid, target_device_name,
+                              entry_point, std::move(page_context),
+                              std::move(send_result_callback), start_time,
+                              std::move(text_fragment));
 }
 
 void SendTabToSelfBrowserAgent::OpenEntryInBackgroundTab(
