@@ -1492,8 +1492,8 @@ SkiaOutputSurfaceImpl::GetGraphitePromiseTextureInfo(
     int plane_index,
     bool mipmap) {
   return gpu::GraphitePromiseTextureInfo(
-      gr_context_type_, image_context->format(), image_context->ycbcr_info(),
-      plane_index, mipmap);
+      gr_context_type_, image_context->format(), image_context->color_space(),
+      image_context->ycbcr_info(), plane_index, mipmap);
 }
 
 GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(
