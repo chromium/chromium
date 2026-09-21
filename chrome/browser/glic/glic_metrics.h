@@ -96,7 +96,8 @@ enum class ShareImageResult {
   kFailedCancelled = 26,
   kFailedProfileNotEnabled = 27,
   kFailedSuperseded = 28,
-  kMaxValue = kFailedSuperseded,
+  kFailedLiveModeActive = 29,
+  kMaxValue = kFailedLiveModeActive,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:ShareImageResult)

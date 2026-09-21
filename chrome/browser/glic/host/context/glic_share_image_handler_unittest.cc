@@ -397,6 +397,13 @@ TEST_F(GlicShareImageHandlerTest, OnInvokeErrorSuperseded) {
       static_cast<int>(ShareImageResult::kFailedSuperseded), 1);
 }
 
+TEST_F(GlicShareImageHandlerTest, OnInvokeErrorLiveModeActive) {
+  OnInvokeError(GlicInvokeError::kLiveModeActive);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.TabContext.ShareImageResult",
+      static_cast<int>(ShareImageResult::kFailedLiveModeActive), 1);
+}
+
 TEST_F(GlicShareImageHandlerTest,
        PageContextEligibilityChangedToIneligibleFails) {
   SetShareInProgress(true);

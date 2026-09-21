@@ -41,6 +41,14 @@ constexpr base::TimeDelta kDefaultTimeout = base::Minutes(1);
 ShowOptions CreateShowOptions(
     const GlicInvokeHandler::ResolvedTarget& resolved_target,
     const GlicInvokeOptions& options) {
+  // A floating panel can be asked to come up in text mode, e.g. to take a
+  // conversation out of live mode. The browser can only request it; leaving
+  // live mode is up to the web client.
+  const mojom::WebClientMode floating_initial_mode =
+      options.target.live_mode_behavior ==
+              LiveModeBehavior::kForceFloatingTextMode
+          ? mojom::WebClientMode::kText
+          : mojom::WebClientMode::kUnknown;
   ShowOptions show_options = std::visit(
       absl::Overload{[&](const GlicInvokeHandler::TabSurface& tab_surface) {
                        SidePanelShowOptions side_panel_options{
@@ -54,7 +62,8 @@ ShowOptions CreateShowOptions(
                      },
                      [&](Floating) {
                        return ShowOptions::ForFloating(
-                           /*source_tab=*/tabs::TabHandle::Null());
+                           /*source_tab=*/tabs::TabHandle::Null(),
+                           floating_initial_mode);
                      }},
       resolved_target);
   show_options.invocation_source = options.GetInvocationSource();

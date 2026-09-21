@@ -85,6 +85,24 @@ bool IsEligibleForHibernation(const GlicInstanceImpl* instance) {
          !instance->IsShowing();
 }
 
+// Whether `target.live_mode_behavior` can have any effect on an invocation
+// targeting `target.surface`. Apart from `kFail`, these behaviors work by
+// choosing between a tab's side panel and the floaty, so they need a surface
+// that resolves to one of those up front. `LastActiveOrNew` instead resolves
+// to whichever surface the instance is already on, so nothing can steer it.
+bool CanLiveModeBehaviorTakeEffect(const Target& target) {
+  switch (target.live_mode_behavior) {
+    case LiveModeBehavior::kProceedInLiveMode:
+    case LiveModeBehavior::kFail:
+      return true;
+    case LiveModeBehavior::kForceSidePanelTextMode:
+      return !std::holds_alternative<Floating>(target.surface) &&
+             !std::holds_alternative<LastActiveOrNew>(target.surface);
+    case LiveModeBehavior::kForceFloatingTextMode:
+      return !std::holds_alternative<LastActiveOrNew>(target.surface);
+  }
+}
+
 }  // namespace
 
 BASE_FEATURE(kGlicMaxAwakeInstances, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -664,6 +682,20 @@ base::WeakPtr<GlicInstanceImpl> GlicInstanceCoordinatorImpl::InvokeInternal(
     }
   }
 
+  // Validate against the requested surface, before it gets resolved and
+  // rewritten below: a behavior that could never take effect is a caller
+  // configuration error, whether or not an instance happens to be live.
+  // TODO(b/559214349): Expose a way for callers to ask up front whether an
+  // invocation would be rejected here or by the `kFail` check below, so that
+  // UI entry points can be disabled or hidden instead of failing on click.
+  if (!CanLiveModeBehaviorTakeEffect(options.target)) {
+    metrics->RecordError(GlicInvokeError::kInvalidConfiguration);
+    if (options.on_error) {
+      std::move(options.on_error).Run(GlicInvokeError::kInvalidConfiguration);
+    }
+    return nullptr;
+  }
+
   GlicInvokeHandler::ResolvedTarget resolved_target;
   tabs::TabInterface* tab = nullptr;
 
@@ -753,10 +785,47 @@ base::WeakPtr<GlicInstanceImpl> GlicInstanceCoordinatorImpl::InvokeInternal(
     return nullptr;
   }
 
+  // `options.target.live_mode_behavior` decides what happens when this
+  // invocation lands on an instance that is already in live (audio) mode,
+  // superseding `options.preserve_active_surface`. A newly created instance is
+  // never in live mode, so this only affects invocations that joined an
+  // existing conversation. The interaction mode is sticky once reported by the
+  // client, so a hidden instance doesn't count as being in live mode.
+  const bool is_showing_live_mode =
+      instance->IsShowing() && instance->IsLiveMode();
+  if (is_showing_live_mode &&
+      options.target.live_mode_behavior == LiveModeBehavior::kFail) {
+    metrics->RecordError(GlicInvokeError::kLiveModeActive);
+    if (options.on_error) {
+      std::move(options.on_error).Run(GlicInvokeError::kLiveModeActive);
+    }
+    return nullptr;
+  }
+
+  const bool is_floating = instance->IsActiveEmbedder(FloatingEmbedderKey{});
+  bool keep_in_floaty = false;
+  if (is_showing_live_mode) {
+    switch (options.target.live_mode_behavior) {
+      case LiveModeBehavior::kProceedInLiveMode:
+        // Live mode runs in the floaty, so carrying on in live mode means
+        // leaving the conversation where it is.
+        keep_in_floaty = is_floating;
+        break;
+      case LiveModeBehavior::kForceFloatingTextMode:
+        // Unlike the above, this pulls the conversation into the floaty.
+        keep_in_floaty = true;
+        break;
+      case LiveModeBehavior::kForceSidePanelTextMode:
+      case LiveModeBehavior::kFail:
+        break;
+    }
+  } else {
+    keep_in_floaty = options.preserve_active_surface && is_floating;
+  }
+
   // Leave the conversation in the floaty instead of pulling it into the
   // targeted tab's side panel.
-  if (options.preserve_active_surface && tab &&
-      instance->IsActiveEmbedder(FloatingEmbedderKey{})) {
+  if (keep_in_floaty && tab) {
     // A `DefaultConversation` only resolves to a floating instance when the tab
     // is already bound to it. An explicitly targeted one may still need to
     // adopt the tab.

@@ -693,6 +693,7 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="Profile not enabled"/>
   <int value="17" label="Cancelled"/>
   <int value="18" label="Superseded by another invocation"/>
+  <int value="19" label="Instance is in live mode"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/public/glic_invoke_options.h:GlicInvokeError) -->
@@ -1471,6 +1472,7 @@ chromium-metrics-reviews@google.com.
   <int value="26" label="kFailedCancelled"/>
   <int value="27" label="kFailedProfileNotEnabled"/>
   <int value="28" label="kFailedSuperseded"/>
+  <int value="29" label="kFailedLiveModeActive"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:ShareImageResult) -->
