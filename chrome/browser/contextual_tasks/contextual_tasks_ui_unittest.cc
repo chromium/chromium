@@ -85,6 +85,10 @@ class MockContextualTasksComposeboxHandler
               SetAimThreadRestoredTabs,
               (std::vector<searchbox::mojom::TabInfoPtr>),
               (override));
+  MOCK_METHOD(std::vector<int32_t>,
+              GetSelectedTabIds,
+              (),
+              (const, override));
 };
 
 class MockTaskInfoDelegate : public TaskInfoDelegate {

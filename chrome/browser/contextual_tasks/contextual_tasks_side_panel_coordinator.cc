@@ -24,6 +24,7 @@
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_tasks/contextual_search_session_finder.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_auto_suggestion_manager.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_host.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_permission_controller.h"
@@ -1353,6 +1354,15 @@ ContextualTasksSidePanelCoordinator::GetAutoSuggestedTabHandle() {
   if (!web_ui_interface ||
       !web_ui_interface->IsActiveTabContextSuggestionShowing()) {
     return std::nullopt;
+  }
+
+  if (auto* manager = web_ui_interface->GetAutoSuggestionManager()) {
+    if (const auto* suggestion = manager->GetCurrentSuggestion()) {
+      tabs::TabHandle handle(suggestion->tab_id);
+      if (handle.Get()) {
+        return handle;
+      }
+    }
   }
 
   tabs::TabInterface* active_tab_interface =

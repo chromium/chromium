@@ -93,6 +93,7 @@ class ComposeboxQueryControllerBridge
   void OnTaskChanged() override;
   void InitializeInputStateModel() override;
   void UpdateStateFromUrl(const GURL& url) override;
+  std::vector<int32_t> GetSelectedTabIds() const override;
 
   // contextual_tasks::QueryContextualizer::Delegate:
   GURL GetTabUrl(contextual_tasks::QueryContextualizer::TabId id) override;

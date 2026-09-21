@@ -10,10 +10,11 @@
 
 #include "base/check_deref.h"
 #include "base/json/string_escape.h"
+#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
-#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
@@ -44,6 +45,7 @@
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/common/composebox_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -248,7 +250,7 @@ class ContextualTasksContextManagementInteractiveUiTest
 
     url_loader_interceptor_ = std::make_unique<content::URLLoaderInterceptor>(
         base::BindLambdaForTesting(
-            [](content::URLLoaderInterceptor::RequestParams* params) {
+            [this](content::URLLoaderInterceptor::RequestParams* params) {
               const GURL& url = params->url_request.url;
               if (url.host().find("lensfrontend-pa") != std::string::npos) {
                 if (url.path().find("gsessionid") != std::string::npos) {
@@ -261,6 +263,19 @@ class ContextualTasksContextManagementInteractiveUiTest
                       "HTTP/1.1 200 OK\r\nContent-Type: "
                       "application/x-protobuf\r\n\r\n",
                       response_data, params->client.get());
+                  return true;
+                }
+                if (fail_context_uploads_) {
+                  content::URLLoaderInterceptor::WriteResponse(
+                      "HTTP/1.1 500 Internal Server Error\r\n\r\n", "",
+                      params->client.get());
+                  return true;
+                }
+                // Keep the context upload in flight by retaining the client
+                // without ever responding. Dropping it would complete the
+                // request with an error instead.
+                if (ShouldStallContextUploads()) {
+                  stalled_upload_clients_.push_back(std::move(params->client));
                   return true;
                 }
                 lens::LensOverlayServerResponse upload_response;
@@ -344,12 +359,32 @@ class ContextualTasksContextManagementInteractiveUiTest
     return WaitForStateChange(contents_id, uploads_done);
   }
 
+  // Runs the message loop with `kNestableTasksAllowed` until `condition`
+  // evaluates to true. `base::test::RunUntil` uses `RunLoop::Type::kDefault`,
+  // which blocks application tasks when called inside an `InteractionSequence`
+  // `Do()` step.
+  bool RunUntilNestable(base::FunctionRef<bool()> condition) {
+    if (condition()) {
+      return true;
+    }
+    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+    base::RepeatingTimer timer;
+    timer.Start(FROM_HERE, base::Milliseconds(10),
+                base::BindLambdaForTesting([&]() {
+                  if (condition()) {
+                    timer.Stop();
+                    run_loop.Quit();
+                  }
+                }));
+    run_loop.Run();
+    return condition();
+  }
+
   // Asynchronously verifies whether the native tab strip reflects the expected
-  // set of underlined tabs. Uses base::test::RunUntil to poll all tab underline
-  // views synchronously until the visual state matches expectations.
+  // set of underlined tabs.
   auto VerifyUnderlinedTabs(const std::set<int>& expected_indices) {
     return Do([this, expected_indices]() {
-      EXPECT_TRUE(base::test::RunUntil([&]() {
+      EXPECT_TRUE(RunUntilNestable([&]() {
         auto* tabstrip = BrowserView::GetBrowserViewForBrowser(browser())
                              ->horizontal_tab_strip_for_testing();
         if (!tabstrip) {
@@ -395,11 +430,7 @@ class ContextualTasksContextManagementInteractiveUiTest
                       const container = el.getRootNode().host?.getRootNode();
                       const menu = container?.querySelector('#menu');
                       if (menu && !menu.open) {
-                        if (typeof menu.showAt === 'function') {
-                          menu.showAt(el);
-                        } else {
-                          el.click();
-                        }
+                        el.click();
                       }
                     })"),
                  WaitForStateChange(contents_id, menu_open),
@@ -618,9 +649,44 @@ class ContextualTasksContextManagementInteractiveUiTest
         WaitForElementExists(kSidePanelWebContentsId, kComposeboxContainer));
   }
 
+  // Returns the task ID that the tab at `index` is associated with in
+  // ContextualTasksService, or an invalid Uuid if it has no task. This is the
+  // association that drives whether the side panel follows the user to a tab;
+  // it is distinct from the tab-strip underline, which reflects the session's
+  // uploaded context attachments.
+  base::Uuid TaskIdForTab(int index) {
+    content::WebContents* contents =
+        browser()->GetAllTabInterfaces()[index]->GetContents();
+    std::optional<ContextualTask> task =
+        ContextualTasksServiceFactory::GetForProfile(browser()->GetProfile())
+            ->GetContextualTaskForTab(
+                sessions::SessionTabHelper::IdForTab(contents));
+    return task ? task->GetTaskId() : base::Uuid();
+  }
+
+  // When true, context uploads are held open indefinitely instead of
+  // completing immediately. The production interceptor answers uploads
+  // synchronously, which hides any behavior that depends on a tab being
+  // attached while its upload is still in flight.
+  virtual bool ShouldStallContextUploads() const { return false; }
+
+  void FailStalledUploads() {
+    EXPECT_TRUE(
+        RunUntilNestable([this]() { return !stalled_upload_clients_.empty(); }));
+    fail_context_uploads_ = true;
+    for (auto& client : stalled_upload_clients_) {
+      content::URLLoaderInterceptor::WriteResponse(
+          "HTTP/1.1 500 Internal Server Error\r\n\r\n", "", client.get());
+    }
+    stalled_upload_clients_.clear();
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::optional<ui::UserDataFactory::ScopedOverride> tab_context_override_;
+  bool fail_context_uploads_ = false;
+  std::vector<mojo::Remote<network::mojom::URLLoaderClient>>
+      stalled_upload_clients_;
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
 };
 
@@ -707,6 +773,139 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextManagementInteractiveUiTest,
       VerifyUnderlinedTabs({1}), OpenShareTabsFlyout(kSidePanelWebContentsId),
       VerifyMenuTriggerState(kSidePanelWebContentsId, 1),
       VerifyFlyoutTabChecked(kSidePanelWebContentsId, "title1", true));
+}
+
+// Context uploads never complete, reproducing real network timing where the
+// user switches to a tab in the window between attaching it and its upload
+// finishing.
+class ContextualTasksStalledUploadInteractiveUiTest
+    : public ContextualTasksContextManagementInteractiveUiTest {
+ protected:
+  bool ShouldStallContextUploads() const override { return true; }
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksStalledUploadInteractiveUiTest,
+                       PanelFollowsTabAttachedWhileUploadInFlight) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kAttachedTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kControlTab);
+
+  const GURL kUrl1 = embedded_test_server()->GetURL("/title1.html");
+  const GURL kUrl2 = embedded_test_server()->GetURL("/title2.html");
+
+  RunTestSequence(
+      InstrumentTab(kPrimaryTab, 0), AddInstrumentedTab(kAttachedTab, kUrl1),
+      AddInstrumentedTab(kControlTab, kUrl2), SelectTab(kTabStripElementId, 0),
+      OpenSidePanelWithWebContents(),
+
+      // Attach Tab 1 via the tab picker. Its upload will never complete, so
+      // the underline is the only signal that the attach has been processed.
+      OpenShareTabsFlyout(kSidePanelWebContentsId),
+      ToggleFlyoutTab(kSidePanelWebContentsId, "title1"),
+      VerifyUnderlinedTabs({1}),
+
+      CheckResult([this]() { return TaskIdForTab(0).is_valid(); }, true,
+                  "Tab 0 should have a task once the panel is open"),
+      CheckResult([this]() { return TaskIdForTab(1) == TaskIdForTab(0); }, true,
+                  "Attached tab should share the task while upload is pending"),
+      CheckResult([this]() { return TaskIdForTab(2) == TaskIdForTab(0); },
+                  false, "CONTROL: an unattached tab must not share the task"),
+
+      // Switching to the attached tab should carry the panel over.
+      SelectTab(kTabStripElementId, 1),
+      CheckResult(
+          [this]() {
+            return ContextualTasksPanelController::From(browser())
+                ->IsPanelOpenForContextualTask();
+          },
+          true, "Side panel should follow to a tab attached as context"));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksStalledUploadInteractiveUiTest,
+                       TabDisassociatedWhenUploadFails) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kAttachedTab);
+
+  const GURL kUrl1 = embedded_test_server()->GetURL("/title1.html");
+
+  RunTestSequence(
+      InstrumentTab(kPrimaryTab, 0), AddInstrumentedTab(kAttachedTab, kUrl1),
+      SelectTab(kTabStripElementId, 0), OpenSidePanelWithWebContents(),
+
+      // Attach Tab 1 via the tab picker while uploads are stalled.
+      OpenShareTabsFlyout(kSidePanelWebContentsId),
+      ToggleFlyoutTab(kSidePanelWebContentsId, "title1"),
+      VerifyUnderlinedTabs({1}),
+
+      CheckResult([this]() { return TaskIdForTab(0).is_valid(); }, true,
+                  "Tab 0 should have a task once the panel is open"),
+      CheckResult([this]() { return TaskIdForTab(1) == TaskIdForTab(0); }, true,
+                  "Attached tab should share the task while upload is pending"),
+
+      // Fail the in-flight upload and verify that Tab 1 is disassociated from
+      // the task.
+      Do([this]() { FailStalledUploads(); }),
+      Do([this]() {
+        EXPECT_TRUE(RunUntilNestable(
+            [this]() { return !TaskIdForTab(1).is_valid(); }))
+            << "Tab 1 should be disassociated from the task after upload fails";
+      }));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextManagementInteractiveUiTest,
+                       ContextPersistsAfterSwitchingToAttachedTab) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kAttachedTab);
+
+  const GURL kUrl0 = embedded_test_server()->GetURL("/title1.html");
+  const GURL kUrl1 = embedded_test_server()->GetURL("/title2.html");
+
+  content::WebContents* panel_contents_before_switch = nullptr;
+
+  RunTestSequence(
+      InstrumentTab(kPrimaryTab, 0), NavigateWebContents(kPrimaryTab, kUrl0),
+      AddInstrumentedTab(kAttachedTab, kUrl1), SelectTab(kTabStripElementId, 0),
+      OpenSidePanelWithWebContents(),
+      VerifyPlusButtonCoins(kSidePanelWebContentsId, 1),
+      VerifyUnderlinedTabs({0}),
+
+      // Attach Tab 1 as context from Tab 0's panel. Both Tab 0 and Tab 1
+      // should now be in context in the side panel.
+      OpenShareTabsFlyout(kSidePanelWebContentsId),
+      ToggleFlyoutTab(kSidePanelWebContentsId, "title2"),
+      WaitForFileUploadsComplete(kSidePanelWebContentsId, 2),
+      VerifyPlusButtonCoins(kSidePanelWebContentsId, 2),
+      VerifyUnderlinedTabs({0, 1}),
+
+      Do([this, &panel_contents_before_switch]() {
+        panel_contents_before_switch =
+            ContextualTasksPanelController::From(browser())
+                ->GetActiveWebContents();
+      }),
+
+      // Switch to the attached tab. It shares Tab 0's task, so the panel must
+      // keep showing the very same WebContents and keep both Tab 0 and Tab 1
+      // in context without requiring a query submission first.
+      SelectTab(kTabStripElementId, 1),
+      CheckResult(
+          [this]() {
+            return ContextualTasksPanelController::From(browser())
+                ->IsPanelOpenForContextualTask();
+          },
+          true, "Side panel should remain open on the attached tab"),
+      CheckResult(
+          [this, &panel_contents_before_switch]() {
+            return ContextualTasksPanelController::From(browser())
+                       ->GetActiveWebContents() == panel_contents_before_switch;
+          },
+          true, "Tabs in the same task must share one panel WebContents"),
+
+      // Both Tab 0 and Tab 1 must still be reflected in the side panel context.
+      VerifyPlusButtonCoins(kSidePanelWebContentsId, 2),
+      VerifyUnderlinedTabs({0, 1}), OpenShareTabsFlyout(kSidePanelWebContentsId),
+      VerifyMenuTriggerState(kSidePanelWebContentsId, 2),
+      VerifyFlyoutTabChecked(kSidePanelWebContentsId, "title1", true),
+      VerifyFlyoutTabChecked(kSidePanelWebContentsId, "title2", true));
 }
 
 }  // namespace contextual_tasks

@@ -849,6 +849,7 @@ const std::optional<base::Uuid>& ContextualTasksUI::GetTaskId() {
 }
 
 void ContextualTasksUI::SetTaskId(std::optional<base::Uuid> id) {
+  const bool task_changed = (id != task_id_);
   // Only clear restored tabs if the task has changed or no id exists.
   if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
     if ((id.has_value() && task_id_.has_value() &&
@@ -856,13 +857,13 @@ void ContextualTasksUI::SetTaskId(std::optional<base::Uuid> id) {
         !id.has_value()) {
       OnRestoredTabsFetched({});
     }
-    if (id != task_id_) {
+    if (task_changed) {
       is_history_thread_loading_ = id.has_value();
     }
   }
   task_id_ = id;
   // Initialize input state once task id is available.
-  if (composebox_handler_) {
+  if (composebox_handler_ && task_changed) {
     composebox_handler_->InitializeInputStateModel();
   }
 }
@@ -1082,8 +1083,10 @@ void ContextualTasksUI::CreatePageHandler(
   SetComposeboxHandler(owned_composebox_handler_.get());
 
   // Sync the initial auto-suggestion state.
-  composebox_handler_->UpdateSuggestedTabContext(
-      auto_suggestion_manager_->GetCurrentSuggestion());
+  if (auto_suggestion_manager_->GetCurrentSuggestion()) {
+    composebox_handler_->UpdateSuggestedTabContext(
+        auto_suggestion_manager_->GetCurrentSuggestion());
+  }
 }
 
 contextual_search::ContextualSearchSessionHandle*
@@ -1111,6 +1114,7 @@ ContextualTasksUI::GetOrCreateContextualSessionHandle() {
           contextual_tasks::CreateQueryControllerConfigParams(),
           contextual_search::ContextualSearchSource::kContextualTasks,
           lens::LensOverlayInvocationSource::kContextualTasksComposebox);
+      session_handle->NotifySessionStarted();
       // TODO(crbug.com/469875164): Determine what to do with the return value
       // of this call, or move this call to a different location.
       session_handle->CheckSearchContentSharingSettings(
@@ -1262,17 +1266,49 @@ void ContextualTasksUI::OnContextRetrievedForActiveTab(
     if (composebox_handler_) {
       composebox_handler_->UpdateSuggestedTabContext(nullptr);
     }
+    if (auto* provider =
+            contextual_tasks::ActiveTaskContextProvider::From(browser.get())) {
+      provider->RefreshContext();
+    }
     return;
   }
 
   // If last_committed_url is already in the context, clear the suggested tab
-  // context.
+  // context unless the existing suggestion is for another tab in this task that
+  // is still valid and attached in the composebox.
   std::unique_ptr<url_deduplication::URLDeduplicationHelper>
       url_duplication_helper =
           contextual_tasks::CreateURLDeduplicationHelperForContextualTask();
   bool is_tab_already_in_context =
       context &&
       context->ContainsURL(last_committed_url, url_duplication_helper.get());
+  if (!is_tab_already_in_context && composebox_handler_) {
+    const auto* current_suggestion =
+        auto_suggestion_manager_->GetCurrentSuggestion();
+    if (!current_suggestion ||
+        current_suggestion->tab_id != tab->GetHandle().raw_value()) {
+      std::vector<int32_t> selected_tabs =
+          composebox_handler_->GetSelectedTabIds();
+      is_tab_already_in_context =
+          std::ranges::contains(selected_tabs, tab->GetHandle().raw_value());
+    }
+  }
+
+  if (is_tab_already_in_context) {
+    const auto* current_suggestion =
+        auto_suggestion_manager_->GetCurrentSuggestion();
+    if (current_suggestion && composebox_handler_ &&
+        std::ranges::contains(composebox_handler_->GetSelectedTabIds(),
+                              current_suggestion->tab_id)) {
+      tabs::TabInterface* suggested_tab =
+          tabs::TabHandle(current_suggestion->tab_id).Get();
+      if (suggested_tab && suggested_tab->GetContents() &&
+          suggested_tab->GetContents()->GetLastCommittedURL() ==
+              current_suggestion->url) {
+        return;
+      }
+    }
+  }
 
   std::unique_ptr<contextual_tasks::SuggestedTabInfo> suggestion;
   if (!is_tab_already_in_context) {
@@ -1290,6 +1326,10 @@ void ContextualTasksUI::OnContextRetrievedForActiveTab(
   if (composebox_handler_) {
     composebox_handler_->UpdateSuggestedTabContext(
         auto_suggestion_manager_->GetCurrentSuggestion());
+  }
+  if (auto* provider =
+          contextual_tasks::ActiveTaskContextProvider::From(browser.get())) {
+    provider->RefreshContext();
   }
 }
 
@@ -1490,6 +1530,12 @@ void ContextualTasksUI::OnActiveTabContextStatusChanged() {
     auto_suggestion_manager_->SetCurrentSuggestion(nullptr);
     if (composebox_handler_) {
       composebox_handler_->UpdateSuggestedTabContext(nullptr);
+    }
+    if (browser) {
+      if (auto* provider =
+              contextual_tasks::ActiveTaskContextProvider::From(browser)) {
+        provider->RefreshContext();
+      }
     }
     return;
   }
@@ -1736,7 +1782,7 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
     base::Uuid new_task_id;
     if (old_task_id && old_task_id->is_valid() &&
         !task_info_delegate_->GetThreadId().has_value() &&
-        !has_zero_state_changed) {
+        (last_committed_url_was_empty || !has_zero_state_changed)) {
       // Reuse the existing task ID if it is valid and has no thread ID yet
       // (it represents an unassociated zero-state task).
       new_task_id = *old_task_id;

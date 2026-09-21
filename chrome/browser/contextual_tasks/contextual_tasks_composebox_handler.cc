@@ -327,7 +327,9 @@ void ContextualTasksComposeboxHandler::OnContextUploadStatusChanged(
       }
     }
   }
-  if (context_upload_status == ContextUploadStatus::kUploadSuccessful) {
+  if (context_upload_status == ContextUploadStatus::kUploadSuccessful ||
+      context_upload_status == ContextUploadStatus::kUploadFailed ||
+      context_upload_status == ContextUploadStatus::kValidationFailed) {
     auto* contextual_session_handle = GetContextualSessionHandle();
     if (!contextual_session_handle) {
       return;
@@ -342,8 +344,13 @@ void ContextualTasksComposeboxHandler::OnContextUploadStatusChanged(
 
     auto task_id = web_ui_interface_->GetTaskId();
     if (task_id.has_value() && contextual_tasks_service_) {
-      contextual_tasks_service_->AssociateTabWithTask(
-          task_id.value(), file_info->tab_session_id.value());
+      if (context_upload_status == ContextUploadStatus::kUploadSuccessful) {
+        contextual_tasks_service_->AssociateTabWithTask(
+            task_id.value(), file_info->tab_session_id.value());
+      } else {
+        contextual_tasks_service_->DisassociateTabFromTask(
+            task_id.value(), file_info->tab_session_id.value());
+      }
     }
   }
 }
@@ -1014,6 +1021,16 @@ void ContextualTasksComposeboxHandler::AddTabContext(
     std::move(callback).Run(base::unexpected(
         contextual_search::ContextUploadErrorType::kBrowserProcessingError));
     return;
+  }
+
+  if (tab) {
+    // Associate the tab with the task as soon as it is attached as context.
+    auto task_id = web_ui_interface_->GetTaskId();
+    if (task_id.has_value() && contextual_tasks_service_) {
+      contextual_tasks_service_->AssociateTabWithTask(
+          task_id.value(),
+          sessions::SessionTabHelper::IdForTab(tab->GetContents()));
+    }
   }
   auto token = contextual_session_handle->CreateContextToken();
 

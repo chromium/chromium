@@ -708,6 +708,14 @@ void ComposeboxQueryControllerBridge::UpdateStateFromUrl(const GURL& url) {
   }
 }
 
+// Returns an empty list as tab selection state for this workflow is managed
+// on the Java side in Clank, and this method is primarily consumed by
+// Desktop-specific WebUI controllers.
+std::vector<int32_t> ComposeboxQueryControllerBridge::GetSelectedTabIds()
+    const {
+  return {};
+}
+
 static bool JNI_ComposeboxQueryControllerBridge_IsFuseboxEligibleForProfile(
     Profile* profile) {
   return IsFuseboxEligibleForProfileInternal(profile);
