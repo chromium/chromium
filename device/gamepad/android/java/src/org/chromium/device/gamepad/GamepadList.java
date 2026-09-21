@@ -20,6 +20,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -347,6 +348,13 @@ public class GamepadList {
     @CalledByNative
     static void setGamepadAPIActive(boolean isActive) {
         getInstance().setIsGamepadActive(isActive);
+    }
+
+    /** Sets whether the Gamepad API is active for testing. */
+    public static void setGamepadApiActiveForTesting(boolean isActive) {
+        boolean oldValue = isGamepadAPIActive();
+        setGamepadAPIActive(isActive);
+        ResettersForTesting.register(() -> setGamepadAPIActive(oldValue));
     }
 
     private void setIsGamepadActive(boolean isGamepadActive) {

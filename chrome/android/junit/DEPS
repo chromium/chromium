@@ -65,4 +65,5 @@ include_rules = [
   "+content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java",
 
   "+google_apis/gaia/android/java",
+  "+device/gamepad/android/java",
 ]
