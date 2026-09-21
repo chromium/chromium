@@ -24,6 +24,19 @@ typedef NS_ENUM(NSInteger, PageActionMenuFeatureActionType) {
   PageActionMenuButtonAction,
   // Shows chevron for settings navigation.
   PageActionMenuSettingsAction,
+  // Shows a dropdown menu (e.g., Camera permission allow once/always/never).
+  PageActionMenuDropdownAction,
+};
+
+// The permission choices offered for a site when domain level site permissions
+// are enabled.
+enum class PageActionMenuPermissionSetting {
+  // The site can use the permission for the current visit only.
+  kAllowOnce,
+  // The site can use the permission on every visit.
+  kAlwaysAllow,
+  // The site is blocked from using the permission.
+  kNeverAllow,
 };
 
 // Data model for a feature in the Page Action Menu.
@@ -49,6 +62,10 @@ typedef NS_ENUM(NSInteger, PageActionMenuFeatureActionType) {
 
 // For toggle-type features, whether the feature is currently active.
 @property(nonatomic, assign) BOOL toggleState;
+
+// For dropdown-type permission features, the currently selected permission
+// setting for the site.
+@property(nonatomic, assign) PageActionMenuPermissionSetting permissionSetting;
 
 // Accessibility label for the feature.
 @property(nonatomic, copy) NSString* accessibilityLabel;

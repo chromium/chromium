@@ -14,6 +14,7 @@ include_rules = [
   "+ios/chrome/browser/optimization_guide/model",
   "+ios/chrome/browser/overlays/model",
   "+ios/chrome/browser/overlays/model/public/default",
+  "+ios/chrome/browser/permissions/model",
   "+ios/chrome/browser/price_insights/model",
   "+ios/chrome/browser/reader_mode",
   "+ios/chrome/browser/search_engines/model/template_url_service_factory.h",

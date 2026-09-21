@@ -40,6 +40,8 @@ TEST_F(PageActionMenuFeatureTest, Initialization) {
   EXPECT_EQ(feature_.icon, icon_);
   EXPECT_EQ(feature_.actionType, PageActionMenuButtonAction);
   EXPECT_FALSE(feature_.toggleState);
+  EXPECT_EQ(feature_.permissionSetting,
+            PageActionMenuPermissionSetting::kAllowOnce);
 }
 
 // Tests that setters work correctly.
@@ -55,6 +57,10 @@ TEST_F(PageActionMenuFeatureTest, Setters) {
 
   feature_.toggleState = YES;
   EXPECT_TRUE(feature_.toggleState);
+
+  feature_.permissionSetting = PageActionMenuPermissionSetting::kAlwaysAllow;
+  EXPECT_EQ(feature_.permissionSetting,
+            PageActionMenuPermissionSetting::kAlwaysAllow);
 }
 
 }  // namespace

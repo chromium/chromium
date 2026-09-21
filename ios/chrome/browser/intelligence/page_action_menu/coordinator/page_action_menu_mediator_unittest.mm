@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -46,6 +47,7 @@
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
 #import "ios/chrome/browser/web/model/blocked_popup_tab_helper.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/navigation_test_util.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -53,11 +55,31 @@
 
 // Fake consumer that absorbs delegate events during testing.
 @interface FakePageActionMenuConsumer : NSObject <PageActionMenuConsumer>
+@property(nonatomic, assign) BOOL permissionStateChangedCalled;
 @end
 @implementation FakePageActionMenuConsumer
 - (void)pageLoadStatusChanged {
 }
+- (void)permissionStateChanged {
+  self.permissionStateChangedCalled = YES;
+}
 @end
+
+namespace {
+
+// Returns the camera permission feature among `features`, or nil if the camera
+// row is not shown.
+PageActionMenuFeature* CameraFeature(
+    NSArray<PageActionMenuFeature*>* features) {
+  for (PageActionMenuFeature* feature in features) {
+    if (feature.featureType == PageActionMenuCameraPermission) {
+      return feature;
+    }
+  }
+  return nil;
+}
+
+}  // namespace
 
 // Test fixture for PageActionMenuMediator.
 class PageActionMenuMediatorTest : public PlatformTest {
@@ -348,4 +370,134 @@ TEST_F(PageActionMenuMediatorTest, UpdatePermission) {
   [mediator_ updatePermission:NO forFeature:PageActionMenuMicrophonePermission];
   EXPECT_EQ(web_state_->GetStateForPermission(web::PermissionMicrophone),
             web::PermissionStateBlocked);
+}
+
+// Tests that updatePermissionSetting updates both the session permission state
+// and the persisted content setting of the site.
+TEST_F(PageActionMenuMediatorTest, UpdatePermissionSetting) {
+  scoped_feature_list_.InitWithFeatures(
+      {kPageActionMenu, kDomainLevelSitePermissions}, {});
+
+  const GURL url("https://example.com");
+  web_state_->SetCurrentURL(url);
+
+  // 1. Always allow persists an ALLOW content setting.
+  [mediator_
+      updatePermissionSetting:PageActionMenuPermissionSetting::kAlwaysAllow
+                   forFeature:PageActionMenuCameraPermission];
+  EXPECT_EQ(web_state_->GetStateForPermission(web::PermissionCamera),
+            web::PermissionStateAllowed);
+  EXPECT_EQ(settings_map_->GetContentSetting(
+                url, url, ContentSettingsType::MEDIASTREAM_CAMERA),
+            CONTENT_SETTING_ALLOW);
+
+  // 2. Never allow persists a BLOCK content setting and blocks the session.
+  [mediator_
+      updatePermissionSetting:PageActionMenuPermissionSetting::kNeverAllow
+                   forFeature:PageActionMenuCameraPermission];
+  EXPECT_EQ(web_state_->GetStateForPermission(web::PermissionCamera),
+            web::PermissionStateBlocked);
+  EXPECT_EQ(settings_map_->GetContentSetting(
+                url, url, ContentSettingsType::MEDIASTREAM_CAMERA),
+            CONTENT_SETTING_BLOCK);
+
+  // 3. Allow once clears the persisted decision but grants for the session.
+  [mediator_ updatePermissionSetting:PageActionMenuPermissionSetting::kAllowOnce
+                          forFeature:PageActionMenuCameraPermission];
+  EXPECT_EQ(web_state_->GetStateForPermission(web::PermissionCamera),
+            web::PermissionStateAllowed);
+  EXPECT_EQ(settings_map_->GetContentSetting(
+                url, url, ContentSettingsType::MEDIASTREAM_CAMERA),
+            CONTENT_SETTING_ASK);
+
+  // 4. The microphone permission is updated independently.
+  [mediator_
+      updatePermissionSetting:PageActionMenuPermissionSetting::kAlwaysAllow
+                   forFeature:PageActionMenuMicrophonePermission];
+  EXPECT_EQ(settings_map_->GetContentSetting(
+                url, url, ContentSettingsType::MEDIASTREAM_MIC),
+            CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(settings_map_->GetContentSetting(
+                url, url, ContentSettingsType::MEDIASTREAM_CAMERA),
+            CONTENT_SETTING_ASK);
+}
+
+// Tests that permission rows are shown as dropdowns reflecting the persisted
+// content setting, and remain visible once the permission is blocked.
+TEST_F(PageActionMenuMediatorTest, PermissionFeatureDropdown) {
+  scoped_feature_list_.InitWithFeatures(
+      {kPageActionMenu, kDomainLevelSitePermissions}, {});
+
+  const GURL url("https://example.com");
+  web_state_->SetCurrentURL(url);
+  web_state_->SetStateForPermission(web::PermissionStateAllowed,
+                                    web::PermissionCamera);
+
+  // 1. Without a persisted decision, the access lasts for this visit only.
+  PageActionMenuFeature* feature = CameraFeature([mediator_ activeFeatures]);
+  ASSERT_TRUE(feature);
+  EXPECT_EQ(feature.actionType, PageActionMenuDropdownAction);
+  EXPECT_EQ(feature.permissionSetting,
+            PageActionMenuPermissionSetting::kAllowOnce);
+
+  // 2. A persisted ALLOW is surfaced as "always allow".
+  settings_map_->SetContentSettingDefaultScope(
+      url, url, ContentSettingsType::MEDIASTREAM_CAMERA, CONTENT_SETTING_ALLOW);
+  feature = CameraFeature([mediator_ activeFeatures]);
+  ASSERT_TRUE(feature);
+  EXPECT_EQ(feature.permissionSetting,
+            PageActionMenuPermissionSetting::kAlwaysAllow);
+
+  // 3. If the session blocks a permission while persisted setting is ALLOW,
+  // session state takes precedence and consumer is notified.
+  fake_consumer_.permissionStateChangedCalled = NO;
+  web_state_->SetStateForPermission(web::PermissionStateBlocked,
+                                    web::PermissionCamera);
+  EXPECT_TRUE(fake_consumer_.permissionStateChangedCalled);
+  feature = CameraFeature([mediator_ activeFeatures]);
+  ASSERT_TRUE(feature);
+  EXPECT_EQ(feature.permissionSetting,
+            PageActionMenuPermissionSetting::kNeverAllow);
+
+  // 4. A persisted BLOCK is surfaced as "never allow" even when session state
+  // is not blocked.
+  web_state_->SetStateForPermission(web::PermissionStateAllowed,
+                                    web::PermissionCamera);
+  settings_map_->SetContentSettingDefaultScope(
+      url, url, ContentSettingsType::MEDIASTREAM_CAMERA, CONTENT_SETTING_BLOCK);
+  feature = CameraFeature([mediator_ activeFeatures]);
+  ASSERT_TRUE(feature);
+  EXPECT_EQ(feature.permissionSetting,
+            PageActionMenuPermissionSetting::kNeverAllow);
+
+  // 5. A blocked permission keeps its row so that it can be changed back.
+  [mediator_
+      updatePermissionSetting:PageActionMenuPermissionSetting::kNeverAllow
+                   forFeature:PageActionMenuCameraPermission];
+  EXPECT_TRUE([mediator_ isFeatureAvailable:PageActionMenuCameraPermission]);
+  feature = CameraFeature([mediator_ activeFeatures]);
+  ASSERT_TRUE(feature);
+  EXPECT_EQ(feature.permissionSetting,
+            PageActionMenuPermissionSetting::kNeverAllow);
+}
+
+// Tests that permission rows keep using a toggle, and are hidden when the
+// permission is not allowed, while domain level site permissions are disabled.
+TEST_F(PageActionMenuMediatorTest, PermissionFeatureToggle) {
+  scoped_feature_list_.InitWithFeatures({kPageActionMenu},
+                                        {kDomainLevelSitePermissions});
+
+  web_state_->SetCurrentURL(GURL("https://example.com"));
+  web_state_->SetStateForPermission(web::PermissionStateAllowed,
+                                    web::PermissionCamera);
+
+  PageActionMenuFeature* feature = CameraFeature([mediator_ activeFeatures]);
+  ASSERT_TRUE(feature);
+  EXPECT_EQ(feature.actionType, PageActionMenuToggleAction);
+  EXPECT_TRUE(feature.toggleState);
+
+  web_state_->SetStateForPermission(web::PermissionStateBlocked,
+                                    web::PermissionCamera);
+  EXPECT_FALSE([mediator_ isFeatureAvailable:PageActionMenuCameraPermission]);
+  EXPECT_FALSE(CameraFeature([mediator_ activeFeatures]));
 }

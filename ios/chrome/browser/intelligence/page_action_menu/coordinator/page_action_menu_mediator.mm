@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/lens_overlay/public/lens_overlay_availability.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_modality.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
+#import "ios/chrome/browser/permissions/model/permissions_tab_helper.h"
 #import "ios/chrome/browser/price_insights/model/price_insights_model.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_browser_agent.h"
@@ -42,6 +43,7 @@
 #import "ios/chrome/browser/reader_mode/model/reader_mode_web_state_utils.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -282,16 +284,10 @@ bool SigninIsPossible(AuthenticationService* auth_service) {
       ChromeIOSTranslateClient* translateClient = [self findTranslateClient];
       return IsTranslateActive(translateClient);
     }
-    case PageActionMenuCameraPermission: {
-      web::PermissionState state =
-          _webState->GetStateForPermission(web::PermissionCamera);
-      return state == web::PermissionStateAllowed;
-    }
-    case PageActionMenuMicrophonePermission: {
-      web::PermissionState state =
-          _webState->GetStateForPermission(web::PermissionMicrophone);
-      return state == web::PermissionStateAllowed;
-    }
+    case PageActionMenuCameraPermission:
+      return [self isPermissionRowAvailable:web::PermissionCamera];
+    case PageActionMenuMicrophonePermission:
+      return [self isPermissionRowAvailable:web::PermissionMicrophone];
     case PageActionMenuPopupBlocker: {
       if (!IsProactiveSuggestionsFrameworkPopupBlockerEnabled() ||
           !_hostContentSettingsMap) {
@@ -402,7 +398,10 @@ bool SigninIsPossible(AuthenticationService* auth_service) {
       RecordPageActionMenuFeatureRowUsed(
           IOSPageActionMenuFeatureType::kMicrophonePermission);
       break;
-    default:
+    // Only permission rows have a toggle.
+    case PageActionMenuTranslate:
+    case PageActionMenuPopupBlocker:
+    case PageActionMenuPriceTracking:
       return;
   }
 
@@ -411,6 +410,41 @@ bool SigninIsPossible(AuthenticationService* auth_service) {
   } else {
     _webState->SetStateForPermission(web::PermissionStateBlocked, permission);
   }
+}
+
+- (void)updatePermissionSetting:(PageActionMenuPermissionSetting)setting
+                     forFeature:(PageActionMenuFeatureType)featureType {
+  CHECK(IsDomainLevelSitePermissionsEnabled());
+  if (!_webState) {
+    return;
+  }
+
+  web::Permission permission;
+  switch (featureType) {
+    case PageActionMenuCameraPermission:
+      permission = web::PermissionCamera;
+      RecordPageActionMenuFeatureRowUsed(
+          IOSPageActionMenuFeatureType::kCameraPermission);
+      break;
+    case PageActionMenuMicrophonePermission:
+      permission = web::PermissionMicrophone;
+      RecordPageActionMenuFeatureRowUsed(
+          IOSPageActionMenuFeatureType::kMicrophonePermission);
+      break;
+    case PageActionMenuTranslate:
+    case PageActionMenuPopupBlocker:
+    case PageActionMenuPriceTracking:
+      // Only handle permissions with domain-level state.
+      return;
+  }
+
+  [self persistSetting:setting forPermission:permission];
+
+  web::PermissionState state =
+      setting == PageActionMenuPermissionSetting::kNeverAllow
+          ? web::PermissionStateBlocked
+          : web::PermissionStateAllowed;
+  _webState->SetStateForPermission(state, permission);
 }
 
 - (NSArray<PageActionMenuFeature*>*)activeFeatures {
@@ -470,9 +504,8 @@ bool SigninIsPossible(AuthenticationService* auth_service) {
                        icon:SymbolWithPointSize(SymbolCameraFill,
                                                 kFeatureRowIconSize)
                  actionType:PageActionMenuToggleAction];
-    web::PermissionState state =
-        _webState->GetStateForPermission(web::PermissionCamera);
-    cameraFeature.toggleState = (state == web::PermissionStateAllowed);
+    [self populatePermissionFeature:cameraFeature
+                      forPermission:web::PermissionCamera];
     [features addObject:cameraFeature];
   }
 
@@ -487,9 +520,8 @@ bool SigninIsPossible(AuthenticationService* auth_service) {
                        icon:SymbolWithPointSize(SymbolMicrophoneFill,
                                                 kFeatureRowIconSize)
                  actionType:PageActionMenuToggleAction];
-    web::PermissionState state =
-        _webState->GetStateForPermission(web::PermissionMicrophone);
-    micFeature.toggleState = (state == web::PermissionStateAllowed);
+    [self populatePermissionFeature:micFeature
+                      forPermission:web::PermissionMicrophone];
     [features addObject:micFeature];
   }
   // Price tracking feature.
@@ -597,6 +629,11 @@ bool SigninIsPossible(AuthenticationService* auth_service) {
   [self.consumer pageLoadStatusChanged];
 }
 
+- (void)webState:(web::WebState*)webState
+    didChangeStateForPermission:(web::Permission)permission {
+  [self.consumer permissionStateChanged];
+}
+
 - (void)webStateDestroyed:(web::WebState*)webState {
   [self disconnect];
   [self.pageActionMenuHandler dismissPageActionMenuWithCompletion:nil];
@@ -614,6 +651,93 @@ bool SigninIsPossible(AuthenticationService* auth_service) {
     _webState = nullptr;
   }
   _webStateObserver.reset();
+}
+
+// Returns whether the row for `permission` should be shown. With domain level
+// site permissions, the row remains visible for any permission the site has
+// requested, so that a blocked permission can still be changed back.
+- (BOOL)isPermissionRowAvailable:(web::Permission)permission {
+  if (!_webState) {
+    return NO;
+  }
+  web::PermissionState state = _webState->GetStateForPermission(permission);
+  if (state == web::PermissionStateNotAccessible) {
+    return NO;
+  }
+  return state == web::PermissionStateAllowed ||
+         IsDomainLevelSitePermissionsEnabled();
+}
+
+// Populates `feature` with the current state of `permission`, either as a
+// dropdown of site permission settings or as a legacy on/off toggle.
+- (void)populatePermissionFeature:(PageActionMenuFeature*)feature
+                    forPermission:(web::Permission)permission {
+  if (!_webState) {
+    return;
+  }
+  if (IsDomainLevelSitePermissionsEnabled()) {
+    feature.actionType = PageActionMenuDropdownAction;
+    feature.permissionSetting = [self permissionSettingFor:permission];
+    return;
+  }
+  feature.toggleState = _webState->GetStateForPermission(permission) ==
+                        web::PermissionStateAllowed;
+}
+
+// Returns the setting currently in effect for `permission` on the current site.
+- (PageActionMenuPermissionSetting)permissionSettingFor:
+    (web::Permission)permission {
+  if (!_webState) {
+    return PageActionMenuPermissionSetting::kAllowOnce;
+  }
+  if (_webState->GetStateForPermission(permission) ==
+      web::PermissionStateBlocked) {
+    return PageActionMenuPermissionSetting::kNeverAllow;
+  }
+
+  GURL url = _webState->GetLastCommittedURL();
+  if (_hostContentSettingsMap && url.is_valid()) {
+    ContentSetting contentSetting = _hostContentSettingsMap->GetContentSetting(
+        url, url, ContentSettingsTypeForPermission(permission));
+    if (contentSetting == CONTENT_SETTING_ALLOW) {
+      return PageActionMenuPermissionSetting::kAlwaysAllow;
+    }
+    if (contentSetting == CONTENT_SETTING_BLOCK) {
+      return PageActionMenuPermissionSetting::kNeverAllow;
+    }
+  }
+
+  // Without a persisted decision, the access only lasts for this visit.
+  return PageActionMenuPermissionSetting::kAllowOnce;
+}
+
+// Persists `setting` for `permission` on the current site. "Allow once" clears
+// any persisted decision so that the site is asked again on the next visit.
+- (void)persistSetting:(PageActionMenuPermissionSetting)setting
+         forPermission:(web::Permission)permission {
+  if (!_webState || !_hostContentSettingsMap) {
+    return;
+  }
+  GURL url = _webState->GetLastCommittedURL();
+  if (!url.is_valid()) {
+    return;
+  }
+
+  ContentSetting contentSetting = CONTENT_SETTING_DEFAULT;
+  switch (setting) {
+    case PageActionMenuPermissionSetting::kAlwaysAllow:
+      contentSetting = CONTENT_SETTING_ALLOW;
+      break;
+    case PageActionMenuPermissionSetting::kNeverAllow:
+      contentSetting = CONTENT_SETTING_BLOCK;
+      break;
+    case PageActionMenuPermissionSetting::kAllowOnce:
+      contentSetting = CONTENT_SETTING_DEFAULT;
+      break;
+  }
+
+  _hostContentSettingsMap->SetContentSettingDefaultScope(
+      url, url, ContentSettingsTypeForPermission(permission), contentSetting);
 }
 
 // Returns true if translation is currently active for the page.

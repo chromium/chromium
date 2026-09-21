@@ -404,6 +404,15 @@
       <message name="IDS_IOS_AI_HUB_ALWAYS_SHOW_POPUPS_ACCESSIBILITY_LABEL" desc="The accessibility label for the button to always show pop-ups on this site in the AI hub.">
         Always show pop-ups on this site
       </message>
+      <message name="IDS_IOS_AI_HUB_CAMERA_PERMISSION_ALWAYS_ALLOWED_EXPLANATION" desc="Explanation text shown under the camera permission row of the AI hub when the site is always allowed to use the camera.">
+        "<ph name="SITE_DOMAIN">$1<ex>camera.com</ex></ph>" can access your camera whenever you visit this site
+      </message>
+      <message name="IDS_IOS_AI_HUB_CAMERA_PERMISSION_BLOCKED_EXPLANATION" desc="Explanation text shown under the camera permission row of the AI hub when the site is never allowed to use the camera.">
+        "<ph name="SITE_DOMAIN">$1<ex>camera.com</ex></ph>" is blocked from accessing your camera
+      </message>
+      <message name="IDS_IOS_AI_HUB_CAMERA_PERMISSION_DROPDOWN_ACCESSIBILITY_LABEL" desc="The accessibility label for the dropdown used to choose the camera permission for the current site in the AI hub.">
+        Camera access for this site
+      </message>
       <message name="IDS_IOS_AI_HUB_CAMERA_PERMISSION_LABEL" desc="The button label for the Camera permission feature of the AI hub.">
         Camera
       </message>
@@ -430,6 +439,15 @@
       </message>
       <message name="IDS_IOS_AI_HUB_LENS_UNAVAILABLE_SEARCH_ENGINE_LABEL" desc="The message displayed in the footer for the Lens entry point of the AI hub whenever it is unavailable because Google is not set as the default search engine.">
         Search screen is only available when Google is set as your default search engine. You can change your default search engine in <ph name="BEGIN_LINK">BEGIN_LINK</ph>Settings<ph name="END_LINK">END_LINK</ph>.
+      </message>
+      <message name="IDS_IOS_AI_HUB_MICROPHONE_PERMISSION_ALWAYS_ALLOWED_EXPLANATION" desc="Explanation text shown under the microphone permission row of the AI hub when the site is always allowed to use the microphone.">
+        "<ph name="SITE_DOMAIN">$1<ex>microphone.com</ex></ph>" can access your microphone whenever you visit this site
+      </message>
+      <message name="IDS_IOS_AI_HUB_MICROPHONE_PERMISSION_BLOCKED_EXPLANATION" desc="Explanation text shown under the microphone permission row of the AI hub when the site is never allowed to use the microphone.">
+        "<ph name="SITE_DOMAIN">$1<ex>microphone.com</ex></ph>" is blocked from accessing your microphone
+      </message>
+      <message name="IDS_IOS_AI_HUB_MICROPHONE_PERMISSION_DROPDOWN_ACCESSIBILITY_LABEL" desc="The accessibility label for the dropdown used to choose the microphone permission for the current site in the AI hub.">
+        Microphone access for this site
       </message>
       <message name="IDS_IOS_AI_HUB_MICROPHONE_PERMISSION_LABEL" desc="The button label for the Microphone permission feature of the AI hub.">
         Microphone

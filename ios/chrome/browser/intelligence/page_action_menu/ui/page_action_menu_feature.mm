@@ -23,6 +23,7 @@
     _icon = icon;
     _actionType = actionType;
     _toggleState = NO;
+    _permissionSetting = PageActionMenuPermissionSetting::kAllowOnce;
   }
   return self;
 }

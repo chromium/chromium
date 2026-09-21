@@ -14,6 +14,9 @@
 // Page Menu Action Feature types.
 typedef NS_ENUM(NSInteger, PageActionMenuFeatureType);
 
+// Page Menu Action permission settings.
+enum class PageActionMenuPermissionSetting;
+
 // The mutator for the page action menu.
 @protocol PageActionMenuMutator
 
@@ -49,6 +52,12 @@ typedef NS_ENUM(NSInteger, PageActionMenuFeatureType);
 // Updates the specified permission for the current site.
 - (void)updatePermission:(BOOL)granted
               forFeature:(PageActionMenuFeatureType)featureType;
+
+// Updates the specified permission for the current site to `setting`. In
+// addition to the session permission state, this persists the site's content
+// setting, except for `kAllowOnce` which clears it.
+- (void)updatePermissionSetting:(PageActionMenuPermissionSetting)setting
+                     forFeature:(PageActionMenuFeatureType)featureType;
 
 // Returns array of currently active features to display.
 - (NSArray<PageActionMenuFeature*>*)activeFeatures;

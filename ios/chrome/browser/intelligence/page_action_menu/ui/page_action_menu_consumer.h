@@ -13,6 +13,9 @@
 // Notifies the consumer that the page load status has changed.
 - (void)pageLoadStatusChanged;
 
+// Notifies the consumer that a site permission state has changed.
+- (void)permissionStateChanged;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_PAGE_ACTION_MENU_UI_PAGE_ACTION_MENU_CONSUMER_H_
