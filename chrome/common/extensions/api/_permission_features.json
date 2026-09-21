@@ -27,8 +27,14 @@
     "extension_types": ["legacy_packaged_app"],
     "platforms": ["chromeos"],
     "allowlist": [
-      "0EA6B717932AD64C469C1CCB6911457733295907",  // http://crbug.com/41384528
-      "58B0C2968C335964D5433E89CA4D86628A0E3D4B"   // http://crbug.com/41384528
+      // http://crbug.com/41384528
+      "0EA6B717932AD64C469C1CCB6911457733295907",
+      // http://crbug.com/41384528 (SHA-256 Stable)
+      "64444C82CD0FC7251F3F9839E164AC5E312F094351E438AC4941C88FEDBE4203",
+      // http://crbug.com/41384528
+      "58B0C2968C335964D5433E89CA4D86628A0E3D4B",
+      // http://crbug.com/41384528 (SHA-256 Dev)
+      "5F13EB3D4C8E5A012DF6F03BB4766532C41A07E23CC9F7963FEEB77BBBC7334D"
     ]
   }],
   "accessibilityPrivate": {
@@ -215,12 +221,26 @@
     "channel": "dev",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
     "allowlist": [
-      "0EA6B717932AD64C469C1CCB6911457733295907",  // Secure Shell App (stable)
-      "58B0C2968C335964D5433E89CA4D86628A0E3D4B",  // Secure Shell App (dev)
-      "3BC1ED0B3E6EFDC7BD4D3D1D75D44B52DEE0A226",  // Secure Shell Ext (stable)
-      "38C361D4A0726CE45D3572D65071B6BDB3092371",  // Secure Shell Ext (dev)
-      "06BE211D5F014BAB34BC22D9DDA09C63A81D828E",  // http://crbug.com/946241
-      "1B1388598AC9A5608F43DE38316D6FB5FAD3574A"   // OneDrive FS extension
+      // Secure Shell App (stable)
+      "0EA6B717932AD64C469C1CCB6911457733295907",
+      // Secure Shell App (stable) (SHA-256)
+      "64444C82CD0FC7251F3F9839E164AC5E312F094351E438AC4941C88FEDBE4203",
+      // Secure Shell App (dev)
+      "58B0C2968C335964D5433E89CA4D86628A0E3D4B",
+      // Secure Shell App (dev) (SHA-256)
+      "5F13EB3D4C8E5A012DF6F03BB4766532C41A07E23CC9F7963FEEB77BBBC7334D",
+      // Secure Shell Ext (stable)
+      "3BC1ED0B3E6EFDC7BD4D3D1D75D44B52DEE0A226",
+      // Secure Shell Ext (stable) (SHA-256)
+      "016C557CDCA68B397FF4A18FC90127C08FCA46663BFB82C301F58734482E37E8",
+      // Secure Shell Ext (dev)
+      "38C361D4A0726CE45D3572D65071B6BDB3092371",
+      // Secure Shell Ext (dev) (SHA-256)
+      "EF9B72731592D220DACCE1EA67179A9F4CB0B8AAD0BBDC87D3C4815E16461C81",
+      // http://crbug.com/946241
+      "06BE211D5F014BAB34BC22D9DDA09C63A81D828E",
+      // OneDrive FS extension
+      "1B1388598AC9A5608F43DE38316D6FB5FAD3574A"
     ]
   },
   "debugger": [
@@ -1023,11 +1043,22 @@
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
     "platforms": ["chromeos"],
     "allowlist": [
-      "0EA6B717932AD64C469C1CCB6911457733295907",  // Secure Shell App (stable) (SHA-1)
-      "64444C82CD0FC7251F3F9839E164AC5E312F094351E438AC4941C88FEDBE4203",  // Secure Shell App (stable) (SHA-256)
-      "58B0C2968C335964D5433E89CA4D86628A0E3D4B",  // Secure Shell App (dev)
-      "3BC1ED0B3E6EFDC7BD4D3D1D75D44B52DEE0A226",  // Secure Shell Ext (stable)
-      "38C361D4A0726CE45D3572D65071B6BDB3092371"   // Secure Shell Ext (dev)
+      // Secure Shell App (stable) (SHA-1)
+      "0EA6B717932AD64C469C1CCB6911457733295907",
+      // Secure Shell App (stable) (SHA-256)
+      "64444C82CD0FC7251F3F9839E164AC5E312F094351E438AC4941C88FEDBE4203",
+      // Secure Shell App (dev)
+      "58B0C2968C335964D5433E89CA4D86628A0E3D4B",
+      // Secure Shell App (dev) (SHA-256)
+      "5F13EB3D4C8E5A012DF6F03BB4766532C41A07E23CC9F7963FEEB77BBBC7334D",
+      // Secure Shell Ext (stable)
+      "3BC1ED0B3E6EFDC7BD4D3D1D75D44B52DEE0A226",
+      // Secure Shell Ext (stable) (SHA-256)
+      "016C557CDCA68B397FF4A18FC90127C08FCA46663BFB82C301F58734482E37E8",
+      // Secure Shell Ext (dev)
+      "38C361D4A0726CE45D3572D65071B6BDB3092371",
+      // Secure Shell Ext (dev) (SHA-256)
+      "EF9B72731592D220DACCE1EA67179A9F4CB0B8AAD0BBDC87D3C4815E16461C81"
     ]
   },
   "topSites": {

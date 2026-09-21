@@ -545,8 +545,14 @@
       "channel": "stable",
       "extension_types": ["extension"],
       "allowlist": [
-        "3BC1ED0B3E6EFDC7BD4D3D1D75D44B52DEE0A226",  // Secure Shell Ext (stable)
-        "38C361D4A0726CE45D3572D65071B6BDB3092371"   // Secure Shell Ext (dev)
+        // Secure Shell Ext (stable)
+        "3BC1ED0B3E6EFDC7BD4D3D1D75D44B52DEE0A226",
+        // Secure Shell Ext (stable) (SHA-256)
+        "016C557CDCA68B397FF4A18FC90127C08FCA46663BFB82C301F58734482E37E8",
+        // Secure Shell Ext (dev)
+        "38C361D4A0726CE45D3572D65071B6BDB3092371",
+        // Secure Shell Ext (dev) (SHA-256)
+        "EF9B72731592D220DACCE1EA67179A9F4CB0B8AAD0BBDC87D3C4815E16461C81"
       ]
     },
     {
