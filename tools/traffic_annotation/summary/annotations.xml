@@ -153,7 +153,7 @@ Refer to README.md for content description and update process.
  <item id="qr_code_save" added_in_milestone="84" content_hash_code="045593bd" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/views/qrcode_generator/qrcode_generator_bubble.cc" />
  <item id="quic_chromium_incoming_session" added_in_milestone="66" content_hash_code="04aeee25" os_list="linux,windows,chromeos,android" file_path="net/quic/quic_chromium_client_session.cc" />
  <item id="quic_chromium_packet_writer" added_in_milestone="66" content_hash_code="01c48aa5" os_list="linux,windows,chromeos,android" file_path="net/quic/quic_chromium_packet_writer.cc" />
- <item id="ranker_url_fetcher" added_in_milestone="62" content_hash_code="02bd45e2" os_list="linux,windows,chromeos,android" file_path="components/assist_ranker/ranker_url_fetcher.cc" />
+ <item id="ranker_url_fetcher" added_in_milestone="62" content_hash_code="02bd45e2" os_list="linux,windows,chromeos,android" file_path="components/translate/core/browser/ranker_url_fetcher.cc" />
  <item id="remote_copy_message_handler" added_in_milestone="80" content_hash_code="07038d73" os_list="linux,windows,chromeos" file_path="chrome/browser/sharing/shared_clipboard/remote_copy_message_handler.cc" />
  <item id="remoting_directory_delete_host" added_in_milestone="86" content_hash_code="03ed762b" os_list="linux,windows,chromeos,android" file_path="remoting/base/directory_service_client.cc" />
  <item id="remoting_directory_get_host_list" added_in_milestone="86" content_hash_code="03933aa0" os_list="linux,windows,chromeos,android" file_path="remoting/base/directory_service_client.cc" />

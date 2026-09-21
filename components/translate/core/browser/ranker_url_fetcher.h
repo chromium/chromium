@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ASSIST_RANKER_RANKER_URL_FETCHER_H_
-#define COMPONENTS_ASSIST_RANKER_RANKER_URL_FETCHER_H_
+#ifndef COMPONENTS_TRANSLATE_CORE_BROWSER_RANKER_URL_FETCHER_H_
+#define COMPONENTS_TRANSLATE_CORE_BROWSER_RANKER_URL_FETCHER_H_
 
 #include <memory>
 #include <optional>
@@ -72,4 +72,4 @@ class RankerURLFetcher {
 
 }  // namespace assist_ranker
 
-#endif  // COMPONENTS_ASSIST_RANKER_RANKER_URL_FETCHER_H_
+#endif  // COMPONENTS_TRANSLATE_CORE_BROWSER_RANKER_URL_FETCHER_H_

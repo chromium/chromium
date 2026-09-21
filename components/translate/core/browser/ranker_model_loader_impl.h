@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ASSIST_RANKER_RANKER_MODEL_LOADER_IMPL_H_
-#define COMPONENTS_ASSIST_RANKER_RANKER_MODEL_LOADER_IMPL_H_
+#ifndef COMPONENTS_TRANSLATE_CORE_BROWSER_RANKER_MODEL_LOADER_IMPL_H_
+#define COMPONENTS_TRANSLATE_CORE_BROWSER_RANKER_MODEL_LOADER_IMPL_H_
 
 #include <memory>
 #include <string>
@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "components/assist_ranker/ranker_model_loader.h"
+#include "components/translate/core/browser/ranker_model_loader.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -165,4 +165,4 @@ class RankerModelLoaderImpl : public RankerModelLoader {
 
 }  // namespace assist_ranker
 
-#endif  // COMPONENTS_ASSIST_RANKER_RANKER_MODEL_LOADER_IMPL_H_
+#endif  // COMPONENTS_TRANSLATE_CORE_BROWSER_RANKER_MODEL_LOADER_IMPL_H_

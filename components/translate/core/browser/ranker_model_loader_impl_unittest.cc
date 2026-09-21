@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/assist_ranker/ranker_model_loader_impl.h"
+#include "components/translate/core/browser/ranker_model_loader_impl.h"
 
 #include <initializer_list>
 #include <memory>
@@ -14,9 +14,9 @@
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/task_environment.h"
-#include "components/assist_ranker/proto/ranker_model.pb.h"
-#include "components/assist_ranker/proto/translate_ranker_model.pb.h"
-#include "components/assist_ranker/ranker_model.h"
+#include "components/translate/core/browser/ranker_model.h"
+#include "components/translate/core/browser/ranker_model.pb.h"
+#include "components/translate/core/browser/translate_ranker_model.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -207,14 +207,16 @@ void RankerModelLoaderImplTest::InitModel(const GURL& model_url,
   model->mutable_proto()->Clear();
 
   auto* metadata = model->mutable_proto()->mutable_metadata();
-  if (!model_url.is_empty())
+  if (!model_url.is_empty()) {
     metadata->set_source(model_url.spec());
+  }
   if (!last_modified.is_null()) {
     auto last_modified_sec = (last_modified - base::Time()).InSeconds();
     metadata->set_last_modified_sec(last_modified_sec);
   }
-  if (!cache_duration.is_zero())
+  if (!cache_duration.is_zero()) {
     metadata->set_cache_duration_sec(cache_duration.InSeconds());
+  }
 
   auto* translate = model->mutable_proto()->mutable_translate();
   translate->set_version(1);

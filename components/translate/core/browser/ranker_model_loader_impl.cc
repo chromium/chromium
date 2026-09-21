@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/assist_ranker/ranker_model_loader_impl.h"
+#include "components/translate/core/browser/ranker_model_loader_impl.h"
 
 #include <memory>
 #include <utility>
@@ -15,8 +15,8 @@
 #include "base/metrics/histogram_base.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "components/assist_ranker/proto/ranker_model.pb.h"
-#include "components/assist_ranker/ranker_url_fetcher.h"
+#include "components/translate/core/browser/ranker_model.pb.h"
+#include "components/translate/core/browser/ranker_url_fetcher.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace assist_ranker {
@@ -251,8 +251,9 @@ RankerModelStatus RankerModelLoaderImpl::ReportModelStatus(
       static_cast<int>(RankerModelStatus::kMaxValue) + 1,
       static_cast<int>(RankerModelStatus::kMaxValue) + 2,
       base::HistogramBase::kUmaTargetedHistogramFlag);
-  if (histogram)
+  if (histogram) {
     histogram->Add(static_cast<int>(model_status));
+  }
   return model_status;
 }
 

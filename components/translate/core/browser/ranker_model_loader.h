@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ASSIST_RANKER_RANKER_MODEL_LOADER_H_
-#define COMPONENTS_ASSIST_RANKER_RANKER_MODEL_LOADER_H_
+#ifndef COMPONENTS_TRANSLATE_CORE_BROWSER_RANKER_MODEL_LOADER_H_
+#define COMPONENTS_TRANSLATE_CORE_BROWSER_RANKER_MODEL_LOADER_H_
 
 #include <memory>
 
 #include "base/functional/callback.h"
-#include "components/assist_ranker/ranker_model.h"
+#include "components/translate/core/browser/ranker_model.h"
 
 namespace assist_ranker {
 
@@ -59,4 +59,4 @@ class RankerModelLoader {
 
 }  // namespace assist_ranker
 
-#endif  // COMPONENTS_ASSIST_RANKER_RANKER_MODEL_LOADER_H_
+#endif  // COMPONENTS_TRANSLATE_CORE_BROWSER_RANKER_MODEL_LOADER_H_

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/assist_ranker/ranker_model.h"
+#include "components/translate/core/browser/ranker_model.h"
 
 #include <memory>
 
 #include "base/time/time.h"
-#include "components/assist_ranker/proto/ranker_model.pb.h"
+#include "components/translate/core/browser/ranker_model.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -25,12 +25,15 @@ std::unique_ptr<RankerModel> NewModel(const std::string& model_url,
                                       base::TimeDelta cache_duration) {
   std::unique_ptr<RankerModel> model = std::make_unique<RankerModel>();
   auto* metadata = model->mutable_proto()->mutable_metadata();
-  if (!model_url.empty())
+  if (!model_url.empty()) {
     metadata->set_source(model_url);
-  if (!last_modified.is_null())
+  }
+  if (!last_modified.is_null()) {
     metadata->set_last_modified_sec(InSeconds(last_modified));
-  if (!cache_duration.is_zero())
+  }
+  if (!cache_duration.is_zero()) {
     metadata->set_cache_duration_sec(cache_duration.InSeconds());
+  }
 
   auto* translate = model->mutable_proto()->mutable_translate();
   translate->set_version(1);

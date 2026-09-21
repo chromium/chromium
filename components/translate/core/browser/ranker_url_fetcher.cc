@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/assist_ranker/ranker_url_fetcher.h"
+#include "components/translate/core/browser/ranker_url_fetcher.h"
 
 #include <optional>
 #include <string>
@@ -37,16 +37,18 @@ bool RankerURLFetcher::Request(
     NOTREACHED();
   }
 
-  if (retry_count_ >= kMaxRetry)
+  if (retry_count_ >= kMaxRetry) {
     return false;
+  }
   retry_count_++;
 
   state_ = REQUESTING;
   url_ = url;
   callback_ = std::move(callback);
 
-  if (url_loader_factory == nullptr)
+  if (url_loader_factory == nullptr) {
     return false;
+  }
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("ranker_url_fetcher", R"(

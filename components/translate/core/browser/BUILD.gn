@@ -3,12 +3,20 @@
 # found in the LICENSE file.
 
 import("//build/config/ui.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 static_library("browser") {
   sources = [
     "language_state.cc",
     "language_state.h",
     "page_translated_details.h",
+    "ranker_model.cc",
+    "ranker_model.h",
+    "ranker_model_loader.h",
+    "ranker_model_loader_impl.cc",
+    "ranker_model_loader_impl.h",
+    "ranker_url_fetcher.cc",
+    "ranker_url_fetcher.h",
     "translate_browser_metrics.cc",
     "translate_browser_metrics.h",
     "translate_client.h",
@@ -49,10 +57,9 @@ static_library("browser") {
   ]
 
   deps = [
+    ":translate_ranker_proto",
     "//base",
     "//base:i18n",
-    "//components/assist_ranker",
-    "//components/assist_ranker/proto",
     "//components/keyed_service/core",
     "//components/language/core/browser",
     "//components/language/core/common",
@@ -94,10 +101,19 @@ source_set("translate_pref_names") {
   sources = [ "translate_pref_names.h" ]
 }
 
+proto_library("translate_ranker_proto") {
+  sources = [
+    "ranker_model.proto",
+    "translate_ranker_model.proto",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
     "language_state_unittest.cc",
+    "ranker_model_loader_impl_unittest.cc",
+    "ranker_model_unittest.cc",
     "translate_browser_metrics_unittest.cc",
     "translate_language_list_unittest.cc",
     "translate_manager_unittest.cc",
@@ -112,10 +128,9 @@ source_set("unit_tests") {
   deps = [
     ":browser",
     ":test_support",
+    ":translate_ranker_proto",
     "//base",
     "//base:i18n",
-    "//components/assist_ranker",
-    "//components/assist_ranker/proto",
     "//components/infobars/core",
     "//components/language/core/browser",
     "//components/language/core/browser:test_support",
