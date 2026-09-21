@@ -81,19 +81,19 @@ TEST_F(ChannelIndicatorUtilsTest, GetChannelNameStringResourceID) {
 
 TEST_F(ChannelIndicatorUtilsTest, GetColors) {
   // Non-displayable channel should yield fg/bg `ColorId` of `ui::ColorId()`.
-  EXPECT_EQ(
-      channel_indicator_utils::GetFgColorJelly(version_info::Channel::STABLE),
-      ui::ColorId());
-  EXPECT_EQ(
-      channel_indicator_utils::GetBgColorJelly(version_info::Channel::STABLE),
-      ui::ColorId());
+  EXPECT_EQ(channel_indicator_utils::GetForegroundColor(
+                version_info::Channel::STABLE),
+            ui::ColorId());
+  EXPECT_EQ(channel_indicator_utils::GetBackgroundColor(
+                version_info::Channel::STABLE),
+            ui::ColorId());
 
   // Displayable channel should yield valid, fg/bg `ColorId`s.
   EXPECT_EQ(
-      channel_indicator_utils::GetFgColorJelly(version_info::Channel::BETA),
+      channel_indicator_utils::GetForegroundColor(version_info::Channel::BETA),
       cros_tokens::kCrosSysOnProgressContainer);
   EXPECT_EQ(
-      channel_indicator_utils::GetBgColorJelly(version_info::Channel::BETA),
+      channel_indicator_utils::GetBackgroundColor(version_info::Channel::BETA),
       cros_tokens::kCrosSysProgressContainer);
 }
 

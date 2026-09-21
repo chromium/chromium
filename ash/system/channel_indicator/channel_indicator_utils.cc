@@ -54,7 +54,7 @@ int GetChannelNameStringResourceID(version_info::Channel channel,
   }
 }
 
-ui::ColorId GetFgColorJelly(version_info::Channel channel) {
+ui::ColorId GetForegroundColor(version_info::Channel channel) {
   switch (channel) {
     case version_info::Channel::BETA:
       return cros_tokens::kCrosSysOnProgressContainer;
@@ -68,7 +68,7 @@ ui::ColorId GetFgColorJelly(version_info::Channel channel) {
   }
 }
 
-ui::ColorId GetBgColorJelly(version_info::Channel channel) {
+ui::ColorId GetBackgroundColor(version_info::Channel channel) {
   switch (channel) {
     case version_info::Channel::BETA:
       return cros_tokens::kCrosSysProgressContainer;

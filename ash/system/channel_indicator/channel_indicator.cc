@@ -75,35 +75,6 @@ views::View* ChannelIndicatorView::GetTooltipHandlerForPoint(
   return GetLocalBounds().Contains(point) ? this : nullptr;
 }
 
-void ChannelIndicatorView::OnThemeChanged() {
-  TrayItemView::OnThemeChanged();
-
-  if (Shell::Get()->session_controller()->GetSessionState() ==
-      session_manager::SessionState::ACTIVE) {
-    // User is logged in, set image view colors.
-    if (image_view()) {
-      image_view()->SetBackground(views::CreateRoundedRectBackground(
-          channel_indicator_utils::GetBgColorJelly(channel_),
-          (IsHorizontalAlignment() ? GetLocalBounds().width()
-                                   : GetLocalBounds().height()) /
-              2.0f));
-      image_view()->SetImage(ui::ImageModel::FromVectorIcon(
-          channel_indicator_utils::GetVectorIcon(channel_),
-          channel_indicator_utils::GetFgColorJelly(channel_), kVectorIconSize));
-    }
-    return;
-  }
-
-  // User is not logged in, set label colors.
-  if (label()) {
-    label()->SetBackground(views::CreateRoundedRectBackground(
-        channel_indicator_utils::GetBgColorJelly(channel_),
-        kIndicatorBgCornerRadius));
-    label()->SetEnabledColor(
-        channel_indicator_utils::GetFgColorJelly(channel_));
-  }
-}
-
 void ChannelIndicatorView::HandleLocaleChange() {
   Update();
 }
@@ -143,14 +114,12 @@ void ChannelIndicatorView::SetImageOrText() {
                                            : gfx::Insets::VH(0, kBorderInset)));
     image_view()->SetBorder(
         views::CreateEmptyBorder(gfx::Insets(kIconBackgroundInset)));
-    image_view()->SetBackground(views::CreateRoundedRectBackground(
-        channel_indicator_utils::GetBgColorJelly(channel_),
-        (IsHorizontalAlignment() ? GetLocalBounds().width()
-                                 : GetLocalBounds().height()) /
-            2.0f));
+    image_view()->SetBackground(views::CreatePillBackground(
+        channel_indicator_utils::GetBackgroundColor(channel_)));
     image_view()->SetImage(ui::ImageModel::FromVectorIcon(
         channel_indicator_utils::GetVectorIcon(channel_),
-        channel_indicator_utils::GetFgColorJelly(channel_), kVectorIconSize));
+        channel_indicator_utils::GetForegroundColor(channel_),
+        kVectorIconSize));
     PreferredSizeChanged();
     image_view()->GetViewAccessibility().SetName(
         GetViewAccessibility().GetCachedName());
@@ -173,9 +142,10 @@ void ChannelIndicatorView::SetImageOrText() {
   label()->SetBorder(
       views::CreateEmptyBorder(gfx::Insets::VH(0, kBorderInset)));
   label()->SetBackground(views::CreateRoundedRectBackground(
-      channel_indicator_utils::GetBgColorJelly(channel_),
+      channel_indicator_utils::GetBackgroundColor(channel_),
       kIndicatorBgCornerRadius));
-  label()->SetEnabledColor(channel_indicator_utils::GetFgColorJelly(channel_));
+  label()->SetEnabledColor(
+      channel_indicator_utils::GetForegroundColor(channel_));
 
   label()->SetText(l10n_util::GetStringUTF16(
       channel_indicator_utils::GetChannelNameStringResourceID(

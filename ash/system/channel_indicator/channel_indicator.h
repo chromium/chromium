@@ -40,7 +40,6 @@ class ASH_EXPORT ChannelIndicatorView : public TrayItemView,
 
   // views::View:
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
-  void OnThemeChanged() override;
 
   // TrayItemView:
   void HandleLocaleChange() override;

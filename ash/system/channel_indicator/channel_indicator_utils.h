@@ -28,12 +28,12 @@ ASH_EXPORT int GetChannelNameStringResourceID(version_info::Channel channel,
 // Returns the foreground `ui::ColorId` for release track `channel`.
 // If `channel` is one of the displayable values then the expected `ColorId` is
 // returned, a value of `ui::ColorId()` otherwise.
-ASH_EXPORT ui::ColorId GetFgColorJelly(version_info::Channel channel);
+ASH_EXPORT ui::ColorId GetForegroundColor(version_info::Channel channel);
 
 // Returns the background `ui::ColorId` for release track `channel`.
 // If `channel` is one of the displayable values then the expected `ColorId` is
 // returned, a value of `ui::ColorId()` otherwise.
-ASH_EXPORT ui::ColorId GetBgColorJelly(version_info::Channel channel);
+ASH_EXPORT ui::ColorId GetBackgroundColor(version_info::Channel channel);
 
 // Returns the text for the version button text, for release track `channel`
 // e.g. "Beta 105.0.5167.0". If `channel` is not one of the displayable values,
