@@ -158,6 +158,7 @@ if (!is_android) {
       "//chrome/browser/glic:impl",
       "//chrome/browser/glic/test_support",
       "//chrome/browser/status_icons",
+      "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/views/frame/",
       "//chrome/browser/ui/views/glic",
       "//chrome/common:chrome_features",

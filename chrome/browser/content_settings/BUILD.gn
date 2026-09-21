@@ -214,6 +214,7 @@ source_set("content_settings_util_impl") {
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/location_bar",
       "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/views/frame:picture_in_picture_browser_frame_view",
       "//chrome/browser/ui/views/picture_in_picture",
     ]

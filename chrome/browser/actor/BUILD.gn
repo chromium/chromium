@@ -590,7 +590,10 @@ source_set("browser_tests") {
     ]
   }
   if (!is_android) {
-    deps += [ "//chrome/browser/ui:browser_window_header" ]
+    deps += [
+      "//chrome/browser/ui:browser_window_header",
+      "//chrome/browser/ui/views/frame:browser_view_header",
+    ]
   }
 }
 

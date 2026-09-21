@@ -243,6 +243,10 @@ if (!skip_android_unmigrated_actor_files) {
       "//testing/gtest",
       "//ui/views:view_pixel_diff_test_support",
     ]
+
+    if (!is_android) {
+      deps += [ "//chrome/browser/ui/views/frame:browser_view_header" ]
+    }
   }
 
   source_set("interactive_ui_tests") {
@@ -273,6 +277,10 @@ if (!skip_android_unmigrated_actor_files) {
 
     if (use_ozone) {
       deps += [ "//ui/ozone" ]
+    }
+
+    if (!is_android) {
+      deps += [ "//chrome/browser/ui/views/frame:browser_view_header" ]
     }
   }
 }

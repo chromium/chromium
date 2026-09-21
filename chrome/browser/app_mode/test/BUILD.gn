@@ -16,6 +16,7 @@ static_library("test_support") {
 
   deps = [
     "//base",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/test:test_support_ui",
     "//content/test:test_support",
     "//testing/gtest",

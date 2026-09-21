@@ -68,6 +68,7 @@ source_set("test_support") {
       "//chrome/browser/actor",
       "//chrome/browser/actor/ui",
       "//chrome/browser/glic/browser_ui",
+      "//chrome/browser/ui/views/frame:browser_view_header",
       "//ui/events:test_support",
     ]
   } else {

@@ -101,6 +101,10 @@ source_set("impl") {
     "//ui/events/blink",
     "//ui/views",
   ]
+
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/views/frame:browser_view_header" ]
+  }
 }
 
 source_set("test_support") {
@@ -190,6 +194,10 @@ source_set("browser_tests") {
     "//components/tabs:test_support",
     "//content/test:test_support",
   ]
+
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/views/frame:browser_view_header" ]
+  }
 }
 
 source_set("interactive_ui_tests") {
@@ -212,4 +220,8 @@ source_set("interactive_ui_tests") {
     "//components/tabs:test_support",
     "//content/test:test_support",
   ]
+
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/views/frame:browser_view_header" ]
+  }
 }

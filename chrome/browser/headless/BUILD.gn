@@ -147,6 +147,7 @@ if (!is_android) {
       "//chrome/browser/infobars",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/views/exclusive_access",
+      "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/common:constants",
       "//chrome/test:test_support",
       "//components/headless/clipboard",
@@ -233,5 +234,9 @@ source_set("interactive_ui_tests") {
       "//ui/aura",
       "//ui/compositor",
     ]
+  }
+
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/views/frame:browser_view_header" ]
   }
 }

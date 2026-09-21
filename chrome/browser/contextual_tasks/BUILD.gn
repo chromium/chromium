@@ -528,7 +528,10 @@ source_set("ui_impl") {
     ]
   }
   if (!is_android) {
-    deps += [ "//chrome/browser/ui:browser_window_header" ]
+    deps += [
+      "//chrome/browser/ui:browser_window_header",
+      "//chrome/browser/ui/views/frame:browser_view_header",
+    ]
   }
 }
 
@@ -818,6 +821,7 @@ source_set("interactive_ui_tests") {
   if (!is_android) {
     deps += [
       ":ui",
+      "//chrome/browser/ui/views/frame:browser_view_header",
 
       # TabUnderlineView currently resides under glic/browser_ui.
       "//chrome/browser/glic/browser_ui:glow",
