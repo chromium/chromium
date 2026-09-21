@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/test/metrics/histogram_tester.h"
+#include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -13,6 +15,9 @@
 #include "chrome/browser/ui/views/infobars/confirm_infobar.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/test/base/scoped_channel_override.h"
+#endif
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #include "components/infobars/core/infobar.h"
@@ -156,6 +161,12 @@ class StartupLaunchInfoBarIsolatedModeInteractiveTest
         enterprise_isolated_mode::switches::
             kForceEnterpriseIsolatedModeReplacesIncognito);
   }
+
+ private:
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
+  chrome::ScopedChannelOverride channel_override_{
+      chrome::ScopedChannelOverride::Channel::kDev};
+#endif
 };
 
 IN_PROC_BROWSER_TEST_F(StartupLaunchInfoBarIsolatedModeInteractiveTest,
