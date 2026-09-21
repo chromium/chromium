@@ -25,37 +25,41 @@ using message_center::Notification;
 
 namespace {
 
-const message_center::NotifierId kNotifierFastPair =
-    message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                               "ash.fastpair",
-                               ash::NotificationCatalogName::kFastPair);
-const char kFastPairErrorNotificationId[] =
+constexpr char kFastPairNotifierId[] = "ash.fastpair";
+
+constexpr char kFastPairErrorNotificationId[] =
     "cros_fast_pair_error_notification_id";
-const char kFastPairDiscoveryGuestNotificationId[] =
+constexpr char kFastPairDiscoveryGuestNotificationId[] =
     "cros_fast_pair_discovery_guest_notification_id";
-const char kFastPairApplicationAvailableNotificationId[] =
+constexpr char kFastPairApplicationAvailableNotificationId[] =
     "cros_fast_pair_application_available_notification_id";
-const char kFastPairApplicationInstalledNotificationId[] =
+constexpr char kFastPairApplicationInstalledNotificationId[] =
     "cros_fast_pair_application_installed_notification_id";
-const char kFastPairDiscoveryUserNotificationId[] =
+constexpr char kFastPairDiscoveryUserNotificationId[] =
     "cros_fast_pair_discovery_user_notification_id";
-const char kFastPairPairingNotificationId[] =
+constexpr char kFastPairPairingNotificationId[] =
     "cros_fast_pair_pairing_notification_id";
-const char kFastPairAssociateAccountNotificationId[] =
+constexpr char kFastPairAssociateAccountNotificationId[] =
     "cros_fast_pair_associate_account_notification_id";
-const char kFastPairDiscoverySubsequentNotificationId[] =
+constexpr char kFastPairDiscoverySubsequentNotificationId[] =
     "cros_fast_pair_discovery_subsequent_notification_id";
-const char kFastPairDisplayPasskeyNotificationId[] =
+constexpr char kFastPairDisplayPasskeyNotificationId[] =
     "cros_fast_pair_display_passkey_notification_id";
 
 // Values outside of the range (e.g. -1) will show an infinite loading
 // progress bar.
-const int kInfiniteLoadingProgressValue = -1;
+constexpr int kInfiniteLoadingProgressValue = -1;
 
 // 12 seconds comes from aligning CrOS notification with Android. Android
 // determined it takes 12 seconds for a device to be truly lost to the adapter.
 // Within 12 seconds, a device can be perceived as lost, yet be found again.
 constexpr base::TimeDelta kNotificationTimeout = base::Seconds(12);
+
+message_center::NotifierId GetFastPairNotifierId() {
+  return message_center::NotifierId(
+      message_center::NotifierType::SYSTEM_COMPONENT, kFastPairNotifierId,
+      ash::NotificationCatalogName::kFastPair);
+}
 
 // Creates an empty Fast Pair notification with the given id and uses the
 // Bluetooth icon and FastPair notifierID.
@@ -65,7 +69,7 @@ std::unique_ptr<message_center::Notification> CreateNotification(
     message_center::MessageCenter* message_center) {
   // Remove any existing Fast Pair notifications so only one appears at a time,
   // since there isn't a case where all of them should be showing.
-  message_center->RemoveNotificationsForNotifierId(kNotifierFastPair);
+  message_center->RemoveNotificationsForNotifierId(GetFastPairNotifierId());
 
   std::unique_ptr<message_center::Notification> notification =
       ash::CreateSystemNotificationPtr(
@@ -74,7 +78,7 @@ std::unique_ptr<message_center::Notification> CreateNotification(
           /*title=*/std::u16string(),
           /*message=*/std::u16string(),
           /*display_source=*/std::u16string(),
-          /*notifier_id=*/kNotifierFastPair,
+          /*notifier_id=*/GetFastPairNotifierId(),
           /*optional_fields=*/{},
           /*delegate=*/nullptr,
           /*small_image=*/ash::kNotificationBluetoothIcon,
@@ -497,7 +501,7 @@ void FastPairNotificationController::ShowPasskey(
 }
 
 void FastPairNotificationController::RemoveNotifications() {
-  message_center_->RemoveNotificationsForNotifierId(kNotifierFastPair);
+  message_center_->RemoveNotificationsForNotifierId(GetFastPairNotifierId());
 }
 
 void FastPairNotificationController::RemoveNotificationsByTimeout(

@@ -38,9 +38,9 @@
 
 namespace {
 
-const char kDiscoveryLearnMoreLink[] =
+constexpr char kDiscoveryLearnMoreLink[] =
     "https://support.google.com/chromebook?p=fast_pair_m101";
-const char kAssociateAccountLearnMoreLink[] =
+constexpr char kAssociateAccountLearnMoreLink[] =
     "https://support.google.com/chromebook?p=bluetooth_pairing_m101";
 
 bool ShouldShowUserEmail(ash::LoginStatus status) {

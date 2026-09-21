@@ -18,6 +18,7 @@
 #include "ash/quick_pair/message_stream/message_stream_lookup.h"
 #include "ash/quick_pair/pairing/mock_pairer_broker.h"
 #include "ash/quick_pair/pairing/pairer_broker.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -38,22 +39,22 @@ namespace {
 constexpr char kTestDeviceAddress[] = "11:12:13:14:15:16";
 constexpr char kTestBleDeviceName[] = "Test Device Name";
 
-std::vector<uint8_t> kBatteryUpdateBytes1 = {/*mesage_group=*/0x03,
-                                             /*mesage_code=*/0x03,
-                                             /*additional_data_length=*/0x00,
-                                             0x03,
-                                             /*additional_data=*/0x57,
-                                             0x41,
-                                             0x7F};
-std::vector<uint8_t> kBatteryUpdateBytes2 = {/*mesage_group=*/0x03,
-                                             /*mesage_code=*/0x03,
-                                             /*additional_data_length=*/0x00,
-                                             0x03,
-                                             /*additional_data=*/0x51,
-                                             0x38,
-                                             0x38};
+constexpr uint8_t kBatteryUpdateBytes1[] = {/*mesage_group=*/0x03,
+                                            /*mesage_code=*/0x03,
+                                            /*additional_data_length=*/0x00,
+                                            0x03,
+                                            /*additional_data=*/0x57,
+                                            0x41,
+                                            0x7F};
+constexpr uint8_t kBatteryUpdateBytes2[] = {/*mesage_group=*/0x03,
+                                            /*mesage_code=*/0x03,
+                                            /*additional_data_length=*/0x00,
+                                            0x03,
+                                            /*additional_data=*/0x51,
+                                            0x38,
+                                            0x38};
 
-const std::vector<uint8_t> kModelIdBytes = {
+constexpr uint8_t kModelIdBytes[] = {
     /*message_group=*/0x03,
     /*message_code=*/0x01,
     /*additional_data_length=*/0x00, 0x03,
@@ -115,18 +116,25 @@ class BatteryUpdateMessageHandlerTest : public testing::Test {
     return static_cast<MockQuickPairProcessManager*>(process_manager_.get());
   }
 
-  void SetMessageStream(const std::vector<uint8_t>& message_bytes) {
-    fake_socket_->SetIOBufferFromBytes(message_bytes);
+  void SetMessageStream(base::span<const uint8_t> message_bytes) {
+    fake_socket_->SetIOBufferFromBytes(
+        std::vector<uint8_t>(message_bytes.begin(), message_bytes.end()));
     message_stream_ =
         std::make_unique<MessageStream>(kTestDeviceAddress, fake_socket_.get());
   }
 
-  void AddMessageStream(const std::vector<uint8_t>& message_bytes) {
-    fake_socket_->SetIOBufferFromBytes(message_bytes);
+  void AddMessageStream(base::span<const uint8_t> message_bytes) {
+    fake_socket_->SetIOBufferFromBytes(
+        std::vector<uint8_t>(message_bytes.begin(), message_bytes.end()));
     message_stream_ =
         std::make_unique<MessageStream>(kTestDeviceAddress, fake_socket_.get());
     fake_message_stream_lookup_->AddMessageStream(kTestDeviceAddress,
                                                   message_stream_.get());
+  }
+
+  void SetIOBufferFromBytes(base::span<const uint8_t> bytes) {
+    fake_socket_->SetIOBufferFromBytes(
+        std::vector<uint8_t>(bytes.begin(), bytes.end()));
   }
 
   void NotifyMessageStreamConnected(std::string device_address) {
@@ -197,7 +205,7 @@ TEST_F(BatteryUpdateMessageHandlerTest, BatteryUpdate_Observation) {
             bluetooth_device()->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kCaseTrueWireless));
 
-  fake_socket_->SetIOBufferFromBytes(kBatteryUpdateBytes1);
+  SetIOBufferFromBytes(kBatteryUpdateBytes1);
   NotifyMessageStreamConnected(kTestDeviceAddress);
   base::RunLoop().RunUntilIdle();
 
@@ -258,7 +266,7 @@ TEST_F(BatteryUpdateMessageHandlerTest, BatteryUpdate_MultipleMessages) {
                        device::BluetoothDevice::BatteryType::kCaseTrueWireless)
                    ->percentage);
 
-  fake_socket_->SetIOBufferFromBytes(kBatteryUpdateBytes2);
+  SetIOBufferFromBytes(kBatteryUpdateBytes2);
   fake_socket_->TriggerReceiveCallback();
   base::RunLoop().RunUntilIdle();
 
@@ -332,7 +340,7 @@ TEST_F(BatteryUpdateMessageHandlerTest, NoBatteryUpdate_Observation) {
             bluetooth_device()->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kCaseTrueWireless));
 
-  fake_socket_->SetIOBufferFromBytes(kModelIdBytes);
+  SetIOBufferFromBytes(kModelIdBytes);
   NotifyMessageStreamConnected(kTestDeviceAddress);
   base::RunLoop().RunUntilIdle();
 

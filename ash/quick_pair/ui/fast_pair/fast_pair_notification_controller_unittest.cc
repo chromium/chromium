@@ -20,26 +20,26 @@
 
 namespace {
 
-const char16_t kTestDeviceName[] = u"Pixel Buds";
-const char16_t kTestAppName[] = u"JBLTools";
-const char16_t kTestEmail[] = u"testemail@gmail.com";
-const char kFastPairErrorNotificationId[] =
+constexpr char16_t kTestDeviceName[] = u"Pixel Buds";
+constexpr char16_t kTestAppName[] = u"JBLTools";
+constexpr char16_t kTestEmail[] = u"testemail@gmail.com";
+constexpr char kFastPairErrorNotificationId[] =
     "cros_fast_pair_error_notification_id";
-const char kFastPairDiscoveryGuestNotificationId[] =
+constexpr char kFastPairDiscoveryGuestNotificationId[] =
     "cros_fast_pair_discovery_guest_notification_id";
-const char kFastPairApplicationAvailableNotificationId[] =
+constexpr char kFastPairApplicationAvailableNotificationId[] =
     "cros_fast_pair_application_available_notification_id";
-const char kFastPairApplicationInstalledNotificationId[] =
+constexpr char kFastPairApplicationInstalledNotificationId[] =
     "cros_fast_pair_application_installed_notification_id";
-const char kFastPairDiscoveryUserNotificationId[] =
+constexpr char kFastPairDiscoveryUserNotificationId[] =
     "cros_fast_pair_discovery_user_notification_id";
-const char kFastPairPairingNotificationId[] =
+constexpr char kFastPairPairingNotificationId[] =
     "cros_fast_pair_pairing_notification_id";
-const char kFastPairAssociateAccountNotificationId[] =
+constexpr char kFastPairAssociateAccountNotificationId[] =
     "cros_fast_pair_associate_account_notification_id";
-const char kFastPairDiscoverySubsequentNotificationId[] =
+constexpr char kFastPairDiscoverySubsequentNotificationId[] =
     "cros_fast_pair_discovery_subsequent_notification_id";
-const char kFastPairDisplayPasskeyNotificationId[] =
+constexpr char kFastPairDisplayPasskeyNotificationId[] =
     "cros_fast_pair_display_passkey_notification_id";
 
 constexpr base::TimeDelta kNotificationShortTimeDuration = base::Seconds(5);

@@ -4,8 +4,11 @@
 
 #include "ash/quick_pair/keyed_service/quick_pair_mediator.h"
 
+#include <array>
+#include <cstdint>
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -73,9 +76,13 @@ constexpr base::TimeDelta kShortBanDiscoveryNotificationBanTime =
 constexpr base::TimeDelta kLongBanDiscoveryNotificationBanTime =
     base::Minutes(15);
 
-const std::vector<uint8_t> kAccountKey1{0x11, 0x22, 0x33, 0x44, 0x55, 0x66,
-                                        0x77, 0x88, 0x99, 0x00, 0xAA, 0xBB,
-                                        0xCC, 0xDD, 0xEE, 0xFF};
+constexpr auto kAccountKey1 =
+    std::to_array<uint8_t>({0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88,
+                            0x99, 0x00, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF});
+
+std::vector<uint8_t> GetAccountKey1() {
+  return std::vector<uint8_t>(kAccountKey1.begin(), kAccountKey1.end());
+}
 
 }  // namespace
 
@@ -558,7 +565,7 @@ TEST_F(MediatorTest, InvokesShowAssociateAccount) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_pairer_broker_, PairDevice);
   EXPECT_CALL(*mock_ui_broker_, ShowAssociateAccount);
-  retroactive_device_->set_account_key(kAccountKey1);
+  retroactive_device_->set_account_key(GetAccountKey1());
   fake_retroactive_pairing_detector_->NotifyRetroactivePairFound(
       retroactive_device_);
   ASSERT_TRUE(retroactive_device_->version().value() ==
@@ -616,7 +623,7 @@ TEST_F(MediatorTest, AssociateAccountKeyAction_AssociateAccount) {
   EXPECT_CALL(*mock_fast_pair_repository_, WriteAccountAssociationToFootprints);
   EXPECT_CALL(*mock_ui_broker_, RemoveNotifications);
   retroactive_device_->set_version(DeviceFastPairVersion::kHigherThanV1);
-  retroactive_device_->set_account_key(kAccountKey1);
+  retroactive_device_->set_account_key(GetAccountKey1());
   mock_ui_broker_->NotifyAssociateAccountAction(
       retroactive_device_, AssociateAccountAction::kAssociateAccount);
 }
@@ -1025,7 +1032,7 @@ TEST_F(MediatorTest, PersistsDeviceImages_AfterDeviceSubsequentPaired) {
 TEST_F(MediatorTest,
        ShowAssociateAccount_OnRetroactivePairSilentAccountKeyWrite) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
-  retroactive_device_->set_account_key(kAccountKey1);
+  retroactive_device_->set_account_key(GetAccountKey1());
   EXPECT_CALL(*mock_ui_broker_, ShowAssociateAccount);
   mock_pairer_broker_->NotifyAccountKeyWrite(retroactive_device_,
                                              /*error=*/std::nullopt);
@@ -1033,7 +1040,7 @@ TEST_F(MediatorTest,
 
 TEST_F(MediatorTest, NoShowAssociateAccount_OnInitialPairAccountKeyWrite) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
-  initial_device_->set_account_key(kAccountKey1);
+  initial_device_->set_account_key(GetAccountKey1());
   EXPECT_CALL(*mock_ui_broker_, ShowAssociateAccount).Times(0);
   mock_pairer_broker_->NotifyAccountKeyWrite(initial_device_,
                                              /*error=*/std::nullopt);

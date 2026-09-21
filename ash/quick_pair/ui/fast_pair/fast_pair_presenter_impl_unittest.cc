@@ -53,26 +53,26 @@ constexpr char kUserEmail[] = "test@test.test";
 constexpr auto kTestAccountId =
     AccountId::Literal::FromUserEmailGaiaId(kUserEmail,
                                             GaiaId::Literal("fake-gaia-id"));
-const char kPublicAntiSpoof[] =
+constexpr char kPublicAntiSpoof[] =
     "Wuyr48lD3txnUhGiMF1IfzlTwRxxe+wMB1HLzP+"
     "0wVcljfT3XPoiy1fntlneziyLD5knDVAJSE+RM/zlPRP/Jg==";
 constexpr char kValidModelId[] = "718c17";
 constexpr char kTestAddress[] = "test_address";
-const char kFastPairErrorNotificationId[] =
+constexpr char kFastPairErrorNotificationId[] =
     "cros_fast_pair_error_notification_id";
-const char kFastPairDiscoveryGuestNotificationId[] =
+constexpr char kFastPairDiscoveryGuestNotificationId[] =
     "cros_fast_pair_discovery_guest_notification_id";
-const char kFastPairDiscoveryUserNotificationId[] =
+constexpr char kFastPairDiscoveryUserNotificationId[] =
     "cros_fast_pair_discovery_user_notification_id";
-const char kFastPairApplicationInstalledNotificationId[] =
+constexpr char kFastPairApplicationInstalledNotificationId[] =
     "cros_fast_pair_application_installed_notification_id";
-const char kFastPairPairingNotificationId[] =
+constexpr char kFastPairPairingNotificationId[] =
     "cros_fast_pair_pairing_notification_id";
-const char kFastPairAssociateAccountNotificationId[] =
+constexpr char kFastPairAssociateAccountNotificationId[] =
     "cros_fast_pair_associate_account_notification_id";
-const char kFastPairDiscoverySubsequentNotificationId[] =
+constexpr char kFastPairDiscoverySubsequentNotificationId[] =
     "cros_fast_pair_discovery_subsequent_notification_id";
-const char kFastPairDisplayPasskeyNotificationId[] =
+constexpr char kFastPairDisplayPasskeyNotificationId[] =
     "cros_fast_pair_display_passkey_notification_id";
 constexpr char kRetroactiveSuccessFunnelMetric[] =
     "FastPair.RetroactivePairing";

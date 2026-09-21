@@ -62,39 +62,40 @@ constexpr char kFastPairEngagementFlowMetricSubsequentWithFakeMetadata[] =
     "FastPairNotificationType";
 constexpr char kInitialSuccessFunnelMetric[] = "FastPair.InitialPairing";
 constexpr char kSubsequentSuccessFunnelMetric[] = "FastPair.SubsequentPairing";
-const char kFastPairRetroactiveEngagementFlowMetric[] =
+constexpr char kFastPairRetroactiveEngagementFlowMetric[] =
     "Bluetooth.ChromeOS.FastPair.RetroactiveEngagementFunnel.Steps";
-const char kFastPairRetroactiveEngagementFlowMetricWithFakeMetadata[] =
+constexpr char kFastPairRetroactiveEngagementFlowMetricWithFakeMetadata[] =
     "Bluetooth.ChromeOS.FastPair.RetroactiveEngagementFunnel.Steps."
     "TrueWirelessHeadphonesDeviceType.FastPairNotificationType";
 constexpr char kFastPairPairTimeMetricInitial[] =
     "Bluetooth.ChromeOS.FastPair.TotalUxPairTime.InitialPairingProtocol2";
 constexpr char kFastPairPairTimeMetricSubsequent[] =
     "Bluetooth.ChromeOS.FastPair.TotalUxPairTime.SubsequentPairingProtocol2";
-const char kPairingMethodMetric[] = "Bluetooth.ChromeOS.FastPair.PairingMethod";
-const char kRetroactivePairingResultMetric[] =
+constexpr char kPairingMethodMetric[] =
+    "Bluetooth.ChromeOS.FastPair.PairingMethod";
+constexpr char kRetroactivePairingResultMetric[] =
     "Bluetooth.ChromeOS.FastPair.RetroactivePairing.Result";
-const char kFastPairPairFailureMetricInitial[] =
+constexpr char kFastPairPairFailureMetricInitial[] =
     "Bluetooth.ChromeOS.FastPair.PairFailure.InitialPairingProtocol";
-const char kFastPairPairFailureMetricSubsequent[] =
+constexpr char kFastPairPairFailureMetricSubsequent[] =
     "Bluetooth.ChromeOS.FastPair.PairFailure.SubsequentPairingProtocol";
-const char kFastPairPairFailureMetricRetroactive[] =
+constexpr char kFastPairPairFailureMetricRetroactive[] =
     "Bluetooth.ChromeOS.FastPair.PairFailure.RetroactivePairingProtocol";
-const char kFastPairPairResultMetricInitial[] =
+constexpr char kFastPairPairResultMetricInitial[] =
     "Bluetooth.ChromeOS.FastPair.Pairing.Result.InitialPairingProtocol";
-const char kFastPairPairResultMetricSubsequent[] =
+constexpr char kFastPairPairResultMetricSubsequent[] =
     "Bluetooth.ChromeOS.FastPair.Pairing.Result.SubsequentPairingProtocol";
-const char kFastPairPairResultMetricRetroactive[] =
+constexpr char kFastPairPairResultMetricRetroactive[] =
     "Bluetooth.ChromeOS.FastPair.Pairing.Result.RetroactivePairingProtocol";
-const char kFastPairAccountKeyWriteResultMetricInitial[] =
+constexpr char kFastPairAccountKeyWriteResultMetricInitial[] =
     "Bluetooth.ChromeOS.FastPair.AccountKey.Write.Result."
     "InitialPairingProtocol";
-const char kFastPairAccountKeyWriteResultMetricRetroactive[] =
+constexpr char kFastPairAccountKeyWriteResultMetricRetroactive[] =
     "Bluetooth.ChromeOS.FastPair.AccountKey.Write.Result."
     "RetroactivePairingProtocol";
-const char kFastPairAccountKeyWriteFailureMetricInitial[] =
+constexpr char kFastPairAccountKeyWriteFailureMetricInitial[] =
     "Bluetooth.ChromeOS.FastPair.AccountKey.Failure.InitialPairingProtocol";
-const char kFastPairAccountKeyWriteFailureMetricRetroactive[] =
+constexpr char kFastPairAccountKeyWriteFailureMetricRetroactive[] =
     "Bluetooth.ChromeOS.FastPair.AccountKey.Failure.RetroactivePairingProtocol";
 constexpr char kRetroactiveSuccessFunnelMetric[] =
     "FastPair.RetroactivePairing";
