@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_KCER_KCER_HISTOGRAMS_H_
 #define CHROMEOS_ASH_COMPONENTS_KCER_KCER_HISTOGRAMS_H_
 
-#include "base/component_export.h"
 #include "chromeos/ash/components/kcer/kcer.h"
 
 namespace kcer {
@@ -35,20 +34,6 @@ enum class KcerPkcs12ImportEvent {
 void RecordKcerPkcs12ImportUmaEvent(KcerPkcs12ImportEvent event);
 
 }  // namespace internal
-
-// Events related to import of PKCS#12 files. These values are persisted to
-// histograms. Entries should not be renumbered and numeric values should never
-// be reused.
-enum class Pkcs12MigrationUmaEvent {
-  kPkcs12ImportNssSuccess = 0,
-  kPkcs12ImportNssFailed = 1,
-  kPkcs12ImportKcerSuccess = 2,
-  kPkcs12ImportKcerFailed = 3,
-  kMaxValue = kPkcs12ImportKcerFailed,
-};
-
-COMPONENT_EXPORT(KCER)
-void RecordPkcs12MigrationUmaEvent(Pkcs12MigrationUmaEvent event);
 
 }  // namespace kcer
 

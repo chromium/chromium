@@ -1177,14 +1177,6 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="SuccessMultipleCertImport"/>
 </enum>
 
-<enum name="KcerPkcs12MigrationUmaEvent">
-  <summary>Events related to the migration of PKCS#12 Import.</summary>
-  <int value="0" label="Pkcs12ImportNssSuccess"/>
-  <int value="1" label="Pkcs12ImportNssFailed"/>
-  <int value="2" label="Pkcs12ImportKcerSuccess"/>
-  <int value="3" label="Pkcs12ImportKcerFailed"/>
-</enum>
-
 <enum name="KeyboardTopRowActionKeys">
   <summary>
     List of possible keyboard top-row action keys. This is defined in

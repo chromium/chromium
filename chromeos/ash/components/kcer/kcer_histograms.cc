@@ -7,10 +7,6 @@
 #include "base/metrics/histogram_functions.h"
 
 namespace kcer {
-namespace {
-constexpr char kPkcs12MigrationHistogram[] = "ChromeOS.Kcer.Pkcs12Migration";
-}  // namespace
-
 namespace internal {
 
 void RecordKcerPkcs12ImportUmaEvent(internal::KcerPkcs12ImportEvent event) {
@@ -18,9 +14,5 @@ void RecordKcerPkcs12ImportUmaEvent(internal::KcerPkcs12ImportEvent event) {
 }
 
 }  // namespace internal
-
-void RecordPkcs12MigrationUmaEvent(Pkcs12MigrationUmaEvent event) {
-  base::UmaHistogramEnumeration(kPkcs12MigrationHistogram, event);
-}
 
 }  // namespace kcer

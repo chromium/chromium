@@ -72,7 +72,6 @@
 #include "chrome/browser/ash/net/client_cert_store_kcer.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chromeos/ash/components/kcer/kcer.h"
-#include "chromeos/ash/components/kcer/kcer_histograms.h"
 #include "chromeos/components/certificate_provider/certificate_provider.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/user.h"
@@ -778,8 +777,6 @@ class WritableClientCertSource
 
 #if BUILDFLAG(IS_CHROMEOS)
     if (nss_import_result == net::OK) {
-      kcer::RecordPkcs12MigrationUmaEvent(
-          kcer::Pkcs12MigrationUmaEvent::kPkcs12ImportNssSuccess);
       // `import_hardware_backed_` == false indicates that the cert came from
       // the "Import" button. By default it's imported into the software NSS
       // database (aka public slot). With the experiment enabled it should also
@@ -804,9 +801,6 @@ class WritableClientCertSource
                              nss_import_result));
         }
       }
-    } else {
-      kcer::RecordPkcs12MigrationUmaEvent(
-          kcer::Pkcs12MigrationUmaEvent::kPkcs12ImportNssFailed);
     }
 #endif
 
@@ -816,16 +810,8 @@ class WritableClientCertSource
 #if BUILDFLAG(IS_CHROMEOS)
   void FinishedKcerImport(
       int nss_import_result,
-      base::expected<void, kcer::Error> kcer_import_result) {
+      base::expected<void, kcer::Error> /*kcer_import_result*/) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-    if (kcer_import_result.has_value()) {
-      kcer::RecordPkcs12MigrationUmaEvent(
-          kcer::Pkcs12MigrationUmaEvent::kPkcs12ImportKcerSuccess);
-    } else {
-      kcer::RecordPkcs12MigrationUmaEvent(
-          kcer::Pkcs12MigrationUmaEvent::kPkcs12ImportKcerFailed);
-    }
 
     // Just return the nss_import_result. Kcer will attempt to import only if
     // NSS succeeds and even if Kcer fails, the cert should be usable.
