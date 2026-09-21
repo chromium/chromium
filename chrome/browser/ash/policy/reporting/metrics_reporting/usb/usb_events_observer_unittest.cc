@@ -6,6 +6,9 @@
 
 #include <sys/types.h>
 
+#include <string>
+#include <vector>
+
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
@@ -20,6 +23,7 @@ namespace {
 
 using ::ash::cros_healthd::mojom::UsbEventInfo;
 using ::ash::cros_healthd::mojom::UsbEventInfoPtr;
+using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::IsEmpty;
 using ::testing::StrEq;
@@ -30,8 +34,6 @@ static constexpr char kTestName[] = "TestName";
 static constexpr char kTestVendor[] = "TestVendor";
 static constexpr char kTestCategory1[] = "TestCategory1";
 static constexpr char kTestCategory2[] = "TestCategory2";
-const std::vector<std::string> kTestCategories = {kTestCategory1,
-                                                  kTestCategory2};
 
 class UsbEventsObserverTest : public ::testing::Test {
  public:
@@ -64,7 +66,8 @@ TEST_F(UsbEventsObserverTest, UsbOnRemove) {
   usb_observer.SetReportingEnabled(true);
   usb_observer.OnEvent(
       ::ash::cros_healthd::mojom::EventInfo::NewUsbEventInfo(UsbEventInfo::New(
-          kTestVendor, kTestName, kTestVid, kTestPid, kTestCategories,
+          kTestVendor, kTestName, kTestVid, kTestPid,
+          std::vector<std::string>{kTestCategory1, kTestCategory2},
           ::ash::cros_healthd::mojom::UsbEventInfo::State::kRemove)));
 
   UsbTelemetry usb_telemetry =
@@ -85,12 +88,8 @@ TEST_F(UsbEventsObserverTest, UsbOnRemove) {
   EXPECT_THAT(usb_telemetry.vendor(), StrEq(kTestVendor));
   EXPECT_THAT(usb_telemetry.vid(), Eq(kTestVid));
   EXPECT_EQ(metric_data.event_data().type(), MetricEventType::USB_REMOVED);
-  ASSERT_EQ(static_cast<size_t>(usb_telemetry.categories().size()),
-            kTestCategories.size());
-
-  for (size_t i = 0; i < kTestCategories.size(); ++i) {
-    EXPECT_THAT(usb_telemetry.categories()[i], StrEq(kTestCategories[i]));
-  }
+  EXPECT_THAT(usb_telemetry.categories(),
+              ElementsAre(kTestCategory1, kTestCategory2));
 }
 
 TEST_F(UsbEventsObserverTest, UsbOnAdd) {
@@ -106,7 +105,8 @@ TEST_F(UsbEventsObserverTest, UsbOnAdd) {
   usb_observer.SetReportingEnabled(true);
   usb_observer.OnEvent(
       ::ash::cros_healthd::mojom::EventInfo::NewUsbEventInfo(UsbEventInfo::New(
-          kTestVendor, kTestName, kTestVid, kTestPid, kTestCategories,
+          kTestVendor, kTestName, kTestVid, kTestPid,
+          std::vector<std::string>{kTestCategory1, kTestCategory2},
           ::ash::cros_healthd::mojom::UsbEventInfo::State::kAdd)));
 
   UsbTelemetry usb_telemetry =
@@ -127,12 +127,8 @@ TEST_F(UsbEventsObserverTest, UsbOnAdd) {
   EXPECT_THAT(usb_telemetry.vendor(), StrEq(kTestVendor));
   EXPECT_THAT(usb_telemetry.vid(), Eq(kTestVid));
   EXPECT_EQ(metric_data.event_data().type(), MetricEventType::USB_ADDED);
-  ASSERT_EQ(static_cast<size_t>(usb_telemetry.categories().size()),
-            kTestCategories.size());
-
-  for (size_t i = 0; i < kTestCategories.size(); ++i) {
-    EXPECT_THAT(usb_telemetry.categories()[i], StrEq(kTestCategories[i]));
-  }
+  EXPECT_THAT(usb_telemetry.categories(),
+              ElementsAre(kTestCategory1, kTestCategory2));
 }
 
 TEST_F(UsbEventsObserverTest, UsbOnAddUsingFakeCrosHealthd) {

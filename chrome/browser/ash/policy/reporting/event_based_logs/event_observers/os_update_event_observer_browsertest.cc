@@ -21,10 +21,12 @@
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/reporting/util/status.h"
-#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -36,10 +38,10 @@ using ::testing::WithArgs;
 namespace {
 
 constexpr char kTestUserEmail[] = "test@example.com";
+constexpr AccountId::Literal kTestAccountId =
+    AccountId::Literal::FromUserEmailGaiaId(kTestUserEmail,
+                                            GaiaId::Literal("1234567890"));
 constexpr char kTestAffiliationId[] = "test_affiliation_id";
-static const AccountId kTestAccountId = AccountId::FromUserEmailGaiaId(
-    kTestUserEmail,
-    signin::GetTestGaiaIdForEmail(kTestUserEmail));
 
 class MockLogUploader : public policy::EventBasedLogUploader {
  public:

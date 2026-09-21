@@ -19,6 +19,8 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/dbus/missive/missive_client.h"
 #include "chromeos/dbus/missive/missive_client_test_observer.h"
+#include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/policy/core/common/remote_commands/remote_commands_fetch_reason.h"
 #include "components/policy/core/common/remote_commands/remote_commands_service.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -26,8 +28,8 @@
 #include "components/policy/test_support/remote_commands_result_waiter.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
-#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -43,11 +45,11 @@ namespace ash::reporting {
 namespace {
 
 constexpr char kTestUserEmail[] = "test@example.com";
+constexpr AccountId::Literal kTestAccountId =
+    AccountId::Literal::FromUserEmailGaiaId(kTestUserEmail,
+                                            GaiaId::Literal("1234567890"));
 constexpr char kTestAffiliationId[] = "test_affiliation_id";
 constexpr char kNewPlatformVersion[] = "1235.0.0";
-static const AccountId kTestAccountId = AccountId::FromUserEmailGaiaId(
-    kTestUserEmail,
-    signin::GetTestGaiaIdForEmail(kTestUserEmail));
 
 struct OsUpdatesReporterBrowserTestCase {
   update_engine::Operation operation;

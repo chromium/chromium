@@ -20,6 +20,7 @@
 #include "chrome/browser/policy/messaging_layer/proto/synced/user_session_activity.pb.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/reporting/client/mock_report_queue.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
@@ -44,7 +45,8 @@ namespace {
 
 constexpr std::string_view kUserEmail = "user@example.com";
 
-const AccountId kAccountId = AccountId::FromUserEmail(kUserEmail);
+constexpr AccountId::Literal kAccountId =
+    AccountId::Literal::FromUserEmail(kUserEmail);
 
 constexpr char kSessionId[] = "session_id";
 

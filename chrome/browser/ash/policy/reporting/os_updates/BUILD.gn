@@ -88,18 +88,15 @@ source_set("browser_tests") {
     "//chromeos/ash/components/settings",
     "//chromeos/dbus/missive",
     "//chromeos/dbus/missive:test_support",
+    "//components/account_id",
+    "//components/account_id:test_support",
     "//components/policy/core/common",
     "//components/policy/proto",
     "//components/policy/test_support",
     "//components/reporting/proto:record_constants",
     "//components/reporting/proto:record_proto",
-    "//components/signin/public/identity_manager:test_support",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
