@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/speech/extension_api/tts_audio_output_stream_factory.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
 #include "chromeos/services/tts/public/mojom/tts_service.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -169,14 +170,18 @@ void TtsEngineExtensionObserverChromeOS::BindGoogleTtsStream(
 
   CreateTtsServiceIfNeeded();
 
-  // Always create a new audio stream for the tts stream. It is assumed once the
-  // tts stream is reset by the service, the audio stream is appropriately
-  // cleaned up by the audio service.
+  // Always create a new audio stream for the tts stream. It is assumed once
+  // the tts stream is reset by the service, the audio stream is appropriately
+  // cleaned up by the audio service. Wrap it in an output-only restricted
+  // factory before passing to the TTS service.
+  // TODO(crbug.com/554915521): Switch to an upstream output-only factory
+  // interface.
   mojo::PendingRemote<media::mojom::AudioStreamFactory> factory_remote;
   auto factory_receiver = factory_remote.InitWithNewPipeAndPassReceiver();
   content::GetAudioService().BindStreamFactory(std::move(factory_receiver));
-  tts_service_->BindGoogleTtsStream(std::move(receiver),
-                                    std::move(factory_remote));
+  tts_service_->BindGoogleTtsStream(
+      std::move(receiver), chromeos::tts::TtsAudioOutputStreamFactory::Create(
+                               std::move(factory_remote)));
 }
 
 void TtsEngineExtensionObserverChromeOS::BindPlaybackTtsStream(
@@ -185,14 +190,19 @@ void TtsEngineExtensionObserverChromeOS::BindPlaybackTtsStream(
     chromeos::tts::mojom::TtsService::BindPlaybackTtsStreamCallback callback) {
   CreateTtsServiceIfNeeded();
 
-  // Always create a new audio stream for the tts stream. It is assumed once the
-  // tts stream is reset by the service, the audio stream is appropriately
-  // cleaned up by the audio service.
+  // Always create a new audio stream for the tts stream. It is assumed once
+  // the tts stream is reset by the service, the audio stream is appropriately
+  // cleaned up by the audio service. Wrap it in an output-only restricted
+  // factory before passing to the TTS service.
+  // TODO(crbug.com/554915521): Switch to an upstream output-only factory
+  // interface.
   mojo::PendingRemote<media::mojom::AudioStreamFactory> factory_remote;
   auto factory_receiver = factory_remote.InitWithNewPipeAndPassReceiver();
   content::GetAudioService().BindStreamFactory(std::move(factory_receiver));
   tts_service_->BindPlaybackTtsStream(
-      std::move(receiver), std::move(factory_remote),
+      std::move(receiver),
+      chromeos::tts::TtsAudioOutputStreamFactory::Create(
+          std::move(factory_remote)),
       std::move(audio_parameters), std::move(callback));
 }
 
