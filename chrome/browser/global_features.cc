@@ -144,8 +144,7 @@ void GlobalFeatures::PostBrowserProcessInit() {
     glic_profile_manager_ = std::make_unique<glic::GlicProfileManager>();
 #if !BUILDFLAG(IS_ANDROID)
     glic_background_mode_manager_ =
-        std::make_unique<glic::GlicBackgroundModeManager>(
-            g_browser_process->status_tray());
+        std::make_unique<glic::GlicBackgroundModeManager>();
 #endif
     synthetic_trial_manager_ =
         std::make_unique<glic::GlicSyntheticTrialManager>();

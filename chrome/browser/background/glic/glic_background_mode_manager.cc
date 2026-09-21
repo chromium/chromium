@@ -93,9 +93,8 @@ class GlicBackgroundModeManager::AcceleratorRegistrar
   const raw_ref<GlicBackgroundModeManager> manager_;
 };
 
-GlicBackgroundModeManager::GlicBackgroundModeManager(StatusTray* status_tray)
+GlicBackgroundModeManager::GlicBackgroundModeManager()
     : configuration_(std::make_unique<GlicLauncherConfiguration>(this)),
-      status_tray_(status_tray),
       enabled_pref_(GlicLauncherConfiguration::IsLauncherIconEnabled()),
       expected_registered_hotkeys_(
           ShouldRegisterGlobalHotkey()
@@ -288,8 +287,10 @@ void GlicBackgroundModeManager::EnterBackgroundMode(bool show_status_icon) {
 
   if (show_status_icon) {
     if (!status_icon_) {
-      status_icon_ = GlicStatusIcon::Create(this, status_tray_);
-      status_icon_->Init();
+      if (StatusTray* status_tray = g_browser_process->status_tray()) {
+        status_icon_ = GlicStatusIcon::Create(this, status_tray);
+        status_icon_->Init();
+      }
     }
   } else {
     status_icon_.reset();

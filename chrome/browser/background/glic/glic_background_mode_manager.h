@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/callback_list.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
@@ -23,7 +22,6 @@
 
 class ScopedKeepAlive;
 class ScopedProfileKeepAlive;
-class StatusTray;
 
 namespace ui {
 class Accelerator;
@@ -64,7 +62,7 @@ class GlicBackgroundModeManager : public GlicLauncherConfiguration::Observer,
                                   public ProfileObserver,
                                   public GlicBackgroundDelegate {
  public:
-  explicit GlicBackgroundModeManager(StatusTray* status_tray);
+  GlicBackgroundModeManager();
   ~GlicBackgroundModeManager() override;
 
   // GlicBackgroundDelegate:
@@ -123,9 +121,6 @@ class GlicBackgroundModeManager : public GlicLauncherConfiguration::Observer,
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 
-  // TODO(https://crbug.com/378139555): Figure out how to not dangle this
-  // pointer (and other instances of StatusTray).
-  raw_ptr<StatusTray, DanglingUntriaged> status_tray_;
   // Class that represents the glic status icon. Only exists when the background
   // mode is enabled.
   std::unique_ptr<GlicStatusIcon> status_icon_;
