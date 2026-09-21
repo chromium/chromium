@@ -62,6 +62,7 @@ suite('OmniboxEverywhereOmniboxTest', () => {
       omniboxEverywhereProfilePickerEnabled: false,
       isEnterpriseProfile: false,
       searchboxLayoutMode: 'TallBottomContext',
+      searchboxMultiline: true,
     });
     testProxy = new TestSearchboxBrowserProxy();
     SearchboxBrowserProxy.setInstance(testProxy);
@@ -339,6 +340,30 @@ suite('OmniboxEverywhereOmniboxTest', () => {
 
     assertEquals('', omnibox.$.input.inputElement.value);
   });
+
+  test('multiLineEnabled is initialized from loadTimeData', () => {
+    assertTrue(omnibox.multiLineEnabled);
+    assertTrue(omnibox.hasAttribute('multi-line-enabled'));
+  });
+
+  test(
+      'updateDropdownVisibility suppresses dropdown when multiline input ' +
+          'expands',
+      () => {
+        omnibox.result = createAutocompleteResultForTesting({
+          input: 'multiline text',
+          matches: [createSearchMatchForTesting()],
+        });
+        omnibox.dropdownIsVisible = true;
+
+        Object.defineProperty(omnibox.$.input.inputElement, 'scrollHeight', {
+          value: 64,
+          configurable: true,
+        });
+
+        omnibox.updateDropdownVisibility();
+        assertFalse(omnibox.dropdownIsVisible);
+      });
 
   test('respects isFuseboxEnabled false', async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;

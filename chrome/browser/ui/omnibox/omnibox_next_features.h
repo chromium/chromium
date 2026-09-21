@@ -78,6 +78,7 @@ BASE_DECLARE_FEATURE(kOmniboxKeepOpenOnFileSelection);
 
 extern const base::FeatureParam<bool> kWebUIOmniboxPopupDebugSxSParam;
 extern const base::FeatureParam<bool> kOmniboxEverywhereProfilePickerParam;
+extern const base::FeatureParam<bool> kOmniboxEverywhereMultilineParam;
 
 // The serialized base64 encoded `omnibox::NTPComposeboxConfig`.
 extern const base::FeatureParam<std::string> kConfigParam;

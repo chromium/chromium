@@ -21,7 +21,7 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
         part="animated-glow">
       </search-animated-glow>
       <cr-searchbox-input id="input"
-          exportparts="searchbox-input"
+          exportparts="searchbox-input, icon"
           ?dropdown-is-visible="${this.dropdownIsVisible}"
           input-aria-live="${this.inputAriaLive}"
           ?multi-line-enabled="${this.multiLineEnabled}"

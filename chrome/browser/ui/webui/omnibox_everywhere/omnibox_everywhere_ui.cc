@@ -345,6 +345,8 @@ OmniboxEverywhereUI::OmniboxEverywhereUI(content::WebUI* web_ui)
   source->AddBoolean(
       "omniboxPopupDebugEnabled",
       base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopupDebug));
+  source->AddBoolean("searchboxMultiline",
+                     omnibox::kOmniboxEverywhereMultilineParam.Get());
 
   source->AddBoolean("reportMetrics", true);
   source->AddString("charTypedToPaintMetricName",
