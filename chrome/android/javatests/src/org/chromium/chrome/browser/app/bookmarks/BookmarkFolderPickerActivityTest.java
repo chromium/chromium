@@ -38,6 +38,8 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkFolderPickerMetrics.BookmarkFolderPickerOutcome;
@@ -45,6 +47,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -182,6 +185,7 @@ public class BookmarkFolderPickerActivityTest {
     @Test
     @MediumTest
     @Feature({"Bookmark"})
+    @DisableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG)
     public void testCancelButton()
             throws ExecutionException, TimeoutException, InterruptedException {
         var histogramWatcher =
@@ -196,6 +200,29 @@ public class BookmarkFolderPickerActivityTest {
         startFolderPickerActivity(bookmark);
 
         onView(withText("Cancel")).perform(click());
+
+        CriteriaHelper.pollUiThread(() -> mActivity.isFinishing());
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Bookmark"})
+    @EnableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG)
+    public void testCloseButton_Desktop()
+            throws ExecutionException, TimeoutException, InterruptedException {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Bookmarks.FolderPicker.Outcome",
+                                BookmarkFolderPickerOutcome.CLOSED)
+                        .build();
+
+        BookmarkId bookmark =
+                addBookmark(mMobileFolderId, 0, "bookmark", new GURL("https://google.com"));
+        startFolderPickerActivity(bookmark);
+
+        onView(withId(R.id.close_button)).perform(click());
 
         CriteriaHelper.pollUiThread(() -> mActivity.isFinishing());
         histogramWatcher.assertExpected();

@@ -212,10 +212,4 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
         }
         return ObservableSuppliers.alwaysTrue();
     }
-
-    // Testing methods.
-
-    void openFolderForTesting(BookmarkId folder) {
-        mMediator.populateFoldersForParentId(folder);
-    }
 }
