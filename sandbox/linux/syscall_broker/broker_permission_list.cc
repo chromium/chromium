@@ -75,6 +75,28 @@ const char* BrokerPermissionList::GetFileNameIfAllowedToStat(
   return nullptr;
 }
 
+const char* BrokerPermissionList::GetFileNameIfAllowedToConnect(
+    const char* requested_name) const {
+  for (size_t i = 0; i < num_of_permissions_; i++) {
+    const char* ret = permissions_array_[i].CheckConnect(requested_name);
+    if (ret) {
+      return ret;
+    }
+  }
+  return nullptr;
+}
+
+const char* BrokerPermissionList::GetFileNameIfAllowedToBind(
+    const char* requested_name) const {
+  for (size_t i = 0; i < num_of_permissions_; i++) {
+    const char* ret = permissions_array_[i].CheckBind(requested_name);
+    if (ret) {
+      return ret;
+    }
+  }
+  return nullptr;
+}
+
 const char* BrokerPermissionList::GetFileNameIfAllowedToInotifyAddWatch(
     const char* requested_filename,
     uint32_t mask) const {

@@ -72,6 +72,35 @@ SANDBOX_DEATH_TEST(
   BrokerFilePermission perm = BrokerFilePermission::ReadOnlyRecursive(kPath);
 }
 
+SANDBOX_TEST(BrokerFilePermission, CreateGoodConnectAbstractRecursive) {
+  BrokerFilePermission perm =
+      BrokerFilePermission::ConnectOnlyRecursive("@/steamvr/");
+}
+
+// An abstract recursive prefix must end with '/' so it matches whole name
+// components ("@/steamvr/" must not match "@/steamvrbad").
+SANDBOX_DEATH_TEST(
+    BrokerFilePermission,
+    CreateBadConnectAbstractRecursiveNoSlash,
+    DEATH_BY_CHECK(BrokerFilePermissionTester::GetErrorMessage())) {
+  BrokerFilePermission perm =
+      BrokerFilePermission::ConnectOnlyRecursive("@/steamvr");
+}
+
+// A bind() prefix is a literal string prefix: bound names are not always
+// '/'-delimited (SteamVR's "fd-cl-<n>"), so no trailing '/' is required.
+SANDBOX_TEST(BrokerFilePermission, CreateGoodBindAbstractRecursive) {
+  BrokerFilePermission perm =
+      BrokerFilePermission::BindOnlyRecursive("@fd-cl-");
+}
+
+SANDBOX_DEATH_TEST(
+    BrokerFilePermission,
+    CreateBadBindAbstractEmpty,
+    DEATH_BY_CHECK(BrokerFilePermissionTester::GetErrorMessage())) {
+  BrokerFilePermission perm = BrokerFilePermission::BindOnly("@");
+}
+
 SANDBOX_DEATH_TEST(
     BrokerFilePermission,
     CreateBadNotAbs,

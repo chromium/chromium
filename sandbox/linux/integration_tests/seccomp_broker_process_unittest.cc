@@ -4,14 +4,18 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <netinet/in.h>
 #include <sys/inotify.h>
+#include <sys/socket.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/un.h>
 #include <unistd.h>
 
 #include <algorithm>
 #include <array>
 #include <memory>
+#include <string>
 #include <tuple>
 #include <type_traits>
 #include <vector>
@@ -34,6 +38,7 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/run_loop.h"
 #include "base/strings/cstring_view.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -216,6 +221,122 @@ BPF_TEST(SandboxBPF,
   BPF_ASSERT(cpu_info_fd >= 0);
   std::array<char, 1024> buf;
   BPF_ASSERT(HANDLE_EINTR(read(cpu_info_fd, buf.data(), buf.size())) > 0);
+}
+
+// Test the bind() trap path end to end: the SIGSYS handler reads the sockaddr
+// in the sandboxed process and the broker checks the name and bind()s the fd.
+class InitializedBindBroker {
+ public:
+  InitializedBindBroker() {
+    syscall_broker::BrokerCommandSet command_set;
+    command_set.set(syscall_broker::COMMAND_BIND);
+    std::vector<BrokerFilePermission> permissions = {
+        BrokerFilePermission::BindOnlyRecursive("@fd-cl-")};
+    broker_process_ = std::make_unique<BrokerProcess>(
+        syscall_broker::BrokerSandboxConfig(command_set, permissions, EPERM),
+        BrokerType::SIGNAL_BASED);
+    BPF_ASSERT(broker_process_->Fork(base::BindOnce(
+        [](const syscall_broker::BrokerSandboxConfig&) { return true; })));
+  }
+
+  InitializedBindBroker(const InitializedBindBroker&) = delete;
+  InitializedBindBroker& operator=(const InitializedBindBroker&) = delete;
+
+  BrokerProcess* broker_process() const { return broker_process_.get(); }
+
+ private:
+  std::unique_ptr<BrokerProcess> broker_process_;
+};
+
+class BrokerBindPolicy : public bpf_dsl::Policy {
+ public:
+  explicit BrokerBindPolicy(InitializedBindBroker* ibb) : ibb_(ibb) {}
+
+  BrokerBindPolicy(const BrokerBindPolicy&) = delete;
+  BrokerBindPolicy& operator=(const BrokerBindPolicy&) = delete;
+
+  ~BrokerBindPolicy() override {}
+
+  ResultExpr EvaluateSyscall(int sysno) const override {
+    DCHECK(SandboxBPF::IsValidSyscallNumber(sysno));
+    if (sysno == __NR_bind) {
+      return Trap(syscall_broker::BrokerClient::SIGSYS_Handler,
+                  ibb_->broker_process()->GetBrokerClientSignalBased());
+    }
+    return Allow();
+  }
+
+ private:
+  raw_ptr<InitializedBindBroker> ibb_;
+};
+
+BPF_TEST(SandboxBPF,
+         UseBindBroker,
+         BrokerBindPolicy,
+         InitializedBindBroker /* (*BPF_AUX) */) {
+  auto unix_socket = [] {
+    base::ScopedFD fd(socket(AF_UNIX, SOCK_STREAM, 0));
+    BPF_ASSERT(fd.is_valid());
+    return fd;
+  };
+
+  // An abstract name under the allowed prefix binds; getsockname() shows it
+  // on the sandboxed process' own fd. The pid keeps the host-wide name unique.
+  const std::string allowed_name = "fd-cl-" + base::NumberToString(getpid());
+  struct sockaddr_un abstract = {};
+  abstract.sun_family = AF_UNIX;
+  base::span(abstract.sun_path)
+      .subspan(1u)
+      .copy_prefix_from(base::span(allowed_name));
+  const socklen_t abstract_len =
+      offsetof(struct sockaddr_un, sun_path) + 1 + allowed_name.size();
+  base::ScopedFD sock = unix_socket();
+  BPF_ASSERT(bind(sock.get(), reinterpret_cast<struct sockaddr*>(&abstract),
+                  abstract_len) == 0);
+  struct sockaddr_un local = {};
+  socklen_t local_len = sizeof(local);
+  BPF_ASSERT(getsockname(sock.get(), reinterpret_cast<struct sockaddr*>(&local),
+                         &local_len) == 0);
+  BPF_ASSERT(local_len == abstract_len);
+  BPF_ASSERT(local.sun_path[0] == '\0');
+  const base::span<const char> local_name =
+      base::span(local.sun_path).subspan(1u, allowed_name.size());
+  BPF_ASSERT(std::string(local_name.begin(), local_name.end()) == allowed_name);
+
+  // A name outside the prefix is refused by the broker's permission check.
+  struct sockaddr_un denied = {};
+  denied.sun_family = AF_UNIX;
+  base::span(denied.sun_path)
+      .subspan(1u)
+      .copy_prefix_from(base::span_from_cstring("other-1"));
+  base::ScopedFD denied_sock = unix_socket();
+  BPF_ASSERT(bind(denied_sock.get(),
+                  reinterpret_cast<struct sockaddr*>(&denied),
+                  offsetof(struct sockaddr_un, sun_path) + 1 + 7) == -1);
+  BPF_ASSERT(errno == EPERM);
+
+  // The allowed name spelled as a relative filesystem path ("@fd-cl-<pid>",
+  // no leading NUL) is not an abstract name: it must be rejected outright
+  // rather than reinterpreted as the abstract one the prefix allows.
+  struct sockaddr_un relative = {};
+  relative.sun_family = AF_UNIX;
+  const std::string relative_name = "@" + allowed_name;
+  base::span(relative.sun_path).copy_prefix_from(base::span(relative_name));
+  base::ScopedFD relative_sock = unix_socket();
+  BPF_ASSERT(bind(relative_sock.get(),
+                  reinterpret_cast<struct sockaddr*>(&relative),
+                  sizeof(relative)) == -1);
+  BPF_ASSERT(errno == EINVAL);
+
+  // Non-AF_UNIX addresses never reach the broker.
+  struct sockaddr_in inet = {};
+  inet.sin_family = AF_INET;
+  inet.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+  base::ScopedFD inet_sock(socket(AF_INET, SOCK_STREAM, 0));
+  BPF_ASSERT(inet_sock.is_valid());
+  BPF_ASSERT(bind(inet_sock.get(), reinterpret_cast<struct sockaddr*>(&inet),
+                  sizeof(inet)) == -1);
+  BPF_ASSERT(errno == EPERM);
 }
 
 // The rest of the tests do not run under thread sanitizer, as TSAN starts up an

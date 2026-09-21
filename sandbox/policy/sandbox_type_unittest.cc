@@ -96,6 +96,15 @@ TEST(SandboxTypeTest, Utility) {
             SandboxTypeFromCommandLine(command_line12));
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+  // The XR Device Service (kXrCompositing) hosts the OpenXR runtime and is
+  // sandboxed on Linux as well as Windows.
+  base::CommandLine command_line_xr(command_line);
+  SetCommandLineFlagsForSandboxType(&command_line_xr, Sandbox::kXrCompositing);
+  EXPECT_EQ(Sandbox::kXrCompositing,
+            SandboxTypeFromCommandLine(command_line_xr));
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
   base::CommandLine command_line13(command_line);

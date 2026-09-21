@@ -31,6 +31,10 @@ enum class InotifyAddWatchWithIntermediatesPermission {
   kBlockInotifyAddWatchWithIntermediates = 0,
   kAllowInotifyAddWatchWithIntermediates
 };
+// Allow connect() to the AF_UNIX socket at the path.
+enum class ConnectPermission { kBlockConnect = 0, kAllowConnect };
+// Allow bind() of an AF_UNIX socket to the path.
+enum class BindPermission { kBlockBind = 0, kAllowBind };
 
 // BrokerFilePermission defines a path for allowlisting.
 // Pick the correct static factory method to create a permission.
@@ -174,6 +178,63 @@ class SANDBOX_EXPORT BrokerFilePermission {
             kAllowInotifyAddWatchWithIntermediates);
   }
 
+  // Allows connect(2) to the AF_UNIX socket named |name| and nothing else.
+  // An abstract-namespace name is written with a leading '@', as in
+  // "@/steamvr/SteamVR_Namespace"; anything else is a filesystem path.
+  static BrokerFilePermission ConnectOnly(const std::string& name) {
+    return BrokerFilePermission(
+        name, RecursionOption::kNonRecursive, PersistenceOption::kPermanent,
+        ReadPermission::kBlockRead, WritePermission::kBlockWrite,
+        CreatePermission::kBlockCreate,
+        StatWithIntermediatesPermission::kBlockStatWithIntermediates,
+        InotifyAddWatchWithIntermediatesPermission::
+            kBlockInotifyAddWatchWithIntermediates,
+        ConnectPermission::kAllowConnect);
+  }
+
+  // As above, but allows any name under |prefix|, which must end with '/' so
+  // it matches whole name components like the other recursive permissions
+  // ("@/steamvr/" allows "@/steamvr/<anything>" but not "@/steamvrbad").
+  // Runtimes that mint per-instance names (e.g.
+  // "@/steamvr/VR_ServerPipe_<pid>") need this.
+  static BrokerFilePermission ConnectOnlyRecursive(const std::string& prefix) {
+    return BrokerFilePermission(
+        prefix, RecursionOption::kRecursive, PersistenceOption::kPermanent,
+        ReadPermission::kBlockRead, WritePermission::kBlockWrite,
+        CreatePermission::kBlockCreate,
+        StatWithIntermediatesPermission::kBlockStatWithIntermediates,
+        InotifyAddWatchWithIntermediatesPermission::
+            kBlockInotifyAddWatchWithIntermediates,
+        ConnectPermission::kAllowConnect);
+  }
+
+  // Allows bind(2)ing an AF_UNIX socket to |name| and nothing else. Names are
+  // spelled as for ConnectOnly().
+  static BrokerFilePermission BindOnly(const std::string& name) {
+    return BrokerFilePermission(
+        name, RecursionOption::kNonRecursive, PersistenceOption::kPermanent,
+        ReadPermission::kBlockRead, WritePermission::kBlockWrite,
+        CreatePermission::kBlockCreate,
+        StatWithIntermediatesPermission::kBlockStatWithIntermediates,
+        InotifyAddWatchWithIntermediatesPermission::
+            kBlockInotifyAddWatchWithIntermediates,
+        ConnectPermission::kBlockConnect, BindPermission::kAllowBind);
+  }
+
+  // As above, but allows any name under |prefix|. An abstract prefix is a
+  // literal string prefix, so end it at the runtime's own delimiter, which is
+  // not always '/': SteamVR binds "@fd-cl-<n>" names, delimited by '-'.
+  static BrokerFilePermission BindOnlyRecursive(const std::string& prefix) {
+    return BrokerFilePermission(
+        prefix, RecursionOption::kRecursive, PersistenceOption::kPermanent,
+        ReadPermission::kBlockRead, WritePermission::kBlockWrite,
+        CreatePermission::kBlockCreate,
+        StatWithIntermediatesPermission::kBlockStatWithIntermediates,
+        InotifyAddWatchWithIntermediatesPermission::
+            kBlockInotifyAddWatchWithIntermediates,
+        ConnectPermission::kBlockConnect, BindPermission::kAllowBind);
+  }
+
   // Returns nullptr if |requested_filename| is NOT allowed to be accessed
   // by this permission with the given |mode| as per access(2).
   //
@@ -208,6 +269,18 @@ class SANDBOX_EXPORT BrokerFilePermission {
   // allowlist if an absolute match.
   //
   // Async signal safe.
+  // Returns nullptr if |requested_name| is NOT allowed to be connect()ed to by
+  // this permission, otherwise the matched name.
+  //
+  // Async signal safe.
+  [[nodiscard]] const char* CheckConnect(const char* requested_name) const;
+
+  // Returns nullptr if |requested_name| is NOT allowed to be bind()ed to by
+  // this permission, otherwise the matched name.
+  //
+  // Async signal safe.
+  [[nodiscard]] const char* CheckBind(const char* requested_name) const;
+
   [[nodiscard]] const char* CheckStatWithIntermediates(
       const char* requested_filename) const;
 
@@ -237,19 +310,24 @@ class SANDBOX_EXPORT BrokerFilePermission {
     kAllowCreateBitPos,
     kAllowStatWithIntermediatesBitPos,
     kAllowInotifyAddWatchWithIntermediates,
+    kAllowConnectBitPos,
+    kAllowBindBitPos,
 
-    kMaxValueBitPos = kAllowInotifyAddWatchWithIntermediates
+    kMaxValueBitPos = kAllowBindBitPos
   };
 
   // NOTE: Validates the permission and dies if invalid!
-  BrokerFilePermission(std::string path,
-                       RecursionOption recurse_opt,
-                       PersistenceOption persist_opt,
-                       ReadPermission read_perm,
-                       WritePermission write_perm,
-                       CreatePermission create_perm,
-                       StatWithIntermediatesPermission stat_perm,
-                       InotifyAddWatchWithIntermediatesPermission inotify_perm);
+  BrokerFilePermission(
+      std::string path,
+      RecursionOption recurse_opt,
+      PersistenceOption persist_opt,
+      ReadPermission read_perm,
+      WritePermission write_perm,
+      CreatePermission create_perm,
+      StatWithIntermediatesPermission stat_perm,
+      InotifyAddWatchWithIntermediatesPermission inotify_perm,
+      ConnectPermission connect_perm = ConnectPermission::kBlockConnect,
+      BindPermission bind_perm = BindPermission::kBlockBind);
 
   // Allows construction from the raw bitset.
   BrokerFilePermission(std::string path, uint64_t flags);
@@ -276,6 +354,10 @@ class SANDBOX_EXPORT BrokerFilePermission {
   bool allow_inotify_add_watch_with_intermediates() const {
     return flags_.test(kAllowInotifyAddWatchWithIntermediates);
   }
+
+  bool allow_connect() const { return flags_.test(kAllowConnectBitPos); }
+
+  bool allow_bind() const { return flags_.test(kAllowBindBitPos); }
 
   // ValidatePath checks |path| and returns true if these conditions are met
   // * Greater than 0 length

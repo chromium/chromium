@@ -156,6 +156,12 @@ class UtilityProcessSandboxBrowserTest
       case Sandbox::kOnDeviceModelExecution:
       case Sandbox::kPrintBackend:
       case Sandbox::kScreenAI:
+#if BUILDFLAG(IS_LINUX)
+      // The XR Device Service forks from the unsandboxed zygote and installs
+      // its seccomp policy from a pre-sandbox hook, so it ends up with the
+      // partial sandbox like the other hook-based types.
+      case Sandbox::kXrCompositing:
+#endif  // BUILDFLAG(IS_LINUX)
       case Sandbox::kSpeechRecognition: {
         constexpr int kExpectedPartialSandboxFlags =
             SandboxLinux::kSeccompBPF | SandboxLinux::kYama |

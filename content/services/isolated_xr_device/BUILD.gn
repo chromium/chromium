@@ -28,3 +28,22 @@ source_set("lib") {
     "//services/viz/public/cpp/gpu",
   ]
 }
+
+if (is_linux) {
+  # Pre-sandbox hook for the XR Device Service (kXrCompositing) on Linux.
+  # Loads the OpenXR runtime and grants the broker file access the runtime
+  # needs before the sandbox seals.
+  source_set("xr_sandbox_hook") {
+    sources = [
+      "xr_sandbox_hook_linux.cc",
+      "xr_sandbox_hook_linux.h",
+    ]
+
+    deps = [
+      "//base",
+      "//sandbox/linux:sandbox_services",
+    ]
+
+    public_deps = [ "//sandbox/policy" ]
+  }
+}

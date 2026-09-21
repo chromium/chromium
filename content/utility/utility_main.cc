@@ -51,6 +51,9 @@
 #include "content/child/sandboxed_process_thread_type_handler.h"
 #include "content/common/gpu_pre_sandbox_hook_linux.h"
 #include "content/public/common/content_descriptor_keys.h"
+#if BUILDFLAG(IS_LINUX)
+#include "content/services/isolated_xr_device/xr_sandbox_hook_linux.h"
+#endif  // BUILDFLAG(IS_LINUX)
 #include "content/utility/speech/speech_recognition_sandbox_hook_linux.h"
 #include "media/gpu/buildflags.h"
 #include "media/media_buildflags.h"
@@ -343,6 +346,11 @@ int UtilityMain(MainFunctionParams parameters) {
       pre_sandbox_hook =
           base::BindOnce(&speech::SpeechRecognitionPreSandboxHook);
       break;
+#if BUILDFLAG(IS_LINUX)
+    case sandbox::mojom::Sandbox::kXrCompositing:
+      pre_sandbox_hook = base::BindOnce(&vr::XrPreSandboxHook);
+      break;
+#endif  // BUILDFLAG(IS_LINUX)
 #if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION) && \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
     case sandbox::mojom::Sandbox::kOnDeviceTranslation:

@@ -68,6 +68,8 @@ class SANDBOX_EXPORT BrokerClient : public SyscallDispatcher {
              bool follow_links,
              struct kernel_stat64* sb) const override;
   int Unlink(const char* unlink) const override;
+  int Connect(int sockfd, const char* name) const override;
+  int Bind(int sockfd, const char* name) const override;
   int InotifyAddWatch(int fd,
                       const char* pathname,
                       uint32_t mask) const override;
@@ -90,6 +92,10 @@ class SANDBOX_EXPORT BrokerClient : public SyscallDispatcher {
                         bool follow_links,
                         void* result_ptr,
                         size_t expected_result_size) const;
+
+  int SocketNameSyscall(BrokerCommand syscall_type,
+                        int sockfd,
+                        const char* name) const;
 
   const raw_ref<const BrokerSandboxConfig> policy_;
   const BrokerChannel::EndPoint ipc_channel_;

@@ -2,14 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "sandbox/linux/syscall_broker/syscall_dispatcher.h"
 
 #include <fcntl.h>
+#include <sys/socket.h>
+#include <sys/un.h>
 
+#include <algorithm>
 #include <cerrno>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "sandbox/linux/system_headers/linux_syscalls.h"
 
@@ -66,6 +69,62 @@ int SyscallDispatcher::PerformUnlinkat(const arch_seccomp_data& args) {
     return -EPERM;
 
   return Unlink(reinterpret_cast<const char*>(args.args[1]));
+}
+
+int SyscallDispatcher::PerformConnect(const arch_seccomp_data& args) const {
+  return PerformConnectOrBind(args, /*is_bind=*/false);
+}
+
+int SyscallDispatcher::PerformBind(const arch_seccomp_data& args) const {
+  return PerformConnectOrBind(args, /*is_bind=*/true);
+}
+
+int SyscallDispatcher::PerformConnectOrBind(const arch_seccomp_data& args,
+                                            bool is_bind) const {
+  // The sockaddr lives in this process' memory: this runs in the SIGSYS
+  // handler of the sandboxed process, so it can be read directly.
+  const struct sockaddr* addr =
+      reinterpret_cast<const struct sockaddr*>(args.args[1]);
+  const socklen_t addrlen = static_cast<socklen_t>(args.args[2]);
+  if (!addr || addrlen > sizeof(struct sockaddr_un) ||
+      addrlen <= offsetof(struct sockaddr_un, sun_path)) {
+    return -EINVAL;
+  }
+  if (addr->sa_family != AF_UNIX) {
+    return -EPERM;
+  }
+
+  const struct sockaddr_un* addr_un =
+      reinterpret_cast<const struct sockaddr_un*>(addr);
+  const size_t sun_path_len = addrlen - offsetof(struct sockaddr_un, sun_path);
+  base::span<const char> sun_path(addr_un->sun_path);
+
+  // An abstract-namespace name starts with a NUL and is not NUL-terminated:
+  // its length comes from addrlen. Copy it out as "@<name>" so the rest of the
+  // broker can treat both namespaces as one C string.
+  if (sun_path[0] == '\0') {
+    base::span<const char> name = sun_path.subspan(1u, sun_path_len - 1);
+    if (name.empty() ||
+        std::find(name.begin(), name.end(), '\0') != name.end()) {
+      return -EINVAL;
+    }
+    char buffer[sizeof(addr_un->sun_path) + 1] = {'@'};
+    base::span(buffer).subspan(1u).copy_prefix_from(name);
+    return is_bind ? Bind(static_cast<int>(args.args[0]), buffer)
+                   : Connect(static_cast<int>(args.args[0]), buffer);
+  }
+
+  // A filesystem path must be absolute and NUL-terminated within the supplied
+  // length. Absolute so that a relative path starting with '@' cannot pass as
+  // the abstract-namespace spelling above.
+  if (sun_path[0] != '/' ||
+      std::find(sun_path.begin(), sun_path.begin() + sun_path_len, '\0') ==
+          sun_path.begin() + sun_path_len) {
+    return -EINVAL;
+  }
+
+  return is_bind ? Bind(static_cast<int>(args.args[0]), addr_un->sun_path)
+                 : Connect(static_cast<int>(args.args[0]), addr_un->sun_path);
 }
 
 int SyscallDispatcher::DispatchSyscall(const arch_seccomp_data& args) {
@@ -202,6 +261,14 @@ int SyscallDispatcher::DispatchSyscall(const arch_seccomp_data& args) {
     case __NR_unlinkat:
       return PerformUnlinkat(args);
 #endif  // defined(__NR_unlinkat)
+#if defined(__NR_connect)
+    case __NR_connect:
+      return PerformConnect(args);
+#endif
+#if defined(__NR_bind)
+    case __NR_bind:
+      return PerformBind(args);
+#endif
 #if defined(__NR_inotify_add_watch)
     case __NR_inotify_add_watch:
       return InotifyAddWatch(static_cast<int>(args.args[0]),

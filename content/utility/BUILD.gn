@@ -116,6 +116,12 @@ source_set("utility") {
     }
   }
 
+  if (is_linux) {
+    # Pre-sandbox hook for the XR Device Service (kXrCompositing). Loads the
+    # OpenXR runtime and grants broker file access before the sandbox seals.
+    deps += [ "//content/services/isolated_xr_device:xr_sandbox_hook" ]
+  }
+
   if (is_win || ((is_chromeos || is_linux) && is_chrome_branded)) {
     deps += [
       "//services/shape_detection:lib",

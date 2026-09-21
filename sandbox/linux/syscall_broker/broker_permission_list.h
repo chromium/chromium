@@ -96,6 +96,16 @@ class BrokerPermissionList {
   // attacker managed to fool the string comparison mechanism.
   //
   // Async signal safe.
+  // Returns nullptr if |requested_filename| is NOT allowed to be connect()ed
+  // to. Async signal safe.
+  [[nodiscard]] const char* GetFileNameIfAllowedToConnect(
+      const char* requested_name) const;
+
+  // Returns nullptr if |requested_name| is NOT allowed to be bind()ed to.
+  // Async signal safe.
+  [[nodiscard]] const char* GetFileNameIfAllowedToBind(
+      const char* requested_name) const;
+
   [[nodiscard]] const char* GetFileNameIfAllowedToInotifyAddWatch(
       const char* requested_filename,
       uint32_t mask) const;

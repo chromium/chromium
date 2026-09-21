@@ -192,6 +192,10 @@ bool BrokerProcess::IsSyscallBrokerable(int sysno, bool fast_check) const {
     case __NR_inotify_add_watch:
       return !fast_check ||
              policy_->allowed_command_set.test(COMMAND_INOTIFY_ADD_WATCH);
+    case __NR_connect:
+      return !fast_check || policy_->allowed_command_set.test(COMMAND_CONNECT);
+    case __NR_bind:
+      return !fast_check || policy_->allowed_command_set.test(COMMAND_BIND);
     default:
       return false;
   }

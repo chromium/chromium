@@ -44,9 +44,11 @@ enum BrokerCommand {
   COMMAND_STAT64,
   COMMAND_UNLINK,
   COMMAND_INOTIFY_ADD_WATCH,
+  COMMAND_CONNECT,
+  COMMAND_BIND,
 
   // NOTE: update when adding new commands.
-  COMMAND_MAX = COMMAND_INOTIFY_ADD_WATCH
+  COMMAND_MAX = COMMAND_BIND
 };
 
 using BrokerCommandSet = std::bitset<COMMAND_MAX + 1>;
@@ -107,6 +109,15 @@ inline BrokerCommandSet MakeBrokerCommandSet(
     const BrokerCommandSet& command_set,
     const BrokerPermissionList& policy,
     const char* requested_filename);
+
+[[nodiscard]] const char* CommandConnectIsSafe(
+    const BrokerCommandSet& command_set,
+    const BrokerPermissionList& policy,
+    const char* requested_name);
+
+[[nodiscard]] const char* CommandBindIsSafe(const BrokerCommandSet& command_set,
+                                            const BrokerPermissionList& policy,
+                                            const char* requested_name);
 
 [[nodiscard]] const char* CommandInotifyAddWatchIsSafe(
     const BrokerCommandSet& command_set,

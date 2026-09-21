@@ -226,6 +226,43 @@ const char* BrokerFilePermission::CheckStatWithIntermediates(
   return requested_filename;
 }
 
+const char* BrokerFilePermission::CheckConnect(
+    const char* requested_name) const {
+  if (!allow_connect()) {
+    return nullptr;
+  }
+
+  // Abstract-namespace names are spelled with a leading '@' and are not
+  // filesystem paths, so only the filesystem case is path-validated.
+  if (requested_name[0] != '@' && !ValidatePath(requested_name)) {
+    return nullptr;
+  }
+
+  if (!MatchPath(requested_name)) {
+    return nullptr;
+  }
+
+  return recursive() ? requested_name : path_.c_str();
+}
+
+const char* BrokerFilePermission::CheckBind(const char* requested_name) const {
+  if (!allow_bind()) {
+    return nullptr;
+  }
+
+  // Abstract-namespace names are spelled with a leading '@' and are not
+  // filesystem paths, so only the filesystem case is path-validated.
+  if (requested_name[0] != '@' && !ValidatePath(requested_name)) {
+    return nullptr;
+  }
+
+  if (!MatchPath(requested_name)) {
+    return nullptr;
+  }
+
+  return recursive() ? requested_name : path_.c_str();
+}
+
 const char* BrokerFilePermission::CheckInotifyAddWatchWithIntermediates(
     const char* requested_filename,
     uint32_t mask) const {
@@ -285,6 +322,26 @@ void BrokerFilePermission::DieOnInvalidPermission() {
   // Must have enough length for a '/'
   CHECK(path_.length() > 0) << GetErrorMessageForTests();
 
+  // An abstract-namespace socket name is not a filesystem path: something must
+  // follow the '@', and a recursive connect() prefix must end with '/' so it
+  // matches whole name components, as recursive filesystem paths do
+  // ("@/steamvr/" must not match "@/steamvrbad"). A bind() prefix is exempt
+  // because bound names are not always '/'-delimited (SteamVR's "fd-cl-<n>");
+  // its author must end it at the runtime's own delimiter instead.
+  if ((allow_connect() || allow_bind()) && path_[0] == '@') {
+    CHECK(path_.length() > 1) << GetErrorMessageForTests();
+    if (recursive() && allow_connect()) {
+      CHECK(path_.back() == '/') << GetErrorMessageForTests();
+    }
+    // Filesystem rights make no sense on a socket name and must not be
+    // smuggled in alongside connect()/bind().
+    CHECK(!allow_read() && !allow_write() && !allow_create() &&
+          !allow_stat_with_intermediates() &&
+          !allow_inotify_add_watch_with_intermediates())
+        << GetErrorMessageForTests();
+    return;
+  }
+
   // Allowlisted paths must be absolute.
   CHECK(path_[0] == '/') << GetErrorMessageForTests();
 
@@ -316,7 +373,9 @@ BrokerFilePermission::BrokerFilePermission(
     WritePermission write_perm,
     CreatePermission create_perm,
     StatWithIntermediatesPermission stat_perm,
-    InotifyAddWatchWithIntermediatesPermission inotify_perm)
+    InotifyAddWatchWithIntermediatesPermission inotify_perm,
+    ConnectPermission connect_perm,
+    BindPermission bind_perm)
     : path_(std::move(path)) {
   flags_[kRecursiveBitPos] = recurse_opt == RecursionOption::kRecursive;
   flags_[kTemporaryOnlyBitPos] =
@@ -329,6 +388,9 @@ BrokerFilePermission::BrokerFilePermission(
   flags_[kAllowInotifyAddWatchWithIntermediates] =
       inotify_perm == InotifyAddWatchWithIntermediatesPermission::
                           kAllowInotifyAddWatchWithIntermediates;
+  flags_[kAllowConnectBitPos] =
+      connect_perm == ConnectPermission::kAllowConnect;
+  flags_[kAllowBindBitPos] = bind_perm == BindPermission::kAllowBind;
 
   DieOnInvalidPermission();
 }

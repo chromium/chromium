@@ -64,6 +64,16 @@ class BrokerHost {
                       BrokerSimpleMessage* reply);
   void UnlinkFileForIPC(const char* requested_filename,
                         BrokerSimpleMessage* message);
+  void ConnectForIPC(base::ScopedFD sockfd,
+                     const char* requested_name,
+                     BrokerSimpleMessage* message);
+  void BindForIPC(base::ScopedFD sockfd,
+                  const char* requested_name,
+                  BrokerSimpleMessage* message);
+  void ConnectOrBindForIPC(base::ScopedFD sockfd,
+                           bool is_bind,
+                           const char* requested_name,
+                           BrokerSimpleMessage* message);
   void InotifyAddWatchForIPC(base::ScopedFD inotify_fd,
                              const char* requested_filename,
                              uint32_t mask,
