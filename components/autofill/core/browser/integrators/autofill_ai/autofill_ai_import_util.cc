@@ -73,6 +73,22 @@ bool AttributesMeetImportConstraints(EntityType entity_type,
                              });
 }
 
+bool ShouldImportValueForAttribute(AttributeType attribute,
+                                   std::u16string_view value) {
+  // At the moment, AutofillAI attributes can never save an email. At the same
+  // time, in some countries fields that accept either an AutofillAI type or an
+  // email address are common. This avoids mistakenly offering to save those.
+  if (value.empty() || IsValidEmailAddress(value)) {
+    return false;
+  }
+  // At the moment, additional validation only exists for redress number.
+  if (attribute.name() != AttributeTypeName::kRedressNumberNumber) {
+    return true;
+  }
+  return value.size() == 7 &&
+         std::ranges::all_of(value, &base::IsAsciiDigit<char16_t>);
+}
+
 struct ValueAndFormatString {
   std::u16string value;
   AutofillFormatString format_string;
@@ -162,11 +178,7 @@ std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
         const ValueAndFormatString value =
             GetValueAndFormatString(*field, attribute_type);
 
-        // At the moment, AutofillAI attributes can never save an email. At the
-        // same time, in some countries fields that accept either an AutofillAI
-        // type or an email address are common. This avoids mistakenly offering
-        // to save those.
-        if (value.value.empty() || IsValidEmailAddress(value.value)) {
+        if (!ShouldImportValueForAttribute(attribute_type, value.value)) {
           continue;
         }
 

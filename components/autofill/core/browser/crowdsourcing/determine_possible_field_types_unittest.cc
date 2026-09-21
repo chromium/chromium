@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/form_parsing/determine_regex_types.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_test_util.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_import_util.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_util.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
@@ -933,6 +934,42 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
           /*last_unlocked_credit_card_cvc=*/u"", std::vector<OneTimeToken>(),
           "en-US", form_structure->fields()),
       ElementsAre(HasTypes(PASSPORT_NUMBER), HasTypes(UNKNOWN_TYPE)));
+}
+
+// Tests that no votes are generated for values on file or in fields that don't
+// meet `ShouldImportValueForAttribute()`.
+TEST_F(DeterminePossibleFieldTypesForUploadTest,
+       CrowdsourceMaskedAutofillAiTypes_ValidValueForImport) {
+  constexpr char16_t kInvalidRedressNumber[] = u"123456";
+  ASSERT_FALSE(ShouldImportValueForAttribute(
+      AttributeType(AttributeTypeName::kRedressNumberNumber),
+      kInvalidRedressNumber));
+
+  FormData form;
+  form.set_fields({CreateTestFormField("number", "number",
+                                       base::UTF16ToUTF8(kInvalidRedressNumber),
+                                       FormControlType::kInputText)});
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form);
+
+  EntityInstance unmasked_entity =
+      test::GetRedressNumberEntityInstance({.number = kInvalidRedressNumber});
+  // A masked redress number whose suffix matches the field's value.
+  EntityInstance masked_entity =
+      test::MaskEntityInstance(test::GetRedressNumberEntityInstance(
+          {.number = u"56",
+           .record_type = EntityInstance::RecordType::kServerWallet}));
+
+  // Expect that no votes are generated for the field.
+  EXPECT_THAT(
+      DeterminePossibleFieldTypesForUpload(
+          std::vector<AutofillProfile>(), std::vector<CreditCard>(),
+          std::vector<EntityInstance>{unmasked_entity, masked_entity},
+          std::vector<LoyaltyCard>(),
+          /*fields_that_match_state=*/{},
+          /*last_unlocked_credit_card_cvc=*/u"", std::vector<OneTimeToken>(),
+          "en-US", form_structure->fields()),
+      ElementsAre(HasTypes(UNKNOWN_TYPE)));
 }
 
 // Tests that only masked attributes with at least 2 known digits are

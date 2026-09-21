@@ -153,7 +153,7 @@ EntityInstance GetKnownTravelerNumberInstanceWithRandomGuid(
 template <typename = void>
 struct RedressNumberOptionsT {
   const char16_t* name = u"Name";
-  const char16_t* number = u"987654321";
+  const char16_t* number = u"7654321";
   std::string_view guid = "00000000-0000-4000-8000-500000000000";
   std::string_view nickname = "RedressNumber";
   std::string_view app_locale = "en-US";

@@ -40,6 +40,7 @@
 #include "components/autofill/core/browser/field_type_util.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_import_util.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -376,10 +377,19 @@ void AddPossibleAutofillAiTypes(base::span<const EntityInstance> entities,
     return;
   }
 
+  // Note that `NormalizeForComparison()` replaces punctuation with whitespaces,
+  // meaning that some of the validation logic in
+  // `ShouldImportValueForAttribute()` cannot be applied correctly.
+  // This applies to `value_on_file` as well.
   const std::u16string& value_in_field =
       normalization::NormalizeForComparison(value_u16);
   for (const EntityInstance& entity : entities) {
     for (const AttributeInstance& attribute : entity.attributes()) {
+      // Don't vote for values that AutofillAi wouldn't even import for the
+      // type.
+      if (!ShouldImportValueForAttribute(attribute.type(), value_in_field)) {
+        continue;
+      }
       for (const FieldType field_type : attribute.type().field_subtypes()) {
         const std::u16string& value_on_file =
             normalization::NormalizeForComparison(
@@ -387,10 +397,14 @@ void AddPossibleAutofillAiTypes(base::span<const EntityInstance> entities,
         if (value_on_file.empty()) {
           continue;
         }
+        // It is necessary to validate the `value_on_file` because
+        // `ShouldImportValueForAttribute()` isn't enforced in settings.
+        // For masked attributes, validation is not possible.
         if (attribute.masked()) {
           AddPossibleAutofillAiTypesForMaskedValue(
               value_in_field, value_on_file, field_type, pt);
-        } else {
+        } else if (ShouldImportValueForAttribute(attribute.type(),
+                                                 value_on_file)) {
           AddPossibleAutofillAiTypesForUnmaskedValue(
               value_in_field, value_on_file, field_type, pt);
         }

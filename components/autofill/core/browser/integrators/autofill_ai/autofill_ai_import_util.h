@@ -25,8 +25,14 @@ class EntityInstance;
 // Returns whether `attributes` satisfy at least one import constraint of
 // `entity_type`. If `entity_type` specifies no import constraints, returns
 // true.
+// This only validates whether all required `attributes` are present, not if
+// their values make sense.
 bool AttributesMeetImportConstraints(EntityType entity_type,
                                      DenseSet<AttributeType> attributes);
+
+// Validates whether the `value` makes sense for the `attribute`.
+bool ShouldImportValueForAttribute(AttributeType attribute,
+                                   std::u16string_view value);
 
 // Returns import candidates.
 std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
