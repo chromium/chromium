@@ -163,15 +163,6 @@ class WorkerThreadForTest : public WorkerThread {
                           v8_inspector::V8StackTraceId());
   }
 
-  void WaitForInit() {
-    base::WaitableEvent completion_event;
-    PostCrossThreadTask(
-        *GetWorkerBackingThread().BackingThread().GetTaskRunner(), FROM_HERE,
-        CrossThreadBindOnce(&base::WaitableEvent::Signal,
-                            CrossThreadUnretained(&completion_event)));
-    completion_event.Wait();
-  }
-
  protected:
   WorkerOrWorkletGlobalScope* CreateWorkerGlobalScope(
       std::unique_ptr<GlobalScopeCreationParams> creation_params) override {
@@ -194,7 +185,7 @@ class MockWorkerReportingProxy final : public WorkerReportingProxy {
 
   MOCK_METHOD1(DidCreateWorkerGlobalScope, void(WorkerOrWorkletGlobalScope*));
   MOCK_METHOD0(WillEvaluateScriptMock, void());
-  MOCK_METHOD2(DidEvaluateTopLevelScript,
+  MOCK_METHOD2(DidEvaluateTopLevelScriptMock,
                void(bool success,
                     const JavaScriptFrameworkDetectionResult& result));
   MOCK_METHOD0(DidCloseWorkerGlobalScope, void());
@@ -202,14 +193,30 @@ class MockWorkerReportingProxy final : public WorkerReportingProxy {
   MOCK_METHOD0(DidTerminateWorkerThread, void());
 
   void WillEvaluateScript() override {
-    script_evaluation_event_.Signal();
+    will_evaluate_script_event_.Signal();
     WillEvaluateScriptMock();
   }
 
-  void WaitUntilScriptEvaluation() { script_evaluation_event_.Wait(); }
+  void DidEvaluateTopLevelScript(
+      bool success,
+      const JavaScriptFrameworkDetectionResult& result) override {
+    DidEvaluateTopLevelScriptMock(success, result);
+    did_evaluate_top_level_script_event_.Signal();
+  }
+
+  void WaitUntilDidEvaluateTopLevelScript() {
+    did_evaluate_top_level_script_event_.Wait();
+  }
+
+  // Usually prefer `WaitUntilDidEvaluateTopLevelScript()`, to avoid race
+  // conditions between notification and script evaluation. One case to use
+  // `WaitUntilWillEvaluateScript()` is when the top-level script never
+  // completes (e.g. infinite loop).
+  void WaitUntilWillEvaluateScript() { will_evaluate_script_event_.Wait(); }
 
  private:
-  base::WaitableEvent script_evaluation_event_;
+  base::WaitableEvent will_evaluate_script_event_;
+  base::WaitableEvent did_evaluate_top_level_script_event_;
 };
 
 }  // namespace blink

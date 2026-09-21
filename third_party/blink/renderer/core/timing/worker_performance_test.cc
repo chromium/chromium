@@ -19,7 +19,7 @@ class WorkerPerformanceTest : public testing::Test {
   void Mark() {
     worker_thread_->StartWithSourceCode(security_origin_.get(),
                                         "performance.mark('test_trace')");
-    worker_thread_->WaitForInit();
+    reporting_proxy_->WaitUntilDidEvaluateTopLevelScript();
 
     worker_thread_->Terminate();
 

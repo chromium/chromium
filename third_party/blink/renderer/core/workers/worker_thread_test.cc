@@ -90,7 +90,7 @@ void CreateNestedWorkerThenTerminateParent(
   EXPECT_CALL(*nested_worker_helper->reporting_proxy, WillEvaluateScriptMock())
       .Times(1);
   EXPECT_CALL(*nested_worker_helper->reporting_proxy,
-              DidEvaluateTopLevelScript(true, _))
+              DidEvaluateTopLevelScriptMock(true, _))
       .Times(1);
   EXPECT_CALL(*nested_worker_helper->reporting_proxy,
               WillDestroyWorkerGlobalScope())
@@ -104,7 +104,7 @@ void CreateNestedWorkerThenTerminateParent(
   nested_worker_helper->worker_thread->StartWithSourceCode(
       SecurityOrigin::Create(KURL("http://fake.url/")).get(),
       "//fake source code");
-  nested_worker_helper->worker_thread->WaitForInit();
+  nested_worker_helper->reporting_proxy->WaitUntilDidEvaluateTopLevelScript();
 
   // Ask the main threat to terminate this parent thread.
   base::WaitableEvent child_waitable;
@@ -177,7 +177,8 @@ class WorkerThreadTest : public testing::Test {
   void ExpectReportingCalls() {
     EXPECT_CALL(*reporting_proxy_, DidCreateWorkerGlobalScope(_)).Times(1);
     EXPECT_CALL(*reporting_proxy_, WillEvaluateScriptMock()).Times(1);
-    EXPECT_CALL(*reporting_proxy_, DidEvaluateTopLevelScript(true, _)).Times(1);
+    EXPECT_CALL(*reporting_proxy_, DidEvaluateTopLevelScriptMock(true, _))
+        .Times(1);
     EXPECT_CALL(*reporting_proxy_, WillDestroyWorkerGlobalScope()).Times(1);
     EXPECT_CALL(*reporting_proxy_, DidTerminateWorkerThread()).Times(1);
   }
@@ -185,7 +186,7 @@ class WorkerThreadTest : public testing::Test {
   void ExpectReportingCallsForWorkerPossiblyTerminatedBeforeInitialization() {
     EXPECT_CALL(*reporting_proxy_, DidCreateWorkerGlobalScope(_)).Times(1);
     EXPECT_CALL(*reporting_proxy_, WillEvaluateScriptMock()).Times(AtMost(1));
-    EXPECT_CALL(*reporting_proxy_, DidEvaluateTopLevelScript(_, _))
+    EXPECT_CALL(*reporting_proxy_, DidEvaluateTopLevelScriptMock(_, _))
         .Times(AtMost(1));
     EXPECT_CALL(*reporting_proxy_, WillDestroyWorkerGlobalScope())
         .Times(AtMost(1));
@@ -195,7 +196,7 @@ class WorkerThreadTest : public testing::Test {
   void ExpectReportingCallsForWorkerForciblyTerminated() {
     EXPECT_CALL(*reporting_proxy_, DidCreateWorkerGlobalScope(_)).Times(1);
     EXPECT_CALL(*reporting_proxy_, WillEvaluateScriptMock()).Times(1);
-    EXPECT_CALL(*reporting_proxy_, DidEvaluateTopLevelScript(false, _))
+    EXPECT_CALL(*reporting_proxy_, DidEvaluateTopLevelScriptMock(false, _))
         .Times(1);
     EXPECT_CALL(*reporting_proxy_, WillDestroyWorkerGlobalScope()).Times(1);
     EXPECT_CALL(*reporting_proxy_, DidTerminateWorkerThread()).Times(1);
@@ -245,7 +246,7 @@ TEST_F(WorkerThreadTest, AsyncTerminate_OnIdle) {
 
   // Wait until the initialization completes and the worker thread becomes
   // idle.
-  worker_thread_->WaitForInit();
+  reporting_proxy_->WaitUntilDidEvaluateTopLevelScript();
 
   // The worker thread is not being blocked, so the worker thread should be
   // gracefully shut down.
@@ -261,7 +262,7 @@ TEST_F(WorkerThreadTest, SyncTerminate_OnIdle) {
 
   // Wait until the initialization completes and the worker thread becomes
   // idle.
-  worker_thread_->WaitForInit();
+  reporting_proxy_->WaitUntilDidEvaluateTopLevelScript();
 
   worker_thread_->TerminateForTesting();
   worker_thread_->WaitForShutdownForTesting();
@@ -316,7 +317,7 @@ TEST_F(WorkerThreadTest, MAYBE_AsyncTerminate_WhileTaskIsRunning) {
 
   ExpectReportingCallsForWorkerForciblyTerminated();
   StartWithSourceCodeNotToFinish();
-  reporting_proxy_->WaitUntilScriptEvaluation();
+  reporting_proxy_->WaitUntilWillEvaluateScript();
 
   // Terminate() schedules a forcible termination task.
   worker_thread_->Terminate();
@@ -337,7 +338,7 @@ TEST_F(WorkerThreadTest, MAYBE_AsyncTerminate_WhileTaskIsRunning) {
 TEST_F(WorkerThreadTest, SyncTerminate_WhileTaskIsRunning) {
   ExpectReportingCallsForWorkerForciblyTerminated();
   StartWithSourceCodeNotToFinish();
-  reporting_proxy_->WaitUntilScriptEvaluation();
+  reporting_proxy_->WaitUntilWillEvaluateScript();
 
   // TerminateForTesting() synchronously terminates the worker script execution.
   worker_thread_->TerminateForTesting();
@@ -351,7 +352,7 @@ TEST_F(WorkerThreadTest,
 
   ExpectReportingCallsForWorkerForciblyTerminated();
   StartWithSourceCodeNotToFinish();
-  reporting_proxy_->WaitUntilScriptEvaluation();
+  reporting_proxy_->WaitUntilWillEvaluateScript();
 
   // Terminate() schedules a forcible termination task.
   worker_thread_->Terminate();
@@ -431,7 +432,7 @@ TEST_F(WorkerThreadTest, Terminate_WhileDebuggerTaskIsRunning) {
 
   ExpectReportingCalls();
   Start();
-  worker_thread_->WaitForInit();
+  reporting_proxy_->WaitUntilDidEvaluateTopLevelScript();
 
   // Used to wait for worker thread termination in a debugger task on the
   // worker thread.
@@ -477,7 +478,7 @@ TEST_F(WorkerThreadTest, DISABLED_TerminateWorkerWhileChildIsLoading) {
   base::RunLoop loop;
   ExpectReportingCalls();
   Start();
-  worker_thread_->WaitForInit();
+  reporting_proxy_->WaitUntilDidEvaluateTopLevelScript();
 
   NestedWorkerHelper nested_worker_helper;
   // Create a nested worker from the worker thread.
@@ -515,7 +516,7 @@ TEST_F(WorkerThreadTest, MAYBE_TerminateWhileWorkerPausedByDebugger) {
 
   ExpectReportingCallsForWorkerForciblyTerminated();
   StartWithSourceCodeNotToFinish();
-  reporting_proxy_->WaitUntilScriptEvaluation();
+  reporting_proxy_->WaitUntilWillEvaluateScript();
 
   worker_thread_->GetIsolate()->RequestInterrupt(&PauseExecution,
                                                  worker_thread_.get());
@@ -542,7 +543,7 @@ TEST_F(WorkerThreadTest, MAYBE_TerminateFrozenScript) {
 
   ExpectReportingCallsForWorkerForciblyTerminated();
   StartWithSourceCodeNotToFinish();
-  reporting_proxy_->WaitUntilScriptEvaluation();
+  reporting_proxy_->WaitUntilWillEvaluateScript();
 
   base::WaitableEvent child_waitable;
   PostCrossThreadTask(
@@ -576,7 +577,7 @@ TEST_F(WorkerThreadTest, MAYBE_NestedPauseFreeze) {
 
   ExpectReportingCallsForWorkerForciblyTerminated();
   StartWithSourceCodeNotToFinish();
-  reporting_proxy_->WaitUntilScriptEvaluation();
+  reporting_proxy_->WaitUntilWillEvaluateScript();
 
   base::WaitableEvent child_waitable;
   PostCrossThreadTask(
