@@ -6,11 +6,14 @@
 #include "media/base/mac/channel_layout_util_mac.h"
 
 #include <memory>
+#include <optional>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
 #include "media/base/channel_layout.h"
 
@@ -246,6 +249,78 @@ bool AudioChannelLayoutToChannelLayout(const AudioChannelLayout& input_layout,
   }
 
   return false;
+}
+
+void ParseCoreAudioChannelLayout(const AudioChannelLayout& input_layout,
+                                 uint32_t* channels,
+                                 ChannelLayout* channel_layout) {
+  CHECK(channels);
+  CHECK(channel_layout);
+
+  const auto descriptions = GetDescriptions(input_layout);
+  *channels = base::checked_cast<uint32_t>(descriptions.size());
+
+  if (descriptions.empty()) {
+    *channel_layout = CHANNEL_LAYOUT_NONE;
+    return;
+  }
+
+  // CoreAudio omits speaker labels for mono and stereo; treat 1-2 channel
+  // layouts as named so ordinary devices keep their speaker configuration.
+  if (descriptions.size() == 1 || descriptions.size() == 2) {
+    *channel_layout =
+        *channels == 2 ? CHANNEL_LAYOUT_STEREO : CHANNEL_LAYOUT_MONO;
+    return;
+  }
+
+  // Multichannel interfaces often label all outputs as unknown. Count every
+  // description so those channels remain addressable (crbug.com/561637136).
+  *channel_layout = CHANNEL_LAYOUT_DISCRETE;
+
+  std::vector<Channels> channels_to_match;
+  for (const AudioChannelDescription& description : descriptions) {
+    const std::optional<Channels> maybe_channel =
+        AudioChannelLabelToChannel(description.mChannelLabel);
+    if (maybe_channel.has_value()) {
+      channels_to_match.push_back(*maybe_channel);
+    }
+  }
+
+  // Named layouts require every channel to have a known speaker role.
+  if (channels_to_match.size() != descriptions.size()) {
+    return;
+  }
+
+  for (int i = 0; i <= ChannelLayout::CHANNEL_LAYOUT_MAX; i++) {
+    ChannelLayout layout = static_cast<ChannelLayout>(i);
+    if (static_cast<uint32_t>(ChannelLayoutToChannelCount(layout)) !=
+        *channels) {
+      continue;
+    }
+
+    // Reject duplicate speaker roles (e.g., 6 center channels matching 5.1).
+    uint32_t occupied_positions = 0;
+    bool matched = true;
+    for (const auto& channel : channels_to_match) {
+      const int channel_order = ChannelOrder(layout, channel);
+      if (channel_order == -1) {
+        matched = false;
+        break;
+      }
+
+      const uint32_t position = 1u << channel_order;
+      if (occupied_positions & position) {
+        matched = false;
+        break;
+      }
+      occupied_positions |= position;
+    }
+
+    if (matched) {
+      *channel_layout = layout;
+      return;
+    }
+  }
 }
 
 }  // namespace media
