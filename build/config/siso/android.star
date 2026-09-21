@@ -535,9 +535,9 @@ def __android_proguard_handler(ctx, cmd):
 def __android_trace_references_handler(ctx, cmd):
     # Sample command:
     # python3 ../../build/android/gyp/tracereferences.py \
-    #   --depfile gen/chrome/android/monochrome_public_bundle__dex.d \
-    #   --tracerefs-json gen/chrome/android/monochrome_public_bundle__dex.tracerefs.json \
-    #   --stamp obj/chrome/android/monochrome_public_bundle__dex.tracereferences.stamp --warnings-as-errors
+    #   --depfile gen/chrome/android/chrome_public_bundle__dex.d \
+    #   --tracerefs-json gen/chrome/android/chrome_public_bundle__dex.tracerefs.json \
+    #   --stamp obj/chrome/android/chrome_public_bundle__dex.tracereferences.stamp --warnings-as-errors
     # Sample tracerefs.json:
     # {
     #   "r8jar": "../../third_party/r8/cipd/lib/r8.jar",
@@ -550,17 +550,17 @@ def __android_trace_references_handler(ctx, cmd):
     #     {
     #       "name": "",
     #       "jars": [
-    #         "obj/chrome/android/monochrome_public_bundle__base_bundle_module/monochrome_public_bundle__base_bundle_module.r8dex.jar",
-    #         "obj/chrome/android/monochrome_public_bundle__chrome_bundle_module/monochrome_public_bundle__chrome_bundle_module.r8dex.jar",
-    #         "obj/chrome/android/monochrome_public_bundle__dev_ui_bundle_module/monochrome_public_bundle__dev_ui_bundle_module.r8dex.jar",
-    #         "obj/chrome/android/monochrome_public_bundle__stack_unwinder_bundle_module/monochrome_public_bundle__stack_unwinder_bundle_module.r8dex.jar",
-    #         "obj/chrome/android/monochrome_public_bundle__test_dummy_bundle_module/monochrome_public_bundle__test_dummy_bundle_module.r8dex.jar"
+    #         "obj/chrome/android/chrome_public_bundle__base_bundle_module/chrome_public_bundle__base_bundle_module.r8dex.jar",
+    #         "obj/chrome/android/chrome_public_bundle__chrome_bundle_module/chrome_public_bundle__chrome_bundle_module.r8dex.jar",
+    #         "obj/chrome/android/chrome_public_bundle__dev_ui_bundle_module/chrome_public_bundle__dev_ui_bundle_module.r8dex.jar",
+    #         "obj/chrome/android/chrome_public_bundle__stack_unwinder_bundle_module/chrome_public_bundle__stack_unwinder_bundle_module.r8dex.jar",
+    #         "obj/chrome/android/chrome_public_bundle__test_dummy_bundle_module/chrome_public_bundle__test_dummy_bundle_module.r8dex.jar"
     #       ]
     #     },
     #     {
     #       "name": "base",
     #       "jars": [
-    #         "obj/chrome/android/monochrome_public_bundle__base_bundle_module/monochrome_public_bundle__base_bundle_module.r8dex.jar"
+    #         "obj/chrome/android/chrome_public_bundle__base_bundle_module/chrome_public_bundle__base_bundle_module.r8dex.jar"
     #       ]
     #     }
     #   ]

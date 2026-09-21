@@ -98,7 +98,7 @@ _NO_COMPONENT_BUILD = [
 ]
 
 _TARGETS = {
-    'bundle': 'monochrome_public_bundle',
+    'bundle': 'chrome_public_bundle',
     'apk': 'chrome_public_apk',
     'test': 'chrome_public_test_apk',
 }

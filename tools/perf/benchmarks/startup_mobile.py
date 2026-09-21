@@ -35,8 +35,8 @@ from devil.android.sdk import intent  # pylint: disable=import-error
 #    shell> gn gen --args='use_remoteexec=true target_os="android" target_cpu="arm" \
 #           is_debug=false is_official_build=true' out/AndroidReleaseOfficial
 #
-# 2.1. Build Monochrome:
-#    shell> autoninja -C out/AndroidReleaseOfficial monochrome_apk
+# 2.1. Build Chrome:
+#    shell> autoninja -C out/AndroidReleaseOfficial chrome_apk
 #
 # 2.2. Build the (pseudo) PWA launcher (it will be auto-installed later):
 #    shell> autoninja -C out/AndroidReleaseOfficial/ webapk
@@ -55,7 +55,7 @@ from devil.android.sdk import intent  # pylint: disable=import-error
 #     http://crbug.com/849907.
 # --browser=android-chrome - *must* be used *instead* of "android-chromium". The
 #     latter may silently produce subtly incorrect results. This is because
-#     MonohromePublic initialization path is less optimized than Monochrome
+#     ChromePublic initialization path is less optimized than Chrome
 #     (no orderfile, no library prefetch, etc.)
 # -v - in some cases the benchmark does not run in non-verbose mode, details
 #     unknown.
