@@ -492,6 +492,87 @@ public class SettingsPageTest {
         onViewWaiting(withId(R.id.search_query)).check(matches(isFocused()));
     }
 
+    /** Regression test for https://crbug.com/563047017. */
+    @Test
+    @MediumTest
+    @Restriction({
+        DeviceFormFactor.ONLY_TABLET,
+        // Automotive devices do not support display rotation.
+        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
+    })
+    public void testRootSettingsShownAfterRotatingTwoColumnLandscapeToPortrait() {
+        // Start in landscape, which uses two-column mode on a tablet.
+        ensureActivityOrientation(Configuration.ORIENTATION_LANDSCAPE);
+
+        mActivityTestRule.loadUrl("chrome-native://settings/");
+        ensureTwoColumnMode();
+
+        // Rotate to portrait, which uses single-column mode.
+        ensureActivityOrientation(Configuration.ORIENTATION_PORTRAIT);
+        ensureSingleColumnMode();
+
+        // Root settings should be showing, not the detail fragment that two-column mode
+        // created to fill its detail pane.
+        assertRootSettingsShown();
+    }
+
+    /** Regression test for https://crbug.com/563047017. */
+    @Test
+    @MediumTest
+    @Restriction({
+        DeviceFormFactor.ONLY_TABLET,
+        // Automotive devices do not support display rotation.
+        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
+    })
+    public void testRootSettingsShownAfterRotatingPortraitToLandscapeAndBack() {
+        // Start in portrait, which uses single-column mode at root settings.
+        ensureActivityOrientation(Configuration.ORIENTATION_PORTRAIT);
+
+        mActivityTestRule.loadUrl("chrome-native://settings/");
+        ensureSingleColumnMode();
+        assertRootSettingsShown();
+
+        // Rotate to landscape. Entering two-column mode creates an initial detail fragment to
+        // fill the detail pane, which the user did not navigate to.
+        ensureActivityOrientation(Configuration.ORIENTATION_LANDSCAPE);
+        ensureTwoColumnMode();
+
+        // Rotate back to portrait, which uses single-column mode.
+        ensureActivityOrientation(Configuration.ORIENTATION_PORTRAIT);
+        ensureSingleColumnMode();
+
+        // Root settings should be showing, not the auto-created detail fragment.
+        assertRootSettingsShown();
+    }
+
+    /**
+     * Asserts that root settings is showing, i.e. no detail page is covering it.
+     *
+     * <p>Espresso's isDisplayed() only tests whether a view occupies screen space, and the header
+     * pane still does while an open detail pane is drawn on top of it. The pane state therefore has
+     * to be checked directly.
+     */
+    private void assertRootSettingsShown() {
+        onViewWaiting(
+                        allOf(
+                                withText(R.string.search_engine_settings),
+                                isDescendantOfA(withId(R.id.preferences_header))))
+                .check(matches(isDisplayed()));
+
+        boolean rootShown =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            var hostFragment =
+                                    SettingsHostFragment.get(mActivityTestRule.getActivity());
+                            assertNotNull(hostFragment);
+                            var multiColumn = hostFragment.getMultiColumnSettings();
+                            assertNotNull(multiColumn);
+                            // Two-column mode always shows root settings in the header pane.
+                            return multiColumn.isTwoColumn() || !multiColumn.isLayoutOpen();
+                        });
+        assertTrue("A detail page is covering root settings.", rootShown);
+    }
+
     /** Regression test for https://crbug.com/549509308. */
     @Test
     @MediumTest
@@ -1124,6 +1205,15 @@ public class SettingsPageTest {
                     return hostFragment != null && hostFragment.isTwoColumnSettingsVisible();
                 },
                 "Settings should be shown in two-column mode.");
+    }
+
+    private void ensureSingleColumnMode() {
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    var hostFragment = SettingsHostFragment.get(mActivityTestRule.getActivity());
+                    return hostFragment != null && !hostFragment.isTwoColumnSettingsVisible();
+                },
+                "Settings should be shown in single-column mode.");
     }
 
     /**

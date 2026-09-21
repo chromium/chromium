@@ -16,6 +16,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
@@ -204,16 +205,7 @@ public class SettingsActivityTest {
         LocalizationUtils.setRtlForTesting(true);
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
-        // Skip the test on landscape devices running Android 14 or earlier. See
-        // crbug.com/561400736 and the similar workaround in SettingsPageTest.
-        boolean isLandscape =
-                activity.getResources().getConfiguration().orientation
-                        == Configuration.ORIENTATION_LANDSCAPE;
-        Assume.assumeFalse(
-                "Rotating to portrait letterboxes the activity on landscape-oriented devices,"
-                        + " which moves the window on screen and pops Android 14's letterbox"
-                        + " education dialog.",
-                Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE && isLandscape);
+        assumeNotLandscapeDeviceOnAndroid14OrEarlier(activity);
 
         ensureActivityOrientation(activity, Configuration.ORIENTATION_PORTRAIT);
 
@@ -341,6 +333,97 @@ public class SettingsActivityTest {
                         }
                     });
         }
+    }
+
+    /** Regression test for https://crbug.com/514934630. */
+    @Test
+    @MediumTest
+    @Restriction({
+        DeviceFormFactor.ONLY_TABLET,
+        // Automotive devices do not support display rotation.
+        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
+    })
+    public void testRootSettingsShownAfterRotatingPortraitToLandscapeAndBack() {
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        assumeNotLandscapeDeviceOnAndroid14OrEarlier(activity);
+
+        ensureActivityOrientation(activity, Configuration.ORIENTATION_PORTRAIT);
+        assertRootSettingsShown(activity);
+
+        // Rotate to landscape (two-column mode on a tablet) and back to portrait.
+        ensureActivityOrientation(activity, Configuration.ORIENTATION_LANDSCAPE);
+        ensureActivityOrientation(activity, Configuration.ORIENTATION_PORTRAIT);
+
+        // Root settings should be showing, not the detail fragment that two-column mode
+        // created to fill its detail pane.
+        assertRootSettingsShown(activity);
+    }
+
+    /**
+     * Regression test for https://crbug.com/514934630, following the original repro steps: enter
+     * search, rotate to landscape, then rotate back to portrait.
+     */
+    @Test
+    @MediumTest
+    @Restriction({
+        DeviceFormFactor.ONLY_TABLET,
+        // Automotive devices do not support display rotation.
+        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
+    })
+    public void testRootSettingsShownAfterEnteringSearchAndRotatingLandscapeToPortrait() {
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        assumeNotLandscapeDeviceOnAndroid14OrEarlier(activity);
+
+        ensureActivityOrientation(activity, Configuration.ORIENTATION_PORTRAIT);
+        onViewWaiting(withId(R.id.search_box)).perform(click());
+        onViewWaiting(withId(R.id.search_query_container)).check(matches(isDisplayed()));
+
+        ensureActivityOrientation(activity, Configuration.ORIENTATION_LANDSCAPE);
+        ensureActivityOrientation(activity, Configuration.ORIENTATION_PORTRAIT);
+
+        // Rotating exits search and returns to root settings.
+        assertRootSettingsShown(activity);
+        onView(withId(R.id.search_box)).check(matches(isDisplayed()));
+    }
+
+    /**
+     * Asserts that root settings is showing, i.e. no detail page is covering it.
+     *
+     * <p>Espresso's isDisplayed() only tests whether a view occupies screen space, and the header
+     * pane still does while an open detail pane is drawn on top of it. The pane state therefore has
+     * to be checked directly.
+     */
+    private void assertRootSettingsShown(SettingsActivity activity) {
+        onViewWaiting(
+                        Matchers.allOf(
+                                withText(R.string.search_engine_settings),
+                                isDescendantOfA(withId(R.id.preferences_header))))
+                .check(matches(isDisplayed()));
+
+        boolean rootShown =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            MultiColumnSettings multiColumn = activity.getMultiColumnSettings();
+                            assertNotNull(multiColumn);
+                            // Two-column mode always shows root settings in the header pane.
+                            return multiColumn.isTwoColumn() || !multiColumn.isLayoutOpen();
+                        });
+        assertTrue("A detail page is covering root settings.", rootShown);
+    }
+
+    /**
+     * Skips the test on landscape devices running Android 14 or earlier. See crbug.com/561400736
+     * and the similar workaround in SettingsPageTest.
+     */
+    private void assumeNotLandscapeDeviceOnAndroid14OrEarlier(SettingsActivity activity) {
+        boolean isLandscape =
+                activity.getResources().getConfiguration().orientation
+                        == Configuration.ORIENTATION_LANDSCAPE;
+        Assume.assumeFalse(
+                "Rotating to portrait letterboxes the activity on landscape-oriented devices,"
+                        + " which moves the window on screen and pops Android 14's letterbox"
+                        + " education dialog.",
+                Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE && isLandscape);
     }
 
     /** Rotates the activity and waits for the window to be laid out in the new orientation. */

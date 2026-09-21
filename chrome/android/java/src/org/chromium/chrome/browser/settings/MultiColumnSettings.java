@@ -308,6 +308,13 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
         if (initialDetail == null) return;
 
         showDetailFragment(initialDetail, /* addToBackStack= */ false, /* tag= */ null);
+
+        // showDetailFragment() opens the sliding pane. In two-column mode the pane is not
+        // slideable, so opening it has no visual effect, but it still latches
+        // SlidingPaneLayout's preserved open state. Returning to single-column mode would then
+        // restore the pane as open, showing this auto-created fragment instead of root settings.
+        // The user never navigated here, so undo it. https://crbug.com/563047017
+        getSlidingPaneLayout().closePane();
     }
 
     /**
