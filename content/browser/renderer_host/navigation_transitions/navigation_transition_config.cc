@@ -7,7 +7,6 @@
 #include "base/android/callback_android.h"
 #include "base/auto_reset.h"
 #include "base/byte_size.h"
-#include "base/debug/crash_logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
@@ -74,16 +73,6 @@ size_t NavigationTransitionConfig::ComputeCacheSizeInBytes() {
   // We should at least be able to cache one uncompressed screenshot.
   physical_memory_budget =
       std::max(display_size_in_bytes, physical_memory_budget);
-
-  static auto* const display_size_key = base::debug::AllocateCrashKeyString(
-      "dnt_display_size_bytes", base::debug::CrashKeySize::Size32);
-  static auto* const budget_key = base::debug::AllocateCrashKeyString(
-      "dnt_budget_bytes", base::debug::CrashKeySize::Size32);
-
-  base::debug::SetCrashKeyString(display_size_key,
-                                 base::NumberToString(display_size_in_bytes));
-  base::debug::SetCrashKeyString(budget_key,
-                                 base::NumberToString(physical_memory_budget));
 
   return physical_memory_budget;
 }

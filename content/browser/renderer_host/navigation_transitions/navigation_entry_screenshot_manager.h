@@ -67,7 +67,6 @@ class CONTENT_EXPORT NavigationEntryScreenshotManager
   // Allow tests to customize memory budget.
   void SetMemoryBudgetForTesting(size_t size) {
     max_cache_size_in_bytes_ = size;
-    UpdateMaxCacheSizeCrashKey();
   }
   void SetUITaskRunnerForTesting(
       scoped_refptr<base::SequencedTaskRunner> task_runner) {
@@ -103,9 +102,6 @@ class CONTENT_EXPORT NavigationEntryScreenshotManager
   // `RecordScreenshotCacheSizeAfterDelay` to continue recording the memory
   // periodically.
   void RecordScreenshotCacheSize();
-
-  void UpdateMaxCacheSizeCrashKey();
-  void UpdateCurrentCacheSizeCrashKey();
 
   size_t max_cache_size_in_bytes_;
   size_t current_cache_size_in_bytes_ = 0U;
