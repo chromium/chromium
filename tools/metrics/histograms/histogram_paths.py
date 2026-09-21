@@ -10,6 +10,7 @@ histograms.xml and enums.xml files that exist.
 """
 
 import os
+from typing import Iterable
 
 import setup_modules  # pylint: disable=unused-import
 
@@ -60,6 +61,7 @@ ENUMS_XMLS = [path_util.GetInputFile(f) for f in _ENUMS_XML_RELATIVE]
 UKM_XML = path_util.GetInputFile('tools/metrics/ukm/ukm.xml')
 DWA_XML = path_util.GetInputFile('tools/metrics/private_metrics/dwa.xml')
 HISTOGRAMS_XMLS = [path_util.GetInputFile(f) for f in _HISTOGRAMS_XMLS_RELATIVE]
+VARIANTS_XMLS = [path_util.GetInputFile(f) for f in _VARIANTS_XML_RELATIVE]
 ALL_XMLS = [path_util.GetInputFile(f) for f in ALL_XMLS_RELATIVE]
 
 ALL_TEST_XMLS_RELATIVE = [
@@ -92,24 +94,40 @@ _GNI_LINE_PREFIX = '  "//'
 _GNI_LINE_SUFFIX = '",\n'
 
 
-def _GenerateHistogramsXmlGniContent():
+def _FormatGniList(name: str, paths: Iterable[str]) -> str:
+  lines = [f'{name} = [\n']
+  for path in sorted(paths):
+    normalized = path.replace(os.sep, '/')
+    lines.append(f'{_GNI_LINE_PREFIX}{normalized}{_GNI_LINE_SUFFIX}')
+  lines.append(']\n')
+  return ''.join(lines)
+
+
+def _GenerateHistogramsXmlGniContent() -> str:
   """Generates the contents for the _HISTOGRAMS_XML_FILES_GNI file."""
-  content = 'histograms_xml_files = [\n'
-  for path in sorted(ALL_XMLS_RELATIVE):
-    content += _GNI_LINE_PREFIX
-    content += path.replace(os.sep, '/')
-    content += _GNI_LINE_SUFFIX
-  content += ']\n'
-  return content
+  sections = [
+    '# Note: The contents of this file are auto-generated from the script at\n'
+    '# //tools/metrics/histograms/histogram_paths.py.\n\n'
+    + _FormatGniList('enums_xml_files', _ENUMS_XML_RELATIVE),
+    _FormatGniList(
+      'histograms_and_variants_xml_files',
+      _HISTOGRAMS_XMLS_RELATIVE + _VARIANTS_XML_RELATIVE,
+    ),
+    (
+      'histograms_xml_files = '
+      'enums_xml_files + histograms_and_variants_xml_files\n'
+    ),
+  ]
+  return '\n'.join(sections)
 
 
-def UpdateHistogramsXmlGniFile():
+def UpdateHistogramsXmlGniFile() -> None:
   """Updates the _HISTOGRAMS_XML_FILES_GNI file."""
   with open(_HISTOGRAMS_XML_FILES_GNI, 'w+') as f:
     f.write(_GenerateHistogramsXmlGniContent())
 
 
-def ValidateHistogramsGniFile():
+def ValidateHistogramsGniFile() -> bool:
   """Returns true if _HISTOGRAMS_XML_FILES_GNI file is up to date."""
   with open(_HISTOGRAMS_XML_FILES_GNI, 'r') as f:
     return _GenerateHistogramsXmlGniContent() == f.read()

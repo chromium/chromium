@@ -10,6 +10,7 @@ import os
 from pathlib import Path
 import re
 import sys
+from typing import Iterable
 
 import setup_modules  # pylint: disable=unused-import
 
@@ -246,11 +247,14 @@ def _GenerateFileContent(
   return header_file_content
 
 
-def CheckUnsyncedHistograms(inputs):
-  """Checks whether --inputs is in sync with |histogram_paths.ALL_XMLS|."""
-  all_xmls_set = set(histogram_paths.ALL_XMLS)
+def CheckUnsyncedHistograms(inputs: Iterable[str]) -> tuple[set[str], set[str]]:
+  """Checks whether --inputs matches |histogram_paths.HISTOGRAMS_XMLS|."""
+  expected_set = set(
+    histogram_paths.HISTOGRAMS_XMLS + histogram_paths.VARIANTS_XMLS
+  )
   inputs_set = set(os.path.abspath(input) for input in inputs)
-  to_add, to_remove = all_xmls_set - inputs_set, inputs_set - all_xmls_set
+  to_add = expected_set - inputs_set
+  to_remove = inputs_set - expected_set
   return to_add, to_remove
 
 
@@ -266,9 +270,9 @@ def _GenerateFile(arguments):
       arguments.major_branch_date_filepath: File path for base date.
       arguments.milestone_filepath: File path for milestone information.
   """
-  # Assert that the |--inputs| is the same as |histogram_paths.ALL_XMLS| to make
-  # sure we have the most updated list of histogram descriptions. Otherwise,
-  # inform the cl owner to update the --inputs.
+  # Assert that |--inputs| is in sync with |histogram_paths.HISTOGRAMS_XMLS| to
+  # ensure we have the most updated list of histogram descriptions. Otherwise,
+  # inform the CL owner to update the --inputs.
   to_add, to_remove = CheckUnsyncedHistograms(arguments.inputs)
   assert len(to_add) == 0 and len(to_remove) == 0, (
     'The --inputs is not in sync with the most updated list of xmls. Please '

@@ -196,6 +196,23 @@ class ExpiredHistogramsTest(unittest.TestCase):
       content,
     )
 
+  def testCheckUnsyncedHistograms(self) -> None:
+    all_inputs = (
+      generate_expired_histograms_array.histogram_paths.HISTOGRAMS_XMLS
+      + generate_expired_histograms_array.histogram_paths.VARIANTS_XMLS
+    )
+    self.assertEqual(
+      (set(), set()),
+      generate_expired_histograms_array.CheckUnsyncedHistograms(all_inputs),
+    )
+
+    missing_one = all_inputs[1:]
+    to_add, to_remove = (
+      generate_expired_histograms_array.CheckUnsyncedHistograms(missing_one)
+    )
+    self.assertEqual({all_inputs[0]}, to_add)
+    self.assertEqual(set(), to_remove)
+
 
 if __name__ == '__main__':
   unittest.main()
