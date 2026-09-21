@@ -200,6 +200,14 @@ cr-most-visited {
   width: max-content;
 }
 
+:host([small-loomnibox]) omnibox-everywhere-omnibox {
+  /* In small Loomnibox, prioritize displaying page title/contents over the
+   * URL in autocomplete suggestions while preserving at least ~35% width
+   * for the URL. */
+  --cr-searchbox-url-contents-flex-shrink: 0;
+  --cr-searchbox-url-contents-max-width: 65%;
+}
+
 :host([small-loomnibox]) cr-most-visited {
   /* Total inner width for 5 tiles:
    * 480px (small content width) - 32px (16px * 2 padding) - 4px (2px * 2 border) = 444px.

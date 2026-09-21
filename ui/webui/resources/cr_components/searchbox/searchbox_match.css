@@ -289,6 +289,17 @@
   color: var(--color-searchbox-results-url-selected);
 }
 
+/* For URL suggestions, allow customizing the text-to-URL distribution ratio via
+ * custom properties (e.g. for narrow displays like small Loomnibox). */
+#suggestion:has(.url) #contents {
+  flex-shrink: var(--cr-searchbox-url-contents-flex-shrink, 1);
+  max-width: var(--cr-searchbox-url-contents-max-width, 100%);
+}
+
+#description:has(.url) {
+  flex-shrink: var(--cr-searchbox-url-description-flex-shrink, 1);
+}
+
 #remove {
   display: none;
   margin-inline-end: 1px;
