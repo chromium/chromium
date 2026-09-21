@@ -45,6 +45,7 @@ namespace web {
 class BrowserState;
 class BrowserURLRewriter;
 class CobaltController;
+class ExtensionController;
 class JavaScriptFeature;
 class WebClient;
 class WebMainParts;
@@ -248,6 +249,11 @@ class WebClient {
   // Returns the Cobalt controller for the given `browser_state`.
   virtual CobaltController* GetCobaltController(
       BrowserState* browser_state) const;
+
+  // Returns the ExtensionController for `browser_state`, or nullptr if not
+  // supported or enabled.
+  virtual ExtensionController* GetExtensionController(
+      BrowserState* browser_state) const API_AVAILABLE(ios(18.4));
 
   // Returns whether smooth scrolling is supported.
   virtual bool IsSmoothScrollingSupported() const;

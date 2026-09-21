@@ -109,6 +109,8 @@
 #import "ios/chrome/browser/web/model/java_script_console/java_script_console_feature_factory.h"
 #import "ios/chrome/browser/web/model/print/print_java_script_feature.h"
 #import "ios/chrome/browser/web/model/web_performance_metrics/web_performance_metrics_java_script_feature.h"
+#import "ios/chrome/browser/web_extension/model/extension_service.h"
+#import "ios/chrome/browser/web_extension/model/extension_service_factory.h"
 #import "ios/chrome/browser/web_selection/model/web_selection_java_script_feature.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/chrome/common/crash_report/crash_helper.h"
@@ -740,4 +742,11 @@ web::UniversalOptOutState ChromeWebClient::GetUniversalOptOutState(
   }
 
   return web::UniversalOptOutState::kNotEligible;
+}
+
+web::ExtensionController* ChromeWebClient::GetExtensionController(
+    web::BrowserState* browser_state) const {
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
+  ExtensionService* service = ExtensionServiceFactory::GetForProfile(profile);
+  return service ? service->GetExtensionController() : nullptr;
 }

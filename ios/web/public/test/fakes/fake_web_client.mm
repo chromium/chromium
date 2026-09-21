@@ -93,4 +93,14 @@ UniversalOptOutState FakeWebClient::GetUniversalOptOutState(
   return universal_opt_out_state_;
 }
 
+ExtensionController* FakeWebClient::GetExtensionController(
+    BrowserState* browser_state) const {
+  return extension_controller_;
+}
+
+void FakeWebClient::SetExtensionController(
+    ExtensionController* extension_controller) {
+  extension_controller_ = extension_controller;
+}
+
 }  // namespace web

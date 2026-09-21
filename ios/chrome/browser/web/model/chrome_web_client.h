@@ -87,6 +87,8 @@ class ChromeWebClient : public web::WebClient {
   bool IsSmoothScrollingSupported() const override;
   web::UniversalOptOutState GetUniversalOptOutState(
       web::BrowserState* browser_state) const override;
+  web::ExtensionController* GetExtensionController(
+      web::BrowserState* browser_state) const override API_AVAILABLE(ios(18.4));
 
  private:
   // Reference to a view that is attached to a window.

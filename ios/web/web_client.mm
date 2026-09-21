@@ -159,6 +159,11 @@ CobaltController* WebClient::GetCobaltController(
   return nullptr;
 }
 
+ExtensionController* WebClient::GetExtensionController(
+    BrowserState* browser_state) const {
+  return nullptr;
+}
+
 bool WebClient::IsSmoothScrollingSupported() const {
   return false;
 }
