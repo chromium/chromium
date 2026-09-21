@@ -224,6 +224,50 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
   EXPECT_TRUE(manager.ShouldReloadOnShow());
 }
 
+IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
+                       PanelOpenRetriesLoadingWhenInErrorState) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  ASSERT_OK(WaitForGlicClient(instance));
+  PreventDeletionOnClose(instance);
+  content::WebContents* initial_guest = instance->host().web_client_contents();
+  ASSERT_TRUE(initial_guest);
+
+  auto* manager = GetNoWebviewContentsManager(instance);
+  ASSERT_TRUE(manager);
+  EXPECT_FALSE(manager->ShouldReloadOnShow());
+
+  // Normal close and re-open should not trigger a reload.
+  ASSERT_OK(CloseGlicForTabAndWait(GetTabListInterface()->GetActiveTab()));
+  GlicInstanceImpl* reopened_instance = nullptr;
+  ASSERT_OK_AND_ASSIGN(reopened_instance, OpenGlicForActiveTab());
+  EXPECT_EQ(instance, reopened_instance);
+  EXPECT_EQ(initial_guest, instance->host().web_client_contents());
+
+  // Put the manager into a transient error state that requires reload on show.
+  manager = GetNoWebviewContentsManager(instance);
+  ASSERT_TRUE(manager);
+  manager->SetErrorState(mojom::ErrorPanelType::kOffline);
+  EXPECT_TRUE(manager->ShouldReloadOnShow());
+
+  // Close the panel while in the error state.
+  ASSERT_OK(CloseGlicForTabAndWait(GetTabListInterface()->GetActiveTab()));
+
+  // Re-opening the panel should detect ShouldReloadOnShow() and reload the
+  // host.
+  ASSERT_OK_AND_ASSIGN(reopened_instance, OpenGlicForActiveTab());
+  EXPECT_EQ(instance, reopened_instance);
+  ASSERT_OK(WaitForGlicClient(instance));
+  EXPECT_OK(
+      WaitForWebUiContentsVisibility(instance, content::Visibility::VISIBLE));
+  content::WebContents* new_guest = instance->host().web_client_contents();
+  EXPECT_TRUE(new_guest);
+  EXPECT_NE(initial_guest, new_guest);
+
+  auto* new_manager = GetNoWebviewContentsManager(instance);
+  ASSERT_TRUE(new_manager);
+  EXPECT_FALSE(new_manager->ShouldReloadOnShow());
+}
+
 IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
                        IneligibleAccountHelpClickOpensTab) {
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());

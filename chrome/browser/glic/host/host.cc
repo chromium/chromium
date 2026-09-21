@@ -167,8 +167,7 @@ void Host::Close() {
 }
 
 void Host::Reload() {
-  auto* contents = webui_contents();
-  if (!contents) {
+  if (!contents_) {
     return;
   }
 
@@ -178,6 +177,10 @@ void Host::Reload() {
     Awaken();
     delegate_->OnReload();
   } else {
+    auto* contents = webui_contents();
+    if (!contents) {
+      return;
+    }
     contents->GetController().Reload(content::ReloadType::BYPASSING_CACHE,
                                      /*check_for_repost=*/false);
   }
@@ -341,6 +344,12 @@ GlicPageHandler* Host::FindPageHandlerForWebUiContents(
 }
 
 void Host::NotifyWindowIntentToShow() {
+  if (features::IsGlicNoWebviewEnabled()) {
+    if (contents_ && contents_->ShouldReloadOnShow()) {
+      Reload();
+      return;
+    }
+  }
   if (page_handler_) {
     page_handler_->NotifyWindowIntentToShow();
   }
