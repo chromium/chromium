@@ -10,8 +10,11 @@
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "components/facilitated_payments/core/features/features.h"
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
+#include "components/optimization_guide/core/hints/optimization_guide_decider.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "url/gurl.h"
 
 namespace payments::facilitated {
 
@@ -80,6 +83,40 @@ void ContentFacilitatedPaymentsDriverFactory::DidFinishNavigation(
   }
   auto& driver = GetOrCreateForFrame(navigation_handle->GetRenderFrameHost());
   driver.DidNavigateToOrAwayFromPage();
+
+  // The agent starts every document dormant, so the decision is pushed on each
+  // commit rather than only when detection is eligible.
+  const mojo::AssociatedRemote<mojom::FacilitatedPaymentsAgent>& agent =
+      driver.GetFacilitatedPaymentsAgent();
+  if (!agent.is_bound()) {
+    return;
+  }
+  agent->SetQrCodeDetectionEnabled(
+      IsEligibleForQrCodeDetection(navigation_handle->GetURL()));
+}
+
+bool ContentFacilitatedPaymentsDriverFactory::IsEligibleForQrCodeDetection(
+    const GURL& url) const {
+  if (!base::FeatureList::IsEnabled(kEnableDesktopQrCodeDetection)) {
+    return false;
+  }
+
+  optimization_guide::OptimizationGuideDecider* decider =
+      client_->GetOptimizationGuideDecider();
+  if (!decider) {
+    return false;
+  }
+
+  // The Optimization Guide list answers "can this site be optimized?", so
+  // `kTrue` means `url` is allowed. `kUnknown` is returned when the
+  // optimization type has not been registered yet, and is treated as a
+  // rejection.
+  return decider->CanApplyOptimization(
+             url,
+             optimization_guide::proto::
+                 PAYMENT_QR_CODE_MERCHANT_URL_REGEX_ALLOWLIST,
+             /*optimization_metadata=*/nullptr) ==
+         optimization_guide::OptimizationGuideDecision::kTrue;
 }
 
 void ContentFacilitatedPaymentsDriverFactory::OnTextCopiedToClipboard(

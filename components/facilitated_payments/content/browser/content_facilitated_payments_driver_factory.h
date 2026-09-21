@@ -13,6 +13,8 @@
 #include "components/facilitated_payments/content/browser/content_facilitated_payments_driver.h"
 #include "content/public/browser/web_contents_observer.h"
 
+class GURL;
+
 namespace content {
 class WebContents;
 class NavigationHandle;
@@ -50,19 +52,31 @@ class ContentFacilitatedPaymentsDriverFactory
  private:
   FRIEND_TEST_ALL_PREFIXES(
       ContentFacilitatedPaymentsDriverFactoryTest,
-      OnTextCopiedToClipboard_PixCodeInIFrame_DoesNotTriggerPixDetection_PixFlowExitedReasonLogged);
+      IsEligibleForQrCodeDetection_FeatureDisabled_ReturnsFalse);
   FRIEND_TEST_ALL_PREFIXES(
       ContentFacilitatedPaymentsDriverFactoryTest,
-      OnTextCopiedToClipboard_PixCodeInIFrame_FlagEnabled_PixFlowExitedReasonNotLogged);
+      IsEligibleForQrCodeDetection_MerchantAllowlistedAndFeatureEnabled_ReturnsTrue);
   FRIEND_TEST_ALL_PREFIXES(
       ContentFacilitatedPaymentsDriverFactoryTest,
-      OnTextCopiedToClipboard_PixCodeInIFrame_FlagEnabled_CorrectIframeUrlPassedToDriver);
+      IsEligibleForQrCodeDetection_MerchantNotAllowlisted_ReturnsFalse);
+  FRIEND_TEST_ALL_PREFIXES(
+      ContentFacilitatedPaymentsDriverFactoryTest,
+      IsEligibleForQrCodeDetection_NoOptimizationGuideDecider_ReturnsFalse);
+  FRIEND_TEST_ALL_PREFIXES(
+      ContentFacilitatedPaymentsDriverFactoryTest,
+      OnTextCopiedToClipboard_ErrorDocument_DoesNotTriggerPixDetection_PixFlowExitedReasonLogged);
   FRIEND_TEST_ALL_PREFIXES(
       ContentFacilitatedPaymentsDriverFactoryTest,
       OnTextCopiedToClipboard_FrameNotActive_DoesNotTriggerPixDetection_PixFlowExitedReasonLogged);
   FRIEND_TEST_ALL_PREFIXES(
       ContentFacilitatedPaymentsDriverFactoryTest,
-      OnTextCopiedToClipboard_ErrorDocument_DoesNotTriggerPixDetection_PixFlowExitedReasonLogged);
+      OnTextCopiedToClipboard_PixCodeInIFrame_DoesNotTriggerPixDetection_PixFlowExitedReasonLogged);
+  FRIEND_TEST_ALL_PREFIXES(
+      ContentFacilitatedPaymentsDriverFactoryTest,
+      OnTextCopiedToClipboard_PixCodeInIFrame_FlagEnabled_CorrectIframeUrlPassedToDriver);
+  FRIEND_TEST_ALL_PREFIXES(
+      ContentFacilitatedPaymentsDriverFactoryTest,
+      OnTextCopiedToClipboard_PixCodeInIFrame_FlagEnabled_PixFlowExitedReasonNotLogged);
   // content::WebContentsObserver:
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void RenderFrameHostStateChanged(
@@ -73,6 +87,11 @@ class ContentFacilitatedPaymentsDriverFactory
       content::NavigationHandle* navigation_handle) override;
   void OnTextCopiedToClipboard(content::RenderFrameHost* render_frame_host,
                                const std::u16string& copied_text) override;
+
+  // Returns whether the `FacilitatedPaymentsAgent` should run QR code
+  // heuristics on `url`. Detection requires both the feature flag and a
+  // merchant on the Optimization Guide allowlist.
+  bool IsEligibleForQrCodeDetection(const GURL& url) const;
 
   // Owns the drivers, one for each render frame host. Should be empty at
   // destruction time because its elements are erased in RenderFrameDeleted().

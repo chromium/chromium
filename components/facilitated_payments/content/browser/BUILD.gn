@@ -24,6 +24,7 @@ static_library("browser") {
 
   deps = [
     "//components/network_session_configurator/common",
+    "//components/optimization_guide/core",
     "//components/security_state/content",
     "//components/security_state/core",
   ]

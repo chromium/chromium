@@ -11,6 +11,7 @@
 #include "components/facilitated_payments/core/browser/mock_facilitated_payments_client.h"
 #include "components/facilitated_payments/core/features/features.h"
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
+#include "components/optimization_guide/core/hints/mock_optimization_guide_decider.h"
 #include "components/optimization_guide/core/hints/test_optimization_guide_decider.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
@@ -52,6 +53,10 @@ class ContentFacilitatedPaymentsDriverFactoryTest
     decider_ =
         std::make_unique<optimization_guide::TestOptimizationGuideDecider>();
     client_ = std::make_unique<MockFacilitatedPaymentsClient>();
+    // Every committed main frame navigation consults the merchant allowlist, so
+    // the decider must be available by default.
+    ON_CALL(*client_, GetOptimizationGuideDecider)
+        .WillByDefault(testing::Return(decider_.get()));
     factory_ = std::make_unique<ContentFacilitatedPaymentsDriverFactory>(
         web_contents(), client_.get());
   }
@@ -67,6 +72,7 @@ class ContentFacilitatedPaymentsDriverFactoryTest
 
  protected:
   std::unique_ptr<optimization_guide::TestOptimizationGuideDecider> decider_;
+  optimization_guide::MockOptimizationGuideDecider mock_decider_;
   std::unique_ptr<MockFacilitatedPaymentsClient> client_;
   std::unique_ptr<ContentFacilitatedPaymentsDriverFactory> factory_;
 };
@@ -183,6 +189,81 @@ TEST_F(
       "FacilitatedPayments.Pix.PayflowExitedReason",
       /*sample=*/PixFlowExitedReason::kFrameIsErrorDocument,
       /*expected_bucket_count=*/1);
+}
+
+// Test that QR code detection is eligible when the merchant is on the
+// allowlist and the feature is enabled.
+TEST_F(
+    ContentFacilitatedPaymentsDriverFactoryTest,
+    IsEligibleForQrCodeDetection_MerchantAllowlistedAndFeatureEnabled_ReturnsTrue) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnableDesktopQrCodeDetection);
+
+  const GURL kMerchantUrl("https://allowlisted-merchant.com");
+  ON_CALL(*client_, GetOptimizationGuideDecider)
+      .WillByDefault(testing::Return(&mock_decider_));
+  EXPECT_CALL(mock_decider_,
+              CanApplyOptimization(
+                  testing::Eq(kMerchantUrl),
+                  testing::Eq(optimization_guide::proto::
+                                  PAYMENT_QR_CODE_MERCHANT_URL_REGEX_ALLOWLIST),
+                  testing::A<optimization_guide::OptimizationMetadata*>()))
+      .WillOnce(testing::Return(
+          optimization_guide::OptimizationGuideDecision::kTrue));
+
+  EXPECT_TRUE(factory_->IsEligibleForQrCodeDetection(kMerchantUrl));
+}
+
+// Test that a merchant missing from the allowlist is not eligible even when the
+// feature is enabled.
+TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
+       IsEligibleForQrCodeDetection_MerchantNotAllowlisted_ReturnsFalse) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnableDesktopQrCodeDetection);
+
+  const GURL kMerchantUrl("https://unknown-merchant.com");
+  ON_CALL(*client_, GetOptimizationGuideDecider)
+      .WillByDefault(testing::Return(&mock_decider_));
+  EXPECT_CALL(mock_decider_,
+              CanApplyOptimization(
+                  testing::Eq(kMerchantUrl), testing::_,
+                  testing::A<optimization_guide::OptimizationMetadata*>()))
+      .WillOnce(testing::Return(
+          optimization_guide::OptimizationGuideDecision::kFalse));
+
+  EXPECT_FALSE(factory_->IsEligibleForQrCodeDetection(kMerchantUrl));
+}
+
+// Test that a disabled feature short circuits before the allowlist is queried.
+TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
+       IsEligibleForQrCodeDetection_FeatureDisabled_ReturnsFalse) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kEnableDesktopQrCodeDetection);
+
+  ON_CALL(*client_, GetOptimizationGuideDecider)
+      .WillByDefault(testing::Return(&mock_decider_));
+  EXPECT_CALL(mock_decider_,
+              CanApplyOptimization(
+                  testing::_, testing::_,
+                  testing::A<optimization_guide::OptimizationMetadata*>()))
+      .Times(0);
+
+  EXPECT_FALSE(factory_->IsEligibleForQrCodeDetection(
+      GURL("https://allowlisted-merchant.com")));
+}
+
+// Test that detection is not eligible when the embedder provides no
+// Optimization Guide decider.
+TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
+       IsEligibleForQrCodeDetection_NoOptimizationGuideDecider_ReturnsFalse) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnableDesktopQrCodeDetection);
+
+  ON_CALL(*client_, GetOptimizationGuideDecider)
+      .WillByDefault(testing::Return(nullptr));
+
+  EXPECT_FALSE(factory_->IsEligibleForQrCodeDetection(
+      GURL("https://allowlisted-merchant.com")));
 }
 
 }  // namespace payments::facilitated
