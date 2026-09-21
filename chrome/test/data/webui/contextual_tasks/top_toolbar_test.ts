@@ -61,7 +61,7 @@ suite('TopToolbarTest', () => {
       assertHTMLElement(lightLogo);
       assertEquals(
           lightLogo.src,
-          'chrome://resources/cr_components/searchbox/icons/chrome_product.svg');
+          'chrome://resources/cr_components/searchbox/icons/chrome_product_cr23.svg');
       const darkLogo = topToolbar.shadowRoot.querySelector<HTMLImageElement>(
           '.chrome-logo-dark');
       assertHTMLElement(darkLogo);

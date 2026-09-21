@@ -498,6 +498,7 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksAppPixelTest, MAYBE_Screenshots) {
 enum class TitleType { kNone, kShort, kLong };
 
 struct ToolbarPixelTestParams {
+  bool is_post_rearchitecture = false;
   bool dark_mode = false;
   TitleType title_type = TitleType::kNone;
   bool menu_open = false;
@@ -527,6 +528,9 @@ struct ToolbarPixelTestParams {
     if (is_ai_page) {
       name += "_AiPage";
     }
+    if (is_post_rearchitecture) {
+      name += "_PostRearchitecture";
+    }
     return name;
   }
 };
@@ -534,6 +538,28 @@ struct ToolbarPixelTestParams {
 class ContextualTasksToolbarPixelTest
     : public ContextualTasksPixelTestBase,
       public testing::WithParamInterface<ToolbarPixelTestParams> {
+ public:
+  void SetUp() override {
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {contextual_tasks::kContextualTasks,
+         {{"ContextualTasksExpandButtonOptions", "toolbar-close-button"}}},
+        {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}},
+        {contextual_tasks::kContextualTasksContextMenu, {}}};
+    if (GetParam().is_post_rearchitecture) {
+      enabled_features.push_back(
+          {contextual_tasks::kContextualTasksSidePanelRearchitecture, {}});
+    }
+    feature_list_.InitWithFeaturesAndParameters(
+        enabled_features,
+        /*disabled_features=*/
+        {contextual_tasks::kContextualTasksAnimatedCaret,
+         // TODO(crbug.com/452061489): Fix tests that fail when the WebUI
+         // Omnibox is enabled and then remove these two Features.
+         omnibox::internal::kWebUIOmniboxPopup,
+         omnibox::internal::kWebUIOmniboxAimPopup});
+    WebUIComposeBoxPixelTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
     SetRTL(GetParam().rtl);
     SetDarkMode(GetParam().dark_mode);
@@ -555,19 +581,34 @@ INSTANTIATE_TEST_SUITE_P(
         {.dark_mode = true, .title_type = TitleType::kShort},
         {.dark_mode = true, .title_type = TitleType::kLong},
 
-        // Test non AI page color scheme
-        {.dark_mode = true, .is_ai_page = false},
-
         // RTL variations
         {.title_type = TitleType::kShort, .rtl = true},
         {.dark_mode = true, .title_type = TitleType::kLong, .rtl = true},
 
         // Open menu.
-        {
-            .menu_open = true,
-            .is_ai_page = true,
-        },
-        {.dark_mode = true, .menu_open = true, .is_ai_page = true},
+        {.menu_open = true},
+        {.dark_mode = true, .menu_open = true},
+
+        // Post rearchitecture toolbar variations
+        {.is_post_rearchitecture = true, .title_type = TitleType::kNone},
+        {.is_post_rearchitecture = true, .title_type = TitleType::kShort},
+        {.is_post_rearchitecture = true, .title_type = TitleType::kLong},
+        {.is_post_rearchitecture = true,
+         .dark_mode = true,
+         .title_type = TitleType::kNone},
+        {.is_post_rearchitecture = true,
+         .dark_mode = true,
+         .title_type = TitleType::kShort},
+        {.is_post_rearchitecture = true,
+         .dark_mode = true,
+         .title_type = TitleType::kLong},
+        {.is_post_rearchitecture = true,
+         .title_type = TitleType::kShort,
+         .rtl = true},
+        {.is_post_rearchitecture = true,
+         .dark_mode = true,
+         .title_type = TitleType::kLong,
+         .rtl = true},
     }),
     [](const testing::TestParamInfo<ToolbarPixelTestParams>& info) {
       return info.param.ToString();
@@ -575,21 +616,31 @@ INSTANTIATE_TEST_SUITE_P(
 
 IN_PROC_BROWSER_TEST_P(ContextualTasksToolbarPixelTest, Screenshots) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
-  DeepQuery app = {"contextual-tasks-app"};
+  const bool is_rearch = GetParam().is_post_rearchitecture;
+  DeepQuery app = {is_rearch ? "contextual-tasks-toolbar-app"
+                             : "contextual-tasks-app"};
   DeepQuery toolbar = app + "top-toolbar";
   DeepQuery moreButton = toolbar + "#overflowMenuButton";
   DeepQuery menu =
       toolbar + "contextual-tasks-overflow-menu" + "cr-action-menu" + "dialog";
+  const GURL url = is_rearch ? GURL(chrome::kChromeUIContextualTasksToolbarURL)
+                             : GURL(chrome::kChromeUIContextualTasksURL);
+  const std::string toolbar_screenshot_name =
+      is_rearch ? "ContextualTasksToolbar_PostRearchitecture"
+                : "ContextualTasksToolbar";
+  const std::string menu_screenshot_name =
+      is_rearch ? "ContextualTasksToolbarMenu_PostRearchitecture"
+                : "ContextualTasksToolbarMenu";
 
   RunTestSequence(
-      SetupWebUIEnvironment(kActiveTab,
-                            GURL(chrome::kChromeUIContextualTasksURL),
-                            {"contextual-tasks-app"}),
+      SetupWebUIEnvironment(kActiveTab, url, app),
 
       // The toolbar is only shown when the app is in side panel mode.
       ExecuteJsAt(kActiveTab, app,
                   base::StringPrintf("(el) => { "
-                                     "  el.isShownInTab_ = false; "
+                                     "  if ('isShownInTab_' in el) { "
+                                     "    el.isShownInTab_ = false; "
+                                     "  } "
                                      "  el.isAiPage_ = %s; "
                                      "  el.requestUpdate(); "
                                      "}",
@@ -610,12 +661,12 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksToolbarPixelTest, Screenshots) {
               SetOnIncompatibleAction(
                   OnIncompatibleAction::kIgnoreAndContinue,
                   "Screenshots not captured on this platform."),
-              ScreenshotWebUi(kActiveTab, menu, "ContextualTasksToolbarMenu",
+              ScreenshotWebUi(kActiveTab, menu, menu_screenshot_name,
                               /*baseline_cl=*/"7620222")),
          Else(WaitForWebContentsPainted(kActiveTab),
               SetOnIncompatibleAction(
                   OnIncompatibleAction::kIgnoreAndContinue,
                   "Screenshots not captured on this platform."),
-              ScreenshotWebUi(kActiveTab, toolbar, "ContextualTasksToolbar",
+              ScreenshotWebUi(kActiveTab, toolbar, toolbar_screenshot_name,
                               /*baseline_cl=*/"7620222"))));
 }
