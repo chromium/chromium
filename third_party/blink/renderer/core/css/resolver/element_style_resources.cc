@@ -63,6 +63,27 @@ namespace blink {
 
 namespace {
 
+// Records the viewport-unit dependency described by `types` on
+// `conversion_data`, so that a viewport resize triggers a style recalc for this
+// element, and returns the viewport size to snapshot on the generated image.
+// Gradient color stops and positions are resolved lazily when the image is
+// painted rather than during style resolution, so without the snapshot the
+// recalc would produce an equal StyleImage, leaving the previously rasterized
+// gradient in place.
+CSSToLengthConversionData::ViewportSize GradientViewportSize(
+    const CSSPrimitiveValue::LengthTypeFlags& types,
+    const CSSToLengthConversionData* conversion_data) {
+  using ViewportSize = CSSToLengthConversionData::ViewportSize;
+  if (!conversion_data) {
+    return ViewportSize();
+  }
+  if (!CSSPrimitiveValue::HasStaticViewportUnits(types) &&
+      !CSSPrimitiveValue::HasDynamicViewportUnits(types)) {
+    return ViewportSize();
+  }
+  return conversion_data->ViewportSizes(types);
+}
+
 class StyleImageLoader {
   STACK_ALLOCATED();
 
@@ -71,10 +92,12 @@ class StyleImageLoader {
 
   StyleImageLoader(Document& document,
                    ComputedStyleBuilder& builder,
+                   const CSSToLengthConversionData* conversion_data,
                    const PreCachedContainerSizes& pre_cached_container_sizes,
                    float device_scale_factor)
       : document_(document),
         builder_(builder),
+        conversion_data_(conversion_data),
         pre_cached_container_sizes_(pre_cached_container_sizes),
         device_scale_factor_(device_scale_factor) {}
 
@@ -93,6 +116,7 @@ class StyleImageLoader {
 
   Document& document_;
   ComputedStyleBuilder& builder_;
+  const CSSToLengthConversionData* conversion_data_;
   const PreCachedContainerSizes& pre_cached_container_sizes_;
   const float device_scale_factor_;
 };
@@ -108,8 +132,9 @@ StyleImage* StyleImageLoader::Load(
   }
 
   if (auto* paint_value = DynamicTo<CSSPaintValue>(value)) {
-    auto* image = MakeGarbageCollected<StyleGeneratedImage>(*paint_value,
-                                                            ContainerSizes());
+    auto* image = MakeGarbageCollected<StyleGeneratedImage>(
+        *paint_value, ContainerSizes(),
+        CSSToLengthConversionData::ViewportSize());
     builder_.AddPaintImage(image);
     return image;
   }
@@ -133,8 +158,9 @@ StyleImage* StyleImageLoader::Load(
         CSSPrimitiveValue::HasContainerRelativeUnits(types)
             ? pre_cached_container_sizes_.Get()
             : ContainerSizes();
-    return MakeGarbageCollected<StyleGeneratedImage>(*image_gradient_value,
-                                                     container_sizes);
+    return MakeGarbageCollected<StyleGeneratedImage>(
+        *image_gradient_value, container_sizes,
+        GradientViewportSize(types, conversion_data_));
   }
 
   if (auto* image_set_value = DynamicTo<CSSImageSetValue>(value)) {
@@ -248,8 +274,9 @@ StyleImage* ElementStyleResources::CachedStyleImage(
         CSSPrimitiveValue::HasContainerRelativeUnits(types)
             ? pre_cached_container_sizes_.Get()
             : ContainerSizes();
-    return MakeGarbageCollected<StyleGeneratedImage>(*gradient_value,
-                                                     container_sizes);
+    return MakeGarbageCollected<StyleGeneratedImage>(
+        *gradient_value, container_sizes,
+        GradientViewportSize(types, conversion_data_));
   }
 
   if (auto* img_set_value = DynamicTo<CSSImageSetValue>(value)) {
@@ -415,7 +442,7 @@ void ElementStyleResources::LoadPendingImages(
   // If we eagerly loaded the images we'd fetch a.png, even though it's not
   // used. If we didn't null check below we'd crash since the none actually
   // removed all background images.
-  StyleImageLoader loader(element_.GetDocument(), builder,
+  StyleImageLoader loader(element_.GetDocument(), builder, conversion_data_,
                           pre_cached_container_sizes_, device_scale_factor_);
   for (CSSPropertyID property : pending_image_properties_) {
     switch (property) {
@@ -531,6 +558,7 @@ void ElementStyleResources::LoadPendingResources(
 
 void ElementStyleResources::UpdateLengthConversionData(
     const CSSToLengthConversionData* conversion_data) {
+  conversion_data_ = conversion_data;
   pre_cached_container_sizes_ = PreCachedContainerSizes(conversion_data);
 }
 

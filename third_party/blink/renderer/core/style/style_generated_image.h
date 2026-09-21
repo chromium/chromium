@@ -43,9 +43,11 @@ class ImageResourceObserver;
 class CORE_EXPORT StyleGeneratedImage final : public StyleImage {
  public:
   using ContainerSizes = CSSToLengthConversionData::ContainerSizes;
+  using ViewportSize = CSSToLengthConversionData::ViewportSize;
 
-  explicit StyleGeneratedImage(const CSSImageGeneratorValue&,
-                               const ContainerSizes&);
+  StyleGeneratedImage(const CSSImageGeneratorValue&,
+                      const ContainerSizes&,
+                      const ViewportSize&);
 
   WrappedImagePtr Data() const override { return image_generator_value_.Get(); }
 
@@ -85,6 +87,10 @@ class CORE_EXPORT StyleGeneratedImage final : public StyleImage {
 
   Member<CSSImageGeneratorValue> image_generator_value_;
   ContainerSizes container_sizes_;
+  // Snapshot of the viewport size taken when this image was created, for
+  // gradients that resolve viewport units. Default-constructed for images that
+  // do not, so that they keep comparing equal across viewport changes.
+  ViewportSize viewport_size_;
 };
 
 template <>

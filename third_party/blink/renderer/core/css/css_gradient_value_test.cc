@@ -50,6 +50,14 @@ bool IsUsingContainerRelativeUnits(const char* text) {
   return CSSPrimitiveValue::HasContainerRelativeUnits(LengthUnitTypes(text));
 }
 
+bool IsUsingStaticViewportUnits(const char* text) {
+  return CSSPrimitiveValue::HasStaticViewportUnits(LengthUnitTypes(text));
+}
+
+bool IsUsingDynamicViewportUnits(const char* text) {
+  return CSSPrimitiveValue::HasDynamicViewportUnits(LengthUnitTypes(text));
+}
+
 TEST(CSSGradientValueTest, RadialGradient_Equals) {
   test::TaskEnvironment task_environment;
   // Trivially identical.
@@ -152,6 +160,76 @@ TEST(CSSGradientValueTest, IsUsingContainerRelativeUnits) {
       IsUsingContainerRelativeUnits("radial-gradient(green 5px, blue 10px)"));
   EXPECT_FALSE(IsUsingContainerRelativeUnits(
       "conic-gradient(from 180deg at 10px 20px, green, blue)"));
+}
+
+TEST(CSSGradientValueTest, IsUsingStaticViewportUnits) {
+  test::TaskEnvironment task_environment;
+  EXPECT_TRUE(
+      IsUsingStaticViewportUnits("linear-gradient(green 5vw, blue 10vh)"));
+  EXPECT_TRUE(
+      IsUsingStaticViewportUnits("linear-gradient(green 5vi, blue 10vb)"));
+  EXPECT_TRUE(
+      IsUsingStaticViewportUnits("linear-gradient(green 5vmin, blue 10vmax)"));
+  EXPECT_TRUE(
+      IsUsingStaticViewportUnits("linear-gradient(green 5svw, blue 10svh)"));
+  EXPECT_TRUE(
+      IsUsingStaticViewportUnits("linear-gradient(green 5lvw, blue 10lvh)"));
+  EXPECT_TRUE(
+      IsUsingStaticViewportUnits("linear-gradient(green 10px, blue 10vh)"));
+  EXPECT_TRUE(
+      IsUsingStaticViewportUnits("linear-gradient(green 5vw, blue 10px)"));
+  EXPECT_TRUE(IsUsingStaticViewportUnits(
+      "linear-gradient(green calc(10px + 5vw), blue 10px)"));
+
+  // Radial gradient positions and sizes resolve viewport units too.
+  EXPECT_TRUE(
+      IsUsingStaticViewportUnits("radial-gradient(green 5vw, blue 10vh)"));
+  EXPECT_TRUE(IsUsingStaticViewportUnits(
+      "radial-gradient(circle 40vh at 50% 50%, green, blue)"));
+  EXPECT_TRUE(IsUsingStaticViewportUnits(
+      "radial-gradient(circle 40px at 10vh 20px, green, blue)"));
+
+  // As do conic gradient positions.
+  EXPECT_TRUE(IsUsingStaticViewportUnits(
+      "conic-gradient(from 180deg at 10vh 20vw, green, blue)"));
+  EXPECT_TRUE(IsUsingStaticViewportUnits(
+      "conic-gradient(from 180deg at 10px 20vw, green, blue)"));
+
+  EXPECT_FALSE(
+      IsUsingStaticViewportUnits("linear-gradient(green 10px, blue 10em)"));
+  EXPECT_FALSE(
+      IsUsingStaticViewportUnits("linear-gradient(green 10px, blue 10cqh)"));
+  EXPECT_FALSE(
+      IsUsingStaticViewportUnits("linear-gradient(green 10px, blue 50%)"));
+  EXPECT_FALSE(
+      IsUsingStaticViewportUnits("radial-gradient(green 5px, blue 10px)"));
+  EXPECT_FALSE(IsUsingStaticViewportUnits(
+      "conic-gradient(from 180deg at 10px 20px, green, blue)"));
+
+  // Dynamic viewport units are reported separately.
+  EXPECT_FALSE(
+      IsUsingStaticViewportUnits("linear-gradient(green 10px, blue 10dvh)"));
+}
+
+TEST(CSSGradientValueTest, IsUsingDynamicViewportUnits) {
+  test::TaskEnvironment task_environment;
+  EXPECT_TRUE(
+      IsUsingDynamicViewportUnits("linear-gradient(green 5dvw, blue 10dvh)"));
+  EXPECT_TRUE(IsUsingDynamicViewportUnits(
+      "linear-gradient(green 5dvmin, blue 10dvmax)"));
+  EXPECT_TRUE(IsUsingDynamicViewportUnits(
+      "linear-gradient(green calc(10px + 5dvw), blue 10px)"));
+  EXPECT_TRUE(IsUsingDynamicViewportUnits(
+      "radial-gradient(circle 40dvh at 50% 50%, green, blue)"));
+  EXPECT_TRUE(IsUsingDynamicViewportUnits(
+      "conic-gradient(from 180deg at 10dvh 20px, green, blue)"));
+
+  EXPECT_FALSE(
+      IsUsingDynamicViewportUnits("linear-gradient(green 10px, blue 10vh)"));
+  EXPECT_FALSE(
+      IsUsingDynamicViewportUnits("linear-gradient(green 10px, blue 10svh)"));
+  EXPECT_FALSE(
+      IsUsingDynamicViewportUnits("linear-gradient(green 10px, blue 10px)"));
 }
 
 }  // namespace

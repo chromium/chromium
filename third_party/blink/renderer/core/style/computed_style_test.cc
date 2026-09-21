@@ -536,9 +536,11 @@ TEST_F(ComputedStyleTest, CursorList) {
       nullptr, nullptr, nullptr, nullptr, nullptr, cssvalue::kRepeating);
 
   auto* image_value = MakeGarbageCollected<StyleGeneratedImage>(
-      *gradient, StyleGeneratedImage::ContainerSizes());
+      *gradient, StyleGeneratedImage::ContainerSizes(),
+      StyleGeneratedImage::ViewportSize());
   auto* other_image_value = MakeGarbageCollected<StyleGeneratedImage>(
-      *gradient, StyleGeneratedImage::ContainerSizes());
+      *gradient, StyleGeneratedImage::ContainerSizes(),
+      StyleGeneratedImage::ViewportSize());
 
   EXPECT_TRUE(base::ValuesEquivalent(image_value, other_image_value));
 

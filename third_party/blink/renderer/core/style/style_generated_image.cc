@@ -32,9 +32,11 @@
 namespace blink {
 
 StyleGeneratedImage::StyleGeneratedImage(const CSSImageGeneratorValue& value,
-                                         const ContainerSizes& container_sizes)
+                                         const ContainerSizes& container_sizes,
+                                         const ViewportSize& viewport_size)
     : image_generator_value_(const_cast<CSSImageGeneratorValue*>(&value)),
-      container_sizes_(container_sizes) {
+      container_sizes_(container_sizes),
+      viewport_size_(viewport_size) {
   is_generated_image_ = true;
   if (value.IsPaintValue()) {
     is_paint_image_ = true;
@@ -47,6 +49,9 @@ bool StyleGeneratedImage::IsEqual(const StyleImage& other) const {
   }
   const auto& other_generated = To<StyleGeneratedImage>(other);
   if (!container_sizes_.SizesEqual(other_generated.container_sizes_)) {
+    return false;
+  }
+  if (viewport_size_ != other_generated.viewport_size_) {
     return false;
   }
   return base::ValuesEquivalent(image_generator_value_,

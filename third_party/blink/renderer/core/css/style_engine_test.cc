@@ -4181,6 +4181,60 @@ TEST_F(StyleEngineTest, HasViewportUnitFlags) {
   }
 }
 
+TEST_F(StyleEngineTest, HasViewportUnitFlagsInGradient) {
+  // Gradient color stops are resolved lazily, when the gradient is painted,
+  // rather than during style resolution. The viewport dependency still has to
+  // be recorded on the style, or a viewport resize would not invalidate it.
+  struct {
+    const char* value;
+    bool has_static;
+    bool has_dynamic;
+  } test_data[] = {
+      {"10px", false, false},
+      {"10em", false, false},
+      {"50%", false, false},
+
+      {"10vw", true, false},
+      {"10vh", true, false},
+      {"10vmin", true, false},
+      {"10vmax", true, false},
+      {"10svh", true, false},
+      {"10lvh", true, false},
+
+      {"10dvw", false, true},
+      {"10dvh", false, true},
+
+      {"calc(10px + 10vh)", true, false},
+      {"calc(10px + 10dvh)", false, true},
+  };
+
+  for (const auto& data : test_data) {
+    SCOPED_TRACE(data.value);
+    auto holder = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
+    Document& document = holder->GetDocument();
+    document.body()->SetInnerHTMLWithoutTrustedTypes(Format(R"HTML(
+      <style>
+        div {{
+          width: 100px;
+          height: 100px;
+          background-image: linear-gradient(to bottom, red 0, blue {});
+        }}
+      </style>
+      <div id=target></div>
+    )HTML",
+                                                            data.value));
+    document.View()->UpdateAllLifecyclePhasesForTest();
+
+    Element* target = document.getElementById(AtomicString("target"));
+    ASSERT_TRUE(target);
+
+    EXPECT_EQ(data.has_static,
+              target->GetComputedStyle()->HasStaticViewportUnits());
+    EXPECT_EQ(data.has_dynamic,
+              target->GetComputedStyle()->HasDynamicViewportUnits());
+  }
+}
+
 TEST_F(StyleEngineTest, DynamicViewportUnitInvalidation) {
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
   <style>

@@ -882,7 +882,8 @@ TEST_P(AnimationCompositorAnimationsTest,
   CSSPaintValue* paint_value = MakeGarbageCollected<CSSPaintValue>(ident);
   paint_value->CreateGeneratorForTesting(GetDocument());
   StyleGeneratedImage* style_image = MakeGarbageCollected<StyleGeneratedImage>(
-      *paint_value, StyleGeneratedImage::ContainerSizes());
+      *paint_value, StyleGeneratedImage::ContainerSizes(),
+      StyleGeneratedImage::ViewportSize());
 
   ComputedStyleBuilder builder(*style);
   builder.AddPaintImage(style_image);

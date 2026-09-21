@@ -24,7 +24,8 @@ class NinePieceImageGridTest : public RenderingTest {
                                               CSSLinearGradientValue>(
         nullptr, nullptr, nullptr, nullptr, nullptr, cssvalue::kRepeating);
     return MakeGarbageCollected<StyleGeneratedImage>(
-        *gradient, StyleGeneratedImage::ContainerSizes());
+        *gradient, StyleGeneratedImage::ContainerSizes(),
+        StyleGeneratedImage::ViewportSize());
   }
 };
 

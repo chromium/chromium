@@ -523,6 +523,18 @@ double CSSToLengthConversionData::DynamicViewportHeight() const {
   return viewport_size_.DynamicHeight();
 }
 
+const CSSToLengthConversionData::ViewportSize&
+CSSToLengthConversionData::ViewportSizes(
+    const CSSPrimitiveValue::LengthTypeFlags& types) const {
+  if (CSSPrimitiveValue::HasStaticViewportUnits(types)) {
+    SetFlag(Flag::kViewport);
+  }
+  if (CSSPrimitiveValue::HasDynamicViewportUnits(types)) {
+    SetFlag(Flag::kDynamicViewport);
+  }
+  return viewport_size_;
+}
+
 double CSSToLengthConversionData::ContainerWidth() const {
   SetFlag(Flag::kContainerRelative);
   return container_sizes_.Width().value_or(SmallViewportWidth());

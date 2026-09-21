@@ -444,6 +444,17 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
     return CopyWithAdjustedZoom(1.0f);
   }
 
+  // Returns the viewport sizes, recording the viewport-unit dependencies
+  // present in `types` so that the resulting style is invalidated when the
+  // viewport is resized.
+  //
+  // This is for values that are not resolved during style resolution (e.g.
+  // gradient color stops), and which therefore never reach the
+  // ViewportWidth()/ViewportHeight()/etc. accessors that record the
+  // dependency themselves.
+  const ViewportSize& ViewportSizes(
+      const CSSPrimitiveValue::LengthTypeFlags& types) const;
+
  private:
   void SetFlag(Flag flag) const {
     if (flags_) {
