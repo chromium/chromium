@@ -23,6 +23,7 @@
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_interactive_test_base.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
@@ -60,6 +61,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/contextual_search/contextual_search_types.h"
+#include "components/contextual_search/mock_contextual_search_session_handle.h"
 #include "components/contextual_search/pref_names.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
@@ -106,8 +108,6 @@
 using testing::_;
 
 namespace {
-constexpr char kMockAimPagePath[] = "chrome/test/data/mock_aim_page.html";
-constexpr char kMockAimPageHost[] = "www.google.com";
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTab);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kGenericTab);
@@ -119,80 +119,11 @@ DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementExistsEvent);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementDoesNotExistEvent);
 
 constexpr char kCujInterceptionUrl[] = "https://www.google.com/search?udm=50";
-class TestTabContextualizationController
-    : public lens::TabContextualizationController {
- public:
-  inline static SkColor screenshot_color_ = SK_ColorRED;
 
-  explicit TestTabContextualizationController(tabs::TabInterface* tab)
-      : lens::TabContextualizationController(tab) {}
-  ~TestTabContextualizationController() override = default;
-
-  void CaptureScreenshot(
-      std::optional<lens::ImageEncodingOptions> image_options,
-      CaptureScreenshotCallback callback) override {
-    SkBitmap bitmap;
-    bitmap.allocN32Pixels(100, 100, /*isOpaque=*/true);
-    bitmap.eraseColor(screenshot_color_);
-    std::move(callback).Run(bitmap);
-  }
-
- protected:
-  bool IsPageContextEligible(
-      const GURL& url,
-      const std::vector<optimization_guide::FrameMetadata>& frame_metadata)
-      override {
-    return true;
-  }
-};
-
-class MockContextualTasksEligibilityManager
-    : public contextual_tasks::ContextualTasksEligibilityManager {
- public:
-  MockContextualTasksEligibilityManager(
-      PrefService* pref_service,
-      signin::IdentityManager* identity_manager,
-      AimEligibilityService* aim_eligibility_service)
-      : contextual_tasks::ContextualTasksEligibilityManager(
-            pref_service, identity_manager, aim_eligibility_service) {
-    MaybeNotifyEligibilityChanged();
-  }
-  ~MockContextualTasksEligibilityManager() override = default;
-
-  bool IsEligibleWithoutIdentity() const override { return true; }
-  bool CalculateEligibility() const override { return true; }
-};
-
-class MockContextualTasksUiService
-    : public contextual_tasks::ContextualTasksUiService {
- public:
-  MockContextualTasksUiService(
-      Profile* profile,
-      contextual_tasks::ContextualTasksService* contextual_tasks_service,
-      AimEligibilityService* aim_eligibility_service,
-      signin::IdentityManager* identity_manager)
-      : contextual_tasks::ContextualTasksUiService(
-            profile,
-            std::make_unique<testing::NiceMock<
-                contextual_tasks::MockContextualTasksUiServiceDelegate>>(),
-            contextual_tasks_service,
-            identity_manager,
-            aim_eligibility_service,
-            std::make_unique<MockContextualTasksEligibilityManager>(
-                profile->GetPrefs(),
-                identity_manager,
-                aim_eligibility_service),
-            /*cookie_synchronizer=*/nullptr) {}
-  ~MockContextualTasksUiService() override = default;
-
-  bool IsSignedInToBrowserWithValidCredentials() override { return true; }
-  bool IsUrlForPrimaryAccount(const GURL& url) override { return true; }
-  void GetAccessToken(
-      GetAccessTokenCallback callback,
-      base::WeakPtr<content::WebContents> web_contents) override {
-    std::move(callback).Run("fake_access_token");
-  }
-};
+using MockContextualTasksEligibilityManager =
+    contextual_tasks::TestContextualTasksEligibilityManager;
+using MockContextualTasksUiService =
+    contextual_tasks::TestContextualTasksUiService;
 
 class ClipboardTextObserver
     : public ui::test::ObservationStateObserver<std::u16string,
@@ -250,181 +181,14 @@ DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ClipboardTextObserver, kClipboardText);
 
 namespace contextual_tasks {
 
-class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
+class ContextualTasksInteractiveUiTest
+    : public ContextualTasksInteractiveTestBase {
  public:
-  ContextualTasksInteractiveUiTest() {
-    // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox is
-    // enabled and then remove the two omnibox features below.
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{kContextualTasks, lens::features::kLensOverlay,
-                              lens::features::kLensSidePanelUnification,
-                              lens::features::kLensOverlayContextualSearchbox},
-        /*disabled_features=*/{lens::features::kLensSendRawFileMediaTypes,
-                               omnibox::internal::kWebUIOmniboxPopup,
-                               omnibox::internal::kWebUIOmniboxAimPopup});
-    tab_context_override_ =
-        tabs::TabFeatures::GetUserDataFactoryForTesting()
-            .AddOverrideForTesting<
-                lens::TabContextualizationController>(base::BindRepeating(
-                [](tabs::TabInterface& tab)
-                    -> std::unique_ptr<lens::TabContextualizationController> {
-                  return std::make_unique<TestTabContextualizationController>(
-                      &tab);
-                }));
-  }
+  ContextualTasksInteractiveUiTest() = default;
   ~ContextualTasksInteractiveUiTest() override = default;
 
-  void SetUpBrowserContextKeyedServices(
-      content::BrowserContext* context) override {
-    InteractiveBrowserTest::SetUpBrowserContextKeyedServices(context);
-
-    AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
-        context,
-        base::BindRepeating(
-            &ContextualTasksInteractiveUiTest::BuildMockAimServiceInstance,
-            base::Unretained(this)));
-
-    contextual_tasks::ContextualTasksUiServiceFactory::GetInstance()
-        ->SetTestingFactory(
-            context,
-            base::BindRepeating(&ContextualTasksInteractiveUiTest::
-                                    BuildMockContextualTasksUiServiceInstance,
-                                base::Unretained(this)));
-
-  }
-
-  std::unique_ptr<KeyedService> BuildMockAimServiceInstance(
-      content::BrowserContext* context) {
-    Profile* profile = Profile::FromBrowserContext(context);
-    auto mock = std::make_unique<MockAimEligibilityService>(
-        CHECK_DEREF(profile->GetPrefs()), /*template_url_service=*/nullptr,
-        /*url_loader_factory=*/nullptr,
-        IdentityManagerFactory::GetForProfile(profile));
-
-    auto* config = &mock->config();
-    // Configure AimEligibility to recognize Browser Tabs as valid inputs to
-    // populate context selection.
-    config->add_input_type_configs()->set_input_type(
-        omnibox::INPUT_TYPE_BROWSER_TAB);
-    config->add_input_type_configs()->set_input_type(
-        omnibox::INPUT_TYPE_LENS_IMAGE);
-    config->add_input_type_configs()->set_input_type(
-        omnibox::INPUT_TYPE_LENS_FILE);
-
-    ON_CALL(*mock, GetSearchboxConfig()).WillByDefault(testing::Return(config));
-
-    ON_CALL(*mock, IsAimUrl(_, _))
-        .WillByDefault(
-            [](const GURL& url,
-               std::optional<contextual_tasks::HostOverride> host_override) {
-              return url.host().find(kMockAimPageHost) != std::string::npos;
-            });
-
-    // Satisfy the native navigation interception checks.
-    ON_CALL(*mock, HasAimUrlParams(_)).WillByDefault(testing::Return(true));
-    ON_CALL(*mock, IsCobrowseEligible()).WillByDefault(testing::Return(true));
-    ON_CALL(*mock, IsAimEligible()).WillByDefault(testing::Return(true));
-    ON_CALL(*mock, RegisterEligibilityChangedCallback(_))
-        .WillByDefault([](base::RepeatingClosure) {
-          return base::CallbackListSubscription();
-        });
-
-    return mock;
-  }
-
-  std::unique_ptr<KeyedService> BuildMockContextualTasksUiServiceInstance(
-      content::BrowserContext* context) {
-    Profile* profile = Profile::FromBrowserContext(context);
-    return std::make_unique<MockContextualTasksUiService>(
-        profile,
-        contextual_tasks::ContextualTasksServiceFactory::GetForProfile(profile),
-        AimEligibilityServiceFactory::GetForProfile(profile),
-        IdentityManagerFactory::GetForProfile(profile));
-  }
-
-  MockAimEligibilityService* GetMockAimEligibilityService(Profile* profile) {
-    auto* service = AimEligibilityServiceFactory::GetForProfile(profile);
-    return static_cast<MockAimEligibilityService*>(service);
-  }
-
   void SetUpOnMainThread() override {
-    TestTabContextualizationController::screenshot_color_ = SK_ColorRED;
-    InteractiveBrowserTest::SetUpOnMainThread();
-
-    browser()->GetProfile()->GetPrefs()->SetBoolean(
-        lens::prefs::kLensSharingPageScreenshotEnabled, true);
-    browser()->GetProfile()->GetPrefs()->SetBoolean(
-        lens::prefs::kLensSharingPageContentEnabled, true);
-
-    host_resolver()->AddRule("*", "127.0.0.1");
-    ASSERT_TRUE(embedded_test_server()->Start());
-
-    url_loader_interceptor_ = std::make_unique<
-        content::URLLoaderInterceptor>(base::BindLambdaForTesting(
-        [&](content::URLLoaderInterceptor::RequestParams* params) {
-          const GURL& url = params->url_request.url;
-          if (url.host() == kMockAimPageHost &&
-              (url.path() == "/complete/s" ||
-               url.path() == "/complete/search")) {
-            std::string q_param;
-            net::GetValueForKeyInQuery(url, "q", &q_param);
-            std::string query = base::UnescapeURLComponent(
-                q_param, base::UnescapeRule::REPLACE_PLUS_WITH_SPACE);
-            std::string response_json = base::StringPrintf(
-                ")]}'\n" R"(["%s", ["suggestion-1", "suggestion-2"]])",
-                query.c_str());
-            content::URLLoaderInterceptor::WriteResponse(
-                "HTTP/1.1 200 OK\nContent-Type: application/json\n\n",
-                response_json, params->client.get());
-            return true;
-          }
-          if (url.host() == "a.google.com") {
-            content::URLLoaderInterceptor::WriteResponse(
-                "HTTP/1.1 200 OK\nContent-Type: text/html\n\n",
-                "<html><body>Title 1</body></html>", params->client.get());
-            return true;
-          }
-          if (url.host() == kMockAimPageHost) {
-            content::URLLoaderInterceptor::WriteResponse(kMockAimPagePath,
-                                                         params->client.get());
-            return true;
-          }
-          GURL cluster_info_url{
-              lens::features::GetLensOverlayClusterInfoEndpointUrl()};
-          GURL upload_url{lens::features::GetLensOverlayEndpointURL()};
-          GURL composebox_cluster_info_url{
-              lens::features::GetLensComposeboxClusterInfoEndpointUrl()};
-          GURL composebox_upload_url{
-              lens::features::GetLensComposeboxEndpointUrl()};
-          if ((url.host() == cluster_info_url.host() &&
-               url.path() == cluster_info_url.path()) ||
-              (url.host() == composebox_cluster_info_url.host() &&
-               url.path() == composebox_cluster_info_url.path())) {
-            lens::LensOverlayServerClusterInfoResponse response;
-            response.set_search_session_id("test_search_session_id");
-            std::string response_string;
-            CHECK(response.SerializeToString(&response_string));
-            content::URLLoaderInterceptor::WriteResponse(
-                "HTTP/1.1 200 OK\nContent-Type: application/x-protobuf\n\n",
-                response_string, params->client.get());
-            return true;
-          }
-          if ((url.host() == upload_url.host() &&
-               url.path() == upload_url.path()) ||
-              (url.host() == composebox_upload_url.host() &&
-               url.path() == composebox_upload_url.path())) {
-            lens::LensOverlayServerResponse response;
-            std::string response_string;
-            CHECK(response.SerializeToString(&response_string));
-            content::URLLoaderInterceptor::WriteResponse(
-                "HTTP/1.1 200 OK\nContent-Type: application/x-protobuf\n\n",
-                response_string, params->client.get());
-            return true;
-          }
-          return false;
-        }));
-
-    // Mock configured in factory BuildMockAimServiceInstance
+    ContextualTasksInteractiveTestBase::SetUpOnMainThread();
 
     // Explicitly enable user-level content sharing settings to satisfy native
     // FeatureEligibility.
@@ -438,9 +202,8 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
   }
 
   void TearDownOnMainThread() override {
-    url_loader_interceptor_.reset();
     ui::SelectFileDialog::SetFactory(nullptr);
-    InteractiveBrowserTest::TearDownOnMainThread();
+    ContextualTasksInteractiveTestBase::TearDownOnMainThread();
   }
 
   static auto WaitForElementExists(const ui::ElementIdentifier& contents_id,
@@ -713,11 +476,13 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
     return Steps(
         // Wait until the inner WebContents receives the message at the expected
         // index.
-        WaitForJsResult(kInnerWebContentsId,
-                        base::StringPrintf(
-                            "() => window.receivedMessages.filter(buf => new "
-                            "Uint8Array(buf)[0] === 18).length > %d",
-                            expected_message_index)),
+        WaitForJsResult(
+            kInnerWebContentsId,
+            base::StringPrintf(
+                "() => Boolean(Array.isArray(window.receivedMessages) && "
+                "window.receivedMessages.filter(buf => new "
+                "Uint8Array(buf)[0] === 18).length > %d)",
+                expected_message_index)),
         WithElement(kInnerWebContentsId, [expected_media_type,
                                           expected_added_input_name,
                                           expected_message_index,
@@ -873,11 +638,13 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
     return Steps(
         // Wait until the inner WebContents receives the message at the expected
         // index.
-        WaitForJsResult(kInnerWebContentsId,
-                        base::StringPrintf(
-                            "() => window.receivedMessages.filter(buf => new "
-                            "Uint8Array(buf)[0] === 18).length > %d",
-                            expected_message_index)),
+        WaitForJsResult(
+            kInnerWebContentsId,
+            base::StringPrintf(
+                "() => Boolean(Array.isArray(window.receivedMessages) && "
+                "window.receivedMessages.filter(buf => new "
+                "Uint8Array(buf)[0] === 18).length > %d)",
+                expected_message_index)),
         WithElement(kInnerWebContentsId, [expected_query_text,
                                           expected_viewport_image_count,
                                           expected_upload_image_count,
@@ -1111,13 +878,6 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
                            "{ detail: $1, bubbles: true, composed: true}))",
                            transcript));
   }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  std::optional<ui::UserDataFactory::ScopedOverride> tab_context_override_;
-  std::optional<ui::UserDataFactory::ScopedOverride>
-      lens_search_controller_override_;
-  std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
 
  private:
   gfx::ScopedAnimationDurationScaleMode disable_animations_{
@@ -1739,13 +1499,15 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
 class ContextualTasksInteractiveUiTestWithChips
     : public ContextualTasksInteractiveUiTest {
  public:
-  ContextualTasksInteractiveUiTestWithChips() {
-    scoped_feature_list_chips_.InitAndDisableFeature(
-        omnibox::kTabFaviconChipsToCoins);
-  }
+  ContextualTasksInteractiveUiTestWithChips() = default;
+  ~ContextualTasksInteractiveUiTestWithChips() override = default;
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_chips_;
+  void SetUpFeatureList() override {
+    auto enabled = GetDefaultEnabledFeatures();
+    auto disabled = GetDefaultDisabledFeatures();
+    disabled.push_back(omnibox::kTabFaviconChipsToCoins);
+    feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTestWithChips,
@@ -1926,12 +1688,18 @@ class ContextualTasksInteractiveUiTestParameterized
     : public ContextualTasksInteractiveUiTest,
       public testing::WithParamInterface<bool> {
  public:
-  ContextualTasksInteractiveUiTestParameterized() {
+  ContextualTasksInteractiveUiTestParameterized() = default;
+  ~ContextualTasksInteractiveUiTestParameterized() override = default;
+
+  void SetUpFeatureList() override {
+    auto enabled = GetDefaultEnabledFeatures();
+    auto disabled = GetDefaultDisabledFeatures();
     if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(kAimTriggeredThreadLinks);
+      enabled.push_back({kAimTriggeredThreadLinks, {}});
     } else {
-      scoped_feature_list_.InitAndDisableFeature(kAimTriggeredThreadLinks);
+      disabled.push_back(kAimTriggeredThreadLinks);
     }
+    feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -1999,7 +1767,6 @@ class ContextualTasksInteractiveUiTestParameterized
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   content::ContentMockCertVerifier mock_cert_verifier_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
@@ -2136,6 +1903,10 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksInteractiveUiTestParameterized,
 // 3) Verifies the Contextual Tasks tab navigates to the opened URL.
 IN_PROC_BROWSER_TEST_P(ContextualTasksInteractiveUiTestParameterized,
                        WindowOpenSelf) {
+  if (!GetParam()) {
+    GTEST_SKIP() << "WindowOpenSelf target=_self tab navigation requires "
+                    "kAimTriggeredThreadLinks";
+  }
   const GURL kInterceptionUrl("https://www.google.com/search?udm=50");
   const GURL kTargetUrl("https://a.google.com/title1.html");
 
@@ -2468,13 +2239,17 @@ INSTANTIATE_TEST_SUITE_P(All,
 class ContextualTasksInteractiveUiTestWithAaiOnlyForModalityChipsDisabled
     : public ContextualTasksInteractiveUiTest {
  public:
-  ContextualTasksInteractiveUiTestWithAaiOnlyForModalityChipsDisabled() {
-    scoped_feature_list_aai_disabled_.InitAndDisableFeature(
-        lens::features::kLensOnlySendAaiForModalityChips);
-  }
+  ContextualTasksInteractiveUiTestWithAaiOnlyForModalityChipsDisabled() =
+      default;
+  ~ContextualTasksInteractiveUiTestWithAaiOnlyForModalityChipsDisabled()
+      override = default;
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_aai_disabled_;
+  void SetUpFeatureList() override {
+    auto enabled = GetDefaultEnabledFeatures();
+    auto disabled = GetDefaultDisabledFeatures();
+    disabled.push_back(lens::features::kLensOnlySendAaiForModalityChips);
+    feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(
@@ -2629,21 +2404,27 @@ class ContextualTasksRecontextUiTest
     : public ContextualTasksInteractiveUiTest,
       public testing::WithParamInterface<bool> {
  public:
-  ContextualTasksRecontextUiTest() {
+  ContextualTasksRecontextUiTest() = default;
+  ~ContextualTasksRecontextUiTest() override = default;
+
+  void SetUpFeatureList() override {
+    auto disabled = GetDefaultDisabledFeatures();
     if (GetParam()) {
-      // Explicitly disable `kContextualTasks` here to override the base
-      // class (ContextualTasksInteractiveUiTest) which enables it.
-      scoped_feature_list_.InitWithFeatures(
-          {kContextualTasksSidePanel}, {kContextualTasks});
+      std::vector<base::test::FeatureRefAndParams> enabled;
+      for (const auto& f : GetDefaultEnabledFeatures()) {
+        if (&f.feature.get() != &kContextualTasks) {
+          enabled.push_back(f);
+        }
+      }
+      disabled.push_back(kContextualTasks);
+      enabled.push_back({kContextualTasksSidePanel, {}});
+      feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
     } else {
-      // `kContextualTasks` is already enabled by the base class.
-      scoped_feature_list_.InitWithFeatures(
-          {}, {kContextualTasksSidePanel});
+      auto enabled = GetDefaultEnabledFeatures();
+      disabled.push_back(kContextualTasksSidePanel);
+      feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
     }
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(ContextualTasksRecontextUiTest,
@@ -2703,7 +2484,26 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksRecontextUiTest,
       // Turn 1: Issue a query from the Lens Overlay Contextual Searchbox entry
       // point.
       InSameContext(
-          WaitForShow(LensOverlayController::kOverlayId),
+          WaitForShow(LensOverlayController::kOverlayId), Do([&]() {
+            content::WebContents* web_contents =
+                browser()->tab_strip_model()->GetActiveWebContents();
+            auto* lens_controller =
+                LensSearchController::FromTabWebContents(web_contents);
+            auto* query_router = static_cast<lens::FakeLensQueryFlowRouter*>(
+                lens_controller->query_router());
+            CHECK(query_router);
+            auto* session_handle = static_cast<
+                contextual_search::MockContextualSearchSessionHandle*>(
+                query_router->GetContextualSearchSessionHandle());
+            CHECK(session_handle);
+            ON_CALL(*session_handle,
+                    CreateSearchUrl(::testing::_, ::testing::_))
+                .WillByDefault(::testing::WithArg<1>([](base::OnceCallback<void(
+                                                            GURL)> callback) {
+                  std::move(callback).Run(GURL(
+                      "https://www.google.com/search?q=first+query&udm=50"));
+                }));
+          }),
           WaitForElementExists(kOverlayId, kPathToOverlaySearchboxInput),
           FocusWebContents(kOverlayId),
           ExecuteJsAt(kOverlayId, kPathToOverlaySearchboxInput,
@@ -3053,19 +2853,26 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
 class ContextualTasksCopyUrlTest : public ContextualTasksInteractiveUiTest,
                                    public testing::WithParamInterface<bool> {
  public:
-  ContextualTasksCopyUrlTest() {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-    std::vector<base::test::FeatureRef> features = {
+  ContextualTasksCopyUrlTest() = default;
+  ~ContextualTasksCopyUrlTest() override = default;
+
+  void SetUpFeatureList() override {
+    auto enabled = GetDefaultEnabledFeatures();
+    auto disabled = GetDefaultDisabledFeatures();
+    std::vector<base::test::FeatureRef> webui_features = {
         features::kInitialWebUI, features::kWebUILocationBar,
         omnibox::internal::kWebUIOmniboxAimPopup};
     if (GetParam()) {
-      enabled_features = features;
+      std::erase(disabled, omnibox::internal::kWebUIOmniboxAimPopup);
+      for (const auto& f : webui_features) {
+        enabled.push_back({*f, {}});
+      }
     } else {
-      disabled_features = features;
+      for (const auto& f : webui_features) {
+        disabled.push_back(f);
+      }
     }
-    copy_url_feature_list_.InitWithFeatures(enabled_features,
-                                            disabled_features);
+    feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
   }
 
   views::WebView* GetWebUIToolbarWebView() {
@@ -3109,8 +2916,6 @@ class ContextualTasksCopyUrlTest : public ContextualTasksInteractiveUiTest,
     }
   }
 
- private:
-  base::test::ScopedFeatureList copy_url_feature_list_;
 };
 
 // TODO(crbug.com/542608217): Disable on Linux MSan due to failure/flakiness.
