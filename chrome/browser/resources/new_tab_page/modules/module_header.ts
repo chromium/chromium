@@ -58,16 +58,6 @@ export class ModuleHeaderElement extends CrLitElement {
   accessor moreActionsText: string = '';
   accessor hideCustomize: boolean = false;
 
-  private hideDismissAction_: boolean =
-      loadTimeData.getBoolean('hideDismissModules');
-
-  protected visibleMenuItems_(): MenuItem[] {
-    if (this.hideDismissAction_) {
-      return this.menuItems.filter(item => item.action !== 'dismiss');
-    }
-    return this.menuItems;
-  }
-
   protected onButtonClick_(e: Event) {
     const action = (e.currentTarget as HTMLElement).dataset['action'];
     assert(action);

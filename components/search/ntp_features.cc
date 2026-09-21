@@ -303,10 +303,6 @@ BASE_FEATURE(kNtpFeatureOptimizationShortcutsRemoval,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// If enabled, the dismiss module buttons will be removed from the NTP modules.
-BASE_FEATURE(kNtpFeatureOptimizationDismissModulesRemoval,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, will support animated Doodles on the NTP.
 BASE_FEATURE(kNtpAnimatedDoodles, base::FEATURE_ENABLED_BY_DEFAULT);
 

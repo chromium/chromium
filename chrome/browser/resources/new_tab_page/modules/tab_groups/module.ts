@@ -131,15 +131,6 @@ export class TabGroupsModuleElement extends TabGroupsModuleElementBase {
   protected getMenuItems_(): MenuItem[] {
     return [
       {
-        action: 'dismiss',
-        icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-            'modules:visibility-off' :
-            'modules:visibility_off-old',
-        text: this.i18nRecursive(
-            '', 'modulesDismissForHoursButtonText',
-            'tabGroupsModuleDismissHours'),
-      },
-      {
         action: 'disable',
         icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
             'modules:block' :
@@ -164,14 +155,6 @@ export class TabGroupsModuleElement extends TabGroupsModuleElementBase {
   protected onDisableButtonClick_() {
     this.fire('disable-module', {
       message: this.i18n('modulesTabGroupsDisableToastMessage'),
-    });
-  }
-
-  protected onDismissButtonClick_() {
-    this.handler_.dismissModule();
-    this.fire('dismiss-module-instance', {
-      message: this.i18n('modulesTabGroupsDismissToastMessage'),
-      restoreCallback: () => this.handler_.restoreModule(),
     });
   }
 

@@ -22,12 +22,6 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
   let handler: TestMock<PageHandlerRemote>;
   let metrics: MetricsTracker;
 
-  suiteSetup(() => {
-    loadTimeData.overrideValues({
-      hideDismissModules: false,
-    });
-  });
-
   setup(() => {
     handler = installMock(
         PageHandlerRemote,
@@ -347,41 +341,6 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     assertEquals(
         loadTimeData.getString('modulesTabGroupsDisableToastMessage'),
         detail.message);
-  });
-
-  test('action menu - dismiss and restore module', async () => {
-    // Arrange.
-    const module = await createModule([{
-      id: '0',
-      color: Color.kBlue,
-      title: 'Tab Group',
-      updateTime: 'Recently used',
-      deviceName: 'Test Device',
-      faviconUrls: ['https://www.google.com'],
-      totalTabCount: 1,
-      isSharedTabGroup: false,
-    }]);
-    assertTrue(!!module);
-
-    // Act.
-    const whenFired = eventToPromise('dismiss-module-instance', module);
-    const headerElement = module.shadowRoot.querySelector('ntp-module-header');
-    assertTrue(!!headerElement);
-    headerElement.dispatchEvent(new Event('dismiss-button-click'));
-
-    // Assert.
-    const {detail} = await whenFired;
-    assertEquals(
-        loadTimeData.getString('modulesTabGroupsDismissToastMessage'),
-        detail.message);
-    assertTrue(!!detail.restoreCallback);
-    assertEquals(1, handler.getCallCount('dismissModule'));
-
-    // Act.
-    detail.restoreCallback();
-
-    // Assert.
-    assertEquals(1, handler.getCallCount('restoreModule'));
   });
 
   test('create new tab group from the footer button', async () => {

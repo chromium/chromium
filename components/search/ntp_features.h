@@ -95,7 +95,6 @@ BASE_DECLARE_FEATURE(kNtpTabGroupsModule);
 BASE_DECLARE_FEATURE(kNtpTabGroupsModuleZeroState);
 BASE_DECLARE_FEATURE(kNtpFeatureOptimizationModuleRemoval);
 BASE_DECLARE_FEATURE(kNtpFeatureOptimizationShortcutsRemoval);
-BASE_DECLARE_FEATURE(kNtpFeatureOptimizationDismissModulesRemoval);
 BASE_DECLARE_FEATURE(kNtpAnimatedDoodles);
 BASE_DECLARE_FEATURE(kNtpDoodleMurals);
 BASE_DECLARE_FEATURE(kLightningTakeoverEdition);

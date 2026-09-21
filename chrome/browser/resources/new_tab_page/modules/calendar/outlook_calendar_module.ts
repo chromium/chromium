@@ -10,7 +10,6 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {CalendarEvent} from '../../calendar_data.mojom-webui.js';
 import {I18nMixinLit, loadTimeData} from '../../i18n_setup.js';
-import type {OutlookCalendarPageHandlerRemote} from '../../outlook_calendar.mojom-webui.js';
 import {ParentTrustedDocumentProxy} from '../microsoft_auth_frame_connector.js';
 import {ModuleDescriptor} from '../module_descriptor.js';
 import type {MenuItem, ModuleHeaderElement} from '../module_header.js';
@@ -50,25 +49,13 @@ export class OutlookCalendarModuleElement extends
   protected accessor events_: CalendarEvent[] = [];
   protected accessor showInfoDialog_: boolean = false;
 
-  private handler_: OutlookCalendarPageHandlerRemote;
-
   constructor(events: CalendarEvent[]) {
     super();
-    this.handler_ = OutlookCalendarProxyImpl.getInstance().handler;
     this.events_ = events;
   }
 
   protected getMenuItems_(): MenuItem[] {
     return [
-      {
-        action: 'dismiss',
-        icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-            'modules:visibility-off' :
-            'modules:visibility_off-old',
-        text: this.i18nRecursive(
-            '', 'modulesDismissForHoursButtonText',
-            'calendarModuleDismissHours'),
-      },
       {
         action: 'disable',
         icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
@@ -112,14 +99,6 @@ export class OutlookCalendarModuleElement extends
 
   protected onInfoDialogClose_() {
     this.showInfoDialog_ = false;
-  }
-
-  protected onDismissButtonClick_() {
-    this.handler_.dismissModule();
-    this.fire('dismiss-module-instance', {
-      message: this.i18n('modulesOutlookCalendarDismissToastMessage'),
-      restoreCallback: () => this.handler_.restoreModule(),
-    });
   }
 
   protected onSignoutButtonClick_() {

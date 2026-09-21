@@ -7496,13 +7496,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpSimplificationBookmarkBarDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kNtpSimplificationBookmarkBar)},
 
-    {"ntp-feature-optimization-dismiss-modules-removal",
-     flag_descriptions::kNtpFeatureOptimizationDismissModulesRemovalName,
-     flag_descriptions::kNtpFeatureOptimizationDismissModulesRemovalDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         ntp_features::kNtpFeatureOptimizationDismissModulesRemoval)},
-
     {"ntp-footer", flag_descriptions::kNtpFooterName,
      flag_descriptions::kNtpFooterDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kNtpFooter)},

@@ -7013,12 +7013,6 @@ inline constexpr char kNtpDummyModulesDescription[] =
     "Adds dummy modules to New Tab Page when 'NTP Modules Redesigned' is "
     "enabled.";
 
-inline constexpr char kNtpFeatureOptimizationDismissModulesRemovalName[] =
-    "NTP Feature Optimization Dismiss Modules Removal";
-inline constexpr char
-    kNtpFeatureOptimizationDismissModulesRemovalDescription[] =
-        "Removes the dismiss module buttons from the NTP modules.";
-
 inline constexpr char kNtpFeatureOptimizationModuleRemovalName[] =
     "NTP Feature Optimization Module Removal";
 inline constexpr char kNtpFeatureOptimizationModuleRemovalDescription[] =

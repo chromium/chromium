@@ -6320,7 +6320,6 @@
                         "StaleModulesCountThreshold": "14"
                     },
                     "enable_features": [
-                        "NtpFeatureOptimizationDismissModulesRemoval",
                         "NtpFeatureOptimizationModuleRemoval"
                     ]
                 }

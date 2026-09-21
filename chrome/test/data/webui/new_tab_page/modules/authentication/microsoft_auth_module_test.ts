@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {DisableModuleEvent, DismissModuleInstanceEvent, MicrosoftAuthModuleElement} from 'chrome://new-tab-page/lazy_load.js';
+import type {DisableModuleEvent, MicrosoftAuthModuleElement} from 'chrome://new-tab-page/lazy_load.js';
 import {microsoftAuthModuleDescriptor, MicrosoftAuthProxyImpl, ParentTrustedDocumentProxy} from 'chrome://new-tab-page/lazy_load.js';
 import {AuthType, MicrosoftAuthPageHandlerRemote, MicrosoftAuthUntrustedDocumentRemote} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -25,7 +25,6 @@ suite('MicrosoftAuthModule', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
       modulesMicrosoftAuthName: modulesMicrosoftAuthName,
-      hideDismissModules: false,
     });
 
     handler = installMock(
@@ -65,29 +64,6 @@ suite('MicrosoftAuthModule', () => {
     assertEquals(
         ('You won\'t see ' + modulesMicrosoftAuthName + ' on this page again'),
         event.detail.message);
-  });
-
-  test('dismisses and restores module', async () => {
-    // Arrange.
-    await createMicrosoftAuthElement();
-
-    // Act.
-    const whenFired =
-        eventToPromise('dismiss-module-instance', microsoftAuthModule);
-    microsoftAuthModule.$.moduleHeader.dispatchEvent(
-        new Event('dismiss-button-click'));
-
-    // Assert.
-    const event: DismissModuleInstanceEvent = await whenFired;
-    assertEquals((modulesMicrosoftAuthName + ' hidden'), event.detail.message);
-    assertTrue(!!event.detail.restoreCallback);
-    assertEquals(1, handler.getCallCount('dismissModule'));
-
-    // Act.
-    event.detail.restoreCallback();
-
-    // Assert.
-    assertEquals(1, handler.getCallCount('restoreModule'));
   });
 
   test('clicking sign in sends message to child document', async () => {

@@ -640,25 +640,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
   source->AddLocalizedStrings(kStrings);
 
   source->AddBoolean(
-      "hideDismissModules",
-      base::FeatureList::IsEnabled(
-          ntp_features::kNtpFeatureOptimizationDismissModulesRemoval));
-  source->AddBoolean(
       "showDriveModuleSeeMoreLink",
       base::FeatureList::IsEnabled(ntp_features::kNtpDriveModuleLink));
-
-  source->AddString(
-      "calendarModuleDismissHours",
-      base::NumberToString(
-          ntp_features::kNtpCalendarModuleWindowEndDeltaParam.Get().InHours()));
-  source->AddString(
-      "fileSuggestionDismissHours",
-      base::NumberToString(DriveService::kDismissDuration.InHours()));
-  source->AddString(
-      "tabGroupsModuleDismissHours",
-      base::NumberToString(
-          ntp_features::kNtpTabGroupsModuleWindowEndDeltaParam.Get()
-              .InHours()));
 
   bool microsoft_module_enabled = IsMicrosoftModuleEnabledForProfile(profile);
   source->AddBoolean("microsoftModuleEnabled", microsoft_module_enabled);

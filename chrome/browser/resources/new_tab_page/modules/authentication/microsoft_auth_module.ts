@@ -9,7 +9,6 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {I18nMixinLit, loadTimeData} from '../../i18n_setup.js';
 import {recordEnumeration} from '../../metrics_utils.js';
-import type {MicrosoftAuthPageHandlerRemote} from '../../microsoft_auth.mojom-webui.js';
 import {AuthType} from '../../ntp_microsoft_auth_shared_ui.mojom-webui.js';
 import {ParentTrustedDocumentProxy} from '../microsoft_auth_frame_connector.js';
 import {ModuleDescriptor} from '../module_descriptor.js';
@@ -47,22 +46,8 @@ export class MicrosoftAuthModuleElement extends MicrosoftAuthModuleElementBase {
     return getHtml.bind(this)();
   }
 
-  private handler_: MicrosoftAuthPageHandlerRemote;
-
-  constructor() {
-    super();
-    this.handler_ = MicrosoftAuthProxyImpl.getInstance().handler;
-  }
-
   protected getMenuItems_(): MenuItem[] {
     return [
-      {
-        action: 'dismiss',
-        icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-            'modules:visibility-off' :
-            'modules:visibility_off-old',
-        text: this.i18n('modulesMicrosoftAuthDismiss'),
-      },
       {
         action: 'disable',
         icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
@@ -84,16 +69,6 @@ export class MicrosoftAuthModuleElement extends MicrosoftAuthModuleElementBase {
       },
     });
     this.dispatchEvent(disableEvent);
-  }
-
-  protected onDismissButtonClick_() {
-    this.handler_.dismissModule();
-    this.fire('dismiss-module-instance', {
-      message: loadTimeData.getStringF(
-          'dismissModuleToastMessage',
-          loadTimeData.getString('modulesMicrosoftAuthName')),
-      restoreCallback: () => this.handler_.restoreModule(),
-    });
   }
 
   // Cause Login flow to begin within auth iframe.

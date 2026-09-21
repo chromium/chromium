@@ -55,15 +55,6 @@ export class DriveModuleElement extends DriveModuleElementBase {
   protected getMenuItems_(): MenuItem[] {
     return [
       {
-        action: 'dismiss',
-        icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-            'modules:visibility-off' :
-            'modules:visibility_off-old',
-        text: this.i18nRecursive(
-            '', 'modulesDismissForHoursButtonText',
-            'fileSuggestionDismissHours'),
-      },
-      {
         action: 'disable',
         icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
             'modules:block' :
@@ -91,16 +82,6 @@ export class DriveModuleElement extends DriveModuleElementBase {
       },
     });
     this.dispatchEvent(disableEvent);
-  }
-
-  protected onDismissButtonClick_() {
-    FileProxy.getHandler().dismissModule();
-    this.fire('dismiss-module-instance', {
-      message: loadTimeData.getStringF(
-          'dismissModuleToastMessage',
-          loadTimeData.getString('modulesFilesSentence')),
-      restoreCallback: () => FileProxy.getHandler().restoreModule(),
-    });
   }
 
   protected onInfoButtonClick_() {
