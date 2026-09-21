@@ -112,6 +112,9 @@
 using InfoBarType = infobar_internals::mojom::InfoBarType;
 using InfoBarEntry = infobar_internals::mojom::InfoBarEntry;
 using InfoBarEntryPtr = infobar_internals::mojom::InfoBarEntryPtr;
+using InfoBarAction = infobar_internals::mojom::InfoBarAction;
+using InfoBarActionEntry = infobar_internals::mojom::InfoBarActionEntry;
+using InfoBarActionEntryPtr = infobar_internals::mojom::InfoBarActionEntryPtr;
 
 namespace {
 
@@ -178,17 +181,30 @@ InfoBarInternalsHandler::InfoBarInternalsHandler(
 
 InfoBarInternalsHandler::~InfoBarInternalsHandler() = default;
 
-void InfoBarInternalsHandler::TriggerInfoBar(InfoBarType type,
-                                             TriggerInfoBarCallback callback) {
-  std::move(callback).Run(TriggerInfoBarInternal(type));
+void InfoBarInternalsHandler::PerformInfoBarAction(
+    InfoBarType type,
+    InfoBarAction action,
+    PerformInfoBarActionCallback callback) {
+  std::move(callback).Run(PerformInfoBarActionInternal(type, action));
 }
 
 void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
   // Please keep the entries in alphabetical order, based on the type.
   std::vector<InfoBarEntryPtr> infobar_list;
-  auto add_entry = [&infobar_list](InfoBarType type, const std::string& name,
-                                   const std::string& description) {
-    infobar_list.emplace_back(InfoBarEntry::New(type, name, description));
+  // Adds an infobar exposing a single button. `action` defaults to showing the
+  // infobar on the active tab (suitable for tab-scoped infobar);
+  // pass kShowGlobally for infobars shown in global scope.
+  // `action` describes what PerformInfoBarActionInternal() does for
+  // this type - keep the two in sync.
+  auto add_entry = [&infobar_list](
+                       InfoBarType type, const std::string& name,
+                       const std::string& description,
+                       InfoBarAction action = InfoBarAction::kShowForCurrentTab,
+                       const std::string& label = "Trigger") {
+    std::vector<InfoBarActionEntryPtr> actions;
+    actions.emplace_back(InfoBarActionEntry::New(action, label));
+    infobar_list.emplace_back(
+        InfoBarEntry::New(type, name, description, std::move(actions)));
   };
   if (base::FeatureList::IsEnabled(features::kInfoBarInlineLinks)) {
     add_entry(InfoBarType::kAlternateNav, "Alternate Nav",
@@ -201,7 +217,8 @@ void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
 #if BUILDFLAG(CHROME_FOR_TESTING)
   add_entry(InfoBarType::kChromeForTesting, "Chrome for Testing",
             "The Chrome for Testing infobar warns users that this version is "
-            "only for automated testing.");
+            "only for automated testing.",
+            InfoBarAction::kShowGlobally);
 #endif
   add_entry(InfoBarType::kCollectedCookies, "Collected Cookies",
             "The Collected Cookies infobar is shown after the user has changed "
@@ -235,7 +252,8 @@ void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
   add_entry(InfoBarType::kExtensionDevTools, "Extension DevTools",
             "The Extension DevTools infobar is used to globally warn users "
             "that an extension is debugging the browser. This trigger shows "
-            "the infobar.");
+            "the infobar.",
+            InfoBarAction::kShowGlobally);
 
   add_entry(InfoBarType::kGoogleApiKeys, "Google API Keys",
             "The Google API Keys infobar warns users when Google API keys are "
@@ -262,7 +280,8 @@ void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
             "The Keystone infobar asks the user to promote the updater to "
             "system scope. This trigger resets any browser state that prevents "
             "the infobar from being shown, then shows the infobar. This can "
-            "only be triggered on Mac.");
+            "only be triggered on Mac.",
+            InfoBarAction::kShowGlobally);
 #endif
 
   add_entry(InfoBarType::kKnownInterception, "Known Interception Disclosure",
@@ -273,7 +292,8 @@ void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
   add_entry(InfoBarType::kLocalTestPoliciesApplied,
             "Local Test Policies Applied",
             "The Local Test Policies Applied infobar warns the user that local "
-            "test policies are active.");
+            "test policies are active.",
+            InfoBarAction::kShowGlobally);
 
   add_entry(InfoBarType::kObsoleteSystem, "Obsolete System",
             "The Obsolete System infobar warns users when their operating "
@@ -317,7 +337,14 @@ void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
   std::move(callback).Run(std::move(infobar_list));
 }
 
-bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
+bool InfoBarInternalsHandler::PerformInfoBarActionInternal(
+    InfoBarType type,
+    InfoBarAction action) {
+  // Single-action infobars execute their default trigger in the switch below.
+  // When an infobar supports multiple actions (e.g. ShowGlobally vs
+  // ShowForCurrentTab, or Hide), its case must branch on `action`, and
+  // RequirementsFor() must cover all prerequisites needed across those paths.
+
   BrowserWindowInterface* const bwi =
       GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   Profile* const profile = bwi ? bwi->GetProfile() : nullptr;

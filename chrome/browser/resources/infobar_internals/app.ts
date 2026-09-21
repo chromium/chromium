@@ -22,7 +22,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {browserProxyFactory} from './infobar_internals.mojom-webui.js';
-import type {InfoBarEntry, InfoBarType} from './infobar_internals.mojom-webui.js';
+import type {InfoBarAction, InfoBarEntry, InfoBarType} from './infobar_internals.mojom-webui.js';
 
 // Persists the dropdown selection across reloads.
 const SELECTION_STORAGE_KEY = 'infobar-internals-selected';
@@ -183,7 +183,7 @@ export class InfobarInternalsAppElement extends CrLitElement {
             .map(infobar => infobar.type);
   }
 
-  protected async onTriggerClick(e: Event) {
+  protected async onActionClick(e: Event) {
     const target = e.currentTarget as HTMLElement;
     const typeStr = target.dataset['type'];
     assert(typeStr);
@@ -191,20 +191,28 @@ export class InfobarInternalsAppElement extends CrLitElement {
     const typeNum = Number(typeStr);
     assert(!Number.isNaN(typeNum));
 
+    const actionStr = target.dataset['action'];
+    assert(actionStr);
+
+    const actionNum = Number(actionStr);
+    assert(!Number.isNaN(actionNum));
+
     const name = target.dataset['name'] || 'Infobar';
 
-    const type = typeNum as InfoBarType;
-    await this.trigger(type, name);
+    await this.performAction(
+        typeNum as InfoBarType, actionNum as InfoBarAction, name);
   }
 
-  private async trigger(id: InfoBarType, name: string) {
+  private async performAction(
+      id: InfoBarType, action: InfoBarAction, name: string) {
     const {success} =
-        await browserProxyFactory.getInstance().handler.triggerInfoBar(id);
+        await browserProxyFactory.getInstance().handler.performInfoBarAction(
+            id, action);
     if (success) {
       this.toastMessage = `Triggered "${name}"`;
     } else {
       this.toastMessage = `Failed to trigger "${name}"`;
-      console.warn('Failed to trigger infobar', id);
+      console.warn('Failed to perform infobar action', id, action);
     }
     this.$.toast.show();
   }

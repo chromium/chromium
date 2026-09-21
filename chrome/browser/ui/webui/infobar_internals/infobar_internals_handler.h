@@ -25,13 +25,16 @@ class InfoBarInternalsHandler final
 
   // infobar_internals::mojom::PageHandler:
   void GetInfoBars(GetInfoBarsCallback callback) override;
-  void TriggerInfoBar(infobar_internals::mojom::InfoBarType type,
-                      TriggerInfoBarCallback callback) override;
+  void PerformInfoBarAction(infobar_internals::mojom::InfoBarType type,
+                            infobar_internals::mojom::InfoBarAction action,
+                            PerformInfoBarActionCallback callback) override;
 
  private:
   // Returns true on success, false if the requested type is unsupported or the
-  // triggering fail.
-  bool TriggerInfoBarInternal(infobar_internals::mojom::InfoBarType type);
+  // action fails.
+  bool PerformInfoBarActionInternal(
+      infobar_internals::mojom::InfoBarType type,
+      infobar_internals::mojom::InfoBarAction action);
 
   mojo::Receiver<infobar_internals::mojom::PageHandler> receiver_;
 

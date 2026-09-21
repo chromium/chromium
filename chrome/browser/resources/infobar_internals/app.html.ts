@@ -91,13 +91,16 @@ export function getHtml(this: InfobarInternalsAppElement) {
               <div class="infobar-description">${infobar.description}</div>
             </div>
             <div class="actions">
-              <cr-button
-                class="action-button"
-                data-type="${infobar.type}"
-                data-name="${infobar.name}"
-                @click="${this.onTriggerClick}">
-                Trigger
-              </cr-button>
+              ${infobar.actions.map((action, index) => html`
+                <cr-button
+                  class="${index === 0 ? 'action-button' : ''}"
+                  data-type="${infobar.type}"
+                  data-name="${infobar.name}"
+                  data-action="${action.action}"
+                  @click="${this.onActionClick}">
+                  ${action.label}
+                </cr-button>
+              `)}
             </div>
           </div>
         `)}
