@@ -1458,13 +1458,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.CredentialRequest.ThirdParty.Store2"
-    enum="CredentialManagerStoreResult" expires_after="2026-02-09">
+    enum="CredentialManagerStoreResult" expires_after="2027-09-30">
   <owner>izuzic@google.com</owner>
   <owner>anki-team@google.com</owner>
   <summary>
     Log the result of the call to the Credential Manager API on Android when
     storing a credential. Logged only on Android when Chrome uses platform
-    Autofill.
+    Autofill. Warning: this histogram was expired from 2026-02-09 to 2027-09-30;
+    data may be missing.
   </summary>
 </histogram>
 
