@@ -488,7 +488,8 @@ void QueryContextualizer::OnTabContextualizationFetched(
 
   page_content_data->is_implicit_upload =
       tab_update.is_recontextualization || tab_update.is_auto_suggested ||
-      tab_update.is_contextual_searchbox_first_turn;
+      tab_update.is_contextual_searchbox_first_turn ||
+      tab_update.is_smart_selection;
   page_content_data->was_smart_tab_selection = tab_update.is_smart_selection;
 
   if (tab_update.is_auto_suggested) {
@@ -594,9 +595,10 @@ QueryContextualizer::GetTabsToUpdate(
       SessionID session_id = delegate_->GetTabSessionId(id);
 
       if (GetMatchingAttachment(*context, url, session_id)) {
+        bool is_smart = std::ranges::contains(smart_tabs_to_contextualize, id);
         tabs_to_update.push_back(
             {id, /*is_recontextualization=*/true,
-             /*is_smart_selection=*/false,
+             /*is_smart_selection=*/is_smart,
              /*is_auto_suggested=*/false,
              /*is_contextual_searchbox_first_turn=*/false});
         added_tabs.insert(id);
@@ -692,6 +694,9 @@ bool QueryContextualizer::CheckIfContextChangedAndPrepareUploadData(
   }
 
   const auto& old_data = *matching_file_info->input_data;
+  if (old_data.was_smart_tab_selection) {
+    page_content_data.was_smart_tab_selection = true;
+  }
   const auto& new_data = page_content_data;
 
   bool page_content_changed = false;

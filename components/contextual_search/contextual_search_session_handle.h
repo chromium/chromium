@@ -98,7 +98,14 @@ class ContextualSearchSessionHandle {
   std::optional<bool> smart_tab_sharing_active() const {
     return smart_tab_sharing_active_;
   }
-  void set_smart_tab_sharing_active(std::optional<bool> active);
+  void set_smart_tab_sharing_active(std::optional<bool> active) {
+    smart_tab_sharing_active_ = active;
+  }
+
+  // Invoked when the user explicitly toggles Smart Tab Sharing in the UI.
+  // Clears active/persisted context tokens and records removed context IDs so
+  // that tab strip underlines clear immediately and the server drops context.
+  void OnSmartTabSharingToggled(bool active);
 
   bool smart_tab_sharing_toggled_since_last_turn() const {
     return smart_tab_sharing_toggled_since_last_turn_;

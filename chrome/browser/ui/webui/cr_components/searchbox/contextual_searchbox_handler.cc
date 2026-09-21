@@ -866,7 +866,7 @@ void ContextualSearchboxHandler::SetSmartTabSharingActive(bool active) {
   smart_tab_sharing_active_for_thread_ = active;
   auto* session_handle = GetContextualSessionHandle();
   if (session_handle) {
-    session_handle->set_smart_tab_sharing_active(active);
+    session_handle->OnSmartTabSharingToggled(active);
   }
   ClearFiles(/*should_block_auto_suggested_tabs=*/true);
   if (input_state_model_) {
@@ -2035,8 +2035,29 @@ void ContextualSearchboxHandler::OnContextUploadStatusChanged(
     contextual_search::ContextUploadStatus context_upload_status,
     const std::optional<contextual_search::ContextUploadErrorType>&
         error_type) {
-  page_->OnContextualInputStatusChanged(context_token, context_upload_status,
-                                        error_type);
+  bool is_implicit_upload = false;
+  if (auto* session_handle = GetContextualSessionHandle()) {
+    if (auto* controller = session_handle->GetController()) {
+      if (const auto* file_info = controller->GetFileInfo(context_token)) {
+        is_implicit_upload = file_info->is_implicit_upload ||
+                             (file_info->input_data &&
+                              file_info->input_data->was_smart_tab_selection);
+      }
+    }
+  }
+
+  // Suppress WebUI error notifications for implicit background uploads (Smart
+  // Tab Sharing / auto-recontextualization). Implicit uploads have no
+  // composebox chip and forwarding errors to WebUI causes composebox_mixin.ts
+  // to display <ntp-error-scrim> and call deleteContext().
+  const bool is_failed_terminal_status =
+      contextual_search::IsTerminalContextStatus(context_upload_status) &&
+      context_upload_status !=
+          contextual_search::ContextUploadStatus::kUploadSuccessful;
+  if (!is_implicit_upload || !is_failed_terminal_status) {
+    page_->OnContextualInputStatusChanged(context_token, context_upload_status,
+                                          error_type);
+  }
 
   if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox) &&
       contextual_search::IsTerminalContextStatus(context_upload_status) &&

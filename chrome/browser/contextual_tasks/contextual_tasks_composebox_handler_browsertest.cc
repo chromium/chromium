@@ -4071,6 +4071,99 @@ IN_PROC_BROWSER_TEST_F(
   mock_ui_->SetSessionHandle(nullptr);
 }
 
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksComposeboxHandlerTestWithContextManagementEnabled,
+    CacheSubmittedTabsOnQuerySubmission_AccumulatesAcrossTurns) {
+  tabs::TabInterface* tab1 =
+      tabs::TabLookupFromWebContents::FromWebContents(web_contents_)->model();
+  ASSERT_NE(tab1, nullptr);
+  SessionID session_id1 =
+      sessions::SessionTabHelper::FromWebContents(tab1->GetContents())
+          ->session_id();
+
+  tabs::TabInterface* tab2 = AddTab(GURL("about:blank#2"));
+  ASSERT_NE(tab2, nullptr);
+  SessionID session_id2 =
+      sessions::SessionTabHelper::FromWebContents(tab2->GetContents())
+          ->session_id();
+
+  auto mock_session = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  mock_ui_->SetSessionHandle(mock_session.get());
+
+  EXPECT_CALL(*mock_session, GetSubmittedContextFileInfos())
+      .WillRepeatedly(
+          testing::Return(std::vector<contextual_search::FileInfo>()));
+
+  SetUpHandler();
+  ASSERT_NE(handler_, nullptr);
+
+  EXPECT_CALL(*mock_ui_, GetTaskId())
+      .WillRepeatedly(testing::ReturnRefOfCopy(std::optional<base::Uuid>()));
+  EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
+      .WillRepeatedly([](std::unique_ptr<
+                          contextual_search::ContextualSearchContextController::
+                              CreateClientToAimRequestInfo> info) {
+        return lens::ClientToAimMessage();
+      });
+  EXPECT_CALL(*mock_ui_, PostAimMessage(testing::_)).Times(2);
+
+  // Initial query submission with tab1.
+  base::Time now = base::Time::Now();
+  contextual_search::FileInfo tab_info1;
+  tab_info1.tab_url = GURL("about:blank#1");
+  tab_info1.tab_title = "About Blank 1";
+  tab_info1.tab_session_id = session_id1;
+  tab_info1.mime_type = lens::MimeType::kHtml;
+  tab_info1.selection_time = now;
+
+  EXPECT_CALL(*mock_session, GetSubmittedContextFileInfos())
+      .WillRepeatedly(
+          testing::Return(std::vector<contextual_search::FileInfo>{tab_info1}));
+
+  EXPECT_CALL(mock_searchbox_page_, SetAimThreadRestoredTabs(testing::_))
+      .WillOnce([&](const std::vector<searchbox::mojom::TabInfoPtr>& tabs) {
+        ASSERT_EQ(tabs.size(), 1u);
+        EXPECT_EQ(tabs[0]->url, GURL("about:blank#1"));
+        EXPECT_EQ(tabs[0]->title, "About Blank 1");
+        EXPECT_EQ(tabs[0]->tab_id, tab1->GetHandle().raw_value());
+      });
+
+  handler_->CreateAndSendQueryMessage("first query",
+                                      /*is_voice_search=*/false);
+  searchbox_page_receiver_.FlushForTesting();
+
+  // Subsequent query submission where session handle returns both persisted
+  // tab1 and newly submitted tab2.
+  contextual_search::FileInfo tab_info2;
+  tab_info2.tab_url = GURL("about:blank#2");
+  tab_info2.tab_title = "About Blank 2";
+  tab_info2.tab_session_id = session_id2;
+  tab_info2.mime_type = lens::MimeType::kHtml;
+  tab_info2.selection_time = now + base::Seconds(5);
+
+  EXPECT_CALL(*mock_session, GetSubmittedContextFileInfos())
+      .WillRepeatedly(testing::Return(
+          std::vector<contextual_search::FileInfo>{tab_info1, tab_info2}));
+
+  EXPECT_CALL(mock_searchbox_page_, SetAimThreadRestoredTabs(testing::_))
+      .WillOnce([&](const std::vector<searchbox::mojom::TabInfoPtr>& tabs) {
+        ASSERT_EQ(tabs.size(), 2u);
+        EXPECT_EQ(tabs[0]->url, GURL("about:blank#1"));
+        EXPECT_EQ(tabs[0]->title, "About Blank 1");
+        EXPECT_EQ(tabs[0]->tab_id, tab1->GetHandle().raw_value());
+        EXPECT_EQ(tabs[1]->url, GURL("about:blank#2"));
+        EXPECT_EQ(tabs[1]->title, "About Blank 2");
+        EXPECT_EQ(tabs[1]->tab_id, tab2->GetHandle().raw_value());
+      });
+
+  handler_->CreateAndSendQueryMessage("second query",
+                                      /*is_voice_search=*/false);
+  searchbox_page_receiver_.FlushForTesting();
+
+  mock_ui_->SetSessionHandle(nullptr);
+}
+
 class ContextualTasksComposeboxHandlerSmartTabSharingTest
     : public ContextualTasksComposeboxHandlerTest {
  public:

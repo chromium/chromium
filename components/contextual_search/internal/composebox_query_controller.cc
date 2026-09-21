@@ -1148,6 +1148,9 @@ void ComposeboxQueryController::StartFileUploadFlow(
       std::make_unique<base::ios::ScopedCriticalAction>("ComposeboxFileUpload");
 #endif
   file_info->file_token = file_token;
+  if (file_info->selection_time.is_null()) {
+    file_info->selection_time = base::Time::Now();
+  }
   if (contextual_input_data->primary_content_type.has_value()) {
     file_info->mime_type = contextual_input_data->primary_content_type.value();
   } else {

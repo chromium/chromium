@@ -2452,6 +2452,8 @@ TEST_F(QueryContextualizerTest,
         EXPECT_EQ(*data->upload_type,
                   lens::LensOverlayContextualInputUploadType::
                       CONTEXTUAL_INPUT_UPLOAD_TYPE_SMART_TAB_SELECTION);
+        EXPECT_TRUE(data->is_implicit_upload);
+        EXPECT_TRUE(data->was_smart_tab_selection);
       });
 
   base::MockCallback<QueryContextualizer::ContextualizedCallback> callback;
