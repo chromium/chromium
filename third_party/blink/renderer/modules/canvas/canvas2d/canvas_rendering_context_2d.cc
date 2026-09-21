@@ -780,7 +780,13 @@ CanvasRenderingContext2D::PaintRenderingResultsToResource(
   }
 
   FlushCanvas(reason);
-  return si_provider->ProduceCanvasResource();
+  auto resource = si_provider->ProduceCanvasResource();
+  if (resource) {
+    CHECK(!resource->CreatesAcceleratedTransferableResources() ||
+          resource->ContextProviderWrapper());
+  }
+
+  return resource;
 }
 
 scoped_refptr<StaticBitmapImage>

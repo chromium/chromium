@@ -349,7 +349,6 @@ Canvas2DResourceProvider::ProduceCanvasResource() {
 
     output_resource->UploadSoftwareRenderingResults(GetSkSurface());
 
-    CHECK(!output_resource->CreatesAcceleratedTransferableResources());
     return output_resource;
   }
 
@@ -361,11 +360,6 @@ Canvas2DResourceProvider::ProduceCanvasResource() {
   // backing SharedImage). Hence, we must make sure that we give up any write
   // access.
   EndWriteAccess();
-
-  if (resource_) {
-    CHECK(resource_->CreatesAcceleratedTransferableResources());
-    CHECK(resource_->ContextProviderWrapper());
-  }
 
   return resource_;
 }
