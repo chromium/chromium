@@ -27,27 +27,6 @@ dependencies {
     buildCompileNoDeps "com.android.tools:sdk-common:${androidToolsVersion}"
     buildCompileNoDeps "com.android.tools:common:${androidToolsVersion}"
     buildCompileNoDeps "com.android.tools.layoutlib:layoutlib-api:${androidToolsVersion}"
-
-    androidTestCompile 'com.google.android.apps.common.testing.accessibility.framework:accessibility-test-framework:4.0.0'
-    androidTestCompile 'com.googlecode.java-diff-utils:diffutils:1.3.0'
-    // Version 1.2 is needed by espresso-web, but we'll newer 1.2.1.
-    androidTestCompile 'org.ccil.cowan.tagsoup:tagsoup:1.2.1'
-
-    // accessibility-test-framework has a phantom dependency on the really old
-    // protobuf runtime which trips our asserts. Manually add dep here but
-    // exclude it in ChromiumDepGraph.
-    androidTestCompile 'com.google.protobuf:protobuf-lite:3.0.0'
-
-    String mockitoVersion = '5.19.0'
-    androidTestCompile "org.mockito:mockito-android:${mockitoVersion}"
-    androidTestCompile "org.mockito:mockito-core:${mockitoVersion}"
-    androidTestCompile "org.mockito:mockito-subclass:${mockitoVersion}"
-
-    // Declared as a top-level dep so that //third_party/byte_buddy can depend
-    // on it. The version must match the byte-buddy that mockito depends on
-    // (see byte-buddy-agent / byte-buddy-android), otherwise gradle resolves
-    // to the higher of the two anyway.
-    androidTestCompile "net.bytebuddy:byte-buddy:1.17.6"
 }
 
 task setUpRepository(type: BuildConfigGenerator) {
