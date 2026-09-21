@@ -130,8 +130,7 @@ class KcerTokenUtils {
                     ObjectHandle pub_key_handle,
                     uint32_t result_code);
 
-  void ImportPkc12DidImportKey(kcer::KeyType key_type,
-                               Pkcs11Id pkcs11_id,
+  void ImportPkc12DidImportKey(Pkcs11Id pkcs11_id,
                                std::vector<CertData> certs_data,
                                bool hardware_backed,
                                bool mark_as_migrated,
@@ -143,8 +142,6 @@ class KcerTokenUtils {
                        std::vector<CertData> in_certs_data,
                        bool in_hardware_backed,
                        bool in_mark_as_migrated,
-                       bool in_multi_cert_import,
-                       KeyType in_key_type,
                        ImportPkcs12Callback in_callback);
     ImportAllCertsTask(ImportAllCertsTask&& other);
     ~ImportAllCertsTask();
@@ -153,8 +150,6 @@ class KcerTokenUtils {
     std::vector<CertData> certs_data;
     const bool hardware_backed;
     const bool mark_as_migrated;
-    const bool multi_cert_import;
-    KeyType key_type;
     ImportPkcs12Callback callback;
     int attemps_left = 5;
   };

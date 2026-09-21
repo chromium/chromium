@@ -2509,13 +2509,6 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   <summary>Tracks the K12 user age classification.</summary>
 </histogram>
 
-<histogram name="ChromeOS.Kcer.KcerPkcs12ImportEvent"
-    enum="KcerPkcs12ImportEvent" expires_after="2026-05-17">
-  <owner>miersh@google.com</owner>
-  <owner>olsa@google.com</owner>
-  <summary>Tracks events related to the import of PKCS#12 files.</summary>
-</histogram>
-
 <histogram name="ChromeOS.Keyboard.HasBacklight" enum="Boolean"
     expires_after="2027-03-01">
   <owner>longbowei@google.com</owner>

@@ -22,7 +22,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "chromeos/ash/components/chaps_util/chaps_util.h"
@@ -30,7 +29,6 @@
 #include "chromeos/ash/components/kcer/chaps/high_level_chaps_client.h"
 #include "chromeos/ash/components/kcer/helpers/key_helper.h"
 #include "chromeos/ash/components/kcer/helpers/pkcs12_validator.h"
-#include "chromeos/ash/components/kcer/kcer_histograms.h"
 #include "chromeos/ash/components/kcer/kcer_token.h"
 #include "chromeos/ash/components/kcer/kcer_utils.h"
 #include "chromeos/ash/components/kcer/key_permissions.pb.h"
@@ -1178,9 +1176,6 @@ void KcerTokenImplNss::ImportPkcs12Cert(Pkcs12Blob pkcs12_blob,
         std::move(pkcs12_blob), std::move(password), hardware_backed,
         mark_as_migrated, std::move(callback)));
   }
-
-  RecordKcerPkcs12ImportUmaEvent(
-      KcerPkcs12ImportEvent::AttemptedPkcs12ChapsImport);
 
   // Block task queue, attach queue unblocking and notification sending to the
   // callback.
