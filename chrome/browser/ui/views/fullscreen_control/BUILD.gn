@@ -27,6 +27,7 @@ source_set("impl") {
     "//chrome/browser/ui/exclusive_access",
     "//chrome/browser/ui/fullscreen",
     "//chrome/browser/ui/views/exclusive_access",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//content/public/browser",
     "//ui/events",
     "//ui/views",

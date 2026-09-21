@@ -73,6 +73,7 @@ source_set("impl") {
     "//chrome/browser/ui/views:media_picker_utils",
     "//chrome/browser/ui/views:title_origin_label",
     "//chrome/browser/ui/views/extensions:security_dialog_tracker",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//components/constrained_window",
     "//components/strings:components_strings",
     "//components/vector_icons",

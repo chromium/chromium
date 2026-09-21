@@ -224,6 +224,7 @@ source_set("test_support") {
     "//chrome/browser/extensions:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/test:dialog",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/toolbar",
     "//chrome/test:test_support_ui",
     "//content/test:test_support",
@@ -286,7 +287,10 @@ source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = []
-  deps = [ "//chrome/browser/ui:browser_window_header" ]
+  deps = [
+    "//chrome/browser/ui:browser_window_header",
+    "//chrome/browser/ui/views/frame:browser_view_header",
+  ]
 
   if (!is_android) {
     sources += [
@@ -432,6 +436,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/ui/tabs:tab_enums",
     "//chrome/browser/ui/toolbar",
     "//chrome/browser/ui/views/controls",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/toolbar",
     "//chrome/common",
     "//chrome/test:test_support",
@@ -552,6 +557,7 @@ source_set("extension_view_utils_impl") {
     ":extensions_toolbar_desktop",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/toolbar",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
     "//content/public/browser",
   ]
@@ -903,6 +909,7 @@ source_set("extension_popup_impl") {
     "//base",
     "//chrome/browser/devtools",
     "//chrome/browser/extensions",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//components/javascript_dialogs",
     "//components/web_modal",
     "//content/public/browser",
@@ -946,6 +953,7 @@ source_set("extensions_toolbar_desktop") {
     ":extensions_views_utils",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/user_education",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
     "//chrome/browser/ui/views/toolbar",
     "//chrome/browser/user_education",

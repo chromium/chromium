@@ -123,6 +123,10 @@ source_set("impl") {
   if (enable_extensions_core) {
     deps += [ "//chrome/browser/extensions" ]
   }
+
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/views/frame:browser_view_header" ]
+  }
 }
 
 source_set("unit_tests") {
@@ -196,6 +200,10 @@ source_set("browser_tests") {
     "//ui/events:test_support",
   ]
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/views/frame:browser_view_header" ]
+  }
 }
 
 source_set("interactive_ui_tests") {
@@ -215,5 +223,9 @@ source_set("interactive_ui_tests") {
 
   if (is_chromeos) {
     deps += [ "//chrome/browser/smart_card" ]
+  }
+
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/views/frame:browser_view_header" ]
   }
 }

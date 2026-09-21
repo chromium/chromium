@@ -51,6 +51,10 @@ source_set("impl") {
     "//ui/native_theme",
     "//ui/views",
   ]
+
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/views/frame:browser_view_header" ]
+  }
 }
 
 source_set("browser_tests") {
@@ -77,6 +81,10 @@ source_set("browser_tests") {
     "//ui/views",
     "//ui/views:test_support",
   ]
+
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/views/frame:browser_view_header" ]
+  }
 }
 
 source_set("unit_tests") {

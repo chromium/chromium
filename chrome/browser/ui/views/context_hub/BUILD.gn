@@ -60,6 +60,7 @@ source_set("save_to_memory_bank_bubble_controller_impl") {
     ":save_to_memory_bank_bubble_view",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
     "//components/tabs:public",
     "//content/public/browser",

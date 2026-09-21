@@ -106,6 +106,10 @@ source_set("browser_tests") {
     "//chrome/test:test_support_ui",
     "//components/infobars/content",
   ]
+
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/views/frame:browser_view_header" ]
+  }
 }
 
 if (!is_chromeos_device) {
@@ -127,6 +131,7 @@ if (!is_chromeos_device) {
       "//chrome/browser/permissions",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/views:content_setting_bubble_contents",
+      "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/views/location_bar:test_support",
       "//chrome/browser/ui/views/page_info",
       "//chrome/browser/ui/views/permissions",

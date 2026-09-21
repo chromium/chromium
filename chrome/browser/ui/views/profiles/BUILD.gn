@@ -54,6 +54,7 @@ if (is_win || is_mac || is_linux || is_chromeos) {
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/interaction",
       "//chrome/browser/ui/user_education",
+      "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/views/frame:toolbar_button_provider",
       "//chrome/browser/ui/views/toolbar",
       "//components/feature_engagement/public",
@@ -208,6 +209,7 @@ if (is_win || is_mac || is_linux || is_chromeos) {
       "//chrome/browser/ui/signin",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/views:color_provider_browser_helper",
+      "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/webui/signin",
       "//chrome/browser/ui/webui/signin:signin_utils",
       "//chrome/common:constants",
@@ -349,6 +351,7 @@ if (toolkit_views) {
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/profiles",
       "//chrome/browser/ui/signin",
+      "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/views/toolbar:test_support",
       "//chrome/browser/ui/waap:manager",
@@ -643,6 +646,7 @@ if (is_win || is_mac || is_linux) {
       "//chrome/browser/themes",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/signin",
+      "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/views/frame:toolbar_button_provider",
       "//components/sync/service",
     ]
@@ -701,6 +705,10 @@ if (enable_dice_support) {
       "//ui/views",
       "//ui/views/controls/webview",
     ]
+
+    if (!is_android) {
+      deps += [ "//chrome/browser/ui/views/frame:browser_view_header" ]
+    }
   }
 
   source_set("profile_picker_toolbar") {
@@ -1009,6 +1017,10 @@ if (enable_dice_support) {
       "//ui/events",
       "//ui/views",
     ]
+
+    if (!is_android) {
+      deps += [ "//chrome/browser/ui/views/frame:browser_view_header" ]
+    }
   }
 
   source_set("profile_picker_glic_flow_controller") {
@@ -1172,6 +1184,10 @@ if (enable_dice_support) {
       "//components/signin/public/base",
       "//net",
     ]
+
+    if (!is_android) {
+      deps += [ "//chrome/browser/ui/views/frame:browser_view_header" ]
+    }
   }
 
   source_set("first_run_flow_controller") {
@@ -1236,6 +1252,10 @@ if (enable_dice_support) {
     ]
     if (is_win) {
       deps += [ "//chrome/browser/win" ]
+    }
+
+    if (!is_android) {
+      deps += [ "//chrome/browser/ui/views/frame:browser_view_header" ]
     }
   }
 }
