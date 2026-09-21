@@ -13,6 +13,9 @@
 // Requests stopping the active actuation task.
 - (void)stopActuation;
 
+// Called when the user taps the primary action button on an intervention card.
+- (void)didTapInterventionButton;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_UI_ACTUATION_WORKLOG_MUTATOR_H_

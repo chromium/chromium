@@ -79,6 +79,9 @@ ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
   std::optional<actor::ActorTaskId> _currentTaskId;
   // Latest emitted update, used to deduplicate consecutive identical updates.
   NSString* _latestEmittedTaskUpdate;
+  // Pending completion block for the active intervention. Only called when a
+  // user interacts with the UI associated with it.
+  void (^_pendingInterventionCompletion)(void);
 }
 
 - (instancetype)initWithActorService:(actor::ActorService*)actorService {
@@ -100,6 +103,7 @@ ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
     _actorService->RemoveTaskUpdatesObserver(self);
     _actorService = nullptr;
   }
+  [self discardPendingIntervention];
   [_consumer reset];
   _consumer = nil;
   _currentTaskId.reset();
@@ -107,6 +111,24 @@ ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
 }
 
 #pragma mark - Private
+
+// Resolves the pending intervention by calling its completion handler and
+// clearing the UI. Should only be called upon explicit user interaction.
+- (void)resolvePendingIntervention {
+  if (_pendingInterventionCompletion) {
+    void (^completion)(void) = _pendingInterventionCompletion;
+    _pendingInterventionCompletion = nil;
+    completion();
+  }
+  [_consumer setIntervention:nil];
+}
+
+// Dismisses the active intervention card and discards the pending completion
+// handler without calling it (task cancellation, replacement, or disconnect).
+- (void)discardPendingIntervention {
+  _pendingInterventionCompletion = nil;
+  [_consumer setIntervention:nil];
+}
 
 // Emits a worklog item and tool chip, deduplicating consecutive updates.
 - (void)processUpdateWithTool:(std::optional<actor::ToolType>)toolType
@@ -179,9 +201,37 @@ ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
     return;
   }
   _currentTaskId.reset();
+  [self discardPendingIntervention];
   _latestEmittedTaskUpdate = nil;
   [_consumer setActuationActive:NO];
   [_consumer reset];
+}
+
+#pragma mark - ActorTaskInterventionDelegate
+
+- (void)actorTask:(actor::ActorTaskId)taskID
+    selectFromSuggestions:(NSArray<ActorFormSuggestion*>*)suggestions
+        completionHandler:
+            (void (^)(ActorFormSuggestion* selectedSuggestion,
+                      BOOL shouldStorePermission))completionHandler {
+  completionHandler(suggestions.firstObject, NO);
+}
+
+- (void)actorTask:(actor::ActorTaskId)taskID
+    requestUserInterventionWithTitle:(NSString*)title
+                            subtitle:(NSString*)subtitle
+                          buttonText:(NSString*)buttonText
+                   completionHandler:(void (^)(void))completionHandler {
+  [self discardPendingIntervention];
+  if (completionHandler) {
+    _pendingInterventionCompletion = [completionHandler copy];
+  }
+
+  ActuationInterventionData* data =
+      [[ActuationInterventionData alloc] initWithTitle:title
+                                              subtitle:subtitle
+                                            buttonText:buttonText];
+  [_consumer setIntervention:data];
 }
 
 #pragma mark - ActuationWorklogMutator
@@ -192,6 +242,10 @@ ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
   }
   _actorService->StopTask(*_currentTaskId,
                           actor::ActorTaskStoppedReason::kStoppedByUser);
+}
+
+- (void)didTapInterventionButton {
+  [self resolvePendingIntervention];
 }
 
 @end

@@ -5,13 +5,30 @@
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_controller.h"
 
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_header_view.h"
+#import "ios/chrome/browser/intelligence/actor/ui/actuation_task_card_view.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_constants.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_consumer.h"
+#import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_mutator.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
 #import "ios/chrome/browser/intelligence/actor/ui/test/actor_ui_test_utils.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+
+@interface FakeActuationWorklogMutator : NSObject <ActuationWorklogMutator>
+@property(nonatomic, assign) BOOL interventionButtonTapped;
+@property(nonatomic, assign) BOOL stopActuationCalled;
+@end
+
+@implementation FakeActuationWorklogMutator
+- (void)stopActuation {
+  _stopActuationCalled = YES;
+}
+
+- (void)didTapInterventionButton {
+  _interventionButtonTapped = YES;
+}
+@end
 
 namespace {
 
@@ -86,6 +103,44 @@ TEST_F(ActuationWorklogViewControllerTest, TestResetClearsContent) {
           view_controller.view, kFullWorklogScrollViewAccessibilityIdentifier));
   ASSERT_NE(scroll_view, nil);
   EXPECT_TRUE(CGPointEqualToPoint(scroll_view.contentOffset, CGPointZero));
+}
+
+// Test setting intervention presents card, dispatches action, and reset clears
+// it.
+TEST_F(ActuationWorklogViewControllerTest, TestInterventionCardFlow) {
+  ActuationWorklogViewController* view_controller =
+      [[ActuationWorklogViewController alloc] init];
+  FakeActuationWorklogMutator* fake_mutator =
+      [[FakeActuationWorklogMutator alloc] init];
+  view_controller.mutator = fake_mutator;
+  id<ActuationWorklogConsumer> consumer =
+      static_cast<id<ActuationWorklogConsumer>>(view_controller);
+
+  // Force view load.
+  EXPECT_NE(view_controller.view, nil);
+
+  ActuationTaskCardView* card_view =
+      static_cast<ActuationTaskCardView*>(FindViewByAccessibilityIdentifier(
+          view_controller.view,
+          kActuationInterventionCardAccessibilityIdentifier));
+  ASSERT_NE(card_view, nil);
+  EXPECT_TRUE(card_view.hidden);
+
+  ActuationInterventionData* intervention =
+      [[ActuationInterventionData alloc] initWithTitle:@"Intervention Title"
+                                              subtitle:@"Intervention Subtitle"
+                                            buttonText:@"Continue"];
+  [consumer setIntervention:intervention];
+  EXPECT_FALSE(card_view.hidden);
+
+  // Verify mutator dispatch on button tap.
+  ASSERT_NE(card_view.delegate, nil);
+  [card_view.delegate taskCardViewDidTapActionButton:card_view];
+  EXPECT_TRUE(fake_mutator.interventionButtonTapped);
+
+  // Reset clears intervention.
+  [consumer reset];
+  EXPECT_TRUE(card_view.hidden);
 }
 
 }  // namespace

@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+@class ActuationInterventionData;
 @class ActuationWorklogChip;
 @class ActuationWorklogItem;
 
@@ -23,6 +24,10 @@
 - (void)updateWorklogWithItem:(ActuationWorklogItem*)item
                          chip:(ActuationWorklogChip*)chip
                      animated:(BOOL)animated;
+
+// Displays an interactive intervention below the worklog, or dismisses any
+// active intervention if `intervention` is nil.
+- (void)setIntervention:(ActuationInterventionData*)intervention;
 
 // Resets and clears all worklog timeline items and state.
 - (void)reset;

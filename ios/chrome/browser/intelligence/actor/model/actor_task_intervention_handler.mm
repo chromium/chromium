@@ -16,4 +16,16 @@
   completionHandler(suggestions.firstObject, NO);
 }
 
+// TODO(crbug.com/558837681): Remove when intervention delegation is wired into
+// ActorEngine.
+- (void)actorTask:(actor::ActorTaskId)taskID
+    requestUserInterventionWithTitle:(NSString*)title
+                            subtitle:(NSString*)subtitle
+                          buttonText:(NSString*)buttonText
+                   completionHandler:(void (^)(void))completionHandler {
+  if (completionHandler) {
+    completionHandler();
+  }
+}
+
 @end

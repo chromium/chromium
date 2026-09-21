@@ -140,3 +140,22 @@
 }
 
 @end
+
+@implementation ActuationInterventionData
+
+- (instancetype)initWithTitle:(NSString*)title
+                     subtitle:(NSString*)subtitle
+                   buttonText:(NSString*)buttonText {
+  CHECK(title);
+  CHECK(buttonText);
+
+  self = [super init];
+  if (self) {
+    _title = [title copy];
+    _subtitle = [subtitle copy];
+    _buttonText = [buttonText copy];
+  }
+  return self;
+}
+
+@end

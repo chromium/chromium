@@ -25,6 +25,11 @@ inline constexpr NSString* const kCompactWorklogAccessibilityIdentifier =
 inline constexpr NSString* const kFullWorklogScrollViewAccessibilityIdentifier =
     @"FullWorklogScrollViewAccessibilityIdentifier";
 
+// Accessibility identifier for the actuation intervention card view.
+inline constexpr NSString* const
+    kActuationInterventionCardAccessibilityIdentifier =
+        @"ActuationInterventionCardAccessibilityIdentifier";
+
 // TODO(crbug.com/553535673): Remove C++ namespace for UI constants.
 namespace intelligence::actor {
 

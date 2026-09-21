@@ -23,6 +23,7 @@ using enum actor::ToolType;
 @property(nonatomic, assign) BOOL actuationActive;
 @property(nonatomic, strong) NSMutableArray<ActuationWorklogItem*>* items;
 @property(nonatomic, strong) NSMutableArray<ActuationWorklogChip*>* chips;
+@property(nonatomic, strong) ActuationInterventionData* intervention;
 @end
 
 @implementation FakeActuationWorklogConsumer
@@ -46,10 +47,15 @@ using enum actor::ToolType;
   }
 }
 
+- (void)setIntervention:(ActuationInterventionData*)intervention {
+  _intervention = intervention;
+}
+
 - (void)reset {
   [_items removeAllObjects];
   [_chips removeAllObjects];
   _taskTitle = nil;
+  _intervention = nil;
 }
 
 @end
@@ -195,4 +201,79 @@ TEST_F(ActuationWorklogMediatorTest, TestDisconnectResetsConsumer) {
   [mediator_ disconnect];
   EXPECT_EQ(fake_consumer_.items.count, 0u);
   EXPECT_EQ(fake_consumer_.taskTitle, nil);
+}
+
+// Tests the user intervention flow.
+TEST_F(ActuationWorklogMediatorTest, TestUserInterventionFlow) {
+  RegisterTask();
+  __block BOOL completion_called = NO;
+  [mediator_ actorTask:kTaskId
+      requestUserInterventionWithTitle:@"Intervention Title"
+                              subtitle:@"Intervention Subtitle"
+                            buttonText:@"Continue"
+                     completionHandler:^{
+                       completion_called = YES;
+                     }];
+
+  ASSERT_NE(fake_consumer_.intervention, nil);
+  EXPECT_NSEQ(fake_consumer_.intervention.title, @"Intervention Title");
+  EXPECT_NSEQ(fake_consumer_.intervention.subtitle, @"Intervention Subtitle");
+  EXPECT_NSEQ(fake_consumer_.intervention.buttonText, @"Continue");
+  EXPECT_FALSE(completion_called);
+
+  [mediator_ didTapInterventionButton];
+  EXPECT_TRUE(completion_called);
+  EXPECT_EQ(fake_consumer_.intervention, nil);
+}
+
+// Tests that cancelling, replacing, or disconnecting an intervention discards
+// the pending completion without invoking it.
+TEST_F(ActuationWorklogMediatorTest, TestUserInterventionCancellation) {
+  RegisterTask();
+  __block BOOL first_completion_called = NO;
+  [mediator_ actorTask:kTaskId
+      requestUserInterventionWithTitle:@"First Title"
+                              subtitle:@"First Subtitle"
+                            buttonText:@"Action 1"
+                     completionHandler:^{
+                       first_completion_called = YES;
+                     }];
+
+  ASSERT_NE(fake_consumer_.intervention, nil);
+  EXPECT_FALSE(first_completion_called);
+
+  // A second intervention arrives before user acts on the first.
+  __block BOOL second_completion_called = NO;
+  [mediator_ actorTask:kTaskId
+      requestUserInterventionWithTitle:@"Second Title"
+                              subtitle:@"Second Subtitle"
+                            buttonText:@"Action 2"
+                     completionHandler:^{
+                       second_completion_called = YES;
+                     }];
+
+  // First completion must be discarded without invocation.
+  EXPECT_FALSE(first_completion_called);
+  EXPECT_FALSE(second_completion_called);
+  EXPECT_NSEQ(fake_consumer_.intervention.title, @"Second Title");
+
+  // Task stoppage discards pending completion and clears consumer.
+  EndActuation();
+  EXPECT_FALSE(second_completion_called);
+  EXPECT_EQ(fake_consumer_.intervention, nil);
+
+  // A third intervention followed by disconnect should also discard completion.
+  RegisterTask();
+  __block BOOL third_completion_called = NO;
+  [mediator_ actorTask:kTaskId
+      requestUserInterventionWithTitle:@"Third Title"
+                              subtitle:@"Third Subtitle"
+                            buttonText:@"Action 3"
+                     completionHandler:^{
+                       third_completion_called = YES;
+                     }];
+  ASSERT_NE(fake_consumer_.intervention, nil);
+  [mediator_ disconnect];
+  EXPECT_FALSE(third_completion_called);
+  EXPECT_EQ(fake_consumer_.intervention, nil);
 }

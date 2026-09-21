@@ -136,4 +136,26 @@ enum class ActuationWorklogItemStyle {
 
 @end
 
+// View data object describing an interactive intervention in the actuation
+// worklog.
+@interface ActuationInterventionData : NSObject
+
+// Mandatory title text.
+@property(nonatomic, copy, readonly) NSString* title;
+
+// Optional subtitle text.
+@property(nonatomic, copy, readonly) NSString* subtitle;
+
+// Mandatory primary action button title.
+@property(nonatomic, copy, readonly) NSString* buttonText;
+
+// Designated initializer.
+- (instancetype)initWithTitle:(NSString*)title
+                     subtitle:(NSString*)subtitle
+                   buttonText:(NSString*)buttonText NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+@end
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_UI_ACTUATION_WORKLOG_VIEW_DATA_H_

@@ -28,7 +28,7 @@
 // The delegate for this view controller.
 @property(nonatomic, weak) id<ActuationWorklogViewControllerDelegate> delegate;
 
-// The mutator for delegating user actions.
+// Mutator for dispatching user actions.
 @property(nonatomic, weak) id<ActuationWorklogMutator> mutator;
 
 // Whether the worklog is presented in compact mode or full timeline mode.

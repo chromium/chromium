@@ -29,6 +29,15 @@
             (void (^)(ActorFormSuggestion* selectedSuggestion,
                       BOOL shouldStorePermission))completionHandler;
 
+// Prompts the user with an intervention card containing a title,
+// subtitle, and action button text. `completionHandler` is invoked when
+// the user confirms the action to resume the task.
+- (void)actorTask:(actor::ActorTaskId)taskID
+    requestUserInterventionWithTitle:(NSString*)title
+                            subtitle:(NSString*)subtitle
+                          buttonText:(NSString*)buttonText
+                   completionHandler:(void (^)(void))completionHandler;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_PUBLIC_ACTOR_TASK_INTERVENTION_DELEGATE_H_
