@@ -40,6 +40,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -476,7 +477,8 @@ class QuickPairMetricsLoggerTest : public NoSessionAshTestBase {
                                               std::string classic_address) {
     std::unique_ptr<testing::NiceMock<device::MockBluetoothDevice>>
         bluetooth_device = CreateTestBluetoothDevice(classic_address);
-    bluetooth_device->AddUUID(ash::quick_pair::kFastPairBluetoothUuid);
+    bluetooth_device->AddUUID(
+        device::BluetoothUUID(ash::quick_pair::kFastPairBluetoothUuid));
     auto* bt_device_ptr = bluetooth_device.get();
     adapter_->AddMockDevice(std::move(bluetooth_device));
     adapter_->NotifyDevicePairedChanged(bt_device_ptr, new_paired_status);

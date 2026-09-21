@@ -30,6 +30,7 @@
 #include "device/bluetooth//bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/floss/floss_features.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 namespace {
 
@@ -162,7 +163,8 @@ void FastPairDiscoverableScannerImpl::OnDeviceFound(
       << __func__ << ": " << device->GetNameForDisplay();
 
   const std::vector<uint8_t>* fast_pair_service_data =
-      device->GetServiceDataForUUID(kFastPairBluetoothUuid);
+      device->GetServiceDataForUUID(
+          device::BluetoothUUID(kFastPairBluetoothUuid));
 
   if (!fast_pair_service_data) {
     CD_LOG(WARNING, Feature::FP)
@@ -374,7 +376,8 @@ void FastPairDiscoverableScannerImpl::OnUtilityProcessStopped(
   model_id_parse_attempts_[address] = current_retry_count + 1;
 
   const std::vector<uint8_t>* fast_pair_service_data =
-      device->GetServiceDataForUUID(kFastPairBluetoothUuid);
+      device->GetServiceDataForUUID(
+          device::BluetoothUUID(kFastPairBluetoothUuid));
 
   CD_LOG(INFO, Feature::FP) << __func__ << ": Retrying call to get model ID";
   quick_pair_process::GetHexModelIdFromServiceData(

@@ -16,6 +16,7 @@
 #include "components/cross_device/logging/logging.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_low_energy_scan_filter.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 namespace {
 
@@ -143,8 +144,8 @@ void FastPairScannerImpl::OnSessionInvalidated(
 void FastPairScannerImpl::OnDeviceFound(
     device::BluetoothLowEnergyScanSession* scan_session,
     device::BluetoothDevice* device) {
-  const std::vector<uint8_t>* service_data =
-      device->GetServiceDataForUUID(kFastPairBluetoothUuid);
+  const std::vector<uint8_t>* service_data = device->GetServiceDataForUUID(
+      device::BluetoothUUID(kFastPairBluetoothUuid));
 
   if (!service_data) {
     CD_LOG(WARNING, Feature::FP) << "No Fast Pair service data found on device";
@@ -176,8 +177,8 @@ void FastPairScannerImpl::OnDeviceFound(
 void FastPairScannerImpl::DeviceChanged(device::BluetoothAdapter* adapter,
                                         device::BluetoothDevice* device) {
   std::string device_address = device->GetAddress();
-  const std::vector<uint8_t>* service_data =
-      device->GetServiceDataForUUID(kFastPairBluetoothUuid);
+  const std::vector<uint8_t>* service_data = device->GetServiceDataForUUID(
+      device::BluetoothUUID(kFastPairBluetoothUuid));
 
   if (!service_data || service_data->empty())
     return;

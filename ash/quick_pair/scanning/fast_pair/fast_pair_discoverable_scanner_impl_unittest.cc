@@ -35,6 +35,7 @@
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/floss/floss_features.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
@@ -149,7 +150,7 @@ class FastPairDiscoverableScannerImplTest : public testing::Test {
     if (!hex_model_id.empty()) {
       std::vector<uint8_t> model_id_bytes;
       base::HexStringToBytes(hex_model_id, &model_id_bytes);
-      device->SetServiceDataForUUID(kFastPairBluetoothUuid, model_id_bytes);
+      device->SetServiceDataForUUID(fast_pair_service_uuid_, model_id_bytes);
     }
 
     device::BluetoothDevice* device_ptr = device.get();
@@ -161,6 +162,7 @@ class FastPairDiscoverableScannerImplTest : public testing::Test {
     return device_ptr;
   }
 
+  const device::BluetoothUUID fast_pair_service_uuid_{kFastPairBluetoothUuid};
   raw_ptr<FakeQuickPairProcessManager> fake_process_manager_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   NetworkStateTestHelper helper_{/*use_default_devices_and_services=*/true};
@@ -186,7 +188,7 @@ TEST_F(FastPairDiscoverableScannerImplTest, UtilityProcessStopped_DeviceLost) {
   auto device = std::make_unique<device::MockBluetoothDevice>(
       adapter_.get(), 0, "test_name", kAddress, /*paired=*/false,
       /*connected=*/false);
-  device->SetServiceDataForUUID(kFastPairBluetoothUuid, {1, 2, 3});
+  device->SetServiceDataForUUID(fast_pair_service_uuid_, {1, 2, 3});
 
   device::BluetoothDevice* device_ptr = device.get();
 
@@ -231,7 +233,7 @@ TEST_F(FastPairDiscoverableScannerImplTest, NoModelIdDataInRepository) {
   auto device = std::make_unique<device::MockBluetoothDevice>(
       adapter_.get(), 0, "test_name", kAddress, /*paired=*/false,
       /*connected=*/false);
-  device->SetServiceDataForUUID(kFastPairBluetoothUuid, {1, 2, 3});
+  device->SetServiceDataForUUID(fast_pair_service_uuid_, {1, 2, 3});
   device::BluetoothDevice* device_ptr = device.get();
 
   adapter_->AddMockDevice(std::move(device));

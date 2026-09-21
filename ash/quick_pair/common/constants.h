@@ -5,13 +5,11 @@
 #ifndef ASH_QUICK_PAIR_COMMON_CONSTANTS_H_
 #define ASH_QUICK_PAIR_COMMON_CONSTANTS_H_
 
-#include "base/component_export.h"
-#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
-
 namespace ash::quick_pair {
 
-COMPONENT_EXPORT(QUICK_PAIR_COMMON)
-extern const device::BluetoothUUID kFastPairBluetoothUuid;
+// The 16-bit Fast Pair GATT service UUID. device::BluetoothUUID is not
+// constexpr constructible, so callers build one on demand from this.
+inline constexpr char kFastPairBluetoothUuid[] = "0xFE2C";
 
 }  // namespace ash::quick_pair
 

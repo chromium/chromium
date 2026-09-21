@@ -12,7 +12,6 @@ component("common") {
   sources = [
     "account_key_failure.cc",
     "account_key_failure.h",
-    "constants.cc",
     "constants.h",
     "device.cc",
     "device.h",
@@ -53,10 +52,6 @@ component("common") {
     "//services/network/public/mojom",
     "//url",
   ]
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 static_library("test_support") {

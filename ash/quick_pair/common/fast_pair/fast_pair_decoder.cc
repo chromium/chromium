@@ -5,6 +5,7 @@
 #include "ash/quick_pair/common/fast_pair/fast_pair_decoder.h"
 
 #include <optional>
+#include <string_view>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -23,7 +24,7 @@ constexpr int kHeaderLengthOffset2018 = 1;
 constexpr int kHeaderVersionBitmask2018 = 0b11100000;
 constexpr int kHeaderVersionOffset2018 = 5;
 constexpr int kMaxModelIdLength = 14;
-const std::string k2018HeaderPrefix = "06";
+constexpr std::string_view k2018HeaderPrefix = "06";
 
 // Format 2022 (0bVVVVFFFF)
 constexpr int kHeaderVersionBitmask2022 = 0b11110000;

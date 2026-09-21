@@ -20,6 +20,7 @@
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
 #include "device/bluetooth/public/cpp/bluetooth_address.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "third_party/boringssl/src/include/openssl/rand.h"
 
 namespace {
@@ -420,7 +421,7 @@ void FastPairGattServiceClientImpl::CreateGattConnection() {
   device->CreateGattConnection(
       base::BindOnce(&FastPairGattServiceClientImpl::OnGattConnection,
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()),
-      kFastPairBluetoothUuid);
+      device::BluetoothUUID(kFastPairBluetoothUuid));
 }
 
 void FastPairGattServiceClientImpl::OnGattServiceDiscoveryTimeout() {
@@ -541,7 +542,7 @@ void FastPairGattServiceClientImpl::GattDiscoveryCompleteForService(
     device::BluetoothAdapter* adapter,
     device::BluetoothRemoteGattService* service) {
   // Verify that the discovered service and device are the ones we care about.
-  if (service->GetUUID() == kFastPairBluetoothUuid &&
+  if (service->GetUUID() == device::BluetoothUUID(kFastPairBluetoothUuid) &&
       service->GetDevice()->GetAddress() == device_address_) {
     RecordGattServiceDiscoveryTime(base::TimeTicks::Now() -
                                    gatt_service_discovery_start_time_);

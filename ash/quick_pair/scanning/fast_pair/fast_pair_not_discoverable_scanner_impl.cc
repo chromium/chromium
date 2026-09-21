@@ -34,6 +34,7 @@
 #include "components/cross_device/logging/logging.h"
 #include "device/bluetooth//bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 namespace {
 
@@ -126,7 +127,8 @@ void FastPairNotDiscoverableScannerImpl::OnDeviceFound(
       << __func__ << ": " << device->GetNameForDisplay();
 
   const std::vector<uint8_t>* fast_pair_service_data =
-      device->GetServiceDataForUUID(kFastPairBluetoothUuid);
+      device->GetServiceDataForUUID(
+          device::BluetoothUUID(kFastPairBluetoothUuid));
 
   if (!fast_pair_service_data) {
     CD_LOG(WARNING, Feature::FP)
@@ -292,7 +294,8 @@ void FastPairNotDiscoverableScannerImpl::OnUtilityProcessStopped(
   }
 
   const std::vector<uint8_t>* fast_pair_service_data =
-      device->GetServiceDataForUUID(kFastPairBluetoothUuid);
+      device->GetServiceDataForUUID(
+          device::BluetoothUUID(kFastPairBluetoothUuid));
 
   if (!fast_pair_service_data) {
     CD_LOG(WARNING, Feature::FP)

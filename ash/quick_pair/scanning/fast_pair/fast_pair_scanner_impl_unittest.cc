@@ -28,6 +28,7 @@
 #include "base/time/time.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_low_energy_scan_filter.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "device/bluetooth/test/mock_bluetooth_low_energy_scan_session.h"
@@ -45,9 +46,10 @@ std::unique_ptr<device::MockBluetoothDevice> CreateTestBluetoothDevice(
       std::make_unique<testing::NiceMock<device::MockBluetoothDevice>>(
           /*adapter=*/nullptr, /*bluetooth_class=*/0, kTestBleDeviceName,
           address, /*paired=*/true, /*connected=*/true);
-  mock_device->AddUUID(ash::quick_pair::kFastPairBluetoothUuid);
-  mock_device->SetServiceDataForUUID(ash::quick_pair::kFastPairBluetoothUuid,
-                                     {1, 2, 3});
+  const device::BluetoothUUID fast_pair_service_uuid(
+      ash::quick_pair::kFastPairBluetoothUuid);
+  mock_device->AddUUID(fast_pair_service_uuid);
+  mock_device->SetServiceDataForUUID(fast_pair_service_uuid, {1, 2, 3});
   return mock_device;
 }
 
@@ -171,6 +173,7 @@ class FastPairScannerImplTest : public testing::Test {
   }
 
  protected:
+  const device::BluetoothUUID fast_pair_service_uuid_{kFastPairBluetoothUuid};
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   scoped_refptr<FakeBluetoothAdapter> adapter_;
@@ -226,8 +229,7 @@ TEST_F(FastPairScannerImplTest, DeviceRemoved) {
 
   auto mock_device = CreateTestBluetoothDevice(kTestBleDeviceAddress1);
   auto* mock_device_ptr = mock_device.get();
-  mock_device->SetServiceDataForUUID(ash::quick_pair::kFastPairBluetoothUuid,
-                                     {4, 5, 6});
+  mock_device->SetServiceDataForUUID(fast_pair_service_uuid_, {4, 5, 6});
 
   adapter().NotifyDeviceRemoved(mock_device_ptr);
   adapter().NotifyDeviceChanged(mock_device_ptr);
@@ -240,8 +242,7 @@ TEST_F(FastPairScannerImplTest, DevicePairedChanged) {
 
   auto mock_device = CreateTestBluetoothDevice(kTestBleDeviceAddress1);
   auto* mock_device_ptr = mock_device.get();
-  mock_device->SetServiceDataForUUID(ash::quick_pair::kFastPairBluetoothUuid,
-                                     {4, 5, 6});
+  mock_device->SetServiceDataForUUID(fast_pair_service_uuid_, {4, 5, 6});
 
   adapter().NotifyDevicePairedChanged(mock_device_ptr, false);
   adapter().NotifyDeviceChanged(mock_device_ptr);
@@ -273,8 +274,7 @@ TEST_F(FastPairScannerImplTest, DeviceChangedNewServiceDataLength) {
 
   // The length of the service data changes between Initial/Subsequent pairing
   // which is used to detect if we should trigger OnDeviceFound or not.
-  mock_device->SetServiceDataForUUID(ash::quick_pair::kFastPairBluetoothUuid,
-                                     {4, 5, 6, 7});
+  mock_device->SetServiceDataForUUID(fast_pair_service_uuid_, {4, 5, 6, 7});
   adapter().NotifyDeviceChanged(mock_device_ptr);
   EXPECT_EQ(scanner_observer().on_device_found_count(), 2);
 }
@@ -285,8 +285,7 @@ TEST_F(FastPairScannerImplTest, DeviceChangedSameServiceDataLength) {
 
   auto mock_device = CreateTestBluetoothDevice(kTestBleDeviceAddress1);
   auto* mock_device_ptr = mock_device.get();
-  mock_device->SetServiceDataForUUID(ash::quick_pair::kFastPairBluetoothUuid,
-                                     {4, 5, 6});
+  mock_device->SetServiceDataForUUID(fast_pair_service_uuid_, {4, 5, 6});
   // This simulates a change of service data within one of the ongoing pairing
   // scenarios, in which case we do not notify observers.
   adapter().NotifyDeviceChanged(mock_device_ptr);
@@ -310,8 +309,7 @@ TEST_F(FastPairScannerImplTest, DeviceChangedNoServiceData) {
   delegate_->OnDeviceFound(mock_scan_session_, mock_device.get());
   EXPECT_EQ(scanner_observer().on_device_found_count(), 0);
   auto* mock_device_ptr = mock_device.get();
-  mock_device->SetServiceDataForUUID(ash::quick_pair::kFastPairBluetoothUuid,
-                                     {4, 5, 6});
+  mock_device->SetServiceDataForUUID(fast_pair_service_uuid_, {4, 5, 6});
   adapter().NotifyDeviceChanged(mock_device_ptr);
   EXPECT_EQ(scanner_observer().on_device_found_count(), 0);
 }

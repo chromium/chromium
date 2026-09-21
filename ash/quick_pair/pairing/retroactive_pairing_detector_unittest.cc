@@ -41,6 +41,7 @@
 #include "chromeos/ash/services/quick_pair/quick_pair_process_manager_impl.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/floss/floss_features.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
@@ -211,7 +212,8 @@ class RetroactivePairingDetectorTest
       std::string classic_address,
       bool test_hid_already_connected = false) {
     bluetooth_device_ = CreateTestBluetoothDevice(classic_address);
-    bluetooth_device_->AddUUID(ash::quick_pair::kFastPairBluetoothUuid);
+    bluetooth_device_->AddUUID(
+        device::BluetoothUUID(ash::quick_pair::kFastPairBluetoothUuid));
     bluetooth_device_->SetType(
         device::BluetoothTransport::BLUETOOTH_TRANSPORT_LE);
     auto* bt_device_ptr = bluetooth_device_.get();

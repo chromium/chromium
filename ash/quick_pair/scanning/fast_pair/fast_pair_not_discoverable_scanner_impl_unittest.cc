@@ -36,6 +36,7 @@
 #include "chromeos/ash/services/quick_pair/quick_pair_process_manager_impl.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
@@ -168,7 +169,7 @@ class FastPairNotDiscoverableScannerImplTest : public testing::Test {
         /*connected=*/false);
     device::BluetoothDevice* device_ptr = device.get();
 
-    device->SetServiceDataForUUID(kFastPairBluetoothUuid, service_data);
+    device->SetServiceDataForUUID(fast_pair_service_uuid_, service_data);
 
     adapter_->AddMockDevice(std::move(device));
     ON_CALL(*adapter_, GetDevice(kAddress))
@@ -177,6 +178,7 @@ class FastPairNotDiscoverableScannerImplTest : public testing::Test {
     return device_ptr;
   }
 
+  const device::BluetoothUUID fast_pair_service_uuid_{kFastPairBluetoothUuid};
   base::test::SingleThreadTaskEnvironment task_enviornment_;
   scoped_refptr<FakeFastPairScanner> scanner_;
   std::unique_ptr<FakeFastPairRepository> repository_;
@@ -238,7 +240,7 @@ TEST_F(FastPairNotDiscoverableScannerImplTest,
   auto device = std::make_unique<device::MockBluetoothDevice>(
       adapter_.get(), 0, "test_name", kAddress, /*paired=*/false,
       /*connected=*/false);
-  device->SetServiceDataForUUID(kFastPairBluetoothUuid, {1, 2, 3});
+  device->SetServiceDataForUUID(fast_pair_service_uuid_, {1, 2, 3});
 
   device::BluetoothDevice* device_ptr = device.get();
 
@@ -287,7 +289,7 @@ TEST_F(FastPairNotDiscoverableScannerImplTest,
 
   auto* mock_device = static_cast<device::MockBluetoothDevice*>(device_ptr);
 
-  device->SetServiceDataForUUID(kFastPairBluetoothUuid, GetAdvServicedata());
+  device->SetServiceDataForUUID(fast_pair_service_uuid_, GetAdvServicedata());
 
   adapter_->AddMockDevice(std::move(device));
   ON_CALL(*adapter_, GetDevice(kAddress))
@@ -315,7 +317,7 @@ TEST_F(FastPairNotDiscoverableScannerImplTest,
                 data_parser_remote_, base::DoNothing());
           });
   scanner_->NotifyDeviceFound(device_ptr);
-  mock_device->SetServiceDataForUUID(kFastPairBluetoothUuid, {});
+  mock_device->SetServiceDataForUUID(fast_pair_service_uuid_, {});
 }
 
 TEST_F(FastPairNotDiscoverableScannerImplTest, NoServiceData) {
