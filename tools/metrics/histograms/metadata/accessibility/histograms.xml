@@ -1158,7 +1158,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosColorCorrection.FilterAmount" units="%"
-    expires_after="2026-10-25">
+    expires_after="2027-09-14">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1171,7 +1171,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosColorCorrection.FilterType"
-    enum="ColorCorrectionFilterTypes" expires_after="2026-10-25">
+    enum="ColorCorrectionFilterTypes" expires_after="2027-09-14">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1906,7 +1906,7 @@ recorded in the same way, even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.FaceGaze.AverageFaceLandmarkerLatency"
-    units="ms" expires_after="2026-08-02">
+    units="ms" expires_after="2027-09-14">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1917,6 +1917,8 @@ recorded in the same way, even if they fit the naming pattern. -->
     FaceLandmarker API during a FaceGaze session and we don't want to clutter
     the histograms. Each call to record a histogram also takes work and we don't
     want to spam the histograms API multiple times per second.
+
+    Note: this metric was expired from 2026-08-02 to 2026-09-15.
   </summary>
 </histogram>
 
@@ -1967,7 +1969,7 @@ recorded in the same way, even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.ImageLabels.ModalDialogAccepted"
-    enum="BooleanAccepted" expires_after="2026-06-01">
+    enum="BooleanAccepted" expires_after="2027-09-14">
   <owner>katie@chromium.org</owner>
   <owner>dtseng@chromium.org</owner>
   <summary>
@@ -1975,11 +1977,13 @@ recorded in the same way, even if they fit the naming pattern. -->
     labels option. If the user does not accept it this does not track whether
     they closed it with the negative button, the close button, or keyboard
     escape.
+
+    Note: this metric was expired from 2026-06-01 to 2026-09-15.
   </summary>
 </histogram>
 
 <histogram name="Accessibility.ImageLabels.PageLanguage" enum="LanguageName"
-    expires_after="2026-10-04">
+    expires_after="2027-09-14">
   <owner>katie@chromium.org</owner>
   <owner>dtseng@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
