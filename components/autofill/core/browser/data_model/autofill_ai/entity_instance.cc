@@ -476,12 +476,14 @@ std::ostream& operator<<(
     const EntityInstance::PersonalContextRecordTypePayload::Source& s) {
   os << "Source(type: " << s.type() << ", url: \"" << s.url << "\"";
   std::visit(absl::Overload{
-                 [&](const EntityInstance::PersonalContextRecordTypePayload::
-                         GmailSourceMetadata& gmail) {
+                 [&os](const EntityInstance::PersonalContextRecordTypePayload::
+                           GmailSourceMetadata& gmail) {
                    os << ", title: \"" << gmail.title << "\"";
                  },
-                 [&](const EntityInstance::PersonalContextRecordTypePayload::
-                         PhotosSourceMetadata&) {}},
+                 [&os](const EntityInstance::PersonalContextRecordTypePayload::
+                           PhotosSourceMetadata& photos) {
+                   os << ", timestamp: \"" << photos.timestamp << "\"";
+                 }},
              s.metadata);
   os << ")";
   return os;
@@ -501,13 +503,13 @@ std::ostream& operator<<(std::ostream& os, const EntityInstance& e) {
 
   std::visit(
       absl::Overload{
-          [&](const EntityInstance::PersonalContextRecordTypePayload& p) {
+          [&os](const EntityInstance::PersonalContextRecordTypePayload& p) {
             for (const EntityInstance::PersonalContextRecordTypePayload::Source&
                      s : p.sources) {
               os << "- source " << s << std::endl;
             }
           },
-          [&](const EntityInstance::WalletRecordTypePayload& p) {
+          [&os](const EntityInstance::WalletRecordTypePayload& p) {
             if (!p.management_url.empty()) {
               os << "- management url: \"" << p.management_url << '"'
                  << std::endl;

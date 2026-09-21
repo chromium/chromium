@@ -324,6 +324,7 @@ class EntityInstance final {
                              const GmailSourceMetadata&) = default;
     };
     struct PhotosSourceMetadata {
+      base::Time timestamp;
       friend bool operator==(const PhotosSourceMetadata&,
                              const PhotosSourceMetadata&) = default;
     };

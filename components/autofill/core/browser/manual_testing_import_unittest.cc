@@ -390,11 +390,13 @@ TEST_F(ManualTestingImportTest, LoadEntitiesFromFile_PersonalContext_Sources) {
         "sources" : [
           {
             "type" : "photos",
-            "url" : "https://photos.google.com/sample"
+            "url" : "https://photos.google.com/sample",
+            "timestamp" : "2025-10-15T14:30:00Z"
           },
           {
             "type" : "gmail",
-            "url" : "https://mail.google.com/sample"
+            "url" : "https://mail.google.com/sample",
+            "title" : "Sample Email"
           }
         ],
         "attributes" : {
@@ -421,14 +423,19 @@ TEST_F(ManualTestingImportTest, LoadEntitiesFromFile_PersonalContext_Sources) {
   const auto* payload =
       std::get_if<PersonalContextRecordTypePayload>(&entity.record_type_data());
   ASSERT_TRUE(payload);
-  EXPECT_EQ(*payload,
-            (PersonalContextRecordTypePayload{
-                .sources = {
-                    Source{.url = GURL("https://photos.google.com/sample"),
-                           .metadata = PhotosSourceMetadata{}},
-                    Source{.url = GURL("https://mail.google.com/sample"),
-                           .metadata = GmailSourceMetadata{}},
-                }}));
+  base::Time expected_timestamp;
+  ASSERT_TRUE(
+      base::Time::FromUTCString("2025-10-15T14:30:00Z", &expected_timestamp));
+  EXPECT_EQ(
+      *payload,
+      (PersonalContextRecordTypePayload{
+          .sources = {
+              Source{.url = GURL("https://photos.google.com/sample"),
+                     .metadata =
+                         PhotosSourceMetadata{.timestamp = expected_timestamp}},
+              Source{.url = GURL("https://mail.google.com/sample"),
+                     .metadata = GmailSourceMetadata{.title = "Sample Email"}},
+          }}));
 }
 
 // Tests that the WalletRecordTypePayload is read correctly.

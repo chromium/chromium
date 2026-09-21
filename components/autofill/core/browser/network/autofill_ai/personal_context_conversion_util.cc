@@ -114,14 +114,19 @@ PersonalContextSourceReferenceToSource(
                      .title = std::string(source_reference.gmail().subject())}};
       break;
     case personal_context::proto::SourceReference::kPhotos:
-      source = Source{.url = GURL(source_reference.photos().photos_url()),
-                      .metadata = PhotosSourceMetadata{}};
+      source = Source{
+          .url = GURL(source_reference.photos().photos_url()),
+          .metadata = PhotosSourceMetadata{
+              .timestamp = source_reference.photos().has_timestamp()
+                               ? FormatDateTimeAsTime(
+                                     source_reference.photos().timestamp())
+                               : base::Time()}};
       break;
     case personal_context::proto::SourceReference::kDrive:
     case personal_context::proto::SourceReference::SOURCE_REFERENCE_NOT_SET:
       return std::nullopt;
   }
-
+  // TODO(crbug.com/551864564): Extend validation to include other metadata.
   if (source.has_value() && !source->url.is_valid()) {
     return std::nullopt;
   }

@@ -463,6 +463,40 @@ TEST(AutofillAiPersonalContextConverters, ConvertEntityWithPhotosSource) {
       entity.add_source_references();
   source->mutable_photos()->set_photos_url(
       "https://photos.google.com/photo/abc");
+  source->mutable_photos()->mutable_timestamp()->set_year(2025);
+  source->mutable_photos()->mutable_timestamp()->set_month(10);
+  source->mutable_photos()->mutable_timestamp()->set_day(15);
+  source->mutable_photos()->mutable_timestamp()->set_hours(14);
+  source->mutable_photos()->mutable_timestamp()->set_minutes(30);
+
+  std::optional<EntityInstance> opt_result =
+      PersonalContextEntityToEntityInstance(entity);
+
+  ASSERT_TRUE(opt_result.has_value());
+  const EntityInstance& result = opt_result.value();
+  base::Time expected_timestamp;
+  ASSERT_TRUE(
+      base::Time::FromUTCString("2025-10-15 14:30:00", &expected_timestamp));
+  EntityInstance::PersonalContextRecordTypePayload payload{
+      .sources = {Source{
+          .url = GURL("https://photos.google.com/photo/abc"),
+          .metadata = PhotosSourceMetadata{.timestamp = expected_timestamp}}}};
+  EXPECT_EQ(std::get<EntityInstance::PersonalContextRecordTypePayload>(
+                result.record_type_data()),
+            payload);
+}
+
+TEST(AutofillAiPersonalContextConverters,
+     ConvertEntityWithPhotosSource_EmptyTimestamp) {
+  personal_context::proto::DriversLicense dl;
+  dl.set_name("John Smith");
+
+  personal_context::proto::Entity entity;
+  *entity.mutable_drivers_license() = dl;
+  personal_context::proto::SourceReference* source =
+      entity.add_source_references();
+  source->mutable_photos()->set_photos_url(
+      "https://photos.google.com/photo/abc");
 
   std::optional<EntityInstance> opt_result =
       PersonalContextEntityToEntityInstance(entity);
