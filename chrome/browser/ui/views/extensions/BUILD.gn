@@ -887,6 +887,7 @@ source_set("extension_popup") {
   public = [ "extension_popup.h" ]
   public_deps = [
     ":extension_view_views",
+    ":security_dialog_tracker",
     "//base",
     "//chrome/browser/ui/extensions:extension_popup_types",
     "//chrome/browser/ui/tabs:tab_strip",
@@ -905,7 +906,6 @@ source_set("extension_popup_impl") {
     "//chrome/browser:browser_public_dependencies",
   ]
   deps = [
-    ":security_dialog_tracker",
     "//base",
     "//chrome/browser/devtools",
     "//chrome/browser/extensions",

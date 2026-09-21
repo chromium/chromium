@@ -640,7 +640,8 @@ DevToolsWindow* DevToolsWindow::GetInstanceForInspectedWebContents(
     return nullptr;
   }
   for (auto& instance : GetDevToolsWindowInstances()) {
-    if (instance->GetInspectedWebContents() == inspected_web_contents) {
+    if (instance->GetInspectedWebContents() == inspected_web_contents &&
+        instance->life_stage_ != kClosing) {
       return instance;
     }
   }

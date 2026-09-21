@@ -47,6 +47,20 @@ IN_PROC_BROWSER_TEST_F(SecurityDialogTrackerTest, Basic) {
   views::test::WidgetVisibleWaiter(security_widget.get()).Wait();
   // Security dialog is now visible.
   EXPECT_TRUE(tracker->BrowserHasVisibleSecurityDialogs(browser()));
+  EXPECT_FALSE(tracker->BrowserHasVisibleSecurityDialogs(
+      browser(), security_widget.get()));
+  EXPECT_FALSE(tracker->BrowserHasVisibleSecurityDialogs(nullptr));
+
+  EXPECT_TRUE(SecurityDialogTracker::IsWidgetOrDescendantOf(
+      security_widget.get(), security_widget.get()));
+  EXPECT_TRUE(SecurityDialogTracker::IsWidgetOrDescendantOf(
+      security_widget.get(), browser_view->GetWidget()));
+  EXPECT_FALSE(SecurityDialogTracker::IsWidgetOrDescendantOf(
+      browser_view->GetWidget(), security_widget.get()));
+  EXPECT_FALSE(SecurityDialogTracker::IsWidgetOrDescendantOf(
+      nullptr, security_widget.get()));
+  EXPECT_FALSE(SecurityDialogTracker::IsWidgetOrDescendantOf(
+      security_widget.get(), nullptr));
 
   BrowserWindowInterface* new_browser = CreateBrowser(browser()->GetProfile());
   // No security dialogs under a different browser.

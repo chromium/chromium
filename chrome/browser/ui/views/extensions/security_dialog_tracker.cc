@@ -41,6 +41,14 @@ SecurityDialogTracker* SecurityDialogTracker::GetInstance() {
   return &*s_instance;
 }
 
+void SecurityDialogTracker::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void SecurityDialogTracker::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void SecurityDialogTracker::AddSecurityDialog(views::Widget* widget) {
   views::View* root_view = widget->GetRootView();
   if (root_view->GetProperty(kIdentifierViewKey)) {
@@ -50,6 +58,10 @@ void SecurityDialogTracker::AddSecurityDialog(views::Widget* widget) {
   // Add an invisible identifier view to the root view of the widget.
   root_view->SetProperty(kIdentifierViewKey,
                          root_view->AddChildView(MakeIdentifierView()));
+
+  for (Observer& observer : observers_) {
+    observer.OnSecurityDialogAdded(widget);
+  }
 }
 
 void SecurityDialogTracker::RemoveSecurityDialog(views::Widget* widget) {
@@ -63,15 +75,46 @@ void SecurityDialogTracker::RemoveSecurityDialog(views::Widget* widget) {
   root_view->ClearProperty(kIdentifierViewKey);
 }
 
+// static
+bool SecurityDialogTracker::IsWidgetOrDescendantOf(
+    const views::Widget* widget,
+    const views::Widget* ancestor) {
+  if (!widget || !ancestor) {
+    return false;
+  }
+  for (const views::Widget* w = widget; w; w = w->parent()) {
+    if (w == ancestor) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool SecurityDialogTracker::BrowserHasVisibleSecurityDialogs(
-    BrowserWindowInterface* browser) const {
-  const auto views = BrowserElementsViews::From(browser)->GetAllViews(
-      kSecuritySensitiveDialogIdentifier);
+    BrowserWindowInterface* browser,
+    const views::Widget* ignore_widget) const {
+  if (!browser) {
+    return false;
+  }
+  auto* browser_elements = BrowserElementsViews::From(browser);
+  if (!browser_elements) {
+    return false;
+  }
+  const auto views =
+      browser_elements->GetAllViews(kSecuritySensitiveDialogIdentifier);
   return std::any_of(views.begin(), views.end(),
-                     [](views::View* identifier_view) {
+                     [ignore_widget](views::View* identifier_view) {
                        views::Widget* dialog_widget =
                            identifier_view->GetWidget();
-                       return dialog_widget && dialog_widget->IsVisible();
+                       if (!dialog_widget || !dialog_widget->IsVisible() ||
+                           dialog_widget->IsClosed()) {
+                         return false;
+                       }
+                       if (ignore_widget && IsWidgetOrDescendantOf(
+                                                dialog_widget, ignore_widget)) {
+                         return false;
+                       }
+                       return true;
                      });
 }
 

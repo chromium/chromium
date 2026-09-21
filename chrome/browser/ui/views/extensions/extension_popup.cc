@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -15,7 +16,6 @@
 #include "components/javascript_dialogs/app_modal_dialog_queue.h"
 #include "components/web_modal/web_modal_utils.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
@@ -49,31 +49,6 @@ constexpr gfx::Size ExtensionPopup::kMaxSize;
 // The most recently constructed popup; used for testing purposes.
 ExtensionPopup* g_last_popup_for_testing = nullptr;
 
-// A helper class to scope the observation of DevToolsAgentHosts. We can't just
-// use base::ScopedObservation here because that requires a specific source
-// object, where as DevToolsAgentHostObservers are added to a singleton list.
-// The `observer_` passed into this object will be registered as an observer
-// for this object's lifetime.
-class ExtensionPopup::ScopedDevToolsAgentHostObservation {
- public:
-  explicit ScopedDevToolsAgentHostObservation(
-      content::DevToolsAgentHostObserver* observer)
-      : observer_(observer) {
-    content::DevToolsAgentHost::AddObserver(observer_);
-  }
-
-  ScopedDevToolsAgentHostObservation(
-      const ScopedDevToolsAgentHostObservation&) = delete;
-  ScopedDevToolsAgentHostObservation& operator=(
-      const ScopedDevToolsAgentHostObservation&) = delete;
-
-  ~ScopedDevToolsAgentHostObservation() {
-    content::DevToolsAgentHost::RemoveObserver(observer_);
-  }
-
- private:
-  raw_ptr<content::DevToolsAgentHostObserver> observer_;
-};
 
 // static
 ExtensionPopup* ExtensionPopup::last_popup_for_testing() {
@@ -154,9 +129,9 @@ views::View* ExtensionPopup::GetInitiallyFocusedView() {
 
 void ExtensionPopup::OnWidgetDestroying(views::Widget* widget) {
   BubbleDialogDelegateView::OnWidgetDestroying(widget);
-  scoped_devtools_observation_.reset();
   anchor_widget_observation_.Reset();
   extension_registry_observation_.Reset();
+  security_dialog_tracker_observation_.Reset();
   extension_view_ = nullptr;
   host_.reset();
   browser_ = nullptr;
@@ -178,6 +153,23 @@ void ExtensionPopup::OnWidgetTreeActivated(views::Widget* root_widget,
   // TODO(crbug.com/326681253): don't show the popup if it might cover
   // security-sensitive UIs.
   if (active_widget != GetWidget()) {
+    // Ignore activation of child/descendant widgets belonging to this popup.
+    if (extensions::SecurityDialogTracker::IsWidgetOrDescendantOf(
+            active_widget, GetWidget())) {
+      return;
+    }
+
+    if (extensions::SecurityDialogTracker::GetInstance()
+            ->BrowserHasVisibleSecurityDialogs(browser_, GetWidget())) {
+      // Defer to avoid reentrant focus and window activation changes in
+      // FocusController while the security dialog is in the middle of being
+      // shown.
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&ExtensionPopup::CloseIfSecurityDialogPresent,
+                         deferred_close_weak_ptr_factory_.GetWeakPtr()));
+      return;
+    }
     CloseUnlessBlockedByInspectionOrJSDialog();
   }
 }
@@ -219,12 +211,6 @@ void ExtensionPopup::OnExtensionUnloaded(
     // try to access the host during Widget closure, destroy it immediately.
     RemoveChildViewT(extension_view_.ExtractAsDangling());
 
-    // Note: it's important that we unregister the devtools observation *before*
-    // we destroy `host_`. Otherwise, destroying `host_` can synchronously cause
-    // the associated WebContents to be destroyed, which will cause devtools to
-    // detach, which will notify our observer, where we rely on `host_` - all
-    // synchronously.
-    scoped_devtools_observation_.reset();
     host_.reset();
     // Stop observing the registry immediately to prevent any subsequent
     // notifications, since Widget::Close is asynchronous.
@@ -250,20 +236,18 @@ void ExtensionPopup::OnTabStripModelChanged(
   }
 }
 
-void ExtensionPopup::DevToolsAgentHostAttached(
-    content::DevToolsAgentHost* agent_host) {
-  DCHECK(host_);
-  if (host_->host_contents() == agent_host->GetWebContents()) {
-    inspected_ = true;
+void ExtensionPopup::OnSecurityDialogAdded(views::Widget* widget) {
+  // Don't close if the security dialog belongs to this popup.
+  if (extensions::SecurityDialogTracker::IsWidgetOrDescendantOf(widget,
+                                                                GetWidget())) {
+    return;
   }
-}
 
-void ExtensionPopup::DevToolsAgentHostDetached(
-    content::DevToolsAgentHost* agent_host) {
-  DCHECK(host_);
-  if (host_->host_contents() == agent_host->GetWebContents()) {
-    inspected_ = false;
-  }
+  // Defer to avoid reentrant focus and window activation changes in
+  // FocusController while the security dialog is in the middle of being shown.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&ExtensionPopup::CloseIfSecurityDialogPresent,
+                                deferred_close_weak_ptr_factory_.GetWeakPtr()));
 }
 
 ExtensionPopup::ExtensionPopup(
@@ -301,12 +285,13 @@ ExtensionPopup::ExtensionPopup(
   // See comments in OnWidgetActivationChanged().
   set_close_on_deactivate(false);
 
-  scoped_devtools_observation_ =
-      std::make_unique<ScopedDevToolsAgentHostObservation>(this);
   browser_->GetTabStripModel()->AddObserver(this);
 
   CHECK(anchor_widget());
   anchor_widget_observation_.Observe(anchor_widget()->GetPrimaryWindowWidget());
+
+  security_dialog_tracker_observation_.Observe(
+      extensions::SecurityDialogTracker::GetInstance());
 
   // Handle the containing view calling window.close();
   // The base::Unretained() below is safe because this object owns `host_`, so
@@ -331,7 +316,7 @@ void ExtensionPopup::ShowBubble() {
   // Don't show the popup if there are visible security dialogs. This protects
   // the security dialogs from spoofing.
   if (extensions::SecurityDialogTracker::GetInstance()
-          ->BrowserHasVisibleSecurityDialogs(browser_)) {
+          ->BrowserHasVisibleSecurityDialogs(browser_, GetWidget())) {
     CloseDeferredIfNecessary();
     return;
   }
@@ -352,9 +337,19 @@ void ExtensionPopup::ShowBubble() {
   }
 }
 
+void ExtensionPopup::CloseIfSecurityDialogPresent() {
+  if (!browser_ || !host_) {
+    return;
+  }
+
+  if (extensions::SecurityDialogTracker::GetInstance()
+          ->BrowserHasVisibleSecurityDialogs(browser_, GetWidget())) {
+    CloseDeferredIfNecessary(views::Widget::ClosedReason::kLostFocus);
+  }
+}
+
 void ExtensionPopup::CloseUnlessBlockedByInspectionOrJSDialog() {
-  // Don't close if the extension page is under inspection.
-  if (inspected_) {
+  if (!browser_ || !host_) {
     return;
   }
 
@@ -369,6 +364,12 @@ void ExtensionPopup::CloseUnlessBlockedByInspectionOrJSDialog() {
   // Don't close if a web modal dialog (e.g. webauthn security key dialog) is
   // showing.
   if (web_modal::WebContentsHasActiveWebModal(host_->host_contents())) {
+    return;
+  }
+
+  // Don't close if the extension page is under inspection in a DevTools window.
+  if (DevToolsWindow::GetInstanceForInspectedWebContents(
+          host_->host_contents())) {
     return;
   }
 

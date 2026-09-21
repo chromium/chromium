@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_SECURITY_DIALOG_TRACKER_H_
 
 #include "base/no_destructor.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 
 namespace views {
 class Widget;
@@ -22,10 +24,19 @@ namespace extensions {
 // opening when security dialogs are present.
 class SecurityDialogTracker {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when a security dialog is added to the tracker.
+    virtual void OnSecurityDialogAdded(views::Widget* widget) {}
+  };
+
   static SecurityDialogTracker* GetInstance();
 
   SecurityDialogTracker(const SecurityDialogTracker&) = delete;
   SecurityDialogTracker& operator=(const SecurityDialogTracker&) = delete;
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // Adds a security dialog to block extension popups from opening while the
   // dialog is visible.
@@ -40,13 +51,23 @@ class SecurityDialogTracker {
   void RemoveSecurityDialog(views::Widget* widget);
 
   // Returns true if `browser` has visible security dialogs.
-  bool BrowserHasVisibleSecurityDialogs(BrowserWindowInterface* browser) const;
+  // If `ignore_widget` is non-null, any security dialog hosted by or descendant
+  // of `ignore_widget` is ignored.
+  bool BrowserHasVisibleSecurityDialogs(
+      BrowserWindowInterface* browser,
+      const views::Widget* ignore_widget = nullptr) const;
+
+  // Returns true if `widget` is `ancestor` or a descendant of `ancestor`.
+  static bool IsWidgetOrDescendantOf(const views::Widget* widget,
+                                     const views::Widget* ancestor);
 
  private:
   friend class base::NoDestructor<SecurityDialogTracker>;
 
   SecurityDialogTracker();
   ~SecurityDialogTracker();
+
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace extensions

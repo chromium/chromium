@@ -79,6 +79,12 @@ class DevToolsAttachWaiter : public content::DevToolsAgentHostObserver {
   raw_ptr<content::WebContents> web_contents_;
 };
 
+class CloseableTestDevToolsProtocolClient
+    : public content::TestDevToolsProtocolClient {
+ public:
+  CloseableTestDevToolsProtocolClient() { set_agent_host_can_close(); }
+};
+
 views::UniqueWidgetPtr CreateTestTopLevelWidget() {
   views::UniqueWidgetPtr widget = std::make_unique<views::Widget>();
   views::Widget::InitParams params(
@@ -771,6 +777,158 @@ IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
 
   // The extension should be destroyed without showing.
   popup_waiter.WaitForHostDestroyed();
+}
+
+// Tests that an extension popup under active DevTools inspection is dismissed
+// when a security dialog is shown.
+IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
+                       InspectedPopupClosesWhenSecurityDialogShown) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Test Extension",
+           "manifest_version": 3,
+           "action": { "default_popup": "popup.html" },
+           "version": "0.1"
+         })";
+
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("popup.html"),
+                     "<html>Hello, world!</html>");
+  const extensions::Extension* extension =
+      LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Open the popup and inspect it.
+  extensions::ExtensionHostTestHelper popup_waiter(profile(), extension->id());
+  popup_waiter.RestrictToType(extensions::mojom::ViewType::kExtensionPopup);
+  ExtensionActionTestHelper::Create(browser())->InspectPopup(extension->id());
+  popup_waiter.WaitForHostCompletedFirstLoad();
+  content::WebContents* extension_contents =
+      ExtensionPopup::last_popup_for_testing()->host()->host_contents();
+  ASSERT_NE(extension_contents, nullptr);
+  DevToolsAttachWaiter(extension_contents).Wait();
+
+  base::WeakPtr<views::Widget> extension_popup_widget =
+      ExtensionPopup::last_popup_for_testing()->GetWidget()->GetWeakPtr();
+  ASSERT_TRUE(extension_popup_widget);
+  views::test::WidgetVisibleWaiter(extension_popup_widget.get()).Wait();
+  EXPECT_TRUE(extension_popup_widget->IsVisible());
+
+  // Show a security dialog.
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  views::UniqueWidgetPtr security_widget =
+      CreateTestDialogWidget(browser_view->GetWidget());
+  extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(
+      security_widget.get());
+  security_widget->Show();
+  views::test::WidgetVisibleWaiter(security_widget.get()).Wait();
+
+  // The popup should be dismissed even though it was under inspection.
+  ExpectWidgetDestroy(extension_popup_widget);
+}
+
+// Tests that an extension popup attached to a DevTools protocol client
+// (emulating chrome.debugger.attach()) is dismissed when a security dialog is
+// shown.
+IN_PROC_BROWSER_TEST_F(
+    ExtensionPopupInteractiveUiTest,
+    DevToolsProtocolClientAttachedPopupClosesWhenSecurityDialogShown) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Test Extension",
+           "manifest_version": 3,
+           "action": { "default_popup": "popup.html" },
+           "version": "0.1"
+         })";
+
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("popup.html"),
+                     "<html>Hello, world!</html>");
+  const extensions::Extension* extension =
+      LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Open the popup.
+  base::WeakPtr<views::Widget> extension_popup_widget =
+      OpenExtensionPopup(browser(), extension);
+  ASSERT_TRUE(extension_popup_widget);
+  EXPECT_TRUE(extension_popup_widget->IsVisible());
+
+  content::WebContents* extension_contents =
+      ExtensionPopup::last_popup_for_testing()->host()->host_contents();
+  ASSERT_NE(extension_contents, nullptr);
+
+  // Attach a DevTools protocol client (emulating chrome.debugger.attach()).
+  CloseableTestDevToolsProtocolClient devtools_client;
+  devtools_client.AttachToWebContents(extension_contents);
+
+  // Show a security dialog.
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  views::UniqueWidgetPtr security_widget =
+      CreateTestDialogWidget(browser_view->GetWidget());
+  extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(
+      security_widget.get());
+  security_widget->Show();
+  views::test::WidgetVisibleWaiter(security_widget.get()).Wait();
+
+  // The popup should be dismissed.
+  ExpectWidgetDestroy(extension_popup_widget);
+}
+
+// Tests that an extension popup in one browser window does not close when a
+// security dialog is shown in a different browser window.
+IN_PROC_BROWSER_TEST_F(
+    ExtensionPopupInteractiveUiTest,
+    PopupDoesNotCloseWhenSecurityDialogShownInDifferentBrowser) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Test Extension",
+           "manifest_version": 3,
+           "action": { "default_popup": "popup.html" },
+           "version": "0.1"
+         })";
+
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("popup.html"),
+                     "<html>Hello, world!</html>");
+  const extensions::Extension* extension =
+      LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Open the popup in the first browser.
+  base::WeakPtr<views::Widget> extension_popup_widget =
+      OpenExtensionPopup(browser(), extension);
+  ASSERT_TRUE(extension_popup_widget);
+  EXPECT_TRUE(extension_popup_widget->IsVisible());
+
+  // Create a second browser window and show a security dialog in it.
+  BrowserWindowInterface* second_browser = CreateBrowser(profile());
+  BrowserView* second_browser_view =
+      BrowserView::GetBrowserViewForBrowser(second_browser);
+  views::UniqueWidgetPtr security_widget =
+      CreateTestDialogWidget(second_browser_view->GetWidget());
+  extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(
+      security_widget.get());
+  security_widget->Show();
+  views::test::WidgetVisibleWaiter(security_widget.get()).Wait();
+
+  // Flush the deferred CloseIfSecurityDialogPresent task.
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  // The popup in the first browser should remain open.
+  EXPECT_TRUE(extension_popup_widget);
+  EXPECT_TRUE(extension_popup_widget->IsVisible());
+
+  // Clean up.
+  security_widget->Close();
+  views::test::WidgetDestroyedWaiter(security_widget.get()).Wait();
+  CloseBrowserSynchronously(second_browser);
 }
 
 // Tests that pressing Escape in an extension popup does not close the popup
