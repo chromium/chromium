@@ -187,42 +187,61 @@ button {
     align-items: center;
     background-clip: border-box;
     border-bottom: 1px solid #0001;
-    border-left: 3px solid transparent;  /* Descendent selection indicator. */
+    border-left: 3px solid transparent;  /* Descendant selection indicator. */
     display: flex;
     font-family: monospace;
     height: 24px;
     white-space: nowrap;
-  }
 
-  .tree-toggle {
-    align-items: center;
-    box-sizing: border-box;
-    display: inline-flex;
-    flex-shrink: 0;
-    height: 100%;
-    justify-content: center;
-    user-select: none;
-    width: var(--tree-toggle-width);
+    &.expanded {
+      .tree-toggle span {
+        transform: rotate(90deg);
+      }
+    }
 
-    span {
-      display: inline-block;
+    .tree-toggle {
+      align-items: center;
+      box-sizing: border-box;
+      color: #666;
+      cursor: pointer;
+      display: inline-flex;
+      flex-shrink: 0;
+      font-size: 10px;
+      height: 100%;
+      justify-content: center;
+      user-select: none;
+      width: var(--tree-toggle-width);
+
+      &:hover {
+        color: #000;
+      }
+
+      span {
+        border-bottom: 4px solid transparent;
+        border-left: 4px solid currentColor;
+        border-top: 4px solid transparent;
+        box-sizing: border-box;
+        display: inline-block;
+        height: 8px;
+        pointer-events: none;
+        transition: transform 0.15s;
+        width: 4px;
+      }
+    }
+
+    .view-label {
+      padding-left: 4px;
+      padding-right: 4px;
       pointer-events: none;
-      transform: translate(1px, -2px) rotate(45deg);
-      transition: transform 0.15s;
-    }
-  }
 
-  .view-label {
-    padding-left: 4px;
-    padding-right: 4px;
+      &.no-id {
+        color: #888;
+        font-style: italic;
+      }
 
-    &.no-id {
-      color: #888;
-      font-style: italic;
-    }
-
-    .leaf & {
-      margin-left: var(--tree-toggle-width);
+      .leaf & {
+        margin-left: var(--tree-toggle-width);
+      }
     }
   }
 }

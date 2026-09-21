@@ -35,14 +35,12 @@ class MainVis {
 
     this.screenshotVis =
         new ScreenshotVis(this.el.divScreenshot, this.model.visOpts);
-    this.treeVis = new TreeVis(this.el.divViewTree);
     this.infoBarVis = new InfoBarVis(this.el.divInfoBar);
     this.overlayVis = new OverlayVis(this.el.divOverlay);
   }
 
   clearUI() {
     this.screenshotVis.clear();
-    this.treeVis.clear();
   }
 }
 
@@ -63,12 +61,17 @@ class MainController {
         this.model, this.el.divMain, this.el.divPaneScreenshot,
         this.el.divMainSplitter, this.hintCtrl);
 
-    this.treeCtrl = new TreeController(this.model, this.vis.treeVis);
+    this.treeCtrl = new TreeController(this.model, this.el.divViewTree);
+  }
+
+  clearUI() {
+    this.vis.clearUI();
+    this.treeCtrl.clear();
   }
 
   // Event Handlers - File Operations/Markup
   async handleLoad() {
-    this.vis.clearUI();
+    this.clearUI();
     this.vis.overlayVis.show('overlay-loading', 'Loading...');
     await this.model.unload();
 
