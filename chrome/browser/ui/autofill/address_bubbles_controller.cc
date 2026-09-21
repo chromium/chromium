@@ -97,7 +97,8 @@ AddressBubblesController::AddressBubblesController(
       content::WebContentsUserData<AddressBubblesController>(*web_contents),
       app_locale_(g_browser_process->GetFeatures()
                       ->application_locale_storage()
-                      ->Get()) {}
+                      ->GetTag()
+                      .tag_string()) {}
 
 AddressBubblesController::~AddressBubblesController() {
   // `address_profile_save_prompt_callback_` must have been invoked before

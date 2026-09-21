@@ -39,7 +39,8 @@ AddressEditorController::AddressEditorController(
       pdm_(*pdm),
       locale_(g_browser_process->GetFeatures()
                   ->application_locale_storage()
-                  ->Get()),
+                  ->GetTag()
+                  .tag_string()),
       is_validatable_(is_validatable) {
   const variations::VariationsService* variations_service =
       g_browser_process->variations_service();
