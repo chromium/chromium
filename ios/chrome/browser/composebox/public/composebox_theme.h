@@ -27,6 +27,9 @@
 // Convenience check for input plate position top.
 @property(nonatomic, readonly) BOOL isTopInputPlate;
 
+// Convenience check for input plate position bottom.
+@property(nonatomic, readonly) BOOL isBottomInputPlate;
+
 // The background color for the composebox;
 @property(nonatomic, readonly) UIColor* composeboxBackgroundColor;
 

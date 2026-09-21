@@ -167,7 +167,7 @@ class AssistantAIMUIStateProvider
 
   _modeHolder = [[ComposeboxModeHolder alloc] init];
   ComposeboxTheme* theme = [[ComposeboxTheme alloc]
-      initWithInputPlatePosition:ComposeboxInputPlatePosition::kBottom
+      initWithInputPlatePosition:ComposeboxInputPlatePosition::kBottomSheet
                        incognito:NO
                            isNTP:NO];
   ComposeboxFocusParams* focusParams = [[ComposeboxFocusParams alloc]

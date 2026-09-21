@@ -732,7 +732,7 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
 - (void)showMaxAttachmentSnackbarError {
   [self createSnackbarPresenterIfNeeded];
   CGFloat offset = _viewController.keyboardHeight;
-  if (!_theme.isTopInputPlate) {
+  if (_theme.isBottomInputPlate) {
     offset += _viewController.inputHeight + kSnackbarBottomMargin;
   }
   [_snackbarPresenter
@@ -744,7 +744,7 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
 - (void)showUnableToAddAttachmentSnackbarError {
   [self createSnackbarPresenterIfNeeded];
   CGFloat offset = _viewController.keyboardHeight;
-  if (!_theme.isTopInputPlate) {
+  if (_theme.isBottomInputPlate) {
     offset += _viewController.inputHeight + kSnackbarBottomMargin;
   }
   [_snackbarPresenter showUnableToAddAttachmentSnackbarWithBottomOffset:offset];
@@ -755,7 +755,7 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
 - (void)showMaxAttachmentForImageGenerationSnackbarError {
   [self createSnackbarPresenterIfNeeded];
   CGFloat offset = _viewController.keyboardHeight;
-  if (!_theme.isTopInputPlate) {
+  if (_theme.isBottomInputPlate) {
     offset += _viewController.inputHeight + kSnackbarBottomMargin;
   }
   [_snackbarPresenter showAttachmentLimitForImageGenerationSnackbar:

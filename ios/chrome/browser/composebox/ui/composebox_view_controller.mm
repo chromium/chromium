@@ -545,6 +545,8 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
     }
     case ComposeboxInputPlatePosition::kMissing:
       break;
+    case ComposeboxInputPlatePosition::kBottomSheet:
+      NOTREACHED() << "Bottom sheet position incompatible with composebox";
   }
 
   [NSLayoutConstraint activateConstraints:_constraintsForCurrentPosition];
@@ -572,6 +574,7 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
   ];
   switch (positon) {
     case ComposeboxInputPlatePosition::kiPad:  // Fall through
+    case ComposeboxInputPlatePosition::kBottomSheet:  // Fall through
     case ComposeboxInputPlatePosition::kTop:
       gradientLayer.startPoint = CGPointMake(0.5, 1.0);
       gradientLayer.endPoint = CGPointMake(0.5, 0.4);

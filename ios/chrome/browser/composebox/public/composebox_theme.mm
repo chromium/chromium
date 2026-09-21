@@ -34,6 +34,10 @@
          _inputPlatePosition == ComposeboxInputPlatePosition::kiPad;
 }
 
+- (BOOL)isBottomInputPlate {
+  return _inputPlatePosition == ComposeboxInputPlatePosition::kBottom;
+}
+
 - (UIColor*)composeboxBackgroundColor {
   return [UIColor colorNamed:kBackgroundColor];
 }
