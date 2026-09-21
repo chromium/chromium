@@ -678,6 +678,13 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
+    public void testOnSuggestionsChanged_notifiesLayoutEvenWhenInputNull() {
+        assertNull(mMediator.getCurrentInput());
+        mMediator.onSuggestionsChanged(null, /* hasSuggestions= */ false);
+        verify(mLocationBarLayout).onSuggestionsChanged(/* hasSuggestions= */ false);
+    }
+
+    @Test
     public void testOnTabLoadingNtp() {
         mMediator.onNtpStartedLoading();
         verify(mLocationBarLayout).onNtpStartedLoading();

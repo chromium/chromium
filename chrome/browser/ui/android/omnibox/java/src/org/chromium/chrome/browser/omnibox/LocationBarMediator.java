@@ -1051,6 +1051,9 @@ class LocationBarMediator
 
     /* package */ void onSuggestionsChanged(
             @Nullable AutocompleteMatch defaultMatch, boolean hasSuggestions) {
+        // Ensure layout is notified of cleared suggestions even after input is suspended.
+        mLocationBarLayout.onSuggestionsChanged(hasSuggestions);
+
         if (mAutocompleteCoordinator == null || mCurrentInput == null) return;
 
         String userText = mCurrentInput.getUserText();
@@ -1114,7 +1117,6 @@ class LocationBarMediator
 
         mUrlCoordinator.onUrlBarSuggestionsChanged(
                 mAutocompleteCoordinator.getSuggestionCount() != 0);
-        mLocationBarLayout.onSuggestionsChanged(hasSuggestions);
     }
 
     @Override
