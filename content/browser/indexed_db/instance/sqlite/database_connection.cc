@@ -2108,6 +2108,10 @@ StatusOr<IndexedDBValue> DatabaseConnection::AddExternalObjectMetadataToValue(
         it->second.file_system_access_token_remote()->Clone(
             token_clone.InitWithNewPipeAndPassReceiver());
         value.external_objects.emplace_back(std::move(token_clone));
+      } else if (in_memory()) {
+        auto in_memory_ref = in_memory_blob_references_.find(blob_row_id);
+        CHECK(in_memory_ref != in_memory_blob_references_.end());
+        value.external_objects.emplace_back(in_memory_ref->second);
       } else {
         base::span<const uint8_t> serialized_handle = statement.ColumnBlob(1);
         value.external_objects.emplace_back(std::vector<uint8_t>(
