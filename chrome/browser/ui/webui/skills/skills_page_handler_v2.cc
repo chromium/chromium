@@ -243,7 +243,16 @@ void SkillsPageHandlerV2::SendPrompt(const std::string& prompt) {
   tabs::TabInterface* tab =
       tabs::TabInterface::MaybeGetFromContents(&web_contents_.get());
   if (!tab) {
-    return;
+    // In the dialog the WebUI is hosted by a views::WebView rather than a tab,
+    // so fall back to the tab the dialog was opened over.
+    BrowserWindowInterface* browser = GetBrowserWindow();
+    if (!browser) {
+      return;
+    }
+    tab = browser->GetActiveTabInterface();
+    if (!tab) {
+      return;
+    }
   }
   if (auto* tab_controller = SkillsUiTabControllerInterface::From(tab)) {
     tab_controller->SendPrompt(prompt);
