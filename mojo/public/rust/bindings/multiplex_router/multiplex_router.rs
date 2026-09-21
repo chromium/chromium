@@ -267,12 +267,22 @@ impl MultiplexRouter {
 
     /// Send a message through the underlying pipe with the given interface ID.
     pub(super) fn send_message(&self, mut msg: MojomMessage, interface_id: InterfaceId) {
-        // Don't bother sending the message if we've been disconnected.
-        // Technically this is just an optimization, since incoming messages to
-        // a disconnected ID will be ignored on the other side.
-        if self.shared_state.lock().unwrap().registry.endpoint_map.contains_key(&interface_id) {
-            msg.header.interface_id = interface_id;
-            self.endpoint_watcher.with(|watcher| watcher.send_message(msg.into()));
+        msg.header.interface_id = interface_id;
+        // If the message fails to send, then Mojo will close any attached
+        // handles for us. But we have to close any attach associated
+        // interfaces ourselves, so get the list of interface IDs (if
+        // any) before we give away the message.
+        let ids = msg.associated_interface_ids();
+        let sent = self.send_raw_message(interface_id, msg.into());
+        if !sent {
+            for id in ids {
+                // We should never have invalid IDs in this array
+                debug_assert!(id != PRIMARY_INTERFACE_ID && id != INVALID_INTERFACE_ID);
+                // The IDs were registered with this router prior to the sending
+                // process, so we need to notify _ourselves_
+                // that they've just been dropped.
+                self.notify_peer_closed(id);
+            }
         }
     }
 
@@ -311,6 +321,38 @@ impl MultiplexRouter {
             });
 
             self.schedule_all_possible_tasks();
+        }
+    }
+
+    /// Tell the router that the peer of this associated interface has been
+    /// closed, so the local endpoint should be disconnected.
+    ///
+    /// This is meant for FFI use; normally disconnect handlers are scheduled
+    /// via an incoming notification from mojo, but it's also possible for C++
+    /// to notify us instead.
+    pub(crate) fn notify_peer_closed(&self, interface_id: InterfaceId) {
+        let mut shared_state = self.shared_state.lock().unwrap();
+        if shared_state.registry.endpoint_map.contains_key(&interface_id) {
+            shared_state.unscheduled_tasks.push_back(Task::Disconnect(interface_id));
+        }
+        drop(shared_state);
+        // Doesn't actually run the disconnect handler yet, just schedules it
+        self.schedule_all_possible_tasks();
+    }
+
+    /// Sends a raw message through the underlying pipe if the interface is
+    /// connected.
+    pub(super) fn send_raw_message(
+        &self,
+        interface_id: InterfaceId,
+        msg: system::message::SendableMessage,
+    ) -> bool {
+        if self.shared_state.lock().unwrap().registry.endpoint_map.contains_key(&interface_id) {
+            self.endpoint_watcher
+                .with(|watcher| watcher.send_message(msg))
+                .is_some_and(|result| result.is_ok())
+        } else {
+            false
         }
     }
 

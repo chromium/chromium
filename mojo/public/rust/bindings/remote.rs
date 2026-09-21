@@ -260,9 +260,11 @@ where
         self.next_request_id =
             if self.next_request_id == u64::MAX { 1 } else { self.next_request_id + 1 };
 
-        // This can only fail if the other end is closed, in which case we've
-        // nothing to do here (we'll get a disconnection notification
-        // separately).
+        // This can only fail if the other end is closed, in which case we'll
+        // get a disconnection notification separately.
+        // TODO(crbug.com/546129246): If the send failed, we shouldn't insert
+        // the response handler in the first place. But that requires plumbing
+        // to observe if it failed.
         self.router.send_message(message);
     }
 

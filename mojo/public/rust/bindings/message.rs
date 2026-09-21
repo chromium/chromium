@@ -70,6 +70,26 @@ impl MojomMessage {
         }
     }
 
+    /// Extract any associated interface IDs serialized into this message's
+    /// payload.
+    ///
+    /// This function is meant to be called for outgoing messages only, in
+    /// order to close any contained associated interfaces if the message
+    /// fails to send. The associated interface IDs for incoming messages
+    /// will be handled by the normal deserialization process.
+    /// TODO(crbug.com/540355135): We should handle associated interfaces
+    /// better, maybe track them in the type instead of re-reading them each
+    /// time.
+    pub fn associated_interface_ids(&self) -> Vec<u32> {
+        let Ok((_, ids)) = mojom_value_parser::extract_interface_ids(
+            &self.payload,
+            self.header.interface_ids_offset(),
+        ) else {
+            unreachable!("Outgoing messages should always be well-formed.")
+        };
+        ids.into_iter().map(|id| id.get()).collect()
+    }
+
     /// Serialize this message into its binary equivalent, and return the
     /// attached handles
     pub fn into_data(self) -> (Vec<u8>, Vec<UntypedHandle>) {

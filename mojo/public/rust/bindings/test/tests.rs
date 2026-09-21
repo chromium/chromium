@@ -1154,3 +1154,40 @@ fn test_duplicate_interface_id_reports_bad_message() {
         expect_true!(reported.is_some());
     }
 }
+
+/// Tests that when sending a message fails on a pure-Rust pipe, any associated
+/// endpoints serialized into that message are notified of peer closure.
+#[gtest(RustBindingsAPI, TestFailedSendMessageNotifiesSerializedEndpointPureRust)]
+fn test_failed_send_message_notifies_serialized_endpoint_pure_rust() {
+    let _task_env = task_environment::ffi::CreateTaskEnvironment();
+    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+
+    let (pending_remote, pending_receiver) =
+        PendingRemote::<dyn AssociatedSender>::new_pipe().unwrap();
+    let mut primary_remote = pending_remote.bind();
+
+    let run_loop = RunLoop::new();
+    let quit = run_loop.get_quit_closure();
+
+    let (child_remote, child_receiver) = PendingAssociatedRemote::<dyn MathService>::new_pair();
+    let child_disconnected = Arc::new(Mutex::new(false));
+    let child_disconnected_clone = child_disconnected.clone();
+    let _child_remote = child_remote.bind_with_options(
+        None,
+        Some(Box::new(move || {
+            *child_disconnected_clone.lock().unwrap() = true;
+            quit();
+        })),
+    );
+
+    // Drop the primary receiver so any subsequent message on this pipe fails.
+    drop(pending_receiver);
+
+    // Send child_receiver across primary_remote; writing will fail and
+    // child_remote should be notified.
+    primary_remote.SendReceiver(child_receiver);
+
+    run_loop.run();
+
+    assert!(*child_disconnected.lock().unwrap());
+}
