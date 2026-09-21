@@ -2024,36 +2024,40 @@ const FeatureEntry::FeatureParam kOmniboxAimNtpPlusMenuPopupWithFocus[] = {
 const FeatureEntry::FeatureParam kOmniboxAimNtpPlusMenuBottomSheet[] = {
     {"show_bottom_sheet_popup", "true"},
     {"show_ntp_plus_button", "true"}};
-const FeatureEntry::FeatureParam kOmniboxFuseboxContextMenuNoAccordion[] = {
+const FeatureEntry::FeatureParam kOmniboxFuseboxContextMenu[] = {
     {"show_bottom_sheet_popup", "false"},
-    {"fusebox_popup_carousel_ui", "false"},
-    {"fusebox_popup_use_accordion_ui", "false"}};
-const FeatureEntry::FeatureParam kOmniboxFuseboxContextMenuAccordion[] = {
-    {"show_bottom_sheet_popup", "false"},
-    {"fusebox_popup_carousel_ui", "false"},
-    {"fusebox_popup_use_accordion_ui", "true"}};
-const FeatureEntry::FeatureParam kOmniboxFuseboxBottomSheetCarouselAccordion[] = {
+    {"fusebox_popup_carousel", "false"},
+    {"fusebox_popup_scrollable_carousel", "false"},
+    {"fusebox_popup_use_accordion", "true"},
+    {"fusebox_popup_put_current_tab_first", "true"}};
+const FeatureEntry::FeatureParam kOmniboxFuseboxBottomSheetCarousel[] = {
     {"show_bottom_sheet_popup", "true"},
-    {"fusebox_popup_carousel_ui", "true"},
-    {"fusebox_popup_use_accordion_ui", "true"}};
-const FeatureEntry::FeatureParam kOmniboxFuseboxBottomSheetListAccordion[] = {
+    {"fusebox_popup_carousel", "true"},
+    {"fusebox_popup_scrollable_carousel", "false"},
+    {"fusebox_popup_use_accordion", "true"},
+    {"fusebox_popup_put_current_tab_first", "false"}};
+const FeatureEntry::FeatureParam kOmniboxFuseboxBottomSheetList[] = {
     {"show_bottom_sheet_popup", "true"},
-    {"fusebox_popup_carousel_ui", "false"},
-    {"fusebox_popup_use_accordion_ui", "true"}};
-const FeatureEntry::FeatureParam kOmniboxFuseboxBottomSheetCarouselNoAccordion[] = {
-    {"show_bottom_sheet_popup", "true"},
-    {"fusebox_popup_carousel_ui", "true"},
-    {"fusebox_popup_use_accordion_ui", "false"}};
+    {"fusebox_popup_carousel", "false"},
+    {"fusebox_popup_scrollable_carousel", "false"},
+    {"fusebox_popup_use_accordion", "true"},
+    {"fusebox_popup_put_current_tab_first", "true"}};
+const FeatureEntry::FeatureParam
+    kOmniboxFuseboxBottomSheetScrollableCarousel[] = {
+        {"show_bottom_sheet_popup", "true"},
+        {"fusebox_popup_carousel", "true"},
+        {"fusebox_popup_scrollable_carousel", "true"},
+        {"fusebox_popup_use_accordion", "false"},
+        {"fusebox_popup_put_current_tab_first", "true"}};
 
-const FeatureEntry::FeatureVariation kOmniboxFuseboxPopupVariationsVariants[] = {
-    {"Context Menu: No Accordion", kOmniboxFuseboxContextMenuNoAccordion, nullptr},
-    {"Context Menu: With Accordion", kOmniboxFuseboxContextMenuAccordion, nullptr},
-    {"Bottom Sheet: Carousel + Accordion",
-     kOmniboxFuseboxBottomSheetCarouselAccordion, nullptr},
-    {"Bottom Sheet: List + Accordion", kOmniboxFuseboxBottomSheetListAccordion,
-     nullptr},
-    {"Bottom Sheet: Carousel, No Accordion",
-     kOmniboxFuseboxBottomSheetCarouselNoAccordion, nullptr},
+const FeatureEntry::FeatureVariation kOmniboxFuseboxPopupVariationsVariants[] =
+    {
+        {"Context Menu", kOmniboxFuseboxContextMenu, nullptr},
+        {"Bottom Sheet w/ Carousel", kOmniboxFuseboxBottomSheetCarousel,
+         nullptr},
+        {"Bottom Sheet w/ List", kOmniboxFuseboxBottomSheetList, nullptr},
+        {"Bottom Sheet w/ Scrollable Carousel",
+         kOmniboxFuseboxBottomSheetScrollableCarousel, nullptr},
 };
 
 const FeatureEntry::FeatureParam kOmniboxAimHint[] = {

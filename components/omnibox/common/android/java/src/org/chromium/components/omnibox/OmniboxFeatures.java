@@ -196,16 +196,28 @@ public class OmniboxFeatures {
      * Whether the popup should use a horizontal carousel for attachments. This is private to ensure
      * that callers use {@link #shouldUseCarousel()} which also checks if the platform is desktop.
      */
-    private static final BooleanCachedFeatureParam sFuseboxPopupCarouselUi =
-            newBooleanParam(sOmniboxFuseboxPopupVariations, "fusebox_popup_carousel_ui", false);
+    private static final BooleanCachedFeatureParam sFuseboxPopupCarousel =
+            newBooleanParam(sOmniboxFuseboxPopupVariations, "fusebox_popup_carousel", false);
+
+    /**
+     * Whether the horizontal attachments carousel should be scrollable. This is private to ensure
+     * that callers use {@link #shouldUseScrollableCarousel()}.
+     */
+    private static final BooleanCachedFeatureParam sFuseboxPopupScrollableCarousel =
+            newBooleanParam(
+                    sOmniboxFuseboxPopupVariations, "fusebox_popup_scrollable_carousel", false);
 
     /**
      * Whether the popup should use an accordion for tools. This is private to ensure that callers
      * use {@link #hasAccordion()} which also checks if the platform is desktop.
      */
-    private static final BooleanCachedFeatureParam sFuseboxPopupAccordionUi =
+    private static final BooleanCachedFeatureParam sFuseboxPopupAccordion =
+            newBooleanParam(sOmniboxFuseboxPopupVariations, "fusebox_popup_use_accordion", false);
+
+    /** Whether the "Ask about this page" item should be placed first, before attachments. */
+    private static final BooleanCachedFeatureParam sFuseboxPopupPutCurrentTabFirst =
             newBooleanParam(
-                    sOmniboxFuseboxPopupVariations, "fusebox_popup_use_accordion_ui", false);
+                    sOmniboxFuseboxPopupVariations, "fusebox_popup_put_current_tab_first", false);
 
     public static final BooleanCachedFeatureParam sUseAskHintForNtp =
             newBooleanParam(sOmniboxMultimodalInput, "use_ask_hint_for_ntp", false);
@@ -431,12 +443,22 @@ public class OmniboxFeatures {
 
     /** Modifies the output of {@link #shouldUseCarousel()} for testing. */
     public static void setUseCarouselForTesting(boolean value) {
-        sFuseboxPopupCarouselUi.setForTesting(value);
+        sFuseboxPopupCarousel.setForTesting(value);
+    }
+
+    /** Modifies the output of {@link #shouldUseScrollableCarousel()} for testing. */
+    public static void setUseScrollableCarouselForTesting(boolean value) {
+        sFuseboxPopupScrollableCarousel.setForTesting(value);
     }
 
     /** Modifies the output of {@link #hasAccordion()} for testing. */
     public static void setUseAccordionForTesting(boolean value) {
-        sFuseboxPopupAccordionUi.setForTesting(value);
+        sFuseboxPopupAccordion.setForTesting(value);
+    }
+
+    /** Modifies the output of {@link #shouldPutCurrentTabFirst()} for testing. */
+    public static void setPutCurrentTabFirstForTesting(boolean value) {
+        sFuseboxPopupPutCurrentTabFirst.setForTesting(value);
     }
 
     /** Returns whether the bottom sheet popup should be shown. */
@@ -451,7 +473,12 @@ public class OmniboxFeatures {
 
     /** Returns whether the popup should use a horizontal carousel for attachments. */
     public static boolean shouldUseCarousel() {
-        return shouldShowBottomSheetPopup() && sFuseboxPopupCarouselUi.getValue();
+        return shouldShowBottomSheetPopup() && sFuseboxPopupCarousel.getValue();
+    }
+
+    /** Returns whether the popup should use a scrollable carousel for attachments. */
+    public static boolean shouldUseScrollableCarousel() {
+        return shouldUseCarousel() && sFuseboxPopupScrollableCarousel.getValue();
     }
 
     /** Returns whether the popup should use a collapsible accordion for tools. */
@@ -459,7 +486,12 @@ public class OmniboxFeatures {
         if (OmniboxCapabilities.isDesktopPlatform()) {
             return false;
         }
-        return sFuseboxPopupAccordionUi.getValue();
+        return sFuseboxPopupAccordion.getValue();
+    }
+
+    /** Returns whether "Ask about this page" should be placed first before attachments. */
+    public static boolean shouldPutCurrentTabFirst() {
+        return sFuseboxPopupPutCurrentTabFirst.getValue();
     }
 
     /**
