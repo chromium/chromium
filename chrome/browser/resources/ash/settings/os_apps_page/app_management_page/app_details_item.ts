@@ -15,11 +15,13 @@ enum UpdateState {
 }
 import './app_management_cros_shared_style.css.js';
 
+import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppType, browserProxyFactory, InstallReason, InstallSource} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppManagementUserAction} from 'chrome://resources/cr_components/app_management/constants.js';
 import {recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
+import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -145,17 +147,44 @@ export class AppManagementAppDetailsItem extends
     this.checkForUpdates_();
   }
 
-  private onUpdateFoundDialogClose_(): void {
+  private onUpdateFoundDialogClose_(e: Event): void {
     this.showUpdateFoundDialog_ = false;
+
+    // `CrDialogElement.close()` sets the native dialog's `returnValue` to
+    // 'success', while all dismissal paths (Cancel button, Escape key and the
+    // close 'X' button) leave it empty. Focus is only restored here for
+    // dismissals: on confirmation `triggerUpdate_()` immediately disables
+    // `#checkUpdateButton`, which blurs it, so focus is instead restored once
+    // the update finishes.
+    const dialog = e.target as CrDialogElement;
+    if (dialog.getNative().returnValue !== 'success') {
+      this.focusCheckUpdateButton_();
+    }
   }
 
   private onUpdateFoundDialogCancel_(): void {
-    this.showUpdateFoundDialog_ = false;
+    const dialog =
+        this.shadowRoot!.querySelector<CrDialogElement>('#updateFoundDialog');
+    if (dialog) {
+      dialog.cancel();
+    }
   }
 
   private onUpdateFoundDialogConfirm_(): void {
-    this.showUpdateFoundDialog_ = false;
+    const dialog =
+        this.shadowRoot!.querySelector<CrDialogElement>('#updateFoundDialog');
+    if (dialog) {
+      dialog.close();
+    }
     this.triggerUpdate_();
+  }
+
+  private focusCheckUpdateButton_(): void {
+    const checkUpdateButton =
+        this.shadowRoot!.querySelector<HTMLElement>('#checkUpdateButton');
+    if (checkUpdateButton) {
+      focusWithoutInk(checkUpdateButton);
+    }
   }
 
   private async checkForUpdates_(): Promise<void> {
@@ -213,10 +242,12 @@ export class AppManagementAppDetailsItem extends
       } else {
         this.updateState_ = UpdateState.UPDATE_AVAILABLE;
       }
+      this.focusCheckUpdateButton_();
     } catch (e) {
       if (this.app?.id === targetAppId) {
         console.error('Failed to apply update:', e);
         this.updateState_ = UpdateState.UPDATE_AVAILABLE;
+        this.focusCheckUpdateButton_();
       }
     }
   }

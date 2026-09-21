@@ -6,11 +6,13 @@ import 'chrome://os-settings/lazy_load.js';
 
 import type {AppManagementAppDetailsItem} from 'chrome://os-settings/lazy_load.js';
 import {AppManagementStore, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
+import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppType, InstallReason, InstallSource} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import type {FakePageHandler} from '../../app_management/fake_page_handler.js';
 import type {TestAppManagementStore} from '../../app_management/test_store.js';
@@ -428,6 +430,7 @@ suite('<app-management-app-details-item>', () => {
     // All dialogues closed, and button is back to default
     assertNull(appDetailsItem.shadowRoot!.querySelector('#updateFoundDialog'));
     assertEquals('Check for updates', checkUpdateButton.innerText.trim());
+    assertEquals(checkUpdateButton, appDetailsItem.shadowRoot!.activeElement);
     assertEquals('', lastCheckText.innerText.trim());
   });
 
@@ -614,11 +617,120 @@ suite('<app-management-app-details-item>', () => {
         assertEquals('Apply update', applyButton.innerText.trim());
 
         // Test cancelling the dialog closes it without applying update
+        // and restores focus.
+        const whenClosed = eventToPromise('close', updateFoundDialog);
         cancelButton.click();
+
+        await whenClosed;
         await flushTasks();
 
         assertNull(
             appDetailsItem.shadowRoot!.querySelector('#updateFoundDialog'));
         assertEquals('Check for updates', checkUpdateButton.innerText.trim());
+        assertEquals(
+            checkUpdateButton, appDetailsItem.shadowRoot!.activeElement);
       });
+
+  /**
+   * Adds an IWA with a pending update and opens the "Update found" dialog.
+   * Returns the elements involved in the focus restoration flow.
+   */
+  async function showUpdateFoundDialog():
+      Promise<{checkUpdateButton: HTMLElement, dialog: CrDialogElement}> {
+    loadTimeData.overrideValues({isIwaInlineUpdateEnabled: true});
+    await addApp({
+      type: AppType.kWeb,
+      publisherId: 'isolated-app://pt2igw6.../',
+      version: '1.0.0',
+      title: 'Kitchen Sink IWA',
+    });
+
+    const checkUpdateButton =
+        appDetailsItem.shadowRoot!.querySelector<HTMLElement>(
+            '#checkUpdateButton');
+    assertTrue(!!checkUpdateButton);
+
+    fakeHandler.updateVersion = {components: [1, 2, 0]};
+    fakeHandler.numWindowsForApp = 0;
+
+    checkUpdateButton.click();
+    await fakeHandler.whenCalled('checkForIsolatedWebAppUpdate');
+    await fakeHandler.whenCalled('getNumWindowsForApp');
+    await fakeHandler.flushPipesForTesting();
+    await flushTasks();
+
+    const dialog = appDetailsItem.shadowRoot!.querySelector<CrDialogElement>(
+        '#updateFoundDialog');
+    assertTrue(!!dialog);
+
+    return {checkUpdateButton, dialog};
+  }
+
+  test(
+      'IWA update dialog restores focus when dismissed with Escape',
+      async () => {
+        const {checkUpdateButton, dialog} = await showUpdateFoundDialog();
+        const whenClosed = eventToPromise('close', dialog);
+
+        // Emulate an 'Escape' key dismissal: the native <dialog> fires
+        // 'cancel' and then closes, firing 'close' with an empty
+        // `returnValue`.
+        const nativeDialog = dialog.getNative();
+        nativeDialog.dispatchEvent(new Event('cancel', {cancelable: true}));
+        nativeDialog.close();
+
+        await whenClosed;
+        await flushTasks();
+
+        assertNull(
+            appDetailsItem.shadowRoot!.querySelector('#updateFoundDialog'));
+        assertEquals(
+            checkUpdateButton, appDetailsItem.shadowRoot!.activeElement);
+      });
+
+  test(
+      'IWA update dialog restores focus when cancelled by the dialog',
+      async () => {
+        const {checkUpdateButton, dialog} = await showUpdateFoundDialog();
+
+        // `#updateFoundDialog` does not set `show-close-button`, so the 'X'
+        // button stays hidden and is not reachable by the user. `cancel()` is
+        // the shared entry point that the 'X' button would otherwise invoke.
+        const closeButton =
+            dialog.shadowRoot!.querySelector<HTMLElement>('#close');
+        assertTrue(!!closeButton);
+        assertTrue(closeButton.hidden);
+
+        const whenClosed = eventToPromise('close', dialog);
+        dialog.cancel();
+
+        await whenClosed;
+        await flushTasks();
+
+        assertNull(
+            appDetailsItem.shadowRoot!.querySelector('#updateFoundDialog'));
+        assertEquals(
+            checkUpdateButton, appDetailsItem.shadowRoot!.activeElement);
+      });
+
+  test('IWA update restores focus when applying the update fails', async () => {
+    const {checkUpdateButton, dialog} = await showUpdateFoundDialog();
+
+    const confirmFoundButton =
+        dialog.querySelector<HTMLElement>('#confirmFound');
+    assertTrue(!!confirmFoundButton);
+
+    fakeHandler.applyUpdateSuccess = false;
+    confirmFoundButton.click();
+
+    await fakeHandler.whenCalled('applyIsolatedWebAppUpdate');
+    await fakeHandler.flushPipesForTesting();
+    await flushTasks();
+
+    // The update failed, so the update remains available. Focus is
+    // restored once `#checkUpdateButton` is re-enabled.
+    assertNull(appDetailsItem.shadowRoot!.querySelector('#updateFoundDialog'));
+    assertEquals('Check for updates', checkUpdateButton.innerText.trim());
+    assertEquals(checkUpdateButton, appDetailsItem.shadowRoot!.activeElement);
+  });
 });
