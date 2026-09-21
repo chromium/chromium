@@ -43,8 +43,6 @@ class OneTimePermissionsTracker : public KeyedService {
     virtual ~Condition() = default;
   };
 
-  base::WeakPtr<OneTimePermissionsTracker> GetWeakPtr();
-
   std::unique_ptr<Condition> NewActivePage(const url::Origin& origin);
   std::unique_ptr<Condition> NewForegroundPage(const url::Origin& origin);
   // Adds observer implementing `OneTimePermissionsTrackerObserver`.

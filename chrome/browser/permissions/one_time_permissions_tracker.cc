@@ -78,11 +78,6 @@ OneTimePermissionsTracker::OneTimePermissionsTracker() {
 
 OneTimePermissionsTracker::~OneTimePermissionsTracker() = default;
 
-base::WeakPtr<OneTimePermissionsTracker>
-OneTimePermissionsTracker::GetWeakPtr() {
-  return weak_factory_.GetWeakPtr();
-}
-
 std::unique_ptr<OneTimePermissionsTracker::Condition>
 OneTimePermissionsTracker::NewActivePage(const url::Origin& origin) {
   return std::make_unique<MultipleTrackerCondition<1>>(
