@@ -52,7 +52,7 @@ config("warnings_config") {
 # The "public" target for all litert/litert files.
 tflite_group("litert") {
   public_deps = [ ":litert_headers" ]
-  if (build_with_internal_optimization_guide) {
+  if (build_with_chromium && build_with_internal_optimization_guide) {
     public_deps_for_standalone = [ ":serialization_schema_litert" ]
   }
   conditional_deps = [
@@ -211,7 +211,7 @@ flatbuffer("weight_cache_schema_litert") {
   ]
 }
 
-if (build_with_internal_optimization_guide) {
+if (build_with_chromium && build_with_internal_optimization_guide) {
   flatbuffer("serialization_schema_litert") {
     sources = [ "src/ml_drift_delegate/delegate/serialization_weight_cache/serialization_schema.fbs" ]
     flatc_out_dir = "src/ml_drift_delegate/delegate/serialization_weight_cache"
@@ -1495,7 +1495,7 @@ if (use_litert_tflite) {
     # target (which is assumed to be for third_party code that is OK to have
     # these switches).
     public_deps_for_standalone = [ "//third_party/neon_2_sse" ]
-    if (build_with_internal_optimization_guide) {
+    if (build_with_chromium && build_with_internal_optimization_guide) {
       public_deps_for_standalone += [ ":serialization_schema_litert" ]
     }
   }
