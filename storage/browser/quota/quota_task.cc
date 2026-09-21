@@ -20,7 +20,7 @@ namespace storage {
 QuotaTask::~QuotaTask() = default;
 
 void QuotaTask::Start() {
-  CHECK(observer_ != nullptr, base::NotFatalUntil::M148);
+  CHECK(observer_ != nullptr);
   observer()->RegisterTask(this);
   Run();
 }
@@ -29,7 +29,7 @@ QuotaTask::QuotaTask(QuotaTaskObserver* observer)
     : observer_(observer),
       original_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       delete_scheduled_(false) {
-  CHECK(observer != nullptr, base::NotFatalUntil::M148);
+  CHECK(observer != nullptr);
 }
 
 void QuotaTask::CallCompleted() {
@@ -71,7 +71,7 @@ void QuotaTaskObserver::RegisterTask(QuotaTask* task) {
 }
 
 void QuotaTaskObserver::UnregisterTask(QuotaTask* task) {
-  CHECK(running_quota_tasks_.contains(task), base::NotFatalUntil::M148);
+  CHECK(running_quota_tasks_.contains(task));
   running_quota_tasks_.erase(task);
 }
 

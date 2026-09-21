@@ -245,17 +245,17 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::UpdateOrCreateBucket(
   // Update the parameters that can be changed.
   if (!params.expiration.is_null() &&
       (params.expiration != bucket_result->expiration)) {
-    CHECK(!bucket_result->is_default(), base::NotFatalUntil::M148);
+    CHECK(!bucket_result->is_default());
     bucket_result =
         UpdateBucketExpiration(bucket_result->id, params.expiration);
-    CHECK(bucket_result.has_value(), base::NotFatalUntil::M148);
+    CHECK(bucket_result.has_value());
   }
 
   if (params.persistent && (*params.persistent != bucket_result->persistent)) {
-    CHECK(!bucket_result->is_default(), base::NotFatalUntil::M148);
+    CHECK(!bucket_result->is_default());
     bucket_result =
         UpdateBucketPersistence(bucket_result->id, *params.persistent);
-    CHECK(bucket_result.has_value(), base::NotFatalUntil::M148);
+    CHECK(bucket_result.has_value());
   }
 
   return bucket_result;
@@ -473,7 +473,7 @@ QuotaError QuotaDatabase::SetStorageKeyLastAccessTime(
 QuotaError QuotaDatabase::SetBucketLastAccessTime(BucketId bucket_id,
                                                   base::Time last_accessed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!bucket_id.is_null(), base::NotFatalUntil::M148);
+  CHECK(!bucket_id.is_null());
   QuotaError open_error = EnsureOpened();
   if (open_error != QuotaError::kNone) {
     return open_error;
@@ -500,7 +500,7 @@ QuotaError QuotaDatabase::SetBucketLastAccessTime(BucketId bucket_id,
 QuotaError QuotaDatabase::SetBucketLastModifiedTime(BucketId bucket_id,
                                                     base::Time last_modified) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!bucket_id.is_null(), base::NotFatalUntil::M148);
+  CHECK(!bucket_id.is_null());
   QuotaError open_error = EnsureOpened();
   if (open_error != QuotaError::kNone) {
     return open_error;
@@ -550,7 +550,7 @@ QuotaError QuotaDatabase::RegisterInitialStorageKeyInfo(
 QuotaErrorOr<mojom::BucketTableEntryPtr> QuotaDatabase::GetBucketInfoForTest(
     BucketId bucket_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!bucket_id.is_null(), base::NotFatalUntil::M148);
+  CHECK(!bucket_id.is_null());
   QuotaError open_error = EnsureOpened();
   if (open_error != QuotaError::kNone) {
     return base::unexpected(open_error);
@@ -718,8 +718,8 @@ QuotaErrorOr<std::set<BucketLocator>> QuotaDatabase::GetBucketsModifiedBetween(
     return base::unexpected(open_error);
   }
 
-  CHECK(!begin.is_max(), base::NotFatalUntil::M148);
-  CHECK(end != base::Time(), base::NotFatalUntil::M148);
+  CHECK(!begin.is_max());
+  CHECK(end != base::Time());
   // clang-format off
   static constexpr char kSql[] =
       "SELECT id, storage_key, name FROM buckets "
@@ -1193,9 +1193,9 @@ bool QuotaDatabase::CreateIndex(const IndexSchema& index) {
 
 bool QuotaDatabase::ResetStorage() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!db_file_path_.empty(), base::NotFatalUntil::M148);
-  CHECK(storage_directory_, base::NotFatalUntil::M148);
-  CHECK(!db_ || !db_->HasActiveTransactions(), base::NotFatalUntil::M148);
+  CHECK(!db_file_path_.empty());
+  CHECK(storage_directory_);
+  CHECK(!db_ || !db_->HasActiveTransactions());
   VLOG(1) << "Deleting existing quota data and starting over.";
 
   meta_table_.reset();
@@ -1264,7 +1264,7 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::CreateBucketInternal(
 
   // First verify this won't exceed the max bucket count if one is given.
   if (max_bucket_count > 0) {
-    CHECK_NE(params.name, kDefaultBucketName, base::NotFatalUntil::M148);
+    CHECK_NE(params.name, kDefaultBucketName);
     // Note that technically we should be filtering out default buckets when
     // counting existing buckets so that the max count only applies to
     // non-default buckets. However the precise bucket count is not that

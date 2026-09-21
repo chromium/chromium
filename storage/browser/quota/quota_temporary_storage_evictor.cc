@@ -42,7 +42,7 @@ QuotaTemporaryStorageEvictor::QuotaTemporaryStorageEvictor(
     QuotaEvictionHandler* quota_eviction_handler,
     base::TimeDelta interval)
     : quota_eviction_handler_(quota_eviction_handler), interval_(interval) {
-  CHECK(quota_eviction_handler, base::NotFatalUntil::M148);
+  CHECK(quota_eviction_handler);
 }
 
 QuotaTemporaryStorageEvictor::~QuotaTemporaryStorageEvictor() {
@@ -52,7 +52,7 @@ QuotaTemporaryStorageEvictor::~QuotaTemporaryStorageEvictor() {
 void QuotaTemporaryStorageEvictor::GetStatistics(
     std::map<std::string, int64_t>* statistics) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(statistics, base::NotFatalUntil::M148);
+  CHECK(statistics);
 
   (*statistics)["errors-on-getting-usage-and-quota"] =
       statistics_.num_errors_on_getting_usage_and_quota;
@@ -64,8 +64,8 @@ void QuotaTemporaryStorageEvictor::GetStatistics(
 
 void QuotaTemporaryStorageEvictor::ReportPerRoundHistogram() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(round_statistics_.in_round, base::NotFatalUntil::M148);
-  CHECK(round_statistics_.is_initialized, base::NotFatalUntil::M148);
+  CHECK(round_statistics_.in_round);
+  CHECK(round_statistics_.is_initialized);
 
   base::Time now = base::Time::Now();
   base::UmaHistogramTimes("Quota.TimeSpentToAEvictionRound",
@@ -178,7 +178,7 @@ void QuotaTemporaryStorageEvictor::OnGotEvictionRoundInfo(
     int64_t current_usage,
     bool current_usage_is_complete) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK_GE(current_usage, 0, base::NotFatalUntil::M148);
+  CHECK_GE(current_usage, 0);
 
   // Note: if there is no storage pressure, |current_usage|
   // may not be fully calculated and may be 0.
@@ -192,8 +192,7 @@ void QuotaTemporaryStorageEvictor::OnGotEvictionRoundInfo(
                                            kUsageRatioToStartEviction));
   int64_t diskspace_shortage =
       std::max(INT64_C(0), settings.should_remain_available - available_space);
-  CHECK(current_usage_is_complete || diskspace_shortage == 0,
-        base::NotFatalUntil::M148);
+  CHECK(current_usage_is_complete || diskspace_shortage == 0);
 
   // If we're using so little that freeing all of it wouldn't help,
   // don't let the low space condition cause us to delete it all.

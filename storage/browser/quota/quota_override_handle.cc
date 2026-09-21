@@ -50,7 +50,7 @@ void QuotaOverrideHandle::OverrideQuotaForStorageKey(
 
 void QuotaOverrideHandle::DidGetOverrideHandleId(int id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!id_.has_value(), base::NotFatalUntil::M148);
+  CHECK(!id_.has_value());
   id_ = std::make_optional(id);
 
   for (auto& callback : override_callback_queue_) {
