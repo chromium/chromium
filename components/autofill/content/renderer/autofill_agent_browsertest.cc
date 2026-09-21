@@ -699,19 +699,25 @@ TEST_F(AutofillAgentTest, TriggerFormExtractionWithResponse_CalledTwice) {
   autofill_agent().TriggerFormExtractionWithResponse(mock_callback.Get());
 }
 
-// Tests that `AutofillDriver::TriggerSuggestions()` triggers
-// `AutofillAgent::AskForValuesToFill()` (which will ultimately trigger
+// Tests that `AutofillAgent::TriggerSuggestions()` triggers
+// `AutofillDriver::AskForValuesToFill()` (which will ultimately trigger
 // suggestions).
 TEST_F(AutofillAgentTest, TriggerSuggestions) {
   EXPECT_CALL(autofill_driver(), FormsSeen);
-  LoadHTML("<body><input></body>");
+  LoadHTML(R"(<body><input id="input"></body>)");
   WaitForFormsSeen();
-  EXPECT_CALL(autofill_driver(), AskForValuesToFill);
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, GetFieldRendererIdById("input"), _,
+          AutofillSuggestionTriggerSource::kFormControlElementClicked, _));
   autofill_agent().TriggerSuggestions(
-      FieldRendererId(2),
+      GetFieldRendererIdById("input"),
       AutofillSuggestionTriggerSource::kFormControlElementClicked);
 }
 
+// Tests that `AutofillAgent::TriggerSuggestions()` works for elements with a
+// datalist and extracts datalist options.
 TEST_F(AutofillAgentTest, TriggerSuggestionsForElementWithDatalist) {
   EXPECT_CALL(autofill_driver(), FormsSeen);
   LoadHTML(R"(<body><form>
@@ -724,14 +730,16 @@ TEST_F(AutofillAgentTest, TriggerSuggestionsForElementWithDatalist) {
   WaitForFormsSeen();
 
   FormData form;
-  EXPECT_CALL(autofill_driver(),
-              AskForValuesToFill(
-                  Property(&FormData::fields,
-                           ElementsAre(Property(
-                               &FormFieldData::datalist_options,
-                               ElementsAre(SelectOption{.value = u"Strawberry"},
-                                           SelectOption{.value = u"Apple"})))),
-                  _, _, _, Eq(std::nullopt)));
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          Property(&FormData::fields,
+                   ElementsAre(Property(
+                       &FormFieldData::datalist_options,
+                       ElementsAre(SelectOption{.value = u"Strawberry"},
+                                   SelectOption{.value = u"Apple"})))),
+          GetFieldRendererIdById("ff"), _,
+          AutofillSuggestionTriggerSource::kFormControlElementClicked, _));
   autofill_agent().TriggerSuggestions(
       GetFieldRendererIdById("ff"),
       AutofillSuggestionTriggerSource::kFormControlElementClicked);
@@ -1013,19 +1021,21 @@ TEST_F(AutofillAgentTest, SelectFieldOptionsChangedAfterFillUsesFieldId) {
   task_environment_.FastForwardBy(base::Milliseconds(100));
 }
 
-// Tests that `AutofillDriver::TriggerSuggestions()` works for contenteditables.
+// Tests that `AutofillAgent::TriggerSuggestions()` works for contenteditables.
 TEST_F(AutofillAgentTest, TriggerSuggestionsForContenteditable) {
-  LoadHTML("<body><div id=ce contenteditable></div></body>");
-  FormRendererId form_id = GetFormRendererIdById("ce");
-  EXPECT_CALL(autofill_driver(), AskForValuesToFill);
+  LoadHTML(R"(<body><div id="ce" contenteditable></div></body>)");
+  EXPECT_CALL(autofill_driver(),
+              AskForValuesToFill(
+                  _, GetFieldRendererIdById("ce"), _,
+                  AutofillSuggestionTriggerSource::kComposeDialogLostFocus, _));
   autofill_agent().TriggerSuggestions(
-      FieldRendererId(form_id.value()),
+      GetFieldRendererIdById("ce"),
       AutofillSuggestionTriggerSource::kComposeDialogLostFocus);
 }
 
-// Tests that AutofillAgent::ApplyFormAction(kFill, kPreview) and
-// AutofillAgent::ClearPreviewedForm correctly set/reset the autofill state of a
-// field.
+// Tests that `AutofillAgent::ApplyFormAction(kFill, kPreview)` and
+// `AutofillAgent::ClearPreviewedForm()` correctly set/reset the autofill state
+// of a field.
 TEST_F(AutofillAgentTest, PreviewThenClear) {
   LoadHTML(R"(
     <form id="form_id">
