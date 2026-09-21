@@ -294,9 +294,9 @@ bool HTMLCanvasElement::PrepareTransferableResource(
   auto exported_resource =
       base::MakeRefCounted<ExportedCanvasResource>(std::move(frame));
 
-  CHECK(exported_resource->PrepareTransferableResource(
+  exported_resource->PrepareTransferableResource(
       CHECK_DEREF(out_resource),
-      /*needs_verified_synctoken=*/false));
+      /*needs_verified_synctoken=*/false);
 
   // TODO(https://crbug.com/1475955): HDR metadata should be propagated to
   // `frame`, and should be populated by the above call to

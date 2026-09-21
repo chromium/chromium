@@ -142,9 +142,9 @@ void CanvasResourceDispatcher::PrepareFrame(
   const bool nearest_neighbor = false;
 
   if (base::FeatureList::IsEnabled(kVerifySyncTokensInCRD)) {
-    CHECK(exported_resource->PrepareTransferableResource(
+    exported_resource->PrepareTransferableResource(
         resource,
-        /*needs_verified_synctoken=*/false));
+        /*needs_verified_synctoken=*/false);
 
     gpu::SharedImageInterface* sii = nullptr;
 
@@ -162,9 +162,9 @@ void CanvasResourceDispatcher::PrepareFrame(
       sii->VerifySyncToken(resource.mutable_sync_token());
     }
   } else {
-    CHECK(exported_resource->PrepareTransferableResource(
+    exported_resource->PrepareTransferableResource(
         resource,
-        /*needs_verified_synctoken=*/true));
+        /*needs_verified_synctoken=*/true);
   }
 
   const viz::ResourceId resource_id = id_generator_.GenerateNextId();

@@ -120,14 +120,12 @@ void CanvasResource::DropRefOnOwningThread(
   raw_resource->OnRefReturned(std::move(resource));
 }
 
-bool CanvasResource::PrepareTransferableResource(
+void CanvasResource::PrepareTransferableResource(
     viz::TransferableResource& out_resource,
     bool needs_verified_synctoken) {
   TRACE_EVENT0("blink", "CanvasResource::PrepareTransferableResource");
 
-  if (CreatesAcceleratedTransferableResources() && !ContextProviderWrapper()) {
-    return false;
-  }
+  CHECK(!CreatesAcceleratedTransferableResources() || ContextProviderWrapper());
 
   if (needs_verified_synctoken) {
     VerifySyncToken();
@@ -152,8 +150,6 @@ bool CanvasResource::PrepareTransferableResource(
     out_resource.synchronization_type =
         viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted;
   }
-
-  return true;
 }
 
 // CanvasResourceSharedImage
