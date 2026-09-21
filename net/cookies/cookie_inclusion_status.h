@@ -32,90 +32,87 @@ class NET_EXPORT CookieInclusionStatus {
     // Statuses applied when accessing a cookie (either sending or setting):
 
     // Cookie was HttpOnly, but the attempted access was through a non-HTTP API.
-    EXCLUDE_HTTP_ONLY = 1,
+    EXCLUDE_HTTP_ONLY,
     // Cookie was Secure, but the URL was not allowed to access Secure cookies.
-    EXCLUDE_SECURE_ONLY = 2,
+    EXCLUDE_SECURE_ONLY,
     // The cookie's domain attribute did not match the domain of the URL
     // attempting access.
-    EXCLUDE_DOMAIN_MISMATCH = 3,
+    EXCLUDE_DOMAIN_MISMATCH,
     // The cookie's path attribute did not match the path of the URL attempting
     // access.
-    EXCLUDE_NOT_ON_PATH = 4,
+    EXCLUDE_NOT_ON_PATH,
     // The cookie had SameSite=Strict, and the attempted access did not have an
     // appropriate SameSiteCookieContext.
-    EXCLUDE_SAMESITE_STRICT = 5,
+    EXCLUDE_SAMESITE_STRICT,
     // The cookie had SameSite=Lax, and the attempted access did not have an
     // appropriate SameSiteCookieContext.
-    EXCLUDE_SAMESITE_LAX = 6,
+    EXCLUDE_SAMESITE_LAX,
     // The cookie did not specify a SameSite attribute, and therefore was
     // treated as if it were SameSite=Lax, and the attempted access did not have
     // an appropriate SameSiteCookieContext.
-    EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX = 7,
+    EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX,
     // The cookie specified SameSite=None, but it was not Secure.
-    EXCLUDE_SAMESITE_NONE_INSECURE = 8,
+    EXCLUDE_SAMESITE_NONE_INSECURE,
     // Caller did not allow access to the cookie.
-    EXCLUDE_USER_PREFERENCES = 9,
+    EXCLUDE_USER_PREFERENCES,
 
     // Statuses only applied when creating/setting cookies:
 
     // Cookie was malformed and could not be stored, due to problem(s) while
     // parsing.
     // TODO(crbug.com/40189703): Use more specific reasons for parsing errors.
-    EXCLUDE_FAILURE_TO_STORE = 10,
+    EXCLUDE_FAILURE_TO_STORE,
     // Attempted to set a cookie from a scheme that does not support cookies.
-    EXCLUDE_NONCOOKIEABLE_SCHEME = 11,
+    EXCLUDE_NONCOOKIEABLE_SCHEME,
     // Cookie would have overwritten a Secure cookie, and was not allowed to do
     // so. (See "Leave Secure Cookies Alone":
     // https://tools.ietf.org/html/draft-west-leave-secure-cookies-alone-05 )
-    EXCLUDE_OVERWRITE_SECURE = 12,
+    EXCLUDE_OVERWRITE_SECURE,
     // Cookie would have overwritten an HttpOnly cookie, and was not allowed to
     // do so.
-    EXCLUDE_OVERWRITE_HTTP_ONLY = 13,
+    EXCLUDE_OVERWRITE_HTTP_ONLY,
     // Cookie was set with an invalid Domain attribute.
-    EXCLUDE_INVALID_DOMAIN = 14,
+    EXCLUDE_INVALID_DOMAIN,
     // Cookie was set with an invalid __Host- or __Secure- prefix.
-    EXCLUDE_INVALID_PREFIX = 15,
+    EXCLUDE_INVALID_PREFIX,
     /// Cookie was set with an invalid Partitioned attribute, which is only
     // valid if the cookie has a __Host- prefix.
-    EXCLUDE_INVALID_PARTITIONED = 16,
+    EXCLUDE_INVALID_PARTITIONED,
     // Cookie exceeded the name/value pair size limit.
-    EXCLUDE_NAME_VALUE_PAIR_EXCEEDS_MAX_SIZE = 17,
+    EXCLUDE_NAME_VALUE_PAIR_EXCEEDS_MAX_SIZE,
     // Cookie exceeded the attribute size limit. Note that this exclusion value
     // won't be used by code that parses cookie lines since RFC6265bis
     // indicates that large attributes should be ignored instead of causing the
     // whole cookie to be rejected. There will be a corresponding WarningReason
     // to notify users that an attribute value was ignored in that case.
-    EXCLUDE_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE = 18,
+    EXCLUDE_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE,
     // Cookie was set with a Domain attribute containing non ASCII characters.
-    EXCLUDE_DOMAIN_NON_ASCII = 19,
-    // Special case for when a cookie is blocked by third-party cookie blocking
-    // but the two sites are in the same First-Party Set.
-    EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET = 20,
+    EXCLUDE_DOMAIN_NON_ASCII,
     // Cookie's source_port did not match the port of the request.
-    EXCLUDE_PORT_MISMATCH = 21,
+    EXCLUDE_PORT_MISMATCH,
     // Cookie's source_scheme did not match the scheme of the request.
-    EXCLUDE_SCHEME_MISMATCH = 22,
+    EXCLUDE_SCHEME_MISMATCH,
     // Cookie is a domain cookie and has the same name as an origin cookie on
     // this origin.
-    EXCLUDE_SHADOWING_DOMAIN = 23,
+    EXCLUDE_SHADOWING_DOMAIN,
     // Cookie contains ASCII control characters (including the tab character,
     // when it appears in the middle of the cookie name, value, an attribute
     // name, or an attribute value).
-    EXCLUDE_DISALLOWED_CHARACTER = 24,
+    EXCLUDE_DISALLOWED_CHARACTER,
     // Cookie is blocked for third-party cookie phaseout.
-    EXCLUDE_THIRD_PARTY_PHASEOUT = 25,
+    EXCLUDE_THIRD_PARTY_PHASEOUT,
     // Cookie contains no content or only whitespace.
-    EXCLUDE_NO_COOKIE_CONTENT = 26,
+    EXCLUDE_NO_COOKIE_CONTENT,
     // Cookie is unpartitioned and being accessed from an anonymous context
-    EXCLUDE_ANONYMOUS_CONTEXT = 27,
+    EXCLUDE_ANONYMOUS_CONTEXT,
     // Cookie was set with an invalid Path attribute (path was modified during
     // canonicalization, indicating the original path was malformed).
-    EXCLUDE_INVALID_PATH = 28,
+    EXCLUDE_INVALID_PATH,
     // Cookie was rejected in parsing due to having an ambiguous serialization.
     // This can result from having an empty name and a value containing an
     // equals sign, such as a cookie line "=Foo=Bar", which is serialized as
     // "Foo=Bar" and could shadow a cookie named "Foo".
-    EXCLUDE_AMBIGUOUS_SERIALIZATION = 29,
+    EXCLUDE_AMBIGUOUS_SERIALIZATION,
     // This should be kept last.
     MAX_EXCLUSION_REASON = EXCLUDE_AMBIGUOUS_SERIALIZATION
   };

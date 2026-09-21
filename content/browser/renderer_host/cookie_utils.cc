@@ -190,9 +190,6 @@ bool ShouldReportDevToolsIssueForStatus(
                                        EXCLUDE_PORT_MISMATCH) ||
          status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
                                        EXCLUDE_SCHEME_MISMATCH) ||
-         status.HasExclusionReason(
-             net::CookieInclusionStatus::ExclusionReason::
-                 EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET) ||
          status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
                                        EXCLUDE_THIRD_PARTY_PHASEOUT);
 }

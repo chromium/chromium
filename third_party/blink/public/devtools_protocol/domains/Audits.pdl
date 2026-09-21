@@ -36,7 +36,6 @@ experimental domain Audits
       ExcludeSameSiteLax
       ExcludeSameSiteStrict
       ExcludeDomainNonASCII
-      ExcludeThirdPartyCookieBlockedInFirstPartySet
       ExcludeThirdPartyPhaseout
       ExcludePortMismatch
       ExcludeSchemeMismatch

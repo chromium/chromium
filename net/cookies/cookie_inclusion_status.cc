@@ -102,14 +102,9 @@ void CookieInclusionStatus::MaybeClearThirdPartyPhaseoutReason() {
   if (!IsInclude()) {
     RemoveWarningReason(WarningReason::WARN_THIRD_PARTY_PHASEOUT);
   }
-  if (!ExclusionReasonsWithout(
-           {ExclusionReason::EXCLUDE_THIRD_PARTY_PHASEOUT,
-            ExclusionReason::
-                EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET})
+  if (!ExclusionReasonsWithout({ExclusionReason::EXCLUDE_THIRD_PARTY_PHASEOUT})
            .empty()) {
-    RemoveExclusionReasons(
-        {ExclusionReason::EXCLUDE_THIRD_PARTY_PHASEOUT,
-         ExclusionReason::EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET});
+    RemoveExclusionReasons({ExclusionReason::EXCLUDE_THIRD_PARTY_PHASEOUT});
   }
 }
 
@@ -173,8 +168,6 @@ std::string CookieInclusionStatus::GetDebugString() const {
       {ExclusionReason::EXCLUDE_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE,
        "EXCLUDE_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE"},
       {ExclusionReason::EXCLUDE_DOMAIN_NON_ASCII, "EXCLUDE_DOMAIN_NON_ASCII"},
-      {ExclusionReason::EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET,
-       "EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET"},
       {ExclusionReason::EXCLUDE_PORT_MISMATCH, "EXCLUDE_PORT_MISMATCH"},
       {ExclusionReason::EXCLUDE_SCHEME_MISMATCH, "EXCLUDE_SCHEME_MISMATCH"},
       {ExclusionReason::EXCLUDE_SHADOWING_DOMAIN, "EXCLUDE_SHADOWING_DOMAIN"},
@@ -335,15 +328,8 @@ std::optional<CookieInclusionStatus> CookieInclusionStatus::MakeFromComponents(
 }
 
 bool CookieInclusionStatus::ExcludedByUserPreferencesOrTPCD() const {
-  if (HasOnlyExclusionReason(ExclusionReason::EXCLUDE_USER_PREFERENCES) ||
-      HasOnlyExclusionReason(ExclusionReason::EXCLUDE_THIRD_PARTY_PHASEOUT)) {
-    return true;
-  }
-  return exclusion_reasons_ ==
-         ExclusionReasonBitset(
-             {ExclusionReason::EXCLUDE_THIRD_PARTY_PHASEOUT,
-              ExclusionReason::
-                  EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET});
+  return HasOnlyExclusionReason(ExclusionReason::EXCLUDE_USER_PREFERENCES) ||
+         HasOnlyExclusionReason(ExclusionReason::EXCLUDE_THIRD_PARTY_PHASEOUT);
 }
 
 }  // namespace net

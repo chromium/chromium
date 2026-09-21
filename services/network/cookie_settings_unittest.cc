@@ -1439,26 +1439,17 @@ TEST_P(CookieSettingsTestP, IsCookieAccessible_SitesInFirstPartySets) {
                              EXCLUDE_USER_PREFERENCES}));
 
   status.ResetForTesting();
-  // EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET should be added with the
-  // FirstPartySetMetadata indicating the cookie url and the top-level url are
-  // in the same RWS.
   EXPECT_FALSE(settings.IsCookieAccessible(
       *cookie, GURL(kRwsMemberURL), net::SiteForCookies(), top_level_origin,
       net::FirstPartySetMetadata(
           net::FirstPartySetEntry(primary, net::SiteType::kAssociated),
           net::FirstPartySetEntry(primary, net::SiteType::kPrimary)),
       GetCookieSettingOverrides(), &status));
-  if (IsTPCDEnabled()) {
-    EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-        {net::CookieInclusionStatus::ExclusionReason::
-             EXCLUDE_THIRD_PARTY_PHASEOUT,
-         net::CookieInclusionStatus::ExclusionReason::
-             EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET}));
-  } else {
-    EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-        {net::CookieInclusionStatus::ExclusionReason::
-             EXCLUDE_USER_PREFERENCES}));
-  }
+  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
+      {IsTPCDEnabled() ? net::CookieInclusionStatus::ExclusionReason::
+                             EXCLUDE_THIRD_PARTY_PHASEOUT
+                       : net::CookieInclusionStatus::ExclusionReason::
+                             EXCLUDE_USER_PREFERENCES}));
 }
 
 TEST_P(CookieSettingsTestP, AnnotateAndMoveUserBlockedCookies_CrossSiteEmbed) {
@@ -1933,15 +1924,12 @@ TEST_P(CookieSettingsTestP,
               net::HasExactlyExclusionReasonsForTesting(
                   IsForceThirdPartyCookieBlockingFlagEnabled()
                       ? net::CookieInclusionStatus::ExclusionReasonBitset{
-                                    net::CookieInclusionStatus::
-                                        ExclusionReason::EXCLUDE_THIRD_PARTY_PHASEOUT,
-                                    net::CookieInclusionStatus::
-                                        ExclusionReason::EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET,
-                                }
-                      :
-                            net::CookieInclusionStatus::
-                                ExclusionReasonBitset{net::CookieInclusionStatus::
-                                                     ExclusionReason::EXCLUDE_USER_PREFERENCES}),
+                            net::CookieInclusionStatus::ExclusionReason::
+                                EXCLUDE_THIRD_PARTY_PHASEOUT,
+                        }
+                      : net::CookieInclusionStatus::ExclusionReasonBitset{
+                            net::CookieInclusionStatus::ExclusionReason::
+                                EXCLUDE_USER_PREFERENCES}),
               _, _, _))));
 }
 
@@ -1980,18 +1968,13 @@ TEST_P(
           MatchesCookieAccessResult(
               net::HasExactlyExclusionReasonsForTesting(
                   IsForceThirdPartyCookieBlockingFlagEnabled()
-                      ?
-                            net::CookieInclusionStatus::
-                                ExclusionReasonBitset{
-                                    net::CookieInclusionStatus::
-                                                ExclusionReason::EXCLUDE_THIRD_PARTY_PHASEOUT,
-                                    net::CookieInclusionStatus::
-                                                ExclusionReason::EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET,
-                                }
-                      :
-                            net::CookieInclusionStatus::
-                                ExclusionReasonBitset{net::CookieInclusionStatus::
-                                                     ExclusionReason::EXCLUDE_USER_PREFERENCES}),
+                      ? net::CookieInclusionStatus::ExclusionReasonBitset{
+                            net::CookieInclusionStatus::ExclusionReason::
+                                EXCLUDE_THIRD_PARTY_PHASEOUT,
+                        }
+                      : net::CookieInclusionStatus::ExclusionReasonBitset{
+                            net::CookieInclusionStatus::ExclusionReason::
+                                EXCLUDE_USER_PREFERENCES}),
               _, _, _))));
 }
 

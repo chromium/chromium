@@ -903,12 +903,6 @@ GetProtocolBlockedSetCookieReason(net::CookieInclusionStatus status) {
     blockedReasons->push_back(
         Network::SetCookieBlockedReasonEnum::UserPreferences);
   }
-  if (status.HasExclusionReason(
-          net::CookieInclusionStatus::ExclusionReason::
-              EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET)) {
-    blockedReasons->push_back(
-        Network::SetCookieBlockedReasonEnum::ThirdPartyBlockedInFirstPartySet);
-  }
   if (status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
                                     EXCLUDE_THIRD_PARTY_PHASEOUT)) {
     blockedReasons->push_back(
@@ -1004,12 +998,6 @@ GetProtocolBlockedCookieReason(net::CookieInclusionStatus status) {
                                     EXCLUDE_USER_PREFERENCES)) {
     blockedReasons->push_back(
         Network::CookieBlockedReasonEnum::UserPreferences);
-  }
-  if (status.HasExclusionReason(
-          net::CookieInclusionStatus::ExclusionReason::
-              EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET)) {
-    blockedReasons->push_back(
-        Network::CookieBlockedReasonEnum::ThirdPartyBlockedInFirstPartySet);
   }
   if (status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
                                     EXCLUDE_THIRD_PARTY_PHASEOUT)) {
