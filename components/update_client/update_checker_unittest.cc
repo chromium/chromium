@@ -359,7 +359,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
 
 #if BUILDFLAG(IS_WIN)
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  const auto* updater = request->FindDict("updater");
+  const auto* updater = request->FindDict("updaters");
   ASSERT_TRUE(updater);
   ASSERT_TRUE(updater->FindString("name"));
   EXPECT_EQ("Omaha", *updater->FindString("name"));
