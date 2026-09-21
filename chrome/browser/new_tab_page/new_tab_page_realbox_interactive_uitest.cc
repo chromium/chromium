@@ -860,7 +860,7 @@ IN_PROC_BROWSER_TEST_F(NtpRealboxTabFlyoverInteractiveTest,
                                  SearchContentSharingSettingsValue::kEnabled));
       }),
       // Open a background tab first, then open NTP.
-      AddInstrumentedTab(kFirstTab, GURL("about:blank")),
+      AddInstrumentedTab(kFirstTab, GURL("https://www.example.com")),
       AddInstrumentedTab(kNtpElementId, chrome::ChromeUINewTabURLAsGURL()),
       // Open NTP composebox by clicking compose button.
       WaitForElementToRender(kNtpElementId, kRealbox),

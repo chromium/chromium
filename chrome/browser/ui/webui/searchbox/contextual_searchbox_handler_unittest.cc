@@ -3875,7 +3875,8 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, GetRecentTabs) {
       ntp_composebox::kNtpComposebox, params);
 
   // Add only 1 valid tab, and ensure it is the only one returned.
-  auto* about_blank_tab = AddTab(GURL("about:blank"));
+  auto* example_tab = AddTab(GURL("https://www.example.com"));
+  AddTab(GURL("about:blank"));
   AddTab(GURL("chrome://webui-is-ignored"));
 
   {
@@ -3884,7 +3885,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, GetRecentTabs) {
     handler().GetRecentTabs(future.GetCallback());
     auto tabs = future.Take();
     ASSERT_EQ(tabs.size(), 1u);
-    EXPECT_EQ(tabs[0]->tab_id, about_blank_tab->GetHandle().raw_value());
+    EXPECT_EQ(tabs[0]->tab_id, example_tab->GetHandle().raw_value());
   }
 
   auto* contextual_tasks_tab =
@@ -3896,17 +3897,17 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, GetRecentTabs) {
 
   {
     // Verify that the active contextual tasks tab is successfully filtered out,
-    // and only the regular blank tab is returned.
+    // and only the regular example tab is returned.
     base::test::TestFuture<std::vector<searchbox::mojom::TabInfoPtr>> future;
     handler().GetRecentTabs(future.GetCallback());
     auto tabs = future.Take();
     ASSERT_EQ(tabs.size(), 1u);
-    EXPECT_EQ(tabs[0]->tab_id, about_blank_tab->GetHandle().raw_value());
+    EXPECT_EQ(tabs[0]->tab_id, example_tab->GetHandle().raw_value());
   }
 
   // Case B: Test when the contextual tasks tab is an INACTIVE tab.
   ON_CALL(*tab_list(), GetActiveTab())
-      .WillByDefault(testing::Return(about_blank_tab));
+      .WillByDefault(testing::Return(example_tab));
 
   {
     // Verify that even when the contextual tasks tab is inactive,
@@ -3915,7 +3916,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, GetRecentTabs) {
     handler().GetRecentTabs(future.GetCallback());
     auto tabs = future.Take();
     ASSERT_EQ(tabs.size(), 1u);
-    EXPECT_EQ(tabs[0]->tab_id, about_blank_tab->GetHandle().raw_value());
+    EXPECT_EQ(tabs[0]->tab_id, example_tab->GetHandle().raw_value());
   }
 
   AddTab(GURL("https://www.google.com"));
@@ -3932,7 +3933,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, GetRecentTabs) {
     EXPECT_EQ(tabs[1]->tab_id, youtube_tab->GetHandle().raw_value());
   }
 
-  content::WebContentsTester::For(about_blank_tab->GetContents())
+  content::WebContentsTester::For(example_tab->GetContents())
       ->SetLastActiveTimeTicks(IncrementTimeTicksAndGet());
 
   {
@@ -3940,7 +3941,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, GetRecentTabs) {
     base::test::TestFuture<std::vector<searchbox::mojom::TabInfoPtr>> future;
     handler().GetRecentTabs(future.GetCallback());
     auto tabs = future.Take();
-    EXPECT_EQ(tabs[0]->tab_id, about_blank_tab->GetHandle().raw_value());
+    EXPECT_EQ(tabs[0]->tab_id, example_tab->GetHandle().raw_value());
     EXPECT_EQ(tabs[1]->tab_id, gmail_tab->GetHandle().raw_value());
   }
 }
