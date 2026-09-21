@@ -7,22 +7,19 @@ package org.chromium.content.browser.accessibility.captioning;
 import android.graphics.Color;
 import android.graphics.Typeface;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Test suite to ensure that platform settings are translated to CSS appropriately */
-@RunWith(BaseJUnit4ClassRunner.class)
-public class CaptioningChangeDelegateTest {
+@RunWith(BaseRobolectricTestRunner.class)
+public class CaptioningChangeDelegateUnitTest {
     private static final String DEFAULT_CAPTIONING_PREF_VALUE =
             CaptioningChangeDelegate.DEFAULT_CAPTIONING_PREF_VALUE;
 
     @Test
-    @SmallTest
     public void testFontScaleToPercentage() {
         String result = CaptioningChangeDelegate.androidFontScaleToPercentage(0f);
         Assert.assertEquals("0%", result);
@@ -47,7 +44,6 @@ public class CaptioningChangeDelegateTest {
     }
 
     @Test
-    @SmallTest
     public void testAndroidColorToCssColor() {
         String result = CaptioningChangeDelegate.androidColorToCssColor(null);
         Assert.assertEquals(DEFAULT_CAPTIONING_PREF_VALUE, result);
@@ -79,7 +75,6 @@ public class CaptioningChangeDelegateTest {
     }
 
     @Test
-    @SmallTest
     public void testClosedCaptionEdgeAttributeWithDefaults() {
         Assert.assertEquals(
                 DEFAULT_CAPTIONING_PREF_VALUE,
@@ -103,7 +98,6 @@ public class CaptioningChangeDelegateTest {
 
     /** Verifies that certain system fonts always correspond to the default captioning font. */
     @Test
-    @SmallTest
     public void testClosedCaptionDefaultFonts() {
         Assert.assertEquals(
                 "Null typeface should return the default font family.",
@@ -122,12 +116,11 @@ public class CaptioningChangeDelegateTest {
     }
 
     /**
-     * Typeface.DEFAULT may be equivalent to another Typeface such as Typeface.SANS_SERIF
-     * so this test ensures that each typeface returns DEFAULT_CAPTIONING_PREF_VALUE if it is
-     * equal to Typeface.DEFAULT or returns an explicit font family otherwise.
+     * Typeface.DEFAULT may be equivalent to another Typeface such as Typeface.SANS_SERIF so this
+     * test ensures that each typeface returns DEFAULT_CAPTIONING_PREF_VALUE if it is equal to
+     * Typeface.DEFAULT or returns an explicit font family otherwise.
      */
     @Test
-    @SmallTest
     public void testClosedCaptionNonDefaultFonts() {
         if (Typeface.MONOSPACE.equals(Typeface.DEFAULT)) {
             Assert.assertEquals(

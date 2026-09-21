@@ -10,7 +10,6 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -21,17 +20,15 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 
 /** Test suite for {@link FakeAndroidCache}. */
-@RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
-@MinAndroidSdkLevel(Build.VERSION_CODES.TIRAMISU)
-public class FakeAndroidCacheTest {
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(sdk = Build.VERSION_CODES.TIRAMISU)
+public class FakeAndroidCacheUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private WebContentsAccessibilityImpl mWebContentsAccessibility;
     private AccessibilityHistogramRecorder mHistogramRecorder;
@@ -53,7 +50,6 @@ public class FakeAndroidCacheTest {
     }
 
     @Test
-    @SmallTest
     public void testAddNodeAndRemoveIt() {
         // Create a test node and remove it from the cache.
         AccessibilityNodeInfoCompat testNode =
@@ -84,7 +80,6 @@ public class FakeAndroidCacheTest {
     }
 
     @Test
-    @SmallTest
     public void testAddedToCacheTimestamp() {
         // Verify that adding a node to the cache records a valid timestamp.
         long startTime = SystemClock.elapsedRealtime();
@@ -103,7 +98,6 @@ public class FakeAndroidCacheTest {
     }
 
     @Test
-    @SmallTest
     public void testDetectStaleNode() {
         // Create a test node and add it to the cache.
         AccessibilityNodeInfoCompat testNode =
@@ -132,7 +126,6 @@ public class FakeAndroidCacheTest {
     }
 
     @Test
-    @SmallTest
     public void testNotStaleChildNode() {
         // Create a test node and add it to the cache.
         AccessibilityNodeInfoCompat testNode1 =
@@ -170,7 +163,6 @@ public class FakeAndroidCacheTest {
     }
 
     @Test
-    @SmallTest
     public void testDetectStaleChildNode() {
         // Create a test node and add it to the cache.
         AccessibilityNodeInfoCompat testNode1 =
@@ -213,7 +205,6 @@ public class FakeAndroidCacheTest {
     }
 
     @Test
-    @SmallTest
     public void testComplexTree() {
         // Create a test node and add it to the cache.
         AccessibilityNodeInfoCompat testNode1 =
@@ -283,7 +274,6 @@ public class FakeAndroidCacheTest {
     }
 
     @Test
-    @SmallTest
     public void testScenarioSteadyState() {
         AccessibilityHistogramRecorder recorder = new AccessibilityHistogramRecorder();
         FakeAndroidCache cacheWithRecorder =
@@ -350,7 +340,6 @@ public class FakeAndroidCacheTest {
     }
 
     @Test
-    @SmallTest
     public void testScenarioEmptyCacheStartup() {
         AccessibilityHistogramRecorder recorder = new AccessibilityHistogramRecorder();
         FakeAndroidCache cacheWithRecorder =

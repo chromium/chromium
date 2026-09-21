@@ -7,23 +7,18 @@ package org.chromium.content.browser.accessibility;
 import android.graphics.Rect;
 import android.util.SparseArray;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.ui.accessibility.AccessibilityFeatures;
 
 /** Test suite for {@link AccessibilityNodeInfoUtils}. */
-@RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
-public class AccessibilityNodeInfoUtilsTest {
+@RunWith(BaseRobolectricTestRunner.class)
+public class AccessibilityNodeInfoUtilsUnitTest {
     @Test
-    @SmallTest
     @EnableFeatures(AccessibilityFeatures.ACCESSIBILITY_HANDLE_OCCLUDING_VIEWS)
     public void testcomputeUnoccludedRect_fullyOccluded() {
         Rect nodeBounds = new Rect(0, 0, 100, 100);
@@ -36,7 +31,6 @@ public class AccessibilityNodeInfoUtilsTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(AccessibilityFeatures.ACCESSIBILITY_HANDLE_OCCLUDING_VIEWS)
     public void testcomputeUnoccludedRect_partiallyOccluded_rightSide() {
         Rect nodeBounds = new Rect(0, 0, 100, 100);
@@ -50,7 +44,6 @@ public class AccessibilityNodeInfoUtilsTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(AccessibilityFeatures.ACCESSIBILITY_HANDLE_OCCLUDING_VIEWS)
     public void testcomputeUnoccludedRect_partiallyOccluded_leftSide() {
         Rect nodeBounds = new Rect(0, 0, 100, 100);
@@ -64,7 +57,6 @@ public class AccessibilityNodeInfoUtilsTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(AccessibilityFeatures.ACCESSIBILITY_HANDLE_OCCLUDING_VIEWS)
     public void testcomputeUnoccludedRect_partiallyOccluded_topSide() {
         Rect nodeBounds = new Rect(0, 0, 100, 100);
@@ -78,7 +70,6 @@ public class AccessibilityNodeInfoUtilsTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(AccessibilityFeatures.ACCESSIBILITY_HANDLE_OCCLUDING_VIEWS)
     public void testcomputeUnoccludedRect_partiallyOccluded_bottomSide() {
         Rect nodeBounds = new Rect(0, 0, 100, 100);
@@ -92,7 +83,6 @@ public class AccessibilityNodeInfoUtilsTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(AccessibilityFeatures.ACCESSIBILITY_HANDLE_OCCLUDING_VIEWS)
     public void testcomputeUnoccludedRect_notOccluded() {
         Rect nodeBounds = new Rect(0, 0, 100, 100);
