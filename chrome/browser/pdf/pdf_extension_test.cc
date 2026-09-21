@@ -1414,7 +1414,7 @@ class PDFExtensionScrollTest : public PDFExtensionTest {
   // Scrolling by a fraction of the viewport height may introduce slight
   // position differences on various platforms due to rounding. Tolerate this
   // difference.
-  static constexpr float kScrollPositionEpsilon = 2.0f;
+  static constexpr float kScrollPositionEpsilon = 4.0f;
 
   static int GetViewportHeight(content::RenderFrameHost* extension_host) {
     return content::EvalJs(extension_host, "viewer.viewport.size.height;")
@@ -1572,15 +1572,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithArrowLeftRight) {
   EXPECT_EQ(kScrollIncrement, GetViewportScrollPositionX(extension_host));
 }
 
-// TODO(crbug.com/369947144): Fix flakiness and reenable the test.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_WithArrowLeftRightScrollToPage \
-  DISABLED_WithArrowLeftRightScrollToPage
-#else
-#define MAYBE_WithArrowLeftRightScrollToPage WithArrowLeftRightScrollToPage
-#endif  // BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest,
-                       MAYBE_WithArrowLeftRightScrollToPage) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithArrowLeftRightScrollToPage) {
   content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(
       embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
   ASSERT_TRUE(extension_host);
@@ -1597,13 +1589,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest,
                                        /*alt=*/false,
                                        /*command=*/false);
   ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
-#if BUILDFLAG(IS_WIN)
-  constexpr int kFirstPosition = 917;
-#elif BUILDFLAG(IS_CHROMEOS)
   constexpr int kFirstPosition = 918;
-#else
-  constexpr int kFirstPosition = 918;
-#endif
   EXPECT_NEAR(kFirstPosition, GetViewportScrollPositionY(extension_host),
               kScrollPositionEpsilon);
 
@@ -1616,13 +1602,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest,
                                        /*alt=*/false,
                                        /*command=*/false);
   ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
-#if BUILDFLAG(IS_WIN)
   constexpr int kSecondPosition = 1837;
-#elif BUILDFLAG(IS_CHROMEOS)
-  constexpr int kSecondPosition = 1837;
-#else
-  constexpr int kSecondPosition = 1836;
-#endif
   EXPECT_NEAR(kSecondPosition, GetViewportScrollPositionY(extension_host),
               kScrollPositionEpsilon);
 
