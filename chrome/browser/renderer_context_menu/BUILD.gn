@@ -100,6 +100,8 @@ source_set("impl") {
     sources += [
       "accessibility_labels_bubble_model.cc",
       "accessibility_labels_menu_observer.cc",
+      "context_menu_content_type_glic.cc",
+      "context_menu_content_type_glic.h",
       "context_menu_content_type_read_anything.cc",
       "context_menu_content_type_read_anything.h",
       "dictation_menu_observer.cc",

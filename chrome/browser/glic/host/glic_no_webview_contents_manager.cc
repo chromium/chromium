@@ -159,6 +159,7 @@ GlicNoWebviewContentsManager::OverlayContentsManager::EnsureWebContents() {
   web_modal::WebContentsModalDialogManager::CreateForWebContents(
       web_contents_.get());
 #endif
+  CreateGlicOverlayData(web_contents_.get());
   web_contents_->SetSupportsDraggableRegions(true);
 
   // Load the overlay WebUI.

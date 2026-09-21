@@ -4,11 +4,14 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/glic/host/glic_no_webview_contents_manager.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
+#include "chrome/browser/pwc/pwc_features.mojom-features.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_test_util.h"
@@ -886,6 +889,124 @@ IN_PROC_BROWSER_TEST_F(GlicContextMenuBelowSearchBrowserTest,
   ASSERT_TRUE(lens_index.has_value());
   EXPECT_EQ(glic_index->first, lens_index->first);
   EXPECT_GT(glic_index->second, lens_index->second);
+}
+
+class GlicInternalContextMenuBrowserTest
+    : public GlicBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  GlicInternalContextMenuBrowserTest() {
+    std::vector<base::test::FeatureRef> enabled_features = {
+        features::kGlic, features::kGlicArchiveConversation};
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (IsNoWebview()) {
+      enabled_features.push_back(features::kGlicNoWebview);
+      enabled_features.push_back(pwc::mojom::features::kPrivilegedWebContents);
+    } else {
+      disabled_features.push_back(features::kGlicNoWebview);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  bool IsNoWebview() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         GlicInternalContextMenuBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "NoWebview" : "Webview";
+                         });
+
+IN_PROC_BROWSER_TEST_P(GlicInternalContextMenuBrowserTest,
+                       GuestContextMenuShowsCustomItemsAndSuppressesPageItems) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  content::WebContents* guest_contents = nullptr;
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    guest_contents = instance->host().web_client_contents();
+    return guest_contents != nullptr;
+  }));
+
+  content::ContextMenuParams params;
+  params.page_url = guest_contents->GetVisibleURL();
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      *guest_contents->GetPrimaryMainFrame(), params);
+  menu->Init();
+
+  // Reload should be present and enabled.
+  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_RELOAD_GLIC));
+  EXPECT_TRUE(menu->IsItemEnabled(IDC_CONTENT_CONTEXT_RELOAD_GLIC));
+  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_ARCHIVE_GLIC));
+
+  // Standard page navigation items should be suppressed.
+  EXPECT_FALSE(menu->IsItemPresent(IDC_BACK));
+  EXPECT_FALSE(menu->IsItemPresent(IDC_FORWARD));
+  EXPECT_FALSE(menu->IsItemPresent(IDC_RELOAD));
+  EXPECT_FALSE(menu->IsItemPresent(IDC_SAVE_PAGE));
+  EXPECT_FALSE(menu->IsItemPresent(IDC_VIEW_SOURCE));
+
+  // Ask Gemini should not appear recursively.
+  EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_GLIC));
+}
+
+IN_PROC_BROWSER_TEST_P(GlicInternalContextMenuBrowserTest,
+                       GuestLinkContextMenuShowsCopyLinkOnly) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  content::WebContents* guest_contents = nullptr;
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    guest_contents = instance->host().web_client_contents();
+    return guest_contents != nullptr;
+  }));
+
+  content::ContextMenuParams params;
+  params.page_url = guest_contents->GetVisibleURL();
+  params.link_url = GURL("https://example.com");
+  params.unfiltered_link_url = GURL("https://example.com");
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      *guest_contents->GetPrimaryMainFrame(), params);
+  menu->Init();
+
+  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_COPYLINKLOCATION));
+  EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB));
+}
+
+class GlicNoWebviewOverlayContextMenuBrowserTest : public GlicBrowserTest {
+ public:
+  GlicNoWebviewOverlayContextMenuBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kGlic, features::kGlicNoWebview,
+         pwc::mojom::features::kPrivilegedWebContents},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayContextMenuBrowserTest,
+                       OverlayContextMenuShowsReloadAndSuppressesPageItems) {
+  GlicNoWebviewContentsManager manager(GetProfile(),
+                                       /*initially_hidden=*/false);
+  manager.SetVisibility(content::Visibility::VISIBLE);
+  content::WebContents* overlay = manager.overlay_contents();
+  ASSERT_TRUE(overlay);
+
+  content::ContextMenuParams params;
+  params.page_url = overlay->GetVisibleURL();
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      *overlay->GetPrimaryMainFrame(), params);
+  menu->Init();
+
+  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_RELOAD_GLIC));
+  EXPECT_FALSE(menu->IsItemPresent(IDC_BACK));
+  EXPECT_FALSE(menu->IsItemPresent(IDC_FORWARD));
+  EXPECT_FALSE(menu->IsItemPresent(IDC_RELOAD));
+  EXPECT_FALSE(menu->IsItemPresent(IDC_SAVE_PAGE));
+  EXPECT_FALSE(menu->IsItemPresent(IDC_VIEW_SOURCE));
+  EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_GLIC));
 }
 
 }  // namespace glic

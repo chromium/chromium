@@ -77,7 +77,14 @@ GURL GetLocalizedGuestURL(const GURL& guest_url);
 bool IsGlicWebUI(const content::WebContents* web_contents);
 
 // Returns true if `web_contents` is the Glic guest WebContents.
-bool IsGlicGuest(content::WebContents* web_contents);
+bool IsGlicGuest(const content::WebContents* web_contents);
+
+// Returns true if `web_contents` contains the Glic overlay WebUI.
+bool IsGlicOverlay(const content::WebContents* web_contents);
+
+// Returns true if `web_contents` is any Glic WebContents (guest, WebUI, or
+// overlay).
+bool IsAnyGlicWebContents(const content::WebContents* web_contents);
 
 // Binds WebClientHandler for guest frame.
 void BindGlicWebClientHandler(
@@ -104,6 +111,9 @@ void MarkProcessAsGlic(content::RenderProcessHost* rph);
 
 // Instantiates Glic WebUI metadata on a WebContents.
 void CreateGlicWebUiData(content::WebContents* webui_contents);
+
+// Instantiates Glic overlay metadata on a WebContents.
+void CreateGlicOverlayData(content::WebContents* overlay_contents);
 
 // Returns Glic form factor mapping for the given device form factor.
 mojom::FormFactor GetGlicFormFactor(ui::DeviceFormFactor form_factor);

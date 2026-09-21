@@ -6,17 +6,22 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/renderer_context_menu/context_menu_content_type_read_anything.h"
-#endif
 #include "chrome/common/webui_url_constants.h"
 #include "components/renderer_context_menu/context_menu_content_type.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/buildflags/buildflags.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/glic/host/guest_util.h"  // nogncheck
+#include "chrome/browser/glic/public/features.h"  // nogncheck
+#include "chrome/browser/renderer_context_menu/context_menu_content_type_glic.h"
+#include "chrome/browser/renderer_context_menu/context_menu_content_type_read_anything.h"
+#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/app_mode/app_mode_utils.h"
@@ -86,6 +91,14 @@ ContextMenuContentTypeFactory::CreateInternal(
       params.page_url.host() ==
           chrome::kChromeUIUntrustedReadAnythingSidePanelHost) {
     return std::make_unique<ContextMenuContentTypeReadAnything>(params);
+  }
+
+  if (features::IsGlicNoWebviewEnabled()) {
+    content::WebContents* web_contents =
+        content::WebContents::FromRenderFrameHost(render_frame_host);
+    if (glic::IsAnyGlicWebContents(web_contents)) {
+      return std::make_unique<ContextMenuContentTypeGlic>(params);
+    }
   }
 #endif
 

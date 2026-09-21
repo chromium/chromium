@@ -171,6 +171,20 @@ class GlicWebUiData : public content::WebContentsUserData<GlicWebUiData>,
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(GlicWebUiData);
 
+// Attached to the overlay WebContents using WebContentsUserData.
+class GlicOverlayData : public content::WebContentsUserData<GlicOverlayData> {
+ public:
+  ~GlicOverlayData() override = default;
+
+ private:
+  explicit GlicOverlayData(content::WebContents* overlay_contents)
+      : content::WebContentsUserData<GlicOverlayData>(*overlay_contents) {}
+  friend class content::WebContentsUserData<GlicOverlayData>;
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+};
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(GlicOverlayData);
+
 // Attached to RenderProcessHost to identify Glic processes.
 class GlicProcessUserData : public base::SupportsUserData::Data {
  public:
@@ -256,7 +270,7 @@ void SetHostForGuest(content::WebContents& guest_contents, Host* host) {
   }
 }
 
-bool IsGlicGuest(content::WebContents* web_contents) {
+bool IsGlicGuest(const content::WebContents* web_contents) {
   return web_contents &&
          GlicGuestObserver::FromWebContents(web_contents) != nullptr;
 }
@@ -267,6 +281,10 @@ void MarkProcessAsGlic(content::RenderProcessHost* rph) {
 
 void CreateGlicWebUiData(content::WebContents* webui_contents) {
   GlicWebUiData::CreateForWebContents(webui_contents);
+}
+
+void CreateGlicOverlayData(content::WebContents* overlay_contents) {
+  GlicOverlayData::CreateForWebContents(overlay_contents);
 }
 
 void SetContentsManagerForWebContents(
@@ -517,6 +535,19 @@ GURL GetLocalizedGuestURL(const GURL& guest_url) {
 bool IsGlicWebUI(const content::WebContents* web_contents) {
   return web_contents &&
          GlicWebUiData::FromWebContents(web_contents) != nullptr;
+}
+
+bool IsGlicOverlay(const content::WebContents* web_contents) {
+  return web_contents &&
+         GlicOverlayData::FromWebContents(web_contents) != nullptr;
+}
+
+bool IsAnyGlicWebContents(const content::WebContents* web_contents) {
+  if (!web_contents) {
+    return false;
+  }
+  return IsGlicGuest(web_contents) || IsGlicWebUI(web_contents) ||
+         IsGlicOverlay(web_contents);
 }
 
 bool IsProcessHostForGlic(content::RenderProcessHost* process_host) {

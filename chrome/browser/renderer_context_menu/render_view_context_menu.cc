@@ -954,13 +954,9 @@ bool IsLensOptionEnteredThroughKeyboard(int event_flags) {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
-bool IsGlicWindow(const RenderViewContextMenu* menu,
-                  content::BrowserContext* browser_context) {
-  if (glic::GlicEnabling::IsEnabledByGlobalCriteria()) {
-    return glic::GetGlicGuestWebContents(
-               menu->GetWebContents()->GetOuterWebContents()) != nullptr;
-  }
-  return false;
+bool IsAnyGlicWebContents(const RenderViewContextMenu* menu) {
+  return glic::GlicEnabling::IsEnabledByGlobalCriteria() &&
+         glic::IsAnyGlicWebContents(menu->GetWebContents());
 }
 
 bool IsPrintPreviewContent(const GURL& current_url) {
@@ -1292,7 +1288,7 @@ void RenderViewContextMenu::InitMenu() {
     // Add "Copy Link Address" menu option for Glic Multi instance. Link
     // options are not supported by default (since Glic uses WebView's context
     // menu).
-    if (IsGlicWindow(this, browser_context_) && !params_.link_url.is_empty()) {
+    if (IsAnyGlicWebContents(this) && !params_.link_url.is_empty()) {
       AppendCopyLinkLocationItem();
       menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
     }
@@ -1420,7 +1416,7 @@ void RenderViewContextMenu::InitMenu() {
       content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_PRINT)) {
     AppendPrintItem();
   } else {
-    if (IsGlicWindow(this, browser_context_) &&
+    if (IsAnyGlicWebContents(this) &&
         base::FeatureList::IsEnabled(features::kGlicPrintMenuItem)) {
       AppendPrintItem();
     }
@@ -2297,7 +2293,7 @@ void RenderViewContextMenu::AppendImageItems() {
     menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_LOAD_IMAGE,
                                     IDS_CONTENT_CONTEXT_LOAD_IMAGE);
   }
-  if (!IsGlicWindow(this, browser_context_)) {
+  if (!IsAnyGlicWebContents(this)) {
     // Glic doesn't have tabs, to this option doesn't make sense there.
     AddItemWithOptionalIcon(IDC_CONTENT_CONTEXT_OPENIMAGENEWTAB,
                             IDS_CONTENT_CONTEXT_OPENIMAGENEWTAB, kImageIcon);
@@ -2739,7 +2735,7 @@ void RenderViewContextMenu::AppendLinkToTextItems() {
   }
 
   // Disable for glic.
-  if (IsGlicWindow(this, browser_context_)) {
+  if (IsAnyGlicWebContents(this)) {
     return;
   }
 
@@ -2876,7 +2872,7 @@ void RenderViewContextMenu::AppendSaveToMemoryBanksItem() {
 }
 
 void RenderViewContextMenu::AppendGlicItems() {
-  if (IsGlicWindow(this, browser_context_)) {
+  if (IsAnyGlicWebContents(this)) {
     menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_RELOAD_GLIC,
                                     IDS_CONTENT_CONTEXT_RELOAD);
     menu_model_.SetElementIdentifierAt(
@@ -4577,7 +4573,7 @@ bool RenderViewContextMenu::IsPasteAndMatchStyleEnabled() const {
 }
 
 bool RenderViewContextMenu::IsPrintPreviewEnabled() const {
-  if (IsGlicWindow(this, browser_context_) &&
+  if (IsAnyGlicWebContents(this) &&
       base::FeatureList::IsEnabled(features::kGlicPrintMenuItem)) {
     return GetPrefs(browser_context_)->GetBoolean(prefs::kPrintingEnabled) &&
            (source_web_contents_ && !source_web_contents_->IsCrashed());
@@ -5595,7 +5591,7 @@ void RenderViewContextMenu::MaybeAppendOpenGlicItem(bool add_separator) {
 
   if (glic::GlicEnabling::IsContextualMenuItemEnabled(GetProfile(),
                                                       params_.selection_text) &&
-      !IsGlicWindow(this, browser_context_)) {
+      !IsAnyGlicWebContents(this)) {
     base::ReplaceChars(params_.selection_text, AutocompleteInput::kInvalidChars,
                        u" ", &params_.selection_text);
     base::TrimWhitespace(params_.selection_text, base::TRIM_ALL,
@@ -5992,7 +5988,7 @@ bool RenderViewContextMenu::CanAppendGlicShareImageItem() const {
   }
 
   if (!glic::GlicEnabling::IsShareImageEnabledForProfile(GetProfile()) ||
-      IsGlicWindow(this, browser_context_)) {
+      IsAnyGlicWebContents(this)) {
     return false;
   }
 
