@@ -364,6 +364,22 @@ TEST_F(AutofillProfileComparatorTest, MergePhoneNumbers_Mergeability) {
             AutofillProfile::ProfileMergeResult::kMergeFailed);
 }
 
+// Tests that merging a phone number with an explicit '+' country code and a
+// phone number starting with the default region's country code does not crash
+// when they match without region context.
+TEST_F(AutofillProfileComparatorTest,
+       MergePhoneNumbers_DifferentCountryCodesCrashRepro) {
+  AutofillProfile profile_a =
+      CreateProfileWithPhoneNumber("+49 1 415 555 0199");
+  AutofillProfile profile_b = CreateProfileWithPhoneNumber("1 415 555 0199");
+  profile_a.SetInfo(ADDRESS_HOME_COUNTRY, u"US", kLocale);
+  profile_b.SetInfo(ADDRESS_HOME_COUNTRY, u"US", kLocale);
+
+  PhoneNumber merged_number(&profile_b);
+  EXPECT_EQ(comparator_.MergePhoneNumbers(profile_a, profile_b, merged_number),
+            AutofillProfile::ProfileMergeResult::kMergeFailed);
+}
+
 // Tests that MergeAddresses correctly identifies mergeable and
 // non-mergeable addresses.
 TEST_F(AutofillProfileComparatorTest, MergeAddresses_Mergeability) {
