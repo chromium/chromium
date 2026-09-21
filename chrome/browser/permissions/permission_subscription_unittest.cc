@@ -14,6 +14,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"
@@ -957,6 +958,43 @@ TEST_P(PermissionSubscriptionGeolocationTest,
                 PermissionType::GEOLOCATION, PermissionStatus::ASK);
   EXPECT_TRUE(callback_called());
   EXPECT_EQ(PermissionStatus::ASK, callback_result());
+
+  GetBrowserContext()
+      ->GetPermissionController()
+      ->UnsubscribeFromPermissionResultChange(subscription_id);
+}
+
+// Regression test for crbug.com/564314400: creating a subscription must not
+// synchronously deliver a permission change to that very subscription.
+TEST_F(PermissionSubscriptionTest,
+       SubscriptionIsNotNotifiedWhileBeingConstructed) {
+  permissions::PermissionContextBase* context =
+      GetPermissionManager()->GetPermissionContextForTesting(
+          ContentSettingsType::MEDIASTREAM_CAMERA);
+  ASSERT_TRUE(context);
+
+  // Prime the cached device-permission value so that the flip below is seen as
+  // a real change rather than as the initial observation.
+  context->set_has_device_permission_for_test(true);
+  GetPermissionStatusForCurrentDocument(PermissionType::VIDEO_CAPTURE,
+                                        main_rfh());
+
+  // Flip the OS-level permission. Nothing observes it until the cached value
+  // is refreshed, which happens while the subscription below is constructed.
+  context->set_has_device_permission_for_test(false);
+
+  content::PermissionController::SubscriptionId subscription_id =
+      content::SubscribeToPermissionResultChange(
+          GetPermissionController(),
+          content::PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionType(
+                  PermissionType::VIDEO_CAPTURE),
+          /*render_process_host=*/nullptr, main_rfh(), url(),
+          /*should_include_device_status=*/false,
+          base::BindRepeating(&PermissionSubscriptionTest::OnPermissionChange,
+                              base::Unretained(this)));
+
+  EXPECT_FALSE(callback_called());
 
   GetBrowserContext()
       ->GetPermissionController()

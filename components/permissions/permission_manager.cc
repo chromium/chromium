@@ -671,6 +671,13 @@ void PermissionManager::OnPermissionChanged(
       if (!subscription) {
         continue;
       }
+      // Skip subscriptions that are still being set up. A subscription is
+      // inserted into the map before
+      // OnPermissionStatusChangeSubscriptionAdded() computes its initial
+      // result, and that method can re-enter here.
+      if (!subscription->permission_result) {
+        continue;
+      }
       if (!content_type_set.Contains(
               PermissionUtil::PermissionTypeToContentSettingsType(
                   blink::PermissionDescriptorToPermissionType(
