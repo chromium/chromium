@@ -275,6 +275,14 @@ class NotFatalUntilAdoptionTest(unittest.TestCase):
         )
         self.assertEqual(len(errors), 0)
 
+    def testNotReachedIgnored(self):
+        file = MockFile('ios/web_view/test.cc', ['  NOTREACHED();'], action='A')
+        self.mock_input_api.InitFiles([file])
+        errors = presubmit_support.CheckNotFatalUntilAdoption(
+            self.mock_input_api, self.mock_output_api
+        )
+        self.assertEqual(len(errors), 0)
+
 
 class DiscourageCheckDerefTest(unittest.TestCase):
     """Test the CheckDiscourageCheckDeref presubmit check."""
