@@ -117,7 +117,21 @@ class PictureInPictureWindowManager {
   // Closes any existing picture-in-picture windows (video or document pip).
   // Returns true if a picture-in-picture window was closed, and false if there
   // were no picture-in-picture windows to close.
+  //
+  // NOTE: This synchronously closes the window and destroys associated objects
+  // (such as TabFeatures). Calling this synchronously from callbacks or
+  // observers (e.g. during widget show or visibility changes) can cause
+  // re-entrancy issues and use-after-free crashes. Use
+  // `ExitPictureInPictureSoon()` unless you know that synchronous closure will
+  // not be a problem.
   bool ExitPictureInPicture();
+
+  // Exits picture in picture soon, but not before this call returns.  If
+  // picture in picture closes between now and then, that's okay.  Intended as a
+  // helper for callbacks and observers to avoid re-entrant calls during pip
+  // set-up or in observer notifications (e.g. when an occluded dialog is being
+  // shown).
+  static void ExitPictureInPictureSoon();
 
   // Called to notify that the initiator web contents should be focused.
   void FocusInitiator();
@@ -352,10 +366,6 @@ class PictureInPictureWindowManager {
   // Called when the document PiP parent web contents is being destroyed.
   void DocumentWebContentsDestroyed();
 
-  // Exits picture in picture soon, but not before this call returns.  If
-  // picture in picture closes between now and then, that's okay.  Intended as a
-  // helper class for callbacks, to avoid re-entrant calls during pip set-up.
-  static void ExitPictureInPictureSoon();
 
 #if !BUILDFLAG(IS_ANDROID)
   // Creates the `occlusion_tracker_` if it does not already exist and should
