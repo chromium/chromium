@@ -65,6 +65,10 @@ UniversalOptOutServiceFactory::BuildServiceInstanceFor(
                   base::FeatureList::IsEnabled(
                       features::kUniversalOptOutSettings);
               web::SetUniversalOptOutEnabled(profile, effective_enabled);
+              if (profile->HasOffTheRecordProfile()) {
+                web::SetUniversalOptOutEnabled(
+                    profile->GetOffTheRecordProfile(), effective_enabled);
+              }
             }
           },
           profile->AsWeakPtr()));
