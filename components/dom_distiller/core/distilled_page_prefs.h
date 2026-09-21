@@ -20,10 +20,8 @@ inline constexpr float kMinFontScale = 0.4f;
 inline constexpr float kMaxFontScale = 3.0f;
 
 // Custom values for Android reader mode font scaling boundaries.
-inline constexpr float kMinFontScaleAndroidInApp = 1.0f;
-inline constexpr float kMaxFontScaleAndroidInApp = 2.5f;
-inline constexpr float kMinFontScaleAndroidCCT = 0.5f;
-inline constexpr float kMaxFontScaleAndroidCCT = 2.0f;
+inline constexpr float kMinFontScaleAndroid = 1.0f;
+inline constexpr float kMaxFontScaleAndroid = 2.5f;
 
 // The source for updates to the distiller theme settings.
 enum class ThemeSettingsUpdateSource {
@@ -102,8 +100,8 @@ class DistilledPagePrefs {
   bool IsUserPrefFontAvailable(mojom::FontFamily font);
 
 #if BUILDFLAG(IS_ANDROID)
-  // Clamps the default font scaling to properly follow min and max font scaling
-  // for whether the distillation is in-app or CCT.
+  // Clamps the default font scaling to Android reader mode font scaling
+  // boundaries.
   void ClampDefaultFontScaling();
 #endif
 

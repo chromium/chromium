@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.dom_distiller;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ObserverList;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
@@ -19,43 +21,34 @@ import java.util.concurrent.TimeUnit;
  * <ol>
  *   <li>Allowing a certain number of CPA show events (READER_MODE_ACTION_SHOW_COUNT) within a
  *       certain window of time (READER_MODE_ACTION_FIRST_SHOWN_TIMESTAMP).
- *   <li>If the READER_MODE_ACTION_SHOW_COUNT exceeds the limit in the given window then the CPA is
- *       temporarily suppressed for a certain period of time
- *       (READER_MODE_ACTION_SUPPRESSION_END_TIMESTAMP).
- *   <li>If the CPA is temporarily suppressed more then the allowable amount
- *       (READER_MODE_ACTION_SUPPRESSION_COUNT), then it's permanently suppressed.
+ *   <li>If the READER_MODE_ACTION_SHOW_COUNT exceeds {@link #CPA_SHOW_LIMIT} within {@link
+ *       #TRACKING_WINDOW_MS}, then the CPA is temporarily suppressed for {@link
+ *       #SUPPRESSION_WINDOW_MS} (READER_MODE_ACTION_SUPPRESSION_END_TIMESTAMP).
+ *   <li>If the CPA is temporarily suppressed at least {@link #SUPPRESSION_LIMIT} times
+ *       (READER_MODE_ACTION_SUPPRESSION_COUNT), then it is permanently suppressed.
  * </ol>
- *
- * <p>Each of these parameters are configurable within finch in the following manner:
- *
- * <ul>
- *   <li>READER_MODE_ACTION_SHOW_COUNT - cpa_show_limit.
- *   <li>READER_MODE_ACTION_FIRST_SHOWN_TIMESTAMP - tracking_window_ms.
- *   <li>READER_MODE_ACTION_SUPPRESSION_END_TIMESTAMP - suppression_window_ms
- *   <li>READER_MODE_ACTION_SUPPRESSION_COUNT - suppression_limit
- * </ul>
  */
 @NullMarked
 public class ReaderModeActionRateLimiter {
     private static final int INVALID_TIME = -1;
 
     /** The number of times the CPA can be shown without interaction before being suppressed. */
-    private static final int CPA_SHOW_LIMIT = 3;
+    @VisibleForTesting static final int CPA_SHOW_LIMIT = 3;
 
     /** The window of time to track the CPA being shown in milliseconds. */
-    private static final long TRACKING_WINDOW_MS = TimeUnit.DAYS.toMillis(1);
+    @VisibleForTesting static final long TRACKING_WINDOW_MS = TimeUnit.DAYS.toMillis(1);
 
     /**
      * The number of times that the CPA can be temporarily suppressed before being permanently
      * suppressed.
      */
-    private static final int SUPPRESSION_LIMIT = 3;
+    @VisibleForTesting static final int SUPPRESSION_LIMIT = 3;
 
     /**
      * The window of time to suppress the CPA after it's been shown without interaction in
      * milliseconds.
      */
-    private static final long SUPPRESSION_WINDOW_MS = TimeUnit.DAYS.toMillis(3);
+    @VisibleForTesting static final long SUPPRESSION_WINDOW_MS = TimeUnit.DAYS.toMillis(3);
 
     @Nullable private static ReaderModeActionRateLimiter sInstance;
 

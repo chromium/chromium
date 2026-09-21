@@ -69,6 +69,10 @@ const char kLexendCssClass[] = "Lexend";
 
 // LINT.ThenChange(//components/dom_distiller/core/css/distilledpage_common.css)
 
+// Default pinch zoom boundaries for the distilled page viewer.
+constexpr float kMinPinchZoomScale = 0.5f;
+constexpr float kMaxPinchZoomScale = 2.0f;
+
 std::string GetVersionedCss() {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
@@ -341,21 +345,19 @@ const std::string GetLoadingImage() {
 }
 
 static std::string GetMinPinchZoomScale() {
-  float min_scale = kMinFontScaleAndroidCCT;
+  float min_scale = kMinPinchZoomScale;
 #if BUILDFLAG(IS_ANDROID)
-  // Make the minimum pinch zoom value to be 1.0 for distillation in app to
-  // align with prefs UI.
-  min_scale = kMinFontScaleAndroidInApp;
+  // Align the minimum pinch zoom value with the reader mode prefs UI.
+  min_scale = kMinFontScaleAndroid;
 #endif
   return base::NumberToString(min_scale);
 }
 
 static std::string GetMaxPinchZoomScale() {
-  float max_scale = kMaxFontScaleAndroidCCT;
+  float max_scale = kMaxPinchZoomScale;
 #if BUILDFLAG(IS_ANDROID)
-  // Make the maximum pinch zoom value to be 2.5 for distillation in app to
-  // align with prefs UI.
-  max_scale = kMaxFontScaleAndroidInApp;
+  // Align the maximum pinch zoom value with the reader mode prefs UI.
+  max_scale = kMaxFontScaleAndroid;
 #endif
   return base::NumberToString(max_scale);
 }

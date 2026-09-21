@@ -193,10 +193,7 @@ public class ReaderModePrefsViewUnitTest {
     }
 
     @Test
-    @EnableFeatures({
-        DomDistillerFeatures.READER_MODE_DISTILL_IN_APP,
-        DomDistillerFeatures.READER_MODE_SUPPORT_NEW_FONTS
-    })
+    @EnableFeatures(DomDistillerFeatures.READER_MODE_SUPPORT_NEW_FONTS)
     public void testAdditionalFontFamilyButtonsVisibility_NewFontsEnabled() {
         assertEquals(
                 View.VISIBLE, mReaderModePrefsView.findViewById(R.id.font_lexend).getVisibility());

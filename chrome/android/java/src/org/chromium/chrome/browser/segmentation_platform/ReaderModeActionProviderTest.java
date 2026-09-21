@@ -30,7 +30,6 @@ import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.dom_distiller.DistillerHeuristicsType;
 import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
@@ -46,7 +45,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.components.dom_distiller.content.DistillablePageUtils;
 import org.chromium.components.dom_distiller.content.DistillablePageUtilsJni;
-import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.ukm.UkmRecorder;
@@ -290,7 +288,6 @@ public class ReaderModeActionProviderTest {
     }
 
     @Test
-    @EnableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
     public void testDistillableButSupressed() {
         when(mReaderModeActionRateLimiter.isActionSuppressed()).thenReturn(true);
         var provider = new ReaderModeActionProvider(mButtonVisibilitySupplier);
@@ -303,7 +300,6 @@ public class ReaderModeActionProviderTest {
     }
 
     @Test
-    @EnableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
     public void testActionAlwaysAvailableInReadingMode() {
         var provider = new ReaderModeActionProvider(mButtonVisibilitySupplier);
 

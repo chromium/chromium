@@ -36,10 +36,7 @@ import java.io.IOException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableFeatures({
-    DomDistillerFeatures.READER_MODE_DISTILL_IN_APP,
-    DomDistillerFeatures.READER_MODE_SUPPORT_NEW_FONTS,
-})
+@DisableFeatures({DomDistillerFeatures.READER_MODE_SUPPORT_NEW_FONTS})
 public class ReaderModePrefsRenderTest {
     @Rule
     public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =

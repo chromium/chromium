@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.dom_distiller;
 import android.content.Context;
 import android.view.View;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.CallbackController;
@@ -37,7 +38,7 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider
         implements ReaderModeActionRateLimiter.Observer {
     // The amount of time the Reader Mode contextual page action button is shown before it is
     // automatically hidden.
-    private static final long HIDE_CPA_DELAY_MS = TimeUnit.SECONDS.toMillis(5);
+    @VisibleForTesting static final long HIDE_CPA_DELAY_MS = TimeUnit.SECONDS.toMillis(5);
 
     private final Supplier<@Nullable ReaderModeIphController> mReaderModeIphControllerSupplier;
     private final TabSupplierObserver mActivityTabObserver;

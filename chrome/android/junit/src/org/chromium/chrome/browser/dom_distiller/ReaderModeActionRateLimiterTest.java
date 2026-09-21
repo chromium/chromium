@@ -20,16 +20,11 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
-
-import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link ReaderModeActionRateLimiter}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
 public class ReaderModeActionRateLimiterTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -60,7 +55,8 @@ public class ReaderModeActionRateLimiterTest {
 
     @Test
     public void testIsActionSuppressed_suppressed() {
-        long suppressionEnd = System.currentTimeMillis() + TimeUnit.DAYS.toMillis(1);
+        long suppressionEnd =
+                System.currentTimeMillis() + ReaderModeActionRateLimiter.SUPPRESSION_WINDOW_MS;
         mPrefs.writeLong(
                 ChromePreferenceKeys.READER_MODE_ACTION_SUPPRESSION_END_TIMESTAMP, suppressionEnd);
         assertTrue(mReaderModeActionRateLimiter.isActionSuppressed());
@@ -68,7 +64,8 @@ public class ReaderModeActionRateLimiterTest {
 
     @Test
     public void testIsActionSuppressed_suppressionExpired() {
-        long suppressionEnd = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(1);
+        long suppressionEnd =
+                System.currentTimeMillis() - ReaderModeActionRateLimiter.SUPPRESSION_WINDOW_MS;
         mPrefs.writeLong(
                 ChromePreferenceKeys.READER_MODE_ACTION_SUPPRESSION_END_TIMESTAMP, suppressionEnd);
         assertFalse(mReaderModeActionRateLimiter.isActionSuppressed());
@@ -89,7 +86,8 @@ public class ReaderModeActionRateLimiterTest {
 
     @Test
     public void testOnActionShown_resetsAfterWindow() {
-        long firstShown = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(2);
+        long firstShown =
+                System.currentTimeMillis() - (ReaderModeActionRateLimiter.TRACKING_WINDOW_MS + 1);
         mPrefs.writeLong(ChromePreferenceKeys.READER_MODE_ACTION_FIRST_SHOWN_TIMESTAMP, firstShown);
         mPrefs.writeInt(ChromePreferenceKeys.READER_MODE_ACTION_SHOW_COUNT, 2);
 
@@ -108,7 +106,7 @@ public class ReaderModeActionRateLimiterTest {
 
     @Test
     public void testOnActionShown_permanentSuppressionAfterMultipleSuppressions() {
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < ReaderModeActionRateLimiter.SUPPRESSION_LIMIT; i++) {
             createTemporarySuppression();
             resetTemporarySuppression();
         }
@@ -132,7 +130,7 @@ public class ReaderModeActionRateLimiterTest {
 
     private void createTemporarySuppression() {
         reset(mObserver);
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < ReaderModeActionRateLimiter.CPA_SHOW_LIMIT; i++) {
             mReaderModeActionRateLimiter.onActionShown();
         }
         assertTrue(mReaderModeActionRateLimiter.isActionSuppressed());

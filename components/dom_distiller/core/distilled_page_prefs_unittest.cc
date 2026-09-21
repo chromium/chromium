@@ -543,8 +543,8 @@ TEST_F(DistilledPagePrefsTest, TestClampDefaultFontScaling) {
   TestingObserver obs;
   distilled_page_prefs_->AddObserver(&obs);
 
-  float min_font_scale = kMinFontScaleAndroidInApp;
-  float max_font_scale = kMaxFontScaleAndroidInApp;
+  float min_font_scale = kMinFontScaleAndroid;
+  float max_font_scale = kMaxFontScaleAndroid;
 
   // Test clamping for values smaller than the minimum.
   distilled_page_prefs_->SetDefaultFontScaling(min_font_scale - 0.5f);

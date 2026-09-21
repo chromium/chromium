@@ -210,7 +210,9 @@ public class ReaderModeToolbarButtonControllerTest {
 
         // Simulate the button being shown, and verify that the button is hidden after a delay.
         controller.onActionShown();
-        shadowOf(Looper.getMainLooper()).idleFor(5, TimeUnit.SECONDS);
+        shadowOf(Looper.getMainLooper())
+                .idleFor(
+                        ReaderModeToolbarButtonController.HIDE_CPA_DELAY_MS, TimeUnit.MILLISECONDS);
         assertEquals(1, callbackHelper.getCallCount());
         assertFalse(controller.shouldShowButton(mMockTab));
 

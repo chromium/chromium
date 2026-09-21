@@ -200,9 +200,8 @@ void DistilledPagePrefs::RemoveObserver(Observer* obs) {
 
 #if BUILDFLAG(IS_ANDROID)
 void DistilledPagePrefs::ClampDefaultFontScaling() {
-  default_font_scaling_ =
-      std::clamp(default_font_scaling_, kMinFontScaleAndroidInApp,
-                 kMaxFontScaleAndroidInApp);
+  default_font_scaling_ = std::clamp(
+      default_font_scaling_, kMinFontScaleAndroid, kMaxFontScaleAndroid);
 }
 #endif
 
