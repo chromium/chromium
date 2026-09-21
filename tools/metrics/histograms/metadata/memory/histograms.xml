@@ -1485,7 +1485,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Experimental.AvailableMemoryMB" units="MB"
-    expires_after="2025-11-16">
+    expires_after="2027-09-17">
   <owner>anthonyvd@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -1493,6 +1493,8 @@ chromium-metrics-reviews@google.com.
     base::SysInfo::AmountOfAvailablePhysicalMemory().
 
     Recorded every 2 minutes.
+
+    Note: This histogram was expired from Nov 16, 2025 to Sep 17, 2026.
   </summary>
 </histogram>
 
