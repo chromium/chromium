@@ -23,6 +23,7 @@ import static org.chromium.ui.test.util.ViewUtils.withEventualExpectedViewState;
 
 import android.view.FocusFinder;
 import android.view.View;
+import android.view.ViewParent;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.espresso.Espresso;
@@ -163,18 +164,16 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
     }
 
     private void waitForDisclaimerVisible() {
-        waitForVisibleView(withId(R.id.disclaimer_scroll_view));
+        waitForVisibleView(withId(R.id.disclaimer_container));
 
         onView(withId(R.id.disclaimer_title)).perform(scrollTo()).check(matches(isDisplayed()));
         onView(withId(R.id.disclaimer_description))
                 .perform(scrollTo())
                 .check(matches(isDisplayed()));
-        onView(withId(R.id.disclaimer_accept_button))
-                .perform(scrollTo())
-                .check(matches(isDisplayed()));
-        onView(withId(R.id.disclaimer_cancel_button))
-                .perform(scrollTo())
-                .check(matches(isDisplayed()));
+
+        // The buttons are pinned below the scroll view, so they must be visible without scrolling.
+        onView(withId(R.id.disclaimer_accept_button)).check(matches(isDisplayed()));
+        onView(withId(R.id.disclaimer_cancel_button)).check(matches(isDisplayed()));
     }
 
     private void waitForDisclaimerNotShowing() {
@@ -343,6 +342,15 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
         }
     }
 
+    private EnterpriseSignalsDisclaimerView getDisclaimerViewFor(View child) {
+        ViewParent parent = child.getParent();
+        while (parent != null && !(parent instanceof EnterpriseSignalsDisclaimerView)) {
+            parent = parent.getParent();
+        }
+        Assert.assertNotNull(parent);
+        return (EnterpriseSignalsDisclaimerView) parent;
+    }
+
     private boolean hasAccountAcknowledgedSignalsDisclaimer(CoreAccountInfo account) {
         return ThreadUtils.runOnUiThreadBlocking(
                 () ->
@@ -352,7 +360,7 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
 
     private void acceptDisclaimerForAccount(CoreAccountInfo account) {
         waitForDisclaimerVisible();
-        onView(withId(R.id.disclaimer_accept_button)).perform(scrollTo(), click());
+        onView(withId(R.id.disclaimer_accept_button)).perform(click());
         waitForDisclaimerNotShowing();
         Assert.assertTrue(hasAccountAcknowledgedSignalsDisclaimer(account));
     }
@@ -458,7 +466,7 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
                         .expectAnyRecord(MetricsHelper.HISTOGRAM_TIME_TO_USER_ACTION)
                         .build();
 
-        onView(withId(R.id.disclaimer_accept_button)).perform(scrollTo(), click());
+        onView(withId(R.id.disclaimer_accept_button)).perform(click());
 
         waitForDisclaimerNotShowing();
         Assert.assertNotNull(mSigninTestRule.getPrimaryAccount());
@@ -481,7 +489,7 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
                         .expectAnyRecord(MetricsHelper.HISTOGRAM_TIME_TO_USER_ACTION)
                         .build();
 
-        onView(withId(R.id.disclaimer_cancel_button)).perform(scrollTo(), click());
+        onView(withId(R.id.disclaimer_cancel_button)).perform(click());
 
         waitForDisclaimerNotShowing();
         waitForSignout();
@@ -649,7 +657,7 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
         waitForDisclaimerVisible();
 
         // 3. Finally accept the disclaimer.
-        onView(withId(R.id.disclaimer_accept_button)).perform(scrollTo(), click());
+        onView(withId(R.id.disclaimer_accept_button)).perform(click());
         waitForDisclaimerNotShowing();
 
         Assert.assertNotNull(mSigninTestRule.getPrimaryAccount());
@@ -730,7 +738,7 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
 
         // Advance 1000ms while the disclaimer is showing and then accept the disclaimer.
         mFakeTimeTestRule.advanceMillis(1000);
-        onView(withId(R.id.disclaimer_accept_button)).perform(scrollTo(), click());
+        onView(withId(R.id.disclaimer_accept_button)).perform(click());
         waitForDisclaimerNotShowing();
         shownWatcher.assertExpected();
 
@@ -760,7 +768,7 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
                     View scrollView = getDialogView().findViewById(R.id.disclaimer_scroll_view);
                     Assert.assertNotNull(scrollView);
                     EnterpriseSignalsDisclaimerView disclaimerView =
-                            (EnterpriseSignalsDisclaimerView) scrollView.getParent();
+                            getDisclaimerViewFor(scrollView);
 
                     View firstFocusable =
                             FocusFinder.getInstance()

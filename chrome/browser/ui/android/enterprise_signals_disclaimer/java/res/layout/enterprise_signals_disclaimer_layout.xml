@@ -5,142 +5,149 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<ScrollView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/disclaimer_scroll_view"
+    android:id="@+id/disclaimer_container"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingBottom="16dp">
 
-    <LinearLayout
+    <org.chromium.components.browser_ui.widget.FadingEdgeScrollView
+        android:id="@+id/disclaimer_scroll_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:paddingStart="24dp"
         android:paddingEnd="24dp"
-        android:paddingTop="0dp"
-        android:paddingBottom="16dp">
-
-    <ImageView
-        android:id="@+id/disclaimer_logo"
-        android:layout_width=
-          "@dimen/enterprise_signals_disclaimer_profile_picture_size"
-        android:layout_height=
-          "@dimen/enterprise_signals_disclaimer_profile_picture_size"
-        android:layout_gravity="center_horizontal"
-        android:importantForAccessibility="no"
-        android:layout_marginTop="16dp"/>
-
-    <TextView
-        android:id="@+id/disclaimer_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="2dp"
-        android:gravity="center_horizontal"
-        android:textAppearance="@style/TextAppearance.Headline.Primary" />
-
-    <org.chromium.ui.widget.TextViewWithClickableSpans
-        android:id="@+id/disclaimer_description"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
-        android:gravity="center_horizontal"
-        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-        app:leading="@dimen/text_size_medium_leading" />
-
-    <!-- Profile information card -->
-    <org.chromium.components.browser_ui.widget.containment.ContainedLinearLayout
-        android:id="@+id/profile_info_card"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="2dp"
-        android:padding="16dp"
-        android:orientation="horizontal"
-        app:backgroundColor="@macro/default_card_bg_color">
-
-        <ImageView
-            android:id="@+id/profile_info_icon"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginEnd="16dp"
-            android:layout_gravity="center_vertical"
-            android:importantForAccessibility="no"
-            android:src="@drawable/ic_account_circle_24dp"
-            app:tint="@color/default_icon_color_tint_list" />
+        android:scrollbarStyle="outsideOverlay"
+        app:bottomEdgeVisibility="fading"
+        app:topEdgeVisibility="none">
 
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingBottom="8dp">
+
+            <ImageView
+                android:id="@+id/disclaimer_logo"
+                android:layout_width="@dimen/enterprise_signals_disclaimer_profile_picture_size"
+                android:layout_height="@dimen/enterprise_signals_disclaimer_profile_picture_size"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:importantForAccessibility="no" />
 
             <TextView
-                android:id="@+id/profile_information_title"
+                android:id="@+id/disclaimer_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="2dp"
+                android:gravity="center_horizontal"
+                android:textAppearance="@style/TextAppearance.Headline.Primary" />
+
+            <org.chromium.ui.widget.TextViewWithClickableSpans
+                android:id="@+id/disclaimer_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                android:gravity="center_horizontal"
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+                app:leading="@dimen/text_size_medium_leading" />
+
+            <!-- Profile information card -->
+            <org.chromium.components.browser_ui.widget.containment.ContainedLinearLayout
+                android:id="@+id/profile_info_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="2dp"
-                android:textAppearance=
-                  "@style/TextAppearance.TextLarge.Primary" />
+                android:orientation="horizontal"
+                android:padding="16dp"
+                app:backgroundColor="@macro/default_card_bg_color">
 
-            <org.chromium.ui.widget.TextViewWithLeading
-                android:id="@+id/profile_information_details"
+                <ImageView
+                    android:id="@+id/profile_info_icon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="16dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_account_circle_24dp"
+                    app:tint="@color/default_icon_color_tint_list" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/profile_information_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="2dp"
+                        android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+
+                    <org.chromium.ui.widget.TextViewWithLeading
+                        android:id="@+id/profile_information_details"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+                        app:leading="@dimen/text_size_medium_leading" />
+                </LinearLayout>
+            </org.chromium.components.browser_ui.widget.containment.ContainedLinearLayout>
+
+            <!-- Device information card -->
+            <org.chromium.components.browser_ui.widget.containment.ContainedLinearLayout
+                android:id="@+id/device_info_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance=
-                  "@style/TextAppearance.TextMedium.Secondary"
-                app:leading="@dimen/text_size_medium_leading" />
+                android:orientation="horizontal"
+                android:padding="16dp"
+                app:backgroundColor="@macro/default_card_bg_color">
+
+                <ImageView
+                    android:id="@+id/device_info_icon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="16dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/mobile_icon"
+                    app:tint="@color/default_icon_color_tint_list" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/device_information_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="2dp"
+                        android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+
+                    <org.chromium.ui.widget.TextViewWithLeading
+                        android:id="@+id/device_information_details"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+                        app:leading="@dimen/text_size_medium_leading" />
+                </LinearLayout>
+            </org.chromium.components.browser_ui.widget.containment.ContainedLinearLayout>
         </LinearLayout>
-    </org.chromium.components.browser_ui.widget.containment.ContainedLinearLayout>
-
-    <!-- Device information card -->
-    <org.chromium.components.browser_ui.widget.containment.ContainedLinearLayout
-        android:id="@+id/device_info_card"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
-        android:padding="16dp"
-        android:orientation="horizontal"
-        app:backgroundColor="@macro/default_card_bg_color">
-
-        <ImageView
-            android:id="@+id/device_info_icon"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginEnd="16dp"
-            android:layout_gravity="center_vertical"
-            android:importantForAccessibility="no"
-            android:src="@drawable/mobile_icon"
-            app:tint="@color/default_icon_color_tint_list" />
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/device_information_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="2dp"
-                android:textAppearance=
-                  "@style/TextAppearance.TextLarge.Primary" />
-
-            <org.chromium.ui.widget.TextViewWithLeading
-                android:id="@+id/device_information_details"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAppearance=
-                  "@style/TextAppearance.TextMedium.Secondary"
-                app:leading="@dimen/text_size_medium_leading" />
-        </LinearLayout>
-    </org.chromium.components.browser_ui.widget.containment.ContainedLinearLayout>
+    </org.chromium.components.browser_ui.widget.FadingEdgeScrollView>
 
     <FrameLayout
         android:id="@+id/disclaimer_buttons_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"/>
 
-    </LinearLayout>
-</ScrollView>
+</LinearLayout>
