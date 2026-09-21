@@ -41,13 +41,18 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     LensSidePanelComposeBoxPixelTest,
     testing::ValuesIn<ComposeBoxPixelTestParams>({
-        // Testing in dark mode.
+        // Testing focused vs unfocused in dark mode.
         {},
+        {.focused = true},
         {.dark_mode = true},
-        // Testing with text.
+        {.focused = true, .dark_mode = true},
+        // Testing focused vs unfocused with text.
         {.with_text = true},
-        // Testing RTL with and without text.
+        {.focused = true, .with_text = true},
+        // Testing RTL with and without text, without and without focus.
         {.rtl = true},
+        {.focused = true, .rtl = true},
+        {.focused = true, .rtl = true, .with_text = true},
         {.rtl = true, .with_text = true},
     }),
     [](const testing::TestParamInfo<ComposeBoxPixelTestParams>& info) {
@@ -56,6 +61,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 IN_PROC_BROWSER_TEST_P(LensSidePanelComposeBoxPixelTest, Screenshots) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kComposeBoxExpanded);
 
   // DeepQuery needed to target elements with injected JS.
   const DeepQuery kComposebox = {"lens-side-panel-app", "#composebox"};
@@ -74,6 +80,26 @@ IN_PROC_BROWSER_TEST_P(LensSidePanelComposeBoxPixelTest, Screenshots) {
       ExecuteJsAt(kActiveTab, kComposeBoxInput,
                   R"((el) => {el.style.caretColor = 'transparent'})"),
 
+      // Focus the composebox if specified. Waits for the composebox to expand
+      // before continuing.
+      If([]() { return GetParam().focused; },
+         Then(
+             ExecuteJsAt(kActiveTab, kComposebox,
+                         "(el) => { window.initialComposeboxHeight = "
+                         "el.getBoundingClientRect().height; }"),
+             ExecuteJsAt(kActiveTab, kComposeBoxInput, "(el) => el.focus()"),
+             [=]() {
+               WebContentsInteractionTestUtil::StateChange compose_box_expanded;
+               compose_box_expanded.event = kComposeBoxExpanded;
+               compose_box_expanded.where = kComposebox;
+               compose_box_expanded.type = WebContentsInteractionTestUtil::
+                   StateChange::Type::kExistsAndConditionTrue;
+               compose_box_expanded.test_function =
+                   "(el) => { return el.getBoundingClientRect().height > "
+                   "window.initialComposeboxHeight; }";
+               return WaitForStateChange(kActiveTab, compose_box_expanded);
+             }())),
+
       // Set the composebox text if specified.
       If([]() { return GetParam().with_text; },
          Then(ExecuteJsAt(kActiveTab, kComposeBoxInput,
@@ -91,5 +117,5 @@ IN_PROC_BROWSER_TEST_P(LensSidePanelComposeBoxPixelTest, Screenshots) {
       // Take a screenshot of the composebox.
       ScreenshotWebUi(kActiveTab, kComposebox,
                       /*screenshot_name=*/"LensComposebox",
-                      /*baseline_cl=*/"8254217"));
+                      /*baseline_cl=*/"7018205"));
 }
