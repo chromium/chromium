@@ -333,13 +333,6 @@ BASE_DECLARE_FEATURE(kGeminiMultiTabContext);
 // Returns true if the GeminiMultiTabContext feature is enabled.
 bool IsGeminiMultiTabContextEnabled();
 
-// Enables the GeminiScreenContextMigration feature.
-BASE_DECLARE_FEATURE(kGeminiScreenContextMigration);
-
-// Returns true if the GeminiScreenContextMigration feature is enabled.
-bool IsGeminiScreenContextMigrationEnabled();
-
-
 // Feature flag controlling the generalized Gemini entry flow outside of the
 // Page Action Menu.
 BASE_DECLARE_FEATURE(kGeneralizedGeminiEntryFlow);

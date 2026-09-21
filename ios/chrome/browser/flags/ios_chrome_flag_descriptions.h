@@ -938,11 +938,6 @@ inline constexpr char kGeminiQuizzesName[] = "GeminiQuizzes";
 inline constexpr char kGeminiQuizzesDescription[] =
     "Enables the GeminiQuizzes feature.";
 
-inline constexpr char kGeminiScreenContextMigrationName[] =
-    "Gemini Screen Context Migration";
-inline constexpr char kGeminiScreenContextMigrationDescription[] =
-    "Enables migration from Gemini Page Context to Screen Context.";
-
 inline constexpr char kGeminiUnaryMigrationName[] = "Gemini Unary Migration";
 inline constexpr char kGeminiUnaryMigrationDescription[] =
     "Enables the unary network migration for Gemini.";

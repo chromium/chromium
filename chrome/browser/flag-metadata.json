@@ -5529,14 +5529,6 @@
     "expiry_milestone": 165
   },
   {
-    "name": "gemini-screen-context-migration",
-    "owners": [
-      "joepeplowski@google.com",
-      "bling-alchemy-eng@google.com"
-    ],
-    "expiry_milestone": 156
-  },
-  {
     "name": "gemini-unary-migration",
     "owners": [ "adamta@google.com", "bling-alchemy-eng@google.com" ],
     "expiry_milestone": 160
