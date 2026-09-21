@@ -1776,12 +1776,7 @@ public class UrlBarUnitTest {
     @Test
     @DisableFeatures(OmniboxFeatureList.URL_BAR_WITHOUT_LIGATURES)
     public void testUrlBarWithoutLigaturesDisabled() {
-        // With the feature off the UrlBar does not set any font features of its own, but it still
-        // inherits the UI-wide defaults from the root TextAppearance style, which disables the
-        // "liga" and "calt" features for all Chrome Android UI text.
-        assertEquals(
-                mActivity.getString(R.string.default_font_feature_settings),
-                mUrlBar.getFontFeatureSettings());
+        assertNull(mUrlBar.getFontFeatureSettings());
     }
 
     @Test
