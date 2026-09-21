@@ -8,7 +8,6 @@
     "libs/net_bytebuddy_byte_buddy",
     "libs/net_bytebuddy_byte_buddy_agent",
     "libs/org_ccil_cowan_tagsoup_tagsoup",
-    "libs/org_checkerframework_checker_compat_qual",
     "libs/org_jetbrains_kotlin_kotlin_android_extensions_runtime",
     "libs/org_jetbrains_kotlin_kotlin_parcelize_runtime",
     "libs/org_jsoup_jsoup",

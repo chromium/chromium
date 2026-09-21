@@ -3586,17 +3586,6 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/android_deps/cipd/libs/org_checkerframework_checker_compat_qual': {
-      'packages': [
-          {
-              'package': 'chromium/third_party/android_deps/libs/org_checkerframework_checker_compat_qual',
-              'version': 'version:2@2.5.5.cr2',
-          },
-      ],
-      'condition': 'checkout_android and non_git_source',
-      'dep_type': 'cipd',
-  },
-
   'src/third_party/android_deps/cipd/libs/org_jetbrains_kotlin_kotlin_android_extensions_runtime': {
       'packages': [
           {
