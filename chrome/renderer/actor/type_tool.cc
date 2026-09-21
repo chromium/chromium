@@ -487,6 +487,7 @@ void TypeTool::Execute(ToolFinishedCallback callback) {
       blink::WebMouseEvent::Button::kLeft, 1, *resolved_target_, *this,
       base::BindOnce(&TypeTool::OnFocusingClickComplete,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  click_dispatcher_->Start();
 }
 
 void TypeTool::Cancel() {

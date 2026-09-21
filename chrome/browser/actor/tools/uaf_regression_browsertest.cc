@@ -86,6 +86,28 @@ IN_PROC_BROWSER_TEST_F(ActorUafRegressionBrowserTest,
 
   // This should not crash the renderer.
   ASSERT_TRUE(result.Wait());
+  ExpectErrorResult(result, mojom::ActionResultCode::kFrameWentAway);
+  EXPECT_TRUE(main_frame()->IsRenderFrameLive());
+}
+
+// Regression test for UAF in Glic actor tools.
+// See crbug.com/558301759.
+IN_PROC_BROWSER_TEST_F(ActorUafRegressionBrowserTest,
+                       ClickTool_HandlesSynchronousFrameDetachmentOnMouseMove) {
+  SetupAbaFrames("/actor/click_tool_uaf_mousemove_inner.html");
+  RenderFrameHost* inner_rfh = GetInnerRfh();
+  ASSERT_TRUE(inner_rfh);
+
+  const int32_t target_id = GetDOMNodeId(*inner_rfh, "#target").value();
+
+  std::unique_ptr<ToolRequest> action = MakeClickRequest(*inner_rfh, target_id);
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+
+  // This should not crash the renderer.
+  ASSERT_TRUE(result.Wait());
+  ExpectErrorResult(result, mojom::ActionResultCode::kFrameWentAway);
+  EXPECT_TRUE(main_frame()->IsRenderFrameLive());
 }
 
 // Regression test for UAF in Glic actor tools.
@@ -93,6 +115,25 @@ IN_PROC_BROWSER_TEST_F(ActorUafRegressionBrowserTest,
 IN_PROC_BROWSER_TEST_F(ActorUafRegressionBrowserTest,
                        TypeTool_HandlesSynchronousFrameDetachment) {
   SetupAbaFrames("/actor/type_tool_uaf_inner.html");
+  RenderFrameHost* inner_rfh = GetInnerRfh();
+  ASSERT_TRUE(inner_rfh);
+
+  const int32_t target_id = GetDOMNodeId(*inner_rfh, "#target").value();
+
+  std::unique_ptr<ToolRequest> action = MakeTypeRequest(
+      *inner_rfh, target_id, "hello", /* follow_by_enter= */ false);
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+
+  // This should not crash the renderer.
+  ASSERT_TRUE(result.Wait());
+}
+
+// Regression test for UAF in Glic actor tools.
+// See crbug.com/558301759.
+IN_PROC_BROWSER_TEST_F(ActorUafRegressionBrowserTest,
+                       TypeTool_HandlesSynchronousFrameDetachmentOnMouseMove) {
+  SetupAbaFrames("/actor/type_tool_uaf_mousemove_inner.html");
   RenderFrameHost* inner_rfh = GetInnerRfh();
   ASSERT_TRUE(inner_rfh);
 

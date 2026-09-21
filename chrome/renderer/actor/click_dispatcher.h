@@ -25,8 +25,6 @@ namespace actor {
 // The `on_complete` caller may safely destroy this ClickDispatcher.
 class ClickDispatcher {
  public:
-  // Starts the sequence of mouse events upon creation.
-  //
   // The passed in `tool` must own this instance.
   //
   // `on_complete` is always called asynchronously, but isn't invoked if
@@ -38,15 +36,16 @@ class ClickDispatcher {
                   base::OnceCallback<void(mojom::ActionResultPtr)> on_complete);
   ~ClickDispatcher();
 
+  // Starts the sequence of mouse events.
+  void Start();
+
   // Cancels future dispatching, with the exception that if a mouse button is in
   // a down state, mouse up will be synchronously dispatched.
   void Cancel();
 
  private:
   // Clicks the mouse down, and calls DoMouseUp() asynchronously after a delay.
-  void DoMouseDown(blink::WebMouseEvent::Button button,
-                   int count,
-                   const ResolvedTarget& target);
+  void DoMouseDown();
 
   // Calls DoMouseUpImpl(), then calls Finish(). Used by Cancel() so it can
   // Finish() with a different result.
@@ -58,6 +57,9 @@ class ClickDispatcher {
   // Asynchronously calls `on_complete_` with `result`. Does nothing if already
   // called, or if Cancel() has been called.
   void Finish(mojom::ActionResultPtr result);
+
+  const blink::WebMouseEvent::Button button_;
+  const int count_;
 
   // The target to click on.
   const ResolvedTarget target_;

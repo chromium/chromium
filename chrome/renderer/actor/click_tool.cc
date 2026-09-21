@@ -149,6 +149,7 @@ void ClickTool::Execute(ToolFinishedCallback callback) {
   CHECK(!click_dispatcher_);
   click_dispatcher_.emplace(button, click_count, target, *this,
                             std::move(callback));
+  click_dispatcher_->Start();
 }
 
 std::string ClickTool::DebugString() const {

@@ -42,8 +42,16 @@ ClickDispatcher::ClickDispatcher(
     const ResolvedTarget& target,
     const ToolBase& tool,
     base::OnceCallback<void(mojom::ActionResultPtr)> on_complete)
-    : target_(target), tool_(tool), on_complete_(std::move(on_complete)) {
-  WebWidget* widget = target.GetWidget(*tool_);
+    : button_(button),
+      count_(count),
+      target_(target),
+      tool_(tool),
+      on_complete_(std::move(on_complete)) {}
+
+ClickDispatcher::~ClickDispatcher() = default;
+
+void ClickDispatcher::Start() {
+  WebWidget* widget = target_.GetWidget(*tool_);
   CHECK(widget);
   if (base::FeatureList::IsEnabled(features::kGlicActorMoveBeforeClick)) {
     WebMouseEvent mouse_move(WebInputEvent::Type::kMouseMove,
@@ -51,9 +59,9 @@ ClickDispatcher::ClickDispatcher(
                              ui::EventTimeForNow());
     // No button for move
     mouse_move.button = WebMouseEvent::Button::kNoButton;
-    mouse_move.SetPositionInWidget(target.widget_point);
+    mouse_move.SetPositionInWidget(target_.widget_point);
     mouse_move.SetPositionInScreen(
-        target.widget_point +
+        target_.widget_point +
         gfx::Vector2dF(widget->ViewRect().OffsetFromOrigin()));
 
     // Mouse move is considered optional, so we don't check this result.
@@ -69,14 +77,12 @@ ClickDispatcher::ClickDispatcher(
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ClickDispatcher::DoMouseDown,
-                       weak_ptr_factory_.GetWeakPtr(), button, count, target),
+                       weak_ptr_factory_.GetWeakPtr()),
         delay);
   } else {
-    DoMouseDown(button, count, target);
+    DoMouseDown();
   }
 }
-
-ClickDispatcher::~ClickDispatcher() = default;
 
 void ClickDispatcher::Cancel() {
   weak_ptr_factory_.InvalidateWeakPtrs();
@@ -88,10 +94,8 @@ void ClickDispatcher::Cancel() {
   }
 }
 
-void ClickDispatcher::DoMouseDown(WebMouseEvent::Button button,
-                                  int count,
-                                  const ResolvedTarget& target) {
-  WebWidget* widget = target.GetWidget(*tool_);
+void ClickDispatcher::DoMouseDown() {
+  WebWidget* widget = target_.GetWidget(*tool_);
   if (!widget) {
     Finish(MakeResult(mojom::ActionResultCode::kFrameWentAway,
                       /*requires_page_stabilization=*/true,
@@ -101,12 +105,12 @@ void ClickDispatcher::DoMouseDown(WebMouseEvent::Button button,
 
   WebMouseEvent mouse_down(WebInputEvent::Type::kMouseDown,
                            WebInputEvent::kNoModifiers, ui::EventTimeForNow());
-  mouse_down.button = button;
-  mouse_down.click_count = count;
-  mouse_down.SetPositionInWidget(target.widget_point);
+  mouse_down.button = button_;
+  mouse_down.click_count = count_;
+  mouse_down.SetPositionInWidget(target_.widget_point);
 
   gfx::PointF screen_point =
-      target.widget_point +
+      target_.widget_point +
       gfx::Vector2dF(widget->ViewRect().OffsetFromOrigin());
   mouse_down.SetPositionInScreen(screen_point);
   mouse_down.UpdateEventModifiersToMatchButton();
