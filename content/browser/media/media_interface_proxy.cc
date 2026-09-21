@@ -494,9 +494,17 @@ void MediaInterfaceProxy::CreateMediaFoundationRenderer(
   auto* factory = GetMediaFoundationServiceInterfaceFactory(base::FilePath());
   if (factory) {
     // `MediaFoundationRenderer` bypasses the browser's audio service.
-    // Authorize the frame for audibility bypass claims.
-    AudibilityBypassTracker::ScopedGrant grant =
-        AudibilityBypassTracker::AddGrant(&render_frame_host());
+    // Authorize the frame for audibility bypass claims — but only when the
+    // document is in a legitimate MediaFoundation playback context (clear
+    // playback enabled, or a hardware-secure CDM created via CreateCdm()).
+    // Otherwise any renderer could self-mint the authorization and spoof
+    // tab audibility (WasRecentlyAudible / speaker indicator / Auto-PiP
+    // gates) with no real playback.
+    AudibilityBypassTracker::ScopedGrant grant;
+    if (media::SupportMediaFoundationClearPlayback() ||
+        mf_protected_playback_context_) {
+      grant = AudibilityBypassTracker::AddGrant(&render_frame_host());
+    }
 
     mojo::PendingRemote<media::mojom::MediaFoundationRendererExtension>
         utility_extension_remote;
@@ -582,6 +590,10 @@ void MediaInterfaceProxy::CreateCdm(const media::CdmConfig& cdm_config,
       bool is_cached_factory = mf_interface_factory_remote_.is_bound();
       auto* factory = GetMediaFoundationServiceInterfaceFactory(cdm_info->path);
       if (factory) {
+        // A hardware-secure CDM is being created for this document, so
+        // subsequent MediaFoundationRenderer creation is part of a real
+        // protected-playback setup and may claim audibility bypass.
+        mf_protected_playback_context_ = true;
         factory->CreateCdm(
             cdm_config,
             WrapCreateCdmCallback(base::BindOnce(

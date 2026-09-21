@@ -14,6 +14,7 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "content/browser/media/media_interface_factory_holder.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/common/cdm_info.h"
 #include "media/cdm/cdm_type.h"
@@ -42,8 +43,9 @@ class RenderFrameHost;
 // This implements the media::mojom::InterfaceFactory interface for a
 // RenderFrameHostImpl to help create remote media components in different
 // processes.
-class MediaInterfaceProxy final : public DocumentUserData<MediaInterfaceProxy>,
-                                  public media::mojom::InterfaceFactory {
+class CONTENT_EXPORT MediaInterfaceProxy final
+    : public DocumentUserData<MediaInterfaceProxy>,
+      public media::mojom::InterfaceFactory {
  public:
   ~MediaInterfaceProxy() final;
 
@@ -89,6 +91,7 @@ class MediaInterfaceProxy final : public DocumentUserData<MediaInterfaceProxy>,
 
  private:
   friend class DocumentUserData<MediaInterfaceProxy>;
+  friend class MediaInterfaceProxyTest;
   explicit MediaInterfaceProxy(RenderFrameHost* rfh);
   DOCUMENT_USER_DATA_KEY_DECL();
 
@@ -148,6 +151,15 @@ class MediaInterfaceProxy final : public DocumentUserData<MediaInterfaceProxy>,
       const media::CdmConfig& cdm_config);
 
   mojo::Remote<media::mojom::InterfaceFactory> mf_interface_factory_remote_;
+
+  // Only authorize audibility-bypass grants when this document actually
+  // established a MediaFoundation playback context: either MediaFoundation
+  // clear playback is enabled, or a hardware-secure CDM was set up through
+  // CreateCdm(). This stops a (compromised) renderer from self-minting
+  // AudibilityBypassTracker grants by merely calling
+  // CreateMediaFoundationRenderer(), which requires no CDM, no content setting
+  // and no user interaction.
+  bool mf_protected_playback_context_ = false;
 #endif  // BUILDFLAG(IS_WIN)
 
   mojo::UniqueReceiverSet<media::mojom::FrameInterfaceFactory> frame_factories_;

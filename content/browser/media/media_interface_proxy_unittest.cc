@@ -2,25 +2,35 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/media/media_interface_proxy.h"
+
 #include <memory>
 #include <optional>
 #include <string>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/media/cdm_registry_impl.h"
+#include "content/browser/media/media_web_contents_observer.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/pseudonymization_salt.h"
+#include "content/public/browser/media_player_id.h"
 #include "content/public/common/cdm_info.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "media/base/cdm_capability.h"
 #include "media/base/cdm_config.h"
+#include "media/base/media_switches.h"
 #include "media/mojo/mojom/content_decryption_module.mojom.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
+#include "media/mojo/mojom/media_log.mojom.h"
+#include "media/mojo/mojom/renderer.mojom.h"
+#include "media/mojo/mojom/renderer_extensions.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "sandbox/policy/switches.h"
@@ -54,6 +64,15 @@ class MediaInterfaceProxyTest : public RenderViewHostTestHarness {
     ResetSaltForTesting();
     RenderViewHostTestHarness::TearDown();
   }
+
+#if BUILDFLAG(IS_WIN)
+  void SetMediaFoundationInterfaceFactoryRemote(
+      mojo::PendingRemote<media::mojom::InterfaceFactory> factory_remote) {
+    auto* proxy =
+        MediaInterfaceProxy::GetOrCreateForCurrentDocument(main_rfh());
+    proxy->mf_interface_factory_remote_.Bind(std::move(factory_remote));
+  }
+#endif
 
   mojo::Remote<media::mojom::InterfaceFactory> GetMediaInterfaceFactory() {
     mojo::Remote<media::mojom::InterfaceFactory> factory;
@@ -134,6 +153,95 @@ TEST_F(MediaInterfaceProxyTest, CreateCdm_MediaFoundation_InvalidConfig) {
 
   ASSERT_TRUE(created_status.has_value());
   EXPECT_EQ(created_status.value(), media::CreateCdmStatus::kInvalidCdmConfig);
+}
+
+TEST_F(MediaInterfaceProxyTest,
+       CreateMediaFoundationRenderer_NoGrantWithoutContext) {
+  mojo::PendingRemote<media::mojom::InterfaceFactory> dummy_factory_remote;
+  auto dummy_factory_receiver =
+      dummy_factory_remote.InitWithNewPipeAndPassReceiver();
+  SetMediaFoundationInterfaceFactoryRemote(std::move(dummy_factory_remote));
+
+  auto factory = GetMediaInterfaceFactory();
+  ASSERT_TRUE(factory.is_bound());
+
+  mojo::PendingRemote<media::mojom::MediaLog> media_log_remote;
+  auto media_log_receiver = media_log_remote.InitWithNewPipeAndPassReceiver();
+  mojo::PendingRemote<media::mojom::Renderer> renderer_remote;
+  auto renderer_receiver = renderer_remote.InitWithNewPipeAndPassReceiver();
+  mojo::PendingRemote<media::mojom::MediaFoundationRendererExtension>
+      extension_remote;
+
+  // A renderer should NOT be granted audibility bypass authorization when
+  // calling CreateMediaFoundationRenderer without an established
+  // MediaFoundation playback context (no CDM created, clear playback disabled).
+  factory->CreateMediaFoundationRenderer(
+      std::move(media_log_remote), std::move(renderer_receiver),
+      extension_remote.InitWithNewPipeAndPassReceiver());
+  base::RunLoop().RunUntilIdle();
+
+  MediaPlayerId player_id(main_rfh()->GetGlobalId(), 1);
+  EXPECT_FALSE(AudibilityBypassTracker::ClaimGrant(player_id));
+}
+
+TEST_F(MediaInterfaceProxyTest,
+       CreateMediaFoundationRenderer_GrantWithProtectedContext) {
+  mojo::PendingRemote<media::mojom::InterfaceFactory> dummy_factory_remote;
+  auto dummy_factory_receiver =
+      dummy_factory_remote.InitWithNewPipeAndPassReceiver();
+  SetMediaFoundationInterfaceFactoryRemote(std::move(dummy_factory_remote));
+
+  auto factory = GetMediaInterfaceFactory();
+  ASSERT_TRUE(factory.is_bound());
+
+  // Establish a hardware-secure CDM context first.
+  factory->CreateCdm(CreateHwSecureCdmConfig(), base::DoNothing());
+  base::RunLoop().RunUntilIdle();
+
+  mojo::PendingRemote<media::mojom::MediaLog> media_log_remote;
+  auto media_log_receiver = media_log_remote.InitWithNewPipeAndPassReceiver();
+  mojo::PendingRemote<media::mojom::Renderer> renderer_remote;
+  auto renderer_receiver = renderer_remote.InitWithNewPipeAndPassReceiver();
+  mojo::PendingRemote<media::mojom::MediaFoundationRendererExtension>
+      extension_remote;
+
+  factory->CreateMediaFoundationRenderer(
+      std::move(media_log_remote), std::move(renderer_receiver),
+      extension_remote.InitWithNewPipeAndPassReceiver());
+  base::RunLoop().RunUntilIdle();
+
+  MediaPlayerId player_id(main_rfh()->GetGlobalId(), 1);
+  EXPECT_TRUE(AudibilityBypassTracker::ClaimGrant(player_id));
+}
+
+TEST_F(MediaInterfaceProxyTest,
+       CreateMediaFoundationRenderer_GrantWithClearPlayback) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      media::kMediaFoundationClearPlayback);
+
+  mojo::PendingRemote<media::mojom::InterfaceFactory> dummy_factory_remote;
+  auto dummy_factory_receiver =
+      dummy_factory_remote.InitWithNewPipeAndPassReceiver();
+  SetMediaFoundationInterfaceFactoryRemote(std::move(dummy_factory_remote));
+
+  auto factory = GetMediaInterfaceFactory();
+  ASSERT_TRUE(factory.is_bound());
+
+  mojo::PendingRemote<media::mojom::MediaLog> media_log_remote;
+  auto media_log_receiver = media_log_remote.InitWithNewPipeAndPassReceiver();
+  mojo::PendingRemote<media::mojom::Renderer> renderer_remote;
+  auto renderer_receiver = renderer_remote.InitWithNewPipeAndPassReceiver();
+  mojo::PendingRemote<media::mojom::MediaFoundationRendererExtension>
+      extension_remote;
+
+  factory->CreateMediaFoundationRenderer(
+      std::move(media_log_remote), std::move(renderer_receiver),
+      extension_remote.InitWithNewPipeAndPassReceiver());
+  base::RunLoop().RunUntilIdle();
+
+  MediaPlayerId player_id(main_rfh()->GetGlobalId(), 1);
+  EXPECT_TRUE(AudibilityBypassTracker::ClaimGrant(player_id));
 }
 #endif  // BUILDFLAG(IS_WIN)
 
