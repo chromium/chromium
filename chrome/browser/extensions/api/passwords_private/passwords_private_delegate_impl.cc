@@ -11,6 +11,7 @@
 
 #include "ash/constants/web_app_id_constants.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -302,41 +303,25 @@ ToActionableApiError(password_manager::ActionableError error) {
 
 namespace extensions {
 
-PasswordsPrivateDelegateImpl::PasswordsPrivateDelegateImpl(
-    PrefService* prefs,
-    signin::IdentityManager* identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    password_manager::PasswordSenderService* password_sender_service,
-    syncer::SyncService* sync_service,
-    TrustSafetySentimentService* trust_safety_sentiment_service,
-    affiliations::AffiliationService* affiliation_service,
-    scoped_refptr<password_manager::PasswordStoreInterface>
-        profile_password_store,
-    scoped_refptr<password_manager::PasswordStoreInterface>
-        account_password_store,
-    webauthn::PasskeyModel* passkey_model,
-    password_manager::BulkLeakCheckServiceInterface* bulk_leak_check_service,
-    PasswordsPrivateEventRouter* event_router,
-    web_app::WebAppInstallManager* web_app_install_manager,
-    EnclaveManagerInterface* enclave_manager,
-    const DeviceAuthenticatorFactory& device_authenticator_factory,
-    const base::RepeatingClosure& maybe_show_profile_switch_iph_cb)
-    : prefs_(prefs),
-      identity_manager_(identity_manager),
-      url_loader_factory_(std::move(url_loader_factory)),
-      password_sender_service_(password_sender_service),
-      sync_service_(sync_service),
-      trust_safety_sentiment_service_(trust_safety_sentiment_service),
-      profile_password_store_(profile_password_store),
-      account_password_store_(account_password_store),
-      event_router_(event_router),
-      enclave_manager_(enclave_manager),
-      device_authenticator_factory_(device_authenticator_factory),
-      maybe_show_profile_switch_iph_cb_(maybe_show_profile_switch_iph_cb),
-      saved_passwords_presenter_(affiliation_service,
-                                 profile_password_store,
-                                 account_password_store,
-                                 passkey_model),
+PasswordsPrivateDelegateImpl::PasswordsPrivateDelegateImpl(Dependencies deps)
+    : prefs_(&CHECK_DEREF(deps.prefs)),
+      identity_manager_(deps.identity_manager),
+      url_loader_factory_(std::move(deps.url_loader_factory)),
+      password_sender_service_(deps.password_sender_service),
+      sync_service_(deps.sync_service),
+      trust_safety_sentiment_service_(deps.trust_safety_sentiment_service),
+      profile_password_store_(deps.profile_password_store),
+      account_password_store_(deps.account_password_store),
+      event_router_(deps.event_router),
+      enclave_manager_(deps.enclave_manager),
+      device_authenticator_factory_(
+          std::move(deps.device_authenticator_factory)),
+      maybe_show_profile_switch_iph_cb_(
+          std::move(deps.maybe_show_profile_switch_iph_cb)),
+      saved_passwords_presenter_(&CHECK_DEREF(deps.affiliation_service),
+                                 std::move(deps.profile_password_store),
+                                 std::move(deps.account_password_store),
+                                 deps.passkey_model),
       password_import_controller_(std::make_unique<PasswordImportController>(
           saved_passwords_presenter_)),
       password_export_controller_(std::make_unique<PasswordExportController>(
@@ -345,11 +330,15 @@ PasswordsPrivateDelegateImpl::PasswordsPrivateDelegateImpl(
               &PasswordsPrivateDelegateImpl::OnPasswordsExportProgress,
               base::Unretained(this)))),
       password_check_delegate_(prefs_,
-                               bulk_leak_check_service,
+                               &CHECK_DEREF(deps.bulk_leak_check_service),
                                &saved_passwords_presenter_,
                                &credential_id_generator_,
                                event_router_),
       current_entries_initialized_(false) {
+  CHECK(identity_manager_);
+  CHECK(url_loader_factory_);
+  CHECK(maybe_show_profile_switch_iph_cb_);
+
   auth_timeout_handler_.Init(
       base::BindRepeating(&PasswordsPrivateDelegateImpl::OsReauthTimeoutCall,
                           weak_ptr_factory_.GetWeakPtr()));
@@ -368,7 +357,8 @@ PasswordsPrivateDelegateImpl::PasswordsPrivateDelegateImpl(
   }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  install_manager_observation_.Observe(web_app_install_manager);
+  CHECK(deps.web_app_install_manager);
+  install_manager_observation_.Observe(deps.web_app_install_manager.get());
 #endif
 }
 

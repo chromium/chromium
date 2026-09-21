@@ -102,26 +102,36 @@ PasswordsPrivateDelegateProxy::GetOrCreateDelegate() {
   }
 
   Profile* profile = Profile::FromBrowserContext(browser_context_);
-  scoped_refptr<PasswordsPrivateDelegate> delegate =
-      base::MakeRefCounted<PasswordsPrivateDelegateImpl>(
-          profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile),
-          profile->GetDefaultStoragePartition()
-              ->GetURLLoaderFactoryForBrowserProcess(),
+  auto delegate = base::MakeRefCounted<
+      PasswordsPrivateDelegateImpl>(PasswordsPrivateDelegateImpl::Dependencies{
+      .prefs = profile->GetPrefs(),
+      .identity_manager = IdentityManagerFactory::GetForProfile(profile),
+      .url_loader_factory = profile->GetDefaultStoragePartition()
+                                ->GetURLLoaderFactoryForBrowserProcess(),
+      .password_sender_service =
           PasswordSenderServiceFactory::GetForProfile(profile),
-          SyncServiceFactory::GetForProfile(profile),
+      .sync_service = SyncServiceFactory::GetForProfile(profile),
+      .trust_safety_sentiment_service =
           TrustSafetySentimentServiceFactory::GetForProfile(profile),
-          AffiliationServiceFactory::GetForProfile(profile),
-          ProfilePasswordStoreFactory::GetForProfile(
-              profile, ServiceAccessType::EXPLICIT_ACCESS),
-          AccountPasswordStoreFactory::GetForProfile(
-              profile, ServiceAccessType::EXPLICIT_ACCESS),
+      .affiliation_service = AffiliationServiceFactory::GetForProfile(profile),
+      .profile_password_store = ProfilePasswordStoreFactory::GetForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS),
+      .account_password_store = AccountPasswordStoreFactory::GetForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS),
+      .passkey_model =
           PasskeyModelFactory::GetInstance()->GetForProfile(profile),
+      .bulk_leak_check_service =
           BulkLeakCheckServiceFactory::GetForProfile(profile),
+      .event_router =
           PasswordsPrivateEventRouterFactory::GetForProfile(profile),
+      .web_app_install_manager =
           &web_app::WebAppProvider::GetForWebApps(profile)->install_manager(),
-          EnclaveManagerFactory::GetForProfile(profile),
+      .enclave_manager = EnclaveManagerFactory::GetForProfile(profile),
+      .device_authenticator_factory =
           base::BindRepeating(&GetDeviceAuthenticator, profile),
-          base::BindRepeating(&MaybeShowProfileSwitchIPH, profile));
+      .maybe_show_profile_switch_iph_cb =
+          base::BindRepeating(&MaybeShowProfileSwitchIPH, profile),
+  });
   weak_instance_ = delegate->AsWeakPtr();
   return delegate;
 }

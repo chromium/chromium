@@ -104,26 +104,30 @@ class PasswordsPrivateDelegateImpl
           const device_reauth::DeviceAuthParams& params)>;
 
   // LINT.IfChange(Dependencies)
-  PasswordsPrivateDelegateImpl(
-      PrefService* prefs,
-      signin::IdentityManager* identity_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      password_manager::PasswordSenderService* password_sender_service,
-      syncer::SyncService* sync_service,
-      TrustSafetySentimentService* trust_safety_sentiment_service,
-      affiliations::AffiliationService* affiliation_service,
-      scoped_refptr<password_manager::PasswordStoreInterface>
-          profile_password_store,
-      scoped_refptr<password_manager::PasswordStoreInterface>
-          account_password_store,
-      webauthn::PasskeyModel* passkey_model,
-      password_manager::BulkLeakCheckServiceInterface* bulk_leak_check_service,
-      PasswordsPrivateEventRouter* event_router,
-      web_app::WebAppInstallManager* web_app_install_manager,
-      EnclaveManagerInterface* enclave_manager,
-      const DeviceAuthenticatorFactory& device_authenticator_factory,
-      const base::RepeatingClosure& maybe_show_profile_switch_iph_cb);
+  struct Dependencies {
+    raw_ptr<PrefService> prefs;
+    raw_ptr<signin::IdentityManager> identity_manager;
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
+    raw_ptr<password_manager::PasswordSenderService> password_sender_service;
+    raw_ptr<syncer::SyncService> sync_service;
+    raw_ptr<TrustSafetySentimentService> trust_safety_sentiment_service;
+    raw_ptr<affiliations::AffiliationService> affiliation_service;
+    scoped_refptr<password_manager::PasswordStoreInterface>
+        profile_password_store;
+    scoped_refptr<password_manager::PasswordStoreInterface>
+        account_password_store;
+    raw_ptr<webauthn::PasskeyModel> passkey_model;
+    raw_ptr<password_manager::BulkLeakCheckServiceInterface>
+        bulk_leak_check_service;
+    raw_ptr<PasswordsPrivateEventRouter> event_router;
+    raw_ptr<web_app::WebAppInstallManager> web_app_install_manager;
+    raw_ptr<EnclaveManagerInterface> enclave_manager;
+    DeviceAuthenticatorFactory device_authenticator_factory;
+    base::RepeatingClosure maybe_show_profile_switch_iph_cb;
+  };
   // LINT.ThenChange(//chrome/browser/extensions/api/passwords_private/passwords_private_delegate_factory.cc:Dependencies)
+
+  explicit PasswordsPrivateDelegateImpl(Dependencies deps);
 
   PasswordsPrivateDelegateImpl(const PasswordsPrivateDelegateImpl&) = delete;
   PasswordsPrivateDelegateImpl& operator=(const PasswordsPrivateDelegateImpl&) =

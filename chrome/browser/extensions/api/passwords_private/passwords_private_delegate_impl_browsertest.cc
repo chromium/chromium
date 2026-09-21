@@ -226,23 +226,37 @@ class PasswordsPrivateDelegateImplTest : public InProcessBrowserTest {
   scoped_refptr<PasswordsPrivateDelegateImpl> CreateDelegate() {
     Profile* profile = GetProfile();
     return base::MakeRefCounted<PasswordsPrivateDelegateImpl>(
-        profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile),
-        profile->GetDefaultStoragePartition()
-            ->GetURLLoaderFactoryForBrowserProcess(),
-        PasswordSenderServiceFactory::GetForProfile(profile),
-        SyncServiceFactory::GetForProfile(profile),
-        TrustSafetySentimentServiceFactory::GetForProfile(profile),
-        AffiliationServiceFactory::GetForProfile(profile),
-        ProfilePasswordStoreFactory::GetForProfile(
-            profile, ServiceAccessType::EXPLICIT_ACCESS),
-        AccountPasswordStoreFactory::GetForProfile(
-            profile, ServiceAccessType::EXPLICIT_ACCESS),
-        PasskeyModelFactory::GetInstance()->GetForProfile(profile),
-        BulkLeakCheckServiceFactory::GetForProfile(profile),
-        PasswordsPrivateEventRouterFactory::GetForProfile(profile),
-        &web_app::WebAppProvider::GetForWebApps(profile)->install_manager(),
-        EnclaveManagerFactory::GetForProfile(profile), base::NullCallback(),
-        base::DoNothing());
+        PasswordsPrivateDelegateImpl::Dependencies{
+            .prefs = profile->GetPrefs(),
+            .identity_manager = IdentityManagerFactory::GetForProfile(profile),
+            .url_loader_factory = profile->GetDefaultStoragePartition()
+                                      ->GetURLLoaderFactoryForBrowserProcess(),
+            .password_sender_service =
+                PasswordSenderServiceFactory::GetForProfile(profile),
+            .sync_service = SyncServiceFactory::GetForProfile(profile),
+            .trust_safety_sentiment_service =
+                TrustSafetySentimentServiceFactory::GetForProfile(profile),
+            .affiliation_service =
+                AffiliationServiceFactory::GetForProfile(profile),
+            .profile_password_store =
+                ProfilePasswordStoreFactory::GetForProfile(
+                    profile, ServiceAccessType::EXPLICIT_ACCESS),
+            .account_password_store =
+                AccountPasswordStoreFactory::GetForProfile(
+                    profile, ServiceAccessType::EXPLICIT_ACCESS),
+            .passkey_model =
+                PasskeyModelFactory::GetInstance()->GetForProfile(profile),
+            .bulk_leak_check_service =
+                BulkLeakCheckServiceFactory::GetForProfile(profile),
+            .event_router =
+                PasswordsPrivateEventRouterFactory::GetForProfile(profile),
+            .web_app_install_manager =
+                &web_app::WebAppProvider::GetForWebApps(profile)
+                     ->install_manager(),
+            .enclave_manager = EnclaveManagerFactory::GetForProfile(profile),
+            .device_authenticator_factory = base::NullCallback(),
+            .maybe_show_profile_switch_iph_cb = base::DoNothing(),
+        });
   }
 
   // Queries and returns the list of saved credentials, blocking until finished.
