@@ -289,8 +289,7 @@ DrawingBuffer::DrawingBuffer(
       hdr_metadata_(hdr_metadata),
       opengl_flip_y_extension_(
           ContextProvider()->GetCapabilities().mesa_framebuffer_flip_y),
-      initial_gpu_(gpu_preference),
-      current_active_gpu_(gpu_preference),
+      requested_gpu_(gpu_preference),
       weak_factory_(this) {
   // Used by browser tests to detect the use of a DrawingBuffer.
   TRACE_EVENT_INSTANT0("test_gpu", "DrawingBufferCreation",
@@ -1805,66 +1804,6 @@ void DrawingBuffer::ResolveIfNeeded(DiscardBehavior discardBehavior) {
     }
   }
   contents_change_resolved_ = true;
-
-  auto* gl = ContextProvider()->ContextGL();
-  gl::GpuPreference active_gpu = gl::GpuPreference::kDefault;
-  if (gl->DidGpuSwitch(&active_gpu) == GL_TRUE) {
-    // This code path is mainly taken on macOS (the only platform which, as of
-    // this writing, dispatches the GPU-switched notifications), and the
-    // comments below focus only on macOS.
-    //
-    // The code below attempts to deduce whether, if a GPU switch occurred,
-    // it's really necessary to lose the context because certain GPU resources
-    // are no longer accessible. Resources only become inaccessible if
-    // CGLSetVirtualScreen is explicitly called against a GL context to change
-    // its renderer ID. GPU switching notifications are highly asynchronous.
-    //
-    // The tests below, of the initial and currently active GPU, replicate
-    // some logic in GLContextCGL::ForceGpuSwitchIfNeeded. Basically, if a
-    // context requests the high-performance GPU, then CGLSetVirtualScreen
-    // will never be called to migrate that context to the low-power
-    // GPU. However, contexts that were allocated on the integrated GPU will
-    // be migrated to the discrete GPU, and back, when the discrete GPU is
-    // activated and deactivated. Also, if the high-performance GPU was
-    // requested, then that request took effect during context bringup, even
-    // though the GPU switching notification is generally dispatched a couple
-    // of seconds after that, so it's not necessary to either lose the context
-    // or reallocate the multisampled renderbuffers when that initial
-    // notification is received.
-    if (initial_gpu_ == gl::GpuPreference::kLowPower &&
-        current_active_gpu_ != active_gpu) {
-      if ((WantExplicitResolve() && preserve_drawing_buffer_ == kPreserve) ||
-          client_
-              ->DrawingBufferClientUserAllocatedMultisampledRenderbuffers()) {
-        // In these situations there are multisampled renderbuffers whose
-        // content the application expects to be preserved, but which can not
-        // be. Forcing a lost context is the only option to keep applications
-        // rendering correctly.
-        client_->DrawingBufferClientForceLostContextWithAutoRecovery(
-            "Losing WebGL context because multisampled renderbuffers were "
-            "allocated, to work around macOS OpenGL driver bugs");
-      } else if (WantExplicitResolve() && multisample_renderbuffer_) {
-        // About the `multisample_renderbuffer_` condition above: Only
-        // reallocate if the multisample renderbuffer is currently allocated.
-        // If the buffer was discarded in the background, reallocating here
-        // would attempt to operate on handle 0.
-        ReallocateMultisampleRenderbuffer(size_);
-
-        // This does a bit more work than desired - clearing any depth and
-        // stencil renderbuffers is unnecessary, since they weren't reallocated
-        // - but reusing this code reduces complexity. Note that we do not clear
-        // the non-multisampled framebuffer, as doing so can cause users'
-        // content to disappear unexpectedly.
-        //
-        // TODO(crbug.com/1046146): perform this clear at the beginning rather
-        // than at the end of a frame in order to eliminate rendering glitches.
-        // This should also simplify the code, allowing removal of the
-        // ClearOption.
-        ClearNewlyAllocatedFramebuffers(kClearOnlyMultisampledFBO);
-      }
-    }
-    current_active_gpu_ = active_gpu;
-  }
 }
 
 bool DrawingBuffer::ReallocateMultisampleRenderbuffer(const gfx::Size& size) {
@@ -2142,7 +2081,7 @@ gpu::ImageInfo DrawingBuffer::CreateImageInfo(const gfx::Size& size) {
                                    gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
                                    gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                                    gpu::SHARED_IMAGE_USAGE_RASTER_READ;
-  if (initial_gpu_ == gl::GpuPreference::kHighPerformance) {
+  if (requested_gpu_ == gl::GpuPreference::kHighPerformance) {
     usage |= gpu::SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU;
   }
   GrSurfaceOrigin origin = opengl_flip_y_extension_

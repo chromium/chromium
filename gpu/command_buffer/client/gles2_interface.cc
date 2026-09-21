@@ -52,9 +52,5 @@ CopySharedImageSyncCallback GLES2Interface::CopySharedImageDirectlyToGLTexture(
   return CopySharedImageSyncCallback();
 }
 
-GLboolean GLES2Interface::DidGpuSwitch(gl::GpuPreference* active_gpu) {
-  return GL_FALSE;
-}
-
 }  // namespace gles2
 }  // namespace gpu

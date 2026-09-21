@@ -725,8 +725,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
 
   bool opengl_flip_y_extension_;
 
-  const gl::GpuPreference initial_gpu_;
-  gl::GpuPreference current_active_gpu_;
+  const gl::GpuPreference requested_gpu_;
 
   std::unique_ptr<WebGraphicsSharedImageInterfaceProvider>
       shared_image_interface_provider_for_bitmap_test_;
