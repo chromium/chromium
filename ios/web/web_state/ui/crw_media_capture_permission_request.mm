@@ -4,6 +4,8 @@
 
 #import "ios/web/web_state/ui/crw_media_capture_permission_request.h"
 
+#import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/task/bind_post_task.h"
 #import "base/task/sequenced_task_runner.h"
 #import "ios/web/public/permissions/permissions.h"
@@ -114,14 +116,22 @@ NSArray<NSNumber*>* GetPermissionsFromWKMediaCaptureType(
   WKPermissionDecision finalDecision =
       _presenter ? decision : WKPermissionDecisionDeny;
   auto decisionHandler = _decisionHandler;
+  base::ScopedClosureRunner denyIfNotRun(
+      base::BindOnce(decisionHandler, WKPermissionDecisionDeny));
   // Post the decision handler asynchronously to prevent synchronous re-entrancy
   // and stack overflow if WebKit immediately initiates another permission
-  // request upon decision completion.
-  _taskRunner->PostTask(FROM_HERE, base::BindOnce(
-                                       ^(WKPermissionDecision webkit_decision) {
-                                         decisionHandler(webkit_decision);
-                                       },
-                                       finalDecision));
+  // request upon decision completion. If the taskRunner is torn down before the
+  // task has run, the decision handler will be invoked synchronously during
+  // teardown, thus ensuring that the handler is always called.
+  _taskRunner->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](base::ScopedClosureRunner deny_runner,
+                        void (^handler)(WKPermissionDecision),
+                        WKPermissionDecision webkit_decision) {
+                       std::ignore = deny_runner.Release();
+                       handler(webkit_decision);
+                     },
+                     std::move(denyIfNotRun), decisionHandler, finalDecision));
 }
 
 @end
