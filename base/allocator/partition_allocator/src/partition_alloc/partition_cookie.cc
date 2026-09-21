@@ -8,7 +8,9 @@
 #include <type_traits>
 
 #include "partition_alloc/buildflags.h"
-#include "partition_alloc/partition_alloc_check.h"
+#include "partition_alloc/debug_data_on_stack.h"
+#include "partition_alloc/partition_alloc_base/debug/alias.h"
+#include "partition_alloc/partition_alloc_base/immediate_crash.h"
 
 #if PA_BUILDFLAG(USE_PARTITION_COOKIE)
 namespace partition_alloc::internal {

@@ -7,6 +7,7 @@
 #include <cstddef>
 
 #include "partition_alloc/buildflags.h"
+#include "partition_alloc/debug_data_on_stack.h"
 #include "partition_alloc/internal/partition_root_internal.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_check.h"

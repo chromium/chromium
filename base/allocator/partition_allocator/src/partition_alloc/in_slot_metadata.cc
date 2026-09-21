@@ -8,6 +8,7 @@
 
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
+#include "partition_alloc/debug_data_on_stack.h"
 #include "partition_alloc/internal/partition_root_internal.h"
 #include "partition_alloc/internal/thread_cache_internal.h"
 #include "partition_alloc/partition_alloc_base/logging.h"

@@ -462,6 +462,7 @@ if (is_clang_or_gcc) {
       "compressed_pointer.h",
       "dangling_raw_ptr_checks.cc",
       "dangling_raw_ptr_checks.h",
+      "debug_data_on_stack.h",
       "extent_in_bounds.h",
       "flags.h",
       "fnv1a_consteval.h",

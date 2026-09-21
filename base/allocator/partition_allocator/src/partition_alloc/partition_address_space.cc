@@ -17,6 +17,7 @@
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/compressed_pointer.h"
+#include "partition_alloc/debug_data_on_stack.h"
 #include "partition_alloc/internal/page_allocator_internal.h"
 #include "partition_alloc/page_allocator.h"
 #include "partition_alloc/partition_alloc_base/bits.h"

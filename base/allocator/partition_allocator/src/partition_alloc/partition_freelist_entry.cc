@@ -4,8 +4,8 @@
 
 #include "partition_alloc/partition_freelist_entry.h"
 
+#include "partition_alloc/debug_data_on_stack.h"
 #include "partition_alloc/partition_alloc_base/immediate_crash.h"
-#include "partition_alloc/partition_alloc_check.h"
 
 namespace partition_alloc::internal {
 
