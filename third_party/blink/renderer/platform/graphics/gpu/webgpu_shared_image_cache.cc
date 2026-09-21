@@ -46,10 +46,8 @@ WebGpuSharedImageLease::~WebGpuSharedImageLease() {
 }
 
 void WebGpuSharedImageLease::WaitSyncToken(const gpu::SyncToken& sync_token) {
-  if (sync_token.HasData()) {
-    resource_.sync_token_ = sync_token;
-    resource_.shared_image_->UpdateDestructionSyncToken(resource_.sync_token_);
-  }
+  resource_.sync_token_ = sync_token;
+  resource_.shared_image_->UpdateDestructionSyncToken(resource_.sync_token_);
 }
 
 scoped_refptr<gpu::ClientSharedImage> WebGpuSharedImageLease::GetSharedImage()
