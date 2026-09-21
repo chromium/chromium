@@ -84,9 +84,9 @@ inline JniUniquePtr<T> MakeUnique(std::unique_ptr<T> ptr) {
   return JniUniquePtr<T>(std::move(ptr));
 }
 
-template <typename T>
-inline JniUniquePtr<T> MakeUnique(T* ptr) {
-  return JniUniquePtr<T>(ptr);
+template <typename T, typename... Args>
+inline JniUniquePtr<T> MakeUnique(Args&&... args) {
+  return JniUniquePtr<T>(std::make_unique<T>(std::forward<Args>(args)...));
 }
 
 }  // namespace jni_zero

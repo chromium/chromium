@@ -94,4 +94,15 @@ TEST(JniUniquePtrTest, NullPointer) {
   EXPECT_EQ(nullptr, null_ptr.get());
 }
 
+TEST(JniUniquePtrTest, MakeUniqueInPlace) {
+  bool destroyed = false;
+  {
+    auto unique_ptr = MakeUnique<DestructionTracker>(&destroyed);
+    EXPECT_TRUE(unique_ptr);
+    EXPECT_NE(0, unique_ptr.deleter_address());
+    EXPECT_FALSE(destroyed);
+  }
+  EXPECT_TRUE(destroyed);
+}
+
 }  // namespace jni_zero
