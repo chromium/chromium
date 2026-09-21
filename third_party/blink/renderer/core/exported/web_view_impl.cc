@@ -1085,11 +1085,7 @@ WebPagePopupImpl* WebViewImpl::OpenPagePopup(PagePopupClient* client) {
   // because it would require multiple user activations to be created and
   // consumed within the same task.
   CancelPagePopup();
-  if (RuntimeEnabledFeatures::FileColorPickerConsumeActivationEnabled()) {
-    CHECK(!page_popup_);
-  } else {
-    DCHECK(!page_popup_);
-  }
+  CHECK(!page_popup_);
 
   LocalFrame* opener_frame = client->OwnerElement().GetDocument().GetFrame();
   WebLocalFrameImpl* web_opener_frame =

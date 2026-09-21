@@ -257,9 +257,7 @@ void ColorInputType::HandleDOMActivateEvent(Event& event) {
         "A user gesture is required to show the color picker."));
     return;
   }
-  if (RuntimeEnabledFeatures::FileColorPickerConsumeActivationEnabled()) {
-    LocalFrame::ConsumeTransientUserActivation(document.GetFrame());
-  }
+  LocalFrame::ConsumeTransientUserActivation(document.GetFrame());
 
   ChromeClient* chrome_client = GetChromeClient();
   if (chrome_client && !HasOpenedPopup()) {
