@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
@@ -452,6 +453,44 @@ TEST_P(PermissionControllerImplTestWithApproxLocation,
   SetPermissionOverrideAndWait(kTestOrigin, kTestOrigin,
                                PermissionType::GEOLOCATION,
                                PermissionStatus::ASK);
+}
+
+// A callback may unsubscribe another subscription that is part of the same
+// notification batch. The removed subscription must not be notified.
+TEST_F(PermissionControllerImplTest,
+       NotifyChangedSubscriptionsSkipsSubscriptionsRemovedWhileNotifying) {
+  GURL kUrl = GURL(kTestUrl);
+  url::Origin kTestOrigin = url::Origin::Create(kUrl);
+
+  SetPermissionOverrideAndWait(kTestOrigin, kTestOrigin,
+                               PermissionType::BACKGROUND_SYNC,
+                               PermissionStatus::DENIED);
+
+  PermissionControllerImpl::SubscriptionId first_id, second_id;
+  int callback_count = 0;
+
+  // Each callback unsubscribes the other one, so exactly one of them runs no
+  // matter which order they are dispatched in.
+  auto subscribe = [&](PermissionControllerImpl::SubscriptionId* peer_id) {
+    return permission_controller()->SubscribeToPermissionResultChange(
+        PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionType(
+            PermissionType::BACKGROUND_SYNC),
+        nullptr, nullptr, kUrl,
+        /*should_include_device_status=*/false,
+        base::BindLambdaForTesting([&, peer_id](PermissionResult) {
+          ++callback_count;
+          permission_controller()->UnsubscribeFromPermissionResultChange(
+              *peer_id);
+        }));
+  };
+  first_id = subscribe(&second_id);
+  second_id = subscribe(&first_id);
+
+  SetPermissionOverrideAndWait(kTestOrigin, kTestOrigin,
+                               PermissionType::BACKGROUND_SYNC,
+                               PermissionStatus::GRANTED);
+
+  EXPECT_EQ(callback_count, 1);
 }
 
 TEST_F(PermissionControllerImplTest,

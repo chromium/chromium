@@ -12,4 +12,9 @@ PermissionResultSubscription::PermissionResultSubscription(
 
 PermissionResultSubscription::~PermissionResultSubscription() = default;
 
+base::WeakPtr<PermissionResultSubscription>
+PermissionResultSubscription::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 }  // namespace content

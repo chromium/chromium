@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_PERMISSION_STATUS_SUBSCRIPTION_H_
 #define CONTENT_PUBLIC_BROWSER_PERMISSION_STATUS_SUBSCRIPTION_H_
 
+#include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/permission_result.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
@@ -33,6 +34,11 @@ struct CONTENT_EXPORT PermissionResultSubscription {
 
   base::RepeatingCallback<void(PermissionResult, bool)> callback;
   std::optional<PermissionResult> permission_result;
+
+  base::WeakPtr<PermissionResultSubscription> GetWeakPtr();
+
+ private:
+  base::WeakPtrFactory<PermissionResultSubscription> weak_factory_{this};
 };
 
 }  // namespace content

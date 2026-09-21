@@ -11,6 +11,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/types/optional_ref.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -391,7 +392,12 @@ PermissionControllerImpl::GetSubscriptionsStatuses(
 
 void PermissionControllerImpl::NotifyChangedSubscriptions(
     const SubscriptionsStatusMap& old_statuses) {
-  std::vector<base::OnceClosure> callbacks;
+  // A callback may unsubscribe another subscription of this batch, so each
+  // callback is paired with a weak pointer to its subscription and is skipped
+  // if that subscription is gone by the time it would run.
+  std::vector<
+      std::pair<base::WeakPtr<PermissionResultSubscription>, base::OnceClosure>>
+      callbacks;
   for (const auto& it : old_statuses) {
     auto key = it.first;
     PermissionResultSubscription* subscription = subscriptions_.Lookup(key);
@@ -404,11 +410,15 @@ void PermissionControllerImpl::NotifyChangedSubscriptions(
       // This is a private method that is called internally if a permission
       // status was set by DevTools. Suppress permission status override
       // verification and always notify listeners.
-      callbacks.push_back(base::BindOnce(subscription->callback, new_result,
-                                         /*ignore_status_override=*/true));
+      callbacks.emplace_back(subscription->GetWeakPtr(),
+                             base::BindOnce(subscription->callback, new_result,
+                                            /*ignore_status_override=*/true));
     }
   }
-  for (auto& callback : callbacks) {
+  for (auto& [subscription, callback] : callbacks) {
+    if (!subscription) {
+      continue;
+    }
     std::move(callback).Run();
   }
 }
@@ -818,13 +828,9 @@ void PermissionControllerImpl::PermissionResultChange(
   }
   PermissionResultSubscription* subscription =
       subscriptions_.Lookup(subscription_id);
-  DCHECK(subscription);
-  // TODO(crbug.com/40056329) Adding this block to prevent crashes while we
-  // investigate the root cause of the crash. This block will be removed as the
-  // DCHECK() above should be enough.
-  if (!subscription) {
-    return;
-  }
+  // Callers must not deliver a change for a subscription that was already
+  // removed.
+  CHECK(subscription);
   std::optional<PermissionResult> permission_result = permission_overrides_.Get(
       url::Origin::Create(subscription->requesting_origin),
       url::Origin::Create(subscription->embedding_origin),

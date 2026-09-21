@@ -650,7 +650,17 @@ void PermissionManager::OnPermissionChanged(
   DCHECK(primary_pattern.IsValid());
   DCHECK(secondary_pattern.IsValid());
 
-  std::vector<base::OnceClosure> callbacks;
+  // Callbacks are collected first and run only after both loops below, to
+  // prevent re-entrance issues. A callback may unsubscribe another
+  // subscription, so each callback is paired with a weak pointer to its
+  // subscription and is skipped if that subscription is gone by the time it
+  // would run.
+  std::vector<std::pair<base::WeakPtr<content::PermissionResultSubscription>,
+                        base::OnceClosure>>
+      permission_callbacks;
+  std::vector<std::pair<base::WeakPtr<ContentSettingsTypeSubscription>,
+                        base::OnceClosure>>
+      content_settings_callbacks;
 
   if (subscriptions()) {
     for (content::PermissionController::SubscriptionsMap::iterator iter(
@@ -705,10 +715,10 @@ void PermissionManager::OnPermissionChanged(
 
       subscription->permission_result = new_result;
 
-      // Add the callback to |callbacks| which will be run after the loop to
-      // prevent re-entrance issues.
-      callbacks.push_back(base::BindOnce(subscription->callback, new_result,
-                                         /*ignore_status_override=*/false));
+      permission_callbacks.emplace_back(
+          subscription->GetWeakPtr(),
+          base::BindOnce(subscription->callback, new_result,
+                         /*ignore_status_override=*/false));
     }
   }
 
@@ -756,11 +766,23 @@ void PermissionManager::OnPermissionChanged(
 
     subscription->last_setting = new_setting;
 
-    callbacks.push_back(base::BindOnce(subscription->callback, new_setting));
+    content_settings_callbacks.emplace_back(
+        subscription->GetWeakPtr(),
+        base::BindOnce(subscription->callback, new_setting));
   }
 
-  for (auto& callback : callbacks)
+  for (auto& [subscription, callback] : permission_callbacks) {
+    if (!subscription) {
+      continue;
+    }
     std::move(callback).Run();
+  }
+  for (auto& [subscription, callback] : content_settings_callbacks) {
+    if (!subscription) {
+      continue;
+    }
+    std::move(callback).Run();
+  }
 }
 
 content::PermissionResult PermissionManager::GetPermissionStatusInternal(

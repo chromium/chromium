@@ -201,6 +201,13 @@ class PermissionManager : public KeyedService,
     GURL embedding_origin;
     base::RepeatingCallback<void(const PermissionSetting&)> callback;
     PermissionSetting last_setting;
+
+    base::WeakPtr<ContentSettingsTypeSubscription> GetWeakPtr() {
+      return weak_factory_.GetWeakPtr();
+    }
+
+   private:
+    base::WeakPtrFactory<ContentSettingsTypeSubscription> weak_factory_{this};
   };
 
   base::IDMap<std::unique_ptr<ContentSettingsTypeSubscription>,
