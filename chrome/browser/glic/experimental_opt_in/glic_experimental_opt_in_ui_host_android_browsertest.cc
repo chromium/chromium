@@ -261,4 +261,115 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInUIHostAndroidBrowserTest,
   run_loop.Run();
 }
 
+IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInUIHostAndroidBrowserTest,
+                       OpensNewTabForDialog) {
+  TabListInterface* tab_list = GetTabListInterface();
+  tabs::TabInterface* original_tab = tab_list->GetActiveTab();
+  ASSERT_TRUE(original_tab);
+  const int tab_count_before = tab_list->GetTabCount();
+
+  testing::StrictMock<MockGlicExperimentalOptInUIHostDelegate> delegate;
+  auto host = GlicExperimentalOptInUIHost::Create(GetProfile(), &delegate);
+  ASSERT_TRUE(host);
+
+  content::WebContents* contents = host->GetOrCreateSuitableWebContents();
+  ASSERT_TRUE(contents);
+
+  // A brand new foreground tab is used, rather than whatever the user was
+  // looking at.
+  EXPECT_EQ(tab_count_before + 1, tab_list->GetTabCount());
+  EXPECT_NE(original_tab->GetContents(), contents);
+  ASSERT_TRUE(tab_list->GetActiveTab());
+  EXPECT_EQ(tab_list->GetActiveTab()->GetContents(), contents);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInUIHostAndroidBrowserTest,
+                       KeepsCreatedTabWhenDialogDismissed) {
+  TabListInterface* tab_list = GetTabListInterface();
+  const int tab_count_before = tab_list->GetTabCount();
+
+  testing::StrictMock<MockGlicExperimentalOptInUIHostDelegate> delegate;
+  auto host = GlicExperimentalOptInUIHost::Create(GetProfile(), &delegate);
+  ASSERT_TRUE(host);
+
+  content::WebContents* contents = host->GetOrCreateSuitableWebContents();
+  ASSERT_TRUE(contents);
+  ASSERT_EQ(tab_count_before + 1, tab_list->GetTabCount());
+
+  host->Show(contents);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(delegate, OnUIClosed(false)).WillOnce([&run_loop]() {
+    run_loop.Quit();
+  });
+  static_cast<GlicExperimentalOptInUIHostAndroid*>(host.get())
+      ->SimulateDismissingForTesting();
+  run_loop.Run();
+
+  // Dismissing the dialog leaves the user on the tab it was shown over.
+  EXPECT_EQ(tab_count_before + 1, tab_list->GetTabCount());
+  ASSERT_TRUE(tab_list->GetActiveTab());
+  EXPECT_EQ(tab_list->GetActiveTab()->GetContents(), contents);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInUIHostAndroidBrowserTest,
+                       ReusesTabWhileDialogIsShowing) {
+  TabListInterface* tab_list = GetTabListInterface();
+  const int tab_count_before = tab_list->GetTabCount();
+
+  testing::StrictMock<MockGlicExperimentalOptInUIHostDelegate> delegate;
+  auto host = GlicExperimentalOptInUIHost::Create(GetProfile(), &delegate);
+  ASSERT_TRUE(host);
+
+  content::WebContents* first = host->GetOrCreateSuitableWebContents();
+  ASSERT_TRUE(first);
+  ASSERT_EQ(tab_count_before + 1, tab_list->GetTabCount());
+
+  host->Show(first);
+
+  // A second opt-in request arriving while the dialog is already up must reuse
+  // the tab that was created for it. Show() ignores the contents in that case,
+  // so creating another tab would strand it behind the dialog.
+  content::WebContents* second = host->GetOrCreateSuitableWebContents();
+  EXPECT_EQ(first, second);
+  EXPECT_EQ(tab_count_before + 1, tab_list->GetTabCount());
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(delegate, OnUIClosed(false)).WillOnce([&run_loop]() {
+    run_loop.Quit();
+  });
+  static_cast<GlicExperimentalOptInUIHostAndroid*>(host.get())
+      ->SimulateDismissingForTesting();
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    GlicExperimentalOptInUIHostAndroidBrowserTest,
+    ReturnsNullFromGetOrCreateSuitableWebContentsIfDialogShowingWithoutCreatedTab) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  const int tab_count_before = GetTabListInterface()->GetTabCount();
+
+  testing::StrictMock<MockGlicExperimentalOptInUIHostDelegate> delegate;
+  auto host = GlicExperimentalOptInUIHost::Create(GetProfile(), &delegate);
+  ASSERT_TRUE(host);
+
+  // Show the dialog directly without calling GetOrCreateSuitableWebContents()
+  // first, so dialog_tab_ is empty.
+  host->Show(tab->GetContents());
+
+  // While the dialog is showing, calling GetOrCreateSuitableWebContents()
+  // should return null instead of creating another tab.
+  EXPECT_FALSE(host->GetOrCreateSuitableWebContents());
+  EXPECT_EQ(tab_count_before, GetTabListInterface()->GetTabCount());
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(delegate, OnUIClosed(false)).WillOnce([&run_loop]() {
+    run_loop.Quit();
+  });
+  static_cast<GlicExperimentalOptInUIHostAndroid*>(host.get())
+      ->SimulateDismissingForTesting();
+  run_loop.Run();
+}
+
 }  // namespace glic

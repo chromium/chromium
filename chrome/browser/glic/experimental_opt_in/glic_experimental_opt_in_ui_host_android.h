@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_ui_host.h"
+#include "components/tabs/public/tab_interface.h"
 
 class Profile;
 
@@ -44,6 +45,10 @@ class GlicExperimentalOptInUIHostAndroid : public GlicExperimentalOptInUIHost {
   raw_ptr<Delegate> delegate_;
   std::unique_ptr<content::WebContents> opt_in_web_contents_;
   base::android::ScopedJavaGlobalRef<jobject> java_dialog_;
+  // The tab created by GetOrCreateSuitableWebContents() for the currently
+  // showing dialog, if any. Held as a handle rather than a pointer so it
+  // resolves to null if the tab goes away underneath us.
+  tabs::TabHandle dialog_tab_;
   bool is_accepted_ = false;
   base::WeakPtrFactory<GlicExperimentalOptInUIHostAndroid> weak_ptr_factory_{
       this};
