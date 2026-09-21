@@ -1815,7 +1815,7 @@ external/wpt/css/css-scroll-anchoring/negative-layout-overflow.html [ Failure Pa
 external/wpt/css/css-scroll-anchoring/reading-scroll-forces-anchoring.html [ Failure Pass ]
 external/wpt/css/css-scroll-snap/capturing-snap-positions.html [ Failure Pass ]
 external/wpt/css/css-scroll-snap/input/scroll-padding-paged.html [ Failure Pass ]
-external/wpt/css/css-scroll-snap/pair/scroll-snap-type-pair.tentative.html [ Failure Pass ]
+external/wpt/css/css-scroll-snap/parsing/scroll-snap-type-pair.html [ Failure Pass ]
 external/wpt/css/css-scroll-snap/snap-after-relayout/multiple-aligned-targets/prefer-first-in-flat-tree-order.html [ Failure Pass Timeout ]
 external/wpt/css/css-scroll-snap/snap-to-combination-of-two-elements-2.html [ Failure Pass ]
 external/wpt/css/css-shadow/font-face-001.html [ Failure Pass ]
