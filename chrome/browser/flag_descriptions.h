@@ -1716,11 +1716,6 @@ inline constexpr char kGeicEnabledName[] = "GEiC enabled";
 inline constexpr char kGeicEnabledDescription[] =
     "Enables Gemini Enterprise in Chrome (GEiC) side panel integration.";
 
-inline constexpr char kGeicGuestUrlName[] = "GEiC guest URL";
-inline constexpr char kGeicGuestUrlDescription[] =
-    "Configures the guest URL loaded into the GEiC PrivilegedWebContents "
-    "container.";
-
 inline constexpr char kGlassFrameName[] = "Glass Frame";
 inline constexpr char kGlassFrameDescription[] =
     "Enables a glass effect on the browser frame.";

@@ -211,7 +211,6 @@ source_set("impl") {
     "//chrome/browser/extensions",
     "//chrome/browser/feedback",
     "//chrome/browser/file_system_access",
-    "//chrome/browser/geic",
     "//chrome/browser/glic",
     "//chrome/browser/glic/actor",
     "//chrome/browser/glic/gemini_enterprise",

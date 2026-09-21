@@ -7988,6 +7988,7 @@ from previous Chrome versions.
   <int value="-2087444854" label="ThreadWrapperUsesMetronome:disabled"/>
   <int value="-2086690409"
       label="EnableExtensionsPermissionsForSupervisedUsersOnDesktop:enabled"/>
+  <int value="-2086559584" label="Geic:disabled"/>
   <int value="-2086547119"
       label="ReportNotificationContentDetectionData:disabled"/>
   <int value="-2086380381" label="FedCmIdpSigninStatusEnabled:disabled"/>
@@ -9116,6 +9117,7 @@ from previous Chrome versions.
   <int value="-1750933674" label="ObservableAPI:disabled"/>
   <int value="-1750872580" label="UseDHCPCD10:enabled"/>
   <int value="-1750309491" label="DragWindowToNewDesk:enabled"/>
+  <int value="-1750224669" label="Geic:enabled"/>
   <int value="-1750008152" label="UsernameFirstFlow:enabled"/>
   <int value="-1749689559" label="SelectToSpeakNavigationControl:disabled"/>
   <int value="-1749176684" label="PauseBackgroundTabs:disabled"/>

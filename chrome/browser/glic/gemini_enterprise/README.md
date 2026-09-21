@@ -15,13 +15,14 @@ There are two related integration efforts for Gemini Enterprise:
   compliance, data protections, and direct grounding in active tab and
   enterprise context without routing through consumer Gemini infrastructure.
 
-The top-level `//chrome/browser/geic` Mojo API was an initial prototype before
-there was a clear pathway to support PrivilegedWebContents (PWC) in Glic.
-With PrivilegedWebContents now supported in Glic, this directory
+The top-level `//chrome/browser/geic` directory previously contained an initial
+standalone prototype before there was a clear pathway to support
+PrivilegedWebContents (PWC) and shared Chrome-side infrastructure in Glic
+(`go/glic-geic-code-reuse`). With PrivilegedWebContents now supported in Glic,
+the standalone prototype in `//chrome/browser/geic` has been removed (leaving
+only `OWNERS`, `DIR_METADATA`, and `README.md`), and this directory
 (`//chrome/browser/glic/gemini_enterprise`) serves as the official Glic module
-for Gemini Enterprise features. Functionality from the top-level
-`//chrome/browser/geic` module will eventually be deprecated and consolidated
-here.
+for Gemini Enterprise features.
 
 ## Key Responsibilities
 

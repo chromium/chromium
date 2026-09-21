@@ -528,10 +528,6 @@
     "META": {"sizes": {"includes": [20],}},
     "includes": [4000],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/geic/resources.grd": {
-    "META": {"sizes": {"includes": [5]}},
-    "includes": [4005],
-  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/glic/resources.grd": {
     "META": {"sizes": {"includes": [60]}},
     "includes": [4010],

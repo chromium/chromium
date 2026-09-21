@@ -44,8 +44,6 @@
 #include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
 #include "chrome/browser/flag_descriptions.h"
-#include "chrome/browser/geic/geic_enabling.h"
-#include "chrome/browser/geic/geic_pwc_manager.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/login_detection/login_detection_util.h"
@@ -9870,11 +9868,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"geic-enabled", flag_descriptions::kGeicEnabledName,
      flag_descriptions::kGeicEnabledDescription, kOsDesktop,
-     SINGLE_VALUE_TYPE(geic::switches::kGeicEnabled)},
-
-    {"geic-guest-url", flag_descriptions::kGeicGuestUrlName,
-     flag_descriptions::kGeicGuestUrlDescription, kOsDesktop,
-     STRING_VALUE_TYPE(geic::kGeicGuestURLSwitch, "")},
+     FEATURE_VALUE_TYPE(features::kGeic)},
 
     {"glass-frame", flag_descriptions::kGlassFrameName,
      flag_descriptions::kGlassFrameDescription, kOsMac,
@@ -14054,10 +14048,8 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"autofill-enable-omnibox-gpay-button",
      flag_descriptions::kAutofillEnableOmniboxGPayButtonName,
-     flag_descriptions::kAutofillEnableOmniboxGPayButtonDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableOmniboxGPayButton)},
+     flag_descriptions::kAutofillEnableOmniboxGPayButtonDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableOmniboxGPayButton)},
 
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

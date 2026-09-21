@@ -15,7 +15,6 @@
 #include "chrome/browser/actor/actor_script_tool_receiver.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
-#include "chrome/browser/geic/geic_host.h"
 #include "chrome/browser/glic/host/glic_page_handler.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/features.h"
@@ -105,8 +104,6 @@
 #include "third_party/blink/public/mojom/installedapp/installed_app_provider.mojom.h"
 #else
 #include "chrome/browser/badging/badge_manager.h"
-#include "chrome/browser/geic/geic.mojom.h"
-#include "chrome/browser/geic/geic_pwc_manager.h"
 #include "chrome/browser/payments/payment_request_factory.h"
 #include "chrome/browser/prefs/persistent_renderer_prefs_manager.h"
 #include "chrome/browser/web_applications/web_install_service_impl.h"
@@ -454,7 +451,6 @@ void PopulateChromeFrameBinders(
   // remains the security boundary for frames that do get the binders.
   if (render_frame_host->GetProcess()->IsPrivileged()) {
     map->Add<pwc::mojom::PrivilegedBridge>(&pwc::BindPrivilegedBridge);
-    map->Add<geic::mojom::GeicApi>(&geic::BindGeicApi);
   }
   map->Add<image_annotation::mojom::Annotator>(&BindImageAnnotator);
 
@@ -518,7 +514,6 @@ void PopulateChromeFrameBinders(
 #endif  // BUILDFLAG(ENABLE_UNHANDLED_TAP)
 
 #else
-  map->Add<geic::mojom::GeicBrowserHost>(&geic::BindGeicBrowserHost);
   map->Add<blink::mojom::BadgeService>(
       &badging::BadgeManager::BindFrameReceiverIfAllowed);
   map->Add<blink::mojom::PersistentRendererPrefsService>(
