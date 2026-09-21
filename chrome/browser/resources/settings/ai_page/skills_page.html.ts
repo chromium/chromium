@@ -1,3 +1,13 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
+import type {SettingsSkillsPageElement} from './skills_page.js';
+
+export function getHtml(this: SettingsSkillsPageElement) {
+  return html`<!--_html_template_start_-->
 <settings-subpage page-title="$i18n{skillsSettingLabel}"
     route-path="${this.routePath}">
   <settings-toggle-button
@@ -41,3 +51,5 @@
       @click="${this.onSkillsGalleryLinkClick_}" external>
   </cr-link-row>
 </settings-subpage>
+<!--_html_template_end_-->`;
+}

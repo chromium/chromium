@@ -4,7 +4,6 @@
 
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
@@ -140,8 +139,6 @@ export class SettingsAiModeSearchPageElement extends
     event.stopPropagation();
   }
 }
-
-export type AiModeSearchPageElement = SettingsAiModeSearchPageElement;
 
 declare global {
   interface HTMLElementTagNameMap {

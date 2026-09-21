@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import './ai_logging_info_bullet.js';
 import './ai_policy_indicator.js';
 import '../controls/settings_toggle_button.js';
+import '../icons.html.js';
 import '../settings_page/settings_subpage.js';
 
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
@@ -60,6 +61,9 @@ export class SettingsOfferWritingHelpPageElement extends
   protected accessor enterprisePref_: chrome.settingsPrivate.PrefObject|
       undefined;
 
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
+
   override connectedCallback() {
     super.connectedCallback();
     this.mirrorPref(AiEnterpriseFeaturePrefName.COMPOSE, 'enterprisePref_');
@@ -67,9 +71,6 @@ export class SettingsOfferWritingHelpPageElement extends
         COMPOSE_PROACTIVE_NUDGE_DISABLED_SITES_PREF,
         () => this.onPrefsChanged_());
   }
-
-  private metricsBrowserProxy_: MetricsBrowserProxy =
-      MetricsBrowserProxyImpl.getInstance();
 
   private recordInteractionMetrics_(
       interaction: AiPageComposeInteractions, action: string) {
@@ -126,8 +127,6 @@ export class SettingsOfferWritingHelpPageElement extends
     this.shadowRoot.querySelector('settings-subpage')!.focusBackButton();
   }
 }
-
-export type OfferWritingHelpPageElement = SettingsOfferWritingHelpPageElement;
 
 declare global {
   interface HTMLElementTagNameMap {

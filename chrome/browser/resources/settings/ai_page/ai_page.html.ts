@@ -1,3 +1,13 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
+import type {SettingsAiPageElement} from './ai_page.js';
+
+export function getHtml(this: SettingsAiPageElement) {
+  return html`<!--_html_template_start_-->
 <!-- TODO(crbug.com/362225975): Remove V2 suffixes. -->
 <settings-section page-title="$i18n{aiPageTitle}">
   <div>
@@ -58,12 +68,7 @@
     </cr-link-row>
     <cr-link-row id="indigoRow" class="hr"
         ?hidden="${!this.showIndigoControl_}"
-<if expr="not _google_chrome">
-        start-icon="settings20:button-magic"
-</if>
-<if expr="_google_chrome">
-        start-icon="settings-internal:face-retouch"
-</if>
+        start-icon="${this.getIndigoStartIcon_()}"
         label="$i18n{indigoLabel}"
         sub-label="$i18n{indigoSublabel}"
         @click="${this.onIndigoRowClick_}" external>
@@ -87,9 +92,10 @@
           label="$i18n{onDeviceAiEnabledLabel}"
           sub-label-with-link="$i18n{onDeviceAiEnabledSubLabel}"
           @sub-label-link-clicked="${this.onOnDeviceAiSubLabelLinkClicked_}"
-          @settings-boolean-control-change="${
-              this.onOnDeviceAiSettingsBooleanControlChange_}">
+          @settings-boolean-control-change="${this.onOnDeviceAiSettingsBooleanControlChange_}">
       </settings-toggle-button>
     ` : ''}
   </settings-section>
 </if>
+<!--_html_template_end_-->`;
+}

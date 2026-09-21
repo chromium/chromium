@@ -207,6 +207,15 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
     router.navigateTo(router.getRoutes().DICTATION);
   }
 
+  protected getIndigoStartIcon_(): string {
+    // <if expr="not _google_chrome">
+    return 'settings20:button-magic';
+    // </if>
+    // <if expr="_google_chrome">
+    return 'settings-internal:face-retouch';
+    // </if>
+  }
+
   protected onIndigoRowClick_() {
     this.recordInteractionMetrics_(
         AiPageInteractions.INDIGO_CLICK,
@@ -381,8 +390,6 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
     return control;
   }
 }
-
-export type AiPageElement = SettingsAiPageElement;
 
 declare global {
   interface HTMLElementTagNameMap {

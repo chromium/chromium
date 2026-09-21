@@ -59,8 +59,6 @@ export class SettingsAiPolicyIndicatorElement extends
   }
 }
 
-export type AiPolicyIndicatorElement = SettingsAiPolicyIndicatorElement;
-
 declare global {
   interface HTMLElementTagNameMap {
     'settings-ai-policy-indicator': SettingsAiPolicyIndicatorElement;

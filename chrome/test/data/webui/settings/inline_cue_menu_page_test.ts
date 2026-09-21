@@ -5,7 +5,7 @@
 // clang-format off
 import 'chrome://settings/lazy_load.js';
 
-import type {InlineCueMenuPageElement, SettingsToggleButtonElement} from 'chrome://settings/lazy_load.js';
+import type {SettingsInlineCueMenuPageElement, SettingsToggleButtonElement} from 'chrome://settings/lazy_load.js';
 import {ContentSetting, ContentSettingsTypes, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -16,7 +16,7 @@ import {createContentSettingTypeToValuePair, createRawSiteException, createSiteS
 
 suite('InlineCueMenuPage', function() {
   let browserProxy: TestSiteSettingsBrowserProxy;
-  let page: InlineCueMenuPageElement;
+  let page: SettingsInlineCueMenuPageElement;
 
   setup(function() {
     browserProxy = new TestSiteSettingsBrowserProxy();

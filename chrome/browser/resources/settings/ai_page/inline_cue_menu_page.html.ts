@@ -1,6 +1,15 @@
-<!-- #html_wrapper_imports_start
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
 import {ContentSetting, ContentSettingsTypes} from '../site_settings/constants.js';
-#html_wrapper_imports_end -->
+
+import type {SettingsInlineCueMenuPageElement} from './inline_cue_menu_page.js';
+
+export function getHtml(this: SettingsInlineCueMenuPageElement) {
+  return html`<!--_html_template_start_-->
 <settings-subpage page-title="$i18n{siteSettingsInlineCueMenu}"
     route-path="${this.routePath}">
   <div class="preview-container">
@@ -57,3 +66,5 @@ import {ContentSetting, ContentSettingsTypes} from '../site_settings/constants.j
     </add-site-dialog>
   ` : ''}
 </settings-subpage>
+<!--_html_template_end_-->`;
+}

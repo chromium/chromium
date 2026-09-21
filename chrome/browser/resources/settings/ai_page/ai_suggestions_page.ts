@@ -108,8 +108,6 @@ export class SettingsAiSuggestionsPageElement extends
   }
 }
 
-export type AiSuggestionsPageElement = SettingsAiSuggestionsPageElement;
-
 declare global {
   interface HTMLElementTagNameMap {
     'settings-ai-suggestions-page': SettingsAiSuggestionsPageElement;

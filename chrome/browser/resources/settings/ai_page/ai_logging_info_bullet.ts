@@ -11,6 +11,7 @@
  */
 import '/shared/settings/controls/cr_policy_pref_indicator.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+import '../icons.html.js';
 
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -65,8 +66,6 @@ export class SettingsAiLoggingInfoBulletElement extends
     return loadTimeData.getString('aiSubpageSublabelLoggingManagedDisabled');
   }
 }
-
-export type AiLoggingInfoBulletElement = SettingsAiLoggingInfoBulletElement;
 
 declare global {
   interface HTMLElementTagNameMap {

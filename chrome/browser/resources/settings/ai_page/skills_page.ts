@@ -41,8 +41,6 @@ export class SettingsSkillsPageElement extends SettingsSkillsPageElementBase {
   }
 }
 
-export type SkillsPageElement = SettingsSkillsPageElement;
-
 declare global {
   interface HTMLElementTagNameMap {
     'settings-skills-page': SettingsSkillsPageElement;

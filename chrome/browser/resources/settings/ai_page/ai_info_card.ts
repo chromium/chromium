@@ -8,6 +8,7 @@
  */
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '../settings_page/settings_section.js';
+import '../icons.html.js';
 
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -38,8 +39,6 @@ export class SettingsAiInfoCardElement extends CrLitElement {
                                'settings20:account-box';
   }
 }
-
-export type AiInfoCardElement = SettingsAiInfoCardElement;
 
 declare global {
   interface HTMLElementTagNameMap {

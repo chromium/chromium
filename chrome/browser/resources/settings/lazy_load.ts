@@ -165,7 +165,7 @@ export type {DictationBrowserProxy} from './ai_page/dictation_browser_proxy.js';
 export {DictationBrowserProxyImpl} from './ai_page/dictation_browser_proxy.js';
 export {SettingsDictationPageElement} from './ai_page/dictation_page.js';
 export {SettingsHistorySearchPageElement} from './ai_page/history_search_page.js';
-export {InlineCueMenuPageElement} from './ai_page/inline_cue_menu_page.js';
+export {SettingsInlineCueMenuPageElement} from './ai_page/inline_cue_menu_page.js';
 export {COMPOSE_PROACTIVE_NUDGE_DISABLED_SITES_PREF, COMPOSE_PROACTIVE_NUDGE_PREF, SettingsOfferWritingHelpPageElement} from './ai_page/offer_writing_help_page.js';
 // <if expr="_google_chrome">
 export type {OnDeviceAiBrowserProxy, OnDeviceAiEnabled} from './ai_page/on_device_ai_browser_proxy.js';

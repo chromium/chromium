@@ -194,8 +194,6 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
   }
 }
 
-export type AiPageIndexElement = SettingsAiPageIndexElement;
-
 declare global {
   interface HTMLElementTagNameMap {
     'settings-ai-page-index': SettingsAiPageIndexElement;

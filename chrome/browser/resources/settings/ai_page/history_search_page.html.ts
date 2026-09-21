@@ -1,6 +1,14 @@
-<!-- #html_wrapper_imports_start
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
 import {FeatureOptInState} from './constants.js';
-#html_wrapper_imports_end -->
+import type {SettingsHistorySearchPageElement} from './history_search_page.js';
+
+export function getHtml(this: SettingsHistorySearchPageElement) {
+  return html`<!--_html_template_start_-->
 <settings-subpage page-title="$i18n{historySearchSettingLabel}"
     route-path="${this.routePath}">
 <div class="settings-row first">
@@ -119,3 +127,5 @@ import {FeatureOptInState} from './constants.js';
   </div>
 </div>
 </settings-subpage>
+<!--_html_template_end_-->`;
+}

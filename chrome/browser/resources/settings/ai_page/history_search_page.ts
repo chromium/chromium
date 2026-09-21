@@ -66,6 +66,7 @@ export class SettingsHistorySearchPageElement extends
             // following Learn More.
   protected accessor enterprisePref_: chrome.settingsPrivate.PrefObject|
       undefined;
+
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
 
@@ -130,8 +131,6 @@ export class SettingsHistorySearchPageElement extends
     this.shadowRoot.querySelector('settings-subpage')!.focusBackButton();
   }
 }
-
-export type HistorySearchPageElement = SettingsHistorySearchPageElement;
 
 declare global {
   interface HTMLElementTagNameMap {

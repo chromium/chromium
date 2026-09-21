@@ -79,8 +79,6 @@ export class SettingsDictationPageElement extends
   }
 }
 
-export type DictationPageElement = SettingsDictationPageElement;
-
 declare global {
   interface HTMLElementTagNameMap {
     'settings-dictation-page': SettingsDictationPageElement;

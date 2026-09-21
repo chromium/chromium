@@ -26,16 +26,17 @@ import {isSettingEnabled} from '../site_settings/site_settings_util.js';
 import {getCss} from './inline_cue_menu_page.css.js';
 import {getHtml} from './inline_cue_menu_page.html.js';
 
-export interface InlineCueMenuPageElement {
+export interface SettingsInlineCueMenuPageElement {
   $: {
     mainToggle: SettingsToggleButtonElement,
   };
 }
 
-const InlineCueMenuPageElementBase =
+const SettingsInlineCueMenuPageElementBase =
     SettingsViewMixinLit(WebUiListenerMixinLit(I18nMixinLit(CrLitElement)));
 
-export class InlineCueMenuPageElement extends InlineCueMenuPageElementBase {
+export class SettingsInlineCueMenuPageElement extends
+    SettingsInlineCueMenuPageElementBase {
   static get is() {
     return 'settings-inline-cue-menu-page';
   }
@@ -63,6 +64,7 @@ export class InlineCueMenuPageElement extends InlineCueMenuPageElementBase {
   };
   protected accessor sites_: RawSiteException[] = [];
   protected accessor showAddSiteDialog_: boolean = false;
+
   private browserProxy_: SiteSettingsBrowserProxy =
       SiteSettingsBrowserProxyImpl.getInstance();
 
@@ -189,8 +191,9 @@ export class InlineCueMenuPageElement extends InlineCueMenuPageElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-inline-cue-menu-page': InlineCueMenuPageElement;
+    'settings-inline-cue-menu-page': SettingsInlineCueMenuPageElement;
   }
 }
 
-customElements.define(InlineCueMenuPageElement.is, InlineCueMenuPageElement);
+customElements.define(
+    SettingsInlineCueMenuPageElement.is, SettingsInlineCueMenuPageElement);
