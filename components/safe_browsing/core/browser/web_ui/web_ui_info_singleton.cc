@@ -16,7 +16,7 @@ WebUIInfoSingleton::WebUIInfoSingleton() = default;
 
 WebUIInfoSingleton::~WebUIInfoSingleton() = default;
 
-bool WebUIInfoSingleton::HasListener() {
+bool WebUIInfoSingleton::HasListener() const {
   return has_test_listener_ || !webui_instances_.empty();
 }
 

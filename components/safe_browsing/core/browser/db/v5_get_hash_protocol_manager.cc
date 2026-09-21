@@ -149,9 +149,15 @@ void V5GetHashProtocolManager::Shutdown() {
   pending_loaders_.clear();
 }
 
+bool V5GetHashProtocolManager::HasWebUIListener() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return webui_delegate_ && webui_delegate_->HasListener();
+}
+
 void V5GetHashProtocolManager::GetFullHashes(
     std::map<FullHashStr, std::vector<SBThreatType>> full_hash_to_threat_types,
-    FullHashCallback callback) {
+    FullHashCallback callback,
+    std::optional<CheckContext> check_context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!full_hash_to_threat_types.empty());
 

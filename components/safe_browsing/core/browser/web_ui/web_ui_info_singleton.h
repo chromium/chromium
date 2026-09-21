@@ -34,7 +34,7 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
   WebUIInfoSingleton& operator=(const WebUIInfoSingleton&) = delete;
 
   // Returns true when there is a listening chrome://safe-browsing tab.
-  bool HasListener();
+  bool HasListener() const override;
 
   // Add the new message in |download_urls_checked_| and send it to all
   // the open chrome://safe-browsing tabs.

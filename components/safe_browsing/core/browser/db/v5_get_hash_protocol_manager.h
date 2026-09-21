@@ -11,6 +11,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -29,6 +30,7 @@
 #include "components/safe_browsing/core/browser/db/v5_search_hashes_util.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 #include "net/base/backoff_entry.h"
+#include "url/gurl.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -68,11 +70,27 @@ class V5GetHashProtocolManager : public KeyedService {
     ThreatMetadata metadata;
   };
 
+  // Context of the check that triggered this GetFullHashes request. Used for
+  // displaying on chrome://safe-browsing debugging page.
+  struct CheckContext {
+    bool operator==(const CheckContext&) const = default;
+
+    // The URLs that are being checked. May be empty for non-URL checks (e.g.
+    // extension ID checks).
+    std::vector<GURL> urls;
+
+    // The type of check being performed.
+    ClientCallbackType check_type = ClientCallbackType::CHECK_OTHER;
+  };
+
   // Interface via which a client of this class can surface relevant events in
   // WebUI. All methods must be called on the UI thread.
   class WebUIDelegate {
    public:
     virtual ~WebUIDelegate() = default;
+
+    // Returns true if there is an active chrome://safe-browsing listener.
+    virtual bool HasListener() const = 0;
 
     // TODO(crbug.com/362791941): Add AddToV5GetHashLookups method
   };
@@ -106,9 +124,16 @@ class V5GetHashProtocolManager : public KeyedService {
   // of threat types.
   // `callback` is the callback that will be run with the threat type and threat
   // metadata once the check completes.
+  // `check_context` provides optional context about the initiating check for
+  // WebUI logging. Only populated if there is a web UI listener.
   virtual void GetFullHashes(std::map<FullHashStr, std::vector<SBThreatType>>
                                  full_hash_to_threat_types,
-                             FullHashCallback callback);
+                             FullHashCallback callback,
+                             std::optional<CheckContext> check_context);
+
+  // Returns true if a WebUI delegate is attached and has an active listener on
+  // chrome://safe-browsing.
+  bool HasWebUIListener() const;
 
   // KeyedService:
   void Shutdown() override;
