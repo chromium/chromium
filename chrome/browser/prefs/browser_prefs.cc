@@ -1029,6 +1029,8 @@ inline constexpr char kInvalidationPerSenderRegisteredForInvalidation[] =
     "invalidation.per_sender_registered_for_invalidation";
 inline constexpr char kInvalidationPerSenderActiveRegistrationTokens[] =
     "invalidation.per_sender_active_registration_tokens";
+inline constexpr char kBookmarkEditorExpandedNodes[] =
+    "bookmark_editor.expanded_nodes";
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Deprecated 09/2026.
@@ -1427,6 +1429,7 @@ void RegisterProfilePrefsForMigration(
       kInvalidationPerSenderRegisteredForInvalidation);
   registry->RegisterDictionaryPref(
       kInvalidationPerSenderActiveRegistrationTokens);
+  registry->RegisterListPref(kBookmarkEditorExpandedNodes);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Deprecated 09/2026.
@@ -2779,6 +2782,7 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 09/2026.
   profile_prefs->ClearPref(kInvalidationPerSenderRegisteredForInvalidation);
   profile_prefs->ClearPref(kInvalidationPerSenderActiveRegistrationTokens);
+  profile_prefs->ClearPref(kBookmarkEditorExpandedNodes);
 
 #if BUILDFLAG(IS_WIN)
   // Added 09/2026.

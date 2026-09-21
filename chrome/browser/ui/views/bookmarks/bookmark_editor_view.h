@@ -13,7 +13,6 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/bookmarks/bookmark_expanded_state_tracker.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -229,11 +228,6 @@ class BookmarkEditorView : public BookmarkEditor,
   // only a title field.
   void AddLabels();
 
-  // If |editor_node| is expanded it's added to |expanded_nodes| and this is
-  // recursively invoked for all the children.
-  void UpdateExpandedNodes(EditorNode* editor_node,
-                           BookmarkExpandedStateTracker::Nodes* expanded_nodes);
-
   void OnReadTextForBeforePaste(
       base::OnceCallback<void(std::optional<std::u16string>)> callback,
       std::u16string text);
@@ -278,8 +272,6 @@ class BookmarkEditorView : public BookmarkEditor,
 
   // Mode used to create nodes from.
   raw_ptr<bookmarks::BookmarkModel> bb_model_;
-  // Corresponding expanded state tracker.
-  raw_ptr<BookmarkExpandedStateTracker> expanded_state_tracker_;
 
   // Is the tree shown?
   const bool show_tree_;

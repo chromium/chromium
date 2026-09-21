@@ -12,8 +12,6 @@ source_set("types") {
 source_set("bookmarks") {
   public = [
     "bookmark_bar_policy_handler.h",
-    "bookmark_expanded_state_tracker.h",
-    "bookmark_expanded_state_tracker_factory.h",
     "bookmark_html_writer.h",
     "bookmark_merged_surface_ordering_storage.h",
     "bookmark_merged_surface_service.h",
@@ -46,8 +44,6 @@ source_set("bookmarks") {
 source_set("impl") {
   sources = [
     "bookmark_bar_policy_handler.cc",
-    "bookmark_expanded_state_tracker.cc",
-    "bookmark_expanded_state_tracker_factory.cc",
     "bookmark_html_writer.cc",
     "bookmark_merged_surface_ordering_storage.cc",
     "bookmark_merged_surface_service.cc",
@@ -139,10 +135,6 @@ source_set("unit_tests") {
       "bookmark_parent_folder_unittest.cc",
       "permanent_folder_ordering_tracker_unittest.cc",
     ]
-  }
-
-  if (toolkit_views) {
-    sources += [ "bookmark_expanded_state_tracker_unittest.cc" ]
   }
 
   deps = [

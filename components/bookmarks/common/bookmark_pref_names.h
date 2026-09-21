@@ -9,10 +9,6 @@
 
 namespace bookmarks::prefs {
 
-// Boolean which specifies the ids of the bookmark nodes that are expanded in
-// the bookmark editor.
-inline constexpr char kBookmarkEditorExpandedNodes[] =
-    "bookmark_editor.expanded_nodes";
 // Modifying bookmarks is completely disabled when this is set to false.
 // This includes uploading bookmarks to a sync-ing account.
 inline constexpr char kEditBookmarksEnabled[] = "bookmarks.editing_enabled";

@@ -152,7 +152,6 @@ const char* const kPersistentPrefNames[] = {
 #endif
 
     // Bookmark preferences are common between incognito and regular mode.
-    bookmarks::prefs::kBookmarkEditorExpandedNodes,
     bookmarks::prefs::kEditBookmarksEnabled,
     bookmarks::prefs::kManagedBookmarks,
     bookmarks::prefs::kManagedBookmarksFolderName,

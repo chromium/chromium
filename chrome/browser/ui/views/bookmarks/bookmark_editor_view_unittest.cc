@@ -929,14 +929,7 @@ TEST_P(BookmarkEditorViewTest,
   EXPECT_FALSE(editor()->IsNewFolderButtonEnabledForTesting());
 }
 
-TEST_P(BookmarkEditorViewTest, DoNotOnlyExpandTrackedNodes) {
-  // Configure the local bookmarks bar to be tracked as expanded.
-  ScopedListPrefUpdate update(profile_->GetPrefs(),
-                              bookmarks::prefs::kBookmarkEditorExpandedNodes);
-  base::ListValue& initial_expanded_nodes_list = update.Get();
-  initial_expanded_nodes_list.Append(
-      base::NumberToString(model()->bookmark_bar_node()->id()));
-
+TEST_P(BookmarkEditorViewTest, OnlyExpandSelectedNodePath) {
   // Open the editor with a node saved under the local other bookmarks folder.
   CreateEditor(profile_.get(),
                BookmarkEditor::EditDetails::EditNode(GetNode("oa")),
@@ -946,13 +939,11 @@ TEST_P(BookmarkEditorViewTest, DoNotOnlyExpandTrackedNodes) {
   // The node being edited should always be visible.
   EXPECT_TRUE(GetNode("oa")->IsVisible());
 
-  // The local bookmarks bar should no longer be open in the tree view.
+  // The local bookmarks bar should not be open in the tree view.
   EXPECT_FALSE(tree_view()->IsExpanded(local_bookmark_bar_editor_node()));
 
   // The same behavior is expected with account nodes.
   if (SyncEnableBookmarksInTransportModeEnabled()) {
-    initial_expanded_nodes_list.Append(
-        base::NumberToString(model()->account_bookmark_bar_node()->id()));
     ApplyEdits();
     CreateEditor(profile_.get(),
                  BookmarkEditor::EditDetails::EditNode(GetNode("acc_oa")),

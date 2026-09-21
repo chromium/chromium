@@ -699,7 +699,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
 #endif  // BUILDFLAG(IS_CHROMEOS)
     "BookmarkManagerPrivateAPI",
 #if defined(TOOLKIT_VIEWS)
-    "BookmarkExpandedStateTracker",
     "BookmarkMergedSurfaceService",
 #endif
     "BookmarkModel",
