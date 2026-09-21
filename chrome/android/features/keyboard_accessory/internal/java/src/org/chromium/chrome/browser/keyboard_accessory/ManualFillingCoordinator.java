@@ -243,7 +243,7 @@ class ManualFillingCoordinator implements ManualFillingComponent {
 
     @Override
     public boolean removeObserver(Observer observer) {
-        return mObserverList.addObserver(observer);
+        return mObserverList.removeObserver(observer);
     }
 
     @Override

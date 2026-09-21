@@ -2095,6 +2095,23 @@ public class ManualFillingControllerTest {
         assertThat(sheetTabCaptor.getValue().length, is(1));
     }
 
+    @Test
+    public void testNotifyingNullSheetDataDuringTeardownDoesNotCrash() {
+        // Regression test for crbug.com/518916125. When the native bridge is
+        // destroyed it broadcasts null to every registered sheet data provider
+        // (ManualFillingComponentBridge#destroy). While the WebContents is still
+        // showing, this used to forward null into a monotonic supplier that
+        // rejects null, throwing an AssertionError that crashed the browser via
+        // CheckException in the native destructor.
+        addBrowserTab(mMediator, 1234, null);
+        Provider<AccessorySheetData> sheetDataProvider = new Provider<>();
+        mController.registerSheetDataProvider(
+                mLastMockWebContents, AccessoryTabType.PASSWORDS, sheetDataProvider);
+
+        // Simulates the teardown broadcast; this must not throw.
+        sheetDataProvider.notifyObservers(null);
+    }
+
     private Tab addBrowserTab(ManualFillingMediator mediator, int id, @Nullable Tab lastTab) {
         int lastId = INVALID_TAB_ID;
         if (lastTab != null) {

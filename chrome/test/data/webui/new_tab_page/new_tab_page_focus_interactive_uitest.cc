@@ -69,23 +69,11 @@ class NewTabPageFocusTest : public WebUIMochaFocusTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/518916125): Flaky on Android Desktop due to Autofill /
-// keyboard accessory lifecycle issues during test teardown.
-#if BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_F(NewTabPageFocusTest, DISABLED_DoodleShareDialogFocus) {
-#else
 IN_PROC_BROWSER_TEST_F(NewTabPageFocusTest, DoodleShareDialogFocus) {
-#endif
   RunTest("new_tab_page/doodle_share_dialog_focus_test.js", "mocha.run()");
 }
 
-// TODO(crbug.com/518916125): Flaky on Android Desktop due to Autofill /
-// keyboard accessory lifecycle issues during test teardown.
-#if BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_F(NewTabPageFocusTest, DISABLED_AppFocus) {
-#else
 IN_PROC_BROWSER_TEST_F(NewTabPageFocusTest, AppFocus) {
-#endif
   RunTest("new_tab_page/app_focus_test.js", "mocha.run()");
 }
 
