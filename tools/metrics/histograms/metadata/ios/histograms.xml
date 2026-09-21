@@ -2090,7 +2090,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Enterprise.DataProtection.ScreenshotBlock.Source"
-    enum="IOSDataProtectionScreenshotBlockSource" expires_after="2026-10-29">
+    enum="IOSDataProtectionScreenshotBlockSource" expires_after="2027-04-29">
   <owner>dmytriievd@google.com</owner>
   <owner>eic@google.com</owner>
   <owner>bling-enterprise@google.com</owner>
