@@ -14,8 +14,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -98,7 +96,6 @@ public class AwContentRestrictionManagerBridgeTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     @DisableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
     public void testIsContentRestrictionEnabled_featureDisabled() {
@@ -107,7 +104,6 @@ public class AwContentRestrictionManagerBridgeTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
     public void testIsContentRestrictionEnabled_featureEnabled() {
@@ -121,7 +117,6 @@ public class AwContentRestrictionManagerBridgeTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
     public void testIsContentRestrictionEnabled_appOptOut() {
@@ -131,7 +126,6 @@ public class AwContentRestrictionManagerBridgeTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
     public void testRequestContentClassification_invalidUrl() {
@@ -142,7 +136,6 @@ public class AwContentRestrictionManagerBridgeTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
     public void testRequestContentClassification_delegateMissing() {
@@ -156,7 +149,6 @@ public class AwContentRestrictionManagerBridgeTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
     public void testRequestContentClassification_allowed() {
@@ -175,7 +167,6 @@ public class AwContentRestrictionManagerBridgeTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
     public void testRequestContentClassification_blocked() {
@@ -194,7 +185,6 @@ public class AwContentRestrictionManagerBridgeTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
     public void testRequestContentClassification_exception() {
@@ -214,7 +204,6 @@ public class AwContentRestrictionManagerBridgeTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
     public void testRequestContentClassification_withRequestBody() {
@@ -234,7 +223,6 @@ public class AwContentRestrictionManagerBridgeTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
     public void testDestroyCleansUpReadFileDescriptorMap() {
@@ -258,7 +246,6 @@ public class AwContentRestrictionManagerBridgeTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
     public void testSendShowRestrictedContentIntent_invalidUrl() {
@@ -267,7 +254,6 @@ public class AwContentRestrictionManagerBridgeTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
     public void testSendShowRestrictedContentIntent_delegateMissing() {
@@ -277,7 +263,6 @@ public class AwContentRestrictionManagerBridgeTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
     public void testSendShowRestrictedContentIntent_success() {
@@ -289,7 +274,6 @@ public class AwContentRestrictionManagerBridgeTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
     public void testSendShowRestrictedContentIntent_failure() {

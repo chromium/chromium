@@ -4,8 +4,6 @@
 
 package org.chromium.android_webview.robolectric.metrics;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,7 +16,6 @@ import org.chromium.base.test.util.Feature;
 @RunWith(BaseRobolectricTestRunner.class)
 public class AwMetricsUtilsTest {
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     public void testHistogramNameHashing() {
         Assert.assertEquals(
@@ -28,7 +25,7 @@ public class AwMetricsUtilsTest {
         Assert.assertEquals(
                 AwMetricsUtils.hashHistogramName(
                         "PageLoad.LayoutInstability.MaxCumulativeShiftScore."
-                                + "AfterBackForwardCacheRestore.SessionWindow.Gap1000ms.Max5000ms2"),
+                            + "AfterBackForwardCacheRestore.SessionWindow.Gap1000ms.Max5000ms2"),
                 Long.parseUnsignedLong("17564198105882768940"));
 
         Assert.assertEquals(

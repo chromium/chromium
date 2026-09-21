@@ -6,8 +6,6 @@ package org.chromium.android_webview.robolectric;
 
 import android.os.Bundle;
 
-import androidx.test.filters.SmallTest;
-
 import com.android.webview.chromium.PrefetchOperationResult;
 import com.android.webview.chromium.PrefetchOperationStatusCode;
 
@@ -24,7 +22,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 public class PrefetchOperationResultTest {
 
     @Test
-    @SmallTest
     public void testFromPrefetchStatusCode_Success() {
         PrefetchOperationResult result =
                 PrefetchOperationResult.fromPrefetchStatusCode(
@@ -34,7 +31,6 @@ public class PrefetchOperationResultTest {
     }
 
     @Test
-    @SmallTest
     public void testFromPrefetchStatusCode_StartFailed() {
         PrefetchOperationResult result =
                 PrefetchOperationResult.fromPrefetchStatusCode(
@@ -44,7 +40,6 @@ public class PrefetchOperationResultTest {
     }
 
     @Test
-    @SmallTest
     public void testFromPrefetchStatusCode_GenericError() {
         PrefetchOperationResult result =
                 PrefetchOperationResult.fromPrefetchStatusCode(
@@ -54,7 +49,6 @@ public class PrefetchOperationResultTest {
     }
 
     @Test
-    @SmallTest
     public void testFromPrefetchStatusCode_ServerErrorNoExtras() {
         PrefetchOperationResult result =
                 PrefetchOperationResult.fromPrefetchStatusCode(
@@ -64,7 +58,6 @@ public class PrefetchOperationResultTest {
     }
 
     @Test
-    @SmallTest
     public void testFromPrefetchStatusCode_ServerErrorWithExtras() {
         Bundle extras = new Bundle();
         extras.putInt(AwPrefetchCallback.EXTRA_HTTP_RESPONSE_CODE, 404);
@@ -76,7 +69,6 @@ public class PrefetchOperationResultTest {
     }
 
     @Test
-    @SmallTest
     public void testFromPrefetchStatusCode_DuplicateRequest() {
         PrefetchOperationResult result =
                 PrefetchOperationResult.fromPrefetchStatusCode(
@@ -86,7 +78,6 @@ public class PrefetchOperationResultTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    @SmallTest
     public void testFromPrefetchStatusCode_InvalidStatusCode() {
         PrefetchOperationResult.fromPrefetchStatusCode(-1, null);
     }

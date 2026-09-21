@@ -4,8 +4,6 @@
 
 package org.chromium.android_webview.robolectric.common.services;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,7 +22,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 @RunWith(BaseRobolectricTestRunner.class)
 public class ServiceNamesTest {
     @Test
-    @SmallTest
     public void testServiceNamesValid() {
         Assert.assertEquals(
                 "Incorrect class name constant",

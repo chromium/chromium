@@ -6,8 +6,6 @@ package org.chromium.android_webview.robolectric;
 
 import android.graphics.Rect;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,7 +22,6 @@ import java.util.List;
 public class RectUtilsTest {
     @Test
     @Feature({"AndroidWebView"})
-    @SmallTest
     public void testPixelCoverage() {
         Rect screenRect = new Rect(0, 0, 100, 100);
         int coveragePixels;

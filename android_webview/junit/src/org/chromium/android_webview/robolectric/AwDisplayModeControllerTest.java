@@ -14,8 +14,6 @@ import android.graphics.Matrix;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -142,7 +140,6 @@ public class AwDisplayModeControllerTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     public void testFullscreen() {
         Assert.assertEquals(DisplayMode.FULLSCREEN, mController.getDisplayMode());
@@ -156,7 +153,6 @@ public class AwDisplayModeControllerTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     public void testNotFullscreen_NotOccupyingFullDisplay() {
         // View is not occupying the entire display, so no insets applied.
@@ -172,7 +168,6 @@ public class AwDisplayModeControllerTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     public void testNotFullscreen_NotOccupyingFullWindow() {
         // View is not occupying the entire window, so no insets applied.
@@ -188,7 +183,6 @@ public class AwDisplayModeControllerTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     public void testNotFullscreen_ParentLayoutRotated() {
         mGlobalTransformMatrix.postRotate(30.0f);

@@ -23,7 +23,6 @@ import android.view.WindowInsets;
 
 import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -151,7 +150,6 @@ public class AwDisplayCutoutControllerTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     public void testOnApplyWindowInsets() {
         mController.onApplyWindowInsets(mWindowInsets);
@@ -162,7 +160,6 @@ public class AwDisplayCutoutControllerTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     public void testOnSizeChanged() {
         mController.onSizeChanged();
@@ -175,7 +172,6 @@ public class AwDisplayCutoutControllerTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     public void testOnAttachedToWindow() {
         mController.onAttachedToWindow();
@@ -188,7 +184,6 @@ public class AwDisplayCutoutControllerTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     public void testChangeContainerView_doesNotTriggerOriginalView() {
         // Switching to another container view.

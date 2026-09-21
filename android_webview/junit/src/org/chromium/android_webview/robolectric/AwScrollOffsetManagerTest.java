@@ -6,8 +6,6 @@ package org.chromium.android_webview.robolectric;
 
 import android.graphics.Rect;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -138,7 +136,6 @@ public class AwScrollOffsetManagerTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     public void testWhenContentSizeMatchesView() {
         TestScrollOffsetManagerDelegate delegate = new TestScrollOffsetManagerDelegate();
@@ -184,7 +181,6 @@ public class AwScrollOffsetManagerTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     public void testWhenWebViewHasBottomInset() {
         final int bottomInset = 25;
@@ -218,7 +214,6 @@ public class AwScrollOffsetManagerTest {
     private static final int CONTENT_HEIGHT = VIEW_HEIGHT + MAX_VERTICAL_OFFSET;
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     public void testScrollRangeAndMaxOffset() {
         TestScrollOffsetManagerDelegate delegate = new TestScrollOffsetManagerDelegate();
@@ -265,7 +260,6 @@ public class AwScrollOffsetManagerTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     public void testDelegateCanOverrideScroll() {
         final int overrideScrollX = 10;
@@ -294,7 +288,6 @@ public class AwScrollOffsetManagerTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     public void testDelegateOverridenScrollsDontExceedBounds() {
         final int overrideScrollX = MAX_HORIZONTAL_OFFSET + 10;
@@ -322,7 +315,6 @@ public class AwScrollOffsetManagerTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     public void testScrollContainerViewTo() {
         TestScrollOffsetManagerDelegate delegate = new TestScrollOffsetManagerDelegate();
@@ -345,7 +337,6 @@ public class AwScrollOffsetManagerTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     public void testOnContainerViewOverScrolled() {
         TestScrollOffsetManagerDelegate delegate = new TestScrollOffsetManagerDelegate();
@@ -370,7 +361,6 @@ public class AwScrollOffsetManagerTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     public void testDefersScrollUntilTouchEnd() {
         TestScrollOffsetManagerDelegate delegate = new TestScrollOffsetManagerDelegate();
@@ -397,7 +387,6 @@ public class AwScrollOffsetManagerTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     public void testRequestChildRectangleOnScreenDontScrollIfAlreadyThere() {
         TestScrollOffsetManagerDelegate delegate = new TestScrollOffsetManagerDelegate();
@@ -425,7 +414,6 @@ public class AwScrollOffsetManagerTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     public void testRequestChildRectangleOnScreenScrollToBottom() {
         TestScrollOffsetManagerDelegate delegate = new TestScrollOffsetManagerDelegate();
@@ -451,7 +439,6 @@ public class AwScrollOffsetManagerTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     public void testRequestChildRectangleOnScreenScrollToBottomLargeRect() {
         TestScrollOffsetManagerDelegate delegate = new TestScrollOffsetManagerDelegate();
@@ -476,7 +463,6 @@ public class AwScrollOffsetManagerTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     public void testRequestChildRectangleOnScreenScrollToTop() {
         TestScrollOffsetManagerDelegate delegate = new TestScrollOffsetManagerDelegate();

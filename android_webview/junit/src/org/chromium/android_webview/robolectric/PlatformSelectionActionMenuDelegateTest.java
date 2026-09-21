@@ -10,7 +10,6 @@ import android.view.MenuItem;
 import android.view.View;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -47,7 +46,6 @@ import java.util.List;
 public class PlatformSelectionActionMenuDelegateTest {
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     public void usesDefaultMenuItemOrderFromClient() {
         final @DefaultItem int[] floatingOrder =
@@ -90,7 +88,6 @@ public class PlatformSelectionActionMenuDelegateTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     public void hasAdditionalItemsFromSuper_noClientItems() {
         // Create an instance of the superclass and store the returned additional items.
@@ -115,7 +112,6 @@ public class PlatformSelectionActionMenuDelegateTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     public void hasAdditionalItemsFromSuper_withClientItems() {
         // Create an instance of the superclass and store the returned additional items.
@@ -155,7 +151,6 @@ public class PlatformSelectionActionMenuDelegateTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     public void usesFilteringFromClient() {
         ResolveInfo extraResolveInfo = new ResolveInfo();
@@ -195,7 +190,6 @@ public class PlatformSelectionActionMenuDelegateTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     public void handlesAddedMenuItems() {
         MenuItem extraItem1 = getFakeMenuItem("Item1", 1);
@@ -243,7 +237,6 @@ public class PlatformSelectionActionMenuDelegateTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     public void handlesItemsFromSuper() {
         // Create an instance of the superclass and store the returned additional items.

@@ -20,8 +20,6 @@ import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.view.WindowMetrics;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,7 +35,6 @@ import org.chromium.base.test.util.Feature;
 @Config(sdk = Build.VERSION_CODES.R)
 public class AwInsetsTest {
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     public void webViewIsAlignedWithBottomOfWindow() {
         Rect windowBounds = new Rect(20, 50, 520, 850);
@@ -50,7 +47,6 @@ public class AwInsetsTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     public void webViewIsAboveWindowBottomNoImeOverlap() {
         Rect windowBounds = new Rect(20, 50, 520, 850);
@@ -63,7 +59,6 @@ public class AwInsetsTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     public void webViewIsAboveWindowBottomImeGap() {
         Rect windowBounds = new Rect(20, 50, 520, 850);
@@ -76,7 +71,6 @@ public class AwInsetsTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     public void webViewIsAboveWindowBottomImeOverlap() {
         Rect windowBounds = new Rect(20, 50, 520, 850);
@@ -90,7 +84,6 @@ public class AwInsetsTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     public void webViewIsBelowWindowBottomNoIme() {
         Rect windowBounds = new Rect(20, 50, 520, 850);
@@ -101,7 +94,6 @@ public class AwInsetsTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"AndroidWebView"})
     public void webViewIsBelowWindowBottomIme() {
         Rect windowBounds = new Rect(20, 50, 520, 850);

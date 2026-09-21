@@ -8,7 +8,6 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import androidx.annotation.Nullable;
-import androidx.test.filters.SmallTest;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,7 +25,6 @@ import java.io.IOException;
 @RunWith(BaseRobolectricTestRunner.class)
 public final class CapturedSitesInstructionsTest {
     @Test
-    @SmallTest
     public void verifyBuild_failsIfNoTestFile() {
         String url = "missing.test";
         assertThrows(IOException.class, () -> new CapturedSitesInstructions(url));
@@ -36,14 +34,12 @@ public final class CapturedSitesInstructionsTest {
     // test json object is read from correctly and output is correct.
 
     @Test
-    @SmallTest
     public void verifyBuild_failsIfTestEmpty() {
         JSONObject test = new JSONObject();
         assertThrows(JSONException.class, () -> new CapturedSitesInstructions(test));
     }
 
     @Test
-    @SmallTest
     public void verifyBuild_succeedsWithOnlyStartingUrl() throws Throwable {
         JSONObject test = new JSONObject();
         test.put("actions", new JSONArray());
@@ -75,7 +71,6 @@ public final class CapturedSitesInstructionsTest {
     }
 
     @Test
-    @SmallTest
     public void verifyBuild_succeedsWithLoadPageForce() throws Throwable {
         CapturedSitesInstructions actions = loadPageForceHelper(true);
         actions.getNextAction(); // Skip startingURL
@@ -85,7 +80,6 @@ public final class CapturedSitesInstructionsTest {
     }
 
     @Test
-    @SmallTest
     public void verifyBuild_succeedsWithLoadPageNoForce() throws Throwable {
         CapturedSitesInstructions actions = loadPageForceHelper(false);
         actions.getNextAction(); // Skip startingURL
@@ -95,7 +89,6 @@ public final class CapturedSitesInstructionsTest {
     }
 
     @Test
-    @SmallTest
     public void verifyBuild_succeedsWithLoadPageNullForce() throws Throwable {
         CapturedSitesInstructions actions = loadPageForceHelper(null);
         actions.getNextAction(); // Skip startingURL
@@ -105,7 +98,6 @@ public final class CapturedSitesInstructionsTest {
     }
 
     @Test
-    @SmallTest
     public void verifyBuild_completeTestSucceeds() throws Throwable {
         JSONObject test = new JSONObject();
         JSONArray jsonActions = new JSONArray();

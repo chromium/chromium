@@ -6,8 +6,6 @@ package org.chromium.android_webview.robolectric;
 
 import static org.chromium.android_webview.common.WebViewCachedFlags.param;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Test;
@@ -36,7 +34,6 @@ public class WebViewCachedFlagsTest {
 
     @Test
     @Feature({"AndroidWebView"})
-    @SmallTest
     public void doubleInitFailsAssertion() {
         Assume.assumeTrue(BuildConfig.ENABLE_ASSERTS);
         InMemorySharedPreferences sharedPrefs = new InMemorySharedPreferences();
@@ -50,7 +47,6 @@ public class WebViewCachedFlagsTest {
 
     @Test
     @Feature({"AndroidWebView"})
-    @SmallTest
     public void sharedPrefsAreDeletedOnInit() {
         InMemorySharedPreferences sharedPrefs = new InMemorySharedPreferences();
         sharedPrefs
@@ -65,7 +61,6 @@ public class WebViewCachedFlagsTest {
 
     @Test
     @Feature({"AndroidWebView"})
-    @SmallTest
     public void flagsShowAsEnabledAndDisabledCorrectly() {
         InMemorySharedPreferences sharedPrefs = new InMemorySharedPreferences();
         sharedPrefs
@@ -82,7 +77,6 @@ public class WebViewCachedFlagsTest {
 
     @Test
     @Feature({"AndroidWebView"})
-    @SmallTest
     public void flagsDefaultToCorrectValueWhenNotCached() {
         InMemorySharedPreferences sharedPrefs = new InMemorySharedPreferences();
         sharedPrefs
@@ -106,7 +100,6 @@ public class WebViewCachedFlagsTest {
 
     @Test
     @Feature({"AndroidWebView"})
-    @SmallTest
     @Features.EnableFeatures({"Baz"})
     @Features.DisableFeatures({"Foo", "Bar"})
     public void flagsAreSetCorrectlyPostStartup() {
@@ -136,7 +129,6 @@ public class WebViewCachedFlagsTest {
 
     @Test
     @Feature({"AndroidWebView"})
-    @SmallTest
     public void logWhetherCachedFlagsExist() {
         InMemorySharedPreferences sharedPrefs = new InMemorySharedPreferences();
         sharedPrefs
@@ -158,7 +150,6 @@ public class WebViewCachedFlagsTest {
 
     @Test
     @Feature({"AndroidWebView"})
-    @SmallTest
     @Features.EnableFeatures({"Baz"})
     @Features.DisableFeatures({"Foo"})
     public void flagsAreNotSetIfNotOverridden() {
@@ -196,7 +187,6 @@ public class WebViewCachedFlagsTest {
 
     @Test
     @Feature({"AndroidWebView"})
-    @SmallTest
     public void testFeatureAccessHistograms() {
         InMemorySharedPreferences sharedPrefs = new InMemorySharedPreferences();
         WebViewCachedFlags cachedFlags =
@@ -249,7 +239,6 @@ public class WebViewCachedFlagsTest {
 
     @Test
     @Feature({"AndroidWebView"})
-    @SmallTest
     public void testHashFieldTrialName() {
         Assert.assertEquals(0x3f66c0bc, WebViewCachedFlags.hashFieldTrialName("NewTab"));
         Assert.assertEquals(0x26724eba, WebViewCachedFlags.hashFieldTrialName("Forward"));
@@ -262,7 +251,6 @@ public class WebViewCachedFlagsTest {
 
     @Test
     @Feature({"AndroidWebView"})
-    @SmallTest
     public void testForceDefaults() {
         InMemorySharedPreferences sharedPrefs = new InMemorySharedPreferences();
         sharedPrefs
@@ -299,7 +287,6 @@ public class WebViewCachedFlagsTest {
 
     @Test
     @Feature({"AndroidWebView"})
-    @SmallTest
     public void testParameterCachingAndCrashProtection() {
         InMemorySharedPreferences sharedPrefs = new InMemorySharedPreferences();
         sharedPrefs
@@ -350,7 +337,6 @@ public class WebViewCachedFlagsTest {
 
     @Test
     @Feature({"AndroidWebView"})
-    @SmallTest
     @Features.EnableFeatures({"TestFeature:active_param/override_hello"})
     public void testOnStartupCompletedDropsStaleParamsFromPrefs() {
         InMemorySharedPreferences sharedPrefs = new InMemorySharedPreferences();
@@ -379,7 +365,6 @@ public class WebViewCachedFlagsTest {
 
     @Test
     @Feature({"AndroidWebView"})
-    @SmallTest
     @Features.EnableFeatures({"TestFeature:paramA/overrideA/paramB/overrideB"})
     public void testOnStartupCompletedUpdatesParamsInPrefs() {
         InMemorySharedPreferences sharedPrefs = new InMemorySharedPreferences();

@@ -6,8 +6,6 @@ package org.chromium.webview_ui_test.test.robolectric;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 
-import androidx.test.filters.SmallTest;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,7 +21,6 @@ import java.io.IOException;
 @RunWith(BaseRobolectricTestRunner.class)
 public final class AutofillProfileTest {
     @Test
-    @SmallTest
     public void verifyAutofillProfile_testCompleteBuilds() throws Throwable {
         // (crbug/1473318) Add utilities to create these JSONs and CapturedSitesInstructionsTests.
         JSONObject test = new JSONObject();
@@ -53,7 +50,6 @@ public final class AutofillProfileTest {
     }
 
     @Test
-    @SmallTest
     public void verifyAutofillProfile_missingFileFails() {
         String url = "nowhere.profile";
         assertThrows(IOException.class, () -> new AutofillProfile(url));
@@ -62,14 +58,12 @@ public final class AutofillProfileTest {
     // We can't test the loading of the url due to the way file structure works so, all we can do is
     // test json object is read from correctly and output is correct.
     @Test
-    @SmallTest
     public void verifyAutofillProfile_noProfileFails() throws Throwable {
         JSONObject test = new JSONObject();
         assertThrows(JSONException.class, () -> new AutofillProfile(test));
     }
 
     @Test
-    @SmallTest
     public void verifyAutofillProfile_emptyProfileFails() throws Throwable {
         JSONObject test = new JSONObject();
         JSONArray profile = new JSONArray();
@@ -78,7 +72,6 @@ public final class AutofillProfileTest {
     }
 
     @Test
-    @SmallTest
     public void verifyAutofillProfile_duplicateFieldFails() throws Throwable {
         JSONObject test = new JSONObject();
         JSONArray profile = new JSONArray();

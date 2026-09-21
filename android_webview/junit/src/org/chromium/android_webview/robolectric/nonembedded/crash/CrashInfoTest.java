@@ -7,8 +7,6 @@ package org.chromium.android_webview.robolectric.nonembedded.crash;
 import static org.chromium.android_webview.nonembedded.crash.CrashInfo.createCrashInfoForTesting;
 import static org.chromium.android_webview.nonembedded.crash.CrashInfoEqualityMatcher.equalsTo;
 
-import androidx.test.filters.SmallTest;
-
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
@@ -23,7 +21,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 public class CrashInfoTest {
     /** Test that merging two {@code CrashInfo} objects works correctly. */
     @Test
-    @SmallTest
     public void testMergeCrashInfo() {
         CrashInfo a =
                 createCrashInfoForTesting(
@@ -46,7 +43,6 @@ public class CrashInfoTest {
 
     /** Test that merging two {@code CrashInfo} objects works correctly. */
     @Test
-    @SmallTest
     public void testMergeCrashInfo_differentUploadStates() {
         CrashInfo a = createCrashInfoForTesting("123456", -1, null, -1, null, UploadState.PENDING);
         CrashInfo b =
@@ -61,7 +57,6 @@ public class CrashInfoTest {
 
     /** Test that merging two {@code CrashInfo} objects works correctly. */
     @Test
-    @SmallTest
     public void testMergeCrashInfo_differentCaptureTime() {
         CrashInfo a = createCrashInfoForTesting("123456", 1234567, null, -1, null, null);
         CrashInfo b = createCrashInfoForTesting("123456", 1234555, null, -1, null, null);
@@ -74,7 +69,6 @@ public class CrashInfoTest {
 
     /** Test compatibility with old JSON format. */
     @Test
-    @SmallTest
     public void testSerializeToJson() throws Throwable {
         final String jsonObjectString =
                 "{'crash-local-id':'123456abc','crash-capture-time':1234567890,"
@@ -90,7 +84,6 @@ public class CrashInfoTest {
 
     /** Test compatibility with old JSON format. */
     @Test
-    @SmallTest
     public void testReadFromJsonString() throws Throwable {
         final String jsonObjectString =
                 "{'crash-local-id':'123456abc','crash-capture-time':1234567890,"
