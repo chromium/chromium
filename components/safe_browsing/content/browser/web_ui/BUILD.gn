@@ -64,9 +64,12 @@ source_set("unit_tests") {
 
   deps = [
     ":web_ui",
+    "//base/test:test_support",
     "//components/os_crypt/browser",
     "//components/os_crypt/browser:test_support",
+    "//components/safe_browsing/core/browser/db:v5_get_hash_protocol_manager",
     "//components/safe_browsing/core/browser/web_ui:event_observer",
+    "//components/safe_browsing/core/common:features",
     "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
     "//content/test:test_support",
     "//testing/gtest",

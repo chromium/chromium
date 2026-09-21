@@ -159,6 +159,12 @@ void WebUIInfoSingletonEventObserverImpl::NotifyReportingEventJsListener(
                                 web_ui::SerializeReportingEvent(event));
 }
 
+void WebUIInfoSingletonEventObserverImpl::NotifyV5GetHashLookupJsListener(
+    const V5GetHashProtocolManager::V5GetHashLookup& lookup) {
+  delegate_->SendEventToHandler("v5-get-hash-lookup-update",
+                                web_ui::SerializeV5GetHashLookup(lookup));
+}
+
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 void WebUIInfoSingletonEventObserverImpl::NotifyDeepScanJsListener(
     const std::string& token,

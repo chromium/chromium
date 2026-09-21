@@ -9,6 +9,10 @@
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/time_formatting.h"
 #include "base/json/json_writer.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/enterprise/connectors/core/reporting_event_mappings.h"
 #include "components/safe_browsing/core/browser/referring_app_info.h"
@@ -16,6 +20,7 @@
 #include "components/safe_browsing/core/common/proto/csd.to_value.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.to_value.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.to_value.h"
+#include "net/base/net_errors.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/strings/escape.h"
@@ -442,6 +447,178 @@ base::DictValue SerializeLogMessage(base::Time timestamp,
 base::DictValue SerializeReportingEvent(const base::DictValue& event) {
   base::DictValue result;
   result.Set("message", SerializeJson(event));
+  return result;
+}
+
+namespace {
+
+std::string ClientCallbackTypeToString(ClientCallbackType type) {
+  switch (type) {
+    case ClientCallbackType::CHECK_BROWSE_URL:
+      return "CHECK_BROWSE_URL";
+    case ClientCallbackType::CHECK_DOWNLOAD_URLS:
+      return "CHECK_DOWNLOAD_URLS";
+    case ClientCallbackType::CHECK_EXTENSION_IDS:
+      return "CHECK_EXTENSION_IDS";
+    case ClientCallbackType::CHECK_URL_FOR_SUBRESOURCE_FILTER:
+      return "CHECK_URL_FOR_SUBRESOURCE_FILTER";
+    case ClientCallbackType::CHECK_CSD_ALLOWLIST:
+      return "CHECK_CSD_ALLOWLIST";
+    case ClientCallbackType::CHECK_NOTIFICATION_ABUSE:
+      return "CHECK_NOTIFICATION_ABUSE";
+    case ClientCallbackType::CHECK_OTHER:
+      return "CHECK_OTHER";
+  }
+}
+
+std::string SBThreatTypeToString(SBThreatType type) {
+  switch (type) {
+    case SBThreatType::SB_THREAT_TYPE_UNUSED:
+      return "UNUSED";
+    case SBThreatType::SB_THREAT_TYPE_SAFE:
+      return "SAFE";
+    case SBThreatType::SB_THREAT_TYPE_URL_PHISHING:
+      return "URL_PHISHING";
+    case SBThreatType::SB_THREAT_TYPE_URL_MALWARE:
+      return "URL_MALWARE";
+    case SBThreatType::SB_THREAT_TYPE_URL_UNWANTED:
+      return "URL_UNWANTED";
+    case SBThreatType::SB_THREAT_TYPE_URL_BINARY_MALWARE:
+      return "URL_BINARY_MALWARE";
+    case SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING:
+      return "URL_CLIENT_SIDE_PHISHING";
+    case SBThreatType::SB_THREAT_TYPE_EXTENSION:
+      return "EXTENSION";
+    case SBThreatType::DEPRECATED_SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE:
+      return "DEPRECATED_URL_CLIENT_SIDE_MALWARE";
+    case SBThreatType::SB_THREAT_TYPE_API_ABUSE:
+      return "API_ABUSE";
+    case SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER:
+      return "SUBRESOURCE_FILTER";
+    case SBThreatType::SB_THREAT_TYPE_CSD_ALLOWLIST:
+      return "CSD_ALLOWLIST";
+    case SBThreatType::
+        DEPRECATED_SB_THREAT_TYPE_URL_PASSWORD_PROTECTION_PHISHING:
+      return "DEPRECATED_URL_PASSWORD_PROTECTION_PHISHING";
+    case SBThreatType::SB_THREAT_TYPE_SAVED_PASSWORD_REUSE:
+      return "SAVED_PASSWORD_REUSE";
+    case SBThreatType::SB_THREAT_TYPE_SIGNED_IN_SYNC_PASSWORD_REUSE:
+      return "SIGNED_IN_SYNC_PASSWORD_REUSE";
+    case SBThreatType::SB_THREAT_TYPE_SIGNED_IN_NON_SYNC_PASSWORD_REUSE:
+      return "SIGNED_IN_NON_SYNC_PASSWORD_REUSE";
+    case SBThreatType::SB_THREAT_TYPE_AD_SAMPLE:
+      return "AD_SAMPLE";
+    case SBThreatType::SB_THREAT_TYPE_SUSPICIOUS_SITE:
+      return "SUSPICIOUS_SITE";
+    case SBThreatType::SB_THREAT_TYPE_ENTERPRISE_PASSWORD_REUSE:
+      return "ENTERPRISE_PASSWORD_REUSE";
+    case SBThreatType::SB_THREAT_TYPE_BILLING:
+      return "BILLING";
+    case SBThreatType::SB_THREAT_TYPE_APK_DOWNLOAD:
+      return "APK_DOWNLOAD";
+    case SBThreatType::SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST:
+      return "HIGH_CONFIDENCE_ALLOWLIST";
+    case SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_WARN:
+      return "MANAGED_POLICY_WARN";
+    case SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_BLOCK:
+      return "MANAGED_POLICY_BLOCK";
+    case SBThreatType::SB_THREAT_TYPE_CSD_DOWNLOAD_ALLOWLIST:
+      return "CSD_DOWNLOAD_ALLOWLIST";
+    case SBThreatType::SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE:
+      return "WARNABLE_SUSPICIOUS_SITE";
+    case SBThreatType::DEPRECATED_SB_THREAT_TYPE_BLOCKED_AD_REDIRECT:
+    case SBThreatType::DEPRECATED_SB_THREAT_TYPE_BLOCKED_AD_POPUP:
+      NOTREACHED();
+  }
+}
+
+std::string SubresourceFilterTypeToString(SubresourceFilterType type) {
+  switch (type) {
+    case SubresourceFilterType::ABUSIVE:
+      return "ABUSIVE";
+    case SubresourceFilterType::BETTER_ADS:
+      return "BETTER_ADS";
+  }
+}
+
+std::string SubresourceFilterLevelToString(SubresourceFilterLevel level) {
+  switch (level) {
+    case SubresourceFilterLevel::WARN:
+      return "WARN";
+    case SubresourceFilterLevel::ENFORCE:
+      return "ENFORCE";
+  }
+}
+
+// Appends a key/value dictionary entry to `list`.
+//  - `list`: The list to append the entry to.
+//  - `key`: The key string.
+//  - `value`: The value string.
+void AddKeyValue(base::ListValue& list,
+                 std::string_view key,
+                 std::string value) {
+  base::DictValue entry;
+  entry.Set("key", std::string(key));
+  entry.Set("value", std::move(value));
+  list.Append(std::move(entry));
+}
+
+}  // namespace
+
+base::DictValue SerializeV5GetHashLookup(
+    const V5GetHashProtocolManager::V5GetHashLookup& lookup) {
+  base::DictValue result;
+
+  base::ListValue request_key_values;
+  AddKeyValue(request_key_values, "Check type",
+              ClientCallbackTypeToString(lookup.check_type));
+
+  std::vector<std::string> local_threat_types;
+  local_threat_types.reserve(lookup.local_threat_types.size());
+  for (SBThreatType threat_type : lookup.local_threat_types) {
+    local_threat_types.push_back(SBThreatTypeToString(threat_type));
+  }
+  AddKeyValue(request_key_values, "Local threat types",
+              base::JoinString(local_threat_types, ", "));
+
+  if (!lookup.urls.empty()) {
+    std::vector<std::string> urls;
+    urls.reserve(lookup.urls.size());
+    for (const auto& url : lookup.urls) {
+      urls.push_back(url.spec());
+    }
+    AddKeyValue(request_key_values, "URLs", base::JoinString(urls, ", "));
+  }
+
+  result.Set("requestKeyValues", std::move(request_key_values));
+  result.Set("requestSearchHashesJson",
+             SerializeJson(ToValue(lookup.request_proto)));
+
+  base::ListValue response_key_values;
+  AddKeyValue(response_key_values, "Response code",
+              base::NumberToString(lookup.response_code));
+  AddKeyValue(response_key_values, "Net error",
+              net::ErrorToString(lookup.net_error));
+  AddKeyValue(response_key_values, "Severest threat type",
+              SBThreatTypeToString(lookup.severest_threat_type));
+
+  if (!lookup.metadata.subresource_filter_match.empty()) {
+    std::vector<std::string> srf_matches;
+    for (const auto& [type, level] : lookup.metadata.subresource_filter_match) {
+      srf_matches.push_back(
+          base::StrCat({SubresourceFilterTypeToString(type), " (",
+                        SubresourceFilterLevelToString(level), ")"}));
+    }
+    AddKeyValue(response_key_values, "Subresource filter",
+                base::JoinString(srf_matches, ", "));
+  }
+  result.Set("responseKeyValues", std::move(response_key_values));
+
+  if (lookup.response_proto.has_value()) {
+    result.Set("responseSearchHashesJson",
+               SerializeJson(ToValue(*lookup.response_proto)));
+  }
+
   return result;
 }
 

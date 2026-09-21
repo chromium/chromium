@@ -143,6 +143,15 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
   void AddToV5GetHashLookups(
       const V5GetHashProtocolManager::V5GetHashLookup& lookup) override;
 
+  // Clear `v5_get_hash_lookups_`.
+  void ClearV5GetHashLookups();
+
+  // Returns the list of logged V5 get-hash lookups.
+  const std::vector<V5GetHashProtocolManager::V5GetHashLookup>&
+  v5_get_hash_lookups() const {
+    return v5_get_hash_lookups_;
+  }
+
   // Log an arbitrary message. Frequently used for debugging.
   void LogMessage(const std::string& message);
 
@@ -440,6 +449,10 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
   // currently open chrome://safe-browsing tab was opened. Keyed by the index of
   // the corresponding request in |hprt_lookup_pings_|.
   std::map<int, V5::SearchHashesResponse> hprt_lookup_responses_;
+
+  // List of V5 get-hash lookups logged since the oldest currently open
+  // chrome://safe-browsing tab was opened.
+  std::vector<V5GetHashProtocolManager::V5GetHashLookup> v5_get_hash_lookups_;
 
   // List of WebUI listener objects. "WebUIInfoSingletonEventObserver*" cannot
   // be const, due to being used by functions that call AllowJavascript(), which

@@ -140,6 +140,11 @@ class SafeBrowsingUIHandler {
   // currently open chrome://safe-browsing tab was opened.
   void GetReportingEvents(const base::ListValue& args);
 
+  // Gets the V5 get-hash network lookups that have been collected since the
+  // oldest currently open chrome://safe-browsing tab was opened.
+  //  - `args`: the JavaScript callback ID passed in a ListValue.
+  void GetV5GetHashLookups(const base::ListValue& args);
+
   // Get the deep scanning requests that have been collected since the oldest
   // currently open chrome://safe-browsing tab was opened.
   void GetDeepScans(const base::ListValue& args);

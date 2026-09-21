@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "components/enterprise/common/proto/upload_request_response.pb.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
 #include "components/safe_browsing/core/browser/download_check_result.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
@@ -166,6 +167,8 @@ std::string SerializeHPRTLookupResponse(
 base::DictValue SerializeLogMessage(base::Time timestamp,
                                     const std::string& message);
 base::DictValue SerializeReportingEvent(const base::DictValue& event);
+base::DictValue SerializeV5GetHashLookup(
+    const V5GetHashProtocolManager::V5GetHashLookup& lookup);
 base::DictValue SerializeUploadEventsRequest(
     const ::chrome::cros::reporting::proto::UploadEventsRequest&
         upload_events_request,

@@ -423,6 +423,17 @@ void SafeBrowsingUIHandler::GetReportingEvents(const base::ListValue& args) {
   ResolveCallback(callback_id, reporting_events);
 }
 
+void SafeBrowsingUIHandler::GetV5GetHashLookups(const base::ListValue& args) {
+  base::ListValue lookups;
+  for (const auto& lookup : web_ui_info_singleton()->v5_get_hash_lookups()) {
+    lookups.Append(web_ui::SerializeV5GetHashLookup(lookup));
+  }
+
+  CHECK(!args.empty());
+  const std::string& callback_id = args[0].GetString();
+  ResolveCallback(callback_id, lookups);
+}
+
 void SafeBrowsingUIHandler::GetLogMessages(const base::ListValue& args) {
   const std::vector<std::pair<base::Time, std::string>>& log_messages =
       web_ui_info_singleton()->log_messages();
@@ -598,6 +609,10 @@ void SafeBrowsingUIHandler::RegisterMessages() {
   RegisterMessage(
       "getReportingEvents",
       base::BindRepeating(&SafeBrowsingUIHandler::GetReportingEvents,
+                          base::Unretained(this)));
+  RegisterMessage(
+      "getV5GetHashLookups",
+      base::BindRepeating(&SafeBrowsingUIHandler::GetV5GetHashLookups,
                           base::Unretained(this)));
   RegisterMessage("getDeepScans",
                   base::BindRepeating(&SafeBrowsingUIHandler::GetDeepScans,

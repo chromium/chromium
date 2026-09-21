@@ -380,6 +380,10 @@ extern const base::FeatureParam<int> kHashPrefixRealTimeLookupsSampleRate;
 // how often the checks are triggered (they are still not in real time).
 BASE_DECLARE_FEATURE(kLocalListsUseSBv5);
 
+// If enabled, V5 GetHash lookups are logged to WebUIInfoSingleton for display
+// on the chrome://safe-browsing debugging page.
+BASE_DECLARE_FEATURE(kLocalListsUseSBv5WebUI);
+
 #if BUILDFLAG(IS_ANDROID)
 // Enables ClientDownloadRequests for APK downloads on Android.
 BASE_DECLARE_FEATURE(kMaliciousApkDownloadCheck);

@@ -11,6 +11,7 @@
 #include "base/values.h"
 #include "components/enterprise/common/proto/upload_request_response.pb.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
 #include "components/safe_browsing/core/browser/download_check_result.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
@@ -137,6 +138,12 @@ class WebUIInfoSingletonEventObserver {
   virtual void NotifyReportingEventJsListener(
       const ::chrome::cros::reporting::proto::UploadEventsRequest& event,
       const base::DictValue& result) = 0;
+
+  // Called when a new V5 get-hash lookup completes while one or more WebUI tabs
+  // are open.
+  //  - `lookup`: the details of the get-hash lookup.
+  virtual void NotifyV5GetHashLookupJsListener(
+      const V5GetHashProtocolManager::V5GetHashLookup& lookup) = 0;
 
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
   // Called when any deep scans are updated while one or more WebUI

@@ -4,11 +4,14 @@
 
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_content_ui_handler.h"
+#include "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
 #include "components/safe_browsing/core/browser/web_ui/web_ui_info_singleton_event_observer.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -51,6 +54,33 @@ class SafeBrowsingUITest : public testing::Test {
   void UnregisterHandler(SafeBrowsingContentUIHandler* handler) {
     WebUIContentInfoSingleton::GetInstance()->UnregisterWebUIInstance(
         handler->event_observer());
+  }
+
+  V5GetHashProtocolManager::V5GetHashLookup CreateV5GetHashLookup() {
+    V5GetHashProtocolManager::V5GetHashLookup log;
+    log.urls = {GURL("https://example.com/test1"),
+                GURL("https://example.com/test2")};
+    log.check_type = ClientCallbackType::CHECK_BROWSE_URL;
+    log.local_threat_types = {SBThreatType::SB_THREAT_TYPE_URL_PHISHING};
+    log.request_proto.add_hash_prefixes("test");
+    log.response_code = 200;
+    log.net_error = 0;
+    log.severest_threat_type = SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
+    log.metadata.subresource_filter_match[SubresourceFilterType::ABUSIVE] =
+        SubresourceFilterLevel::ENFORCE;
+    log.metadata.subresource_filter_match[SubresourceFilterType::BETTER_ADS] =
+        SubresourceFilterLevel::WARN;
+
+    V5::SearchHashesResponse response;
+    V5::Duration* cache_duration = response.mutable_cache_duration();
+    cache_duration->set_seconds(300);
+    cache_duration->set_nanos(0);
+    V5::FullHash* full_hash = response.add_full_hashes();
+    full_hash->set_full_hash("test_hash");
+    full_hash->add_full_hash_details()->set_threat_type(
+        V5::ThreatType::SOCIAL_ENGINEERING);
+    log.response_proto = response;
+    return log;
   }
 
  protected:
@@ -191,6 +221,144 @@ TEST_F(SafeBrowsingUITest, TestHPRTLookups) {
       web_ui_.call_data()[3]->arg3()->GetList();
   ASSERT_EQ(response_pings.size(), 1u);
   EXPECT_EQ(response_pings[0], response_data);
+
+  UnregisterHandler(handler);
+}
+
+TEST_F(SafeBrowsingUITest, TestV5GetHashLookups) {
+  base::test::ScopedFeatureList scoped_feature_list(kLocalListsUseSBv5WebUI);
+  SafeBrowsingContentUIHandler* handler = RegisterNewHandler();
+  ASSERT_EQ(0u, web_ui_.call_data().size());
+
+  WebUIContentInfoSingleton::GetInstance()->AddToV5GetHashLookups(
+      CreateV5GetHashLookup());
+
+  ASSERT_EQ(1u, web_ui_.call_data().size());
+  EXPECT_EQ(web_ui_.call_data()[0]->arg1()->GetString(),
+            "v5-get-hash-lookup-update");
+  const base::DictValue& lookup_data =
+      web_ui_.call_data()[0]->arg2()->GetDict();
+
+  const base::ListValue* request_key_values =
+      lookup_data.FindList("requestKeyValues");
+  ASSERT_TRUE(request_key_values);
+  EXPECT_EQ(*request_key_values, base::test::ParseJson(R"!([
+    {"key": "Check type", "value": "CHECK_BROWSE_URL"},
+    {"key": "Local threat types", "value": "URL_PHISHING"},
+    {"key": "URLs", "value": "https://example.com/test1, https://example.com/test2"}
+  ])!")
+                                     .GetList());
+
+  const std::string* request_search_hashes_json =
+      lookup_data.FindString("requestSearchHashesJson");
+  ASSERT_TRUE(request_search_hashes_json);
+  EXPECT_EQ(base::test::ParseJson(*request_search_hashes_json),
+            base::test::ParseJson(R"!({
+    "hash_prefixes": [
+      "dGVzdA=="
+    ]
+  })!"));
+
+  const base::ListValue* response_key_values =
+      lookup_data.FindList("responseKeyValues");
+  ASSERT_TRUE(response_key_values);
+  EXPECT_EQ(*response_key_values, base::test::ParseJson(R"!([
+    {"key": "Response code", "value": "200"},
+    {"key": "Net error", "value": "net::OK"},
+    {"key": "Severest threat type", "value": "URL_PHISHING"},
+    {"key": "Subresource filter", "value": "ABUSIVE (ENFORCE), BETTER_ADS (WARN)"}
+  ])!")
+                                      .GetList());
+
+  const std::string* response_search_hashes_json =
+      lookup_data.FindString("responseSearchHashesJson");
+  ASSERT_TRUE(response_search_hashes_json);
+  EXPECT_EQ(base::test::ParseJson(*response_search_hashes_json),
+            base::test::ParseJson(R"!({
+    "cache_duration": {
+      "nanos": 0,
+      "seconds": "300"
+    },
+    "full_hashes": [ {
+      "full_hash": "dGVzdF9oYXNo",
+      "full_hash_details": [ {
+        "threat_type": "SOCIAL_ENGINEERING"
+      } ]
+    } ]
+  })!"));
+
+  // Log a second lookup with a network error and no URLs (e.g. extension
+  // check).
+  V5GetHashProtocolManager::V5GetHashLookup failed_log;
+  failed_log.check_type = ClientCallbackType::CHECK_EXTENSION_IDS;
+  failed_log.local_threat_types = {SBThreatType::SB_THREAT_TYPE_EXTENSION};
+  failed_log.request_proto.add_hash_prefixes("fail");
+  failed_log.net_error = net::ERR_FAILED;
+
+  WebUIContentInfoSingleton::GetInstance()->AddToV5GetHashLookups(failed_log);
+
+  ASSERT_EQ(2u, web_ui_.call_data().size());
+  EXPECT_EQ(web_ui_.call_data()[1]->arg1()->GetString(),
+            "v5-get-hash-lookup-update");
+  const base::DictValue& failed_lookup_data =
+      web_ui_.call_data()[1]->arg2()->GetDict();
+
+  const base::ListValue* failed_request_key_values =
+      failed_lookup_data.FindList("requestKeyValues");
+  ASSERT_TRUE(failed_request_key_values);
+  EXPECT_EQ(*failed_request_key_values, base::test::ParseJson(R"!([
+    {"key": "Check type", "value": "CHECK_EXTENSION_IDS"},
+    {"key": "Local threat types", "value": "EXTENSION"}
+  ])!")
+                                            .GetList());
+
+  const std::string* failed_request_search_hashes_json =
+      failed_lookup_data.FindString("requestSearchHashesJson");
+  ASSERT_TRUE(failed_request_search_hashes_json);
+  EXPECT_EQ(base::test::ParseJson(*failed_request_search_hashes_json),
+            base::test::ParseJson(R"!({
+    "hash_prefixes": [
+      "ZmFpbA=="
+    ]
+  })!"));
+
+  const base::ListValue* failed_response_key_values =
+      failed_lookup_data.FindList("responseKeyValues");
+  ASSERT_TRUE(failed_response_key_values);
+  EXPECT_EQ(*failed_response_key_values, base::test::ParseJson(R"!([
+    {"key": "Response code", "value": "0"},
+    {"key": "Net error", "value": "net::ERR_FAILED"},
+    {"key": "Severest threat type", "value": "SAFE"}
+  ])!")
+                                             .GetList());
+
+  EXPECT_FALSE(failed_lookup_data.contains("responseSearchHashesJson"));
+
+  // Simulate JS calling getV5GetHashLookups and validate call_data.
+  base::ListValue call_args;
+  call_args.Append("dummy-callback-id-1");
+  web_ui_.HandleReceivedMessage("getV5GetHashLookups", call_args);
+  ASSERT_EQ(3u, web_ui_.call_data().size());
+  EXPECT_EQ(web_ui_.call_data()[2]->arg1()->GetString(), "dummy-callback-id-1");
+  EXPECT_EQ(web_ui_.call_data()[2]->arg2()->GetBool(), true);
+  const base::ListValue& lookups = web_ui_.call_data()[2]->arg3()->GetList();
+  ASSERT_EQ(lookups.size(), 2u);
+  EXPECT_EQ(lookups[0].GetDict(), lookup_data);
+  EXPECT_EQ(lookups[1].GetDict(), failed_lookup_data);
+
+  UnregisterHandler(handler);
+}
+
+TEST_F(SafeBrowsingUITest, TestV5GetHashLookups_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kLocalListsUseSBv5WebUI);
+  SafeBrowsingContentUIHandler* handler = RegisterNewHandler();
+  ASSERT_EQ(0u, web_ui_.call_data().size());
+
+  WebUIContentInfoSingleton::GetInstance()->AddToV5GetHashLookups(
+      CreateV5GetHashLookup());
+
+  EXPECT_EQ(0u, web_ui_.call_data().size());
 
   UnregisterHandler(handler);
 }
