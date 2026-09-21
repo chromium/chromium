@@ -235,10 +235,27 @@ void TabDesktopMediaList::Refresh(bool update_thumbnails) {
   }
   favicon_hashes_ = new_favicon_hashes;
 
-  // Sort tab sources by time. Most recent one first. Then update sources list.
+  // Sort tab sources by time. Most recent one first.
+  // When tab sharing protection is enabled, blocked tabs are sorted to the
+  // bottom; recency order is preserved within each partition.
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+  const bool sort_blocked_tabs_last = base::FeatureList::IsEnabled(
+      enterprise_data_protection::kEnableTabSharingProtection);
+#else
+  const bool sort_blocked_tabs_last = false;
+#endif
+
+  std::vector<SourceDescription> blocked_sources;
   for (const auto& [time, tab_source] : std::views::reverse(tab_map)) {
-    sources.push_back(tab_source);
+    if (sort_blocked_tabs_last && tab_source.is_sharing_blocked) {
+      blocked_sources.push_back(tab_source);
+    } else {
+      sources.push_back(tab_source);
+    }
   }
+  sources.insert(sources.end(),
+                 std::make_move_iterator(blocked_sources.begin()),
+                 std::make_move_iterator(blocked_sources.end()));
 
   UpdateSourcesList(sources);
 

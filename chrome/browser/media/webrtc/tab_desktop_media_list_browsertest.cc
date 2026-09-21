@@ -44,7 +44,10 @@
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_media_capture_id.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -549,6 +552,19 @@ IN_PROC_BROWSER_TEST_P(TabDesktopMediaListProtectionTest,
 }
 
 #if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+namespace {
+
+// Mirrors the way TabDesktopMediaList::Refresh() derives the capture ID of a
+// tab, so that tests can assert on the identity of individual sources.
+content::WebContentsMediaCaptureId GetCaptureId(
+    content::WebContents* contents) {
+  content::RenderFrameHost* main_frame = contents->GetPrimaryMainFrame();
+  return content::WebContentsMediaCaptureId(
+      main_frame->GetProcess()->GetDeprecatedID(), main_frame->GetRoutingID());
+}
+
+}  // namespace
+
 class TabDesktopMediaListProtectionFeatureEnabledTest
     : public InProcessBrowserTest {
  public:
@@ -561,9 +577,8 @@ class TabDesktopMediaListProtectionFeatureEnabledTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(
-    TabDesktopMediaListProtectionFeatureEnabledTest,
-    PreservesRecencyOrderAndSuppressesPreviewForBlockedTabs) {
+IN_PROC_BROWSER_TEST_F(TabDesktopMediaListProtectionFeatureEnabledTest,
+                       SortsBlockedTabsToBottomAndSuppressesPreview) {
   content::WebContents* tab1 =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(tab1);
@@ -597,24 +612,27 @@ IN_PROC_BROWSER_TEST_F(
   run_loop.Run();
 
   ASSERT_EQ(media_list.GetSourceCount(), 2);
-  // Tab 2 (blocked) is more recent and remains at index 0 (no re-sorting).
-  EXPECT_TRUE(media_list.GetSource(0).is_sharing_blocked);
-  // Tab 1 (allowed) remains at index 1.
-  EXPECT_FALSE(media_list.GetSource(1).is_sharing_blocked);
+  // Tab 1 (allowed) must be sorted first even though Tab 2 was more recent.
+  EXPECT_FALSE(media_list.GetSource(0).is_sharing_blocked);
+  EXPECT_EQ(media_list.GetSource(0).id.web_contents_id, GetCaptureId(tab1));
+  // Tab 2 (blocked) must be sorted to the bottom.
+  EXPECT_TRUE(media_list.GetSource(1).is_sharing_blocked);
+  EXPECT_EQ(media_list.GetSource(1).id.web_contents_id, GetCaptureId(tab2));
 
   // Setting the blocked source as previewed should not mark it as visibly
   // captured.
-  media_list.SetPreviewedSource(media_list.GetSource(0).id);
+  media_list.SetPreviewedSource(media_list.GetSource(1).id);
   EXPECT_FALSE(tab2->IsBeingVisiblyCaptured());
 
   // Setting the allowed source as previewed should mark it as visibly captured.
-  media_list.SetPreviewedSource(media_list.GetSource(1).id);
+  media_list.SetPreviewedSource(media_list.GetSource(0).id);
   EXPECT_TRUE(tab1->IsBeingVisiblyCaptured());
 
   // If the previewed tab becomes blocked by policy during a subsequent refresh,
   // previewed_source_ state is updated and the visible capture keepalive is
   // reset.
   base::RunLoop run_loop2;
+  EXPECT_CALL(observer, OnSourceMoved(1, 0));
   EXPECT_CALL(observer, OnSourceThumbnailChanged(testing::_))
       .WillRepeatedly(testing::Return());
   EXPECT_CALL(observer, OnSourceThumbnailChanged(1))
@@ -625,7 +643,13 @@ IN_PROC_BROWSER_TEST_F(
                                         /*allow=*/false);
   run_loop2.Run();
 
+  // Both tabs are now blocked, so recency ordering applies within the blocked
+  // partition: Tab 2 is more recent and must come first.
+  ASSERT_EQ(media_list.GetSourceCount(), 2);
+  EXPECT_TRUE(media_list.GetSource(0).is_sharing_blocked);
   EXPECT_TRUE(media_list.GetSource(1).is_sharing_blocked);
+  EXPECT_EQ(media_list.GetSource(0).id.web_contents_id, GetCaptureId(tab2));
+  EXPECT_EQ(media_list.GetSource(1).id.web_contents_id, GetCaptureId(tab1));
   EXPECT_FALSE(tab1->IsBeingVisiblyCaptured());
 }
 #endif  // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
