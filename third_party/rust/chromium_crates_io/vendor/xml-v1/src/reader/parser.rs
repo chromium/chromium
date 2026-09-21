@@ -4,7 +4,7 @@ use crate::common::{is_xml10_char, is_xml11_char, is_xml11_char_not_restricted, 
 use crate::common::{Position, TextPosition, XmlVersion};
 use crate::attribute::OwnedAttribute;
 use crate::name::OwnedName;
-use crate::namespace::{self, NamespaceStack};
+use crate::namespace::{self, Namespace, NamespaceStack};
 use crate::reader::config::ParserConfig;
 use crate::reader::error::{Error, ImmutableEntitiesError, SyntaxError};
 use crate::reader::events::XmlEvent;
@@ -93,6 +93,8 @@ pub(crate) struct PullParser {
     inside_whitespace: bool,
     seen_prefix_separator: bool,
     pop_namespace: bool,
+    /// The top of `nst` belongs to the element of the event just emitted
+    emitted_element_event: bool,
 }
 
 // Keeps track when XML declaration can happen
@@ -162,6 +164,7 @@ impl PullParser {
             inside_whitespace: true,
             seen_prefix_separator: false,
             pop_namespace: false,
+            emitted_element_event: false,
         }
     }
 
@@ -182,6 +185,14 @@ impl PullParser {
             public_id: self.data.doctype_public_id.as_deref(),
             system_id: self.data.doctype_system_id.as_deref(),
         })
+    }
+
+    pub fn declared_namespaces(&self) -> Option<&Namespace> {
+        // The namespace stack is pushed when an element starts and popped only when
+        // the next event is pulled after its `EndElement`, so its top describes the
+        // element just reported. In between it may hold a partially parsed namespace
+        // of an element that hasn't been reported yet.
+        self.emitted_element_event.then(|| self.nst.peek())
     }
 
     #[inline(never)]
@@ -390,11 +401,16 @@ impl PullParser {
     /// This method should be always called with the same buffer. If you call it
     /// providing different buffers each time, the result will be undefined.
     pub fn next<R: Read>(&mut self, r: &mut R) -> Result {
+        // Every event invalidates it; only element events are emitted while the
+        // element's own namespace declarations are on top of `nst`.
+        self.emitted_element_event = false;
+
         if let Some(ref ev) = self.final_result {
             return ev.clone();
         }
 
         if let Some(ev) = self.next_event.take() {
+            self.emitted_element_event = matches!(ev, Ok(XmlEvent::StartElement { .. } | XmlEvent::EndElement { .. }));
             return ev;
         }
 
@@ -419,6 +435,7 @@ impl PullParser {
                     None => continue,
                     Some(Ok(xml_event)) => {
                         self.next_pos();
+                        self.emitted_element_event = matches!(xml_event, XmlEvent::StartElement { .. } | XmlEvent::EndElement { .. });
                         return Ok(xml_event);
                     },
                     Some(Err(xml_error)) => {
