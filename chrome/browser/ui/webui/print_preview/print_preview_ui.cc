@@ -241,7 +241,6 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
       {"printOnBothSidesLabel", IDS_PRINT_PREVIEW_PRINT_ON_BOTH_SIDES_LABEL},
       {"printButton", IDS_PRINT_PREVIEW_PRINT_BUTTON},
       {"printDestinationsTitle", IDS_PRINT_PREVIEW_PRINT_DESTINATIONS_TITLE},
-      {"printPagesLabel", IDS_PRINT_PREVIEW_PRINT_PAGES_LABEL},
 #if BUILDFLAG(IS_CHROMEOS)
       {"printerSetupInfoMessageDetailNoPrintersText",
        IDS_PRINT_PREVIEW_PRINTER_SETUP_INFO_MESSAGE_DETAIL_NO_PRINTERS_TEXT},
@@ -272,7 +271,6 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
       {"searchResultBubbleText", IDS_SEARCH_RESULT_BUBBLE_TEXT},
       {"searchResultsBubbleText", IDS_SEARCH_RESULTS_BUBBLE_TEXT},
       {"selectButton", IDS_PRINT_PREVIEW_BUTTON_SELECT},
-      {"seeMore", IDS_PRINT_PREVIEW_SEE_MORE},
       {"seeMoreButton", IDS_PRINT_PREVIEW_SEE_MORE_BUTTON},
       {"seeMoreDestinationsLabel",
        IDS_PRINT_PREVIEW_SEE_MORE_DESTINATIONS_LABEL},

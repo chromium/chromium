@@ -136,9 +136,6 @@
     <message name="IDS_PRINT_PREVIEW_SCALING_INSTRUCTION" desc="Instruction shown when the user enters an invalid scaling value.">
       Scale amount must be a number between 10 and 200.
     </message>
-    <message name="IDS_PRINT_PREVIEW_PRINT_PAGES_LABEL" desc="ARIA label used by screen reader to explain the purpose of the page selection textbox">
-      Print Specific Pages
-    </message>
     <message name="IDS_PRINT_PREVIEW_OPTIONS_LABEL" desc="Options label currently providing the choice to print headers and footers.">
       Options
     </message>
@@ -216,9 +213,6 @@
     </message>
     <message name="IDS_PRINT_PREVIEW_MANAGE" desc="Text of link to manage printers.">
       Manage
-    </message>
-    <message name="IDS_PRINT_PREVIEW_SEE_MORE" desc="Dropdown option to view more print destinations in a dialog." meaning="Label text">
-      See more...
     </message>
     <message name="IDS_PRINT_PREVIEW_SEE_MORE_BUTTON" desc="Button text to view more print destinations in a dialog.">
       See more
