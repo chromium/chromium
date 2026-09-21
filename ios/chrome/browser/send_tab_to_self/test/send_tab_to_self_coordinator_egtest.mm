@@ -123,6 +123,12 @@ NSString* SendTabToSelfButtonLabel() {
   return l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF);
 }
 
+// Returns a matcher for the "Send to your device" context menu item.
+id<GREYMatcher> SendToDevicesMenuItem() {
+  return chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+      IDS_SEND_TAB_TO_SELF);
+}
+
 // Taps the "Send tab to self" button in the open Activity (Share) Sheet.
 void TapSendTabToSelfInActivitySheet() {
   [ChromeEarlGrey tapButtonInActivitySheetWithID:SendTabToSelfButtonLabel()];
@@ -781,14 +787,11 @@ void DismissSendTabToSelfModal() {
       performAction:grey_longPress()];
 
   // Verify the "Send to your device" menu item shows up.
-  id<GREYMatcher> sendToDevicesMenuItem =
-      chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
-          IDS_SEND_TAB_TO_SELF);
   [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:sendToDevicesMenuItem];
+      waitForSufficientlyVisibleElementWithMatcher:SendToDevicesMenuItem()];
 
   // Tap the context menu item.
-  [[EarlGrey selectElementWithMatcher:sendToDevicesMenuItem]
+  [[EarlGrey selectElementWithMatcher:SendToDevicesMenuItem()]
       performAction:grey_tap()];
 
   // Verify that the device picker shows up.
@@ -819,14 +822,11 @@ void DismissSendTabToSelfModal() {
       performAction:grey_longPress()];
 
   // Verify the "Send to your device" menu item shows up.
-  id<GREYMatcher> sendToDevicesMenuItem =
-      chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
-          IDS_SEND_TAB_TO_SELF);
   [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:sendToDevicesMenuItem];
+      waitForSufficientlyVisibleElementWithMatcher:SendToDevicesMenuItem()];
 
   // Tap the context menu item.
-  [[EarlGrey selectElementWithMatcher:sendToDevicesMenuItem]
+  [[EarlGrey selectElementWithMatcher:SendToDevicesMenuItem()]
       performAction:grey_tap()];
 
   // Verify that the device picker shows up.
@@ -861,14 +861,11 @@ void DismissSendTabToSelfModal() {
       performAction:grey_longPress()];
 
   // Verify the "Send to your device" menu item shows up.
-  id<GREYMatcher> sendToDevicesMenuItem =
-      chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
-          IDS_SEND_TAB_TO_SELF);
   [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:sendToDevicesMenuItem];
+      waitForSufficientlyVisibleElementWithMatcher:SendToDevicesMenuItem()];
 
   // Tap the context menu item.
-  [[EarlGrey selectElementWithMatcher:sendToDevicesMenuItem]
+  [[EarlGrey selectElementWithMatcher:SendToDevicesMenuItem()]
       performAction:grey_tap()];
 
   // Verify that the sign-in promo is visible.
@@ -915,14 +912,11 @@ void DismissSendTabToSelfModal() {
       performAction:grey_longPress()];
 
   // Verify the "Send to your device" menu item shows up.
-  id<GREYMatcher> sendToDevicesMenuItem =
-      chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
-          IDS_SEND_TAB_TO_SELF);
   [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:sendToDevicesMenuItem];
+      waitForSufficientlyVisibleElementWithMatcher:SendToDevicesMenuItem()];
 
   // Tap the context menu item.
-  [[EarlGrey selectElementWithMatcher:sendToDevicesMenuItem]
+  [[EarlGrey selectElementWithMatcher:SendToDevicesMenuItem()]
       performAction:grey_tap()];
 
   // Verify that the device picker shows up.
