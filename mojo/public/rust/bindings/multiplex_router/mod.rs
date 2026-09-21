@@ -41,7 +41,9 @@ mod response_sender;
 mod router_handle;
 
 // Needed to call `MultiplexRouterHandle` methods
-pub(crate) use endpoint_registry::{EndpointInfo, InterfaceId};
+pub(crate) use endpoint_registry::{
+    EndpointInfo, InterfaceId, INVALID_INTERFACE_ID, PRIMARY_INTERFACE_ID,
+};
 pub(crate) use multiplex_router_handle::MultiplexRouterHandle;
 pub(crate) use router_handle::{AssociatedRouterHandle, RouterHandle};
 

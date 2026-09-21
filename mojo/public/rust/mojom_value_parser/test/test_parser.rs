@@ -161,7 +161,7 @@ where
     let validate_parsing_internal = || -> anyhow::Result<()> {
         let wire_data = validation_parser::parse(data).map_err(anyhow::Error::msg)?.data;
 
-        let parsing_registrar = DummyRegistrarForTesting::new(false);
+        let parsing_registrar = DummyRegistrarForTesting::new(true);
         let deparsing_registrar = DummyRegistrarForTesting::new(false);
 
         let (deparsed_bytes, _deparsed_handles, interface_ids_ptr) =

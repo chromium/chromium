@@ -20,7 +20,7 @@ use system::scoped_handle_interop::ScopedMessageHandleWrapper;
 
 use crate::message::{MojomMessage, ReadableWithHandlesMessage, SendableMessage};
 use crate::multiplex_router::response_sender::ResponseSender;
-use crate::multiplex_router::{EndpointInfo, InterfaceId};
+use crate::multiplex_router::{EndpointInfo, InterfaceId, INVALID_INTERFACE_ID};
 
 use super::cxx::ffi;
 
@@ -63,9 +63,13 @@ impl CppRouterHandle {
         interface_id: Option<InterfaceId>,
         endpoint_info: Option<EndpointInfo>,
     ) -> Option<Self> {
-        // `InterfaceId::MAX` is a signal for `RegisterNewEndpoint` to generate
-        // a fresh interface ID.
-        let id_val = interface_id.unwrap_or(InterfaceId::MAX);
+        assert!(
+            interface_id != Some(INVALID_INTERFACE_ID),
+            "kInvalidInterfaceId is not a valid interface ID"
+        );
+        // Here, INVALID_INTERFACE_ID is used as a signal to request a new ID be
+        // allocated.
+        let id_val = interface_id.unwrap_or(INVALID_INTERFACE_ID);
         let new_adapter = self.adapter.RegisterNewEndpoint(id_val);
         let mut handle = Self::new(new_adapter)?;
         if let Some(info) = endpoint_info {
@@ -137,9 +141,13 @@ impl CppResponseSender {
         interface_id: Option<InterfaceId>,
         endpoint_info: Option<EndpointInfo>,
     ) -> Option<CppRouterHandle> {
-        // `InterfaceId::MAX` is a signal for `RegisterNewEndpoint` to generate
-        // a fresh interface ID.
-        let id_val = interface_id.unwrap_or(InterfaceId::MAX);
+        assert!(
+            interface_id != Some(INVALID_INTERFACE_ID),
+            "kInvalidInterfaceId is not a valid interface ID"
+        );
+        // Here, INVALID_INTERFACE_ID is used as a signal to request a new ID be
+        // allocated.
+        let id_val = interface_id.unwrap_or(INVALID_INTERFACE_ID);
         let new_adapter = self.responder.RegisterNewEndpoint(id_val);
         let mut handle = CppRouterHandle::new(new_adapter)?;
         if let Some(info) = endpoint_info {

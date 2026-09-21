@@ -221,7 +221,7 @@ impl TestType {
         mojom_val: MojomValue,
         has_expected_value: impl Fn(&T) -> bool,
     ) {
-        let parsing_registrar = DummyRegistrarForTesting::new(false);
+        let parsing_registrar = DummyRegistrarForTesting::new(true);
         let deparsing_registrar = DummyRegistrarForTesting::new(false);
 
         expect_eq!(

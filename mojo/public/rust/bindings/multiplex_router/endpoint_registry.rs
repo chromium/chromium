@@ -42,9 +42,12 @@ use super::response_sender::ResponseSender;
 pub type InterfaceId = u32;
 
 /// This ID is assigned to the primary interface, which owns the message pipe.
-pub(super) const PRIMARY_INTERFACE_ID: InterfaceId = 0;
+/// Equivalent to `mojo::kPrimaryInterfaceId` in C++.
+pub(crate) const PRIMARY_INTERFACE_ID: InterfaceId = 0;
 /// This ID is used for control messages (e.g. disconnect notifications).
-pub(super) const CONTROL_INTERFACE_ID: InterfaceId = u32::MAX;
+pub(crate) const CONTROL_INTERFACE_ID: InterfaceId = u32::MAX;
+/// It's also used to mean "no interface" in cases where options don't work.
+pub(crate) const INVALID_INTERFACE_ID: InterfaceId = CONTROL_INTERFACE_ID;
 /// Routers always either generate IDs with the high bit set, or always generate
 /// IDs with the high bit unset.
 const HIGH_BIT_MASK: InterfaceId = 0x80000000;
@@ -131,5 +134,11 @@ impl EndpointRegistry {
             panic!("MultiplexRouter ran out of interface IDs to allocate")
         }
         ret
+    }
+
+    /// Returns whether `id` belongs to the half of the ID space that the peer
+    /// allocates from.
+    pub(super) fn is_peer_allocated_id(&self, id: InterfaceId) -> bool {
+        (id & HIGH_BIT_MASK) != (self.next_interface_id & HIGH_BIT_MASK)
     }
 }

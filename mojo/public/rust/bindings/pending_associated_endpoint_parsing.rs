@@ -27,7 +27,8 @@ use mojom_value_parser_core::{MojomType, MojomValue};
 use crate::interface::DynMojomInterface;
 use crate::marker_types::IsRemote;
 use crate::multiplex_router::{
-    AssociatedRouterHandle, EndpointInfo, InterfaceId, MultiplexRouterHandle,
+    AssociatedRouterHandle, EndpointInfo, InterfaceId, MultiplexRouterHandle, INVALID_INTERFACE_ID,
+    PRIMARY_INTERFACE_ID,
 };
 use crate::pending_associated_endpoint::{
     AssociatedEndpointState, AssociatedState, PendingAssociatedEndpoint,
@@ -125,8 +126,15 @@ where
         };
 
         let interface_id = AssociatedState::register_with_router(shared_state, context);
-        let interface_id_nonzero =
-            interface_id.try_into().expect("Should never try to serialize a zero interface ID!");
+        // The primary interface ID will never be associated, and
+        // `INVALID_INTERFACE_ID` used as a sentinel.
+        assert!(
+            interface_id != PRIMARY_INTERFACE_ID && interface_id != INVALID_INTERFACE_ID,
+            "Associated interface ID must be valid and non-zero to be serialized"
+        );
+        let interface_id_nonzero = interface_id
+            .try_into()
+            .expect("Associated interface ID must be non-zero to be serialized");
 
         if Marker::IS_REMOTE {
             MojomValue::PendingAssociatedRemote(interface_id_nonzero)
@@ -147,12 +155,14 @@ where
             _ => anyhow::bail!("Expected PendingAssociatedReceiver, got {:?}", value),
         };
 
-        let handle =
-            context.register_new_endpoint(Some(interface_id.into()), None).ok_or_else(|| {
-                anyhow::anyhow!(
-                    "Interface ID {interface_id} was already registered with the router!"
-                )
-            })?;
+        let id_val: u32 = interface_id.into();
+        if id_val == INVALID_INTERFACE_ID {
+            anyhow::bail!("Invalid associated interface ID: {id_val}");
+        }
+
+        let handle = context.register_new_endpoint(Some(id_val), None).ok_or_else(|| {
+            anyhow::anyhow!("Interface ID {id_val} was already registered with the router!")
+        })?;
         Ok(Self::new_singleton(handle))
     }
 }

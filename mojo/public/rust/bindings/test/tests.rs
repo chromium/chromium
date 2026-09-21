@@ -1088,3 +1088,69 @@ fn test_associated_interop_cpp_primary_remote() {
     });
     run_loop.run();
 }
+
+#[gtest(RustBindingsAPI, TestDuplicateInterfaceIdRejected)]
+fn test_duplicate_interface_id_rejected() {
+    let _task_env = task_environment::ffi::CreateTaskEnvironment();
+    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+
+    let (pending_remote, pending_receiver) =
+        PendingRemote::<dyn AssociatedSender>::new_pipe().unwrap();
+    let _receiver = pending_receiver.bind(AssociatedSenderInteropRustImpl {});
+    let remote_wrapper =
+        system::scoped_handle_interop::ScopedMessagePipeHandleWrapper::from_message_endpoint(
+            pending_remote.into_endpoint(),
+        );
+    let mut cxx_remote = crate::cxx::ffi::CreateAssociatedSenderTestRemote(remote_wrapper);
+
+    let cpp_adapter = cxx_remote.pin_mut().RequestRemote();
+
+    let existing_id = cpp_adapter.GetInterfaceId();
+    let duplicate_adapter = cpp_adapter.RegisterNewEndpoint(existing_id);
+    assert!(
+        duplicate_adapter.is_null(),
+        "Registering an already-registered interface ID should return null."
+    );
+}
+
+/// Similar to the previous test, but the duplicate interface ID comes in
+/// a message rather than a direct call.
+#[gtest(RustBindingsAPI, TestDuplicateInterfaceIdReportsBadMessage)]
+fn test_duplicate_interface_id_reports_bad_message() {
+    let _task_env = task_environment::ffi::CreateTaskEnvironment();
+
+    let bad_message_flag = Arc::new(Mutex::new(None::<String>));
+    let bad_message_flag_clone = bad_message_flag.clone();
+    test_util::set_default_process_error_handler(move |msg: &str| {
+        *bad_message_flag_clone.lock().unwrap() = Some(msg.to_string());
+    });
+
+    // Create a message with interface IDs, that we'll send multiple times
+    let message_bytes = {
+        // A short-lived pipe to create IDs on
+        let (pending_remote, pending_receiver) =
+            PendingRemote::<dyn AssociatedSender>::new_pipe().unwrap();
+        let mut remote = pending_remote.bind();
+        let (_math_remote, math_receiver) = PendingAssociatedRemote::<dyn MathService>::new_pair();
+        remote.SendReceiver(math_receiver);
+        let raw_msg = pending_receiver.into_endpoint().read().unwrap();
+        raw_msg.read_bytes().unwrap().to_vec()
+    };
+
+    // Sending the message twice, through a pure-rust pipe
+    {
+        let (handle0, handle1) = system::message_pipe::MessageEndpoint::create_pipe().unwrap();
+        let _receiver =
+            PendingReceiver::<dyn AssociatedSender>::new(handle0).bind(AssociatedSenderImpl::new());
+
+        let msg1 = system::message::WritableMessage::new_with_bytes(&message_bytes).unwrap().into();
+        let msg2 = system::message::WritableMessage::new_with_bytes(&message_bytes).unwrap().into();
+        handle1.write(msg1).unwrap();
+        handle1.write(msg2).unwrap();
+
+        RunLoop::new().run_until_idle();
+
+        let reported = bad_message_flag.lock().unwrap().take();
+        expect_true!(reported.is_some());
+    }
+}

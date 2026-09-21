@@ -180,9 +180,8 @@ impl MultiplexRouter {
     /// Will panic if this router has run out of IDs to allocate.
     ///
     /// Will return `None` if called with an interface ID that is already
-    /// registered with the router. Since each pair of endpoints should have a
-    /// unique ID, this should only happen if we receive a malformed mojo
-    /// message.
+    /// registered with the router, or if it is invalid. This should only
+    /// happen if we receive a malformed mojo message.
     ///
     /// Note: This function is only called for _associated_ endpoints, never the
     /// primary one (those use `new` instead).
@@ -191,12 +190,19 @@ impl MultiplexRouter {
         interface_id_opt: Option<InterfaceId>,
         endpoint_info: Option<EndpointInfo>,
     ) -> Option<InterfaceId> {
+        if matches!(interface_id_opt, Some(PRIMARY_INTERFACE_ID | CONTROL_INTERFACE_ID)) {
+            return None;
+        }
         // Will be initialized in the block below, while shared_state is locked.
         let interface_id;
         {
             let mut shared_state = self.shared_state.lock().unwrap();
-            interface_id =
-                interface_id_opt.unwrap_or_else(|| shared_state.registry.get_new_interface_id());
+            interface_id = match interface_id_opt {
+                // We should only ever get IDs allocated by the peer.
+                Some(id) if !shared_state.registry.is_peer_allocated_id(id) => return None,
+                Some(id) => id,
+                None => shared_state.registry.get_new_interface_id(),
+            };
 
             let previous_entry =
                 shared_state.registry.endpoint_map.insert(interface_id, endpoint_info);
@@ -273,7 +279,7 @@ impl MultiplexRouter {
     /// will handle the notification to the interfaces on the other side.
     pub(super) fn notify_dropped(&self, interface_id: InterfaceId) {
         let _ = self.shared_state.lock().unwrap().registry.endpoint_map.remove(&interface_id);
-        if interface_id == 0 {
+        if interface_id == PRIMARY_INTERFACE_ID {
             // If the primary interface is being dropped, then we don't need to
             // notify it of anything, but we do need to alert all the associated
             // interfaces on this side that they've been disconnected.
