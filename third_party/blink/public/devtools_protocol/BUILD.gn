@@ -1,4 +1,5 @@
 import("//third_party/inspector_protocol/inspector_protocol.gni")
+import("//third_party/node/node.gni")
 import("//v8/gni/v8.gni")
 
 _inspector_protocol_dir = "//third_party/inspector_protocol"
@@ -95,4 +96,40 @@ action("protocol_version") {
     rebase_path(v8_inspector_js_protocol, root_build_dir),
     rebase_path(output_file, root_build_dir),
   ]
+}
+
+# Generates the TypeScript typings for CDP from the concatenated protocol.json
+# produced by ":protocol_version" (derived from the in-tree PDL files). The
+# output is a drop-in replacement for the `types/` directory of the
+# `devtools-protocol` npm package, so that in-tree TypeScript consumers
+# (chromium-bidi, inspector-protocol tests, ...) do not have to depend on the
+# npm package and always see the protocol as defined in this checkout.
+node("protocol_typescript_definitions") {
+  script = "//third_party/node/node.py"
+
+  _generator = "scripts/protocol_dts_generator.ts"
+  _protocol_json = "$_protocol_out_dir/protocol.json"
+  _types_dir = "$_protocol_out_dir/types"
+
+  inputs = [
+    _generator,
+    "scripts/protocol_schema.d.ts",
+    _protocol_json,
+  ]
+
+  outputs = [
+    "$_types_dir/protocol.d.ts",
+    "$_types_dir/protocol-mapping.d.ts",
+    "$_types_dir/protocol-proxy-api.d.ts",
+    "$_types_dir/protocol-tests-proxy-api.d.ts",
+  ]
+
+  args = [
+    rebase_path(_generator, root_build_dir),
+    "--output-dir",
+    rebase_path(_types_dir, root_build_dir),
+    rebase_path(_protocol_json, root_build_dir),
+  ]
+
+  deps = [ ":protocol_version" ]
 }
