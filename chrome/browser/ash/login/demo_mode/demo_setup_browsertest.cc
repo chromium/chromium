@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
 #include <string>
 #include <string_view>
 
@@ -1172,18 +1173,18 @@ IN_PROC_BROWSER_TEST_F(DemoSetupProgressStepsTest,
 
   DemoSetupScreen* demoSetupScreen = GetDemoSetupScreen();
 
-  DemoSetupController::DemoSetupStep orderedSteps[] = {
+  constexpr std::array kOrderedSteps = {
       DemoSetupController::DemoSetupStep::kDownloadResources,
       DemoSetupController::DemoSetupStep::kEnrollment,
-      DemoSetupController::DemoSetupStep::kComplete};
+      DemoSetupController::DemoSetupStep::kComplete,
+  };
 
   // Subtract 1 to account for kComplete step
-  int numSteps =
-      static_cast<int>(sizeof(orderedSteps) / sizeof(*orderedSteps)) - 1;
+  int numSteps = static_cast<int>(kOrderedSteps.size()) - 1;
   ASSERT_EQ(CountNumberOfStepsInUi(), numSteps);
 
   for (int i = 0; i < numSteps; i++) {
-    demoSetupScreen->SetCurrentSetupStepForTest(UNSAFE_TODO(orderedSteps[i]));
+    demoSetupScreen->SetCurrentSetupStepForTest(kOrderedSteps[i]);
     ASSERT_EQ(CountStepsInUi("pending"), numSteps - i - 1);
     ASSERT_EQ(CountStepsInUi("active"), 1);
     ASSERT_EQ(CountStepsInUi("completed"), i);

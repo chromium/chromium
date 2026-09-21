@@ -52,13 +52,14 @@ bool IsExceptionalHWID(std::string_view hwid) {
 }
 
 std::string CalculateExceptionalHWIDChecksum(std::string_view data) {
-  static const char base32_alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+  static constexpr std::string_view kBase32Alphabet =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
   unsigned crc32 = CalculateCRC32(data);
   // We take 10 least significant bits of CRC-32 and encode them in 2 characters
   // using Base32 alphabet.
   std::string checksum;
-  checksum += base32_alphabet[(crc32 >> 5) & 0x1f];
-  checksum += base32_alphabet[crc32 & 0x1f];
+  checksum += kBase32Alphabet[(crc32 >> 5) & 0x1f];
+  checksum += kBase32Alphabet[crc32 & 0x1f];
   return checksum;
 }
 
@@ -84,13 +85,14 @@ bool IsCorrectExceptionalHWID(std::string_view hwid) {
 }
 
 std::string CalculateHWIDv3Checksum(std::string_view data) {
-  static const char base8_alphabet[] = "23456789";
-  static const char base32_alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+  static constexpr std::string_view kBase8Alphabet = "23456789";
+  static constexpr std::string_view kBase32Alphabet =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
   unsigned crc32 = CalculateCRC32(data);
   // We take 8 least significant bits of CRC-32 and encode them in 2 characters.
   std::string checksum;
-  checksum += base8_alphabet[(crc32 >> 5) & 0x7];
-  checksum += base32_alphabet[crc32 & 0x1f];
+  checksum += kBase8Alphabet[(crc32 >> 5) & 0x7];
+  checksum += kBase32Alphabet[crc32 & 0x1f];
   return checksum;
 }
 

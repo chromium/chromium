@@ -126,13 +126,6 @@ TestApi::TestApi(bool override_quick_unlock)
     : overridden_(override_quick_unlock) {
   old_instance_ = g_instance;
   g_instance = this;
-  std::fill(pin_purposes_enabled_by_policy_,
-            UNSAFE_TODO(pin_purposes_enabled_by_policy_ + kNumOfPurposes),
-            false);
-  std::fill(
-      fingerprint_purposes_enabled_by_policy_,
-      UNSAFE_TODO(fingerprint_purposes_enabled_by_policy_ + kNumOfPurposes),
-      false);
 }
 
 TestApi::~TestApi() {
@@ -150,30 +143,25 @@ bool TestApi::IsQuickUnlockOverridden() {
 
 void TestApi::EnablePinByPolicy(Purpose purpose) {
   if (purpose != Purpose::kAny) {
-    pin_purposes_enabled_by_policy_[static_cast<int>(Purpose::kAny)] = true;
+    pin_purposes_enabled_by_policy_[static_cast<size_t>(Purpose::kAny)] = true;
   }
-  UNSAFE_TODO(pin_purposes_enabled_by_policy_[static_cast<int>(purpose)]) =
-      true;
+  pin_purposes_enabled_by_policy_[static_cast<size_t>(purpose)] = true;
 }
 
 void TestApi::EnableFingerprintByPolicy(Purpose purpose) {
   if (purpose != Purpose::kAny) {
-    fingerprint_purposes_enabled_by_policy_[static_cast<int>(Purpose::kAny)] =
-        true;
+    fingerprint_purposes_enabled_by_policy_[static_cast<size_t>(
+        Purpose::kAny)] = true;
   }
-  UNSAFE_TODO(
-      fingerprint_purposes_enabled_by_policy_[static_cast<int>(purpose)]) =
-      true;
+  fingerprint_purposes_enabled_by_policy_[static_cast<size_t>(purpose)] = true;
 }
 
 bool TestApi::IsPinEnabledByPolicy(Purpose purpose) {
-  return UNSAFE_TODO(
-      pin_purposes_enabled_by_policy_[static_cast<int>(purpose)]);
+  return pin_purposes_enabled_by_policy_[static_cast<size_t>(purpose)];
 }
 
 bool TestApi::IsFingerprintEnabledByPolicy(Purpose purpose) {
-  return UNSAFE_TODO(
-      fingerprint_purposes_enabled_by_policy_[static_cast<int>(purpose)]);
+  return fingerprint_purposes_enabled_by_policy_[static_cast<size_t>(purpose)];
 }
 
 bool IsFingerprintDisabledByPolicy(const PrefService* pref_service,

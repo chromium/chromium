@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <iterator>
 #include <memory>
 #include <optional>
@@ -84,7 +85,7 @@ scoped_refptr<extensions::Extension> MakeKioskApp(
     const std::string& name,
     const std::string& version,
     const std::string& id,
-    const std::string& required_platform_version) {
+    std::string_view required_platform_version) {
   auto value = base::DictValue()
                    .Set("name", name)
                    .Set("version", version)
@@ -885,35 +886,42 @@ IN_PROC_BROWSER_TEST_F(ChromeAppKioskAppManagerTest,
       kAppId);
   manager()->SetAppWasAutoLaunchedWithZeroDelay(kAppId);
 
-  struct {
-    const std::string required_platform_version;
-    const bool expected_compliant;
-  } kTestCases[] = {
-      {"", true},          {"1234", true},      {"1234.1", true},
-      {"1234.1.2", true},  {"123", false},      {"1234.2", false},
-      {"1234.1.1", false}, {"1234.1.3", false},
+  struct TestCase {
+    std::string_view required_platform_version;
+    bool expected_compliant;
   };
+  static constexpr auto kTestCases = std::to_array<TestCase>({
+      {"", true},
+      {"1234", true},
+      {"1234.1", true},
+      {"1234.1.2", true},
+      {"123", false},
+      {"1234.2", false},
+      {"1234.1.1", false},
+      {"1234.1.3", false},
+  });
 
-  for (size_t i = 0; i < std::size(kTestCases); ++i) {
-    scoped_refptr<extensions::Extension> app =
-        MakeKioskApp("App Name", "1.0", kAppId,
-                     UNSAFE_TODO(kTestCases[i]).required_platform_version);
-    UNSAFE_TODO(EXPECT_EQ(kTestCases[i].expected_compliant,
-                          manager()->IsPlatformCompliantWithApp(app.get())))
+  for (size_t i = 0; const auto& test_case : kTestCases) {
+    scoped_refptr<extensions::Extension> app = MakeKioskApp(
+        "App Name", "1.0", kAppId, test_case.required_platform_version);
+    EXPECT_EQ(test_case.expected_compliant,
+              manager()->IsPlatformCompliantWithApp(app.get()))
         << "Test case: " << i << ", required_platform_version="
-        << UNSAFE_TODO(kTestCases[i]).required_platform_version;
+        << test_case.required_platform_version;
+    ++i;
   }
 
   // If an app is not auto launched with zero delay, it is always compliant.
   const char kNoneAutoLaucnhedAppId[] = "none_auto_launch_app_id";
-  for (size_t i = 0; i < std::size(kTestCases); ++i) {
+  for (size_t i = 0; const auto& test_case : kTestCases) {
     scoped_refptr<extensions::Extension> app =
         MakeKioskApp("App Name", "1.0", kNoneAutoLaucnhedAppId,
-                     UNSAFE_TODO(kTestCases[i]).required_platform_version);
+                     test_case.required_platform_version);
     EXPECT_TRUE(manager()->IsPlatformCompliantWithApp(app.get()))
         << "Test case for non auto launch app: " << i
         << ", required_platform_version="
-        << UNSAFE_TODO(kTestCases[i]).required_platform_version;
+        << test_case.required_platform_version;
+    ++i;
   }
 }
 

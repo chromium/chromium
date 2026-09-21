@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_result.h"
 
+#include <algorithm>
+#include <array>
 #include <memory>
 #include <string>
 #include <type_traits>
@@ -14,6 +16,7 @@
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "base/base64.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -73,9 +76,9 @@ const ACMatchClassification kExampleContentsClass[] = {
     {/*offset=*/5, /*style=*/ACMatchClassification::URL},
 };
 
-const ash::SearchResultTag kExpectedExampleContentsTags[] = {
+const auto kExpectedExampleContentsTags = std::to_array<ash::SearchResultTag>({
     {/*styles=*/ash::SearchResultTag::URL, /*start=*/0, /*end=*/25},
-};
+});
 
 // Example description is not a URL.
 const ACMatchClassification kExampleDescriptionClass[] = {
@@ -113,32 +116,19 @@ bool IsSingletonTextVectorNoTags(
 
 // Returns true if the given text vector has one text entry that equals the
 // given text, and tags that match the given tags.
-//
-// Would use an absl::Span to capture static array lengths, but absl isn't yet
-// allowed in these unit tests.
-template <int ArraySize>
 bool IsSingletonTextVector(const std::vector<ash::SearchResultTextItem>& v,
                            const std::u16string& text,
-                           const ash::SearchResultTag (&tags)[ArraySize]) {
+                           base::span<const ash::SearchResultTag> tags) {
   if (v.size() != 1 ||
       v[0].GetType() != ash::SearchResultTextItemType::kString ||
       v[0].GetText() != text) {
     return false;
   }
 
-  // Check that tags match.
-  const auto& result_tags = v[0].GetTextTags();
-  if (result_tags.size() != ArraySize)
-    return false;
-
-  for (int i = 0; i < ArraySize; ++i) {
-    if (result_tags[i].styles != UNSAFE_TODO(tags[i]).styles ||
-        result_tags[i].range != UNSAFE_TODO(tags[i]).range) {
-      return false;
-    }
-  }
-
-  return true;
+  return std::ranges::equal(
+      v[0].GetTextTags(), tags, [](const auto& lhs, const auto& rhs) {
+        return lhs.styles == rhs.styles && lhs.range == rhs.range;
+      });
 }
 
 }  // namespace

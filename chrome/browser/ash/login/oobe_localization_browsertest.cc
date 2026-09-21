@@ -4,7 +4,6 @@
 
 #include <stddef.h>
 
-#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -199,7 +198,7 @@ struct LocalizationTestParams {
 
 class OobeLocalizationTest
     : public OobeBaseTest,
-      public testing::WithParamInterface<const LocalizationTestParams*> {
+      public testing::WithParamInterface<LocalizationTestParams> {
  public:
   OobeLocalizationTest();
 
@@ -229,9 +228,9 @@ class OobeLocalizationTest
 
 OobeLocalizationTest::OobeLocalizationTest() : OobeBaseTest() {
   fake_statistics_provider_.SetMachineStatistic("initial_locale",
-                                                GetParam()->initial_locale);
+                                                GetParam().initial_locale);
   fake_statistics_provider_.SetMachineStatistic("keyboard_layout",
-                                                GetParam()->keyboard_layout);
+                                                GetParam().keyboard_layout);
 }
 
 void OobeLocalizationTest::VerifyInitialOptions(const char* select_id,
@@ -355,11 +354,11 @@ std::string TranslateLocal2Global(const std::string& src) {
 
 void OobeLocalizationTest::RunLocalizationTest() {
   WaitForOobeUI();
-  const std::string expected_locale(GetParam()->expected_locale);
+  const std::string expected_locale(GetParam().expected_locale);
   const std::string expected_keyboard_layout(
-      GetParam()->expected_keyboard_layout);
+      GetParam().expected_keyboard_layout);
   const std::string expected_keyboard_select_control(
-      GetParam()->expected_keyboard_select_control);
+      GetParam().expected_keyboard_select_control);
 
   const std::string expected_keyboard_select =
       TranslateLocal2Global(expected_keyboard_select_control);
@@ -398,10 +397,7 @@ IN_PROC_BROWSER_TEST_P(OobeLocalizationTest, LocalizationTest) {
   RunLocalizationTest();
 }
 
-UNSAFE_TODO(INSTANTIATE_TEST_SUITE_P(
-    All,
-    OobeLocalizationTest,
-    testing::Range(&oobe_localization_test_parameters[0],
-                   &oobe_localization_test_parameters[std::size(
-                       oobe_localization_test_parameters)])));
+INSTANTIATE_TEST_SUITE_P(All,
+                         OobeLocalizationTest,
+                         testing::ValuesIn(oobe_localization_test_parameters));
 }  // namespace ash

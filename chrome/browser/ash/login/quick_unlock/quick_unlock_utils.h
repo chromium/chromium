@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_QUICK_UNLOCK_QUICK_UNLOCK_UTILS_H_
 #define CHROME_BROWSER_ASH_LOGIN_QUICK_UNLOCK_QUICK_UNLOCK_UTILS_H_
 
+#include <array>
+
 #include "base/memory/raw_ptr.h"
 
 namespace base {
@@ -97,13 +99,13 @@ class TestApi {
   bool IsFingerprintEnabledByPolicy(Purpose purpose);
 
  private:
-  static constexpr int kNumOfPurposes =
-      static_cast<int>(Purpose::kNumOfPurposes);
+  static constexpr size_t kNumOfPurposes =
+      static_cast<size_t>(Purpose::kNumOfPurposes);
 
-  raw_ptr<TestApi> old_instance_;
-  bool overridden_;
-  bool pin_purposes_enabled_by_policy_[kNumOfPurposes];
-  bool fingerprint_purposes_enabled_by_policy_[kNumOfPurposes];
+  raw_ptr<TestApi> old_instance_ = nullptr;
+  bool overridden_ = false;
+  std::array<bool, kNumOfPurposes> pin_purposes_enabled_by_policy_ = {};
+  std::array<bool, kNumOfPurposes> fingerprint_purposes_enabled_by_policy_ = {};
 };
 
 base::TimeDelta PasswordConfirmationFrequencyToTimeDelta(
