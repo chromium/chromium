@@ -2,18 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_VALUE_VALIDATION_ONC_DEVICE_POLICY_VALUE_VALIDATOR_H_
-#define CHROME_BROWSER_ASH_POLICY_VALUE_VALIDATION_ONC_DEVICE_POLICY_VALUE_VALIDATOR_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_POLICY_VALUE_VALIDATION_ONC_DEVICE_POLICY_VALUE_VALIDATOR_H_
+#define CHROMEOS_ASH_COMPONENTS_POLICY_VALUE_VALIDATION_ONC_DEVICE_POLICY_VALUE_VALIDATOR_H_
 
-#include "chrome/browser/ash/policy/value_validation/onc_policy_value_validator_base.h"
-
-namespace enterprise_management {
-class ChromeDeviceSettingsProto;
-}
+#include "base/component_export.h"
+#include "chromeos/ash/components/policy/value_validation/onc_policy_value_validator_base.h"
+#include "components/policy/proto/chrome_device_policy.pb.h"
 
 namespace policy {
 
-class ONCDevicePolicyValueValidator
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
+    ONCDevicePolicyValueValidator
     : public ONCPolicyValueValidatorBase<
           enterprise_management::ChromeDeviceSettingsProto> {
  public:
@@ -32,4 +31,4 @@ class ONCDevicePolicyValueValidator
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_ASH_POLICY_VALUE_VALIDATION_ONC_DEVICE_POLICY_VALUE_VALIDATOR_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_POLICY_VALUE_VALIDATION_ONC_DEVICE_POLICY_VALUE_VALIDATOR_H_

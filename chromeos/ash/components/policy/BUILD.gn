@@ -18,6 +18,7 @@ component("policy") {
     "local_auth_factors",
     "restriction_schedule",
     "system_features_disable_list",
+    "value_validation",
   ]
 
   deps = []

@@ -2,15 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_VALUE_VALIDATION_ONC_POLICY_VALUE_VALIDATOR_BASE_H_
-#define CHROME_BROWSER_ASH_POLICY_VALUE_VALIDATION_ONC_POLICY_VALUE_VALIDATOR_BASE_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_POLICY_VALUE_VALIDATION_ONC_POLICY_VALUE_VALIDATOR_BASE_H_
+#define CHROMEOS_ASH_COMPONENTS_POLICY_VALUE_VALIDATION_ONC_POLICY_VALUE_VALIDATOR_BASE_H_
 
-#include "components/policy/core/common/cloud/policy_value_validator.h"
+#include <optional>
+#include <string>
+#include <vector>
 
+#include "base/values.h"
 #include "chromeos/components/onc/onc_signature.h"
 #include "chromeos/components/onc/onc_utils.h"
 #include "chromeos/components/onc/onc_validator.h"
 #include "components/onc/onc_constants.h"
+#include "components/policy/core/common/cloud/policy_value_validator.h"
 
 namespace policy {
 
@@ -37,8 +41,9 @@ class ONCPolicyValueValidatorBase : public PolicyValueValidator<PayloadProto> {
     std::optional<std::string> onc_string =
         GetONCStringFromPayload(policy_payload);
 
-    if (!onc_string.has_value())
+    if (!onc_string.has_value()) {
       return true;
+    }
 
     std::optional<base::DictValue> root_dict =
         chromeos::onc::ReadDictionaryFromJson(onc_string.value());
@@ -84,4 +89,4 @@ class ONCPolicyValueValidatorBase : public PolicyValueValidator<PayloadProto> {
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_ASH_POLICY_VALUE_VALIDATION_ONC_POLICY_VALUE_VALIDATOR_BASE_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_POLICY_VALUE_VALIDATION_ONC_POLICY_VALUE_VALIDATOR_BASE_H_

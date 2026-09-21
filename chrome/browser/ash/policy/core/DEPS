@@ -36,7 +36,6 @@ include_rules = [
   "+chrome/browser/ash/policy/skyvault",
   "+chrome/browser/ash/policy/status_collector",
   "+chrome/browser/ash/policy/uploading",
-  "+chrome/browser/ash/policy/value_validation",
   "+chrome/browser/ash/printing",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/settings",
