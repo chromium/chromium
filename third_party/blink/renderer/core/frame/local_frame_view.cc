@@ -2858,12 +2858,9 @@ bool LocalFrameView::RunContainerQueryListSteps() {
   if (!RuntimeEnabledFeatures::ElementMatchContainerEnabled()) {
     return false;
   }
-  LocalDOMWindow* window = GetFrame().DomWindow();
-  if (!window) {
-    return false;
-  }
   if (ContainerQueryListController* controller =
-          ContainerQueryListController::FromIfExists(*window)) {
+          ContainerQueryListController::FromIfExists(
+              *GetFrame().GetDocument())) {
     return controller->NotifyChanges();
   }
   return false;

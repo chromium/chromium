@@ -16,17 +16,16 @@ namespace blink {
 class ContainerQueryList;
 class Document;
 class Element;
-class LocalDOMWindow;
 
 class CORE_EXPORT ContainerQueryListController final
     : public GarbageCollected<ContainerQueryListController>,
-      public Supplement<LocalDOMWindow> {
+      public Supplement<Document> {
  public:
   static const char kSupplementName[];
-  static ContainerQueryListController* From(LocalDOMWindow&);
-  static ContainerQueryListController* FromIfExists(LocalDOMWindow&);
+  static ContainerQueryListController* From(Document&);
+  static ContainerQueryListController* FromIfExists(Document&);
 
-  explicit ContainerQueryListController(LocalDOMWindow&);
+  explicit ContainerQueryListController(Document&);
 
   void AddContainerQueryList(Element&, ContainerQueryList&);
 

@@ -3527,11 +3527,8 @@ ContainerQueryList* Element::matchContainer(const String& query) {
       ContainerQueryParser::ParseContainerQuerySet(query, *context);
   auto* list = MakeGarbageCollected<ContainerQueryList>(
       GetDocument().GetExecutionContext(), container_queries, this);
-  if (auto* window =
-          DynamicTo<LocalDOMWindow>(GetDocument().GetExecutionContext())) {
-    ContainerQueryListController::From(*window)->AddContainerQueryList(*this,
-                                                                       *list);
-  }
+  ContainerQueryListController::From(GetDocument())
+      ->AddContainerQueryList(*this, *list);
   return list;
 }
 

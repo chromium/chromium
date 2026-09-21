@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
-#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -17,23 +16,22 @@ const char ContainerQueryListController::kSupplementName[] =
     "ContainerQueryListController";
 
 ContainerQueryListController* ContainerQueryListController::From(
-    LocalDOMWindow& window) {
-  auto* controller = FromIfExists(window);
+    Document& document) {
+  auto* controller = FromIfExists(document);
   if (!controller) {
-    controller = MakeGarbageCollected<ContainerQueryListController>(window);
-    Supplement<LocalDOMWindow>::ProvideTo(window, controller);
+    controller = MakeGarbageCollected<ContainerQueryListController>(document);
+    Supplement<Document>::ProvideTo(document, controller);
   }
   return controller;
 }
 
 ContainerQueryListController* ContainerQueryListController::FromIfExists(
-    LocalDOMWindow& window) {
-  return Supplement<LocalDOMWindow>::From<ContainerQueryListController>(window);
+    Document& document) {
+  return Supplement<Document>::From<ContainerQueryListController>(document);
 }
 
-ContainerQueryListController::ContainerQueryListController(
-    LocalDOMWindow& window)
-    : Supplement(window) {}
+ContainerQueryListController::ContainerQueryListController(Document& document)
+    : Supplement(document) {}
 
 void ContainerQueryListController::AddContainerQueryList(
     Element& element,
@@ -50,11 +48,7 @@ void ContainerQueryListController::InvalidateSelectorCache(Document& document) {
   if (!RuntimeEnabledFeatures::ElementMatchContainerEnabled()) {
     return;
   }
-  LocalDOMWindow* window = document.domWindow();
-  if (!window) {
-    return;
-  }
-  if (auto* controller = FromIfExists(*window)) {
+  if (auto* controller = FromIfExists(document)) {
     ++controller->selector_cache_generation_;
   }
 }
@@ -64,11 +58,7 @@ void ContainerQueryListController::InvalidateSelectorCacheFor(
   if (!RuntimeEnabledFeatures::ElementMatchContainerEnabled()) {
     return;
   }
-  LocalDOMWindow* window = element.GetDocument().domWindow();
-  if (!window) {
-    return;
-  }
-  auto* controller = FromIfExists(*window);
+  auto* controller = FromIfExists(element.GetDocument());
   if (!controller) {
     return;
   }
@@ -82,11 +72,6 @@ void ContainerQueryListController::InvalidateSelectorCacheFor(
 }
 
 bool ContainerQueryListController::NotifyChanges() {
-  Document* document = GetSupplementable()->document();
-  if (!document) {
-    return false;
-  }
-
   bool dispatched = false;
   HeapVector<Member<Element>> elements(elements_);
   for (Element* element : elements) {
@@ -108,7 +93,7 @@ bool ContainerQueryListController::NotifyChanges() {
 void ContainerQueryListController::Trace(Visitor* visitor) const {
   visitor->Trace(elements_);
   visitor->Trace(lists_by_element_);
-  Supplement<LocalDOMWindow>::Trace(visitor);
+  Supplement<Document>::Trace(visitor);
 }
 
 }  // namespace blink
