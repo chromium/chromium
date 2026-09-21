@@ -67,6 +67,7 @@ source_set("impl") {
     "//chrome/browser/ui/user_education",
     "//chrome/browser/ui/views:dotted_icon",
     "//chrome/browser/ui/views/frame",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/permissions/chip",
     "//chrome/browser/ui/views/tabs:base",
     "//chrome/browser/ui/views/tabs:tab",
@@ -105,6 +106,7 @@ source_set("browser_tests") {
   deps = [
     ":tab",
     "//chrome/browser/media/webrtc:webrtc_browser_tests_base",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/tabs:tab",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",

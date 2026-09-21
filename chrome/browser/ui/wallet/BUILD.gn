@@ -39,6 +39,7 @@ source_set("wallet") {
     deps += [
       "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui:singleton_tabs",
+      "//chrome/browser/ui/views/frame:browser_view_header",
     ]
   }
 

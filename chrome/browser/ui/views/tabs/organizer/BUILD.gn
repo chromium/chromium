@@ -94,6 +94,10 @@ source_set("impl") {
       "//extensions/common",
     ]
   }
+
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/views/frame:browser_view_header" ]
+  }
 }
 
 source_set("unit_test_support") {
@@ -183,5 +187,9 @@ source_set("interactive_ui_tests") {
       "//extensions/browser",
       "//extensions/common",
     ]
+  }
+
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/views/frame:browser_view_header" ]
   }
 }

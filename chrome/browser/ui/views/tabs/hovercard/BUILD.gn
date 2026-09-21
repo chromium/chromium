@@ -140,6 +140,10 @@ source_set("test_support") {
     "//ui/gfx:test_support",
     "//ui/views:test_support",
   ]
+
+  if (!is_android) {
+    deps = [ "//chrome/browser/ui/views/frame:browser_view_header" ]
+  }
 }
 
 source_set("browser_tests") {
@@ -157,6 +161,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/performance_controls",
     "//chrome/browser/ui/tabs:features",
     "//chrome/browser/ui/thumbnails",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/tabs:base",
     "//chrome/browser/ui/views/tabs/common:impl",
     "//chrome/common:constants",

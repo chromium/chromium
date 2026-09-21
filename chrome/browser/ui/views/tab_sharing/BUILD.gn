@@ -107,6 +107,7 @@ source_set("browser_tests") {
     "//chrome/browser/media/webrtc",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/views/frame",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/frame:contents_capture_border_view",
     "//chrome/common",
     "//chrome/test:test_support",

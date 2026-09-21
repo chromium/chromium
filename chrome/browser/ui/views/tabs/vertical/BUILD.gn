@@ -101,6 +101,10 @@ source_set("impl") {
     "//chrome/browser/ui/tabs/alert:tab_alert",
     "//chrome/browser/ui/views/tabs/common:impl",
   ]
+
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/views/frame:browser_view_header" ]
+  }
 }
 
 source_set("browser_tests") {
@@ -193,4 +197,8 @@ source_set("interactive_ui_tests") {
     "//ui/base:ozone_buildflags",
     "//ui/views",
   ]
+
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/views/frame:browser_view_header" ]
+  }
 }
