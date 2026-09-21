@@ -48,6 +48,7 @@
 #include "components/policy/core/common/policy_service_impl.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/pref_service_mock_factory.h"
 #include "components/sync_preferences/pref_service_syncable.h"
@@ -170,10 +171,6 @@ TestingProfile* BuildTestingProfile(
     }
   }
 
-  if (params.profile_is_supervised) {
-    profile_builder.SetIsSupervisedProfile();
-  }
-
   if (params.profile_is_guest) {
     profile_builder.SetGuestSession();
   }
@@ -218,8 +215,15 @@ TestingProfile* BuildTestingProfile(
   profile_builder.AddTestingFactories(std::move(params.testing_factories));
 
   auto user_name = base::UTF8ToUTF16(profile_builder.profile_name());
-  return testing_profile_manager.CreateTestingProfile(
+  TestingProfile* profile = testing_profile_manager.CreateTestingProfile(
       std::move(profile_builder), user_name, /*avatar_id=*/0);
+
+  if (params.profile_is_supervised) {
+    supervised_user::SupervisedUserTestEnvironment::EnableSupervisedAccount(
+        IdentityManagerFactory::GetForProfile(profile));
+  }
+
+  return profile;
 }
 
 }  // namespace
