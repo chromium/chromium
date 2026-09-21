@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
 #include "chrome/browser/ui/lens/lens_overlay_wait_for_paint_utils.h"
 #include "chrome/browser/ui/lens/lens_search_contextualization_controller.h"
@@ -1016,6 +1017,27 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksRoutingEnabledTest,
   controller->OpenLensOverlay(lens::LensOverlayInvocationSource::kAppMenu);
 
   EXPECT_FALSE(controller->should_route_to_contextual_tasks());
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksRoutingEnabledTest,
+                       UpdatePageContextDoesNotCrashWhenQueryControllerIsOff) {
+  WaitForPaint();
+
+  auto* controller = GetLensSearchController();
+  ASSERT_TRUE(controller);
+
+  controller->OpenLensOverlay(
+      lens::LensOverlayInvocationSource::kContextualTasksComposebox);
+
+  WaitForOverlayToOpen(controller);
+
+  EXPECT_TRUE(controller->should_route_to_contextual_tasks());
+  EXPECT_TRUE(controller->lens_overlay_query_controller()->IsOff());
+
+  base::RunLoop run_loop;
+  controller->lens_search_contextualization_controller()
+      ->TryUpdatePageContextualization(run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 class ContextualTasksRoutingIneligibleTest

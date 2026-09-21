@@ -420,6 +420,9 @@ void LensOverlayQueryController::EndQuery() {
 }
 
 void LensOverlayQueryController::MaybeRestartQueryFlow() {
+  if (IsOff()) {
+    return;
+  }
   if (query_controller_state_ == QueryControllerState::kClusterInfoExpired ||
       query_controller_state_ == QueryControllerState::kWaitingForPermissions) {
     PrepareAndFetchFullImageRequest();
@@ -465,8 +468,9 @@ void LensOverlayQueryController::SendUpdatedPageContent(
     std::optional<std::string> new_page_title,
     std::optional<uint32_t> pdf_current_page,
     const SkBitmap& screenshot) {
-  CHECK(query_controller_state_ != QueryControllerState::kOff)
-      << "SendUpdatedPageContent called when query controller is off";
+  if (IsOff()) {
+    return;
+  }
 
   if (underlying_page_content.has_value()) {
     underlying_page_contents_ = underlying_page_content.value();
@@ -501,8 +505,9 @@ void LensOverlayQueryController::SendUpdatedPageContent(
 
 void LensOverlayQueryController::SendPartialPageContentRequest(
     base::span<const std::u16string> partial_content) {
-  CHECK(query_controller_state_ != QueryControllerState::kOff)
-      << "SendPartialPageContentRequest called when query controller is off";
+  if (IsOff()) {
+    return;
+  }
   partial_content_ = partial_content;
 
   PrepareAndFetchPartialPageContentRequest();

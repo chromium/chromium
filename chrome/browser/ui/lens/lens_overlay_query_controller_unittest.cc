@@ -5355,4 +5355,28 @@ TEST_F(LensOverlayQueryControllerTest, SearchSessionIdNulloptSafe) {
   EXPECT_TRUE(query_controller.search_session_id().empty());
 }
 
+TEST_F(LensOverlayQueryControllerTest, MethodsNoOpWhenQueryControllerIsOff) {
+  TestLensOverlayQueryController query_controller(
+      base::NullCallback(), base::NullCallback(), base::NullCallback(),
+      base::NullCallback(), base::NullCallback(), fake_variations_client_.get(),
+      IdentityManagerFactory::GetForProfile(profile()), profile(),
+      lens::LensOverlayInvocationSource::kAppMenu,
+      /*use_dark_mode=*/false, GetGen204Controller());
+
+  EXPECT_TRUE(query_controller.IsOff());
+
+  // Calling these methods when the controller is off should safely no-op.
+  query_controller.MaybeRestartQueryFlow();
+  query_controller.SendUpdatedPageContent(
+      /*underlying_page_content=*/std::nullopt,
+      /*primary_content_type=*/std::nullopt, /*new_page_url=*/std::nullopt,
+      /*new_page_title=*/std::nullopt, /*pdf_current_page=*/std::nullopt,
+      CreateNonEmptyBitmap(100, 100));
+  std::vector<std::u16string> partial_content = {u"test content"};
+  query_controller.SendPartialPageContentRequest(partial_content);
+  query_controller.ResetPageContentData();
+
+  EXPECT_TRUE(query_controller.IsOff());
+}
+
 }  // namespace lens
