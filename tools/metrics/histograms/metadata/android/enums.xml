@@ -496,21 +496,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Auto dark mode message"/>
 </enum>
 
-<!-- LINT.IfChange(AndroidUidType) -->
-
-<enum name="AndroidUidType">
-  <int value="0" label="root"/>
-  <int value="1" label="system"/>
-  <int value="2" label="phone"/>
-  <int value="3" label="nfc"/>
-  <int value="4" label="bluetooth"/>
-  <int value="5" label="wifi"/>
-  <int value="6" label="shell"/>
-  <int value="7" label="Other non-app UID"/>
-</enum>
-
-<!-- LINT.ThenChange(//android_webview/glue/java/src/com/android/webview/chromium/WebViewChromiumFactoryProvider.java:UidType)-->
-
 <!-- LINT.IfChange(AndroidVerticalTabsDragDropResult) -->
 
 <enum name="AndroidVerticalTabsDragDropResult">
