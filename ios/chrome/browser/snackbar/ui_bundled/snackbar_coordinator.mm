@@ -20,11 +20,7 @@
 #import "ios/chrome/browser/snackbar/ui_bundled/ui/snackbar_view.h"
 #import "ios/chrome/browser/snackbar/ui_bundled/ui/snackbar_view_delegate.h"
 
-// TODO(crbug.com/512521102): Remove the GeminiActorSnackbarCommands protocol
-// when the agent prototype is cleaned up.
-@interface SnackbarCoordinator () <GeminiActorSnackbarCommands,
-                                   SnackbarCommands,
-                                   SnackbarViewDelegate>
+@interface SnackbarCoordinator () <SnackbarCommands, SnackbarViewDelegate>
 @end
 
 @implementation SnackbarCoordinator {
@@ -62,12 +58,6 @@
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   [dispatcher startDispatchingToTarget:self
                            forProtocol:@protocol(SnackbarCommands)];
-  // TODO(crbug.com/512521102): Remove when the agent prototype is cleaned up.
-  if (IsActorEnabled() && IsGeminiActorEnabled()) {
-    [dispatcher
-        startDispatchingToTarget:self
-                     forProtocol:@protocol(GeminiActorSnackbarCommands)];
-  }
 }
 
 - (void)stop {
@@ -178,20 +168,6 @@
   _snackbarView = nil;
 }
 
-#pragma mark - GeminiActorSnackbarCommands
-
-// TODO(crbug.com/512521102): Remove when the agent prototype is cleaned up.
-- (void)showGeminiActorSnackbarMessage:(SnackbarMessage*)message
-                additionalBottomOffset:(CGFloat)offset {
-  CHECK(IsActorEnabled() && IsGeminiActorEnabled());
-  CGFloat baseOffset =
-      [_delegate snackbarCoordinatorBottomOffsetForCurrentlyPresentedView:self
-                                                      forceBrowserToolbar:NO];
-  [self presentSnackbar:message
-       withBottomOffset:baseOffset + offset
-             hideFloaty:NO];
-}
-
 #pragma mark - SnackbarViewDelegate
 
 - (void)snackbarViewDidTapActionButton:(SnackbarView*)snackbarView {
@@ -220,25 +196,10 @@
 }
 
 // Dismisses any currently visible snackbar, then creates, configures and
-// presents a new `SnackbarView`, hiding the Gemini floaty by default.
+// presents a new `SnackbarView` with a custom bottom offset.
 - (void)presentSnackbar:(SnackbarMessage*)message
        withBottomOffset:(CGFloat)offset {
-  [self presentSnackbar:message withBottomOffset:offset hideFloaty:YES];
-}
-
-// Dismisses any currently visible snackbar, then creates, configures and
-// presents a new `SnackbarView` with a custom bottom offset.
-// If `hideFloaty` is YES, the Gemini floaty will be hidden while the snackbar
-// is presented. If NO, the floaty will remain visible.
-// TODO(crbug.com/512521102): The Gemini floaty capability is temporary for the
-// agent prototype and will be cleaned up.
-- (void)presentSnackbar:(SnackbarMessage*)message
-       withBottomOffset:(CGFloat)offset
-             hideFloaty:(BOOL)hideFloaty {
   CHECK(message);
-  // TODO(crbug.com/512521102): Temporary check. Keeping the floaty visible is
-  // strictly for the agent prototype and will be cleaned up.
-  CHECK(hideFloaty || (IsActorEnabled() && IsGeminiActorEnabled()));
   // If a snackbar is already showing, dismiss it before showing the new one.
   if (_snackbarView) {
     [self dismissAllSnackbars];
@@ -250,7 +211,7 @@
   _snackbarView.bottomOffset = offset;
 
   // Add the snackbar to the window and present it.
-  if (hideFloaty && IsPageActionMenuEnabled()) {
+  if (IsPageActionMenuEnabled()) {
     [_geminiHandler
         hideFloatyIfInvokedAnimated:NO
                          fromSource:gemini::FloatyUpdateSource::Snackbar];
