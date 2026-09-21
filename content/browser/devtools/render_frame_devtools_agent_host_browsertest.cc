@@ -6,15 +6,21 @@
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 
 #include <string_view>
+#include <utility>
 
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_agent_host_client.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/network_service_util.h"
 #include "content/public/browser/render_process_host.h"
@@ -26,11 +32,15 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/test_devtools_protocol_client.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
+#include "content/test/content_browser_test_utils_internal.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
+#include "ui/base/page_transition_types.h"
+#include "url/url_constants.h"
 
 namespace content {
 
@@ -58,6 +68,79 @@ class StubDevToolsAgentHostClient : public content::DevToolsAgentHostClient {
 };
 
 }  // namespace
+
+IN_PROC_BROWSER_TEST_F(RenderFrameDevToolsAgentHostBrowserTest,
+                       OlderCommitKeepsPendingNavigationTarget) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  Shell* new_shell =
+      Shell::CreateNewWindow(shell()->web_contents()->GetBrowserContext(),
+                             GURL(), nullptr, gfx::Size());
+  auto* web_contents = static_cast<WebContentsImpl*>(new_shell->web_contents());
+  FrameTreeNode* root = web_contents->GetPrimaryFrameTree().root();
+  RenderFrameHostImpl* frame_a = web_contents->GetPrimaryMainFrame();
+  scoped_refptr<DevToolsAgentHost> agent_host =
+      DevToolsAgentHost::GetOrCreateFor(web_contents);
+  auto* frame_agent =
+      static_cast<RenderFrameDevToolsAgentHost*>(agent_host.get());
+
+  // Hold the initial about:blank commit in the current frame while a newer
+  // navigation becomes ready to commit in a different frame.
+  CommitNavigationPauser initial_commit(frame_a);
+  NavigationController::LoadURLParams initial_params{GURL(url::kAboutBlankURL)};
+  initial_params.transition_type = ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
+  auto initial_navigation =
+      web_contents->GetController().LoadURLWithParams(initial_params);
+  initial_commit.WaitForCommitAndPause();
+  ASSERT_TRUE(initial_navigation);
+  ASSERT_TRUE(initial_navigation->IsWaitingToCommit());
+  ASSERT_EQ(frame_a, initial_navigation->GetRenderFrameHost());
+
+  TestDevToolsProtocolClient client;
+  client.AttachToWebContents(web_contents);
+  base::ScopedClosureRunner detach_client(
+      base::BindLambdaForTesting([&] { client.DetachProtocolClient(); }));
+  ASSERT_TRUE(agent_host->IsAttached());
+
+  const GURL destination =
+      embedded_test_server()->GetURL("next.test", "/title1.html");
+  TestNavigationManager newer_navigation(web_contents, destination);
+  new_shell->LoadURL(destination);
+  ASSERT_TRUE(newer_navigation.WaitForResponse());
+  RenderFrameHostImpl* frame_b =
+      root->render_manager()->speculative_frame_host();
+  ASSERT_TRUE(frame_b);
+  ASSERT_NE(frame_a, frame_b);
+
+  CommitNavigationPauser newer_commit(frame_b);
+  newer_navigation.ResumeNavigation();
+  newer_commit.WaitForCommitAndPause();
+  ASSERT_TRUE(newer_navigation.GetNavigationHandle()->IsWaitingToCommit());
+  ASSERT_EQ(frame_b, frame_agent->GetFrameHostForTesting());
+
+  initial_commit.ResumePausedCommit();
+  EXPECT_FALSE(initial_navigation);
+  EXPECT_EQ(GURL(url::kAboutBlankURL), web_contents->GetLastCommittedURL());
+  EXPECT_EQ(frame_a, web_contents->GetPrimaryMainFrame());
+  EXPECT_TRUE(newer_navigation.GetNavigationHandle()->IsWaitingToCommit());
+  EXPECT_EQ(frame_b, frame_agent->GetFrameHostForTesting());
+
+  newer_commit.ResumePausedCommit();
+  ASSERT_TRUE(newer_navigation.WaitForNavigationFinished());
+  ASSERT_TRUE(WaitForLoadStop(web_contents));
+  EXPECT_EQ(frame_b, web_contents->GetPrimaryMainFrame());
+  EXPECT_EQ(frame_b, frame_agent->GetFrameHostForTesting());
+  EXPECT_FALSE(web_contents->IsCrashed());
+
+  base::DictValue params;
+  params.Set("expression", "location.href");
+  params.Set("returnByValue", true);
+  const base::DictValue* result =
+      client.SendCommandSync("Runtime.evaluate", std::move(params));
+  ASSERT_TRUE(result);
+  const std::string* value = result->FindStringByDottedPath("result.value");
+  ASSERT_TRUE(value);
+  EXPECT_EQ(destination.spec(), *value);
+}
 
 // This test checks which RenderFrameHostImpl the RenderFrameDevToolsAgentHost
 // is tracking while a cross-site navigation is canceled after having reached

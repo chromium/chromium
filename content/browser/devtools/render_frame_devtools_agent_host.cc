@@ -4,6 +4,7 @@
 
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 
+#include <algorithm>
 #include <set>
 #include <string>
 #include <tuple>
@@ -579,7 +580,16 @@ void RenderFrameDevToolsAgentHost::DidFinishNavigation(
     // anything to update here. Eagerly updating the tracked RFH is harmful,
     // since the same-document navigation may interleave with cross-document
     // navigations, e.g. if triggered from an unload handler.
-    if (!request->IsSameDocument()) {
+    // Another navigation may still be waiting to commit in the selected RFH.
+    // Finishing this navigation must not switch away from that RFH.
+    const bool should_update_frame_host =
+        !request->IsSameDocument() &&
+        std::ranges::none_of(
+            navigation_requests_, [this](const auto& pending_request) {
+              return pending_request->IsWaitingToCommit() &&
+                     pending_request->GetRenderFrameHost() == frame_host_.get();
+            });
+    if (should_update_frame_host) {
       // UpdateFrameHost may destruct |this|.
       protect = this;
       UpdateFrameHost(frame_tree_node_->current_frame_host());
