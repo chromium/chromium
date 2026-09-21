@@ -11,10 +11,6 @@
 #include "components/browser_actuator/public/transport_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace google::protobuf {
-class MessageLite;
-}  // namespace google::protobuf
-
 namespace browser_actuator {
 
 class MockTransportHandler : public TransportHandler {
@@ -26,7 +22,7 @@ class MockTransportHandler : public TransportHandler {
 
   MOCK_METHOD(void,
               OnMessage,
-              (const google::protobuf::MessageLite& message),
+              (PayloadType payload_type, std::string_view serialized_payload),
               (override));
 };
 
@@ -35,7 +31,8 @@ class CallbackTransportHandler : public TransportHandler {
   explicit CallbackTransportHandler(base::OnceClosure on_message_cb);
   ~CallbackTransportHandler() override;
 
-  void OnMessage(const google::protobuf::MessageLite& message) override;
+  void OnMessage(PayloadType payload_type,
+                 std::string_view serialized_payload) override;
 
  private:
   base::OnceClosure on_message_cb_;

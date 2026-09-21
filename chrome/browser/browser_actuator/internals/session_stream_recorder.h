@@ -32,10 +32,6 @@ namespace base {
 class DictValue;
 }  // namespace base
 
-namespace google::protobuf {
-class MessageLite;
-}  // namespace google::protobuf
-
 namespace browser_actuator {
 
 class TransportSession;
@@ -91,7 +87,8 @@ class SessionStreamRecorder : public TransportHandler {
   SessionStreamRecorder& operator=(const SessionStreamRecorder&) = delete;
 
   // TransportHandler implementation:
-  void OnMessage(const google::protobuf::MessageLite& message) override;
+  void OnMessage(PayloadType payload_type,
+                 std::string_view serialized_payload) override;
 
   // Direct recording methods:
   void RecordDownstreamMessage(ActuatorDownstreamMessage message);

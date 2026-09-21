@@ -180,7 +180,8 @@ TEST_F(GlicExperimentalTriggeringTransportHandlerTest,
         return {};
       });
 
-  handler.OnMessage(triggering);
+  handler.OnMessage(PayloadType::kExperimentalTriggering,
+                    triggering.SerializeAsString());
 
   histogram_tester.ExpectUniqueSample(
       "Glic.ExperimentalTriggering.IncomingMessageResult."
@@ -241,7 +242,8 @@ TEST_F(GlicExperimentalTriggeringTransportHandlerTest,
         return {};
       });
 
-  handler.OnMessage(triggering);
+  handler.OnMessage(PayloadType::kExperimentalTriggering,
+                    triggering.SerializeAsString());
 
   histogram_tester.ExpectUniqueSample(
       "Glic.ExperimentalTriggering.IncomingMessageResult."
@@ -274,7 +276,8 @@ TEST_F(GlicExperimentalTriggeringTransportHandlerTest, HandlesMissingPayload) {
         return {};
       });
 
-  handler.OnMessage(triggering);
+  handler.OnMessage(PayloadType::kExperimentalTriggering,
+                    triggering.SerializeAsString());
 
   histogram_tester.ExpectUniqueSample(
       "Glic.ExperimentalTriggering.IncomingMessageResult."

@@ -4,6 +4,7 @@
 
 #include "components/browser_actuator/test_support/mock_transport_handler.h"
 
+#include <string_view>
 #include <utility>
 
 namespace browser_actuator {
@@ -18,8 +19,8 @@ CallbackTransportHandler::CallbackTransportHandler(
 
 CallbackTransportHandler::~CallbackTransportHandler() = default;
 
-void CallbackTransportHandler::OnMessage(
-    const google::protobuf::MessageLite& message) {
+void CallbackTransportHandler::OnMessage(PayloadType payload_type,
+                                         std::string_view serialized_payload) {
   if (on_message_cb_) {
     base::OnceClosure cb = std::move(on_message_cb_);
     // The callback may synchronously delete `this`.

@@ -201,11 +201,11 @@ TEST(SessionStreamRecorderTest, ObserverDefaultMethodsDoNothing) {
 TEST(SessionStreamRecorderTest, RecordsIncomingMessagesViaOnMessage) {
   SessionStreamRecorder recorder("session_123");
 
-  // 1. Unpacked ControlCommand arriving via OnMessage is recorded as a
-  // downstream message with typed payload.
+  // A control payload is recorded as a downstream message carrying the payload
+  // type it was dispatched under, with its bytes stored verbatim.
   ControlCommand command;
   command.mutable_close_session();
-  recorder.OnMessage(command);
+  recorder.OnMessage(PayloadType::kControl, command.SerializeAsString());
 
   EXPECT_EQ(recorder.metadata().total_downstream_messages, 1u);
   EXPECT_EQ(recorder.metadata().total_upstream_messages, 0u);
@@ -224,49 +224,28 @@ TEST(SessionStreamRecorderTest, RecordsIncomingMessagesViaOnMessage) {
       downstream.typed_payloads(0).proto_payload().value()));
   EXPECT_TRUE(parsed_command.has_close_session());
 
-  // 2. Direct ActuatorDownstreamMessage arriving via OnMessage is also
-  // recorded.
-  ActuatorDownstreamMessage full_downstream;
-  full_downstream.set_session_id("session_123");
-  full_downstream.set_sequence_number(42);
-  recorder.OnMessage(full_downstream);
+  // An experimental triggering payload is distinguished by its payload type
+  // rather than by inspecting the bytes.
+  recorder.OnMessage(PayloadType::kExperimentalTriggering, "payload-bytes");
 
-  EXPECT_EQ(recorder.metadata().total_downstream_messages, 2u);
-  EXPECT_EQ(recorder.metadata().total_upstream_messages, 0u);
   ASSERT_EQ(recorder.entries().size(), 2u);
-  ASSERT_TRUE(std::holds_alternative<ActuatorDownstreamMessage>(
-      recorder.entries()[1].message));
-  EXPECT_EQ(std::get<ActuatorDownstreamMessage>(recorder.entries()[1].message)
-                .sequence_number(),
-            42);
+  const auto& triggering_entry =
+      std::get<ActuatorDownstreamMessage>(recorder.entries()[1].message);
+  ASSERT_EQ(triggering_entry.typed_payloads_size(), 1);
+  EXPECT_EQ(triggering_entry.typed_payloads(0).payload_type(),
+            ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING);
+  EXPECT_EQ(triggering_entry.typed_payloads(0).proto_payload().value(),
+            "payload-bytes");
 
-  // 3. Direct ActuatorUpstreamMessage arriving via OnMessage is also
-  // recorded.
-  ActuatorUpstreamMessage full_upstream;
-  full_upstream.set_session_id("session_123");
-  full_upstream.set_client_sequence_number(99);
-  recorder.OnMessage(full_upstream);
-
-  EXPECT_EQ(recorder.metadata().total_downstream_messages, 2u);
-  EXPECT_EQ(recorder.metadata().total_upstream_messages, 1u);
-  ASSERT_EQ(recorder.entries().size(), 3u);
-  ASSERT_TRUE(std::holds_alternative<ActuatorUpstreamMessage>(
-      recorder.entries()[2].message));
-  EXPECT_EQ(std::get<ActuatorUpstreamMessage>(recorder.entries()[2].message)
-                .client_sequence_number(),
-            99);
-
-  // 4. Unrecognized payload arriving via OnMessage is recorded with
-  // ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_UNSPECIFIED.
-  WatchSessionsRequest unrecognized_message;
-  recorder.OnMessage(unrecognized_message);
+  // An unspecified payload type is recorded as such. The recorder never
+  // discards a payload: an entry the internals page cannot classify is still
+  // more useful than a gap in the log.
+  recorder.OnMessage(PayloadType::kUnspecified, "");
 
   EXPECT_EQ(recorder.metadata().total_downstream_messages, 3u);
-  EXPECT_EQ(recorder.metadata().total_upstream_messages, 1u);
-  ASSERT_EQ(recorder.entries().size(), 4u);
-  ASSERT_TRUE(std::holds_alternative<ActuatorDownstreamMessage>(
-      recorder.entries()[3].message));
-  EXPECT_EQ(std::get<ActuatorDownstreamMessage>(recorder.entries()[3].message)
+  EXPECT_EQ(recorder.metadata().total_upstream_messages, 0u);
+  ASSERT_EQ(recorder.entries().size(), 3u);
+  EXPECT_EQ(std::get<ActuatorDownstreamMessage>(recorder.entries()[2].message)
                 .typed_payloads(0)
                 .payload_type(),
             ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_UNSPECIFIED);

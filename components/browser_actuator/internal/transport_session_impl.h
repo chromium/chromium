@@ -67,12 +67,15 @@ class TransportSessionImpl : public TransportSession {
     return client_sequence_number_;
   }
 
-  // Routes a downstream message payload of a given `payload_type` to all active
-  // handlers registered to receive it. Handlers are lazily instantiated from
-  // the registry on the first message receipt for their payload_type.
+  // Routes the serialized bytes of a downstream payload of a given
+  // `payload_type` to all active handlers registered to receive it. Handlers
+  // are lazily instantiated from the registry on the first message receipt for
+  // their payload_type, and each parses `serialized_payload` into its own
+  // concrete message type. See TransportHandler for why parsing belongs to the
+  // handler rather than to this layer.
   base::expected<void, ProcessPayloadError> ProcessPayload(
       PayloadType payload_type,
-      const google::protobuf::MessageLite& message);
+      std::string_view serialized_payload);
 
   // Processes a downstream message from the server by checking sequence numbers
   // and routing payloads to registered handlers.

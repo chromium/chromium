@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_GLIC_EXPERIMENTAL_TRIGGERING_GLIC_EXPERIMENTAL_TRIGGERING_TRANSPORT_HANDLER_H_
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -42,7 +43,8 @@ class GlicExperimentalTriggeringTransportHandler
       const GlicExperimentalTriggeringTransportHandler&) = delete;
 
   // browser_actuator::TransportHandler implementation:
-  void OnMessage(const google::protobuf::MessageLite& message) override;
+  void OnMessage(browser_actuator::PayloadType payload_type,
+                 std::string_view serialized_payload) override;
 
  private:
   void SendResponse(ExperimentalTriggeringResponse response);

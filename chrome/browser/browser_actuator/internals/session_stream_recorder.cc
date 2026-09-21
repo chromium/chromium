@@ -24,10 +24,10 @@
 #include "components/browser_actuator/internal/proto/transport_messages.pb.h"
 #include "components/browser_actuator/internal/proto/transport_messages.to_value.h"
 #include "components/browser_actuator/public/common.h"
+#include "components/browser_actuator/public/payload_type_mapping.h"
 #include "components/browser_actuator/public/transport_session.h"
 #include "components/sharing_message/proto/actuator_downstream_message.pb.h"
 #include "components/sharing_message/proto/actuator_downstream_message.to_value.h"
-#include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
 namespace browser_actuator {
 
@@ -83,49 +83,20 @@ SessionStreamRecorder::~SessionStreamRecorder() {
   }
 }
 
-void SessionStreamRecorder::OnMessage(
-    const google::protobuf::MessageLite& message) {
+void SessionStreamRecorder::OnMessage(PayloadType payload_type,
+                                      std::string_view serialized_payload) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (const auto* downstream =
-          google::protobuf::DynamicCastMessage<ActuatorDownstreamMessage>(
-              &message)) {
-    RecordDownstreamMessage(*downstream);
-    return;
-  }
-
-  if (const auto* upstream =
-          google::protobuf::DynamicCastMessage<ActuatorUpstreamMessage>(
-              &message)) {
-    RecordUpstreamMessage(*upstream);
-    return;
-  }
-
-  // Any other payload received via TransportHandler::OnMessage is an unpacked
-  // downstream payload (such as ControlCommand). Record as a downstream
-  // message with its typed payload.
+  // Rebuild the single-payload message that the entry list records.
   ActuatorDownstreamMessage downstream;
   downstream.set_session_id(session_id_);
   auto* typed_payload = downstream.add_typed_payloads();
-
-  std::string_view type_name = message.GetTypeName();
-  if (type_name.find("ControlCommand") != std::string_view::npos) {
-    typed_payload->set_payload_type(
-        ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
-  } else if (type_name.find("ExperimentalTriggering") !=
-             std::string_view::npos) {
-    // TODO(b/560176806): Currently, ExperimentalTriggering payloads only arrive
-    // via the FCM SharingMessage push path (BrowserActuatorMessageHandler).
-    // Update this handling once TransportSessionImpl::ProcessDownstreamMessage
-    // routes EXPERIMENTAL_TRIGGERING stream payloads to registered handlers.
-    typed_payload->set_payload_type(
-        ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING);
-  } else {
-    typed_payload->set_payload_type(
-        ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_UNSPECIFIED);
-  }
+  typed_payload->set_payload_type(
+      payload_type == PayloadType::kUnspecified
+          ? ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_UNSPECIFIED
+          : ToDownstreamProtoPayloadType(payload_type));
   typed_payload->mutable_proto_payload()->set_value(
-      message.SerializeAsString());
+      std::string(serialized_payload));
   RecordDownstreamMessage(std::move(downstream));
 }
 

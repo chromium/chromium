@@ -5,6 +5,8 @@
 #include "components/browser_actuator/internal/transport_session_impl.h"
 
 #include <memory>
+#include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -20,6 +22,8 @@
 
 namespace browser_actuator {
 namespace {
+
+constexpr std::string_view kTestPayload = "test-payload";
 
 TEST(TransportSessionImplTest, GetSessionId) {
   MockTransportChannel channel;
@@ -115,19 +119,16 @@ TEST(TransportSessionImplTest, LazyInstantiationAndRouting) {
   EXPECT_CALL(factory, OnNewSession(&session))
       .WillOnce(testing::Return(std::move(handler)));
   EXPECT_CALL(*handler_ptr, OnMessage)
-      .WillRepeatedly([&message_count](const google::protobuf::MessageLite&) {
-        message_count++;
-      });
-
-  ControlCommand command;
+      .WillRepeatedly(
+          [&message_count](PayloadType, std::string_view) { message_count++; });
 
   // First dispatch triggers factory.OnNewSession
-  EXPECT_TRUE(
-      session.ProcessPayload(PayloadType::kUnspecified, command).has_value());
+  EXPECT_TRUE(session.ProcessPayload(PayloadType::kUnspecified, kTestPayload)
+                  .has_value());
 
   // Second dispatch should reuse the handler (OnNewSession not called again)
-  EXPECT_TRUE(
-      session.ProcessPayload(PayloadType::kUnspecified, command).has_value());
+  EXPECT_TRUE(session.ProcessPayload(PayloadType::kUnspecified, kTestPayload)
+                  .has_value());
 
   EXPECT_EQ(message_count, 2);
 }
@@ -164,11 +165,10 @@ TEST(TransportSessionImplTest, HandlerDestroysSessionDuringDispatch) {
   // the session is destroyed.
   EXPECT_CALL(*handler_ptr2, OnMessage).Times(0);
 
-  ControlCommand command;
-
   // This should not crash and should return success.
-  EXPECT_TRUE(session_ptr->ProcessPayload(PayloadType::kUnspecified, command)
-                  .has_value());
+  EXPECT_TRUE(
+      session_ptr->ProcessPayload(PayloadType::kUnspecified, kTestPayload)
+          .has_value());
 }
 
 TEST(TransportSessionImplTest, ProcessPayloadAfterChannelDestruction) {
@@ -176,8 +176,7 @@ TEST(TransportSessionImplTest, ProcessPayloadAfterChannelDestruction) {
   TransportSessionImpl session("test_session", channel->GetWeakPtr());
 
   channel.reset();
-  ControlCommand command;
-  auto result = session.ProcessPayload(PayloadType::kUnspecified, command);
+  auto result = session.ProcessPayload(PayloadType::kUnspecified, kTestPayload);
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error(),
             TransportSessionImpl::ProcessPayloadError::kChannelDisconnected);
@@ -204,8 +203,8 @@ TEST(TransportSessionImplTest, FactoryDestroysSessionDuringOnNewSession) {
         return nullptr;
       });
 
-  ControlCommand command;
-  auto result = session_ptr->ProcessPayload(PayloadType::kUnspecified, command);
+  auto result =
+      session_ptr->ProcessPayload(PayloadType::kUnspecified, kTestPayload);
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error(),
             TransportSessionImpl::ProcessPayloadError::kSessionNotFound);
@@ -236,13 +235,13 @@ TEST(TransportSessionImplTest, MultipleHandlersForSamePayloadType) {
   EXPECT_CALL(factory2, OnNewSession(&session))
       .WillOnce(testing::Return(std::move(handler2)));
 
-  ControlCommand command;
+  EXPECT_CALL(*handler_ptr1,
+              OnMessage(PayloadType::kUnspecified, kTestPayload));
+  EXPECT_CALL(*handler_ptr2,
+              OnMessage(PayloadType::kUnspecified, kTestPayload));
 
-  EXPECT_CALL(*handler_ptr1, OnMessage(testing::Ref(command)));
-  EXPECT_CALL(*handler_ptr2, OnMessage(testing::Ref(command)));
-
-  EXPECT_TRUE(
-      session.ProcessPayload(PayloadType::kUnspecified, command).has_value());
+  EXPECT_TRUE(session.ProcessPayload(PayloadType::kUnspecified, kTestPayload)
+                  .has_value());
 }
 
 TEST(TransportSessionImplTest, NoFactoriesRegistered) {
@@ -254,8 +253,7 @@ TEST(TransportSessionImplTest, NoFactoriesRegistered) {
 
   TransportSessionImpl session("test_session", channel.GetWeakPtr());
 
-  ControlCommand command;
-  auto result = session.ProcessPayload(PayloadType::kUnspecified, command);
+  auto result = session.ProcessPayload(PayloadType::kUnspecified, kTestPayload);
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error(),
             TransportSessionImpl::ProcessPayloadError::kNoFactoriesRegistered);
@@ -276,8 +274,7 @@ TEST(TransportSessionImplTest, HandlerInstantiationFailed) {
   EXPECT_CALL(factory, OnNewSession(&session))
       .WillOnce(testing::Return(nullptr));
 
-  ControlCommand command;
-  auto result = session.ProcessPayload(PayloadType::kUnspecified, command);
+  auto result = session.ProcessPayload(PayloadType::kUnspecified, kTestPayload);
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(
       result.error(),
@@ -306,9 +303,7 @@ TEST(TransportSessionImplTest, ProcessDownstreamMessageRoutesControlCommand) {
   EXPECT_CALL(factory, OnNewSession(&session))
       .WillOnce(testing::Return(std::move(handler)));
   EXPECT_CALL(*handler_ptr,
-              OnMessage(testing::Property(
-                  &google::protobuf::MessageLite::SerializeAsString,
-                  serialized_command)));
+              OnMessage(PayloadType::kControl, serialized_command));
 
   ActuatorDownstreamMessage message;
   message.set_session_id("test_session");
@@ -365,7 +360,8 @@ TEST(TransportSessionImplTest, OnMessage) {
   ControlCommand command;
   command.mutable_close_session();
 
-  EXPECT_CALL(*handler_ptr, OnMessage(testing::Ref(command)));
+  EXPECT_CALL(*handler_ptr,
+              OnMessage(PayloadType::kControl, command.SerializeAsString()));
 
   session.OnMessage(PayloadType::kControl, command);
 }

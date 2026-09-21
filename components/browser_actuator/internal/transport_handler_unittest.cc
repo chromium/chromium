@@ -40,7 +40,8 @@ class TestTransportHandler : public TransportHandler {
       : TransportHandler(session) {}
   ~TestTransportHandler() override = default;
 
-  void OnMessage(const google::protobuf::MessageLite& message) override {}
+  void OnMessage(PayloadType payload_type,
+                 std::string_view serialized_payload) override {}
 
   using TransportHandler::SendUpstreamMessage;
 };

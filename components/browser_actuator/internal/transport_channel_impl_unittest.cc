@@ -100,18 +100,17 @@ class FakeMessageStreamClient : public MessageStreamClient {
 class FakeTransportHandler : public TransportHandler {
  public:
   explicit FakeTransportHandler(
-      base::RepeatingCallback<void(const google::protobuf::MessageLite&)>
-          on_message_cb)
+      base::RepeatingCallback<void(std::string_view)> on_message_cb)
       : on_message_cb_(std::move(on_message_cb)) {}
   ~FakeTransportHandler() override = default;
 
-  void OnMessage(const google::protobuf::MessageLite& message) override {
-    on_message_cb_.Run(message);
+  void OnMessage(PayloadType payload_type,
+                 std::string_view serialized_payload) override {
+    on_message_cb_.Run(serialized_payload);
   }
 
  private:
-  base::RepeatingCallback<void(const google::protobuf::MessageLite&)>
-      on_message_cb_;
+  base::RepeatingCallback<void(std::string_view)> on_message_cb_;
 };
 
 class FakeTransportHandlerFactory : public TransportHandlerFactory {
@@ -326,9 +325,7 @@ TEST_F(TransportChannelImplTest, RoutesPayloadTypeToHandler) {
           [&](TransportSession*) -> std::unique_ptr<TransportHandler> {
             return std::make_unique<FakeTransportHandler>(
                 base::BindLambdaForTesting(
-                    [&](const google::protobuf::MessageLite&) {
-                      message_handled = true;
-                    }));
+                    [&](std::string_view) { message_handled = true; }));
           }));
   channel_->GetHandlerFactoryRegistry()->RegisterFactory(&factory);
 

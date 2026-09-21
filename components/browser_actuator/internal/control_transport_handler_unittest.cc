@@ -51,7 +51,7 @@ TEST(ControlTransportHandlerTest, OnMessageCloseChannel) {
   ControlCommand command;
   command.mutable_close_channel();
 
-  handler.OnMessage(command);
+  handler.OnMessage(PayloadType::kControl, command.SerializeAsString());
 
   EXPECT_TRUE(close_channel_called);
   EXPECT_FALSE(close_session_called);
@@ -72,7 +72,7 @@ TEST(ControlTransportHandlerTest, OnMessageCloseSession) {
   ControlCommand command;
   command.mutable_close_session();
 
-  handler.OnMessage(command);
+  handler.OnMessage(PayloadType::kControl, command.SerializeAsString());
 
   EXPECT_FALSE(close_channel_called);
   EXPECT_EQ(closed_session_id, "session_1");
@@ -91,7 +91,7 @@ TEST(ControlTransportHandlerTest, OnMessageCloseSessionWithNullSessionNoops) {
   ControlCommand command;
   command.mutable_close_session();
 
-  handler.OnMessage(command);
+  handler.OnMessage(PayloadType::kControl, command.SerializeAsString());
 
   EXPECT_FALSE(close_channel_called);
   EXPECT_FALSE(close_session_called);
@@ -110,13 +110,16 @@ TEST(ControlTransportHandlerTest, OnMessageUnsetCommand) {
 
   ControlCommand command;  // empty, command_case() is COMMAND_NOT_SET
 
-  handler.OnMessage(command);
+  handler.OnMessage(PayloadType::kControl, command.SerializeAsString());
 
   EXPECT_FALSE(close_channel_called);
   EXPECT_FALSE(close_session_called);
 }
 
-TEST(ControlTransportHandlerTest, UnexpectedMessageTypeIsIgnored) {
+// The handler receives raw bytes, so a payload that is not a ControlCommand
+// surfaces as a parse failure rather than as a type mismatch. It must be
+// dropped without invoking any callback.
+TEST(ControlTransportHandlerTest, MalformedPayloadIsIgnored) {
   bool close_channel_called = false;
   bool close_session_called = false;
 
@@ -127,9 +130,8 @@ TEST(ControlTransportHandlerTest, UnexpectedMessageTypeIsIgnored) {
       base::BindLambdaForTesting(
           [&](std::string_view) { close_session_called = true; }));
 
-  ActuatorDownstreamMessage unexpected_message;
-
-  handler.OnMessage(unexpected_message);
+  // Field number 13 with wire type 6, which is not a valid wire type.
+  handler.OnMessage(PayloadType::kControl, "not a valid proto");
 
   EXPECT_FALSE(close_channel_called);
   EXPECT_FALSE(close_session_called);
@@ -172,7 +174,7 @@ TEST(ControlTransportHandlerTest, FactoryOnNewSession) {
   ControlCommand command;
   command.mutable_close_session();
 
-  handler->OnMessage(command);
+  handler->OnMessage(PayloadType::kControl, command.SerializeAsString());
 
   EXPECT_EQ(closed_session_id, "session_abc");
 }

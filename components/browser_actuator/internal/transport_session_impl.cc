@@ -48,16 +48,26 @@ TransportSessionImpl::SendUpstreamMessage(
 void TransportSessionImpl::OnMessage(
     PayloadType payload_type,
     const google::protobuf::MessageLite& message) {
-  std::ignore = ProcessPayload(payload_type, message);
+  // This entry point exists for the FCM wake-up path, which receives an
+  // already-parsed proto because the sharing stack parses the enclosing
+  // SharingMessage before this layer ever sees it. Handlers consume bytes, so
+  // serialize here rather than give every handler a second, parsed overload to
+  // implement. The round-trip is confined to wake-ups, which arrive at most
+  // once per session.
+  // TODO(crbug.com/538161953): Once the FCM flow delivers an
+  // ActuatorDownstreamMessage through ProcessDownstreamMessage, this method
+  // and its round-trip can be deleted along with TransportSession::OnMessage.
+  const std::string serialized_payload = message.SerializeAsString();
+  std::ignore = ProcessPayload(payload_type, serialized_payload);
 }
 
 base::expected<void, TransportSessionImpl::ProcessPayloadError>
-TransportSessionImpl::ProcessPayload(
-    PayloadType payload_type,
-    const google::protobuf::MessageLite& message) {
-  return DispatchToHandlers(
-      payload_type,
-      [&message](TransportHandler* handler) { handler->OnMessage(message); });
+TransportSessionImpl::ProcessPayload(PayloadType payload_type,
+                                     std::string_view serialized_payload) {
+  return DispatchToHandlers(payload_type, [payload_type, serialized_payload](
+                                              TransportHandler* handler) {
+    handler->OnMessage(payload_type, serialized_payload);
+  });
 }
 
 base::expected<void, TransportSessionImpl::ProcessPayloadError>
@@ -167,18 +177,15 @@ void TransportSessionImpl::ProcessDownstreamMessage(
     // Map ActuatorDownstreamPayloadType to public PayloadType
     switch (typed_payload.payload_type()) {
       case ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND: {
-        ControlCommand command;
-        if (!command.ParseFromString(typed_payload.proto_payload().value())) {
-          DLOG(WARNING) << "Failed to parse ControlCommand payload";
-          continue;
-        }
-        auto result = ProcessPayload(PayloadType::kControl, command);
+        auto result = ProcessPayload(PayloadType::kControl,
+                                     typed_payload.proto_payload().value());
         if (!result.has_value()) {
           DLOG(WARNING) << "Failed to process payload "
                         << "error: " << static_cast<int>(result.error());
         }
         break;
       }
+
       case ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_UNSPECIFIED:
       default:
         // Ignore unspecified or unknown payload types

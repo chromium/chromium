@@ -4,6 +4,7 @@
 
 #include "components/browser_actuator/internal/control_transport_handler.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/logging.h"
@@ -25,18 +26,16 @@ ControlTransportHandler::~ControlTransportHandler() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void ControlTransportHandler::OnMessage(
-    const google::protobuf::MessageLite& message) {
+void ControlTransportHandler::OnMessage(PayloadType payload_type,
+                                        std::string_view serialized_payload) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (message.GetTypeName() !=
-      ControlCommand::default_instance().GetTypeName()) {
-    DLOG(WARNING) << "Received unexpected message type: "
-                  << message.GetTypeName();
+  ControlCommand command;
+  if (!command.ParseFromString(serialized_payload)) {
+    DLOG(WARNING) << "Failed to parse ControlCommand payload";
     return;
   }
-  const auto* command = static_cast<const ControlCommand*>(&message);
 
-  switch (command->command_case()) {
+  switch (command.command_case()) {
     case ControlCommand::kCloseChannel: {
       if (close_channel_cb_) {
         close_channel_cb_.Run();

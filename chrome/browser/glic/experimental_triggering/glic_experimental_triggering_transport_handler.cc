@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -42,13 +43,13 @@ GlicExperimentalTriggeringTransportHandler::
     ~GlicExperimentalTriggeringTransportHandler() = default;
 
 void GlicExperimentalTriggeringTransportHandler::OnMessage(
-    const google::protobuf::MessageLite& message) {
-  if (message.GetTypeName() !=
-      GlicExperimentalTriggering::default_instance().GetTypeName()) {
+    browser_actuator::PayloadType payload_type,
+    std::string_view serialized_payload) {
+  GlicExperimentalTriggering triggering;
+  if (!triggering.ParseFromString(serialized_payload)) {
+    DLOG(WARNING) << "Failed to parse GlicExperimentalTriggering payload";
     return;
   }
-  const auto& triggering =
-      static_cast<const GlicExperimentalTriggering&>(message);
 
   ScopedIncomingMessageResultLogger result_logger(
       ScopedIncomingMessageResultLogger::Channel::kBrowserActuatorTransport);
