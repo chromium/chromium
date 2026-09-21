@@ -35,9 +35,9 @@ class GIN_EXPORT Arguments {
 
   template<typename T>
   bool GetData(T* out) {
-    v8::Local<v8::Value> data = is_for_property_ ? info_for_property_->Data()
-                                                 : info_for_function_->Data();
-    return ConvertFromV8(isolate_, data, out);
+    v8::Local<v8::Data> data = is_for_property_ ? info_for_property_->DataV2()
+                                                : info_for_function_->DataV2();
+    return ConvertFromV8(isolate_, data.As<v8::Value>(), out);
   }
 
   template<typename T>
