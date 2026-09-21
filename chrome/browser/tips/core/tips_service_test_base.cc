@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
@@ -164,6 +165,35 @@ void TipsServiceTestBase::TearDown() {
 
 void TipsServiceTestBase::RecordUserAction(const std::string& action_name) {
   base::RecordAction(base::UserMetricsAction(action_name.c_str()));
+  {
+    base::RunLoop run_loop;
+    task_environment_.GetMainThreadTaskRunner()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+  segmentation_platform::UkmDatabase* ukm_db =
+      test_utils_->ukm_database_client()->GetUkmDataManager()->GetUkmDatabase();
+  ASSERT_TRUE(ukm_db);
+  ukm_db->CommitTransactionForTesting();
+  {
+    base::RunLoop run_loop;
+    ukm_db->RunReadOnlyQueries(
+        {}, base::BindOnce(
+                [](base::OnceClosure quit,
+                   std::optional<
+                       segmentation_platform::processing::IndexedTensors>) {
+                  std::move(quit).Run();
+                },
+                run_loop.QuitClosure()));
+    run_loop.Run();
+  }
+}
+
+void TipsServiceTestBase::RecordHistogramEnum(
+    const std::string& histogram_name,
+    base::HistogramBase::Sample32 sample,
+    base::HistogramBase::Sample32 enum_size) {
+  base::UmaHistogramExactLinear(histogram_name, sample, enum_size);
   {
     base::RunLoop run_loop;
     task_environment_.GetMainThreadTaskRunner()->PostTask(

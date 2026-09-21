@@ -131,6 +131,8 @@ void TipsAgentAndroid::ScheduleNewNotification(
     return;
   }
 
+  // TODO(crbug.com/559296862): Deprecate the original flow for scheduling tips
+  // in tips_agent_android.cc after self service is launched.
   segmentation_platform::SegmentationPlatformService*
       segmentation_platform_service = segmentation_platform::
           SegmentationPlatformServiceFactory::GetForProfile(profile);

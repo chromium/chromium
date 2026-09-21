@@ -78,7 +78,21 @@ class TipsServiceTestBase : public ::testing::Test {
   void SetUp() override;
   void TearDown() override;
 
+  // Default exclusive upper bound (number of enum buckets) for linear histogram
+  // recordings in tests.
+  static constexpr base::HistogramBase::Sample32 kDefaultEnumSize = 50;
+
+  // Emits a user action using production `base::RecordAction` and commits it
+  // to the segmentation platform's database.
   void RecordUserAction(const std::string& action_name);
+
+  // Emits an enumerated/linear histogram sample using production UMA APIs and
+  // commits it to the segmentation platform's database. `enum_size` is the
+  // exclusive maximum enum value (i.e. the total number of enum entries).
+  void RecordHistogramEnum(
+      const std::string& histogram_name,
+      base::HistogramBase::Sample32 sample,
+      base::HistogramBase::Sample32 enum_size = kDefaultEnumSize);
   std::optional<TipsNotificationsFeatureType> DetermineBestTipSync();
 
   void RunDetermineBestTipTest(

@@ -8,6 +8,8 @@ source_set("features") {
   sources = [
     "enhanced_safe_browsing_tip.cc",
     "enhanced_safe_browsing_tip.h",
+    "quick_delete_tip.cc",
+    "quick_delete_tip.h",
   ]
 
   public_deps = [
@@ -17,6 +19,7 @@ source_set("features") {
 
   deps = [
     "//base",
+    "//components/browsing_data/core",
     "//components/prefs",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/segmentation_platform/public",
@@ -25,7 +28,10 @@ source_set("features") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "enhanced_safe_browsing_tip_unittest.cc" ]
+  sources = [
+    "enhanced_safe_browsing_tip_unittest.cc",
+    "quick_delete_tip_unittest.cc",
+  ]
 
   deps = [
     ":features",
@@ -34,6 +40,7 @@ source_set("unit_tests") {
     "//chrome/browser/notifications/scheduler/public",
     "//chrome/browser/tips/core",
     "//chrome/browser/tips/core:test_support",
+    "//components/browsing_data/core",
     "//components/prefs:test_support",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/segmentation_platform/public",
