@@ -8659,6 +8659,21 @@
             ]
         }
     ],
+    "EnterpriseSignalsDisclaimerForExistingProfiles": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidDeviceSignalsDisclaimer"
+                    ]
+                }
+            ]
+        }
+    ],
     "EraseLegacyQueueOnDataLoss": [
         {
             "platforms": [
