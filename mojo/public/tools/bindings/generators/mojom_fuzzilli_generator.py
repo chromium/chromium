@@ -315,12 +315,17 @@ class Generator(generator.Generator):
       return f"js{self._FormatUniqueName(kind)}"
 
     if mojom.IsArrayKind(kind):
-      return f"js{self._FormatUniqueName(kind.kind)}Array"
+      return (
+        f"js{self._FormatUniqueName(kind.kind, primitive_with_suffix=True)}"
+        "Array"
+      )
 
     if mojom.IsMapKind(kind):
       return (
-        f"js{self._FormatUniqueName(kind.key_kind)}_"
-        f"{self._FormatUniqueName(kind.value_kind)}Map"
+        "js"
+        f"{self._FormatUniqueName(kind.key_kind, primitive_with_suffix=True)}_"
+        f"{self._FormatUniqueName(kind.value_kind, primitive_with_suffix=True)}"
+        "Map"
       )
 
     if mojom.IsInterfaceKind(kind):

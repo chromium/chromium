@@ -40,11 +40,11 @@ extension ObjectGroup {
         properties: ["$": .jsGoldenPrimaryRemoteWrapper],
         methods: [
             "passMap": [
-                .plain(.jsString_GoldenEntryMap),
+                .plain(.jsStringElement_GoldenEntryMap),
                 .plain(.string),
             ] => .jsPromise(resolvingTo: .jsGoldenPrimary_PassMap_ResponseParams),
             "passNestedMap": [
-                .plain(.jsInt32_String_GoldenEntryMapMap),
+                .plain(.jsInt32Element_String_GoldenEntryMapMap),
                 .plain(.integer),
             ] => .jsPromise(resolvingTo: .jsGoldenPrimary_PassNestedMap_ResponseParams),
             "getMap": [
@@ -117,7 +117,7 @@ extension ObjectGroup {
         name: "golden.Primary_PassNestedMap_ResponseParams",
         instanceType: .jsGoldenPrimary_PassNestedMap_ResponseParams,
         properties: [
-            "result": .jsString_GoldenEntryMap,
+            "result": .jsStringElement_GoldenEntryMap,
         ],
         methods: [:]
     )
@@ -125,7 +125,7 @@ extension ObjectGroup {
         name: "golden.Primary_GetMap_ResponseParams",
         instanceType: .jsGoldenPrimary_GetMap_ResponseParams,
         properties: [
-            "result": .jsFloat_BoolMap,
+            "result": .jsFloatElement_BoolElementMap,
         ],
         methods: [:]
     )
@@ -135,17 +135,17 @@ extension ObjectGroup {
 /// Maps
 ///
 extension ILType {
-    fileprivate static let jsString_GoldenEntryMap: ILType =
+    fileprivate static let jsStringElement_GoldenEntryMap: ILType =
         .createJsMapType(
             ofKeyType: .jsStringElement,
             ofValueType: .jsGoldenEntry
         )
-    fileprivate static let jsInt32_String_GoldenEntryMapMap: ILType =
+    fileprivate static let jsInt32Element_String_GoldenEntryMapMap: ILType =
         .createJsMapType(
             ofKeyType: .jsInt32Element,
-            ofValueType: .jsString_GoldenEntryMap
+            ofValueType: .jsStringElement_GoldenEntryMap
         )
-    fileprivate static let jsFloat_BoolMap: ILType =
+    fileprivate static let jsFloatElement_BoolElementMap: ILType =
         .createJsMapType(
             ofKeyType: .jsFloatElement,
             ofValueType: .jsBoolElement
@@ -166,7 +166,7 @@ extension ILType {
 private let MojoString_GoldenEntryMapGenerator = CodeGenerator(
     "MojoString_GoldenEntryMapGenerator",
     inputs: .one,
-    produces: [.jsString_GoldenEntryMap]
+    produces: [.jsStringElement_GoldenEntryMap]
 ) { b, _, _ in
     let key = b.findOrGenerateType(.jsStringElement)
     let val = b.findOrGenerateType(.jsGoldenEntry)
@@ -183,10 +183,10 @@ private let MojoString_GoldenEntryMapGenerator = CodeGenerator(
 private let MojoInt32_String_GoldenEntryMapMapGenerator = CodeGenerator(
     "MojoInt32_String_GoldenEntryMapMapGenerator",
     inputs: .one,
-    produces: [.jsInt32_String_GoldenEntryMapMap]
+    produces: [.jsInt32Element_String_GoldenEntryMapMap]
 ) { b, _, _ in
     let key = b.findOrGenerateType(.jsInt32Element)
-    let val = b.findOrGenerateType(.jsString_GoldenEntryMap)
+    let val = b.findOrGenerateType(.jsStringElement_GoldenEntryMap)
     var keys: [Variable] = [key]
     var values: [Variable] = [val]
     b.createMap(
@@ -195,12 +195,12 @@ private let MojoInt32_String_GoldenEntryMapMapGenerator = CodeGenerator(
         keyGroupName:
             ILType.jsInt32Element.group,
         valueGroupName:
-            ILType.jsString_GoldenEntryMap.group)
+            ILType.jsStringElement_GoldenEntryMap.group)
 }
 private let MojoFloat_BoolMapGenerator = CodeGenerator(
     "MojoFloat_BoolMapGenerator",
     inputs: .one,
-    produces: [.jsFloat_BoolMap]
+    produces: [.jsFloatElement_BoolElementMap]
 ) { b, _, _ in
     let key = b.findOrGenerateType(.jsFloatElement)
     let val = b.findOrGenerateType(.jsBoolElement)

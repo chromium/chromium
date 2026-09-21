@@ -68,22 +68,22 @@ extension ObjectGroup {
                 .either(.jsGoldenSimpleStruct, .undefined),
             ] => .undefined,
             "getArrayValue": [
-                .plain(.jsFloatArray),
+                .plain(.jsFloatElementArray),
                 .plain(.integer),
             ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetArrayValue_ResponseParams),
             "getMapValue": [
-                .plain(.jsString_Uint64Map),
+                .plain(.jsStringElement_Uint64ElementMap),
                 .plain(.string),
             ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetMapValue_ResponseParams),
             "sendObserver": [
                 .either(.jsGoldenObserverRemote, .undefined),
             ] => .undefined,
             "syncGetArrayValue": [
-                .plain(.jsFloatArray),
+                .plain(.jsFloatElementArray),
                 .plain(.integer),
             ] => .jsGoldenPrimary_SyncGetArrayValue_ResponseParams,
             "syncGetMapValue": [
-                .plain(.jsString_Uint64Map),
+                .plain(.jsStringElement_Uint64ElementMap),
                 .plain(.string),
             ] => .jsPromise(resolvingTo: .jsGoldenPrimary_SyncGetMapValue_ResponseParams),
         ]
@@ -268,7 +268,7 @@ extension ObjectGroup {
 /// Arrays
 ///
 extension ILType {
-    fileprivate static let jsFloatArray: ILType =
+    fileprivate static let jsFloatElementArray: ILType =
         .createJsArrayType(ofElementType: .jsFloatElement)
 }
 
@@ -286,7 +286,7 @@ extension ILType {
 private let MojoFloatArrayGenerator = CodeGenerator(
     "MojoFloatArrayGenerator",
     inputs: .one,
-    produces: [.jsFloatArray]
+    produces: [.jsFloatElementArray]
 ) { b, _ in
     let elem = b.findOrGenerateType(.float)
     var elements: [Variable] = [elem]
@@ -312,7 +312,7 @@ private let MojoFloatArrayGenerator = CodeGenerator(
 /// Maps
 ///
 extension ILType {
-    fileprivate static let jsString_Uint64Map: ILType =
+    fileprivate static let jsStringElement_Uint64ElementMap: ILType =
         .createJsMapType(
             ofKeyType: .jsStringElement,
             ofValueType: .jsUint64Element
@@ -333,7 +333,7 @@ extension ILType {
 private let MojoString_Uint64MapGenerator = CodeGenerator(
     "MojoString_Uint64MapGenerator",
     inputs: .one,
-    produces: [.jsString_Uint64Map]
+    produces: [.jsStringElement_Uint64ElementMap]
 ) { b, _, _ in
     let key = b.findOrGenerateType(.jsStringElement)
     let val = b.findOrGenerateType(.jsUint64Element)

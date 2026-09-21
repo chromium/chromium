@@ -157,7 +157,7 @@ extension ObjectGroup {
 /// Arrays
 ///
 extension ILType {
-    fileprivate static let jsInt64Array: ILType =
+    fileprivate static let jsInt64ElementArray: ILType =
         .createJsArrayType(ofElementType: .jsInt64Element)
 }
 
@@ -175,7 +175,7 @@ extension ILType {
 private let MojoInt64ArrayGenerator = CodeGenerator(
     "MojoInt64ArrayGenerator",
     inputs: .one,
-    produces: [.jsInt64Array]
+    produces: [.jsInt64ElementArray]
 ) { b, _ in
     let elem = b.findOrGenerateType(.bigint)
     var elements: [Variable] = [elem]
@@ -197,7 +197,7 @@ extension OptionsBag {
     fileprivate static let goldenSimpleUnion = OptionsBag(
         name: "golden.SimpleUnion",
         properties: [
-            "arr": .jsInt64Array,
+            "arr": .jsInt64ElementArray,
             "val": .integer,
             "flag": .boolean,
         ],
