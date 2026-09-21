@@ -237,7 +237,9 @@ def entry_point_method(sb,
           sb(f'static_assert(false, "{msg}")')
 
     with sb.statement():
-      if not return_type.is_void():
+      if return_type.is_safe_pointer():
+        sb(f'{return_type.to_backend_cpp_type()} return_value = ')
+      elif not return_type.is_void():
         sb('auto return_value = ')
       sb('dependent_context(0)')
 

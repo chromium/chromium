@@ -81,7 +81,7 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleTypeUse() {}
         static_assert(false, "JNI_SampleTypeUse_MakeOwned() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleTypeUse_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
-    auto return_value = dependent_context(0);                                                      \
+    ::jni_zero::JniUniquePtr<::my::cpp::Define> return_value = dependent_context(0);               \
     auto _deleter = return_value.deleter_address();                                                \
     return ::jni_zero::internal::CreateJavaJniUniquePtr(env, reinterpret_cast<jlong>(return_value.release()), _deleter).ReleaseLocal(); \
   }                                                                                                \
@@ -104,7 +104,7 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleTypeUse() {}
         static_assert(false, "JNI_SampleTypeUse_MakeRaw() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleTypeUse_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
-    auto return_value = dependent_context(0);                                                      \
+    ::jni_zero::JniRawPtr<::my::cpp::Define> return_value = dependent_context(0);                  \
     return ::jni_zero::internal::CreateJavaJniRawPtr(env, reinterpret_cast<jlong>(return_value.get())).ReleaseLocal(); \
   }                                                                                                \
                                                                                                    \
