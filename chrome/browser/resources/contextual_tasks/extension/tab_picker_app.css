@@ -1,0 +1,178 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=chrome://resources/cr_elements/mwb_shared_vars.css.js
+ * #scheme=chrome
+ * #include=cr-icons-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+#shareTabsTrigger {
+  --iron-icon-height: 16px;
+  --iron-icon-width: 16px;
+  align-items: center;
+  background: transparent;
+  border: none;
+  box-sizing: border-box;
+  color: var(--cr-primary-text-color, #1f1f1f);
+  cursor: pointer;
+  display: flex;
+  font-family: var(--cr-composebox-context-menu-font-family, inherit);
+  font-size: 13px;
+  font-weight: 400;
+  gap: 8px;
+  height: 100%;
+  justify-content: flex-start;
+  min-height: 32px;
+  padding: 6px 14px;
+  text-align: left;
+  width: 100%;
+}
+
+#shareTabsTrigger:hover {
+  background-color: var(--color-context-menu-hover-background,
+      var(--cr-hover-background-color, rgba(0, 0, 0, 0.04)));
+}
+
+#shareTabsTrigger:focus {
+  background-color: var(--color-context-menu-hover-background,
+      var(--cr-hover-background-color, rgba(0, 0, 0, 0.04)));
+  outline: none;
+}
+
+#shareTabsTrigger:focus-visible {
+  outline: 2px solid var(--cr-focus-outline-color);
+  outline-offset: -2px;
+}
+
+#shareTabsTrigger[disabled] {
+  color: var(--color-composebox-context-entrypoint-text-disabled);
+  cursor: default;
+}
+
+#shareTabsTrigger[disabled]:hover {
+  background-color: transparent;
+}
+
+composebox-favicon-group {
+  --composebox-favicon-border-color: var(--cr-menu-background-color,
+      var(--color-composebox-background,
+          #fff));
+  margin-inline-end: 10px;
+  margin-inline-start: auto;
+}
+
+.share-tabs-arrow {
+  --iron-icon-height: 16px;
+  --iron-icon-width: 16px;
+  flex-shrink: 0;
+}
+
+.tab-title {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#tabMenu {
+  --cr-menu-background-color: var(--color-composebox-background,
+      var(--search-background-color, #fff));
+  --cr-menu-border-radius: 16px;
+  --cr-menu-shadow: var(--cr-elevation-3);
+  --cr-primary-text-color: var(--color-composebox-file-chip-text, #1f1f1f);
+  --cr-hover-background-color:
+      var(--color-composebox-context-entrypoint-hover-background,
+          rgba(0, 0, 0, 0.04));
+}
+
+#tabMenu::part(dialog) {
+  border-radius: 16px;
+  box-sizing: border-box;
+  max-height: var(--share-tabs-flyout-max-height, 344px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 8px 0;
+  width: 320px;
+}
+
+#tabMenu .dropdown-item {
+  --iron-icon-height: 16px;
+  --iron-icon-width: 16px;
+  align-items: center;
+  background: transparent;
+  border: none;
+  box-sizing: border-box;
+  color: var(--cr-primary-text-color);
+  cursor: pointer;
+  display: flex;
+  font-family: var(--cr-composebox-context-menu-font-family, inherit);
+  font-size: 13px;
+  font-weight: 400;
+  gap: 8px;
+  height: 32px;
+  justify-content: flex-start;
+  max-width: none;
+  padding: 6px 14px;
+  text-align: left;
+  width: 100%;
+}
+
+#tabMenu .dropdown-item:hover,
+#tabMenu .dropdown-item:focus {
+  background-color: var(--color-context-menu-hover-background,
+      var(--cr-hover-background-color));
+  outline: none;
+}
+
+#tabMenu .dropdown-item:focus-visible {
+  outline: 2px solid var(--cr-focus-outline-color);
+  outline-offset: -2px;
+}
+
+.tab-title-group {
+  align-items: center;
+  display: flex;
+  flex: 1 1 auto;
+  gap: 4px;
+  min-width: 0;
+}
+
+.tab-title-group .tab-title {
+  min-width: 0;
+}
+
+.recent-tabs-suffix {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  font-family: var(--cr-composebox-context-menu-font-family, inherit);
+  font-size: 12px;
+  font-weight: 400;
+  height: 20px;
+  justify-content: flex-end;
+  line-height: var(--cr-composebox-context-menu-line-height, 18px);
+  white-space: nowrap;
+  width: 72px;
+}
+
+.recent-tabs-suffix[disabled] {
+  color: var(--color-composebox-context-entrypoint-text-disabled);
+}
+
+.share-tabs-check {
+  --iron-icon-height: 16px;
+  --iron-icon-width: 16px;
+  flex-shrink: 0;
+  margin-inline-start: auto;
+}

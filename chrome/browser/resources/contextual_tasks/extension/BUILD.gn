@@ -138,6 +138,32 @@ generate_grd("build_post_message_handler_grdp") {
   ]
 }
 
+bundle_js("bundle_tab_picker") {
+  host = "chrome-extension://glbjnfimcajjenihimblfaponejbkoph"
+  input = rebase_path("$target_gen_dir/tsc", root_build_dir)
+  js_module_in_files = [ "tab_picker.js" ]
+  out_folder = "$target_gen_dir/tab_picker_bundled"
+  excludes = BUNDLE_JS_EXCLUDES
+  deps = [ ":build_ts" ]
+  external_paths =
+      [ "chrome://contextual-tasks/|" +
+        rebase_path(
+            "$root_gen_dir/chrome/browser/resources/contextual_tasks/tsc",
+            root_build_dir) ]
+}
+
+generate_grd("build_tab_picker_grdp") {
+  grd_prefix = "contextual_tasks_extension"
+  out_grd = "$target_gen_dir/tab_picker_resources.grdp"
+  resource_path_prefix = "contextual_tasks_extension"
+  input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
+  input_files = [ "tab_picker_bundled/tab_picker.rollup.js" ]
+  resource_path_rewrites = [
+    "tab_picker_bundled/tab_picker.rollup.js|tab_picker.js",
+  ]
+  deps = [ ":bundle_tab_picker" ]
+}
+
 build_webui("build") {
   grd_prefix = "contextual_tasks_extension"
   grd_resource_path_prefix = "contextual_tasks_extension"
@@ -150,15 +176,18 @@ build_webui("build") {
     "favicons.html",
     "lens_button.html",
     "manifest.json",
+    "tab_picker.html",
   ]
 
   extra_grdp_deps = [
     ":build_background_grdp",
     ":build_post_message_handler_grdp",
+    ":build_tab_picker_grdp",
   ]
   extra_grdp_files = [
     "$target_gen_dir/background_resources.grdp",
     "$target_gen_dir/post_message_handler_resources.grdp",
+    "$target_gen_dir/tab_picker_resources.grdp",
   ]
 
   ts_files = [
@@ -166,11 +195,16 @@ build_webui("build") {
     "favicons_app.ts",
     "lens_button_app.html.ts",
     "lens_button_app.ts",
+    "tab_picker.ts",
+    "tab_picker_app.html.ts",
+    "tab_picker_app.ts",
+    "tab_picker_browser_proxy.ts",
   ]
 
   css_files = [
     "favicons_app.css",
     "lens_button_app.css",
+    "tab_picker_app.css",
   ]
 
   ts_deps = [
@@ -185,7 +219,6 @@ build_webui("build") {
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
-
   mojo_files_deps = [ ":rewrite_mojo_imports" ]
   mojo_files = [
     "$target_gen_dir/mojo/contextual_tasks.mojom-webui.ts",
