@@ -24,6 +24,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -301,5 +302,38 @@ public class FirstRunFlowSequencerTest {
         assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_HISTORY_SYNC_PAGE));
         assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
         assertEquals(2, bundle.size());
+    }
+
+    @Test
+    @Feature({"FirstRun"})
+    public void testFirstRunIsNotNecessaryInRetailDemoModeOnNonDesktop() {
+        DeviceInfo.setIsRetailDemoModeForTesting(true);
+        DeviceInfo.setIsDesktopForTesting(false);
+
+        assertFalse(
+                FirstRunFlowSequencer.checkIfFirstRunIsNecessary(
+                        /* preferLightweightFre= */ false, /* isCct= */ false));
+    }
+
+    @Test
+    @Feature({"FirstRun"})
+    public void testFirstRunIsNecessaryInRetailDemoModeOnDesktop() {
+        DeviceInfo.setIsRetailDemoModeForTesting(true);
+        DeviceInfo.setIsDesktopForTesting(true);
+
+        assertTrue(
+                FirstRunFlowSequencer.checkIfFirstRunIsNecessary(
+                        /* preferLightweightFre= */ false, /* isCct= */ false));
+    }
+
+    @Test
+    @Feature({"FirstRun"})
+    public void testFirstRunIsNecessaryOutsideOfRetailDemoMode() {
+        DeviceInfo.setIsRetailDemoModeForTesting(false);
+        DeviceInfo.setIsDesktopForTesting(false);
+
+        assertTrue(
+                FirstRunFlowSequencer.checkIfFirstRunIsNecessary(
+                        /* preferLightweightFre= */ false, /* isCct= */ false));
     }
 }

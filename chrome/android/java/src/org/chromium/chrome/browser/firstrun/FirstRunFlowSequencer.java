@@ -236,14 +236,18 @@ public abstract class FirstRunFlowSequencer {
 
     /**
      * Checks if the First Run Experience needs to be launched.
+     *
      * @param preferLightweightFre Whether to prefer the Lightweight First Run Experience.
      * @param isCct Whether this check is being made in the context of a CCT.
      * @return Whether the First Run Experience needs to be launched.
      */
     public static boolean checkIfFirstRunIsNecessary(boolean preferLightweightFre, boolean isCct) {
         // If FRE is disabled (e.g. in tests), proceed directly to the intent handling.
+        // Retail demo mode suppresses the FRE, except on desktop devices where the signed-in
+        // experience needs to be showcased. Account visibility controls whether sign-in is
+        // actually available on those devices.
         if (CommandLine.getInstance().hasSwitch(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
-                || DeviceInfo.isRetailDemoMode()
+                || (DeviceInfo.isRetailDemoMode() && !DeviceInfo.isDesktop())
                 || ApiCompatibilityUtils.isRunningInUserTestHarness()) {
             return false;
         }
