@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.page_info;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE;
@@ -28,6 +27,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
 import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
 import static org.chromium.components.content_settings.PrefNames.IN_CONTEXT_COOKIE_CONTROLS_OPENED;
 import static org.chromium.components.permissions.PermissionUtil.getGeolocationType;
@@ -772,8 +772,7 @@ public class PageInfoViewTest {
                                 .findViewById(R.id.page_info_mark_as_safe_button)
                                 .performClick());
         histogramWatcher.pollInstrumentationThreadUntilSatisfied();
-        CriteriaHelper.pollInstrumentationThread(
-                () -> onView(withId(R.id.page_info_mark_as_safe_button)).check(doesNotExist()));
+        waitForNoView(withId(R.id.page_info_mark_as_safe_button));
     }
 
     /** Tests dismissing suspicious site warning without explicit action. */
