@@ -4507,6 +4507,19 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
+<histogram name="Extensions.SettingsOverridden.DseExtensionStackState"
+    enum="SearchOverrideStackState" expires_after="2027-03-14">
+  <owner>koretadaniel@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    The state of the stack of enabled DSE-overriding extensions below the
+    controlling extension (ordered by precedence). Recorded at most once per
+    regular profile per browser session on Windows and Mac when a browser window
+    is initialized with an extension controlling the DSE (regardless of whether
+    the settings overridden dialog is shown).
+  </summary>
+</histogram>
+
 <histogram
     name="Extensions.SettingsOverridden.GenericNtpOverriddenDialogResult"
     enum="SettingsOverriddenDialogResult" expires_after="2026-11-15">
@@ -4543,6 +4556,64 @@ This is emitted for two scenarios when a worker may be unregistered:
   <summary>
     Records whether any search parameters are missing when populating the values
     for the Explicit Choice dialog.
+  </summary>
+</histogram>
+
+<histogram
+    name="Extensions.SettingsOverridden.SearchOverriddenDialogResult.{SearchOverrideStackState}"
+    enum="SettingsOverriddenDialogResult" expires_after="2027-03-14">
+  <owner>koretadaniel@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    The action taken on the search settings overridden dialog when
+    {SearchOverrideStackState}. Recorded on Windows and Mac each time the dialog
+    is answered or dismissed.
+  </summary>
+  <token key="SearchOverrideStackState">
+    <variant name="AcknowledgedExtensionNext"
+        summary="the extension next in precedence was acknowledged"/>
+    <variant name="MustRemainEnabledExtensionNext"
+        summary="the extension next in precedence was never acknowledged but
+                 cannot be disabled"/>
+    <variant name="SingleOverride"
+        summary="the controlling extension is the only one overriding search"/>
+    <variant name="UnacknowledgedChainOverAcknowledgedExtension"
+        summary="unacknowledged extensions sit between the controlling one
+                 and an acknowledged extension"/>
+    <variant name="UnacknowledgedChainOverMustRemainEnabledExtension"
+        summary="unacknowledged extensions sit between the controlling one
+                 and an extension that cannot be disabled"/>
+    <variant name="UnacknowledgedChainOverNonExtensionDefault"
+        summary="unacknowledged extensions sit between the controlling one
+                 and the non-extension default"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Extensions.SettingsOverridden.SearchOverriddenDialogStackState"
+    enum="SearchOverrideStackState" expires_after="2027-03-14">
+  <owner>koretadaniel@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    The state of the stack of enabled DSE-overriding extensions below the
+    controlling extension (ordered by precedence). Recorded on Windows and Mac
+    the first time the search settings overridden dialog is shown for a given
+    controlling extension in a browser session.
+  </summary>
+</histogram>
+
+<histogram
+    name="Extensions.SettingsOverridden.SearchOverriddenDialogUnacknowledgedChainLength"
+    units="extensions" expires_after="2027-03-14">
+  <owner>koretadaniel@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The number of enabled, unacknowledged DSE-overriding extensions sitting
+    between the controlling extension (excluded) and the first acknowledged or
+    force-installed extension (or the non-extension default). Recorded on
+    Windows and Mac the first time the search settings overridden dialog is
+    shown for a given controlling extension in a browser session.
   </summary>
 </histogram>
 

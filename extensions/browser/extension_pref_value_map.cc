@@ -4,8 +4,12 @@
 
 #include "extensions/browser/extension_pref_value_map.h"
 
+#include <algorithm>
+#include <tuple>
 #include <utility>
+#include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/memory/ptr_util.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -400,6 +404,33 @@ std::string ExtensionPrefValueMap::GetExtensionControllingPref(
     return std::string();
   }
   return winner->first;
+}
+
+extensions::ExtensionIdList
+ExtensionPrefValueMap::GetExtensionsSettingPrefByPrecedence(
+    const std::string& pref_key) const {
+  // Candidates as GetEffectivePrefValueController() picks them for a regular
+  // profile.
+  std::vector<ExtensionEntryMap::const_iterator> candidates;
+  for (auto i = entries_.cbegin(); i != entries_.cend(); ++i) {
+    const ExtensionEntry& entry = *i->second;
+    if (!entry.enabled) {
+      continue;
+    }
+    const base::Value* value = nullptr;
+    if (entry.regular_profile_preferences.GetValue(pref_key, &value) ||
+        entry.regular_only_profile_preferences.GetValue(pref_key, &value)) {
+      candidates.push_back(i);
+    }
+  }
+  // Later install wins; GetEffectivePrefValueController() breaks ties toward
+  // the later entry in `entries_`, i.e. the greater ID.
+  std::ranges::sort(candidates, [](const auto& a, const auto& b) {
+    return std::tie(a->second->install_time, a->first) >
+           std::tie(b->second->install_time, b->first);
+  });
+  return base::ToVector(candidates,
+                        [](const auto& candidate) { return candidate->first; });
 }
 
 void ExtensionPrefValueMap::NotifyInitializationCompleted() {

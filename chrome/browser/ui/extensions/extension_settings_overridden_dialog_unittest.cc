@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/extensions/search_override_stack.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_pref_names.h"
 #include "extensions/browser/extension_prefs.h"
@@ -25,6 +26,14 @@ using DialogResult = SettingsOverriddenDialogController::DialogResult;
 
 constexpr char kTestAcknowledgedPreference[] = "TestPreference";
 constexpr char kTestDialogResultHistogramName[] = "TestHistogramName";
+constexpr char kStackStateHistogramName[] =
+    "Extensions.SettingsOverridden.SearchOverriddenDialogStackState";
+constexpr char kChainLengthHistogramName[] =
+    "Extensions.SettingsOverridden."
+    "SearchOverriddenDialogUnacknowledgedChainLength";
+constexpr char kDialogResultForChainOverDefaultHistogramName[] =
+    "Extensions.SettingsOverridden.SearchOverriddenDialogResult."
+    "UnacknowledgedChainOverNonExtensionDefault";
 
 ExtensionSettingsOverriddenDialog::Params CreateTestDialogParams(
     const extensions::ExtensionId& controlling_id) {
@@ -375,4 +384,75 @@ TEST_F(ExtensionSettingsOverriddenDialogUnitTest,
       CreateTestDialogParams(extension->id()), *profile());
 
   EXPECT_TRUE(controller.ShouldShow());
+}
+
+TEST_F(ExtensionSettingsOverriddenDialogUnitTest,
+       RecordsSearchOverrideStackOncePerExtensionWhenShown) {
+  base::HistogramTester histogram_tester;
+  const extensions::Extension* extension = AddExtension();
+
+  // A search dialog whose "previous choice" is an extension the user never
+  // acknowledged, re-shown on every search until they choose.
+  auto create_params = [&]() {
+    ExtensionSettingsOverriddenDialog::Params params =
+        CreateTestDialogParams(extension->id());
+    params.unlimited_shows = true;
+    params.search_override_stack.emplace();
+    params.search_override_stack->state = extensions::SearchOverrideStackState::
+        kUnacknowledgedChainOverNonExtensionDefault;
+    params.search_override_stack->unacknowledged_chain_length = 2;
+    return params;
+  };
+
+  {
+    ExtensionSettingsOverriddenDialog controller(create_params(), *profile());
+    EXPECT_TRUE(controller.ShouldShow());
+    controller.OnDialogWillBeShown();
+    controller.HandleDialogResult(DialogResult::kDialogDismissed);
+  }
+
+  histogram_tester.ExpectUniqueSample(
+      kStackStateHistogramName,
+      extensions::SearchOverrideStackState::
+          kUnacknowledgedChainOverNonExtensionDefault,
+      1);
+  histogram_tester.ExpectUniqueSample(kChainLengthHistogramName, 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      kDialogResultForChainOverDefaultHistogramName,
+      DialogResult::kDialogDismissed, 1);
+
+  // The stack is recorded once; the result every time.
+  {
+    ExtensionSettingsOverriddenDialog controller(create_params(), *profile());
+    EXPECT_TRUE(controller.ShouldShow());
+    controller.OnDialogWillBeShown();
+    controller.HandleDialogResult(DialogResult::kKeepNewSettings);
+  }
+
+  histogram_tester.ExpectTotalCount(kStackStateHistogramName, 1);
+  histogram_tester.ExpectTotalCount(kChainLengthHistogramName, 1);
+  histogram_tester.ExpectBucketCount(
+      kDialogResultForChainOverDefaultHistogramName,
+      DialogResult::kKeepNewSettings, 1);
+  histogram_tester.ExpectTotalCount(
+      kDialogResultForChainOverDefaultHistogramName, 2);
+}
+
+TEST_F(ExtensionSettingsOverriddenDialogUnitTest,
+       DoesNotRecordSearchOverrideStackWithoutOne) {
+  base::HistogramTester histogram_tester;
+  const extensions::Extension* extension = AddExtension();
+
+  ExtensionSettingsOverriddenDialog controller(
+      CreateTestDialogParams(extension->id()), *profile());
+  EXPECT_TRUE(controller.ShouldShow());
+  controller.OnDialogWillBeShown();
+  controller.HandleDialogResult(DialogResult::kKeepNewSettings);
+
+  histogram_tester.ExpectTotalCount(kStackStateHistogramName, 0);
+  histogram_tester.ExpectTotalCount(kChainLengthHistogramName, 0);
+  EXPECT_TRUE(histogram_tester
+                  .GetTotalCountsForPrefix("Extensions.SettingsOverridden."
+                                           "SearchOverriddenDialogResult.")
+                  .empty());
 }

@@ -3666,6 +3666,21 @@ Called by update_extension_permission.py.-->
   <int value="4" label="SET_AUTH_CREDENTIALS"/>
 </enum>
 
+<!-- LINT.IfChange(SearchOverrideStackState) -->
+
+<enum name="SearchOverrideStackState">
+  <int value="0"
+      label="Single override (previous choice is the non-extension default)"/>
+  <int value="1" label="Acknowledged extension is next"/>
+  <int value="2" label="Unacknowledged chain over an acknowledged extension"/>
+  <int value="3" label="Unacknowledged chain over the non-extension default"/>
+  <int value="4" label="Extension that cannot be disabled is next"/>
+  <int value="5"
+      label="Unacknowledged chain over an extension that cannot be disabled"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/extensions/search_override_stack.h:SearchOverrideStackState) -->
+
 <enum name="ServiceWorkerExternalRequestResult">
   <int value="0" label="Ok"/>
   <int value="1" label="Bad request ID"/>

@@ -25,6 +25,7 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/extensions/controlled_home_dialog_controller.h"
+#include "chrome/browser/ui/extensions/search_override_stack.h"
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/common/chrome_features.h"
@@ -586,6 +587,12 @@ void GetSearchOverriddenParamsThenRun(
 
   SecondarySearchInfo secondary_search = GetSecondarySearchInfo(profile);
 
+  // Extension preferences live on the original profile, so an incognito
+  // window sees the same stack.
+  std::optional<extensions::SearchOverrideStackInfo> search_override_stack =
+      extensions::GetSearchOverrideStackInfo(*profile->GetOriginalProfile(),
+                                             extension->id());
+
   constexpr char kGenericDialogHistogramName[] =
       "Extensions.SettingsOverridden.GenericSearchOverriddenDialogResult";
   constexpr char kBackToOtherHistogramName[] =
@@ -631,6 +638,7 @@ void GetSearchOverriddenParamsThenRun(
     auto params = std::make_unique<ExtensionSettingsOverriddenDialog::Params>(
         extension->id(), extension->name(), preference_name, histogram_name,
         std::move(show_params));
+    params->search_override_stack = search_override_stack;
     if (base::FeatureList::IsEnabled(
             features::kHappinessTrackingSurveysForDesktopSEHijacking)) {
       params->hats_survey_trigger = kHatsSurveyTriggerSEHijacking;
@@ -725,6 +733,7 @@ void GetSearchOverriddenParamsThenRun(
   auto params = std::make_unique<ExtensionSettingsOverriddenDialog::Params>(
       extension->id(), extension->name(), preference_name, histogram_name,
       std::move(show_params));
+  params->search_override_stack = search_override_stack;
   if (base::FeatureList::IsEnabled(
           features::kHappinessTrackingSurveysForDesktopSEHijacking)) {
     params->hats_survey_trigger = kHatsSurveyTriggerSEHijacking;

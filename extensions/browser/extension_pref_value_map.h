@@ -138,6 +138,18 @@ class ExtensionPrefValueMap : public KeyedService {
   // extension.
   std::string GetExtensionControllingPref(const std::string& pref_key) const;
 
+  // Returns the enabled extensions setting `pref_key` for a regular profile,
+  // from the one controlling it (see GetExtensionControllingPref()) down, i.e.
+  // the order in which they would take control if each were disabled in turn.
+  // Ordered by registered install time, latest first; precedence goes to the
+  // greater ID in case of a tie for install time. Incognito settings are
+  // ignored.
+  // Note that this function does not consider the existence of policies. An
+  // extension is only really able to control a preference if
+  // PrefService::Preference::IsExtensionModifiable() returns true as well.
+  extensions::ExtensionIdList GetExtensionsSettingPrefByPrecedence(
+      const std::string& pref_key) const;
+
   // Tell the store it's now fully initialized.
   void NotifyInitializationCompleted();
 

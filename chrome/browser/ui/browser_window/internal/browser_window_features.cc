@@ -208,6 +208,7 @@
 #include "chrome/browser/extensions/extension_browser_window_helper.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/extensions/search_override_stack.h"
 #include "chrome/browser/ui/extensions/settings_overridden_params_providers.h"
 #include "chrome/browser/ui/search_engines/default_search_extension_controlled_controller.h"
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
@@ -764,6 +765,7 @@ void BrowserWindowFeatures::InitPostWindowConstruction(
           "UnacknowledgedMatchingDseExtensionPresent",
           settings_overridden_params::HasUnacknowledgedMatchingDseExtension(
               browser_->GetProfile()));
+      extensions::RecordDseExtensionStackStateOnce(*browser_->GetProfile());
     }
 
     if (base::FeatureList::IsEnabled(
