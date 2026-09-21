@@ -1860,7 +1860,7 @@ void RasterImplementation::FlushPaintCachePurgedEntries() {
   paint_cache_->Purge(&temp_paint_cache_purged_data_);
   for (uint32_t i = static_cast<uint32_t>(cc::PaintCacheDataType::kPath);
        i < cc::PaintCacheDataTypeCount; ++i) {
-    auto& ids = UNSAFE_TODO(temp_paint_cache_purged_data_[i]);
+    auto& ids = temp_paint_cache_purged_data_[i];
     if (ids.empty()) {
       continue;
     }
