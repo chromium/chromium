@@ -126,7 +126,12 @@ void LocalPointerInputMonitorChromeos::Core::DidProcessEvent(
 
   ui::EventType type = ui::EventTypeFromNative(event);
   if (type == ui::EventType::kMouseMoved ||
-      type == ui::EventType::kTouchMoved) {
+      type == ui::EventType::kMousePressed ||
+      type == ui::EventType::kMouseReleased ||
+      type == ui::EventType::kMouseDragged ||
+      type == ui::EventType::kTouchMoved ||
+      type == ui::EventType::kTouchPressed ||
+      type == ui::EventType::kTouchReleased) {
     HandlePointerMove(event, type);
   }
 }
@@ -135,23 +140,28 @@ void LocalPointerInputMonitorChromeos::Core::HandlePointerMove(
     const ui::PlatformEvent& event,
     ui::EventType type) {
   ui::LocatedEvent* located_event = event->AsLocatedEvent();
-  // The event we received has the location of the mouse in pixels
-  // *within the current display*. The event itself does not tell us what
-  // display the mouse is on (so the top-left of every display has coordinates
-  // 0x0 in the event).
-  // Luckily the cursor manager remembers the display the mouse is on.
-  const display::Display& current_display =
-      ash::Shell::Get()->cursor_manager()->GetDisplay();
-  const aura::Window& window = CHECK_DEREF(
-      ash::Shell::Get()->GetRootWindowForDisplayId(current_display.id()));
+  gfx::Point pointer_position;
+  if (ash::Shell::HasInstance()) {
+    // The event we received has the location of the mouse in pixels
+    // *within the current display*. The event itself does not tell us what
+    // display the mouse is on (so the top-left of every display has coordinates
+    // 0x0 in the event).
+    // Luckily the cursor manager remembers the display the mouse is on.
+    const display::Display& current_display =
+        ash::Shell::Get()->cursor_manager()->GetDisplay();
+    const aura::Window& window = CHECK_DEREF(
+        ash::Shell::Get()->GetRootWindowForDisplayId(current_display.id()));
 
-  gfx::PointF location_in_window_in_pixels = located_event->location_f();
+    gfx::PointF location_in_window_in_pixels = located_event->location_f();
 
-  gfx::PointF location_in_screen_in_dip =
-      PointTransformer::ConvertWindowInPixelToScreenInDip(
-          window, location_in_window_in_pixels);
+    gfx::PointF location_in_screen_in_dip =
+        PointTransformer::ConvertWindowInPixelToScreenInDip(
+            window, location_in_window_in_pixels);
 
-  gfx::Point pointer_position = gfx::ToRoundedPoint(location_in_screen_in_dip);
+    pointer_position = gfx::ToRoundedPoint(location_in_screen_in_dip);
+  } else {
+    pointer_position = located_event->location();
+  }
 
   caller_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(on_pointer_move_,

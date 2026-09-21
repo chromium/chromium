@@ -4,16 +4,20 @@
 
 #include "remoting/host/input_monitor/local_keyboard_input_monitor.h"
 
+#include <cstdint>
+#include <memory>
+#include <set>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "remoting/host/chromeos/point_transformer.h"
-#include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
+#include "ui/aura/env.h"
+#include "ui/aura/env_observer.h"
 #include "ui/events/event.h"
-#include "ui/events/event_utils.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/event_observer.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/platform/platform_event_observer.h"
 #include "ui/events/platform/platform_event_source.h"
@@ -22,8 +26,8 @@ namespace remoting {
 
 namespace {
 
-bool IsInjectedByCrd(const ui::PlatformEvent& event) {
-  return event->source_device_id() == ui::ED_REMOTE_INPUT_DEVICE;
+bool IsInjectedByCrd(const ui::Event& event) {
+  return event.source_device_id() == ui::ED_REMOTE_INPUT_DEVICE;
 }
 
 class LocalKeyboardInputMonitorChromeos : public LocalKeyboardInputMonitor {
@@ -41,7 +45,9 @@ class LocalKeyboardInputMonitorChromeos : public LocalKeyboardInputMonitor {
   ~LocalKeyboardInputMonitorChromeos() override;
 
  private:
-  class Core : ui::PlatformEventObserver {
+  class Core : public ui::PlatformEventObserver,
+               public ui::EventObserver,
+               public aura::EnvObserver {
    public:
     Core(scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
          LocalInputMonitor::KeyPressedCallback on_key_event_callback);
@@ -57,7 +63,15 @@ class LocalKeyboardInputMonitorChromeos : public LocalKeyboardInputMonitor {
     void WillProcessEvent(const ui::PlatformEvent& event) override;
     void DidProcessEvent(const ui::PlatformEvent& event) override;
 
+    // ui::EventObserver interface.
+    void OnEvent(const ui::Event& event) override;
+
+    // aura::EnvObserver interface.
+    void OnWillDestroyEnv() override;
+
    private:
+    void StopObservingEnv();
+
     scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner_;
     LocalInputMonitor::KeyPressedCallback key_pressed_callback_;
   };
@@ -94,9 +108,15 @@ void LocalKeyboardInputMonitorChromeos::Core::Start() {
   if (ui::PlatformEventSource::GetInstance()) {
     ui::PlatformEventSource::GetInstance()->AddPlatformEventObserver(this);
   }
+  if (aura::Env::HasInstance()) {
+    aura::Env::GetInstance()->AddObserver(this);
+    aura::Env::GetInstance()->AddEventObserver(this, aura::Env::GetInstance(),
+                                               {ui::EventType::kKeyPressed});
+  }
 }
 
 LocalKeyboardInputMonitorChromeos::Core::~Core() {
+  StopObservingEnv();
   if (ui::PlatformEventSource::GetInstance()) {
     ui::PlatformEventSource::GetInstance()->RemovePlatformEventObserver(this);
   }
@@ -109,18 +129,32 @@ void LocalKeyboardInputMonitorChromeos::Core::WillProcessEvent(
 
 void LocalKeyboardInputMonitorChromeos::Core::DidProcessEvent(
     const ui::PlatformEvent& event) {
+  OnEvent(*event);
+}
+
+void LocalKeyboardInputMonitorChromeos::Core::OnEvent(const ui::Event& event) {
   // Do not pass on events remotely injected by CRD, as we're supposed to
   // monitor for local input only.
   if (IsInjectedByCrd(event)) {
     return;
   }
 
-  ui::EventType type = ui::EventTypeFromNative(event);
-  if (type == ui::EventType::kKeyPressed) {
-    ui::DomCode dom_code = ui::CodeFromNative(event);
-    uint32_t usb_keycode = ui::KeycodeConverter::DomCodeToUsbKeycode(dom_code);
+  if (event.type() == ui::EventType::kKeyPressed) {
+    uint32_t usb_keycode =
+        ui::KeycodeConverter::DomCodeToUsbKeycode(event.AsKeyEvent()->code());
     caller_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(key_pressed_callback_, usb_keycode));
+  }
+}
+
+void LocalKeyboardInputMonitorChromeos::Core::OnWillDestroyEnv() {
+  StopObservingEnv();
+}
+
+void LocalKeyboardInputMonitorChromeos::Core::StopObservingEnv() {
+  if (aura::Env::HasInstance()) {
+    aura::Env::GetInstance()->RemoveEventObserver(this);
+    aura::Env::GetInstance()->RemoveObserver(this);
   }
 }
 
