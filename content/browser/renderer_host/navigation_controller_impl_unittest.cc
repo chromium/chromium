@@ -742,6 +742,77 @@ TEST_F(NavigationControllerTest, LoadURLWithExtraParams_Data) {
   CheckNavigationEntryMatchLoadParams(load_url_params, entry);
 }
 
+TEST_F(NavigationControllerTest,
+       LoadURLWithParamsForResult_NavigationNotStartedReason) {
+  NavigationControllerImpl& controller = controller_impl();
+
+  // Valid URL returns a live handle for the navigation that is now in flight.
+  {
+    NavigationController::LoadURLParams params(GURL("https://example.com"));
+    base::expected<base::WeakPtr<NavigationHandle>, NavigationNotStartedReason>
+        result = controller.LoadURLWithParamsForResult(params);
+    ASSERT_TRUE(result.has_value());
+    ASSERT_TRUE(result.value());
+    EXPECT_EQ(result.value()->GetURL(), GURL("https://example.com"));
+    controller.DiscardNonCommittedEntries();
+  }
+
+  // Invalid URL returns kInvalidUrl error.
+  {
+    NavigationController::LoadURLParams params(GURL("http://google.com:foo"));
+    base::expected<base::WeakPtr<NavigationHandle>, NavigationNotStartedReason>
+        result = controller.LoadURLWithParamsForResult(params);
+    ASSERT_FALSE(result.has_value());
+    EXPECT_EQ(result.error(), NavigationNotStartedReason::kInvalidUrl);
+  }
+
+  // Oversized URL returns kOversizedUrl error.
+  {
+    std::string long_url =
+        "https://example.com/?" + std::string(url::kMaxURLChars, 'a');
+    GURL long_gurl(long_url);
+    NavigationController::LoadURLParams params(long_gurl);
+    base::expected<base::WeakPtr<NavigationHandle>, NavigationNotStartedReason>
+        result = controller.LoadURLWithParamsForResult(params);
+    ASSERT_FALSE(result.has_value());
+    EXPECT_EQ(result.error(), NavigationNotStartedReason::kOversizedUrl);
+  }
+
+  // JavaScript URL is handled without creating a navigation request.
+  {
+    NavigationController::LoadURLParams params(GURL("javascript:void(0)"));
+    base::expected<base::WeakPtr<NavigationHandle>, NavigationNotStartedReason>
+        result = controller.LoadURLWithParamsForResult(params);
+    ASSERT_FALSE(result.has_value());
+    EXPECT_EQ(result.error(),
+              NavigationNotStartedReason::kRendererDebugUrlHandled);
+  }
+
+  // Debug URL with opaque origin returns kBlockedRendererDebugUrl error.
+  {
+    NavigationController::LoadURLParams params(GURL("chrome://crashdump/"));
+    params.initiator_origin = url::Origin();
+    base::expected<base::WeakPtr<NavigationHandle>, NavigationNotStartedReason>
+        result = controller.LoadURLWithParamsForResult(params);
+    ASSERT_FALSE(result.has_value());
+    EXPECT_EQ(result.error(),
+              NavigationNotStartedReason::kBlockedRendererDebugUrl);
+  }
+}
+
+// LoadURLWithParams() collapses every initiation error to a null handle, which
+// is the contract its callers rely on.
+TEST_F(NavigationControllerTest, LoadURLWithParamsReturnsNullOnError) {
+  NavigationControllerImpl& controller = controller_impl();
+  const int entry_count_before = controller.GetEntryCount();
+
+  NavigationController::LoadURLParams params(GURL("http://google.com:foo"));
+  EXPECT_FALSE(controller.LoadURLWithParams(params));
+
+  EXPECT_FALSE(controller.GetPendingEntry());
+  EXPECT_EQ(controller.GetEntryCount(), entry_count_before);
+}
+
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(NavigationControllerTest, LoadURLWithExtraParams_Data_Android) {
   NavigationControllerImpl& controller = controller_impl();

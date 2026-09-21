@@ -123,8 +123,8 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       const Referrer& referrer,
       ui::PageTransition type,
       const std::string& extra_headers) override;
-  base::WeakPtr<NavigationHandle> LoadURLWithParams(
-      const LoadURLParams& params) override;
+  base::expected<base::WeakPtr<NavigationHandle>, NavigationNotStartedReason>
+  LoadURLWithParamsForResult(const LoadURLParams& params) override;
   void LoadIfNecessary() override;
   void LoadOriginalRequestURL() override;
   base::WeakPtr<NavigationHandle> LoadPostCommitErrorPage(
@@ -727,9 +727,9 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // Starts a new navigation based on |load_params|, that doesn't correspond to
   // an existing NavigationEntry.
   // |actual_navigation_start| is the time the navigation began, for metrics.
-  base::WeakPtr<NavigationHandle> NavigateWithoutEntry(
-      const LoadURLParams& load_params,
-      base::TimeTicks actual_navigation_start);
+  base::expected<base::WeakPtr<NavigationHandle>, NavigationNotStartedReason>
+  NavigateWithoutEntry(const LoadURLParams& load_params,
+                       base::TimeTicks actual_navigation_start);
 
   // Handles a navigation to a renderer-debug URL.
   void HandleRendererDebugURL(FrameTreeNode* frame_tree_node, const GURL& url);
@@ -761,7 +761,8 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   //
   // TODO(clamy): Remove the dependency on NavigationEntry and
   // FrameNavigationEntry.
-  std::unique_ptr<NavigationRequest> CreateNavigationRequestFromLoadParams(
+  base::expected<std::unique_ptr<NavigationRequest>, NavigationNotStartedReason>
+  CreateNavigationRequestFromLoadParams(
       FrameTreeNode* node,
       const LoadURLParams& load_params,
       bool override_user_agent,

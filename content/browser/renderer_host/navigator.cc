@@ -839,8 +839,9 @@ void Navigator::DidNavigate(
   delegate_->DidNavigateAnyFramePostCommit(render_frame_host, details);
 }
 
-void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
-                         ReloadType reload_type) {
+std::optional<NavigationNotStartedReason> Navigator::Navigate(
+    std::unique_ptr<NavigationRequest> request,
+    ReloadType reload_type) {
   TRACE_EVENT0("browser,navigation", "Navigator::Navigate");
   TRACE_EVENT_INSTANT_WITH_TIMESTAMP0(
       "navigation,rail", "NavigationTiming navigationStart",
@@ -856,7 +857,7 @@ void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
   if (controller_.GetBrowserContext()->ShutdownStarted()) {
     request->set_navigation_discard_reason(
         NavigationDiscardReason::kNeverStarted);
-    return;
+    return NavigationNotStartedReason::kContextShutdown;
   }
 
   // Ignore potentially duplicated navigations, where the new navigation has the
@@ -998,7 +999,7 @@ void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
                << request->common_params().url
                << " due to the short interval since the previous one.";
       ongoing_navigation_request->DidIgnoreDuplicateNavigation();
-      return;
+      return NavigationNotStartedReason::kDuplicateNavigationIgnored;
     } else {
       ongoing_navigation_request->set_navigation_discard_reason(
           NavigationDiscardReason::kNewDuplicateNavigation);
@@ -1065,6 +1066,8 @@ void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
   // Make sure no code called via RFH::Navigate clears the pending entry.
   if (is_pending_entry)
     CHECK_EQ(nav_entry_id, controller_.GetPendingEntry()->GetUniqueID());
+
+  return std::nullopt;
 }
 
 void Navigator::RequestOpenURL(

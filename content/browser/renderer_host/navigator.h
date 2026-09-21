@@ -117,8 +117,9 @@ class CONTENT_EXPORT Navigator {
   // |navigation_request|. The NavigationController should be called back with
   // RendererDidNavigate on success or DiscardPendingEntry on failure. The
   // callbacks should be called in a future iteration of the message loop.
-  void Navigate(std::unique_ptr<NavigationRequest> request,
-                ReloadType reload_type);
+  std::optional<NavigationNotStartedReason> Navigate(
+      std::unique_ptr<NavigationRequest> request,
+      ReloadType reload_type);
 
   // The RenderFrameHostImpl has received a request to open a URL with the
   // specified |disposition|.

@@ -281,22 +281,23 @@ std::optional<url::Origin> GetCommittedOriginForFrameEntry(
   return std::make_optional(params.origin);
 }
 
-bool IsValidURLForNavigation(FrameTreeNode* node,
-                             const GURL& virtual_url,
-                             const GURL& dest_url) {
+std::optional<NavigationNotStartedReason> CheckURLForNavigationError(
+    FrameTreeNode* node,
+    const GURL& virtual_url,
+    const GURL& dest_url) {
   // Don't attempt to navigate if the virtual URL is non-empty and invalid.
   if (node->IsOutermostMainFrame() && !virtual_url.is_valid() &&
       !virtual_url.is_empty()) {
     LOG(WARNING) << "Refusing to load for invalid virtual URL: "
                  << virtual_url.possibly_invalid_spec();
-    return false;
+    return NavigationNotStartedReason::kInvalidUrl;
   }
 
   // Don't attempt to navigate to non-empty invalid URLs.
   if (!dest_url.is_valid() && !dest_url.is_empty()) {
     LOG(WARNING) << "Refusing to load invalid URL: "
                  << dest_url.possibly_invalid_spec();
-    return false;
+    return NavigationNotStartedReason::kInvalidUrl;
   }
 
   // The renderer will reject IPC messages with URLs longer than
@@ -304,7 +305,7 @@ bool IsValidURLForNavigation(FrameTreeNode* node,
   if (dest_url.spec().size() > url::kMaxURLChars) {
     LOG(WARNING) << "Refusing to load URL as it exceeds " << url::kMaxURLChars
                  << " characters.";
-    return false;
+    return NavigationNotStartedReason::kOversizedUrl;
   }
 
   // Reject renderer debug URLs because they should have been handled before
@@ -316,7 +317,7 @@ bool IsValidURLForNavigation(FrameTreeNode* node,
   if (blink::IsRendererDebugURL(dest_url)) {
     LOG(WARNING) << "Refusing to load renderer debug URL: "
                  << dest_url.possibly_invalid_spec();
-    return false;
+    return NavigationNotStartedReason::kBlockedRendererDebugUrl;
   }
 
   // Guests only support navigations to known-safe schemes. This check already
@@ -334,11 +335,11 @@ bool IsValidURLForNavigation(FrameTreeNode* node,
         !dest_url.SchemeIs(url::kAboutScheme)) {
       LOG(WARNING) << "Refusing to load unsafe URL in a guest: "
                    << dest_url.possibly_invalid_spec();
-      return false;
+      return NavigationNotStartedReason::kDisallowedScheme;
     }
   }
 
-  return true;
+  return std::nullopt;
 }
 
 // See replaced_navigation_entry_data.h for details: this information is meant
@@ -1741,7 +1742,8 @@ base::WeakPtr<NavigationHandle> NavigationControllerImpl::LoadURL(
   return LoadURLWithParams(params);
 }
 
-base::WeakPtr<NavigationHandle> NavigationControllerImpl::LoadURLWithParams(
+base::expected<base::WeakPtr<NavigationHandle>, NavigationNotStartedReason>
+NavigationControllerImpl::LoadURLWithParamsForResult(
     const LoadURLParams& params) {
   // For now, treat this as the actual navigation start time, even though a fair
   // amount of work is done in the browser process between the various ways to
@@ -1758,7 +1760,7 @@ base::WeakPtr<NavigationHandle> NavigationControllerImpl::LoadURLWithParams(
   }
 
   TRACE_EVENT1("browser,navigation",
-               "NavigationControllerImpl::LoadURLWithParams", "url",
+               "NavigationControllerImpl::LoadURLWithParamsForResult", "url",
                params.url.possibly_invalid_spec());
 
   if (IsDebugURL(params.url)) {
@@ -1770,7 +1772,8 @@ base::WeakPtr<NavigationHandle> NavigationControllerImpl::LoadURLWithParams(
             GetTargetFrameTreeNodeForNavigation(params)
                 ->current_frame_host())) {
       DiscardPendingEntry(false);
-      return nullptr;
+      return base::unexpected(
+          NavigationNotStartedReason::kBlockedRendererDebugUrl);
     }
     HandleDebugURL(params.url, params.transition_type,
                    client->IsExplicitNavigation(params.transition_type));
@@ -1778,7 +1781,8 @@ base::WeakPtr<NavigationHandle> NavigationControllerImpl::LoadURLWithParams(
     // unhandled, otherwise Telemetry can't tell if Navigation completed.
     if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kEnableGpuBenchmarking)) {
-      return nullptr;
+      return base::unexpected(
+          NavigationNotStartedReason::kRendererDebugUrlHandled);
     }
   }
 
@@ -3462,17 +3466,14 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
   params.started_by_ad = started_by_ad;
   params.has_rel_opener = has_rel_opener;
 
-  std::unique_ptr<NavigationRequest> request =
-      CreateNavigationRequestFromLoadParams(
-          node, params, override_user_agent, should_replace_current_entry,
-          std::move(source_location), ReloadType::NONE, entry.get(),
-          frame_entry.get(), actual_navigation_start_time,
-          navigation_start_time,
-          /*from_frame_proxy=*/true,
-          is_embedder_initiated_fenced_frame_navigation,
-          is_unfenced_top_navigation, is_container_initiated);
+  auto request = CreateNavigationRequestFromLoadParams(
+      node, params, override_user_agent, should_replace_current_entry,
+      std::move(source_location), ReloadType::NONE, entry.get(),
+      frame_entry.get(), actual_navigation_start_time, navigation_start_time,
+      /*from_frame_proxy=*/true, is_embedder_initiated_fenced_frame_navigation,
+      is_unfenced_top_navigation, is_container_initiated);
 
-  if (!request) {
+  if (!request.has_value()) {
     return;
   }
 
@@ -3480,7 +3481,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
   // This is used by _unfencedTop in fenced frames to ensure that navigations
   // leaving the fenced context create a new browsing instance.
   if (force_new_browsing_instance) {
-    request->coop_status().ForceBrowsingInstanceSwap();
+    request.value()->coop_status().ForceBrowsingInstanceSwap();
   }
 
   // At this stage we are proceeding with this navigation. If this was renderer
@@ -3488,7 +3489,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
   // remains of a cancelled browser initiated navigation to avoid URL spoofs.
   DiscardNonCommittedEntries();
 
-  node->navigator().Navigate(std::move(request), ReloadType::NONE);
+  node->navigator().Navigate(std::move(request).value(), ReloadType::NONE);
 }
 
 void NavigationControllerImpl::SetSessionStorageNamespace(
@@ -4262,7 +4263,8 @@ void NavigationControllerImpl::FindFramesToNavigate(
   }
 }
 
-base::WeakPtr<NavigationHandle> NavigationControllerImpl::NavigateWithoutEntry(
+base::expected<base::WeakPtr<NavigationHandle>, NavigationNotStartedReason>
+NavigationControllerImpl::NavigateWithoutEntry(
     const LoadURLParams& params,
     base::TimeTicks actual_navigation_start) {
   FrameTreeNode* node = GetTargetFrameTreeNodeForNavigation(params);
@@ -4306,7 +4308,8 @@ base::WeakPtr<NavigationHandle> NavigationControllerImpl::NavigateWithoutEntry(
     if (GetContentClient()->browser()->ShouldBlockRendererDebugURL(
             params.url, browser_context_, node->current_frame_host())) {
       DiscardPendingEntry(false);
-      return nullptr;
+      return base::unexpected(
+          NavigationNotStartedReason::kBlockedRendererDebugUrl);
     }
 
     // Don't trust opaque origins to run debug URLs (like javascript: URLs) on
@@ -4314,11 +4317,13 @@ base::WeakPtr<NavigationHandle> NavigationControllerImpl::NavigateWithoutEntry(
     if (params.initiator_origin.has_value() &&
         params.initiator_origin->opaque()) {
       DiscardPendingEntry(true);
-      return nullptr;
+      return base::unexpected(
+          NavigationNotStartedReason::kBlockedRendererDebugUrl);
     }
 
     HandleRendererDebugURL(node, params.url);
-    return nullptr;
+    return base::unexpected(
+        NavigationNotStartedReason::kRendererDebugUrlHandled);
   }
 
   DCHECK(pending_entry_);
@@ -4382,35 +4387,48 @@ base::WeakPtr<NavigationHandle> NavigationControllerImpl::NavigateWithoutEntry(
   // will be updated when the BeforeUnload ack is received.
   const auto navigation_start_time = base::TimeTicks::Now();
 
-  std::unique_ptr<NavigationRequest> request =
-      CreateNavigationRequestFromLoadParams(
-          node, params, override_user_agent, should_replace_current_entry,
-          network::mojom::SourceLocation::New(), reload_type, pending_entry_,
-          pending_entry_->GetFrameEntry(node), actual_navigation_start,
-          navigation_start_time, /*from_frame_proxy=*/false);
+  auto request = CreateNavigationRequestFromLoadParams(
+      node, params, override_user_agent, should_replace_current_entry,
+      network::mojom::SourceLocation::New(), reload_type, pending_entry_,
+      pending_entry_->GetFrameEntry(node), actual_navigation_start,
+      navigation_start_time, /*from_frame_proxy=*/false);
 
   // If the navigation couldn't start, return immediately and discard the
   // pending NavigationEntry.
-  if (!request) {
+  if (!request.has_value()) {
     DiscardPendingEntry(false);
-    return nullptr;
+    return base::unexpected(request.error());
   }
 
 #if DCHECK_IS_ON()
   // Safety check that NavigationRequest and NavigationEntry match.
-  ValidateRequestMatchesEntry(request.get(), pending_entry_);
+  ValidateRequestMatchesEntry(request.value().get(), pending_entry_);
 #endif
+
+  base::WeakPtr<NavigationRequest> created_request =
+      request.value()->GetWeakPtr();
 
   // Ensure that no re-entrant calls or discards of the pending entry occur
   // while calling `Navigator::Navigate` for a pending entry.
   ScopedPendingEntryReentrancyGuard reentrancy_guard(
       weak_factory_.GetSafeRef());
 
-  base::WeakPtr<NavigationHandle> created_navigation_handle(
-      request->GetWeakPtr());
-  node->navigator().Navigate(std::move(request), reload_type);
+  std::optional<NavigationNotStartedReason> not_started_reason =
+      node->navigator().Navigate(std::move(request).value(), reload_type);
 
-  return created_navigation_handle;
+  if (not_started_reason.has_value()) {
+    return base::unexpected(*not_started_reason);
+  }
+
+  // `Navigator::Navigate()` has several paths that drop the request without
+  // reporting a reason, e.g. a NavigationThrottle cancelling synchronously
+  // during BeginNavigation(). Report them uniformly rather than handing back a
+  // null handle that callers would have to null-check themselves.
+  if (!created_request) {
+    return base::unexpected(NavigationNotStartedReason::kCancelledDuringStart);
+  }
+
+  return created_request;
   // `reentrancy_guard` deleted here.
 }
 
@@ -4573,7 +4591,7 @@ NavigationControllerImpl::CreateNavigationEntryFromLoadParams(
   return entry;
 }
 
-std::unique_ptr<NavigationRequest>
+base::expected<std::unique_ptr<NavigationRequest>, NavigationNotStartedReason>
 NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
     FrameTreeNode* node,
     const LoadURLParams& params,
@@ -4651,11 +4669,13 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
   if (node->render_manager()->is_attaching_inner_delegate()) {
     // Avoid starting any new navigations since this node is now preparing for
     // attaching an inner delegate.
-    return nullptr;
+    return base::unexpected(
+        NavigationNotStartedReason::kAttachingInnerDelegate);
   }
 
-  if (!IsValidURLForNavigation(node, virtual_url, url_to_load)) {
-    return nullptr;
+  auto reason = CheckURLForNavigationError(node, virtual_url, url_to_load);
+  if (reason.has_value()) {
+    return base::unexpected(*reason);
   }
 
   // Look for a pending commit that is to another document in this
@@ -4846,9 +4866,8 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
       embedder_isolation_mode, is_embedder_initiated_fenced_frame_navigation,
       is_container_initiated, params.has_rel_opener);
 
-  if (!navigation_request) {
-    return nullptr;
-  }
+  // NavigationRequest::Create() always returns a newly created request.
+  CHECK(navigation_request);
 
   navigation_request->set_from_download_cross_origin_redirect(
       params.from_download_cross_origin_redirect);
@@ -4895,8 +4914,9 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
     return nullptr;
   }
 
-  if (!IsValidURLForNavigation(frame_tree_node, entry->GetVirtualURL(),
-                               dest_url)) {
+  if (CheckURLForNavigationError(frame_tree_node, entry->GetVirtualURL(),
+                                 dest_url)
+          .has_value()) {
     return nullptr;
   }
 

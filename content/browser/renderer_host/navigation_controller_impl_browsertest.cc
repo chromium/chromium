@@ -21160,16 +21160,25 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       URLLoadReturnsNavigationHandle) {
+                       LoadURLWithParamsForResultReturnsNavigationHandle) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));
 
   TestNavigationManager navigation_manager(shell()->web_contents(), url);
-  base::WeakPtr<NavigationHandle> navigation =
-      shell()->web_contents()->GetController().LoadURLWithParams(
-          NavigationController::LoadURLParams(url));
+  NavigationController::LoadURLParams params(url);
+  base::expected<base::WeakPtr<NavigationHandle>, NavigationNotStartedReason>
+      result =
+          shell()->web_contents()->GetController().LoadURLWithParamsForResult(
+              params);
 
   // The returned NavigationHandle should be valid.
-  EXPECT_TRUE(navigation);
+  ASSERT_TRUE(result.has_value());
+  base::WeakPtr<NavigationHandle> navigation = result.value();
+  ASSERT_TRUE(navigation);
+
+  // The navigation is already owned by the FrameTreeNode when the handle is
+  // returned, i.e. the handle refers to a navigation that is really in flight.
+  EXPECT_EQ(navigation.get(),
+            contents()->GetPrimaryFrameTree().root()->navigation_request());
 
   // Start the navigation and ensure that the NavigationHandle we saw matches
   // the one TestNavigationManager saw.

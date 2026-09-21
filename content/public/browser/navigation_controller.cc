@@ -89,4 +89,11 @@ NavigationController::LoadURLParams&
 NavigationController::LoadURLParams::operator=(
     NavigationController::LoadURLParams&&) = default;
 
+base::WeakPtr<NavigationHandle> NavigationController::LoadURLWithParams(
+    const LoadURLParams& params) {
+  // Callers of this overload cannot act on the reason a navigation failed to
+  // start, so collapse every error to a null handle.
+  return LoadURLWithParamsForResult(params).value_or(nullptr);
+}
+
 }  // namespace content

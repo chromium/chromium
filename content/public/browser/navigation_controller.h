@@ -12,7 +12,9 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/child_process_host.h"
@@ -50,6 +52,60 @@ class NavigationEntry;
 class RenderFrameHost;
 class NavigationHandle;
 struct OpenURLParams;
+
+// Represents the reason why no navigation is in flight after a call to
+// NavigationController::LoadURLWithParamsForResult().
+//
+// "Not started" here means "did not successfully start": in most cases nothing
+// was ever set in motion, but kCancelledDuringStart covers a navigation that
+// began and was cancelled again before this call returned.
+//
+// Note also that not every value is a failure: kRendererDebugUrlHandled and
+// kDuplicateNavigationIgnored both mean the requested action was carried out
+// (or deliberately suppressed), there is simply no navigation to observe.
+//
+// NOTE: Embedders may expose these reasons in external APIs.
+// When adding a value, please check and update embedder mappings (e.g. in
+// //android_webview).
+enum class NavigationNotStartedReason {
+  // The URL, or the virtual URL of an outermost main frame, was non-empty and
+  // failed to parse. Commonly reached when an embedder passes along raw user
+  // input without running it through URL fixup first.
+  kInvalidUrl,
+  // The URL exceeded url::kMaxURLChars and would be rejected by the renderer.
+  kOversizedUrl,
+  // A renderer debug URL (e.g. chrome://crash) that was blocked, e.g. by the
+  // embedder via ContentBrowserClient::ShouldBlockRendererDebugURL() or
+  // because the initiator origin was opaque.
+  kBlockedRendererDebugUrl,
+  // The scheme is not permitted for the target frame.
+  kDisallowedScheme,
+  // The frame is preparing to attach an inner delegate, so no new navigation
+  // may start in it until that completes.
+  kAttachingInnerDelegate,
+  // The URL was handled without creating a navigation: a javascript: URL was
+  // executed against the current document, or a debug URL was actioned
+  // directly. Note that this is not a failure - the requested action was
+  // performed, there is simply no NavigationHandle for it.
+  kRendererDebugUrlHandled,
+  // An identical navigation was already ongoing and had started recently
+  // enough to be treated as an unintentional duplicate, such as a double tap
+  // or double click. Suppression is opt-in per embedder via
+  // ContentClient::ShouldIgnoreDuplicateNavs(). The earlier navigation is
+  // still in flight, so this is not a failure to navigate.
+  kDuplicateNavigationIgnored,
+  // The BrowserContext is shutting down, e.g. the profile is being destroyed,
+  // so no navigation can be started in it.
+  kContextShutdown,
+  // The navigation was created and handed to the Navigator, but was destroyed
+  // before LoadURLWithParamsForResult() returned, e.g. because a
+  // NavigationThrottle cancelled it synchronously during BeginNavigation().
+  // Unlike the values above, a NavigationHandle did briefly exist - and
+  // observers may already have seen it start and finish - but it is already
+  // gone by the time the caller regains control, so there is nothing to hand
+  // back.
+  kCancelledDuringStart,
+};
 
 // A NavigationController manages session history, i.e., a back-forward list
 // of navigation entries.
@@ -504,8 +560,36 @@ class NavigationController {
 
   // More general version of LoadURL. See comments in LoadURLParams for
   // using |params|.
-  virtual base::WeakPtr<NavigationHandle> LoadURLWithParams(
-      const LoadURLParams& params) = 0;
+  //
+  // Returns the NavigationHandle as described above. Use
+  // LoadURLWithParamsForResult() instead if you need to know *why* a navigation
+  // failed to start.
+  CONTENT_EXPORT base::WeakPtr<NavigationHandle> LoadURLWithParams(
+      const LoadURLParams& params);
+
+  // Same as LoadURLWithParams(), but reports why no navigation is in flight
+  // when one could not be started.
+  //
+  // On success, returns the NavigationHandle of the navigation that is now in
+  // flight. The returned WeakPtr is non-null at the moment of return; it is
+  // invalidated later if the navigation is cancelled or replaced, which is why
+  // WebContentsObserver::DidFinishNavigation() may never be dispatched for it.
+  //
+  // On failure, returns the NavigationNotStartedReason explaining why no
+  // navigation is in flight.
+  //
+  // Most errors mean the navigation never got as far as creating a
+  // NavigationRequest. kCancelledDuringStart is the exception: the request was
+  // created and handed to the Navigator, but something cancelled it
+  // synchronously while it was still starting up, i.e. before Navigate()
+  // returned and therefore before this method had a handle to give back. A
+  // NavigationThrottle cancelling during BeginNavigation() is the common case.
+  // Because a NavigationHandle did briefly exist, observers may already have
+  // been given DidStartNavigation() and DidFinishNavigation() for it by the
+  // time this method returns.
+  virtual base::expected<base::WeakPtr<NavigationHandle>,
+                         NavigationNotStartedReason>
+  LoadURLWithParamsForResult(const LoadURLParams& params) = 0;
 
   // Loads the current page if this NavigationController was restored from
   // history and the current page has not loaded yet or if the load was
