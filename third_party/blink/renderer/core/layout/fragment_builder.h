@@ -530,7 +530,8 @@ class CORE_EXPORT FragmentBuilder {
 
   PhysicalAxes GetScrollSnapAxes() const;
 
-  SnapArea ResolveSnapArea(const SnapArea& snap_area) const;
+  SnapArea ResolveSnapArea(const SnapArea& snap_area,
+                           wtf_size_t parent_snap_area_offset) const;
 
   void PropagateFromFragment(
       const PhysicalFragment& child,

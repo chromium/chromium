@@ -163,11 +163,27 @@ bool SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
                            old_target_ids);
   } else {
     for (auto& fragment : snap_container.PhysicalFragments()) {
-      for (const auto& item : fragment.SnapAreas()) {
+      Vector<std::optional<size_t>> recorded_snap_area_indices;
+      recorded_snap_area_indices.ReserveInitialCapacity(
+          fragment.SnapAreas().size());
+      for (wtf_size_t i = 0; i < fragment.SnapAreas().size(); ++i) {
+        const SnapArea& item = fragment.SnapAreas()[i];
+        std::optional<size_t> parent_index;
+        const wtf_size_t parent_offset = item.ParentSnapAreaOffset();
+        if (parent_offset) {
+          CHECK_LE(parent_offset, i);
+          parent_index = recorded_snap_area_indices[i - parent_offset];
+        }
+
         if (Element* snap_area = item.GetElementIfConsumed()) {
           cc::SnapAreaData snap_area_data = CalculateSnapAreaData(
               *snap_area, snap_container, item.ConsumedAxes(),
               item.ContainerWritingDirectionMode().value());
+          if (parent_index) {
+            DCHECK_LT(*parent_index, snap_container_data.size());
+            snap_area_data.parent_snap_area_offset =
+                snap_container_data.size() - *parent_index;
+          }
           // The target snap elements should be preserved in the new container
           // only if the respective snap areas are still present.
           if (old_target_ids.x == snap_area_data.element_id) {
@@ -184,7 +200,10 @@ bool SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
             snap_container.GetDocument().CountUse(
                 WebFeature::kScrollSnapCoveringSnapArea);
           }
+          recorded_snap_area_indices.push_back(snap_container_data.size());
           snap_container_data.AddSnapAreaData(snap_area_data);
+        } else {
+          recorded_snap_area_indices.push_back(parent_index);
         }
       }
     }

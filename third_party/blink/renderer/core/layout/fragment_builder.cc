@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/animation/animation_trigger.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/layout/block_layout_algorithm_utils.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/geometry/axis.h"
@@ -249,10 +250,11 @@ void FragmentBuilder::PropagateSnapAreas(const PhysicalFragment& child) {
     if (!new_box) {
       return snap_areas.size();
     }
-    // Ensure that snap areas are added in DOM order.
+    // Ensure that snap areas are added in flat tree order.
     for (wtf_size_t i = snap_areas.size(); i >= 1; i--) {
-      auto* existing_box = snap_areas.at(i - 1).GetElement()->GetLayoutBox();
-      if (existing_box && existing_box->IsBeforeInPreOrder(*new_box)) {
+      const Element* existing_snap_area = snap_areas.at(i - 1).GetElement();
+      if (LayoutTreeBuilderTraversal::ComparePreorderTreePosition(
+              *existing_snap_area, *new_snap_area) < 0) {
         return i;
       }
     }
@@ -260,18 +262,45 @@ void FragmentBuilder::PropagateSnapAreas(const PhysicalFragment& child) {
   };
 
   HeapVector<SnapArea> resolved_child_snap_areas;
+  std::optional<wtf_size_t> child_snap_area_index;
   if (child.IsSnapArea()) {
     // Insert a new snap area *once* per node, when at the last fragment
     // (i.e. when there's no outgoing break token).
     if (!To<PhysicalBoxFragment>(child).GetBreakToken()) {
-      auto* element = To<Element>(child.GetLayoutObject()->GetNode());
-      resolved_child_snap_areas.push_back(ResolveSnapArea(SnapArea(element)));
+      Element* child_snap_area =
+          To<Element>(child.GetLayoutObject()->GetNode());
+      child_snap_area_index = resolved_child_snap_areas.size();
+      resolved_child_snap_areas.push_back(
+          ResolveSnapArea(SnapArea(child_snap_area), 0));
     }
   }
 
-  for (auto& item : child.SnapAreas()) {
+  // For each child snap area, record the nearest ancestor that remains in the
+  // propagated list. This bypasses an ancestor fully consumed by an inner snap
+  // container while preserving the ancestry chain for pending descendants.
+  Vector<std::optional<wtf_size_t>> propagated_snap_area_indices;
+  propagated_snap_area_indices.ReserveInitialCapacity(child.SnapAreas().size());
+  for (wtf_size_t i = 0; i < child.SnapAreas().size(); ++i) {
+    const SnapArea& item = child.SnapAreas()[i];
+    std::optional<wtf_size_t> parent_index = child_snap_area_index;
+    const wtf_size_t parent_offset = item.ParentSnapAreaOffset();
+    if (parent_offset) {
+      CHECK_LE(parent_offset, i);
+      parent_index = propagated_snap_area_indices[i - parent_offset];
+    }
+
     if (item.IsPending()) {
-      resolved_child_snap_areas.push_back(ResolveSnapArea(item));
+      const wtf_size_t item_index = resolved_child_snap_areas.size();
+      wtf_size_t resolved_parent_offset = 0;
+      if (parent_index) {
+        DCHECK_LT(*parent_index, item_index);
+        resolved_parent_offset = item_index - *parent_index;
+      }
+      resolved_child_snap_areas.push_back(
+          ResolveSnapArea(item, resolved_parent_offset));
+      propagated_snap_area_indices.push_back(item_index);
+    } else {
+      propagated_snap_area_indices.push_back(parent_index);
     }
   }
 
@@ -287,7 +316,7 @@ void FragmentBuilder::PropagateSnapAreas(const PhysicalFragment& child) {
 }
 
 void FragmentBuilder::AddSnapAreaForColumn(ColumnPseudoElement* column_pseudo) {
-  EnsureSnapAreas().push_back(ResolveSnapArea(SnapArea(column_pseudo)));
+  EnsureSnapAreas().push_back(ResolveSnapArea(SnapArea(column_pseudo), 0));
 }
 
 void FragmentBuilder::PropagateChildAnchors(const PhysicalFragment& child,
@@ -455,41 +484,47 @@ PhysicalAxes FragmentBuilder::GetScrollSnapAxes() const {
                                                    : kPhysicalAxesBoth;
 }
 
-SnapArea FragmentBuilder::ResolveSnapArea(const SnapArea& snap_area) const {
+SnapArea FragmentBuilder::ResolveSnapArea(
+    const SnapArea& snap_area,
+    wtf_size_t parent_snap_area_offset) const {
   PhysicalAxes scroll_snap_axes = GetScrollSnapAxes();
-  // If this fragment is not a scroll container, return the snap area
-  // unmodified.
-  if (scroll_snap_axes == kPhysicalAxesNone) {
-    return snap_area;
-  }
-
-  std::optional<WritingDirectionMode> writing_direction_mode;
+  std::optional<WritingDirectionMode> writing_direction_mode =
+      snap_area.ContainerWritingDirectionMode();
+  PhysicalAxes consumed_axes = kPhysicalAxesNone;
   PhysicalAxes pending_axes = kPhysicalAxesNone;
-  if (!snap_area.Resolved()) {
-    // If the snap area is not resolved to a scroll container yet, this fragment
-    // is the nearest ancestor scroll container. Resolve the snap area's logical
-    // axes using this container's writing direction mode.
-    writing_direction_mode = GetWritingDirection();
-    pending_axes = GetScrollSnapAlignAxes(
-        snap_area.GetElement()->ComputedStyleRef().GetScrollSnapAlign(),
-        *writing_direction_mode);
-  } else {
-    writing_direction_mode = snap_area.ContainerWritingDirectionMode();
+  if (snap_area.Resolved()) {
+    consumed_axes = snap_area.ConsumedAxes();
     pending_axes = snap_area.PendingAxes();
   }
 
-  auto [consumed, pending] = PartitionAxes(scroll_snap_axes, pending_axes);
-  if (snap_area.Resolved()) {
-    PhysicalAxes snap_type_axes = GetSnapAxesForPropagatedSnapAreas(
-        Style().GetScrollSnapType(), GetWritingDirection());
-    if ((consumed & snap_type_axes) != kPhysicalAxesNone) {
-      // Count when an ancestor scroll container consumes a snap axis propagated
-      // from a descendant scroll container and can snap in that axis.
-      snap_area.GetElement()->GetDocument().CountUse(
-          WebFeature::kSingleAxisScrollerPropagateSnapAxis);
+  if (scroll_snap_axes != kPhysicalAxesNone) {
+    if (!snap_area.Resolved()) {
+      // This is the nearest ancestor scroll container. Resolve the snap area's
+      // logical axes using this container's writing direction mode.
+      writing_direction_mode = GetWritingDirection();
+      pending_axes = GetScrollSnapAlignAxes(
+          snap_area.GetElement()->ComputedStyleRef().GetScrollSnapAlign(),
+          *writing_direction_mode);
+    }
+    const auto [consumed, pending] =
+        PartitionAxes(scroll_snap_axes, pending_axes);
+    consumed_axes = consumed;
+    pending_axes = pending;
+    if (snap_area.Resolved()) {
+      PhysicalAxes snap_type_axes = GetSnapAxesForPropagatedSnapAreas(
+          Style().GetScrollSnapType(), GetWritingDirection());
+      if ((consumed & snap_type_axes) != kPhysicalAxesNone) {
+        // Count when an ancestor scroll container consumes a snap axis
+        // propagated from a descendant scroll container and can snap in that
+        // axis.
+        snap_area.GetElement()->GetDocument().CountUse(
+            WebFeature::kSingleAxisScrollerPropagateSnapAxis);
+      }
     }
   }
-  return {snap_area.GetElement(), consumed, pending, writing_direction_mode};
+
+  return {snap_area.GetElement(), consumed_axes, pending_axes,
+          writing_direction_mode, parent_snap_area_offset};
 }
 
 // Propagate data in |child| to this fragment. The |child| will then be added as

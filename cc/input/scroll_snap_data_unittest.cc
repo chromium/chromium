@@ -182,6 +182,138 @@ TEST_F(ScrollSnapDataTest, FindsClosestSnapPositionIndependently) {
             result.target_element_ids);
 }
 
+TEST_F(ScrollSnapDataTest, AlignedSiblingSnapAreasUseTreeOrder) {
+  SnapContainerData container(
+      ScrollSnapType(false, SnapAxis::kY, SnapStrictness::kMandatory),
+      gfx::RectF(0, 0, 300, 300), gfx::PointF(0, 800));
+  SnapAreaData first(ScrollSnapAlign(SnapAlignment::kStart),
+                     gfx::RectF(0, 100, 200, 100), false, false, ElementId(10));
+  SnapAreaData second(ScrollSnapAlign(SnapAlignment::kStart),
+                      gfx::RectF(0, 100, 100, 100), false, false,
+                      ElementId(20));
+  container.AddSnapAreaData(first);
+  container.AddSnapAreaData(second);
+
+  std::unique_ptr<SnapSelectionStrategy> strategy =
+      SnapSelectionStrategy::CreateForEndPosition(gfx::PointF(0, 100), false,
+                                                  true);
+  SnapPositionData result = container.FindSnapPosition(*strategy);
+  EXPECT_EQ(Type::kAligned, result.type);
+  EXPECT_EQ(100, result.position.y());
+  EXPECT_EQ(ElementId(10), result.target_element_ids.y);
+}
+
+TEST_F(ScrollSnapDataTest, AlignedDescendantSnapAreaIsPreferred) {
+  SnapContainerData container(
+      ScrollSnapType(false, SnapAxis::kY, SnapStrictness::kMandatory),
+      gfx::RectF(0, 0, 300, 300), gfx::PointF(0, 800));
+  SnapAreaData ancestor(ScrollSnapAlign(SnapAlignment::kStart),
+                        gfx::RectF(0, 100, 200, 100), false, false,
+                        ElementId(10));
+  SnapAreaData sibling(ScrollSnapAlign(SnapAlignment::kNone),
+                       gfx::RectF(0, 100, 175, 100), false, false,
+                       ElementId(15), 1u);
+  SnapAreaData intermediate(ScrollSnapAlign(SnapAlignment::kNone),
+                            gfx::RectF(0, 100, 150, 100), false, false,
+                            ElementId(20), 2u);
+  SnapAreaData descendant(ScrollSnapAlign(SnapAlignment::kStart),
+                          gfx::RectF(0, 100, 100, 100), false, false,
+                          ElementId(30), 1u);
+  container.AddSnapAreaData(ancestor);
+  container.AddSnapAreaData(sibling);
+  container.AddSnapAreaData(intermediate);
+  container.AddSnapAreaData(descendant);
+
+  std::unique_ptr<SnapSelectionStrategy> strategy =
+      SnapSelectionStrategy::CreateForEndPosition(gfx::PointF(0, 100), false,
+                                                  true);
+  SnapPositionData result = container.FindSnapPosition(*strategy);
+  EXPECT_EQ(Type::kAligned, result.type);
+  EXPECT_EQ(100, result.position.y());
+  EXPECT_EQ(ElementId(30), result.target_element_ids.y);
+}
+
+TEST_F(ScrollSnapDataTest, SnapAreaParentChainCrossesAxes) {
+  SnapContainerData container(
+      ScrollSnapType(false, SnapAxis::kBoth, SnapStrictness::kMandatory),
+      gfx::RectF(0, 0, 300, 300), gfx::PointF(800, 800));
+  container.AddSnapAreaData(SnapAreaData(ScrollSnapAlign(SnapAlignment::kStart),
+                                         gfx::RectF(100, 100, 200, 200), false,
+                                         false, ElementId(10)));
+  container.AddSnapAreaData(SnapAreaData(
+      ScrollSnapAlign(SnapAlignment::kNone, SnapAlignment::kStart),
+      gfx::RectF(100, 100, 150, 150), false, false, ElementId(20), 1u));
+  container.AddSnapAreaData(SnapAreaData(ScrollSnapAlign(SnapAlignment::kStart),
+                                         gfx::RectF(100, 100, 100, 100), false,
+                                         false, ElementId(30), 1u));
+
+  std::unique_ptr<SnapSelectionStrategy> horizontal_strategy =
+      SnapSelectionStrategy::CreateForEndPosition(gfx::PointF(100, 100), true,
+                                                  false);
+  SnapPositionData horizontal_result =
+      container.FindSnapPosition(*horizontal_strategy);
+  EXPECT_EQ(Type::kAligned, horizontal_result.type);
+  EXPECT_EQ(ElementId(30), horizontal_result.target_element_ids.x);
+
+  std::unique_ptr<SnapSelectionStrategy> vertical_strategy =
+      SnapSelectionStrategy::CreateForEndPosition(gfx::PointF(100, 100), false,
+                                                  true);
+  SnapPositionData vertical_result =
+      container.FindSnapPosition(*vertical_strategy);
+  EXPECT_EQ(Type::kAligned, vertical_result.type);
+  EXPECT_EQ(ElementId(30), vertical_result.target_element_ids.y);
+}
+
+TEST_F(ScrollSnapDataTest,
+       BothAxisAlternativeUsesTreeOrderOverGeometricContainment) {
+  SnapContainerData container(
+      ScrollSnapType(false, SnapAxis::kBoth, SnapStrictness::kMandatory),
+      gfx::RectF(0, 0, 300, 300), gfx::PointF(800, 800));
+  container.AddSnapAreaData(SnapAreaData(
+      ScrollSnapAlign(SnapAlignment::kNone, SnapAlignment::kStart),
+      gfx::RectF(100, 100, 100, 100), false, false, ElementId(10)));
+  container.AddSnapAreaData(SnapAreaData(ScrollSnapAlign(SnapAlignment::kStart),
+                                         gfx::RectF(100, 100, 200, 200), false,
+                                         false, ElementId(20)));
+  container.AddSnapAreaData(SnapAreaData(ScrollSnapAlign(SnapAlignment::kStart),
+                                         gfx::RectF(100, 100, 50, 50), false,
+                                         false, ElementId(30)));
+
+  std::unique_ptr<SnapSelectionStrategy> strategy =
+      SnapSelectionStrategy::CreateForEndPosition(gfx::PointF(100, 100), true,
+                                                  true);
+  SnapPositionData result = container.FindSnapPosition(*strategy);
+  EXPECT_EQ(Type::kAligned, result.type);
+  EXPECT_EQ(gfx::PointF(100, 100), result.position);
+  EXPECT_EQ(TargetSnapAreaElementIds(ElementId(20), ElementId(20)),
+            result.target_element_ids);
+}
+
+TEST_F(ScrollSnapDataTest,
+       CommonBothAxisTargetSupersedesIndependentTreeOrderTargets) {
+  SnapContainerData container(
+      ScrollSnapType(false, SnapAxis::kBoth, SnapStrictness::kMandatory),
+      gfx::RectF(0, 0, 300, 300), gfx::PointF(800, 800));
+  container.AddSnapAreaData(SnapAreaData(ScrollSnapAlign(SnapAlignment::kStart),
+                                         gfx::RectF(100, 300, 100, 100), false,
+                                         false, ElementId(10)));
+  container.AddSnapAreaData(SnapAreaData(ScrollSnapAlign(SnapAlignment::kStart),
+                                         gfx::RectF(300, 100, 100, 100), false,
+                                         false, ElementId(20)));
+  container.AddSnapAreaData(SnapAreaData(ScrollSnapAlign(SnapAlignment::kStart),
+                                         gfx::RectF(100, 100, 100, 100), false,
+                                         false, ElementId(30)));
+
+  std::unique_ptr<SnapSelectionStrategy> strategy =
+      SnapSelectionStrategy::CreateForEndPosition(gfx::PointF(100, 100), true,
+                                                  true);
+  SnapPositionData result = container.FindSnapPosition(*strategy);
+  EXPECT_EQ(Type::kAligned, result.type);
+  EXPECT_EQ(gfx::PointF(100, 100), result.position);
+  EXPECT_EQ(TargetSnapAreaElementIds(ElementId(30), ElementId(30)),
+            result.target_element_ids);
+}
+
 TEST_F(ScrollSnapDataTest, FindsClosestSnapPositionOnAxisValueBoth) {
   SnapContainerData container(
       ScrollSnapType(false, SnapAxis::kBoth, SnapStrictness::kMandatory),

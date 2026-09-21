@@ -33,11 +33,13 @@ class SnapArea {
   SnapArea(Element* element,
            PhysicalAxes consumed,
            PhysicalAxes pending,
-           std::optional<WritingDirectionMode> writing_direction_mode)
+           std::optional<WritingDirectionMode> writing_direction_mode,
+           wtf_size_t parent_snap_area_offset)
       : element_(element),
         consumed_axes_(consumed),
         pending_axes_(pending),
-        writing_direction_mode_(writing_direction_mode) {}
+        writing_direction_mode_(writing_direction_mode),
+        parent_snap_area_offset_(parent_snap_area_offset) {}
 
   Element* GetElementIfConsumed() const {
     CHECK(Resolved());
@@ -65,6 +67,8 @@ class SnapArea {
     return writing_direction_mode_;
   }
 
+  wtf_size_t ParentSnapAreaOffset() const { return parent_snap_area_offset_; }
+
   void Trace(Visitor* visitor) const { visitor->Trace(element_); }
 
   bool operator==(const SnapArea&) const = default;
@@ -74,6 +78,8 @@ class SnapArea {
   PhysicalAxes consumed_axes_ = kPhysicalAxesNone;
   PhysicalAxes pending_axes_ = kPhysicalAxesNone;
   std::optional<WritingDirectionMode> writing_direction_mode_;
+  // Distance to the closest ancestor in the fragment's snap-area list.
+  wtf_size_t parent_snap_area_offset_ = 0;
 };
 
 template <>

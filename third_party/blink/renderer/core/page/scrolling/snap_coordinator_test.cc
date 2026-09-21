@@ -992,6 +992,92 @@ TEST_F(SnapCoordinatorTest, UseCounterNestedSnap) {
   EXPECT_FALSE(IsUseCounted(WebFeature::kScrollSnapNestedSnapAreas));
 }
 
+TEST_F(SnapCoordinatorTest, RecordsSnapAreaAncestors) {
+  SetHTML(R"HTML(
+    <style>
+      #scroller {
+        overflow: auto;
+        scroll-snap-type: both mandatory;
+        width: 200px;
+        height: 200px;
+      }
+      .snap { padding: 100px; }
+      #outer, #sibling, #inner { scroll-snap-align: start; }
+      #middle { scroll-snap-align: none start; }
+    </style>
+    <div id="scroller">
+      <div id="outer" class="snap">
+        <div id="sibling" class="snap"></div>
+        <div id="middle" class="snap">
+          <div id="inner" class="snap"></div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* scroller = GetDocument().getElementById(AtomicString("scroller"));
+  const cc::SnapContainerData* data =
+      GetSnapContainerData(*scroller->GetLayoutBox());
+  ASSERT_TRUE(data);
+  ASSERT_EQ(4u, data->size());
+  EXPECT_EQ(0u, data->at(0).parent_snap_area_offset);
+  EXPECT_EQ(1u, data->at(1).parent_snap_area_offset);
+  EXPECT_EQ(2u, data->at(2).parent_snap_area_offset);
+  EXPECT_EQ(1u, data->at(3).parent_snap_area_offset);
+}
+
+TEST_F(SnapCoordinatorTest, RecordsAncestorAcrossSingleAxisScroller) {
+  ScopedSingleAxisScrollContainersForTest single_axis_scrollers(true);
+  ScopedSingleAxisScrollContainersForScrollSnapForTest single_axis_snap(true);
+  SetHTML(R"HTML(
+    <style>
+      #outer-scroller {
+        overflow-x: clip;
+        overflow-y: scroll;
+        scroll-snap-type: y mandatory;
+        width: 200px;
+        height: 200px;
+      }
+      #outer { scroll-snap-align: start; height: 400px; }
+      #inner-scroller {
+        overflow-x: scroll;
+        overflow-y: clip;
+        scroll-snap-type: x mandatory;
+        width: 100px;
+        height: 100px;
+      }
+      #middle {
+        scroll-snap-align: none start;
+        width: 300px;
+      }
+      #inner {
+        scroll-snap-align: start;
+        width: 100px;
+        height: 300px;
+      }
+    </style>
+    <div id="outer-scroller">
+      <div id="outer">
+        <div id="inner-scroller">
+          <div id="middle">
+            <div id="inner"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* scroller = GetDocument().getElementById(AtomicString("outer-scroller"));
+  const cc::SnapContainerData* data =
+      GetSnapContainerData(*scroller->GetLayoutBox());
+  ASSERT_TRUE(data);
+  ASSERT_EQ(2u, data->size());
+  EXPECT_EQ(0u, data->at(0).parent_snap_area_offset);
+  EXPECT_EQ(1u, data->at(1).parent_snap_area_offset);
+}
+
 TEST_F(SnapCoordinatorTest, UseCounterCoveringSnapArea) {
   ClearUseCounter(WebFeature::kScrollSnapCoveringSnapArea);
   // Create some small snap areas. No covering areas should be reported.
