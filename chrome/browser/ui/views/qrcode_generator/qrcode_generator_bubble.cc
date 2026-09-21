@@ -125,19 +125,6 @@ void QRCodeGeneratorBubble::Hide() {
   }
 }
 
-void QRCodeGeneratorBubble::OnThemeChanged() {
-  LocationBarBubbleDelegateView::OnThemeChanged();
-
-  const int border_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
-      views::Emphasis::kHigh);
-  const auto* color_provider = GetColorProvider();
-  qr_code_image_->SetBorder(views::CreateRoundedRectBorder(
-      /*thickness=*/2, border_radius,
-      color_provider->GetColor(kColorQrCodeBorder)));
-  qr_code_image_->SetBackground(views::CreateRoundedRectBackground(
-      color_provider->GetColor(kColorQrCodeBackground), border_radius, 2));
-}
-
 void QRCodeGeneratorBubble::UpdateQRContent() {
   if (textfield_url_->GetText().empty()) {
     DisplayPlaceholderImage();
@@ -254,6 +241,10 @@ void QRCodeGeneratorBubble::Init() {
                              views::LayoutAlignment::kCenter);
 
   qr_code_image_ = AddChildView(std::move(qr_code_image));
+  qr_code_image_->SetBorder(views::CreateRoundedRectBorder(
+      /*thickness=*/2, border_radius, kColorQrCodeBorder));
+  qr_code_image_->SetBackground(views::CreateRoundedRectBackground(
+      kColorQrCodeBackground, border_radius, /*for_border_thickness=*/2));
 
   // Center error message.
   auto center_error_label = std::make_unique<views::Label>(
