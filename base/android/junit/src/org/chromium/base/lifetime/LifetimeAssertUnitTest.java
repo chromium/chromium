@@ -123,7 +123,7 @@ public class LifetimeAssertUnitTest {
         LifetimeAssert.setSafeToGc(mTestClass.mLifetimeAssert, true);
         LifetimeAssert.registerSafePointersTrackerFactory();
         JniUniquePtr<?> ptr = JniUniquePtr.createForTesting(0x1234L);
-        ptr.close();
+        ptr.destroy();
         LifetimeAssert.assertAllInstancesDestroyedForTesting();
     }
 

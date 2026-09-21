@@ -7,12 +7,12 @@ package org.jni_zero;
 /**
  * High-level wrapper for an owned C++ pointer passed across JNI.
  *
- * <p>Java takes full ownership of the native object. Java MUST explicitly destroy the object using
- * {@link #destroy()} or via try-with-resources ({@link AutoCloseable#close()}).
+ * <p>Java takes full ownership of the native object and must explicitly destroy it using {@link
+ * #destroy()}.
  *
  * @param <T> The native type token defining the C++ class.
  */
-public interface JniUniquePtr<T extends JniTypeToken> extends JniPtr<T>, AutoCloseable {
+public interface JniUniquePtr<T extends JniTypeToken> extends JniPtr<T> {
     /**
      * Destroys the underlying C++ object using the bound C++ deleter.
      *
@@ -24,16 +24,10 @@ public interface JniUniquePtr<T extends JniTypeToken> extends JniPtr<T>, AutoClo
      */
     void destroy();
 
-    /** Equivalent to {@link #destroy()}, enabling try-with-resources usage. */
-    @Override
-    default void close() {
-        destroy();
-    }
-
     /**
      * Factory method for creating mock/test instances with a fake pointer.
      *
-     * <p>The returned unique pointer does not trigger native deletion on close.
+     * <p>The returned unique pointer does not trigger native deletion on destroy.
      */
     static <T extends JniTypeToken> JniUniquePtr<T> createForTesting(long fakePtr) {
         return new JniUniquePtrImpl<>(fakePtr, 0);
