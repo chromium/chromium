@@ -6,6 +6,8 @@
 
 #include <AppKit/AppKit.h>
 
+#include <array>
+
 #include "base/compiler_specific.h"
 #include "base/time/time.h"
 #import "ui/base/test/cocoa_helper.h"
@@ -40,7 +42,7 @@ class DefaultsUtilsTest : public CocoaTest {
     // a personal machine).
     int i = 0;
     for (NSString* next_key in blink_period_keys) {
-      UNSAFE_TODO(orig_blink_period_values_[i++]) =
+      orig_blink_period_values_[i++] =
           [NSUserDefaults.standardUserDefaults integerForKey:next_key];
       [NSUserDefaults.standardUserDefaults removeObjectForKey:next_key];
     }
@@ -77,9 +79,9 @@ class DefaultsUtilsTest : public CocoaTest {
   void TearDown() override {
     int i = 0;
     for (NSString* next_key in blink_period_keys) {
-      if (UNSAFE_TODO(orig_blink_period_values_[i])) {
+      if (orig_blink_period_values_[i]) {
         [NSUserDefaults.standardUserDefaults
-            setInteger:UNSAFE_TODO(orig_blink_period_values_[i])
+            setInteger:orig_blink_period_values_[i]
                 forKey:next_key];
       } else {
         [NSUserDefaults.standardUserDefaults removeObjectForKey:next_key];
@@ -92,7 +94,7 @@ class DefaultsUtilsTest : public CocoaTest {
 
  private:
   std::optional<bool> refresh_flag_initial_value_;
-  NSInteger orig_blink_period_values_[2];
+  std::array<NSInteger, 2> orig_blink_period_values_ = {};
 };
 
 // Tests that the flag which tells

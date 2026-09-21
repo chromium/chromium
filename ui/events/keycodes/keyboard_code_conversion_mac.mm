@@ -7,6 +7,8 @@
 #import <Carbon/Carbon.h>
 
 #include <algorithm>
+#include <array>
+#include <string_view>
 
 #include "base/apple/foundation_util.h"
 #include "base/apple/osstatus_logging.h"
@@ -91,7 +93,7 @@ bool IsKeypadOrNumericKeyEvent(NSEvent* event) {
 }
 
 // A convenient array for getting symbol characters on the number keys.
-const char kShiftCharsForNumberKeys[] = ")!@#$%^&*(";
+constexpr std::string_view kShiftCharsForNumberKeys = ")!@#$%^&*(";
 
 DomKey DomKeyFromKeyCode(unsigned short key_code) {
   constexpr auto kMap = base::MakeFixedFlatMap<unsigned short, DomKey>({
@@ -480,7 +482,7 @@ int MacKeyCodeForWindowsKeyCode(KeyboardCode keycode,
   if (flags & NSEventModifierFlagShift) {
     if (keycode >= VKEY_0 && keycode <= VKEY_9) {
       *us_keyboard_shifted_character =
-          UNSAFE_TODO(kShiftCharsForNumberKeys[keycode - VKEY_0]);
+          kShiftCharsForNumberKeys[keycode - VKEY_0];
     } else if (keycode >= VKEY_A && keycode <= VKEY_Z) {
       *us_keyboard_shifted_character = 'A' + (keycode - VKEY_A);
     } else {
@@ -640,7 +642,7 @@ KeyboardCode KeyboardCodeFromCharCode(unichar char_code) {
 }
 
 KeyboardCode KeyboardCodeFromKeyCode(unsigned short key_code) {
-  static const KeyboardCode kKeyboardCodes[] = {
+  static constexpr std::array<KeyboardCode, 128> kKeyboardCodes = {
       /* 0x00 */ VKEY_A,
       /* 0x01 */ VKEY_S,
       /* 0x02 */ VKEY_D,
@@ -775,7 +777,7 @@ KeyboardCode KeyboardCodeFromKeyCode(unsigned short key_code) {
     return VKEY_UNKNOWN;
   }
 
-  return UNSAFE_TODO(kKeyboardCodes[key_code]);
+  return kKeyboardCodes[key_code];
 }
 
 KeyboardCode KeyboardCodeFromNSEvent(NSEvent* event) {

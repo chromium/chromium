@@ -7,6 +7,7 @@
 #include <CoreGraphics/CoreGraphics.h>
 #import <Foundation/Foundation.h>
 
+#include <array>
 #include <map>
 #include <memory>
 
@@ -169,10 +170,10 @@ bool IsRunningHeadless() {
   // virtual.
   constexpr CGDirectDisplayID kVirtualDisplayID = 0x76697274;
 
-  CGDirectDisplayID online_displays[kMaxDisplaysToQuery];
+  std::array<CGDirectDisplayID, kMaxDisplaysToQuery> online_displays;
   UInt32 online_display_count = 0;
   CGError return_code = CGGetOnlineDisplayList(
-      kMaxDisplaysToQuery, online_displays, &online_display_count);
+      kMaxDisplaysToQuery, online_displays.data(), &online_display_count);
   if (return_code != kCGErrorSuccess) {
     LOG(ERROR) << __func__
                << " - CGGetOnlineDisplayList() failed: " << return_code << ".";
@@ -182,8 +183,7 @@ bool IsRunningHeadless() {
 
   bool is_running_headless = true;
   for (UInt32 i = 0; i < online_display_count; i++) {
-    if (CGDisplayModelNumber(UNSAFE_TODO(online_displays[i])) !=
-        kVirtualDisplayID) {
+    if (CGDisplayModelNumber(online_displays[i]) != kVirtualDisplayID) {
       // At least one monitor is attached so the machine is not headless.
       is_running_headless = false;
       break;
