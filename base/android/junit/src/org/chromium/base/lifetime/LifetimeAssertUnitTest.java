@@ -4,6 +4,7 @@
 
 package org.chromium.base.lifetime;
 
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniUniquePtr;
 import org.junit.After;
 import org.junit.Assert;
@@ -124,6 +125,8 @@ public class LifetimeAssertUnitTest {
         LifetimeAssert.registerSafePointersTrackerFactory();
         JniUniquePtr<?> ptr = JniUniquePtr.createForTesting(0x1234L);
         ptr.destroy();
+        JniRawPtr<?> rawPtr = JniRawPtr.createForTesting(0x1234L);
+        rawPtr.release();
         LifetimeAssert.assertAllInstancesDestroyedForTesting();
     }
 

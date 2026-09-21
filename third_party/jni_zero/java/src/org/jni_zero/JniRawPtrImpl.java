@@ -13,8 +13,8 @@ import org.jni_zero.internal.Nullable;
  * <p>Enforces explicit lifecycle tracking and safe pointer invalidation.
  */
 class JniRawPtrImpl<T extends JniTypeToken> implements JniRawPtr<T>, JniPtrInner<T> {
-    private final @Nullable SafePointersTracker mTracker;
-    private long mNativePointer;
+    final @Nullable SafePointersTracker mTracker;
+    long mNativePointer;
 
     @CalledByNative
     JniRawPtrImpl(long nativePointer) {

@@ -27,8 +27,22 @@ public interface JniRawPtr<T extends JniTypeToken> extends JniPtr<T> {
      */
     void release();
 
-    /** Factory method for creating mock/test instances with a fake pointer. */
+    /**
+     * Factory method for creating mock/test instances with a fake pointer.
+     *
+     * <p>The returned handle does not trigger native BackupRefPtr release on {@link #release()}.
+     */
     static <T extends JniTypeToken> JniRawPtr<T> createForTesting(long fakePtr) {
-        return new JniRawPtrImpl<>(fakePtr);
+        return new JniRawPtrImpl<>(fakePtr) {
+            @Override
+            public void release() {
+                if (mNativePointer != 0) {
+                    if (mTracker != null) {
+                        mTracker.destroy();
+                    }
+                    mNativePointer = 0;
+                }
+            }
+        };
     }
 }
