@@ -316,6 +316,21 @@ public class TabBottomSheetCoordinatorUnitTest {
     }
 
     @Test
+    public void testShowFailure_CleansUpPeekViewManagerThroughCoBrowseViews() {
+        PeekViewManager peekViewManager = mock(PeekViewManager.class);
+        when(peekViewManager.getModel())
+                .thenReturn(
+                        new PropertyModel.Builder(TabBottomSheetPeekProperties.ALL_KEYS).build());
+        doReturn(peekViewManager).when(mCoBrowseViews).getOrCreatePeekViewManager();
+        when(mMockBottomSheetController.requestShowContent(any(BottomSheetContent.class), eq(true)))
+                .thenReturn(false);
+
+        mCoordinator.tryToShowBottomSheet(/* animate= */ true, /* startsExpanded= */ true);
+
+        verify(mCoBrowseViews).destroyPeekViewManager();
+    }
+
+    @Test
     public void testDestroy_WhenNotShown_CleansUp() {
         when(mMockBottomSheetController.requestShowContent(any(BottomSheetContent.class), eq(true)))
                 .thenReturn(false);

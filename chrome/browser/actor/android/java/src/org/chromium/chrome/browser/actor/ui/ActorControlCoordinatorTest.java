@@ -333,6 +333,49 @@ public class ActorControlCoordinatorTest {
     }
 
     @Test
+    public void testNewChat_showsNewChatTitle_updatesWhenGenerated_andRecreatesAfterDestroy() {
+        expectValidProfile();
+        // Start with empty conversation title ("New chat").
+        when(mGlicInstanceHelper.getConversationTitle()).thenReturn("");
+        when(mGlicInstanceHelper.getConversationId()).thenReturn(CONVERSATION_ID_1);
+        when(mGlicInstanceHelper.getTaskId()).thenReturn(0);
+        mProfileSupplier.set(mProfile);
+        mTabSupplier.set(mTab);
+
+        ArgumentCaptor<GlicInstanceHelper.Observer> captor =
+                ArgumentCaptor.forClass(GlicInstanceHelper.Observer.class);
+        verify(mGlicInstanceHelper).addObserver(captor.capture());
+
+        // When conversation title is empty, peek view displays "New chat".
+        String newChatString = mActivity.getString(R.string.peek_state_new_chat);
+        assertEquals(newChatString, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
+
+        // When conversation title is generated after turn 1, title updates from "New chat".
+        when(mGlicInstanceHelper.getConversationTitle()).thenReturn(CONVERSATION_TITLE_1);
+        captor.getValue().onInstanceChanged();
+        assertEquals(CONVERSATION_TITLE_1, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
+
+        // Sheet is torn down / closed: coordinator is destroyed.
+        mCoordinator.destroy();
+
+        // Second conversation starts with a new title.
+        when(mGlicInstanceHelper.getConversationTitle()).thenReturn(CONVERSATION_TITLE_2);
+        when(mGlicInstanceHelper.getConversationId()).thenReturn(CONVERSATION_ID_2);
+        captor.getValue().onInstanceChanged();
+
+        // Destroyed coordinator unregistered from state tracker and must not receive updates.
+        assertEquals(CONVERSATION_TITLE_1, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
+
+        // Fresh coordinator is created on subsequent sheet show (post-b/559305257 lifecycle).
+        ActorControlCoordinator newCoordinator =
+                new ActorControlCoordinator(
+                        mTabBottomSheetManager, mStateTracker, mTabSelectionDelegate);
+        assertEquals(
+                CONVERSATION_TITLE_2,
+                newCoordinator.getModel().get(TabBottomSheetPeekProperties.TITLE_TEXT));
+    }
+
+    @Test
     public void testTabChanged_toNull_clearsContent() {
         expectValidProfile();
         expectValidGlicInstance1();
