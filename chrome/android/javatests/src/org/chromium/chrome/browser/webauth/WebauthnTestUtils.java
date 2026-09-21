@@ -8,29 +8,20 @@ import static com.google.common.truth.Truth.assertThat;
 
 import android.app.Activity;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.os.ConditionVariable;
 import android.util.Pair;
 
 import androidx.annotation.Nullable;
-import androidx.test.InstrumentationRegistry;
-
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.junit.Assert;
 
 import org.chromium.base.Callback;
-import org.chromium.base.Log;
-import org.chromium.base.PackageUtils;
 import org.chromium.blink.mojom.CredentialInfo;
 import org.chromium.blink.mojom.CredentialType;
 import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
 import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
 import org.chromium.components.webauthn.AssertionMediationType;
-import org.chromium.components.webauthn.AuthenticationContextProvider;
-import org.chromium.components.webauthn.Fido2ApiCallHelper;
 import org.chromium.components.webauthn.Fido2ApiTestHelper;
 import org.chromium.components.webauthn.FidoIntentSender;
 import org.chromium.components.webauthn.InternalAuthenticator;
@@ -48,19 +39,9 @@ import org.chromium.url.Origin;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /** Shared test utilities and mocks for WebAuthn unit tests. */
 public class WebauthnTestUtils {
-    private static final String TAG = "WebauthnTestUtils";
-
-    private static final String FIDO_OVERRIDE_COMMAND =
-            "su root am broadcast -a com.google.android.gms.phenotype.FLAG_OVERRIDE --es package"
-                    + " com.google.android.gms.fido --es user * --esa flags"
-                    + " Fido2ApiKnownBrowsers__fingerprints --esa values"
-                    + " %s --esa types"
-                    + " string --ez commit true --user 0 com.google.android.gms";
-
     public static class MockIntentSender implements FidoIntentSender {
         private Pair<Integer, Intent> mNextResult;
         private boolean mInvokeCallbackImmediately = true;
@@ -106,55 +87,6 @@ public class WebauthnTestUtils {
             }
             mShowIntentCalled.open();
             return true;
-        }
-    }
-
-    public static class MockFido2ApiCallHelper extends Fido2ApiCallHelper {
-        private List<WebauthnCredentialDetails> mReturnedCredentialDetails;
-        private boolean mInvokeCallbackImmediately = true;
-        private OnSuccessListener<List<WebauthnCredentialDetails>> mSuccessCallback;
-
-        @Override
-        public void invokeFido2GetCredentials(
-                AuthenticationContextProvider authenticationContextProvider,
-                String relyingPartyId,
-                OnSuccessListener<List<WebauthnCredentialDetails>> successCallback,
-                OnFailureListener failureCallback) {
-            if (mInvokeCallbackImmediately) {
-                successCallback.onSuccess(mReturnedCredentialDetails);
-                return;
-            }
-            mSuccessCallback = successCallback;
-        }
-
-        @Override
-        public void invokePasskeyCacheGetCredentials(
-                AuthenticationContextProvider authenticationContextProvider,
-                String relyingParty,
-                OnSuccessListener<List<WebauthnCredentialDetails>> successListener,
-                OnFailureListener failureListener) {
-            if (mInvokeCallbackImmediately) {
-                successListener.onSuccess(mReturnedCredentialDetails);
-                return;
-            }
-            mSuccessCallback = successListener;
-        }
-
-        @Override
-        public boolean arePlayServicesAvailable() {
-            return true;
-        }
-
-        public void setReturnedCredentialDetails(List<WebauthnCredentialDetails> details) {
-            mReturnedCredentialDetails = details;
-        }
-
-        public void setInvokeCallbackImmediately(boolean invokeImmediately) {
-            mInvokeCallbackImmediately = invokeImmediately;
-        }
-
-        public void invokeSuccessCallback() {
-            mSuccessCallback.onSuccess(mReturnedCredentialDetails);
         }
     }
 
@@ -427,17 +359,6 @@ public class WebauthnTestUtils {
         byte[] actualPrefix =
                 Arrays.copyOfRange(response.attestationObject, 0, expectedPrefix.length);
         Assert.assertArrayEquals(expectedPrefix, actualPrefix);
-    }
-
-    public static void applyFidoOverride(Context context) {
-        String fingerprints =
-                PackageUtils.getCertificateSHA256FingerprintForPackage(context.getPackageName())
-                        .stream()
-                        .map(s -> s.replaceAll(":", ""))
-                        .collect(Collectors.joining("\'"));
-        String command = String.format(FIDO_OVERRIDE_COMMAND, fingerprints);
-        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(command);
-        Log.d(TAG, "Executing command: '%s'", command);
     }
 
     private WebauthnTestUtils() {}

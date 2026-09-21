@@ -142,7 +142,7 @@ public class Fido2CredentialRequestTest {
     private WebauthnTestUtils.MockAuthenticatorRenderFrameHost mFrameHost;
     private MockWebContents mWebContents;
     private WebauthnTestUtils.MockBrowserBridge mMockBrowserBridge;
-    private WebauthnTestUtils.MockFido2ApiCallHelper mFido2ApiCallHelper;
+    private MockFido2ApiCallHelper mFido2ApiCallHelper;
     private AuthenticationContextProvider mAuthenticationContextProvider;
     private Origin mOrigin;
     private Bundle mBrowserOptions;
@@ -246,7 +246,6 @@ public class Fido2CredentialRequestTest {
     public void setUp() throws Exception {
         mPage = mActivityTestRule.startOnBlankPage();
         mContext = ContextUtils.getApplicationContext();
-        WebauthnTestUtils.applyFidoOverride(mContext);
         mIntentSender = new WebauthnTestUtils.MockIntentSender();
         mTestServer = mActivityTestRule.getTestServer();
         mCallback = Fido2ApiTestHelper.getAuthenticatorCallback();
@@ -308,7 +307,7 @@ public class Fido2CredentialRequestTest {
         mRequest = new Fido2CredentialRequest(mAuthenticationContextProvider);
         AuthenticatorImpl.overrideFido2CredentialRequestForTesting(mRequest);
 
-        mFido2ApiCallHelper = new WebauthnTestUtils.MockFido2ApiCallHelper();
+        mFido2ApiCallHelper = new MockFido2ApiCallHelper();
         mFido2ApiCallHelper.setReturnedCredentialDetails(
                 Arrays.asList(Fido2ApiTestHelper.getCredentialDetails()));
         Fido2ApiCallHelper.overrideInstanceForTesting(mFido2ApiCallHelper);

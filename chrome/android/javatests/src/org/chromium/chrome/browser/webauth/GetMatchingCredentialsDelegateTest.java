@@ -9,9 +9,6 @@ import android.os.ConditionVariable;
 
 import androidx.test.filters.SmallTest;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -85,28 +82,6 @@ public class GetMatchingCredentialsDelegateTest {
         credential4.mCredentialId = CREDENTIAL_ID_4;
         credential4.mIsPayment = false;
         return Arrays.asList(credential1, credential2, credential3, credential4);
-    }
-
-    private static class MockFido2ApiCallHelper extends Fido2ApiCallHelper {
-        private List<WebauthnCredentialDetails> mReturnedCredentialDetails;
-
-        @Override
-        public void invokeFido2GetCredentials(
-                AuthenticationContextProvider authenticationContextProvider,
-                String relyingPartyId,
-                OnSuccessListener<List<WebauthnCredentialDetails>> successCallback,
-                OnFailureListener failureCallback) {
-            successCallback.onSuccess(mReturnedCredentialDetails);
-        }
-
-        @Override
-        public boolean arePlayServicesAvailable() {
-            return true;
-        }
-
-        public void setReturnedCredentialDetails(List<WebauthnCredentialDetails> details) {
-            mReturnedCredentialDetails = details;
-        }
     }
 
     private static class GetMatchingCredentialIdsCallback implements ResponseCallback {
