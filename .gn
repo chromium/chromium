@@ -2,6 +2,8 @@
 # tree and to set startup options. For documentation on the values set in this
 # file, run "gn help dotfile" at the command line.
 
+import("//build/circular_includes_bedrock.gni")
+import("//build/circular_includes_untriaged.gni")
 import("//build/dotfile_settings.gni")
 import("//third_party/angle/dotfile_settings.gni")
 
@@ -467,3 +469,11 @@ expand_directory_allowlist =
       # Requires to enumerate policy template yaml files.
       "//components/policy/BUILD.gn",
     ]
+
+# Entries in the allowlist should have a justification for why we need them. New
+# entries should in this list should be reviewed by a member of the chrome build
+# team.
+# entries in this list should be reviewed by a member of the chrome build team.
+allow_circular_includes_from_allowlist =
+    allow_circular_includes_from_untriaged + project_bedrock_circular_includes +
+    []

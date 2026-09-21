@@ -45,3 +45,10 @@ per-file strict_deps_failures.gni=jwata@google.com
 per-file strict_deps_failures.gni=msta@google.com
 per-file strict_deps_failures.gni=rysk@google.com
 per-file strict_deps_failures.gni=tikuta@google.com
+
+# Project Bedrock circular include exceptions:
+# https://docs.google.com/document/d/1aQRPDX9RjWHE48rAHntsV64VU1-4uZO_nkL6A7ohr2k
+per-file circular_includes_bedrock.gni=tluk@chromium.org
+per-file circular_includes_bedrock.gni=erikchen@chromium.org
+per-file circular_includes_bedrock.gni=tacet@google.com
+per-file circular_includes_bedrock.gni=kuchyn@google.com

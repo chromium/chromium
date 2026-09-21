@@ -1,0 +1,8 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Project bedrock (https://docs.google.com/document/d/1aQRPDX9RjWHE48rAHntsV64VU1-4uZO_nkL6A7ohr2k/edit?tab=t.t3973seeaoyz)
+# is a project to decouple the chrome browser object. To achieve this,
+# creating new allow_circular_includes_from *temporarily* has been pre-approved.
+project_bedrock_circular_includes = []
