@@ -15,6 +15,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/run_until.h"
+#include "components/remote_cocoa/app_shim/mouse_capture.h"
+#include "components/remote_cocoa/app_shim/mouse_capture_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #import "content/browser/web_contents/web_drag_dest_mac.h"
@@ -47,6 +49,25 @@ class FakeContentBrowserClient : public TestContentBrowserClient {
 
  private:
   bool was_called_ = false;
+};
+
+// Minimal capture delegate standing in for a widget that has acquired mouse
+// capture (as the bridge of a views::Widget does on SetCapture()).
+class TestMouseCaptureDelegate
+    : public remote_cocoa::CocoaMouseCaptureDelegate {
+ public:
+  explicit TestMouseCaptureDelegate(NSWindow* window) : window_(window) {}
+
+  TestMouseCaptureDelegate(const TestMouseCaptureDelegate&) = delete;
+  TestMouseCaptureDelegate& operator=(const TestMouseCaptureDelegate&) = delete;
+
+  // remote_cocoa::CocoaMouseCaptureDelegate:
+  bool PostCapturedEvent(NSEvent* event) override { return false; }
+  void OnMouseCaptureLost() override {}
+  NSWindow* GetWindow() const override { return window_; }
+
+ private:
+  NSWindow* __strong window_;
 };
 
 class WebContentsViewMacTest : public RenderViewHostImplTestHarness {
@@ -124,6 +145,48 @@ TEST_F(WebContentsViewMacTest, StartDragging_RejectedWhileDragInProgress) {
                         CreateValidDragImage(), gfx::Vector2d(), gfx::Rect(),
                         blink::mojom::DragEventSourceInfo());
   EXPECT_TRUE(fake_client().was_called());
+}
+
+// A drag must not start while a widget holds mouse capture: the held mouse
+// button is driving that widget's gesture (e.g. a tab drag or an open menu).
+TEST_F(WebContentsViewMacTest, StartDragging_RefusedWhileMouseCaptureHeld) {
+  CocoaTestHelperWindow* window = [[CocoaTestHelperWindow alloc] init];
+  TestMouseCaptureDelegate capture_delegate(window);
+  remote_cocoa::CocoaMouseCapture capture(&capture_delegate);
+  ASSERT_TRUE(remote_cocoa::CocoaMouseCapture::GetGlobalCaptureWindow() != nil);
+
+  DropData drop_data;
+  drop_data.text = u"test data";
+
+  view()->StartDragging(*main_rfh(), drop_data, blink::kDragOperationCopy,
+                        CreateValidDragImage(), gfx::Vector2d(), gfx::Rect(),
+                        blink::mojom::DragEventSourceInfo());
+
+  // The drag request must be rejected before it reaches the policy check.
+  EXPECT_FALSE(fake_client().was_called());
+  [window close];
+}
+
+// Once mouse capture is released, drag requests must go through again.
+TEST_F(WebContentsViewMacTest, StartDragging_AllowedAfterMouseCaptureReleased) {
+  CocoaTestHelperWindow* window = [[CocoaTestHelperWindow alloc] init];
+  {
+    TestMouseCaptureDelegate capture_delegate(window);
+    remote_cocoa::CocoaMouseCapture capture(&capture_delegate);
+    ASSERT_TRUE(remote_cocoa::CocoaMouseCapture::GetGlobalCaptureWindow() !=
+                nil);
+  }
+  ASSERT_TRUE(remote_cocoa::CocoaMouseCapture::GetGlobalCaptureWindow() == nil);
+
+  DropData drop_data;
+  drop_data.text = u"test data";
+
+  view()->StartDragging(*main_rfh(), drop_data, blink::kDragOperationCopy,
+                        CreateValidDragImage(), gfx::Vector2d(), gfx::Rect(),
+                        blink::mojom::DragEventSourceInfo());
+
+  EXPECT_TRUE(fake_client().was_called());
+  [window close];
 }
 
 TEST_F(WebContentsViewMacTest, InitiallyHiddenButPaintingNativeView) {

@@ -3576,6 +3576,7 @@ test("content_unittests") {
   }
   if (is_mac) {
     deps += [
+      "//components/remote_cocoa/app_shim",
       "//crypto:test_support",
       "//device/fido:icloud_keychain_test_support",
       "//sandbox/mac:seatbelt",
