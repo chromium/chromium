@@ -2501,16 +2501,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.FontLookup.MatchLocalFontByUniqueName.Time" units="ms"
-    expires_after="2023-08-13">
-  <owner>twellington@chromium.org</owner>
-  <owner>clank-app-team@google.com</owner>
-  <summary>
-    Records the time taken to respond to a request from the renderer to fetch a
-    specific font file from the GMS Core Android downloadable font provider.
-  </summary>
-</histogram>
-
 <histogram name="Android.GlicPromoBottomSheet.DismissReason"
     enum="GlicPromoBottomSheetDismissReason" expires_after="2027-05-15">
   <owner>ssid@google.com</owner>

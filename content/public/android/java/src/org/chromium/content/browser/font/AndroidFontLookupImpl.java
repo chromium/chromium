@@ -9,7 +9,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.ParcelFileDescriptor;
-import android.os.SystemClock;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.core.provider.FontRequest;
@@ -20,7 +19,6 @@ import androidx.core.provider.FontsContractCompat.FontInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.SequencedTaskRunner;
 import org.chromium.base.task.TaskTraits;
@@ -53,10 +51,6 @@ import java.util.concurrent.Executor;
 public class AndroidFontLookupImpl implements AndroidFontLookup {
     private static final String TAG = "AndroidFontLookup";
     private static final String READ_ONLY_MODE = "r";
-
-    @VisibleForTesting
-    static final String MATCH_LOCAL_FONT_BY_UNIQUE_NAME_HISTOGRAM =
-            "Android.FontLookup.MatchLocalFontByUniqueName.Time";
 
     private static final String GOOGLE_SANS_REGULAR = "google sans regular";
     private static final String GOOGLE_SANS_MEDIUM = "google sans medium";
@@ -133,13 +127,11 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
      *
      * @param fontUniqueName The ICU case folded full font name to fetch.
      * @param callback The callback to be called with the resulting opened font file handle, or null
-     *         if the font file is not available. Caller is responsible for closing file when done.
+     *     if the font file is not available. Caller is responsible for closing file when done.
      */
     @Override
     public void matchLocalFontByUniqueName(
             String fontUniqueName, MatchLocalFontByUniqueName_Response callback) {
-        long startTimeMs = SystemClock.elapsedRealtime();
-
         // Get executor associated with the current thread for running Mojo callback.
         Core core = CoreImpl.getInstance();
         Executor executor = ExecutorFactory.getExecutorForCurrentThread(core);
@@ -148,9 +140,6 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
         mTaskRunner.execute(
                 () -> {
                     final ReadOnlyFile result = fetchFontInBackground(fontUniqueName, core);
-                    RecordHistogram.recordTimesHistogram(
-                            MATCH_LOCAL_FONT_BY_UNIQUE_NAME_HISTOGRAM,
-                            SystemClock.elapsedRealtime() - startTimeMs);
                     executor.execute(() -> callback.call(result));
                 });
     }
