@@ -293,8 +293,10 @@ std::string_view GetThreatInfoSizeMetricSuffix(
       return ".SubresourceFilter";
     case CHECK_CSD_ALLOWLIST:
       return ".CsdAllowlist";
+    // Not used in local database manager.
+    case CHECK_NOTIFICATION_ABUSE:
+    // Synchronous checks never perform full-hash checks.
     case CHECK_OTHER:
-      // Synchronous checks never perform full-hash checks.
       NOTREACHED();
   }
 }
@@ -1470,6 +1472,7 @@ void SBLocalDatabaseManager::RespondToClientWithoutPendingCheckCleanup(
       break;
     }
 
+    case ClientCallbackType::CHECK_NOTIFICATION_ABUSE:
     case ClientCallbackType::CHECK_OTHER:
       NOTREACHED() << "Unexpected client_callback_type encountered";
   }

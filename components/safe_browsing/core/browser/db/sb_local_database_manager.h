@@ -73,32 +73,7 @@ class SBLocalDatabaseManager : public SafeBrowsingDatabaseManager {
     return current_local_database_manager_;
   }
 
-  enum class ClientCallbackType : int {
-    // This represents the case when we're trying to determine if a URL is
-    // unsafe from the following perspectives: Malware, Phishing, UwS.
-    CHECK_BROWSE_URL,
-
-    // This represents the case when we're trying to determine if any of the
-    // URLs in a vector of URLs is unsafe for downloading binaries.
-    CHECK_DOWNLOAD_URLS,
-
-    // This represents the case when we're trying to determine if a Chrome
-    // extension is unsafe.
-    CHECK_EXTENSION_IDS,
-
-    // This represents the case when we're trying to determine if a URL belongs
-    // to the list where subresource filter should be active.
-    CHECK_URL_FOR_SUBRESOURCE_FILTER,
-
-    // This represents the case when we're trying to determine if a URL is
-    // part of the CSD allowlist.
-    CHECK_CSD_ALLOWLIST,
-
-    // This represents the other cases when a check is being performed
-    // synchronously so a client callback isn't required. For instance, when
-    // trying to determine if an IP address is unsafe due to hosting Malware.
-    CHECK_OTHER,
-  };
+  using ClientCallbackType = safe_browsing::ClientCallbackType;
 
   //
   // SafeBrowsingDatabaseManager implementation
