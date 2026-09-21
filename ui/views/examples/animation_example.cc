@@ -159,9 +159,8 @@ ProposedLayout SquaresLayoutManager::CalculateProposedLayout(
 }
 
 void SquaresLayoutManager::LayoutImpl() {
-  const ProposedLayout& proposed_layout =
-      GetProposedLayout(host_view()->size());
-  for (const auto& child_layout : proposed_layout.child_layouts) {
+  ProposedLayout proposed_layout = GetProposedLayout(host_view()->size());
+  for (auto child_layout : proposed_layout.child_layouts) {
     bounds_animator_->AnimateViewTo(child_layout.child_view,
                                     child_layout.bounds);
   }
