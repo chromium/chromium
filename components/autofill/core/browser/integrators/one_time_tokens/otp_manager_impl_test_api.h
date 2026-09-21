@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_ONE_TIME_TOKENS_OTP_MANAGER_IMPL_TEST_API_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_ONE_TIME_TOKENS_OTP_MANAGER_IMPL_TEST_API_H_
 
+#include <optional>
+
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_manager_impl.h"
 
@@ -21,8 +23,10 @@ class OtpManagerImplTestApi {
 
   explicit OtpManagerImplTestApi(OtpManagerImpl& manager) : manager_(manager) {}
 
-  void SetReceivedOtps(std::vector<one_time_tokens::OneTimeToken> otps) {
-    manager_->received_otps_ = std::move(otps);
+  std::optional<one_time_tokens::OneTimeToken> SelectMostRecentToken(
+      std::optional<one_time_tokens::OneTimeTokenType> type =
+          std::nullopt) const {
+    return manager_->SelectMostRecentToken(type);
   }
 
   const one_time_tokens::ExpiringSubscription& gmail_otp_tickle_subscription()

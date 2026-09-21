@@ -78,10 +78,6 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   // Callback handler for `log_subscription_`.
   void OnLogMessage(std::string_view message);
 
-  // Returns the most recent token from a list of tokens. Relevance is
-  // determined by the on-device arrival time.
-  std::optional<one_time_tokens::OneTimeToken> SelectMostRecentToken() const;
-
  private:
   friend class OtpManagerImplTestApi;
 
@@ -96,6 +92,13 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   static constexpr base::TimeDelta kGmailOtpTickleSubscriptionDuration =
       base::Minutes(5);
 
+  // Returns the most recent non-expired token from the token service's cache
+  // matching the optional `type`. If `type` is nullopt, tokens of any type
+  // are considered. Returns std::nullopt if the service is unavailable, the
+  // cache is empty, or all matching tokens are expired.
+  std::optional<one_time_tokens::OneTimeToken> SelectMostRecentToken(
+      std::optional<one_time_tokens::OneTimeTokenType> type =
+          std::nullopt) const;
   // Fetches recent OTPs and creates or renewes a subscription. Any OTPs
   // discovered in this process are reported to `OnOneTimeTokenReceived`.
   // This calls OnOneTimeTokenReceived() at least one time.
@@ -153,10 +156,6 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
 
   // The time when the phish guard check was started.
   base::TimeTicks phish_guard_check_start_time_;
-
-  // The received OTPs. This is used to store the OTPs between the phishing
-  // check and the actual display of the suggestions.
-  std::vector<one_time_tokens::OneTimeToken> received_otps_;
 
   base::ScopedObservation<BrowserAutofillManager, AutofillManager::Observer>
       autofill_manager_observation_{this};

@@ -391,14 +391,29 @@ bool OtpManagerImpl::UserOptedIntoGmailOtpFilling() const {
   return prefs && prefs::IsAutofillGmailOtpFillingEnabled(prefs);
 }
 
-std::optional<one_time_tokens::OneTimeToken>
-OtpManagerImpl::SelectMostRecentToken() const {
-  if (received_otps_.empty()) {
+std::optional<OneTimeToken> OtpManagerImpl::SelectMostRecentToken(
+    std::optional<OneTimeTokenType> type) const {
+  if (!one_time_token_service_) {
     return std::nullopt;
   }
-  return *std::ranges::max_element(
-      received_otps_, {},
-      &one_time_tokens::OneTimeToken::on_device_arrival_time);
+  base::TimeTicks now = base::TimeTicks::Now();
+  std::vector<OneTimeToken> cached_tokens =
+      one_time_token_service_->GetCachedOneTimeTokens();
+  const OneTimeToken* most_recent = nullptr;
+  for (const OneTimeToken& token : cached_tokens) {
+    if ((type.has_value() && token.type() != *type) ||
+        token.on_device_arrival_time().is_null() ||
+        now - token.on_device_arrival_time() >
+            one_time_tokens::kCacheDurationForOldTokens) {
+      continue;
+    }
+    if (!most_recent ||
+        token.on_device_arrival_time() >
+            most_recent->on_device_arrival_time()) {
+      most_recent = &token;
+    }
+  }
+  return most_recent ? std::optional(*most_recent) : std::nullopt;
 }
 
 void OtpManagerImpl::OnLogMessage(std::string_view message) {

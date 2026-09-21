@@ -28,10 +28,6 @@ namespace one_time_tokens {
 // how often a request is submitted even if the API returned a SMS.
 inline constexpr base::TimeDelta kSmsRefetchInterval = base::Seconds(5);
 
-// Duration after which tokens expire and won't be returned by
-// `GetRecentOneTimeTokens`.
-inline constexpr base::TimeDelta kCacheDurationForOldTokens = base::Minutes(3);
-
 // Service to subscribe to one time tokens. One instance per profile.
 class OneTimeTokenServiceImpl : public OneTimeTokenService {
  public:

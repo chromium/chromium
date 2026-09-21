@@ -44,6 +44,7 @@ using ::base::test::RunOnceCallback;
 using ::one_time_tokens::OneTimeTokenServiceImpl;
 using ::testing::_;
 using ::testing::NiceMock;
+using ::testing::Return;
 using ::testing::Test;
 
 namespace autofill {
@@ -820,26 +821,122 @@ TEST_F(OtpManagerImplTest, OnBeforeFocusOnNonFormField_ClearsPendingCallback) {
   EXPECT_TRUE(future.Get().empty());
 }
 
-// Tests that `SelectMostRecentToken` returns the most recent token.
-TEST_F(OtpManagerImplTest, SelectMostRecentToken) {
+// Tests that `SelectMostRecentToken` returns the most recent token across all
+// types when no type filter is specified.
+TEST_F(OtpManagerImplTest,
+       SelectMostRecentToken_ReturnsNewestTokenAcrossAllTypes) {
+  base::TimeTicks now = base::TimeTicks::Now();
   std::vector<one_time_tokens::OneTimeToken> tokens = {
       {one_time_tokens::OneTimeTokenType::kSmsOtp, "123",
-       base::TimeTicks() + base::Seconds(10)},
+       now - base::Seconds(20)},
       {one_time_tokens::OneTimeTokenType::kSmsOtp, "456",
-       base::TimeTicks() + base::Seconds(20)},
-      {one_time_tokens::OneTimeTokenType::kSmsOtp, "789",
-       base::TimeTicks() + base::Seconds(15)}};
+       now - base::Seconds(10)},
+      {one_time_tokens::OneTimeTokenType::kGmail, "789",
+       now - base::Seconds(15), "sender@example.com"}};
 
-  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
-  test_api(otp_manager).SetReceivedOtps(tokens);
+  NiceMock<one_time_tokens::MockOneTimeTokenService> mock_service;
+  ON_CALL(mock_service, GetCachedOneTimeTokens).WillByDefault(Return(tokens));
 
+  OtpManagerImpl otp_manager(autofill_manager(), &mock_service);
   std::optional<one_time_tokens::OneTimeToken> selected_token =
-      otp_manager.SelectMostRecentToken();
+      test_api(otp_manager).SelectMostRecentToken();
   ASSERT_TRUE(selected_token.has_value());
   EXPECT_EQ(selected_token->value(), "456");
+}
 
-  test_api(otp_manager).SetReceivedOtps({});
-  EXPECT_FALSE(otp_manager.SelectMostRecentToken().has_value());
+// Tests that `SelectMostRecentToken` returns the most recent token matching
+// the requested type even if a newer token of another type exists.
+TEST_F(OtpManagerImplTest, SelectMostRecentToken_FiltersByTokenType) {
+  base::TimeTicks now = base::TimeTicks::Now();
+  std::vector<one_time_tokens::OneTimeToken> tokens = {
+      {one_time_tokens::OneTimeTokenType::kSmsOtp, "123",
+       now - base::Seconds(10)},
+      {one_time_tokens::OneTimeTokenType::kGmail, "789",
+       now - base::Seconds(15), "sender@example.com"}};
+
+  NiceMock<one_time_tokens::MockOneTimeTokenService> mock_service;
+  ON_CALL(mock_service, GetCachedOneTimeTokens).WillByDefault(Return(tokens));
+
+  OtpManagerImpl otp_manager(autofill_manager(), &mock_service);
+  std::optional<one_time_tokens::OneTimeToken> selected_gmail_token =
+      test_api(otp_manager)
+          .SelectMostRecentToken(one_time_tokens::OneTimeTokenType::kGmail);
+  ASSERT_TRUE(selected_gmail_token.has_value());
+  EXPECT_EQ(selected_gmail_token->value(), "789");
+}
+
+// Tests that `SelectMostRecentToken` returns nullopt when tokens exist in cache
+// but none match the requested type.
+TEST_F(OtpManagerImplTest,
+       SelectMostRecentToken_ReturnsNulloptWhenNoMatchingType) {
+  base::TimeTicks now = base::TimeTicks::Now();
+  std::vector<one_time_tokens::OneTimeToken> sms_only_tokens = {
+      {one_time_tokens::OneTimeTokenType::kSmsOtp, "123",
+       now - base::Seconds(20)}};
+
+  NiceMock<one_time_tokens::MockOneTimeTokenService> sms_only_service;
+  ON_CALL(sms_only_service, GetCachedOneTimeTokens)
+      .WillByDefault(Return(sms_only_tokens));
+
+  OtpManagerImpl otp_manager(autofill_manager(), &sms_only_service);
+  EXPECT_FALSE(test_api(otp_manager)
+                   .SelectMostRecentToken(
+                       one_time_tokens::OneTimeTokenType::kGmail)
+                   .has_value());
+}
+
+// Tests that `SelectMostRecentToken` returns nullopt when matching tokens are
+// expired (older than 3 minutes).
+TEST_F(OtpManagerImplTest,
+       SelectMostRecentToken_ReturnsNulloptWhenTokensExpired) {
+  base::TimeTicks now = base::TimeTicks::Now();
+  std::vector<one_time_tokens::OneTimeToken> expired_tokens = {
+      {one_time_tokens::OneTimeTokenType::kGmail, "999",
+       now - base::Minutes(5), "sender@example.com"}};
+
+  NiceMock<one_time_tokens::MockOneTimeTokenService> expired_mock_service;
+  ON_CALL(expired_mock_service, GetCachedOneTimeTokens)
+      .WillByDefault(Return(expired_tokens));
+
+  OtpManagerImpl otp_manager(autofill_manager(), &expired_mock_service);
+  EXPECT_FALSE(test_api(otp_manager).SelectMostRecentToken().has_value());
+}
+
+// Tests that when cache contains both expired and valid tokens of the same
+// type, only the non-expired token is selected.
+TEST_F(OtpManagerImplTest, SelectMostRecentToken_IgnoresExpiredTokensInCache) {
+  base::TimeTicks now = base::TimeTicks::Now();
+  std::vector<one_time_tokens::OneTimeToken> mixed_tokens = {
+      {one_time_tokens::OneTimeTokenType::kGmail, "expired",
+       now - base::Minutes(4), "sender@example.com"},
+      {one_time_tokens::OneTimeTokenType::kGmail, "valid",
+       now - base::Seconds(30), "sender@example.com"}};
+
+  NiceMock<one_time_tokens::MockOneTimeTokenService> mixed_mock_service;
+  ON_CALL(mixed_mock_service, GetCachedOneTimeTokens)
+      .WillByDefault(Return(mixed_tokens));
+
+  OtpManagerImpl otp_manager(autofill_manager(), &mixed_mock_service);
+  std::optional<one_time_tokens::OneTimeToken> selected_mixed =
+      test_api(otp_manager)
+          .SelectMostRecentToken(one_time_tokens::OneTimeTokenType::kGmail);
+  ASSERT_TRUE(selected_mixed.has_value());
+  EXPECT_EQ(selected_mixed->value(), "valid");
+}
+
+// Tests that `SelectMostRecentToken` returns nullopt when the service is null.
+TEST_F(OtpManagerImplTest,
+       SelectMostRecentToken_ReturnsNulloptWhenServiceIsNull) {
+  OtpManagerImpl otp_manager(autofill_manager(), nullptr);
+  EXPECT_FALSE(test_api(otp_manager).SelectMostRecentToken().has_value());
+}
+
+// Tests that `SelectMostRecentToken` returns nullopt when the cache is empty.
+TEST_F(OtpManagerImplTest,
+       SelectMostRecentToken_ReturnsNulloptWhenCacheIsEmpty) {
+  NiceMock<one_time_tokens::MockOneTimeTokenService> empty_mock_service;
+  OtpManagerImpl otp_manager(autofill_manager(), &empty_mock_service);
+  EXPECT_FALSE(test_api(otp_manager).SelectMostRecentToken().has_value());
 }
 
 // Tests that when `kAutofillRestrictOtpToSameTldPlusOne` is enabled, no query

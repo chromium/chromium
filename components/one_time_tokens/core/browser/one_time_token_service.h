@@ -20,6 +20,9 @@
 
 namespace one_time_tokens {
 
+// Duration after which tokens expire and are no longer returned or served.
+inline constexpr base::TimeDelta kCacheDurationForOldTokens = base::Minutes(3);
+
 // The origin of a one time token. This is currently limited to on-device SMS
 // tokens, but may grow to cross-device SMS tokens, email tokens, authenticator
 // tokens, etc. in the future. As SMS tokens can come from different sources
