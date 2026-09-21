@@ -8108,7 +8108,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.Ui.GetDisplayMedia.{Type}.UserInteractionWithControls"
     enum="GetDisplayMediaUserInteractionWithControls"
-    expires_after="2026-10-25">
+    expires_after="2027-10-25">
   <owner>eladalon@chromium.org</owner>
   <owner>tovep@chromium.org</owner>
   <summary>
