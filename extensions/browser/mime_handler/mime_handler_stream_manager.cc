@@ -585,7 +585,10 @@ void MimeHandlerStreamManager::ReadyToCommitNavigation(
   // response should result in a different `content::RenderFrameHost`.
   content::RenderFrameHost* embedder_host =
       navigation_handle->GetRenderFrameHost();
-  if (!ContainsUnclaimedStreamInfo(embedder_host->GetFrameTreeNodeId())) {
+  auto iter = stream_infos_.find(
+      GetUnclaimedEmbedderHostInfo(embedder_host->GetFrameTreeNodeId()));
+  if (iter == stream_infos_.end() ||
+      iter->second->navigation_id() != navigation_handle->GetNavigationId()) {
     return;
   }
 
@@ -596,17 +599,33 @@ void MimeHandlerStreamManager::ReadyToCommitNavigation(
 
 void MimeHandlerStreamManager::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
+  const content::FrameTreeNodeId frame_tree_node_id =
+      navigation_handle->GetFrameTreeNodeId();
+
   // Drop any native-fallback mark for the navigating frame. The mark is held
   // until the re-navigation has committed or errored so the throttle can peek
   // it from `WillProcessResponse`. For a canceled navigation this still fires,
   // so the entry is never leaked.
-  pending_native_fallback_frames_.erase(
-      navigation_handle->GetFrameTreeNodeId());
+  pending_native_fallback_frames_.erase(frame_tree_node_id);
 
   if (IsContentFrameNavigation(navigation_handle)) {
     --g_debug_ongoing_content_navigations;
     SetManagerCrashKeys(stream_infos_.size());
     ClearContentNavigationCrashKeys();
+  }
+
+  // A stream whose navigation never commits may stay unclaimed for as long as
+  // the frame lives. Thus, delete the stream so that it is not wrongly
+  // claimed by an unrelated navigation.
+  if (!navigation_handle->HasCommitted()) {
+    auto iter =
+        stream_infos_.find(GetUnclaimedEmbedderHostInfo(frame_tree_node_id));
+    if (iter != stream_infos_.end() &&
+        iter->second->navigation_id() == navigation_handle->GetNavigationId()) {
+      // This call may delete `this`.
+      DeleteUnclaimedStreamInfo(frame_tree_node_id);
+      return;
+    }
   }
 
   // Maybe set up postMessage support after the PDF content host finishes
@@ -638,7 +657,7 @@ void MimeHandlerStreamManager::DidFinishNavigation(
     const GURL pdf_extension_url = stream_info->stream()->handler_url();
     if (url == pdf_extension_url &&
         stream_info->extension_host_frame_tree_node_id() ==
-            navigation_handle->GetFrameTreeNodeId() &&
+            frame_tree_node_id &&
         navigation_handle->HasCommitted() &&
         !navigation_handle->IsErrorPage()) {
       stream_info->SetDidExtensionFinishNavigation();
