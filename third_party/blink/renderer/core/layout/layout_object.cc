@@ -1603,6 +1603,15 @@ void LayoutObject::SetNeedsCollectInlines() {
     parent->SetChildNeedsCollectInlines();
 }
 
+void LayoutObject::SetNeedsDevtoolsInfo() {
+  NOT_DESTROYED();
+  if (!IsFlexibleBox() && !IsOutOfFlowPositioned()) {
+    return;
+  }
+  SetNeedsLayout(layout_invalidation_reason::kDevtools);
+  needs_devtools_info_ = true;
+}
+
 void LayoutObject::SetChildNeedsCollectInlines() {
   NOT_DESTROYED();
   LayoutObject* object = this;

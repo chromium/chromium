@@ -41,10 +41,6 @@ class CORE_EXPORT LayoutFlexibleBox : public LayoutBlock {
   }
 
   const DevtoolsFlexInfo* FlexLayoutData() const;
-  // Once this is set to true it is never set back to false. This is maybe okay,
-  // but could make devtools use too much memory after a lot of flexboxes have
-  // been inspected.
-  void SetNeedsLayoutForDevtools();
 
  protected:
   bool IsChildAllowed(LayoutObject* object,

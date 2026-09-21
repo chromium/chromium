@@ -495,8 +495,10 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
 
   // Returns the inset-modified containing block relative to the container's
   // border-box, in physical coordinates.
-  PhysicalRect InsetModifiedContainingBlock() const {
-    DCHECK(rare_data_);
+  std::optional<PhysicalRect> InsetModifiedContainingBlock() const {
+    if (!rare_data_) {
+      return std::nullopt;
+    }
     return rare_data_->inset_modified_containing_block_;
   }
 

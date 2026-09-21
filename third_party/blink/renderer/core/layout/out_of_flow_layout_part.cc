@@ -2651,8 +2651,10 @@ const LayoutResult* OutOfFlowLayoutPart::Layout(
   layout_result->GetMutableForOutOfFlow().SetDisplayLocksAffectedByAnchors(
       offset_info.display_locks_affected_by_anchors);
 
-  layout_result->GetMutableForOutOfFlow().SetInsetModifiedContainingBlock(
-      offset_info.imcb_rect);
+  if (oof_node_to_layout.node_info.node.GetLayoutBox()->NeedsDevtoolsInfo()) {
+    layout_result->GetMutableForOutOfFlow().SetInsetModifiedContainingBlock(
+        offset_info.imcb_rect);
+  }
 
   const auto& fragment =
       To<PhysicalBoxFragment>(layout_result->GetPhysicalFragment());

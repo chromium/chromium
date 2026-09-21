@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -1035,6 +1036,8 @@ TEST_F(InspectorHighlightTest, ImcbInfoStandardAbspos) {
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   Element* target = GetDocument().getElementById(AtomicString("target"));
   EXPECT_TRUE(target);
+  target->GetLayoutBox()->SetNeedsDevtoolsInfo();
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
   InspectorHighlightConfig config = InspectorHighlight::DefaultConfig();
   config.imcb_highlight_config =
@@ -1098,6 +1101,8 @@ TEST_F(InspectorHighlightTest, ImcbInfoAnchorPositionArea) {
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   Element* anchored = GetDocument().getElementById(AtomicString("anchored"));
   EXPECT_TRUE(anchored);
+  anchored->GetLayoutBox()->SetNeedsDevtoolsInfo();
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
   InspectorHighlightConfig config = InspectorHighlight::DefaultConfig();
   config.imcb_highlight_config =
@@ -1183,6 +1188,8 @@ TEST_F(InspectorHighlightTest, ImcbInfoAnchorFunctions) {
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   Element* anchored = GetDocument().getElementById(AtomicString("anchored"));
   EXPECT_TRUE(anchored);
+  anchored->GetLayoutBox()->SetNeedsDevtoolsInfo();
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
   InspectorHighlightConfig config = InspectorHighlight::DefaultConfig();
   config.imcb_highlight_config =
@@ -1247,6 +1254,8 @@ TEST_F(InspectorHighlightTest, ImcbInfoImplicitAnchor) {
 
   Element* popover = GetDocument().getElementById(AtomicString("popover"));
   ASSERT_TRUE(popover);
+  popover->GetLayoutBox()->SetNeedsDevtoolsInfo();
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
   InspectorHighlightConfig config = InspectorHighlight::DefaultConfig();
   config.imcb_highlight_config =

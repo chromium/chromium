@@ -32,7 +32,7 @@ class FlexLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     if (!flex) {
       return nullptr;
     }
-    flex->SetNeedsLayoutForDevtools();
+    flex->SetNeedsDevtoolsInfo();
     UpdateAllLifecyclePhasesForTest();
     return flex->FlexLayoutData();
   }

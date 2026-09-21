@@ -2158,10 +2158,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return whitespace_children_may_change_;
   }
-  void SetNeedsDevtoolsInfo(bool b) {
-    NOT_DESTROYED();
-    needs_devtools_info_ = b;
-  }
+  // Once this is set to true it is never set back to false. This is maybe okay,
+  // but could make devtools use too much memory after a lot of boxes have
+  // been inspected.
+  void SetNeedsDevtoolsInfo();
   bool NeedsDevtoolsInfo() const {
     NOT_DESTROYED();
     return needs_devtools_info_;

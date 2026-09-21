@@ -102,10 +102,6 @@ bool LayoutFlexibleBox::IsChildAllowed(LayoutObject* object,
   return LayoutBlock::IsChildAllowed(object, style);
 }
 
-void LayoutFlexibleBox::SetNeedsLayoutForDevtools() {
-  SetNeedsLayout(layout_invalidation_reason::kDevtools);
-  SetNeedsDevtoolsInfo(true);
-}
 
 const DevtoolsFlexInfo* LayoutFlexibleBox::FlexLayoutData() const {
   const wtf_size_t fragment_count = PhysicalFragmentCount();
