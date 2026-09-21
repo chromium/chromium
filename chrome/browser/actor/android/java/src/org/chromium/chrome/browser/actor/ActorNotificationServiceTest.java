@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -54,14 +55,6 @@ public class ActorNotificationServiceTest {
     @Mock private ActorKeyedService mKeyedService;
     @Mock private ActorTask mTask;
     @Mock private ActorForegroundServiceController mServiceController;
-    @Mock private ActorForegroundServiceManager mActorForegroundServiceManager;
-    @Mock private ActorTask mActorTask;
-    @Mock private Profile mMockProfile;
-    @Mock private Profile mMockOriginalProfile;
-    @Mock private ActorTask mTask1;
-    @Mock private ActorTask mTask2;
-    @Mock private ActorForegroundServiceManager mFgsManager;
-    @Mock private ActorForegroundServiceManager mMockManager;
 
     private ActorNotificationService mNotificationService;
     private MockNotificationManagerProxy mMockNotificationManager;
@@ -75,15 +68,16 @@ public class ActorNotificationServiceTest {
         ActorForegroundServiceController.setInstanceForTesting(mServiceController);
         mNotificationService = new ActorNotificationService(mKeyedService);
 
+        ActorForegroundServiceManager fgsManager = mock(ActorForegroundServiceManager.class);
         doAnswer(
                         invocation -> {
                             int taskId = invocation.getArgument(0);
                             mNotificationService.clearTaskData(taskId);
                             return null;
                         })
-                .when(mActorForegroundServiceManager)
+                .when(fgsManager)
                 .onNotificationDismissed(anyInt());
-        ActorForegroundServiceManager.setInstanceForTesting(mActorForegroundServiceManager);
+        ActorForegroundServiceManager.setInstanceForTesting(fgsManager);
     }
 
     @After
@@ -842,10 +836,13 @@ public class ActorNotificationServiceTest {
         int taskId = 101;
         int state = ActorTaskState.FINISHED;
 
-        when(mActorTask.getState()).thenReturn(state);
-        when(mKeyedService.getTask(taskId)).thenReturn(mActorTask);
+        ActorTask mockTask = mock(ActorTask.class);
+        when(mockTask.getState()).thenReturn(state);
+        when(mKeyedService.getTask(taskId)).thenReturn(mockTask);
 
-        when(mMockProfile.getOriginalProfile()).thenReturn(mMockOriginalProfile);
+        Profile mockProfile = mock(Profile.class);
+        Profile mockOriginalProfile = mock(Profile.class);
+        when(mockProfile.getOriginalProfile()).thenReturn(mockOriginalProfile);
         ActorKeyedServiceFactory.setForTesting(mKeyedService);
 
         Intent intent = new Intent();
@@ -855,7 +852,7 @@ public class ActorNotificationServiceTest {
         mMockNotificationManager.notify(taskId, new Notification());
         assertEquals(1, mMockNotificationManager.getNotifications().size());
 
-        ActorNotificationService.maybeDismissNotificationFromIntent(intent, mMockProfile);
+        ActorNotificationService.maybeDismissNotificationFromIntent(intent, mockProfile);
 
         assertTrue(
                 "Completed task notification should be cancelled on intent receipt",
@@ -889,10 +886,13 @@ public class ActorNotificationServiceTest {
         int taskId = 103;
         int state = ActorTaskState.ACTING;
 
-        when(mActorTask.getState()).thenReturn(state);
-        when(mKeyedService.getTask(taskId)).thenReturn(mActorTask);
+        ActorTask mockTask = mock(ActorTask.class);
+        when(mockTask.getState()).thenReturn(state);
+        when(mKeyedService.getTask(taskId)).thenReturn(mockTask);
 
-        when(mMockProfile.getOriginalProfile()).thenReturn(mMockOriginalProfile);
+        Profile mockProfile = mock(Profile.class);
+        Profile mockOriginalProfile = mock(Profile.class);
+        when(mockProfile.getOriginalProfile()).thenReturn(mockOriginalProfile);
         ActorKeyedServiceFactory.setForTesting(mKeyedService);
 
         Intent intent = new Intent();
@@ -902,7 +902,7 @@ public class ActorNotificationServiceTest {
         mMockNotificationManager.notify(taskId, new Notification());
         assertEquals(1, mMockNotificationManager.getNotifications().size());
 
-        ActorNotificationService.maybeDismissNotificationFromIntent(intent, mMockProfile);
+        ActorNotificationService.maybeDismissNotificationFromIntent(intent, mockProfile);
 
         assertEquals(
                 "Active task notification should not be cancelled on intent receipt",
@@ -945,15 +945,17 @@ public class ActorNotificationServiceTest {
     public void testIndividualTaskDemotion_DemotesBasedOnPerNotificationTimer() {
         int taskId1 = 1;
         int taskId2 = 2;
-        when(mTask1.getId()).thenReturn(taskId1);
-        when(mTask1.getTitle()).thenReturn("Task 1");
-        when(mTask1.getState()).thenReturn(ActorTaskState.FINISHED);
-        when(mKeyedService.getTask(taskId1)).thenReturn(mTask1);
+        ActorTask task1 = mock(ActorTask.class);
+        when(task1.getId()).thenReturn(taskId1);
+        when(task1.getTitle()).thenReturn("Task 1");
+        when(task1.getState()).thenReturn(ActorTaskState.FINISHED);
+        when(mKeyedService.getTask(taskId1)).thenReturn(task1);
 
-        when(mTask2.getId()).thenReturn(taskId2);
-        when(mTask2.getTitle()).thenReturn("Task 2");
-        when(mTask2.getState()).thenReturn(ActorTaskState.FAILED);
-        when(mKeyedService.getTask(taskId2)).thenReturn(mTask2);
+        ActorTask task2 = mock(ActorTask.class);
+        when(task2.getId()).thenReturn(taskId2);
+        when(task2.getTitle()).thenReturn("Task 2");
+        when(task2.getState()).thenReturn(ActorTaskState.FAILED);
+        when(mKeyedService.getTask(taskId2)).thenReturn(task2);
 
         // Task 1 finishes at t=0.
         mNotificationService.updateNotificationForTask(
@@ -1012,7 +1014,8 @@ public class ActorNotificationServiceTest {
         when(mTask.getState()).thenReturn(ActorTaskState.FINISHED);
         when(mKeyedService.getTask(taskId)).thenReturn(mTask);
 
-        ActorForegroundServiceManager.setInstanceForTesting(mFgsManager);
+        ActorForegroundServiceManager fgsManager = mock(ActorForegroundServiceManager.class);
+        ActorForegroundServiceManager.setInstanceForTesting(fgsManager);
 
         mNotificationService.updateNotificationForTask(
                 taskId, ActorTaskState.FINISHED, /* isSilent= */ false, /* isWarning= */ false);
@@ -1036,12 +1039,12 @@ public class ActorNotificationServiceTest {
                                                     false));
                             return null;
                         })
-                .when(mFgsManager)
+                .when(fgsManager)
                 .maybeStopServiceNow();
 
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
-        verify(mFgsManager).maybeStopServiceNow();
+        verify(fgsManager).maybeStopServiceNow();
         assertTrue(
                 "When maybeStopServiceNow was called, previous ongoing notification should"
                         + " still be in manager",
@@ -1058,7 +1061,8 @@ public class ActorNotificationServiceTest {
     @Test
     public void testMaybeDismissNotificationFromIntent_CallsServiceBeforeCancel() {
         int taskId = 105;
-        ActorForegroundServiceManager.setInstanceForTesting(mMockManager);
+        ActorForegroundServiceManager mockManager = mock(ActorForegroundServiceManager.class);
+        ActorForegroundServiceManager.setInstanceForTesting(mockManager);
 
         MockNotificationManagerProxy spyNotificationManager = spy(mMockNotificationManager);
         BaseNotificationManagerProxyFactory.setInstanceForTesting(spyNotificationManager);
@@ -1069,8 +1073,8 @@ public class ActorNotificationServiceTest {
 
         ActorNotificationService.maybeDismissNotificationFromIntent(intent, null);
 
-        InOrder inOrder = inOrder(mMockManager, spyNotificationManager);
-        inOrder.verify(mMockManager).onNotificationDismissed(taskId);
+        InOrder inOrder = inOrder(mockManager, spyNotificationManager);
+        inOrder.verify(mockManager).onNotificationDismissed(taskId);
         inOrder.verify(spyNotificationManager).cancel(taskId);
     }
 }

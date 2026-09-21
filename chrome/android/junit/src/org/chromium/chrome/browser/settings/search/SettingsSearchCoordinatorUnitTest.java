@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -64,13 +65,12 @@ import java.util.HashMap;
 public class SettingsSearchCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    private FragmentActivity mActivity;
+    private Toolbar mToolbar;
     @Mock private MultiColumnSettings mMultiColumnSettings;
     @Mock private Profile mProfile;
     @Mock private ModalDialogManager mModalDialogManager;
-    @Mock private FragmentManager mFragmentManager;
 
-    private FragmentActivity mActivity;
-    private Toolbar mToolbar;
     private SettingsSearchCoordinator mCoordinator;
     private boolean mUseMultiColumn = true;
     private boolean mMultiColumnSettingsDetached;
@@ -185,8 +185,9 @@ public class SettingsSearchCoordinatorUnitTest {
     @Test
     public void testAccessibilityStateChanged_whenMultiColumnSettingsAdded_doesNotCrash() {
         // Mock multiColumnSettings to be attached and return a child fragment manager.
-        when(mMultiColumnSettings.getChildFragmentManagerOrNull()).thenReturn(mFragmentManager);
-        when(mFragmentManager.isStateSaved()).thenReturn(false);
+        FragmentManager childFragmentManager = mock(FragmentManager.class);
+        when(mMultiColumnSettings.getChildFragmentManagerOrNull()).thenReturn(childFragmentManager);
+        when(childFragmentManager.isStateSaved()).thenReturn(false);
 
         var state =
                 new AccessibilityState.State(
@@ -214,7 +215,8 @@ public class SettingsSearchCoordinatorUnitTest {
 
     @Test
     public void testOnHeaderLayoutUpdated_switchesToSingleColumnMode() {
-        when(mMultiColumnSettings.getChildFragmentManagerOrNull()).thenReturn(mFragmentManager);
+        FragmentManager childFragmentManager = mock(FragmentManager.class);
+        when(mMultiColumnSettings.getChildFragmentManagerOrNull()).thenReturn(childFragmentManager);
 
         SlidingPaneLayout slidingPaneLayout = new SlidingPaneLayout(mActivity);
         when(mMultiColumnSettings.getView()).thenReturn(slidingPaneLayout);
@@ -254,7 +256,8 @@ public class SettingsSearchCoordinatorUnitTest {
 
     @Test
     public void testSingleColumnSearchUiWidth_updatesOnAppBarLayoutResized() {
-        when(mMultiColumnSettings.getChildFragmentManagerOrNull()).thenReturn(mFragmentManager);
+        FragmentManager childFragmentManager = mock(FragmentManager.class);
+        when(mMultiColumnSettings.getChildFragmentManagerOrNull()).thenReturn(childFragmentManager);
 
         SlidingPaneLayout slidingPaneLayout = new SlidingPaneLayout(mActivity);
         when(mMultiColumnSettings.getView()).thenReturn(slidingPaneLayout);

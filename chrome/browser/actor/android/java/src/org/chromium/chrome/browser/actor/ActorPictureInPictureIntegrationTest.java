@@ -19,10 +19,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -49,10 +46,6 @@ public class ActorPictureInPictureIntegrationTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private ActorTask mActorTask;
-    @Mock private ActorKeyedService mActorKeyedService;
-
     private ActorPictureInPictureController mController;
     private Tab mTab;
 
@@ -67,11 +60,13 @@ public class ActorPictureInPictureIntegrationTest {
                     Profile profile = mActivityTestRule.getProfile(false);
 
                     // Setup mock actor task so that getCurrentActingTab returns our tab.
-                    Mockito.when(mActorTask.getLastActedTabs())
+                    ActorTask mockTask = Mockito.mock(ActorTask.class);
+                    Mockito.when(mockTask.getLastActedTabs())
                             .thenReturn(Collections.singleton(mTab.getId()));
-                    Mockito.when(mActorKeyedService.getCurrentActiveTask()).thenReturn(mActorTask);
-                    Mockito.when(mActorKeyedService.getActiveTasksCount()).thenReturn(1);
-                    ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
+                    ActorKeyedService actorService = Mockito.mock(ActorKeyedService.class);
+                    Mockito.when(actorService.getCurrentActiveTask()).thenReturn(mockTask);
+                    Mockito.when(actorService.getActiveTasksCount()).thenReturn(1);
+                    ActorKeyedServiceFactory.setForTesting(actorService);
 
                     mController =
                             new ActorPictureInPictureController(

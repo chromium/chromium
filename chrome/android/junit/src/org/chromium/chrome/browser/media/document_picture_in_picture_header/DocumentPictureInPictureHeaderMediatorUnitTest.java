@@ -32,7 +32,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -65,16 +64,6 @@ import java.util.List;
 /** Unit tests for {@link DocumentPictureInPictureHeaderMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class DocumentPictureInPictureHeaderMediatorUnitTest {
-    private static final int DEFAULT_THEME_COLOR = Color.BLUE;
-    private static final ColorStateList DEFAULT_FOCUS_TINT = ColorStateList.valueOf(Color.RED);
-    private static final @BrandedColorScheme int DEFAULT_BRANDED_COLOR_SCHEME =
-            BrandedColorScheme.LIGHT_BRANDED_THEME;
-    private static final GURL HTTPS_URL = JUnitTestGURLs.EXAMPLE_URL;
-    private static final GURL LOCAL_FILE_URL = new GURL("file:///android_asset/index.html");
-    private static final GURL CONTENT_URL = new GURL("content://media/external/images/media/1");
-
-    private Context mContext;
-
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
@@ -84,10 +73,19 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
     @Mock private SecurityStateModel.Natives mSecurityStateModelNatives;
     @Mock private DisplayAndroid mDisplayAndroid;
     @Mock private UrlFormatter.Natives mUrlFormatterJniMock;
-    @Captor private ArgumentCaptor<WebContentsObserver> mWebContentsObserverCaptor;
 
     private WebContents mOpenerWebContents;
     private WebContents mWebContents;
+
+    private static final int DEFAULT_THEME_COLOR = Color.BLUE;
+    private static final ColorStateList DEFAULT_FOCUS_TINT = ColorStateList.valueOf(Color.RED);
+    private static final @BrandedColorScheme int DEFAULT_BRANDED_COLOR_SCHEME =
+            BrandedColorScheme.LIGHT_BRANDED_THEME;
+    private static final GURL HTTPS_URL = JUnitTestGURLs.EXAMPLE_URL;
+    private static final GURL LOCAL_FILE_URL = new GURL("file:///android_asset/index.html");
+    private static final GURL CONTENT_URL = new GURL("content://media/external/images/media/1");
+
+    private Context mContext;
     private PropertyModel mModel;
     private DocumentPictureInPictureHeaderMediator mMediator;
 
@@ -544,9 +542,9 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
         // Capture the WebContentsObserver created by the mediator.
         // The mediator creates a new WebContentsObserver, which registers itself to the
         // WebContents.
-        verify((WebContentsObserver.Observable) mWebContents)
-                .addObserver(mWebContentsObserverCaptor.capture());
-        WebContentsObserver observer = mWebContentsObserverCaptor.getValue();
+        var captor = ArgumentCaptor.forClass(WebContentsObserver.class);
+        verify((WebContentsObserver.Observable) mWebContents).addObserver(captor.capture());
+        var observer = captor.getValue();
 
         // Simulate a security state change.
         int securityLevel = ConnectionSecurityLevel.DANGEROUS;

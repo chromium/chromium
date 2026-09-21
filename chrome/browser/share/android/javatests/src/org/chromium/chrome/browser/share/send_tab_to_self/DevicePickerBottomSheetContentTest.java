@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.share.send_tab_to_self;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -45,11 +46,11 @@ public class DevicePickerBottomSheetContentTest {
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private Profile mProfile;
     @Mock private Tab mTab;
+    private WebContents mWebContents;
+
     @Mock private SendTabToSelfAndroidBridge.Natives mNativeMock;
     @Mock private IdentityManager mIdentityManager;
-    @Mock private IdentityServicesProvider mIdentityServicesProvider;
 
-    private WebContents mWebContents;
     private Activity mContext;
     private List<TargetDeviceInfo> mDevices;
 
@@ -57,8 +58,9 @@ public class DevicePickerBottomSheetContentTest {
     public void setUp() {
         mWebContents = new MockWebContents();
 
-        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
-        when(mIdentityServicesProvider.getIdentityManager(any())).thenReturn(mIdentityManager);
+        IdentityServicesProvider identityServicesProvider = mock(IdentityServicesProvider.class);
+        IdentityServicesProvider.setInstanceForTests(identityServicesProvider);
+        when(identityServicesProvider.getIdentityManager(any())).thenReturn(mIdentityManager);
 
         when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(TestAccounts.ACCOUNT1);
         when(mIdentityManager.findExtendedAccountInfoByAccountId(any()))

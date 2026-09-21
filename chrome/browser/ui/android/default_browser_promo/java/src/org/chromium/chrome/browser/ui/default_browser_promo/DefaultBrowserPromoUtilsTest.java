@@ -26,8 +26,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.ParameterizedRobolectricTestRunner;
@@ -53,7 +53,6 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoMetrics.DefaultBrowserPromoSourceType;
-import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserPromoDelegate;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserPromoTriggerStateListener;
 import org.chromium.chrome.browser.util.ChromePackageNameVariant;
 import org.chromium.chrome.browser.util.DefaultBrowserInfo;
@@ -77,12 +76,6 @@ import java.util.Collection;
 /** Unit test for {@link DefaultBrowserPromoUtils}. */
 @RunWith(ParameterizedRobolectricTestRunner.class)
 public class DefaultBrowserPromoUtilsTest {
-    @Rule(order = -2)
-    public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
-
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
-
     @Mock private DefaultBrowserPromoImpressionCounter mCounter;
     @Mock private DefaultBrowserStateProvider mProvider;
     @Mock private Tracker mMockTracker;
@@ -90,9 +83,12 @@ public class DefaultBrowserPromoUtilsTest {
     @Mock private ManagedMessageDispatcher mMockMessageDispatcher;
     @Mock private SearchEngineChoiceService mMockSearchEngineChoiceService;
     @Mock private InsetObserver mInsetObserver;
-    @Mock private DefaultBrowserPromoTriggerStateListener mDefaultBrowserPromoTriggerStateListener;
-    @Mock private DefaultBrowserPromoDelegate mDefaultBrowserPromoDelegate;
-    @Captor private ArgumentCaptor<PropertyModel> mMessageCaptor;
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
+
+    @Rule(order = -2)
+    public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
 
     private Activity mActivity;
     private WindowAndroid mWindowAndroid;
@@ -369,26 +365,26 @@ public class DefaultBrowserPromoUtilsTest {
 
         mUtils.maybeShowDefaultBrowserPromoMessages(mActivity, mWindowAndroid, mProfile);
 
-        verify(mMockMessageDispatcher)
-                .enqueueWindowScopedMessage(mMessageCaptor.capture(), eq(false));
+        ArgumentCaptor<PropertyModel> message = ArgumentCaptor.forClass(PropertyModel.class);
+        verify(mMockMessageDispatcher).enqueueWindowScopedMessage(message.capture(), eq(false));
         Assert.assertEquals(
                 "Message identifier should match.",
                 MessageIdentifier.DEFAULT_BROWSER_PROMO,
-                mMessageCaptor.getValue().get(MessageBannerProperties.MESSAGE_IDENTIFIER));
+                message.getValue().get(MessageBannerProperties.MESSAGE_IDENTIFIER));
         Assert.assertEquals(
                 "Message title should match.",
                 mActivity.getResources().getString(R.string.default_browser_promo_message_title),
-                mMessageCaptor.getValue().get(MessageBannerProperties.TITLE));
+                message.getValue().get(MessageBannerProperties.TITLE));
         Assert.assertEquals(
                 "Message primary button text should match.",
                 mActivity
                         .getResources()
                         .getString(R.string.default_browser_promo_message_settings_button),
-                mMessageCaptor.getValue().get(MessageBannerProperties.PRIMARY_BUTTON_TEXT));
+                message.getValue().get(MessageBannerProperties.PRIMARY_BUTTON_TEXT));
         Assert.assertEquals(
                 "Message icon resource ID should match.",
                 R.drawable.ic_chrome,
-                mMessageCaptor.getValue().get(MessageBannerProperties.ICON_RESOURCE_ID));
+                message.getValue().get(MessageBannerProperties.ICON_RESOURCE_ID));
     }
 
     @Test
@@ -400,9 +396,11 @@ public class DefaultBrowserPromoUtilsTest {
                 "Promo shouldn't have been shown recently.",
                 DefaultBrowserPromoUtils.hasPromoShownRecently());
 
-        mUtils.addListener(mDefaultBrowserPromoTriggerStateListener);
+        DefaultBrowserPromoTriggerStateListener listener =
+                Mockito.mock(DefaultBrowserPromoTriggerStateListener.class);
+        mUtils.addListener(listener);
         mUtils.notifyDefaultBrowserPromoVisible();
-        verify(mDefaultBrowserPromoTriggerStateListener).onDefaultBrowserPromoTriggered();
+        verify(listener).onDefaultBrowserPromoTriggered();
 
         mFakeTimeTestRule.advanceMillis(Duration.ofDays(1).toMillis());
         Assert.assertTrue(
@@ -413,9 +411,9 @@ public class DefaultBrowserPromoUtilsTest {
                 "Promo should no longer be considered recently shown.",
                 DefaultBrowserPromoUtils.hasPromoShownRecently());
 
-        mUtils.removeListener(mDefaultBrowserPromoTriggerStateListener);
+        mUtils.removeListener(listener);
         mUtils.notifyDefaultBrowserPromoVisible();
-        verify(mDefaultBrowserPromoTriggerStateListener).onDefaultBrowserPromoTriggered();
+        verify(listener).onDefaultBrowserPromoTriggered();
     }
 
     @Test
@@ -610,8 +608,10 @@ public class DefaultBrowserPromoUtilsTest {
 
     @Test
     public void testPromo_SuppressedByDelegate() {
-        when(mDefaultBrowserPromoDelegate.shouldSuppressPromo()).thenReturn(true);
-        DefaultBrowserPromoUtils.setDelegate(mDefaultBrowserPromoDelegate);
+        DefaultBrowserPromoUtils.DefaultBrowserPromoDelegate delegate =
+                Mockito.mock(DefaultBrowserPromoUtils.DefaultBrowserPromoDelegate.class);
+        when(delegate.shouldSuppressPromo()).thenReturn(true);
+        DefaultBrowserPromoUtils.setDelegate(delegate);
 
         Assert.assertFalse(
                 "Should not promo when suppressed by delegate.",

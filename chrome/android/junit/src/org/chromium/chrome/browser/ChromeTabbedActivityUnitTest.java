@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -25,12 +26,8 @@ import android.view.Window;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.DeviceInfo;
@@ -106,11 +103,6 @@ public class ChromeTabbedActivityUnitTest {
         }
     }
 
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private Profile mProfile;
-    @Mock private TabModelOrchestrator mTabModelOrchestrator;
-    @Mock private TabModelSelectorBase mTabModelSelectorBase;
-    @Mock private TabModel mTabModel;
     private ChromeTabbedActivity mActivity;
 
     @Before
@@ -144,7 +136,8 @@ public class ChromeTabbedActivityUnitTest {
 
     @Test
     public void testTransformSavedInstanceStateForOnCreate_profileManagerInitialized() {
-        ProfileManager.setLastUsedProfileForTesting(mProfile);
+        Profile profile = mock(Profile.class);
+        ProfileManager.setLastUsedProfileForTesting(profile);
         assertTrue(ProfileManager.isInitialized());
 
         Bundle savedState = new Bundle();
@@ -220,15 +213,16 @@ public class ChromeTabbedActivityUnitTest {
 
     @Test
     public void testDestroyTabModels_unregistersEvenIfOrchestratorThrows() {
-        doThrow(new RuntimeException("destroy failure")).when(mTabModelOrchestrator).destroy();
+        TabModelOrchestrator orchestrator = mock(TabModelOrchestrator.class);
+        doThrow(new RuntimeException("destroy failure")).when(orchestrator).destroy();
         TestChromeTabbedActivity activity = new TestChromeTabbedActivity();
-        activity.setTabModelOrchestratorForTesting(mTabModelOrchestrator);
+        activity.setTabModelOrchestratorForTesting(orchestrator);
         IncognitoTabHost host = activity.getIncognitoTabHostForTesting();
         IncognitoTabHostRegistry.getInstance().register(host);
         assertTrue(IncognitoTabHostRegistry.getInstance().getHosts().contains(host));
 
         assertThrows(RuntimeException.class, activity::destroyTabModels);
-        verify(mTabModelOrchestrator).destroy();
+        verify(orchestrator).destroy();
 
         assertFalse(IncognitoTabHostRegistry.getInstance().getHosts().contains(host));
     }
@@ -245,10 +239,12 @@ public class ChromeTabbedActivityUnitTest {
     public void testIncognitoTabHost_initializedTabModels() {
         TestChromeTabbedActivity activity = new TestChromeTabbedActivity();
         activity.setAreTabModelsInitialized(true);
-        when(mTabModelSelectorBase.getModel(/* incognito= */ true)).thenReturn(mTabModel);
-        when(mTabModel.getCount()).thenReturn(2);
-        when(mTabModel.isActiveModel()).thenReturn(true);
-        activity.setTabModelSelectorForTesting(mTabModelSelectorBase);
+        TabModelSelectorBase tabModelSelector = mock(TabModelSelectorBase.class);
+        TabModel incognitoTabModel = mock(TabModel.class);
+        when(tabModelSelector.getModel(/* incognito= */ true)).thenReturn(incognitoTabModel);
+        when(incognitoTabModel.getCount()).thenReturn(2);
+        when(incognitoTabModel.isActiveModel()).thenReturn(true);
+        activity.setTabModelSelectorForTesting(tabModelSelector);
 
         IncognitoTabHost host = activity.getIncognitoTabHostForTesting();
         assertTrue(host.hasIncognitoTabs());
@@ -259,8 +255,8 @@ public class ChromeTabbedActivityUnitTest {
         activity.setIsActivityFinishingOrDestroyed(true);
         assertTrue(host.hasIncognitoTabs());
 
-        when(mTabModel.getCount()).thenReturn(0);
-        when(mTabModel.isActiveModel()).thenReturn(false);
+        when(incognitoTabModel.getCount()).thenReturn(0);
+        when(incognitoTabModel.isActiveModel()).thenReturn(false);
         assertFalse(host.hasIncognitoTabs());
         assertFalse(host.isActiveModel());
     }
@@ -272,7 +268,8 @@ public class ChromeTabbedActivityUnitTest {
         activity.setDidFinishNativeInitialization(true);
         activity.setAreTabModelsInitialized(true);
         activity.setIsActivityFinishingOrDestroyed(true);
-        activity.setTabModelSelectorForTesting(mTabModelSelectorBase);
+        TabModelSelectorBase tabModelSelector = mock(TabModelSelectorBase.class);
+        activity.setTabModelSelectorForTesting(tabModelSelector);
 
         IncognitoTabHost host = activity.getIncognitoTabHostForTesting();
         host.closeAllIncognitoTabs();
@@ -288,7 +285,8 @@ public class ChromeTabbedActivityUnitTest {
         activity.setDidFinishNativeInitialization(false);
         activity.setAreTabModelsInitialized(true);
         activity.setIsActivityFinishingOrDestroyed(true);
-        activity.setTabModelSelectorForTesting(mTabModelSelectorBase);
+        TabModelSelectorBase tabModelSelector = mock(TabModelSelectorBase.class);
+        activity.setTabModelSelectorForTesting(tabModelSelector);
 
         IncognitoTabHost host = activity.getIncognitoTabHostForTesting();
         host.closeAllIncognitoTabs();
@@ -342,8 +340,9 @@ public class ChromeTabbedActivityUnitTest {
             testCloseAllIncognitoTabsOnInit_initializedAndTabStateInitialized_terminatesSession() {
         TestChromeTabbedActivity activity = new TestChromeTabbedActivity();
         activity.setDidFinishNativeInitialization(true);
-        when(mTabModelSelectorBase.isTabStateInitialized()).thenReturn(true);
-        activity.setTabModelSelectorForTesting(mTabModelSelectorBase);
+        TabModelSelectorBase tabModelSelector = mock(TabModelSelectorBase.class);
+        when(tabModelSelector.isTabStateInitialized()).thenReturn(true);
+        activity.setTabModelSelectorForTesting(tabModelSelector);
 
         IncognitoTabHost host = activity.getIncognitoTabHostForTesting();
         host.closeAllIncognitoTabsOnInit();

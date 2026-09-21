@@ -21,7 +21,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatcher;
 import org.mockito.ArgumentMatchers;
-import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
@@ -65,17 +64,18 @@ public class OfflineContentAggregatorNotificationBridgeUiTest {
         }
     }
 
+    @Mock private OfflineContentProvider mProvider;
+
+    @Mock private DownloadNotifier mNotifier;
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private static OfflineItem buildOfflineItem(ContentId id, @OfflineItemState int state) {
         OfflineItem item = new OfflineItem();
         item.id = id;
         item.state = state;
         return item;
     }
-
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private OfflineContentProvider mProvider;
-    @Mock private DownloadNotifier mNotifier;
-    @Captor private ArgumentCaptor<DownloadInfo> mDownloadInfoCaptor;
 
     @Before
     public void setUp() {
@@ -223,15 +223,17 @@ public class OfflineContentAggregatorNotificationBridgeUiTest {
         verify(mProvider, times(1)).getVisualsForItem(item1.id, bridge);
         verify(mProvider, times(1)).getVisualsForItem(item2.id, bridge);
 
+        ArgumentCaptor<DownloadInfo> captor = ArgumentCaptor.forClass(DownloadInfo.class);
+
         bridge.onVisualsAvailable(item1.id, visuals1);
         bridge.onVisualsAvailable(item2.id, null);
         verify(mNotifier, times(2))
                 .notifyDownloadProgress(
-                        mDownloadInfoCaptor.capture(),
+                        captor.capture(),
                         ArgumentMatchers.anyLong(),
                         ArgumentMatchers.anyBoolean());
 
-        List<DownloadInfo> capturedInfo = mDownloadInfoCaptor.getAllValues();
+        List<DownloadInfo> capturedInfo = captor.getAllValues();
         Assert.assertEquals(item1.id, capturedInfo.get(0).getContentId());
         Assert.assertEquals(visuals1.icon, capturedInfo.get(0).getIcon());
         Assert.assertEquals(item2.id, capturedInfo.get(1).getContentId());

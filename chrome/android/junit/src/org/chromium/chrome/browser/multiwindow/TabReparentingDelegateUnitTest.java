@@ -82,11 +82,8 @@ public class TabReparentingDelegateUnitTest {
     @Mock private Tab mTab2;
     @Mock private Profile mProfile;
     @Mock private WebContents mWebContents;
-    @Mock private Bundle mBundle;
 
     @Captor private ArgumentCaptor<Runnable> mOnSaveTabListRunnableCaptor;
-    @Captor private ArgumentCaptor<Intent> mIntentCaptor;
-    @Captor private ArgumentCaptor<Intent> mOnNewIntentCaptor;
 
     private TabReparentingDelegate mDelegate;
 
@@ -148,27 +145,28 @@ public class TabReparentingDelegateUnitTest {
                 NewWindowAppSource.MENU);
 
         // Verify that the reparenting task is initiated.
+        var intentCaptor = ArgumentCaptor.forClass(Intent.class);
         verify(mReparentingTabsTask)
-                .begin(eq(mCurrentActivity), mIntentCaptor.capture(), eq(null), eq(null));
+                .begin(eq(mCurrentActivity), intentCaptor.capture(), eq(null), eq(null));
 
         // Verify the intent used in the reparenting task.
         assertEquals(
                 "FLAG_ACTIVITY_LAUNCH_ADJACENT is not set as expected.",
                 openAdjacently,
-                (mIntentCaptor.getValue().getFlags() & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT) != 0);
+                (intentCaptor.getValue().getFlags() & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT) != 0);
         assertTrue(
                 "EXTRA_PREFER_NEW is not set as expected.",
-                mIntentCaptor.getValue().getBooleanExtra(IntentHandler.EXTRA_PREFER_NEW, false));
+                intentCaptor.getValue().getBooleanExtra(IntentHandler.EXTRA_PREFER_NEW, false));
         assertEquals(
                 "EXTRA_WINDOW_ID is not set as expected.",
                 INVALID_WINDOW_ID,
-                mIntentCaptor
+                intentCaptor
                         .getValue()
                         .getIntExtra(IntentHandler.EXTRA_WINDOW_ID, INVALID_WINDOW_ID));
         assertEquals(
                 "New window source extra is incorrect.",
                 NewWindowAppSource.MENU,
-                mIntentCaptor
+                intentCaptor
                         .getValue()
                         .getIntExtra(
                                 IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE,
@@ -189,9 +187,10 @@ public class TabReparentingDelegateUnitTest {
 
         // Verify.
         assertTrue(result);
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
         verify(mReparentingTabsTask)
-                .begin(eq(mCurrentActivity), mIntentCaptor.capture(), eq(null), eq(null));
-        Intent intent = mIntentCaptor.getValue();
+                .begin(eq(mCurrentActivity), intentCaptor.capture(), eq(null), eq(null));
+        Intent intent = intentCaptor.getValue();
         org.junit.Assert.assertNotNull(intent);
         org.junit.Assert.assertFalse(
                 intent.getBooleanExtra(
@@ -205,6 +204,7 @@ public class TabReparentingDelegateUnitTest {
 
         Bundle extras = new Bundle();
         extras.putInt("extra", 1);
+        Bundle options = mock(Bundle.class);
 
         // Act.
         boolean result =
@@ -213,14 +213,15 @@ public class TabReparentingDelegateUnitTest {
                         mProfile,
                         mWebContents,
                         extras,
-                        mBundle,
+                        options,
                         NewWindowAppSource.BROWSER_WINDOW_CREATOR);
 
         // Verify.
         assertTrue(result);
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
         verify(mReparentingTabsTask)
-                .begin(eq(mCurrentActivity), mIntentCaptor.capture(), eq(mBundle), eq(null));
-        Intent intent = mIntentCaptor.getValue();
+                .begin(eq(mCurrentActivity), intentCaptor.capture(), eq(options), eq(null));
+        Intent intent = intentCaptor.getValue();
         org.junit.Assert.assertNotNull(intent);
         org.junit.Assert.assertTrue(
                 intent.getBooleanExtra(
@@ -276,18 +277,20 @@ public class TabReparentingDelegateUnitTest {
                 /* bringToFront= */ true);
 
         // Verify that the reparenting task is initiated.
-        verify(mReparentingTabsTask).setupIntent(mIntentCaptor.capture(), eq(null));
-        verify(mDestActivity).onNewIntent(mOnNewIntentCaptor.capture());
+        var setupIntentCaptor = ArgumentCaptor.forClass(Intent.class);
+        var onNewIntentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(mReparentingTabsTask).setupIntent(setupIntentCaptor.capture(), eq(null));
+        verify(mDestActivity).onNewIntent(onNewIntentCaptor.capture());
 
         // Verify the intent used in the reparenting task.
         assertEquals(
                 "Intents passed to setup reparenting task and sent to the activity should be the"
                         + " same.",
-                mIntentCaptor.getValue(),
-                mOnNewIntentCaptor.getValue());
+                setupIntentCaptor.getValue(),
+                onNewIntentCaptor.getValue());
         assertTrue(
                 "EXTRA_TAB_INDEX is not set.",
-                mIntentCaptor.getValue().hasExtra(IntentHandler.EXTRA_TAB_INDEX));
+                setupIntentCaptor.getValue().hasExtra(IntentHandler.EXTRA_TAB_INDEX));
     }
 
     @Test
@@ -304,18 +307,20 @@ public class TabReparentingDelegateUnitTest {
                 /* bringToFront= */ true);
 
         // Verify that the reparenting task is initiated.
-        verify(mReparentingTabsTask).setupIntent(mIntentCaptor.capture(), eq(null));
-        verify(mDestActivity).onNewIntent(mOnNewIntentCaptor.capture());
+        var setupIntentCaptor = ArgumentCaptor.forClass(Intent.class);
+        var onNewIntentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(mReparentingTabsTask).setupIntent(setupIntentCaptor.capture(), eq(null));
+        verify(mDestActivity).onNewIntent(onNewIntentCaptor.capture());
 
         // Verify the intent used in the reparenting task.
         assertEquals(
                 "Intents passed to setup reparenting task and sent to the activity should be the"
                         + " same.",
-                mIntentCaptor.getValue(),
-                mOnNewIntentCaptor.getValue());
+                setupIntentCaptor.getValue(),
+                onNewIntentCaptor.getValue());
         assertTrue(
                 "EXTRA_DEST_TAB_ID is not set.",
-                mIntentCaptor.getValue().hasExtra(IntentHandler.EXTRA_DEST_TAB_ID));
+                setupIntentCaptor.getValue().hasExtra(IntentHandler.EXTRA_DEST_TAB_ID));
     }
 
     @Test

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.safe_browsing;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -34,13 +35,13 @@ import java.lang.ref.WeakReference;
 /** Unit tests for SafeBrowsingReferringAppBridge. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SafeBrowsingReferringAppBridgeTest {
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
     @Mock private WindowAndroid mWindowAndroid;
+
     @Mock private ChromeActivity mActivity;
-    @Mock private BaseCustomTabActivity mBaseCustomTabActivity;
 
     private WeakReference<Activity> mActivityRef;
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Before
     public void setUp() {
@@ -115,17 +116,18 @@ public class SafeBrowsingReferringAppBridgeTest {
         final String webApkStartUrl = "https://example.test/app";
         final String webApkManifestId = "https://example.test/id";
         // Set up the WebAPK referrer.
-        when(mBaseCustomTabActivity.getIntentDataProvider())
+        BaseCustomTabActivity mockCustomTabActivity = mock(BaseCustomTabActivity.class);
+        when(mockCustomTabActivity.getIntentDataProvider())
                 .thenReturn(
                         new WebApkIntentDataProviderBuilder(webApkPackageName, webApkStartUrl)
                                 .setWebApkManifestId(webApkManifestId)
                                 .build());
-        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mBaseCustomTabActivity));
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mockCustomTabActivity));
         // Add a previous app referrer to the Intent, to test that both the previous referrer and
         // the WebAPK referrer are captured.
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, IntentHandler.PACKAGE_GSA);
-        when(mBaseCustomTabActivity.getIntent()).thenReturn(intent);
+        when(mockCustomTabActivity.getIntent()).thenReturn(intent);
 
         // Check that when WebAPK info is not explicitly requested, the fields are not populated.
         ReferringAppInfo infoWithoutWebApk =

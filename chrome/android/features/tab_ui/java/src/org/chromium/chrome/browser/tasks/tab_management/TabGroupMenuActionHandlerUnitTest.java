@@ -79,10 +79,6 @@ public class TabGroupMenuActionHandlerUnitTest {
     @Mock private TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJniMock;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private TabGroupUiActionHandler mTabGroupUiActionHandler;
-    @Mock private TabWindowManager mTabWindowManager;
-    @Mock private TabModelSelector mTabModelSelector;
-    @Mock private TabModel mOtherModel;
-    @Mock private Tab mDestTab;
 
     private TabGroupMenuActionHandler mHandler;
     @Nullable private TabGroupCreationCallback mTabGroupCreationCallback;
@@ -141,11 +137,14 @@ public class TabGroupMenuActionHandlerUnitTest {
     @EnableFeatures({ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS})
     public void testHandleAddToGroupAction_crossWindowGroups() {
         when(mTabModel.getTabGroupCount()).thenReturn(0);
-        when(mTabModelSelector.getModel(false)).thenReturn(mOtherModel);
-        when(mOtherModel.getTabGroupCount()).thenReturn(1);
-        when(mTabWindowManager.getAllTabModelSelectors()).thenReturn(List.of(mTabModelSelector));
+        TabWindowManager tabWindowManager = mock(TabWindowManager.class);
+        TabModelSelector otherSelector = mock(TabModelSelector.class);
+        TabModel otherModel = mock(TabModel.class);
+        when(otherSelector.getModel(false)).thenReturn(otherModel);
+        when(otherModel.getTabGroupCount()).thenReturn(1);
+        when(tabWindowManager.getAllTabModelSelectors()).thenReturn(List.of(otherSelector));
         ThreadUtils.runOnUiThreadBlocking(
-                () -> TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager));
+                () -> TabWindowManagerSingleton.setTabWindowManagerForTesting(tabWindowManager));
 
         mHandler.handleAddToGroupAction(mTab);
 
@@ -179,9 +178,10 @@ public class TabGroupMenuActionHandlerUnitTest {
     public void testHandleAddToExistingGroupAction() {
         UserActionTester actionTester = new UserActionTester();
         Token groupId = Token.createRandom();
-        when(mDestTab.getId()).thenReturn(123);
-        when(mTabModel.getTabById(123)).thenReturn(mDestTab);
-        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mDestTab));
+        Tab destTab = mock(Tab.class);
+        when(destTab.getId()).thenReturn(123);
+        when(mTabModel.getTabById(123)).thenReturn(destTab);
+        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(destTab));
         when(mTabModel.tabGroupExists(groupId)).thenReturn(true);
         when(mTabModel.getGroupLastShownTabId(groupId)).thenReturn(123);
 
@@ -190,7 +190,7 @@ public class TabGroupMenuActionHandlerUnitTest {
         verify(mTabModel)
                 .mergeListOfTabsToGroup(
                         eq(List.of(mTab)),
-                        eq(mDestTab),
+                        eq(destTab),
                         eq(TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP));
         assertTrue(actionTester.getActions().contains("MobileMenuAddToExistingGroup"));
     }

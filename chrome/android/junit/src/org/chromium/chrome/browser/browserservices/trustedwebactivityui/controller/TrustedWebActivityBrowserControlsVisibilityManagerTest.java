@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -66,7 +67,6 @@ public class TrustedWebActivityBrowserControlsVisibilityManagerTest {
     @Mock SecurityStateModel.Natives mSecurityStateMocks;
     @Mock public CustomTabToolbarCoordinator mToolbarCoordinator;
     @Mock public CloseButtonVisibilityManager mCloseButtonVisibilityManager;
-    @Mock private BrowserServicesIntentDataProvider mBrowserServicesIntentDataProvider;
 
     TrustedWebActivityBrowserControlsVisibilityManager mController;
 
@@ -87,7 +87,7 @@ public class TrustedWebActivityBrowserControlsVisibilityManagerTest {
     /** Browser controls should be shown for pages with certificate errors. */
     @Test
     public void testDangerousSecurityLevel() {
-        mController = buildController(mBrowserServicesIntentDataProvider);
+        mController = buildController(mock(BrowserServicesIntentDataProvider.class));
         setTabSecurityLevel(ConnectionSecurityLevel.DANGEROUS);
         mController.updateIsInAppMode(true);
         assertEquals(BrowserControlsState.SHOWN, getLastBrowserControlsState());
@@ -97,7 +97,7 @@ public class TrustedWebActivityBrowserControlsVisibilityManagerTest {
     /** Browser controls should be shown for pages with mixed content warnings. */
     @Test
     public void testWarningSecurityLevel() {
-        mController = buildController(mBrowserServicesIntentDataProvider);
+        mController = buildController(mock(BrowserServicesIntentDataProvider.class));
         setTabSecurityLevel(ConnectionSecurityLevel.WARNING);
         mController.updateIsInAppMode(true);
         assertEquals(BrowserControlsState.SHOWN, getLastBrowserControlsState());
@@ -107,7 +107,7 @@ public class TrustedWebActivityBrowserControlsVisibilityManagerTest {
     /** Browser controls should be hidden for HTTP connections and mixed forms. */
     @Test
     public void testNoneSecurityLevel() {
-        mController = buildController(mBrowserServicesIntentDataProvider);
+        mController = buildController(mock(BrowserServicesIntentDataProvider.class));
         setTabSecurityLevel(ConnectionSecurityLevel.NONE);
         mController.updateIsInAppMode(true);
         assertEquals(BrowserControlsState.HIDDEN, getLastBrowserControlsState());
@@ -161,7 +161,7 @@ public class TrustedWebActivityBrowserControlsVisibilityManagerTest {
     /** Browser controls should be shown for TWAs when outside of the TWA's scope. */
     @Test
     public void testTwaOutOfScope() {
-        mController = buildController(mBrowserServicesIntentDataProvider);
+        mController = buildController(mock(BrowserServicesIntentDataProvider.class));
         mController.updateIsInAppMode(true);
         mController.updateIsInAppMode(false);
         assertEquals(

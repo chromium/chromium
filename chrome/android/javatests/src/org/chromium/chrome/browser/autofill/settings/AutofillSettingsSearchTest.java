@@ -28,9 +28,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.mockito.Mockito;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
@@ -64,18 +62,15 @@ import org.chromium.components.user_prefs.UserPrefs;
 @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
 @Batch(Batch.PER_CLASS)
 public class AutofillSettingsSearchTest {
-    @Rule
-    public SettingsActivityTestRule<MainSettings> mSettingsActivityTestRule =
-            new SettingsActivityTestRule<>(null); // null sets up the search bar to be displayed.
-
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Mock private EntityDataManager mEntityDataManager;
 
     private final HistogramWatcher mSettingsSearchHistogramWatcher =
             HistogramWatcher.newSingleRecordWatcher(
                     "Autofill.YourSavedInfoSettingsPage.VisitReferrer",
                     AutofillSettingsReferrer.SETTINGS_SEARCH);
+
+    @Rule
+    public SettingsActivityTestRule<MainSettings> mSettingsActivityTestRule =
+            new SettingsActivityTestRule<>(null); // null sets up the search bar to be displayed.
 
     @Before
     public void setUp() {
@@ -237,9 +232,10 @@ public class AutofillSettingsSearchTest {
     @Test
     @SmallTest
     public void testSearchPersonalContextToggle() {
-        when(mEntityDataManager.isPersonalContextPreferenceVisible()).thenReturn(true);
-        when(mEntityDataManager.isPersonalContextEnabled()).thenReturn(true);
-        EntityDataManagerFactory.setInstanceForTesting(mEntityDataManager);
+        EntityDataManager entityDataManagerMock = Mockito.mock(EntityDataManager.class);
+        when(entityDataManagerMock.isPersonalContextPreferenceVisible()).thenReturn(true);
+        when(entityDataManagerMock.isPersonalContextEnabled()).thenReturn(true);
+        EntityDataManagerFactory.setInstanceForTesting(entityDataManagerMock);
 
         searchSettings("find and fill");
 

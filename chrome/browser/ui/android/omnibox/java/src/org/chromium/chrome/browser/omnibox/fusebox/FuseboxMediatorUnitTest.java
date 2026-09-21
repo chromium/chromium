@@ -281,6 +281,7 @@ public class FuseboxMediatorUnitTest {
     @Mock private KeyEvent mKeyEvent;
     @Mock private Runnable mOnRemoveRunnable;
     @Mock private FuseboxAttachmentModelList mFuseboxAttachmentModelList;
+    @Mock private Tab mTab;
     @Mock private PropertyObserver<PropertyKey> mPropertyObserver;
     @Mock private DriveFilePickerClient mDriveFilePickerClient;
     @Mock private TabLoadingService mTabLoadingService;
@@ -2220,9 +2221,9 @@ public class FuseboxMediatorUnitTest {
 
         SuggestedTabInfo info =
                 new SuggestedTabInfo(1, "Title", new GURL("https://google.com"), 12345L);
-        when(mTab1.getId()).thenReturn(1);
-        when(mTab1.getTitle()).thenReturn("Title");
-        when(mTabModelSelector.getTabById(1)).thenReturn(mTab1);
+        when(mTab.getId()).thenReturn(1);
+        when(mTab.getTitle()).thenReturn("Title");
+        when(mTabModelSelector.getTabById(1)).thenReturn(mTab);
         when(mComposeboxQueryControllerBridge.addTabContextFromCache(eq(1L), anyBoolean()))
                 .thenReturn("token");
 
@@ -2247,8 +2248,8 @@ public class FuseboxMediatorUnitTest {
         mMediator.beginInput(mSession);
         SuggestedTabInfo info =
                 new SuggestedTabInfo(1, "Title", new GURL("https://google.com"), 12345L);
-        when(mTab1.getId()).thenReturn(1);
-        when(mTabModelSelector.getTabById(1)).thenReturn(mTab1);
+        when(mTab.getId()).thenReturn(1);
+        when(mTabModelSelector.getTabById(1)).thenReturn(mTab);
 
         mSuggestedTabsSupplier.set(List.of(info));
         RobolectricUtil.runAllBackgroundAndUi();
@@ -2275,9 +2276,10 @@ public class FuseboxMediatorUnitTest {
         when(mTabModelSelector.getCurrentTab()).thenReturn(tab1);
 
         // Recent tabs.
-        when(mTab2.getId()).thenReturn(2);
-        when(mTab2.getUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
-        mTabMap.put(2, mTab2);
+        Tab tab2 = mock(Tab.class);
+        when(tab2.getId()).thenReturn(2);
+        when(tab2.getUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
+        mTabMap.put(2, tab2);
 
         mockTab(3, JUnitTestGURLs.URL_1);
         mockTab(4, JUnitTestGURLs.URL_2);

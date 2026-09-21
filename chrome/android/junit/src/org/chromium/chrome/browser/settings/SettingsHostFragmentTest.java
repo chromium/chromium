@@ -36,9 +36,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -68,26 +65,14 @@ import org.chromium.components.sync.SyncService;
 @Config(qualifiers = "w720dp-h1024dp")
 @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_MULTI_COLUMN})
 public class SettingsHostFragmentTest {
-    /** Subclass SettingsHostFragment to mock initial fragment instantiation. */
     @Rule
     public ActivityScenarioRule<TestChromeBaseAppCompatActivity> mActivityScenarios =
             new ActivityScenarioRule<>(TestChromeBaseAppCompatActivity.class);
 
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Mock private Preference mPreference;
-    @Mock private PreferenceFragmentCompat mPreferenceFragmentCompat;
-    @Mock private FragmentDependencyProvider mFragmentDependencyProvider;
-    @Mock private SettingsContainmentHelper mSettingsContainmentHelper;
-    @Mock private SettingsNavigation mSettingsNavigation;
-    @Mock private Profile mProfile;
-    @Mock private SigninManager mSigninManager;
-    @Mock private TemplateUrlService mTemplateUrlService;
-    @Mock private SyncService mSyncService;
-
     private TestChromeBaseAppCompatActivity mActivity;
     private SettingsHostFragment mSettingsHostFragment;
 
+    /** Subclass SettingsHostFragment to mock initial fragment instantiation. */
     public static class TestSettingsHostFragment extends SettingsHostFragment {
         private @Nullable Intent mCapturedIntent;
 
@@ -112,10 +97,10 @@ public class SettingsHostFragmentTest {
                             ApplicationStatus.onStateChangeForTesting(
                                     activity, ActivityState.RESUMED);
                         });
-        ProfileManager.setLastUsedProfileForTesting(mProfile);
-        IdentityServicesProvider.setSigninManagerForTesting(mSigninManager);
-        TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
-        SyncServiceFactory.setInstanceForTesting(mSyncService);
+        ProfileManager.setLastUsedProfileForTesting(mock(Profile.class));
+        IdentityServicesProvider.setSigninManagerForTesting(mock(SigninManager.class));
+        TemplateUrlServiceFactory.setInstanceForTesting(mock(TemplateUrlService.class));
+        SyncServiceFactory.setInstanceForTesting(mock(SyncService.class));
     }
 
     @After
@@ -200,14 +185,14 @@ public class SettingsHostFragmentTest {
     @Test
     public void testOnPreferenceStartFragment() {
         attachHostFragment();
-        when(mPreference.getFragment()).thenReturn(SecondFakeSettingsFragment.class.getName());
+        Preference preference = mock(Preference.class);
+        when(preference.getFragment()).thenReturn(SecondFakeSettingsFragment.class.getName());
         Bundle extras = new Bundle();
         extras.putString("test_key", "test_value");
-        when(mPreference.getExtras()).thenReturn(extras);
+        when(preference.getExtras()).thenReturn(extras);
 
-        boolean handled =
-                mSettingsHostFragment.onPreferenceStartFragment(
-                        mPreferenceFragmentCompat, mPreference);
+        PreferenceFragmentCompat caller = mock(PreferenceFragmentCompat.class);
+        boolean handled = mSettingsHostFragment.onPreferenceStartFragment(caller, preference);
 
         assertTrue("Preference start fragment should be handled", handled);
         mSettingsHostFragment.getChildFragmentManager().executePendingTransactions();
@@ -729,9 +714,10 @@ public class SettingsHostFragmentTest {
     @Test
     public void testSetDependencyProvider_whenNotAdded_defersRegistrationUntilAttached() {
         SettingsHostFragment fragment = new TestSettingsHostFragment();
+        FragmentDependencyProvider mockProvider = mock(FragmentDependencyProvider.class);
 
         // setDependencyProvider should not throw when fragment is unattached
-        fragment.setDependencyProvider(mFragmentDependencyProvider);
+        fragment.setDependencyProvider(mockProvider);
 
         mActivity
                 .getSupportFragmentManager()
@@ -778,9 +764,10 @@ public class SettingsHostFragmentTest {
                 mainSettings, /* addToBackStack= */ false, /* tag= */ null);
         mSettingsHostFragment.getChildFragmentManager().executePendingTransactions();
 
-        mSettingsHostFragment.setDependencyProvider(mFragmentDependencyProvider);
+        FragmentDependencyProvider mockProvider = mock(FragmentDependencyProvider.class);
+        mSettingsHostFragment.setDependencyProvider(mockProvider);
 
-        verify(mFragmentDependencyProvider)
+        verify(mockProvider)
                 .attachDependencies(mSettingsHostFragment.getChildFragmentManager(), mainSettings);
     }
 
@@ -862,24 +849,26 @@ public class SettingsHostFragmentTest {
     @Test
     public void testOnConfigurationChanged_updatesContainment() {
         attachHostFragment();
-        mSettingsHostFragment.setContainmentHelperForTesting(mSettingsContainmentHelper);
+        SettingsContainmentHelper mockHelper = mock(SettingsContainmentHelper.class);
+        mSettingsHostFragment.setContainmentHelperForTesting(mockHelper);
 
         mSettingsHostFragment.onConfigurationChanged(new Configuration());
 
-        verify(mSettingsContainmentHelper).updateContainmentForAttachedFragments(any());
+        verify(mockHelper).updateContainmentForAttachedFragments(any());
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
     public void testSettingsNavigationFactory_createSettingsNavigation() {
         attachHostFragment();
-        mSettingsHostFragment.setSettingsNavigation(mSettingsNavigation);
+        SettingsNavigation mockNavigation = mock(SettingsNavigation.class);
+        mSettingsHostFragment.setSettingsNavigation(mockNavigation);
 
         SettingsNavigation resolved = SettingsNavigationFactory.createSettingsNavigation(mActivity);
         assertEquals(
                 "Should resolve the tab-scoped SettingsNavigation when host is attached and URL nav"
                         + " is enabled",
-                mSettingsNavigation,
+                mockNavigation,
                 resolved);
 
         SettingsNavigation nullResolved = SettingsNavigationFactory.createSettingsNavigation(null);
@@ -890,13 +879,14 @@ public class SettingsHostFragmentTest {
     @DisableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
     public void testSettingsNavigationFactory_createSettingsNavigation_urlNavDisabled() {
         attachHostFragment();
-        mSettingsHostFragment.setSettingsNavigation(mSettingsNavigation);
+        SettingsNavigation mockNavigation = mock(SettingsNavigation.class);
+        mSettingsHostFragment.setSettingsNavigation(mockNavigation);
 
         SettingsNavigation resolved = SettingsNavigationFactory.createSettingsNavigation(mActivity);
         assertNotNull(resolved);
         assertNotEquals(
                 "Should not resolve tab-scoped delegate when URL nav is disabled",
-                mSettingsNavigation,
+                mockNavigation,
                 resolved);
     }
 
@@ -904,19 +894,20 @@ public class SettingsHostFragmentTest {
     @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
     public void testOnPreferenceStartFragment_DelegatesToSettingsNavigation() {
         attachHostFragment();
-        mSettingsHostFragment.setSettingsNavigation(mSettingsNavigation);
+        SettingsNavigation mockNavigation = mock(SettingsNavigation.class);
+        mSettingsHostFragment.setSettingsNavigation(mockNavigation);
 
-        when(mPreference.getFragment()).thenReturn(SecondFakeSettingsFragment.class.getName());
+        Preference preference = mock(Preference.class);
+        when(preference.getFragment()).thenReturn(SecondFakeSettingsFragment.class.getName());
         Bundle extras = new Bundle();
         extras.putString("test_key", "test_value");
-        when(mPreference.getExtras()).thenReturn(extras);
+        when(preference.getExtras()).thenReturn(extras);
 
-        boolean handled =
-                mSettingsHostFragment.onPreferenceStartFragment(
-                        mPreferenceFragmentCompat, mPreference);
+        PreferenceFragmentCompat caller = mock(PreferenceFragmentCompat.class);
+        boolean handled = mSettingsHostFragment.onPreferenceStartFragment(caller, preference);
 
         assertTrue("Preference start fragment should be handled", handled);
-        verify(mSettingsNavigation)
+        verify(mockNavigation)
                 .startSettings(
                         mSettingsHostFragment.getContext(),
                         SecondFakeSettingsFragment.class,

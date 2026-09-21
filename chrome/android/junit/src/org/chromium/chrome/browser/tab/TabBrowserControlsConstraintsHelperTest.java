@@ -12,7 +12,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -40,22 +39,14 @@ import java.lang.ref.WeakReference;
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabBrowserControlsConstraintsHelperTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    private final UserDataHost mUserDataHost = new UserDataHost();
 
     @Mock TabImpl mTab;
     @Mock WebContents mWebContents;
     @Mock TabDelegateFactory mDelegateFactory;
     @Mock TabBrowserControlsConstraintsHelper.Natives mJniMock;
     @Mock TabObserver mTabObserver;
-    @Mock private WindowAndroid mWindowAndroid;
-    @Mock private ChromeActivity mChromeActivity;
-    @Mock private TabDelegateFactory mTabDelegateFactory;
-    @Captor private ArgumentCaptor<TabObserver> mObserverArgCaptor;
-    @Captor private ArgumentCaptor<BrowserControlsOffsetTagsInfo> mTagsInfoArgCaptor;
 
-    @Captor
-    private ArgumentCaptor<BrowserControlsOffsetTagModifications> mTagModificationsArgCaptor;
-
-    private final UserDataHost mUserDataHost = new UserDataHost();
     private TabBrowserControlsConstraintsHelper mHelper;
     private TabObserver mRegisteredTabObserver;
     private BrowserControlsVisibilityDelegate mVisibilityDelegate;
@@ -77,10 +68,11 @@ public class TabBrowserControlsConstraintsHelperTest {
     }
 
     private void initHelper() {
+        ArgumentCaptor<TabObserver> observerArg = ArgumentCaptor.forClass(TabObserver.class);
         TabBrowserControlsConstraintsHelper.createForTab(mTab);
         mHelper = TabBrowserControlsConstraintsHelper.get(mTab);
-        Mockito.verify(mTab).addObserver(mObserverArgCaptor.capture());
-        mRegisteredTabObserver = mObserverArgCaptor.getValue();
+        Mockito.verify(mTab).addObserver(observerArg.capture());
+        mRegisteredTabObserver = observerArg.getValue();
     }
 
     @Test
@@ -100,9 +92,11 @@ public class TabBrowserControlsConstraintsHelperTest {
     @Test
     public void testUpdateVisibilityDelegate_TabAlreadyInitializedAndAttached() {
         Mockito.when(mTab.isInitialized()).thenReturn(true);
-        Mockito.when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
-        WeakReference<Context> activityRef = new WeakReference<>(mChromeActivity);
-        Mockito.when(mWindowAndroid.getContext()).thenReturn(activityRef);
+        WindowAndroid window = Mockito.mock(WindowAndroid.class);
+        Mockito.when(mWebContents.getTopLevelNativeWindow()).thenReturn(window);
+        ChromeActivity activity = Mockito.mock(ChromeActivity.class);
+        WeakReference<Context> activityRef = new WeakReference<>(activity);
+        Mockito.when(window.getContext()).thenReturn(activityRef);
 
         initHelper();
         Mockito.verify(mDelegateFactory, Mockito.times(1))
@@ -122,7 +116,8 @@ public class TabBrowserControlsConstraintsHelperTest {
         Mockito.verify(mDelegateFactory, Mockito.never())
                 .createBrowserControlsVisibilityDelegate(mTab);
 
-        mRegisteredTabObserver.onActivityAttachmentChanged(mTab, mWindowAndroid);
+        WindowAndroid window = Mockito.mock(WindowAndroid.class);
+        mRegisteredTabObserver.onActivityAttachmentChanged(mTab, window);
         Mockito.verify(mDelegateFactory, Mockito.times(1))
                 .createBrowserControlsVisibilityDelegate(mTab);
         verifyUpdateState(BrowserControlsState.BOTH);
@@ -144,14 +139,16 @@ public class TabBrowserControlsConstraintsHelperTest {
         mVisibilityDelegate.set(BrowserControlsState.HIDDEN);
         verifyUpdateState(BrowserControlsState.HIDDEN, false);
 
+        TabDelegateFactory newDelegateFactory = Mockito.mock(TabDelegateFactory.class);
         BrowserControlsVisibilityDelegate newVisibilityDelegate =
                 new BrowserControlsVisibilityDelegate();
-        Mockito.when(mTab.getDelegateFactory()).thenReturn(mTabDelegateFactory);
-        Mockito.when(mTabDelegateFactory.createBrowserControlsVisibilityDelegate(Mockito.any()))
+        Mockito.when(mTab.getDelegateFactory()).thenReturn(newDelegateFactory);
+        Mockito.when(newDelegateFactory.createBrowserControlsVisibilityDelegate(Mockito.any()))
                 .thenReturn(newVisibilityDelegate);
 
-        mRegisteredTabObserver.onActivityAttachmentChanged(mTab, mWindowAndroid);
-        Mockito.verify(mTabDelegateFactory).createBrowserControlsVisibilityDelegate(mTab);
+        WindowAndroid window = Mockito.mock(WindowAndroid.class);
+        mRegisteredTabObserver.onActivityAttachmentChanged(mTab, window);
+        Mockito.verify(newDelegateFactory).createBrowserControlsVisibilityDelegate(mTab);
 
         verifyUpdateState(BrowserControlsState.BOTH);
 
@@ -168,71 +165,73 @@ public class TabBrowserControlsConstraintsHelperTest {
     @Test
     public void testUpdateOffsetTag_visibilityConstraintsChanged() {
         initHelper();
+        ArgumentCaptor<BrowserControlsOffsetTagsInfo> tagsInfoArg =
+                ArgumentCaptor.forClass(BrowserControlsOffsetTagsInfo.class);
+        ArgumentCaptor<BrowserControlsOffsetTagModifications> tagModificationsArg =
+                ArgumentCaptor.forClass(BrowserControlsOffsetTagModifications.class);
         mRegisteredTabObserver.onInitialized(mTab, null);
         RobolectricUtil.runAllBackgroundAndUi();
 
         // During init, delegate gets set with BOTH, check that we create and propagate offset tags.
         Mockito.verify(mTabObserver)
                 .onOffsetTagsInfoChanged(
-                        Mockito.any(), Mockito.any(), mTagsInfoArgCaptor.capture(), Mockito.eq(3));
-        assertOffsetTagsNotNull(mTagsInfoArgCaptor.getValue().getTags());
-        verifyUpdateState(BrowserControlsState.BOTH, mTagModificationsArgCaptor);
-        assertOffsetTagsNotNull(mTagModificationsArgCaptor.getValue().getTags());
+                        Mockito.any(), Mockito.any(), tagsInfoArg.capture(), Mockito.eq(3));
+        assertOffsetTagsNotNull(tagsInfoArg.getValue().getTags());
+        verifyUpdateState(BrowserControlsState.BOTH, tagModificationsArg);
+        assertOffsetTagsNotNull(tagModificationsArg.getValue().getTags());
 
         // When visibility is forced, we should have null tags.
         mVisibilityDelegate.set(BrowserControlsState.SHOWN);
         RobolectricUtil.runAllBackgroundAndUi();
         Mockito.verify(mTabObserver)
                 .onOffsetTagsInfoChanged(
-                        Mockito.any(), Mockito.any(), mTagsInfoArgCaptor.capture(), Mockito.eq(1));
-        assertOffsetTagsNull(mTagsInfoArgCaptor.getValue().getTags());
-        verifyUpdateState(BrowserControlsState.SHOWN, mTagModificationsArgCaptor);
-        assertOffsetTagsNull(mTagModificationsArgCaptor.getValue().getTags());
+                        Mockito.any(), Mockito.any(), tagsInfoArg.capture(), Mockito.eq(1));
+        assertOffsetTagsNull(tagsInfoArg.getValue().getTags());
+        verifyUpdateState(BrowserControlsState.SHOWN, tagModificationsArg);
+        assertOffsetTagsNull(tagModificationsArg.getValue().getTags());
 
         // Back to non forced state, check that we create and propagate tags again.
         mVisibilityDelegate.set(BrowserControlsState.BOTH);
         RobolectricUtil.runAllBackgroundAndUi();
         Mockito.verify(mTabObserver, Mockito.times(2))
                 .onOffsetTagsInfoChanged(
-                        Mockito.any(), Mockito.any(), mTagsInfoArgCaptor.capture(), Mockito.eq(3));
-        assertOffsetTagsNotNull(mTagsInfoArgCaptor.getValue().getTags());
-        verifyUpdateState(BrowserControlsState.BOTH, mTagModificationsArgCaptor);
-        assertOffsetTagsNotNull(mTagModificationsArgCaptor.getValue().getTags());
+                        Mockito.any(), Mockito.any(), tagsInfoArg.capture(), Mockito.eq(3));
+        assertOffsetTagsNotNull(tagsInfoArg.getValue().getTags());
+        verifyUpdateState(BrowserControlsState.BOTH, tagModificationsArg);
+        assertOffsetTagsNotNull(tagModificationsArg.getValue().getTags());
     }
 
     @Test
     public void testUpdateOffsetTag_onTabShownAndHidden() {
         initHelper();
+        ArgumentCaptor<BrowserControlsOffsetTagsInfo> tagsInfoArg =
+                ArgumentCaptor.forClass(BrowserControlsOffsetTagsInfo.class);
+        ArgumentCaptor<BrowserControlsOffsetTagModifications> tagModificationsArg =
+                ArgumentCaptor.forClass(BrowserControlsOffsetTagModifications.class);
         mRegisteredTabObserver.onInitialized(mTab, null);
         RobolectricUtil.runAllBackgroundAndUi();
         Mockito.verify(mTabObserver)
                 .onOffsetTagsInfoChanged(
-                        Mockito.any(), Mockito.any(), mTagsInfoArgCaptor.capture(), Mockito.eq(3));
-        assertOffsetTagsNotNull(mTagsInfoArgCaptor.getValue().getTags());
-        verifyUpdateState(BrowserControlsState.BOTH, mTagModificationsArgCaptor);
-        assertOffsetTagsNotNull(mTagModificationsArgCaptor.getValue().getTags());
+                        Mockito.any(), Mockito.any(), tagsInfoArg.capture(), Mockito.eq(3));
+        assertOffsetTagsNotNull(tagsInfoArg.getValue().getTags());
+        verifyUpdateState(BrowserControlsState.BOTH, tagModificationsArg);
+        assertOffsetTagsNotNull(tagModificationsArg.getValue().getTags());
 
         // Unregister tags when tab is hidden.
         mRegisteredTabObserver.onHidden(mTab, TabHidingType.CHANGED_TABS);
         RobolectricUtil.runAllBackgroundAndUi();
         Mockito.verify(mTabObserver, Mockito.times(2))
                 .onOffsetTagsInfoChanged(
-                        Mockito.any(),
-                        Mockito.any(),
-                        mTagsInfoArgCaptor.capture(),
-                        Mockito.anyInt());
-        assertOffsetTagsNull(mTagsInfoArgCaptor.getValue().getTags());
+                        Mockito.any(), Mockito.any(), tagsInfoArg.capture(), Mockito.anyInt());
+        assertOffsetTagsNull(tagsInfoArg.getValue().getTags());
 
         // Visibility is not forced, register tags again when tab is shown.
         mRegisteredTabObserver.onShown(mTab, TabHidingType.CHANGED_TABS);
         RobolectricUtil.runAllBackgroundAndUi();
         Mockito.verify(mTabObserver, Mockito.times(3))
                 .onOffsetTagsInfoChanged(
-                        Mockito.any(),
-                        Mockito.any(),
-                        mTagsInfoArgCaptor.capture(),
-                        Mockito.anyInt());
-        assertOffsetTagsNotNull(mTagsInfoArgCaptor.getValue().getTags());
+                        Mockito.any(), Mockito.any(), tagsInfoArg.capture(), Mockito.anyInt());
+        assertOffsetTagsNotNull(tagsInfoArg.getValue().getTags());
     }
 
     private void assertOffsetTagsNull(BrowserControlsOffsetTags tags) {
@@ -292,14 +291,15 @@ public class TabBrowserControlsConstraintsHelperTest {
         Mockito.verify(mDelegateFactory, Mockito.times(1))
                 .createBrowserControlsVisibilityDelegate(mTab);
 
+        TabDelegateFactory newDelegateFactory = Mockito.mock(TabDelegateFactory.class);
         BrowserControlsVisibilityDelegate newVisibilityDelegate =
                 new BrowserControlsVisibilityDelegate();
-        Mockito.when(mTab.getDelegateFactory()).thenReturn(mTabDelegateFactory);
-        Mockito.when(mTabDelegateFactory.createBrowserControlsVisibilityDelegate(Mockito.any()))
+        Mockito.when(mTab.getDelegateFactory()).thenReturn(newDelegateFactory);
+        Mockito.when(newDelegateFactory.createBrowserControlsVisibilityDelegate(Mockito.any()))
                 .thenReturn(newVisibilityDelegate);
 
         TabBrowserControlsConstraintsHelper.updateVisibilityDelegate(mTab);
-        Mockito.verify(mTabDelegateFactory, Mockito.times(1))
+        Mockito.verify(newDelegateFactory, Mockito.times(1))
                 .createBrowserControlsVisibilityDelegate(mTab);
 
         verifyUpdateState(BrowserControlsState.BOTH);

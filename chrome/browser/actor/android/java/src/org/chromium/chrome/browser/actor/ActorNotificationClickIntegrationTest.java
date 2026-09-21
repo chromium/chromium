@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.actor;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.app.Notification;
@@ -35,7 +36,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
-import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 
 /** Integration tests for actor notification clicks. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -48,8 +48,6 @@ public class ActorNotificationClickIntegrationTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private ActorKeyedService mActorKeyedService;
-    @Mock private ActorTask mActorTask;
-    @Mock private ActorForegroundServiceController mActorForegroundServiceController;
 
     private Context mContext;
 
@@ -114,22 +112,22 @@ public class ActorNotificationClickIntegrationTest {
         int taskId = 789;
         int state = ActorTaskState.ACTING;
 
-        when(mActorTask.getId()).thenReturn(taskId);
-        when(mActorTask.getState()).thenReturn(state);
+        ActorTask task = mock(ActorTask.class);
+        when(task.getId()).thenReturn(taskId);
+        when(task.getState()).thenReturn(state);
 
-        ActorForegroundServiceController.setInstanceForTesting(mActorForegroundServiceController);
+        ActorForegroundServiceController controller = mock(ActorForegroundServiceController.class);
+        ActorForegroundServiceController.setInstanceForTesting(controller);
 
         Intent intent = new Intent(mContext, ChromeTabbedActivity.class);
         intent.setAction(Intent.ACTION_VIEW);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, taskId);
         intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_STATE, state);
-        when(mActorForegroundServiceController.createTrustedBringTabToFrontIntent(mActorTask))
-                .thenReturn(intent);
+        when(controller.createTrustedBringTabToFrontIntent(task)).thenReturn(intent);
 
         // Verify that building a notification for this task produces a PendingIntent.
-        NotificationWrapper wrapper =
-                ActorNotificationFactory.buildNotification(mActorTask, state, false, false);
+        var wrapper = ActorNotificationFactory.buildNotification(task, state, false, false);
 
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher("Actor.Notification.ClickTaskState", state);
@@ -148,8 +146,9 @@ public class ActorNotificationClickIntegrationTest {
         int liveState = ActorTaskState.ACTING;
 
         ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
-        when(mActorKeyedService.getTask(taskId)).thenReturn(mActorTask);
-        when(mActorTask.getState()).thenReturn(liveState);
+        ActorTask liveTask = mock(ActorTask.class);
+        when(mActorKeyedService.getTask(taskId)).thenReturn(liveTask);
+        when(liveTask.getState()).thenReturn(liveState);
 
         // The intent contains an older state, but the live state should be logged.
         Intent intent = new Intent(mContext, ChromeTabbedActivity.class);

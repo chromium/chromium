@@ -53,9 +53,6 @@ public class TabCacheUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private CipherFactory mCipherFactory;
-    @Mock private Tab mTab;
-    @Mock private Tab mTab1;
-    @Mock private Tab mTab2;
 
     private final PausedExecutorService mExecutor = new PausedExecutorService();
     private TabCache mTabCache;
@@ -101,14 +98,15 @@ public class TabCacheUnitTest {
     public void testSaveTab_ValidRegular() {
         initTabCache(/* hasCipherFactory= */ false);
 
-        when(mTab.getId()).thenReturn(10);
-        when(mTab.isOffTheRecord()).thenReturn(false);
+        Tab tab = mock(Tab.class);
+        when(tab.getId()).thenReturn(10);
+        when(tab.isOffTheRecord()).thenReturn(false);
 
         TabState tabState = createMockTabState();
         TabStateExtractor.setTabStateForTesting(10, tabState);
 
         TabCacheKey key = new TabCacheKey("0", /* isIncognito= */ false);
-        mTabCache.saveTab(key, mTab);
+        mTabCache.saveTab(key, tab);
 
         mExecutor.runAll();
         assertTrue(getCacheFile(key.getFileName()).exists());
@@ -118,14 +116,15 @@ public class TabCacheUnitTest {
     public void testSaveTab_ValidIncognito() {
         initTabCache(/* hasCipherFactory= */ true);
 
-        when(mTab.getId()).thenReturn(20);
-        when(mTab.isOffTheRecord()).thenReturn(true);
+        Tab tab = mock(Tab.class);
+        when(tab.getId()).thenReturn(20);
+        when(tab.isOffTheRecord()).thenReturn(true);
 
         TabState tabState = createMockTabState();
         TabStateExtractor.setTabStateForTesting(20, tabState);
 
         TabCacheKey key = new TabCacheKey("0", /* isIncognito= */ true);
-        mTabCache.saveTab(key, mTab);
+        mTabCache.saveTab(key, tab);
 
         mExecutor.runAll();
         assertTrue(getCacheFile(key.getFileName()).exists());
@@ -135,19 +134,20 @@ public class TabCacheUnitTest {
     public void testSaveTab_NullStateDeletesFile() {
         initTabCache(/* hasCipherFactory= */ false);
 
-        when(mTab.getId()).thenReturn(10);
-        when(mTab.isOffTheRecord()).thenReturn(false);
+        Tab tab = mock(Tab.class);
+        when(tab.getId()).thenReturn(10);
+        when(tab.isOffTheRecord()).thenReturn(false);
 
         TabState tabState = createMockTabState();
         TabStateExtractor.setTabStateForTesting(10, tabState);
 
         TabCacheKey key = new TabCacheKey("0", /* isIncognito= */ false);
-        mTabCache.saveTab(key, mTab);
+        mTabCache.saveTab(key, tab);
         mExecutor.runAll();
         assertTrue(getCacheFile(key.getFileName()).exists());
 
         TabStateExtractor.resetTabStatesForTesting();
-        mTabCache.saveTab(key, mTab);
+        mTabCache.saveTab(key, tab);
         mExecutor.runAll();
         assertFalse(getCacheFile(key.getFileName()).exists());
     }
@@ -156,14 +156,15 @@ public class TabCacheUnitTest {
     public void testPreloadAndGetPreLoadedTabOrLoad() {
         initTabCache(/* hasCipherFactory= */ false);
 
-        when(mTab.getId()).thenReturn(10);
-        when(mTab.isOffTheRecord()).thenReturn(false);
+        Tab tab = mock(Tab.class);
+        when(tab.getId()).thenReturn(10);
+        when(tab.isOffTheRecord()).thenReturn(false);
 
         TabState tabState = createMockTabState();
         TabStateExtractor.setTabStateForTesting(10, tabState);
 
         TabCacheKey key = new TabCacheKey("0", /* isIncognito= */ false);
-        mTabCache.saveTab(key, mTab);
+        mTabCache.saveTab(key, tab);
         mExecutor.runAll();
 
         mTabCache.preloadTab(key);
@@ -179,19 +180,21 @@ public class TabCacheUnitTest {
         initTabCache(/* hasCipherFactory= */ false);
         assertTrue(mTabCache.getAllTabIds().isEmpty());
 
-        when(mTab1.getId()).thenReturn(10);
-        when(mTab1.isOffTheRecord()).thenReturn(false);
+        Tab tab1 = mock(Tab.class);
+        when(tab1.getId()).thenReturn(10);
+        when(tab1.isOffTheRecord()).thenReturn(false);
         TabStateExtractor.setTabStateForTesting(10, createMockTabState());
 
-        when(mTab2.getId()).thenReturn(20);
-        when(mTab2.isOffTheRecord()).thenReturn(false);
+        Tab tab2 = mock(Tab.class);
+        when(tab2.getId()).thenReturn(20);
+        when(tab2.isOffTheRecord()).thenReturn(false);
         TabStateExtractor.setTabStateForTesting(20, createMockTabState());
 
         TabCacheKey key1 = new TabCacheKey("0", /* isIncognito= */ false);
         TabCacheKey key2 = new TabCacheKey("1", /* isIncognito= */ false);
 
-        mTabCache.saveTab(key1, mTab1);
-        mTabCache.saveTab(key2, mTab2);
+        mTabCache.saveTab(key1, tab1);
+        mTabCache.saveTab(key2, tab2);
         mExecutor.runAll();
 
         Set<Integer> tabIds = mTabCache.getAllTabIds();
@@ -211,14 +214,15 @@ public class TabCacheUnitTest {
     public void testClearKey() {
         initTabCache(/* hasCipherFactory= */ false);
 
-        when(mTab.getId()).thenReturn(10);
-        when(mTab.isOffTheRecord()).thenReturn(false);
+        Tab tab = mock(Tab.class);
+        when(tab.getId()).thenReturn(10);
+        when(tab.isOffTheRecord()).thenReturn(false);
 
         TabState tabState = createMockTabState();
         TabStateExtractor.setTabStateForTesting(10, tabState);
 
         TabCacheKey key = new TabCacheKey("0", /* isIncognito= */ false);
-        mTabCache.saveTab(key, mTab);
+        mTabCache.saveTab(key, tab);
         mExecutor.runAll();
         assertTrue(getCacheFile(key.getFileName()).exists());
 
@@ -262,11 +266,13 @@ public class TabCacheUnitTest {
         TabCache cacheA = TabCacheManager.create(CUSTOM_DIR_A, /* cipherFactory= */ null);
         TabCache cacheB = TabCacheManager.create(CUSTOM_DIR_B, /* cipherFactory= */ null);
 
-        when(mTab1.getId()).thenReturn(10);
-        when(mTab1.isOffTheRecord()).thenReturn(false);
+        Tab tab1 = mock(Tab.class);
+        when(tab1.getId()).thenReturn(10);
+        when(tab1.isOffTheRecord()).thenReturn(false);
 
-        when(mTab2.getId()).thenReturn(20);
-        when(mTab2.isOffTheRecord()).thenReturn(false);
+        Tab tab2 = mock(Tab.class);
+        when(tab2.getId()).thenReturn(20);
+        when(tab2.isOffTheRecord()).thenReturn(false);
 
         TabState tabState1 = createMockTabState();
         TabState tabState2 = createMockTabState();
@@ -274,8 +280,8 @@ public class TabCacheUnitTest {
         TabStateExtractor.setTabStateForTesting(20, tabState2);
 
         TabCacheKey key = new TabCacheKey("shared_key", /* isIncognito= */ false);
-        cacheA.saveTab(key, mTab1);
-        cacheB.saveTab(key, mTab2);
+        cacheA.saveTab(key, tab1);
+        cacheB.saveTab(key, tab2);
 
         mExecutor.runAll();
 
@@ -307,11 +313,13 @@ public class TabCacheUnitTest {
         TabCache cacheA = TabCacheManager.create(CUSTOM_DIR_A, /* cipherFactory= */ null);
         TabCache cacheB = TabCacheManager.create(CUSTOM_DIR_B, /* cipherFactory= */ null);
 
-        when(mTab1.getId()).thenReturn(10);
-        when(mTab1.isOffTheRecord()).thenReturn(false);
+        Tab tab1 = mock(Tab.class);
+        when(tab1.getId()).thenReturn(10);
+        when(tab1.isOffTheRecord()).thenReturn(false);
 
-        when(mTab2.getId()).thenReturn(20);
-        when(mTab2.isOffTheRecord()).thenReturn(false);
+        Tab tab2 = mock(Tab.class);
+        when(tab2.getId()).thenReturn(20);
+        when(tab2.isOffTheRecord()).thenReturn(false);
 
         TabState tabState1 = createMockTabState();
         TabState tabState2 = createMockTabState();
@@ -319,8 +327,8 @@ public class TabCacheUnitTest {
         TabStateExtractor.setTabStateForTesting(20, tabState2);
 
         TabCacheKey key = new TabCacheKey("target_key", /* isIncognito= */ false);
-        cacheA.saveTab(key, mTab1);
-        cacheB.saveTab(key, mTab2);
+        cacheA.saveTab(key, tab1);
+        cacheB.saveTab(key, tab2);
 
         mExecutor.runAll();
 
@@ -381,12 +389,13 @@ public class TabCacheUnitTest {
     @Test
     public void testResetForTesting() {
         TabCache cacheA = TabCacheManager.create(CUSTOM_DIR_A, /* cipherFactory= */ null);
-        when(mTab.getId()).thenReturn(10);
-        when(mTab.isOffTheRecord()).thenReturn(false);
+        Tab tab = mock(Tab.class);
+        when(tab.getId()).thenReturn(10);
+        when(tab.isOffTheRecord()).thenReturn(false);
         TabState tabState = createMockTabState();
         TabStateExtractor.setTabStateForTesting(10, tabState);
         TabCacheKey key = new TabCacheKey("reset_key", /* isIncognito= */ false);
-        cacheA.saveTab(key, mTab);
+        cacheA.saveTab(key, tab);
         mExecutor.runAll();
 
         File fileA =

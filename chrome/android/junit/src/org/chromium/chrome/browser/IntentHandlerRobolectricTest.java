@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
@@ -205,10 +206,6 @@ public class IntentHandlerRobolectricTest {
 
     @Mock IntentHandler.Natives mNativeMock;
     @Mock ExternalIntentUrlChecker.Natives mExternalIntentUrlCheckerNativeMock;
-    @Mock private Activity mActivity;
-    @Mock private Profile mProfile;
-    @Mock private ActorKeyedService mActorKeyedService;
-    @Mock private ActorTask mActorTask;
 
     private ShadowPowerManager mShadowPowerManager;
     private ShadowKeyguardManager mShadowKeyguardManager;
@@ -804,20 +801,21 @@ public class IntentHandlerRobolectricTest {
     @Test
     @Feature({"Android-AppBase"})
     public void testDetermineExternalIntentSource() {
+        Activity activity = Mockito.mock(Activity.class);
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.putExtra(
                 IntentHandler.EXTRA_ACTIVITY_REFERRER,
                 "android-app://com.google.android.apps.nexuslauncher");
         assertEquals(
                 ExternalAppId.PIXEL_LAUNCHER,
-                IntentHandler.determineExternalIntentSource(intent, mActivity));
+                IntentHandler.determineExternalIntentSource(intent, activity));
 
         intent.putExtra(
                 IntentHandler.EXTRA_ACTIVITY_REFERRER,
                 "android-app://com.sec.android.app.launcher");
         assertEquals(
                 ExternalAppId.SAMSUNG_LAUNCHER,
-                IntentHandler.determineExternalIntentSource(intent, mActivity));
+                IntentHandler.determineExternalIntentSource(intent, activity));
     }
 
     @Test
@@ -1005,11 +1003,14 @@ public class IntentHandlerRobolectricTest {
         // Trusted intent should resolve dynamically when explicit tab ID is invalid.
         IntentUtils.addTrustedIntentExtras(actorIntent);
 
-        ProfileManager.setLastUsedProfileForTesting(mProfile);
-        ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
+        Profile profile = mock(Profile.class);
+        ProfileManager.setLastUsedProfileForTesting(profile);
+        ActorKeyedService actorKeyedService = mock(ActorKeyedService.class);
+        ActorKeyedServiceFactory.setForTesting(actorKeyedService);
 
-        when(mActorKeyedService.getTask(123)).thenReturn(mActorTask);
-        when(mActorTask.getTargetTabId()).thenReturn(789);
+        ActorTask task = mock(ActorTask.class);
+        when(actorKeyedService.getTask(123)).thenReturn(task);
+        when(task.getTargetTabId()).thenReturn(789);
 
         assertEquals(
                 "Should resolve tab ID dynamically for trusted actor notification intent.",

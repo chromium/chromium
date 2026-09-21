@@ -204,12 +204,9 @@ public class MultiInstanceManagerApi31UnitTest {
     @Mock private ChromeTabbedActivity mTabbedActivityTask66;
     @Mock private RecentlyClosedEntriesManagerTracker mRecentlyClosedTracker;
     @Mock private MessageDispatcher mMessageDispatcher;
-    @Mock private Resources mResources;
 
     @Captor private ArgumentCaptor<List<Integer>> mIntegerListCaptor;
     @Captor private ArgumentCaptor<List<InstanceInfo>> mInstanceInfoListCaptor;
-    @Captor private ArgumentCaptor<Intent> mIntentCaptor;
-    @Captor private ArgumentCaptor<PropertyModel> mMessageCaptor;
 
     private final SettableMonotonicObservableSupplier<TabModelOrchestrator>
             mTabModelOrchestratorSupplier = ObservableSuppliers.createMonotonic();
@@ -1831,11 +1828,12 @@ public class MultiInstanceManagerApi31UnitTest {
     @Test
     public void testOpenWindow() {
         setupTwoInstances();
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
 
         mMultiInstanceManager.openWindow(INSTANCE_ID_2, NewWindowAppSource.WINDOW_MANAGER);
 
-        verify(mCurrentActivity).startActivity(mIntentCaptor.capture());
-        Intent intent = mIntentCaptor.getValue();
+        verify(mCurrentActivity).startActivity(intentCaptor.capture());
+        Intent intent = intentCaptor.getValue();
         assertNotEquals("Intent should not be null.", null, intent);
         assertEquals(
                 "New window source extra is incorrect.",
@@ -1857,10 +1855,12 @@ public class MultiInstanceManagerApi31UnitTest {
         ChromeMultiInstancePersistentStore.writeProfileType(
                 INSTANCE_ID_2, SupportedProfileType.OFF_THE_RECORD);
 
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+
         mMultiInstanceManager.openWindow(INSTANCE_ID_2, NewWindowAppSource.WINDOW_MANAGER);
 
-        verify(mCurrentActivity).startActivity(mIntentCaptor.capture());
-        Intent intent = mIntentCaptor.getValue();
+        verify(mCurrentActivity).startActivity(intentCaptor.capture());
+        Intent intent = intentCaptor.getValue();
         assertNotEquals("Intent should not be null.", null, intent);
         int flags = intent.getFlags();
         assertFalse(
@@ -1883,10 +1883,12 @@ public class MultiInstanceManagerApi31UnitTest {
         ChromeMultiInstancePersistentStore.writeProfileType(
                 INSTANCE_ID_2, SupportedProfileType.REGULAR);
 
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+
         manager.openWindow(INSTANCE_ID_2, NewWindowAppSource.WINDOW_MANAGER);
 
-        verify(mTabbedActivityTask62).startActivity(mIntentCaptor.capture());
-        Intent intent = mIntentCaptor.getValue();
+        verify(mTabbedActivityTask62).startActivity(intentCaptor.capture());
+        Intent intent = intentCaptor.getValue();
         assertNotEquals("Intent should not be null.", null, intent);
         int flags = intent.getFlags();
         assertFalse(
@@ -1909,10 +1911,12 @@ public class MultiInstanceManagerApi31UnitTest {
         ChromeMultiInstancePersistentStore.writeProfileType(
                 INSTANCE_ID_2, SupportedProfileType.OFF_THE_RECORD);
 
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+
         manager.openWindow(INSTANCE_ID_2, NewWindowAppSource.WINDOW_MANAGER);
 
-        verify(mTabbedActivityTask62).startActivity(mIntentCaptor.capture());
-        Intent intent = mIntentCaptor.getValue();
+        verify(mTabbedActivityTask62).startActivity(intentCaptor.capture());
+        Intent intent = intentCaptor.getValue();
         assertNotEquals("Intent should not be null.", null, intent);
         int flags = intent.getFlags();
         assertTrue(
@@ -1930,10 +1934,12 @@ public class MultiInstanceManagerApi31UnitTest {
         ChromeMultiInstancePersistentStore.writeProfileType(
                 INSTANCE_ID_2, SupportedProfileType.OFF_THE_RECORD);
 
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+
         mMultiInstanceManager.openWindow(INSTANCE_ID_2, NewWindowAppSource.WINDOW_MANAGER);
 
-        verify(mCurrentActivity).startActivity(mIntentCaptor.capture());
-        Intent intent = mIntentCaptor.getValue();
+        verify(mCurrentActivity).startActivity(intentCaptor.capture());
+        Intent intent = intentCaptor.getValue();
         assertNotEquals("Intent should not be null.", null, intent);
         int flags = intent.getFlags();
         assertTrue(
@@ -2278,10 +2284,12 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     public void testOpenNewWindow() {
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+
         mMultiInstanceManager.openNewWindow(false);
 
-        verify(mCurrentActivity).startActivity(mIntentCaptor.capture(), eq(null));
-        Intent intent = mIntentCaptor.getValue();
+        verify(mCurrentActivity).startActivity(intentCaptor.capture(), eq(null));
+        Intent intent = intentCaptor.getValue();
         assertNotNull(intent.getComponent());
         assertEquals(
                 "New window source extra is incorrect.",
@@ -2296,25 +2304,27 @@ public class MultiInstanceManagerApi31UnitTest {
     @Test
     @DisableFeatures(ChromeFeatureList.IN_APP_WINDOW_MANAGER_DEPRECATION)
     public void showInstanceCreationLimitMessage() {
-        when(mCurrentActivity.getResources()).thenReturn(mResources);
+        when(mCurrentActivity.getResources()).thenReturn(mock(Resources.class));
 
         mMultiInstanceManager.showInstanceCreationLimitMessage();
 
-        verify(mMessageDispatcher).enqueueWindowScopedMessage(mMessageCaptor.capture(), eq(false));
+        ArgumentCaptor<PropertyModel> message = ArgumentCaptor.forClass(PropertyModel.class);
+        verify(mMessageDispatcher).enqueueWindowScopedMessage(message.capture(), eq(false));
         assertEquals(
                 "Message identifier should match.",
                 MessageIdentifier.MULTI_INSTANCE_CREATION_LIMIT,
-                mMessageCaptor.getValue().get(MessageBannerProperties.MESSAGE_IDENTIFIER));
+                message.getValue().get(MessageBannerProperties.MESSAGE_IDENTIFIER));
     }
 
     @Test
     @DisableFeatures(ChromeFeatureList.IN_APP_WINDOW_MANAGER_DEPRECATION)
     public void testShowInstanceCreationLimitMessage_SuppressesDuplicates() {
-        when(mCurrentActivity.getResources()).thenReturn(mResources);
+        when(mCurrentActivity.getResources()).thenReturn(mock(Resources.class));
 
         // First invocation enqueues.
         mMultiInstanceManager.showInstanceCreationLimitMessage();
-        verify(mMessageDispatcher).enqueueWindowScopedMessage(mMessageCaptor.capture(), eq(false));
+        ArgumentCaptor<PropertyModel> message = ArgumentCaptor.forClass(PropertyModel.class);
+        verify(mMessageDispatcher).enqueueWindowScopedMessage(message.capture(), eq(false));
         reset(mMessageDispatcher);
 
         // Second invocation does not enqueue again because it is already enqueued.
@@ -2322,8 +2332,7 @@ public class MultiInstanceManagerApi31UnitTest {
         verify(mMessageDispatcher, never()).enqueueWindowScopedMessage(any(), anyBoolean());
 
         // Dismiss the message.
-        mMessageCaptor
-                .getValue()
+        message.getValue()
                 .get(MessageBannerProperties.ON_DISMISSED)
                 .onResult(DismissReason.GESTURE);
 

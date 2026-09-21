@@ -10,6 +10,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -25,7 +26,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -81,8 +81,6 @@ public class InstalledWebappBroadcastReceiverTest {
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
     @Mock private AppBannerManager mAppBannerManager;
-    @Mock private Context mContext1;
-    @Captor private ArgumentCaptor<Intent> mIntentCaptor;
 
     private InstalledWebappBroadcastReceiver mReceiver;
 
@@ -163,11 +161,14 @@ public class InstalledWebappBroadcastReceiverTest {
 
         addToRegister(id, appName, urls);
 
-        mReceiver.onReceive(mContext1, createMockIntent(id, Intent.ACTION_PACKAGE_FULLY_REMOVED));
+        Context context = mock(Context.class);
 
-        verify(mContext1).startActivity(mIntentCaptor.capture());
+        mReceiver.onReceive(context, createMockIntent(id, Intent.ACTION_PACKAGE_FULLY_REMOVED));
 
-        Intent intent = mIntentCaptor.getValue();
+        ArgumentCaptor<Intent> intentArgumentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(context).startActivity(intentArgumentCaptor.capture());
+
+        Intent intent = intentArgumentCaptor.getValue();
 
         assertEquals(appName, ClearDataDialogActivity.getAppNameFromIntent(intent));
         assertTrue(ClearDataDialogActivity.getIsAppUninstalledFromIntent(intent));
@@ -334,9 +335,10 @@ public class InstalledWebappBroadcastReceiverTest {
 
         addToRegister(id, appName, urls);
 
-        mReceiver.onReceive(mContext1, createMockIntent(id, Intent.ACTION_PACKAGE_FULLY_REMOVED));
+        Context context = mock(Context.class);
+        mReceiver.onReceive(context, createMockIntent(id, Intent.ACTION_PACKAGE_FULLY_REMOVED));
 
         verify(mNotificationManager, never()).notify(any(NotificationWrapper.class));
-        verify(mContext1).startActivity(any());
+        verify(context).startActivity(any());
     }
 }

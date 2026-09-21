@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -68,18 +69,13 @@ public class ExtensionAccessControlButtonMediatorTest {
     @Mock private Supplier<Boolean> mIsWindowCompactSupplier;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private ManagedMessageDispatcher mMessageDispatcher;
-    @Captor private ArgumentCaptor<ExtensionsToolbarBridge.Observer> mToolbarObserverCaptor;
-    @Captor private ArgumentCaptor<PropertyModel> mMessageCaptor;
-    @Mock private UrlFormatter.Natives mUrlFormatterJniMock;
-    @Mock private DisplayAndroid mDisplayAndroid;
-    @Mock private Resources mResources;
-    @Mock private WindowManager mWindowManager;
-    @Mock private Display mDisplay;
-    @Mock private WebContents mNewWebContents;
-    @Mock private ExtensionAction mExtensionAction;
 
     private final SettableNullableObservableSupplier<Tab> mCurrentTabSupplier =
             ObservableSuppliers.createNullable();
+
+    @Captor private ArgumentCaptor<ExtensionsToolbarBridge.Observer> mToolbarObserverCaptor;
+    @Mock private UrlFormatter.Natives mUrlFormatterJniMock;
+
     private ExtensionAccessControlButtonMediator mMediator;
     private PropertyModel mModel;
 
@@ -91,14 +87,18 @@ public class ExtensionAccessControlButtonMediatorTest {
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
         when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(new UnownedUserDataHost());
         when(mWindowAndroid.getContext()).thenReturn(new WeakReference<>(mContext));
-        when(mDisplayAndroid.getDipScale()).thenReturn(1.0f);
-        when(mWindowAndroid.getDisplay()).thenReturn(mDisplayAndroid);
-        DisplayAndroid.setNonMultiDisplayForTesting(mDisplayAndroid);
+        DisplayAndroid displayAndroid = mock(DisplayAndroid.class);
+        when(displayAndroid.getDipScale()).thenReturn(1.0f);
+        when(mWindowAndroid.getDisplay()).thenReturn(displayAndroid);
+        DisplayAndroid.setNonMultiDisplayForTesting(displayAndroid);
 
-        when(mContext.getResources()).thenReturn(mResources);
-        when(mResources.getDimensionPixelSize(anyInt())).thenReturn(10);
-        when(mContext.getSystemService(Context.WINDOW_SERVICE)).thenReturn(mWindowManager);
-        when(mWindowManager.getDefaultDisplay()).thenReturn(mDisplay);
+        Resources resources = mock(Resources.class);
+        when(mContext.getResources()).thenReturn(resources);
+        when(resources.getDimensionPixelSize(anyInt())).thenReturn(10);
+        WindowManager windowManager = mock(WindowManager.class);
+        when(mContext.getSystemService(Context.WINDOW_SERVICE)).thenReturn(windowManager);
+        Display display = mock(Display.class);
+        when(windowManager.getDefaultDisplay()).thenReturn(display);
 
         MessagesFactory.attachMessageDispatcher(mWindowAndroid, mMessageDispatcher);
 
@@ -226,11 +226,12 @@ public class ExtensionAccessControlButtonMediatorTest {
                 -1, mModel.get(ExtensionsToolbarProperties.REQUEST_ACCESS_BUTTON_EXTENSION_COUNT));
 
         // 5. Switch to a new tab (different WebContents)
+        WebContents newWebContents = mock(WebContents.class);
         RequestAccessButtonParams paramsNewTab = new RequestAccessButtonParams(new String[0], "");
-        when(mExtensionsToolbarBridge.getRequestAccessButtonParams(mNewWebContents))
+        when(mExtensionsToolbarBridge.getRequestAccessButtonParams(newWebContents))
                 .thenReturn(paramsNewTab);
 
-        observer.onActiveWebContentsChanged(mNewWebContents);
+        observer.onActiveWebContentsChanged(newWebContents);
 
         // State should be immediately cleared and the button should evaluate state for the new tab
         // (no requests)
@@ -293,8 +294,9 @@ public class ExtensionAccessControlButtonMediatorTest {
                         "2"))
                 .thenReturn("example.com needs your permission to run 2 extensions");
 
-        when(mExtensionAction.getName()).thenReturn("ExtensionName");
-        when(mExtensionsToolbarBridge.getAction("a", mWebContents)).thenReturn(mExtensionAction);
+        ExtensionAction action = mock(ExtensionAction.class);
+        when(action.getName()).thenReturn("ExtensionName");
+        when(mExtensionsToolbarBridge.getAction("a", mWebContents)).thenReturn(action);
 
         observer.onRequestAccessButtonParamsChanged();
 
@@ -302,10 +304,11 @@ public class ExtensionAccessControlButtonMediatorTest {
         assertFalse(mModel.get(ExtensionsToolbarProperties.IS_REQUEST_ACCESS_BUTTON_VISIBLE));
 
         // But message should be enqueued
+        ArgumentCaptor<PropertyModel> messageCaptor = ArgumentCaptor.forClass(PropertyModel.class);
         verify(mMessageDispatcher)
-                .enqueueWindowScopedMessage(mMessageCaptor.capture(), any(Boolean.class));
+                .enqueueWindowScopedMessage(messageCaptor.capture(), any(Boolean.class));
 
-        PropertyModel messageModel = mMessageCaptor.getValue();
+        PropertyModel messageModel = messageCaptor.getValue();
         assertEquals(
                 "Allow extension \"ExtensionName\"?",
                 messageModel.get(MessageBannerProperties.TITLE));
@@ -339,8 +342,8 @@ public class ExtensionAccessControlButtonMediatorTest {
         observer.onRequestAccessButtonParamsChanged();
 
         verify(mMessageDispatcher, times(2))
-                .enqueueWindowScopedMessage(mMessageCaptor.capture(), any(Boolean.class));
-        PropertyModel multiMessageModel = mMessageCaptor.getValue();
+                .enqueueWindowScopedMessage(messageCaptor.capture(), any(Boolean.class));
+        PropertyModel multiMessageModel = messageCaptor.getValue();
         assertEquals("Allow 2 extensions?", multiMessageModel.get(MessageBannerProperties.TITLE));
         assertEquals(
                 "example.com needs your permission to run 2 extensions",
@@ -372,15 +375,17 @@ public class ExtensionAccessControlButtonMediatorTest {
                         truncatedName))
                 .thenReturn("example.com needs your permission to run " + truncatedName);
 
-        when(mExtensionAction.getName()).thenReturn(longName);
-        when(mExtensionsToolbarBridge.getAction("a", mWebContents)).thenReturn(mExtensionAction);
+        ExtensionAction action = mock(ExtensionAction.class);
+        when(action.getName()).thenReturn(longName);
+        when(mExtensionsToolbarBridge.getAction("a", mWebContents)).thenReturn(action);
 
         observer.onRequestAccessButtonParamsChanged();
 
+        ArgumentCaptor<PropertyModel> messageCaptor = ArgumentCaptor.forClass(PropertyModel.class);
         verify(mMessageDispatcher)
-                .enqueueWindowScopedMessage(mMessageCaptor.capture(), any(Boolean.class));
+                .enqueueWindowScopedMessage(messageCaptor.capture(), any(Boolean.class));
 
-        PropertyModel messageModel = mMessageCaptor.getValue();
+        PropertyModel messageModel = messageCaptor.getValue();
         assertEquals(
                 "Allow extension \"" + truncatedName + "\"?",
                 messageModel.get(MessageBannerProperties.TITLE));
@@ -391,8 +396,9 @@ public class ExtensionAccessControlButtonMediatorTest {
 
     @Test
     public void testRequestAccessButtonVisibility_CompactWindow_HighDipScale() {
-        when(mDisplayAndroid.getDipScale()).thenReturn(2.0f);
-        when(mWindowAndroid.getDisplay()).thenReturn(mDisplayAndroid);
+        DisplayAndroid displayAndroid = mock(DisplayAndroid.class);
+        when(displayAndroid.getDipScale()).thenReturn(2.0f);
+        when(mWindowAndroid.getDisplay()).thenReturn(displayAndroid);
 
         ExtensionsToolbarBridge.Observer observer = mToolbarObserverCaptor.getValue();
         when(mIsWindowCompactSupplier.get()).thenReturn(true);
@@ -403,8 +409,9 @@ public class ExtensionAccessControlButtonMediatorTest {
         when(mExtensionsToolbarBridge.getRequestAccessButtonParams(any()))
                 .thenReturn(paramsWithRequests);
 
-        when(mExtensionAction.getName()).thenReturn("ExtensionName");
-        when(mExtensionsToolbarBridge.getAction("a", mWebContents)).thenReturn(mExtensionAction);
+        ExtensionAction action = mock(ExtensionAction.class);
+        when(action.getName()).thenReturn("ExtensionName");
+        when(mExtensionsToolbarBridge.getAction("a", mWebContents)).thenReturn(action);
 
         observer.onRequestAccessButtonParamsChanged();
 

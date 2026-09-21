@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -55,7 +56,6 @@ public class GlicNavigationUtilsUnitTest {
     @Mock private IdentityManager mIdentityManagerMock;
     @Mock private AccountManagerFacade mAccountManagerFacadeMock;
     @Mock private SigninAndHistorySyncActivityLauncher mLauncherMock;
-    @Mock private Intent mIntent;
 
     @Before
     public void setUp() {
@@ -94,12 +94,13 @@ public class GlicNavigationUtilsUnitTest {
     @Test
     public void testShowSignIn_WithoutPrimaryAccount_LaunchesSigninBottomSheet() {
         when(mIdentityManagerMock.getPrimaryAccountInfo()).thenReturn(null);
+        Intent intentMock = mock(Intent.class);
         when(mLauncherMock.createBottomSheetSigninIntentOrShowError(
                         eq(mActivityMock),
                         eq(mProfileMock),
                         any(BottomSheetSigninAndHistorySyncConfig.class),
                         eq(SigninAccessPoint.GLIC_LAUNCH_BUTTON)))
-                .thenReturn(mIntent);
+                .thenReturn(intentMock);
 
         GlicNavigationUtils.showSignIn(mProfileMock, mWebContentsMock);
 
@@ -109,6 +110,6 @@ public class GlicNavigationUtilsUnitTest {
                         eq(mProfileMock),
                         any(BottomSheetSigninAndHistorySyncConfig.class),
                         eq(SigninAccessPoint.GLIC_LAUNCH_BUTTON));
-        verify(mActivityMock).startActivity(mIntent);
+        verify(mActivityMock).startActivity(intentMock);
     }
 }

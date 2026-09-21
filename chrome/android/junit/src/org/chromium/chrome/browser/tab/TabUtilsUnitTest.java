@@ -35,6 +35,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -69,6 +70,16 @@ public class TabUtilsUnitTest {
         }
     }
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Rule
+    public OverrideContextWrapperTestRule mAutomotiveContextWrapperTestRule =
+            new OverrideContextWrapperTestRule();
+
+    @Rule
+    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
+
     private static final int TEST_SCREEN_WIDTH = 1000;
     private static final int TEST_SCREEN_HEIGHT = 1000;
     private static final int TEST_NAVIGATION_BAR_HEIGHT = 30;
@@ -83,7 +94,6 @@ public class TabUtilsUnitTest {
     @Mock private NavigationController mNavigationController;
     @Mock private Profile mProfile;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
-    @Mock private TabThumbnailView mTabThumbnailView;
 
     private boolean mRdsDefault;
     private @ContentSetting int mRdsException;
@@ -91,15 +101,6 @@ public class TabUtilsUnitTest {
     private boolean mUseDesktopUserAgent;
     private @TabUserAgent int mTabUserAgent;
     private @TabUserAgent int mTabNativeUserAgent;
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Rule
-    public OverrideContextWrapperTestRule mAutomotiveContextWrapperTestRule =
-            new OverrideContextWrapperTestRule();
-
-    @Rule
-    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
-            new ActivityScenarioRule<>(TestActivity.class);
 
     @Before
     public void setup() {
@@ -232,10 +233,11 @@ public class TabUtilsUnitTest {
         int mockImageSize = 100;
         int mockTargetSize = 50;
 
+        TabThumbnailView thumbnailView = Mockito.mock(TabThumbnailView.class);
         Bitmap bitmap = Bitmap.createBitmap(mockImageSize, mockImageSize, Bitmap.Config.ARGB_8888);
         bitmap.setDensity(DisplayMetrics.DENSITY_DEFAULT);
         TabUtils.setDrawableAndUpdateImageMatrix(
-                mTabThumbnailView,
+                thumbnailView,
                 new BitmapDrawable(bitmap),
                 new Size(mockTargetSize, mockTargetSize));
 
@@ -253,12 +255,13 @@ public class TabUtilsUnitTest {
         int mockImageSize = 100;
         int mockTargetSize = 50;
 
-        doReturn(ContextUtils.getApplicationContext()).when(mTabThumbnailView).getContext();
+        TabThumbnailView thumbnailView = Mockito.mock(TabThumbnailView.class);
+        doReturn(ContextUtils.getApplicationContext()).when(thumbnailView).getContext();
 
         Bitmap bitmap = Bitmap.createBitmap(mockImageSize, mockImageSize, Bitmap.Config.ARGB_8888);
         bitmap.setDensity(DisplayMetrics.DENSITY_DEFAULT);
         TabUtils.setDrawableAndUpdateImageMatrix(
-                mTabThumbnailView,
+                thumbnailView,
                 new BitmapDrawable(bitmap),
                 new Size(mockTargetSize, mockTargetSize));
 

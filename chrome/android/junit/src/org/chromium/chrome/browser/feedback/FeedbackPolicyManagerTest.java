@@ -36,8 +36,6 @@ public class FeedbackPolicyManagerTest {
     @Mock private PrefService mMockPrefService;
     @Mock private PrefChangeRegistrar mMockRegistrar;
     @Mock private Profile mRegularMockProfile;
-    @Mock private Profile mProfile;
-    @Mock private PrefChangeRegistrar mPrefChangeRegistrar;
     @Captor private ArgumentCaptor<PrefChangeRegistrar.PrefObserver> mObserverCaptor;
 
     private SharedPreferencesManager mSharedPreferenceManager;
@@ -119,27 +117,31 @@ public class FeedbackPolicyManagerTest {
 
     @Test
     public void testProfileSwitching_RecreatesRegistrar() {
+        Profile secondMockProfile = Mockito.mock(Profile.class);
+        PrefChangeRegistrar secondMockRegistrar = Mockito.mock(PrefChangeRegistrar.class);
+
         // Initialize with first profile
         Mockito.when(mMockPrefService.getBoolean(Pref.USER_FEEDBACK_ALLOWED)).thenReturn(true);
         FeedbackPolicyManager.getInstance().onFinishNativeInitialization(mRegularMockProfile);
 
         // Switch to second profile
-        FeedbackPolicyManager.setPrefChangeRegistrarForTesting(mPrefChangeRegistrar);
-        FeedbackPolicyManager.getInstance().onFinishNativeInitialization(mProfile);
+        FeedbackPolicyManager.setPrefChangeRegistrarForTesting(secondMockRegistrar);
+        FeedbackPolicyManager.getInstance().onFinishNativeInitialization(secondMockProfile);
 
         // Verify that the old registrar was destroyed
         Mockito.verify(mMockRegistrar).destroy();
 
         // Verify that the new registrar was used to add observer
-        Mockito.verify(mPrefChangeRegistrar)
+        Mockito.verify(secondMockRegistrar)
                 .addObserver(Mockito.eq(Pref.USER_FEEDBACK_ALLOWED), Mockito.any());
     }
 
     @Test
     public void testIncognitoProfile_ObserverNotRegistered() {
-        Mockito.when(mProfile.isOffTheRecord()).thenReturn(true);
+        Profile incognitoProfile = Mockito.mock(Profile.class);
+        Mockito.when(incognitoProfile.isOffTheRecord()).thenReturn(true);
 
-        FeedbackPolicyManager.getInstance().onFinishNativeInitialization(mProfile);
+        FeedbackPolicyManager.getInstance().onFinishNativeInitialization(incognitoProfile);
 
         // Verify that the registrar was NOT used to add observer
         Mockito.verify(mMockRegistrar, Mockito.never())

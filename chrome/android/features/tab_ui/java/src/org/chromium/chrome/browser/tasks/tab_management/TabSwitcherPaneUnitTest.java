@@ -180,9 +180,6 @@ public class TabSwitcherPaneUnitTest {
     @Mock private Tracker mTracker;
     @Mock private BottomSheetController mMockBottomSheetController;
     @Mock private TabArchiveSettings mMockTabArchiveSettings;
-    @Mock private View mView;
-    @Mock private Tab mTab2;
-    @Mock private Tab mTab1;
 
     @Captor private ArgumentCaptor<NonNullObservableSupplier<Boolean>> mIsAnimatingSupplierCaptor;
 
@@ -240,7 +237,7 @@ public class TabSwitcherPaneUnitTest {
         mTabModel = spy(new MockTabModel(mProfile, null));
         when(mTabModel.isTabModelRestored()).thenReturn(true);
         mTabList = new ArrayList<>();
-        mTabList.add(mTab1);
+        mTabList.add(mock(Tab.class));
         when(mTabModel.getRepresentativeTabList()).thenReturn(mTabList);
 
         Supplier<Boolean> gridDialogVisibilitySupplier = SupplierUtils.alwaysFalse();
@@ -483,9 +480,10 @@ public class TabSwitcherPaneUnitTest {
                 R.drawable.new_tab_icon,
                 shadowOf(buttonData.resolveIcon(mContext)).getCreatedFromResId());
 
-        buttonData.onPress(mView);
+        View mockView = mock(View.class);
+        buttonData.onPress(mockView);
         verify(mTabSwitcherPaneCoordinator).prepareHiding();
-        verify(mNewTabButtonClickListener).onClick(mView);
+        verify(mNewTabButtonClickListener).onClick(mockView);
     }
 
     @Test
@@ -500,8 +498,9 @@ public class TabSwitcherPaneUnitTest {
     public void testNewTabButton_NoCoordinator() {
         FullButtonData buttonData = mTabSwitcherPane.getActionButtonDataSupplier().get();
 
-        buttonData.onPress(mView);
-        verify(mNewTabButtonClickListener).onClick(mView);
+        View mockView = mock(View.class);
+        buttonData.onPress(mockView);
+        verify(mNewTabButtonClickListener).onClick(mockView);
     }
 
     @Test
@@ -1137,13 +1136,14 @@ public class TabSwitcherPaneUnitTest {
         verify(mUserEducationHelper).requestShowIph(argThat(remoteGroupIph()));
 
         // Case 2: not in group.
-        when(mTabModel.getRepresentativeTabAt(1)).thenReturn(mTab2);
+        Tab tab = mock(Tab.class);
+        when(mTabModel.getRepresentativeTabAt(1)).thenReturn(tab);
         mTabGroupObserverCaptor.getValue().didCreateNewGroup(mTab, mTabModel);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mUserEducationHelper, times(2)).requestShowIph(argThat(remoteGroupIph()));
 
         // Case 3: no token.
-        when(mTabModel.isTabInTabGroup(mTab2)).thenReturn(true);
+        when(mTabModel.isTabInTabGroup(tab)).thenReturn(true);
         mTabGroupObserverCaptor.getValue().didCreateNewGroup(mTab, mTabModel);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mUserEducationHelper, times(3)).requestShowIph(argThat(remoteGroupIph()));
@@ -1151,7 +1151,7 @@ public class TabSwitcherPaneUnitTest {
         // Case 4: token not in saved tab group.
         Token tabGroupId = new Token(3789L, 3478L);
         LocalTabGroupId localTabGroupId = new LocalTabGroupId(tabGroupId);
-        when(mTab2.getTabGroupId()).thenReturn(tabGroupId);
+        when(tab.getTabGroupId()).thenReturn(tabGroupId);
         when(mTabGroupSyncService.getGroup(localTabGroupId)).thenReturn(null);
         mTabGroupObserverCaptor.getValue().didCreateNewGroup(mTab, mTabModel);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();

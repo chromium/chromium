@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.keyboard_accessory.sheet_component;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -13,12 +14,8 @@ import android.view.View;
 import android.view.View.MeasureSpec;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -29,15 +26,15 @@ import org.chromium.chrome.browser.keyboard_accessory.R;
 @RunWith(BaseRobolectricTestRunner.class)
 @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)
 public class NoSwipeViewPagerTest {
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private AccessoryPagerAdapter mAdapter;
     private Activity mActivity;
     private NoSwipeViewPager mViewPager;
+    private AccessoryPagerAdapter mAdapter;
 
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mViewPager = new NoSwipeViewPager(mActivity, null);
+        mAdapter = mock(AccessoryPagerAdapter.class);
         mViewPager.setAdapter(mAdapter);
     }
 

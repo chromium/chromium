@@ -66,7 +66,6 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -196,7 +195,6 @@ public class MainSettingsFragmentTest {
     @Mock private DefaultBrowserPromoUtils mMockDefaultBrowserPromoUtils;
 
     @Mock private SettingsIndexData mSearchIndexDataMock;
-    @Captor private ArgumentCaptor<BottomSheetSigninAndHistorySyncConfig> mConfigCaptor;
 
     private MainSettings mMainSettings;
 
@@ -493,13 +491,15 @@ public class MainSettingsFragmentTest {
         onView(withText(R.string.signin_settings_subtitle)).check(matches(isDisplayed()));
         onView(withText(R.string.signin_settings_title)).perform(click());
 
+        ArgumentCaptor<BottomSheetSigninAndHistorySyncConfig> configCaptor =
+                ArgumentCaptor.forClass(BottomSheetSigninAndHistorySyncConfig.class);
         verify(mSigninAndHistorySyncActivityLauncher)
                 .createBottomSheetSigninIntentOrShowError(
                         any(Context.class),
                         any(Profile.class),
-                        mConfigCaptor.capture(),
+                        configCaptor.capture(),
                         eq(SigninAccessPoint.SETTINGS));
-        BottomSheetSigninAndHistorySyncConfig config = mConfigCaptor.getValue();
+        BottomSheetSigninAndHistorySyncConfig config = configCaptor.getValue();
         assertEquals(NoAccountSigninMode.BOTTOM_SHEET, config.noAccountSigninMode);
         assertEquals(
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET, config.withAccountSigninMode);

@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -58,7 +59,6 @@ public class TabStateAttributesTest {
     @Mock private MockWebContents mWebContents;
     @Mock private TabStateAttributes.Observer mAttributesObserver;
     @Mock private TabStateAttributes.Observer mAttributesObserver2;
-    @Mock private WindowAndroid mWindowAndroid;
 
     @Captor ArgumentCaptor<WebContentsObserver> mWebContentsObserverCaptor;
 
@@ -313,9 +313,10 @@ public class TabStateAttributesTest {
         verifyNoMoreInteractions(mAttributesObserver);
         reset(mAttributesObserver);
 
+        WindowAndroid window = mock(WindowAndroid.class);
         // Re-attaching a tab does mark a tab as needing to be saved.
         for (TabObserver observer : TabTestUtils.getTabObservers(mTab)) {
-            observer.onActivityAttachmentChanged(mTab, mWindowAndroid);
+            observer.onActivityAttachmentChanged(mTab, window);
         }
         assertEquals(DirtinessState.UNTIDY, getAttributes().getDirtinessState());
         verify(mAttributesObserver).onTabStateDirtinessChanged(mTab, DirtinessState.UNTIDY);

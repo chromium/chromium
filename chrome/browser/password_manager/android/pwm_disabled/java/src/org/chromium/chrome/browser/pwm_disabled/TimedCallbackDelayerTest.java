@@ -12,7 +12,6 @@ import static org.mockito.Mockito.verify;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
@@ -25,7 +24,6 @@ public class TimedCallbackDelayerTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule public final EnsureAsyncPostingRule mPostingRule = new EnsureAsyncPostingRule();
-    @Mock private Runnable mRunnable;
 
     /** Check that the callback is eventually called. */
     @Test
@@ -46,8 +44,9 @@ public class TimedCallbackDelayerTest {
     /** Check that the callback is not called synchronously, even if the time delay is 0. */
     @Test
     public void testCallbackAsync() {
+        Runnable callback = mock(Runnable.class);
         TimedCallbackDelayer delayer = new TimedCallbackDelayer(0);
-        delayer.delay(mRunnable);
-        verify(mRunnable, never()).run();
+        delayer.delay(callback);
+        verify(callback, never()).run();
     }
 }

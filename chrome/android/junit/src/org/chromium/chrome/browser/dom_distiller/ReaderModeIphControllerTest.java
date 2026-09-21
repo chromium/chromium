@@ -13,7 +13,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -33,7 +32,6 @@ public class ReaderModeIphControllerTest {
     @Mock private UserEducationHelper mUserEducationHelper;
     @Mock private View mAnchorView;
     @Mock private AppMenuHandler mAppMenuHandler;
-    @Captor private ArgumentCaptor<IphCommand> mIphCommandCaptor;
 
     private ReaderModeIphController mController;
 
@@ -47,9 +45,10 @@ public class ReaderModeIphControllerTest {
     public void testShowIph() {
         mController.showIph();
 
-        verify(mUserEducationHelper).requestShowIph(mIphCommandCaptor.capture());
+        ArgumentCaptor<IphCommand> captor = ArgumentCaptor.forClass(IphCommand.class);
+        verify(mUserEducationHelper).requestShowIph(captor.capture());
 
-        IphCommand command = mIphCommandCaptor.getValue();
+        IphCommand command = captor.getValue();
         command.onShowCallback.run();
         verify(mAppMenuHandler).setMenuHighlight(R.id.reader_mode_menu_id);
 

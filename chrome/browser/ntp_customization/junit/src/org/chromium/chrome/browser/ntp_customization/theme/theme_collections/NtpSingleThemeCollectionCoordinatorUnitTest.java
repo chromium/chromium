@@ -75,7 +75,6 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
     @Mock private Runnable mOnDailyUpdateCancelledCallback;
     @Captor private ArgumentCaptor<Callback<List<CollectionImage>>> mCallbackCaptor;
     @Captor private ArgumentCaptor<ComponentCallbacks> mComponentCallbacksCaptor;
-    @Captor private ArgumentCaptor<View> mViewCaptor;
 
     private NtpSingleThemeCollectionCoordinator mCoordinator;
     private Context mContext;
@@ -103,9 +102,10 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
                         TEST_COLLECTION_HASH_1,
                         mOnDailyUpdateCancelledCallback);
 
+        ArgumentCaptor<View> viewCaptor = ArgumentCaptor.forClass(View.class);
         verify(mBottomSheetDelegate)
-                .registerBottomSheetLayout(eq(SINGLE_THEME_COLLECTION), mViewCaptor.capture());
-        mBottomSheetView = mViewCaptor.getValue();
+                .registerBottomSheetLayout(eq(SINGLE_THEME_COLLECTION), viewCaptor.capture());
+        mBottomSheetView = viewCaptor.getValue();
     }
 
     @Test

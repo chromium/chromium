@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.actor;
 
 import static org.junit.Assert.assertFalse;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.content.Intent;
@@ -36,9 +37,6 @@ public class ActorMetricsTest {
     @Mock private Profile mProfile;
     @Mock private Profile mOriginalProfile;
     @Mock private ActorKeyedService mActorService;
-    @Mock private ActorTask mActorTask;
-    @Mock private ActorTask mMockTask1;
-    @Mock private ActorTask mMockTask2;
 
     private ActorMetrics mActorMetrics;
 
@@ -61,8 +59,9 @@ public class ActorMetricsTest {
         int intentState = ActorTaskState.ACTING;
         int serviceState = ActorTaskState.REFLECTING;
 
-        when(mActorTask.getState()).thenReturn(serviceState);
-        when(mActorService.getTask(taskId)).thenReturn(mActorTask);
+        ActorTask mockTask = mock(ActorTask.class);
+        when(mockTask.getState()).thenReturn(serviceState);
+        when(mActorService.getTask(taskId)).thenReturn(mockTask);
 
         Intent intent = new Intent();
         intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, taskId);
@@ -107,11 +106,13 @@ public class ActorMetricsTest {
         int taskId2 = 102;
         int state2 = ActorTaskState.WAITING_ON_USER;
 
-        when(mMockTask1.getState()).thenReturn(state1);
-        when(mActorService.getTask(taskId1)).thenReturn(mMockTask1);
+        ActorTask mockTask1 = mock(ActorTask.class);
+        when(mockTask1.getState()).thenReturn(state1);
+        when(mActorService.getTask(taskId1)).thenReturn(mockTask1);
 
-        when(mMockTask2.getState()).thenReturn(state2);
-        when(mActorService.getTask(taskId2)).thenReturn(mMockTask2);
+        ActorTask mockTask2 = mock(ActorTask.class);
+        when(mockTask2.getState()).thenReturn(state2);
+        when(mActorService.getTask(taskId2)).thenReturn(mockTask2);
 
         // Click on Task 2's notification.
         Intent intent = new Intent();

@@ -17,7 +17,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -45,11 +44,11 @@ public class TabModelOrchestratorUnitTest {
     @Mock private TabPersistentStore mMockTabPersistentStore;
     @Mock private TabPersistentStore mMockShadowPersistentStore;
     @Mock private TabPersistencePolicy mTabPersistencePolicy;
-    @Captor private ArgumentCaptor<TabPersistentStoreObserver> mObserverCaptor;
 
     private final SettableMonotonicObservableSupplier<TabModelStartupInfo>
             mTabModelStartupInfoSupplier = ObservableSuppliers.createMonotonic();
     private TabModelOrchestrator mTabModelOrchestrator;
+    private ArgumentCaptor<TabPersistentStoreObserver> mObserverCaptor;
 
     @Before
     public void setUp() {
@@ -64,6 +63,7 @@ public class TabModelOrchestratorUnitTest {
                 mMockShadowPersistentStore);
         when(mTabPersistencePolicy.getMetadataFileName()).thenReturn("metadata");
 
+        mObserverCaptor = ArgumentCaptor.forClass(TabPersistentStoreObserver.class);
         mTabModelOrchestrator.wireSelectorAndStore();
         mTabModelOrchestrator.setStartupInfoObservableSupplier(mTabModelStartupInfoSupplier);
         verify(mMockTabPersistentStore).addObserver(mObserverCaptor.capture());

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.settings;
 
 import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.mock;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -20,12 +21,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
@@ -34,8 +31,6 @@ import org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory;
 /** Unit test for {@link SelectionDecoration}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SelectionDecorationTest {
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private RecyclerView.State mRecyclerViewState;
     private Context mContext;
 
     @Before
@@ -83,7 +78,7 @@ public class SelectionDecorationTest {
         SelectionDecoration decoration = new SelectionDecoration(0, 0, 0f, 0);
 
         // Trigger onDraw which runs setChildViewColor
-        decoration.onDraw(new Canvas(), recyclerView, mRecyclerViewState);
+        decoration.onDraw(new Canvas(), recyclerView, mock(RecyclerView.State.class));
 
         // Category view background should be cleared (null)
         assertNull("Category background should be null", categoryView.getBackground());

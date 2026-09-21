@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -37,7 +38,6 @@ public class PassthroughTabRemoverUnitTest {
     @Mock private Profile mProfile;
     @Mock private TabModelActionListener mListener;
     @Mock private Callback<TabClosureParams> mTabClosureCallback;
-    @Mock private BeforeUnloadCallback mBeforeUnloadCallback;
 
     private MockTabModel mTabModel;
     private PassthroughTabRemover mPassthroughTabRemover;
@@ -103,12 +103,13 @@ public class PassthroughTabRemoverUnitTest {
     @Test
     public void testPrepareCloseTabs_BeforeUnload_DisallowedDialog() {
         Tab tab0 = mTabModel.addTab(/* id= */ 0);
-        tab0.getUserDataHost().setUserData(BeforeUnloadCallback.class, mBeforeUnloadCallback);
+        BeforeUnloadCallback callback = mock(BeforeUnloadCallback.class);
+        tab0.getUserDataHost().setUserData(BeforeUnloadCallback.class, callback);
         TabClosureParams params = TabClosureParams.closeTab(tab0).build();
 
         mPassthroughTabRemover.prepareCloseTabs(
                 params, /* allowDialog= */ false, mListener, mTabClosureCallback);
-        verify(mBeforeUnloadCallback, never()).handleBeforeUnload(any(), any());
+        verify(callback, never()).handleBeforeUnload(any(), any());
         verify(mTabClosureCallback).onResult(params);
     }
 
@@ -164,11 +165,12 @@ public class PassthroughTabRemoverUnitTest {
     @Test
     public void testForceCloseTabs_BypassesBeforeUnload() {
         Tab tab0 = mTabModel.addTab(/* id= */ 0);
-        tab0.getUserDataHost().setUserData(BeforeUnloadCallback.class, mBeforeUnloadCallback);
+        BeforeUnloadCallback callback = mock(BeforeUnloadCallback.class);
+        tab0.getUserDataHost().setUserData(BeforeUnloadCallback.class, callback);
         TabClosureParams params = TabClosureParams.closeTab(tab0).build();
 
         mPassthroughTabRemover.forceCloseTabs(params);
-        verify(mBeforeUnloadCallback, never()).handleBeforeUnload(any(), any());
+        verify(callback, never()).handleBeforeUnload(any(), any());
         verify(mTabModel).closeTabs(params);
     }
 

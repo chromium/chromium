@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -99,18 +100,7 @@ public class ActorTabStateHelperTest {
     @Mock private Activity mActivity;
     @Mock private ProfileProvider mProfileProvider;
     @Mock private GlicKeyedService mGlicKeyedService;
-    @Mock private ActorTask mActorTask;
-    @Mock private ActorTask mMockTask;
-    @Mock private Tab mTab2;
-    @Mock private Tab mOtherTab;
-    @Mock private Tab mTab1;
-    @Mock private Tab mRegularTab;
-    @Mock private TabGroupSyncService mTabGroupSyncService;
-    @Mock private WindowAndroid mWindowAndroid;
-    @Mock private TabDelegateFactory mTabDelegateFactory;
-    @Mock private Tab mExistingTabInModel;
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
-    @Captor private ArgumentCaptor<TabModelSelectorObserver> mSelectorObserverCaptor;
 
     @Before
     public void setUp() {
@@ -147,10 +137,11 @@ public class ActorTabStateHelperTest {
         when(mActorKeyedService.getActiveTasksCount()).thenReturn(1);
         when(mTabModel.iterator()).thenReturn(Collections.singletonList(mTab).iterator());
 
-        when(mActorTask.getId()).thenReturn(500);
-        when(mActorTask.isUnderActorControl()).thenReturn(true);
-        when(mActorTask.getTabs()).thenReturn(Collections.singleton(TAB_ID));
-        when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(mActorTask));
+        ActorTask mockTask = mock(ActorTask.class);
+        when(mockTask.getId()).thenReturn(500);
+        when(mockTask.isUnderActorControl()).thenReturn(true);
+        when(mockTask.getTabs()).thenReturn(Collections.singleton(TAB_ID));
+        when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(mockTask));
         when(mTabModel.getTabById(TAB_ID)).thenReturn(mTab);
 
         when(mPlaceholderTab.getId()).thenReturn(101);
@@ -206,10 +197,11 @@ public class ActorTabStateHelperTest {
         setupModelSelectorAndProfile();
         when(mActorKeyedService.getActiveTasksCount()).thenReturn(1);
 
-        when(mMockTask.getId()).thenReturn(500);
-        when(mMockTask.isUnderActorControl()).thenReturn(false);
-        when(mMockTask.getTabs()).thenReturn(Collections.singleton(TAB_ID));
-        when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(mMockTask));
+        ActorTask mockTask = mock(ActorTask.class);
+        when(mockTask.getId()).thenReturn(500);
+        when(mockTask.isUnderActorControl()).thenReturn(false);
+        when(mockTask.getTabs()).thenReturn(Collections.singleton(TAB_ID));
+        when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(mockTask));
 
         List<BackgroundSession> sessions =
                 ActorTabStateHelper.detachActiveBackgroundSessions(
@@ -224,18 +216,20 @@ public class ActorTabStateHelperTest {
     public void testDetachActiveBackgroundSessions_MultipleTabsSameTask_GroupedInSession() {
         setupDetachmentMocks();
 
-        when(mTab2.getId()).thenReturn(102);
-        when(mTab2.getIsPinned()).thenReturn(false);
+        Tab tab2 = mock(Tab.class);
+        when(tab2.getId()).thenReturn(102);
+        when(tab2.getIsPinned()).thenReturn(false);
 
-        when(mTabModel.iterator()).thenReturn(Arrays.asList(mTab, mTab2).iterator());
-        when(mTabModel.getTabById(102)).thenReturn(mTab2);
-        when(mTabModel.indexOf(mTab2)).thenReturn(1);
+        when(mTabModel.iterator()).thenReturn(Arrays.asList(mTab, tab2).iterator());
+        when(mTabModel.getTabById(102)).thenReturn(tab2);
+        when(mTabModel.indexOf(tab2)).thenReturn(1);
         when(mTabCreator.createFrozenTab(any(), anyInt(), eq(2))).thenReturn(mPlaceholderTab);
 
-        when(mMockTask.getId()).thenReturn(500);
-        when(mMockTask.isUnderActorControl()).thenReturn(true);
-        when(mMockTask.getTabs()).thenReturn(new LinkedHashSet<>(Arrays.asList(TAB_ID, 102)));
-        when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(mMockTask));
+        ActorTask mockTask = mock(ActorTask.class);
+        when(mockTask.getId()).thenReturn(500);
+        when(mockTask.isUnderActorControl()).thenReturn(true);
+        when(mockTask.getTabs()).thenReturn(new LinkedHashSet<>(Arrays.asList(TAB_ID, 102)));
+        when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(mockTask));
 
         TabState testTabState = new TabState();
         TabStateExtractor.setTabStateForTesting(TAB_ID, testTabState);
@@ -248,16 +242,16 @@ public class ActorTabStateHelperTest {
         assertEquals(1, sessions.size());
         assertEquals(2, sessions.get(0).getTabs().size());
         assertEquals(mTab, sessions.get(0).getTabs().get(0));
-        assertEquals(mTab2, sessions.get(0).getTabs().get(1));
-        assertEquals(mTab2, sessions.get(0).getLastActiveTab());
+        assertEquals(tab2, sessions.get(0).getTabs().get(1));
+        assertEquals(tab2, sessions.get(0).getLastActiveTab());
         assertEquals(0, sessions.get(0).getTabDataList().get(0).getOriginalTabIndex());
         assertEquals(1, sessions.get(0).getTabDataList().get(1).getOriginalTabIndex());
 
         InOrder inOrder = inOrder(mOnTabDetaching, mTabRemover);
         inOrder.verify(mOnTabDetaching).onResult(mTab);
         inOrder.verify(mTabRemover).removeTab(mTab, false);
-        inOrder.verify(mOnTabDetaching).onResult(mTab2);
-        inOrder.verify(mTabRemover).removeTab(mTab2, false);
+        inOrder.verify(mOnTabDetaching).onResult(tab2);
+        inOrder.verify(mTabRemover).removeTab(tab2, false);
     }
 
     @Test
@@ -315,10 +309,11 @@ public class ActorTabStateHelperTest {
         assertEquals(
                 TabModel.INVALID_TAB_INDEX, session.getTabDataList().get(0).getOriginalTabIndex());
 
-        session.addTabData(new BackgroundSession.BackgroundTabData(mOtherTab, 102, 3, 42));
+        Tab otherTab = mock(Tab.class);
+        session.addTabData(new BackgroundSession.BackgroundTabData(otherTab, 102, 3, 42));
 
         assertEquals(2, session.getTabDataList().size());
-        assertEquals(mOtherTab, session.getTabDataList().get(1).getTab());
+        assertEquals(otherTab, session.getTabDataList().get(1).getTab());
         assertEquals(Integer.valueOf(102), session.getTabDataList().get(1).getPlaceholderTabId());
         assertEquals(3, session.getTabDataList().get(1).getOriginalTabIndex());
         assertEquals(42, session.getTabDataList().get(1).getTabWindowId());
@@ -440,7 +435,8 @@ public class ActorTabStateHelperTest {
 
     @Test
     public void testListenAndSelectTabOnAdded_didAddTab_nonMatchingId_doesNotSelect() {
-        when(mOtherTab.getId()).thenReturn(999);
+        Tab otherTab = mock(Tab.class);
+        when(otherTab.getId()).thenReturn(999);
 
         ActorTabStateHelper.listenAndSelectTabOnAdded(mTabModelSelector, mLayoutManager, TAB_ID);
 
@@ -448,7 +444,7 @@ public class ActorTabStateHelperTest {
         TabModelObserver observer = mTabModelObserverCaptor.getValue();
 
         observer.didAddTab(
-                mOtherTab,
+                otherTab,
                 TabLaunchType.FROM_RESTORE,
                 TabCreationState.LIVE_IN_BACKGROUND,
                 /* markedForSelection= */ false);
@@ -460,13 +456,16 @@ public class ActorTabStateHelperTest {
 
     @Test
     public void testListenAndSelectTabOnAdded_tabStateInitialized_destroysObserver() {
+        ArgumentCaptor<TabModelSelectorObserver> selectorObserverCaptor =
+                ArgumentCaptor.forClass(TabModelSelectorObserver.class);
+
         ActorTabStateHelper.listenAndSelectTabOnAdded(mTabModelSelector, mLayoutManager, TAB_ID);
 
         verify(mTabModel).addObserver(mTabModelObserverCaptor.capture());
         TabModelObserver tabModelObserver = mTabModelObserverCaptor.getValue();
 
-        verify(mTabModelSelector).addObserver(mSelectorObserverCaptor.capture());
-        TabModelSelectorObserver selectorObserver = mSelectorObserverCaptor.getValue();
+        verify(mTabModelSelector).addObserver(selectorObserverCaptor.capture());
+        TabModelSelectorObserver selectorObserver = selectorObserverCaptor.getValue();
 
         selectorObserver.onTabStateInitialized();
         Shadows.shadowOf(Looper.getMainLooper()).idle();
@@ -507,14 +506,17 @@ public class ActorTabStateHelperTest {
         when(mTabModelSelector.getTabById(TAB_ID)).thenReturn(null).thenReturn(mTab);
         when(mTabModel.indexOf(mTab)).thenReturn(0);
 
+        ArgumentCaptor<TabModelSelectorObserver> selectorObserverCaptor =
+                ArgumentCaptor.forClass(TabModelSelectorObserver.class);
+
         ActorTabStateHelper.listenAndSelectTabOnAdded(
                 mTabModelSelector, mLayoutManager, TAB_ID, mOnTabSelected);
 
         verify(mTabModel).addObserver(mTabModelObserverCaptor.capture());
         TabModelObserver observer = mTabModelObserverCaptor.getValue();
 
-        verify(mTabModelSelector).addObserver(mSelectorObserverCaptor.capture());
-        TabModelSelectorObserver selectorObserver = mSelectorObserverCaptor.getValue();
+        verify(mTabModelSelector).addObserver(selectorObserverCaptor.capture());
+        TabModelSelectorObserver selectorObserver = selectorObserverCaptor.getValue();
 
         observer.didAddTab(
                 mTab,
@@ -539,11 +541,14 @@ public class ActorTabStateHelperTest {
         when(mTabModelSelector.getTabById(TAB_ID)).thenReturn(null).thenReturn(mTab);
         when(mTabModel.indexOf(mTab)).thenReturn(0);
 
+        ArgumentCaptor<TabModelSelectorObserver> selectorObserverCaptor =
+                ArgumentCaptor.forClass(TabModelSelectorObserver.class);
+
         ActorTabStateHelper.listenAndSelectTabOnAdded(
                 mTabModelSelector, mLayoutManager, TAB_ID, mOnTabSelected);
 
-        verify(mTabModelSelector).addObserver(mSelectorObserverCaptor.capture());
-        TabModelSelectorObserver selectorObserver = mSelectorObserverCaptor.getValue();
+        verify(mTabModelSelector).addObserver(selectorObserverCaptor.capture());
+        TabModelSelectorObserver selectorObserver = selectorObserverCaptor.getValue();
 
         selectorObserver.onTabStateInitialized();
         Shadows.shadowOf(Looper.getMainLooper()).idle();
@@ -575,34 +580,36 @@ public class ActorTabStateHelperTest {
 
     @Test
     public void testPersistTabsForCompletedTask() {
-        when(mTab1.getId()).thenReturn(101);
-        when(mTab1.isDestroyed()).thenReturn(false);
-        when(mTab1.getUrl()).thenReturn(GURL.emptyGURL());
+        Tab tab1 = mock(Tab.class);
+        when(tab1.getId()).thenReturn(101);
+        when(tab1.isDestroyed()).thenReturn(false);
+        when(tab1.getUrl()).thenReturn(GURL.emptyGURL());
         UserDataHost host1 = new UserDataHost();
-        when(mTab1.getUserDataHost()).thenReturn(host1);
+        when(tab1.getUserDataHost()).thenReturn(host1);
         TabStateAttributesRegistry.createAttributesForTab(
-                mTab1, TabStateAttributes.StoreKey.class, TabCreationState.LIVE_IN_BACKGROUND);
+                tab1, TabStateAttributes.StoreKey.class, TabCreationState.LIVE_IN_BACKGROUND);
 
-        when(mTab2.getId()).thenReturn(102);
-        when(mTab2.isDestroyed()).thenReturn(false);
-        when(mTab2.getUrl()).thenReturn(GURL.emptyGURL());
+        Tab tab2 = mock(Tab.class);
+        when(tab2.getId()).thenReturn(102);
+        when(tab2.isDestroyed()).thenReturn(false);
+        when(tab2.getUrl()).thenReturn(GURL.emptyGURL());
         UserDataHost host2 = new UserDataHost();
-        when(mTab2.getUserDataHost()).thenReturn(host2);
+        when(tab2.getUserDataHost()).thenReturn(host2);
         TabStateAttributesRegistry.createAttributesForTab(
-                mTab2, TabStateAttributes.StoreKey.class, TabCreationState.LIVE_IN_BACKGROUND);
+                tab2, TabStateAttributes.StoreKey.class, TabCreationState.LIVE_IN_BACKGROUND);
 
-        BackgroundSession session = new BackgroundSession(mTab1, 500);
-        session.addTab(mTab2);
+        BackgroundSession session = new BackgroundSession(tab1, 500);
+        session.addTab(tab2);
 
         List<BackgroundSession> sessions = Collections.singletonList(session);
 
         // Before completion, attributes are UNTIDY
         TabStateAttributes attr1 =
                 TabStateAttributesRegistry.getAttributesFor(
-                        mTab1, TabStateAttributes.StoreKey.class);
+                        tab1, TabStateAttributes.StoreKey.class);
         TabStateAttributes attr2 =
                 TabStateAttributesRegistry.getAttributesFor(
-                        mTab2, TabStateAttributes.StoreKey.class);
+                        tab2, TabStateAttributes.StoreKey.class);
         assertEquals(DirtinessState.UNTIDY, attr1.getDirtinessState());
         assertEquals(DirtinessState.UNTIDY, attr2.getDirtinessState());
 
@@ -655,9 +662,10 @@ public class ActorTabStateHelperTest {
         GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
         when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
         when(mTab.isIncognito()).thenReturn(true);
-        when(mRegularTab.isIncognito()).thenReturn(false);
-        when(mRegularTab.isDestroyed()).thenReturn(false);
-        when(mTabModelSelector.getCurrentTab()).thenReturn(mRegularTab);
+        Tab regularTab = mock(Tab.class);
+        when(regularTab.isIncognito()).thenReturn(false);
+        when(regularTab.isDestroyed()).thenReturn(false);
+        when(mTabModelSelector.getCurrentTab()).thenReturn(regularTab);
         when(mActivity.isFinishing()).thenReturn(false);
         when(mActivity.isDestroyed()).thenReturn(false);
 
@@ -670,7 +678,7 @@ public class ActorTabStateHelperTest {
         verify(mTabModelSelector).selectModel(false);
         verify(mGlicKeyedService)
                 .invokeWithConversation(
-                        mRegularTab,
+                        regularTab,
                         "test_glic_conv_id",
                         GlicKeyedService.GlicInvocationSource.TOOLBAR_BUTTON);
     }
@@ -716,11 +724,13 @@ public class ActorTabStateHelperTest {
         ChromeFeatureList.GLIC_BACKGROUND_ACTUATION_TAB_GROUP_SYNC
     })
     public void testSetTabGroupSyncPaused() {
-        ActorTabStateHelper.setTabGroupSyncPaused(mTabGroupSyncService, true);
-        verify(mTabGroupSyncService).setLocalObservationMode(false);
+        TabGroupSyncService syncService = mock(TabGroupSyncService.class);
 
-        ActorTabStateHelper.setTabGroupSyncPaused(mTabGroupSyncService, false);
-        verify(mTabGroupSyncService).setLocalObservationMode(true);
+        ActorTabStateHelper.setTabGroupSyncPaused(syncService, true);
+        verify(syncService).setLocalObservationMode(false);
+
+        ActorTabStateHelper.setTabGroupSyncPaused(syncService, false);
+        verify(syncService).setLocalObservationMode(true);
 
         // Null syncService should be safely handled as a no-op
         ActorTabStateHelper.setTabGroupSyncPaused(null, true);
@@ -730,13 +740,14 @@ public class ActorTabStateHelperTest {
     @Test
     @DisableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION_TAB_GROUP_SYNC)
     public void testTabGroupSync_flagDisabled_doesNotInteractWithSync() {
+        TabGroupSyncService syncService = mock(TabGroupSyncService.class);
         assertNull(ActorTabStateHelper.getTabGroupSyncService(mTabModel));
 
-        ActorTabStateHelper.setTabGroupSyncPaused(mTabGroupSyncService, true);
-        verify(mTabGroupSyncService, never()).setLocalObservationMode(anyBoolean());
+        ActorTabStateHelper.setTabGroupSyncPaused(syncService, true);
+        verify(syncService, never()).setLocalObservationMode(anyBoolean());
 
-        ActorTabStateHelper.updateTabGroupSyncMapping(mTabGroupSyncService, mTabModel, mTab, 202);
-        verify(mTabGroupSyncService, never()).updateLocalTabId(any(), any(), anyInt());
+        ActorTabStateHelper.updateTabGroupSyncMapping(syncService, mTabModel, mTab, 202);
+        verify(syncService, never()).updateLocalTabId(any(), any(), anyInt());
     }
 
     @Test
@@ -745,6 +756,7 @@ public class ActorTabStateHelperTest {
         ChromeFeatureList.GLIC_BACKGROUND_ACTUATION_TAB_GROUP_SYNC
     })
     public void testUpdateTabGroupSyncMapping() {
+        TabGroupSyncService syncService = mock(TabGroupSyncService.class);
         Token tabGroupId = Token.createRandom();
         when(mTab.getTabGroupId()).thenReturn(tabGroupId);
         when(mTab.getId()).thenReturn(TAB_ID);
@@ -759,21 +771,25 @@ public class ActorTabStateHelperTest {
         savedTab.syncId = "test_sync_id_123";
         savedGroup.savedTabs.add(savedTab);
 
-        when(mTabGroupSyncService.getGroup(localTabGroupId)).thenReturn(savedGroup);
+        when(syncService.getGroup(localTabGroupId)).thenReturn(savedGroup);
 
-        ActorTabStateHelper.updateTabGroupSyncMapping(mTabGroupSyncService, mTabModel, mTab, 202);
+        ActorTabStateHelper.updateTabGroupSyncMapping(syncService, mTabModel, mTab, 202);
 
-        verify(mTabGroupSyncService).updateLocalTabId(localTabGroupId, "test_sync_id_123", 202);
+        verify(syncService).updateLocalTabId(localTabGroupId, "test_sync_id_123", 202);
     }
 
     @Test
     public void testRestoreSessionTabToForeground_tabAlreadyPresentInModel_skipsAddTab() {
+        WindowAndroid window = mock(WindowAndroid.class);
+        TabDelegateFactory delegateFactory = mock(TabDelegateFactory.class);
+
         when(mTab.getId()).thenReturn(TAB_ID);
-        when(mExistingTabInModel.getId()).thenReturn(TAB_ID);
-        when(mTabModel.getTabById(TAB_ID)).thenReturn(mExistingTabInModel);
+        Tab existingTabInModel = mock(Tab.class);
+        when(existingTabInModel.getId()).thenReturn(TAB_ID);
+        when(mTabModel.getTabById(TAB_ID)).thenReturn(existingTabInModel);
 
         ActorTabStateHelper.restoreSessionTabToForeground(
-                mTab, 999, 0, mTabModel, mWindowAndroid, mTabDelegateFactory);
+                mTab, 999, 0, mTabModel, window, delegateFactory);
 
         verify(mTabModel, never()).addTab(any(), anyInt(), anyInt(), anyInt());
         verify(mTabRemover, never()).removeTab(any(), anyBoolean());

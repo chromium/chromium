@@ -32,7 +32,6 @@ public final class AutoTranslateSnackbarControllerTest {
 
     @Mock private WebContents mWebContents;
     @Mock private WindowAndroid mWindowAndroid;
-    @Mock private Activity mActivity;
 
     @Before
     public void setUp() {
@@ -56,7 +55,9 @@ public final class AutoTranslateSnackbarControllerTest {
 
     @Test
     public void testCreateWithNullSnackbarManager() {
-        Mockito.doReturn(new WeakReference<>(mActivity)).when(mWindowAndroid).getActivity();
+        Activity activity = Mockito.mock(Activity.class);
+
+        Mockito.doReturn(new WeakReference<>(activity)).when(mWindowAndroid).getActivity();
         Mockito.doReturn(mWindowAndroid).when(mWebContents).getTopLevelNativeWindow();
         Mockito.doReturn(new UnownedUserDataHost()).when(mWindowAndroid).getUnownedUserDataHost();
         Assert.assertNull(

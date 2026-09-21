@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -83,7 +84,6 @@ public class TabRemoverImplUnitTest {
     @Mock private Runnable mFinishBlocking;
     @Mock private ActorKeyedService mActorKeyedService;
     @Mock private ModalDialogManager mModalDialogManager;
-    @Mock private BeforeUnloadCallback mBeforeUnloadCallback;
 
     @Captor private ArgumentCaptor<TabModelRemoverFlowHandler> mHandlerCaptor;
     @Captor private ArgumentCaptor<Callback<@ActionConfirmationResult Integer>> mOnResultCaptor;
@@ -175,12 +175,13 @@ public class TabRemoverImplUnitTest {
     @Test
     public void testPrepareCloseTabs_BeforeUnload_DisallowedDialog() {
         Tab tab0 = mTabModel.addTab(/* id= */ 0);
-        tab0.getUserDataHost().setUserData(BeforeUnloadCallback.class, mBeforeUnloadCallback);
+        BeforeUnloadCallback callback = mock(BeforeUnloadCallback.class);
+        tab0.getUserDataHost().setUserData(BeforeUnloadCallback.class, callback);
         TabClosureParams params = TabClosureParams.closeTab(tab0).build();
 
         mTabRemoverImpl.prepareCloseTabs(
                 params, /* allowDialog= */ false, mListener, mTabClosureCallback);
-        verify(mBeforeUnloadCallback, never()).handleBeforeUnload(any(), any());
+        verify(callback, never()).handleBeforeUnload(any(), any());
         verify(mTabModelRemover).doTabRemovalFlow(mHandlerCaptor.capture(), eq(false));
     }
 

@@ -28,13 +28,9 @@ import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
@@ -69,8 +65,6 @@ public final class LaunchTest {
 
     private static String sWebApkPackageName;
 
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private ActivityManager mActivityManager;
     private Context mAppContext;
     private ShadowApplication mShadowApplication;
     private PackageManager mPackageManager;
@@ -566,16 +560,18 @@ public final class LaunchTest {
                 new ComponentName(sWebApkPackageName, H2OOpaqueMainActivity.class.getName()));
         launchIntent.putExtra(WebApkConstants.EXTRA_BRING_TO_FRONT, true);
 
+        ActivityManager activityManagerMock = Mockito.mock(ActivityManager.class);
+
         ActivityController<TestH2OOpaqueMainActivity> controller =
                 Robolectric.buildActivity(TestH2OOpaqueMainActivity.class, launchIntent);
         TestH2OOpaqueMainActivity activity = controller.get();
-        activity.mActivityManager = mActivityManager;
+        activity.mActivityManager = activityManagerMock;
         int taskId = activity.getTaskId();
 
         controller.create();
 
         Assert.assertTrue(activity.isFinishing());
-        Mockito.verify(mActivityManager).moveTaskToFront(taskId, 0);
+        Mockito.verify(activityManagerMock).moveTaskToFront(taskId, 0);
         Assert.assertNull(mShadowApplication.getNextStartedActivity());
     }
 

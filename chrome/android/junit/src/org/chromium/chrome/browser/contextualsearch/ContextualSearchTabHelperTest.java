@@ -8,6 +8,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -35,8 +36,6 @@ import org.chromium.ui.base.WindowAndroid;
 /** Tests for {@link ContextualSearchTabHelper} dynamic TabObserver memory optimizations. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ContextualSearchTabHelperTest {
-    private static final long NATIVE_PTR = 12345;
-
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private ContextualSearchTabHelper.Natives mTabHelperJniMock;
@@ -46,10 +45,9 @@ public class ContextualSearchTabHelperTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private SelectionPopupControllerImpl mSelectionPopupController;
-    @Mock private WebContents mNewWebContents;
-    @Mock private SelectionPopupControllerImpl mSelectionPopupControllerImpl;
 
     private final UserDataHost mUserDataHost = new UserDataHost();
+    private static final long NATIVE_PTR = 12345;
     private ContextualSearchTabHelper mHelper;
 
     @Before
@@ -121,9 +119,12 @@ public class ContextualSearchTabHelperTest {
         assertNull(mHelper);
 
         // 2. Simulate tab unfreeze (new WebContents attached)
-        when(mNewWebContents.getOrSetUserData(eq(SelectionPopupControllerImpl.class), any()))
-                .thenReturn(mSelectionPopupControllerImpl);
-        when(mTab.getWebContents()).thenReturn(mNewWebContents);
+        WebContents newWebContents = mock(WebContents.class);
+        SelectionPopupControllerImpl newSelectionController =
+                mock(SelectionPopupControllerImpl.class);
+        when(newWebContents.getOrSetUserData(eq(SelectionPopupControllerImpl.class), any()))
+                .thenReturn(newSelectionController);
+        when(mTab.getWebContents()).thenReturn(newWebContents);
 
         // 3. Re-querying from(Tab) should successfully lazy-create and initialize the helper
         mHelper = ContextualSearchTabHelper.from(mTab);

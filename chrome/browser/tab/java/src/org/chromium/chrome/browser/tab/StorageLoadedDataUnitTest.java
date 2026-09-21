@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -27,15 +28,11 @@ import org.chromium.chrome.browser.tab.StorageLoadedData.StorageLoadWarning;
 /** Unit tests for {@link StorageLoadedData} and {@link LoadedTabState}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class StorageLoadedDataUnitTest {
-    private static final long NATIVE_PTR = 12345L;
-
     @Rule public final MockitoRule mMockito = MockitoJUnit.rule();
 
+    private static final long NATIVE_PTR = 12345L;
+
     @Mock private StorageLoadedData.Natives mStorageLoadedDataJniMock;
-    @Mock private WebContentsState mWebContentsState;
-    @Mock private WebContentsState mContentsStateClaimed;
-    @Mock private WebContentsState mContentsStateUnclaimed;
-    @Mock private TabGroupCollectionData mTabGroupCollectionData;
 
     @Before
     public void setUp() {
@@ -61,7 +58,8 @@ public class StorageLoadedDataUnitTest {
     @Test
     public void testLoadedTabState_DestroyUnclaimed() {
         TabState tabState = new TabState();
-        tabState.contentsState = mWebContentsState;
+        WebContentsState webContentsState = mock(WebContentsState.class);
+        tabState.contentsState = webContentsState;
         LoadedTabState loadedTabState = new LoadedTabState(1, tabState);
 
         assertFalse(loadedTabState.isClaimedOrDestroyed());
@@ -69,7 +67,7 @@ public class StorageLoadedDataUnitTest {
         loadedTabState.destroy();
 
         assertTrue(loadedTabState.isClaimedOrDestroyed());
-        verify(mWebContentsState).destroy();
+        verify(webContentsState).destroy();
         assertNull(tabState.contentsState);
 
         // Subsequent claim calls must return null after destruction.
@@ -79,7 +77,8 @@ public class StorageLoadedDataUnitTest {
     @Test
     public void testLoadedTabState_DestroyClaimedPreservesWebContentsState() {
         TabState tabState = new TabState();
-        tabState.contentsState = mWebContentsState;
+        WebContentsState webContentsState = mock(WebContentsState.class);
+        tabState.contentsState = webContentsState;
         LoadedTabState loadedTabState = new LoadedTabState(1, tabState);
 
         TabState claimed = loadedTabState.claim();
@@ -89,8 +88,8 @@ public class StorageLoadedDataUnitTest {
         loadedTabState.destroy();
 
         assertTrue(loadedTabState.isClaimedOrDestroyed());
-        verify(mWebContentsState, never()).destroy();
-        assertEquals(mWebContentsState, tabState.contentsState);
+        verify(webContentsState, never()).destroy();
+        assertEquals(webContentsState, tabState.contentsState);
     }
 
     @Test
@@ -108,17 +107,21 @@ public class StorageLoadedDataUnitTest {
     @Test
     public void testStorageLoadedData_DestroyCleansUnclaimedOnly() {
         TabState tabStateClaimed = new TabState();
-        tabStateClaimed.contentsState = mContentsStateClaimed;
+        WebContentsState contentsStateClaimed = mock(WebContentsState.class);
+        tabStateClaimed.contentsState = contentsStateClaimed;
         LoadedTabState loadedStateClaimed = new LoadedTabState(1, tabStateClaimed);
         loadedStateClaimed.claim();
 
         TabState tabStateUnclaimed = new TabState();
-        tabStateUnclaimed.contentsState = mContentsStateUnclaimed;
+        WebContentsState contentsStateUnclaimed = mock(WebContentsState.class);
+        tabStateUnclaimed.contentsState = contentsStateUnclaimed;
         LoadedTabState loadedStateUnclaimed = new LoadedTabState(2, tabStateUnclaimed);
 
         TabState tabStateNullContents = new TabState();
         tabStateNullContents.contentsState = null;
         LoadedTabState loadedStateNullContents = new LoadedTabState(3, tabStateNullContents);
+
+        TabGroupCollectionData groupData = mock(TabGroupCollectionData.class);
 
         StorageLoadedData storageLoadedData =
                 StorageLoadedData.createData(
@@ -126,19 +129,19 @@ public class StorageLoadedDataUnitTest {
                         new LoadedTabState[] {
                             loadedStateClaimed, loadedStateUnclaimed, loadedStateNullContents
                         },
-                        new TabGroupCollectionData[] {mTabGroupCollectionData},
+                        new TabGroupCollectionData[] {groupData},
                         /* activeTabIndex= */ 0,
                         new StorageLoadWarning[0]);
 
         storageLoadedData.destroy();
 
         // Claimed state must not be destroyed.
-        verify(mContentsStateClaimed, never()).destroy();
-        assertEquals(mContentsStateClaimed, tabStateClaimed.contentsState);
+        verify(contentsStateClaimed, never()).destroy();
+        assertEquals(contentsStateClaimed, tabStateClaimed.contentsState);
         assertTrue(loadedStateClaimed.isClaimedOrDestroyed());
 
         // Unclaimed state must be destroyed and nulled out.
-        verify(mContentsStateUnclaimed).destroy();
+        verify(contentsStateUnclaimed).destroy();
         assertNull(tabStateUnclaimed.contentsState);
         assertTrue(loadedStateUnclaimed.isClaimedOrDestroyed());
 
@@ -146,7 +149,7 @@ public class StorageLoadedDataUnitTest {
         assertTrue(loadedStateNullContents.isClaimedOrDestroyed());
 
         // Group data and native pointer must be destroyed.
-        verify(mTabGroupCollectionData).destroy();
+        verify(groupData).destroy();
         verify(mStorageLoadedDataJniMock).destroy(NATIVE_PTR);
         assertEquals(0, storageLoadedData.getNativePtr());
     }

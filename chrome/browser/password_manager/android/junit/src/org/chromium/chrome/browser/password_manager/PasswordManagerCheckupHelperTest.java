@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -33,7 +34,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -85,24 +85,26 @@ public class PasswordManagerCheckupHelperTest {
     // TODO(crbug.com/40854050): Use a fake for PasswordCheckupClientHelper.
     @Mock private PasswordCheckupClientHelperFactory mPasswordCheckupClientHelperFactoryMock;
     @Mock private PasswordCheckupClientHelper mPasswordCheckupClientHelperMock;
+
     @Mock private Profile mProfile;
+
     @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
+
     @Mock private SyncService mSyncServiceMock;
+
     @Mock private PendingIntent mPendingIntentMock;
+
     // TODO(crbug.com/40854050): Use fake instead of mock
     @Mock private PasswordManagerBackendSupportHelper mBackendSupportHelperMock;
-    @Mock private LoadingModalDialogCoordinator mLoadingModalDialogCoordinator;
-    @Mock private PasswordCsvDownloadFlowController mPasswordCsvDownloadFlowController;
-    @Mock private ModalDialogManager.Presenter mModalDialogManagerPresenter;
-
-    @Captor
-    private ArgumentCaptor<PasswordManagerUnavailableException>
-            mPasswordManagerUnavailableExceptionCaptor;
 
     private SettingsCustomTabLauncher mSettingsCustomTabLauncher;
+
     private ModalDialogManager mModalDialogManager;
     private SettableNonNullObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
+
+    @Mock private LoadingModalDialogCoordinator mLoadingModalDialogCoordinator;
     private LoadingModalDialogCoordinator.Observer mLoadingDialogCoordinatorObserver;
+
     private PasswordManagerHelper mPasswordManagerHelper;
 
     @Before
@@ -114,7 +116,8 @@ public class PasswordManagerCheckupHelperTest {
                 .thenReturn(LoadingModalDialogCoordinator.State.PENDING);
         mModalDialogManager =
                 new ModalDialogManager(
-                        mModalDialogManagerPresenter, ModalDialogManager.ModalDialogType.APP);
+                        mock(ModalDialogManager.Presenter.class),
+                        ModalDialogManager.ModalDialogType.APP);
         mModalDialogManagerSupplier = ObservableSuppliers.createNonNull(mModalDialogManager);
         doAnswer(
                         invocation -> {
@@ -145,8 +148,10 @@ public class PasswordManagerCheckupHelperTest {
                 TEST_EMAIL_ADDRESS,
                 MockitoHelper.mockCallback(),
                 failureCallback);
+        final ArgumentCaptor<PasswordManagerUnavailableException> captor =
+                ArgumentCaptor.forClass(PasswordManagerUnavailableException.class);
 
-        verify(failureCallback).onResult(mPasswordManagerUnavailableExceptionCaptor.capture());
+        verify(failureCallback).onResult(captor.capture());
     }
 
     @Test
@@ -1027,8 +1032,9 @@ public class PasswordManagerCheckupHelperTest {
                 Robolectric.buildActivity(BrowserUiTestFragmentActivity.class).setup().get();
         setUpUpdatableGmsCore(testActivity);
 
-        PasswordCsvDownloadFlowControllerFactory.setControllerForTesting(
-                mPasswordCsvDownloadFlowController);
+        PasswordCsvDownloadFlowController mockController =
+                mock(PasswordCsvDownloadFlowController.class);
+        PasswordCsvDownloadFlowControllerFactory.setControllerForTesting(mockController);
         mPasswordManagerHelper.showPasswordCheckup(
                 testActivity,
                 PasswordCheckReferrer.SAFETY_CHECK,
@@ -1036,7 +1042,7 @@ public class PasswordManagerCheckupHelperTest {
                 TEST_NO_EMAIL_ADDRESS,
                 mSettingsCustomTabLauncher);
 
-        verify(mPasswordCsvDownloadFlowController)
+        verify(mockController)
                 .showDialogAndStartFlow(
                         eq(testActivity),
                         eq(mProfile),
@@ -1054,8 +1060,9 @@ public class PasswordManagerCheckupHelperTest {
         FragmentActivity testActivity =
                 Robolectric.buildActivity(BrowserUiTestFragmentActivity.class).setup().get();
 
-        PasswordCsvDownloadFlowControllerFactory.setControllerForTesting(
-                mPasswordCsvDownloadFlowController);
+        PasswordCsvDownloadFlowController mockController =
+                mock(PasswordCsvDownloadFlowController.class);
+        PasswordCsvDownloadFlowControllerFactory.setControllerForTesting(mockController);
         mPasswordManagerHelper.showPasswordCheckup(
                 testActivity,
                 PasswordCheckReferrer.SAFETY_CHECK,
@@ -1063,7 +1070,7 @@ public class PasswordManagerCheckupHelperTest {
                 TEST_NO_EMAIL_ADDRESS,
                 mSettingsCustomTabLauncher);
 
-        verify(mPasswordCsvDownloadFlowController)
+        verify(mockController)
                 .showDialogAndStartFlow(
                         eq(testActivity),
                         eq(mProfile),

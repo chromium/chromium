@@ -25,7 +25,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -41,15 +40,14 @@ import org.chromium.ui.test.util.DeviceRestriction;
 @Batch(Batch.PER_CLASS)
 @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
 public class BookmarkWidgetProviderTest {
-    private static final int WIDGET_ID = 1;
-
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private AppWidgetManager mAppWidgetManager;
-    @Captor private ArgumentCaptor<RemoteViews> mRemoteViewsCaptor;
 
     private Context mContext;
     private BookmarkWidgetProvider mProvider;
+
+    private static final int WIDGET_ID = 1;
 
     @Before
     public void setUp() {
@@ -67,9 +65,11 @@ public class BookmarkWidgetProviderTest {
 
         mProvider.onUpdate(mContext, mAppWidgetManager, widgetIds);
 
+        ArgumentCaptor<RemoteViews> remoteViewsCaptor = ArgumentCaptor.forClass(RemoteViews.class);
+
         verify(mAppWidgetManager).notifyAppWidgetViewDataChanged(WIDGET_ID, R.id.bookmarks_list);
-        verify(mAppWidgetManager).updateAppWidget(eq(WIDGET_ID), mRemoteViewsCaptor.capture());
-        RemoteViews capturedViews = mRemoteViewsCaptor.getValue();
+        verify(mAppWidgetManager).updateAppWidget(eq(WIDGET_ID), remoteViewsCaptor.capture());
+        RemoteViews capturedViews = remoteViewsCaptor.getValue();
         assertEquals(
                 "Widget should use the standard layout.",
                 R.layout.bookmark_widget,
@@ -86,9 +86,10 @@ public class BookmarkWidgetProviderTest {
 
         mProvider.onAppWidgetOptionsChanged(mContext, mAppWidgetManager, WIDGET_ID, newOptions);
 
-        verify(mAppWidgetManager).updateAppWidget(eq(WIDGET_ID), mRemoteViewsCaptor.capture());
+        ArgumentCaptor<RemoteViews> captor = ArgumentCaptor.forClass(RemoteViews.class);
+        verify(mAppWidgetManager).updateAppWidget(eq(WIDGET_ID), captor.capture());
 
-        RemoteViews views = mRemoteViewsCaptor.getValue();
+        RemoteViews views = captor.getValue();
         assertEquals(
                 "Widget should have switched to icons-only layout after resize.",
                 R.layout.bookmark_widget_icons_only,
@@ -105,9 +106,10 @@ public class BookmarkWidgetProviderTest {
 
         mProvider.onAppWidgetOptionsChanged(mContext, mAppWidgetManager, WIDGET_ID, newOptions);
 
-        verify(mAppWidgetManager).updateAppWidget(eq(WIDGET_ID), mRemoteViewsCaptor.capture());
+        ArgumentCaptor<RemoteViews> captor = ArgumentCaptor.forClass(RemoteViews.class);
+        verify(mAppWidgetManager).updateAppWidget(eq(WIDGET_ID), captor.capture());
 
-        RemoteViews views = mRemoteViewsCaptor.getValue();
+        RemoteViews views = captor.getValue();
         assertEquals(
                 "Widget should be using the standard layout after resize.",
                 R.layout.bookmark_widget,

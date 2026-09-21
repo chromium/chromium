@@ -14,6 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -29,7 +30,6 @@ public class AppHeaderUtilsUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
-    @Mock private AppHeaderState mAppHeaderState;
 
     @After
     public void tearDown() {
@@ -88,16 +88,17 @@ public class AppHeaderUtilsUnitTest {
                 "Desktop windowing mode status is incorrect.",
                 AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager));
 
-        doReturn(mAppHeaderState).when(mDesktopWindowStateManager).getAppHeaderState();
+        AppHeaderState state = Mockito.mock(AppHeaderState.class);
+        doReturn(state).when(mDesktopWindowStateManager).getAppHeaderState();
 
         // Assume state not in desktop windowing mode.
-        doReturn(false).when(mAppHeaderState).isInDesktopWindow();
+        doReturn(false).when(state).isInDesktopWindow();
         assertFalse(
                 "Desktop windowing mode status is incorrect.",
                 AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager));
 
         // Assume state is in desktop windowing mode.
-        doReturn(true).when(mAppHeaderState).isInDesktopWindow();
+        doReturn(true).when(state).isInDesktopWindow();
         assertTrue(
                 "Desktop windowing mode status is incorrect.",
                 AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager));

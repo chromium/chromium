@@ -30,7 +30,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -61,6 +60,8 @@ import java.util.concurrent.TimeUnit;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowSystemClock.class})
 public class AuthTabVerifierTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private static final String REDIRECT_HOST = "www.awesome-site.com";
     private static final String REDIRECT_PATH = "/auth-response.html";
     private static final String REDIRECT_URL =
@@ -68,9 +69,6 @@ public class AuthTabVerifierTest {
     private static final String OTHER_URL = "https://www.notverifiedurl.com/random_page.html";
 
     @Mock ActivityLifecycleDispatcher mLifecycleDispatcher;
-
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
     @Mock AuthTabIntentDataProvider mIntentDataProvider;
     @Mock ChromeOriginVerifier mOriginVerifier;
     @Mock CustomTabActivityTabProvider mActivityTabProvider;
@@ -78,7 +76,6 @@ public class AuthTabVerifierTest {
     @Mock Context mContext;
     @Mock DomainVerificationManager mDomainVerificationManager;
     @Mock DomainVerificationUserState mDomainVerificationUserState;
-    @Captor private ArgumentCaptor<OriginVerificationListener> mVerifyCallback;
 
     private AuthTabVerifier mDelegate;
 
@@ -107,8 +104,10 @@ public class AuthTabVerifierTest {
 
     void simulateVerificationResultFromNetwork(String url, boolean success) {
         // Simulate the OriginVerifier comes back with the verification result.
-        verify(mOriginVerifier).start(mVerifyCallback.capture(), eq(Origin.create(url)));
-        mVerifyCallback.getValue().onOriginVerified(null, null, success, TriState.TRUE);
+        ArgumentCaptor<OriginVerificationListener> verifyCallback =
+                ArgumentCaptor.forClass(OriginVerificationListener.class);
+        verify(mOriginVerifier).start(verifyCallback.capture(), eq(Origin.create(url)));
+        verifyCallback.getValue().onOriginVerified(null, null, success, TriState.TRUE);
         assertTrue(mDelegate.hasValidatedHttps());
     }
 

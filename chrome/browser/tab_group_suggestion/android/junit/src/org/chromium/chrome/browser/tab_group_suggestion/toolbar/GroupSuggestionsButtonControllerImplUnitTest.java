@@ -19,7 +19,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -63,7 +62,6 @@ public class GroupSuggestionsButtonControllerImplUnitTest {
     @Mock private Tab mThirdTab;
     @Mock private TabModel mTabModel;
     @Mock private Profile mProfile;
-    @Captor private ArgumentCaptor<UserResponseMetadata> mResultCallbackCaptor;
 
     @Before
     public void setUp() throws Exception {
@@ -102,6 +100,7 @@ public class GroupSuggestionsButtonControllerImplUnitTest {
     @Test
     public void shouldShowButtonReturnsFalseWhenSuggestionIsForOtherTab() {
         JniOnceCallback<UserResponseMetadata> suggestionCallback = mock();
+        var resultCallbackArgumentCaptor = ArgumentCaptor.forClass(UserResponseMetadata.class);
         var mockCachedSuggestion =
                 createCachedSuggestions(
                         /* suggestionId= */ SUGGESTION_ID,
@@ -113,11 +112,11 @@ public class GroupSuggestionsButtonControllerImplUnitTest {
 
         var shouldShow = controller.shouldShowButton(mMockTab, WINDOW_ID);
 
-        verify(suggestionCallback).onResult(mResultCallbackCaptor.capture());
+        verify(suggestionCallback).onResult(resultCallbackArgumentCaptor.capture());
         verify(mMockGroupSuggestionService).getCachedSuggestions(WINDOW_ID);
         Assert.assertFalse(shouldShow);
 
-        UserResponseMetadata responseMetadata = mResultCallbackCaptor.getValue();
+        var responseMetadata = resultCallbackArgumentCaptor.getValue();
         Assert.assertEquals(SUGGESTION_ID, responseMetadata.getSuggestionId());
         Assert.assertEquals(UserResponse.NOT_SHOWN, responseMetadata.getUserResponse());
     }
@@ -125,6 +124,7 @@ public class GroupSuggestionsButtonControllerImplUnitTest {
     @Test
     public void callingShouldShowButtonAgainClearsPreviousSuggestion() {
         JniOnceCallback<UserResponseMetadata> firstSuggestionCallback = mock();
+        var firstResultCallbackArgumentCaptor = ArgumentCaptor.forClass(UserResponseMetadata.class);
         var firstCachedSuggestion =
                 createCachedSuggestions(SUGGESTION_ID, TAB_ID, firstSuggestionCallback);
         JniOnceCallback<UserResponseMetadata> secondSuggestionCallback = mock();
@@ -141,8 +141,8 @@ public class GroupSuggestionsButtonControllerImplUnitTest {
         var secondShouldShow = controller.shouldShowButton(mMockTab, WINDOW_ID);
 
         assertTrue(firstShouldShow);
-        verify(firstSuggestionCallback).onResult(mResultCallbackCaptor.capture());
-        UserResponseMetadata firstResponseMetadata = mResultCallbackCaptor.getValue();
+        verify(firstSuggestionCallback).onResult(firstResultCallbackArgumentCaptor.capture());
+        var firstResponseMetadata = firstResultCallbackArgumentCaptor.getValue();
         assertEquals(SUGGESTION_ID, firstResponseMetadata.getSuggestionId());
         assertEquals(UserResponse.NOT_SHOWN, firstResponseMetadata.getUserResponse());
         assertTrue(secondShouldShow);
@@ -152,6 +152,7 @@ public class GroupSuggestionsButtonControllerImplUnitTest {
     @Test
     public void showingButtonForOtherTabShouldClearSuggestion() {
         JniOnceCallback<UserResponseMetadata> suggestionCallback = mock();
+        var suggestionCallbackArgumentCaptor = ArgumentCaptor.forClass(UserResponseMetadata.class);
         var suggestion = createCachedSuggestions(SUGGESTION_ID, TAB_ID, suggestionCallback);
         when(mMockGroupSuggestionService.getCachedSuggestions(WINDOW_ID)).thenReturn(suggestion);
 
@@ -161,8 +162,8 @@ public class GroupSuggestionsButtonControllerImplUnitTest {
 
         controller.onButtonShown(mSecondTab);
 
-        verify(suggestionCallback).onResult(mResultCallbackCaptor.capture());
-        UserResponseMetadata responseMetadata = mResultCallbackCaptor.getValue();
+        verify(suggestionCallback).onResult(suggestionCallbackArgumentCaptor.capture());
+        var responseMetadata = suggestionCallbackArgumentCaptor.getValue();
 
         assertTrue(shouldShow);
         assertEquals(UserResponse.NOT_SHOWN, responseMetadata.getUserResponse());
@@ -171,6 +172,7 @@ public class GroupSuggestionsButtonControllerImplUnitTest {
     @Test
     public void ignoringButtonShouldProvideCallback() {
         JniOnceCallback<UserResponseMetadata> suggestionCallback = mock();
+        var suggestionCallbackArgumentCaptor = ArgumentCaptor.forClass(UserResponseMetadata.class);
         var suggestion = createCachedSuggestions(SUGGESTION_ID, TAB_ID, suggestionCallback);
         when(mMockGroupSuggestionService.getCachedSuggestions(WINDOW_ID)).thenReturn(suggestion);
 
@@ -180,8 +182,8 @@ public class GroupSuggestionsButtonControllerImplUnitTest {
         controller.onButtonShown(mMockTab);
         controller.onButtonHidden();
 
-        verify(suggestionCallback).onResult(mResultCallbackCaptor.capture());
-        UserResponseMetadata responseMetadata = mResultCallbackCaptor.getValue();
+        verify(suggestionCallback).onResult(suggestionCallbackArgumentCaptor.capture());
+        var responseMetadata = suggestionCallbackArgumentCaptor.getValue();
 
         assertTrue(shouldShow);
         assertEquals(UserResponse.IGNORED, responseMetadata.getUserResponse());
@@ -190,6 +192,7 @@ public class GroupSuggestionsButtonControllerImplUnitTest {
     @Test
     public void hidingWithoutShowingShouldProvideCallback() {
         JniOnceCallback<UserResponseMetadata> suggestionCallback = mock();
+        var suggestionCallbackArgumentCaptor = ArgumentCaptor.forClass(UserResponseMetadata.class);
         var suggestion = createCachedSuggestions(SUGGESTION_ID, TAB_ID, suggestionCallback);
         when(mMockGroupSuggestionService.getCachedSuggestions(WINDOW_ID)).thenReturn(suggestion);
 
@@ -198,8 +201,8 @@ public class GroupSuggestionsButtonControllerImplUnitTest {
         var shouldShow = controller.shouldShowButton(mMockTab, WINDOW_ID);
         controller.onButtonHidden();
 
-        verify(suggestionCallback).onResult(mResultCallbackCaptor.capture());
-        UserResponseMetadata responseMetadata = mResultCallbackCaptor.getValue();
+        verify(suggestionCallback).onResult(suggestionCallbackArgumentCaptor.capture());
+        var responseMetadata = suggestionCallbackArgumentCaptor.getValue();
 
         assertTrue(shouldShow);
         assertEquals(UserResponse.NOT_SHOWN, responseMetadata.getUserResponse());
@@ -208,6 +211,7 @@ public class GroupSuggestionsButtonControllerImplUnitTest {
     @Test
     public void clickingWithAnotherTabDoesNothing() {
         JniOnceCallback<UserResponseMetadata> suggestionCallback = mock();
+        var suggestionCallbackArgumentCaptor = ArgumentCaptor.forClass(UserResponseMetadata.class);
         var suggestion = createCachedSuggestions(SUGGESTION_ID, TAB_ID, suggestionCallback);
         when(mMockGroupSuggestionService.getCachedSuggestions(WINDOW_ID)).thenReturn(suggestion);
 
@@ -216,8 +220,8 @@ public class GroupSuggestionsButtonControllerImplUnitTest {
         controller.shouldShowButton(mMockTab, WINDOW_ID);
         controller.onButtonClicked(mSecondTab, mTabModel);
 
-        verify(suggestionCallback).onResult(mResultCallbackCaptor.capture());
-        UserResponseMetadata responseMetadata = mResultCallbackCaptor.getValue();
+        verify(suggestionCallback).onResult(suggestionCallbackArgumentCaptor.capture());
+        var responseMetadata = suggestionCallbackArgumentCaptor.getValue();
 
         assertEquals(UserResponse.UNKNOWN, responseMetadata.getUserResponse());
     }
@@ -225,6 +229,7 @@ public class GroupSuggestionsButtonControllerImplUnitTest {
     @Test
     public void clickingShouldGroupTabs() {
         JniOnceCallback<UserResponseMetadata> suggestionCallback = mock();
+        var suggestionCallbackArgumentCaptor = ArgumentCaptor.forClass(UserResponseMetadata.class);
         var suggestion =
                 createCachedSuggestions(
                         SUGGESTION_ID,
@@ -240,8 +245,8 @@ public class GroupSuggestionsButtonControllerImplUnitTest {
         controller.shouldShowButton(mMockTab, WINDOW_ID);
         controller.onButtonClicked(mMockTab, mTabModel);
 
-        verify(suggestionCallback).onResult(mResultCallbackCaptor.capture());
-        UserResponseMetadata responseMetadata = mResultCallbackCaptor.getValue();
+        verify(suggestionCallback).onResult(suggestionCallbackArgumentCaptor.capture());
+        var responseMetadata = suggestionCallbackArgumentCaptor.getValue();
         verify(mTabModel)
                 .mergeListOfTabsToGroup(
                         eq(List.of(mSecondTab, mThirdTab)),

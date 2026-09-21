@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -46,7 +47,6 @@ public class BookmarkDesktopNavigationMediatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private BookmarkDelegate mBookmarkDelegate;
-    @Mock private BookmarkModel mMockBookmarkModel;
 
     private Context mContext;
     private FakeBookmarkModel mBookmarkModel;
@@ -393,24 +393,25 @@ public class BookmarkDesktopNavigationMediatorUnitTest {
 
     @Test
     public void testInit_whenModelNotLoaded_doesNotCrashAndInitializesOnModelLoaded() {
-        when(mMockBookmarkModel.isBookmarkModelLoaded()).thenReturn(false);
+        BookmarkModel mockBookmarkModel = mock(BookmarkModel.class);
+        when(mockBookmarkModel.isBookmarkModelLoaded()).thenReturn(false);
 
         ModelList modelList = new ModelList();
         BookmarkDesktopNavigationMediator mediator =
                 new BookmarkDesktopNavigationMediator(
-                        mContext, mMockBookmarkModel, modelList, mBookmarkDelegate);
+                        mContext, mockBookmarkModel, modelList, mBookmarkDelegate);
 
         // When model is not loaded, modelList is empty and no native methods are invoked.
         assertTrue(modelList.isEmpty());
-        verify(mMockBookmarkModel, never()).getRootFolderId();
+        verify(mockBookmarkModel, never()).getRootFolderId();
 
         // When model finishes loading:
-        when(mMockBookmarkModel.isBookmarkModelLoaded()).thenReturn(true);
-        when(mMockBookmarkModel.getRootFolderId())
+        when(mockBookmarkModel.isBookmarkModelLoaded()).thenReturn(true);
+        when(mockBookmarkModel.getRootFolderId())
                 .thenReturn(new BookmarkId(0, BookmarkType.NORMAL));
         mediator.bookmarkModelChanged();
 
-        verify(mMockBookmarkModel).getTopLevelFolderIds(anyInt());
+        verify(mockBookmarkModel).getTopLevelFolderIds(anyInt());
     }
 
     private void assertFolderItem(

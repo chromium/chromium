@@ -9,6 +9,7 @@ import static android.os.Looper.getMainLooper;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.app.PendingIntent;
@@ -18,12 +19,8 @@ import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.Status;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.PayloadCallbackHelper;
@@ -34,14 +31,12 @@ import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.Cr
 @RunWith(BaseRobolectricTestRunner.class)
 public class FakeCredentialManagerLauncherTest {
     private static final String TEST_EMAIL_ADDRESS = "test@email.com";
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private PendingIntent mPendingIntent;
     private FakeCredentialManagerLauncher mFakeLauncher;
 
     @Before
     public void setUp() {
         mFakeLauncher = new FakeCredentialManagerLauncher();
-        mFakeLauncher.setIntent(mPendingIntent);
+        mFakeLauncher.setIntent(mock(PendingIntent.class));
     }
 
     @Test

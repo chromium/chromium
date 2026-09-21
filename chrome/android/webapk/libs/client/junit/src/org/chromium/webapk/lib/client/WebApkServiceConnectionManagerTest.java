@@ -15,13 +15,9 @@ import android.text.TextUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowApplication;
@@ -37,11 +33,8 @@ import java.util.HashSet;
 @RunWith(BaseRobolectricTestRunner.class)
 public class WebApkServiceConnectionManagerTest {
     private static final String WEBAPK_PACKAGE = "com.webapk.package";
+
     private static final String CATEGORY_WEBAPK_SERVICE_API = "android.intent.category.WEBAPK_API";
-
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Mock private IBinder mIBinder;
 
     private ShadowApplication mShadowApplication;
     private WebApkServiceConnectionManager mConnectionManager;
@@ -61,7 +54,7 @@ public class WebApkServiceConnectionManagerTest {
     public void setUp() {
         mShadowApplication = Shadows.shadowOf(RuntimeEnvironment.application);
         mShadowApplication.setComponentNameAndServiceForBindService(
-                new ComponentName(WEBAPK_PACKAGE, ""), mIBinder);
+                new ComponentName(WEBAPK_PACKAGE, ""), Mockito.mock(IBinder.class));
         mConnectionManager =
                 new WebApkServiceConnectionManager(
                         TaskTraits.BEST_EFFORT_MAY_BLOCK,
@@ -116,7 +109,8 @@ public class WebApkServiceConnectionManagerTest {
             public void establishServiceConnection() {
                 if (mConnection != null) {
                     mConnection.onServiceConnected(
-                            new ComponentName(WEBAPK_PACKAGE, "random"), mIBinder);
+                            new ComponentName(WEBAPK_PACKAGE, "random"),
+                            Mockito.mock(IBinder.class));
                 }
             }
 

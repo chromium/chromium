@@ -28,6 +28,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -109,6 +110,7 @@ import java.util.function.Supplier;
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.CROSS_DEVICE_TASK_HANDOFF)
 public final class BaseCustomTabRootUiCoordinatorUnitTest {
+
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
@@ -128,8 +130,12 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
     @Mock private Supplier<Integer> mActivityThemeColorSupplier;
     @Mock private AppMenuBlocker mAppMenuBlocker;
     @Mock private BooleanSupplier mSupportsAppMenuSupplier;
+    private final MonotonicObservableSupplier<TabCreatorManager> mTabCreatorManagerSupplier =
+            ObservableSuppliers.alwaysNull();
     @Mock private FullscreenManager mFullscreenManager;
     @Mock private Supplier<TabContentManager> mTabContentManagerSupplier;
+    private final SettableMonotonicObservableSupplier<SnackbarManager> mSnackbarManagerSupplier =
+            ObservableSuppliers.createMonotonic();
     @Mock private Supplier<Boolean> mIsInOverviewModeSupplier;
     @Mock private AppMenuDelegate mAppMenuDelegate;
     @Mock private StatusBarColorProvider mStatusBarColorProvider;
@@ -153,16 +159,7 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
     @Mock private IdentityManager mIdentityManager;
     @Mock private Supplier<BrowserServicesThemeColorProvider> mBrowserServicesColorProviderSupplier;
     @Mock private SnackbarManager mSnackbarManager;
-    @Mock private CustomTabsConnection mCustomTabsConnection;
-    @Mock private SigninAndHistorySyncActivityLauncher mSigninAndHistorySyncActivityLauncher;
 
-    @Mock
-    private BottomSheetSigninAndHistorySyncCoordinator mBottomSheetSigninAndHistorySyncCoordinator;
-
-    private final MonotonicObservableSupplier<TabCreatorManager> mTabCreatorManagerSupplier =
-            ObservableSuppliers.alwaysNull();
-    private final SettableMonotonicObservableSupplier<SnackbarManager> mSnackbarManagerSupplier =
-            ObservableSuppliers.createMonotonic();
     private final SettableMonotonicObservableSupplier<EphemeralTabCoordinator>
             mEphemeralTabCoordinatorSupplier = ObservableSuppliers.createMonotonic();
     private BrowserStateBrowserControlsVisibilityDelegate
@@ -295,16 +292,17 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR)
     public void testGoogleBottomBarEnabled_cctGoogleBottomBarTrue() throws Exception {
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
 
-        when(mCustomTabsConnection.shouldEnableGoogleBottomBarForIntent(any())).thenReturn(true);
+        when(connection.shouldEnableGoogleBottomBarForIntent(any())).thenReturn(true);
         assertTrue(
                 "Google Bottom Bar should be enabled",
                 BaseCustomTabRootUiCoordinator.isGoogleBottomBarEnabled(null));
 
         // The method should return false if any one of the conditions is not met .
 
-        when(mCustomTabsConnection.shouldEnableGoogleBottomBarForIntent(any())).thenReturn(false);
+        when(connection.shouldEnableGoogleBottomBarForIntent(any())).thenReturn(false);
         assertFalse(
                 "Google Bottom Bar should be disabled",
                 BaseCustomTabRootUiCoordinator.isGoogleBottomBarEnabled(null));
@@ -313,8 +311,9 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
     @Test
     @DisableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR)
     public void testGoogleBottomBarEnabled_cctGoogleBottomBarFalse() throws Exception {
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
-        when(mCustomTabsConnection.shouldEnableGoogleBottomBarForIntent(any())).thenReturn(true);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
+        when(connection.shouldEnableGoogleBottomBarForIntent(any())).thenReturn(true);
 
         // The method returns false if the flag is set to false
 
@@ -340,19 +339,20 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
     })
     public void testInitProfileDependantFeatures_WebSigninAndHistorySyncCoordinatorSupplier() {
-        when(mSigninAndHistorySyncActivityLauncher
-                        .createBottomSheetSigninCoordinatorAndObserveAddAccountResult(
-                                any(), any(), any(), any(), any(), any(), any(), any(), any(),
-                                anyInt()))
-                .thenReturn(mBottomSheetSigninAndHistorySyncCoordinator);
-        SigninAndHistorySyncActivityLauncherImpl.setLauncherForTest(
-                mSigninAndHistorySyncActivityLauncher);
+        SigninAndHistorySyncActivityLauncher launcherMock =
+                Mockito.mock(SigninAndHistorySyncActivityLauncher.class);
+        BottomSheetSigninAndHistorySyncCoordinator coordinatorMock =
+                Mockito.mock(BottomSheetSigninAndHistorySyncCoordinator.class);
+        when(launcherMock.createBottomSheetSigninCoordinatorAndObserveAddAccountResult(
+                        any(), any(), any(), any(), any(), any(), any(), any(), any(), anyInt()))
+                .thenReturn(coordinatorMock);
+        SigninAndHistorySyncActivityLauncherImpl.setLauncherForTest(launcherMock);
 
         mBaseCustomTabRootUiCoordinator.initProfileDependentFeatures(mProfile);
 
         Assert.assertEquals(
                 "Coordinator retrieved from supplier should match the one created by the launcher",
-                mBottomSheetSigninAndHistorySyncCoordinator,
+                coordinatorMock,
                 BottomSheetSigninAndHistorySyncCoordinatorSupplier.getValueForFlow(
                         mWindowAndroid, SupplierFlow.WEB_SIGNIN));
     }
@@ -401,8 +401,9 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
                                 MismatchNotificationController.SuppressedReason
                                         .CCT_IS_OFF_THE_RECORD)
                         .build();
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
-        when(mCustomTabsConnection.isAppForAccountMismatchNotification(any())).thenReturn(true);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
+        when(connection.isAppForAccountMismatchNotification(any())).thenReturn(true);
         mProfileSupplier.set(mProfile);
         when(mProfile.isOffTheRecord()).thenReturn(false);
 
@@ -411,11 +412,11 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
                 mBaseCustomTabRootUiCoordinator.createMismatchNotificationChecker("app-id"));
 
         // Not the right app
-        when(mCustomTabsConnection.isAppForAccountMismatchNotification(any())).thenReturn(false);
+        when(connection.isAppForAccountMismatchNotification(any())).thenReturn(false);
         assertNull(
                 "Should NOT create a checker for a wrong app",
                 mBaseCustomTabRootUiCoordinator.createMismatchNotificationChecker("app-id"));
-        when(mCustomTabsConnection.isAppForAccountMismatchNotification(any())).thenReturn(true);
+        when(connection.isAppForAccountMismatchNotification(any())).thenReturn(true);
 
         // Nulled-out app ID
         assertNull(

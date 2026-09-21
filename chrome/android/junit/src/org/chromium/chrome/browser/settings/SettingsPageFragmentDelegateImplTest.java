@@ -35,7 +35,6 @@ import android.widget.LinearLayout;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ApplicationProvider;
@@ -46,7 +45,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -111,17 +109,6 @@ public class SettingsPageFragmentDelegateImplTest {
     @Mock private Tab mTab;
     @Mock private Function<View, EdgeToEdgePadAdjuster> mPadAdjusterGenerator;
     @Mock private EdgeToEdgePadAdjuster mPadAdjuster;
-    @Mock private SettingsContainmentHelper mSettingsContainmentHelper;
-    @Mock private Fragment mFragment;
-    @Mock private SettingsSearchCoordinator mSettingsSearchCoordinator;
-    @Mock private MultiColumnTitleUpdater mMultiColumnTitleUpdater;
-    @Mock private RecyclerView mRecyclerView;
-    @Mock private Fragment mOtherFragment;
-    @Mock private Fragment mMockFragmentWithoutRecycler;
-    @Mock private FragmentManager mMockChildFragmentManager;
-    @Captor private ArgumentCaptor<FragmentLifecycleCallbacks> mCallbackCaptor;
-    @Captor private ArgumentCaptor<SettingsHostFragment> mHostCaptor;
-    @Captor private ArgumentCaptor<MultiColumnTitleUpdater> mObserverCaptor;
 
     private Context mContext;
     private SettingsPageFragmentDelegateImpl mDelegate;
@@ -189,8 +176,8 @@ public class SettingsPageFragmentDelegateImplTest {
         when(mActivity.getString(anyInt()))
                 .thenAnswer(invocation -> mContext.getString(invocation.getArgument(0)));
 
-        when(mMockSettingsHostFragment.getContainmentHelper())
-                .thenReturn(mSettingsContainmentHelper);
+        SettingsContainmentHelper mockContainmentHelper = mock(SettingsContainmentHelper.class);
+        when(mMockSettingsHostFragment.getContainmentHelper()).thenReturn(mockContainmentHelper);
         when(mMockSettingsHostFragment.containsChild(mMultiColumnSettings)).thenReturn(true);
         when(mMockSettingsHostFragment.getMultiColumnSettings()).thenReturn(mMultiColumnSettings);
         when(mTitleContainer.getContext()).thenReturn(mActivity);
@@ -219,9 +206,11 @@ public class SettingsPageFragmentDelegateImplTest {
     private void triggerFragmentViewCreated() {
         when(mFragmentView.findViewById(R.id.settings_title_in_detailed_pane))
                 .thenReturn(mTitleContainer);
+        ArgumentCaptor<FragmentManager.FragmentLifecycleCallbacks> callbackCaptor =
+                ArgumentCaptor.forClass(FragmentManager.FragmentLifecycleCallbacks.class);
         verify(mFragmentManager, atLeastOnce())
-                .registerFragmentLifecycleCallbacks(mCallbackCaptor.capture(), eq(true));
-        for (FragmentManager.FragmentLifecycleCallbacks callback : mCallbackCaptor.getAllValues()) {
+                .registerFragmentLifecycleCallbacks(callbackCaptor.capture(), eq(true));
+        for (FragmentManager.FragmentLifecycleCallbacks callback : callbackCaptor.getAllValues()) {
             callback.onFragmentViewCreated(
                     mFragmentManager, mMultiColumnSettings, mFragmentView, null);
         }
@@ -234,19 +223,23 @@ public class SettingsPageFragmentDelegateImplTest {
         mDelegate.initSettings(mContainerView, "", mPadAdjusterGenerator);
 
         // Verify FragmentDependencyProvider is not registered on mFragmentManager.
+        ArgumentCaptor<FragmentManager.FragmentLifecycleCallbacks> callbackCaptor =
+                ArgumentCaptor.forClass(FragmentManager.FragmentLifecycleCallbacks.class);
         verify(mFragmentManager, atLeastOnce())
-                .registerFragmentLifecycleCallbacks(mCallbackCaptor.capture(), eq(true));
-        for (FragmentManager.FragmentLifecycleCallbacks callback : mCallbackCaptor.getAllValues()) {
+                .registerFragmentLifecycleCallbacks(callbackCaptor.capture(), eq(true));
+        for (FragmentManager.FragmentLifecycleCallbacks callback : callbackCaptor.getAllValues()) {
             assertFalse(
                     "Lifecycle callbacks should not include FragmentDependencyProvider",
                     callback instanceof FragmentDependencyProvider);
         }
 
         // Verify fragment creation and addition with dependency provider set.
-        verify(mFragmentTransaction).add(mHostCaptor.capture(), eq(EXPECTED_TAG));
+        ArgumentCaptor<SettingsHostFragment> hostCaptor =
+                ArgumentCaptor.forClass(SettingsHostFragment.class);
+        verify(mFragmentTransaction).add(hostCaptor.capture(), eq(EXPECTED_TAG));
         assertNotNull(
                 "Dependency provider should be set on host fragment before transaction",
-                mHostCaptor.getValue().getDependencyProviderForTesting());
+                hostCaptor.getValue().getDependencyProviderForTesting());
         verify(mFragmentTransaction).commitAllowingStateLoss();
     }
 
@@ -313,13 +306,15 @@ public class SettingsPageFragmentDelegateImplTest {
         mDelegate.initSettings(mContainerView, "", mPadAdjusterGenerator);
 
         // Retrieve the registered callbacks to verify they get unregistered.
+        ArgumentCaptor<FragmentManager.FragmentLifecycleCallbacks> callbackCaptor =
+                ArgumentCaptor.forClass(FragmentManager.FragmentLifecycleCallbacks.class);
         verify(mFragmentManager, atLeastOnce())
-                .registerFragmentLifecycleCallbacks(mCallbackCaptor.capture(), eq(true));
+                .registerFragmentLifecycleCallbacks(callbackCaptor.capture(), eq(true));
 
         mDelegate.destroySettings();
 
         // Verify unregistration for all registered callbacks.
-        for (FragmentManager.FragmentLifecycleCallbacks callback : mCallbackCaptor.getAllValues()) {
+        for (FragmentManager.FragmentLifecycleCallbacks callback : callbackCaptor.getAllValues()) {
             verify(mFragmentManager).unregisterFragmentLifecycleCallbacks(callback);
         }
 
@@ -334,10 +329,11 @@ public class SettingsPageFragmentDelegateImplTest {
     public void testGetMainFragment() {
         mDelegate.initSettings(mContainerView, "", mPadAdjusterGenerator);
 
+        Fragment mockFragment = mock(Fragment.class);
         when(mMockSettingsHostFragment.isAttachedToActivity()).thenReturn(true);
-        when(mMockSettingsHostFragment.getMainFragment()).thenReturn(mFragment);
+        when(mMockSettingsHostFragment.getMainFragment()).thenReturn(mockFragment);
 
-        assertEquals(mFragment, mDelegate.getMainFragment());
+        assertEquals(mockFragment, mDelegate.getMainFragment());
     }
 
     @Test
@@ -362,8 +358,10 @@ public class SettingsPageFragmentDelegateImplTest {
         mDelegate.initSettings(mContainerView, "", mPadAdjusterGenerator);
         triggerFragmentViewCreated();
 
-        verify(mMultiColumnSettings).addObserver(mObserverCaptor.capture());
-        MultiColumnTitleUpdater titleUpdater = mObserverCaptor.getValue();
+        ArgumentCaptor<MultiColumnTitleUpdater> observerCaptor =
+                ArgumentCaptor.forClass(MultiColumnTitleUpdater.class);
+        verify(mMultiColumnSettings).addObserver(observerCaptor.capture());
+        MultiColumnTitleUpdater titleUpdater = observerCaptor.getValue();
         assertNotNull(titleUpdater);
 
         // Observer removal is tested in the next test.
@@ -377,8 +375,10 @@ public class SettingsPageFragmentDelegateImplTest {
         mDelegate.initSettings(mContainerView, "", mPadAdjusterGenerator);
         triggerFragmentViewCreated();
 
-        verify(mMultiColumnSettings).addObserver(mObserverCaptor.capture());
-        MultiColumnTitleUpdater titleUpdater = mObserverCaptor.getValue();
+        ArgumentCaptor<MultiColumnTitleUpdater> observerCaptor =
+                ArgumentCaptor.forClass(MultiColumnTitleUpdater.class);
+        verify(mMultiColumnSettings).addObserver(observerCaptor.capture());
+        MultiColumnTitleUpdater titleUpdater = observerCaptor.getValue();
         assertNotNull(titleUpdater);
 
         mDelegate.destroySettings();
@@ -402,9 +402,10 @@ public class SettingsPageFragmentDelegateImplTest {
         mDelegate.initSettings(mContainerView, "", mPadAdjusterGenerator);
         triggerFragmentViewCreated();
 
-        verify(mMultiColumnSettings).addObserver(mObserverCaptor.capture());
-        assertEquals(
-                "key1", mObserverCaptor.getValue().getInitialBreadcrumbPathForTesting().get(0).key);
+        ArgumentCaptor<MultiColumnTitleUpdater> captor =
+                ArgumentCaptor.forClass(MultiColumnTitleUpdater.class);
+        verify(mMultiColumnSettings).addObserver(captor.capture());
+        assertEquals("key1", captor.getValue().getInitialBreadcrumbPathForTesting().get(0).key);
     }
 
     @Test
@@ -440,9 +441,10 @@ public class SettingsPageFragmentDelegateImplTest {
         mDelegate.initSettings(mContainerView, "", mPadAdjusterGenerator);
         triggerFragmentViewCreated();
 
-        verify(mMultiColumnSettings).addObserver(mObserverCaptor.capture());
-        List<SettingsIndexData.Entry> path =
-                mObserverCaptor.getValue().getInitialBreadcrumbPathForTesting();
+        ArgumentCaptor<MultiColumnTitleUpdater> captor =
+                ArgumentCaptor.forClass(MultiColumnTitleUpdater.class);
+        verify(mMultiColumnSettings).addObserver(captor.capture());
+        List<SettingsIndexData.Entry> path = captor.getValue().getInitialBreadcrumbPathForTesting();
         assertNotNull(path);
         // The path contains 2 keys because the full settings path is root -> child1 -> child2.
         assertEquals(2, path.size());
@@ -498,10 +500,12 @@ public class SettingsPageFragmentDelegateImplTest {
         // Setup mSettingsHostFragment.
         mDelegate.initSettings(mContainerView, "", mPadAdjusterGenerator);
 
+        Fragment fragment = mock(Fragment.class);
+
         // Ensure mSettingsHostFragment is attached to activity.
         when(mMockSettingsHostFragment.isAttachedToActivity()).thenReturn(true);
-        mDelegate.finishCurrentSettings(mFragment);
-        verify(mMockSettingsHostFragment).finishCurrentSettings(mFragment);
+        mDelegate.finishCurrentSettings(fragment);
+        verify(mMockSettingsHostFragment).finishCurrentSettings(fragment);
     }
 
     @Test
@@ -509,14 +513,16 @@ public class SettingsPageFragmentDelegateImplTest {
         mDelegate.initSettings(mContainerView, "", mPadAdjusterGenerator);
 
         // Capture all registered FragmentLifecycleCallbacks.
+        ArgumentCaptor<FragmentManager.FragmentLifecycleCallbacks> callbackCaptor =
+                ArgumentCaptor.forClass(FragmentManager.FragmentLifecycleCallbacks.class);
         verify(mFragmentManager, atLeastOnce())
-                .registerFragmentLifecycleCallbacks(mCallbackCaptor.capture(), eq(true));
+                .registerFragmentLifecycleCallbacks(callbackCaptor.capture(), eq(true));
 
         when(mFragmentView.findViewById(R.id.settings_title_in_detailed_pane))
                 .thenReturn(mTitleContainer);
 
         // Run the view creation callback for all registered callbacks.
-        for (FragmentManager.FragmentLifecycleCallbacks callback : mCallbackCaptor.getAllValues()) {
+        for (FragmentManager.FragmentLifecycleCallbacks callback : callbackCaptor.getAllValues()) {
             callback.onFragmentViewCreated(
                     mFragmentManager, mMultiColumnSettings, mFragmentView, null);
         }
@@ -533,8 +539,10 @@ public class SettingsPageFragmentDelegateImplTest {
         mDelegate.initSettings(mContainerView, "", mPadAdjusterGenerator);
 
         // Capture lifecycle callbacks.
+        ArgumentCaptor<FragmentManager.FragmentLifecycleCallbacks> callbackCaptor =
+                ArgumentCaptor.forClass(FragmentManager.FragmentLifecycleCallbacks.class);
         verify(mFragmentManager, atLeastOnce())
-                .registerFragmentLifecycleCallbacks(mCallbackCaptor.capture(), eq(true));
+                .registerFragmentLifecycleCallbacks(callbackCaptor.capture(), eq(true));
 
         // Set up mocks.
         when(mFragmentView.findViewById(R.id.settings_title_in_detailed_pane))
@@ -543,7 +551,7 @@ public class SettingsPageFragmentDelegateImplTest {
         when(mMockSettingsHostFragment.getActiveFragment()).thenReturn(mMultiColumnSettings);
 
         // Trigger view creation.
-        for (FragmentManager.FragmentLifecycleCallbacks callback : mCallbackCaptor.getAllValues()) {
+        for (FragmentManager.FragmentLifecycleCallbacks callback : callbackCaptor.getAllValues()) {
             callback.onFragmentViewCreated(
                     mFragmentManager, mMultiColumnSettings, mFragmentView, null);
         }
@@ -575,13 +583,15 @@ public class SettingsPageFragmentDelegateImplTest {
 
         mDelegate.initSettings(mContainerView, "", mPadAdjusterGenerator);
 
+        ArgumentCaptor<FragmentManager.FragmentLifecycleCallbacks> callbackCaptor =
+                ArgumentCaptor.forClass(FragmentManager.FragmentLifecycleCallbacks.class);
         verify(mFragmentManager, atLeastOnce())
-                .registerFragmentLifecycleCallbacks(mCallbackCaptor.capture(), eq(true));
+                .registerFragmentLifecycleCallbacks(callbackCaptor.capture(), eq(true));
 
         when(mFragmentView.findViewById(R.id.settings_title_in_detailed_pane))
                 .thenReturn(mTitleContainer);
 
-        for (FragmentManager.FragmentLifecycleCallbacks callback : mCallbackCaptor.getAllValues()) {
+        for (FragmentManager.FragmentLifecycleCallbacks callback : callbackCaptor.getAllValues()) {
             callback.onFragmentViewCreated(
                     mFragmentManager, mMultiColumnSettings, mFragmentView, null);
         }
@@ -596,13 +606,15 @@ public class SettingsPageFragmentDelegateImplTest {
     public void testTitleUpdaterLifecycleCallbacks_unregistersAfterViewCreated() {
         mDelegate.initSettings(mContainerView, "", mPadAdjusterGenerator);
 
+        ArgumentCaptor<FragmentManager.FragmentLifecycleCallbacks> callbackCaptor =
+                ArgumentCaptor.forClass(FragmentManager.FragmentLifecycleCallbacks.class);
         verify(mFragmentManager, atLeastOnce())
-                .registerFragmentLifecycleCallbacks(mCallbackCaptor.capture(), eq(true));
+                .registerFragmentLifecycleCallbacks(callbackCaptor.capture(), eq(true));
 
         when(mFragmentView.findViewById(R.id.settings_title_in_detailed_pane))
                 .thenReturn(mTitleContainer);
 
-        for (FragmentManager.FragmentLifecycleCallbacks callback : mCallbackCaptor.getAllValues()) {
+        for (FragmentManager.FragmentLifecycleCallbacks callback : callbackCaptor.getAllValues()) {
             callback.onFragmentViewCreated(
                     mFragmentManager, mMultiColumnSettings, mFragmentView, null);
         }
@@ -680,8 +692,9 @@ public class SettingsPageFragmentDelegateImplTest {
 
         // When search coordinator indicates navigation icon should be hidden (single-column in
         // search mode):
-        when(mSettingsSearchCoordinator.shouldShowNavigationIcon()).thenReturn(false);
-        mDelegate.setSearchCoordinatorForTesting(mSettingsSearchCoordinator);
+        SettingsSearchCoordinator mockSearchCoordinator = mock(SettingsSearchCoordinator.class);
+        when(mockSearchCoordinator.shouldShowNavigationIcon()).thenReturn(false);
+        mDelegate.setSearchCoordinatorForTesting(mockSearchCoordinator);
 
         // During slide animation / header updates while in search mode, navigation icon must stay
         // hidden.
@@ -699,13 +712,15 @@ public class SettingsPageFragmentDelegateImplTest {
     public void testInitSettings_registersSelfAsMultiColumnSettingsObserver() {
         mDelegate.initSettings(mContainerView, "", mPadAdjusterGenerator);
 
+        ArgumentCaptor<FragmentManager.FragmentLifecycleCallbacks> callbackCaptor =
+                ArgumentCaptor.forClass(FragmentManager.FragmentLifecycleCallbacks.class);
         verify(mFragmentManager, atLeastOnce())
-                .registerFragmentLifecycleCallbacks(mCallbackCaptor.capture(), eq(true));
+                .registerFragmentLifecycleCallbacks(callbackCaptor.capture(), eq(true));
 
         when(mFragmentView.findViewById(R.id.settings_title_in_detailed_pane))
                 .thenReturn(mTitleContainer);
 
-        for (FragmentManager.FragmentLifecycleCallbacks callback : mCallbackCaptor.getAllValues()) {
+        for (FragmentManager.FragmentLifecycleCallbacks callback : callbackCaptor.getAllValues()) {
             callback.onFragmentViewCreated(
                     mFragmentManager, mMultiColumnSettings, mFragmentView, null);
         }
@@ -783,12 +798,13 @@ public class SettingsPageFragmentDelegateImplTest {
         when(mMockSettingsHostFragment.getActiveFragment()).thenReturn(mMultiColumnSettings);
         when(mMultiColumnSettings.getBackStackEntryCount()).thenReturn(1);
 
-        when(mMultiColumnTitleUpdater.handleBackAction()).thenReturn(true);
-        mDelegate.setMultiColumnTitleUpdaterForTesting(mMultiColumnTitleUpdater);
+        MultiColumnTitleUpdater mockTitleUpdater = mock(MultiColumnTitleUpdater.class);
+        when(mockTitleUpdater.handleBackAction()).thenReturn(true);
+        mDelegate.setMultiColumnTitleUpdaterForTesting(mockTitleUpdater);
 
         ShadowLooper.idleMainLooper();
         assertEquals(BackPressResult.SUCCESS, mDelegate.handleBackPress());
-        verify(mMultiColumnTitleUpdater).handleBackAction();
+        verify(mockTitleUpdater).handleBackAction();
         // Back stack should not be popped when search consumed the back press.
         verify(mMultiColumnSettings, never()).popBackStack();
     }
@@ -817,8 +833,9 @@ public class SettingsPageFragmentDelegateImplTest {
         when(mMockSettingsHostFragment.getActiveFragment()).thenReturn(mMultiColumnSettings);
         when(mMultiColumnSettings.getBackStackEntryCount()).thenReturn(0);
 
-        when(mMultiColumnTitleUpdater.isSearchOpen()).thenReturn(true);
-        mDelegate.setMultiColumnTitleUpdaterForTesting(mMultiColumnTitleUpdater);
+        MultiColumnTitleUpdater mockTitleUpdater = mock(MultiColumnTitleUpdater.class);
+        when(mockTitleUpdater.isSearchOpen()).thenReturn(true);
+        mDelegate.setMultiColumnTitleUpdaterForTesting(mockTitleUpdater);
 
         mDelegate.onHeaderLayoutUpdated();
         ShadowLooper.idleMainLooper();
@@ -828,18 +845,21 @@ public class SettingsPageFragmentDelegateImplTest {
     /** Regression test for crash due to activity recreation. http://crbug.com/542023392 */
     @Test
     public void testInitSettings_withNullContainmentHelper_delaysSearchCoordinatorCreation() {
+        SettingsContainmentHelper mockContainmentHelper = mock(SettingsContainmentHelper.class);
         when(mMockSettingsHostFragment.getContainmentHelper()).thenReturn(null);
 
         mDelegate.initSettings(mContainerView, "", mPadAdjusterGenerator);
 
+        ArgumentCaptor<FragmentManager.FragmentLifecycleCallbacks> callbackCaptor =
+                ArgumentCaptor.forClass(FragmentManager.FragmentLifecycleCallbacks.class);
         verify(mFragmentManager, atLeastOnce())
-                .registerFragmentLifecycleCallbacks(mCallbackCaptor.capture(), anyBoolean());
+                .registerFragmentLifecycleCallbacks(callbackCaptor.capture(), anyBoolean());
 
         when(mFragmentView.findViewById(R.id.settings_title_in_detailed_pane))
                 .thenReturn(mTitleContainer);
 
         for (FragmentManager.FragmentLifecycleCallbacks callback :
-                new ArrayList<>(mCallbackCaptor.getAllValues())) {
+                new ArrayList<>(callbackCaptor.getAllValues())) {
             callback.onFragmentViewCreated(
                     mFragmentManager, mMultiColumnSettings, mFragmentView, null);
         }
@@ -848,15 +868,14 @@ public class SettingsPageFragmentDelegateImplTest {
         assertNull(mDelegate.getSearchCoordinator());
 
         // Now mock containmentHelper becoming available upon fragment attachment.
-        when(mMockSettingsHostFragment.getContainmentHelper())
-                .thenReturn(mSettingsContainmentHelper);
+        when(mMockSettingsHostFragment.getContainmentHelper()).thenReturn(mockContainmentHelper);
 
         // Capture newly registered callbacks (the non-recursive attached listener).
         verify(mFragmentManager, atLeastOnce())
-                .registerFragmentLifecycleCallbacks(mCallbackCaptor.capture(), eq(false));
+                .registerFragmentLifecycleCallbacks(callbackCaptor.capture(), eq(false));
 
         for (FragmentManager.FragmentLifecycleCallbacks callback :
-                new ArrayList<>(mCallbackCaptor.getAllValues())) {
+                new ArrayList<>(callbackCaptor.getAllValues())) {
             callback.onFragmentAttached(
                     mFragmentManager,
                     mMockSettingsHostFragment,
@@ -866,7 +885,7 @@ public class SettingsPageFragmentDelegateImplTest {
         SettingsSearchCoordinator searchCoordinator = mDelegate.getSearchCoordinator();
         assertNotNull(searchCoordinator);
         verify(mMultiColumnSettings).addObserver(searchCoordinator);
-        verify(mSettingsContainmentHelper).getItemDecorations();
+        verify(mockContainmentHelper).getItemDecorations();
     }
 
     @Test
@@ -949,17 +968,20 @@ public class SettingsPageFragmentDelegateImplTest {
         var lifecycleCallbacks = mDelegate.getEdgeToEdgeLifecycleCallbacksForTesting();
         assertNotNull(lifecycleCallbacks);
 
-        when(mMockSettingsHostFragment.containsFragment(mFragment)).thenReturn(true);
+        Fragment mockFragment = mock(Fragment.class);
+        when(mMockSettingsHostFragment.containsFragment(mockFragment)).thenReturn(true);
         FrameLayout mockView = new FrameLayout(mContext);
-        mockView.addView(mRecyclerView);
+        RecyclerView mockRecyclerView = mock(RecyclerView.class);
+        mockView.addView(mockRecyclerView);
 
-        lifecycleCallbacks.onFragmentViewCreated(mFragmentManager, mFragment, mockView, null);
+        lifecycleCallbacks.onFragmentViewCreated(mFragmentManager, mockFragment, mockView, null);
 
-        verify(mPadAdjusterGenerator).apply(mRecyclerView);
+        verify(mPadAdjusterGenerator).apply(mockRecyclerView);
         assertEquals(1, mDelegate.getEdgeToEdgePadAdjustersForTesting().size());
-        assertEquals(mPadAdjuster, mDelegate.getEdgeToEdgePadAdjustersForTesting().get(mFragment));
+        assertEquals(
+                mPadAdjuster, mDelegate.getEdgeToEdgePadAdjustersForTesting().get(mockFragment));
 
-        lifecycleCallbacks.onFragmentViewDestroyed(mFragmentManager, mFragment);
+        lifecycleCallbacks.onFragmentViewDestroyed(mFragmentManager, mockFragment);
 
         verify(mPadAdjuster).destroy();
         assertTrue(mDelegate.getEdgeToEdgePadAdjustersForTesting().isEmpty());
@@ -974,11 +996,13 @@ public class SettingsPageFragmentDelegateImplTest {
         var lifecycleCallbacks = mDelegate.getEdgeToEdgeLifecycleCallbacksForTesting();
         assertNotNull(lifecycleCallbacks);
 
-        when(mMockSettingsHostFragment.containsFragment(mFragment)).thenReturn(true);
+        Fragment mockFragment = mock(Fragment.class);
+        when(mMockSettingsHostFragment.containsFragment(mockFragment)).thenReturn(true);
         FrameLayout mockView = new FrameLayout(mContext);
-        mockView.addView(mRecyclerView);
+        RecyclerView mockRecyclerView = mock(RecyclerView.class);
+        mockView.addView(mockRecyclerView);
 
-        lifecycleCallbacks.onFragmentViewCreated(mFragmentManager, mFragment, mockView, null);
+        lifecycleCallbacks.onFragmentViewCreated(mFragmentManager, mockFragment, mockView, null);
 
         mDelegate.destroySettings();
 
@@ -1004,59 +1028,65 @@ public class SettingsPageFragmentDelegateImplTest {
         verify(mPadAdjusterGenerator, never()).apply(any());
 
         // 2. Fragment not hosted by mMockSettingsHostFragment should be ignored.
-        when(mMockSettingsHostFragment.containsFragment(mOtherFragment)).thenReturn(false);
+        Fragment otherFragment = mock(Fragment.class);
+        when(mMockSettingsHostFragment.containsFragment(otherFragment)).thenReturn(false);
         FrameLayout mockView2 = new FrameLayout(mContext);
         mockView2.addView(mock(RecyclerView.class));
-        lifecycleCallbacks.onFragmentViewCreated(mFragmentManager, mOtherFragment, mockView2, null);
+        lifecycleCallbacks.onFragmentViewCreated(mFragmentManager, otherFragment, mockView2, null);
         verify(mPadAdjusterGenerator, never()).apply(any());
 
         // 3. Settings fragment with no recycler_view should be ignored.
-        when(mMockSettingsHostFragment.containsFragment(mMockFragmentWithoutRecycler))
+        Fragment mockFragmentWithoutRecycler = mock(Fragment.class);
+        when(mMockSettingsHostFragment.containsFragment(mockFragmentWithoutRecycler))
                 .thenReturn(true);
         FrameLayout mockView3 = new FrameLayout(mContext);
         mockView3.addView(new View(mContext));
         lifecycleCallbacks.onFragmentViewCreated(
-                mFragmentManager, mMockFragmentWithoutRecycler, mockView3, null);
+                mFragmentManager, mockFragmentWithoutRecycler, mockView3, null);
         verify(mPadAdjusterGenerator, never()).apply(any());
         assertTrue(mDelegate.getEdgeToEdgePadAdjustersForTesting().isEmpty());
     }
 
     @Test
     public void testEdgeToEdge_attachesAdjustersRecursivelyToExistingChildFragments() {
+        FragmentManager mockChildFragmentManager = mock(FragmentManager.class);
         when(mMockSettingsHostFragment.isAttachedToActivity()).thenReturn(true);
         when(mMockSettingsHostFragment.getHostFragmentManager())
-                .thenReturn(mMockChildFragmentManager);
+                .thenReturn(mockChildFragmentManager);
 
-        when(mMockSettingsHostFragment.containsFragment(mFragment)).thenReturn(true);
+        Fragment childFragment = mock(Fragment.class);
+        when(mMockSettingsHostFragment.containsFragment(childFragment)).thenReturn(true);
         FrameLayout childView = new FrameLayout(mContext);
-        childView.addView(mRecyclerView);
-        when(mFragment.getView()).thenReturn(childView);
+        RecyclerView childRecyclerView = mock(RecyclerView.class);
+        childView.addView(childRecyclerView);
+        when(childFragment.getView()).thenReturn(childView);
 
         List<Fragment> childFragments = new ArrayList<>();
-        childFragments.add(mFragment);
-        when(mMockChildFragmentManager.getFragments()).thenReturn(childFragments);
+        childFragments.add(childFragment);
+        when(mockChildFragmentManager.getFragments()).thenReturn(childFragments);
 
         when(mPadAdjusterGenerator.apply(any())).thenReturn(mPadAdjuster);
 
         mDelegate.initSettings(mContainerView, "", mPadAdjusterGenerator);
 
-        verify(mPadAdjusterGenerator, atLeastOnce()).apply(mRecyclerView);
+        verify(mPadAdjusterGenerator, atLeastOnce()).apply(childRecyclerView);
         assertEquals(1, mDelegate.getEdgeToEdgePadAdjustersForTesting().size());
-        assertEquals(mPadAdjuster, mDelegate.getEdgeToEdgePadAdjustersForTesting().get(mFragment));
+        assertEquals(
+                mPadAdjuster, mDelegate.getEdgeToEdgePadAdjustersForTesting().get(childFragment));
     }
 
     @Test
     public void testFindRecyclerView() {
         assertNull(SettingsPageFragmentDelegateImpl.findRecyclerView(new View(mContext)));
 
-        assertEquals(
-                mRecyclerView, SettingsPageFragmentDelegateImpl.findRecyclerView(mRecyclerView));
+        RecyclerView recyclerView = mock(RecyclerView.class);
+        assertEquals(recyclerView, SettingsPageFragmentDelegateImpl.findRecyclerView(recyclerView));
 
         FrameLayout root = new FrameLayout(mContext);
         LinearLayout inner = new LinearLayout(mContext);
         root.addView(new View(mContext));
         root.addView(inner);
-        inner.addView(mRecyclerView);
-        assertEquals(mRecyclerView, SettingsPageFragmentDelegateImpl.findRecyclerView(root));
+        inner.addView(recyclerView);
+        assertEquals(recyclerView, SettingsPageFragmentDelegateImpl.findRecyclerView(root));
     }
 }

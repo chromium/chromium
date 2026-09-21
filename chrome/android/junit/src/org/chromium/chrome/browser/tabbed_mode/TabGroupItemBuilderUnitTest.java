@@ -79,25 +79,22 @@ import java.util.Set;
 public class TabGroupItemBuilderUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    private Context mContext;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private Profile mProfile;
     @Mock private RoundedIconGenerator mRoundedIconGenerator;
     @Mock private FaviconHelper.DefaultFaviconHelper mDefaultFaviconHelper;
+    private FaviconHelper mFaviconHelper;
     @Mock private FaviconHelper.Natives mFaviconHelperJniMock;
     @Mock private AppMenuItemTheme mAppMenuItemTheme;
     @Mock private Tab mTab;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private TabWindowManager mTabWindowManager;
     @Mock private TabList mTabList;
+
+    private TabGroupItemBuilder mTabGroupItemBuilder;
     @Mock private TabModel mTabModel;
     @Mock private TabModel mIncognitoTabModel;
-    @Mock private Tab mTab1;
-    @Mock private Tab mTab2;
-    @Mock private TabList mTabList1;
-
-    private Context mContext;
-    private FaviconHelper mFaviconHelper;
-    private TabGroupItemBuilder mTabGroupItemBuilder;
 
     @Before
     public void setUp() {
@@ -161,15 +158,17 @@ public class TabGroupItemBuilderUnitTest {
         when(mTabModel.getTabGroupTitle(token1)).thenReturn("Group 1");
         when(mTabModel.getTabGroupColorWithFallback(token1)).thenReturn(TabGroupColorId.BLUE);
 
-        when(mTab1.getId()).thenReturn(101);
-        when(mTab1.getTitle()).thenReturn("Tab 1");
-        when(mTab1.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
+        Tab tab1 = Mockito.mock(Tab.class);
+        when(tab1.getId()).thenReturn(101);
+        when(tab1.getTitle()).thenReturn("Tab 1");
+        when(tab1.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
 
-        when(mTab2.getId()).thenReturn(102);
-        when(mTab2.getTitle()).thenReturn("Tab 2");
-        when(mTab2.getUrl()).thenReturn(JUnitTestGURLs.URL_2);
+        Tab tab2 = Mockito.mock(Tab.class);
+        when(tab2.getId()).thenReturn(102);
+        when(tab2.getTitle()).thenReturn("Tab 2");
+        when(tab2.getUrl()).thenReturn(JUnitTestGURLs.URL_2);
 
-        when(mTabModel.getTabsInGroup(token1)).thenReturn(Arrays.asList(mTab1, mTab2));
+        when(mTabModel.getTabsInGroup(token1)).thenReturn(Arrays.asList(tab1, tab2));
 
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
 
@@ -469,12 +468,15 @@ public class TabGroupItemBuilderUnitTest {
         when(mTabGroupSyncService.getGroup("id1")).thenReturn(group1);
         when(mTabGroupSyncService.getGroup("id2")).thenReturn(group2);
 
-        when(mTab1.getTabGroupId()).thenReturn(token1);
-        when(mTab2.getTabGroupId()).thenReturn(token2);
+        Tab tab1 = Mockito.mock(Tab.class);
+        when(tab1.getTabGroupId()).thenReturn(token1);
+        Tab tab2 = Mockito.mock(Tab.class);
+        when(tab2.getTabGroupId()).thenReturn(token2);
 
-        List<Tab> tabs = List.of(mTab1, mTab2);
-        when(mTabList1.iterator()).thenAnswer(invocation -> tabs.iterator());
-        when(mTabModel.getComprehensiveModel()).thenReturn(mTabList1);
+        TabList tabList = Mockito.mock(TabList.class);
+        List<Tab> tabs = List.of(tab1, tab2);
+        when(tabList.iterator()).thenAnswer(invocation -> tabs.iterator());
+        when(mTabModel.getComprehensiveModel()).thenReturn(tabList);
 
         TabGroupItemBuilder builder =
                 new TabGroupItemBuilder(
@@ -523,12 +525,15 @@ public class TabGroupItemBuilderUnitTest {
         when(mTabGroupSyncService.getGroup("id1")).thenReturn(group1);
         when(mTabGroupSyncService.getGroup("id2")).thenReturn(group2);
 
-        when(mTab1.getTabGroupId()).thenReturn(token1);
-        when(mTab2.getTabGroupId()).thenReturn(token2);
+        Tab tab1 = Mockito.mock(Tab.class);
+        when(tab1.getTabGroupId()).thenReturn(token1);
+        Tab tab2 = Mockito.mock(Tab.class);
+        when(tab2.getTabGroupId()).thenReturn(token2);
 
-        List<Tab> tabs = List.of(mTab1, mTab2);
-        when(mTabList1.iterator()).thenAnswer(invocation -> tabs.iterator());
-        when(mTabModel.getComprehensiveModel()).thenReturn(mTabList1);
+        TabList tabList = Mockito.mock(TabList.class);
+        List<Tab> tabs = List.of(tab1, tab2);
+        when(tabList.iterator()).thenAnswer(invocation -> tabs.iterator());
+        when(mTabModel.getComprehensiveModel()).thenReturn(tabList);
 
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
 
@@ -602,27 +607,30 @@ public class TabGroupItemBuilderUnitTest {
         when(mTabGroupSyncService.getGroup("id1")).thenReturn(group1);
         when(mTabGroupSyncService.getGroup("id2")).thenReturn(group2);
 
-        when(mTab1.getTabGroupId()).thenReturn(token1);
-        when(mTab1.getId()).thenReturn(101);
-        when(mTab1.getTitle()).thenReturn("Tab 1");
-        when(mTab1.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
+        Tab tab1 = Mockito.mock(Tab.class);
+        when(tab1.getTabGroupId()).thenReturn(token1);
+        when(tab1.getId()).thenReturn(101);
+        when(tab1.getTitle()).thenReturn("Tab 1");
+        when(tab1.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
 
-        when(mTab2.getTabGroupId()).thenReturn(token2);
-        when(mTab2.getId()).thenReturn(102);
-        when(mTab2.getTitle()).thenReturn("Tab 2");
-        when(mTab2.getUrl()).thenReturn(JUnitTestGURLs.URL_2);
+        Tab tab2 = Mockito.mock(Tab.class);
+        when(tab2.getTabGroupId()).thenReturn(token2);
+        when(tab2.getId()).thenReturn(102);
+        when(tab2.getTitle()).thenReturn("Tab 2");
+        when(tab2.getUrl()).thenReturn(JUnitTestGURLs.URL_2);
 
         // Current model only has tab1 in group1.
-        List<Tab> tabs = List.of(mTab1);
-        when(mTabList1.iterator()).thenAnswer(invocation -> tabs.iterator());
-        when(mTabModel.getComprehensiveModel()).thenReturn(mTabList1);
-        when(mTabModel.getTabsInGroup(token1)).thenReturn(List.of(mTab1));
+        TabList tabList = Mockito.mock(TabList.class);
+        List<Tab> tabs = List.of(tab1);
+        when(tabList.iterator()).thenAnswer(invocation -> tabs.iterator());
+        when(mTabModel.getComprehensiveModel()).thenReturn(tabList);
+        when(mTabModel.getTabsInGroup(token1)).thenReturn(List.of(tab1));
         when(mTabModel.getTabsInGroup(token2)).thenReturn(List.of());
 
         // TabWindowManager has group2 in window 2.
         TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
         when(mTabWindowManager.findWindowIdForTabGroup(token2)).thenReturn(2);
-        when(mTabWindowManager.getGroupedTabsByWindow(2, token2, false)).thenReturn(List.of(mTab2));
+        when(mTabWindowManager.getGroupedTabsByWindow(2, token2, false)).thenReturn(List.of(tab2));
 
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
 
@@ -670,10 +678,11 @@ public class TabGroupItemBuilderUnitTest {
         when(mIncognitoTabModel.getTabGroupColorWithFallback(token1))
                 .thenReturn(TabGroupColorId.GREY);
 
-        when(mTab1.getId()).thenReturn(101);
-        when(mTab1.getTitle()).thenReturn("Incognito Tab");
-        when(mTab1.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
-        when(mIncognitoTabModel.getTabsInGroup(token1)).thenReturn(List.of(mTab1));
+        Tab tab1 = Mockito.mock(Tab.class);
+        when(tab1.getId()).thenReturn(101);
+        when(tab1.getTitle()).thenReturn("Incognito Tab");
+        when(tab1.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
+        when(mIncognitoTabModel.getTabsInGroup(token1)).thenReturn(List.of(tab1));
 
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         when(mTab.isIncognito()).thenReturn(true);
@@ -918,11 +927,13 @@ public class TabGroupItemBuilderUnitTest {
         when(mTabGroupSyncService.getGroup("local_id")).thenReturn(localGroup);
         when(mTabGroupSyncService.getGroup("remote_id")).thenReturn(remoteGroup);
 
-        when(mTab1.getTabGroupId()).thenReturn(token1);
+        Tab tab1 = Mockito.mock(Tab.class);
+        when(tab1.getTabGroupId()).thenReturn(token1);
 
-        List<Tab> tabs = List.of(mTab1);
-        when(mTabList1.iterator()).thenAnswer(invocation -> tabs.iterator());
-        when(mTabModel.getComprehensiveModel()).thenReturn(mTabList1);
+        TabList tabList = Mockito.mock(TabList.class);
+        List<Tab> tabs = List.of(tab1);
+        when(tabList.iterator()).thenAnswer(invocation -> tabs.iterator());
+        when(mTabModel.getComprehensiveModel()).thenReturn(tabList);
 
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
 

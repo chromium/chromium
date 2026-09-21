@@ -37,7 +37,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
@@ -78,13 +77,14 @@ import java.util.function.Supplier;
 })
 @EnableFeatures(ChromeFeatureList.CCT_REPORT_PRERENDER_EVENTS)
 public class CustomTabMinimizationManagerUnitTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private static final String TITLE = "Google";
     private static final String HOST =
             UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
                     JUnitTestGURLs.SEARCH_URL);
 
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
+    private ActivityScenario<CustomTabActivity> mActivityScenario;
     @Spy private AppCompatActivity mActivity;
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
@@ -98,10 +98,8 @@ public class CustomTabMinimizationManagerUnitTest {
     @Mock private CustomTabMinimizeDelegate mOtherMinimizeDelegate;
     @Mock private ActivityLifecycleDispatcher mLifecycleDispatcher;
     @Mock private Supplier<Bundle> mSavedInstanceStateSupplier;
-    @Captor private ArgumentCaptor<InflationObserver> mInflationObserverCaptor;
-
-    private ActivityScenario<CustomTabActivity> mActivityScenario;
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
+
     private CustomTabMinimizationManager mManager;
 
     @Before
@@ -323,8 +321,9 @@ public class CustomTabMinimizationManagerUnitTest {
                         mLifecycleDispatcher,
                         mSavedInstanceStateSupplier);
 
-        verify(mLifecycleDispatcher).register(mInflationObserverCaptor.capture());
-        mInflationObserverCaptor.getValue().onPostInflationStartup();
+        var captor = ArgumentCaptor.forClass(InflationObserver.class);
+        verify(mLifecycleDispatcher).register(captor.capture());
+        captor.getValue().onPostInflationStartup();
 
         assertTrue(manager.isMinimized());
         assertEquals(TITLE, ((TextView) mActivity.findViewById(R.id.title)).getText());

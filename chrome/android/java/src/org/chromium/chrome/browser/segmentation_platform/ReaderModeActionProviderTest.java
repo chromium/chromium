@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -63,8 +64,8 @@ import java.util.concurrent.TimeoutException;
 public class ReaderModeActionProviderTest {
 
     private static final GURL TEST_URL = new GURL("https://test.com");
-
     private static final GURL TEST_DISTILLER_URL = new GURL("chrome-distiller://test.com");
+
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Tab mMockTab;
@@ -81,8 +82,6 @@ public class ReaderModeActionProviderTest {
     @Mock private OneshotSupplier<Boolean> mButtonVisibilitySupplier;
     @Mock private ReaderModeActionRateLimiter mReaderModeActionRateLimiter;
     @Mock private DistillablePageUtils.Natives mDistillablePageUtilsJniMock;
-    @Mock private WebContents mWebContents;
-    @Mock private NavigationController mNavigationController;
 
     @Before
     @SuppressWarnings("DirectInvocationOnMock")
@@ -238,10 +237,12 @@ public class ReaderModeActionProviderTest {
         // Set heuristic to flag all sites as distillable.
         DomDistillerTabUtils.setDistillerHeuristicsForTesting(DistillerHeuristicsType.ALWAYS_TRUE);
 
+        WebContents mockWebContents = mock(WebContents.class);
+        NavigationController mockNavigationController = mock(NavigationController.class);
         // Set "request desktop page" on.
-        when(mNavigationController.getUseDesktopUserAgent()).thenReturn(true);
-        when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
-        when(mMockTab.getWebContents()).thenReturn(mWebContents);
+        when(mockNavigationController.getUseDesktopUserAgent()).thenReturn(true);
+        when(mockWebContents.getNavigationController()).thenReturn(mockNavigationController);
+        when(mMockTab.getWebContents()).thenReturn(mockWebContents);
 
         var provider = new ReaderModeActionProvider(mButtonVisibilitySupplier);
 

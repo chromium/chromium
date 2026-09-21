@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.appmenu;
 
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -16,13 +17,9 @@ import android.view.View;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ui.appmenu.internal.R;
@@ -30,6 +27,9 @@ import org.chromium.chrome.browser.ui.appmenu.internal.R;
 /** Tests AppMenu#getPopupPosition. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AppMenuPopupPositionTest {
+
+    private final int[] mTempLocation = new int[2];
+
     private static final int APP_WIDTH = 400;
     private static final int APP_HEIGHT = 1000;
     private static final int BG_PADDING = 10;
@@ -40,14 +40,7 @@ public class AppMenuPopupPositionTest {
     private static final int ANCHOR_WIDTH = 40;
     private static final int NEGATIVE_SOFTWARE_VERTICAL_OFFSET = 25;
     private static final int BOTTOM_BAR_MARGIN_DP = 12;
-
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Mock private View mAnchorView;
-    @Mock private Context mContext;
-    @Mock private Resources mResources;
-
-    private final int[] mTempLocation = new int[2];
+    private final View mAnchorView = mock(View.class);
     private final Rect mAppRect = new Rect(0, 0, APP_WIDTH, APP_HEIGHT);
     private final Rect mBgPaddingRect = new Rect(BG_PADDING, BG_PADDING, BG_PADDING, BG_PADDING);
 
@@ -73,13 +66,15 @@ public class AppMenuPopupPositionTest {
 
         when(mAnchorView.getWidth()).thenReturn(ANCHOR_WIDTH);
 
+        Context context = mock(Context.class);
+        Resources resources = mock(Resources.class);
         DisplayMetrics displayMetrics = new DisplayMetrics();
         displayMetrics.density = 1.0f;
-        when(mContext.getResources()).thenReturn(mResources);
-        when(mResources.getDisplayMetrics()).thenReturn(displayMetrics);
-        when(mResources.getDimensionPixelSize(R.dimen.bottom_bar_app_menu_lateral_margin))
+        when(context.getResources()).thenReturn(resources);
+        when(resources.getDisplayMetrics()).thenReturn(displayMetrics);
+        when(resources.getDimensionPixelSize(R.dimen.bottom_bar_app_menu_lateral_margin))
                 .thenReturn(BOTTOM_BAR_MARGIN_DP);
-        when(mAnchorView.getContext()).thenReturn(mContext);
+        when(mAnchorView.getContext()).thenReturn(context);
     }
 
     @Test

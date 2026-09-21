@@ -16,7 +16,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
@@ -37,7 +36,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class ImmersiveVideoFormatSelectionDialogTest {
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private ImmersivePlaybackConfirmationCallback mCallback;
-    @Captor private ArgumentCaptor<PropertyModel> mModelCaptor;
 
     private Context mContext;
     private ImmersiveVideoFormatSelectionDialog mDialog;
@@ -67,13 +65,14 @@ public class ImmersiveVideoFormatSelectionDialogTest {
     public void testPositiveButton_DefaultSelection() {
         mDialog.show();
 
+        ArgumentCaptor<PropertyModel> modelCaptor = ArgumentCaptor.forClass(PropertyModel.class);
         verify(mModalDialogManager)
                 .showDialog(
-                        mModelCaptor.capture(),
+                        modelCaptor.capture(),
                         eq(ModalDialogManager.ModalDialogType.APP),
                         eq(true));
 
-        PropertyModel model = mModelCaptor.getValue();
+        PropertyModel model = modelCaptor.getValue();
         assertNotNull(model);
 
         // Dismiss with positive button click
@@ -93,13 +92,14 @@ public class ImmersiveVideoFormatSelectionDialogTest {
     public void testPositiveButton_ChangeSelection() {
         mDialog.show();
 
+        ArgumentCaptor<PropertyModel> modelCaptor = ArgumentCaptor.forClass(PropertyModel.class);
         verify(mModalDialogManager)
                 .showDialog(
-                        mModelCaptor.capture(),
+                        modelCaptor.capture(),
                         eq(ModalDialogManager.ModalDialogType.APP),
                         eq(true));
 
-        PropertyModel model = mModelCaptor.getValue();
+        PropertyModel model = modelCaptor.getValue();
         ImmersiveVideoFormatRadioGroup radioGroup =
                 (ImmersiveVideoFormatRadioGroup) model.get(ModalDialogProperties.CUSTOM_VIEW);
         assertNotNull(radioGroup);
@@ -125,13 +125,14 @@ public class ImmersiveVideoFormatSelectionDialogTest {
     public void testNegativeButton_Declined() {
         mDialog.show();
 
+        ArgumentCaptor<PropertyModel> modelCaptor = ArgumentCaptor.forClass(PropertyModel.class);
         verify(mModalDialogManager)
                 .showDialog(
-                        mModelCaptor.capture(),
+                        modelCaptor.capture(),
                         eq(ModalDialogManager.ModalDialogType.APP),
                         eq(true));
 
-        PropertyModel model = mModelCaptor.getValue();
+        PropertyModel model = modelCaptor.getValue();
         model.get(ModalDialogProperties.CONTROLLER)
                 .onDismiss(model, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
 
@@ -147,13 +148,14 @@ public class ImmersiveVideoFormatSelectionDialogTest {
     public void testCancellation() {
         mDialog.show();
 
+        ArgumentCaptor<PropertyModel> modelCaptor = ArgumentCaptor.forClass(PropertyModel.class);
         verify(mModalDialogManager)
                 .showDialog(
-                        mModelCaptor.capture(),
+                        modelCaptor.capture(),
                         eq(ModalDialogManager.ModalDialogType.APP),
                         eq(true));
 
-        PropertyModel model = mModelCaptor.getValue();
+        PropertyModel model = modelCaptor.getValue();
         model.get(ModalDialogProperties.CONTROLLER)
                 .onDismiss(model, DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
 

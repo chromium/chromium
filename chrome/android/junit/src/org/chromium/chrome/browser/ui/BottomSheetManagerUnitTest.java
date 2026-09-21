@@ -18,7 +18,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -57,7 +56,6 @@ public class BottomSheetManagerUnitTest {
     @Mock private Supplier<OverlayPanelManager> mOverlayManager;
     @Mock private BottomControlsStacker mBottomControlsStacker;
     @Mock private BottomSheetContent mSheetContent;
-    @Captor private ArgumentCaptor<BottomControlsLayer> mBottomControlsLayerCaptor;
 
     private final ActivityTabProvider mTabProvider = new ActivityTabProvider();
     private final SettableMonotonicObservableSupplier<Boolean> mOmniboxFocusStateSupplier =
@@ -85,8 +83,10 @@ public class BottomSheetManagerUnitTest {
                         mBottomControlsStacker,
                         /* isBottomSheetAsBrowserControlsEnabled= */ true);
 
-        verify(mBottomControlsStacker).addLayer(mBottomControlsLayerCaptor.capture());
-        mLayer = mBottomControlsLayerCaptor.getValue();
+        ArgumentCaptor<BottomControlsLayer> captor =
+                ArgumentCaptor.forClass(BottomControlsLayer.class);
+        verify(mBottomControlsStacker).addLayer(captor.capture());
+        mLayer = captor.getValue();
         mObserver = (BottomSheetObserver) mLayer;
     }
 

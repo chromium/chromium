@@ -28,7 +28,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -64,10 +63,6 @@ public class GlicHelperUnitTest {
     @Mock private PrefService mPrefServiceMock;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
     @Mock private WindowAndroid mWindowAndroidMock;
-    @Mock private SnackbarManageable mSnackbarManageable;
-    @Mock private Activity mActivity;
-    @Captor private ArgumentCaptor<Snackbar> mSnackbarCaptor;
-    @Captor private ArgumentCaptor<Intent> mIntentCaptor;
 
     private UserActionTester mUserActionTester;
 
@@ -154,7 +149,8 @@ public class GlicHelperUnitTest {
         when(mProfileMock.isOffTheRecord()).thenReturn(false);
         when(mActorServiceMock.getActiveTasksCount()).thenReturn(1);
 
-        when(mSnackbarManageable.getSnackbarManager()).thenReturn(mSnackbarManagerMock);
+        SnackbarManageable secondInstance = mock(SnackbarManageable.class);
+        when(secondInstance.getSnackbarManager()).thenReturn(mSnackbarManagerMock);
 
         GlicHelper.maybeShowGlicTaskInProgressSnackbar(
                 mSnackbarManageableMock,
@@ -162,10 +158,7 @@ public class GlicHelperUnitTest {
                 mContextMock,
                 GlicHelper.Caller.SETTINGS_ACTIVITY);
         GlicHelper.maybeShowGlicTaskInProgressSnackbar(
-                mSnackbarManageable,
-                mProfileMock,
-                mContextMock,
-                GlicHelper.Caller.SETTINGS_ACTIVITY);
+                secondInstance, mProfileMock, mContextMock, GlicHelper.Caller.SETTINGS_ACTIVITY);
 
         verify(mSnackbarManagerMock, times(2)).showSnackbar(any(Snackbar.class));
     }
@@ -199,8 +192,9 @@ public class GlicHelperUnitTest {
         GlicHelper.showUnpinnedSnackbar(mSnackbarManagerMock, mContextMock, mProfileMock);
 
         // Verify.
-        verify(mSnackbarManagerMock).showSnackbar(mSnackbarCaptor.capture());
-        Snackbar snackbar = mSnackbarCaptor.getValue();
+        ArgumentCaptor<Snackbar> captor = ArgumentCaptor.forClass(Snackbar.class);
+        verify(mSnackbarManagerMock).showSnackbar(captor.capture());
+        Snackbar snackbar = captor.getValue();
         assertEquals(Snackbar.UMA_GLIC_UNPIN_UNDO, snackbar.getIdentifierForTesting());
         assertEquals("Gemini unpinned", snackbar.getTextForTesting());
         assertEquals("Undo", snackbar.getActionText());
@@ -238,7 +232,9 @@ public class GlicHelperUnitTest {
     @Test
     public void testShowMicDisabledSnackbar_NonSnackbarManageableActivity() {
         when(mWindowAndroidMock.hasPermission(Manifest.permission.RECORD_AUDIO)).thenReturn(false);
-        when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(mActivity));
+        Activity nonManageableActivity = mock(Activity.class);
+        when(mWindowAndroidMock.getActivity())
+                .thenReturn(new WeakReference<>(nonManageableActivity));
 
         GlicHelper.showMicDisabledSnackbar(mWindowAndroidMock);
 
@@ -277,8 +273,9 @@ public class GlicHelperUnitTest {
         GlicHelper.showMicDisabledSnackbar(mWindowAndroidMock);
 
         // Verify.
-        verify(mSnackbarManagerMock).showSnackbar(mSnackbarCaptor.capture());
-        Snackbar snackbar = mSnackbarCaptor.getValue();
+        ArgumentCaptor<Snackbar> captor = ArgumentCaptor.forClass(Snackbar.class);
+        verify(mSnackbarManagerMock).showSnackbar(captor.capture());
+        Snackbar snackbar = captor.getValue();
         assertEquals(Snackbar.UMA_GLIC_MIC_DISABLED, snackbar.getIdentifierForTesting());
         assertEquals("Enable mic to use voice", snackbar.getTextForTesting());
         assertEquals("Settings", snackbar.getActionText());
@@ -293,8 +290,9 @@ public class GlicHelperUnitTest {
                 1,
                 mUserActionTester.getActionCount(
                         "Glic.Interaction.MicDisabledSnackbar.SettingsClicked"));
-        verify(mContextMock).startActivity(mIntentCaptor.capture(), isNull());
-        Intent intent = mIntentCaptor.getValue();
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(mContextMock).startActivity(intentCaptor.capture(), isNull());
+        Intent intent = intentCaptor.getValue();
         assertEquals(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, intent.getAction());
         assertEquals(Uri.parse("package:org.chromium.chrome"), intent.getData());
         assertEquals(

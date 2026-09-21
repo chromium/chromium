@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -35,6 +36,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -63,20 +65,17 @@ import java.util.concurrent.TimeUnit;
 @RunWith(BaseRobolectricTestRunner.class)
 @SuppressWarnings("DoNotMock") // Mock ListenableFuture.
 public class AuxiliarySearchDonorUnitTest {
-    private static final int DEFAULT_TAB_TTL_HOURS = 168;
-    private static final int DEFAULT_HISTORY_TTL_HOURS = 24;
-
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public FakeTimeTestRule mFakeTime = new FakeTimeTestRule();
+
+    private static final int DEFAULT_TAB_TTL_HOURS = 168;
+    private static final int DEFAULT_HISTORY_TTL_HOURS = 24;
 
     @Mock private MigrationFailure mMigrationFailure;
     @Mock private AuxiliarySearchHooks mHooks;
     @Mock private ListenableFuture<AppSearchSession> mAppSearchSession;
     @Mock private AppSearchSession mSession;
     @Mock private Callback<Boolean> mCallback;
-    @Mock private Tab mTab;
-    @Mock private SearchResults mSearchResults;
-    @Mock private SearchQueryChecker mSearchQueryChecker;
 
     private AuxiliarySearchDonor mAuxiliarySearchDonor;
 
@@ -171,13 +170,14 @@ public class AuxiliarySearchDonorUnitTest {
                 currentTime + TimeUnit.HOURS.toMillis(DEFAULT_TAB_TTL_HOURS) - lastAccessTimeStamp;
         int[] counts = new int[AuxiliarySearchEntryType.MAX_VALUE + 1];
 
-        when(mTab.getUrl()).thenReturn(url);
-        when(mTab.getTitle()).thenReturn(title);
-        when(mTab.getTimestampMillis()).thenReturn(lastAccessTimeStamp);
-        when(mTab.getId()).thenReturn(id);
+        Tab tab = mock(Tab.class);
+        when(tab.getUrl()).thenReturn(url);
+        when(tab.getTitle()).thenReturn(title);
+        when(tab.getTimestampMillis()).thenReturn(lastAccessTimeStamp);
+        when(tab.getId()).thenReturn(id);
 
         testBuildDocumentImplAndVerify(
-                mTab,
+                tab,
                 type,
                 url.getSpec(),
                 title,
@@ -524,11 +524,13 @@ public class AuxiliarySearchDonorUnitTest {
 
     @Test
     public void testIterateSearchResults() {
+        SearchResults searchresults = Mockito.mock(SearchResults.class);
+        SearchQueryChecker searchQueryChecker = Mockito.mock(SearchQueryChecker.class);
         List<SearchResult> page = new ArrayList<>();
         assertTrue(page.isEmpty());
 
         mAuxiliarySearchDonor.iterateSearchResults(
-                mSearchResults, page, mCallback, mSearchQueryChecker);
+                searchresults, page, mCallback, searchQueryChecker);
         verify(mCallback).onResult(eq(false));
 
         SearchResult searchResult1 =
@@ -542,22 +544,22 @@ public class AuxiliarySearchDonorUnitTest {
                         GlobalSearchApplicationInfo.APPLICATION_TYPE_CONSUMER,
                         AuxiliarySearchDonor.SCHEMA_WEBPAGE);
 
-        when(mSearchQueryChecker.isSuccess(eq(searchResult1))).thenReturn(false);
+        when(searchQueryChecker.isSuccess(eq(searchResult1))).thenReturn(false);
         page.add(searchResult1);
         mAuxiliarySearchDonor.iterateSearchResults(
-                mSearchResults, page, mCallback, mSearchQueryChecker);
+                searchresults, page, mCallback, searchQueryChecker);
         verify(mCallback, times(2)).onResult(eq(false));
 
-        when(mSearchQueryChecker.isSuccess(eq(searchResult2))).thenReturn(false);
+        when(searchQueryChecker.isSuccess(eq(searchResult2))).thenReturn(false);
         page.add(searchResult2);
         mAuxiliarySearchDonor.iterateSearchResults(
-                mSearchResults, page, mCallback, mSearchQueryChecker);
+                searchresults, page, mCallback, searchQueryChecker);
         verify(mCallback, times(3)).onResult(eq(false));
 
-        when(mSearchQueryChecker.isSuccess(eq(searchResult3))).thenReturn(true);
+        when(searchQueryChecker.isSuccess(eq(searchResult3))).thenReturn(true);
         page.add(searchResult3);
         mAuxiliarySearchDonor.iterateSearchResults(
-                mSearchResults, page, mCallback, mSearchQueryChecker);
+                searchresults, page, mCallback, searchQueryChecker);
         verify(mCallback).onResult(eq(true));
     }
 

@@ -25,7 +25,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -114,7 +113,6 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
     @Mock private AutofillImageFetcher mAutofillImageFetcher;
     @Mock private Profile mProfile;
     @Mock private SnackbarManager mSnackbarManager;
-    @Captor private ArgumentCaptor<FacilitatedPaymentsPaymentMethodsView> mContentCaptor;
 
     private Context mApplicationContext;
     private FacilitatedPaymentsPaymentMethodsViewBridge mViewBridge;
@@ -183,9 +181,11 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
     public void requestShowContent_bottomSheetContentImplIsStubbed() {
         mViewBridge.requestShowContent(BANK_ACCOUNTS);
 
+        ArgumentCaptor<FacilitatedPaymentsPaymentMethodsView> contentCaptor =
+                ArgumentCaptor.forClass(FacilitatedPaymentsPaymentMethodsView.class);
         verify(mBottomSheetController)
-                .requestShowContent(mContentCaptor.capture(), /* animate= */ anyBoolean());
-        FacilitatedPaymentsPaymentMethodsView content = mContentCaptor.getValue();
+                .requestShowContent(contentCaptor.capture(), /* animate= */ anyBoolean());
+        FacilitatedPaymentsPaymentMethodsView content = contentCaptor.getValue();
         assertThat(content.getContentView(), notNullValue());
         assertThat(
                 content.getSheetContentDescription(mApplicationContext),
@@ -226,9 +226,11 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
     public void requestShowContentForPaymentLink_bottomSheetContentImplIsStubbed() {
         mViewBridge.requestShowContentForPaymentLink(EWALLETS, APPS);
 
+        ArgumentCaptor<FacilitatedPaymentsPaymentMethodsView> contentCaptor =
+                ArgumentCaptor.forClass(FacilitatedPaymentsPaymentMethodsView.class);
         verify(mBottomSheetController)
-                .requestShowContent(mContentCaptor.capture(), /* animate= */ anyBoolean());
-        FacilitatedPaymentsPaymentMethodsView content = mContentCaptor.getValue();
+                .requestShowContent(contentCaptor.capture(), /* animate= */ anyBoolean());
+        FacilitatedPaymentsPaymentMethodsView content = contentCaptor.getValue();
 
         assertThat(content.getContentView(), notNullValue());
         assertThat(

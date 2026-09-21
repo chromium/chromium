@@ -15,6 +15,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -75,6 +76,9 @@ public class TabModelSelectorImplTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    private final OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
+            new OneshotSupplierImpl<>();
+
     @Mock private TabContentManager mMockTabContentManager;
     @Mock private TabDelegateFactory mTabDelegateFactory;
     @Mock private NextTabPolicySupplier mNextTabPolicySupplier;
@@ -92,12 +96,7 @@ public class TabModelSelectorImplTest {
     @Mock private Profile mIncognitoProfile;
     @Mock private Context mContext;
     @Mock private TabGroupSyncService mTabGroupSyncService;
-    @Mock private WindowAndroid mWindowAndroid;
-    @Mock private TabUngrouper mTabUngrouper;
-    @Mock private TabModelJniBridge mTabModelJniBridge;
 
-    private final OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
-            new OneshotSupplierImpl<>();
     private TabModelSelectorImpl mTabModelSelector;
     private MockTabCreatorManager mTabCreatorManager;
     private MockTabModel mRegularTabModel;
@@ -295,10 +294,11 @@ public class TabModelSelectorImplTest {
         mTabModelSelector
                 .getModel(false)
                 .addTab(tab, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        WindowAndroid window = mock(WindowAndroid.class);
         WeakReference<Context> weakContext = new WeakReference<>(mContext);
-        when(mWindowAndroid.getContext()).thenReturn(weakContext);
-        doReturn(ObservableSuppliers.alwaysFalse()).when(mWindowAndroid).getOcclusionSupplier();
-        tab.updateAttachment(mWindowAndroid, mTabDelegateFactory);
+        when(window.getContext()).thenReturn(weakContext);
+        doReturn(ObservableSuppliers.alwaysFalse()).when(window).getOcclusionSupplier();
+        tab.updateAttachment(window, mTabDelegateFactory);
 
         assertEquals(
                 "moving a tab between windows shouldn't remove it from the model",
@@ -403,7 +403,8 @@ public class TabModelSelectorImplTest {
         TabRemover regularTabRemover = new PassthroughTabRemover(() -> regularTabModel);
         regularTabModel.setActive(true);
         regularTabModel.setTabRemoverForTesting(regularTabRemover);
-        when(regularTabModel.getTabUngrouper()).thenReturn(mTabUngrouper);
+        TabUngrouper tabUngrouper = mock(TabUngrouper.class);
+        when(regularTabModel.getTabUngrouper()).thenReturn(tabUngrouper);
         doAnswer(
                         invocation -> {
                             List<Tab> tabs = invocation.getArgument(0);
@@ -413,7 +414,7 @@ public class TabModelSelectorImplTest {
                             }
                             return null;
                         })
-                .when(mTabUngrouper)
+                .when(tabUngrouper)
                 .ungroupTabs(any(), anyBoolean(), anyBoolean());
         tabCreatorManager.initialize(tabModelSelector);
         tabModelSelector.onNativeLibraryReadyInternal(
@@ -427,7 +428,7 @@ public class TabModelSelectorImplTest {
         for (TabObserver observer : tab1.getObservers()) {
             observer.onActivityAttachmentChanged(tab1, /* window= */ null);
         }
-        verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean());
+        verify(tabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean());
         assertEquals(0, regularTabModel.indexOf(tab0));
         assertEquals(TabModel.INVALID_TAB_INDEX, regularTabModel.indexOf(tab1));
 
@@ -438,7 +439,7 @@ public class TabModelSelectorImplTest {
         for (TabObserver observer : tab0.getObservers()) {
             observer.onActivityAttachmentChanged(tab0, /* window= */ null);
         }
-        verify(mTabUngrouper).ungroupTabs(any(), anyBoolean(), anyBoolean());
+        verify(tabUngrouper).ungroupTabs(any(), anyBoolean(), anyBoolean());
         assertNull(tab0.getTabGroupId());
         assertEquals(TabModel.INVALID_TAB_INDEX, regularTabModel.indexOf(tab0));
     }
@@ -447,6 +448,7 @@ public class TabModelSelectorImplTest {
     public void testInitDoesNotBroadcastInHeadless() {
         mTabModelSelector.destroy();
 
+        TabModelJniBridge regularModel = mock(TabModelJniBridge.class);
         mTabModelSelector =
                 new TabModelSelectorImpl(
                         mContext,
@@ -461,10 +463,10 @@ public class TabModelSelectorImplTest {
                         TabModelType.STANDARD,
                         /* startIncognito= */ false,
                         SupportedProfileType.MIXED);
-        when(mTabModelJniBridge.isActiveModel()).thenReturn(true);
-        mTabModelSelector.initializeForTesting(mTabModelJniBridge, mIncognitoTabModel);
+        when(regularModel.isActiveModel()).thenReturn(true);
+        mTabModelSelector.initializeForTesting(regularModel, mIncognitoTabModel);
         mTabModelSelector.markTabStateInitialized();
-        verify(mTabModelJniBridge, never()).broadcastSessionRestoreComplete();
+        verify(regularModel, never()).broadcastSessionRestoreComplete();
     }
 
     @Test

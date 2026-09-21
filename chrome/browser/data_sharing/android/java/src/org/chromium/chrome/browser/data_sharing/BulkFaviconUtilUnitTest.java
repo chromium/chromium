@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -50,9 +51,6 @@ public class BulkFaviconUtilUnitTest {
     @Mock private Profile mProfile;
     @Mock private FaviconHelper mFaviconHelper;
     @Mock private RoundedIconGenerator mRoundedIconGenerator;
-    @Mock private Bitmap mBitmap;
-    @Mock private Bitmap mMockBitmap1;
-    @Mock private Bitmap mMockBitmap2;
     @Captor private ArgumentCaptor<FaviconHelper.FaviconImageCallback> mCallbackCaptor;
     @Captor private ArgumentCaptor<List<Bitmap>> mResultCaptor;
     @Captor private ArgumentCaptor<List<Drawable>> mDrawableResultCaptor;
@@ -88,9 +86,10 @@ public class BulkFaviconUtilUnitTest {
 
     @Test
     public void testFetchAsBitmap_singleUrl() {
+        Bitmap mockBitmap = mock(Bitmap.class);
         doAnswer(
                         invocation -> {
-                            mCallbackCaptor.getValue().onFaviconAvailable(mBitmap, mGurl1);
+                            mCallbackCaptor.getValue().onFaviconAvailable(mockBitmap, mGurl1);
                             return null;
                         })
                 .when(mFaviconHelper)
@@ -103,14 +102,15 @@ public class BulkFaviconUtilUnitTest {
 
         Callback<List<Bitmap>> callback = MockitoHelper.mockCallback();
         mBulkFaviconUtil.fetchAsBitmap(mContext, mProfile, Arrays.asList(mGurl1), 16, callback);
-        verify(callback).onResult(Arrays.asList(mBitmap));
+        verify(callback).onResult(Arrays.asList(mockBitmap));
     }
 
     @Test
     public void testFetchAsBitmap_twoUrls() {
+        Bitmap mockBitmap1 = mock(Bitmap.class);
         doAnswer(
                         invocation -> {
-                            mCallbackCaptor.getValue().onFaviconAvailable(mMockBitmap1, mGurl1);
+                            mCallbackCaptor.getValue().onFaviconAvailable(mockBitmap1, mGurl1);
                             return null;
                         })
                 .when(mFaviconHelper)
@@ -121,9 +121,10 @@ public class BulkFaviconUtilUnitTest {
                         anyBoolean(),
                         mCallbackCaptor.capture());
 
+        Bitmap mockBitmap2 = mock(Bitmap.class);
         doAnswer(
                         invocation -> {
-                            mCallbackCaptor.getValue().onFaviconAvailable(mMockBitmap2, mGurl2);
+                            mCallbackCaptor.getValue().onFaviconAvailable(mockBitmap2, mGurl2);
                             return null;
                         })
                 .when(mFaviconHelper)
@@ -136,7 +137,7 @@ public class BulkFaviconUtilUnitTest {
 
         Callback<List<Bitmap>> callback = MockitoHelper.mockCallback();
         mBulkFaviconUtil.fetchAsBitmap(mContext, mProfile, mGurlList, 16, callback);
-        verify(callback).onResult(Arrays.asList(mMockBitmap1, mMockBitmap2));
+        verify(callback).onResult(Arrays.asList(mockBitmap1, mockBitmap2));
     }
 
     @Test

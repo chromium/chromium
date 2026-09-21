@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -44,7 +45,7 @@ public class CustomTileEditViewUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private ViewToMediator mMediatorDelegateMock;
-    @Mock private Runnable mRunnable;
+
     private Context mContext;
     private CustomTileEditView mView;
     private PropertyModel mDialogModel;
@@ -212,23 +213,24 @@ public class CustomTileEditViewUnitTest {
 
     @Test
     public void testOnWindowFocusChanged() {
-        mView.addOnWindowFocusGainedTask(mRunnable);
+        Runnable task = mock(Runnable.class);
+        mView.addOnWindowFocusGainedTask(task);
 
         // Task shouldn't run if view is not visible, or focus is lost.
         mView.setVisibility(View.GONE);
         mView.onWindowFocusChanged(true);
-        verify(mRunnable, never()).run();
+        verify(task, never()).run();
 
         mView.setVisibility(View.VISIBLE);
         mView.onWindowFocusChanged(false);
-        verify(mRunnable, never()).run();
+        verify(task, never()).run();
 
         // Task should run when view is visible and has window focus.
         mView.onWindowFocusChanged(true);
-        verify(mRunnable).run();
+        verify(task).run();
 
         // Task should only run once.
         mView.onWindowFocusChanged(true);
-        verifyNoMoreInteractions(mRunnable);
+        verifyNoMoreInteractions(task);
     }
 }

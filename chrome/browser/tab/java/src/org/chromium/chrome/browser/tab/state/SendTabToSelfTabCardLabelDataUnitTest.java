@@ -21,7 +21,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -49,7 +48,6 @@ public class SendTabToSelfTabCardLabelDataUnitTest {
     @Mock private Tab mTab;
     @Mock private Profile mProfile;
     @Mock private SendTabToSelfTabCardLabelData.Natives mSendTabToSelfTabCardLabelDataNatives;
-    @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
 
     private Context mContext;
     private UserDataHost mUserDataHost;
@@ -121,13 +119,14 @@ public class SendTabToSelfTabCardLabelDataUnitTest {
     @Test
     public void testUserData_Interacted() {
         // Attach active label data and capture the registered TabObserver.
+        ArgumentCaptor<TabObserver> captor = ArgumentCaptor.forClass(TabObserver.class);
         createAndSetLabelData();
-        verify(mTab).addObserver(mTabObserverCaptor.capture());
+        verify(mTab).addObserver(captor.capture());
 
         assertNotNull(SendTabToSelfTabCardLabelData.get(mTab));
 
         // Simulate user interaction triggering onShown.
-        mTabObserverCaptor.getValue().onShown(mTab, TabSelectionType.FROM_USER);
+        captor.getValue().onShown(mTab, TabSelectionType.FROM_USER);
 
         // Verify the entry is marked as activated.
         verify(mSendTabToSelfTabCardLabelDataNatives)
@@ -135,28 +134,30 @@ public class SendTabToSelfTabCardLabelDataUnitTest {
 
         // Verify the user interaction removes the UserData and unregisters the observer.
         assertNull(mUserDataHost.getUserData(SendTabToSelfTabCardLabelData.class));
-        verify(mTab).removeObserver(mTabObserverCaptor.getValue());
+        verify(mTab).removeObserver(captor.getValue());
     }
 
     @Test
     public void testUserData_RemoveAndDestroy() {
+        ArgumentCaptor<TabObserver> captor = ArgumentCaptor.forClass(TabObserver.class);
         SendTabToSelfTabCardLabelData data = createAndSetLabelData();
-        verify(mTab).addObserver(mTabObserverCaptor.capture());
+        verify(mTab).addObserver(captor.capture());
 
         assertNotNull(SendTabToSelfTabCardLabelData.get(mTab));
 
         data.removeAndDestroy();
 
         assertNull(mUserDataHost.getUserData(SendTabToSelfTabCardLabelData.class));
-        verify(mTab).removeObserver(mTabObserverCaptor.getValue());
+        verify(mTab).removeObserver(captor.getValue());
     }
 
     @Test
     public void testUserData_TabShown() {
+        ArgumentCaptor<TabObserver> captor = ArgumentCaptor.forClass(TabObserver.class);
         createAndSetLabelData();
-        verify(mTab).addObserver(mTabObserverCaptor.capture());
+        verify(mTab).addObserver(captor.capture());
 
-        mTabObserverCaptor.getValue().onShown(mTab, TabSelectionType.FROM_USER);
+        captor.getValue().onShown(mTab, TabSelectionType.FROM_USER);
 
         verify(mSendTabToSelfTabCardLabelDataNatives).onTabShown(eq(mTab), eq(DEVICE_NAME));
     }
@@ -164,8 +165,9 @@ public class SendTabToSelfTabCardLabelDataUnitTest {
     @Test
     public void testUserData_ClosedWithoutActivation() {
         // Attach active label data and capture the registered TabObserver.
+        ArgumentCaptor<TabObserver> captor = ArgumentCaptor.forClass(TabObserver.class);
         createAndSetLabelData();
-        verify(mTab).addObserver(mTabObserverCaptor.capture());
+        verify(mTab).addObserver(captor.capture());
 
         assertNotNull(SendTabToSelfTabCardLabelData.get(mTab));
 
@@ -173,7 +175,7 @@ public class SendTabToSelfTabCardLabelDataUnitTest {
         when(mTab.isClosing()).thenReturn(true);
 
         // Simulate tab destruction.
-        mTabObserverCaptor.getValue().onDestroyed(mTab);
+        captor.getValue().onDestroyed(mTab);
 
         // Verify the entry is marked as closed without activation.
         verify(mSendTabToSelfTabCardLabelDataNatives)
@@ -184,20 +186,21 @@ public class SendTabToSelfTabCardLabelDataUnitTest {
 
         // Verify the destruction removes the UserData and unregisters the observer.
         assertNull(mUserDataHost.getUserData(SendTabToSelfTabCardLabelData.class));
-        verify(mTab).removeObserver(mTabObserverCaptor.getValue());
+        verify(mTab).removeObserver(captor.getValue());
     }
 
     @Test
     public void testUserData_DestroyedWithoutClosing_Shutdown() {
         // Attach active label data and capture the registered TabObserver.
+        ArgumentCaptor<TabObserver> captor = ArgumentCaptor.forClass(TabObserver.class);
         createAndSetLabelData();
-        verify(mTab).addObserver(mTabObserverCaptor.capture());
+        verify(mTab).addObserver(captor.capture());
 
         assertNotNull(SendTabToSelfTabCardLabelData.get(mTab));
 
         // Simulate tab destruction WITHOUT prior closing state (shutdown).
         when(mTab.isClosing()).thenReturn(false);
-        mTabObserverCaptor.getValue().onDestroyed(mTab);
+        captor.getValue().onDestroyed(mTab);
 
         // Verify that the entry is NOT marked as activated/closed.
         org.mockito.Mockito.verifyNoInteractions(mSendTabToSelfTabCardLabelDataNatives);

@@ -36,7 +36,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -195,7 +194,6 @@ public class SearchActivityTest {
     private @Mock AutocompleteController.Natives mAutocompleteControllerJniMock;
     private @Mock AutocompleteController mAutocompleteController;
     private @Mock VoiceRecognitionHandler mHandler;
-    @Captor private ArgumentCaptor<AutocompleteInput> mAutocompleteInputCaptor;
 
     private TestDelegate mTestDelegate;
     private OmniboxTestUtils mOmnibox;
@@ -355,11 +353,12 @@ public class SearchActivityTest {
                 0, 1, ScalableTimeout.scaleTimeout(30), TimeUnit.SECONDS);
 
         // Omnibox suggestions should be requested now.
-        verify(mAutocompleteController).startZeroSuggest(any(), mAutocompleteInputCaptor.capture());
-        Assert.assertEquals("", mAutocompleteInputCaptor.getValue().getUserText());
+        var captor = ArgumentCaptor.forClass(AutocompleteInput.class);
+        verify(mAutocompleteController).startZeroSuggest(any(), captor.capture());
+        Assert.assertEquals("", captor.getValue().getUserText());
         Assert.assertEquals(
                 PageClassification.ANDROID_SEARCH_WIDGET,
-                mAutocompleteInputCaptor.getValue().getPageClassification());
+                captor.getValue().getPageClassification());
     }
 
     @Test

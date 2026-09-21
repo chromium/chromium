@@ -14,6 +14,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -105,7 +106,6 @@ public class HubToolbarMediatorUnitTest {
     @Mock private Intent mIntent;
     @Mock private Runnable mExitHubRunnable;
     @Mock private HubColorMixer mColorMixer;
-    @Mock private View mView;
 
     private final SettableMonotonicObservableSupplier<Pane> mFocusedPaneSupplier =
             ObservableSuppliers.createMonotonic();
@@ -304,10 +304,11 @@ public class HubToolbarMediatorUnitTest {
         List<FullButtonData> paneSwitcherButtonData = mModel.get(PANE_SWITCHER_BUTTON_DATA);
         assertEquals(2, paneSwitcherButtonData.size());
 
-        paneSwitcherButtonData.get(1).onPress(mView);
+        View mockView = mock(View.class);
+        paneSwitcherButtonData.get(1).onPress(mockView);
         verify(mPaneManager).focusPane(PaneId.INCOGNITO_TAB_SWITCHER);
 
-        paneSwitcherButtonData.get(0).onPress(mView);
+        paneSwitcherButtonData.get(0).onPress(mockView);
         verify(mPaneManager).focusPane(PaneId.TAB_SWITCHER);
     }
 
@@ -325,7 +326,8 @@ public class HubToolbarMediatorUnitTest {
         List<FullButtonData> paneSwitcherButtonData = mModel.get(PANE_SWITCHER_BUTTON_DATA);
         assertEquals(1, paneSwitcherButtonData.size());
 
-        paneSwitcherButtonData.get(0).onPress(mView);
+        View mockView = mock(View.class);
+        paneSwitcherButtonData.get(0).onPress(mockView);
         verify(mPaneManager).focusPane(PaneId.TAB_SWITCHER);
     }
 
@@ -441,11 +443,12 @@ public class HubToolbarMediatorUnitTest {
         List<FullButtonData> paneSwitcherButtonData = mModel.get(PANE_SWITCHER_BUTTON_DATA);
         assertEquals(2, paneSwitcherButtonData.size());
 
-        paneSwitcherButtonData.get(0).onPress(mView);
+        View mockView = mock(View.class);
+        paneSwitcherButtonData.get(0).onPress(mockView);
         verify(mPaneManager).focusPane(PaneId.TAB_SWITCHER);
         verifyNoInteractions(mTracker);
 
-        paneSwitcherButtonData.get(1).onPress(mView);
+        paneSwitcherButtonData.get(1).onPress(mockView);
         verify(mPaneManager).focusPane(PaneId.TAB_GROUPS);
         verify(mTracker).notifyEvent("tab_groups_surface_clicked");
     }
@@ -820,8 +823,9 @@ public class HubToolbarMediatorUnitTest {
                 mSearchActivityClient,
                 mExitHubRunnable);
 
+        View mockView = mock(View.class);
         // Verify that focus pane is called when runnables are invoked.
-        mModel.get(PANE_SWITCHER_BUTTON_DATA).get(0).onPress(mView);
+        mModel.get(PANE_SWITCHER_BUTTON_DATA).get(0).onPress(mockView);
         verify(mPaneManager, times(1)).focusPane(anyInt());
 
         // Create similar logic to what the view does, where setting button data will trigger a
@@ -831,7 +835,7 @@ public class HubToolbarMediatorUnitTest {
                 (source, propertyKey) -> {
                     if (propertyKey == PANE_SWITCHER_BUTTON_DATA) {
                         buttonDataChanged[0] = true;
-                        mModel.get(PANE_SWITCHER_BUTTON_DATA).get(0).onPress(mView);
+                        mModel.get(PANE_SWITCHER_BUTTON_DATA).get(0).onPress(mockView);
                     }
                 });
         assertFalse(buttonDataChanged[0]);

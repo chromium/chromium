@@ -46,23 +46,21 @@ import javax.crypto.spec.SecretKeySpec;
 /** Unit tests for {@link ActiveTabCache}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ActiveTabCacheUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private static final String WINDOW_TAG = "window_tag";
     private static final String CACHE_DIR_NAME = "active_tabs";
     private static final String FLATBUFFER_PREFIX = "flatbufferv1_";
     private static final String REGULAR_SUFFIX = "_regular";
     private static final String INCOGNITO_SUFFIX = "_incognito";
 
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mTabModel;
     @Mock private CipherFactory mCipherFactory;
-    @Mock private Tab mTab;
-    @Mock private Tab mTab1;
-    @Mock private Tab mTab2;
 
     private final SettableNullableObservableSupplier<Tab> mCurrentTabSupplier =
             ObservableSuppliers.createNullable();
+
     private final PausedExecutorService mExecutor = new PausedExecutorService();
     private ActiveTabCache mActiveTabCache;
 
@@ -89,13 +87,14 @@ public class ActiveTabCacheUnitTest {
     public void testSaveActiveTab_ValidRegular() {
         initActiveTabCache(/* hasCipherFactory= */ false);
 
-        when(mTab.getId()).thenReturn(1);
-        when(mTab.isOffTheRecord()).thenReturn(false);
+        Tab tab = mock(Tab.class);
+        when(tab.getId()).thenReturn(1);
+        when(tab.isOffTheRecord()).thenReturn(false);
 
         TabState tabState = createMockTabState();
         TabStateExtractor.setTabStateForTesting(1, tabState);
 
-        mActiveTabCache.saveActiveTab(mTab);
+        mActiveTabCache.saveActiveTab(tab);
 
         // Assert pref is set synchronously
         String fileName = getFileName(false);
@@ -112,13 +111,14 @@ public class ActiveTabCacheUnitTest {
     public void testSaveActiveTab_ValidIncognito() {
         initActiveTabCache(/* hasCipherFactory= */ true);
 
-        when(mTab.getId()).thenReturn(2);
-        when(mTab.isOffTheRecord()).thenReturn(true);
+        Tab tab = mock(Tab.class);
+        when(tab.getId()).thenReturn(2);
+        when(tab.isOffTheRecord()).thenReturn(true);
 
         TabState tabState = createMockTabState();
         TabStateExtractor.setTabStateForTesting(2, tabState);
 
-        mActiveTabCache.saveActiveTab(mTab);
+        mActiveTabCache.saveActiveTab(tab);
 
         String fileName = getFileName(true);
         assertEquals(2, getSharedPreferences().getInt(fileName, Tab.INVALID_TAB_ID));
@@ -132,24 +132,26 @@ public class ActiveTabCacheUnitTest {
         initActiveTabCache(/* hasCipherFactory= */ false);
 
         // Pre-populate cache with a valid tab first to simulate stale state.
-        when(mTab1.getId()).thenReturn(1);
-        when(mTab1.isOffTheRecord()).thenReturn(false);
+        Tab tab1 = mock(Tab.class);
+        when(tab1.getId()).thenReturn(1);
+        when(tab1.isOffTheRecord()).thenReturn(false);
 
         TabState tabState1 = createMockTabState();
         TabStateExtractor.setTabStateForTesting(1, tabState1);
 
-        mActiveTabCache.saveActiveTab(mTab1);
+        mActiveTabCache.saveActiveTab(tab1);
         mExecutor.runAll();
         assertTrue(getCacheFile(false).exists());
         String fileName = getFileName(false);
         assertEquals(1, getSharedPreferences().getInt(fileName, Tab.INVALID_TAB_ID));
 
         // Now save tab with null tabState.
-        when(mTab2.getId()).thenReturn(2);
-        when(mTab2.isOffTheRecord()).thenReturn(false);
+        Tab tab2 = mock(Tab.class);
+        when(tab2.getId()).thenReturn(2);
+        when(tab2.isOffTheRecord()).thenReturn(false);
         TabStateExtractor.setTabStateForTesting(2, null);
 
-        mActiveTabCache.saveActiveTab(mTab2);
+        mActiveTabCache.saveActiveTab(tab2);
 
         // Assert pref is removed synchronously.
         assertEquals(
@@ -167,27 +169,29 @@ public class ActiveTabCacheUnitTest {
         initActiveTabCache(/* hasCipherFactory= */ false);
 
         // Pre-populate cache.
-        when(mTab1.getId()).thenReturn(1);
-        when(mTab1.isOffTheRecord()).thenReturn(false);
+        Tab tab1 = mock(Tab.class);
+        when(tab1.getId()).thenReturn(1);
+        when(tab1.isOffTheRecord()).thenReturn(false);
 
         TabState tabState1 = createMockTabState();
         TabStateExtractor.setTabStateForTesting(1, tabState1);
 
-        mActiveTabCache.saveActiveTab(mTab1);
+        mActiveTabCache.saveActiveTab(tab1);
         mExecutor.runAll();
         assertTrue(getCacheFile(false).exists());
         String fileName = getFileName(false);
         assertEquals(1, getSharedPreferences().getInt(fileName, Tab.INVALID_TAB_ID));
 
         // Now save tab with tabState having null contentsState.
-        when(mTab2.getId()).thenReturn(2);
-        when(mTab2.isOffTheRecord()).thenReturn(false);
+        Tab tab2 = mock(Tab.class);
+        when(tab2.getId()).thenReturn(2);
+        when(tab2.isOffTheRecord()).thenReturn(false);
 
         TabState tabState2 = new TabState();
         tabState2.contentsState = null;
         TabStateExtractor.setTabStateForTesting(2, tabState2);
 
-        mActiveTabCache.saveActiveTab(mTab2);
+        mActiveTabCache.saveActiveTab(tab2);
 
         // Assert pref is removed.
         assertEquals(
@@ -202,24 +206,26 @@ public class ActiveTabCacheUnitTest {
         initActiveTabCache(/* hasCipherFactory= */ true);
 
         // Pre-populate cache.
-        when(mTab1.getId()).thenReturn(1);
-        when(mTab1.isOffTheRecord()).thenReturn(true);
+        Tab tab1 = mock(Tab.class);
+        when(tab1.getId()).thenReturn(1);
+        when(tab1.isOffTheRecord()).thenReturn(true);
 
         TabState tabState1 = createMockTabState();
         TabStateExtractor.setTabStateForTesting(1, tabState1);
 
-        mActiveTabCache.saveActiveTab(mTab1);
+        mActiveTabCache.saveActiveTab(tab1);
         mExecutor.runAll();
         assertTrue(getCacheFile(true).exists());
         String fileName = getFileName(true);
         assertEquals(1, getSharedPreferences().getInt(fileName, Tab.INVALID_TAB_ID));
 
         // Save tab with null tabState.
-        when(mTab2.getId()).thenReturn(2);
-        when(mTab2.isOffTheRecord()).thenReturn(true);
+        Tab tab2 = mock(Tab.class);
+        when(tab2.getId()).thenReturn(2);
+        when(tab2.isOffTheRecord()).thenReturn(true);
         TabStateExtractor.setTabStateForTesting(2, null);
 
-        mActiveTabCache.saveActiveTab(mTab2);
+        mActiveTabCache.saveActiveTab(tab2);
 
         assertEquals(
                 Tab.INVALID_TAB_ID, getSharedPreferences().getInt(fileName, Tab.INVALID_TAB_ID));
@@ -232,27 +238,29 @@ public class ActiveTabCacheUnitTest {
         initActiveTabCache(/* hasCipherFactory= */ true);
 
         // Pre-populate cache.
-        when(mTab1.getId()).thenReturn(1);
-        when(mTab1.isOffTheRecord()).thenReturn(true);
+        Tab tab1 = mock(Tab.class);
+        when(tab1.getId()).thenReturn(1);
+        when(tab1.isOffTheRecord()).thenReturn(true);
 
         TabState tabState1 = createMockTabState();
         TabStateExtractor.setTabStateForTesting(1, tabState1);
 
-        mActiveTabCache.saveActiveTab(mTab1);
+        mActiveTabCache.saveActiveTab(tab1);
         mExecutor.runAll();
         assertTrue(getCacheFile(true).exists());
         String fileName = getFileName(true);
         assertEquals(1, getSharedPreferences().getInt(fileName, Tab.INVALID_TAB_ID));
 
         // Save tab with null contentsState.
-        when(mTab2.getId()).thenReturn(2);
-        when(mTab2.isOffTheRecord()).thenReturn(true);
+        Tab tab2 = mock(Tab.class);
+        when(tab2.getId()).thenReturn(2);
+        when(tab2.isOffTheRecord()).thenReturn(true);
 
         TabState tabState2 = new TabState();
         tabState2.contentsState = null;
         TabStateExtractor.setTabStateForTesting(2, tabState2);
 
-        mActiveTabCache.saveActiveTab(mTab2);
+        mActiveTabCache.saveActiveTab(tab2);
 
         assertEquals(
                 Tab.INVALID_TAB_ID, getSharedPreferences().getInt(fileName, Tab.INVALID_TAB_ID));
@@ -264,12 +272,13 @@ public class ActiveTabCacheUnitTest {
     public void testStartTracking_NullCurrentTab_PreservesCachedActiveTab() {
         initActiveTabCache(/* hasCipherFactory= */ false);
 
-        when(mTab.getId()).thenReturn(1);
-        when(mTab.isOffTheRecord()).thenReturn(false);
+        Tab tab = mock(Tab.class);
+        when(tab.getId()).thenReturn(1);
+        when(tab.isOffTheRecord()).thenReturn(false);
         TabState tabState = createMockTabState();
         TabStateExtractor.setTabStateForTesting(1, tabState);
 
-        mActiveTabCache.saveActiveTab(mTab);
+        mActiveTabCache.saveActiveTab(tab);
         mExecutor.runAll();
         assertTrue(getCacheFile(false).exists());
 

@@ -33,11 +33,6 @@ public class SnackbarCollectionUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private SnackbarController mMockController;
-    @Mock private SnackbarController mSnackbarController;
-    @Mock private SnackbarController mController1;
-    @Mock private SnackbarController mController2;
-    @Mock private SnackbarController mSpamController;
-    @Mock private SnackbarController mHpController;
 
     @Test
     @Feature({"Browser", "Snackbar"})
@@ -116,15 +111,16 @@ public class SnackbarCollectionUnitTest {
             collection.add(makeActionSnackbar());
             collection.add(makeNotificationSnackbar());
         }
+        SnackbarController anotherController = mock(SnackbarController.class);
         for (int i = 0; i < 3; i++) {
-            collection.add(makeActionSnackbar(mSnackbarController));
-            collection.add(makeNotificationSnackbar(mSnackbarController));
+            collection.add(makeActionSnackbar(anotherController));
+            collection.add(makeNotificationSnackbar(anotherController));
         }
 
         collection.removeMatchingSnackbars(mMockController);
         while (!collection.isEmpty()) {
             Snackbar removed = collection.removeCurrentDueToAction();
-            assertEquals(mSnackbarController, removed.getController());
+            assertEquals(anotherController, removed.getController());
         }
     }
 
@@ -136,10 +132,11 @@ public class SnackbarCollectionUnitTest {
             collection.add(makeActionSnackbar().setAction(ACTION_TITLE, i));
             collection.add(makeNotificationSnackbar().setAction(NOTIFICATION_TITLE, i));
         }
+        SnackbarController anotherController = mock(SnackbarController.class);
         for (int i = 0; i < 3; i++) {
-            collection.add(makeActionSnackbar(mSnackbarController).setAction(ACTION_TITLE, i));
+            collection.add(makeActionSnackbar(anotherController).setAction(ACTION_TITLE, i));
             collection.add(
-                    makeNotificationSnackbar(mSnackbarController).setAction(NOTIFICATION_TITLE, i));
+                    makeNotificationSnackbar(anotherController).setAction(NOTIFICATION_TITLE, i));
         }
 
         final Integer dataToRemove = 0;
@@ -276,19 +273,21 @@ public class SnackbarCollectionUnitTest {
     public void testMultipleHighPrioritySnackbarsShownSequentially() {
         SnackbarCollection collection = new SnackbarCollection();
 
+        SnackbarController controller1 = mock(SnackbarController.class);
         Snackbar hp1 =
                 Snackbar.make(
                                 ACTION_TITLE,
-                                mController1,
+                                controller1,
                                 Snackbar.TYPE_ACTION,
                                 Snackbar.UMA_TEST_SNACKBAR)
                         .setHighPriority(true);
         collection.add(hp1);
 
+        SnackbarController controller2 = mock(SnackbarController.class);
         Snackbar hp2 =
                 Snackbar.make(
                                 ACTION_TITLE,
-                                mController2,
+                                controller2,
                                 Snackbar.TYPE_ACTION,
                                 Snackbar.UMA_TEST_SNACKBAR)
                         .setHighPriority(true);
@@ -297,10 +296,10 @@ public class SnackbarCollectionUnitTest {
         // hp2 should instantly interrupt and replace hp1.
         assertEquals(hp2, collection.getCurrent());
         // Verify hp1 was dismissed with the correct reason.
-        verify(mController1, times(1)).onDismissNoAction(null);
+        verify(controller1, times(1)).onDismissNoAction(null);
 
         // Remove hp2
-        collection.removeMatchingSnackbars(mController2);
+        collection.removeMatchingSnackbars(controller2);
         assertTrue(collection.isEmpty());
     }
 
@@ -308,13 +307,14 @@ public class SnackbarCollectionUnitTest {
     @Feature({"Browser", "Snackbar", "Security"})
     public void testQueueExhaustion_HighPriorityPreemptsSpam() {
         SnackbarCollection collection = new SnackbarCollection();
+        SnackbarController spamController = mock(SnackbarController.class);
 
         // 1. Attacker spams the queue with standard notifications (like "Copied to clipboard")
         for (int i = 0; i < 20; ++i) {
             Snackbar spam =
                     Snackbar.make(
                             "Spam " + i,
-                            mSpamController,
+                            spamController,
                             Snackbar.TYPE_NOTIFICATION,
                             Snackbar.UMA_TEST_SNACKBAR);
             collection.add(spam);
@@ -322,10 +322,11 @@ public class SnackbarCollectionUnitTest {
 
         // At this point, the queue is full of spam.
         // 2. A legitimate High Priority warning (Fullscreen) is triggered.
+        SnackbarController hpController = mock(SnackbarController.class);
         Snackbar hpSnackbar =
                 Snackbar.make(
                                 "Fullscreen Warning",
-                                mHpController,
+                                hpController,
                                 Snackbar.TYPE_ACTION,
                                 Snackbar.UMA_TEST_SNACKBAR)
                         .setHighPriority(true);
@@ -377,6 +378,7 @@ public class SnackbarCollectionUnitTest {
     @Feature({"Browser", "Snackbar", "Security"})
     public void testOscillationAttack_StateDeduplication() {
         SnackbarCollection collection = new SnackbarCollection();
+        SnackbarController controller = mock(SnackbarController.class);
         Object actionData = new Object();
 
         // 1. Attacker rapidly requests Fullscreen 5 times in a row.
@@ -384,7 +386,7 @@ public class SnackbarCollectionUnitTest {
             Snackbar hpSnackbar =
                     Snackbar.make(
                                     "Fullscreen",
-                                    mSnackbarController,
+                                    controller,
                                     Snackbar.TYPE_ACTION,
                                     Snackbar.UMA_TEST_SNACKBAR)
                             .setAction("Undo", actionData)

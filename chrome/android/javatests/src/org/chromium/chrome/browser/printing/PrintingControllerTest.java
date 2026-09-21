@@ -26,11 +26,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
@@ -91,6 +87,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PrintingControllerTest {
+    @Rule
+    public final FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
     private static final String TEMP_FILE_NAME = "temp_print";
     private static final String TEMP_FILE_EXTENSION = ".pdf";
     private static final String URL =
@@ -99,15 +99,6 @@ public class PrintingControllerTest {
     private static final long TEST_TIMEOUT = 20000L;
     private static final long PDF_LOAD_TIMEOUT_MS = 8000;
     private static final long POLLING_INTERVAL_MS = 500;
-
-    @Rule
-    public final FreshCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.freshChromeTabbedActivityRule();
-
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private ToastManager mToastManager;
-    @Mock private Runnable mRunnable;
-    @Captor private ArgumentCaptor<Toast> mToastCaptor;
 
     @Before
     public void setUp() {
@@ -505,7 +496,8 @@ public class PrintingControllerTest {
         mActivityTestRule.loadUrl(UrlConstants.HISTORY_URL);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         Tab currentTab = ThreadUtils.runOnUiThreadBlocking(() -> cta.getActivityTab());
-        ToastManager.setInstanceForTesting(mToastManager);
+        ToastManager toastManager = Mockito.mock(ToastManager.class);
+        ToastManager.setInstanceForTesting(toastManager);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -516,8 +508,9 @@ public class PrintingControllerTest {
                             cta.onMenuOrKeyboardAction(R.id.print_id, false));
                 });
 
-        Mockito.verify(mToastManager, Mockito.times(1)).requestShow(mToastCaptor.capture());
-        Assert.assertEquals("This page can't be printed", mToastCaptor.getValue().getText());
+        ArgumentCaptor<Toast> toastCaptor = ArgumentCaptor.forClass(Toast.class);
+        Mockito.verify(toastManager, Mockito.times(1)).requestShow(toastCaptor.capture());
+        Assert.assertEquals("This page can't be printed", toastCaptor.getValue().getText());
     }
 
     @Test
@@ -711,16 +704,17 @@ public class PrintingControllerTest {
                     PrintingControllerImpl printingController =
                             (PrintingControllerImpl) PrintingControllerImpl.getInstance(window);
 
-                    printingController.setPendingPrintCallback(mRunnable);
+                    Runnable mockCallback = Mockito.mock(Runnable.class);
+                    printingController.setPendingPrintCallback(mockCallback);
 
                     // Verify it hasn't been called yet.
-                    Mockito.verify(mRunnable, Mockito.never()).run();
+                    Mockito.verify(mockCallback, Mockito.never()).run();
 
                     // Call onFinish which simulates the Print Spooler finishing.
                     printingController.onFinish();
 
                     // Verify that the delayed callback is now executed.
-                    Mockito.verify(mRunnable, Mockito.times(1)).run();
+                    Mockito.verify(mockCallback, Mockito.times(1)).run();
                 });
     }
 
@@ -733,6 +727,7 @@ public class PrintingControllerTest {
         WindowAndroid window = page.getTab().getWindowAndroid();
 
         // Create mock on test thread.
+        Runnable mockCallback = Mockito.mock(Runnable.class);
 
         CountDownLatch detachLatch = new CountDownLatch(1);
         PrintingControllerImpl.setOnDetachCallbackForTesting(detachLatch::countDown);
@@ -741,10 +736,10 @@ public class PrintingControllerTest {
                 () -> {
                     PrintingControllerImpl printingController =
                             (PrintingControllerImpl) PrintingControllerImpl.getInstance(window);
-                    printingController.setPendingPrintCallback(mRunnable);
+                    printingController.setPendingPrintCallback(mockCallback);
 
                     // Verify it hasn't been called yet.
-                    Mockito.verify(mRunnable, Mockito.never()).run();
+                    Mockito.verify(mockCallback, Mockito.never()).run();
 
                     // Simulate host destruction to trigger detachment.
                     window.getUnownedUserDataHost().destroy();
@@ -754,7 +749,7 @@ public class PrintingControllerTest {
         detachLatch.await();
 
         // Verify that the delayed callback is now executed.
-        Mockito.verify(mRunnable, Mockito.times(1)).run();
+        Mockito.verify(mockCallback, Mockito.times(1)).run();
     }
 
     private static class TestPrintingControllerImpl extends PrintingControllerImpl {
@@ -860,18 +855,20 @@ public class PrintingControllerTest {
                     }
                 };
 
+        Runnable mockCallback = Mockito.mock(Runnable.class);
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PrintingControllerImpl printingController =
                             (PrintingControllerImpl) PrintingControllerImpl.getInstance(window);
                     printingController.setPendingPrint(
                             new TabPrinter(tab), failingPrintManager, -1, -1);
-                    printingController.setPendingPrintCallback(mRunnable);
+                    printingController.setPendingPrintCallback(mockCallback);
 
                     printingController.startPendingPrint();
 
                     // The callback should have been invoked immediately because print failed.
-                    Mockito.verify(mRunnable, Mockito.times(1)).run();
+                    Mockito.verify(mockCallback, Mockito.times(1)).run();
                     Assert.assertFalse(printingController.isBusy());
                     Assert.assertTrue(printingController.hasPrintingFinished());
                 });
@@ -900,6 +897,8 @@ public class PrintingControllerTest {
                     }
                 };
 
+        Runnable pendingCallback = Mockito.mock(Runnable.class);
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PrintingControllerImpl printingController =
@@ -908,12 +907,12 @@ public class PrintingControllerTest {
                     Assert.assertTrue(printingController.isBusy());
 
                     // Calling startPendingPrint while busy should be a safe no-op.
-                    printingController.setPendingPrintCallback(mRunnable);
+                    printingController.setPendingPrintCallback(pendingCallback);
                     printingController.startPendingPrint();
 
                     // The controller should remain busy with the original job.
                     Assert.assertTrue(printingController.isBusy());
-                    Mockito.verify(mRunnable, Mockito.never()).run();
+                    Mockito.verify(pendingCallback, Mockito.never()).run();
 
                     // Cleanup
                     printingController.onActivityDestroyed();

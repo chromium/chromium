@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -24,7 +25,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -62,8 +62,6 @@ public class SafetyHubMagicStackMediatorTest {
     @Mock private PrefChangeRegistrar mPrefChangeRegistrar;
     @Mock private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     @Mock private View mView;
-    @Mock private ModalDialogManager.Presenter mModalDialogManagerPresenter;
-    @Captor private ArgumentCaptor<PrefObserver> mPrefObserverCaptor;
 
     private Context mContext;
     private Profile mProfile;
@@ -96,7 +94,8 @@ public class SafetyHubMagicStackMediatorTest {
 
         mModalDialogManager =
                 new ModalDialogManager(
-                        mModalDialogManagerPresenter, ModalDialogManager.ModalDialogType.APP);
+                        mock(ModalDialogManager.Presenter.class),
+                        ModalDialogManager.ModalDialogType.APP);
         when(mModalDialogManagerSupplier.get()).thenReturn(mModalDialogManager);
 
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
@@ -253,9 +252,9 @@ public class SafetyHubMagicStackMediatorTest {
         mMediator.showModule();
 
         // Capture the callback
-        verify(mPrefChangeRegistrar)
-                .addObserver(eq(Pref.SAFE_BROWSING_ENABLED), mPrefObserverCaptor.capture());
-        PrefObserver observer = mPrefObserverCaptor.getValue();
+        ArgumentCaptor<PrefObserver> captor = ArgumentCaptor.forClass(PrefObserver.class);
+        verify(mPrefChangeRegistrar).addObserver(eq(Pref.SAFE_BROWSING_ENABLED), captor.capture());
+        PrefObserver observer = captor.getValue();
 
         // Test that the module is not dismissed when Safe Browsing is disabled.
         doReturn(false).when(mPrefService).getBoolean(Pref.SAFE_BROWSING_ENABLED);
@@ -310,9 +309,10 @@ public class SafetyHubMagicStackMediatorTest {
         mMediator.showModule();
 
         // Capture the callback
+        ArgumentCaptor<PrefObserver> captor = ArgumentCaptor.forClass(PrefObserver.class);
         verify(mPrefChangeRegistrar)
-                .addObserver(eq(Pref.BREACHED_CREDENTIALS_COUNT), mPrefObserverCaptor.capture());
-        PrefObserver observer = mPrefObserverCaptor.getValue();
+                .addObserver(eq(Pref.BREACHED_CREDENTIALS_COUNT), captor.capture());
+        PrefObserver observer = captor.getValue();
 
         // Test that the module is not dismissed when compromised passwords exist.
         doReturn(5).when(mPrefService).getInteger(Pref.BREACHED_CREDENTIALS_COUNT);

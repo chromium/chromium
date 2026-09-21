@@ -82,13 +82,16 @@ import java.util.Objects;
 @RunWith(BaseRobolectricTestRunner.class)
 public class WebAppLaunchHandlerTest {
     static final int WRONG_CLIENT_MODE = 65;
+
     public static final String INITIAL_URL = JUnitTestGURLs.INITIAL_URL.getSpec();
     public static final String OTHER_URL = JUnitTestGURLs.EXAMPLE_URL.getSpec();
     public static final String CONTENT_URI = "content://com.a.b.c/a";
     public static final String TEST_PACKAGE_NAME = "com.test";
+    private FileHandlingData mFileHandlingData;
+    private String[] mExpectedFileList = new String[0];
+    private boolean[] mExpectedCanWriteList = new boolean[0];
 
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
-
     @Mock MockWebContents mWebContentsMock;
     @Mock CustomTabActivityNavigationController mNavigationControllerMock;
     @Mock Verifier mVerifierMock;
@@ -96,16 +99,9 @@ public class WebAppLaunchHandlerTest {
     @Mock Activity mActivityMock;
     @Mock WebAppLaunchHandler.Natives mWebAppLaunchHandlerJniMock;
     @Mock CustomTabsConnection mCustomTabsConnectionMock;
-    @Mock CustomTabActivityTabProvider mTabProviderMock;
-    @Mock private ComponentCaller mComponentCaller;
-    @Mock private CustomTabIntentDataProvider mCustomTabIntentDataProvider;
-    @Mock private IBinder mIBinder;
-
-    private FileHandlingData mFileHandlingData;
-    private String[] mExpectedFileList = new String[0];
-    private boolean[] mExpectedCanWriteList = new boolean[0];
     private final SessionHolder.CustomTab mSessionHolder =
             SessionHolder.of(CustomTabsSessionToken.createMockSessionTokenForTesting());
+    @Mock CustomTabActivityTabProvider mTabProviderMock;
 
     @Before
     public void setUp() {
@@ -924,8 +920,9 @@ public class WebAppLaunchHandlerTest {
     @Test
     @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
     public void testFileHandling_trampolineFallback() {
-        when(mComponentCaller.getUid()).thenReturn(Process.myUid());
-        when(mActivityMock.getCurrentCaller()).thenReturn(mComponentCaller);
+        ComponentCaller callerMock = mock(ComponentCaller.class);
+        when(callerMock.getUid()).thenReturn(Process.myUid());
+        when(mActivityMock.getCurrentCaller()).thenReturn(callerMock);
 
         final Uri authorizedUri =
                 Uri.parse("content://com.android.externalstorage.documents/photo.png");
@@ -946,8 +943,9 @@ public class WebAppLaunchHandlerTest {
     @Test
     @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
     public void testFileHandling_trampolineFallback_denied() {
-        when(mComponentCaller.getUid()).thenReturn(Process.myUid());
-        when(mActivityMock.getCurrentCaller()).thenReturn(mComponentCaller);
+        ComponentCaller callerMock = mock(ComponentCaller.class);
+        when(callerMock.getUid()).thenReturn(Process.myUid());
+        when(mActivityMock.getCurrentCaller()).thenReturn(callerMock);
 
         final Uri authorizedUri =
                 Uri.parse("content://com.android.externalstorage.documents/photo.png");
@@ -973,11 +971,10 @@ public class WebAppLaunchHandlerTest {
         intent.putExtra(
                 CustomTabIntentDataProvider.EXTRA_VERIFIED_SHARE_DATA, verifiedData.toBundle());
 
-        when(mCustomTabIntentDataProvider.getIntent()).thenReturn(intent);
+        CustomTabIntentDataProvider dataProvider = mock(CustomTabIntentDataProvider.class);
+        when(dataProvider.getIntent()).thenReturn(intent);
 
-        ShareData result =
-                WebAppLaunchHandler.filterShareData(
-                        mCustomTabIntentDataProvider, mActivityMock, null);
+        ShareData result = WebAppLaunchHandler.filterShareData(dataProvider, mActivityMock, null);
         Assert.assertNotNull(result);
         Assert.assertEquals("title", result.title);
         Assert.assertEquals(fileUri, result.uris.get(0));
@@ -991,9 +988,10 @@ public class WebAppLaunchHandlerTest {
         ShareData rawData =
                 new ShareData("title", "text", Arrays.asList(authorizedUri, unauthorizedUri));
 
-        when(mCustomTabIntentDataProvider.getIntent()).thenReturn(intent);
-        when(mCustomTabIntentDataProvider.getShareData()).thenReturn(rawData);
-        when(mCustomTabIntentDataProvider.getSession()).thenReturn(mSessionHolder);
+        CustomTabIntentDataProvider dataProvider = mock(CustomTabIntentDataProvider.class);
+        when(dataProvider.getIntent()).thenReturn(intent);
+        when(dataProvider.getShareData()).thenReturn(rawData);
+        when(dataProvider.getSession()).thenReturn(mSessionHolder);
 
         when(mActivityMock.checkUriPermission(
                         eq(authorizedUri),
@@ -1008,9 +1006,7 @@ public class WebAppLaunchHandlerTest {
                         eq(Intent.FLAG_GRANT_READ_URI_PERMISSION)))
                 .thenReturn(PackageManager.PERMISSION_DENIED);
 
-        ShareData result =
-                WebAppLaunchHandler.filterShareData(
-                        mCustomTabIntentDataProvider, mActivityMock, null);
+        ShareData result = WebAppLaunchHandler.filterShareData(dataProvider, mActivityMock, null);
         Assert.assertNotNull(result);
         Assert.assertEquals("title", result.title);
         Assert.assertEquals(1, result.uris.size());
@@ -1030,9 +1026,10 @@ public class WebAppLaunchHandlerTest {
         ShareData rawData =
                 new ShareData("title", "text", Arrays.asList(internalUri, fileSchemeUri, validUri));
 
-        when(mCustomTabIntentDataProvider.getIntent()).thenReturn(intent);
-        when(mCustomTabIntentDataProvider.getShareData()).thenReturn(rawData);
-        when(mCustomTabIntentDataProvider.getSession()).thenReturn(mSessionHolder);
+        CustomTabIntentDataProvider dataProvider = mock(CustomTabIntentDataProvider.class);
+        when(dataProvider.getIntent()).thenReturn(intent);
+        when(dataProvider.getShareData()).thenReturn(rawData);
+        when(dataProvider.getSession()).thenReturn(mSessionHolder);
 
         when(mActivityMock.checkUriPermission(
                         eq(validUri),
@@ -1047,9 +1044,7 @@ public class WebAppLaunchHandlerTest {
                         eq(Intent.FLAG_GRANT_READ_URI_PERMISSION)))
                 .thenReturn(PackageManager.PERMISSION_GRANTED);
 
-        ShareData result =
-                WebAppLaunchHandler.filterShareData(
-                        mCustomTabIntentDataProvider, mActivityMock, null);
+        ShareData result = WebAppLaunchHandler.filterShareData(dataProvider, mActivityMock, null);
         Assert.assertNotNull(result);
         Assert.assertEquals("title", result.title);
         Assert.assertEquals(1, result.uris.size());
@@ -1135,11 +1130,12 @@ public class WebAppLaunchHandlerTest {
         FileHandlingData rawData =
                 new FileHandlingData(Arrays.asList(internalUri, fileSchemeUri, validUri));
 
-        when(mCustomTabIntentDataProvider.getIntent()).thenReturn(intent);
-        when(mCustomTabIntentDataProvider.getFileHandlingData()).thenReturn(rawData);
-        when(mCustomTabIntentDataProvider.getSession()).thenReturn(mSessionHolder);
-        when(mCustomTabIntentDataProvider.getUrlToLoad()).thenReturn(INITIAL_URL);
-        when(mCustomTabIntentDataProvider.getClientPackageName()).thenReturn(TEST_PACKAGE_NAME);
+        CustomTabIntentDataProvider dataProvider = mock(CustomTabIntentDataProvider.class);
+        when(dataProvider.getIntent()).thenReturn(intent);
+        when(dataProvider.getFileHandlingData()).thenReturn(rawData);
+        when(dataProvider.getSession()).thenReturn(mSessionHolder);
+        when(dataProvider.getUrlToLoad()).thenReturn(INITIAL_URL);
+        when(dataProvider.getClientPackageName()).thenReturn(TEST_PACKAGE_NAME);
 
         when(mActivityMock.checkUriPermission(
                         eq(validUri),
@@ -1155,7 +1151,7 @@ public class WebAppLaunchHandlerTest {
                 .thenReturn(PackageManager.PERMISSION_GRANTED);
 
         WebAppLaunchHandler launchHandler = createWebAppLaunchHandler();
-        launchHandler.handleInitialIntent(mCustomTabIntentDataProvider);
+        launchHandler.handleInitialIntent(dataProvider);
 
         verify(mWebAppLaunchHandlerJniMock)
                 .prepareForLaunch(
@@ -1172,7 +1168,8 @@ public class WebAppLaunchHandlerTest {
     @Test
     public void testCopyShareDataPermissions_InvalidUrisFiltered() {
         Intent sourceIntent = new Intent();
-        sourceIntent.putExtra(CustomTabsIntent.EXTRA_SESSION, mIBinder);
+        IBinder sessionBinder = mock(IBinder.class);
+        sourceIntent.putExtra(CustomTabsIntent.EXTRA_SESSION, sessionBinder);
         Uri internalUri =
                 Uri.parse(
                         "content://"
@@ -1366,7 +1363,8 @@ public class WebAppLaunchHandlerTest {
     @Test
     public void testCopyFilePermissions_InvalidUrisFiltered() {
         Intent sourceIntent = new Intent();
-        sourceIntent.putExtra(CustomTabsIntent.EXTRA_SESSION, mIBinder);
+        IBinder sessionBinder = mock(IBinder.class);
+        sourceIntent.putExtra(CustomTabsIntent.EXTRA_SESSION, sessionBinder);
         Uri internalUri =
                 Uri.parse(
                         "content://"

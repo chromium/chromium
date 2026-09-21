@@ -17,10 +17,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.StreamUtil;
 import org.chromium.base.Token;
@@ -67,8 +64,6 @@ public class TabStateFileManagerUnitTest {
     private static final GURL URL = new GURL(getOriginalNativeNtpUrl());
 
     @Rule public TemporaryFolder temporaryFolder = new TemporaryFolder();
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private File mFile;
 
     private CipherFactory mCipherFactory;
 
@@ -655,8 +650,9 @@ public class TabStateFileManagerUnitTest {
     @Test
     public void testNullListFilesDeleteFlatBuffer() {
         try {
-            Mockito.doReturn(null).when(mFile).listFiles();
-            TabStateFileManager.deleteFlatBufferFiles(mFile);
+            File stateDirectory = Mockito.mock(File.class);
+            Mockito.doReturn(null).when(stateDirectory).listFiles();
+            TabStateFileManager.deleteFlatBufferFiles(stateDirectory);
         } catch (NullPointerException e) {
             throw new AssertionError(
                     "deleteFlatBufferFiles should not throw NullPointerException", e);

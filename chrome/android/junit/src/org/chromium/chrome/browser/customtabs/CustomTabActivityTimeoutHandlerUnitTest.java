@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.customtabs;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -51,18 +52,16 @@ import java.util.concurrent.TimeUnit;
     ChromeFeatureList.CCT_RESET_TIMEOUT_SKIP_CONFIGURATION_CHANGES
 })
 public class CustomTabActivityTimeoutHandlerUnitTest {
-    private static final int TIMEOUT_MINUTES = 5;
+    @Mock private Runnable mFinishRunnable;
+    @Mock private PendingIntent mPendingIntent;
+    @Mock private Activity mActivity;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
-    @Mock private Runnable mFinishRunnable;
-    @Mock private PendingIntent mPendingIntent;
-    @Mock private Activity mActivity;
-    @Mock private Context mConstructorContext;
-    @Mock private Context mOnStopContext;
-
     private CustomTabActivityTimeoutHandler mTimeoutHandler;
+
+    private static final int TIMEOUT_MINUTES = 5;
     private Intent mIntentWithExtra;
     private Context mContext;
     private ShadowPowerManager mShadowPowerManager;
@@ -338,17 +337,19 @@ public class CustomTabActivityTimeoutHandlerUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.CCT_EARLY_INIT_POWER_MANAGER})
     public void onStop_earlyInitPowerManagerEnabled_usesConstructorPowerManager() {
+        Context constructorContext = mock(Context.class);
+        Context onStopContext = mock(Context.class);
         PowerManager powerManager = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
-        when(mConstructorContext.getSystemService(Context.POWER_SERVICE)).thenReturn(powerManager);
+        when(constructorContext.getSystemService(Context.POWER_SERVICE)).thenReturn(powerManager);
 
         CustomTabActivityTimeoutHandler timeoutHandler =
                 new CustomTabActivityTimeoutHandler(
-                        mConstructorContext, mFinishRunnable, mIntentWithExtra);
-        verify(mConstructorContext).getSystemService(Context.POWER_SERVICE);
+                        constructorContext, mFinishRunnable, mIntentWithExtra);
+        verify(constructorContext).getSystemService(Context.POWER_SERVICE);
 
         mShadowPowerManager.setIsInteractive(true);
-        timeoutHandler.onStop(mOnStopContext);
-        verify(mOnStopContext, never()).getSystemService(Context.POWER_SERVICE);
+        timeoutHandler.onStop(onStopContext);
+        verify(onStopContext, never()).getSystemService(Context.POWER_SERVICE);
 
         mFakeTimeTestRule.advanceMillis(TimeUnit.MINUTES.toMillis(TIMEOUT_MINUTES + 1));
         timeoutHandler.onResume(mContext);
@@ -358,17 +359,19 @@ public class CustomTabActivityTimeoutHandlerUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.CCT_EARLY_INIT_POWER_MANAGER})
     public void onStop_earlyInitPowerManagerEnabled_lockingScreen_doesNotSetTimestamp() {
+        Context constructorContext = mock(Context.class);
+        Context onStopContext = mock(Context.class);
         PowerManager powerManager = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
-        when(mConstructorContext.getSystemService(Context.POWER_SERVICE)).thenReturn(powerManager);
+        when(constructorContext.getSystemService(Context.POWER_SERVICE)).thenReturn(powerManager);
 
         CustomTabActivityTimeoutHandler timeoutHandler =
                 new CustomTabActivityTimeoutHandler(
-                        mConstructorContext, mFinishRunnable, mIntentWithExtra);
-        verify(mConstructorContext).getSystemService(Context.POWER_SERVICE);
+                        constructorContext, mFinishRunnable, mIntentWithExtra);
+        verify(constructorContext).getSystemService(Context.POWER_SERVICE);
 
         mShadowPowerManager.setIsInteractive(false);
-        timeoutHandler.onStop(mOnStopContext);
-        verify(mOnStopContext, never()).getSystemService(Context.POWER_SERVICE);
+        timeoutHandler.onStop(onStopContext);
+        verify(onStopContext, never()).getSystemService(Context.POWER_SERVICE);
 
         mFakeTimeTestRule.advanceMillis(TimeUnit.MINUTES.toMillis(TIMEOUT_MINUTES + 1));
         timeoutHandler.onResume(mContext);
@@ -378,17 +381,19 @@ public class CustomTabActivityTimeoutHandlerUnitTest {
     @Test
     @DisableFeatures({ChromeFeatureList.CCT_EARLY_INIT_POWER_MANAGER})
     public void onStop_earlyInitPowerManagerDisabled_usesOnStopPowerManager() {
+        Context constructorContext = mock(Context.class);
+        Context onStopContext = mock(Context.class);
         PowerManager powerManager = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
-        when(mOnStopContext.getSystemService(Context.POWER_SERVICE)).thenReturn(powerManager);
+        when(onStopContext.getSystemService(Context.POWER_SERVICE)).thenReturn(powerManager);
 
         CustomTabActivityTimeoutHandler timeoutHandler =
                 new CustomTabActivityTimeoutHandler(
-                        mConstructorContext, mFinishRunnable, mIntentWithExtra);
-        verify(mConstructorContext, never()).getSystemService(Context.POWER_SERVICE);
+                        constructorContext, mFinishRunnable, mIntentWithExtra);
+        verify(constructorContext, never()).getSystemService(Context.POWER_SERVICE);
 
         mShadowPowerManager.setIsInteractive(true);
-        timeoutHandler.onStop(mOnStopContext);
-        verify(mOnStopContext).getSystemService(Context.POWER_SERVICE);
+        timeoutHandler.onStop(onStopContext);
+        verify(onStopContext).getSystemService(Context.POWER_SERVICE);
 
         mFakeTimeTestRule.advanceMillis(TimeUnit.MINUTES.toMillis(TIMEOUT_MINUTES + 1));
         timeoutHandler.onResume(mContext);
@@ -398,8 +403,10 @@ public class CustomTabActivityTimeoutHandlerUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.CCT_EARLY_INIT_POWER_MANAGER})
     public void constructor_earlyInitPowerManagerEnabled_timeoutDisabled_doesNotGetPowerManager() {
-        new CustomTabActivityTimeoutHandler(mConstructorContext, mFinishRunnable, new Intent());
-        verify(mConstructorContext, never()).getSystemService(Context.POWER_SERVICE);
+        Context constructorContext = mock(Context.class);
+
+        new CustomTabActivityTimeoutHandler(constructorContext, mFinishRunnable, new Intent());
+        verify(constructorContext, never()).getSystemService(Context.POWER_SERVICE);
     }
 
     @Test

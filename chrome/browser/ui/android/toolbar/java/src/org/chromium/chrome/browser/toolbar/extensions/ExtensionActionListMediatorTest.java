@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -65,9 +66,9 @@ import org.chromium.chrome.browser.ui.toolbar.SiteAccess;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenuButton;
+import org.chromium.ui.listmenu.ListMenuHost;
 import org.chromium.ui.listmenu.MenuModelBridge;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
@@ -78,49 +79,6 @@ import java.util.concurrent.TimeUnit;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class ExtensionActionListMediatorTest {
-    private static final int TAB_ID = 111;
-    private static final long BROWSER_WINDOW_POINTER = 1000L;
-    private static final long ACTION_CONTEXT_MENU_BRIDGE_POINTER = 10000L;
-    private static final Bitmap ICON_RED = createSimpleIcon(Color.RED);
-    private static final Bitmap ICON_BLUE = createSimpleIcon(Color.BLUE);
-    private static final Bitmap ICON_GREEN = createSimpleIcon(Color.GREEN);
-    private static final Bitmap ICON_CYAN = createSimpleIcon(Color.CYAN);
-    private static final Bitmap ICON_MAGENTA = createSimpleIcon(Color.MAGENTA);
-    private static final String ACTION1_ID = "aaaaa";
-    private static final String ACTION2_ID = "bbbbb";
-    private static final String ACTION3_ID = "ccccc";
-
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Mock private ChromeAndroidTask mTask;
-    @Mock private Profile mProfile;
-    @Mock private WindowAndroid mWindowAndroid;
-    @Mock private WebContents mWebContents;
-    @Mock private ExtensionsToolbarBridge mExtensionsToolbarBridge;
-    @Mock private ExtensionActionPopupContents mPopupContentsMock;
-    @Mock private MenuModelBridge mMenuModelBridge;
-    @Mock private ExtensionActionContextMenuBridge.Native mActionContextMenuBridgeJniMock;
-    @Mock private ExtensionActionListCoordinator.RecyclerViewDelegate mRecyclerViewDelegate;
-    @Mock private TabModelSelector mTabModelSelector;
-    @Mock private ModalDialogManager mModalDialogManager;
-    @Mock private ExtensionAction mExtensionAction;
-    @Mock private HoverCardState mHoverCardState;
-    @Mock private MotionEvent mMotionEvent;
-    @Mock private MotionEvent mEnterEvent;
-    @Mock private MotionEvent mExitEvent;
-    @Mock private ListMenuButton mListMenuButton;
-
-    @Captor
-    private ArgumentCaptor<ExtensionsToolbarBridge.ActionListDelegate> mBridgeDelegateCaptor;
-
-    @Captor private ArgumentCaptor<ModalDialogManagerObserver> mObserverCaptor;
-    @Captor private ArgumentCaptor<Runnable> mRunnableCaptor;
-
-    private final Map<String, ActionData> mActions = new HashMap<>();
-    private ExtensionActionListMediator mMediator;
-    private ModelList mModels;
-    private MockTab mTab;
-    private SettableNullableObservableSupplier<Tab> mCurrentTabSupplier;
 
     /** An representation of an extension action. */
     private static class ActionData {
@@ -152,6 +110,51 @@ public class ExtensionActionListMediatorTest {
             return mHoverCardState;
         }
     }
+
+    private static final int TAB_ID = 111;
+    private static final long BROWSER_WINDOW_POINTER = 1000L;
+    private static final long ACTION_CONTEXT_MENU_BRIDGE_POINTER = 10000L;
+
+    private static final Bitmap ICON_RED = createSimpleIcon(Color.RED);
+    private static final Bitmap ICON_BLUE = createSimpleIcon(Color.BLUE);
+    private static final Bitmap ICON_GREEN = createSimpleIcon(Color.GREEN);
+    private static final Bitmap ICON_CYAN = createSimpleIcon(Color.CYAN);
+    private static final Bitmap ICON_MAGENTA = createSimpleIcon(Color.MAGENTA);
+
+    private static final String ACTION1_ID = "aaaaa";
+    private static final String ACTION2_ID = "bbbbb";
+    private static final String ACTION3_ID = "ccccc";
+
+    private final Map<String, ActionData> mActions = new HashMap<>();
+
+    private ExtensionActionListMediator mMediator;
+    private ModelList mModels;
+    private MockTab mTab;
+    private SettableNullableObservableSupplier<Tab> mCurrentTabSupplier;
+
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private ChromeAndroidTask mTask;
+    @Mock private Profile mProfile;
+    @Mock private WindowAndroid mWindowAndroid;
+    @Mock private WebContents mWebContents;
+
+    @Mock private ExtensionsToolbarBridge mExtensionsToolbarBridge;
+
+    @Mock private ExtensionActionPopupContents mPopupContentsMock;
+
+    @Mock private MenuModelBridge mMenuModelBridge;
+    @Mock private ExtensionActionContextMenuBridge.Native mActionContextMenuBridgeJniMock;
+
+    @Mock private ExtensionActionListCoordinator.RecyclerViewDelegate mRecyclerViewDelegate;
+
+    @Mock private TabModelSelector mTabModelSelector;
+
+    @Mock private ModalDialogManager mModalDialogManager;
+
+    @Captor private ArgumentCaptor<ListMenuHost.PopupMenuShownListener> mPopupListenerCaptor;
+
+    @Captor
+    private ArgumentCaptor<ExtensionsToolbarBridge.ActionListDelegate> mBridgeDelegateCaptor;
 
     @Before
     public void setUp() {
@@ -439,7 +442,9 @@ public class ExtensionActionListMediatorTest {
 
     @Test
     public void testDismissPopupOnDialogAdded() {
-        verify(mModalDialogManager).addObserver(mObserverCaptor.capture());
+        ArgumentCaptor<ModalDialogManager.ModalDialogManagerObserver> observerCaptor =
+                ArgumentCaptor.forClass(ModalDialogManager.ModalDialogManagerObserver.class);
+        verify(mModalDialogManager).addObserver(observerCaptor.capture());
 
         // Trigger a popup.
         mBridgeDelegateCaptor
@@ -447,7 +452,7 @@ public class ExtensionActionListMediatorTest {
                 .triggerPopup(ACTION1_ID, mPopupContentsMock, /* inspectWithDevTools= */ false);
 
         // Simulate a dialog being added.
-        mObserverCaptor.getValue().onDialogAdded(null);
+        observerCaptor.getValue().onDialogAdded(null);
 
         // The pending popup contents should be destroyed to prevent overlapping UIs.
         verify(mPopupContentsMock).destroy();
@@ -616,25 +621,28 @@ public class ExtensionActionListMediatorTest {
                 item.model.get(ExtensionActionButtonProperties.ON_HOVER_LISTENER);
 
         // Set up the mock action to track if its state is queried.
-        when(mExtensionAction.getHoverCardState()).thenReturn(mHoverCardState);
-        doReturn(mExtensionAction).when(mExtensionsToolbarBridge).getAction(eq(ACTION1_ID), any());
+        ExtensionAction action = mock(ExtensionAction.class);
+        ExtensionAction.HoverCardState state = mock(ExtensionAction.HoverCardState.class);
+        when(action.getHoverCardState()).thenReturn(state);
+        doReturn(action).when(mExtensionsToolbarBridge).getAction(eq(ACTION1_ID), any());
 
         View anchorView = new View(activity);
         when(mRecyclerViewDelegate.getButtonViewForId(ACTION1_ID)).thenReturn(anchorView);
 
         // Trigger hover enter.
-        when(mMotionEvent.getAction()).thenReturn(MotionEvent.ACTION_HOVER_ENTER);
-        listener.onHover(anchorView, mMotionEvent);
+        MotionEvent enterEvent = mock(MotionEvent.class);
+        when(enterEvent.getAction()).thenReturn(MotionEvent.ACTION_HOVER_ENTER);
+        listener.onHover(anchorView, enterEvent);
 
         // Verify the card construction hasn't started yet.
-        verify(mExtensionAction, never()).getHoverCardState();
+        verify(action, never()).getHoverCardState();
 
         // Fast forward looper past the long press timeout.
         shadowOf(Looper.getMainLooper())
                 .idleFor(ViewConfiguration.getLongPressTimeout(), TimeUnit.MILLISECONDS);
 
         // Verify the mediator proceeded to build and show the card.
-        verify(mExtensionAction).getHoverCardState();
+        verify(action).getHoverCardState();
     }
 
     @Test
@@ -647,26 +655,30 @@ public class ExtensionActionListMediatorTest {
         View.OnHoverListener listener =
                 item.model.get(ExtensionActionButtonProperties.ON_HOVER_LISTENER);
 
-        when(mExtensionAction.getHoverCardState()).thenReturn(mHoverCardState);
-        doReturn(mExtensionAction).when(mExtensionsToolbarBridge).getAction(eq(ACTION1_ID), any());
+        ExtensionAction action = mock(ExtensionAction.class);
+        ExtensionAction.HoverCardState state = mock(ExtensionAction.HoverCardState.class);
+        when(action.getHoverCardState()).thenReturn(state);
+        doReturn(action).when(mExtensionsToolbarBridge).getAction(eq(ACTION1_ID), any());
 
         View anchorView = new View(activity);
         when(mRecyclerViewDelegate.getButtonViewForId(ACTION1_ID)).thenReturn(anchorView);
 
         // Trigger hover enter.
-        when(mEnterEvent.getAction()).thenReturn(MotionEvent.ACTION_HOVER_ENTER);
-        listener.onHover(anchorView, mEnterEvent);
+        MotionEvent enterEvent = mock(MotionEvent.class);
+        when(enterEvent.getAction()).thenReturn(MotionEvent.ACTION_HOVER_ENTER);
+        listener.onHover(anchorView, enterEvent);
 
         // Immediately trigger hover exit before the delay finishes.
-        when(mExitEvent.getAction()).thenReturn(MotionEvent.ACTION_HOVER_EXIT);
-        listener.onHover(anchorView, mExitEvent);
+        MotionEvent exitEvent = mock(MotionEvent.class);
+        when(exitEvent.getAction()).thenReturn(MotionEvent.ACTION_HOVER_EXIT);
+        listener.onHover(anchorView, exitEvent);
 
         // Fast forward looper past the long press timeout.
         shadowOf(Looper.getMainLooper())
                 .idleFor(ViewConfiguration.getLongPressTimeout(), TimeUnit.MILLISECONDS);
 
         // Verify the runnable was cancelled and the card was never constructed.
-        verify(mExtensionAction, never()).getHoverCardState();
+        verify(action, never()).getHoverCardState();
     }
 
     @Test
@@ -679,18 +691,21 @@ public class ExtensionActionListMediatorTest {
         View.OnHoverListener listener =
                 item.model.get(ExtensionActionButtonProperties.ON_HOVER_LISTENER);
 
-        when(mExtensionAction.getHoverCardState()).thenReturn(mHoverCardState);
-        doReturn(mExtensionAction).when(mExtensionsToolbarBridge).getAction(eq(ACTION1_ID), any());
+        ExtensionAction action = mock(ExtensionAction.class);
+        ExtensionAction.HoverCardState state = mock(ExtensionAction.HoverCardState.class);
+        when(action.getHoverCardState()).thenReturn(state);
+        doReturn(action).when(mExtensionsToolbarBridge).getAction(eq(ACTION1_ID), any());
 
         View anchorView = new View(activity);
         when(mRecyclerViewDelegate.getButtonViewForId(ACTION1_ID)).thenReturn(anchorView);
 
         // Trigger hover enter to start timer.
-        when(mMotionEvent.getAction()).thenReturn(MotionEvent.ACTION_HOVER_ENTER);
-        listener.onHover(anchorView, mMotionEvent);
+        MotionEvent enterEvent = mock(MotionEvent.class);
+        when(enterEvent.getAction()).thenReturn(MotionEvent.ACTION_HOVER_ENTER);
+        listener.onHover(anchorView, enterEvent);
 
         // Verify card not shown yet.
-        verify(mExtensionAction, never()).getHoverCardState();
+        verify(action, never()).getHoverCardState();
 
         // Simulate a popup request to immediately move out of the Idle state without side effects.
         mBridgeDelegateCaptor
@@ -702,7 +717,7 @@ public class ExtensionActionListMediatorTest {
                 .idleFor(ViewConfiguration.getLongPressTimeout(), TimeUnit.MILLISECONDS);
 
         // Verify hover card was not shown.
-        verify(mExtensionAction, never()).getHoverCardState();
+        verify(action, never()).getHoverCardState();
     }
 
     // Tests that requesting a context menu gracefully aborts without throwing an
@@ -713,13 +728,16 @@ public class ExtensionActionListMediatorTest {
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(activity));
 
-        doReturn(mListMenuButton).when(mRecyclerViewDelegate).getButtonViewForId(ACTION1_ID);
+        ListMenuButton buttonView = mock(ListMenuButton.class);
+        doReturn(buttonView).when(mRecyclerViewDelegate).getButtonViewForId(ACTION1_ID);
+
+        ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
 
         // Request context menu for ACTION1.
         mMediator.requestShowContextMenu(ACTION1_ID);
 
         // Capture the posted runnable waiting for animations/layout to finish.
-        verify(mRecyclerViewDelegate).addOnAnimationsFinishedRunnable(mRunnableCaptor.capture());
+        verify(mRecyclerViewDelegate).addOnAnimationsFinishedRunnable(runnableCaptor.capture());
 
         // Before the runnable executes, state changes to non-Idle (e.g. PopupPending).
         mBridgeDelegateCaptor
@@ -728,7 +746,7 @@ public class ExtensionActionListMediatorTest {
 
         // Execute the queued context menu callback while state is not Idle.
         // With the fix, this safely returns without throwing an AssertionError.
-        mRunnableCaptor.getValue().run();
+        runnableCaptor.getValue().run();
     }
 
     // Tests that requesting a context menu immediately cancels any pending hover card
@@ -743,15 +761,18 @@ public class ExtensionActionListMediatorTest {
         View.OnHoverListener listener =
                 item.model.get(ExtensionActionButtonProperties.ON_HOVER_LISTENER);
 
-        when(mExtensionAction.getHoverCardState()).thenReturn(mHoverCardState);
-        doReturn(mExtensionAction).when(mExtensionsToolbarBridge).getAction(eq(ACTION1_ID), any());
+        ExtensionAction action = mock(ExtensionAction.class);
+        ExtensionAction.HoverCardState state = mock(ExtensionAction.HoverCardState.class);
+        when(action.getHoverCardState()).thenReturn(state);
+        doReturn(action).when(mExtensionsToolbarBridge).getAction(eq(ACTION1_ID), any());
 
         View anchorView = new View(activity);
         when(mRecyclerViewDelegate.getButtonViewForId(ACTION1_ID)).thenReturn(anchorView);
 
         // Trigger hover enter to start hover card timer.
-        when(mMotionEvent.getAction()).thenReturn(MotionEvent.ACTION_HOVER_ENTER);
-        listener.onHover(anchorView, mMotionEvent);
+        MotionEvent enterEvent = mock(MotionEvent.class);
+        when(enterEvent.getAction()).thenReturn(MotionEvent.ACTION_HOVER_ENTER);
+        listener.onHover(anchorView, enterEvent);
 
         // Right-click / context menu request arrives while hover card timer is pending.
         mMediator.requestShowContextMenu(ACTION1_ID);
@@ -762,7 +783,7 @@ public class ExtensionActionListMediatorTest {
 
         // Verify the pending hover card runnable was cancelled and never constructed the hover
         // card.
-        verify(mExtensionAction, never()).getHoverCardState();
+        verify(action, never()).getHoverCardState();
     }
 
     private static Bitmap createSimpleIcon(int color) {

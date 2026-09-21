@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -39,7 +40,6 @@ public class NtpSyncedThemeBridgeUnitTest {
     @Mock private NtpSyncedThemeBridge.Natives mNatives;
     @Mock private Profile mProfile;
     @Mock private NtpSyncedThemeBridge.Observer mObserver;
-    @Mock private NtpSyncedThemeBridge.Observer mNtpSyncedThemeBridgeObserver;
     private NtpSyncedThemeBridge mNtpSyncedThemeBridge;
 
     @Before
@@ -93,8 +93,8 @@ public class NtpSyncedThemeBridgeUnitTest {
 
     @Test
     public void testObserverCallbacks() {
-        NtpSyncedThemeBridge bridge =
-                new NtpSyncedThemeBridge(mProfile, mNtpSyncedThemeBridgeObserver);
+        NtpSyncedThemeBridge.Observer observer = mock(NtpSyncedThemeBridge.Observer.class);
+        NtpSyncedThemeBridge bridge = new NtpSyncedThemeBridge(mProfile, observer);
 
         CustomBackgroundInfo info =
                 new CustomBackgroundInfo(
@@ -104,13 +104,13 @@ public class NtpSyncedThemeBridgeUnitTest {
                         /* isDailyRefreshEnabled= */ false);
         when(mNatives.getCustomBackgroundInfo(anyLong())).thenReturn(info);
         bridge.onCustomBackgroundImageUpdated();
-        verify(mNtpSyncedThemeBridgeObserver).onThemeCollectionSynced(info);
+        verify(observer).onThemeCollectionSynced(info);
 
         bridge.onChromeColorSynced(THEME_COLOR_ID);
-        verify(mNtpSyncedThemeBridgeObserver).onChromeColorSynced(THEME_COLOR_ID);
+        verify(observer).onChromeColorSynced(THEME_COLOR_ID);
 
         bridge.onDefaultThemeSynced();
-        verify(mNtpSyncedThemeBridgeObserver).onDefaultThemeSynced();
+        verify(observer).onDefaultThemeSynced();
     }
 
     @Test

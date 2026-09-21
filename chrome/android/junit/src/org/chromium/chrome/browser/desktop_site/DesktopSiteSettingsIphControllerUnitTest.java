@@ -85,7 +85,6 @@ public class DesktopSiteSettingsIphControllerUnitTest {
     @Mock private MessageDispatcher mMessageDispatcher;
 
     @Captor private ArgumentCaptor<IphCommand> mIphCommandCaptor;
-    @Captor private ArgumentCaptor<PropertyModel> mMessageCaptor;
 
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private DesktopSiteSettingsIphController mController;
@@ -248,9 +247,10 @@ public class DesktopSiteSettingsIphControllerUnitTest {
                 "The window setting IPH should be shown.",
                 mController.showWindowSettingIph(mTab, mProfile));
 
+        ArgumentCaptor<PropertyModel> message = ArgumentCaptor.forClass(PropertyModel.class);
         verify(mMessageDispatcher)
                 .enqueueMessage(
-                        mMessageCaptor.capture(),
+                        message.capture(),
                         eq(mWebContents),
                         eq(MessageScopeType.ORIGIN),
                         eq(false));
@@ -259,19 +259,19 @@ public class DesktopSiteSettingsIphControllerUnitTest {
         Assert.assertEquals(
                 "Message identifier should match.",
                 MessageIdentifier.DESKTOP_SITE_WINDOW_SETTING,
-                mMessageCaptor.getValue().get(MessageBannerProperties.MESSAGE_IDENTIFIER));
+                message.getValue().get(MessageBannerProperties.MESSAGE_IDENTIFIER));
         Assert.assertEquals(
                 "Message title should match.",
                 mContext.getString(R.string.rds_window_setting_message_title),
-                mMessageCaptor.getValue().get(MessageBannerProperties.TITLE));
+                message.getValue().get(MessageBannerProperties.TITLE));
         Assert.assertEquals(
                 "Message primary button text should match.",
                 mContext.getString(R.string.rds_window_setting_message_button),
-                mMessageCaptor.getValue().get(MessageBannerProperties.PRIMARY_BUTTON_TEXT));
+                message.getValue().get(MessageBannerProperties.PRIMARY_BUTTON_TEXT));
         Assert.assertEquals(
                 "Message icon resource ID should match.",
                 R.drawable.ic_desktop_windows,
-                mMessageCaptor.getValue().get(MessageBannerProperties.ICON_RESOURCE_ID));
+                message.getValue().get(MessageBannerProperties.ICON_RESOURCE_ID));
     }
 
     @Test

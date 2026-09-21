@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.autofill.settings.options;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.os.Bundle;
@@ -18,9 +19,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
@@ -69,8 +67,7 @@ public class AutofillOptionsRenderTest {
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_AUTOFILL)
                     .build();
 
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private EntityDataManager mEntityDataManager;
+    private EntityDataManager mEntityDataManager;
 
     public AutofillOptionsRenderTest(boolean nightModeEnabled) {
         ChromeNightModeTestUtils.setUpNightModeForChromeActivity(nightModeEnabled);
@@ -79,6 +76,7 @@ public class AutofillOptionsRenderTest {
 
     @Before
     public void setUp() {
+        mEntityDataManager = mock(EntityDataManager.class);
         EntityDataManagerFactory.setInstanceForTesting(mEntityDataManager);
         when(mEntityDataManager.isPersonalContextPreferenceVisible()).thenReturn(true);
         when(mEntityDataManager.isPersonalContextEnabled()).thenReturn(true);

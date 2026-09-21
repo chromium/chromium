@@ -197,37 +197,6 @@ import java.util.stream.IntStream;
 public class StripLayoutHelperTest {
     private static final Token TAB_GROUP_ID_1 = new Token(1L, 1L);
     private static final Token TAB_GROUP_ID_2 = new Token(1L, 2L);
-    private static final String[] TEST_TAB_TITLES = {"Tab 1", "Tab 2", "Tab 3", "", null};
-    private static final String EXPECTED_TAB = "The view should be a tab.";
-    private static final String EXPECTED_TITLE = "The view should be a title.";
-    private static final String EXPECTED_NON_TITLE = "The view should not be a title.";
-    private static final String IDENTIFIER = "Tab";
-    private static final String IDENTIFIER_SELECTED = "Selected Tab";
-    private static final String INCOGNITO_IDENTIFIER = "Incognito Tab";
-    private static final String INCOGNITO_IDENTIFIER_SELECTED = "Selected Incognito Tab";
-    private static final float STRIP_WIDTH = 800.f;
-    private static final float STRIP_WIDTH_LANDSCAPE = 1200.f;
-    private static final float STRIP_HEIGHT = 40.f;
-    private static final float TAB_WIDTH_1 = 140.f;
-    private static final float TAB_WIDTH_SMALL = 108.f;
-    private static final float TAB_WIDTH_MEDIUM = 156.f;
-    private static final long TIMESTAMP = 5000;
-    private static final float NEW_TAB_BTN_X_RTL = 100.f;
-    private static final float NEW_TAB_BTN_X = 700.f;
-    private static final float NEW_TAB_BTN_Y = 1400.f;
-    private static final float NEW_TAB_BTN_WIDTH = 100.f;
-    private static final float NEW_TAB_BTN_HEIGHT = 100.f;
-    private static final float PADDING_LEFT = 10.f;
-    private static final float PADDING_RIGHT = 20.f;
-    private static final float PADDING_TOP = 20.f;
-    private static final float REORDER_OVERLAP_SWITCH_PERCENTAGE = 0.53f;
-    private static final float LONG_PRESS_X = 150.f;
-    private static final float LONG_PRESS_Y = 0.f;
-    private static final PointF DRAG_START_POINT = new PointF(70f, 20f);
-    private static final float EPSILON = 0.001f;
-    private static final String COLLABORATION_ID1 = "A";
-    private static final String SYNC_ID1 = "B";
-    private static final GURL URL = new GURL("http://example.com");
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -273,27 +242,54 @@ public class StripLayoutHelperTest {
     @Mock private SendTabToSelfAndroidBridge.Natives mSendTabToSelfAndroidBridgeNatives;
     @Mock private LeadingButtonDelegate mLeadingButtonDelegate;
     @Mock private Tracker mTracker;
-    @Mock private ReorderDelegate mReorderDelegate;
-    @Mock private TintedCompositorButton mTintedCompositorButton;
-    @Mock private Animator mAnimator;
-    @Mock private TabModel mTabModel;
-    @Mock private LayerTitleCache mNewTitleCache;
+
     @Captor private ArgumentCaptor<DataSharingService.Observer> mSharingObserverCaptor;
     @Captor private ArgumentCaptor<TabModelActionListener> mTabModelActionListenerCaptor;
     @Captor private ArgumentCaptor<Callback<TabClosureParams>> mTabRemoverCallbackCaptor;
     @Captor private ArgumentCaptor<List<Tab>> mTabListCaptor;
     @Captor private ArgumentCaptor<List<Animator>> mAnimationListCaptor;
-    @Captor private ArgumentCaptor<RectProvider> mRectProviderCaptor;
 
     private Activity mActivity;
     private Context mContext;
     private SharedGroupTestHelper mSharedGroupTestHelper;
+
     // TODO(crbug.com/369736293): Verify usages and remove duplicate implementations of
     // `TestTabModel` for tab model.
     private final TestTabModel mModel = spy(new TestTabModel());
     private final TestTabRemover mTabRemover = spy(new TestTabRemover());
     private StripLayoutHelper mStripLayoutHelper;
     private boolean mIncognito;
+    private static final String[] TEST_TAB_TITLES = {"Tab 1", "Tab 2", "Tab 3", "", null};
+    private static final String EXPECTED_TAB = "The view should be a tab.";
+    private static final String EXPECTED_TITLE = "The view should be a title.";
+    private static final String EXPECTED_NON_TITLE = "The view should not be a title.";
+    private static final String IDENTIFIER = "Tab";
+    private static final String IDENTIFIER_SELECTED = "Selected Tab";
+    private static final String INCOGNITO_IDENTIFIER = "Incognito Tab";
+    private static final String INCOGNITO_IDENTIFIER_SELECTED = "Selected Incognito Tab";
+    private static final float STRIP_WIDTH = 800.f;
+    private static final float STRIP_WIDTH_LANDSCAPE = 1200.f;
+    private static final float STRIP_HEIGHT = 40.f;
+    private static final float TAB_WIDTH_1 = 140.f;
+    private static final float TAB_WIDTH_SMALL = 108.f;
+    private static final float TAB_WIDTH_MEDIUM = 156.f;
+    private static final long TIMESTAMP = 5000;
+    private static final float NEW_TAB_BTN_X_RTL = 100.f;
+    private static final float NEW_TAB_BTN_X = 700.f;
+    private static final float NEW_TAB_BTN_Y = 1400.f;
+    private static final float NEW_TAB_BTN_WIDTH = 100.f;
+    private static final float NEW_TAB_BTN_HEIGHT = 100.f;
+    private static final float PADDING_LEFT = 10.f;
+    private static final float PADDING_RIGHT = 20.f;
+    private static final float PADDING_TOP = 20.f;
+    private static final float REORDER_OVERLAP_SWITCH_PERCENTAGE = 0.53f;
+    private static final float LONG_PRESS_X = 150.f;
+    private static final float LONG_PRESS_Y = 0.f;
+    private static final PointF DRAG_START_POINT = new PointF(70f, 20f);
+    private static final float EPSILON = 0.001f;
+    private static final String COLLABORATION_ID1 = "A";
+    private static final String SYNC_ID1 = "B";
+    private static final GURL URL = new GURL("http://example.com");
 
     /** Reset the environment before each test. */
     @Before
@@ -2771,7 +2767,8 @@ public class StripLayoutHelperTest {
         // Setup
         var tabs = initializeTest_ForTab();
         setupForIndividualTabContextMenu();
-        mStripLayoutHelper.setReorderDelegateForTesting(mReorderDelegate);
+        ReorderDelegate mockDelegate = mock(ReorderDelegate.class);
+        mStripLayoutHelper.setReorderDelegateForTesting(mockDelegate);
         mStripLayoutHelper.onTabStateInitialized();
         float dragDistance = 40f; // Greater than INITIATE_REORDER_DRAG_THRESHOLD
 
@@ -2781,7 +2778,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.drag(LONG_PRESS_X + dragDistance, LONG_PRESS_Y, dragDistance);
 
         // Verify we start reorder mode.
-        verify(mReorderDelegate)
+        verify(mockDelegate)
                 .startReorderMode(
                         any(),
                         any(),
@@ -2795,7 +2792,8 @@ public class StripLayoutHelperTest {
     public void testOnLongPress_OnTab_NoReorder() {
         // Setup
         var tabs = initializeTest_ForTab();
-        mStripLayoutHelper.setReorderDelegateForTesting(mReorderDelegate);
+        ReorderDelegate mockDelegate = mock(ReorderDelegate.class);
+        mStripLayoutHelper.setReorderDelegateForTesting(mockDelegate);
         mStripLayoutHelper.onTabStateInitialized();
         setupForIndividualTabContextMenu();
 
@@ -2803,8 +2801,7 @@ public class StripLayoutHelperTest {
         onLongPress_OnTab(tabs);
 
         // Verify we start reorder mode.
-        verify(mReorderDelegate, never())
-                .startReorderMode(any(), any(), any(), any(), any(), anyInt());
+        verify(mockDelegate, never()).startReorderMode(any(), any(), any(), any(), any(), anyInt());
     }
 
     @Test
@@ -2817,18 +2814,20 @@ public class StripLayoutHelperTest {
         // Verify we performed haptic feedback for a long-press.
         verify(mControlContainer, times(1))
                 .performHapticFeedback(eq(HapticFeedbackConstants.LONG_PRESS));
+        ArgumentCaptor<RectProvider> rectProviderArgumentCaptor =
+                ArgumentCaptor.forClass(RectProvider.class);
         // Verify tab context menu is showing.
         List<Integer> expectedTabIds = Collections.singletonList(tabs[1].getTabId());
         verify(mTabContextMenuCoordinator)
                 .showMenu(
-                        mRectProviderCaptor.capture(),
+                        rectProviderArgumentCaptor.capture(),
                         argThat(anchorInfo -> anchorInfo.getAllTabIds().equals(expectedTabIds)));
         // Verify anchorView coordinates.
         StripLayoutView view = mStripLayoutHelper.getViewAtPositionX(10f, true);
         assertThat(view, instanceOf(StripLayoutTab.class));
         Rect expectedRect = new Rect();
         view.getAnchorRect(expectedRect);
-        Rect actualRect = mRectProviderCaptor.getValue().getRect();
+        Rect actualRect = rectProviderArgumentCaptor.getValue().getRect();
         assertEquals("Anchor view for menu is positioned incorrectly", expectedRect, actualRect);
     }
 
@@ -2853,15 +2852,17 @@ public class StripLayoutHelperTest {
         // Long press on tab.
         onLongPress_OnTab(tabs);
         // Set this up to capture rectProvider.
+        ArgumentCaptor<RectProvider> rectProviderArgumentCaptor =
+                ArgumentCaptor.forClass(RectProvider.class);
         // Verify tab context menu is showing.
-        verify(mTabContextMenuCoordinator).showMenu(mRectProviderCaptor.capture(), any());
+        verify(mTabContextMenuCoordinator).showMenu(rectProviderArgumentCaptor.capture(), any());
         // Verify anchorView coordinates.
         StripLayoutView view = mStripLayoutHelper.getViewAtPositionX(10f, true);
         assertThat(view, instanceOf(StripLayoutTab.class));
         Rect expectedRect = new Rect();
         view.getAnchorRect(expectedRect);
         expectedRect.offset(0, Math.round(densityForTest * PADDING_TOP));
-        Rect actualRect = mRectProviderCaptor.getValue().getRect();
+        Rect actualRect = rectProviderArgumentCaptor.getValue().getRect();
         assertEquals(
                 "Anchor view for menu should take into account top padding and screen density",
                 expectedRect,
@@ -2893,7 +2894,9 @@ public class StripLayoutHelperTest {
         // Long press on tab.
         onLongPress_OnTab(tabs);
 
-        verify(mTabContextMenuCoordinator).showMenu(mRectProviderCaptor.capture(), any());
+        ArgumentCaptor<RectProvider> rectProviderArgumentCaptor =
+                ArgumentCaptor.forClass(RectProvider.class);
+        verify(mTabContextMenuCoordinator).showMenu(rectProviderArgumentCaptor.capture(), any());
 
         // Verify anchorView coordinates are offset by controlContainer's location.
         StripLayoutView view = mStripLayoutHelper.getViewAtPositionX(10f, true);
@@ -2902,7 +2905,7 @@ public class StripLayoutHelperTest {
         view.getAnchorRect(expectedRect);
         expectedRect.offset(hostX, hostY);
 
-        Rect actualRect = mRectProviderCaptor.getValue().getRect();
+        Rect actualRect = rectProviderArgumentCaptor.getValue().getRect();
         assertEquals(
                 "Anchor view for menu should be offset by controlContainer's location",
                 expectedRect,
@@ -3002,8 +3005,11 @@ public class StripLayoutHelperTest {
         // Verify we performed haptic feedback for a long-press.
         verify(mControlContainer, times(1))
                 .performHapticFeedback(eq(HapticFeedbackConstants.LONG_PRESS));
+        ArgumentCaptor<RectProvider> rectProviderArgumentCaptor =
+                ArgumentCaptor.forClass(RectProvider.class);
         // Verify tab group context menu is showing.
-        verify(mTabGroupContextMenuCoordinator).showMenu(mRectProviderCaptor.capture(), any());
+        verify(mTabGroupContextMenuCoordinator)
+                .showMenu(rectProviderArgumentCaptor.capture(), any());
         // Verify anchorView coordinates.
         StripLayoutView view = mStripLayoutHelper.getViewAtPositionX(10f, true);
         assertTrue(view instanceof StripLayoutGroupTitle);
@@ -3014,7 +3020,7 @@ public class StripLayoutHelperTest {
                         Math.round(titleView.getDrawY()),
                         Math.round(titleView.getPaddedX() + titleView.getPaddedWidth()),
                         Math.round(titleView.getDrawY() + titleView.getHeight()));
-        Rect actualRect = mRectProviderCaptor.getValue().getRect();
+        Rect actualRect = rectProviderArgumentCaptor.getValue().getRect();
         assertEquals("Anchor view for menu is positioned incorrectly", expectedRect, actualRect);
     }
 
@@ -3151,14 +3157,15 @@ public class StripLayoutHelperTest {
         initializeTest(false, false, 0, 5);
 
         // Enter reorder mode and drag.
-        mStripLayoutHelper.setReorderDelegateForTesting(mReorderDelegate);
-        when(mReorderDelegate.getInReorderMode()).thenReturn(true);
+        ReorderDelegate mockDelegate = mock(ReorderDelegate.class);
+        mStripLayoutHelper.setReorderDelegateForTesting(mockDelegate);
+        when(mockDelegate.getInReorderMode()).thenReturn(true);
         float dragDistance = 100.f;
         float endX = 50.f + dragDistance;
         mStripLayoutHelper.drag(endX, 0f, dragDistance);
 
         // Verify we update reorder position.
-        verify(mReorderDelegate)
+        verify(mockDelegate)
                 .updateReorderPosition(
                         any(),
                         any(),
@@ -3182,14 +3189,15 @@ public class StripLayoutHelperTest {
         when(mModel.getTabAt(1).getView()).thenReturn(tabView);
 
         // Long press on second tab's close button.
+        TintedCompositorButton closeButton = mock(TintedCompositorButton.class);
         when(tabs[1].checkCloseHitTest(anyFloat(), anyFloat())).thenReturn(true);
-        when(tabs[1].getCloseButton()).thenReturn(mTintedCompositorButton);
-        when(mTintedCompositorButton.getParentView()).thenReturn(tabs[1]);
-        when(mTintedCompositorButton.getType()).thenReturn(ButtonType.TAB_CLOSE);
-        when(mTintedCompositorButton.handleLongClick())
+        when(tabs[1].getCloseButton()).thenReturn(closeButton);
+        when(closeButton.getParentView()).thenReturn(tabs[1]);
+        when(closeButton.getType()).thenReturn(ButtonType.TAB_CLOSE);
+        when(closeButton.handleLongClick())
                 .thenAnswer(
                         inv -> {
-                            mStripLayoutHelper.onLongClick(mTintedCompositorButton);
+                            mStripLayoutHelper.onLongClick(closeButton);
                             return true;
                         });
         mStripLayoutHelper.setTabAtPositionForTesting(tabs[1]);
@@ -3270,9 +3278,10 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.click(0, x, y, MotionEvent.BUTTON_SECONDARY, 0);
 
         // Verify that we show the strip context menu.
+        var rectProviderCaptor = ArgumentCaptor.forClass(RectProvider.class);
         verify(mTabStripContextMenuCoordinator)
-                .showMenu(mRectProviderCaptor.capture(), eq(mIncognito), any());
-        Rect rect = mRectProviderCaptor.getValue().getRect();
+                .showMenu(rectProviderCaptor.capture(), eq(mIncognito), any());
+        Rect rect = rectProviderCaptor.getValue().getRect();
         int tabWidthPx =
                 Math.round(
                         mStripLayoutHelper.getUnpinnedTabWidth()
@@ -5334,14 +5343,15 @@ public class StripLayoutHelperTest {
     public void testDrag_DragOntoSourceStrip() {
         // Setup and mark the active clicked tab.
         initializeTest(false, false, 0, 5);
-        mStripLayoutHelper.setReorderDelegateForTesting(mReorderDelegate);
-        when(mReorderDelegate.getInReorderMode()).thenReturn(true);
+        ReorderDelegate mockDelegate = mock(ReorderDelegate.class);
+        mStripLayoutHelper.setReorderDelegateForTesting(mockDelegate);
+        when(mockDelegate.getInReorderMode()).thenReturn(true);
 
         // Drag tab back onto strip.
         mStripLayoutHelper.handleDragEnter(0f, 0f, true, false);
 
         // Verify we continue reorder.
-        verify(mReorderDelegate)
+        verify(mockDelegate)
                 .updateReorderPosition(
                         any(),
                         any(),
@@ -6401,8 +6411,9 @@ public class StripLayoutHelperTest {
         var hoveredTab = mStripLayoutHelper.getStripLayoutTabsForTesting()[1];
 
         // Assume that animations are running.
-        when(mAnimator.isRunning()).thenReturn(true);
-        mStripLayoutHelper.setRunningAnimatorForTesting(mAnimator);
+        var animator = mock(Animator.class);
+        when(animator.isRunning()).thenReturn(true);
+        mStripLayoutHelper.setRunningAnimatorForTesting(animator);
         mStripLayoutHelper.updateLastHoveredTab(hoveredTab);
         verify(mTabHoverCardView, never()).show(any(), anyFloat(), anyFloat());
     }
@@ -6446,11 +6457,12 @@ public class StripLayoutHelperTest {
         verify(mModel).addTabGroupObserver(observer);
 
         // Set a new TabModel.
-        mStripLayoutHelper.setTabModel(mTabModel, mTabCreator, true);
+        TabModel newModel = mock(TabModel.class);
+        mStripLayoutHelper.setTabModel(newModel, mTabCreator, true);
 
         // Verify the observers have been updated as expected.
         verify(mModel).removeTabGroupObserver(observer);
-        verify(mTabModel).addTabGroupObserver(observer);
+        verify(newModel).addTabGroupObserver(observer);
     }
 
     @Test
@@ -6461,10 +6473,11 @@ public class StripLayoutHelperTest {
         groupTabs(1, 3, TAB_GROUP_ID_1);
 
         // Set a new LayerTitleCache.
-        mStripLayoutHelper.setLayerTitleCache(mNewTitleCache);
+        LayerTitleCache newTitleCache = mock(LayerTitleCache.class);
+        mStripLayoutHelper.setLayerTitleCache(newTitleCache);
 
         // Verify the observers have been updated as expected.
-        verify(mNewTitleCache).getTitleWidth(eq(false), eq(expectedTitle));
+        verify(newTitleCache).getTitleWidth(eq(false), eq(expectedTitle));
     }
 
     @Test

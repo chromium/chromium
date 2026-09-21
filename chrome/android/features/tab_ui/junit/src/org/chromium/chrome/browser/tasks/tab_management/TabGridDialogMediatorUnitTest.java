@@ -24,6 +24,7 @@ import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
@@ -220,7 +221,6 @@ public class TabGridDialogMediatorUnitTest {
     @Mock private View mCardView;
     @Mock private TabGridContextMenuCoordinator mTabGridContextMenuCoordinator;
     @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
-    @Mock private View mView1;
 
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     @Captor private ArgumentCaptor<TabGroupObserver> mTabGroupObserverCaptor;
@@ -236,7 +236,6 @@ public class TabGridDialogMediatorUnitTest {
     @Captor private ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
 
     @Captor private ArgumentCaptor<List<TabListEditorAction>> mTabListEditorActionListCaptor;
-    @Captor private ArgumentCaptor<String> mCategoryCaptor;
 
     private final MonotonicObservableSupplier<TabBookmarker> mTabBookmarkerSupplier =
             ObservableSuppliers.alwaysNull();
@@ -349,10 +348,11 @@ public class TabGridDialogMediatorUnitTest {
                 .createOrManageFlow(eq(EITHER_LOCAL_TAB_GROUP_ID), anyInt(), any());
 
         mModel.get(TabGridDialogProperties.SEND_FEEDBACK_RUNNABLE).run();
+        ArgumentCaptor<String> categoryCaptor = ArgumentCaptor.forClass(String.class);
         verify(mHelpAndFeedbackLauncher)
-                .showFeedback(eq(mActivity), isNull(), mCategoryCaptor.capture());
+                .showFeedback(eq(mActivity), isNull(), categoryCaptor.capture());
         assertTrue(
-                mCategoryCaptor
+                categoryCaptor
                         .getValue()
                         .contains(TabGridDialogMediator.SHARE_FEEDBACK_CATEGORY_SUFFIX));
     }
@@ -1397,7 +1397,7 @@ public class TabGridDialogMediatorUnitTest {
         // Mock that the dialog is hidden and animation source view is set to some mock view for
         // testing purpose.
         mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, false);
-        mModel.set(TabGridDialogProperties.ANIMATION_SOURCE_VIEW, mView1);
+        mModel.set(TabGridDialogProperties.ANIMATION_SOURCE_VIEW, mock(View.class));
         // Mock that tab1 and tab2 are in a group.
         List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         createTabGroup(tabGroup, TAB_GROUP_ID);

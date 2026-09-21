@@ -39,7 +39,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -137,7 +136,6 @@ public class NewTabAnimationLayoutUnitTest {
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
     @Mock private View mBottomBar;
     @Mock private View mBottomBarTabSwitcherButton;
-    @Captor private ArgumentCaptor<NewForegroundTabAnimationHostView> mViewCaptor;
     private SceneLayer mSceneLayer;
 
     private final SettableNullableObservableSupplier<Tab> mCurrentTabSupplier =
@@ -498,8 +496,10 @@ public class NewTabAnimationLayoutUnitTest {
                 /* originY= */ 0f);
 
         // Capture NewForegroundTabAnimationHostView
-        verify(mAnimationHostView).addView(mViewCaptor.capture());
-        NewForegroundTabAnimationHostView hostView = mViewCaptor.getValue();
+        ArgumentCaptor<NewForegroundTabAnimationHostView> viewCaptor =
+                ArgumentCaptor.forClass(NewForegroundTabAnimationHostView.class);
+        verify(mAnimationHostView).addView(viewCaptor.capture());
+        NewForegroundTabAnimationHostView hostView = viewCaptor.getValue();
 
         // Use reflection to access private mInitialRect
         Field initialRectField =
@@ -555,8 +555,10 @@ public class NewTabAnimationLayoutUnitTest {
                 /* originY= */ 0f);
 
         // Capture NewForegroundTabAnimationHostView
-        verify(mAnimationHostView).addView(mViewCaptor.capture());
-        NewForegroundTabAnimationHostView hostView = mViewCaptor.getValue();
+        ArgumentCaptor<NewForegroundTabAnimationHostView> viewCaptor =
+                ArgumentCaptor.forClass(NewForegroundTabAnimationHostView.class);
+        verify(mAnimationHostView).addView(viewCaptor.capture());
+        NewForegroundTabAnimationHostView hostView = viewCaptor.getValue();
 
         // Use reflection to access private mInitialRect
         Field initialRectField =
@@ -609,8 +611,10 @@ public class NewTabAnimationLayoutUnitTest {
                 /* originY= */ 0f);
 
         // Capture NewForegroundTabAnimationHostView
-        verify(mAnimationHostView).addView(mViewCaptor.capture());
-        NewForegroundTabAnimationHostView hostView = mViewCaptor.getValue();
+        ArgumentCaptor<NewForegroundTabAnimationHostView> viewCaptor =
+                ArgumentCaptor.forClass(NewForegroundTabAnimationHostView.class);
+        verify(mAnimationHostView).addView(viewCaptor.capture());
+        NewForegroundTabAnimationHostView hostView = viewCaptor.getValue();
 
         // Use reflection to access private mInitialRect
         Field initialRectField =
@@ -666,8 +670,10 @@ public class NewTabAnimationLayoutUnitTest {
                 /* originY= */ 0f);
 
         // Capture NewForegroundTabAnimationHostView
-        verify(mAnimationHostView).addView(mViewCaptor.capture());
-        NewForegroundTabAnimationHostView hostView = mViewCaptor.getValue();
+        ArgumentCaptor<NewForegroundTabAnimationHostView> viewCaptor =
+                ArgumentCaptor.forClass(NewForegroundTabAnimationHostView.class);
+        verify(mAnimationHostView).addView(viewCaptor.capture());
+        NewForegroundTabAnimationHostView hostView = viewCaptor.getValue();
 
         // Use reflection to access private mInitialRect
         Field initialRectField =
@@ -727,8 +733,10 @@ public class NewTabAnimationLayoutUnitTest {
                 /* originY= */ 0f);
 
         // Capture NewForegroundTabAnimationHostView
-        verify(mAnimationHostView).addView(mViewCaptor.capture());
-        NewForegroundTabAnimationHostView hostView = mViewCaptor.getValue();
+        ArgumentCaptor<NewForegroundTabAnimationHostView> viewCaptor =
+                ArgumentCaptor.forClass(NewForegroundTabAnimationHostView.class);
+        verify(mAnimationHostView).addView(viewCaptor.capture());
+        NewForegroundTabAnimationHostView hostView = viewCaptor.getValue();
 
         // Use reflection to access private mInitialRect
         Field initialRectField =
@@ -785,8 +793,10 @@ public class NewTabAnimationLayoutUnitTest {
                 /* originY= */ 0f);
 
         // Capture NewForegroundTabAnimationHostView
-        verify(mAnimationHostView).addView(mViewCaptor.capture());
-        NewForegroundTabAnimationHostView hostView = mViewCaptor.getValue();
+        ArgumentCaptor<NewForegroundTabAnimationHostView> viewCaptor =
+                ArgumentCaptor.forClass(NewForegroundTabAnimationHostView.class);
+        verify(mAnimationHostView).addView(viewCaptor.capture());
+        NewForegroundTabAnimationHostView hostView = viewCaptor.getValue();
 
         // Use reflection to access private mInitialRect
         Field initialRectField =
@@ -852,8 +862,10 @@ public class NewTabAnimationLayoutUnitTest {
                 /* originY= */ 0f);
 
         // Capture NewForegroundTabAnimationHostView
-        verify(mAnimationHostView).addView(mViewCaptor.capture());
-        NewForegroundTabAnimationHostView hostView = mViewCaptor.getValue();
+        ArgumentCaptor<NewForegroundTabAnimationHostView> viewCaptor =
+                ArgumentCaptor.forClass(NewForegroundTabAnimationHostView.class);
+        verify(mAnimationHostView).addView(viewCaptor.capture());
+        NewForegroundTabAnimationHostView hostView = viewCaptor.getValue();
 
         // Use reflection to access private mInitialRect
         Field initialRectField =
@@ -919,8 +931,10 @@ public class NewTabAnimationLayoutUnitTest {
                 /* originY= */ 0f);
 
         // Capture NewForegroundTabAnimationHostView
-        verify(mAnimationHostView).addView(mViewCaptor.capture());
-        NewForegroundTabAnimationHostView hostView = mViewCaptor.getValue();
+        ArgumentCaptor<NewForegroundTabAnimationHostView> viewCaptor =
+                ArgumentCaptor.forClass(NewForegroundTabAnimationHostView.class);
+        verify(mAnimationHostView).addView(viewCaptor.capture());
+        NewForegroundTabAnimationHostView hostView = viewCaptor.getValue();
 
         // Use reflection to access private mInitialRect
         Field initialRectField =
@@ -1000,8 +1014,10 @@ public class NewTabAnimationLayoutUnitTest {
                 /* originY= */ 0f);
 
         // Capture NewForegroundTabAnimationHostView
-        verify(mAnimationHostView).addView(mViewCaptor.capture());
-        NewForegroundTabAnimationHostView hostView = mViewCaptor.getValue();
+        ArgumentCaptor<NewForegroundTabAnimationHostView> viewCaptor =
+                ArgumentCaptor.forClass(NewForegroundTabAnimationHostView.class);
+        verify(mAnimationHostView).addView(viewCaptor.capture());
+        NewForegroundTabAnimationHostView hostView = viewCaptor.getValue();
 
         // Use reflection to access private mInitialRect
         Field initialRectField =

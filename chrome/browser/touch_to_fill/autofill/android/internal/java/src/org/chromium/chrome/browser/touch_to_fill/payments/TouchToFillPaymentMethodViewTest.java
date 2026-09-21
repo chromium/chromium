@@ -464,9 +464,6 @@ public class TouchToFillPaymentMethodViewTest {
     @Mock private Runnable mBackPressHandler;
     @Mock private FillableItemCollectionInfo mItemCollectionInfo;
     @Mock private TouchToFillResourceProvider mResourceProvider;
-    @Mock private Runnable mRunnable;
-    @Mock private Runnable mAcceptCallback;
-    @Mock private Runnable mCancelCallback;
 
     private BottomSheetController mBottomSheetController;
     private BottomSheetTestSupport mSheetTestSupport;
@@ -851,6 +848,7 @@ public class TouchToFillPaymentMethodViewTest {
     @MediumTest
     @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID})
     public void testCreditCardSuggestionViewProcessesClicksThroughObscuredSurfaces() {
+        Runnable actionCallback = mock(Runnable.class);
         runOnUiThreadBlocking(
                 () -> {
                     mTouchToFillPaymentMethodModel
@@ -861,23 +859,24 @@ public class TouchToFillPaymentMethodViewTest {
                                             createCardSuggestionModel(
                                                     NICKNAMED_VISA_SUGGESTION,
                                                     mItemCollectionInfo,
-                                                    mRunnable)));
+                                                    actionCallback)));
                     mTouchToFillPaymentMethodModel
                             .get(SHEET_ITEMS)
-                            .add(new ListItem(FILL_BUTTON, createFillButtonModel(mRunnable)));
+                            .add(new ListItem(FILL_BUTTON, createFillButtonModel(actionCallback)));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
         onView(withText(NICKNAMED_VISA_SUGGESTION.getLabel()))
                 .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
-        waitForEvent(mRunnable).run();
+        waitForEvent(actionCallback).run();
     }
 
     @Test
     @MediumTest
     @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID})
     public void testAcceptButtonProcessesClicksThroughObscuredSurfaces() {
+        Runnable actionCallback = mock(Runnable.class);
         runOnUiThreadBlocking(
                 () -> {
                     mTouchToFillPaymentMethodModel
@@ -888,17 +887,17 @@ public class TouchToFillPaymentMethodViewTest {
                                             createCardSuggestionModel(
                                                     NICKNAMED_VISA_SUGGESTION,
                                                     mItemCollectionInfo,
-                                                    mRunnable)));
+                                                    actionCallback)));
                     mTouchToFillPaymentMethodModel
                             .get(SHEET_ITEMS)
-                            .add(new ListItem(FILL_BUTTON, createFillButtonModel(mRunnable)));
+                            .add(new ListItem(FILL_BUTTON, createFillButtonModel(actionCallback)));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
         onView(withText(getString(R.string.autofill_payment_method_continue_button)))
                 .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
-        waitForEvent(mRunnable).run();
+        waitForEvent(actionCallback).run();
     }
 
     @Test
@@ -1178,42 +1177,44 @@ public class TouchToFillPaymentMethodViewTest {
     @MediumTest
     @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID})
     public void testIbanViewProcessesTouchEvents() {
+        Runnable actionCallback = mock(Runnable.class);
         runOnUiThreadBlocking(
                 () -> {
                     mTouchToFillPaymentMethodModel
                             .get(SHEET_ITEMS)
-                            .add(new ListItem(IBAN, createIbanModel(LOCAL_IBAN, mRunnable)));
+                            .add(new ListItem(IBAN, createIbanModel(LOCAL_IBAN, actionCallback)));
                     mTouchToFillPaymentMethodModel
                             .get(SHEET_ITEMS)
-                            .add(new ListItem(FILL_BUTTON, createFillButtonModel(mRunnable)));
+                            .add(new ListItem(FILL_BUTTON, createFillButtonModel(actionCallback)));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
         onView(withText(LOCAL_IBAN.getLabel()))
                 .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
-        waitForEvent(mRunnable).run();
+        waitForEvent(actionCallback).run();
     }
 
     @Test
     @MediumTest
     @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID})
     public void testIbanAcceptButtonProcessesTouchEvents() {
+        Runnable actionCallback = mock(Runnable.class);
         runOnUiThreadBlocking(
                 () -> {
                     mTouchToFillPaymentMethodModel
                             .get(SHEET_ITEMS)
-                            .add(new ListItem(IBAN, createIbanModel(LOCAL_IBAN, mRunnable)));
+                            .add(new ListItem(IBAN, createIbanModel(LOCAL_IBAN, actionCallback)));
                     mTouchToFillPaymentMethodModel
                             .get(SHEET_ITEMS)
-                            .add(new ListItem(FILL_BUTTON, createFillButtonModel(mRunnable)));
+                            .add(new ListItem(FILL_BUTTON, createFillButtonModel(actionCallback)));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
         onView(withText(getString(R.string.autofill_payment_method_continue_button)))
                 .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
-        waitForEvent(mRunnable).run();
+        waitForEvent(actionCallback).run();
     }
 
     @Test
@@ -1295,6 +1296,7 @@ public class TouchToFillPaymentMethodViewTest {
     @Test
     @MediumTest
     public void testLoyaltyCardTouchToFillItem() {
+        Runnable actionCallback = mock(Runnable.class);
         runOnUiThreadBlocking(
                 () -> {
                     mTouchToFillPaymentMethodModel
@@ -1302,7 +1304,8 @@ public class TouchToFillPaymentMethodViewTest {
                             .add(
                                     new ListItem(
                                             LOYALTY_CARD,
-                                            createLoyaltyCardModel(CVS_LOYALTY_CARD, mRunnable)));
+                                            createLoyaltyCardModel(
+                                                    CVS_LOYALTY_CARD, actionCallback)));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -1320,12 +1323,13 @@ public class TouchToFillPaymentMethodViewTest {
 
         onView(withText(CVS_LOYALTY_CARD.getLoyaltyCardNumber()))
                 .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
-        waitForEvent(mRunnable).run();
+        waitForEvent(actionCallback).run();
     }
 
     @Test
     @MediumTest
     public void testAutofillLoyaltyCardIsClickable() {
+        Runnable actionCallback = mock(Runnable.class);
         runOnUiThreadBlocking(
                 () -> {
                     mTouchToFillPaymentMethodModel
@@ -1333,7 +1337,8 @@ public class TouchToFillPaymentMethodViewTest {
                             .add(
                                     new ListItem(
                                             LOYALTY_CARD,
-                                            createLoyaltyCardModel(CVS_LOYALTY_CARD, mRunnable)));
+                                            createLoyaltyCardModel(
+                                                    CVS_LOYALTY_CARD, actionCallback)));
                     mTouchToFillPaymentMethodModel
                             .get(SHEET_ITEMS)
                             .add(
@@ -1341,19 +1346,20 @@ public class TouchToFillPaymentMethodViewTest {
                                             FILL_BUTTON,
                                             createButtonModel(
                                                     R.string.autofill_loyalty_card_autofill_button,
-                                                    mRunnable)));
+                                                    actionCallback)));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
         onView(withText(getString(R.string.autofill_loyalty_card_autofill_button)))
                 .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
-        waitForEvent(mRunnable).run();
+        waitForEvent(actionCallback).run();
     }
 
     @Test
     @MediumTest
     public void testAllLoyaltyCardsItem() {
+        Runnable actionCallback = mock(Runnable.class);
         runOnUiThreadBlocking(
                 () -> {
                     mTouchToFillPaymentMethodModel
@@ -1361,7 +1367,7 @@ public class TouchToFillPaymentMethodViewTest {
                             .add(
                                     new ListItem(
                                             ALL_LOYALTY_CARDS,
-                                            createAllLoyaltyCardsItemModel(mRunnable)));
+                                            createAllLoyaltyCardsItemModel(actionCallback)));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -1376,19 +1382,20 @@ public class TouchToFillPaymentMethodViewTest {
 
         onView(withText(getString(R.string.autofill_bottom_sheet_all_your_loyalty_cards)))
                 .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
-        waitForEvent(mRunnable).run();
+        waitForEvent(actionCallback).run();
     }
 
     @Test
     @MediumTest
     public void testAllLoyaltyCardsScreen() {
+        Runnable actionCallback = mock(Runnable.class);
         runOnUiThreadBlocking(
                 () -> {
                     ModelList allLoyaltyCards = new ModelList();
                     allLoyaltyCards.add(
                             new ListItem(
                                     LOYALTY_CARD,
-                                    createLoyaltyCardModel(CVS_LOYALTY_CARD, mRunnable)));
+                                    createLoyaltyCardModel(CVS_LOYALTY_CARD, actionCallback)));
                     mTouchToFillPaymentMethodModel.set(CURRENT_SCREEN, ALL_LOYALTY_CARDS_SCREEN);
                     mTouchToFillPaymentMethodModel.set(SHEET_ITEMS, allLoyaltyCards);
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
@@ -1425,7 +1432,7 @@ public class TouchToFillPaymentMethodViewTest {
         // Verify that the loyalty card is clickable.
         onView(withText(CVS_LOYALTY_CARD.getLoyaltyCardNumber()))
                 .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
-        waitForEvent(mRunnable).run();
+        waitForEvent(actionCallback).run();
 
         onView(withId(R.id.all_loyalty_cards_back_image_button))
                 .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
@@ -1441,6 +1448,7 @@ public class TouchToFillPaymentMethodViewTest {
     @DisabledTest(message = "crbug.com/523228313")
     public void testAllLoyaltyCardsScreenWithManyLoyaltyCards() {
         final int loyaltyCardNumber = 25;
+        Runnable actionCallback = mock(Runnable.class);
         runOnUiThreadBlocking(
                 () -> {
                     ModelList allLoyaltyCards = new ModelList();
@@ -1449,7 +1457,7 @@ public class TouchToFillPaymentMethodViewTest {
                         allLoyaltyCards.add(
                                 new ListItem(
                                         LOYALTY_CARD,
-                                        createLoyaltyCardModel(CVS_LOYALTY_CARD, mRunnable)));
+                                        createLoyaltyCardModel(CVS_LOYALTY_CARD, actionCallback)));
                     }
                     mTouchToFillPaymentMethodModel.set(CURRENT_SCREEN, ALL_LOYALTY_CARDS_SCREEN);
                     mTouchToFillPaymentMethodModel.set(SHEET_ITEMS, allLoyaltyCards);
@@ -1543,6 +1551,8 @@ public class TouchToFillPaymentMethodViewTest {
     @Test
     @MediumTest
     public void testBnplIssuerTosFooter() {
+        Runnable acceptCallback = mock(Runnable.class);
+        Runnable cancelCallback = mock(Runnable.class);
         runOnUiThreadBlocking(
                 () -> {
                     ModelList bnplTosFooter = new ModelList();
@@ -1552,14 +1562,14 @@ public class TouchToFillPaymentMethodViewTest {
                                     FILL_BUTTON,
                                     createButtonModel(
                                             R.string.autofill_bnpl_tos_ok_button_label,
-                                            mAcceptCallback)));
+                                            acceptCallback)));
                     bnplTosFooter.add(
                             new ListItem(
                                     TEXT_BUTTON,
                                     createButtonModel(
                                             R.string
                                                     .autofill_bnpl_tos_bottom_sheet_cancel_button_label,
-                                            mCancelCallback)));
+                                            cancelCallback)));
                     mTouchToFillPaymentMethodModel.set(CURRENT_SCREEN, BNPL_ISSUER_TOS_SCREEN);
                     mTouchToFillPaymentMethodModel.set(SHEET_ITEMS, bnplTosFooter);
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
@@ -1591,10 +1601,10 @@ public class TouchToFillPaymentMethodViewTest {
                 is(getString(R.string.autofill_bnpl_tos_bottom_sheet_cancel_button_label)));
 
         onView(is(acceptButton)).perform(click());
-        waitForEvent(mAcceptCallback).run();
+        waitForEvent(acceptCallback).run();
 
         onView(is(cancelButton)).perform(click());
-        waitForEvent(mCancelCallback).run();
+        waitForEvent(cancelCallback).run();
     }
 
     @Test
@@ -1637,6 +1647,7 @@ public class TouchToFillPaymentMethodViewTest {
     @Test
     @MediumTest
     public void testBnplClickIsHandled() {
+        Runnable actionCallback = mock(Runnable.class);
         runOnUiThreadBlocking(
                 () -> {
                     mTouchToFillPaymentMethodModel
@@ -1647,13 +1658,13 @@ public class TouchToFillPaymentMethodViewTest {
                                             createBnplSuggestionModel(
                                                     BNPL_SUGGESTION,
                                                     mItemCollectionInfo,
-                                                    mRunnable)));
+                                                    actionCallback)));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
         onView(withText(BNPL_SUGGESTION.getLabel())).perform(createClickActionWithFlags(0));
-        waitForEvent(mRunnable).run();
+        waitForEvent(actionCallback).run();
     }
 
     @Test
@@ -1732,6 +1743,7 @@ public class TouchToFillPaymentMethodViewTest {
     @Test
     @MediumTest
     public void testDeactivatedBnplClickIsIgnored() {
+        Runnable actionCallback = mock(Runnable.class);
         runOnUiThreadBlocking(
                 () -> {
                     mTouchToFillPaymentMethodModel
@@ -1742,14 +1754,14 @@ public class TouchToFillPaymentMethodViewTest {
                                             createBnplSuggestionModel(
                                                     DEACTIVATED_BNPL_SUGGESTION,
                                                     mItemCollectionInfo,
-                                                    mRunnable)));
+                                                    actionCallback)));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
         onView(withText(DEACTIVATED_BNPL_SUGGESTION.getLabel()))
                 .perform(createClickActionWithFlags(0));
-        verify(mRunnable, never()).run();
+        verify(actionCallback, never()).run();
     }
 
     @Test
@@ -1791,6 +1803,7 @@ public class TouchToFillPaymentMethodViewTest {
     @Test
     @MediumTest
     public void testBnplSelectionProgressHeaderBackButtonDisabled() {
+        Runnable actionCallback = mock(Runnable.class);
         runOnUiThreadBlocking(
                 () -> {
                     mTouchToFillPaymentMethodModel
@@ -1799,7 +1812,8 @@ public class TouchToFillPaymentMethodViewTest {
                                     new ListItem(
                                             BNPL_SELECTION_PROGRESS_HEADER,
                                             createBnplSelectionProgressHeaderModel(
-                                                    /* backButtonEnabled= */ false, mRunnable)));
+                                                    /* backButtonEnabled= */ false,
+                                                    actionCallback)));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -1818,12 +1832,13 @@ public class TouchToFillPaymentMethodViewTest {
         assertThat(backButton.getAlpha(), is(GRAYED_OUT_OPACITY_ALPHA));
 
         onView(withId(R.id.bnpl_header_back_button)).perform(createClickActionWithFlags(0));
-        verify(mRunnable, never()).run();
+        verify(actionCallback, never()).run();
     }
 
     @Test
     @MediumTest
     public void testBnplSelectionProgressHeaderBackButtonEnabled() {
+        Runnable actionCallback = mock(Runnable.class);
         runOnUiThreadBlocking(
                 () -> {
                     mTouchToFillPaymentMethodModel
@@ -1832,7 +1847,8 @@ public class TouchToFillPaymentMethodViewTest {
                                     new ListItem(
                                             BNPL_SELECTION_PROGRESS_HEADER,
                                             createBnplSelectionProgressHeaderModel(
-                                                    /* backButtonEnabled= */ true, mRunnable)));
+                                                    /* backButtonEnabled= */ true,
+                                                    actionCallback)));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -1851,12 +1867,13 @@ public class TouchToFillPaymentMethodViewTest {
         assertThat(backButton.getAlpha(), is(COMPLETE_OPACITY_ALPHA));
 
         onView(withId(R.id.bnpl_header_back_button)).perform(createClickActionWithFlags(0));
-        waitForEvent(mRunnable).run();
+        waitForEvent(actionCallback).run();
     }
 
     @Test
     @MediumTest
     public void testBnplIssuerSelectionScreenWithLinkedIssuer() {
+        Runnable actionCallback = mock(Runnable.class);
         runOnUiThreadBlocking(
                 () -> {
                     ModelList bnplIssuerContexts = new ModelList();
@@ -1864,7 +1881,7 @@ public class TouchToFillPaymentMethodViewTest {
                             new ListItem(
                                     BNPL_ISSUER,
                                     createBnplIssuerContextModel(
-                                            BNPL_ISSUER_CONTEXT_AFFIRM_LINKED, mRunnable)));
+                                            BNPL_ISSUER_CONTEXT_AFFIRM_LINKED, actionCallback)));
                     mTouchToFillPaymentMethodModel.set(
                             CURRENT_SCREEN, BNPL_ISSUER_SELECTION_SCREEN);
                     mTouchToFillPaymentMethodModel.set(SHEET_ITEMS, bnplIssuerContexts);
@@ -1880,12 +1897,13 @@ public class TouchToFillPaymentMethodViewTest {
         assertThat(bnplIssuerContextsContainer.getAdapter().getItemCount(), is(1));
 
         View issuerItem = bnplIssuerContextsContainer.getChildAt(0);
-        assertBnplIssuerItemMatches(issuerItem, BNPL_ISSUER_CONTEXT_AFFIRM_LINKED, mRunnable);
+        assertBnplIssuerItemMatches(issuerItem, BNPL_ISSUER_CONTEXT_AFFIRM_LINKED, actionCallback);
     }
 
     @Test
     @MediumTest
     public void testBnplIssuerSelectionScreenWithUnlinkedIssuer() {
+        Runnable actionCallback = mock(Runnable.class);
         runOnUiThreadBlocking(
                 () -> {
                     ModelList bnplIssuerContexts = new ModelList();
@@ -1893,37 +1911,7 @@ public class TouchToFillPaymentMethodViewTest {
                             new ListItem(
                                     BNPL_ISSUER,
                                     createBnplIssuerContextModel(
-                                            BNPL_ISSUER_CONTEXT_AFFIRM_UNLINKED, mRunnable)));
-                    mTouchToFillPaymentMethodModel.set(
-                            CURRENT_SCREEN, BNPL_ISSUER_SELECTION_SCREEN);
-                    mTouchToFillPaymentMethodModel.set(SHEET_ITEMS, bnplIssuerContexts);
-                    mTouchToFillPaymentMethodModel.set(VISIBLE, true);
-                });
-        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
-
-        RecyclerView bnplIssuerContextsContainer =
-                mTouchToFillPaymentMethodView
-                        .getContentView()
-                        .findViewById(R.id.touch_to_fill_bnpl_issuer_selection_screen);
-        assertNotNull(bnplIssuerContextsContainer);
-        assertThat(bnplIssuerContextsContainer.getAdapter().getItemCount(), is(1));
-
-        View issuerItem = bnplIssuerContextsContainer.getChildAt(0);
-        assertBnplIssuerItemMatches(issuerItem, BNPL_ISSUER_CONTEXT_AFFIRM_UNLINKED, mRunnable);
-    }
-
-    @Test
-    @MediumTest
-    public void testBnplIssuerSelectionScreenWithIneligibleIssuer() {
-        runOnUiThreadBlocking(
-                () -> {
-                    ModelList bnplIssuerContexts = new ModelList();
-                    bnplIssuerContexts.add(
-                            new ListItem(
-                                    BNPL_ISSUER,
-                                    createBnplIssuerContextModel(
-                                            BNPL_ISSUER_CONTEXT_INELIGIBLE_NOT_SUPPORTED_BY_MERCHANT,
-                                            mRunnable)));
+                                            BNPL_ISSUER_CONTEXT_AFFIRM_UNLINKED, actionCallback)));
                     mTouchToFillPaymentMethodModel.set(
                             CURRENT_SCREEN, BNPL_ISSUER_SELECTION_SCREEN);
                     mTouchToFillPaymentMethodModel.set(SHEET_ITEMS, bnplIssuerContexts);
@@ -1940,7 +1928,41 @@ public class TouchToFillPaymentMethodViewTest {
 
         View issuerItem = bnplIssuerContextsContainer.getChildAt(0);
         assertBnplIssuerItemMatches(
-                issuerItem, BNPL_ISSUER_CONTEXT_INELIGIBLE_NOT_SUPPORTED_BY_MERCHANT, mRunnable);
+                issuerItem, BNPL_ISSUER_CONTEXT_AFFIRM_UNLINKED, actionCallback);
+    }
+
+    @Test
+    @MediumTest
+    public void testBnplIssuerSelectionScreenWithIneligibleIssuer() {
+        Runnable actionCallback = mock(Runnable.class);
+        runOnUiThreadBlocking(
+                () -> {
+                    ModelList bnplIssuerContexts = new ModelList();
+                    bnplIssuerContexts.add(
+                            new ListItem(
+                                    BNPL_ISSUER,
+                                    createBnplIssuerContextModel(
+                                            BNPL_ISSUER_CONTEXT_INELIGIBLE_NOT_SUPPORTED_BY_MERCHANT,
+                                            actionCallback)));
+                    mTouchToFillPaymentMethodModel.set(
+                            CURRENT_SCREEN, BNPL_ISSUER_SELECTION_SCREEN);
+                    mTouchToFillPaymentMethodModel.set(SHEET_ITEMS, bnplIssuerContexts);
+                    mTouchToFillPaymentMethodModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        RecyclerView bnplIssuerContextsContainer =
+                mTouchToFillPaymentMethodView
+                        .getContentView()
+                        .findViewById(R.id.touch_to_fill_bnpl_issuer_selection_screen);
+        assertNotNull(bnplIssuerContextsContainer);
+        assertThat(bnplIssuerContextsContainer.getAdapter().getItemCount(), is(1));
+
+        View issuerItem = bnplIssuerContextsContainer.getChildAt(0);
+        assertBnplIssuerItemMatches(
+                issuerItem,
+                BNPL_ISSUER_CONTEXT_INELIGIBLE_NOT_SUPPORTED_BY_MERCHANT,
+                actionCallback);
     }
 
     @Test
@@ -1984,6 +2006,7 @@ public class TouchToFillPaymentMethodViewTest {
     @MediumTest
     @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_AI_BASED_AMOUNT_EXTRACTION})
     public void testBnplProgressTerms_AiBasedAmountExtractionEnabled_HasSeenAiTerms() {
+        Runnable actionCallback = mock(Runnable.class);
         runOnUiThreadBlocking(
                 () -> {
                     mTouchToFillPaymentMethodModel
@@ -1994,7 +2017,7 @@ public class TouchToFillPaymentMethodViewTest {
                                                     mActivityTestRule.getActivity(),
                                                     /* didShowBoldedAiTerms= */ true,
                                                     /* isProgressUi= */ true,
-                                                    mRunnable));
+                                                    actionCallback));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -2012,7 +2035,7 @@ public class TouchToFillPaymentMethodViewTest {
         assertEquals(
                 "There should be exactly one character style span", 1, unclickableSpans.length);
         termsLabel.performClick();
-        verify(mRunnable, never()).run();
+        verify(actionCallback, never()).run();
 
         StyleSpan[] styleSpans = spanned.getSpans(0, spanned.length(), StyleSpan.class);
         assertEquals("There should be no style span", 0, styleSpans.length);
@@ -2022,6 +2045,7 @@ public class TouchToFillPaymentMethodViewTest {
     @MediumTest
     @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_AI_BASED_AMOUNT_EXTRACTION})
     public void testBnplProgressTerms_AiBasedAmountExtractionEnabled_HasNotSeenAiTerms() {
+        Runnable actionCallback = mock(Runnable.class);
         runOnUiThreadBlocking(
                 () -> {
                     mTouchToFillPaymentMethodModel
@@ -2032,7 +2056,7 @@ public class TouchToFillPaymentMethodViewTest {
                                                     mActivityTestRule.getActivity(),
                                                     /* didShowBoldedAiTerms= */ false,
                                                     /* isProgressUi= */ true,
-                                                    mRunnable));
+                                                    actionCallback));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -2050,13 +2074,14 @@ public class TouchToFillPaymentMethodViewTest {
                 spanned.getSpans(0, spanned.length(), CharacterStyle.class);
         assertEquals("There should be exactly two style spans", 2, unclickableSpans.length);
         termsLabel.performClick();
-        verify(mRunnable, never()).run();
+        verify(actionCallback, never()).run();
     }
 
     @Test
     @MediumTest
     @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_AI_BASED_AMOUNT_EXTRACTION})
     public void testBnplProgressTerms_AiBasedAmountExtractionDisabled() {
+        Runnable actionCallback = mock(Runnable.class);
         runOnUiThreadBlocking(
                 () -> {
                     mTouchToFillPaymentMethodModel
@@ -2067,7 +2092,7 @@ public class TouchToFillPaymentMethodViewTest {
                                                     mActivityTestRule.getActivity(),
                                                     /* didShowBoldedAiTerms= */ false,
                                                     /* isProgressUi= */ true,
-                                                    mRunnable));
+                                                    actionCallback));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -2086,13 +2111,14 @@ public class TouchToFillPaymentMethodViewTest {
         assertEquals(
                 "There should be exactly one character style span", 1, unclickableSpans.length);
         termsLabel.performClick();
-        verify(mRunnable, never()).run();
+        verify(actionCallback, never()).run();
     }
 
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_AI_BASED_AMOUNT_EXTRACTION})
     public void testBnplSelectionTerms_AiBasedAmountExtractionEnabled_HasSeenAiTerms() {
+        Runnable actionCallback = mock(Runnable.class);
         runOnUiThreadBlocking(
                 () -> {
                     mTouchToFillPaymentMethodModel
@@ -2103,7 +2129,7 @@ public class TouchToFillPaymentMethodViewTest {
                                                     mActivityTestRule.getActivity(),
                                                     /* didShowBoldedAiTerms= */ true,
                                                     /* isProgressUi= */ false,
-                                                    mRunnable));
+                                                    actionCallback));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -2120,7 +2146,7 @@ public class TouchToFillPaymentMethodViewTest {
                 spannableString.getSpans(0, spannableString.length(), ClickableSpan.class);
         assertEquals("There should be exactly one clickable span", 1, clickableSpans.length);
         clickableSpans[0].onClick(termsLabel);
-        waitForEvent(mRunnable).run();
+        waitForEvent(actionCallback).run();
 
         StyleSpan[] styleSpans =
                 spannableString.getSpans(0, spannableString.length(), StyleSpan.class);
@@ -2131,6 +2157,7 @@ public class TouchToFillPaymentMethodViewTest {
     @MediumTest
     @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_AI_BASED_AMOUNT_EXTRACTION})
     public void testBnplSelectionTerms_AiBasedAmountExtractionEnabled_HasNotSeenAiTerms() {
+        Runnable actionCallback = mock(Runnable.class);
         runOnUiThreadBlocking(
                 () -> {
                     mTouchToFillPaymentMethodModel
@@ -2141,7 +2168,7 @@ public class TouchToFillPaymentMethodViewTest {
                                                     mActivityTestRule.getActivity(),
                                                     /* didShowBoldedAiTerms= */ false,
                                                     /* isProgressUi= */ false,
-                                                    mRunnable));
+                                                    actionCallback));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -2158,7 +2185,7 @@ public class TouchToFillPaymentMethodViewTest {
                 spannableString.getSpans(0, spannableString.length(), ClickableSpan.class);
         assertEquals("There should be exactly one clickable span", 1, clickableSpans.length);
         clickableSpans[0].onClick(termsLabel);
-        waitForEvent(mRunnable).run();
+        waitForEvent(actionCallback).run();
 
         StyleSpan[] styleSpans =
                 spannableString.getSpans(0, spannableString.length(), StyleSpan.class);
@@ -2169,6 +2196,7 @@ public class TouchToFillPaymentMethodViewTest {
     @MediumTest
     @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_AI_BASED_AMOUNT_EXTRACTION})
     public void testBnplSelectionTerms_AiBasedAmountExtractionDisabled() {
+        Runnable actionCallback = mock(Runnable.class);
         runOnUiThreadBlocking(
                 () -> {
                     mTouchToFillPaymentMethodModel
@@ -2179,7 +2207,7 @@ public class TouchToFillPaymentMethodViewTest {
                                                     mActivityTestRule.getActivity(),
                                                     /* didShowBoldedAiTerms= */ false,
                                                     /* isProgressUi= */ false,
-                                                    mRunnable));
+                                                    actionCallback));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -2196,7 +2224,7 @@ public class TouchToFillPaymentMethodViewTest {
                 spannableString.getSpans(0, spannableString.length(), ClickableSpan.class);
         assertEquals("There should be exactly one clickable span", 1, spans.length);
         spans[0].onClick(termsLabel);
-        waitForEvent(mRunnable).run();
+        waitForEvent(actionCallback).run();
     }
 
     @Test

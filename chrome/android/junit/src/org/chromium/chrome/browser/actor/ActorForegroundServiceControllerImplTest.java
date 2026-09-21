@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -65,9 +66,6 @@ public class ActorForegroundServiceControllerImplTest {
     @Mock private SettingsActivity mSettingsActivity;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private Tab mTab;
-    @Mock private Profile mProfile;
-    @Mock private ActorKeyedService mActorKeyedService;
-    @Mock private ActorTask mTask;
 
     private ActorForegroundServiceControllerImpl mController;
     private ShadowApplication mShadowApplication;
@@ -409,8 +407,10 @@ public class ActorForegroundServiceControllerImplTest {
         Intent actorIntent = new Intent(Intent.ACTION_VIEW);
         actorIntent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, 123);
 
-        ProfileManager.setLastUsedProfileForTesting(mProfile);
-        ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
+        Profile profile = mock(Profile.class);
+        ProfileManager.setLastUsedProfileForTesting(profile);
+        ActorKeyedService actorKeyedService = mock(ActorKeyedService.class);
+        ActorKeyedServiceFactory.setForTesting(actorKeyedService);
 
         // When task does not exist, should return INVALID_TAB_ID.
         assertEquals(
@@ -418,8 +418,9 @@ public class ActorForegroundServiceControllerImplTest {
                 Tab.INVALID_TAB_ID,
                 ActorForegroundServiceController.resolveActorIntentTabId(actorIntent));
 
-        when(mActorKeyedService.getTask(123)).thenReturn(mTask);
-        when(mTask.getTargetTabId()).thenReturn(789);
+        ActorTask task = mock(ActorTask.class);
+        when(actorKeyedService.getTask(123)).thenReturn(task);
+        when(task.getTargetTabId()).thenReturn(789);
 
         assertEquals(
                 "Should resolve tab ID from task.getTargetTabId().",
@@ -431,18 +432,19 @@ public class ActorForegroundServiceControllerImplTest {
 
     @Test
     public void testActorTask_getTargetTabId() {
-        when(mTask.getTargetTabId()).thenCallRealMethod();
+        ActorTask task = mock(ActorTask.class);
+        when(task.getTargetTabId()).thenCallRealMethod();
 
-        when(mTask.getLastActuatedTabId()).thenReturn(789);
-        when(mTask.getTabs()).thenReturn(Collections.singleton(456));
-        assertEquals(789, mTask.getTargetTabId());
+        when(task.getLastActuatedTabId()).thenReturn(789);
+        when(task.getTabs()).thenReturn(Collections.singleton(456));
+        assertEquals(789, task.getTargetTabId());
 
         // Fall back to any associated tab when last actuated tab ID is invalid.
-        when(mTask.getLastActuatedTabId()).thenReturn(Tab.INVALID_TAB_ID);
-        assertEquals(456, mTask.getTargetTabId());
+        when(task.getLastActuatedTabId()).thenReturn(Tab.INVALID_TAB_ID);
+        assertEquals(456, task.getTargetTabId());
 
-        when(mTask.getTabs()).thenReturn(Collections.emptySet());
-        assertEquals(Tab.INVALID_TAB_ID, mTask.getTargetTabId());
+        when(task.getTabs()).thenReturn(Collections.emptySet());
+        assertEquals(Tab.INVALID_TAB_ID, task.getTargetTabId());
     }
 
     public ServiceConnection getServiceConnectionForTesting() {

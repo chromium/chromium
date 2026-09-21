@@ -18,7 +18,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -41,6 +40,7 @@ import org.chromium.components.sync.SyncService;
 /** Unit tests for {@link SigninSnackbarController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SigninSnackbarControllerTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private static final SigninAndHistorySyncCoordinator.Result SIGN_IN_AND_HISTORY_SYNC =
             new SigninAndHistorySyncCoordinator.Result(true, true);
     private static final SigninAndHistorySyncCoordinator.Result SIGN_IN_ONLY =
@@ -50,8 +50,6 @@ public class SigninSnackbarControllerTest {
     private static final SigninAndHistorySyncCoordinator.Result ABORTED =
             SigninAndHistorySyncCoordinator.Result.aborted();
 
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
     @Mock private Profile mProfile;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private SnackbarManager mSnackbarManager;
@@ -59,7 +57,6 @@ public class SigninSnackbarControllerTest {
     @Mock private SyncService mSyncService;
     @Mock private HistorySyncHelper mHistorySyncHelper;
     @Mock private SigninManager mSigninManager;
-    @Captor private ArgumentCaptor<Snackbar> mSnackbarCaptor;
 
     private final FakeIdentityManager mIdentityManager = new FakeIdentityManager();
     private ComponentActivity mActivity;
@@ -109,8 +106,9 @@ public class SigninSnackbarControllerTest {
                 mListener,
                 SIGN_IN_ONLY);
 
-        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
-        Snackbar snackbar = mSnackbarCaptor.getValue();
+        ArgumentCaptor<Snackbar> snackbarCaptor = ArgumentCaptor.forClass(Snackbar.class);
+        verify(mSnackbarManager).showSnackbar(snackbarCaptor.capture());
+        Snackbar snackbar = snackbarCaptor.getValue();
         assertThat(
                 "Snackbar text should contain the user's email.",
                 snackbar.getTextForTesting().toString(),

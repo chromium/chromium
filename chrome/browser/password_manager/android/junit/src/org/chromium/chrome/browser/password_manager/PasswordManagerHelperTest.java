@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -86,20 +87,27 @@ public class PasswordManagerHelperTest {
     // TODO(crbug.com/40854050): Use fakes for CredentialManagerLauncher.
     @Mock private CredentialManagerLauncherFactory mCredentialManagerLauncherFactoryMock;
     @Mock private CredentialManagerLauncher mCredentialManagerLauncherMock;
+
     @Mock private Profile mProfile;
+
     @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
+
     @Mock private SyncService mSyncServiceMock;
+
     @Mock private SettingsNavigation mSettingsNavigationMock;
+
     @Mock private PendingIntent mPendingIntentMock;
+
     // TODO(crbug.com/40854050): Use fake instead of mock
     @Mock private PasswordManagerBackendSupportHelper mBackendSupportHelperMock;
-    @Mock private LoadingModalDialogCoordinator mLoadingModalDialogCoordinator;
-    @Mock private PasswordCsvDownloadFlowController mPasswordCsvDownloadFlowController;
-    @Mock private ModalDialogManager.Presenter mModalDialogManagerPresenter;
 
     private ModalDialogManager mModalDialogManager;
+
+    @Mock private LoadingModalDialogCoordinator mLoadingModalDialogCoordinator;
     private LoadingModalDialogCoordinator.Observer mLoadingDialogCoordinatorObserver;
+
     private SettingsCustomTabLauncher mSettingsCustomTabLauncher;
+
     private PasswordManagerHelper mPasswordManagerHelper;
 
     @Before
@@ -117,7 +125,8 @@ public class PasswordManagerHelperTest {
                 .thenReturn(LoadingModalDialogCoordinator.State.PENDING);
         mModalDialogManager =
                 new ModalDialogManager(
-                        mModalDialogManagerPresenter, ModalDialogManager.ModalDialogType.APP);
+                        mock(ModalDialogManager.Presenter.class),
+                        ModalDialogManager.ModalDialogType.APP);
         doAnswer(
                         invocation -> {
                             mLoadingDialogCoordinatorObserver = invocation.getArgument(0);
@@ -628,8 +637,9 @@ public class PasswordManagerHelperTest {
                 Robolectric.buildActivity(BrowserUiTestFragmentActivity.class).setup().get();
         setUpUpdatableGmsCore(testActivity);
 
-        PasswordCsvDownloadFlowControllerFactory.setControllerForTesting(
-                mPasswordCsvDownloadFlowController);
+        PasswordCsvDownloadFlowController mockController =
+                mock(PasswordCsvDownloadFlowController.class);
+        PasswordCsvDownloadFlowControllerFactory.setControllerForTesting(mockController);
         mPasswordManagerHelper.showPasswordSettings(
                 testActivity,
                 ManagePasswordsReferrer.CHROME_SETTINGS,
@@ -638,7 +648,7 @@ public class PasswordManagerHelperTest {
                 TEST_NO_EMAIL_ADDRESS,
                 mSettingsCustomTabLauncher);
 
-        verify(mPasswordCsvDownloadFlowController)
+        verify(mockController)
                 .showDialogAndStartFlow(
                         eq(testActivity),
                         eq(mProfile),
@@ -657,8 +667,9 @@ public class PasswordManagerHelperTest {
                 Robolectric.buildActivity(BrowserUiTestFragmentActivity.class).setup().get();
         setUpUpdatableGmsCore(testActivity);
 
-        PasswordCsvDownloadFlowControllerFactory.setControllerForTesting(
-                mPasswordCsvDownloadFlowController);
+        PasswordCsvDownloadFlowController mockController =
+                mock(PasswordCsvDownloadFlowController.class);
+        PasswordCsvDownloadFlowControllerFactory.setControllerForTesting(mockController);
         mPasswordManagerHelper.showPasswordSettings(
                 testActivity,
                 ManagePasswordsReferrer.CHROME_SETTINGS,
@@ -667,7 +678,7 @@ public class PasswordManagerHelperTest {
                 TEST_NO_EMAIL_ADDRESS,
                 mSettingsCustomTabLauncher);
 
-        verify(mPasswordCsvDownloadFlowController)
+        verify(mockController)
                 .showDialogAndStartFlow(
                         eq(testActivity),
                         eq(mProfile),
@@ -685,8 +696,9 @@ public class PasswordManagerHelperTest {
         FragmentActivity testActivity =
                 Robolectric.buildActivity(BrowserUiTestFragmentActivity.class).setup().get();
 
-        PasswordCsvDownloadFlowControllerFactory.setControllerForTesting(
-                mPasswordCsvDownloadFlowController);
+        PasswordCsvDownloadFlowController mockController =
+                mock(PasswordCsvDownloadFlowController.class);
+        PasswordCsvDownloadFlowControllerFactory.setControllerForTesting(mockController);
         mPasswordManagerHelper.showPasswordSettings(
                 testActivity,
                 ManagePasswordsReferrer.CHROME_SETTINGS,
@@ -695,7 +707,7 @@ public class PasswordManagerHelperTest {
                 TEST_NO_EMAIL_ADDRESS,
                 mSettingsCustomTabLauncher);
 
-        verify(mPasswordCsvDownloadFlowController)
+        verify(mockController)
                 .showDialogAndStartFlow(
                         eq(testActivity),
                         eq(mProfile),

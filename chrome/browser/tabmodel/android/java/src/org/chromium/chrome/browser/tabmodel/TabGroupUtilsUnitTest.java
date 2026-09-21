@@ -16,6 +16,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -86,8 +87,6 @@ public class TabGroupUtilsUnitTest {
     @Mock TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJniMock;
     @Mock TabCreator mTabCreator;
     @Mock Profile mProfile;
-    @Mock private TabModelSelector mOtherSelector;
-    @Mock private TabModel mOtherModel;
 
     private Tab mTab1;
     private Tab mTab2;
@@ -295,12 +294,15 @@ public class TabGroupUtilsUnitTest {
         when(mTabModel.getTabGroupCount()).thenReturn(0);
         when(mTabModel.isIncognito()).thenReturn(false);
 
+        TabModelSelector otherSelector = mock(TabModelSelector.class);
+        TabModel otherModel = mock(TabModel.class);
+
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
-        when(mOtherSelector.getModel(false)).thenReturn(mOtherModel);
-        when(mOtherModel.getTabGroupCount()).thenReturn(2);
+        when(otherSelector.getModel(false)).thenReturn(otherModel);
+        when(otherModel.getTabGroupCount()).thenReturn(2);
 
         assertTrue(
-                TabGroupUtils.hasTabGroups(mTabModel, List.of(mTabModelSelector, mOtherSelector)));
+                TabGroupUtils.hasTabGroups(mTabModel, List.of(mTabModelSelector, otherSelector)));
         assertFalse(TabGroupUtils.hasTabGroups(mTabModel, (Collection<TabModelSelector>) null));
     }
 

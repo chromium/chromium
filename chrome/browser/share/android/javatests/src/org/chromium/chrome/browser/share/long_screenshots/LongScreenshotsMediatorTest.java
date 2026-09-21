@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.share.long_screenshots;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -54,6 +55,10 @@ public class LongScreenshotsMediatorTest {
      */
     private static final int MAX_ALLOWABLE_SCREENSHOT_DIMENSION = 4999;
 
+    private Activity mActivity;
+    private Bitmap mBitmap;
+    private LongScreenshotsMediator mMediator;
+
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
@@ -61,15 +66,14 @@ public class LongScreenshotsMediatorTest {
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Mock private View mView;
-    @Mock private EntryManager mManager;
-    @Mock private LongScreenshotsEntry mLongScreenshotsEntry;
-    @Mock private Runnable mRunnable;
-    @Captor private ArgumentCaptor<BitmapGeneratorObserver> mBitmapGeneratorObserverCaptor;
-    @Captor private ArgumentCaptor<LongScreenshotsEntry.EntryListener> mEntryListenerCaptor;
 
-    private Activity mActivity;
-    private Bitmap mBitmap;
-    private LongScreenshotsMediator mMediator;
+    @Mock private EntryManager mManager;
+
+    @Mock private LongScreenshotsEntry mLongScreenshotsEntry;
+
+    @Captor private ArgumentCaptor<BitmapGeneratorObserver> mBitmapGeneratorObserverCaptor;
+
+    @Captor private ArgumentCaptor<LongScreenshotsEntry.EntryListener> mEntryListenerCaptor;
 
     @Before
     public void setUp() {
@@ -253,19 +257,21 @@ public class LongScreenshotsMediatorTest {
     @Test
     @MediumTest
     public void testOnStatusChange_FailureCallsDoneCallback() {
-        mMediator.capture(mRunnable);
+        Runnable doneCallback = mock(Runnable.class);
+        mMediator.capture(doneCallback);
 
         verify(mManager).addBitmapGeneratorObserver(mBitmapGeneratorObserverCaptor.capture());
         BitmapGeneratorObserver generatorObserver = mBitmapGeneratorObserverCaptor.getValue();
 
         generatorObserver.onStatusChange(EntryStatus.GENERATION_ERROR);
-        verify(mRunnable).run();
+        verify(doneCallback).run();
     }
 
     @Test
     @MediumTest
     public void testOnEntry_FailureCallsDoneCallback() {
-        mMediator.capture(mRunnable);
+        Runnable doneCallback = mock(Runnable.class);
+        mMediator.capture(doneCallback);
 
         verify(mManager).addBitmapGeneratorObserver(mBitmapGeneratorObserverCaptor.capture());
         BitmapGeneratorObserver generatorObserver = mBitmapGeneratorObserverCaptor.getValue();
@@ -277,6 +283,6 @@ public class LongScreenshotsMediatorTest {
         EntryListener entryListener = mEntryListenerCaptor.getValue();
 
         entryListener.onResult(EntryStatus.GENERATION_ERROR);
-        verify(mRunnable).run();
+        verify(doneCallback).run();
     }
 }

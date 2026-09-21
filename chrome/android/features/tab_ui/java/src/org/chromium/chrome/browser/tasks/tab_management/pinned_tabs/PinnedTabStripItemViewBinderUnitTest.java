@@ -21,7 +21,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -45,7 +44,6 @@ public final class PinnedTabStripItemViewBinderUnitTest {
     @Mock private Drawable mDrawable;
     @Mock private TabFaviconFetcher mFaviconFetcher;
     @Mock private TabActionListener mMockTabActionListener;
-    @Captor private ArgumentCaptor<View.OnClickListener> mViewOnClickListenerCaptor;
 
     private Activity mActivity;
     private PropertyModel mModel;
@@ -111,8 +109,10 @@ public final class PinnedTabStripItemViewBinderUnitTest {
         mModel.set(TabProperties.TAB_CLICK_LISTENER, mMockTabActionListener);
         PinnedTabStripItemViewBinder.bind(
                 mModel, mPinnedTabStripItemView, TabProperties.TAB_CLICK_LISTENER);
-        verify(mPinnedTabStripItemView).setOnClickListener(mViewOnClickListenerCaptor.capture());
-        mViewOnClickListenerCaptor.getValue().onClick(mPinnedTabStripItemView);
+        ArgumentCaptor<View.OnClickListener> captor =
+                ArgumentCaptor.forClass(View.OnClickListener.class);
+        verify(mPinnedTabStripItemView).setOnClickListener(captor.capture());
+        captor.getValue().onClick(mPinnedTabStripItemView);
         verify(mMockTabActionListener).run(eq(mPinnedTabStripItemView), eq(1), any());
     }
 

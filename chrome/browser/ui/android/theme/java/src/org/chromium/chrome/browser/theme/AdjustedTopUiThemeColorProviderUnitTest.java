@@ -45,8 +45,6 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 /** Unit tests for {@link AdjustedTopUiThemeColorProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AdjustedTopUiThemeColorProviderUnitTest {
-    private static final @ColorInt int TAB_COLOR = Color.RED;
-
     @Rule public MockitoRule mMockitoJUnit = MockitoJUnit.rule();
 
     @Mock private Tab mTab;
@@ -54,11 +52,12 @@ public class AdjustedTopUiThemeColorProviderUnitTest {
     @Mock private NativePage mNativePage;
     @Mock private NtpThemeStateProvider mNtpThemeStateProvider;
     @Captor private ArgumentCaptor<NtpThemeStateProvider.Observer> mObserverCaptor;
-    @Captor private ArgumentCaptor<ColorStateList> mTintCaptor;
-    @Captor private ArgumentCaptor<ColorStateList> mActivityTintCaptor;
+
+    private static final @ColorInt int TAB_COLOR = Color.RED;
 
     private final SettableNonNullObservableSupplier<Integer> mActivityThemeColorSupplier =
             ObservableSuppliers.createNonNull(TAB_COLOR);
+
     private Context mContext;
     private AdjustedTopUiThemeColorProvider mAdjustedTopUiThemeColorProvider;
     private SettableNullableObservableSupplier<Tab> mTabSupplier;
@@ -162,12 +161,15 @@ public class AdjustedTopUiThemeColorProviderUnitTest {
         clearInvocations(mTintObserver);
         mObserverCaptor.getValue().onCustomBackgroundChanged();
 
+        ArgumentCaptor<ColorStateList> tintCaptor = ArgumentCaptor.forClass(ColorStateList.class);
+        ArgumentCaptor<ColorStateList> activityTintCaptor =
+                ArgumentCaptor.forClass(ColorStateList.class);
         verify(mTintObserver)
                 .onTintChanged(
-                        mTintCaptor.capture(),
-                        mActivityTintCaptor.capture(),
+                        tintCaptor.capture(),
+                        activityTintCaptor.capture(),
                         eq(adjustedBrandedColorScheme));
-        assertEquals(adjustedTint, mTintCaptor.getValue());
+        assertEquals(adjustedTint, tintCaptor.getValue());
 
         // Case NTP uses regular Tab's tint color.
         var themeColor =
@@ -178,10 +180,10 @@ public class AdjustedTopUiThemeColorProviderUnitTest {
 
         verify(mTintObserver)
                 .onTintChanged(
-                        mTintCaptor.capture(),
-                        mActivityTintCaptor.capture(),
+                        tintCaptor.capture(),
+                        activityTintCaptor.capture(),
                         eq(BrandedColorScheme.APP_DEFAULT));
-        assertEquals(themeColor.getDefaultColor(), mTintCaptor.getValue().getDefaultColor());
+        assertEquals(themeColor.getDefaultColor(), tintCaptor.getValue().getDefaultColor());
     }
 
     private void updateColorAndVerifyOnTintChange(

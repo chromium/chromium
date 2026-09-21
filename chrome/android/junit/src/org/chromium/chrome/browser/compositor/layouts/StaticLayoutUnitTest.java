@@ -77,12 +77,14 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({ChromeFeatureList.REMOVE_TAB_FOCUS_ON_SHOWING_AND_SELECT})
 public class StaticLayoutUnitTest {
+
     private static final int TAB1_ID = 0;
     private static final int TAB2_ID = 789;
     private static final int POSITION1 = 0;
     private static final int POSITION2 = 1;
     private static final String TAB1_URL = JUnitTestGURLs.URL_1.getSpec();
     private static final String TAB2_URL = JUnitTestGURLs.URL_2.getSpec();
+
     private static final int BACKGROUND_COLOR = Color.WHITE;
     private static final int TOOLBAR_BACKGROUND_COLOR = Color.BLUE;
     private static final int TEXT_BOX_BACKGROUND_COLOR = Color.BLACK;
@@ -90,7 +92,6 @@ public class StaticLayoutUnitTest {
     private static final int HEIGHT = 16;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
     @Mock private Context mContext;
     @Mock private Resources mResources;
     @Mock private DisplayMetrics mDisplayMetrics;
@@ -98,27 +99,32 @@ public class StaticLayoutUnitTest {
     @Mock private LayoutRenderHost mRenderHost;
     @Mock private LayoutManagerHost mViewHost;
     @Mock StaticTabSceneLayer mStaticTabSceneLayer;
+
     @Mock private TabContentManager mTabContentManager;
+
     @Mock private TabModelSelector mTabModelSelector;
     @Spy private TabModel mTabModel;
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
+
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
 
     @Captor
     private ArgumentCaptor<BrowserControlsStateProvider.Observer>
             mBrowserControlsStateProviderObserverCaptor;
 
-    @Mock private ToolbarThemeColorProvider mToolbarThemeColorProvider;
-    @Mock private View mTabView;
-    @Mock private NativePage mNativePage;
-    @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
-
     private final UserDataHost mUserDataHost = new UserDataHost();
+    @Mock private ToolbarThemeColorProvider mToolbarThemeColorProvider;
+
+    @Mock private View mTabView;
+
     private Tab mTab1;
     private Tab mTab2;
+    @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
+
     private final SettableNonNullObservableSupplier<Long> mFrameRequestSupplier =
             ObservableSuppliers.createNonNull(0L);
     private CompositorAnimationHandler mCompositorAnimationHandler;
+
     private StaticLayout mStaticLayout;
     private PropertyModel mModel;
     private SettableNonNullObservableSupplier<Boolean> mNeedsOffsetTagsSupplier;
@@ -303,8 +309,9 @@ public class StaticLayoutUnitTest {
     public void testTabSelectionNativeTab() {
         assertNotEquals(mTab2.getId(), mModel.get(LayoutTab.TAB_ID));
         doReturn(true).when(mTab2).isNativePage();
-        doReturn(BACKGROUND_COLOR).when(mNativePage).getBackgroundColor();
-        doReturn(mNativePage).when(mTab2).getNativePage();
+        NativePage nativePage = mock(NativePage.class);
+        doReturn(BACKGROUND_COLOR).when(nativePage).getBackgroundColor();
+        doReturn(nativePage).when(mTab2).getNativePage();
 
         getTabModelSelectorTabModelObserverFromCaptor()
                 .didSelectTab(mTab2, TabSelectionType.FROM_USER, TAB1_ID);

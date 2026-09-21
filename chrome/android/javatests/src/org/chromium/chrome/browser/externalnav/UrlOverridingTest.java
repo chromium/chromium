@@ -168,6 +168,14 @@ import java.util.concurrent.atomic.AtomicReference;
 })
 @DisableLeakChecks("crbug.com/527131099")
 public class UrlOverridingTest {
+    @Rule
+    public FreshCtaTransitTestRule mTabbedActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
+    @Rule public CustomTabActivityTestRule mCustomTabActivityRule = new CustomTabActivityTestRule();
+
     private static final String BASE_PATH = "/chrome/test/data/android/url_overriding/";
     private static final String HELLO_PAGE = BASE_PATH + "hello.html";
     private static final String NAVIGATION_FROM_TIMEOUT_PAGE =
@@ -239,12 +247,15 @@ public class UrlOverridingTest {
             BASE_PATH + "renavigate_frame_with_redirect.html";
     private static final String NAVIGATION_FROM_WINDOW_REDIRECT =
             BASE_PATH + "navigation_from_window_redirect.html";
+
     private static final String EXTERNAL_APP_URL =
             "intent://test/#Intent;scheme=externalappscheme;end;";
 
     private static final String OTHER_BROWSER_PACKAGE = "com.other.browser";
     private static final String TRUSTED_CCT_PACKAGE = "com.trusted.cct";
+
     private static final String EXTERNAL_APP_SCHEME = "externalappscheme";
+
     private static final String INTENT_LAUNCH_FROM_TAB_CREATION =
             "Android.Intent.IntentLaunchFromTabCreation";
 
@@ -264,16 +275,9 @@ public class UrlOverridingTest {
         int CSP = 2;
     }
 
-    @Rule
-    public FreshCtaTransitTestRule mTabbedActivityTestRule =
-            ChromeTransitTestRules.freshChromeTabbedActivityRule();
-
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
-    @Rule public CustomTabActivityTestRule mCustomTabActivityRule = new CustomTabActivityTestRule();
+    @Mock private RedirectHandler mRedirectHandler;
 
     @Spy private RedirectHandler mSpyRedirectHandler;
-    @Mock private RedirectHandler mRedirectHandler;
-    @Mock private ActorKeyedService mActorKeyedService;
 
     private static class TestTabObserver implements TabObserver {
         private final CallbackHelper mFinishCallback;
@@ -978,10 +982,11 @@ public class UrlOverridingTest {
     @EnableFeatures({ChromeFeatureList.GLIC})
     public void testNavigationWithFallbackURL_ActorTaskShouldBlock() throws Exception {
         GlicEnabling.setEnabledForTesting(true);
-        ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
+        ActorKeyedService mockActorService = Mockito.mock(ActorKeyedService.class);
+        ActorKeyedServiceFactory.setForTesting(mockActorService);
         WebPageStation ctaPage = mTabbedActivityTestRule.startOnBlankPage();
         // The current tab is attached to an active ActorTask.
-        when(mActorKeyedService.getActiveTaskIdOnTab(ctaPage.getTab().getId())).thenReturn(123);
+        when(mockActorService.getActiveTaskIdOnTab(ctaPage.getTab().getId())).thenReturn(123);
 
         String fallbackUrl = mTestServer.getURL(FALLBACK_LANDING_PATH);
         // Load a URL with a valid intent scheme and a fallback URL.

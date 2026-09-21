@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -49,7 +50,6 @@ public class ComposeplateCoordinatorUnitTest {
     @Mock private View mIncognitoButton;
     @Mock private View mComposeplateButton;
     @Mock private View.OnClickListener mOriginalOnClickListener;
-    @Mock private View mView;
 
     private Context mContext;
     private ComposeplateCoordinator mCoordinator;
@@ -102,10 +102,11 @@ public class ComposeplateCoordinatorUnitTest {
                         "NewTabPage.Module.Click",
                         ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_INCOGNITO_BUTTON);
 
-        enhancedListener.onClick(mView);
+        View clickedView = mock(View.class);
+        enhancedListener.onClick(clickedView);
 
         histogramWatcher.assertExpected();
-        verify(mOriginalOnClickListener).onClick(mView);
+        verify(mOriginalOnClickListener).onClick(clickedView);
     }
 
     @Test
@@ -117,10 +118,11 @@ public class ComposeplateCoordinatorUnitTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "NewTabPage.Module.Click", ModuleTypeOnStartAndNtp.COMPOSEPLATE_BUTTON);
 
-        enhancedListener.onClick(mView);
+        View clickedView = mock(View.class);
+        enhancedListener.onClick(clickedView);
 
         histogramWatcher.assertExpected();
-        verify(mOriginalOnClickListener).onClick(mView);
+        verify(mOriginalOnClickListener).onClick(clickedView);
     }
 
     @Test

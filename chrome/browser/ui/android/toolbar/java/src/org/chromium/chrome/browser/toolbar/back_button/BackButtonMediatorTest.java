@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.toolbar.back_button;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.robolectric.Shadows.shadowOf;
@@ -52,9 +53,6 @@ public class BackButtonMediatorTest {
     @Mock public Profile mProfile;
     @Mock public Resources mResources;
     @Mock public Context mContext;
-    @Mock private ColorStateList mTint;
-    @Mock private ColorStateList mFocusTint;
-    @Mock private ColorStateList mColorStateList;
     private SettableNullableObservableSupplier<Tab> mTabSupplier;
     private SettableNonNullObservableSupplier<Boolean> mEnabledSupplier;
     private PropertyModel mModel;
@@ -107,17 +105,20 @@ public class BackButtonMediatorTest {
 
     @Test
     public void testActivityFocusChanged_shouldUpdateFocusTint() {
-        mMediator.onTintChanged(mTint, mFocusTint, BrandedColorScheme.APP_DEFAULT);
+        var tint = mock(ColorStateList.class);
+        var focusTint = mock(ColorStateList.class);
+        mMediator.onTintChanged(tint, focusTint, BrandedColorScheme.APP_DEFAULT);
 
         assertEquals(
                 "Activity focus tint list should be used, but was another tint",
                 mModel.get(BackButtonProperties.TINT_COLOR_LIST),
-                mFocusTint);
+                focusTint);
     }
 
     @Test
     public void testThemeChangedToAppDefault_shouldSetDefaultRippleBackground() {
-        mMediator.onTintChanged(mColorStateList, mColorStateList, BrandedColorScheme.APP_DEFAULT);
+        var tint = mock(ColorStateList.class);
+        mMediator.onTintChanged(tint, tint, BrandedColorScheme.APP_DEFAULT);
 
         assertEquals(
                 "Background ripple effect should be default",
@@ -127,8 +128,8 @@ public class BackButtonMediatorTest {
 
     @Test
     public void testThemeChangedToLightTheme_shouldSetDefaultRippleBackground() {
-        mMediator.onTintChanged(
-                mColorStateList, mColorStateList, BrandedColorScheme.DARK_BRANDED_THEME);
+        var tint = mock(ColorStateList.class);
+        mMediator.onTintChanged(tint, tint, BrandedColorScheme.DARK_BRANDED_THEME);
 
         assertEquals(
                 "Background ripple effect should be default",
@@ -138,8 +139,8 @@ public class BackButtonMediatorTest {
 
     @Test
     public void testThemeChangedToDarkTheme_shouldSetDefaultRippleBackground() {
-        mMediator.onTintChanged(
-                mColorStateList, mColorStateList, BrandedColorScheme.DARK_BRANDED_THEME);
+        var tint = mock(ColorStateList.class);
+        mMediator.onTintChanged(tint, tint, BrandedColorScheme.DARK_BRANDED_THEME);
 
         assertEquals(
                 "Background ripple effect should be default",
@@ -149,7 +150,8 @@ public class BackButtonMediatorTest {
 
     @Test
     public void testThemeChangedToIncognito_shouldSetIncognitoRipple() {
-        mMediator.onTintChanged(mColorStateList, mColorStateList, BrandedColorScheme.INCOGNITO);
+        var tint = mock(ColorStateList.class);
+        mMediator.onTintChanged(tint, tint, BrandedColorScheme.INCOGNITO);
 
         assertEquals(
                 "Background ripple effect should be incognito",

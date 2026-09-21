@@ -42,7 +42,6 @@ public class SyncSettingsUtilsTest {
     @Mock private SyncService mSyncService;
 
     @Mock private SettingsCustomTabLauncher mCustomTabLauncher;
-    @Mock private Context mContext;
 
     @Before
     public void setUp() {
@@ -77,10 +76,12 @@ public class SyncSettingsUtilsTest {
     @Test
     @SmallTest
     public void testOpenBookmarkLimitHelpPage() {
+        Context context = Mockito.mock(Context.class);
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SyncSettingsUtils.openBookmarkLimitHelpPage(
-                            mContext,
+                            context,
                             mSyncService,
                             BookmarksLimitExceededHelpClickedSource.SETTINGS,
                             mCustomTabLauncher);
@@ -90,6 +91,6 @@ public class SyncSettingsUtilsTest {
                 .acknowledgeBookmarksLimitExceededError(
                         BookmarksLimitExceededHelpClickedSource.SETTINGS);
         Mockito.verify(mCustomTabLauncher)
-                .openUrlInCct(mContext, SyncSettingsUtils.BOOKMARKS_LIMIT_EXCEEDED_HELP_CENTER_URL);
+                .openUrlInCct(context, SyncSettingsUtils.BOOKMARKS_LIMIT_EXCEEDED_HELP_CENTER_URL);
     }
 }

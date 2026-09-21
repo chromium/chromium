@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -71,7 +72,6 @@ public class InstalledWebappPermissionManagerTest {
     public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
 
     @Mock public InstalledWebappPermissionStore mStore;
-    @Mock private CustomTabActivity mCustomTabActivity;
 
     private ShadowPackageManager mShadowPackageManager;
 
@@ -252,12 +252,13 @@ public class InstalledWebappPermissionManagerTest {
         when(mStore.getStoredOrigins()).thenReturn(Collections.singleton(mOrigin.toString()));
 
         // Mock CustomTabActivity.
-        when(mCustomTabActivity.isInTwaMode()).thenReturn(true);
+        CustomTabActivity activity = mock(CustomTabActivity.class);
+        when(activity.isInTwaMode()).thenReturn(true);
 
         // Register activity with ApplicationStatus.
         // We need to transition it to CREATED then RESUMED to mimic lifecycle.
-        ApplicationStatus.onStateChangeForTesting(mCustomTabActivity, ActivityState.CREATED);
-        ApplicationStatus.onStateChangeForTesting(mCustomTabActivity, ActivityState.RESUMED);
+        ApplicationStatus.onStateChangeForTesting(activity, ActivityState.CREATED);
+        ApplicationStatus.onStateChangeForTesting(activity, ActivityState.RESUMED);
 
         try {
             // Scenario 1: Coarse only granted.
@@ -321,7 +322,7 @@ public class InstalledWebappPermissionManagerTest {
             }
         } finally {
             // Clean up activity.
-            ApplicationStatus.onStateChangeForTesting(mCustomTabActivity, ActivityState.DESTROYED);
+            ApplicationStatus.onStateChangeForTesting(activity, ActivityState.DESTROYED);
         }
     }
 }

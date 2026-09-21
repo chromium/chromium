@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -104,6 +105,9 @@ public class SafetyCheckMediatorTest {
     @Rule(order = -2)
     public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
 
+    private PropertyModel mSafetyCheckModel;
+    private PropertyModel mPasswordCheckModel;
+
     @Mock private SafetyCheckBridge.Natives mSafetyCheckBridge;
     @Mock private Profile mProfile;
     @Mock private SafetyCheckUpdatesDelegate mUpdatesDelegate;
@@ -120,14 +124,9 @@ public class SafetyCheckMediatorTest {
     @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeNativeMock;
     @Mock private PasswordManagerHelper.Natives mPasswordManagerHelperNativeMock;
     @Mock LoadingModalDialogCoordinator mLoadingModalDialogCoordinator;
-    @Mock private SettingsCustomTabLauncher mSettingsCustomTabLauncher;
-    @Mock private PasswordCheckupClientHelperFactory mPasswordCheckupClientHelperFactory;
-    @Mock private CredentialManagerLauncherFactory mCredentialManagerLauncherFactory;
-    @Mock private ModalDialogManager.Presenter mModalDialogManagerPresenter;
-
-    private PropertyModel mSafetyCheckModel;
-    private PropertyModel mPasswordCheckModel;
     private FakePasswordCheckControllerFactory mPasswordCheckControllerFactory;
+    @Mock private SettingsCustomTabLauncher mSettingsCustomTabLauncher;
+
     private SafetyCheckMediator mMediator;
 
     private final boolean mUseGmsApi;
@@ -239,12 +238,15 @@ public class SafetyCheckMediatorTest {
         when(mPasswordManagerUtilBridgeNativeMock.isPasswordManagerAvailable(true))
                 .thenReturn(mUseGmsApi);
         // TODO(crbug.com/40854050): Use existing fake instead of mocking
-        when(mPasswordCheckupClientHelperFactory.createHelper()).thenReturn(mPasswordCheckupHelper);
-        PasswordCheckupClientHelperFactory.setFactoryForTesting(
-                mPasswordCheckupClientHelperFactory);
-        when(mCredentialManagerLauncherFactory.createLauncher())
+        PasswordCheckupClientHelperFactory mockPasswordCheckFactory =
+                mock(PasswordCheckupClientHelperFactory.class);
+        when(mockPasswordCheckFactory.createHelper()).thenReturn(mPasswordCheckupHelper);
+        PasswordCheckupClientHelperFactory.setFactoryForTesting(mockPasswordCheckFactory);
+        CredentialManagerLauncherFactory mockCredentialManagerLauncherFactory =
+                mock(CredentialManagerLauncherFactory.class);
+        when(mockCredentialManagerLauncherFactory.createLauncher())
                 .thenReturn(mCredentialManagerLauncher);
-        CredentialManagerLauncherFactory.setFactoryForTesting(mCredentialManagerLauncherFactory);
+        CredentialManagerLauncherFactory.setFactoryForTesting(mockCredentialManagerLauncherFactory);
         mMediator =
                 createSafetyCheckMediator(mPasswordCheckModel, /* passwordCheckLocalModel= */ null);
 
@@ -263,7 +265,8 @@ public class SafetyCheckMediatorTest {
 
         mModalDialogManager =
                 new ModalDialogManager(
-                        mModalDialogManagerPresenter, ModalDialogManager.ModalDialogType.APP);
+                        mock(ModalDialogManager.Presenter.class),
+                        ModalDialogManager.ModalDialogType.APP);
         mModalDialogManagerSupplier.set(mModalDialogManager);
         doAnswer(
                         invocation -> {

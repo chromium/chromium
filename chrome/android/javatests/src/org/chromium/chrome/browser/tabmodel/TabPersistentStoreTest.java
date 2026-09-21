@@ -25,13 +25,9 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -121,57 +117,12 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @EnableFeatures({ChromeFeatureList.ANDROID_TAB_SKIP_SAVE_TABS_TASK_KILLSWITCH})
 public class TabPersistentStoreTest {
-    private static final int SELECTOR_INDEX = 0;
-    private static final int PREV_ROOT_ID = 32;
-    private static final int NEW_ROOT_ID = 42;
-    private static final TabModelSelectorFactory sMockTabModelSelectorFactory =
-            new TabModelSelectorFactory() {
-                @Override
-                public TabModelSelector buildTabbedSelector(
-                        Context context,
-                        ModalDialogManager modalDialogManager,
-                        OneshotSupplier<ProfileProvider> profileProviderSupplier,
-                        TabCreatorManager tabCreatorManager,
-                        NextTabPolicySupplier nextTabPolicySupplier,
-                        @SupportedProfileType int supportedProfileType) {
-                    try {
-                        return new TestTabModelSelector(
-                                context, profileProviderSupplier, tabCreatorManager);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-
-                @Override
-                public Pair<TabModelSelector, Destroyable> buildHeadlessSelector(
-                        @WindowId int windowId, Profile profile) {
-                    return Pair.create(null, null);
-                }
-            };
-    private static TabWindowManager sTabWindowManager;
-    private static CipherFactory sCipherFactory;
-
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Mock private TabModelSelector mTabModelSelector;
-    @Mock private TabPersistentStore mTabPersistentStore;
-    @Mock private PersistentStoreMigrationManager mPersistentStoreMigrationManager;
-
     private ChromeActivity mChromeActivity;
 
-    /** Class for mocking out the directory containing all of the TabState files. */
-    private TestTabModelDirectory mMockDirectory;
+    private static final int SELECTOR_INDEX = 0;
 
-    private AdvancedMockContext mAppContext;
-    private SharedPreferencesManager mPreferences;
-    // This is used to pretend we've started the activity, so we can attach a base context to the
-    // activity.
-    private final ActivityStateListener mActivityStateListener =
-            (activity, state) -> {
-                if (state == ActivityState.STARTED) {
-                    mChromeActivity.onStart();
-                }
-            };
+    private static final int PREV_ROOT_ID = 32;
+    private static final int NEW_ROOT_ID = 42;
 
     private static class TabRestoredDetails {
         public final int index;
@@ -312,6 +263,48 @@ public class TabPersistentStoreTest {
         }
     }
 
+    private static final TabModelSelectorFactory sMockTabModelSelectorFactory =
+            new TabModelSelectorFactory() {
+                @Override
+                public TabModelSelector buildTabbedSelector(
+                        Context context,
+                        ModalDialogManager modalDialogManager,
+                        OneshotSupplier<ProfileProvider> profileProviderSupplier,
+                        TabCreatorManager tabCreatorManager,
+                        NextTabPolicySupplier nextTabPolicySupplier,
+                        @SupportedProfileType int supportedProfileType) {
+                    try {
+                        return new TestTabModelSelector(
+                                context, profileProviderSupplier, tabCreatorManager);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                @Override
+                public Pair<TabModelSelector, Destroyable> buildHeadlessSelector(
+                        @WindowId int windowId, Profile profile) {
+                    return Pair.create(null, null);
+                }
+            };
+    private static TabWindowManager sTabWindowManager;
+    private static CipherFactory sCipherFactory;
+
+    /** Class for mocking out the directory containing all of the TabState files. */
+    private TestTabModelDirectory mMockDirectory;
+
+    private AdvancedMockContext mAppContext;
+    private SharedPreferencesManager mPreferences;
+
+    // This is used to pretend we've started the activity, so we can attach a base context to the
+    // activity.
+    private final ActivityStateListener mActivityStateListener =
+            (activity, state) -> {
+                if (state == ActivityState.STARTED) {
+                    mChromeActivity.onStart();
+                }
+            };
+
     @BeforeClass
     public static void beforeClassSetUp() {
         // Required for parameterized tests - otherwise we will fail
@@ -417,9 +410,10 @@ public class TabPersistentStoreTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
+                    TabModelSelector mockArchived = mock(TabModelSelector.class);
+                    when(mockArchived.isTabStateInitialized()).thenReturn(true);
                     TabWindowManagerSingleton.getInstance()
-                            .setArchivedTabModelSelector(mTabModelSelector);
+                            .setArchivedTabModelSelector(mockArchived);
                     ApplicationStatus.registerStateListenerForActivity(
                             mActivityStateListener, mChromeActivity);
                 });
@@ -1585,11 +1579,14 @@ public class TabPersistentStoreTest {
                 buildTabPersistentStore(
                         persistencePolicy, mockSelector, recordingTabCreatorManager);
 
-        when(mTabPersistentStore.getStoreType()).thenReturn(StoreType.TAB_STATE_STORE);
+        TabPersistentStore shadowStore = mock(TabPersistentStore.class);
+        when(shadowStore.getStoreType()).thenReturn(StoreType.TAB_STATE_STORE);
 
         AccumulatingTabCreator shadowTabCreator = new AccumulatingTabCreator();
 
-        when(mPersistentStoreMigrationManager.isShadowStoreCaughtUp()).thenReturn(true);
+        PersistentStoreMigrationManager migrationManager =
+                mock(PersistentStoreMigrationManager.class);
+        when(migrationManager.isShadowStoreCaughtUp()).thenReturn(true);
 
         ArgumentCaptor<TabPersistentStoreObserver> shadowObserverCaptor = captor();
 
@@ -1598,15 +1595,15 @@ public class TabPersistentStoreTest {
                     new ShadowTabStoreValidator(
                             ProfileManager.getLastUsedRegularProfile(),
                             store,
-                            mTabPersistentStore,
+                            shadowStore,
                             recordingTabCreator,
                             shadowTabCreator,
-                            mPersistentStoreMigrationManager,
+                            migrationManager,
                             /* windowTag= */ "0",
                             TabOrchestratorType.TABBED);
                 });
 
-        verify(mTabPersistentStore).addObserver(shadowObserverCaptor.capture());
+        verify(shadowStore).addObserver(shadowObserverCaptor.capture());
         TabPersistentStoreObserver shadowObserver = shadowObserverCaptor.getValue();
 
         MockTabPersistentStoreObserver observer = new MockTabPersistentStoreObserver();

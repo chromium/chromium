@@ -227,6 +227,7 @@ public class TabContextMenuCoordinatorUnitTest {
     private static final int NUM_TABS = 1;
     private static final int NUM_INCOGNITO_TABS = 0;
     private static final long LAST_ACCESSED_TIME = 100L;
+
     private static final InstanceInfo INSTANCE_INFO_1 =
             new InstanceInfo(
                     INSTANCE_ID_1,
@@ -240,6 +241,7 @@ public class TabContextMenuCoordinatorUnitTest {
                     /* isIncognitoSelected= */ false,
                     LAST_ACCESSED_TIME,
                     /* closureTime= */ 0);
+
     private static final InstanceInfo INSTANCE_INFO_2 =
             new InstanceInfo(
                     INSTANCE_ID_2,
@@ -253,6 +255,7 @@ public class TabContextMenuCoordinatorUnitTest {
                     /* isIncognitoSelected= */ false,
                     LAST_ACCESSED_TIME,
                     /* closureTime= */ 0);
+
     private static final InstanceInfo INSTANCE_INFO_INCOGNITO =
             new InstanceInfo(
                     INSTANCE_ID_3,
@@ -273,6 +276,12 @@ public class TabContextMenuCoordinatorUnitTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
+    private TabContextMenuCoordinator mTabContextMenuCoordinator;
+    private OnItemClickedCallback<AnchorInfo> mOnItemClickedCallback;
+    private MockTabModel mTabModel;
+    private final LocalTabGroupId mLocalId = new LocalTabGroupId(TAB_GROUP_ID);
+    private final SavedTabGroup mSavedTabGroup = new SavedTabGroup();
+    private final SavedTabGroupTab mSavedTabGroupTab = new SavedTabGroupTab();
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private TabList mTabList;
     @Mock private Tab mTab1;
@@ -311,19 +320,7 @@ public class TabContextMenuCoordinatorUnitTest {
     @Mock private Tab mChromeNativeSchemeTabWithWebContents;
     @Mock private Tab mChromeNativeSchemeTabWithoutWebContents;
     @Mock private BiConsumer<AnchorInfo, Boolean> mReorderFunction;
-    @Mock private TabModelSelector mSelectorWindow2;
-    @Mock private TabModel mTabModelWindow2;
-    @Mock private SendTabToSelfCoordinator mSendTabToSelfCoordinator;
-    @Mock private BottomSheetController mBottomSheetController;
-    @Mock private DeviceLockActivityLauncher mDeviceLockActivityLauncher;
-    @Mock private WebContents mWebContents2;
 
-    private TabContextMenuCoordinator mTabContextMenuCoordinator;
-    private OnItemClickedCallback<AnchorInfo> mOnItemClickedCallback;
-    private MockTabModel mTabModel;
-    private final LocalTabGroupId mLocalId = new LocalTabGroupId(TAB_GROUP_ID);
-    private final SavedTabGroup mSavedTabGroup = new SavedTabGroup();
-    private final SavedTabGroupTab mSavedTabGroupTab = new SavedTabGroupTab();
     private Activity mActivity;
     private SettableNonNullObservableSupplier<Integer> mTotalTabCountSupplier;
 
@@ -1263,12 +1260,14 @@ public class TabContextMenuCoordinatorUnitTest {
         when(mTabGroupSyncService.getGroup(tabGroupId2.toString())).thenReturn(savedTabGroup2);
         when(mTabWindowManager.findWindowIdForTabGroup(tabGroupId2)).thenReturn(INSTANCE_ID_2);
 
-        when(mTabWindowManager.getTabModelSelectorById(INSTANCE_ID_2)).thenReturn(mSelectorWindow2);
-        when(mSelectorWindow2.getModel(false)).thenReturn(mTabModelWindow2);
-        when(mTabModelWindow2.getTabGroupTitle(tabGroupId2)).thenReturn("Window 2 Group");
-        when(mTabModelWindow2.getTabGroupColorWithFallback(tabGroupId2))
+        TabModelSelector selectorWindow2 = Mockito.mock(TabModelSelector.class);
+        TabModel tabModelWindow2 = Mockito.mock(TabModel.class);
+        when(mTabWindowManager.getTabModelSelectorById(INSTANCE_ID_2)).thenReturn(selectorWindow2);
+        when(selectorWindow2.getModel(false)).thenReturn(tabModelWindow2);
+        when(tabModelWindow2.getTabGroupTitle(tabGroupId2)).thenReturn("Window 2 Group");
+        when(tabModelWindow2.getTabGroupColorWithFallback(tabGroupId2))
                 .thenReturn(TAB_GROUP_INDICATOR_COLOR_ID);
-        when(mTabModelWindow2.tabGroupExists(tabGroupId2)).thenReturn(true);
+        when(tabModelWindow2.tabGroupExists(tabGroupId2)).thenReturn(true);
 
         mTabModel.addTab(
                 mTab1,
@@ -2519,6 +2518,7 @@ public class TabContextMenuCoordinatorUnitTest {
     @Test
     @Feature("Tab Strip Context Menu")
     public void testSendToYourDevice() {
+        SendTabToSelfCoordinator mockSttsCoordinator = Mockito.mock(SendTabToSelfCoordinator.class);
         TabContextMenuCoordinator.setSendTabToSelfCreatorForTesting(
                 (context,
                         window,
@@ -2537,18 +2537,21 @@ public class TabContextMenuCoordinatorUnitTest {
                     assertEquals(EXAMPLE_URL.getSpec(), url);
                     assertEquals(mTab1, tabSupplier.get());
                     assertEquals(ShareEntryPoint.TAB_MENU, entryPoint);
-                    return mSendTabToSelfCoordinator;
+                    return mockSttsCoordinator;
                 });
 
         // Mock BottomSheetController retrieval
-        BottomSheetControllerProvider.setInstanceForTesting(mBottomSheetController);
+        BottomSheetController mockBottomSheetController = Mockito.mock(BottomSheetController.class);
+        BottomSheetControllerProvider.setInstanceForTesting(mockBottomSheetController);
 
         // Mock UnownedUserDataHost and bind DeviceLockActivityLauncher
         UnownedUserDataHost unownedUserDataHost = new UnownedUserDataHost();
         when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(unownedUserDataHost);
+        DeviceLockActivityLauncher mockDeviceLockActivityLauncher =
+                Mockito.mock(DeviceLockActivityLauncher.class);
         DeviceLockActivityLauncherSupplier.attach(
                 unownedUserDataHost,
-                ObservableSuppliers.createMonotonic(mDeviceLockActivityLauncher));
+                ObservableSuppliers.createMonotonic(mockDeviceLockActivityLauncher));
 
         // Click on the menu action item
         mOnItemClickedCallback.onClick(
@@ -2557,7 +2560,7 @@ public class TabContextMenuCoordinatorUnitTest {
                 /* collaborationId= */ null,
                 /* listViewTouchTracker= */ null);
 
-        verify(mSendTabToSelfCoordinator, times(1)).show();
+        verify(mockSttsCoordinator, times(1)).show();
     }
 
     @Test
@@ -3485,9 +3488,10 @@ public class TabContextMenuCoordinatorUnitTest {
 
     @Test
     public void buildMenuActionItems_WithExtensionItems_MultipleTabs_UsesAnchorTab() {
-        when(mTab2.getWebContents()).thenReturn(mWebContents2);
+        WebContents webContents2 = Mockito.mock(WebContents.class);
+        when(mTab2.getWebContents()).thenReturn(webContents2);
 
-        when(mExtensionTabContextMenuBridgeJniMock.init(mWebContents2)).thenReturn(12345L);
+        when(mExtensionTabContextMenuBridgeJniMock.init(webContents2)).thenReturn(12345L);
         when(mExtensionTabContextMenuBridgeJniMock.getMenuModelBridge(12345L))
                 .thenReturn(mMenuModelBridge);
 
@@ -3518,7 +3522,7 @@ public class TabContextMenuCoordinatorUnitTest {
         ListItem extensionItem = findItemByTitle(modelList, "Extension Multi Item");
         assertNotNull("Extension item should be present in menu", extensionItem);
         // Verify init was called for the anchor tab's WebContents (mTab2), not mTab1.
-        verify(mExtensionTabContextMenuBridgeJniMock).init(mWebContents2);
+        verify(mExtensionTabContextMenuBridgeJniMock).init(webContents2);
         verify(mExtensionTabContextMenuBridgeJniMock, never()).init(mWebContents);
 
         mTabContextMenuCoordinator.onMenuDismissed();

@@ -112,16 +112,16 @@ public class TabbedRootUiCoordinatorTest {
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule public TestName mTestName = new TestName();
+
     @Rule public MockitoRule mockito = MockitoJUnit.rule();
+
+    private WebPageStation mPage;
+    private TabbedRootUiCoordinator mTabbedRootUiCoordinator;
 
     @Mock private BookmarkBarSceneLayer.Natives mBookmarkBarSceneLayerJni;
     @Mock private SearchEngineChoiceService mSearchEngineChoiceService;
     @Mock private Tracker mTracker;
     @Mock private UmaSessionStats.Natives mUmaSessionStatsJniMock;
-    @Mock private SendTabToSelfAndroidBridge.Natives mSendTabToSelfAndroidBridgeNatives;
-
-    private WebPageStation mPage;
-    private TabbedRootUiCoordinator mTabbedRootUiCoordinator;
 
     @Before
     public void setUp() {
@@ -953,10 +953,12 @@ public class TabbedRootUiCoordinatorTest {
                 .addOnInitializedCallback(any());
         TrackerFactory.setTrackerForTests(mTracker);
 
-        SendTabToSelfAndroidBridgeJni.setInstanceForTesting(mSendTabToSelfAndroidBridgeNatives);
-        doReturn(true).when(mSendTabToSelfAndroidBridgeNatives).isModelReady(any());
+        SendTabToSelfAndroidBridge.Natives bridgeMock =
+                mock(SendTabToSelfAndroidBridge.Natives.class);
+        SendTabToSelfAndroidBridgeJni.setInstanceForTesting(bridgeMock);
+        doReturn(true).when(bridgeMock).isModelReady(any());
         doReturn(EntryPointDisplayReason.OFFER_FEATURE)
-                .when(mSendTabToSelfAndroidBridgeNatives)
+                .when(bridgeMock)
                 .getEntryPointDisplayReason(any(), any());
 
         try {
@@ -985,10 +987,12 @@ public class TabbedRootUiCoordinatorTest {
                 .addOnInitializedCallback(any());
         TrackerFactory.setTrackerForTests(mTracker);
 
-        SendTabToSelfAndroidBridgeJni.setInstanceForTesting(mSendTabToSelfAndroidBridgeNatives);
-        doReturn(true).when(mSendTabToSelfAndroidBridgeNatives).isModelReady(any());
+        SendTabToSelfAndroidBridge.Natives bridgeMock =
+                mock(SendTabToSelfAndroidBridge.Natives.class);
+        SendTabToSelfAndroidBridgeJni.setInstanceForTesting(bridgeMock);
+        doReturn(true).when(bridgeMock).isModelReady(any());
         doReturn(EntryPointDisplayReason.OFFER_SIGN_IN)
-                .when(mSendTabToSelfAndroidBridgeNatives)
+                .when(bridgeMock)
                 .getEntryPointDisplayReason(any(), any());
         try {
             mPage = mActivityTestRule.startOnTestServerUrl("/chrome/test/data/android/about.html");

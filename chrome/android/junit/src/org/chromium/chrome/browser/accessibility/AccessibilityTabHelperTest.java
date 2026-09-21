@@ -8,6 +8,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -36,8 +37,6 @@ public class AccessibilityTabHelperTest {
     @Mock private Tab mTab;
     @Mock private WebContentsImpl mWebContents;
     @Mock private WebContentsAccessibilityImpl mWebContentsAccessibility;
-    @Mock private WebContentsImpl mWebContentsImpl;
-    @Mock private WebContentsAccessibilityImpl mWebContentsAccessibilityImpl;
 
     private UserDataHost mUserDataHost;
     private AccessibilityTabHelper mHelper;
@@ -105,14 +104,17 @@ public class AccessibilityTabHelperTest {
         mHelper.onContentChanged(mTab);
 
         // Simulate tab restore (new WebContents attached)
-        when(mWebContentsImpl.getOrSetUserData(eq(WebContentsAccessibilityImpl.class), any()))
-                .thenReturn(mWebContentsAccessibilityImpl);
-        when(mTab.getWebContents()).thenReturn(mWebContentsImpl);
+        WebContentsImpl newWebContents = mock(WebContentsImpl.class);
+        WebContentsAccessibilityImpl newWebContentsAccessibility =
+                mock(WebContentsAccessibilityImpl.class);
+        when(newWebContents.getOrSetUserData(eq(WebContentsAccessibilityImpl.class), any()))
+                .thenReturn(newWebContentsAccessibility);
+        when(mTab.getWebContents()).thenReturn(newWebContents);
 
         mHelper.onContentChanged(mTab);
 
         // Verify it successfully registered on the new WebContents
-        verify(mWebContentsAccessibilityImpl).setShouldFocusOnPageLoad(true);
+        verify(newWebContentsAccessibility).setShouldFocusOnPageLoad(true);
     }
 
     @Test

@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -91,7 +92,6 @@ public class ReaderModeManagerTest {
     private static final GURL MOCK_URL = JUnitTestGURLs.GOOGLE_URL_CAT;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
     @Mock private Profile mProfile;
     @Mock private Tab mTab;
     @Mock private ActorUiTabController mActorUiTabController;
@@ -110,16 +110,18 @@ public class ReaderModeManagerTest {
     @Mock private LoadCommittedDetails mLoadCommitedDetails;
     @Mock private Activity mActivity;
     @Mock private Resources mResources;
-    @Mock private WebContents mMockWebContents;
-    @Mock private NavigationController mNavigationController;
+
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
+    private TabObserver mTabObserver;
+
     @Captor private ArgumentCaptor<DistillabilityObserver> mDistillabilityObserverCaptor;
+    private DistillabilityObserver mDistillabilityObserver;
+
     @Captor private ArgumentCaptor<WebContentsObserver> mWebContentsObserverCaptor;
+    private WebContentsObserver mWebContentsObserver;
+
     @Captor private ArgumentCaptor<Callback<Boolean>> mDistillationCallbackCaptor;
 
-    private TabObserver mTabObserver;
-    private DistillabilityObserver mDistillabilityObserver;
-    private WebContentsObserver mWebContentsObserver;
     private UserDataHost mUserDataHost;
     private UnownedUserDataHost mUnownedUserDataHost;
     private ReaderModeManager mManager;
@@ -412,10 +414,12 @@ public class ReaderModeManagerTest {
     public void testDistillationMetricsOnDistillabilityResult_requestDesktopSiteExcluded() {
         when(mTab.isCustomTab()).thenReturn(true);
 
+        WebContents mockWebContents = mock(WebContents.class);
+        NavigationController mockNavigationController = mock(NavigationController.class);
         // Set "request desktop page" on.
-        when(mNavigationController.getUseDesktopUserAgent()).thenReturn(true);
-        when(mMockWebContents.getNavigationController()).thenReturn(mNavigationController);
-        when(mTab.getWebContents()).thenReturn(mMockWebContents);
+        when(mockNavigationController.getUseDesktopUserAgent()).thenReturn(true);
+        when(mockWebContents.getNavigationController()).thenReturn(mockNavigationController);
+        when(mTab.getWebContents()).thenReturn(mockWebContents);
 
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()

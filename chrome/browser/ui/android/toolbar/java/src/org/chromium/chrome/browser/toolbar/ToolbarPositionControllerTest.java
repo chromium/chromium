@@ -14,6 +14,7 @@ import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -33,7 +34,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -95,32 +95,15 @@ import java.util.concurrent.atomic.AtomicReference;
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures(ChromeFeatureList.CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS)
 public class ToolbarPositionControllerTest {
+
+    @Rule public MockitoRule mMockitoJUnit = MockitoJUnit.rule();
+    @Mock Tab mTab;
+
     private static final int TOOLBAR_HEIGHT = 56;
     private static final int CONTROL_CONTAINER_ID = 12356;
 
-    @Rule public MockitoRule mMockitoJUnit = MockitoJUnit.rule();
-
-    @Mock Tab mTab;
-    @Mock private ControlContainer mControlContainer;
-    @Mock private ToolbarLayout mToolbarLayout;
-    @Mock private View mControlContainerView;
-    @Mock private BottomSheetController mBottomSheetController;
-    @Mock private View mProgressBarContainer;
-    @Mock private ViewGroup mProgressBarParent;
-    @Mock private TopInsetProvider mTopInsetProvider;
-    @Mock private Profile mProfile;
-    @Mock private UserPrefs.Natives mUserPrefsNatives;
-    @Mock private PrefService mPrefs;
-    @Mock private LocalStatePrefs.Natives mLocalStatePrefsNatives;
-    @Mock private PrefService mLocalPrefService;
-    @Mock private TopControlsStacker mTopControlsStacker;
-    @Mock private WindowAndroid mWindowAndroid;
-    @Mock private InsetObserver mInsetObserver;
-    @Mock private Tab mTab1;
-    @Mock private BottomSheetContent mBottomSheetContent;
-    @Captor private ArgumentCaptor<BottomSheetObserver> mObserverCaptor;
-
     private BrowserControlsStateProvider.Observer mBrowserControlsObserver;
+
     private final BrowserControlsSizer mBrowserControlsSizer =
             new BrowserControlsSizer() {
                 @ControlsPosition private int mControlsPosition = ControlsPosition.TOP;
@@ -293,6 +276,7 @@ public class ToolbarPositionControllerTest {
                     return false;
                 }
             };
+
     private final CoordinatorLayout.LayoutParams mControlContainerLayoutParams =
             new CoordinatorLayout.LayoutParams(400, TOOLBAR_HEIGHT);
     private final CoordinatorLayout.LayoutParams mProgressBarLayoutParams =
@@ -301,6 +285,22 @@ public class ToolbarPositionControllerTest {
             new CoordinatorLayout.LayoutParams(400, 80);
     private final CoordinatorLayout.LayoutParams mHairlineLayoutParams =
             new CoordinatorLayout.LayoutParams(400, 5);
+    @Mock private ControlContainer mControlContainer;
+    @Mock private ToolbarLayout mToolbarLayout;
+    @Mock private View mControlContainerView;
+    @Mock private BottomSheetController mBottomSheetController;
+    @Mock private View mProgressBarContainer;
+    @Mock private ViewGroup mProgressBarParent;
+    @Mock private TopInsetProvider mTopInsetProvider;
+    @Mock private Profile mProfile;
+    @Mock private UserPrefs.Natives mUserPrefsNatives;
+    @Mock private PrefService mPrefs;
+    @Mock private LocalStatePrefs.Natives mLocalStatePrefsNatives;
+    @Mock private PrefService mLocalPrefService;
+    @Mock private TopControlsStacker mTopControlsStacker;
+    @Mock private WindowAndroid mWindowAndroid;
+    @Mock private InsetObserver mInsetObserver;
+
     private Context mContext;
     private final SettableNonNullObservableSupplier<Boolean> mIsNtpShowing =
             ObservableSuppliers.createNonNull(false);
@@ -333,8 +333,6 @@ public class ToolbarPositionControllerTest {
     private HistogramWatcher mStartupExpectation;
     private int mTopAnchorViewId = CONTROL_CONTAINER_ID;
     private int mHairlineHeight;
-    private final FakeKeyboardVisibilityDelegate mKeyboardVisibilityDelegate =
-            new FakeKeyboardVisibilityDelegate();
 
     public static class FakeKeyboardVisibilityDelegate extends KeyboardVisibilityDelegate {
         private boolean mIsShowing;
@@ -349,6 +347,9 @@ public class ToolbarPositionControllerTest {
             return mIsShowing;
         }
     }
+
+    private final FakeKeyboardVisibilityDelegate mKeyboardVisibilityDelegate =
+            new FakeKeyboardVisibilityDelegate();
 
     @Before
     public void setUp() {
@@ -915,84 +916,88 @@ public class ToolbarPositionControllerTest {
 
     @Test
     public void shouldShowToolbarOnTop_withNtpUrl() {
-        doReturn(new GURL(UrlConstantResolver.getOriginalNativeNtpUrl())).when(mTab1).getUrl();
+        Tab tab = mock(Tab.class);
+        doReturn(new GURL(UrlConstantResolver.getOriginalNativeNtpUrl())).when(tab).getUrl();
 
         // By default, Toolbar should be anchored on top.
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ null);
-        assertTrue(ToolbarPositionController.shouldShowToolbarOnTop(mTab1));
+        assertTrue(ToolbarPositionController.shouldShowToolbarOnTop(tab));
 
         // When the user explicitly asks for bottom toolbar, NTP should still show that toolbar on
         // top.
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
-        assertTrue(ToolbarPositionController.shouldShowToolbarOnTop(mTab1));
+        assertTrue(ToolbarPositionController.shouldShowToolbarOnTop(tab));
 
         // ... NTP always shows toolbar on top.
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ true);
-        assertTrue(ToolbarPositionController.shouldShowToolbarOnTop(mTab1));
+        assertTrue(ToolbarPositionController.shouldShowToolbarOnTop(tab));
     }
 
     @Test
     public void shouldShowToolbarOnTop_withIncognitoNtpUrl() {
-        doReturn(new GURL(UrlConstantResolver.getOriginalNativeNtpUrl())).when(mTab1).getUrl();
-        doReturn(true).when(mTab1).isIncognitoBranded();
+        Tab tab = mock(Tab.class);
+        doReturn(new GURL(UrlConstantResolver.getOriginalNativeNtpUrl())).when(tab).getUrl();
+        doReturn(true).when(tab).isIncognitoBranded();
 
         // By default, Toolbar should be anchored on top.
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ null);
-        assertTrue(ToolbarPositionController.shouldShowToolbarOnTop(mTab1));
+        assertTrue(ToolbarPositionController.shouldShowToolbarOnTop(tab));
 
         // When the user explicitly asks for bottom toolbar the incognito NTP should show toolbar on
         // the bottom.
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
-        assertFalse(ToolbarPositionController.shouldShowToolbarOnTop(mTab1));
+        assertFalse(ToolbarPositionController.shouldShowToolbarOnTop(tab));
 
         // ... same for the explicit top toolbar.
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ true);
-        assertTrue(ToolbarPositionController.shouldShowToolbarOnTop(mTab1));
+        assertTrue(ToolbarPositionController.shouldShowToolbarOnTop(tab));
     }
 
     @Test
     public void shouldShowToolbarOnTop_withNonNtpUrl() {
         // This test does not instantiate ToolbarPositionController, meaning there is no Preference
         // observer watching for settings changes.
-        doReturn(new GURL(UrlConstants.ABOUT_URL)).when(mTab1).getUrl();
+        Tab tab = mock(Tab.class);
+        doReturn(new GURL(UrlConstants.ABOUT_URL)).when(tab).getUrl();
 
         // By default, Toolbar should be anchored on top.
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ null);
         ToolbarPositionController.resetCachedToolbarConfigurationForTesting();
-        assertTrue(ToolbarPositionController.shouldShowToolbarOnTop(mTab1));
+        assertTrue(ToolbarPositionController.shouldShowToolbarOnTop(tab));
 
         // When the user explicitly asks for bottom toolbar, non-NTP URLs should obey.
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         ToolbarPositionController.resetCachedToolbarConfigurationForTesting();
-        assertFalse(ToolbarPositionController.shouldShowToolbarOnTop(mTab1));
+        assertFalse(ToolbarPositionController.shouldShowToolbarOnTop(tab));
 
         // ... same if the User wants explicitly Top toolbar.
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ true);
         ToolbarPositionController.resetCachedToolbarConfigurationForTesting();
-        assertTrue(ToolbarPositionController.shouldShowToolbarOnTop(mTab1));
+        assertTrue(ToolbarPositionController.shouldShowToolbarOnTop(tab));
     }
 
     @Test
     public void shouldShowToolbarOnTop_edgeCases() {
         // This test does not instantiate ToolbarPositionController, meaning there is no Preference
         // observer watching for settings changes.
+        Tab tab = mock(Tab.class);
 
         // By default, Toolbar should be anchored on top.
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ null);
         ToolbarPositionController.resetCachedToolbarConfigurationForTesting();
         assertTrue(ToolbarPositionController.shouldShowToolbarOnTop(null));
-        assertTrue(ToolbarPositionController.shouldShowToolbarOnTop(mTab1));
+        assertTrue(ToolbarPositionController.shouldShowToolbarOnTop(tab));
 
         // In the absence of relevant signals, assume regular tab.
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         ToolbarPositionController.resetCachedToolbarConfigurationForTesting();
         assertFalse(ToolbarPositionController.shouldShowToolbarOnTop(null));
-        assertFalse(ToolbarPositionController.shouldShowToolbarOnTop(mTab1));
+        assertFalse(ToolbarPositionController.shouldShowToolbarOnTop(tab));
 
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ true);
         ToolbarPositionController.resetCachedToolbarConfigurationForTesting();
         assertTrue(ToolbarPositionController.shouldShowToolbarOnTop(null));
-        assertTrue(ToolbarPositionController.shouldShowToolbarOnTop(mTab1));
+        assertTrue(ToolbarPositionController.shouldShowToolbarOnTop(tab));
     }
 
     @Test
@@ -1086,7 +1091,7 @@ public class ToolbarPositionControllerTest {
 
     @Test
     public void testOnToEdgeChange() {
-        mActivityTabSupplier.set(mTab1);
+        mActivityTabSupplier.set(mock(Tab.class));
         int topInset = 50;
 
         // Test case to apply the top inset.
@@ -1221,11 +1226,14 @@ public class ToolbarPositionControllerTest {
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         assertControlsAtBottom();
 
-        verify(mBottomSheetController).addObserver(mObserverCaptor.capture());
-        BottomSheetObserver observer = mObserverCaptor.getValue();
+        ArgumentCaptor<BottomSheetObserver> observerCaptor =
+                ArgumentCaptor.forClass(BottomSheetObserver.class);
+        verify(mBottomSheetController).addObserver(observerCaptor.capture());
+        BottomSheetObserver observer = observerCaptor.getValue();
 
-        when(mBottomSheetContent.actsAsBrowserControls()).thenReturn(true);
-        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mBottomSheetContent);
+        BottomSheetContent bottomSheetContent = mock(BottomSheetContent.class);
+        when(bottomSheetContent.actsAsBrowserControls()).thenReturn(true);
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(bottomSheetContent);
         when(mBottomSheetController.getSheetState())
                 .thenReturn(BottomSheetController.SheetState.HALF);
 
@@ -1254,11 +1262,14 @@ public class ToolbarPositionControllerTest {
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         assertControlsAtBottom();
 
-        verify(mBottomSheetController).addObserver(mObserverCaptor.capture());
-        BottomSheetObserver observer = mObserverCaptor.getValue();
+        ArgumentCaptor<BottomSheetObserver> observerCaptor =
+                ArgumentCaptor.forClass(BottomSheetObserver.class);
+        verify(mBottomSheetController).addObserver(observerCaptor.capture());
+        BottomSheetObserver observer = observerCaptor.getValue();
 
-        when(mBottomSheetContent.actsAsBrowserControls()).thenReturn(true);
-        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mBottomSheetContent);
+        BottomSheetContent bottomSheetContent = mock(BottomSheetContent.class);
+        when(bottomSheetContent.actsAsBrowserControls()).thenReturn(true);
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(bottomSheetContent);
         when(mBottomSheetController.getSheetState())
                 .thenReturn(BottomSheetController.SheetState.FULL);
 
@@ -1276,11 +1287,14 @@ public class ToolbarPositionControllerTest {
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         assertControlsAtBottom();
 
-        verify(mBottomSheetController).addObserver(mObserverCaptor.capture());
-        BottomSheetObserver observer = mObserverCaptor.getValue();
+        ArgumentCaptor<BottomSheetObserver> observerCaptor =
+                ArgumentCaptor.forClass(BottomSheetObserver.class);
+        verify(mBottomSheetController).addObserver(observerCaptor.capture());
+        BottomSheetObserver observer = observerCaptor.getValue();
 
-        when(mBottomSheetContent.actsAsBrowserControls()).thenReturn(false);
-        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mBottomSheetContent);
+        BottomSheetContent bottomSheetContent = mock(BottomSheetContent.class);
+        when(bottomSheetContent.actsAsBrowserControls()).thenReturn(false);
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(bottomSheetContent);
         when(mBottomSheetController.getSheetState())
                 .thenReturn(BottomSheetController.SheetState.HALF);
 
@@ -1299,11 +1313,14 @@ public class ToolbarPositionControllerTest {
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ true);
         assertControlsAtTop();
 
-        verify(mBottomSheetController).addObserver(mObserverCaptor.capture());
-        BottomSheetObserver observer = mObserverCaptor.getValue();
+        ArgumentCaptor<BottomSheetObserver> observerCaptor =
+                ArgumentCaptor.forClass(BottomSheetObserver.class);
+        verify(mBottomSheetController).addObserver(observerCaptor.capture());
+        BottomSheetObserver observer = observerCaptor.getValue();
 
-        when(mBottomSheetContent.actsAsBrowserControls()).thenReturn(true);
-        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mBottomSheetContent);
+        BottomSheetContent bottomSheetContent = mock(BottomSheetContent.class);
+        when(bottomSheetContent.actsAsBrowserControls()).thenReturn(true);
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(bottomSheetContent);
         when(mBottomSheetController.getSheetState())
                 .thenReturn(BottomSheetController.SheetState.HALF);
 

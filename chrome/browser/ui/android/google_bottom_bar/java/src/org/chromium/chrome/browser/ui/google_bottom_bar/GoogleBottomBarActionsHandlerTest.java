@@ -91,11 +91,8 @@ public class GoogleBottomBarActionsHandlerTest {
 
     @Mock private ShareDelegate mShareDelegate;
     @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
-    @Mock private PendingIntent mPendingIntent;
-    @Mock private Drawable mDrawable;
 
     @Captor private ArgumentCaptor<LensIntentParams> mLensIntentParamsArgumentCaptor;
-    @Captor private ArgumentCaptor<Intent> mIntentCaptor;
 
     private Activity mActivity;
     private GoogleBottomBarActionsHandler mGoogleBottomBarActionsHandler;
@@ -147,9 +144,10 @@ public class GoogleBottomBarActionsHandlerTest {
                 mGoogleBottomBarActionsHandler.getClickListener(buttonConfig);
         clickListener.onClick(new View(context));
 
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
         verify(pendingIntent)
-                .send(eq(mActivity), anyInt(), mIntentCaptor.capture(), any(), any(), any(), any());
-        assertEquals(Uri.parse(TEST_URI), mIntentCaptor.getValue().getData());
+                .send(eq(mActivity), anyInt(), captor.capture(), any(), any(), any(), any());
+        assertEquals(Uri.parse(TEST_URI), captor.getValue().getData());
     }
 
     @Test
@@ -182,6 +180,7 @@ public class GoogleBottomBarActionsHandlerTest {
         mHistogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.SHARE_EMBEDDER);
+        PendingIntent pendingIntent = mock(PendingIntent.class);
         Context context = mActivity.getApplicationContext();
         View buttonView = new View(context);
         BottomBarConfig.ButtonConfig buttonConfig =
@@ -189,15 +188,16 @@ public class GoogleBottomBarActionsHandlerTest {
                         ButtonId.SHARE,
                         context.getDrawable(R.drawable.ic_share_white_24dp),
                         context.getString(R.string.google_bottom_bar_share_button_description),
-                        mPendingIntent);
+                        pendingIntent);
 
         View.OnClickListener clickListener =
                 mGoogleBottomBarActionsHandler.getClickListener(buttonConfig);
         clickListener.onClick(buttonView);
 
-        verify(mPendingIntent)
-                .send(eq(mActivity), anyInt(), mIntentCaptor.capture(), any(), any(), any(), any());
-        assertEquals(Uri.parse(TEST_URI), mIntentCaptor.getValue().getData());
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(pendingIntent)
+                .send(eq(mActivity), anyInt(), captor.capture(), any(), any(), any(), any());
+        assertEquals(Uri.parse(TEST_URI), captor.getValue().getData());
     }
 
     @Test
@@ -228,6 +228,7 @@ public class GoogleBottomBarActionsHandlerTest {
         mHistogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.PIH_EMBEDDER);
+        PendingIntent pendingIntent = mock(PendingIntent.class);
         Context context = mActivity.getApplicationContext();
         View buttonView = new View(context);
         BottomBarConfig.ButtonConfig buttonConfig =
@@ -236,15 +237,16 @@ public class GoogleBottomBarActionsHandlerTest {
                         context.getDrawable(R.drawable.bottom_bar_page_insights_icon),
                         context.getString(
                                 R.string.google_bottom_bar_page_insights_button_description),
-                        mPendingIntent);
+                        pendingIntent);
 
         View.OnClickListener clickListener =
                 mGoogleBottomBarActionsHandler.getClickListener(buttonConfig);
         clickListener.onClick(buttonView);
 
-        verify(mPendingIntent)
-                .send(eq(mActivity), anyInt(), mIntentCaptor.capture(), any(), any(), any(), any());
-        assertEquals(Uri.parse(TEST_URI), mIntentCaptor.getValue().getData());
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(pendingIntent)
+                .send(eq(mActivity), anyInt(), captor.capture(), any(), any(), any(), any());
+        assertEquals(Uri.parse(TEST_URI), captor.getValue().getData());
     }
 
     @Test
@@ -275,10 +277,11 @@ public class GoogleBottomBarActionsHandlerTest {
                 HistogramWatcher.newBuilder().expectNoRecords(BUTTON_CLICKED_HISTOGRAM).build();
         Context context = mActivity.getApplicationContext();
         View buttonView = new View(context);
+        Drawable icon = mock(Drawable.class);
         BottomBarConfig.ButtonConfig buttonConfig =
                 new BottomBarConfig.ButtonConfig(
                         ButtonId.CUSTOM,
-                        mDrawable,
+                        icon,
                         /* description= */ "Description",
                         /* pendingIntent= */ null);
 
@@ -299,10 +302,11 @@ public class GoogleBottomBarActionsHandlerTest {
         Context context = mActivity.getApplicationContext();
         View buttonView = new View(context);
         PendingIntent pendingIntent = mock(PendingIntent.class);
+        Drawable icon = mock(Drawable.class);
         BottomBarConfig.ButtonConfig buttonConfig =
                 new BottomBarConfig.ButtonConfig(
                         ButtonId.CUSTOM,
-                        mDrawable,
+                        icon,
                         /* description= */ "Description",
                         /* pendingIntent= */ pendingIntent);
 
@@ -310,9 +314,10 @@ public class GoogleBottomBarActionsHandlerTest {
                 mGoogleBottomBarActionsHandler.getClickListener(buttonConfig);
         clickListener.onClick(buttonView);
 
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
         verify(pendingIntent)
-                .send(eq(mActivity), anyInt(), mIntentCaptor.capture(), any(), any(), any(), any());
-        assertEquals(Uri.parse(TEST_URI), mIntentCaptor.getValue().getData());
+                .send(eq(mActivity), anyInt(), captor.capture(), any(), any(), any(), any());
+        assertEquals(Uri.parse(TEST_URI), captor.getValue().getData());
     }
 
     @Test(expected = IllegalStateException.class)
@@ -323,10 +328,11 @@ public class GoogleBottomBarActionsHandlerTest {
                         BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.SEARCH_CHROME);
         Context context = mActivity.getApplicationContext();
         View buttonView = new View(context);
+        Drawable icon = mock(Drawable.class);
         BottomBarConfig.ButtonConfig buttonConfig =
                 new BottomBarConfig.ButtonConfig(
                         ButtonId.SEARCH,
-                        mDrawable,
+                        icon,
                         /* description= */ "Description",
                         /* pendingIntent= */ null);
 
@@ -347,10 +353,11 @@ public class GoogleBottomBarActionsHandlerTest {
                         BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.SEARCH_CHROME);
         Context context = mActivity.getApplicationContext();
         View buttonView = new View(context);
+        Drawable icon = mock(Drawable.class);
         BottomBarConfig.ButtonConfig buttonConfig =
                 new BottomBarConfig.ButtonConfig(
                         ButtonId.SEARCH,
-                        mDrawable,
+                        icon,
                         /* description= */ "Description",
                         /* pendingIntent= */ null);
         Intent intent = new Intent(SearchManager.INTENT_ACTION_GLOBAL_SEARCH);
@@ -379,10 +386,11 @@ public class GoogleBottomBarActionsHandlerTest {
         Context context = mActivity.getApplicationContext();
         View buttonView = new View(context);
         PendingIntent pendingIntent = mock(PendingIntent.class);
+        Drawable icon = mock(Drawable.class);
         BottomBarConfig.ButtonConfig buttonConfig =
                 new BottomBarConfig.ButtonConfig(
                         ButtonId.SEARCH,
-                        mDrawable,
+                        icon,
                         /* description= */ "Description",
                         /* pendingIntent= */ pendingIntent);
 
@@ -390,9 +398,10 @@ public class GoogleBottomBarActionsHandlerTest {
                 mGoogleBottomBarActionsHandler.getClickListener(buttonConfig);
         clickListener.onClick(buttonView);
 
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
         verify(pendingIntent)
-                .send(eq(mActivity), anyInt(), mIntentCaptor.capture(), any(), any(), any(), any());
-        assertEquals(Uri.parse(TEST_URI), mIntentCaptor.getValue().getData());
+                .send(eq(mActivity), anyInt(), captor.capture(), any(), any(), any(), any());
+        assertEquals(Uri.parse(TEST_URI), captor.getValue().getData());
     }
 
     @Test(expected = IllegalStateException.class)
@@ -403,10 +412,11 @@ public class GoogleBottomBarActionsHandlerTest {
                         BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.HOME_CHROME);
         Context context = mActivity.getApplicationContext();
         View buttonView = new View(context);
+        Drawable icon = mock(Drawable.class);
         BottomBarConfig.ButtonConfig buttonConfig =
                 new BottomBarConfig.ButtonConfig(
                         ButtonId.HOME,
-                        mDrawable,
+                        icon,
                         /* description= */ "Description",
                         /* pendingIntent= */ null);
 
@@ -426,10 +436,11 @@ public class GoogleBottomBarActionsHandlerTest {
                         BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.HOME_CHROME);
         Context context = mActivity.getApplicationContext();
         View buttonView = new View(context);
+        Drawable icon = mock(Drawable.class);
         BottomBarConfig.ButtonConfig buttonConfig =
                 new BottomBarConfig.ButtonConfig(
                         ButtonId.HOME,
-                        mDrawable,
+                        icon,
                         /* description= */ "Description",
                         /* pendingIntent= */ null);
         Intent intent = new Intent(Intent.ACTION_MAIN);
@@ -462,10 +473,11 @@ public class GoogleBottomBarActionsHandlerTest {
         Context context = mActivity.getApplicationContext();
         View buttonView = new View(context);
         PendingIntent pendingIntent = mock(PendingIntent.class);
+        Drawable icon = mock(Drawable.class);
         BottomBarConfig.ButtonConfig buttonConfig =
                 new BottomBarConfig.ButtonConfig(
                         ButtonId.HOME,
-                        mDrawable,
+                        icon,
                         /* description= */ "Description",
                         /* pendingIntent= */ pendingIntent);
 
@@ -473,9 +485,10 @@ public class GoogleBottomBarActionsHandlerTest {
                 mGoogleBottomBarActionsHandler.getClickListener(buttonConfig);
         clickListener.onClick(buttonView);
 
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
         verify(pendingIntent)
-                .send(eq(mActivity), anyInt(), mIntentCaptor.capture(), any(), any(), any(), any());
-        assertEquals(Uri.parse(TEST_URI), mIntentCaptor.getValue().getData());
+                .send(eq(mActivity), anyInt(), captor.capture(), any(), any(), any(), any());
+        assertEquals(Uri.parse(TEST_URI), captor.getValue().getData());
     }
 
     @Test(expected = IllegalStateException.class)

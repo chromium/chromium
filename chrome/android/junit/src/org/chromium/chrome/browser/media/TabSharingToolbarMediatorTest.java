@@ -25,7 +25,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -48,16 +47,13 @@ public class TabSharingToolbarMediatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private TabSharingUiBridge mBridge;
+    private WebContents mCapturer;
     @Mock private WebContents mCapturee;
     @Mock private WebContents mOtherWebContents;
     @Mock private Tab mCurrentTab;
     @Mock private UrlFormatter.Natives mUrlFormatterJniMock;
     @Mock private MediaCaptureDevicesDispatcherAndroid.Natives mDispatcherJniMock;
-    @Mock private Tab mTab;
-    @Mock private View mView;
-    @Captor private ArgumentCaptor<TabObserver> mObserverCaptor;
 
-    private WebContents mCapturer;
     private final ActivityTabProvider mTabProvider = new ActivityTabProvider();
     private Context mContext;
     private PropertyModel mModel;
@@ -194,10 +190,11 @@ public class TabSharingToolbarMediatorTest {
                         .contains("meet.google.com"));
 
         // Simulate switching active tabs dynamically
-        when(mTab.getWebContents()).thenReturn(mCapturer);
-        when(mTab.isNativePage()).thenReturn(false);
-        when(mTab.getUrl()).thenReturn(new GURL("https://meet.google.com"));
-        mTabProvider.setForTesting(mTab);
+        Tab newTab = Mockito.mock(Tab.class);
+        when(newTab.getWebContents()).thenReturn(mCapturer);
+        when(newTab.isNativePage()).thenReturn(false);
+        when(newTab.getUrl()).thenReturn(new GURL("https://meet.google.com"));
+        mTabProvider.setForTesting(newTab);
         assertTrue(
                 mModel.get(TabSharingToolbarProperties.STATUS_TEXT)
                         .toString()
@@ -250,8 +247,9 @@ public class TabSharingToolbarMediatorTest {
         mMediator = new TabSharingToolbarMediator(mContext, mModel, mBridge, mTabProvider);
         assertFalse(mModel.get(TabSharingToolbarProperties.SHARE_INSTEAD_BUTTON_VISIBLE));
 
-        verify(mCurrentTab).addObserver(mObserverCaptor.capture());
-        TabObserver tabObserver = mObserverCaptor.getValue();
+        ArgumentCaptor<TabObserver> observerCaptor = ArgumentCaptor.forClass(TabObserver.class);
+        verify(mCurrentTab).addObserver(observerCaptor.capture());
+        TabObserver tabObserver = observerCaptor.getValue();
 
         when(mCurrentTab.isNativePage()).thenReturn(false);
         when(mCurrentTab.getWebContents()).thenReturn(mOtherWebContents);
@@ -276,7 +274,8 @@ public class TabSharingToolbarMediatorTest {
         assertTrue(spans.length > 0);
 
         try {
-            spans[0].onClick(mView);
+            View mockView = Mockito.mock(View.class);
+            spans[0].onClick(mockView);
         } catch (RuntimeException e) {
             // Expected fallthrough when unmocked JNI boundary in TabImplJni is reached in
             // Robolectric.

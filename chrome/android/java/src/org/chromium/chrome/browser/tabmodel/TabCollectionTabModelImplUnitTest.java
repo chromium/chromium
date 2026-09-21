@@ -79,7 +79,6 @@ public class TabCollectionTabModelImplUnitTest {
     @Mock private ScopedStorageBatch mScopedStorageBatch;
     @Mock private TabModelObserver mTabModelObserver;
     @Mock private PendingTabClosureManager mPendingTabClosureManager;
-    @Mock private TabList mTabList;
 
     private TabCollectionTabModelImpl mTabModel;
     private List<Tab> mTabs;
@@ -608,7 +607,7 @@ public class TabCollectionTabModelImplUnitTest {
         @TabId int tabId = 789;
         MockTab tab = createMockTab(tabId, mProfile);
         tab.setIsInitialized(true);
-        when(mPendingTabClosureManager.getRewoundList()).thenReturn(mTabList);
+        when(mPendingTabClosureManager.getRewoundList()).thenReturn(mock(TabList.class));
         mTabModel.setPendingTabClosureManagerForTesting(mPendingTabClosureManager);
 
         mTabModel.addTab(tab, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);

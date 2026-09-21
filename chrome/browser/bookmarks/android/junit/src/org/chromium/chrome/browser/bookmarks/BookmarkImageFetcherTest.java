@@ -75,7 +75,6 @@ public class BookmarkImageFetcherTest {
 
     @Captor private ArgumentCaptor<Drawable> mDrawableCaptor;
     @Captor private ArgumentCaptor<Pair<Drawable, Drawable>> mFolderDrawablesCaptor;
-    @Captor private ArgumentCaptor<ImageFetcher.Params> mParamsCaptor;
 
     private final BookmarkId mFolderId = new BookmarkId(/* id= */ 1, BookmarkType.NORMAL);
     private final BookmarkId mBookmarkId1 = new BookmarkId(/* id= */ 2, BookmarkType.NORMAL);
@@ -243,8 +242,10 @@ public class BookmarkImageFetcherTest {
         mBookmarkImageFetcher.fetchImageForBookmarkWithFaviconFallback(
                 mAccountBookmark1, 100, mDrawableCallback);
 
-        verify(mImageFetcher).fetchImage(mParamsCaptor.capture(), any());
-        assertEquals(mParamsCaptor.getValue().url, metaImageUrl);
+        ArgumentCaptor<ImageFetcher.Params> paramsArgumentCaptor =
+                ArgumentCaptor.forClass(ImageFetcher.Params.class);
+        verify(mImageFetcher).fetchImage(paramsArgumentCaptor.capture(), any());
+        assertEquals(paramsArgumentCaptor.getValue().url, metaImageUrl);
 
         verify(mDrawableCallback).onResult(mDrawableCaptor.capture());
         // There shouldn't be any interaction with favicon helper since an image was found.

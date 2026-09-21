@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
@@ -65,11 +66,11 @@ public class BookmarkBarContextMenuMediatorTest {
     @Mock private Tab mCurrentTab;
     @Mock private Runnable mDismissRunnable;
     @Mock private BookmarkBarContextMenuDelegate mContextMenuDelegate;
-    @Mock private Profile mProfile;
 
     private Activity mActivity;
     private FakeBookmarkModel mBookmarkModel;
     private BookmarkBarContextMenuMediator mMediator;
+    private Profile mProfile;
 
     @Before
     public void setUp() {
@@ -77,6 +78,7 @@ public class BookmarkBarContextMenuMediatorTest {
 
         mBookmarkModel = FakeBookmarkModel.createModel();
         BookmarkModel.setInstanceForTesting(mBookmarkModel);
+        mProfile = mock(Profile.class);
 
         mMediator =
                 new BookmarkBarContextMenuMediator(

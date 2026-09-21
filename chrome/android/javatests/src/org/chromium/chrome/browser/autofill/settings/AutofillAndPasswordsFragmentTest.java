@@ -44,7 +44,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -119,7 +118,6 @@ public class AutofillAndPasswordsFragmentTest {
     @Mock private SettingsNavigation mSettingsNavigation;
     @Mock private BottomSheetSigninAndHistorySyncCoordinator mSettingsSigninCoordinator;
     @Mock private BottomSheetSigninAndHistorySyncCoordinator mAutofillAndPasswordsSigninCoordinator;
-    @Captor private ArgumentCaptor<Bundle> mBundleCaptor;
 
     private final FakeCredentialManagerLauncherFactoryImpl mFakeLauncherFactory =
             new FakeCredentialManagerLauncherFactoryImpl();
@@ -512,15 +510,13 @@ public class AutofillAndPasswordsFragmentTest {
 
         testItemClick(R.string.autofill_settings_title, AutofillOptionsFragment.class);
 
+        ArgumentCaptor<Bundle> bundleCaptor = ArgumentCaptor.forClass(Bundle.class);
         verify(mSettingsNavigation)
                 .startSettings(
-                        any(),
-                        eq(AutofillOptionsFragment.class),
-                        mBundleCaptor.capture(),
-                        eq(true));
+                        any(), eq(AutofillOptionsFragment.class), bundleCaptor.capture(), eq(true));
         assertEquals(
                 AutofillOptionsReferrer.AUTOFILL_AND_PASSWORDS_FRAGMENT,
-                mBundleCaptor.getValue().getInt(AutofillOptionsFragment.AUTOFILL_OPTIONS_REFERRER));
+                bundleCaptor.getValue().getInt(AutofillOptionsFragment.AUTOFILL_OPTIONS_REFERRER));
     }
 
     @Test
@@ -532,15 +528,13 @@ public class AutofillAndPasswordsFragmentTest {
 
         testItemClick(R.string.autofill_options_title, AutofillOptionsFragment.class);
 
+        ArgumentCaptor<Bundle> bundleCaptor = ArgumentCaptor.forClass(Bundle.class);
         verify(mSettingsNavigation)
                 .startSettings(
-                        any(),
-                        eq(AutofillOptionsFragment.class),
-                        mBundleCaptor.capture(),
-                        eq(true));
+                        any(), eq(AutofillOptionsFragment.class), bundleCaptor.capture(), eq(true));
         assertEquals(
                 AutofillOptionsReferrer.AUTOFILL_AND_PASSWORDS_FRAGMENT,
-                mBundleCaptor.getValue().getInt(AutofillOptionsFragment.AUTOFILL_OPTIONS_REFERRER));
+                bundleCaptor.getValue().getInt(AutofillOptionsFragment.AUTOFILL_OPTIONS_REFERRER));
     }
 
     @Test

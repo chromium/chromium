@@ -26,7 +26,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -50,22 +49,20 @@ import org.chromium.url.JUnitTestGURLs;
 /** Unit tests for {@link AutoPictureInPicturePermissionController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AutoPictureInPicturePermissionControllerTest {
-    private static final Runnable NO_OP_CALLBACK = () -> {};
-
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private AutoPictureInPicturePermissionController.Natives mNativeMock;
     @Mock private UrlFormatter.Natives mUrlFormatterJniMock;
     @Mock private Tab mTab;
     @Mock private ViewGroup mContainerView;
-    @Mock private Runnable mRunnable;
-    @Mock private Page mPage;
-    @Captor private ArgumentCaptor<WebContentsObserver> mWebContentsObserverCaptor;
+
+    private static final Runnable NO_OP_CALLBACK = () -> {};
 
     private ActivityController<Activity> mActivityController;
     private Activity mActivity;
     private WebContents mWebContents;
     private ViewAndroidDelegate mViewAndroidDelegate;
+
     private AutoPictureInPictureTabHelper mTabHelper;
 
     @Before
@@ -233,13 +230,15 @@ public class AutoPictureInPicturePermissionControllerTest {
     @Test
     public void testShowPrompt_BlockClick_SetsPermissionToBlockAndClosesPip() {
         when(mNativeMock.getPermissionStatus(mWebContents)).thenReturn(ContentSetting.ASK);
-        AutoPictureInPicturePermissionController.showPromptIfNeeded(mActivity, mTab, mRunnable);
+        Runnable closePipCallback = mock(Runnable.class);
+        AutoPictureInPicturePermissionController.showPromptIfNeeded(
+                mActivity, mTab, closePipCallback);
 
         ViewGroup rootView = mActivity.findViewById(android.R.id.content);
         clickButtonWithTextId(R.string.permission_dont_allow);
 
         verify(mNativeMock).setPermissionStatus(eq(mWebContents), eq(ContentSetting.BLOCK));
-        verify(mRunnable).run();
+        verify(closePipCallback).run();
         Assert.assertEquals(0, rootView.getChildCount());
     }
 
@@ -282,11 +281,12 @@ public class AutoPictureInPicturePermissionControllerTest {
         mTabHelper.setHasAllowOnce(true);
 
         // Capture the observer registered by the helper
-        verify((WebContentsObserver.Observable) mWebContents)
-                .addObserver(mWebContentsObserverCaptor.capture());
+        ArgumentCaptor<WebContentsObserver> captor =
+                ArgumentCaptor.forClass(WebContentsObserver.class);
+        verify((WebContentsObserver.Observable) mWebContents).addObserver(captor.capture());
 
         // Simulate primary page changed
-        mWebContentsObserverCaptor.getValue().primaryPageChanged(mPage);
+        captor.getValue().primaryPageChanged(mock(Page.class));
 
         Assert.assertFalse("Allow once should be cleared on navigation", mTabHelper.hasAllowOnce());
     }
@@ -401,13 +401,14 @@ public class AutoPictureInPicturePermissionControllerTest {
         AutoPictureInPicturePermissionController controller = mTabHelper.getPermissionController();
         Assert.assertNotNull(controller);
 
-        controller.mOnPromptDismissedCallback = mRunnable;
+        Runnable mockCallback = mock(Runnable.class);
+        controller.mOnPromptDismissedCallback = mockCallback;
 
         // Simulate "Allow Once" click.
         clickButtonWithTextId(R.string.permission_allow_this_time);
 
         // Verify callback triggered
-        verify(mRunnable).run();
+        verify(mockCallback).run();
     }
 
     private void clickButtonWithTextId(int stringResId) {

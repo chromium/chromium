@@ -30,7 +30,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -47,8 +46,6 @@ public class NtpThemeCollectionsUtilsUnitTest {
 
     @Mock private GridLayoutManager mGridLayoutManager;
     @Mock private Callback<Configuration> mMockConfigurationCallback;
-    @Captor private ArgumentCaptor<ComponentCallbacks> mComponentCallbacksCaptor;
-    @Captor private ArgumentCaptor<OnGlobalLayoutListener> mListenerCaptor;
 
     private Context mContext;
 
@@ -64,6 +61,8 @@ public class NtpThemeCollectionsUtilsUnitTest {
     public void testRegisterOrientationListener() {
         // Spy the context to capture the registered listener.
         Context spyContext = spy(mContext);
+        ArgumentCaptor<ComponentCallbacks> componentCallbacksCaptor =
+                ArgumentCaptor.forClass(ComponentCallbacks.class);
 
         // Call the method under test.
         ComponentCallbacks returnedCallbacks =
@@ -71,8 +70,8 @@ public class NtpThemeCollectionsUtilsUnitTest {
                         spyContext, mMockConfigurationCallback);
 
         // Verify that a listener was registered and capture it.
-        verify(spyContext).registerComponentCallbacks(mComponentCallbacksCaptor.capture());
-        ComponentCallbacks capturedCallbacks = mComponentCallbacksCaptor.getValue();
+        verify(spyContext).registerComponentCallbacks(componentCallbacksCaptor.capture());
+        ComponentCallbacks capturedCallbacks = componentCallbacksCaptor.getValue();
         assertEquals(returnedCallbacks, capturedCallbacks);
 
         // Create a new configuration and trigger the callback.
@@ -110,8 +109,10 @@ public class NtpThemeCollectionsUtilsUnitTest {
         NtpThemeCollectionsUtils.updateSpanCountOnLayoutChange(
                 layoutManagerSpy, recyclerViewSpy, 180, 20);
 
-        verify(viewTreeObserverSpy).addOnGlobalLayoutListener(mListenerCaptor.capture());
-        OnGlobalLayoutListener listener = mListenerCaptor.getValue();
+        ArgumentCaptor<OnGlobalLayoutListener> listenerCaptor =
+                ArgumentCaptor.forClass(ViewTreeObserver.OnGlobalLayoutListener.class);
+        verify(viewTreeObserverSpy).addOnGlobalLayoutListener(listenerCaptor.capture());
+        OnGlobalLayoutListener listener = listenerCaptor.getValue();
 
         // 1. Not shown, should do nothing.
         doReturn(false).when(recyclerViewSpy).isShown();

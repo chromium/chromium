@@ -36,8 +36,6 @@ public class AuthenticatorIncognitoConfirmationBottomsheetTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private WebContents mWebContents;
 
-    @Mock private WindowAndroid mWindowAndroid;
-
     private Runnable mPositiveCallback;
     private Runnable mNegativeCallback;
     private boolean mUserResponded;
@@ -47,9 +45,10 @@ public class AuthenticatorIncognitoConfirmationBottomsheetTest {
 
     @Before
     public void setUp() {
-        setWindowAndroid(mWindowAndroid, mWebContents);
+        WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);
+        setWindowAndroid(windowAndroid, mWebContents);
         Mockito.doReturn(new WeakReference<>(RuntimeEnvironment.application))
-                .when(mWindowAndroid)
+                .when(windowAndroid)
                 .getContext();
 
         mPositiveCallback =

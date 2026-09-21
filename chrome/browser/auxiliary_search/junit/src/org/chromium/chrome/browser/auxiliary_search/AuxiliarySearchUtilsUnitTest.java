@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -16,12 +17,9 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.mockito.Mockito;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ServiceLoaderUtil;
@@ -44,10 +42,6 @@ import java.io.File;
 /** Unit tests for AuxiliarySearchUtils. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AuxiliarySearchUtilsUnitTest {
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private AuxiliarySearchHooks mAuxiliarySearchHooks;
-    @Mock private Tab mTab;
-
     @Test
     public void testBitmapToString() {
         assertNull(AuxiliarySearchUtils.bitmapToBytes(null));
@@ -75,8 +69,9 @@ public class AuxiliarySearchUtilsUnitTest {
     @Test
     public void testShareTabsWithOs() {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
-        when(mAuxiliarySearchHooks.isSettingDefaultEnabledByOs()).thenReturn(true);
-        ServiceLoaderUtil.setInstanceForTesting(AuxiliarySearchHooks.class, mAuxiliarySearchHooks);
+        AuxiliarySearchHooks hooksMock = Mockito.mock(AuxiliarySearchHooks.class);
+        when(hooksMock.isSettingDefaultEnabledByOs()).thenReturn(true);
+        ServiceLoaderUtil.setInstanceForTesting(AuxiliarySearchHooks.class, hooksMock);
         assertTrue(AuxiliarySearchControllerFactory.getInstance().isSettingDefaultEnabledByOs());
 
         prefsManager.removeKey(ChromePreferenceKeys.SHARING_TABS_WITH_OS);
@@ -109,13 +104,14 @@ public class AuxiliarySearchUtilsUnitTest {
                 + ":multi_data_source_skip_device_check/false"
     })
     public void testIsShareTabsWithOsDefaultEnabled_MultiDataSource() {
-        when(mAuxiliarySearchHooks.isEnabled()).thenReturn(true);
-        when(mAuxiliarySearchHooks.isSettingDefaultEnabledByOs()).thenReturn(true);
-        ServiceLoaderUtil.setInstanceForTesting(AuxiliarySearchHooks.class, mAuxiliarySearchHooks);
+        AuxiliarySearchHooks hooksMock = Mockito.mock(AuxiliarySearchHooks.class);
+        when(hooksMock.isEnabled()).thenReturn(true);
+        when(hooksMock.isSettingDefaultEnabledByOs()).thenReturn(true);
+        ServiceLoaderUtil.setInstanceForTesting(AuxiliarySearchHooks.class, hooksMock);
 
         assertTrue(AuxiliarySearchUtils.isShareTabsWithOsDefaultEnabled());
 
-        when(mAuxiliarySearchHooks.isSettingDefaultEnabledByOs()).thenReturn(false);
+        when(hooksMock.isSettingDefaultEnabledByOs()).thenReturn(false);
         assertFalse(AuxiliarySearchUtils.isShareTabsWithOsDefaultEnabled());
     }
 
@@ -151,7 +147,8 @@ public class AuxiliarySearchUtilsUnitTest {
 
     @Test
     public void testGetMetadataVersion() {
-        assertEquals(MetaDataVersion.V1, AuxiliarySearchUtils.getMetadataVersion(mTab));
+        Tab tab = mock(Tab.class);
+        assertEquals(MetaDataVersion.V1, AuxiliarySearchUtils.getMetadataVersion(tab));
 
         AuxiliarySearchEntry entry = AuxiliarySearchEntry.newBuilder().build();
         assertEquals(MetaDataVersion.V1, AuxiliarySearchUtils.getMetadataVersion(entry));

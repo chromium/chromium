@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -32,6 +33,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -76,10 +78,13 @@ import java.util.List;
 public class BookmarksItemBuilderUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    private Context mContext;
     @Mock private AppMenuItemTheme mAppMenuItemTheme;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private Profile mProfile;
+    private FakeBookmarkModel mBookmarkModel;
     @Mock private Tab mTab;
+
     @Mock private BookmarkImageFetcher mBookmarkImageFetcher;
 
     @Mock
@@ -90,11 +95,6 @@ public class BookmarksItemBuilderUnitTest {
     @SuppressWarnings("MockNotUsedInProduction")
     private UserPrefs.Natives mUserPrefsNatives;
 
-    @Mock private TabModel mTabModel;
-    @Mock private Drawable mDrawable;
-
-    private Context mContext;
-    private FakeBookmarkModel mBookmarkModel;
     private BookmarksItemBuilder mBookmarksItemBuilder;
 
     @Before
@@ -103,9 +103,10 @@ public class BookmarksItemBuilderUnitTest {
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
 
-        when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
-        when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
-        when(mTabModel.getProfile()).thenReturn(mProfile);
+        TabModel tabModel = Mockito.mock(TabModel.class);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(tabModel);
+        when(mTabModelSelector.getModel(false)).thenReturn(tabModel);
+        when(tabModel.getProfile()).thenReturn(mProfile);
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
 
@@ -365,9 +366,10 @@ public class BookmarksItemBuilderUnitTest {
                 bookmarkListItem.model.get(AppMenuItemProperties.ICON_SUPPLIER);
         assertNotNull(iconSupplier);
 
+        Drawable mockFavicon = mock(Drawable.class);
         doAnswer(
                         invocation -> {
-                            ((Callback<Drawable>) invocation.getArgument(1)).onResult(mDrawable);
+                            ((Callback<Drawable>) invocation.getArgument(1)).onResult(mockFavicon);
                             return null;
                         })
                 .when(mBookmarkImageFetcher)
@@ -381,7 +383,7 @@ public class BookmarksItemBuilderUnitTest {
         if (actualIcon instanceof InsetDrawable insetDrawable) {
             actualIcon = insetDrawable.getDrawable();
         }
-        assertEquals(mDrawable, actualIcon);
+        assertEquals(mockFavicon, actualIcon);
     }
 
     @Test

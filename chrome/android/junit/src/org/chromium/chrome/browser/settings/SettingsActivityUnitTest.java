@@ -11,6 +11,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
 
@@ -69,14 +70,12 @@ import java.util.concurrent.TimeoutException;
 public class SettingsActivityUnitTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
+    private ActivityScenario<SettingsActivity> mActivityScenario;
+    private SettingsActivity mSettingsActivity;
+
     @Mock public ChromeBrowserInitializer mInitializer;
     @Mock public Profile mProfile;
     @Mock public ActorKeyedService mActorKeyedService;
-    @Mock private SettingsContainmentHelper mSettingsContainmentHelper;
-    @Mock private MultiColumnSettings mMultiColumnSettings;
-
-    private ActivityScenario<SettingsActivity> mActivityScenario;
-    private SettingsActivity mSettingsActivity;
 
     @Before
     public void setup() {
@@ -371,12 +370,13 @@ public class SettingsActivityUnitTest {
         startSettingsActivity(TestEmbeddableFragment.class.getName());
         mActivityScenario.moveToState(State.CREATED);
 
-        mSettingsActivity.setContainmentHelperForTesting(mSettingsContainmentHelper);
-        mSettingsActivity.setMultiColumnSettingsForTesting(mMultiColumnSettings);
+        SettingsContainmentHelper mockHelper = mock(SettingsContainmentHelper.class);
+        mSettingsActivity.setContainmentHelperForTesting(mockHelper);
+        mSettingsActivity.setMultiColumnSettingsForTesting(mock(MultiColumnSettings.class));
 
         mSettingsActivity.onConfigurationChanged(new Configuration());
 
-        verify(mSettingsContainmentHelper).updateContainmentForAttachedFragments(any());
+        verify(mockHelper).updateContainmentForAttachedFragments(any());
     }
 
     @Test
@@ -384,11 +384,12 @@ public class SettingsActivityUnitTest {
         startSettingsActivity(TestEmbeddableFragment.class.getName());
         mActivityScenario.moveToState(State.CREATED);
 
-        mSettingsActivity.setContainmentHelperForTesting(mSettingsContainmentHelper);
+        SettingsContainmentHelper mockHelper = mock(SettingsContainmentHelper.class);
+        mSettingsActivity.setContainmentHelperForTesting(mockHelper);
 
         mSettingsActivity.onHeaderLayoutUpdated();
 
-        verify(mSettingsContainmentHelper).updateContainmentForAttachedFragments(any());
+        verify(mockHelper).updateContainmentForAttachedFragments(any());
     }
 
     /**

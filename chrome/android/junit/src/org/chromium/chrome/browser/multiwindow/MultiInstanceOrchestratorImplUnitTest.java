@@ -37,7 +37,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
@@ -114,13 +113,6 @@ public class MultiInstanceOrchestratorImplUnitTest {
     @Mock private Tab mTab2;
     @Mock private TabModel mTabModel;
     @Mock private TabModelSelector mTabModelSelector1;
-    @Mock private Bundle mBundle;
-    @Mock private Profile mProfile;
-    @Mock private WebContents mWebContents;
-    @Mock private ReparentingTabsTask mReparentingTabsTask;
-    @Mock private AppTask mAppTask;
-    @Mock private ActivityManager mActivityManager;
-    @Captor private ArgumentCaptor<Intent> mIntentCaptor;
 
     @Spy private MultiWindowUtils mMultiWindowUtils;
 
@@ -212,17 +204,19 @@ public class MultiInstanceOrchestratorImplUnitTest {
 
         // Verify.
         assertTrue(result);
-        verify(mActivity).startActivity(mIntentCaptor.capture(), eq(null));
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(mActivity).startActivity(intentCaptor.capture(), eq(null));
         assertEquals(
                 "Intent consumer update failed.",
                 1,
-                mIntentCaptor.getValue().getIntExtra("my_extra", 0));
+                intentCaptor.getValue().getIntExtra("my_extra", 0));
     }
 
     @Test
     public void testCreateNewWindow_startsActivityWithBundle() {
         // Setup.
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        Bundle startActivityBundle = mock(Bundle.class);
 
         // Act.
         boolean result =
@@ -230,12 +224,12 @@ public class MultiInstanceOrchestratorImplUnitTest {
                         mActivity,
                         /* isIncognito= */ false,
                         /* additionalIntentExtras= */ null,
-                        mBundle,
+                        startActivityBundle,
                         NewWindowAppSource.BROWSER_WINDOW_CREATOR);
 
         // Verify.
         assertTrue(result);
-        verify(mActivity).startActivity(any(), eq(mBundle));
+        verify(mActivity).startActivity(any(), eq(startActivityBundle));
     }
 
     @Test
@@ -263,13 +257,15 @@ public class MultiInstanceOrchestratorImplUnitTest {
         // Setup.
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
         MultiWindowUtils.setMaxInstancesForTesting(2);
+        Profile profile = mock(Profile.class);
+        WebContents webContents = mock(WebContents.class);
 
         // Act.
         boolean result =
                 mMultiInstanceOrchestrator.createNewWindowFromWebContents(
                         mTabbedActivity1,
-                        mProfile,
-                        mWebContents,
+                        profile,
+                        webContents,
                         /* additionalIntentExtras= */ null,
                         /* startActivityOptions= */ null,
                         NewWindowAppSource.BROWSER_WINDOW_CREATOR);
@@ -277,27 +273,29 @@ public class MultiInstanceOrchestratorImplUnitTest {
         // Verify.
         assertFalse(result);
         verify(mMultiInstanceManager1).showInstanceCreationLimitMessage();
-        verify(mWebContents).destroy();
+        verify(webContents).destroy();
     }
 
     @Test
     public void testCreateNewWindowFromWebContents_api31Disabled_destroysWebContents() {
         // Setup.
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(false);
+        Profile profile = mock(Profile.class);
+        WebContents webContents = mock(WebContents.class);
 
         // Act.
         boolean result =
                 mMultiInstanceOrchestrator.createNewWindowFromWebContents(
                         mTabbedActivity1,
-                        mProfile,
-                        mWebContents,
+                        profile,
+                        webContents,
                         /* additionalIntentExtras= */ null,
                         /* startActivityOptions= */ null,
                         NewWindowAppSource.BROWSER_WINDOW_CREATOR);
 
         // Verify.
         assertFalse(result);
-        verify(mWebContents).destroy();
+        verify(webContents).destroy();
     }
 
     @Test
@@ -305,6 +303,8 @@ public class MultiInstanceOrchestratorImplUnitTest {
         // Setup.
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
         MultiWindowUtils.setMaxInstancesForTesting(5);
+        Profile profile = mock(Profile.class);
+        WebContents webContents = mock(WebContents.class);
         when(mTabReparentingDelegate.createNewWindowFromWebContents(
                         any(), any(), any(), any(), any(), anyInt()))
                 .thenReturn(true);
@@ -313,8 +313,8 @@ public class MultiInstanceOrchestratorImplUnitTest {
         boolean result =
                 mMultiInstanceOrchestrator.createNewWindowFromWebContents(
                         mTabbedActivity1,
-                        mProfile,
-                        mWebContents,
+                        profile,
+                        webContents,
                         /* additionalIntentExtras= */ null,
                         /* startActivityOptions= */ null,
                         NewWindowAppSource.BROWSER_WINDOW_CREATOR);
@@ -325,8 +325,8 @@ public class MultiInstanceOrchestratorImplUnitTest {
         verify(mTabReparentingDelegate)
                 .createNewWindowFromWebContents(
                         eq(mTabbedActivity1),
-                        eq(mProfile),
-                        eq(mWebContents),
+                        eq(profile),
+                        eq(webContents),
                         eq(null),
                         eq(null),
                         eq(NewWindowAppSource.BROWSER_WINDOW_CREATOR));
@@ -337,21 +337,24 @@ public class MultiInstanceOrchestratorImplUnitTest {
         // Setup.
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
         MultiWindowUtils.setMaxInstancesForTesting(5);
+        Profile profile = mock(Profile.class);
+        WebContents webContents = mock(WebContents.class);
         when(mTabReparentingDelegate.createNewWindowFromWebContents(
                         any(), any(), any(), any(), any(), anyInt()))
                 .thenReturn(true);
 
         Bundle extras = new Bundle();
         extras.putInt("extra", 1);
+        Bundle options = mock(Bundle.class);
 
         // Act.
         boolean result =
                 mMultiInstanceOrchestrator.createNewWindowFromWebContents(
                         mTabbedActivity1,
-                        mProfile,
-                        mWebContents,
+                        profile,
+                        webContents,
                         extras,
-                        mBundle,
+                        options,
                         NewWindowAppSource.BROWSER_WINDOW_CREATOR);
 
         // Verify.
@@ -360,10 +363,10 @@ public class MultiInstanceOrchestratorImplUnitTest {
         verify(mTabReparentingDelegate)
                 .createNewWindowFromWebContents(
                         eq(mTabbedActivity1),
-                        eq(mProfile),
-                        eq(mWebContents),
+                        eq(profile),
+                        eq(webContents),
                         eq(extras),
-                        eq(mBundle),
+                        eq(options),
                         eq(NewWindowAppSource.BROWSER_WINDOW_CREATOR));
     }
 
@@ -662,13 +665,14 @@ public class MultiInstanceOrchestratorImplUnitTest {
     @Test
     public void testMoveTabsToOtherWindow_preApi31() {
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(false);
-        ReparentingTabsTask.setReparentingTabsTaskForTesting(mReparentingTabsTask);
-        when(mReparentingTabsTask.begin(any(), any(), any(), any())).thenReturn(true);
+        var reparentingTabsTask = mock(ReparentingTabsTask.class);
+        ReparentingTabsTask.setReparentingTabsTaskForTesting(reparentingTabsTask);
+        when(reparentingTabsTask.begin(any(), any(), any(), any())).thenReturn(true);
 
         mMultiInstanceOrchestrator.moveTabsToOtherWindow(
                 List.of(mTab1, mTab2), NewWindowAppSource.MENU);
 
-        verify(mReparentingTabsTask).begin(eq(mTabbedActivity1), any(), eq(null), eq(null));
+        verify(reparentingTabsTask).begin(eq(mTabbedActivity1), any(), eq(null), eq(null));
     }
 
     @Test
@@ -955,11 +959,12 @@ public class MultiInstanceOrchestratorImplUnitTest {
                 /* isIncognito= */ false);
 
         // Verify.
-        verify(mTabbedActivity1).onNewIntent(mIntentCaptor.capture());
+        var intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(mTabbedActivity1).onNewIntent(intentCaptor.capture());
         assertEquals(
                 "Uri data is incorrect.",
                 mUrlParams.getUrl(),
-                mIntentCaptor.getValue().getData().toString());
+                intentCaptor.getValue().getData().toString());
     }
 
     @Test
@@ -984,8 +989,9 @@ public class MultiInstanceOrchestratorImplUnitTest {
                 /* openInTabGroup= */ true);
 
         // Verify.
-        verify(mTabbedActivity2).onNewIntent(mIntentCaptor.capture());
-        Intent intent = mIntentCaptor.getValue();
+        var intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(mTabbedActivity2).onNewIntent(intentCaptor.capture());
+        Intent intent = intentCaptor.getValue();
         assertEquals("Uri data is incorrect.", mUrlParams.getUrl(), intent.getData().toString());
         List<String> extraUrls =
                 IntentUtils.safeGetSerializableExtra(intent, IntentHandler.EXTRA_ADDITIONAL_URLS);
@@ -1021,8 +1027,9 @@ public class MultiInstanceOrchestratorImplUnitTest {
                 /* openInTabGroup= */ false);
 
         // Verify.
-        verify(mTabbedActivity2).onNewIntent(mIntentCaptor.capture());
-        Intent intent = mIntentCaptor.getValue();
+        var intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(mTabbedActivity2).onNewIntent(intentCaptor.capture());
+        Intent intent = intentCaptor.getValue();
         assertEquals("Uri data is incorrect.", mUrlParams.getUrl(), intent.getData().toString());
         List<String> extraUrls =
                 IntentUtils.safeGetSerializableExtra(intent, IntentHandler.EXTRA_ADDITIONAL_URLS);
@@ -1057,8 +1064,9 @@ public class MultiInstanceOrchestratorImplUnitTest {
                 /* openInTabGroup= */ false);
 
         // Verify.
-        verify(mTabbedActivity2).onNewIntent(mIntentCaptor.capture());
-        Intent intent = mIntentCaptor.getValue();
+        var intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(mTabbedActivity2).onNewIntent(intentCaptor.capture());
+        Intent intent = intentCaptor.getValue();
         assertEquals("Uri data is incorrect.", mUrlParams.getUrl(), intent.getData().toString());
         assertTrue(
                 "Incognito extra should be true",
@@ -1081,7 +1089,8 @@ public class MultiInstanceOrchestratorImplUnitTest {
         // Setup: Simulate the last accessed window to have a destroyed activity.
         MultiWindowUtils.setLastAccessedWindowIdForTesting(DEST_WINDOW_ID);
         MultiWindowUtils.setActivityByWindowIdForTesting(DEST_WINDOW_ID, /* activity= */ null);
-        AndroidTaskUtils.setAppTaskForTesting(mAppTask);
+        var appTask = mock(AppTask.class);
+        AndroidTaskUtils.setAppTaskForTesting(appTask);
 
         // Act.
         mMultiInstanceOrchestrator.openUrlInOtherWindow(
@@ -1092,13 +1101,14 @@ public class MultiInstanceOrchestratorImplUnitTest {
                 /* isIncognito= */ false);
 
         // Verify.
-        verify(mAppTask).finishAndRemoveTask();
-        verify(mTabbedActivity1).startActivity(mIntentCaptor.capture());
-        verifyNewWindowIntentForUrlLaunch(mIntentCaptor.getValue(), /* isIncognitoWindow= */ false);
+        verify(appTask).finishAndRemoveTask();
+        var intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(mTabbedActivity1).startActivity(intentCaptor.capture());
+        verifyNewWindowIntentForUrlLaunch(intentCaptor.getValue(), /* isIncognitoWindow= */ false);
         assertEquals(
                 "Window id intent extra is not set.",
                 DEST_WINDOW_ID,
-                mIntentCaptor
+                intentCaptor
                         .getValue()
                         .getIntExtra(IntentHandler.EXTRA_WINDOW_ID, INVALID_WINDOW_ID));
     }
@@ -1117,11 +1127,12 @@ public class MultiInstanceOrchestratorImplUnitTest {
                 /* isIncognito= */ false);
 
         // Verify.
-        verify(mTabbedActivity1).startActivity(mIntentCaptor.capture());
+        var intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(mTabbedActivity1).startActivity(intentCaptor.capture());
         assertEquals(
                 "New window source extra is incorrect.",
                 NewWindowAppSource.URL_LAUNCH,
-                mIntentCaptor
+                intentCaptor
                         .getValue()
                         .getIntExtra(
                                 IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE,
@@ -1199,9 +1210,8 @@ public class MultiInstanceOrchestratorImplUnitTest {
         TabbedStartupWindowPolicyDelegate.getInstance()
                 .claimStartupPolicy(/* isIncognito= */ false, StartupMode.UNMAPPED_TASK);
 
-        doReturn(mActivityManager)
-                .when(mTabbedActivity1)
-                .getSystemService(Context.ACTIVITY_SERVICE);
+        ActivityManager activityManager = mock(ActivityManager.class);
+        doReturn(activityManager).when(mTabbedActivity1).getSystemService(Context.ACTIVITY_SERVICE);
         doReturn(0).when(mTabbedActivity1).getWindowId();
 
         // Act.

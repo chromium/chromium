@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.glic;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -44,14 +45,11 @@ public class GlicButtonStateControllerTest {
     @Mock private ActorKeyedService mActorService;
     @Mock private GlicKeyedService mGlicKeyedService;
     @Mock private BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
+    private BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
     @Mock private ChromeAndroidTask mTask;
     @Mock private GlicButtonStateController.Listener mListener;
     @Mock private GlicKeyedServiceFactory.Natives mGlicKeyedServiceFactoryJniMock;
-    @Mock private ActorTask mActorTask;
-    @Mock private ActorTask mTask1;
-    @Mock private ActorTask mTask2;
 
-    private BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
     private GlicButtonStateController mController;
     private Activity mActivity;
 
@@ -91,20 +89,21 @@ public class GlicButtonStateControllerTest {
     public void testOnTaskStateChanged() {
         mController.updateObservations(mProfile);
 
-        when(mActorService.getActiveTasks()).thenReturn(Collections.singletonList(mActorTask));
+        ActorTask task = mock(ActorTask.class);
+        when(mActorService.getActiveTasks()).thenReturn(Collections.singletonList(task));
 
         // Trigger state change to WORKING.
-        when(mActorTask.getState()).thenReturn(ActorTaskState.ACTING);
+        when(task.getState()).thenReturn(ActorTaskState.ACTING);
         mController.onTaskStateChanged(1, ActorTaskState.ACTING);
         verify(mListener).onStateChanged(ButtonState.WORKING, false);
 
         // Trigger state change to NEEDS_REVIEW.
-        when(mActorTask.getState()).thenReturn(ActorTaskState.WAITING_ON_USER);
+        when(task.getState()).thenReturn(ActorTaskState.WAITING_ON_USER);
         mController.onTaskStateChanged(1, ActorTaskState.WAITING_ON_USER);
         verify(mListener).onStateChanged(ButtonState.NEEDS_REVIEW, false);
 
         // Trigger state change to DONE.
-        when(mActorTask.getState()).thenReturn(ActorTaskState.FINISHED);
+        when(task.getState()).thenReturn(ActorTaskState.FINISHED);
         mController.onTaskStateChanged(1, ActorTaskState.FINISHED);
         verify(mListener).onStateChanged(ButtonState.DONE, false);
     }
@@ -128,8 +127,9 @@ public class GlicButtonStateControllerTest {
     public void testUpdateButtonState() {
         mController.updateObservations(mProfile);
 
-        when(mActorTask.getState()).thenReturn(ActorTaskState.ACTING);
-        when(mActorService.getActiveTasks()).thenReturn(Collections.singletonList(mActorTask));
+        ActorTask task = mock(ActorTask.class);
+        when(task.getState()).thenReturn(ActorTaskState.ACTING);
+        when(mActorService.getActiveTasks()).thenReturn(Collections.singletonList(task));
 
         mController.updateButtonState();
         verify(mListener).onStateChanged(ButtonState.WORKING, false);
@@ -139,11 +139,13 @@ public class GlicButtonStateControllerTest {
     public void testUpdateButtonState_MultipleTasks() {
         mController.updateObservations(mProfile);
 
-        when(mTask1.getState()).thenReturn(ActorTaskState.FINISHED);
+        ActorTask task1 = mock(ActorTask.class);
+        when(task1.getState()).thenReturn(ActorTaskState.FINISHED);
 
-        when(mTask2.getState()).thenReturn(ActorTaskState.WAITING_ON_USER);
+        ActorTask task2 = mock(ActorTask.class);
+        when(task2.getState()).thenReturn(ActorTaskState.WAITING_ON_USER);
 
-        when(mActorService.getActiveTasks()).thenReturn(Arrays.asList(mTask1, mTask2));
+        when(mActorService.getActiveTasks()).thenReturn(Arrays.asList(task1, task2));
 
         mController.updateButtonState();
         verify(mListener).onStateChanged(ButtonState.NEEDS_REVIEW, false);

@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -49,19 +50,15 @@ import org.chromium.url.JUnitTestGURLs;
 /** Unit tests for {@link CurrentTabPriceTrackingStateSupplier} */
 @RunWith(BaseRobolectricTestRunner.class)
 public class CurrentTabPriceTrackingStateSupplierUnitTest {
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    private SettableNullableObservableSupplier<Tab> mTabSupplier;
+    private SettableMonotonicObservableSupplier<Profile> mProfileSupplier;
     @Mock private Profile mMockProfile;
     @Mock private Tab mMockTab;
     @Mock private ShoppingService mMockShoppingService;
     @Mock PriceTrackingUtils.Natives mMockPriceTrackingUtilsJni;
-    @Mock private Tab mTab;
     @Captor ArgumentCaptor<ProductInfoCallback> mProductInfoCallbackCaptor;
-    @Captor private ArgumentCaptor<CommerceSubscription> mCommerceSubscriptionCaptor;
-    @Captor private ArgumentCaptor<SubscriptionsObserver> mSubscriptionsObserverCaptor;
-
-    private SettableNullableObservableSupplier<Tab> mTabSupplier;
-    private SettableMonotonicObservableSupplier<Profile> mProfileSupplier;
 
     @Before
     public void setUp() throws Exception {
@@ -146,6 +143,8 @@ public class CurrentTabPriceTrackingStateSupplierUnitTest {
         when(mMockTab.getUrl()).thenReturn(JUnitTestGURLs.GOOGLE_URL_CAT);
         // Set ShoppingService to return product info for the current tab.
 
+        ArgumentCaptor<CommerceSubscription> commerceSubscriptionArgumentCaptor =
+                ArgumentCaptor.forClass(CommerceSubscription.class);
         ArgumentCaptor<Callback<Boolean>> shoppingServiceCallbackCaptor =
                 MockitoHelper.callbackCaptor();
 
@@ -164,12 +163,12 @@ public class CurrentTabPriceTrackingStateSupplierUnitTest {
         // Ensure ShoppingService is called to check if the current product info is tracked.
         verify(mMockShoppingService)
                 .isSubscribed(
-                        mCommerceSubscriptionCaptor.capture(),
+                        commerceSubscriptionArgumentCaptor.capture(),
                         shoppingServiceCallbackCaptor.capture());
         // Ensure ShoppingService was called with the correct product ID.
         assertEquals(
                 UnsignedLongs.toString(productClusterId),
-                mCommerceSubscriptionCaptor.getValue().id);
+                commerceSubscriptionArgumentCaptor.getValue().id);
         // Set ShoppingService to return false on the callback to isSubscribed.
         shoppingServiceCallbackCaptor.getValue().onResult(false);
 
@@ -219,6 +218,10 @@ public class CurrentTabPriceTrackingStateSupplierUnitTest {
 
         when(mMockTab.getUrl()).thenReturn(JUnitTestGURLs.GOOGLE_URL_CAT);
 
+        ArgumentCaptor<SubscriptionsObserver> subscriptionsObserverArgumentCaptor =
+                ArgumentCaptor.forClass(SubscriptionsObserver.class);
+        ArgumentCaptor<CommerceSubscription> commerceSubscriptionArgumentCaptor =
+                ArgumentCaptor.forClass(CommerceSubscription.class);
         ArgumentCaptor<Callback<Boolean>> shoppingServiceCallbackCaptor =
                 MockitoHelper.callbackCaptor();
 
@@ -236,18 +239,18 @@ public class CurrentTabPriceTrackingStateSupplierUnitTest {
 
         verify(mMockShoppingService)
                 .isSubscribed(
-                        mCommerceSubscriptionCaptor.capture(),
+                        commerceSubscriptionArgumentCaptor.capture(),
                         shoppingServiceCallbackCaptor.capture());
         // Ensure the supplier is observing for subscription changes.
         verify(mMockShoppingService)
-                .addSubscriptionsObserver(mSubscriptionsObserverCaptor.capture());
+                .addSubscriptionsObserver(subscriptionsObserverArgumentCaptor.capture());
         // Set ShoppingService to return false on the callback to isSubscribed, indicating that the
         // product is not tracked when the tab loaded.
         shoppingServiceCallbackCaptor.getValue().onResult(false);
         // Invoke subscription change listener notifying that the product is now subscribed to.
-        mSubscriptionsObserverCaptor
+        subscriptionsObserverArgumentCaptor
                 .getValue()
-                .onSubscribe(mCommerceSubscriptionCaptor.getValue(), true);
+                .onSubscribe(commerceSubscriptionArgumentCaptor.getValue(), true);
 
         // Supplier should invoke callback.
         verify(mockCallback).onResult(true);
@@ -263,6 +266,10 @@ public class CurrentTabPriceTrackingStateSupplierUnitTest {
 
         when(mMockTab.getUrl()).thenReturn(JUnitTestGURLs.GOOGLE_URL_CAT);
 
+        ArgumentCaptor<SubscriptionsObserver> subscriptionsObserverArgumentCaptor =
+                ArgumentCaptor.forClass(SubscriptionsObserver.class);
+        ArgumentCaptor<CommerceSubscription> commerceSubscriptionArgumentCaptor =
+                ArgumentCaptor.forClass(CommerceSubscription.class);
         ArgumentCaptor<Callback<Boolean>> shoppingServiceCallbackCaptor =
                 MockitoHelper.callbackCaptor();
 
@@ -280,18 +287,18 @@ public class CurrentTabPriceTrackingStateSupplierUnitTest {
 
         verify(mMockShoppingService)
                 .isSubscribed(
-                        mCommerceSubscriptionCaptor.capture(),
+                        commerceSubscriptionArgumentCaptor.capture(),
                         shoppingServiceCallbackCaptor.capture());
         verify(mMockShoppingService)
-                .addSubscriptionsObserver(mSubscriptionsObserverCaptor.capture());
+                .addSubscriptionsObserver(subscriptionsObserverArgumentCaptor.capture());
         // Set ShoppingService to return true on the callback to isSubscribed, indicating that the
         // product is tracked when the tab loaded.
         shoppingServiceCallbackCaptor.getValue().onResult(true);
 
         // Invoke subscription change listener notifying that the product is now unsubscribed to.
-        mSubscriptionsObserverCaptor
+        subscriptionsObserverArgumentCaptor
                 .getValue()
-                .onUnsubscribe(mCommerceSubscriptionCaptor.getValue(), true);
+                .onUnsubscribe(commerceSubscriptionArgumentCaptor.getValue(), true);
 
         // Supplier callback should have been called twice, once on start indicating the product was
         // tracked then again indicating the product is no longer tracked.
@@ -303,12 +310,13 @@ public class CurrentTabPriceTrackingStateSupplierUnitTest {
 
     @Test
     public void testWithTabWithProductInfo_tabChangesWhileLoading() {
+        Tab anotherTab = mock(Tab.class);
         Callback<Boolean> mockCallback = MockitoHelper.mockCallback();
         long productClusterId = 1234L;
         ShoppingService.ProductInfo productInfo = createProductInfoWithId(productClusterId);
 
         when(mMockTab.getUrl()).thenReturn(JUnitTestGURLs.GOOGLE_URL_CAT);
-        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.GOOGLE_URL_DOG);
+        when(anotherTab.getUrl()).thenReturn(JUnitTestGURLs.GOOGLE_URL_DOG);
 
         ArgumentCaptor<Callback<Boolean>> shoppingServiceCallbackCaptor =
                 MockitoHelper.callbackCaptor();
@@ -328,7 +336,7 @@ public class CurrentTabPriceTrackingStateSupplierUnitTest {
         verify(mMockShoppingService).isSubscribed(any(), shoppingServiceCallbackCaptor.capture());
 
         // Change current tab.
-        mTabSupplier.set(mTab);
+        mTabSupplier.set(anotherTab);
 
         // Set ShoppingService to return true on the callback to isSubscribed.
         shoppingServiceCallbackCaptor.getValue().onResult(true);

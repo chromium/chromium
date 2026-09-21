@@ -16,7 +16,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -31,7 +30,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.glic.GlicKeyedService.GlobalShowHideObserver;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
@@ -67,7 +65,6 @@ public class GlicToolbarButtonRenderTest {
     @Rule public final MockitoRule mMocks = MockitoJUnit.rule();
 
     @Mock private GlicKeyedService mGlicKeyedService;
-    @Captor private ArgumentCaptor<GlobalShowHideObserver> mObserverCaptor;
 
     private WebPageStation mPage;
 
@@ -97,8 +94,10 @@ public class GlicToolbarButtonRenderTest {
     @DisableIf.Device(DeviceFormFactor.TABLET_OR_DESKTOP) // crbug.com/530605872
     public void testGlicButton_PanelOpen() throws Exception {
         // Capture observer
-        verify(mGlicKeyedService).addGlobalShowHideObserver(mObserverCaptor.capture());
-        GlicKeyedService.GlobalShowHideObserver observer = mObserverCaptor.getValue();
+        ArgumentCaptor<GlicKeyedService.GlobalShowHideObserver> observerCaptor =
+                ArgumentCaptor.forClass(GlicKeyedService.GlobalShowHideObserver.class);
+        verify(mGlicKeyedService).addGlobalShowHideObserver(observerCaptor.capture());
+        GlicKeyedService.GlobalShowHideObserver observer = observerCaptor.getValue();
 
         // Mock panel is open
         GlicButtonStateController.setPanelOpenForTesting(true);

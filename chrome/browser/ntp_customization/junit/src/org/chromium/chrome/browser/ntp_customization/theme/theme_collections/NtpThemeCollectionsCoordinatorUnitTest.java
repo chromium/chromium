@@ -81,8 +81,6 @@ public class NtpThemeCollectionsCoordinatorUnitTest {
     @Mock private NtpThemeCollectionManager mNtpThemeCollectionManager;
     @Mock private Runnable mOnDailyUpdateCancelledCallback;
     @Captor private ArgumentCaptor<ComponentCallbacks> mComponentCallbacksCaptor;
-    @Captor private ArgumentCaptor<View> mViewCaptor;
-    @Captor private ArgumentCaptor<View> mViewCaptor1;
 
     private NtpThemeCollectionsCoordinator mCoordinator;
     private Context mContext;
@@ -115,9 +113,10 @@ public class NtpThemeCollectionsCoordinatorUnitTest {
                         mOnDailyUpdateCancelledCallback,
                         mThemeCollectionsList);
 
+        ArgumentCaptor<View> viewCaptor = ArgumentCaptor.forClass(View.class);
         verify(mBottomSheetDelegate)
-                .registerBottomSheetLayout(eq(THEME_COLLECTIONS), mViewCaptor.capture());
-        mBottomSheetView = mViewCaptor.getValue();
+                .registerBottomSheetLayout(eq(THEME_COLLECTIONS), viewCaptor.capture());
+        mBottomSheetView = viewCaptor.getValue();
     }
 
     @After
@@ -206,9 +205,10 @@ public class NtpThemeCollectionsCoordinatorUnitTest {
                         mNtpThemeCollectionManager,
                         mOnDailyUpdateCancelledCallback,
                         collections);
+        ArgumentCaptor<View> viewCaptor = ArgumentCaptor.forClass(View.class);
         verify(mBottomSheetDelegate, times(2))
-                .registerBottomSheetLayout(eq(THEME_COLLECTIONS), mViewCaptor1.capture());
-        mBottomSheetView = mViewCaptor1.getValue();
+                .registerBottomSheetLayout(eq(THEME_COLLECTIONS), viewCaptor.capture());
+        mBottomSheetView = viewCaptor.getValue();
 
         // Force the RecyclerView to create and bind views.
         RecyclerView recyclerView =

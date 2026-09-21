@@ -69,6 +69,7 @@ public class GlicActionCoordinatorUnitTest {
     @Mock private Tab mNtpTab;
     @Mock private GlicButtonDelegate mToggleGlicCallback;
     @Mock private Profile mProfile;
+    private Activity mActivity;
     @Mock private Supplier<ChromeAndroidTask> mTaskSupplier;
     @Mock private BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
     @Mock private Supplier<TabModelSelector> mTabModelSelectorSupplier;
@@ -82,9 +83,6 @@ public class GlicActionCoordinatorUnitTest {
     @Captor
     private ArgumentCaptor<GlicKeyedService.GlobalShowHideObserver> mGlobalShowHideObserverCaptor;
 
-    @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
-
-    private Activity mActivity;
     private ActionRegistry mActionRegistry;
     private SettableNullableObservableSupplier<Tab> mTabSupplier;
     private GlicActionCoordinator mCoordinator;
@@ -194,8 +192,9 @@ public class GlicActionCoordinatorUnitTest {
     public void testUrlUpdate_updatesState() {
         assertEquals(ButtonState.DEFAULT, mActionModel.get(ActionProperties.BUTTON_STATE));
 
-        verify(mTab).addObserver(mTabObserverCaptor.capture());
-        TabObserver observer = mTabObserverCaptor.getValue();
+        ArgumentCaptor<TabObserver> captor = ArgumentCaptor.forClass(TabObserver.class);
+        verify(mTab).addObserver(captor.capture());
+        TabObserver observer = captor.getValue();
 
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
         observer.onUrlUpdated(mTab);

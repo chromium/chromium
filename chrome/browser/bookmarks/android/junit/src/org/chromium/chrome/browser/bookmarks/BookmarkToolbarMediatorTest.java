@@ -33,7 +33,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
@@ -100,8 +99,6 @@ public class BookmarkToolbarMediatorTest {
     @Mock private ProfileResolver.Natives mProfileResolverNatives;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private Clipboard mClipboard;
-    @Captor private ArgumentCaptor<Intent> mIntentCaptor;
-    @Captor private ArgumentCaptor<Snackbar> mSnackbarCaptor;
 
     @Spy private Context mContext;
 
@@ -180,8 +177,9 @@ public class BookmarkToolbarMediatorTest {
     }
 
     private void verifyActivityLaunched(Class clazz) {
-        verify(mContext).startActivity(mIntentCaptor.capture());
-        assertEquals(clazz.getName(), mIntentCaptor.getValue().getComponent().getClassName());
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(mContext).startActivity(intentCaptor.capture());
+        assertEquals(clazz.getName(), intentCaptor.getValue().getComponent().getClassName());
 
         mMediator =
                 new BookmarkToolbarMediator(
@@ -602,8 +600,9 @@ public class BookmarkToolbarMediatorTest {
         verify(mClipboard).setText(JUnitTestGURLs.EXAMPLE_URL.getSpec());
         verify(mSelectionDelegate).clearSelection();
 
-        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
-        Snackbar snackbar = mSnackbarCaptor.getValue();
+        ArgumentCaptor<Snackbar> snackbarCaptor = ArgumentCaptor.forClass(Snackbar.class);
+        verify(mSnackbarManager).showSnackbar(snackbarCaptor.capture());
+        Snackbar snackbar = snackbarCaptor.getValue();
         assertEquals(mContext.getString(R.string.copied), snackbar.getTextForTesting());
         assertEquals(Snackbar.UMA_BOOKMARK_LINK_COPIED, snackbar.getIdentifierForTesting());
     }

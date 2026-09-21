@@ -64,29 +64,16 @@ import java.util.Set;
 /** Unit tests for {@link HomeModulesMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class HomeModulesMediatorUnitTest {
-    private static final int MODULE_TYPES = 3;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    private static final int MODULE_TYPES = 3;
     @Mock private Profile mProfile;
     @Mock private Runnable mOnHomeModulesChangedCallback;
     @Mock private ModuleDelegate mModuleDelegate;
     @Mock private ModuleRegistry mModuleRegistry;
     @Mock private ModuleDelegateHost mModuleDelegateHost;
     @Mock private HomeModulesRankingHelper.Natives mHomeModulesRankingHelperJniMock;
-    @Mock private PropertyModel mPropertyModel1;
-    @Mock private PropertyModel mPropertyModel0;
-    @Mock private PropertyModel mPropertyModel2;
-    @Mock private ModuleProvider mModuleProvider;
-    @Mock private ModuleProviderBuilder mSingleTabBuilder;
-    @Mock private ModuleProviderBuilder mEsbBuilder;
-    @Mock private ModuleProviderBuilder mTwoCellBuilder;
-    @Mock private ModuleProviderBuilder mAddressBarBuilder;
-    @Mock private Tab mTab;
-    @Mock private ModuleProviderBuilder mPriceChangeBuilder;
-    @Mock private ModuleProviderBuilder mManualBuilder;
-    @Mock private ModuleProviderBuilder mModuleProviderBuilder;
-    @Mock private PropertyModel mPropertyModel;
     @Spy private ModelList mModel;
 
     private int[] mModuleTypeList;
@@ -198,23 +185,26 @@ public class HomeModulesMediatorUnitTest {
         verify(mModel, never()).add(any());
 
         // Verifies that the response of a low ranking module is cached.
-        mMediator.addToRecyclerViewOrCache(mModuleTypeList[1], mPropertyModel1);
+        PropertyModel propertyModel1 = mock(PropertyModel.class);
+        mMediator.addToRecyclerViewOrCache(mModuleTypeList[1], propertyModel1);
         assertTrue(moduleFetchResultsIndicator[2]);
-        assertEquals(mPropertyModel1, moduleFetchResultsCache[2].model);
+        assertEquals(propertyModel1, moduleFetchResultsCache[2].model);
         assertEquals(0, mMediator.getModuleResultsWaitingIndexForTesting());
         verify(mModel, never()).add(any());
 
         // Verifies that the response of a low ranking module is cached.
-        mMediator.addToRecyclerViewOrCache(mModuleTypeList[0], mPropertyModel0);
+        PropertyModel propertyModel0 = mock(PropertyModel.class);
+        mMediator.addToRecyclerViewOrCache(mModuleTypeList[0], propertyModel0);
         assertTrue(moduleFetchResultsIndicator[1]);
-        assertEquals(mPropertyModel0, moduleFetchResultsCache[1].model);
+        assertEquals(propertyModel0, moduleFetchResultsCache[1].model);
         assertEquals(0, mMediator.getModuleResultsWaitingIndexForTesting());
         verify(mModel, never()).add(any());
         verify(mOnHomeModulesChangedCallback, never()).run();
 
         // Verifies that cached results will be added to the magic stack once the response of the
         // highest ranking modules arrive.
-        mMediator.addToRecyclerViewOrCache(mModuleTypeList[2], mPropertyModel2);
+        PropertyModel propertyModel2 = mock(PropertyModel.class);
+        mMediator.addToRecyclerViewOrCache(mModuleTypeList[2], propertyModel2);
         verify(mModel, times(3)).add(any());
         assertEquals(3, mMediator.getModuleResultsWaitingIndexForTesting());
     }
@@ -243,9 +233,10 @@ public class HomeModulesMediatorUnitTest {
         }
 
         // The response of the second highest ranking module arrives first.
-        mMediator.addToRecyclerViewOrCache(mModuleTypeList[0], mPropertyModel0);
+        PropertyModel propertyModel0 = mock(PropertyModel.class);
+        mMediator.addToRecyclerViewOrCache(mModuleTypeList[0], propertyModel0);
         assertTrue(moduleFetchResultsIndicator[1]);
-        assertEquals(mPropertyModel0, moduleFetchResultsCache[1].model);
+        assertEquals(propertyModel0, moduleFetchResultsCache[1].model);
         assertEquals(0, mMediator.getModuleResultsWaitingIndexForTesting());
         verify(mModel, never()).add(any());
         verify(mOnHomeModulesChangedCallback, never()).run();
@@ -259,7 +250,8 @@ public class HomeModulesMediatorUnitTest {
         assertEquals(2, mMediator.getModuleResultsWaitingIndexForTesting());
 
         // Verifies that the callback to notify a module being added is called again.
-        mMediator.addToRecyclerViewOrCache(mModuleTypeList[1], mPropertyModel1);
+        PropertyModel propertyModel1 = mock(PropertyModel.class);
+        mMediator.addToRecyclerViewOrCache(mModuleTypeList[1], propertyModel1);
         verify(mModel, times(2)).add(any());
         assertEquals(3, mMediator.getModuleResultsWaitingIndexForTesting());
         verify(mOnHomeModulesChangedCallback, times(2)).run();
@@ -286,9 +278,11 @@ public class HomeModulesMediatorUnitTest {
             mMediator.onModuleBuilt(mModuleTypeList[i], mModuleProviders[i]);
         }
         // Adds modules to the recyclerview and show.
-        mMediator.addToRecyclerViewOrCache(mModuleTypeList[0], mPropertyModel0);
+        PropertyModel propertyModel0 = mock(PropertyModel.class);
+        PropertyModel propertyModel2 = mock(PropertyModel.class);
+        mMediator.addToRecyclerViewOrCache(mModuleTypeList[0], propertyModel0);
         mMediator.addToRecyclerViewOrCache(mModuleTypeList[1], null);
-        mMediator.addToRecyclerViewOrCache(mModuleTypeList[2], mPropertyModel2);
+        mMediator.addToRecyclerViewOrCache(mModuleTypeList[2], propertyModel2);
         verify(mOnHomeModulesChangedCallback, times(2)).run();
 
         // Calls buildModulesAndShow() again when the magic stack is still visible.
@@ -435,8 +429,9 @@ public class HomeModulesMediatorUnitTest {
                 .thenReturn(true);
         mMediator.buildModulesAndShow(moduleList, mModuleDelegate, mOnHomeModulesChangedCallback);
 
-        mMediator.onModuleBuilt(mModuleTypeList[0], mModuleProvider);
-        mMediator.addToRecyclerViewOrCache(mModuleTypeList[0], mPropertyModel);
+        ModuleProvider moduleProvider = mock(ModuleProvider.class);
+        mMediator.onModuleBuilt(mModuleTypeList[0], moduleProvider);
+        mMediator.addToRecyclerViewOrCache(mModuleTypeList[0], mock(PropertyModel.class));
 
         // Case for removing a module which isn't added to the RecyclerView.
         mMediator.remove(mModuleTypeList[1]);
@@ -445,7 +440,7 @@ public class HomeModulesMediatorUnitTest {
         mMediator.remove(mModuleTypeList[0]);
         // Verifies that the existing module is removed from the RecyclerView.
         verify(mModel, times(1)).removeAt(eq(0));
-        verify(mModuleProvider).hideModule();
+        verify(moduleProvider).hideModule();
     }
 
     @Test
@@ -480,9 +475,10 @@ public class HomeModulesMediatorUnitTest {
         verify(mModuleProviders[1]).hideModule();
 
         // The third ranking module returns a successful result.
-        mMediator.addToRecyclerViewOrCache(mModuleTypeList[0], mPropertyModel0);
+        PropertyModel propertyModel0 = mock(PropertyModel.class);
+        mMediator.addToRecyclerViewOrCache(mModuleTypeList[0], propertyModel0);
         assertTrue(moduleFetchResultsIndicator[2]);
-        assertEquals(mPropertyModel0, moduleFetchResultsCache[2].model);
+        assertEquals(propertyModel0, moduleFetchResultsCache[2].model);
         assertEquals(0, mMediator.getModuleResultsWaitingIndexForTesting());
         verify(mModel, never()).add(any());
         verify(mOnHomeModulesChangedCallback, never()).run();
@@ -501,7 +497,8 @@ public class HomeModulesMediatorUnitTest {
         // without any data to show.
         verify(mModuleProviders[1]).hideModule();
 
-        mMediator.addToRecyclerViewOrCache(mModuleTypeList[2], mPropertyModel2);
+        PropertyModel propertyModel2 = mock(PropertyModel.class);
+        mMediator.addToRecyclerViewOrCache(mModuleTypeList[2], propertyModel2);
         // Verifies that there isn't any new module added to the recyclerview.
         verify(mModel, times(1)).add(any());
         // Verifies that #hideModule() won't be called again for the module which responds after
@@ -704,21 +701,25 @@ public class HomeModulesMediatorUnitTest {
                                 ));
 
         // Mock Builders
-        when(mSingleTabBuilder.getManualRank()).thenReturn(null);
+        ModuleProviderBuilder singleTabBuilder = mock(ModuleProviderBuilder.class);
+        when(singleTabBuilder.getManualRank()).thenReturn(null);
         when(mModuleRegistry.getModuleProviderBuilder(ModuleType.SINGLE_TAB))
-                .thenReturn(mSingleTabBuilder);
+                .thenReturn(singleTabBuilder);
 
-        when(mEsbBuilder.getManualRank()).thenReturn(1);
+        ModuleProviderBuilder esbBuilder = mock(ModuleProviderBuilder.class);
+        when(esbBuilder.getManualRank()).thenReturn(1);
         when(mModuleRegistry.getModuleProviderBuilder(ModuleType.ENHANCED_SAFE_BROWSING_PROMO))
-                .thenReturn(mEsbBuilder);
+                .thenReturn(esbBuilder);
 
-        when(mTwoCellBuilder.getManualRank()).thenReturn(0);
+        ModuleProviderBuilder twoCellBuilder = mock(ModuleProviderBuilder.class);
+        when(twoCellBuilder.getManualRank()).thenReturn(0);
         when(mModuleRegistry.getModuleProviderBuilder(ModuleType.SETUP_LIST_TWO_CELL_CONTAINER))
-                .thenReturn(mTwoCellBuilder);
+                .thenReturn(twoCellBuilder);
 
-        when(mAddressBarBuilder.getManualRank()).thenReturn(2);
+        ModuleProviderBuilder addressBarBuilder = mock(ModuleProviderBuilder.class);
+        when(addressBarBuilder.getManualRank()).thenReturn(2);
         when(mModuleRegistry.getModuleProviderBuilder(ModuleType.ADDRESS_BAR_PLACEMENT_PROMO))
-                .thenReturn(mAddressBarBuilder);
+                .thenReturn(addressBarBuilder);
 
         // Define enabled set
         Set<Integer> enabledSet =
@@ -738,14 +739,15 @@ public class HomeModulesMediatorUnitTest {
         assertFalse(manuallyRankedModules.contains(ModuleType.SINGLE_TAB));
 
         // Case 2: Tracking a tab, manual ranking should NO LONGER be skipped.
-        when(mModuleDelegateHost.getTrackingTab()).thenReturn(mTab);
+        Tab tab = mock(Tab.class);
+        when(mModuleDelegateHost.getTrackingTab()).thenReturn(tab);
 
         // Give single tab a rank of 0.
-        when(mSingleTabBuilder.getManualRank()).thenReturn(0);
+        when(singleTabBuilder.getManualRank()).thenReturn(0);
         // Shift other manual ranks.
-        when(mTwoCellBuilder.getManualRank()).thenReturn(1);
-        when(mEsbBuilder.getManualRank()).thenReturn(2);
-        when(mAddressBarBuilder.getManualRank()).thenReturn(3);
+        when(twoCellBuilder.getManualRank()).thenReturn(1);
+        when(esbBuilder.getManualRank()).thenReturn(2);
+        when(addressBarBuilder.getManualRank()).thenReturn(3);
 
         enabledSet =
                 Set.of(
@@ -779,29 +781,33 @@ public class HomeModulesMediatorUnitTest {
                                 ));
 
         // Mock Builders
-        when(mSingleTabBuilder.getManualRank()).thenReturn(null);
+        ModuleProviderBuilder singleTabBuilder = mock(ModuleProviderBuilder.class);
+        when(singleTabBuilder.getManualRank()).thenReturn(null);
         // Registers a solid module.
         InputContext singleTabContext = HomeModulesUtils.createInputContext(ModuleType.SINGLE_TAB);
         singleTabContext.addEntry("single_tab", ProcessedValue.fromString("st_value"));
-        when(mSingleTabBuilder.createInputContext()).thenReturn(singleTabContext);
+        when(singleTabBuilder.createInputContext()).thenReturn(singleTabContext);
         when(mModuleRegistry.getModuleProviderBuilder(ModuleType.SINGLE_TAB))
-                .thenReturn(mSingleTabBuilder);
+                .thenReturn(singleTabBuilder);
 
-        when(mPriceChangeBuilder.getManualRank()).thenReturn(null);
+        ModuleProviderBuilder priceChangeBuilder = mock(ModuleProviderBuilder.class);
+        when(priceChangeBuilder.getManualRank()).thenReturn(null);
         // Registers an ephemeral module.
         InputContext priceChangeContext = new InputContext();
         priceChangeContext.addEntry("price_change", ProcessedValue.fromFloat(1.0f));
-        when(mPriceChangeBuilder.createInputContext()).thenReturn(priceChangeContext);
+        when(priceChangeBuilder.createInputContext()).thenReturn(priceChangeContext);
         when(mModuleRegistry.getModuleProviderBuilder(ModuleType.PRICE_CHANGE))
-                .thenReturn(mPriceChangeBuilder);
+                .thenReturn(priceChangeBuilder);
 
-        when(mManualBuilder.getManualRank()).thenReturn(0);
+        ModuleProviderBuilder manualBuilder = mock(ModuleProviderBuilder.class);
+        when(manualBuilder.getManualRank()).thenReturn(0);
         when(mModuleRegistry.getModuleProviderBuilder(ModuleType.ENHANCED_SAFE_BROWSING_PROMO))
-                .thenReturn(mManualBuilder);
+                .thenReturn(manualBuilder);
 
-        when(mTwoCellBuilder.getManualRank()).thenReturn(0);
+        ModuleProviderBuilder twoCellBuilder = mock(ModuleProviderBuilder.class);
+        when(twoCellBuilder.getManualRank()).thenReturn(0);
         when(mModuleRegistry.getModuleProviderBuilder(ModuleType.SETUP_LIST_TWO_CELL_CONTAINER))
-                .thenReturn(mTwoCellBuilder);
+                .thenReturn(twoCellBuilder);
 
         Set<Integer> enabledSet =
                 Set.of(
@@ -825,10 +831,10 @@ public class HomeModulesMediatorUnitTest {
         assertNull(resultContext.getEntryValue("ENHANCED_SAFE_BROWSING_PROMO"));
         assertNull(resultContext.getEntryValue("SETUP_LIST_TWO_CELL_CONTAINER"));
 
-        verify(mSingleTabBuilder).createInputContext();
-        verify(mPriceChangeBuilder).createInputContext();
-        verify(mManualBuilder, never()).createInputContext();
-        verify(mTwoCellBuilder, never()).createInputContext();
+        verify(singleTabBuilder).createInputContext();
+        verify(priceChangeBuilder).createInputContext();
+        verify(manualBuilder, never()).createInputContext();
+        verify(twoCellBuilder, never()).createInputContext();
     }
 
     @Test
@@ -837,11 +843,10 @@ public class HomeModulesMediatorUnitTest {
         @ModuleType int moduleType2 = ModuleType.TAB_GROUP_SYNC_PROMO;
 
         // Mock builders to be segmentation-ranked (null manual rank) so tracking is enabled.
-        when(mModuleProviderBuilder.getManualRank()).thenReturn(null);
-        when(mModuleRegistry.getModuleProviderBuilder(moduleType1))
-                .thenReturn(mModuleProviderBuilder);
-        when(mModuleRegistry.getModuleProviderBuilder(moduleType2))
-                .thenReturn(mModuleProviderBuilder);
+        ModuleProviderBuilder builder = mock(ModuleProviderBuilder.class);
+        when(builder.getManualRank()).thenReturn(null);
+        when(mModuleRegistry.getModuleProviderBuilder(moduleType1)).thenReturn(builder);
+        when(mModuleRegistry.getModuleProviderBuilder(moduleType2)).thenReturn(builder);
 
         mMediator.onModuleViewCreated(moduleType1);
         assertEquals(1, HomeModulesUtils.getImpressionCountBeforeInteraction(moduleType1));
@@ -861,9 +866,9 @@ public class HomeModulesMediatorUnitTest {
         @ModuleType int moduleType = ModuleType.DEFAULT_BROWSER_PROMO;
 
         // Mock builder to be manually ranked (Setup List style).
-        when(mModuleProviderBuilder.getManualRank()).thenReturn(0);
-        when(mModuleRegistry.getModuleProviderBuilder(moduleType))
-                .thenReturn(mModuleProviderBuilder);
+        ModuleProviderBuilder builder = mock(ModuleProviderBuilder.class);
+        when(builder.getManualRank()).thenReturn(0);
+        when(mModuleRegistry.getModuleProviderBuilder(moduleType)).thenReturn(builder);
 
         mMediator.onModuleViewCreated(moduleType);
 

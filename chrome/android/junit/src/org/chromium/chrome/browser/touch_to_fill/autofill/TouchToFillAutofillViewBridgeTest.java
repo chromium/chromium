@@ -23,7 +23,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
@@ -41,19 +40,18 @@ import org.chromium.ui.base.WindowAndroid;
 /** Unit tests for {@link TouchToFillAutofillViewBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TouchToFillAutofillViewBridgeTest {
-    private static final long NATIVE_POINTER = 123456L;
-
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private TouchToFillAutofillViewBridge.Natives mNativeMock;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private KeyboardVisibilityDelegate mKeyboardDelegate;
-    @Mock private WebContents mWebContents;
-    @Mock private ViewGroup mContainerView;
-    @Captor private ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
 
+    @Mock private WebContents mWebContents;
     private ViewAndroidDelegate mViewAndroidDelegate;
+    @Mock private ViewGroup mContainerView;
+
+    private static final long NATIVE_POINTER = 123456L;
     private TouchToFillAutofillViewBridge mBridge;
 
     @Before
@@ -79,17 +77,19 @@ public class TouchToFillAutofillViewBridgeTest {
     @Test
     public void testShow_RegistersObserver() {
         mBridge.showPersonalContextNotice();
-        verify(mBottomSheetController, atLeastOnce())
-                .addObserver(mBottomSheetObserverCaptor.capture());
-        assertNotNull(mBottomSheetObserverCaptor.getAllValues().get(0));
+        ArgumentCaptor<BottomSheetObserver> captor =
+                ArgumentCaptor.forClass(BottomSheetObserver.class);
+        verify(mBottomSheetController, atLeastOnce()).addObserver(captor.capture());
+        assertNotNull(captor.getAllValues().get(0));
     }
 
     @Test
     public void testDestroy_RemovesObserver() {
         mBridge.showPersonalContextNotice();
-        verify(mBottomSheetController, atLeastOnce())
-                .addObserver(mBottomSheetObserverCaptor.capture());
-        BottomSheetObserver bridgeObserver = mBottomSheetObserverCaptor.getAllValues().get(0);
+        ArgumentCaptor<BottomSheetObserver> captor =
+                ArgumentCaptor.forClass(BottomSheetObserver.class);
+        verify(mBottomSheetController, atLeastOnce()).addObserver(captor.capture());
+        BottomSheetObserver bridgeObserver = captor.getAllValues().get(0);
 
         mBridge.destroy();
         verify(mBottomSheetController).removeObserver(bridgeObserver);
@@ -99,12 +99,13 @@ public class TouchToFillAutofillViewBridgeTest {
     public void testShow_RegistersObserverOnlyOnce() {
         mBridge.showPersonalContextNotice();
         mBridge.showPersonalContextNotice();
-        verify(mBottomSheetController, atLeastOnce())
-                .addObserver(mBottomSheetObserverCaptor.capture());
+        ArgumentCaptor<BottomSheetObserver> captor =
+                ArgumentCaptor.forClass(BottomSheetObserver.class);
+        verify(mBottomSheetController, atLeastOnce()).addObserver(captor.capture());
 
-        BottomSheetObserver bridgeObserver = mBottomSheetObserverCaptor.getAllValues().get(0);
+        BottomSheetObserver bridgeObserver = captor.getAllValues().get(0);
         int count = 0;
-        for (BottomSheetObserver o : mBottomSheetObserverCaptor.getAllValues()) {
+        for (BottomSheetObserver o : captor.getAllValues()) {
             if (o == bridgeObserver) {
                 count++;
             }
@@ -121,9 +122,10 @@ public class TouchToFillAutofillViewBridgeTest {
     @Test
     public void testOnSheetClosed_NotifiesNative() {
         mBridge.showPersonalContextNotice();
-        verify(mBottomSheetController, atLeastOnce())
-                .addObserver(mBottomSheetObserverCaptor.capture());
-        BottomSheetObserver observer = mBottomSheetObserverCaptor.getAllValues().get(0);
+        ArgumentCaptor<BottomSheetObserver> captor =
+                ArgumentCaptor.forClass(BottomSheetObserver.class);
+        verify(mBottomSheetController, atLeastOnce()).addObserver(captor.capture());
+        BottomSheetObserver observer = captor.getAllValues().get(0);
 
         observer.onSheetClosed(BottomSheetController.StateChangeReason.BACK_PRESS);
 
@@ -133,9 +135,10 @@ public class TouchToFillAutofillViewBridgeTest {
     @Test
     public void testOnSheetClosed_HandlesDestroyedBridgeGracefully() {
         mBridge.showPersonalContextNotice();
-        verify(mBottomSheetController, atLeastOnce())
-                .addObserver(mBottomSheetObserverCaptor.capture());
-        BottomSheetObserver observer = mBottomSheetObserverCaptor.getAllValues().get(0);
+        ArgumentCaptor<BottomSheetObserver> captor =
+                ArgumentCaptor.forClass(BottomSheetObserver.class);
+        verify(mBottomSheetController, atLeastOnce()).addObserver(captor.capture());
+        BottomSheetObserver observer = captor.getAllValues().get(0);
 
         mBridge.destroy();
         observer.onSheetClosed(BottomSheetController.StateChangeReason.BACK_PRESS);
@@ -146,9 +149,10 @@ public class TouchToFillAutofillViewBridgeTest {
     @Test
     public void testOnSheetClosed_TriggersKeyboardRestore() {
         mBridge.showPersonalContextNotice();
-        verify(mBottomSheetController, atLeastOnce())
-                .addObserver(mBottomSheetObserverCaptor.capture());
-        BottomSheetObserver observer = mBottomSheetObserverCaptor.getAllValues().get(0);
+        ArgumentCaptor<BottomSheetObserver> captor =
+                ArgumentCaptor.forClass(BottomSheetObserver.class);
+        verify(mBottomSheetController, atLeastOnce()).addObserver(captor.capture());
+        BottomSheetObserver observer = captor.getAllValues().get(0);
 
         observer.onSheetClosed(BottomSheetController.StateChangeReason.BACK_PRESS);
 
@@ -160,9 +164,10 @@ public class TouchToFillAutofillViewBridgeTest {
     @Test
     public void testOnSheetClosed_RestoresKeyboardBeforeNotifyingNative() {
         mBridge.showPersonalContextNotice();
-        verify(mBottomSheetController, atLeastOnce())
-                .addObserver(mBottomSheetObserverCaptor.capture());
-        BottomSheetObserver observer = mBottomSheetObserverCaptor.getAllValues().get(0);
+        ArgumentCaptor<BottomSheetObserver> captor =
+                ArgumentCaptor.forClass(BottomSheetObserver.class);
+        verify(mBottomSheetController, atLeastOnce()).addObserver(captor.capture());
+        BottomSheetObserver observer = captor.getAllValues().get(0);
 
         observer.onSheetClosed(BottomSheetController.StateChangeReason.BACK_PRESS);
 
@@ -175,9 +180,10 @@ public class TouchToFillAutofillViewBridgeTest {
     @Test
     public void testOnSheetClosed_DoesNotRestoreIfOmniboxFocused() {
         mBridge.showPersonalContextNotice();
-        verify(mBottomSheetController, atLeastOnce())
-                .addObserver(mBottomSheetObserverCaptor.capture());
-        BottomSheetObserver observer = mBottomSheetObserverCaptor.getAllValues().get(0);
+        ArgumentCaptor<BottomSheetObserver> captor =
+                ArgumentCaptor.forClass(BottomSheetObserver.class);
+        verify(mBottomSheetController, atLeastOnce()).addObserver(captor.capture());
+        BottomSheetObserver observer = captor.getAllValues().get(0);
 
         observer.onSheetClosed(BottomSheetController.StateChangeReason.OMNIBOX_FOCUS);
 
@@ -189,9 +195,10 @@ public class TouchToFillAutofillViewBridgeTest {
     @Test
     public void testOnSheetClosed_DoesNotRestoreIfWebContentsDestroyed() {
         mBridge.showPersonalContextNotice();
-        verify(mBottomSheetController, atLeastOnce())
-                .addObserver(mBottomSheetObserverCaptor.capture());
-        BottomSheetObserver observer = mBottomSheetObserverCaptor.getAllValues().get(0);
+        ArgumentCaptor<BottomSheetObserver> captor =
+                ArgumentCaptor.forClass(BottomSheetObserver.class);
+        verify(mBottomSheetController, atLeastOnce()).addObserver(captor.capture());
+        BottomSheetObserver observer = captor.getAllValues().get(0);
 
         when(mWebContents.isDestroyed()).thenReturn(true);
 

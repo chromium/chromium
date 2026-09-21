@@ -21,7 +21,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -79,7 +78,6 @@ public class PinnedTabStripItemContextMenuCoordinatorTest {
     @Mock private Profile mProfile;
     @Mock private BookmarkModel mBookmarkModel;
     @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
-    @Captor private ArgumentCaptor<TabClosureParams> mTabClosureParamsCaptor;
 
     private PinnedTabStripItemContextMenuCoordinator mCoordinator;
     private ModelList mMenuItemList;
@@ -227,9 +225,11 @@ public class PinnedTabStripItemContextMenuCoordinatorTest {
                 /* collaborationId= */ null,
                 /* listViewTouchTracker= */ null);
 
+        ArgumentCaptor<TabClosureParams> tabClosureParamsCaptor =
+                ArgumentCaptor.forClass(TabClosureParams.class);
         verify(mTabRemover)
-                .closeTabs(mTabClosureParamsCaptor.capture(), /* allowDialog= */ eq(true));
-        assertEquals(true, mTabClosureParamsCaptor.getValue().allowUndo);
+                .closeTabs(tabClosureParamsCaptor.capture(), /* allowDialog= */ eq(true));
+        assertEquals(true, tabClosureParamsCaptor.getValue().allowUndo);
     }
 
     @Test

@@ -31,6 +31,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -57,10 +58,7 @@ public class CustomTabAdaptiveToolbarBehaviorUnitTest {
     @Mock private Drawable mOpenInBrowserButton;
     @Mock private BrowserServicesIntentDataProvider mIntentDataProvider;
     @Mock private Supplier<Tracker> mTrackerSupplier;
-    @Mock private AdaptiveToolbarButtonController mAdaptiveToolbarButtonController;
-    @Mock private CustomButtonParams mOpenInBrowser;
-    @Mock private CustomButtonParams mShare;
-    @Mock private Profile mProfile;
+
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private CustomTabAdaptiveToolbarBehavior mBehavior;
 
@@ -82,46 +80,54 @@ public class CustomTabAdaptiveToolbarBehaviorUnitTest {
 
     @Test
     public void registerPerSurfaceButtons_openInBrowser_WhenOpenInBrowserButtonSetToDefault() {
+        AdaptiveToolbarButtonController controller =
+                Mockito.mock(AdaptiveToolbarButtonController.class);
         when(mIntentDataProvider.getOpenInBrowserButtonState())
                 .thenReturn(OPEN_IN_BROWSER_STATE_DEFAULT);
-        mBehavior.registerPerSurfaceButtons(mAdaptiveToolbarButtonController, mTrackerSupplier);
-        verify(mAdaptiveToolbarButtonController)
+        mBehavior.registerPerSurfaceButtons(controller, mTrackerSupplier);
+        verify(controller)
                 .addButtonVariant(eq(AdaptiveToolbarButtonVariant.OPEN_IN_BROWSER), any());
     }
 
     @Test
     public void registerPerSurfaceButtons_openInBrowser_WhenOpenInBrowserButtonOn() {
+        AdaptiveToolbarButtonController controller =
+                Mockito.mock(AdaptiveToolbarButtonController.class);
         when(mIntentDataProvider.getOpenInBrowserButtonState())
                 .thenReturn(OPEN_IN_BROWSER_STATE_ON);
-        mBehavior.registerPerSurfaceButtons(mAdaptiveToolbarButtonController, mTrackerSupplier);
-        verify(mAdaptiveToolbarButtonController)
+        mBehavior.registerPerSurfaceButtons(controller, mTrackerSupplier);
+        verify(controller)
                 .addButtonVariant(eq(AdaptiveToolbarButtonVariant.OPEN_IN_BROWSER), any());
     }
 
     @Test
     public void
             registerPerSurfaceButtons_DoesNotAddOpenInBrowser_WhenOpenInBrowserButtonDisabled() {
+        AdaptiveToolbarButtonController controller =
+                Mockito.mock(AdaptiveToolbarButtonController.class);
         when(mIntentDataProvider.getOpenInBrowserButtonState())
                 .thenReturn(OPEN_IN_BROWSER_STATE_OFF);
-        mBehavior.registerPerSurfaceButtons(mAdaptiveToolbarButtonController, mTrackerSupplier);
-        verify(mAdaptiveToolbarButtonController, never())
+        mBehavior.registerPerSurfaceButtons(controller, mTrackerSupplier);
+        verify(controller, never())
                 .addButtonVariant(eq(AdaptiveToolbarButtonVariant.OPEN_IN_BROWSER), any());
     }
 
     @Test
     public void resultFilter_avoidDuplicationWithDeveloperCustomButtons() {
-        when(mOpenInBrowser.getType()).thenReturn(ButtonType.CCT_OPEN_IN_BROWSER_BUTTON);
-        when(mShare.getType()).thenReturn(ButtonType.CCT_SHARE_BUTTON);
+        CustomButtonParams openInBrowser = Mockito.mock(CustomButtonParams.class);
+        when(openInBrowser.getType()).thenReturn(ButtonType.CCT_OPEN_IN_BROWSER_BUTTON);
+        CustomButtonParams share = Mockito.mock(CustomButtonParams.class);
+        when(share.getType()).thenReturn(ButtonType.CCT_SHARE_BUTTON);
         List<Integer> segmentationResults = List.of(OPEN_IN_BROWSER, SHARE, TRANSLATE);
 
         assertEquals(OPEN_IN_BROWSER, mBehavior.resultFilter(segmentationResults));
 
-        initBehavior(List.of(mOpenInBrowser));
+        initBehavior(List.of(openInBrowser));
         assertEquals(SHARE, mBehavior.resultFilter(segmentationResults));
 
         // Verify that the segmentation results down to the 2nd one can be picked up,
         // and the 3rd one (translate) is ignored.
-        initBehavior(List.of(mOpenInBrowser, mShare));
+        initBehavior(List.of(openInBrowser, share));
         assertEquals(UNKNOWN, mBehavior.resultFilter(segmentationResults));
     }
 
@@ -136,16 +142,18 @@ public class CustomTabAdaptiveToolbarBehaviorUnitTest {
     @Test
     public void hideManuallySetButton() {
         // Initialize custom action button types.
-        when(mOpenInBrowser.getType()).thenReturn(ButtonType.CCT_OPEN_IN_BROWSER_BUTTON);
-        when(mShare.getType()).thenReturn(ButtonType.CCT_SHARE_BUTTON);
+        CustomButtonParams openInBrowser = Mockito.mock(CustomButtonParams.class);
+        when(openInBrowser.getType()).thenReturn(ButtonType.CCT_OPEN_IN_BROWSER_BUTTON);
+        CustomButtonParams share = Mockito.mock(CustomButtonParams.class);
+        when(share.getType()).thenReturn(ButtonType.CCT_SHARE_BUTTON);
 
         assertTrue(mBehavior.canShowManualOverride(OPEN_IN_BROWSER));
 
-        initBehavior(List.of(mOpenInBrowser));
+        initBehavior(List.of(openInBrowser));
         assertTrue(mBehavior.canShowManualOverride(SHARE));
         assertFalse(mBehavior.canShowManualOverride(OPEN_IN_BROWSER));
 
-        initBehavior(List.of(mShare));
+        initBehavior(List.of(share));
         assertFalse(mBehavior.canShowManualOverride(SHARE));
         assertTrue(mBehavior.canShowManualOverride(OPEN_IN_BROWSER));
 
@@ -159,6 +167,6 @@ public class CustomTabAdaptiveToolbarBehaviorUnitTest {
         assertEquals(
                 "The default should be UNKNOWN",
                 UNKNOWN,
-                mBehavior.getSegmentationDefault(mProfile));
+                mBehavior.getSegmentationDefault(Mockito.mock(Profile.class)));
     }
 }

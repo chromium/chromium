@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tab.state;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -53,7 +54,6 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
     @Mock protected NavigationHandle mNavigationHandle;
 
     @Mock private ShoppingPersistedTabDataService mShoppingPersistedTabDataService;
-    @Mock private Tab mTab;
 
     @Before
     public void setUp() {
@@ -223,13 +223,14 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
     @EnableFeatures(
             ChromeFeatureList.PRICE_ANNOTATIONS + ":return_empty_price_drops_until_init/true")
     public void testSkipDelayedInitialization_SkipForDestroyedTab() {
-        doReturn(true).when(mTab).isDestroyed();
+        final Tab tab = mock(Tab.class);
+        doReturn(true).when(tab).isDestroyed();
 
         final Semaphore semaphore = new Semaphore(0);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ShoppingPersistedTabData.from(
-                            mTab,
+                            tab,
                             (shoppingPersistedTabData) -> {
                                 Assert.assertNull(shoppingPersistedTabData);
                                 semaphore.release();
@@ -262,12 +263,13 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
     @SmallTest
     @Test
     public void testInitializeWithDestroyedTabDoesNotQueue() {
-        doReturn(true).when(mTab).isDestroyed();
+        final Tab tab = mock(Tab.class);
+        doReturn(true).when(tab).isDestroyed();
         Assert.assertEquals(0, ShoppingPersistedTabData.getQueueSizeForTesting());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    ShoppingPersistedTabData.initialize(mTab);
+                    ShoppingPersistedTabData.initialize(tab);
                 });
         Assert.assertEquals(0, ShoppingPersistedTabData.getQueueSizeForTesting());
     }

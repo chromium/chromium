@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
@@ -41,22 +42,21 @@ import java.util.Map;
 /** Unit test for {@link SurveyClientBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SurveyClientBridgeUnitTest {
+
     private static final String TEST_TRIGGER = "trigger";
     private static final String SUPPLIED_TRIGGER_ID = "SomeOtherSurveyTriggerId";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    LifecycleDispatcherActivity mActivity;
     @Mock SurveyClientFactory mFactory;
     @Mock SurveyClient mDelegateSurveyClient;
     @Mock ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock Profile mProfile;
     @Mock TabModelSelector mTabModelSelector;
-    @Mock private WindowAndroid mWindowAndroid;
     @Captor ArgumentCaptor<Map<String, Boolean>> mBitValueCaptor;
     @Captor ArgumentCaptor<Map<String, String>> mStringValueCaptor;
-    @Captor private ArgumentCaptor<SurveyConfig> mSurveyConfigCaptor;
 
-    LifecycleDispatcherActivity mActivity;
     WindowAndroid mWindow;
 
     @Before
@@ -96,10 +96,13 @@ public class SurveyClientBridgeUnitTest {
         bridge.showSurvey(mActivity, mActivityLifecycleDispatcher);
         verify(mDelegateSurveyClient).showSurvey(mActivity, mActivityLifecycleDispatcher);
 
-        verify(mFactory).createClient(mSurveyConfigCaptor.capture(), any(), any(), any());
+        ArgumentCaptor<SurveyConfig> surveyConfigArgumentCaptor =
+                ArgumentCaptor.forClass(SurveyConfig.class);
+        verify(mFactory).createClient(surveyConfigArgumentCaptor.capture(), any(), any(), any());
 
         assertEquals(
-                TestSurveyUtils.TEST_TRIGGER_ID_FOO, mSurveyConfigCaptor.getValue().mTriggerId);
+                TestSurveyUtils.TEST_TRIGGER_ID_FOO,
+                surveyConfigArgumentCaptor.getValue().mTriggerId);
     }
 
     @Test
@@ -116,8 +119,10 @@ public class SurveyClientBridgeUnitTest {
         bridge.showSurvey(mActivity, mActivityLifecycleDispatcher);
         verify(mDelegateSurveyClient).showSurvey(mActivity, mActivityLifecycleDispatcher);
 
-        verify(mFactory).createClient(mSurveyConfigCaptor.capture(), any(), any(), any());
-        assertEquals(SUPPLIED_TRIGGER_ID, mSurveyConfigCaptor.getValue().mTriggerId);
+        ArgumentCaptor<SurveyConfig> surveyConfigArgumentCaptor =
+                ArgumentCaptor.forClass(SurveyConfig.class);
+        verify(mFactory).createClient(surveyConfigArgumentCaptor.capture(), any(), any(), any());
+        assertEquals(SUPPLIED_TRIGGER_ID, surveyConfigArgumentCaptor.getValue().mTriggerId);
     }
 
     @Test
@@ -148,10 +153,11 @@ public class SurveyClientBridgeUnitTest {
                 SurveyClientBridge.create(TEST_TRIGGER, testDelegate, mProfile, "", mWindow);
         assertNotNull(bridge);
 
-        doReturn(new WeakReference<>(mActivity)).when(mWindowAndroid).getActivity();
+        WindowAndroid window = mock(WindowAndroid.class);
+        doReturn(new WeakReference<>(mActivity)).when(window).getActivity();
 
         bridge.showSurvey(
-                mWindowAndroid,
+                window,
                 bitFields,
                 new boolean[] {true, false},
                 stringFields,

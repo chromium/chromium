@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.password_manager;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.password_manager.PasswordExportLauncher.START_PASSWORDS_EXPORT;
@@ -18,7 +19,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -32,8 +32,6 @@ import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFr
 public class PasswordExportLauncherTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private SettingsNavigation mSettingsNavigationMock;
-    @Mock private Context mContext;
-    @Captor private ArgumentCaptor<Bundle> mBundleCaptor;
 
     @Before
     public void setUp() {
@@ -42,11 +40,13 @@ public class PasswordExportLauncherTest {
 
     @Test
     public void testShowMainSettingsAndStartExport() {
-        PasswordExportLauncher.showMainSettingsAndStartExport(mContext);
+        Context mockContext = mock(Context.class);
+        PasswordExportLauncher.showMainSettingsAndStartExport(mockContext);
+        ArgumentCaptor<Bundle> bundleArgumentCaptor = ArgumentCaptor.forClass(Bundle.class);
         verify(mSettingsNavigationMock)
                 .createSettingsIntent(
-                        eq(mContext), eq(SettingsFragment.MAIN), mBundleCaptor.capture());
-        Bundle bundle = mBundleCaptor.getValue();
+                        eq(mockContext), eq(SettingsFragment.MAIN), bundleArgumentCaptor.capture());
+        Bundle bundle = bundleArgumentCaptor.getValue();
         assertTrue(bundle.containsKey(START_PASSWORDS_EXPORT));
         assertTrue(bundle.getBoolean(START_PASSWORDS_EXPORT));
     }

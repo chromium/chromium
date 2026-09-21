@@ -9,6 +9,7 @@ import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -70,8 +71,6 @@ public class BrowserServicesThemeColorProviderUnitTest {
     @Mock public DesktopWindowStateManager mDesktopWindowStateManager;
     @Mock public TabObserverRegistrar mTabObserverRegistrar;
     @Mock public ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    @Mock private BrowserServicesIntentDataProvider mBrowserServicesIntentDataProvider;
-    @Mock private TintObserver mTintObserver;
 
     private Context mContext;
 
@@ -173,14 +172,16 @@ public class BrowserServicesThemeColorProviderUnitTest {
 
     @Test
     public void testFullscreenWebApp_UseDefaultTheme() {
-        when(mBrowserServicesIntentDataProvider.isOpenedByChrome()).thenReturn(false);
-        when(mBrowserServicesIntentDataProvider.getWebappExtras())
+        BrowserServicesIntentDataProvider webAppIntentDataProvider =
+                mock(BrowserServicesIntentDataProvider.class);
+        when(webAppIntentDataProvider.isOpenedByChrome()).thenReturn(false);
+        when(webAppIntentDataProvider.getWebappExtras())
                 .thenReturn(buildWebAppExtras(DisplayMode.FULLSCREEN));
         assertEquals(
                 "Default theme is expected, to keep status bar visible",
                 ThemeColorSource.BROWSER_DEFAULT,
                 BrowserServicesThemeColorProvider.computeColorSource(
-                        mBrowserServicesIntentDataProvider, false, tab));
+                        webAppIntentDataProvider, false, tab));
     }
 
     @Test
@@ -412,7 +413,8 @@ public class BrowserServicesThemeColorProviderUnitTest {
 
         verify(mDesktopWindowStateManager).addObserver(themeColorProvider);
 
-        themeColorProvider.addTintObserver(mTintObserver);
+        TintObserver tintObserver = mock(TintObserver.class);
+        themeColorProvider.addTintObserver(tintObserver);
 
         // When in desktop windowing mode
         Rect rect = new Rect(0, 0, 800, 40);

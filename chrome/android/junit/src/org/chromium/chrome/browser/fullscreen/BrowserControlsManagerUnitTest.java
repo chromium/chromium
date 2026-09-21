@@ -87,12 +87,12 @@ import java.util.concurrent.TimeUnit;
 /** Unit tests for {@link BrowserControlsManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class BrowserControlsManagerUnitTest {
+    @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
+
     // Since these tests don't depend on the heights being pixels, we can use these as dpi directly.
     private static final int TOOLBAR_HEIGHT = 56;
     private static final int EXTRA_TOP_CONTROL_HEIGHT = 20;
     private static final int TOOLBAR_HAIRLINE_HEIGHT = 5;
-
-    @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     @Mock private Activity mActivity;
     @Mock private ControlContainer mControlContainer;
@@ -106,9 +106,7 @@ public class BrowserControlsManagerUnitTest {
     @Mock private TabBrowserControlsOffsetHelper mTabBrowserControlsOffsetHelper;
     @Mock private MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
     @Mock private WebContents mWebContents;
-    @Mock private NativePage mNativePage;
-    @Mock private Tab mNewTab;
-    @Mock private Tab mTab1;
+
     private @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     private @Captor ArgumentCaptor<TabObserver> mTabObserverCaptor;
 
@@ -116,6 +114,7 @@ public class BrowserControlsManagerUnitTest {
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private BrowserControlsManager mBrowserControlsManager;
     private BrowserStateBrowserControlsVisibilityDelegate mControlsDelegate;
+
     private InOrder mWebContentsInOrder;
 
     @Before
@@ -630,7 +629,7 @@ public class BrowserControlsManagerUnitTest {
         assertEquals(View.INVISIBLE, mBrowserControlsManager.getAndroidControlsVisibility());
 
         // But now switch tabs instead. The manager should clear the scrolling signal.
-        mActivityTabProvider.setForTesting(mTab1);
+        mActivityTabProvider.setForTesting(Mockito.mock(Tab.class));
         assertEquals(View.VISIBLE, mBrowserControlsManager.getAndroidControlsVisibility());
     }
 
@@ -957,8 +956,9 @@ public class BrowserControlsManagerUnitTest {
         // canAnimateNativeBrowserControls() becomes false, correctly running the Java animator.
         when(mTab.isIncognito()).thenReturn(false);
         when(mTab.isNativePage()).thenReturn(true);
-        when(mNativePage.getHost()).thenReturn("newtab");
-        when(mTab.getNativePage()).thenReturn(mNativePage);
+        NativePage nativePage = Mockito.mock(NativePage.class);
+        when(nativePage.getHost()).thenReturn("newtab");
+        when(mTab.getNativePage()).thenReturn(nativePage);
 
         mBrowserControlsManager.setAnimateBrowserControlsHeightChanges(true);
 
@@ -1024,16 +1024,17 @@ public class BrowserControlsManagerUnitTest {
     @SuppressWarnings("DirectInvocationOnMock")
     public void testSetTab_skipsTransientControlsWhenHidingTokensActive() {
         remakeWithoutSpy();
-        when(mNewTab.isUserInteractable()).thenReturn(true);
-        when(mNewTab.getUserDataHost()).thenReturn(mUserDataHost);
-        when(mNewTab.getContentView()).thenReturn(mContentView);
+        Tab newTab = Mockito.mock(Tab.class);
+        when(newTab.isUserInteractable()).thenReturn(true);
+        when(newTab.getUserDataHost()).thenReturn(mUserDataHost);
+        when(newTab.getContentView()).thenReturn(mContentView);
 
         mBrowserControlsManager.hideAndroidControlsAndClearOldToken(
                 org.chromium.ui.util.TokenHolder.INVALID_TOKEN);
         assertTrue(mBrowserControlsManager.hasHidingTokens());
 
         // Switching tabs while hiding tokens are active should keep controls hidden.
-        mActivityTabProvider.setForTesting(mNewTab);
+        mActivityTabProvider.setForTesting(newTab);
         assertEquals(View.INVISIBLE, mContainerView.getVisibility());
     }
 

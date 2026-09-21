@@ -20,7 +20,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -79,7 +78,6 @@ public final class FeedActionDelegateImplTest {
     @Mock private Intent mSigninIntent;
 
     @Mock private BottomSheetSigninAndHistorySyncCoordinator mSigninCoordinator;
-    @Captor private ArgumentCaptor<BottomSheetSigninAndHistorySyncConfig> mConfigCaptor;
 
     private FeedActionDelegateImpl mFeedActionDelegateImpl;
 
@@ -104,13 +102,15 @@ public final class FeedActionDelegateImplTest {
 
         mFeedActionDelegateImpl.startSigninFlow(SigninAccessPoint.NTP_FEED_TOP_PROMO);
 
+        ArgumentCaptor<BottomSheetSigninAndHistorySyncConfig> configCaptor =
+                ArgumentCaptor.forClass(BottomSheetSigninAndHistorySyncConfig.class);
         verify(mMockSigninAndHistorySyncActivityLauncher)
                 .createBottomSheetSigninIntentOrShowError(
                         any(),
                         any(),
-                        mConfigCaptor.capture(),
+                        configCaptor.capture(),
                         eq(SigninAccessPoint.NTP_FEED_TOP_PROMO));
-        BottomSheetSigninAndHistorySyncConfig config = mConfigCaptor.getValue();
+        BottomSheetSigninAndHistorySyncConfig config = configCaptor.getValue();
         assertEquals(NoAccountSigninMode.BOTTOM_SHEET, config.noAccountSigninMode);
         assertEquals(
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET, config.withAccountSigninMode);
@@ -132,13 +132,15 @@ public final class FeedActionDelegateImplTest {
         mFeedActionDelegateImpl.showSignInInterstitial(
                 SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO, null);
 
+        ArgumentCaptor<BottomSheetSigninAndHistorySyncConfig> configCaptor =
+                ArgumentCaptor.forClass(BottomSheetSigninAndHistorySyncConfig.class);
         verify(mMockSigninAndHistorySyncActivityLauncher)
                 .createBottomSheetSigninIntentOrShowError(
                         any(),
                         any(),
-                        mConfigCaptor.capture(),
+                        configCaptor.capture(),
                         eq(SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO));
-        BottomSheetSigninAndHistorySyncConfig config = mConfigCaptor.getValue();
+        BottomSheetSigninAndHistorySyncConfig config = configCaptor.getValue();
         assertEquals(NoAccountSigninMode.BOTTOM_SHEET, config.noAccountSigninMode);
         assertEquals(
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET, config.withAccountSigninMode);

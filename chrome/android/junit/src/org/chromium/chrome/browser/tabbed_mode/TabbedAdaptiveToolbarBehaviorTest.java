@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -79,7 +80,6 @@ public class TabbedAdaptiveToolbarBehaviorTest {
     @Mock private GlicButtonDelegate mGlicButtonDelegate;
     @Mock private ChromeAndroidTask mChromeAndroidTask;
     @Mock private BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
-    @Mock private Profile mIncognitoProfile;
 
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private final MonotonicObservableSupplier<Integer> mTabStripVisibilitySupplier =
@@ -151,10 +151,11 @@ public class TabbedAdaptiveToolbarBehaviorTest {
         ChromeFeatureList.ANDROID_BOTTOM_BAR
     })
     public void testResultFilterWithGlicEnabled_Incognito() {
-        when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
-        when(mIncognitoProfile.getOriginalProfile()).thenReturn(mProfile);
-        when(mTabModel.getProfile()).thenReturn(mIncognitoProfile);
-        when(mGlicEnablingJniMock.isEnabledForProfile(eq(mIncognitoProfile))).thenReturn(false);
+        Profile incognitoProfile = mock(Profile.class);
+        when(incognitoProfile.isOffTheRecord()).thenReturn(true);
+        when(incognitoProfile.getOriginalProfile()).thenReturn(mProfile);
+        when(mTabModel.getProfile()).thenReturn(incognitoProfile);
+        when(mGlicEnablingJniMock.isEnabledForProfile(eq(incognitoProfile))).thenReturn(false);
         when(mGlicEnablingJniMock.isEnabledForProfile(eq(mProfile))).thenReturn(true);
         ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
         when(mActorKeyedService.getCurrentActiveTask()).thenReturn(mActorTask);

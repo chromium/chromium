@@ -16,6 +16,7 @@ import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -38,7 +39,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -102,7 +102,6 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
     private static final int URLBAR_BOTTOM = 150;
     private static final int LONG_PRESS_MENU_WIDTH = 80;
     private static final int LONG_PRESS_MENU_HEIGHT = 30;
-
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     @Rule
@@ -119,15 +118,13 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private DisplayAndroid mDisplayAndroid;
+    private ChromePopupWindow mSpyPopupWindow;
     @Mock LocalStatePrefs.Natives mLocalStatePrefsNatives;
     @Mock PrefService mLocalPrefService;
-    @Mock private ClipboardManager mClipboardManager;
-    @Mock private Runnable mRunnable;
-    @Captor private ArgumentCaptor<ClipData> mClipCaptor;
 
-    private ChromePopupWindow mSpyPopupWindow;
     private ToolbarLongPressMenuHandler mToolbarLongPressMenuHandler;
     private SettableNonNullObservableSupplier<Profile> mProfileSupplier;
+
     private Activity mActivity;
     private boolean mShouldSuppress;
     private final BooleanSupplier mSuppressSupplier = () -> mShouldSuppress;
@@ -347,28 +344,32 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
     @Test
     public void testHandleCopyLink() {
         Clipboard clipboard = Clipboard.getInstance();
-        ((ClipboardImpl) clipboard).overrideClipboardManagerForTesting(mClipboardManager);
+        ClipboardManager clipboardManager = mock(ClipboardManager.class);
+        ((ClipboardImpl) clipboard).overrideClipboardManagerForTesting(clipboardManager);
         mUrl = JUnitTestGURLs.URL_1;
 
         mToolbarLongPressMenuHandler.handleMenuClick(
                 ToolbarLongPressMenuHandler.MenuItemType.COPY_LINK);
 
-        verify(mClipboardManager).setPrimaryClip(mClipCaptor.capture());
-        assertEquals("url", mClipCaptor.getValue().getDescription().getLabel());
-        assertEquals(mUrl.getSpec(), mClipCaptor.getValue().getItemAt(0).getText());
+        ArgumentCaptor<ClipData> clipCaptor = ArgumentCaptor.forClass(ClipData.class);
+        verify(clipboardManager).setPrimaryClip(clipCaptor.capture());
+        assertEquals("url", clipCaptor.getValue().getDescription().getLabel());
+        assertEquals(mUrl.getSpec(), clipCaptor.getValue().getItemAt(0).getText());
     }
 
     @Test
     public void testHandleCopyLink_nullUrl() {
         Clipboard clipboard = Clipboard.getInstance();
-        ((ClipboardImpl) clipboard).overrideClipboardManagerForTesting(mClipboardManager);
+        ClipboardManager clipboardManager = mock(ClipboardManager.class);
+        ((ClipboardImpl) clipboard).overrideClipboardManagerForTesting(clipboardManager);
         mUrl = null;
         mToolbarLongPressMenuHandler.handleMenuClick(
                 ToolbarLongPressMenuHandler.MenuItemType.COPY_LINK);
 
-        verify(mClipboardManager).setPrimaryClip(mClipCaptor.capture());
-        assertEquals("url", mClipCaptor.getValue().getDescription().getLabel());
-        assertEquals("", mClipCaptor.getValue().getItemAt(0).getText());
+        ArgumentCaptor<ClipData> clipCaptor = ArgumentCaptor.forClass(ClipData.class);
+        verify(clipboardManager).setPrimaryClip(clipCaptor.capture());
+        assertEquals("url", clipCaptor.getValue().getDescription().getLabel());
+        assertEquals("", clipCaptor.getValue().getItemAt(0).getText());
     }
 
     @Test
@@ -626,6 +627,7 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
 
     @Test
     public void testHandleSendTabToSelf() {
+        Runnable onSendTabToSelfClicked = mock(Runnable.class);
         ToolbarLongPressMenuHandler handler =
                 new ToolbarLongPressMenuHandler(
                         mActivity,
@@ -637,9 +639,9 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
                         () -> mUrl,
                         () -> mViewRectProvider,
                         url -> true,
-                        mRunnable);
+                        onSendTabToSelfClicked);
         handler.handleMenuClick(ToolbarLongPressMenuHandler.MenuItemType.SEND_TAB_TO_SELF);
-        verify(mRunnable).run();
+        verify(onSendTabToSelfClicked).run();
     }
 
     @Test

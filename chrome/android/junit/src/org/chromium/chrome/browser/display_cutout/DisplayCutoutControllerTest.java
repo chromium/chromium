@@ -82,7 +82,6 @@ public class DisplayCutoutControllerTest {
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
     @Captor private ArgumentCaptor<WebContentsObserver> mWebContentObserverCaptor;
-    @Captor private ArgumentCaptor<Rect> mSafeAreaCaptor;
 
     @Mock private ChromeActivity mChromeActivity;
 
@@ -93,9 +92,6 @@ public class DisplayCutoutControllerTest {
     @Mock private BrowserServicesIntentDataProvider mIntentDataProvider;
 
     @Mock private DisplayCutoutController.Delegate mDelegate;
-    @Mock private WindowInsetsCompat mInitialInsets;
-    @Mock private WindowInsetsCompat mUpdatedInsets;
-    @Mock private WindowInsetsCompat mZeroInsets;
 
     private DisplayCutoutTabHelper mDisplayCutoutTabHelper;
     private DisplayCutoutController mController;
@@ -299,21 +295,25 @@ public class DisplayCutoutControllerTest {
 
     @Test
     public void testStandaloneCoverMergesSafeAreaWithSystemBars() {
-        when(mInitialInsets.getInsetsIgnoringVisibility(statusBars()))
+        WindowInsetsCompat initialInsets = mock(WindowInsetsCompat.class);
+        WindowInsetsCompat updatedInsets = mock(WindowInsetsCompat.class);
+        WindowInsetsCompat zeroInsets = mock(WindowInsetsCompat.class);
+
+        when(initialInsets.getInsetsIgnoringVisibility(statusBars()))
                 .thenReturn(INITIAL_STATUS_BAR_INSETS);
-        when(mInitialInsets.getInsetsIgnoringVisibility(navigationBars()))
+        when(initialInsets.getInsetsIgnoringVisibility(navigationBars()))
                 .thenReturn(INITIAL_NAV_BAR_INSETS);
 
-        when(mUpdatedInsets.getInsetsIgnoringVisibility(statusBars()))
+        when(updatedInsets.getInsetsIgnoringVisibility(statusBars()))
                 .thenReturn(UPDATED_STATUS_BAR_INSETS);
-        when(mUpdatedInsets.getInsetsIgnoringVisibility(navigationBars()))
+        when(updatedInsets.getInsetsIgnoringVisibility(navigationBars()))
                 .thenReturn(UPDATED_NAV_BAR_INSETS);
 
-        when(mZeroInsets.getInsetsIgnoringVisibility(statusBars())).thenReturn(Insets.NONE);
-        when(mZeroInsets.getInsetsIgnoringVisibility(navigationBars())).thenReturn(Insets.NONE);
+        when(zeroInsets.getInsetsIgnoringVisibility(statusBars())).thenReturn(Insets.NONE);
+        when(zeroInsets.getInsetsIgnoringVisibility(navigationBars())).thenReturn(Insets.NONE);
 
         // A real soft keyboard is far taller than the navigation bar.
-        when(mUpdatedInsets.getInsets(ime())).thenReturn(Insets.of(0, 0, 0, 392));
+        when(updatedInsets.getInsets(ime())).thenReturn(Insets.of(0, 0, 0, 392));
 
         when(mDelegate.getAttachedActivity()).thenReturn(mChromeActivity);
         when(mDelegate.getInsetObserver()).thenReturn(mInsetObserver);
@@ -322,7 +322,7 @@ public class DisplayCutoutControllerTest {
         when(mWebContents.isFullscreenForCurrentTab()).thenReturn(false);
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
         when(mInsetObserver.getCurrentSafeArea()).thenReturn(new Rect());
-        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(mInitialInsets);
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(initialInsets);
 
         DisplayCutoutController controller =
                 new DisplayCutoutController(mDelegate) {
@@ -335,52 +335,53 @@ public class DisplayCutoutControllerTest {
         clearInvocations(mWebContents);
         controller.setViewportFit(ViewportFit.COVER);
 
-        verify(mWebContents).setDisplayCutoutSafeArea(mSafeAreaCaptor.capture());
-        Assert.assertEquals(INITIAL_EXPECTED_SAFE_AREA, mSafeAreaCaptor.getValue());
+        ArgumentCaptor<Rect> safeAreaCaptor = ArgumentCaptor.forClass(Rect.class);
+        verify(mWebContents).setDisplayCutoutSafeArea(safeAreaCaptor.capture());
+        Assert.assertEquals(INITIAL_EXPECTED_SAFE_AREA, safeAreaCaptor.getValue());
 
         clearInvocations(mWebContents);
-        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(mUpdatedInsets);
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(updatedInsets);
         controller.setViewportFit(ViewportFit.COVER);
 
-        verify(mWebContents).setDisplayCutoutSafeArea(mSafeAreaCaptor.capture());
-        Assert.assertEquals(UPDATED_EXPECTED_SAFE_AREA, mSafeAreaCaptor.getValue());
+        verify(mWebContents).setDisplayCutoutSafeArea(safeAreaCaptor.capture());
+        Assert.assertEquals(UPDATED_EXPECTED_SAFE_AREA, safeAreaCaptor.getValue());
 
         clearInvocations(mWebContents);
         controller.onInsetChanged();
 
-        verify(mWebContents).setDisplayCutoutSafeArea(mSafeAreaCaptor.capture());
-        Assert.assertEquals(UPDATED_EXPECTED_SAFE_AREA, mSafeAreaCaptor.getValue());
+        verify(mWebContents).setDisplayCutoutSafeArea(safeAreaCaptor.capture());
+        Assert.assertEquals(UPDATED_EXPECTED_SAFE_AREA, safeAreaCaptor.getValue());
 
         clearInvocations(mWebContents);
-        when(mUpdatedInsets.isVisible(ime())).thenReturn(true);
+        when(updatedInsets.isVisible(ime())).thenReturn(true);
         when(mWebContents.getVirtualKeyboardMode()).thenReturn(VirtualKeyboardMode.RESIZES_VISUAL);
         controller.onInsetChanged();
 
-        verify(mWebContents).setDisplayCutoutSafeArea(mSafeAreaCaptor.capture());
-        Assert.assertEquals(UPDATED_EXPECTED_SAFE_AREA, mSafeAreaCaptor.getValue());
+        verify(mWebContents).setDisplayCutoutSafeArea(safeAreaCaptor.capture());
+        Assert.assertEquals(UPDATED_EXPECTED_SAFE_AREA, safeAreaCaptor.getValue());
 
         clearInvocations(mWebContents);
         when(mWebContents.getVirtualKeyboardMode()).thenReturn(VirtualKeyboardMode.RESIZES_CONTENT);
         controller.onInsetChanged();
 
-        verify(mWebContents).setDisplayCutoutSafeArea(mSafeAreaCaptor.capture());
+        verify(mWebContents).setDisplayCutoutSafeArea(safeAreaCaptor.capture());
         Assert.assertEquals(
-                new Rect(0, UPDATED_STATUS_BAR_INSETS.top, 0, 0), mSafeAreaCaptor.getValue());
+                new Rect(0, UPDATED_STATUS_BAR_INSETS.top, 0, 0), safeAreaCaptor.getValue());
 
         clearInvocations(mWebContents);
         when(mWebContents.getVirtualKeyboardMode())
                 .thenReturn(VirtualKeyboardMode.OVERLAYS_CONTENT);
         controller.onInsetChanged();
 
-        verify(mWebContents).setDisplayCutoutSafeArea(mSafeAreaCaptor.capture());
-        Assert.assertEquals(UPDATED_EXPECTED_SAFE_AREA, mSafeAreaCaptor.getValue());
+        verify(mWebContents).setDisplayCutoutSafeArea(safeAreaCaptor.capture());
+        Assert.assertEquals(UPDATED_EXPECTED_SAFE_AREA, safeAreaCaptor.getValue());
 
         clearInvocations(mWebContents);
-        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(mZeroInsets);
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(zeroInsets);
         controller.setViewportFit(ViewportFit.COVER);
 
-        verify(mWebContents).setDisplayCutoutSafeArea(mSafeAreaCaptor.capture());
-        Assert.assertEquals(UPDATED_EXPECTED_SAFE_AREA, mSafeAreaCaptor.getValue());
+        verify(mWebContents).setDisplayCutoutSafeArea(safeAreaCaptor.capture());
+        Assert.assertEquals(UPDATED_EXPECTED_SAFE_AREA, safeAreaCaptor.getValue());
     }
 
     /**
@@ -429,9 +430,10 @@ public class DisplayCutoutControllerTest {
         clearInvocations(mWebContents);
         controller.onInsetChanged();
 
-        verify(mWebContents).setDisplayCutoutSafeArea(mSafeAreaCaptor.capture());
+        ArgumentCaptor<Rect> safeAreaCaptor = ArgumentCaptor.forClass(Rect.class);
+        verify(mWebContents).setDisplayCutoutSafeArea(safeAreaCaptor.capture());
         Assert.assertEquals(
-                new Rect(0, UPDATED_STATUS_BAR_INSETS.top, 0, 0), mSafeAreaCaptor.getValue());
+                new Rect(0, UPDATED_STATUS_BAR_INSETS.top, 0, 0), safeAreaCaptor.getValue());
     }
 
     @Test
@@ -445,9 +447,10 @@ public class DisplayCutoutControllerTest {
         clearInvocations(mWebContents);
         controller.onInsetChanged();
 
-        verify(mWebContents).setDisplayCutoutSafeArea(mSafeAreaCaptor.capture());
+        ArgumentCaptor<Rect> safeAreaCaptor = ArgumentCaptor.forClass(Rect.class);
+        verify(mWebContents).setDisplayCutoutSafeArea(safeAreaCaptor.capture());
         Assert.assertEquals(
-                new Rect(0, UPDATED_STATUS_BAR_INSETS.top, 0, 12), mSafeAreaCaptor.getValue());
+                new Rect(0, UPDATED_STATUS_BAR_INSETS.top, 0, 12), safeAreaCaptor.getValue());
     }
 
     @Test

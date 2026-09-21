@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -60,10 +61,8 @@ public class BookmarkPopupMediatorTest {
     @Mock private PriceDropNotificationManager mPriceDropNotificationManager;
 
     @Mock private Runnable mDismissRunnable;
-    @Mock private Drawable mDrawable;
 
     @Captor private ArgumentCaptor<Callback<Drawable>> mCallbackCaptor;
-    @Captor private ArgumentCaptor<Runnable> mRunnableCaptor;
 
     private final BookmarkId mBookmarkId = new BookmarkId(1, BookmarkType.NORMAL);
     private final BookmarkId mParentId = new BookmarkId(2, BookmarkType.NORMAL);
@@ -136,8 +135,9 @@ public class BookmarkPopupMediatorTest {
                 .isBookmarkPriceTracked(Mockito.any(), Mockito.anyLong(), Mockito.any());
         mMediator.show(mBookmarkId, true);
 
-        verify(mBookmarkModel).finishLoadingBookmarkModel(mRunnableCaptor.capture());
-        mRunnableCaptor.getValue().run();
+        ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mBookmarkModel).finishLoadingBookmarkModel(runnableCaptor.capture());
+        runnableCaptor.getValue().run();
 
         assertEquals(
                 mActivity.getString(R.string.bookmark_added),
@@ -151,8 +151,9 @@ public class BookmarkPopupMediatorTest {
     public void testShowAndModelBinding_EditMode() {
         mMediator.show(mBookmarkId, false);
 
-        verify(mBookmarkModel).finishLoadingBookmarkModel(mRunnableCaptor.capture());
-        mRunnableCaptor.getValue().run();
+        ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mBookmarkModel).finishLoadingBookmarkModel(runnableCaptor.capture());
+        runnableCaptor.getValue().run();
 
         assertEquals(
                 mActivity.getString(R.string.edit_bookmark),
@@ -172,15 +173,17 @@ public class BookmarkPopupMediatorTest {
                 .isBookmarkPriceTracked(Mockito.any(), Mockito.anyLong(), Mockito.any());
         mMediator.show(mBookmarkId, true);
 
-        verify(mBookmarkModel).finishLoadingBookmarkModel(mRunnableCaptor.capture());
-        mRunnableCaptor.getValue().run();
+        ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mBookmarkModel).finishLoadingBookmarkModel(runnableCaptor.capture());
+        runnableCaptor.getValue().run();
 
         verify(mBookmarkImageFetcher)
                 .fetchImageForBookmarkWithFaviconFallback(any(), eq(0), mCallbackCaptor.capture());
 
-        mCallbackCaptor.getValue().onResult(mDrawable);
+        Drawable mockDrawable = mock(Drawable.class);
+        mCallbackCaptor.getValue().onResult(mockDrawable);
 
-        assertEquals(mDrawable, mPropertyModel.get(BookmarkPopupProperties.IMAGE_DRAWABLE));
+        assertEquals(mockDrawable, mPropertyModel.get(BookmarkPopupProperties.IMAGE_DRAWABLE));
     }
 
     @Test
@@ -196,8 +199,9 @@ public class BookmarkPopupMediatorTest {
                 .isBookmarkPriceTracked(Mockito.any(), Mockito.anyLong(), Mockito.any());
         mMediator.show(mBookmarkId, true);
 
-        verify(mBookmarkModel).finishLoadingBookmarkModel(mRunnableCaptor.capture());
-        mRunnableCaptor.getValue().run();
+        ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mBookmarkModel).finishLoadingBookmarkModel(runnableCaptor.capture());
+        runnableCaptor.getValue().run();
 
         verify(mBookmarkImageFetcher)
                 .fetchImageForBookmarkWithFaviconFallback(any(), eq(0), mCallbackCaptor.capture());
@@ -205,7 +209,8 @@ public class BookmarkPopupMediatorTest {
         // Destroy mediator before callback returns
         mMediator.destroy();
 
-        mCallbackCaptor.getValue().onResult(mDrawable);
+        Drawable mockDrawable = mock(Drawable.class);
+        mCallbackCaptor.getValue().onResult(mockDrawable);
 
         // Properties should not be set since mediator is destroyed and callback is cancelled
         assertNull(mPropertyModel.get(BookmarkPopupProperties.IMAGE_DRAWABLE));
@@ -226,10 +231,11 @@ public class BookmarkPopupMediatorTest {
         // Destroy mediator before model loading callback runs
         mMediator.destroy();
 
-        verify(mBookmarkModel).finishLoadingBookmarkModel(mRunnableCaptor.capture());
+        ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mBookmarkModel).finishLoadingBookmarkModel(runnableCaptor.capture());
 
         // Run the callback (it should be cancelled and not proceed)
-        mRunnableCaptor.getValue().run();
+        runnableCaptor.getValue().run();
 
         // Verify that properties were not bound since mediator was destroyed
         assertNull(mPropertyModel.get(BookmarkPopupProperties.TITLE));
@@ -268,8 +274,9 @@ public class BookmarkPopupMediatorTest {
 
         mMediator.show(mBookmarkId, false);
 
-        verify(mBookmarkModel).finishLoadingBookmarkModel(mRunnableCaptor.capture());
-        mRunnableCaptor.getValue().run();
+        ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mBookmarkModel).finishLoadingBookmarkModel(runnableCaptor.capture());
+        runnableCaptor.getValue().run();
 
         mPropertyModel.get(BookmarkPopupProperties.TITLE_CHANGED_LISTENER).onResult("New Title");
 
@@ -295,8 +302,9 @@ public class BookmarkPopupMediatorTest {
 
         mMediator.show(mBookmarkId, true);
 
-        verify(mBookmarkModel).finishLoadingBookmarkModel(mRunnableCaptor.capture());
-        mRunnableCaptor.getValue().run();
+        ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mBookmarkModel).finishLoadingBookmarkModel(runnableCaptor.capture());
+        runnableCaptor.getValue().run();
 
         Runnable doneClickListener =
                 mPropertyModel.get(BookmarkPopupProperties.DONE_BUTTON_CLICK_LISTENER);
@@ -369,8 +377,9 @@ public class BookmarkPopupMediatorTest {
                 .isBookmarkPriceTracked(Mockito.any(), Mockito.anyLong(), Mockito.any());
         mMediator.show(mBookmarkId, true);
 
-        verify(mBookmarkModel).finishLoadingBookmarkModel(mRunnableCaptor.capture());
-        mRunnableCaptor.getValue().run();
+        ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mBookmarkModel).finishLoadingBookmarkModel(runnableCaptor.capture());
+        runnableCaptor.getValue().run();
 
         assertTrue(mPropertyModel.get(BookmarkPopupProperties.PRICE_TRACKING_VISIBLE));
         assertTrue(mPropertyModel.get(BookmarkPopupProperties.PRICE_TRACKING_ENABLED));
@@ -406,8 +415,9 @@ public class BookmarkPopupMediatorTest {
                 .isBookmarkPriceTracked(Mockito.any(), Mockito.anyLong(), Mockito.any());
         mMediator.show(mBookmarkId, true);
 
-        verify(mBookmarkModel).finishLoadingBookmarkModel(mRunnableCaptor.capture());
-        mRunnableCaptor.getValue().run();
+        ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mBookmarkModel).finishLoadingBookmarkModel(runnableCaptor.capture());
+        runnableCaptor.getValue().run();
 
         // Visible would normally be true, but because shopping service is null, it should return
         // early

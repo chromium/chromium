@@ -57,14 +57,13 @@ import java.util.Arrays;
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.TAB_STORAGE_SQLITE_PROTOTYPE)
 public class ModelTrackingOrchestratorUnitTest {
-    private static final String WINDOW_TAG = "window_1";
-
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    private static final String WINDOW_TAG = "window_1";
 
     @Captor private ArgumentCaptor<IncognitoTabModelObserver> mIncognitoObserverCaptor;
     @Captor private ArgumentCaptor<TabGroupObserver> mTabGroupObserverCaptor;
-    @Captor private ArgumentCaptor<Runnable> mCallbackCaptor;
-    @Captor private ArgumentCaptor<Runnable> mIncognitoCallbackCaptor;
+
     @Mock private PersistentStoreMigrationManager mMigrationManager;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mRegularTabModel;
@@ -76,9 +75,11 @@ public class ModelTrackingOrchestratorUnitTest {
     @Mock private StorageLoadedData mRegularData;
     @Mock private StorageLoadedData mStorageLoadedData;
     @Mock private TabStateStorageService mTabStateStorageService;
+
     @Mock private CollectionKeyedFactory<StorageCollectionSynchronizer> mSynchronizerFactory;
     @Mock private StorageCollectionSynchronizer mRegularSynchronizer;
     @Mock private StorageCollectionSynchronizer mIncognitoSynchronizer;
+
     @Mock private CollectionKeyedFactory<CollectionSaveForwarder> mSaveForwarderFactory;
     @Mock private CollectionSaveForwarder mRegularSaveForwarder;
     @Mock private CollectionSaveForwarder mIncognitoSaveForwarder;
@@ -87,6 +88,7 @@ public class ModelTrackingOrchestratorUnitTest {
             ObservableSuppliers.createNullable();
     private final SettableNullableObservableSupplier<Tab> mIncognitoTabSupplier =
             ObservableSuppliers.createNullable();
+
     private ModelTrackingOrchestrator mOrchestrator;
 
     @Before
@@ -179,8 +181,9 @@ public class ModelTrackingOrchestratorUnitTest {
 
         mOrchestrator.onRestoredForModel(/* incognito= */ false);
 
-        verify(mRegularSynchronizer).fullSave(mCallbackCaptor.capture());
-        mCallbackCaptor.getValue().run();
+        ArgumentCaptor<Runnable> callbackCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mRegularSynchronizer).fullSave(callbackCaptor.capture());
+        callbackCaptor.getValue().run();
 
         ShadowLooper.runUiThreadTasks();
 
@@ -200,16 +203,18 @@ public class ModelTrackingOrchestratorUnitTest {
 
         // Caught up Regular.
         mOrchestrator.onRestoredForModel(/* incognito= */ false);
-        verify(mRegularSynchronizer).fullSave(mCallbackCaptor.capture());
-        mCallbackCaptor.getValue().run();
+        ArgumentCaptor<Runnable> regularCallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mRegularSynchronizer).fullSave(regularCallbackCaptor.capture());
+        regularCallbackCaptor.getValue().run();
         ShadowLooper.runUiThreadTasks();
 
         verify(mMigrationManager, never()).onShadowStoreCaughtUp();
 
         // Caught up Incognito.
         mOrchestrator.onRestoredForModel(/* incognito= */ true);
-        verify(mIncognitoSynchronizer).fullSave(mIncognitoCallbackCaptor.capture());
-        mIncognitoCallbackCaptor.getValue().run();
+        ArgumentCaptor<Runnable> incognitoCallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mIncognitoSynchronizer).fullSave(incognitoCallbackCaptor.capture());
+        incognitoCallbackCaptor.getValue().run();
         ShadowLooper.runUiThreadTasks();
 
         // Now both models caught up.
@@ -225,8 +230,9 @@ public class ModelTrackingOrchestratorUnitTest {
 
         // Caught up Regular.
         mOrchestrator.onRestoredForModel(/* incognito= */ false);
-        verify(mRegularSynchronizer).fullSave(mCallbackCaptor.capture());
-        mCallbackCaptor.getValue().run();
+        ArgumentCaptor<Runnable> regularCallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mRegularSynchronizer).fullSave(regularCallbackCaptor.capture());
+        regularCallbackCaptor.getValue().run();
         ShadowLooper.runUiThreadTasks();
 
         verify(mMigrationManager, never()).onShadowStoreCaughtUp();

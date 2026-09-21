@@ -106,6 +106,7 @@ import org.chromium.url.JUnitTestGURLs;
 @Config(sdk = VERSION_CODES.R)
 @Features.DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
 public class EdgeToEdgeControllerTest {
+
     private static final int TOP_INSET = 113;
     private static final int TOP_INSET_LANDSCAPE = 98;
     private static final int BOTTOM_INSET = 59;
@@ -118,12 +119,14 @@ public class EdgeToEdgeControllerTest {
             Insets.of(GESTURE_SWIPE_INSET, TOP_INSET, GESTURE_SWIPE_INSET, BOTTOM_INSET);
     private static final Insets MANDATORY_SYSTEM_GESTURE_INSETS =
             Insets.of(0, TOP_INSET, 0, BOTTOM_INSET);
+
     private static final Insets SYSTEM_INSETS = Insets.of(0, TOP_INSET, 0, BOTTOM_INSET);
     private static final Insets SYSTEM_INSETS_LANDSCAPE =
             Insets.of(0, TOP_INSET_LANDSCAPE, 0, BOTTOM_INSET_LANDSCAPE);
     private static final Insets IME_INSETS_NO_KEYBOARD = Insets.of(0, 0, 0, 0);
     private static final Insets IME_INSETS_KEYBOARD = Insets.of(0, 0, 0, BOTTOM_KEYBOARD_INSET);
     private static final int EDGE_TO_EDGE_STATUS_TOKEN = 12345;
+
     private static final WindowInsetsCompat SYSTEM_BARS_WINDOW_INSETS =
             new WindowInsetsCompat.Builder()
                     .setInsets(WindowInsetsCompat.Type.statusBars(), STATUS_BAR_INSETS)
@@ -137,6 +140,7 @@ public class EdgeToEdgeControllerTest {
                             WindowInsetsCompat.Type.mandatorySystemGestures(),
                             MANDATORY_SYSTEM_GESTURE_INSETS)
                     .build();
+
     private static final WindowInsetsCompat GESTURE_NAV_INSETS_MISSING_NAVBAR =
             new WindowInsetsCompat.Builder()
                     .setInsets(WindowInsetsCompat.Type.statusBars(), STATUS_BAR_INSETS)
@@ -150,6 +154,7 @@ public class EdgeToEdgeControllerTest {
                             WindowInsetsCompat.Type.mandatorySystemGestures(),
                             MANDATORY_SYSTEM_GESTURE_INSETS)
                     .build();
+
     private static final WindowInsetsCompat GESTURE_NAV_INSETS_MISSING_ALL_BOTTOM_INSETS =
             new WindowInsetsCompat.Builder()
                     .setInsets(WindowInsetsCompat.Type.statusBars(), STATUS_BAR_INSETS)
@@ -161,6 +166,7 @@ public class EdgeToEdgeControllerTest {
                             Insets.of(GESTURE_SWIPE_INSET, TOP_INSET, GESTURE_SWIPE_INSET, 0))
                     .setInsets(WindowInsetsCompat.Type.mandatorySystemGestures(), STATUS_BAR_INSETS)
                     .build();
+
     private static final WindowInsetsCompat SYSTEM_BARS_WINDOW_INSETS_WITH_KEYBOARD =
             new WindowInsetsCompat.Builder()
                     .setInsets(WindowInsetsCompat.Type.navigationBars(), NAVIGATION_BAR_INSETS)
@@ -174,11 +180,13 @@ public class EdgeToEdgeControllerTest {
                             WindowInsetsCompat.Type.mandatorySystemGestures(),
                             MANDATORY_SYSTEM_GESTURE_INSETS)
                     .build();
+
     private static final WindowInsetsCompat SYSTEM_BARS_TOP_INSETS_ONLY =
             new WindowInsetsCompat.Builder()
                     .setInsets(WindowInsetsCompat.Type.statusBars(), STATUS_BAR_INSETS)
                     .setInsets(WindowInsetsCompat.Type.systemBars(), STATUS_BAR_INSETS)
                     .build();
+
     private static final WindowInsetsCompat SYSTEM_BARS_WITH_TAPPABLE_NAVBAR =
             new WindowInsetsCompat.Builder()
                     .setInsets(WindowInsetsCompat.Type.statusBars(), STATUS_BAR_INSETS)
@@ -192,6 +200,7 @@ public class EdgeToEdgeControllerTest {
                             WindowInsetsCompat.Type.mandatorySystemGestures(),
                             MANDATORY_SYSTEM_GESTURE_INSETS)
                     .build();
+
     private static final WindowInsetsCompat SYSTEM_BARS_WITH_TAPPABLE_MISSING_NAVBAR =
             new WindowInsetsCompat.Builder()
                     .setInsets(WindowInsetsCompat.Type.statusBars(), STATUS_BAR_INSETS)
@@ -205,6 +214,7 @@ public class EdgeToEdgeControllerTest {
                             WindowInsetsCompat.Type.mandatorySystemGestures(),
                             MANDATORY_SYSTEM_GESTURE_INSETS)
                     .build();
+
     private static final WindowInsetsCompat SYSTEM_BARS_NEITHER_TAPPABLE_NOR_GESTURE_NAV =
             new WindowInsetsCompat.Builder()
                     .setInsets(WindowInsetsCompat.Type.statusBars(), STATUS_BAR_INSETS)
@@ -219,36 +229,40 @@ public class EdgeToEdgeControllerTest {
                             MANDATORY_SYSTEM_GESTURE_INSETS)
                     .build();
 
+    private Activity mActivity;
+    private EdgeToEdgeControllerImpl mEdgeToEdgeControllerImpl;
+
+    private final SettableNullableObservableSupplier<Tab> mTabProvider =
+            ObservableSuppliers.createNullable();
+    private final SettableMonotonicObservableSupplier<LayoutManager> mLayoutManagerSupplier =
+            ObservableSuppliers.createMonotonic();
+
+    private final UserDataHost mTabDataHost = new UserDataHost();
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private InsetObserver mInsetObserver;
     @Mock private Tab mTab;
     @Mock private NativePage mKeyNativePage;
+
     @Mock private MockWebContents mWebContents;
+
     @Mock private EdgeToEdgeOSWrapper mOsWrapper;
     @Mock private EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
     @Mock private EdgeToEdgeManager mEdgeToEdgeManager;
     @Mock private EdgeToEdgeSupplier.ChangeObserver mChangeObserver;
+
     @Captor private ArgumentCaptor<WindowInsetsConsumer> mWindowInsetsListenerCaptor;
+
     @Captor private ArgumentCaptor<TabObserver> mTabObserverArgumentCaptor;
+
     @Mock private View mViewMock;
+
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private LayoutManager mLayoutManager;
     @Mock private FullscreenManager mFullscreenManager;
     @Mock private TopInsetProvider.Observer mTopInsetObserver;
-    @Mock private Tab mRegularTab1;
-    @Mock private Tab mRegularTab2;
-    @Mock private TopInsetProvider.Observer mTopInsetProviderObserver;
-    @Mock private NativePage mNativePage;
-
-    private Activity mActivity;
-    private EdgeToEdgeControllerImpl mEdgeToEdgeControllerImpl;
-    private final SettableNullableObservableSupplier<Tab> mTabProvider =
-            ObservableSuppliers.createNullable();
-    private final SettableMonotonicObservableSupplier<LayoutManager> mLayoutManagerSupplier =
-            ObservableSuppliers.createMonotonic();
-    private final UserDataHost mTabDataHost = new UserDataHost();
 
     @Before
     public void setUp() {
@@ -1556,19 +1570,21 @@ public class EdgeToEdgeControllerTest {
         // 2. Verifies that retriggerOnApplyWindowInsets() is called when switching from NTP to a
         // regular tab.
         clearInvocations(mInsetObserver);
-        when(mRegularTab1.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
-        when(mRegularTab1.isNativePage()).thenReturn(false);
-        when(mRegularTab1.getUserDataHost()).thenReturn(new org.chromium.base.UserDataHost());
-        mEdgeToEdgeControllerImpl.onTabSwitched(mRegularTab1);
+        Tab regularTab1 = Mockito.mock(Tab.class);
+        when(regularTab1.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
+        when(regularTab1.isNativePage()).thenReturn(false);
+        when(regularTab1.getUserDataHost()).thenReturn(new org.chromium.base.UserDataHost());
+        mEdgeToEdgeControllerImpl.onTabSwitched(regularTab1);
         verify(mInsetObserver).retriggerOnApplyWindowInsets();
 
         // 3. Verifies that retriggerOnApplyWindowInsets() is NOT called when switching between
         // non-NTP tabs.
         clearInvocations(mInsetObserver);
-        when(mRegularTab2.getUrl()).thenReturn(JUnitTestGURLs.URL_2);
-        when(mRegularTab2.isNativePage()).thenReturn(false);
-        when(mRegularTab2.getUserDataHost()).thenReturn(new org.chromium.base.UserDataHost());
-        mEdgeToEdgeControllerImpl.onTabSwitched(mRegularTab2);
+        Tab regularTab2 = Mockito.mock(Tab.class);
+        when(regularTab2.getUrl()).thenReturn(JUnitTestGURLs.URL_2);
+        when(regularTab2.isNativePage()).thenReturn(false);
+        when(regularTab2.getUserDataHost()).thenReturn(new org.chromium.base.UserDataHost());
+        mEdgeToEdgeControllerImpl.onTabSwitched(regularTab2);
         verify(mInsetObserver, never()).retriggerOnApplyWindowInsets();
     }
 
@@ -1598,10 +1614,11 @@ public class EdgeToEdgeControllerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.EDGELESS_TOP_INSET)
     public void testAddAndRemoveObservers_Top() {
-        mEdgeToEdgeControllerImpl.addObserver(mTopInsetProviderObserver);
+        TopInsetProvider.Observer observer = Mockito.mock(TopInsetProvider.Observer.class);
+        mEdgeToEdgeControllerImpl.addObserver(observer);
         mEdgeToEdgeControllerImpl.setConsumeTopInsetForTesting(true);
         assertTrue(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
-        mEdgeToEdgeControllerImpl.removeObserver(mTopInsetProviderObserver);
+        mEdgeToEdgeControllerImpl.removeObserver(observer);
     }
 
     @Test
@@ -1716,8 +1733,9 @@ public class EdgeToEdgeControllerTest {
     @EnableFeatures(ChromeFeatureList.EDGELESS_TOP_INSET)
     public void testTopInsetOnNtpTab() {
         when(mTab.isNativePage()).thenReturn(true);
-        when(mTab.getNativePage()).thenReturn(mNativePage);
-        when(mNativePage.supportsEdgeToEdgeOnTop()).thenReturn(true);
+        NativePage nativePage = Mockito.mock(NativePage.class);
+        when(mTab.getNativePage()).thenReturn(nativePage);
+        when(nativePage.supportsEdgeToEdgeOnTop()).thenReturn(true);
 
         mTabProvider.set(mTab);
         assertTrue(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
@@ -1727,8 +1745,9 @@ public class EdgeToEdgeControllerTest {
     @EnableFeatures(ChromeFeatureList.EDGELESS_TOP_INSET)
     public void testTopInset_CustomizedBackgroundNtp_ConsumesStatusBars() {
         when(mTab.isNativePage()).thenReturn(true);
-        when(mTab.getNativePage()).thenReturn(mNativePage);
-        when(mNativePage.supportsEdgeToEdgeOnTop()).thenReturn(true);
+        NativePage nativePage = Mockito.mock(NativePage.class);
+        when(mTab.getNativePage()).thenReturn(nativePage);
+        when(nativePage.supportsEdgeToEdgeOnTop()).thenReturn(true);
 
         mTabProvider.set(mTab);
         assertTrue(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());

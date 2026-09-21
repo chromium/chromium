@@ -19,7 +19,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -51,6 +50,9 @@ import java.util.List;
 public class CustomSearchEngineMediatorUnitTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
+    private Context mContext;
+    private Resources mResources;
+
     @Mock private ModelList mModelList;
     @Mock private Profile mProfile;
     @Mock private TemplateUrlService mTemplateUrlService;
@@ -58,10 +60,7 @@ public class CustomSearchEngineMediatorUnitTest {
     @Mock private LargeIconBridgeJni mLargeIconBridgeJni;
     @Mock private Callback<TemplateUrl> mOnEditSearchEngine;
     @Mock private Callback<TemplateUrl> mOnRemoveSearchEngine;
-    @Captor private ArgumentCaptor<ListItem> mItemCaptor;
 
-    private Context mContext;
-    private Resources mResources;
     private CustomSearchEngineMediator mMediator;
 
     @Before
@@ -105,9 +104,10 @@ public class CustomSearchEngineMediatorUnitTest {
 
     @Test
     public void testMenuDelegate() {
-        verify(mModelList).add(mItemCaptor.capture());
+        ArgumentCaptor<ListItem> itemCaptor = ArgumentCaptor.forClass(ListItem.class);
+        verify(mModelList).add(itemCaptor.capture());
 
-        PropertyModel model = mItemCaptor.getValue().model;
+        PropertyModel model = itemCaptor.getValue().model;
         ListMenuDelegate delegate = model.get(SiteSearchProperties.MENU_DELEGATE);
 
         assertNotNull(delegate);
@@ -169,9 +169,10 @@ public class CustomSearchEngineMediatorUnitTest {
         Mockito.clearInvocations(mModelList, mTemplateUrlService);
         mMediator.onTemplateURLServiceChanged();
 
-        verify(mModelList).add(mItemCaptor.capture());
+        ArgumentCaptor<ListItem> itemCaptor = ArgumentCaptor.forClass(ListItem.class);
+        verify(mModelList).add(itemCaptor.capture());
 
-        PropertyModel model = mItemCaptor.getValue().model;
+        PropertyModel model = itemCaptor.getValue().model;
         ListMenuDelegate delegate = model.get(SiteSearchProperties.MENU_DELEGATE);
 
         assertNotNull(delegate);

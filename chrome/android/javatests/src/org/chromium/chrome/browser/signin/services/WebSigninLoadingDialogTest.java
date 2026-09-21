@@ -77,8 +77,6 @@ public class WebSigninLoadingDialogTest {
     @Mock private WebContents mMockWebContents;
 
     @Captor private ArgumentCaptor<Callback<Integer>> mCallbackCaptor;
-    @Captor private ArgumentCaptor<Runnable> mMinShowTimeRunnableCaptor;
-    @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
 
     private WebSigninRedirectCoordinator mCoordinator;
 
@@ -327,13 +325,15 @@ public class WebSigninLoadingDialogTest {
                 .startTimer(anyLong(), any(Runnable.class));
 
         mCoordinator.setMinDialogVisibleTimerForTesting(mMockMinDialogVisibleTimer);
+        final ArgumentCaptor<Runnable> minShowTimeRunnableCaptor =
+                ArgumentCaptor.forClass(Runnable.class);
         doAnswer(
                         invocation -> {
                             // Do nothing immediately, just capture the runnable.
                             return null;
                         })
                 .when(mMockMinDialogVisibleTimer)
-                .startTimer(anyLong(), mMinShowTimeRunnableCaptor.capture());
+                .startTimer(anyLong(), minShowTimeRunnableCaptor.capture());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -358,7 +358,7 @@ public class WebSigninLoadingDialogTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Fire the timer.
-                    mMinShowTimeRunnableCaptor.getValue().run();
+                    minShowTimeRunnableCaptor.getValue().run();
                 });
 
         // Dialog should be dismissed.
@@ -390,11 +390,12 @@ public class WebSigninLoadingDialogTest {
                     mCallbackCaptor.getValue().onResult(WebSigninTrackerResult.SUCCESS);
                 });
 
-        verify(spyTab).loadUrl(mLoadUrlParamsCaptor.capture());
-        Assert.assertEquals("https://continue.url/", mLoadUrlParamsCaptor.getValue().getUrl());
-        Assert.assertTrue(mLoadUrlParamsCaptor.getValue().getIsRendererInitiated());
-        Assert.assertNotNull(mLoadUrlParamsCaptor.getValue().getInitiatorOrigin());
-        Assert.assertTrue(mLoadUrlParamsCaptor.getValue().getInitiatorOrigin().isOpaque());
+        ArgumentCaptor<LoadUrlParams> captor = ArgumentCaptor.forClass(LoadUrlParams.class);
+        verify(spyTab).loadUrl(captor.capture());
+        Assert.assertEquals("https://continue.url/", captor.getValue().getUrl());
+        Assert.assertTrue(captor.getValue().getIsRendererInitiated());
+        Assert.assertNotNull(captor.getValue().getInitiatorOrigin());
+        Assert.assertTrue(captor.getValue().getInitiatorOrigin().isOpaque());
     }
 
     @Test
@@ -448,13 +449,15 @@ public class WebSigninLoadingDialogTest {
                 .startTimer(anyLong(), any(Runnable.class));
 
         mCoordinator.setMinDialogVisibleTimerForTesting(mMockMinDialogVisibleTimer);
+        final ArgumentCaptor<Runnable> minShowTimeRunnableCaptor =
+                ArgumentCaptor.forClass(Runnable.class);
         doAnswer(
                         invocation -> {
                             // Do nothing immediately, just capture the runnable.
                             return null;
                         })
                 .when(mMockMinDialogVisibleTimer)
-                .startTimer(anyLong(), mMinShowTimeRunnableCaptor.capture());
+                .startTimer(anyLong(), minShowTimeRunnableCaptor.capture());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -471,7 +474,7 @@ public class WebSigninLoadingDialogTest {
         // The minShowTime fires and then WebSigninTrackerResult is returned.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mMinShowTimeRunnableCaptor.getValue().run();
+                    minShowTimeRunnableCaptor.getValue().run();
                 });
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

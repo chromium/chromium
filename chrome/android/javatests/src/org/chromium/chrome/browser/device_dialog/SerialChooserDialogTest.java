@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.device_dialog;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.Manifest;
@@ -26,9 +27,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -64,12 +62,6 @@ public class SerialChooserDialogTest {
     @Rule
     public final AutoResetCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.fastAutoResetCtaActivityRule();
-
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Mock private ModalDialogManager mModalDialogManager;
-    @Mock private Activity mActivity;
-    @Mock private WindowAndroid mMockWindowAndroid;
 
     private String mSelectedDeviceId = "";
 
@@ -437,16 +429,19 @@ public class SerialChooserDialogTest {
     @SmallTest
     @DisabledTest(message = "crbug.com/343347280")
     public void testChooserBlockedByModalDialogManager() {
-        when(mModalDialogManager.isSuspended(ModalDialogManager.ModalDialogType.APP))
+        ModalDialogManager mockModalDialogManager = mock(ModalDialogManager.class);
+        when(mockModalDialogManager.isSuspended(ModalDialogManager.ModalDialogType.APP))
                 .thenReturn(true);
-        when(mModalDialogManager.isSuspended(ModalDialogManager.ModalDialogType.TAB))
+        when(mockModalDialogManager.isSuspended(ModalDialogManager.ModalDialogType.TAB))
                 .thenReturn(true);
-        when(mMockWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
-        when(mMockWindowAndroid.getModalDialogManager()).thenReturn(mModalDialogManager);
-        when(mMockWindowAndroid.hasPermission(Manifest.permission.BLUETOOTH_SCAN)).thenReturn(true);
-        when(mMockWindowAndroid.hasPermission(Manifest.permission.BLUETOOTH_CONNECT))
+        Activity mockActivity = mock(Activity.class);
+        WindowAndroid mockWindowAndroid = mock(WindowAndroid.class);
+        when(mockWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mockActivity));
+        when(mockWindowAndroid.getModalDialogManager()).thenReturn(mockModalDialogManager);
+        when(mockWindowAndroid.hasPermission(Manifest.permission.BLUETOOTH_SCAN)).thenReturn(true);
+        when(mockWindowAndroid.hasPermission(Manifest.permission.BLUETOOTH_CONNECT))
                 .thenReturn(true);
-        when(mMockWindowAndroid.hasPermission(Manifest.permission.ACCESS_FINE_LOCATION))
+        when(mockWindowAndroid.hasPermission(Manifest.permission.ACCESS_FINE_LOCATION))
                 .thenReturn(true);
 
         SerialChooserDialog dialog;
@@ -454,7 +449,7 @@ public class SerialChooserDialogTest {
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return SerialChooserDialog.create(
-                                    mMockWindowAndroid,
+                                    mockWindowAndroid,
                                     "https://origin.example.com/",
                                     ConnectionSecurityLevel.SECURE,
                                     ProfileManager.getLastUsedRegularProfile(),

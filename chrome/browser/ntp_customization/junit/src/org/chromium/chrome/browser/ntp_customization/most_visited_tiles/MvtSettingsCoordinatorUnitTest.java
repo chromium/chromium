@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.BOTTOM_SHEET_KEYS;
@@ -51,8 +52,6 @@ public class MvtSettingsCoordinatorUnitTest {
 
     @Mock BottomSheetDelegate mBottomSheetDelegate;
     @Mock Profile mProfile;
-    @Mock private CompoundButton.OnCheckedChangeListener mCompoundButtonOnCheckedChangeListener;
-    @Mock private MvtSettingsMediator mMvtSettingsMediator;
 
     private MvtSettingsCoordinator mCoordinator;
     private Context mContext;
@@ -94,14 +93,15 @@ public class MvtSettingsCoordinatorUnitTest {
                 mPropertyModel, mvtBottomSheet, BottomSheetViewBinder::bind);
 
         // Verifies the on checked change listener is added to the mvt bottom sheet's mvt switch.
-        mPropertyModel.set(
-                MVT_SWITCH_ON_CHECKED_CHANGE_LISTENER, mCompoundButtonOnCheckedChangeListener);
+        CompoundButton.OnCheckedChangeListener onCheckedChangeListener =
+                mock(CompoundButton.OnCheckedChangeListener.class);
+        mPropertyModel.set(MVT_SWITCH_ON_CHECKED_CHANGE_LISTENER, onCheckedChangeListener);
         MaterialSwitchWithText mvtSwitch = mvtBottomSheet.findViewById(R.id.mvt_switch_button);
         mvtSwitch.setChecked(true);
-        verify(mCompoundButtonOnCheckedChangeListener)
+        verify(onCheckedChangeListener)
                 .onCheckedChanged(eq(mvtBottomSheet.findViewById(R.id.switch_widget)), eq(true));
         mvtSwitch.setChecked(false);
-        verify(mCompoundButtonOnCheckedChangeListener)
+        verify(onCheckedChangeListener)
                 .onCheckedChanged(eq(mvtBottomSheet.findViewById(R.id.switch_widget)), eq(false));
 
         // Verifies the mvt switch will get updated timely.
@@ -114,8 +114,9 @@ public class MvtSettingsCoordinatorUnitTest {
 
     @Test
     public void testDestroy() {
-        mCoordinator.setMediatorForTesting(mMvtSettingsMediator);
+        MvtSettingsMediator mediator = mock(MvtSettingsMediator.class);
+        mCoordinator.setMediatorForTesting(mediator);
         mCoordinator.destroy();
-        verify(mMvtSettingsMediator).destroy();
+        verify(mediator).destroy();
     }
 }

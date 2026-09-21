@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -16,12 +17,8 @@ import android.os.Bundle;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -33,9 +30,6 @@ import java.util.List;
 /** Unit tests for {@link SettingsBreadcrumbUtil}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SettingsBreadcrumbUtilTest {
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private Profile mProfile;
-
     @After
     public void tearDown() {
         SettingsIndexData.reset();
@@ -83,17 +77,19 @@ public class SettingsBreadcrumbUtilTest {
     @Test
     public void testGetInitialBreadcrumbPath_nullFragmentName() {
         Context context = ApplicationProvider.getApplicationContext();
-        assertNull(SettingsBreadcrumbUtil.getInitialBreadcrumbPath(context, mProfile, null, null));
+        Profile profile = mock(Profile.class);
+        assertNull(SettingsBreadcrumbUtil.getInitialBreadcrumbPath(context, profile, null, null));
     }
 
     @Test
     public void testGetInitialBreadcrumbPath_fromFragment_noPath() {
         Context context = ApplicationProvider.getApplicationContext();
+        Profile profile = mock(Profile.class);
         SettingsIndexData indexData = SettingsIndexData.createInstance();
         indexData.resetNeedsIndexing();
 
         assertNull(
                 SettingsBreadcrumbUtil.getInitialBreadcrumbPath(
-                        context, mProfile, "NonExistentFragment", null));
+                        context, profile, "NonExistentFragment", null));
     }
 }

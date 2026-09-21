@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -51,7 +52,6 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager.HomepageStateListener;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager.ThemeSyncObserver;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeStateProvider;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorFromHexInfo;
@@ -78,22 +78,19 @@ import java.util.concurrent.Executor;
 /** Unit tests for {@link NtpCustomizationConfigManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class NtpCustomizationConfigManagerUnitTest {
-    private static final String FILE_ID_HASH = "fileIdHash";
-    private static final String OTHER_FILE_ID_HASH = "otherFileIdHash";
-    private static final String TEST_COLLECTION_ID = "collectionId";
-    private static final String OTHER_COLLECTION_ID = "otherCollection";
-
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
     @Mock private HomepageStateListener mListener;
     @Mock private NtpThemeDailyRefreshManager mNtpThemeDailyRefreshManager;
     @Mock private NtpBackgroundDataManager mNtpBackgroundDataManager;
     @Mock private NtpThemeStateProvider mNtpThemeStateProvider;
-    @Mock private BackgroundImageInfo mImageInfo;
-    @Mock private ThemeSyncObserver mThemeSyncObserver;
     @Captor private ArgumentCaptor<Bitmap> mBitmapCaptor;
     @Captor private ArgumentCaptor<BackgroundImageInfo> mBackgroundImageInfoCaptor;
     @Captor private ArgumentCaptor<Callback<Bitmap>> mBitmapCallbackCaptor;
+
+    private static final String FILE_ID_HASH = "fileIdHash";
+    private static final String OTHER_FILE_ID_HASH = "otherFileIdHash";
+    private static final String TEST_COLLECTION_ID = "collectionId";
+    private static final String OTHER_COLLECTION_ID = "otherCollection";
 
     private Context mContext;
     private NtpCustomizationConfigManager mNtpCustomizationConfigManager;
@@ -617,8 +614,8 @@ public class NtpCustomizationConfigManagerUnitTest {
         assertNull(mNtpCustomizationConfigManager.getBackgroundImageInfoForTesting());
         assertNull(mNtpCustomizationConfigManager.getOriginalBitmapForTesting());
         if (deleteImageFile) {
-
             assertFalse(imageFile.exists());
+
         } else {
             assertTrue(imageFile.exists());
         }
@@ -653,8 +650,9 @@ public class NtpCustomizationConfigManagerUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
     public void testOnBackgroundImageLoadedFromDisk() {
+        BackgroundImageInfo imageInfo = mock(BackgroundImageInfo.class);
         testOnBackgroundImageLoadedFromDiskImpl(
-                createBitmap(), mImageInfo, NtpBackgroundType.IMAGE_FROM_DISK);
+                createBitmap(), imageInfo, NtpBackgroundType.IMAGE_FROM_DISK);
     }
 
     @Test
@@ -1321,7 +1319,9 @@ public class NtpCustomizationConfigManagerUnitTest {
         NtpCustomizationConfigManager manager =
                 ThreadUtils.runOnUiThreadBlocking(NtpCustomizationConfigManager::new);
         manager.setNtpBackgroundDataManagerForTesting(mNtpBackgroundDataManager);
-        manager.addThemeSyncObserver(mThemeSyncObserver);
+        NtpCustomizationConfigManager.ThemeSyncObserver observer =
+                mock(NtpCustomizationConfigManager.ThemeSyncObserver.class);
+        manager.addThemeSyncObserver(observer);
 
         int colorInfoId = NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_BLUE;
         NtpThemeColorInfo colorInfo =
@@ -1334,20 +1334,20 @@ public class NtpCustomizationConfigManagerUnitTest {
         manager.onBackgroundDataChanged(
                 mContext, colorData, /* shouldNotifyThemeSyncObserver= */ true);
         RobolectricUtil.runAllBackgroundAndUi();
-        verify(mThemeSyncObserver).onThemeCommitted(eq(colorData));
+        verify(observer).onThemeCommitted(eq(colorData));
 
-        clearInvocations(mThemeSyncObserver);
+        clearInvocations(observer);
         manager.onBackgroundDataChanged(
                 mContext, /* backgroundData= */ null, /* shouldNotifyThemeSyncObserver= */ false);
         RobolectricUtil.runAllBackgroundAndUi();
-        verify(mThemeSyncObserver, never()).onThemeCommitted(any());
+        verify(observer, never()).onThemeCommitted(any());
 
-        clearInvocations(mThemeSyncObserver);
-        manager.removeThemeSyncObserver(mThemeSyncObserver);
+        clearInvocations(observer);
+        manager.removeThemeSyncObserver(observer);
         manager.onBackgroundDataChanged(
                 mContext, colorData, /* shouldNotifyThemeSyncObserver= */ true);
         RobolectricUtil.runAllBackgroundAndUi();
-        verify(mThemeSyncObserver, never()).onThemeCommitted(any());
+        verify(observer, never()).onThemeCommitted(any());
     }
 
     private NtpCustomizationConfigManager createConfigManagerWithListener() {

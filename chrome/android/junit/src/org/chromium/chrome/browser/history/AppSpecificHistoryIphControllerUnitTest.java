@@ -20,7 +20,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -57,7 +56,6 @@ public class AppSpecificHistoryIphControllerUnitTest {
     @Mock private Tracker mTracker;
 
     @Mock private Activity mActivity;
-    @Captor private ArgumentCaptor<IphCommand> mIphCommandCaptor;
     private AppSpecificHistoryIphController mController;
 
     @Before
@@ -80,8 +78,9 @@ public class AppSpecificHistoryIphControllerUnitTest {
     @SuppressWarnings("DirectInvocationOnMock")
     public void testShowsIphOnPageLoad() {
         mController.maybeShowIph();
-        verify(mUserEducationHelper).requestShowIph(mIphCommandCaptor.capture());
-        IphCommand cmd = mIphCommandCaptor.getValue();
+        var captor = ArgumentCaptor.forClass(IphCommand.class);
+        verify(mUserEducationHelper).requestShowIph(captor.capture());
+        var cmd = captor.getValue();
         assertEquals(FeatureConstants.APP_SPECIFIC_HISTORY_FEATURE, cmd.featureName);
         assertEquals(R.string.history_iph_bubble_text, cmd.stringId);
         assertEquals(R.string.history_iph_bubble_text, cmd.accessibilityStringId);

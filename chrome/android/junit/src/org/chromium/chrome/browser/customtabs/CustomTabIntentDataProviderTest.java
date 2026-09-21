@@ -24,6 +24,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -62,13 +63,9 @@ import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
@@ -109,11 +106,6 @@ public class CustomTabIntentDataProviderTest {
     private static final String BUTTON_DESCRIPTION = "buttonDescription";
     private static final String PACKAGE = "com.example.package.app";
 
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private CustomTabsConnection mCustomTabsConnection;
-    @Mock private Intent mIntent;
-    @Mock private PendingIntent mPendingIntent;
-    @Mock private Network mNetwork;
     private Context mContext;
 
     @Before
@@ -294,8 +286,9 @@ public class CustomTabIntentDataProviderTest {
     @Test
     @EnableFeatures({ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR})
     public void googleBottomBarFlagsOn_customButtonWithSupportedId_hasItemInGoogleBottomBar() {
-        when(mCustomTabsConnection.shouldEnableGoogleBottomBarForIntent(any())).thenReturn(true);
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        when(connection.shouldEnableGoogleBottomBarForIntent(any())).thenReturn(true);
+        CustomTabsConnection.setInstanceForTesting(connection);
 
         ArrayList<Bundle> buttons =
                 new ArrayList<>(
@@ -315,8 +308,9 @@ public class CustomTabIntentDataProviderTest {
     @Test
     @EnableFeatures({ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR})
     public void googleBottomBarFlagsOn_customButtonWithNonSupportedId_hasItemsInToolbar() {
-        when(mCustomTabsConnection.shouldEnableGoogleBottomBarForIntent(any())).thenReturn(true);
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        when(connection.shouldEnableGoogleBottomBarForIntent(any())).thenReturn(true);
+        CustomTabsConnection.setInstanceForTesting(connection);
 
         ArrayList<Bundle> buttons =
                 new ArrayList<>(
@@ -337,8 +331,9 @@ public class CustomTabIntentDataProviderTest {
     @EnableFeatures({ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR})
     public void
             googleBottomBarFlagsOn_hasExtraGoogleBottomBarButtons_hasSupportedItemsInGoogleBottomBar() {
-        when(mCustomTabsConnection.shouldEnableGoogleBottomBarForIntent(any())).thenReturn(true);
-        when(mCustomTabsConnection.hasExtraGoogleBottomBarButtons(any())).thenReturn(true);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        when(connection.shouldEnableGoogleBottomBarForIntent(any())).thenReturn(true);
+        when(connection.hasExtraGoogleBottomBarButtons(any())).thenReturn(true);
 
         ArrayList<Bundle> googleBottomBarButtons =
                 new ArrayList<>(
@@ -346,9 +341,8 @@ public class CustomTabIntentDataProviderTest {
                                 createCustomGoogleBottomBarItemBundleWithId(103),
                                 createCustomGoogleBottomBarItemBundleWithId(2)));
 
-        when(mCustomTabsConnection.getGoogleBottomBarButtons(any()))
-                .thenReturn(googleBottomBarButtons);
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
+        when(connection.getGoogleBottomBarButtons(any())).thenReturn(googleBottomBarButtons);
+        CustomTabsConnection.setInstanceForTesting(connection);
 
         ArrayList<Bundle> buttons =
                 new ArrayList<>(
@@ -373,8 +367,9 @@ public class CustomTabIntentDataProviderTest {
         ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS
     })
     public void googleBottomBarFlagsOn_withNoVariantLayout_hasItemsInGoogleBottomBar() {
-        when(mCustomTabsConnection.shouldEnableGoogleBottomBarForIntent(any())).thenReturn(true);
-        when(mCustomTabsConnection.hasExtraGoogleBottomBarButtons(any())).thenReturn(true);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        when(connection.shouldEnableGoogleBottomBarForIntent(any())).thenReturn(true);
+        when(connection.hasExtraGoogleBottomBarButtons(any())).thenReturn(true);
 
         ArrayList<Bundle> googleBottomBarButtons =
                 new ArrayList<>(
@@ -383,9 +378,8 @@ public class CustomTabIntentDataProviderTest {
                                 createCustomGoogleBottomBarItemBundleWithId(2)) // UNSUPPORTED
                         );
 
-        when(mCustomTabsConnection.getGoogleBottomBarButtons(any()))
-                .thenReturn(googleBottomBarButtons);
-        when(mCustomTabsConnection.getGoogleBottomBarIntentParams(any()))
+        when(connection.getGoogleBottomBarButtons(any())).thenReturn(googleBottomBarButtons);
+        when(connection.getGoogleBottomBarIntentParams(any()))
                 .thenReturn(
                         GoogleBottomBarIntentParams.newBuilder()
                                 .setVariantLayoutType(VariantLayoutType.NO_VARIANT)
@@ -394,7 +388,7 @@ public class CustomTabIntentDataProviderTest {
                                         // type
                                         List.of(0, 1, 8, 9))
                                 .build());
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
+        CustomTabsConnection.setInstanceForTesting(connection);
 
         ArrayList<Bundle> buttons =
                 new ArrayList<>(
@@ -421,8 +415,9 @@ public class CustomTabIntentDataProviderTest {
         ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS
     })
     public void googleBottomBarFlagsOn_withDoubleDeckerLayout_hasItemsInGoogleBottomBar() {
-        when(mCustomTabsConnection.shouldEnableGoogleBottomBarForIntent(any())).thenReturn(true);
-        when(mCustomTabsConnection.hasExtraGoogleBottomBarButtons(any())).thenReturn(true);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        when(connection.shouldEnableGoogleBottomBarForIntent(any())).thenReturn(true);
+        when(connection.hasExtraGoogleBottomBarButtons(any())).thenReturn(true);
 
         ArrayList<Bundle> googleBottomBarButtons =
                 new ArrayList<>(
@@ -431,9 +426,8 @@ public class CustomTabIntentDataProviderTest {
                                 createCustomGoogleBottomBarItemBundleWithId(2)) // UNSUPPORTED
                         );
 
-        when(mCustomTabsConnection.getGoogleBottomBarButtons(any()))
-                .thenReturn(googleBottomBarButtons);
-        when(mCustomTabsConnection.getGoogleBottomBarIntentParams(any()))
+        when(connection.getGoogleBottomBarButtons(any())).thenReturn(googleBottomBarButtons);
+        when(connection.getGoogleBottomBarIntentParams(any()))
                 .thenReturn(
                         GoogleBottomBarIntentParams.newBuilder()
                                 .setVariantLayoutType(VariantLayoutType.DOUBLE_DECKER)
@@ -442,7 +436,7 @@ public class CustomTabIntentDataProviderTest {
                                         // type
                                         List.of(0, 1, 8, 9))
                                 .build());
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
+        CustomTabsConnection.setInstanceForTesting(connection);
 
         ArrayList<Bundle> buttons =
                 new ArrayList<>(
@@ -469,8 +463,9 @@ public class CustomTabIntentDataProviderTest {
         ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS
     })
     public void googleBottomBarFlagsOn_withSingleDeckerLayout_hasItemsInToolbar() {
-        when(mCustomTabsConnection.shouldEnableGoogleBottomBarForIntent(any())).thenReturn(true);
-        when(mCustomTabsConnection.hasExtraGoogleBottomBarButtons(any())).thenReturn(true);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        when(connection.shouldEnableGoogleBottomBarForIntent(any())).thenReturn(true);
+        when(connection.hasExtraGoogleBottomBarButtons(any())).thenReturn(true);
 
         ArrayList<Bundle> googleBottomBarButtons =
                 new ArrayList<>(
@@ -479,15 +474,14 @@ public class CustomTabIntentDataProviderTest {
                                 createCustomGoogleBottomBarItemBundleWithId(2)) // UNSUPPORTED
                         );
 
-        when(mCustomTabsConnection.getGoogleBottomBarButtons(any()))
-                .thenReturn(googleBottomBarButtons);
-        when(mCustomTabsConnection.getGoogleBottomBarIntentParams(any()))
+        when(connection.getGoogleBottomBarButtons(any())).thenReturn(googleBottomBarButtons);
+        when(connection.getGoogleBottomBarIntentParams(any()))
                 .thenReturn(
                         GoogleBottomBarIntentParams.newBuilder()
                                 .setVariantLayoutType(VariantLayoutType.SINGLE_DECKER)
                                 .addAllEncodedButton(List.of())
                                 .build());
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
+        CustomTabsConnection.setInstanceForTesting(connection);
 
         ArrayList<Bundle> buttons =
                 new ArrayList<>(
@@ -516,8 +510,9 @@ public class CustomTabIntentDataProviderTest {
         ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS
     })
     public void googleBottomBarFlagsOn_withSingleDeckerWithRightButtonsLayout_hasItemsInToolbar() {
-        when(mCustomTabsConnection.shouldEnableGoogleBottomBarForIntent(any())).thenReturn(true);
-        when(mCustomTabsConnection.hasExtraGoogleBottomBarButtons(any())).thenReturn(true);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        when(connection.shouldEnableGoogleBottomBarForIntent(any())).thenReturn(true);
+        when(connection.hasExtraGoogleBottomBarButtons(any())).thenReturn(true);
 
         ArrayList<Bundle> googleBottomBarButtons =
                 new ArrayList<>(
@@ -526,16 +521,15 @@ public class CustomTabIntentDataProviderTest {
                                 createCustomGoogleBottomBarItemBundleWithId(2)) // UNSUPPORTED
                         );
 
-        when(mCustomTabsConnection.getGoogleBottomBarButtons(any()))
-                .thenReturn(googleBottomBarButtons);
-        when(mCustomTabsConnection.getGoogleBottomBarIntentParams(any()))
+        when(connection.getGoogleBottomBarButtons(any())).thenReturn(googleBottomBarButtons);
+        when(connection.getGoogleBottomBarIntentParams(any()))
                 .thenReturn(
                         GoogleBottomBarIntentParams.newBuilder()
                                 .setVariantLayoutType(
                                         VariantLayoutType.SINGLE_DECKER_WITH_RIGHT_BUTTONS)
                                 .addAllEncodedButton(List.of(0, 2)) // SHARE
                                 .build());
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
+        CustomTabsConnection.setInstanceForTesting(connection);
 
         ArrayList<Bundle> buttons =
                 new ArrayList<>(
@@ -562,8 +556,9 @@ public class CustomTabIntentDataProviderTest {
     @Test
     @DisableFeatures({ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR})
     public void googleBottomBarFlagsOff_hasExtraGoogleBottomBarButtons_hasItemsInToolbar() {
-        when(mCustomTabsConnection.shouldEnableGoogleBottomBarForIntent(any())).thenReturn(true);
-        when(mCustomTabsConnection.hasExtraGoogleBottomBarButtons(any())).thenReturn(true);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        when(connection.shouldEnableGoogleBottomBarForIntent(any())).thenReturn(true);
+        when(connection.hasExtraGoogleBottomBarButtons(any())).thenReturn(true);
 
         ArrayList<Bundle> googleBottomBarButtons =
                 new ArrayList<>(
@@ -571,9 +566,8 @@ public class CustomTabIntentDataProviderTest {
                                 createCustomGoogleBottomBarItemBundleWithId(103),
                                 createCustomGoogleBottomBarItemBundleWithId(2)));
 
-        when(mCustomTabsConnection.getGoogleBottomBarButtons(any()))
-                .thenReturn(googleBottomBarButtons);
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
+        when(connection.getGoogleBottomBarButtons(any())).thenReturn(googleBottomBarButtons);
+        CustomTabsConnection.setInstanceForTesting(connection);
 
         ArrayList<Bundle> buttons =
                 new ArrayList<>(
@@ -719,8 +713,9 @@ public class CustomTabIntentDataProviderTest {
     @Test
     public void testInitialActivityHeight_1stParty() {
         var intent = new Intent().putExtra(CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, 50);
-        when(mCustomTabsConnection.isFirstParty(any())).thenReturn(true);
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        when(connection.isFirstParty(any())).thenReturn(true);
+        CustomTabsConnection.setInstanceForTesting(connection);
         var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         assertEquals(50, dataProvider.getInitialActivityHeight());
     }
@@ -729,9 +724,9 @@ public class CustomTabIntentDataProviderTest {
     public void testInitialActivityWidth_3P_notdenied() {
         Intent intent = new CustomTabsIntent.Builder().build().intent;
         intent.putExtra(CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_WIDTH_PX, 50);
-        when(mCustomTabsConnection.getClientPackageNameForSession(any()))
-                .thenReturn("com.pixar.woody");
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        when(connection.getClientPackageNameForSession(any())).thenReturn("com.pixar.woody");
+        CustomTabsConnection.setInstanceForTesting(connection);
         var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         assertEquals("Width should be 50", 50, dataProvider.getInitialActivityWidth());
     }
@@ -740,9 +735,9 @@ public class CustomTabIntentDataProviderTest {
     public void testInitialActivityWidth_3P_denied() {
         Intent intent = new CustomTabsIntent.Builder().build().intent;
         intent.putExtra(CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_WIDTH_PX, 50);
-        when(mCustomTabsConnection.getClientPackageNameForSession(any()))
-                .thenReturn("com.dc.joker");
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        when(connection.getClientPackageNameForSession(any())).thenReturn("com.dc.joker");
+        CustomTabsConnection.setInstanceForTesting(connection);
         var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         ChromeFeatureList.sCctResizableForThirdPartiesDenylistEntries.setForTesting(
                 "com.dc.joker|com.marvel.thanos");
@@ -897,8 +892,9 @@ public class CustomTabIntentDataProviderTest {
 
     @Test
     public void testGetClientPackageName_Session() {
-        when(mCustomTabsConnection.getClientPackageNameForSession(any())).thenReturn("com.foo.bar");
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        when(connection.getClientPackageNameForSession(any())).thenReturn("com.foo.bar");
+        CustomTabsConnection.setInstanceForTesting(connection);
 
         Intent intent = new Intent();
         intent.putExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, "com.baz.qux");
@@ -910,8 +906,9 @@ public class CustomTabIntentDataProviderTest {
 
     @Test
     public void testGetClientPackageName_Intent() {
-        when(mCustomTabsConnection.getClientPackageNameForSession(any())).thenReturn(null);
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        when(connection.getClientPackageNameForSession(any())).thenReturn(null);
+        CustomTabsConnection.setInstanceForTesting(connection);
 
         Intent intent = new Intent();
         intent.putExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, "com.foo.bar");
@@ -923,8 +920,9 @@ public class CustomTabIntentDataProviderTest {
 
     @Test
     public void testGetClientPackageName_None() {
-        when(mCustomTabsConnection.getClientPackageNameForSession(any())).thenReturn(null);
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        when(connection.getClientPackageNameForSession(any())).thenReturn(null);
+        CustomTabsConnection.setInstanceForTesting(connection);
 
         Intent intent = new Intent();
         CustomTabIntentDataProvider dataProvider =
@@ -946,9 +944,10 @@ public class CustomTabIntentDataProviderTest {
 
     @Test
     public void testIsTrustedCustomTab_NoServiceConnection() {
-        when(mCustomTabsConnection.getClientPackageNameForSession(any())).thenReturn(null);
-        when(mCustomTabsConnection.isFirstParty(eq("com.foo.bar"))).thenReturn(true);
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        when(connection.getClientPackageNameForSession(any())).thenReturn(null);
+        when(connection.isFirstParty(eq("com.foo.bar"))).thenReturn(true);
+        CustomTabsConnection.setInstanceForTesting(connection);
 
         Intent intent = new Intent();
         Assert.assertFalse(CustomTabIntentDataProvider.isTrustedCustomTab(intent, null));
@@ -959,47 +958,51 @@ public class CustomTabIntentDataProviderTest {
 
     @Test
     public void testConfigureIntentForResizableCustomTab_regularCCT_transparentTheme() {
+        Intent intent = Mockito.mock(Intent.class);
+
         // Regular CCT won't get the transparent activity theme.
-        CustomTabIntentDataProvider.configureIntentForResizableCustomTab(mContext, mIntent);
-        Mockito.verify(mIntent, never())
+        CustomTabIntentDataProvider.configureIntentForResizableCustomTab(mContext, intent);
+        Mockito.verify(intent, never())
                 .setClassName(eq(mContext), eq(TranslucentCustomTabActivity.class.getName()));
-        Mockito.clearInvocations(mIntent);
+        Mockito.clearInvocations(intent);
 
         // Regular CCT with translucency extra gets the transparent activity theme.
-        when(mIntent.hasExtra(eq(CustomTabIntentDataProvider.EXTRA_TRANSLUCENT_BACKGROUND)))
+        when(intent.hasExtra(eq(CustomTabIntentDataProvider.EXTRA_TRANSLUCENT_BACKGROUND)))
                 .thenReturn(true);
-        CustomTabIntentDataProvider.configureIntentForResizableCustomTab(mContext, mIntent);
-        Mockito.verify(mIntent)
+        CustomTabIntentDataProvider.configureIntentForResizableCustomTab(mContext, intent);
+        Mockito.verify(intent)
                 .setClassName(eq(mContext), eq(TranslucentCustomTabActivity.class.getName()));
     }
 
     @Test
     public void testConfigureIntentForResizableCustomTab_partialCCT_transparentTheme() {
-        when(mCustomTabsConnection.getClientPackageNameForSession(any())).thenReturn(null);
-        when(mCustomTabsConnection.isFirstParty(eq("com.foo.bar"))).thenReturn(true);
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        when(connection.getClientPackageNameForSession(any())).thenReturn(null);
+        when(connection.isFirstParty(eq("com.foo.bar"))).thenReturn(true);
+        CustomTabsConnection.setInstanceForTesting(connection);
+        Intent intent = Mockito.mock(Intent.class);
 
         // Partial CCT gets the transparent activity theme.
-        when(mIntent.getStringExtra(eq(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE)))
+        when(intent.getStringExtra(eq(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE)))
                 .thenReturn("com.foo.bar");
-        when(mIntent.getIntExtra(eq(CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX), eq(0)))
+        when(intent.getIntExtra(eq(CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX), eq(0)))
                 .thenReturn(50);
 
         // Partial CCT with translucency extra also gets the transparent activity theme.
-        when(mIntent.hasExtra(eq(CustomTabIntentDataProvider.EXTRA_TRANSLUCENT_BACKGROUND)))
+        when(intent.hasExtra(eq(CustomTabIntentDataProvider.EXTRA_TRANSLUCENT_BACKGROUND)))
                 .thenReturn(true);
-        CustomTabIntentDataProvider.configureIntentForResizableCustomTab(mContext, mIntent);
-        Mockito.verify(mIntent)
+        CustomTabIntentDataProvider.configureIntentForResizableCustomTab(mContext, intent);
+        Mockito.verify(intent)
                 .setClassName(eq(mContext), eq(TranslucentCustomTabActivity.class.getName()));
-        Mockito.clearInvocations(mIntent);
+        Mockito.clearInvocations(intent);
     }
 
     @Test
     @DisableFeatures(ChromeFeatureList.CCT_AUTO_TRANSLATE)
     public void getTranslateLanguage_autoTranslateFeatureDisabled() {
-        when(mCustomTabsConnection.getClientPackageNameForSession(any()))
-                .thenReturn("com.example.foo");
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        when(connection.getClientPackageNameForSession(any())).thenReturn("com.example.foo");
+        CustomTabsConnection.setInstanceForTesting(connection);
 
         Intent intent = new Intent();
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_TRANSLATE_LANGUAGE, "fr");
@@ -1018,9 +1021,9 @@ public class CustomTabIntentDataProviderTest {
         ChromeFeatureList.sCctAutoTranslatePackageNamesAllowlist.setForTesting(
                 "com.example.foo|com.example.bar");
 
-        when(mCustomTabsConnection.getClientPackageNameForSession(any()))
-                .thenReturn("com.example.foo");
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        when(connection.getClientPackageNameForSession(any())).thenReturn("com.example.foo");
+        CustomTabsConnection.setInstanceForTesting(connection);
 
         Intent intent = new Intent();
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_TRANSLATE_LANGUAGE, "fr");
@@ -1038,9 +1041,9 @@ public class CustomTabIntentDataProviderTest {
         ChromeFeatureList.sCctAutoTranslatePackageNamesAllowlist.setForTesting(
                 "com.example.foo|com.example.bar");
 
-        when(mCustomTabsConnection.getClientPackageNameForSession(any()))
-                .thenReturn("com.example.foo");
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        when(connection.getClientPackageNameForSession(any())).thenReturn("com.example.foo");
+        CustomTabsConnection.setInstanceForTesting(connection);
 
         Intent intent = new Intent();
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_TRANSLATE_LANGUAGE, "fr");
@@ -1059,9 +1062,9 @@ public class CustomTabIntentDataProviderTest {
         ChromeFeatureList.sCctAutoTranslatePackageNamesAllowlist.setForTesting(
                 "com.example.foo|com.example.bar");
 
-        when(mCustomTabsConnection.getClientPackageNameForSession(any()))
-                .thenReturn("com.not.in.allowlist");
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        when(connection.getClientPackageNameForSession(any())).thenReturn("com.not.in.allowlist");
+        CustomTabsConnection.setInstanceForTesting(connection);
 
         Intent intent = new Intent();
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_TRANSLATE_LANGUAGE, "fr");
@@ -1080,10 +1083,10 @@ public class CustomTabIntentDataProviderTest {
         ChromeFeatureList.sCctAutoTranslatePackageNamesAllowlist.setForTesting(
                 "com.example.foo|com.example.bar");
 
-        when(mCustomTabsConnection.getClientPackageNameForSession(any()))
-                .thenReturn("com.not.in.allowlist");
-        when(mCustomTabsConnection.isFirstParty(eq("com.not.in.allowlist"))).thenReturn(true);
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        when(connection.getClientPackageNameForSession(any())).thenReturn("com.not.in.allowlist");
+        when(connection.isFirstParty(eq("com.not.in.allowlist"))).thenReturn(true);
+        CustomTabsConnection.setInstanceForTesting(connection);
 
         Intent intent = new Intent();
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_TRANSLATE_LANGUAGE, "fr");
@@ -1102,10 +1105,10 @@ public class CustomTabIntentDataProviderTest {
         ChromeFeatureList.sCctAutoTranslatePackageNamesAllowlist.setForTesting(
                 "com.example.foo|com.example.bar");
 
-        when(mCustomTabsConnection.getClientPackageNameForSession(any()))
-                .thenReturn("com.not.in.allowlist");
-        when(mCustomTabsConnection.isFirstParty(eq("com.not.in.allowlist"))).thenReturn(false);
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        when(connection.getClientPackageNameForSession(any())).thenReturn("com.not.in.allowlist");
+        when(connection.isFirstParty(eq("com.not.in.allowlist"))).thenReturn(false);
+        CustomTabsConnection.setInstanceForTesting(connection);
 
         Intent intent = new Intent();
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_TRANSLATE_LANGUAGE, "fr");
@@ -1120,11 +1123,11 @@ public class CustomTabIntentDataProviderTest {
     @Test
     public void getSecondaryToolbarSwipeUpPendingIntent() {
         Intent intent = new Intent();
+        var pendingIntent = mock(PendingIntent.class);
         intent.putExtra(
-                CustomTabIntentDataProvider.EXTRA_SECONDARY_TOOLBAR_SWIPE_UP_ACTION,
-                mPendingIntent);
+                CustomTabIntentDataProvider.EXTRA_SECONDARY_TOOLBAR_SWIPE_UP_ACTION, pendingIntent);
         var provider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
-        assertEquals(mPendingIntent, provider.getSecondaryToolbarSwipeUpPendingIntent());
+        assertEquals(pendingIntent, provider.getSecondaryToolbarSwipeUpPendingIntent());
     }
 
     @Test
@@ -1256,36 +1259,39 @@ public class CustomTabIntentDataProviderTest {
     @Test
     @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
     public void isInteractiveOmniboxEnabled_flagEnabled() {
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
 
         Intent intent = new CustomTabsIntent.Builder().build().intent;
         var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
 
-        when(mCustomTabsConnection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
+        when(connection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
         assertTrue(dataProvider.isInteractiveOmniboxEnabled());
 
-        when(mCustomTabsConnection.getClientPackageNameForSession(any())).thenReturn(null);
+        when(connection.getClientPackageNameForSession(any())).thenReturn(null);
         assertTrue(dataProvider.isInteractiveOmniboxEnabled());
     }
 
     @Test
     @DisableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
     public void isInteractiveOmniboxEnabled_flagDisabled() {
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
 
         Intent intent = new CustomTabsIntent.Builder().build().intent;
         var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
 
-        when(mCustomTabsConnection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
+        when(connection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
         assertFalse(dataProvider.isInteractiveOmniboxEnabled());
 
-        when(mCustomTabsConnection.getClientPackageNameForSession(any())).thenReturn(null);
+        when(connection.getClientPackageNameForSession(any())).thenReturn(null);
         assertFalse(dataProvider.isInteractiveOmniboxEnabled());
     }
 
     @Test
     public void searchInCct_notAllowedInOffTheRecordMode() {
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
 
         Intent intent = new CustomTabsIntent.Builder().build().intent;
         var dataProvider =
@@ -1297,7 +1303,8 @@ public class CustomTabIntentDataProviderTest {
 
     @Test
     public void searchInCct_notAllowedOnPartialCcts() {
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
 
         Intent intent = new CustomTabsIntent.Builder().build().intent;
         var dataProvider =
@@ -1313,7 +1320,8 @@ public class CustomTabIntentDataProviderTest {
         shadowPkgMgr.setSystemFeature(PackageManager.FEATURE_AUTOMOTIVE, /* supported= */ true);
         assertTrue(DeviceInfo.isAutomotive());
 
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
 
         Intent intent = new CustomTabsIntent.Builder().build().intent;
         var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
@@ -1324,9 +1332,10 @@ public class CustomTabIntentDataProviderTest {
     @Test
     @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
     public void addShareOption_conventionalCct_defaultState() {
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
-        when(mCustomTabsConnection.shouldEnableOmniboxForIntent(any())).thenReturn(false);
-        when(mCustomTabsConnection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
+        when(connection.shouldEnableOmniboxForIntent(any())).thenReturn(false);
+        when(connection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
 
         Intent intent = new CustomTabsIntent.Builder().build().intent;
 
@@ -1342,9 +1351,10 @@ public class CustomTabIntentDataProviderTest {
     @Test
     @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
     public void addShareOption_conventionalCct_disabledState() {
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
-        when(mCustomTabsConnection.shouldEnableOmniboxForIntent(any())).thenReturn(false);
-        when(mCustomTabsConnection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
+        when(connection.shouldEnableOmniboxForIntent(any())).thenReturn(false);
+        when(connection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
 
         Intent intent = new CustomTabsIntent.Builder().build().intent;
         intent.putExtra(CustomTabsIntent.EXTRA_SHARE_STATE, CustomTabsIntent.SHARE_STATE_OFF);
@@ -1359,9 +1369,10 @@ public class CustomTabIntentDataProviderTest {
     @Test
     @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
     public void addShareOption_searchInCct_enabledState() {
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
-        when(mCustomTabsConnection.shouldEnableOmniboxForIntent(any())).thenReturn(true);
-        when(mCustomTabsConnection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
+        when(connection.shouldEnableOmniboxForIntent(any())).thenReturn(true);
+        when(connection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
 
         Intent intent = new CustomTabsIntent.Builder().build().intent;
         intent.putExtra(CustomTabsIntent.EXTRA_SHARE_STATE, CustomTabsIntent.SHARE_STATE_ON);
@@ -1379,9 +1390,10 @@ public class CustomTabIntentDataProviderTest {
     @Test
     @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
     public void addOpenInBrowserOption_searchInCct_defaultState() {
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
-        when(mCustomTabsConnection.shouldEnableOmniboxForIntent(any())).thenReturn(true);
-        when(mCustomTabsConnection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
+        when(connection.shouldEnableOmniboxForIntent(any())).thenReturn(true);
+        when(connection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
 
         Intent intent = new CustomTabsIntent.Builder().build().intent;
 
@@ -1398,9 +1410,10 @@ public class CustomTabIntentDataProviderTest {
     @Test
     @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
     public void addOpenInBrowserOption_searchInCct_disabledState() {
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
-        when(mCustomTabsConnection.shouldEnableOmniboxForIntent(any())).thenReturn(true);
-        when(mCustomTabsConnection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
+        when(connection.shouldEnableOmniboxForIntent(any())).thenReturn(true);
+        when(connection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
 
         Intent intent = new CustomTabsIntent.Builder().build().intent;
         intent.putExtra(
@@ -1420,9 +1433,10 @@ public class CustomTabIntentDataProviderTest {
     @Test
     @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
     public void addOpenInBrowserOption_conventionalCct_enabledState() {
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
-        when(mCustomTabsConnection.shouldEnableOmniboxForIntent(any())).thenReturn(false);
-        when(mCustomTabsConnection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
+        when(connection.shouldEnableOmniboxForIntent(any())).thenReturn(false);
+        when(connection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
 
         Intent intent = new CustomTabsIntent.Builder().build().intent;
         intent.putExtra(
@@ -1449,7 +1463,8 @@ public class CustomTabIntentDataProviderTest {
      */
     @Test
     public void openInBrowserState_trustedWebActivity_isDisabled() {
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
 
         CustomTabsSession session =
                 CustomTabsSession.createMockSessionForTesting(
@@ -1479,11 +1494,12 @@ public class CustomTabIntentDataProviderTest {
      */
     @Test
     public void shareState_partialCustomTab_omniboxNotAllowedDuringConstruction() {
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
-        when(mCustomTabsConnection.isFirstParty(any())).thenReturn(true);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
+        when(connection.isFirstParty(any())).thenReturn(true);
         // Mirror ChromeCustomTabsConnection#shouldEnableOmniboxForIntent, which consults the
         // provider instead of looking at the intent alone.
-        when(mCustomTabsConnection.shouldEnableOmniboxForIntent(any()))
+        when(connection.shouldEnableOmniboxForIntent(any()))
                 .thenAnswer(
                         invocation ->
                                 ((BrowserServicesIntentDataProvider) invocation.getArgument(0))
@@ -1500,7 +1516,8 @@ public class CustomTabIntentDataProviderTest {
 
     @Test
     public void openInBrowserStateExtraTrue_enabledByEmbedderTrue_openInBrowserButtonAdded() {
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
 
         Intent intent = new CustomTabsIntent.Builder().build().intent;
         intent.putExtra(
@@ -1676,11 +1693,13 @@ public class CustomTabIntentDataProviderTest {
 
     @Test
     public void requestUiType_withTargetNetwork() {
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
-        when(mCustomTabsConnection.extractTargetNetwork(any(), any())).thenReturn(mNetwork);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
+        Network network = Mockito.mock(Network.class);
+        when(connection.extractTargetNetwork(any(), any())).thenReturn(network);
 
         Intent intent = new CustomTabsIntent.Builder().build().intent;
-        intent.putExtra(CustomTabsIntent.EXTRA_NETWORK, mNetwork);
+        intent.putExtra(CustomTabsIntent.EXTRA_NETWORK, network);
         intent.putExtra(
                 CustomTabIntentDataProvider.EXTRA_UI_TYPE, CustomTabsUiType.NETWORK_BOUND_TAB);
 
@@ -1691,7 +1710,8 @@ public class CustomTabIntentDataProviderTest {
 
     @Test
     public void requestUiType_withoutTargetNetwork() {
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
 
         Intent intent = new CustomTabsIntent.Builder().build().intent;
         intent.putExtra(
@@ -1704,11 +1724,13 @@ public class CustomTabIntentDataProviderTest {
 
     @Test
     public void targetNetwork_strippedWhenCallerLacksPermission() {
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
-        when(mCustomTabsConnection.extractTargetNetwork(any(), any())).thenReturn(null);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
+        when(connection.extractTargetNetwork(any(), any())).thenReturn(null);
 
+        Network network = Mockito.mock(Network.class);
         Intent intent = new CustomTabsIntent.Builder().build().intent;
-        intent.putExtra(CustomTabsIntent.EXTRA_NETWORK, mNetwork);
+        intent.putExtra(CustomTabsIntent.EXTRA_NETWORK, network);
         intent.putExtra(
                 CustomTabIntentDataProvider.EXTRA_UI_TYPE, CustomTabsUiType.NETWORK_BOUND_TAB);
 
@@ -1719,11 +1741,13 @@ public class CustomTabIntentDataProviderTest {
 
     @Test
     public void targetNetwork_strippedWhenNoSession() {
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
-        when(mCustomTabsConnection.extractTargetNetwork(any(), any())).thenReturn(null);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
+        when(connection.extractTargetNetwork(any(), any())).thenReturn(null);
 
+        Network network = Mockito.mock(Network.class);
         Intent intent = new CustomTabsIntent.Builder().build().intent;
-        intent.putExtra(CustomTabsIntent.EXTRA_NETWORK, mNetwork);
+        intent.putExtra(CustomTabsIntent.EXTRA_NETWORK, network);
 
         var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         assertFalse(dataProvider.hasTargetNetwork());
@@ -2133,11 +2157,12 @@ public class CustomTabIntentDataProviderTest {
     public void testGetCustomContentActions_returnsListOfCustomContentAction_whenDefined() {
         int id = 1;
         String label = "Pin Image";
+        var pendingIntent = mock(PendingIntent.class);
         @CustomTabsIntent.ContentTargetType
         int targetType = CustomTabsIntent.CONTENT_TARGET_TYPE_IMAGE;
 
         CustomContentAction action =
-                new CustomContentAction.Builder(id, label, mPendingIntent, targetType).build();
+                new CustomContentAction.Builder(id, label, pendingIntent, targetType).build();
 
         Intent intent =
                 new CustomTabsIntent.Builder().addCustomContentAction(action).build().intent;
@@ -2497,7 +2522,8 @@ public class CustomTabIntentDataProviderTest {
 
     @Test
     public void testMaybeAddAdditionalContentExtrasToOutboundIntent() {
-        CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
 
         Intent intent = new CustomTabsIntent.Builder().build().intent;
         CustomTabIntentDataProvider dataProvider =
@@ -2510,7 +2536,7 @@ public class CustomTabIntentDataProviderTest {
         dataProvider.maybeAddAdditionalContentExtrasToOutboundIntent(
                 tabProvider, outboundIntent, viewId);
 
-        Mockito.verify(mCustomTabsConnection)
+        Mockito.verify(connection)
                 .maybeAddAdditionalContentExtrasToOutboundIntent(
                         eq(tabProvider), eq(dataProvider), eq(outboundIntent), eq(viewId));
     }

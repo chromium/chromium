@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -89,9 +90,6 @@ public class NtpCustomizationCoordinatorUnitTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private ModuleRegistry mModuleRegistry;
     @Mock private SnackbarManager mSnackbarManager;
-    @Mock private NtpCardsCoordinator mNtpCardsCoordinator;
-    @Mock private NtpThemeTipCoordinator mNtpThemeTipCoordinator;
-    @Mock private NtpThemeSyncHistoryCoordinator mNtpThemeSyncHistoryCoordinator;
 
     private Context mContext;
     private NtpCustomizationCoordinator mNtpCustomizationCoordinator;
@@ -286,18 +284,22 @@ public class NtpCustomizationCoordinatorUnitTest {
 
     @Test
     public void testDestroy() {
-        mNtpCustomizationCoordinator.setNtpCardsCoordinatorForTesting(mNtpCardsCoordinator);
-        mNtpCustomizationCoordinator.setNtpThemeTipCoordinatorForTesting(mNtpThemeTipCoordinator);
+        NtpCardsCoordinator ntpCardsCoordinator = mock(NtpCardsCoordinator.class);
+        mNtpCustomizationCoordinator.setNtpCardsCoordinatorForTesting(ntpCardsCoordinator);
+        NtpThemeTipCoordinator ntpThemeTipCoordinator = mock(NtpThemeTipCoordinator.class);
+        mNtpCustomizationCoordinator.setNtpThemeTipCoordinatorForTesting(ntpThemeTipCoordinator);
+        NtpThemeSyncHistoryCoordinator ntpThemeSyncHistoryCoordinator =
+                mock(NtpThemeSyncHistoryCoordinator.class);
         mNtpCustomizationCoordinator.setNtpThemeSyncHistoryCoordinatorForTesting(
-                mNtpThemeSyncHistoryCoordinator);
+                ntpThemeSyncHistoryCoordinator);
 
         mNtpCustomizationCoordinator.destroy();
 
         verify(mViewFlipper).removeAllViews();
         verify(mMediator).destroy();
-        verify(mNtpCardsCoordinator).destroy();
-        verify(mNtpThemeTipCoordinator).destroy();
-        verify(mNtpThemeSyncHistoryCoordinator).destroy();
+        verify(ntpCardsCoordinator).destroy();
+        verify(ntpThemeTipCoordinator).destroy();
+        verify(ntpThemeSyncHistoryCoordinator).destroy();
     }
 
     @Test

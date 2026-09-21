@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.content.Intent;
@@ -19,12 +20,8 @@ import android.os.Bundle;
 
 import androidx.browser.customtabs.CustomTabsIntent;
 
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -96,9 +93,6 @@ public class WebappActivityTest {
             return getBackgroundDrawable();
         }
     }
-
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private BrowserServicesIntentDataProvider mBrowserServicesIntentDataProvider;
 
     private WebappExtras createWebappExtras(
             @Nullable Integer backgroundColor, int defaultBackgroundColor) {
@@ -211,10 +205,12 @@ public class WebappActivityTest {
     @Test
     public void getBackgroundDrawable_withCustomBackgroundColor() {
         TestWebappActivity activity = new TestWebappActivity();
+        BrowserServicesIntentDataProvider intentDataProvider =
+                mock(BrowserServicesIntentDataProvider.class);
         // Semi-transparent green (0x8000FF00) should be converted to opaque green (0xFF00FF00).
         WebappExtras webappExtras = createWebappExtras(0x8000FF00, Color.WHITE);
-        when(mBrowserServicesIntentDataProvider.getWebappExtras()).thenReturn(webappExtras);
-        activity.setMockIntentDataProvider(mBrowserServicesIntentDataProvider);
+        when(intentDataProvider.getWebappExtras()).thenReturn(webappExtras);
+        activity.setMockIntentDataProvider(intentDataProvider);
 
         Drawable drawable = activity.callGetBackgroundDrawable();
         assertNotNull(drawable);
@@ -225,9 +221,11 @@ public class WebappActivityTest {
     @Test
     public void getBackgroundDrawable_withDefaultBackgroundColorFallback() {
         TestWebappActivity activity = new TestWebappActivity();
+        BrowserServicesIntentDataProvider intentDataProvider =
+                mock(BrowserServicesIntentDataProvider.class);
         WebappExtras webappExtras = createWebappExtras(null, Color.BLUE);
-        when(mBrowserServicesIntentDataProvider.getWebappExtras()).thenReturn(webappExtras);
-        activity.setMockIntentDataProvider(mBrowserServicesIntentDataProvider);
+        when(intentDataProvider.getWebappExtras()).thenReturn(webappExtras);
+        activity.setMockIntentDataProvider(intentDataProvider);
 
         Drawable drawable = activity.callGetBackgroundDrawable();
         assertNotNull(drawable);
@@ -239,9 +237,11 @@ public class WebappActivityTest {
     @Config(sdk = 30)
     public void getBackgroundDrawable_sameTaskWebApkActivity_preS_returnsNull() {
         TestSameTaskWebApkActivity activity = new TestSameTaskWebApkActivity();
+        BrowserServicesIntentDataProvider intentDataProvider =
+                mock(BrowserServicesIntentDataProvider.class);
         WebappExtras webappExtras = createWebappExtras(Color.RED, Color.WHITE);
-        when(mBrowserServicesIntentDataProvider.getWebappExtras()).thenReturn(webappExtras);
-        activity.setMockIntentDataProvider(mBrowserServicesIntentDataProvider);
+        when(intentDataProvider.getWebappExtras()).thenReturn(webappExtras);
+        activity.setMockIntentDataProvider(intentDataProvider);
 
         Drawable drawable = activity.callGetBackgroundDrawable();
         org.junit.Assert.assertNull(drawable);
@@ -251,9 +251,11 @@ public class WebappActivityTest {
     @Config(sdk = 31)
     public void getBackgroundDrawable_sameTaskWebApkActivity_sPlus_returnsColorDrawable() {
         TestSameTaskWebApkActivity activity = new TestSameTaskWebApkActivity();
+        BrowserServicesIntentDataProvider intentDataProvider =
+                mock(BrowserServicesIntentDataProvider.class);
         WebappExtras webappExtras = createWebappExtras(Color.RED, Color.WHITE);
-        when(mBrowserServicesIntentDataProvider.getWebappExtras()).thenReturn(webappExtras);
-        activity.setMockIntentDataProvider(mBrowserServicesIntentDataProvider);
+        when(intentDataProvider.getWebappExtras()).thenReturn(webappExtras);
+        activity.setMockIntentDataProvider(intentDataProvider);
 
         Drawable drawable = activity.callGetBackgroundDrawable();
         assertNotNull(drawable);

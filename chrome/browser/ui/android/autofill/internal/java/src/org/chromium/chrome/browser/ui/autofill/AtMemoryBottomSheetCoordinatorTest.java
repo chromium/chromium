@@ -24,7 +24,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -52,7 +51,6 @@ public class AtMemoryBottomSheetCoordinatorTest {
     @Mock private AtMemoryBottomSheetCoordinator.Delegate mMockDelegate;
     @Mock private Profile mProfile;
     @Mock private PersonalContextFirstRunService.Natives mFirstRunServiceJniMock;
-    @Captor private ArgumentCaptor<BottomSheetObserver> mObserverCaptor;
 
     private AtMemoryBottomSheetCoordinator mCoordinator;
 
@@ -101,13 +99,15 @@ public class AtMemoryBottomSheetCoordinatorTest {
 
     @Test
     public void testShow_FocusSearchArea() {
+        ArgumentCaptor<BottomSheetObserver> observerCaptor =
+                ArgumentCaptor.forClass(BottomSheetObserver.class);
         when(mBottomSheetController.requestShowContent(any(), eq(true))).thenReturn(true);
         when(mBottomSheetController.getCurrentSheetContent())
                 .thenReturn(mCoordinator.getBottomSheetContentForTesting());
 
         mCoordinator.show(List.of(), /* searchBarInitialValue= */ null);
-        verify(mBottomSheetController).addObserver(mObserverCaptor.capture());
-        mObserverCaptor.getValue().onSheetOpened(StateChangeReason.NONE);
+        verify(mBottomSheetController).addObserver(observerCaptor.capture());
+        observerCaptor.getValue().onSheetOpened(StateChangeReason.NONE);
 
         View contentView = mCoordinator.getBottomSheetContentForTesting().getContentView();
         View searchInput = contentView.findViewById(R.id.search_query_input);

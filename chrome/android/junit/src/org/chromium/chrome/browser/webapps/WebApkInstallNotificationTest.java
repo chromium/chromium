@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.webapps;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -31,7 +32,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -65,8 +65,6 @@ public class WebApkInstallNotificationTest {
     private static final String URL = "https://test.com";
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private Tab mTab;
-    @Mock private WebContents mWebContents;
     private final Bitmap mIcon = Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8);
     private Context mContext;
     private ShadowNotificationManager mShadowNotificationManager;
@@ -207,14 +205,16 @@ public class WebApkInstallNotificationTest {
         IntentHandler.setTestIntentsEnabled(true);
 
         final int tabId = 10;
+        Tab mockTab = mock(Tab.class);
         UserDataHost userDataHost = new UserDataHost();
-        when(mTab.getUserDataHost()).thenReturn(userDataHost);
-        when(mTab.getId()).thenReturn(tabId);
+        when(mockTab.getUserDataHost()).thenReturn(userDataHost);
+        when(mockTab.getId()).thenReturn(tabId);
 
-        when(mTab.getWebContents()).thenReturn(mWebContents);
+        WebContents mockWebContents = mock(WebContents.class);
+        when(mockTab.getWebContents()).thenReturn(mockWebContents);
 
         WebApkInstallService.showInstalledNotificationAndMaybeLaunch(
-                mTab,
+                mockTab,
                 PACKAGE_NAME,
                 MANIFEST_URL,
                 SHORT_NAME,
@@ -236,11 +236,11 @@ public class WebApkInstallNotificationTest {
 
         AsyncTabParams params = AsyncTabParamsManagerSingleton.getInstance().remove(tabId);
         Assert.assertNotNull(params);
-        Assert.assertEquals(mTab, params.getTabToReparent());
+        Assert.assertEquals(mockTab, params.getTabToReparent());
 
         // Verify that the tab was detached from the window for reparenting
-        verify(mWebContents).setTopLevelNativeWindow(null);
-        verify(mTab).updateAttachment(null, null);
+        verify(mockWebContents).setTopLevelNativeWindow(null);
+        verify(mockTab).updateAttachment(null, null);
     }
 
     @Test
@@ -249,11 +249,13 @@ public class WebApkInstallNotificationTest {
         IntentHandler.setTestIntentsEnabled(true);
 
         final int tabId = 10;
+        Tab mockTab = mock(Tab.class);
         UserDataHost userDataHost = new UserDataHost();
-        lenient().when(mTab.getUserDataHost()).thenReturn(userDataHost);
-        when(mTab.getId()).thenReturn(tabId);
+        lenient().when(mockTab.getUserDataHost()).thenReturn(userDataHost);
+        when(mockTab.getId()).thenReturn(tabId);
 
-        lenient().when(mTab.getWebContents()).thenReturn(mWebContents);
+        WebContents mockWebContents = mock(WebContents.class);
+        lenient().when(mockTab.getWebContents()).thenReturn(mockWebContents);
 
         Context spyContext = spy(mContext);
         doThrow(new ActivityNotFoundException("Activity not found"))
@@ -262,7 +264,7 @@ public class WebApkInstallNotificationTest {
         ContextUtils.initApplicationContextForTests(spyContext);
 
         WebApkInstallService.showInstalledNotificationAndMaybeLaunch(
-                mTab,
+                mockTab,
                 PACKAGE_NAME,
                 MANIFEST_URL,
                 SHORT_NAME,
@@ -278,7 +280,7 @@ public class WebApkInstallNotificationTest {
         Assert.assertFalse(AsyncTabParamsManagerSingleton.getInstance().hasParamsForTabId(tabId));
 
         // Verify that the tab was NEVER detached
-        verify(mWebContents, never()).setTopLevelNativeWindow(any());
-        verify(mTab, never()).updateAttachment(any(), any());
+        verify(mockWebContents, never()).setTopLevelNativeWindow(any());
+        verify(mockTab, never()).updateAttachment(any(), any());
     }
 }

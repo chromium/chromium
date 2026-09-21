@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ntp_customization;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -36,7 +37,6 @@ public class BottomSheetListContainerViewBinderUnitTest {
     @Mock private BottomSheetListContainerView mMainBottomSheetListContainerView;
     @Mock private BottomSheetListItemView mMainBottomSheetListItem;
     @Mock private Context mContext;
-    @Mock private ListContainerViewDelegate mListContainerViewDelegate;
 
     private PropertyModel mPropertyModel;
 
@@ -53,9 +53,9 @@ public class BottomSheetListContainerViewBinderUnitTest {
                 BottomSheetListContainerViewBinder::bind);
 
         // Verifies if the delegate is not null, it should be bound to the containerView.
-        mPropertyModel.set(LIST_CONTAINER_VIEW_DELEGATE, mListContainerViewDelegate);
-        verify(mMainBottomSheetListContainerView)
-                .renderAllListItems(eq(mListContainerViewDelegate));
+        ListContainerViewDelegate delegate = mock(ListContainerViewDelegate.class);
+        mPropertyModel.set(LIST_CONTAINER_VIEW_DELEGATE, delegate);
+        verify(mMainBottomSheetListContainerView).renderAllListItems(eq(delegate));
 
         // Verifies the delegate is null, the containerView should be destroyed.
         mPropertyModel.set(LIST_CONTAINER_VIEW_DELEGATE, null);

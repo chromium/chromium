@@ -69,10 +69,7 @@ public class TabGroupListBottomSheetCoordinatorUnitTest {
     @Mock private Profile mProfile;
     @Mock private Tab mTab;
     @Mock private WindowAndroid mWindowAndroid;
-    @Mock private TabGroupListBottomSheetView mTabGroupListBottomSheetView;
-    @Mock private BottomSheetContent mBottomSheetContent;
     @Captor private ArgumentCaptor<ActivityStateObserver> mActivityStateObserverCaptor;
-    @Captor private ArgumentCaptor<TabGroupListBottomSheetView> mViewCaptor;
     private final SavedTabGroup mSavedTabGroup = new SavedTabGroup();
     private final SavedTabGroupTab mSavedTabGroupTab = new SavedTabGroupTab();
     private Context mContext;
@@ -180,10 +177,12 @@ public class TabGroupListBottomSheetCoordinatorUnitTest {
         ActivityStateObserver observer = mActivityStateObserverCaptor.getValue();
 
         when(mBottomSheetController.getCurrentSheetContent())
-                .thenReturn(mTabGroupListBottomSheetView);
+                .thenReturn(mock(TabGroupListBottomSheetView.class));
+        ArgumentCaptor<TabGroupListBottomSheetView> viewCaptor =
+                ArgumentCaptor.forClass(TabGroupListBottomSheetView.class);
         mCoordinator.showBottomSheet(List.of(mTab));
-        verify(mBottomSheetController).requestShowContent(mViewCaptor.capture(), eq(true));
-        TabGroupListBottomSheetView view = mViewCaptor.getValue();
+        verify(mBottomSheetController).requestShowContent(viewCaptor.capture(), eq(true));
+        TabGroupListBottomSheetView view = viewCaptor.getValue();
 
         when(mBottomSheetController.getCurrentSheetContent()).thenReturn(view);
         observer.onActivityPaused();
@@ -196,7 +195,8 @@ public class TabGroupListBottomSheetCoordinatorUnitTest {
         verify(mWindowAndroid).addActivityStateObserver(mActivityStateObserverCaptor.capture());
         ActivityStateObserver observer = mActivityStateObserverCaptor.getValue();
 
-        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mBottomSheetContent);
+        when(mBottomSheetController.getCurrentSheetContent())
+                .thenReturn(mock(BottomSheetContent.class));
         observer.onActivityPaused();
 
         verify(mBottomSheetController, never())

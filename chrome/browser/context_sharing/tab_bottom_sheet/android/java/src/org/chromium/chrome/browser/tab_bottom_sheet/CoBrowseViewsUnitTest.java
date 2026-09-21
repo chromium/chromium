@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -53,13 +54,6 @@ public class CoBrowseViewsUnitTest {
     @Mock private WebContents mWebContents;
     @Mock private EventForwarder mEventForwarder;
     @Mock private CoBrowseComponentProvider mMockContentProvider;
-
-    @Mock
-    private TabBottomSheetWebUiContainer.TouchHandler mTabBottomSheetWebUiContainerTouchHandler;
-
-    @Mock private PeekViewManager mPeekViewManager;
-    @Mock private PeekViewManager mFirstManager;
-    @Mock private PeekViewManager mSecondManager;
 
     private Context mContext;
     private CoBrowseViews mCoBrowseViews;
@@ -132,7 +126,9 @@ public class CoBrowseViewsUnitTest {
 
     @Test
     public void testSetWebUiTouchHandler() {
-        mCoBrowseViews.setWebUiTouchHandler(mTabBottomSheetWebUiContainerTouchHandler);
+        TabBottomSheetWebUiContainer.TouchHandler handler =
+                mock(TabBottomSheetWebUiContainer.TouchHandler.class);
+        mCoBrowseViews.setWebUiTouchHandler(handler);
         // Verifies that it doesn't crash.
     }
 
@@ -257,43 +253,48 @@ public class CoBrowseViewsUnitTest {
 
     @Test
     public void testGetOrCreatePeekViewManager_CachesInstance() {
-        CoBrowseViews coBrowseViews = createCoBrowseViewsWithPeekViewManagers(mPeekViewManager);
+        PeekViewManager manager = mock(PeekViewManager.class);
+        CoBrowseViews coBrowseViews = createCoBrowseViewsWithPeekViewManagers(manager);
 
-        assertEquals(mPeekViewManager, coBrowseViews.getOrCreatePeekViewManager());
-        assertEquals(mPeekViewManager, coBrowseViews.getOrCreatePeekViewManager());
+        assertEquals(manager, coBrowseViews.getOrCreatePeekViewManager());
+        assertEquals(manager, coBrowseViews.getOrCreatePeekViewManager());
     }
 
     @Test
     public void testDestroyPeekViewManager_DestroysAndClearsCache() {
+        PeekViewManager firstManager = mock(PeekViewManager.class);
+        PeekViewManager secondManager = mock(PeekViewManager.class);
         CoBrowseViews coBrowseViews =
-                createCoBrowseViewsWithPeekViewManagers(mFirstManager, mSecondManager);
-        assertEquals(mFirstManager, coBrowseViews.getOrCreatePeekViewManager());
+                createCoBrowseViewsWithPeekViewManagers(firstManager, secondManager);
+        assertEquals(firstManager, coBrowseViews.getOrCreatePeekViewManager());
 
         coBrowseViews.destroyPeekViewManager();
 
-        verify(mFirstManager).destroy();
+        verify(firstManager).destroy();
         // A destroyed manager has unregistered its observers, so it must not be handed out again.
-        assertEquals(mSecondManager, coBrowseViews.getOrCreatePeekViewManager());
+        assertEquals(secondManager, coBrowseViews.getOrCreatePeekViewManager());
     }
 
     @Test
     public void testDestroyPeekViewManager_ManagerNeverCreated_IsNoOp() {
+        PeekViewManager manager = mock(PeekViewManager.class);
         // getOrCreatePeekViewManager() is deliberately not called, so nothing is cached yet.
-        CoBrowseViews coBrowseViews = createCoBrowseViewsWithPeekViewManagers(mPeekViewManager);
+        CoBrowseViews coBrowseViews = createCoBrowseViewsWithPeekViewManagers(manager);
 
         coBrowseViews.destroyPeekViewManager();
 
-        verify(mPeekViewManager, never()).destroy();
+        verify(manager, never()).destroy();
     }
 
     @Test
     public void testDestroy_DestroysPeekViewManager() {
-        CoBrowseViews coBrowseViews = createCoBrowseViewsWithPeekViewManagers(mPeekViewManager);
-        assertEquals(mPeekViewManager, coBrowseViews.getOrCreatePeekViewManager());
+        PeekViewManager manager = mock(PeekViewManager.class);
+        CoBrowseViews coBrowseViews = createCoBrowseViewsWithPeekViewManagers(manager);
+        assertEquals(manager, coBrowseViews.getOrCreatePeekViewManager());
 
         coBrowseViews.destroy();
 
-        verify(mPeekViewManager).destroy();
+        verify(manager).destroy();
     }
 
     /**

@@ -34,7 +34,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -84,8 +83,11 @@ import java.io.IOException;
     ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP // crbug.com/556881398
 })
 public class SyncErrorMessageTest {
-    private static final int RENDER_TEST_REVISION = 3;
-    private static final String RENDER_TEST_DESCRIPTION = "Sync error message for identity errors.";
+
+    @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
+    @Mock private MessageDispatcher mMessageDispatcher;
+    private FakeSyncServiceImpl mFakeSyncServiceImpl;
+    private final Context mContext = ContextUtils.getApplicationContext();
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -98,6 +100,9 @@ public class SyncErrorMessageTest {
                 }
             };
 
+    private static final int RENDER_TEST_REVISION = 3;
+    private static final String RENDER_TEST_DESCRIPTION = "Sync error message for identity errors.";
+
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
@@ -105,13 +110,6 @@ public class SyncErrorMessageTest {
                     .setDescription(RENDER_TEST_DESCRIPTION)
                     .setBugComponent(ChromeRenderTestRule.Component.SERVICES_SYNC)
                     .build();
-
-    @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
-    @Mock private MessageDispatcher mMessageDispatcher;
-    @Captor private ArgumentCaptor<PropertyModel> mModelCaptor;
-
-    private FakeSyncServiceImpl mFakeSyncServiceImpl;
-    private final Context mContext = ContextUtils.getApplicationContext();
 
     @Before
     public void setUp() {
@@ -218,6 +216,8 @@ public class SyncErrorMessageTest {
     @LargeTest
     @DisableFeatures({ChromeFeatureList.SYNC_TRUSTED_VAULT_ERROR_MESSAGE_DURATION})
     public void testSyncErrorMessageToUnlockVaultSuppressedAfterTimer() throws Exception {
+        ArgumentCaptor<PropertyModel> modelCaptor = ArgumentCaptor.forClass(PropertyModel.class);
+
         // Sign in.
         mSyncTestRule.setUpAccountAndSignInForTesting();
         mFakeSyncServiceImpl.setEngineInitialized(true);
@@ -225,8 +225,8 @@ public class SyncErrorMessageTest {
         mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
 
         // Verify the correct message gets shown.
-        verify(mMessageDispatcher).enqueueWindowScopedMessage(mModelCaptor.capture(), anyBoolean());
-        PropertyModel model = mModelCaptor.getValue();
+        verify(mMessageDispatcher).enqueueWindowScopedMessage(modelCaptor.capture(), anyBoolean());
+        PropertyModel model = modelCaptor.getValue();
         Assert.assertEquals(
                 mContext.getString(R.string.password_sync_trusted_vault_error_title),
                 model.get(MessageBannerProperties.TITLE));
@@ -255,6 +255,8 @@ public class SyncErrorMessageTest {
     @LargeTest
     @EnableFeatures({ChromeFeatureList.SYNC_TRUSTED_VAULT_ERROR_MESSAGE_DURATION})
     public void testSyncErrorMessageToUnlockVaultShowsAgainWithoutDismissal() throws Exception {
+        ArgumentCaptor<PropertyModel> modelCaptor = ArgumentCaptor.forClass(PropertyModel.class);
+
         // Sign in.
         mSyncTestRule.setUpAccountAndSignInForTesting();
         mFakeSyncServiceImpl.setEngineInitialized(true);
@@ -262,8 +264,8 @@ public class SyncErrorMessageTest {
         mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
 
         // Verify the correct message gets shown.
-        verify(mMessageDispatcher).enqueueWindowScopedMessage(mModelCaptor.capture(), anyBoolean());
-        PropertyModel model = mModelCaptor.getValue();
+        verify(mMessageDispatcher).enqueueWindowScopedMessage(modelCaptor.capture(), anyBoolean());
+        PropertyModel model = modelCaptor.getValue();
         Assert.assertEquals(
                 mContext.getString(R.string.password_sync_trusted_vault_error_title),
                 model.get(MessageBannerProperties.TITLE));

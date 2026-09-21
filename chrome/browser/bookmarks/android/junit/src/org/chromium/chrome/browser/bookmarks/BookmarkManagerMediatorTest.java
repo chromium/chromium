@@ -19,6 +19,7 @@ import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
@@ -41,7 +42,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.StringRes;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.RecyclerView.OnChildAttachStateChangeListener;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -180,6 +180,14 @@ public class BookmarkManagerMediatorTest {
     @Rule(order = Rule.DEFAULT_ORDER - 1)
     public final BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
 
+    @Parameters(name = "{index}_isIdentityMgr={0}")
+    public static Collection parameters() {
+        return Arrays.asList(false, true);
+    }
+
+    private GURL mExampleUrl;
+    private String mExampleUrlFormatted;
+
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
@@ -221,26 +229,14 @@ public class BookmarkManagerMediatorTest {
     @Mock private ReauthenticatorBridge mReauthenticatorMock;
     @Mock private BookmarkManagerOpener mBookmarkManagerOpener;
     @Mock private PriceDropNotificationManager mPriceDropNotificationManager;
-    @Mock private View mView;
 
     @Captor private ArgumentCaptor<BookmarkModelObserver> mBookmarkModelObserverArgumentCaptor;
     @Captor private ArgumentCaptor<SelectionObserver<BookmarkId>> mSelectionObserver;
     @Captor private ArgumentCaptor<DragListener> mDragListenerArgumentCaptor;
     @Captor private ArgumentCaptor<SyncStateChangedListener> mSyncStateChangedListenerCaptor;
     @Captor private ArgumentCaptor<Runnable> mFinishLoadingBookmarkModelCaptor;
-    @Captor private ArgumentCaptor<Runnable> mPostRunnableCaptor;
     @Captor private ArgumentCaptor<OnScrollListener> mOnScrollListenerCaptor;
     @Captor private ArgumentCaptor<SubscriptionsObserver> mSubscriptionsObserver;
-    @Captor private ArgumentCaptor<Snackbar> mSnackbarCaptor;
-    @Captor private ArgumentCaptor<OnChildAttachStateChangeListener> mAttachListenerCaptor;
-
-    @Parameters(name = "{index}_isIdentityMgr={0}")
-    public static Collection parameters() {
-        return Arrays.asList(false, true);
-    }
-
-    private GURL mExampleUrl;
-    private String mExampleUrlFormatted;
 
     private int mId = 1;
     private final SettableNonNullObservableSupplier<Boolean> mBackPressStateSupplier =
@@ -1463,8 +1459,9 @@ public class BookmarkManagerMediatorTest {
         UserActionTester userActionTester = new UserActionTester();
         clickChildAt(menu, 2);
         verify(mClipboard).setText(mExampleUrl.getSpec());
-        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
-        Snackbar snackbar = mSnackbarCaptor.getValue();
+        ArgumentCaptor<Snackbar> snackbarCaptor = ArgumentCaptor.forClass(Snackbar.class);
+        verify(mSnackbarManager).showSnackbar(snackbarCaptor.capture());
+        Snackbar snackbar = snackbarCaptor.getValue();
         assertEquals(mActivity.getString(R.string.copied), snackbar.getTextForTesting());
         assertEquals(
                 Snackbar.UMA_BOOKMARK_LINK_COPIED_NON_SELECTION,
@@ -2359,20 +2356,22 @@ public class BookmarkManagerMediatorTest {
         when(mSelectionDelegate.getSelectedItemsAsList())
                 .thenReturn(Collections.singletonList(mFolderId2));
 
+        ArgumentCaptor<Runnable> postRunnableCaptor = ArgumentCaptor.forClass(Runnable.class);
         mMediator.changeSelectionMode(true);
 
-        verify(mRecyclerView).post(mPostRunnableCaptor.capture());
+        verify(mRecyclerView).post(postRunnableCaptor.capture());
 
         int expectedPosition = mMediator.getPositionForBookmark(mFolderId2);
         assertTrue(expectedPosition >= 0);
 
-        RecyclerView.ViewHolder mockViewHolder = new RecyclerView.ViewHolder(mView) {};
+        View mockRowView = mock(View.class);
+        RecyclerView.ViewHolder mockViewHolder = new RecyclerView.ViewHolder(mockRowView) {};
         when(mRecyclerView.findViewHolderForAdapterPosition(expectedPosition))
                 .thenReturn(mockViewHolder);
 
-        mPostRunnableCaptor.getValue().run();
+        postRunnableCaptor.getValue().run();
 
-        verify(mView).requestFocus();
+        verify(mockRowView).requestFocus();
     }
 
     @Test
@@ -2388,22 +2387,27 @@ public class BookmarkManagerMediatorTest {
 
         when(mRecyclerView.findViewHolderForAdapterPosition(expectedPosition)).thenReturn(null);
 
+        ArgumentCaptor<RecyclerView.OnChildAttachStateChangeListener> attachListenerCaptor =
+                ArgumentCaptor.forClass(RecyclerView.OnChildAttachStateChangeListener.class);
+
         mMediator.focusRowForBookmark(mFolderId2);
 
-        verify(mRecyclerView).addOnChildAttachStateChangeListener(mAttachListenerCaptor.capture());
+        verify(mRecyclerView).addOnChildAttachStateChangeListener(attachListenerCaptor.capture());
         verify(mRecyclerView).scrollToPosition(expectedPosition);
 
-        when(mRecyclerView.getChildAdapterPosition(mView)).thenReturn(expectedPosition);
+        View mockRowView = mock(View.class);
+        when(mRecyclerView.getChildAdapterPosition(mockRowView)).thenReturn(expectedPosition);
 
-        mAttachListenerCaptor.getValue().onChildViewAttachedToWindow(mView);
+        attachListenerCaptor.getValue().onChildViewAttachedToWindow(mockRowView);
 
         verify(mRecyclerView)
-                .removeOnChildAttachStateChangeListener(mAttachListenerCaptor.getValue());
+                .removeOnChildAttachStateChangeListener(attachListenerCaptor.getValue());
 
-        verify(mView).post(mPostRunnableCaptor.capture());
+        ArgumentCaptor<Runnable> viewPostCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mockRowView).post(viewPostCaptor.capture());
 
-        mPostRunnableCaptor.getValue().run();
-        verify(mView).requestFocus();
+        viewPostCaptor.getValue().run();
+        verify(mockRowView).requestFocus();
     }
 
     @Test
@@ -2432,15 +2436,16 @@ public class BookmarkManagerMediatorTest {
         when(mSelectionDelegate.getSelectedItemsAsList())
                 .thenReturn(Collections.singletonList(mFolderId2));
 
+        ArgumentCaptor<Runnable> postRunnableCaptor = ArgumentCaptor.forClass(Runnable.class);
         mMediator.changeSelectionMode(true);
 
-        verify(mRecyclerView).post(mPostRunnableCaptor.capture());
+        verify(mRecyclerView).post(postRunnableCaptor.capture());
 
         // Cancel selection before runnable executes.
         when(mSelectionDelegate.isItemSelected(mFolderId2)).thenReturn(false);
         mMediator.changeSelectionMode(false);
 
-        mPostRunnableCaptor.getValue().run();
+        postRunnableCaptor.getValue().run();
 
         verify(mRecyclerView, never()).findViewHolderForAdapterPosition(anyInt());
     }
@@ -2480,12 +2485,15 @@ public class BookmarkManagerMediatorTest {
         assertTrue(expectedPosition >= 0);
         when(mRecyclerView.findViewHolderForAdapterPosition(expectedPosition)).thenReturn(null);
 
+        ArgumentCaptor<RecyclerView.OnChildAttachStateChangeListener> attachListenerCaptor =
+                ArgumentCaptor.forClass(RecyclerView.OnChildAttachStateChangeListener.class);
+
         mMediator.focusRowForBookmark(mFolderId2);
-        verify(mRecyclerView).addOnChildAttachStateChangeListener(mAttachListenerCaptor.capture());
+        verify(mRecyclerView).addOnChildAttachStateChangeListener(attachListenerCaptor.capture());
 
         mMediator.onDestroy();
         verify(mRecyclerView)
-                .removeOnChildAttachStateChangeListener(mAttachListenerCaptor.getValue());
+                .removeOnChildAttachStateChangeListener(attachListenerCaptor.getValue());
     }
 
     @Test

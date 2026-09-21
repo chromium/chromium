@@ -20,6 +20,7 @@ import static org.hamcrest.core.AllOf.allOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -47,7 +48,6 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -111,7 +111,6 @@ import java.util.concurrent.TimeUnit;
 @Batch(Batch.PER_CLASS)
 public class RecentTabsPageTest {
     private static final int COLOR_ID = TabGroupColorId.YELLOW;
-    private static FakeRecentlyClosedTabManager sManager;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -130,8 +129,7 @@ public class RecentTabsPageTest {
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_RECENT_TABS)
                     .build();
 
-    @Mock private ToastManager mToastManager;
-
+    private static FakeRecentlyClosedTabManager sManager;
     private FakeRecentlyClosedTabManager mManager;
     private ChromeTabbedActivity mActivity;
     private TabModel mTabModel;
@@ -667,7 +665,8 @@ public class RecentTabsPageTest {
             testRecentlyClosedWindows_reachInstanceLimit_showInstanceCreationLimitMessage_windowManagerDeprecation()
                     throws Exception {
         // Mock ToastManager.
-        ToastManager.setInstanceForTesting(mToastManager);
+        ToastManager mockToastManager = mock(ToastManager.class);
+        ToastManager.setInstanceForTesting(mockToastManager);
 
         // Simulate reaching the instance limit.
         MultiWindowUtils.setInstanceCountForTesting(3);
@@ -697,7 +696,7 @@ public class RecentTabsPageTest {
                 () -> recentlyClosedEntriesManager.openRecentlyClosedEntry(window1));
 
         // Verify that the toast is shown.
-        verify(mToastManager).requestShow(any(Toast.class));
+        verify(mockToastManager).requestShow(any(Toast.class));
     }
 
     @Test

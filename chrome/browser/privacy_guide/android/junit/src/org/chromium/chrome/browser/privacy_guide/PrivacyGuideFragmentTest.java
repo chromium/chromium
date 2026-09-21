@@ -60,7 +60,6 @@ public class PrivacyGuideFragmentTest {
     @Mock private PrefService mPrefService;
     @Mock private UserPrefs.Natives mUserPrefsNatives;
     @Mock private WebsitePreferenceBridge.Natives mWebsitePreferenceNatives;
-    @Mock private MenuItem mMenuItem;
 
     private FragmentScenario<PrivacyGuideFragment> mScenario;
     private PrivacyGuideFragment mFragment;
@@ -127,17 +126,19 @@ public class PrivacyGuideFragmentTest {
 
     @Test
     public void testCloseMenuItemClicked_finishesCurrentSettings() {
-        when(mMenuItem.getItemId()).thenReturn(R.id.close_menu_id);
+        MenuItem closeItem = Mockito.mock(MenuItem.class);
+        when(closeItem.getItemId()).thenReturn(R.id.close_menu_id);
 
-        assertTrue(mFragment.onOptionsItemSelected(mMenuItem));
+        assertTrue(mFragment.onOptionsItemSelected(closeItem));
         verify(mSettingsNavigation).finishCurrentSettings(mFragment);
     }
 
     @Test
     public void testHomeMenuItemClicked_withMultiColumn_finishesCurrentSettings() {
-        when(mMenuItem.getItemId()).thenReturn(android.R.id.home);
+        MenuItem homeItem = Mockito.mock(MenuItem.class);
+        when(homeItem.getItemId()).thenReturn(android.R.id.home);
 
-        assertTrue(mFragment.onOptionsItemSelected(mMenuItem));
+        assertTrue(mFragment.onOptionsItemSelected(homeItem));
         verify(mSettingsNavigation).finishCurrentSettings(mFragment);
     }
 }

@@ -40,7 +40,6 @@ public class EducationalTipSetupListBottomSheetListContainerViewUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private EducationalTipCardProvider mEducationalTipCardProvider;
-    @Mock private Runnable mRunnable;
 
     private EducationalTipSetupListBottomSheetListContainerView mContainerView;
     private List<EducationalTipSetupListBottomSheetItem>
@@ -87,7 +86,8 @@ public class EducationalTipSetupListBottomSheetListContainerViewUnitTest {
 
     @Test
     public void testListItemOnClick() {
-        mContainerView.setDismissBottomSheet(mRunnable);
+        Runnable mockDismissRunnable = mock(Runnable.class);
+        mContainerView.setDismissBottomSheet(mockDismissRunnable);
         mContainerView.renderSetUpList(
                 List.of(
                         new EducationalTipSetupListBottomSheetItem(
@@ -96,7 +96,7 @@ public class EducationalTipSetupListBottomSheetListContainerViewUnitTest {
         mContainerView.getChildAt(0).performClick();
 
         verify(mEducationalTipCardProvider, times(1)).onCardClicked();
-        verify(mRunnable, times(1)).run();
+        verify(mockDismissRunnable, times(1)).run();
     }
 
     private List<EducationalTipSetupListBottomSheetItem>

@@ -28,6 +28,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
@@ -78,9 +79,6 @@ public class BookmarkBarVisibilityProviderTest {
     @Mock private Profile mProfile;
     @Mock private UserPrefs.Natives mUserPrefsJni;
     @Mock private BookmarkBarVisibilityObserver mObserver;
-    @Mock private Profile mNewProfile;
-    @Mock private PrefService mNewPrefService;
-    @Mock private Profile mProfile1;
 
     private final Set<ConfigurationChangedObserver> mConfigChangeObserverCache = new HashSet<>();
     private final SettableMonotonicObservableSupplier<Profile> mProfileSupplier =
@@ -246,7 +244,7 @@ public class BookmarkBarVisibilityProviderTest {
         // Case: Profile changed
         clearInvocations(mObserver);
         BookmarkBarUtils.setSettingEnabledForTesting(true);
-        mProfileSupplier.set(mProfile1);
+        mProfileSupplier.set(Mockito.mock(Profile.class));
         verify(mObserver, times(1)).onVisibilityChanged(true);
         verify(mObserver, never()).onItemWidthConstraintsChanged(anyInt(), anyInt());
 
@@ -512,12 +510,14 @@ public class BookmarkBarVisibilityProviderTest {
 
         // Case: Profile changed.
         clearInvocations(mObserver);
-        when(mNewProfile.getOriginalProfile()).thenReturn(mNewProfile);
-        when(mUserPrefsJni.get(mNewProfile)).thenReturn(mNewPrefService);
-        when(mNewPrefService.getInteger(Pref.BOOKMARK_BAR_VISIBILITY_STATE))
+        Profile newProfile = Mockito.mock(Profile.class);
+        when(newProfile.getOriginalProfile()).thenReturn(newProfile);
+        PrefService newPrefService = Mockito.mock(PrefService.class);
+        when(mUserPrefsJni.get(newProfile)).thenReturn(newPrefService);
+        when(newPrefService.getInteger(Pref.BOOKMARK_BAR_VISIBILITY_STATE))
                 .thenReturn(BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP);
 
-        mProfileSupplier.set(mNewProfile);
+        mProfileSupplier.set(newProfile);
         verify(mObserver, times(1))
                 .onVisibilityChanged_TriState(BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP);
         verify(mObserver, never()).onItemWidthConstraintsChanged(anyInt(), anyInt());

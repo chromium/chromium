@@ -102,8 +102,6 @@ public class BottomBarMediatorUnitTest {
     private ArgumentCaptor<GlicKeyedService.AllowedChangedObserver> mAllowedChangedObserverCaptor;
 
     @Captor private ArgumentCaptor<TemplateUrlServiceObserver> mTemplateUrlObserverCaptor;
-    @Captor private ArgumentCaptor<IphCommand> mCommandCaptor;
-    @Captor private ArgumentCaptor<IphCommand> mNewTabCommandCaptor;
 
     private SettableNullableObservableSupplier<Profile> mProfileSupplier;
     private OneshotSupplierImpl<String> mCountrySupplier;
@@ -262,9 +260,10 @@ public class BottomBarMediatorUnitTest {
 
         glicIph.tryShow(mView, mUserEducationHelper);
 
-        verify(mUserEducationHelper, times(1)).requestShowIph(mCommandCaptor.capture());
+        ArgumentCaptor<IphCommand> commandCaptor = ArgumentCaptor.forClass(IphCommand.class);
+        verify(mUserEducationHelper, times(1)).requestShowIph(commandCaptor.capture());
 
-        IphCommand command = mCommandCaptor.getValue();
+        IphCommand command = commandCaptor.getValue();
         assertNotNull(command);
         assertEquals(FeatureConstants.ANDROID_BOTTOM_BAR_GLIC, command.featureName);
         assertNotNull(command.onShowCallback);
@@ -299,8 +298,9 @@ public class BottomBarMediatorUnitTest {
                 FeatureConstants.ANDROID_BOTTOM_BAR_NEW_TAB, newTabIph.getFeatureNameForTesting());
 
         newTabIph.tryShow(mView, mUserEducationHelper);
-        verify(mUserEducationHelper, times(2)).requestShowIph(mNewTabCommandCaptor.capture());
-        IphCommand newTabCommand = mNewTabCommandCaptor.getAllValues().get(1);
+        ArgumentCaptor<IphCommand> newTabCommandCaptor = ArgumentCaptor.forClass(IphCommand.class);
+        verify(mUserEducationHelper, times(2)).requestShowIph(newTabCommandCaptor.capture());
+        IphCommand newTabCommand = newTabCommandCaptor.getAllValues().get(1);
         assertNotNull(newTabCommand);
         assertEquals(FeatureConstants.ANDROID_BOTTOM_BAR_NEW_TAB, newTabCommand.featureName);
         assertNotNull(newTabCommand.onShowCallback);
@@ -356,9 +356,10 @@ public class BottomBarMediatorUnitTest {
 
         aimIph.tryShow(mView, mUserEducationHelper);
 
-        verify(mUserEducationHelper, times(1)).requestShowIph(mCommandCaptor.capture());
+        ArgumentCaptor<IphCommand> commandCaptor = ArgumentCaptor.forClass(IphCommand.class);
+        verify(mUserEducationHelper, times(1)).requestShowIph(commandCaptor.capture());
 
-        IphCommand command = mCommandCaptor.getValue();
+        IphCommand command = commandCaptor.getValue();
         assertNotNull(command);
         assertEquals(FeatureConstants.ANDROID_BOTTOM_BAR_AIM, command.featureName);
         assertNotNull(command.onShowCallback);
@@ -393,8 +394,9 @@ public class BottomBarMediatorUnitTest {
                 FeatureConstants.ANDROID_BOTTOM_BAR_NEW_TAB, newTabIph.getFeatureNameForTesting());
 
         newTabIph.tryShow(mView, mUserEducationHelper);
-        verify(mUserEducationHelper, times(2)).requestShowIph(mNewTabCommandCaptor.capture());
-        IphCommand newTabCommand = mNewTabCommandCaptor.getAllValues().get(1);
+        ArgumentCaptor<IphCommand> newTabCommandCaptor = ArgumentCaptor.forClass(IphCommand.class);
+        verify(mUserEducationHelper, times(2)).requestShowIph(newTabCommandCaptor.capture());
+        IphCommand newTabCommand = newTabCommandCaptor.getAllValues().get(1);
         assertNotNull(newTabCommand);
         assertEquals(FeatureConstants.ANDROID_BOTTOM_BAR_NEW_TAB, newTabCommand.featureName);
         assertNotNull(newTabCommand.onShowCallback);
@@ -444,8 +446,9 @@ public class BottomBarMediatorUnitTest {
         assertNotNull(glicIph);
         glicIph.tryShow(mView, mUserEducationHelper);
 
-        verify(mUserEducationHelper, times(1)).requestShowIph(mCommandCaptor.capture());
-        IphCommand command = mCommandCaptor.getValue();
+        ArgumentCaptor<IphCommand> commandCaptor = ArgumentCaptor.forClass(IphCommand.class);
+        verify(mUserEducationHelper, times(1)).requestShowIph(commandCaptor.capture());
+        IphCommand command = commandCaptor.getValue();
         assertNotNull(command);
 
         // Dismiss Glic IPH to chain to New Tab IPH.
@@ -455,8 +458,9 @@ public class BottomBarMediatorUnitTest {
         assertNotNull(newTabIph);
 
         newTabIph.tryShow(mView, mUserEducationHelper);
-        verify(mUserEducationHelper, times(2)).requestShowIph(mNewTabCommandCaptor.capture());
-        IphCommand newTabCommand = mNewTabCommandCaptor.getAllValues().get(1);
+        ArgumentCaptor<IphCommand> newTabCommandCaptor = ArgumentCaptor.forClass(IphCommand.class);
+        verify(mUserEducationHelper, times(2)).requestShowIph(newTabCommandCaptor.capture());
+        IphCommand newTabCommand = newTabCommandCaptor.getAllValues().get(1);
         assertNotNull(newTabCommand);
         assertEquals(FeatureConstants.ANDROID_BOTTOM_BAR_NEW_TAB, newTabCommand.featureName);
         assertNotNull(newTabCommand.highlightParams);
@@ -548,8 +552,9 @@ public class BottomBarMediatorUnitTest {
 
         // Showing the GLIC IPH.
         assertTrue(glicIph.tryShow(mView, mUserEducationHelper));
-        verify(mUserEducationHelper, times(2)).requestShowIph(mCommandCaptor.capture());
-        IphCommand glicCommand = mCommandCaptor.getAllValues().get(1);
+        ArgumentCaptor<IphCommand> commandCaptor = ArgumentCaptor.forClass(IphCommand.class);
+        verify(mUserEducationHelper, times(2)).requestShowIph(commandCaptor.capture());
+        IphCommand glicCommand = commandCaptor.getAllValues().get(1);
         assertEquals(FeatureConstants.ANDROID_BOTTOM_BAR_GLIC, glicCommand.featureName);
 
         glicCommand.onDismissCallback.run();

@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
@@ -85,12 +86,7 @@ public class NtpCardsMediatorUnitTest {
     @Mock private HomeModulesConfigManager mHomeModulesConfigManager;
     @Mock private ModuleRegistry mModuleRegistry;
     @Mock private CompoundButton mCompoundButton;
-    @Mock private View mView;
     @Captor private ArgumentCaptor<View.OnClickListener> mBackPressHandlerCaptor;
-
-    @Captor
-    private ArgumentCaptor<CompoundButton.OnCheckedChangeListener>
-            mCompoundButtonOnCheckedChangeListenerCaptor;
 
     private Supplier<@Nullable Profile> mProfileSupplier;
     private NtpCardsMediator mNtpCardsMediator;
@@ -198,6 +194,7 @@ public class NtpCardsMediatorUnitTest {
         // Verifies that when the feed settings bottom sheet is part of the navigation flow starting
         // from the main bottom sheet, and the back press handler should be set to
         // backPressOnCurrentBottomSheet()
+        View backButton = mock(View.class);
         clearInvocations(mBottomSheetPropertyModel);
         when(mDelegate.shouldShowAlone()).thenReturn(false);
         new NtpCardsMediator(
@@ -209,7 +206,7 @@ public class NtpCardsMediatorUnitTest {
                 mModuleRegistry);
         verify(mBottomSheetPropertyModel)
                 .set(eq(BACK_PRESS_HANDLER), mBackPressHandlerCaptor.capture());
-        mBackPressHandlerCaptor.getValue().onClick(mView);
+        mBackPressHandlerCaptor.getValue().onClick(backButton);
         verify(mDelegate).backPressOnCurrentBottomSheet();
     }
 
@@ -270,14 +267,15 @@ public class NtpCardsMediatorUnitTest {
 
     @Test
     public void testAllCardsSwitchToggled() {
+        ArgumentCaptor<CompoundButton.OnCheckedChangeListener> captor =
+                ArgumentCaptor.forClass(CompoundButton.OnCheckedChangeListener.class);
         verify(mNtpCardsPropertyModel)
                 .set(
                         eq(
                                 NtpCustomizationViewProperties
                                         .ALL_NTP_CARDS_SWITCH_ON_CHECKED_CHANGE_LISTENER),
-                        mCompoundButtonOnCheckedChangeListenerCaptor.capture());
-        CompoundButton.OnCheckedChangeListener listener =
-                mCompoundButtonOnCheckedChangeListenerCaptor.getValue();
+                        captor.capture());
+        CompoundButton.OnCheckedChangeListener listener = captor.getValue();
 
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()

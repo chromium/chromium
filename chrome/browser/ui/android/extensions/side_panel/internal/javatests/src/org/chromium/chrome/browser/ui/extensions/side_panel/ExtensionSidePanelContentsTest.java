@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -48,7 +49,6 @@ public class ExtensionSidePanelContentsTest {
     @Mock private WebContents mWebContents;
     @Mock private ThinWebView mThinWebView;
     @Mock private View mThinWebViewUnderlyingView;
-    @Mock private WindowAndroid mMockWindow;
 
     private Activity mActivity;
     private IntentRequestTracker mIntentRequestTracker;
@@ -78,10 +78,11 @@ public class ExtensionSidePanelContentsTest {
 
     @Test
     public void testCreate_nullContext_returnsNull() {
-        when(mMockWindow.getContext()).thenReturn(new WeakReference<Context>(null));
+        WindowAndroid mockWindow = mock(WindowAndroid.class);
+        when(mockWindow.getContext()).thenReturn(new WeakReference<Context>(null));
 
         ExtensionSidePanelContents contents =
-                ExtensionSidePanelContents.create(mWebContents, mMockWindow);
+                ExtensionSidePanelContents.create(mWebContents, mockWindow);
 
         assertNull(contents);
     }

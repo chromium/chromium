@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.dom_distiller;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -67,7 +68,6 @@ public class ReaderModeBottomSheetManagerTest {
     @Mock private DistilledPagePrefs mDistilledPagePrefs;
     @Mock private DomDistillerService mDomDistillerService;
     @Mock private ThemeColorProvider mThemeColorProvider;
-    @Mock private BottomSheetContent mBottomSheetContent;
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
 
@@ -310,9 +310,10 @@ public class ReaderModeBottomSheetManagerTest {
     @Test
     public void testShowOnScroll_CurrentContentIsCobrowse_DoesNotShow() {
         // Setup: Currently showing content is COBROWSE.
-        when(mBottomSheetContent.getPriority())
+        BottomSheetContent mockCobrowseContent = mock(BottomSheetContent.class);
+        when(mockCobrowseContent.getPriority())
                 .thenReturn(BottomSheetContent.ContentPriority.COBROWSE);
-        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mBottomSheetContent);
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mockCobrowseContent);
 
         updateUrl(DISTILLED_URL);
         createManagerAndGetTabObserver();
@@ -337,8 +338,9 @@ public class ReaderModeBottomSheetManagerTest {
     @Test
     public void testShowOnScroll_CurrentContentIsNotCobrowse_Shows() {
         // Setup: Currently showing content is NOT COBROWSE (e.g. low priority).
-        when(mBottomSheetContent.getPriority()).thenReturn(BottomSheetContent.ContentPriority.LOW);
-        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mBottomSheetContent);
+        BottomSheetContent mockOtherContent = mock(BottomSheetContent.class);
+        when(mockOtherContent.getPriority()).thenReturn(BottomSheetContent.ContentPriority.LOW);
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mockOtherContent);
 
         updateUrl(DISTILLED_URL);
         createManagerAndGetTabObserver();

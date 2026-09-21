@@ -81,6 +81,8 @@ import java.util.List;
     ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC
 })
 public class NtpThemeSyncHistoryCoordinatorUnitTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private static final String TEST_COLLECTION_ID = "collection_id";
     private static final String TEST_COLLECTION_LABEL = "Label";
     private static final int TEST_COLLECTION_ORDER = 123;
@@ -94,26 +96,22 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
     private static final int FULL_BITMAP_SIZE = 10;
     private static final String TEST_FILE_ID_HASH = "test_already_has_bitmap_hash";
 
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
     @Mock private BottomSheetDelegate mBottomSheetDelegate;
     @Mock private View.OnClickListener mMoreOptionsClickListener;
     @Mock private NtpCustomizationConfigManager mNtpCustomizationConfigManager;
     @Mock private NtpThemeCollectionManager mThemeCollectionManager;
     @Mock private Profile mProfile;
     @Mock private CrossDeviceThemeTracker.Natives mCrossDeviceThemeTrackerJni;
-    @Mock private ImageFetcher mMockImageFetcher;
-    @Mock private NtpThemeCollectionManager mNtpThemeCollectionManager;
     @Captor private ArgumentCaptor<Callback<List<BackgroundCollection>>> mCollectionsCallbackCaptor;
     @Captor private ArgumentCaptor<Callback<List<CollectionImage>>> mImagesCallbackCaptor;
     @Captor private ArgumentCaptor<Callback<Bitmap>> mPreviewCallbackCaptor;
-    @Captor private ArgumentCaptor<Params> mParamsCaptor;
 
     private Context mContext;
     private NtpThemeSyncHistoryCoordinator mCoordinator;
     private NtpBackgroundDataManager mNtpBackgroundDataManager;
     private ViewGroup mParentView;
     private PropertyModel mPropertyModel;
+    private ImageFetcher mMockImageFetcher;
     private Bitmap mBitmap;
 
     @Before
@@ -159,6 +157,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
                         mThemeCollectionManager,
                         mProfile);
         mPropertyModel = mCoordinator.getPropertyModelForTesting();
+        mMockImageFetcher = mock(ImageFetcher.class);
         NtpCustomizationUtils.setImageFetcherForTesting(mMockImageFetcher);
         mBitmap = Bitmap.createBitmap(FULL_BITMAP_SIZE, FULL_BITMAP_SIZE, Bitmap.Config.ARGB_8888);
     }
@@ -631,20 +630,21 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
                 .when(mMockImageFetcher)
                 .fetchImage(any(), any());
 
+        NtpThemeCollectionManager mockManager = mock(NtpThemeCollectionManager.class);
+
         NtpThemeSyncHistoryCoordinator coordinator =
                 new NtpThemeSyncHistoryCoordinator(
                         mContext,
                         mParentView,
                         mBottomSheetDelegate,
                         mMoreOptionsClickListener,
-                        mNtpThemeCollectionManager,
+                        mockManager,
                         mProfile);
 
-        verify(mNtpThemeCollectionManager)
-                .getBackgroundCollections(mCollectionsCallbackCaptor.capture());
+        verify(mockManager).getBackgroundCollections(mCollectionsCallbackCaptor.capture());
         mCollectionsCallbackCaptor.getValue().onResult(Arrays.asList(collection));
 
-        verify(mNtpThemeCollectionManager)
+        verify(mockManager)
                 .getBackgroundImages(eq(TEST_COLLECTION_ID), mImagesCallbackCaptor.capture());
         mImagesCallbackCaptor.getValue().onResult(Arrays.asList(image1, image2));
 
@@ -751,8 +751,9 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         RobolectricUtil.runAllBackgroundAndUi();
 
         // Verify it fetches the image again.
-        verify(mMockImageFetcher).fetchImage(mParamsCaptor.capture(), any());
-        assertEquals(TEST_IMAGE_URL_1, mParamsCaptor.getValue().url);
+        ArgumentCaptor<Params> paramsCaptor = ArgumentCaptor.forClass(Params.class);
+        verify(mMockImageFetcher).fetchImage(paramsCaptor.capture(), any());
+        assertEquals(TEST_IMAGE_URL_1, paramsCaptor.getValue().url);
 
         // Verify the bitmap is set.
         assertEquals(fullBitmap, themeData.getBitmap());
@@ -1035,9 +1036,10 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         clearInvocations(mMockImageFetcher, mNtpCustomizationConfigManager);
         mCoordinator.prepareToShow();
 
+        ArgumentCaptor<Params> paramsCaptor = ArgumentCaptor.forClass(Params.class);
         verify(mMockImageFetcher)
-                .fetchImage(mParamsCaptor.capture(), mPreviewCallbackCaptor.capture());
-        assertEquals(TEST_IMAGE_URL_1, mParamsCaptor.getValue().url);
+                .fetchImage(paramsCaptor.capture(), mPreviewCallbackCaptor.capture());
+        assertEquals(TEST_IMAGE_URL_1, paramsCaptor.getValue().url);
 
         mPreviewCallbackCaptor.getValue().onResult(mBitmap);
         RobolectricUtil.runAllBackgroundAndUi();
@@ -1070,8 +1072,9 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         RobolectricUtil.runAllBackgroundAndUi();
 
         mCoordinator.prepareToShow();
+        ArgumentCaptor<Params> paramsCaptor = ArgumentCaptor.forClass(Params.class);
         verify(mMockImageFetcher)
-                .fetchImage(mParamsCaptor.capture(), mPreviewCallbackCaptor.capture());
+                .fetchImage(paramsCaptor.capture(), mPreviewCallbackCaptor.capture());
 
         mPreviewCallbackCaptor.getValue().onResult(mBitmap);
         RobolectricUtil.runAllBackgroundAndUi();
@@ -1158,9 +1161,10 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
 
         adapter.setSelectedPosition(position, /* isFromClick= */ true);
 
+        ArgumentCaptor<Params> paramsCaptor = ArgumentCaptor.forClass(Params.class);
         verify(mMockImageFetcher)
-                .fetchImage(mParamsCaptor.capture(), mPreviewCallbackCaptor.capture());
-        assertEquals(TEST_IMAGE_URL_1, mParamsCaptor.getValue().url);
+                .fetchImage(paramsCaptor.capture(), mPreviewCallbackCaptor.capture());
+        assertEquals(TEST_IMAGE_URL_1, paramsCaptor.getValue().url);
 
         mPreviewCallbackCaptor.getValue().onResult(mBitmap);
         RobolectricUtil.runAllBackgroundAndUi();

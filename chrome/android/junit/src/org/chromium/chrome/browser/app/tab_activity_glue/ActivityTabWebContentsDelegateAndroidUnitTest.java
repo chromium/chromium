@@ -83,45 +83,6 @@ import java.util.function.Supplier;
     ChromeFeatureList.DOCUMENT_PICTURE_IN_PICTURE_API
 })
 public class ActivityTabWebContentsDelegateAndroidUnitTest {
-    private static final GURL URL_1 = new GURL("https://url1.com");
-    private static final GURL TARGET_URL = new GURL("https://foo.com");
-
-    private static final int TEST_DISPLAY_ID = 73;
-    private static final float TEST_DENSITY = 1.0f;
-    private static final Rect TEST_BOUNDS = new Rect(0, 0, 1920, 1080);
-    private static final Rect TEST_LOCAL_BOUNDS = new Rect(0, 0, 1920, 1080);
-
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Mock Activity mActivity;
-    @Mock Profile mProfile;
-    @Mock WebContents mWebContents;
-    @Mock WebContents mNewWebContents;
-    @Mock Tab mTab;
-    @Mock TabCreatorManager mTabCreatorManager;
-    @Mock TabCreator mTabCreator;
-    @Mock TabModel mTabModel;
-    @Mock ActivityManager mActivityManager;
-    @Mock AconfigFlaggedApiDelegate mFlaggedApiDelegate;
-    @Mock DisplayAndroid mDisplayAndroid;
-    @Mock DisplayAndroidManager mDisplayAndroidManager;
-    @Mock AppTask mAppTask;
-    @Mock PopupCreator mPopupCreator;
-    @Mock MultiWindowUtils mMultiWindowUtils;
-    @Mock ExclusiveAccessManager mExclusiveAccessManager;
-    @Mock FullscreenManager mFullscreenManager;
-    @Mock RenderFrameHost mRenderFrameHost;
-    @Mock private View mUrlBar;
-    @Mock private View mMenuButton;
-    @Mock private View mTabSwitcherButton;
-    @Mock private View mTabSharingToolbar;
-    @Mock private Tab mParentTab;
-    @Mock private Tab mNewTab;
-    @Captor private ArgumentCaptor<CompletableFuture<Boolean>> mFutureCaptor;
-    @Captor private ArgumentCaptor<Rect> mRectCaptor;
-
-    private TestActivityTabWebContentsDelegateAndroid mTabWebContentsDelegateAndroid;
-
     static class TestActivityTabWebContentsDelegateAndroid
             extends ActivityTabWebContentsDelegateAndroid {
         private final TabModel mTabModel;
@@ -192,6 +153,43 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
             mIsDocumentPictureInPictureEnabled = isDocumentPictureInPictureEnabled;
         }
     }
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock Activity mActivity;
+    @Mock Profile mProfile;
+    @Mock WebContents mWebContents;
+    @Mock WebContents mNewWebContents;
+    @Mock Tab mTab;
+    @Mock TabCreatorManager mTabCreatorManager;
+    @Mock TabCreator mTabCreator;
+    @Mock TabModel mTabModel;
+    @Mock ActivityManager mActivityManager;
+    @Mock AconfigFlaggedApiDelegate mFlaggedApiDelegate;
+    @Mock DisplayAndroid mDisplayAndroid;
+    @Mock DisplayAndroidManager mDisplayAndroidManager;
+    @Mock AppTask mAppTask;
+    @Mock PopupCreator mPopupCreator;
+    @Mock MultiWindowUtils mMultiWindowUtils;
+    @Mock ExclusiveAccessManager mExclusiveAccessManager;
+    @Mock FullscreenManager mFullscreenManager;
+    @Mock RenderFrameHost mRenderFrameHost;
+    @Mock private View mUrlBar;
+    @Mock private View mMenuButton;
+    @Mock private View mTabSwitcherButton;
+    @Mock private View mTabSharingToolbar;
+
+    @Captor private ArgumentCaptor<CompletableFuture<Boolean>> mFutureCaptor;
+
+    private static final GURL URL_1 = new GURL("https://url1.com");
+    private static final GURL TARGET_URL = new GURL("https://foo.com");
+
+    private static final int TEST_DISPLAY_ID = 73;
+    private static final float TEST_DENSITY = 1.0f;
+    private static final Rect TEST_BOUNDS = new Rect(0, 0, 1920, 1080);
+    private static final Rect TEST_LOCAL_BOUNDS = new Rect(0, 0, 1920, 1080);
+
+    private TestActivityTabWebContentsDelegateAndroid mTabWebContentsDelegateAndroid;
 
     @Before
     public void setup() {
@@ -274,13 +272,15 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
 
     @Test
     public void testAddNewContentsToTabGroup() {
-        when(mParentTab.getTabGroupId()).thenReturn(Token.createRandom());
+        Tab parentTab = mock(Tab.class);
+        Tab newTab = mock(Tab.class);
+        when(parentTab.getTabGroupId()).thenReturn(Token.createRandom());
         when(mTabCreator.createTabWithWebContents(
                         any(), anyBoolean(), any(), anyInt(), any(), any()))
-                .thenReturn(mNewTab);
+                .thenReturn(newTab);
         when(mTabModel.isTabInTabGroup(any())).thenReturn(true);
         when(mTabModel.isTabModelRestored()).thenReturn(true);
-        Map<WebContents, Tab> tabMap = Map.of(mWebContents, mParentTab, mNewWebContents, mNewTab);
+        Map<WebContents, Tab> tabMap = Map.of(mWebContents, parentTab, mNewWebContents, newTab);
         mTabWebContentsDelegateAndroid.setTabMap(tabMap);
 
         mTabWebContentsDelegateAndroid.addNewContents(
@@ -293,8 +293,8 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
                 null);
         verify(mTabModel)
                 .mergeListOfTabsToGroup(
-                        Arrays.asList(mNewTab),
-                        mParentTab,
+                        Arrays.asList(newTab),
+                        parentTab,
                         TabGroupMergeNotificationType.DONT_NOTIFY);
     }
 
@@ -438,15 +438,17 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
 
     @Test
     public void testAddNewContents_InTabGroup_AlreadyGrouped_DoesNotReMerge() {
+        Tab parentTab = mock(Tab.class);
+        Tab newTab = mock(Tab.class);
         Token tabGroupId = Token.createRandom();
-        when(mParentTab.getTabGroupId()).thenReturn(tabGroupId);
-        when(mNewTab.getTabGroupId()).thenReturn(tabGroupId);
+        when(parentTab.getTabGroupId()).thenReturn(tabGroupId);
+        when(newTab.getTabGroupId()).thenReturn(tabGroupId);
         when(mTabCreator.createTabWithWebContents(
                         any(), anyBoolean(), any(), anyInt(), any(), any()))
-                .thenReturn(mNewTab);
+                .thenReturn(newTab);
         when(mTabModel.isTabInTabGroup(any())).thenReturn(true);
         when(mTabModel.isTabModelRestored()).thenReturn(true);
-        Map<WebContents, Tab> tabMap = Map.of(mWebContents, mParentTab, mNewWebContents, mNewTab);
+        Map<WebContents, Tab> tabMap = Map.of(mWebContents, parentTab, mNewWebContents, newTab);
         mTabWebContentsDelegateAndroid.setTabMap(tabMap);
 
         mTabWebContentsDelegateAndroid.addNewContents(
@@ -463,7 +465,8 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     @Test
     public void testAddNewContentsDoesNotAddToTabModelWhenMovingTabToPopupIsSuccessful() {
         when(mPopupCreator.moveTabToNewPopup(any(), any())).thenReturn(true);
-        doReturn(mNewTab)
+        Tab newTab = mock(Tab.class);
+        doReturn(newTab)
                 .when(mTabCreator)
                 .createTabWithWebContents(any(), anyBoolean(), any(), anyInt(), any(), any());
 
@@ -491,7 +494,8 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     @Test
     public void testAddNewContentsAddToTabModelWhenMovingTabToPopupIsUnsuccessful() {
         when(mPopupCreator.moveTabToNewPopup(any(), any())).thenReturn(false);
-        doReturn(mNewTab)
+        Tab newTab = mock(Tab.class);
+        doReturn(newTab)
                 .when(mTabCreator)
                 .createTabWithWebContents(any(), anyBoolean(), any(), anyInt(), any(), any());
 
@@ -608,8 +612,9 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         mTabWebContentsDelegateAndroid.setContentsBounds(
                 mWebContents, new Rect(-100, -100, 2000, 2000));
 
-        verify(mFlaggedApiDelegate).moveTaskTo(any(), eq(TEST_DISPLAY_ID), mRectCaptor.capture());
-        final Rect passedBounds = mRectCaptor.getValue();
+        ArgumentCaptor<Rect> captor = ArgumentCaptor.forClass(Rect.class);
+        verify(mFlaggedApiDelegate).moveTaskTo(any(), eq(TEST_DISPLAY_ID), captor.capture());
+        final Rect passedBounds = captor.getValue();
         Assert.assertTrue(
                 "The bounds passed to moveTaskTo do not fit inside display",
                 TEST_LOCAL_BOUNDS.contains(passedBounds));

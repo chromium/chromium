@@ -16,6 +16,7 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -36,7 +37,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
@@ -104,8 +104,6 @@ public class VerticalTabHoverControllerUnitTest {
     @Mock private Tab mTab1;
     @Mock private Tab mTab2;
     @Mock private Tab mPinnedTab;
-    @Mock private Runnable mRunnable;
-    @Captor private ArgumentCaptor<Runnable> mCallbackCaptor;
 
     private VerticalTabHoverController mController;
 
@@ -457,8 +455,9 @@ public class VerticalTabHoverControllerUnitTest {
         listener.onTabHoverStateChanged(TAB_ID_1, mTabView1, /* isHovered= */ true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
-        verify(mTabHoverCardView).setOnCardHeightChangedCallback(mCallbackCaptor.capture());
-        Runnable heightChangedCallback = mCallbackCaptor.getValue();
+        ArgumentCaptor<Runnable> callbackCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mTabHoverCardView).setOnCardHeightChangedCallback(callbackCaptor.capture());
+        Runnable heightChangedCallback = callbackCaptor.getValue();
         assertNotNull(heightChangedCallback);
 
         // When height changes (e.g. from 200 to 250 due to memory usage visibility):
@@ -1001,14 +1000,15 @@ public class VerticalTabHoverControllerUnitTest {
     @Test
     public void testHideHoverCard_ExecutesTagHoverExitListener() {
         when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_3);
-        when(mTabView1.getTag(R.id.tab_hover_exit_listener)).thenReturn(mRunnable);
+        Runnable mockHoverExit = mock(Runnable.class);
+        when(mTabView1.getTag(R.id.tab_hover_exit_listener)).thenReturn(mockHoverExit);
 
         TabHoverListener listener = mController.getTabHoverListener();
         listener.onTabHoverStateChanged(TAB_ID_1, mTabView1, /* isHovered= */ true);
 
         mController.hideHoverCard();
 
-        verify(mRunnable).run();
+        verify(mockHoverExit).run();
     }
 
     @Test

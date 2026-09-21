@@ -18,7 +18,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -46,7 +45,6 @@ public class PasswordSyncControllerDelegateBridgeTest {
 
     @Mock private PasswordSyncControllerDelegateBridgeImpl.Natives mBridgeJniMock;
     @Mock private PasswordSyncControllerDelegate mDelegateMock;
-    @Captor private ArgumentCaptor<Runnable> mSuccessCallback;
 
     private PasswordSyncControllerDelegateBridgeImpl mDelegateBridge;
 
@@ -60,12 +58,13 @@ public class PasswordSyncControllerDelegateBridgeTest {
     @Test
     public void testNotifyCredentialManagerWhenSyncingCallsBridgeOnSuccess() {
         mDelegateBridge.notifyCredentialManagerWhenSyncing(TEST_EMAIL_ADDRESS);
+        ArgumentCaptor<Runnable> successCallback = ArgumentCaptor.forClass(Runnable.class);
         verify(mDelegateMock)
                 .notifyCredentialManagerWhenSyncing(
-                        eq(TEST_EMAIL_ADDRESS), mSuccessCallback.capture(), any());
+                        eq(TEST_EMAIL_ADDRESS), successCallback.capture(), any());
 
-        assertNotNull(mSuccessCallback.getValue());
-        mSuccessCallback.getValue().run();
+        assertNotNull(successCallback.getValue());
+        successCallback.getValue().run();
         verify(mBridgeJniMock).onCredentialManagerNotified(sFakeNativePointer);
     }
 
@@ -105,12 +104,13 @@ public class PasswordSyncControllerDelegateBridgeTest {
     public void testNotifyCredentialManagerWhenNotSyncingCallsBridgeOnSuccess() {
         // Ensure the delegate is called with a valid success callback.
         mDelegateBridge.notifyCredentialManagerWhenNotSyncing();
+        ArgumentCaptor<Runnable> successCallback = ArgumentCaptor.forClass(Runnable.class);
 
         verify(mDelegateMock)
-                .notifyCredentialManagerWhenNotSyncing(mSuccessCallback.capture(), any());
-        assertNotNull(mSuccessCallback.getValue());
+                .notifyCredentialManagerWhenNotSyncing(successCallback.capture(), any());
+        assertNotNull(successCallback.getValue());
 
-        mSuccessCallback.getValue().run();
+        successCallback.getValue().run();
         verify(mBridgeJniMock).onCredentialManagerNotified(sFakeNativePointer);
     }
 

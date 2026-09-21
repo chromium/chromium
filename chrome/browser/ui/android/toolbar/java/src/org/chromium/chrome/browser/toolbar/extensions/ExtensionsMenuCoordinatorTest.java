@@ -71,10 +71,8 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.listmenu.ListMenuHost;
-import org.chromium.ui.listmenu.ListMenuHost.PopupMenuShownListener;
 import org.chromium.ui.listmenu.MenuModelBridge;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.AnchoredPopupWindow;
@@ -105,12 +103,8 @@ public class ExtensionsMenuCoordinatorTest {
     @Mock private Tracker mTracker;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private ModalDialogManager mModalDialogManager;
-    @Mock private PopupMenuShownListener mPopupMenuShownListener;
-    @Mock private AnchoredPopupWindow mAnchoredPopupWindow;
-    @Mock private Tab mNewTab;
 
     @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
-    @Captor private ArgumentCaptor<ModalDialogManagerObserver> mObserverCaptor;
 
     private Activity mContext;
     private final SettableNullableObservableSupplier<Tab> mCurrentTabSupplier =
@@ -202,11 +196,13 @@ public class ExtensionsMenuCoordinatorTest {
      */
     @Test
     public void testTriggeringExtensionClosesMenu() {
-        mExtensionsMenuButton.addPopupListener(mPopupMenuShownListener);
+        ListMenuHost.PopupMenuShownListener shownListener =
+                mock(ListMenuHost.PopupMenuShownListener.class);
+        mExtensionsMenuButton.addPopupListener(shownListener);
 
         mExtensionsMenuButton.performClick();
         triggerOnMediatorReady();
-        verify(mPopupMenuShownListener).onPopupMenuShown();
+        verify(shownListener).onPopupMenuShown();
         assertTrue(mExtensionsMenuCoordinator.isExtensionsMenuOpen());
 
         View primaryActionButton =
@@ -310,12 +306,14 @@ public class ExtensionsMenuCoordinatorTest {
      */
     @Test
     public void testShowMenu() {
-        mExtensionsMenuButton.addPopupListener(mPopupMenuShownListener);
+        ListMenuHost.PopupMenuShownListener shownListener =
+                mock(ListMenuHost.PopupMenuShownListener.class);
+        mExtensionsMenuButton.addPopupListener(shownListener);
 
         // Click on the button. The menu should not be shown yet, but the mediator should be
         // created.
         mExtensionsMenuButton.performClick();
-        verify(mPopupMenuShownListener, never()).onPopupMenuShown();
+        verify(shownListener, never()).onPopupMenuShown();
         assertNotNull(mExtensionsMenuCoordinator.mMediator);
 
         // Verify that the IPH event was recorded.
@@ -323,7 +321,7 @@ public class ExtensionsMenuCoordinatorTest {
 
         // Menu should be shown once mediator trigger the onReady runnable.
         triggerOnMediatorReady();
-        verify(mPopupMenuShownListener).onPopupMenuShown();
+        verify(shownListener).onPopupMenuShown();
     }
 
     /**
@@ -332,21 +330,23 @@ public class ExtensionsMenuCoordinatorTest {
      */
     @Test
     public void testClickMenuButtonWhileOpen_DismissesAndDoesNotReopen() {
-        mExtensionsMenuButton.addPopupListener(mPopupMenuShownListener);
+        ListMenuHost.PopupMenuShownListener shownListener =
+                mock(ListMenuHost.PopupMenuShownListener.class);
+        mExtensionsMenuButton.addPopupListener(shownListener);
 
         // Click opens the menu.
         mExtensionsMenuButton.performClick();
         triggerOnMediatorReady();
-        verify(mPopupMenuShownListener, times(1)).onPopupMenuShown();
+        verify(shownListener, times(1)).onPopupMenuShown();
 
         // Simulate clicking the button again while the menu is open:
         // Popup is dismissed (dismissal triggers onPopupMenuDismissed).
         mExtensionsMenuButton.dismiss();
-        verify(mPopupMenuShownListener, times(1)).onPopupMenuDismissed();
+        verify(shownListener, times(1)).onPopupMenuDismissed();
 
         // Extensions menu is clicked again, but should not be shown again.
         mExtensionsMenuButton.performClick();
-        verify(mPopupMenuShownListener, times(1)).onPopupMenuShown();
+        verify(shownListener, times(1)).onPopupMenuShown();
 
         // Advance the clock by 250ms to pass the 200ms cooldown.
         mExtensionsMenuButton.postDelayed(() -> {}, 250);
@@ -355,34 +355,38 @@ public class ExtensionsMenuCoordinatorTest {
         // A subsequent click should open it again.
         mExtensionsMenuButton.performClick();
         triggerOnMediatorReady();
-        verify(mPopupMenuShownListener, times(2)).onPopupMenuShown();
+        verify(shownListener, times(2)).onPopupMenuShown();
     }
 
     /** Tests that the extensions menu can be dismissed by clicking the close button. */
     @Test
     public void testCloseMenu() {
         // Show the menu.
-        mExtensionsMenuButton.addPopupListener(mPopupMenuShownListener);
+        ListMenuHost.PopupMenuShownListener shownListener =
+                mock(ListMenuHost.PopupMenuShownListener.class);
+        mExtensionsMenuButton.addPopupListener(shownListener);
         mExtensionsMenuButton.performClick();
         triggerOnMediatorReady();
-        verify(mPopupMenuShownListener).onPopupMenuShown();
+        verify(shownListener).onPopupMenuShown();
 
         mExtensionsMenuCoordinator
                 .getContentView()
                 .findViewById(R.id.extensions_menu_close_button)
                 .performClick();
 
-        verify(mPopupMenuShownListener).onPopupMenuDismissed();
+        verify(shownListener).onPopupMenuDismissed();
     }
 
     /** Tests that clicking "Manage extensions" opens the extensions management page. */
     @Test
     public void testManageExtensions() {
         // Show the menu.
-        mExtensionsMenuButton.addPopupListener(mPopupMenuShownListener);
+        ListMenuHost.PopupMenuShownListener shownListener =
+                mock(ListMenuHost.PopupMenuShownListener.class);
+        mExtensionsMenuButton.addPopupListener(shownListener);
         mExtensionsMenuButton.performClick();
         triggerOnMediatorReady();
-        verify(mPopupMenuShownListener).onPopupMenuShown();
+        verify(shownListener).onPopupMenuShown();
 
         // Click on the manage extensions button.
         mExtensionsMenuCoordinator
@@ -391,7 +395,7 @@ public class ExtensionsMenuCoordinatorTest {
                 .performClick();
 
         // Verify that the menu is closed and the tab is loaded with the correct URL.
-        verify(mPopupMenuShownListener).onPopupMenuDismissed();
+        verify(shownListener).onPopupMenuDismissed();
         verify(mTabCreator)
                 .createNewTab(
                         mLoadUrlParamsCaptor.capture(), eq(TabLaunchType.FROM_CHROME_UI), isNull());
@@ -402,10 +406,12 @@ public class ExtensionsMenuCoordinatorTest {
     @Test
     public void testDiscoverExtensions() {
         // Show the menu.
-        mExtensionsMenuButton.addPopupListener(mPopupMenuShownListener);
+        ListMenuHost.PopupMenuShownListener shownListener =
+                mock(ListMenuHost.PopupMenuShownListener.class);
+        mExtensionsMenuButton.addPopupListener(shownListener);
         mExtensionsMenuButton.performClick();
         triggerOnMediatorReady();
-        verify(mPopupMenuShownListener).onPopupMenuShown();
+        verify(shownListener).onPopupMenuShown();
 
         // Click on the discover extensions button.
         mExtensionsMenuCoordinator
@@ -414,7 +420,7 @@ public class ExtensionsMenuCoordinatorTest {
                 .performClick();
 
         // Verify that the menu is closed and the tab is loaded with the correct URL.
-        verify(mPopupMenuShownListener).onPopupMenuDismissed();
+        verify(shownListener).onPopupMenuDismissed();
         verify(mTabCreator)
                 .createNewTab(
                         mLoadUrlParamsCaptor.capture(), eq(TabLaunchType.FROM_CHROME_UI), isNull());
@@ -431,10 +437,12 @@ public class ExtensionsMenuCoordinatorTest {
         assertNull(mExtensionsMenuCoordinator.mMediator);
 
         // Open the menu.
-        mExtensionsMenuButton.addPopupListener(mPopupMenuShownListener);
+        ListMenuHost.PopupMenuShownListener shownListener =
+                mock(ListMenuHost.PopupMenuShownListener.class);
+        mExtensionsMenuButton.addPopupListener(shownListener);
         mExtensionsMenuButton.performClick();
         triggerOnMediatorReady();
-        verify(mPopupMenuShownListener).onPopupMenuShown();
+        verify(shownListener).onPopupMenuShown();
 
         // Mediator should be created when the menu is opened.
         assertNotNull(mExtensionsMenuCoordinator.mMediator);
@@ -445,7 +453,7 @@ public class ExtensionsMenuCoordinatorTest {
                 .findViewById(R.id.extensions_menu_close_button)
                 .performClick();
 
-        verify(mPopupMenuShownListener).onPopupMenuDismissed();
+        verify(shownListener).onPopupMenuDismissed();
 
         // Mediator should be destroyed when the menu is closed.
         assertNull(mExtensionsMenuCoordinator.mMediator);
@@ -535,36 +543,43 @@ public class ExtensionsMenuCoordinatorTest {
     @Test
     public void testCloseExtensionsMenuIfOpen() {
         // Show the menu.
-        mExtensionsMenuButton.addPopupListener(mPopupMenuShownListener);
+        ListMenuHost.PopupMenuShownListener shownListener =
+                mock(ListMenuHost.PopupMenuShownListener.class);
+        mExtensionsMenuButton.addPopupListener(shownListener);
         mExtensionsMenuButton.performClick();
         triggerOnMediatorReady();
-        verify(mPopupMenuShownListener).onPopupMenuShown();
+        verify(shownListener).onPopupMenuShown();
 
         // Trigger the programmatic close.
         mExtensionsMenuCoordinator.closeExtensionsMenuIfOpen();
 
         // Verify that the menu is closed.
-        verify(mPopupMenuShownListener).onPopupMenuDismissed();
+        verify(shownListener).onPopupMenuDismissed();
     }
 
     @Test
     public void testDismissMenuOnDialogAdded() {
-        verify(mModalDialogManager).addObserver(mObserverCaptor.capture());
+        ArgumentCaptor<ModalDialogManager.ModalDialogManagerObserver> observerCaptor =
+                ArgumentCaptor.forClass(ModalDialogManager.ModalDialogManagerObserver.class);
+        verify(mModalDialogManager).addObserver(observerCaptor.capture());
 
-        mExtensionsMenuButton.addPopupListener(mPopupMenuShownListener);
+        ListMenuHost.PopupMenuShownListener popupListener =
+                mock(ListMenuHost.PopupMenuShownListener.class);
+        mExtensionsMenuButton.addPopupListener(popupListener);
 
         mExtensionsMenuButton.performClick();
         triggerOnMediatorReady();
         assertTrue(mExtensionsMenuCoordinator.isExtensionsMenuOpen());
 
-        mObserverCaptor.getValue().onDialogAdded(new PropertyModel());
+        observerCaptor.getValue().onDialogAdded(new PropertyModel());
         assertFalse(mExtensionsMenuCoordinator.isExtensionsMenuOpen());
     }
 
     @Test
     public void testPageChangeUpdatesPopupSize() {
         // Intercept the popup window.
-        ListMenuHost.setMenuChangedListenerForTesting(popup -> mAnchoredPopupWindow);
+        AnchoredPopupWindow mockPopup = mock(AnchoredPopupWindow.class);
+        ListMenuHost.setMenuChangedListenerForTesting(popup -> mockPopup);
 
         // Show the menu.
         mExtensionsMenuButton.performClick();
@@ -580,7 +595,7 @@ public class ExtensionsMenuCoordinatorTest {
                         ExtensionsMenuProperties.Page.SITE_PERMISSIONS);
 
         // Verify that updateDesiredContentSize(0, 0, true) was called.
-        verify(mAnchoredPopupWindow).updateDesiredContentSize(0, 0, true);
+        verify(mockPopup).updateDesiredContentSize(0, 0, true);
     }
 
     @Test
@@ -597,12 +612,13 @@ public class ExtensionsMenuCoordinatorTest {
 
     @Test
     public void testCurrentTabSupplierChange_UpdatesButtonState() {
+        Tab newTab = mock(Tab.class);
         org.chromium.content_public.browser.WebContents newWebContents =
                 mock(org.chromium.content_public.browser.WebContents.class);
-        when(mNewTab.getWebContents()).thenReturn(newWebContents);
+        when(newTab.getWebContents()).thenReturn(newWebContents);
         clearInvocations(mExtensionsToolbarBridge);
 
-        mCurrentTabSupplier.set(mNewTab);
+        mCurrentTabSupplier.set(newTab);
 
         verify(mExtensionsToolbarBridge)
                 .getMenuButtonState(eq(newWebContents), anyInt(), anyInt(), anyFloat(), anyInt());

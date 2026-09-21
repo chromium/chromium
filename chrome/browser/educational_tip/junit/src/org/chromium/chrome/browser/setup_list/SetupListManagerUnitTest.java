@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -18,7 +19,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.sync.SyncService;
-import org.chromium.components.sync.SyncService.SyncStateChangedListener;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 
@@ -56,8 +55,6 @@ import java.util.concurrent.TimeUnit;
 @Config(shadows = {ShadowAppCompatResources.class})
 @Features.EnableFeatures(ChromeFeatureList.ANDROID_SETUP_LIST)
 public class SetupListManagerUnitTest {
-    private static final long ONE_MINUTE_IN_MILLIS = TimeUnit.MINUTES.toMillis(1);
-
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public FakeTimeTestRule mFakeTime = new FakeTimeTestRule();
 
@@ -66,10 +63,9 @@ public class SetupListManagerUnitTest {
     @Mock private IdentityManager mIdentityManager;
     @Mock private SafeBrowsingBridge.Natives mSafeBrowsingBridgeJni;
     @Mock private SyncService mSyncService;
-    @Mock private SetupListManager.Observer mSetupListManagerObserver;
-    @Captor private ArgumentCaptor<SyncStateChangedListener> mListenerCaptor;
 
     private SharedPreferencesManager mSharedPreferencesManager;
+    private static final long ONE_MINUTE_IN_MILLIS = TimeUnit.MINUTES.toMillis(1);
 
     @Before
     public void setUp() {
@@ -384,19 +380,20 @@ public class SetupListManagerUnitTest {
     public void testObserver_NotifiedOnPrimaryAccountChanged() {
         SetupListManager.setInstanceForTesting(new SetupListManager());
         SetupListManager manager = SetupListManager.getInstance();
-        manager.addObserver(mSetupListManagerObserver);
+        SetupListManager.Observer observer = mock(SetupListManager.Observer.class);
+        manager.addObserver(observer);
 
         // Sign-in event
         PrimaryAccountChangeEvent signInEvent =
                 new PrimaryAccountChangeEvent(PrimaryAccountChangeEvent.Type.SET);
         manager.onPrimaryAccountChanged(signInEvent);
-        verify(mSetupListManagerObserver).onSetupListStateChanged();
+        verify(observer).onSetupListStateChanged();
 
         // Sign-out event
         PrimaryAccountChangeEvent signOutEvent =
                 new PrimaryAccountChangeEvent(PrimaryAccountChangeEvent.Type.CLEARED);
         manager.onPrimaryAccountChanged(signOutEvent);
-        verify(mSetupListManagerObserver, times(2)).onSetupListStateChanged();
+        verify(observer, times(2)).onSetupListStateChanged();
     }
 
     @Test
@@ -409,9 +406,11 @@ public class SetupListManagerUnitTest {
         SetupListManager manager = SetupListManager.getInstance();
 
         // Capture the observer registered by the manager.
+        ArgumentCaptor<SyncService.SyncStateChangedListener> listenerCaptor =
+                ArgumentCaptor.forClass(SyncService.SyncStateChangedListener.class);
         manager.maybePrimeCompletionStatus(mProfile);
-        verify(mSyncService).addSyncStateChangedListener(mListenerCaptor.capture());
-        SyncService.SyncStateChangedListener listener = mListenerCaptor.getValue();
+        verify(mSyncService).addSyncStateChangedListener(listenerCaptor.capture());
+        SyncService.SyncStateChangedListener listener = listenerCaptor.getValue();
 
         assertFalse(manager.isModuleCompleted(ModuleType.HISTORY_SYNC_PROMO));
 
@@ -435,9 +434,11 @@ public class SetupListManagerUnitTest {
         SetupListManager manager = SetupListManager.getInstance();
 
         // Capture the observer registered by the manager.
+        ArgumentCaptor<SyncService.SyncStateChangedListener> listenerCaptor =
+                ArgumentCaptor.forClass(SyncService.SyncStateChangedListener.class);
         manager.maybePrimeCompletionStatus(mProfile);
-        verify(mSyncService).addSyncStateChangedListener(mListenerCaptor.capture());
-        SyncService.SyncStateChangedListener listener = mListenerCaptor.getValue();
+        verify(mSyncService).addSyncStateChangedListener(listenerCaptor.capture());
+        SyncService.SyncStateChangedListener listener = listenerCaptor.getValue();
 
         assertFalse(manager.isModuleCompleted(ModuleType.ENHANCED_SAFE_BROWSING_PROMO));
 

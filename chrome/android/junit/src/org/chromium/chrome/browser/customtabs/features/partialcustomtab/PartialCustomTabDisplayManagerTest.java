@@ -34,9 +34,7 @@ import androidx.annotation.Px;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.mockito.Mockito;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.CallbackUtils;
@@ -57,14 +55,8 @@ import java.util.function.Supplier;
 public class PartialCustomTabDisplayManagerTest {
     private static final int BOTTOM_SHEET_MAX_WIDTH_DP = 900;
 
-    @Rule public final PartialCustomTabTestRule mPCCTTestRule = new PartialCustomTabTestRule();
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Mock private Runnable mFinish;
-    @Mock private Runnable mFinish2;
-    @Mock private BrowserServicesIntentDataProvider mBrowserServicesIntentDataProvider;
-
     private boolean mFullscreen;
+    @Rule public final PartialCustomTabTestRule mPCCTTestRule = new PartialCustomTabTestRule();
 
     private PartialCustomTabDisplayManager createPcctDisplayManager() {
         return createPcctDisplayManager(800, 2000);
@@ -343,8 +335,10 @@ public class PartialCustomTabDisplayManagerTest {
                 "Bottom-Sheet should be the active strategy",
                 PartialCustomTabType.BOTTOM_SHEET,
                 displayManager.getActiveStrategyType());
-        assertTrue("Close animation didn't run", displayManager.handleCloseAnimation(mFinish));
-        assertFalse("Close animation shouldn't run", displayManager.handleCloseAnimation(mFinish2));
+        Runnable finish = Mockito.mock(Runnable.class);
+        assertTrue("Close animation didn't run", displayManager.handleCloseAnimation(finish));
+        Runnable finish2 = Mockito.mock(Runnable.class);
+        assertFalse("Close animation shouldn't run", displayManager.handleCloseAnimation(finish2));
 
         mPCCTTestRule.configLandscapeMode();
         displayManager = createPcctDisplayManager();
@@ -352,16 +346,16 @@ public class PartialCustomTabDisplayManagerTest {
                 "Side-Sheet should be the active strategy",
                 PartialCustomTabType.SIDE_SHEET,
                 displayManager.getActiveStrategyType());
-        assertTrue("Close animation didn't run", displayManager.handleCloseAnimation(mFinish));
-        assertFalse("Close animation shouldn't run", displayManager.handleCloseAnimation(mFinish2));
+        assertTrue("Close animation didn't run", displayManager.handleCloseAnimation(finish));
+        assertFalse("Close animation shouldn't run", displayManager.handleCloseAnimation(finish2));
 
         displayManager = createPcctDisplayManager(0, 0);
         assertEquals(
                 "Full-Size PCCT should be created",
                 PartialCustomTabType.FULL_SIZE,
                 displayManager.getActiveStrategyType());
-        assertTrue("Close animation didn't run", displayManager.handleCloseAnimation(mFinish));
-        assertFalse("Close animation shouldn't run", displayManager.handleCloseAnimation(mFinish2));
+        assertTrue("Close animation didn't run", displayManager.handleCloseAnimation(finish));
+        assertFalse("Close animation shouldn't run", displayManager.handleCloseAnimation(finish2));
     }
 
     @Test
@@ -744,48 +738,43 @@ public class PartialCustomTabDisplayManagerTest {
     @Test
     public void startAnimationOverride() {
         int defId = 42;
-        when(mBrowserServicesIntentDataProvider.getAnimationEnterRes()).thenReturn(defId);
+        var provider = Mockito.mock(BrowserServicesIntentDataProvider.class);
+        when(provider.getAnimationEnterRes()).thenReturn(defId);
 
         // FULL_SIZE -> slide up
         assertEquals(
                 R.anim.slide_in_up,
-                PartialCustomTabDisplayManager.getStartAnimationOverride(
-                        null, mBrowserServicesIntentDataProvider, defId));
+                PartialCustomTabDisplayManager.getStartAnimationOverride(null, provider, defId));
 
         // BOTTOM_SHEET -> slide up
-        when(mBrowserServicesIntentDataProvider.getInitialActivityHeight()).thenReturn(1000);
+        when(provider.getInitialActivityHeight()).thenReturn(1000);
         assertEquals(
                 R.anim.slide_in_up,
-                PartialCustomTabDisplayManager.getStartAnimationOverride(
-                        null, mBrowserServicesIntentDataProvider, defId));
+                PartialCustomTabDisplayManager.getStartAnimationOverride(null, provider, defId));
 
         // SIDE_SHEET -> slide from side
-        when(mBrowserServicesIntentDataProvider.getSideSheetPosition())
-                .thenReturn(ACTIVITY_SIDE_SHEET_POSITION_END);
-        when(mBrowserServicesIntentDataProvider.getInitialActivityWidth()).thenReturn(1000);
-        when(mBrowserServicesIntentDataProvider.getActivityBreakPoint()).thenReturn(500);
+        when(provider.getSideSheetPosition()).thenReturn(ACTIVITY_SIDE_SHEET_POSITION_END);
+        when(provider.getInitialActivityWidth()).thenReturn(1000);
+        when(provider.getActivityBreakPoint()).thenReturn(500);
 
         Activity act = mPCCTTestRule.mActivity;
-        when(mBrowserServicesIntentDataProvider.getSideSheetSlideInBehavior())
+        when(provider.getSideSheetSlideInBehavior())
                 .thenReturn(ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE);
         assertEquals(
                 R.anim.slide_in_right,
-                PartialCustomTabDisplayManager.getStartAnimationOverride(
-                        act, mBrowserServicesIntentDataProvider, defId));
+                PartialCustomTabDisplayManager.getStartAnimationOverride(act, provider, defId));
 
         LocalizationUtils.setRtlForTesting(true);
         assertEquals(
                 R.anim.slide_in_left,
-                PartialCustomTabDisplayManager.getStartAnimationOverride(
-                        act, mBrowserServicesIntentDataProvider, defId));
+                PartialCustomTabDisplayManager.getStartAnimationOverride(act, provider, defId));
 
         // BOTTOM_SHEET -> slide up (with height and width set, compact portrait)
         mPCCTTestRule.configCompactDevice_Portrait();
-        when(mBrowserServicesIntentDataProvider.getInitialActivityWidth()).thenReturn(500);
-        when(mBrowserServicesIntentDataProvider.getActivityBreakPoint()).thenReturn(50);
+        when(provider.getInitialActivityWidth()).thenReturn(500);
+        when(provider.getActivityBreakPoint()).thenReturn(50);
         assertEquals(
                 R.anim.slide_in_up,
-                PartialCustomTabDisplayManager.getStartAnimationOverride(
-                        act, mBrowserServicesIntentDataProvider, defId));
+                PartialCustomTabDisplayManager.getStartAnimationOverride(act, provider, defId));
     }
 }

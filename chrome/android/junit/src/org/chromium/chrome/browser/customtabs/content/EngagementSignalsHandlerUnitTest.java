@@ -24,7 +24,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -50,7 +49,6 @@ public class EngagementSignalsHandlerUnitTest {
     @Mock private TabInteractionRecorder mTabInteractionRecorder;
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
-    @Captor private ArgumentCaptor<CustomTabTabObserver> mTabObserverCaptor;
 
     private EngagementSignalsHandler mEngagementSignalsHandler;
     private final SettableNonNullObservableSupplier<Boolean> mCrashUploadPermittedSupplier =
@@ -108,16 +106,17 @@ public class EngagementSignalsHandlerUnitTest {
     public void testCloseCustomTabDestroysEverything() {
         mEngagementSignalsHandler.setEngagementSignalsCallback(mCallback);
         mEngagementSignalsHandler.setTabObserverRegistrar(mTabObserverRegistrar);
+        ArgumentCaptor<CustomTabTabObserver> tabObserver =
+                ArgumentCaptor.forClass(CustomTabTabObserver.class);
         assertTrue(mCrashUploadPermittedSupplier.hasObservers());
-        verify(mTabObserverRegistrar, times(2))
-                .registerActivityTabObserver(mTabObserverCaptor.capture());
+        verify(mTabObserverRegistrar, times(2)).registerActivityTabObserver(tabObserver.capture());
         var observer = mEngagementSignalsHandler.getEngagementSignalsObserverForTesting();
         // Simulate closing custom tab.
-        mTabObserverCaptor.getValue().onAllTabsClosed();
+        tabObserver.getValue().onAllTabsClosed();
         // Verify observers are removed.
         assertFalse(mCrashUploadPermittedSupplier.hasObservers());
         var tabObserverInHandler =
-                mTabObserverCaptor.getAllValues().stream()
+                tabObserver.getAllValues().stream()
                         .filter(o -> !o.equals(observer))
                         .findFirst()
                         .orElseThrow();

@@ -32,7 +32,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -78,10 +77,6 @@ public class ActorPictureInPictureControllerTest {
     @Mock private WebContents mWebContents;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private Lifecycle mLifecycle;
-    @Mock private ActorForegroundServiceManager mActorForegroundServiceManager;
-    @Mock private Runnable mRunnable;
-    @Mock private Tab mMockTab;
-    @Captor private ArgumentCaptor<PictureInPictureParams> mPictureInPictureParamsCaptor;
 
     private ComponentActivity mActivity;
     private Supplier<Profile> mProfileSupplier;
@@ -170,7 +165,8 @@ public class ActorPictureInPictureControllerTest {
 
     @Test
     public void testOnPictureInPictureEvent_Entered_ShowsOverlay() {
-        ActorForegroundServiceManager.setInstanceForTesting(mActorForegroundServiceManager);
+        ActorForegroundServiceManager manager = mock(ActorForegroundServiceManager.class);
+        ActorForegroundServiceManager.setInstanceForTesting(manager);
 
         createMockActorTask(101, "Test Title", ActorTaskState.ACTING);
         mController.onPictureInPictureEvent(PictureInPictureDelegate.Event.ENTERED, null);
@@ -179,25 +175,27 @@ public class ActorPictureInPictureControllerTest {
         verify(mMockCoordinator).updateTitle("Test Title");
         verify(mMockCoordinator).updateStatus(ActorTaskState.ACTING);
         verify(mMockCoordinator, never()).destroy();
-        verify(mActorForegroundServiceManager).resendWorkingNotifications();
+        verify(manager).resendWorkingNotifications();
     }
 
     @Test
     public void testOnPictureInPictureEvent_Exited_HidesOverview() {
+        Runnable mockHideTabSwitcher = mock(Runnable.class);
         mController =
                 new ActorPictureInPictureController(
                         mActivity,
                         mProfileSupplier,
                         () -> mActivity.findViewById(android.R.id.content),
                         () -> mTabModelSelector,
-                        mRunnable,
+                        mockHideTabSwitcher,
                         mToggleGlicCallback,
                         new Size(1920, 1080),
                         mOnPipChangedCallback);
 
         ActorTask mockTask = createMockActorTask(101, "Task", ActorTaskState.ACTING);
         when(mockTask.getLastActedTabs()).thenReturn(Collections.singleton(1));
-        when(mTabModelSelector.getTabById(1)).thenReturn(mMockTab);
+        Tab mockTab = mock(Tab.class);
+        when(mTabModelSelector.getTabById(1)).thenReturn(mockTab);
 
         mController.setInActorPiPForTesting(true);
         mController.onPictureInPictureEvent(PictureInPictureDelegate.Event.EXITED, null);
@@ -205,7 +203,7 @@ public class ActorPictureInPictureControllerTest {
         // Allow the delayed tab selection task to run.
         ShadowLooper.idleMainLooper();
 
-        verify(mRunnable).run();
+        verify(mockHideTabSwitcher).run();
         verify(mToggleGlicCallback).onResult(true);
     }
 
@@ -218,13 +216,14 @@ public class ActorPictureInPictureControllerTest {
 
     @Test
     public void testExitPip_WithNonActorIntent_SkipsTabSelection() {
+        Runnable mockHideTabSwitcher = mock(Runnable.class);
         mController =
                 new ActorPictureInPictureController(
                         mActivity,
                         mProfileSupplier,
                         () -> mActivity.findViewById(android.R.id.content),
                         () -> mTabModelSelector,
-                        mRunnable,
+                        mockHideTabSwitcher,
                         mToggleGlicCallback,
                         new Size(1920, 1080),
                         mOnPipChangedCallback);
@@ -244,19 +243,20 @@ public class ActorPictureInPictureControllerTest {
         ShadowLooper.idleMainLooper();
 
         // Verify tab selection was skipped
-        verify(mRunnable, never()).run();
+        verify(mockHideTabSwitcher, never()).run();
         verify(mToggleGlicCallback, never()).onResult(any());
     }
 
     @Test
     public void testExitPip_ManualExpand_PerformsTabSelection() {
+        Runnable mockHideTabSwitcher = mock(Runnable.class);
         mController =
                 new ActorPictureInPictureController(
                         mActivity,
                         mProfileSupplier,
                         () -> mActivity.findViewById(android.R.id.content),
                         () -> mTabModelSelector,
-                        mRunnable,
+                        mockHideTabSwitcher,
                         mToggleGlicCallback,
                         new Size(1920, 1080),
                         mOnPipChangedCallback);
@@ -273,19 +273,20 @@ public class ActorPictureInPictureControllerTest {
         ShadowLooper.idleMainLooper();
 
         // Verify tab selection was performed
-        verify(mRunnable).run();
+        verify(mockHideTabSwitcher).run();
         verify(mToggleGlicCallback).onResult(true);
     }
 
     @Test
     public void testExitPip_WithActorIntent_PerformsTabSelection() {
+        Runnable mockHideTabSwitcher = mock(Runnable.class);
         mController =
                 new ActorPictureInPictureController(
                         mActivity,
                         mProfileSupplier,
                         () -> mActivity.findViewById(android.R.id.content),
                         () -> mTabModelSelector,
-                        mRunnable,
+                        mockHideTabSwitcher,
                         mToggleGlicCallback,
                         new Size(1920, 1080),
                         mOnPipChangedCallback);
@@ -307,19 +308,20 @@ public class ActorPictureInPictureControllerTest {
         ShadowLooper.idleMainLooper();
 
         // Verify tab selection was performed
-        verify(mRunnable).run();
+        verify(mockHideTabSwitcher).run();
         verify(mToggleGlicCallback).onResult(true);
     }
 
     @Test
     public void testEnterPip_CancelsPendingTabSelection() {
+        Runnable mockHideTabSwitcher = mock(Runnable.class);
         mController =
                 new ActorPictureInPictureController(
                         mActivity,
                         mProfileSupplier,
                         () -> mActivity.findViewById(android.R.id.content),
                         () -> mTabModelSelector,
-                        mRunnable,
+                        mockHideTabSwitcher,
                         mToggleGlicCallback,
                         new Size(1920, 1080),
                         mOnPipChangedCallback);
@@ -339,7 +341,7 @@ public class ActorPictureInPictureControllerTest {
         ShadowLooper.idleMainLooper();
 
         // Verify tab selection was NOT performed
-        verify(mRunnable, never()).run();
+        verify(mockHideTabSwitcher, never()).run();
         verify(mToggleGlicCallback, never()).onResult(any());
     }
 
@@ -444,9 +446,11 @@ public class ActorPictureInPictureControllerTest {
         createMockActorTask(101, "Task", ActorTaskState.ACTING);
         mController.updatePipState();
 
-        verify(mActivity).setPictureInPictureParams(mPictureInPictureParamsCaptor.capture());
+        ArgumentCaptor<PictureInPictureParams> captor =
+                ArgumentCaptor.forClass(PictureInPictureParams.class);
+        verify(mActivity).setPictureInPictureParams(captor.capture());
 
-        List<RemoteAction> actions = mPictureInPictureParamsCaptor.getValue().getActions();
+        List<RemoteAction> actions = captor.getValue().getActions();
         assertEquals(1, actions.size());
         assertEquals(
                 mActivity.getString(R.string.actor_pip_working_status), actions.get(0).getTitle());
@@ -458,9 +462,11 @@ public class ActorPictureInPictureControllerTest {
 
         mController.updatePipState();
 
-        verify(mActivity).setPictureInPictureParams(mPictureInPictureParamsCaptor.capture());
+        ArgumentCaptor<PictureInPictureParams> captor =
+                ArgumentCaptor.forClass(PictureInPictureParams.class);
+        verify(mActivity).setPictureInPictureParams(captor.capture());
 
-        List<RemoteAction> actions = mPictureInPictureParamsCaptor.getValue().getActions();
+        List<RemoteAction> actions = captor.getValue().getActions();
         assertEquals(1, actions.size());
         assertEquals(
                 mActivity.getString(R.string.actor_pip_paused_status), actions.get(0).getTitle());
@@ -472,9 +478,11 @@ public class ActorPictureInPictureControllerTest {
 
         mController.updatePipState();
 
-        verify(mActivity).setPictureInPictureParams(mPictureInPictureParamsCaptor.capture());
+        ArgumentCaptor<PictureInPictureParams> captor =
+                ArgumentCaptor.forClass(PictureInPictureParams.class);
+        verify(mActivity).setPictureInPictureParams(captor.capture());
 
-        List<RemoteAction> actions = mPictureInPictureParamsCaptor.getValue().getActions();
+        List<RemoteAction> actions = captor.getValue().getActions();
         assertTrue(actions.isEmpty());
     }
 

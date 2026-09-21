@@ -32,6 +32,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -40,7 +41,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
-import org.chromium.chrome.browser.customtabs.CustomTabBottomBarDelegate.CustomButtonsUpdater;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -69,10 +69,6 @@ public class CustomTabBottomBarDelegateUnitTest {
     @Mock private PendingIntent mRemoteViewsPendingIntent;
     @Mock private PendingIntent mSwipeUpPendingIntent;
     @Mock private ImageButton mButtonView;
-    @Mock private PendingIntent mPendingIntent;
-    @Mock private Drawable mDrawable;
-    @Mock private CustomButtonParams mCustomButtonParams;
-    @Mock private CustomButtonsUpdater mCustomButtonsUpdater;
 
     private final ApplicationViewportInsetTracker mViewportInsetSupplier =
             ApplicationViewportInsetTracker.createForTests();
@@ -141,12 +137,13 @@ public class CustomTabBottomBarDelegateUnitTest {
     @Test
     public void testSwipeIntentAfterUpdate() throws CanceledException {
         mBottomBarDelegate.showBottomBarIfNecessary();
-        mBottomBarDelegate.updateSwipeUpPendingIntent(mPendingIntent);
+        var pendingIntent = Mockito.mock(PendingIntent.class);
+        mBottomBarDelegate.updateSwipeUpPendingIntent(pendingIntent);
         // Simulate a swipe up gesture.
         mBottomBarDelegate.onSwipeStarted(
                 ScrollDirection.UP, MotionEvent.obtain(0, 10, MotionEvent.ACTION_MOVE, 0f, 10f, 0));
         // Verify the intent is sent.
-        verify(mPendingIntent).send(eq(mActivity), anyInt(), any(), any(), any(), any(), any());
+        verify(pendingIntent).send(eq(mActivity), anyInt(), any(), any(), any(), any(), any());
     }
 
     @Test
@@ -162,12 +159,14 @@ public class CustomTabBottomBarDelegateUnitTest {
     @Test
     public void testUpdateBottomBarButtons() {
         when(mBottomBarView.findViewById(1)).thenReturn(mButtonView);
+        Drawable icon = Mockito.mock(Drawable.class);
         var description = "description";
-        when(mCustomButtonParams.getId()).thenReturn(1);
-        when(mCustomButtonParams.getIcon(any(), any())).thenReturn(mDrawable);
-        when(mCustomButtonParams.getDescription()).thenReturn(description);
+        CustomButtonParams customButtonParams = Mockito.mock(CustomButtonParams.class);
+        when(customButtonParams.getId()).thenReturn(1);
+        when(customButtonParams.getIcon(any(), any())).thenReturn(icon);
+        when(customButtonParams.getDescription()).thenReturn(description);
 
-        mBottomBarDelegate.updateBottomBarButtons(mCustomButtonParams);
+        mBottomBarDelegate.updateBottomBarButtons(customButtonParams);
 
         verify(mButtonView).setImageDrawable(any());
         verify(mButtonView).setContentDescription(eq(description));
@@ -176,16 +175,20 @@ public class CustomTabBottomBarDelegateUnitTest {
     @Test
     public void testUpdateBottomBarButtons_updaterSet_noInteractionsWithButtonView() {
         when(mBottomBarView.findViewById(1)).thenReturn(mButtonView);
+        Drawable icon = Mockito.mock(Drawable.class);
         var description = "description";
-        when(mCustomButtonParams.getId()).thenReturn(1);
-        when(mCustomButtonParams.getIcon(any(), any())).thenReturn(mDrawable);
-        when(mCustomButtonParams.getDescription()).thenReturn(description);
-        when(mCustomButtonsUpdater.updateBottomBarButton(mCustomButtonParams)).thenReturn(true);
-        mBottomBarDelegate.setCustomButtonsUpdater(mCustomButtonsUpdater);
+        CustomButtonParams customButtonParams = Mockito.mock(CustomButtonParams.class);
+        when(customButtonParams.getId()).thenReturn(1);
+        when(customButtonParams.getIcon(any(), any())).thenReturn(icon);
+        when(customButtonParams.getDescription()).thenReturn(description);
+        CustomTabBottomBarDelegate.CustomButtonsUpdater updater =
+                Mockito.mock(CustomTabBottomBarDelegate.CustomButtonsUpdater.class);
+        when(updater.updateBottomBarButton(customButtonParams)).thenReturn(true);
+        mBottomBarDelegate.setCustomButtonsUpdater(updater);
 
-        mBottomBarDelegate.updateBottomBarButtons(mCustomButtonParams);
+        mBottomBarDelegate.updateBottomBarButtons(customButtonParams);
 
-        verify(mCustomButtonsUpdater).updateBottomBarButton(eq(mCustomButtonParams));
+        verify(updater).updateBottomBarButton(eq(customButtonParams));
         verifyNoInteractions(mButtonView);
     }
 

@@ -31,7 +31,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -67,7 +66,6 @@ public class SearchActivityPreferencesManagerTest {
     @Mock private Profile mProfile;
     @Mock private LensController mLensController;
     @Mock private IdentityManager mIdentityManager;
-    @Captor private ArgumentCaptor<SearchActivityPreferences> mRefPrefsCaptor;
 
     private LoadListener mTemplateUrlServiceLoadListener;
     private TemplateUrlServiceObserver mTemplateUrlServiceObserver;
@@ -320,6 +318,8 @@ public class SearchActivityPreferencesManagerTest {
     public void managerTest_lateInitializationOfTemplateUrlService() {
         // Install event listener.
         Consumer<SearchActivityPreferences> listener = mockPrefsConsumer();
+        ArgumentCaptor<SearchActivityPreferences> refPrefs =
+                ArgumentCaptor.forClass(SearchActivityPreferences.class);
 
         SearchActivityPreferencesManager.addObserver(listener);
         clearPrefsConsumerInvocations(listener);
@@ -347,10 +347,10 @@ public class SearchActivityPreferencesManagerTest {
 
         // Confirm data is available and update is pushed.
         RobolectricUtil.runAllBackgroundAndUi();
-        verify(listener).accept(mRefPrefsCaptor.capture());
-        Assert.assertEquals("Cowabunga", mRefPrefsCaptor.getValue().searchEngineName);
+        verify(listener).accept(refPrefs.capture());
+        Assert.assertEquals("Cowabunga", refPrefs.getValue().searchEngineName);
         Assert.assertEquals(
-                "https://www.cowabunga.com/", mRefPrefsCaptor.getValue().searchEngineUrl.getSpec());
+                "https://www.cowabunga.com/", refPrefs.getValue().searchEngineUrl.getSpec());
     }
 
     @Test

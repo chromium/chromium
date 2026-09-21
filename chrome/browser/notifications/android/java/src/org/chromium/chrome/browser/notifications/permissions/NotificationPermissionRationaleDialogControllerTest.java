@@ -21,12 +21,9 @@ import android.view.View;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.mockito.Mockito;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
@@ -44,14 +41,13 @@ import org.chromium.ui.test.util.MockitoHelper;
 /** Tests for {@link NotificationPermissionRationaleDialogController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class NotificationPermissionRationaleDialogControllerTest {
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private ModalDialogManager.Presenter mModalDialogManagerPresenter;
     private ModalDialogManager mModalDialogManager;
     private Context mContext;
 
     @Before
     public void setUp() {
-        mModalDialogManager = new ModalDialogManager(mModalDialogManagerPresenter, 0);
+        mModalDialogManager =
+                new ModalDialogManager(Mockito.mock(ModalDialogManager.Presenter.class), 0);
         mContext = ApplicationProvider.getApplicationContext();
     }
 

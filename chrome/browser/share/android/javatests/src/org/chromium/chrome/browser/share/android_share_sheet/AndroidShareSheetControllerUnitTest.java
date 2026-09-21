@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
@@ -43,6 +44,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
@@ -130,9 +132,6 @@ public class AndroidShareSheetControllerUnitTest {
     @Mock ActivityResultTracker mActivityResultTracker;
     @Mock ModalDialogManager mModalDialogManager;
     @Mock SnackbarManager mSnackbarManager;
-    @Mock private PrefService mPrefService;
-    @Mock private LongScreenshotsCoordinator mLongScreenshotsCoordinator;
-    @Mock private QrCodeDialog mQrCodeDialog;
 
     private TestActivity mActivity;
     private WindowAndroid mWindow;
@@ -153,8 +152,9 @@ public class AndroidShareSheetControllerUnitTest {
                 .getEntryPointDisplayReason(any(), anyString());
         // Set up print tab option.
         UserPrefsJni.setInstanceForTesting(mMockUserPrefsJni);
-        doReturn(mPrefService).when(mMockUserPrefsJni).get(mProfile);
-        doReturn(true).when(mPrefService).getBoolean(Pref.PRINTING_ENABLED);
+        PrefService service = mock(PrefService.class);
+        doReturn(service).when(mMockUserPrefsJni).get(mProfile);
+        doReturn(true).when(service).getBoolean(Pref.PRINTING_ENABLED);
         // Set up favicon helper.
         FaviconHelperJni.setInstanceForTesting(mMockFaviconHelperJni);
         doReturn(1L).when(mMockFaviconHelperJni).init();
@@ -675,7 +675,7 @@ public class AndroidShareSheetControllerUnitTest {
 
     @Test
     public void shareQrCodeForImage() throws CanceledException {
-        QrCodeDialog.setInstanceForTesting(mQrCodeDialog);
+        QrCodeDialog.setInstanceForTesting(Mockito.mock(QrCodeDialog.class));
         Uri testImageUri = Uri.parse("content://test.image.uri");
         ShareParams params =
                 new ShareParams.Builder(mWindow, "", "")
@@ -767,7 +767,8 @@ public class AndroidShareSheetControllerUnitTest {
 
     @Test
     public void chooseLongScreenShot() throws CanceledException {
-        LongScreenshotsCoordinator.setInstanceForTesting(mLongScreenshotsCoordinator);
+        LongScreenshotsCoordinator mockCoordinator = Mockito.mock(LongScreenshotsCoordinator.class);
+        LongScreenshotsCoordinator.setInstanceForTesting(mockCoordinator);
 
         ShareParams params =
                 new ShareParams.Builder(mWindow, "", JUnitTestGURLs.EXAMPLE_URL.getSpec())
@@ -798,7 +799,7 @@ public class AndroidShareSheetControllerUnitTest {
                 intent, R.string.sharing_long_screenshot, ShareCustomAction.LONG_SCREENSHOT);
 
         verify(mTracker).notifyEvent(EventConstants.SHARE_SCREENSHOT_SELECTED);
-        verify(mLongScreenshotsCoordinator).captureScreenshot();
+        verify(mockCoordinator).captureScreenshot();
     }
 
     @Test

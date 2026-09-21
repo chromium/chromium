@@ -50,8 +50,6 @@ public class BackgroundTabPoolManagerTest {
 
     private @Mock ProfileResolver.Natives mProfileResolverNatives;
     private @Mock Profile mProfile;
-    @Mock private BackgroundTabPool mBackgroundTabPool;
-    @Mock private Profile mOtrProfile;
 
     @Before
     public void setUp() {
@@ -233,19 +231,21 @@ public class BackgroundTabPoolManagerTest {
 
     @Test
     public void testSetPoolForTesting() {
-        BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
+        BackgroundTabPool mockPool = mock(BackgroundTabPool.class);
+        BackgroundTabPoolManager.setPoolForTesting(mockPool);
 
         BackgroundTabPool acquired = BackgroundTabPoolManager.acquire(mProfile);
-        assertSame(mBackgroundTabPool, acquired);
+        assertSame(mockPool, acquired);
 
-        BackgroundTabPoolManager.release(mBackgroundTabPool);
-        assertSame(mBackgroundTabPool, BackgroundTabPoolManager.acquire(mProfile));
+        BackgroundTabPoolManager.release(mockPool);
+        assertSame(mockPool, BackgroundTabPoolManager.acquire(mProfile));
     }
 
     @Test(expected = AssertionError.class)
     public void testOffTheRecordProfileThrowsAssertion() {
-        when(mOtrProfile.isOffTheRecord()).thenReturn(true);
-        BackgroundTabPoolManager.acquire(mOtrProfile);
+        Profile otrProfile = mock(Profile.class);
+        when(otrProfile.isOffTheRecord()).thenReturn(true);
+        BackgroundTabPoolManager.acquire(otrProfile);
     }
 
     @Test

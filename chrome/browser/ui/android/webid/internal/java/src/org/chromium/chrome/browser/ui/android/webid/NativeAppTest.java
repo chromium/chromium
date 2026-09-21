@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -30,7 +31,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -64,19 +64,16 @@ import java.lang.ref.WeakReference;
     ChromeFeatureList.CCT_DONT_OVERRIDE_INTENT_MIME_TYPE
 })
 public class NativeAppTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private static final String IDP_PACKAGE = "com.idp.app";
     private static final GURL CONTINUE_URL = new GURL("https://idp.com/continue");
     private static final GURL LOGIN_URL = new GURL("https://idp.com/login");
 
     @Mock private Tab mTab;
-
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private AccountSelectionComponent.Delegate mMockDelegate;
-    @Mock private ChromeOriginVerifier mMockOriginVerifier;
-    @Captor private ArgumentCaptor<Intent> mIntentCaptor;
 
     private AccountSelectionCoordinator mCoordinator;
     private Activity mActivity;
@@ -84,6 +81,7 @@ public class NativeAppTest {
     private PackageManager mSpyPackageManager;
     private ShadowActivity mShadowActivity;
     private ShadowPackageManager mShadowPackageManager;
+    private ChromeOriginVerifier mMockOriginVerifier;
 
     @Before
     public void setUp() {
@@ -100,6 +98,7 @@ public class NativeAppTest {
         WeakReference<Activity> activityRef = new WeakReference<>((Activity) mSpyContext);
         when(mWindowAndroid.getActivity()).thenReturn(activityRef);
 
+        mMockOriginVerifier = mock(ChromeOriginVerifier.class);
         ChromeOriginVerifierFactory.setInstanceForTesting(mMockOriginVerifier);
 
         // Default stubbing: verification succeeds
@@ -240,10 +239,10 @@ public class NativeAppTest {
         mCoordinator.showModalDialog(CONTINUE_URL);
 
         // Verify native app was launched with MIME type
-        verify(mWindowAndroid)
-                .showIntent(mIntentCaptor.capture(), any(IntentCallback.class), any());
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(mWindowAndroid).showIntent(intentCaptor.capture(), any(IntentCallback.class), any());
 
-        Intent intent = mIntentCaptor.getValue();
+        Intent intent = intentCaptor.getValue();
         assertNotNull(intent);
         assertEquals("application/web-identity+json", intent.getType());
         assertEquals(CONTINUE_URL.getSpec(), intent.getDataString());
@@ -338,10 +337,10 @@ public class NativeAppTest {
         mCoordinator.showModalDialog(CONTINUE_URL);
 
         // Verify native app 2 was launched (since 1 failed verification)
-        verify(mWindowAndroid)
-                .showIntent(mIntentCaptor.capture(), any(IntentCallback.class), any());
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(mWindowAndroid).showIntent(intentCaptor.capture(), any(IntentCallback.class), any());
 
-        Intent intent = mIntentCaptor.getValue();
+        Intent intent = intentCaptor.getValue();
         assertNotNull(intent);
         assertEquals(pkg2, intent.getPackage());
 

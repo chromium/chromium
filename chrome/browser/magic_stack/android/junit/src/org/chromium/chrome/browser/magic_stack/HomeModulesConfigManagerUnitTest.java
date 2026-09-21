@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.magic_stack.HomeModulesUtils.getSettingsPreferenceKey;
@@ -36,7 +37,6 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 public class HomeModulesConfigManagerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private HomeModulesStateListener mListener;
-    @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
     private HomeModulesConfigManager mHomeModulesConfigManager;
     private ModuleRegistry mModuleRegistry;
@@ -46,7 +46,8 @@ public class HomeModulesConfigManagerUnitTest {
         mHomeModulesConfigManager = new HomeModulesConfigManager();
         HomeModulesConfigManager.setInstanceForTesting(mHomeModulesConfigManager);
         mModuleRegistry =
-                new ModuleRegistry(mHomeModulesConfigManager, mActivityLifecycleDispatcher);
+                new ModuleRegistry(
+                        mHomeModulesConfigManager, mock(ActivityLifecycleDispatcher.class));
         mHomeModulesConfigManager.addListener(mListener);
     }
 

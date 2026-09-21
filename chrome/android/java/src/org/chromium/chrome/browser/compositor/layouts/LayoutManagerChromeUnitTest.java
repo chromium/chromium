@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -68,7 +69,6 @@ public class LayoutManagerChromeUnitTest {
     private @Mock StaticLayout mStaticLayout;
     private @Mock HubLayout mHubLayout;
     private @Mock TabModelSelector mTabModelSelector;
-    @Mock private TabModel mTabModel;
 
     private final SettableNullableObservableSupplier<TabSwitcher> mTabSwitcherSupplier =
             ObservableSuppliers.createNullable();
@@ -391,8 +391,9 @@ public class LayoutManagerChromeUnitTest {
         DeviceInfo.setIsDesktopForTesting(true);
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
         when(mTabModelSelector.isIncognitoBrandedModelSelected()).thenReturn(false);
-        when(mTabModel.getCount()).thenReturn(0);
-        when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
+        TabModel normalTabModel = mock(TabModel.class);
+        when(normalTabModel.getCount()).thenReturn(0);
+        when(mTabModelSelector.getModel(false)).thenReturn(normalTabModel);
 
         LayoutManagerChrome layoutManagerChrome = createLayoutManagerChromeSpy();
         doReturn(mTabModelSelector).when(layoutManagerChrome).getTabModelSelector();
@@ -409,8 +410,9 @@ public class LayoutManagerChromeUnitTest {
         DeviceInfo.setIsDesktopForTesting(false);
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
         when(mTabModelSelector.isIncognitoBrandedModelSelected()).thenReturn(false);
-        when(mTabModel.getCount()).thenReturn(0);
-        when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
+        TabModel normalTabModel = mock(TabModel.class);
+        when(normalTabModel.getCount()).thenReturn(0);
+        when(mTabModelSelector.getModel(false)).thenReturn(normalTabModel);
 
         LayoutManagerChrome layoutManagerChrome = createLayoutManagerChromeSpy();
         doReturn(mTabModelSelector).when(layoutManagerChrome).getTabModelSelector();

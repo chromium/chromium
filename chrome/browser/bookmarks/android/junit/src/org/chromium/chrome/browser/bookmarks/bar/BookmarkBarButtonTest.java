@@ -49,12 +49,6 @@ public class BookmarkBarButtonTest {
 
     @Mock private ClickWithMetaStateCallback mClickCallback;
     @Mock private View.OnLongClickListener mLongClickListener;
-    @Mock private MotionEvent mPressEvent;
-    @Mock private MotionEvent mReleaseEvent;
-    @Mock private MotionEvent mMotionEvent;
-    @Mock private MotionEvent mDownEvent;
-    @Mock private MotionEvent mUpEvent;
-    @Mock private View.OnLongClickListener mViewOnLongClickListener;
 
     private Activity mActivity;
     private BookmarkBarButton mButton;
@@ -71,64 +65,71 @@ public class BookmarkBarButtonTest {
     @Test
     public void testOnGenericMotionEvent_MiddleClick() {
         // Initial press to set the button state.
-        when(mPressEvent.getSource()).thenReturn(InputDevice.SOURCE_MOUSE);
-        when(mPressEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_BUTTON_PRESS);
-        when(mPressEvent.getActionButton()).thenReturn(MotionEvent.BUTTON_TERTIARY);
-        when(mPressEvent.getButtonState()).thenReturn(MotionEvent.BUTTON_TERTIARY);
-        mButton.onGenericMotionEvent(mPressEvent);
+        MotionEvent pressEvent = Mockito.mock(MotionEvent.class);
+        when(pressEvent.getSource()).thenReturn(InputDevice.SOURCE_MOUSE);
+        when(pressEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_BUTTON_PRESS);
+        when(pressEvent.getActionButton()).thenReturn(MotionEvent.BUTTON_TERTIARY);
+        when(pressEvent.getButtonState()).thenReturn(MotionEvent.BUTTON_TERTIARY);
+        mButton.onGenericMotionEvent(pressEvent);
 
         // Release event triggers the callback.
-        when(mReleaseEvent.getSource()).thenReturn(InputDevice.SOURCE_MOUSE);
-        when(mReleaseEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_BUTTON_RELEASE);
-        when(mReleaseEvent.getActionButton()).thenReturn(MotionEvent.BUTTON_TERTIARY);
-        when(mReleaseEvent.getMetaState()).thenReturn(KeyEvent.META_CTRL_ON);
-        when(mReleaseEvent.getButtonState()).thenReturn(0);
+        MotionEvent releaseEvent = Mockito.mock(MotionEvent.class);
+        when(releaseEvent.getSource()).thenReturn(InputDevice.SOURCE_MOUSE);
+        when(releaseEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_BUTTON_RELEASE);
+        when(releaseEvent.getActionButton()).thenReturn(MotionEvent.BUTTON_TERTIARY);
+        when(releaseEvent.getMetaState()).thenReturn(KeyEvent.META_CTRL_ON);
+        when(releaseEvent.getButtonState()).thenReturn(0);
 
-        assertTrue(mButton.onGenericMotionEvent(mReleaseEvent));
+        assertTrue(mButton.onGenericMotionEvent(releaseEvent));
         verify(mClickCallback).onClickWithMeta(KeyEvent.META_CTRL_ON, MotionEvent.BUTTON_TERTIARY);
     }
 
     @Test
     public void testOnGenericMotionEvent_RightClick() {
         // Initial press to set the button state.
-        when(mPressEvent.getSource()).thenReturn(InputDevice.SOURCE_MOUSE);
-        when(mPressEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_BUTTON_PRESS);
-        when(mPressEvent.getActionButton()).thenReturn(MotionEvent.BUTTON_SECONDARY);
-        when(mPressEvent.getButtonState()).thenReturn(MotionEvent.BUTTON_SECONDARY);
-        mButton.onGenericMotionEvent(mPressEvent);
+        MotionEvent pressEvent = Mockito.mock(MotionEvent.class);
+        when(pressEvent.getSource()).thenReturn(InputDevice.SOURCE_MOUSE);
+        when(pressEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_BUTTON_PRESS);
+        when(pressEvent.getActionButton()).thenReturn(MotionEvent.BUTTON_SECONDARY);
+        when(pressEvent.getButtonState()).thenReturn(MotionEvent.BUTTON_SECONDARY);
+        mButton.onGenericMotionEvent(pressEvent);
 
         // Release event triggers the callback.
-        when(mReleaseEvent.getSource()).thenReturn(InputDevice.SOURCE_MOUSE);
-        when(mReleaseEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_BUTTON_RELEASE);
-        when(mReleaseEvent.getActionButton()).thenReturn(MotionEvent.BUTTON_SECONDARY);
-        when(mReleaseEvent.getMetaState()).thenReturn(KeyEvent.META_CTRL_ON);
-        when(mReleaseEvent.getButtonState()).thenReturn(0);
+        MotionEvent releaseEvent = Mockito.mock(MotionEvent.class);
+        when(releaseEvent.getSource()).thenReturn(InputDevice.SOURCE_MOUSE);
+        when(releaseEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_BUTTON_RELEASE);
+        when(releaseEvent.getActionButton()).thenReturn(MotionEvent.BUTTON_SECONDARY);
+        when(releaseEvent.getMetaState()).thenReturn(KeyEvent.META_CTRL_ON);
+        when(releaseEvent.getButtonState()).thenReturn(0);
 
-        assertTrue(mButton.onGenericMotionEvent(mReleaseEvent));
+        assertTrue(mButton.onGenericMotionEvent(releaseEvent));
         verify(mClickCallback).onClickWithMeta(KeyEvent.META_CTRL_ON, MotionEvent.BUTTON_SECONDARY);
     }
 
     @Test
     public void testOnGenericMotionEvent_NotMiddleClick() {
-        when(mMotionEvent.getSource()).thenReturn(InputDevice.SOURCE_MOUSE);
-        when(mMotionEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_BUTTON_RELEASE);
-        when(mMotionEvent.getActionButton()).thenReturn(MotionEvent.BUTTON_PRIMARY);
-        when(mMotionEvent.getMetaState()).thenReturn(0);
-        when(mMotionEvent.getButtonState()).thenReturn(MotionEvent.BUTTON_PRIMARY);
+        MotionEvent event = Mockito.mock(MotionEvent.class);
+        when(event.getSource()).thenReturn(InputDevice.SOURCE_MOUSE);
+        when(event.getActionMasked()).thenReturn(MotionEvent.ACTION_BUTTON_RELEASE);
+        when(event.getActionButton()).thenReturn(MotionEvent.BUTTON_PRIMARY);
+        when(event.getMetaState()).thenReturn(0);
+        when(event.getButtonState()).thenReturn(MotionEvent.BUTTON_PRIMARY);
 
-        mButton.onGenericMotionEvent(mMotionEvent);
+        mButton.onGenericMotionEvent(event);
         verify(mClickCallback, never()).onClickWithMeta(anyInt(), anyInt());
     }
 
     @Test
     public void testOnTouchEvent_MiddleClickConsumedAndCleared() {
-        when(mDownEvent.getButtonState()).thenReturn(MotionEvent.BUTTON_TERTIARY);
-        when(mDownEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
+        MotionEvent downEvent = Mockito.mock(MotionEvent.class);
+        when(downEvent.getButtonState()).thenReturn(MotionEvent.BUTTON_TERTIARY);
+        when(downEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
 
-        assertTrue("Middle click down should be consumed", mButton.onTouchEvent(mDownEvent));
+        assertTrue("Middle click down should be consumed", mButton.onTouchEvent(downEvent));
 
-        when(mUpEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_UP);
-        assertTrue("Middle click up should be consumed", mButton.onTouchEvent(mUpEvent));
+        MotionEvent upEvent = Mockito.mock(MotionEvent.class);
+        when(upEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_UP);
+        assertTrue("Middle click up should be consumed", mButton.onTouchEvent(upEvent));
 
         // After UP, mLastEventButtonState should be 0, so performClick should work normally
         // (if it were called by the system, which it won't be because we consumed DOWN).
@@ -139,17 +140,19 @@ public class BookmarkBarButtonTest {
     @Test
     public void testOnClick_FiresForPrimaryClick() {
         // First simulate a primary click down in onTouchEvent to set state.
-        when(mDownEvent.getButtonState()).thenReturn(MotionEvent.BUTTON_PRIMARY);
-        when(mDownEvent.getMetaState()).thenReturn(0);
-        when(mDownEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
-        mButton.onTouchEvent(mDownEvent);
+        MotionEvent downEvent = Mockito.mock(MotionEvent.class);
+        when(downEvent.getButtonState()).thenReturn(MotionEvent.BUTTON_PRIMARY);
+        when(downEvent.getMetaState()).thenReturn(0);
+        when(downEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
+        mButton.onTouchEvent(downEvent);
 
         // Simulate an UP event with a different meta state to ensure it's captured
         // but that the button state persists.
-        when(mUpEvent.getButtonState()).thenReturn(0); // UP usually has 0 button state
-        when(mUpEvent.getMetaState()).thenReturn(KeyEvent.META_SHIFT_ON);
-        when(mUpEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_UP);
-        mButton.onTouchEvent(mUpEvent);
+        MotionEvent upEvent = Mockito.mock(MotionEvent.class);
+        when(upEvent.getButtonState()).thenReturn(0); // UP usually has 0 button state
+        when(upEvent.getMetaState()).thenReturn(KeyEvent.META_SHIFT_ON);
+        when(upEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_UP);
+        mButton.onTouchEvent(upEvent);
 
         // Now trigger the standard click.
         mButton.performClick();
@@ -159,23 +162,26 @@ public class BookmarkBarButtonTest {
 
     @Test
     public void testOnLongClick_FiresLongClickListener() {
-        when(mViewOnLongClickListener.onLongClick(mButton)).thenReturn(true);
-        mButton.setOnLongClickListener(mViewOnLongClickListener);
+        View.OnLongClickListener longClickListener = Mockito.mock(View.OnLongClickListener.class);
+        when(longClickListener.onLongClick(mButton)).thenReturn(true);
+        mButton.setOnLongClickListener(longClickListener);
 
         assertTrue(mButton.performLongClick());
-        verify(mViewOnLongClickListener).onLongClick(mButton);
+        verify(longClickListener).onLongClick(mButton);
         verify(mClickCallback, never()).onClickWithMeta(anyInt(), anyInt());
     }
 
     @Test
     public void testOnTouchEvent_RightClickConsumedAndCleared() {
-        when(mDownEvent.getButtonState()).thenReturn(MotionEvent.BUTTON_SECONDARY);
-        when(mDownEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
+        MotionEvent downEvent = Mockito.mock(MotionEvent.class);
+        when(downEvent.getButtonState()).thenReturn(MotionEvent.BUTTON_SECONDARY);
+        when(downEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
 
-        assertTrue("Right click down should be consumed", mButton.onTouchEvent(mDownEvent));
+        assertTrue("Right click down should be consumed", mButton.onTouchEvent(downEvent));
 
-        when(mUpEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_UP);
-        assertTrue("Right click up should be consumed", mButton.onTouchEvent(mUpEvent));
+        MotionEvent upEvent = Mockito.mock(MotionEvent.class);
+        when(upEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_UP);
+        assertTrue("Right click up should be consumed", mButton.onTouchEvent(upEvent));
 
         // After UP, mLastEventButtonState should be 0, so performClick should work normally.
         mButton.performClick();
@@ -184,11 +190,12 @@ public class BookmarkBarButtonTest {
 
     @Test
     public void testGetLastClickPoint() {
-        when(mMotionEvent.getX()).thenReturn(123f);
-        when(mMotionEvent.getY()).thenReturn(456f);
-        when(mMotionEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
+        MotionEvent event = Mockito.mock(MotionEvent.class);
+        when(event.getX()).thenReturn(123f);
+        when(event.getY()).thenReturn(456f);
+        when(event.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
 
-        mButton.onTouchEvent(mMotionEvent);
+        mButton.onTouchEvent(event);
 
         Point point = mButton.getLastClickPoint();
         assertEquals(123, point.x);
@@ -198,32 +205,36 @@ public class BookmarkBarButtonTest {
     @Test
     public void testDoubleTrigger_OnlyFiresOnce() {
         // Down event (touch)
-        when(mDownEvent.getButtonState()).thenReturn(MotionEvent.BUTTON_TERTIARY);
-        when(mDownEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
-        assertTrue(mButton.onTouchEvent(mDownEvent));
+        MotionEvent downEvent = Mockito.mock(MotionEvent.class);
+        when(downEvent.getButtonState()).thenReturn(MotionEvent.BUTTON_TERTIARY);
+        when(downEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
+        assertTrue(mButton.onTouchEvent(downEvent));
 
         // Press event (generic)
-        when(mPressEvent.getSource()).thenReturn(InputDevice.SOURCE_MOUSE);
-        when(mPressEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_BUTTON_PRESS);
-        when(mPressEvent.getActionButton()).thenReturn(MotionEvent.BUTTON_TERTIARY);
-        when(mPressEvent.getButtonState()).thenReturn(MotionEvent.BUTTON_TERTIARY);
-        mButton.onGenericMotionEvent(mPressEvent);
+        MotionEvent pressEvent = Mockito.mock(MotionEvent.class);
+        when(pressEvent.getSource()).thenReturn(InputDevice.SOURCE_MOUSE);
+        when(pressEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_BUTTON_PRESS);
+        when(pressEvent.getActionButton()).thenReturn(MotionEvent.BUTTON_TERTIARY);
+        when(pressEvent.getButtonState()).thenReturn(MotionEvent.BUTTON_TERTIARY);
+        mButton.onGenericMotionEvent(pressEvent);
 
         // Release event (generic) -> should trigger click
-        when(mReleaseEvent.getSource()).thenReturn(InputDevice.SOURCE_MOUSE);
-        when(mReleaseEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_BUTTON_RELEASE);
-        when(mReleaseEvent.getActionButton()).thenReturn(MotionEvent.BUTTON_TERTIARY);
-        when(mReleaseEvent.getMetaState()).thenReturn(0);
-        when(mReleaseEvent.getButtonState()).thenReturn(0);
-        assertTrue(mButton.onGenericMotionEvent(mReleaseEvent));
+        MotionEvent releaseEvent = Mockito.mock(MotionEvent.class);
+        when(releaseEvent.getSource()).thenReturn(InputDevice.SOURCE_MOUSE);
+        when(releaseEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_BUTTON_RELEASE);
+        when(releaseEvent.getActionButton()).thenReturn(MotionEvent.BUTTON_TERTIARY);
+        when(releaseEvent.getMetaState()).thenReturn(0);
+        when(releaseEvent.getButtonState()).thenReturn(0);
+        assertTrue(mButton.onGenericMotionEvent(releaseEvent));
         verify(mClickCallback).onClickWithMeta(0, MotionEvent.BUTTON_TERTIARY);
 
         // Reset mock to verify it's not called again
         Mockito.reset(mClickCallback);
 
         // Up event (touch) -> should NOT trigger click again
-        when(mUpEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_UP);
-        assertTrue(mButton.onTouchEvent(mUpEvent));
+        MotionEvent upEvent = Mockito.mock(MotionEvent.class);
+        when(upEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_UP);
+        assertTrue(mButton.onTouchEvent(upEvent));
         verify(mClickCallback, never()).onClickWithMeta(anyInt(), anyInt());
     }
 

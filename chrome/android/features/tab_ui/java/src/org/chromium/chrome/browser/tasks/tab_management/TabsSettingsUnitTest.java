@@ -31,6 +31,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -41,7 +42,6 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchConfigManager;
-import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchConfigManager.ShareTabsWithOsStateListener;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchControllerFactory;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchHooks;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchUtils;
@@ -77,6 +77,8 @@ public class TabsSettingsUnitTest {
     public final ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
+    private TestActivity mActivity;
+
     @Mock private Profile mProfileMock;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
     @Mock private PrefService mPrefServiceMock;
@@ -85,11 +87,6 @@ public class TabsSettingsUnitTest {
     @Mock private SettingsCustomTabLauncher mCustomTabLauncher;
     @Mock private SettingsIndexData mSearchIndexDataMock;
     @Mock private AuxiliarySearchHooks mAuxiliarySearchHooksMock;
-    @Mock private AuxiliarySearchHooks mAuxiliarySearchHooks;
-    @Mock private ShareTabsWithOsStateListener mShareTabsWithOsStateListener;
-    @Mock private View mView;
-
-    private TestActivity mActivity;
 
     @Before
     public void setUp() {
@@ -242,9 +239,10 @@ public class TabsSettingsUnitTest {
 
     @Test
     public void testLaunchTabsSettingsShareTabs_NotShowWhenDeviceNotCompatible() {
-        when(mAuxiliarySearchHooks.isEnabled()).thenReturn(true);
-        when(mAuxiliarySearchHooks.isSettingDefaultEnabledByOs()).thenReturn(true);
-        ServiceLoaderUtil.setInstanceForTesting(AuxiliarySearchHooks.class, mAuxiliarySearchHooks);
+        AuxiliarySearchHooks hooksMock = Mockito.mock(AuxiliarySearchHooks.class);
+        when(hooksMock.isEnabled()).thenReturn(true);
+        when(hooksMock.isSettingDefaultEnabledByOs()).thenReturn(true);
+        ServiceLoaderUtil.setInstanceForTesting(AuxiliarySearchHooks.class, hooksMock);
         // Sets no consumer schema exists.
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.AUXILIARY_SEARCH_CONSUMER_SCHEMA_FOUND, false);
@@ -261,9 +259,10 @@ public class TabsSettingsUnitTest {
 
     @Test
     public void testLaunchTabsSettingsShareTabs() {
-        when(mAuxiliarySearchHooks.isEnabled()).thenReturn(true);
-        when(mAuxiliarySearchHooks.isSettingDefaultEnabledByOs()).thenReturn(true);
-        ServiceLoaderUtil.setInstanceForTesting(AuxiliarySearchHooks.class, mAuxiliarySearchHooks);
+        AuxiliarySearchHooks hooksMock = Mockito.mock(AuxiliarySearchHooks.class);
+        when(hooksMock.isEnabled()).thenReturn(true);
+        when(hooksMock.isSettingDefaultEnabledByOs()).thenReturn(true);
+        ServiceLoaderUtil.setInstanceForTesting(AuxiliarySearchHooks.class, hooksMock);
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.AUXILIARY_SEARCH_CONSUMER_SCHEMA_FOUND, true);
         assertTrue(AuxiliarySearchControllerFactory.getInstance().isSettingDefaultEnabledByOs());
@@ -278,26 +277,29 @@ public class TabsSettingsUnitTest {
         assertTrue(shareTitlesAndUrlsWithOsSwitch.isVisible());
         assertTrue(learnMoreTextMessagePreference.isVisible());
 
-        AuxiliarySearchConfigManager.getInstance().addListener(mShareTabsWithOsStateListener);
+        var listener =
+                Mockito.mock(AuxiliarySearchConfigManager.ShareTabsWithOsStateListener.class);
+        AuxiliarySearchConfigManager.getInstance().addListener(listener);
         shareTitlesAndUrlsWithOsSwitch.onClick();
 
         assertFalse(shareTitlesAndUrlsWithOsSwitch.isChecked());
-        verify(mShareTabsWithOsStateListener).onConfigChanged(eq(false));
+        verify(listener).onConfigChanged(eq(false));
         verify(mHomeModulesRankingHelperJniMock)
                 .notifyCardInteracted(
                         eq(mProfileMock),
                         eq(HomeModulesMetricsUtils.getModuleName(ModuleType.AUXILIARY_SEARCH)));
-        AuxiliarySearchConfigManager.getInstance().removeListener(mShareTabsWithOsStateListener);
+        AuxiliarySearchConfigManager.getInstance().removeListener(listener);
     }
 
     @Test
     public void testLaunchTabsSettingsShareTabs_DefaultDisabled() {
-        when(mAuxiliarySearchHooks.isEnabled()).thenReturn(true);
+        AuxiliarySearchHooks hooksMock = Mockito.mock(AuxiliarySearchHooks.class);
+        when(hooksMock.isEnabled()).thenReturn(true);
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.AUXILIARY_SEARCH_CONSUMER_SCHEMA_FOUND, true);
         // Sets the setting as default disabled.
-        when(mAuxiliarySearchHooks.isSettingDefaultEnabledByOs()).thenReturn(false);
-        ServiceLoaderUtil.setInstanceForTesting(AuxiliarySearchHooks.class, mAuxiliarySearchHooks);
+        when(hooksMock.isSettingDefaultEnabledByOs()).thenReturn(false);
+        ServiceLoaderUtil.setInstanceForTesting(AuxiliarySearchHooks.class, hooksMock);
         assertFalse(AuxiliarySearchUtils.isShareTabsWithOsEnabled());
 
         TabsSettings tabsSettings = launchFragment();
@@ -310,23 +312,26 @@ public class TabsSettingsUnitTest {
         assertFalse(shareTitlesAndUrlsWithOsSwitch.isChecked());
         assertTrue(learnMoreTextMessagePreference.isVisible());
 
-        AuxiliarySearchConfigManager.getInstance().addListener(mShareTabsWithOsStateListener);
+        var listener =
+                Mockito.mock(AuxiliarySearchConfigManager.ShareTabsWithOsStateListener.class);
+        AuxiliarySearchConfigManager.getInstance().addListener(listener);
         shareTitlesAndUrlsWithOsSwitch.onClick();
 
         assertTrue(shareTitlesAndUrlsWithOsSwitch.isChecked());
-        verify(mShareTabsWithOsStateListener).onConfigChanged(eq(true));
+        verify(listener).onConfigChanged(eq(true));
         verify(mHomeModulesRankingHelperJniMock)
                 .notifyCardInteracted(
                         eq(mProfileMock),
                         eq(HomeModulesMetricsUtils.getModuleName(ModuleType.AUXILIARY_SEARCH)));
-        AuxiliarySearchConfigManager.getInstance().removeListener(mShareTabsWithOsStateListener);
+        AuxiliarySearchConfigManager.getInstance().removeListener(listener);
     }
 
     @Test
     public void testLaunchTabsSettingsShareTabs_LearnMore() {
-        when(mAuxiliarySearchHooks.isEnabled()).thenReturn(true);
-        when(mAuxiliarySearchHooks.isSettingDefaultEnabledByOs()).thenReturn(true);
-        ServiceLoaderUtil.setInstanceForTesting(AuxiliarySearchHooks.class, mAuxiliarySearchHooks);
+        AuxiliarySearchHooks hooksMock = Mockito.mock(AuxiliarySearchHooks.class);
+        when(hooksMock.isEnabled()).thenReturn(true);
+        when(hooksMock.isSettingDefaultEnabledByOs()).thenReturn(true);
+        ServiceLoaderUtil.setInstanceForTesting(AuxiliarySearchHooks.class, hooksMock);
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.AUXILIARY_SEARCH_CONSUMER_SCHEMA_FOUND, true);
 
@@ -339,7 +344,8 @@ public class TabsSettingsUnitTest {
         assertTrue(shareTitlesAndUrlsWithOsSwitch.isVisible());
         assertTrue(learnMoreTextMessagePreference.isVisible());
 
-        tabsSettings.onLearnMoreClicked(mView);
+        View view = Mockito.mock(View.class);
+        tabsSettings.onLearnMoreClicked(view);
         verify(mCustomTabLauncher).openUrlInCct(eq(mActivity), eq(TabsSettings.LEARN_MORE_URL));
     }
 
@@ -367,8 +373,9 @@ public class TabsSettingsUnitTest {
 
     @Test
     public void testSearchableIndex_isShareTitlesAndUrlsEnabled_True() {
-        when(mAuxiliarySearchHooks.isEnabled()).thenReturn(true);
-        ServiceLoaderUtil.setInstanceForTesting(AuxiliarySearchHooks.class, mAuxiliarySearchHooks);
+        AuxiliarySearchHooks hooksMock = Mockito.mock(AuxiliarySearchHooks.class);
+        when(hooksMock.isEnabled()).thenReturn(true);
+        ServiceLoaderUtil.setInstanceForTesting(AuxiliarySearchHooks.class, hooksMock);
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.AUXILIARY_SEARCH_CONSUMER_SCHEMA_FOUND, true);
 
@@ -387,8 +394,9 @@ public class TabsSettingsUnitTest {
 
     @Test
     public void testSearchableIndex_isShareTitlesAndUrlsEnabled_False() {
-        when(mAuxiliarySearchHooks.isEnabled()).thenReturn(true);
-        ServiceLoaderUtil.setInstanceForTesting(AuxiliarySearchHooks.class, mAuxiliarySearchHooks);
+        AuxiliarySearchHooks hooksMock = Mockito.mock(AuxiliarySearchHooks.class);
+        when(hooksMock.isEnabled()).thenReturn(true);
+        ServiceLoaderUtil.setInstanceForTesting(AuxiliarySearchHooks.class, hooksMock);
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.AUXILIARY_SEARCH_CONSUMER_SCHEMA_FOUND, false);
 

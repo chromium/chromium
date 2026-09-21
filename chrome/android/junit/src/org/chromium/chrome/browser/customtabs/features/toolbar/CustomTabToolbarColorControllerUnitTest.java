@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.customtabs.features.toolbar;
 
 import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -68,7 +69,6 @@ public class CustomTabToolbarColorControllerUnitTest {
     @Mock public ToolbarManager mToolbarManager;
     @Mock public ColorStateList mThemeColorStateList;
     @Mock public ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    @Mock private ColorStateList mColorStateList;
     private BrowserServicesIntentDataProvider mIntentDataProvider;
     private Context mContext;
     private AppHeaderState mAppHeaderState;
@@ -174,7 +174,8 @@ public class CustomTabToolbarColorControllerUnitTest {
         mColorController.onToolbarInitialized(mToolbarManager);
 
         // update provider with new theme
-        setupThemeProvider(Color.BLUE, mColorStateList, BrandedColorScheme.LIGHT_BRANDED_THEME);
+        ColorStateList newTint = mock(ColorStateList.class);
+        setupThemeProvider(Color.BLUE, newTint, BrandedColorScheme.LIGHT_BRANDED_THEME);
 
         // check new color is set
         mColorController.onThemeColorChanged(Color.BLUE, false);
@@ -186,10 +187,9 @@ public class CustomTabToolbarColorControllerUnitTest {
 
         // check tint is updated
         mColorController.onTintChanged(
-                mColorStateList, expectedFocusTint, BrandedColorScheme.LIGHT_BRANDED_THEME);
+                newTint, expectedFocusTint, BrandedColorScheme.LIGHT_BRANDED_THEME);
         verify(mToolbarManager)
-                .onTintChanged(
-                        mColorStateList, expectedFocusTint, BrandedColorScheme.LIGHT_BRANDED_THEME);
+                .onTintChanged(newTint, expectedFocusTint, BrandedColorScheme.LIGHT_BRANDED_THEME);
     }
 
     @Test

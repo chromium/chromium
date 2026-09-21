@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -38,7 +39,6 @@ public class HeadlessTabCreatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Profile mProfile;
     @Mock private TabModel mTabModel;
-    @Mock private WebContentsState mWebContentsState;
 
     private HeadlessTabCreator mDisabledCreator;
     private HeadlessTabCreator mCreator;
@@ -68,9 +68,10 @@ public class HeadlessTabCreatorUnitTest {
     @Test
     public void testCreateFrozenTabDoesNotCreateWebContents() {
         TabState tabState = new TabState();
-        when(mWebContentsState.getVirtualUrlFromState()).thenReturn("https://example.com");
-        when(mWebContentsState.getDisplayTitleFromState()).thenReturn("Title");
-        tabState.contentsState = mWebContentsState;
+        WebContentsState contentsState = mock(WebContentsState.class);
+        when(contentsState.getVirtualUrlFromState()).thenReturn("https://example.com");
+        when(contentsState.getDisplayTitleFromState()).thenReturn("Title");
+        tabState.contentsState = contentsState;
         Tab tab = mCreator.createFrozenTab(tabState, /* id= */ 1, /* index= */ 0);
         assertNotNull(tab);
         assertNull(tab.getWebContents());

@@ -10,7 +10,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -24,12 +23,11 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabBrowserControlsOffsetHelperTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    private final UserDataHost mUserDataHost = new UserDataHost();
 
     @Mock public TabImpl mTab;
     @Mock public TabObserver mDispatchedTabObserver;
-    @Captor private ArgumentCaptor<TabObserver> mObserverArgCaptor;
 
-    private final UserDataHost mUserDataHost = new UserDataHost();
     private TabBrowserControlsOffsetHelper mHelper;
     private TabObserver mRegisteredTabObserver;
 
@@ -41,9 +39,10 @@ public class TabBrowserControlsOffsetHelperTest {
         observers.addObserver(mDispatchedTabObserver);
         Mockito.when(mTab.getTabObservers()).thenReturn(observers);
 
+        ArgumentCaptor<TabObserver> observerArg = ArgumentCaptor.forClass(TabObserver.class);
         mHelper = TabBrowserControlsOffsetHelper.get(mTab);
-        Mockito.verify(mTab).addObserver(mObserverArgCaptor.capture());
-        mRegisteredTabObserver = mObserverArgCaptor.getValue();
+        Mockito.verify(mTab).addObserver(observerArg.capture());
+        mRegisteredTabObserver = observerArg.getValue();
 
         Assert.assertFalse(mHelper.offsetInitialized());
     }

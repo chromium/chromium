@@ -105,8 +105,6 @@ public final class TabGridViewBinderUnitTest {
     @Mock private View mSpinner;
 
     @Captor private ArgumentCaptor<Callback<Drawable>> mCallbackCaptor;
-    @Captor private ArgumentCaptor<Matrix> mMatrixCaptor;
-    @Captor private ArgumentCaptor<View.OnContextClickListener> mViewOnContextClickListenerCaptor;
 
     private Context mContext;
     private PropertyModel mModel;
@@ -216,7 +214,8 @@ public final class TabGridViewBinderUnitTest {
 
         verify(mThumbnailView).setScaleType(ScaleType.MATRIX);
         verify(mThumbnailView).setImageDrawable(mBitmapDrawable);
-        verify(mThumbnailView).setImageMatrix(mMatrixCaptor.capture());
+        ArgumentCaptor<Matrix> matrixCaptor = ArgumentCaptor.forClass(Matrix.class);
+        verify(mThumbnailView).setImageMatrix(matrixCaptor.capture());
         verify(mThumbnailView)
                 .setThumbnailViewState(TabThumbnailView.ThumbnailViewState.THUMBNAIL_LOADED);
         verifyNoMoreInteractions(mThumbnailView);
@@ -226,7 +225,7 @@ public final class TabGridViewBinderUnitTest {
         float expectedScale = 1.76f;
         // xTranslate = (updatedBitmapWidth - scaledWidth) /2 = (176 - (100*1.76))/2 = 0.
         float expectedXTrans = 0.f;
-        assertImageMatrix(mMatrixCaptor, expectedScale, expectedXTrans);
+        assertImageMatrix(matrixCaptor, expectedScale, expectedXTrans);
     }
 
     @Test
@@ -293,7 +292,8 @@ public final class TabGridViewBinderUnitTest {
 
         verify(mThumbnailView).setScaleType(ScaleType.MATRIX);
         verify(mThumbnailView).setImageDrawable(mBitmapDrawable);
-        verify(mThumbnailView).setImageMatrix(mMatrixCaptor.capture());
+        ArgumentCaptor<Matrix> matrixCaptor = ArgumentCaptor.forClass(Matrix.class);
+        verify(mThumbnailView).setImageMatrix(matrixCaptor.capture());
         verify(mThumbnailView)
                 .setThumbnailViewState(TabThumbnailView.ThumbnailViewState.THUMBNAIL_LOADED);
         verifyNoMoreInteractions(mThumbnailView);
@@ -303,7 +303,7 @@ public final class TabGridViewBinderUnitTest {
         float expectedScale = 1.76f;
         // xTranslate = (updatedBitmapWidth - scaledWidth) /2 = (176 - (100*1.76))/2 = 0.
         float expectedXTrans = 0.f;
-        assertImageMatrix(mMatrixCaptor, expectedScale, expectedXTrans);
+        assertImageMatrix(matrixCaptor, expectedScale, expectedXTrans);
     }
 
     @Test
@@ -329,7 +329,8 @@ public final class TabGridViewBinderUnitTest {
 
         verify(mThumbnailView).setScaleType(ScaleType.MATRIX);
         verify(mThumbnailView).setImageDrawable(mBitmapDrawable);
-        verify(mThumbnailView).setImageMatrix(mMatrixCaptor.capture());
+        ArgumentCaptor<Matrix> matrixCaptor = ArgumentCaptor.forClass(Matrix.class);
+        verify(mThumbnailView).setImageMatrix(matrixCaptor.capture());
         verify(mThumbnailView)
                 .setThumbnailViewState(TabThumbnailView.ThumbnailViewState.THUMBNAIL_LOADED);
         verifyNoMoreInteractions(mThumbnailView);
@@ -339,7 +340,7 @@ public final class TabGridViewBinderUnitTest {
         float expectedScale = 1.76f;
         // xTranslate = (updatedBitmapWidth - scaledWidth) /2 = (176 - (100*1.76))/2 = 0.
         float expectedXTrans = 0.f;
-        assertImageMatrix(mMatrixCaptor, expectedScale, expectedXTrans);
+        assertImageMatrix(matrixCaptor, expectedScale, expectedXTrans);
     }
 
     @Test
@@ -364,7 +365,8 @@ public final class TabGridViewBinderUnitTest {
 
         verify(mThumbnailView).setScaleType(ScaleType.MATRIX);
         verify(mThumbnailView).setImageDrawable(mBitmapDrawable);
-        verify(mThumbnailView).setImageMatrix(mMatrixCaptor.capture());
+        ArgumentCaptor<Matrix> matrixCaptor = ArgumentCaptor.forClass(Matrix.class);
+        verify(mThumbnailView).setImageMatrix(matrixCaptor.capture());
         verify(mThumbnailView)
                 .setThumbnailViewState(TabThumbnailView.ThumbnailViewState.THUMBNAIL_LOADED);
         verifyNoMoreInteractions(mThumbnailView);
@@ -374,7 +376,7 @@ public final class TabGridViewBinderUnitTest {
         float expectedScale = 1.7f;
         // xTranslate = (updatedBitmapWidth - scaledWidth) /2 = (76 - (100*1.7))/2 = -47.
         float expectedXTrans = -47f;
-        assertImageMatrix(mMatrixCaptor, expectedScale, expectedXTrans);
+        assertImageMatrix(matrixCaptor, expectedScale, expectedXTrans);
     }
 
     @Test
@@ -586,8 +588,10 @@ public final class TabGridViewBinderUnitTest {
         TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.TAB_CONTEXT_CLICK_LISTENER);
 
         verify(mViewGroup).setContextClickable(true);
-        verify(mViewGroup).setOnContextClickListener(mViewOnContextClickListenerCaptor.capture());
-        assertNotNull(mViewOnContextClickListenerCaptor.getValue());
+        ArgumentCaptor<View.OnContextClickListener> captor =
+                ArgumentCaptor.forClass(View.OnContextClickListener.class);
+        verify(mViewGroup).setOnContextClickListener(captor.capture());
+        assertNotNull(captor.getValue());
 
         mModel.set(TabProperties.TAB_CONTEXT_CLICK_LISTENER, null);
         TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.TAB_CONTEXT_CLICK_LISTENER);

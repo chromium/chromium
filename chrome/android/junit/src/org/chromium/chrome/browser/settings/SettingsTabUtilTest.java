@@ -12,12 +12,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
@@ -29,76 +25,74 @@ import org.chromium.chrome.browser.ui.native_page.NativePage;
 /** Unit tests for {@link SettingsTabUtil}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SettingsTabUtilTest {
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private Tab mClosingTab;
-    @Mock private Tab mDestroyedTab;
-    @Mock private Tab mIncognitoTab;
-    @Mock private Tab mRegularTabNonNative;
-    @Mock private Tab mRegularTabOtherNative;
-    @Mock private Tab mRegularTabSettingsPage;
-    @Mock private TabModelSelector mTabModelSelector;
-    @Mock private TabModel mTabModel;
-    @Mock private Tab mTab1;
-    @Mock private Tab mTab2;
-    @Mock private Tab mTab;
-    @Mock private NativePage mNativePage;
-    @Mock private SettingsPage mSettingsPage;
-
     @Test
     public void testIsSettingsTab() {
         assertFalse(SettingsTabUtil.isSettingsTab(null));
 
-        when(mClosingTab.isClosing()).thenReturn(true);
-        when(mClosingTab.getNativePage()).thenReturn(mock(SettingsPage.class));
-        assertFalse(SettingsTabUtil.isSettingsTab(mClosingTab));
+        Tab closingTab = mock(Tab.class);
+        when(closingTab.isClosing()).thenReturn(true);
+        when(closingTab.getNativePage()).thenReturn(mock(SettingsPage.class));
+        assertFalse(SettingsTabUtil.isSettingsTab(closingTab));
 
-        when(mDestroyedTab.isDestroyed()).thenReturn(true);
-        when(mDestroyedTab.getNativePage()).thenReturn(mock(SettingsPage.class));
-        assertFalse(SettingsTabUtil.isSettingsTab(mDestroyedTab));
+        Tab destroyedTab = mock(Tab.class);
+        when(destroyedTab.isDestroyed()).thenReturn(true);
+        when(destroyedTab.getNativePage()).thenReturn(mock(SettingsPage.class));
+        assertFalse(SettingsTabUtil.isSettingsTab(destroyedTab));
 
-        when(mIncognitoTab.isIncognito()).thenReturn(true);
-        when(mIncognitoTab.getNativePage()).thenReturn(mock(SettingsPage.class));
-        assertFalse(SettingsTabUtil.isSettingsTab(mIncognitoTab));
+        Tab incognitoTab = mock(Tab.class);
+        when(incognitoTab.isIncognito()).thenReturn(true);
+        when(incognitoTab.getNativePage()).thenReturn(mock(SettingsPage.class));
+        assertFalse(SettingsTabUtil.isSettingsTab(incognitoTab));
 
-        when(mRegularTabNonNative.getNativePage()).thenReturn(null);
-        assertFalse(SettingsTabUtil.isSettingsTab(mRegularTabNonNative));
+        Tab regularTabNonNative = mock(Tab.class);
+        when(regularTabNonNative.getNativePage()).thenReturn(null);
+        assertFalse(SettingsTabUtil.isSettingsTab(regularTabNonNative));
 
-        when(mRegularTabOtherNative.getNativePage()).thenReturn(mNativePage);
-        assertFalse(SettingsTabUtil.isSettingsTab(mRegularTabOtherNative));
+        Tab regularTabOtherNative = mock(Tab.class);
+        when(regularTabOtherNative.getNativePage()).thenReturn(mock(NativePage.class));
+        assertFalse(SettingsTabUtil.isSettingsTab(regularTabOtherNative));
 
-        when(mRegularTabSettingsPage.getNativePage()).thenReturn(mock(SettingsPage.class));
-        assertTrue(SettingsTabUtil.isSettingsTab(mRegularTabSettingsPage));
+        Tab regularTabSettingsPage = mock(Tab.class);
+        when(regularTabSettingsPage.getNativePage()).thenReturn(mock(SettingsPage.class));
+        assertTrue(SettingsTabUtil.isSettingsTab(regularTabSettingsPage));
     }
 
     @Test
     public void testFindSettingsTab() {
-        when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
+        TabModelSelector selector = mock(TabModelSelector.class);
+        TabModel regularModel = mock(TabModel.class);
+        when(selector.getModel(false)).thenReturn(regularModel);
 
-        when(mTab2.getNativePage()).thenReturn(mSettingsPage);
+        Tab tab1 = mock(Tab.class);
+        Tab tab2 = mock(Tab.class);
+        when(tab2.getNativePage()).thenReturn(mock(SettingsPage.class));
 
-        when(mTabModel.getCount()).thenReturn(2);
-        when(mTabModel.getTabAt(0)).thenReturn(mTab1);
-        when(mTabModel.getTabAt(1)).thenReturn(mTab2);
+        when(regularModel.getCount()).thenReturn(2);
+        when(regularModel.getTabAt(0)).thenReturn(tab1);
+        when(regularModel.getTabAt(1)).thenReturn(tab2);
 
-        Tab found = SettingsTabUtil.findSettingsTab(mTabModelSelector);
-        assertEquals(mTab2, found);
+        Tab found = SettingsTabUtil.findSettingsTab(selector);
+        assertEquals(tab2, found);
 
         // Test when no settings tab exists.
-        when(mTabModel.getCount()).thenReturn(1);
-        assertNull(SettingsTabUtil.findSettingsTab(mTabModelSelector));
+        when(regularModel.getCount()).thenReturn(1);
+        assertNull(SettingsTabUtil.findSettingsTab(selector));
         assertNull(SettingsTabUtil.findSettingsTab(null));
     }
 
     @Test
     public void testActivateSettingsTab() {
-        when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
-        when(mTabModelSelector.isIncognitoSelected()).thenReturn(true);
+        TabModelSelector selector = mock(TabModelSelector.class);
+        TabModel regularModel = mock(TabModel.class);
+        when(selector.getModel(false)).thenReturn(regularModel);
+        when(selector.isIncognitoSelected()).thenReturn(true);
 
-        when(mTab.getNativePage()).thenReturn(mSettingsPage);
-        when(mTabModel.indexOf(mTab)).thenReturn(3);
+        Tab tab = mock(Tab.class);
+        when(tab.getNativePage()).thenReturn(mock(SettingsPage.class));
+        when(regularModel.indexOf(tab)).thenReturn(3);
 
-        SettingsTabUtil.activateSettingsTab(mTabModelSelector, mTab);
-        verify(mTabModelSelector).selectModel(false);
-        verify(mTabModel).setIndex(3, TabSelectionType.FROM_USER);
+        SettingsTabUtil.activateSettingsTab(selector, tab);
+        verify(selector).selectModel(false);
+        verify(regularModel).setIndex(3, TabSelectionType.FROM_USER);
     }
 }

@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -60,15 +61,6 @@ public class SettingsMenuHelperUnitTest {
     @Mock private SettingsMenuHelper.Delegate mDelegate;
     @Mock private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
     @Mock private MultiColumnSettings mMultiColumnSettings;
-    @Mock private Menu mMenu;
-    @Mock private MenuItem mMenuItem;
-    @Mock private MenuItem mItemWithIcon;
-    @Mock private MenuItem mItemWithoutIcon;
-    @Mock private Fragment mFragment;
-    @Mock private MultiColumnSettings mMultiColumnSettings1;
-    @Mock private SettingsSearchCoordinator mSettingsSearchCoordinator;
-    @Mock private Activity mActivity1;
-    @Mock private Drawable mDrawable;
 
     private TestActivity mActivity;
 
@@ -84,42 +76,47 @@ public class SettingsMenuHelperUnitTest {
 
     @Test
     public void testCreateOptionsMenu() {
-        when(mMenu.add(
+        Menu menu = mock(Menu.class);
+        MenuItem menuItem = mock(MenuItem.class);
+        when(menu.add(
                         eq(Menu.NONE),
                         eq(R.id.menu_id_general_help),
                         eq(Menu.CATEGORY_SECONDARY),
                         any(Integer.class)))
-                .thenReturn(mMenuItem);
+                .thenReturn(menuItem);
 
-        SettingsMenuHelper.onCreateOptionsMenu(mMenu, mActivity, mDelegate);
+        SettingsMenuHelper.onCreateOptionsMenu(menu, mActivity, mDelegate);
 
-        verify(mMenu)
+        verify(menu)
                 .add(
                         eq(Menu.NONE),
                         eq(R.id.menu_id_general_help),
                         eq(Menu.CATEGORY_SECONDARY),
                         any(Integer.class));
-        verify(mMenuItem).setIcon(any());
+        verify(menuItem).setIcon(any());
     }
 
     @Test
     public void testCreateOptionsMenu_shownInTab() {
         when(mDelegate.isShownInTab()).thenReturn(true);
+        Menu menu = mock(Menu.class);
 
-        SettingsMenuHelper.onCreateOptionsMenu(mMenu, mActivity, mDelegate);
+        SettingsMenuHelper.onCreateOptionsMenu(menu, mActivity, mDelegate);
 
-        verify(mMenu, never()).add(anyInt(), anyInt(), anyInt(), anyInt());
+        verify(menu, never()).add(anyInt(), anyInt(), anyInt(), anyInt());
     }
 
     @Test
     public void testPrepareOptionsMenu() {
-        when(mMenu.size()).thenReturn(1);
-        when(mMenu.getItem(0)).thenReturn(mMenuItem);
-        when(mMenuItem.getIcon()).thenReturn(mDrawable);
+        Menu menu = mock(Menu.class);
+        MenuItem menuItem = mock(MenuItem.class);
+        when(menu.size()).thenReturn(1);
+        when(menu.getItem(0)).thenReturn(menuItem);
+        when(menuItem.getIcon()).thenReturn(mock(Drawable.class));
 
-        SettingsMenuHelper.onPrepareOptionsMenu(mMenu, mDelegate);
+        SettingsMenuHelper.onPrepareOptionsMenu(menu, mDelegate);
 
-        verify(mMenuItem).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        verify(menuItem).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
     }
 
     public static class TestMenuFragment extends Fragment {
@@ -430,54 +427,66 @@ public class SettingsMenuHelperUnitTest {
 
     @Test
     public void testPrepareOptionsMenu_MultipleItems() {
-        when(mMenu.size()).thenReturn(2);
-        when(mMenu.getItem(0)).thenReturn(mItemWithIcon);
-        when(mMenu.getItem(1)).thenReturn(mItemWithoutIcon);
-        when(mItemWithIcon.getIcon()).thenReturn(mDrawable);
-        when(mItemWithoutIcon.getIcon()).thenReturn(null);
+        Menu menu = mock(Menu.class);
+        MenuItem itemWithIcon = mock(MenuItem.class);
+        MenuItem itemWithoutIcon = mock(MenuItem.class);
 
-        SettingsMenuHelper.onPrepareOptionsMenu(mMenu, mDelegate);
+        when(menu.size()).thenReturn(2);
+        when(menu.getItem(0)).thenReturn(itemWithIcon);
+        when(menu.getItem(1)).thenReturn(itemWithoutIcon);
+        when(itemWithIcon.getIcon()).thenReturn(mock(Drawable.class));
+        when(itemWithoutIcon.getIcon()).thenReturn(null);
 
-        verify(mItemWithIcon).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-        verify(mItemWithoutIcon, never()).setShowAsAction(anyInt());
+        SettingsMenuHelper.onPrepareOptionsMenu(menu, mDelegate);
+
+        verify(itemWithIcon).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        verify(itemWithoutIcon, never()).setShowAsAction(anyInt());
     }
 
     @Test
     public void testOptionsItemSelected_FragmentHandles() {
-        when(mDelegate.getMainFragment()).thenReturn(mFragment);
-        when(mFragment.onOptionsItemSelected(mMenuItem)).thenReturn(true);
+        MenuItem item = mock(MenuItem.class);
+        Fragment fragment = mock(Fragment.class);
+        when(mDelegate.getMainFragment()).thenReturn(fragment);
+        when(fragment.onOptionsItemSelected(item)).thenReturn(true);
 
-        assertTrue(SettingsMenuHelper.onOptionsItemSelected(mMenuItem, mActivity, mDelegate));
+        assertTrue(SettingsMenuHelper.onOptionsItemSelected(item, mActivity, mDelegate));
     }
 
     @Test
     public void testOptionsItemSelected_HomeTwoColumn() {
-        when(mMenuItem.getItemId()).thenReturn(android.R.id.home);
-        when(mDelegate.getMultiColumnSettings()).thenReturn(mMultiColumnSettings1);
-        when(mMultiColumnSettings1.isTwoColumn()).thenReturn(true);
+        MenuItem item = mock(MenuItem.class);
+        when(item.getItemId()).thenReturn(android.R.id.home);
+        MultiColumnSettings multiColumnSettings = mock(MultiColumnSettings.class);
+        when(mDelegate.getMultiColumnSettings()).thenReturn(multiColumnSettings);
+        when(multiColumnSettings.isTwoColumn()).thenReturn(true);
 
-        assertTrue(SettingsMenuHelper.onOptionsItemSelected(mMenuItem, mActivity, mDelegate));
+        assertTrue(SettingsMenuHelper.onOptionsItemSelected(item, mActivity, mDelegate));
         verify(mDelegate).finishSettings();
     }
 
     @Test
     public void testOptionsItemSelected_HomeSingleColumn() {
-        when(mMenuItem.getItemId()).thenReturn(android.R.id.home);
-        when(mDelegate.getMultiColumnSettings()).thenReturn(mMultiColumnSettings1);
-        when(mMultiColumnSettings1.isTwoColumn()).thenReturn(false);
+        MenuItem item = mock(MenuItem.class);
+        when(item.getItemId()).thenReturn(android.R.id.home);
+        MultiColumnSettings multiColumnSettings = mock(MultiColumnSettings.class);
+        when(mDelegate.getMultiColumnSettings()).thenReturn(multiColumnSettings);
+        when(multiColumnSettings.isTwoColumn()).thenReturn(false);
 
-        assertTrue(SettingsMenuHelper.onOptionsItemSelected(mMenuItem, mActivity, mDelegate));
+        assertTrue(SettingsMenuHelper.onOptionsItemSelected(item, mActivity, mDelegate));
         verify(mDelegate).onBackPressed();
     }
 
     @Test
     public void testOptionsItemSelected_HomeNoMultiColumnSearchHandlesBack() {
-        when(mMenuItem.getItemId()).thenReturn(android.R.id.home);
+        MenuItem item = mock(MenuItem.class);
+        when(item.getItemId()).thenReturn(android.R.id.home);
         when(mDelegate.getMultiColumnSettings()).thenReturn(null);
-        when(mDelegate.getSearchCoordinator()).thenReturn(mSettingsSearchCoordinator);
-        when(mSettingsSearchCoordinator.handleBackAction()).thenReturn(true);
+        SettingsSearchCoordinator searchCoordinator = mock(SettingsSearchCoordinator.class);
+        when(mDelegate.getSearchCoordinator()).thenReturn(searchCoordinator);
+        when(searchCoordinator.handleBackAction()).thenReturn(true);
 
-        assertTrue(SettingsMenuHelper.onOptionsItemSelected(mMenuItem, mActivity, mDelegate));
+        assertTrue(SettingsMenuHelper.onOptionsItemSelected(item, mActivity, mDelegate));
         verify(mDelegate, never()).finishSettings();
         verify(mDelegate, never()).onBackPressed();
         verify(mDelegate, never()).finishCurrentSettings(any());
@@ -485,29 +494,34 @@ public class SettingsMenuHelperUnitTest {
 
     @Test
     public void testOptionsItemSelected_HomeNoMultiColumnSearchDoesNotHandleBack() {
-        when(mMenuItem.getItemId()).thenReturn(android.R.id.home);
+        MenuItem item = mock(MenuItem.class);
+        when(item.getItemId()).thenReturn(android.R.id.home);
         when(mDelegate.getMultiColumnSettings()).thenReturn(null);
-        when(mDelegate.getSearchCoordinator()).thenReturn(mSettingsSearchCoordinator);
-        when(mSettingsSearchCoordinator.handleBackAction()).thenReturn(false);
-        when(mDelegate.getMainFragment()).thenReturn(mFragment);
+        SettingsSearchCoordinator searchCoordinator = mock(SettingsSearchCoordinator.class);
+        when(mDelegate.getSearchCoordinator()).thenReturn(searchCoordinator);
+        when(searchCoordinator.handleBackAction()).thenReturn(false);
+        Fragment fragment = mock(Fragment.class);
+        when(mDelegate.getMainFragment()).thenReturn(fragment);
 
-        assertTrue(SettingsMenuHelper.onOptionsItemSelected(mMenuItem, mActivity, mDelegate));
-        verify(mDelegate).finishCurrentSettings(mFragment);
+        assertTrue(SettingsMenuHelper.onOptionsItemSelected(item, mActivity, mDelegate));
+        verify(mDelegate).finishCurrentSettings(fragment);
     }
 
     @Test
     public void testOptionsItemSelected_GeneralHelp() {
-        when(mMenuItem.getItemId()).thenReturn(R.id.menu_id_general_help);
+        MenuItem item = mock(MenuItem.class);
+        when(item.getItemId()).thenReturn(R.id.menu_id_general_help);
 
-        assertTrue(SettingsMenuHelper.onOptionsItemSelected(mMenuItem, mActivity, mDelegate));
+        assertTrue(SettingsMenuHelper.onOptionsItemSelected(item, mActivity, mDelegate));
         verify(mHelpAndFeedbackLauncher).show(eq(mActivity), any(String.class), eq(null));
     }
 
     @Test
     public void testOptionsItemSelected_UnhandledItem() {
-        when(mMenuItem.getItemId()).thenReturn(12345);
+        MenuItem item = mock(MenuItem.class);
+        when(item.getItemId()).thenReturn(12345);
 
-        assertFalse(SettingsMenuHelper.onOptionsItemSelected(mMenuItem, mActivity, mDelegate));
+        assertFalse(SettingsMenuHelper.onOptionsItemSelected(item, mActivity, mDelegate));
     }
 
     @Test
@@ -531,9 +545,11 @@ public class SettingsMenuHelperUnitTest {
 
     @Test
     public void testUpdateNavigationIcon_ShowSingleColumn() {
+        Activity activity = mock(Activity.class);
+
         SettingsMenuHelper.updateNavigationIcon(
                 mToolbar,
-                mActivity1,
+                activity,
                 /* shownInTab= */ false,
                 /* show= */ true,
                 /* isMultiColumn= */ false,
@@ -548,7 +564,7 @@ public class SettingsMenuHelperUnitTest {
         assertTrue(navigationButton.hasOnClickListeners());
 
         navigationButton.performClick();
-        verify(mActivity1).onBackPressed();
+        verify(activity).onBackPressed();
     }
 
     @Test
@@ -572,9 +588,11 @@ public class SettingsMenuHelperUnitTest {
 
     @Test
     public void testUpdateNavigationIcon_ShowSingleColumn_shownInTabDetailSettings() {
+        Activity activity = mock(Activity.class);
+
         SettingsMenuHelper.updateNavigationIcon(
                 mToolbar,
-                mActivity1,
+                activity,
                 /* shownInTab= */ true,
                 /* show= */ true,
                 /* isMultiColumn= */ false,
@@ -590,7 +608,7 @@ public class SettingsMenuHelperUnitTest {
         assertNotNull(shadowOf(navigationButton).getOnClickListener());
 
         navigationButton.performClick();
-        verify(mActivity1).onBackPressed();
+        verify(activity).onBackPressed();
     }
 
     @Test

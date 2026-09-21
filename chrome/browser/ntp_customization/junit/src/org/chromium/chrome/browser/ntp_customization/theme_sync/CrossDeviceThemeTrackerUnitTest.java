@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -51,8 +52,6 @@ public class CrossDeviceThemeTrackerUnitTest {
 
     @Mock private CrossDeviceThemeTracker.Natives mNatives;
     @Mock private Profile mProfile;
-    @Mock private CrossDeviceThemeTracker mCrossDeviceThemeTracker;
-    @Mock private CrossDeviceThemeTracker.Observer mCrossDeviceThemeTrackerObserver;
 
     private Activity mActivity;
 
@@ -70,9 +69,10 @@ public class CrossDeviceThemeTrackerUnitTest {
 
     @Test
     public void testGetForProfile() {
-        when(mNatives.getForProfile(mProfile)).thenReturn(mCrossDeviceThemeTracker);
+        CrossDeviceThemeTracker tracker = mock(CrossDeviceThemeTracker.class);
+        when(mNatives.getForProfile(mProfile)).thenReturn(tracker);
 
-        assertEquals(mCrossDeviceThemeTracker, CrossDeviceThemeTracker.getForProfile(mProfile));
+        assertEquals(tracker, CrossDeviceThemeTracker.getForProfile(mProfile));
         verify(mNatives).getForProfile(mProfile);
     }
 
@@ -169,14 +169,15 @@ public class CrossDeviceThemeTrackerUnitTest {
         createMethod.setAccessible(true);
         CrossDeviceThemeTracker tracker = (CrossDeviceThemeTracker) createMethod.invoke(null, 1L);
 
-        tracker.addObserver(mCrossDeviceThemeTrackerObserver);
+        CrossDeviceThemeTracker.Observer observer = mock(CrossDeviceThemeTracker.Observer.class);
+        tracker.addObserver(observer);
 
         Method notifyMethod =
                 CrossDeviceThemeTracker.class.getDeclaredMethod("notifyThemesChanged");
         notifyMethod.setAccessible(true);
         notifyMethod.invoke(tracker);
 
-        verify(mCrossDeviceThemeTrackerObserver).onThemesChanged();
+        verify(observer).onThemesChanged();
     }
 
     @Test

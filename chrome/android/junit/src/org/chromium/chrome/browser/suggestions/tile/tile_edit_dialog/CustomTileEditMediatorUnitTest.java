@@ -15,7 +15,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -37,7 +36,6 @@ public class CustomTileEditMediatorUnitTest {
     @Mock private MediatorToBrowser mBrowserDelegate;
     @Mock private MediatorToView mViewDelegate;
     @Mock private Tile mOriginalTile;
-    @Captor private ArgumentCaptor<Runnable> mTaskCaptor;
 
     @Test
     public void testShowAddNewTile() {
@@ -50,10 +48,11 @@ public class CustomTileEditMediatorUnitTest {
         verify(mBrowserDelegate).showEditDialog();
 
         // Verify that the focus action is scheduled, then run it and verify the result.
-        verify(mViewDelegate).addOnWindowFocusGainedTask(mTaskCaptor.capture());
+        ArgumentCaptor<Runnable> taskCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mViewDelegate).addOnWindowFocusGainedTask(taskCaptor.capture());
         verify(mViewDelegate, never()).focusOnUrl(anyBoolean());
 
-        mTaskCaptor.getValue().run();
+        taskCaptor.getValue().run();
         verify(mViewDelegate).focusOnUrl(true);
     }
 
@@ -70,10 +69,11 @@ public class CustomTileEditMediatorUnitTest {
         verify(mBrowserDelegate).showEditDialog();
 
         // Verify that the focus action is scheduled, then run it and verify the result.
-        verify(mViewDelegate).addOnWindowFocusGainedTask(mTaskCaptor.capture());
+        ArgumentCaptor<Runnable> taskCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mViewDelegate).addOnWindowFocusGainedTask(taskCaptor.capture());
         verify(mViewDelegate, never()).focusOnName();
 
-        mTaskCaptor.getValue().run();
+        taskCaptor.getValue().run();
         verify(mViewDelegate).focusOnName();
     }
 

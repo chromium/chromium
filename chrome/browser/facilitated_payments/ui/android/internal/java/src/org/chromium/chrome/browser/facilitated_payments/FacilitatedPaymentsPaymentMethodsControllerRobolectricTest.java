@@ -227,9 +227,6 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private IdentityManager mIdentityManagerMock;
 
-    @Mock
-    private FacilitatedPaymentsPaymentMethodsMediator mFacilitatedPaymentsPaymentMethodsMediator;
-
     private final Context mContext;
     private final FacilitatedPaymentsPaymentMethodsCoordinator mCoordinator;
     private final FakeClock mClock = new FakeClock();
@@ -2047,63 +2044,69 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
     @Test
     public void testShowAccountLinkingPrompt_EwalletCallsMediator() throws Exception {
+        FacilitatedPaymentsPaymentMethodsMediator mockMediator =
+                mock(FacilitatedPaymentsPaymentMethodsMediator.class);
         FacilitatedPaymentsPaymentMethodsCoordinator coordinator =
                 new FacilitatedPaymentsPaymentMethodsCoordinator();
 
         java.lang.reflect.Field mediatorField =
                 FacilitatedPaymentsPaymentMethodsCoordinator.class.getDeclaredField("mMediator");
         mediatorField.setAccessible(true);
-        mediatorField.set(coordinator, mFacilitatedPaymentsPaymentMethodsMediator);
+        mediatorField.set(coordinator, mockMediator);
 
         coordinator.showAccountLinkingPrompt(FacilitatedPaymentsType.EWALLET, "ChilliPay", 1);
 
-        verify(mFacilitatedPaymentsPaymentMethodsMediator)
+        verify(mockMediator)
                 .showAccountLinkingPrompt(FacilitatedPaymentsType.EWALLET, "ChilliPay", 1);
     }
 
     @Test
     public void testShowAccountLinkingPrompt_PixCallsMediator() throws Exception {
+        FacilitatedPaymentsPaymentMethodsMediator mockMediator =
+                mock(FacilitatedPaymentsPaymentMethodsMediator.class);
         FacilitatedPaymentsPaymentMethodsCoordinator coordinator =
                 new FacilitatedPaymentsPaymentMethodsCoordinator();
 
         java.lang.reflect.Field mediatorField =
                 FacilitatedPaymentsPaymentMethodsCoordinator.class.getDeclaredField("mMediator");
         mediatorField.setAccessible(true);
-        mediatorField.set(coordinator, mFacilitatedPaymentsPaymentMethodsMediator);
+        mediatorField.set(coordinator, mockMediator);
 
         coordinator.showAccountLinkingPrompt(FacilitatedPaymentsType.PIX, "PixAccount", 2);
 
-        verify(mFacilitatedPaymentsPaymentMethodsMediator)
-                .showAccountLinkingPrompt(FacilitatedPaymentsType.PIX, "PixAccount", 2);
+        verify(mockMediator).showAccountLinkingPrompt(FacilitatedPaymentsType.PIX, "PixAccount", 2);
     }
 
     @Test
     public void testShowProgressScreen_CallsMediator() throws Exception {
+        FacilitatedPaymentsPaymentMethodsMediator mockMediator =
+                mock(FacilitatedPaymentsPaymentMethodsMediator.class);
         FacilitatedPaymentsPaymentMethodsCoordinator coordinator =
                 new FacilitatedPaymentsPaymentMethodsCoordinator();
 
         java.lang.reflect.Field mediatorField =
                 FacilitatedPaymentsPaymentMethodsCoordinator.class.getDeclaredField("mMediator");
         mediatorField.setAccessible(true);
-        mediatorField.set(coordinator, mFacilitatedPaymentsPaymentMethodsMediator);
+        mediatorField.set(coordinator, mockMediator);
 
         coordinator.showProgressScreen(ProgressScreenType.PAYMENT);
-        verify(mFacilitatedPaymentsPaymentMethodsMediator)
-                .showProgressScreen(ProgressScreenType.PAYMENT);
+        verify(mockMediator).showProgressScreen(ProgressScreenType.PAYMENT);
     }
 
     @Test
     public void testShowErrorScreen_CallsMediator() throws Exception {
+        FacilitatedPaymentsPaymentMethodsMediator mockMediator =
+                mock(FacilitatedPaymentsPaymentMethodsMediator.class);
         FacilitatedPaymentsPaymentMethodsCoordinator coordinator =
                 new FacilitatedPaymentsPaymentMethodsCoordinator();
 
         java.lang.reflect.Field mediatorField =
                 FacilitatedPaymentsPaymentMethodsCoordinator.class.getDeclaredField("mMediator");
         mediatorField.setAccessible(true);
-        mediatorField.set(coordinator, mFacilitatedPaymentsPaymentMethodsMediator);
+        mediatorField.set(coordinator, mockMediator);
 
         coordinator.showErrorScreen();
-        verify(mFacilitatedPaymentsPaymentMethodsMediator).showErrorScreen();
+        verify(mockMediator).showErrorScreen();
     }
 
     @Test

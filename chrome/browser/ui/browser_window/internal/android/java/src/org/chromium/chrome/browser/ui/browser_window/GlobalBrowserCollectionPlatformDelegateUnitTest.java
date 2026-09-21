@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.browser_window;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -34,8 +35,6 @@ public class GlobalBrowserCollectionPlatformDelegateUnitTest {
     @Rule public final MockitoRule mockitoRule = MockitoJUnit.rule();
 
     @Mock private GlobalBrowserCollectionPlatformDelegate.Natives mNativeMock;
-    @Mock private Profile mProfile;
-    @Mock private ActivityWindowAndroid mActivityWindowAndroid;
 
     private final ChromeAndroidTaskTrackerImpl mTaskTracker =
             ChromeAndroidTaskTrackerImpl.getInstance();
@@ -110,7 +109,9 @@ public class GlobalBrowserCollectionPlatformDelegateUnitTest {
                 new GlobalBrowserCollectionPlatformDelegate(DELEGATE_PTR);
         var info =
                 new AndroidBrowserWindowInfo(
-                        FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR, mProfile, mActivityWindowAndroid);
+                        FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR,
+                        mock(Profile.class),
+                        mock(ActivityWindowAndroid.class));
 
         delegate.onBrowserWindowAdded(info);
         verify(mNativeMock).onBrowserCreated(DELEGATE_PTR, FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
@@ -129,7 +130,9 @@ public class GlobalBrowserCollectionPlatformDelegateUnitTest {
 
         var info =
                 new AndroidBrowserWindowInfo(
-                        FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR, mProfile, mActivityWindowAndroid);
+                        FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR,
+                        mock(Profile.class),
+                        mock(ActivityWindowAndroid.class));
         delegate.onBrowserWindowAdded(info);
         delegate.onBrowserWindowRemoved(info);
         verify(mNativeMock, never())

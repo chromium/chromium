@@ -14,6 +14,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
@@ -56,9 +57,6 @@ public class ActorForegroundServiceManagerTest {
     @Mock private ActorTask mTask;
     @Mock private Profile mProfile;
     @Mock private Notification mNotification;
-    @Mock private ActorTask mActorTask;
-    @Mock private Notification mNotification2;
-    @Mock private ActorTaskTimeoutManager mActorTaskTimeoutManager;
 
     private ActorForegroundServiceManager mManager;
 
@@ -239,19 +237,20 @@ public class ActorForegroundServiceManagerTest {
         // Update to another task
         reset(mServiceController);
         when(mServiceController.isConnected()).thenReturn(true);
-        when(mActorTask.getId()).thenReturn(2);
-        when(mKeyedService.getTask(2)).thenReturn(mActorTask);
-        when(mKeyedService.getCurrentActiveTask()).thenReturn(mActorTask);
-        when(mNotificationService.getForegroundNotification(
-                        eq(mActorTask), anyBoolean(), anyBoolean()))
-                .thenReturn(mNotification2);
+        ActorTask task2 = mock(ActorTask.class);
+        when(task2.getId()).thenReturn(2);
+        when(mKeyedService.getTask(2)).thenReturn(task2);
+        when(mKeyedService.getCurrentActiveTask()).thenReturn(task2);
+        Notification notification2 = mock(Notification.class);
+        when(mNotificationService.getForegroundNotification(eq(task2), anyBoolean(), anyBoolean()))
+                .thenReturn(notification2);
 
         mManager.onTaskStateChanged(2, ActorTaskState.ACTING);
         ShadowLooper.idleMainLooper();
 
         // Should update to task 2's notification
         verify(mServiceController)
-                .startOrUpdateForegroundService(eq(2), eq(mNotification2), eq(1), eq(true));
+                .startOrUpdateForegroundService(eq(2), eq(notification2), eq(1), eq(true));
     }
 
     @Test
@@ -280,10 +279,11 @@ public class ActorForegroundServiceManagerTest {
     @Test
     public void testOnTaskStateChanged_ShowsWarningNotification() {
         mManager.setKeyedServiceForTesting(mKeyedService);
-        mManager.setTimeoutManagerForTesting(mActorTaskTimeoutManager);
+        ActorTaskTimeoutManager timeoutManager = mock(ActorTaskTimeoutManager.class);
+        mManager.setTimeoutManagerForTesting(timeoutManager);
 
         int taskId = 1;
-        when(mActorTaskTimeoutManager.isWarningMode(taskId)).thenReturn(true);
+        when(timeoutManager.isWarningMode(taskId)).thenReturn(true);
 
         mManager.onTaskStateChanged(taskId, ActorTaskState.ACTING);
         ShadowLooper.idleMainLooper();
@@ -476,10 +476,11 @@ public class ActorForegroundServiceManagerTest {
         int taskId1 = 1;
         int taskId2 = 2;
 
-        when(mActorTask.getId()).thenReturn(taskId2);
-        when(mActorTask.isCompleted()).thenReturn(false);
-        when(mActorTask.isUnderActorControl()).thenReturn(true);
-        when(mKeyedService.getTask(taskId2)).thenReturn(mActorTask);
+        ActorTask task2 = mock(ActorTask.class);
+        when(task2.getId()).thenReturn(taskId2);
+        when(task2.isCompleted()).thenReturn(false);
+        when(task2.isUnderActorControl()).thenReturn(true);
+        when(mKeyedService.getTask(taskId2)).thenReturn(task2);
 
         mManager.onTaskStateChanged(taskId1, ActorTaskState.ACTING);
         mManager.onTaskStateChanged(taskId2, ActorTaskState.ACTING);

@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
@@ -24,12 +25,8 @@ import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
@@ -58,8 +55,6 @@ import java.util.Arrays;
 public class WebappLauncherActivityTest {
     private static final String WEBAPK_PACKAGE_NAME = "org.chromium.webapk.test_package";
     private static final String START_URL = "https://www.google.com/scope/a_is_for_apple";
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private Tab mTab;
 
     @Before
     public void setUp() {
@@ -126,11 +121,12 @@ public class WebappLauncherActivityTest {
     public void testReparentingTokenUnpackedToTabId() {
         registerWebApk(WEBAPK_PACKAGE_NAME, START_URL);
         final int tabId = 10;
-        when(mTab.getId()).thenReturn(tabId);
-        when(mTab.getUserDataHost()).thenReturn(new UserDataHost());
+        Tab mockTab = mock(Tab.class);
+        when(mockTab.getId()).thenReturn(tabId);
+        when(mockTab.getUserDataHost()).thenReturn(new UserDataHost());
         Intent intent = WebApkTestHelper.createMinimalWebApkIntent(WEBAPK_PACKAGE_NAME, START_URL);
         WebApkReparentingHandler.getInstance()
-                .prepareIntentForReparenting(intent, mTab, WEBAPK_PACKAGE_NAME, START_URL);
+                .prepareIntentForReparenting(intent, mockTab, WEBAPK_PACKAGE_NAME, START_URL);
         Robolectric.buildActivity(WebappLauncherActivity.class, intent).create();
         Intent launchIntent = getNextStartedActivity();
         assertEquals(tabId, IntentHandler.getTabId(launchIntent));

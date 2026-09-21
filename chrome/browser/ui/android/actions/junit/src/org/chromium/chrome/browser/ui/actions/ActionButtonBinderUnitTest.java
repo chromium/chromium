@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -31,7 +32,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -60,9 +60,6 @@ public class ActionButtonBinderUnitTest {
     @Mock private Callback<View> mOnLongPressCallback;
     @Mock private IphIntent mIphIntent;
     @Mock private UserEducationHelper mUserEducationHelper;
-    @Mock private Context mContext;
-    @Mock private Resources mResources;
-    @Captor private ArgumentCaptor<IphCommand> mIphCommandCaptor;
 
     private Activity mActivity;
     private ImageView mView;
@@ -193,10 +190,14 @@ public class ActionButtonBinderUnitTest {
 
         PropertyModel model = new PropertyModel.Builder(ActionProperties.ALL_KEYS).build();
         ImageView mockView = spy(new ImageView(mActivity));
+        Context mockContext = mock(Context.class);
+        Resources mockResources = mock(Resources.class);
 
-        doReturn(mContext).when(mockView).getContext();
-        doReturn(mResources).when(mContext).getResources();
-        doReturn(expectedDescription).when(mResources).getQuantityString(pluralResId, count, count);
+        doReturn(mockContext).when(mockView).getContext();
+        doReturn(mockResources).when(mockContext).getResources();
+        doReturn(expectedDescription)
+                .when(mockResources)
+                .getQuantityString(pluralResId, count, count);
 
         PropertyModelChangeProcessor.create(model, mockView, ActionButtonBinder::bind);
 
@@ -357,10 +358,11 @@ public class ActionButtonBinderUnitTest {
         mModel.set(ActionProperties.IPH_INTENT, realIphIntent);
         assertTrue(realIphIntent.hasBeenShown());
 
-        verify(mUserEducationHelper, times(1)).requestShowIph(mIphCommandCaptor.capture());
+        ArgumentCaptor<IphCommand> captor = ArgumentCaptor.forClass(IphCommand.class);
+        verify(mUserEducationHelper, times(1)).requestShowIph(captor.capture());
 
         // Ensure that the IPH intent is only shown on the first view.
-        assertEquals(mView, mIphCommandCaptor.getValue().anchorView);
+        assertEquals(mView, captor.getValue().anchorView);
     }
 
     @Test

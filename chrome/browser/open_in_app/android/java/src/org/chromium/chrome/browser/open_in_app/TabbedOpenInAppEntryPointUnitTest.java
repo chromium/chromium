@@ -36,7 +36,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
@@ -88,10 +87,6 @@ public class TabbedOpenInAppEntryPointUnitTest {
     @Spy private Context mContext;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private ExternalNavigationHelper mExternalNavigationHelper;
-    @Captor private ArgumentCaptor<WebContentsObserver> mWebContentsObserverCaptor;
-    @Captor private ArgumentCaptor<Runnable> mActionCaptor;
-    @Captor private ArgumentCaptor<TabClosureParams> mClosureParamsCaptor;
-    @Captor private ArgumentCaptor<Runnable> mConfirmationCaptor;
 
     private SettableNullableObservableSupplier<Tab> mTabSupplier;
     private TabbedOpenInAppEntryPoint mEntryPoint;
@@ -134,11 +129,9 @@ public class TabbedOpenInAppEntryPointUnitTest {
         OpenInAppDelegate delegate = OpenInAppDelegate.from(mTab);
         delegate.setExternalNavigationHelper(mExternalNavigationHelper);
 
-        verify(((WebContentsObserver.Observable) mWebContents))
-                .addObserver(mWebContentsObserverCaptor.capture());
-        mWebContentsObserverCaptor
-                .getValue()
-                .didFinishNavigationInPrimaryMainFrame(mNavigationHandle);
+        var captor = ArgumentCaptor.forClass(WebContentsObserver.class);
+        verify(((WebContentsObserver.Observable) mWebContents)).addObserver(captor.capture());
+        captor.getValue().didFinishNavigationInPrimaryMainFrame(mNavigationHandle);
 
         ShadowLooper.idleMainLooper();
 
@@ -163,23 +156,25 @@ public class TabbedOpenInAppEntryPointUnitTest {
         mEntryPoint.onResolveInfosFetched(delegate, infos, mIntent, mUrl, /* navigationId= */ 123L);
         shownWatcher2.assertExpected();
 
+        ArgumentCaptor<Runnable> actionCaptor = ArgumentCaptor.forClass(Runnable.class);
         String chipTitle = mContext.getString(R.string.open_in_app);
         String chipDescription = mContext.getString(R.string.open_in_app_desc, LABEL);
         verify(mOmniboxChipManager, times(2))
-                .placeChip(eq(chipTitle), eq(mIcon), eq(chipDescription), mActionCaptor.capture());
+                .placeChip(eq(chipTitle), eq(mIcon), eq(chipDescription), actionCaptor.capture());
 
         // Simulate chip click.
         var clickWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.OpenInApp.Clicked.OmniboxChip", true);
-        mActionCaptor.getValue().run();
+        actionCaptor.getValue().run();
         clickWatcher.assertExpected();
 
         verify(mExternalNavigationHelper).launchExternalApp(eq(mIntent), eq(mContext));
         ShadowLooper.idleMainLooper();
-        verify(mTabModelSelector).tryCloseTab(mClosureParamsCaptor.capture(), eq(false));
-        assertEquals(
-                TabClosingSource.OPEN_IN_APP, mClosureParamsCaptor.getValue().tabClosingSource);
+        ArgumentCaptor<TabClosureParams> closureParamsCaptor =
+                ArgumentCaptor.forClass(TabClosureParams.class);
+        verify(mTabModelSelector).tryCloseTab(closureParamsCaptor.capture(), eq(false));
+        assertEquals(TabClosingSource.OPEN_IN_APP, closureParamsCaptor.getValue().tabClosingSource);
 
         when(mOmniboxChipManager.isChipPlaced()).thenReturn(true);
 
@@ -189,9 +184,7 @@ public class TabbedOpenInAppEntryPointUnitTest {
         assertEquals(mIcon, appInfo.appIcon);
         assertEquals(PACKAGE, appInfo.packageName);
 
-        mWebContentsObserverCaptor
-                .getValue()
-                .didFinishNavigationInPrimaryMainFrame(mNavigationHandle);
+        captor.getValue().didFinishNavigationInPrimaryMainFrame(mNavigationHandle);
         verify(mOmniboxChipManager).dismissChip();
 
         // Empty resolve infos; the app info should be null.
@@ -218,35 +211,36 @@ public class TabbedOpenInAppEntryPointUnitTest {
         OpenInAppDelegate delegate = OpenInAppDelegate.from(mTab);
         delegate.setExternalNavigationHelper(mExternalNavigationHelper);
 
-        verify(((WebContentsObserver.Observable) mWebContents))
-                .addObserver(mWebContentsObserverCaptor.capture());
-        mWebContentsObserverCaptor
-                .getValue()
-                .didFinishNavigationInPrimaryMainFrame(mNavigationHandle);
+        var captor = ArgumentCaptor.forClass(WebContentsObserver.class);
+        verify(((WebContentsObserver.Observable) mWebContents)).addObserver(captor.capture());
+        captor.getValue().didFinishNavigationInPrimaryMainFrame(mNavigationHandle);
 
         ShadowLooper.idleMainLooper();
 
         var infos = new OpenInAppEntryPoint.ResolveResult.Info(mResolveInfo);
         mEntryPoint.onResolveInfosFetched(delegate, infos, mIntent, mUrl, /* navigationId= */ 123L);
 
-        verify(mOmniboxChipManager).placeChip(any(), any(), any(), mActionCaptor.capture());
+        ArgumentCaptor<Runnable> actionCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mOmniboxChipManager).placeChip(any(), any(), any(), actionCaptor.capture());
 
         // Simulate chip click.
-        mActionCaptor.getValue().run();
+        actionCaptor.getValue().run();
 
+        ArgumentCaptor<Runnable> confirmationCaptor = ArgumentCaptor.forClass(Runnable.class);
         verify(mExternalNavigationHelper)
                 .launchExternalAppWithIncognitoConfirmation(
-                        eq(mIntent), eq(123L), eq(mContext), mConfirmationCaptor.capture());
+                        eq(mIntent), eq(123L), eq(mContext), confirmationCaptor.capture());
 
         // Tab should not be closed yet.
         verify(mTabModelSelector, never()).tryCloseTab(any(), anyBoolean());
 
         // Simulate user confirmation in the dialog.
-        mConfirmationCaptor.getValue().run();
+        confirmationCaptor.getValue().run();
         ShadowLooper.idleMainLooper();
-        verify(mTabModelSelector).tryCloseTab(mClosureParamsCaptor.capture(), eq(false));
-        assertEquals(
-                TabClosingSource.OPEN_IN_APP, mClosureParamsCaptor.getValue().tabClosingSource);
+        ArgumentCaptor<TabClosureParams> closureParamsCaptor =
+                ArgumentCaptor.forClass(TabClosureParams.class);
+        verify(mTabModelSelector).tryCloseTab(closureParamsCaptor.capture(), eq(false));
+        assertEquals(TabClosingSource.OPEN_IN_APP, closureParamsCaptor.getValue().tabClosingSource);
     }
 
     @Test

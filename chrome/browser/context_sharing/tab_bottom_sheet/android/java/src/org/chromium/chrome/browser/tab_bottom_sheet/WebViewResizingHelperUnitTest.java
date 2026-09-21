@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -67,11 +68,7 @@ public class WebViewResizingHelperUnitTest {
     @Mock private Window mMockWindow;
     @Mock private CoBrowseComponentProvider mMockComponentProvider;
     @Mock private View mMockDecorView;
-    @Mock private CoBrowseComponentProvider mCoBrowseComponentProvider;
-    @Mock private ResizingPlaceholderCoordinator mResizingPlaceholderCoordinator;
     @Captor private ArgumentCaptor<WindowInsetsAnimationListener> mAnimationListenerCaptor;
-    @Captor private ArgumentCaptor<Runnable> mFrameCallbackCaptor;
-    @Captor private ArgumentCaptor<ActivityStateObserver> mObserverCaptor;
 
     private Context mContext;
     private View mView;
@@ -125,6 +122,7 @@ public class WebViewResizingHelperUnitTest {
 
     @Test
     public void testComponentProvider_PassedThroughConstructor() {
+        CoBrowseComponentProvider mockProvider = mock(CoBrowseComponentProvider.class);
         WebViewResizingHelper helper =
                 new WebViewResizingHelper(
                         mContainerView,
@@ -132,8 +130,8 @@ public class WebViewResizingHelperUnitTest {
                         Color.WHITE,
                         Color.LTGRAY,
                         false,
-                        mCoBrowseComponentProvider);
-        assertEquals(mCoBrowseComponentProvider, helper.getComponentProviderForTesting());
+                        mockProvider);
+        assertEquals(mockProvider, helper.getComponentProviderForTesting());
     }
 
     @Test
@@ -216,6 +214,8 @@ public class WebViewResizingHelperUnitTest {
         ResizeLock lock = mHelper.requestResize();
         assertEquals(View.VISIBLE, placeholder.getVisibility());
 
+        ArgumentCaptor<Runnable> frameCallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
+
         container.measure(
                 View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(200, View.MeasureSpec.EXACTLY));
@@ -224,10 +224,10 @@ public class WebViewResizingHelperUnitTest {
         lock.unlock();
 
         // Verify runOnNextFrame was registered.
-        verify(mMockThinWebView).runOnNextFrame(mFrameCallbackCaptor.capture());
+        verify(mMockThinWebView).runOnNextFrame(frameCallbackCaptor.capture());
 
         // Run the frame callback and verify view visibility.
-        mFrameCallbackCaptor.getValue().run();
+        frameCallbackCaptor.getValue().run();
         assertEquals(View.VISIBLE, mView.getVisibility());
     }
 
@@ -569,8 +569,10 @@ public class WebViewResizingHelperUnitTest {
 
     @Test
     public void testActivityResumed_ForcesResizeAfterInactive() {
-        verify(mMockWindowAndroid).addActivityStateObserver(mObserverCaptor.capture());
-        ActivityStateObserver observer = mObserverCaptor.getValue();
+        ArgumentCaptor<ActivityStateObserver> observerCaptor =
+                ArgumentCaptor.forClass(ActivityStateObserver.class);
+        verify(mMockWindowAndroid).addActivityStateObserver(observerCaptor.capture());
+        ActivityStateObserver observer = observerCaptor.getValue();
         assertNotNull(observer);
 
         mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
@@ -644,16 +646,17 @@ public class WebViewResizingHelperUnitTest {
                 View.MeasureSpec.makeMeasureSpec(400, View.MeasureSpec.EXACTLY));
         container.layout(0, 0, 300, 400);
 
+        ArgumentCaptor<Runnable> frameCallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
         lock1.unlock();
 
-        verify(mMockThinWebView).runOnNextFrame(mFrameCallbackCaptor.capture());
+        verify(mMockThinWebView).runOnNextFrame(frameCallbackCaptor.capture());
 
         // Re-enter resizing mode before the captured next-frame callback executes.
         ResizeLock lock2 = mHelper.requestResize();
         assertEquals(View.VISIBLE, placeholder.getVisibility());
 
         // Now run the stale frame callback from lock1.
-        mFrameCallbackCaptor.getValue().run();
+        frameCallbackCaptor.getValue().run();
 
         // Placeholder should still remain visible because resizing mode is active again.
         assertEquals(View.VISIBLE, placeholder.getVisibility());
@@ -766,11 +769,13 @@ public class WebViewResizingHelperUnitTest {
 
     @Test
     public void testPlaceholderCoordinator_DelegatesToComponentProvider() {
+        CoBrowseComponentProvider provider = mock(CoBrowseComponentProvider.class);
+        ResizingPlaceholderCoordinator customCoordinator =
+                mock(ResizingPlaceholderCoordinator.class);
         View customPlaceholderView = new View(mContext);
-        when(mResizingPlaceholderCoordinator.getView()).thenReturn(customPlaceholderView);
-        when(mCoBrowseComponentProvider.createResizingPlaceholderCoordinator(
-                        any(), anyInt(), anyInt()))
-                .thenReturn(mResizingPlaceholderCoordinator);
+        when(customCoordinator.getView()).thenReturn(customPlaceholderView);
+        when(provider.createResizingPlaceholderCoordinator(any(), anyInt(), anyInt()))
+                .thenReturn(customCoordinator);
 
         WebViewResizingHelper helper =
                 new WebViewResizingHelper(
@@ -779,18 +784,17 @@ public class WebViewResizingHelperUnitTest {
                         Color.WHITE,
                         Color.LTGRAY,
                         false,
-                        mCoBrowseComponentProvider);
-        verify(mCoBrowseComponentProvider)
-                .createResizingPlaceholderCoordinator(mContext, Color.WHITE, Color.LTGRAY);
-        assertSame(mResizingPlaceholderCoordinator, helper.getPlaceholderCoordinator());
+                        provider);
+        verify(provider).createResizingPlaceholderCoordinator(mContext, Color.WHITE, Color.LTGRAY);
+        assertSame(customCoordinator, helper.getPlaceholderCoordinator());
 
         helper.updatePlaceholderHeight(250);
-        verify(mResizingPlaceholderCoordinator).updateVisibleHeight(250);
+        verify(customCoordinator).updateVisibleHeight(250);
 
         customPlaceholderView.setVisibility(View.VISIBLE);
         customPlaceholderView.setAlpha(0.4f);
         helper.destroy();
-        verify(mResizingPlaceholderCoordinator).destroy();
+        verify(customCoordinator).destroy();
         assertEquals(View.INVISIBLE, customPlaceholderView.getVisibility());
         assertEquals(1.0f, customPlaceholderView.getAlpha(), 0.01f);
         assertEquals(0, ((FrameLayout) helper.getResizingContainer()).getChildCount());
@@ -798,8 +802,8 @@ public class WebViewResizingHelperUnitTest {
 
     @Test
     public void testPlaceholderCoordinator_NullCoordinator_WorksCleanly() {
-        when(mCoBrowseComponentProvider.createResizingPlaceholderCoordinator(
-                        any(), anyInt(), anyInt()))
+        CoBrowseComponentProvider provider = mock(CoBrowseComponentProvider.class);
+        when(provider.createResizingPlaceholderCoordinator(any(), anyInt(), anyInt()))
                 .thenReturn(null);
 
         WebViewResizingHelper helper =
@@ -809,7 +813,7 @@ public class WebViewResizingHelperUnitTest {
                         Color.WHITE,
                         Color.LTGRAY,
                         false,
-                        mCoBrowseComponentProvider);
+                        provider);
         assertNull(helper.getPlaceholderCoordinator());
         FrameLayout container = (FrameLayout) helper.getResizingContainer();
         assertEquals(0, container.getChildCount());

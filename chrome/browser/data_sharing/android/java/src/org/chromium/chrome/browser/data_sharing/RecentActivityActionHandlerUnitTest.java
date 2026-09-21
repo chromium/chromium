@@ -18,7 +18,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -55,7 +54,6 @@ public class RecentActivityActionHandlerUnitTest {
     @Mock private TabModel mTabModel;
     @Mock private TabCreator mTabCreator;
     @Mock private Tab mTab1;
-    @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
     private RecentActivityActionHandlerImpl mRecentActivityActionHandler;
 
     @Before
@@ -103,8 +101,9 @@ public class RecentActivityActionHandlerUnitTest {
     public void testReopenTab() {
         String url = "https://google.com";
         mRecentActivityActionHandler.reopenTab(url);
-        verify(mTabCreator, times(1)).createNewTab(mLoadUrlParamsCaptor.capture(), anyInt(), any());
-        Assert.assertEquals(url, mLoadUrlParamsCaptor.getValue().getUrl());
+        ArgumentCaptor<LoadUrlParams> captor = ArgumentCaptor.forClass(LoadUrlParams.class);
+        verify(mTabCreator, times(1)).createNewTab(captor.capture(), anyInt(), any());
+        Assert.assertEquals(url, captor.getValue().getUrl());
     }
 
     @Test

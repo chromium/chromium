@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
@@ -81,7 +82,6 @@ public class ToggleTabStackButtonCoordinatorTest {
     @Mock private TopUiThemeColorProvider mTopUIThemeProvider;
     @Mock private IncognitoStateProvider mIncognitoStateProvider;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
-    @Mock private ToggleTabStackButton mButton;
 
     @Captor private ArgumentCaptor<IphCommand> mIphCommandCaptor;
 
@@ -477,8 +477,9 @@ public class ToggleTabStackButtonCoordinatorTest {
     @EnableFeatures(ChromeFeatureList.DISABLE_GRID_TAB_SWITCHER)
     public void testConstructor_disabledOnDesktop_setsVisibilityGone() {
         DeviceInfo.setIsDesktopForTesting(true);
-        ToggleTabStackButtonCoordinator coordinator = newToggleTabStackButtonCoordinator(mButton);
+        ToggleTabStackButton button = mock(ToggleTabStackButton.class);
+        ToggleTabStackButtonCoordinator coordinator = newToggleTabStackButtonCoordinator(button);
         assertFalse(coordinator.hasSpaceToShow());
-        verify(mButton).setVisibility(View.GONE);
+        verify(button).setVisibility(View.GONE);
     }
 }

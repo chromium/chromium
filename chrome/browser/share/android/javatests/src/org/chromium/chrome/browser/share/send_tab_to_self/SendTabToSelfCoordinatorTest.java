@@ -27,6 +27,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
@@ -107,7 +108,6 @@ public class SendTabToSelfCoordinatorTest {
 
     @Mock private DeviceLockActivityLauncher mDeviceLockActivityLauncher;
     @Mock private Tracker mTracker;
-    @Mock private SendTabToSelfAndroidBridge.Natives mSendTabToSelfAndroidBridgeNatives;
 
     private long mSetUpTimeMs;
 
@@ -557,13 +557,15 @@ public class SendTabToSelfCoordinatorTest {
     })
     public void testEnhancedDevicePicker_emptyListFallback() {
         mSyncTestRule.setUpAccountAndSignInForTesting();
-        SendTabToSelfAndroidBridgeJni.setInstanceForTesting(mSendTabToSelfAndroidBridgeNatives);
+        SendTabToSelfAndroidBridge.Natives nativeMock =
+                mock(SendTabToSelfAndroidBridge.Natives.class);
+        SendTabToSelfAndroidBridgeJni.setInstanceForTesting(nativeMock);
         try {
             doReturn(EntryPointDisplayReason.INFORM_NO_TARGET_DEVICE)
-                    .when(mSendTabToSelfAndroidBridgeNatives)
+                    .when(nativeMock)
                     .getEntryPointDisplayReason(any(), any());
             doReturn(new java.util.ArrayList<TargetDeviceInfo>())
-                    .when(mSendTabToSelfAndroidBridgeNatives)
+                    .when(nativeMock)
                     .getAllTargetDeviceInfos(any());
 
             buildAndShowCoordinator();
@@ -1183,9 +1185,11 @@ public class SendTabToSelfCoordinatorTest {
     public void testSendTabToSelfOmniboxUsedEventRecorded() {
         mSyncTestRule.setUpAccountAndSignInForTesting();
 
-        SendTabToSelfAndroidBridgeJni.setInstanceForTesting(mSendTabToSelfAndroidBridgeNatives);
+        SendTabToSelfAndroidBridge.Natives bridgeMock =
+                mock(SendTabToSelfAndroidBridge.Natives.class);
+        SendTabToSelfAndroidBridgeJni.setInstanceForTesting(bridgeMock);
         doReturn(EntryPointDisplayReason.OFFER_FEATURE)
-                .when(mSendTabToSelfAndroidBridgeNatives)
+                .when(bridgeMock)
                 .getEntryPointDisplayReason(any(), any());
 
         ChromeTabbedActivity activity = mSyncTestRule.getActivity();

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.logo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -76,15 +77,12 @@ public class LogoMediatorUnitTest {
     @Mock Callback<Logo> mOnLogoAvailableCallback;
 
     @Mock DoodleCache mDoodleCache;
-    @Mock private Logo mLogo;
-    @Mock private Drawable mDrawable;
 
     @Captor
     private ArgumentCaptor<TemplateUrlService.TemplateUrlServiceObserver>
             mTemplateUrlServiceObserverArgumentCaptor;
 
     @Captor private ArgumentCaptor<LogoBridge.LogoObserver> mLogoObserverArgumentCaptor;
-    @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
 
     private Context mContext;
     private PropertyModel mLogoModel;
@@ -374,7 +372,8 @@ public class LogoMediatorUnitTest {
         mLogoModel.set(LogoProperties.VISIBILITY, true);
         assertTrue(logoMediator.isDefaultGoogleLogoShown());
 
-        mLogoModel.set(LogoProperties.LOGO, mLogo);
+        Logo logo = mock(Logo.class);
+        mLogoModel.set(LogoProperties.LOGO, logo);
         Assert.assertFalse(logoMediator.isDefaultGoogleLogoShown());
 
         mLogoModel.set(LogoProperties.LOGO, null);
@@ -397,19 +396,22 @@ public class LogoMediatorUnitTest {
     @Test
     public void testUpdateDefaultGoogleLogo_NoDoodle() {
         LogoMediator logoMediator = createMediator();
-        logoMediator.updateDefaultGoogleLogo(mDrawable);
+        Drawable drawable = mock(Drawable.class);
+        logoMediator.updateDefaultGoogleLogo(drawable);
 
-        assertEquals(mDrawable, logoMediator.getDefaultGoogleLogoDrawable());
+        assertEquals(drawable, logoMediator.getDefaultGoogleLogoDrawable());
         assertTrue(mLogoModel.get(LogoProperties.SHOW_DEFAULT_GOOGLE_LOGO));
     }
 
     @Test
     public void testUpdateDefaultGoogleLogo_WithDoodle() {
         LogoMediator logoMediator = createMediator();
-        mLogoModel.set(LogoProperties.LOGO, mLogo);
+        Logo logo = mock(Logo.class);
+        mLogoModel.set(LogoProperties.LOGO, logo);
 
+        Drawable drawable = mock(Drawable.class);
         Assert.assertThrows(
-                AssertionError.class, () -> logoMediator.updateDefaultGoogleLogo(mDrawable));
+                AssertionError.class, () -> logoMediator.updateDefaultGoogleLogo(drawable));
     }
 
     @Test
@@ -441,8 +443,9 @@ public class LogoMediatorUnitTest {
 
         logoMediator.onLogoClicked(false);
 
-        verify(mLogoClickedCallback).onResult(mLoadUrlParamsCaptor.capture());
-        assertEquals(TEST_CLICK_URL, mLoadUrlParamsCaptor.getValue().getUrl());
+        ArgumentCaptor<LoadUrlParams> captor = ArgumentCaptor.forClass(LoadUrlParams.class);
+        verify(mLogoClickedCallback).onResult(captor.capture());
+        assertEquals(TEST_CLICK_URL, captor.getValue().getUrl());
     }
 
     private LogoMediator createMediator() {
@@ -642,30 +645,34 @@ public class LogoMediatorUnitTest {
 
     @Test
     public void testSwitchBetweenGoogleAndCachedThirdPartyLogo() {
-        LogoMediator logoMediator = createMediator(mDrawable);
+        Drawable defaultGoogleLogoDrawable = mock(Drawable.class);
+        LogoMediator logoMediator = createMediator(defaultGoogleLogoDrawable);
         verify(mTemplateUrlService)
                 .addObserver(mTemplateUrlServiceObserverArgumentCaptor.capture());
 
-        when(mDoodleCache.getCachedDoodle("bing.com")).thenReturn(mLogo);
+        Logo bingLogo = mock(Logo.class);
+        when(mDoodleCache.getCachedDoodle("bing.com")).thenReturn(bingLogo);
         when(mDoodleCache.getCachedDoodle("google.com")).thenReturn(null);
 
         // 1. Switch from Google to Bing.
         when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
         when(mTemplateUrl.getKeyword()).thenReturn("bing.com");
         mTemplateUrlServiceObserverArgumentCaptor.getValue().onTemplateURLServiceChanged();
-        assertEquals(mLogo, mLogoModel.get(LogoProperties.LOGO));
+        assertEquals(bingLogo, mLogoModel.get(LogoProperties.LOGO));
 
         // 2. Switch from Bing to Google (no doodle).
         when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
         when(mTemplateUrl.getKeyword()).thenReturn("google.com");
         mTemplateUrlServiceObserverArgumentCaptor.getValue().onTemplateURLServiceChanged();
         Assert.assertNull(mLogoModel.get(LogoProperties.LOGO));
-        assertEquals(mDrawable, mLogoModel.get(LogoProperties.DEFAULT_GOOGLE_LOGO_DRAWABLE));
+        assertEquals(
+                defaultGoogleLogoDrawable,
+                mLogoModel.get(LogoProperties.DEFAULT_GOOGLE_LOGO_DRAWABLE));
 
         // 3. Switch from Google to Bing again (Cache Hit).
         when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
         when(mTemplateUrl.getKeyword()).thenReturn("bing.com");
         mTemplateUrlServiceObserverArgumentCaptor.getValue().onTemplateURLServiceChanged();
-        assertEquals(mLogo, mLogoModel.get(LogoProperties.LOGO));
+        assertEquals(bingLogo, mLogoModel.get(LogoProperties.LOGO));
     }
 }

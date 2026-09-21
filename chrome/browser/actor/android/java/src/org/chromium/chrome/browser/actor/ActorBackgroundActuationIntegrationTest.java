@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import androidx.test.filters.MediumTest;
@@ -86,11 +87,6 @@ public class ActorBackgroundActuationIntegrationTest {
     @Mock private ActorTask mActorTask;
     @Mock private ActorForegroundServiceImpl mForegroundService;
     @Mock private ActorForegroundServiceImpl.LocalBinder mBinder;
-    @Mock private TabModel mTabModel;
-    @Mock private TabModelSelector mTabModelSelector;
-    @Mock private TabCreatorManager mTabCreatorManager;
-    @Mock private TabCreator mTabCreator;
-    @Mock private TabWindowManager mTabWindowManager;
 
     private ActorForegroundServiceControllerImpl mController;
     private ActorBackgroundActuationManager mBackgroundManager;
@@ -322,23 +318,29 @@ public class ActorBackgroundActuationIntegrationTest {
                     int windowId =
                             TabWindowManagerSingleton.getInstance()
                                     .getWindowIdForSelector(selector);
+                    TabModel mockNewModel = mock(TabModel.class);
+                    TabModelSelector mockNewSelector = mock(TabModelSelector.class);
+                    TabCreatorManager mockCreatorManager = mock(TabCreatorManager.class);
+                    TabCreator mockTabCreator = mock(TabCreator.class);
                     TabDelegateFactory delegateFactory = TabTestUtils.getDelegateFactory(mTab);
                     WindowAndroid newWindow = activity.getWindowAndroid();
 
-                    when(mTabWindowManager.getWindowIdForSelector(mTabModelSelector))
+                    TabWindowManager mockWindowManager = mock(TabWindowManager.class);
+                    when(mockWindowManager.getWindowIdForSelector(mockNewSelector))
                             .thenReturn(windowId);
-                    TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
+                    TabWindowManagerSingleton.setTabWindowManagerForTesting(mockWindowManager);
 
                     Profile profile = activity.getCurrentTabModel().getProfile();
-                    when(mTabModel.getProfile()).thenReturn(profile);
-                    when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
-                    when(mTabModelSelector.getTabCreatorManager()).thenReturn(mTabCreatorManager);
-                    when(mTabCreatorManager.getTabCreator(false)).thenReturn(mTabCreator);
-                    when(mTabCreator.createDefaultTabDelegateFactory()).thenReturn(delegateFactory);
-                    when(mTabModel.indexOf(mTab)).thenReturn(TabModel.INVALID_TAB_INDEX);
+                    when(mockNewModel.getProfile()).thenReturn(profile);
+                    when(mockNewSelector.getModel(false)).thenReturn(mockNewModel);
+                    when(mockNewSelector.getTabCreatorManager()).thenReturn(mockCreatorManager);
+                    when(mockCreatorManager.getTabCreator(false)).thenReturn(mockTabCreator);
+                    when(mockTabCreator.createDefaultTabDelegateFactory())
+                            .thenReturn(delegateFactory);
+                    when(mockNewModel.indexOf(mTab)).thenReturn(TabModel.INVALID_TAB_INDEX);
 
                     mController.restoreActiveWindowBackgroundTabs(
-                            mTabModelSelector, newWindow, delegateFactory);
+                            mockNewSelector, newWindow, delegateFactory);
                 });
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -405,23 +407,29 @@ public class ActorBackgroundActuationIntegrationTest {
                     int windowId =
                             TabWindowManagerSingleton.getInstance()
                                     .getWindowIdForSelector(selector);
+                    TabModel mockNewModel = mock(TabModel.class);
+                    TabModelSelector mockNewSelector = mock(TabModelSelector.class);
+                    TabCreatorManager mockCreatorManager = mock(TabCreatorManager.class);
+                    TabCreator mockTabCreator = mock(TabCreator.class);
                     TabDelegateFactory delegateFactory = TabTestUtils.getDelegateFactory(mTab);
                     WindowAndroid newWindow = activity.getWindowAndroid();
 
-                    when(mTabWindowManager.getWindowIdForSelector(mTabModelSelector))
+                    TabWindowManager mockWindowManager = mock(TabWindowManager.class);
+                    when(mockWindowManager.getWindowIdForSelector(mockNewSelector))
                             .thenReturn(windowId);
-                    TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
+                    TabWindowManagerSingleton.setTabWindowManagerForTesting(mockWindowManager);
 
                     Profile profile = activity.getCurrentTabModel().getProfile();
-                    when(mTabModel.getProfile()).thenReturn(profile);
-                    when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
-                    when(mTabModelSelector.getTabCreatorManager()).thenReturn(mTabCreatorManager);
-                    when(mTabCreatorManager.getTabCreator(false)).thenReturn(mTabCreator);
-                    when(mTabCreator.createDefaultTabDelegateFactory()).thenReturn(delegateFactory);
-                    when(mTabModel.indexOf(mTab)).thenReturn(TabModel.INVALID_TAB_INDEX);
+                    when(mockNewModel.getProfile()).thenReturn(profile);
+                    when(mockNewSelector.getModel(false)).thenReturn(mockNewModel);
+                    when(mockNewSelector.getTabCreatorManager()).thenReturn(mockCreatorManager);
+                    when(mockCreatorManager.getTabCreator(false)).thenReturn(mockTabCreator);
+                    when(mockTabCreator.createDefaultTabDelegateFactory())
+                            .thenReturn(delegateFactory);
+                    when(mockNewModel.indexOf(mTab)).thenReturn(TabModel.INVALID_TAB_INDEX);
 
                     mController.restoreActiveWindowBackgroundTabs(
-                            mTabModelSelector, newWindow, delegateFactory);
+                            mockNewSelector, newWindow, delegateFactory);
                 });
 
         ThreadUtils.runOnUiThreadBlocking(

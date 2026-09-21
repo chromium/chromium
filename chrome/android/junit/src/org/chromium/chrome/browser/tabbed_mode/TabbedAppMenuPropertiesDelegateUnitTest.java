@@ -292,10 +292,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     @Mock private RecentlyClosedEntriesManager mRecentlyClosedEntriesManager;
     @Mock private SideUiStateProvider mSideUiStateProvider;
-    @Mock private Tab mMockTab1;
-    @Mock private HomepageManager mHomepageManager;
-    @Mock private TabWindowManager mTabWindowManager;
-    @Mock private TabModelSelector mAnotherSelector;
 
     private ShadowPackageManager mShadowPackageManager;
 
@@ -3053,7 +3049,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         setUpMocksForOverviewMenu();
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
         when(mTabModel.getCount()).thenReturn(1);
-        when(mTabModel.getTabAt(0)).thenReturn(mMockTab1);
+        Tab mockTab1 = mock(Tab.class);
+        when(mTabModel.getTabAt(0)).thenReturn(mockTab1);
 
         ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
         // Check group tabs enabled decision in regular mode doesn't depend on re-auth.
@@ -4178,8 +4175,9 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     public void testHomepageMenuItem_shouldShow() {
         setUpMocksForPageMenu();
 
-        HomepageManager.setInstanceForTesting(mHomepageManager);
-        when(mHomepageManager.shouldShowHomepageMenuItem()).thenReturn(true);
+        HomepageManager homepageManagerMock = mock(HomepageManager.class);
+        HomepageManager.setInstanceForTesting(homepageManagerMock);
+        when(homepageManagerMock.shouldShowHomepageMenuItem()).thenReturn(true);
 
         ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
         ListItem homepageItem = findItemById(modelList, R.id.homepage_menu_id);
@@ -4190,8 +4188,9 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     public void testHomepageMenuItem_shouldNotShow() {
         setUpMocksForPageMenu();
 
-        HomepageManager.setInstanceForTesting(mHomepageManager);
-        when(mHomepageManager.shouldShowHomepageMenuItem()).thenReturn(false);
+        HomepageManager homepageManagerMock = mock(HomepageManager.class);
+        HomepageManager.setInstanceForTesting(homepageManagerMock);
+        when(homepageManagerMock.shouldShowHomepageMenuItem()).thenReturn(false);
 
         ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
         ListItem homepageItem = findItemById(modelList, R.id.homepage_menu_id);
@@ -4207,12 +4206,14 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mTabModelSelector.getModel(false)).thenReturn(tabModel);
         when(tabModel.getTabGroupCount()).thenReturn(0);
 
-        TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
+        TabWindowManager tabWindowManager = Mockito.mock(TabWindowManager.class);
+        TabWindowManagerSingleton.setTabWindowManagerForTesting(tabWindowManager);
 
+        TabModelSelector anotherSelector = Mockito.mock(TabModelSelector.class);
         TabModel anotherTabModel = Mockito.mock(TabModel.class);
         when(anotherTabModel.isIncognito()).thenReturn(false);
-        when(mAnotherSelector.getCurrentModel()).thenReturn(anotherTabModel);
-        when(mAnotherSelector.getModel(false)).thenReturn(anotherTabModel);
+        when(anotherSelector.getCurrentModel()).thenReturn(anotherTabModel);
+        when(anotherSelector.getModel(false)).thenReturn(anotherTabModel);
         when(anotherTabModel.getTabGroupCount()).thenReturn(1);
         Token groupId = Token.createRandom();
         when(anotherTabModel.getAllTabGroupIds()).thenReturn(Set.of(groupId));
@@ -4220,8 +4221,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(anotherTabModel.getTabGroupTitle(groupId)).thenReturn("Group");
         when(anotherTabModel.getTabsInGroup(groupId)).thenReturn(List.of());
 
-        when(mTabWindowManager.getAllTabModelSelectors())
-                .thenReturn(Arrays.asList(mTabModelSelector, mAnotherSelector));
+        when(tabWindowManager.getAllTabModelSelectors())
+                .thenReturn(Arrays.asList(mTabModelSelector, anotherSelector));
 
         assertEquals(
                 R.string.menu_add_tab_to_group,
@@ -4237,16 +4238,18 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mTabModelSelector.getModel(false)).thenReturn(tabModel);
         when(tabModel.getTabGroupCount()).thenReturn(0);
 
-        TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
+        TabWindowManager tabWindowManager = Mockito.mock(TabWindowManager.class);
+        TabWindowManagerSingleton.setTabWindowManagerForTesting(tabWindowManager);
 
+        TabModelSelector anotherSelector = Mockito.mock(TabModelSelector.class);
         TabModel anotherTabModel = Mockito.mock(TabModel.class);
         when(anotherTabModel.isIncognito()).thenReturn(false);
-        when(mAnotherSelector.getCurrentModel()).thenReturn(anotherTabModel);
-        when(mAnotherSelector.getModel(false)).thenReturn(anotherTabModel);
+        when(anotherSelector.getCurrentModel()).thenReturn(anotherTabModel);
+        when(anotherSelector.getModel(false)).thenReturn(anotherTabModel);
         when(anotherTabModel.getTabGroupCount()).thenReturn(1);
 
-        when(mTabWindowManager.getAllTabModelSelectors())
-                .thenReturn(Arrays.asList(mTabModelSelector, mAnotherSelector));
+        when(tabWindowManager.getAllTabModelSelectors())
+                .thenReturn(Arrays.asList(mTabModelSelector, anotherSelector));
 
         assertEquals(
                 R.string.menu_add_tab_to_new_group,

@@ -61,7 +61,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -138,7 +137,6 @@ public class AutofillIdentityDocsFragmentTest {
     @Mock private SettingsNavigation mSettingsNavigation;
 
     @Mock private EntityDataManager mEntityDataManager;
-    @Captor private ArgumentCaptor<EntityDataManagerObserver> mEntityDataManagerObserverCaptor;
 
     @Before
     public void setUp() {
@@ -476,9 +474,10 @@ public class AutofillIdentityDocsFragmentTest {
         mSettingsTestRule.startSettingsActivity();
 
         // Capture the observer registered by the fragment.
-        verify(mEntityDataManager, atLeastOnce())
-                .registerDataObserver(mEntityDataManagerObserverCaptor.capture());
-        EntityDataManagerObserver observer = mEntityDataManagerObserverCaptor.getValue();
+        ArgumentCaptor<EntityDataManagerObserver> captor =
+                ArgumentCaptor.forClass(EntityDataManagerObserver.class);
+        verify(mEntityDataManager, atLeastOnce()).registerDataObserver(captor.capture());
+        EntityDataManagerObserver observer = captor.getValue();
 
         // Initially check that the entity is rendered.
         CriteriaHelper.pollUiThread(

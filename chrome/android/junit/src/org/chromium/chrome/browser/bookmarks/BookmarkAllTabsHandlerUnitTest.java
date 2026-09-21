@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.bookmarks;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -53,7 +54,6 @@ public class BookmarkAllTabsHandlerUnitTest {
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private Profile mProfile;
     @Mock private BookmarkModel mBookmarkModel;
-    @Mock private Tab mTab;
 
     @Captor private ArgumentCaptor<Runnable> mRunnableCaptor;
 
@@ -122,12 +122,13 @@ public class BookmarkAllTabsHandlerUnitTest {
     public void testBookmarkAllTabs_Success() {
         GURL url = JUnitTestGURLs.EXAMPLE_URL;
 
-        doReturn(url).when(mTab).getOriginalUrl();
-        doReturn(url).when(mTab).getUrl();
+        Tab mockTab = mock(Tab.class);
+        doReturn(url).when(mockTab).getOriginalUrl();
+        doReturn(url).when(mockTab).getUrl();
 
         when(mTabModel.getCount()).thenReturn(1);
-        when(mTabModel.getTabAt(0)).thenReturn(mTab);
-        when(mTabModel.iterator()).thenAnswer(inv -> Collections.singletonList(mTab).iterator());
+        when(mTabModel.getTabAt(0)).thenReturn(mockTab);
+        when(mTabModel.iterator()).thenAnswer(inv -> Collections.singletonList(mockTab).iterator());
 
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher(

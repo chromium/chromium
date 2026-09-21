@@ -11,6 +11,7 @@ import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_SYSTEM;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -42,7 +43,6 @@ public class CustomTabNightModeStateControllerTest {
     @Mock private SystemNightModeMonitor mSystemNightModeMonitor;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private AppCompatDelegate mAppCompatDelegate;
-    @Mock private NightModeStateProvider.Observer mNightModeStateProviderObserver;
     @Captor private ArgumentCaptor<SystemNightModeMonitor.Observer> mSystemNightModeObserverCaptor;
 
     private CustomTabNightModeStateController mNightModeController;
@@ -101,19 +101,21 @@ public class CustomTabNightModeStateControllerTest {
 
     @Test
     public void notifiesObservers_WhenNightModeChanged() {
+        NightModeStateProvider.Observer observer = mock(NightModeStateProvider.Observer.class);
         initializeWithColorScheme(COLOR_SCHEME_SYSTEM);
-        mNightModeController.addObserver(mNightModeStateProviderObserver);
+        mNightModeController.addObserver(observer);
         setSystemNightMode(true);
-        verify(mNightModeStateProviderObserver).onNightModeStateChanged();
+        verify(observer).onNightModeStateChanged();
     }
 
     @Test
     public void doesntNotifyObservers_WhenNightModeDoesntChange() {
         // Extra calls to observers may lead to unnecessary activity restarts
         setSystemNightMode(true);
+        NightModeStateProvider.Observer observer = mock(NightModeStateProvider.Observer.class);
         initializeWithColorScheme(COLOR_SCHEME_SYSTEM);
-        mNightModeController.addObserver(mNightModeStateProviderObserver);
-        verify(mNightModeStateProviderObserver, never()).onNightModeStateChanged();
+        mNightModeController.addObserver(observer);
+        verify(observer, never()).onNightModeStateChanged();
     }
 
     private void initializeWithColorScheme(int colorScheme) {

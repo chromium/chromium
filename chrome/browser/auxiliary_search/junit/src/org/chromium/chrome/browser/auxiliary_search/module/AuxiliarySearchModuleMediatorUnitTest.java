@@ -59,7 +59,6 @@ public class AuxiliarySearchModuleMediatorUnitTest {
     @Mock private PropertyModel mPropertyModel;
 
     @Mock private Runnable mOpenSettingsRunnable;
-    @Mock private ShareTabsWithOsStateListener mShareTabsWithOsStateListener;
     @Captor private ArgumentCaptor<OnClickListener> mFirstButtonClickListenerCaptor;
     @Captor private ArgumentCaptor<OnClickListener> mSecondButtonClickListenerCaptor;
 
@@ -144,17 +143,18 @@ public class AuxiliarySearchModuleMediatorUnitTest {
 
         createMediator();
         inflateViewAndVerify(/* isDefaultOptIn= */ false);
-        AuxiliarySearchConfigManager.getInstance().addListener(mShareTabsWithOsStateListener);
+        ShareTabsWithOsStateListener listener = Mockito.mock(ShareTabsWithOsStateListener.class);
+        AuxiliarySearchConfigManager.getInstance().addListener(listener);
 
         mMediator.showModule();
         verifyShowModuleComplete();
 
         // Verifies the case of clicking the "Turn on" button.
         clickButtonAndVerify(mSecondButtonClickListenerCaptor.getValue(), ClickInfo.TURN_ON);
-        verify(mShareTabsWithOsStateListener).onConfigChanged(eq(true));
+        verify(listener).onConfigChanged(eq(true));
 
         AuxiliarySearchUtils.resetSharedPreferenceForTesting();
-        AuxiliarySearchConfigManager.getInstance().removeListener(mShareTabsWithOsStateListener);
+        AuxiliarySearchConfigManager.getInstance().removeListener(listener);
     }
 
     @Test

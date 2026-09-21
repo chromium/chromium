@@ -17,6 +17,7 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -80,6 +81,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(qualifiers = "w1920dp-h1080dp-mdpi" /* windowWidth = 1920dp; 1920dp = 1920px (mdpi) */)
 public class SideUiCoordinatorImplTest {
+
     /** Window size in this test; it must match {@code @Config}. */
     private static final Size WINDOW_SIZE_PX = new Size(1920, 1080);
 
@@ -89,6 +91,8 @@ public class SideUiCoordinatorImplTest {
 
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
+    private final TestBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate =
+            new TestBrowserControlsVisibilityDelegate();
     @Mock private FullscreenManager mFullscreenManager;
     @Mock private LayoutStateProvider mLayoutStateProvider;
     @Mock private TopControlsStacker mTopControlsStacker;
@@ -99,15 +103,12 @@ public class SideUiCoordinatorImplTest {
     @Mock private IncognitoStateProvider mIncognitoStateProvider;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private Tab mTab;
-    @Mock private Tab mTabWithSideUi;
-    @Mock private Tab mTabWithoutSideUi;
-    @Captor private ArgumentCaptor<LayoutStateObserver> mLayoutStateObserverCaptor;
-    @Captor private ArgumentCaptor<SideUiShowability> mShowabilityCaptor;
 
-    private final TestBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate =
-            new TestBrowserControlsVisibilityDelegate();
+    @Captor private ArgumentCaptor<LayoutStateObserver> mLayoutStateObserverCaptor;
+
     private final OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
             new OneshotSupplierImpl<>();
+
     private Activity mTestActivity;
     private ViewGroup mLeftAnchorContainer;
     private ViewGroup mRightAnchorContainer;
@@ -372,13 +373,15 @@ public class SideUiCoordinatorImplTest {
         // The left SideUiContainer isn't visible, but it has higher priority. If it needs to be
         // shown, it will force the right SideUiContainer to be hidden. So the left SideUiContainer
         // is also showable.
-        verify(mSideUiObserver).onShowableSideUisUpdated(mShowabilityCaptor.capture());
+        ArgumentCaptor<SideUiShowability> showabilityCaptor =
+                ArgumentCaptor.forClass(SideUiShowability.class);
+        verify(mSideUiObserver).onShowableSideUisUpdated(showabilityCaptor.capture());
         assertEquals(
                 List.of(
                         SideUiId.SIDE_UI_FOR_TESTING_HIGH_PRIORITY,
                         SideUiId.SIDE_UI_FOR_TESTING_LOW_PRIORITY),
-                mShowabilityCaptor.getValue().mShowableSideUiIds);
-        assertTrue(mShowabilityCaptor.getValue().mUnshowableSideUiIds.isEmpty());
+                showabilityCaptor.getValue().mShowableSideUiIds);
+        assertTrue(showabilityCaptor.getValue().mUnshowableSideUiIds.isEmpty());
 
         // Act: Attempt to show both SideUiContainers.
         rightUiContainer.mHasContentForTabMap.put(mTab, true);
@@ -417,13 +420,13 @@ public class SideUiCoordinatorImplTest {
 
         // Assert: The observer is notified that the right (low-priority) container is no longer
         // showable.
-        verify(mSideUiObserver).onShowableSideUisUpdated(mShowabilityCaptor.capture());
+        verify(mSideUiObserver).onShowableSideUisUpdated(showabilityCaptor.capture());
         assertEquals(
                 List.of(SideUiId.SIDE_UI_FOR_TESTING_HIGH_PRIORITY),
-                mShowabilityCaptor.getValue().mShowableSideUiIds);
+                showabilityCaptor.getValue().mShowableSideUiIds);
         assertEquals(
                 List.of(SideUiId.SIDE_UI_FOR_TESTING_LOW_PRIORITY),
-                mShowabilityCaptor.getValue().mUnshowableSideUiIds);
+                showabilityCaptor.getValue().mUnshowableSideUiIds);
 
         // Act: Close the left container.
         leftUiContainer.mHasContentForTabMap.put(mTab, false);
@@ -460,13 +463,13 @@ public class SideUiCoordinatorImplTest {
         assertEquals(Integer.valueOf(0), leftUiContainer.mLastNewWidthOnUpdateCompleted);
 
         // Assert: The observer is notified that both containers are showable.
-        verify(mSideUiObserver).onShowableSideUisUpdated(mShowabilityCaptor.capture());
+        verify(mSideUiObserver).onShowableSideUisUpdated(showabilityCaptor.capture());
         assertEquals(
                 List.of(
                         SideUiId.SIDE_UI_FOR_TESTING_HIGH_PRIORITY,
                         SideUiId.SIDE_UI_FOR_TESTING_LOW_PRIORITY),
-                mShowabilityCaptor.getValue().mShowableSideUiIds);
-        assertTrue(mShowabilityCaptor.getValue().mUnshowableSideUiIds.isEmpty());
+                showabilityCaptor.getValue().mShowableSideUiIds);
+        assertTrue(showabilityCaptor.getValue().mUnshowableSideUiIds.isEmpty());
     }
 
     @Test
@@ -874,10 +877,12 @@ public class SideUiCoordinatorImplTest {
         mCoordinator.onConfigurationChanged(new Configuration());
 
         // Verify the observer is notified that the container can no longer be shown.
-        verify(mSideUiObserver).onShowableSideUisUpdated(mShowabilityCaptor.capture());
-        assertTrue(mShowabilityCaptor.getValue().mShowableSideUiIds.isEmpty());
+        ArgumentCaptor<SideUiShowability> showabilityCaptor =
+                ArgumentCaptor.forClass(SideUiShowability.class);
+        verify(mSideUiObserver).onShowableSideUisUpdated(showabilityCaptor.capture());
+        assertTrue(showabilityCaptor.getValue().mShowableSideUiIds.isEmpty());
         assertEquals(
-                List.of(SideUiId.SIDE_PANEL), mShowabilityCaptor.getValue().mUnshowableSideUiIds);
+                List.of(SideUiId.SIDE_PANEL), showabilityCaptor.getValue().mUnshowableSideUiIds);
 
         clearInvocations(mSideUiObserver);
 
@@ -887,10 +892,9 @@ public class SideUiCoordinatorImplTest {
         mCoordinator.onConfigurationChanged(new Configuration());
 
         // Verify the observer is notified that the container can be shown again.
-        verify(mSideUiObserver).onShowableSideUisUpdated(mShowabilityCaptor.capture());
-        assertEquals(
-                List.of(SideUiId.SIDE_PANEL), mShowabilityCaptor.getValue().mShowableSideUiIds);
-        assertTrue(mShowabilityCaptor.getValue().mUnshowableSideUiIds.isEmpty());
+        verify(mSideUiObserver).onShowableSideUisUpdated(showabilityCaptor.capture());
+        assertEquals(List.of(SideUiId.SIDE_PANEL), showabilityCaptor.getValue().mShowableSideUiIds);
+        assertTrue(showabilityCaptor.getValue().mUnshowableSideUiIds.isEmpty());
     }
 
     @Test
@@ -1371,25 +1375,28 @@ public class SideUiCoordinatorImplTest {
 
     @Test
     public void testGetExpectedSideUiSpecsForTab() {
+        Tab tabWithSideUi = mock(Tab.class);
+        Tab tabWithoutSideUi = mock(Tab.class);
+
         var sideUiContainer =
                 new TestSideUiContainer(
                         mCoordinator, mSideUiContainerView, SideUiId.SIDE_PANEL, AnchorSide.RIGHT);
         sideUiContainer.mMaxWidthDp = 300;
         sideUiContainer.mHeightType = HeightType.TOOLBAR;
-        sideUiContainer.mHasContentForTabMap.put(mTabWithSideUi, true);
-        sideUiContainer.mHasContentForTabMap.put(mTabWithoutSideUi, false);
+        sideUiContainer.mHasContentForTabMap.put(tabWithSideUi, true);
+        sideUiContainer.mHasContentForTabMap.put(tabWithoutSideUi, false);
 
         mCoordinator.registerSideUiContainer(sideUiContainer);
 
         // For tabWithSideUi, side panel has content to show -> expected width is 300px (at mdpi).
         SideUiSpecs specsForTabWithSideUi =
-                mCoordinator.getExpectedSideUiSpecsForTab(mTabWithSideUi);
+                mCoordinator.getExpectedSideUiSpecsForTab(tabWithSideUi);
         assertEquals(300, specsForTabWithSideUi.getWidth(AnchorSide.RIGHT));
         assertEquals(HeightType.TOOLBAR, specsForTabWithSideUi.getHeightType(AnchorSide.RIGHT));
 
         // For tabWithoutSideUi, side panel has no content to show -> expected width is 0.
         SideUiSpecs specsForTabWithoutSideUi =
-                mCoordinator.getExpectedSideUiSpecsForTab(mTabWithoutSideUi);
+                mCoordinator.getExpectedSideUiSpecsForTab(tabWithoutSideUi);
         assertEquals(0, specsForTabWithoutSideUi.getWidth(AnchorSide.RIGHT));
         assertEquals(
                 HeightType.NOT_APPLICABLE,

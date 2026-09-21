@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.enterprise_signals_disclaimer;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -21,7 +22,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -64,10 +64,6 @@ public class EnterpriseSignalsDisclaimerControllerUnitTest {
     @Mock private EnterpriseSignalsDisclaimerCoordinator.Delegate mDelegate;
     @Mock private ManagedBrowserUtils.Natives mManagedBrowserUtilsJniMock;
     @Mock private EnterpriseSignalsDisclaimerBridge.Natives mBridgeNativesMock;
-    @Mock private EnterpriseSignalsDisclaimerCoordinator mCoordinator1;
-    @Mock private EnterpriseSignalsDisclaimerCoordinator mCoordinator2;
-    @Captor private ArgumentCaptor<Runnable> mCallbackCaptor;
-    @Captor private ArgumentCaptor<MetricsHelper> mMetricsHelperCaptor;
 
     private final FakeIdentityManager mIdentityManager = new FakeIdentityManager();
 
@@ -279,10 +275,14 @@ public class EnterpriseSignalsDisclaimerControllerUnitTest {
         when(mProfile.isOffTheRecord()).thenReturn(false);
         when(mManagedBrowserUtilsJniMock.isProfileManaged(mProfile)).thenReturn(true);
 
+        EnterpriseSignalsDisclaimerCoordinator coordinator1 =
+                mock(EnterpriseSignalsDisclaimerCoordinator.class);
+        EnterpriseSignalsDisclaimerCoordinator coordinator2 =
+                mock(EnterpriseSignalsDisclaimerCoordinator.class);
         when(mCoordinatorFactory.create(any(), any(), any(), any(), any(), any(), any()))
-                .thenReturn(mCoordinator1)
-                .thenReturn(mCoordinator2);
-        when(mCoordinator1.isActive()).thenReturn(false);
+                .thenReturn(coordinator1)
+                .thenReturn(coordinator2);
+        when(coordinator1.isActive()).thenReturn(false);
 
         EnterpriseSignalsDisclaimerController controller = createController();
         Assert.assertNotNull(controller);
@@ -301,7 +301,7 @@ public class EnterpriseSignalsDisclaimerControllerUnitTest {
 
         // Second call should destroy coordinator1 and create coordinator2.
         Assert.assertTrue(controller.maybeShow(ShownOn.STARTUP));
-        verify(mCoordinator1).destroy();
+        verify(coordinator1).destroy();
         verify(mCoordinatorFactory, times(2))
                 .create(
                         eq(mActivity),
@@ -311,7 +311,7 @@ public class EnterpriseSignalsDisclaimerControllerUnitTest {
                         eq(mDelegate),
                         any(),
                         any());
-        verify(mCoordinator2).show(ShownOn.STARTUP);
+        verify(coordinator2).show(ShownOn.STARTUP);
     }
 
     @Test
@@ -456,22 +456,26 @@ public class EnterpriseSignalsDisclaimerControllerUnitTest {
         when(mProfile.isOffTheRecord()).thenReturn(false);
         when(mManagedBrowserUtilsJniMock.isProfileManaged(mProfile)).thenReturn(true);
 
+        EnterpriseSignalsDisclaimerCoordinator coordinator1 =
+                mock(EnterpriseSignalsDisclaimerCoordinator.class);
+        EnterpriseSignalsDisclaimerCoordinator coordinator2 =
+                mock(EnterpriseSignalsDisclaimerCoordinator.class);
         when(mCoordinatorFactory.create(any(), any(), any(), any(), any(), any(), any()))
-                .thenReturn(mCoordinator1)
-                .thenReturn(mCoordinator2);
+                .thenReturn(coordinator1)
+                .thenReturn(coordinator2);
 
         EnterpriseSignalsDisclaimerController controller = createController();
         Assert.assertNotNull(controller);
-        when(mCoordinator1.isActive()).thenReturn(true);
+        when(coordinator1.isActive()).thenReturn(true);
 
         controller.onSignedIn();
-        verify(mCoordinator1).show(ShownOn.SIGN_IN);
+        verify(coordinator1).show(ShownOn.SIGN_IN);
 
         controller.onSignedOut();
-        verify(mCoordinator1).destroy();
+        verify(coordinator1).destroy();
 
         controller.onSignedIn();
-        verify(mCoordinator2).show(ShownOn.SIGN_IN);
+        verify(coordinator2).show(ShownOn.SIGN_IN);
     }
 
     @Test
@@ -516,6 +520,7 @@ public class EnterpriseSignalsDisclaimerControllerUnitTest {
         Assert.assertNotNull(controller);
         Assert.assertTrue(controller.maybeShow(ShownOn.STARTUP));
 
+        var callbackCaptor = ArgumentCaptor.forClass(Runnable.class);
         verify(mCoordinatorFactory)
                 .create(
                         eq(mActivity),
@@ -523,11 +528,11 @@ public class EnterpriseSignalsDisclaimerControllerUnitTest {
                         eq(mModalDialogManager),
                         eq(mSigninManager),
                         eq(mDelegate),
-                        mCallbackCaptor.capture(),
+                        callbackCaptor.capture(),
                         any());
 
         // Simulate the coordinator destroying itself.
-        mCallbackCaptor.getValue().run();
+        callbackCaptor.getValue().run();
 
         // Now we verify that destroy is not called on the coordinator again, because it should have
         // been nulled out.
@@ -557,10 +562,14 @@ public class EnterpriseSignalsDisclaimerControllerUnitTest {
         when(mProfile.isOffTheRecord()).thenReturn(false);
         when(mManagedBrowserUtilsJniMock.isProfileManaged(mProfile)).thenReturn(true);
 
+        EnterpriseSignalsDisclaimerCoordinator coordinator1 =
+                mock(EnterpriseSignalsDisclaimerCoordinator.class);
+        EnterpriseSignalsDisclaimerCoordinator coordinator2 =
+                mock(EnterpriseSignalsDisclaimerCoordinator.class);
         when(mCoordinatorFactory.create(any(), any(), any(), any(), any(), any(), any()))
-                .thenReturn(mCoordinator1)
-                .thenReturn(mCoordinator2);
-        when(mCoordinator1.isActive()).thenReturn(false);
+                .thenReturn(coordinator1)
+                .thenReturn(coordinator2);
+        when(coordinator1.isActive()).thenReturn(false);
 
         EnterpriseSignalsDisclaimerController controller = createController();
         Assert.assertNotNull(controller);
@@ -568,6 +577,7 @@ public class EnterpriseSignalsDisclaimerControllerUnitTest {
         Assert.assertTrue(controller.maybeShow(ShownOn.STARTUP));
         Assert.assertTrue(controller.maybeShow(ShownOn.STARTUP));
 
+        var metricsHelperCaptor = ArgumentCaptor.forClass(MetricsHelper.class);
         verify(mCoordinatorFactory, times(2))
                 .create(
                         eq(mActivity),
@@ -576,9 +586,9 @@ public class EnterpriseSignalsDisclaimerControllerUnitTest {
                         eq(mSigninManager),
                         eq(mDelegate),
                         any(),
-                        mMetricsHelperCaptor.capture());
+                        metricsHelperCaptor.capture());
 
-        List<MetricsHelper> capturedHelpers = mMetricsHelperCaptor.getAllValues();
+        List<MetricsHelper> capturedHelpers = metricsHelperCaptor.getAllValues();
         Assert.assertEquals(2, capturedHelpers.size());
         Assert.assertSame(
                 "The same MetricsHelper instance should be reused across coordinators.",

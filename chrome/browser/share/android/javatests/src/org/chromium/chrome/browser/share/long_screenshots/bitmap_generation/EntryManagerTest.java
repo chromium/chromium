@@ -48,7 +48,6 @@ public class EntryManagerTest {
     private static final long FAKE_CAPTURE_ADDR = 123L;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
     @Mock private Tab mTabMock;
     @Mock private WebContents mWebContentsMock;
     @Mock private LongScreenshotsTabService mTabServiceMock;
@@ -57,10 +56,12 @@ public class EntryManagerTest {
     @Mock private EntryManager.BitmapGeneratorObserver mObserverMock;
     @Mock private LongScreenshotsTabServiceFactory.Natives mLongScreenshotsTabServiceFactoryJniMock;
     @Mock private Bitmap mBitmapMock;
+
+    private InOrder mInOrder;
+
     @Captor private ArgumentCaptor<Runnable> mErrorCaptor;
     @Captor private ArgumentCaptor<Callback<Bitmap>> mCompleteCaptor;
 
-    private InOrder mInOrder;
     private EntryManager mEntryManager;
     private LongScreenshotsTabService.CaptureProcessor mProcessor;
     private BitmapGenerator mGenerator;
@@ -77,6 +78,8 @@ public class EntryManagerTest {
                 .thenReturn(mTabServiceMock);
         mEntryManager = new EntryManager(mBoundsManagerMock, mTabMock, false);
         mEntryManager.addBitmapGeneratorObserver(mObserverMock);
+        final ArgumentCaptor<LongScreenshotsTabService.CaptureProcessor> captor =
+                ArgumentCaptor.forClass(LongScreenshotsTabService.CaptureProcessor.class);
         mInOrder.verify(mTabServiceMock).setCaptureProcessor(any());
         mInOrder.verify(mTabServiceMock).captureTab(any(), any(), anyBoolean(), anyInt(), anyInt());
         mInOrder.verify(mObserverMock).onStatusChange(eq(EntryStatus.CAPTURE_IN_PROGRESS));

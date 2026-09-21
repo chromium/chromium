@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -51,7 +52,6 @@ public final class VoiceToolbarButtonControllerUnitTest {
     @Mock private VoiceToolbarButtonController.VoiceSearchDelegate mVoiceSearchDelegate;
     @Mock private Drawable mDrawable;
     @Mock private Tracker mTracker;
-    @Mock private View mView;
 
     private final Configuration mConfiguration = new Configuration();
     private VoiceToolbarButtonController mVoiceToolbarButtonController;
@@ -110,7 +110,8 @@ public final class VoiceToolbarButtonControllerUnitTest {
                         FeatureConstants
                                 .ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_VOICE_SEARCH_FEATURE);
 
-        mVoiceToolbarButtonController.get(mTab).getButtonSpec().getOnClickListener().onClick(mView);
+        View view = mock(View.class);
+        mVoiceToolbarButtonController.get(mTab).getButtonSpec().getOnClickListener().onClick(view);
 
         verify(mTracker, times(1))
                 .notifyEvent(EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_VOICE_SEARCH_OPENED);

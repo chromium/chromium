@@ -25,6 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -69,7 +70,6 @@ public class MiniPlayerCoordinatorUnitTest {
     @Mock private PlayerCoordinator mPlayerCoordinator;
     @Mock private UserEducationHelper mUserEducationHelper;
     @Mock private View mView;
-    @Mock private SideUiStateProvider mSideUiStateProvider;
     private PropertyModel mSharedModel;
     private PropertyModel mModel;
 
@@ -192,6 +192,7 @@ public class MiniPlayerCoordinatorUnitTest {
     @Test
     public void testSideUiStateProviderRegistration() {
         OneshotSupplierImpl<SideUiStateProvider> supplier = new OneshotSupplierImpl<>();
+        SideUiStateProvider provider = Mockito.mock(SideUiStateProvider.class);
         MarginLayoutParams layoutParams = new MarginLayoutParams(0, 0);
         doReturn(layoutParams).when(mLayout).getLayoutParams();
 
@@ -208,17 +209,17 @@ public class MiniPlayerCoordinatorUnitTest {
                         supplier);
 
         SideUiSpecs specs = new SideUiSpecs(10, 20);
-        doReturn(specs).when(mSideUiStateProvider).getCurrentSideUiSpecs();
+        doReturn(specs).when(provider).getCurrentSideUiSpecs();
 
         // Before supplier is available, no observer is registered.
-        verify(mSideUiStateProvider, never()).addObserver(any());
+        verify(provider, never()).addObserver(any());
 
         // Set supplier
-        supplier.set(mSideUiStateProvider);
+        supplier.set(provider);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         // Now, it should have registered an observer.
-        verify(mSideUiStateProvider).addObserver(any(ViewMarginAdjusterForSideUi.class));
+        verify(provider).addObserver(any(ViewMarginAdjusterForSideUi.class));
 
         // It should have applied the current specs immediately.
         assertEquals(10, layoutParams.leftMargin);
@@ -226,6 +227,6 @@ public class MiniPlayerCoordinatorUnitTest {
 
         // When coordinator is destroyed, it should remove the observer.
         mCoordinator.destroy();
-        verify(mSideUiStateProvider).removeObserver(any(ViewMarginAdjusterForSideUi.class));
+        verify(provider).removeObserver(any(ViewMarginAdjusterForSideUi.class));
     }
 }
