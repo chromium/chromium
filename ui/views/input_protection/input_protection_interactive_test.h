@@ -6,6 +6,7 @@
 #define UI_VIEWS_INPUT_PROTECTION_INPUT_PROTECTION_INTERACTIVE_TEST_H_
 
 #include <concepts>
+#include <memory>
 #include <optional>
 #include <utility>
 
@@ -16,8 +17,14 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/views/input_protection/input_protection_specification.h"
 #include "ui/views/interaction/interactive_views_test.h"
 #include "ui/views/test/views_test_base.h"
+
+namespace views {
+class Widget;
+}
 
 namespace views::test {
 
@@ -106,6 +113,41 @@ class InputProtectionTestApi
       int expected_count = 1,
       int flags = ui::EF_NONE);
 
+  // Creates and shows an Always-On-Top floating window completely occluding the
+  // element with `element_id`.
+  [[nodiscard]] ui::InteractionSequence::StepBuilder
+  OccludeElementWithAotWindow(ui::ElementIdentifier element_id);
+
+  // Creates and shows an Always-On-Top floating window occluding `local_bounds`
+  // relative to the element with `element_id`.
+  [[nodiscard]] ui::InteractionSequence::StepBuilder OccludeRectWithAotWindow(
+      ui::ElementIdentifier element_id,
+      const gfx::Rect& local_bounds);
+
+  // Hides the active Always-On-Top window, triggering historical occlusion
+  // tracking.
+  [[nodiscard]] ui::InteractionSequence::StepBuilder HideAotWindow();
+
+  // Moves the active Always-On-Top window away from `element_id` so that
+  // `element_id` is no longer occluded.
+  [[nodiscard]] ui::InteractionSequence::StepBuilder MoveAotWindowToUnocclude(
+      ui::ElementIdentifier element_id);
+
+  // Creates and shows an Always-On-Top floating window completely occluding
+  // `element_id` and immediately hides it to simulate a pop-away attack.
+  [[nodiscard]] MultiStep TriggerAotPopAwayAttack(
+      ui::ElementIdentifier element_id);
+
+  // Installs custom protected bounds on the view identified by `element_id`.
+  [[nodiscard]] ui::InteractionSequence::StepBuilder
+  InstallInputProtectionSpecification(
+      ui::ElementIdentifier element_id,
+      InputProtectionSpecification::GetBoundsCallback<View> callback);
+
+  // Advances mock clock halfway through the default protection interval.
+  [[nodiscard]] ui::InteractionSequence::StepBuilder
+  AdvanceHalfwayThroughInputProtectionInterval();
+
   // Advances mock clock by the specified `delta`.
   [[nodiscard]] ui::InteractionSequence::StepBuilder AdvanceClockBy(
       base::TimeDelta delta);
@@ -118,6 +160,8 @@ class InputProtectionTestApi
   // Fast-forwards mock time by `delta`. Subclasses or mixins (such as
   // `InputProtectionInteractiveTestMixin`) must override this method.
   virtual void FastForwardMockClock(base::TimeDelta delta);
+
+  std::unique_ptr<views::Widget> aot_widget_;
 };
 
 // Template for adding `InputProtectionTestApi` to any test fixture which is
@@ -144,6 +188,7 @@ class InputProtectionInteractiveTestMixin : public T,
 
   void TearDown() override {
     private_test_impl().DoTestTearDown();
+    aot_widget_.reset();
     run_loop_timeout_.reset();
     T::TearDown();
   }

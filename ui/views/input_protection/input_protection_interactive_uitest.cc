@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -17,6 +18,8 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/input_protection/input_protection_interactive_test.h"
+#include "ui/views/input_protection/input_protection_specification.h"
+#include "ui/views/input_protection/occluded_widget_input_protector.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
@@ -97,6 +100,7 @@ class InputProtectionInteractiveUiTest : public InputProtectionInteractiveTest {
   void TearDown() override {
     SetContextWidget(nullptr);
     widget_.reset();
+    OccludedWidgetInputProtector::GetInstance()->ClearForTesting();
     InputProtectionInteractiveTest::TearDown();
   }
 
@@ -205,6 +209,180 @@ TEST_F(InputProtectionInteractiveUiTest,
       AdvancePastInputProtectionInterval(),
       KeyPressAndReleaseExpectingAllowed(kPrimaryButtonId, ui::VKEY_RETURN,
                                          primary_click_count(), 1));
+}
+
+// Verifies that an Always-On-Top window actively occluding an element blocks
+// clicks, and that clicks succeed after the AOT window is removed and cooldown
+// expires.
+TEST_F(InputProtectionInteractiveUiTest, LiveAotWindowBlocksClicks) {
+  RunTestSequence(
+      OccludeElementWithAotWindow(kPrimaryButtonId),
+      ClickExpectingBlocked(kPrimaryButtonId, primary_click_count(), 0),
+      HideAotWindow(), AdvancePastInputProtectionInterval(),
+      ClickExpectingAllowed(kPrimaryButtonId, primary_click_count(), 1));
+}
+
+// Verifies that an Always-On-Top window occluding one element does not block
+// clicks on an unoccluded element.
+TEST_F(InputProtectionInteractiveUiTest, AotWindowAllowsUnoccludedClicks) {
+  RunTestSequence(
+      OccludeElementWithAotWindow(kSecondaryButtonId),
+      // Clicks on the unoccluded primary button succeed.
+      ClickExpectingAllowed(kPrimaryButtonId, primary_click_count(), 1),
+      // Clicks on the occluded secondary button are blocked.
+      ClickExpectingBlocked(kSecondaryButtonId, secondary_click_count(), 0));
+}
+
+// Verifies that dismissing an active Always-On-Top window triggers historical
+// occlusion, enforcing a cooldown during which clicks remain blocked.
+TEST_F(InputProtectionInteractiveUiTest, AotWindowDismissalEnforcesCooldown) {
+  RunTestSequence(
+      OccludeElementWithAotWindow(kPrimaryButtonId), HideAotWindow(),
+      // Immediately after dismissal, historical occlusion blocks clicks.
+      ClickExpectingBlocked(kPrimaryButtonId, primary_click_count(), 0),
+      AdvancePastInputProtectionInterval(),
+      // After cooldown expires, clicks succeed.
+      ClickExpectingAllowed(kPrimaryButtonId, primary_click_count(), 1));
+}
+
+// Verifies that a pop-away attack (AOT window shown and immediately hidden)
+// enforces cooldown during which clicks are blocked.
+TEST_F(InputProtectionInteractiveUiTest, PopAwayAttackEnforcesCooldown) {
+  RunTestSequence(
+      TriggerAotPopAwayAttack(kPrimaryButtonId),
+      ClickExpectingBlocked(kPrimaryButtonId, primary_click_count(), 0),
+      AdvanceHalfwayThroughInputProtectionInterval(),
+      ClickExpectingBlocked(kPrimaryButtonId, primary_click_count(), 0),
+      AdvancePastInputProtectionInterval(),
+      ClickExpectingAllowed(kPrimaryButtonId, primary_click_count(), 1));
+}
+
+// Verifies that a moved Always-On-Top window records historical occlusion at
+// the vacated position, blocking clicks during the post-move cooldown.
+TEST_F(InputProtectionInteractiveUiTest, MovedAotWindowEnforcesCooldown) {
+  RunTestSequence(
+      OccludeElementWithAotWindow(kPrimaryButtonId),
+      ClickExpectingBlocked(kPrimaryButtonId, primary_click_count(), 0),
+      MoveAotWindowToUnocclude(kPrimaryButtonId),
+      // Vacated area is still protected by historical occlusion.
+      ClickExpectingBlocked(kPrimaryButtonId, primary_click_count(), 0),
+      AdvancePastInputProtectionInterval(),
+      // After cooldown expires, clicks at the vacated position succeed.
+      ClickExpectingAllowed(kPrimaryButtonId, primary_click_count(), 1));
+}
+
+// Verifies that view defined protected bounds via
+// `InputProtectionSpecification` are respected by occlusion detection.
+TEST_F(InputProtectionInteractiveUiTest, CustomProtectedBoundsEnforced) {
+  // Designate the left half of the element as protected.
+  constexpr int kProtectedWidth = kButtonSize.width() / 2;
+  const gfx::Rect protected_region(0, 0, kProtectedWidth, kButtonSize.height());
+
+  // Point inside the protected region (center of protected bounds).
+  const gfx::Point inside_point = protected_region.CenterPoint();
+
+  // Point outside the protected region (center of remaining unprotected area).
+  const gfx::Point outside_point((kProtectedWidth + kButtonSize.width()) / 2,
+                                 kButtonSize.height() / 2);
+
+  RunTestSequence(
+      InstallInputProtectionSpecification(
+          kPrimaryButtonId, base::BindRepeating(
+                                [](const gfx::Rect& region,
+                                   const View* view) -> std::vector<gfx::Rect> {
+                                  return {region};
+                                },
+                                protected_region)),
+      OccludeElementWithAotWindow(kPrimaryButtonId), HideAotWindow(),
+      // Clicks within the protected region are blocked during cooldown.
+      ClickExpectingBlocked(kPrimaryButtonId, primary_click_count(), 0,
+                            inside_point),
+      // Clicks outside the protected region are permitted.
+      ClickExpectingAllowed(kPrimaryButtonId, primary_click_count(), 1,
+                            outside_point),
+      AdvancePastInputProtectionInterval(),
+      // After cooldown expires, clicks within the protected region succeed.
+      ClickExpectingAllowed(kPrimaryButtonId, primary_click_count(), 2,
+                            inside_point));
+}
+
+// Verifies that when an element is fully occluded by an Always-On-Top window,
+// key presses are blocked by default (without requiring a specification), and
+// remain blocked during the post-dismissal cooldown.
+TEST_F(InputProtectionInteractiveUiTest, FullyOccludedKeyEventsBlocked) {
+  RunTestSequence(
+      EnableInputEventActivationProtection(kPrimaryButtonId),
+      AdvancePastInputProtectionInterval(),
+      OccludeElementWithAotWindow(kPrimaryButtonId),
+      // Reactivate target surface so it can receive focus (required on macOS).
+      ActivateSurface(kPrimaryButtonId), FocusElement(kPrimaryButtonId),
+      // Fully occluded element blocks Space key without a specification.
+      KeyPressAndReleaseExpectingBlocked(kPrimaryButtonId, ui::VKEY_SPACE,
+                                         primary_click_count(), 0),
+      HideAotWindow(),
+      // Immediately after dismissal, historical occlusion blocks Space key.
+      KeyPressAndReleaseExpectingBlocked(kPrimaryButtonId, ui::VKEY_SPACE,
+                                         primary_click_count(), 0),
+      AdvancePastInputProtectionInterval(),
+      // After cooldown expires, Space key succeeds.
+      KeyPressAndReleaseExpectingAllowed(kPrimaryButtonId, ui::VKEY_SPACE,
+                                         primary_click_count(), 1));
+}
+
+// Verifies that partially occluding an element allows key presses by default,
+// but blocks them if an `InputProtectionSpecification` is installed and
+// intersects the occluded region.
+TEST_F(InputProtectionInteractiveUiTest,
+       PartiallyOccludedKeyEventsRespectCustomBounds) {
+  // Designate the right half of the element as protected.
+  constexpr int kProtectedWidth = kButtonSize.width() / 2;
+  const gfx::Rect protected_region(kButtonSize.width() - kProtectedWidth, 0,
+                                   kProtectedWidth, kButtonSize.height());
+
+  // Occlude only the right quarter of the element (partially occluding the
+  // protected region).
+  constexpr int kOccludedWidth = kButtonSize.width() / 4;
+  const gfx::Rect occluded_region(kButtonSize.width() - kOccludedWidth, 0,
+                                  kOccludedWidth, kButtonSize.height());
+
+  RunTestSequence(
+      EnableInputEventActivationProtection(kPrimaryButtonId),
+      AdvancePastInputProtectionInterval(),
+      // Partially occlude only a slice of the element.
+      OccludeRectWithAotWindow(kPrimaryButtonId, occluded_region),
+      // Reactivate target surface so it can receive focus (required on macOS).
+      ActivateSurface(kPrimaryButtonId), FocusElement(kPrimaryButtonId),
+      // Without spec: Check allows Space key because view is not fully
+      // occluded.
+      KeyPressAndReleaseExpectingAllowed(kPrimaryButtonId, ui::VKEY_SPACE,
+                                         primary_click_count(), 1),
+      // Install spec designating the right half as protected.
+      InstallInputProtectionSpecification(
+          kPrimaryButtonId, base::BindRepeating(
+                                [](const gfx::Rect& region,
+                                   const View* view) -> std::vector<gfx::Rect> {
+                                  return {region};
+                                },
+                                protected_region)),
+      // With spec: Check blocks Space key because the occluding window
+      // intersects the protected region.
+      KeyPressAndReleaseExpectingBlocked(kPrimaryButtonId, ui::VKEY_SPACE,
+                                         primary_click_count(), 1),
+      HideAotWindow(), AdvancePastInputProtectionInterval(),
+      // After cooldown expires, Space key succeeds.
+      KeyPressAndReleaseExpectingAllowed(kPrimaryButtonId, ui::VKEY_SPACE,
+                                         primary_click_count(), 2));
+}
+
+// Verifies that the forward focus navigation key (Tab) is not blocked even
+// when an element is actively occluded by an Always-On-Top window.
+TEST_F(InputProtectionInteractiveUiTest, TabKeyTraversalAllowedWhileOccluded) {
+  RunTestSequence(
+      OccludeElementWithAotWindow(kPrimaryButtonId),
+      // Reactivate target surface so it can receive focus (required on macOS).
+      ActivateSurface(kPrimaryButtonId), FocusElement(kPrimaryButtonId),
+      KeyPressAndRelease(kPrimaryButtonId, ui::VKEY_TAB),
+      CheckViewProperty(kSecondaryButtonId, &View::HasFocus, true));
 }
 
 }  // namespace views::test

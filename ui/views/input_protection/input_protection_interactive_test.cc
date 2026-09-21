@@ -4,9 +4,13 @@
 
 #include "ui/views/input_protection/input_protection_interactive_test.h"
 
+#include <memory>
 #include <optional>
 
+#include "base/check.h"
 #include "base/notreached.h"
+#include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -15,13 +19,67 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/vector2d.h"
+#include "ui/views/input_protection/input_protection_specification.h"
 #include "ui/views/metrics.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace views::test {
 
 namespace {
+
+// Helper class to wait for a widget bounds change.
+class WidgetBoundsWaiter : public WidgetObserver {
+ public:
+  WidgetBoundsWaiter(Widget* widget, const gfx::Rect& target_bounds)
+      : target_bounds_(target_bounds) {
+    observation_.Observe(widget);
+    if (widget->GetWindowBoundsInScreen() == target_bounds_) {
+      finished_ = true;
+    }
+  }
+  WidgetBoundsWaiter(const WidgetBoundsWaiter&) = delete;
+  WidgetBoundsWaiter& operator=(const WidgetBoundsWaiter&) = delete;
+  ~WidgetBoundsWaiter() override = default;
+
+  void Wait() {
+    if (!finished_) {
+      run_loop_.Run();
+    }
+  }
+
+ private:
+  void OnWidgetBoundsChanged(Widget* widget, const gfx::Rect& bounds) override {
+    if (widget->GetWindowBoundsInScreen() == target_bounds_) {
+      finished_ = true;
+      if (run_loop_.running()) {
+        run_loop_.Quit();
+      }
+    }
+  }
+
+  const gfx::Rect target_bounds_;
+  bool finished_ = false;
+  base::RunLoop run_loop_;
+  base::ScopedObservation<Widget, WidgetObserver> observation_{this};
+};
+
+std::unique_ptr<Widget> CreateAotWidget(View* target_view,
+                                        const gfx::Rect& screen_bounds) {
+  Widget::InitParams params(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                            Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  if (target_view && target_view->GetWidget()) {
+    params.context = target_view->GetWidget()->GetNativeWindow();
+  }
+  params.z_order = ui::ZOrderLevel::kFloatingWindow;
+  params.bounds = screen_bounds;
+  auto widget = std::make_unique<Widget>();
+  widget->Init(std::move(params));
+  return widget;
+}
 
 // Returns `click_point` (or the center point of `view` if omitted) converted to
 // the `RootView` coordinate space of the target widget.
@@ -245,6 +303,87 @@ InputProtectionTestApi::AdvancePastInputProtectionInterval() {
   auto step =
       AdvanceClockBy(views::GetDoubleClickInterval() + base::Milliseconds(50));
   step.SetDescription("AdvancePastInputProtectionInterval()");
+  return step;
+}
+
+ui::InteractionSequence::StepBuilder
+InputProtectionTestApi::OccludeElementWithAotWindow(
+    ui::ElementIdentifier element_id) {
+  auto step = WithView(element_id, [this](View* view) {
+    gfx::Rect screen_bounds = view->GetBoundsInScreen();
+    aot_widget_ = CreateAotWidget(view, screen_bounds);
+    aot_widget_->Show();
+    WidgetVisibleWaiter(aot_widget_.get()).Wait();
+  });
+  step.SetDescription("OccludeElementWithAotWindow()");
+  return step;
+}
+
+ui::InteractionSequence::StepBuilder
+InputProtectionTestApi::OccludeRectWithAotWindow(
+    ui::ElementIdentifier element_id,
+    const gfx::Rect& local_bounds) {
+  auto step = WithView(element_id, [this, local_bounds](View* view) {
+    gfx::Rect screen_bounds = local_bounds;
+    View::ConvertRectToScreen(view, &screen_bounds);
+    aot_widget_ = CreateAotWidget(view, screen_bounds);
+    aot_widget_->Show();
+    WidgetVisibleWaiter(aot_widget_.get()).Wait();
+  });
+  step.SetDescription("OccludeRectWithAotWindow()");
+  return step;
+}
+
+ui::InteractionSequence::StepBuilder InputProtectionTestApi::HideAotWindow() {
+  auto step = Do([this]() {
+    CHECK(aot_widget_);
+    aot_widget_->Hide();
+  });
+  step.SetDescription("HideAotWindow()");
+  return step;
+}
+
+ui::InteractionSequence::StepBuilder
+InputProtectionTestApi::MoveAotWindowToUnocclude(
+    ui::ElementIdentifier element_id) {
+  auto step = WithView(element_id, [this](View* view) {
+    CHECK(aot_widget_);
+    gfx::Rect element_bounds = view->GetBoundsInScreen();
+    gfx::Rect aot_bounds = aot_widget_->GetWindowBoundsInScreen();
+    gfx::Point new_origin = element_bounds.top_right() + gfx::Vector2d(50, 0);
+    gfx::Rect target_bounds(new_origin, aot_bounds.size());
+    WidgetBoundsWaiter waiter(aot_widget_.get(), target_bounds);
+    aot_widget_->SetBounds(target_bounds);
+    waiter.Wait();
+  });
+  step.SetDescription("MoveAotWindowToUnocclude()");
+  return step;
+}
+
+InputProtectionTestApi::MultiStep
+InputProtectionTestApi::TriggerAotPopAwayAttack(
+    ui::ElementIdentifier element_id) {
+  auto steps = Steps(OccludeElementWithAotWindow(element_id), HideAotWindow());
+  AddDescriptionPrefix(steps, "TriggerAotPopAwayAttack()");
+  return steps;
+}
+
+ui::InteractionSequence::StepBuilder
+InputProtectionTestApi::InstallInputProtectionSpecification(
+    ui::ElementIdentifier element_id,
+    InputProtectionSpecification::GetBoundsCallback<View> callback) {
+  auto step = WithView(
+      element_id, [callback = std::move(callback)](View* view) mutable {
+        InputProtectionSpecification::Install(*view, std::move(callback));
+      });
+  step.SetDescription("InstallInputProtectionSpecification()");
+  return step;
+}
+
+ui::InteractionSequence::StepBuilder
+InputProtectionTestApi::AdvanceHalfwayThroughInputProtectionInterval() {
+  auto step = AdvanceClockBy(views::GetDoubleClickInterval() / 2);
+  step.SetDescription("AdvanceHalfwayThroughInputProtectionInterval()");
   return step;
 }
 
