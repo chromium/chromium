@@ -7754,35 +7754,32 @@ def CheckStableMojomChanges(input_api, output_api):
                     f'"true", but got "{no_stable_mojom_checks}" instead.')
             ]
 
-    def CheckMojomsIfNeeded():
-        changed_mojoms = input_api.AffectedFiles(
-            include_deletes=True,
-            file_filter=lambda f: f.LocalPath().endswith(('.mojom')))
+    unnecessary_footer_error = output_api.PresubmitError(
+        'No [Stable] mojom definitions changed in a way breaks '
+        'backward compatibility.\n\n'
+        'Please remove the unnecessary git footer '
+        '`No-Stable-Mojom-Checks: true`.')
 
-        if not changed_mojoms or input_api.no_diffs:
-            return []
+    if not has_mojom or input_api.no_diffs:
+        return [unnecessary_footer_error] if expect_stable_mojom_failures else []
 
-        delta = []
-        for mojom in changed_mojoms:
-            delta.append({
-                'filename': mojom.LocalPath(),
-                'old': '\n'.join(mojom.OldContents()) or None,
-                'new': '\n'.join(mojom.NewContents()) or None,
-            })
+    changed_mojoms = input_api.AffectedFiles(
+        include_deletes=True,
+        file_filter=lambda f: f.LocalPath().endswith('.mojom'))
 
-        process = input_api.subprocess.Popen([
-            input_api.python3_executable,
-            input_api.os_path.join(
-                input_api.PresubmitLocalPath(), 'mojo', 'public', 'tools',
-                'mojom', 'check_stable_mojom_compatibility.py'), '--src-root',
-            input_api.PresubmitLocalPath()
-        ],
-                                             stdin=input_api.subprocess.PIPE,
-                                             stdout=input_api.subprocess.PIPE,
-                                             stderr=input_api.subprocess.PIPE,
-                                             universal_newlines=True)
-        (_, error) = process.communicate(input=input_api.json.dumps(delta))
-        if process.returncode:
+    delta = []
+    for mojom in changed_mojoms:
+        delta.append({
+            'filename': mojom.LocalPath(),
+            'old': '\n'.join(mojom.OldContents()) or None,
+            'new': '\n'.join(mojom.NewContents()) or None,
+        })
+
+    def parse_output(returncode, stdout, stderr):
+        failed = bool(returncode)
+        if failed != expect_stable_mojom_failures:
+            if expect_stable_mojom_failures:
+                return [unnecessary_footer_error]
             return [
                 output_api.PresubmitError(
                     'One or more [Stable] mojom definitions changed in a way '
@@ -7792,23 +7789,25 @@ def CheckStableMojomChanges(input_api, output_api):
                     'If you are confident this is a false positive, add '
                     '`No-Stable-Mojom-Checks: true` to the git footers to suppress '
                     'this check.',
-                    long_text=error)
+                    long_text=stderr)
             ]
         return []
 
-    results = CheckMojomsIfNeeded()
-    if bool(results) != expect_stable_mojom_failures:
-        if expect_stable_mojom_failures:
-            return [
-                output_api.PresubmitError(
-                    'No [Stable] mojom definitions changed in a way breaks '
-                    'backward compatibility.\n\n'
-                    'Please remove the unnecessary git footer '
-                    '`No-Stable-Mojom-Checks: true`.')
-            ]
-        else:
-            return results
-    return []
+    cmd = [
+        input_api.python3_executable,
+        input_api.os_path.join(input_api.PresubmitLocalPath(), 'mojo', 'public',
+                               'tools', 'mojom',
+                               'check_stable_mojom_compatibility.py'),
+        '--src-root',
+        input_api.PresubmitLocalPath(),
+    ]
+    return input_api.RunTests([
+        input_api.Command(
+            name='check_stable_mojom_compatibility',
+            cmd=cmd,
+            kwargs={'stdin': input_api.json.dumps(delta).encode('utf-8')},
+            output_parser=parse_output)
+    ])
 
 
 def CheckNoMojomDataViewIncludes(input_api, output_api):
