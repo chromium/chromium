@@ -7,8 +7,15 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
 #searchField {
   --cr-toolbar-search-field-background: var(--color-toolbar);
+  flex-shrink: 0;
   margin: 12px;
   margin-top: 4px;
   width: auto;
@@ -17,4 +24,11 @@
 #shortcut {
   color: var(--cr-secondary-text-color);
   margin-inline-end: 12px;
+}
+
+#list {
+  flex: 1;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
