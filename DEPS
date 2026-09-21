@@ -349,7 +349,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
-  'angle_revision': 'b62f95698adf848a7deaa87428d123290b240760',
+  'angle_revision': '238d0aabc10b2faf36063509d2aadff842b7642b',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
@@ -4032,7 +4032,7 @@ deps = {
 
   'src/components/optimization_guide/internal': {
       'url': Var('chrome_git') + '/chrome/components/optimization_guide.git' + '@' +
-        '983887ae8febeaa493808ecc35ecf68fba9d5846',
+        '207a7f7f1694dcf30180480b8435727736677c39',
       'condition': 'checkout_src_internal',
   },
 
