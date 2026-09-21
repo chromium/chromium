@@ -312,6 +312,7 @@ class LocationBarMediator
     private @Deprecated boolean mUrlHasFocus; // Please check mCurrentInput instead.
     private final NonNullObservableSupplier<Boolean> mWindowHasFocusSupplier;
     private final Callback<Boolean> mOnWindowFocusChanged = this::onWindowFocusChanged;
+    private final Callback<Boolean> mTextWrappingObserver = this::onTextWrappingChanged;
     private @Nullable PrefChangeRegistrar mPrefChangeRegistrar;
 
     private @Nullable Boolean mPreviousDeleteButtonVisible;
@@ -342,6 +343,7 @@ class LocationBarMediator
     private boolean mMiniOriginMode;
     private LocationBarSelectionController mSelectionController;
     private boolean mIsTextWrapping;
+    private @Nullable NonNullObservableSupplier<Boolean> mUrlTextWrappingSupplier;
 
     /*package */ LocationBarMediator(
             Context context,
@@ -522,6 +524,8 @@ class LocationBarMediator
         mUrlCoordinator = urlCoordinator;
         mAutocompleteCoordinator = autocompleteCoordinator;
         mStatusCoordinator = statusCoordinator;
+        mUrlTextWrappingSupplier = urlCoordinator.getUrlTextWrappingSupplier();
+        mUrlTextWrappingSupplier.addSyncObserverAndCallIfNonNull(mTextWrappingObserver);
 
         // Set up VoiceRecognitionHandler once mAutocompleteCoordinator is set.
         if (mVoiceRecognitionHandler == null) {
@@ -688,6 +692,9 @@ class LocationBarMediator
         }
         mLocationBarLayout.removeOnLayoutChangeListener(mOnLocationBarLayoutChange);
         mDeferredFocusCurrentTab = false;
+        if (mUrlTextWrappingSupplier != null) {
+            mUrlTextWrappingSupplier.removeObserver(mTextWrappingObserver);
+        }
     }
 
     /*package */ void onUrlFocusChange(UrlBarFocusChangeInfo info) {
@@ -3567,7 +3574,7 @@ class LocationBarMediator
         mLocationBarLayout.setActivationChipCompact(shouldBeCompact);
     }
 
-    public void setIsTextWrapping(boolean isTextWrapping) {
+    private void onTextWrappingChanged(boolean isTextWrapping) {
         if (mIsTextWrapping == isTextWrapping) return;
         mIsTextWrapping = isTextWrapping;
         updateActivationChipCompact();

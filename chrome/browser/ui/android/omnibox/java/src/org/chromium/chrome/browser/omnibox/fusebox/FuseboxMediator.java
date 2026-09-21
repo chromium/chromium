@@ -133,7 +133,8 @@ import java.util.function.Supplier;
     private final OmniboxResourceProvider mResourceProvider;
     private @Nullable AttachmentsSelectionController mSelectionController;
 
-    private boolean mIsTextWrapping;
+    private final NonNullObservableSupplier<Boolean> mUrlTextWrappingSupplier;
+    private final Callback<Boolean> mOnTextWrappingChanged = _ -> updateFuseboxState();
     private @BrandedColorScheme int mBrandedColorScheme = BrandedColorScheme.APP_DEFAULT;
     private @Nullable Profile mProfile;
     private @Nullable AutocompleteInput mInput;
@@ -172,7 +173,8 @@ import java.util.function.Supplier;
             Supplier<@Nullable View> scrimAnchorViewSupplier,
             BackPressManager backPressManager,
             @Nullable Runnable onFirstPickerInteractionCanceledCallback,
-            SettableNonNullObservableSupplier<Boolean> hasAttachmentsSupplier) {
+            SettableNonNullObservableSupplier<Boolean> hasAttachmentsSupplier,
+            NonNullObservableSupplier<Boolean> urlTextWrappingSupplier) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mPermissionDelegate = windowAndroid;
@@ -190,6 +192,8 @@ import java.util.function.Supplier;
         mOnFirstPickerInteractionCanceledCallback = onFirstPickerInteractionCanceledCallback;
         mIsDesktopPlatform = OmniboxCapabilities.isDesktopPlatform();
         mHasAttachmentsSupplier = hasAttachmentsSupplier;
+        mUrlTextWrappingSupplier = urlTextWrappingSupplier;
+        mUrlTextWrappingSupplier.addSyncObserverAndCallIfNonNull(mOnTextWrappingChanged);
 
         // Create the upload failed snackbar.
         mAttachmentUploadFailedSnackbar =
@@ -236,6 +240,7 @@ import java.util.function.Supplier;
     /* package */ void destroy() {
         endInput();
         mBackPressManager.removeHandler(this);
+        mUrlTextWrappingSupplier.removeObserver(mOnTextWrappingChanged);
     }
 
     public boolean wasPopupItemSelected() {
@@ -363,7 +368,6 @@ import java.util.function.Supplier;
         setAutocompleteInput(null);
         mProfile = null;
         mMetrics = null;
-        mIsTextWrapping = false;
         updateFuseboxState();
     }
 
@@ -485,11 +489,6 @@ import java.util.function.Supplier;
         }
     }
 
-    /* package */ void setIsTextWrapping(boolean isTextWrapping) {
-        mIsTextWrapping = isTextWrapping;
-        updateFuseboxState();
-    }
-
     private void updateFuseboxState() {
         @FuseboxState int targetState;
         boolean showRequestTypeButton = shouldShowRequestTypeButton();
@@ -504,11 +503,12 @@ import java.util.function.Supplier;
             boolean isPopover =
                     mModel.get(FuseboxProperties.FUSEBOX_LAYOUT_MODE)
                             == FuseboxLayoutMode.SUGGESTIONS_POPOVER;
+            boolean isTextWrapping = mUrlTextWrappingSupplier.get();
             targetState =
                     // If we're showing the request type button...
                     showRequestTypeButton
                                     // or the text is wrapping (popover doesn't care)...
-                                    || (mIsTextWrapping && !isPopover)
+                                    || (isTextWrapping && !isPopover)
                                     // or the attachments list has elements...
                                     || !mModelList.isEmpty()
                                     // or popover with any ai request type, even when the request

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.fusebox;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
@@ -135,6 +136,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
 
     // Mediator is scoped to a particular profile. Can reuse as long as the profile does not change.
     private @Nullable FuseboxMediator mMediator;
+    private @Nullable NonNullObservableSupplier<Boolean> mUrlTextWrappingSupplier;
     private @Nullable @BrandedColorScheme Integer mLastBrandedColorScheme;
     private boolean mDestroyed;
     private @Nullable Callback<Boolean> mOnInteractionCompletedCallback;
@@ -304,7 +306,8 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                         mScrimAnchorViewSupplier,
                         mBackPressManager,
                         mOnFirstPickerInteractionCanceledCallback,
-                        mHasAttachmentsSupplier);
+                        mHasAttachmentsSupplier,
+                        assertNonNull(mUrlTextWrappingSupplier));
         if (mLastBrandedColorScheme != null) {
             mMediator.updateVisualsForState(mLastBrandedColorScheme);
         }
@@ -477,12 +480,18 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     }
 
     /**
-     * @param isTextWrapping Whether the text is wrapping or not.
+     * Sets the supplier for whether the URL bar text is currently wrapping.
+     *
+     * <p>This method is an {@link Initializer} called post-construction because {@link
+     * FuseboxCoordinator} is constructed before {@link UrlBarCoordinator}. {@link FuseboxMediator}
+     * is created lazily after this initializer has set {@link #mUrlTextWrappingSupplier}, allowing
+     * the supplier to be passed directly into the mediator's constructor.
+     *
+     * @param supplier The supplier to observe.
      */
-    public void onFuseboxTextWrappingChanged(boolean isTextWrapping) {
-        if (mMediator != null) {
-            mMediator.setIsTextWrapping(isTextWrapping);
-        }
+    @Initializer
+    public void setUrlTextWrappingSupplier(NonNullObservableSupplier<Boolean> supplier) {
+        mUrlTextWrappingSupplier = supplier;
     }
 
     public void notifyOmniboxSessionEnded(boolean userDidNavigate) {

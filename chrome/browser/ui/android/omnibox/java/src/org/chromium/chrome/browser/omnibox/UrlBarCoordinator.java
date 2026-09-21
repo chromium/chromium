@@ -15,7 +15,9 @@ import android.view.inputmethod.InputMethodManager;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ObserverList;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
@@ -64,12 +66,12 @@ public class UrlBarCoordinator
     private final KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     private final Callback<UrlBarFocusChangeInfo> mFocusChangeCallback;
     private final Callback<Boolean> mTextWrappedCallback;
-    private final ObserverList<Callback<Boolean>> mTextWrapListeners = new ObserverList<>();
+    private final SettableNonNullObservableSupplier<Boolean> mTextWrappingSupplier =
+            ObservableSuppliers.createNonNull(false);
     private final Runnable mKeyboardTransitionRunnable = this::resolveKeyboardTransition;
     private @Nullable Runnable mKeyboardHideTask;
     private @KeyboardState int mKeyboardState = KeyboardState.HIDDEN;
     private boolean mHasFocus;
-    private boolean mTextIsWrapped;
 
     /**
      * Constructs a coordinator for the given UrlBar view.
@@ -139,6 +141,7 @@ public class UrlBarCoordinator
         }
         mUrlBar.removeCallbacks(mKeyboardTransitionRunnable);
         mKeyboardState = KeyboardState.HIDDEN;
+        mTextWrappingSupplier.destroy();
         mUrlBar.destroy();
     }
 
@@ -154,32 +157,16 @@ public class UrlBarCoordinator
 
     /** Returns whether the url bar currently contains more than a single line of text. */
     public boolean isTextWrapped() {
-        return mTextIsWrapped;
+        return mTextWrappingSupplier.get();
     }
 
-    /**
-     * Adds a listener for text wrapping changes.
-     *
-     * @param listener The listener to be added.
-     */
-    public void addTextWrappingChangeListener(Callback<Boolean> listener) {
-        mTextWrapListeners.addObserver(listener);
-    }
-
-    /**
-     * Removes a listener for text wrapping changes.
-     *
-     * @param listener The listener to be removed.
-     */
-    public void removeTextWrappingChangeListener(Callback<Boolean> listener) {
-        mTextWrapListeners.removeObserver(listener);
+    /** Returns the supplier for whether the url bar text is wrapping across multiple lines. */
+    public NonNullObservableSupplier<Boolean> getUrlTextWrappingSupplier() {
+        return mTextWrappingSupplier;
     }
 
     private void onTextWrappingChanged(boolean isWrapped) {
-        mTextIsWrapped = isWrapped;
-        for (Callback<Boolean> listener : mTextWrapListeners) {
-            listener.onResult(isWrapped);
-        }
+        mTextWrappingSupplier.set(isWrapped);
     }
 
     /**

@@ -309,6 +309,8 @@ public class FuseboxMediatorUnitTest {
             ObservableSuppliers.createNonNull(PopupState.HIDDEN);
     private final SettableNonNullObservableSupplier<Boolean> mHasAttachmentsSupplier =
             ObservableSuppliers.createNonNull(false);
+    private final SettableNonNullObservableSupplier<Boolean> mUrlTextWrappingSupplier =
+            ObservableSuppliers.createNonNull(false);
     private final AutocompleteInput mInput = new AutocompleteInput();
 
     @Before
@@ -433,7 +435,8 @@ public class FuseboxMediatorUnitTest {
                         SupplierUtils.ofNull(),
                         mBackPressManager,
                         mOnFirstPickerInteractionCanceledCallback,
-                        mHasAttachmentsSupplier);
+                        mHasAttachmentsSupplier,
+                        mUrlTextWrappingSupplier);
         mMediator.beginInput(mSession);
     }
 
@@ -723,7 +726,7 @@ public class FuseboxMediatorUnitTest {
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
         recreateMediator();
 
-        mMediator.setIsTextWrapping(/* isTextWrapping= */ true);
+        mUrlTextWrappingSupplier.set(true);
 
         assertEquals(FuseboxState.EXPANDED, mModel.get(FuseboxProperties.FUSEBOX_STATE));
     }
@@ -734,8 +737,23 @@ public class FuseboxMediatorUnitTest {
         mModel.set(FuseboxProperties.FUSEBOX_LAYOUT_MODE, FuseboxLayoutMode.SUGGESTIONS_POPOVER);
         recreateMediator();
 
-        mMediator.setIsTextWrapping(/* isTextWrapping= */ true);
+        mUrlTextWrappingSupplier.set(true);
 
+        assertEquals(FuseboxState.COMPACT, mModel.get(FuseboxProperties.FUSEBOX_STATE));
+    }
+
+    @Test
+    public void updateFuseboxState_urlTextWrappingSupplier_updatesState() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ false);
+        mInput.setRequestType(AutocompleteRequestType.SEARCH);
+        recreateMediator();
+
+        assertEquals(FuseboxState.COMPACT, mModel.get(FuseboxProperties.FUSEBOX_STATE));
+
+        mUrlTextWrappingSupplier.set(true);
+        assertEquals(FuseboxState.EXPANDED, mModel.get(FuseboxProperties.FUSEBOX_STATE));
+
+        mUrlTextWrappingSupplier.set(false);
         assertEquals(FuseboxState.COMPACT, mModel.get(FuseboxProperties.FUSEBOX_STATE));
     }
 
@@ -850,7 +868,7 @@ public class FuseboxMediatorUnitTest {
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
         recreateMediator();
 
-        mMediator.setIsTextWrapping(/* isTextWrapping= */ true);
+        mUrlTextWrappingSupplier.set(true);
 
         assertEquals(FuseboxState.EXPANDED, mModel.get(FuseboxProperties.FUSEBOX_STATE));
         assertEquals(
@@ -1692,7 +1710,7 @@ public class FuseboxMediatorUnitTest {
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
         assertEquals(FuseboxState.COMPACT, mModel.get(FuseboxProperties.FUSEBOX_STATE));
 
-        mMediator.setIsTextWrapping(/* isTextWrapping= */ true);
+        mUrlTextWrappingSupplier.set(true);
         assertEquals(FuseboxState.EXPANDED, mModel.get(FuseboxProperties.FUSEBOX_STATE));
     }
 

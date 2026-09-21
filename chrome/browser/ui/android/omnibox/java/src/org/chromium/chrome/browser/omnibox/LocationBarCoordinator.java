@@ -154,7 +154,6 @@ public class LocationBarCoordinator
     private StatusCoordinator mStatusCoordinator;
     private FuseboxCoordinator mFuseboxCoordinator;
     private final WindowAndroid mWindowAndroid;
-    private final Callback<Boolean> mTextWrappingListener;
     private final Callback<@FuseboxState Integer> mOnFuseboxStateChange =
             this::onFuseboxStateChange;
     private final Callback<@PopupState Integer> mOnPopupStateChange = this::onPopupStateChange;
@@ -437,9 +436,8 @@ public class LocationBarCoordinator
 
         initializeBoundsEllipsis(locationBarDataProvider);
 
-        // Set up text wrapping listener for FuseboxCoordinator
-        mTextWrappingListener = this::onTextWrappingChanged;
-        mUrlCoordinator.addTextWrappingChangeListener(mTextWrappingListener);
+        mFuseboxCoordinator.setUrlTextWrappingSupplier(
+                mUrlCoordinator.getUrlTextWrappingSupplier());
 
         mAutocompleteCoordinator =
                 new AutocompleteCoordinator(
@@ -642,7 +640,6 @@ public class LocationBarCoordinator
         }
 
         mLocationBarMediator.removeUrlFocusChangeListener(mUrlCoordinator);
-        mUrlCoordinator.removeTextWrappingChangeListener(mTextWrappingListener);
         mUrlCoordinator.destroy();
         mUrlCoordinator = null;
 
@@ -1012,14 +1009,6 @@ public class LocationBarCoordinator
      */
     public void setUrlBarFocusable(boolean focusable) {
         mUrlCoordinator.setAllowFocus(focusable);
-    }
-
-    /* package */ void onTextWrappingChanged(boolean isWrapping) {
-        if (mFuseboxCoordinator != null) {
-            mFuseboxCoordinator.onFuseboxTextWrappingChanged(isWrapping);
-        }
-        mLocationBarMediator.setIsTextWrapping(isWrapping);
-        mLocationBarMediator.updateButtonVisibility();
     }
 
     /* package */ void onFuseboxStateChange(@FuseboxState int newState) {

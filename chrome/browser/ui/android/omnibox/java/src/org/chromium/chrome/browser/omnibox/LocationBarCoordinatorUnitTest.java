@@ -204,14 +204,6 @@ public class LocationBarCoordinatorUnitTest {
     }
 
     @Test
-    public void testOnTextWrappingChanged() {
-        mCoordinator.onTextWrappingChanged(/* isWrapping= */ true);
-        verify(mFuseboxCoordinator).onFuseboxTextWrappingChanged(/* isTextWrapping= */ true);
-        verify(mLocationBarMediator).setIsTextWrapping(true);
-        verify(mLocationBarMediator).updateButtonVisibility();
-    }
-
-    @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testOptionalButton_shownThenHidden() {
         ButtonData buttonData = setUpPhoneLayoutWithOptionalButton();

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
@@ -48,6 +50,7 @@ public class UrlBarCoordinatorUnitTest {
     @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     @Mock private Callback<UrlBarFocusChangeInfo> mFocusChangeCallback;
     @Captor private ArgumentCaptor<Runnable> mRunnableCaptor;
+    @Captor private ArgumentCaptor<Callback<Boolean>> mTextWrappingCallbackCaptor;
 
     private Context mContext;
     private UrlBarCoordinator mCoordinator;
@@ -242,5 +245,22 @@ public class UrlBarCoordinatorUnitTest {
     public void testSelectAllText_delegates() {
         mCoordinator.selectAllText();
         verify(mUrlBar).selectAll();
+    }
+
+    @Test
+    public void testUrlTextWrappingSupplier() {
+        var supplier = mCoordinator.getUrlTextWrappingSupplier();
+        assertFalse(supplier.get());
+        assertFalse(mCoordinator.isTextWrapped());
+
+        verify(mUrlBar).setUrlTextWrappingChangeListener(mTextWrappingCallbackCaptor.capture());
+
+        mTextWrappingCallbackCaptor.getValue().onResult(true);
+        assertTrue(supplier.get());
+        assertTrue(mCoordinator.isTextWrapped());
+
+        mTextWrappingCallbackCaptor.getValue().onResult(false);
+        assertFalse(supplier.get());
+        assertFalse(mCoordinator.isTextWrapped());
     }
 }

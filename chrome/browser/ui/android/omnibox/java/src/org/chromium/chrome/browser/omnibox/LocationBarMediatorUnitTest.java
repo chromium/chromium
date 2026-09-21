@@ -286,6 +286,8 @@ public class LocationBarMediatorUnitTest {
     private final FuseboxSessionState mSessionState = new FuseboxSessionState();
     private final SettableNonNullObservableSupplier<Boolean> mScrimVisibilitySupplier =
             ObservableSuppliers.createNonNull(false);
+    private final SettableNonNullObservableSupplier<Boolean> mUrlTextWrappingSupplier =
+            ObservableSuppliers.createNonNull(false);
     private final OmniboxAnimator mOmniboxAnimator = new OmniboxAnimator(1.0f, 0);
 
     // Members capturing final state of the LocationBarLayout elements.
@@ -455,6 +457,10 @@ public class LocationBarMediatorUnitTest {
                 .when(mAutocompleteCoordinator)
                 .setupSuggestionsListShowAnimation();
 
+        lenient()
+                .doReturn(mUrlTextWrappingSupplier)
+                .when(mUrlCoordinator)
+                .getUrlTextWrappingSupplier();
         mMediator.setCoordinators(mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         mMediator.setAddToHomescreenCoordinatorForTesting(mAddToHomescreenCoordinator);
         ObjectAnimatorShadow.setUrlAnimator(mUrlAnimator);
@@ -5442,10 +5448,12 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
-    public void updateActivationChipCompact_isTextWrappingTriggersCompact() {
+    public void urlTextWrappingSupplier_triggersUpdateActivationChipCompact() {
         OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
         when(mLocationBarLayout.isActivationChipCompact()).thenReturn(false);
-        mMediator.setIsTextWrapping(true);
+        verify(mLocationBarLayout, never()).setActivationChipCompact(true);
+
+        mUrlTextWrappingSupplier.set(true);
         verify(mLocationBarLayout).setActivationChipCompact(true);
     }
 
@@ -5471,7 +5479,7 @@ public class LocationBarMediatorUnitTest {
         when(mLocationBarLayout.isActivationChipCompact()).thenReturn(false);
 
         mMediator.beginInput(mSessionState.getAutocompleteInput());
-        mMediator.setIsTextWrapping(true);
+        mUrlTextWrappingSupplier.set(true);
 
         verify(mLocationBarLayout).setActivationChipCompact(true);
         when(mLocationBarLayout.isActivationChipCompact()).thenReturn(true);

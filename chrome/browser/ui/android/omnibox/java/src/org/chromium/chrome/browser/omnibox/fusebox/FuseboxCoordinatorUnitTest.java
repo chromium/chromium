@@ -139,6 +139,8 @@ public class FuseboxCoordinatorUnitTest {
     private final Function<Tab, @Nullable Bitmap> mTabFaviconFunction = (tab) -> mBitmap;
     private final NullableObservableSupplier<GURL> mPreviewMatchUrlSupplier =
             ObservableSuppliers.alwaysNull();
+    private final SettableNonNullObservableSupplier<Boolean> mUrlTextWrappingSupplier =
+            ObservableSuppliers.createNonNull(false);
 
     @Before
     public void setUp() {
@@ -181,18 +183,21 @@ public class FuseboxCoordinatorUnitTest {
     }
 
     private FuseboxCoordinator createCoordinator(boolean isForcedPhoneStyleOmnibox) {
-        return new FuseboxCoordinator(
-                mActivityController.get(),
-                mWindowAndroid,
-                mParent,
-                new OmniboxResourceProvider(
-                        mActivityController.get(), BrandedColorScheme.APP_DEFAULT),
-                mTabModelSelectorSupplier,
-                mTemplateUrlServiceSupplier,
-                mSnackbarManager,
-                /* scrimAnchorViewSupplier= */ SupplierUtils.ofNull(),
-                mBackPressManager,
-                isForcedPhoneStyleOmnibox);
+        FuseboxCoordinator coordinator =
+                new FuseboxCoordinator(
+                        mActivityController.get(),
+                        mWindowAndroid,
+                        mParent,
+                        new OmniboxResourceProvider(
+                                mActivityController.get(), BrandedColorScheme.APP_DEFAULT),
+                        mTabModelSelectorSupplier,
+                        mTemplateUrlServiceSupplier,
+                        mSnackbarManager,
+                        /* scrimAnchorViewSupplier= */ SupplierUtils.ofNull(),
+                        mBackPressManager,
+                        isForcedPhoneStyleOmnibox);
+        coordinator.setUrlTextWrappingSupplier(mUrlTextWrappingSupplier);
+        return coordinator;
     }
 
     @After
