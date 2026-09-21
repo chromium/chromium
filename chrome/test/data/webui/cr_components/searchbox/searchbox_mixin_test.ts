@@ -3532,4 +3532,40 @@ suite('SearchboxMixinVirtualFocusTest', () => {
     element.onMatchClick();
     assertFalse(element.keywordModeManager.isInKeywordMode);
   });
+
+  test(
+      'mousedown on match prevents focus loss and does not prematurely fill ' +
+          'input in zero state under virtual focus',
+      async () => {
+        element.activeQueryId = 0;
+        await element.onAutocompleteResultChanged(
+            createAutocompleteResultForTesting({
+              matches: [createSearchMatchForTesting()],
+            }));
+        await microtasksFinished();
+
+        const matchEl = element.getDropdownElement().shadowRoot.querySelector(
+            'cr-searchbox-match');
+        assertTrue(!!matchEl);
+
+        const mousedownEvent = new MouseEvent('mousedown', {
+          button: 0,
+          bubbles: true,
+          cancelable: true,
+          composed: true,
+        });
+        matchEl.dispatchEvent(mousedownEvent);
+        assertTrue(mousedownEvent.defaultPrevented);
+
+        // Even if focusin fires on the match element, virtual focus should
+        // ignore it and keep the input empty until click/navigation.
+        matchEl.dispatchEvent(new FocusEvent('focusin', {
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+
+        assertEquals('', element.getInputElement().inputElement.value);
+        assertDeepEquals(kDefaultSelection, element.selection);
+      });
 });

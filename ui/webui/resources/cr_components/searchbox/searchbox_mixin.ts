@@ -982,6 +982,9 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
     }
 
     async onMatchFocusin(e: CustomEvent<number>) {
+      if (this.virtualFocusEnabled) {
+        return;
+      }
       // Select the match that received focus.
       await this.getDropdownElement().selectIndex(e.detail);
       // Input selection (if any) likely drops due to focus change. Simply fill
