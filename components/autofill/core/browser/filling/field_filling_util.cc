@@ -251,7 +251,7 @@ std::optional<SelectOption> GetNumericSelectControlOption(
   return std::nullopt;
 }
 
-std::u16string GetObfuscatedValue(const std::u16string& value,
+std::u16string GetObfuscatedValue(std::u16string_view value,
                                   size_t visible_suffix_length) {
   // Same obfuscation symbol as used for credit cards - see also credit_card.h.
   //  - \u2022 - Bullet.

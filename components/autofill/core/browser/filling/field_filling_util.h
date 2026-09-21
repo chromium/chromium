@@ -70,7 +70,7 @@ std::optional<SelectOption> GetNumericSelectControlOption(
 // Returns an obfuscated version of `value` with a fixed total length of 8
 // slots. `visible_suffix_length` defines how many trailing characters (up to 4)
 // remain unmasked.
-std::u16string GetObfuscatedValue(const std::u16string& value,
+std::u16string GetObfuscatedValue(std::u16string_view value,
                                   size_t visible_suffix_length = 0);
 
 // Gets the country option to fill in a select control.

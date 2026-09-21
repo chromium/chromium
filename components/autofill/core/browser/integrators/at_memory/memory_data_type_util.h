@@ -62,6 +62,11 @@ ToAutofillPolicyDataCategory(MemoryDataType type);
 // information.
 bool IsSpiiMemoryDataType(MemoryDataType type);
 
+// Applies the same UI obfuscation format used by Autofill to an unmasked SPII
+// `value`.
+std::u16string ObfuscateSpiiValue(MemoryDataType type,
+                                  std::u16string_view value);
+
 // Converts a set of memory entry values into `personal_context::proto::Entity`.
 // `value` is the primary value of the memory entry corresponding to the
 // `memory_data_type` (for example, the actual passport number if the type is

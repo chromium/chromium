@@ -20,6 +20,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/break_iterator.h"
 #include "base/i18n/case_conversion.h"
+#include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -91,9 +92,11 @@ personal_context::proto::AtMemoryQueryRequest BuildAtMemoryQueryRequest(
   return request;
 }
 
-// Trims any obfuscating dots and formatting characters from `value`.
-std::u16string_view TrimObfuscatingDots(std::u16string_view value) {
-  return base::TrimString(value, kMidlineEllipsisDot, base::TRIM_LEADING);
+// Removes any obfuscating dots and formatting characters from `value`.
+std::u16string RemoveObfuscatingDots(std::u16string_view value) {
+  std::u16string result = base::i18n::StripWrappingBidiControlCharacters(value);
+  base::RemoveChars(result, kMidlineEllipsisDot, &result);
+  return result;
 }
 
 // Returns whether two values are equivalent for deduplication, comparing typed
@@ -102,18 +105,38 @@ bool AreValuesEquivalent(
     MemoryDataType type,
     std::u16string_view a_value,
     const std::optional<personal_context::proto::TypedValue>& a_typed_value,
+    bool is_a_autofill_sourced,
     std::u16string_view b_value,
-    const std::optional<personal_context::proto::TypedValue>& b_typed_value) {
+    const std::optional<personal_context::proto::TypedValue>& b_typed_value,
+    bool is_b_autofill_sourced) {
   if (a_typed_value && b_typed_value) {
     return *a_typed_value == *b_typed_value;
   }
-  bool is_obfuscated = IsSpiiMemoryDataType(type);
-  std::u16string_view clean_a =
-      is_obfuscated ? TrimObfuscatingDots(a_value) : a_value;
-  std::u16string_view clean_b =
-      is_obfuscated ? TrimObfuscatingDots(b_value) : b_value;
-  return normalization::NormalizeForComparison(clean_a) ==
-         normalization::NormalizeForComparison(clean_b);
+
+  const normalization::WhitespaceSpec whitespace_spec =
+      IsSpiiMemoryDataType(type) ? normalization::WhitespaceSpec::kDiscard
+                                 : normalization::WhitespaceSpec::kRetain;
+  const std::u16string a_normalized_value =
+      normalization::NormalizeForComparison(a_value, whitespace_spec);
+  const std::u16string b_normalized_value =
+      normalization::NormalizeForComparison(b_value, whitespace_spec);
+
+  if (!IsSpiiMemoryDataType(type)) {
+    return a_normalized_value == b_normalized_value;
+  }
+
+  if (is_a_autofill_sourced && !is_b_autofill_sourced) {
+    return RemoveObfuscatingDots(a_normalized_value) ==
+           RemoveObfuscatingDots(ObfuscateSpiiValue(type, b_normalized_value));
+  }
+
+  if (!is_a_autofill_sourced && is_b_autofill_sourced) {
+    return RemoveObfuscatingDots(
+               ObfuscateSpiiValue(type, a_normalized_value)) ==
+           RemoveObfuscatingDots(b_normalized_value);
+  }
+
+  return a_normalized_value == b_normalized_value;
 }
 
 // Returns an `EntryMetadata` for the given `type` in `result`, or
@@ -131,6 +154,12 @@ std::optional<EntryMetadata> GetMetadataForMemoryDataType(
     return *it;
   }
   return std::nullopt;
+}
+
+// Returns whether the result has Autofill as a source.
+bool IsAutofillSourced(const MemorySearchResult& result) {
+  return std::ranges::contains(result.sources, MemoryEntrySourceType::kAutofill,
+                               &MemoryEntrySource::type);
 }
 
 // Returns whether two results are considered duplicates and should be merged.
@@ -158,8 +187,12 @@ bool AreResultsDuplicates(const MemorySearchResult& a,
       (a.type_name != b.type_name || a.type_name.empty())) {
     return false;
   }
-  if (!AreValuesEquivalent(a.type, a.value, a.typed_value, b.value,
-                           b.typed_value)) {
+
+  const bool is_a_autofill_sourced = IsAutofillSourced(a);
+  const bool is_b_autofill_sourced = IsAutofillSourced(b);
+  if (!AreValuesEquivalent(a.type, a.value, a.typed_value,
+                           is_a_autofill_sourced, b.value, b.typed_value,
+                           is_b_autofill_sourced)) {
     return false;
   }
 
@@ -180,34 +213,28 @@ bool AreResultsDuplicates(const MemorySearchResult& a,
             std::optional<EntryMetadata> meta_b =
                 GetMetadataForMemoryDataType(b, mem_type);
             return meta_a && meta_b &&
-                   AreValuesEquivalent(mem_type, meta_a->value,
-                                       meta_a->typed_value, meta_b->value,
-                                       meta_b->typed_value);
+                   AreValuesEquivalent(
+                       mem_type, meta_a->value, meta_a->typed_value,
+                       is_a_autofill_sourced, meta_b->value,
+                       meta_b->typed_value, is_b_autofill_sourced);
           })) {
         return true;
       }
     }
   }
 
-  auto has_contradicting_metadata = [](const MemorySearchResult& result,
-                                       const EntryMetadata& meta) {
-    return std::ranges::any_of(
-        result.metadata_list, [&](const EntryMetadata& result_meta) {
-          return result_meta.type == meta.type &&
-                 result_meta.type_name == meta.type_name &&
-                 !AreValuesEquivalent(meta.type, result_meta.value,
-                                      result_meta.typed_value, meta.value,
-                                      meta.typed_value);
-        });
-  };
-
-  return std::ranges::all_of(a.metadata_list,
-                             [&](const EntryMetadata& meta_a) {
-                               return !has_contradicting_metadata(b, meta_a);
-                             }) &&
-         std::ranges::all_of(b.metadata_list, [&](const EntryMetadata& meta_b) {
-           return !has_contradicting_metadata(a, meta_b);
-         });
+  return std::ranges::none_of(
+      a.metadata_list, [&](const EntryMetadata& meta_a) {
+        return std::ranges::any_of(
+            b.metadata_list, [&](const EntryMetadata& meta_b) {
+              return meta_a.type == meta_b.type &&
+                     meta_a.type_name == meta_b.type_name &&
+                     !AreValuesEquivalent(
+                         meta_a.type, meta_a.value, meta_a.typed_value,
+                         is_a_autofill_sourced, meta_b.value,
+                         meta_b.typed_value, is_b_autofill_sourced);
+            });
+      });
 }
 
 // Returns the number of metadata fields in the result that have a non-empty
@@ -216,12 +243,6 @@ int CountNonEmptyMetadata(const MemorySearchResult& result) {
   return std::ranges::count_if(
       result.metadata_list,
       [](const EntryMetadata& meta) { return !meta.value.empty(); });
-}
-
-// Returns whether the result has Autofill as a source.
-bool IsAutofillSourced(const MemorySearchResult& result) {
-  return std::ranges::contains(result.sources, MemoryEntrySourceType::kAutofill,
-                               &MemoryEntrySource::type);
 }
 
 // Primary logic for resolving duplicates.

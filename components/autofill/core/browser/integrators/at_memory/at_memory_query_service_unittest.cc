@@ -288,6 +288,8 @@ class AtMemoryQueryServiceTest : public testing::Test,
         proto_type = personal_context::proto::MEMORY_DATA_TYPE_PHONE;
       } else if (local_result.type == MemoryDataType::kAddressFull) {
         proto_type = personal_context::proto::MEMORY_DATA_TYPE_ADDRESS_FULL;
+      } else if (local_result.type == MemoryDataType::kIban) {
+        proto_type = personal_context::proto::MEMORY_DATA_TYPE_IBAN;
       }
       plan->add_fetch_specifications()->set_data_type(proto_type);
     }
@@ -852,29 +854,99 @@ TEST_F(AtMemoryQueryServiceTest,
   EXPECT_EQ(result.entries.size(), 1u);
 }
 
-// Tests that deduplication works when the local data is obfuscated with dots
-// and the remote one is a raw suffix.
+// Tests that deduplication works when the local Autofill data is obfuscated
+// with dots and the remote Sian entry is unmasked.
 TEST_F(AtMemoryQueryServiceTest, Query_DeduplicatesResults_ObfuscatedValues) {
-  // Local, obfuscated result.
+  // Local, obfuscated Autofill result.
   std::u16string raw_value = u"DL123456789012";
   std::u16string obfuscated_value = GetObfuscatedValue(raw_value, 4);
 
   MemorySearchResult result1(MemoryDataType::kDriversLicenseNumber,
                              u"Driver's license number", obfuscated_value);
   result1.is_local = true;
+  result1.sources = {MemoryEntrySource(MemoryEntrySourceType::kAutofill)};
   result1.metadata_list.emplace_back(MemoryDataType::kDriversLicenseName,
                                      u"Name", u"John Doe");
 
-  // Remote result with last 4 digits.
+  // Remote Sian result with unmasked value.
   MemorySearchResult result2(MemoryDataType::kDriversLicenseNumber,
-                             u"Driver's license number", u"9012");
+                             u"Driver's license number", raw_value);
   result2.is_local = false;
+  result2.sources = {MemoryEntrySource(MemoryEntrySourceType::kGmail)};
   result2.metadata_list.emplace_back(MemoryDataType::kDriversLicenseName,
                                      u"Name", u"John Doe");
 
   const MemorySearchResults& result =
       RunDeduplicationQueryWithLocalResults({result1, result2});
   EXPECT_EQ(result.entries.size(), 1u);
+}
+
+// Tests that deduplication works for IBANs when local Autofill data is masked
+// (prefix + middle dots + suffix) and remote Sian data is unmasked and
+// formatted with spaces.
+TEST_F(AtMemoryQueryServiceTest,
+       Query_DeduplicatesResults_ObfuscatedIbanWithUnmaskedSianIban) {
+  std::u16string raw_iban = u"DE91100000000123456789";
+  std::u16string obfuscated_iban = GetObfuscatedIban(raw_iban);
+
+  MemorySearchResult result1(MemoryDataType::kIban, u"IBAN", obfuscated_iban);
+  result1.is_local = true;
+  result1.sources = {MemoryEntrySource(MemoryEntrySourceType::kAutofill)};
+
+  MemorySearchResult result2(MemoryDataType::kIban, u"IBAN",
+                             u"DE91 1000 0000 0123 4567 89");
+  result2.is_local = false;
+  result2.sources = {MemoryEntrySource(MemoryEntrySourceType::kGmail)};
+
+  const MemorySearchResults& result =
+      RunDeduplicationQueryWithLocalResults({result1, result2});
+  EXPECT_EQ(result.entries.size(), 1u);
+}
+
+// Tests that deduplication works when an unmasked Sian SPII attribute appears
+// in metadata (e.g., passport number merge constraint on a passport name
+// query).
+TEST_F(AtMemoryQueryServiceTest,
+       Query_DeduplicatesResults_UnmaskedSianSpiiInMergeConstraintMetadata) {
+  MemorySearchResult result1(MemoryDataType::kPassportName, u"Name",
+                             u"John Doe");
+  result1.is_local = true;
+  result1.sources = {MemoryEntrySource(MemoryEntrySourceType::kAutofill)};
+  result1.metadata_list.emplace_back(MemoryDataType::kPassportNumber,
+                                     u"Passport number",
+                                     GetObfuscatedValue(u"123456789", 4));
+
+  MemorySearchResult result2(MemoryDataType::kPassportName, u"Name",
+                             u"John Doe");
+  result2.is_local = false;
+  result2.sources = {MemoryEntrySource(MemoryEntrySourceType::kGmail)};
+  result2.metadata_list.emplace_back(MemoryDataType::kPassportNumber,
+                                     u"Passport number", u"123456789");
+
+  const MemorySearchResults& result =
+      RunDeduplicationQueryWithLocalResults({result1, result2});
+  EXPECT_EQ(result.entries.size(), 1u);
+}
+
+// Tests that two distinct unmasked remote Sian SPII entries that share the
+// same trailing 4 digits are compared using their full unmasked values and are
+// not falsely deduplicated.
+TEST_F(
+    AtMemoryQueryServiceTest,
+    Query_DeduplicatesResults_TwoUnmaskedSianSpiiWithSameSuffix_NotDeduplicated) {
+  MemorySearchResult result1(MemoryDataType::kPassportNumber,
+                             u"Passport number", u"AA11116789");
+  result1.is_local = false;
+  result1.sources = {MemoryEntrySource(MemoryEntrySourceType::kGmail)};
+
+  MemorySearchResult result2(MemoryDataType::kPassportNumber,
+                             u"Passport number", u"BB22226789");
+  result2.is_local = false;
+  result2.sources = {MemoryEntrySource(MemoryEntrySourceType::kGmail)};
+
+  const MemorySearchResults& result =
+      RunDeduplicationQueryWithLocalResults({result1, result2});
+  EXPECT_EQ(result.entries.size(), 2u);
 }
 
 // Tests that results with matching metadata `TypedValue`s are deduplicated,
