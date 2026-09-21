@@ -63,6 +63,16 @@ void FakeDesktopMediaList::SetSourcePreview(int index, gfx::ImageSkia preview) {
   observer_->OnSourcePreviewChanged(index);
 }
 
+void FakeDesktopMediaList::SetSourceSharingBlocked(int index,
+                                                   bool is_sharing_blocked) {
+  sources_[index].is_sharing_blocked = is_sharing_blocked;
+  if (observer_) {
+    // Reuse OnSourceThumbnailChanged to refresh the table row's icon,
+    // tooltip, preview state, and dialog button enablement.
+    observer_->OnSourceThumbnailChanged(index);
+  }
+}
+
 void FakeDesktopMediaList::SetUpdatePeriod(base::TimeDelta period) {}
 
 void FakeDesktopMediaList::SetThumbnailSize(const gfx::Size& thumbnail_size) {}

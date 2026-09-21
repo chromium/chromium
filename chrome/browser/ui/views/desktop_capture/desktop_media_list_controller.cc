@@ -183,6 +183,7 @@ DesktopMediaListController::GetSelection() const {
 }
 
 void DesktopMediaListController::ClearSelection() {
+  selected_source_sharing_blocked_ = std::nullopt;
   if (view_) {
     view_->ClearSelection();
   }
@@ -193,6 +194,11 @@ void DesktopMediaListController::OnSourceListLayoutChanged() {
 }
 
 void DesktopMediaListController::OnSourceSelectionChanged() {
+  if (std::optional<content::DesktopMediaID> selection = GetSelection()) {
+    selected_source_sharing_blocked_ = IsSourceSharingBlocked(*selection);
+  } else {
+    selected_source_sharing_blocked_ = std::nullopt;
+  }
   dialog_->OnSelectionChanged();
 }
 
@@ -218,6 +224,17 @@ size_t DesktopMediaListController::GetSourceCount() const {
 const DesktopMediaList::Source& DesktopMediaListController::GetSource(
     size_t index) const {
   return media_list_->GetSource(index);
+}
+
+bool DesktopMediaListController::IsSourceSharingBlocked(
+    const content::DesktopMediaID& id) const {
+  for (size_t i = 0; i < GetSourceCount(); ++i) {
+    const DesktopMediaList::Source& source = GetSource(i);
+    if (source.id == id) {
+      return source.is_sharing_blocked;
+    }
+  }
+  return false;
 }
 
 void DesktopMediaListController::SetThumbnailSize(const gfx::Size& size) {
@@ -280,6 +297,12 @@ void DesktopMediaListController::OnSourceThumbnailChanged(int index) {
   if (view_) {
     view_->GetSourceListListener()->OnSourceThumbnailChanged(
         base::checked_cast<size_t>(index));
+    const DesktopMediaList::Source& source = GetSource(index);
+    if (GetSelection() == source.id &&
+        selected_source_sharing_blocked_ != source.is_sharing_blocked) {
+      selected_source_sharing_blocked_ = source.is_sharing_blocked;
+      dialog_->OnSelectionChanged();
+    }
   }
 }
 

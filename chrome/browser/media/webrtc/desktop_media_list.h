@@ -75,6 +75,9 @@ class DesktopMediaList {
     // A preview for this source, used when both a thumbnail and preview are
     // used. Currently only the case in the tab_desktop_media_list.
     gfx::ImageSkia preview;
+
+    // Whether sharing this source is blocked by enterprise policy.
+    bool is_sharing_blocked = false;
   };
 
   using UpdateCallback = base::OnceClosure;

@@ -177,13 +177,14 @@ void TabDesktopMediaList::Refresh(bool update_thumbnails) {
                                 main_frame->GetProcess()->GetDeprecatedID(),
                                 main_frame->GetRoutingID()));
 
-    media_id.is_sharing_blocked =
+    const bool is_sharing_blocked =
         page_user_data && !page_user_data->settings().allow_screenshots;
 
     // Get tab's last active time stamp.
     const base::TimeTicks t = contents->GetLastActiveTimeTicks();
-    tab_map.insert(
-        std::make_pair(t, SourceDescription(media_id, contents->GetTitle())));
+    tab_map.insert(std::make_pair(
+        t,
+        SourceDescription(media_id, contents->GetTitle(), is_sharing_blocked)));
 
     // Get favicon for tab.
     favicon::FaviconDriver* favicon_driver =
