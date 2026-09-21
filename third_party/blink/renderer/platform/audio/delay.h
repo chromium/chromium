@@ -90,11 +90,6 @@ class PLATFORM_EXPORT Delay final {
   std::tuple<size_t, size_t> ProcessARateVector(base::span<float> destination,
                                                 size_t frames_to_process) const;
 
-  // Handle NaN values in `delay_times`.  Replace NaN with `max_time`.
-  void HandleNaN(base::span<float> delay_times,
-                 size_t frames_to_process,
-                 float max_time);
-
   double DelayTime(float sample_rate);
 
   size_t BufferLengthForDelay(double delay_time,

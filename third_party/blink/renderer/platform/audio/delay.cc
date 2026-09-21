@@ -110,15 +110,6 @@ std::tuple<size_t, size_t> Delay::ProcessARateVector(
   return std::make_tuple(0, write_index_);
 }
 
-void Delay::HandleNaN(base::span<float> delay_times,
-                      size_t frames_to_process,
-                      float max_time) {
-  for (size_t k = 0; k < frames_to_process; ++k) {
-    if (std::isnan(delay_times[k])) {
-      delay_times[k] = max_time;
-    }
-  }
-}
 #endif
 
 size_t Delay::ProcessARateScalar(size_t start,
@@ -168,11 +159,6 @@ void Delay::ProcessARate(base::span<const float> source,
                          base::span<float> destination,
                          size_t frames_to_process) {
   DCHECK_LT(write_index_, buffer_.size());
-
-  // Any NaN's get converted to max time
-  // TODO(crbug.com/1013345): Don't need this if that bug is fixed
-  double max_time = MaxDelayTime();
-  HandleNaN(delay_times_.as_span(), frames_to_process, max_time);
 
   CopyToCircularBuffer(buffer_.as_span(), write_index_, source,
                        frames_to_process);

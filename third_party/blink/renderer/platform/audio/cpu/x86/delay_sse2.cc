@@ -144,40 +144,4 @@ std::tuple<size_t, size_t> Delay::ProcessARateVector(
   return std::make_tuple(k, w_index);
 }
 
-void Delay::HandleNaN(base::span<float> delay_times,
-                      size_t frames_to_process,
-                      float max_time) {
-  unsigned k = 0;
-  const unsigned number_of_loops =
-      base::checked_cast<unsigned>(frames_to_process / 4);
-
-  __m128 v_max_time = _mm_set1_ps(max_time);
-
-  // This is approximately 4 times faster than the scalar version.
-  for (unsigned loop = 0; loop < number_of_loops; ++loop, k += 4) {
-    __m128 x = _mm_loadu_ps(delay_times.subspan(k, 4u).data());
-    // 0xffffffff if x is NaN. Otherwise 0
-    __m128 cmp = _mm_cmpunord_ps(x, x);
-
-    // Use cmp as a mask to set a component of x to 0 if is NaN.  Otherwise,
-    // preserve x.
-    x = _mm_andnot_ps(cmp, x);
-
-    // Now set cmp to be max_time if the value is 0xffffffff or 0.
-    cmp = _mm_and_ps(cmp, v_max_time);
-
-    // Merge i (bitwise or) x and cmp.  This makes x = max_time if x was NaN and
-    // preserves x if not.
-    x = _mm_or_ps(x, cmp);
-    _mm_storeu_ps(delay_times.subspan(k, 4u).data(), x);
-  }
-
-  // Handle any frames not done in the loop above.
-  for (; k < frames_to_process; ++k) {
-    if (std::isnan(delay_times[k])) {
-      delay_times[k] = max_time;
-    }
-  }
-}
-
 }  // namespace blink
