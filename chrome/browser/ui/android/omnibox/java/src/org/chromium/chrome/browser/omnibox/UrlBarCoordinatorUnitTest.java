@@ -218,6 +218,27 @@ public class UrlBarCoordinatorUnitTest {
     }
 
     @Test
+    public void setKeyboardVisibility_hideAfterShowRunnableFiresBeforeOsCallback_schedulesHide() {
+        mCoordinator.setKeyboardVisibility(
+                /* showKeyboard= */ true, /* shouldDelayHiding= */ false);
+        verify(mUrlBar).postDelayed(mRunnableCaptor.capture(), eq(150L));
+        mRunnableCaptor.getValue().run();
+        verify(mKeyboardVisibilityDelegate).showKeyboard(mUrlBar);
+
+        clearInvocations(mUrlBar);
+        mCoordinator.setKeyboardVisibility(
+                /* showKeyboard= */ false, /* shouldDelayHiding= */ false);
+        verify(mUrlBar).postDelayed(mRunnableCaptor.capture(), eq(150L));
+
+        // Late OS show callback must not cancel the pending hide runnable.
+        mCoordinator.keyboardVisibilityChanged(/* isKeyboardShowing= */ true);
+        verify(mUrlBar, never()).removeCallbacks(mRunnableCaptor.getValue());
+
+        mRunnableCaptor.getValue().run();
+        verify(mKeyboardVisibilityDelegate).hideKeyboard(mUrlBar);
+    }
+
+    @Test
     public void testSelectAllText_delegates() {
         mCoordinator.selectAllText();
         verify(mUrlBar).selectAll();

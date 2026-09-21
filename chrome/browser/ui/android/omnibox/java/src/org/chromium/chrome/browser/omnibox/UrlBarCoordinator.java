@@ -325,10 +325,16 @@ public class UrlBarCoordinator
         if (OmniboxFeatures.isDebounceKeyboardVisibilityEnabled()) {
             // When the OS notifies us that the keyboard visibility has changed (e.g. user
             // dismissed via back gesture or IME completed showing), any pending debounce
-            // transition is obsolete because the OS has reached a steady state. Clear the
-            // pending transition task and synchronize our internal state with reality.
-            mUrlBar.removeCallbacks(mKeyboardTransitionRunnable);
-            mKeyboardState = isKeyboardShowing ? KeyboardState.SHOWN : KeyboardState.HIDDEN;
+            // transition in the same direction is obsolete because the OS has reached a steady
+            // state. Do not cancel a pending transition in the opposite direction (e.g. when a
+            // late OS show callback arrives after a hide transition has already been queued).
+            boolean isOppositeTransitionPending =
+                    (isKeyboardShowing && mKeyboardState == KeyboardState.HIDING)
+                            || (!isKeyboardShowing && mKeyboardState == KeyboardState.SHOWING);
+            if (!isOppositeTransitionPending) {
+                mUrlBar.removeCallbacks(mKeyboardTransitionRunnable);
+                mKeyboardState = isKeyboardShowing ? KeyboardState.SHOWN : KeyboardState.HIDDEN;
+            }
         }
         // The cursor visibility should follow soft keyboard visibility and should be hidden
         // when keyboard is dismissed for any reason (including scroll).
@@ -431,8 +437,10 @@ public class UrlBarCoordinator
 
     private void resolveKeyboardTransition() {
         if (mKeyboardState == KeyboardState.SHOWING) {
+            mKeyboardState = KeyboardState.SHOWN;
             mKeyboardVisibilityDelegate.showKeyboard(mUrlBar);
         } else if (mKeyboardState == KeyboardState.HIDING) {
+            mKeyboardState = KeyboardState.HIDDEN;
             mKeyboardVisibilityDelegate.hideKeyboard(mUrlBar);
         }
     }
