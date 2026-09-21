@@ -483,6 +483,8 @@ void NativeWidgetNSWindowBridge::SetCommandDispatcher(
 }
 
 void NativeWidgetNSWindowBridge::SetParent(uint64_t new_parent_id) {
+  const bool was_allowing_screenshots = ShouldAllowScreenshots();
+
   // Remove from the old parent.
   if (parent_) {
     parent_->RemoveChildWindow(this);
@@ -510,6 +512,9 @@ void NativeWidgetNSWindowBridge::SetParent(uint64_t new_parent_id) {
     // collection behavior.
     window_.collectionBehavior =
         collectionBehavior | NSWindowCollectionBehaviorManaged;
+    if (!was_allowing_screenshots || !ShouldAllowScreenshots()) {
+      UpdateCaptureExclusion();
+    }
     return;
   }
 
@@ -522,6 +527,10 @@ void NativeWidgetNSWindowBridge::SetParent(uint64_t new_parent_id) {
   // transient collection behavior. See https://crbug.com/41305285.
   window_.collectionBehavior =
       collectionBehavior | NSWindowCollectionBehaviorTransient;
+
+  if (!was_allowing_screenshots || !ShouldAllowScreenshots()) {
+    UpdateCaptureExclusion();
+  }
 
   if (wants_to_be_visible_) {
     parent_->OrderChildren();
@@ -1349,11 +1358,35 @@ void NativeWidgetNSWindowBridge::DisplayContextMenu(
 }
 
 void NativeWidgetNSWindowBridge::SetAllowScreenshots(bool allow) {
+  if (allow_screenshots_ == allow) {
+    return;
+  }
   allow_screenshots_ = allow;
+  UpdateCaptureExclusion();
+}
+
+bool NativeWidgetNSWindowBridge::ShouldAllowScreenshots() const {
+  // A window inherits the capture exclusion of its ancestors: if this window or
+  // any of its ancestors disallows screenshots, this window is excluded from
+  // capture. This mirrors the Windows implementation, where an owned window
+  // inherits the display affinity of its owner. See
+  // `DesktopWindowTreeHostWin::UpdateDisplayAffinity()`.
+  if (!allow_screenshots_) {
+    return false;
+  }
+  return !parent_ || parent_->ShouldAllowScreenshots();
+}
+
+void NativeWidgetNSWindowBridge::UpdateCaptureExclusion() {
+  const bool allow = ShouldAllowScreenshots();
   if (capture_exclusion_applier_for_testing_) {
     capture_exclusion_applier_for_testing_.Run(ns_window(), allow);
   } else {
     ApplyCaptureExclusion(ns_window(), allow);
+  }
+
+  for (NativeWidgetNSWindowBridge* child : child_windows_) {
+    child->UpdateCaptureExclusion();
   }
 }
 
@@ -1473,8 +1506,10 @@ void NativeWidgetNSWindowBridge::OnWindowWillClose() {
 
 void NativeWidgetNSWindowBridge::OnSizeChanged() {
   UpdateWindowGeometry();
-  if (!allow_screenshots_) {
-    SetAllowScreenshots(false);
+  // The capture exclusion shape is expressed in window coordinates, so it has
+  // to be re-applied to match the new window size.
+  if (!ShouldAllowScreenshots()) {
+    UpdateCaptureExclusion();
   }
 }
 

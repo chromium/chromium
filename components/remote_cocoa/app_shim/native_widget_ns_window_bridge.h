@@ -431,6 +431,19 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // `MoveToActiveFullscreenSpace()`.
   void RestoreCollectionBehavior();
 
+  // Returns whether screenshots of this window are allowed, taking the window
+  // hierarchy into account: a window is excluded from capture if it or any of
+  // its ancestors disallows screenshots. This does not modify
+  // `allow_screenshots_` as that reflects the state requested by the
+  // host for this window.
+  bool ShouldAllowScreenshots() const;
+
+  // Applies the CoreGraphics window capture exclusion shape for this window and
+  // its child windows, which inherit this window's exclusion state. The shape
+  // is expressed in window coordinates, so this must also be called whenever
+  // the window is resized.
+  void UpdateCaptureExclusion();
+
   // CocoaMouseCaptureDelegate:
   bool PostCapturedEvent(NSEvent* event) override;
   void OnMouseCaptureLost() override;
@@ -545,6 +558,9 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
 
   base::RepeatingCallback<void(NSWindow*, bool)>
       capture_exclusion_applier_for_testing_;
+  // The screenshot state requested by the host for this window, ignoring any
+  // state inherited from ancestor windows. Use `ShouldAllowScreenshots()` to
+  // get the effective state.
   bool allow_screenshots_ = true;
 
   display::ScopedDisplayObserver display_observer_{this};

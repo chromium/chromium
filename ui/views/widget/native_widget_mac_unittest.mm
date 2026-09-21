@@ -329,6 +329,118 @@ TEST_F(NativeWidgetMacTest, ScreenshotProtectionTracksWindowSize) {
   widget->CloseNow();
 }
 
+TEST_F(NativeWidgetMacTest, ExcludeOwnedWindowsFromCapture) {
+  struct CaptureExclusionCall {
+    NSRect frame;
+    bool allow;
+  };
+
+  NativeWidgetMacTestWindow* parent_window = nil;
+  Widget::InitParams parent_params =
+      CreateParams(Widget::InitParams::TYPE_WINDOW);
+  parent_params.bounds = gfx::Rect(100, 100, 400, 300);
+  Widget* parent_widget =
+      CreateWidgetWithTestWindow(std::move(parent_params), &parent_window);
+
+  std::vector<CaptureExclusionCall> parent_calls;
+  BridgedNativeWidgetTestApi(parent_widget).SetCaptureExclusionApplier(
+      base::BindRepeating(
+          [](std::vector<CaptureExclusionCall>* calls, NSWindow* window,
+             bool allow) { calls->push_back({window.frame, allow}); },
+          &parent_calls));
+
+  // Exclude parent from capture.
+  parent_widget->SetAllowScreenshots(false);
+  EXPECT_FALSE(parent_widget->AreScreenshotsAllowed());
+  ASSERT_EQ(1u, parent_calls.size());
+  EXPECT_FALSE(parent_calls.back().allow);
+
+  // Create a child widget and install a capture exclusion test applier.
+  NativeWidgetMacTestWindow* child_window = nil;
+  Widget::InitParams child_params =
+      CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  child_params.bounds = gfx::Rect(150, 150, 200, 150);
+  Widget* child_widget =
+      CreateWidgetWithTestWindow(std::move(child_params), &child_window);
+
+  std::vector<CaptureExclusionCall> child_calls;
+  BridgedNativeWidgetTestApi(child_widget).SetCaptureExclusionApplier(
+      base::BindRepeating(
+          [](std::vector<CaptureExclusionCall>* calls, NSWindow* window,
+             bool allow) { calls->push_back({window.frame, allow}); },
+          &child_calls));
+
+  NativeWidgetMacNSWindowHost* child_host =
+      NativeWidgetMacNSWindowHost::GetFromNativeWindow(
+          child_widget->GetNativeWindow());
+  NativeWidgetMacNSWindowHost* parent_host =
+      NativeWidgetMacNSWindowHost::GetFromNativeWindow(
+          parent_widget->GetNativeWindow());
+  ASSERT_TRUE(child_host);
+  ASSERT_TRUE(parent_host);
+
+  // When attached to the excluded parent, the child window should inherit
+  // screenshot exclusion at the bridge level.
+  child_host->SetParent(parent_host);
+  EXPECT_EQ(parent_host, child_host->parent());
+  ASSERT_EQ(1u, child_calls.size());
+  EXPECT_FALSE(child_calls.back().allow);
+  EXPECT_TRUE(NSEqualRects(child_window.frame, child_calls.back().frame));
+
+  // Resizing the child while exclusion is active updates the exclusion shape to
+  // the new frame.
+  const NSRect child_initial_frame = child_window.frame;
+  const NSRect child_expanded_frame =
+      NSMakeRect(child_initial_frame.origin.x, child_initial_frame.origin.y,
+                 child_initial_frame.size.width + 50,
+                 child_initial_frame.size.height + 50);
+  [child_window setFrame:child_expanded_frame display:NO];
+  ASSERT_EQ(2u, child_calls.size());
+  EXPECT_FALSE(child_calls.back().allow);
+  EXPECT_TRUE(NSEqualRects(child_window.frame, child_calls.back().frame));
+
+  // Setting parent to true propagates to child.
+  parent_widget->SetAllowScreenshots(true);
+  EXPECT_TRUE(parent_widget->AreScreenshotsAllowed());
+  ASSERT_EQ(2u, parent_calls.size());
+  EXPECT_TRUE(parent_calls.back().allow);
+  ASSERT_EQ(3u, child_calls.size());
+  EXPECT_TRUE(child_calls.back().allow);
+
+  // Reparenting when both parent and child allow screenshots does not trigger
+  // capture exclusion updates.
+  child_host->SetParent(nullptr);
+  child_host->SetParent(parent_host);
+  EXPECT_EQ(3u, child_calls.size());
+
+  // Setting parent to false sets child to false as well.
+  parent_widget->SetAllowScreenshots(false);
+  EXPECT_FALSE(parent_widget->AreScreenshotsAllowed());
+  ASSERT_EQ(3u, parent_calls.size());
+  EXPECT_FALSE(parent_calls.back().allow);
+  ASSERT_EQ(4u, child_calls.size());
+  EXPECT_FALSE(child_calls.back().allow);
+
+  // A child that is false still is false once removed from a true parent.
+  child_widget->SetAllowScreenshots(false);
+  EXPECT_FALSE(child_widget->AreScreenshotsAllowed());
+  ASSERT_EQ(5u, child_calls.size());
+  EXPECT_FALSE(child_calls.back().allow);
+
+  parent_widget->SetAllowScreenshots(true);
+  ASSERT_EQ(4u, parent_calls.size());
+  EXPECT_TRUE(parent_calls.back().allow);
+  ASSERT_EQ(6u, child_calls.size());
+  EXPECT_FALSE(child_calls.back().allow);
+
+  child_host->SetParent(nullptr);
+  ASSERT_EQ(7u, child_calls.size());
+  EXPECT_FALSE(child_calls.back().allow);
+
+  child_widget->CloseNow();
+  parent_widget->CloseNow();
+}
+
 class WidgetChangeObserver : public TestWidgetObserver {
  public:
   explicit WidgetChangeObserver(Widget* widget) : TestWidgetObserver(widget) {}
