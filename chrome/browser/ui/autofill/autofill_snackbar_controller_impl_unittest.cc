@@ -383,4 +383,46 @@ TEST_F(AutofillSnackbarControllerImplTest, GetSnackbarType_VirtualCard) {
             AutofillSnackbarType::kVirtualCard);
 }
 
+TEST_F(AutofillSnackbarControllerImplTest, Metrics_AutofillAiSuppressionUndo) {
+  base::HistogramTester histogram_tester;
+  controller()->Show(AutofillSnackbarType::kAutofillAiSuppressionUndo,
+                     base::DoNothing());
+  // Verify that the count for Shown is incremented and ActionClicked hasn't
+  // changed. This also verifies GetSnackbarTypeForLogging() returns
+  // "AutofillAiSuppressionUndo".
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Snackbar.AutofillAiSuppressionUndo.Shown", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Snackbar.AutofillAiSuppressionUndo.ActionClicked", 0);
+  controller()->OnDismissed();
+
+  base::MockCallback<base::OnceClosure> on_action_clicked_callback;
+  controller()->Show(AutofillSnackbarType::kAutofillAiSuppressionUndo,
+                     on_action_clicked_callback.Get());
+  EXPECT_CALL(on_action_clicked_callback, Run);
+  controller()->OnActionClicked();
+
+  // Verify that the count for both Shown and ActionClicked is incremented.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Snackbar.AutofillAiSuppressionUndo.Shown", true, 2);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Snackbar.AutofillAiSuppressionUndo.ActionClicked", true, 1);
+}
+
+TEST_F(AutofillSnackbarControllerImplTest,
+       AutofillAiSuppressionUndoMessageAndActionButtonText) {
+  controller()->Show(AutofillSnackbarType::kAutofillAiSuppressionUndo,
+                     base::DoNothing());
+
+  EXPECT_EQ(controller()->GetSnackbarType(),
+            AutofillSnackbarType::kAutofillAiSuppressionUndo);
+  EXPECT_EQ(controller()->GetMessageText(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_AI_SUPPRESSION_UNDO_SNACKBAR_MESSAGE));
+  EXPECT_EQ(controller()->GetActionButtonText(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_AI_SUPPRESSION_UNDO_SNACKBAR_ACTION));
+  controller()->OnDismissed();
+}
+
 }  // namespace autofill

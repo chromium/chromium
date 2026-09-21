@@ -123,6 +123,9 @@ std::u16string AutofillSnackbarControllerImpl::GetMessageText() const {
     case AutofillSnackbarType::kAutofillAiFetchEntityFailure:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AI_FETCH_ENTITY_FAILURE_NOTIFICATION);
+    case AutofillSnackbarType::kAutofillAiSuppressionUndo:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_SUPPRESSION_UNDO_SNACKBAR_MESSAGE);
     case AutofillSnackbarType::kUnspecified:
       NOTREACHED();
   }
@@ -151,6 +154,9 @@ std::u16string AutofillSnackbarControllerImpl::GetActionButtonText() const {
     case AutofillSnackbarType::kAutofillAiFetchEntityFailure:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AI_SNACK_BAR_CONFIRMATION_BUTTON_LABEL);
+    case AutofillSnackbarType::kAutofillAiSuppressionUndo:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_SUPPRESSION_UNDO_SNACKBAR_ACTION);
     case AutofillSnackbarType::kUnspecified:
       NOTREACHED();
   }
@@ -196,6 +202,8 @@ std::string AutofillSnackbarControllerImpl::GetSnackbarTypeForLogging() const {
       return "AutofillAiSaveToWalletFailure";
     case AutofillSnackbarType::kAutofillAiFetchEntityFailure:
       return "AutofillAiFetchFromWalletFailure";
+    case AutofillSnackbarType::kAutofillAiSuppressionUndo:
+      return "AutofillAiSuppressionUndo";
     case AutofillSnackbarType::kUnspecified:
       return "Unspecified";
   }

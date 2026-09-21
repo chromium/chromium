@@ -92,6 +92,8 @@ public class AutofillSnackbarController implements SnackbarManager.SnackbarContr
 
     private static int getSnackbarIdentifier(@AutofillSnackbarType int snackbarType) {
         switch (snackbarType) {
+            case AutofillSnackbarType.AUTOFILL_AI_SUPPRESSION_UNDO:
+                return Snackbar.UMA_AUTOFILL_AI_SUPPRESSION_UNDO;
             case AutofillSnackbarType.VIRTUAL_CARD:
             default:
                 // Other snackbar types intentionally share UMA_AUTOFILL_VIRTUAL_CARD_FILLED

@@ -98,6 +98,24 @@ public class AutofillSnackbarControllerTest {
 
     @Test
     @SmallTest
+    public void testShow_AutofillAiSuppressionUndo() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mAutofillSnackbarController.show(
+                                SNACKBAR_MESSAGE_TEXT,
+                                SNACKBAR_ACTION_TEXT,
+                                SNACKBAR_DURATION,
+                                AutofillSnackbarType.AUTOFILL_AI_SUPPRESSION_UNDO));
+
+        Snackbar currentSnackbar = getCurrentSnackbar();
+        assertEquals(
+                "Incorrect snackbar identifier",
+                Snackbar.UMA_AUTOFILL_AI_SUPPRESSION_UNDO,
+                currentSnackbar.getIdentifierForTesting());
+    }
+
+    @Test
+    @SmallTest
     public void testDismiss() throws Exception {
         showSnackbar();
 

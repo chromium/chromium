@@ -1849,6 +1849,16 @@ You can remove this suggestion from Chrome. Your original source won't be delete
     </message>
   </if>
 
+  <!-- Autofill AI Suppression Snackbar Strings (Android) -->
+  <if expr="is_android">
+    <message name="IDS_AUTOFILL_AI_SUPPRESSION_UNDO_SNACKBAR_MESSAGE" desc="Informational message shown in the snackbar after an Autofill AI suggestion has been removed from Chrome on Android.">
+      Suggestion removed from Chrome
+    </message>
+    <message name="IDS_AUTOFILL_AI_SUPPRESSION_UNDO_SNACKBAR_ACTION" meaning="Verb: action button to undo removal of an Autofill AI suggestion" desc="Action button label shown in the snackbar for ~10 seconds allowing the user to undo removal of an Autofill AI suggestion on Android. Keep label concise.">
+      Undo
+    </message>
+  </if>
+
   <!-- Entity editor strings used on Android -->
   <if expr="is_android">
     <message name="IDS_AUTOFILL_AI_ENTITY_EDITOR_DELETE_LOCAL_ENTITY_DIALOG_TEXT" desc="The text that appears beneath a 'Delete object' title. We want the 'Autofill' keyword to be as prominent as possible because that word captures the value of saved information. 'On this device': helps the user understand that information is saved locally, not in the Cloud." formatter_data="android_java">

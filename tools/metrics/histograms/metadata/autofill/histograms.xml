@@ -369,8 +369,18 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="Autofill.Snackbar.Type">
+  <variant name="AutofillAiFetchFromWalletFailure"
+      summary="Snackbar shown when fetching entity data from Wallet fails."/>
+  <variant name="AutofillAiSaveToWalletFailure"
+      summary="Snackbar shown when saving an entity to Wallet fails."/>
+  <variant name="AutofillAiSuppressionUndo"
+      summary="Snackbar shown after an Autofill AI suggestion is removed,
+               offering an undo action."/>
   <variant name="BnplVirtualCard"
       summary="Snackbar shown after BNPL virtual card is autofilled."/>
+  <variant name="CardInfoRetrievalEnrolled"
+      summary="Snackbar shown after masked server card enrolled in card info
+               retrieval is autofilled."/>
   <variant name="MandatoryReauth"
       summary="Snackbar shown after opting into mandatory reauth."/>
   <variant name="SaveCardSuccess"

@@ -39,6 +39,9 @@ enum class AutofillSnackbarType {
 
   // Used when the server request to fetch entity data failed.
   kAutofillAiFetchEntityFailure = 9,
+
+  // Used when an Autofill AI suggestion was removed, offering an undo action.
+  kAutofillAiSuppressionUndo = 10,
 };
 
 }  // namespace autofill
