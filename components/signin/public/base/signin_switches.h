@@ -874,18 +874,6 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kSignInPromoMaterialNextUI);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-// Feature to show a promo on the avatar pill on profile startup.
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kSigninPromoOnAvatarPill);
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
-                           kSigninPromoOnAvatarPillStartupDelayForPromoShow);
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
-                           kSigninPromoOnAvatarPillDelayForNextPromoAllowed);
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
 // Feature flag used for testing purposes only:
 //
 // Set this flag to force the flow off on Windows 10 (a lot of bots run on

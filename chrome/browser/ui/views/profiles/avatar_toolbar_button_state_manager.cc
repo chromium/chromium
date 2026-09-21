@@ -107,8 +107,6 @@ std::optional<base::TimeDelta> g_show_signin_pending_text_delay_for_testing;
 
 constexpr base::TimeDelta kPromoDuration = base::Seconds(20);
 std::optional<base::TimeDelta> g_promo_duration_for_testing;
-
-std::optional<base::TimeDelta> g_signed_out_promo_trigger_delay_for_testing;
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 constexpr base::TimeDelta kOnSigninDuration = base::Seconds(20);
@@ -955,8 +953,7 @@ class PromoStateProviderCoordinator
     }
   }
 
-  void MaybeStartSignedOutTriggerTimer() {
-    CHECK(base::FeatureList::IsEnabled(switches::kSigninPromoOnAvatarPill));
+  void MaybeTriggerSignedOutPromo() {
     CHECK(identity_manager_->AreRefreshTokensLoaded());
 
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -964,14 +961,8 @@ class PromoStateProviderCoordinator
       return;
     }
 
-    // Start a delayed timer to trigger the promo for signed out profiles.
-    if (!IsSignedIn() && !signed_out_trigger_delay_timer_.IsRunning()) {
-      signed_out_trigger_delay_timer_.Start(
-          FROM_HERE,
-          g_signed_out_promo_trigger_delay_for_testing.value_or(
-              switches::kSigninPromoOnAvatarPillStartupDelayForPromoShow.Get()),
-          base::BindOnce(&PromoStateProviderCoordinator::Trigger,
-                         base::Unretained(this)));
+    if (!IsSignedIn()) {
+      Trigger();
     }
   }
 
@@ -999,17 +990,6 @@ class PromoStateProviderCoordinator
   void ClearForTesting() { Collapse(); }
 
   void ForceShowingPromoForTesting() { Trigger(); }
-
-  // Returns whether the delay timer was running or not.
-  bool GetStateAndFireSignedOutTriggerDelayTimerForTesting() {
-    CHECK(base::FeatureList::IsEnabled(switches::kSigninPromoOnAvatarPill));
-    bool is_running = signed_out_trigger_delay_timer_.IsRunning();
-    if (is_running) {
-      signed_out_trigger_delay_timer_.FireNow();
-      signed_out_trigger_delay_timer_.Stop();
-    }
-    return is_running;
-  }
 
   // AvatarToolbarButtonStateManager::Observer:
   void OnButtonStateChanged(std::optional<ButtonState> old_state,
@@ -1072,17 +1052,12 @@ class PromoStateProviderCoordinator
         case signin::PrimaryAccountChangeEvent::Type::kSet: {
           // Setting any consent level should remove any promo that is showing.
           Collapse();
-          if (signed_out_trigger_delay_timer_.IsRunning()) {
-            signed_out_trigger_delay_timer_.Stop();
-          }
 
           std::optional<signin_metrics::AccessPoint> access_point =
               event_details.GetSetPrimaryAccountAccessPoint();
           CHECK(access_point.has_value());
           if (access_point ==
               signin_metrics::AccessPoint::kAvatarPillExpandPromo) {
-            CHECK(base::FeatureList::IsEnabled(
-                switches::kSigninPromoOnAvatarPill));
             // Enabling sync through this access point is not possible - so this
             // cannot double record. Also
             // `syncer::kReplaceSyncPromosWithSignInPromos` should be enabled,
@@ -1101,9 +1076,6 @@ class PromoStateProviderCoordinator
         case signin::PrimaryAccountChangeEvent::Type::kCleared:
           // Clearing any consent level should remove any promo that is showing.
           Collapse();
-          if (signed_out_trigger_delay_timer_.IsRunning()) {
-            signed_out_trigger_delay_timer_.Stop();
-          }
           break;
         case signin::PrimaryAccountChangeEvent::Type::kNone:
           break;
@@ -1123,11 +1095,7 @@ class PromoStateProviderCoordinator
     }
   }
 
-  void OnRefreshTokensLoaded() override {
-    if (base::FeatureList::IsEnabled(switches::kSigninPromoOnAvatarPill)) {
-      MaybeStartSignedOutTriggerTimer();
-    }
-  }
+  void OnRefreshTokensLoaded() override { MaybeTriggerSignedOutPromo(); }
 
   void OnIdentityManagerShutdown(
       signin::IdentityManager* identity_manager) override {
@@ -1323,7 +1291,6 @@ class PromoStateProviderCoordinator
   std::optional<base::ElapsedTimer> before_promo_used_elapsed_timer_;
 
   bool initialzed_ = false;
-  base::OneShotTimer signed_out_trigger_delay_timer_;
   bool waiting_sync_active_for_promo_computation_ = false;
   GaiaId last_gaia_id_promo_used_;
 
@@ -2947,11 +2914,6 @@ AvatarToolbarButtonStateManager::CreateScopedInfiniteDelayOverrideForTesting(
     case AvatarDelayType::kPromo:
       return base::AutoReset<std::optional<base::TimeDelta>>(
           &g_promo_duration_for_testing, kInfiniteTimeForTesting);
-    case AvatarDelayType::kSignedOutPromo:
-      return base::AutoReset<std::optional<base::TimeDelta>>(
-          &g_signed_out_promo_trigger_delay_for_testing,
-          kInfiniteTimeForTesting);
-
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   }
 }
@@ -2981,18 +2943,6 @@ void AvatarToolbarButtonStateManager::ForceShowingPromoForTesting() {
       static_cast<PromoStateProvider*>(it->second.get());
   promo_state_provider->GetCoordinatorForTesting()
       .ForceShowingPromoForTesting();
-}
-
-bool AvatarToolbarButtonStateManager::
-    GetStateAndFireSignedOutTriggerDelayTimerForTesting() {
-  auto it = states_.find(ButtonState::kPromo);
-  if (it == states_.end() || !it->second) {
-    return false;
-  }
-  PromoStateProvider* promo_state_provider =
-      static_cast<PromoStateProvider*>(it->second.get());
-  return promo_state_provider->GetCoordinatorForTesting()
-      .GetStateAndFireSignedOutTriggerDelayTimerForTesting();
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

@@ -1315,7 +1315,8 @@ class AvatarButtonPromoManagerTest : public testing::Test {
         break;
       case ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
         task_environment_.FastForwardBy(
-            switches::kSigninPromoOnAvatarPillDelayForNextPromoAllowed.Get() +
+            AvatarButtonPromoManager::
+                kSigninPromoMinimumDelayForNextPromoAllowed +
             base::Days(1));
         break;
     }
@@ -1528,7 +1529,7 @@ TEST_F(AvatarButtonPromoManagerTest,
   // Fast forward by less than expected.
   base::TimeDelta time_remaining_for_promo_to_show = base::Days(1);
   FastForwardBy(
-      switches::kSigninPromoOnAvatarPillDelayForNextPromoAllowed.Get() -
+      AvatarButtonPromoManager::kSigninPromoMinimumDelayForNextPromoAllowed -
       time_remaining_for_promo_to_show);
   // Promo shown time check should still not allow the promo to show yet.
   ASSERT_FALSE(manager.ShouldShowPromo(signin_promo_type));
@@ -1565,7 +1566,7 @@ TEST_F(AvatarButtonPromoManagerTest,
   // Fast forward by less than expected.
   base::TimeDelta time_remaining_for_promo_to_show = base::Days(1);
   FastForwardBy(
-      switches::kSigninPromoOnAvatarPillDelayForNextPromoAllowed.Get() -
+      AvatarButtonPromoManager::kSigninPromoMinimumDelayForNextPromoAllowed -
       time_remaining_for_promo_to_show);
   // Promo shown time check should still not allow the promo to show yet.
   ASSERT_FALSE(manager.ShouldShowPromo(signin_promo_type));
@@ -1604,10 +1605,11 @@ TEST_F(AvatarButtonPromoManagerTest, SigninPromoHasLastExternalEventTimeCheck) {
 
   // Fast forward by less than expected.
   base::TimeDelta time_remaining_for_promo_to_show = base::Days(1);
-  // Uses `switches::kSigninPromoOnAvatarPillDelayForNextPromoAllowed`
+  // Uses
+  // `AvatarButtonPromoManager::kSigninPromoMinimumDelayForNextPromoAllowed`
   // explicitly as the threshold value is shared.
   FastForwardBy(
-      switches::kSigninPromoOnAvatarPillDelayForNextPromoAllowed.Get() -
+      AvatarButtonPromoManager::kSigninPromoMinimumDelayForNextPromoAllowed -
       time_remaining_for_promo_to_show);
   // Last external event time check should still not allow the promo to show
   // yet.
@@ -1914,16 +1916,9 @@ class ComputeProfileMenuAvatarButtonPromoInfoTestBase : public testing::Test {
 
 class ComputeProfileMenuAvatarButtonPromoInfoSignInPromoTest
     : public ComputeProfileMenuAvatarButtonPromoInfoTestBase {
- public:
-  ComputeProfileMenuAvatarButtonPromoInfoSignInPromoTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos,
-                              switches::kSigninPromoOnAvatarPill},
-        /*disabled_features=*/{});
-  }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      syncer::kReplaceSyncPromosWithSignInPromos};
 };
 
 TEST_F(ComputeProfileMenuAvatarButtonPromoInfoSignInPromoTest,
@@ -1980,8 +1975,7 @@ class ComputeProfileMenuAvatarButtonPromoInfoParamTest
             /*enabled_features=*/
             {syncer::kReplaceSyncPromosWithSignInPromos,
              switches::kAvatarButtonSyncPromoForTesting,
-             switches::kSigninWindows10DepreciationStateBypassForTesting,
-             switches::kSigninPromoOnAvatarPill},
+             switches::kSigninWindows10DepreciationStateBypassForTesting},
             /*disabled_features=*/{});
         break;
       case ProfileMenuAvatarButtonPromoInfo::Type::
@@ -1994,16 +1988,14 @@ class ComputeProfileMenuAvatarButtonPromoInfoParamTest
             /*enabled_features=*/
             {syncer::kReplaceSyncPromosWithSignInPromos,
              switches::kAvatarButtonSyncPromoForTesting,
-             switches::kSigninWindows10DepreciationStateForTesting,
-             switches::kSigninPromoOnAvatarPill},
+             switches::kSigninWindows10DepreciationStateForTesting},
             /*disabled_features=*/{});
         break;
       case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
         scoped_feature_list_.InitWithFeatures(
             // For the Sync promo to be shown
             // `syncer::kReplaceSyncPromosWithSignInPromos` must be off.
-            /*enabled_features=*/{switches::kAvatarButtonSyncPromoForTesting,
-                                  switches::kSigninPromoOnAvatarPill},
+            /*enabled_features=*/{switches::kAvatarButtonSyncPromoForTesting},
             /*disabled_features=*/{
                 syncer::kReplaceSyncPromosWithSignInPromos,
                 syncer::kReplaceSyncPromosWithSigninPromosNewSignin});

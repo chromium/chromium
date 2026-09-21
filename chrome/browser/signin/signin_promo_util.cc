@@ -201,7 +201,8 @@ base::TimeDelta GetMinimumThresholdSinceLastShownTime(
     case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
       NOTREACHED() << "The promo does not support shown time checking.";
     case ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
-      return switches::kSigninPromoOnAvatarPillDelayForNextPromoAllowed.Get();
+      return AvatarButtonPromoManager::
+          kSigninPromoMinimumDelayForNextPromoAllowed;
   }
 }
 
@@ -348,8 +349,7 @@ ComputeProfileMenuAvatarButtonPromoInfoWithBatchUploadResult(
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  if (base::FeatureList::IsEnabled(switches::kSigninPromoOnAvatarPill) &&
-      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     // Do not promote signing in if a sign in cannot be offered at all.
     if (!CanOfferSignInForPromos(CHECK_DEREF(profile))) {
       return {};

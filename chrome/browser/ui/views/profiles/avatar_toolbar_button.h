@@ -73,7 +73,6 @@ class AvatarToolbarButton : public ToolbarButton,
   void ClearActiveStateForTesting() override;
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   void ForceShowingPromoForTesting() override;
-  bool GetStateAndFireSignedOutTriggerDelayTimerForTesting() override;
 #endif
 
   // ToolbarButton:

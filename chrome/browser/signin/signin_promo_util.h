@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -150,6 +151,9 @@ void ComputeProfileMenuAvatarButtonPromoInfo(
 // via `ComputeProfileMenuAvatarButtonPromoInfo()`.
 class AvatarButtonPromoManager : public signin::IdentityManager::Observer {
  public:
+  static constexpr base::TimeDelta kSigninPromoMinimumDelayForNextPromoAllowed =
+      base::Days(7);
+
   AvatarButtonPromoManager(
       signin::IdentityManager* identity_manager,
       signin::AccountPreviewDataService* account_preview_data_service,

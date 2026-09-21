@@ -294,13 +294,6 @@ void WebUIAvatarToolbarButton::ForceShowingPromoForTesting() {
   CHECK(state_manager_);
   state_manager_->ForceShowingPromoForTesting();  // IN-TEST
 }
-
-bool WebUIAvatarToolbarButton::
-    GetStateAndFireSignedOutTriggerDelayTimerForTesting() {
-  CHECK(state_manager_);
-  return state_manager_
-      ->GetStateAndFireSignedOutTriggerDelayTimerForTesting();  // IN-TEST
-}
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 void WebUIAvatarToolbarButton::NotifyIPHPromoChanged(bool has_promo) {

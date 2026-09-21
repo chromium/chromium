@@ -9147,11 +9147,6 @@
     "expiry_milestone": 158
   },
   {
-    "name": "signin-promo-on-avatar-pill",
-    "owners": ["rsult@google.com", "chrome-signin-desktop-team@google.com"],
-    "expiry_milestone": 160
-  },
-  {
     "name": "single-ca-cert-verification-phase-1",
     "owners": ["olsa@chromium.org", "chromeos-commercial-networking@google.com"],
     "expiry_milestone": 150

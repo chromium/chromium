@@ -69,7 +69,6 @@ class WebUIAvatarToolbarButton : public AvatarToolbarButtonInterface,
   void ClearActiveStateForTesting() override;
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   void ForceShowingPromoForTesting() override;
-  bool GetStateAndFireSignedOutTriggerDelayTimerForTesting() override;
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   bool is_initialized() const { return is_initialized_; }

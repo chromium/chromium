@@ -556,11 +556,6 @@ void AvatarToolbarButton::ClearActiveStateForTesting() {
 void AvatarToolbarButton::ForceShowingPromoForTesting() {
   state_manager_.ForceShowingPromoForTesting();
 }
-
-bool AvatarToolbarButton::
-    GetStateAndFireSignedOutTriggerDelayTimerForTesting() {
-  return state_manager_.GetStateAndFireSignedOutTriggerDelayTimerForTesting();
-}
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 BEGIN_METADATA(AvatarToolbarButton)

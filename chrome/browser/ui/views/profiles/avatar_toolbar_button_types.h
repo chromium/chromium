@@ -19,8 +19,6 @@ enum class AvatarDelayType {
   kSigninPendingText,
   // Delay for the promo that are shown by expanding the button.
   kPromo,
-  // Delay for the Promo trigger for signed out profiles.
-  kSignedOutPromo,
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 };
 
