@@ -98,6 +98,14 @@ public class PopupCreatorImpl implements PopupCreator {
             @Nullable WindowFeatures windowFeatures,
             @Nullable Bundle additionalIntentExtras,
             @Nullable Bundle startActivityOptions) {
+        // Only allow popups for the main incognito profile. Other OTR profiles
+        // cannot have popups. The caller transfers ownership of webContents to
+        // this method, so if popup creation fails we must destroy webContents.
+        if (profile.isOffTheRecord() && !profile.isPrimaryOtrProfile()) {
+            webContents.destroy();
+            return false;
+        }
+
         TabDelegateFactory delegateFactory = CustomTabDelegateFactory.createEmpty();
         Tab tab = TabBuilder.createDetachedSpareTab(context, delegateFactory, profile, webContents);
 
@@ -122,6 +130,13 @@ public class PopupCreatorImpl implements PopupCreator {
     public boolean moveTabToNewPopup(Tab tab, WindowFeatures windowFeatures) {
         if (sMoveTabToNewPopupResultForTesting != null) {
             return sMoveTabToNewPopupResultForTesting;
+        }
+
+        Profile profile = tab.getProfile();
+        // Only allow popups for the main incognito profile. Other OTR profiles
+        // cannot have popups.
+        if (profile != null && profile.isOffTheRecord() && !profile.isPrimaryOtrProfile()) {
+            return false;
         }
 
         Bundle optionsBundle =
@@ -487,7 +502,7 @@ public class PopupCreatorImpl implements PopupCreator {
 
     private static Intent createTrustedPopupIntent(
             @Nullable WindowFeatures windowFeatures,
-            boolean isIncognito,
+            boolean isIncognitoBranded,
             @Nullable Bundle additionalIntentExtras) {
         Intent intent = new Intent();
         intent.setClass(ContextUtils.getApplicationContext(), CustomTabActivity.class);
@@ -499,7 +514,7 @@ public class PopupCreatorImpl implements PopupCreator {
         if (additionalIntentExtras != null) {
             intent.putExtras(additionalIntentExtras);
         }
-        if (isIncognito) {
+        if (isIncognitoBranded) {
             IncognitoCustomTabIntentDataProvider.addIncognitoExtrasForChromeFeatures(
                     intent, IncognitoCctCallerId.CONTEXTUAL_POPUP);
         }

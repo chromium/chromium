@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.app.tab_activity_glue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -69,7 +70,7 @@ public class ReparentingTaskUnitTest {
     @Mock private WindowAndroid mWindowAndroid;
 
     @Mock private Tab mTab;
-    private final UserDataHost mUserDataHost = new UserDataHost();
+    private UserDataHost mUserDataHost;
     @Mock private ReparentingTask mTabReparentingTask;
     @Mock private WebContents mWebContents;
 
@@ -83,6 +84,7 @@ public class ReparentingTaskUnitTest {
 
     @Before
     public void setup() {
+        mUserDataHost = new UserDataHost();
         when(mTab.getUserDataHost()).thenReturn(mUserDataHost);
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mTab.getId()).thenReturn(TAB_ID);
@@ -180,7 +182,7 @@ public class ReparentingTaskUnitTest {
 
     @Test
     public void testBegin_setsIntentParameters_incognito() {
-        when(mTab.isIncognito()).thenReturn(true);
+        when(mTab.isIncognitoBranded()).thenReturn(true);
         final ReparentingTask task = ReparentingTask.from(mTab);
         final Intent intent = new Intent();
 
@@ -203,6 +205,29 @@ public class ReparentingTaskUnitTest {
                 "#begin(...) should set the EXTRA_OPEN_NEW_INCOGNITO_TAB extra of the Intent if"
                         + " the Tab is incognito",
                 sentIntent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false));
+    }
+
+    @Test
+    public void testBegin_setsIntentParameters_offTheRecordNonIncognito() {
+        when(mTab.isOffTheRecord()).thenReturn(true);
+        when(mTab.isIncognitoBranded()).thenReturn(false);
+        final ReparentingTask task = ReparentingTask.from(mTab);
+        final Intent intent = new Intent();
+
+        task.begin(mContext, intent, null, null);
+
+        final ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(mContext).startActivity(captor.capture(), any());
+        final Intent sentIntent = captor.getValue();
+
+        assertNull(
+                "#begin(...) should not populate the EXTRA_APPLICATION_ID extra for"
+                        + " non-incognito-branded OTR Tab",
+                sentIntent.getStringExtra(Browser.EXTRA_APPLICATION_ID));
+        assertFalse(
+                "#begin(...) should not set EXTRA_OPEN_NEW_INCOGNITO_TAB extra for"
+                        + " non-incognito-branded OTR Tab",
+                sentIntent.hasExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB));
     }
 
     @Test

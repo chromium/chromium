@@ -117,7 +117,7 @@ public class ReparentingTabsTask {
 
         if (mTabs == null || mTabs.isEmpty()) return;
 
-        boolean isIncognito = mTabs.get(0).isIncognito();
+        boolean isIncognito = mTabs.get(0).isIncognitoBranded();
 
         for (Tab tab : mTabs) {
             AsyncTabParamsManagerSingleton.getInstance()

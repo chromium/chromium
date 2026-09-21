@@ -751,6 +751,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/customtabs/CustomTabCookiesFetcherUnitTest.java",
       "src/org/chromium/chrome/browser/customtabs/CustomTabDelegateFactoryUnitTest.java",
       "src/org/chromium/chrome/browser/customtabs/CustomTabFileUtilsUnitTest.java",
+      "src/org/chromium/chrome/browser/customtabs/CustomTabIncognitoManagerUnitTest.java",
       "src/org/chromium/chrome/browser/customtabs/CustomTabIntentDataProviderTest.java",
       "src/org/chromium/chrome/browser/customtabs/CustomTabNavigationBarControllerTest.java",
       "src/org/chromium/chrome/browser/customtabs/CustomTabNavigationEventObserverUnitTest.java",

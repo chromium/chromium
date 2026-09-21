@@ -358,6 +358,106 @@ public class PopupCreatorImplUnitTest {
                 IntentUtils.isTrustedIntentFromSelf(sentIntent));
     }
 
+    @Test
+    public void testIntentParams_twaOpener_invalidSessionId() {
+        BaseCustomTabActivity twaActivity = mock(BaseCustomTabActivity.class);
+        BrowserServicesIntentDataProvider provider = mock(BrowserServicesIntentDataProvider.class);
+        doReturn(twaActivity).when(mTab).getContext();
+        doReturn(provider).when(twaActivity).getIntentDataProvider();
+
+        when(provider.getActivityType()).thenReturn(ActivityType.TRUSTED_WEB_ACTIVITY);
+        when(provider.getClientPackageName()).thenReturn("org.chromium.test.twa");
+        when(provider.getUrlToLoad()).thenReturn("https://example.com/twa");
+
+        Intent sourceIntent = new Intent();
+        sourceIntent.putExtra(CustomTabsIntent.EXTRA_SESSION_ID, new Intent("malicious_action"));
+        when(provider.getIntent()).thenReturn(sourceIntent);
+
+        final WindowFeatures windowFeatures = new WindowFeatures(12, 34, 56, null);
+        mPopupCreator.moveTabToNewPopup(mTab, windowFeatures);
+
+        final ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(mReparentingTask).begin(any(), captor.capture(), any(), any());
+        final Intent sentIntent = captor.getValue();
+
+        assertFalse(
+                "Invalid EXTRA_SESSION_ID must not be forwarded",
+                sentIntent.hasExtra(CustomTabsIntent.EXTRA_SESSION_ID));
+    }
+
+    @Test
+    public void testIntentParams_standardCctOpener() {
+        BaseCustomTabActivity cctActivity = mock(BaseCustomTabActivity.class);
+        BrowserServicesIntentDataProvider provider = mock(BrowserServicesIntentDataProvider.class);
+        doReturn(cctActivity).when(mTab).getContext();
+        doReturn(provider).when(cctActivity).getIntentDataProvider();
+
+        when(provider.getActivityType()).thenReturn(ActivityType.CUSTOM_TAB);
+        when(provider.getClientPackageName()).thenReturn("org.chromium.test.cct");
+        when(provider.getUrlToLoad()).thenReturn("https://example.com/cct");
+        List<String> origins = Arrays.asList("https://trusted.example.com");
+        when(provider.getTrustedWebActivityAdditionalOrigins()).thenReturn(origins);
+
+        Intent sourceIntent = new Intent();
+        IBinder session = new Binder();
+        IntentUtils.safePutBinderExtra(sourceIntent, CustomTabsIntent.EXTRA_SESSION, session);
+        PendingIntent sessionId = mock(PendingIntent.class);
+        sourceIntent.putExtra(CustomTabsIntent.EXTRA_SESSION_ID, sessionId);
+        when(provider.getIntent()).thenReturn(sourceIntent);
+
+        final WindowFeatures windowFeatures = new WindowFeatures(12, 34, 56, null);
+        mPopupCreator.moveTabToNewPopup(mTab, windowFeatures);
+
+        final ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(mReparentingTask).begin(any(), captor.capture(), any(), any());
+        final Intent sentIntent = captor.getValue();
+
+        assertEquals(
+                new ComponentName(ContextUtils.getApplicationContext(), CustomTabActivity.class),
+                sentIntent.getComponent());
+        assertEquals(
+                CustomTabsUiType.POPUP,
+                sentIntent.getIntExtra(CustomTabIntentDataProvider.EXTRA_UI_TYPE, -1));
+        assertFalse(
+                "EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY must not be set for standard CCT",
+                sentIntent.hasExtra(TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY));
+        assertNull("Data URI must not be set for standard CCT popup", sentIntent.getData());
+        assertFalse(sentIntent.hasExtra(CustomTabsIntent.EXTRA_SESSION));
+        assertFalse(sentIntent.hasExtra(CustomTabsIntent.EXTRA_SESSION_ID));
+        assertFalse(sentIntent.hasExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE));
+        assertFalse(
+                sentIntent.hasExtra(
+                        TrustedWebActivityIntentBuilder.EXTRA_ADDITIONAL_TRUSTED_ORIGINS));
+    }
+
+    @Test
+    public void testMoveTabToNewPopup_isolatedOtrProfile_returnsFalse() {
+        final WindowFeatures windowFeatures = new WindowFeatures(12, 34, 56, null);
+        Profile isolatedProfile = mock(Profile.class);
+        doReturn(true).when(isolatedProfile).isOffTheRecord();
+        doReturn(false).when(isolatedProfile).isPrimaryOtrProfile();
+        doReturn(isolatedProfile).when(mTab).getProfile();
+
+        assertFalse(
+                "moveTabToNewPopup should return false for isolated OTR profiles",
+                mPopupCreator.moveTabToNewPopup(mTab, windowFeatures));
+        verify(mReparentingTask, never()).begin(any(), any(), any(), any());
+    }
+
+    @Test
+    public void testCreateNewPopupFromWebContents_isolatedOtrProfile_returnsFalse() {
+        final WindowFeatures windowFeatures = new WindowFeatures(12, 34, 56, null);
+        Profile isolatedProfile = mock(Profile.class);
+        doReturn(true).when(isolatedProfile).isOffTheRecord();
+        doReturn(false).when(isolatedProfile).isPrimaryOtrProfile();
+
+        assertFalse(
+                "createNewPopupFromWebContents should return false for isolated OTR profiles",
+                mPopupCreator.createNewPopupFromWebContents(
+                        mContext, isolatedProfile, mWebContents, windowFeatures, null, null));
+        verify(mWebContents).destroy();
+    }
+
     private ActivityOptions getActivityOptionsPassedToReparentingTask() {
         ArgumentCaptor<Bundle> captor = ArgumentCaptor.forClass(Bundle.class);
         verify(mReparentingTask).begin(any(), any(), captor.capture(), any());
