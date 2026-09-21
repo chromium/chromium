@@ -3847,7 +3847,7 @@
     },
     {
       name: "JavaScriptImportText",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "JavaScriptSourcePhaseImports",
