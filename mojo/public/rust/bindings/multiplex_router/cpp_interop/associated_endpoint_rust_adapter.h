@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <memory>
 
+#include "base/check_op.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/sequence_bound.h"
 #include "mojo/public/cpp/bindings/associated_group_controller.h"
@@ -119,7 +120,7 @@ void CreatePairPendingAssociation(
 // (`mojo::PendingAssociatedReceiver` / `mojo::PendingAssociatedRemote`) and
 // `AssociatedEndpointRustAdapter`.
 //
-// You should use these functions if you need to send or a receive a pending
+// You should use these functions if you need to send or receive a pending
 // associated endpoint to/from Rust code. The Adapter can be used to create a
 // Rust associated endpoint once it's passed across the FFI boundary.
 // ****************************************************************************
@@ -135,11 +136,13 @@ mojo::PendingAssociatedReceiver<Interface> PassPendingAssociatedReceiver(
 
 template <typename Interface>
 mojo::PendingAssociatedRemote<Interface> PassPendingAssociatedRemote(
-    std::unique_ptr<AssociatedEndpointRustAdapter> adapter) {
+    std::unique_ptr<AssociatedEndpointRustAdapter> adapter,
+    uint32_t version = 0) {
   if (!adapter) {
     return {};
   }
-  return mojo::PendingAssociatedRemote<Interface>(adapter->PassHandle());
+  return mojo::PendingAssociatedRemote<Interface>(adapter->PassHandle(),
+                                                  version);
 }
 
 template <typename Interface>
@@ -153,6 +156,7 @@ template <typename Interface>
 std::unique_ptr<AssociatedEndpointRustAdapter>
 MakeAssociatedEndpointRustAdapter(
     mojo::PendingAssociatedRemote<Interface> remote) {
+  CHECK_EQ(remote.version(), 0u) << "Rust doesn't support versioning yet";
   return AssociatedEndpointRustAdapter::Create(remote.PassHandle());
 }
 
