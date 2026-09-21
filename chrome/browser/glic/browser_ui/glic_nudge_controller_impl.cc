@@ -6,7 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
-#include "chrome/browser/glic/browser_ui/glic_split_button_view_delegate.h"
+#include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -40,12 +40,12 @@ GlicNudgeControllerImpl::~GlicNudgeControllerImpl() = default;
 // TODO(crbug.com/511309088): Remove and have callers do this directly on the
 // split button controller.
 void GlicNudgeControllerImpl::SetHorizontalTabsDelegate(
-    GlicSplitButtonViewDelegate* delegate) {
+    GlicSplitButtonDelegate* delegate) {
   split_button_controller_->SetHorizontalTabsDelegate(delegate);
 }
 
 void GlicNudgeControllerImpl::SetVerticalTabsDelegate(
-    GlicSplitButtonViewDelegate* delegate) {
+    GlicSplitButtonDelegate* delegate) {
   split_button_controller_->SetVerticalTabsDelegate(delegate);
 }
 
@@ -108,8 +108,7 @@ void GlicNudgeControllerImpl::UpdateNudgeLabel(
       browser_window_interface_->GetProfile()->GetPrefs();
   if (pref_service->GetBoolean(glic::prefs::kGlicPinnedToTabstrip)) {
     split_button_controller_->CallOnBoth(base::BindRepeating(
-        [](const std::string& nudge_label,
-           GlicSplitButtonViewDelegate& delegate) {
+        [](const std::string& nudge_label, GlicSplitButtonDelegate& delegate) {
           if (nudge_label.empty()) {
             delegate.OnHideGlicNudgeUI();
           } else {
@@ -195,7 +194,7 @@ void GlicNudgeControllerImpl::OnTabListActiveChanged(TabListInterface& tab_list,
 
 void GlicNudgeControllerImpl::HideNudge(GlicNudgeActivity activity) {
   split_button_controller_->CallOnBoth(
-      base::BindRepeating([](GlicSplitButtonViewDelegate& delegate) {
+      base::BindRepeating([](GlicSplitButtonDelegate& delegate) {
         if (delegate.GetIsShowingGlicNudge()) {
           delegate.OnHideGlicNudgeUI();
         }

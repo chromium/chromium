@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_SPLIT_BUTTON_VIEW_DELEGATE_H_
-#define CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_SPLIT_BUTTON_VIEW_DELEGATE_H_
+#ifndef CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_SPLIT_BUTTON_DELEGATE_H_
+#define CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_SPLIT_BUTTON_DELEGATE_H_
 
 #include <optional>
 #include <string>
@@ -35,10 +35,9 @@ struct NudgeParams {
 
 // Delegate interface for the UI container that houses GlicButton and
 // GlicActorTaskIcon.
-class GlicSplitButtonViewDelegate
-    : public ActorTaskListBubbleControllerDelegate {
+class GlicSplitButtonDelegate : public ActorTaskListBubbleControllerDelegate {
  public:
-  ~GlicSplitButtonViewDelegate() override;
+  ~GlicSplitButtonDelegate() override;
 
   // Methods related to glic nudge.
 
@@ -86,4 +85,4 @@ class GlicSplitButtonViewDelegate
 
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_SPLIT_BUTTON_VIEW_DELEGATE_H_
+#endif  // CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_SPLIT_BUTTON_DELEGATE_H_

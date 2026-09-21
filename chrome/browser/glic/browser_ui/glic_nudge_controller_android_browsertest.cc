@@ -10,7 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller_impl.h"
-#include "chrome/browser/glic/browser_ui/glic_split_button_view_delegate.h"
+#include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
 #include "chrome/browser/glic/glic_warming_checks.h"
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
 #include "chrome/browser/glic/public/features.h"
@@ -26,10 +26,10 @@ namespace glic {
 
 namespace {
 
-class MockGlicNudgeViewDelegate : public GlicSplitButtonViewDelegate {
+class MockGlicNudgeDelegate : public GlicSplitButtonDelegate {
  public:
-  MockGlicNudgeViewDelegate() = default;
-  ~MockGlicNudgeViewDelegate() override = default;
+  MockGlicNudgeDelegate() = default;
+  ~MockGlicNudgeDelegate() override = default;
 
   void OnTriggerGlicNudgeUI(NudgeParams params) override {
     is_showing_glic_nudge_ = true;
@@ -73,7 +73,7 @@ class GlicNudgeControllerAndroidBrowserTest : public GlicBrowserTest {
   }
 
  protected:
-  MockGlicNudgeViewDelegate mock_delegate_;
+  MockGlicNudgeDelegate mock_delegate_;
   raw_ptr<GlicNudgeController> nudge_controller_ = nullptr;
 };
 

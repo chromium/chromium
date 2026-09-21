@@ -19,7 +19,7 @@ class Profile;
 
 namespace glic {
 
-class GlicSplitButtonViewDelegate;
+class GlicSplitButtonDelegate;
 class GlicSplitButtonController;
 class GlicKeyedService;
 
@@ -38,8 +38,8 @@ class GlicButtonController {
 
   // TODO(crbug.com/511309088): Remove these and have the split button
   // controller keep the delegates.
-  void SetHorizontalTabsDelegate(GlicSplitButtonViewDelegate* delegate);
-  void SetVerticalTabsDelegate(GlicSplitButtonViewDelegate* delegate);
+  void SetHorizontalTabsDelegate(GlicSplitButtonDelegate* delegate);
+  void SetVerticalTabsDelegate(GlicSplitButtonDelegate* delegate);
 
   base::WeakPtr<GlicButtonController> GetWeakPtr();
 
@@ -49,8 +49,7 @@ class GlicButtonController {
   void UpdateButton();
 
  private:
-  void CallOnBoth(
-      base::RepeatingCallback<void(GlicSplitButtonViewDelegate&)> fn);
+  void CallOnBoth(base::RepeatingCallback<void(GlicSplitButtonDelegate&)> fn);
 
   raw_ptr<Profile> profile_;
   raw_ref<BrowserWindowInterface> browser_;

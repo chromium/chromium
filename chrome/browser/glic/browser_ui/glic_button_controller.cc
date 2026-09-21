@@ -6,7 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
-#include "chrome/browser/glic/browser_ui/glic_split_button_view_delegate.h"
+#include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
 #include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -62,12 +62,12 @@ GlicButtonController::GlicButtonController(
 GlicButtonController::~GlicButtonController() = default;
 
 void GlicButtonController::SetHorizontalTabsDelegate(
-    GlicSplitButtonViewDelegate* delegate) {
+    GlicSplitButtonDelegate* delegate) {
   split_button_controller_->SetHorizontalTabsDelegate(delegate);
 }
 
 void GlicButtonController::SetVerticalTabsDelegate(
-    GlicSplitButtonViewDelegate* delegate) {
+    GlicSplitButtonDelegate* delegate) {
   split_button_controller_->SetVerticalTabsDelegate(delegate);
 }
 
@@ -89,7 +89,7 @@ void GlicButtonController::UpdateButton() {
       profile_->GetPrefs()->GetBoolean(prefs::kGlicPinnedToTabstrip);
   if (!should_show_button || !is_pinned_to_tabstrip) {
     // If the button shouldn't be shown, just hide it.
-    CallOnBoth(base::BindRepeating([](GlicSplitButtonViewDelegate& delegate) {
+    CallOnBoth(base::BindRepeating([](GlicSplitButtonDelegate& delegate) {
       delegate.SetGlicShowState(false);
     }));
     return;
@@ -98,7 +98,7 @@ void GlicButtonController::UpdateButton() {
   const bool is_glic_panel_open =
       glic_keyed_service_->IsPanelShowingForBrowser(*browser_);
   CallOnBoth(base::BindRepeating(
-      [](bool is_glic_panel_open, GlicSplitButtonViewDelegate& delegate) {
+      [](bool is_glic_panel_open, GlicSplitButtonDelegate& delegate) {
         delegate.SetGlicShowState(true);
         delegate.SetGlicPanelIsOpen(is_glic_panel_open);
       },
@@ -106,7 +106,7 @@ void GlicButtonController::UpdateButton() {
 }
 
 void GlicButtonController::CallOnBoth(
-    base::RepeatingCallback<void(GlicSplitButtonViewDelegate&)> fn) {
+    base::RepeatingCallback<void(GlicSplitButtonDelegate&)> fn) {
   split_button_controller_->CallOnBoth(fn);
 }
 

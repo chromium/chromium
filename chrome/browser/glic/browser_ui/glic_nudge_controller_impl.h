@@ -19,7 +19,7 @@ class ScopedCallToActionLock;
 namespace glic {
 
 class GlicSplitButtonController;
-class GlicSplitButtonViewDelegate;
+class GlicSplitButtonDelegate;
 
 class GlicNudgeControllerImpl : public GlicNudgeController,
                                 public TabListInterfaceObserver {
@@ -48,9 +48,8 @@ class GlicNudgeControllerImpl : public GlicNudgeController,
 
   // TODO(crbug.com/511309088): Remove and have callers do this directly on the
   // split button controller.
-  void SetHorizontalTabsDelegate(
-      GlicSplitButtonViewDelegate* delegate) override;
-  void SetVerticalTabsDelegate(GlicSplitButtonViewDelegate* delegate) override;
+  void SetHorizontalTabsDelegate(GlicSplitButtonDelegate* delegate) override;
+  void SetVerticalTabsDelegate(GlicSplitButtonDelegate* delegate) override;
 
   void SetNudgeActivityCallbackForTesting();
 

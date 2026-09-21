@@ -33,7 +33,7 @@ enum class GlicNudgeActivity {
   kNudgeIgnoredOmniboxContextMenuInteraction = 8,
 };
 
-class GlicSplitButtonViewDelegate;
+class GlicSplitButtonDelegate;
 
 // Interface for the controller that mediates Glic Nudges.
 class GlicNudgeController {
@@ -49,10 +49,8 @@ class GlicNudgeController {
 
   virtual ~GlicNudgeController();
 
-  virtual void SetHorizontalTabsDelegate(
-      GlicSplitButtonViewDelegate* delegate) = 0;
-  virtual void SetVerticalTabsDelegate(
-      GlicSplitButtonViewDelegate* delegate) = 0;
+  virtual void SetHorizontalTabsDelegate(GlicSplitButtonDelegate* delegate) = 0;
+  virtual void SetVerticalTabsDelegate(GlicSplitButtonDelegate* delegate) = 0;
 
   // Updates the `nudge_label` for `web_contents`, if the WebContents is active.
   // The nudge will be removed from `web_contents` if `nudge_label` is empty.

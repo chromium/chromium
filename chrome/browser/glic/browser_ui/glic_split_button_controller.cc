@@ -16,7 +16,7 @@
 #include "chrome/browser/glic/browser_ui/glic_button_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller_impl.h"
-#include "chrome/browser/glic/browser_ui/glic_split_button_view_delegate.h"
+#include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
@@ -69,20 +69,20 @@ GlicSplitButtonController::GlicSplitButtonController(
 GlicSplitButtonController::~GlicSplitButtonController() = default;
 
 void GlicSplitButtonController::SetHorizontalTabsDelegate(
-    GlicSplitButtonViewDelegate* delegate) {
+    GlicSplitButtonDelegate* delegate) {
   horizontal_tabs_delegate_ = delegate;
   glic_button_controller_->UpdateButton();
 }
 
 void GlicSplitButtonController::SetVerticalTabsDelegate(
-    GlicSplitButtonViewDelegate* delegate) {
+    GlicSplitButtonDelegate* delegate) {
   vertical_tabs_delegate_ = delegate;
   glic_button_controller_->UpdateButton();
 }
 
 void GlicSplitButtonController::OnGlicButtonClicked() {
-  auto* view_delegate = GetActiveViewDelegate();
-  if (!view_delegate) {
+  auto* delegate = GetActiveDelegate();
+  if (!delegate) {
     // TODO(crbug.com/511309088): This should not be reachable.
     NOTIMPLEMENTED_LOG_ONCE();
     return;
@@ -108,23 +108,23 @@ void GlicSplitButtonController::OnGlicButtonClicked() {
   if (!is_panel_showing && prompt_suggestion && !prompt_suggestion->empty() &&
       active_tab && GlicEnabling::IsEnabledForProfile(browser_->GetProfile())) {
     glic::GlicInvokeOptions options(glic::Target(*active_tab),
-                                    GetInvocationSource(*view_delegate));
+                                    GetInvocationSource(*delegate));
     options.prompts.push_back(std::move(*prompt_suggestion));
     glic_service_->Invoke(std::move(options));
   } else {
     glic_service_->ToggleUI(browser_,
                             /*prevent_close=*/false,
-                            GetInvocationSource(*view_delegate));
+                            GetInvocationSource(*delegate));
   }
 
-  if (view_delegate->GetIsShowingGlicNudge()) {
+  if (delegate->GetIsShowingGlicNudge()) {
     glic_nudge_controller_->OnNudgeActivity(
         glic::GlicNudgeActivity::kNudgeClicked);
   }
 }
 
 void GlicSplitButtonController::CallOnBoth(
-    base::RepeatingCallback<void(GlicSplitButtonViewDelegate&)> fn) {
+    base::RepeatingCallback<void(GlicSplitButtonDelegate&)> fn) {
   if (horizontal_tabs_delegate_) {
     fn.Run(*horizontal_tabs_delegate_);
   }
@@ -133,8 +133,7 @@ void GlicSplitButtonController::CallOnBoth(
   }
 }
 
-GlicSplitButtonViewDelegate*
-GlicSplitButtonController::GetActiveViewDelegate() {
+GlicSplitButtonDelegate* GlicSplitButtonController::GetActiveDelegate() {
   return IsToolbarButton() ? vertical_tabs_delegate_
                            : horizontal_tabs_delegate_;
 }
@@ -157,7 +156,7 @@ bool GlicSplitButtonController::IsToolbarButton() const {
 }
 
 mojom::InvocationSource GlicSplitButtonController::GetInvocationSource(
-    GlicSplitButtonViewDelegate& delegate) const {
+    GlicSplitButtonDelegate& delegate) const {
   if (delegate.GetIsShowingGlicNudge()) {
     return mojom::InvocationSource::kNudge;
   }

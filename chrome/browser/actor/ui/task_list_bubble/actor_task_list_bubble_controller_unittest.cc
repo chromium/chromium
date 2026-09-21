@@ -18,7 +18,7 @@
 #include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager.h"
 #include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager_factory.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
-#include "chrome/browser/glic/browser_ui/glic_split_button_view_delegate.h"
+#include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -82,16 +82,15 @@ class MockGlicSplitButtonController : public glic::GlicSplitButtonController {
   }
   ~MockGlicSplitButtonController() override = default;
 
-  MOCK_METHOD(glic::GlicSplitButtonViewDelegate*,
-              GetActiveViewDelegate,
+  MOCK_METHOD(glic::GlicSplitButtonDelegate*,
+              GetActiveDelegate,
               (),
               (override));
 };
 
-class TestGlicSplitButtonViewDelegate
-    : public glic::GlicSplitButtonViewDelegate {
+class TestGlicSplitButtonDelegate : public glic::GlicSplitButtonDelegate {
  public:
-  explicit TestGlicSplitButtonViewDelegate(
+  explicit TestGlicSplitButtonDelegate(
       BrowserWindowInterface* browser,
       views::View* anchor_view,
       ActorTaskListBubbleController* controller)
@@ -190,10 +189,10 @@ class ActorTaskListBubbleControllerTest : public ChromeViewsTestBase {
     actor_task_list_bubble_controller_ =
         ActorTaskListBubbleController::From(browser_window_interface_.get());
     ASSERT_TRUE(actor_task_list_bubble_controller_);
-    test_delegate_ = std::make_unique<TestGlicSplitButtonViewDelegate>(
+    test_delegate_ = std::make_unique<TestGlicSplitButtonDelegate>(
         browser_window_interface_.get(), anchor_widget_->GetContentsView(),
         actor_task_list_bubble_controller_);
-    ON_CALL(*mock_glic_split_button_controller_, GetActiveViewDelegate())
+    ON_CALL(*mock_glic_split_button_controller_, GetActiveDelegate())
         .WillByDefault(testing::Return(test_delegate_.get()));
   }
 
@@ -274,7 +273,7 @@ class ActorTaskListBubbleControllerTest : public ChromeViewsTestBase {
   raw_ptr<glic::MockGlicKeyedService> mock_glic_keyed_service_ = nullptr;
   std::unique_ptr<MockGlicSplitButtonController>
       mock_glic_split_button_controller_;
-  std::unique_ptr<TestGlicSplitButtonViewDelegate> test_delegate_;
+  std::unique_ptr<TestGlicSplitButtonDelegate> test_delegate_;
   raw_ptr<ActorTaskListBubbleController> actor_task_list_bubble_controller_ =
       nullptr;
   std::unique_ptr<MockBrowserWindowInterface> browser_window_interface_;
