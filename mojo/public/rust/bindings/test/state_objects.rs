@@ -36,6 +36,8 @@ impl MathService for WrappingMathService {
         // Too small to overflow!
         send_response(u32::from(ns.a) + u32::from(ns.b))
     }
+
+    fn DoNothing(&mut self) {}
 }
 
 register_mojom_state_object_impls!(impl MathService for WrappingMathService);
@@ -52,6 +54,8 @@ impl MathService for SaturatingMathService {
         // Too small to overflow!
         send_response(u32::from(ns.a) + u32::from(ns.b))
     }
+
+    fn DoNothing(&mut self) {}
 }
 
 register_mojom_state_object_impls!(impl MathService for SaturatingMathService);
@@ -74,6 +78,8 @@ impl<F: FnMut(u32) + Send> MathService for NotifyingMathService<F> {
         (self.f)(ret);
         send_response(ret)
     }
+
+    fn DoNothing(&mut self) {}
 }
 
 register_mojom_state_object_impls!(
@@ -132,6 +138,7 @@ pub struct DropNotifyingService {
 impl MathService for DropNotifyingService {
     fn Add(&mut self, _a: u32, _b: u32, _send_response: impl FnOnce(u32)) {}
     fn AddTwoInts(&mut self, _ns: TwoInts, _send_response: impl FnOnce(u32)) {}
+    fn DoNothing(&mut self) {}
 }
 
 impl Drop for DropNotifyingService {

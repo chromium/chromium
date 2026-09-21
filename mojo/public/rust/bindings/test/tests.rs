@@ -9,6 +9,7 @@ use std::sync::{Arc, Mutex, OnceLock};
 chromium::import! {
     "//mojo/public/rust/bindings";
     "//mojo/public/rust/bindings/test:bindings_unittests_mojom_rust";
+    "//mojo/public/rust/mojom_value_parser";
     "//mojo/public/rust/system";
     "//mojo/public/rust/system/test_util";
     "//base:run_loop";
@@ -848,6 +849,77 @@ fn test_bad_control_message() {
     let reported = bad_message_flag.lock().unwrap().take();
     expect_true!(reported.is_some());
     expect_eq!(reported.unwrap(), "Control message has incorrect message ID");
+}
+
+/// Serialize `params` and send it on the provided remote,
+/// with the given `flags`. This lets us test incorrect flag
+/// combinations.
+fn send_request_with_flags<T: mojom_value_parser::MojomParse<()>>(
+    remote: &mut Remote<dyn MathService>,
+    ordinal: u32,
+    flags: MessageHeaderFlags,
+    params: T,
+) {
+    let (payload, handles, interface_ids_offset) = mojom_value_parser::serialize(params, &());
+    let header = MessageHeader::new(0, ordinal, flags, 0, interface_ids_offset);
+    // Don't call this yourself! We're being bad here!
+    remote.send_message_internal(
+        MojomMessage { header, payload, handles, raw_message_handle: None },
+        None,
+    );
+}
+
+/// Installs a process error handler that records the most recent bad-message
+/// report, and returns the slot it writes into.
+fn capture_bad_messages() -> Arc<Mutex<Option<String>>> {
+    let reported = Arc::new(Mutex::new(None::<String>));
+    let reported_clone = reported.clone();
+    test_util::set_default_process_error_handler(move |msg: &str| {
+        *reported_clone.lock().unwrap() = Some(msg.to_string());
+    });
+    reported
+}
+
+/// Make sure that we notice if we get a message
+/// with incorrect response flags.
+#[gtest(RustBindingsAPI, TestRequestMissingExpectsResponseFlag)]
+fn test_request_missing_expects_response_flag() {
+    let _task_env = task_environment::ffi::CreateTaskEnvironment();
+    let reported = capture_bad_messages();
+
+    let (pending_remote, pending_receiver) = PendingRemote::<dyn MathService>::new_pipe().unwrap();
+    let _receiver = pending_receiver.bind(WrappingMathService {});
+    let mut remote = pending_remote.bind();
+
+    // Missing response flag
+    send_request_with_flags(
+        &mut remote,
+        0, // Corresponds to `Add`
+        MessageHeaderFlags::default(),
+        test_mojom::MathService_Add_Params { a: 1, b: 2 },
+    );
+
+    RunLoop::new().run_until_idle();
+
+    expect_eq!(
+        reported.lock().unwrap().take(),
+        Some("Message flags do not match the method signature".to_string())
+    );
+
+    // Extraneous response flag
+    send_request_with_flags(
+        &mut remote,
+        2, // `DoNothing`
+        MessageHeaderFlags::EXPECTS_RESPONSE,
+        test_mojom::MathService_DoNothing_Params {},
+    );
+
+    RunLoop::new().run_until_idle();
+
+    expect_eq!(
+        reported.lock().unwrap().take(),
+        Some("Message flags do not match the method signature".to_string())
+    );
 }
 
 // These types and functions provide us a way to set a disconnect handler for

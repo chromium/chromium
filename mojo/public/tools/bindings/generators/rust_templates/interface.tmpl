@@ -93,23 +93,28 @@ pub trait {{interface.name}} : bindings::interface::internal::ImplementThisViaMa
   #[allow(unused_variables, unused_mut)] // If no messages send a response
   fn handle_incoming_message(
       &mut self,
-      message: bindings::message::MojomMessage,
+      mut message: bindings::message::MojomMessage,
       sender: ResponseSender,
       send_response: impl FnOnce(bindings::message::MojomMessage) + Send + 'static)
     where Self: Sized
   {
     // We could also do this with std::mem::transmute due to the null-pointer optimization,
     // but that's unsafe, and the compiler can figure it out anyway.
-    let mut handles = message.handles.into_iter().map(|h| Some(h)).collect::<Vec<_>>();
+    let mut handles = std::mem::take(&mut message.handles).into_iter().map(|h| Some(h)).collect::<Vec<_>>();
     match message.header.name {
       {%- for method in interface.methods %}
       {{method.ordinal}} => {
+        // Check that this does/doesn't have the request flags set like the mojom file says it should.
+        if !message.header.flags.is_valid_request({{ "true" if method.response_parameters else "false" }}) {
+          let _ = message.report_bad_message("Message flags do not match the method signature");
+          return;
+        }
         let {{"_" if not method.parameters}}parsed: {{args_struct(method)}} = match
           mojom_value_parser::deserialize_exact(&message.payload, &mut handles, message.header.interface_ids_offset(), &sender)
         {
           Ok(parsed) => parsed,
           Err(err) => {
-            let _ = message.raw_message_handle.unwrap().report_bad_message(&err.to_string());
+            let _ = message.report_bad_message(&err.to_string());
             return;
           }
         };
@@ -126,7 +131,9 @@ pub trait {{interface.name}} : bindings::interface::internal::ImplementThisViaMa
         );
       }
       {%- endfor %}
-      _ => todo!("Got a bad mojo message!")
+      _ => {
+        let _ = message.report_bad_message("Received a message with an unknown ordinal");
+      }
     }
   }
 }
@@ -150,9 +157,15 @@ impl bindings::interface::MojomInterface for dyn {{interface.name}} {
     sender: ResponseSender,
     send_response: Self::ResponseCallbackTy)
   {
+    // Responses are matched up by request ID alone, so check that this is
+    // actually a response before we treat it as one.
+    if !message.header.flags.is_valid_response() {
+      let _ = message.report_bad_message("Message flags do not mark this as a response");
+      return;
+    }
     // We could also do this with std::mem::transmute due to the null-pointer optimization,
     // but that's unsafe, and the compiler can figure it out anway.
-    let mut handles = message.handles.into_iter().map(|h| Some(h)).collect::<Vec<_>>();
+    let mut handles = std::mem::take(&mut message.handles).into_iter().map(|h| Some(h)).collect::<Vec<_>>();
     match (message.header.name, send_response) {
       {%- for method in interface.methods if method.response_parameters %}
       ({{method.ordinal}}, {{callback_ty_name}}::{{method.name}}(callback)) => {
@@ -161,7 +174,7 @@ impl bindings::interface::MojomInterface for dyn {{interface.name}} {
         {
           Ok(parsed) => parsed,
           Err(err) => {
-            let _ = message.raw_message_handle.unwrap().report_bad_message(&err.to_string());
+            let _ = message.report_bad_message(&err.to_string());
             return;
           }
         };
@@ -172,7 +185,9 @@ impl bindings::interface::MojomInterface for dyn {{interface.name}} {
         );
       }
       {%- endfor %}
-      _ => todo!("Got a bad mojo message!")
+      _ => {
+        let _ = message.report_bad_message("Received a response with an unexpected ordinal");
+      }
     }
   }
 

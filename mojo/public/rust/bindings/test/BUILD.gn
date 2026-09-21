@@ -19,6 +19,7 @@ rust_static_library("bindings_unittests") {
     ":bindings_unittests_mojom_rust",
     ":math_service_cpp",
     "..:bindings",
+    "../../mojom_value_parser",
     "../../system",
     "../../system/test_util",
     "//base",
