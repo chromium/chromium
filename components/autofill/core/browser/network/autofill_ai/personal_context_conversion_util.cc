@@ -99,10 +99,10 @@ void AddStringAttribute(AttributeTypeName type,
 std::optional<EntityInstance::PersonalContextRecordTypePayload::Source>
 PersonalContextSourceReferenceToSource(
     const personal_context::proto::SourceReference& source_reference) {
-  using GmailSource =
-      EntityInstance::PersonalContextRecordTypePayload::GmailSource;
-  using PhotosSource =
-      EntityInstance::PersonalContextRecordTypePayload::PhotosSource;
+  using GmailSourceMetadata =
+      EntityInstance::PersonalContextRecordTypePayload::GmailSourceMetadata;
+  using PhotosSourceMetadata =
+      EntityInstance::PersonalContextRecordTypePayload::PhotosSourceMetadata;
   using Source = EntityInstance::PersonalContextRecordTypePayload::Source;
   std::optional<EntityInstance::PersonalContextRecordTypePayload::Source>
       source;
@@ -110,12 +110,12 @@ PersonalContextSourceReferenceToSource(
     case personal_context::proto::SourceReference::kGmail:
       source =
           Source{.url = GURL(source_reference.gmail().message_url()),
-                 .data = GmailSource{
+                 .metadata = GmailSourceMetadata{
                      .title = std::string(source_reference.gmail().subject())}};
       break;
     case personal_context::proto::SourceReference::kPhotos:
       source = Source{.url = GURL(source_reference.photos().photos_url()),
-                      .data = PhotosSource{}};
+                      .metadata = PhotosSourceMetadata{}};
       break;
     case personal_context::proto::SourceReference::kDrive:
     case personal_context::proto::SourceReference::SOURCE_REFERENCE_NOT_SET:

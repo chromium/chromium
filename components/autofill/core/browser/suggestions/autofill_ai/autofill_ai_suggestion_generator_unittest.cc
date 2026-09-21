@@ -53,10 +53,10 @@ using test::GetOrderEntityInstance;
 using test::GetPassportEntityInstance;
 using test::GetPassportEntityInstanceWithRandomGuid;
 using test::MaskEntityInstance;
-using GmailSource =
-    EntityInstance::PersonalContextRecordTypePayload::GmailSource;
-using PhotosSource =
-    EntityInstance::PersonalContextRecordTypePayload::PhotosSource;
+using GmailSourceMetadata =
+    EntityInstance::PersonalContextRecordTypePayload::GmailSourceMetadata;
+using PhotosSourceMetadata =
+    EntityInstance::PersonalContextRecordTypePayload::PhotosSourceMetadata;
 using Source = EntityInstance::PersonalContextRecordTypePayload::Source;
 using ::testing::AllOf;
 using ::testing::Contains;
@@ -612,7 +612,7 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
           {.record_type =
                EntityInstance::PersonalContextRecordTypePayload{
                    .sources = {Source{.url = GURL("https://photos.example.com"),
-                                      .data = PhotosSource{}}}},
+                                      .metadata = PhotosSourceMetadata{}}}},
            .use_count = 0});
   SetEntities({passport_personal_context});
   SetForm({PASSPORT_NUMBER, NAME_FULL});
@@ -648,7 +648,7 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
           {.record_type =
                EntityInstance::PersonalContextRecordTypePayload{
                    .sources = {Source{.url = GURL("https://mail.example.com"),
-                                      .data = GmailSource{}}}},
+                                      .metadata = GmailSourceMetadata{}}}},
            .use_count = 0});
   SetEntities({passport_personal_context});
   SetForm({PASSPORT_NUMBER, NAME_FULL});
@@ -685,9 +685,9 @@ TEST_F(
           {.record_type =
                EntityInstance::PersonalContextRecordTypePayload{
                    .sources = {Source{.url = GURL("https://photos.example.com"),
-                                      .data = PhotosSource{}},
+                                      .metadata = PhotosSourceMetadata{}},
                                Source{.url = GURL("https://mail.example.com"),
-                                      .data = GmailSource{}}}},
+                                      .metadata = GmailSourceMetadata{}}}},
            .use_count = 0});
   SetEntities({passport_personal_context});
   SetForm({PASSPORT_NUMBER, NAME_FULL});
@@ -725,9 +725,9 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
           {.record_type =
                EntityInstance::PersonalContextRecordTypePayload{
                    .sources = {Source{.url = GURL("https://mail.example.com/1"),
-                                      .data = GmailSource{}},
+                                      .metadata = GmailSourceMetadata{}},
                                Source{.url = GURL("https://mail.example.com/2"),
-                                      .data = GmailSource{}}}},
+                                      .metadata = GmailSourceMetadata{}}}},
            .use_count = 0});
   SetEntities({passport_personal_context});
   SetForm({PASSPORT_NUMBER, NAME_FULL});
@@ -764,10 +764,11 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
           {.record_type =
                EntityInstance::PersonalContextRecordTypePayload{
                    .sources = {Source{.url = GURL("not a valid url"),
-                                      .data = GmailSource{}},
-                               Source{.url = GURL(""), .data = GmailSource{}},
+                                      .metadata = GmailSourceMetadata{}},
+                               Source{.url = GURL(""),
+                                      .metadata = GmailSourceMetadata{}},
                                Source{.url = GURL("https://photos.example.com"),
-                                      .data = PhotosSource{}}}},
+                                      .metadata = PhotosSourceMetadata{}}}},
            .use_count = 0});
   SetEntities({passport_personal_context});
   SetForm({PASSPORT_NUMBER, NAME_FULL});
@@ -805,7 +806,7 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
           {.record_type =
                EntityInstance::PersonalContextRecordTypePayload{
                    .sources = {Source{.url = GURL("https://photos.example.com"),
-                                      .data = PhotosSource{}}}},
+                                      .metadata = PhotosSourceMetadata{}}}},
            .use_count = 0});
   SetEntities({passport_personal_context});
   SetForm({PASSPORT_NUMBER, NAME_FULL});
@@ -852,7 +853,7 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
           {.record_type =
                EntityInstance::PersonalContextRecordTypePayload{
                    .sources = {Source{.url = GURL("https://photos.example.com"),
-                                      .data = PhotosSource{}}}},
+                                      .metadata = PhotosSourceMetadata{}}}},
            .use_count = 0});
   SetEntities({passport_personal_context});
   SetForm({PASSPORT_NUMBER, NAME_FULL});
@@ -891,9 +892,9 @@ TEST_F(
           {.record_type =
                EntityInstance::PersonalContextRecordTypePayload{
                    .sources = {Source{.url = GURL("invalid-url"),
-                                      .data = PhotosSource{}},
+                                      .metadata = PhotosSourceMetadata{}},
                                Source{.url = GURL("not a valid url"),
-                                      .data = GmailSource{}}}},
+                                      .metadata = GmailSourceMetadata{}}}},
            .use_count = 0});
   SetEntities({passport_personal_context});
   SetForm({PASSPORT_NUMBER});
@@ -918,10 +919,10 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
            .record_type =
                EntityInstance::PersonalContextRecordTypePayload{
                    .sources = {Source{.url = GURL("invalid-url"),
-                                      .data = PhotosSource{}},
+                                      .metadata = PhotosSourceMetadata{}},
                                Source{
                                    .url = GURL("https://mail.google.com/test"),
-                                   .data = GmailSource{}}}},
+                                   .metadata = GmailSourceMetadata{}}}},
            .use_count = 0});
   SetEntities({passport_personal_context});
   SetForm({PASSPORT_NUMBER});

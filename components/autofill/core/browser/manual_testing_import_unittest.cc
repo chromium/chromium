@@ -409,10 +409,10 @@ TEST_F(ManualTestingImportTest, LoadEntitiesFromFile_PersonalContext_Sources) {
   ASSERT_TRUE(entities.has_value());
   ASSERT_EQ(entities->size(), 1u);
 
-  using GmailSource =
-      EntityInstance::PersonalContextRecordTypePayload::GmailSource;
-  using PhotosSource =
-      EntityInstance::PersonalContextRecordTypePayload::PhotosSource;
+  using GmailSourceMetadata =
+      EntityInstance::PersonalContextRecordTypePayload::GmailSourceMetadata;
+  using PhotosSourceMetadata =
+      EntityInstance::PersonalContextRecordTypePayload::PhotosSourceMetadata;
   using Source = EntityInstance::PersonalContextRecordTypePayload::Source;
   using PersonalContextRecordTypePayload =
       EntityInstance::PersonalContextRecordTypePayload;
@@ -425,9 +425,9 @@ TEST_F(ManualTestingImportTest, LoadEntitiesFromFile_PersonalContext_Sources) {
             (PersonalContextRecordTypePayload{
                 .sources = {
                     Source{.url = GURL("https://photos.google.com/sample"),
-                           .data = PhotosSource{}},
+                           .metadata = PhotosSourceMetadata{}},
                     Source{.url = GURL("https://mail.google.com/sample"),
-                           .data = GmailSource{}},
+                           .metadata = GmailSourceMetadata{}},
                 }}));
 }
 

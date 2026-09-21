@@ -73,13 +73,13 @@ NSArray<AutofillAiSourceGroup*>* ExtractSourcesFromEntity(
     switch (source.type()) {
       case autofill::EntityInstance::PersonalContextRecordTypePayload::Source::
           Type::kGmail: {
-        const auto* gmail_data =
-            std::get_if<autofill::EntityInstance::
-                            PersonalContextRecordTypePayload::GmailSource>(
-                &source.data);
+        const auto& gmail_metadata =
+            std::get<autofill::EntityInstance::
+                         PersonalContextRecordTypePayload::GmailSourceMetadata>(
+                source.metadata);
         NSString* title =
-            (gmail_data && !gmail_data->title.empty())
-                ? base::SysUTF8ToNSString(gmail_data->title)
+            !gmail_metadata.title.empty()
+                ? base::SysUTF8ToNSString(gmail_metadata.title)
                 : l10n_util::GetNSStringF(
                       IDS_IOS_AUTOFILL_AI_SOURCES_FALLBACK_GMAIL_MESSAGE,
                       base::NumberToString16(gmail_index++));

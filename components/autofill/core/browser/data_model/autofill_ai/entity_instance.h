@@ -318,16 +318,18 @@ class EntityInstance final {
                            const WalletRecordTypePayload&) = default;
   };
   struct PersonalContextRecordTypePayload {
-    struct GmailSource {
+    struct GmailSourceMetadata {
       std::string title;
-      friend bool operator==(const GmailSource&, const GmailSource&) = default;
+      friend bool operator==(const GmailSourceMetadata&,
+                             const GmailSourceMetadata&) = default;
     };
-    struct PhotosSource {
-      friend bool operator==(const PhotosSource&,
-                             const PhotosSource&) = default;
+    struct PhotosSourceMetadata {
+      friend bool operator==(const PhotosSourceMetadata&,
+                             const PhotosSourceMetadata&) = default;
     };
 
-    using SourceData = std::variant<GmailSource, PhotosSource>;
+    using SourceMetadata =
+        std::variant<GmailSourceMetadata, PhotosSourceMetadata>;
 
     // Captures the provenance of an entity (e.g., its product source and URL).
     struct Source {
@@ -337,14 +339,15 @@ class EntityInstance final {
       };
 
       GURL url;
-      SourceData data;
+      SourceMetadata metadata;
 
-      // Derived from `data` so type and payload can never get out of sync.
+      // Derived from `metadata` so type and payload can never get out of sync.
       Type type() const {
         return std::visit(
-            absl::Overload{[](const GmailSource&) { return Type::kGmail; },
-                           [](const PhotosSource&) { return Type::kPhotos; }},
-            data);
+            absl::Overload{
+                [](const GmailSourceMetadata&) { return Type::kGmail; },
+                [](const PhotosSourceMetadata&) { return Type::kPhotos; }},
+            metadata);
       }
 
       friend bool operator==(const Source&, const Source&) = default;

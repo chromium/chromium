@@ -239,15 +239,14 @@ GetPersonalContextSourcesFromDict(const base::DictValue& dict) {
       case Source::Type::kGmail:
         sources.push_back(
             {.url = std::move(url),
-             .data =
-                 EntityInstance::PersonalContextRecordTypePayload::GmailSource{
-                     .title = title_str ? *title_str : ""}});
+             .metadata = EntityInstance::PersonalContextRecordTypePayload::
+                 GmailSourceMetadata{.title = title_str ? *title_str : ""}});
         break;
       case Source::Type::kPhotos:
         sources.push_back(
             {.url = std::move(url),
-             .data = EntityInstance::PersonalContextRecordTypePayload::
-                 PhotosSource{}});
+             .metadata = EntityInstance::PersonalContextRecordTypePayload::
+                 PhotosSourceMetadata{}});
         break;
     }
   }

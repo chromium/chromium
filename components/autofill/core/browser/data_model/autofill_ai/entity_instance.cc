@@ -477,12 +477,12 @@ std::ostream& operator<<(
   os << "Source(type: " << s.type() << ", url: \"" << s.url << "\"";
   std::visit(absl::Overload{
                  [&](const EntityInstance::PersonalContextRecordTypePayload::
-                         GmailSource& gmail) {
+                         GmailSourceMetadata& gmail) {
                    os << ", title: \"" << gmail.title << "\"";
                  },
                  [&](const EntityInstance::PersonalContextRecordTypePayload::
-                         PhotosSource&) {}},
-             s.data);
+                         PhotosSourceMetadata&) {}},
+             s.metadata);
   os << ")";
   return os;
 }

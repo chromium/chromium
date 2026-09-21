@@ -129,15 +129,15 @@ class AutofillKeyboardAccessoryControllerImplTest
   }
 
   EntityInstance CreatePassport() {
-    using GmailSource =
-        EntityInstance::PersonalContextRecordTypePayload::GmailSource;
+    using GmailSourceMetadata =
+        EntityInstance::PersonalContextRecordTypePayload::GmailSourceMetadata;
     using Source = EntityInstance::PersonalContextRecordTypePayload::Source;
     return test::GetPassportEntityInstance({
         .guid = "00000000-0000-4000-8000-000000000000",
         .record_type =
             EntityInstance::PersonalContextRecordTypePayload{
                 .sources = {Source{.url = GURL("https://mail.google.com"),
-                                   .data = GmailSource{}}}},
+                                   .metadata = GmailSourceMetadata{}}}},
     });
   }
 

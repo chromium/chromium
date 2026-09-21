@@ -23,10 +23,10 @@ namespace autofill {
 namespace {
 
 using enum AttributeTypeName;
-using GmailSource =
-    EntityInstance::PersonalContextRecordTypePayload::GmailSource;
-using PhotosSource =
-    EntityInstance::PersonalContextRecordTypePayload::PhotosSource;
+using GmailSourceMetadata =
+    EntityInstance::PersonalContextRecordTypePayload::GmailSourceMetadata;
+using PhotosSourceMetadata =
+    EntityInstance::PersonalContextRecordTypePayload::PhotosSourceMetadata;
 using Source = EntityInstance::PersonalContextRecordTypePayload::Source;
 
 // Helper to check the string value of an attribute.
@@ -419,9 +419,9 @@ TEST(AutofillAiPersonalContextConverters, ConvertEntityWithGmailSource) {
   ASSERT_TRUE(opt_result.has_value());
   const EntityInstance& result = opt_result.value();
   EntityInstance::PersonalContextRecordTypePayload payload{
-      .sources = {
-          Source{.url = GURL("https://mail.google.com/mail/u/0/#inbox/123"),
-                 .data = GmailSource{.title = "Passport Information"}}}};
+      .sources = {Source{
+          .url = GURL("https://mail.google.com/mail/u/0/#inbox/123"),
+          .metadata = GmailSourceMetadata{.title = "Passport Information"}}}};
   EXPECT_EQ(std::get<EntityInstance::PersonalContextRecordTypePayload>(
                 result.record_type_data()),
             payload);
@@ -447,7 +447,7 @@ TEST(AutofillAiPersonalContextConverters,
   EntityInstance::PersonalContextRecordTypePayload payload{
       .sources = {
           Source{.url = GURL("https://mail.google.com/mail/u/0/#inbox/123"),
-                 .data = GmailSource{.title = ""}}}};
+                 .metadata = GmailSourceMetadata{.title = ""}}}};
   EXPECT_EQ(std::get<EntityInstance::PersonalContextRecordTypePayload>(
                 result.record_type_data()),
             payload);
@@ -471,7 +471,7 @@ TEST(AutofillAiPersonalContextConverters, ConvertEntityWithPhotosSource) {
   const EntityInstance& result = opt_result.value();
   EntityInstance::PersonalContextRecordTypePayload payload{
       .sources = {Source{.url = GURL("https://photos.google.com/photo/abc"),
-                         .data = PhotosSource{}}}};
+                         .metadata = PhotosSourceMetadata{}}}};
   EXPECT_EQ(std::get<EntityInstance::PersonalContextRecordTypePayload>(
                 result.record_type_data()),
             payload);
@@ -510,9 +510,9 @@ TEST(AutofillAiPersonalContextConverters, ConvertEntityWithMultipleSources) {
   EntityInstance::PersonalContextRecordTypePayload payload{
       .sources = {
           Source{.url = GURL("https://mail.google.com/mail/u/0/#inbox/123"),
-                 .data = GmailSource{.title = ""}},
+                 .metadata = GmailSourceMetadata{.title = ""}},
           Source{.url = GURL("https://photos.google.com/photo/abc"),
-                 .data = PhotosSource{}}}};
+                 .metadata = PhotosSourceMetadata{}}}};
   EXPECT_EQ(std::get<EntityInstance::PersonalContextRecordTypePayload>(
                 result.record_type_data()),
             payload);
