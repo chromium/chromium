@@ -18,14 +18,14 @@ namespace trusted_vault {
 
 TrustedVaultThrottlingConnectionImpl::TrustedVaultThrottlingConnectionImpl(
     std::unique_ptr<TrustedVaultConnection> delegate,
-    LegacyConnectionThrottlingStorage* storage)
+    ConnectionThrottlingStorage* storage)
     : TrustedVaultThrottlingConnectionImpl(std::move(delegate),
                                            storage,
                                            base::DefaultClock::GetInstance()) {}
 
 TrustedVaultThrottlingConnectionImpl::TrustedVaultThrottlingConnectionImpl(
     std::unique_ptr<TrustedVaultConnection> delegate,
-    LegacyConnectionThrottlingStorage* storage,
+    ConnectionThrottlingStorage* storage,
     raw_ptr<base::Clock> clock)
     : delegate_(std::move(delegate)), storage_(storage), clock_(clock) {
   CHECK(delegate_);
@@ -37,7 +37,7 @@ TrustedVaultThrottlingConnectionImpl::TrustedVaultThrottlingConnectionImpl(
 std::unique_ptr<TrustedVaultThrottlingConnectionImpl>
 TrustedVaultThrottlingConnectionImpl::CreateForTesting(
     std::unique_ptr<TrustedVaultConnection> delegate,
-    LegacyConnectionThrottlingStorage* storage,
+    ConnectionThrottlingStorage* storage,
     raw_ptr<base::Clock> clock) {
   return base::WrapUnique(new TrustedVaultThrottlingConnectionImpl(
       std::move(delegate), storage, clock));
@@ -49,10 +49,8 @@ TrustedVaultThrottlingConnectionImpl::~TrustedVaultThrottlingConnectionImpl() =
 bool TrustedVaultThrottlingConnectionImpl::AreRequestsThrottled(
     const CoreAccountInfo& account_info,
     SecurityDomainId domain) {
-  // TODO(crbug.com/542895033): Make request throttling generic across domains.
-  CHECK_EQ(domain, SecurityDomainId::kChromeSync);
   const int64_t last_failed_request_millis =
-      storage_->GetLastFailedRequestMillis(account_info.gaia);
+      storage_->GetLastFailedRequestMillis(account_info.gaia, domain);
   if (last_failed_request_millis == 0) {
     // No failed requests recorded yet, so not throttled.
     return false;
@@ -74,9 +72,7 @@ bool TrustedVaultThrottlingConnectionImpl::AreRequestsThrottled(
 void TrustedVaultThrottlingConnectionImpl::RecordFailedRequestForThrottling(
     const CoreAccountInfo& account_info,
     SecurityDomainId domain) {
-  // TODO(crbug.com/542895033): Make request throttling generic across domains.
-  CHECK_EQ(domain, SecurityDomainId::kChromeSync);
-  storage_->SetLastFailedRequestMillis(account_info.gaia,
+  storage_->SetLastFailedRequestMillis(account_info.gaia, domain,
                                        TimeToProtoTime(clock_->Now()));
 }
 

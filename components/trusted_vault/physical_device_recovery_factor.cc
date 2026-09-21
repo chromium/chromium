@@ -13,8 +13,6 @@ namespace trusted_vault {
 
 namespace {
 
-constexpr int kCurrentDeviceRegistrationVersion = 1;
-
 TrustedVaultDownloadKeysStatusForUMA GetDownloadKeysStatusForUMAFromResponse(
     TrustedVaultDownloadKeysStatus response_status) {
   switch (response_status) {
@@ -47,16 +45,19 @@ TrustedVaultDownloadKeysStatusForUMA GetDownloadKeysStatusForUMAFromResponse(
 
 PhysicalDeviceRecoveryFactor::PhysicalDeviceRecoveryFactor(
     SecurityDomainId security_domain_id,
-    LegacyPhysicalDeviceStorage* storage,
-    LegacyKeyStorage* key_storage,
+    PhysicalDeviceStorage* storage,
+    RecoveryFactorRegistrationStorage* registration_storage,
+    KeyStorage* key_storage,
     TrustedVaultThrottlingConnection* connection,
     CoreAccountInfo primary_account)
     : security_domain_id_(security_domain_id),
       storage_(storage),
+      registration_storage_(registration_storage),
       key_storage_(key_storage),
       connection_(connection),
       primary_account_(primary_account) {
   CHECK(storage_);
+  CHECK(registration_storage_);
   CHECK(key_storage_);
   CHECK(connection_);
 }
@@ -68,10 +69,7 @@ LocalRecoveryFactorType PhysicalDeviceRecoveryFactor::GetRecoveryFactorType()
 }
 
 void PhysicalDeviceRecoveryFactor::AttemptRecovery(AttemptRecoveryCallback cb) {
-  const LocalDeviceRegistrationInfo& registration_info =
-      storage_->GetLocalDeviceRegistrationInfo(primary_account_.gaia);
-
-  if (!registration_info.device_registered()) {
+  if (!IsRegistered()) {
     FulfillRecoveryWithFailure(
         TrustedVaultDownloadKeysStatusForUMA::kDeviceNotRegistered,
         std::move(cb));
@@ -86,6 +84,8 @@ void PhysicalDeviceRecoveryFactor::AttemptRecovery(AttemptRecoveryCallback cb) {
     return;
   }
 
+  const LocalDeviceRegistrationInfo& registration_info =
+      storage_->GetLocalDeviceRegistrationInfo(primary_account_.gaia);
   std::unique_ptr<SecureBoxKeyPair> key_pair =
       SecureBoxKeyPair::CreateByPrivateKeyImport(
           ProtoStringToBytes(registration_info.private_key_material()));
@@ -100,9 +100,9 @@ void PhysicalDeviceRecoveryFactor::AttemptRecovery(AttemptRecoveryCallback cb) {
   }
 
   std::vector<std::vector<uint8_t>> vault_keys =
-      key_storage_->GetVaultKeys(primary_account_.gaia);
-  int last_vault_key_version =
-      key_storage_->GetLastKeyVersion(primary_account_.gaia);
+      key_storage_->GetVaultKeys(primary_account_.gaia, security_domain_id_);
+  int last_vault_key_version = key_storage_->GetLastKeyVersion(
+      primary_account_.gaia, security_domain_id_);
 
   // Guaranteed by `device_registered` check above.
   CHECK(!vault_keys.empty());
@@ -117,26 +117,20 @@ void PhysicalDeviceRecoveryFactor::AttemptRecovery(AttemptRecoveryCallback cb) {
 }
 
 bool PhysicalDeviceRecoveryFactor::IsRegistered() {
-  return storage_->GetLocalDeviceRegistrationInfo(primary_account_.gaia)
-      .device_registered();
+  return registration_storage_->IsRecoveryFactorRegistered(
+      primary_account_.gaia, security_domain_id_,
+      LocalRecoveryFactorType::kPhysicalDevice);
 }
 
 void PhysicalDeviceRecoveryFactor::MarkAsNotRegistered() {
-  storage_->MutateLocalDeviceRegistrationInfo(
-      primary_account_.gaia,
-      [](LocalDeviceRegistrationInfo& registration_info) {
-        registration_info.set_device_registered(false);
-        registration_info.clear_device_registered_version();
-      });
+  registration_storage_->SetRecoveryFactorRegistered(
+      primary_account_.gaia, security_domain_id_,
+      LocalRecoveryFactorType::kPhysicalDevice, false);
 }
 
 TrustedVaultRecoveryFactorRegistrationStateForUMA
 PhysicalDeviceRecoveryFactor::MaybeRegister(RegisterCallback cb) {
-  const LocalDeviceRegistrationInfo& registration_info =
-      storage_->GetLocalDeviceRegistrationInfo(primary_account_.gaia);
-
-  if (registration_info.device_registered()) {
-    static_assert(kCurrentDeviceRegistrationVersion == 1);
+  if (IsRegistered()) {
     FulfillRegistrationWithFailure(
         TrustedVaultRegistrationStatus::kRegistrationNotAttempted,
         std::move(cb));
@@ -144,8 +138,8 @@ PhysicalDeviceRecoveryFactor::MaybeRegister(RegisterCallback cb) {
         kAlreadyRegisteredV1;
   }
 
-  if (storage_->GetLastRegistrationReturnedLocalDataObsolete(
-          primary_account_.gaia)) {
+  if (registration_storage_->GetLastRegistrationReturnedLocalDataObsolete(
+          primary_account_.gaia, security_domain_id_)) {
     // Client already knows that existing vault keys (or their absence) isn't
     // sufficient for device registration. Fresh keys should be obtained
     // first.
@@ -165,6 +159,8 @@ PhysicalDeviceRecoveryFactor::MaybeRegister(RegisterCallback cb) {
         kThrottledClientSide;
   }
 
+  const LocalDeviceRegistrationInfo& registration_info =
+      storage_->GetLocalDeviceRegistrationInfo(primary_account_.gaia);
   std::unique_ptr<SecureBoxKeyPair> key_pair;
   if (!registration_info.private_key_material().empty()) {
     key_pair = SecureBoxKeyPair::CreateByPrivateKeyImport(
@@ -198,13 +194,14 @@ PhysicalDeviceRecoveryFactor::MaybeRegister(RegisterCallback cb) {
 
   ongoing_registration_callback_ = std::move(cb);
   std::vector<std::vector<uint8_t>> vault_keys =
-      key_storage_->GetVaultKeys(primary_account_.gaia);
-  int last_vault_key_version =
-      key_storage_->GetLastKeyVersion(primary_account_.gaia);
+      key_storage_->GetVaultKeys(primary_account_.gaia, security_domain_id_);
+  int last_vault_key_version = key_storage_->GetLastKeyVersion(
+      primary_account_.gaia, security_domain_id_);
 
   // `this` outlives `ongoing_registration_request_`, so it's safe to
   // use base::Unretained() here.
-  if (key_storage_->HasNonConstantKey(primary_account_.gaia)) {
+  if (key_storage_->HasNonConstantKey(primary_account_.gaia,
+                                      security_domain_id_)) {
     ongoing_registration_request_ = connection_->RegisterAuthenticationFactor(
         primary_account_,
         GetTrustedVaultKeysWithVersions(vault_keys, last_vault_key_version),
@@ -318,18 +315,15 @@ void PhysicalDeviceRecoveryFactor::OnRegistered(
     case TrustedVaultRegistrationStatus::kAlreadyRegistered:
       // kAlreadyRegistered handled as success, because it only means that
       // client doesn't fully handled successful device registration before.
-      storage_->MutateLocalDeviceRegistrationInfo(
-          primary_account_.gaia, [](LocalDeviceRegistrationInfo& info) {
-            info.set_device_registered(true);
-            info.set_device_registered_version(
-                kCurrentDeviceRegistrationVersion);
-          });
-      storage_->SetLastRegistrationReturnedLocalDataObsolete(
-          primary_account_.gaia, false);
+      registration_storage_->SetRecoveryFactorRegistered(
+          primary_account_.gaia, security_domain_id_,
+          LocalRecoveryFactorType::kPhysicalDevice, true);
+      registration_storage_->SetLastRegistrationReturnedLocalDataObsolete(
+          primary_account_.gaia, security_domain_id_, false);
       break;
     case TrustedVaultRegistrationStatus::kLocalDataObsolete:
-      storage_->SetLastRegistrationReturnedLocalDataObsolete(
-          primary_account_.gaia, true);
+      registration_storage_->SetLastRegistrationReturnedLocalDataObsolete(
+          primary_account_.gaia, security_domain_id_, true);
       break;
     case TrustedVaultRegistrationStatus::kTransientAccessTokenFetchError:
     case TrustedVaultRegistrationStatus::kPersistentAccessTokenFetchError:

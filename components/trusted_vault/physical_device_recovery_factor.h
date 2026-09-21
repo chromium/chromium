@@ -10,9 +10,9 @@
 
 #include "base/functional/callback.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/trusted_vault/legacy_standalone_trusted_vault_storage.h"
 #include "components/trusted_vault/local_recovery_factor.h"
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
+#include "components/trusted_vault/standalone_trusted_vault_storage.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
 #include "components/trusted_vault/trusted_vault_throttling_connection.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -24,14 +24,15 @@ namespace trusted_vault {
 // storage instances.
 class PhysicalDeviceRecoveryFactor : public LocalRecoveryFactor {
  public:
-  // `storage` and `connection` must not be null and must outlive this object.
-  // `storage` must contain a vault for `primary_account` when calling any
-  // method of this class.
-  PhysicalDeviceRecoveryFactor(SecurityDomainId security_domain_id,
-                               LegacyPhysicalDeviceStorage* storage,
-                               LegacyKeyStorage* key_storage,
-                               TrustedVaultThrottlingConnection* connection,
-                               CoreAccountInfo primary_account);
+  // `storage`, `registration_storage`, `key_storage`, and `connection` must not
+  // be null and must outlive this object.
+  PhysicalDeviceRecoveryFactor(
+      SecurityDomainId security_domain_id,
+      PhysicalDeviceStorage* storage,
+      RecoveryFactorRegistrationStorage* registration_storage,
+      KeyStorage* key_storage,
+      TrustedVaultThrottlingConnection* connection,
+      CoreAccountInfo primary_account);
   PhysicalDeviceRecoveryFactor(const PhysicalDeviceRecoveryFactor&) = delete;
   PhysicalDeviceRecoveryFactor& operator=(PhysicalDeviceRecoveryFactor&) =
       delete;
@@ -63,8 +64,9 @@ class PhysicalDeviceRecoveryFactor : public LocalRecoveryFactor {
                                       RegisterCallback cb);
 
   const SecurityDomainId security_domain_id_;
-  const raw_ptr<LegacyPhysicalDeviceStorage> storage_;
-  const raw_ptr<LegacyKeyStorage> key_storage_;
+  const raw_ptr<PhysicalDeviceStorage> storage_;
+  const raw_ptr<RecoveryFactorRegistrationStorage> registration_storage_;
+  const raw_ptr<KeyStorage> key_storage_;
   const raw_ptr<TrustedVaultThrottlingConnection> connection_;
   const CoreAccountInfo primary_account_;
 

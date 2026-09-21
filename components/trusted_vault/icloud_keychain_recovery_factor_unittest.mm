@@ -15,6 +15,8 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/trusted_vault/icloud_recovery_key_mac.h"
+#include "components/trusted_vault/legacy_standalone_trusted_vault_storage.h"
+#include "components/trusted_vault/legacy_standalone_trusted_vault_storage_adapter.h"
 #include "components/trusted_vault/local_recovery_factor.h"
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
@@ -108,19 +110,20 @@ class ICloudKeychainRecoveryFactorTest : public testing::Test {
 
   void ResetRecoveryFactor(const CoreAccountInfo account_info) {
     // Destroy `recovery_factor_`, otherwise it would hold a reference to
-    // `storage_` which is destroyed before `recovery_factor_` below.
+    // `storage_` and `adapter_` which are destroyed before `recovery_factor_`
+    // below.
     recovery_factor_ = nullptr;
 
-    std::unique_ptr<LegacyFakeFileAccess> file_access =
-        std::make_unique<LegacyFakeFileAccess>();
+    auto file_access = std::make_unique<LegacyFakeFileAccess>();
     if (file_access_) {
       // We only want to reset the recovery factor, not the underlying storage.
       file_access->SetStoredLocalTrustedVault(
           file_access_->GetStoredLocalTrustedVault());
     }
     file_access_ = file_access.get();
-    storage_ = LegacyStandaloneTrustedVaultStorage::CreateForTesting(
+    auto storage = LegacyStandaloneTrustedVaultStorage::CreateForTesting(
         std::move(file_access));
+    storage_ = storage.get();
     storage_->ReadDataFromDisk();
     // Create a user vault if none exists yet.
     storage_->MutateUserVault(account_info.gaia, [](UserVault&) {});
@@ -128,9 +131,12 @@ class ICloudKeychainRecoveryFactorTest : public testing::Test {
     connection_ =
         std::make_unique<NiceMock<MockTrustedVaultThrottlingConnection>>();
 
+    // TODO(crbug.com/542895033): Use the new storage format in tests.
+    adapter_ = std::make_unique<LegacyStandaloneTrustedVaultStorageAdapter>(
+        std::move(storage));
     recovery_factor_ = std::make_unique<ICloudKeychainRecoveryFactor>(
         kKeychainAccessGroupPrefix, SecurityDomainId::kChromeSync,
-        storage_.get(), storage_.get(), connection_.get(), account_info);
+        adapter_.get(), adapter_.get(), connection_.get(), account_info);
   }
 
   CoreAccountInfo account_info() {
@@ -440,10 +446,11 @@ class ICloudKeychainRecoveryFactorTest : public testing::Test {
   }
 
  private:
-  std::unique_ptr<LegacyStandaloneTrustedVaultStorage> storage_ = nullptr;
-  raw_ptr<LegacyFakeFileAccess> file_access_ = nullptr;
   std::unique_ptr<NiceMock<MockTrustedVaultThrottlingConnection>> connection_ =
       nullptr;
+  std::unique_ptr<LegacyStandaloneTrustedVaultStorageAdapter> adapter_;
+  raw_ptr<LegacyStandaloneTrustedVaultStorage> storage_ = nullptr;
+  raw_ptr<LegacyFakeFileAccess> file_access_ = nullptr;
   std::unique_ptr<ICloudKeychainRecoveryFactor> recovery_factor_;
 
   crypto::apple::ScopedFakeKeychainV2 fake_keychain_{kKeychainAccessGroup};

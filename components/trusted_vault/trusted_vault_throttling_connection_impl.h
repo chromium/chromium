@@ -9,8 +9,8 @@
 
 #include "base/time/clock.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/trusted_vault/legacy_standalone_trusted_vault_storage.h"
 #include "components/trusted_vault/proto/vault.pb.h"
+#include "components/trusted_vault/standalone_trusted_vault_storage.h"
 #include "components/trusted_vault/trusted_vault_access_token_fetcher.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_throttling_connection.h"
@@ -25,7 +25,7 @@ class TrustedVaultThrottlingConnectionImpl
   // `storage` is guaranteed to outlive this object.
   TrustedVaultThrottlingConnectionImpl(
       std::unique_ptr<TrustedVaultConnection> delegate,
-      LegacyConnectionThrottlingStorage* storage);
+      ConnectionThrottlingStorage* storage);
 
   TrustedVaultThrottlingConnectionImpl(
       const TrustedVaultThrottlingConnectionImpl& other) = delete;
@@ -91,17 +91,17 @@ class TrustedVaultThrottlingConnectionImpl
 
   static std::unique_ptr<TrustedVaultThrottlingConnectionImpl> CreateForTesting(
       std::unique_ptr<TrustedVaultConnection> delegate,
-      LegacyConnectionThrottlingStorage* storage,
+      ConnectionThrottlingStorage* storage,
       raw_ptr<base::Clock> clock);
 
  private:
   TrustedVaultThrottlingConnectionImpl(
       std::unique_ptr<TrustedVaultConnection> delegate,
-      LegacyConnectionThrottlingStorage* storage,
+      ConnectionThrottlingStorage* storage,
       raw_ptr<base::Clock> clock);
 
   const std::unique_ptr<TrustedVaultConnection> delegate_;
-  const raw_ptr<LegacyConnectionThrottlingStorage> storage_;
+  const raw_ptr<ConnectionThrottlingStorage> storage_;
 
   // Used to determine current time, set to base::DefaultClock in prod and can
   // be overridden in tests.
