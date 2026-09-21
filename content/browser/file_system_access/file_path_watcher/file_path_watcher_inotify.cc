@@ -398,6 +398,101 @@ InotifyReader& GetInotifyReader() {
   return *inotify_reader;
 }
 
+// Drains the currently available batches. Move pairing is scoped to each read
+// buffer. Event pointers are only valid during `dispatch_event`.
+bool ReadInotifyEvents(
+    int inotify_fd,
+    base::FunctionRef<void(const inotify_event*, const inotify_event*)>
+        dispatch_event) {
+  std::array<pollfd, 1> fdarray{{{inotify_fd, POLLIN, 0}}};
+  bool has_batch = true;
+  while (has_batch) {
+    // Adjust buffer size to current event queue size.
+    int buffer_size;
+    int ioctl_result = HANDLE_EINTR(ioctl(inotify_fd, FIONREAD, &buffer_size));
+
+    if (ioctl_result != 0 || buffer_size < 0) {
+      DPLOG(WARNING) << "ioctl failed";
+      return false;
+    }
+
+    std::vector<char> buffer(static_cast<size_t>(buffer_size));
+
+    ssize_t bytes_read = HANDLE_EINTR(
+        read(inotify_fd, buffer.data(), static_cast<size_t>(buffer_size)));
+
+    if (bytes_read < 0) {
+      DPLOG(WARNING) << "read from inotify fd failed";
+      return false;
+    }
+
+    // Most events are notified one by one, except for move events, which are
+    // expected to come in a pair (IN_MOVED_FROM and IN_MOVED_TO) with a
+    // matching cookie value. IN_MOVED_FROM event is expected to arrive right
+    // before the matching IN_MOVED_TO event, but inotify does not guarantee
+    // that these events are consecutive in the stream, or that they exist in
+    // the same buffer read. (i.e. IN_MOVED_FROM  is the last item to fit in
+    // the current buffer, so the matching IN_MOVED_TO is read in the next
+    // buffer). We don't want to wait indefinitely for the matching pair due
+    // to this lack of guarantee, so perform the best-effort coalescing of
+    // move events only within the same buffer.
+    inotify_event* pending_move_from_event = nullptr;
+    for (size_t i = 0; i < static_cast<size_t>(bytes_read);) {
+      inotify_event* event = reinterpret_cast<inotify_event*>(&buffer[i]);
+      size_t event_size = sizeof(inotify_event) + event->len;
+      DUMP_WILL_BE_CHECK_LE(i + event_size, static_cast<size_t>(bytes_read));
+      i += event_size;
+
+      if (event->mask & IN_IGNORED) {
+        continue;
+      }
+
+      if (pending_move_from_event) {
+        if (event->mask & IN_MOVED_TO &&
+            pending_move_from_event->cookie == event->cookie) {
+          // Matching IN_MOVED_TO is observed for the existing pending move.
+          // Match up the two move events, and reset
+          // `pending_move_from_event`.
+          dispatch_event(pending_move_from_event, event);
+          pending_move_from_event = nullptr;
+          continue;
+        }
+        // No matching IN_MOVED_TO is observed for `pending_move_from_event`.
+        // Flush and reset `pending_move_from_event`.
+        dispatch_event(pending_move_from_event, nullptr);
+        pending_move_from_event = nullptr;
+      }
+
+      if (event->mask & IN_MOVED_FROM) {
+        // IN_MOVED_FROM event is observed. Save as `pending_move_from_event`,
+        // so that it can attempt to find the matching IN_MOVED_TO event for
+        // the next iteration.
+        pending_move_from_event = event;
+      } else {
+        // Process other events as normal.
+        dispatch_event(event, nullptr);
+      }
+    }
+
+    // Poll with zero timeout to see if another batch is immediately
+    // available.
+    int poll_result = HANDLE_EINTR(poll(fdarray.data(), fdarray.size(), 0));
+    has_batch = poll_result > 0;
+
+    if (poll_result < 0) {
+      DPLOG(WARNING) << "poll failed";
+      return false;
+    }
+
+    // Coalescing is limited to this buffer, so flush any pending move-from
+    // event before the buffer is destroyed, even if another batch is ready.
+    if (pending_move_from_event) {
+      dispatch_event(pending_move_from_event, nullptr);
+    }
+  }
+  return true;
+}
+
 void InotifyReaderThreadDelegate::ThreadMain() {
   base::PlatformThread::SetName("file_system_access_inotify_reader");
 
@@ -413,92 +508,15 @@ void InotifyReaderThreadDelegate::ThreadMain() {
       }
     }
 
-    bool has_batch = true;
-    while (has_batch) {
-      // Adjust buffer size to current event queue size.
-      int buffer_size;
-      int ioctl_result =
-          HANDLE_EINTR(ioctl(inotify_fd_, FIONREAD, &buffer_size));
-
-      if (ioctl_result != 0 || buffer_size < 0) {
-        DPLOG(WARNING) << "ioctl failed";
-        return;
-      }
-
-      std::vector<char> buffer(static_cast<size_t>(buffer_size));
-
-      ssize_t bytes_read = HANDLE_EINTR(
-          read(inotify_fd_, buffer.data(), static_cast<size_t>(buffer_size)));
-
-      if (bytes_read < 0) {
-        DPLOG(WARNING) << "read from inotify fd failed";
-        return;
-      }
-
-      // Most events are notified one by one, except for move events, which are
-      // expected to come in a pair (IN_MOVED_FROM and IN_MOVED_TO) with a
-      // matching cookie value. IN_MOVED_FROM event is expected to arrive right
-      // before the matching IN_MOVED_TO event, but inotify does not guarantee
-      // that these events are consecutive in the stream, or that they exist in
-      // the same buffer read. (i.e. IN_MOVED_FROM  is the last item to fit in
-      // the current buffer, so the matching IN_MOVED_TO is read in the next
-      // buffer). We don't want to wait indefinitely for the matching pair due
-      // to this lack of guarantee, so perform the best-effort coalescing of
-      // move events only within the same buffer.
-      inotify_event* pending_move_from_event = nullptr;
-      for (size_t i = 0; i < static_cast<size_t>(bytes_read);) {
-        inotify_event* event = reinterpret_cast<inotify_event*>(&buffer[i]);
-        size_t event_size = sizeof(inotify_event) + event->len;
-        DUMP_WILL_BE_CHECK_LE(i + event_size, static_cast<size_t>(bytes_read));
-        i += event_size;
-
-        if (event->mask & IN_IGNORED) {
-          continue;
-        }
-
-        if (pending_move_from_event) {
-          if (event->mask & IN_MOVED_TO &&
-              pending_move_from_event->cookie == event->cookie) {
-            // Matching IN_MOVED_TO is observed for the existing pending move.
-            // Match up the two move events, and reset
-            // `pending_move_from_event`.
-            GetInotifyReader().OnInotifyMatchingMoveEvents(
-                pending_move_from_event, event);
-            pending_move_from_event = nullptr;
-            continue;
+    if (!ReadInotifyEvents(inotify_fd_, [](const inotify_event* event,
+                                           const inotify_event* moved_to) {
+          if (moved_to) {
+            GetInotifyReader().OnInotifyMatchingMoveEvents(event, moved_to);
+          } else {
+            GetInotifyReader().OnInotifyEvent(event);
           }
-          // No matching IN_MOVED_TO is observed for `pending_move_from_event`.
-          // Flush and reset `pending_move_from_event`.
-          GetInotifyReader().OnInotifyEvent(pending_move_from_event);
-          pending_move_from_event = nullptr;
-        }
-
-        if (event->mask & IN_MOVED_FROM) {
-          // IN_MOVED_FROM event is observed. Save as `pending_move_from_event`,
-          // so that it can attempt to find the matching IN_MOVED_TO event for
-          // the next iteration.
-          pending_move_from_event = event;
-        } else {
-          // Process other events as normal.
-          GetInotifyReader().OnInotifyEvent(event);
-        }
-      }
-
-      // Poll with zero timeout to see if another batch is immediately
-      // available. This allows coalescing move events across batches.
-      int poll_result = HANDLE_EINTR(poll(fdarray.data(), fdarray.size(), 0));
-      has_batch = poll_result > 0;
-
-      if (poll_result < 0) {
-        DPLOG(WARNING) << "poll failed";
-        return;
-      }
-
-      // If we don't have another batch to process, assume any pending move-from
-      // event doesn't have a matching move-to event.
-      if (!has_batch && pending_move_from_event) {
-        GetInotifyReader().OnInotifyEvent(pending_move_from_event);
-      }
+        })) {
+      return;
     }
   }
 }
@@ -1361,6 +1379,13 @@ size_t GetMaxNumberOfInotifyWatches() {
   }();
   return max;
 #endif  // if BUILDFLAG(IS_FUCHSIA)
+}
+
+bool ReadInotifyEventsForTesting(
+    int inotify_fd,
+    base::FunctionRef<void(const inotify_event*, const inotify_event*)>
+        dispatch_event) {
+  return ReadInotifyEvents(inotify_fd, dispatch_event);
 }
 
 size_t GetQuotaLimitFromSystemLimitForTesting(size_t system_limit) {

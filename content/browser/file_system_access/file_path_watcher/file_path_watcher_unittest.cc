@@ -4,9 +4,11 @@
 
 #include "content/browser/file_system_access/file_path_watcher/file_path_watcher.h"
 
+#include <array>
 #include <list>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/atomic_sequence_num.h"
@@ -60,13 +62,97 @@
 #endif  // BUILDFLAG(IS_POSIX)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include <sys/inotify.h>
+#include <sys/socket.h>
+#include <unistd.h>
+
+#include "base/containers/span.h"
+#include "base/files/scoped_file.h"
 #include "base/format_macros.h"
+#include "base/posix/eintr_wrapper.h"
 #include "content/browser/file_system_access/file_path_watcher/file_path_watcher_inotify.h"
 #endif
 
 namespace content {
 
 namespace {
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// Queue packets before running the reader so read boundaries and the readiness
+// of the next batch do not depend on filesystem or thread scheduling.
+class InotifyReaderTest : public testing::Test {
+ protected:
+  void SetUp() override {
+    int fds[2];
+    ASSERT_EQ(0, socketpair(AF_UNIX, SOCK_SEQPACKET, 0, fds));
+    writer_.reset(fds[0]);
+    reader_.reset(fds[1]);
+  }
+
+  void QueueBatch(base::span<const inotify_event> events) {
+    ASSERT_EQ(
+        static_cast<ssize_t>(events.size_bytes()),
+        HANDLE_EINTR(write(writer_.get(), events.data(), events.size_bytes())));
+  }
+
+  void ReadEvents() {
+    ASSERT_TRUE(ReadInotifyEventsForTesting(
+        reader_.get(),
+        [this](const inotify_event* event, const inotify_event* moved_to) {
+          if (moved_to) {
+            moves_.emplace_back(event->wd, moved_to->wd);
+          } else {
+            events_.push_back(event->mask);
+          }
+        }));
+  }
+
+  base::ScopedFD writer_;
+  base::ScopedFD reader_;
+  std::vector<uint32_t> events_;
+  std::vector<std::pair<int, int>> moves_;
+};
+
+TEST_F(InotifyReaderTest, FlushesMoveFromWhenAnotherBatchIsReady) {
+  const std::array<inotify_event, 1> first = {
+      {{.wd = 1, .mask = IN_MOVED_FROM, .cookie = 42, .len = 0}}};
+  const std::array<inotify_event, 1> second = {
+      {{.wd = 2, .mask = IN_CREATE, .cookie = 0, .len = 0}}};
+  ASSERT_NO_FATAL_FAILURE(QueueBatch(first));
+  ASSERT_NO_FATAL_FAILURE(QueueBatch(second));
+
+  ReadEvents();
+
+  EXPECT_THAT(events_, testing::ElementsAre(IN_MOVED_FROM, IN_CREATE));
+  EXPECT_THAT(moves_, testing::IsEmpty());
+}
+
+TEST_F(InotifyReaderTest, PairsMovesWithinSameBuffer) {
+  const std::array<inotify_event, 2> batch = {
+      {{.wd = 1, .mask = IN_MOVED_FROM, .cookie = 42, .len = 0},
+       {.wd = 2, .mask = IN_MOVED_TO, .cookie = 42, .len = 0}}};
+  ASSERT_NO_FATAL_FAILURE(QueueBatch(batch));
+
+  ReadEvents();
+
+  EXPECT_THAT(events_, testing::IsEmpty());
+  EXPECT_THAT(moves_, testing::ElementsAre(std::make_pair(1, 2)));
+}
+
+TEST_F(InotifyReaderTest, DoesNotPairMovesAcrossBuffers) {
+  const std::array<inotify_event, 1> first = {
+      {{.wd = 1, .mask = IN_MOVED_FROM, .cookie = 42, .len = 0}}};
+  const std::array<inotify_event, 1> second = {
+      {{.wd = 2, .mask = IN_MOVED_TO, .cookie = 42, .len = 0}}};
+  ASSERT_NO_FATAL_FAILURE(QueueBatch(first));
+  ASSERT_NO_FATAL_FAILURE(QueueBatch(second));
+
+  ReadEvents();
+
+  EXPECT_THAT(events_, testing::ElementsAre(IN_MOVED_FROM, IN_MOVED_TO));
+  EXPECT_THAT(moves_, testing::IsEmpty());
+}
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 base::AtomicSequenceNumber g_next_delegate_id;
 

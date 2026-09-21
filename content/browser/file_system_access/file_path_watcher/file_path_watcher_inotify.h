@@ -7,9 +7,20 @@
 
 #include <stddef.h>
 
+#include "base/functional/function_ref.h"
 #include "content/common/content_export.h"
 
+struct inotify_event;
+
 namespace content {
+
+// Drains queued events from `inotify_fd` through the production reader loop.
+// Tests can supply a packet socket to control read boundaries. `dispatch_event`
+// receives either a single event (second argument null) or a matched move pair.
+CONTENT_EXPORT bool ReadInotifyEventsForTesting(
+    int inotify_fd,
+    base::FunctionRef<void(const inotify_event*, const inotify_event*)>
+        dispatch_event);
 
 CONTENT_EXPORT size_t
 GetQuotaLimitFromSystemLimitForTesting(size_t system_limit);
