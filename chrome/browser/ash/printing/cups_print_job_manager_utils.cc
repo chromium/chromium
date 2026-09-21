@@ -198,9 +198,8 @@ void UpdateHeldJob(const ::printing::CupsJob& job, CupsPrintJob* print_job) {
 
 bool UpdatePrintJob(const ::printing::PrinterStatus& printer_status,
                     const ::printing::CupsJob& job,
-                    CupsPrintJob* print_job) {
-  static absl::flat_hash_map<int, std::string> old_status;
-
+                    CupsPrintJob* print_job,
+                    absl::flat_hash_map<int, std::string>& last_logged_status) {
   CHECK_EQ(job.id, print_job->job_id(), base::NotFatalUntil::M160);
 
   CupsPrintJob::State old_state = print_job->state();
@@ -234,7 +233,7 @@ bool UpdatePrintJob(const ::printing::PrinterStatus& printer_status,
   // even if the job-state doesn't change, so this is based on matching the
   // previous status message instead of looking at just the state.
   bool updated = print_job->state() != old_state || pages_updated;
-  if (!old_status.contains(job.id)) {
+  if (!last_logged_status.contains(job.id)) {
     PRINTER_LOG(EVENT) << base::StringPrintf(
         "%s: job %d created with total_pages: %d, title: %s", job.printer_id,
         job.id, print_job->total_page_number(), print_job->document_title());
@@ -243,13 +242,13 @@ bool UpdatePrintJob(const ::printing::PrinterStatus& printer_status,
       "%s: job %d changed to page %d/%d with state: %s", job.printer_id, job.id,
       print_job->printed_page_number(), print_job->total_page_number(),
       GetStateDescription(printer_status, job));
-  if (status != old_status[job.id]) {
+  if (status != last_logged_status[job.id]) {
     if (updated) {
       PRINTER_LOG(EVENT) << status;
     } else {
       PRINTER_LOG(DEBUG) << status;
     }
-    old_status[job.id] = status;
+    last_logged_status[job.id] = status;
   }
   if (job.state == ::printing::CupsJob::COMPLETED ||
       job.state == ::printing::CupsJob::CANCELED ||
@@ -260,7 +259,7 @@ bool UpdatePrintJob(const ::printing::PrinterStatus& printer_status,
 
     // No need to save statuses for terminal states, since no more updates are
     // expected.
-    old_status.erase(job.id);
+    last_logged_status.erase(job.id);
   }
 
   return updated;

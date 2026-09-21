@@ -42,6 +42,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "printing/printed_document.h"
 #include "printing/printing_utils.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -299,7 +300,8 @@ class CupsPrintJobManagerImpl : public CupsPrintJobManager {
 
         CupsPrintJob* print_job = entry->second.get();
 
-        if (UpdatePrintJob(queue.printer_status, job, print_job)) {
+        if (UpdatePrintJob(queue.printer_status, job, print_job,
+                           last_logged_status_)) {
           // The state of the job changed, notify observers.
           NotifyJobStateUpdate(print_job->GetWeakPtr());
         }
@@ -520,6 +522,10 @@ class CupsPrintJobManagerImpl : public CupsPrintJobManager {
   // `unique_id`. Once the corresponding print job either fails or completes,
   // record the metrics entry to histograms and remove it from the map.
   base::flat_map<std::string, PrinterMetrics> printer_metrics_cache_;
+
+  // Maps a CUPS job id to the status message most recently logged for it, so
+  // that an unchanged status is not logged repeatedly while a job is polled.
+  absl::flat_hash_map<int, std::string> last_logged_status_;
 
   base::RepeatingTimer timer_;
   std::unique_ptr<CupsWrapper> cups_wrapper_;
