@@ -43,9 +43,14 @@ class OmniboxPopupAimHandler : public omnibox_popup_aim::mojom::PageHandler {
   }
 
   // omnibox_popup_aim::mojom::PageHandler:
-  // Forwards a close event from the page to the browser.
-  void RequestClose() override;
+  // Forwards a close event from the page to the browser with the current input.
+  void RequestClose(const std::string& input) override;
   void ShowContextMenu(const gfx::Point& point) override;
+
+  // Draft text from the most recent `RequestClose()`, drained by
+  // `OmniboxAimPopupWebUIContent::CloseUI()`.
+  const std::string& cached_draft_text() const { return cached_draft_text_; }
+  void clear_cached_draft_text() { cached_draft_text_.clear(); }
 
   // Forwards an `OnPopupShown()` call to the page.
   void OnPopupShown(std::unique_ptr<SearchboxContextData::Context> context);
@@ -76,6 +81,7 @@ class OmniboxPopupAimHandler : public omnibox_popup_aim::mojom::PageHandler {
   mojo::Remote<omnibox_popup_aim::mojom::Page> page_;
   raw_ptr<content::WebContents> web_contents_;
   base::WeakPtr<TopChromeWebUIController::Embedder> embedder_;
+  std::string cached_draft_text_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_OMNIBOX_POPUP_OMNIBOX_POPUP_AIM_HANDLER_H_
