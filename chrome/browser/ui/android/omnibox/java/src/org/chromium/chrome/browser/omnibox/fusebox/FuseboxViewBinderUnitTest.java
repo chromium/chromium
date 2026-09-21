@@ -517,6 +517,14 @@ public class FuseboxViewBinderUnitTest {
 
         mModel.set(
                 FuseboxProperties.REQUEST_TYPE_BUTTON_ICON_ID,
+                IconResourceIdsProtoIntDef.IconResourceIds.IMAGE_CREATE);
+        assertStartDrawable(R.drawable.image_create_24dp);
+        assertNull(mViewHolder.requestType.getCompoundDrawablesRelative()[1]);
+        assertNotNull(mViewHolder.requestType.getCompoundDrawablesRelative()[2]);
+        assertNull(mViewHolder.requestType.getCompoundDrawablesRelative()[3]);
+
+        mModel.set(
+                FuseboxProperties.REQUEST_TYPE_BUTTON_ICON_ID,
                 IconResourceIdsProtoIntDef.IconResourceIds.SEARCH_LOUPE_WITH_SPARKLE);
         assertStartDrawable(R.drawable.search_spark_black_24dp);
         assertNull(mViewHolder.requestType.getCompoundDrawablesRelative()[1]);
