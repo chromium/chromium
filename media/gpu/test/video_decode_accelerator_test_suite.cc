@@ -133,11 +133,13 @@ VideoDecodeAcceleratorTestSuite* VideoDecodeAcceleratorTestSuite::Create(
 
   for (base::CommandLine::SwitchMap::const_iterator it = switches.begin();
        it != switches.end(); ++it) {
-    if (it->first.find("gtest_") == 0 ||  // Handled by GoogleTest
-                                          // Options below are handled by Chrome
-        it->first == "use-gl" || it->first == "v" || it->first == "vmodule" ||
+    if (it->first.starts_with(
+            "gtest_") ||  // Handled by GoogleTest
+                          // Options below are handled by Chrome
+        it->first == "use-gl" ||
+        it->first == "v" || it->first == "vmodule" ||
         it->first == "enable-features" || it->first == "disable-features" ||
-        it->first.find("test-launcher-") == 0 ||
+        it->first.starts_with("test-launcher-") ||
         it->first == "enable-primary-node-access-for-vkms-testing" ||
         it->first == "single-process-tests" ||
         it->first == "enable-clear-hevc-for-testing") {

@@ -58,8 +58,7 @@ TEST(CdmPathsTest, Prefix) {
   const char kPrefix[] = "prefix";
   auto path = GetPlatformSpecificDirectory(kPrefix);
 
-  EXPECT_TRUE(base::StartsWith(path.MaybeAsASCII(), kPrefix,
-                               base::CompareCase::SENSITIVE));
+  EXPECT_TRUE(path.MaybeAsASCII().starts_with(kPrefix));
 }
 
 TEST(CdmPathsTest, Expected) {

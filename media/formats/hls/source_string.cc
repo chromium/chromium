@@ -127,9 +127,9 @@ ParseStatus::Or<SourceString> SourceLineIterator::Next() {
   const auto following = source_.substr(line_end);
 
   // Trim (and validate) newline sequence from the following text
-  if (base::StartsWith(following, "\n")) {
+  if (following.starts_with("\n")) {
     source_ = following.substr(1);
-  } else if (base::StartsWith(following, "\r\n")) {
+  } else if (following.starts_with("\r\n")) {
     source_ = following.substr(2);
   } else {
     return ParseStatusCode::kInvalidEOL;

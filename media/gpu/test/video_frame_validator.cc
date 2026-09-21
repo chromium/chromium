@@ -305,7 +305,7 @@ MD5VideoFrameValidator::Validate(scoped_refptr<const VideoFrame> frame,
   // devices. Since this bug only occurs in Skylake just because they are 3.18
   // devices, we also filter by the processor.
   const static std::string kernel_version = base::SysInfo::KernelVersion();
-  if (base::StartsWith(kernel_version, "3.18")) {
+  if (kernel_version.starts_with("3.18")) {
     static const bool is_skylake = []() {
       constexpr int kPentiumAndLaterFamily = 0x06;
       constexpr int kSkyLakeModelId = 0x5E;

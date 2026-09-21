@@ -871,7 +871,7 @@ int main(int argc, char** argv) {
   base::CommandLine::SwitchMap switches = cmd_line->GetSwitches();
   for (base::CommandLine::SwitchMap::const_iterator it = switches.begin();
        it != switches.end(); ++it) {
-    if (it->first.find("gtest_") == 0 ||               // Handled by GoogleTest
+    if (it->first.starts_with("gtest_") ||             // Handled by GoogleTest
         it->first == "v" || it->first == "vmodule") {  // Handled by Chrome
       continue;
     }

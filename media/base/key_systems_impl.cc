@@ -410,10 +410,12 @@ bool KeySystemsImpl::IsValidMimeTypeCodecsCombination(
   if (codecs == EME_CODEC_NONE)
     return true;
 
-  if (base::StartsWith(mime_type, "audio/", base::CompareCase::SENSITIVE))
+  if (mime_type.starts_with("audio/")) {
     return !(codecs & ~audio_codec_mask_);
-  if (base::StartsWith(mime_type, "video/", base::CompareCase::SENSITIVE))
+  }
+  if (mime_type.starts_with("video/")) {
     return !(codecs & ~video_codec_mask_);
+  }
 
   return false;
 }
@@ -525,14 +527,12 @@ EmeConfig::Rule KeySystemsImpl::GetContentTypeConfigRule(
   // Make sure the container MIME type matches |media_type|.
   switch (media_type) {
     case EmeMediaType::AUDIO:
-      if (!base::StartsWith(container_mime_type, "audio/",
-                            base::CompareCase::SENSITIVE)) {
+      if (!container_mime_type.starts_with("audio/")) {
         return EmeConfig::UnsupportedRule();
       }
       break;
     case EmeMediaType::VIDEO:
-      if (!base::StartsWith(container_mime_type, "video/",
-                            base::CompareCase::SENSITIVE)) {
+      if (!container_mime_type.starts_with("video/")) {
         return EmeConfig::UnsupportedRule();
       }
       break;

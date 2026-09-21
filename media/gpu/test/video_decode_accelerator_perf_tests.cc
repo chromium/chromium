@@ -478,10 +478,10 @@ int main(int argc, char** argv) {
   base::CommandLine::SwitchMap switches = cmd_line->GetSwitches();
   for (base::CommandLine::SwitchMap::const_iterator it = switches.begin();
        it != switches.end(); ++it) {
-    if (it->first.find("gtest_") == 0 ||  // Handled by GoogleTest
-        it->first == "ozone-platform" ||  // Handled by Chrome
-        it->first == "use-gl" ||          // Handled by Chrome
-                                          // Options below handled by Chrome
+    if (it->first.starts_with("gtest_") ||  // Handled by GoogleTest
+        it->first == "ozone-platform" ||    // Handled by Chrome
+        it->first == "use-gl" ||            // Handled by Chrome
+                                            // Options below handled by Chrome
         it->first == "v" || it->first == "vmodule" ||
         it->first == "enable-features" || it->first == "disable-features") {
       continue;

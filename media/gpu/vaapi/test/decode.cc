@@ -176,8 +176,7 @@ std::optional<SharedVASurface::FetchPolicy> GetFetchPolicy(
   // Always use kGetImage for AMD devices.
   // TODO(b/201587517): remove this exception.
   const std::string va_vendor_string = vaQueryVendorString(va_device.display());
-  if (base::StartsWith(va_vendor_string, "Mesa Gallium driver",
-                       base::CompareCase::SENSITIVE)) {
+  if (va_vendor_string.starts_with("Mesa Gallium driver")) {
     LOG(WARNING) << "AMD driver detected, forcing vaGetImage";
     return SharedVASurface::FetchPolicy::kGetImage;
   }

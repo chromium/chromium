@@ -486,11 +486,11 @@ ParseStatus::Or<InstreamId> InstreamId::Parse(ResolvedSourceString str) {
   // Parse the type (one of 'CC' or 'SERVICE')
   Type type;
   uint8_t max;
-  if (base::StartsWith(str.Str(), kCcStr)) {
+  if (str.Str().starts_with(kCcStr)) {
     type = Type::kCc;
     max = 4;
     str.Consume(kCcStr.size());
-  } else if (base::StartsWith(str.Str(), kServiceStr)) {
+  } else if (str.Str().starts_with(kServiceStr)) {
     type = Type::kService;
     max = 63;
     str.Consume(kServiceStr.size());

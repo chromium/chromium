@@ -108,9 +108,8 @@ bool IsVividLoaded() {
   std::vector<std::string_view> lines = base::SplitStringPieceUsingSubstr(
       output, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
-  return std::ranges::any_of(lines, [](const auto& line) {
-    return base::StartsWith(line, "vivid", base::CompareCase::SENSITIVE);
-  });
+  return std::ranges::any_of(
+      lines, [](const auto& line) { return line.starts_with("vivid"); });
 }
 
 base::flat_set<int32_t> GetAvailableFramerates(
@@ -742,7 +741,7 @@ cros::mojom::CameraInfoPtr CameraHalDelegate::GetCameraInfoFromDeviceId(
     return {};
   }
   auto info = it->second.Clone();
-  if (base::StartsWith(device_id, std::string(kVirtualPrefix))) {
+  if (device_id.starts_with(kVirtualPrefix)) {
     switch (it->second->facing) {
       case cros::mojom::CameraFacing::CAMERA_FACING_BACK:
         info->facing = cros::mojom::CameraFacing::CAMERA_FACING_VIRTUAL_BACK;
@@ -763,7 +762,7 @@ cros::mojom::CameraInfoPtr CameraHalDelegate::GetCameraInfoFromDeviceId(
 
 void CameraHalDelegate::EnableVirtualDevice(const std::string& device_id,
                                             bool enable) {
-  if (base::StartsWith(device_id, std::string(kVirtualPrefix))) {
+  if (device_id.starts_with(kVirtualPrefix)) {
     return;
   }
   auto camera_id = GetCameraIdFromDeviceId(device_id);

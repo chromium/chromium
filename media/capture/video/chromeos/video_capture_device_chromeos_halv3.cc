@@ -15,7 +15,7 @@ VideoCaptureDeviceChromeOSHalv3::VideoCaptureDeviceChromeOSHalv3(
     VideoCaptureDeviceChromeOSDelegate* delegate,
     const VideoCaptureDeviceDescriptor& vcd_descriptor)
     : vcd_delegate_(delegate) {
-  client_type_ = base::StartsWith(vcd_descriptor.device_id, kVirtualPrefix)
+  client_type_ = vcd_descriptor.device_id.starts_with(kVirtualPrefix)
                      ? ClientType::kVideoClient
                      : ClientType::kPreviewClient;
 }

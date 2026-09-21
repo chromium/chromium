@@ -185,7 +185,7 @@ class FrameProcessorTest : public ::testing::TestWithParam<bool> {
     BufferQueue buffers;
     for (size_t i = 0; i < timestamps.size(); i++) {
       bool is_keyframe = false;
-      if (base::EndsWith(timestamps[i], "K", base::CompareCase::SENSITIVE)) {
+      if (timestamps[i].ends_with("K")) {
         is_keyframe = true;
         // Remove the "K" off of the token.
         timestamps[i] = timestamps[i].substr(0, timestamps[i].length() - 1);

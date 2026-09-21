@@ -245,11 +245,10 @@ TEST(AudioVideoMetadataExtractorTest, AudioMP3) {
   EXPECT_EQ(1u, extractor->attached_images_bytes().size());
   EXPECT_EQ(155752u, extractor->attached_images_bytes()[0].size());
 
-  EXPECT_EQ("\x89PNG\r\n\x1a\n",
-            extractor->attached_images_bytes()[0].substr(0, 8));
-  EXPECT_EQ("IEND\xae\x42\x60\x82",
-            extractor->attached_images_bytes()[0].substr(
-                extractor->attached_images_bytes()[0].size() - 8, 8));
+  EXPECT_TRUE(
+      extractor->attached_images_bytes()[0].starts_with("\x89PNG\r\n\x1a\n"));
+  EXPECT_TRUE(
+      extractor->attached_images_bytes()[0].ends_with("IEND\xae\x42\x60\x82"));
   EXPECT_EQ("\xF3\xED\x8F\xC7\xC7\x98\xB9V|p\xC0u!\xB5\x82\xCF\x95\xF0\xCD\xCE",
             base::SHA1HashString(extractor->attached_images_bytes()[0]));
 }

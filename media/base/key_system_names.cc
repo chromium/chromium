@@ -16,8 +16,8 @@ bool IsClearKey(std::string_view key_system) {
 }
 
 bool IsSubKeySystemOf(std::string_view key_system, std::string_view base) {
-  return base::StartsWith(key_system, base) &&
-         base::StartsWith(key_system.substr(base.size()), ".");
+  return key_system.starts_with(base) &&
+         key_system.substr(base.size()).starts_with(".");
 }
 
 bool IsExternalClearKey(std::string_view key_system) {

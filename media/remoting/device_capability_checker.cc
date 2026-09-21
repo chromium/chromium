@@ -18,10 +18,8 @@ bool IsKnownToSupportRemoting(const std::string& model_name) {
   //
   // TODO(crbug.com/1380864): Use a better mechanism to feature detect remoting
   // support before mirroring begins.
-  return base::StartsWith(model_name, "Chromecast",
-                          base::CompareCase::SENSITIVE) ||
-         base::StartsWith(model_name, "Eureka Dongle",
-                          base::CompareCase::SENSITIVE) ||
+  return model_name.starts_with("Chromecast") ||
+         model_name.starts_with("Eureka Dongle") ||
          model_name == "Google TV Streamer";
 }
 

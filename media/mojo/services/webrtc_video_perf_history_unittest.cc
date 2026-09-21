@@ -119,7 +119,7 @@ class FakeWebrtcVideoStatsDB : public WebrtcVideoStatsDB {
     WebrtcVideoStatsDB::VideoStatsCollection collection;
     std::string key_filter = key.SerializeWithoutPixels();
     for (auto const& [str, video_stats_entry] : entries_) {
-      if (str.rfind(key_filter, 0) == 0) {
+      if (str.starts_with(key_filter)) {
         std::optional<int> pixels = VideoDescKey::ParsePixelsFromKey(str);
         if (pixels) {
           collection.insert({*pixels, std::move(video_stats_entry)});

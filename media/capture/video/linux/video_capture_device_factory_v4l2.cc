@@ -69,7 +69,7 @@ bool ReadIdFile(const std::string& path, std::string* id) {
 std::string ExtractFileNameFromDeviceId(const std::string& device_id) {
   // |unique_id| is of the form "/dev/video2".  |file_name| is "video2".
   constexpr std::string_view kDevDir = "/dev/";
-  DCHECK(base::StartsWith(device_id, kDevDir, base::CompareCase::SENSITIVE));
+  DCHECK(device_id.starts_with(kDevDir));
   return device_id.substr(kDevDir.length());
 }
 

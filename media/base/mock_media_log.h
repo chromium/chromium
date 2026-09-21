@@ -65,7 +65,7 @@ struct TypeAndCodec {
 namespace media {
 
 MATCHER_P(TracksHasCodecName, tandc, "") {
-  return (arg.substr(0, 15) == "{\"" + tandc.type + "\"") && (arg[16] != ']') &&
+  return arg.starts_with("{\"" + tandc.type + "\"") && (arg[16] != ']') &&
          CONTAINS_STRING(arg, tandc.codec);
 }
 

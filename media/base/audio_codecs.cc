@@ -83,7 +83,7 @@ AudioCodec StringToAudioCodec(std::string_view codec_id) {
   if (codec_id == "ac-3" || codec_id == "mp4a.A5" || codec_id == "mp4a.a5")
     return AudioCodec::kAC3;
   if (codec_id == "ac-4" || codec_id == "mp4a.AE" || codec_id == "mp4a.ae" ||
-      base::StartsWith(codec_id, "ac-4.", base::CompareCase::SENSITIVE)) {
+      codec_id.starts_with("ac-4.")) {
     return AudioCodec::kAC4;
   }
   if (codec_id == "ec-3" || codec_id == "mp4a.A6" || codec_id == "mp4a.a6")
@@ -104,8 +104,7 @@ AudioCodec StringToAudioCodec(std::string_view codec_id) {
   if (codec_id == "flac" || codec_id == "fLaC") {
     return AudioCodec::kFLAC;
   }
-  if (base::StartsWith(codec_id, "mhm1.", base::CompareCase::SENSITIVE) ||
-      base::StartsWith(codec_id, "mha1.", base::CompareCase::SENSITIVE)) {
+  if (codec_id.starts_with("mhm1.") || codec_id.starts_with("mha1.")) {
     return AudioCodec::kMpegHAudio;
   }
   if (codec_id == "opus" || codec_id == "Opus") {
@@ -113,10 +112,10 @@ AudioCodec StringToAudioCodec(std::string_view codec_id) {
   }
   if (codec_id == "vorbis")
     return AudioCodec::kVorbis;
-  if (base::StartsWith(codec_id, "mp4a.40.", base::CompareCase::SENSITIVE))
+  if (codec_id.starts_with("mp4a.40.")) {
     return AudioCodec::kAAC;
-  if (codec_id == "iamf" ||
-      base::StartsWith(codec_id, "iamf.", base::CompareCase::SENSITIVE)) {
+  }
+  if (codec_id == "iamf" || codec_id.starts_with("iamf.")) {
     return AudioCodec::kIAMF;
   }
   return AudioCodec::kUnknown;
@@ -137,7 +136,7 @@ bool ParseDolbyAc4CodecId(const std::string& codec_id,
   //            E.13 The MIME codecs parameter
   // (https://www.etsi.org/deliver/etsi_ts/103100_103199/10319002/01.02.01_60/ts_10319002v010201p.pdf)
 
-  if (!base::StartsWith(codec_id, "ac-4")) {
+  if (!codec_id.starts_with("ac-4")) {
     return false;
   }
 

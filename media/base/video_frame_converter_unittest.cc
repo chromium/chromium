@@ -676,7 +676,7 @@ std::string PrintTestParams(const testing::TestParamInfo<TestParams>& info) {
   auto format_to_string = [](VideoPixelFormat format) {
     std::string name = VideoPixelFormatToString(format);
     const std::string prefix = "PIXEL_FORMAT_";
-    if (name.find(prefix) == 0) {
+    if (name.starts_with(prefix)) {
       name = name.substr(prefix.length());
     }
     return name;

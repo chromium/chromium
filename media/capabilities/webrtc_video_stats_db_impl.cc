@@ -17,7 +17,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
@@ -138,7 +137,7 @@ void WebrtcVideoStatsDBImpl::GetVideoStatsCollection(
   std::string key_without_pixels = key.SerializeWithoutPixels();
   auto key_iterator_controller = base::BindRepeating(
       [](const std::string& key_filter, const std::string& key) {
-        if (base::StartsWith(key, key_filter)) {
+        if (key.starts_with(key_filter)) {
           // Include this entry and continue the search if the key has the
           // same beginning as `key_without_pixels`.
           return leveldb_proto::Enums::kLoadAndContinue;

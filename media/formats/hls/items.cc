@@ -60,7 +60,7 @@ ParseStatus::Or<GetNextLineItemResult> GetNextLineItem(
       line.Consume(1);
 
       // All tags begin with "EXT", otherwise it's a comment.
-      if (base::StartsWith(line.Str(), "EXT")) {
+      if (line.Str().starts_with("EXT")) {
         return GetNextLineItemResult{GetTagItem(line)};
       }
 

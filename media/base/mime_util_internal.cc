@@ -603,8 +603,7 @@ bool MimeUtil::IsCodecSupportedOnAndroid(Codec codec,
       // MPEG2_AAC cannot be used in HLS (mpegurl suffix), but this is enforced
       // in the parsing step by excluding MPEG2_AAC from the list of
       // valid codecs to be used with HLS mime types.
-      DCHECK(!base::EndsWith(mime_type_lower_case, "mpegurl",
-                             base::CompareCase::SENSITIVE));
+      DCHECK(!mime_type_lower_case.ends_with("mpegurl"));
       [[fallthrough]];
     case PCM:
     case MP3:
@@ -824,7 +823,7 @@ bool MimeUtil::ParseCodecHelper(std::string_view mime_type_lower_case,
     // Original VP9 codec string did not describe the profile.
     if (out_result->video->profile == VIDEO_CODEC_PROFILE_UNKNOWN) {
       // New VP9 string should never be ambiguous.
-      DCHECK(!base::StartsWith(codec_id, "vp09", base::CompareCase::SENSITIVE));
+      DCHECK(!codec_id.starts_with("vp09"));
       out_result->is_ambiguous = true;
       if (!out_result->video->color_space.IsSpecified()) {
         out_result->video->color_space = kDefaultColorSpace;
@@ -874,8 +873,7 @@ bool MimeUtil::ParseCodecHelper(std::string_view mime_type_lower_case,
 // TODO(crbug.com/40145071): Remove buildflags for parsing functions; we
 // shouldn't be combining codec support and parsing support.
 #if BUILDFLAG(ENABLE_PLATFORM_MPEG_H_AUDIO)
-  if (base::StartsWith(codec_id, "mhm1.", base::CompareCase::SENSITIVE) ||
-      base::StartsWith(codec_id, "mha1.", base::CompareCase::SENSITIVE)) {
+  if (codec_id.starts_with("mhm1.") || codec_id.starts_with("mha1.")) {
     out_result->codec = MimeUtil::MPEG_H_AUDIO;
     return true;
   }

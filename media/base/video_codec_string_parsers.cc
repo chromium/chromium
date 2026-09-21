@@ -18,17 +18,15 @@
 namespace {
 
 bool IsDolbyVisionAVCCodecId(std::string_view codec_id) {
-  return base::StartsWith(codec_id, "dva1.", base::CompareCase::SENSITIVE) ||
-         base::StartsWith(codec_id, "dvav.", base::CompareCase::SENSITIVE);
+  return codec_id.starts_with("dva1.") || codec_id.starts_with("dvav.");
 }
 
 bool IsDolbyVisionHEVCCodecId(std::string_view codec_id) {
-  return base::StartsWith(codec_id, "dvh1.", base::CompareCase::SENSITIVE) ||
-         base::StartsWith(codec_id, "dvhe.", base::CompareCase::SENSITIVE);
+  return codec_id.starts_with("dvh1.") || codec_id.starts_with("dvhe.");
 }
 
 bool IsDolbyVisionAV1CodecId(std::string_view codec_id) {
-  return base::StartsWith(codec_id, "dav1.", base::CompareCase::SENSITIVE);
+  return codec_id.starts_with("dav1.");
 }
 
 }  // namespace
@@ -479,8 +477,7 @@ std::optional<VideoType> ParseAv1CodecId(std::string_view codec_id) {
 
 std::optional<VideoType> ParseAVCCodecId(std::string_view codec_id) {
   // Make sure we have avc1.xxxxxx or avc3.xxxxxx , where xxxxxx are hex digits
-  if (!base::StartsWith(codec_id, "avc1.", base::CompareCase::SENSITIVE) &&
-      !base::StartsWith(codec_id, "avc3.", base::CompareCase::SENSITIVE)) {
+  if (!codec_id.starts_with("avc1.") && !codec_id.starts_with("avc3.")) {
     return std::nullopt;
   }
   uint32_t elem = 0;
@@ -568,8 +565,7 @@ std::optional<VideoType> ParseAVCCodecId(std::string_view codec_id) {
 // The specification for HEVC codec id strings can be found in ISO IEC 14496-15
 // dated 2012 or newer in the Annex E.3
 std::optional<VideoType> ParseHEVCCodecId(std::string_view codec_id) {
-  if (!base::StartsWith(codec_id, "hev1.", base::CompareCase::SENSITIVE) &&
-      !base::StartsWith(codec_id, "hvc1.", base::CompareCase::SENSITIVE)) {
+  if (!codec_id.starts_with("hev1.") && !codec_id.starts_with("hvc1.")) {
     return std::nullopt;
   }
 
@@ -973,15 +969,13 @@ std::string TranslateLegacyAvc1CodecIds(std::string_view codec_id) {
   // See, for example, http://qtdevseed.apple.com/qadrift/testcases/tc-0133.php
   uint32_t level_start = 0;
   std::string result;
-  if (base::StartsWith(codec_id, "avc1.66.", base::CompareCase::SENSITIVE)) {
+  if (codec_id.starts_with("avc1.66.")) {
     level_start = 8;
     result = "avc1.4200";
-  } else if (base::StartsWith(codec_id, "avc1.77.",
-                              base::CompareCase::SENSITIVE)) {
+  } else if (codec_id.starts_with("avc1.77.")) {
     level_start = 8;
     result = "avc1.4D00";
-  } else if (base::StartsWith(codec_id, "avc1.100.",
-                              base::CompareCase::SENSITIVE)) {
+  } else if (codec_id.starts_with("avc1.100.")) {
     level_start = 9;
     result = "avc1.6400";
   }
