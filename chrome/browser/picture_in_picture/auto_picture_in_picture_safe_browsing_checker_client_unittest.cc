@@ -133,7 +133,8 @@ TEST_F(AutoPictureInPictureSafeBrowsingCheckerClientTest,
   safe_browsing::V5GetHashProtocolManager v5_protocol_manager(
       /*url_loader_factory=*/nullptr,
       safe_browsing::SBProtocolConfig("test", false, "key", "1.0"),
-      /*cache=*/nullptr);
+      /*cache=*/nullptr,
+      /*webui_delegate=*/nullptr);
 
   AutoPictureInPictureSafeBrowsingCheckerClient client(
       v5_db_manager, v5_protocol_manager.GetWeakPtr(), kSafeBrowsingCheckDelay,

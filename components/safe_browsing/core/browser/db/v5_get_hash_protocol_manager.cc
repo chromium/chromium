@@ -131,12 +131,14 @@ bool IsHashDetailRelevantForLocalChecks(
 V5GetHashProtocolManager::V5GetHashProtocolManager(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const SBProtocolConfig& config,
-    V5SearchHashesCache* cache)
+    V5SearchHashesCache* cache,
+    WebUIDelegate* webui_delegate)
     : url_loader_factory_(url_loader_factory),
       config_(config),
       cache_(cache),
       backoff_entry_(
-          std::make_unique<net::BackoffEntry>(&kV5GetHashBackoffPolicy)) {}
+          std::make_unique<net::BackoffEntry>(&kV5GetHashBackoffPolicy)),
+      webui_delegate_(webui_delegate) {}
 
 V5GetHashProtocolManager::~V5GetHashProtocolManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

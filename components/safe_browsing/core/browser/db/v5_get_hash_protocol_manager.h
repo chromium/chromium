@@ -68,6 +68,15 @@ class V5GetHashProtocolManager : public KeyedService {
     ThreatMetadata metadata;
   };
 
+  // Interface via which a client of this class can surface relevant events in
+  // WebUI. All methods must be called on the UI thread.
+  class WebUIDelegate {
+   public:
+    virtual ~WebUIDelegate() = default;
+
+    // TODO(crbug.com/362791941): Add AddToV5GetHashLookups method
+  };
+
   // Callback when GetFullHashes completes.
   // Passes the most severe threat type and the associated threat metadata.
   using FullHashCallback =
@@ -79,10 +88,12 @@ class V5GetHashProtocolManager : public KeyedService {
   //  - `url_loader_factory`: The factory to use for creating URLLoaders.
   //  - `config`: The protocol configuration (used for client info).
   //  - `cache`: The cache to store and retrieve full hash results.
+  //  - `webui_delegate`: The delegate to surface events in WebUI.
   V5GetHashProtocolManager(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const SBProtocolConfig& config,
-      V5SearchHashesCache* cache);
+      V5SearchHashesCache* cache,
+      WebUIDelegate* webui_delegate);
 
   V5GetHashProtocolManager(const V5GetHashProtocolManager&) = delete;
   V5GetHashProtocolManager& operator=(const V5GetHashProtocolManager&) = delete;
@@ -185,6 +196,9 @@ class V5GetHashProtocolManager : public KeyedService {
 
   // Enforces exponential backoff on requests.
   std::unique_ptr<net::BackoffEntry> backoff_entry_;
+
+  // The delegate to surface lookup events in chrome://safe-browsing.
+  raw_ptr<WebUIDelegate> webui_delegate_ = nullptr;
 
   // Number of GetHash attempts skipped due to backoff within the same backoff
   // time window.

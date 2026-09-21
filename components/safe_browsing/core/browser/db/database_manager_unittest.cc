@@ -135,8 +135,8 @@ class SafeBrowsingDatabaseManagerTest : public testing::Test {
     v5_cache_ =
         std::make_unique<V5SearchHashesCache>(/*history_service=*/nullptr);
     v5_manager_ = std::make_unique<V5GetHashProtocolManager>(
-        test_shared_loader_factory_, GetTestSBProtocolConfig(),
-        v5_cache_.get());
+        test_shared_loader_factory_, GetTestSBProtocolConfig(), v5_cache_.get(),
+        /*webui_delegate=*/nullptr);
     client.SetV5GetHashProtocolManager(v5_manager_->GetWeakPtr());
   }
 

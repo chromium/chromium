@@ -2450,7 +2450,8 @@ TEST_F(SafeBrowsingUrlCheckerTest, GetV5GetHashProtocolManager) {
   V5GetHashProtocolManager v5_protocol_manager(
       /*url_loader_factory=*/nullptr,
       SBProtocolConfig("test", false, "key", "1.0"),
-      /*cache=*/nullptr);
+      /*cache=*/nullptr,
+      /*webui_delegate=*/nullptr);
 
   auto checker = CreateSafeBrowsingUrlChecker(
       /*url_real_time_lookup_enabled=*/false,

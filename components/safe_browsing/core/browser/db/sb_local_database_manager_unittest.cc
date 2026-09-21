@@ -133,9 +133,13 @@ class FakeV5GetHashProtocolManager : public V5GetHashProtocolManager {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const SBProtocolConfig& config,
       V5SearchHashesCache* cache,
+      WebUIDelegate* webui_delegate,
       SBThreatType threat_type,
       ThreatMetadata metadata)
-      : V5GetHashProtocolManager(url_loader_factory, config, cache),
+      : V5GetHashProtocolManager(url_loader_factory,
+                                 config,
+                                 cache,
+                                 webui_delegate),
         threat_type_(threat_type),
         metadata_(metadata) {}
 
@@ -716,7 +720,7 @@ class SBLocalDatabaseManagerTest : public PlatformTest {
           std::make_unique<V5SearchHashesCache>(/*history_service=*/nullptr);
       v5_fake_manager_ = std::make_unique<FakeV5GetHashProtocolManager>(
           test_shared_loader_factory_, GetTestSBProtocolConfig(),
-          v5_cache_.get(), threat_type, metadata);
+          v5_cache_.get(), /*webui_delegate=*/nullptr, threat_type, metadata);
     }
     client.SetV5GetHashProtocolManager(v5_fake_manager_->GetWeakPtr());
   }

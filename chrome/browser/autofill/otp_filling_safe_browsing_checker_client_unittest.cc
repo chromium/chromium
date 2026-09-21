@@ -263,7 +263,8 @@ TEST_F(OtpFillingSafeBrowsingCheckerClientTest, GetV5GetHashProtocolManager) {
   safe_browsing::V5GetHashProtocolManager v5_protocol_manager(
       /*url_loader_factory=*/nullptr,
       safe_browsing::SBProtocolConfig("test", false, "key", "1.0"),
-      /*cache=*/nullptr);
+      /*cache=*/nullptr,
+      /*webui_delegate=*/nullptr);
 
   EXPECT_CALL(*v5_db_manager, CheckBrowseUrl(main_frame_url_, _, _, _))
       .WillOnce(Return(true));

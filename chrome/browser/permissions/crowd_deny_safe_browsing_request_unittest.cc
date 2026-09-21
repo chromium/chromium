@@ -202,7 +202,8 @@ TEST_F(CrowdDenySafeBrowsingRequestTest, GetV5GetHashProtocolManager) {
       safe_browsing::SBProtocolConfig(/*client_name=*/"test",
                                       /*disable_auto_update=*/false,
                                       /*key_param=*/"key", /*version=*/"1.0"),
-      /*cache=*/nullptr);
+      /*cache=*/nullptr,
+      /*webui_delegate=*/nullptr);
 
   base::RunLoop run_loop;
   CrowdDenySafeBrowsingRequest request(

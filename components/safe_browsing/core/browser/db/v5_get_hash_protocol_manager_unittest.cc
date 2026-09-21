@@ -47,7 +47,8 @@ class V5GetHashProtocolManagerTest : public ::testing::Test {
 
   std::unique_ptr<V5GetHashProtocolManager> CreateProtocolManager() {
     return std::make_unique<V5GetHashProtocolManager>(
-        test_shared_loader_factory_, GetTestSBProtocolConfig(), cache_.get());
+        test_shared_loader_factory_, GetTestSBProtocolConfig(), cache_.get(),
+        /*webui_delegate=*/nullptr);
   }
 
   std::string GetExpectedRequestUrl(std::vector<std::string> prefixes) {

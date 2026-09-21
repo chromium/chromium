@@ -6,6 +6,7 @@
 #define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_WEB_UI_WEB_UI_INFO_SINGLETON_H_
 
 #include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
 #include "components/safe_browsing/core/browser/download_check_result.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
@@ -23,7 +24,8 @@ class WebUIInfoSingletonEventObserver;
 
 class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
                            public PingManager::WebUIDelegate,
-                           public HashRealTimeService::WebUIDelegate {
+                           public HashRealTimeService::WebUIDelegate,
+                           public V5GetHashProtocolManager::WebUIDelegate {
  public:
   WebUIInfoSingleton();
   ~WebUIInfoSingleton() override;

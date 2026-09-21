@@ -68,7 +68,10 @@ WebViewV5GetHashProtocolManagerFactory::BuildServiceInstanceFor(
       safe_browsing::GetSBProtocolConfig(
           /*client_name=*/std::string(kClientName),
           /*disable_auto_update=*/false),
-      WebViewV5SearchHashesCacheFactory::GetForBrowserState(browser_state));
+      WebViewV5SearchHashesCacheFactory::GetForBrowserState(browser_state),
+      // This is only used for the chrome://safe-browsing debugging page, which
+      // web_view does not support.
+      /*webui_delegate=*/nullptr);
 }
 
 web::BrowserState* WebViewV5GetHashProtocolManagerFactory::GetBrowserStateToUse(
