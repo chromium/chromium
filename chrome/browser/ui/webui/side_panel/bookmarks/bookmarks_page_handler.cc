@@ -692,23 +692,6 @@ void BookmarksPageHandler::RenameBookmark(int64_t node_id,
                   bookmarks::metrics::BookmarkEditSource::kExtension);
 }
 
-void BookmarksPageHandler::MoveBookmark(int64_t node_id,
-                                        const std::string& folder_id) {
-  std::optional<BookmarkParentFolder> parent =
-      GetBookmarkParentFolderFromSidePanel(*bookmark_merged_surface_,
-                                           folder_id);
-  if (!parent) {
-    return;
-  }
-
-  const bookmarks::BookmarkNode* node_to_move = bookmarks::GetBookmarkNodeByID(
-      bookmark_merged_surface_->bookmark_model(), node_id);
-  bookmark_merged_surface_->Move(
-      node_to_move, *parent,
-      bookmark_merged_surface_->GetChildrenCount(*parent),
-      browser_window_interface_);
-}
-
 void BookmarksPageHandler::RemoveBookmarks(const std::vector<int64_t>& node_ids,
                                            RemoveBookmarksCallback callback) {
   bookmarks::BookmarkModel* model = bookmark_merged_surface_->bookmark_model();

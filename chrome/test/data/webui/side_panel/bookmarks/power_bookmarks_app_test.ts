@@ -5,7 +5,7 @@
 import 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_list.js';
 import 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_app.js';
 
-import {SortOrder, ViewType} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks.mojom-webui.js';
+import {ActionSource, SortOrder, ViewType} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks.mojom-webui.js';
 import {BookmarksApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks_api_proxy.js';
 import type {PowerBookmarkRowElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmark_row.js';
 import {BOOKMARK_ROW_LOAD_EVENT} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmark_row.js';
@@ -164,7 +164,6 @@ suite('General', () => {
       emptyBodyFolder: 'folder body',
       emptyTitleGuest: 'guest title',
       emptyBodyGuest: 'guest body',
-      isBookmarksMigrationUiChanges: false,
     });
 
     const app = document.createElement('power-bookmarks-app');
@@ -1103,7 +1102,8 @@ suite('General', () => {
 
 
     test('EditBookmarks', async () => {
-      const bookmark = getBookmarkWithId(powerBookmarksApp, '3')!;
+      const bookmarkId = '3';
+      const bookmark = getBookmarkWithId(powerBookmarksApp, bookmarkId)!;
       const contextMenu = powerBookmarksApp.$.contextMenu;
       const editClicked = eventToPromise('edit-clicked', contextMenu);
 
@@ -1126,16 +1126,19 @@ suite('General', () => {
       await editClicked;
       await microtasksFinished();
 
-      // The edit dialog is opened.
-      const editDialog = powerBookmarksApp.$.editDialog;
-      assertTrue(editDialog.$.dialog.open);
-      assertEquals(bookmark.title, editDialog.$.nameInput.inputElement.value);
-      assertEquals(bookmark.url, editDialog.$.urlInput.inputElement.value);
+      // The native edit dialog is opened.
+      assertEquals(1, bookmarksApi.getCallCount('contextMenuEdit'));
+      assertEquals(
+          bookmarkId, bookmarksApi.getArgs('contextMenuEdit')[0][0][0]);
+      assertEquals(
+          ActionSource.kBookmark,
+          bookmarksApi.getArgs('contextMenuEdit')[0][1]);
     });
 
     test('MoveBookmarks', async () => {
+      const bookmarkId = '3';
       const bookmarks = [
-        getBookmarkWithId(powerBookmarksApp, '3')!,
+        getBookmarkWithId(powerBookmarksApp, bookmarkId)!,
         getBookmarkWithId(powerBookmarksApp, '5')!,
       ];
       const contextMenu = powerBookmarksApp.$.contextMenu;
@@ -1160,9 +1163,13 @@ suite('General', () => {
       await editClicked;
       await microtasksFinished();
 
-      // The edit dialog is opened.
-      const editDialog = powerBookmarksApp.$.editDialog;
-      assertTrue(editDialog.$.dialog.open);
+      // The native move dialog is opened.
+      assertEquals(1, bookmarksApi.getCallCount('contextMenuMove'));
+      assertEquals(
+          bookmarkId, bookmarksApi.getArgs('contextMenuMove')[0][0][0]);
+      assertEquals(
+          ActionSource.kBookmark,
+          bookmarksApi.getArgs('contextMenuMove')[0][1]);
     });
 
     test('LogsBookmarkCountMetric', async () => {

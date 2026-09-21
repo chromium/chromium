@@ -14,7 +14,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -53,14 +52,9 @@ using bookmarks::BookmarkNode;
 class BookmarkEditorViewTest : public testing::Test,
                                public base::test::WithFeatureOverride {
  public:
-  explicit BookmarkEditorViewTest(
-      bool enable_migration_ui_changes_feature = true)
+  BookmarkEditorViewTest()
       : base::test::WithFeatureOverride(
-            switches::kSyncEnableBookmarksInTransportMode) {
-    scoped_feature_list_.InitWithFeatureState(
-        switches::kBookmarksMigrateUiChanges,
-        /*enabled=*/enable_migration_ui_changes_feature);
-  }
+            switches::kSyncEnableBookmarksInTransportMode) {}
 
   void SetUp() override {
     TestingProfile::Builder profile_builder;
@@ -286,8 +280,6 @@ class BookmarkEditorViewTest : public testing::Test,
   raw_ptr<bookmarks::BookmarkModel> model_;
   ChromeTestViewsDelegate<> views_delegate_;
   std::unique_ptr<BookmarkEditorView> editor_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Makes sure the tree model matches that of the bookmark bar model.
@@ -970,38 +962,6 @@ TEST_P(BookmarkEditorViewTest, DoNotOnlyExpandTrackedNodes) {
     EXPECT_FALSE(tree_view()->IsExpanded(account_bookmark_bar_editor_node()));
   }
 }
-
-class BookmarkEditorViewWithMigrationUiChangesDisabledTest
-    : public BookmarkEditorViewTest {
- public:
-  BookmarkEditorViewWithMigrationUiChangesDisabledTest()
-      : BookmarkEditorViewTest(/*enable_migration_ui_changes_feature=*/false) {}
-};
-
-TEST_P(BookmarkEditorViewWithMigrationUiChangesDisabledTest,
-       ExpandAllTrackedNodes) {
-  // Configure the local bookmarks bar to be tracked as expanded.
-  ScopedListPrefUpdate update(profile_->GetPrefs(),
-                              bookmarks::prefs::kBookmarkEditorExpandedNodes);
-  base::ListValue& initial_expanded_nodes_list = update.Get();
-  initial_expanded_nodes_list.Append(
-      base::NumberToString(model()->bookmark_bar_node()->id()));
-
-  // Open the editor with a node saved under the local other bookmarks folder.
-  CreateEditor(profile_.get(),
-               BookmarkEditor::EditDetails::EditNode(GetNode("oa")),
-               BookmarkEditorView::SHOW_TREE);
-  ExpandAndSelect();
-
-  // The node being edited should always be visible.
-  EXPECT_TRUE(GetNode("oa")->IsVisible());
-
-  // The local bookmarks bar should still be open in the tree view.
-  EXPECT_TRUE(tree_view()->IsExpanded(local_bookmark_bar_editor_node()));
-}
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    BookmarkEditorViewWithMigrationUiChangesDisabledTest);
 
 // The URL field should truncate to 500KB.
 TEST_P(BookmarkEditorViewTest, UrlTextfiledPasteTruncates) {

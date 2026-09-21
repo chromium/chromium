@@ -103,10 +103,6 @@ export function getHtml(this: PowerBookmarksAppElement) {
   </sp-footer>
 </div>
 
-<power-bookmarks-edit-dialog id="editDialog"
-    @save="${this.onEditDialogSave_}">
-</power-bookmarks-edit-dialog>
-
 <cr-dialog id="disabledFeatureDialog">
   <div slot="body" class="dialog-body">
     <cr-icon icon="cr:domain"></cr-icon>

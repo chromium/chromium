@@ -23,11 +23,6 @@ IN_PROC_BROWSER_TEST_F(SidePanelBookmarksTest, DISABLED_ShoppingList) {
 }
 
 using SidePanelPowerBookmarksTest = SidePanelBookmarksTest;
-IN_PROC_BROWSER_TEST_F(SidePanelPowerBookmarksTest, EditDialog) {
-  RunTest("side_panel/bookmarks/power_bookmarks_edit_dialog_test.js",
-          "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(SidePanelPowerBookmarksTest, Service) {
   RunTest("side_panel/bookmarks/power_bookmarks_service_test.js",
           "mocha.run()");
@@ -70,13 +65,6 @@ IN_PROC_BROWSER_TEST_F(SidePanelBookmarksAppTest, General2) {
   SidePanelBookmarksTest::RunTest(
       "side_panel/bookmarks/power_bookmarks_app_test.js",
       "runMochaSuite('General Part2');");
-}
-
-IN_PROC_BROWSER_TEST_F(SidePanelBookmarksAppTest, BookmarksMigrateUiChanges) {
-  RunTest(
-      "side_panel/bookmarks/"
-      "power_bookmarks_app_migrate_ui_changes_test.js",
-      "mocha.run()");
 }
 
 // TODO(crbug.com/493823435) Investigate why this is failing.

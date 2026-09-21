@@ -7,7 +7,6 @@ import './commerce/shopping_list.js';
 import './icons.html.js';
 import './power_bookmarks_context_menu.js';
 import './power_bookmarks_labels.js';
-import './power_bookmarks_edit_dialog.js';
 import './power_bookmarks_list.js';
 import '//bookmarks-side-panel.top-chrome/shared/sp_empty_state.js';
 import '//bookmarks-side-panel.top-chrome/shared/sp_footer.js';
@@ -46,11 +45,9 @@ import {BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
 import {getCss} from './power_bookmarks_app.css.js';
 import {getHtml} from './power_bookmarks_app.html.js';
 import type {PowerBookmarksContextMenuElement} from './power_bookmarks_context_menu.js';
-import type {PowerBookmarksEditDialogElement} from './power_bookmarks_edit_dialog.js';
-import {TEMP_FOLDER_ID_PREFIX} from './power_bookmarks_edit_dialog.js';
 import type {PowerBookmarksLabelsElement} from './power_bookmarks_labels.js';
 import type {PowerBookmarksListElement} from './power_bookmarks_list.js';
-import {recordBookmarkAdded, recordFolderAdded, recordSearchCTR, SearchAction} from './power_bookmarks_metrics.js';
+import {recordBookmarkAdded, recordSearchCTR, SearchAction} from './power_bookmarks_metrics.js';
 import type {Label} from './power_bookmarks_service.js';
 import {editingDisabledByPolicy, PowerBookmarksService} from './power_bookmarks_service.js';
 import type {PowerBookmarksDelegate} from './power_bookmarks_service.js';
@@ -62,7 +59,6 @@ export interface PowerBookmarksAppElement {
     deletionToast: CrLazyRenderLitElement<CrToastElement>,
     powerBookmarksContainer: HTMLElement,
     searchField: CrToolbarSearchFieldElement,
-    editDialog: PowerBookmarksEditDialogElement,
     disabledFeatureDialog: CrDialogElement,
     topLevelEmptyState: SpEmptyStateElement,
     footer: HTMLElement,
@@ -351,38 +347,6 @@ export class PowerBookmarksAppElement extends CrLitElement implements
         this.currentUrl_, this.getActiveFolder_());
   }
 
-  protected async onEditDialogSave_(event: CustomEvent<{
-    bookmarks: BookmarksTreeNode[],
-    name: string|undefined,
-    url: string|undefined,
-    folderId: string,
-    newFolders: BookmarksTreeNode[],
-  }>) {
-    event.preventDefault();
-    event.stopPropagation();
-    let parentId = event.detail.folderId;
-    for (const folder of event.detail.newFolders) {
-      recordFolderAdded();
-      const result: {newFolderId: string} =
-          await this.bookmarksApi_.createFolder(folder.parentId, folder.title);
-      folder.children!.forEach(child => child.parentId = result.newFolderId);
-      if (folder.id === parentId) {
-        parentId = result.newFolderId;
-      }
-      // Removing folders added in edit menu while editing a bookmark as they
-      // are made with TEMP_FOLDER_ID_PREFIX bookmark-id and are again created
-      // with correct id with createFolder method above
-      const parentFolder =
-          this.bookmarksService_.findBookmarkWithId(folder.parentId)!;
-      parentFolder.children = parentFolder.children!.filter(
-          child => !child.id.startsWith(TEMP_FOLDER_ID_PREFIX));
-    }
-    this.bookmarksApi_.editBookmarks(
-        event.detail.bookmarks.map(bookmark => bookmark.id), event.detail.name,
-        event.detail.url, parentId);
-    this.selectedBookmarks_ = {};
-  }
-
   protected getSelectedDescription_() {
     return loadTimeData.getStringF(
         'selectedBookmarkCount', this.getSelectedBookmarksLength_());
@@ -566,13 +530,6 @@ export class PowerBookmarksAppElement extends CrLitElement implements
   }
 
   private showEditDialog_(bookmarks: BookmarksTreeNode[], moveOnly: boolean) {
-    if (!loadTimeData.getBoolean('isBookmarksMigrationUiChanges')) {
-      this.$.editDialog.showDialog(
-          this.activeFolderPath_, this.bookmarksService_.getTopLevelBookmarks(),
-          bookmarks, moveOnly);
-      return;
-    }
-
     if (moveOnly) {
       this.bookmarksApi_.contextMenuMove(
           bookmarks.map(bookmark => bookmark.id), ActionSource.kBookmark);
