@@ -1426,8 +1426,11 @@ TEST_F(SendTabToSelfBridgeTest,
               ElementsAre(target_device_info));
 }
 
-// Tests that the local device is not returned.
-TEST_F(SendTabToSelfBridgeTest, GetTargetDeviceInfoSortedList_NoLocalDevice) {
+// Tests that the local device is not returned, and verifies whether remote
+// devices sharing the local device's name are kept (when simplified naming is
+// enabled) or filtered out (in legacy naming mode).
+TEST_P(SendTabToSelfBridgeNamingTest,
+       GetTargetDeviceInfoSortedList_NoLocalDevice) {
   InitializeBridge();
 
   std::unique_ptr<syncer::DeviceInfo> local_device =
@@ -1435,20 +1438,31 @@ TEST_F(SendTabToSelfBridgeTest, GetTargetDeviceInfoSortedList_NoLocalDevice) {
   AddTestDevice(local_device.get());
 
   std::unique_ptr<syncer::DeviceInfo> other_local_device =
-      CreateDevice("other_local_guid", kLocalDeviceName, clock()->Now());
+      CreateDevice("other_local_guid", kLocalDeviceName,
+                   clock()->Now() - base::Minutes(1));
   AddTestDevice(other_local_device.get());
 
   std::unique_ptr<syncer::DeviceInfo> other_device =
-      CreateDevice("other_guid", "other_device_name", clock()->Now());
+      CreateDevice("other_guid", "other_device_name",
+                   clock()->Now() - base::Minutes(2));
   AddTestDevice(other_device.get());
 
-  TargetDeviceInfo target_device_info(
+  TargetDeviceInfo other_local_target_info(
+      other_local_device->client_name(), other_local_device->guid(),
+      other_local_device->form_factor(), other_local_device->os_type(),
+      other_local_device->last_updated_timestamp());
+  TargetDeviceInfo other_target_info(
       other_device->client_name(), other_device->guid(),
       other_device->form_factor(), other_device->os_type(),
       other_device->last_updated_timestamp());
 
-  EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),
-              ElementsAre(target_device_info));
+  if (GetParam() == DeviceNamingMode::kSimplifiedWithoutDeduplication) {
+    EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),
+                ElementsAre(other_local_target_info, other_target_info));
+  } else {
+    EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),
+                ElementsAre(other_target_info));
+  }
 }
 
 // Tests that a device is no longer returned after time advances and it expires.
@@ -1869,7 +1883,10 @@ TEST_P(SendTabToSelfBridgeNamingTest,
 }
 
 TEST_F(SendTabToSelfBridgeTest,
-       GetTargetDeviceInfoSortedList_DeduplicationPrefersRecent) {
+       GetTargetDeviceInfoSortedList_LegacyDeduplicationPrefersRecent) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(syncer::kSyncSimplifyDeviceNaming);
+
   InitializeBridge();
 
   // Create two devices with the same full name but different activity times.

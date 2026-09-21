@@ -589,6 +589,9 @@ TEST_F(DeviceNameUtilUseServerDeterminedDeviceNameTest,
 // legacy naming logic even if a server-determined name is available.
 TEST_F(DeviceNameUtilTest,
        GetDisplayNameCandidates_ServerDeterminedName_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kSyncUseServerDeterminedDeviceName);
+
   TestDeviceInfoBuilder builder(DeviceInfo::OsType::kAndroid);
   builder.WithGuid("guid1")
       .WithClientName(kGalaxyS22UltraModel)

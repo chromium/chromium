@@ -12437,10 +12437,7 @@
                         "SendTabToSelfImprovedLastActiveLabels",
                         "SendTabToSelfPostSendToast",
                         "SendTabToSelfPropagateFormFields",
-                        "SendTabToSelfPropagateScrollPosition",
-                        "SyncSessionsUsePreferredDisplayName",
-                        "SyncSimplifyDeviceNaming",
-                        "SyncUseServerDeterminedDeviceName"
+                        "SendTabToSelfPropagateScrollPosition"
                     ]
                 }
             ]
