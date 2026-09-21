@@ -643,7 +643,7 @@ bool HEVCBitstreamConverter::ConvertAndAnalyzeFrame(
     std::vector<SubsampleEntry>* subsamples,
     AnalysisResult* analysis_result) const {
   RCHECK(AVC::ConvertFrameToAnnexB(hevc_config_->length_size_minus_one + 1,
-                                   frame_buf, subsamples));
+                                   VideoCodec::kHEVC, frame_buf, subsamples));
   // |is_keyframe| may be incorrect. Analyze the frame to see if it is a
   // keyframe. |is_keyframe| will be used if the analysis is inconclusive.
   // Also, provide the analysis result to the caller via out parameter

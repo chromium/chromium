@@ -115,6 +115,13 @@ uint32_t H265ToAnnexBBitstreamConverter::CalculateNeededOutputBufferSize(
       return 0;  // Error: Not enough data for correct conversion
     }
 
+    // HEVC NAL units strictly require at least a 2-byte header.
+    // Skip dummy NALUs inserted by buggy encoders.
+    if (nal_unit_length < 2) {
+      input_reader.Skip(nal_unit_length);
+      continue;
+    }
+
     // Six bits after forbidden_zero_bit of first NAL unit byte signify
     // nal_unit_type.
     const int nal_unit_type = (input_reader.remaining_span()[0] >> 1) & 0x3F;
@@ -180,6 +187,13 @@ bool H265ToAnnexBBitstreamConverter::ConvertNalUnitStreamToByteStream(
       break;  // Successful conversion, end of buffer
     } else if (nal_unit_length > input_reader.remaining()) {
       return false;  // Error: not enough data for correct conversion
+    }
+
+    // HEVC NAL units strictly require at least a 2-byte header.
+    // Skip dummy NALUs inserted by buggy encoders.
+    if (nal_unit_length < 2) {
+      input_reader.Skip(nal_unit_length);
+      continue;
     }
 
     // Six bits after forbidden_zero_bit of first NAL unit byte signify

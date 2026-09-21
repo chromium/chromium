@@ -118,6 +118,10 @@ uint32_t H264ToAnnexBBitstreamConverter::CalculateNeededOutputBufferSize(
 
     // five least significant bits of first NAL unit byte signify nal_unit_type
     int nal_unit_type = input_reader.remaining_span()[0] & 0x1F;
+    if (nal_unit_length == 1 && nal_unit_type == 0) {
+      input_reader.Skip(nal_unit_length);
+      continue;  // Skip dummy NALUs inserted by buggy encoders
+    }
     if (first_nal_in_this_access_unit ||
         IsAccessUnitBoundaryNal(nal_unit_type)) {
       output_size += 1;  // Extra zero_byte for these nal units
@@ -202,6 +206,10 @@ bool H264ToAnnexBBitstreamConverter::ConvertNalUnitStreamToByteStream(
     // Five least significant bits of first NAL unit byte signify
     // nal_unit_type.
     int nal_unit_type = input_reader.remaining_span()[0] & 0x1F;
+    if (nal_unit_length == 1 && nal_unit_type == 0) {
+      input_reader.Skip(nal_unit_length);
+      continue;  // Skip dummy NALUs inserted by buggy encoders
+    }
     nal_unit_count++;
 
     // Insert the config after the AUD if an AUD is the first NAL unit or

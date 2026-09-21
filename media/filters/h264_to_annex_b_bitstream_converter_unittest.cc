@@ -360,6 +360,26 @@ TEST_F(H264ToAnnexBBitstreamConverterTest, FailureZeroSizedNAL) {
   EXPECT_EQ(out_size, 0U);
 }
 
+TEST_F(H264ToAnnexBBitstreamConverterTest, SkipDummyNalu) {
+  H264ToAnnexBBitstreamConverter converter;
+
+  EXPECT_TRUE(
+      converter.ParseConfiguration(kHeaderDataOkWithFieldLen4, &avc_config_));
+
+  std::vector<uint8_t> input = {0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
+                                0x00, 0x05, 0x01, 0x02, 0x03, 0x04, 0x05};
+  uint32_t needed =
+      converter.CalculateNeededOutputBufferSize(input, &avc_config_);
+  std::vector<uint8_t> output(needed);
+
+  uint32_t out_size = needed;
+  EXPECT_TRUE(converter.ConvertNalUnitStreamToByteStream(input, &avc_config_,
+                                                         output, &out_size));
+  ASSERT_EQ(out_size, needed);
+  ASSERT_EQ(needed, converter.GetConfigSize(avc_config_) + 9u);
+  EXPECT_EQ(output[out_size - 1], 0x05);
+}
+
 TEST_F(H264ToAnnexBBitstreamConverterTest, FailureNalUnitBreakage) {
   // Initialize converter.
   base::HeapArray<uint8_t> output;

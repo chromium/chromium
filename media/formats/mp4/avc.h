@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "media/base/media_export.h"
+#include "media/base/video_codecs.h"
 #include "media/formats/mp4/bitstream_converter.h"
 
 namespace media {
@@ -24,7 +25,13 @@ struct AVCDecoderConfigurationRecord;
 
 class MEDIA_EXPORT AVC {
  public:
+  // Converts a NALU stream where the header is `length_size` bytes - either 1,
+  // 2, or 4 bytes. `codec` determines which NALU pattern is dropped for being a
+  // dummy NALU (H264: type == 0 // HEVC: length < 2). `buffer` is the stream,
+  // and `subsamples` contains a set of byte ranges for clear and cypher bytes
+  // which might have to get updated if any NALUs need to be dropped.
   static bool ConvertFrameToAnnexB(size_t length_size,
+                                   VideoCodec codec,
                                    std::vector<uint8_t>* buffer,
                                    std::vector<SubsampleEntry>* subsamples);
 

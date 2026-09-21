@@ -11,6 +11,7 @@
 
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/types/to_address.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/media_switches.h"
@@ -27,11 +28,8 @@ bool AVC::ConvertAVCToAnnexBInPlaceForLengthSize4(std::vector<uint8_t>* buf) {
   const size_t kLengthSize = 4;
   size_t pos = 0;
   while (buf->size() > kLengthSize && buf->size() - kLengthSize > pos) {
-    uint32_t nal_length = (*buf)[pos];
-    nal_length = (nal_length << 8) + (*buf)[pos+1];
-    nal_length = (nal_length << 8) + (*buf)[pos+2];
-    nal_length = (nal_length << 8) + (*buf)[pos+3];
-
+    uint32_t nal_length =
+        base::U32FromBigEndian(base::span(*buf).subspan(pos).first<4u>());
     if (nal_length == 0) {
       DVLOG(3) << "nal_length is 0";
       return false;
@@ -66,8 +64,93 @@ int AVC::FindSubsampleIndex(const std::vector<uint8_t>& buffer,
   NOTREACHED();
 }
 
+bool ShouldSkipDummyNALU(VideoCodec codec, base::span<const uint8_t> nalu) {
+  if (nalu.empty()) {
+    return true;
+  }
+  if (codec == VideoCodec::kHEVC) {
+    return nalu.size() < 2;
+  }
+  if (codec == VideoCodec::kH264) {
+    return nalu.size() == 1 && (nalu[0] & 0x1F) == 0;
+  }
+  NOTREACHED();
+}
+
+bool IsRangeClear(const std::vector<SubsampleEntry>* subsamples,
+                  size_t offset,
+                  size_t size) {
+  if (!subsamples || subsamples->empty()) {
+    return true;
+  }
+  size_t cur = 0;
+  for (const auto& s : *subsamples) {
+    // `SampleEncryptionEntry::GetTotalSizeOfSubsamples` is called before any of the entry
+    // points into the avc helpers here, which validates that the arithmetic below isn't able
+    // to overflow. Additionally, `ContainsSkippableNalu` and `ConvertFrameToAnnexB` both
+    // have bounds checking to ensure that `offset + size` is not able to overflow.
+    size_t clear_end = cur + s.clear_bytes;
+    size_t cypher_end = clear_end + s.cypher_bytes;
+    if (s.cypher_bytes > 0) {
+      size_t overlap_start = std::max(offset, clear_end);
+      size_t overlap_end = std::min(offset + size, cypher_end);
+      if (overlap_start < overlap_end) {
+        return false;
+      }
+    }
+    cur = cypher_end;
+  }
+  return offset + size <= cur;
+}
+
+void RemoveClearRange(std::vector<SubsampleEntry>* subsamples,
+                      size_t offset,
+                      size_t size) {
+  if (!subsamples || subsamples->empty()) {
+    return;
+  }
+  size_t cur = 0;
+  for (auto& s : *subsamples) {
+    size_t clear_start = cur;
+    size_t clear_end = cur + s.clear_bytes;
+    size_t next_cur = clear_end + s.cypher_bytes;
+
+    size_t overlap_start = std::max(offset, clear_start);
+    size_t overlap_end = std::min(offset + size, clear_end);
+    if (overlap_start < overlap_end) {
+      s.clear_bytes -= (overlap_end - overlap_start);
+    }
+    cur = next_cur;
+  }
+}
+
+bool ContainsSkippableNalu(VideoCodec codec,
+                           const std::vector<uint8_t>& buf,
+                           const std::vector<SubsampleEntry>* subsamples) {
+  const size_t kLengthSize = 4;
+  size_t pos = 0;
+  while (buf.size() > kLengthSize && buf.size() - kLengthSize > pos) {
+    uint32_t nal_length =
+        base::U32FromBigEndian(base::span(buf).subspan(pos).first<4u>());
+
+    if (nal_length == 0 || buf.size() < nal_length ||
+        buf.size() - nal_length < pos + kLengthSize) {
+      return false;
+    }
+
+    auto nalu = base::span(buf).subspan(pos + kLengthSize, nal_length);
+    if (ShouldSkipDummyNALU(codec, nalu) &&
+        IsRangeClear(subsamples, pos, kLengthSize + nal_length)) {
+      return true;
+    }
+    pos += kLengthSize + nal_length;
+  }
+  return false;
+}
+
 // static
 bool AVC::ConvertFrameToAnnexB(size_t length_size,
+                               VideoCodec codec,
                                std::vector<uint8_t>* buffer,
                                std::vector<SubsampleEntry>* subsamples) {
   RCHECK(length_size == 1 || length_size == 2 || length_size == 4);
@@ -75,8 +158,9 @@ bool AVC::ConvertFrameToAnnexB(size_t length_size,
            << " buffer->size()=" << buffer->size()
            << " subsamples=" << (subsamples ? subsamples->size() : 0);
 
-  if (length_size == 4)
+  if (length_size == 4 && !ContainsSkippableNalu(codec, *buffer, subsamples)) {
     return ConvertAVCToAnnexBInPlaceForLengthSize4(buffer);
+  }
 
   std::vector<uint8_t> temp;
   temp.swap(*buffer);
@@ -84,8 +168,10 @@ bool AVC::ConvertFrameToAnnexB(size_t length_size,
 
   size_t pos = 0;
   while (temp.size() > length_size && temp.size() - length_size > pos) {
-    size_t nal_length = temp[pos];
-    if (length_size == 2) nal_length = (nal_length << 8) + temp[pos+1];
+    size_t nal_length = 0;
+    for (size_t i = 0; i < length_size; ++i) {
+      nal_length = (nal_length << 8) + temp[pos + i];
+    }
     pos += length_size;
 
     if (nal_length == 0) {
@@ -94,6 +180,17 @@ bool AVC::ConvertFrameToAnnexB(size_t length_size,
     }
 
     RCHECK(temp.size() >= nal_length && temp.size() - nal_length >= pos);
+
+    auto nalu = base::span(temp).subspan(pos, nal_length);
+    const size_t bytes_to_remove = length_size + nal_length;
+    const size_t output_offset = buffer->size();
+    if (ShouldSkipDummyNALU(codec, nalu) &&
+        IsRangeClear(subsamples, output_offset, bytes_to_remove)) {
+      RemoveClearRange(subsamples, output_offset, bytes_to_remove);
+      pos += nal_length;
+      continue;
+    }
+
     buffer->insert(buffer->end(), kAnnexBStartCode.begin(),
                    kAnnexBStartCode.end());
     if (subsamples && !subsamples->empty()) {
@@ -108,7 +205,7 @@ bool AVC::ConvertFrameToAnnexB(size_t length_size,
                    temp.begin() + pos + nal_length);
     pos += nal_length;
   }
-  return pos == temp.size();
+  return pos == temp.size() && (temp.empty() || !buffer->empty());
 }
 
 // static
@@ -421,8 +518,8 @@ bool AVCBitstreamConverter::ConvertAndAnalyzeFrame(
   // update the clear byte count for each subsample if encryption is used to
   // account for the difference in size between the length prefix and Annex B
   // start code.
-  RCHECK(AVC::ConvertFrameToAnnexB(avc_config_->length_size, frame_buf,
-                                   subsamples));
+  RCHECK(AVC::ConvertFrameToAnnexB(avc_config_->length_size, VideoCodec::kH264,
+                                   frame_buf, subsamples));
 
   // |is_keyframe| may be incorrect. Analyze the frame to see if it is a
   // keyframe. |is_keyframe| will be used if the analysis is inconclusive.

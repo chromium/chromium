@@ -123,6 +123,24 @@ TEST_F(H265ToAnnexBBitstreamConverterTest, FailureZeroSizedNAL) {
                                                           nal_writer));
 }
 
+TEST_F(H265ToAnnexBBitstreamConverterTest, SkipDummyNalu) {
+  H265ToAnnexBBitstreamConverter converter;
+
+  EXPECT_TRUE(
+      converter.ParseConfiguration(kHeaderDataOkWithFieldLen4, &hevc_config_));
+
+  std::vector<uint8_t> input = {0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
+                                0x00, 0x05, 0x01, 0x02, 0x03, 0x04, 0x05};
+  uint32_t out_size =
+      converter.CalculateNeededOutputBufferSize(input, &hevc_config_);
+  ASSERT_EQ(out_size, 91u);
+
+  base::HeapArray<uint8_t> output = base::HeapArray<uint8_t>::Uninit(out_size);
+  base::SpanWriter nal_writer(base::as_writable_byte_span(output));
+  EXPECT_TRUE(converter.ConvertNalUnitStreamToByteStream(input, &hevc_config_,
+                                                         nal_writer));
+}
+
 TEST_F(H265ToAnnexBBitstreamConverterTest, FailureNalUnitBreakage) {
   // Initialize converter.
   base::HeapArray<uint8_t> output;

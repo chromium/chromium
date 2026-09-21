@@ -54,8 +54,8 @@ bool FFmpegH265ToAnnexBBitstreamConverter::ConvertPacket(AVPacket* packet) {
   std::vector<uint8_t> input_frame(packet_data.begin(), packet_data.end());
   std::vector<SubsampleEntry> subsamples;
   size_t nalu_size_len = hevc_config_->length_size_minus_one + 1;
-  if (!mp4::AVC::ConvertFrameToAnnexB(nalu_size_len, &input_frame,
-                                      &subsamples)) {
+  if (!mp4::AVC::ConvertFrameToAnnexB(nalu_size_len, VideoCodec::kHEVC,
+                                      &input_frame, &subsamples)) {
     DVLOG(1) << "AnnexB conversion failed";
     return false;
   }
