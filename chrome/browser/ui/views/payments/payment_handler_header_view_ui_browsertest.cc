@@ -18,6 +18,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/interaction/element_tracker_views.h"
 
 namespace payments {
 namespace {
@@ -26,21 +27,16 @@ using IconInstall = test::PaymentAppInstallUtil::IconInstall;
 
 class PaymentHandlerHeaderViewUITest : public PaymentRequestBrowserTestBase {
  public:
-  PaymentHandlerHeaderViewUITest() {
-    feature_list_.InitWithFeatures(
-        {features::kPaymentRequestMandatoryPaymentAppUi,
-         features::kPaymentHandlerHtmlHeadThemeColor},
-        {});
-  }
-  ~PaymentHandlerHeaderViewUITest() override = default;
-
   void SetUpOnMainThread() override {
     PaymentRequestBrowserTestBase::SetUpOnMainThread();
     NavigateTo("/payment_handler.html");
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{
+      {features::kPaymentRequestMandatoryPaymentAppUi,
+       features::kPaymentHandlerHtmlHeadThemeColor,
+       features::kPaymentHandlerCameraAccessUx}};
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest,
@@ -72,8 +68,18 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest,
   EXPECT_TRUE(IsViewVisible(DialogViewID::CANCEL_BUTTON, view_stack->top()));
   EXPECT_FALSE(IsViewVisible(DialogViewID::BACK_BUTTON, view_stack->top()));
   EXPECT_TRUE(IsViewVisible(DialogViewID::SHEET_TITLE, view_stack->top()));
-  EXPECT_TRUE(
+
+  // With kPaymentHandlerCameraAccessUx enabled the payment app icon is replaced
+  // by the PageInfo LocationIconView (`kAppIconElementId`), so
+  // PAYMENT_APP_HEADER_ICON is not shown.
+  EXPECT_NE(
+      nullptr,
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          PaymentHandlerWebFlowViewController::kAppIconElementId,
+          views::ElementTrackerViews::GetContextForView(view_stack->top())));
+  EXPECT_FALSE(
       IsViewVisible(DialogViewID::PAYMENT_APP_HEADER_ICON, view_stack->top()));
+
   EXPECT_TRUE(IsViewVisible(DialogViewID::PAYMENT_APP_OPENED_WINDOW_SHEET,
                             view_stack->top()));
 
@@ -118,7 +124,15 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest, HeaderWithoutIcon) {
                                DialogEvent::PAYMENT_HANDLER_TITLE_SET});
   ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON);
 
-  // The payment app has no icon, so it should not be displayed on the header.
+  // The payment app has no icon, so PAYMENT_APP_HEADER_ICON should not be
+  // displayed on the header, while the PageInfo LocationIconView is still
+  // displayed.
+  ViewStack* view_stack = test_api(dialog_view()).view_stack();
+  EXPECT_NE(
+      nullptr,
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          PaymentHandlerWebFlowViewController::kAppIconElementId,
+          views::ElementTrackerViews::GetContextForView(view_stack->top())));
   EXPECT_FALSE(IsViewVisible(DialogViewID::PAYMENT_APP_HEADER_ICON));
 }
 
@@ -229,45 +243,6 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest,
   ClickOnCancel();
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest, LargeIcon) {
-  // Install a payment app with a large icon that will be sized down at render.
-  std::string method_name = test::PaymentAppInstallUtil::InstallPaymentApp(
-      *GetActiveWebContents()->GetPrimaryMainFrame(), *https_server(), "a.com",
-      "/payment_handler_sw.js", IconInstall::kWithLargeIcon);
-
-  // Trigger PaymentRequest, and wait until the PaymentHandler has loaded a
-  // web-contents that has set a title.
-  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
-                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
-                               DialogEvent::DIALOG_OPENED,
-                               DialogEvent::LOADING_VIEW_SHOWN,
-                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
-                               DialogEvent::LOADING_VIEW_HIDDEN,
-                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
-  ASSERT_EQ(
-      "success",
-      content::EvalJs(
-          GetActiveWebContents(),
-          content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
-  ASSERT_TRUE(WaitForObservedEvent());
-
-  // We always push the initial browser sheet to the stack, even if it isn't
-  // shown. Since it also defines a SHEET_TITLE, we have to explicitly test the
-  // front PaymentHandler view here.
-  ViewStack* view_stack = test_api(dialog_view()).view_stack();
-  EXPECT_TRUE(
-      IsViewVisible(DialogViewID::PAYMENT_APP_HEADER_ICON, view_stack->top()));
-  EXPECT_EQ(
-      gfx::Size(
-          IconSizeCalculator::kPaymentAppDeviceIndependentIdealIconHeight,
-          IconSizeCalculator::kPaymentAppDeviceIndependentIdealIconHeight),
-      static_cast<views::ImageView*>(
-          GetChildByDialogViewID(view_stack,
-                                 DialogViewID::PAYMENT_APP_HEADER_ICON))
-          ->GetImageBounds()
-          .size());
-}
-
 IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest, HtmlHeadThemeColor) {
   std::string method_name;
   InstallPaymentApp("a.com", "/payment_handler_sw.js", &method_name);
@@ -317,6 +292,53 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest, HtmlHeadThemeColor) {
 
   EXPECT_EQ(SK_ColorRED, header_view->background()->color().ResolveToSkColor(
                              header_view->GetColorProvider()));
+}
+
+class PaymentHandlerHeaderViewAppIconUITest
+    : public PaymentHandlerHeaderViewUITest {
+ private:
+  base::test::ScopedFeatureList app_icon_feature_list_{
+      {},
+      {features::kPaymentHandlerCameraAccessUx}};
+};
+
+IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewAppIconUITest, LargeIcon) {
+  // Install a payment app with a large icon that will be sized down at render.
+  std::string method_name = test::PaymentAppInstallUtil::InstallPaymentApp(
+      *GetActiveWebContents()->GetPrimaryMainFrame(), *https_server(), "a.com",
+      "/payment_handler_sw.js", IconInstall::kWithLargeIcon);
+
+  // Trigger PaymentRequest, and wait until the PaymentHandler has loaded a
+  // web-contents that has set a title.
+  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::DIALOG_OPENED,
+                               DialogEvent::LOADING_VIEW_SHOWN,
+                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::LOADING_VIEW_HIDDEN,
+                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
+  ASSERT_EQ(
+      "success",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
+  ASSERT_TRUE(WaitForObservedEvent());
+
+  // We always push the initial browser sheet to the stack, even if it isn't
+  // shown. Since it also defines a SHEET_TITLE, we have to explicitly test the
+  // front PaymentHandler view here.
+  ViewStack* view_stack = test_api(dialog_view()).view_stack();
+  EXPECT_TRUE(
+      IsViewVisible(DialogViewID::PAYMENT_APP_HEADER_ICON, view_stack->top()));
+  EXPECT_EQ(
+      gfx::Size(
+          IconSizeCalculator::kPaymentAppDeviceIndependentIdealIconHeight,
+          IconSizeCalculator::kPaymentAppDeviceIndependentIdealIconHeight),
+      static_cast<views::ImageView*>(
+          GetChildByDialogViewID(view_stack,
+                                 DialogViewID::PAYMENT_APP_HEADER_ICON))
+          ->GetImageBounds()
+          .size());
 }
 
 }  // namespace
