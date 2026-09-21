@@ -152,3 +152,6 @@ crbug.com/563223568 GeminiContainerTestCase/testOpenSettingsFromToolbar [ Pass F
 crbug.com/493866369 [ Device ] SendTabToSelfCoordinatorTestCase/testShareTabViaDirectTargetAndVerifyErrorSnackbarOnNetworkFailure [ Pass Failure ]
 crbug.com/493866369 [ Device ] SendTabToSelfCoordinatorTestCase/testShareTabViaDirectTargetInShareSheetAndVerifySuccessSnackbar [ Pass Failure ]
 crbug.com/563344456 BubblePresenterTestCase/testSendTabToSelfOmniboxIPH [ Pass Failure ]
+
+# Gardening suppression 2026-09-21
+crbug.com/564394196 GeminiContainerTestCase/testOpenAppsActivityFromToolbar [ Pass Failure ]
