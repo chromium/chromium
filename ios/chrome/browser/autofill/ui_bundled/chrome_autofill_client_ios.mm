@@ -540,12 +540,46 @@ ChromeAutofillClientIOS::ShowAutofillSuggestions(
     const AutofillClient::PopupOpenArgs& open_args,
     base::WeakPtr<AutofillSuggestionDelegate> delegate) {
   active_suggestion_delegate_ = std::move(delegate);
+  current_session_id_ = session_id_generator_.GenerateNextId();
+  current_suggestions_ = open_args.suggestions;
+  current_form_id_ = open_args.form_id;
+  current_field_id_ = open_args.field_id;
 
   [bridge_ showAutofillPopup:open_args.suggestions
           suggestionDelegate:active_suggestion_delegate_
                       formId:open_args.form_id
                      fieldId:open_args.field_id];
-  return SuggestionUiSessionId();
+
+  return *current_session_id_;
+}
+
+std::optional<AutofillClient::SuggestionUiSessionId>
+ChromeAutofillClientIOS::GetSessionIdForCurrentAutofillSuggestions() const {
+  return current_session_id_;
+}
+
+base::span<const Suggestion> ChromeAutofillClientIOS::GetAutofillSuggestions()
+    const {
+  return current_suggestions_;
+}
+
+void ChromeAutofillClientIOS::UpdateAutofillSuggestions(
+    const std::vector<Suggestion>& suggestions,
+    FillingProduct main_filling_product,
+    AutofillSuggestionTriggerSource trigger_source,
+    AutofillSuggestionsIgnoreFocusLoss ignore_focus_loss) {
+  // Only update suggestions for a live session. Otherwise the popup was never
+  // shown or was already hidden, in which case the cached delegate and
+  // form/field IDs are stale.
+  if (!current_session_id_.has_value() || !active_suggestion_delegate_) {
+    return;
+  }
+
+  current_suggestions_ = suggestions;
+  [bridge_ showAutofillPopup:suggestions
+          suggestionDelegate:active_suggestion_delegate_
+                      formId:current_form_id_
+                     fieldId:current_field_id_];
 }
 
 void ChromeAutofillClientIOS::UpdateAutofillDataListValues(
@@ -570,6 +604,10 @@ void ChromeAutofillClientIOS::HideSuggestions(
   }
 
   active_suggestion_delegate_.reset();
+  current_session_id_.reset();
+  current_suggestions_.clear();
+  current_form_id_ = {};
+  current_field_id_ = {};
   [bridge_ hideAutofillPopup];
   if (reason == SuggestionHidingReason::kAcceptSuggestion) {
     [commands_handler_ legacyResetAutofillSuggestionsLoadingStates];

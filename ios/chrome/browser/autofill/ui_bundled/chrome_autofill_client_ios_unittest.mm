@@ -19,6 +19,9 @@
 #import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #import "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #import "components/autofill/core/browser/integrators/password_form_classification.h"
+#import "components/autofill/core/browser/suggestions/suggestion.h"
+#import "components/autofill/core/browser/suggestions/suggestion_type.h"
+#import "components/autofill/core/browser/ui/mock_autofill_suggestion_delegate.h"
 #import "components/autofill/core/common/autofill_debug_features.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
@@ -28,6 +31,7 @@
 #import "components/autofill/ios/browser/autofill_agent.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
+#import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "components/autofill/ios/browser/test_autofill_manager_injector.h"
 #import "components/infobars/core/infobar.h"
@@ -131,6 +135,7 @@ class ChromeAutofillClientIOSTest : public PlatformTest {
     autofill_manager_injector_ =
         std::make_unique<TestAutofillManagerInjector<TestAutofillManager>>(
             web_state_.get());
+    autofill_agent_ = autofill_agent;
   }
 
   void TearDown() override {
@@ -155,6 +160,25 @@ class ChromeAutofillClientIOSTest : public PlatformTest {
 
   web::WebState* web_state() { return web_state_.get(); }
 
+  // Returns the suggestions the agent last pushed to the keyboard accessory.
+  // `-retrieveSuggestionsForForm:webState:completionHandler:` runs its
+  // completion synchronously, so the result is available upon return.
+  NSArray<FormSuggestion*>* LastSuggestionsSentToKeyboard() {
+    __block BOOL completion_called = NO;
+    __block NSArray<FormSuggestion*>* suggestions = nil;
+    [autofill_agent_
+        retrieveSuggestionsForForm:nil
+                          webState:web_state()
+                 completionHandler:^(NSArray<FormSuggestion*>* form_suggestions,
+                                     id<FormSuggestionProvider> provider) {
+                   completion_called = YES;
+                   suggestions = form_suggestions;
+                 }];
+    // Guards against the completion becoming asynchronous.
+    EXPECT_TRUE(completion_called);
+    return suggestions;
+  }
+
   id autofill_agent_delegate_;
   id mock_snackbar_handler_;
 
@@ -169,6 +193,9 @@ class ChromeAutofillClientIOSTest : public PlatformTest {
   web::ScopedTestingWebClient web_client_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
+  // Declared after `web_state_` so that the agent, which holds a raw_ptr to the
+  // profile's `PrefService`, is released before the profile goes away.
+  AutofillAgent* autofill_agent_;
   std::unique_ptr<ChromeAutofillClientIOS> autofill_client_;
   std::unique_ptr<TestAutofillManagerInjector<TestAutofillManager>>
       autofill_manager_injector_;
@@ -580,6 +607,35 @@ TEST_F(ChromeAutofillClientIOSTest, HideSuggestionsDismissesAtMemory) {
   EXPECT_OCMOCK_VERIFY(mock_at_memory_handler);
 
   client().set_at_memory_handler(nil);
+}
+
+// Test that suggestion updates are attributed to the form and field the popup
+// was opened for. `UpdateAutofillSuggestions()` carries no `PopupOpenArgs`, so
+// the client has to reuse the IDs captured by `ShowAutofillSuggestions()`.
+TEST_F(ChromeAutofillClientIOSTest, UpdateSuggestionsKeepsFormAndFieldId) {
+  const FormGlobalId form_id = test::MakeFormGlobalId();
+  const FieldGlobalId field_id = test::MakeFieldGlobalId();
+
+  AutofillClient::PopupOpenArgs open_args;
+  open_args.form_id = form_id;
+  open_args.field_id = field_id;
+  open_args.suggestions = {
+      Suggestion(u"", SuggestionType::kFetchingAmbientData)};
+
+  testing::NiceMock<MockAutofillSuggestionDelegate> delegate;
+  client().ShowAutofillSuggestions(open_args, delegate.GetWeakPtr());
+
+  client().UpdateAutofillSuggestions(
+      {Suggestion(u"John Doe", SuggestionType::kAddressEntry)},
+      FillingProduct::kAddress,
+      AutofillSuggestionTriggerSource::kFormControlElementClicked,
+      AutofillSuggestionsIgnoreFocusLoss(false));
+
+  NSArray<FormSuggestion*>* suggestions = LastSuggestionsSentToKeyboard();
+  ASSERT_EQ(1U, suggestions.count);
+  EXPECT_EQ(SuggestionType::kAddressEntry, suggestions[0].type);
+  EXPECT_EQ(form_id, suggestions[0].metadata.form_id);
+  EXPECT_EQ(field_id, suggestions[0].metadata.field_id);
 }
 
 }  // namespace autofill
