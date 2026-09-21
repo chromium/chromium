@@ -7,6 +7,7 @@
 #import "components/grit/safe_browsing_resources.h"
 #import "components/grit/safe_browsing_resources_map.h"
 #import "components/prefs/pref_service.h"
+#import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/web_ui_constants.h"
 #import "components/safe_browsing/ios/browser/web_ui/chrome_ios_safe_browsing_local_state_delegate.h"
 #import "components/safe_browsing/ios/browser/web_ui/safe_browsing_ios_ui_handler.h"
@@ -25,6 +26,10 @@ web::WebUIIOSDataSource* CreateSafeBrowsingUIDataSource() {
   html_source->AddResourcePaths(kSafeBrowsingResources);
   html_source->AddResourcePath("", IDR_SAFE_BROWSING_SAFE_BROWSING_HTML);
   html_source->SetDefaultResource(IDR_SAFE_BROWSING_SAFE_BROWSING_HTML);
+  html_source->AddBoolean(
+      "isV5Enabled",
+      base::FeatureList::IsEnabled(safe_browsing::kLocalListsUseSBv5));
+  html_source->UseStringsJs();
   return html_source;
 }
 

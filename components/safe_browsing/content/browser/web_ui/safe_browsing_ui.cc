@@ -7,6 +7,7 @@
 #include "components/grit/safe_browsing_resources.h"
 #include "components/grit/safe_browsing_resources_map.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_content_ui_handler.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/web_ui_constants.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
 #include "content/public/browser/web_contents.h"
@@ -26,6 +27,12 @@ SafeBrowsingUI::SafeBrowsingUI(
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(
           browser_context, safe_browsing::kChromeUISafeBrowsingHost);
+
+  // TODO(crbug.com/372395685): deprecate v4 hash cache panel
+  html_source->AddBoolean(
+      "isV5Enabled",
+      base::FeatureList::IsEnabled(safe_browsing::kLocalListsUseSBv5));
+  html_source->UseStringsJs();
 
   // Register callback handler.
   // Handles messages from JavaScript to C++ via chrome.send().

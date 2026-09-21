@@ -2,6 +2,7 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
+import '/strings.m.js';
 import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
 // <if expr="is_ios">
 // TODO(crbug.com/41173939): Remove this once injected by web. -->
@@ -11,6 +12,7 @@ import 'chrome://resources/js/ios/web_ui.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {addWebUiListener, sendWithPromise} from 'chrome://resources/js/cr.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {$} from 'chrome://resources/js/util.js';
 
 // Type definitions for custom types used through the file.
@@ -54,6 +56,8 @@ const deepScanData: Map<string, DeepScanResult> = new Map();
  * addPreferences() (below).
  */
 function initialize() {
+  updateDatabaseManagerGetHashTabs();
+
   sendWithPromise<string[]>('getExperiments', [])
       .then((experiments: string[]) => addExperiments(experiments));
   sendWithPromise<string[]>('getPrefs', [])
@@ -66,9 +70,11 @@ function initialize() {
       .then((passwords: Array<string|boolean>) => addSavedPasswords(passwords));
   sendWithPromise<Array<string|number|string[]>>('getDatabaseManagerInfo', [])
       .then(function(databaseState: Array<string|number|string[]>) {
-        const fullHashCacheState = databaseState.splice(-1, 1) as string[];
+        if (!loadTimeData.getBoolean('isV5Enabled')) {
+          const fullHashCacheState = databaseState.splice(-1, 1) as string[];
+          addFullHashCacheInfo(fullHashCacheState);
+        }
         addDatabaseManagerInfo(databaseState);
-        addFullHashCacheInfo(fullHashCacheState);
       });
 
   sendWithPromise<string[]>('getDownloadUrlsChecked', [])
@@ -298,6 +304,18 @@ function initialize() {
 // odd-indexed elements are the feature's status.
 function addExperiments(experiments: string[]) {
   addContentHelper(experiments, 'result-template', 'experiments-list', 'span');
+}
+
+// Shows either the Hash Cache tab (for V4) or the Database Manager
+// SearchHashes Lookups tab (for V5) depending on whether the
+// SafeBrowsingLocalListsUseSBv5 feature is enabled.
+// TODO(crbug.com/362791941): hide v5 panel when disabled
+function updateDatabaseManagerGetHashTabs() {
+  const isV5Enabled = loadTimeData.getBoolean('isV5Enabled');
+  if (isV5Enabled) {
+    $('hash-cache')?.remove();
+    $('hash-cache-panel')?.remove();
+  }
 }
 
 // Adds a list of preferences and their statuses to the DOM. `prefs` is

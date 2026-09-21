@@ -156,11 +156,7 @@ void SafeBrowsingUIHandler::GetDatabaseManagerInfo(
                               database_manager_info);
     }
 
-    if (base::FeatureList::IsEnabled(kLocalListsUseSBv5)) {
-      // Temporarily append an empty string to avoid JS errors.
-      // TODO(crbug.com/362791941): Support v5 local hit debugging.
-      database_manager_info.Append("");
-    } else {
+    if (!base::FeatureList::IsEnabled(kLocalListsUseSBv5)) {
       database_manager_info.Append(
           web_ui::AddFullHashCacheInfo(full_hash_cache_info_proto));
     }
