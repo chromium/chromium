@@ -5,12 +5,15 @@
 #include "chrome/browser/ash/input_method/assistive_suggester_client_filter.h"
 
 #include <algorithm>
+#include <array>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/hash/hash.h"
 #include "base/strings/string_util.h"
@@ -24,30 +27,36 @@ namespace ash {
 namespace input_method {
 namespace {
 
-const char* kAllowedDomainAndPathsForEmojiSuggester[][2] = {
-    {"discord.com", ""},         {"messenger.com", ""},
-    {"web.whatsapp.com", ""},    {"web.skype.com", ""},
-    {"duo.google.com", ""},      {"hangouts.google.com", ""},
-    {"messages.google.com", ""}, {"web.telegram.org", ""},
-    {"voice.google.com", ""},    {"mail.google.com", "/chat"},
-};
+constexpr auto kAllowedDomainAndPathsForEmojiSuggester =
+    std::to_array<std::array<std::string_view, 2>>({
+        {{"discord.com", ""}},
+        {{"messenger.com", ""}},
+        {{"web.whatsapp.com", ""}},
+        {{"web.skype.com", ""}},
+        {{"duo.google.com", ""}},
+        {{"hangouts.google.com", ""}},
+        {{"messages.google.com", ""}},
+        {{"web.telegram.org", ""}},
+        {{"voice.google.com", ""}},
+        {{"mail.google.com", "/chat"}},
+    });
 
-const char* kTestUrls[] = {
+constexpr auto kTestUrls = std::to_array<std::string_view>({
     "e14s-test",
     "simple_textarea.html",
     "test_page.html",
-};
+});
 
 // For some internal websites, we do not want to reveal their urls in plain
 // text. See map between url and hash code in
 // https://docs.google.com/spreadsheets/d/1VELTWiHrUTEyX4HQI5PL_jDVFreM-lRhThVOurUuOk4/edit#gid=0
-const uint32_t kHashedInternalUrls[] = {
+constexpr auto kHashedInternalUrls = std::to_array<uint32_t>({
     1845308025U,
     153302869U,
-};
+});
 
 // For ARC++ apps, use arc package name. For system apps, use app ID.
-const char* kAllowedAppsForEmojiSuggester[] = {
+constexpr auto kAllowedAppsForEmojiSuggester = std::to_array<std::string_view>({
     "com.discord",
     "com.facebook.orca",
     "com.whatsapp",
@@ -69,46 +78,48 @@ const char* kAllowedAppsForEmojiSuggester[] = {
     "co.happybits.marcopolo",
     "com.imo.android.imous",
     "mmfbcljfglbokpmkimbfghdkjmjhdgbg",  // System text
-};
+});
 
-const char* kDeniedUrlsForMultiwordSuggester[] = {
-    "chrome-untrusted://crosh/",     // Crosh on Chrome browser
-    "chrome-untrusted://terminal/",  // Terminal on Chrome browser
-};
+constexpr auto kDeniedUrlsForMultiwordSuggester =
+    std::to_array<std::string_view>({
+        "chrome-untrusted://crosh/",     // Crosh on Chrome browser
+        "chrome-untrusted://terminal/",  // Terminal on Chrome browser
+    });
 
-const char* kDeniedAppsForMultiwordSuggester[] = {
+constexpr auto kDeniedAppsForMultiwordSuggester =
+    std::to_array<std::string_view>({
+        "iodihamcpbpeioajjeobimgagajmlibd",  // SSH app
+        "cgfnfgkafmcdkdgilmojlnaadileaach",  // Crosh app
+        "fhicihalidkgcimdmhpohldehjmcabcf",  // Terminal app
+        "mmfbcljfglbokpmkimbfghdkjmjhdgbg",  // System text
+        "algkcnfjnajfhgimadimbjhmpaeohhln",  // SSH app (dev)
+    });
+
+constexpr auto kDeniedAppsForDiacritics = std::to_array<std::string_view>({
     "iodihamcpbpeioajjeobimgagajmlibd",  // SSH app
     "cgfnfgkafmcdkdgilmojlnaadileaach",  // Crosh app
     "fhicihalidkgcimdmhpohldehjmcabcf",  // Terminal app
     "mmfbcljfglbokpmkimbfghdkjmjhdgbg",  // System text
     "algkcnfjnajfhgimadimbjhmpaeohhln",  // SSH app (dev)
-};
+});
 
-const char* kDeniedAppsForDiacritics[] = {
-    "iodihamcpbpeioajjeobimgagajmlibd",  // SSH app
-    "cgfnfgkafmcdkdgilmojlnaadileaach",  // Crosh app
-    "fhicihalidkgcimdmhpohldehjmcabcf",  // Terminal app
-    "mmfbcljfglbokpmkimbfghdkjmjhdgbg",  // System text
-    "algkcnfjnajfhgimadimbjhmpaeohhln",  // SSH app (dev)
-};
-
-const char* kDeniedUrlsForDiacritics[] = {
+constexpr auto kDeniedUrlsForDiacritics = std::to_array<std::string_view>({
     "chrome-untrusted://crosh/",     // Crosh app
     "chrome-untrusted://terminal/",  // Terminal app
-};
+});
 
-const char* kDeniedDomainsForDiacritics[] = {
+constexpr auto kDeniedDomainsForDiacritics = std::to_array<std::string_view>({
     "localhost",            // Lots of dev apps on localhost (e.g. code-server)
     "cider.corp.google",    // Cider
     "cider-v.corp.google",  // Cider-v
-};
+});
 
 bool IsTestUrl(const std::optional<GURL>& url) {
   if (!url) {
     return false;
   }
   std::string filename = url->ExtractFileName();
-  for (const char* test_url : kTestUrls) {
+  for (std::string_view test_url : kTestUrls) {
     if (base::CompareCaseInsensitiveASCII(filename, test_url) == 0) {
       return true;
     }
@@ -130,8 +141,8 @@ bool IsInternalWebsite(const std::optional<GURL>& url) {
 }
 
 bool AtDomainWithPathPrefix(const std::optional<GURL>& url,
-                            const std::string& domain,
-                            const std::string& prefix) {
+                            std::string_view domain,
+                            std::string_view prefix) {
   if (!url) {
     return false;
   }
@@ -139,15 +150,14 @@ bool AtDomainWithPathPrefix(const std::optional<GURL>& url,
          base::StartsWith(url->GetPath(), prefix);
 }
 
-template <size_t N>
-bool IsMatchedUrlWithPathPrefix(const char* (&expected_domains_and_paths)[N][2],
-                                const std::optional<GURL>& url) {
+bool IsMatchedUrlWithPathPrefix(
+    base::span<const std::array<std::string_view, 2>>
+        expected_domains_and_paths,
+    const std::optional<GURL>& url) {
   if (!url) {
     return false;
   }
-  for (size_t i = 0; i < N; i++) {
-    auto domain = UNSAFE_TODO(expected_domains_and_paths[i])[0];
-    auto path_prefix = UNSAFE_TODO(expected_domains_and_paths[i])[1];
+  for (const auto& [domain, path_prefix] : expected_domains_and_paths) {
     if (AtDomainWithPathPrefix(url, domain, path_prefix)) {
       return true;
     }
@@ -155,14 +165,12 @@ bool IsMatchedUrlWithPathPrefix(const char* (&expected_domains_and_paths)[N][2],
   return false;
 }
 
-template <size_t N>
-bool IsMatchedExactUrl(const char* (&expected_urls)[N],
+bool IsMatchedExactUrl(base::span<const std::string_view> expected_urls,
                        const std::optional<GURL>& url) {
   if (!url) {
     return false;
   }
-  for (size_t i = 0; i < N; i++) {
-    auto expected_url = UNSAFE_TODO(expected_urls[i]);
+  for (std::string_view expected_url : expected_urls) {
     if (base::CompareCaseInsensitiveASCII(url->spec(), expected_url) == 0) {
       return true;
     }
@@ -170,48 +178,30 @@ bool IsMatchedExactUrl(const char* (&expected_urls)[N],
   return false;
 }
 
-template <size_t N>
-bool IsMatchedApp(const char* (&expected_app_ids_or_package_names)[N],
-                  WindowProperties w) {
+bool IsMatchedApp(
+    base::span<const std::string_view> expected_app_ids_or_package_names,
+    WindowProperties w) {
   if (!w.arc_package_name.empty() &&
-      std::find(expected_app_ids_or_package_names,
-                UNSAFE_TODO(expected_app_ids_or_package_names + N),
-                w.arc_package_name) !=
-          UNSAFE_TODO(expected_app_ids_or_package_names + N)) {
+      std::ranges::find(expected_app_ids_or_package_names,
+                        w.arc_package_name) !=
+          expected_app_ids_or_package_names.end()) {
     return true;
   }
   if (!w.app_id.empty() &&
-      std::find(expected_app_ids_or_package_names,
-                UNSAFE_TODO(expected_app_ids_or_package_names + N), w.app_id) !=
-          UNSAFE_TODO(expected_app_ids_or_package_names + N)) {
+      std::ranges::find(expected_app_ids_or_package_names, w.app_id) !=
+          expected_app_ids_or_package_names.end()) {
     return true;
   }
   return false;
 }
 
-template <size_t N>
-bool IsMatchedSubDomain(const char* (&expected_domains)[N],
+bool IsMatchedSubDomain(base::span<const std::string_view> expected_domains,
                         const std::optional<GURL>& url) {
   if (!url.has_value()) {
     return false;
   }
-  for (const auto& domain : expected_domains) {
+  for (std::string_view domain : expected_domains) {
     if (IsSubDomain(*url, domain)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-template <size_t N>
-bool IsMatchedSubDomainWithPathPrefix(
-    const char* (&expected_domains_and_paths)[N][2],
-    const std::optional<GURL>& url) {
-  if (!url.has_value()) {
-    return false;
-  }
-  for (const auto& [domain, path_prefix] : expected_domains_and_paths) {
-    if (IsSubDomainWithPathPrefix(*url, domain, path_prefix)) {
       return true;
     }
   }

@@ -7,9 +7,11 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <set>
 #include <sstream>
+#include <string_view>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -62,12 +64,16 @@ namespace input_method {
 
 namespace {
 
-const char* const kNonPositionalLayouts[] = {
-    "de(neo)",    "gb(dvorak)", "tr(f)",       "us(colemak)",
-    "us(dvorak)", "us(dvp)",    "us(workman)", "us(workman-intl)",
-};
-
-const size_t kNonPositionalLayoutsLength = std::size(kNonPositionalLayouts);
+constexpr auto kNonPositionalLayouts = std::to_array<std::string_view>({
+    "de(neo)",
+    "gb(dvorak)",
+    "tr(f)",
+    "us(colemak)",
+    "us(dvorak)",
+    "us(dvp)",
+    "us(workman)",
+    "us(workman-intl)",
+});
 
 enum InputMethodCategory {
   INPUT_METHOD_CATEGORY_UNKNOWN = 0,
@@ -1077,9 +1083,9 @@ InputMethodManagerImpl::InputMethodManagerImpl(
       features_enabled_state_(InputMethodManager::FEATURE_ALL) {
   if (::features::IsImprovedKeyboardShortcutsEnabled()) {
     // Create a set of layouts that do not use positional shortcuts.
-    non_positional_layouts_.reserve(kNonPositionalLayoutsLength);
-    for (size_t i = 0; i < kNonPositionalLayoutsLength; i++) {
-      non_positional_layouts_.emplace(UNSAFE_TODO(kNonPositionalLayouts[i]));
+    non_positional_layouts_.reserve(kNonPositionalLayouts.size());
+    for (std::string_view layout : kNonPositionalLayouts) {
+      non_positional_layouts_.emplace(layout);
     }
   }
 
