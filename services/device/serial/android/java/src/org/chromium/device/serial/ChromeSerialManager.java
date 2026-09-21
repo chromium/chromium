@@ -4,8 +4,14 @@
 
 package org.chromium.device.serial;
 
+import android.hardware.serial.SerialManager;
+import android.hardware.serial.SerialPort;
+import android.hardware.serial.SerialPortListener;
+import android.hardware.serial.SerialPortResponse;
+import android.os.Build;
 import android.os.OutcomeReceiver;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -13,13 +19,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.AconfigFlaggedApiDelegate;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.ServiceLoaderUtil;
-import org.chromium.base.serial.SerialManager;
-import org.chromium.base.serial.SerialPort;
-import org.chromium.base.serial.SerialPortListener;
-import org.chromium.base.serial.SerialPortResponse;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -30,14 +31,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-/** Exposes Android Serial API as necessary for C++ device::SerialDeviceEnumeratorAndroid. */
+/**
+ * Exposes Android Serial API as necessary for C++ device::SerialDeviceEnumeratorAndroid.
+ *
+ * <p>This class implements a platform interface that does not exist before SDK 37, and so cannot
+ * even be loaded on older OS versions. Callers must first check
+ * SerialDeviceEnumeratorAndroid::IsSupported().
+ */
 @JNINamespace("device")
 @NullMarked
+@RequiresApi(Build.VERSION_CODES.CINNAMON_BUN)
 public class ChromeSerialManager implements SerialPortListener {
     private static final String TAG = "ChromeSerialManager";
-
-    private static final @Nullable AconfigFlaggedApiDelegate sAconfigFlaggedApiDelegate =
-            ServiceLoaderUtil.maybeCreate(AconfigFlaggedApiDelegate.class);
 
     /** Address of C++ object SerialDeviceEnumeratorAndroid. */
     private final long mNativePointer;
@@ -60,10 +65,8 @@ public class ChromeSerialManager implements SerialPortListener {
 
     @CalledByNative
     private static @Nullable ChromeSerialManager create(long nativePointer) {
-        if (sAconfigFlaggedApiDelegate == null) {
-            return null;
-        }
-        SerialManager serialManager = sAconfigFlaggedApiDelegate.getSerialManager();
+        SerialManager serialManager =
+                ContextUtils.getApplicationContext().getSystemService(SerialManager.class);
         if (serialManager == null) {
             return null;
         }
@@ -135,7 +138,6 @@ public class ChromeSerialManager implements SerialPortListener {
         ChromeSerialManagerJni.get().removePortViaJni(mNativePointer, port.getName());
     }
 
-    @SuppressWarnings("NewApi")
     private class FileDescriptorReceiver implements OutcomeReceiver<SerialPortResponse, Exception> {
         private final String mPortName;
 

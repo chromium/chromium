@@ -24,6 +24,12 @@ namespace device {
 
 class SerialDeviceEnumeratorAndroidTest : public testing::Test {
  public:
+  void SetUp() override {
+    if (!SerialDeviceEnumeratorAndroid::IsSupported()) {
+      GTEST_SKIP() << "android.hardware.serial requires SDK 37";
+    }
+  }
+
   std::unique_ptr<SerialDeviceEnumeratorAndroid> CreateEnumeratorForTesting() {
     auto enumerator = std::make_unique<SerialDeviceEnumeratorAndroid>();
     JNIEnv* env = jni_zero::AttachCurrentThread();

@@ -14,6 +14,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.hardware.serial.SerialManager;
+import android.hardware.serial.SerialPort;
+import android.hardware.serial.SerialPortResponse;
+import android.os.Build;
 import android.os.OutcomeReceiver;
 import android.os.ParcelFileDescriptor;
 
@@ -27,16 +31,15 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 
-import org.chromium.base.serial.SerialManager;
-import org.chromium.base.serial.SerialPort;
-import org.chromium.base.serial.SerialPortResponse;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 import java.util.List;
 
 /** Unit tests for ChromeSerialManager. */
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
 public class ChromeSerialManagerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -196,19 +199,12 @@ public class ChromeSerialManagerTest {
     }
 
     private SerialPortResponse createSerialPortResponse(SerialPort port, int fd) {
-        return new SerialPortResponse() {
-            @Override
-            public SerialPort getPort() {
-                return port;
-            }
-
-            @Override
-            public ParcelFileDescriptor getFileDescriptor() {
-                ParcelFileDescriptor pfd = mock(ParcelFileDescriptor.class);
-                when(pfd.getFd()).thenReturn(fd);
-                when(pfd.detachFd()).thenReturn(fd);
-                return pfd;
-            }
-        };
+        ParcelFileDescriptor pfd = mock(ParcelFileDescriptor.class);
+        when(pfd.getFd()).thenReturn(fd);
+        when(pfd.detachFd()).thenReturn(fd);
+        SerialPortResponse response = mock(SerialPortResponse.class);
+        when(response.getPort()).thenReturn(port);
+        when(response.getFileDescriptor()).thenReturn(pfd);
+        return response;
     }
 }

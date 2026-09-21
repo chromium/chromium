@@ -8,6 +8,7 @@
 
 #include <cstdint>
 
+#include "base/android/android_info.h"
 #include "base/android/jni_string.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
@@ -23,7 +24,17 @@ using ::jni_zero::AttachCurrentThread;
 SerialDeviceEnumeratorAndroid::SerialDeviceEnumeratorAndroid()
     : task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
+// static
+bool SerialDeviceEnumeratorAndroid::IsSupported() {
+  return base::android::android_info::sdk_int() >=
+         base::android::android_info::SDK_VERSION_CINNAMON_BUN;
+}
+
 void SerialDeviceEnumeratorAndroid::Initialize() {
+  if (!IsSupported()) {
+    SERIAL_LOG(EVENT) << "Android Serial Service requires SDK 37";
+    return;
+  }
   JNIEnv* env = AttachCurrentThread();
   j_serial_manager_.Reset(
       Java_ChromeSerialManager_create(env, reinterpret_cast<int64_t>(this)));

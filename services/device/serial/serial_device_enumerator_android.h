@@ -37,6 +37,11 @@ class SerialDeviceEnumeratorAndroid : public SerialDeviceEnumerator {
 
   ~SerialDeviceEnumeratorAndroid() override;
 
+  // Returns whether the OS supports the serial API. The Java-side
+  // ChromeSerialManager implements android.hardware.serial.SerialPortListener,
+  // and so cannot even be loaded when this returns false.
+  static bool IsSupported();
+
   // Must be called once immediately after the constructor.
   void Initialize();
 

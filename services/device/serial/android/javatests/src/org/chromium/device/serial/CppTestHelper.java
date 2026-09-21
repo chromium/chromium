@@ -4,6 +4,10 @@
 
 package org.chromium.device.serial;
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
@@ -13,6 +17,7 @@ import org.jni_zero.JniType;
  * ChromeSerialManager mock and verifies its calls.
  */
 @JNINamespace("device")
+@RequiresApi(Build.VERSION_CODES.CINNAMON_BUN)
 public class CppTestHelper {
 
     private static long sNativePointer;
