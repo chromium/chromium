@@ -16,38 +16,17 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
+#include "components/one_time_tokens/core/browser/gmail_otp_sender_domain_matcher.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/util/expiring_subscription.h"
 #include "url/origin.h"
 
-namespace url {
-class SchemeHostPort;
-}
-
 namespace affiliations {
-enum class MatchType;
 class DomainRelationChecker;
 }  // namespace affiliations
 
 namespace one_time_tokens {
-
-// LINT.IfChange(GmailOtpSenderDomainMatchType)
-enum class GmailOtpSenderDomainMatchType {
-  kUnknown = 0,
-  kNoMatch = 1,
-  kGrouped = 2,
-  kPsl = 3,
-  kGroupedAndPsl = 4,
-  kExact = 5,
-  kAffiliated = 6,
-  kFrameIsWwwPsl = 7,
-  kMaxValue = kFrameIsWwwPsl
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/enums.xml:GmailOtpSenderDomainMatchType)
-
-std::ostream& operator<<(std::ostream& os,
-                         GmailOtpSenderDomainMatchType match_type);
 
 class OneTimeTokenService;
 enum class OneTimeTokenSource;
@@ -56,8 +35,9 @@ enum class OneTimeTokenSource;
 // target origin frame.
 //
 // It queries cached tokens and listens for incoming ones from
-// `OneTimeTokenService`. Only tokens whose sender matches the target frame
-// origin are accepted. The retriever keeps listening for incoming tokens
+// `OneTimeTokenService`. Only tokens whose sender is accepted by
+// `GmailOtpSenderDomainMatcher` for the target frame origin are accepted. The
+// retriever keeps listening for incoming tokens
 // either until it finds a match (and all pending backend requests complete) or
 // the subscription times out.
 //
@@ -117,13 +97,12 @@ class GmailOtpRetriever {
 
   void Start();
   void SubscribeForOneTimeToken();
-  void CheckSenderDomainMatchesFrameToFill(
+  // Asks `sender_domain_matcher_` whether `sender_address` may fill the frame.
+  // The matcher is owned by this object, so destroying `this` cancels the
+  // check.
+  void StartSenderDomainCheck(
       std::string_view sender_address,
-      base::OnceCallback<void(GmailOtpSenderDomainMatchType)> callback);
-  void OnSenderDomainMatchChecked(
-      const url::SchemeHostPort& sender_tuple,
-      base::OnceCallback<void(GmailOtpSenderDomainMatchType)> callback,
-      std::optional<affiliations::MatchType> match_type);
+      GmailOtpSenderDomainMatcher::ResultCallback callback);
   void CheckCachedTokenMatch(std::vector<OneTimeToken> cached_tokens,
                              size_t index);
   bool IsMatchTypeAllowed(GmailOtpSenderDomainMatchType match_type) const;
@@ -140,9 +119,10 @@ class GmailOtpRetriever {
   void OnOpaqueOriginDetected();
 
   const raw_ref<OneTimeTokenService> one_time_token_service_;
-  std::unique_ptr<affiliations::DomainRelationChecker> domain_relation_checker_;
   const url::Origin otp_frame_origin_;
   const bool is_login_flow_;
+  // Answers all sender domain checks of this retrieval.
+  GmailOtpSenderDomainMatcher sender_domain_matcher_;
   size_t pending_sender_domain_checks_ = 0;
   std::optional<OneTimeTokenRetrievalError> error_;
   ExpiringSubscription subscription_;

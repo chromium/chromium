@@ -5,6 +5,7 @@
 #include "components/one_time_tokens/core/browser/gmail_otp_retriever.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/check.h"
@@ -13,66 +14,18 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string_split.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/affiliations/core/browser/domain_matching/domain_relation_checker.h"
-#include "components/affiliations/core/browser/match_type.h"
+#include "components/one_time_tokens/core/browser/gmail_otp_sender_domain_matcher.h"
 #include "components/one_time_tokens/core/browser/one_time_token_log_sink.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service.h"
 #include "components/one_time_tokens/core/common/one_time_token_features.h"
-#include "components/url_formatter/url_formatter.h"
 #include "url/origin.h"
-#include "url/scheme_host_port.h"
-#include "url/url_constants.h"
 
 namespace one_time_tokens {
 
 namespace {
-
-GmailOtpSenderDomainMatchType ResolveSenderDomainMatchType(
-    std::optional<affiliations::MatchType> match_type,
-    const url::Origin& frame_origin,
-    const url::SchemeHostPort& sender_tuple) {
-  if (!match_type.has_value()) {
-    return GmailOtpSenderDomainMatchType::kNoMatch;
-  }
-  if (*match_type == affiliations::MatchType::kExact) {
-    return GmailOtpSenderDomainMatchType::kExact;
-  }
-
-  int value = static_cast<int>(*match_type);
-  bool has_psl = value & static_cast<int>(affiliations::MatchType::kPSL);
-  bool has_grouped =
-      value & static_cast<int>(affiliations::MatchType::kGrouped);
-  bool has_affiliated =
-      value & static_cast<int>(affiliations::MatchType::kAffiliated);
-
-  if (has_psl) {
-    std::string stripped_frame_host =
-        url_formatter::StripWWW(frame_origin.host());
-    url::SchemeHostPort stripped_frame_tuple(frame_origin.scheme(),
-                                             std::move(stripped_frame_host),
-                                             frame_origin.port());
-    if (stripped_frame_tuple == sender_tuple) {
-      return GmailOtpSenderDomainMatchType::kFrameIsWwwPsl;
-    }
-  }
-
-  if (has_affiliated) {
-    return GmailOtpSenderDomainMatchType::kAffiliated;
-  }
-  if (has_grouped && has_psl) {
-    return GmailOtpSenderDomainMatchType::kGroupedAndPsl;
-  }
-  if (has_psl) {
-    return GmailOtpSenderDomainMatchType::kPsl;
-  }
-  if (has_grouped) {
-    return GmailOtpSenderDomainMatchType::kGrouped;
-  }
-  return GmailOtpSenderDomainMatchType::kUnknown;
-}
 
 void RecordSenderDomainMatchRejectionReason(
     GmailOtpSenderDomainMatchType reason,
@@ -106,15 +59,6 @@ void RecordSenderDomainMatchAcceptedMatchType(
   }
 }
 
-std::string ExtractEmailDomain(std::string_view email) {
-  std::vector<std::string_view> parts = base::SplitStringPiece(
-      email, "@", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-  if (parts.size() == 2) {
-    return std::string(parts[1]);
-  }
-  return std::string();
-}
-
 }  // namespace
 
 // static
@@ -140,9 +84,10 @@ GmailOtpRetriever::GmailOtpRetriever(
     bool is_login_flow,
     ResultCallback callback)
     : one_time_token_service_(service),
-      domain_relation_checker_(std::move(domain_relation_checker)),
       otp_frame_origin_(otp_frame_origin),
       is_login_flow_(is_login_flow),
+      sender_domain_matcher_(std::move(domain_relation_checker),
+                             otp_frame_origin),
       retrieve_otp_callback_(std::move(callback)) {}
 
 GmailOtpRetriever::~GmailOtpRetriever() = default;
@@ -208,38 +153,17 @@ void GmailOtpRetriever::SubscribeForOneTimeToken() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void GmailOtpRetriever::CheckSenderDomainMatchesFrameToFill(
+void GmailOtpRetriever::StartSenderDomainCheck(
     std::string_view sender_address,
-    base::OnceCallback<void(GmailOtpSenderDomainMatchType)> callback) {
-  pending_sender_domain_checks_++;
-  std::string sender_domain = ExtractEmailDomain(sender_address);
-
+    GmailOtpSenderDomainMatcher::ResultCallback callback) {
   CHECK(!otp_frame_origin_.opaque());
 
   LOG_OTT(one_time_token_service_->log_sink())
       << "GmailOtpRetriever checking sender domain match: sender_address="
-      << sender_address << ", sender_domain=" << sender_domain
-      << ", otp_frame_origin=" << otp_frame_origin_;
+      << sender_address << ", otp_frame_origin=" << otp_frame_origin_;
 
-  url::SchemeHostPort frame_tuple =
-      otp_frame_origin_.GetTupleOrPrecursorTupleIfOpaque();
-  url::SchemeHostPort sender_tuple(
-      url::kHttpsScheme, std::move(sender_domain),
-      url::DefaultPortForScheme(url::kHttpsScheme));
-
-  domain_relation_checker_->Check(
-      frame_tuple, sender_tuple,
-      base::BindOnce(&GmailOtpRetriever::OnSenderDomainMatchChecked,
-                     weak_ptr_factory_.GetWeakPtr(), sender_tuple,
-                     std::move(callback)));
-}
-
-void GmailOtpRetriever::OnSenderDomainMatchChecked(
-    const url::SchemeHostPort& sender_tuple,
-    base::OnceCallback<void(GmailOtpSenderDomainMatchType)> callback,
-    std::optional<affiliations::MatchType> match_type) {
-  std::move(callback).Run(ResolveSenderDomainMatchType(
-      match_type, otp_frame_origin_, sender_tuple));
+  pending_sender_domain_checks_++;
+  sender_domain_matcher_.Check(sender_address, std::move(callback));
 }
 
 void GmailOtpRetriever::CheckCachedTokenMatch(
@@ -255,7 +179,7 @@ void GmailOtpRetriever::CheckCachedTokenMatch(
 
   std::string sender_address =
       cached_tokens.at(index).sender_address().value_or("");
-  CheckSenderDomainMatchesFrameToFill(
+  StartSenderDomainCheck(
       sender_address,
       base::BindOnce(&GmailOtpRetriever::OnCachedTokenMatchChecked,
                      weak_ptr_factory_.GetWeakPtr(), std::move(cached_tokens),
@@ -369,7 +293,7 @@ void GmailOtpRetriever::OnOneTimeTokenReceived(
       << result->sender_address().value_or("");
 
   std::string sender_address = result->sender_address().value_or("");
-  CheckSenderDomainMatchesFrameToFill(
+  StartSenderDomainCheck(
       sender_address,
       base::BindOnce(&GmailOtpRetriever::OnReceivedTokenMatchChecked,
                      weak_ptr_factory_.GetWeakPtr(), std::move(*result)));
@@ -462,29 +386,6 @@ void GmailOtpRetriever::OnOpaqueOriginDetected() {
       << "GmailOtpRetriever failed: Opaque frame origin.";
   std::move(retrieve_otp_callback_)
       .Run(base::unexpected(OneTimeTokenRetrievalError::kGmailOtpUnknown));
-}
-
-std::ostream& operator<<(std::ostream& os,
-                         GmailOtpSenderDomainMatchType match_type) {
-  switch (match_type) {
-    case GmailOtpSenderDomainMatchType::kUnknown:
-      return os << "kUnknown";
-    case GmailOtpSenderDomainMatchType::kNoMatch:
-      return os << "kNoMatch";
-    case GmailOtpSenderDomainMatchType::kGrouped:
-      return os << "kGrouped";
-    case GmailOtpSenderDomainMatchType::kPsl:
-      return os << "kPsl";
-    case GmailOtpSenderDomainMatchType::kGroupedAndPsl:
-      return os << "kGroupedAndPsl";
-    case GmailOtpSenderDomainMatchType::kExact:
-      return os << "kExact";
-    case GmailOtpSenderDomainMatchType::kAffiliated:
-      return os << "kAffiliated";
-    case GmailOtpSenderDomainMatchType::kFrameIsWwwPsl:
-      return os << "kFrameIsWwwPsl";
-  }
-  return os << static_cast<int>(match_type);
 }
 
 std::ostream& operator<<(std::ostream& os, GmailOtpRetriever::Source source) {
