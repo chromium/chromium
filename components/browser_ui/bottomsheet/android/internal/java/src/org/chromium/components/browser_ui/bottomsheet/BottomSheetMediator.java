@@ -691,6 +691,79 @@ class BottomSheetMediator {
         mModel.set(BottomSheetProperties.ACCESSIBILITY_PANE_TITLE, title);
     }
 
+    /**
+     * Sets the sheet translation Y in the model.
+     *
+     * @param translationY The translation Y in pixels.
+     */
+    void setSheetTranslationY(float translationY) {
+        mModel.set(BottomSheetProperties.SHEET_TRANSLATION_Y, translationY);
+    }
+
+    /** Returns the sheet translation Y from the model. */
+    float getSheetTranslationY() {
+        return mModel.get(BottomSheetProperties.SHEET_TRANSLATION_Y);
+    }
+
+    /**
+     * Sets the sheet translation X in the model.
+     *
+     * @param translationX The translation X in pixels.
+     */
+    void setSheetTranslationX(float translationX) {
+        mModel.set(BottomSheetProperties.SHEET_TRANSLATION_X, translationX);
+    }
+
+    /**
+     * Sets handlebar visibility in the model.
+     *
+     * @param visible Whether the handlebar is visible.
+     */
+    void setHandlebarVisible(boolean visible) {
+        mModel.set(BottomSheetProperties.HANDLEBAR_VISIBLE, visible);
+    }
+
+    /**
+     * Sets the content and toolbar top margin in the model.
+     *
+     * @param topMargin The top margin in pixels.
+     */
+    void setContentTopMargin(@Px int topMargin) {
+        mModel.set(BottomSheetProperties.CONTENT_TOP_MARGIN, topMargin);
+    }
+
+    /**
+     * Sets the visible background height in the model.
+     *
+     * @param height The visible background height in pixels.
+     */
+    void setVisibleBackgroundHeight(@Px int height) {
+        mModel.set(BottomSheetProperties.VISIBLE_BACKGROUND_HEIGHT, height);
+    }
+
+    /**
+     * Sets whether the sheet is focusable in the model.
+     *
+     * @param focusable Whether the sheet is focusable.
+     */
+    void setSheetFocusable(boolean focusable) {
+        mModel.set(BottomSheetProperties.SHEET_FOCUSABLE, focusable);
+    }
+
+    /** Updates the background glow specification in the model based on current content. */
+    void updateBackgroundGlow() {
+        setGlowSpec(getGlowSpecOrDefault(mSheetContent));
+    }
+
+    /**
+     * Sets the glow spec in the model.
+     *
+     * @param spec The glow specification.
+     */
+    void setGlowSpec(GlowSpec spec) {
+        mModel.set(BottomSheetProperties.GLOW_SPEC, spec);
+    }
+
     /** Returns the ratio of the height of the screen that the hidden state is. */
     float getHiddenRatio() {
         return 0;

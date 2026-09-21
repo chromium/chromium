@@ -126,4 +126,40 @@ public class BottomSheetViewBinderUnitTest {
         mModel.set(BottomSheetProperties.ACCESSIBILITY_PANE_TITLE, "Sheet Title");
         verify(mView).setSheetAccessibilityPaneTitle("Sheet Title");
     }
+
+    @Test
+    public void testSheetTranslationY() {
+        mModel.set(BottomSheetProperties.SHEET_TRANSLATION_Y, 150f);
+        verify(mView).setSheetTranslationY(150f);
+    }
+
+    @Test
+    public void testSheetTranslationX() {
+        mModel.set(BottomSheetProperties.SHEET_TRANSLATION_X, 75f);
+        verify(mView).setSheetTranslationX(75f);
+    }
+
+    @Test
+    public void testHandlebarVisible() {
+        mModel.set(BottomSheetProperties.HANDLEBAR_VISIBLE, true);
+        verify(mView).setHandlebarVisible(true);
+    }
+
+    @Test
+    public void testContentTopMargin() {
+        mModel.set(BottomSheetProperties.CONTENT_TOP_MARGIN, 32);
+        verify(mView).setContentTopMargin(32);
+    }
+
+    @Test
+    public void testVisibleBackgroundHeight() {
+        mModel.set(BottomSheetProperties.VISIBLE_BACKGROUND_HEIGHT, 500);
+        verify(mView).setVisibleBackgroundHeight(500);
+    }
+
+    @Test
+    public void testSheetFocusable() {
+        mModel.set(BottomSheetProperties.SHEET_FOCUSABLE, true);
+        verify(mView).setSheetFocusable(true);
+    }
 }

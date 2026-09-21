@@ -143,6 +143,9 @@ public class BottomSheetView extends FrameLayout {
     /** The active visual layout mode of the sheet. */
     private @SheetLayoutMode int mLayoutMode = SheetLayoutMode.STANDARD;
 
+    /** The visible cosmetic height of the sheet background and shadow layer. */
+    private @Px int mVisibleBackgroundHeight;
+
     /** The active glow specification for the sheet. */
     private @Nullable GlowSpec mGlowSpec;
 
@@ -301,6 +304,7 @@ public class BottomSheetView extends FrameLayout {
      * @param mode The layout mode to apply.
      */
     public void setSheetLayoutMode(@SheetLayoutMode int mode) {
+        if (mLayoutMode == mode) return;
         mLayoutMode = mode;
         switch (mode) {
             case SheetLayoutMode.DESKTOP_POPUP -> {
@@ -352,6 +356,7 @@ public class BottomSheetView extends FrameLayout {
      */
     public void setKeyboardCurtainHeight(@Px int height) {
         if (mKeyboardCurtain == null) return;
+        mKeyboardCurtain.setTranslationY(height);
         MarginLayoutParams params = (MarginLayoutParams) mKeyboardCurtain.getLayoutParams();
         if (params != null && params.height != height) {
             params.height = height;
@@ -474,6 +479,106 @@ public class BottomSheetView extends FrameLayout {
         if (params != null && params.height != height) {
             params.height = height;
             mBottomSheetContentContainer.setLayoutParams(params);
+        }
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        if (mVisibleBackgroundHeight > 0) {
+            setVisibleBackgroundHeight(mVisibleBackgroundHeight);
+        }
+    }
+
+    /**
+     * Sets the translation Y of the sheet view.
+     *
+     * @param translationY The translation Y coordinate.
+     */
+    public void setSheetTranslationY(float translationY) {
+        setTranslationY(translationY);
+    }
+
+    /**
+     * Sets the translation X of the sheet view.
+     *
+     * @param translationX The translation X coordinate.
+     */
+    public void setSheetTranslationX(float translationX) {
+        setTranslationX(translationX);
+    }
+
+    /**
+     * Sets whether the drag handlebar is visible.
+     *
+     * @param visible True if the handlebar should be visible, false otherwise.
+     */
+    public void setHandlebarVisible(boolean visible) {
+        if (mHandlebar != null) {
+            mHandlebar.setVisibility(visible ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    /**
+     * Sets the top margin of the content container and toolbar holder.
+     *
+     * @param topMargin The top margin in pixels.
+     */
+    public void setContentTopMargin(@Px int topMargin) {
+        if (mBottomSheetContentContainer != null) {
+            MarginLayoutParams params =
+                    (MarginLayoutParams) mBottomSheetContentContainer.getLayoutParams();
+            if (params != null && params.topMargin != topMargin) {
+                params.topMargin = topMargin;
+                mBottomSheetContentContainer.setLayoutParams(params);
+            }
+        }
+        if (mToolbarHolder != null) {
+            MarginLayoutParams params = (MarginLayoutParams) mToolbarHolder.getLayoutParams();
+            if (params != null && params.topMargin != topMargin) {
+                params.topMargin = topMargin;
+                mToolbarHolder.setLayoutParams(params);
+            }
+        }
+    }
+
+    /**
+     * Sets the visible cosmetic height of the sheet background and shadow layer.
+     *
+     * @param visibleHeight The visible background height in pixels.
+     */
+    public void setVisibleBackgroundHeight(@Px int visibleHeight) {
+        mVisibleBackgroundHeight = visibleHeight;
+        if (mSheetBackground == null || mShadowLayer == null) {
+            return;
+        }
+
+        // Clip the solid background strictly to the visual height.
+        mSheetBackground.setBottom(mSheetBackground.getTop() + visibleHeight);
+
+        // Wrap the shadow layer around the new background height, explicitly appending
+        // the shadow's native padding to allow the 9-patch border to paint correctly.
+        int shadowTopPadding = mShadowLayer.getPaddingTop();
+        int shadowBottomPadding = mShadowLayer.getPaddingBottom();
+        mShadowLayer.setBottom(
+                mShadowLayer.getTop() + visibleHeight + shadowTopPadding + shadowBottomPadding);
+        mShadowLayer.invalidate();
+    }
+
+    /**
+     * Sets whether the sheet view is focusable and manages its focus.
+     *
+     * @param focusable True if the sheet should be focusable, false otherwise.
+     */
+    public void setSheetFocusable(boolean focusable) {
+        setFocusable(focusable);
+        setFocusableInTouchMode(focusable);
+        if (focusable) {
+            if (getFocusedChild() == null) {
+                requestFocus();
+            }
+        } else {
+            clearFocus();
         }
     }
 }

@@ -43,6 +43,17 @@ public class BottomSheetProperties {
     public static final WritableIntPropertyKey SHEET_WIDTH_PX = new WritableIntPropertyKey();
     public static final WritableObjectPropertyKey<@Nullable CharSequence> ACCESSIBILITY_PANE_TITLE =
             new WritableObjectPropertyKey<>();
+    public static final WritableFloatPropertyKey SHEET_TRANSLATION_Y =
+            new WritableFloatPropertyKey();
+    public static final WritableFloatPropertyKey SHEET_TRANSLATION_X =
+            new WritableFloatPropertyKey();
+    public static final WritableBooleanPropertyKey HANDLEBAR_VISIBLE =
+            new WritableBooleanPropertyKey();
+    public static final WritableIntPropertyKey CONTENT_TOP_MARGIN = new WritableIntPropertyKey();
+    public static final WritableIntPropertyKey VISIBLE_BACKGROUND_HEIGHT =
+            new WritableIntPropertyKey();
+    public static final WritableBooleanPropertyKey SHEET_FOCUSABLE =
+            new WritableBooleanPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
@@ -59,7 +70,13 @@ public class BottomSheetProperties {
                 KEYBOARD_CURTAIN_HEIGHT,
                 CONTAINER_HEIGHT,
                 SHEET_WIDTH_PX,
-                ACCESSIBILITY_PANE_TITLE
+                ACCESSIBILITY_PANE_TITLE,
+                SHEET_TRANSLATION_Y,
+                SHEET_TRANSLATION_X,
+                HANDLEBAR_VISIBLE,
+                CONTENT_TOP_MARGIN,
+                VISIBLE_BACKGROUND_HEIGHT,
+                SHEET_FOCUSABLE
             };
 
     private BottomSheetProperties() {}

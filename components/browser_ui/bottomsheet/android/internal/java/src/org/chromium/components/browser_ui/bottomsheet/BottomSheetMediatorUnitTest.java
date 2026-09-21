@@ -899,4 +899,57 @@ public class BottomSheetMediatorUnitTest {
                         /* containerWidth= */ 500,
                         viewport));
     }
+
+    @Test
+    public void testSheetTranslationProperties() {
+        mMediator.setSheetTranslationY(120f);
+        assertEquals(120f, mMediator.getSheetTranslationY(), 0.0f);
+        assertEquals(120f, mModel.get(BottomSheetProperties.SHEET_TRANSLATION_Y), 0.0f);
+
+        mMediator.setSheetTranslationX(60f);
+        assertEquals(60f, mModel.get(BottomSheetProperties.SHEET_TRANSLATION_X), 0.0f);
+    }
+
+    @Test
+    public void testHandlebarVisible() {
+        mMediator.setHandlebarVisible(true);
+        assertTrue(mModel.get(BottomSheetProperties.HANDLEBAR_VISIBLE));
+
+        mMediator.setHandlebarVisible(false);
+        assertFalse(mModel.get(BottomSheetProperties.HANDLEBAR_VISIBLE));
+    }
+
+    @Test
+    public void testContentTopMargin() {
+        mMediator.setContentTopMargin(40);
+        assertEquals(40, mModel.get(BottomSheetProperties.CONTENT_TOP_MARGIN));
+    }
+
+    @Test
+    public void testVisibleBackgroundHeight() {
+        mMediator.setVisibleBackgroundHeight(450);
+        assertEquals(450, mModel.get(BottomSheetProperties.VISIBLE_BACKGROUND_HEIGHT));
+    }
+
+    @Test
+    public void testSheetFocusable() {
+        mMediator.setSheetFocusable(true);
+        assertTrue(mModel.get(BottomSheetProperties.SHEET_FOCUSABLE));
+
+        mMediator.setSheetFocusable(false);
+        assertFalse(mModel.get(BottomSheetProperties.SHEET_FOCUSABLE));
+    }
+
+    @Test
+    public void testGlowSpec() {
+        GlowSpec spec = new GlowSpec(Color.BLUE, GlowSpec.ShadowSize.DEFAULT);
+        mMediator.setGlowSpec(spec);
+        assertEquals(spec, mModel.get(BottomSheetProperties.GLOW_SPEC));
+
+        when(mContent.getSheetBackgroundGlowSpecOverride()).thenReturn(spec);
+        mMediator.setSheetContent(mContent);
+        mMediator.setGlowSpec(new GlowSpec(Color.RED, GlowSpec.ShadowSize.DEFAULT));
+        mMediator.updateBackgroundGlow();
+        assertEquals(spec, mModel.get(BottomSheetProperties.GLOW_SPEC));
+    }
 }

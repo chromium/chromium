@@ -50,6 +50,19 @@ public class BottomSheetViewBinder {
         } else if (BottomSheetProperties.ACCESSIBILITY_PANE_TITLE == propertyKey) {
             view.setSheetAccessibilityPaneTitle(
                     model.get(BottomSheetProperties.ACCESSIBILITY_PANE_TITLE));
+        } else if (BottomSheetProperties.SHEET_TRANSLATION_Y == propertyKey) {
+            view.setSheetTranslationY(model.get(BottomSheetProperties.SHEET_TRANSLATION_Y));
+        } else if (BottomSheetProperties.SHEET_TRANSLATION_X == propertyKey) {
+            view.setSheetTranslationX(model.get(BottomSheetProperties.SHEET_TRANSLATION_X));
+        } else if (BottomSheetProperties.HANDLEBAR_VISIBLE == propertyKey) {
+            view.setHandlebarVisible(model.get(BottomSheetProperties.HANDLEBAR_VISIBLE));
+        } else if (BottomSheetProperties.CONTENT_TOP_MARGIN == propertyKey) {
+            view.setContentTopMargin(model.get(BottomSheetProperties.CONTENT_TOP_MARGIN));
+        } else if (BottomSheetProperties.VISIBLE_BACKGROUND_HEIGHT == propertyKey) {
+            view.setVisibleBackgroundHeight(
+                    model.get(BottomSheetProperties.VISIBLE_BACKGROUND_HEIGHT));
+        } else if (BottomSheetProperties.SHEET_FOCUSABLE == propertyKey) {
+            view.setSheetFocusable(model.get(BottomSheetProperties.SHEET_FOCUSABLE));
         }
     }
 
