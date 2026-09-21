@@ -1146,44 +1146,6 @@ source_set("tab_helpers_impl") {
   }
 }
 
-# Browser is the desktop implementation of BrowserWindowInterface. It is
-# deliberately NOT part of //chrome/browser/ui:ui so that it cannot be included
-# from anywhere else: features must go through BrowserWindowInterface instead.
-# The visibility list below is intentionally minimal -- please do not extend it
-# without discussing with the Bedrock team (crbug.com/428946261).
-if (!is_android) {
-  source_set("browser_header") {
-    public = [ "browser.h" ]
-    visibility = [
-      ":ui",
-      "//chrome/browser/ui/browser_window/internal",
-    ]
-    public_deps = [
-      ":browser_window_deleter",
-      "//base",
-      "//chrome/browser/tab_contents",
-      "//chrome/browser/ui/bookmarks",
-      "//chrome/browser/ui/browser_window",
-      "//chrome/browser/ui/browser_window:create_browser_window",
-      "//chrome/browser/ui/navigator",
-      "//chrome/browser/ui/tabs:tab_strip",
-      "//chrome/browser/ui/window_feature_controller",
-      "//components/paint_preview/buildflags",
-      "//components/sessions:session_id",
-      "//components/tab_groups",
-      "//content/public/browser",
-      "//extensions/buildflags",
-      "//printing/buildflags",
-      "//third_party/blink/public/common:headers",
-      "//ui/base",
-      "//ui/base/mojom",
-      "//ui/base/unowned_user_data",
-      "//ui/gfx/geometry",
-      "//url",
-    ]
-  }
-}
-
 # Use a static library here because many test binaries depend on this but don't
 # require many files from it. This makes linking more efficient.
 # TODO(https://crbug.com/353332589): Once //chrome/browser is properly
@@ -1932,6 +1894,7 @@ static_library("ui") {
       # WebUI interface binders for desktop, which need this target's headers.
       "//chrome/browser/chrome_browser_interface_binders_webui_parts_desktop.cc",
       "browser.cc",
+      "browser.h",
       "browser_command_controller.cc",
       "browser_command_controller.h",
       "browser_commands.cc",
@@ -1964,7 +1927,6 @@ static_library("ui") {
     deps += [
       ":accelerator_table",
       ":browser_actions",
-      ":browser_header",
       ":browser_manager_service",
       ":browser_select_file_dialog_controller",
       ":browser_window_header",

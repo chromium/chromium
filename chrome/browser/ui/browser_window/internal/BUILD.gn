@@ -79,7 +79,6 @@ source_set("internal") {
       "//chrome/browser/ttc/core",
       "//chrome/browser/ui:browser_actions",
       "//chrome/browser/ui:browser_content_setting_bubble_model_delegate",
-      "//chrome/browser/ui:browser_header",
       "//chrome/browser/ui:browser_init_state",
       "//chrome/browser/ui:browser_manager_service",
       "//chrome/browser/ui:browser_tab_menu_model_delegate",
