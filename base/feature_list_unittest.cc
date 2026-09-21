@@ -121,6 +121,12 @@ BASE_FEATURE_PARAM(int,
                    &kRuntimeMutableFeature,
                    12345);
 
+BASE_FEATURE_ENUM_PARAM(TestEnum,
+                        kRuntimeMutableFeatureEnumParam,
+                        &kRuntimeMutableFeature,
+                        TestEnum::kFirst,
+                        &kTestEnumOptions);
+
 // For testing features with country restrictions.
 BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS(kCountryEnabledEuropeFeature,
                                        FEATURE_ENABLED_FOR_COUNTRIES,
@@ -1712,7 +1718,10 @@ TEST_F(FeatureListTest, RuntimeMutability_FeatureParamBypassCache) {
     trial->SetForced();
     ASSERT_TRUE(base::AssociateFieldTrialParams(
         kTrialName, kGroupName,
-        FieldTrialParams{{kRuntimeMutableFeatureParam.name, "99999"}}));
+        FieldTrialParams{
+            {kRuntimeMutableFeatureParam.name, "99999"},
+            {kRuntimeMutableFeatureEnumParam.name, "second"},
+        }));
     feature_list->RegisterFieldTrialOverride(
         kRuntimeMutableFeature.name, FeatureList::OVERRIDE_ENABLE_FEATURE,
         trial.get());
@@ -1734,6 +1743,7 @@ TEST_F(FeatureListTest, RuntimeMutability_FeatureParamBypassCache) {
   // The overridden enabled state and overridden param should be reflected.
   EXPECT_TRUE(FeatureList::IsEnabled(kRuntimeMutableFeature));
   EXPECT_EQ(99999, kRuntimeMutableFeatureParam.Get());
+  EXPECT_EQ(TestEnum::kSecond, kRuntimeMutableFeatureEnumParam.Get());
 
   // Update parameters/configuration.
   auto update =
@@ -1750,6 +1760,7 @@ TEST_F(FeatureListTest, RuntimeMutability_FeatureParamBypassCache) {
   // reflected.
   EXPECT_FALSE(FeatureList::IsEnabled(kRuntimeMutableFeature));
   EXPECT_EQ(12345, kRuntimeMutableFeatureParam.Get());
+  EXPECT_EQ(TestEnum::kFirst, kRuntimeMutableFeatureEnumParam.Get());
 
   // The runtime mutability interactions should be logged.
   histogram_tester.ExpectUniqueSample(kRuntimeMutabilityResult,
