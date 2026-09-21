@@ -797,7 +797,7 @@ TEST_P(BaseGridMediatorTest, SelectedTabAndGroupWithGroup) {
   EXPECT_FALSE(configuration.closeAllButton);
   EXPECT_FALSE(configuration.newTabButton);
   EXPECT_FALSE(configuration.searchButton);
-  EXPECT_FALSE(configuration.searchButtonHidden);
+  EXPECT_TRUE(configuration.searchButtonHidden);
   EXPECT_FALSE(configuration.selectTabsButton);
   EXPECT_FALSE(configuration.deselectAllButton);
   EXPECT_FALSE(configuration.cancelSearchButton);

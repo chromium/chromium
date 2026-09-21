@@ -92,6 +92,7 @@ CGFloat HorizontalMargin() {
   BOOL _selectTabsActionEnabled;
   BOOL _closeAllActionEnabled;
   BOOL _closeOtherTabsEnabled;
+  BOOL _searchButtonHidden;
 
   BOOL _scrolledToEdge;
   TabGridToolbarBackground* _backgroundView;
@@ -184,6 +185,13 @@ CGFloat HorizontalMargin() {
 }
 
 - (void)setSearchButtonHidden:(BOOL)hidden {
+  // Store the hidden state from the mediator to ensure the correct value is
+  // applied to `_searchButton.hidden` on trait changes.
+  _searchButtonHidden = hidden;
+  if (_mode != TabGridMode::kNormal) {
+    _searchButton.hidden = YES;
+    return;
+  }
   _searchButton.hidden = hidden;
 }
 
@@ -441,7 +449,7 @@ CGFloat HorizontalMargin() {
       case TabGridMode::kNormal:
         _searchFirstConstraint.active = YES;
         _pageActionMenuEntrypointFirstConstraint.active = YES;
-        _searchButton.hidden = NO;
+        _searchButton.hidden = _searchButtonHidden;
         _pageControl.hidden = NO;
         if (self.page == TabGridPageTabGroups) {
           _overflowMenuButton.hidden = YES;
@@ -472,7 +480,7 @@ CGFloat HorizontalMargin() {
           _overflowMenuBeforeDoneConstraint.active = YES;
         }
         _pageActionMenuEntrypointBeforeDoneConstraint.active = YES;
-        _searchButton.hidden = NO;
+        _searchButton.hidden = _searchButtonHidden;
         _pageControl.hidden = NO;
         BOOL appBarAvailable =
             self.layoutState.appBarPosition != AppBarPosition::kNone;
