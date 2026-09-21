@@ -131,7 +131,6 @@ suite('ContextualTasksComposeboxTest', () => {
     mockTimer = new MockTimer();
 
     loadTimeData.overrideValues({
-      useContextualTasksComposeboxFork: false,
       contextualMenuUsePecApi: false,
       composeboxSmartTabSharingVisible: false,
       contextManagementInComposeboxEnabled: false,
@@ -1069,7 +1068,7 @@ suite('ContextualTasksComposeboxTest', () => {
   });
 
   test('DoesNotAutoSuggestTabIfAlreadyInAimThreadRestoredTabs', async () => {
-    const {innerComposebox} = await createCtComposeboxApp(/*useFork=*/ true);
+    const {innerComposebox} = await createCtComposeboxApp();
     innerComposebox.contextManagementInComposeboxEnabled = true;
 
     const restoredTab = {
@@ -1289,1087 +1288,978 @@ suite('ContextualTasksComposeboxTest', () => {
 });
 
 // =============================================================================
-// Fork DUAL-PATH SMOKE SUITE
-// Infrastructure-only coverage: verifies the wrapper's
-// `useContextualTasksComposeboxFork` ternary picks the right inner element
-// and that wrapper-teplate bindings reach the inner element at mount, on both
-// paths. The fork is a smoke skeleton, so nothing here may depend on
-// fork-specific inner composebox behavior.
+// Fork SMOKE SUITE
 // =============================================================================
-[true, false].forEach(useFork => {
-  suite(
-      'ContextualTasksComposeboxForkSmokeTest ' +
-          `(useContextualTasksComposeboxFork = ${useFork})`,
-      () => {
-        let testProxy: TestContextualTasksBrowserProxy;
-        let mockComposeboxPageHandler: TestMock<ComposeboxPageHandlerRemote>&
-            ComposeboxPageHandlerRemote;
-        let mockSearchboxPageHandler: TestMock<SearchboxPageHandlerRemote>&
-            SearchboxPageHandlerRemote;
-        let parts: CtComposeboxAppParts;
+suite('ContextualTasksComposeboxForkSmokeTest', () => {
+  let testProxy: TestContextualTasksBrowserProxy;
+  let mockComposeboxPageHandler: TestMock<ComposeboxPageHandlerRemote>&
+      ComposeboxPageHandlerRemote;
+  let mockSearchboxPageHandler: TestMock<SearchboxPageHandlerRemote>&
+      SearchboxPageHandlerRemote;
+  let parts: CtComposeboxAppParts;
 
-        setup(async () => {
-          if (!window.chrome) {
-            Object.assign(window, {chrome: {}});
-          }
+  setup(async () => {
+    if (!window.chrome) {
+      Object.assign(window, {chrome: {}});
+    }
 
-          if (!window.chrome.histograms) {
-            Object.assign(window.chrome, {
-              histograms: {
-                recordEnumerationValue: () => {},
-                recordUserAction: () => {},
-                recordBoolean: () => {},
-              },
-            });
-          }
-          document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
-          loadTimeData.overrideValues({
-            contextualMenuUsePecApi: false,
-            composeboxSmartTabSharingVisible: false,
-            enableComposeboxJumpFix: false,
-            composeboxShowTypedSuggest: true,
-            composeboxShowZps: true,
-            enableBasicModeZOrder: true,
-            composeboxShowContextMenu: true,
-            forcedEmbeddedPageHost: '',
-            tabFaviconChipsToCoinsEnabled: false,
-          });
-
-          testProxy = new TestContextualTasksBrowserProxy(fixtureUrl);
-          BrowserProxyImpl.setInstance(testProxy);
-
-          mockComposeboxPageHandler =
-              TestMock.fromClass(ComposeboxPageHandlerRemote);
-          mockComposeboxPageHandler.setResultFor(
-              'canShowNextboxAnimation', Promise.resolve({canShow: true}));
-          mockSearchboxPageHandler =
-              TestMock.fromClass(SearchboxPageHandlerRemote);
-          // <if expr="not is_android">
-          mockComposeboxPageHandler.setResultFor(
-              'getSmartTabSharingActive', Promise.resolve({active: false}));
-          // </if>
-          mockSearchboxPageHandler.setResultFor(
-              'getRecentTabs', Promise.resolve({tabs: []}));
-          mockSearchboxPageHandler.setResultFor(
-              'getPageClassification',
-              Promise.resolve({metricSource: 'CO_BROWSING_COMPOSEBOX'}));
-          mockSearchboxPageHandler.setResultFor(
-              'addTabContext',
-              Promise.resolve({high: BigInt(1), low: BigInt(2)}));
-          mockSearchboxPageHandler.setResultFor(
-              'getInputState', Promise.resolve({state: new MockInputState()}));
-          const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
-          searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
-          ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
-              mockComposeboxPageHandler, mockSearchboxPageHandler,
-              searchboxCallbackRouter));
-
-          parts = await createCtComposeboxApp(useFork);
-        });
-
-        test('flag selects the expected inner composebox element', () => {
-          const {wrapper, innerComposebox} = parts;
-          assertEquals(
-              useFork ? 'CONTEXTUAL-TASKS-INNER-COMPOSEBOX' : 'CR-COMPOSEBOX',
-              innerComposebox.tagName);
-          assertEquals('composebox', innerComposebox.id);
-          assertEquals(
-            innerComposebox,
-            wrapper.shadowRoot.querySelector('#composebox'));
-        });
-
-        test('inner composebox does not query zps on initial mount', () => {
-          const {innerComposebox} = parts;
-          // The wrapper template binds `.queryZpsOnLoad="${false}"`, so the
-          // mount in setup() must not blindly query zps in connectedCallback.
-          assertFalse(innerComposebox.queryZpsOnLoad);
-          assertEquals(
-              0, mockSearchboxPageHandler.getCallCount('queryAutocomplete'));
-        });
-
-        test('wrapper tracks focus state from inner composebox events',
-             async () => {
-               const {wrapper, innerComposebox} = parts;
-
-               innerComposebox.dispatchEvent(
-                   new CustomEvent('composebox-focus-in'));
-               await microtasksFinished();
-               assertTrue(wrapper.isComposeboxFocusedForTesting);
-
-               innerComposebox.dispatchEvent(
-                   new CustomEvent('composebox-focus-out'));
-               await microtasksFinished();
-               assertFalse(wrapper.isComposeboxFocusedForTesting);
-        });
+    if (!window.chrome.histograms) {
+      Object.assign(window.chrome, {
+        histograms: {
+          recordEnumerationValue: () => {},
+          recordUserAction: () => {},
+          recordBoolean: () => {},
+        },
       });
+    }
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    loadTimeData.overrideValues({
+      contextualMenuUsePecApi: false,
+      composeboxSmartTabSharingVisible: false,
+      enableComposeboxJumpFix: false,
+      composeboxShowTypedSuggest: true,
+      composeboxShowZps: true,
+      enableBasicModeZOrder: true,
+      composeboxShowContextMenu: true,
+      forcedEmbeddedPageHost: '',
+      tabFaviconChipsToCoinsEnabled: false,
+    });
+
+    testProxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+    BrowserProxyImpl.setInstance(testProxy);
+
+    mockComposeboxPageHandler = TestMock.fromClass(ComposeboxPageHandlerRemote);
+    mockComposeboxPageHandler.setResultFor(
+        'canShowNextboxAnimation', Promise.resolve({canShow: true}));
+    mockSearchboxPageHandler = TestMock.fromClass(SearchboxPageHandlerRemote);
+    // <if expr="not is_android">
+    mockComposeboxPageHandler.setResultFor(
+        'getSmartTabSharingActive', Promise.resolve({active: false}));
+    // </if>
+    mockSearchboxPageHandler.setResultFor(
+        'getRecentTabs', Promise.resolve({tabs: []}));
+    mockSearchboxPageHandler.setResultFor(
+        'getPageClassification',
+        Promise.resolve({metricSource: 'CO_BROWSING_COMPOSEBOX'}));
+    mockSearchboxPageHandler.setResultFor(
+        'addTabContext', Promise.resolve({high: BigInt(1), low: BigInt(2)}));
+    mockSearchboxPageHandler.setResultFor(
+        'getInputState', Promise.resolve({state: new MockInputState()}));
+    const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
+    searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
+    ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
+        mockComposeboxPageHandler, mockSearchboxPageHandler,
+        searchboxCallbackRouter));
+
+    parts = await createCtComposeboxApp();
+  });
+
+  test('renders the expected inner composebox element', () => {
+    const {wrapper, innerComposebox} = parts;
+    assertEquals('CONTEXTUAL-TASKS-INNER-COMPOSEBOX', innerComposebox.tagName);
+    assertEquals('composebox', innerComposebox.id);
+    assertEquals(
+        innerComposebox, wrapper.shadowRoot.querySelector('#composebox'));
+  });
+
+  test('inner composebox does not query zps on initial mount', () => {
+    const {innerComposebox} = parts;
+    // The wrapper template binds `.queryZpsOnLoad="${false}"`, so the
+    // mount in setup() must not blindly query zps in connectedCallback.
+    assertFalse(innerComposebox.queryZpsOnLoad);
+    assertEquals(0, mockSearchboxPageHandler.getCallCount('queryAutocomplete'));
+  });
+
+  test('wrapper tracks focus state from inner composebox events', async () => {
+    const {wrapper, innerComposebox} = parts;
+
+    innerComposebox.dispatchEvent(new CustomEvent('composebox-focus-in'));
+    await microtasksFinished();
+    assertTrue(wrapper.isComposeboxFocusedForTesting);
+
+    innerComposebox.dispatchEvent(new CustomEvent('composebox-focus-out'));
+    await microtasksFinished();
+    assertFalse(wrapper.isComposeboxFocusedForTesting);
+  });
 });
 
 // =============================================================================
-// Fork DUAL-PATH BASIC INPUT/SUBMIT/CLEAR SUITE
-// Basic input, submit, and clear behavior is implemented by both the legacy
-// <cr-composebox> and the <contextual-tasks-inner-composebox>, so these tests
-// run on both paths. Tests depending on behavior the fork does not implement
-// yet (selected-match submit, dropdown/result-changed, files, ...) stay
-// in the flag-off suites above.
+// Fork BASIC INPUT/SUBMIT/CLEAR SUITE
 // =============================================================================
-[true, false].forEach(useFork => {
-  suite(
-      'ContextualTasksComposeboxForkBasicInputTest ' +
-          `(useContextualTasksComposeboxFork = ${useFork})`,
-      () => {
-        let testProxy: TestContextualTasksBrowserProxy;
-        let mockComposeboxPageHandler: TestMock<ComposeboxPageHandlerRemote>&
-            ComposeboxPageHandlerRemote;
-        let mockSearchboxPageHandler: TestMock<SearchboxPageHandlerRemote>&
-            SearchboxPageHandlerRemote;
-        let parts: CtComposeboxAppParts;
+suite('ContextualTasksComposeboxForkBasicInputTest', () => {
+  let testProxy: TestContextualTasksBrowserProxy;
+  let mockComposeboxPageHandler: TestMock<ComposeboxPageHandlerRemote>&
+      ComposeboxPageHandlerRemote;
+  let mockSearchboxPageHandler: TestMock<SearchboxPageHandlerRemote>&
+      SearchboxPageHandlerRemote;
+  let parts: CtComposeboxAppParts;
 
-        setup(async () => {
-          if (!window.chrome) {
-            Object.assign(window, {chrome: {}});
-          }
+  setup(async () => {
+    if (!window.chrome) {
+      Object.assign(window, {chrome: {}});
+    }
 
-          if (!window.chrome.histograms) {
-            Object.assign(window.chrome, {
-              histograms: {
-                recordEnumerationValue: () => {},
-                recordUserAction: () => {},
-                recordBoolean: () => {},
-              },
-            });
-          }
-          document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
-          loadTimeData.overrideValues({
-            contextualMenuUsePecApi: false,
-            composeboxSmartTabSharingVisible: false,
-            enableComposeboxJumpFix: false,
-            composeboxShowTypedSuggest: true,
-            composeboxShowZps: true,
-            enableBasicModeZOrder: true,
-            composeboxShowContextMenu: true,
-            composeboxHintTextLensOverlay: 'Test Lens Hint',
-            forcedEmbeddedPageHost: '',
-            tabFaviconChipsToCoinsEnabled: false,
-          });
-
-          testProxy = new TestContextualTasksBrowserProxy(fixtureUrl);
-          BrowserProxyImpl.setInstance(testProxy);
-
-          mockComposeboxPageHandler =
-              TestMock.fromClass(ComposeboxPageHandlerRemote);
-          mockComposeboxPageHandler.setResultFor(
-              'canShowNextboxAnimation', Promise.resolve({canShow: true}));
-          mockSearchboxPageHandler =
-              TestMock.fromClass(SearchboxPageHandlerRemote);
-          // <if expr="not is_android">
-          mockComposeboxPageHandler.setResultFor(
-              'getSmartTabSharingActive', Promise.resolve({active: false}));
-          // </if>
-          mockSearchboxPageHandler.setResultFor(
-              'getRecentTabs', Promise.resolve({tabs: []}));
-          mockSearchboxPageHandler.setResultFor(
-              'getPageClassification',
-              Promise.resolve({metricSource: 'CO_BROWSING_COMPOSEBOX'}));
-          mockSearchboxPageHandler.setResultFor(
-              'addTabContext',
-              Promise.resolve({high: BigInt(1), low: BigInt(2)}));
-          mockSearchboxPageHandler.setResultFor(
-              'getInputState', Promise.resolve({state: new MockInputState()}));
-          const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
-          searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
-          ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
-              mockComposeboxPageHandler, mockSearchboxPageHandler,
-              searchboxCallbackRouter));
-
-          parts = await createCtComposeboxApp(useFork);
-        });
-
-        test('EnterKeyOnEmptyInputDoesNotAddNewLineOrSubmit', async () => {
-          const {innerComposebox} = parts;
-          const inputElement = innerComposebox.getInputElement().$.input;
-          const keydownDiv =
-              innerComposebox.shadowRoot.querySelector<HTMLElement>(
-                  '#composebox');
-          assertTrue(keydownDiv !== null);
-
-          assertEquals('', getInputValue(inputElement));
-          mockSearchboxPageHandler.reset();
-
-          // Action: Press Enter on empty input.
-          pressEnter(keydownDiv);
-          await microtasksFinished();
-
-          // Assert: No newline and no submission.
-          assertFalse(getInputValue(inputElement).includes('\n'));
-          assertEquals(0, mockSearchboxPageHandler.getCallCount('submitQuery'));
-        });
-
-        test(
-            'cancel button click clears input without submitting', async () => {
-              const {innerComposebox} = parts;
-              const inputElement = innerComposebox.getInputElement().$.input;
-              const cancelIcon = innerComposebox.getInputElement().$.cancelIcon;
-
-              // Type text so the composebox has content; with content present,
-              // cancel clears the input instead of closing the composebox.
-              simulateUserInput(inputElement, 'test query');
-              await innerComposebox.updateComplete;
-              assertEquals('test query', innerComposebox.input);
-
-              // Reset so setup / initial ZPS calls do not pollute the counts
-              // below.
-              mockSearchboxPageHandler.reset();
-
-              cancelIcon.click();
-              await innerComposebox.updateComplete;
-              await innerComposebox.getInputElement().updateComplete;
-
-              // Cancel clears the input and its uploaded files, but never
-              // submits.
-              assertEquals('', innerComposebox.input);
-              assertEquals('', getInputValue(inputElement));
-              assertEquals(
-                  0, mockSearchboxPageHandler.getCallCount('submitQuery'));
-              assertEquals(
-                  1, mockSearchboxPageHandler.getCallCount('clearFiles'));
-            });
-
-        test('lens overlay showing updates placeholder', async () => {
-          const {wrapper, innerComposebox} = parts;
-          const inputElement = innerComposebox.getInputElement().$.input;
-
-          // Initially false, placeholder override should be empty.
-          assertFalse(wrapper.isOverlayOpenForAimVisualSearch);
-          await wrapper.updateComplete;
-          await innerComposebox.updateComplete;
-          assertEquals('', innerComposebox.inputPlaceholderOverride);
-
-          const initialPlaceholder = inputElement.getAttribute('placeholder');
-
-          // Set to true.
-          wrapper.isOverlayOpenForAimVisualSearch = true;
-          await wrapper.updateComplete;
-          await innerComposebox.updateComplete;
-
-          assertTrue(wrapper.isOverlayOpenForAimVisualSearch);
-          assertEquals(
-              'Test Lens Hint', innerComposebox.inputPlaceholderOverride);
-          assertEquals(
-              'Test Lens Hint', inputElement.getAttribute('placeholder'));
-
-          // Set back to false.
-          wrapper.isOverlayOpenForAimVisualSearch = false;
-          await wrapper.updateComplete;
-          await innerComposebox.updateComplete;
-
-          assertFalse(wrapper.isOverlayOpenForAimVisualSearch);
-          assertEquals('', innerComposebox.inputPlaceholderOverride);
-          assertEquals(
-              initialPlaceholder, inputElement.getAttribute('placeholder'));
-        });
-
-        test('ClearInputAndFocusClearsMatchesOnSubmit', () => {
-          const {wrapper, innerComposebox} = parts;
-
-          let clearAutocompleteMatchesCallCount = 0;
-          let queryAutocompleteCallCount = 0;
-
-          innerComposebox.clearAutocompleteMatches = () => {
-            clearAutocompleteMatchesCallCount++;
-          };
-
-          innerComposebox.queryAutocomplete = () => {
-            queryAutocompleteCallCount++;
-          };
-
-          wrapper.isZeroState = true;
-          wrapper.clearInputAndFocus(true);
-          assertEquals(
-              1, clearAutocompleteMatchesCallCount,
-              'querySubmitted = true should clear matches');
-          assertEquals(
-              0, queryAutocompleteCallCount,
-              'querySubmitted = true should not query');
-        });
-
-        test('ClearInputAndFocusClearsMatchesWhenNotZeroState', () => {
-          const {wrapper, innerComposebox} = parts;
-
-          let clearAutocompleteMatchesCallCount = 0;
-          let queryAutocompleteCallCount = 0;
-
-          innerComposebox.clearAutocompleteMatches = () => {
-            clearAutocompleteMatchesCallCount++;
-          };
-
-          innerComposebox.queryAutocomplete = () => {
-            queryAutocompleteCallCount++;
-          };
-
-          wrapper.isZeroState = false;
-          wrapper.clearInputAndFocus(false);
-          assertEquals(
-              1, clearAutocompleteMatchesCallCount,
-              'isZeroState = false should clear matches');
-          assertEquals(
-              0, queryAutocompleteCallCount,
-              'isZeroState = false should not query');
-        });
-
-        test('ClearInputAndFocusIgnoresEmptyZeroState', () => {
-          const {wrapper, innerComposebox} = parts;
-
-          let clearAutocompleteMatchesCallCount = 0;
-          let queryAutocompleteCallCount = 0;
-
-          wrapper.isZeroState = true;
-          simulateUserInput(innerComposebox.getInputElement().$.input, '');
-
-          innerComposebox.clearAutocompleteMatches = () => {
-            clearAutocompleteMatchesCallCount++;
-          };
-
-          innerComposebox.queryAutocomplete = () => {
-            queryAutocompleteCallCount++;
-          };
-
-          wrapper.clearInputAndFocus(false);
-          assertEquals(
-              0, clearAutocompleteMatchesCallCount,
-              'hadContent = false should not clear matches');
-          assertEquals(
-              0, queryAutocompleteCallCount,
-              'hadContent = false should not query');
-        });
-
-        test('ClearInputAndFocusQueriesZeroStateWithText', () => {
-          const {wrapper, innerComposebox} = parts;
-
-          let clearAutocompleteMatchesCallCount = 0;
-          let queryAutocompleteCallCount = 0;
-          let queryAutocompleteClearMatchesArg = false;
-
-          innerComposebox.clearAutocompleteMatches = () => {
-            clearAutocompleteMatchesCallCount++;
-          };
-
-          innerComposebox.queryAutocomplete = (clearMatches: boolean) => {
-            queryAutocompleteCallCount++;
-            queryAutocompleteClearMatchesArg = clearMatches;
-          };
-
-          wrapper.isZeroState = true;
-          innerComposebox.input = 'test';
-          wrapper.clearInputAndFocus(false);
-          assertEquals(
-              0, clearAutocompleteMatchesCallCount,
-              'hadContent = true should not clear matches');
-          assertEquals(
-              1, queryAutocompleteCallCount, 'hadContent = true should query');
-          assertTrue(
-              queryAutocompleteClearMatchesArg,
-              'should pass clearMatches = true');
-        });
-
-        test('ClearInputAndFocusQueriesZeroStateWithFiles', () => {
-          const {wrapper, innerComposebox} = parts;
-
-          let clearAutocompleteMatchesCallCount = 0;
-          let queryAutocompleteCallCount = 0;
-          let queryAutocompleteClearMatchesArg = false;
-
-          innerComposebox.clearAutocompleteMatches = () => {
-            clearAutocompleteMatchesCallCount++;
-          };
-
-          innerComposebox.queryAutocomplete = (clearMatches: boolean) => {
-            queryAutocompleteCallCount++;
-            queryAutocompleteClearMatchesArg = clearMatches;
-          };
-
-          wrapper.isZeroState = true;
-          innerComposebox.input = '';
-          innerComposebox.hasFiles = () => true;
-          wrapper.clearInputAndFocus(false);
-          assertEquals(
-              0, clearAutocompleteMatchesCallCount,
-              'hadContent = true (files) should not clear matches');
-          assertEquals(
-              1, queryAutocompleteCallCount,
-              'hadContent = true (files) should query');
-          assertTrue(
-              queryAutocompleteClearMatchesArg,
-              'should pass clearMatches = true');
-        });
-
-        test('clear-smart-compose event clears the inline hint', () => {
-          const {innerComposebox} = parts;
-          innerComposebox.smartComposeInlineHint = 'test hint';
-          innerComposebox.getInputElement().dispatchEvent(
-              new CustomEvent('clear-smart-compose'));
-          assertEquals('', innerComposebox.smartComposeInlineHint);
-        });
+    if (!window.chrome.histograms) {
+      Object.assign(window.chrome, {
+        histograms: {
+          recordEnumerationValue: () => {},
+          recordUserAction: () => {},
+          recordBoolean: () => {},
+        },
       });
+    }
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    loadTimeData.overrideValues({
+      contextualMenuUsePecApi: false,
+      composeboxSmartTabSharingVisible: false,
+      enableComposeboxJumpFix: false,
+      composeboxShowTypedSuggest: true,
+      composeboxShowZps: true,
+      enableBasicModeZOrder: true,
+      composeboxShowContextMenu: true,
+      composeboxHintTextLensOverlay: 'Test Lens Hint',
+      forcedEmbeddedPageHost: '',
+      tabFaviconChipsToCoinsEnabled: false,
+    });
+
+    testProxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+    BrowserProxyImpl.setInstance(testProxy);
+
+    mockComposeboxPageHandler = TestMock.fromClass(ComposeboxPageHandlerRemote);
+    mockComposeboxPageHandler.setResultFor(
+        'canShowNextboxAnimation', Promise.resolve({canShow: true}));
+    mockSearchboxPageHandler = TestMock.fromClass(SearchboxPageHandlerRemote);
+    // <if expr="not is_android">
+    mockComposeboxPageHandler.setResultFor(
+        'getSmartTabSharingActive', Promise.resolve({active: false}));
+    // </if>
+    mockSearchboxPageHandler.setResultFor(
+        'getRecentTabs', Promise.resolve({tabs: []}));
+    mockSearchboxPageHandler.setResultFor(
+        'getPageClassification',
+        Promise.resolve({metricSource: 'CO_BROWSING_COMPOSEBOX'}));
+    mockSearchboxPageHandler.setResultFor(
+        'addTabContext', Promise.resolve({high: BigInt(1), low: BigInt(2)}));
+    mockSearchboxPageHandler.setResultFor(
+        'getInputState', Promise.resolve({state: new MockInputState()}));
+    const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
+    searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
+    ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
+        mockComposeboxPageHandler, mockSearchboxPageHandler,
+        searchboxCallbackRouter));
+
+    parts = await createCtComposeboxApp();
+  });
+
+  test('EnterKeyOnEmptyInputDoesNotAddNewLineOrSubmit', async () => {
+    const {innerComposebox} = parts;
+    const inputElement = innerComposebox.getInputElement().$.input;
+    const keydownDiv =
+        innerComposebox.shadowRoot.querySelector<HTMLElement>('#composebox');
+    assertTrue(keydownDiv !== null);
+
+    assertEquals('', getInputValue(inputElement));
+    mockSearchboxPageHandler.reset();
+
+    // Action: Press Enter on empty input.
+    pressEnter(keydownDiv);
+    await microtasksFinished();
+
+    // Assert: No newline and no submission.
+    assertFalse(getInputValue(inputElement).includes('\n'));
+    assertEquals(0, mockSearchboxPageHandler.getCallCount('submitQuery'));
+  });
+
+  test('cancel button click clears input without submitting', async () => {
+    const {innerComposebox} = parts;
+    const inputElement = innerComposebox.getInputElement().$.input;
+    const cancelIcon = innerComposebox.getInputElement().$.cancelIcon;
+
+    // Type text so the composebox has content; with content present,
+    // cancel clears the input instead of closing the composebox.
+    simulateUserInput(inputElement, 'test query');
+    await innerComposebox.updateComplete;
+    assertEquals('test query', innerComposebox.input);
+
+    // Reset so setup / initial ZPS calls do not pollute the counts
+    // below.
+    mockSearchboxPageHandler.reset();
+
+    cancelIcon.click();
+    await innerComposebox.updateComplete;
+    await innerComposebox.getInputElement().updateComplete;
+
+    // Cancel clears the input and its uploaded files, but never
+    // submits.
+    assertEquals('', innerComposebox.input);
+    assertEquals('', getInputValue(inputElement));
+    assertEquals(0, mockSearchboxPageHandler.getCallCount('submitQuery'));
+    assertEquals(1, mockSearchboxPageHandler.getCallCount('clearFiles'));
+  });
+
+  test('lens overlay showing updates placeholder', async () => {
+    const {wrapper, innerComposebox} = parts;
+    const inputElement = innerComposebox.getInputElement().$.input;
+
+    // Initially false, placeholder override should be empty.
+    assertFalse(wrapper.isOverlayOpenForAimVisualSearch);
+    await wrapper.updateComplete;
+    await innerComposebox.updateComplete;
+    assertEquals('', innerComposebox.inputPlaceholderOverride);
+
+    const initialPlaceholder = inputElement.getAttribute('placeholder');
+
+    // Set to true.
+    wrapper.isOverlayOpenForAimVisualSearch = true;
+    await wrapper.updateComplete;
+    await innerComposebox.updateComplete;
+
+    assertTrue(wrapper.isOverlayOpenForAimVisualSearch);
+    assertEquals('Test Lens Hint', innerComposebox.inputPlaceholderOverride);
+    assertEquals('Test Lens Hint', inputElement.getAttribute('placeholder'));
+
+    // Set back to false.
+    wrapper.isOverlayOpenForAimVisualSearch = false;
+    await wrapper.updateComplete;
+    await innerComposebox.updateComplete;
+
+    assertFalse(wrapper.isOverlayOpenForAimVisualSearch);
+    assertEquals('', innerComposebox.inputPlaceholderOverride);
+    assertEquals(initialPlaceholder, inputElement.getAttribute('placeholder'));
+  });
+
+  test('ClearInputAndFocusClearsMatchesOnSubmit', () => {
+    const {wrapper, innerComposebox} = parts;
+
+    let clearAutocompleteMatchesCallCount = 0;
+    let queryAutocompleteCallCount = 0;
+
+    innerComposebox.clearAutocompleteMatches = () => {
+      clearAutocompleteMatchesCallCount++;
+    };
+
+    innerComposebox.queryAutocomplete = () => {
+      queryAutocompleteCallCount++;
+    };
+
+    wrapper.isZeroState = true;
+    wrapper.clearInputAndFocus(true);
+    assertEquals(
+        1, clearAutocompleteMatchesCallCount,
+        'querySubmitted = true should clear matches');
+    assertEquals(
+        0, queryAutocompleteCallCount,
+        'querySubmitted = true should not query');
+  });
+
+  test('ClearInputAndFocusClearsMatchesWhenNotZeroState', () => {
+    const {wrapper, innerComposebox} = parts;
+
+    let clearAutocompleteMatchesCallCount = 0;
+    let queryAutocompleteCallCount = 0;
+
+    innerComposebox.clearAutocompleteMatches = () => {
+      clearAutocompleteMatchesCallCount++;
+    };
+
+    innerComposebox.queryAutocomplete = () => {
+      queryAutocompleteCallCount++;
+    };
+
+    wrapper.isZeroState = false;
+    wrapper.clearInputAndFocus(false);
+    assertEquals(
+        1, clearAutocompleteMatchesCallCount,
+        'isZeroState = false should clear matches');
+    assertEquals(
+        0, queryAutocompleteCallCount, 'isZeroState = false should not query');
+  });
+
+  test('ClearInputAndFocusIgnoresEmptyZeroState', () => {
+    const {wrapper, innerComposebox} = parts;
+
+    let clearAutocompleteMatchesCallCount = 0;
+    let queryAutocompleteCallCount = 0;
+
+    wrapper.isZeroState = true;
+    simulateUserInput(innerComposebox.getInputElement().$.input, '');
+
+    innerComposebox.clearAutocompleteMatches = () => {
+      clearAutocompleteMatchesCallCount++;
+    };
+
+    innerComposebox.queryAutocomplete = () => {
+      queryAutocompleteCallCount++;
+    };
+
+    wrapper.clearInputAndFocus(false);
+    assertEquals(
+        0, clearAutocompleteMatchesCallCount,
+        'hadContent = false should not clear matches');
+    assertEquals(
+        0, queryAutocompleteCallCount, 'hadContent = false should not query');
+  });
+
+  test('ClearInputAndFocusQueriesZeroStateWithText', () => {
+    const {wrapper, innerComposebox} = parts;
+
+    let clearAutocompleteMatchesCallCount = 0;
+    let queryAutocompleteCallCount = 0;
+    let queryAutocompleteClearMatchesArg = false;
+
+    innerComposebox.clearAutocompleteMatches = () => {
+      clearAutocompleteMatchesCallCount++;
+    };
+
+    innerComposebox.queryAutocomplete = (clearMatches: boolean) => {
+      queryAutocompleteCallCount++;
+      queryAutocompleteClearMatchesArg = clearMatches;
+    };
+
+    wrapper.isZeroState = true;
+    innerComposebox.input = 'test';
+    wrapper.clearInputAndFocus(false);
+    assertEquals(
+        0, clearAutocompleteMatchesCallCount,
+        'hadContent = true should not clear matches');
+    assertEquals(
+        1, queryAutocompleteCallCount, 'hadContent = true should query');
+    assertTrue(
+        queryAutocompleteClearMatchesArg, 'should pass clearMatches = true');
+  });
+
+  test('ClearInputAndFocusQueriesZeroStateWithFiles', () => {
+    const {wrapper, innerComposebox} = parts;
+
+    let clearAutocompleteMatchesCallCount = 0;
+    let queryAutocompleteCallCount = 0;
+    let queryAutocompleteClearMatchesArg = false;
+
+    innerComposebox.clearAutocompleteMatches = () => {
+      clearAutocompleteMatchesCallCount++;
+    };
+
+    innerComposebox.queryAutocomplete = (clearMatches: boolean) => {
+      queryAutocompleteCallCount++;
+      queryAutocompleteClearMatchesArg = clearMatches;
+    };
+
+    wrapper.isZeroState = true;
+    innerComposebox.input = '';
+    innerComposebox.hasFiles = () => true;
+    wrapper.clearInputAndFocus(false);
+    assertEquals(
+        0, clearAutocompleteMatchesCallCount,
+        'hadContent = true (files) should not clear matches');
+    assertEquals(
+        1, queryAutocompleteCallCount,
+        'hadContent = true (files) should query');
+    assertTrue(
+        queryAutocompleteClearMatchesArg, 'should pass clearMatches = true');
+  });
+
+  test('clear-smart-compose event clears the inline hint', () => {
+    const {innerComposebox} = parts;
+    innerComposebox.smartComposeInlineHint = 'test hint';
+    innerComposebox.getInputElement().dispatchEvent(
+        new CustomEvent('clear-smart-compose'));
+    assertEquals('', innerComposebox.smartComposeInlineHint);
+  });
 });
 
 // =============================================================================
-// Fork DUAL-PATH DROPDOWN / RESULT-CHANGED / SUGGESTION-ACTIVITY SUITE
-// The fork forwards autocomplete results to the wrapper via `result-changed`
-// and signals the suggestion-activity link via `show-suggestion-activity-link`,
-// matching the legacy <cr-composebox>, so these tests run on both paths.
+// Fork DROPDOWN / RESULT-CHANGED / SUGGESTION-ACTIVITY SUITE
 // =============================================================================
-[true, false].forEach(useFork => {
-  suite(
-      'ContextualTasksComposeboxForkDropdownTest ' +
-          `(useContextualTasksComposeboxFork = ${useFork})`,
-      () => {
-        let mockComposeboxPageHandler: TestMock<ComposeboxPageHandlerRemote>&
-            ComposeboxPageHandlerRemote;
-        let mockSearchboxPageHandler: TestMock<SearchboxPageHandlerRemote>&
-            SearchboxPageHandlerRemote;
-        let searchboxCallbackRouterRemote: SearchboxPageRemote;
-        let mockTimer: MockTimer;
-        let parts: CtComposeboxAppParts;
+suite('ContextualTasksComposeboxForkDropdownTest', () => {
+  let mockComposeboxPageHandler: TestMock<ComposeboxPageHandlerRemote>&
+      ComposeboxPageHandlerRemote;
+  let mockSearchboxPageHandler: TestMock<SearchboxPageHandlerRemote>&
+      SearchboxPageHandlerRemote;
+  let searchboxCallbackRouterRemote: SearchboxPageRemote;
+  let mockTimer: MockTimer;
+  let parts: CtComposeboxAppParts;
 
-        setup(async () => {
-          if (!window.chrome) {
-            Object.assign(window, {chrome: {}});
-          }
-          if (!window.chrome.histograms) {
-            Object.assign(window.chrome, {
-              histograms: {
-                recordEnumerationValue: () => {},
-                recordUserAction: () => {},
-                recordBoolean: () => {},
-              },
-            });
-          }
-          document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
-          mockTimer = new MockTimer();
-
-          loadTimeData.overrideValues({
-            contextualMenuUsePecApi: false,
-            composeboxSmartTabSharingVisible: false,
-            enableComposeboxJumpFix: false,
-            composeboxShowTypedSuggest: true,
-            composeboxShowZps: true,
-            enableBasicModeZOrder: true,
-            composeboxShowContextMenu: true,
-            composeboxHintTextLensOverlay: 'Test Lens Hint',
-            forcedEmbeddedPageHost: '',
-            tabFaviconChipsToCoinsEnabled: false,
-          });
-
-          const testProxy = new TestContextualTasksBrowserProxy(fixtureUrl);
-          BrowserProxyImpl.setInstance(testProxy);
-
-          mockComposeboxPageHandler =
-              TestMock.fromClass(ComposeboxPageHandlerRemote);
-          mockComposeboxPageHandler.setResultFor(
-              'canShowNextboxAnimation', Promise.resolve({canShow: true}));
-          mockSearchboxPageHandler =
-              TestMock.fromClass(SearchboxPageHandlerRemote);
-          // <if expr="not is_android">
-          mockComposeboxPageHandler.setResultFor(
-              'getSmartTabSharingActive', Promise.resolve({active: false}));
-          // </if>
-          mockSearchboxPageHandler.setResultFor(
-              'getRecentTabs', Promise.resolve({tabs: []}));
-          mockSearchboxPageHandler.setResultFor(
-              'getPageClassification',
-              Promise.resolve({metricSource: 'CO_BROWSING_COMPOSEBOX'}));
-          mockSearchboxPageHandler.setResultFor(
-              'addTabContext',
-              Promise.resolve({high: BigInt(1), low: BigInt(2)}));
-          mockSearchboxPageHandler.setResultFor(
-              'getInputState', Promise.resolve({state: new MockInputState()}));
-          const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
-          searchboxCallbackRouterRemote =
-              searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
-          ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
-              mockComposeboxPageHandler, mockSearchboxPageHandler,
-              searchboxCallbackRouter));
-
-          parts = await createCtComposeboxApp(useFork);
-          searchboxCallbackRouterRemote.onInputStateChanged(
-              new MockInputState());
-          await microtasksFinished();
-        });
-
-        teardown(() => {
-          mockTimer.uninstall();
-        });
-
-        test('fires result-changed for an accepted autocomplete result',
-            async () => {
-              mockTimer.install();
-              const {innerComposebox} = parts;
-              const inputElement = innerComposebox.getInputElement().$.input;
-              const testQuery = 'test';
-
-              simulateUserInput(inputElement, testQuery);
-              mockTimer.tick(300);
-              await mockSearchboxPageHandler.whenCalled('queryAutocomplete');
-
-              const whenResultChanged =
-                  eventToPromise<CustomEvent<AutocompleteResult>>(
-                      'result-changed', innerComposebox);
-              searchboxCallbackRouterRemote.autocompleteResultChanged(
-                  createAutocompleteResultForTesting({
-                    queryId: parts.innerComposebox.activeQueryId,
-                    input: testQuery,
-                    matches: [createAutocompleteMatch({fillIntoEdit: 'm1'})],
-                  }));
-              await searchboxCallbackRouterRemote.$.flushForTesting();
-              mockTimer.tick(0);
-
-              const event = await whenResultChanged;
-              assertEquals(testQuery, event.detail.input);
-              assertEquals(1, event.detail.matches.length);
-            });
-
-        test('does not fire result-changed for a stale autocomplete result',
-            async () => {
-              mockTimer.install();
-              const {innerComposebox} = parts;
-              const inputElement = innerComposebox.getInputElement().$.input;
-
-              simulateUserInput(inputElement, 'test');
-              mockTimer.tick(300);
-              await mockSearchboxPageHandler.whenCalled('queryAutocomplete');
-
-              let fired = false;
-              innerComposebox.addEventListener(
-                  'result-changed', () => fired = true);
-
-              // The response input does not match the last queried input.
-              searchboxCallbackRouterRemote.autocompleteResultChanged(
-                  createAutocompleteResultForTesting({
-                    queryId: parts.innerComposebox.activeQueryId + 1,
-                    input: 'stale',
-                    matches: [createAutocompleteMatch()],
-                  }));
-              await searchboxCallbackRouterRemote.$.flushForTesting();
-              mockTimer.tick(0);
-              await innerComposebox.updateComplete;
-
-              assertFalse(
-                  fired, 'result-changed should not fire for a stale result');
-            });
-
-        test(
-            'fires show-suggestion-activity-link for a noncanned AIM suggestion',
-            async () => {
-              const {innerComposebox} = parts;
-              let lastDetail: boolean|null = null;
-              innerComposebox.addEventListener(
-                  'show-suggestion-activity-link',
-                  e => lastDetail = (e as CustomEvent<boolean>).detail);
-
-              // Zero-prefix-suggest results (empty input) keep the dropdown
-              // shown; one match is a noncanned AIM suggestion.
-              searchboxCallbackRouterRemote.autocompleteResultChanged(
-                  createAutocompleteResultForTesting({
-                    queryId: parts.innerComposebox.activeQueryId,
-                    input: '',
-                    matches: [
-                      createAutocompleteMatch({isNoncannedAimSuggestion: true}),
-                      createAutocompleteMatch(),
-                    ],
-                  }));
-              await searchboxCallbackRouterRemote.$.flushForTesting();
-              await innerComposebox.updateComplete;
-
-              assertTrue(
-                  !!lastDetail,
-                  'show-suggestion-activity-link should fire true');
-            });
-
-        test('clears the suggestion-activity link for ordinary results',
-            async () => {
-              const {wrapper, innerComposebox} = parts;
-              let lastDetail: boolean|null = null;
-              innerComposebox.addEventListener(
-                  'show-suggestion-activity-link',
-                  e => lastDetail = (e as CustomEvent<boolean>).detail);
-
-              // A noncanned AIM suggestion first surfaces the link.
-              searchboxCallbackRouterRemote.autocompleteResultChanged(
-                  createAutocompleteResultForTesting({
-                    queryId: parts.innerComposebox.activeQueryId,
-                    input: '',
-                    matches: [
-                      createAutocompleteMatch({isNoncannedAimSuggestion: true}),
-                      createAutocompleteMatch(),
-                    ],
-                  }));
-              await searchboxCallbackRouterRemote.$.flushForTesting();
-              await innerComposebox.updateComplete;
-              assertTrue(!!lastDetail);
-
-              // Ordinary results clear it; the wrapper keeps no residual link.
-              searchboxCallbackRouterRemote.autocompleteResultChanged(
-                  createAutocompleteResultForTesting({
-                    queryId: parts.innerComposebox.activeQueryId,
-                    input: '',
-                    matches: [
-                      createAutocompleteMatch(),
-                      createAutocompleteMatch(),
-                    ],
-                  }));
-              await searchboxCallbackRouterRemote.$.flushForTesting();
-              await innerComposebox.updateComplete;
-              await wrapper.updateComplete;
-
-              assertFalse(
-                  !!lastDetail,
-                  'show-suggestion-activity-link should fire false');
-              assertEquals(
-                  null,
-                  wrapper.shadowRoot.querySelector('#suggestionActivity'),
-                  'wrapper should not keep a residual activity link');
-            });
-
-        test('selecting a match populates the composebox', async () => {
-          mockTimer.install();
-          const {innerComposebox} = parts;
-          const inputElement = innerComposebox.getInputElement().$.input;
-          const testQuery = 'test';
-
-          simulateUserInput(inputElement, testQuery);
-          searchboxCallbackRouterRemote.autocompleteResultChanged(
-              createAutocompleteResultForTesting({
-                queryId: parts.innerComposebox.activeQueryId,
-                input: testQuery,
-                matches: [
-                  createAutocompleteMatch({fillIntoEdit: 'match 1'}),
-                  createAutocompleteMatch({fillIntoEdit: 'match 2'}),
-                ],
-              }));
-          await searchboxCallbackRouterRemote.$.flushForTesting();
-          mockTimer.tick(0);
-
-          const matchesEl = innerComposebox.getDropdownElement();
-          assertTrue(matchesEl.result !== null, 'Matches should be populated');
-          assertEquals(2, matchesEl.result.matches.length);
-
-          inputElement.dispatchEvent(new KeyboardEvent(
-              'keydown', {key: 'ArrowDown', bubbles: true, composed: true}));
-          mockTimer.tick(100);
-          await innerComposebox.getDropdownElement().updateComplete;
-          await innerComposebox.updateComplete;
-
-          assertEquals(
-              0, innerComposebox.getDropdownElement().selectedMatchIndex);
-          assertEquals('match 1', getInputValue(inputElement));
-          assertEquals(0, innerComposebox.selectedMatchIndex);
-        });
-
-        test('clears dropdown matches after submitting a selected match',
-            async () => {
-              mockTimer.install();
-              const TEST_QUERY = 'test query';
-              const {app, innerComposebox} = parts;
-              const inputElement = innerComposebox.getInputElement().$.input;
-              assertTrue(isVisible(inputElement));
-
-              simulateUserInput(inputElement, TEST_QUERY);
-              mockTimer.tick(300);
-              await mockSearchboxPageHandler.whenCalled('queryAutocomplete');
-
-              await setupAutocompleteResults(
-                  searchboxCallbackRouterRemote, innerComposebox.activeQueryId,
-                  TEST_QUERY, mockTimer);
-              while (!innerComposebox.getDropdownElement().result) {
-                mockTimer.tick(10);
-                await Promise.resolve();
-              }
-
-              const submitButton = getSubmitButton(innerComposebox);
-              assertTrue(submitButton !== null);
-              assertFalse(submitButton.disabled);
-
-              mockSearchboxPageHandler.reset();
-              pressEnter(inputElement);
-              await mockSearchboxPageHandler.whenCalled('openAutocompleteMatch');
-              mockTimer.tick(0);
-              await innerComposebox.updateComplete;
-              await app.updateComplete;
-
-              assertEquals('', getInputValue(inputElement));
-              assertEquals(
-                  null, innerComposebox.getDropdownElement().result,
-                  'Matches should be cleared after submit');
-
-              // Pressing Enter again on the now-empty input is a no-op.
-              mockSearchboxPageHandler.reset();
-              pressEnter(inputElement);
-              mockTimer.tick(0);
-              await innerComposebox.updateComplete;
-              assertFalse(getInputValue(inputElement).includes('\n'));
-              assertEquals(
-                  0, mockSearchboxPageHandler.getCallCount('submitQuery'));
-              assertEquals(
-                  0,
-                  mockSearchboxPageHandler.getCallCount(
-                      'openAutocompleteMatch'));
-            });
+  setup(async () => {
+    if (!window.chrome) {
+      Object.assign(window, {chrome: {}});
+    }
+    if (!window.chrome.histograms) {
+      Object.assign(window.chrome, {
+        histograms: {
+          recordEnumerationValue: () => {},
+          recordUserAction: () => {},
+          recordBoolean: () => {},
+        },
       });
-});
+    }
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
-// =============================================================================
-// Fork DUAL-PATH CONTEXT MENU / SMART TAB SHARING SUITE
-// The fork renders the contextual entrypoint-and-menu and mirrors the legacy
-// <cr-composebox>'s Smart Tab Sharing behavior (initial-active fetch on
-// connect, clearing shared tab context when sharing turns active), so these
-// tests run on both paths. The app's help-bubble wiring and the onboarding
-// tooltip resolve the menu through the element chain asserted here.
-// =============================================================================
-// `useFork` toggles `useContextualTasksComposeboxFork`:
-// - true: uses the contextual tasks inner composebox (routing calls via `mockComposeboxPageHandler`).
-// - false: uses the legacy <cr-composebox> (routing calls via `mockSearchboxPageHandler`).
-[true, false].forEach(useFork => {
-  suite(
-      'ContextualTasksComposeboxForkContextMenuTest ' +
-          `(useContextualTasksComposeboxFork = ${useFork})`,
-      () => {
-        let testProxy: TestContextualTasksBrowserProxy;
-        let mockComposeboxPageHandler: TestMock<ComposeboxPageHandlerRemote>&
-            ComposeboxPageHandlerRemote;
-        let mockSearchboxPageHandler: TestMock<SearchboxPageHandlerRemote>&
-            SearchboxPageHandlerRemote;
-        let parts: CtComposeboxAppParts;
+    mockTimer = new MockTimer();
 
-        // Both inner elements initialize `smartTabSharingVisible` from
-        // loadTimeData, so the override must be applied before the mount.
-        async function mountApp(smartTabSharingVisible: boolean) {
-          loadTimeData.overrideValues(
-              {composeboxSmartTabSharingVisible: smartTabSharingVisible});
-          parts = await createCtComposeboxApp(useFork);
+    loadTimeData.overrideValues({
+      contextualMenuUsePecApi: false,
+      composeboxSmartTabSharingVisible: false,
+      enableComposeboxJumpFix: false,
+      composeboxShowTypedSuggest: true,
+      composeboxShowZps: true,
+      enableBasicModeZOrder: true,
+      composeboxShowContextMenu: true,
+      composeboxHintTextLensOverlay: 'Test Lens Hint',
+      forcedEmbeddedPageHost: '',
+      tabFaviconChipsToCoinsEnabled: false,
+    });
+
+    const testProxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+    BrowserProxyImpl.setInstance(testProxy);
+
+    mockComposeboxPageHandler = TestMock.fromClass(ComposeboxPageHandlerRemote);
+    mockComposeboxPageHandler.setResultFor(
+        'canShowNextboxAnimation', Promise.resolve({canShow: true}));
+    mockSearchboxPageHandler = TestMock.fromClass(SearchboxPageHandlerRemote);
+    // <if expr="not is_android">
+    mockComposeboxPageHandler.setResultFor(
+        'getSmartTabSharingActive', Promise.resolve({active: false}));
+    // </if>
+    mockSearchboxPageHandler.setResultFor(
+        'getRecentTabs', Promise.resolve({tabs: []}));
+    mockSearchboxPageHandler.setResultFor(
+        'getPageClassification',
+        Promise.resolve({metricSource: 'CO_BROWSING_COMPOSEBOX'}));
+    mockSearchboxPageHandler.setResultFor(
+        'addTabContext', Promise.resolve({high: BigInt(1), low: BigInt(2)}));
+    mockSearchboxPageHandler.setResultFor(
+        'getInputState', Promise.resolve({state: new MockInputState()}));
+    const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
+    searchboxCallbackRouterRemote =
+        searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
+    ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
+        mockComposeboxPageHandler, mockSearchboxPageHandler,
+        searchboxCallbackRouter));
+
+    parts = await createCtComposeboxApp();
+    searchboxCallbackRouterRemote.onInputStateChanged(new MockInputState());
+    await microtasksFinished();
+  });
+
+  teardown(() => {
+    mockTimer.uninstall();
+  });
+
+  test('fires result-changed for an accepted autocomplete result', async () => {
+    mockTimer.install();
+    const {innerComposebox} = parts;
+    const inputElement = innerComposebox.getInputElement().$.input;
+    const testQuery = 'test';
+
+    simulateUserInput(inputElement, testQuery);
+    mockTimer.tick(300);
+    await mockSearchboxPageHandler.whenCalled('queryAutocomplete');
+
+    const whenResultChanged = eventToPromise<CustomEvent<AutocompleteResult>>(
+        'result-changed', innerComposebox);
+    searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          queryId: parts.innerComposebox.activeQueryId,
+          input: testQuery,
+          matches: [createAutocompleteMatch({fillIntoEdit: 'm1'})],
+        }));
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    mockTimer.tick(0);
+
+    const event = await whenResultChanged;
+    assertEquals(testQuery, event.detail.input);
+    assertEquals(1, event.detail.matches.length);
+  });
+
+  test(
+      'does not fire result-changed for a stale autocomplete result',
+      async () => {
+        mockTimer.install();
+        const {innerComposebox} = parts;
+        const inputElement = innerComposebox.getInputElement().$.input;
+
+        simulateUserInput(inputElement, 'test');
+        mockTimer.tick(300);
+        await mockSearchboxPageHandler.whenCalled('queryAutocomplete');
+
+        let fired = false;
+        innerComposebox.addEventListener('result-changed', () => fired = true);
+
+        // The response input does not match the last queried input.
+        searchboxCallbackRouterRemote.autocompleteResultChanged(
+            createAutocompleteResultForTesting({
+              queryId: parts.innerComposebox.activeQueryId + 1,
+              input: 'stale',
+              matches: [createAutocompleteMatch()],
+            }));
+        await searchboxCallbackRouterRemote.$.flushForTesting();
+        mockTimer.tick(0);
+        await innerComposebox.updateComplete;
+
+        assertFalse(fired, 'result-changed should not fire for a stale result');
+      });
+
+  test(
+      'fires show-suggestion-activity-link for a noncanned AIM suggestion',
+      async () => {
+        const {innerComposebox} = parts;
+        let lastDetail: boolean|null = null;
+        innerComposebox.addEventListener(
+            'show-suggestion-activity-link',
+            e => lastDetail = (e as CustomEvent<boolean>).detail);
+
+        // Zero-prefix-suggest results (empty input) keep the dropdown
+        // shown; one match is a noncanned AIM suggestion.
+        searchboxCallbackRouterRemote.autocompleteResultChanged(
+            createAutocompleteResultForTesting({
+              queryId: parts.innerComposebox.activeQueryId,
+              input: '',
+              matches: [
+                createAutocompleteMatch({isNoncannedAimSuggestion: true}),
+                createAutocompleteMatch(),
+              ],
+            }));
+        await searchboxCallbackRouterRemote.$.flushForTesting();
+        await innerComposebox.updateComplete;
+
+        assertTrue(
+            !!lastDetail, 'show-suggestion-activity-link should fire true');
+      });
+
+  test('clears the suggestion-activity link for ordinary results', async () => {
+    const {wrapper, innerComposebox} = parts;
+    let lastDetail: boolean|null = null;
+    innerComposebox.addEventListener(
+        'show-suggestion-activity-link',
+        e => lastDetail = (e as CustomEvent<boolean>).detail);
+
+    // A noncanned AIM suggestion first surfaces the link.
+    searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          queryId: parts.innerComposebox.activeQueryId,
+          input: '',
+          matches: [
+            createAutocompleteMatch({isNoncannedAimSuggestion: true}),
+            createAutocompleteMatch(),
+          ],
+        }));
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    await innerComposebox.updateComplete;
+    assertTrue(!!lastDetail);
+
+    // Ordinary results clear it; the wrapper keeps no residual link.
+    searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          queryId: parts.innerComposebox.activeQueryId,
+          input: '',
+          matches: [
+            createAutocompleteMatch(),
+            createAutocompleteMatch(),
+          ],
+        }));
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    await innerComposebox.updateComplete;
+    await wrapper.updateComplete;
+
+    assertFalse(
+        !!lastDetail, 'show-suggestion-activity-link should fire false');
+    assertEquals(
+        null, wrapper.shadowRoot.querySelector('#suggestionActivity'),
+        'wrapper should not keep a residual activity link');
+  });
+
+  test('selecting a match populates the composebox', async () => {
+    mockTimer.install();
+    const {innerComposebox} = parts;
+    const inputElement = innerComposebox.getInputElement().$.input;
+    const testQuery = 'test';
+
+    simulateUserInput(inputElement, testQuery);
+    searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          queryId: parts.innerComposebox.activeQueryId,
+          input: testQuery,
+          matches: [
+            createAutocompleteMatch({fillIntoEdit: 'match 1'}),
+            createAutocompleteMatch({fillIntoEdit: 'match 2'}),
+          ],
+        }));
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    mockTimer.tick(0);
+
+    const matchesEl = innerComposebox.getDropdownElement();
+    assertTrue(matchesEl.result !== null, 'Matches should be populated');
+    assertEquals(2, matchesEl.result.matches.length);
+
+    inputElement.dispatchEvent(new KeyboardEvent(
+        'keydown', {key: 'ArrowDown', bubbles: true, composed: true}));
+    mockTimer.tick(100);
+    await innerComposebox.getDropdownElement().updateComplete;
+    await innerComposebox.updateComplete;
+
+    assertEquals(0, innerComposebox.getDropdownElement().selectedMatchIndex);
+    assertEquals('match 1', getInputValue(inputElement));
+    assertEquals(0, innerComposebox.selectedMatchIndex);
+  });
+
+  test(
+      'clears dropdown matches after submitting a selected match', async () => {
+        mockTimer.install();
+        const TEST_QUERY = 'test query';
+        const {app, innerComposebox} = parts;
+        const inputElement = innerComposebox.getInputElement().$.input;
+        assertTrue(isVisible(inputElement));
+
+        simulateUserInput(inputElement, TEST_QUERY);
+        mockTimer.tick(300);
+        await mockSearchboxPageHandler.whenCalled('queryAutocomplete');
+
+        await setupAutocompleteResults(
+            searchboxCallbackRouterRemote, innerComposebox.activeQueryId,
+            TEST_QUERY, mockTimer);
+        while (!innerComposebox.getDropdownElement().result) {
+          mockTimer.tick(10);
+          await Promise.resolve();
         }
 
-        function getEntrypointAndMenu() {
-          const entrypoint = parts.innerComposebox.shadowRoot.querySelector(
-              'cr-composebox-contextual-entrypoint-and-menu');
-          assertTrue(!!entrypoint);
-          return entrypoint;
-        }
+        const submitButton = getSubmitButton(innerComposebox);
+        assertTrue(submitButton !== null);
+        assertFalse(submitButton.disabled);
 
-        setup(() => {
-          if (!window.chrome) {
-            Object.assign(window, {chrome: {}});
-          }
-          if (!window.chrome.histograms) {
-            Object.assign(window.chrome, {
-              histograms: {
-                recordEnumerationValue: () => {},
-                recordUserAction: () => {},
-                recordBoolean: () => {},
-              },
-            });
-          }
-          document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        mockSearchboxPageHandler.reset();
+        pressEnter(inputElement);
+        await mockSearchboxPageHandler.whenCalled('openAutocompleteMatch');
+        mockTimer.tick(0);
+        await innerComposebox.updateComplete;
+        await app.updateComplete;
 
-          loadTimeData.overrideValues({
-            contextualMenuUsePecApi: false,
-            composeboxSmartTabSharingVisible: false,
-            contextManagementInComposeboxEnabled: false,
-            enableComposeboxJumpFix: false,
-            composeboxShowTypedSuggest: true,
-            composeboxShowZps: true,
-            enableBasicModeZOrder: true,
-            composeboxShowContextMenu: true,
-            forcedEmbeddedPageHost: '',
-            tabFaviconChipsToCoinsEnabled: false,
-          });
+        assertEquals('', getInputValue(inputElement));
+        assertEquals(
+            null, innerComposebox.getDropdownElement().result,
+            'Matches should be cleared after submit');
 
-          testProxy = new TestContextualTasksBrowserProxy(fixtureUrl);
-          BrowserProxyImpl.setInstance(testProxy);
-
-          mockComposeboxPageHandler =
-              TestMock.fromClass(ComposeboxPageHandlerRemote);
-          mockComposeboxPageHandler.setResultFor(
-              'canShowNextboxAnimation', Promise.resolve({canShow: true}));
-          mockSearchboxPageHandler =
-              TestMock.fromClass(SearchboxPageHandlerRemote);
-          // Smart Tab Sharing is a desktop-only feature ([EnableIfNot=is_android] in mojom).
-          // <if expr="not is_android">
-          mockSearchboxPageHandler.setResultFor(
-              'getSmartTabSharingActive', Promise.resolve({active: false}));
-          // </if>
-          mockSearchboxPageHandler.setResultFor(
-              'getRecentTabs', Promise.resolve({tabs: []}));
-          mockSearchboxPageHandler.setResultFor(
-              'getPageClassification',
-              Promise.resolve({metricSource: 'CO_BROWSING_COMPOSEBOX'}));
-          mockSearchboxPageHandler.setResultFor(
-              'addTabContext',
-              Promise.resolve({high: BigInt(1), low: BigInt(2)}));
-          mockSearchboxPageHandler.setResultFor(
-              'getInputState', Promise.resolve({state: new MockInputState()}));
-          const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
-          searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
-          ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
-              mockComposeboxPageHandler, mockSearchboxPageHandler,
-              searchboxCallbackRouter));
-        });
-
-        test('renders the contextual entrypoint and exposes it', async () => {
-          await mountApp(/*smartTabSharingVisible=*/ false);
-          const entrypoint = getEntrypointAndMenu();
-          assertEquals('contextEntrypoint', entrypoint.id);
-          assertEquals(
-              entrypoint, parts.innerComposebox.getContextEntrypointElement());
-        });
-
-        test('app query chain reaches the contextual action menu', async () => {
-          await mountApp(/*smartTabSharingVisible=*/ false);
-          // Mirrors the app's help-bubble lookup:
-          // wrapper -> #composebox -> #contextEntrypoint -> #menu.
-          const wrapper =
-              parts.app.shadowRoot.querySelector('contextual-tasks-composebox');
-          assertTrue(!!wrapper);
-          const innerComposebox =
-              wrapper.shadowRoot.querySelector('#composebox');
-          assertTrue(!!innerComposebox);
-          const innerShadowRoot = innerComposebox.shadowRoot;
-          assertTrue(!!innerShadowRoot);
-          const entrypoint =
-              innerShadowRoot.querySelector('#contextEntrypoint');
-          assertTrue(!!entrypoint);
-          const entrypointShadowRoot = entrypoint.shadowRoot;
-          assertTrue(!!entrypointShadowRoot);
-          const menu = entrypointShadowRoot.querySelector('#menu');
-          assertTrue(!!menu);
-          assertEquals('CR-COMPOSEBOX-CONTEXTUAL-ACTION-MENU', menu.tagName);
-        });
-
-        test(
-            'forwards contextManagementInComposeboxEnabled to the menu',
-            async () => {
-              loadTimeData.overrideValues(
-                  {contextManagementInComposeboxEnabled: true});
-              await mountApp(/*smartTabSharingVisible=*/ false);
-              const entrypointAndMenu = getEntrypointAndMenu();
-              await entrypointAndMenu.updateComplete;
-              assertTrue(
-                  entrypointAndMenu.contextManagementInComposeboxEnabled);
-
-              const menu =
-                  entrypointAndMenu.shadowRoot
-                      .querySelector<ContextualActionMenuElement>('#menu');
-              assertTrue(!!menu);
-              await menu.updateComplete;
-              assertTrue(menu.contextManagementInComposeboxEnabled);
-            });
-
-        test(
-            'zero state drives glif animation into the entrypoint button',
-            async () => {
-              // Deterministic animation-limiting path: the wrapper must consult
-              // canShowNextboxAnimation() before starting the glif animation
-              // on a zero-state transition.
-              loadTimeData.overrideValues(
-                  {contextMenuAnimationLimitingEnabled: true});
-              mockComposeboxPageHandler.setResultFor(
-                  'canShowNextboxAnimation', Promise.resolve({canShow: true}));
-              await mountApp(/*smartTabSharingVisible=*/ false);
-              const {app, wrapper, innerComposebox} = parts;
-              const entrypointAndMenu = getEntrypointAndMenu();
-              const button = entrypointAndMenu.shadowRoot.querySelector(
-                  'cr-composebox-contextual-entrypoint-button');
-              assertTrue(!!button);
-              const entrypointButton = button;
-
-              async function settleChain() {
-                await microtasksFinished();
-                await app.updateComplete;
-                await wrapper.updateComplete;
-                await innerComposebox.updateComplete;
-                await entrypointAndMenu.updateComplete;
-                await entrypointButton.updateComplete;
-              }
-
-              // Baseline: leaving zero state marks the animation ineligible.
-              testProxy.callbackRouterRemote.onZeroStateChange(false);
-              await testProxy.callbackRouterRemote.$.flushForTesting();
-              await settleChain();
-              assertEquals(
-                  GlifAnimationState.INELIGIBLE,
-                  entrypointButton.glifAnimationState);
-              assertEquals(
-                  null,
-                  entrypointButton.shadowRoot.querySelector('#glowWrapper'));
-
-              // Entering zero state drives the wrapper's glifAnimationState_
-              // through the real chain: app -> wrapper -> innerComposebox ->
-              // entrypointAndMenu -> entrypointButton.
-              mockComposeboxPageHandler.resetResolver(
-                  'canShowNextboxAnimation');
-              mockComposeboxPageHandler.setResultFor(
-                  'canShowNextboxAnimation', Promise.resolve({canShow: true}));
-              testProxy.callbackRouterRemote.onZeroStateChange(true);
-              await testProxy.callbackRouterRemote.$.flushForTesting();
-              await settleChain();
-              assertEquals(
-                  1,
-                  mockComposeboxPageHandler.getCallCount(
-                      'canShowNextboxAnimation'));
-              assertEquals(
-                  GlifAnimationState.STARTED,
-                  entrypointButton.glifAnimationState);
-              assertEquals(
-                  'started',
-                  entrypointButton.getAttribute('glif-animation-state'));
-              const glowWrapper =
-                  entrypointButton.shadowRoot.querySelector('#glowWrapper');
-              assertTrue(!!glowWrapper);
-              assertTrue(glowWrapper.classList.contains('glow-container'));
-
-              // Leaving zero state retracts the glow render contract.
-              testProxy.callbackRouterRemote.onZeroStateChange(false);
-              await testProxy.callbackRouterRemote.$.flushForTesting();
-              await settleChain();
-              assertEquals(
-                  GlifAnimationState.INELIGIBLE,
-                  entrypointButton.glifAnimationState);
-              assertEquals(
-                  'ineligible',
-                  entrypointButton.getAttribute('glif-animation-state'));
-              assertEquals(
-                  null,
-                  entrypointButton.shadowRoot.querySelector('#glowWrapper'));
-              assertEquals(
-                  null,
-                  entrypointButton.shadowRoot.querySelector('.glow-container'));
-            });
-
-        // Smart Tab Sharing tests are desktop-only ([EnableIfNot=is_android] in mojom).
-        // <if expr="not is_android">
-        test(
-            'fetches Smart Tab Sharing active state on connect when visible',
-            async () => {
-              mockSearchboxPageHandler.setResultFor(
-                  'getSmartTabSharingActive', Promise.resolve({active: true}));
-              await mountApp(/*smartTabSharingVisible=*/ true);
-              assertEquals(
-                  1,
-                  mockSearchboxPageHandler.getCallCount(
-                      'getSmartTabSharingActive'));
-              assertEquals(
-                  0,
-                  mockComposeboxPageHandler.getCallCount(
-                      'getSmartTabSharingActive'));
-              await microtasksFinished();
-              assertTrue(parts.innerComposebox.smartTabSharingActive);
-            });
-
-        test(
-            'does not fetch Smart Tab Sharing active state when not visible',
-            async () => {
-              await mountApp(/*smartTabSharingVisible=*/ false);
-              assertEquals(
-                  0,
-                  mockSearchboxPageHandler.getCallCount(
-                      'getSmartTabSharingActive'));
-              assertEquals(
-                  0,
-                  mockComposeboxPageHandler.getCallCount(
-                      'getSmartTabSharingActive'));
-            });
-
-        test('SmartTabSharingActiveChangedFiresMojo', async () => {
-          await mountApp(/*smartTabSharingVisible=*/ false);
-          const entrypointAndMenu = getEntrypointAndMenu();
-
-          mockSearchboxPageHandler.reset();
-
-          entrypointAndMenu.dispatchEvent(
-              new CustomEvent('smart-tab-sharing-active-changed', {
-                detail: {active: true},
-                bubbles: true,
-                composed: true,
-              }));
-
-          const activeArg = await mockSearchboxPageHandler.whenCalled(
-              'setSmartTabSharingActive');
-          assertEquals(
-              1,
-              mockSearchboxPageHandler.getCallCount(
-                  'setSmartTabSharingActive'));
-          assertEquals(true, activeArg);
-        });
-        // </if>
-
-        test('ContextMenuOpenedFiresMojo', async () => {
-          await mountApp(/*smartTabSharingVisible=*/ false);
-          const entrypointAndMenu = getEntrypointAndMenu();
-
-          mockComposeboxPageHandler.reset();
-
-          entrypointAndMenu.dispatchEvent(
-              new CustomEvent('context-menu-opened', {
-                bubbles: true,
-                composed: true,
-              }));
-
-          await mockComposeboxPageHandler.whenCalled('onContextMenuOpened');
-          assertEquals(
-              1, mockComposeboxPageHandler.getCallCount('onContextMenuOpened'));
-        });
-
-        // Smart Tab Sharing is desktop-only ([EnableIfNot=is_android] in mojom).
-        // <if expr="not is_android">
-        test(
-            'clears shared tab context when sharing becomes active',
-            async () => {
-              await mountApp(/*smartTabSharingVisible=*/ false);
-              const {innerComposebox} = parts;
-              const entrypointAndMenu = getEntrypointAndMenu();
-
-              entrypointAndMenu.dispatchEvent(
-                  new CustomEvent('add-tab-context', {
-                    detail: {
-                      id: 1,
-                      title: 'Shared tab',
-                      // WebUI maps Mojo URL to a string, which is passed to
-                      // `new URL()`.
-                      url: 'https://example.com/',
-                      delayUpload: false,
-                      origin: TabUploadOrigin.CURRENT_TAB_CHIP,
-                    },
-                    bubbles: true,
-                    composed: true,
-                  }));
-              await mockSearchboxPageHandler.whenCalled('addTabContext');
-              await microtasksFinished();
-              assertEquals(1, innerComposebox.attachedContext.size);
-
-              entrypointAndMenu.dispatchEvent(
-                  new CustomEvent('smart-tab-sharing-active-changed', {
-                    detail: {active: true},
-                    bubbles: true,
-                    composed: true,
-                  }));
-              const activeArg = await mockSearchboxPageHandler.whenCalled(
-                  'setSmartTabSharingActive');
-              assertEquals(true, activeArg);
-              await microtasksFinished();
-              assertEquals(0, innerComposebox.attachedContext.size);
-            });
-        // </if>
+        // Pressing Enter again on the now-empty input is a no-op.
+        mockSearchboxPageHandler.reset();
+        pressEnter(inputElement);
+        mockTimer.tick(0);
+        await innerComposebox.updateComplete;
+        assertFalse(getInputValue(inputElement).includes('\n'));
+        assertEquals(0, mockSearchboxPageHandler.getCallCount('submitQuery'));
+        assertEquals(
+            0, mockSearchboxPageHandler.getCallCount('openAutocompleteMatch'));
       });
 });
 
 // =============================================================================
-// Fork RESIZE/HEIGHT SUITE (fork path)
-// The fork sets up the composebox-resize observers (the shared cr-composebox
-// keeps them only for the Contextual Tasks Embedder) and renders the file
-// carousel that fires carousel-resize. These checks target the fork; the legacy
-// path's wrapper-side height flow is covered by the flag-off suite above.
+// Fork CONTEXT MENU / SMART TAB SHARING SUITE
+// =============================================================================
+suite('ContextualTasksComposeboxForkContextMenuTest', () => {
+  let testProxy: TestContextualTasksBrowserProxy;
+  let mockComposeboxPageHandler: TestMock<ComposeboxPageHandlerRemote>&
+      ComposeboxPageHandlerRemote;
+  let mockSearchboxPageHandler: TestMock<SearchboxPageHandlerRemote>&
+      SearchboxPageHandlerRemote;
+  let parts: CtComposeboxAppParts;
+
+  // The inner element initializes `smartTabSharingVisible` based on
+  // loadTimeData, so the override must be applied before the mount.
+  async function mountApp(smartTabSharingVisible: boolean) {
+    loadTimeData.overrideValues(
+        {composeboxSmartTabSharingVisible: smartTabSharingVisible});
+    parts = await createCtComposeboxApp();
+  }
+
+  function getEntrypointAndMenu() {
+    const entrypoint = parts.innerComposebox.shadowRoot.querySelector(
+        'cr-composebox-contextual-entrypoint-and-menu');
+    assertTrue(!!entrypoint);
+    return entrypoint;
+  }
+
+  setup(() => {
+    if (!window.chrome) {
+      Object.assign(window, {chrome: {}});
+    }
+    if (!window.chrome.histograms) {
+      Object.assign(window.chrome, {
+        histograms: {
+          recordEnumerationValue: () => {},
+          recordUserAction: () => {},
+          recordBoolean: () => {},
+        },
+      });
+    }
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    loadTimeData.overrideValues({
+      contextualMenuUsePecApi: false,
+      composeboxSmartTabSharingVisible: false,
+      contextManagementInComposeboxEnabled: false,
+      enableComposeboxJumpFix: false,
+      composeboxShowTypedSuggest: true,
+      composeboxShowZps: true,
+      enableBasicModeZOrder: true,
+      composeboxShowContextMenu: true,
+      forcedEmbeddedPageHost: '',
+      tabFaviconChipsToCoinsEnabled: false,
+    });
+
+    testProxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+    BrowserProxyImpl.setInstance(testProxy);
+
+    mockComposeboxPageHandler = TestMock.fromClass(ComposeboxPageHandlerRemote);
+    mockComposeboxPageHandler.setResultFor(
+        'canShowNextboxAnimation', Promise.resolve({canShow: true}));
+    mockSearchboxPageHandler = TestMock.fromClass(SearchboxPageHandlerRemote);
+    // Smart Tab Sharing is a desktop-only feature ([EnableIfNot=is_android]
+    // in mojom).
+    // <if expr="not is_android">
+    mockSearchboxPageHandler.setResultFor(
+        'getSmartTabSharingActive', Promise.resolve({active: false}));
+    // </if>
+    mockSearchboxPageHandler.setResultFor(
+        'getRecentTabs', Promise.resolve({tabs: []}));
+    mockSearchboxPageHandler.setResultFor(
+        'getPageClassification',
+        Promise.resolve({metricSource: 'CO_BROWSING_COMPOSEBOX'}));
+    mockSearchboxPageHandler.setResultFor(
+        'addTabContext', Promise.resolve({high: BigInt(1), low: BigInt(2)}));
+    mockSearchboxPageHandler.setResultFor(
+        'getInputState', Promise.resolve({state: new MockInputState()}));
+    const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
+    searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
+    ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
+        mockComposeboxPageHandler, mockSearchboxPageHandler,
+        searchboxCallbackRouter));
+  });
+
+  test('renders the contextual entrypoint and exposes it', async () => {
+    await mountApp(/*smartTabSharingVisible=*/ false);
+    const entrypoint = getEntrypointAndMenu();
+    assertEquals('contextEntrypoint', entrypoint.id);
+    assertEquals(
+        entrypoint, parts.innerComposebox.getContextEntrypointElement());
+  });
+
+  test('app query chain reaches the contextual action menu', async () => {
+    await mountApp(/*smartTabSharingVisible=*/ false);
+    // Mirrors the app's help-bubble lookup:
+    // wrapper -> #composebox -> #contextEntrypoint -> #menu.
+    const wrapper =
+        parts.app.shadowRoot.querySelector('contextual-tasks-composebox');
+    assertTrue(!!wrapper);
+    const innerComposebox = wrapper.shadowRoot.querySelector('#composebox');
+    assertTrue(!!innerComposebox);
+    const innerShadowRoot = innerComposebox.shadowRoot;
+    assertTrue(!!innerShadowRoot);
+    const entrypoint = innerShadowRoot.querySelector('#contextEntrypoint');
+    assertTrue(!!entrypoint);
+    const entrypointShadowRoot = entrypoint.shadowRoot;
+    assertTrue(!!entrypointShadowRoot);
+    const menu = entrypointShadowRoot.querySelector('#menu');
+    assertTrue(!!menu);
+    assertEquals('CR-COMPOSEBOX-CONTEXTUAL-ACTION-MENU', menu.tagName);
+  });
+
+  test(
+      'forwards contextManagementInComposeboxEnabled to the menu', async () => {
+        loadTimeData.overrideValues(
+            {contextManagementInComposeboxEnabled: true});
+        await mountApp(/*smartTabSharingVisible=*/ false);
+        const entrypointAndMenu = getEntrypointAndMenu();
+        await entrypointAndMenu.updateComplete;
+        assertTrue(entrypointAndMenu.contextManagementInComposeboxEnabled);
+
+        const menu = entrypointAndMenu.shadowRoot
+                         .querySelector<ContextualActionMenuElement>('#menu');
+        assertTrue(!!menu);
+        await menu.updateComplete;
+        assertTrue(menu.contextManagementInComposeboxEnabled);
+      });
+
+  test(
+      'zero state drives glif animation into the entrypoint button',
+      async () => {
+        // Deterministic animation-limiting path: the wrapper must consult
+        // canShowNextboxAnimation() before starting the glif animation
+        // on a zero-state transition.
+        loadTimeData.overrideValues(
+            {contextMenuAnimationLimitingEnabled: true});
+        mockComposeboxPageHandler.setResultFor(
+            'canShowNextboxAnimation', Promise.resolve({canShow: true}));
+        await mountApp(/*smartTabSharingVisible=*/ false);
+        const {app, wrapper, innerComposebox} = parts;
+        const entrypointAndMenu = getEntrypointAndMenu();
+        const button = entrypointAndMenu.shadowRoot.querySelector(
+            'cr-composebox-contextual-entrypoint-button');
+        assertTrue(!!button);
+        const entrypointButton = button;
+
+        async function settleChain() {
+          await microtasksFinished();
+          await app.updateComplete;
+          await wrapper.updateComplete;
+          await innerComposebox.updateComplete;
+          await entrypointAndMenu.updateComplete;
+          await entrypointButton.updateComplete;
+        }
+
+        // Baseline: leaving zero state marks the animation ineligible.
+        testProxy.callbackRouterRemote.onZeroStateChange(false);
+        await testProxy.callbackRouterRemote.$.flushForTesting();
+        await settleChain();
+        assertEquals(
+            GlifAnimationState.INELIGIBLE, entrypointButton.glifAnimationState);
+        assertEquals(
+            null, entrypointButton.shadowRoot.querySelector('#glowWrapper'));
+
+        // Entering zero state drives the wrapper's glifAnimationState_
+        // through the real chain: app -> wrapper -> innerComposebox ->
+        // entrypointAndMenu -> entrypointButton.
+        mockComposeboxPageHandler.resetResolver('canShowNextboxAnimation');
+        mockComposeboxPageHandler.setResultFor(
+            'canShowNextboxAnimation', Promise.resolve({canShow: true}));
+        testProxy.callbackRouterRemote.onZeroStateChange(true);
+        await testProxy.callbackRouterRemote.$.flushForTesting();
+        await settleChain();
+        assertEquals(
+            1,
+            mockComposeboxPageHandler.getCallCount('canShowNextboxAnimation'));
+        assertEquals(
+            GlifAnimationState.STARTED, entrypointButton.glifAnimationState);
+        assertEquals(
+            'started', entrypointButton.getAttribute('glif-animation-state'));
+        const glowWrapper =
+            entrypointButton.shadowRoot.querySelector('#glowWrapper');
+        assertTrue(!!glowWrapper);
+        assertTrue(glowWrapper.classList.contains('glow-container'));
+
+        // Leaving zero state retracts the glow render contract.
+        testProxy.callbackRouterRemote.onZeroStateChange(false);
+        await testProxy.callbackRouterRemote.$.flushForTesting();
+        await settleChain();
+        assertEquals(
+            GlifAnimationState.INELIGIBLE, entrypointButton.glifAnimationState);
+        assertEquals(
+            'ineligible',
+            entrypointButton.getAttribute('glif-animation-state'));
+        assertEquals(
+            null, entrypointButton.shadowRoot.querySelector('#glowWrapper'));
+        assertEquals(
+            null, entrypointButton.shadowRoot.querySelector('.glow-container'));
+      });
+
+  // Smart Tab Sharing tests are desktop-only ([EnableIfNot=is_android] in
+  // mojom).
+  // <if expr="not is_android">
+  test(
+      'fetches Smart Tab Sharing active state on connect when visible',
+      async () => {
+        mockSearchboxPageHandler.setResultFor(
+            'getSmartTabSharingActive', Promise.resolve({active: true}));
+        await mountApp(/*smartTabSharingVisible=*/ true);
+        assertEquals(
+            1,
+            mockSearchboxPageHandler.getCallCount('getSmartTabSharingActive'));
+        assertEquals(
+            0,
+            mockComposeboxPageHandler.getCallCount('getSmartTabSharingActive'));
+        await microtasksFinished();
+        assertTrue(parts.innerComposebox.smartTabSharingActive);
+      });
+
+  test(
+      'does not fetch Smart Tab Sharing active state when not visible',
+      async () => {
+        await mountApp(/*smartTabSharingVisible=*/ false);
+        assertEquals(
+            0,
+            mockSearchboxPageHandler.getCallCount('getSmartTabSharingActive'));
+        assertEquals(
+            0,
+            mockComposeboxPageHandler.getCallCount('getSmartTabSharingActive'));
+      });
+
+  test('SmartTabSharingActiveChangedFiresMojo', async () => {
+    await mountApp(/*smartTabSharingVisible=*/ false);
+    const entrypointAndMenu = getEntrypointAndMenu();
+
+    mockSearchboxPageHandler.reset();
+
+    entrypointAndMenu.dispatchEvent(
+        new CustomEvent('smart-tab-sharing-active-changed', {
+          detail: {active: true},
+          bubbles: true,
+          composed: true,
+        }));
+
+    const activeArg =
+        await mockSearchboxPageHandler.whenCalled('setSmartTabSharingActive');
+    assertEquals(
+        1, mockSearchboxPageHandler.getCallCount('setSmartTabSharingActive'));
+    assertEquals(true, activeArg);
+  });
+  // </if>
+
+  test('ContextMenuOpenedFiresMojo', async () => {
+    await mountApp(/*smartTabSharingVisible=*/ false);
+    const entrypointAndMenu = getEntrypointAndMenu();
+
+    mockComposeboxPageHandler.reset();
+
+    entrypointAndMenu.dispatchEvent(new CustomEvent('context-menu-opened', {
+      bubbles: true,
+      composed: true,
+    }));
+
+    await mockComposeboxPageHandler.whenCalled('onContextMenuOpened');
+    assertEquals(
+        1, mockComposeboxPageHandler.getCallCount('onContextMenuOpened'));
+  });
+
+  // Smart Tab Sharing is desktop-only ([EnableIfNot=is_android] in mojom).
+  // <if expr="not is_android">
+  test('clears shared tab context when sharing becomes active', async () => {
+    await mountApp(/*smartTabSharingVisible=*/ false);
+    const {innerComposebox} = parts;
+    const entrypointAndMenu = getEntrypointAndMenu();
+
+    entrypointAndMenu.dispatchEvent(new CustomEvent('add-tab-context', {
+      detail: {
+        id: 1,
+        title: 'Shared tab',
+        // WebUI maps Mojo URL to a string, which is passed to
+        // `new URL()`.
+        url: 'https://example.com/',
+        delayUpload: false,
+        origin: TabUploadOrigin.CURRENT_TAB_CHIP,
+      },
+      bubbles: true,
+      composed: true,
+    }));
+    await mockSearchboxPageHandler.whenCalled('addTabContext');
+    await microtasksFinished();
+    assertEquals(1, innerComposebox.attachedContext.size);
+
+    entrypointAndMenu.dispatchEvent(
+        new CustomEvent('smart-tab-sharing-active-changed', {
+          detail: {active: true},
+          bubbles: true,
+          composed: true,
+        }));
+    const activeArg =
+        await mockSearchboxPageHandler.whenCalled('setSmartTabSharingActive');
+    assertEquals(true, activeArg);
+    await microtasksFinished();
+    assertEquals(0, innerComposebox.attachedContext.size);
+  });
+  // </if>
+});
+
+// =============================================================================
+// Fork RESIZE/HEIGHT SUITE
 // =============================================================================
 suite('ContextualTasksComposeboxResizeTest', () => {
   // Minimal ResizeObserver stub whose instances can be triggered on demand;
@@ -2463,7 +2353,7 @@ suite('ContextualTasksComposeboxResizeTest', () => {
         mockComposeboxPageHandler, mockSearchboxPageHandler,
         searchboxCallbackRouter));
 
-    parts = await createCtComposeboxApp(/* useFork= */ true);
+    parts = await createCtComposeboxApp();
     searchboxCallbackRouterRemote.onInputStateChanged(new MockInputState());
     await microtasksFinished();
 
@@ -2535,265 +2425,235 @@ suite('ContextualTasksComposeboxResizeTest', () => {
 });
 
 // =============================================================================
-// Fork GLOW RENDER SURFACE SUITE (both paths)
-// The wrapper drives animation and energy-effect state on whichever inner
-// element the flag selects, so both templates must render the same
-// `search-animated-glow` consumer; the legacy path doubles as the baseline for
-// the fork's render and state-propagation contract.
+// Fork GLOW RENDER SURFACE SUITE
 // =============================================================================
-[true, false].forEach(useFork => {
-  suite(
-      'ContextualTasksComposeboxForkGlowTest ' +
-          `(useContextualTasksComposeboxFork = ${useFork})`,
-      () => {
-        let parts: CtComposeboxAppParts;
+suite('ContextualTasksComposeboxForkGlowTest', () => {
+  let parts: CtComposeboxAppParts;
 
-        setup(async () => {
-          if (!window.chrome) {
-            Object.assign(window, {chrome: {}});
-          }
-          if (!window.chrome.histograms) {
-            Object.assign(window.chrome, {
-              histograms: {
-                recordEnumerationValue: () => {},
-                recordUserAction: () => {},
-                recordBoolean: () => {},
-              },
-            });
-          }
-          document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
-          loadTimeData.overrideValues({
-            contextualMenuUsePecApi: false,
-            composeboxSmartTabSharingVisible: false,
-            enableComposeboxJumpFix: false,
-            composeboxShowTypedSuggest: true,
-            composeboxShowZps: true,
-            enableBasicModeZOrder: true,
-            composeboxShowContextMenu: true,
-            forcedEmbeddedPageHost: '',
-            tabFaviconChipsToCoinsEnabled: false,
-            energyEffectEnabled: true,
-          });
-
-          const testProxy = new TestContextualTasksBrowserProxy(fixtureUrl);
-          BrowserProxyImpl.setInstance(testProxy);
-
-          const mockComposeboxPageHandler =
-              TestMock.fromClass(ComposeboxPageHandlerRemote);
-          mockComposeboxPageHandler.setResultFor(
-              'canShowNextboxAnimation', Promise.resolve({canShow: true}));
-          const mockSearchboxPageHandler =
-              TestMock.fromClass(SearchboxPageHandlerRemote);
-          // <if expr="not is_android">
-          mockComposeboxPageHandler.setResultFor(
-              'getSmartTabSharingActive', Promise.resolve({active: false}));
-          // </if>
-          mockSearchboxPageHandler.setResultFor(
-              'getRecentTabs', Promise.resolve({tabs: []}));
-          mockSearchboxPageHandler.setResultFor(
-              'getPageClassification',
-              Promise.resolve({metricSource: 'CO_BROWSING_COMPOSEBOX'}));
-          mockSearchboxPageHandler.setResultFor(
-              'addTabContext',
-              Promise.resolve({high: BigInt(1), low: BigInt(2)}));
-          mockSearchboxPageHandler.setResultFor(
-              'getInputState', Promise.resolve({state: new MockInputState()}));
-          const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
-          searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
-          ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
-              mockComposeboxPageHandler, mockSearchboxPageHandler,
-              searchboxCallbackRouter));
-
-          parts = await createCtComposeboxApp(useFork);
-        });
-
-        test('both paths render the glow render surface', () => {
-          const {innerComposebox} = parts;
-          const glow =
-              innerComposebox.shadowRoot.querySelector('search-animated-glow');
-          assertTrue(!!glow, 'search-animated-glow should be in the DOM');
-          assertEquals('animatedSearchElement', glow.id);
-          const exportparts = glow.getAttribute('exportparts');
-          assertTrue(
-              !!exportparts && exportparts.includes('composebox-background'),
-              'Glow should re-export the composebox-background part');
-        });
-
-        test('wrapper startExpandAnimation reaches the glow', async () => {
-          const {wrapper, innerComposebox} = parts;
-          const glow =
-              innerComposebox.shadowRoot.querySelector('search-animated-glow');
-          assertTrue(!!glow);
-          await wrapper.startExpandAnimation();
-          await wrapper.updateComplete;
-          await innerComposebox.updateComplete;
-          await glow.updateComplete;
-          assertEquals(GlowAnimationState.EXPANDING, glow.animationState);
-        });
-
-        test('energy state reaches the inner host and the glow', async () => {
-          const {wrapper, innerComposebox} = parts;
-          await wrapper.updateComplete;
-          await innerComposebox.updateComplete;
-          assertTrue(innerComposebox.energyEffectEnabled);
-          assertTrue(innerComposebox.hasAttribute('energy-effect-enabled'));
-          const glow =
-              innerComposebox.shadowRoot.querySelector('search-animated-glow');
-          assertTrue(!!glow);
-          await glow.updateComplete;
-          assertTrue(glow.energyEffectAnimationEnabled);
-        });
+  setup(async () => {
+    if (!window.chrome) {
+      Object.assign(window, {chrome: {}});
+    }
+    if (!window.chrome.histograms) {
+      Object.assign(window.chrome, {
+        histograms: {
+          recordEnumerationValue: () => {},
+          recordUserAction: () => {},
+          recordBoolean: () => {},
+        },
       });
+    }
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    loadTimeData.overrideValues({
+      contextualMenuUsePecApi: false,
+      composeboxSmartTabSharingVisible: false,
+      enableComposeboxJumpFix: false,
+      composeboxShowTypedSuggest: true,
+      composeboxShowZps: true,
+      enableBasicModeZOrder: true,
+      composeboxShowContextMenu: true,
+      forcedEmbeddedPageHost: '',
+      tabFaviconChipsToCoinsEnabled: false,
+      energyEffectEnabled: true,
+    });
+
+    const testProxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+    BrowserProxyImpl.setInstance(testProxy);
+
+    const mockComposeboxPageHandler =
+        TestMock.fromClass(ComposeboxPageHandlerRemote);
+    mockComposeboxPageHandler.setResultFor(
+        'canShowNextboxAnimation', Promise.resolve({canShow: true}));
+    const mockSearchboxPageHandler =
+        TestMock.fromClass(SearchboxPageHandlerRemote);
+    // <if expr="not is_android">
+    mockComposeboxPageHandler.setResultFor(
+        'getSmartTabSharingActive', Promise.resolve({active: false}));
+    // </if>
+    mockSearchboxPageHandler.setResultFor(
+        'getRecentTabs', Promise.resolve({tabs: []}));
+    mockSearchboxPageHandler.setResultFor(
+        'getPageClassification',
+        Promise.resolve({metricSource: 'CO_BROWSING_COMPOSEBOX'}));
+    mockSearchboxPageHandler.setResultFor(
+        'addTabContext', Promise.resolve({high: BigInt(1), low: BigInt(2)}));
+    mockSearchboxPageHandler.setResultFor(
+        'getInputState', Promise.resolve({state: new MockInputState()}));
+    const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
+    searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
+    ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
+        mockComposeboxPageHandler, mockSearchboxPageHandler,
+        searchboxCallbackRouter));
+
+    parts = await createCtComposeboxApp();
+  });
+
+  test('renders the glow render surface', () => {
+    const {innerComposebox} = parts;
+    const glow =
+        innerComposebox.shadowRoot.querySelector('search-animated-glow');
+    assertTrue(!!glow, 'search-animated-glow should be in the DOM');
+    assertEquals('animatedSearchElement', glow.id);
+    const exportparts = glow.getAttribute('exportparts');
+    assertTrue(
+        !!exportparts && exportparts.includes('composebox-background'),
+        'Glow should re-export the composebox-background part');
+  });
+
+  test('wrapper startExpandAnimation reaches the glow', async () => {
+    const {wrapper, innerComposebox} = parts;
+    const glow =
+        innerComposebox.shadowRoot.querySelector('search-animated-glow');
+    assertTrue(!!glow);
+    await wrapper.startExpandAnimation();
+    await wrapper.updateComplete;
+    await innerComposebox.updateComplete;
+    await glow.updateComplete;
+    assertEquals(GlowAnimationState.EXPANDING, glow.animationState);
+  });
+
+  test('energy state reaches the inner host and the glow', async () => {
+    const {wrapper, innerComposebox} = parts;
+    await wrapper.updateComplete;
+    await innerComposebox.updateComplete;
+    assertTrue(innerComposebox.energyEffectEnabled);
+    assertTrue(innerComposebox.hasAttribute('energy-effect-enabled'));
+    const glow =
+        innerComposebox.shadowRoot.querySelector('search-animated-glow');
+    assertTrue(!!glow);
+    await glow.updateComplete;
+    assertTrue(glow.energyEffectAnimationEnabled);
+  });
 });
 
-[true, false].forEach(useFork => {
-  suite(
-      'ContextualTasksComposeboxForkErrorScrimTest ' +
-          `(useContextualTasksComposeboxFork = ${useFork})`,
-      () => {
-        let mockComposeboxPageHandler: TestMock<ComposeboxPageHandlerRemote>&
-            ComposeboxPageHandlerRemote;
-        let mockSearchboxPageHandler: TestMock<SearchboxPageHandlerRemote>&
-            SearchboxPageHandlerRemote;
-        let searchboxCallbackRouterRemote: SearchboxPageRemote;
-        let parts: CtComposeboxAppParts;
+suite('ContextualTasksComposeboxForkErrorScrimTest', () => {
+  let mockComposeboxPageHandler: TestMock<ComposeboxPageHandlerRemote>&
+      ComposeboxPageHandlerRemote;
+  let mockSearchboxPageHandler: TestMock<SearchboxPageHandlerRemote>&
+      SearchboxPageHandlerRemote;
+  let searchboxCallbackRouterRemote: SearchboxPageRemote;
+  let parts: CtComposeboxAppParts;
 
-        setup(async () => {
-          if (!window.chrome) {
-            Object.assign(window, {chrome: {}});
-          }
-          if (!window.chrome.histograms) {
-            Object.assign(window.chrome, {
-              histograms: {
-                recordEnumerationValue: () => {},
-                recordUserAction: () => {},
-                recordBoolean: () => {},
-              },
-            });
-          }
-          document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
-          loadTimeData.overrideValues({
-            contextualMenuUsePecApi: false,
-            composeboxSmartTabSharingVisible: false,
-            enableComposeboxJumpFix: false,
-            composeboxShowTypedSuggest: true,
-            composeboxShowZps: true,
-            enableBasicModeZOrder: true,
-            composeboxShowContextMenu: true,
-            composeboxHintTextLensOverlay: 'Test Lens Hint',
-            forcedEmbeddedPageHost: '',
-            tabFaviconChipsToCoinsEnabled: false,
-          });
-
-          const testProxy = new TestContextualTasksBrowserProxy(fixtureUrl);
-          BrowserProxyImpl.setInstance(testProxy);
-
-          mockComposeboxPageHandler =
-              TestMock.fromClass(ComposeboxPageHandlerRemote);
-          mockComposeboxPageHandler.setResultFor(
-              'canShowNextboxAnimation', Promise.resolve({canShow: true}));
-          mockSearchboxPageHandler =
-              TestMock.fromClass(SearchboxPageHandlerRemote);
-          // <if expr="not is_android">
-          mockComposeboxPageHandler.setResultFor(
-              'getSmartTabSharingActive', Promise.resolve({active: false}));
-          // </if>
-          mockSearchboxPageHandler.setResultFor(
-              'getRecentTabs', Promise.resolve({tabs: []}));
-          mockSearchboxPageHandler.setResultFor(
-              'getPageClassification',
-              Promise.resolve({metricSource: 'CO_BROWSING_COMPOSEBOX'}));
-          mockSearchboxPageHandler.setResultFor(
-              'addTabContext',
-              Promise.resolve({high: BigInt(1), low: BigInt(2)}));
-          mockSearchboxPageHandler.setResultFor(
-              'getInputState', Promise.resolve({state: new MockInputState()}));
-          const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
-          searchboxCallbackRouterRemote =
-              searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
-          ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
-              mockComposeboxPageHandler, mockSearchboxPageHandler,
-              searchboxCallbackRouter));
-
-          parts = await createCtComposeboxApp(useFork);
-          searchboxCallbackRouterRemote.onInputStateChanged(
-              new MockInputState());
-          await microtasksFinished();
-        });
-
-        test('error scrim lifecycle: render, inert, dismiss', async () => {
-          const {innerComposebox} = parts;
-          const composeboxDiv =
-              innerComposebox.shadowRoot.querySelector('#composebox');
-          assertTrue(!!composeboxDiv);
-
-          // No error: no scrim in the DOM, composebox stays interactive.
-          assertFalse(
-              !!innerComposebox.shadowRoot.querySelector('ntp-error-scrim'));
-          assertFalse(composeboxDiv.hasAttribute('inert'));
-
-          innerComposebox.errorMessage = 'Upload failed';
-          await innerComposebox.updateComplete;
-
-          const errorScrim =
-              innerComposebox.shadowRoot.querySelector('ntp-error-scrim');
-          assertTrue(!!errorScrim);
-          await errorScrim.updateComplete;
-          assertEquals('Upload failed', errorScrim.errorMessage);
-          const errorMessageElement =
-              errorScrim.shadowRoot.querySelector('#errorMessage');
-          assertTrue(!!errorMessageElement);
-          assertEquals('Upload failed', errorMessageElement.textContent);
-          assertTrue(composeboxDiv.hasAttribute('inert'));
-          // Outside voice search mode the scrim host must stay static, as in
-          // the shared template (no fork-specific positioning).
-          assertEquals('static', window.getComputedStyle(errorScrim).position);
-
-          const dismissErrorButton =
-              errorScrim.shadowRoot.querySelector<HTMLElement>(
-                  '#dismissErrorButton');
-          assertTrue(!!dismissErrorButton);
-          dismissErrorButton.click();
-          await microtasksFinished();
-          await innerComposebox.updateComplete;
-
-          assertEquals('', innerComposebox.errorMessage);
-          assertFalse(
-              !!innerComposebox.shadowRoot.querySelector('ntp-error-scrim'));
-          assertFalse(composeboxDiv.hasAttribute('inert'));
-        });
-
-        test(
-            'error scrim is position absolute in voice search mode',
-            async () => {
-              const {innerComposebox} = parts;
-              innerComposebox.inVoiceSearchMode = true;
-              innerComposebox.errorMessage = 'Network error';
-              await innerComposebox.updateComplete;
-
-              const errorScrim =
-                  innerComposebox.shadowRoot.querySelector('ntp-error-scrim');
-              assertTrue(!!errorScrim);
-              await errorScrim.updateComplete;
-              assertEquals(
-                  'absolute', window.getComputedStyle(errorScrim).position);
-
-              innerComposebox.inVoiceSearchMode = false;
-              innerComposebox.errorMessage = '';
-              await innerComposebox.updateComplete;
-            });
+  setup(async () => {
+    if (!window.chrome) {
+      Object.assign(window, {chrome: {}});
+    }
+    if (!window.chrome.histograms) {
+      Object.assign(window.chrome, {
+        histograms: {
+          recordEnumerationValue: () => {},
+          recordUserAction: () => {},
+          recordBoolean: () => {},
+        },
       });
+    }
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    loadTimeData.overrideValues({
+      contextualMenuUsePecApi: false,
+      composeboxSmartTabSharingVisible: false,
+      enableComposeboxJumpFix: false,
+      composeboxShowTypedSuggest: true,
+      composeboxShowZps: true,
+      enableBasicModeZOrder: true,
+      composeboxShowContextMenu: true,
+      composeboxHintTextLensOverlay: 'Test Lens Hint',
+      forcedEmbeddedPageHost: '',
+      tabFaviconChipsToCoinsEnabled: false,
+    });
+
+    const testProxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+    BrowserProxyImpl.setInstance(testProxy);
+
+    mockComposeboxPageHandler = TestMock.fromClass(ComposeboxPageHandlerRemote);
+    mockComposeboxPageHandler.setResultFor(
+        'canShowNextboxAnimation', Promise.resolve({canShow: true}));
+    mockSearchboxPageHandler = TestMock.fromClass(SearchboxPageHandlerRemote);
+    // <if expr="not is_android">
+    mockComposeboxPageHandler.setResultFor(
+        'getSmartTabSharingActive', Promise.resolve({active: false}));
+    // </if>
+    mockSearchboxPageHandler.setResultFor(
+        'getRecentTabs', Promise.resolve({tabs: []}));
+    mockSearchboxPageHandler.setResultFor(
+        'getPageClassification',
+        Promise.resolve({metricSource: 'CO_BROWSING_COMPOSEBOX'}));
+    mockSearchboxPageHandler.setResultFor(
+        'addTabContext', Promise.resolve({high: BigInt(1), low: BigInt(2)}));
+    mockSearchboxPageHandler.setResultFor(
+        'getInputState', Promise.resolve({state: new MockInputState()}));
+    const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
+    searchboxCallbackRouterRemote =
+        searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
+    ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
+        mockComposeboxPageHandler, mockSearchboxPageHandler,
+        searchboxCallbackRouter));
+
+    parts = await createCtComposeboxApp();
+    searchboxCallbackRouterRemote.onInputStateChanged(new MockInputState());
+    await microtasksFinished();
+  });
+
+  test('error scrim lifecycle: render, inert, dismiss', async () => {
+    const {innerComposebox} = parts;
+    const composeboxDiv =
+        innerComposebox.shadowRoot.querySelector('#composebox');
+    assertTrue(!!composeboxDiv);
+
+    // No error: no scrim in the DOM, composebox stays interactive.
+    assertFalse(!!innerComposebox.shadowRoot.querySelector('ntp-error-scrim'));
+    assertFalse(composeboxDiv.hasAttribute('inert'));
+
+    innerComposebox.errorMessage = 'Upload failed';
+    await innerComposebox.updateComplete;
+
+    const errorScrim =
+        innerComposebox.shadowRoot.querySelector('ntp-error-scrim');
+    assertTrue(!!errorScrim);
+    await errorScrim.updateComplete;
+    assertEquals('Upload failed', errorScrim.errorMessage);
+    const errorMessageElement =
+        errorScrim.shadowRoot.querySelector('#errorMessage');
+    assertTrue(!!errorMessageElement);
+    assertEquals('Upload failed', errorMessageElement.textContent);
+    assertTrue(composeboxDiv.hasAttribute('inert'));
+    // Outside voice search mode the scrim host must stay static, as in
+    // the shared template (no fork-specific positioning).
+    assertEquals('static', window.getComputedStyle(errorScrim).position);
+
+    const dismissErrorButton =
+        errorScrim.shadowRoot.querySelector<HTMLElement>('#dismissErrorButton');
+    assertTrue(!!dismissErrorButton);
+    dismissErrorButton.click();
+    await microtasksFinished();
+    await innerComposebox.updateComplete;
+
+    assertEquals('', innerComposebox.errorMessage);
+    assertFalse(!!innerComposebox.shadowRoot.querySelector('ntp-error-scrim'));
+    assertFalse(composeboxDiv.hasAttribute('inert'));
+  });
+
+  test('error scrim is position absolute in voice search mode', async () => {
+    const {innerComposebox} = parts;
+    innerComposebox.inVoiceSearchMode = true;
+    innerComposebox.errorMessage = 'Network error';
+    await innerComposebox.updateComplete;
+
+    const errorScrim =
+        innerComposebox.shadowRoot.querySelector('ntp-error-scrim');
+    assertTrue(!!errorScrim);
+    await errorScrim.updateComplete;
+    assertEquals('absolute', window.getComputedStyle(errorScrim).position);
+
+    innerComposebox.inVoiceSearchMode = false;
+    innerComposebox.errorMessage = '';
+    await innerComposebox.updateComplete;
+  });
 });
 
 // =============================================================================
-// Fork DUAL-PATH VOICE SUITE
-// Voice search is implemented by both the legacy <cr-composebox> and the
-// <contextual-tasks-inner-composebox>, so these tests run on both paths, in two
-// arms: voice search coherence disabled and enabled. All flows go through the
-// real component chain (mock SpeechRecognition callbacks, real buttons);
-// `composebox-voice-search-*` events are never dispatched directly.
+// Fork VOICE SUITE
 // =============================================================================
 
 // Deferred-end SpeechRecognition fake: the real API fires `onend`
@@ -2841,348 +2701,625 @@ class FakeSpeechRecognition {
 function createVoiceResults(transcripts: string[]): SpeechRecognitionEvent {
   return {
     results: transcripts.map(transcript => ({
-                              isFinal: false,
-                              length: 1,
-                              0: {transcript, confidence: 1},
-                            })),
+                               isFinal: false,
+                               length: 1,
+                               0: {transcript, confidence: 1},
+                             })),
     resultIndex: 0,
   } as unknown as SpeechRecognitionEvent;
 }
 
-[true, false].forEach(useFork => {
-  [true, false].forEach(coherenceEnabled => {
-    suite(
-        'ContextualTasksComposeboxForkVoiceTest ' +
-            `(useContextualTasksComposeboxFork = ${useFork}, ` +
-            `coherence = ${coherenceEnabled})`,
-        () => {
-          let testProxy: TestContextualTasksBrowserProxy;
-          let mockComposeboxPageHandler: TestMock<ComposeboxPageHandlerRemote>&
-              ComposeboxPageHandlerRemote;
-          let mockSearchboxPageHandler: TestMock<SearchboxPageHandlerRemote>&
-              SearchboxPageHandlerRemote;
-          let searchboxCallbackRouterRemote: SearchboxPageRemote;
-          let windowProxy: TestMock<WindowProxy>& WindowProxy;
-          let mockRecognition: FakeSpeechRecognition|null;
-          let metrics: MetricsTracker;
-          let parts: CtComposeboxAppParts;
+[true, false].forEach(coherenceEnabled => {
+  suite(
+      'ContextualTasksComposeboxForkVoiceTest ' +
+          `(coherence = ${coherenceEnabled})`,
+      () => {
+        let testProxy: TestContextualTasksBrowserProxy;
+        let mockComposeboxPageHandler: TestMock<ComposeboxPageHandlerRemote>&
+            ComposeboxPageHandlerRemote;
+        let mockSearchboxPageHandler: TestMock<SearchboxPageHandlerRemote>&
+            SearchboxPageHandlerRemote;
+        let searchboxCallbackRouterRemote: SearchboxPageRemote;
+        let windowProxy: TestMock<WindowProxy>&WindowProxy;
+        let mockRecognition: FakeSpeechRecognition|null;
+        let metrics: MetricsTracker;
+        let parts: CtComposeboxAppParts;
 
-          setup(async () => {
-            const voiceSearchClass = window.customElements.get('cr-composebox-voice-search') as any;
-            if (voiceSearchClass) {
-              voiceSearchClass.activeRecognition_ = null;
-              voiceSearchClass.pendingStartInstance_ = null;
-            }
-            if (!window.chrome) {
-              Object.assign(window, {chrome: {}});
-            }
-            document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        setup(async () => {
+          const voiceSearchClass =
+              window.customElements.get('cr-composebox-voice-search') as any;
+          if (voiceSearchClass) {
+            voiceSearchClass.activeRecognition_ = null;
+            voiceSearchClass.pendingStartInstance_ = null;
+          }
+          if (!window.chrome) {
+            Object.assign(window, {chrome: {}});
+          }
+          document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
-            loadTimeData.overrideValues({
-              contextualMenuUsePecApi: false,
-              composeboxSmartTabSharingVisible: false,
-              enableComposeboxJumpFix: false,
-              composeboxShowTypedSuggest: true,
-              composeboxShowZps: true,
-              enableBasicModeZOrder: true,
-              composeboxShowContextMenu: true,
-              composeboxHintTextLensOverlay: 'Test Lens Hint',
-              forcedEmbeddedPageHost: '',
-              tabFaviconChipsToCoinsEnabled: false,
-              voiceSearchCoherenceComposeboxesEnabled: coherenceEnabled,
-              voiceSearchCoherenceCobrowsingComposeboxEnabled: coherenceEnabled,
-              isSystemVoiceSearchEnabled: false,
-            });
-
-            metrics = fakeMetricsPrivate();
-
-            testProxy = new TestContextualTasksBrowserProxy(fixtureUrl);
-            BrowserProxyImpl.setInstance(testProxy);
-
-            mockRecognition = null;
-            windowProxy = TestMock.fromClass(WindowProxy);
-            windowProxy.setResultFor('hasWebkitSpeechRecognition', true);
-            windowProxy.setResultMapperFor('createSpeechRecognition', () => {
-              mockRecognition = new FakeSpeechRecognition();
-              return mockRecognition as unknown as SpeechRecognition;
-            });
-            windowProxy.setResultMapperFor(
-                'matchMedia', (query: string) => window.matchMedia(query));
-            windowProxy.setResultFor('setTimeout', 0);
-            WindowProxy.setInstance(windowProxy);
-
-            mockComposeboxPageHandler =
-                TestMock.fromClass(ComposeboxPageHandlerRemote);
-            mockComposeboxPageHandler.setResultFor(
-                'getSmartTabSharingActive', Promise.resolve({active: false}));
-            mockComposeboxPageHandler.setResultFor(
-                'canShowNextboxAnimation', Promise.resolve({canShow: true}));
-            mockSearchboxPageHandler =
-                TestMock.fromClass(SearchboxPageHandlerRemote);
-            mockSearchboxPageHandler.setResultFor(
-                'getRecentTabs', Promise.resolve({tabs: []}));
-            mockSearchboxPageHandler.setResultFor(
-                'getPageClassification',
-                Promise.resolve({metricSource: 'CO_BROWSING_COMPOSEBOX'}));
-            mockSearchboxPageHandler.setResultFor(
-                'addTabContext',
-                Promise.resolve({high: BigInt(1), low: BigInt(2)}));
-            mockSearchboxPageHandler.setResultFor(
-                'getInputState',
-                Promise.resolve({state: new MockInputState()}));
-            const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
-            searchboxCallbackRouterRemote =
-                searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
-            ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
-                mockComposeboxPageHandler, mockSearchboxPageHandler,
-                searchboxCallbackRouter));
-
-            parts = await createCtComposeboxApp(useFork);
-            searchboxCallbackRouterRemote.onInputStateChanged(
-                new MockInputState());
-            await microtasksFinished();
+          loadTimeData.overrideValues({
+            contextualMenuUsePecApi: false,
+            composeboxSmartTabSharingVisible: false,
+            enableComposeboxJumpFix: false,
+            composeboxShowTypedSuggest: true,
+            composeboxShowZps: true,
+            enableBasicModeZOrder: true,
+            composeboxShowContextMenu: true,
+            composeboxHintTextLensOverlay: 'Test Lens Hint',
+            forcedEmbeddedPageHost: '',
+            tabFaviconChipsToCoinsEnabled: false,
+            voiceSearchCoherenceComposeboxesEnabled: coherenceEnabled,
+            voiceSearchCoherenceCobrowsingComposeboxEnabled: coherenceEnabled,
+            isSystemVoiceSearchEnabled: false,
           });
 
-          teardown(() => {
-            // Release the static SpeechRecognition coordination state while
-            // the element is still in the DOM, then flush the deferred end.
-            const voiceSearch = parts.innerComposebox.shadowRoot.querySelector(
-                'cr-composebox-voice-search');
-            if (voiceSearch) {
-              (voiceSearch as unknown as {voiceModeEndCleanup_: () => void})
-                  .voiceModeEndCleanup_();
-            }
-            if (mockRecognition) {
-              mockRecognition.flushEnd();
-            }
+          metrics = fakeMetricsPrivate();
+
+          testProxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+          BrowserProxyImpl.setInstance(testProxy);
+
+          mockRecognition = null;
+          windowProxy = TestMock.fromClass(WindowProxy);
+          windowProxy.setResultFor('hasWebkitSpeechRecognition', true);
+          windowProxy.setResultMapperFor('createSpeechRecognition', () => {
+            mockRecognition = new FakeSpeechRecognition();
+            return mockRecognition as unknown as SpeechRecognition;
           });
+          windowProxy.setResultMapperFor(
+              'matchMedia', (query: string) => window.matchMedia(query));
+          windowProxy.setResultFor('setTimeout', 0);
+          WindowProxy.setInstance(windowProxy);
 
-          function getVoiceSearch() {
-            const voiceSearch = parts.innerComposebox.shadowRoot.querySelector(
-                'cr-composebox-voice-search');
-            assertTrue(!!voiceSearch, 'Voice search element should exist');
-            return voiceSearch;
+          mockComposeboxPageHandler =
+              TestMock.fromClass(ComposeboxPageHandlerRemote);
+          mockComposeboxPageHandler.setResultFor(
+              'getSmartTabSharingActive', Promise.resolve({active: false}));
+          mockComposeboxPageHandler.setResultFor(
+              'canShowNextboxAnimation', Promise.resolve({canShow: true}));
+          mockSearchboxPageHandler =
+              TestMock.fromClass(SearchboxPageHandlerRemote);
+          mockSearchboxPageHandler.setResultFor(
+              'getRecentTabs', Promise.resolve({tabs: []}));
+          mockSearchboxPageHandler.setResultFor(
+              'getPageClassification',
+              Promise.resolve({metricSource: 'CO_BROWSING_COMPOSEBOX'}));
+          mockSearchboxPageHandler.setResultFor(
+              'addTabContext',
+              Promise.resolve({high: BigInt(1), low: BigInt(2)}));
+          mockSearchboxPageHandler.setResultFor(
+              'getInputState', Promise.resolve({state: new MockInputState()}));
+          const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
+          searchboxCallbackRouterRemote =
+              searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
+          ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
+              mockComposeboxPageHandler, mockSearchboxPageHandler,
+              searchboxCallbackRouter));
+
+          parts = await createCtComposeboxApp();
+          searchboxCallbackRouterRemote.onInputStateChanged(
+              new MockInputState());
+          await microtasksFinished();
+        });
+
+        teardown(() => {
+          // Release the static SpeechRecognition coordination state while
+          // the element is still in the DOM, then flush the deferred end.
+          const voiceSearch = parts.innerComposebox.shadowRoot.querySelector(
+              'cr-composebox-voice-search');
+          if (voiceSearch) {
+            (voiceSearch as unknown as {
+              voiceModeEndCleanup_: () => void,
+            }).voiceModeEndCleanup_();
           }
-
-          function getRecognition(): FakeSpeechRecognition {
-            const recognition = mockRecognition;
-            assertTrue(!!recognition, 'Speech recognition should be created');
-            return recognition;
+          if (mockRecognition) {
+            mockRecognition.flushEnd();
           }
+        });
 
-          function getAnimatedGlow() {
-            const animatedGlow = parts.innerComposebox.shadowRoot.querySelector(
-                'search-animated-glow');
-            assertTrue(!!animatedGlow, 'Animated glow should exist');
-            return animatedGlow;
-          }
+        function getVoiceSearch() {
+          const voiceSearch = parts.innerComposebox.shadowRoot.querySelector(
+              'cr-composebox-voice-search');
+          assertTrue(!!voiceSearch, 'Voice search element should exist');
+          return voiceSearch;
+        }
 
-          async function enterVoiceSearchMode() {
-            const voiceSearchButton =
-                parts.innerComposebox.shadowRoot.querySelector<HTMLElement>(
-                    '#voiceSearchButton');
-            assertTrue(!!voiceSearchButton, 'Voice search button should exist');
-            voiceSearchButton.click();
-            await microtasksFinished();
-            await parts.innerComposebox.updateComplete;
-            await getAnimatedGlow().updateComplete;
-            await getVoiceSearch().updateComplete;
-          }
+        function getRecognition(): FakeSpeechRecognition {
+          const recognition = mockRecognition;
+          assertTrue(!!recognition, 'Speech recognition should be created');
+          return recognition;
+        }
 
-          function fireRecognitionResult(transcripts: string[]) {
-            const recognition = getRecognition();
-            assertTrue(!!recognition.onresult, 'onresult should be wired');
-            recognition.onresult(createVoiceResults(transcripts));
-          }
+        function getAnimatedGlow() {
+          const animatedGlow = parts.innerComposebox.shadowRoot.querySelector(
+              'search-animated-glow');
+          assertTrue(!!animatedGlow, 'Animated glow should exist');
+          return animatedGlow;
+        }
 
-          function fireRecognitionError(error: string) {
-            const recognition = getRecognition();
-            assertTrue(!!recognition.onerror, 'onerror should be wired');
-            recognition.onerror({error} as SpeechRecognitionErrorEvent);
-          }
+        async function enterVoiceSearchMode() {
+          const voiceSearchButton =
+              parts.innerComposebox.shadowRoot.querySelector<HTMLElement>(
+                  '#voiceSearchButton');
+          assertTrue(!!voiceSearchButton, 'Voice search button should exist');
+          voiceSearchButton.click();
+          await microtasksFinished();
+          await parts.innerComposebox.updateComplete;
+          await getAnimatedGlow().updateComplete;
+          await getVoiceSearch().updateComplete;
+        }
 
-          async function whenMetricSourceFetched() {
-            await mockSearchboxPageHandler.whenCalled('getPageClassification');
-            await microtasksFinished();
-            assertEquals(
-                1,
-                mockSearchboxPageHandler.getCallCount('getPageClassification'));
-            assertEquals(
-                'CO_BROWSING_COMPOSEBOX', getVoiceSearch().metricSource);
-          }
+        function fireRecognitionResult(transcripts: string[]) {
+          const recognition = getRecognition();
+          assertTrue(!!recognition.onresult, 'onresult should be wired');
+          recognition.onresult(createVoiceResults(transcripts));
+        }
 
-          // Executes the last idle-timeout callback scheduled after `baseline`
-          // setTimeout calls. The call-count baseline excludes timers already
-          // armed during start; the delay filter excludes the 0ms
-          // outside-listener registration.
-          async function fireIdleTimeout(baseline: number) {
-            const idleTimeout = getVoiceSearch().idleTimeout;
-            const idleCallbacks =
-                windowProxy.getArgs('setTimeout')
-                    .slice(baseline)
-                    .filter(
-                        (args: [() => void, number]) => args[1] === idleTimeout)
-                    .map((args: [() => void, number]) => args[0]);
-            const lastIdleCallback = idleCallbacks.pop();
-            assertTrue(
-                !!lastIdleCallback, 'onresult should re-arm the idle timer');
-            lastIdleCallback();
-            await microtasksFinished();
-            await parts.innerComposebox.updateComplete;
-          }
+        function fireRecognitionError(error: string) {
+          const recognition = getRecognition();
+          assertTrue(!!recognition.onerror, 'onerror should be wired');
+          recognition.onerror({error} as SpeechRecognitionErrorEvent);
+        }
 
-          suite('SurfaceAndStartup', () => {
-            test(
-                'voice button and overlay render behind inherited gating',
-                async () => {
-                  const inner = parts.innerComposebox;
-                  const voiceSearchButton =
-                      inner.shadowRoot.querySelector<HTMLElement>(
-                          '#voiceSearchButton');
-                  assertTrue(!!voiceSearchButton);
-                  assertTrue(voiceSearchButton.part.contains('voice-icon'));
-                  assertEquals(
-                      'cr:mic-filled',
-                      voiceSearchButton.getAttribute('iron-icon'));
-                  assertEquals(
-                      loadTimeData.getString('voiceSearchButtonLabel'),
-                      voiceSearchButton.title);
-                  assertTrue(!!inner.shadowRoot.querySelector(
-                      'cr-composebox-voice-search'));
+        async function whenMetricSourceFetched() {
+          await mockSearchboxPageHandler.whenCalled('getPageClassification');
+          await microtasksFinished();
+          assertEquals(
+              1,
+              mockSearchboxPageHandler.getCallCount('getPageClassification'));
+          assertEquals('CO_BROWSING_COMPOSEBOX', getVoiceSearch().metricSource);
+        }
 
-                  inner.showVoiceSearch = false;
-                  await inner.updateComplete;
-                  assertFalse(
-                      !!inner.shadowRoot.querySelector('#voiceSearchButton'));
-                  assertFalse(!!inner.shadowRoot.querySelector(
-                      'cr-composebox-voice-search'));
-                });
+        // Executes the last idle-timeout callback scheduled after `baseline`
+        // setTimeout calls. The call-count baseline excludes timers already
+        // armed during start; the delay filter excludes the 0ms
+        // outside-listener registration.
+        async function fireIdleTimeout(baseline: number) {
+          const idleTimeout = getVoiceSearch().idleTimeout;
+          const idleCallbacks =
+              windowProxy.getArgs('setTimeout')
+                  .slice(baseline)
+                  .filter(
+                      (args: [() => void, number]) => args[1] === idleTimeout)
+                  .map((args: [() => void, number]) => args[0]);
+          const lastIdleCallback = idleCallbacks.pop();
+          assertTrue(
+              !!lastIdleCallback, 'onresult should re-arm the idle timer');
+          lastIdleCallback();
+          await microtasksFinished();
+          await parts.innerComposebox.updateComplete;
+        }
 
-            test(
-                'voice surface absent without speech recognition API',
-                async () => {
-                  windowProxy.setResultFor('hasWebkitSpeechRecognition', false);
-                  document.body.innerHTML = window.trustedTypes!.emptyHTML;
-                  parts = await createCtComposeboxApp(useFork);
+        suite('SurfaceAndStartup', () => {
+          test(
+              'voice button and overlay render behind inherited gating',
+              async () => {
+                const inner = parts.innerComposebox;
+                const voiceSearchButton =
+                    inner.shadowRoot.querySelector<HTMLElement>(
+                        '#voiceSearchButton');
+                assertTrue(!!voiceSearchButton);
+                assertTrue(voiceSearchButton.part.contains('voice-icon'));
+                assertEquals(
+                    'cr:mic-filled',
+                    voiceSearchButton.getAttribute('iron-icon'));
+                assertEquals(
+                    loadTimeData.getString('voiceSearchButtonLabel'),
+                    voiceSearchButton.title);
+                assertTrue(!!inner.shadowRoot.querySelector(
+                    'cr-composebox-voice-search'));
 
-                  const inner = parts.innerComposebox;
-                  assertTrue(inner.showVoiceSearch);
-                  assertFalse(
-                      !!inner.shadowRoot.querySelector('#voiceSearchButton'));
-                  assertFalse(!!inner.shadowRoot.querySelector(
-                      'cr-composebox-voice-search'));
-                });
-
-            test(
-                'entering voice search mode hides composebox and starts ' +
-                    'recognition',
-                async () => {
-                  const inner = parts.innerComposebox;
-                  const voiceSearch = getVoiceSearch();
-                  const composeboxDiv =
-                      inner.shadowRoot.querySelector('#composebox');
-                  assertTrue(!!composeboxDiv);
-                  assertEquals(
-                      'none', window.getComputedStyle(voiceSearch).display);
-
-                  await enterVoiceSearchMode();
-
-                  assertTrue(getRecognition().started);
-                  assertTrue(inner.inVoiceSearchMode);
-                  assertTrue(
-                      parts.wrapper.hasAttribute('in-voice-search-mode_'));
-                  assertEquals(
-                      'none', window.getComputedStyle(composeboxDiv).display);
-                  assertEquals(
-                      'block', window.getComputedStyle(voiceSearch).display);
-                  assertTrue(getAnimatedGlow().isListening);
-                  assertEquals(
-                      1,
-                      metrics.count(
-                          'ContextualTasks.VoiceSearch.StateV2',
-                          VoiceSearchState.VOICE_SEARCH_BUTTON_CLICKED));
-                });
-
-            test('glow receives voice bindings', async () => {
-              const animatedGlow = getAnimatedGlow();
-              assertEquals(
-                  coherenceEnabled,
-                  animatedGlow.coloredTicTacVoiceAnimationEnabled);
-              assertTrue(animatedGlow.requiresVoice);
-              assertFalse(animatedGlow.isListening);
-
-              await enterVoiceSearchMode();
-              assertTrue(animatedGlow.isListening);
-
-              if (coherenceEnabled) {
-                assertTrue(
-                    !!animatedGlow.shadowRoot.querySelector('#recordingWave'));
+                inner.showVoiceSearch = false;
+                await inner.updateComplete;
                 assertFalse(
-                    !!animatedGlow.shadowRoot.querySelector('audio-wave'));
-              } else {
-                fireRecognitionResult(['hello', 'world']);
-                await microtasksFinished();
-                await parts.innerComposebox.updateComplete;
-                await animatedGlow.updateComplete;
+                    !!inner.shadowRoot.querySelector('#voiceSearchButton'));
+                assertFalse(!!inner.shadowRoot.querySelector(
+                    'cr-composebox-voice-search'));
+              });
 
-                assertEquals('helloworld', animatedGlow.transcript);
-                assertTrue(animatedGlow.receivedSpeech);
-                const audioWave =
-                    animatedGlow.shadowRoot.querySelector<HTMLElement&{
-                      transcript: string,
-                      receivedSpeech: boolean,
-                    }>('audio-wave');
-                assertTrue(!!audioWave);
-                assertEquals('helloworld', audioWave.transcript);
-                assertTrue(audioWave.receivedSpeech);
+          test(
+              'voice surface absent without speech recognition API',
+              async () => {
+                windowProxy.setResultFor('hasWebkitSpeechRecognition', false);
+                document.body.innerHTML = window.trustedTypes!.emptyHTML;
+                parts = await createCtComposeboxApp();
+
+                const inner = parts.innerComposebox;
+                assertTrue(inner.showVoiceSearch);
                 assertFalse(
-                    !!animatedGlow.shadowRoot.querySelector('#recordingWave'));
-              }
-            });
-          });
+                    !!inner.shadowRoot.querySelector('#voiceSearchButton'));
+                assertFalse(!!inner.shadowRoot.querySelector(
+                    'cr-composebox-voice-search'));
+              });
 
-          suite('RecognitionAndSubmission', () => {
-            test('transcription success submits voice query', async () => {
-              const inner = parts.innerComposebox;
-              await whenMetricSourceFetched();
+          test(
+              'entering voice search mode hides composebox and starts ' +
+                  'recognition',
+              async () => {
+                const inner = parts.innerComposebox;
+                const voiceSearch = getVoiceSearch();
+                const composeboxDiv =
+                    inner.shadowRoot.querySelector('#composebox');
+                assertTrue(!!composeboxDiv);
+                assertEquals(
+                    'none', window.getComputedStyle(voiceSearch).display);
 
-              await enterVoiceSearchMode();
-              assertEquals(
-                  1,
-                  metrics.count(
-                      'VoiceSearch.Action.CO_BROWSING_COMPOSEBOX',
-                      VoiceSearchAction.ACTIVATED_BY_ICON));
+                await enterVoiceSearchMode();
 
-              const baseline = windowProxy.getCallCount('setTimeout');
+                assertTrue(getRecognition().started);
+                assertTrue(inner.inVoiceSearchMode);
+                assertTrue(parts.wrapper.hasAttribute('in-voice-search-mode_'));
+                assertEquals(
+                    'none', window.getComputedStyle(composeboxDiv).display);
+                assertEquals(
+                    'block', window.getComputedStyle(voiceSearch).display);
+                assertTrue(getAnimatedGlow().isListening);
+                assertEquals(
+                    1,
+                    metrics.count(
+                        'ContextualTasks.VoiceSearch.StateV2',
+                        VoiceSearchState.VOICE_SEARCH_BUTTON_CLICKED));
+              });
+
+          test('glow receives voice bindings', async () => {
+            const animatedGlow = getAnimatedGlow();
+            assertEquals(
+                coherenceEnabled,
+                animatedGlow.coloredTicTacVoiceAnimationEnabled);
+            assertTrue(animatedGlow.requiresVoice);
+            assertFalse(animatedGlow.isListening);
+
+            await enterVoiceSearchMode();
+            assertTrue(animatedGlow.isListening);
+
+            if (coherenceEnabled) {
+              assertTrue(
+                  !!animatedGlow.shadowRoot.querySelector('#recordingWave'));
+              assertFalse(
+                  !!animatedGlow.shadowRoot.querySelector('audio-wave'));
+            } else {
               fireRecognitionResult(['hello', 'world']);
               await microtasksFinished();
-              await fireIdleTimeout(baseline);
+              await parts.innerComposebox.updateComplete;
+              await animatedGlow.updateComplete;
 
-              const submitArgs =
-                  await mockSearchboxPageHandler.whenCalled('submitQuery');
-              assertEquals(
-                  1, mockSearchboxPageHandler.getCallCount('submitQuery'));
-              assertEquals('helloworld', submitArgs[0]);
-              assertTrue(submitArgs[6], 'Should submit as a voice query');
+              assertEquals('helloworld', animatedGlow.transcript);
+              assertTrue(animatedGlow.receivedSpeech);
+              const audioWave =
+                  animatedGlow.shadowRoot.querySelector<HTMLElement&{
+                    transcript: string,
+                    receivedSpeech: boolean,
+                  }>('audio-wave');
+              assertTrue(!!audioWave);
+              assertEquals('helloworld', audioWave.transcript);
+              assertTrue(audioWave.receivedSpeech);
+              assertFalse(
+                  !!animatedGlow.shadowRoot.querySelector('#recordingWave'));
+            }
+          });
+        });
+
+        suite('RecognitionAndSubmission', () => {
+          test('transcription success submits voice query', async () => {
+            const inner = parts.innerComposebox;
+            await whenMetricSourceFetched();
+
+            await enterVoiceSearchMode();
+            assertEquals(
+                1,
+                metrics.count(
+                    'VoiceSearch.Action.CO_BROWSING_COMPOSEBOX',
+                    VoiceSearchAction.ACTIVATED_BY_ICON));
+
+            const baseline = windowProxy.getCallCount('setTimeout');
+            fireRecognitionResult(['hello', 'world']);
+            await microtasksFinished();
+            await fireIdleTimeout(baseline);
+
+            const submitArgs =
+                await mockSearchboxPageHandler.whenCalled('submitQuery');
+            assertEquals(
+                1, mockSearchboxPageHandler.getCallCount('submitQuery'));
+            assertEquals('helloworld', submitArgs[0]);
+            assertTrue(submitArgs[6], 'Should submit as a voice query');
+            assertFalse(inner.inVoiceSearchMode);
+            assertEquals(
+                1,
+                metrics.count(
+                    'ContextualTasks.VoiceSearch.StateV2',
+                    VoiceSearchState.SUCCESSFUL_TRANSCRIPT));
+            assertEquals(
+                1,
+                metrics.count(
+                    'VoiceSearch.Action.CO_BROWSING_COMPOSEBOX',
+                    VoiceSearchAction.QUERY_SUBMITTED));
+            assertEquals(
+                1,
+                metrics.count(
+                    'VoiceSearch.QuerySubmission.Source',
+                    VoiceSearchQuerySource.NEXTBOX_COMPOSEBOX));
+
+            getRecognition().flushEnd();
+            await microtasksFinished();
+            assertEquals(
+                0,
+                metrics.count(
+                    'ContextualTasks.VoiceSearch.StateV2',
+                    VoiceSearchState.VOICE_SEARCH_ERROR));
+            assertEquals(
+                0,
+                metrics.count(
+                    'ContextualTasks.VoiceSearch.StateV2',
+                    VoiceSearchState.VOICE_SEARCH_ERROR_AND_CANCELED));
+          });
+        });
+
+        suite('ErrorPermissionAndLayout', () => {
+          test(
+              'non-canceling network error keeps voice search open',
+              async () => {
+                const inner = parts.innerComposebox;
+                await enterVoiceSearchMode();
+
+                fireRecognitionError('network');
+                await microtasksFinished();
+                await inner.updateComplete;
+
+                const voiceSearch = getVoiceSearch();
+                const errorContainer =
+                    voiceSearch.shadowRoot.querySelector<HTMLElement>(
+                        '#error-container');
+                assertTrue(!!errorContainer);
+                assertFalse(errorContainer.hidden);
+                assertTrue(inner.inVoiceSearchMode);
+                assertTrue(parts.wrapper.hasAttribute('in-voice-search-mode_'));
+                assertEquals(
+                    1,
+                    metrics.count(
+                        'ContextualTasks.VoiceSearch.StateV2',
+                        VoiceSearchState.VOICE_SEARCH_ERROR));
+                assertEquals(
+                    0,
+                    metrics.count(
+                        'ContextualTasks.VoiceSearch.StateV2',
+                        VoiceSearchState.VOICE_SEARCH_ERROR_AND_CANCELED));
+                assertEquals(
+                    0,
+                    metrics.count(
+                        'ContextualTasks.VoiceSearch.StateV2',
+                        VoiceSearchState.VOICE_SEARCH_CANCELED));
+              });
+
+          test('error details link is exported and clickable', async () => {
+            await enterVoiceSearchMode();
+            fireRecognitionError('network');
+            await microtasksFinished();
+
+            const voiceSearch = getVoiceSearch();
+            await voiceSearch.updateComplete;
+            const exportparts = voiceSearch.getAttribute('exportparts');
+            assertTrue(!!exportparts);
+            const exportedTokens =
+                exportparts.split(',').map(token => token.trim());
+            ['voice-close-button', 'voice-details-link', 'voice-stop-button',
+             'voice-submit-button']
+                .forEach(token => {
+                  assertTrue(
+                      exportedTokens.includes(token),
+                      `exportparts should include ${token}`);
+                });
+
+            const detailsLink =
+                voiceSearch.shadowRoot.querySelector<HTMLAnchorElement>(
+                    '#details');
+            assertTrue(!!detailsLink);
+            assertTrue(detailsLink.part.contains('voice-details-link'));
+
+            // Isolate the wrapper `::part(voice-details-link)` rule: the
+            // element's own `#error-container` rule sets pointer-events: auto
+            // on the whole container, which would mask a missing exportparts
+            // chain.
+            const errorContainer =
+                voiceSearch.shadowRoot.querySelector<HTMLElement>(
+                    '#error-container');
+            assertTrue(!!errorContainer);
+            errorContainer.style.pointerEvents = 'none';
+            assertEquals(
+                'auto', window.getComputedStyle(detailsLink).pointerEvents);
+
+            const cancelEvent = eventToPromise<CustomEvent<boolean>>(
+                'voice-search-cancel', voiceSearch);
+            detailsLink.click();
+            const e = await cancelEvent;
+            assertFalse(e.detail, 'Details click is not a user cancel');
+            assertEquals(
+                1, mockComposeboxPageHandler.getCallCount('navigateUrl'));
+            const navigatedUrl =
+                await mockComposeboxPageHandler.whenCalled('navigateUrl');
+            assertTrue(navigatedUrl.includes('support.google.com'));
+          });
+
+          test('no-match error cancels voice search', async () => {
+            const inner = parts.innerComposebox;
+            await enterVoiceSearchMode();
+
+            const recognition = getRecognition();
+            assertTrue(!!recognition.onnomatch, 'onnomatch should be wired');
+            recognition.onnomatch();
+            await microtasksFinished();
+            await inner.updateComplete;
+
+            assertFalse(inner.inVoiceSearchMode);
+            assertFalse(parts.wrapper.hasAttribute('in-voice-search-mode_'));
+            assertEquals(
+                1,
+                metrics.count(
+                    'ContextualTasks.VoiceSearch.StateV2',
+                    VoiceSearchState.VOICE_SEARCH_ERROR_AND_CANCELED));
+            assertEquals(
+                0,
+                metrics.count(
+                    'ContextualTasks.VoiceSearch.StateV2',
+                    VoiceSearchState.VOICE_SEARCH_CANCELED));
+          });
+
+          test('permission prompt pauses listening', async () => {
+            loadTimeData.overrideValues(
+                {voiceWaiting: 'Waiting for permission'});
+            const inner = parts.innerComposebox;
+            await enterVoiceSearchMode();
+            const voiceSearch = getVoiceSearch();
+
+            const permissionEvent = eventToPromise<CustomEvent<{
+              isOpened: boolean,
+            }>>('voice-permission-changed', voiceSearch);
+            searchboxCallbackRouterRemote.onPermissionPromptChanged(
+                true, {width: 100, height: 100});
+            await searchboxCallbackRouterRemote.$.flushForTesting();
+            await microtasksFinished();
+            await inner.updateComplete;
+            await voiceSearch.updateComplete;
+
+            const permissionState = await permissionEvent;
+            assertTrue(permissionState.detail.isOpened);
+            assertTrue(voiceSearch.isPermissionPromptOpen);
+            assertFalse(inner.isListening);
+            assertTrue(
+                getAnimatedGlow().classList.contains(
+                    'permission-prompt-showing'));
+            assertTrue(
+                voiceSearch.classList.contains('permission-prompt-showing'));
+            const waitingInput =
+                voiceSearch.shadowRoot.querySelector<HTMLElement>('#input');
+            assertTrue(!!waitingInput);
+            assertTrue(
+                waitingInput.textContent.includes('Waiting for permission'));
+
+            searchboxCallbackRouterRemote.onPermissionPromptChanged(
+                false, {width: 0, height: 0});
+            await searchboxCallbackRouterRemote.$.flushForTesting();
+            await microtasksFinished();
+            await inner.updateComplete;
+            await voiceSearch.updateComplete;
+
+            assertFalse(voiceSearch.isPermissionPromptOpen);
+            assertTrue(inner.isListening);
+            assertFalse(
+                getAnimatedGlow().classList.contains(
+                    'permission-prompt-showing'));
+            assertFalse(
+                voiceSearch.classList.contains('permission-prompt-showing'));
+          });
+
+          test(
+              'voice search and its container are absolute when not ' +
+                  'waiting and not in error',
+              async () => {
+                await enterVoiceSearchMode();
+                const voiceSearch = getVoiceSearch();
+                const container =
+                    voiceSearch.shadowRoot.querySelector('#container');
+                assertTrue(!!container);
+
+                assertEquals(
+                    'absolute', window.getComputedStyle(voiceSearch).position);
+                assertEquals(
+                    coherenceEnabled ? 'absolute' : 'relative',
+                    window.getComputedStyle(container).position);
+
+                // Waiting (permission prompt open):
+                searchboxCallbackRouterRemote.onPermissionPromptChanged(
+                    true, {width: 100, height: 100});
+                await searchboxCallbackRouterRemote.$.flushForTesting();
+                await microtasksFinished();
+                await voiceSearch.updateComplete;
+                assertNotEquals(
+                    'absolute', window.getComputedStyle(container).position);
+
+                searchboxCallbackRouterRemote.onPermissionPromptChanged(
+                    false, {width: 0, height: 0});
+                await searchboxCallbackRouterRemote.$.flushForTesting();
+                await microtasksFinished();
+                await voiceSearch.updateComplete;
+
+                // In error:
+                fireRecognitionError('network');
+                await microtasksFinished();
+                await voiceSearch.updateComplete;
+                assertNotEquals(
+                    'absolute', window.getComputedStyle(container).position);
+              });
+        });
+
+        if (!coherenceEnabled) {
+          suite('NonCoherenceTranscriptAndCancel', () => {
+            test(
+                'live transcript input renders without coherence', async () => {
+                  const inner = parts.innerComposebox;
+                  assertFalse(parts.wrapper.hasAttribute(
+                      'voice-search-coherence-enabled_'));
+                  assertFalse(inner.voiceSearchCoherenceEnabled);
+
+                  await enterVoiceSearchMode();
+                  const voiceSearch = getVoiceSearch();
+                  assertTrue(voiceSearch.liveTranscriptEnabled);
+                  assertFalse(voiceSearch.submitStopButtonsEnabled);
+                  assertFalse(
+                      !!voiceSearch.shadowRoot.querySelector('#bottomActions'));
+
+                  const closeButton =
+                      voiceSearch.shadowRoot.querySelector<HTMLElement>(
+                          '#closeButton');
+                  assertTrue(!!closeButton);
+                  assertTrue(closeButton.part.contains('voice-close-button'));
+
+                  const transcriptText =
+                      voiceSearch.shadowRoot.querySelector<HTMLElement>(
+                          '#transcript-text');
+                  assertTrue(!!transcriptText);
+                  assertEquals(
+                      loadTimeData.getString('voiceListening'),
+                      transcriptText.textContent.trim());
+
+                  fireRecognitionResult(['hello', 'world']);
+                  await microtasksFinished();
+                  await voiceSearch.updateComplete;
+                  assertEquals('helloworld', transcriptText.textContent.trim());
+                });
+
+            test('user cancel preserves composebox input', async () => {
+              const inner = parts.innerComposebox;
+              inner.input = 'draft text';
+              await inner.updateComplete;
+
+              await enterVoiceSearchMode();
+              fireRecognitionResult(['hello']);
+              await microtasksFinished();
+              await inner.updateComplete;
+
+              assertEquals('draft text', inner.input);
+              assertEquals('hello', inner.transcript);
+              assertTrue(inner.receivedSpeech);
+
+              const voiceSearch = getVoiceSearch();
+              const closeButton =
+                  voiceSearch.shadowRoot.querySelector<HTMLElement>(
+                      '#closeButton');
+              assertTrue(!!closeButton);
+              closeButton.click();
+              await microtasksFinished();
+              await inner.updateComplete;
+              getRecognition().flushEnd();
+              await microtasksFinished();
+
+              assertEquals('draft text', inner.input);
               assertFalse(inner.inVoiceSearchMode);
+              assertEquals('', inner.transcript);
+              assertFalse(inner.receivedSpeech);
               assertEquals(
                   1,
                   metrics.count(
                       'ContextualTasks.VoiceSearch.StateV2',
-                      VoiceSearchState.SUCCESSFUL_TRANSCRIPT));
-              assertEquals(
-                  1,
-                  metrics.count(
-                      'VoiceSearch.Action.CO_BROWSING_COMPOSEBOX',
-                      VoiceSearchAction.QUERY_SUBMITTED));
-              assertEquals(
-                  1,
-                  metrics.count(
-                      'VoiceSearch.QuerySubmission.Source',
-                      VoiceSearchQuerySource.NEXTBOX_COMPOSEBOX));
-
-              getRecognition().flushEnd();
-              await microtasksFinished();
+                      VoiceSearchState.VOICE_SEARCH_CANCELED));
               assertEquals(
                   0,
                   metrics.count(
@@ -3195,676 +3332,384 @@ function createVoiceResults(transcripts: string[]): SpeechRecognitionEvent {
                       VoiceSearchState.VOICE_SEARCH_ERROR_AND_CANCELED));
             });
           });
+        }
 
-          suite('ErrorPermissionAndLayout', () => {
+        if (coherenceEnabled) {
+          async function submitVoiceSearchViaSubmitButton(
+              transcripts: string[]) {
+            const voiceSearch = getVoiceSearch();
+            fireRecognitionResult(transcripts);
+            await microtasksFinished();
+            await voiceSearch.updateComplete;
+
+            const submitButton =
+                voiceSearch.shadowRoot.querySelector('cr-composebox-submit');
+            assertTrue(!!submitButton);
+            assertFalse(submitButton.disabled);
+            await submitButton.updateComplete;
+            const submitContainer =
+                submitButton.shadowRoot.querySelector<HTMLElement>(
+                    '#submitContainer');
+            assertTrue(!!submitContainer);
+            submitContainer.click();
+            await microtasksFinished();
+            await parts.innerComposebox.updateComplete;
+            await mockSearchboxPageHandler.whenCalled('submitQuery');
+          }
+
+          async function addImageFile() {
+            const thumbnailUrl = 'data:image/png;base64,sometestdata';
+            const testToken = '12345678901234567890123456789012';
+            searchboxCallbackRouterRemote.addFileContext(testToken, {
+              fileName: 'test.png',
+              mimeType: 'image/png',
+              imageDataUrl: thumbnailUrl,
+              isDeletable: true,
+              selectionTime: new Date(),
+            } as SelectedFileInfo);
+            await searchboxCallbackRouterRemote.$.flushForTesting();
+            await microtasksFinished();
+            await parts.innerComposebox.updateComplete;
+          }
+
+          async function removeImageFromVoiceCarousel(voiceCarousel: Element) {
+            const shadowRoot = voiceCarousel.shadowRoot;
+            assertTrue(!!shadowRoot);
+            const fileThumbnail =
+                shadowRoot.querySelector('cr-composebox-file-thumbnail');
+            assertTrue(!!fileThumbnail);
+            const removeImgButton =
+                fileThumbnail.shadowRoot.querySelector<HTMLElement>(
+                    '#removeImgButton');
+            assertTrue(!!removeImgButton);
+            removeImgButton.click();
+            await microtasksFinished();
+            await parts.innerComposebox.updateComplete;
+          }
+
+          suite('CoherenceControlsFilesAndLifecycle', () => {
             test(
-                'non-canceling network error keeps voice search open',
+                'coherence overlay shows stop and submit controls',
                 async () => {
                   const inner = parts.innerComposebox;
+                  assertTrue(parts.wrapper.hasAttribute(
+                      'voice-search-coherence-enabled_'));
+                  assertTrue(inner.voiceSearchCoherenceEnabled);
+
+                  await enterVoiceSearchMode();
+                  const voiceSearch = getVoiceSearch();
+                  assertFalse(voiceSearch.liveTranscriptEnabled);
+                  assertTrue(voiceSearch.submitStopButtonsEnabled);
+                  assertFalse(!!voiceSearch.shadowRoot.querySelector('#input'));
+                  assertFalse(
+                      !!voiceSearch.shadowRoot.querySelector('#closeButton'));
+
+                  assertEquals(
+                      SubmitButtonIconType.UPWARD, inner.submitButtonIconType);
+                  assertEquals(
+                      inner.submitButtonIconType,
+                      voiceSearch.submitButtonIconType);
+
+                  const stopButton =
+                      voiceSearch.shadowRoot.querySelector<HTMLElement>(
+                          '#stopButton');
+                  assertTrue(!!stopButton);
+                  assertTrue(stopButton.part.contains('voice-stop-button'));
+                  assertFalse(stopButton.hasAttribute('disabled'));
+
+                  const submitButton = voiceSearch.shadowRoot.querySelector(
+                      'cr-composebox-submit');
+                  assertTrue(!!submitButton);
+                  assertTrue(submitButton.part.contains('voice-submit-button'));
+                  assertEquals(
+                      SubmitButtonIconType.UPWARD, submitButton.iconType);
+                  assertTrue(submitButton.disabled);
+                  assertEquals(
+                      '0',
+                      window.getComputedStyle(submitButton)
+                          .getPropertyValue(
+                              '--cr-composebox-submit-icon-offset')
+                          .trim());
+
+                  fireRecognitionResult(['hello']);
+                  await microtasksFinished();
+                  await voiceSearch.updateComplete;
+                  assertFalse(submitButton.disabled);
+                });
+
+            test(
+                'recording stopped populates input without submitting',
+                async () => {
+                  const inner = parts.innerComposebox;
+                  await whenMetricSourceFetched();
                   await enterVoiceSearchMode();
 
-                  fireRecognitionError('network');
+                  fireRecognitionResult(['hello', 'world']);
+                  await microtasksFinished();
+                  const voiceSearch = getVoiceSearch();
+                  await voiceSearch.updateComplete;
+
+                  const stopButton =
+                      voiceSearch.shadowRoot.querySelector<HTMLElement>(
+                          '#stopButton');
+                  assertTrue(!!stopButton);
+                  assertFalse(stopButton.hasAttribute('disabled'));
+                  stopButton.click();
                   await microtasksFinished();
                   await inner.updateComplete;
+                  getRecognition().flushEnd();
+                  await microtasksFinished();
 
-                  const voiceSearch = getVoiceSearch();
-                  const errorContainer =
-                      voiceSearch.shadowRoot.querySelector<HTMLElement>(
-                          '#error-container');
-                  assertTrue(!!errorContainer);
-                  assertFalse(errorContainer.hidden);
-                  assertTrue(inner.inVoiceSearchMode);
-                  assertTrue(
-                      parts.wrapper.hasAttribute('in-voice-search-mode_'));
+                  assertEquals('helloworld', inner.input);
+                  assertFalse(inner.inVoiceSearchMode);
+                  assertEquals(
+                      1,
+                      mockSearchboxPageHandler.getCallCount(
+                          'queryAutocomplete'));
+                  const queryArgs =
+                      mockSearchboxPageHandler.getArgs('queryAutocomplete')[0];
+                  assertEquals('helloworld', queryArgs[2]);
+                  assertEquals(
+                      0, mockSearchboxPageHandler.getCallCount('submitQuery'));
                   assertEquals(
                       1,
                       metrics.count(
-                          'ContextualTasks.VoiceSearch.StateV2',
-                          VoiceSearchState.VOICE_SEARCH_ERROR));
-                  assertEquals(
-                      0,
-                      metrics.count(
-                          'ContextualTasks.VoiceSearch.StateV2',
-                          VoiceSearchState.VOICE_SEARCH_ERROR_AND_CANCELED));
-                  assertEquals(
-                      0,
-                      metrics.count(
-                          'ContextualTasks.VoiceSearch.StateV2',
-                          VoiceSearchState.VOICE_SEARCH_CANCELED));
+                          'VoiceSearch.Action.CO_BROWSING_COMPOSEBOX',
+                          VoiceSearchAction.STOP_BUTTON_CLICKED));
                 });
 
-            test('error details link is exported and clickable', async () => {
-              await enterVoiceSearchMode();
-              fireRecognitionError('network');
-              await microtasksFinished();
-
-              const voiceSearch = getVoiceSearch();
-              await voiceSearch.updateComplete;
-              const exportparts = voiceSearch.getAttribute('exportparts');
-              assertTrue(!!exportparts);
-              const exportedTokens =
-                  exportparts.split(',').map(token => token.trim());
-              ['voice-close-button', 'voice-details-link', 'voice-stop-button',
-               'voice-submit-button']
-                  .forEach(token => {
-                    assertTrue(
-                        exportedTokens.includes(token),
-                        `exportparts should include ${token}`);
-                  });
-
-              const detailsLink =
-                  voiceSearch.shadowRoot.querySelector<HTMLAnchorElement>(
-                      '#details');
-              assertTrue(!!detailsLink);
-              assertTrue(detailsLink.part.contains('voice-details-link'));
-
-              // Isolate the wrapper `::part(voice-details-link)` rule: the
-              // element's own `#error-container` rule sets pointer-events: auto
-              // on the whole container, which would mask a missing exportparts
-              // chain.
-              const errorContainer =
-                  voiceSearch.shadowRoot.querySelector<HTMLElement>(
-                      '#error-container');
-              assertTrue(!!errorContainer);
-              errorContainer.style.pointerEvents = 'none';
-              assertEquals(
-                  'auto', window.getComputedStyle(detailsLink).pointerEvents);
-
-              const cancelEvent = eventToPromise<CustomEvent<boolean>>(
-                  'voice-search-cancel', voiceSearch);
-              detailsLink.click();
-              const e = await cancelEvent;
-              assertFalse(e.detail, 'Details click is not a user cancel');
-              assertEquals(
-                  1, mockComposeboxPageHandler.getCallCount('navigateUrl'));
-              const navigatedUrl =
-                  await mockComposeboxPageHandler.whenCalled('navigateUrl');
-              assertTrue(navigatedUrl.includes('support.google.com'));
-            });
-
-            test('no-match error cancels voice search', async () => {
+            test('manual submit sends voice query', async () => {
               const inner = parts.innerComposebox;
+              await whenMetricSourceFetched();
               await enterVoiceSearchMode();
 
-              const recognition = getRecognition();
-              assertTrue(!!recognition.onnomatch, 'onnomatch should be wired');
-              recognition.onnomatch();
-              await microtasksFinished();
-              await inner.updateComplete;
+              await submitVoiceSearchViaSubmitButton(['test', 'query']);
 
+              const submitArgs =
+                  await mockSearchboxPageHandler.whenCalled('submitQuery');
+              assertEquals(
+                  1, mockSearchboxPageHandler.getCallCount('submitQuery'));
+              assertEquals('testquery', submitArgs[0]);
+              assertTrue(submitArgs[6], 'Should submit as a voice query');
               assertFalse(inner.inVoiceSearchMode);
-              assertFalse(parts.wrapper.hasAttribute('in-voice-search-mode_'));
               assertEquals(
                   1,
                   metrics.count(
-                      'ContextualTasks.VoiceSearch.StateV2',
-                      VoiceSearchState.VOICE_SEARCH_ERROR_AND_CANCELED));
-              assertEquals(
-                  0,
-                  metrics.count(
-                      'ContextualTasks.VoiceSearch.StateV2',
-                      VoiceSearchState.VOICE_SEARCH_CANCELED));
-            });
-
-            test('permission prompt pauses listening', async () => {
-              loadTimeData.overrideValues(
-                  {voiceWaiting: 'Waiting for permission'});
-              const inner = parts.innerComposebox;
-              await enterVoiceSearchMode();
-              const voiceSearch = getVoiceSearch();
-
-              const permissionEvent = eventToPromise<CustomEvent<{
-                isOpened: boolean,
-              }>>('voice-permission-changed', voiceSearch);
-              searchboxCallbackRouterRemote.onPermissionPromptChanged(
-                  true, {width: 100, height: 100});
-              await searchboxCallbackRouterRemote.$.flushForTesting();
-              await microtasksFinished();
-              await inner.updateComplete;
-              await voiceSearch.updateComplete;
-
-              const permissionState = await permissionEvent;
-              assertTrue(permissionState.detail.isOpened);
-              assertTrue(voiceSearch.isPermissionPromptOpen);
-              assertFalse(inner.isListening);
-              assertTrue(
-                  getAnimatedGlow().classList.contains(
-                      'permission-prompt-showing'));
-              assertTrue(
-                  voiceSearch.classList.contains('permission-prompt-showing'));
-              const waitingInput =
-                  voiceSearch.shadowRoot.querySelector<HTMLElement>('#input');
-              assertTrue(!!waitingInput);
-              assertTrue(
-                  waitingInput.textContent.includes('Waiting for permission'));
-
-              searchboxCallbackRouterRemote.onPermissionPromptChanged(
-                  false, {width: 0, height: 0});
-              await searchboxCallbackRouterRemote.$.flushForTesting();
-              await microtasksFinished();
-              await inner.updateComplete;
-              await voiceSearch.updateComplete;
-
-              assertFalse(voiceSearch.isPermissionPromptOpen);
-              assertTrue(inner.isListening);
-              assertFalse(
-                  getAnimatedGlow().classList.contains(
-                      'permission-prompt-showing'));
-              assertFalse(
-                  voiceSearch.classList.contains('permission-prompt-showing'));
+                      'VoiceSearch.Action.CO_BROWSING_COMPOSEBOX',
+                      VoiceSearchAction.QUERY_SUBMITTED));
             });
 
             test(
-                'voice search and its container are absolute when not ' +
-                    'waiting and not in error',
+                'glow reflects showing-only-carousel-on-top-of-input for ' +
+                    'image-only state',
                 async () => {
+                  const animatedGlow = getAnimatedGlow();
+                  assertFalse(animatedGlow.showingOnlyCarouselOnTopOfInput);
+
+                  await addImageFile();
+
+                  assertTrue(animatedGlow.showingOnlyCarouselOnTopOfInput);
+                  assertTrue(animatedGlow.hasAttribute(
+                      'showing-only-carousel-on-top-of-input'));
+                });
+
+            test(
+                'toolchip and image added, then removed in voice search',
+                async () => {
+                  const inner = parts.innerComposebox;
+                  // Add tool chip:
+                  inner.inToolMode = true;
+                  // Add image:
+                  await addImageFile();
+
+                  // Enter voice search mode:
                   await enterVoiceSearchMode();
+
+                  // Ensure carousel and toolchip are visible in voice search:
+                  const animatedGlow = getAnimatedGlow();
+                  const voiceCarouselContainer =
+                      animatedGlow.querySelector('#voiceCarouselContainer');
+                  assertTrue(!!voiceCarouselContainer);
+                  const voiceCarousel = voiceCarouselContainer.querySelector(
+                      '#voiceSearchCarousel');
+                  assertTrue(!!voiceCarousel);
+                  const voiceToolChip =
+                      animatedGlow.querySelector('#voiceToolChipsContainer');
+                  assertTrue(!!voiceToolChip);
+
+                  // Verify slot assignment into the glow shadow DOM:
+                  assertEquals(
+                      'carousel', voiceCarouselContainer.getAttribute('slot'));
+                  assertEquals('tool-chip', voiceToolChip.getAttribute('slot'));
+                  const carouselSlot =
+                      animatedGlow.shadowRoot.querySelector<HTMLSlotElement>(
+                          'slot[name="carousel"]');
+                  assertTrue(!!carouselSlot);
+                  assertTrue(carouselSlot.assignedElements().includes(
+                      voiceCarouselContainer));
+                  const toolChipSlot =
+                      animatedGlow.shadowRoot.querySelector<HTMLSlotElement>(
+                          'slot[name="tool-chip"]');
+                  assertTrue(!!toolChipSlot);
+                  assertTrue(
+                      toolChipSlot.assignedElements().includes(voiceToolChip));
+
+                  // Verify CSS order
+                  assertTrue(voiceCarousel.classList.contains('top'));
+                  assertEquals(
+                      '0',
+                      window.getComputedStyle(voiceCarouselContainer).order);
+                  assertEquals(
+                      '3', window.getComputedStyle(voiceToolChip).order);
+                  const recordingWave =
+                      animatedGlow.shadowRoot.querySelector('#recordingWave');
+                  assertTrue(!!recordingWave);
+                  assertEquals(
+                      '1', window.getComputedStyle(recordingWave).order);
+
+                  // Remove image:
+                  await removeImageFromVoiceCarousel(voiceCarousel);
+                  assertEquals(0, inner.attachedContext.size);
+
+                  // Remove toolchip:
+                  inner.inToolMode = false;
+                  await inner.updateComplete;
+                  assertFalse(
+                      !!animatedGlow.querySelector('#voiceToolChipsContainer'));
+                });
+
+            test(
+                'remove image but submit toolchip in voice search mode',
+                async () => {
+                  const inner = parts.innerComposebox;
+                  // Add tool chip and image:
+                  inner.inToolMode = true;
+                  await addImageFile();
+
+                  await enterVoiceSearchMode();
+
+                  const animatedGlow = getAnimatedGlow();
+                  const voiceCarouselContainer =
+                      animatedGlow.querySelector('#voiceCarouselContainer');
+                  assertTrue(!!voiceCarouselContainer);
+                  const voiceCarousel = voiceCarouselContainer.querySelector(
+                      '#voiceSearchCarousel');
+                  assertTrue(!!voiceCarousel);
+
+                  // Remove image from voice carousel:
+                  await removeImageFromVoiceCarousel(voiceCarousel);
+                  assertEquals(0, inner.attachedContext.size);
+
+                  // Submit:
+                  await submitVoiceSearchViaSubmitButton(['test', 'query']);
+
+                  assertTrue(inner.inToolMode);
+                  assertEquals(0, inner.attachedContext.size);
+                });
+
+            test(
+                'remove toolchip but submit image in voice search mode',
+                async () => {
+                  const inner = parts.innerComposebox;
+                  // Add tool chip and image:
+                  inner.inToolMode = true;
+                  await addImageFile();
+
+                  await enterVoiceSearchMode();
+
+                  const animatedGlow = getAnimatedGlow();
+                  const voiceToolChip =
+                      animatedGlow.querySelector('#voiceToolChipsContainer');
+                  assertTrue(!!voiceToolChip);
+
+                  // Remove toolchip from voice tool chips container:
+                  const toolChip =
+                      voiceToolChip.querySelector('cr-composebox-tool-chip');
+                  assertTrue(!!toolChip);
+                  const toolEnabledButton =
+                      toolChip.shadowRoot.querySelector<HTMLElement>(
+                          '#toolEnabledButton');
+                  assertTrue(!!toolEnabledButton);
+                  toolEnabledButton.click();
+                  // Prevent the image file from being cleared on component
+                  // updates (follows `inputState`):
+                  searchboxCallbackRouterRemote.onInputStateChanged(
+                      new MockInputState({
+                        activeTool: ToolMode.kUnspecified,
+                        allowedInputTypes: [InputType.kLensImage],
+                      }));
+                  await microtasksFinished();
+                  await inner.updateComplete;
+                  assertFalse(inner.inToolMode);
+                  assertEquals(1, inner.attachedContext.size);
+
+                  // Submit:
+                  await submitVoiceSearchViaSubmitButton(['test', 'query']);
+
+                  assertFalse(inner.inToolMode);
+                  // Submitting resets file count to 0:
+                  assertEquals(0, inner.attachedContext.size);
+                });
+
+            test(
+                'removing chips in voice carousel removes them from main ' +
+                    'carousel after stopping recording',
+                async () => {
+                  const inner = parts.innerComposebox;
+                  // Add tool chip and image:
+                  inner.inToolMode = true;
+                  await addImageFile();
+
+                  // Enter voice search mode by clicking voice search button:
+                  await enterVoiceSearchMode();
+
+                  const animatedGlow = getAnimatedGlow();
+                  const voiceCarouselContainer =
+                      animatedGlow.querySelector('#voiceCarouselContainer');
+                  assertTrue(!!voiceCarouselContainer);
+                  const voiceCarousel = voiceCarouselContainer.querySelector(
+                      '#voiceSearchCarousel');
+                  assertTrue(!!voiceCarousel);
+                  const voiceToolChip =
+                      animatedGlow.querySelector('#voiceToolChipsContainer');
+                  assertTrue(!!voiceToolChip);
+
+                  // Remove image from voice carousel:
+                  await removeImageFromVoiceCarousel(voiceCarousel);
+                  assertEquals(0, inner.attachedContext.size);
+
+                  // Remove tool chip from voice tool chips container:
+                  const toolChip =
+                      voiceToolChip.querySelector('cr-composebox-tool-chip');
+                  assertTrue(!!toolChip);
+                  const toolEnabledButton =
+                      toolChip.shadowRoot.querySelector<HTMLElement>(
+                          '#toolEnabledButton');
+                  assertTrue(!!toolEnabledButton);
+                  toolEnabledButton.click();
+                  searchboxCallbackRouterRemote.onInputStateChanged(
+                      new MockInputState({
+                        activeTool: ToolMode.kUnspecified,
+                        allowedInputTypes: [InputType.kLensImage],
+                      }));
+                  await microtasksFinished();
+                  await inner.updateComplete;
+                  assertFalse(inner.inToolMode);
+
+                  // Stop recording:
                   const voiceSearch = getVoiceSearch();
-                  const container =
-                      voiceSearch.shadowRoot.querySelector('#container');
-                  assertTrue(!!container);
-
-                  assertEquals(
-                      'absolute',
-                      window.getComputedStyle(voiceSearch).position);
-                  assertEquals(
-                      coherenceEnabled ? 'absolute' : 'relative',
-                      window.getComputedStyle(container).position);
-
-                  // Waiting (permission prompt open):
-                  searchboxCallbackRouterRemote.onPermissionPromptChanged(
-                      true, {width: 100, height: 100});
-                  await searchboxCallbackRouterRemote.$.flushForTesting();
+                  const stopButton =
+                      voiceSearch.shadowRoot.querySelector<HTMLElement>(
+                          '#stopButton');
+                  assertTrue(!!stopButton);
+                  stopButton.click();
                   await microtasksFinished();
-                  await voiceSearch.updateComplete;
-                  assertNotEquals(
-                      'absolute', window.getComputedStyle(container).position);
+                  await inner.updateComplete;
 
-                  searchboxCallbackRouterRemote.onPermissionPromptChanged(
-                      false, {width: 0, height: 0});
-                  await searchboxCallbackRouterRemote.$.flushForTesting();
-                  await microtasksFinished();
-                  await voiceSearch.updateComplete;
-
-                  // In error:
-                  fireRecognitionError('network');
-                  await microtasksFinished();
-                  await voiceSearch.updateComplete;
-                  assertNotEquals(
-                      'absolute', window.getComputedStyle(container).position);
+                  assertFalse(inner.inToolMode);
+                  assertEquals(0, inner.attachedContext.size);
                 });
           });
-
-          if (!coherenceEnabled) {
-            suite('NonCoherenceTranscriptAndCancel', () => {
-              test(
-                  'live transcript input renders without coherence',
-                  async () => {
-                    const inner = parts.innerComposebox;
-                    assertFalse(parts.wrapper.hasAttribute(
-                        'voice-search-coherence-enabled_'));
-                    assertFalse(inner.voiceSearchCoherenceEnabled);
-
-                    await enterVoiceSearchMode();
-                    const voiceSearch = getVoiceSearch();
-                    assertTrue(voiceSearch.liveTranscriptEnabled);
-                    assertFalse(voiceSearch.submitStopButtonsEnabled);
-                    assertFalse(!!voiceSearch.shadowRoot.querySelector(
-                        '#bottomActions'));
-
-                    const closeButton =
-                        voiceSearch.shadowRoot.querySelector<HTMLElement>(
-                            '#closeButton');
-                    assertTrue(!!closeButton);
-                    assertTrue(closeButton.part.contains('voice-close-button'));
-
-                    const transcriptText =
-                        voiceSearch.shadowRoot.querySelector<HTMLElement>(
-                            '#transcript-text');
-                    assertTrue(!!transcriptText);
-                    assertEquals(
-                        loadTimeData.getString('voiceListening'),
-                        transcriptText.textContent.trim());
-
-                    fireRecognitionResult(['hello', 'world']);
-                    await microtasksFinished();
-                    await voiceSearch.updateComplete;
-                    assertEquals(
-                        'helloworld', transcriptText.textContent.trim());
-                  });
-
-              test('user cancel preserves composebox input', async () => {
-                const inner = parts.innerComposebox;
-                inner.input = 'draft text';
-                await inner.updateComplete;
-
-                await enterVoiceSearchMode();
-                fireRecognitionResult(['hello']);
-                await microtasksFinished();
-                await inner.updateComplete;
-
-                assertEquals('draft text', inner.input);
-                assertEquals('hello', inner.transcript);
-                assertTrue(inner.receivedSpeech);
-
-                const voiceSearch = getVoiceSearch();
-                const closeButton =
-                    voiceSearch.shadowRoot.querySelector<HTMLElement>(
-                        '#closeButton');
-                assertTrue(!!closeButton);
-                closeButton.click();
-                await microtasksFinished();
-                await inner.updateComplete;
-                getRecognition().flushEnd();
-                await microtasksFinished();
-
-                assertEquals('draft text', inner.input);
-                assertFalse(inner.inVoiceSearchMode);
-                assertEquals('', inner.transcript);
-                assertFalse(inner.receivedSpeech);
-                assertEquals(
-                    1,
-                    metrics.count(
-                        'ContextualTasks.VoiceSearch.StateV2',
-                        VoiceSearchState.VOICE_SEARCH_CANCELED));
-                assertEquals(
-                    0,
-                    metrics.count(
-                        'ContextualTasks.VoiceSearch.StateV2',
-                        VoiceSearchState.VOICE_SEARCH_ERROR));
-                assertEquals(
-                    0,
-                    metrics.count(
-                        'ContextualTasks.VoiceSearch.StateV2',
-                        VoiceSearchState.VOICE_SEARCH_ERROR_AND_CANCELED));
-              });
-            });
-          }
-
-          if (coherenceEnabled) {
-            async function submitVoiceSearchViaSubmitButton(
-                transcripts: string[]) {
-              const voiceSearch = getVoiceSearch();
-              fireRecognitionResult(transcripts);
-              await microtasksFinished();
-              await voiceSearch.updateComplete;
-
-              const submitButton =
-                  voiceSearch.shadowRoot.querySelector('cr-composebox-submit');
-              assertTrue(!!submitButton);
-              assertFalse(submitButton.disabled);
-              await submitButton.updateComplete;
-              const submitContainer =
-                  submitButton.shadowRoot.querySelector<HTMLElement>(
-                      '#submitContainer');
-              assertTrue(!!submitContainer);
-              submitContainer.click();
-              await microtasksFinished();
-              await parts.innerComposebox.updateComplete;
-              await mockSearchboxPageHandler.whenCalled('submitQuery');
-            }
-
-            async function addImageFile() {
-              const thumbnailUrl = 'data:image/png;base64,sometestdata';
-              const testToken = '12345678901234567890123456789012';
-              searchboxCallbackRouterRemote.addFileContext(testToken, {
-                fileName: 'test.png',
-                mimeType: 'image/png',
-                imageDataUrl: thumbnailUrl,
-                isDeletable: true,
-                selectionTime: new Date(),
-              } as SelectedFileInfo);
-              await searchboxCallbackRouterRemote.$.flushForTesting();
-              await microtasksFinished();
-              await parts.innerComposebox.updateComplete;
-            }
-
-            async function removeImageFromVoiceCarousel(
-                voiceCarousel: Element) {
-              const shadowRoot = voiceCarousel.shadowRoot;
-              assertTrue(!!shadowRoot);
-              const fileThumbnail =
-                  shadowRoot.querySelector('cr-composebox-file-thumbnail');
-              assertTrue(!!fileThumbnail);
-              const removeImgButton =
-                  fileThumbnail.shadowRoot.querySelector<HTMLElement>(
-                      '#removeImgButton');
-              assertTrue(!!removeImgButton);
-              removeImgButton.click();
-              await microtasksFinished();
-              await parts.innerComposebox.updateComplete;
-            }
-
-            suite('CoherenceControlsFilesAndLifecycle', () => {
-              test(
-                  'coherence overlay shows stop and submit controls',
-                  async () => {
-                    const inner = parts.innerComposebox;
-                    assertTrue(parts.wrapper.hasAttribute(
-                        'voice-search-coherence-enabled_'));
-                    assertTrue(inner.voiceSearchCoherenceEnabled);
-
-                    await enterVoiceSearchMode();
-                    const voiceSearch = getVoiceSearch();
-                    assertFalse(voiceSearch.liveTranscriptEnabled);
-                    assertTrue(voiceSearch.submitStopButtonsEnabled);
-                    assertFalse(
-                        !!voiceSearch.shadowRoot.querySelector('#input'));
-                    assertFalse(
-                        !!voiceSearch.shadowRoot.querySelector('#closeButton'));
-
-                    assertEquals(
-                        SubmitButtonIconType.UPWARD,
-                        inner.submitButtonIconType);
-                    assertEquals(
-                        inner.submitButtonIconType,
-                        voiceSearch.submitButtonIconType);
-
-                    const stopButton =
-                        voiceSearch.shadowRoot.querySelector<HTMLElement>(
-                            '#stopButton');
-                    assertTrue(!!stopButton);
-                    assertTrue(stopButton.part.contains('voice-stop-button'));
-                    assertFalse(stopButton.hasAttribute('disabled'));
-
-                    const submitButton = voiceSearch.shadowRoot.querySelector(
-                        'cr-composebox-submit');
-                    assertTrue(!!submitButton);
-                    assertTrue(
-                        submitButton.part.contains('voice-submit-button'));
-                    assertEquals(
-                        SubmitButtonIconType.UPWARD, submitButton.iconType);
-                    assertTrue(submitButton.disabled);
-                    assertEquals(
-                        '0',
-                        window.getComputedStyle(submitButton)
-                            .getPropertyValue(
-                                '--cr-composebox-submit-icon-offset')
-                            .trim());
-
-                    fireRecognitionResult(['hello']);
-                    await microtasksFinished();
-                    await voiceSearch.updateComplete;
-                    assertFalse(submitButton.disabled);
-                  });
-
-              test(
-                  'recording stopped populates input without submitting',
-                  async () => {
-                    const inner = parts.innerComposebox;
-                    await whenMetricSourceFetched();
-                    await enterVoiceSearchMode();
-
-                    fireRecognitionResult(['hello', 'world']);
-                    await microtasksFinished();
-                    const voiceSearch = getVoiceSearch();
-                    await voiceSearch.updateComplete;
-
-                    const stopButton =
-                        voiceSearch.shadowRoot.querySelector<HTMLElement>(
-                            '#stopButton');
-                    assertTrue(!!stopButton);
-                    assertFalse(stopButton.hasAttribute('disabled'));
-                    stopButton.click();
-                    await microtasksFinished();
-                    await inner.updateComplete;
-                    getRecognition().flushEnd();
-                    await microtasksFinished();
-
-                    assertEquals('helloworld', inner.input);
-                    assertFalse(inner.inVoiceSearchMode);
-                    assertEquals(
-                        1,
-                        mockSearchboxPageHandler.getCallCount(
-                            'queryAutocomplete'));
-                    const queryArgs = mockSearchboxPageHandler.getArgs(
-                        'queryAutocomplete')[0];
-                    assertEquals('helloworld', queryArgs[2]);
-                    assertEquals(
-                        0,
-                        mockSearchboxPageHandler.getCallCount('submitQuery'));
-                    assertEquals(
-                        1,
-                        metrics.count(
-                            'VoiceSearch.Action.CO_BROWSING_COMPOSEBOX',
-                            VoiceSearchAction.STOP_BUTTON_CLICKED));
-                  });
-
-              test('manual submit sends voice query', async () => {
-                const inner = parts.innerComposebox;
-                await whenMetricSourceFetched();
-                await enterVoiceSearchMode();
-
-                await submitVoiceSearchViaSubmitButton(['test', 'query']);
-
-                const submitArgs =
-                    await mockSearchboxPageHandler.whenCalled('submitQuery');
-                assertEquals(
-                    1, mockSearchboxPageHandler.getCallCount('submitQuery'));
-                assertEquals('testquery', submitArgs[0]);
-                assertTrue(submitArgs[6], 'Should submit as a voice query');
-                assertFalse(inner.inVoiceSearchMode);
-                assertEquals(
-                    1,
-                    metrics.count(
-                        'VoiceSearch.Action.CO_BROWSING_COMPOSEBOX',
-                        VoiceSearchAction.QUERY_SUBMITTED));
-              });
-
-              test(
-                  'glow reflects showing-only-carousel-on-top-of-input for ' +
-                      'image-only state',
-                  async () => {
-                    const animatedGlow = getAnimatedGlow();
-                    assertFalse(animatedGlow.showingOnlyCarouselOnTopOfInput);
-
-                    await addImageFile();
-
-                    assertTrue(animatedGlow.showingOnlyCarouselOnTopOfInput);
-                    assertTrue(animatedGlow.hasAttribute(
-                        'showing-only-carousel-on-top-of-input'));
-                  });
-
-              test(
-                  'toolchip and image added, then removed in voice search',
-                  async () => {
-                    const inner = parts.innerComposebox;
-                    // Add tool chip:
-                    inner.inToolMode = true;
-                    // Add image:
-                    await addImageFile();
-
-                    // Enter voice search mode:
-                    await enterVoiceSearchMode();
-
-                    // Ensure carousel and toolchip are visible in voice search:
-                    const animatedGlow = getAnimatedGlow();
-                    const voiceCarouselContainer =
-                        animatedGlow.querySelector('#voiceCarouselContainer');
-                    assertTrue(!!voiceCarouselContainer);
-                    const voiceCarousel = voiceCarouselContainer.querySelector(
-                        '#voiceSearchCarousel');
-                    assertTrue(!!voiceCarousel);
-                    const voiceToolChip =
-                        animatedGlow.querySelector('#voiceToolChipsContainer');
-                    assertTrue(!!voiceToolChip);
-
-                    // Verify slot assignment into the glow shadow DOM:
-                    assertEquals(
-                        'carousel',
-                        voiceCarouselContainer.getAttribute('slot'));
-                    assertEquals(
-                        'tool-chip', voiceToolChip.getAttribute('slot'));
-                    const carouselSlot =
-                        animatedGlow.shadowRoot.querySelector<HTMLSlotElement>(
-                            'slot[name="carousel"]');
-                    assertTrue(!!carouselSlot);
-                    assertTrue(carouselSlot.assignedElements().includes(
-                        voiceCarouselContainer));
-                    const toolChipSlot =
-                        animatedGlow.shadowRoot.querySelector<HTMLSlotElement>(
-                            'slot[name="tool-chip"]');
-                    assertTrue(!!toolChipSlot);
-                    assertTrue(toolChipSlot.assignedElements().includes(
-                        voiceToolChip));
-
-                    // Verify CSS order
-                    assertTrue(voiceCarousel.classList.contains('top'));
-                    assertEquals(
-                        '0',
-                        window.getComputedStyle(voiceCarouselContainer).order);
-                    assertEquals(
-                        '3', window.getComputedStyle(voiceToolChip).order);
-                    const recordingWave =
-                        animatedGlow.shadowRoot.querySelector('#recordingWave');
-                    assertTrue(!!recordingWave);
-                    assertEquals(
-                        '1', window.getComputedStyle(recordingWave).order);
-
-                    // Remove image:
-                    await removeImageFromVoiceCarousel(voiceCarousel);
-                    assertEquals(0, inner.attachedContext.size);
-
-                    // Remove toolchip:
-                    inner.inToolMode = false;
-                    await inner.updateComplete;
-                    assertFalse(!!animatedGlow.querySelector(
-                        '#voiceToolChipsContainer'));
-                  });
-
-              test(
-                  'remove image but submit toolchip in voice search mode',
-                  async () => {
-                    const inner = parts.innerComposebox;
-                    // Add tool chip and image:
-                    inner.inToolMode = true;
-                    await addImageFile();
-
-                    await enterVoiceSearchMode();
-
-                    const animatedGlow = getAnimatedGlow();
-                    const voiceCarouselContainer =
-                        animatedGlow.querySelector('#voiceCarouselContainer');
-                    assertTrue(!!voiceCarouselContainer);
-                    const voiceCarousel = voiceCarouselContainer.querySelector(
-                        '#voiceSearchCarousel');
-                    assertTrue(!!voiceCarousel);
-
-                    // Remove image from voice carousel:
-                    await removeImageFromVoiceCarousel(voiceCarousel);
-                    assertEquals(0, inner.attachedContext.size);
-
-                    // Submit:
-                    await submitVoiceSearchViaSubmitButton(['test', 'query']);
-
-                    assertTrue(inner.inToolMode);
-                    assertEquals(0, inner.attachedContext.size);
-                  });
-
-              test(
-                  'remove toolchip but submit image in voice search mode',
-                  async () => {
-                    const inner = parts.innerComposebox;
-                    // Add tool chip and image:
-                    inner.inToolMode = true;
-                    await addImageFile();
-
-                    await enterVoiceSearchMode();
-
-                    const animatedGlow = getAnimatedGlow();
-                    const voiceToolChip =
-                        animatedGlow.querySelector('#voiceToolChipsContainer');
-                    assertTrue(!!voiceToolChip);
-
-                    // Remove toolchip from voice tool chips container:
-                    const toolChip =
-                        voiceToolChip.querySelector('cr-composebox-tool-chip');
-                    assertTrue(!!toolChip);
-                    const toolEnabledButton =
-                        toolChip.shadowRoot.querySelector<HTMLElement>(
-                            '#toolEnabledButton');
-                    assertTrue(!!toolEnabledButton);
-                    toolEnabledButton.click();
-                    // Prevent the image file from being cleared on component
-                    // updates (follows `inputState`):
-                    searchboxCallbackRouterRemote.onInputStateChanged(
-                        new MockInputState({
-                          activeTool: ToolMode.kUnspecified,
-                          allowedInputTypes: [InputType.kLensImage],
-                        }));
-                    await microtasksFinished();
-                    await inner.updateComplete;
-                    assertFalse(inner.inToolMode);
-                    assertEquals(1, inner.attachedContext.size);
-
-                    // Submit:
-                    await submitVoiceSearchViaSubmitButton(['test', 'query']);
-
-                    assertFalse(inner.inToolMode);
-                    // Submitting resets file count to 0:
-                    assertEquals(0, inner.attachedContext.size);
-                  });
-
-              test(
-                  'removing chips in voice carousel removes them from main ' +
-                      'carousel after stopping recording',
-                  async () => {
-                    const inner = parts.innerComposebox;
-                    // Add tool chip and image:
-                    inner.inToolMode = true;
-                    await addImageFile();
-
-                    // Enter voice search mode by clicking voice search button:
-                    await enterVoiceSearchMode();
-
-                    const animatedGlow = getAnimatedGlow();
-                    const voiceCarouselContainer =
-                        animatedGlow.querySelector('#voiceCarouselContainer');
-                    assertTrue(!!voiceCarouselContainer);
-                    const voiceCarousel = voiceCarouselContainer.querySelector(
-                        '#voiceSearchCarousel');
-                    assertTrue(!!voiceCarousel);
-                    const voiceToolChip =
-                        animatedGlow.querySelector('#voiceToolChipsContainer');
-                    assertTrue(!!voiceToolChip);
-
-                    // Remove image from voice carousel:
-                    await removeImageFromVoiceCarousel(voiceCarousel);
-                    assertEquals(0, inner.attachedContext.size);
-
-                    // Remove tool chip from voice tool chips container:
-                    const toolChip =
-                        voiceToolChip.querySelector('cr-composebox-tool-chip');
-                    assertTrue(!!toolChip);
-                    const toolEnabledButton =
-                        toolChip.shadowRoot.querySelector<HTMLElement>(
-                            '#toolEnabledButton');
-                    assertTrue(!!toolEnabledButton);
-                    toolEnabledButton.click();
-                    searchboxCallbackRouterRemote.onInputStateChanged(
-                        new MockInputState({
-                          activeTool: ToolMode.kUnspecified,
-                          allowedInputTypes: [InputType.kLensImage],
-                        }));
-                    await microtasksFinished();
-                    await inner.updateComplete;
-                    assertFalse(inner.inToolMode);
-
-                    // Stop recording:
-                    const voiceSearch = getVoiceSearch();
-                    const stopButton =
-                        voiceSearch.shadowRoot.querySelector<HTMLElement>(
-                            '#stopButton');
-                    assertTrue(!!stopButton);
-                    stopButton.click();
-                    await microtasksFinished();
-                    await inner.updateComplete;
-
-                    assertFalse(inner.inToolMode);
-                    assertEquals(0, inner.attachedContext.size);
-                  });
-            });
-          }
-        });
-  });
+        }
+      });
 });

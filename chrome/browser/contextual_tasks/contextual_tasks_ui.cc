@@ -395,11 +395,6 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddLocalizedStrings(SearchboxHandler::GetWebUIDataSourceDict(
       profile, {.enable_voice_search = true,
                 .session_allows_drag_and_drop = session_allows_drag_and_drop}));
-  // Re-apply the Contextual Tasks coherence override after the searchbox
-  // overwrite above; see GetContextualTasksLoadTimeData().
-  source->AddBoolean(
-      "voiceSearchCoherenceComposeboxesEnabled",
-      SearchboxHandler::GetVoiceSearchCoherenceCobrowsingComposeboxEnabled());
 #if !BUILDFLAG(IS_ANDROID)
   std::optional<lens::LensOverlayInvocationSource> invocation_source;
   if (auto* browser = GetBrowser()) {
@@ -524,12 +519,6 @@ base::DictValue ContextualTasksUI::GetContextualTasksLoadTimeData(
   dict.Merge(SearchboxHandler::GetWebUIDataSourceDict(
       profile, {.enable_voice_search = true,
                 .session_allows_drag_and_drop = session_allows_drag_and_drop}));
-  // Contextual Tasks follows the cobrowsing coherence key on all composebox
-  // paths; the flag-off legacy <cr-composebox> reads the all-surfaces key via
-  // the shared mixin default, so here that key carries the cobrowsing value.
-  dict.Set(
-      "voiceSearchCoherenceComposeboxesEnabled",
-      SearchboxHandler::GetVoiceSearchCoherenceCobrowsingComposeboxEnabled());
   dict.Set("composeboxSmartTabSharingSupported", !BUILDFLAG(IS_ANDROID));
 #endif  // BUILDFLAG(ENABLE_WEBUI_CONTEXTUAL_TASKS_COMPOSEBOX)
 
@@ -596,9 +585,6 @@ base::DictValue ContextualTasksUI::GetContextualTasksLoadTimeData(
   dict.Set("composeboxFileMaxSize",
            contextual_tasks::kContextualTasksNextboxMaxFileSize.Get());
   dict.Set("composeboxShowTypedSuggest", false);
-  dict.Set("useContextualTasksComposeboxFork",
-           base::FeatureList::IsEnabled(
-               contextual_tasks::kContextualTasksComposeboxFork));
   dict.Set("composeboxShowZps",
            contextual_tasks::GetIsContextualTasksSuggestionsEnabled());
   dict.Set("composeboxShowImageSuggest",

@@ -8,7 +8,6 @@ import type {ContextualTasksAppElement} from 'chrome://contextual-tasks/app.js';
 import type {ContextualTasksComposeboxElement} from 'chrome://contextual-tasks/composebox.js';
 import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import type {ContextualTasksInnerComposeboxElement} from 'chrome://contextual-tasks/contextual_tasks_inner_composebox.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 // </if>
@@ -153,27 +152,17 @@ export async function createContextualTasksAppElement(
 }
 
 // <if expr="not is_android or enable_webui_contextual_tasks_composebox">
-// The element the wrapper renders as `#composebox`: the legacy shared
-// `<cr-composebox>` (flag-off) or the CT fork (flag-on).
-export type CtInnerComposeboxUnionElement =
-    ContextualTasksComposeboxElement['$']['composebox']|
-    ContextualTasksInnerComposeboxElement;
-
 export interface CtComposeboxAppParts {
   app: ContextualTasksAppElement;
   wrapper: ContextualTasksComposeboxElement;
-  innerComposebox: CtInnerComposeboxUnionElement;
+  innerComposebox: ContextualTasksInnerComposeboxElement;
 }
 
 /**
  * Mounts a fresh `<contextual-tasks-app>` and resolves the composebox chain.
- * Mock proxies must already be installed by the caller. The wrapper reads
- * `useContextualTasksComposeboxFork` in a field initializer at construction
- * time, so the override must happen before createElement.
+ * Mock proxies must already be installed by the caller.
  */
-export async function createCtComposeboxApp(useFork: boolean):
-    Promise<CtComposeboxAppParts> {
-  loadTimeData.overrideValues({useContextualTasksComposeboxFork: useFork});
+export async function createCtComposeboxApp(): Promise<CtComposeboxAppParts> {
   const app = document.createElement('contextual-tasks-app');
   document.body.appendChild(app);
   await microtasksFinished();

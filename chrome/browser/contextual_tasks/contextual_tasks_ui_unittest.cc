@@ -899,12 +899,12 @@ TEST_F(ContextualTasksUiTest,
                 "voiceSearchCoherenceCobrowsingComposeboxEnabled"),
             true);
 
-  // The Contextual Tasks dict overrides the all-surfaces key with the
-  // cobrowsing value.
+  // The Contextual Tasks dict preserves the distinct all-surfaces and
+  // cobrowsing values.
   base::DictValue load_time_data =
       ContextualTasksUI::GetContextualTasksLoadTimeData(profile_);
   EXPECT_EQ(load_time_data.FindBool("voiceSearchCoherenceComposeboxesEnabled"),
-            true);
+            false);
   EXPECT_EQ(load_time_data.FindBool(
                 "voiceSearchCoherenceCobrowsingComposeboxEnabled"),
             true);

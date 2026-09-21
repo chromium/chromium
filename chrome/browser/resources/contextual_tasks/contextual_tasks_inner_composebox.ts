@@ -43,7 +43,7 @@ import {getHtml} from './contextual_tasks_inner_composebox.html.js';
 const RESIZE_EVENT_DEBOUNCE_TIMEOUT_MS = 20;
 
 // Inner-element contract the `contextual-tasks-composebox` wrapper invokes on
-// its `#composebox` child; both `<cr-composebox>` and this fork satisfy it.
+// its `#composebox` child.
 export interface ContextualTasksInnerComposeboxInterface {
   animationState: GlowAnimationState;
   canSubmitFilesAndInput: boolean;
