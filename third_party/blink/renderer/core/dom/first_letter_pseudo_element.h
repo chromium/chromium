@@ -47,25 +47,30 @@ class CORE_EXPORT FirstLetterPseudoElement final : public PseudoElement {
 
   static LayoutText* FirstLetterTextLayoutObject(const Element&);
 
-  enum class Punctuation {
+  enum class LeadingPunctuationState {
     // No punctuation seen in preceding text nodes
-    kNotSeen,
-    // Consecutive punctuation seen in preceding text nodes with no spaces after
-    kSeen,
-    // Punctuation seen in preceding text nodes, with trailing spaces. For
-    // signaling that we should stop looking for first letter text.
-    kDisallow,
+    kNotStarted,
+    // Punctuation and intervening spaces seen in preceding text nodes with no
+    // invalid spaces or newlines after
+    kStarted,
+    // Punctuation and intervening spaces seen in preceding text nodes, with
+    // trailing invalid spaces or newlines. For signaling that we should stop
+    // looking for first letter text.
+    kFinished,
   };
 
-  // |punctuation| is used to validate combinations of ::first-letter text and
-  // punctuation that spans across text nodes. Punctuation is initially set to
-  // Punctuation::kNotSeen and is updated to Punctuation::kSeen if the text ends
-  // with punctuation, but did not otherwise include valid ::first-letter text.
-  // If the out value of |punctuation| is Punctuation::kDisallow, it's a signal
-  // that we should continue to look for ::first-letter text.
+  // |punctuation_state| is used to validate combinations of
+  // ::first-letter text and punctuation that spans across text nodes.
+  // LeadingPunctuationState is initially set to
+  // LeadingPunctuationState::kNotStarted and is updated to
+  // LeadingPunctuationState::kStarted if the text ends with punctuation or
+  // intervening spaces, but did not otherwise include valid ::first-letter
+  // text. If out value of |punctuation_state| is
+  // LeadingPunctuationState::kFinished and the return value is 0, it's a
+  // signal that we should not continue to look for ::first-letter text.
   static unsigned FirstLetterLength(const String&,
                                     bool preserve_breaks,
-                                    Punctuation& punctuation);
+                                    LeadingPunctuationState& punctuation_state);
 
   void ClearRemainingTextLayoutObject();
   LayoutTextFragment* RemainingTextLayoutObject() const {

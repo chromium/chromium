@@ -1045,7 +1045,6 @@ crbug.com/429929881 external/wpt/css/css-text/line-breaking/line-breaking-019.ht
 crbug.com/1098801 external/wpt/css/css-text/overflow-wrap/overflow-wrap-normal-keep-all-001.html [ Failure ]
 
 crbug.com/40260693 external/wpt/css/css-pseudo/first-letter-c0.tentative.html [ Failure ]
-crbug.com/40260693 external/wpt/css/css-pseudo/first-letter-trailing-punctuation.html [ Failure ]
 
 # CSS Inline `initial-letter` property.
 crbug.com/370423031 external/wpt/css/css-inline/initial-letter/initial-letter-float-001-vlr.html [ Failure ]
@@ -5149,9 +5148,6 @@ crbug.com/931646 crbug.com/424347610 [ Mac ] virtual/viewport-and-meta-enabled/h
 # Flaking on Linux
 crbug.com/40736669 http/tests/devtools/extensions/extensions-resources.js [ Failure Pass ]
 crbug.com/40736669 http/tests/devtools/console/paintworklet-console-selector.js [ Failure Pass ]
-
-# Wpt importer sheriff 2021-01-05
-crbug.com/1163175 external/wpt/css/css-pseudo/first-letter-punctuation-and-space.html [ Failure ]
 
 # Sheriff 2021-01-12
 crbug.com/1163793 http/tests/inspector-protocol/page/page-events-associated.js [ Failure Pass ]

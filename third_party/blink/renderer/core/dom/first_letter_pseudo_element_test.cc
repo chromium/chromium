@@ -16,8 +16,8 @@ class FirstLetterPseudoElementTest : public PageTestBase {};
 TEST_F(FirstLetterPseudoElementTest, DoesNotBreakEmoji) {
   const UChar emoji[] = {0xD83D, 0xDE31, 0};
   const bool preserve_breaks = false;
-  FirstLetterPseudoElement::Punctuation punctuation =
-      FirstLetterPseudoElement::Punctuation::kNotSeen;
+  FirstLetterPseudoElement::LeadingPunctuationState punctuation =
+      FirstLetterPseudoElement::LeadingPunctuationState::kNotStarted;
   EXPECT_EQ(2u, FirstLetterPseudoElement::FirstLetterLength(
                     emoji, preserve_breaks, punctuation));
 }
@@ -124,8 +124,8 @@ TEST_F(FirstLetterPseudoElementTest, UnicodePairBreaking) {
   const UChar test_string[] = {0xD800, 0xDD00, 'A', 0xD800, 0xDD00,
                                0xD800, 0xDD00, 'B', 0};
   const bool preserve_breaks = false;
-  FirstLetterPseudoElement::Punctuation punctuation =
-      FirstLetterPseudoElement::Punctuation::kNotSeen;
+  FirstLetterPseudoElement::LeadingPunctuationState punctuation =
+      FirstLetterPseudoElement::LeadingPunctuationState::kNotStarted;
   EXPECT_EQ(7u, FirstLetterPseudoElement::FirstLetterLength(
                     test_string, preserve_breaks, punctuation));
 }
@@ -140,23 +140,23 @@ FirstLetterLayoutTextTestCase first_letter_layout_text_cases[] = {
     {" F", " F"},
     {".", nullptr},
     {" ", nullptr},
-    {". F", nullptr},
+    {". F", ". F"},
     {"<span> </span>", nullptr},
     {"<span> F </span>", " F "},
     {" <span>.</span>.F", "."},
     {"..<span></span>F", ".."},
-    {"..<span> </span>F", nullptr},
+    {"..<span> </span>F", ".."},
     {".<span>.F</span>F", "."},
-    {". <span>F</span>", nullptr},
+    {". <span>F</span>", ". "},
     {".<span>..</span>F", "."},
-    {".<span>..</span> F", nullptr},
+    {".<span>..</span> F", "."},
     {".<span>..</span>", nullptr},
     {"<span>..</span>F", ".."},
     {"<span></span>F", "F"},
     {"<span>   </span>F", "F"},
     {"<span><span>.</span></span><span>F</span>", "."},
     {"<span> <span> </span></span> <span>F</span>", "F"},
-    {"<span><span>.</span><span> </span></span><span>F</span>", nullptr},
+    {"<span><span>.</span><span> </span></span><span>F</span>", "."},
 };
 
 class FirstLetterTextTest : public FirstLetterPseudoElementTest,

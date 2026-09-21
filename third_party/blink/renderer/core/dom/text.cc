@@ -498,10 +498,10 @@ static bool ShouldUpdateLayoutByReattaching(const Text& text_node,
   if (text_layout_object->IsSecure()) {
     return false;
   }
-  FirstLetterPseudoElement::Punctuation punctuation1 =
-      FirstLetterPseudoElement::Punctuation::kNotSeen;
-  FirstLetterPseudoElement::Punctuation punctuation2 =
-      FirstLetterPseudoElement::Punctuation::kNotSeen;
+  FirstLetterPseudoElement::LeadingPunctuationState punctuation1 =
+      FirstLetterPseudoElement::LeadingPunctuationState::kNotStarted;
+  FirstLetterPseudoElement::LeadingPunctuationState punctuation2 =
+      FirstLetterPseudoElement::LeadingPunctuationState::kNotStarted;
   bool preserve_breaks = ShouldPreserveBreaks(
       text_layout_object->StyleRef().GetWhiteSpaceCollapse());
   if (!FirstLetterPseudoElement::FirstLetterLength(
