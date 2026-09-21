@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
+#include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_task_metadata.h"
@@ -2813,7 +2814,8 @@ IN_PROC_BROWSER_TEST_P(OutOfTurnNavigationBrowserTest,
 }
 
 // TODO(crbug.com/482434165): Flaky test on win-asan builder.
-#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+// TODO(crbug.com/563615151): Flaky test on Mac builders.
+#if (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)) || BUILDFLAG(IS_MAC)
 #define MAYBE_InterleavedAction_OutOfTurnNavigation \
   DISABLED_InterleavedAction_OutOfTurnNavigation
 #else
