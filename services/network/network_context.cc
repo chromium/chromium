@@ -2157,7 +2157,8 @@ void NetworkContext::CreateWebSocket(
     mojo::PendingRemote<mojom::TrustedHeaderClient> header_client,
     const std::optional<base::UnguessableToken>& throttling_profile_id,
     const base::UnguessableToken& network_restrictions_id,
-    mojom::IPAddressSpace target_address_space) {
+    mojom::IPAddressSpace target_address_space,
+    std::optional<int64_t> target_network) {
 #if BUILDFLAG(ENABLE_WEBSOCKETS)
   if (!websocket_factory_) {
     websocket_factory_ = std::make_unique<WebSocketFactory>(this);
@@ -2172,7 +2173,8 @@ void NetworkContext::CreateWebSocket(
       static_cast<net::NetworkTrafficAnnotationTag>(traffic_annotation),
       std::move(handshake_client), std::move(url_loader_network_observer),
       std::move(auth_handler), std::move(header_client), throttling_profile_id,
-      network_restrictions_id, target_address_space);
+      network_restrictions_id, target_address_space,
+      target_network.value_or(net::handles::kInvalidNetworkHandle));
 #endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
 }
 

@@ -169,7 +169,8 @@ FidoTunnelDevice::FidoTunnelDevice(
       // This is a browser-internal connection for the caBLE rendezvous tunnel.
       // It does not belong to any webpage, so we bypass connection allowlists.
       /*network_restrictions_id=*/network::GetNoOpNetworkRestrictionsId(),
-      /*target_address_space=*/network::mojom::IPAddressSpace::kUnknown);
+      /*target_address_space=*/network::mojom::IPAddressSpace::kUnknown,
+      /*target_network=*/std::nullopt);
 }
 
 FidoTunnelDevice::FidoTunnelDevice(
@@ -231,7 +232,8 @@ FidoTunnelDevice::FidoTunnelDevice(
       // This is a browser-internal connection for the caBLE rendezvous tunnel.
       // It does not belong to any webpage, so we bypass connection allowlists.
       /*network_restrictions_id=*/network::GetNoOpNetworkRestrictionsId(),
-      /*target_address_space=*/network::mojom::IPAddressSpace::kUnknown);
+      /*target_address_space=*/network::mojom::IPAddressSpace::kUnknown,
+      /*target_network=*/std::nullopt);
 }
 
 FidoTunnelDevice::~FidoTunnelDevice() {

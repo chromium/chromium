@@ -578,7 +578,8 @@ WebSocket::WebSocket(
         pending_connection_tracker,
     base::TimeDelta delay,
     const std::optional<base::UnguessableToken>& throttling_profile_id,
-    mojom::IPAddressSpace required_ip_address_space)
+    mojom::IPAddressSpace required_ip_address_space,
+    net::handles::NetworkHandle target_network)
     : factory_(factory),
       url_loader_network_observer_(std::move(url_loader_network_observer)),
       handshake_client_(std::move(handshake_client)),
@@ -593,6 +594,7 @@ WebSocket::WebSocket(
       client_security_state_(std::move(client_security_state)),
       required_ip_address_space_(required_ip_address_space),
       isolation_info_(isolation_info),
+      target_network_(target_network),
       has_raw_headers_access_(has_raw_headers_access),
       writable_watcher_(FROM_HERE,
                         mojo::SimpleWatcher::ArmingPolicy::MANUAL,
@@ -792,9 +794,7 @@ void WebSocket::AddChannel(
       (options_ & mojom::kWebSocketOptionMaximumPriority)
           ? net::WebSocketPriorityHint::kMaximum
           : net::WebSocketPriorityHint::kDefault,
-      traffic_annotation_,
-      // TODO(crbug.com/527777927): Support targeting a network in WebSockets.
-      net::handles::kInvalidNetworkHandle);
+      traffic_annotation_, target_network_);
 }
 
 void WebSocket::OnWritable(MojoResult result,

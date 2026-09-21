@@ -250,7 +250,8 @@ class TunnelTransport : public Transport {
         // tunnel. It does not belong to any webpage, so we bypass connection
         // allowlists.
         /*network_restrictions_id=*/network::GetNoOpNetworkRestrictionsId(),
-        /*target_address_space=*/network::mojom::IPAddressSpace::kUnknown);
+        /*target_address_space=*/network::mojom::IPAddressSpace::kUnknown,
+        /*target_network=*/std::nullopt);
     FIDO_LOG(DEBUG) << "Creating WebSocket to " << target_.spec();
   }
 

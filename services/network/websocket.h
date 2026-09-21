@@ -24,6 +24,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/network_delegate.h"
+#include "net/base/network_handle.h"
 #include "net/log/net_log.h"
 #include "net/storage_access_api/status.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -81,8 +82,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
           pending_connection_tracker,
       base::TimeDelta delay,
       const std::optional<base::UnguessableToken>& throttling_profile_id,
-      mojom::IPAddressSpace required_ip_address_space =
-          mojom::IPAddressSpace::kUnknown);
+      mojom::IPAddressSpace required_ip_address_space,
+      net::handles::NetworkHandle target_network);
 
   WebSocket(const WebSocket&) = delete;
   WebSocket& operator=(const WebSocket&) = delete;
@@ -255,6 +256,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
   // For 3rd-party cookie permission checking. Also used by
   // RevokeIfNonceMatches() for handling network revocation.
   const net::IsolationInfo isolation_info_;
+
+  const net::handles::NetworkHandle target_network_ =
+      net::handles::kInvalidNetworkHandle;
 
   bool handshake_succeeded_ = false;
   const HasRawHeadersAccess has_raw_headers_access_;

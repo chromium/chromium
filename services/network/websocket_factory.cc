@@ -51,7 +51,8 @@ void WebSocketFactory::CreateWebSocket(
     mojo::PendingRemote<mojom::TrustedHeaderClient> header_client,
     const std::optional<base::UnguessableToken>& throttling_profile_id,
     const base::UnguessableToken& network_restrictions_id,
-    mojom::IPAddressSpace target_address_space) {
+    mojom::IPAddressSpace target_address_space,
+    net::handles::NetworkHandle target_network) {
   if (auto error = VerifyWebSocketConnectParameters(url, requested_protocols,
                                                     isolation_info)) {
     mojo::ReportBadMessage(*error);
@@ -97,7 +98,7 @@ void WebSocketFactory::CreateWebSocket(
       std::move(auth_handler), std::move(header_client),
       throttler_.IssuePendingConnectionTracker(process_id),
       throttler_.CalculateDelay(process_id), throttling_profile_id,
-      target_address_space));
+      target_address_space, target_network));
 }
 
 net::URLRequestContext* WebSocketFactory::GetURLRequestContext() {

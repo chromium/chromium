@@ -18,6 +18,7 @@
 #include "mojo/public/cpp/system/functions.h"
 #include "net/base/auth.h"
 #include "net/base/isolation_info.h"
+#include "net/base/network_handle.h"
 #include "net/http/http_auth.h"
 #include "net/http/http_auth_cache.h"
 #include "net/http/http_network_session.h"
@@ -139,7 +140,8 @@ class WebSocketFactoryTest : public testing::Test {
         TRAFFIC_ANNOTATION_FOR_TESTS, std::move(handshake_client),
         mojo::NullRemote(), mojo::NullRemote(), mojo::NullRemote(),
         /*throttling_profile_id=*/std::nullopt,
-        network::GetTestNetworkRestrictionsId());
+        network::GetTestNetworkRestrictionsId(),
+        mojom::IPAddressSpace::kUnknown, net::handles::kInvalidNetworkHandle);
     return stub_handshake_clients_.back().get();
   }
 

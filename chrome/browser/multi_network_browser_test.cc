@@ -814,7 +814,7 @@ IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest,
        .invalid_network_handle = kExpectedNonNetworkFactories + 2u});
 }
 
-IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest, WebSocketIgnoresTargetNetwork) {
+IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest, WebSocketSetsTargetNetwork) {
   TestChromeContentBrowserClient test_client;
 
   constexpr net::handles::NetworkHandle network = 9;
@@ -826,6 +826,7 @@ IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest, WebSocketIgnoresTargetNetwork) {
 
   net::EmbeddedTestServer ws_server(net::EmbeddedTestServer::TYPE_HTTP);
   ws_server.ServeFilesFromSourceDirectory("chrome/test/data");
+  net::test_server::InstallDefaultWebSocketHandlers(&ws_server);
   ASSERT_TRUE(
       ws_server.Start(/*port=*/0, GetLoopbackAddressForNetwork(network)));
 
@@ -837,15 +838,20 @@ IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest, WebSocketIgnoresTargetNetwork) {
   observer.Wait();
   EXPECT_TRUE(observer.last_navigation_succeeded());
 
-  GURL ws_url =
-      net::test_server::GetWebSocketURL(ws_server, "127.0.0.1", "/echo");
+  GURL ws_url = net::test_server::GetWebSocketURL(ws_server, "127.0.0.1",
+                                                  "/echo-with-no-extension");
   std::string script = content::JsReplace(
-      "new Promise(resolve => {"
+      "new Promise((resolve, reject) => {"
       "  const ws = new WebSocket($1);"
-      "  ws.onclose = () => resolve();"
+      "  ws.onopen = () => ws.send('echo-test');"
+      "  ws.onmessage = (e) => resolve(e.data);"
+      "  ws.onerror = () => reject('WebSocket error');"
+      "  ws.onclose = (e) => {"
+      "    if (!e.wasClean) reject('WebSocket closed unexpectedly');"
+      "  };"
       "});",
       ws_url.spec().c_str());
-  EXPECT_TRUE(content::EvalJs(web_contents.get(), script).is_ok());
+  EXPECT_EQ("echo-test", content::EvalJs(web_contents.get(), script));
 
   VerifyFactoryCounts(test_client, network,
                       {.navigation = 1, .document_subresource = 2});

@@ -2062,7 +2062,8 @@ class NetworkContextConfigurationProxySettingsBrowserTest
           /*throttling_profile_id=*/std::nullopt,
           /*network_restrictions_id=*/
           network::GetTestNetworkRestrictionsId(),
-          /*target_address_space=*/network::mojom::IPAddressSpace::kUnknown);
+          /*target_address_space=*/network::mojom::IPAddressSpace::kUnknown,
+          /*target_network=*/std::nullopt);
       waiters.emplace_back(std::move(client));
     }
     expected_connections_run_loop.Run();

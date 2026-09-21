@@ -1624,7 +1624,8 @@ interface NetworkContext {
       pending_remote<TrustedHeaderClient>? header_client,
       mojo_base.mojom.UnguessableToken? throttling_profile_id,
       mojo_base.mojom.UnguessableToken network_restrictions_id,
-      IPAddressSpace target_address_space);
+      IPAddressSpace target_address_space,
+      int64? target_network);
 
   // Creates a WebTransport connection to |url|. |origin| is used for the
   // client indication - see

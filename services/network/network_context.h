@@ -436,7 +436,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       mojo::PendingRemote<mojom::TrustedHeaderClient> header_client,
       const std::optional<base::UnguessableToken>& throttling_profile_id,
       const base::UnguessableToken& network_restrictions_id,
-      mojom::IPAddressSpace target_address_space) override;
+      mojom::IPAddressSpace target_address_space,
+      std::optional<int64_t> target_network) override;
   void CreateWebTransport(
       const GURL& url,
       const url::Origin& origin,

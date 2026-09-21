@@ -187,7 +187,8 @@ class WebSocketBrowserTest : public InProcessBrowserTest {
         /*auth_handler=*/mojo::NullRemote(), std::move(header_client),
         /*throttling_profile_id=*/std::nullopt,
         /*network_restrictions_id=*/network::GetTestNetworkRestrictionsId(),
-        /*target_address_space=*/network::mojom::IPAddressSpace::kUnknown);
+        /*target_address_space=*/network::mojom::IPAddressSpace::kUnknown,
+        /*target_network=*/std::nullopt);
   }
 
   void SetBlockThirdPartyCookies(bool blocked) {

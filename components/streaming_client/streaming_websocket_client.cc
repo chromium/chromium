@@ -118,7 +118,8 @@ void StreamingWebSocketClient::Connect() {
       // WebSocket connections are browser-wide operations not associated with
       // any page/frame, so no Connection Allowlist restrictions should apply.
       network::GetNoOpNetworkRestrictionsId(),
-      /*target_address_space=*/network::mojom::IPAddressSpace::kUnknown);
+      /*target_address_space=*/network::mojom::IPAddressSpace::kUnknown,
+      /*target_network=*/std::nullopt);
 }
 
 void StreamingWebSocketClient::InternalWrite(base::span<const uint8_t> data) {

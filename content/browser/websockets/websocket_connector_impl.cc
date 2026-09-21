@@ -14,10 +14,12 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/child_process_id_util.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "net/base/network_handle.h"
 #include "net/http/http_request_headers.h"
 #include "net/storage_access_api/status.h"
 #include "services/network/public/cpp/features.h"
@@ -123,6 +125,14 @@ void WebSocketConnectorImpl::Connect(
   }
 
   RenderFrameHost* frame = RenderFrameHost::FromID(frame_id_);
+  net::handles::NetworkHandle target_network =
+      net::handles::kInvalidNetworkHandle;
+  if (frame) {
+    if (auto* web_contents = WebContents::FromRenderFrameHost(frame)) {
+      target_network = web_contents->GetTargetNetwork();
+    }
+  }
+
   content::ContentBrowserClient::WebSocketOptions options =
       GetContentClient()->browser()->GetWebSocketOptions(frame);
 
@@ -131,7 +141,7 @@ void WebSocketConnectorImpl::Connect(
       storage_access_api_status_, isolation_info_, frame_id_,
       devtools_worker_token_, origin_, client_security_state_->Clone(),
       options.options, std::move(throttling_profile_id),
-      network_restrictions_id_, target_address_space);
+      network_restrictions_id_, target_address_space, target_network);
 
   if (GetContentClient()->browser()->WillInterceptWebSocket(frame)) {
     GetContentClient()->browser()->CreateWebSocket(
@@ -170,6 +180,7 @@ void WebSocketConnectorImpl::ConnectCalledByContentBrowserClient(
     std::optional<base::UnguessableToken> throttling_profile_id,
     const base::UnguessableToken& network_restrictions_id,
     network::mojom::IPAddressSpace target_address_space,
+    net::handles::NetworkHandle target_network,
     const GURL& url,
     std::vector<network::mojom::HttpHeaderPtr> additional_headers,
     mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
@@ -215,7 +226,10 @@ void WebSocketConnectorImpl::ConnectCalledByContentBrowserClient(
       std::move(handshake_client),
       std::move(url_loader_network_service_observer), std::move(auth_handler),
       std::move(trusted_header_client), std::move(throttling_profile_id),
-      network_restrictions_id, target_address_space);
+      network_restrictions_id, target_address_space,
+      target_network == net::handles::kInvalidNetworkHandle
+          ? std::nullopt
+          : std::make_optional(target_network));
 }
 
 }  // namespace content

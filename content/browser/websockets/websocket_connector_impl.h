@@ -14,6 +14,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "net/base/isolation_info.h"
+#include "net/base/network_handle.h"
 #include "net/storage_access_api/status.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/ip_address_space.mojom.h"
@@ -70,6 +71,7 @@ class WebSocketConnectorImpl final : public blink::mojom::WebSocketConnector {
       std::optional<base::UnguessableToken> throttling_profile_id,
       const base::UnguessableToken& network_restrictions_id,
       network::mojom::IPAddressSpace target_address_space,
+      net::handles::NetworkHandle target_network,
       const GURL& url,
       std::vector<network::mojom::HttpHeaderPtr> additional_headers,
       mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
