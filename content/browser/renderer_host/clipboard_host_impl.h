@@ -12,14 +12,12 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/clipboard_types.h"
-#include "content/public/browser/disallow_activation_reason.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/common/child_process_id.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -29,19 +27,79 @@
 
 class GURL;
 
+namespace blink {
+class StorageKey;
+}  // namespace blink
+
 namespace ui {
 class ScopedClipboardWriter;
+struct ClipboardMetadata;
 }  // namespace ui
 
 namespace content {
 
 class BrowserContext;
 class ClipboardHostImplTest;
+class RenderFrameHost;
 class StoragePartitionImpl;
 
 class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost,
                                          public ui::ClipboardObserver {
  public:
+  using ClipboardPasteData = content::ClipboardPasteData;
+  using IsClipboardPasteAllowedCallback =
+      ContentBrowserClient::IsClipboardPasteAllowedCallback;
+
+  // The execution context a host serves. The host body reaches its context
+  // only through this.
+  class CONTENT_EXPORT Context {
+   public:
+    virtual ~Context() = default;
+
+    // False for a document that may not use the clipboard right now. A
+    // document that is in the back/forward cache
+    // or prerendering is evicted or cancelled by the question, which is why
+    // every request starts here and OnClipboardDataChanged() does not.
+    virtual bool IsActive() = 0;
+
+    // Whether the document is active, asked on every clipboard change while a
+    // listener is registered. No side effects, unlike IsActive().
+    virtual bool CanObserveChanges() = 0;
+
+    // The embedder's per-request paste check: transient user activation or
+    // the clipboard-read permission.
+    virtual bool IsPasteAllowed() = 0;
+
+    virtual BrowserContext* GetBrowserContext() = 0;
+    virtual StoragePartitionImpl* GetStoragePartition() = 0;
+    virtual ChildProcessId GetChildProcessId() = 0;
+    virtual blink::StorageKey GetStorageKey() = 0;
+
+    virtual std::optional<ui::DataTransferEndpoint> CreateDataEndpoint() = 0;
+    virtual ClipboardEndpoint CreateClipboardEndpoint() = 0;
+    virtual void AddSourceDataToClipboardWriter(
+        ui::ScopedClipboardWriter& clipboard_writer) = 0;
+
+    // The enterprise policy hooks a document forwards to its WebContents.
+    virtual std::optional<std::vector<std::u16string>>
+    GetClipboardTypesIfPolicyApplied(
+        const ui::ClipboardSequenceNumberToken& seqno) = 0;
+    virtual void IsClipboardPasteAllowedByPolicy(
+        const ClipboardEndpoint& source,
+        const ClipboardEndpoint& destination,
+        const ui::ClipboardMetadata& metadata,
+        ClipboardPasteData clipboard_paste_data,
+        IsClipboardPasteAllowedCallback callback) = 0;
+    virtual void OnTextCopiedToClipboard(const std::u16string& copied_text) = 0;
+
+#if BUILDFLAG(IS_CHROMEOS)
+    // The Files app pastes its own custom formats alongside files, where a
+    // web page gets only the file list.
+    virtual bool IncludeAllTypesWhenFilesPresent() = 0;
+#endif
+  };
+
+  explicit ClipboardHostImpl(std::unique_ptr<Context> context);
   explicit ClipboardHostImpl(RenderFrameHost& render_frame_host);
   ~ClipboardHostImpl() override;
 
@@ -51,8 +109,6 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost,
   static void Create(
       RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::ClipboardHost> receiver);
-
-  using ClipboardPasteData = content::ClipboardPasteData;
 
   // mojom::ClipboardHost
   void RegisterClipboardListener(
@@ -104,11 +160,8 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost,
 #endif
 
  protected:
-  // These types and methods are protected for testing.
-
-  using IsClipboardPasteAllowedCallback =
-      RenderFrameHostImpl::IsClipboardPasteAllowedCallback;
-
+  // Protected for testing.
+  //
   // Performs a check to see if pasting `data` is allowed by data transfer
   // policies and invokes FinishPasteIfAllowed upon completion.
   void PasteIfPolicyAllowed(ui::ClipboardBuffer clipboard_buffer,
@@ -160,13 +213,9 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost,
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplChangeTest,
                            NoNotificationWhenListenerDisconnectsDuringRead);
 
-
   absl::uint128 GetSequenceNumberImpl(ui::ClipboardBuffer clipboard_buffer);
 
-  // False when the bound document is in a state that disallows activation.
-  bool IsContextActive();
-
-  bool IsPasteAllowed(ui::ClipboardBuffer clipboard_buffer);
+  bool IsPasteAllowed();
   bool IsWriteAllowed();
 
   // Helper to be used when checking if data is allowed to be copied.
@@ -304,19 +353,13 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost,
   // Resets `clipboard_writer_` to write its data to the clipboard, and
   // reinitialize it in preparation for the next write.
   void ResetClipboardWriter();
-  void AddSourceDataToClipboardWriter();
 
   // Stops observing clipboard changes and resets the listener.
   void StopObservingClipboard();
 
-  StoragePartitionImpl* GetStoragePartition();
-  ChildProcessId GetChildProcessId();
-  std::optional<blink::StorageKey> GetStorageKey();
-  BrowserContext* GetBrowserContext();
-  std::optional<ui::DataTransferEndpoint> CreateDataEndpoint();
-  ClipboardEndpoint CreateClipboardEndpoint();
-
-  const raw_ref<RenderFrameHostImpl> render_frame_host_;
+  // The owner of this host also owns, and may be, what `context_` points at:
+  // the DocumentService for a document. The destructor must not touch it.
+  const std::unique_ptr<Context> context_;
 
   std::unique_ptr<ui::ScopedClipboardWriter> clipboard_writer_;
 
