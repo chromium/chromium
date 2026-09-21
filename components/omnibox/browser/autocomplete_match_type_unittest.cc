@@ -47,6 +47,20 @@ TEST(AutocompleteMatchTypeTest, AccessibilityLabelHistory) {
       AutocompleteMatchType::ToAccessibilityLabel(match, u"", kTestUrl, 1, 3));
 }
 
+TEST(AutocompleteMatchTypeTest, AccessibilityLabelHistoryEmbeddings) {
+  const std::u16string& kTestUrl = u"https://www.chromium.org";
+  const std::u16string& kTestTitle = u"The Chromium Projects";
+
+  AutocompleteMatch match;
+  match.type = AutocompleteMatchType::HISTORY_EMBEDDINGS;
+  match.description = kTestTitle;
+
+  EXPECT_EQ(
+      kTestTitle + u" " + kTestUrl +
+          u", AI best match, location from history, 2 of 3",
+      AutocompleteMatchType::ToAccessibilityLabel(match, u"", kTestUrl, 1, 3));
+}
+
 TEST(AutocompleteMatchTypeTest, AccessibilityLabelSearch) {
   const std::u16string& kSearch = u"gondola";
   const std::u16string& kTrendingSearchesHeader = u"Trending searches";

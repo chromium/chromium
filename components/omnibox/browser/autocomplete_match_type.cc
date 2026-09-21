@@ -205,6 +205,7 @@ std::u16string GetAccessibilityBaseLabel(const AutocompleteMatch& match,
       }
       break;
     case IDS_ACC_AUTOCOMPLETE_HISTORY:
+    case IDS_ACC_AUTOCOMPLETE_HISTORY_EMBEDDINGS:
     case IDS_ACC_AUTOCOMPLETE_BOOKMARK:
       // History match.
       // May have descriptive text for the title of the page.
