@@ -1,0 +1,7 @@
+Tests that skip-all-pauses set while paused survives a reload.
+Paused before reload
+Reloaded while paused
+Evaluation result: 42
+Paused on new page: false
+Paused after disabling skip: true
+

@@ -357,7 +357,7 @@ void DevToolsSession::DidStartProvisionalLoad(LocalFrame* frame) {
 
 void DevToolsSession::DidFailProvisionalLoad(LocalFrame* frame) {
   if (v8_session_ && agent_->inspected_frames_->Root() == frame) {
-    v8_session_->setSkipAllPauses(false);
+    v8_session_->setSkipAllPausesForInternalUse(false);
   }
 }
 
@@ -366,7 +366,7 @@ void DevToolsSession::DidCommitLoad(LocalFrame* frame, DocumentLoader*) {
     agents_[i]->DidCommitLoadForLocalFrame(frame);
   }
   if (v8_session_ && agent_->inspected_frames_->Root() == frame) {
-    v8_session_->setSkipAllPauses(false);
+    v8_session_->setSkipAllPausesForInternalUse(false);
   }
 }
 
@@ -515,7 +515,7 @@ void DevToolsSession::UnpauseAndTerminate() {
   if (!v8_session_) {
     return;
   }
-  v8_session_->setSkipAllPauses(true);
+  v8_session_->setSkipAllPausesForInternalUse(true);
   v8_session_->resume(true /* terminate on resume */);
 }
 

@@ -640,7 +640,7 @@ protocol::Response InspectorPageAgent::reload(
   }
   pending_script_injection_on_load_ =
       optional_script_to_evaluate_on_load.value_or("");
-  V8Session()->setSkipAllPauses(true);
+  V8Session()->setSkipAllPausesForInternalUse(true);
   V8Session()->resume(true /* terminate on resume */);
   return protocol::Response::Success();
 }
