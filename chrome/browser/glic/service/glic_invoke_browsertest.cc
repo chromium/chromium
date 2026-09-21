@@ -732,7 +732,13 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest, InvokeTimeoutBehaviors) {
   EXPECT_GE(elapsed_timer.Elapsed(), base::Milliseconds(50));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest, InvokeFailsOnTabClosed) {
+// TODO(crbug.com/564285975): Re-enable the test.
+#if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
+#define MAYBE_InvokeFailsOnTabClosed DISABLED_InvokeFailsOnTabClosed
+#else
+#define MAYBE_InvokeFailsOnTabClosed InvokeFailsOnTabClosed
+#endif
+IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest, MAYBE_InvokeFailsOnTabClosed) {
   // Add a new tab so we don't close the browser when we close the active tab.
   CreateAndActivateTab(GURL("about:blank"));
 
