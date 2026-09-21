@@ -3297,7 +3297,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   ASSERT_TRUE(immersive_contents->IsCrashed());
   AwaitAndAssertOverlayVisibility(/*visible=*/false);
 
-  // 2. Verify that CloseAndTakeContentsWrapper() directly clears `host_` even
+  // 2. Verify that TakeContentsWrapper() directly clears `host_` even
   // when web_contents()->IsCrashed() is true and the view is still alive.
   // With the old `if (!IsCrashed())` check, SetHost(nullptr) was skipped and
   // GetHost() remained non-null while the view was alive.
@@ -3308,8 +3308,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   controller->SetPresentationState(
       ReadAnythingController::PresentationState::kInactive);
   auto immersive_view = std::make_unique<ReadAnythingImmersiveWebView>(
-      base::DoNothing(), std::move(wrapper).release(),
-      ReadAnythingOpenTrigger::kOmniboxChip);
+      base::DoNothing(), std::move(wrapper).release());
   {
     content::RenderProcessHostWatcher crash_observer(
         wrapper_contents,
@@ -3320,7 +3319,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   }
   ASSERT_TRUE(wrapper_contents->IsCrashed());
 
-  auto taken_wrapper = immersive_view->CloseAndTakeContentsWrapper();
+  auto taken_wrapper = immersive_view->TakeContentsWrapper();
   ASSERT_TRUE(taken_wrapper);
   EXPECT_TRUE(taken_wrapper->web_contents()->IsCrashed());
   EXPECT_FALSE(taken_wrapper->GetHost());

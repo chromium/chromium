@@ -73,7 +73,7 @@ class ReadAnythingImmersiveOverlayView
   void SubscribeToController(views::WebView* web_view);
 
   // Callback for when the immersive web view is ready to be shown.
-  void OnShowUI();
+  void OnShowUI(ReadAnythingOpenTrigger trigger);
 
   // Forward the focus event to the focus_callback_list_ observers.
   void OnImmersiveWebViewFocused(views::WebView* web_view);

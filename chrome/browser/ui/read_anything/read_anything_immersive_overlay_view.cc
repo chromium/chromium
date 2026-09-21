@@ -92,7 +92,9 @@ void ReadAnythingImmersiveOverlayView::OnShowImmersive(
 
 void ReadAnythingImmersiveOverlayView::OnCloseImmersive() {
   ReadAnythingContentsWrapper wrapper = CloseUI();
-  if (wrapper && controller_) {
+  CHECK(controller_);
+  if (wrapper) {
+    controller_->OnEntryHidden();
     controller_->TransferWebUiOwnership(
         std::move(wrapper),
         ReadAnythingController::PresentationState::kInImmersiveOverlay);
@@ -115,8 +117,8 @@ void ReadAnythingImmersiveOverlayView::ShowUI(
 
   auto immersive_web_view = std::make_unique<ReadAnythingImmersiveWebView>(
       base::BindOnce(&ReadAnythingImmersiveOverlayView::OnShowUI,
-                     base::Unretained(this)),
-      std::move(contents_wrapper).release(), trigger);
+                     base::Unretained(this), trigger),
+      std::move(contents_wrapper).release());
   immersive_web_view_ = AddChildView(std::move(immersive_web_view));
   immersive_view_focus_subscription_ =
       immersive_web_view_->AddWebContentsFocusedCallback(base::BindRepeating(
@@ -136,7 +138,8 @@ void ReadAnythingImmersiveOverlayView::ShowUI(
   }
 }
 
-void ReadAnythingImmersiveOverlayView::OnShowUI() {
+void ReadAnythingImmersiveOverlayView::OnShowUI(
+    ReadAnythingOpenTrigger trigger) {
   SetVisible(true);
 
   // We set the underlying web contents to be not accessible while IRM is open,
@@ -158,6 +161,9 @@ void ReadAnythingImmersiveOverlayView::OnShowUI() {
   if (immersive_web_view_ && (!tab || tab->IsActivated())) {
     immersive_web_view_->RequestFocus();
   }
+
+  CHECK(controller_);
+  controller_->OnEntryShown(trigger);
 }
 
 ReadAnythingContentsWrapper ReadAnythingImmersiveOverlayView::CloseUI() {
@@ -181,7 +187,7 @@ ReadAnythingContentsWrapper ReadAnythingImmersiveOverlayView::CloseUI() {
     contents_web_view_->RequestFocus();
   }
 
-  return ReadAnythingContentsWrapper(web_view->CloseAndTakeContentsWrapper());
+  return ReadAnythingContentsWrapper(web_view->TakeContentsWrapper());
 }
 
 base::CallbackListSubscription

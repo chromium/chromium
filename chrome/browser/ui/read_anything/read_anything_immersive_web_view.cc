@@ -6,9 +6,7 @@
 
 #include <utility>
 
-#include "base/check.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
-#include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "content/public/browser/context_menu_params.h"
@@ -18,11 +16,9 @@
 ReadAnythingImmersiveWebView::ReadAnythingImmersiveWebView(
     base::OnceClosure on_show_ui_callback,
     std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
-        contents_wrapper,
-    ReadAnythingOpenTrigger trigger)
+        contents_wrapper)
     : on_show_ui_callback_(std::move(on_show_ui_callback)),
-      contents_wrapper_(std::move(contents_wrapper)),
-      trigger_(trigger) {
+      contents_wrapper_(std::move(contents_wrapper)) {
   SetWebContents(contents_wrapper_->web_contents());
   contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
 }
@@ -83,18 +79,10 @@ void ReadAnythingImmersiveWebView::FindReply(content::WebContents* web_contents,
 }
 
 std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
-ReadAnythingImmersiveWebView::CloseAndTakeContentsWrapper() {
+ReadAnythingImmersiveWebView::TakeContentsWrapper() {
   SetWebContents(nullptr);  // This is necessary to reset the web contents.
   contents_wrapper_->SetHost(nullptr);
   SetVisible(false);
-
-  // Call OnEntryHidden on the Controller
-  auto* read_anything_controller = ReadAnythingControllerGlue::FromWebContents(
-                                       contents_wrapper_->web_contents())
-                                       ->controller();
-  CHECK(read_anything_controller);
-  read_anything_controller->OnEntryHidden();
-
   return std::move(contents_wrapper_);
 }
 
@@ -108,11 +96,6 @@ void ReadAnythingImmersiveWebView::ShowUI() {
   if (on_show_ui_callback_) {
     std::move(on_show_ui_callback_).Run();
   }
-  auto* read_anything_controller = ReadAnythingControllerGlue::FromWebContents(
-                                       contents_wrapper_->web_contents())
-                                       ->controller();
-  CHECK(read_anything_controller);
-  read_anything_controller->OnEntryShown(trigger_);
 }
 
 // Called by the WebUI on its embedder (this class) when the WebUI is ready to
