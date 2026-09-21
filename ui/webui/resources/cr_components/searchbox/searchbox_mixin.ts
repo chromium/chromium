@@ -386,8 +386,12 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       return result.queryId !== this.activeQueryId;
     }
 
+    shouldDropdownBeVisible(): boolean {
+      return this.hasMatches();
+    }
+
     updateDropdownVisibility(): void {
-      this.dropdownIsVisible = this.hasMatches();
+      this.dropdownIsVisible = this.shouldDropdownBeVisible();
 
       if (this.multiLineEnabled && this.dropdownIsVisible) {
         const isUserTyping = (this.result?.input.length ?? 0) > 0;
@@ -1102,6 +1106,7 @@ export interface SearchboxMixinInterface extends
   hasMatches(): boolean;
   isAutocompleteResultStale(result: AutocompleteResult): boolean;
   isBackgroundTabNavigation(e: KeyboardEvent|MouseEvent): boolean;
+  shouldDropdownBeVisible(): boolean;
   updateDropdownVisibility(): void;
   unfreezeActiveQueryId(): void;
 

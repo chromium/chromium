@@ -2347,6 +2347,7 @@ suite('OmniboxPopupSearchboxTest', function() {
          hideClassicContextButton: false,
          contextualMenuUsePecApi: false,
          searchboxLayoutMode: 'TallBottomContext',
+         composeboxShowChip: true,
        });
 
        localSearchbox = document.createElement('omnibox-popup-searchbox');
@@ -2427,6 +2428,72 @@ suite('OmniboxPopupSearchboxTest', function() {
        await microtasksFinished();
 
        assertFalse(!!getContextualEntrypointButton(localSearchbox));
+     });
+
+     test(
+         'DropdownVisibleWhenHasContextualChipsEvenWithoutMatches',
+         async () => {
+           localSearchbox.dropdownIsVisible = false;
+           testProxy.page.updateAimPopupEligibility(true);
+           testProxy.page.updateLensSearchEligibility(true);
+           await microtasksFinished();
+
+           assertTrue(localSearchbox.dropdownIsVisible);
+           const contextualEntrypoint =
+               getContextualEntrypointButton(localSearchbox);
+           assertTrue(!!contextualEntrypoint);
+           assertTrue(isVisible(contextualEntrypoint));
+         });
+
+     test('DropdownHiddenWhenNotLensEligibleAndNoMatches', async () => {
+       localSearchbox.dropdownIsVisible = false;
+       testProxy.page.updateAimPopupEligibility(true);
+       testProxy.page.updateLensSearchEligibility(false);
+       await microtasksFinished();
+
+       assertFalse(localSearchbox.dropdownIsVisible);
+       const contextualEntrypoint =
+           getContextualEntrypointButton(localSearchbox);
+       assertFalse(!!contextualEntrypoint);
+     });
+
+     test('DropdownHiddenWhenAskGShowChipDisabledAndNoMatches', async () => {
+       document.body.innerHTML = window.trustedTypes!.emptyHTML;
+       loadTimeData.overrideValues({composeboxShowChip: false});
+       localSearchbox = document.createElement('omnibox-popup-searchbox');
+       localSearchbox.dropdownIsVisible = false;
+       document.body.appendChild(localSearchbox);
+       await microtasksFinished();
+
+       testProxy.page.updateAimPopupEligibility(true);
+       testProxy.page.updateLensSearchEligibility(true);
+       await microtasksFinished();
+
+       assertFalse(localSearchbox.dropdownIsVisible);
+       const contextualEntrypoint =
+           getContextualEntrypointButton(localSearchbox);
+       assertFalse(!!contextualEntrypoint);
+     });
+
+     test('DropdownSuppressedWhenMultilineInputGrows', async () => {
+       localSearchbox.multiLineEnabled = true;
+       const inputElement = localSearchbox.getInputElement();
+       inputElement.multiLineEnabled = true;
+       localSearchbox.result = createAutocompleteResultForTesting({
+         input: 'hello world',
+         matches: [],
+       });
+       Object.defineProperty(
+           inputElement.$.input, 'scrollHeight',
+           {value: 60, configurable: true});
+       testProxy.page.updateAimPopupEligibility(true);
+       testProxy.page.updateLensSearchEligibility(true);
+       await microtasksFinished();
+
+       assertFalse(localSearchbox.dropdownIsVisible);
+       const contextualEntrypoint =
+           getContextualEntrypointButton(localSearchbox);
+       assertFalse(!!contextualEntrypoint);
      });
    });
 
