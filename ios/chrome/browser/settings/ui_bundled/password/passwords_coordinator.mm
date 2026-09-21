@@ -739,7 +739,7 @@ constexpr NSInteger kLevelUpPasswordCheckupWalkthroughTotalPages = 3;
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForProfile(self.profile);
   if (!authenticationService->SigninEnabled()) {
-    // TODO(crbug.com/450982128): Display some error message to the user.
+    // TODO(crbug.com/564375982): Display some error message to the user.
     self.credentialImportUUID = nil;
     return;
   }
