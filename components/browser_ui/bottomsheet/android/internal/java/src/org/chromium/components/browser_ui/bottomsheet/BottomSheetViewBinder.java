@@ -47,6 +47,9 @@ public class BottomSheetViewBinder {
             view.setContainerHeight(model.get(BottomSheetProperties.CONTAINER_HEIGHT));
         } else if (BottomSheetProperties.SHEET_WIDTH_PX == propertyKey) {
             view.setSheetWidth(model.get(BottomSheetProperties.SHEET_WIDTH_PX));
+        } else if (BottomSheetProperties.ACCESSIBILITY_PANE_TITLE == propertyKey) {
+            view.setSheetAccessibilityPaneTitle(
+                    model.get(BottomSheetProperties.ACCESSIBILITY_PANE_TITLE));
         }
     }
 

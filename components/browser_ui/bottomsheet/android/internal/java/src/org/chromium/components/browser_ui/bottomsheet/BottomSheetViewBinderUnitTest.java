@@ -120,4 +120,10 @@ public class BottomSheetViewBinderUnitTest {
         mModel.set(BottomSheetProperties.SHEET_WIDTH_PX, 500);
         verify(mView).setSheetWidth(500);
     }
+
+    @Test
+    public void testAccessibilityPaneTitle() {
+        mModel.set(BottomSheetProperties.ACCESSIBILITY_PANE_TITLE, "Sheet Title");
+        verify(mView).setSheetAccessibilityPaneTitle("Sheet Title");
+    }
 }

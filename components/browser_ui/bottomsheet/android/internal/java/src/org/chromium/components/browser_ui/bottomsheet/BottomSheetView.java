@@ -233,6 +233,15 @@ public class BottomSheetView extends FrameLayout {
     }
 
     /**
+     * Sets the accessibility pane title for the sheet view.
+     *
+     * @param title The pane title.
+     */
+    public void setSheetAccessibilityPaneTitle(@Nullable CharSequence title) {
+        ViewCompat.setAccessibilityPaneTitle(this, title);
+    }
+
+    /**
      * Sets whether the fallback shadow is visible.
      *
      * @param visible Whether the fallback shadow should be visible.

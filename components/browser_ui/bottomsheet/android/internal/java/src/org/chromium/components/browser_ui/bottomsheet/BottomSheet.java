@@ -58,7 +58,6 @@ import org.chromium.ui.insets.InsetObserver.WindowInsetsAnimationListener;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.util.ColorUtils;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -191,23 +190,12 @@ class BottomSheet extends BottomSheetView
 
     @Override
     public boolean shouldGestureMoveSheet(MotionEvent initialEvent, MotionEvent currentEvent) {
-        // If the sheet is scrolling off-screen or in the process of hiding, gestures should not
-        // affect it.
-        if (getOffsetFromBrowserControls() > 0 || isHiding()) {
-            return false;
-        }
-
-        // If the sheet is already open, or an accessibility service that can perform gestures or
-        // uses touch exploration is enabled, there is no need to restrict the swipe area.
-        if (isSheetOpen()
-                || AccessibilityState.isPerformGesturesEnabled()
-                || AccessibilityState.isTouchExplorationEnabled()) {
-            return true;
-        }
-
-        float startX = mVisibleViewportRect.left;
-        float endX = mContainerWidth + mVisibleViewportRect.left;
-        return currentEvent.getRawX() > startX && currentEvent.getRawX() < endX;
+        return mMediator.shouldGestureMoveSheet(
+                currentEvent.getRawX(),
+                getOffsetFromBrowserControls(),
+                isHiding(),
+                mContainerWidth,
+                mVisibleViewportRect);
     }
 
     /**
@@ -1115,21 +1103,7 @@ class BottomSheet extends BottomSheetView
     }
 
     private @StringRes int getAccessibilityStringIdForState(@SheetState int state) {
-        BottomSheetContent content = getCurrentSheetContent();
-        assert content != null : "Sheet content cannot be null";
-        switch (state) {
-            case SheetState.PEEK:
-                return content.getSheetClosedAccessibilityStringId();
-            case SheetState.HALF:
-                return content.getSheetHalfHeightAccessibilityStringId();
-            case SheetState.FULL:
-                return content.getSheetFullHeightAccessibilityStringId();
-            case SheetState.HIDDEN:
-                return content.getSheetHiddenAccessibilityStringId();
-            default:
-                assert false : "Invalid sheet state: " + state;
-                return Resources.ID_NULL;
-        }
+        return mMediator.getAccessibilityStringIdForState(state);
     }
 
     /**
@@ -1777,44 +1751,26 @@ class BottomSheet extends BottomSheetView
 
     @VisibleForTesting
     void updateBackgroundColor() {
-        BottomSheetContent content = getCurrentSheetContent();
-        if (content == null) return;
-
-        if (content.hasSolidBackgroundColor()) {
-            int overrideColor = content.getSheetBackgroundColorOverride();
-            if (overrideColor != Color.TRANSPARENT) {
-                updateSheetBgColorTint(overrideColor);
-                return;
-            }
-        }
-
+        if (getCurrentSheetContent() == null) return;
         Context context = getContext();
         int colorNonModal = getNonModalBottomSheetBgColor(context);
         int colorModal = getModalBottomSheetBgColor(context);
 
-        // Calculate the color based on the ratio between PEEK / FULL state.
-        float maxOffset = getMaxOffsetPx();
-        float minOffset = getPeekRatio() * getMaxSheetHeight();
-
-        boolean isResizableSheet = isHalfStateEnabled() || isPeekStateEnabled();
-        if (!isResizableSheet || maxOffset <= minOffset || colorModal == colorNonModal) {
-            int newColor = BottomSheetUtils.isSheetNonModal(content) ? colorNonModal : colorModal;
-            updateSheetBgColorTint(newColor);
-            return;
-        }
-
-        float currentOffset = getCurrentOffsetPx();
-        float colorRatio = Math.max(0, currentOffset - minOffset) / (maxOffset - minOffset);
         int newColor =
-                ColorUtils.overlayColor(
-                        /* baseColor= */ colorNonModal, /* overlayColor= */ colorModal, colorRatio);
+                mMediator.getBackgroundColor(
+                        colorNonModal,
+                        colorModal,
+                        getMaxOffsetPx(),
+                        getPeekRatio() * getMaxSheetHeight(),
+                        getCurrentOffsetPx(),
+                        isSmallScreen());
         updateSheetBgColorTint(newColor);
     }
 
     private void updateSheetBgColorTint(@ColorInt int newColor) {
         if (mSheetBgColor == newColor) return;
         mSheetBgColor = newColor;
-        mModel.set(BottomSheetProperties.BACKGROUND_COLOR, mSheetBgColor);
+        mMediator.setBackgroundColor(mSheetBgColor);
     }
 
     @VisibleForTesting
@@ -1837,8 +1793,7 @@ class BottomSheet extends BottomSheetView
     }
 
     private void updateA11yPaneTitle(CharSequence msg) {
-        // Set the pane title for the bottom sheet view.
-        ViewCompat.setAccessibilityPaneTitle(this, msg);
+        mMediator.setAccessibilityPaneTitle(msg);
     }
 
     // Suppressing AccessibilityFocus: The bottom sheet uses translationY for animations rather than

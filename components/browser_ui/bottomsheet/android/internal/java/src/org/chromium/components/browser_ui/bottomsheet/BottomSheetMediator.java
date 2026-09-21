@@ -6,9 +6,14 @@ package org.chromium.components.browser_ui.bottomsheet;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.Rect;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Px;
+import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.CallbackUtils;
@@ -22,7 +27,9 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightM
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetView.SheetLayoutMode;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.util.TokenHolder;
 
 /** Coordinates the bottom sheet UI lifecycle, state transitions, and event notifications. */
@@ -666,6 +673,24 @@ class BottomSheetMediator {
         mModel.set(BottomSheetProperties.KEYBOARD_CURTAIN_HEIGHT, height);
     }
 
+    /**
+     * Sets the background color in the model.
+     *
+     * @param color The background color.
+     */
+    void setBackgroundColor(@ColorInt int color) {
+        mModel.set(BottomSheetProperties.BACKGROUND_COLOR, color);
+    }
+
+    /**
+     * Sets the accessibility pane title in the model.
+     *
+     * @param title The pane title.
+     */
+    void setAccessibilityPaneTitle(@Nullable CharSequence title) {
+        mModel.set(BottomSheetProperties.ACCESSIBILITY_PANE_TITLE, title);
+    }
+
     /** Returns the ratio of the height of the screen that the hidden state is. */
     float getHiddenRatio() {
         return 0;
@@ -791,6 +816,33 @@ class BottomSheetMediator {
         return SheetState.FULL;
     }
 
+    boolean shouldGestureMoveSheet(
+            float currentX,
+            float offsetFromBrowserControls,
+            boolean isHiding,
+            int containerWidth,
+            Rect visibleViewportRect) {
+        // If the sheet is scrolling off-screen or in the process of hiding, gestures should not
+        // affect it.
+        if (offsetFromBrowserControls > 0 || isHiding) return false;
+
+        // If the sheet is already open, or an accessibility service that can perform gestures or
+        // uses touch exploration is enabled, there is no need to restrict the swipe area.
+        if (isSheetOpen()
+                || AccessibilityState.isPerformGesturesEnabled()
+                || AccessibilityState.isTouchExplorationEnabled()) {
+            return true;
+        }
+        float startX = visibleViewportRect.left;
+        float endX = containerWidth + startX;
+        return currentX > startX && currentX < endX;
+    }
+
+    @VisibleForTesting
+    void setIsSheetOpenForTesting(boolean isSheetOpen) {
+        mIsSheetOpen = isSheetOpen;
+    }
+
     void maybeCacheStateForImeAnimation(int typeMask, boolean isKeyboardShowing) {
         if ((typeMask & WindowInsetsCompat.Type.ime()) == 0) return;
         if (mStateBeforeKeyboardShown != SheetState.NONE) return;
@@ -836,6 +888,51 @@ class BottomSheetMediator {
         if (mKeyboardToken != TokenHolder.INVALID_TOKEN) {
             mKeyboardTokenHolder.releaseToken(mKeyboardToken);
             mKeyboardToken = TokenHolder.INVALID_TOKEN;
+        }
+    }
+
+    @ColorInt
+    int getBackgroundColor(
+            int colorNonModal,
+            int colorModal,
+            float maxOffset,
+            float minOffset,
+            float currentOffset,
+            boolean isSmallScreen) {
+        if (mSheetContent == null) return colorNonModal;
+
+        if (mSheetContent.hasSolidBackgroundColor()) {
+            int overrideColor = mSheetContent.getSheetBackgroundColorOverride();
+            if (overrideColor != Color.TRANSPARENT) {
+                return overrideColor;
+            }
+        }
+
+        // Calculate the color based on the ratio between PEEK / FULL state.
+        boolean isResizableSheet = isHalfStateEnabled(isSmallScreen) || isPeekStateEnabled();
+        if (!isResizableSheet || maxOffset <= minOffset || colorModal == colorNonModal) {
+            return BottomSheetUtils.isSheetNonModal(mSheetContent) ? colorNonModal : colorModal;
+        }
+
+        float colorRatio = Math.max(0, currentOffset - minOffset) / (maxOffset - minOffset);
+        return ColorUtils.overlayColor(colorNonModal, colorModal, colorRatio);
+    }
+
+    @StringRes
+    int getAccessibilityStringIdForState(@SheetState int state) {
+        assert mSheetContent != null : "Sheet content cannot be null";
+        switch (state) {
+            case SheetState.PEEK:
+                return mSheetContent.getSheetClosedAccessibilityStringId();
+            case SheetState.HALF:
+                return mSheetContent.getSheetHalfHeightAccessibilityStringId();
+            case SheetState.FULL:
+                return mSheetContent.getSheetFullHeightAccessibilityStringId();
+            case SheetState.HIDDEN:
+                return mSheetContent.getSheetHiddenAccessibilityStringId();
+            default:
+                assert false : "Invalid sheet state: " + state;
+                return Resources.ID_NULL;
         }
     }
 

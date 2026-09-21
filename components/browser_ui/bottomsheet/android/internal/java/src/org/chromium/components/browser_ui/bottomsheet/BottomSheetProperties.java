@@ -41,6 +41,8 @@ public class BottomSheetProperties {
             new WritableIntPropertyKey();
     public static final WritableIntPropertyKey CONTAINER_HEIGHT = new WritableIntPropertyKey();
     public static final WritableIntPropertyKey SHEET_WIDTH_PX = new WritableIntPropertyKey();
+    public static final WritableObjectPropertyKey<@Nullable CharSequence> ACCESSIBILITY_PANE_TITLE =
+            new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
@@ -56,7 +58,8 @@ public class BottomSheetProperties {
                 TOOLBAR_VIEW,
                 KEYBOARD_CURTAIN_HEIGHT,
                 CONTAINER_HEIGHT,
-                SHEET_WIDTH_PX
+                SHEET_WIDTH_PX,
+                ACCESSIBILITY_PANE_TITLE
             };
 
     private BottomSheetProperties() {}
