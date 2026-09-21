@@ -4,6 +4,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/glic/host/glic_no_webview_contents_manager.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -1036,6 +1037,30 @@ IN_PROC_BROWSER_TEST_P(GlicInternalContextMenuBrowserTest,
   run_loop.Run();
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
+
+IN_PROC_BROWSER_TEST_P(GlicInternalContextMenuBrowserTest,
+                       GuestContextMenuInspectElementOpensDevTools) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  ASSERT_OK(WaitForGlicClient(instance));
+  content::WebContents* guest_contents = instance->host().web_client_contents();
+  ASSERT_TRUE(guest_contents);
+
+  content::ContextMenuParams params;
+  params.page_url = guest_contents->GetVisibleURL();
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      *guest_contents->GetPrimaryMainFrame(), params);
+  menu->Init();
+
+  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_INSPECTELEMENT));
+  EXPECT_TRUE(menu->IsItemEnabled(IDC_CONTENT_CONTEXT_INSPECTELEMENT));
+
+  DevToolsWindowCreationObserver observer;
+  menu->ExecuteCommand(IDC_CONTENT_CONTEXT_INSPECTELEMENT, 0);
+  observer.WaitForLoad();
+  DevToolsWindow* window = observer.devtools_window();
+  EXPECT_TRUE(window);
+  observer.CloseAllSync();
+}
 
 class GlicNoWebviewOverlayContextMenuBrowserTest : public GlicBrowserTest {
  public:
