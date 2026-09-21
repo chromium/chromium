@@ -86,20 +86,15 @@ std::unique_ptr<web_app::WebAppInstallInfo> GetNullWebAppInstallInfo() {
 }
 
 web_app::WebAppInstallInfoFactory GetApp1WebAppInfoFactory() {
-  // "static" so that web_app::ExternalInstallOptions comparisons in tests work.
-  static auto factory = base::BindRepeating(&GetWebAppInstallInfo, AppUrl1());
-  return factory;
+  return base::BindRepeating(&GetWebAppInstallInfo, AppUrl1());
 }
 
 web_app::WebAppInstallInfoFactory GetApp2WebAppInfoFactory() {
-  // "static" so that web_app::ExternalInstallOptions comparisons in tests work.
-  static auto factory = base::BindRepeating(&GetWebAppInstallInfo, AppUrl2());
-  return factory;
+  return base::BindRepeating(&GetWebAppInstallInfo, AppUrl2());
 }
 
 web_app::WebAppInstallInfoFactory GetNullWebAppInfoFactory() {
-  static auto factory = base::BindRepeating(&GetNullWebAppInstallInfo);
-  return factory;
+  return base::BindRepeating(&GetNullWebAppInstallInfo);
 }
 
 class SystemWebAppWaiter {

@@ -50,19 +50,16 @@ using ::testing::_;
 
 const char kEndpointId[] = "endpointId";
 
-const std::vector<uint8_t>& GetEid() {
-  static const std::vector<uint8_t> eid{0, 1};
-  return eid;
+std::vector<uint8_t> GetEid() {
+  return {0, 1};
 }
 
-const std::vector<uint8_t>& GetBluetoothAddress() {
-  static const std::vector<uint8_t> address{0, 1, 2, 3, 4, 5};
-  return address;
+std::vector<uint8_t> GetBluetoothAddress() {
+  return {0, 1, 2, 3, 4, 5};
 }
 
-const std::vector<uint8_t>& GetEndpointInfo() {
-  static const std::vector<uint8_t> info{6, 7, 8, 9, 10};
-  return info;
+std::vector<uint8_t> GetEndpointInfo() {
+  return {6, 7, 8, 9, 10};
 }
 
 }  // namespace

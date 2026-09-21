@@ -27,13 +27,12 @@ using ::nearby::connections::mojom::EndpointDiscoveryListener;
 using ::nearby::connections::mojom::Status;
 using ::testing::_;
 
-const std::vector<uint8_t> GetEid() {
-  return std::vector<uint8_t>{0, 1};
+std::vector<uint8_t> GetEid() {
+  return {0, 1};
 }
 
-const std::vector<uint8_t>& GetBluetoothAddress() {
-  static const std::vector<uint8_t> address{0, 1, 2, 3, 4, 5};
-  return address;
+std::vector<uint8_t> GetBluetoothAddress() {
+  return {0, 1, 2, 3, 4, 5};
 }
 
 }  // namespace

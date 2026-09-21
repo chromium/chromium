@@ -4,12 +4,17 @@
 
 #include "chrome/browser/ash/crostini/crostini_test_util.h"
 
+#include <memory>
+#include <utility>
+
 #include "chrome/test/views/chrome_test_views_delegate.h"
 #include "ui/views/test/scoped_views_test_helper.h"
 
 namespace {
 
-std::unique_ptr<views::ScopedViewsTestHelper> views_helper_;
+// Owned. Created by SetUpViewsEnvironmentForTesting() and destroyed by
+// TearDownViewsEnvironmentForTesting().
+views::ScopedViewsTestHelper* g_views_helper = nullptr;
 
 // ViewsDelegate to provide context to dialog creation functions which do not
 // allow InitParams to be set, and pass a null |context| argument to
@@ -45,13 +50,13 @@ namespace crostini {
 void SetUpViewsEnvironmentForTesting() {
   auto views_delegate = std::make_unique<TestViewsDelegateWithContext>();
   TestViewsDelegateWithContext* views_delegate_weak = views_delegate.get();
-  views_helper_ =
-      std::make_unique<views::ScopedViewsTestHelper>(std::move(views_delegate));
-  views_delegate_weak->set_context(views_helper_->GetContext());
+  g_views_helper = new views::ScopedViewsTestHelper(std::move(views_delegate));
+  views_delegate_weak->set_context(g_views_helper->GetContext());
 }
 
 void TearDownViewsEnvironmentForTesting() {
-  views_helper_.reset();
+  delete g_views_helper;
+  g_views_helper = nullptr;
 }
 
 }  // namespace crostini
