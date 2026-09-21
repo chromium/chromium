@@ -698,7 +698,13 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
   EXPECT_FALSE(error_future1.IsReady());
 }
 
-IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest, InvokeTimeoutBehaviors) {
+// TODO(b/564473727): Test is flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_InvokeTimeoutBehaviors DISABLED_InvokeTimeoutBehaviors
+#else
+#define MAYBE_InvokeTimeoutBehaviors InvokeTimeoutBehaviors
+#endif
+IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest, MAYBE_InvokeTimeoutBehaviors) {
   // 1. Test custom short timeout
   base::test::TestFuture<GlicInvokeError> short_error_future;
   GlicInvokeOptions short_options(mojom::InvocationSource::kOsButton);
