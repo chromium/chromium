@@ -200,7 +200,7 @@ Description of the patches:
 
   Adds some missing export defines to fix Windows component build.
 
-- 0052-remove-dynanmic-annotations.patch
+- 0052-remove-dynamic-annotations.patch
 
   This removes dynamic annotations (for containers; an ASAN tool). The use of
   absl's dynamic_annotations is banned in Chromium (see
@@ -299,8 +299,10 @@ Description of the patches:
 - 0070-fix-deprecated-get-enum-in-message.patch
 
   Removes [[deprecated]] attribute from Reflection::GetEnum and
-  Reflection::GetRepeatedEnum in message.h to avoid -Wdeprecated-declarations
-  compilation errors across Chromium callers.
+  Reflection::GetRepeatedEnum in message.h (deprecated upstream for removal in
+  Q1 2027 in favor of GetEnumValue / GetRepeatedEnumValue) to avoid
+  -Wdeprecated-declarations compilation errors across remaining third-party
+  callers (fuzztest, tflite, ink).
 
 - 0071-remove-log-include-from-descriptor-h.patch
 
