@@ -924,3 +924,8 @@ void RecordShowPageLoadingSnackbarOnOpeningInvocation(bool show_snackbar) {
   base::UmaHistogramBoolean(
       kShowPageLoadingSnackbarOnOpeningInvocationHistogram, show_snackbar);
 }
+void RecordGeminiAppSwitcherAccountStatus(
+    GeminiAppSwitcherAccountStatus status) {
+  base::UmaHistogramEnumeration("IOS.Gemini.AISummarization.AccountStatus",
+                                status);
+}

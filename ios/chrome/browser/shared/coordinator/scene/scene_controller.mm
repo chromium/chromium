@@ -70,6 +70,7 @@
 #import "ios/chrome/browser/geolocation/model/geolocation_manager.h"
 #import "ios/chrome/browser/google_one/shared/google_one_deep_link_util.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
+#import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
@@ -277,6 +278,27 @@ bool IsProfileUnmanaged(ProfileIOS* profile) {
   }
   // Otherwise, the profile is unmanaged if it is not managed.
   return !service->IsManaged();
+}
+
+// Returns the account alignment status given the external app and client app
+// hashed Gaia IDs.
+GeminiAppSwitcherAccountStatus GetAppSwitcherAccountStatus(
+    NSString* external_app_hashed_gaia_id,
+    NSString* client_app_hashed_gaia_id) {
+  if (external_app_hashed_gaia_id.length && client_app_hashed_gaia_id.length) {
+    if ([external_app_hashed_gaia_id
+            isEqualToString:client_app_hashed_gaia_id]) {
+      return GeminiAppSwitcherAccountStatus::kMatching;
+    }
+    return GeminiAppSwitcherAccountStatus::kMismatched;
+  }
+  if (external_app_hashed_gaia_id.length) {
+    return GeminiAppSwitcherAccountStatus::kExternalAppOnlySignedIn;
+  }
+  if (client_app_hashed_gaia_id.length) {
+    return GeminiAppSwitcherAccountStatus::kClientAppOnlySignedIn;
+  }
+  return GeminiAppSwitcherAccountStatus::kBothSignedOut;
 }
 
 }  // namespace
@@ -2688,10 +2710,12 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
       authService ? authService->GetPrimaryIdentity() : nil;
   NSString* activeHashedGaiaID = identity ? identity.hashedGaiaID : nil;
   NSString* targetHashedGaiaID = self.startupParameters.appSwitcherHashedUserID;
-  if (targetHashedGaiaID.length && activeHashedGaiaID.length &&
-      ![targetHashedGaiaID isEqualToString:activeHashedGaiaID]) {
+  GeminiAppSwitcherAccountStatus accountStatus =
+      GetAppSwitcherAccountStatus(targetHashedGaiaID, activeHashedGaiaID);
+  if (accountStatus == GeminiAppSwitcherAccountStatus::kMismatched) {
     startupState.isMismatchedAccount = YES;
   }
+  RecordGeminiAppSwitcherAccountStatus(accountStatus);
 
   id<GeminiCommands> geminiHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), GeminiCommands);

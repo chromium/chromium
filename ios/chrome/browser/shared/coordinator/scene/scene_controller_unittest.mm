@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/signin/public/base/consent_level.h"
@@ -22,6 +23,8 @@
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
+#import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intents/model/intents_constants.h"
 #import "ios/chrome/browser/intents/model/user_activity_browser_agent.h"
 #import "ios/chrome/browser/main/ui_bundled/browser_lifecycle_manager.h"
@@ -54,6 +57,7 @@
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_data.h"
 #import "ios/testing/scoped_block_swizzler.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #import "services/network/test/test_url_loader_factory.h"
@@ -427,4 +431,29 @@ TEST_F(SceneControllerTest, SceneStatePrefsNotRecreatedAsProfileStageAdvance) {
   EXPECT_EQ(scene_state.prefs, prefs);
 }
 
+// Tests that the AccountStatus metric is recorded when handling
+// START_GEMINI_AI_SUMMARIZATION post-opening action.
+TEST_F(SceneControllerTest, TestAppSwitcherAISummarizationAccountStatusMetric) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kPageActionMenu, kAppSwitcherAISummarization}, {});
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web_state->SetCurrentURL(GURL("https://example.com"));
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  base::HistogramTester histogram_tester;
+
+  ProceduralBlock action = [scene_controller_
+      completionBlockForTriggeringAction:START_GEMINI_AI_SUMMARIZATION];
+  ASSERT_NE(action, nil);
+
+  action();
+
+  histogram_tester.ExpectUniqueSample(
+      "IOS.Gemini.AISummarization.AccountStatus",
+      static_cast<int>(GeminiAppSwitcherAccountStatus::kBothSignedOut), 1);
+}
 }  // namespace

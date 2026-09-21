@@ -2712,6 +2712,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="IOS.Gemini.AISummarization.AccountStatus"
+    enum="GeminiAppSwitcherAccountStatus" expires_after="2027-04-01">
+  <owner>joemerramos@google.com</owner>
+  <owner>bling-alchemy@google.com</owner>
+  <summary>
+    The cross-app account alignment status of a user entering via the App
+    Switcher AI Summarization intent. Recorded upon receiving the App Switcher
+    intent.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Gemini.BlockQuerySubmissionWhileLoading" enum="Boolean"
     expires_after="2027-04-01">
   <owner>yasamans@google.com</owner>
