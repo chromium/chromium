@@ -50,7 +50,6 @@
 #endif
 
 namespace glic {
-BASE_FEATURE(kGlicReloadUsesFreshWebContents, base::FEATURE_ENABLED_BY_DEFAULT);
 
 void Host::EmbedderDelegate::Resize(const gfx::Size& size,
                                     base::TimeDelta duration,
@@ -171,19 +170,10 @@ void Host::Reload() {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(kGlicReloadUsesFreshWebContents)) {
-    UnsetWebClient();
-    Hibernate();
-    Awaken();
-    delegate_->OnReload();
-  } else {
-    auto* contents = webui_contents();
-    if (!contents) {
-      return;
-    }
-    contents->GetController().Reload(content::ReloadType::BYPASSING_CACHE,
-                                     /*check_for_repost=*/false);
-  }
+  UnsetWebClient();
+  Hibernate();
+  Awaken();
+  delegate_->OnReload();
 }
 
 void Host::OnWebContentsNavigated() {
