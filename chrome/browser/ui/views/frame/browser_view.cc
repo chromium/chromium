@@ -5516,7 +5516,17 @@ void BrowserView::ProcessFullscreen(bool fullscreen, const int64_t display_id) {
   PrepareFullscreen(fullscreen);
 
   // TODO(b/40276379): Move this out from ProcessFullscreen.
+  // RequestFullscreen() executes lower-layer platform widget and window manager
+  // operations. On some platforms or window configurations, synchronous event
+  // processing during window resize or display transitions can result in window
+  // closure and the destruction of `this`. Capture a WeakPtr to verify that
+  // `this` remains valid before continuing with post-transition processing and
+  // layout updates.
+  base::WeakPtr<BrowserView> weak_this = GetAsWeakPtr();
   RequestFullscreen(fullscreen, display_id);
+  if (!weak_this) {
+    return;
+  }
 
 #if !BUILDFLAG(IS_MAC)
   // On Mac platforms, FullscreenStateChanged() is invoked from
