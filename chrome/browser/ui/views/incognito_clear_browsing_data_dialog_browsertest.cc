@@ -31,11 +31,17 @@ namespace {
 
 class IncognitoClearBrowsingDataDialogTest : public InProcessBrowserTest {
  public:
+  BrowserWindowInterface* CreateIncognitoBrowser(Profile* profile = nullptr) {
+    BrowserWindowInterface* incognito_browser =
+        InProcessBrowserTest::CreateIncognitoBrowser(profile);
+    AvatarToolbarButtonTestAccessor(incognito_browser).WaitForAvatarButton();
+    return incognito_browser;
+  }
+
   void OpenDialog(IncognitoClearBrowsingDataDialogInterface::Type type) {
     if (!incognito_browser_) {
       incognito_browser_ = CreateIncognitoBrowser(GetProfile());
     }
-    AvatarToolbarButtonTestAccessor(incognito_browser_).WaitForAvatarButton();
 
     auto* coordinator = GetCoordinator();
     BrowserView* browser_view =
