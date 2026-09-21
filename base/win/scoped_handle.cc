@@ -4,8 +4,11 @@
 
 #include "base/win/scoped_handle.h"
 
+#include <windows.h>
+
 #include <string>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/debug/alias.h"
 #include "base/logging.h"
@@ -36,6 +39,23 @@ std::ostream& operator<<(std::ostream& os, HandleOperation operation) {
 // Static.
 bool HandleTraits::CloseHandle(HANDLE handle) {
   return ScopedHandleVerifier::Get()->CloseHandle(handle);
+}
+
+// Static.
+HANDLE HandleTraits::DuplicateHandle(HANDLE handle) {
+  // Reject null and pseudo-handles (e.g. INVALID_HANDLE_VALUE /
+  // GetCurrentProcess() / GetCurrentThread()) to prevent laundering a failed
+  // API return value or pseudo-handle into a real handle with full access.
+  // See docs/security/windows-handle-security-guidelines.md.
+  CHECK(IsHandleValid(handle));
+
+  HANDLE duplicate = nullptr;
+  if (!::DuplicateHandle(::GetCurrentProcess(), handle, ::GetCurrentProcess(),
+                         &duplicate, 0, FALSE, DUPLICATE_SAME_ACCESS)) {
+    return nullptr;
+  }
+  CHECK(IsHandleValid(duplicate));
+  return duplicate;
 }
 
 // Static.

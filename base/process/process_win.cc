@@ -109,13 +109,11 @@ Process Process::Duplicate() const {
     return Current();
   }
 
-  ProcessHandle out_handle;
-  if (!IsValid() ||
-      !::DuplicateHandle(::GetCurrentProcess(), Handle(), ::GetCurrentProcess(),
-                         &out_handle, 0, FALSE, DUPLICATE_SAME_ACCESS)) {
+  win::ScopedHandle duplicate = process_.Duplicate();
+  if (!duplicate.is_valid()) {
     return Process();
   }
-  return Process(out_handle);
+  return Process(duplicate.release());
 }
 
 ProcessHandle Process::Release() {

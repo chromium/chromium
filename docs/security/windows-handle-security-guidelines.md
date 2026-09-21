@@ -54,9 +54,10 @@ underlying object in Chromium code is clear. ScopedHandle refuses to adopt or
 represent pseudo handle values, and will not return them from its .get()
 accessor.
 
-When duplicating a ScopedHandle’s underlying HANDLE always call
-ScopedHandle::is_valid() before calling DuplicateHandle, and return an empty
-ScopedHandle or a raw nullptr HANDLE if duplication fails.
+When duplicating a `ScopedHandle`, use `ScopedHandle::Duplicate()` rather than
+calling `::DuplicateHandle()` directly. `ScopedHandle::Duplicate()` automatically
+checks `is_valid()`, prevents pseudo-handle laundering, and returns an empty
+`ScopedHandle` if duplication fails.
 
 When adopting a HANDLE value into a base::win::ScopedHandle that another process
 duplicated into the current process (e.g. a log file handle on a command line)

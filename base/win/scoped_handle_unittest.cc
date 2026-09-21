@@ -72,27 +72,73 @@ TEST_F(ScopedHandleTest, ScopedHandle) {
   EXPECT_EQ(magic_error, ::GetLastError());
 }
 
+TEST_F(ScopedHandleTest, Duplicate) {
+  // Duplicating an invalid handle should return an invalid handle.
+  base::win::ScopedHandle invalid_handle;
+  base::win::ScopedHandle duplicated_invalid = invalid_handle.Duplicate();
+  EXPECT_FALSE(duplicated_invalid.is_valid());
+
+  // Duplicating a valid handle should return a valid handle with the same
+  // underlying kernel object.
+  base::win::ScopedHandle handle(::CreateEvent(nullptr, FALSE, FALSE, nullptr));
+  ASSERT_TRUE(handle.is_valid());
+
+  base::win::ScopedHandle duplicate = handle.Duplicate();
+  ASSERT_TRUE(duplicate.is_valid());
+  EXPECT_NE(handle.get(), duplicate.get());
+
+  // Signal via original handle, wait on duplicate.
+  EXPECT_TRUE(::SetEvent(handle.get()));
+  EXPECT_EQ(WAIT_OBJECT_0, ::WaitForSingleObject(duplicate.get(), 0));
+
+  // Closing the original handle should not invalidate the duplicate.
+  handle.Close();
+  EXPECT_FALSE(handle.is_valid());
+  EXPECT_TRUE(duplicate.is_valid());
+  EXPECT_EQ(WAIT_TIMEOUT, ::WaitForSingleObject(duplicate.get(), 0));
+}
+
 TEST_F(ScopedHandleTest, InvalidHandles) {
   base::win::ScopedHandle empty;
   // Should not get INVALID_HANDLE_VALUE from an empty handle.
   EXPECT_EQ(empty.get(), nullptr);
-  // Do not allow pseudo handles as scoped handles.
-  base::win::ScopedHandle cur_proc(::GetCurrentProcess());
-  EXPECT_FALSE(cur_proc.is_valid());
-  base::win::ScopedHandle cur_thread(::GetCurrentThread());
-  EXPECT_FALSE(cur_thread.is_valid());
-  cur_thread.Set(::GetCurrentThread());
-  EXPECT_FALSE(cur_thread.is_valid());
-  // Should not get INVALID_HANDLE_VALUE from an invalid handle.
-  EXPECT_EQ(cur_thread.get(), nullptr);
-  // Disallow values that come from uint32_t to ensure casting is working right.
-  base::win::ScopedHandle proc_from_u32(Uint32ToHandle(0xfffffffful));
-  EXPECT_FALSE(proc_from_u32.is_valid());
-  proc_from_u32.Set(Uint32ToHandle(0xfffffffful));
-  EXPECT_FALSE(proc_from_u32.is_valid());
-  EXPECT_EQ(proc_from_u32.get(), nullptr);
-  base::win::ScopedHandle thread_from_u32(Uint32ToHandle(0xfffffffeul));
-  EXPECT_FALSE(thread_from_u32.is_valid());
+  EXPECT_FALSE(empty.is_valid());
+  EXPECT_FALSE(empty.Duplicate().is_valid());
+
+  // Pseudo-handles and invalid handle values (including values cast from
+  // uint32_t) must not be adopted via construction, Set(), or laundered into
+  // real handles via Duplicate().
+  const HANDLE kInvalidHandles[] = {
+      nullptr,
+      INVALID_HANDLE_VALUE,
+      ::GetCurrentProcess(),
+      ::GetCurrentThread(),
+      Uint32ToHandle(0xfffffffful),
+      Uint32ToHandle(0xfffffffeul),
+  };
+
+  for (HANDLE invalid_value : kInvalidHandles) {
+    // Construction from an invalid/pseudo handle leaves it empty (nullptr).
+    base::win::ScopedHandle handle(invalid_value);
+    EXPECT_FALSE(handle.is_valid());
+    EXPECT_EQ(handle.get(), nullptr);
+    EXPECT_FALSE(handle.Duplicate().is_valid());
+
+    // Set() on an empty handle leaves it empty (nullptr).
+    handle.Set(invalid_value);
+    EXPECT_FALSE(handle.is_valid());
+    EXPECT_EQ(handle.get(), nullptr);
+    EXPECT_FALSE(handle.Duplicate().is_valid());
+
+    // Set() on a valid handle closes it and resets to empty (nullptr).
+    base::win::ScopedHandle valid_handle(
+        ::CreateEvent(nullptr, FALSE, FALSE, nullptr));
+    ASSERT_TRUE(valid_handle.is_valid());
+    valid_handle.Set(invalid_value);
+    EXPECT_FALSE(valid_handle.is_valid());
+    EXPECT_EQ(valid_handle.get(), nullptr);
+    EXPECT_FALSE(valid_handle.Duplicate().is_valid());
+  }
 }
 
 TEST_F(ScopedHandleDeathTest, HandleVerifierTrackedHasBeenClosed) {

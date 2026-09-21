@@ -36,13 +36,8 @@ SamplingProfilerThreadToken SamplingProfilerThreadToken::Clone() const {
 #elif BUILDFLAG(IS_WIN)
   const auto& [target_id, target_thread_handle, target_stack_base_address] =
       *this;
-  HANDLE duplicate = nullptr;
-  if (target_thread_handle.is_valid()) {
-    CHECK(::DuplicateHandle(::GetCurrentProcess(), target_thread_handle.get(),
-                            ::GetCurrentProcess(), &duplicate, 0, FALSE,
-                            DUPLICATE_SAME_ACCESS));
-  }
-  return {target_id, win::ScopedHandle(duplicate), target_stack_base_address};
+  return {target_id, target_thread_handle.Duplicate(),
+          target_stack_base_address};
 #else
   const auto& [target_id] = *this;
   return {target_id};

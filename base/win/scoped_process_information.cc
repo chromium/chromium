@@ -4,35 +4,13 @@
 
 #include "base/win/scoped_process_information.h"
 
-#include "base/logging.h"
+#include <utility>
+
+#include "base/check.h"
 #include "base/win/scoped_handle.h"
 
 namespace base {
 namespace win {
-
-namespace {
-
-// Duplicates source into target, returning true upon success. |target| is
-// guaranteed to be untouched in case of failure. Succeeds with no side-effects
-// if source is NULL.
-bool CheckAndDuplicateHandle(HANDLE source, ScopedHandle* target) {
-  if (!source) {
-    return true;
-  }
-
-  HANDLE temp = nullptr;
-  if (!::DuplicateHandle(::GetCurrentProcess(), source, ::GetCurrentProcess(),
-                         &temp, 0, FALSE, DUPLICATE_SAME_ACCESS)) {
-    DWORD last_error = ::GetLastError();
-    DPLOG(ERROR) << "Failed to duplicate a handle " << last_error;
-    ::SetLastError(last_error);
-    return false;
-  }
-  target->Set(temp);
-  return true;
-}
-
-}  // namespace
 
 ScopedProcessInformation::ScopedProcessInformation() = default;
 
@@ -79,14 +57,21 @@ bool ScopedProcessInformation::DuplicateFrom(
   DCHECK(!IsValid()) << "target ScopedProcessInformation must be NULL";
   DCHECK(other.IsValid()) << "source ScopedProcessInformation must be valid";
 
-  if (CheckAndDuplicateHandle(other.process_handle(), &process_handle_) &&
-      CheckAndDuplicateHandle(other.thread_handle(), &thread_handle_)) {
-    process_id_ = other.process_id();
-    thread_id_ = other.thread_id();
-    return true;
+  ScopedHandle duplicate_process = other.process_handle_.Duplicate();
+  if (other.process_handle_.is_valid() && !duplicate_process.is_valid()) {
+    return false;
   }
 
-  return false;
+  ScopedHandle duplicate_thread = other.thread_handle_.Duplicate();
+  if (other.thread_handle_.is_valid() && !duplicate_thread.is_valid()) {
+    return false;
+  }
+
+  process_handle_ = std::move(duplicate_process);
+  thread_handle_ = std::move(duplicate_thread);
+  process_id_ = other.process_id();
+  thread_id_ = other.thread_id();
+  return true;
 }
 
 PROCESS_INFORMATION ScopedProcessInformation::Take() {

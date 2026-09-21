@@ -36,30 +36,7 @@ namespace mojo {
 
 namespace {
 
-#if BUILDFLAG(IS_WIN)
-base::win::ScopedHandle CloneHandle(const base::win::ScopedHandle& handle) {
-  DCHECK(handle.is_valid());
-
-  // If a caller does not correctly check the handle returned by file and pipe
-  // creation APIs, or directly provides a pseudo handle value like
-  // ::GetCurrentThread(), then it would result in the destination process
-  // getting full control over the calling process (see http://crbug.com/243339
-  // for an example of this vulnerability). HandleTraits for Windows rejects
-  // pseudo handle values, but check again here for defense-in-depth.
-  if (!handle.is_valid()) {
-    return base::win::ScopedHandle();
-  }
-
-  HANDLE dupe = nullptr;
-  if (!::DuplicateHandle(::GetCurrentProcess(), handle.Get(),
-                         ::GetCurrentProcess(), &dupe, 0, FALSE,
-                         DUPLICATE_SAME_ACCESS)) {
-    return base::win::ScopedHandle();
-  }
-  DCHECK_NE(dupe, INVALID_HANDLE_VALUE);
-  return base::win::ScopedHandle(dupe);
-}
-#elif BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 zx::handle CloneHandle(const zx::handle& handle) {
   DCHECK(handle.is_valid());
 
@@ -263,7 +240,7 @@ void PlatformHandle::release() {
 
 PlatformHandle PlatformHandle::Clone() const {
 #if BUILDFLAG(IS_WIN)
-  return PlatformHandle(CloneHandle(handle_));
+  return PlatformHandle(handle_.Duplicate());
 #elif BUILDFLAG(IS_FUCHSIA)
   if (is_valid_handle()) {
     return PlatformHandle(CloneHandle(handle_));
