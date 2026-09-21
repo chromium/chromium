@@ -33,7 +33,6 @@ import android.webkit.MimeTypeMap;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.Log;
@@ -323,11 +322,10 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
             final CharSequence text,
             final int newCursorPosition,
             @Nullable TextAttribute textAttribute) {
-        boolean isTextSuggestionSelected = false;
-        if (AconfigFlaggedApiDelegate.getInstance() != null) {
-            isTextSuggestionSelected =
-                    AconfigFlaggedApiDelegate.getInstance().isTextSuggestionSelected(textAttribute);
-        }
+        boolean isTextSuggestionSelected =
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN
+                        && textAttribute != null
+                        && textAttribute.isTextSuggestionSelected();
         if (DEBUG_LOGS) {
             Log.i(
                     TAG,

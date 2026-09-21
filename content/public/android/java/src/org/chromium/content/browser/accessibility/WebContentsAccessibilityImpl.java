@@ -2475,9 +2475,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     }
 
     @CalledByNative
-    // TODO(b:439878463): Remove @SuppressLint("NewApi") once the Android SDK
-    // is finalized and rolled into //third_party/android_sdk.
-    @SuppressLint("NewApi")
     private void handleEditableTextChanged(int id, int subType) {
         if (id == mAccessibilityFocusId) {
             // Reset granularity movement state when text content changes, so that subsequent
@@ -2490,9 +2487,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         AccessibilityEvent event =
                 buildAccessibilityEvent(id, AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED);
         if (event == null) return;
-        AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
-        if (delegate != null) {
-            delegate.setTextChangeTypes(event, subType);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
+            event.setTextChangeTypes(subType);
         }
         requestSendAccessibilityEvent(event, WindowContentChangedSubtype.NONE, id);
     }
