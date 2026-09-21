@@ -263,9 +263,6 @@ public class TitleBitmapFactory {
                             ChromeFeatureList.sSmallerTabStripTitleLimit.isEnabled()
                                     ? SMALLER_MAX_NUM_TITLE_CHAR
                                     : MAX_NUM_TITLE_CHAR;
-                    RecordHistogram.recordCount100Histogram(
-                            "Android.TabStrip.TitleBitmapFactory.getTitleBitmap.Length",
-                            title.length());
                     mCanvas.drawText(
                             title,
                             /* start= */ 0,
