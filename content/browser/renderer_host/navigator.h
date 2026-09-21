@@ -172,7 +172,9 @@ class CONTENT_EXPORT Navigator {
       bool is_unfenced_top_navigation = false,
       bool force_new_browsing_instance = false,
       bool is_container_initiated = false,
-      bool has_rel_opener = false);
+      bool has_rel_opener = false,
+      network::mojom::CSPDisposition should_check_main_world_csp =
+          network::mojom::CSPDisposition::CHECK);
 
   // Called after BeforeUnloadCompleted callback is invoked from the renderer.
   // If `frame_tree_node` has a NavigationRequest waiting for the renderer

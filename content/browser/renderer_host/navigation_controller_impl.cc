@@ -3340,7 +3340,8 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
     bool is_unfenced_top_navigation,
     bool force_new_browsing_instance,
     bool is_container_initiated,
-    bool has_rel_opener) {
+    bool has_rel_opener,
+    network::mojom::CSPDisposition should_check_main_world_csp) {
   SiteInstanceImpl* source_site_instance =
       initiator_navigation_state ? static_cast<InitiatorNavigationStateImpl*>(
                                        initiator_navigation_state.get())
@@ -3471,7 +3472,8 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
       std::move(source_location), ReloadType::NONE, entry.get(),
       frame_entry.get(), actual_navigation_start_time, navigation_start_time,
       /*from_frame_proxy=*/true, is_embedder_initiated_fenced_frame_navigation,
-      is_unfenced_top_navigation, is_container_initiated);
+      is_unfenced_top_navigation, is_container_initiated,
+      should_check_main_world_csp);
 
   if (!request.has_value()) {
     return;
@@ -4606,7 +4608,8 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
     bool from_frame_proxy,
     bool is_embedder_initiated_fenced_frame_navigation,
     bool is_unfenced_top_navigation,
-    bool is_container_initiated) {
+    bool is_container_initiated,
+    network::mojom::CSPDisposition should_check_main_world_csp) {
   DCHECK_EQ(-1, GetIndexOfEntry(entry));
 
   // TODO(https://crbug.com/40467594): Add a CHECK(frame_entry) once all
@@ -4726,9 +4729,8 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           params.load_type == LOAD_TYPE_HTTP_POST ? "POST" : "GET",
           params.post_data, std::move(source_location),
           params.started_from_context_menu, has_user_gesture_for_common_params,
-          false /* has_text_fragment_token */,
-          network::mojom::CSPDisposition::CHECK, std::vector<int>(),
-          params.href_translate,
+          false /* has_text_fragment_token */, should_check_main_world_csp,
+          std::vector<int>(), params.href_translate,
           false /* is_history_navigation_in_new_child_frame */,
           params.input_start, network::mojom::RequestDestination::kEmpty);
 

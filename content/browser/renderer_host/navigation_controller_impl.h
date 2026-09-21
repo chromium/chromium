@@ -250,7 +250,9 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       bool is_unfenced_top_navigation = false,
       bool force_new_browsing_instance = false,
       bool is_container_initiated = false,
-      bool has_rel_opener = false);
+      bool has_rel_opener = false,
+      network::mojom::CSPDisposition should_check_main_world_csp =
+          network::mojom::CSPDisposition::CHECK);
 
   // Navigates to the history entry associated with the given navigation API
   // |key|. Searches |entries_| for a FrameNavigationEntry associated with
@@ -776,7 +778,9 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       bool from_frame_proxy,
       bool is_embedder_initiated_fenced_frame_navigation = false,
       bool is_unfenced_top_navigation = false,
-      bool is_container_initiated = false);
+      bool is_container_initiated = false,
+      network::mojom::CSPDisposition should_check_main_world_csp =
+          network::mojom::CSPDisposition::CHECK);
 
   // Creates and returns a NavigationRequest for a navigation to |entry|. Will
   // return nullptr if the parameters are invalid and the navigation cannot

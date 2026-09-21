@@ -1045,6 +1045,30 @@ void RenderFrameProxyHost::OpenURL(blink::mojom::OpenURLParamsPtr params) {
   // the navigation start will be updated when the BeforeUnload ack is received.
   const auto navigation_start_time = base::TimeTicks::Now();
 
+  // Navigations from an isolated world (e.g., an extension content script) may
+  // ask to bypass the main world's CSP, just like they can for navigations of
+  // local frames (see FrameLoader::StartNavigation()). Since skipping this
+  // check waives the *parent* document's 'frame-src', only honor the request
+  // if it comes from the parent document's own SiteInstanceGroup; otherwise,
+  // an unrelated (possibly compromised) renderer could waive a CSP that
+  // doesn't belong to it.
+  network::mojom::CSPDisposition should_check_main_world_csp =
+      network::mojom::CSPDisposition::CHECK;
+  if (params->should_check_main_world_csp ==
+      network::mojom::CSPDisposition::DO_NOT_CHECK) {
+    // Note that when there is no parent, no 'frame-src' is enforced for this
+    // navigation, and the only policy that gets skipped is the initiator's own
+    // 'form-action'. The initiator is always in this proxy's SiteInstanceGroup
+    // (see the InitiatorNavigationState check above), so it is only waiving
+    // its own policy.
+    RenderFrameHostImpl* parent = frame_tree_node_->parent();
+    if (!parent ||
+        parent->GetSiteInstance()->group() == site_instance_group()) {
+      should_check_main_world_csp =
+          network::mojom::CSPDisposition::DO_NOT_CHECK;
+    }
+  }
+
   // TODO(lfg, lukasza): Remove |extra_headers| parameter from
   // RequestTransferURL method once both RenderFrameProxyHost and
   // RenderFrameHostImpl call RequestOpenURL from their OnOpenURL handlers.
@@ -1064,7 +1088,7 @@ void RenderFrameProxyHost::OpenURL(blink::mojom::OpenURLParamsPtr params) {
       /*is_embedder_initiated_fenced_frame_navigation=*/false,
       /*is_unfenced_top_navigation=*/false,
       /*force_new_browsing_instance=*/false, params->is_container_initiated,
-      params->has_rel_opener);
+      params->has_rel_opener, should_check_main_world_csp);
 }
 
 void RenderFrameProxyHost::UpdateViewportIntersection(

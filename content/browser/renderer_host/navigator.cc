@@ -1199,7 +1199,8 @@ void Navigator::NavigateFromFrameProxy(
     bool is_unfenced_top_navigation,
     bool force_new_browsing_instance,
     bool is_container_initiated,
-    bool has_rel_opener) {
+    bool has_rel_opener,
+    network::mojom::CSPDisposition should_check_main_world_csp) {
   // |method != "POST"| should imply absence of |post_body|.
   if (method != "POST" && post_body) {
     NOTREACHED();
@@ -1260,7 +1261,8 @@ void Navigator::NavigateFromFrameProxy(
       std::move(blob_url_loader_factory), is_form_submission, has_user_gesture,
       started_by_ad, actual_navigation_start_time, navigation_start_time,
       is_embedder_initiated_fenced_frame_navigation, is_unfenced_top_navigation,
-      force_new_browsing_instance, is_container_initiated, has_rel_opener);
+      force_new_browsing_instance, is_container_initiated, has_rel_opener,
+      should_check_main_world_csp);
 }
 
 void Navigator::BeforeUnloadCompleted(FrameTreeNode* frame_tree_node,
