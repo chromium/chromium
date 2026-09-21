@@ -34,6 +34,29 @@ inline std::string_view PayloadTypeToMetricSuffix(PayloadType payload_type) {
 //     //components/browser_actuator/public/common.h:PayloadType,
 //     //tools/metrics/histograms/metadata/browser_actuator/histograms.xml)
 
+// Why a downstream typed payload was discarded before handler delivery.
+// LINT.IfChange(DownstreamPayloadDropReason)
+enum class DownstreamPayloadDropReason {
+  // The wire enum was UNSPECIFIED or an unknown payload type.
+  kUnknownType = 0,
+  // `Any.type_url` did not match the expected URL for `payload_type`.
+  kTypeUrlMismatch = 1,
+  // Nothing registered a factory for this payload type. This is the steady
+  // state when the owning feature is disabled.
+  kNoHandler = 2,
+  // A handler exists in principle, and the payload could not be delivered: the
+  // channel was gone, the session had been destroyed, or the factory declined
+  // to build a handler. Unlike `kNoHandler`, this is always unexpected.
+  kDispatchFailed = 3,
+  kMaxValue = kDispatchFailed,
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:BrowserActuatorPayloadDropReason)
+
+inline void RecordDownstreamPayloadDropped(DownstreamPayloadDropReason reason) {
+  base::UmaHistogramEnumeration("Browser.Actuator.Downstream.PayloadDropped",
+                                reason);
+}
+
 // Tracks and records telemetry metrics for an in-flight upstream request.
 class UpstreamRequestLog {
  public:

@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "components/browser_actuator/internal/metrics_utils.h"
 #include "components/browser_actuator/internal/proto/transport_messages.pb.h"
 #include "components/browser_actuator/public/payload_type_mapping.h"
 #include "components/browser_actuator/public/transport_channel.h"
@@ -194,6 +195,7 @@ void TransportSessionImpl::ProcessTypedPayload(
   if (!payload_type.has_value()) {
     DLOG(WARNING) << "Ignoring payload with unspecified or unknown type: "
                   << typed_payload.payload_type();
+    RecordDownstreamPayloadDropped(DownstreamPayloadDropReason::kUnknownType);
     return;
   }
 
@@ -206,6 +208,8 @@ void TransportSessionImpl::ProcessTypedPayload(
   if (!type_url.empty() && type_url != ExpectedTypeUrl(*payload_type)) {
     DLOG(WARNING) << "Ignoring payload with unexpected type_url: " << type_url
                   << ", expected: " << ExpectedTypeUrl(*payload_type);
+    RecordDownstreamPayloadDropped(
+        DownstreamPayloadDropReason::kTypeUrlMismatch);
     return;
   }
 
@@ -216,6 +220,10 @@ void TransportSessionImpl::ProcessTypedPayload(
   if (!result.has_value()) {
     DLOG(WARNING) << "Failed to process payload "
                   << "error: " << static_cast<int>(result.error());
+    RecordDownstreamPayloadDropped(
+        result.error() == ProcessPayloadError::kNoFactoriesRegistered
+            ? DownstreamPayloadDropReason::kNoHandler
+            : DownstreamPayloadDropReason::kDispatchFailed);
   }
 }
 

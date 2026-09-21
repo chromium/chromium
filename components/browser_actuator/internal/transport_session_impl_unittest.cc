@@ -10,7 +10,9 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "components/browser_actuator/internal/metrics_utils.h"
 #include "components/browser_actuator/internal/proto/transport_messages.pb.h"
 #include "components/browser_actuator/internal/transport_handler_factory_registry_impl.h"
 #include "components/browser_actuator/public/payload_type_mapping.h"
@@ -297,6 +299,7 @@ TEST(TransportSessionImplTest, HandlerInstantiationFailed) {
 }
 
 TEST(TransportSessionImplTest, ProcessDownstreamMessageRoutesControlCommand) {
+  base::HistogramTester histogram_tester;
   MockTransportChannel channel;
   TransportHandlerFactoryRegistryImpl registry;
 
@@ -323,6 +326,9 @@ TEST(TransportSessionImplTest, ProcessDownstreamMessageRoutesControlCommand) {
   session.ProcessDownstreamMessage(MakeDownstreamMessage(
       ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
       ExpectedTypeUrl(PayloadType::kControl), serialized_command));
+
+  histogram_tester.ExpectTotalCount(
+      "Browser.Actuator.Downstream.PayloadDropped", 0);
 }
 
 // Regression test for crbug.com/560176806.
@@ -401,6 +407,7 @@ TEST(TransportSessionImplTest,
 
 TEST(TransportSessionImplTest,
      ProcessDownstreamMessageRejectsMismatchedTypeUrl) {
+  base::HistogramTester histogram_tester;
   MockTransportChannel channel;
   TransportHandlerFactoryRegistryImpl registry;
 
@@ -417,9 +424,14 @@ TEST(TransportSessionImplTest,
   session.ProcessDownstreamMessage(MakeDownstreamMessage(
       ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
       ExpectedTypeUrl(PayloadType::kExperimentalTriggering), kTestPayload));
+
+  histogram_tester.ExpectUniqueSample(
+      "Browser.Actuator.Downstream.PayloadDropped",
+      DownstreamPayloadDropReason::kTypeUrlMismatch, 1);
 }
 
 TEST(TransportSessionImplTest, ProcessDownstreamMessageAcceptsEmptyTypeUrl) {
+  base::HistogramTester histogram_tester;
   MockTransportChannel channel;
   TransportHandlerFactoryRegistryImpl registry;
 
@@ -441,10 +453,14 @@ TEST(TransportSessionImplTest, ProcessDownstreamMessageAcceptsEmptyTypeUrl) {
   session.ProcessDownstreamMessage(
       MakeDownstreamMessage(ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
                             /*type_url=*/"", kTestPayload));
+
+  histogram_tester.ExpectTotalCount(
+      "Browser.Actuator.Downstream.PayloadDropped", 0);
 }
 
 TEST(TransportSessionImplTest,
      ProcessDownstreamMessageIgnoresUnknownPayloadType) {
+  base::HistogramTester histogram_tester;
   MockTransportChannel channel;
   TransportHandlerFactoryRegistryImpl registry;
 
@@ -461,10 +477,15 @@ TEST(TransportSessionImplTest,
   session.ProcessDownstreamMessage(
       MakeDownstreamMessage(static_cast<ActuatorDownstreamPayloadType>(999),
                             /*type_url=*/"", kTestPayload));
+
+  histogram_tester.ExpectUniqueSample(
+      "Browser.Actuator.Downstream.PayloadDropped",
+      DownstreamPayloadDropReason::kUnknownType, 1);
 }
 
 TEST(TransportSessionImplTest,
      ProcessDownstreamMessageIgnoresUnspecifiedPayload) {
+  base::HistogramTester histogram_tester;
   MockTransportChannel channel;
   TransportHandlerFactoryRegistryImpl registry;
 
@@ -485,6 +506,54 @@ TEST(TransportSessionImplTest,
   typed->set_payload_type(ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_UNSPECIFIED);
 
   session.ProcessDownstreamMessage(message);
+
+  histogram_tester.ExpectUniqueSample(
+      "Browser.Actuator.Downstream.PayloadDropped",
+      DownstreamPayloadDropReason::kUnknownType, 1);
+}
+
+TEST(TransportSessionImplTest, ProcessDownstreamMessageReportsMissingHandler) {
+  base::HistogramTester histogram_tester;
+  MockTransportChannel channel;
+  TransportHandlerFactoryRegistryImpl registry;
+
+  EXPECT_CALL(channel, GetHandlerFactoryRegistry())
+      .WillRepeatedly(testing::Return(&registry));
+
+  TransportSessionImpl session("test_session", channel.GetWeakPtr());
+
+  session.ProcessDownstreamMessage(MakeDownstreamMessage(
+      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING,
+      ExpectedTypeUrl(PayloadType::kExperimentalTriggering), kTestPayload));
+
+  histogram_tester.ExpectUniqueSample(
+      "Browser.Actuator.Downstream.PayloadDropped",
+      DownstreamPayloadDropReason::kNoHandler, 1);
+}
+
+TEST(TransportSessionImplTest, ProcessDownstreamMessageReportsDispatchFailure) {
+  base::HistogramTester histogram_tester;
+  MockTransportChannel channel;
+  TransportHandlerFactoryRegistryImpl registry;
+
+  EXPECT_CALL(channel, GetHandlerFactoryRegistry())
+      .WillRepeatedly(testing::Return(&registry));
+
+  TransportSessionImpl session("test_session", channel.GetWeakPtr());
+
+  MockTransportHandlerFactory factory({PayloadType::kControl});
+  registry.RegisterFactory(&factory);
+
+  EXPECT_CALL(factory, OnNewSession(&session))
+      .WillOnce(testing::Return(nullptr));
+
+  session.ProcessDownstreamMessage(MakeDownstreamMessage(
+      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
+      ExpectedTypeUrl(PayloadType::kControl), kTestPayload));
+
+  histogram_tester.ExpectUniqueSample(
+      "Browser.Actuator.Downstream.PayloadDropped",
+      DownstreamPayloadDropReason::kDispatchFailed, 1);
 }
 
 TEST(TransportSessionImplTest, OnMessage) {

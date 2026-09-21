@@ -65,6 +65,7 @@ source_set("internal") {
 
   deps = [
     ":features",
+    ":metrics_utils",
     "//base",
     "//components/browser_actuator/internal/proto",
     "//components/browser_actuator/internal/transport/proto_stream_client",
@@ -92,6 +93,7 @@ source_set("unit_tests") {
   deps = [
     ":features",
     ":internal",
+    ":metrics_utils",
     "//base",
     "//base/test:test_support",
     "//components/browser_actuator/internal/proto",

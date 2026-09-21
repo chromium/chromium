@@ -40,6 +40,23 @@ chromium-metrics-reviews@google.com.
   //components/browser_actuator/internal/metrics_utils.h:PayloadTypeToMetricSuffix
 ) -->
 
+<histogram name="Browser.Actuator.Downstream.PayloadDropped"
+    enum="BrowserActuatorPayloadDropReason" expires_after="2027-09-01">
+  <owner>wenyufu@chromium.org</owner>
+  <owner>anushamuley@google.com</owner>
+  <owner>src/components/browser_actuator/OWNERS</owner>
+  <summary>
+    Records the reason a downstream typed payload was discarded without being
+    delivered to a handler. Recorded once per dropped payload in
+    TransportSessionImpl::ProcessTypedPayload, so a single downstream message
+    carrying several payloads may emit several samples. Not recorded for
+    payloads that are delivered successfully, nor for whole messages rejected on
+    sequence number before payload processing begins. Not broken down by payload
+    type, because the most important bucket is the one where the payload type
+    itself is unrecognized.
+  </summary>
+</histogram>
+
 <histogram name="Browser.Actuator.SessionRegistry.ExistingSessionsCount"
     units="sessions" expires_after="2027-08-01">
   <owner>andylky@google.com</owner>
