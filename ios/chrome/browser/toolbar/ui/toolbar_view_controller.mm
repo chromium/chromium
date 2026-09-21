@@ -50,7 +50,6 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -1438,8 +1437,7 @@ constexpr CGFloat kGlassFullscreenScaleFactor = 0.8;
   _locationBarContainer =
       [self createLocationBarContainerWithBackground:_locationBarBackground];
 
-  if (_topPosition &&
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+  if (_topPosition) {
     _fakeOmniboxTarget = [self createFakeOmniboxTarget];
   }
   _progressBar = [self createProgressBar];

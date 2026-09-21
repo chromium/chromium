@@ -69,7 +69,7 @@ inline LayoutStateToolbarPassKey PassKey() {
 
 }  // namespace
 
-@interface MainToolbarMediator () <BooleanObserver>
+@interface MainToolbarMediator () <BooleanObserver, BrowserLayoutStateObserver>
 @end
 
 @implementation MainToolbarMediator {
@@ -84,6 +84,7 @@ inline LayoutStateToolbarPassKey PassKey() {
     CHECK(prefService);
     CHECK(browserLayoutState);
     _browserLayoutState = browserLayoutState;
+    [_browserLayoutState addObserver:self];
     _bottomOmniboxPref = [[PrefBackedBoolean alloc]
         initWithPrefService:prefService
                    prefName:omnibox::kIsOmniboxInBottomPosition];
@@ -94,16 +95,14 @@ inline LayoutStateToolbarPassKey PassKey() {
 
     if (IsChromeNextIaEnabled()) {
       // Set the initial toolbar position.
-      [_browserLayoutState setToolbarPosition:[self isBottomOmniboxPrefEnabled]
-                                                  ? ToolbarPosition::kBottom
-                                                  : ToolbarPosition::kTop
-                                      passKey:PassKey()];
+      [self updateToolbarPosition];
     }
   }
   return self;
 }
 
 - (void)disconnect {
+  [_browserLayoutState removeObserver:self];
   [_bottomOmniboxPref stop];
   _bottomOmniboxPref = nil;
   _browserLayoutState = nil;
@@ -113,16 +112,32 @@ inline LayoutStateToolbarPassKey PassKey() {
 
 - (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
   if (observableBoolean == _bottomOmniboxPref) {
-    if (IsChromeNextIaEnabled()) {
-      [_browserLayoutState setToolbarPosition:[self isBottomOmniboxPrefEnabled]
-                                                  ? ToolbarPosition::kBottom
-                                                  : ToolbarPosition::kTop
-                                      passKey:PassKey()];
-    }
+    [self updateToolbarPosition];
   }
 }
 
+#pragma mark - BrowserLayoutStateObserver
+
+- (void)browserLayoutState:(BrowserLayoutState*)layoutState
+    didChangeTabStripVisibility:(BOOL)tabStripVisible {
+  [self updateToolbarPosition];
+}
+
 #pragma mark - Private
+
+// Updates the toolbar position in the browser layout state.
+- (void)updateToolbarPosition {
+  if (!IsChromeNextIaEnabled()) {
+    return;
+  }
+  // TODO(crbug.com/553750745): Once the legacy toolbar is removed, unify
+  // toolbar position observation in BrowserLayoutState.
+  BOOL isBottom =
+      [self isBottomOmniboxPrefEnabled] && !_browserLayoutState.tabStripVisible;
+  [_browserLayoutState setToolbarPosition:isBottom ? ToolbarPosition::kBottom
+                                                   : ToolbarPosition::kTop
+                                  passKey:PassKey()];
+}
 
 // Returns whether the bottom omnibox preference is enabled.
 - (BOOL)isBottomOmniboxPrefEnabled {

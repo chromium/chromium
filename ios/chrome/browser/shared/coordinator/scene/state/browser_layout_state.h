@@ -30,6 +30,10 @@ enum class ToolbarPosition {
 - (void)browserLayoutState:(BrowserLayoutState*)layoutState
     didChangeToolbarPosition:(ToolbarPosition)toolbarPosition;
 
+// Called when the tab strip visibility changes for this browser.
+- (void)browserLayoutState:(BrowserLayoutState*)layoutState
+    didChangeTabStripVisibility:(BOOL)tabStripVisible;
+
 @end
 
 // Object containing layout state specific to a single Browser instance.
@@ -38,9 +42,16 @@ enum class ToolbarPosition {
 // Position of the toolbar.
 @property(nonatomic, readonly) ToolbarPosition toolbarPosition;
 
+// Whether the tab strip is visible.
+@property(nonatomic, readonly) BOOL tabStripVisible;
+
 // Sets the position of the toolbar. Secured by passkey.
 - (void)setToolbarPosition:(ToolbarPosition)toolbarPosition
                    passKey:(LayoutStateToolbarPassKey)passKey;
+
+// Sets whether the tab strip is visible. Secured by passkey.
+- (void)setTabStripVisible:(BOOL)tabStripVisible
+                   passKey:(LayoutStateBrowserPassKey)passKey;
 
 // Adds an observer to be notified of browser layout state changes.
 - (void)addObserver:(id<BrowserLayoutStateObserver>)observer;

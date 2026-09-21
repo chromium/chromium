@@ -186,11 +186,13 @@ constexpr CGFloat kContainedLayoutTabStripTopMargin = 4.0;
   frame.origin.y = topInset - offset;
   _tabStripViewController.view.frame = frame;
 
-  // When offset >= topInset, the tab strip is fully hidden (or covered by
+  // When offset >= fadeDistance, the tab strip is fully hidden (or covered by
   // status bar area). When offset == 0, the tab strip is fully visible.
-  // Interpolate alpha from 0 to 1 as offset goes from topInset to 0.
-  CGFloat clampedOffset = std::clamp(offset, 0.0, topInset);
-  CGFloat alpha = 1.0 - (clampedOffset / topInset);
+  // Interpolate alpha from 0 to 1 as offset goes from fadeDistance to 0.
+  CGFloat fadeDistance =
+      topInset > 0 ? topInset : TabStripCollectionViewConstants.height;
+  CGFloat clampedOffset = std::clamp(offset, 0.0, fadeDistance);
+  CGFloat alpha = 1.0 - (clampedOffset / fadeDistance);
   _fadingStatusBarView.alpha = alpha;
   _tabStripViewController.view.alpha = alpha;
 }

@@ -1508,6 +1508,7 @@ inline LayoutStateToolbarPassKey PassKey() {
   toolbarMediator.sceneHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), SceneCommands);
   toolbarMediator.delegate = self;
+  toolbarMediator.browserLayoutState = _browserLayoutState;
 
   return toolbarMediator;
 }

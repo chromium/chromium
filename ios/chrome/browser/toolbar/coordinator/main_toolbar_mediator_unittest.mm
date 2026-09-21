@@ -9,6 +9,7 @@
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/browser_layout_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state_test_passkey_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -66,4 +67,27 @@ TEST_F(MainToolbarMediatorTest, TestPrefChangeUpdatesLayoutState) {
                                        : ToolbarPosition::kTop);
   EXPECT_TRUE([mediator_ isBottomOmniboxPrefEnabled] ||
               !IsBottomOmniboxAvailable());
+}
+
+// Tests that showing the tab strip forces the toolbar position to kTop even
+// when the bottom omnibox preference is enabled.
+TEST_F(MainToolbarMediatorTest, TestTabStripVisibilityUpdatesLayoutState) {
+  prefs_->SetBoolean(omnibox::kIsOmniboxInBottomPosition, true);
+  EXPECT_EQ(browser_layout_state_.toolbarPosition,
+            IsBottomOmniboxAvailable() ? ToolbarPosition::kBottom
+                                       : ToolbarPosition::kTop);
+
+  [browser_layout_state_
+      setTabStripVisible:YES
+                 passKey:layout_state::LayoutStateTestPassKeyFactory::
+                             CreateBrowserKey()];
+  EXPECT_EQ(browser_layout_state_.toolbarPosition, ToolbarPosition::kTop);
+
+  [browser_layout_state_
+      setTabStripVisible:NO
+                 passKey:layout_state::LayoutStateTestPassKeyFactory::
+                             CreateBrowserKey()];
+  EXPECT_EQ(browser_layout_state_.toolbarPosition,
+            IsBottomOmniboxAvailable() ? ToolbarPosition::kBottom
+                                       : ToolbarPosition::kTop);
 }

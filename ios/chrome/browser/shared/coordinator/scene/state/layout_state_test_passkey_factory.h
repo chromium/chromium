@@ -21,6 +21,9 @@ class LayoutStateTestPassKeyFactory {
   static base::PassKey<LayoutStateTestPassKeyFactory> CreateToolbarKey() {
     return base::PassKey<LayoutStateTestPassKeyFactory>();
   }
+  static base::PassKey<LayoutStateTestPassKeyFactory> CreateBrowserKey() {
+    return base::PassKey<LayoutStateTestPassKeyFactory>();
+  }
 };
 
 }  // namespace layout_state

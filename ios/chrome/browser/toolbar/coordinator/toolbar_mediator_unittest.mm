@@ -33,6 +33,8 @@
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/browser_layout_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state_test_passkey_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -495,37 +497,28 @@ TEST_P(ToolbarMediatorTest, TestMutatorStop) {
   EXPECT_TRUE(fake_web_state->was_stopped());
 }
 
-// Tests that the consumer is updated when the bottom omnibox pref changes.
-TEST_P(ToolbarMediatorTest, TestBottomOmniboxEnabled) {
-  if (!IsBottomOmniboxAvailable()) {
-    return;
-  }
+// Tests that changing BrowserLayoutState.toolbarPosition updates the consumer's
+// hasOmnibox state accordingly.
+TEST_P(ToolbarMediatorTest, TestBrowserLayoutStateUpdatesHasOmnibox) {
+  BrowserLayoutState* layout_state = browser_->GetBrowserLayoutState();
   BOOL top_position = GetParam();
 
   OCMExpect([consumer_ setHasOmnibox:top_position]);
-  TestingApplicationContext::GetGlobal()->GetLocalState()->SetBoolean(
-      omnibox::kIsOmniboxInBottomPosition, false);
+  mediator_.browserLayoutState = layout_state;
   EXPECT_OCMOCK_VERIFY(consumer_);
 
+  // Transition toolbar to bottom.
   OCMExpect([consumer_ setHasOmnibox:!top_position]);
-  TestingApplicationContext::GetGlobal()->GetLocalState()->SetBoolean(
-      omnibox::kIsOmniboxInBottomPosition, true);
+  [layout_state setToolbarPosition:ToolbarPosition::kBottom
+                           passKey:layout_state::LayoutStateTestPassKeyFactory::
+                                       CreateToolbarKey()];
   EXPECT_OCMOCK_VERIFY(consumer_);
-}
 
-// Tests that the consumer is not updated when the bottom omnibox pref changes
-// if the bottom toolbar is not available.
-TEST_P(ToolbarMediatorTest, TestBottomOmniboxNotEnabled) {
-  if (IsBottomOmniboxAvailable()) {
-    return;
-  }
-
-  OCMReject([consumer_ setHasOmnibox:YES]).ignoringNonObjectArgs();
-
-  TestingApplicationContext::GetGlobal()->GetLocalState()->SetBoolean(
-      omnibox::kIsOmniboxInBottomPosition, false);
-  TestingApplicationContext::GetGlobal()->GetLocalState()->SetBoolean(
-      omnibox::kIsOmniboxInBottomPosition, true);
+  // Transition toolbar back to top.
+  OCMExpect([consumer_ setHasOmnibox:top_position]);
+  [layout_state setToolbarPosition:ToolbarPosition::kTop
+                           passKey:layout_state::LayoutStateTestPassKeyFactory::
+                                       CreateToolbarKey()];
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
 

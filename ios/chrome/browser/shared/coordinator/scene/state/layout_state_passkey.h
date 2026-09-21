@@ -18,6 +18,7 @@ class AssistantContainerAnimatorPassKeyFactory;
 class MainToolbarCoordinatorPassKeyFactory;
 class MainToolbarMediatorPassKeyFactory;
 class AppBarMediatorPassKeyFactory;
+class BrowserLayoutCoordinatorPassKeyFactory;
 
 // Forward-declare the test helper class defined in
 // layout_state_test_passkey_factory.h.
@@ -45,5 +46,9 @@ typedef base::PassKey<layout_state::MainToolbarCoordinatorPassKeyFactory,
                       layout_state::MainToolbarMediatorPassKeyFactory,
                       layout_state::LayoutStateTestPassKeyFactory>
     LayoutStateToolbarPassKey;
+
+typedef base::PassKey<layout_state::BrowserLayoutCoordinatorPassKeyFactory,
+                      layout_state::LayoutStateTestPassKeyFactory>
+    LayoutStateBrowserPassKey;
 
 #endif  // IOS_CHROME_BROWSER_SHARED_COORDINATOR_SCENE_STATE_LAYOUT_STATE_PASSKEY_H_

@@ -12,6 +12,7 @@
 
 class FullscreenBrowserAgent;
 @class BrowserActionFactory;
+@class BrowserLayoutState;
 @class DefaultBrowserBannerPromoAppAgent;
 @protocol FullscreenCommands;
 class FullscreenController;
@@ -47,6 +48,9 @@ class ProfileIOS;
 
 // Mediator for the toolbar.
 @interface ToolbarMediator : NSObject <BannerPromoViewDelegate, ToolbarMutator>
+
+// Browser layout state.
+@property(nonatomic, weak) BrowserLayoutState* browserLayoutState;
 
 // The consumer for this mediator.
 @property(nonatomic, weak) id<ToolbarConsumer> consumer;

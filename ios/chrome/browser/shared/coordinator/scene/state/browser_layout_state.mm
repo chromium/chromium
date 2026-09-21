@@ -37,6 +37,16 @@
   [_observers browserLayoutState:self didChangeToolbarPosition:toolbarPosition];
 }
 
+- (void)setTabStripVisible:(BOOL)tabStripVisible
+                   passKey:(LayoutStateBrowserPassKey)passKey {
+  if (_tabStripVisible == tabStripVisible) {
+    return;
+  }
+  _tabStripVisible = tabStripVisible;
+  [_observers browserLayoutState:self
+      didChangeTabStripVisibility:tabStripVisible];
+}
+
 - (void)addObserver:(id<BrowserLayoutStateObserver>)observer {
   [_observers addObserver:observer];
 }

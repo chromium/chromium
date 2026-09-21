@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/main/ui/browser_layout_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/browser_layout_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -87,7 +88,9 @@ TEST_F(BrowserLayoutCoordinatorTest, BrowserViewControllerAssignment) {
   [coordinator stop];
 }
 
-// Tests the tab strip visibility based on form factor.
+// Tests that the tab strip view controller is created on start for tablet or
+// lazily when traits change to regular size class on phone, and updates
+// BrowserLayoutState.tabStripVisible.
 TEST_F(BrowserLayoutCoordinatorTest, TabStripVisibility) {
   BrowserLayoutCoordinator* coordinator =
       [[BrowserLayoutCoordinator alloc] initWithBrowser:browser_.get()];
@@ -95,8 +98,17 @@ TEST_F(BrowserLayoutCoordinatorTest, TabStripVisibility) {
 
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     EXPECT_NE(coordinator.viewController.tabStripViewController, nil);
+    EXPECT_TRUE(browser_->GetBrowserLayoutState().tabStripVisible);
   } else {
     EXPECT_EQ(coordinator.viewController.tabStripViewController, nil);
+    EXPECT_FALSE(browser_->GetBrowserLayoutState().tabStripVisible);
+    coordinator.viewController.traitOverrides.horizontalSizeClass =
+        UIUserInterfaceSizeClassRegular;
+    coordinator.viewController.traitOverrides.verticalSizeClass =
+        UIUserInterfaceSizeClassRegular;
+    [coordinator.viewController updateTraitsIfNeeded];
+    EXPECT_NE(coordinator.viewController.tabStripViewController, nil);
+    EXPECT_TRUE(browser_->GetBrowserLayoutState().tabStripVisible);
   }
 
   [coordinator stop];

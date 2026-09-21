@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_web_state_utils.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/browser_layout_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -54,7 +55,7 @@
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "url/gurl.h"
 
-@interface ToolbarMediator () <BooleanObserver,
+@interface ToolbarMediator () <BrowserLayoutStateObserver,
                                CRWWebStateObserver,
                                DefaultBrowserBannerAppAgentObserver,
                                GeminiBrowserAgentObserving,
@@ -64,6 +65,7 @@
 @end
 
 @implementation ToolbarMediator {
+  __weak BrowserLayoutState* _browserLayoutState;
   raw_ptr<WebStateList> _webStateList;
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
   std::unique_ptr<ActiveWebStateObservationForwarder>
@@ -75,8 +77,6 @@
   raw_ptr<ProfileIOS> _profile;
   std::unique_ptr<PrefChangeRegistrar> _prefChangeRegistrar;
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
-  // Pref tracking if bottom omnibox is enabled.
-  PrefBackedBoolean* _bottomOmniboxEnabled;
   // Whether this mediator is tracking a toolbar at the top position.
   BOOL _topPosition;
   // The fullscreen controller.
@@ -158,13 +158,6 @@
     }
 
     if (IsBottomOmniboxAvailable()) {
-      _bottomOmniboxEnabled = [[PrefBackedBoolean alloc]
-          initWithPrefService:GetApplicationContext()->GetLocalState()
-                     prefName:omnibox::kIsOmniboxInBottomPosition];
-      [_bottomOmniboxEnabled setObserver:self];
-      // Initialize to the correct value.
-      [self booleanDidChange:_bottomOmniboxEnabled];
-
       [[NSNotificationCenter defaultCenter]
           addObserver:self
              selector:@selector(keyboardWillHide:)
@@ -226,6 +219,8 @@
 }
 
 - (void)disconnect {
+  [_browserLayoutState removeObserver:self];
+  _browserLayoutState = nil;
   [_defaultBrowserBannerAppAgent removeObserver:self];
   _activeWebStateObservationForwarder.reset();
   _activeWebStateObserver.reset();
@@ -244,6 +239,20 @@
   _authenticationService = nullptr;
   _profile = nullptr;
   _delegate = nil;
+}
+
+- (void)setBrowserLayoutState:(BrowserLayoutState*)browserLayoutState {
+  if (_browserLayoutState == browserLayoutState) {
+    return;
+  }
+  [_browserLayoutState removeObserver:self];
+  _browserLayoutState = browserLayoutState;
+  [_browserLayoutState addObserver:self];
+  [self updateToolbarPosition];
+}
+
+- (BrowserLayoutState*)browserLayoutState {
+  return _browserLayoutState;
 }
 
 - (void)setConsumer:(id<ToolbarConsumer>)consumer {
@@ -441,12 +450,11 @@
   }
 }
 
-#pragma mark - BooleanObserver
+#pragma mark - BrowserLayoutStateObserver
 
-- (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
-  if (observableBoolean == _bottomOmniboxEnabled) {
-    [self updateToolbarPosition];
-  }
+- (void)browserLayoutState:(BrowserLayoutState*)browserLayoutState
+    didChangeToolbarPosition:(ToolbarPosition)toolbarPosition {
+  [self updateToolbarPosition];
 }
 
 #pragma mark - DefaultBrowserBannerAppAgentObserver
@@ -515,20 +523,20 @@
 
 // Updates the position of the toolbar by updating its visibility.
 - (void)updateToolbarPosition {
-  if (IsBottomOmniboxAvailable()) {
-    [self.consumer setHasOmnibox:_bottomOmniboxEnabled.value == !_topPosition];
-  } else {
-    // When the bottom omnibox is not available, only the top toolbar is
-    // available.
-    [self.consumer setHasOmnibox:_topPosition];
+  if (!_browserLayoutState) {
+    return;
   }
+  BOOL hasOmnibox = (_browserLayoutState.toolbarPosition ==
+                     ToolbarPosition::kTop) == _topPosition;
+  [self.consumer setHasOmnibox:hasOmnibox];
 }
 
 // Updates keyboard constraints with `notification`. When
 // `constraintToKeyboard`, the toolbar is collapsed above the keyboard.
 - (void)constraintToKeyboard:(BOOL)shouldConstraintToKeyboard
             withNotification:(NSNotification*)notification {
-  if (_topPosition || !_bottomOmniboxEnabled.value) {
+  if (_topPosition ||
+      _browserLayoutState.toolbarPosition != ToolbarPosition::kBottom) {
     return;
   }
 
