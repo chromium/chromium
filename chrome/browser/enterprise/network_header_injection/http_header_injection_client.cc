@@ -117,10 +117,8 @@ void HttpHeaderInjectionClient::OnTargetBeforeSendHeadersComplete(
     return;
   }
 
-  std::optional<net::HttpRequestHeaders> final_headers = headers;
-
   if (!service_) {
-    std::move(callback).Run(net::OK, final_headers,
+    std::move(callback).Run(net::OK, headers,
                             std::move(extended_net_log_events));
     return;
   }
@@ -134,16 +132,19 @@ void HttpHeaderInjectionClient::OnTargetBeforeSendHeadersComplete(
                               modified);
   }
 
-  if (modified) {
-    if (!final_headers) {
-      final_headers = original_headers;
-    }
-
-    PopulateNetLogEvents(headers_to_inject, *final_headers,
-                         extended_net_log_events);
-
-    final_headers->MergeFrom(headers_to_inject);
+  if (!modified) {
+    std::move(callback).Run(net::OK, headers,
+                            std::move(extended_net_log_events));
+    return;
   }
+
+  std::optional<net::HttpRequestHeaders> final_headers =
+      headers.value_or(original_headers);
+
+  PopulateNetLogEvents(headers_to_inject, *final_headers,
+                       extended_net_log_events);
+
+  final_headers->MergeFrom(headers_to_inject);
 
   std::move(callback).Run(net::OK, final_headers,
                           std::move(extended_net_log_events));
