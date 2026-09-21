@@ -36,6 +36,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/uuid.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
@@ -122,10 +123,14 @@ constexpr char kRestoreIdPrefName[] = "browser_restore_id";
 // Test values for a test WindowInfo object.
 constexpr int kActivationIndex = 2;
 constexpr int kDeskId = 2;
-const base::Uuid kDeskUuid = base::Uuid::GenerateRandomV4();
+constexpr char kDeskUuidString[] = "9b7e0b8a-1a2b-4c3d-8e5f-6a7b8c9d0e1f";
 constexpr gfx::Rect kCurrentBounds(500, 200);
 constexpr chromeos::WindowStateType kWindowStateType =
     chromeos::WindowStateType::kPrimarySnapped;
+
+base::Uuid GetDeskUuid() {
+  return base::Uuid::ParseLowercase(kDeskUuidString);
+}
 
 void RemoveInactiveDesks() {
   // Removes all the inactive desks and waits for their async operations to
@@ -234,7 +239,7 @@ void CreateAndSaveWindowInfo(
 void CreateAndSaveWindowInfo(aura::Window* window,
                              uint32_t activation_index,
                              chromeos::WindowStateType window_state_type) {
-  CreateAndSaveWindowInfo(window, activation_index, kDeskId, kDeskUuid,
+  CreateAndSaveWindowInfo(window, activation_index, kDeskId, GetDeskUuid(),
                           kCurrentBounds, window_state_type,
                           /*pre_minimized_show_state=*/std::nullopt,
                           /*snap_percentage=*/std::nullopt);
@@ -455,7 +460,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
                        PreMinimizedState) {
   // Add app launch info.
   SaveDefaultAppLaunchInfo();
-  CreateAndSaveWindowInfo(kWindowId2, kDeskId, kDeskUuid, kCurrentBounds,
+  CreateAndSaveWindowInfo(kWindowId2, kDeskId, GetDeskUuid(), kCurrentBounds,
                           chromeos::WindowStateType::kMinimized,
                           ui::mojom::WindowShowState::kMaximized,
                           /*snap_percentage=*/std::nullopt);
@@ -746,7 +751,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   SaveBrowserAppLaunchInfo(kWindowId1);
   constexpr uint32_t kSnapPercentage = 75;
   CreateAndSaveWindowInfo(
-      kWindowId1, kDeskId, kDeskUuid, kCurrentBounds, kWindowStateType,
+      kWindowId1, kDeskId, GetDeskUuid(), kCurrentBounds, kWindowStateType,
       /*pre_minimized_show_state=*/std::nullopt, kSnapPercentage);
   AppLaunchInfoSaveWaiter::Wait();
 
@@ -763,7 +768,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   window->SetProperty(::app_restore::kRestoreWindowIdKey, kWindowId1);
   auto stored_window_info = GetWindowInfo(window.get());
   EXPECT_EQ(kDeskId, *stored_window_info->desk_id);
-  EXPECT_EQ(kDeskUuid, stored_window_info->desk_guid);
+  EXPECT_EQ(GetDeskUuid(), stored_window_info->desk_guid);
   EXPECT_EQ(kCurrentBounds, *stored_window_info->current_bounds);
   EXPECT_EQ(kWindowStateType, *stored_window_info->window_state_type);
   EXPECT_EQ(kSnapPercentage, *stored_window_info->snap_percentage);
@@ -814,7 +819,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   // Create Full Restore launch data before launching any browser, simulating
   // Full Restore data being saved prior to restart.
   SaveBrowserAppLaunchInfo(previous_browser_id);
-  CreateAndSaveWindowInfo(previous_browser_id, kDeskId, kDeskUuid,
+  CreateAndSaveWindowInfo(previous_browser_id, kDeskId, GetDeskUuid(),
                           kCurrentBounds, chromeos::WindowStateType::kNormal,
                           /*pre_minimized_show_state=*/std::nullopt,
                           /*snap_percentage=*/std::nullopt);
