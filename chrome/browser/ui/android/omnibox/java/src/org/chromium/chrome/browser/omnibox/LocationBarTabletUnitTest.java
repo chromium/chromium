@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
@@ -490,6 +491,7 @@ public class LocationBarTabletUnitTest {
                         .getResources()
                         .getDimension(R.dimen.omnibox_suggestion_dropdown_round_corner_radius);
         assertEquals(radius, glifStrokeDrawable.getCornerRadiusForTesting(), MathUtils.EPSILON);
+        assertTrue(glifStrokeDrawable.isRunning());
 
         LinearLayout.LayoutParams layoutParams =
                 (LinearLayout.LayoutParams) mHolderView.getLayoutParams();
@@ -505,6 +507,75 @@ public class LocationBarTabletUnitTest {
         assertEquals(0, urlBar.getTranslationY(), MathUtils.EPSILON);
 
         mLocationBarTablet.onSpecializedFuseboxModeActivated(/* isSpecializedRequestType= */ false);
+        assertNull(((FrameLayout) mLocationBarTablet.getParent()).getForeground());
+        assertFalse(glifStrokeDrawable.isRunning());
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testSpecializedFuseboxModeActivated_toolbarMode() {
+        mLocationBarTablet.onFuseboxStateChanged(FuseboxState.EXPANDED);
+        mLocationBarTablet.setFuseboxLayoutMode(FuseboxLayoutMode.TOOLBAR);
+
+        mLocationBarTablet.onSpecializedFuseboxModeActivated(true);
+        GlifStrokeDrawable glif = (GlifStrokeDrawable) mLocationBarTablet.getForeground();
+        assertNotNull(glif);
+        assertTrue(glif.isRunning());
+
+        mLocationBarTablet.onSpecializedFuseboxModeActivated(false);
+        assertNull(mLocationBarTablet.getForeground());
+        assertFalse(glif.isRunning());
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testSpecializedFuseboxMode_preservedWhileFuseboxActive() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        mLocationBarTablet.onFuseboxStateChanged(FuseboxState.EXPANDED);
+        mLocationBarTablet.setFuseboxLayoutMode(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
+        mLocationBarTablet.setReparentedToPopover(true);
+        doReturn(true).when(mUrlBarCoordinator).hasFocus();
+
+        mLocationBarTablet.onSpecializedFuseboxModeActivated(true);
+        GlifStrokeDrawable glif =
+                (GlifStrokeDrawable) ((FrameLayout) mLocationBarTablet.getParent()).getForeground();
+        assertNotNull(glif);
+        assertTrue(glif.isRunning());
+
+        // Suggestions update triggers updateLayoutAndBackground(), but animation continues
+        // because fusebox is still active.
+        mLocationBarTablet.onSuggestionsChanged(/* hasSuggestions= */ true);
+        assertTrue(glif.isRunning());
+        assertEquals(glif, ((FrameLayout) mLocationBarTablet.getParent()).getForeground());
+
+        // Disabling fusebox resets GLIF state and animation.
+        mLocationBarTablet.onFuseboxStateChanged(FuseboxState.DISABLED);
+        assertFalse(glif.isRunning());
+        assertNull(((FrameLayout) mLocationBarTablet.getParent()).getForeground());
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testSpecializedFuseboxMode_popoverMode_losesFocus_stopsGlif() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        mLocationBarTablet.onFuseboxStateChanged(FuseboxState.EXPANDED);
+        mLocationBarTablet.setFuseboxLayoutMode(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
+        mLocationBarTablet.setReparentedToPopover(true);
+        doReturn(true).when(mUrlBarCoordinator).hasFocus();
+
+        mLocationBarTablet.onSpecializedFuseboxModeActivated(true);
+        GlifStrokeDrawable glif =
+                (GlifStrokeDrawable) ((FrameLayout) mLocationBarTablet.getParent()).getForeground();
+        assertNotNull(glif);
+        assertTrue(glif.isRunning());
+
+        // Losing URL bar focus stops GLIF in popover mode.
+        doReturn(false).when(mUrlBarCoordinator).hasFocus();
+        mLocationBarTablet.setUrlFocusChangePercent(
+                /* ntpSearchBoxScrollFraction= */ 0f,
+                /* urlFocusChangeFraction= */ 0f,
+                /* isUrlFocusChangeInProgress= */ false);
+        assertFalse(glif.isRunning());
         assertNull(((FrameLayout) mLocationBarTablet.getParent()).getForeground());
     }
 

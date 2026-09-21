@@ -189,7 +189,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
                     switch (event.getAction()) {
                         case MotionEvent.ACTION_HOVER_ENTER, MotionEvent.ACTION_HOVER_EXIT:
                             mIsHovered = event.getAction() == MotionEvent.ACTION_HOVER_ENTER;
-                            updateForeground();
+                            updateForegroundAndGlifAnimation();
                             return true;
                         default:
                             return false;
@@ -297,7 +297,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
             boolean isUrlFocusChangeInProgress) {
         super.setUrlFocusChangePercent(
                 ntpSearchBoxScrollFraction, urlFocusChangeFraction, isUrlFocusChangeInProgress);
-        updateForeground();
+        updateForegroundAndGlifAnimation();
     }
 
     @Override
@@ -572,20 +572,16 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
 
     @Override
     public void onSpecializedFuseboxModeActivated(boolean isSpecializedRequestType) {
+        if (mIsGlifActive == isSpecializedRequestType) return;
         mIsGlifActive = isSpecializedRequestType;
-        updateForeground();
-        if (isSpecializedRequestType) {
-            mGlifBorderDrawable.start();
-        } else {
-            mGlifBorderDrawable.reset();
-        }
+        updateForegroundAndGlifAnimation();
     }
 
     @Override
     void setFuseboxLayoutMode(@FuseboxLayoutMode int layoutMode) {
         super.setFuseboxLayoutMode(layoutMode);
         mLayoutMode = layoutMode;
-        updateForeground();
+        updateForegroundAndGlifAnimation();
         // We don't expect that the layout mode will ever change back after becoming
         // SUGGESTIONS_POPOVER (it depends only on flags set at build time and startup) and thus
         // don't handle that case.
@@ -631,15 +627,20 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
         mLocationBarBackground.setHairlineBehavior(
                 showFocusRing ? HairlineBehavior.SOLID : HairlineBehavior.NONE);
         updateLayoutAndBackground();
-        updateForeground();
+        updateForegroundAndGlifAnimation();
         updateBackgroundColor();
     }
 
-    private void updateForeground() {
+    private void updateForegroundAndGlifAnimation() {
         // Clear any active GLIF border before updating foreground state.
         if (mGlifForegroundTarget != null) {
             mGlifForegroundTarget.setForeground(null);
             mGlifForegroundTarget = null;
+        }
+
+        if (mLayoutMode == FuseboxLayoutMode.SUGGESTIONS_POPOVER
+                && (mUrlCoordinator == null || !mUrlCoordinator.hasFocus())) {
+            mIsGlifActive = false;
         }
 
         if (mIsGlifActive) {
@@ -654,12 +655,22 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
                 setForeground(mGlifBorderDrawable);
                 mGlifForegroundTarget = this;
             }
-        } else if (mIsHovered
-                && (mLayoutMode != FuseboxLayoutMode.SUGGESTIONS_POPOVER
-                        || !mUrlCoordinator.hasFocus())) {
-            setForeground(mHoverDrawable);
+
+            if (!mGlifBorderDrawable.isRunning()) {
+                mGlifBorderDrawable.start();
+            }
         } else {
-            setForeground(null);
+            if (mGlifBorderDrawable.isRunning()) {
+                mGlifBorderDrawable.reset();
+            }
+
+            if (mIsHovered
+                    && (mLayoutMode != FuseboxLayoutMode.SUGGESTIONS_POPOVER
+                            || !mUrlCoordinator.hasFocus())) {
+                setForeground(mHoverDrawable);
+            } else {
+                setForeground(null);
+            }
         }
     }
 
@@ -693,10 +704,9 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
         LinearLayout.LayoutParams parentParams =
                 (LinearLayout.LayoutParams) mHolder.getLayoutParams();
         boolean isPopoverMode = mLayoutMode == FuseboxLayoutMode.SUGGESTIONS_POPOVER;
-        boolean isToolbarFuseboxActive =
-                !isPopoverMode
-                        && (mFuseboxState == FuseboxState.COMPACT
-                                || mFuseboxState == FuseboxState.EXPANDED);
+        boolean isFuseboxActive =
+                (mFuseboxState == FuseboxState.COMPACT || mFuseboxState == FuseboxState.EXPANDED);
+        boolean isToolbarFuseboxActive = !isPopoverMode && isFuseboxActive;
         boolean shouldExpandLayout =
                 !mShowFocusRing && (mIsReparentedToPopover || isToolbarFuseboxActive);
         if (shouldExpandLayout) {
@@ -742,14 +752,16 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
             super.setOutlineProvider(mOutlineProvider);
             ViewUtils.setAncestorsShouldClipToPadding(this, true, View.NO_ID);
             ViewUtils.setAncestorsShouldClipChildren(this, true, View.NO_ID);
-            // Put the focused foreground back into its starting state before swapping it out;
-            // without this, it may still display the GLIF animation when we refocus.
-            mGlifBorderDrawable.reset();
-            mIsGlifActive = false;
-            updateForeground();
             // Reset our background to reflect non-zero suggestion count, which is the typical
             // state. Not setting this risks visual glitches when returning to the fusebox.
             setBackground(mLocationBarBackground);
+        }
+
+        // Put the focused foreground back into its starting state before swapping it out;
+        // without this, it may still display the GLIF animation when we refocus.
+        if (!isFuseboxActive) {
+            mIsGlifActive = false;
+            updateForegroundAndGlifAnimation();
         }
 
         adjustBackgroundForSuggestions();

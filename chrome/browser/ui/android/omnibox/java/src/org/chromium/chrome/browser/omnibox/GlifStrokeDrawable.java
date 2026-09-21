@@ -129,6 +129,10 @@ public class GlifStrokeDrawable extends Drawable {
         mAnimator.cancel();
     }
 
+    public boolean isRunning() {
+        return mAnimator.isRunning();
+    }
+
     void setCornerRadius(float cornerRadius) {
         mCornerRadius = cornerRadius;
     }
