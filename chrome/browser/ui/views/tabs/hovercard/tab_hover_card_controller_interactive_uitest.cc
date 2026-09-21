@@ -127,7 +127,7 @@ class TabHoverCardInteractiveUiTest
     scoped_feature_list_.InitWithFeatures(
         {features::kTabHoverCardImages,
          data_sharing::features::kDataSharingFeature,
-         features::kTabGroupHoverCards, features::kTabStripDeclutter},
+         features::kTabStripDeclutter},
         {});
   }
 

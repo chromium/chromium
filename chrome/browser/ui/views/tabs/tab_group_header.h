@@ -137,8 +137,6 @@ class TabGroupHeader : public TabSlotView,
   // selected.
   void CreateHeaderWithTitle();
 
-  void UpdateTooltipText();
-
   void UpdateAccessibleName();
 
   void OnTabGroupDataChanged();
@@ -182,8 +180,6 @@ class TabGroupHeader : public TabSlotView,
   // Determines whether the header UI should show the attention indicator needed
   // for collaboration messaging.
   bool needs_attention_ = false;
-
-  base::CallbackListSubscription title_text_changed_subscription_;
 
   TabGroupEditorBubbleTracker editor_bubble_tracker_;
   base::CallbackListSubscription editor_bubble_opened_subscription_;

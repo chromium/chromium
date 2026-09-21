@@ -4718,11 +4718,6 @@ inline constexpr char kDataSharingDebugLogsDescription[] =
     "Enables the data sharing infrastructure to log and save debug messages "
     "that can be shown in the internals page.";
 
-inline constexpr char kTabGroupHoverCardsName[] =
-    "Tab group header hover cards";
-inline constexpr char kTabGroupHoverCardsDescription[] =
-    "Enables hover cards for tab group headers in the tab strip.";
-
 inline constexpr char kThreeButtonPasswordSaveDialogName[] =
     "Three Button Password Save Dialog";
 inline constexpr char kThreeButtonPasswordSaveDialogDescription[] =

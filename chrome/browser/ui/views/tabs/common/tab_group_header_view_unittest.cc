@@ -11,11 +11,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/ui/tabs/tab_group_data.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_style.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -46,7 +44,6 @@ class MockDelegate : public TabGroupHeaderView::Delegate {
               ShowGroupEditorBubble,
               (bool),
               (override));
-  MOCK_METHOD(std::u16string, GetGroupContentString, (), (const, override));
   MOCK_METHOD(bool, IsValid, (), (const, override));
   MOCK_METHOD(void, InitHeaderDrag, (const ui::LocatedEvent&), (override));
   MOCK_METHOD(bool, ContinueHeaderDrag, (const ui::LocatedEvent&), (override));
@@ -82,18 +79,9 @@ int GetPlatformDependentAccelerator() {
 
 }  // namespace
 
-class TabGroupHeaderViewTest : public views::ViewsTestBase,
-                               public testing::WithParamInterface<bool> {
+class TabGroupHeaderViewTest : public views::ViewsTestBase {
  public:
-  TabGroupHeaderViewTest() {
-    if (UseGroupHeaderHoverCards()) {
-      feature_list_.InitWithFeatures({features::kTabGroupHoverCards}, {});
-    } else {
-      feature_list_.InitWithFeatures({}, {features::kTabGroupHoverCards});
-    }
-  }
-
-  bool UseGroupHeaderHoverCards() { return GetParam(); }
+  TabGroupHeaderViewTest() = default;
 
   void MoveMouseTo(ui::test::EventGenerator& generator,
                    const views::View* view,
@@ -107,18 +95,14 @@ class TabGroupHeaderViewTest : public views::ViewsTestBase,
   }
 
   ~TabGroupHeaderViewTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_P(TabGroupHeaderViewTest, TooltipText) {
+// Tooltip text for tab group header view is empty because
+// hover cards are shown instead.
+TEST_F(TabGroupHeaderViewTest, HeaderViewTooltipTextIsEmpty) {
   MockDelegate delegate;
   tab_groups::TabGroupVisualData visual_data(
       u"Group Title", tab_groups::TabGroupColorId::kBlue, false);
-
-  EXPECT_CALL(delegate, GetGroupContentString())
-      .WillRepeatedly(testing::Return(u"3 tabs"));
 
   auto header = std::make_unique<TabGroupHeaderView>(
       delegate, TabStripOrientation::kVertical, nullptr, &visual_data);
@@ -136,14 +120,7 @@ TEST_P(TabGroupHeaderViewTest, TooltipText) {
       .WillRepeatedly(testing::ReturnRef(data));
   header->OnDataChanged(data);
 
-  // Empty tool tip if hover cards are enabled.
-  std::u16string expected_tooltip =
-      UseGroupHeaderHoverCards()
-          ? u""
-          : l10n_util::GetStringFUTF16(IDS_TAB_GROUPS_NAMED_GROUP_TOOLTIP,
-                                       u"Group Title", u"3 tabs");
-
-  EXPECT_EQ(header->GetTooltipText(), expected_tooltip);
+  EXPECT_EQ(header->GetTooltipText(), u"");
 
   // Test unnamed group
   tab_groups::TabGroupVisualData unnamed_visual_data(
@@ -151,16 +128,10 @@ TEST_P(TabGroupHeaderViewTest, TooltipText) {
   data.visual_data = unnamed_visual_data;
   header->OnDataChanged(data);
 
-  // Empty tool tip if hover cards are enabled.
-  expected_tooltip = UseGroupHeaderHoverCards()
-                         ? u""
-                         : l10n_util::GetStringFUTF16(
-                               IDS_TAB_GROUPS_UNNAMED_GROUP_TOOLTIP, u"3 tabs");
-
-  EXPECT_EQ(header->GetTooltipText(), expected_tooltip);
+  EXPECT_EQ(header->GetTooltipText(), u"");
 }
 
-TEST_P(TabGroupHeaderViewTest, TitleLabelHeightWhenConstrained) {
+TEST_F(TabGroupHeaderViewTest, TitleLabelHeightWhenConstrained) {
   MockDelegate delegate;
   tab_groups::TabGroupVisualData visual_data(
       u"Group Title", tab_groups::TabGroupColorId::kBlue, false);
@@ -176,8 +147,6 @@ TEST_P(TabGroupHeaderViewTest, TitleLabelHeightWhenConstrained) {
 
   EXPECT_CALL(delegate, GetTabGroupData())
       .WillRepeatedly(testing::ReturnRef(data));
-  EXPECT_CALL(delegate, GetGroupContentString())
-      .WillRepeatedly(testing::Return(u"1 tab"));
 
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
@@ -197,7 +166,7 @@ TEST_P(TabGroupHeaderViewTest, TitleLabelHeightWhenConstrained) {
             constrained_height);
 }
 
-TEST_P(TabGroupHeaderViewTest, ShowHoverCardOnMouseEnter) {
+TEST_F(TabGroupHeaderViewTest, ShowHoverCardOnMouseEnter) {
   MockDelegate delegate;
   tab_groups::TabGroupVisualData visual_data(
       u"Group Title", tab_groups::TabGroupColorId::kBlue, false);
@@ -208,17 +177,13 @@ TEST_P(TabGroupHeaderViewTest, ShowHoverCardOnMouseEnter) {
       delegate, TabStripOrientation::kVertical, nullptr, &visual_data));
   widget->Show();
 
-  if (UseGroupHeaderHoverCards()) {
-    EXPECT_CALL(delegate, UpdateHoverCard(testing::_));
-  } else {
-    EXPECT_CALL(delegate, UpdateHoverCard(testing::_)).Times(0);
-  }
+  EXPECT_CALL(delegate, UpdateHoverCard(testing::_));
 
   ui::test::EventGenerator generator(GetContext(), widget->GetNativeWindow());
   MoveMouseTo(generator, header, true);
 }
 
-TEST_P(TabGroupHeaderViewTest, EditorBubbleButtonVisibilityOnHover) {
+TEST_F(TabGroupHeaderViewTest, EditorBubbleButtonVisibilityOnHover) {
   MockDelegate delegate;
   tab_groups::TabGroupVisualData visual_data(
       u"Group Title", tab_groups::TabGroupColorId::kBlue, false);
@@ -249,7 +214,7 @@ TEST_P(TabGroupHeaderViewTest, EditorBubbleButtonVisibilityOnHover) {
   check_editor_bubble_button_visible(false);
 }
 
-TEST_P(TabGroupHeaderViewTest, FocusModeVisibility) {
+TEST_F(TabGroupHeaderViewTest, FocusModeVisibility) {
   MockDelegate delegate;
   ON_CALL(delegate, IsGroupFocused()).WillByDefault(testing::Return(true));
 
@@ -281,7 +246,7 @@ TEST_P(TabGroupHeaderViewTest, FocusModeVisibility) {
   EXPECT_FALSE(header->collapse_icon_for_testing()->GetVisible());
 }
 
-TEST_P(TabGroupHeaderViewTest, LeftClickInFocusModeDoesNotToggleCollapse) {
+TEST_F(TabGroupHeaderViewTest, LeftClickInFocusModeDoesNotToggleCollapse) {
   MockDelegate delegate;
   ON_CALL(delegate, IsGroupFocused()).WillByDefault(testing::Return(true));
   EXPECT_CALL(delegate, ToggleCollapsedState(testing::_)).Times(0);
@@ -300,7 +265,7 @@ TEST_P(TabGroupHeaderViewTest, LeftClickInFocusModeDoesNotToggleCollapse) {
   generator.ClickLeftButton();
 }
 
-TEST_P(TabGroupHeaderViewTest, OnKeyPress_ShiftUp) {
+TEST_F(TabGroupHeaderViewTest, OnKeyPress_ShiftUp) {
   MockDelegate delegate;
   tab_groups::TabGroupVisualData visual_data(
       u"Group Title", tab_groups::TabGroupColorId::kBlue, false);
@@ -316,7 +281,7 @@ TEST_P(TabGroupHeaderViewTest, OnKeyPress_ShiftUp) {
   EXPECT_TRUE(header->OnKeyPressed(event));
 }
 
-TEST_P(TabGroupHeaderViewTest, OnKeyPress_ShiftDown) {
+TEST_F(TabGroupHeaderViewTest, OnKeyPress_ShiftDown) {
   MockDelegate delegate;
   tab_groups::TabGroupVisualData visual_data(
       u"Group Title", tab_groups::TabGroupColorId::kBlue, false);
@@ -332,11 +297,7 @@ TEST_P(TabGroupHeaderViewTest, OnKeyPress_ShiftDown) {
   EXPECT_TRUE(header->OnKeyPressed(event));
 }
 
-TEST_P(TabGroupHeaderViewTest, HoverCardAccessibilityText_OneTab) {
-  if (!UseGroupHeaderHoverCards()) {
-    GTEST_SKIP();
-  }
-
+TEST_F(TabGroupHeaderViewTest, HoverCardAccessibilityText_OneTab) {
   MockDelegate delegate;
   tab_groups::TabGroupVisualData visual_data(
       u"Group Title", tab_groups::TabGroupColorId::kBlue, false);
@@ -374,11 +335,7 @@ TEST_P(TabGroupHeaderViewTest, HoverCardAccessibilityText_OneTab) {
   EXPECT_EQ(header->GetViewAccessibility().GetCachedName(), expected_acc_text);
 }
 
-TEST_P(TabGroupHeaderViewTest, HoverCardAccessibilityText_FiveTabs) {
-  if (!UseGroupHeaderHoverCards()) {
-    GTEST_SKIP();
-  }
-
+TEST_F(TabGroupHeaderViewTest, HoverCardAccessibilityText_FiveTabs) {
   MockDelegate delegate;
   tab_groups::TabGroupVisualData visual_data(
       u"Group Title", tab_groups::TabGroupColorId::kBlue, false);
@@ -422,11 +379,7 @@ TEST_P(TabGroupHeaderViewTest, HoverCardAccessibilityText_FiveTabs) {
   EXPECT_EQ(header->GetViewAccessibility().GetCachedName(), expected_acc_text);
 }
 
-TEST_P(TabGroupHeaderViewTest, HoverCardAccessibilityText_ExcessTabs) {
-  if (!UseGroupHeaderHoverCards()) {
-    GTEST_SKIP();
-  }
-
+TEST_F(TabGroupHeaderViewTest, HoverCardAccessibilityText_ExcessTabs) {
   MockDelegate delegate;
   tab_groups::TabGroupVisualData visual_data(
       u"Group Title", tab_groups::TabGroupColorId::kBlue, false);
@@ -470,11 +423,7 @@ TEST_P(TabGroupHeaderViewTest, HoverCardAccessibilityText_ExcessTabs) {
   EXPECT_EQ(header->GetViewAccessibility().GetCachedName(), expected_acc_text);
 }
 
-TEST_P(TabGroupHeaderViewTest, HoverCardAccessibilityText_UnnamedGroup) {
-  if (!UseGroupHeaderHoverCards()) {
-    GTEST_SKIP();
-  }
-
+TEST_F(TabGroupHeaderViewTest, HoverCardAccessibilityText_UnnamedGroup) {
   MockDelegate delegate;
   tab_groups::TabGroupVisualData visual_data(
       u"Group Title", tab_groups::TabGroupColorId::kBlue, false);
@@ -520,11 +469,7 @@ TEST_P(TabGroupHeaderViewTest, HoverCardAccessibilityText_UnnamedGroup) {
   EXPECT_EQ(header->GetViewAccessibility().GetCachedName(), expected_acc_text);
 }
 
-TEST_P(TabGroupHeaderViewTest, HoverCardAccessibilityText_LongTabTitleElided) {
-  if (!UseGroupHeaderHoverCards()) {
-    GTEST_SKIP();
-  }
-
+TEST_F(TabGroupHeaderViewTest, HoverCardAccessibilityText_LongTabTitleElided) {
   MockDelegate delegate;
   tab_groups::TabGroupVisualData visual_data(
       u"Group Title", tab_groups::TabGroupColorId::kBlue, false);
@@ -568,11 +513,7 @@ TEST_P(TabGroupHeaderViewTest, HoverCardAccessibilityText_LongTabTitleElided) {
   EXPECT_EQ(header->GetViewAccessibility().GetCachedName(), expected_acc_text);
 }
 
-TEST_P(TabGroupHeaderViewTest, HoverCardAccessibilityText_SharedGroup) {
-  if (!UseGroupHeaderHoverCards()) {
-    GTEST_SKIP();
-  }
-
+TEST_F(TabGroupHeaderViewTest, HoverCardAccessibilityText_SharedGroup) {
   MockDelegate delegate;
   tab_groups::TabGroupVisualData visual_data(
       u"Group Title", tab_groups::TabGroupColorId::kBlue, false);
@@ -611,11 +552,7 @@ TEST_P(TabGroupHeaderViewTest, HoverCardAccessibilityText_SharedGroup) {
   EXPECT_EQ(header->GetViewAccessibility().GetCachedName(), expected_acc_text);
 }
 
-TEST_P(TabGroupHeaderViewTest, HoverCardAccessibilityText_CollapsedGroup) {
-  if (!UseGroupHeaderHoverCards()) {
-    GTEST_SKIP();
-  }
-
+TEST_F(TabGroupHeaderViewTest, HoverCardAccessibilityText_CollapsedGroup) {
   MockDelegate delegate;
   tab_groups::TabGroupVisualData visual_data(
       u"Group Title", tab_groups::TabGroupColorId::kBlue, true);
@@ -653,7 +590,7 @@ TEST_P(TabGroupHeaderViewTest, HoverCardAccessibilityText_CollapsedGroup) {
   EXPECT_EQ(header->GetViewAccessibility().GetCachedName(), expected_acc_text);
 }
 
-TEST_P(TabGroupHeaderViewTest, HorizontalPreferredSize_NamedGroup) {
+TEST_F(TabGroupHeaderViewTest, HorizontalPreferredSize_NamedGroup) {
   MockDelegate delegate;
   tab_groups::TabGroupVisualData visual_data(
       u"Group Title", tab_groups::TabGroupColorId::kBlue, false);
@@ -669,8 +606,6 @@ TEST_P(TabGroupHeaderViewTest, HorizontalPreferredSize_NamedGroup) {
 
   EXPECT_CALL(delegate, GetTabGroupData())
       .WillRepeatedly(testing::ReturnRef(data));
-  EXPECT_CALL(delegate, GetGroupContentString())
-      .WillRepeatedly(testing::Return(u"1 tab"));
 
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
@@ -683,7 +618,7 @@ TEST_P(TabGroupHeaderViewTest, HorizontalPreferredSize_NamedGroup) {
   EXPECT_GE(preferred_size.width(), TabGroupStyle::GetEmptyChipSize());
 }
 
-TEST_P(TabGroupHeaderViewTest, HorizontalPreferredSize_UnnamedGroup) {
+TEST_F(TabGroupHeaderViewTest, HorizontalPreferredSize_UnnamedGroup) {
   MockDelegate delegate;
   tab_groups::TabGroupVisualData visual_data(
       u"", tab_groups::TabGroupColorId::kBlue, false);
@@ -699,8 +634,6 @@ TEST_P(TabGroupHeaderViewTest, HorizontalPreferredSize_UnnamedGroup) {
 
   EXPECT_CALL(delegate, GetTabGroupData())
       .WillRepeatedly(testing::ReturnRef(data));
-  EXPECT_CALL(delegate, GetGroupContentString())
-      .WillRepeatedly(testing::Return(u"1 tab"));
 
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
@@ -714,11 +647,3 @@ TEST_P(TabGroupHeaderViewTest, HorizontalPreferredSize_UnnamedGroup) {
   EXPECT_EQ(preferred_size, gfx::Size(TabGroupStyle::GetEmptyChipSize(),
                                       TabGroupStyle::GetEmptyChipSize()));
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         TabGroupHeaderViewTest,
-                         testing::Bool(),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "HoverCardEnabled"
-                                             : "HoverCardDisabled";
-                         });

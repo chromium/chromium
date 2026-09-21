@@ -261,19 +261,6 @@ void TabGroupView::OnAnimationEnded() {
   }
 }
 
-std::u16string TabGroupView::GetGroupContentString() const {
-  if (!collection_node_) {
-    return std::u16string();
-  }
-
-  const TabGroup* group = GetTabGroupFromNode(collection_node_);
-  if (group->tab_count() == 0) {
-    return std::u16string();
-  }
-
-  return tab_groups::GetGroupContentString(group);
-}
-
 bool TabGroupView::IsValid() const {
   return collection_node_;
 }

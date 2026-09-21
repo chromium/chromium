@@ -12098,12 +12098,6 @@ const FeatureEntry kFeatureEntries[] = {
          "LensOverlayTextSelectionContextMenuEntrypoint")},
 #endif  // !BUILDFLAG(IS_ANDROID),
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"tab-group-hover-cards", flag_descriptions::kTabGroupHoverCardsName,
-     flag_descriptions::kTabGroupHoverCardsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kTabGroupHoverCards)},
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_ANDROID)
     {"autofill-android-desktop-keyboard-accessory-revamp",
      flag_descriptions::kAutofillAndroidDesktopKeyboardAccessoryRevampName,

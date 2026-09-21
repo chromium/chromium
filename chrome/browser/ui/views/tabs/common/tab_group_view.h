@@ -52,7 +52,6 @@ class TabGroupView : public TabCollectionZOrderManager,
   void ToggleCollapsedState(ToggleTabGroupCollapsedStateOrigin origin) override;
   std::unique_ptr<views::Widget> ShowGroupEditorBubble(
       bool stop_context_menu_propagation) override;
-  std::u16string GetGroupContentString() const override;
   bool IsValid() const override;
   void InitHeaderDrag(const ui::LocatedEvent& event) override;
   bool ContinueHeaderDrag(const ui::LocatedEvent& event) override;

@@ -50,7 +50,6 @@ class TabGroupHeaderView : public views::FlexLayoutView,
         ToggleTabGroupCollapsedStateOrigin origin) = 0;
     virtual std::unique_ptr<views::Widget> ShowGroupEditorBubble(
         bool stop_context_menu_propagation) = 0;
-    virtual std::u16string GetGroupContentString() const = 0;
 
     virtual bool IsValid() const = 0;
     virtual void InitHeaderDrag(const ui::LocatedEvent& event) = 0;
@@ -133,7 +132,6 @@ class TabGroupHeaderView : public views::FlexLayoutView,
   void SetEditorBubbleButtonVisibilityOnHover(bool is_hovered);
   void ShowEditorBubble();
   void UpdateAccessibleName();
-  void UpdateTooltipText();
   void UpdateIsCollapsed();
   void UpdateAttentionState(bool needs_attention);
 

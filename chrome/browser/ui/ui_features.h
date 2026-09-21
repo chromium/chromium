@@ -203,10 +203,6 @@ BASE_DECLARE_FEATURE(kCollapseTabGroupDuringDrag);
 
 #if !BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kNewTabButtonContextMenu);
-
-BASE_DECLARE_FEATURE(kTabGroupHoverCards);
-bool IsTabGroupHoverCardsEnabled();
-
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 BASE_DECLARE_FEATURE(kTabHoverCardImages);

@@ -251,13 +251,6 @@ BASE_FEATURE(kCollapseTabGroupDuringDrag, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kNewTabButtonContextMenu, base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTabGroupHoverCards, base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsTabGroupHoverCardsEnabled() {
-  return base::FeatureList::IsEnabled(kTabGroupHoverCards);
-}
-
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Enables preview images in tab-hover cards.

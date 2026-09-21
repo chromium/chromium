@@ -9475,11 +9475,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "tab-group-hover-cards",
-    "owners": [ "dominicaustria@google.com", "top-chrome-desktop-ui@google.com" ],
-    "expiry_milestone": 155
-  },
-  {
     "name": "tab-group-ribbon",
     "owners": ["chazzy@google.com", "top-chrome-desktop-ui@google.com"],
     "expiry_milestone": 160
