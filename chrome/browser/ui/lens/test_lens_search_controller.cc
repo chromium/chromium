@@ -97,6 +97,7 @@ MockLensSearchController::MockLensSearchController(tabs::TabInterface* tab)
       .WillByDefault([this](lens::LensOverlayDismissalSource dismissal_source) {
         LensSearchController::CloseLensSync(dismissal_source);
       });
+  ON_CALL(*this, IsCurrentTabSameOrigin()).WillByDefault(testing::Return(true));
 }
 
 MockLensSearchController::~MockLensSearchController() = default;

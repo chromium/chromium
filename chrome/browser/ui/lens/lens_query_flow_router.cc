@@ -784,7 +784,9 @@ void LensQueryFlowRouter::SendInteractionToContextualTasks(
     if (!overlay_tab_context_file_token_.has_value() &&
         ShouldFetchActiveTabForInvocationSource(
             pending_search_url_request_->invocation_source,
-            GetContextualSearchSessionHandle())) {
+            GetContextualSearchSessionHandle()) &&
+        ShouldPopulateFullPageContext() &&
+        lens_search_controller_->IsCurrentTabSameOrigin()) {
       force_tabs.push_back(tab_interface()->GetHandle().raw_value());
     }
     contextual_tasks::QueryContextualizer::ContextualizeParams params;

@@ -285,7 +285,7 @@ class LensSearchController {
 
   // Returns whether the current tab's committed origin matches the origin
   // of the page when this Lens session was initiated.
-  bool IsCurrentTabSameOrigin() const;
+  virtual bool IsCurrentTabSameOrigin() const;
 
   // Returns the origin of the page when this Lens session was initiated.
   const url::Origin& session_origin() const { return session_origin_; }

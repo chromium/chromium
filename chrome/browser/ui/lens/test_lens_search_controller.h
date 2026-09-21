@@ -62,6 +62,8 @@ class MockLensSearchController : public LensSearchController {
               HandleInteractionResponse,
               (lens::mojom::TextPtr text),
               (override));
+
+  MOCK_METHOD(bool, IsCurrentTabSameOrigin, (), (const, override));
 };
 
 class FakeLensQueryFlowRouter : public LensQueryFlowRouter {
