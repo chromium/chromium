@@ -47,6 +47,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
+import java.util.function.BooleanSupplier;
 
 /** Hosts settings preference fragments inside a native page. See {@link SettingsPage}. */
 @NullMarked
@@ -91,6 +92,7 @@ public class SettingsHostFragment extends Fragment
     private @Nullable String mInitialUrl;
     private @Nullable Bundle mSavedInstanceState;
     private @Nullable Callback<Bundle> mSaveInstanceStateCallback;
+    private @Nullable BooleanSupplier mSearchOpenSupplier;
     private int mPendingPopBackCount;
 
     /** Public constructor needed for Fragment re-instantiation. */
@@ -396,6 +398,27 @@ public class SettingsHostFragment extends Fragment
         return mSettingsNavigation;
     }
 
+    /**
+     * Sets the source of truth for {@link #isSearchOpen}, owned by whoever owns the search UI.
+     *
+     * @param supplier Supplies whether search is open, or null to forget the previous one.
+     */
+    public void setSearchOpenSupplier(@Nullable BooleanSupplier supplier) {
+        mSearchOpenSupplier = supplier;
+    }
+
+    /**
+     * Returns whether the settings search UI is open.
+     *
+     * <p>Asked by navigation, which keeps pages on the fragment back stack for as long as search
+     * owns the screen. A page opened from search is a step inside that search rather than a place
+     * the user navigated the tab to, and navigating the tab would purge the back stack search is
+     * holding its own pages on.
+     */
+    public boolean isSearchOpen() {
+        return mSearchOpenSupplier != null && mSearchOpenSupplier.getAsBoolean();
+    }
+
     @Override
     public boolean onPreferenceStartFragment(
             PreferenceFragmentCompat caller, Preference preference) {
@@ -407,7 +430,9 @@ public class SettingsHostFragment extends Fragment
         // the target fragment into a canonical URL and loads it via Tab.loadUrl(), pushing a
         // new NavigationEntry to WebContents history, updating the Omnibox URL, and
         // integrating with browser Back/Forward navigation stack.
-        if (ChromeFeatureList.sSettingsInTabUrlNav.isEnabled() && mSettingsNavigation != null) {
+        if (ChromeFeatureList.sSettingsInTabUrlNav.isEnabled()
+                && mSettingsNavigation != null
+                && !isSearchOpen()) {
             try {
                 var fragmentClass = Class.forName(fragmentClassName).asSubclass(Fragment.class);
                 mSettingsNavigation.startSettings(

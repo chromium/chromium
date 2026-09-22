@@ -14,6 +14,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -912,6 +913,29 @@ public class SettingsHostFragmentTest {
                         mSettingsHostFragment.getContext(),
                         SecondFakeSettingsFragment.class,
                         extras);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
+    public void testOnPreferenceStartFragment_SearchOpen_UsesFragmentBackStack() {
+        attachHostFragment();
+        SettingsNavigation mockNavigation = mock(SettingsNavigation.class);
+        mSettingsHostFragment.setSettingsNavigation(mockNavigation);
+        mSettingsHostFragment.setSearchOpenSupplier(() -> true);
+
+        Preference preference = mock(Preference.class);
+        when(preference.getFragment()).thenReturn(SecondFakeSettingsFragment.class.getName());
+        when(preference.getExtras()).thenReturn(new Bundle());
+
+        PreferenceFragmentCompat caller = mock(PreferenceFragmentCompat.class);
+        boolean handled = mSettingsHostFragment.onPreferenceStartFragment(caller, preference);
+
+        // The page belongs to the search rather than to the tab, so it goes on the back stack
+        // search is holding its own pages on, and the tab stays where it is.
+        assertTrue("Preference start fragment should be handled", handled);
+        verifyNoInteractions(mockNavigation);
+        mSettingsHostFragment.getChildFragmentManager().executePendingTransactions();
+        assertEquals(1, mSettingsHostFragment.getChildFragmentManager().getBackStackEntryCount());
     }
 
     @Test

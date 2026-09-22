@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.settings;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
@@ -313,6 +314,54 @@ public class SettingsInTabNavigationDelegateTest {
     @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_MULTI_COLUMN})
     @Config(qualifiers = "w720dp-h1024dp")
     public void testStartSettings_UnmappedFragment_WithHostFragment_ShowsFragmentInHost() {
+        RecordingHostFragment hostFragment = attachHostFragment();
+
+        Context mockContext = spy(hostFragment.requireActivity());
+        doNothing().when(mockContext).startActivity(any());
+
+        mDelegate.startSettings(mockContext, UnmappedTestFragment.class);
+
+        // A page with no Url belongs in the host that is already open. Launching an Intent would
+        // open a second settings tab at the root Url instead.
+        verify(mockContext, never()).startActivity(any());
+        verify(mMockTab, never()).loadUrl(any());
+        assertTrue(hostFragment.mShownFragment instanceof UnmappedTestFragment);
+        assertTrue(hostFragment.mShownAddToBackStack);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_MULTI_COLUMN})
+    @Config(qualifiers = "w720dp-h1024dp")
+    public void testStartSettings_MappedFragment_WithSearchOpen_ShowsFragmentInHost() {
+        RecordingHostFragment hostFragment = attachHostFragment();
+        hostFragment.setSearchOpenSupplier(() -> true);
+
+        mDelegate.startSettings(hostFragment.requireActivity(), ThemeSettingsFragment.class);
+
+        // The page has a Url, but it was opened from search, which owns the screen and keeps its
+        // pages on the fragment back stack. Navigating the tab would purge that stack.
+        verify(mMockTab, never()).loadUrl(any());
+        assertTrue(hostFragment.mShownFragment instanceof ThemeSettingsFragment);
+        assertTrue(hostFragment.mShownAddToBackStack);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_MULTI_COLUMN})
+    @Config(qualifiers = "w720dp-h1024dp")
+    public void testStartSettings_MappedFragment_WithSearchClosed_NavigatesTheTab() {
+        RecordingHostFragment hostFragment = attachHostFragment();
+        hostFragment.setSearchOpenSupplier(() -> false);
+
+        mDelegate.startSettings(hostFragment.requireActivity(), ThemeSettingsFragment.class);
+
+        ArgumentCaptor<LoadUrlParams> captor = ArgumentCaptor.forClass(LoadUrlParams.class);
+        verify(mMockTab).loadUrl(captor.capture());
+        assertEquals("chrome://settings/theme", captor.getValue().getUrl());
+        assertNull(hostFragment.mShownFragment);
+    }
+
+    /** Attaches a host fragment to a live activity and points the tab at it. */
+    private RecordingHostFragment attachHostFragment() {
         TestChromeBaseAppCompatActivity activity =
                 Robolectric.buildActivity(TestChromeBaseAppCompatActivity.class).setup().get();
         ApplicationStatus.onStateChangeForTesting(activity, ActivityState.RESUMED);
@@ -328,18 +377,7 @@ public class SettingsInTabNavigationDelegateTest {
         WindowAndroid windowAndroid = mock(WindowAndroid.class);
         when(windowAndroid.getActivity()).thenReturn(new WeakReference<>(activity));
         when(mMockTab.getWindowAndroid()).thenReturn(windowAndroid);
-
-        Context mockContext = spy(activity);
-        doNothing().when(mockContext).startActivity(any());
-
-        mDelegate.startSettings(mockContext, UnmappedTestFragment.class);
-
-        // A page with no Url belongs in the host that is already open. Launching an Intent would
-        // open a second settings tab at the root Url instead.
-        verify(mockContext, never()).startActivity(any());
-        verify(mMockTab, never()).loadUrl(any());
-        assertTrue(hostFragment.mShownFragment instanceof UnmappedTestFragment);
-        assertTrue(hostFragment.mShownAddToBackStack);
+        return hostFragment;
     }
 
     /**

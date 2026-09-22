@@ -1012,6 +1012,14 @@ public class SettingsSearchCoordinator
         if (!mUseMultiColumn) showTitleTextView(state != FS_SEARCH);
     }
 
+    /**
+     * Returns whether the search UI is on screen, i.e. the user is entering a query or browsing
+     * what a query found, rather than browsing settings normally.
+     */
+    public boolean isSearchOpen() {
+        return mFragmentState != FS_SETTINGS;
+    }
+
     private void showBackArrowInSingleColumnMode(boolean show) {
         if (mUseMultiColumn) return;
 

@@ -500,6 +500,7 @@ public class SettingsPageFragmentDelegateImpl
                     isUrlNavEnabled && mTab.getNativePage() instanceof SettingsPage;
             if (!isAdoptedByNewPage) {
                 mSettingsHostFragment.setSaveInstanceStateCallback(null);
+                mSettingsHostFragment.setSearchOpenSupplier(null);
                 if (isUrlNavEnabled) {
                     mSettingsHostFragment.setSettingsNavigation(null);
                 }
@@ -696,6 +697,11 @@ public class SettingsPageFragmentDelegateImpl
                     () -> assumeNonNull(mSearchCoordinator).initializeSearchUi(savedInstanceState));
         }
         multiColumnSettings.addObserver(mSearchCoordinator);
+
+        // Navigation asks the host whether search is open, so that pages opened from search stay
+        // on the fragment back stack instead of moving the tab.
+        mSettingsHostFragment.setSearchOpenSupplier(
+                () -> mSearchCoordinator != null && mSearchCoordinator.isSearchOpen());
     }
 
     private void updateFirstVisibleTitle(int index) {

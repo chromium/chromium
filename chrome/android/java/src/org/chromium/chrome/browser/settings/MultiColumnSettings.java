@@ -436,7 +436,14 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
         // into a canonical chrome://settings/<path> URL string, pushing a new
         // NavigationEntry onto WebContents navigation history, updating the
         // Omnibox URL, and synchronizing browser Back/Forward navigation.
-        if (!mShownInTab || !ChromeFeatureList.sSettingsInTabUrlNav.isEnabled()) {
+        //
+        // The search UI is the exception: while it is open it owns the screen, and the pages it
+        // opens are steps inside a search rather than places the user navigated the tab to.
+        // Navigating the tab from under search would purge the back stack it records those pages
+        // on, leaving it with nothing to go back to. Let them take the fragment path instead.
+        if (!mShownInTab
+                || !ChromeFeatureList.sSettingsInTabUrlNav.isEnabled()
+                || isSettingsSearchOpen()) {
             return super.onPreferenceStartFragment(caller, preference);
         }
 
@@ -461,6 +468,15 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
 
         navigation.startSettings(requireContext(), fragmentClass, preference.getExtras());
         return true;
+    }
+
+    /**
+     * Returns whether the settings search UI is open over this fragment. False when settings is not
+     * hosted in a tab, where there is nothing to keep off the tab's navigation history.
+     */
+    private boolean isSettingsSearchOpen() {
+        SettingsHostFragment hostFragment = SettingsHostFragment.get(this);
+        return hostFragment != null && hostFragment.isSearchOpen();
     }
 
     /** Shows a fragment inside the detail pane (`preferences_detail`). */

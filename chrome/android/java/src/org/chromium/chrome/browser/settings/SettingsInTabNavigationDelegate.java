@@ -91,7 +91,16 @@ public class SettingsInTabNavigationDelegate implements SettingsNavigation {
             return;
         }
 
-        String targetUrl = SettingsFragmentRegistry.createUrlForFragment(fragment, fragmentArgs);
+        // While the search UI is open it owns the screen, and the pages it opens are steps inside
+        // a search rather than places the user navigated the tab to. Navigating the tab from under
+        // search would purge the fragment back stack it records those pages on.
+        SettingsHostFragment hostFragment = findHostFragment(/* fragment= */ null);
+        boolean searchOpen = hostFragment != null && hostFragment.isSearchOpen();
+
+        String targetUrl =
+                searchOpen
+                        ? null
+                        : SettingsFragmentRegistry.createUrlForFragment(fragment, fragmentArgs);
         if (targetUrl != null) {
             // Executing loadUrl updates the Omnibox, creates a WebContents navigation history
             // entry, and triggers SettingsPage.updateForUrl() on the current tab.
@@ -99,12 +108,11 @@ public class SettingsInTabNavigationDelegate implements SettingsNavigation {
             return;
         }
 
-        // Some pages have no URL, either because they have not been migrated yet or because they
-        // cannot have one: ChosenObjectSettings, for instance, is identified by a serialized device
-        // descriptor. Show them in the current host on the fragment back stack. Launching an Intent
-        // here would open a second settings tab at the root URL, which is never what the user
-        // asked for from inside settings.
-        SettingsHostFragment hostFragment = findHostFragment(/* fragment= */ null);
+        // Show the page in the current host on the fragment back stack: it either has no URL,
+        // because it has not been migrated yet or cannot have one (ChosenObjectSettings, for
+        // instance, is identified by a serialized device descriptor), or it belongs to an open
+        // search. Launching an Intent here would open a second settings tab at the root URL,
+        // which is never what the user asked for from inside settings.
         if (hostFragment != null) {
             hostFragment.showFragment(
                     Fragment.instantiate(context, fragment.getName(), fragmentArgs),
