@@ -4,14 +4,13 @@
 
 #include "components/sync/service/device_statistics_scheduler.h"
 
+#include <optional>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
 #include "components/sync/service/device_statistics_request.h"
 #include "components/sync/service/device_statistics_tracker.h"
@@ -22,6 +21,8 @@ namespace {
 
 constexpr char kLastAttemptedToRecordPref[] =
     "sync.device_statistics_timestamp";
+
+std::optional<base::TimeDelta> g_startup_delay_override_for_testing;
 
 }  // namespace
 
@@ -39,12 +40,10 @@ DeviceStatisticsScheduler::DeviceStatisticsScheduler(
   CHECK(pref_service_);
   CHECK(identity_manager_);
 
-  if (base::FeatureList::IsEnabled(kSyncRecordDeviceStatisticsMetrics)) {
-    if (identity_manager_->AreRefreshTokensLoaded()) {
-      ScheduleNextRun();
-    } else {
-      identity_manager_observation_.Observe(identity_manager_);
-    }
+  if (identity_manager_->AreRefreshTokensLoaded()) {
+    ScheduleNextRun();
+  } else {
+    identity_manager_observation_.Observe(identity_manager_);
   }
 }
 
@@ -54,6 +53,17 @@ DeviceStatisticsScheduler::~DeviceStatisticsScheduler() = default;
 void DeviceStatisticsScheduler::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterTimePref(kLastAttemptedToRecordPref, base::Time());
+}
+
+// static
+void DeviceStatisticsScheduler::SetStartupDelayForTesting(
+    base::TimeDelta delay) {
+  g_startup_delay_override_for_testing = delay;
+}
+
+// static
+void DeviceStatisticsScheduler::ResetStartupDelayForTesting() {
+  g_startup_delay_override_for_testing.reset();
 }
 
 void DeviceStatisticsScheduler::OnRefreshTokensLoaded() {
@@ -69,15 +79,12 @@ base::Time DeviceStatisticsScheduler::ComputeEarliestAllowedTimeToRun() const {
   const base::Time last_recorded_at =
       std::min(pref_service_->GetTime(kLastAttemptedToRecordPref), now);
 
-  // The metrics should be recorded once per N calendar days (determined by a
-  // feature param), so the next possible time is midnight, N days after the
-  // last recording.
+  // The metrics should be recorded once per calendar day, so the next possible
+  // time is midnight on the following day.
   base::Time earliest_allowed =
       last_recorded_at.is_null()
           ? now
-          : (last_recorded_at +
-             base::Days(kSyncRecordDeviceStatisticsMetricsPeriodDays.Get()))
-                .LocalMidnight();
+          : (last_recorded_at + base::Days(1)).LocalMidnight();
 
   if (earliest_allowed > now) {
     // Recording has already happened today. Wait (somewhat arbitrarily) until
@@ -94,15 +101,14 @@ base::Time DeviceStatisticsScheduler::ComputeEarliestAllowedTimeToRun() const {
   }
 
   // At browser startup, wait some time before recording for the first time.
-  earliest_allowed =
-      std::max(earliest_allowed,
-               creation_time_ + kSyncRecordDeviceStatisticsMetricsDelay.Get());
+  const base::TimeDelta startup_delay =
+      g_startup_delay_override_for_testing.value_or(kStartupDelay);
+  earliest_allowed = std::max(earliest_allowed, creation_time_ + startup_delay);
 
   return earliest_allowed;
 }
 
 void DeviceStatisticsScheduler::ScheduleNextRun() {
-  CHECK(base::FeatureList::IsEnabled(kSyncRecordDeviceStatisticsMetrics));
   CHECK(!next_run_timer_.IsRunning());
   CHECK(!tracker_);
   CHECK(identity_manager_->AreRefreshTokensLoaded());

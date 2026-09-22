@@ -11,6 +11,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "url/gurl.h"
@@ -28,6 +29,12 @@ class DeviceStatisticsTracker;
 // (from DeviceStatisticsTracker) once per day.
 class DeviceStatisticsScheduler : public signin::IdentityManager::Observer {
  public:
+  // Delay before downloading device statistics and recording related metrics.
+  // The exact number is somewhat arbitrary, chosen to ensure that refresh
+  // tokens are loaded, the local cache GUID is up to date, and to avoid
+  // interfering with general (sync or browser) startup.
+  static constexpr base::TimeDelta kStartupDelay = base::Seconds(30);
+
   class Delegate {
    public:
     virtual ~Delegate() = default;
@@ -54,6 +61,9 @@ class DeviceStatisticsScheduler : public signin::IdentityManager::Observer {
   ~DeviceStatisticsScheduler() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+  static void SetStartupDelayForTesting(base::TimeDelta delay);
+  static void ResetStartupDelayForTesting();
 
   // IdentityManager::Observer:
   void OnRefreshTokensLoaded() override;

@@ -39,6 +39,7 @@
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
+#include "components/sync/service/device_statistics_scheduler.h"
 #include "components/sync/service/device_statistics_tracker.h"
 #include "components/sync/test/fake_server.h"
 #include "components/sync_device_info/device_info.h"
@@ -198,17 +199,9 @@ class SingleClientDeviceInfoSyncTest
     : public SyncTest,
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  explicit SingleClientDeviceInfoSyncTest(
-      bool enable_device_statistics_metrics = false)
-      : SyncTest(SINGLE_CLIENT) {
+  SingleClientDeviceInfoSyncTest() : SyncTest(SINGLE_CLIENT) {
     std::vector<base::test::FeatureRefAndParams> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
-    if (enable_device_statistics_metrics) {
-      enabled_features.emplace_back(
-          syncer::kSyncRecordDeviceStatisticsMetrics,
-          base::FieldTrialParams{
-              {syncer::kSyncRecordDeviceStatisticsMetricsDelay.name, "0"}});
-    }
     if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
       enabled_features.emplace_back(syncer::kReplaceSyncPromosWithSignInPromos,
                                     base::FieldTrialParams{});
@@ -946,9 +939,14 @@ class SingleClientDeviceInfoWithDeviceStatisticsSyncTest
  public:
   explicit SingleClientDeviceInfoWithDeviceStatisticsSyncTest(
       bool metrics_consent_value = true)
-      : SingleClientDeviceInfoSyncTest(
-            /*enable_device_statistics_metrics=*/true),
-        metrics_consent_value_(metrics_consent_value) {}
+      : metrics_consent_value_(metrics_consent_value) {
+    syncer::DeviceStatisticsScheduler::SetStartupDelayForTesting(
+        base::Seconds(0));
+  }
+
+  ~SingleClientDeviceInfoWithDeviceStatisticsSyncTest() override {
+    syncer::DeviceStatisticsScheduler::ResetStartupDelayForTesting();
+  }
 
   void SetUpInProcessBrowserTestFixture() override {
     create_services_subscription_ =
@@ -1021,8 +1019,7 @@ IN_PROC_BROWSER_TEST_P(
   // Wait long enough so that the DeviceStatisticsTracker would've started, if
   // it were going to.
   const base::Time wait_start = base::Time::Now();
-  const base::TimeDelta wait_time = std::max(
-      base::Seconds(1), syncer::kSyncRecordDeviceStatisticsMetricsDelay.Get());
+  const base::TimeDelta wait_time = base::Seconds(1);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return base::Time::Now() - wait_start > wait_time; }));
 
