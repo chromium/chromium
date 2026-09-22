@@ -118,6 +118,12 @@ bool IsFormatSupported(viz::SharedImageFormat format,
       return false;
     }
   }
+
+  // Don't allow creating for a client provided GMB outside of Fuchsia. That is
+  // handled by OzoneImageBacking instead.
+  if (gmb_type != gfx::GpuMemoryBufferType::EMPTY_BUFFER) {
+    return false;
+  }
 #endif
 
   if (format.is_multi_plane()) {
