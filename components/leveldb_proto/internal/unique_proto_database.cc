@@ -42,7 +42,6 @@ void UniqueProtoDatabase::Init(const std::string& client_name,
                                Callbacks::InitStatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   db_ = std::make_unique<LevelDB>(client_name.c_str());
-  db_wrapper_->SetMetricsId(client_name);
   InitWithDatabase(db_.get(), database_dir_, options_, true,
                    std::move(callback));
 }
@@ -162,10 +161,6 @@ void UniqueProtoDatabase::RemoveKeysForTesting(
     const std::string& target_prefix,
     Callbacks::UpdateCallback callback) {
   db_wrapper_->RemoveKeys(key_filter, target_prefix, std::move(callback));
-}
-
-void UniqueProtoDatabase::SetMetricsId(const std::string& id) {
-  db_wrapper_->SetMetricsId(id);
 }
 
 }  // namespace leveldb_proto

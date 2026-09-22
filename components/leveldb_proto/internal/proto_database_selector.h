@@ -208,7 +208,6 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) ProtoDatabaseSelector
   base::queue<base::OnceClosure> pending_tasks_;
   std::unique_ptr<UniqueProtoDatabase> db_;
   base::FilePath unique_database_dir_;
-  std::string client_name_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

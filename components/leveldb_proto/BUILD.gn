@@ -22,8 +22,6 @@ component("leveldb_proto") {
     "internal/proto_database_selector.h",
     "internal/proto_leveldb_wrapper.cc",
     "internal/proto_leveldb_wrapper.h",
-    "internal/proto_leveldb_wrapper_metrics.cc",
-    "internal/proto_leveldb_wrapper_metrics.h",
     "internal/shared_proto_database.cc",
     "internal/shared_proto_database.h",
     "internal/shared_proto_database_client.cc",

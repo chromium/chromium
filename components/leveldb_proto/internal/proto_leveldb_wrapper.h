@@ -18,7 +18,6 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
-#include "components/leveldb_proto/internal/proto_leveldb_wrapper_metrics.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "third_party/leveldatabase/env_chromium.h"
 
@@ -43,7 +42,6 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) ProtoLevelDBWrapper {
   // Used to destroy database when initialization fails.
   static void Destroy(
       const base::FilePath& db_dir,
-      const std::string& client_id,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       Callbacks::DestroyCallback callback);
 
@@ -139,8 +137,6 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) ProtoLevelDBWrapper {
                         bool destroy_on_corruption,
                         Callbacks::InitStatusCallback callback);
 
-  void SetMetricsId(const std::string& id);
-
   const scoped_refptr<base::SequencedTaskRunner>& task_runner();
 
  private:
@@ -150,10 +146,6 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) ProtoLevelDBWrapper {
   // relies on.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   raw_ptr<LevelDB, AcrossTasksDanglingUntriaged> db_ = nullptr;
-
-  // The identifier used when recording metrics to determine the source of the
-  // LevelDB calls, likely the database client name.
-  std::string metrics_id_ = "Default";
 
   base::WeakPtrFactory<ProtoLevelDBWrapper> weak_ptr_factory_{this};
 };

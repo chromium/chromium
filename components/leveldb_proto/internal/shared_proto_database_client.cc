@@ -186,7 +186,6 @@ SharedProtoDatabaseClient::SharedProtoDatabaseClient(
     : UniqueProtoDatabase(std::move(db_wrapper)),
       prefix_(PrefixForDatabase(db_type)),
       parent_db_(parent_db) {
-  SetMetricsId(SharedProtoDatabaseClientList::ProtoDbTypeToString(db_type));
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 

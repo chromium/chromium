@@ -81,7 +81,6 @@ void ProtoDatabaseSelector::InitUniqueOrShared(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   init_status_ = InitStatus::IN_PROGRESS;
   unique_database_dir_ = db_dir;
-  client_name_ = client_name;
 
   if (unique_database_dir_.empty()) {
     DCHECK(!use_shared_db) << "Opening in memory shared db is not supported";
@@ -602,8 +601,8 @@ void ProtoDatabaseSelector::Destroy(Callbacks::DestroyCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!db_) {
     if (!unique_database_dir_.empty()) {
-      ProtoLevelDBWrapper::Destroy(unique_database_dir_, client_name_,
-                                   task_runner_, std::move(callback));
+      ProtoLevelDBWrapper::Destroy(unique_database_dir_, task_runner_,
+                                   std::move(callback));
       return;
     }
 

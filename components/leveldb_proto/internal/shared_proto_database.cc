@@ -37,8 +37,6 @@ const int kMaxSharedDbFailuresBeforeDestroy = 5;
 
 const char kGlobalMetadataKey[] = "__global";
 
-const char kSharedProtoDatabaseUmaName[] = "SharedDb";
-
 }  // namespace
 
 inline void RunInitStatusCallbackOnCallingSequence(
@@ -349,7 +347,7 @@ void SharedProtoDatabase::OnGetGlobalMetadata(
 
     if (metadata_->failure_count() >= kMaxSharedDbFailuresBeforeDestroy) {
       ProtoLevelDBWrapper::Destroy(
-          db_dir_, /*client_id=*/std::string(), task_runner_,
+          db_dir_, task_runner_,
           base::BindOnce(&SharedProtoDatabase::OnDestroySharedDatabase, this));
       return;
     }
@@ -410,7 +408,6 @@ void SharedProtoDatabase::InitDatabase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(on_task_runner_);
   auto options = CreateSimpleOptions();
   options.create_if_missing = create_if_missing_;
-  db_wrapper_->SetMetricsId(kSharedProtoDatabaseUmaName);
   // |db_wrapper_| uses the same SequencedTaskRunner that Init is called on,
   // so OnDatabaseInit will be called on the same sequence after Init.
   // This means any callers to Init using the same TaskRunner can guarantee that
