@@ -9555,6 +9555,24 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.SubmittedCountryCode{FillingMethod}" enum="Boolean"
+    expires_after="2027-08-08">
+  <owner>taminob@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records whether a non-empty submitted country field in a text input has a
+    value that is a valid 2-letter country code. Logged once per non-empty
+    {FillingMethod} field upon form submission.
+
+    Temporary metric to evaluate feature `AutofillDisallowCountryCodeFilling`.
+  </summary>
+  <token key="FillingMethod">
+    <variant name="" summary=""/>
+    <variant name=".Autofilled" summary="autofilled"/>
+    <variant name=".ManuallyFilled" summary="manually filled"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.SubmittedServerCardExpirationStatus"
     enum="AutofillSubmittedServerCardExpirationStatus"
     expires_after="2027-04-30">

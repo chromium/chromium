@@ -1104,4 +1104,93 @@ TEST_F(QualityMetricsTest, SplitZip_PrefixPredictionIsTruePositive) {
                                 1)));
 }
 
+// Tests that the metric Autofill.SubmittedCountryCode logs submitted country
+// codes as intended.
+TEST_F(QualityMetricsTest, SubmittedCountryCode_True) {
+  base::HistogramTester histogram_tester;
+  FormData form = GetAndAddSeenForm({
+      .fields =
+          {
+              // Standard two-letter country code.
+              {.role = ADDRESS_HOME_COUNTRY, .value = u"US"},
+              // Lower-case two-letter country code.
+              {.role = ADDRESS_HOME_COUNTRY, .value = u"de"},
+              // Country code with leading/trailing whitespaces.
+              {.role = ADDRESS_HOME_COUNTRY, .value = u" AT  "},
+          },
+  });
+
+  FormStructure* form_structure =
+      test_api(autofill_manager()).FindCachedFormById(form.global_id());
+  ASSERT_TRUE(form_structure);
+  form_structure->field(0)->AddFieldModifier(FieldModifier::kAutofill);
+  form_structure->field(1)->AddFieldModifier(FieldModifier::kUser);
+
+  SubmitForm(form);
+
+  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.SubmittedCountryCode"),
+              BucketsAre(Bucket(true, 3), Bucket(false, 0)));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SubmittedCountryCode.Autofilled", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SubmittedCountryCode.ManuallyFilled", true, 1);
+}
+
+// Tests that the metrics Autofill.SubmittedCountryCode are logged correctly on
+// submission of country fields that do not contain a country code.
+TEST_F(QualityMetricsTest, SubmittedCountryCode_False) {
+  base::HistogramTester histogram_tester;
+  FormData form = GetAndAddSeenForm({
+      .fields =
+          {
+              // Not a country code.
+              {.role = ADDRESS_HOME_COUNTRY, .value = u"United States"},
+              // Invalid country code.
+              {.role = ADDRESS_HOME_COUNTRY, .value = u"ZZ"},
+              // Non-ASCII value.
+              {.role = ADDRESS_HOME_COUNTRY, .value = u"龜"},
+          },
+  });
+
+  FormStructure* form_structure =
+      test_api(autofill_manager()).FindCachedFormById(form.global_id());
+  ASSERT_TRUE(form_structure);
+  form_structure->field(0)->AddFieldModifier(FieldModifier::kAutofill);
+  form_structure->field(1)->AddFieldModifier(FieldModifier::kUser);
+
+  SubmitForm(form);
+
+  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.SubmittedCountryCode"),
+              BucketsAre(Bucket(true, 0), Bucket(false, 3)));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SubmittedCountryCode.Autofilled", false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SubmittedCountryCode.ManuallyFilled", false, 1);
+}
+
+// Tests that the metrics Autofill.SubmittedCountryCode is not logged on
+// submission if its prerequisites are not fulfilled.
+TEST_F(QualityMetricsTest, SubmittedCountryCode_NotCounted) {
+  base::HistogramTester histogram_tester;
+  const FormData form = GetAndAddSeenForm({
+      .fields =
+          {
+              // Empty two-character string.
+              {.role = ADDRESS_HOME_COUNTRY, .value = u"  "},
+              // Select elements are not logged.
+              {.role = ADDRESS_HOME_COUNTRY,
+               .value = u"US",
+               .form_control_type = FormControlType::kSelectOne},
+          },
+  });
+
+  SubmitForm(form);
+
+  histogram_tester.ExpectTotalCount("Autofill.SubmittedCountryCode", 0);
+  histogram_tester.ExpectTotalCount("Autofill.SubmittedCountryCode.Autofilled",
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.SubmittedCountryCode.ManuallyFilled", 0);
+}
+
 }  // namespace autofill::autofill_metrics

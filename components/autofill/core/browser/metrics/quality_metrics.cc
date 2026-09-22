@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/i18n/char_iterator.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
@@ -152,6 +153,42 @@ GetAlternativeNameFieldValueCharacterSet(
   return AutofillAlternativeNameFieldValueCharacterSet::kOther;
 }
 
+// TODO(crbug.com/40264633): Remove this metric after feature
+// `AutofillDisallowCountryCodeFilling` is launched.
+void LogSubmittedCountryCodeMetric(const FormStructure& form) {
+  for (const std::unique_ptr<AutofillField>& field : form) {
+    if (field->IsSelectElement() ||
+        field->Type().GetAddressType() != ADDRESS_HOME_COUNTRY) {
+      continue;
+    }
+    std::u16string_view value =
+        base::TrimWhitespace(field->value(), base::TRIM_ALL);
+    if (value.empty()) {
+      continue;
+    }
+
+    const bool is_valid_country_code =
+        data_util::IsValidCountryCode(base::ToUpperASCII(value));
+
+    base::UmaHistogramBoolean("Autofill.SubmittedCountryCode",
+                              is_valid_country_code);
+    if (!field->last_modifier()) {
+      continue;
+    }
+    switch (*field->last_modifier()) {
+      case FieldModifier::kAutofill:
+        base::UmaHistogramBoolean("Autofill.SubmittedCountryCode.Autofilled",
+                                  is_valid_country_code);
+        break;
+      case FieldModifier::kUser:
+        base::UmaHistogramBoolean(
+            "Autofill.SubmittedCountryCode.ManuallyFilled",
+            is_valid_country_code);
+        break;
+    }
+  }
+}
+
 // Records the character set of the submitted value for each alternative name
 // field in the form.
 void LogSubmittedAlternativeNameCharacterSetValues(const FormStructure& form) {
@@ -242,6 +279,7 @@ void LogQualityMetrics(
   LogFillingMetrics(form_structure, form_interactions_ukm_logger, source_id,
                     observed_submission, now, ac_unrecognized_behavior);
   if (observed_submission) {
+    LogSubmittedCountryCodeMetric(form_structure);
     // TODO(crbug.com/359768803): Remove this metric once the feature is
     // launched.
     LogSubmittedAlternativeNameCharacterSetValues(form_structure);
