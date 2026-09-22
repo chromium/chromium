@@ -7,15 +7,22 @@
 #include <memory>
 #include <string>
 
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_test_base.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
+#include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/testing_profile.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/actions/actions.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -29,6 +36,21 @@ class AppMenuChipViewTest : public ActionAppMenuTestBase {
   AppMenuChipViewTest() = default;
   ~AppMenuChipViewTest() override = default;
 };
+
+TEST_F(AppMenuChipViewTest, GetSigninStatusChipString_NotSignedIn) {
+  EXPECT_EQ(GetSigninStatusChipString(profile_.get()),
+            l10n_util::GetStringUTF16(IDS_PROFILES_LOCAL_PROFILE_STATE));
+}
+
+TEST_F(AppMenuChipViewTest, GetSigninStatusChipString_SignedIn) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_.get());
+  signin::MakePrimaryAccountAvailable(identity_manager, "test@example.com",
+                                      signin::ConsentLevel::kSignin);
+
+  EXPECT_EQ(GetSigninStatusChipString(profile_.get()),
+            l10n_util::GetStringUTF16(IDS_PROFILE_ROW_SIGNED_IN_MESSAGE));
+}
 
 TEST_F(AppMenuChipViewTest, AttachTo_AddsChipAndUpdatesAccessibleName) {
   views::TestMenuItemView root_item;

@@ -67,6 +67,9 @@ ProfileAttributesEntry* GetProfileAttributesFromProfile(const Profile* profile);
 std::u16string GetProfileMenuDisplayName(
     ProfileAttributesEntry* profile_attributes);
 
+// Returns the text for the status chip displayed in the profile menu item.
+std::u16string GetSigninStatusChipString(Profile* profile);
+
 // Returns all profile entries sorted by local profile name except for the
 // current or omitted profiles.
 std::vector<ProfileAttributesEntry*> GetAllOtherProfileEntriesForProfileSubMenu(

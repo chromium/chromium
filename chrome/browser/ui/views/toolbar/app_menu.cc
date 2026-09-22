@@ -409,21 +409,6 @@ class InMenuImageButton : public ImageButton {
 BEGIN_METADATA(InMenuImageButton)
 END_METADATA
 
-std::u16string GetSigninStatusChipString(Profile* profile) {
-  const AccountInfo account_info = GetAccountInfoFromProfile(profile);
-
-  if (IsSyncPaused(profile) || account_info.IsEmpty()) {
-    return l10n_util::GetStringUTF16(IDS_PROFILES_LOCAL_PROFILE_STATE);
-  }
-
-  if (signin_util::IsSigninPending(
-          IdentityManagerFactory::GetForProfile(profile))) {
-    return l10n_util::GetStringUTF16(IDS_PROFILE_ROW_VERIFY_MESSAGE);
-  }
-
-  return l10n_util::GetStringUTF16(IDS_PROFILE_ROW_SIGNED_IN_MESSAGE);
-}
-
 // Helper method that adds a bespoke chip to the profile related menu items.
 void AddSignedInChipToProfileMenuItem(
     Profile* profile,

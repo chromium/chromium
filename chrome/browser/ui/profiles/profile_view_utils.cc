@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
 
+#include "base/check.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
@@ -26,6 +28,7 @@
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -36,6 +39,7 @@
 #include "components/user_prefs/user_prefs.h"
 #include "net/base/url_util.h"
 #include "ui/base/accelerators/menu_label_accelerator_util.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -140,6 +144,22 @@ std::u16string GetProfileMenuDisplayName(
       gfx::CHARACTER_BREAK));
 
   return profile_name;
+}
+
+std::u16string GetSigninStatusChipString(Profile* profile) {
+  CHECK(profile);
+  const AccountInfo account_info = GetAccountInfoFromProfile(profile);
+
+  if (IsSyncPaused(profile) || account_info.IsEmpty()) {
+    return l10n_util::GetStringUTF16(IDS_PROFILES_LOCAL_PROFILE_STATE);
+  }
+
+  if (signin_util::IsSigninPending(
+          IdentityManagerFactory::GetForProfile(profile))) {
+    return l10n_util::GetStringUTF16(IDS_PROFILE_ROW_VERIFY_MESSAGE);
+  }
+
+  return l10n_util::GetStringUTF16(IDS_PROFILE_ROW_SIGNED_IN_MESSAGE);
 }
 
 std::vector<ProfileAttributesEntry*> GetAllOtherProfileEntriesForProfileSubMenu(
