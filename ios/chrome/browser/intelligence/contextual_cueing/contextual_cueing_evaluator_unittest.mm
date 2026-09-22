@@ -4,9 +4,11 @@
 
 #import "ios/chrome/browser/intelligence/contextual_cueing/contextual_cueing_evaluator.h"
 
+#import "base/test/scoped_feature_list.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/page_content_annotations/core/page_content_annotation_type.h"
+#import "ios/chrome/browser/intelligence/contextual_cueing/features.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"
@@ -235,6 +237,40 @@ TEST_F(ContextualCueingEvaluatorTest, FETAllowsEvaluation) {
       evaluator.Evaluate(GURL("https://example.com/store"), categories);
   EXPECT_TRUE(result.is_eligible());
   EXPECT_EQ(result.decision, ContextualCueingDecision::kSuccess);
+}
+
+TEST_F(ContextualCueingEvaluatorTest, FinchParamOverrides) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kGeminiContextualSuggestionsCues,
+      {
+          {kEducationClassifierThreshold.name, "0.85"},
+          {kShoppingClassifierThreshold.name, "0.25"},
+          {kFilterSearchAndHomepages.name, "false"},
+      });
+
+  ContextualCueingCapTrackerService cap_tracker;
+  ContextualCueingEvaluator evaluator(&cap_tracker);
+
+  // Education score of 0.70 should now fail (threshold raised to 0.85).
+  std::vector<page_content_annotations::Category> edu_categories = {
+      {.category_type = page_content_annotations::CategoryType::kEducation,
+       .score = 0.70f},
+  };
+  EXPECT_FALSE(evaluator.EvaluateCategoryScores(edu_categories).is_eligible());
+
+  // Shopping score of 0.30 should now pass (threshold lowered to 0.25).
+  std::vector<page_content_annotations::Category> shopping_categories = {
+      {.category_type = page_content_annotations::CategoryType::kShopping,
+       .score = 0.30f},
+  };
+  EXPECT_TRUE(
+      evaluator.EvaluateCategoryScores(shopping_categories).is_eligible());
+
+  // Root homepage should now be eligible because filter_search_and_homepages is
+  // false.
+  EXPECT_EQ(evaluator.EvaluatePageEligibility(GURL("https://example.com/")),
+            ContextualCueingDecision::kSuccess);
 }
 
 }  // namespace contextual_cueing

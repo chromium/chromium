@@ -2,6 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  deps = [ "//ios/chrome/browser/intelligence/features" ]
+  public_deps = [ "//base" ]
+}
+
 source_set("contextual_cueing") {
   sources = [
     "contextual_cueing_cap_tracker_service.h",
@@ -20,6 +29,7 @@ source_set("contextual_cueing") {
     "//ios/chrome/browser/feature_engagement/model",
   ]
   public_deps = [
+    ":features",
     "//base",
     "//components/contextual_cueing",
     "//components/google/core/common",
@@ -51,9 +61,11 @@ source_set("unit_tests") {
     "contextual_cueing_cap_tracker_service_unittest.mm",
     "contextual_cueing_evaluator_unittest.mm",
     "contextual_cueing_tab_helper_unittest.mm",
+    "features_unittest.mm",
   ]
   deps = [
     ":contextual_cueing",
+    ":features",
     "//base/test:test_support",
     "//components/feature_engagement/public",
     "//components/feature_engagement/public:feature_constants",

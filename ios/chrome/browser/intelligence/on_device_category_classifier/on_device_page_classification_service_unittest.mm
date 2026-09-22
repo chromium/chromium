@@ -13,6 +13,7 @@
 #import "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #import "components/page_content_annotations/core/page_content_annotations_common.h"
 #import "components/passage_embeddings/core/passage_embeddings_types.h"
+#import "ios/chrome/browser/intelligence/contextual_cueing/features.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/on_device_category_classifier/in_process_category_classification_service.h"
 #import "ios/chrome/browser/intelligence/on_device_category_classifier/in_process_category_classification_service_factory.h"
@@ -126,8 +127,10 @@ TEST_F(OnDevicePageClassificationServiceTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeaturesAndParameters(
       {{kPageActionMenu, {}},
-       {kGeminiContextualSuggestionsCues,
-        {{kGeminiContextualSuggestionsCuesTitleAndUrlOnlyParam, "true"}}}},
+       {contextual_cueing::kGeminiContextualSuggestionsCues,
+        {{contextual_cueing::
+              kGeminiContextualSuggestionsCuesTitleAndUrlOnlyParam,
+          "true"}}}},
       {});
 
   auto web_state = std::make_unique<web::FakeWebState>();

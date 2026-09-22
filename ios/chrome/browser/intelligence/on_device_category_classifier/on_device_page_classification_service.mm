@@ -17,6 +17,7 @@
 #import "components/page_content_annotations/core/simple_page_content_verbalization.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/page_stability_monitor.h"
+#import "ios/chrome/browser/intelligence/contextual_cueing/features.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/on_device_category_classifier/in_process_category_classification_service.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
@@ -98,7 +99,8 @@ void OnDevicePageClassificationService::ClassifyWebState(
     return;
   }
 
-  if (IsGeminiContextualSuggestionsCuesTitleAndUrlOnlyEnabled()) {
+  if (contextual_cueing::
+          IsGeminiContextualSuggestionsCuesTitleAndUrlOnlyEnabled()) {
     std::string title = base::UTF16ToUTF8(web_state->GetTitle());
     if (title.empty()) {
       title = std::string(url.host());

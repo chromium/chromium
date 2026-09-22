@@ -29,7 +29,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/contextual_cueing/contextual_cueing_cap_tracker_service.h"
 #import "ios/chrome/browser/intelligence/contextual_cueing/contextual_cueing_cap_tracker_service_factory.h"
-#import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/intelligence/contextual_cueing/features.h"
 #import "ios/chrome/browser/intelligence/on_device_category_classifier/on_device_page_classification_service.h"
 #import "ios/chrome/browser/intelligence/on_device_category_classifier/on_device_page_classification_service_factory.h"
 #import "ios/chrome/browser/intelligence/page_classification/features.h"
@@ -45,12 +45,6 @@
 #import "ios/web/public/web_state.h"
 
 namespace contextual_cueing {
-
-namespace {
-
-constexpr size_t kMaxBackgroundTabs = 5;
-
-}  // namespace
 
 ContextualCueingTabHelper::ContextualCueingTabHelper(web::WebState* web_state)
     : web_state_(web_state),
@@ -420,7 +414,8 @@ void ContextualCueingTabHelper::InitiateModelExecutionRequest(
     seen_urls.insert(expected_url.GetWithoutRef());
 
     std::vector<BackgroundTabContext> bg_contexts =
-        delegate_->GetEligibleBackgroundTabs(web_state_, kMaxBackgroundTabs);
+        delegate_->GetEligibleBackgroundTabs(web_state_,
+                                             kMaxBackgroundTabs.Get());
     for (const auto& bg_context : bg_contexts) {
       if (!bg_context.url.is_valid() ||
           !seen_urls.insert(bg_context.url.GetWithoutRef()).second) {

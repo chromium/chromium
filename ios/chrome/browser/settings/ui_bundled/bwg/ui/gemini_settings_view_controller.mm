@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/bwg/ui/gemini_settings_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "ios/chrome/browser/intelligence/contextual_cueing/features.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/gemini_settings_mutator.h"
@@ -199,7 +200,7 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
                        linkURL:GURL()];
 
   TableViewLinkHeaderFooterItem* suggestionsFooterItem;
-  if (IsGeminiContextualSuggestionsCuesEnabled()) {
+  if (contextual_cueing::IsGeminiContextualSuggestionsCuesEnabled()) {
     _suggestionsItem = [self
              detailItemWithType:ItemTypeSuggestions
                            text:l10n_util::GetNSString(
@@ -284,7 +285,7 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
   [model setFooter:pageContentSharingFooterItem
       forSectionWithIdentifier:SectionIdentifierPageContent];
 
-  if (IsGeminiContextualSuggestionsCuesEnabled()) {
+  if (contextual_cueing::IsGeminiContextualSuggestionsCuesEnabled()) {
     [model addSectionWithIdentifier:SectionIdentifierSuggestions];
     if (!firstPermissionsSectionIdentifier) {
       firstPermissionsSectionIdentifier = SectionIdentifierSuggestions;
@@ -597,7 +598,7 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
 }
 
 - (void)setGeminiSuggestionsEnabled:(BOOL)enabled {
-  if (!IsGeminiContextualSuggestionsCuesEnabled()) {
+  if (!contextual_cueing::IsGeminiContextualSuggestionsCuesEnabled()) {
     return;
   }
 

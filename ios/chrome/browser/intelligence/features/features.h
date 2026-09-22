@@ -352,43 +352,6 @@ BASE_DECLARE_FEATURE(kAppSwitcherAISummarization);
 // Returns true if App Switcher AI summarization is enabled.
 bool IsAppSwitcherAISummarizationEnabled();
 
-// Feature flag controlling Gemini contextual suggestions cues framework.
-BASE_DECLARE_FEATURE(kGeminiContextualSuggestionsCues);
-
-// Returns true if Gemini contextual suggestions cues framework is enabled.
-bool IsGeminiContextualSuggestionsCuesEnabled();
-
-// Feature parameter for enabling on-device category classifier in Gemini
-// contextual suggestions cues.
-extern const char kGeminiContextualSuggestionsCuesOnDeviceClassifierParam[];
-
-// Returns true if on-device category classifier is enabled for Gemini
-// contextual suggestions cues.
-bool IsGeminiContextualSuggestionsCuesOnDeviceClassifierEnabled();
-
-// Feature parameter for allowing GPU / Neural Engine execution in Gemini
-// contextual suggestions cues.
-extern const char kGeminiContextualSuggestionsCuesAllowGpuExecutionParam[];
-
-// Returns true if GPU / Neural Engine execution is allowed for Gemini
-// contextual suggestions cues.
-bool IsGeminiContextualSuggestionsCuesAllowGpuExecutionEnabled();
-
-// Feature parameter for using Title and URL only (matching Desktop) for
-// category classification.
-extern const char kGeminiContextualSuggestionsCuesTitleAndUrlOnlyParam[];
-
-// Returns true if category classification should only use Title and URL
-// instead of extracting APC and generating passages.
-bool IsGeminiContextualSuggestionsCuesTitleAndUrlOnlyEnabled();
-
-// Feature parameter for enabling server model execution in Gemini contextual
-// suggestions cues.
-extern const char kGeminiContextualSuggestionsCuesServerModelExecutionParam[];
-
-// Returns true if server model execution is enabled for Gemini contextual
-// suggestions cues.
-bool IsGeminiContextualSuggestionsCuesServerModelExecutionEnabled();
 
 #pragma mark - Debugging Features
 

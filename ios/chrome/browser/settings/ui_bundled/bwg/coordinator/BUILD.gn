@@ -9,7 +9,7 @@ source_set("coordinator") {
     ":protocols",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/intelligence/bwg/utils:feature_availability",
-    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/intelligence/contextual_cueing:features",
     "//ios/chrome/browser/settings/manage_sync/coordinator",
     "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/settings/ui_bundled/bwg/ui",

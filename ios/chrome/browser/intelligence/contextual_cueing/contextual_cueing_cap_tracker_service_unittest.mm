@@ -4,8 +4,10 @@
 
 #import "ios/chrome/browser/intelligence/contextual_cueing/contextual_cueing_cap_tracker_service.h"
 
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/intelligence/contextual_cueing/contextual_cueing_cap_tracker_service_factory.h"
+#import "ios/chrome/browser/intelligence/contextual_cueing/features.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -511,6 +513,41 @@ TEST_F(ContextualCueingCapTrackerServiceTest, FactoryGetForProfile) {
   ContextualCueingCapTrackerService* otr_service =
       ContextualCueingCapTrackerServiceFactory::GetForProfile(otr_profile);
   EXPECT_EQ(otr_service, nullptr);
+}
+
+TEST_F(ContextualCueingCapTrackerServiceTest, FinchParamOverrides) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kGeminiContextualSuggestionsCues,
+      {
+          {kGlobalCapCount.name, "2"},
+          {kGlobalCapDuration.name, "12h"},
+          {kOriginCapCount.name, "3"},
+          {kOriginCapDuration.name, "2h"},
+          {kVisitedOriginsLimit.name, "50"},
+          {kMinPageCountBetweenNudges.name, "3"},
+          {kMinTimeBetweenNudges.name, "15m"},
+          {kIgnoreBackoffMultiplierBase.name, "2.5"},
+          {kBaseDismissBackoffTime.name, "6h"},
+          {kDismissBackoffMultiplierBase.name, "3.0"},
+          {kClickBackoffTime.name, "10m"},
+          {kDisableFrequencyCappingAndBackoff.name, "false"},
+      });
+
+  ContextualCueingCapTrackerService service;
+  const auto& config = service.config();
+  EXPECT_EQ(config.global_cap_count, 2u);
+  EXPECT_EQ(config.global_duration, base::Hours(12));
+  EXPECT_EQ(config.origin_cap_count, 3u);
+  EXPECT_EQ(config.origin_duration, base::Hours(2));
+  EXPECT_EQ(config.visited_origins_limit, 50u);
+  EXPECT_EQ(config.min_page_count_between_nudges, 3u);
+  EXPECT_EQ(config.min_time_between_nudges, base::Minutes(15));
+  EXPECT_DOUBLE_EQ(config.ignore_backoff_multiplier_base, 2.5);
+  EXPECT_EQ(config.base_dismiss_backoff_time, base::Hours(6));
+  EXPECT_DOUBLE_EQ(config.dismiss_backoff_multiplier_base, 3.0);
+  EXPECT_EQ(config.click_backoff_time, base::Minutes(10));
+  EXPECT_FALSE(config.disable_frequency_capping_and_backoff);
 }
 
 }  // namespace contextual_cueing

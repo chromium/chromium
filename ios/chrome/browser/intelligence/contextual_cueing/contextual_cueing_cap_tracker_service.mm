@@ -8,6 +8,8 @@
 #import <cmath>
 #import <utility>
 
+#import "ios/chrome/browser/intelligence/contextual_cueing/features.h"
+
 namespace contextual_cueing {
 
 namespace {
@@ -20,7 +22,20 @@ constexpr size_t kMaxBackoffExponent = 20;
 
 #pragma mark - Config
 
-ContextualCueingCapTrackerService::Config::Config() = default;
+ContextualCueingCapTrackerService::Config::Config()
+    : global_cap_count(kGlobalCapCount.Get()),
+      global_duration(kGlobalCapDuration.Get()),
+      origin_cap_count(kOriginCapCount.Get()),
+      origin_duration(kOriginCapDuration.Get()),
+      visited_origins_limit(kVisitedOriginsLimit.Get()),
+      min_page_count_between_nudges(kMinPageCountBetweenNudges.Get()),
+      min_time_between_nudges(kMinTimeBetweenNudges.Get()),
+      ignore_backoff_multiplier_base(kIgnoreBackoffMultiplierBase.Get()),
+      base_dismiss_backoff_time(kBaseDismissBackoffTime.Get()),
+      dismiss_backoff_multiplier_base(kDismissBackoffMultiplierBase.Get()),
+      click_backoff_time(kClickBackoffTime.Get()),
+      disable_frequency_capping_and_backoff(
+          kDisableFrequencyCappingAndBackoff.Get()) {}
 ContextualCueingCapTrackerService::Config::~Config() = default;
 ContextualCueingCapTrackerService::Config::Config(const Config&) = default;
 ContextualCueingCapTrackerService::Config&

@@ -72,6 +72,7 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/contextual_cueing/contextual_cueing_tab_helper.h"
+#import "ios/chrome/browser/intelligence/contextual_cueing/features.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/itunes_urls/model/itunes_urls_handler_tab_helper.h"
 #import "ios/chrome/browser/lens/model/lens_tab_helper.h"
@@ -413,8 +414,9 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
       ios::provider::AttachClassificationMetricsTabHelper(web_state);
     }
     attacher.CreateWhen<contextual_cueing::ContextualCueingTabHelper>(
-        IsGeminiContextualSuggestionsCuesEnabled() ||
-        IsGeminiContextualSuggestionsCuesOnDeviceClassifierEnabled());
+        contextual_cueing::IsGeminiContextualSuggestionsCuesEnabled() ||
+        contextual_cueing::
+            IsGeminiContextualSuggestionsCuesOnDeviceClassifierEnabled());
   }
 
   attacher.Create<data_controls::DataControlsTabHelper>();

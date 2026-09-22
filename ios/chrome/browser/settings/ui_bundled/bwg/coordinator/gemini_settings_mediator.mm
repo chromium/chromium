@@ -7,7 +7,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_feature_availability.h"
-#import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/intelligence/contextual_cueing/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/model/gemini_dynamic_settings_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/model/gemini_settings_metadata.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/ui/gemini_settings_consumer.h"
@@ -70,7 +70,7 @@ const NSInteger kDynamicSettingsItemTypeOffset = 10000;
                    prefName:prefs::kIOSGeminiCameraSetting];
     _cameraPref.observer = self;
 
-    if (IsGeminiContextualSuggestionsCuesEnabled()) {
+    if (contextual_cueing::IsGeminiContextualSuggestionsCuesEnabled()) {
       _suggestionsPref = [[PrefBackedBoolean alloc]
           initWithPrefService:prefService
                      prefName:prefs::kIOSGeminiSuggestionsSetting];
@@ -130,7 +130,7 @@ const NSInteger kDynamicSettingsItemTypeOffset = 10000;
   _consumer = consumer;
   [_consumer setPreciseLocationEnabled:_preciseLocationPref.value];
   [_consumer setCameraPermissionEnabled:_cameraPref.value];
-  if (IsGeminiContextualSuggestionsCuesEnabled()) {
+  if (contextual_cueing::IsGeminiContextualSuggestionsCuesEnabled()) {
     [_consumer setGeminiSuggestionsEnabled:_suggestionsPref.value];
   }
   [_consumer setClosedCaptioningEnabled:_closedCaptioningPref.value];

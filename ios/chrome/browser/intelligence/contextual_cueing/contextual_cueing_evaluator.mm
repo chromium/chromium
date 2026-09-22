@@ -12,13 +12,19 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/google/core/common/google_util.h"
+#import "ios/chrome/browser/intelligence/contextual_cueing/features.h"
 
 namespace contextual_cueing {
 
 #pragma mark - EvaluationConfig
 
 ContextualCueingEvaluator::EvaluationConfig::EvaluationConfig()
-    : allowed_mime_types{"text/html", "text/plain"} {}
+    : shopping_threshold(
+          static_cast<float>(kShoppingClassifierThreshold.Get())),
+      education_threshold(
+          static_cast<float>(kEducationClassifierThreshold.Get())),
+      filter_search_and_homepages(kFilterSearchAndHomepages.Get()),
+      allowed_mime_types{"text/html", "text/plain"} {}
 
 ContextualCueingEvaluator::EvaluationConfig::~EvaluationConfig() = default;
 

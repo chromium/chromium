@@ -114,6 +114,7 @@
 #import "ios/chrome/browser/first_run/public/features.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/flags/ios_chrome_flag_descriptions.h"
+#import "ios/chrome/browser/intelligence/contextual_cueing/features.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/page_classification/features.h"
 #import "ios/chrome/browser/lens/ui_bundled/features.h"
@@ -1231,24 +1232,48 @@ constexpr FeatureEntry::FeatureVariation kAimButtonRefactorVariations[] = {
 
 const FeatureEntry::FeatureParam
     kGeminiContextualSuggestionsCuesWithOnDeviceClassifierCPU[] = {
-        {kGeminiContextualSuggestionsCuesOnDeviceClassifierParam, "true"},
-        {kGeminiContextualSuggestionsCuesAllowGpuExecutionParam, "false"},
-        {kGeminiContextualSuggestionsCuesTitleAndUrlOnlyParam, "true"}};
+        {contextual_cueing::
+             kGeminiContextualSuggestionsCuesOnDeviceClassifierParam,
+         "true"},
+        {contextual_cueing::
+             kGeminiContextualSuggestionsCuesAllowGpuExecutionParam,
+         "false"},
+        {contextual_cueing::
+             kGeminiContextualSuggestionsCuesTitleAndUrlOnlyParam,
+         "true"}};
 const FeatureEntry::FeatureParam
     kGeminiContextualSuggestionsCuesWithOnDeviceClassifierGPU[] = {
-        {kGeminiContextualSuggestionsCuesOnDeviceClassifierParam, "true"},
-        {kGeminiContextualSuggestionsCuesAllowGpuExecutionParam, "true"},
-        {kGeminiContextualSuggestionsCuesTitleAndUrlOnlyParam, "true"}};
+        {contextual_cueing::
+             kGeminiContextualSuggestionsCuesOnDeviceClassifierParam,
+         "true"},
+        {contextual_cueing::
+             kGeminiContextualSuggestionsCuesAllowGpuExecutionParam,
+         "true"},
+        {contextual_cueing::
+             kGeminiContextualSuggestionsCuesTitleAndUrlOnlyParam,
+         "true"}};
 const FeatureEntry::FeatureParam
     kGeminiContextualSuggestionsCuesWithOnDeviceClassifierApcCPU[] = {
-        {kGeminiContextualSuggestionsCuesOnDeviceClassifierParam, "true"},
-        {kGeminiContextualSuggestionsCuesAllowGpuExecutionParam, "false"},
-        {kGeminiContextualSuggestionsCuesTitleAndUrlOnlyParam, "false"}};
+        {contextual_cueing::
+             kGeminiContextualSuggestionsCuesOnDeviceClassifierParam,
+         "true"},
+        {contextual_cueing::
+             kGeminiContextualSuggestionsCuesAllowGpuExecutionParam,
+         "false"},
+        {contextual_cueing::
+             kGeminiContextualSuggestionsCuesTitleAndUrlOnlyParam,
+         "false"}};
 const FeatureEntry::FeatureParam
     kGeminiContextualSuggestionsCuesWithOnDeviceClassifierApcGPU[] = {
-        {kGeminiContextualSuggestionsCuesOnDeviceClassifierParam, "true"},
-        {kGeminiContextualSuggestionsCuesAllowGpuExecutionParam, "true"},
-        {kGeminiContextualSuggestionsCuesTitleAndUrlOnlyParam, "false"}};
+        {contextual_cueing::
+             kGeminiContextualSuggestionsCuesOnDeviceClassifierParam,
+         "true"},
+        {contextual_cueing::
+             kGeminiContextualSuggestionsCuesAllowGpuExecutionParam,
+         "true"},
+        {contextual_cueing::
+             kGeminiContextualSuggestionsCuesTitleAndUrlOnlyParam,
+         "false"}};
 
 const FeatureEntry::FeatureVariation
     kGeminiContextualSuggestionsCuesVariations[] = {
@@ -2594,9 +2619,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kGeminiContextualSuggestionsCuesName,
      flag_descriptions::kGeminiContextualSuggestionsCuesDescription,
      flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kGeminiContextualSuggestionsCues,
-                                    kGeminiContextualSuggestionsCuesVariations,
-                                    "GeminiContextualSuggestionsCues")},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         contextual_cueing::kGeminiContextualSuggestionsCues,
+         kGeminiContextualSuggestionsCuesVariations,
+         "GeminiContextualSuggestionsCues")},
     {"page-classification", flag_descriptions::kPageClassificationName,
      flag_descriptions::kPageClassificationDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(kPageClassification,

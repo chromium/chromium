@@ -11,7 +11,7 @@
 #import "base/no_destructor.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
-#import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/intelligence/contextual_cueing/features.h"
 #import "ios/chrome/browser/intelligence/on_device_category_classifier/in_process_category_classification_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -89,8 +89,11 @@ class InProcessCategoryClassificationServiceFactoryFeatureTest
 // disabled, even for a regular profile.
 TEST_F(InProcessCategoryClassificationServiceFactoryFeatureTest,
        DoNotCreateServiceWhenOnDeviceClassifierDisabled) {
-  scoped_feature_list_.InitAndDisableFeature(kGeminiContextualSuggestionsCues);
-  ASSERT_FALSE(IsGeminiContextualSuggestionsCuesOnDeviceClassifierEnabled());
+  scoped_feature_list_.InitAndDisableFeature(
+      contextual_cueing::kGeminiContextualSuggestionsCues);
+  ASSERT_FALSE(
+      contextual_cueing::
+          IsGeminiContextualSuggestionsCuesOnDeviceClassifierEnabled());
 
   auto profile = CreateProfile();
   EXPECT_EQ(InProcessCategoryClassificationServiceFactory::GetForProfile(

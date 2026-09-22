@@ -24,6 +24,9 @@ namespace contextual_cueing {
 // an entire Profile on iOS, aligned 1:1 with Desktop and Chrome on Android.
 class ContextualCueingCapTrackerService : public KeyedService {
  public:
+  // Configuration parameters for frequency capping and cooldown backoffs.
+  // Default values are managed via Finch feature parameters in `features.mm`
+  // and populated by `Config()`.
   struct Config {
     Config();
     ~Config();
@@ -32,43 +35,37 @@ class ContextualCueingCapTrackerService : public KeyedService {
     Config(Config&&);
     Config& operator=(Config&&);
 
-    // TODO(crbug.com/544695640) For multi-arm experiments these caps below
-    // should be controlled by finch params.
-
     // Global cap: maximum cues shown across all origins within
-    // `global_duration` (default: 4 cues per 24 hours).
-    size_t global_cap_count = 4;
-    base::TimeDelta global_duration = base::Hours(24);
+    // `global_duration`.
+    size_t global_cap_count;
+    base::TimeDelta global_duration;
 
-    // Per-origin cap: maximum cues shown per origin within `origin_duration`
-    // (default: 1 cue per origin every 1 hour).
-    size_t origin_cap_count = 1;
-    base::TimeDelta origin_duration = base::Hours(1);
+    // Per-origin cap: maximum cues shown per origin within `origin_duration`.
+    size_t origin_cap_count;
+    base::TimeDelta origin_duration;
 
     // Limit on how many recently visited origins should be tracked.
-    size_t visited_origins_limit = 20;
+    size_t visited_origins_limit;
 
     // Minimum committed page navigations required between showing cues.
-    size_t min_page_count_between_nudges = 10;
+    size_t min_page_count_between_nudges;
 
     // Base backoff cooldown applied when a cue is shown / ignored without
-    // interaction (default: 60 mins with 1.5x multiplier on subsequent
-    // ignores).
-    base::TimeDelta min_time_between_nudges = base::Minutes(60);
-    double ignore_backoff_multiplier_base = 1.5;
+    // interaction, and exponential multiplier on subsequent ignores.
+    base::TimeDelta min_time_between_nudges;
+    double ignore_backoff_multiplier_base;
 
-    // Base backoff cooldown applied after user explicitly dismisses a cue
-    // (default: 24 hours with 2x multiplier on subsequent dismissals).
-    base::TimeDelta base_dismiss_backoff_time = base::Hours(24);
-    double dismiss_backoff_multiplier_base = 2.0;
+    // Base backoff cooldown applied after user explicitly dismisses a cue, and
+    // exponential multiplier on subsequent dismissals.
+    base::TimeDelta base_dismiss_backoff_time;
+    double dismiss_backoff_multiplier_base;
 
-    // Backoff cooldown applied after user accepts (clicks) a cue
-    // (default: 30 mins).
-    base::TimeDelta click_backoff_time = base::Minutes(30);
+    // Backoff cooldown applied after user accepts (clicks) a cue.
+    base::TimeDelta click_backoff_time;
 
     // Whether all frequency capping and cooldown backoff logic is completely
     // disabled (e.g. for testing or debugging).
-    bool disable_frequency_capping_and_backoff = false;
+    bool disable_frequency_capping_and_backoff;
   };
 
   ContextualCueingCapTrackerService();
