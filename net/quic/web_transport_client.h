@@ -5,6 +5,8 @@
 #ifndef NET_QUIC_WEB_TRANSPORT_CLIENT_H_
 #define NET_QUIC_WEB_TRANSPORT_CLIENT_H_
 
+#include <cstdint>
+#include <iosfwd>
 #include <optional>
 #include <string_view>
 #include <vector>
@@ -68,6 +70,16 @@ struct NET_EXPORT WebTransportCloseInfo final {
 
   bool operator==(const WebTransportCloseInfo& other) const;
 };
+
+struct NET_EXPORT WebTransportSendStreamStats final {
+  uint64_t bytes_sent = 0;
+  uint64_t bytes_acknowledged = 0;
+
+  bool operator==(const WebTransportSendStreamStats&) const = default;
+};
+
+NET_EXPORT std::ostream& operator<<(std::ostream& os,
+                                    const WebTransportSendStreamStats& stats);
 
 // Returns the string representation of `state`.
 const char* WebTransportStateString(WebTransportState state);
@@ -183,6 +195,13 @@ class NET_EXPORT WebTransportClient {
   // established-session value indicating no non-empty outgoing Datagram
   // payload fits.
   virtual std::optional<quic::QuicByteCount> GetMaxDatagramSize() const = 0;
+
+  // Registers a WebTransport stream with an outgoing direction. Stats are
+  // unavailable before registration and after unregistration.
+  virtual void RegisterSendStream(uint32_t stream_id) = 0;
+  virtual void UnregisterSendStream(uint32_t stream_id) = 0;
+  virtual std::optional<WebTransportSendStreamStats> GetSendStreamStats(
+      uint32_t stream_id) const = 0;
 };
 
 // Creates a WebTransport client for |url| accessed from |origin| with the

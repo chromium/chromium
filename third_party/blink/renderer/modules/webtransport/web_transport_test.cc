@@ -276,6 +276,7 @@ class MockWebTransport : public network::mojom::blink::WebTransport {
            network::mojom::blink::WebTransportStreamPriorityPtr priority));
   MOCK_METHOD2(GetReceiveStreamStats,
                void(uint32_t, GetReceiveStreamStatsCallback));
+  MOCK_METHOD2(GetSendStreamStats, void(uint32_t, GetSendStreamStatsCallback));
   MOCK_METHOD0(Close, void());
   MOCK_METHOD2(Close, void(uint32_t, String));
 

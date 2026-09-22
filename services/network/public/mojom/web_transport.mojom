@@ -89,6 +89,17 @@ struct WebTransportReceiveStreamStats {
   uint64 bytes_received;
 };
 
+struct WebTransportSendStreamStats {
+  // Total application bytes sent on the stream. Stream framing is excluded,
+  // and retransmissions are deduplicated.
+  uint64 bytes_sent;
+
+  // Contiguous application bytes acknowledged through the first
+  // unacknowledged byte. Stream framing is excluded, and retransmissions are
+  // deduplicated.
+  uint64 bytes_acknowledged;
+};
+
 // Represents the priority of a WebTransport stream.
 // https://w3c.github.io/webtransport/#dictdef-webtransportsendoptions
 // Default values (null send_group_id, send_order=0) match QUICHE's
@@ -230,6 +241,11 @@ interface WebTransport {
   // https://w3c.github.io/webtransport/#dom-webtransportreceivestream-getstats
   GetReceiveStreamStats(uint32 stream_id)
       => (WebTransportReceiveStreamStats? stats);
+
+  // Provides the latest send statistics for a currently active stream.
+  // Returns null when the stream is unavailable.
+  GetSendStreamStats(uint32 stream_id)
+      => (WebTransportSendStreamStats? stats);
 
   // https://w3c.github.io/webtransport/#session-terminate
   // This is the last message and it is not allowed to call methods after

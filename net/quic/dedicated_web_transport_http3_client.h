@@ -69,6 +69,10 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
 
   quic::WebTransportSession* session() override;
   std::optional<quic::QuicByteCount> GetMaxDatagramSize() const override;
+  void RegisterSendStream(uint32_t stream_id) override;
+  void UnregisterSendStream(uint32_t stream_id) override;
+  std::optional<WebTransportSendStreamStats> GetSendStreamStats(
+      uint32_t stream_id) const override;
 
   handles::NetworkHandle target_network() const { return target_network_; }
 

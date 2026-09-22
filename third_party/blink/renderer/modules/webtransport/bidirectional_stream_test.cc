@@ -185,6 +185,11 @@ class StubWebTransport : public network::mojom::blink::WebTransport {
     std::move(callback).Run(nullptr);
   }
 
+  void GetSendStreamStats(uint32_t stream_id,
+                          GetSendStreamStatsCallback callback) override {
+    std::move(callback).Run(nullptr);
+  }
+
   void Close(network::mojom::blink::WebTransportCloseInfoPtr) override {}
 
  private:

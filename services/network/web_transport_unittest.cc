@@ -182,6 +182,14 @@ AcceptedBidirectionalStream AcceptBidirectionalStream(
           std::move(writable_for_outgoing)};
 }
 
+mojom::WebTransportSendStreamStatsPtr GetSendStreamStats(
+    mojo::Remote<mojom::WebTransport>& transport_remote,
+    uint32_t stream_id) {
+  base::test::TestFuture<mojom::WebTransportSendStreamStatsPtr> stats_future;
+  transport_remote->GetSendStreamStats(stream_id, stats_future.GetCallback());
+  return stats_future.Take();
+}
+
 class TestHandshakeClient final : public mojom::WebTransportHandshakeClient {
  public:
   TestHandshakeClient(mojo::PendingReceiver<mojom::WebTransportHandshakeClient>
@@ -1529,6 +1537,8 @@ TEST_F(WebTransportTest, EchoOnUnidirectionalStreams) {
 
   client.WaitUntilOutgoingStreamIsClosed(stream_id);
 
+  EXPECT_TRUE(GetSendStreamStats(transport_remote, stream_id).is_null());
+
   mojo::ScopedDataPipeConsumerHandle readable_for_incoming;
   uint32_t incoming_stream_id = stream_id;
   base::RunLoop run_loop_for_incoming_stream;
@@ -1556,6 +1566,51 @@ TEST_F(WebTransportTest, EchoOnUnidirectionalStreams) {
       net_log_observer().GetEntriesWithType(
           net::NetLogEventType::QUIC_SESSION_RST_STREAM_FRAME_SENT);
   EXPECT_EQ(0u, resets_sent.size());
+}
+
+TEST_F(WebTransportTest, SendStreamStatsUnavailableAfterLocalAbort) {
+  base::test::TestFuture<void> handshake_future;
+  mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client;
+  TestHandshakeClient test_handshake_client(
+      handshake_client.InitWithNewPipeAndPassReceiver(),
+      handshake_future.GetCallback());
+
+  CreateWebTransport(GetURL("/echo"), origin(), std::move(handshake_client));
+
+  ASSERT_TRUE(handshake_future.Wait());
+  ASSERT_TRUE(test_handshake_client.has_seen_connection_establishment());
+
+  TestClient client(test_handshake_client.PassClientReceiver());
+  mojo::Remote<mojom::WebTransport> transport_remote(
+      test_handshake_client.PassTransport());
+
+  mojo::ScopedDataPipeConsumerHandle readable;
+  mojo::ScopedDataPipeProducerHandle writable;
+  ASSERT_EQ(MOJO_RESULT_OK,
+            mojo::CreateDataPipe(/*options=*/nullptr, writable, readable));
+
+  base::test::TestFuture<bool, uint32_t> stream_creation_future;
+  transport_remote->CreateStream(std::move(readable), /*writable=*/{},
+                                 /*priority=*/nullptr,
+                                 stream_creation_future.GetCallback());
+  auto [stream_created, stream_id] = stream_creation_future.Take();
+  ASSERT_TRUE(stream_created);
+
+  constexpr std::string_view kData = "hello";
+  ASSERT_EQ(MOJO_RESULT_OK, writable->WriteAllData(base::as_byte_span(kData)));
+
+  mojom::WebTransportSendStreamStatsPtr stats;
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    stats = GetSendStreamStats(transport_remote, stream_id);
+    return stats && stats->bytes_sent == kData.size() &&
+           stats->bytes_acknowledged == kData.size();
+  }));
+  EXPECT_EQ(stats->bytes_sent, kData.size());
+  EXPECT_EQ(stats->bytes_acknowledged, kData.size());
+
+  transport_remote->AbortStream(stream_id, /*code=*/0);
+
+  EXPECT_TRUE(GetSendStreamStats(transport_remote, stream_id).is_null());
 }
 
 TEST_F(WebTransportTest, SetStreamPriority) {

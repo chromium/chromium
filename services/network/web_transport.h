@@ -104,6 +104,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebTransport final
   void GetStats(GetStatsCallback callback) override;
   void GetReceiveStreamStats(uint32_t stream_id,
                              GetReceiveStreamStatsCallback callback) override;
+  void GetSendStreamStats(uint32_t stream_id,
+                          GetSendStreamStatsCallback callback) override;
   void Close(mojom::WebTransportCloseInfoPtr close_info) override;
 
   // WebTransportClientVisitor implementation:
@@ -168,6 +170,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebTransport final
   void ClearDatagramState();
   void MovePendingDatagramToInFlightForTesting(size_t index);
   void ExpireNextDatagramForTesting(size_t index);
+
+  void RegisterSendStream(uint32_t stream_id);
+  void UnregisterSendStream(uint32_t stream_id);
 
   void TearDown();
   void Dispose();

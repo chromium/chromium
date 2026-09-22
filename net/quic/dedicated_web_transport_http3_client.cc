@@ -25,6 +25,7 @@
 #include "net/quic/address_utils.h"
 #include "net/quic/crypto/proof_verifier_chromium.h"
 #include "net/quic/quic_chromium_alarm_factory.h"
+#include "net/quic/web_transport_send_stats_tracker.h"
 #include "net/spdy/spdy_http_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/web_transport_http3.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_connection.h"
@@ -254,8 +255,62 @@ class DedicatedWebTransportHttp3ClientSession
                            : std::optional<quic::DatagramStatus>());
   }
 
+  quic::QuicConsumedData WritevData(quic::QuicStreamId id,
+                                    size_t write_length,
+                                    quic::QuicStreamOffset offset,
+                                    quic::StreamSendingState state,
+                                    quic::TransmissionType type,
+                                    quic::EncryptionLevel level) override {
+    quic::QuicConsumedData consumed = quic::QuicSpdyClientSession::WritevData(
+        id, write_length, offset, state, type, level);
+    if (type == quic::NOT_RETRANSMISSION) {
+      send_stats_tracker_.RecordSent(id, offset, consumed.bytes_consumed);
+    }
+    return consumed;
+  }
+
+  bool OnFrameAcked(const quic::QuicFrame& frame,
+                    quic::QuicTime::Delta ack_delay_time,
+                    quic::QuicTime receive_timestamp,
+                    bool is_retransmission) override {
+    if (frame.type == quic::STREAM_FRAME) {
+      send_stats_tracker_.RecordAcknowledged(frame.stream_frame.stream_id,
+                                             frame.stream_frame.offset,
+                                             frame.stream_frame.data_length);
+    }
+    return quic::QuicSpdyClientSession::OnFrameAcked(
+        frame, ack_delay_time, receive_timestamp, is_retransmission);
+  }
+
+  void RegisterSendStream(quic::QuicStreamId stream_id) {
+    const quic::ParsedQuicVersion version = this->version();
+    const bool bidirectional =
+        quic::QuicUtils::IsBidirectionalStreamId(stream_id, version);
+    const bool client_initiated = quic::QuicUtils::IsOutgoingStreamId(
+        version, stream_id, quic::Perspective::IS_CLIENT);
+    // Incoming unidirectional streams have no locally writable side and must
+    // never be registered for send statistics.
+    CHECK(bidirectional || client_initiated);
+
+    quic::QuicStream* stream = GetActiveStream(stream_id);
+    CHECK(stream);
+    send_stats_tracker_.RegisterStream(
+        stream_id,
+        stream->stream_bytes_written() + stream->BufferedDataBytes());
+  }
+
+  void UnregisterSendStream(quic::QuicStreamId stream_id) {
+    send_stats_tracker_.UnregisterStream(stream_id);
+  }
+
+  std::optional<WebTransportSendStreamStats> GetSendStreamStats(
+      quic::QuicStreamId stream_id) const {
+    return send_stats_tracker_.GetStats(stream_id);
+  }
+
  private:
   raw_ptr<DedicatedWebTransportHttp3Client> client_;
+  WebTransportSendStatsTracker send_stats_tracker_;
 };
 
 class WebTransportVisitorProxy : public quic::WebTransportVisitor {
@@ -488,6 +543,29 @@ DedicatedWebTransportHttp3Client::GetMaxDatagramSize() const {
     return std::nullopt;
   }
   return web_transport_session_->GetMaxDatagramSize();
+}
+
+void DedicatedWebTransportHttp3Client::RegisterSendStream(uint32_t stream_id) {
+  CHECK(session_);
+  static_cast<DedicatedWebTransportHttp3ClientSession*>(session_.get())
+      ->RegisterSendStream(stream_id);
+}
+
+void DedicatedWebTransportHttp3Client::UnregisterSendStream(
+    uint32_t stream_id) {
+  if (session_) {
+    static_cast<DedicatedWebTransportHttp3ClientSession*>(session_.get())
+        ->UnregisterSendStream(stream_id);
+  }
+}
+
+std::optional<WebTransportSendStreamStats>
+DedicatedWebTransportHttp3Client::GetSendStreamStats(uint32_t stream_id) const {
+  if (!session_) {
+    return std::nullopt;
+  }
+  return static_cast<DedicatedWebTransportHttp3ClientSession*>(session_.get())
+      ->GetSendStreamStats(stream_id);
 }
 
 void DedicatedWebTransportHttp3Client::DoLoop(int rv) {

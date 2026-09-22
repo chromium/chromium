@@ -142,6 +142,7 @@ class WebTransport::Stream final {
         }
       }
       if (stream->outgoing_) {
+        stream->transport_->UnregisterSendStream(stream->id_);
         stream->readable_watcher_.Cancel();
         stream->readable_.reset();
         stream->outgoing_ = nullptr;
@@ -243,6 +244,7 @@ class WebTransport::Stream final {
     if (!outgoing_) {
       return;
     }
+    transport_->UnregisterSendStream(id_);
     outgoing_->ResetWithUserCode(code);
     outgoing_ = nullptr;
     readable_watcher_.Cancel();
@@ -290,6 +292,7 @@ class WebTransport::Stream final {
   void Init() {
     if (outgoing_) {
       DCHECK(readable_);
+      transport_->RegisterSendStream(id_);
       outgoing_->SetVisitor(std::make_unique<StreamVisitor>(this));
       readable_watcher_.Watch(
           readable_.get(),
@@ -423,6 +426,7 @@ class WebTransport::Stream final {
   }
 
   void OnStopSendingReceived(quic::WebTransportStreamError error) {
+    transport_->UnregisterSendStream(id_);
     if (transport_->client_) {
       transport_->client_->OnReceivedStopSending(id_, error);
     }
@@ -433,6 +437,7 @@ class WebTransport::Stream final {
   }
 
   void OnWriteSideInDataRecvdState() {
+    transport_->UnregisterSendStream(id_);
     if (transport_->client_) {
       transport_->client_->OnOutgoingStreamClosed(id_);
     }
@@ -1525,6 +1530,29 @@ void WebTransport::GetReceiveStreamStats(
   auto stats = mojom::WebTransportReceiveStreamStats::New();
   stats->bytes_received = stream->bytes_received();
   std::move(callback).Run(std::move(stats));
+}
+
+void WebTransport::GetSendStreamStats(uint32_t stream_id,
+                                      GetSendStreamStatsCallback callback) {
+  if (torn_down_) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  const std::optional<net::WebTransportSendStreamStats> stats =
+      transport_->GetSendStreamStats(stream_id);
+  std::move(callback).Run(
+      stats ? mojom::WebTransportSendStreamStats::New(stats->bytes_sent,
+                                                      stats->bytes_acknowledged)
+            : nullptr);
+}
+
+void WebTransport::RegisterSendStream(uint32_t stream_id) {
+  transport_->RegisterSendStream(stream_id);
+}
+
+void WebTransport::UnregisterSendStream(uint32_t stream_id) {
+  transport_->UnregisterSendStream(stream_id);
 }
 
 void WebTransport::TearDown() {
