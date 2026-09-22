@@ -61,6 +61,10 @@ bool IndigoCueTarget::RequiresModelExecution() const {
   return false;
 }
 
+bool IndigoCueTarget::IsPersistent() const {
+  return true;
+}
+
 bool IndigoCueTarget::IsEligible() const {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(kForceIndigoSwitch)) {
     return true;
