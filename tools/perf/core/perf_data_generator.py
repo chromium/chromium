@@ -568,7 +568,7 @@ BUILDERS = {
       }
     ],
     'dimension': {
-      'cpu': 'x86',
+      'cpu': 'arm64',
       'os': 'Mac',
       'pool': 'chrome.tests',
     },

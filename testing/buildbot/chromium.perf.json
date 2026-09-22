@@ -1515,7 +1515,7 @@
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "arm64",
             "os": "Mac",
             "pool": "chrome.tests"
           },
