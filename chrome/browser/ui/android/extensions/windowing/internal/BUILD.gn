@@ -72,6 +72,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/android/tab_model:test_support",
     "//chrome/browser/ui/browser_window",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//components/sessions:session_id",
     "//testing/gmock",
     "//testing/gtest",

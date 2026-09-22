@@ -114,6 +114,7 @@ source_set("unit_tests") {
     "//chrome/browser/prefs",
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//components/onc",
     "//components/proxy_config",
     "//content/test:test_support",

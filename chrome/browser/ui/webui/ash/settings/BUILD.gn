@@ -147,6 +147,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui",
     "//chrome/browser/ui/webui/ash/settings/pages/reset",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/install_attributes:test_support",
     "//components/prefs:test_support",
     "//components/user_manager",

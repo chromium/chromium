@@ -210,6 +210,7 @@ if (toolkit_views) {
       "//chrome/browser/ui/profiles",
       "//chrome/browser/ui/tabs:test_support",
       "//chrome/test:test_support",
+      "//chrome/test/base:testing_browser_process",
       "//chrome/test/user_education:impl",
       "//components/enterprise/isolated_mode",
       "//components/favicon/core/test:test_support",

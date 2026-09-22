@@ -35,6 +35,7 @@ source_set("unit_tests") {
     "//chrome/browser/prefs",
     "//chrome/common:constants",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//components/prefs:test_support",
     "//content/test:test_support",
     "//testing/gtest",

@@ -423,6 +423,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/common:chrome_features",
+    "//chrome/test/base:testing_browser_process",
   ]
 
   if (!is_android) {
@@ -555,6 +556,7 @@ if (!is_android) {
         "//chrome/browser/profile_resetter",
         "//chrome/browser/ui:chrome_pages",
         "//chrome/credential_provider/common:common_constants",
+        "//chrome/test/base:testing_browser_process",
       ]
     }
     if (enable_dice_support) {

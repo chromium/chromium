@@ -180,6 +180,7 @@ if (is_mac || is_win) {
       "//chrome/browser/new_tab_page/prefs",
       "//chrome/browser/ui/omnibox",
       "//chrome/test:test_support",
+      "//chrome/test/base:testing_browser_process",
       "//chrome/test/views",
       "//components/ntp_tiles:pref_names",
       "//content/test:test_support",

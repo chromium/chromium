@@ -109,6 +109,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/ash/holding_space:test_support",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//components/favicon/core/test:test_support",
     "//components/prefs",
     "//components/send_tab_to_self",

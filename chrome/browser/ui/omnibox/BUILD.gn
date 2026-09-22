@@ -294,6 +294,7 @@ if (!is_android) {
       "//chrome/browser/ui/webui/cr_components/searchbox",
       "//chrome/test:test_support",
       "//chrome/test/base:chrome_render_view_host_test_harness",
+      "//chrome/test/base:testing_browser_process",
       "//components/bookmarks/test",
       "//components/contextual_search:test_support",
       "//components/contextual_tasks/public:query_contextualizer",

@@ -46,6 +46,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/browser_context_helper",
     "//components/account_id:test_support",
     "//components/prefs:test_support",

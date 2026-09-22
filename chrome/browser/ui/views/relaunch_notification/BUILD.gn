@@ -116,6 +116,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/browser_window",
     "//chrome/common:constants",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//components/constrained_window",
     "//components/prefs",
     "//components/safe_browsing/core/common:features",

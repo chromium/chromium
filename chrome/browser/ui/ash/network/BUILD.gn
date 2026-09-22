@@ -96,6 +96,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/webui/ash/floating_workspace",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/carrier_lock",
     "//chromeos/ash/components/dbus/hermes",
     "//chromeos/ash/components/dbus/shill",

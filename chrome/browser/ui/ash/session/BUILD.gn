@@ -93,6 +93,7 @@ source_set("unit_tests") {
     "//chrome/browser/policy:onc",
     "//chrome/browser/ui/ash/assistant",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/login/session",
     "//components/account_id",

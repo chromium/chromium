@@ -82,6 +82,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/local_search_service/public/cpp",
     "//chromeos/ash/components/multidevice:test_support",
     "//chromeos/ash/components/multidevice/logging",

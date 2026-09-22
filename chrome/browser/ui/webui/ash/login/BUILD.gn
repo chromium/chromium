@@ -433,6 +433,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/settings:test_support",
     "//chrome/test:test_support",
     "//chrome/test:test_support_unit",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/proximity_auth",
     "//chromeos/ash/components/system",
     "//components/account_id",

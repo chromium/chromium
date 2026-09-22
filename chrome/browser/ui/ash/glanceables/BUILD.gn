@@ -62,6 +62,7 @@ source_set("unit_tests") {
     "//chrome/browser/prefs",
     "//chrome/browser/web_applications",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/policy/policy_blocklist_service",
     "//components/sync_preferences:test_support",

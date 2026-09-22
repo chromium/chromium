@@ -925,6 +925,7 @@ if (!is_android) {
       "//chrome/common:non_code_constants",
       "//chrome/test/base:chrome_render_view_host_test_harness",
       "//chrome/test/base:menu_model_test",
+      "//chrome/test/base:testing_browser_process",
       "//chrome/test/user_education:impl",
       "//components/commerce/core:account_checker_test_support",
       "//components/commerce/core:feature_list",

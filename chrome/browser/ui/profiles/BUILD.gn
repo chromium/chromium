@@ -153,10 +153,11 @@ source_set("unit_tests") {
 
   if (!is_android) {
     sources += [ "profile_view_utils_unittest.cc" ]
-    deps = [
+    deps += [
       ":profiles",
       "//chrome/browser/prefs",
       "//chrome/test:test_support",
+      "//chrome/test/base:testing_browser_process",
       "//components/account_id",
       "//components/policy/core/common:common_constants",
       "//content/test:test_support",

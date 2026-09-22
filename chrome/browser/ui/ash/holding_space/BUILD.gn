@@ -99,6 +99,7 @@ source_set("unit_tests") {
     "//chrome/browser/prefs",
     "//chrome/browser/ui/webui/print_preview",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/disks",
     "//chromeos/ash/components/disks:test_support",
     "//chromeos/ash/experiences/arc",

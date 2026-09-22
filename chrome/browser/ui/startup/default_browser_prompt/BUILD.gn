@@ -122,6 +122,7 @@ source_set("unit_tests") {
     "//chrome/browser/default_browser",
     "//chrome/common:constants",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//components/infobars/content",
     "//components/prefs",
     "//components/prefs:test_support",

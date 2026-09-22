@@ -94,6 +94,7 @@ if (chrome_root_store_cert_management_ui) {
       "//chrome/common:constants",
       "//chrome/test:test_support",
       "//chrome/test/base:chrome_render_view_host_test_harness",
+      "//chrome/test/base:testing_browser_process",
       "//components/prefs",
       "//components/server_certificate_database",
       "//content/test:test_support",

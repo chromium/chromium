@@ -90,6 +90,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/ash/quick_answers/test:test_support",
     "//chrome/browser/ui/ash/read_write_cards",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/components/quick_answers",
     "//chromeos/components/quick_answers:test_support",
     "//chromeos/components/quick_answers/public/cpp",

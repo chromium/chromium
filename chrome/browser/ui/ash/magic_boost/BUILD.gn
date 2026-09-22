@@ -72,6 +72,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/magic_boost:test_support",
     "//chrome/browser/ui/ash/editor_menu:utils",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/components/magic_boost/public/cpp",
     "//chromeos/components/magic_boost/test:fake_magic_boost_state",
     "//chromeos/components/mahi/public/cpp",

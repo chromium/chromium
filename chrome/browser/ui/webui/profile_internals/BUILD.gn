@@ -46,6 +46,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/search_engines",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

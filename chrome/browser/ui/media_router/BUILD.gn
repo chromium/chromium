@@ -122,6 +122,7 @@ source_set("unit_tests") {
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
+    "//chrome/test/base:testing_browser_process",
     "//components/media_router/browser:test_support",
     "//components/media_router/common:test_support",
     "//components/sync_preferences:test_support",

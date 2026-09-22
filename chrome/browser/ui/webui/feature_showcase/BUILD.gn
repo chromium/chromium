@@ -109,6 +109,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/views/profiles/feature_showcase:metrics",
     "//chrome/browser/ui/webui/intro",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//components/glic:glic_pref_names",
     "//components/lens",
     "//components/prefs",

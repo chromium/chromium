@@ -240,6 +240,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui:test_support",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/browser_window/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//testing/gmock",
     "//testing/gtest",
   ]

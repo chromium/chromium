@@ -47,6 +47,7 @@ source_set("unit_tests") {
     "//chrome/browser/profiles",
     "//chrome/browser/ui",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/browser_context_helper",
     "//components/account_id",
     "//components/constrained_window",

@@ -128,6 +128,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser:global_features",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/editor_menu/public/cpp",
     "//chromeos/constants",
     "//components/application_locale_storage",
