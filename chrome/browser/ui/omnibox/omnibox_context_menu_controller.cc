@@ -254,6 +254,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(OmniboxContextMenuController,
                                       kImageUploadMenuItemIdForTesting);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(OmniboxContextMenuController,
                                       kFileUploadMenuItemIdForTesting);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(OmniboxContextMenuController,
+                                      kSharedTabsSubmenuIdForTesting);
 
 OmniboxContextMenuController::OmniboxContextMenuController(
     OmniboxPopupFileSelector* file_selector,
@@ -533,6 +535,11 @@ void OmniboxContextMenuController::AddRecentTabItems() {
                                            ? ui::kColorMenuIcon
                                            : ui::kColorMenuIconDisabled,
                                        ui::SimpleMenuModel::kDefaultIconSize));
+    // ID for testing the submenu parent row. Tests must select this row to
+    // open the submenu before `kFirstTabMenuItemIdForTesting` becomes
+    // reachable.
+    menu_model_->SetElementIdentifierAt(menu_model_->GetItemCount() - 1,
+                                        kSharedTabsSubmenuIdForTesting);
   }
 
   min_tools_and_models_command_id_ =

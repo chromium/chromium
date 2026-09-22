@@ -95,6 +95,11 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kFirstTabMenuItemIdForTesting);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kImageUploadMenuItemIdForTesting);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kFileUploadMenuItemIdForTesting);
+  // Identifies the "Add tabs" / "Sharing n tabs" parent item that opens the
+  // shared tabs submenu. `kFirstTabMenuItemIdForTesting` lives inside that
+  // submenu, so tests must select this item first to make the tab rows
+  // reachable.
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSharedTabsSubmenuIdForTesting);
   // If `contextual_searchbox_handler` is provided (primarily for dependency
   // injection in unit tests), it will be used instead of looking up the active
   // handler dynamically from `web_contents`.

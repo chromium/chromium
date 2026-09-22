@@ -31,19 +31,34 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/omnibox/omnibox_context_menu_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/contextual_search/pref_names.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_invocation_source.h"
+#include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/common/composebox_features.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/tab_interface.h"
@@ -53,6 +68,9 @@
 #include "third_party/lens_server_proto/lens_overlay_server.pb.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/interaction/polling_state_observer.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/views/controls/webview/webview.h"
 
 namespace contextual_tasks {
 
@@ -61,6 +79,15 @@ namespace {
 using DeepQuery = WebContentsInteractionTestUtil::DeepQuery;
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelWebContentsId);
+// WebContents of the two WebUI omnibox popup surfaces. The classic popup hosts
+// the suggestion list plus the context entrypoint; selecting a tab from its
+// context menu swaps it for the AIM popup, which hosts the composebox.
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kClassicPopupWebContentsId);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kAimPopupWebContentsId);
+// Whether the browser-side omnibox has focus; autocomplete only runs while it
+// does, so the popup will not open until this is true.
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                    kOmniboxFocusState);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementExistsEvent);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kMenuOpenEvent);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kFlyoutVisibleEvent);
@@ -70,6 +97,10 @@ DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kCheckedReadyEvent);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kSubmitEnabledEvent);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kInputClearedEvent);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kUploadsCompleteEvent);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementRenderedEvent);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kAimSubmitEnabledEvent);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kAimUploadsCompleteEvent);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kAimCoinsShownEvent);
 
 class TestTabContextualizationController
     : public lens::TabContextualizationController {
@@ -149,28 +180,9 @@ class MockContextualTasksUiService
 }  // namespace
 
 class ContextualTasksContextManagementInteractiveUiTest
-    : public InteractiveBrowserTest {
+    : public WebUiInteractiveTestMixin<InteractiveBrowserTest> {
  public:
   ContextualTasksContextManagementInteractiveUiTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/
-        {
-            {kContextualTasks, {}},
-            {kContextualTasksForceEntryPointEligibility, {}},
-            {omnibox::kContextManagementInComposebox,
-             {{"enable_tab_deselection", "true"}}},
-            {omnibox::kTabFaviconChipsToCoins, {}},
-            {lens::features::kLensOverlay, {}},
-            {lens::features::kLensSidePanelUnification, {}},
-            {lens::features::kLensOverlayContextualSearchbox, {}},
-        },
-        // Disable WebUI omnibox popups to avoid popup interference during side
-        // panel composebox focus and query submission.
-        /*disabled_features=*/{
-            omnibox::internal::kWebUIOmniboxPopup,
-            omnibox::internal::kWebUIOmniboxAimPopup,
-        });
-
     tab_context_override_ =
         tabs::TabFeatures::GetUserDataFactoryForTesting()
             .AddOverrideForTesting<
@@ -183,6 +195,36 @@ class ContextualTasksContextManagementInteractiveUiTest
   }
 
   ~ContextualTasksContextManagementInteractiveUiTest() override = default;
+
+  // The feature list must be initialized before the browser process starts,
+  // hence before delegating to the base `SetUp()`. Doing this here rather than
+  // in the constructor lets subclasses override `InitializeFeatureList()`.
+  void SetUp() override {
+    InitializeFeatureList();
+    InteractiveBrowserTest::SetUp();
+  }
+
+  // Drives the side panel composebox. WebUI omnibox popups are disabled to
+  // avoid popup interference during side panel composebox focus and query
+  // submission.
+  virtual void InitializeFeatureList() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {
+            {kContextualTasks, {}},
+            {kContextualTasksForceEntryPointEligibility, {}},
+            {omnibox::kContextManagementInComposebox,
+             {{"enable_tab_deselection", "true"}}},
+            {omnibox::kTabFaviconChipsToCoins, {}},
+            {lens::features::kLensOverlay, {}},
+            {lens::features::kLensSidePanelUnification, {}},
+            {lens::features::kLensOverlayContextualSearchbox, {}},
+        },
+        /*disabled_features=*/{
+            omnibox::internal::kWebUIOmniboxPopup,
+            omnibox::internal::kWebUIOmniboxAimPopup,
+        });
+  }
 
   void SetUpBrowserContextKeyedServices(
       content::BrowserContext* context) override {
@@ -681,8 +723,11 @@ class ContextualTasksContextManagementInteractiveUiTest
     stalled_upload_clients_.clear();
   }
 
- private:
+ protected:
+  // Subclasses override `InitializeFeatureList()` and configure this directly.
   base::test::ScopedFeatureList scoped_feature_list_;
+
+ private:
   std::optional<ui::UserDataFactory::ScopedOverride> tab_context_override_;
   bool fail_context_uploads_ = false;
   std::vector<mojo::Remote<network::mojom::URLLoaderClient>>
@@ -906,6 +951,369 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextManagementInteractiveUiTest,
       VerifyMenuTriggerState(kSidePanelWebContentsId, 2),
       VerifyFlyoutTabChecked(kSidePanelWebContentsId, "title1", true),
       VerifyFlyoutTabChecked(kSidePanelWebContentsId, "title2", true));
+}
+
+// -----------------------------------------------------------------------------
+// Omnibox-driven context management.
+//
+// Unlike the side panel, the omnibox composebox does NOT render the WebUI
+// context menu (`cr-composebox-contextual-entrypoint-and-menu`). Clicking its
+// "+" sends a `showContextMenu()` mojo call which opens a *native* Views menu
+// built by `OmniboxContextMenuController`. The "Add Tabs" flyout is therefore a
+// native submenu, and must be driven with Views steps (`SelectMenuItem`) rather
+// than the DeepQuery helpers used above.
+// -----------------------------------------------------------------------------
+class ContextualTasksOmniboxContextManagementInteractiveUiTest
+    : public ContextualTasksContextManagementInteractiveUiTest {
+ public:
+  ContextualTasksOmniboxContextManagementInteractiveUiTest() = default;
+  ~ContextualTasksOmniboxContextManagementInteractiveUiTest() override =
+      default;
+
+  void InitializeFeatureList() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {
+            {kContextualTasks, {}},
+            {kContextualTasksForceEntryPointEligibility, {}},
+            {omnibox::kContextManagementInComposebox,
+             {{"enable_tab_deselection", "true"}}},
+            // Gates the native "Add tabs" submenu. Without this
+            // `AddRecentTabItems()` puts tabs directly in the main menu
+            // instead, and `kSharedTabsSubmenuIdForTesting` is never attached.
+            {omnibox::kContextManagementInOmnibox, {}},
+            {omnibox::kTabFaviconChipsToCoins, {}},
+            // Unlike the base fixture, the WebUI omnibox popups are the surface
+            // under test here.
+            {omnibox::internal::kWebUIOmniboxPopup, {}},
+            {omnibox::internal::kWebUIOmniboxAimPopup, {}},
+            {omnibox::internal::kWebUIOmniboxSimplification,
+             {{omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.name,
+               "below_results"},
+              {omnibox::kHideClassicContextButton.name, "false"}}},
+            {omnibox::kOmniboxWebUIDeferShowUntilVisualStateReady, {}},
+            {omnibox::kAimEnabled, {}},
+            {omnibox::kAimUsePecApi, {}},
+            {lens::features::kLensOverlay, {}},
+            {lens::features::kLensSidePanelUnification, {}},
+            {lens::features::kLensOverlayContextualSearchbox, {}},
+        },
+        /*disabled_features=*/{
+            // Keep `kOmniboxElementId` a Views element so focus and key presses
+            // target it directly.
+            features::kWebUILocationBar,
+            // Eligibility is supplied by `MockAimEligibilityService`; don't let
+            // the real service race it.
+            omnibox::kAimServerEligibilityEnabled,
+            omnibox::kAimFuseboxEligibilityCheckEnabled,
+        });
+  }
+
+  void SetUpOnMainThread() override {
+    ContextualTasksContextManagementInteractiveUiTest::SetUpOnMainThread();
+
+    // The popup grows tall once the composebox is shown, and the native tabs
+    // submenu is anchored to the right of the main menu. A default-sized window
+    // can leave either off-screen, which makes clicks miss.
+    browser()->GetWindow()->SetBounds(gfx::Rect(0, 0, 1280, 1024));
+
+    // `OmniboxContextMenuController::AddRecentTabItems()` early-returns when
+    // content sharing is disabled, so without this the "Add tabs" submenu is
+    // never built.
+    browser()->GetProfile()->GetPrefs()->SetInteger(
+        contextual_search::kSearchContentSharingSettings,
+        static_cast<int>(
+            contextual_search::SearchContentSharingSettingsValue::kEnabled));
+  }
+
+ protected:
+  // --- Omnibox popup DeepQuery paths ---
+  // The classic popup's "+" context entrypoint.
+  const DeepQuery kClassicContextEntrypoint = {
+      "omnibox-popup-app", "omnibox-popup-contextual-entrypoint", "#context"};
+  // The AIM popup composebox. Note this is `cr-omnibox-composebox`, a
+  // different element from the side panel's `cr-composebox`; it renders the
+  // bare `cr-composebox-contextual-entrypoint-button` rather than the WebUI
+  // entrypoint-and-menu, so there is no `#entrypointButton` hop and no
+  // `.share-tabs-flyout` here.
+  const DeepQuery kAimComposebox = {"omnibox-aim-app", "#composebox"};
+  const DeepQuery kAimComposeboxInput = {"omnibox-aim-app", "#composebox",
+                                         "cr-composebox-input", "#input"};
+  const DeepQuery kAimSubmit = {"omnibox-aim-app", "#composebox",
+                                "cr-composebox-submit", "#submitContainer"};
+
+  // The browser-side omnibox model, which drives autocomplete and therefore
+  // the popup.
+  OmniboxEditModel* GetOmniboxEditModel() {
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->GetLocationBar()
+        ->GetOmniboxController()
+        ->edit_model();
+  }
+
+  // Focuses the omnibox and waits until the browser-side `OmniboxEditModel`
+  // agrees that it is focused.
+  auto FocusOmnibox() {
+    return Steps(
+        InAnyContext(WaitForShow(kOmniboxElementId)),
+        InAnyContext(FocusElement(kOmniboxElementId)),
+        PollState(kOmniboxFocusState,
+                  [this]() { return GetOmniboxEditModel()->has_focus(); }),
+        WaitForState(kOmniboxFocusState, true),
+        StopObservingState(kOmniboxFocusState));
+  }
+
+  // An `OmniboxPopupView` may host multiple content views, but only one is
+  // visible at a time; this returns the currently visible one.
+  auto GetActiveClassicPopupWebView() {
+    return base::BindLambdaForTesting([this]() -> views::View* {
+      auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+      if (!browser_view || !browser_view->GetLocationBar()) {
+        return nullptr;
+      }
+      auto* popup_view = static_cast<OmniboxPopupViewWebUI*>(
+          browser_view->GetLocationBar()->GetOmniboxPopupView());
+      if (!popup_view || !popup_view->presenter()) {
+        return nullptr;
+      }
+      return popup_view->presenter()->GetWebUIContent();
+    });
+  }
+
+  auto GetActiveAimPopupWebView() {
+    return base::BindLambdaForTesting([this]() -> views::View* {
+      auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+      if (!browser_view || !browser_view->GetLocationBar()) {
+        return nullptr;
+      }
+      auto* presenter_delegate =
+          browser_view->GetLocationBar()->GetPresenterDelegate();
+      if (!presenter_delegate) {
+        return nullptr;
+      }
+      auto* aim_presenter = presenter_delegate->GetOmniboxPopupAimPresenter();
+      if (!aim_presenter) {
+        return nullptr;
+      }
+      return aim_presenter->GetWebUIContent();
+    });
+  }
+
+  // `WebUiInteractiveTestMixin::WaitForElementToRender()` leaves
+  // `continue_across_navigation` false. That is not safe for either omnibox
+  // popup because both re-navigate while they are being set up.
+  auto WaitForElementToRenderAcrossNavigation(ui::ElementIdentifier contents_id,
+                                              const DeepQuery& where) {
+    StateChange rendered;
+    rendered.type = StateChange::Type::kExistsAndConditionTrue;
+    rendered.where = where;
+    rendered.test_function = R"(
+        el => {
+          const rect = el.getBoundingClientRect();
+          return rect.width > 0 && rect.height > 0;
+        })";
+    rendered.event = kElementRenderedEvent;
+    rendered.continue_across_navigation = true;
+    return WaitForStateChange(contents_id, rendered);
+  }
+
+  // Opens the classic omnibox dropdown and instruments its `WebContents`.
+  auto OpenOmniboxDropdown() {
+    return Steps(
+        FocusOmnibox(), EnterText(kOmniboxElementId, u"a"),
+        InAnyContext(
+            WaitForShow(OmniboxPopupPresenterBase::kRoundedResultsFrame)),
+        InAnyContext(InstrumentNonTabWebView(kClassicPopupWebContentsId,
+                                             GetActiveClassicPopupWebView())),
+        InSameContext(
+            WaitForWebContentsReady(kClassicPopupWebContentsId,
+                                    GURL(chrome::kChromeUIOmniboxPopupURL))),
+        InAnyContext(WaitForElementToRenderAcrossNavigation(
+            kClassicPopupWebContentsId, kClassicContextEntrypoint)));
+  }
+
+  // Instruments the AIM popup, which replaces the classic popup once a tab is
+  // selected from the context menu.
+  auto WaitForAimPopupReady() {
+    return Steps(
+        InAnyContext(
+            WaitForShow(OmniboxPopupPresenterBase::kRoundedResultsFrame)),
+        InAnyContext(InstrumentNonTabWebView(kAimPopupWebContentsId,
+                                             GetActiveAimPopupWebView())),
+        InSameContext(WaitForWebContentsReady(
+            kAimPopupWebContentsId, GURL(chrome::kChromeUIOmniboxPopupAimURL))),
+        InAnyContext(WaitForElementToRenderAcrossNavigation(
+            kAimPopupWebContentsId, kAimComposeboxInput)),
+        InSameContext(ExecuteJsAt(kAimPopupWebContentsId, {}, R"(
+          () => {
+            const style = document.createElement('style');
+            style.textContent =
+                '* { animation: none !important; transition: none !important; }';
+            document.head.appendChild(style);
+          }
+        )")));
+  }
+
+  auto ClickElementAcrossNavigation(ui::ElementIdentifier contents_id,
+                                    const DeepQuery& where) {
+    return Steps(WaitForElementToRenderAcrossNavigation(contents_id, where),
+                 ScrollIntoView(contents_id, where),
+                 MoveMouseTo(contents_id, where), ClickMouse());
+  }
+
+  // Clicks the classic popup's "+" and picks the current tab out of the native
+  // "Add tabs" submenu.
+  auto SelectCurrentTabFromOmniboxAddTabsMenu() {
+    return Steps(
+        InSameContext(ClickElementAcrossNavigation(kClassicPopupWebContentsId,
+                                                   kClassicContextEntrypoint)),
+        InAnyContext(WaitForShow(
+            OmniboxContextMenuController::kSharedTabsSubmenuIdForTesting)),
+        InSameContext(SelectMenuItem(
+            OmniboxContextMenuController::kSharedTabsSubmenuIdForTesting)),
+        InAnyContext(WaitForShow(
+            OmniboxContextMenuController::kFirstTabMenuItemIdForTesting)),
+        InSameContext(SelectMenuItem(
+            OmniboxContextMenuController::kFirstTabMenuItemIdForTesting)));
+  }
+
+  // Waits until the AIM composebox's "+" button shows the expected number of
+  // favicon coins.
+  auto WaitForAimComposeboxCoins(int expected_count) {
+    StateChange coins_shown;
+    coins_shown.type = StateChange::Type::kExistsAndConditionTrue;
+    coins_shown.where = kAimComposebox;
+    coins_shown.test_function = base::StringPrintf(
+        R"(el => {
+          const entrypoint =
+              el.shadowRoot?.querySelector('#contextEntrypoint');
+          const group =
+              entrypoint?.shadowRoot?.querySelector('composebox-favicon-group');
+          const coins =
+              group?.shadowRoot?.querySelectorAll('.favicon-item') ?? [];
+          return coins.length === %d;
+        })",
+        expected_count);
+    coins_shown.event = kAimCoinsShownEvent;
+    // The AIM popup re-navigates while the composebox is being set up, which
+    // would otherwise silently invalidate this observer.
+    coins_shown.continue_across_navigation = true;
+    return InAnyContext(
+        WaitForStateChange(kAimPopupWebContentsId, coins_shown));
+  }
+
+  // Types a query into the AIM composebox and submits it.
+  auto SubmitAimComposeboxQuery(const std::string& query) {
+    StateChange uploads_complete;
+    uploads_complete.type = StateChange::Type::kExistsAndConditionTrue;
+    uploads_complete.where = kAimComposebox;
+    uploads_complete.test_function = "el => el && el.fileUploadsComplete";
+    uploads_complete.event = kAimUploadsCompleteEvent;
+    uploads_complete.continue_across_navigation = true;
+
+    // Typing and the submit gate are a single poll: the composebox rebuilds
+    // itself while the tab context settles, which can drop a value written on
+    // an earlier tick. Re-writing it on every tick converges instead of racing.
+    StateChange submit_enabled;
+    submit_enabled.type = StateChange::Type::kExistsAndConditionTrue;
+    submit_enabled.where = kAimComposebox;
+    submit_enabled.test_function = base::StringPrintf(
+        R"(el => {
+          if (!el) {
+            return false;
+          }
+          if (!el.canSubmitFilesAndInput) {
+            const host = el.shadowRoot?.querySelector('cr-composebox-input');
+            const input = host?.shadowRoot?.querySelector('#input');
+            if (!input) {
+              return false;
+            }
+            input.value = %s;
+            input.dispatchEvent(new Event('input', {bubbles: true}));
+          }
+          return el.canSubmitFilesAndInput;
+        })",
+        base::GetQuotedJSONString(query).c_str());
+    submit_enabled.event = kAimSubmitEnabledEvent;
+    submit_enabled.continue_across_navigation = true;
+
+    // The first step must be `InAnyContext`: the popup lives in its own
+    // `ui::ElementContext`, and the preceding step may have run in the browser
+    // context (e.g. the `Do()`-based underline check).
+    return Steps(
+        InAnyContext(
+            WaitForStateChange(kAimPopupWebContentsId, uploads_complete)),
+        InSameContext(
+            WaitForStateChange(kAimPopupWebContentsId, submit_enabled)),
+        InSameContext(WaitForElementExists(kAimPopupWebContentsId, kAimSubmit)),
+        InSameContext(
+            ExecuteJsAt(kAimPopupWebContentsId, kAimSubmit, "el => el.click()")
+                .SetMustRemainVisible(false)));
+  }
+
+  // Instruments the Contextual Tasks side panel that submitting opened, without
+  // showing it itself. The side panel is back in the browser context, whereas
+  // the preceding submit ran in the popup context.
+  auto InstrumentOpenedSidePanel() {
+    return Steps(
+        InAnyContext(WaitForShow(kContextualTasksSidePanelWebViewElementId)),
+        InSameContext(NameViewRelative(
+            kContextualTasksSidePanelWebViewElementId,
+            "SidePanelContentWebViewName",
+            [](ContextualTasksWebView* web_view) -> views::View* {
+              return web_view->content_web_view();
+            })),
+        InSameContext(InstrumentNonTabWebView(kSidePanelWebContentsId,
+                                              "SidePanelContentWebViewName")),
+        InSameContext(WaitForElementExists(kSidePanelWebContentsId,
+                                           kComposeboxContainer)));
+  }
+};
+
+// Adding the current tab from the omnibox opens the side panel with
+// consistent sign posting.
+IN_PROC_BROWSER_TEST_F(ContextualTasksOmniboxContextManagementInteractiveUiTest,
+                       OmniboxAddCurrentTab_OpensSidePanelWithSignposting) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBackgroundTab1);
+
+  const GURL kUrl1 = embedded_test_server()->GetURL("/title1.html");
+  const GURL kUrl2 = embedded_test_server()->GetURL("/title2.html");
+
+  RunTestSequence(
+      // Tab 0 is the current tab. It must have a committed, shareable URL:
+      // `GetRecentTabs()` filters on `IsValidTab()`, so an NTP or about:blank
+      // tab would be dropped and no tab rows would be built. Tab 1 exists only
+      // to prove exactly one tab gets signposted.
+      InstrumentTab(kPrimaryTab, 0), NavigateWebContents(kPrimaryTab, kUrl1),
+      AddInstrumentedTab(kBackgroundTab1, kUrl2),
+      SelectTab(kTabStripElementId, 0),
+
+      // Nothing is shared before the user acts.
+      VerifyUnderlinedTabs({}),
+
+      // Open the omnibox dropdown and click the "+" in it.
+      // Pick the current tab out of the native "Add Tabs" submenu.
+      OpenOmniboxDropdown(), SelectCurrentTabFromOmniboxAddTabsMenu(),
+
+      // Selecting a tab hands the classic popup off to the AIM composebox,
+      // which should come up already carrying the current tab.
+      InAnyContext(WaitForHide(kClassicPopupWebContentsId)),
+      WaitForAimPopupReady(), WaitForAimComposeboxCoins(1),
+      VerifyUnderlinedTabs({0}),
+
+      // Submitting with the current tab in context opens the side panel.
+      SubmitAimComposeboxQuery("What is on this page?"),
+      InstrumentOpenedSidePanel(),
+
+      // The context carries over, and the side panel signposts it the same
+      // way: tab 0 still underlined, and a single favicon coin on the side
+      // panel composebox's "+" button.
+      //
+      // TODO(crbug.com/564561893): Also assert the tab is checked in the side
+      // panel's Add Tabs flyout.
+      VerifyUnderlinedTabs({0}),
+      VerifyPlusButtonCoins(kSidePanelWebContentsId, 1));
 }
 
 }  // namespace contextual_tasks
