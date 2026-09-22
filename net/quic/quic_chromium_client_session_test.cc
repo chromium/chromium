@@ -2421,7 +2421,7 @@ TEST_P(QuicChromiumClientSessionTest, MaybeCancelProbing_InFlightAttemptFails) {
       "Net.Quic.Migration.Attempt.FailureReason.ByTrigger.OnNetworkMadeDefault",
       QuicMigrationAttemptFailureReason::kProbeFailed, 1);
   histogram_tester.ExpectTotalCount(
-      "Net.Quic.Migration.Attempt.RedundantOutcome", 0);
+      "Net.Quic.Migration.Attempt.SpuriousOutcome", 0);
   histogram_tester.ExpectTotalCount(
       "Net.Quic.Migration.Attempt.UnclassifiedOutcome", 0);
   histogram_tester.ExpectUniqueSample("Net.QuicSession.ConnectionMigration",
@@ -2489,7 +2489,7 @@ TEST_P(QuicChromiumClientSessionTest, MaybeCancelProbing_IneligibleReason) {
   histogram_tester.ExpectTotalCount("Net.Quic.Migration.Attempt.FailureReason",
                                     0);
   histogram_tester.ExpectTotalCount(
-      "Net.Quic.Migration.Attempt.RedundantOutcome", 0);
+      "Net.Quic.Migration.Attempt.SpuriousOutcome", 0);
   histogram_tester.ExpectTotalCount(
       "Net.Quic.Migration.Attempt.UnclassifiedOutcome", 0);
   histogram_tester.ExpectUniqueSample("Net.QuicSession.ConnectionMigration",
@@ -2555,7 +2555,7 @@ TEST_P(QuicChromiumClientSessionTest, MaybeCancelProbing_SupersededReason) {
   histogram_tester.ExpectTotalCount("Net.Quic.Migration.Attempt.FailureReason",
                                     0);
   histogram_tester.ExpectTotalCount(
-      "Net.Quic.Migration.Attempt.RedundantOutcome", 0);
+      "Net.Quic.Migration.Attempt.SpuriousOutcome", 0);
   histogram_tester.ExpectTotalCount(
       "Net.Quic.Migration.Attempt.UnclassifiedOutcome", 0);
   histogram_tester.ExpectUniqueSample(
@@ -2624,7 +2624,7 @@ TEST_P(QuicChromiumClientSessionTest, PathValidationFailure_RetryTimeout) {
       "Net.Quic.Migration.Attempt.FailureReason.ByTrigger.OnNetworkMadeDefault",
       QuicMigrationAttemptFailureReason::kProbeTimeout, 1);
   histogram_tester.ExpectTotalCount(
-      "Net.Quic.Migration.Attempt.RedundantOutcome", 0);
+      "Net.Quic.Migration.Attempt.SpuriousOutcome", 0);
   histogram_tester.ExpectTotalCount(
       "Net.Quic.Migration.Attempt.UnclassifiedOutcome", 0);
   histogram_tester.ExpectUniqueSample("Net.QuicSession.ConnectionMigration",

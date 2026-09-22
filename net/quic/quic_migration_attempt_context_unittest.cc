@@ -275,7 +275,7 @@ TEST_F(QuicMigrationAttemptContextTest, SetSuccess) {
   histogram_tester.ExpectTotalCount("Net.Quic.Migration.Attempt.Ineligible", 0);
   histogram_tester.ExpectTotalCount("Net.Quic.Migration.Attempt.Superseded", 0);
   histogram_tester.ExpectTotalCount(
-      "Net.Quic.Migration.Attempt.RedundantOutcome", 0);
+      "Net.Quic.Migration.Attempt.SpuriousOutcome", 0);
   histogram_tester.ExpectTotalCount(
       "Net.Quic.Migration.Attempt.UnclassifiedOutcome", 0);
 }
@@ -333,7 +333,7 @@ TEST_F(QuicMigrationAttemptContextTest, SetFailure) {
   histogram_tester.ExpectTotalCount("Net.Quic.Migration.Attempt.Ineligible", 0);
   histogram_tester.ExpectTotalCount("Net.Quic.Migration.Attempt.Superseded", 0);
   histogram_tester.ExpectTotalCount(
-      "Net.Quic.Migration.Attempt.RedundantOutcome", 0);
+      "Net.Quic.Migration.Attempt.SpuriousOutcome", 0);
   histogram_tester.ExpectTotalCount(
       "Net.Quic.Migration.Attempt.UnclassifiedOutcome", 0);
 }
