@@ -9206,6 +9206,3 @@ crbug.com/559396684 [ Debug ] external/wpt/content-security-policy/securitypolic
 crbug.com/561536429 http/tests/devtools/application-panel/resources-panel-on-navigation.js [ Failure Pass ]
 crbug.com/561536429 http/tests/devtools/application-panel/resources-panel-resource-preview.js [ Failure Pass ]
 crbug.com/561536429 http/tests/devtools/application-panel/resources-panel-selection-on-reload.js [ Failure Pass ]
-
-# Gardener 2026-09-21
-crbug.com/564516456 [ Debug Linux ] external/wpt/jpegxl/svg-image-element.html [ Pass Timeout ]
