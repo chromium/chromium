@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {browserProxyFactory, isSplitTab, OpenTabsDelegate, OpenTabsItemType, PageHandlerRemote, SplitTabLayout, TabAlertState} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
+import {browserProxyFactory, Color, isSplitTab, OpenTabsDelegate, OpenTabsItemType, PageHandlerRemote, SplitTabLayout, TabAlertState, TabGroupDotSize} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {OrganizerListSectionClient, OrganizerListSectionItem, PageRemote, ProfileData, Tab} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {render} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -527,5 +528,102 @@ suite('OpenTabsDelegateTest', () => {
         assertEquals(1, mockPageHandler.getCallCount('closeTabs'));
         const args = mockPageHandler.getArgs('closeTabs')[0];
         assertDeepEquals([SPLIT_TAB_1_ID, SPLIT_TAB_2_ID], args);
+      });
+
+  test(
+      'includes tab group dot and title as the last description part',
+      async () => {
+        const groupId = {high: 1n, low: 2n};
+        const groupedTab = createTab({
+          tabId: 20,
+          groupId,
+          title: 'Grouped Tab',
+          url: 'https://www.example.com',
+          lastActiveTimeTicks: {internalValue: 500n},
+          lastActiveElapsedText: '2m ago',
+        });
+
+        const profileData: ProfileData = {
+          ...createProfileData([groupedTab]),
+          tabGroups: [{
+            id: groupId,
+            color: Color.kBlue,
+            title: 'Work Group',
+          }],
+        };
+        mockPageHandler.setResultFor(
+            'getProfileData', Promise.resolve({profileData}));
+
+        const items = await delegate.getItems();
+        assertEquals(1, items.length);
+
+        const description = items[0]!.description;
+        assertEquals(3, description?.length);
+        assertDeepEquals(
+            {text: 'www.example.com', elideFromStart: true}, description?.[0]);
+        assertDeepEquals({text: '2m ago'}, description?.[1]);
+        assertEquals('Work Group', description?.[2]!.text);
+
+        const container = document.createElement('div');
+        document.body.appendChild(container);
+        render(description![2]!.prefixElement!, container);
+        const dot = container.querySelector('tab-group-dot');
+        assertTrue(!!dot);
+        assertEquals(Color.kBlue, dot.color);
+        assertTrue(dot.filled);
+        assertEquals(TabGroupDotSize.SMALL, dot.size);
+      });
+
+  test(
+      'includes tab group dot and title for grouped split view tabs',
+      async () => {
+        const groupId = {high: 3n, low: 4n};
+        const splitTab1 = createTab({
+          tabId: SPLIT_TAB_1_ID,
+          groupId,
+          title: SPLIT_TAB_1_TITLE,
+          url: SPLIT_TAB_1_URL,
+          split: true,
+          splitId: SPLIT_TOKEN,
+          lastActiveTimeTicks: {internalValue: 250n},
+          lastActiveElapsedText: '3m ago',
+        });
+        const splitTab2 = createTab({
+          tabId: SPLIT_TAB_2_ID,
+          groupId,
+          title: SPLIT_TAB_2_TITLE,
+          url: SPLIT_TAB_2_URL,
+          split: true,
+          splitId: SPLIT_TOKEN,
+          lastActiveTimeTicks: {internalValue: 150n},
+          lastActiveElapsedText: '7m ago',
+        });
+
+        const profileData: ProfileData = {
+          ...createProfileData([splitTab1, splitTab2]),
+          tabGroups: [{
+            id: groupId,
+            color: Color.kGreen,
+            title: 'Split Group',
+          }],
+        };
+        mockPageHandler.setResultFor(
+            'getProfileData', Promise.resolve({profileData}));
+
+        const items = await delegate.getItems();
+        assertEquals(1, items.length);
+
+        const description = items[0]!.description;
+        assertEquals(4, description?.length);
+        assertEquals('Split Group', description?.[3]!.text);
+
+        const container = document.createElement('div');
+        document.body.appendChild(container);
+        render(description![3]!.prefixElement!, container);
+        const dot = container.querySelector('tab-group-dot');
+        assertTrue(!!dot);
+        assertEquals(Color.kGreen, dot.color);
+        assertTrue(dot.filled);
+        assertEquals(TabGroupDotSize.SMALL, dot.size);
       });
 });
