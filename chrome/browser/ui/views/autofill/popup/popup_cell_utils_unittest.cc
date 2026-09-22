@@ -67,6 +67,14 @@ TEST(PopupCellUtilsTest,
 }
 
 TEST(PopupCellUtilsTest, GetIconImageModelFromIcon_GmailAndOpenInNew) {
+  std::optional<ui::ImageModel> mail_asterisk_model =
+      popup_cell_utils::GetIconImageModelFromIcon(
+          Suggestion::Icon::kMailAsterisk);
+  ASSERT_TRUE(mail_asterisk_model.has_value());
+  EXPECT_FALSE(mail_asterisk_model->IsEmpty());
+  EXPECT_EQ(mail_asterisk_model->GetVectorIcon().vector_icon(),
+            &vector_icons::kMailAsteriskIcon);
+
   std::optional<ui::ImageModel> gmail_model =
       popup_cell_utils::GetIconImageModelFromIcon(Suggestion::Icon::kGmail);
   ASSERT_TRUE(gmail_model.has_value());

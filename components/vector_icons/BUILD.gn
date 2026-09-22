@@ -281,6 +281,7 @@ if (current_toolchain == default_toolchain) {
       "loyalty_old.icon",
       "magic_button_old.icon",
       "mail.icon",
+      "mail_asterisk.icon",
       "mail_filled.icon",
       "mark_email_read.icon",
       "mark_email_read_old.icon",

@@ -438,6 +438,7 @@ struct Suggestion {
     kLocationSpark,
     kLoyalty,
     kMagic,
+    kMailAsterisk,
     kOfferTag,
     kOpenInNew,
     kOrder,
