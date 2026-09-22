@@ -2164,7 +2164,7 @@ StatusOr<BackingStore::RecordIdentifier> DatabaseConnection::PutRecord(
 
     CompressionType compression_type = CompressionType::kUncompressed;
 
-    static constexpr base::ByteSize kMinimumCompressionSize(64);
+    static constexpr base::ByteSize kMinimumCompressionSize(450);
     static constexpr float kMinimumCompressionRatio = 0.8f;
     // Should have already been copied to private memory in `Transaction`.
     CHECK_EQ(value.bits.storage_type(),
