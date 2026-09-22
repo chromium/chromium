@@ -101,20 +101,23 @@ class TreeIDWrapper : public V8HandlerFunctionWrapper {
     const v8::FunctionCallbackInfo<v8::Value>& args =
         *arguments->GetFunctionCallbackInfo();
     v8::Isolate* isolate = automation_router_->GetIsolate();
-    if (args.Length() != 1 || !args[0]->IsString())
+    if (args.Length() != 1 || !args[0]->IsString()) {
       automation_router_->ThrowInvalidArgumentsException();
+    }
 
     AXTreeID tree_id =
         AXTreeID::FromString(*v8::String::Utf8Value(isolate, args[0]));
     AutomationAXTreeWrapper* tree_wrapper =
         automation_tree_manager_owner_->GetAutomationAXTreeWrapperFromTreeID(
             tree_id);
-    if (!tree_wrapper)
+    if (!tree_wrapper) {
       return;
+    }
 
     // The root can be null if this is called from an onTreeChange callback.
-    if (!tree_wrapper->ax_tree()->root())
+    if (!tree_wrapper->ax_tree()->root()) {
       return;
+    }
 
     function_(isolate, args.GetReturnValue(), tree_wrapper);
   }
@@ -154,8 +157,9 @@ class NodeIDWrapper : public V8HandlerFunctionWrapper {
     const v8::FunctionCallbackInfo<v8::Value>& args =
         *arguments->GetFunctionCallbackInfo();
     v8::Isolate* isolate = automation_router_->GetIsolate();
-    if (args.Length() < 2 || !args[0]->IsString() || !args[1]->IsNumber())
+    if (args.Length() < 2 || !args[0]->IsString() || !args[1]->IsNumber()) {
       automation_router_->ThrowInvalidArgumentsException();
+    }
 
     v8::Local<v8::Context> context = automation_router_->GetContext();
     AXTreeID tree_id =
@@ -165,12 +169,14 @@ class NodeIDWrapper : public V8HandlerFunctionWrapper {
     AutomationAXTreeWrapper* tree_wrapper =
         automation_tree_manager_owner_->GetAutomationAXTreeWrapperFromTreeID(
             tree_id);
-    if (!tree_wrapper)
+    if (!tree_wrapper) {
       return;
+    }
 
     AXNode* node = tree_wrapper->GetUnignoredNodeFromId(node_id);
-    if (!node)
+    if (!node) {
       return;
+    }
 
     function_.Run(isolate, args.GetReturnValue(), tree_wrapper, node);
   }
@@ -228,12 +234,14 @@ class NodeIDPlusAttributeWrapper : public V8HandlerFunctionWrapper {
     AutomationAXTreeWrapper* tree_wrapper =
         automation_tree_manager_owner_->GetAutomationAXTreeWrapperFromTreeID(
             tree_id);
-    if (!tree_wrapper)
+    if (!tree_wrapper) {
       return;
+    }
 
     AXNode* node = tree_wrapper->GetUnignoredNodeFromId(node_id);
-    if (!node)
+    if (!node) {
       return;
+    }
 
     function_(isolate, args.GetReturnValue(), tree_wrapper->ax_tree(), node,
               attribute);
@@ -295,12 +303,14 @@ class NodeIDPlusRangeWrapper : public V8HandlerFunctionWrapper {
     AutomationAXTreeWrapper* tree_wrapper =
         automation_tree_manager_owner_->GetAutomationAXTreeWrapperFromTreeID(
             tree_id);
-    if (!tree_wrapper)
+    if (!tree_wrapper) {
       return;
+    }
 
     AXNode* node = tree_wrapper->GetUnignoredNodeFromId(node_id);
-    if (!node)
+    if (!node) {
       return;
+    }
 
     function_.Run(isolate, args.GetReturnValue(), tree_wrapper, node, start,
                   end, clipped);
@@ -353,12 +363,14 @@ class NodeIDPlusStringBoolWrapper : public V8HandlerFunctionWrapper {
     AutomationAXTreeWrapper* tree_wrapper =
         automation_tree_manager_owner_->GetAutomationAXTreeWrapperFromTreeID(
             tree_id);
-    if (!tree_wrapper)
+    if (!tree_wrapper) {
       return;
+    }
 
     AXNode* node = tree_wrapper->GetUnignoredNodeFromId(node_id);
-    if (!node)
+    if (!node) {
       return;
+    }
 
     function_.Run(isolate, args.GetReturnValue(), tree_wrapper, node, str_val,
                   bool_val);
@@ -415,12 +427,14 @@ class NodeIDPlusDimensionsWrapper : public V8HandlerFunctionWrapper {
     AutomationAXTreeWrapper* tree_wrapper =
         automation_tree_manager_owner_->GetAutomationAXTreeWrapperFromTreeID(
             tree_id);
-    if (!tree_wrapper)
+    if (!tree_wrapper) {
       return;
+    }
 
     AXNode* node = tree_wrapper->GetUnignoredNodeFromId(node_id);
-    if (!node)
+    if (!node) {
       return;
+    }
 
     function_.Run(isolate, args.GetReturnValue(), tree_wrapper, node, x, y,
                   width, height);
@@ -489,12 +503,14 @@ class NodeIDPlusEventWrapper : public V8HandlerFunctionWrapper {
     AutomationAXTreeWrapper* tree_wrapper =
         automation_tree_manager_owner_->GetAutomationAXTreeWrapperFromTreeID(
             tree_id);
-    if (!tree_wrapper)
+    if (!tree_wrapper) {
       return;
+    }
 
     AXNode* node = tree_wrapper->GetUnignoredNodeFromId(node_id);
-    if (!node)
+    if (!node) {
       return;
+    }
 
     function_.Run(isolate, args.GetReturnValue(), tree_wrapper, node,
                   event_type);
@@ -678,8 +694,9 @@ void AutomationV8Bindings::AddV8Routes() {
       [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
          AutomationAXTreeWrapper* tree_wrapper) {
         tree_wrapper = tree_wrapper->GetTreeWrapperWithUnignoredRoot();
-        if (!tree_wrapper)
+        if (!tree_wrapper) {
           return;
+        }
 
         gin::DataObjectBuilder response(isolate);
         response.Set("treeId", tree_wrapper->GetTreeID().ToString());
@@ -719,8 +736,9 @@ void AutomationV8Bindings::AddV8Routes() {
          AutomationAXTreeWrapper* tree_wrapper) {
         const AXNode* anchor = tree_wrapper->GetNode(
             tree_wrapper->GetUnignoredSelection().anchor_object_id);
-        if (!anchor)
+        if (!anchor) {
           return;
+        }
 
         result.Set(tree_wrapper->ax_tree()->data().sel_is_backward);
       });
@@ -1025,8 +1043,9 @@ void AutomationV8Bindings::AddV8Routes() {
          AXNode* node, const std::string& attribute_name) {
         auto attribute =
             ParseAXEnum<ax::mojom::IntListAttribute>(attribute_name.c_str());
-        if (!node->HasIntListAttribute(attribute))
+        if (!node->HasIntListAttribute(attribute)) {
           return;
+        }
         const std::vector<int32_t>& attr_value =
             node->GetIntListAttribute(attribute);
 
@@ -1234,8 +1253,10 @@ void AutomationV8Bindings::AddV8Routes() {
                   .ToLocalChecked());
 
           bool did_set_value_result = false;
-          if (!did_set_value.To(&did_set_value_result) || !did_set_value_result)
+          if (!did_set_value.To(&did_set_value_result) ||
+              !did_set_value_result) {
             return;
+          }
         }
         result.Set(actions_result);
       }));
@@ -1275,8 +1296,9 @@ void AutomationV8Bindings::AddV8Routes() {
             ax::mojom::DefaultActionVerb default_action_verb =
                 static_cast<ax::mojom::DefaultActionVerb>(node->GetIntAttribute(
                     ax::mojom::IntAttribute::kDefaultActionVerb));
-            if (default_action_verb == ax::mojom::DefaultActionVerb::kNone)
+            if (default_action_verb == ax::mojom::DefaultActionVerb::kNone) {
               return;
+            }
 
             const std::string& default_action_verb_str =
                 ToString(default_action_verb);
@@ -1302,8 +1324,9 @@ void AutomationV8Bindings::AddV8Routes() {
             ax::mojom::AriaCurrentState current_state =
                 static_cast<ax::mojom::AriaCurrentState>(node->GetIntAttribute(
                     ax::mojom::IntAttribute::kAriaCurrentState));
-            if (current_state == ax::mojom::AriaCurrentState::kNone)
+            if (current_state == ax::mojom::AriaCurrentState::kNone) {
               return;
+            }
             const std::string& current_state_string = ToString(current_state);
             result.Set(
                 v8::String::NewFromUtf8(isolate, current_state_string.c_str())
@@ -1315,8 +1338,9 @@ void AutomationV8Bindings::AddV8Routes() {
           [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
              AutomationAXTreeWrapper* tree_wrapper, AXNode* node) {
             ax::mojom::InvalidState invalid_state = node->GetInvalidState();
-            if (invalid_state == ax::mojom::InvalidState::kNone)
+            if (invalid_state == ax::mojom::InvalidState::kNone) {
               return;
+            }
             const std::string& invalid_state_string = ToString(invalid_state);
             result.Set(
                 v8::String::NewFromUtf8(isolate, invalid_state_string.c_str())
@@ -1433,16 +1457,18 @@ void AutomationV8Bindings::AddV8Routes() {
       base::BindRepeating(
           [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
              AutomationAXTreeWrapper* tree_wrapper, AXNode* node) {
-            if (node->GetTableCellAriaColIndex())
+            if (node->GetTableCellAriaColIndex()) {
               result.Set(*node->GetTableCellAriaColIndex());
+            }
           }));
   RouteNodeIDFunction(
       "GetTableCellAriaRowIndex",
       base::BindRepeating(
           [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
              AutomationAXTreeWrapper* tree_wrapper, AXNode* node) {
-            if (node->GetTableCellAriaRowIndex())
+            if (node->GetTableCellAriaRowIndex()) {
               result.Set(*node->GetTableCellAriaRowIndex());
+            }
           }));
   RouteNodeIDFunction(
       "SetAccessibilityFocus",
@@ -1552,8 +1578,9 @@ void AutomationV8Bindings::GetFocus(
 
   int node_id;
   AXTreeID focused_tree_id;
-  if (!automation_tree_manager_owner_->GetFocus(&focused_tree_id, &node_id))
+  if (!automation_tree_manager_owner_->GetFocus(&focused_tree_id, &node_id)) {
     return;
+  }
 
   args.GetReturnValue().Set(
       gin::DataObjectBuilder(automation_v8_router_->GetIsolate())
@@ -1567,8 +1594,9 @@ void AutomationV8Bindings::GetAccessibilityFocus(
   AXTreeID tree_id;
   int node_id;
   if (!automation_tree_manager_owner_->GetAccessibilityFocus(&tree_id,
-                                                             &node_id))
+                                                             &node_id)) {
     return;
+  }
 
   args.GetReturnValue().Set(
       gin::DataObjectBuilder(automation_v8_router_->GetIsolate())
@@ -1629,8 +1657,9 @@ void AutomationV8Bindings::GetChildIDAtIndex(
   int child_node_id;
   AXTreeID child_tree_id;
   if (!automation_tree_manager_owner_->GetChildIDAtIndex(
-          tree_id, node_id, index, &child_tree_id, &child_node_id))
+          tree_id, node_id, index, &child_tree_id, &child_node_id)) {
     return;
+  }
 
   gin::DataObjectBuilder response(automation_v8_router_->GetIsolate());
   response.Set("treeId", child_tree_id.ToString());
@@ -1656,12 +1685,14 @@ void AutomationV8Bindings::CreateAutomationPosition(
   AutomationAXTreeWrapper* tree_wrapper =
       automation_tree_manager_owner_->GetAutomationAXTreeWrapperFromTreeID(
           tree_id);
-  if (!tree_wrapper)
+  if (!tree_wrapper) {
     return;
+  }
 
   AXNode* node = tree_wrapper->ax_tree()->GetFromId(node_id);
-  if (!node)
+  if (!node) {
     return;
+  }
 
   AXPositionKind kind =
       StringToAXPositionKind(*v8::String::Utf8Value(isolate, args[2]));
@@ -1832,8 +1863,9 @@ void AutomationV8Bindings::GetName(v8::Isolate* isolate,
                                    AutomationAXTreeWrapper* tree_wrapper,
                                    AXNode* node) const {
   const char* name = automation_tree_manager_owner_->GetName(node);
-  if (name)
+  if (name) {
     result.Set(v8::String::NewFromUtf8(isolate, name).ToLocalChecked());
+  }
 }
 
 void AutomationV8Bindings::GetNextTextMatch(
@@ -1930,8 +1962,9 @@ void AutomationV8Bindings::GetMarkers(v8::Isolate* isolate,
 void AutomationV8Bindings::GetState(
     const v8::FunctionCallbackInfo<v8::Value>& args) const {
   v8::Isolate* isolate = automation_v8_router_->GetIsolate();
-  if (args.Length() < 2 || !args[0]->IsString() || !args[1]->IsNumber())
+  if (args.Length() < 2 || !args[0]->IsString() || !args[1]->IsNumber()) {
     automation_v8_router_->ThrowInvalidArgumentsException();
+  }
 
   AXTreeID tree_id =
       AXTreeID::FromString(*v8::String::Utf8Value(isolate, args[0]));
@@ -1949,8 +1982,9 @@ void AutomationV8Bindings::GetState(
   gin::DataObjectBuilder state(isolate);
   uint32_t state_pos = 0, state_shifter = node_state;
   while (state_shifter) {
-    if (state_shifter & 1)
+    if (state_shifter & 1) {
       state.Set(ToString(static_cast<ax::mojom::State>(state_pos)), true);
+    }
     state_shifter = state_shifter >> 1;
     state_pos++;
   }
@@ -1958,8 +1992,9 @@ void AutomationV8Bindings::GetState(
   if (focused) {
     state.Set(automation_v8_router_->GetFocusedStateString(), true);
   }
-  if (offscreen)
+  if (offscreen) {
     state.Set(automation_v8_router_->GetOffscreenStateString(), true);
+  }
 
   args.GetReturnValue().Set(state.Build());
 }
@@ -1992,8 +2027,9 @@ void AutomationV8Bindings::GetImageAnnotation(
           ax::mojom::StringAttribute::kImageAnnotation);
       break;
   }
-  if (status_string.empty())
+  if (status_string.empty()) {
     return;
+  }
   result.Set(
       v8::String::NewFromUtf8(isolate, status_string.c_str()).ToLocalChecked());
 }
