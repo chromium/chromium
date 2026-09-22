@@ -17,14 +17,12 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.appmenu.AppMenuItemTheme;
 import org.chromium.chrome.browser.app.appmenu.AppMenuItemUtils;
-import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tasks.tab_management.GroupWindowChecker;
 import org.chromium.chrome.browser.tasks.tab_management.GroupWindowInfo;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupUiUtils;
@@ -365,20 +363,11 @@ import java.util.function.Supplier;
         }
 
         Token groupId = tabGroup.localId;
-        List<Tab> tabs = tabModel.getTabsInGroup(groupId);
-        if (tabs.isEmpty() && TabGroupUiUtils.isCrossWindowTabGroupOperationsEnabled()) {
-            TabWindowManager windowManager = TabWindowManagerSingleton.getInstance();
-            if (windowManager != null) {
-                int windowId = windowManager.findWindowIdForTabGroup(groupId);
-                if (windowId != TabWindowManager.INVALID_WINDOW_ID) {
-                    List<Tab> crossWindowTabs =
-                            windowManager.getGroupedTabsByWindow(
-                                    windowId, groupId, tabModel.isIncognito());
-                    if (crossWindowTabs != null) {
-                        tabs = crossWindowTabs;
-                    }
-                }
-            }
+        List<Tab> tabs = TabGroupUiUtils.getLocalOrCrossWindowTabsInGroup(tabModel, groupId);
+        if (tabs.isEmpty()
+                && TabGroupUiUtils.isRemoteGroupOperationsEnabled()
+                && tabGroup.syncId != null) {
+            return buildSubmenuForRemoteGroup(tabGroup, tabModel);
         }
         Profile profile = tabModel.getProfile();
         assert profile != null;
