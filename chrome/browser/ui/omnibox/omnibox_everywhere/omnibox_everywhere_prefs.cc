@@ -211,21 +211,38 @@ void OnFreStageDismissed(Profile* profile,
         prefs->SetBoolean(kFreShortcutSetupDismissed, true);
       }
       break;
-    case FreStage::kShortcutSetupChin: {
+    case FreStage::kShortcutSetupChin:
       prefs->SetBoolean(kFreShortcutSetupDismissed, true);
-      const bool has_hotkey = HasOmniboxEverywhereHotkey(resolved_local_state);
-      if (!has_hotkey) {
-        prefs->SetBoolean(kFreShortcutReminderDismissed, true);
-        prefs->SetBoolean(kFreDismissed, true);
-      }
+      prefs->SetBoolean(kFreShortcutReminderDismissed, true);
+      prefs->SetBoolean(kFreDismissed, true);
       break;
-    }
     case FreStage::kShortcutReminderChin:
       prefs->SetBoolean(kFreShortcutReminderDismissed, true);
       prefs->SetBoolean(kFreDismissed, true);
       break;
     case FreStage::kNone:
       prefs->SetBoolean(kFreDismissed, true);
+      break;
+  }
+}
+
+void MarkFreStageCompleted(Profile* profile, FreStage stage) {
+  if (!profile || !profile->GetPrefs()) {
+    return;
+  }
+  PrefService* prefs = profile->GetPrefs();
+  switch (stage) {
+    case FreStage::kIntroModal:
+      prefs->SetBoolean(kFreIntroDismissed, true);
+      break;
+    case FreStage::kShortcutSetupChin:
+      prefs->SetBoolean(kFreShortcutSetupDismissed, true);
+      break;
+    case FreStage::kShortcutReminderChin:
+      prefs->SetBoolean(kFreShortcutReminderDismissed, true);
+      prefs->SetBoolean(kFreDismissed, true);
+      break;
+    case FreStage::kNone:
       break;
   }
 }

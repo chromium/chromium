@@ -113,7 +113,9 @@ inline constexpr char kFreShortcutSetupDismissed[] =
     "omnibox_everywhere.fre_shortcut_setup_dismissed";
 inline constexpr char kFreShortcutSetupImpressionCount[] =
     "omnibox_everywhere.fre_shortcut_setup_impression_count";
-inline constexpr int kMaxFreShortcutSetupImpressions = 3;
+// TODO(crbug.com/563029405): Make FRE impression caps configurable via Finch
+// parameters.
+inline constexpr int kMaxFreShortcutSetupImpressions = 1;
 
 // Preferences for Stage 3: Shortcut Reminder Chin.
 inline constexpr char kFreShortcutReminderDismissed[] =
@@ -151,6 +153,11 @@ void IncrementFreImpression(Profile* profile,
 void OnFreStageDismissed(Profile* profile,
                          FreStage stage,
                          PrefService* local_state = nullptr);
+
+// Marks the specified FRE stage as completed (as opposed to dismissed via 'X').
+// For example, configuring a shortcut outside the chin (e.g. via Settings)
+// completes Stage 2 and advances past it without skipping downstream stages.
+void MarkFreStageCompleted(Profile* profile, FreStage stage);
 
 // Returns the configured global hotkey accelerator for Omnibox Everywhere from
 // local state, or an empty accelerator if unset or invalid.

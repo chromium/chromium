@@ -202,9 +202,14 @@ TEST_F(OmniboxEverywherePrefsTest, FreStagesProgression_Impressions) {
   SetOmniboxEverywhereHotkey(&local_state_, "Ctrl+Shift+Space");
   EXPECT_TRUE(HasOmniboxEverywhereHotkey(&local_state_));
 
-  // Dismiss Stage 2 explicitly -> transitions to Stage 3
+  // Current open still shows Stage 2.
+  EXPECT_EQ(GetCurrentFreStage(&profile_, &local_state_),
+            FreStage::kShortcutSetupChin);
+
+  // Increment impression 1 (closing the invocation where hotkey was
+  // configured). The next invocation immediately shows Stage 3
   // (ShortcutReminderChin).
-  OnFreStageDismissed(&profile_, FreStage::kShortcutSetupChin, &local_state_);
+  IncrementFreImpression(&profile_, &local_state_);
   EXPECT_EQ(GetCurrentFreStage(&profile_, &local_state_),
             FreStage::kShortcutReminderChin);
 
@@ -261,7 +266,7 @@ TEST_F(OmniboxEverywherePrefsTest,
 }
 
 TEST_F(OmniboxEverywherePrefsTest,
-       FreStagesProgression_DismissSetupWithHotkeyTransitionsToReminder) {
+       FreStagesProgression_DismissSetupWithHotkeySkipsReminder) {
   EXPECT_FALSE(HasOmniboxEverywhereHotkey(&local_state_));
 
   // Dismiss Stage 1 to transition to Stage 2.
@@ -276,11 +281,35 @@ TEST_F(OmniboxEverywherePrefsTest,
   EXPECT_EQ(GetCurrentFreStage(&profile_, &local_state_),
             FreStage::kShortcutSetupChin);
 
-  // When hotkey is enabled, dismissing Stage 2 transitions to Stage 3.
+  // When user dismisses Stage 2 after selecting a hotkey, Stage 3 is skipped
+  // and FRE is marked dismissed.
   OnFreStageDismissed(&profile_, FreStage::kShortcutSetupChin, &local_state_);
+  EXPECT_EQ(GetCurrentFreStage(&profile_, &local_state_), FreStage::kNone);
+  EXPECT_TRUE(profile_.GetPrefs()->GetBoolean(kFreDismissed));
+  EXPECT_TRUE(profile_.GetPrefs()->GetBoolean(kFreShortcutReminderDismissed));
+}
+
+TEST_F(OmniboxEverywherePrefsTest, MarkFreStageCompleted_NullProfile) {
+  EXPECT_NO_FATAL_FAILURE(
+      MarkFreStageCompleted(nullptr, FreStage::kShortcutSetupChin));
+}
+
+TEST_F(OmniboxEverywherePrefsTest,
+       MarkFreStageCompleted_SetupChinPreservesReminder) {
+  // Dismiss Stage 1 to transition to Stage 2.
+  OnFreStageDismissed(&profile_, FreStage::kIntroModal, &local_state_);
+  EXPECT_EQ(GetCurrentFreStage(&profile_, &local_state_),
+            FreStage::kShortcutSetupChin);
+
+  // User sets hotkey (e.g. in Settings) and marks Stage 2 completed.
+  SetOmniboxEverywhereHotkey(&local_state_, "Ctrl+Shift+Space");
+  MarkFreStageCompleted(&profile_, FreStage::kShortcutSetupChin);
+
+  // Stage 3 (reminder chin) is shown, not skipped.
   EXPECT_EQ(GetCurrentFreStage(&profile_, &local_state_),
             FreStage::kShortcutReminderChin);
   EXPECT_FALSE(profile_.GetPrefs()->GetBoolean(kFreDismissed));
+  EXPECT_FALSE(profile_.GetPrefs()->GetBoolean(kFreShortcutReminderDismissed));
 }
 
 TEST_F(OmniboxEverywherePrefsTest,
@@ -311,17 +340,8 @@ TEST_F(OmniboxEverywherePrefsTest,
   EXPECT_EQ(GetCurrentFreStage(&profile_, &local_state_),
             FreStage::kShortcutSetupChin);
 
-  // Increment impression 1
-  IncrementFreImpression(&profile_, &local_state_);
-  EXPECT_EQ(GetCurrentFreStage(&profile_, &local_state_),
-            FreStage::kShortcutSetupChin);
-
-  // Increment impression 2
-  IncrementFreImpression(&profile_, &local_state_);
-  EXPECT_EQ(GetCurrentFreStage(&profile_, &local_state_),
-            FreStage::kShortcutSetupChin);
-
-  // Increment impression 3 -> hits 3 impressions, advances to Stage 3.
+  // Increment impression 1 -> reaches impression cap (1), advances to
+  // Stage 3 on the next invocation.
   IncrementFreImpression(&profile_, &local_state_);
   EXPECT_EQ(GetCurrentFreStage(&profile_, &local_state_),
             FreStage::kShortcutReminderChin);

@@ -2227,7 +2227,8 @@ suite('OmniboxEverywhereAppTest', () => {
   });
 
   test(
-      'dismissing shortcut setup chin advances to reminder chin with tokens',
+      'dismissing shortcut setup chin calls dismissFre; reminder chin ' +
+          'renders tokens',
       async () => {
         testProxy.page.setFreState({
           stage: FreStage.kShortcutSetupChin,
