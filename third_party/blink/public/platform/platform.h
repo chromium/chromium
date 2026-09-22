@@ -45,7 +45,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
-#include "media/base/audio_bus.h"
 #include "media/base/audio_capturer_source.h"
 #include "media/base/audio_latency.h"
 #include "media/base/audio_renderer_sink.h"
@@ -130,6 +129,7 @@ class MainThread;
 class ThreadSafeBrowserInterfaceBrokerProxy;
 class URLLoaderThrottle;
 class UserMetricsAction;
+class WebAudioBus;
 class WebAudioLatencyHint;
 class WebAudioSinkDescriptor;
 class WebCrypto;
@@ -424,15 +424,10 @@ class BLINK_PLATFORM_EXPORT Platform {
     return std::nullopt;
   }
 
-  struct DecodedAudioFile {
-    std::unique_ptr<media::AudioBus> bus;
-    double sample_rate = 0.0;
-  };
-
   // Decodes the in-memory audio file data and returns the linear PCM audio data
-  // along with its sample rate.
-  // Returns nullptr on failure.
-  virtual std::unique_ptr<DecodedAudioFile> DecodeAudioFileData(
+  // in the |destination_bus|.
+  // Returns true on success.
+  virtual std::unique_ptr<WebAudioBus> DecodeAudioFileData(
       base::span<const char> audio_file_data) {
     return nullptr;
   }

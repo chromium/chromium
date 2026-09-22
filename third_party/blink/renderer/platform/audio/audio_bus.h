@@ -35,10 +35,6 @@
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
-namespace media {
-class AudioBus;
-}
-
 namespace blink {
 
 // An AudioBus represents a collection of one or more AudioChannels.
@@ -72,12 +68,6 @@ class PLATFORM_EXPORT AudioBus final : public ThreadSafeRefCounted<AudioBus> {
   static scoped_refptr<AudioBus> TryCreate(unsigned number_of_channels,
                                            uint32_t length);
 
-  // Creates an AudioBus that takes ownership of an existing media::AudioBus.
-  // The channels in AudioBus wrap the channel memory of `media_bus`.
-  static scoped_refptr<AudioBus> CreateFromMediaAudioBus(
-      std::unique_ptr<media::AudioBus> media_bus,
-      float sample_rate = 0.0f);
-
   // Pass in 0.0 for sampleRate to use the file's sample-rate, otherwise a
   // sample-rate conversion to the requested sampleRate will be made (if it
   // doesn't already match the file's sample-rate).  The created buffer will
@@ -89,7 +79,6 @@ class PLATFORM_EXPORT AudioBus final : public ThreadSafeRefCounted<AudioBus> {
 
   AudioBus(const AudioBus&) = delete;
   AudioBus& operator=(const AudioBus&) = delete;
-  ~AudioBus();
 
   // Tells the given channel to use externally allocated storage. The channel
   // length is `storage.size()`. Pass an empty span to clear the channel's
@@ -110,6 +99,10 @@ class PLATFORM_EXPORT AudioBus final : public ThreadSafeRefCounted<AudioBus> {
 
   // Number of sample-frames
   uint32_t length() const { return length_; }
+
+  // resizeSmaller() can only be called with a new length <= the current length.
+  // The data stored in the bus will remain undisturbed.
+  void ResizeSmaller(uint32_t new_length);
 
   // Sample-rate : 0.0 if unknown or "don't care"
   float SampleRate() const { return sample_rate_; }
@@ -178,12 +171,18 @@ class PLATFORM_EXPORT AudioBus final : public ThreadSafeRefCounted<AudioBus> {
       const AudioBus& source_bus,
       base::span<const float> gain_values);
 
+  // Returns maximum absolute value across all channels (useful for
+  // normalization).
+  float MaxAbsValue() const;
+
+  // Makes maximum absolute value == 1.0 (if possible).
+  void Normalize();
+
   static scoped_refptr<AudioBus> GetDataResource(int resource_id,
                                                  float sample_rate);
 
  private:
   AudioBus(unsigned number_of_channels, uint32_t length, bool allocate);
-  explicit AudioBus(std::unique_ptr<media::AudioBus> media_bus);
 
   void DiscreteSumFrom(const AudioBus&);
 
@@ -192,8 +191,7 @@ class PLATFORM_EXPORT AudioBus final : public ThreadSafeRefCounted<AudioBus> {
   void SumFromByUpMixing(const AudioBus&);
   void SumFromByDownMixing(const AudioBus&);
 
-  std::unique_ptr<media::AudioBus> underlying_media_bus_;
-  uint32_t length_ = 0;
+  uint32_t length_;
   Vector<AudioChannel, 2> channels_;
   float sample_rate_ = 0.0f;  // 0.0 if unknown or N/A
 };
