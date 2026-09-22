@@ -856,12 +856,14 @@ void HTMLMediaElement::ParseAttribute(
     }
   } else if (name == html_names::kLoadingAttr &&
              RuntimeEnabledFeatures::LazyLoadVideoAndAudioEnabled()) {
-    // If the loading attribute is changed to eager while deferred, load now.
-    LoadingAttributeValue loading = GetLoadingAttributeValue(params.new_value);
-    LoadingAttributeValue old_loading =
-        GetLoadingAttributeValue(params.old_value);
-    if (loading == LoadingAttributeValue::kEager &&
-        old_loading != LoadingAttributeValue::kEager) {
+    // If the loading attribute's state changes to eager while deferred, load
+    // now. The missing value default and the invalid value default are both
+    // the Eager state, so any value other than "lazy" means eager.
+    // https://html.spec.whatwg.org/#attr-media-loading
+    auto is_lazy = [](const AtomicString& value) {
+      return GetLoadingAttributeValue(value) == LoadingAttributeValue::kLazy;
+    };
+    if (is_lazy(params.old_value) && !is_lazy(params.new_value)) {
       LoadDeferredMediaIfNeeded();
     }
   } else {

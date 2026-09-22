@@ -1496,6 +1496,54 @@ TEST_P(HTMLMediaElementTest, ClearMediaPlayerResetsLazyMediaLoadState) {
   EXPECT_TRUE(IsLazyMediaLoadStateNoneForTesting());
 }
 
+// The loading attribute's missing value default is the Eager state, so
+// removing it from a deferred element must resume loading.
+// https://html.spec.whatwg.org/#attr-media-loading
+TEST_P(HTMLMediaElementTest, RemovingLoadingAttributeResumesDeferredMedia) {
+  ScopedLazyLoadVideoAndAudioForTest scoped_feature(true);
+
+  Media()->setAttribute(html_names::kLoadingAttr, AtomicString("lazy"));
+  SetLazyMediaLoadStateToDeferredForTesting();
+
+  Media()->removeAttribute(html_names::kLoadingAttr);
+
+  EXPECT_TRUE(Media()->IsLazyLoadResumed());
+}
+
+// The loading attribute's invalid value default is also the Eager state.
+TEST_P(HTMLMediaElementTest, InvalidLoadingAttributeResumesDeferredMedia) {
+  ScopedLazyLoadVideoAndAudioForTest scoped_feature(true);
+
+  Media()->setAttribute(html_names::kLoadingAttr, AtomicString("lazy"));
+  SetLazyMediaLoadStateToDeferredForTesting();
+
+  Media()->setAttribute(html_names::kLoadingAttr, AtomicString("foo"));
+
+  EXPECT_TRUE(Media()->IsLazyLoadResumed());
+}
+
+TEST_P(HTMLMediaElementTest, EagerLoadingAttributeResumesDeferredMedia) {
+  ScopedLazyLoadVideoAndAudioForTest scoped_feature(true);
+
+  Media()->setAttribute(html_names::kLoadingAttr, AtomicString("lazy"));
+  SetLazyMediaLoadStateToDeferredForTesting();
+
+  Media()->setAttribute(html_names::kLoadingAttr, AtomicString("eager"));
+
+  EXPECT_TRUE(Media()->IsLazyLoadResumed());
+}
+
+TEST_P(HTMLMediaElementTest, LazyLoadingAttributeKeepsMediaDeferred) {
+  ScopedLazyLoadVideoAndAudioForTest scoped_feature(true);
+
+  Media()->setAttribute(html_names::kLoadingAttr, AtomicString("lazy"));
+  SetLazyMediaLoadStateToDeferredForTesting();
+
+  Media()->setAttribute(html_names::kLoadingAttr, AtomicString("LAZY"));
+
+  EXPECT_TRUE(Media()->IsLazyLoadDeferred());
+}
+
 TEST_P(HTMLMediaElementTest, DomInteractive) {
   EXPECT_FALSE(Media()->GetDocument().GetTiming().DomInteractive().is_null());
 }
