@@ -266,13 +266,13 @@ void AtMemoryHandler::WaitForFocusAndReplaceSelectionForAtMemory(
   constexpr int kMaxRetries = 5;
   constexpr base::TimeDelta kDelayBeforeRetry = base::Milliseconds(20);
 
-  WebElement field =
-      WebNode::FromDomNodeId(*info.field_id).DynamicTo<WebElement>();
-  if (!field) {
-    return;
-  }
+  auto get_frame = [field_id = info.field_id]() -> WebLocalFrame* {
+    WebElement field =
+        WebNode::FromDomNodeId(*field_id).DynamicTo<WebElement>();
+    return field ? field.GetDocument().GetFrame() : nullptr;
+  };
 
-  WebLocalFrame* frame = field.GetDocument().GetFrame();
+  WebLocalFrame* frame = get_frame();
   if (!frame) {
     return;
   }
@@ -291,6 +291,12 @@ void AtMemoryHandler::WaitForFocusAndReplaceSelectionForAtMemory(
             weak_ptr_factory_.GetWeakPtr(), std::move(info), std::move(value),
             num_try + 1),
         kDelayBeforeRetry);
+    return;
+  }
+
+  WebElement field =
+      WebNode::FromDomNodeId(*info.field_id).DynamicTo<WebElement>();
+  if (!field) {
     return;
   }
 
@@ -314,6 +320,14 @@ void AtMemoryHandler::WaitForFocusAndReplaceSelectionForAtMemory(
   field.Focus();
 
   if (!info.selection_range.IsNull()) {
+    // `field.Focus()` dispatches `blur`/`focusout` on the previously focused
+    // element and `focus`/`focusin` on `field`. Those listeners may run
+    // JavaScript that detaches the frame, which would leave `frame` dangling.
+    // Therefore, re-fetch it before using it below.
+    frame = get_frame();
+    if (!frame) {
+      return;
+    }
     // Restores the text selection at the time of AskForValuesToFill() so that
     // filling replaces the selected text.
     frame->SetEditableSelectionOffsets(info.selection_range.StartOffset(),
@@ -324,6 +338,10 @@ void AtMemoryHandler::WaitForFocusAndReplaceSelectionForAtMemory(
     field.PasteText(WebString::FromUtf16(value), /*replace_all=*/false,
                     /*smart_replace=*/true);
   } else {
+    frame = get_frame();
+    if (!frame) {
+      return;
+    }
     frame->ExtendSelectionAndReplace(/*before=*/0,
                                      /*after=*/0, WebString::FromUtf16(value));
   }
