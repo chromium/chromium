@@ -399,7 +399,7 @@ void LocalFrameView::Trace(Visitor* visitor) const {
   visitor->Trace(scrollbars_);
   visitor->Trace(viewport_scrollable_area_);
   visitor->Trace(anchoring_adjustment_queue_);
-  visitor->Trace(scroll_event_queue_);
+  visitor->Trace(deferred_scroll_event_queue_);
   visitor->Trace(delayed_intersection_timer_);
   visitor->Trace(paint_controller_persistent_data_);
   visitor->Trace(paint_artifact_compositor_);
@@ -2918,7 +2918,7 @@ bool LocalFrameView::RunStyleAndLayoutLifecyclePhases(
 
   ExecutePendingScrollMarkerSelectionUpdates();
 
-  EnqueueScrollEvents();
+  ProcessDeferredScrollEvents();
 
   frame_->GetPage()->GetValidationMessageClient().LayoutOverlay();
 
@@ -3200,9 +3200,9 @@ void LocalFrameView::DequeueScrollAnchoringAdjustment(
   anchoring_adjustment_queue_.erase(scrollable_area);
 }
 
-void LocalFrameView::SetNeedsEnqueueScrollEvent(
+void LocalFrameView::SetNeedsEnqueueDeferredScrollEvent(
     PaintLayerScrollableArea* scrollable_area) {
-  scroll_event_queue_.insert(scrollable_area);
+  deferred_scroll_event_queue_.insert(scrollable_area);
   GetPage()->Animator().ScheduleVisualUpdate(
       frame_.Get(), cc::BeginMainFrameReason::kMainThreadScroll);
 }
@@ -3228,14 +3228,15 @@ void LocalFrameView::PerformScrollAnchoringAdjustments() {
   }
 }
 
-void LocalFrameView::EnqueueScrollEvents() {
+void LocalFrameView::ProcessDeferredScrollEvents() {
   ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
     for (const WeakMember<PaintLayerScrollableArea>& scroller :
-         frame_view.scroll_event_queue_) {
-      if (scroller)
-        scroller->EnqueueScrollEventIfNeeded();
+         frame_view.deferred_scroll_event_queue_) {
+      if (scroller) {
+        scroller->ProcessDeferredScrollEvents();
+      }
     }
-    frame_view.scroll_event_queue_.clear();
+    frame_view.deferred_scroll_event_queue_.clear();
   });
 }
 

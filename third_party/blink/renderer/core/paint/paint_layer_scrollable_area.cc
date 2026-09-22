@@ -504,8 +504,9 @@ void PaintLayerScrollableArea::UpdateScrollOffset(
   // (*) https://html.spec.whatwg.org/C/#update-the-rendering steps
   if (scroll_type == mojom::blink::ScrollType::kClamping ||
       scroll_type == mojom::blink::ScrollType::kAnchoring) {
-    if (GetLayoutBox()->GetNode())
-      frame_view->SetNeedsEnqueueScrollEvent(this);
+    if (GetLayoutBox()->GetNode()) {
+      frame_view->SetNeedsEnqueueDeferredScrollEvent(this);
+    }
   } else {
     EnqueueScrollEventIfNeeded();
   }
@@ -624,17 +625,36 @@ ScrollOffset PaintLayerScrollableArea::GetScrollOffset() const {
   return scroll_offset_;
 }
 
-void PaintLayerScrollableArea::EnqueueScrollEventIfNeeded() {
+bool PaintLayerScrollableArea::EnqueueScrollEventIfNeeded() {
   if (scroll_offset_ == last_committed_scroll_offset_ &&
-      has_last_committed_scroll_offset_)
-    return;
+      has_last_committed_scroll_offset_) {
+    return false;
+  }
   last_committed_scroll_offset_ = scroll_offset_;
   has_last_committed_scroll_offset_ = true;
-  if (HasBeenDisposed())
-    return;
+  if (HasBeenDisposed()) {
+    // Disposed areas should not dispatch scroll or scrollend events.
+    return false;
+  }
   // Schedule the scroll DOM event.
-  if (auto* node = EventTargetNode())
+  if (auto* node = EventTargetNode()) {
     node->GetDocument().EnqueueScrollEventForNode(node);
+    return true;
+  }
+  return false;
+}
+
+void PaintLayerScrollableArea::ProcessDeferredScrollEvents() {
+  bool did_enqueue_scroll = EnqueueScrollEventIfNeeded();
+
+  // If we scrolled but aren't animating or gesture scrolling, it means the
+  // scroll is already finished and we should enqueue scrollend.
+  // TODO(crbug.com/564413058): Move scrollend handling logic into
+  // EnqueueScrollEventIfNeeded and eliminate ProcessDeferredScrollEvents.
+  if (did_enqueue_scroll && !HasRunningAnimation() &&
+      !IsLatchedForGestureScroll()) {
+    OnScrollFinished(/*enqueue_scrollend=*/true);
+  }
 }
 
 gfx::Vector2d PaintLayerScrollableArea::MinimumScrollOffsetInt() const {

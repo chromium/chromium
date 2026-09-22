@@ -1593,6 +1593,7 @@ void WebFrameWidgetImpl::NotifyLatchedScrollMarkerGroup(
 void WebFrameWidgetImpl::UpdateCompositorScrollState(
     const cc::CompositorCommitData& commit_data) {
   is_scroll_gesture_active_ = commit_data.is_scroll_active;
+  scroll_latched_element_id_ = commit_data.scroll_latched_element_id;
   if (WebDevToolsAgentImpl* devtools =
           LocalRootImpl()->DevToolsAgentImpl(/*create_if_necessary=*/false)) {
     devtools->SetPageIsScrolling(is_scroll_gesture_active_);
@@ -1637,6 +1638,10 @@ void WebFrameWidgetImpl::UpdateAnimatedImageState(
 
 bool WebFrameWidgetImpl::IsScrollGestureActive() const {
   return is_scroll_gesture_active_;
+}
+
+cc::ElementId WebFrameWidgetImpl::ScrollLatchedElementId() const {
+  return scroll_latched_element_id_;
 }
 
 void WebFrameWidgetImpl::RequestViewportScreenshot(

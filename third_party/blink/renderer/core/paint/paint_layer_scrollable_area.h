@@ -323,8 +323,10 @@ class CORE_EXPORT PaintLayerScrollableArea final
   }
   ScrollOffset GetScrollOffset() const override;
   // Commits a final scroll offset for the frame, if it might have changed.
-  // If it did change, enqueues a scroll event.
-  void EnqueueScrollEventIfNeeded();
+  // If it did change, enqueues a scroll event and returns true; otherwise
+  // returns false.
+  bool EnqueueScrollEventIfNeeded();
+  void ProcessDeferredScrollEvents();
   gfx::Vector2d MinimumScrollOffsetInt() const override;
   gfx::Vector2d MaximumScrollOffsetInt() const override;
   PhysicalRect LayoutContentRect(

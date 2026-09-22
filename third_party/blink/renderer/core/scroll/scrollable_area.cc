@@ -54,6 +54,8 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
+#include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
+#include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/anchor_element_viewport_position_tracker.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
@@ -1036,6 +1038,26 @@ const Document* ScrollableArea::GetDocument() const {
   if (auto* box = GetLayoutBox())
     return &box->GetDocument();
   return nullptr;
+}
+
+bool ScrollableArea::IsLatchedForGestureScroll() const {
+  const Document* document = GetDocument();
+  if (!document) {
+    return false;
+  }
+  LocalFrame* frame = document->GetFrame();
+  if (!frame) {
+    return false;
+  }
+  auto* web_frame = WebLocalFrameImpl::FromFrame(frame);
+  if (!web_frame) {
+    return false;
+  }
+  WebFrameWidgetImpl* widget = web_frame->LocalRootFrameWidget();
+  if (!widget) {
+    return false;
+  }
+  return widget->ScrollLatchedElementId() == GetScrollElementId();
 }
 
 gfx::Vector2d ScrollableArea::ClampScrollOffset(

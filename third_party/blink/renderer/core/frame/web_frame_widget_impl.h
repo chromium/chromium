@@ -829,6 +829,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   bool WillBeDestroyed() const;
 
   bool IsScrollGestureActive() const;
+  cc::ElementId ScrollLatchedElementId() const;
 
   // Request the compositor thread to tell the GPU process to generate a
   // screenshot of the current viewport. The screenshot is tagged with `token`.
@@ -1234,6 +1235,9 @@ class CORE_EXPORT WebFrameWidgetImpl
   bool is_pinch_gesture_active_in_mainframe_ = false;
 
   bool is_scroll_gesture_active_ = false;
+  // ElementId of the container currently latched for a gesture scroll on the
+  // compositor thread, if any. Otherwise, ElementId().
+  cc::ElementId scroll_latched_element_id_;
 
   // If set, the (plugin) element which has mouse capture.
   Member<HTMLPlugInElement> mouse_capture_element_;
