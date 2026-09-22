@@ -71,6 +71,12 @@ _COVERAGE_FLAGS = [
     # MacOS. Please refer to crbug.com/796290 for more details.
     '-mllvm',
     '-limited-coverage-experimental=true',
+    # Disable GlobalMerge when instrumenting for code coverage. On macOS arm64,
+    # GlobalMerge reorders Mach-O profile sections in -O3 targets, causing
+    # continuous coverage mode's mmap() to zero out adjacent global variables
+    # at startup. See crbug.com/562085582 for details.
+    '-mllvm',
+    '-enable-global-merge=false',
 ]
 
 # Files that should not be built with coverage flags by default.
