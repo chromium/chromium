@@ -9,6 +9,7 @@
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/devtools/devtools_window.h"
@@ -55,10 +56,12 @@
 #include "extensions/browser/app_window/app_window_registry.h"
 #endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/flags/android/chrome_feature_list.h"
+#else
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/dialog_delegate.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -651,5 +654,46 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiRateExtensionTest,
       content::NavigateToURL(web_contents, GURL("chrome://extensions")));
   EXPECT_EQ(false, content::EvalJs(web_contents, kScript));
 }
+
+#if BUILDFLAG(IS_ANDROID)
+// Desktop Android shows settings in a tab, where a page is addressed by URL
+// only once SettingsInTabUrlNav is enabled.
+class DeveloperPrivateApiSettingsUrlNavTest : public DeveloperPrivateApiTest {
+ public:
+  DeveloperPrivateApiSettingsUrlNavTest() {
+    feature_list_.InitAndEnableFeature(chrome::android::kSettingsInTabUrlNav);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that showSiteSettings opens the extension's site details page next to
+// the chrome://extensions page that asked for it, rather than in a settings
+// surface of its own.
+IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiSettingsUrlNavTest,
+                       ShowSiteSettingsOpensSiteDetails) {
+  static constexpr char kExtensionId[] = "iodihamcpbpeioajjeobimgagajmlibd";
+
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents, GURL("chrome://extensions")));
+
+  auto function =
+      base::MakeRefCounted<api::DeveloperPrivateShowSiteSettingsFunction>();
+  function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
+  ASSERT_TRUE(api_test_utils::RunFunction(
+      function.get(), base::StringPrintf(R"(["%s"])", kExtensionId),
+      profile()));
+
+  // The load is not awaited: settings is a native page, so what this test can
+  // meaningfully assert is the URL the new tab was sent to.
+  EXPECT_EQ(GetActiveWebContents()->GetVisibleURL(),
+            GURL(base::StrCat({"chrome://settings/siteDetails"
+                               "?site=chrome-extension%3A%2F%2F",
+                               kExtensionId})));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace extensions

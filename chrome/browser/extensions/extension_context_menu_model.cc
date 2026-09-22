@@ -79,11 +79,7 @@
 #include "chrome/common/extensions/api/side_panel.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/strings/strcat.h"
-#include "chrome/browser/flags/android/chrome_feature_list.h"
-#include "chrome/browser/ui/android/extensions/extension_developer_private_bridge.h"
-#include "net/base/url_util.h"
-#include "url/origin.h"
+#include "chrome/browser/ui/android/extensions/extension_site_settings_android.h"
 #else
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -308,32 +304,6 @@ void OpenUrl(content::WebContents* web_contents, const GURL& url) {
           ui::PAGE_TRANSITION_LINK);
   web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
 }
-
-#if BUILDFLAG(IS_ANDROID)
-// Shows the site settings page for `extension` on desktop Android, where
-// settings is a native page hosted in a tab rather than the settings WebUI.
-//
-// With SettingsInTabUrlNav the page is addressed by URL, the same way as on
-// desktop: chrome://settings/siteDetails?site=chrome-extension%3A%2F%2F<id>.
-// Without it a settings tab only resolves its host and would land on the main
-// settings page, so the page has to be named by its fragment instead, which is
-// what the Java side does when asked over the bridge.
-void ShowExtensionSiteSettings(content::WebContents* web_contents,
-                               const Extension& extension) {
-  if (!web_contents ||
-      !base::FeatureList::IsEnabled(chrome::android::kSettingsInTabUrlNav)) {
-    ExtensionDeveloperPrivateBridge::ShowSiteSettings(extension.id());
-    return;
-  }
-
-  // The page identifies a site by origin rather than by full URL.
-  OpenUrl(web_contents,
-          net::AppendQueryParameter(
-              GURL(base::StrCat({chrome::kChromeUISettingsURL,
-                                 chrome::kAndroidSiteDetailsSubpage})),
-              "site", extension.origin().Serialize()));
-}
-#endif  // BUILDFLAG(IS_ANDROID)
 
 // A stub for the uninstall dialog.
 // TODO(devlin): Ideally, we would just have the uninstall dialog take a
@@ -645,7 +615,7 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       chrome::ShowSiteSettings(browser_, extension->url());
 #elif BUILDFLAG(IS_ANDROID)
-      ShowExtensionSiteSettings(GetActiveWebContents(), *extension);
+      ShowExtensionSiteSettings(GetActiveWebContents(), extension->id());
 #else
       NOTIMPLEMENTED();
 #endif

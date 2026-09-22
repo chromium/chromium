@@ -698,8 +698,9 @@ source_set("extensions") {
         "extension_menu_model_android.h",
       ]
 
-      # pack_extension_job.cc and developer_private_functions.cc include headers
-      # from android extension bridges under IS_ANDROID.
+      # pack_extension_job.cc, developer_private_functions.cc and
+      # extension_context_menu_model.cc include headers from android extension
+      # bridges under IS_ANDROID.
       deps += [ "//chrome/browser/ui/android/extensions:public" ]
     }
   } else {

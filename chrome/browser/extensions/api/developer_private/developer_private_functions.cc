@@ -87,7 +87,7 @@
 #include "ui/base/window_open_disposition.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/android/extensions/extension_developer_private_bridge.h"
+#include "chrome/browser/ui/android/extensions/extension_site_settings_android.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "extensions/browser/extension_function.h"
 #else  // BUILDFLAG(IS_ANDROID)
@@ -2371,7 +2371,9 @@ DeveloperPrivateShowSiteSettingsFunction::Run() {
       developer_private::ShowSiteSettings::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   const std::string& extension_id = params->extension_id;
-  ExtensionDeveloperPrivateBridge::ShowSiteSettings(extension_id);
+  // The sender is chrome://extensions, shown in a tab, so the page can be
+  // opened next to it rather than in a settings surface of its own.
+  ShowExtensionSiteSettings(GetSenderWebContents(), extension_id);
   return RespondNow(NoArguments());
 }
 #else   // BUILDFLAG(IS_ANDROID)
