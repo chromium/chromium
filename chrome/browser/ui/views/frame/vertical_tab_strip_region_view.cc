@@ -396,8 +396,13 @@ views::ProposedLayout VerticalTabStripRegionView::CalculateProposedLayout(
   const auto vertical_padding = GetLayoutConstant(
       LayoutConstant::kVerticalTabStripUncollapsedVerticalPadding);
 
+  views::SizeBounds button_available_size = size_bounds;
+  if (button_available_size.width().is_bounded()) {
+    button_available_size.set_width(button_available_size.width() -
+                                    2 * horizontal_padding);
+  }
   const gfx::Size button_size =
-      top_button_container_->GetPreferredSize(size_bounds);
+      top_button_container_->GetPreferredSize(button_available_size);
   const gfx::Size tab_strip_size =
       tab_strip_view() ? tab_strip_view()->GetPreferredSize() : gfx::Size();
   const gfx::Size organizer_panel_size =
