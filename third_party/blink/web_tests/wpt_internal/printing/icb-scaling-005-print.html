@@ -1,6 +1,15 @@
 <!DOCTYPE html>
+<html class="reftest-wait">
 <link rel="match" href="icb-scaling-005-print-ref.html">
 <meta name=fuzzy content="maxDifference=0-5;totalPixels=0-20">
+<script src="/common/reftest-wait.js"></script>
+
+<!--
+  Wait for the preloaded image before taking the reftest snapshot, since the
+  image is otherwise only referenced via CSS background.
+-->
+<link rel="preload" as="image" href="../support/cat.png" onload="takeScreenshot()">
+
 <style>
   @page {
     size: 300px;

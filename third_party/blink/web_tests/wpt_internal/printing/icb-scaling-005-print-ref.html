@@ -1,4 +1,13 @@
 <!DOCTYPE html>
+<html class="reftest-wait">
+<script src="/common/reftest-wait.js"></script>
+
+<!--
+  Wait for the preloaded image before taking the reftest snapshot, since the
+  image is otherwise only referenced via CSS background.
+-->
+<link rel="preload" as="image" href="../support/cat.png" onload="takeScreenshot()">
+
 <style>
   @page {
     size: 300px;
