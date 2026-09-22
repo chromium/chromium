@@ -11366,17 +11366,26 @@ void RenderFrameHostImpl::IssueKeepAliveHandle(
     mojo::PendingReceiver<blink::mojom::NavigationStateKeepAliveHandle>
         receiver,
     const blink::InitiatorStateToken& initiator_state_token) {
-  // A well-behaving renderer process should only request a keep-alive for the
-  // current initiator state. Terminate those that attempt to extend the
-  // lifetime of other initiator states.
-  if (initiator_state_token != current_initiator_state_token_) {
-    bad_message::ReceivedBadMessage(
-        GetProcess(),
-        bad_message::RFH_ISSUE_KEEP_ALIVE_HANDLE_INVALID_INITIATOR_TOKEN);
-    return;
-  }
   BrowserContextImpl* browser_context =
       BrowserContextImpl::From(GetBrowserContext());
+  // Normally, a well-behaving renderer process should only request a keep-alive
+  // for the current initiator state. However, it seems to happen in practice.
+  // TODO(crbug.com/510258191): Investigate why this happens and re-enable
+  // renderer process termination upon having the wrong token.
+  if (initiator_state_token != current_initiator_state_token_) {
+    // Attempt to find a matching InitiatorNavigationState.
+    auto initiator_navigation_state =
+        browser_context->GetInitiatorNavigationState(GetDocumentToken(),
+                                                     initiator_state_token);
+    if (initiator_navigation_state) {
+      browser_context->RegisterKeepAliveHandle(
+          std::move(receiver), base::WrapUnique(new NavigationStateKeepAlive(
+                                   initiator_navigation_state)));
+      return;
+    }
+    // Otherwise, fall through to the general case of registering a KeepAlive on
+    // the current InitiatorNavigationState.
+  }
   browser_context->RegisterKeepAliveHandle(
       std::move(receiver), base::WrapUnique(new NavigationStateKeepAlive(
                                current_navigation_state_)));
