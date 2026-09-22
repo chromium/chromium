@@ -16,6 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/autofill/android/entity_data_manager_android_test_api.h"
+#include "chrome/browser/autofill/android/entity_instance_android.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -387,6 +388,32 @@ TEST_F(EntityDataManagerAndroidTest,
   EXPECT_FALSE(entity_data_manager_android_
                    ->GetIsAutofillAiEntityTypeDisabledByEnterprisePolicy(
                        env(), static_cast<int>(EntityTypeName::kVehicle)));
+}
+
+TEST_F(EntityDataManagerAndroidTest, IsEligibleForWalletNotice) {
+  // Vehicle + ServerWallet -> true (public pass, not read-only).
+  EXPECT_TRUE(entity_data_manager_android_->IsEligibleForWalletNotice(
+      env(), static_cast<int>(EntityTypeName::kVehicle),
+      static_cast<int>(EntityInstance::RecordType::kServerWallet)));
+
+  // Passport + ServerWallet -> false (private pass).
+  EXPECT_FALSE(entity_data_manager_android_->IsEligibleForWalletNotice(
+      env(), static_cast<int>(EntityTypeName::kPassport),
+      static_cast<int>(EntityInstance::RecordType::kServerWallet)));
+
+  // Vehicle + Local -> false (not server wallet).
+  EXPECT_FALSE(entity_data_manager_android_->IsEligibleForWalletNotice(
+      env(), static_cast<int>(EntityTypeName::kVehicle),
+      static_cast<int>(EntityInstance::RecordType::kLocal)));
+
+  // FlightReservation + ServerWallet -> false (read-only).
+  EXPECT_FALSE(entity_data_manager_android_->IsEligibleForWalletNotice(
+      env(), static_cast<int>(EntityTypeName::kFlightReservation),
+      static_cast<int>(EntityInstance::RecordType::kServerWallet)));
+
+  // Invalid entity type -> false.
+  EXPECT_FALSE(entity_data_manager_android_->IsEligibleForWalletNotice(
+      env(), -1, static_cast<int>(EntityInstance::RecordType::kServerWallet)));
 }
 
 }  // namespace

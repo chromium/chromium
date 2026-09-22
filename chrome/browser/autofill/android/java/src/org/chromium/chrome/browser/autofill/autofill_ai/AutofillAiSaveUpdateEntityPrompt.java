@@ -88,7 +88,9 @@ public class AutofillAiSaveUpdateEntityPrompt implements EntityEditorCoordinator
                                 ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
                         .with(ModalDialogProperties.CUSTOM_VIEW, mDialogView);
         mDialogModel = builder.build();
-        mEntityEditor = new EntityEditorCoordinator(activity, this, profile, entityInstance);
+        mEntityEditor =
+                new EntityEditorCoordinator(
+                        activity, this, profile, entityInstance, /* detailsForUpsertPass= */ null);
     }
 
     @Override

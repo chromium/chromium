@@ -25,7 +25,7 @@ import java.util.Objects;
 @JNINamespace("autofill")
 @NullMarked
 public class EntityInstance {
-    private final @RecordType int mRecordType;
+    private @RecordType int mRecordType;
     private final EntityType mEntityType;
     private final Map<AttributeType, AttributeInstance> mAttributes = new HashMap<>();
     private final String mNickname;
@@ -147,6 +147,10 @@ public class EntityInstance {
     @CalledByNative
     public @JniType("autofill::EntityInstance::RecordType") @RecordType int getRecordType() {
         return mRecordType;
+    }
+
+    public void setRecordType(@RecordType int recordType) {
+        mRecordType = recordType;
     }
 
     @CalledByNative

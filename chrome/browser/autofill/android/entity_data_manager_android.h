@@ -173,6 +173,12 @@ class EntityDataManagerAndroid : public EntityDataManager::Observer {
   // servers. Used to display a notice in the management UI.
   bool IsWalletPublicPassStorageEnabled(JNIEnv* env);
 
+  // Returns true if an entity with `entity_type` and `record_type` is eligible
+  // for the Google Wallet public pass disclosure notice.
+  bool IsEligibleForWalletNotice(JNIEnv* env,
+                                 int entity_type,
+                                 int record_type) const;
+
   // Returns whether the personal context preference is visible.
   bool IsPersonalContextPreferenceVisible(JNIEnv* env);
 

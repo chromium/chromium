@@ -15,13 +15,17 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -47,6 +51,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -56,6 +61,8 @@ import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
+import org.chromium.chrome.browser.autofill.editors.common.EditorObserverForTest;
+import org.chromium.chrome.browser.autofill.editors.common.EditorViewBase;
 import org.chromium.chrome.browser.autofill.settings.personal_context.AutofillPersonalContextFragment;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
@@ -67,10 +74,14 @@ import org.chromium.chrome.browser.settings.SettingsInTab;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.autofill.autofill_ai.DetailsForUpsertPass;
 import org.chromium.components.autofill.autofill_ai.EntityInstance;
 import org.chromium.components.autofill.autofill_ai.EntityInstanceWithLabels;
 import org.chromium.components.autofill.autofill_ai.EntityType;
+import org.chromium.components.autofill.autofill_ai.EntityTypeName;
+import org.chromium.components.autofill.autofill_ai.RecordType;
 import org.chromium.components.autofill.autofill_ai.utils.TestUtils;
+import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
@@ -280,22 +291,132 @@ public class AutofillTravelFragmentTest {
         when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
         when(mEntityDataManager.getAutofillAiOptInStatus()).thenReturn(true);
 
+        CallbackHelper editorReadyHelper = registerEditorReadyObserver();
+
         mSettingsTestRule.startSettingsActivity();
         setTravelTogglePreference(true);
 
-        Preference addVehicle =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            PreferenceCategory category =
-                                    mSettingsTestRule.getFragment().findPreference("Vehicle");
-                            return category.findPreference("Vehicle" + " Add");
-                        });
-        assertNotNull(addVehicle);
+        Preference addVehicle = waitForEnabledAddVehiclePreference();
+        int callCount = editorReadyHelper.getCallCount();
         ThreadUtils.runOnUiThreadBlocking(addVehicle::performClick);
+        editorReadyHelper.waitForCallback(callCount);
 
-        onView(withText("Add Vehicle")).check(matches(isDisplayed()));
+        onView(withText("Add Vehicle")).inRoot(isDialog()).check(matches(isDisplayed()));
 
-        onView(withText("Done")).perform(click());
+        onView(withText("Done")).inRoot(isDialog()).perform(click());
+        verify(mEntityDataManager)
+                .addOrUpdateEntityInstance(
+                        any(),
+                        eq(R.string.autofill_ai_save_or_update_local_entity_source_notice),
+                        eq(R.string.done),
+                        any());
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_WALLET_DISCLOSURE_NOTICE_PUBLIC_PASS)
+    public void testAutofillAiEntities_publicWalletEntitiesConsumeDetailsForUpsert()
+            throws Exception {
+        EntityType vehicleType =
+                TestUtils.getVehicleEntityType(
+                        /* isReadOnly= */ false,
+                        /* isEnabled= */ true,
+                        /* isEligibleForWalletStorage= */ true);
+
+        LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
+                new LinkedHashMap<>();
+        instancesMap.put(vehicleType, Collections.emptyList());
+
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        when(mEntityDataManager.getAutofillAiOptInStatus()).thenReturn(true);
+        when(mEntityDataManager.isEligibleForWalletNotice(
+                        eq(EntityTypeName.VEHICLE), eq(RecordType.SERVER_WALLET)))
+                .thenReturn(true);
+
+        LegalMessageLine legalMessageLine = new LegalMessageLine("Legal disclaimer with link.");
+        legalMessageLine.links.add(
+                new LegalMessageLine.Link(0, 5, "https://policies.google.com/privacy"));
+        DetailsForUpsertPass response1 =
+                new DetailsForUpsertPass(List.of(legalMessageLine), "context_token_1");
+        DetailsForUpsertPass response2 =
+                new DetailsForUpsertPass(List.of(legalMessageLine), "context_token_2");
+
+        doAnswer(
+                        invocation -> {
+                            Callback<DetailsForUpsertPass> callback = invocation.getArgument(1);
+                            callback.onResult(response1);
+                            return null;
+                        })
+                .doAnswer(
+                        invocation -> {
+                            Callback<DetailsForUpsertPass> callback = invocation.getArgument(1);
+                            callback.onResult(response2);
+                            return null;
+                        })
+                .doAnswer(
+                        invocation -> {
+                            Callback<DetailsForUpsertPass> callback = invocation.getArgument(1);
+                            callback.onResult(null);
+                            return null;
+                        })
+                .when(mEntityDataManager)
+                .getDetailsForUpsertPass(eq(EntityTypeName.VEHICLE), any());
+
+        CallbackHelper editorReadyHelper = registerEditorReadyObserver();
+
+        mSettingsTestRule.startSettingsActivity();
+        setTravelTogglePreference(true);
+
+        Preference addVehicle = waitForEnabledAddVehiclePreference();
+
+        // First entity addition consumes `response1`, saves to Wallet, and triggers a second fetch
+        // (`response2`).
+        int callCount = editorReadyHelper.getCallCount();
+        ThreadUtils.runOnUiThreadBlocking(addVehicle::performClick);
+        editorReadyHelper.waitForCallback(callCount);
+
+        verify(mEntityDataManager, times(2))
+                .getDetailsForUpsertPass(eq(EntityTypeName.VEHICLE), any());
+        verify(mEntityDataManager, times(2))
+                .isEligibleForWalletNotice(
+                        eq(EntityTypeName.VEHICLE), eq(RecordType.SERVER_WALLET));
+
+        onView(withText("Add Vehicle")).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withText("Done")).inRoot(isDialog()).perform(click());
+        verify(mEntityDataManager)
+                .addOrUpdateEntityInstance(
+                        any(),
+                        eq(R.string.autofill_ai_save_or_update_entity_in_wallet_source_notice),
+                        eq(R.string.done),
+                        any());
+
+        // Second entity addition consumes `response2`, saves to Wallet, and triggers a third fetch
+        // (which returns `null`).
+        callCount = editorReadyHelper.getCallCount();
+        ThreadUtils.runOnUiThreadBlocking(addVehicle::performClick);
+        editorReadyHelper.waitForCallback(callCount);
+
+        verify(mEntityDataManager, times(3))
+                .getDetailsForUpsertPass(eq(EntityTypeName.VEHICLE), any());
+        onView(withText("Add Vehicle")).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withText("Done")).inRoot(isDialog()).perform(click());
+        verify(mEntityDataManager, times(2))
+                .addOrUpdateEntityInstance(
+                        any(),
+                        eq(R.string.autofill_ai_save_or_update_entity_in_wallet_source_notice),
+                        eq(R.string.done),
+                        any());
+
+        // Third entity addition verifies that `response2` was consumed and removed from the map:
+        // since the third fetch returned `null`, this addition falls back to `RecordType.LOCAL`.
+        callCount = editorReadyHelper.getCallCount();
+        ThreadUtils.runOnUiThreadBlocking(addVehicle::performClick);
+        editorReadyHelper.waitForCallback(callCount);
+
+        verify(mEntityDataManager, times(4))
+                .getDetailsForUpsertPass(eq(EntityTypeName.VEHICLE), any());
+        onView(withText("Add Vehicle")).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withText("Done")).inRoot(isDialog()).perform(click());
         verify(mEntityDataManager)
                 .addOrUpdateEntityInstance(
                         any(),
@@ -389,5 +510,47 @@ public class AutofillTravelFragmentTest {
                 () ->
                         UserPrefs.get(mSettingsTestRule.getFragment().getProfile())
                                 .setBoolean(Pref.AUTOFILL_AI_TRAVEL_ENTITIES_ENABLED, value));
+    }
+
+    private Preference waitForEnabledAddVehiclePreference() {
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    PreferenceCategory category =
+                            mSettingsTestRule.getFragment().findPreference("Vehicle");
+                    Criteria.checkThat(category, notNullValue());
+                    Preference addVehicle = category.findPreference("Vehicle Add");
+                    Criteria.checkThat(addVehicle, notNullValue());
+                    Criteria.checkThat(addVehicle.isEnabled(), is(true));
+                });
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PreferenceCategory category =
+                            mSettingsTestRule.getFragment().findPreference("Vehicle");
+                    return category.findPreference("Vehicle Add");
+                });
+    }
+
+    private CallbackHelper registerEditorReadyObserver() {
+        CallbackHelper editorReadyHelper = new CallbackHelper();
+        EditorViewBase.setEditorObserverForTest(
+                new EditorObserverForTest() {
+                    @Override
+                    public void onEditorReadyToEdit() {
+                        editorReadyHelper.notifyCalled();
+                    }
+
+                    @Override
+                    public void onEditorValidationError() {}
+
+                    @Override
+                    public void onEditorTextUpdate() {}
+
+                    @Override
+                    public void onEditorDismiss() {}
+
+                    @Override
+                    public void onEditorConfirmationDialogShown() {}
+                });
+        return editorReadyHelper;
     }
 }

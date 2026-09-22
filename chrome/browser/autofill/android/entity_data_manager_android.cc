@@ -36,6 +36,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_import_util.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_labels.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_wallet_util.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/management_util.h"
@@ -497,6 +498,19 @@ bool EntityDataManagerAndroid::IsWalletPublicPassStorageEnabledHelper() const {
 
 bool EntityDataManagerAndroid::IsWalletPublicPassStorageEnabled(JNIEnv* env) {
   return IsWalletPublicPassStorageEnabledHelper();
+}
+
+bool EntityDataManagerAndroid::IsEligibleForWalletNotice(
+    JNIEnv* env,
+    int entity_type,
+    int record_type) const {
+  std::optional<EntityTypeName> type_name = ToSafeEntityTypeName(entity_type);
+  if (!type_name) {
+    return false;
+  }
+  return autofill::IsEligibleForWalletNotice(
+      EntityType(*type_name),
+      static_cast<EntityInstance::RecordType>(record_type));
 }
 
 bool EntityDataManagerAndroid::RunMayPerformAutofillAiAction(

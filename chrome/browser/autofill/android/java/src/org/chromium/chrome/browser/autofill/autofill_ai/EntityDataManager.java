@@ -23,6 +23,7 @@ import org.chromium.components.autofill.autofill_ai.EntityInstance;
 import org.chromium.components.autofill.autofill_ai.EntityInstanceWithLabels;
 import org.chromium.components.autofill.autofill_ai.EntityType;
 import org.chromium.components.autofill.autofill_ai.EntityTypeName;
+import org.chromium.components.autofill.autofill_ai.RecordType;
 
 import java.text.Collator;
 import java.util.ArrayList;
@@ -296,6 +297,24 @@ public class EntityDataManager implements Destroyable {
                 .isWalletPublicPassStorageEnabled(mNativeEntityDataManagerAndroid);
     }
 
+    /**
+     * Checks if an entity with `entityType` and `recordType` is eligible for the Google Wallet
+     * notice.
+     *
+     * @param entityType The entity type.
+     * @param recordType The record type.
+     * @return True if eligible for disclosure notice, false otherwise.
+     */
+    public boolean isEligibleForWalletNotice(
+            @EntityTypeName int entityType, @RecordType int recordType) {
+        ThreadUtils.assertOnUiThread();
+        if (mNativeEntityDataManagerAndroid == 0) {
+            return false;
+        }
+        return EntityDataManagerJni.get()
+                .isEligibleForWalletNotice(mNativeEntityDataManagerAndroid, entityType, recordType);
+    }
+
     public boolean isPersonalContextPreferenceVisible() {
         ThreadUtils.assertOnUiThread();
         return EntityDataManagerJni.get()
@@ -360,6 +379,11 @@ public class EntityDataManager implements Destroyable {
 
         boolean isWalletPublicPassStorageEnabled(long nativeEntityDataManagerAndroid);
 
+        boolean isEligibleForWalletNotice(
+                long nativeEntityDataManagerAndroid,
+                @EntityTypeName int entityType,
+                @RecordType int recordType);
+
         boolean isPersonalContextPreferenceVisible(long nativeEntityDataManagerAndroid);
 
         boolean isPersonalContextEnabled(long nativeEntityDataManagerAndroid);
@@ -370,7 +394,6 @@ public class EntityDataManager implements Destroyable {
 
         @JniType("std::string")
         String getPersonalContextManageConnectedAppsUrl();
-
 
         void removeEntityInstance(
                 long nativeEntityDataManagerAndroid, @JniType("std::string") String guid);

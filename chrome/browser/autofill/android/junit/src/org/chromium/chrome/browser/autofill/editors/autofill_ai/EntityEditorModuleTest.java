@@ -1014,7 +1014,13 @@ public class EntityEditorModuleTest {
     }
 
     private void showEditorDialog(EntityInstance entityInstance) {
-        mCoordinator = new EntityEditorCoordinator(mActivity, mDelegate, mProfile, entityInstance);
+        mCoordinator =
+                new EntityEditorCoordinator(
+                        mActivity,
+                        mDelegate,
+                        mProfile,
+                        entityInstance,
+                        /* detailsForUpsertPass= */ null);
         mContainerView = mCoordinator.getEntityEditorViewForTest().getContainerView();
         mCoordinator.showEditorDialog();
     }

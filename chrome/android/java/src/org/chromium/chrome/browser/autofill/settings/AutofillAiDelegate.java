@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.autofill.autofill_ai.DetailsForUpsertPass;
 import org.chromium.components.autofill.autofill_ai.EntityInstance;
 import org.chromium.components.autofill.autofill_ai.EntityInstanceWithLabels;
 import org.chromium.components.autofill.autofill_ai.EntityType;
@@ -64,6 +65,8 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -141,6 +144,7 @@ public class AutofillAiDelegate {
     private @Nullable PrefChangeRegistrar mPrefChangeRegistrar;
     private @Nullable EntityEditorCoordinator mEntityEditor;
     private @Nullable ReauthenticatorBridge mReauthenticatorBridge;
+    private final Map<Integer, DetailsForUpsertPass> mDetailsForUpsertPassMap = new HashMap<>();
     private final EntityEditorCoordinator.Delegate mEntityEditorDelegate =
             new EntityEditorCoordinator.Delegate() {
                 @Override
@@ -208,9 +212,44 @@ public class AutofillAiDelegate {
                 EntityDataManagerFactory.getForProfile(mFragment.getProfile());
         if (entityDataManager != null) {
             entityDataManager.registerDataObserver(mEntityObserver);
+            if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.AUTOFILL_ENABLE_WALLET_DISCLOSURE_NOTICE_PUBLIC_PASS)) {
+                // Opening the entity editor is a synchronous UI action when the user clicks "Add".
+                // To avoid UI latency or showing a spinner, prefetch the legal message disclosure
+                // and context token for all eligible entity types asynchronously ahead of time.
+                // If the prefetch fails or is still in flight when the user opens the editor, the
+                // editor gracefully falls back to saving the entity locally.
+                for (@EntityTypeName int type : getEntityTypesToPrefetch(entityDataManager)) {
+                    if (entityDataManager.isEligibleForWalletNotice(
+                            type, RecordType.SERVER_WALLET)) {
+                        fetchDetailsForUpsertPass(entityDataManager, type);
+                    }
+                }
+            }
         }
 
         setupPreferenceObservers();
+    }
+
+    private Set<Integer> getEntityTypesToPrefetch(EntityDataManager entityDataManager) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)) {
+            // When `YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID` is enabled, Autofill AI entities are
+            // split across dedicated category subpages (e.g. `AutofillTravelFragment`,
+            // `AutofillIdentityDocsFragment`), each extending `AutofillAiBaseFragment` and
+            // displaying only its own subset of entity types.
+            assert mFragment instanceof AutofillAiBaseFragment;
+            return ((AutofillAiBaseFragment) mFragment).getEntityTypes();
+        } else {
+            // When `YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID` is disabled, all Autofill AI entity
+            // categories are rendered directly inside `AutofillProfilesFragment` ("Addresses and
+            // more") without a category filter, so prefetch for all entity types listed on the
+            // screen.
+            Set<Integer> types = new HashSet<>();
+            for (EntityType type : entityDataManager.getInstancesToList().keySet()) {
+                types.add(type.getTypeName());
+            }
+            return types;
+        }
     }
 
     void onDestroyView() {
@@ -223,6 +262,7 @@ public class AutofillAiDelegate {
             mReauthenticatorBridge.destroy();
             mReauthenticatorBridge = null;
         }
+        mDetailsForUpsertPassMap.clear();
         destroyPreferenceObservers();
     }
 
@@ -696,13 +736,52 @@ public class AutofillAiDelegate {
     }
 
     void showEntityEditor(EntityInstance entityInstance) {
+        EntityDataManager entityDataManager =
+                EntityDataManagerFactory.getForProfile(mFragment.getProfile());
+        final boolean isSavePrompt = TextUtils.isEmpty(entityInstance.getGuid());
+        final boolean isEligibleForWalletNotice =
+                entityDataManager != null
+                        && isSavePrompt
+                        && ChromeFeatureList.isEnabled(
+                                ChromeFeatureList
+                                        .AUTOFILL_ENABLE_WALLET_DISCLOSURE_NOTICE_PUBLIC_PASS)
+                        && entityDataManager.isEligibleForWalletNotice(
+                                entityInstance.getEntityType().getTypeName(),
+                                entityInstance.getRecordType());
+        DetailsForUpsertPass detailsForUpsertPass = null;
+        if (isEligibleForWalletNotice) {
+            @EntityTypeName int entityType = entityInstance.getEntityType().getTypeName();
+            DetailsForUpsertPass prefetchedDetails = mDetailsForUpsertPassMap.remove(entityType);
+            fetchDetailsForUpsertPass(entityDataManager, entityType);
+            if (prefetchedDetails != null && !prefetchedDetails.getLegalMessageLines().isEmpty()) {
+                detailsForUpsertPass = prefetchedDetails;
+            } else {
+                // If prefetching failed, returned empty legal messages, or did not complete in
+                // time, the required legal disclosures and context token cannot be presented to the
+                // user. Rather than blocking the user from saving, fall back to storing the entity
+                // locally on device as `RecordType.LOCAL`.
+                entityInstance.setRecordType(RecordType.LOCAL);
+            }
+        }
         mEntityEditor =
                 new EntityEditorCoordinator(
                         mFragment.getActivity(),
                         mEntityEditorDelegate,
                         mFragment.getProfile(),
-                        entityInstance);
+                        entityInstance,
+                        detailsForUpsertPass);
         mEntityEditor.showEditorDialog();
+    }
+
+    private void fetchDetailsForUpsertPass(
+            EntityDataManager entityDataManager, @EntityTypeName int entityType) {
+        entityDataManager.getDetailsForUpsertPass(
+                entityType,
+                response -> {
+                    if (response != null) {
+                        mDetailsForUpsertPassMap.put(entityType, response);
+                    }
+                });
     }
 
     private Context getStyledContext() {

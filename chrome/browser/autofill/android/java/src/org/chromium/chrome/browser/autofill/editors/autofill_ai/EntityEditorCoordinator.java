@@ -14,6 +14,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.components.autofill.autofill_ai.DetailsForUpsertPass;
 import org.chromium.components.autofill.autofill_ai.EntityInstance;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -61,12 +62,14 @@ public class EntityEditorCoordinator {
      * @param delegate The delegate to be notified of editor events.
      * @param profile The user's profile.
      * @param entityInstance The entity instance to be edited.
+     * @param detailsForUpsertPass The details response containing legal message lines or null.
      */
     public EntityEditorCoordinator(
             FragmentActivity activity,
             Delegate delegate,
             Profile profile,
-            EntityInstance entityInstance) {
+            EntityInstance entityInstance,
+            @Nullable DetailsForUpsertPass detailsForUpsertPass) {
         mMediator =
                 new EntityEditorMediator(
                         activity,
