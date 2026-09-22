@@ -465,7 +465,8 @@ public class TabContextMenuCoordinatorUnitTest {
                         TabClosingSource.TABLET_TAB_STRIP,
                         /* canActivateTabLayoutToggleMenuSupplier= */ null,
                         layout,
-                        /* tabGroupUiActionHandler= */ null);
+                        /* tabGroupUiActionHandler= */ null,
+                        /* onMenuDismissedCallback= */ null);
     }
 
     @Test
@@ -3435,7 +3436,8 @@ public class TabContextMenuCoordinatorUnitTest {
                         TabClosingSource.TABLET_TAB_STRIP,
                         () -> false,
                         TabStripLayoutType.HORIZONTAL,
-                        /* tabGroupUiActionHandler= */ null);
+                        /* tabGroupUiActionHandler= */ null,
+                        /* onMenuDismissedCallback= */ null);
 
         mTabModel.addTab(
                 mTab1,

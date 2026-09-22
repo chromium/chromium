@@ -136,7 +136,8 @@ public class TabStripContextMenuCoordinatorUnitTest {
                         mSnackbarManager,
                         mOnNewTabClick,
                         /* canActivateTabLayoutToggleMenuSupplier= */ null,
-                        layout);
+                        layout,
+                        /* onMenuDismissedCallback= */ null);
     }
 
     @After
@@ -208,7 +209,8 @@ public class TabStripContextMenuCoordinatorUnitTest {
                         mSnackbarManager,
                         mOnNewTabClick,
                         () -> false,
-                        TabStripLayoutType.HORIZONTAL);
+                        TabStripLayoutType.HORIZONTAL,
+                        /* onMenuDismissedCallback= */ null);
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
 
         mCoordinator.showMenu(mRectProvider, false, mActivity);

@@ -1213,7 +1213,8 @@ public class VerticalTabListRenderTest {
                                     /* onNewTabClick= */ () -> {},
                                     /* canActivateTabLayoutToggleMenuSupplier= */ () ->
                                             canToggleLayout,
-                                    TabContextMenuCoordinator.TabStripLayoutType.VERTICAL);
+                                    TabContextMenuCoordinator.TabStripLayoutType.VERTICAL,
+                                    /* onMenuDismissedCallback= */ null);
 
                     // Generate the complete menu list with all rows, dividers, text, click
                     // delegates.
@@ -1353,7 +1354,8 @@ public class VerticalTabListRenderTest {
                                         TabClosingSource.VERTICAL_TAB_STRIP,
                                         () -> canToggleLayout,
                                         TabContextMenuCoordinator.TabStripLayoutType.VERTICAL,
-                                        /* tabGroupUiActionHandler= */ null);
+                                        /* tabGroupUiActionHandler= */ null,
+                                        /* onMenuDismissedCallback= */ null);
 
                         View menuContentView =
                                 coordinatorHolder[0].buildMenuView(anchorInfo, mIsIncognito);

@@ -276,7 +276,8 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                         mDataSharingTabManager,
                         mReorderFunction,
                         TabClosingSource.TABLET_TAB_STRIP,
-                        layout);
+                        layout,
+                        /* onMenuDismissedCallback= */ null);
     }
 
     @Test

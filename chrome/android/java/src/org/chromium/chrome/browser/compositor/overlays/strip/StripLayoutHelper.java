@@ -2665,7 +2665,8 @@ public class StripLayoutHelper
                                         toLeft);
                             },
                             TabClosingSource.TABLET_TAB_STRIP,
-                            TabStripLayoutType.HORIZONTAL);
+                            TabStripLayoutType.HORIZONTAL,
+                            /* onMenuDismissedCallback= */ null);
         }
         StripLayoutUtils.performHapticFeedback(mControlContainer);
 
@@ -2752,7 +2753,8 @@ public class StripLayoutHelper
                             TabClosingSource.TABLET_TAB_STRIP,
                             mCanActivateTabLayoutToggleMenuSupplier,
                             TabStripLayoutType.HORIZONTAL,
-                            /* tabGroupUiActionHandler= */ null);
+                            /* tabGroupUiActionHandler= */ null,
+                            /* onMenuDismissedCallback= */ null);
         }
         RectProvider anchorRectProvider = new RectProvider();
         anchorTab.getAnchorRect(anchorRectProvider.getRect());
@@ -3443,7 +3445,8 @@ public class StripLayoutHelper
                             mSnackbarManager,
                             () -> handleNewTabClick(NewTabSource.EMPTY_SPACE_CONTEXT_MENU),
                             mCanActivateTabLayoutToggleMenuSupplier,
-                            TabStripLayoutType.HORIZONTAL);
+                            TabStripLayoutType.HORIZONTAL,
+                            /* onMenuDismissedCallback= */ null);
         }
 
         // Determine the anchor view rect to position the menu.

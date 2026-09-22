@@ -998,7 +998,7 @@ public class VerticalTabHoverControllerUnitTest {
     }
 
     @Test
-    public void testHideHoverCard_ExecutesTagHoverExitListener() {
+    public void testResetHoverState_ExecutesTagHoverExitListener() {
         when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_3);
         Runnable mockHoverExit = mock(Runnable.class);
         when(mTabView1.getTag(R.id.tab_hover_exit_listener)).thenReturn(mockHoverExit);
@@ -1007,7 +1007,9 @@ public class VerticalTabHoverControllerUnitTest {
         listener.onTabHoverStateChanged(TAB_ID_1, mTabView1, /* isHovered= */ true);
 
         mController.hideHoverCard();
+        verify(mockHoverExit, never()).run();
 
+        mController.resetHoverState();
         verify(mockHoverExit).run();
     }
 
@@ -1120,6 +1122,88 @@ public class VerticalTabHoverControllerUnitTest {
         isContextMenuShowing[0] = false;
         when(mRecyclerView.getScrollState()).thenReturn(RecyclerView.SCROLL_STATE_DRAGGING);
         tabView1.dispatchGenericMotionEvent(enter1);
+        assertNull(controller.getCurrentHoveredView());
+        assertFalse(tab1Hovered[0]);
+
+        controller.destroy();
+    }
+
+    @Test
+    public void testHoverBackgroundPersistsDuringContextMenuAndScroll_ClearedOnReset() {
+        when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_3);
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        FrameLayout tabView1 = new FrameLayout(activity);
+        FrameLayout tabView2 = new FrameLayout(activity);
+        tabView1.layout(0, 0, 100, 48);
+        tabView2.layout(0, 48, 100, 96);
+
+        boolean[] tab1Hovered = new boolean[] {false};
+        boolean[] tab2Hovered = new boolean[] {false};
+        boolean[] isContextMenuShowing = new boolean[] {false};
+        VerticalTabHoverController controller =
+                new VerticalTabHoverController(
+                        mContainerView,
+                        mTabHoverCardViewStub,
+                        mTabGroupHoverCardViewStub,
+                        mTabModelSelector,
+                        mTabContentManagerSupplier,
+                        () -> isContextMenuShowing[0]);
+
+        VerticalTabHoverController.setupTabHover(
+                controller.getTabHoverListener(),
+                TAB_ID_1,
+                tabView1,
+                /* actionButton= */ null,
+                v -> tab1Hovered[0] = v);
+        VerticalTabHoverController.setupTabHover(
+                controller.getTabHoverListener(),
+                TAB_ID_2,
+                tabView2,
+                /* actionButton= */ null,
+                v -> tab2Hovered[0] = v);
+
+        MotionEvent enter = MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 10f, 10f, 0);
+        enter.setSource(InputDevice.SOURCE_MOUSE);
+        MotionEvent exit = MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_EXIT, -10f, -10f, 0);
+        exit.setSource(InputDevice.SOURCE_MOUSE);
+
+        // 1. Hover tab 1, then open context menu and hide hover card.
+        tabView1.dispatchGenericMotionEvent(enter);
+        assertEquals(tabView1, controller.getCurrentHoveredView());
+        assertTrue(tab1Hovered[0]);
+
+        isContextMenuShowing[0] = true;
+        controller.hideHoverCard();
+
+        // Exiting tab 1 or entering tab 2 while context menu is open keeps tab 1 hovered.
+        tabView1.dispatchGenericMotionEvent(exit);
+        tabView2.dispatchGenericMotionEvent(enter);
+        assertEquals(tabView1, controller.getCurrentHoveredView());
+        assertTrue(tab1Hovered[0]);
+        assertFalse(tab2Hovered[0]);
+
+        // Dismissing context menu and resetting hover state clears tab 1 hover background.
+        isContextMenuShowing[0] = false;
+        controller.resetHoverState();
+        assertNull(controller.getCurrentHoveredView());
+        assertFalse(tab1Hovered[0]);
+
+        // 2. Hover tab 1, then start scrolling and hide hover card.
+        tabView1.dispatchGenericMotionEvent(enter);
+        assertEquals(tabView1, controller.getCurrentHoveredView());
+        assertTrue(tab1Hovered[0]);
+
+        when(mRecyclerView.getScrollState()).thenReturn(RecyclerView.SCROLL_STATE_DRAGGING);
+        controller.hideHoverCard();
+
+        // Exiting tab 1 while scrolling keeps tab 1 hovered.
+        tabView1.dispatchGenericMotionEvent(exit);
+        assertEquals(tabView1, controller.getCurrentHoveredView());
+        assertTrue(tab1Hovered[0]);
+
+        // Scroll returning to idle and resetting hover state clears tab 1 hover background.
+        when(mRecyclerView.getScrollState()).thenReturn(RecyclerView.SCROLL_STATE_IDLE);
+        controller.resetHoverState();
         assertNull(controller.getCurrentHoveredView());
         assertFalse(tab1Hovered[0]);
 

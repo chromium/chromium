@@ -72,6 +72,7 @@ public class TabStripContextMenuCoordinator {
     private final @Nullable BooleanSupplier mCanActivateTabLayoutToggleMenuSupplier;
     private final @TabStripLayoutType int mTabStripLayout;
     private @Nullable AnchoredPopupWindow mMenuWindow;
+    private @Nullable Runnable mOnMenuDismissedCallback;
 
     /**
      * Creates the TabStripContextMenuCoordinator object.
@@ -84,6 +85,7 @@ public class TabStripContextMenuCoordinator {
      * @param canActivateTabLayoutToggleMenuSupplier Supplies whether tab layout toggle menu can be
      *     activated.
      * @param tabStripLayout The active {@link TabStripLayoutType}.
+     * @param onMenuDismissedCallback Callback invoked when the context menu is dismissed.
      */
     public static TabStripContextMenuCoordinator createContextMenuCoordinator(
             TabModel tabModel,
@@ -92,7 +94,8 @@ public class TabStripContextMenuCoordinator {
             SnackbarManager snackbarManager,
             Runnable onNewTabClick,
             @Nullable BooleanSupplier canActivateTabLayoutToggleMenuSupplier,
-            @TabStripLayoutType int tabStripLayout) {
+            @TabStripLayoutType int tabStripLayout,
+            @Nullable Runnable onMenuDismissedCallback) {
         return new TabStripContextMenuCoordinator(
                 tabModel,
                 multiInstanceManager,
@@ -100,7 +103,8 @@ public class TabStripContextMenuCoordinator {
                 snackbarManager,
                 onNewTabClick,
                 canActivateTabLayoutToggleMenuSupplier,
-                tabStripLayout);
+                tabStripLayout,
+                onMenuDismissedCallback);
     }
 
     private TabStripContextMenuCoordinator(
@@ -110,7 +114,8 @@ public class TabStripContextMenuCoordinator {
             SnackbarManager snackbarManager,
             Runnable onNewTabClick,
             @Nullable BooleanSupplier canActivateTabLayoutToggleMenuSupplier,
-            @TabStripLayoutType int tabStripLayout) {
+            @TabStripLayoutType int tabStripLayout,
+            @Nullable Runnable onMenuDismissedCallback) {
         mTabModel = tabModel;
         mMultiInstanceManager = multiInstanceManager;
         mWindowAndroid = windowAndroid;
@@ -119,6 +124,7 @@ public class TabStripContextMenuCoordinator {
         mOnNewTabClick = onNewTabClick;
         mCanActivateTabLayoutToggleMenuSupplier = canActivateTabLayoutToggleMenuSupplier;
         mTabStripLayout = tabStripLayout;
+        mOnMenuDismissedCallback = onMenuDismissedCallback;
     }
 
     /**
@@ -182,6 +188,12 @@ public class TabStripContextMenuCoordinator {
                                         .getDimension(R.dimen.tab_overflow_menu_elevation))
                         .setAnimateFromAnchor(true);
         mMenuWindow = builder.build();
+        mMenuWindow.addOnDismissListener(
+                () -> {
+                    if (mOnMenuDismissedCallback != null) {
+                        mOnMenuDismissedCallback.run();
+                    }
+                });
         mMenuWindow.show();
     }
 
@@ -393,6 +405,7 @@ public class TabStripContextMenuCoordinator {
 
     /** Permanently cleans up this component. */
     public void destroy() {
+        mOnMenuDismissedCallback = null;
         dismiss();
         mMenuWindow = null;
     }

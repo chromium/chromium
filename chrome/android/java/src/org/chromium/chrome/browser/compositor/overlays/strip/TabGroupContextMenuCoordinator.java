@@ -112,6 +112,7 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
     private boolean mIsPresetTitleUsed;
     private final WindowAndroid mWindowAndroid;
     private final @TabStripLayoutType int mTabStripLayout;
+    private @Nullable Runnable mOnMenuDismissedCallback;
     private final KeyboardVisibilityDelegate.KeyboardVisibilityListener mKeyboardVisibilityListener;
 
     @SuppressWarnings("HidingField")
@@ -144,7 +145,8 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
             CollaborationService collaborationService,
             BiConsumer<Token, Boolean> reorderFunction,
             @TabClosingSource int tabClosingSource,
-            @TabStripLayoutType int tabStripLayout) {
+            @TabStripLayoutType int tabStripLayout,
+            @Nullable Runnable onMenuDismissedCallback) {
         super(
                 R.layout.tab_strip_group_menu_layout,
                 R.layout.tab_switcher_action_menu_layout,
@@ -164,6 +166,7 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
         mWindowAndroid = windowAndroid;
         mContext = windowAndroid.getActivity().get();
         mTabStripLayout = tabStripLayout;
+        mOnMenuDismissedCallback = onMenuDismissedCallback;
         mKeyboardVisibilityListener =
                 isShowing -> {
                     if (!isShowing) {
@@ -194,6 +197,7 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
      * @param reorderFunction Callback to run when reordering tabs.
      * @param tabClosingSource The {@link TabClosingSource} indicating where the tab is closed from.
      * @param tabStripLayout The active {@link TabStripLayoutType}.
+     * @param onMenuDismissedCallback Callback invoked when the context menu is dismissed.
      */
     public static TabGroupContextMenuCoordinator createContextMenuCoordinator(
             TabModel tabModel,
@@ -202,7 +206,8 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
             DataSharingTabManager dataSharingTabManager,
             BiConsumer<Token, Boolean> reorderFunction,
             @TabClosingSource int tabClosingSource,
-            @TabStripLayoutType int tabStripLayout) {
+            @TabStripLayoutType int tabStripLayout,
+            @Nullable Runnable onMenuDismissedCallback) {
         Profile profile = assumeNonNull(tabModel.getProfile());
 
         @Nullable TabGroupSyncService tabGroupSyncService =
@@ -220,7 +225,8 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
                 collaborationService,
                 reorderFunction,
                 tabClosingSource,
-                tabStripLayout);
+                tabStripLayout,
+                onMenuDismissedCallback);
     }
 
     @VisibleForTesting
@@ -634,6 +640,9 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
         mWindowAndroid
                 .getKeyboardDelegate()
                 .removeKeyboardVisibilityListener(mKeyboardVisibilityListener);
+        if (mOnMenuDismissedCallback != null) {
+            mOnMenuDismissedCallback.run();
+        }
     }
 
     @Override
@@ -833,6 +842,7 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
     }
 
     public void destroy() {
+        mOnMenuDismissedCallback = null;
         getTabModel().removeTabGroupObserver(mTabGroupObserver);
     }
 
