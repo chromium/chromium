@@ -611,16 +611,35 @@ fn test_detect_mpeg_audio_codec_id() {
     let mp3_header = [0xFF, 0xFB, 0x90, 0x00];
     expect_eq!(detect_mpeg_audio_codec_id(&mp3_header), Some(CODEC_ID_MP3));
 
+    // MPEG-2 Layer 1 header: sync = 0x7FF, version = 10 (MPEG-2), layer = 11
+    // (Layer 1)
+    let mpeg2_layer1_header = [0xFF, 0xF7, 0x90, 0x00];
+    expect_eq!(detect_mpeg_audio_codec_id(&mpeg2_layer1_header), Some(CODEC_ID_MP1));
+
     // MPEG-2 Layer 2 header: sync (11 bits) = 0x7FF, version = 10 (MPEG-2),
     // layer = 10 (Layer 2) 0xFF, 0xF5, ...
     let mpeg2_layer2_header = [0xFF, 0xF5, 0x90, 0x00];
     expect_eq!(detect_mpeg_audio_codec_id(&mpeg2_layer2_header), Some(CODEC_ID_MP2));
 
+    // MPEG-2 Layer 3 header: sync = 0x7FF, version = 10 (MPEG-2), layer = 01
+    // (Layer 3)
+    let mpeg2_layer3_header = [0xFF, 0xF3, 0x90, 0x00];
+    expect_eq!(detect_mpeg_audio_codec_id(&mpeg2_layer3_header), Some(CODEC_ID_MP3));
+
+    // MPEG-2.5 Layer 3 header: sync = 0x7FF, version = 00 (MPEG-2.5), layer =
+    // 01 (Layer 3)
+    let mpeg25_layer3_header = [0xFF, 0xE3, 0x90, 0x00];
+    expect_eq!(detect_mpeg_audio_codec_id(&mpeg25_layer3_header), Some(CODEC_ID_MP3));
+
     // Invalid / Non-MPEG headers:
     expect_eq!(detect_mpeg_audio_codec_id(&[]), None);
-    expect_eq!(detect_mpeg_audio_codec_id(&[0xFF, 0xFB]), None); // Too short
+    expect_eq!(detect_mpeg_audio_codec_id(&[0xFF]), None); // 1 byte
+    expect_eq!(detect_mpeg_audio_codec_id(&[0xFF, 0xFB]), None); // 2 bytes
+    expect_eq!(detect_mpeg_audio_codec_id(&[0xFF, 0xFB, 0x90]), None); // 3 bytes
     expect_eq!(detect_mpeg_audio_codec_id(&[0x00, 0x00, 0x00, 0x00]), None); // No sync
-    expect_eq!(detect_mpeg_audio_codec_id(&[0xFF, 0xE9, 0x00, 0x00]), None); // Reserved version
+    expect_eq!(detect_mpeg_audio_codec_id(&[0xFE, 0xFB, 0x00, 0x00]), None); // Sync byte 0 mismatch
+    expect_eq!(detect_mpeg_audio_codec_id(&[0xFF, 0x1B, 0x00, 0x00]), None); // Sync byte 1 top bits mismatch
+    expect_eq!(detect_mpeg_audio_codec_id(&[0xFF, 0xE9, 0x00, 0x00]), None); // Reserved version (01)
     expect_eq!(detect_mpeg_audio_codec_id(&[0xFF, 0xF9, 0x00, 0x00]), None); // Reserved layer (00)
 }
 
@@ -735,6 +754,118 @@ fn test_mp_midstream_layer_switching() {
     expect_eq!(decode_result.status, ffi::SymphoniaDecodeStatus::Ok);
     expect_eq!(decode_result.buffer.num_frames, 1152);
     expect_eq!(result.decoder.current_codec_id(), Some(CODEC_ID_MP2));
+}
+
+// Verify that an MP3-configured decoder dynamically updates when sample rate
+// and channel layout change mid-stream within the same or different MPEG
+// layers.
+#[gtest(SymphoniaDecoderBridgeTest, MpMidstreamSampleRateAndChannelChange)]
+fn test_mp_midstream_sample_rate_and_channel_change() {
+    use symphonia::core::codecs::audio::well_known::*;
+
+    let config = ffi::SymphoniaDecoderConfig {
+        codec: ffi::SymphoniaAudioCodec::Mp3,
+        extra_data: &[],
+        bytes_per_sample: 4,
+        channel_mask: 1, // Mono
+        channel_count: 1,
+        sample_rate: 48000,
+    };
+    let mut result = init_symphonia_decoder(&config);
+    expect_eq!(result.status, ffi::SymphoniaInitStatus::Ok);
+    expect_eq!(result.decoder.current_codec_id(), Some(CODEC_ID_MP3));
+
+    // Packet 1: MP2 96kbps 48kHz Mono (288 bytes).
+    let mut mp2_mono_48k = vec![0u8; 288];
+    mp2_mono_48k[..4].copy_from_slice(&[0xFF, 0xFD, 0x64, 0xD0]);
+    let packet1 = ffi::SymphoniaPacket { timestamp_us: 0, duration_us: 24000, data: &mp2_mono_48k };
+    let decode1 = result.decoder.decode(&packet1);
+    expect_eq!(decode1.status, ffi::SymphoniaDecodeStatus::Ok);
+    expect_eq!(decode1.buffer.sample_rate, 48000);
+    expect_eq!(decode1.buffer.channel_count, 1);
+    expect_eq!(decode1.buffer.num_frames, 1152);
+    expect_eq!(result.decoder.current_codec_id(), Some(CODEC_ID_MP2));
+
+    // Packet 2: Midstream change to MP2 96kbps 44.1kHz Stereo (313 bytes).
+    let mut mp2_stereo_44k1 = vec![0u8; 313];
+    mp2_stereo_44k1[..4].copy_from_slice(&[0xFF, 0xFD, 0x60, 0x10]);
+    let packet2 =
+        ffi::SymphoniaPacket { timestamp_us: 24000, duration_us: 26122, data: &mp2_stereo_44k1 };
+    let decode2 = result.decoder.decode(&packet2);
+    expect_eq!(decode2.status, ffi::SymphoniaDecodeStatus::Ok);
+    expect_eq!(decode2.buffer.sample_rate, 44100);
+    expect_eq!(decode2.buffer.channel_count, 2);
+    expect_eq!(decode2.buffer.num_frames, 1152);
+    expect_eq!(result.decoder.current_codec_id(), Some(CODEC_ID_MP2));
+
+    // Verify copying decoded planar channel data for stereo.
+    let mut plane_ch0 = vec![0u8; 1152 * 4];
+    expect_true!(result.decoder.copy_decoded_channel(0, &mut plane_ch0));
+    let mut plane_ch1 = vec![0u8; 1152 * 4];
+    expect_true!(result.decoder.copy_decoded_channel(1, &mut plane_ch1));
+
+    // Packet 3: Second consecutive packet with the same config (MP2 44.1kHz
+    // Stereo). Verifies that caching last_mpeg_header_sig avoids
+    // re-instantiation while decoding successfully.
+    let packet3 =
+        ffi::SymphoniaPacket { timestamp_us: 50122, duration_us: 26122, data: &mp2_stereo_44k1 };
+    let decode3 = result.decoder.decode(&packet3);
+    expect_eq!(decode3.status, ffi::SymphoniaDecodeStatus::Ok);
+    expect_eq!(decode3.buffer.sample_rate, 44100);
+    expect_eq!(decode3.buffer.channel_count, 2);
+    expect_eq!(decode3.buffer.num_frames, 1152);
+
+    // Packet 4: Midstream change to MP1 192kbps 48kHz Mono (192 bytes).
+    let mut mp1_mono_48k = vec![0u8; 192];
+    mp1_mono_48k[..4].copy_from_slice(&[0xFF, 0xFE, 0x64, 0xD0]);
+    let packet4 =
+        ffi::SymphoniaPacket { timestamp_us: 76244, duration_us: 8000, data: &mp1_mono_48k };
+    let decode4 = result.decoder.decode(&packet4);
+    expect_eq!(decode4.status, ffi::SymphoniaDecodeStatus::Ok);
+    expect_eq!(decode4.buffer.sample_rate, 48000);
+    expect_eq!(decode4.buffer.channel_count, 1);
+    expect_eq!(decode4.buffer.num_frames, 384);
+    expect_eq!(result.decoder.current_codec_id(), Some(CODEC_ID_MP1));
+
+    // Packet 5: Midstream change to MP1 128kbps 32kHz Mono (192 bytes).
+    let mut mp1_mono_32k = vec![0u8; 192];
+    mp1_mono_32k[..4].copy_from_slice(&[0xFF, 0xFE, 0x48, 0xD0]);
+    let packet5 =
+        ffi::SymphoniaPacket { timestamp_us: 84244, duration_us: 12000, data: &mp1_mono_32k };
+    let decode5 = result.decoder.decode(&packet5);
+    expect_eq!(decode5.status, ffi::SymphoniaDecodeStatus::Ok);
+    expect_eq!(decode5.buffer.sample_rate, 32000);
+    expect_eq!(decode5.buffer.channel_count, 1);
+    expect_eq!(decode5.buffer.num_frames, 384);
+    expect_eq!(result.decoder.current_codec_id(), Some(CODEC_ID_MP1));
+}
+
+// Verify that non-MP3 codecs (e.g. PCM) do not attempt MPEG header sniffing
+// or decoder re-instantiation even if packet data begins with MPEG sync bytes.
+#[gtest(SymphoniaDecoderBridgeTest, NonMpegIgnoresMpegHeader)]
+fn test_non_mpeg_ignores_mpeg_header() {
+    use symphonia::core::codecs::audio::well_known::*;
+
+    let config = ffi::SymphoniaDecoderConfig {
+        codec: ffi::SymphoniaAudioCodec::PcmS16,
+        extra_data: &[],
+        bytes_per_sample: 2,
+        channel_mask: 1, // Mono
+        channel_count: 1,
+        sample_rate: 48000,
+    };
+    let mut result = init_symphonia_decoder(&config);
+    expect_eq!(result.status, ffi::SymphoniaInitStatus::Ok);
+    expect_eq!(result.decoder.current_codec_id(), Some(CODEC_ID_PCM_S16LE));
+
+    // Packet starting with MPEG sync bytes.
+    let mut pcm_data = vec![0u8; 288];
+    pcm_data[..4].copy_from_slice(&[0xFF, 0xFD, 0x64, 0xD0]);
+    let packet = ffi::SymphoniaPacket { timestamp_us: 0, duration_us: 3000, data: &pcm_data };
+
+    let decode_result = result.decoder.decode(&packet);
+    expect_eq!(decode_result.status, ffi::SymphoniaDecodeStatus::Ok);
+    expect_eq!(result.decoder.current_codec_id(), Some(CODEC_ID_PCM_S16LE));
 }
 
 // Verify that PCM decoder dynamically grows its buffer for large packets
@@ -880,4 +1011,81 @@ fn test_copy_samples_to_slice_errors() {
         ffi::SymphoniaSampleFormat::PlanarF32,
         &mut dst_f32,
     ));
+}
+
+struct MockResetDecoder {
+    params: symphonia::core::codecs::audio::AudioCodecParameters,
+    buf: AudioBuffer<i16>,
+}
+
+impl MockResetDecoder {
+    fn new() -> Self {
+        let spec = AudioSpec::new(48000, layouts::CHANNEL_LAYOUT_MONO);
+        Self {
+            params: symphonia::core::codecs::audio::AudioCodecParameters::default(),
+            buf: AudioBuffer::<i16>::new(spec, 0),
+        }
+    }
+}
+
+static MOCK_CODEC_INFO: symphonia::core::codecs::CodecInfo = symphonia::core::codecs::CodecInfo {
+    short_name: "mock",
+    long_name: "mock decoder",
+    profiles: &[],
+};
+
+impl symphonia::core::codecs::audio::AudioDecoder for MockResetDecoder {
+    fn reset(&mut self) {}
+    fn codec_info(&self) -> &symphonia::core::codecs::CodecInfo {
+        &MOCK_CODEC_INFO
+    }
+    fn codec_params(&self) -> &symphonia::core::codecs::audio::AudioCodecParameters {
+        &self.params
+    }
+    fn decode_ref(
+        &mut self,
+        _packet: &symphonia::core::packet::PacketRef<'_>,
+    ) -> Result<GenericAudioBufferRef<'_>, symphonia::core::errors::Error> {
+        Err(symphonia::core::errors::Error::ResetRequired)
+    }
+    fn finalize(&mut self) -> symphonia::core::codecs::audio::FinalizeResult {
+        Default::default()
+    }
+    fn last_decoded(&self) -> GenericAudioBufferRef<'_> {
+        GenericAudioBufferRef::S16(&self.buf)
+    }
+}
+
+// Verify that when the underlying decoder returns Error::ResetRequired (e.g.
+// on midstream signal specification change), decode_impl re-instantiates the
+// decoder and successfully retries decoding.
+#[gtest(SymphoniaDecoderBridgeTest, ResetRequiredReinstantiatesDecoder)]
+fn test_reset_required_reinstantiates_decoder() {
+    let config = ffi::SymphoniaDecoderConfig {
+        codec: ffi::SymphoniaAudioCodec::PcmS16,
+        extra_data: &[],
+        bytes_per_sample: 2,
+        channel_mask: 1, // Mono
+        channel_count: 1,
+        sample_rate: 48000,
+    };
+    let mut result = init_symphonia_decoder(&config);
+    expect_eq!(result.status, ffi::SymphoniaInitStatus::Ok);
+
+    // Replace the internal decoder with our mock that returns
+    // Error::ResetRequired on decode.
+    result.decoder.set_decoder_for_testing(Box::new(MockResetDecoder::new()));
+
+    // Decode a valid PCM packet (4 samples of 16-bit mono PCM = 8 bytes).
+    let pcm_data = [0x00, 0x10, 0x00, 0x20, 0x00, 0x30, 0x00, 0x40];
+    let packet = ffi::SymphoniaPacket { timestamp_us: 0, duration_us: 1000, data: &pcm_data };
+    let decode_result = result.decoder.decode(&packet);
+    expect_eq!(decode_result.status, ffi::SymphoniaDecodeStatus::Ok);
+    expect_eq!(decode_result.buffer.sample_rate, 48000);
+    expect_eq!(decode_result.buffer.channel_count, 1);
+    expect_eq!(decode_result.buffer.num_frames, 4);
+
+    let mut dst = vec![0u8; 8];
+    expect_true!(result.decoder.copy_decoded_samples(&mut dst));
+    expect_eq!(&dst, &pcm_data);
 }

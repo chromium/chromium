@@ -226,4 +226,61 @@ TEST(SymphoniaAudioDecoderTest, DecodeMp3WithBlockTypeMismatchSucceeds) {
   EXPECT_GT(output_buffer_count, 0u);
 }
 
+TEST(SymphoniaAudioDecoderTest, MidstreamSampleRateAndChannelChange) {
+  base::test::TaskEnvironment task_environment;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kSymphoniaAudioDecoding, kSymphoniaMp3Decoding}, {});
+
+  NullMediaLog media_log;
+  auto decoder = std::make_unique<SymphoniaAudioDecoder>(
+      task_environment.GetMainThreadTaskRunner(), &media_log);
+
+  AudioDecoderConfig config(AudioCodec::kMP3, kSampleFormatF32,
+                            ChannelLayoutConfig::Mono(), 48000,
+                            EmptyExtraData(), EncryptionScheme::kUnencrypted);
+
+  base::test::TestFuture<DecoderStatus> init_future;
+  base::test::TestFuture<scoped_refptr<AudioBuffer>> output_future;
+  decoder->Initialize(config, nullptr, init_future.GetCallback(),
+                      output_future.GetRepeatingCallback(), base::DoNothing());
+  EXPECT_TRUE(init_future.Get().is_ok());
+
+  // Packet 1: MP2 96kbps 48kHz Mono (288 bytes).
+  std::vector<uint8_t> mp2_mono_48k(288, 0);
+  mp2_mono_48k[0] = 0xFF;
+  mp2_mono_48k[1] = 0xFD;
+  mp2_mono_48k[2] = 0x64;
+  mp2_mono_48k[3] = 0xD0;
+  auto buf1 = DecoderBuffer::CopyFrom(mp2_mono_48k);
+  buf1->set_timestamp(base::Microseconds(0));
+
+  base::test::TestFuture<DecoderStatus> decode_future1;
+  decoder->Decode(std::move(buf1), decode_future1.GetCallback());
+  EXPECT_TRUE(decode_future1.Get().is_ok());
+  scoped_refptr<AudioBuffer> out1 = output_future.Take();
+  ASSERT_TRUE(out1);
+  EXPECT_EQ(out1->sample_rate(), 48000);
+  EXPECT_EQ(out1->channel_count(), 1);
+  EXPECT_EQ(out1->channel_layout(), CHANNEL_LAYOUT_MONO);
+
+  // Packet 2: Midstream change to MP2 96kbps 44.1kHz Stereo (313 bytes).
+  std::vector<uint8_t> mp2_stereo_44k1(313, 0);
+  mp2_stereo_44k1[0] = 0xFF;
+  mp2_stereo_44k1[1] = 0xFD;
+  mp2_stereo_44k1[2] = 0x60;
+  mp2_stereo_44k1[3] = 0x10;
+  auto buf2 = DecoderBuffer::CopyFrom(mp2_stereo_44k1);
+  buf2->set_timestamp(base::Microseconds(24000));
+
+  base::test::TestFuture<DecoderStatus> decode_future2;
+  decoder->Decode(std::move(buf2), decode_future2.GetCallback());
+  EXPECT_TRUE(decode_future2.Get().is_ok());
+  scoped_refptr<AudioBuffer> out2 = output_future.Take();
+  ASSERT_TRUE(out2);
+  EXPECT_EQ(out2->sample_rate(), 44100);
+  EXPECT_EQ(out2->channel_count(), 2);
+  EXPECT_EQ(out2->channel_layout(), CHANNEL_LAYOUT_STEREO);
+}
+
 }  // namespace media

@@ -200,6 +200,41 @@ DecoderStatus ToDecoderStatus(SymphoniaDecodeResult& result) {
   }
 }
 
+// Resolves the channel layout for a decoded frame, taking into account any
+// midstream changes to channel count.
+ChannelLayout ResolveChannelLayout(ChannelLayout current_layout,
+                                   int current_channels,
+                                   uint32_t channel_mask,
+                                   int new_channels) {
+  if (new_channels == current_channels) {
+    return current_layout;
+  }
+  ChannelLayout layout = ChannelMaskToLayout(channel_mask);
+  if (layout != CHANNEL_LAYOUT_UNSUPPORTED &&
+      (layout == CHANNEL_LAYOUT_DISCRETE ||
+       ChannelLayoutToChannelCount(layout) == new_channels)) {
+    return layout;
+  }
+  if (current_layout == CHANNEL_LAYOUT_DISCRETE) {
+    return CHANNEL_LAYOUT_DISCRETE;
+  }
+  layout = GuessChannelLayout(new_channels);
+  return (layout != CHANNEL_LAYOUT_UNSUPPORTED) ? layout
+                                                : CHANNEL_LAYOUT_DISCRETE;
+}
+
+// Returns true if the decoded audio buffer parameters fall within valid limits.
+bool IsValidDecodedParameters(int channels,
+                              int sample_rate,
+                              size_t num_frames,
+                              SampleFormat sample_format) {
+  return channels > 0 && channels <= limits::kMaxChannels &&
+         sample_rate >= limits::kMinSampleRate &&
+         sample_rate <= limits::kMaxSampleRate &&
+         num_frames <= static_cast<size_t>(limits::kMaxSamplesPerPacket) &&
+         sample_format != kUnknownSampleFormat;
+}
+
 }  // namespace
 
 SymphoniaPacket ToSymphoniaPacket(
@@ -453,8 +488,26 @@ DecoderStatus SymphoniaAudioDecoder::SymphoniaDecode(
   // stream.
   CHECK(!buffer.end_of_stream());
 
-  // TODO(crbug.com/40074653): similar to FFMPEG audio decoder, add support
-  // for midstream channel and sample rate changes.
+  const int channels = base::checked_cast<int>(result.buffer.channel_count);
+  const int sample_rate = base::checked_cast<int>(result.buffer.sample_rate);
+  const size_t num_frames = result.buffer.num_frames;
+  const SampleFormat sample_format =
+      ToSampleFormat(result.buffer.sample_format);
+
+  if (!IsValidDecodedParameters(channels, sample_rate, num_frames,
+                                sample_format)) {
+    MEDIA_LOG(ERROR, media_log_)
+        << "Invalid decoded buffer parameters: channels=" << channels
+        << ", sample_rate=" << sample_rate << ", num_frames=" << num_frames
+        << ", sample_format=" << SampleFormatToString(sample_format);
+    return DecoderStatus::Codes::kFailed;
+  }
+
+  const ChannelLayout channel_layout =
+      ResolveChannelLayout(config_.channel_layout(), config_.channels(),
+                           result.buffer.channel_mask, channels);
+  MaybeUpdateConfig(buffer, sample_rate,
+                    ChannelLayoutConfig(channel_layout, channels));
 
   // Convert the Symphonia buffer to a media::AudioBuffer, using the original
   // timestamp.
@@ -489,13 +542,9 @@ scoped_refptr<AudioBuffer> SymphoniaAudioDecoder::ToMediaAudioBuffer(
   const int sample_rate = symphonia_buffer.sample_rate;
   const int num_frames = symphonia_buffer.num_frames;
 
-  const bool count_changed = channel_count != config_.channels();
-  const auto layout = count_changed
-                          ? ChannelMaskToLayout(symphonia_buffer.channel_mask)
-                          : config_.channel_layout();
-
-  scoped_refptr<AudioBuffer> decoded_audio = AudioBuffer::CreateBuffer(
-      sample_format, layout, channel_count, sample_rate, num_frames, pool_);
+  scoped_refptr<AudioBuffer> decoded_audio =
+      AudioBuffer::CreateBuffer(sample_format, config_.channel_layout(),
+                                channel_count, sample_rate, num_frames, pool_);
   if (!decoded_audio) {
     return nullptr;
   }
@@ -557,6 +606,45 @@ DecoderStatus SymphoniaAudioDecoder::ConfigureDecoder(
   ResetTimestampState(config);
   symphonia_decoder_ = std::move(result.decoder);
   return DecoderStatus::Codes::kOk;
+}
+
+void SymphoniaAudioDecoder::MaybeUpdateConfig(
+    const DecoderBuffer& buffer,
+    int sample_rate,
+    const ChannelLayoutConfig& layout_config) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  const bool is_sample_rate_change =
+      sample_rate != config_.samples_per_second();
+  const bool is_config_change =
+      is_sample_rate_change || layout_config != config_.channel_layout_config();
+  if (!is_config_change) {
+    return;
+  }
+
+  MEDIA_LOG(DEBUG, media_log_)
+      << "Detected midstream configuration change"
+      << " PTS:" << buffer.timestamp().InMicroseconds()
+      << " Sample Rate: " << sample_rate << " vs "
+      << config_.samples_per_second() << ", ChannelLayout: "
+      << ChannelLayoutToString(layout_config.channel_layout()) << " vs "
+      << ChannelLayoutToString(config_.channel_layout())
+      << ", Channels: " << layout_config.channels() << " vs "
+      << config_.channels();
+
+  const bool should_discard_decoder_delay =
+      config_.should_discard_decoder_delay();
+  config_.Initialize(config_.codec(), config_.sample_format(), layout_config,
+                     sample_rate, config_.extra_data(),
+                     config_.encryption_scheme(), config_.seek_preroll(),
+                     config_.codec_delay());
+  if (!should_discard_decoder_delay) {
+    config_.disable_discard_decoder_delay();
+  }
+
+  if (is_sample_rate_change) {
+    ResetTimestampState(config_);
+  }
 }
 
 // The Symphonia audio decoder implementation currently needs the same discard

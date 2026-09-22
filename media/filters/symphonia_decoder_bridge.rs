@@ -490,6 +490,11 @@ struct DecoderImpl {
     /// The current codec ID of the active decoder instance.
     current_codec_id: symphonia::core::codecs::audio::AudioCodecId,
 
+    /// The MPEG frame header signature (layer, version, sample rate index,
+    /// channel mode) of the most recently decoded frame, used to detect
+    /// mid-stream spec changes.
+    last_mpeg_header_sig: Option<u32>,
+
     /// Expected bytes per sample.
     bytes_per_sample: u8,
 
@@ -724,6 +729,7 @@ fn init_symphonia_decoder_impl(config: &ffi::SymphoniaDecoderConfig) -> InitResu
             decoder,
             codec_params,
             current_codec_id,
+            last_mpeg_header_sig: None,
             bytes_per_sample: config.bytes_per_sample,
             codec: config.codec,
         }),
@@ -860,7 +866,19 @@ impl DecoderImpl {
         let Some(target_codec_id) = detect_mpeg_audio_codec_id(packet_data) else {
             return Ok(());
         };
-        if target_codec_id == self.current_codec_id {
+        // Compute signature of MPEG frame header fields that determine the
+        // decoder AudioSpec: Byte 1: version & layer (bits 4..1)
+        // Byte 2: sample rate index (bits 3..2)
+        // Byte 3: channel mode (bits 7..6)
+        let header_sig = if packet_data.len() >= 4 {
+            ((packet_data[1] as u32 & 0x1E) << 16)
+                | ((packet_data[2] as u32 & 0x0C) << 8)
+                | (packet_data[3] as u32 & 0xC0)
+        } else {
+            0
+        };
+        if target_codec_id == self.current_codec_id && self.last_mpeg_header_sig == Some(header_sig)
+        {
             return Ok(());
         }
         let mut new_params = self.codec_params.clone();
@@ -871,6 +889,7 @@ impl DecoderImpl {
         self.decoder = new_decoder;
         self.codec_params = new_params;
         self.current_codec_id = target_codec_id;
+        self.last_mpeg_header_sig = Some(header_sig);
         Ok(())
     }
 }
@@ -891,10 +910,23 @@ impl SymphoniaDecoder {
         decoder_impl.maybe_update_mpeg_decoder(packet.data)?;
 
         let packet_ref = PacketRef::from(packet);
-        let buffer = decoder_impl
-            .decoder
-            .decode_ref(&packet_ref)
-            .map_err(|e| ((&e).into(), e.to_string()))?;
+        let buffer = match decoder_impl.decoder.decode_ref(&packet_ref) {
+            Ok(buf) => buf,
+            Err(Error::ResetRequired) => {
+                // If the stream's signal specification (sample rate or channel
+                // layout) changed mid-stream and the decoder requested a reset,
+                // re-instantiate the decoder so its internal AudioBuffer is
+                // re-created with the new AudioSpec.
+                decoder_impl.decoder = symphonia::default::get_codecs()
+                    .make_audio_decoder(&decoder_impl.codec_params, &Default::default())
+                    .map_err(|e| ((&e).into(), e.to_string()))?;
+                decoder_impl
+                    .decoder
+                    .decode_ref(&packet_ref)
+                    .map_err(|e| ((&e).into(), e.to_string()))?
+            }
+            Err(e) => return Err(((&e).into(), e.to_string())),
+        };
 
         let sample_format = get_sample_format(&buffer, decoder_impl.bytes_per_sample)
             .map_err(|e| (ffi::SymphoniaDecodeStatus::InvalidDecodedBufferSampleFormat, e))?;
@@ -959,5 +991,13 @@ impl SymphoniaDecoder {
     /// `None` if the decoder is uninitialized or in an invalid state.
     pub fn current_codec_id(&self) -> Option<AudioCodecId> {
         self.decoder_impl.as_ref().map(|d| d.current_codec_id)
+    }
+
+    /// Replaces the underlying Symphonia decoder with a custom implementation.
+    /// Used in tests to simulate conditions like `Error::ResetRequired`.
+    pub fn set_decoder_for_testing(&mut self, decoder: Box<dyn AudioDecoder>) {
+        if let Some(decoder_impl) = self.decoder_impl.as_mut() {
+            decoder_impl.decoder = decoder;
+        }
     }
 }

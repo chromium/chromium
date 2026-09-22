@@ -121,6 +121,12 @@ class MEDIA_EXPORT SymphoniaAudioDecoder : public AudioDecoder {
   // Resets the timestamp helper state.
   void ResetTimestampState(const AudioDecoderConfig& config);
 
+  // Updates `config_` and resets timestamp state if the decoded audio
+  // parameters reflect a midstream configuration change.
+  void MaybeUpdateConfig(const DecoderBuffer& buffer,
+                         int sample_rate,
+                         const ChannelLayoutConfig& layout_config);
+
   // If the execution mode is set to asynchronous, wraps the `callback` in a
   // bind post task on the current default task runner. Otherwise, a noop.
   template <typename T>
