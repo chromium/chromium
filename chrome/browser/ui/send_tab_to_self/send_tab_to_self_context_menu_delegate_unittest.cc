@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_page_handler.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
@@ -127,11 +128,14 @@ TEST_F(SendTabToSelfContextMenuDelegateTest, ExecuteCommandSendsToDevice) {
   ui::SimpleMenuModel menu_model(&delegate);
   delegate.PopulateSubmenu(&menu_model);
 
+  base::test::TestFuture<const SendTabToSelfEntry*> future;
+  model()->SetSendEntryCallback(future.GetRepeatingCallback());
+
   delegate.ExecuteCommand(IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE1, 0);
 
-  std::vector<std::string> guids = model()->GetAllGuids();
-  ASSERT_EQ(guids.size(), 1u);
-  const SendTabToSelfEntry* sent_entry = model()->GetEntryByGUID(guids[0]);
+  const SendTabToSelfEntry* sent_entry = future.Get();
+  ASSERT_TRUE(sent_entry);
+  ASSERT_EQ(model()->GetAllGuids().size(), 1u);
   EXPECT_EQ(sent_entry->GetTargetDeviceSyncCacheGuid(), "guid0");
   EXPECT_EQ(sent_entry->GetURL(), kExampleUrl);
   EXPECT_EQ(sent_entry->GetTitle(), base::UTF16ToUTF8(kExampleTitle));
@@ -305,11 +309,14 @@ TEST_F(SendTabToSelfContextMenuDelegateTest,
   ui::SimpleMenuModel menu_model(&delegate);
   delegate.PopulateSubmenu(&menu_model);
 
+  base::test::TestFuture<const SendTabToSelfEntry*> future;
+  model()->SetSendEntryCallback(future.GetRepeatingCallback());
+
   delegate.ExecuteCommand(IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE1, 0);
 
   std::vector<std::tuple<std::string, GURL, std::string>> sent_entries;
-  for (const std::string& guid : model()->GetAllGuids()) {
-    const SendTabToSelfEntry* entry = model()->GetEntryByGUID(guid);
+  for (size_t i = 0; i < web_contents_list.size(); ++i) {
+    const SendTabToSelfEntry* entry = future.Take();
     sent_entries.emplace_back(entry->GetTargetDeviceSyncCacheGuid(),
                               entry->GetURL(), entry->GetTitle());
   }
@@ -346,13 +353,16 @@ TEST_F(SendTabToSelfContextMenuDelegateTest,
   // Destroy the second tab.
   web_contents2.reset();
 
+  base::test::TestFuture<const SendTabToSelfEntry*> future;
+  model()->SetSendEntryCallback(future.GetRepeatingCallback());
+
   // Executing command should not crash and should send only the valid first
   // tab.
   delegate.ExecuteCommand(IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE1, 0);
 
-  std::vector<std::string> guids = model()->GetAllGuids();
-  ASSERT_EQ(guids.size(), 1u);
-  const SendTabToSelfEntry* sent_entry = model()->GetEntryByGUID(guids[0]);
+  const SendTabToSelfEntry* sent_entry = future.Get();
+  ASSERT_TRUE(sent_entry);
+  ASSERT_EQ(model()->GetAllGuids().size(), 1u);
   EXPECT_EQ(sent_entry->GetURL(), kUrl1);
 }
 

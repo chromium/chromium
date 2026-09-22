@@ -113,7 +113,12 @@ void SendTabToSelfTextFragmentSelectorGenerator::GetTextFragment(
     web::WebState* web_state,
     base::OnceCallback<void(std::optional<SendTabToSelfTextFragment>)>
         callback) {
-  web::WebFrame* main_frame = GetWebFramesManager(web_state)->GetMainWebFrame();
+  web::WebFramesManager* frames_manager = GetWebFramesManager(web_state);
+  if (!frames_manager) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  web::WebFrame* main_frame = frames_manager->GetMainWebFrame();
   if (!main_frame) {
     std::move(callback).Run(std::nullopt);
     return;
@@ -137,7 +142,11 @@ void SendTabToSelfTextFragmentSelectorGenerator::GetTextFragment(
 void SendTabToSelfTextFragmentSelectorGenerator::ScrollToTextFragment(
     web::WebState* web_state,
     std::string_view text_fragment) {
-  web::WebFrame* main_frame = GetWebFramesManager(web_state)->GetMainWebFrame();
+  web::WebFramesManager* frames_manager = GetWebFramesManager(web_state);
+  if (!frames_manager) {
+    return;
+  }
+  web::WebFrame* main_frame = frames_manager->GetMainWebFrame();
   if (!main_frame) {
     return;
   }

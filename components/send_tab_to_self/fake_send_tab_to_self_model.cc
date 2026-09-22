@@ -84,6 +84,9 @@ const SendTabToSelfEntry* FakeSendTabToSelfModel::SendEntry(
     base::OnceCallback<void(SendTabToSelfResult)> commit_confirmation,
     ShareEntryPoint entry_point) {
   if (!IsReady()) {
+    if (send_entry_callback_) {
+      send_entry_callback_.Run(nullptr);
+    }
     if (commit_confirmation) {
       std::move(commit_confirmation)
           .Run(SendTabToSelfResult::kFailureNotTrackingMetadata);

@@ -352,7 +352,14 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
   // Simulate failure by making the model not ready.
   sync_service->GetFakeSendTabToSelfModel()->SetIsReady(false);
 
+  // `OnDeviceSelected()` asynchronously queries the renderer for scroll
+  // position before calling `SendEntry()`, so wait for `SendEntry()` to run.
+  base::test::TestFuture<const SendTabToSelfEntry*> future;
+  sync_service->GetFakeSendTabToSelfModel()->SetSendEntryCallback(
+      future.GetRepeatingCallback());
+
   controller->OnDeviceSelected(kTargetDeviceId, kTargetDeviceName);
+  EXPECT_EQ(future.Get(), nullptr);
 
   // Verify that the failure toast is shown.
   const gfx::VectorIcon& expected_icon = features::IsRoundedIconsEnabled()
@@ -389,7 +396,14 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastDisabledBrowserTest,
   // Use NotificationDisplayServiceTester to monitor notifications.
   NotificationDisplayServiceTester notification_tester(browser()->GetProfile());
 
+  // `OnDeviceSelected()` asynchronously queries the renderer for scroll
+  // position before calling `SendEntry()`, so wait for `SendEntry()` to run.
+  base::test::TestFuture<const SendTabToSelfEntry*> future;
+  sync_service->GetFakeSendTabToSelfModel()->SetSendEntryCallback(
+      future.GetRepeatingCallback());
+
   controller->OnDeviceSelected(kTargetDeviceId, kTargetDeviceName);
+  EXPECT_EQ(future.Get(), nullptr);
 
   // Verify that a notification is shown.
   std::vector<message_center::Notification> notifications =

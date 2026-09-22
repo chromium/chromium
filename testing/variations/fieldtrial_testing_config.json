@@ -11305,8 +11305,7 @@
                         "SendTabToSelfExtraEntryPoints",
                         "SendTabToSelfImprovedLastActiveLabels",
                         "SendTabToSelfPostSendToast",
-                        "SendTabToSelfPropagateFormFields",
-                        "SendTabToSelfPropagateScrollPosition"
+                        "SendTabToSelfPropagateFormFields"
                     ]
                 }
             ]
