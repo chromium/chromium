@@ -2169,8 +2169,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   virtual void Paint(const PaintInfo&) const;
 
-  virtual RecalcScrollableOverflowResult RecalcScrollableOverflow();
-
   // Invalidate visual overflow, using a method that varies based
   // the object type and state of layout.
   void InvalidateVisualOverflow();

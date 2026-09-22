@@ -75,6 +75,10 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   void Trace(Visitor*) const override;
 
   void LayoutRoot();
+
+  // Make RecalcScrollableOverflow public to trigger calculation from root.
+  using LayoutBlockFlow::RecalcScrollableOverflow;
+
   void WillBeDestroyed(const ComputedStyle*) override;
 
   // hitTest() will update layout, style and compositing first while

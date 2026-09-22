@@ -1202,9 +1202,10 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // Returns the CSS 'direction' property value when it is not atomic inline.
   TextDirection ResolvedDirection() const;
 
-  // RecalcScrollableOverflow implementations for LayoutNG.
-  RecalcScrollableOverflowResult RecalcScrollableOverflowNG();
-  RecalcScrollableOverflowResult RecalcChildScrollableOverflowNG();
+  static void RecalcFragmentScrollableOverflow(const PhysicalBoxFragment&,
+                                               RecalcScrollableOverflowResult&);
+  RecalcScrollableOverflowResult RecalcScrollableOverflow();
+  RecalcScrollableOverflowResult RecalcChildScrollableOverflow();
 
  private:
   inline bool ScrollableOverflowIsSet() const {

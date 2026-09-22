@@ -671,12 +671,6 @@ LayoutBlock* LayoutBlock::CreateAnonymousWithParentAndDisplay(
   return layout_block;
 }
 
-RecalcScrollableOverflowResult LayoutBlock::RecalcScrollableOverflow() {
-  NOT_DESTROYED();
-  DCHECK(!DisableLayoutSideEffectsScope::IsDisabled());
-  return RecalcScrollableOverflowNG();
-}
-
 void LayoutBlock::RecalcVisualOverflow() {
   NOT_DESTROYED();
   if (!PhysicalFragmentCount()) {

@@ -2202,24 +2202,6 @@ void LayoutObject::Paint(const PaintInfo&) const {
   NOT_DESTROYED();
 }
 
-RecalcScrollableOverflowResult LayoutObject::RecalcScrollableOverflow() {
-  NOT_DESTROYED();
-  ClearSelfNeedsScrollableOverflowRecalc();
-  if (!ChildNeedsScrollableOverflowRecalc()) {
-    return RecalcScrollableOverflowResult();
-  }
-
-  ClearChildNeedsScrollableOverflowRecalc();
-  bool children_scrollable_overflow_changed = false;
-  for (LayoutObject* current = SlowFirstChild(); current;
-       current = current->NextSibling()) {
-    children_scrollable_overflow_changed |=
-        current->RecalcScrollableOverflow().scrollable_overflow_changed;
-  }
-  return {children_scrollable_overflow_changed,
-          /* rebuild_fragment_tree */ false};
-}
-
 void LayoutObject::RecalcVisualOverflow() {
   NOT_DESTROYED();
   for (LayoutObject* current = SlowFirstChild(); current;

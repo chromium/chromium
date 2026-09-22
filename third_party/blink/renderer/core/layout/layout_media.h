@@ -105,8 +105,6 @@ class LayoutMedia : public LayoutImage {
     return false;
   }
 
-  RecalcScrollableOverflowResult RecalcScrollableOverflow() override;
-
   LayoutObjectChildList children_;
 };
 

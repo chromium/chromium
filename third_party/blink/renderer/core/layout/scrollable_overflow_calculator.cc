@@ -29,7 +29,7 @@ ScrollableOverflowCalculator::RecalculateScrollableOverflowForFragment(
     bool has_block_fragmentation) {
   const BlockNode node(const_cast<LayoutBox*>(
       To<LayoutBox>(fragment.GetSelfOrContainerLayoutObject())));
-  DCHECK(!node.IsReplaced() || node.IsMedia());
+  DCHECK(!node.IsReplaced());
 
   const WritingDirectionMode writing_direction =
       node.Style().GetWritingDirection();
@@ -88,6 +88,7 @@ ScrollableOverflowCalculator::ScrollableOverflowCalculator(
       has_block_fragmentation_(has_block_fragmentation),
       padding_(padding),
       size_(size) {
+  DCHECK(!node.IsReplaced());
   const auto border_scrollbar = borders + scrollbar;
 
   // TODO(layout-dev): This isn't correct for <fieldset> elements as we may
