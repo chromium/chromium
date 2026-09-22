@@ -29,17 +29,22 @@ import org.chromium.chrome.browser.autofill.settings.AutofillAndPasswordsFragmen
 import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsFragment;
 import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragment;
+import org.chromium.chrome.browser.commerce.PriceNotificationSettingsFragment;
+import org.chromium.chrome.browser.contextualsearch.ContextualSearchSettingsFragment;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.glic.GlicActorLoginPermissionsFragment;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.prefetch.settings.ExtendedPreloadingSettingsFragment;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsFragment;
 import org.chromium.chrome.browser.prefetch.settings.StandardPreloadingSettingsFragment;
 import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
+import org.chromium.chrome.browser.privacy.settings.UniversalOptOutSettings;
 import org.chromium.chrome.browser.safe_browsing.settings.EnhancedProtectionSettingsFragment;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
 import org.chromium.chrome.browser.safe_browsing.settings.StandardProtectionSettingsFragment;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
+import org.chromium.chrome.browser.tracing.settings.TracingCategoriesSettings;
 import org.chromium.chrome.browser.tracing.settings.TracingSettings;
 import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
 import org.chromium.components.browser_ui.site_settings.ChosenObjectSettings;
@@ -68,6 +73,7 @@ public class SettingsFragmentRegistryTest {
         // Verify root path
         assertEquals(MainSettings.class, fragmentClassForPath(""));
         assertEquals(MainSettings.class, fragmentClassForPath("/"));
+        assertNull(fragmentClassForPath("/results"));
 
         // Verify some notable mappings
         assertEquals(PrivacySettings.class, fragmentClassForPath("/privacy"));
@@ -83,6 +89,32 @@ public class SettingsFragmentRegistryTest {
         assertEquals("appearance", fragmentMap.get(AppearanceSettingsFragment.class));
         assertEquals("bookmarkBar", fragmentMap.get(BookmarkBarSettingsFragment.class));
         assertEquals("theme", fragmentMap.get(ThemeSettingsFragment.class));
+        assertEquals("privacy/universalOptOut", fragmentMap.get(UniversalOptOutSettings.class));
+        assertEquals(
+                "googleServices/priceTracking",
+                fragmentMap.get(PriceNotificationSettingsFragment.class));
+        assertEquals(
+                "googleServices/contextualSearch",
+                fragmentMap.get(ContextualSearchSettingsFragment.class));
+        assertEquals(
+                "ai/gemini/permissions", fragmentMap.get(GlicActorLoginPermissionsFragment.class));
+        assertEquals(
+                "developer/tracing/categories", fragmentMap.get(TracingCategoriesSettings.class));
+
+        // Verify TracingCategoriesSettings required args and fallback
+        SettingsFragmentRegistry.Resolution missingTypeRes =
+                SettingsFragmentRegistry.resolve("chrome://settings/developer/tracing/categories");
+        assertEquals("chrome://settings/developer/tracing", missingTypeRes.redirectUrl);
+
+        SettingsFragmentRegistry.Resolution validTypeRes =
+                SettingsFragmentRegistry.resolve(
+                        "chrome://settings/developer/tracing/categories?categoryType="
+                                + TracingSettings.CategoryType.NON_DEFAULT);
+        assertNull(validTypeRes.redirectUrl);
+        assertEquals(TracingCategoriesSettings.class, validTypeRes.fragmentClass);
+        assertEquals(
+                TracingSettings.CategoryType.NON_DEFAULT,
+                validTypeRes.args.getInt(TracingCategoriesSettings.EXTRA_CATEGORY_TYPE));
     }
 
     @Test

@@ -35,7 +35,10 @@ import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsFrag
 import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.autofill.settings.personal_context.AutofillPersonalContextFragment;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragment;
+import org.chromium.chrome.browser.commerce.PriceNotificationSettingsFragment;
+import org.chromium.chrome.browser.contextualsearch.ContextualSearchSettingsFragment;
 import org.chromium.chrome.browser.download.settings.DownloadSettings;
+import org.chromium.chrome.browser.glic.GlicActorLoginPermissionsFragment;
 import org.chromium.chrome.browser.glic.GlicSettings;
 import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsSettings;
@@ -48,6 +51,7 @@ import org.chromium.chrome.browser.prefetch.settings.StandardPreloadingSettingsF
 import org.chromium.chrome.browser.privacy.secure_dns.SecureDnsSettings;
 import org.chromium.chrome.browser.privacy.settings.DoNotTrackSettings;
 import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
+import org.chromium.chrome.browser.privacy.settings.UniversalOptOutSettings;
 import org.chromium.chrome.browser.privacy_guide.PrivacyGuideFragment;
 import org.chromium.chrome.browser.safe_browsing.settings.EnhancedProtectionSettingsFragment;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
@@ -57,7 +61,6 @@ import org.chromium.chrome.browser.safety_hub.SafetyHubNotificationsFragment;
 import org.chromium.chrome.browser.safety_hub.SafetyHubPermissionsFragment;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
 import org.chromium.chrome.browser.search_engines.settings.SiteSearchSettings;
-import org.chromium.chrome.browser.settings.search.SearchResultsPreferenceFragment;
 import org.chromium.chrome.browser.ssl.HttpsFirstModeSettingsFragment;
 import org.chromium.chrome.browser.sync.settings.GoogleServicesSettings;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
@@ -66,6 +69,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabsSettings;
 import org.chromium.chrome.browser.tasks.tab_management.archived_tabs.TabArchiveSettingsFragment;
 import org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
+import org.chromium.chrome.browser.tracing.settings.TracingCategoriesSettings;
 import org.chromium.chrome.browser.tracing.settings.TracingSettings;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
 import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
@@ -213,9 +217,6 @@ public class SettingsFragmentRegistry {
         registerMapping("", MainSettings.class);
         registerMapping("/", MainSettings.class);
 
-        // Search Results Fragment
-        registerMapping("/results", SearchResultsPreferenceFragment.class);
-
         // Multi Column Settings Categories
         // --------------------------------
 
@@ -226,6 +227,8 @@ public class SettingsFragmentRegistry {
         registerMapping("/account", ManageSyncSettings.class);
         registerMapping("/account/personalize", PersonalizeGoogleServicesSettings.class);
         registerMapping("/googleServices", GoogleServicesSettings.class);
+        registerMapping("/googleServices/priceTracking", PriceNotificationSettingsFragment.class);
+        registerMapping("/googleServices/contextualSearch", ContextualSearchSettingsFragment.class);
 
         // Basics
         registerMapping("/search", SearchEngineSettings.class);
@@ -233,6 +236,7 @@ public class SettingsFragmentRegistry {
 
         // Privacy & Security
         registerMapping("/privacy", PrivacySettings.class);
+        registerMapping("/privacy/universalOptOut", UniversalOptOutSettings.class);
         registerMapping("/privacyGuide", PrivacyGuideFragment.class);
         registerMapping("/clearBrowsingData", ClearBrowsingDataFragment.class);
         registerMapping("/cookies", CookieSettings.class);
@@ -384,9 +388,13 @@ public class SettingsFragmentRegistry {
         registerMapping("/about/legal", LegalInformationSettings.class);
         registerMapping("/developer", DeveloperSettings.class);
         registerMapping("/developer/tracing", TracingSettings.class);
+        registerMapping("/developer/tracing/categories", TracingCategoriesSettings.class)
+                .requireArgs(TracingCategoriesSettings.EXTRA_CATEGORY_TYPE)
+                .fallback("/developer/tracing");
 
         // Glic
         registerMapping("/ai/gemini", GlicSettings.class);
+        registerMapping("/ai/gemini/permissions", GlicActorLoginPermissionsFragment.class);
 
         // Parameter translations mapping URL query string keys to Fragment
         // argument extra keys with appropriate type deserialization.
@@ -403,6 +411,10 @@ public class SettingsFragmentRegistry {
                 "optionsReferrer",
                 AutofillOptionsFragment.AUTOFILL_OPTIONS_REFERRER,
                 /* defaultValue= */ AutofillOptionsReferrer.SETTINGS);
+        registerIntParameterMapping(
+                "categoryType",
+                TracingCategoriesSettings.EXTRA_CATEGORY_TYPE,
+                /* defaultValue= */ TracingSettings.CategoryType.DEFAULT);
     }
 
     /**
