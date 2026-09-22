@@ -257,6 +257,47 @@ TEST_F(DarkModeManagerLinuxTest, UsePortalSetting) {
   EXPECT_FALSE(PrefersDarkTheme());
 }
 
+// The portal's "no preference" must be pushed into the toolkit as an explicit
+// non-dark preference rather than as `std::nullopt`. `std::nullopt` means "the
+// portal never answered" and makes the provider fall back to its
+// toolkit-derived scheme, which answers "dark" forever for themes with no light
+// variant. GNOME reports its Light style as no-preference, so treating it as
+// "ask the toolkit" leaves the browser stuck in dark mode.
+// Regression test for crbug.com/462191707.
+TEST_F(DarkModeManagerLinuxTest, UsePortalSettingNoPreference) {
+  // Start from an explicit dark portal preference.
+  dbus::MethodCall method_call(
+      DarkModeManagerLinux::kFreedesktopSettingsInterface,
+      DarkModeManagerLinux::kReadMethod);
+  method_call.SetSerial(123);
+  auto response = dbus::Response::FromMethodCall(&method_call);
+  dbus::MessageWriter writer(response.get());
+  dbus::MessageWriter variant_writer(nullptr);
+  writer.OpenVariant("v", &variant_writer);
+  variant_writer.AppendVariantOfUint32(static_cast<uint32_t>(
+      DarkModeManagerLinux::FreedesktopColorScheme::kDark));
+  writer.CloseContainer(&variant_writer);
+  EXPECT_CALL(*mock_linux_ui(), SetDarkTheme(true));
+  EXPECT_CALL(*mock_linux_ui(), SetColorScheme(std::optional<bool>(true)));
+  std::move(color_scheme_callback()).Run(response.get(), nullptr);
+  EXPECT_TRUE(PrefersDarkTheme());
+  Mock::VerifyAndClearExpectations(mock_linux_ui());
+
+  // Switching to "no preference" must leave dark mode, and must express that as
+  // `false` so the provider does not fall back to the toolkit-derived scheme.
+  dbus::Signal signal(DarkModeManagerLinux::kFreedesktopSettingsInterface,
+                      DarkModeManagerLinux::kSettingChangedSignal);
+  dbus::MessageWriter signal_writer(&signal);
+  signal_writer.AppendString(DarkModeManagerLinux::kSettingsNamespace);
+  signal_writer.AppendString(DarkModeManagerLinux::kColorSchemeKey);
+  signal_writer.AppendVariantOfUint32(static_cast<uint32_t>(
+      DarkModeManagerLinux::FreedesktopColorScheme::kNoPreference));
+  EXPECT_CALL(*mock_linux_ui(), SetDarkTheme(false));
+  EXPECT_CALL(*mock_linux_ui(), SetColorScheme(std::optional<bool>(false)));
+  std::move(setting_changed_callback()).Run(&signal);
+  EXPECT_FALSE(PrefersDarkTheme());
+}
+
 TEST_F(DarkModeManagerLinuxTest, UsePortalAccentColor) {
   // Let the manager know the DBus method call and signal connection succeeded.
   dbus::MethodCall method_call(

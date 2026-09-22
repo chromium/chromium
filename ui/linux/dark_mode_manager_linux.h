@@ -48,6 +48,8 @@ class DarkModeManagerLinux {
   friend class DarkModeManagerLinuxTest;
   FRIEND_TEST_ALL_PREFIXES(DarkModeManagerLinuxTest, UseNativeThemeSetting);
   FRIEND_TEST_ALL_PREFIXES(DarkModeManagerLinuxTest, UsePortalSetting);
+  FRIEND_TEST_ALL_PREFIXES(DarkModeManagerLinuxTest,
+                           UsePortalSettingNoPreference);
   FRIEND_TEST_ALL_PREFIXES(DarkModeManagerLinuxTest, UsePortalAccentColor);
 
   constexpr static char kFreedesktopSettingsService[] =

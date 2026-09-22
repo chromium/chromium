@@ -172,15 +172,30 @@ void DarkModeManagerLinux::OnReadAccentColor(
 
 void DarkModeManagerLinux::SetColorScheme(
     NativeTheme::PreferredColorScheme color_scheme) {
-  // Convert to the toolkit-independent tri-state used by `LinuxUiTheme`:
-  // `std::nullopt` (no preference) falls back to the toolkit-derived scheme in
-  // the provider.
-  std::optional<bool> prefer_dark;
-  if (color_scheme == NativeTheme::PreferredColorScheme::kDark) {
-    prefer_dark = true;
-  } else if (color_scheme == NativeTheme::PreferredColorScheme::kLight) {
-    prefer_dark = false;
-  }
+  // Convert to the toolkit-independent tri-state used by `LinuxUiTheme`, where
+  // `std::nullopt` means "no preference expressed" and makes the provider fall
+  // back to the toolkit-derived scheme.
+  //
+  // This is only reached once the portal has answered, and the portal is
+  // authoritative from that point on - including when it answers
+  // `kNoPreference`, which resolves to light. The spec defines `0` only as "no
+  // preference"; resolving that to light is what the rest of the ecosystem
+  // does. Firefox maps portal `0` and `2` alike to its light color scheme and
+  // consults the GTK theme only when the portal never answered, and
+  // libadwaita's default color scheme is `PREFER_LIGHT`. It also matters
+  // because GNOME reports its Light style (`color-scheme='default'`) as
+  // no-preference rather than as an explicit light preference - its Settings UI
+  // offers only "Default" and "Dark", so `0` is the only way to ask for light.
+  //
+  // Deferring to the provider's "is the toolkit window background dark?"
+  // heuristic instead would permanently answer "dark" for themes that have no
+  // light variant (Adwaita-dark, Yaru-dark, Breeze-Dark, ...), leaving those
+  // users unable to leave dark mode at all. See crbug.com/462191707.
+  //
+  // `std::nullopt` is therefore reserved for "the portal never answered", which
+  // is the provider's initial state.
+  const bool prefer_dark =
+      color_scheme == NativeTheme::PreferredColorScheme::kDark;
 
   // Push the portal color-scheme preference into each toolkit. `SetDarkTheme()`
   // toggles the toolkit's own dark/light variant for native widgets, while
@@ -191,8 +206,7 @@ void DarkModeManagerLinux::SetColorScheme(
   // directly here would race with that provider-sourced write
   // (crbug.com/536445418).
   for (ui::LinuxUiTheme* linux_ui_theme : *linux_ui_themes_) {
-    linux_ui_theme->SetDarkTheme(color_scheme ==
-                                 NativeTheme::PreferredColorScheme::kDark);
+    linux_ui_theme->SetDarkTheme(prefer_dark);
     linux_ui_theme->SetColorScheme(prefer_dark);
   }
 }
