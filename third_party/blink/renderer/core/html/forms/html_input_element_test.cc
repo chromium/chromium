@@ -931,4 +931,40 @@ TEST_F(HTMLInputElementLazyShadowTreeTest, MorePendingThanIndexBits) {
   }
 }
 
+TEST_F(HTMLInputElementTest, PasswordRevealEmptyInsertion) {
+  ScopedPasswordRevealForTest scoped_password_reveal(true);
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<input id=test type=password style='width: 300px'>");
+  UpdateAllLifecyclePhasesForTest();
+  HTMLInputElement& input = TestElement();
+  input.Focus();
+
+  Element* button = input.UserAgentShadowRoot()->getElementById(
+      shadow_element_names::kIdPasswordRevealButton);
+  ASSERT_TRUE(button);
+  EXPECT_EQ(button->EnsureComputedStyle()->Display(), EDisplay::kNone);
+
+  // Inserting empty text should not reveal the button.
+  GetDocument().execCommand("insertText", false, "", ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(button->EnsureComputedStyle()->Display(), EDisplay::kNone);
+
+  // Pressing Alt-F8 should not reveal the password or button because no text
+  // was inserted.
+  KeyboardEventInit* init = KeyboardEventInit::Create();
+  init->setKey("F8");
+  init->setAltKey(true);
+  auto* event =
+      MakeGarbageCollected<KeyboardEvent>(event_type_names::kKeydown, init);
+  input.DispatchEvent(*event);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(input.ShouldRevealPassword());
+  EXPECT_EQ(button->EnsureComputedStyle()->Display(), EDisplay::kNone);
+
+  // Inserting non-empty text should reveal the button.
+  GetDocument().execCommand("insertText", false, "a", ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(button->EnsureComputedStyle()->Display(), EDisplay::kBlock);
+}
+
 }  // namespace blink

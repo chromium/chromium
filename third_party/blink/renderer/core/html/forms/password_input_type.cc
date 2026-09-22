@@ -215,7 +215,7 @@ String PasswordInputType::FilterBeforeTextInserted(const String& text) {
   if (RuntimeEnabledFeatures::PasswordRevealEnabled()) {
     // This is the only scenario we go from no reveal button to showing the
     // reveal button: the password is empty and we have some user input.
-    if (GetElement().Value().empty()) {
+    if (GetElement().Value().empty() && !text.empty()) {
       should_show_reveal_button_ = true;
     }
   }
