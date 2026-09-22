@@ -4,6 +4,8 @@
 
 #include "chrome/updater/win/ui/l10n_util.h"
 
+#include <stddef.h>
+
 #include <optional>
 #include <string>
 #include <vector>

@@ -4,6 +4,8 @@
 
 #include "chrome/updater/test/integration_tests_mac.h"
 
+#include <stdlib.h>
+
 #include <map>
 #include <memory>
 #include <optional>

@@ -4,6 +4,8 @@
 
 #include "chrome/updater/win/ui/progress_wnd.h"
 
+#include <stddef.h>
+
 #include <cstdlib>
 #include <memory>
 #include <string>

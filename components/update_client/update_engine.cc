@@ -4,6 +4,7 @@
 
 #include "components/update_client/update_engine.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <algorithm>

@@ -4,6 +4,8 @@
 
 #include "components/update_client/protocol_parser_json.h"
 
+#include <stddef.h>
+
 #include <memory>
 
 #include "testing/gtest/include/gtest/gtest.h"

@@ -4,7 +4,8 @@
 
 #include "components/update_client/protocol_serializer.h"
 
-#include <cmath>
+#include <stddef.h>
+
 #include <optional>
 #include <string>
 #include <utility>

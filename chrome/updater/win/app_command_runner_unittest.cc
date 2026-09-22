@@ -8,6 +8,7 @@
 
 #include <shellapi.h>
 #include <shlobj.h>
+#include <stddef.h>
 
 #include <algorithm>
 #include <array>

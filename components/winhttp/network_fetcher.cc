@@ -4,6 +4,7 @@
 
 #include "components/winhttp/network_fetcher.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <limits>

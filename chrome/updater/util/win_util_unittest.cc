@@ -12,6 +12,7 @@
 #include <sddl.h>
 #include <shellapi.h>
 #include <shlobj.h>
+#include <stddef.h>
 
 #include <optional>
 #include <string>

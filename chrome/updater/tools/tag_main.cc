@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <cstdlib>
+#include <stdlib.h>
+
 #include <iostream>
 #include <string>
 
@@ -61,12 +62,12 @@ void PrintUsageAndExit(const base::CommandLine* cmdline) {
   std::cerr << "Usage: " << cmdline->GetProgram().AsUTF8Unsafe()
             << " [--get-tag|set-tag=TAG] [--padded-length=PADDED_LENGTH]"
             << " [--out=OUT] binary.[exe|msi|pkg]" << std::endl;
-  std::exit(255);
+  exit(255);
 }
 
 void HandleError(int error) {
   std::cerr << "Error: " << error << std::endl;
-  std::exit(1);
+  exit(1);
 }
 
 CommandLineArguments ParseCommandLineArgs(int argc, char** argv) {
@@ -119,7 +120,7 @@ int TagMain(int argc, char** argv) {
         tagging::BinaryReadTagString(args.in_filename);
     if (tag_string.empty()) {
       std::cout << "Could not get tag string, see log for details" << std::endl;
-      std::exit(1);
+      exit(1);
     }
     std::cout << tag_string << std::endl;
   }
@@ -129,7 +130,7 @@ int TagMain(int argc, char** argv) {
             args.in_filename, args.tag_string, args.padded_length,
             args.out_filename.empty() ? args.in_filename : args.out_filename)) {
       std::cout << "Could not write tag, see log for details" << std::endl;
-      std::exit(1);
+      exit(1);
     }
   }
 

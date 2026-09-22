@@ -4,8 +4,6 @@
 
 #include "components/update_client/update_checker.h"
 
-#include <stddef.h>
-
 #include <algorithm>
 #include <functional>
 #include <memory>

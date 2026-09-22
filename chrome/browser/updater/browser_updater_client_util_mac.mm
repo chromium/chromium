@@ -7,7 +7,6 @@
 #include <Foundation/Foundation.h>
 #import <OpenDirectory/OpenDirectory.h>
 #import <ServiceManagement/ServiceManagement.h>
-#include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
 

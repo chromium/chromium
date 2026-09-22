@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_UPDATE_CLIENT_UPDATE_CLIENT_METRICS_H_
 #define COMPONENTS_UPDATE_CLIENT_UPDATE_CLIENT_METRICS_H_
 
-#include <cstddef>
 #include <string>
 
 #include "base/time/time.h"

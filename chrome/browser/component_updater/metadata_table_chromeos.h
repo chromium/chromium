@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_COMPONENT_UPDATER_METADATA_TABLE_CHROMEOS_H_
 #define CHROME_BROWSER_COMPONENT_UPDATER_METADATA_TABLE_CHROMEOS_H_
 
+#include <stddef.h>
+
 #include <memory>
 #include <string>
 

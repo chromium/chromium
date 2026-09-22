@@ -6,7 +6,9 @@
 
 #import <Foundation/Foundation.h>
 #include <Security/Security.h>
+#include <limits.h>
 #include <pwd.h>
+#include <stddef.h>
 #include <unistd.h>
 
 #include <string>

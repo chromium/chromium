@@ -4,6 +4,7 @@
 
 #include "components/crx_file/crx_creator.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <string>

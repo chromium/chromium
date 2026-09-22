@@ -4,6 +4,8 @@
 
 #include "chrome/updater/policy/policy_manager.h"
 
+#include <stddef.h>
+
 #include <algorithm>
 #include <optional>
 #include <string>

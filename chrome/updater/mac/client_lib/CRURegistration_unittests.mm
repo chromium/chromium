@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 #import <dispatch/dispatch.h>
+#include <stddef.h>
 
 #include "base/apple/foundation_util.h"
 #include "base/files/file_path.h"

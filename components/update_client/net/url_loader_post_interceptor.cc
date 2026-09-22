@@ -4,6 +4,8 @@
 
 #include "components/update_client/net/url_loader_post_interceptor.h"
 
+#include <stddef.h>
+
 #include <algorithm>
 #include <memory>
 #include <string>

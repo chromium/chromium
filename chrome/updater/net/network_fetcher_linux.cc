@@ -5,6 +5,7 @@
 #include <curl/curl.h>
 #include <curl/system.h>
 #include <dlfcn.h>
+#include <stddef.h>
 #include <stdint.h>
 
 #include <array>

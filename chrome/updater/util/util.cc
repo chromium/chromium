@@ -4,6 +4,7 @@
 
 #include "chrome/updater/util/util.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <optional>

@@ -5,6 +5,8 @@
 #ifndef CHROME_UPDATER_APP_SERVER_WIN_COM_CLASSES_UTIL_H_
 #define CHROME_UPDATER_APP_SERVER_WIN_COM_CLASSES_UTIL_H_
 
+#include <stddef.h>
+
 #include <optional>
 #include <string>
 

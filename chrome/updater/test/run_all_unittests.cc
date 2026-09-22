@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <cstdlib>
+#include <stdlib.h>
+
 #include <string_view>
 
 #include "base/base_paths.h"
@@ -217,7 +218,7 @@ int main(int argc, char** argv) {
   // doing so breaks the updater on the system.
   using std::operator""sv;
   if constexpr ("ChromiumUpdater"sv.compare(PRODUCT_FULLNAME_STRING)) {
-    if (!std::getenv("ISOLATED_OUTDIR")) {
+    if (!getenv("ISOLATED_OUTDIR")) {
       LOG(ERROR)
           << "Running branded updater tests breaks the updater for "
              "the branded browser. This is unavoidable in the current "

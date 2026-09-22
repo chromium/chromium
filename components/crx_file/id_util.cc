@@ -4,6 +4,7 @@
 
 #include "components/crx_file/id_util.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <string>

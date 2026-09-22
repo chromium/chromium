@@ -4,6 +4,8 @@
 
 #include "chrome/updater/win/installer/pe_resource.h"
 
+#include <stddef.h>
+
 #include <algorithm>
 
 #include "base/compiler_specific.h"

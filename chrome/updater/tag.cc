@@ -4,6 +4,7 @@
 
 #include "chrome/updater/tag.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <algorithm>

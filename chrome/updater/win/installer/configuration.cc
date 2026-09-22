@@ -7,6 +7,7 @@
 #include <windows.h>
 
 #include <shellapi.h>
+#include <stddef.h>
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"

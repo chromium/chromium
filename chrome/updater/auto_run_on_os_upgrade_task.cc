@@ -4,6 +4,8 @@
 
 #include "chrome/updater/auto_run_on_os_upgrade_task.h"
 
+#include <stddef.h>
+
 #include <algorithm>
 #include <optional>
 #include <string>

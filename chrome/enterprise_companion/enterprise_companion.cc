@@ -4,6 +4,7 @@
 
 #include "chrome/enterprise_companion/enterprise_companion.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <memory>

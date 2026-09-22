@@ -4,6 +4,8 @@
 
 #include "chrome/updater/persisted_data.h"
 
+#include <stddef.h>
+
 #include <algorithm>
 #include <memory>
 #include <string>

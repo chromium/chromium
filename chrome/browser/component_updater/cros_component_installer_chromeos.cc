@@ -5,6 +5,7 @@
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 
 #include <stdint.h>
+#include <string.h>
 
 #include <algorithm>
 #include <map>

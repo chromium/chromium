@@ -4,6 +4,7 @@
 
 #include "chrome/updater/util/util.h"
 
+#include <errno.h>
 #include <sys/stat.h>
 #include <unistd.h>
 

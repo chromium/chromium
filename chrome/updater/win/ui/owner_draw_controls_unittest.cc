@@ -6,8 +6,9 @@
 
 #include <windows.h>
 
+#include <stdint.h>
+
 #include <bitset>
-#include <cstdint>
 #include <iterator>
 #include <memory>
 #include <optional>

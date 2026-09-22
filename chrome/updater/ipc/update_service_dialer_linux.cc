@@ -4,10 +4,11 @@
 
 #include "chrome/updater/ipc/update_service_dialer.h"
 
+#include <stdio.h>
+#include <string.h>
 #include <sys/socket.h>
 #include <sys/un.h>
 
-#include <cstdio>
 #include <optional>
 
 #include "base/compiler_specific.h"

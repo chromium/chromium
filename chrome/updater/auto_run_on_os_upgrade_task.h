@@ -5,6 +5,8 @@
 #ifndef CHROME_UPDATER_AUTO_RUN_ON_OS_UPGRADE_TASK_H_
 #define CHROME_UPDATER_AUTO_RUN_ON_OS_UPGRADE_TASK_H_
 
+#include <stddef.h>
+
 #include <string>
 #include <vector>
 

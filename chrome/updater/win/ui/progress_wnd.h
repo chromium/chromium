@@ -7,6 +7,8 @@
 
 #include <windows.h>
 
+#include <stddef.h>
+
 #include <array>
 #include <memory>
 #include <optional>

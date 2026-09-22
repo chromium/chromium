@@ -4,12 +4,12 @@
 
 #include "components/crx_file/crx_verifier.h"
 
+#include <limits.h>
+#include <stddef.h>
 #include <stdint.h>
 
 #include <algorithm>
 #include <array>
-#include <climits>
-#include <cstring>
 #include <iterator>
 #include <memory>
 #include <optional>

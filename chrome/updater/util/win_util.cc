@@ -12,14 +12,15 @@
 #include <regstr.h>
 #include <shellapi.h>
 #include <shlobj.h>
+#include <stddef.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <sysinfoapi.h>
 #include <winhttp.h>
 #include <wrl/client.h>
 #include <wtsapi32.h>
 
 #include <algorithm>
-#include <cstdlib>
 #include <memory>
 #include <optional>
 #include <string>
@@ -162,7 +163,7 @@ HRESULT GetProcessIntegrityLevel(DWORD process_id, MANDATORY_LEVEL* level) {
     return E_FAIL;
   }
   std::unique_ptr<TOKEN_MANDATORY_LABEL, base::FreeDeleter> label(
-      static_cast<TOKEN_MANDATORY_LABEL*>(std::malloc(label_size)));
+      static_cast<TOKEN_MANDATORY_LABEL*>(malloc(label_size)));
   if (!::GetTokenInformation(token_holder.get(), TokenIntegrityLevel,
                              label.get(), label_size, &label_size)) {
     return HRESULTFromLastError();

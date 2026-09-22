@@ -4,6 +4,7 @@
 
 #include "chrome/updater/mac/keystone/ksadmin.h"
 
+#include <stddef.h>
 #include <sys/stat.h>
 
 #include <algorithm>

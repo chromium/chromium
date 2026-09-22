@@ -4,6 +4,8 @@
 
 #include "chrome/updater/policy/service.h"
 
+#include <stddef.h>
+
 #include <algorithm>
 #include <map>
 #include <memory>

@@ -5,9 +5,9 @@
 #ifndef CHROME_UPDATER_CERTIFICATE_TAG_INTERNAL_H_
 #define CHROME_UPDATER_CERTIFICATE_TAG_INTERNAL_H_
 
+#include <stddef.h>
 #include <stdint.h>
 
-#include <cstring>
 #include <functional>
 #include <memory>
 #include <optional>

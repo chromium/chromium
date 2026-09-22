@@ -4,8 +4,6 @@
 
 #include <windows.h>
 
-#include <wchar.h>
-
 #include <string>
 
 #include "base/at_exit.h"

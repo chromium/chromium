@@ -4,6 +4,8 @@
 
 #include "chrome/updater/test/http_request.h"
 
+#include <stddef.h>
+
 #include <algorithm>
 #include <iterator>
 #include <string>

@@ -4,6 +4,7 @@
 
 #include "chrome/enterprise_companion/icu_util.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include "base/i18n/icu_util.h"

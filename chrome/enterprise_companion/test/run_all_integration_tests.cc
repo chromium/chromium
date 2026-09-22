@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <stdlib.h>
+
 #include <optional>
 #include <string_view>
 
@@ -33,7 +35,7 @@ bool IsUserElevated() {
 }
 
 std::optional<base::FilePath> GetLogFilePath() {
-  const char* var = std::getenv("ISOLATED_OUTDIR");
+  const char* var = getenv("ISOLATED_OUTDIR");
   return var ? std::make_optional(
                    base::FilePath::FromUTF8Unsafe(var).Append(FILE_PATH_LITERAL(
                        "enterprise_companion_integration_test.log")))
@@ -71,9 +73,8 @@ int main(int argc, char* argv[]) {
   // Assume all test bots have the {ISOLATED_OUTDIR} environment variable set.
   // Otherwise, don't run branded tests on a developer's system because doing so
   // can break the updater on the system.
-  if (!std::getenv("ISOLATED_OUTDIR") &&
-      std::string_view(PRODUCT_FULLNAME_STRING) !=
-          "ChromiumEnterpriseCompanion") {
+  if (!getenv("ISOLATED_OUTDIR") && std::string_view(PRODUCT_FULLNAME_STRING) !=
+                                        "ChromiumEnterpriseCompanion") {
     VLOG(1) << "Running branded enterprise companion tests can break the "
                "updater for the branded browser. If you don't care about "
                "broken updaters and want to run the branded enterprise "

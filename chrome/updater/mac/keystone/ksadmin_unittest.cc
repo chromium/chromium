@@ -4,6 +4,8 @@
 
 #include "chrome/updater/mac/keystone/ksadmin.h"
 
+#include <stddef.h>
+
 #include <map>
 #include <string>
 #include <string_view>

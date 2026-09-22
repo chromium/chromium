@@ -5,9 +5,9 @@
 #include "chrome/updater/test/integration_tests_impl.h"
 
 #include <stdint.h>
+#include <stdlib.h>
 
 #include <algorithm>
-#include <cstdlib>
 #include <map>
 #include <memory>
 #include <optional>

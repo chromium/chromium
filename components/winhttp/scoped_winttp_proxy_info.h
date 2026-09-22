@@ -7,6 +7,8 @@
 
 #include <windows.h>
 
+#include <stddef.h>
+#include <string.h>
 #include <winhttp.h>
 
 #include <string>

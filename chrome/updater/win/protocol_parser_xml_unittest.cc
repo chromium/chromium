@@ -4,6 +4,8 @@
 
 #include "chrome/updater/win/protocol_parser_xml.h"
 
+#include <stddef.h>
+
 #include <optional>
 
 #include "testing/gtest/include/gtest/gtest.h"

@@ -7,6 +7,7 @@
 
 #include <windows.h>
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <bit>

@@ -5,6 +5,8 @@
 #ifndef CHROME_UPDATER_EVENT_HISTORY_H_
 #define CHROME_UPDATER_EVENT_HISTORY_H_
 
+#include <stddef.h>
+
 #include <concepts>
 #include <optional>
 #include <string>

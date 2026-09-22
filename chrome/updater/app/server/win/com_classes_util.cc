@@ -4,6 +4,9 @@
 
 #include "chrome/updater/app/server/win/com_classes_util.h"
 
+#include <stddef.h>
+#include <wchar.h>
+
 #include <optional>
 #include <string>
 

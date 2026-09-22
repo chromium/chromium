@@ -4,8 +4,9 @@
 
 #include "chrome/updater/usage_stats_permissions.h"
 
+#include <wchar.h>
+
 #include <algorithm>
-#include <cwchar>
 #include <optional>
 #include <string>
 #include <utility>

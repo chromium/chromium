@@ -8,6 +8,7 @@
 #include <windows.h>
 
 #include <bits.h>
+#include <stddef.h>
 #include <wrl/client.h>
 
 #include <memory>

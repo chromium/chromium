@@ -4,7 +4,6 @@
 
 #include "chrome/updater/app/server/win/com_classes.h"
 
-#include <wchar.h>
 #include <wrl/client.h>
 #include <wrl/implements.h>
 

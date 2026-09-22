@@ -4,12 +4,12 @@
 
 #include "chrome/updater/certificate_tag.h"
 
+#include <stddef.h>
 #include <stdint.h>
+#include <string.h>
 #include <sys/types.h>
 
 #include <algorithm>
-#include <cstddef>
-#include <cstring>
 #include <memory>
 #include <optional>
 #include <string>

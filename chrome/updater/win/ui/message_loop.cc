@@ -6,6 +6,8 @@
 
 #include <windows.h>
 
+#include <stddef.h>
+
 namespace updater::ui {
 
 MessageLoop::MessageLoop() = default;

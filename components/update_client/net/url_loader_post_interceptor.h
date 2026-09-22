@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_UPDATE_CLIENT_NET_URL_LOADER_POST_INTERCEPTOR_H_
 #define COMPONENTS_UPDATE_CLIENT_NET_URL_LOADER_POST_INTERCEPTOR_H_
 
+#include <stddef.h>
+
 #include <memory>
 #include <string>
 #include <tuple>

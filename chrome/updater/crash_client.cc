@@ -4,8 +4,9 @@
 
 #include "chrome/updater/crash_client.h"
 
+#include <stddef.h>
+
 #include <algorithm>
-#include <cstddef>
 #include <functional>
 #include <optional>
 #include <vector>
@@ -111,8 +112,7 @@ bool CrashClient::InitializeCrashReporting(UpdaterScope updater_scope) {
     // looping clients.
     std::ranges::sort(reports_completed, std::greater<>{},
                       &crashpad::CrashReportDatabase::Report::creation_time);
-    for (size_t i = 0; i < std::min(reports_completed.size(), std::size_t{5});
-         ++i) {
+    for (size_t i = 0; i < std::min(reports_completed.size(), size_t{5}); ++i) {
       const auto& report = reports_completed.at(i);
       VLOG(1) << "Crash since last run: ID \"" << report.id << "\", created at "
               << report.creation_time << ", " << report.upload_attempts

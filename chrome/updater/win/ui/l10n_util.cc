@@ -6,6 +6,8 @@
 
 #include <windows.h>
 
+#include <stddef.h>
+
 #include <string>
 #include <utility>
 #include <vector>

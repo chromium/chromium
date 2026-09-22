@@ -4,6 +4,8 @@
 
 #include "chrome/browser/updater/check_updater_health_task.h"
 
+#include <stddef.h>
+
 #include <string>
 #include <string_view>
 #include <utility>

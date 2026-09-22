@@ -4,10 +4,11 @@
 
 #include "components/update_client/background_downloader_mac.h"
 
+#include <stddef.h>
 #include <stdint.h>
+#include <string.h>
 
 #include <algorithm>
-#include <cstring>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -215,8 +216,8 @@ TEST_F(BackgroundDownloaderTest, DISABLED_SimpleDownload) {
                         ExpectDownloadMetrics(
                             metrics,
                             std::to_underlying(CrxDownloaderError::NONE), 0,
-                            std::strlen(kSmallDownloadData),
-                            std::strlen(kSmallDownloadData), true);
+                            strlen(kSmallDownloadData),
+                            strlen(kSmallDownloadData), true);
                       })
                       .Then(run_loop.QuitClosure()));
   run_loop.Run();
@@ -246,8 +247,8 @@ TEST_F(BackgroundDownloaderTest, DISABLED_DownloadDiscoveredInCache) {
                         ExpectDownloadMetrics(
                             metrics,
                             std::to_underlying(CrxDownloaderError::NONE), 0,
-                            std::strlen(kSmallDownloadData),
-                            std::strlen(kSmallDownloadData), false);
+                            strlen(kSmallDownloadData),
+                            strlen(kSmallDownloadData), false);
                       })
                       .Then(run_loop.QuitClosure()));
   run_loop.Run();

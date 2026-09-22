@@ -7,6 +7,7 @@
 #include <windows.h>
 
 #include <commctrl.h>
+#include <stddef.h>
 
 #include <algorithm>
 #include <array>

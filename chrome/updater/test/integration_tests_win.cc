@@ -4,8 +4,10 @@
 
 #include "chrome/updater/test/integration_tests_win.h"
 
+#include <inttypes.h>
 #include <regstr.h>
 #include <shlobj.h>
+#include <stddef.h>
 #include <stdint.h>
 #include <wrl/client.h>
 #include <wrl/implements.h>

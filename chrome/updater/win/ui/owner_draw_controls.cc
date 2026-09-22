@@ -7,6 +7,7 @@
 #include <windows.h>
 
 #include <commctrl.h>
+#include <wchar.h>
 
 #include <algorithm>
 #include <limits>

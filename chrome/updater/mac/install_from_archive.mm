@@ -6,6 +6,7 @@
 
 #import <Cocoa/Cocoa.h>
 #include <poll.h>
+#include <stddef.h>
 #include <sys/types.h>
 #include <sys/uio.h>
 #include <unistd.h>

@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 #include <dispatch/dispatch.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 #include <iostream>
 

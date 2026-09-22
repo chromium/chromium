@@ -4,9 +4,6 @@
 
 #include "chrome/updater/win/installer/configuration.h"
 
-#include <stddef.h>
-#include <stdlib.h>
-
 #include <memory>
 
 #include "base/environment.h"

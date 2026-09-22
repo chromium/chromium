@@ -4,7 +4,6 @@
 
 #include <stdint.h>
 
-#include <cstdlib>
 #include <memory>
 #include <optional>
 #include <string>

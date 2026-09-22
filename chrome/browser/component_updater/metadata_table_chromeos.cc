@@ -4,6 +4,8 @@
 
 #include "chrome/browser/component_updater/metadata_table_chromeos.h"
 
+#include <stddef.h>
+
 #include <algorithm>
 #include <memory>
 #include <string>
