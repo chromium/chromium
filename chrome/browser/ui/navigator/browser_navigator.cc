@@ -141,15 +141,18 @@ bool WindowCanOpenTabs(const NavigateParams& params) {
 
 // Finds an existing Browser compatible with |profile|, making a new one if no
 // such Browser is located.
-BrowserWindowInterface* GetOrCreateBrowser(Profile* profile,
-                                           bool user_gesture) {
+BrowserWindowInterface* GetOrCreateBrowser(
+    Profile* profile,
+    bool user_gesture,
+    bool should_trigger_session_restore) {
   BrowserWindowInterface* browser =
       ProfileBrowserCollection::GetForProfile(profile)->FindTabbedBrowser();
 
   if (!browser && GetBrowserWindowCreationStatusForProfile(*profile) ==
                       BrowserWindowInterface::CreationStatus::kOk) {
-    browser =
-        CreateBrowserWindow(BrowserWindowCreateParams(profile, user_gesture));
+    BrowserWindowCreateParams params(profile, user_gesture);
+    params.should_trigger_session_restore = should_trigger_session_restore;
+    browser = CreateBrowserWindow(std::move(params));
   }
   return browser;
 }
@@ -212,7 +215,8 @@ bool AdjustNavigateParamsForURL(NavigateParams* params) {
       return false;
     }
     params->disposition = WindowOpenDisposition::SINGLETON_TAB;
-    params->browser = GetOrCreateBrowser(profile, params->user_gesture);
+    params->browser = GetOrCreateBrowser(
+        profile, params->user_gesture, params->should_trigger_session_restore);
     params->window_action = NavigateParams::WindowAction::kShowWindow;
   }
 
@@ -250,6 +254,8 @@ std::tuple<BrowserWindowInterface*, int> GetBrowserAndTabForDisposition(
     const NavigateParams& params,
     const AdditionalParams& additional_params) {
   Profile* profile = params.initiating_profile;
+  const bool should_trigger_session_restore =
+      params.should_trigger_session_restore;
 
   switch (params.disposition) {
     case WindowOpenDisposition::SWITCH_TO_TAB: {
@@ -266,7 +272,9 @@ std::tuple<BrowserWindowInterface*, int> GetBrowserAndTabForDisposition(
       }
       // Find a compatible window and re-execute this command in it. Otherwise
       // re-run with NEW_WINDOW.
-      return {GetOrCreateBrowser(profile, params.user_gesture), -1};
+      return {GetOrCreateBrowser(profile, params.user_gesture,
+                                 should_trigger_session_restore),
+              -1};
     case WindowOpenDisposition::SINGLETON_TAB: {
       // If we have a browser window, check it first.
       if (params.browser) {
@@ -297,7 +305,9 @@ std::tuple<BrowserWindowInterface*, int> GetBrowserAndTabForDisposition(
 
       // Find a compatible window and re-execute this command in it. Otherwise
       // re-run with NEW_WINDOW.
-      return {GetOrCreateBrowser(profile, params.user_gesture), -1};
+      return {GetOrCreateBrowser(profile, params.user_gesture,
+                                 should_trigger_session_restore),
+              -1};
     case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE: {
       // The picture in picture window should be part of the opener's web app,
       // if any.
@@ -364,6 +374,8 @@ std::tuple<BrowserWindowInterface*, int> GetBrowserAndTabForDisposition(
         browser_params.initial_origin_specified = GetOriginSpecified(params);
         browser_params.can_maximize = !additional_params.tab_modal_popup;
         browser_params.can_fullscreen = !additional_params.tab_modal_popup;
+        browser_params.should_trigger_session_restore =
+            should_trigger_session_restore;
         return {CreateBrowserWindow(std::move(browser_params)), -1};
       }
       BrowserWindowCreateParams browser_params =
@@ -371,6 +383,8 @@ std::tuple<BrowserWindowInterface*, int> GetBrowserAndTabForDisposition(
               app_name, params.trusted_source, params.window_features.bounds,
               profile, params.user_gesture);
       browser_params.initial_origin_specified = GetOriginSpecified(params);
+      browser_params.should_trigger_session_restore =
+          should_trigger_session_restore;
       return {CreateBrowserWindow(std::move(browser_params)), -1};
     }
     case WindowOpenDisposition::NEW_WINDOW: {
@@ -378,8 +392,10 @@ std::tuple<BrowserWindowInterface*, int> GetBrowserAndTabForDisposition(
       BrowserWindowInterface* browser = nullptr;
       if (GetBrowserWindowCreationStatusForProfile(*profile) ==
           BrowserWindowInterface::CreationStatus::kOk) {
-        browser = CreateBrowserWindow(
-            BrowserWindowCreateParams(profile, params.user_gesture));
+        BrowserWindowCreateParams browser_params(profile, params.user_gesture);
+        browser_params.should_trigger_session_restore =
+            should_trigger_session_restore;
+        browser = CreateBrowserWindow(std::move(browser_params));
       }
       return {browser, -1};
     }
@@ -387,7 +403,7 @@ std::tuple<BrowserWindowInterface*, int> GetBrowserAndTabForDisposition(
       // Make or find an incognito window.
       return {GetOrCreateBrowser(
                   profile->GetPrimaryOTRProfile(/*create_if_needed=*/true),
-                  params.user_gesture),
+                  params.user_gesture, should_trigger_session_restore),
               -1};
     // The following types result in no navigation.
     case WindowOpenDisposition::SAVE_TO_DISK:

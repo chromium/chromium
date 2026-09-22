@@ -307,6 +307,11 @@ struct NavigateParams {
   bool navigation_initiated_from_sync = false;
 #endif
 
+  // If true, opening a new window for this navigation can trigger session
+  // restore (if no browser windows were open and session restore is enabled).
+  // If false, the new window will not trigger session restore.
+  bool should_trigger_session_restore = true;
+
   // The profile that is initiating the navigation. If there is a non-NULL
   // browser passed in via |browser|, it's profile will be used instead.
   raw_ptr<Profile> initiating_profile = nullptr;
