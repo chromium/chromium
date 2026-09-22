@@ -3533,6 +3533,7 @@ class LocationBarMediator
      *     the search box. If not we will use specific color for NTP's un-focus state.
      */
     public void updateUrlBarHintTextColor(boolean useDefaultUrlBarHintTextColor) {
+        if (mUrlCoordinator == null) return;
         if (useDefaultUrlBarHintTextColor) {
             mUrlCoordinator.setUrlBarHintTextColorForDefault(mBrandedColorScheme);
         } else {
