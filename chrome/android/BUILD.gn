@@ -1315,6 +1315,10 @@ if (_is_default_toolchain) {
         "//chrome/browser/ui/android/extensions/side_panel/internal:junit",
       ]
     }
+
+    if (enable_printing) {
+      deps += [ "//printing:printing_junit_tests" ]
+    }
   }
 
   android_library("xr_java") {

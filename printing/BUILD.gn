@@ -516,4 +516,16 @@ if (is_android) {
       "android/java/src/org/chromium/printing/PrintingControllerImpl.java",
     ]
   }
+
+  robolectric_library("printing_junit_tests") {
+    sources = [ "android/java/src/org/chromium/printing/PrintingControllerImplUnitTest.java" ]
+    deps = [
+      ":printing_java",
+      "//base:base_java",
+      "//base:base_junit_test_support",
+      "//build/android:build_java",
+      "//third_party/junit",
+      "//ui/android:ui_no_recycler_view_java",
+    ]
+  }
 }
