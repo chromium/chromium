@@ -410,6 +410,9 @@ class WebUILocationBarInteractiveUiTest
             kAIMWebContentsVisible,
             [this]() {
               auto* view = GetActiveAimPopupWebView().Run();
+              if (!view || !view->GetWidget()) {
+                return false;
+              }
               auto* element =
                   views::ElementTrackerViews::GetInstance()->GetElementForView(
                       view, /* assign_temporary_id =*/true);
@@ -432,6 +435,9 @@ class WebUILocationBarInteractiveUiTest
           PollState(kAIMWebContentsHidden,
                     [this]() {
                       auto* view = GetActiveAimPopupWebView().Run();
+                      if (!view || !view->GetWidget()) {
+                        return true;
+                      }
                       auto* element =
                           views::ElementTrackerViews::GetInstance()
                               ->GetElementForView(

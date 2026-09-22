@@ -14371,6 +14371,24 @@
             ]
         }
     ],
+    "OmniboxWebUIPopupHideOnCreation": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260917",
+                    "enable_features": [
+                        "OmniboxWebUIPopupHideOnCreation"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxWebUIPopupMarkAsHiddenMacOS": [
         {
             "platforms": [
