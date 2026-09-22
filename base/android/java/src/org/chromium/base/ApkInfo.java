@@ -121,11 +121,21 @@ public final class ApkInfo {
     }
 
     /**
+     * Same as {@link #isDebugApp()}, but reads straight from the given {@link ApplicationInfo}
+     * instead of forcing {@link ApkInfo} to initialize. Prefer this on startup-critical paths,
+     * since initializing ApkInfo requires several PackageManager calls.
+     */
+    public static boolean isDebugAppNoInit(ApplicationInfo appInfo) {
+        return (appInfo.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
+    }
+
+    /**
      * Check if this is either a debuggable build of Android or of the host app. Use this to enable
      * developer-only features.
      */
     public static boolean isDebugAndroidOrApp() {
-        return AndroidInfo.isDebugAndroid() || isDebugApp();
+        return AndroidInfo.isDebugAndroid()
+                || isDebugAppNoInit(ContextUtils.getApplicationContext().getApplicationInfo());
     }
 
     /**
@@ -231,7 +241,7 @@ public final class ApkInfo {
         // In the case of the SDK Runtime, we would like to retrieve the package name loading the
         // SDK.
         String appInstalledPackageName = appContextPackageName;
-        mIApkInfo.isDebugApp = (appInfo.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
+        mIApkInfo.isDebugApp = isDebugAppNoInit(appInfo);
         mIApkInfo.isSystemApp = (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
 
         if (hostInformationProvided) {
