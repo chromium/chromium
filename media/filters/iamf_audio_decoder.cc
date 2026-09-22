@@ -287,8 +287,9 @@ DecoderStatus IamfAudioDecoder::DrainTemporalUnits() {
     }
 
     size_t bytes_written = 0;
+    base::span<uint8_t> output_data = result->interleaved_data();
     auto status = iamf_decoder_->GetOutputTemporalUnit(
-        result->channels()[0].data(), result->data_size(), bytes_written);
+        output_data.data(), output_data.size(), bytes_written);
 
     if (!status.ok()) {
       MEDIA_LOG(ERROR, media_log_)
