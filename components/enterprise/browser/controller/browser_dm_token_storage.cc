@@ -221,7 +221,7 @@ void BrowserDMTokenStorage::InitIfNeeded() {
     DVLOG(1) << "DM Token = invalid";
   } else {
     dm_token_ = CreateValidToken(init_dm_token);
-    DVLOG(1) << "DM Token = " << dm_token_.value();
+    DVLOG(1) << "DM Token = valid";
   }
 
   should_display_error_message_on_failure_ =

@@ -723,14 +723,13 @@ CloudPolicyValidatorBase::Status CloudPolicyValidatorBase::CheckDMToken() {
        policy_data_->request_token().empty())) {
     LOG_POLICY(ERROR, POLICY_FETCHING)
         << PolicyTypeLogPrefix(policy_type_, settings_entity_id_)
-        << "Empty DM token encountered - expected: " << dm_token_;
+        << "Empty DM token encountered";
     return VALIDATION_BAD_DM_TOKEN;
   }
   if (!dm_token_.empty() && policy_data_->request_token() != dm_token_) {
     LOG_POLICY(ERROR, POLICY_FETCHING)
         << PolicyTypeLogPrefix(policy_type_, settings_entity_id_)
-        << "Invalid DM token: " << policy_data_->request_token()
-        << " - expected: " << dm_token_;
+        << "Invalid DM token encountered";
     return VALIDATION_BAD_DM_TOKEN;
   }
 

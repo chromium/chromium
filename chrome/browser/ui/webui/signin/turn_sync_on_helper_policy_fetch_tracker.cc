@@ -117,7 +117,7 @@ class PolicyFetchTracker
       return;
     }
 
-    DVLOG(1) << "Policy registration succeeded: dm_token=" << dm_token;
+    DVLOG(1) << "Policy registration succeeded";
 
     DCHECK(dm_token_.empty());
     DCHECK(client_id_.empty());

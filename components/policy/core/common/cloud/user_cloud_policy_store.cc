@@ -364,8 +364,7 @@ void DesktopCloudPolicyStore::InstallLoadedPolicyAfterValidation(
 
   VLOG_POLICY(1, POLICY_PROCESSING)
       << PolicyTypeLogPrefix(policy_type(), std::string())
-      << "Validation succeeded - installing policy with dm_token: "
-      << validator->policy_data()->request_token();
+      << "Validation succeeded - installing policy";
   VLOG_POLICY(1, POLICY_PROCESSING)
       << PolicyTypeLogPrefix(policy_type(), std::string())
       << "Device ID: " << validator->policy_data()->device_id();

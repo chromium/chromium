@@ -1746,8 +1746,7 @@ void CloudPolicyClient::ProcessDeviceRegisterResponse(
           << "Failed to parse configuration seed";
     }
   }
-  DVLOG_POLICY(1, CBCM_ENROLLMENT)
-      << "Client registration complete - DMToken = " << dm_token_;
+  DVLOG_POLICY(1, CBCM_ENROLLMENT) << "Client registration complete";
 
   // Device mode is only relevant for device policy really, it's the
   // responsibility of the consumer of the field to check validity.

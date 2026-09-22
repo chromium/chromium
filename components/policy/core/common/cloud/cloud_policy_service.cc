@@ -247,8 +247,7 @@ void CloudPolicyService::OnStoreLoaded(CloudPolicyStore* store) {
   if (policy && policy->has_request_token() && policy->has_device_id() &&
       !client_->is_registered()) {
     DVLOG_POLICY(1, CBCM_ENROLLMENT)
-        << "Setting up registration with request token: "
-        << policy->request_token();
+        << "Setting up registration for device id: " << policy->device_id();
     std::vector<std::string> user_affiliation_ids(
         policy->user_affiliation_ids().begin(),
         policy->user_affiliation_ids().end());
