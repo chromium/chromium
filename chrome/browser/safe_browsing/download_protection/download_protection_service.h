@@ -177,6 +177,9 @@ class DownloadProtectionService {
   // Returns the timeout that is used by CheckClientDownload().
   base::TimeDelta GetDownloadRequestTimeout() const;
 
+  // Overrides the download request timeout for testing.
+  void SetDownloadRequestTimeoutForTesting(base::TimeDelta timeout);
+
   // Checks the user permissions, and submits the downloaded file if
   // appropriate. Returns whether the submission was successful.
   bool MaybeBeginFeedbackForDownload(Profile* profile,
@@ -433,6 +436,9 @@ class DownloadProtectionService {
   // Rate of allowlisted downloads we sample to send out download ping.
   // Overrides the value provided by the delegate. Intended for testing only.
   std::optional<double> allowlist_sample_rate_;
+
+  // Download request timeout. Can be overridden for testing.
+  base::TimeDelta download_request_timeout_ = base::Milliseconds(7000);
 
   // DownloadProtectionObserver to send real time reports for dangerous download
   // events and handle special user actions on the download.

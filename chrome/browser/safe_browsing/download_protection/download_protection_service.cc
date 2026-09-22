@@ -87,8 +87,6 @@ namespace {
 constexpr int kDownloadAttributionUserGestureLimit = 2;
 constexpr int kDownloadAttributionUserGestureLimitForExtendedReporting = 5;
 
-constexpr base::TimeDelta kDownloadRequestTimeoutMs = base::Milliseconds(7000);
-
 bool IsDownloadSecuritySensitive(safe_browsing::DownloadCheckResult result) {
   using Result = safe_browsing::DownloadCheckResult;
   switch (result) {
@@ -682,8 +680,13 @@ const GURL& DownloadProtectionService::GetDownloadRequestUrl() const {
   return delegate_->GetDownloadRequestUrl();
 }
 
+void DownloadProtectionService::SetDownloadRequestTimeoutForTesting(
+    base::TimeDelta timeout) {
+  download_request_timeout_ = timeout;
+}
+
 base::TimeDelta DownloadProtectionService::GetDownloadRequestTimeout() const {
-  return kDownloadRequestTimeoutMs;
+  return download_request_timeout_;
 }
 
 bool DownloadProtectionService::MaybeBeginFeedbackForDownload(
