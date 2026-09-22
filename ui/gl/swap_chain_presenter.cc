@@ -895,8 +895,7 @@ bool SwapChainPresenter::PresentToDecodeSwapChain(
     hr = dxgi_device->GetAdapter(&dxgi_adapter);
     CHECK_EQ(hr, S_OK);
     Microsoft::WRL::ComPtr<IDXGIFactoryMedia> media_factory;
-    dxgi_adapter->GetParent(IID_PPV_ARGS(&media_factory));
-    DCHECK(media_factory);
+    CHECK_EQ(dxgi_adapter->GetParent(IID_PPV_ARGS(&media_factory)), S_OK);
 
     DXGI_DECODE_SWAP_CHAIN_DESC desc = {};
     // Set the DXGI_SWAP_CHAIN_FLAG_FULLSCREEN_VIDEO flag to mark this surface
@@ -917,8 +916,7 @@ bool SwapChainPresenter::PresentToDecodeSwapChain(
     SetSwapChainPresentDuration();
 
     Microsoft::WRL::ComPtr<IDCompositionDesktopDevice> desktop_device;
-    dcomp_device_.As(&desktop_device);
-    DCHECK(desktop_device);
+    CHECK_EQ(dcomp_device_.As(&desktop_device), S_OK);
 
     hr = desktop_device->CreateSurfaceFromHandle(swap_chain_handle.Get(),
                                                  &decode_surface_);
@@ -1188,11 +1186,9 @@ base::expected<void, CommitError> SwapChainPresenter::SetupPresentToSwapChain(
       }
 
       Microsoft::WRL::ComPtr<ID3D11Texture2D> dest_texture;
-      swap_chain_->GetBuffer(0, IID_PPV_ARGS(&dest_texture));
-      DCHECK(dest_texture);
+      CHECK_EQ(swap_chain_->GetBuffer(0, IID_PPV_ARGS(&dest_texture)), S_OK);
       Microsoft::WRL::ComPtr<ID3D11Texture2D> src_texture;
-      hr = swap_chain_->GetBuffer(1, IID_PPV_ARGS(&src_texture));
-      DCHECK(src_texture);
+      CHECK_EQ(swap_chain_->GetBuffer(1, IID_PPV_ARGS(&src_texture)), S_OK);
       Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
       d3d11_device_->GetImmediateContext(&context);
       DCHECK(context);
@@ -1597,7 +1593,8 @@ base::expected<void, CommitError> SwapChainPresenter::VideoProcessorBlt(
 
     if (!output_view_) {
       Microsoft::WRL::ComPtr<ID3D11Texture2D> swap_chain_buffer;
-      swap_chain_->GetBuffer(0, IID_PPV_ARGS(&swap_chain_buffer));
+      CHECK_EQ(swap_chain_->GetBuffer(0, IID_PPV_ARGS(&swap_chain_buffer)),
+               S_OK);
 
       D3D11_VIDEO_PROCESSOR_OUTPUT_VIEW_DESC output_desc = {};
       output_desc.ViewDimension = D3D11_VPOV_DIMENSION_TEXTURE2D;
@@ -1752,8 +1749,7 @@ base::expected<void, CommitError> SwapChainPresenter::ReallocateSwapChain(
   hr = dxgi_device->GetAdapter(&dxgi_adapter);
   CHECK_EQ(hr, S_OK);
   Microsoft::WRL::ComPtr<IDXGIFactoryMedia> media_factory;
-  dxgi_adapter->GetParent(IID_PPV_ARGS(&media_factory));
-  DCHECK(media_factory);
+  CHECK_EQ(dxgi_adapter->GetParent(IID_PPV_ARGS(&media_factory)), S_OK);
 
   // The composition surface handle is only used to create YUV swap chains since
   // CreateSwapChainForComposition can't do that.
@@ -1966,7 +1962,7 @@ base::expected<void, CommitError> SwapChainPresenter::RevertSwapChainToSDR(
                   });
 
   Microsoft::WRL::ComPtr<ID3D11Texture2D> swap_chain_buffer;
-  swap_chain_->GetBuffer(0, IID_PPV_ARGS(&swap_chain_buffer));
+  CHECK_EQ(swap_chain_->GetBuffer(0, IID_PPV_ARGS(&swap_chain_buffer)), S_OK);
   D3D11_VIDEO_PROCESSOR_OUTPUT_VIEW_DESC output_desc = {};
   output_desc.ViewDimension = D3D11_VPOV_DIMENSION_TEXTURE2D;
   output_desc.Texture2D.MipSlice = 0;
