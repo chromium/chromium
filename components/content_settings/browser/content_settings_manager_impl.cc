@@ -14,6 +14,7 @@
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_features.h"
@@ -126,15 +127,17 @@ void ContentSettingsManagerImpl::Create(
         receiver,
     std::unique_ptr<Delegate> delegate) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  const content::ChildProcessId render_process_id =
+      render_process_host->GetID();
+  auto cookie_settings =
+      delegate->GetCookieSettings(render_process_host->GetBrowserContext());
   base::ThreadPool::CreateSingleThreadTaskRunner(
       {base::TaskPriority::USER_BLOCKING})
-      ->PostTask(FROM_HERE,
-                 base::BindOnce(&ContentSettingsManagerImpl::CreateOnThread,
-                                render_process_host->GetDeprecatedID(),
-                                std::move(receiver),
-                                delegate->GetCookieSettings(
-                                    render_process_host->GetBrowserContext()),
-                                std::move(delegate)));
+      ->PostTask(
+          FROM_HERE,
+          base::BindOnce(&ContentSettingsManagerImpl::CreateOnThread,
+                         render_process_id, std::move(receiver),
+                         std::move(cookie_settings), std::move(delegate)));
 }
 
 void ContentSettingsManagerImpl::Clone(
@@ -242,12 +245,12 @@ void ContentSettingsManagerImpl::OnContentBlocked(
 }
 
 ContentSettingsManagerImpl::ContentSettingsManagerImpl(
-    int render_process_id,
+    content::ChildProcessId render_process_id,
     std::unique_ptr<Delegate> delegate,
     scoped_refptr<CookieSettings> cookie_settings)
     : delegate_(std::move(delegate)),
       render_process_id_(render_process_id),
-      cookie_settings_(cookie_settings) {
+      cookie_settings_(std::move(cookie_settings)) {
   CHECK(cookie_settings_);
 }
 
@@ -259,14 +262,14 @@ ContentSettingsManagerImpl::ContentSettingsManagerImpl(
 
 // static
 void ContentSettingsManagerImpl::CreateOnThread(
-    int render_process_id,
+    content::ChildProcessId render_process_id,
     mojo::PendingReceiver<content_settings::mojom::ContentSettingsManager>
         receiver,
     scoped_refptr<CookieSettings> cookie_settings,
     std::unique_ptr<Delegate> delegate) {
   mojo::MakeSelfOwnedReceiver(
       base::WrapUnique(new ContentSettingsManagerImpl(
-          render_process_id, std::move(delegate), cookie_settings)),
+          render_process_id, std::move(delegate), std::move(cookie_settings))),
       std::move(receiver));
 }
 

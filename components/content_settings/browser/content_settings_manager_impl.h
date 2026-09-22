@@ -5,26 +5,35 @@
 #ifndef COMPONENTS_CONTENT_SETTINGS_BROWSER_CONTENT_SETTINGS_MANAGER_IMPL_H_
 #define COMPONENTS_CONTENT_SETTINGS_BROWSER_CONTENT_SETTINGS_MANAGER_IMPL_H_
 
+#include <memory>
+
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "components/content_settings/common/content_settings_manager.mojom.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "content/public/browser/global_routing_id.h"
+#include "content/public/common/child_process_id.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
+
+class GURL;
 
 namespace content {
 class BrowserContext;
 class RenderProcessHost;
+struct GlobalRenderFrameHostToken;
 }  // namespace content
-
-namespace content_settings {
-class CookieSettings;
-}  // namespace content_settings
 
 namespace net {
 class SiteForCookies;
 }  // namespace net
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace content_settings {
+
+class CookieSettings;
 
 class ContentSettingsManagerImpl
     : public content_settings::mojom::ContentSettingsManager {
@@ -77,7 +86,7 @@ class ContentSettingsManagerImpl
                         ContentSettingsType type) override;
 
  private:
-  ContentSettingsManagerImpl(int render_process_id,
+  ContentSettingsManagerImpl(content::ChildProcessId render_process_id,
                              std::unique_ptr<Delegate> delegate,
                              scoped_refptr<CookieSettings> cookie_settings);
   ContentSettingsManagerImpl(const ContentSettingsManagerImpl& other);
@@ -87,19 +96,20 @@ class ContentSettingsManagerImpl
       const url::Origin& top_frame_origin);
 
   static void CreateOnThread(
-      int render_process_id,
+      content::ChildProcessId render_process_id,
       mojo::PendingReceiver<content_settings::mojom::ContentSettingsManager>
           receiver,
       scoped_refptr<CookieSettings> cookie_settings,
-      std::unique_ptr<ContentSettingsManagerImpl::Delegate> delegate);
+      std::unique_ptr<Delegate> delegate);
 
-  std::unique_ptr<Delegate> delegate_;
+  const std::unique_ptr<Delegate> delegate_;
 
-  // Use these IDs to hold a weak reference back to the RenderFrameHost.
-  const int render_process_id_;
+  // Renderer identity copied across threads and combined with frame tokens.
+  // Does not keep the renderer process or any frame alive.
+  const content::ChildProcessId render_process_id_;
 
   // Used to look up storage permissions.
-  const scoped_refptr<content_settings::CookieSettings> cookie_settings_;
+  const scoped_refptr<CookieSettings> cookie_settings_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
