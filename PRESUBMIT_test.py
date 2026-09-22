@@ -873,7 +873,7 @@ class IDLParsingTest(unittest.TestCase):
             actual_error = self._RunIDLParse(input_api, full_path)
             self.assertIn(expected_error, str(actual_error))
 
-    def testCheckParseErrors(self):
+    def testCheckIDLParseErrors(self):
         input_api = MockInputApi()
         output_api = MockOutputApi()
         valid_path = 'extensions/common/api/valid.idl'
@@ -900,7 +900,7 @@ class IDLParsingTest(unittest.TestCase):
                              invalid_contents,
                              local_root=self._temp_dir.name),
         ]
-        results = PRESUBMIT.CheckParseErrors(input_api, output_api)
+        results = PRESUBMIT.CheckIDLParseErrors(input_api, output_api)
         self.assertEqual(1, len(results))
         self.assertIn(invalid_path, results[0].message)
         self.assertIn('Unexpected "{" after keyword "dictionary".',
