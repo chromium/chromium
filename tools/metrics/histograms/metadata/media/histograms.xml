@@ -7641,13 +7641,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RTCVideoEncoder.Initialize" units="ms"
-    expires_after="2026-09-01">
+    expires_after="2027-10-04">
   <owner>hiroh@chromium.org</owner>
   <owner>chromeos-gfx-video@google.com</owner>
   <summary>
     The duration of initializing a hardware encoder in WebRTC API. It is
     recorded whenever RTCVideoEncoder::InitEncode() is called. Warning: this
-    histogram was expired from 2024-09-30 to 2025-09-01; data may be missing.
+    histogram was expired from 2024-09-30 to 2025-09-01 and from 2026-09-01 to
+    2026-09-21; data may be missing.
   </summary>
 </histogram>
 
@@ -8845,7 +8846,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.VideoEncode.MFVEA.KeyFrameRequestFullfilled.{VideoCodec}"
-    enum="Boolean" expires_after="2026-12-06">
+    enum="Boolean" expires_after="2027-10-04">
   <owner>eugene@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -8856,7 +8857,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoEncoder.D3D12VEA.EncodeStatus.{VideoCodec}"
-    enum="EncoderStatus" expires_after="2027-02-07">
+    enum="EncoderStatus" expires_after="2027-10-04">
   <owner>eugene@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -8868,7 +8869,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoEncoder.D3D12VEA.InitSuccessRate.{VideoCodec}"
-    enum="VEAInitSuccessRate" expires_after="2027-02-07">
+    enum="VEAInitSuccessRate" expires_after="2027-10-04">
   <owner>eugene@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -8881,7 +8882,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoEncoder.NDKVEA.EncodeStatus.{VideoCodec}"
-    enum="EncoderStatus" expires_after="2026-10-04">
+    enum="EncoderStatus" expires_after="2027-10-04">
   <owner>eugene@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -8893,7 +8894,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoEncoder.NDKVEA.InitStatus.{VideoCodec}"
-    enum="EncoderStatus" expires_after="2026-12-06">
+    enum="EncoderStatus" expires_after="2027-10-04">
   <owner>eugene@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -8904,7 +8905,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoEncoder.NDKVEA.TemporalLayerEncodingEnabled"
-    enum="BooleanEnabled" expires_after="2027-04-02">
+    enum="BooleanEnabled" expires_after="2027-10-04">
   <owner>philyan@google.com</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -8916,7 +8917,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoEncoder.{Impl}.EncodingLatency.{VideoCodec}"
-    units="ms" expires_after="2027-02-07">
+    units="ms" expires_after="2027-10-04">
   <owner>eugene@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -8933,43 +8934,47 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoEncoder.{Usage}.{Impl}.Area" units="pixels"
-    expires_after="2026-04-26">
+    expires_after="2027-10-04">
   <owner>hiroh@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     The hundredth of a resolution area (i.e. width x height /100) configured in
     a video encoder. Recorded when a video encoder is destroyed or reconfigured.
+    Warning: this histogram was expired from 2026-04-26 to 2026-09-21; data may
+    be missing.
   </summary>
   <token key="Usage" variants="VideoEncoderUsage"/>
   <token key="Impl" variants="VideoEncoderImpl"/>
 </histogram>
 
 <histogram name="Media.VideoEncoder.{Usage}.{Impl}.Frames" units="frames"
-    expires_after="2026-04-01">
+    expires_after="2027-10-04">
   <owner>hiroh@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     The number of successfully encoded frames. Recorded when a video encoder is
-    destroyed or reconfigured.
+    destroyed or reconfigured. Warning: this histogram was expired from
+    2026-04-01 to 2026-09-21; data may be missing.
   </summary>
   <token key="Usage" variants="VideoEncoderUsage"/>
   <token key="Impl" variants="VideoEncoderImpl"/>
 </histogram>
 
 <histogram name="Media.VideoEncoder.{Usage}.{Impl}.Height" units="pixels"
-    expires_after="2026-04-26">
+    expires_after="2027-10-04">
   <owner>hiroh@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     The height configured in a video encoder. Recorded when a video encoder is
-    destroyed or reconfigured.
+    destroyed or reconfigured. Warning: this histogram was expired from
+    2026-04-26 to 2026-09-21; data may be missing.
   </summary>
   <token key="Usage" variants="VideoEncoderUsage"/>
   <token key="Impl" variants="VideoEncoderImpl"/>
 </histogram>
 
 <histogram name="Media.VideoEncoder.{Usage}.{Impl}.Profile"
-    enum="VideoCodecProfile" expires_after="2027-02-07">
+    enum="VideoCodecProfile" expires_after="2027-10-04">
   <owner>hiroh@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -8981,7 +8986,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoEncoder.{Usage}.{Impl}.Status" enum="EncoderStatus"
-    expires_after="2027-03-14">
+    expires_after="2027-10-04">
   <owner>hiroh@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -8994,24 +8999,26 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoEncoder.{Usage}.{Impl}.SVC"
-    enum="SVCScalabilityMode" expires_after="2026-04-26">
+    enum="SVCScalabilityMode" expires_after="2027-10-04">
   <owner>hiroh@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     SVC Scalability mode configured in a video encoder. Recorded when a video
-    encoder is destroyed or reconfigured.
+    encoder is destroyed or reconfigured. Warning: this histogram was expired
+    from 2026-04-26 to 2026-09-21; data may be missing.
   </summary>
   <token key="Usage" variants="VideoEncoderUsage"/>
   <token key="Impl" variants="VideoEncoderImpl"/>
 </histogram>
 
 <histogram name="Media.VideoEncoder.{Usage}.{Impl}.Width" units="pixels"
-    expires_after="2026-04-26">
+    expires_after="2027-10-04">
   <owner>hiroh@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     The width configured in a video encoder. Recorded when a video encoder is
-    destroyed or reconfigured.
+    destroyed or reconfigured. Warning: this histogram was expired from
+    2026-04-26 to 2026-09-21; data may be missing.
   </summary>
   <token key="Usage" variants="VideoEncoderUsage"/>
   <token key="Impl" variants="VideoEncoderImpl"/>
