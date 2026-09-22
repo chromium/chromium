@@ -16,6 +16,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -45,6 +46,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -945,6 +947,26 @@ public class SettingsPageFragmentDelegateImplTest {
         verify(mMockSettingsHostFragment).setInitialUrl("chrome://settings/appearance");
         verify(mMockSettingsHostFragment, never())
                 .showFragment(any(Fragment.class), anyBoolean(), any());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
+    public void testUpdateForUrl_WithSearchOpen_LeavesSearchFirst() {
+        mDelegate.initSettings(mContainerView, "", mPadAdjusterGenerator);
+        when(mMockSettingsHostFragment.isAttachedToActivity()).thenReturn(true);
+        when(mMockSettingsHostFragment.getActiveFragment()).thenReturn(mMultiColumnSettings);
+        when(mMultiColumnSettings.getView()).thenReturn(mFragmentView);
+        SettingsSearchCoordinator mockSearchCoordinator = mock(SettingsSearchCoordinator.class);
+        mDelegate.setSearchCoordinatorForTesting(mockSearchCoordinator);
+
+        mDelegate.updateForUrl("chrome://settings/appearance");
+
+        // Search stands down before the page it is showing is replaced, rather than having the
+        // back stack it holds its own pages on purged from under it.
+        InOrder inOrder = inOrder(mockSearchCoordinator, mMockSettingsHostFragment);
+        inOrder.verify(mockSearchCoordinator).exitSearchIfOpen();
+        inOrder.verify(mMockSettingsHostFragment)
+                .showFragment(any(Fragment.class), eq(false), eq((String) null));
     }
 
     @Test

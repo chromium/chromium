@@ -804,6 +804,45 @@ public class SettingsSearchCoordinatorUnitTest {
         assertEquals(View.VISIBLE, searchBox.getVisibility());
     }
 
+    @Test
+    public void testExitSearchIfOpen_whenSearchIsOpen_leavesSearch() {
+        setUpMultiColumnSettings();
+        mUseMultiColumn = true;
+        mCoordinator = createCoordinator(/* shownInTab= */ true);
+        mCoordinator.initializeSearchUi(null);
+        ShadowLooper.idleMainLooper();
+
+        View searchBox = mActivity.findViewById(R.id.search_box);
+        assertNotNull(searchBox);
+        mCoordinator.setFragmentState(SettingsSearchCoordinator.FS_SEARCH);
+        searchBox.setVisibility(View.GONE);
+
+        mCoordinator.exitSearchIfOpen();
+
+        assertFalse(mCoordinator.isSearchOpen());
+        assertEquals(View.VISIBLE, searchBox.getVisibility());
+    }
+
+    @Test
+    public void testExitSearchIfOpen_whenSearchIsNotOpen_doesNothing() {
+        setUpMultiColumnSettings();
+        mUseMultiColumn = true;
+        mCoordinator = createCoordinator(/* shownInTab= */ true);
+        mCoordinator.initializeSearchUi(null);
+        ShadowLooper.idleMainLooper();
+
+        // Browsing settings normally. Exiting a search that is not open would pop a back stack
+        // belonging to whatever is on screen.
+        assertFalse(mCoordinator.isSearchOpen());
+        View queryContainer = mActivity.findViewById(R.id.search_query_container);
+        assertNotNull(queryContainer);
+        queryContainer.setVisibility(View.VISIBLE);
+
+        mCoordinator.exitSearchIfOpen();
+
+        assertEquals(View.VISIBLE, queryContainer.getVisibility());
+    }
+
     /**
      * Subclass of Fragment to represent the initial detail pane fragment (e.g. Google services).
      */

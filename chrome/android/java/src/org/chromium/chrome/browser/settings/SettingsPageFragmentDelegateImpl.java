@@ -401,6 +401,13 @@ public class SettingsPageFragmentDelegateImpl
 
         mPendingUrl = null;
 
+        // A Url arriving while search is open is the user asking to go somewhere else: an omnibox
+        // edit, a restored tab, a redirect. Let search stand down first, rather than replacing the
+        // page it is showing and purging the back stack it holds its own pages on underneath it.
+        if (mSearchCoordinator != null) {
+            mSearchCoordinator.exitSearchIfOpen();
+        }
+
         // A settings URL is user editable and is replayed from history, so it may be missing
         // arguments its page cannot do without, or name data that has since been deleted. Let the
         // registry decide, and send the user to the fallback page rather than crashing.

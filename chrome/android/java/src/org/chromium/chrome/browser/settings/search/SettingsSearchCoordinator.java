@@ -1020,6 +1020,19 @@ public class SettingsSearchCoordinator
         return mFragmentState != FS_SETTINGS;
     }
 
+    /**
+     * Leaves the search UI as if the user had dismissed it, or does nothing if it is not open.
+     *
+     * <p>For a caller that is about to take the screen away from search, so that search hears about
+     * it and stands down in order, rather than discovering it afterwards by finding the fragments
+     * it was showing gone.
+     */
+    public void exitSearchIfOpen() {
+        if (!isSearchOpen()) return;
+
+        exitSearchState();
+    }
+
     private void showBackArrowInSingleColumnMode(boolean show) {
         if (mUseMultiColumn) return;
 
