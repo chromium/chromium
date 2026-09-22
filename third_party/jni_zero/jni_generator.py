@@ -495,9 +495,6 @@ def _generate_headers(jni_mode,
   if extra_includes:
     user_includes += extra_includes
   system_includes = ['jni.h']
-  if any(f.const_value in ('Infinity', '-Infinity', 'NaN')
-         for f in jni_obj.IterFields()):
-    system_includes.append('limits')
 
   preamble, epilogue = header_common.header_preamble(
       GetScriptName(),
@@ -514,6 +511,11 @@ def _generate_headers(jni_mode,
   sb(epilogue)
   shared_header_content = sb.to_string()
 
+  if any(f.const_value in ('Infinity', '-Infinity', 'NaN')
+         for f in jni_obj.IterFields()):
+    system_includes.append('limits')
+  # For std::move().
+  system_includes.append('utility')
   user_includes.append(os.path.basename(shared_header_file))
   preamble, epilogue = header_common.header_preamble(
       GetScriptName(),

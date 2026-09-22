@@ -7,6 +7,7 @@
 #define java_util_List_JNI
 
 #include <jni.h>
+#include <utility>
 
 #include "overridden/jni_zero_internal.h"
 #include "extra_include.h"
