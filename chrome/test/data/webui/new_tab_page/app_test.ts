@@ -4299,35 +4299,36 @@ suite('NewTabPageAppTest', () => {
           waveOverlay.style.setProperty('transition', 'none', 'important');
 
           // Simulate multiline transcript (3 lines) where voiceSearch moves
-          // wave to 102px and expands dialog height to 206px.
+          // wave to 102px and expands dialog height to 214px, keeping bottom
+          // actions padding at 16px.
           voiceSearch.toggleAttribute('has-multiline-transcript', true);
           voiceSearch.setAttribute('transcript-lines', '3');
           assertEquals('102px', window.getComputedStyle(waveOverlay).top);
           assertEquals(
-              '206px',
+              '214px',
               window.getComputedStyle(dialog)
                   .getPropertyValue('height')
                   .trim());
           assertEquals(
-              '8px',
+              '16px',
               window.getComputedStyle(voiceSearch)
                   .getPropertyValue('--voice-bottom-actions-bottom')
                   .trim());
 
-          // Verify 7 lines expands dialog to 302px and wave to 198px.
+          // Verify 7 lines expands dialog to 310px and wave to 198px.
           voiceSearch.setAttribute('transcript-lines', '7');
           assertEquals('198px', window.getComputedStyle(waveOverlay).top);
           assertEquals(
-              '302px',
+              '310px',
               window.getComputedStyle(dialog)
                   .getPropertyValue('height')
                   .trim());
 
-          // Verify 2 lines expands dialog to 182px and wave to 78px.
+          // Verify 2 lines expands dialog to 190px and wave to 78px.
           voiceSearch.setAttribute('transcript-lines', '2');
           assertEquals('78px', window.getComputedStyle(waveOverlay).top);
           assertEquals(
-              '182px',
+              '190px',
               window.getComputedStyle(dialog)
                   .getPropertyValue('height')
                   .trim());
