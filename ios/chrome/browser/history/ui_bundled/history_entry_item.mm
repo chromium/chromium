@@ -29,6 +29,7 @@ const NSInteger kNumberOfTitleLines = 2;
 @synthesize timeText = _timeText;
 @synthesize URL = _URL;
 @synthesize timestamp = _timestamp;
+@synthesize allTimestamps = _allTimestamps;
 
 - (instancetype)initWithType:(NSInteger)type
        accessibilityDelegate:(id<HistoryEntryItemDelegate>)delegate {

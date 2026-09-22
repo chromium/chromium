@@ -7,8 +7,14 @@
 #import <UIKit/UIKit.h>
 
 #import <memory>
+#import <set>
+#import <vector>
 
 #import "base/apple/foundation_util.h"
+#import "base/test/scoped_feature_list.h"
+#import "base/time/time.h"
+#import "components/history/core/browser/browsing_history_service.h"
+#import "components/history/core/browser/features.h"
 #import "ios/chrome/browser/history/ui_bundled/history_entry_item.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -17,6 +23,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #import "url/gurl.h"
 
 namespace {
@@ -25,6 +32,15 @@ namespace {
 const NSInteger kTestSectionIdentifier = kSectionIdentifierEnumZero + 1;
 
 }  // namespace
+
+@interface BaseHistoryViewController (Testing)
+
+// Returns the history entries matching the items at `indexPaths`. Each entry
+// carries the visits that deleting the item should remove.
+- (std::vector<BrowsingHistoryService::HistoryEntry>)
+    entriesForItemsAtIndexPaths:(NSArray<NSIndexPath*>*)indexPaths;
+
+@end
 
 // Fake data source to capture the asynchronous favicon completion block.
 @interface FakeFaviconDataSource : NSObject <TableViewFaviconDataSource>
@@ -66,7 +82,10 @@ class BaseHistoryViewControllerTest
   }
 
   // Helper to add dummy history item.
-  void AddHistoryItem(const GURL& url) {
+  void AddHistoryItem(const GURL& url,
+                      base::Time timestamp = base::Time(),
+                      const absl::flat_hash_map<GURL, std::set<base::Time>>&
+                          all_timestamps = {}) {
     if (![history_controller_.tableViewModel
             hasSectionForSectionIdentifier:kTestSectionIdentifier]) {
       [history_controller_.tableViewModel
@@ -76,8 +95,17 @@ class BaseHistoryViewControllerTest
         [[HistoryEntryItem alloc] initWithType:kItemTypeEnumZero
                          accessibilityDelegate:nil];
     item.URL = url;
+    item.timestamp = timestamp;
+    item.allTimestamps = all_timestamps;
     [history_controller_.tableViewModel addItem:item
                         toSectionWithIdentifier:kTestSectionIdentifier];
+  }
+
+  // Returns the index path of the item at `index` in the test section.
+  NSIndexPath* TestSectionIndexPath(NSInteger index) {
+    NSInteger section_index = [history_controller_.tableViewModel
+        sectionForSectionIdentifier:kTestSectionIdentifier];
+    return [NSIndexPath indexPathForRow:index inSection:section_index];
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -105,12 +133,8 @@ TEST_F(BaseHistoryViewControllerTest,
   AddHistoryItem(GURL("http://example.com"));
 
   // Request the cell (triggers async fetch) and then delete the item.
-  NSInteger section_index = [history_controller_.tableViewModel
-      sectionForSectionIdentifier:kTestSectionIdentifier];
-  NSIndexPath* index_path = [NSIndexPath indexPathForRow:0
-                                               inSection:section_index];
   [history_controller_ tableView:history_controller_.tableView
-           cellForRowAtIndexPath:index_path];
+           cellForRowAtIndexPath:TestSectionIndexPath(0)];
 
   // Verify the data source captured the completion block before deleting the
   // item.
@@ -124,4 +148,54 @@ TEST_F(BaseHistoryViewControllerTest,
   FaviconAttributes* dummy_attributes =
       [FaviconAttributes attributesWithImage:[[UIImage alloc] init]];
   favicon_data_source_.completionBlock(dummy_attributes, false);
+}
+
+// Tests that an entry to delete carries every visit grouped into it when
+// history de-duplication is enabled, and only its own visit otherwise.
+TEST_F(BaseHistoryViewControllerTest,
+       ShouldPipeGroupedTimestampsOnlyWhenHistoryDeduplicationIsEnabled) {
+  CheckController();
+
+  // URLs of the visits held by a single de-duplicated history entry.
+  const char example_url[] = "http://example.com/";
+  const char similar_example_url[] = "http://example.com/example";
+
+  // An item produced with de-duplication enabled groups all the visits of the
+  // day made to the same or to similar URLs.
+  const base::Time visit_time = base::Time::Now();
+  const absl::flat_hash_map<GURL, std::set<base::Time>> all_timestamps = {
+      {GURL(example_url), {visit_time, visit_time - base::Hours(1)}},
+      {GURL(similar_example_url), {visit_time - base::Hours(2)}}};
+  AddHistoryItem(GURL(example_url), visit_time, all_timestamps);
+  NSArray<NSIndexPath*>* index_paths = @[ TestSectionIndexPath(0) ];
+
+  // Each phase scopes its own feature list so that the feature state is reset
+  // before the next one is configured.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        history::kBrowsingHistorySimilarVisitsGrouping);
+
+    std::vector<BrowsingHistoryService::HistoryEntry> entries =
+        [history_controller_ entriesForItemsAtIndexPaths:index_paths];
+
+    ASSERT_EQ(1u, entries.size());
+    EXPECT_EQ(GURL(example_url), entries.front().url);
+    EXPECT_EQ(all_timestamps, entries.front().all_timestamps);
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        history::kBrowsingHistorySimilarVisitsGrouping);
+
+    std::vector<BrowsingHistoryService::HistoryEntry> entries =
+        [history_controller_ entriesForItemsAtIndexPaths:index_paths];
+
+    // The grouped visits are ignored, even though the item carries them.
+    ASSERT_EQ(1u, entries.size());
+    const absl::flat_hash_map<GURL, std::set<base::Time>> expected_timestamps =
+        {{GURL(example_url), {visit_time}}};
+    EXPECT_EQ(expected_timestamps, entries.front().all_timestamps);
+  }
 }

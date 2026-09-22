@@ -12,6 +12,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/browsing_data/core/browsing_data_utils.h"
+#import "components/history/core/browser/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/data_type.h"
 #import "components/sync/service/sync_service.h"
@@ -464,20 +465,8 @@ static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
   }
 
   // Delete items from Browser History.
-  std::vector<BrowsingHistoryService::HistoryEntry> entries;
-  for (NSIndexPath* indexPath in toDeleteIndexPaths) {
-    HistoryEntryItem* object = base::apple::ObjCCastStrict<HistoryEntryItem>(
-        [self.tableViewModel itemAtIndexPath:indexPath]);
-    BrowsingHistoryService::HistoryEntry entry;
-    entry.url = object.URL;
-    // Since the similar visits grouping logic does not exist on iOS, we only
-    // need to pass the timestamp for the current URL. See b/460405414 for more
-    // details.
-    // TODO(b/483287809): Enable similar visits grouping for iOS.
-    entry.all_timestamps[object.URL].insert(object.timestamp);
-    entries.push_back(entry);
-  }
-  self.historyService->RemoveVisits(entries);
+  self.historyService->RemoveVisits(
+      [self entriesForItemsAtIndexPaths:toDeleteIndexPaths]);
 
   // Delete items from `self.tableView` using performBatchUpdates.
   __weak __typeof(self) weakSelf = self;
@@ -490,6 +479,29 @@ static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
         [weakSelf updateTableViewAfterDeletingEntries];
       }];
   base::RecordAction(base::UserMetricsAction("HistoryPage_RemoveSelected"));
+}
+
+// Returns the history entries for the items at `indexPaths`. If similar visits
+// grouping is enabled, each entry contains all the timestamps of the similar
+// visits, otherwise each entry contains just one timestamp.
+- (std::vector<BrowsingHistoryService::HistoryEntry>)
+    entriesForItemsAtIndexPaths:(NSArray<NSIndexPath*>*)indexPaths {
+  std::vector<BrowsingHistoryService::HistoryEntry> entries;
+  entries.reserve(indexPaths.count);
+  for (NSIndexPath* indexPath in indexPaths) {
+    HistoryEntryItem* object = base::apple::ObjCCastStrict<HistoryEntryItem>(
+        [self.tableViewModel itemAtIndexPath:indexPath]);
+    BrowsingHistoryService::HistoryEntry entry;
+    entry.url = object.URL;
+    if (base::FeatureList::IsEnabled(
+            history::kBrowsingHistorySimilarVisitsGrouping)) {
+      entry.all_timestamps = object.allTimestamps;
+    } else {
+      entry.all_timestamps[object.URL].insert(object.timestamp);
+    }
+    entries.push_back(entry);
+  }
+  return entries;
 }
 
 #pragma mark - UITableViewDelegate
@@ -806,6 +818,7 @@ static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
         [base::SysUTF16ToNSString(base::TimeFormatTimeOfDay(entry.time)) copy];
     item.URL = entry.url;
     item.timestamp = entry.time;
+    item.allTimestamps = entry.all_timestamps;
     [resultsItems addObject:item];
   }
 
