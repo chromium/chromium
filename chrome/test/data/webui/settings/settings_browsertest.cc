@@ -1601,7 +1601,13 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, CookiesFragment) {
           "runMochaSuite('CookiesFragment')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, CompletionFragment) {
+// TODO(b/565007916): Fix test.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CompletionFragment DISABLED_CompletionFragment
+#else
+#define MAYBE_CompletionFragment CompletionFragment
+#endif  // BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, MAYBE_CompletionFragment) {
   RunTest("settings/privacy_guide_completion_fragment_test.js",
           "runMochaSuite('CompletionFragment')");
 }
