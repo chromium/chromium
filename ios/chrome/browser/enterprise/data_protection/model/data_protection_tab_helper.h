@@ -114,6 +114,7 @@ class DataProtectionTabHelper
 
  private:
   friend class web::WebStateUserData<DataProtectionTabHelper>;
+  friend class DataProtectionTabHelperTest;
 
   explicit DataProtectionTabHelper(web::WebState* web_state);
 

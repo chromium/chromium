@@ -18,7 +18,11 @@
 #import "ios/chrome/browser/enterprise/data_controls/model/ios_rules_service_factory.h"
 #import "ios/chrome/browser/enterprise/data_protection/model/data_protection_tab_helper_observer.h"
 #import "ios/chrome/browser/enterprise/data_protection/model/data_protection_url_lookup_service_factory.h"
+#import "ios/chrome/browser/enterprise/data_protection/model/watermark_request_config.h"
 #import "ios/chrome/browser/enterprise/data_protection/public/features.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_cancel_handler.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/safe_browsing/model/chrome_enterprise_url_lookup_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
@@ -81,6 +85,15 @@ ProtectionState ComputeNextStateOnLookupResponse(
 
   return current_state;
 }
+
+// Cancel handler for watermark overlay requests.
+class WatermarkRequestCancelHandler : public OverlayRequestCancelHandler {
+ public:
+  WatermarkRequestCancelHandler(OverlayRequest* request,
+                                OverlayRequestQueue* queue)
+      : OverlayRequestCancelHandler(request, queue) {}
+  ~WatermarkRequestCancelHandler() override = default;
+};
 
 }  // namespace
 
@@ -331,10 +344,22 @@ void DataProtectionTabHelper::SetCommittedProtectionState(
   }
 
   if (previous_watermark != watermark_text) {
-    for (auto& observer : observers_) {
-      observer.WatermarkTextDidChange(web_state_, watermark_text);
-    }
+    OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
+        web_state_, OverlayModality::kWatermark);
 
+    // Cancel the old watermark overlay request first to prevent multiple
+    // overlays from overlapping.
+    queue->CancelAllRequests();
+
+    if (!watermark_text.empty()) {
+      std::unique_ptr<OverlayRequest> request =
+          OverlayRequest::CreateWithConfig<WatermarkRequestConfig>(
+              watermark_text);
+      OverlayRequest* request_ptr = request.get();
+      queue->AddRequest(
+          std::move(request),
+          std::make_unique<WatermarkRequestCancelHandler>(request_ptr, queue));
+    }
     // TODO(crbug.com/533013176): Record the webstate_id to the prefs map
     // kDataProtectionWatermarkedTabs for tab-grid.
   }

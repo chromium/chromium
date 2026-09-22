@@ -66,6 +66,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/enterprise/connectors",
     "//ios/chrome/browser/enterprise/data_controls/model:ios_rules_service",
     "//ios/chrome/browser/enterprise/data_protection/public:features",
+    "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/safe_browsing/model",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/coordinator/scene/state",
