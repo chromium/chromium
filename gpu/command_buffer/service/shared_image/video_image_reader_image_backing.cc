@@ -915,9 +915,8 @@ class VideoImageReaderImageBacking::VideoRepresentation
       // No sync wait is happening here.
       gfx::GpuFenceHandle handle;
       handle.Adopt(std::move(fence_fd));
-      gfx::GpuFence gpu_fence(std::move(handle));
       std::unique_ptr<gl::GLFence> gl_fence =
-          gl::GLFence::CreateFromGpuFence(gpu_fence);
+          gl::GLFence::CreateFromGpuFenceHandle(std::move(handle));
       gl_fence->ServerWait();
     }
     return true;

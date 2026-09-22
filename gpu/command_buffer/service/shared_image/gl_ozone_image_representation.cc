@@ -67,9 +67,8 @@ bool GLTexturePassthroughOzoneImageRepresentation::BeginAccess(GLenum mode) {
   // synchronize with GL.
   if (gl::GLFence::IsGpuFenceSupported()) {
     for (auto& fence : fences) {
-      gfx::GpuFence gpu_fence = gfx::GpuFence(std::move(fence));
       std::unique_ptr<gl::GLFence> gl_fence =
-          gl::GLFence::CreateFromGpuFence(gpu_fence);
+          gl::GLFence::CreateFromGpuFenceHandle(std::move(fence));
       gl_fence->ServerWait();
     }
   }
@@ -82,9 +81,8 @@ void GLTexturePassthroughOzoneImageRepresentation::EndAccess() {
   // synchronize with GL.
   if (gl::GLFence::IsGpuFenceSupported() && need_end_fence_) {
     if (auto gl_fence = gl::GLFence::CreateForGpuFence()) {
-      auto gpu_fence = gl_fence->GetGpuFence();
-      CHECK(gpu_fence);
-      fence = gpu_fence->GetGpuFenceHandle().Clone();
+      fence = gl_fence->GetGpuFenceHandle();
+      CHECK(!fence.is_null());
     } else {
       DLOG(ERROR) << "Failed to create GPU fence";
     }

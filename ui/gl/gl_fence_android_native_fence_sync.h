@@ -22,10 +22,10 @@ class GL_EXPORT GLFenceAndroidNativeFenceSync : public GLFenceEGL {
 
   static std::unique_ptr<GLFenceAndroidNativeFenceSync> CreateForGpuFence();
 
-  static std::unique_ptr<GLFenceAndroidNativeFenceSync> CreateFromGpuFence(
-      const gfx::GpuFence&);
+  static std::unique_ptr<GLFenceAndroidNativeFenceSync>
+      CreateFromGpuFenceHandle(gfx::GpuFenceHandle);
 
-  std::unique_ptr<gfx::GpuFence> GetGpuFence() override;
+  gfx::GpuFenceHandle GetGpuFenceHandle() override;
 
   // This is a best effort to get status change time. It might fail and a null
   // TimeTicks will be returned in that case.

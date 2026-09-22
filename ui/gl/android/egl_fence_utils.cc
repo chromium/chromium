@@ -15,13 +15,7 @@ base::ScopedFD CreateEglFenceAndExportFd() {
     LOG(ERROR) << "Failed to create android native fence sync object.";
     return base::ScopedFD();
   }
-  std::unique_ptr<gfx::GpuFence> gpu_fence =
-      android_native_fence->GetGpuFence();
-  if (!gpu_fence) {
-    LOG(ERROR) << "Unable to get a gpu fence object.";
-    return base::ScopedFD();
-  }
-  gfx::GpuFenceHandle fence_handle = gpu_fence->GetGpuFenceHandle().Clone();
+  gfx::GpuFenceHandle fence_handle = android_native_fence->GetGpuFenceHandle();
   if (fence_handle.is_null()) {
     LOG(ERROR) << "Gpu fence handle is null";
     return base::ScopedFD();

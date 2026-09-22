@@ -2624,7 +2624,7 @@ gfx::GpuFenceHandle SkiaOutputSurfaceImplOnGpu::CreateReleaseFenceForGL() {
   if (gl::GLFence::IsGpuFenceSupported()) {
     auto fence = gl::GLFence::CreateForGpuFence();
     if (fence) {
-      return fence->GetGpuFence()->GetGpuFenceHandle().Clone();
+      return fence->GetGpuFenceHandle();
     }
   }
   return {};

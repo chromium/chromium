@@ -16,11 +16,11 @@ class GL_EXPORT GLFenceWin : public GLFence {
  public:
   static std::unique_ptr<GLFenceWin> CreateForGpuFence();
   static std::unique_ptr<GLFenceWin> CreateForGpuFence(ID3D11Device*);
-  static std::unique_ptr<GLFenceWin> CreateFromGpuFence(
-      const gfx::GpuFence& gpu_fence);
-  static std::unique_ptr<GLFenceWin> CreateFromGpuFence(
+  static std::unique_ptr<GLFenceWin> CreateFromGpuFenceHandle(
+      gfx::GpuFenceHandle gpu_fence);
+  static std::unique_ptr<GLFenceWin> CreateFromGpuFenceHandle(
       ID3D11Device*,
-      const gfx::GpuFence& gpu_fence);
+      gfx::GpuFenceHandle gpu_fence);
   static bool IsSupported();
 
   GLFenceWin(Microsoft::WRL::ComPtr<ID3D11Fence> d3d11_fence,
@@ -30,7 +30,7 @@ class GL_EXPORT GLFenceWin : public GLFence {
   bool HasCompleted() override;
   void ClientWait() override;
   void ServerWait() override;
-  std::unique_ptr<gfx::GpuFence> GetGpuFence() override;
+  gfx::GpuFenceHandle GetGpuFenceHandle() override;
 
  private:
   Microsoft::WRL::ComPtr<ID3D11Fence> d3d11_fence_;

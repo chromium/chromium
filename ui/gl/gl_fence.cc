@@ -105,11 +105,19 @@ bool GLFence::IsGpuFenceSupported() {
 // static
 std::unique_ptr<GLFence> GLFence::CreateFromGpuFence(
     const gfx::GpuFence& gpu_fence) {
+  auto handle = gpu_fence.GetGpuFenceHandle().Clone();
+  return CreateFromGpuFenceHandle(std::move(handle));
+}
+
+// static
+std::unique_ptr<GLFence> GLFence::CreateFromGpuFenceHandle(
+    gfx::GpuFenceHandle gpu_fence_handle) {
   DCHECK(IsGpuFenceSupported());
 #if defined(USE_GL_FENCE_ANDROID_NATIVE_FENCE_SYNC)
-  return GLFenceAndroidNativeFenceSync::CreateFromGpuFence(gpu_fence);
+  return GLFenceAndroidNativeFenceSync::CreateFromGpuFenceHandle(
+      std::move(gpu_fence_handle));
 #elif BUILDFLAG(IS_WIN)
-  return GLFenceWin::CreateFromGpuFence(gpu_fence);
+  return GLFenceWin::CreateFromGpuFenceHandle(std::move(gpu_fence_handle));
 #else
   NOTREACHED();
 #endif
@@ -126,9 +134,16 @@ std::unique_ptr<GLFence> GLFence::CreateForGpuFence() {
   NOTREACHED();
 #endif
 }
+gfx::GpuFenceHandle GLFence::GetGpuFenceHandle() {
+  return gfx::GpuFenceHandle();
+}
 
 std::unique_ptr<gfx::GpuFence> GLFence::GetGpuFence() {
-  return nullptr;
+  auto handle = GetGpuFenceHandle();
+  if (handle.is_null()) {
+    return nullptr;
+  }
+  return std::make_unique<gfx::GpuFence>(std::move(handle));
 }
 
 }  // namespace gl

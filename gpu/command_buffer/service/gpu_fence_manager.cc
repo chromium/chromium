@@ -90,8 +90,8 @@ bool GpuFenceManager::GpuFenceServerWait(uint32_t client_id) {
   DCHECK(!entry->gl_fence_ || entry->fence_handle_.is_null());
 
   if (!entry->fence_handle_.is_null()) {
-    gfx::GpuFence gpu_fence(entry->fence_handle_.Clone());
-    auto gl_fence = gl::GLFence::CreateFromGpuFence(gpu_fence);
+    auto gl_fence =
+        gl::GLFence::CreateFromGpuFenceHandle(entry->fence_handle_.Clone());
     if (!gl_fence)
       return false;
     gl_fence->ServerWait();

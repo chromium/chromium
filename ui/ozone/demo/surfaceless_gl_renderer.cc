@@ -284,8 +284,7 @@ void SurfacelessGlRenderer::RenderFrame() {
 
     presenter_->ScheduleOverlayPlane(
         buffers_[back_buffer_]->image(),
-        gl_fence ? gl_fence->GetGpuFence()->GetGpuFenceHandle().Clone()
-                 : gfx::GpuFenceHandle(),
+        gl_fence ? gl_fence->GetGpuFenceHandle() : gfx::GpuFenceHandle(),
         gfx::OverlayPlaneData(
             0, gfx::OVERLAY_TRANSFORM_NONE, gfx::RectF(primary_plane_rect_),
             unity_rect, false, gfx::Rect(buffers_[back_buffer_]->size()), 1.0f,
