@@ -586,7 +586,14 @@ IN_PROC_BROWSER_TEST_P(TabRestoreWithEncryptionTest, BasicRestore) {
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 }
 
-IN_PROC_BROWSER_TEST_P(TabRestoreWithEncryptionTest, LargeSessionRestore) {
+// TODO(crbug.com/554734948): Flaky timeout on Linux debug builds.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_LargeSessionRestore DISABLED_LargeSessionRestore
+#else
+#define MAYBE_LargeSessionRestore LargeSessionRestore
+#endif
+IN_PROC_BROWSER_TEST_P(TabRestoreWithEncryptionTest,
+                       MAYBE_LargeSessionRestore) {
   constexpr int kNumTabs = 20;
   AddFileSchemeTabs(browser(), kNumTabs);
   int starting_tab_count = browser()->tab_strip_model()->count();
