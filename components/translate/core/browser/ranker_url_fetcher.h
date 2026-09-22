@@ -19,7 +19,7 @@ class URLLoaderFactory;
 }  // namespace mojom
 }  // namespace network
 
-namespace assist_ranker {
+namespace translate {
 
 // Downloads Ranker models.
 class RankerURLFetcher {
@@ -70,6 +70,6 @@ class RankerURLFetcher {
   int retry_count_ = 0;
 };
 
-}  // namespace assist_ranker
+}  // namespace translate
 
 #endif  // COMPONENTS_TRANSLATE_CORE_BROWSER_RANKER_URL_FETCHER_H_

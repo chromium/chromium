@@ -37,10 +37,6 @@ namespace translate {
 
 namespace {
 
-using assist_ranker::RankerModel;
-using assist_ranker::RankerModelProto;
-using assist_ranker::RankerModelStatus;
-using assist_ranker::TranslateRankerModel;
 using metrics::TranslateEventProto;
 
 const double kTranslationOfferDefaultThreshold = 0.5;
@@ -153,7 +149,7 @@ TranslateRankerImpl::TranslateRankerImpl(const base::FilePath& model_path,
       is_enforcement_enabled_(
           base::FeatureList::IsEnabled(kTranslateRankerEnforcement)) {
   if (is_query_enabled_ || is_enforcement_enabled_) {
-    model_loader_ = std::make_unique<assist_ranker::RankerModelLoaderImpl>(
+    model_loader_ = std::make_unique<RankerModelLoaderImpl>(
         base::BindRepeating(&ValidateModel),
         base::BindRepeating(&TranslateRankerImpl::OnModelAvailable,
                             weak_ptr_factory_.GetWeakPtr()),

@@ -19,7 +19,7 @@
 #include "components/translate/core/browser/ranker_url_fetcher.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace assist_ranker {
+namespace translate {
 namespace {
 
 // The minimum duration, in minutes, between download attempts.
@@ -257,4 +257,4 @@ RankerModelStatus RankerModelLoaderImpl::ReportModelStatus(
   return model_status;
 }
 
-}  // namespace assist_ranker
+}  // namespace translate

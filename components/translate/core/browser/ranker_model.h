@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-namespace assist_ranker {
+namespace translate {
 
 class RankerModelProto;
 
@@ -40,6 +40,6 @@ class RankerModel {
   std::unique_ptr<RankerModelProto> proto_;
 };
 
-}  // namespace assist_ranker
+}  // namespace translate
 
 #endif  // COMPONENTS_TRANSLATE_CORE_BROWSER_RANKER_MODEL_H_

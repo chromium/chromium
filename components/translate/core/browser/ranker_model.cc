@@ -9,7 +9,7 @@
 #include "base/time/time.h"
 #include "components/translate/core/browser/ranker_model.pb.h"
 
-namespace assist_ranker {
+namespace translate {
 
 RankerModel::RankerModel() : proto_(std::make_unique<RankerModelProto>()) {}
 
@@ -57,4 +57,4 @@ std::string RankerModel::SerializeAsString() const {
   return proto_->SerializeAsString();
 }
 
-}  // namespace assist_ranker
+}  // namespace translate

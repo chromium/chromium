@@ -14,7 +14,7 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
-namespace assist_ranker {
+namespace translate {
 
 namespace {
 
@@ -102,4 +102,4 @@ void RankerURLFetcher::OnSimpleLoaderComplete(
   std::move(callback_).Run(state_ == COMPLETED, data);
 }
 
-}  // namespace assist_ranker
+}  // namespace translate

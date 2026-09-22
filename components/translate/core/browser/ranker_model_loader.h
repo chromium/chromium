@@ -10,7 +10,7 @@
 #include "base/functional/callback.h"
 #include "components/translate/core/browser/ranker_model.h"
 
-namespace assist_ranker {
+namespace translate {
 
 // Enumeration denoting the outcome of an attempt to download the model. This
 // must be kept in sync with the RankerModelStatus enum in histograms.xml
@@ -34,14 +34,14 @@ class RankerModelLoader {
   // For example, the callback might validate that the model is compatible with
   // the features generated when ranking translation offerings.  This will be
   // called on the sequence on which the model loader was constructed.
-  using ValidateModelCallback = base::RepeatingCallback<RankerModelStatus(
-      const assist_ranker::RankerModel&)>;
+  using ValidateModelCallback =
+      base::RepeatingCallback<RankerModelStatus(const RankerModel&)>;
 
   // Called to transfer ownership of a loaded model back to the model loader
   // client. This will be called on the sequence on which the model loader was
   // constructed.
-  using OnModelAvailableCallback = base::RepeatingCallback<void(
-      std::unique_ptr<assist_ranker::RankerModel>)>;
+  using OnModelAvailableCallback =
+      base::RepeatingCallback<void(std::unique_ptr<RankerModel>)>;
 
   RankerModelLoader() = default;
 
@@ -57,6 +57,6 @@ class RankerModelLoader {
   virtual void NotifyOfRankerActivity() = 0;
 };
 
-}  // namespace assist_ranker
+}  // namespace translate
 
 #endif  // COMPONENTS_TRANSLATE_CORE_BROWSER_RANKER_MODEL_LOADER_H_

@@ -12,7 +12,7 @@
 
 namespace {
 
-using assist_ranker::RankerModel;
+using translate::RankerModel;
 
 const char kModelURL[] = "https://some.url.net/model";
 

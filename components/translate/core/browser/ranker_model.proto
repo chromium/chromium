@@ -10,7 +10,7 @@ option optimize_for = LITE_RUNTIME;
 
 import "translate_ranker_model.proto";
 
-package assist_ranker;
+package translate;
 
 // Metadata for a ranker model instance. This data describes how the ranker
 // model should be interpreted/used.

@@ -25,9 +25,9 @@
 
 namespace {
 
-using assist_ranker::RankerModel;
-using assist_ranker::RankerModelLoaderImpl;
-using assist_ranker::RankerModelStatus;
+using translate::RankerModel;
+using translate::RankerModelLoaderImpl;
+using translate::RankerModelStatus;
 
 const char kInvalidModelData[] = "not a valid model";
 

@@ -25,7 +25,7 @@ namespace network {
 class SharedURLLoaderFactory;
 }
 
-namespace assist_ranker {
+namespace translate {
 
 class RankerURLFetcher;
 
@@ -114,8 +114,7 @@ class RankerModelLoaderImpl : public RankerModelLoader {
   void OnURLFetched(bool success, const std::string& data);
 
   // Parse |data| and return a validated model. Returns nullptr on failure.
-  std::unique_ptr<assist_ranker::RankerModel> CreateAndValidateModel(
-      const std::string& data);
+  std::unique_ptr<RankerModel> CreateAndValidateModel(const std::string& data);
 
   // Helper function to log |model_status| to UMA and return it.
   RankerModelStatus ReportModelStatus(RankerModelStatus model_status);
@@ -163,6 +162,6 @@ class RankerModelLoaderImpl : public RankerModelLoader {
   base::WeakPtrFactory<RankerModelLoaderImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace assist_ranker
+}  // namespace translate
 
 #endif  // COMPONENTS_TRANSLATE_CORE_BROWSER_RANKER_MODEL_LOADER_IMPL_H_
