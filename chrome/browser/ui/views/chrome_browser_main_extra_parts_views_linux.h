@@ -21,7 +21,7 @@
 namespace ui {
 class LinuxUiGetter;
 #if BUILDFLAG(USE_DBUS)
-class DarkModeManagerLinux;
+class PortalSettingsLinux;
 #endif
 }  // namespace ui
 
@@ -53,7 +53,7 @@ class ChromeBrowserMainExtraPartsViewsLinux
 
   std::unique_ptr<ui::LinuxUiGetter> linux_ui_getter_;
 #if BUILDFLAG(USE_DBUS)
-  std::unique_ptr<ui::DarkModeManagerLinux> dark_mode_manager_;
+  std::unique_ptr<ui::PortalSettingsLinux> portal_settings_;
 #endif
 #if BUILDFLAG(ENABLE_PRINTING)
   std::unique_ptr<printing::PrintingContextLinux::PrintDialogFactory>

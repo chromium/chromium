@@ -20,7 +20,7 @@
 #include "ui/ozone/public/ozone_platform.h"
 
 #if BUILDFLAG(USE_DBUS)
-#include "ui/linux/dark_mode_manager_linux.h"
+#include "ui/linux/portal_settings_linux.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PRINTING)
@@ -69,7 +69,7 @@ void ChromeBrowserMainExtraPartsViewsLinux::ToolkitInitialized() {
 #endif
 
 #if BUILDFLAG(USE_DBUS)
-  dark_mode_manager_ = std::make_unique<ui::DarkModeManagerLinux>();
+  portal_settings_ = std::make_unique<ui::PortalSettingsLinux>();
 #endif
 }
 

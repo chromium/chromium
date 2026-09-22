@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/linux/dark_mode_manager_linux.h"
+#include "ui/linux/portal_settings_linux.h"
 
 #include <optional>
 #include <tuple>
@@ -25,11 +25,11 @@
 
 namespace ui {
 
-DarkModeManagerLinux::DarkModeManagerLinux()
-    : DarkModeManagerLinux(dbus_thread_linux::GetSharedSessionBus(),
-                           &ui::GetLinuxUiThemes()) {}
+PortalSettingsLinux::PortalSettingsLinux()
+    : PortalSettingsLinux(dbus_thread_linux::GetSharedSessionBus(),
+                          &ui::GetLinuxUiThemes()) {}
 
-DarkModeManagerLinux::DarkModeManagerLinux(
+PortalSettingsLinux::PortalSettingsLinux(
     scoped_refptr<dbus::Bus> bus,
     const std::vector<raw_ptr<LinuxUiTheme, VectorExperimental>>*
         linux_ui_themes)
@@ -39,18 +39,18 @@ DarkModeManagerLinux::DarkModeManagerLinux(
           kFreedesktopSettingsService,
           dbus::ObjectPath(kFreedesktopSettingsObjectPath))) {
   dbus_xdg::RequestXdgDesktopPortal(
-      bus_.get(), base::BindOnce(&DarkModeManagerLinux::OnPortalRequestResult,
+      bus_.get(), base::BindOnce(&PortalSettingsLinux::OnPortalRequestResult,
                                  weak_ptr_factory_.GetWeakPtr()));
   // No seeding is needed: until the portal preference (if any) arrives, the
   // toolkit OsSettingsProviders source the toolkit-derived color scheme for
   // the web NativeTheme.
 }
 
-DarkModeManagerLinux::~DarkModeManagerLinux() = default;
+PortalSettingsLinux::~PortalSettingsLinux() = default;
 
 // static
 NativeTheme::PreferredColorScheme
-DarkModeManagerLinux::FreedesktopColorSchemeToNativeThemeColorScheme(
+PortalSettingsLinux::FreedesktopColorSchemeToNativeThemeColorScheme(
     FreedesktopColorScheme color_scheme) {
   switch (color_scheme) {
     case FreedesktopColorScheme::kNoPreference:
@@ -63,22 +63,22 @@ DarkModeManagerLinux::FreedesktopColorSchemeToNativeThemeColorScheme(
   return NativeTheme::PreferredColorScheme::kNoPreference;
 }
 
-void DarkModeManagerLinux::OnPortalRequestResult(uint32_t version) {
+void PortalSettingsLinux::OnPortalRequestResult(uint32_t version) {
   if (version == 0) {
     return;
   }
   // Subscribe to changes in the color scheme preference.
   dbus_utils::ConnectToSignal<"ssv">(
       settings_proxy_, kFreedesktopSettingsInterface, kSettingChangedSignal,
-      base::BindRepeating(&DarkModeManagerLinux::OnPortalSettingChanged,
+      base::BindRepeating(&PortalSettingsLinux::OnPortalSettingChanged,
                           weak_ptr_factory_.GetWeakPtr()),
-      base::BindOnce(&DarkModeManagerLinux::OnSignalConnected,
+      base::BindOnce(&PortalSettingsLinux::OnSignalConnected,
                      weak_ptr_factory_.GetWeakPtr()));
 
   // Read initial color scheme preference.
   dbus_utils::CallMethod<"ss", "v">(
       settings_proxy_, kFreedesktopSettingsInterface, kReadMethod,
-      base::BindOnce(&DarkModeManagerLinux::OnReadColorScheme,
+      base::BindOnce(&PortalSettingsLinux::OnReadColorScheme,
                      weak_ptr_factory_.GetWeakPtr()),
       kSettingsNamespace, kColorSchemeKey);
 
@@ -86,19 +86,19 @@ void DarkModeManagerLinux::OnPortalRequestResult(uint32_t version) {
   if (base::FeatureList::IsEnabled(features::kUsePortalAccentColor)) {
     dbus_utils::CallMethod<"ss", "v">(
         settings_proxy_, kFreedesktopSettingsInterface, kReadMethod,
-        base::BindOnce(&DarkModeManagerLinux::OnReadAccentColor,
+        base::BindOnce(&PortalSettingsLinux::OnReadAccentColor,
                        weak_ptr_factory_.GetWeakPtr()),
         kSettingsNamespace, kAccentColorKey);
   }
 }
 
-void DarkModeManagerLinux::OnSignalConnected(const std::string& interface_name,
-                                             const std::string& signal_name,
-                                             bool connected) {
+void PortalSettingsLinux::OnSignalConnected(const std::string& interface_name,
+                                            const std::string& signal_name,
+                                            bool connected) {
   // Nothing to do.  Continue using the toolkit setting if !connected.
 }
 
-void DarkModeManagerLinux::OnPortalSettingChanged(
+void PortalSettingsLinux::OnPortalSettingChanged(
     dbus_utils::ConnectToSignalResultSig<"ssv"> result) {
   if (!result.has_value()) {
     LOG(ERROR) << "Received malformed Setting Changed signal from "
@@ -128,7 +128,7 @@ void DarkModeManagerLinux::OnPortalSettingChanged(
   }
 }
 
-void DarkModeManagerLinux::OnReadColorScheme(
+void PortalSettingsLinux::OnReadColorScheme(
     dbus_utils::CallMethodResultSig<"v"> result) {
   if (!result.has_value()) {
     // Continue using the toolkit setting.
@@ -153,7 +153,7 @@ void DarkModeManagerLinux::OnReadColorScheme(
       static_cast<FreedesktopColorScheme>(*new_color_scheme)));
 }
 
-void DarkModeManagerLinux::OnReadAccentColor(
+void PortalSettingsLinux::OnReadAccentColor(
     dbus_utils::CallMethodResultSig<"v"> result) {
   if (!result.has_value()) {
     // Continue using the toolkit setting.
@@ -170,7 +170,7 @@ void DarkModeManagerLinux::OnReadAccentColor(
   SetAccentColor(std::move(*inner_variant));
 }
 
-void DarkModeManagerLinux::SetColorScheme(
+void PortalSettingsLinux::SetColorScheme(
     NativeTheme::PreferredColorScheme color_scheme) {
   // Convert to the toolkit-independent tri-state used by `LinuxUiTheme`, where
   // `std::nullopt` means "no preference expressed" and makes the provider fall
@@ -211,7 +211,7 @@ void DarkModeManagerLinux::SetColorScheme(
   }
 }
 
-void DarkModeManagerLinux::SetAccentColor(dbus_utils::Variant variant) {
+void PortalSettingsLinux::SetAccentColor(dbus_utils::Variant variant) {
   auto color_tuple =
       std::move(variant).Take<std::tuple<double, double, double>>();
   if (!color_tuple.has_value()) {

@@ -1340,7 +1340,7 @@ source_set("chrome_browser_main_extra_parts_views") {
       "//ui/ozone",
     ]
     if (use_dbus) {
-      deps += [ "//ui/linux:dark_mode_manager" ]
+      deps += [ "//ui/linux:portal_settings" ]
     }
   }
 }

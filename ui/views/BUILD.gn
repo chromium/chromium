@@ -1514,7 +1514,7 @@ test("views_unittests") {
       "//ui/linux:test_support",
     ]
     if (use_dbus) {
-      deps += [ "//ui/linux:dark_mode_manager_unittests" ]
+      deps += [ "//ui/linux:portal_settings_unittests" ]
     }
   }
 

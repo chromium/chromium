@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/linux/dark_mode_manager_linux.h"
+#include "ui/linux/portal_settings_linux.h"
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
@@ -42,14 +42,15 @@ using testing::Mock;
 using testing::Return;
 using testing::StrictMock;
 
-class DarkModeManagerLinuxTest : public testing::Test {
+class PortalSettingsLinuxTest : public testing::Test {
  public:
-  ~DarkModeManagerLinuxTest() override = default;
+  ~PortalSettingsLinuxTest() override = default;
 
  protected:
   // The web color scheme is sourced from the active `OsSettingsProvider` via
-  // `UpdateVariablesForToolkitSettings()`, so it reflects what the manager
-  // pushed into the toolkit (emulated by the `SetColorScheme` wiring below).
+  // `UpdateVariablesForToolkitSettings()`, so it reflects what
+  // `PortalSettingsLinux` pushed into the toolkit (emulated by the
+  // `SetColorScheme` wiring below).
   bool PrefersDarkTheme() const {
     return NativeTheme::GetInstanceForNativeUi()->preferred_color_scheme() ==
            NativeTheme::PreferredColorScheme::kDark;
@@ -81,9 +82,9 @@ class DarkModeManagerLinuxTest : public testing::Test {
         mock_bus_.get(), DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS));
     mock_portal_proxy_ =
         base::MakeRefCounted<StrictMock<dbus::MockObjectProxy>>(
-            mock_bus_.get(), DarkModeManagerLinux::kFreedesktopSettingsService,
+            mock_bus_.get(), PortalSettingsLinux::kFreedesktopSettingsService,
             dbus::ObjectPath(
-                DarkModeManagerLinux::kFreedesktopSettingsObjectPath));
+                PortalSettingsLinux::kFreedesktopSettingsObjectPath));
 
     EXPECT_CALL(*mock_bus_, GetObjectProxy(DBUS_SERVICE_DBUS,
                                            dbus::ObjectPath(DBUS_PATH_DBUS)))
@@ -91,15 +92,15 @@ class DarkModeManagerLinuxTest : public testing::Test {
 
     EXPECT_CALL(*mock_bus_,
                 GetObjectProxy(
-                    DarkModeManagerLinux::kFreedesktopSettingsService,
+                    PortalSettingsLinux::kFreedesktopSettingsService,
                     dbus::ObjectPath(
-                        DarkModeManagerLinux::kFreedesktopSettingsObjectPath)))
+                        PortalSettingsLinux::kFreedesktopSettingsObjectPath)))
         .WillRepeatedly(Return(mock_portal_proxy_.get()));
 
     EXPECT_CALL(
         *mock_portal_proxy_,
-        ConnectToSignal(DarkModeManagerLinux::kFreedesktopSettingsInterface,
-                        DarkModeManagerLinux::kSettingChangedSignal, _, _))
+        ConnectToSignal(PortalSettingsLinux::kFreedesktopSettingsInterface,
+                        PortalSettingsLinux::kSettingChangedSignal, _, _))
         .WillOnce(
             [&](const std::string& interface_name,
                 const std::string& signal_name,
@@ -111,8 +112,8 @@ class DarkModeManagerLinuxTest : public testing::Test {
 
     EXPECT_CALL(*mock_portal_proxy_,
                 CallMethodWithErrorResponse(
-                    Calls(DarkModeManagerLinux::kFreedesktopSettingsInterface,
-                          DarkModeManagerLinux::kReadMethod),
+                    Calls(PortalSettingsLinux::kFreedesktopSettingsInterface,
+                          PortalSettingsLinux::kReadMethod),
                     _, _))
         .WillOnce([&](dbus::MethodCall* method_call, int timeout_ms,
                       dbus::ObjectProxy::ResponseOrErrorCallback callback) {
@@ -131,7 +132,7 @@ class DarkModeManagerLinuxTest : public testing::Test {
     // the value through its `OsSettingsProvider`, which is what drives the web
     // `NativeTheme` via `UpdateVariablesForToolkitSettings()`. Emulate that
     // here so the assertions below exercise the provider path rather than a
-    // direct write from the manager.
+    // direct write from `PortalSettingsLinux`.
     ON_CALL(*mock_linux_ui_, SetColorScheme(_))
         .WillByDefault([this](std::optional<bool> prefer_dark) {
           os_settings_provider_.SetPreferredColorScheme(
@@ -155,8 +156,8 @@ class DarkModeManagerLinuxTest : public testing::Test {
     os_settings_provider_.SetPreferredColorScheme(
         NativeTheme::PreferredColorScheme::kNoPreference);
 
-    manager_ =
-        std::make_unique<DarkModeManagerLinux>(mock_bus_, &linux_ui_themes_);
+    portal_settings_ =
+        std::make_unique<PortalSettingsLinux>(mock_bus_, &linux_ui_themes_);
 
     auto* const native_theme = ui::NativeTheme::GetInstanceForNativeUi();
     EXPECT_FALSE(PrefersDarkTheme());
@@ -166,7 +167,7 @@ class DarkModeManagerLinuxTest : public testing::Test {
   }
 
   void TearDown() override {
-    manager_.reset();
+    portal_settings_.reset();
     dbus_xdg::SetPortalStateForTesting(dbus_xdg::PortalRegistrarState::kIdle);
   }
 
@@ -187,12 +188,12 @@ class DarkModeManagerLinuxTest : public testing::Test {
 
   base::test::ScopedFeatureList enable_portal_accent_color_;
 
-  std::unique_ptr<DarkModeManagerLinux> manager_;
+  std::unique_ptr<PortalSettingsLinux> portal_settings_;
 };
 
-TEST_F(DarkModeManagerLinuxTest, UseNativeThemeSetting) {
+TEST_F(PortalSettingsLinuxTest, UseNativeThemeSetting) {
   // Without a portal preference, the toolkit-sourced scheme (the provider)
-  // drives the web theme directly; the manager is not involved.
+  // drives the web theme directly; `PortalSettingsLinux` is not involved.
   os_settings_provider().SetPreferredColorScheme(
       NativeTheme::PreferredColorScheme::kDark);
   EXPECT_TRUE(PrefersDarkTheme());
@@ -200,17 +201,18 @@ TEST_F(DarkModeManagerLinuxTest, UseNativeThemeSetting) {
       NativeTheme::PreferredColorScheme::kLight);
   EXPECT_FALSE(PrefersDarkTheme());
 
-  // Let the manager know the DBus method call and signal connection failed.
+  // Let `PortalSettingsLinux` know the DBus method call and signal connection
+  // failed.
   dbus::MethodCall method_call(
-      DarkModeManagerLinux::kFreedesktopSettingsInterface,
-      DarkModeManagerLinux::kReadMethod);
+      PortalSettingsLinux::kFreedesktopSettingsInterface,
+      PortalSettingsLinux::kReadMethod);
   method_call.SetSerial(123);
   auto error = dbus::ErrorResponse::FromMethodCall(
       &method_call, "org.freedesktop.DBus.Error.Failed", "");
   std::move(color_scheme_callback()).Run(nullptr, error.get());
   std::move(signal_connected_callback())
-      .Run(DarkModeManagerLinux::kFreedesktopSettingsInterface,
-           DarkModeManagerLinux::kSettingChangedSignal, false);
+      .Run(PortalSettingsLinux::kFreedesktopSettingsInterface,
+           PortalSettingsLinux::kSettingChangedSignal, false);
 
   // The toolkit-sourced scheme should still drive the web theme.
   os_settings_provider().SetPreferredColorScheme(
@@ -221,36 +223,37 @@ TEST_F(DarkModeManagerLinuxTest, UseNativeThemeSetting) {
   EXPECT_FALSE(PrefersDarkTheme());
 }
 
-TEST_F(DarkModeManagerLinuxTest, UsePortalSetting) {
-  // Let the manager know the DBus method call and signal connection succeeded.
+TEST_F(PortalSettingsLinuxTest, UsePortalSetting) {
+  // Let `PortalSettingsLinux` know the DBus method call and signal connection
+  // succeeded.
   dbus::MethodCall method_call(
-      DarkModeManagerLinux::kFreedesktopSettingsInterface,
-      DarkModeManagerLinux::kReadMethod);
+      PortalSettingsLinux::kFreedesktopSettingsInterface,
+      PortalSettingsLinux::kReadMethod);
   method_call.SetSerial(123);
   auto response = dbus::Response::FromMethodCall(&method_call);
   dbus::MessageWriter writer(response.get());
   dbus::MessageWriter variant_writer(nullptr);
   writer.OpenVariant("v", &variant_writer);
   variant_writer.AppendVariantOfUint32(static_cast<uint32_t>(
-      DarkModeManagerLinux::FreedesktopColorScheme::kDark));
+      PortalSettingsLinux::FreedesktopColorScheme::kDark));
   writer.CloseContainer(&variant_writer);
-  // The manager pushes the portal preference into the toolkit: SetDarkTheme()
-  // for native widgets, and SetColorScheme() for the web theme (via the
-  // provider).
+  // `PortalSettingsLinux` pushes the portal preference into the toolkit:
+  // SetDarkTheme() for native widgets, and SetColorScheme() for the web theme
+  // (via the provider).
   EXPECT_CALL(*mock_linux_ui(), SetDarkTheme(true));
   EXPECT_CALL(*mock_linux_ui(), SetColorScheme(std::optional<bool>(true)));
   std::move(color_scheme_callback()).Run(response.get(), nullptr);
   EXPECT_TRUE(PrefersDarkTheme());
 
-  // Changes in the portal preference should be processed by the manager and the
-  // web theme should be updated.
-  dbus::Signal signal(DarkModeManagerLinux::kFreedesktopSettingsInterface,
-                      DarkModeManagerLinux::kSettingChangedSignal);
+  // Changes in the portal preference should be processed by
+  // `PortalSettingsLinux` and the web theme should be updated.
+  dbus::Signal signal(PortalSettingsLinux::kFreedesktopSettingsInterface,
+                      PortalSettingsLinux::kSettingChangedSignal);
   dbus::MessageWriter signal_writer(&signal);
-  signal_writer.AppendString(DarkModeManagerLinux::kSettingsNamespace);
-  signal_writer.AppendString(DarkModeManagerLinux::kColorSchemeKey);
+  signal_writer.AppendString(PortalSettingsLinux::kSettingsNamespace);
+  signal_writer.AppendString(PortalSettingsLinux::kColorSchemeKey);
   signal_writer.AppendVariantOfUint32(static_cast<uint32_t>(
-      DarkModeManagerLinux::FreedesktopColorScheme::kLight));
+      PortalSettingsLinux::FreedesktopColorScheme::kLight));
   EXPECT_CALL(*mock_linux_ui(), SetDarkTheme(false));
   EXPECT_CALL(*mock_linux_ui(), SetColorScheme(std::optional<bool>(false)));
   std::move(setting_changed_callback()).Run(&signal);
@@ -264,18 +267,18 @@ TEST_F(DarkModeManagerLinuxTest, UsePortalSetting) {
 // variant. GNOME reports its Light style as no-preference, so treating it as
 // "ask the toolkit" leaves the browser stuck in dark mode.
 // Regression test for crbug.com/462191707.
-TEST_F(DarkModeManagerLinuxTest, UsePortalSettingNoPreference) {
+TEST_F(PortalSettingsLinuxTest, UsePortalSettingNoPreference) {
   // Start from an explicit dark portal preference.
   dbus::MethodCall method_call(
-      DarkModeManagerLinux::kFreedesktopSettingsInterface,
-      DarkModeManagerLinux::kReadMethod);
+      PortalSettingsLinux::kFreedesktopSettingsInterface,
+      PortalSettingsLinux::kReadMethod);
   method_call.SetSerial(123);
   auto response = dbus::Response::FromMethodCall(&method_call);
   dbus::MessageWriter writer(response.get());
   dbus::MessageWriter variant_writer(nullptr);
   writer.OpenVariant("v", &variant_writer);
   variant_writer.AppendVariantOfUint32(static_cast<uint32_t>(
-      DarkModeManagerLinux::FreedesktopColorScheme::kDark));
+      PortalSettingsLinux::FreedesktopColorScheme::kDark));
   writer.CloseContainer(&variant_writer);
   EXPECT_CALL(*mock_linux_ui(), SetDarkTheme(true));
   EXPECT_CALL(*mock_linux_ui(), SetColorScheme(std::optional<bool>(true)));
@@ -285,24 +288,25 @@ TEST_F(DarkModeManagerLinuxTest, UsePortalSettingNoPreference) {
 
   // Switching to "no preference" must leave dark mode, and must express that as
   // `false` so the provider does not fall back to the toolkit-derived scheme.
-  dbus::Signal signal(DarkModeManagerLinux::kFreedesktopSettingsInterface,
-                      DarkModeManagerLinux::kSettingChangedSignal);
+  dbus::Signal signal(PortalSettingsLinux::kFreedesktopSettingsInterface,
+                      PortalSettingsLinux::kSettingChangedSignal);
   dbus::MessageWriter signal_writer(&signal);
-  signal_writer.AppendString(DarkModeManagerLinux::kSettingsNamespace);
-  signal_writer.AppendString(DarkModeManagerLinux::kColorSchemeKey);
+  signal_writer.AppendString(PortalSettingsLinux::kSettingsNamespace);
+  signal_writer.AppendString(PortalSettingsLinux::kColorSchemeKey);
   signal_writer.AppendVariantOfUint32(static_cast<uint32_t>(
-      DarkModeManagerLinux::FreedesktopColorScheme::kNoPreference));
+      PortalSettingsLinux::FreedesktopColorScheme::kNoPreference));
   EXPECT_CALL(*mock_linux_ui(), SetDarkTheme(false));
   EXPECT_CALL(*mock_linux_ui(), SetColorScheme(std::optional<bool>(false)));
   std::move(setting_changed_callback()).Run(&signal);
   EXPECT_FALSE(PrefersDarkTheme());
 }
 
-TEST_F(DarkModeManagerLinuxTest, UsePortalAccentColor) {
-  // Let the manager know the DBus method call and signal connection succeeded.
+TEST_F(PortalSettingsLinuxTest, UsePortalAccentColor) {
+  // Let `PortalSettingsLinux` know the DBus method call and signal connection
+  // succeeded.
   dbus::MethodCall method_call(
-      DarkModeManagerLinux::kFreedesktopSettingsInterface,
-      DarkModeManagerLinux::kReadMethod);
+      PortalSettingsLinux::kFreedesktopSettingsInterface,
+      PortalSettingsLinux::kReadMethod);
   method_call.SetSerial(123);
   auto response = dbus::Response::FromMethodCall(&method_call);
   dbus::MessageWriter writer(response.get());
@@ -326,13 +330,13 @@ TEST_F(DarkModeManagerLinuxTest, UsePortalAccentColor) {
   EXPECT_EQ(native_theme->user_color(), kExpectedColor1);
   Mock::VerifyAndClearExpectations(mock_linux_ui());
 
-  // Changes in the portal accent color should be processed by the manager and
-  // the native theme should be updated.
-  dbus::Signal signal(DarkModeManagerLinux::kFreedesktopSettingsInterface,
-                      DarkModeManagerLinux::kSettingChangedSignal);
+  // Changes in the portal accent color should be processed by
+  // `PortalSettingsLinux` and the native theme should be updated.
+  dbus::Signal signal(PortalSettingsLinux::kFreedesktopSettingsInterface,
+                      PortalSettingsLinux::kSettingChangedSignal);
   dbus::MessageWriter signal_writer(&signal);
-  signal_writer.AppendString(DarkModeManagerLinux::kSettingsNamespace);
-  signal_writer.AppendString(DarkModeManagerLinux::kAccentColorKey);
+  signal_writer.AppendString(PortalSettingsLinux::kSettingsNamespace);
+  signal_writer.AppendString(PortalSettingsLinux::kAccentColorKey);
   dbus::MessageWriter variant_writer(nullptr);
   signal_writer.OpenVariant("(ddd)", &variant_writer);
   dbus::MessageWriter struct2_writer(nullptr);

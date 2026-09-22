@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_LINUX_DARK_MODE_MANAGER_LINUX_H_
-#define UI_LINUX_DARK_MODE_MANAGER_LINUX_H_
+#ifndef UI_LINUX_PORTAL_SETTINGS_LINUX_H_
+#define UI_LINUX_PORTAL_SETTINGS_LINUX_H_
 
 #include <optional>
 #include <string>
@@ -26,31 +26,31 @@ class ObjectProxy;
 namespace ui {
 
 class LinuxUiTheme;
-class DarkModeManagerLinuxTest;
+class PortalSettingsLinuxTest;
 
 // Reads the system color-scheme and accent-color preferences from
 // org.freedesktop.portal.Settings and pushes them into each toolkit's
 // `OsSettingsProvider` (`OsSettingsProviderGtk`/`OsSettingsProviderQt`), which
 // source the corresponding web `NativeTheme` values. When the portal is
 // unavailable, the providers fall back to the toolkit-derived values.
-class DarkModeManagerLinux {
+class PortalSettingsLinux {
  public:
-  DarkModeManagerLinux();
-  DarkModeManagerLinux(
+  PortalSettingsLinux();
+  PortalSettingsLinux(
       scoped_refptr<dbus::Bus> bus,
       const std::vector<raw_ptr<LinuxUiTheme, VectorExperimental>>*
           linux_ui_themes);
-  DarkModeManagerLinux(const DarkModeManagerLinux&) = delete;
-  DarkModeManagerLinux& operator=(const DarkModeManagerLinux&) = delete;
-  ~DarkModeManagerLinux();
+  PortalSettingsLinux(const PortalSettingsLinux&) = delete;
+  PortalSettingsLinux& operator=(const PortalSettingsLinux&) = delete;
+  ~PortalSettingsLinux();
 
  private:
-  friend class DarkModeManagerLinuxTest;
-  FRIEND_TEST_ALL_PREFIXES(DarkModeManagerLinuxTest, UseNativeThemeSetting);
-  FRIEND_TEST_ALL_PREFIXES(DarkModeManagerLinuxTest, UsePortalSetting);
-  FRIEND_TEST_ALL_PREFIXES(DarkModeManagerLinuxTest,
+  friend class PortalSettingsLinuxTest;
+  FRIEND_TEST_ALL_PREFIXES(PortalSettingsLinuxTest, UseNativeThemeSetting);
+  FRIEND_TEST_ALL_PREFIXES(PortalSettingsLinuxTest, UsePortalSetting);
+  FRIEND_TEST_ALL_PREFIXES(PortalSettingsLinuxTest,
                            UsePortalSettingNoPreference);
-  FRIEND_TEST_ALL_PREFIXES(DarkModeManagerLinuxTest, UsePortalAccentColor);
+  FRIEND_TEST_ALL_PREFIXES(PortalSettingsLinuxTest, UsePortalAccentColor);
 
   constexpr static char kFreedesktopSettingsService[] =
       "org.freedesktop.portal.Desktop";
@@ -73,7 +73,7 @@ class DarkModeManagerLinux {
 
   static NativeTheme::PreferredColorScheme
   FreedesktopColorSchemeToNativeThemeColorScheme(
-      DarkModeManagerLinux::FreedesktopColorScheme color_scheme);
+      PortalSettingsLinux::FreedesktopColorScheme color_scheme);
 
   // D-Bus async handlers
   void OnPortalRequestResult(uint32_t version);
@@ -97,9 +97,9 @@ class DarkModeManagerLinux {
   scoped_refptr<dbus::Bus> bus_;
   raw_ptr<dbus::ObjectProxy> settings_proxy_;
 
-  base::WeakPtrFactory<DarkModeManagerLinux> weak_ptr_factory_{this};
+  base::WeakPtrFactory<PortalSettingsLinux> weak_ptr_factory_{this};
 };
 
 }  // namespace ui
 
-#endif  // UI_LINUX_DARK_MODE_MANAGER_LINUX_H_
+#endif  // UI_LINUX_PORTAL_SETTINGS_LINUX_H_
