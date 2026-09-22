@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/facilitated_payments/core/validation/pix_code_validator_fuzzer_util.h"
+#include "components/facilitated_payments/core/validation/pix_validator_fuzzer_util.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -10,19 +10,19 @@
 namespace payments::facilitated {
 namespace {
 
-TEST(PixCodeValidatorFuzzerUtilTest, ValidRegexPattern) {
+TEST(PixValidatorFuzzerUtilTest, ValidRegexPattern) {
   EXPECT_TRUE(re2::RE2::FullMatch("00020126180014br.gov.bcb.pix63041D3D",
-                                  kPixCodeValidatorFuzzerDomainRegexPattern));
+                                  kPixValidatorFuzzerDomainRegexPattern));
 }
 
-TEST(PixCodeValidatorFuzzerUtilTest, ValidRegexPatternWithUpperCase) {
+TEST(PixValidatorFuzzerUtilTest, ValidRegexPatternWithUpperCase) {
   EXPECT_TRUE(re2::RE2::FullMatch("00020126180014BR.GOV.BCB.PIX63041D3D",
-                                  kPixCodeValidatorFuzzerDomainRegexPattern));
+                                  kPixValidatorFuzzerDomainRegexPattern));
 }
 
-TEST(PixCodeValidatorFuzzerUtilTest, InValidRegexPattern) {
+TEST(PixValidatorFuzzerUtilTest, InvalidRegexPattern) {
   EXPECT_FALSE(re2::RE2::FullMatch("A0020126180014br.gov.bcb.pix63041D3D",
-                                   kPixCodeValidatorFuzzerDomainRegexPattern));
+                                   kPixValidatorFuzzerDomainRegexPattern));
 }
 
 }  // namespace

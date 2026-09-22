@@ -15,24 +15,24 @@ PixQrCodeResult GetPixQrCodeType(std::string_view code) {
   return get_pix_qr_code_type(base::StringViewToRustSlice(code));
 }
 
-TEST(PixCodeValidatorTest, ValidDynamicCode) {
+TEST(PixValidatorTest, ValidDynamicCode) {
   EXPECT_EQ(GetPixQrCodeType(
                 "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F"),
             PixQrCodeResult::Dynamic);
 }
 
-TEST(PixCodeValidatorTest, ValidDynamicCodeWithSomeUpperCaseLetters) {
+TEST(PixValidatorTest, ValidDynamicCodeWithSomeUpperCaseLetters) {
   EXPECT_EQ(GetPixQrCodeType(
                 "00020126370014Br.gOv.BcB.piX2515www.example.com6304EA3F"),
             PixQrCodeResult::Dynamic);
 }
 
-TEST(PixCodeValidatorTest, StaticCode) {
+TEST(PixValidatorTest, StaticCode) {
   EXPECT_EQ(GetPixQrCodeType("00020126270014br.gov.bcb.pix0105ABCDE63041D3D"),
             PixQrCodeResult::Static);
 }
 
-TEST(PixCodeValidatorTest, DynamicAndStatic) {
+TEST(PixValidatorTest, DynamicAndStatic) {
   // If a dynamic section is encountered first in the merchant account
   // information section, treat the code as dynamic.
   EXPECT_EQ(
@@ -47,7 +47,7 @@ TEST(PixCodeValidatorTest, DynamicAndStatic) {
             PixQrCodeResult::Dynamic);
 }
 
-TEST(PixCodeValidatorTest, StaticAndDynamic) {
+TEST(PixValidatorTest, StaticAndDynamic) {
   // If a static section is encountered first in the merchant account
   // information section, treat the code as static.
   EXPECT_EQ(
@@ -62,11 +62,11 @@ TEST(PixCodeValidatorTest, StaticAndDynamic) {
             PixQrCodeResult::Static);
 }
 
-TEST(PixCodeValidatorTest, EmptyStringNotValid) {
+TEST(PixValidatorTest, EmptyStringNotValid) {
   EXPECT_EQ(GetPixQrCodeType(""), PixQrCodeResult::NotPaymentCode);
 }
 
-TEST(PixCodeValidatorTest, LastSectionLengthTooLong) {
+TEST(PixValidatorTest, LastSectionLengthTooLong) {
   // Code is invalid because the last section 63051D3D has the length specified
   // as 05 which is longer than the string succeeding it (1D3D).
   EXPECT_EQ(GetPixQrCodeType(
@@ -74,7 +74,7 @@ TEST(PixCodeValidatorTest, LastSectionLengthTooLong) {
             PixQrCodeResult::InvalidMerchantPresentedCode);
 }
 
-TEST(PixCodeValidatorTest, SectionHeaderIsNotADigit) {
+TEST(PixValidatorTest, SectionHeaderIsNotADigit) {
   // Code is invalid because the section 000A01 does not have the first 4
   // characters as digits.
   EXPECT_EQ(GetPixQrCodeType(
@@ -82,7 +82,7 @@ TEST(PixCodeValidatorTest, SectionHeaderIsNotADigit) {
             PixQrCodeResult::NotPaymentCode);
 }
 
-TEST(PixCodeValidatorTest, LastSectionLengthTooShort) {
+TEST(PixValidatorTest, LastSectionLengthTooShort) {
   // Code is invalid because the last section 63021D3 has the length specified
   // as 02 which is shorter than the length of the string succeeding it (1D3).
   EXPECT_EQ(GetPixQrCodeType(
@@ -90,7 +90,7 @@ TEST(PixCodeValidatorTest, LastSectionLengthTooShort) {
             PixQrCodeResult::NonFinalCrc);
 }
 
-TEST(PixCodeValidatorTest, SectionHeaderTruncatedTooShort) {
+TEST(PixValidatorTest, SectionHeaderTruncatedTooShort) {
   // Code is invalid because the last section 630 doesn't have the minimum
   // length of 4 characters.
   EXPECT_EQ(
@@ -98,20 +98,20 @@ TEST(PixCodeValidatorTest, SectionHeaderTruncatedTooShort) {
       PixQrCodeResult::InvalidMerchantPresentedCode);
 }
 
-TEST(PixCodeValidatorTest, MerchantAccountInformationIsEmpty) {
+TEST(PixValidatorTest, MerchantAccountInformationIsEmpty) {
   // Code is invalid because the section 2600 has a length of 00.
   EXPECT_EQ(GetPixQrCodeType("000201260063041D3D"),
             PixQrCodeResult::InvalidMerchantPresentedCode);
 }
 
-TEST(PixCodeValidatorTest, MerchantAccountInformationIsNotValid) {
+TEST(PixValidatorTest, MerchantAccountInformationIsNotValid) {
   // Code is invalid because the merchant account information section 2629
   // does not contain the Pix code indicator 0014br.gov.bcb.pix.
   EXPECT_EQ(GetPixQrCodeType("00020126292515www.example.com6304EA3F"),
             PixQrCodeResult::InvalidMerchantPresentedCode);
 }
 
-TEST(PixCodeValidatorTest, InvalidPixCodeIndicator) {
+TEST(PixValidatorTest, InvalidPixCodeIndicator) {
   // Code is invalid because the Pix code indicator is 0014br.gov.bcb.pxi
   // instead 0014br.gov.bcb.pix.
   EXPECT_EQ(GetPixQrCodeType(
@@ -119,7 +119,7 @@ TEST(PixCodeValidatorTest, InvalidPixCodeIndicator) {
             PixQrCodeResult::NonPixMerchantPresentedCode);
 }
 
-TEST(PixCodeValidatorTest, EmptyAdditionalDataSection) {
+TEST(PixValidatorTest, EmptyAdditionalDataSection) {
   // Code is invalid because the additional data section 6200 has a length of
   // 00.
   EXPECT_EQ(GetPixQrCodeType(
@@ -127,7 +127,7 @@ TEST(PixCodeValidatorTest, EmptyAdditionalDataSection) {
             PixQrCodeResult::EmptyAdditionalDataFieldTemplate);
 }
 
-TEST(PixCodeValidatorTest, LastSectionIdIsNotCrc16) {
+TEST(PixValidatorTest, LastSectionIdIsNotCrc16) {
   // Code is invalid because the last section 64041D3D has an id 64 instead
   // of 63.
   EXPECT_EQ(GetPixQrCodeType(
@@ -135,7 +135,7 @@ TEST(PixCodeValidatorTest, LastSectionIdIsNotCrc16) {
             PixQrCodeResult::InvalidMerchantPresentedCode);
 }
 
-TEST(PixCodeValidatorTest, FirstSectionIsNotPayloadIndicator) {
+TEST(PixValidatorTest, FirstSectionIsNotPayloadIndicator) {
   // Code is invalid because the first section 010201 has an id 01 instead of
   // 00.
   EXPECT_EQ(GetPixQrCodeType(
@@ -143,14 +143,14 @@ TEST(PixCodeValidatorTest, FirstSectionIsNotPayloadIndicator) {
             PixQrCodeResult::MissingPayloadFormatIndicator);
 }
 
-TEST(PixCodeValidatorTest, NoMerchantAccountInformationSection) {
+TEST(PixValidatorTest, NoMerchantAccountInformationSection) {
   // Code is invalid because there is no merchant account information section
   // with id 26.
   EXPECT_EQ(GetPixQrCodeType("00020163041D3D"),
             PixQrCodeResult::NonPixMerchantPresentedCode);
 }
 
-TEST(PixCodeValidatorTest, NoPixCodeIndicator) {
+TEST(PixValidatorTest, NoPixCodeIndicator) {
   // Code is invalid because the merchant account information section
   // 261801020063041D3D does not contain the Pix code indicator
   // 0014br.gov.bcb.pix .
@@ -158,7 +158,7 @@ TEST(PixCodeValidatorTest, NoPixCodeIndicator) {
             PixQrCodeResult::InvalidMerchantPresentedCode);
 }
 
-TEST(PixCodeValidatorTest, LengthWithLeadingPlus) {
+TEST(PixValidatorTest, LengthWithLeadingPlus) {
   // Code is invalid because the length of the static code section has a
   // leading `+`. This is a regression test for the Rust validator, which uses
   // `str::parse::<usize>()`, which allows a leading `+`.
@@ -166,7 +166,7 @@ TEST(PixCodeValidatorTest, LengthWithLeadingPlus) {
             PixQrCodeResult::InvalidMerchantPresentedCode);
 }
 
-TEST(PixCodeValidatorTest, NonNumericSectionId) {
+TEST(PixValidatorTest, NonNumericSectionId) {
   // Code is invalid since it contains a top-level non-numeric section ID
   // ("A1").
   EXPECT_EQ(

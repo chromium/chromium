@@ -5,8 +5,8 @@
 #include <string>
 
 #include "base/strings/string_view_rust.h"
-#include "components/facilitated_payments/core/validation/pix_code_validator_fuzzer_util.h"
 #include "components/facilitated_payments/core/validation/pix_validator_cxx.rs.h"
+#include "components/facilitated_payments/core/validation/pix_validator_fuzzer_util.h"
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
 namespace payments::facilitated {
@@ -16,7 +16,7 @@ void GetPixQrCodeTypeCanParseAnyString(const std::string& input) {
 }
 
 FUZZ_TEST(GetPixQrCodeTypeTest, GetPixQrCodeTypeCanParseAnyString)
-    .WithDomains(fuzztest::InRegexp(kPixCodeValidatorFuzzerDomainRegexPattern))
+    .WithDomains(fuzztest::InRegexp(kPixValidatorFuzzerDomainRegexPattern))
     .WithSeeds({{""},
                 {"000201260063041D3D"},
                 {"00020126030014br.gov.bcb.pix63041D3D"},

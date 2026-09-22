@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/facilitated_payments/core/validation/pix_code_validator_fuzzer_util.h"
+#include "components/facilitated_payments/core/validation/pix_validator_fuzzer_util.h"
 
 namespace payments::facilitated {
 
-const char kPixCodeValidatorFuzzerDomainRegexPattern[] = "^([0-9]{4}.+)+$";
+const char kPixValidatorFuzzerDomainRegexPattern[] = "^([0-9]{4}.+)+$";
 
 }  // namespace payments::facilitated
