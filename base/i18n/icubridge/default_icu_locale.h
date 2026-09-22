@@ -45,6 +45,11 @@ namespace blink {
 class LocaleController;
 }
 
+namespace content {
+struct MainFunctionParams;
+int RendererMain(MainFunctionParams);
+}  // namespace content
+
 namespace l10n_util {
 COMPONENT_EXPORT(UI_BASE)
 std::string GetApplicationLocale(std::string_view, bool);
@@ -61,8 +66,7 @@ void BASE_I18N_EXPORT SetICUDefaultLocale(std::string_view);
 // Calling `SetDefaultIcuLocale` requires an instance of this key. Since the
 // constructor of `DefaultIcuLocaleSetterKey` is private, only explicitly
 // friended classes can instantiate it. This prevents arbitrary production
-// code from modifying the global default ICU locale, while allowing
-// authorized test utilities to temporarily override it.
+// code from modifying the global default ICU locale.
 class BASE_I18N_EXPORT DefaultIcuLocaleSetterKey {
  public:
   ~DefaultIcuLocaleSetterKey() = default;
@@ -75,6 +79,7 @@ class BASE_I18N_EXPORT DefaultIcuLocaleSetterKey {
   friend class ::WebEngineMainDelegate;
   friend class ::WebEngineBrowserMainParts;
   friend class ::ChromeMainDelegate;
+  friend int(::content::RendererMain)(::content::MainFunctionParams);
   friend std::string(::l10n_util::GetApplicationLocale)(std::string_view, bool);
   friend BASE_I18N_EXPORT void SetICUDefaultLocale(std::string_view);
 

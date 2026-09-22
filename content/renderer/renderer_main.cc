@@ -13,7 +13,9 @@
 #include "base/debug/debugger.h"
 #include "base/debug/leak_annotations.h"
 #include "base/feature_list.h"
-#include "base/i18n/rtl.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/message_loop/message_pump_wakeup_counter.h"
@@ -167,7 +169,11 @@ int RendererMain(MainFunctionParams parameters) {
   if (command_line.HasSwitch(switches::kLang)) {
     const std::string locale =
         command_line.GetSwitchValueASCII(switches::kLang);
-    base::i18n::SetICUDefaultLocale(locale);
+    std::optional<base::i18n::LanguageTag> lang_tag =
+        base::i18n::GetLanguageTagFromString(locale);
+    CHECK(lang_tag.has_value()) << "Invalid language tag: " << locale;
+    base::i18n::SetDefaultIcuLocale(base::i18n::DefaultIcuLocaleSetterKey(),
+                                    *lang_tag);
   }
 
   // When we start the renderer on ChromeOS if the system has core scheduling
