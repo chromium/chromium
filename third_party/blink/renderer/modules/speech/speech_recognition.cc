@@ -26,11 +26,13 @@
 #include "third_party/blink/renderer/modules/speech/speech_recognition.h"
 
 #include <algorithm>
+#include <optional>
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/channel_layout.h"
@@ -439,12 +441,21 @@ void SpeechRecognition::ResultRetrieved(
       std::move(final_results_);
   aggregated_results.reserve(aggregated_results.size() + results.size());
 
+  // Track the end of the most recent audio recognized in this batch, so the
+  // dispatched event can be stamped with the time the speech actually ended
+  // rather than the time this event happened to be constructed.
+  std::optional<base::TimeDelta> latest_audio_end_time;
   for (const auto& result : results) {
     HeapVector<Member<SpeechRecognitionAlternative>> alternatives;
     alternatives.ReserveInitialCapacity(result->hypotheses.size());
     for (const auto& hypothesis : result->hypotheses) {
       alternatives.push_back(MakeGarbageCollected<SpeechRecognitionAlternative>(
           hypothesis->utterance, hypothesis->confidence));
+    }
+    if (result->audio_end_time.has_value() &&
+        (!latest_audio_end_time.has_value() ||
+         *result->audio_end_time > *latest_audio_end_time)) {
+      latest_audio_end_time = result->audio_end_time;
     }
     aggregated_results.push_back(SpeechRecognitionResult::Create(
         std::move(alternatives), !result->is_provisional,
@@ -463,10 +474,18 @@ void SpeechRecognition::ResultRetrieved(
           .first(aggregated_results.size() - provisional_count));
   final_results_ = std::move(new_final_results);
 
+  // The recognizer reports timestamps as offsets from the start of the audio
+  // stream, so rebase them onto the time the stream started. If the recognizer
+  // did not supply timestamps, or audio never started, fall back to now.
+  base::TimeTicks event_time_stamp = base::TimeTicks::Now();
+  if (latest_audio_end_time.has_value() && !audio_start_ticks_.is_null()) {
+    event_time_stamp = audio_start_ticks_ + *latest_audio_end_time;
+  }
+
   // We dispatch an event with (1) + (2) + (3).
   DispatchEvent(*SpeechRecognitionEvent::CreateResult(
       aggregated_results.size() - results.size(),
-      std::move(aggregated_results)));
+      std::move(aggregated_results), event_time_stamp));
 }
 
 void SpeechRecognition::ErrorOccurred(
@@ -489,6 +508,9 @@ void SpeechRecognition::Started() {
 }
 
 void SpeechRecognition::AudioStarted() {
+  // Per spec, result timestamps are relative to the `audiostart` event, so
+  // record that instant as the time origin for incoming result offsets.
+  audio_start_ticks_ = base::TimeTicks::Now();
   DispatchEvent(*Event::Create(event_type_names::kAudiostart));
 }
 
@@ -715,6 +737,7 @@ void SpeechRecognition::StartInternal() {
   }
 
   final_results_.clear();
+  audio_start_ticks_ = base::TimeTicks();
 
   auto task_runner =
       GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI);

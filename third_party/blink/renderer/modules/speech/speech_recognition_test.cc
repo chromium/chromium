@@ -4,9 +4,14 @@
 
 #include "third_party/blink/renderer/modules/speech/speech_recognition.h"
 
+#include <optional>
+#include <utility>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "media/base/media_switches.h"
+#include "media/mojo/mojom/speech_recognition_result.mojom-blink.h"
 #include "media/mojo/mojom/speech_recognizer.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -18,6 +23,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_speech_recognition_options.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -125,7 +133,42 @@ class ScopedFakeOnDeviceSpeechRecognition {
   const BrowserInterfaceBrokerProxy* broker_;
 };
 
+// Captures the `timeStamp` of each dispatched `result` event.
+class ResultEventRecorder final : public NativeEventListener {
+ public:
+  void Invoke(ExecutionContext*, Event* event) override {
+    ++count_;
+    last_time_stamp_ = event->PlatformTimeStamp();
+  }
+
+  int count() const { return count_; }
+  base::TimeTicks last_time_stamp() const { return last_time_stamp_; }
+
+ private:
+  int count_ = 0;
+  base::TimeTicks last_time_stamp_;
+};
+
+media::mojom::blink::WebSpeechRecognitionResultPtr MakeResult(
+    const String& utterance,
+    bool is_provisional,
+    std::optional<base::TimeDelta> audio_start_time,
+    std::optional<base::TimeDelta> audio_end_time) {
+  auto result = media::mojom::blink::WebSpeechRecognitionResult::New();
+  result->is_provisional = is_provisional;
+  result->audio_start_time = audio_start_time;
+  result->audio_end_time = audio_end_time;
+
+  auto hypothesis = media::mojom::blink::SpeechRecognitionHypothesis::New();
+  hypothesis->utterance = utterance;
+  hypothesis->confidence = 1.0;
+  result->hypotheses.push_back(std::move(hypothesis));
+
+  return result;
+}
+
 }  // namespace
+
 
 class SpeechRecognitionTest : public PageTestBase {
  public:
@@ -368,6 +411,86 @@ TEST_F(SpeechRecognitionInstallTest, UnavailableResolvesFalse) {
   EXPECT_EQ("false", tester.ValueAsString());
   EXPECT_FALSE(fake.install_called());
   histogram_tester.ExpectTotalCount(kDownloadActivationOutcomeHistogram, 0);
+}
+
+TEST_F(SpeechRecognitionTest, ResultEventTimeStampUsesRecognitionEndTime) {
+  V8TestingScope scope;
+  auto* speech_recognition = SpeechRecognition::Create(&scope.GetWindow());
+
+  auto* recorder = MakeGarbageCollected<ResultEventRecorder>();
+  speech_recognition->addEventListener(event_type_names::kResult, recorder);
+
+  // Bracket the audio start so we know the time origin to within a window.
+  const base::TimeTicks before_audio_start = base::TimeTicks::Now();
+  speech_recognition->AudioStarted();
+  const base::TimeTicks after_audio_start = base::TimeTicks::Now();
+
+  constexpr base::TimeDelta kAudioStartTime = base::Milliseconds(500);
+  constexpr base::TimeDelta kAudioEndTime = base::Milliseconds(1500);
+
+  Vector<media::mojom::blink::WebSpeechRecognitionResultPtr> results;
+  results.push_back(MakeResult("hello world", /*is_provisional=*/false,
+                               kAudioStartTime, kAudioEndTime));
+  speech_recognition->ResultRetrieved(std::move(results));
+
+  ASSERT_EQ(recorder->count(), 1);
+  // The event is stamped with the audio time origin plus the recognizer's
+  // reported end offset, not with the time the event was constructed.
+  EXPECT_GE(recorder->last_time_stamp(), before_audio_start + kAudioEndTime);
+  EXPECT_LE(recorder->last_time_stamp(), after_audio_start + kAudioEndTime);
+}
+
+TEST_F(SpeechRecognitionTest, ResultEventTimeStampUsesLatestEndTime) {
+  V8TestingScope scope;
+  auto* speech_recognition = SpeechRecognition::Create(&scope.GetWindow());
+
+  auto* recorder = MakeGarbageCollected<ResultEventRecorder>();
+  speech_recognition->addEventListener(event_type_names::kResult, recorder);
+
+  const base::TimeTicks before_audio_start = base::TimeTicks::Now();
+  speech_recognition->AudioStarted();
+  const base::TimeTicks after_audio_start = base::TimeTicks::Now();
+
+  constexpr base::TimeDelta kFinalEndTime = base::Milliseconds(1000);
+  constexpr base::TimeDelta kProvisionalEndTime = base::Milliseconds(2500);
+
+  Vector<media::mojom::blink::WebSpeechRecognitionResultPtr> results;
+  results.push_back(MakeResult("final", /*is_provisional=*/false,
+                               base::Milliseconds(0), kFinalEndTime));
+  results.push_back(MakeResult("provisional", /*is_provisional=*/true,
+                               kFinalEndTime, kProvisionalEndTime));
+  speech_recognition->ResultRetrieved(std::move(results));
+
+  ASSERT_EQ(recorder->count(), 1);
+  // The newest audio in the batch determines the event time.
+  EXPECT_GE(recorder->last_time_stamp(),
+            before_audio_start + kProvisionalEndTime);
+  EXPECT_LE(recorder->last_time_stamp(),
+            after_audio_start + kProvisionalEndTime);
+}
+
+TEST_F(SpeechRecognitionTest, ResultEventTimeStampFallsBackWithoutTimestamps) {
+  V8TestingScope scope;
+  auto* speech_recognition = SpeechRecognition::Create(&scope.GetWindow());
+
+  auto* recorder = MakeGarbageCollected<ResultEventRecorder>();
+  speech_recognition->addEventListener(event_type_names::kResult, recorder);
+
+  speech_recognition->AudioStarted();
+
+  Vector<media::mojom::blink::WebSpeechRecognitionResultPtr> results;
+  results.push_back(MakeResult("hello world", /*is_provisional=*/false,
+                               /*audio_start_time=*/std::nullopt,
+                               /*audio_end_time=*/std::nullopt));
+
+  const base::TimeTicks before_dispatch = base::TimeTicks::Now();
+  speech_recognition->ResultRetrieved(std::move(results));
+  const base::TimeTicks after_dispatch = base::TimeTicks::Now();
+
+  ASSERT_EQ(recorder->count(), 1);
+  // Without recognizer timestamps the event falls back to the dispatch time.
+  EXPECT_GE(recorder->last_time_stamp(), before_dispatch);
+  EXPECT_LE(recorder->last_time_stamp(), after_dispatch);
 }
 
 }  // namespace blink

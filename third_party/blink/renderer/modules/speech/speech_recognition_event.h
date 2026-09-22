@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SPEECH_SPEECH_RECOGNITION_EVENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SPEECH_SPEECH_RECOGNITION_EVENT_H_
 
+#include "base/time/time.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_speech_recognition_event_init.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
 #include "third_party/blink/renderer/modules/speech/speech_recognition_result.h"
@@ -45,12 +46,18 @@ class SpeechRecognitionEvent final : public Event {
                          const SpeechRecognitionEventInit*);
   SpeechRecognitionEvent(const AtomicString& event_name,
                          uint32_t result_index,
-                         SpeechRecognitionResultList* results);
+                         SpeechRecognitionResultList* results,
+                         base::TimeTicks platform_time_stamp);
   ~SpeechRecognitionEvent() override;
 
+  // `platform_time_stamp` becomes the event's `timeStamp`. Callers should pass
+  // the time at which the recognized audio ended, so that `timeStamp` reflects
+  // the end of the recognized speech rather than the moment the event object
+  // happened to be constructed.
   static SpeechRecognitionEvent* CreateResult(
       uint32_t result_index,
-      const HeapVector<Member<SpeechRecognitionResult>>& results);
+      const HeapVector<Member<SpeechRecognitionResult>>& results,
+      base::TimeTicks platform_time_stamp);
   static SpeechRecognitionEvent* CreateNoMatch(SpeechRecognitionResult*);
 
   uint32_t resultIndex() const { return result_index_; }

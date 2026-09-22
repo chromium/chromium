@@ -37,24 +37,27 @@ SpeechRecognitionEvent* SpeechRecognitionEvent::Create(
 
 SpeechRecognitionEvent* SpeechRecognitionEvent::CreateResult(
     uint32_t result_index,
-    const HeapVector<Member<SpeechRecognitionResult>>& results) {
+    const HeapVector<Member<SpeechRecognitionResult>>& results,
+    base::TimeTicks platform_time_stamp) {
   return MakeGarbageCollected<SpeechRecognitionEvent>(
       event_type_names::kResult, result_index,
-      SpeechRecognitionResultList::Create(results));
+      SpeechRecognitionResultList::Create(results), platform_time_stamp);
 }
 
 SpeechRecognitionEvent* SpeechRecognitionEvent::CreateNoMatch(
     SpeechRecognitionResult* result) {
+  // A nomatch event carries no recognized audio, so there is no speech end
+  // time to report; fall back to the current time.
   if (result) {
     HeapVector<Member<SpeechRecognitionResult>> results;
     results.push_back(result);
     return MakeGarbageCollected<SpeechRecognitionEvent>(
         event_type_names::kNomatch, 0,
-        SpeechRecognitionResultList::Create(results));
+        SpeechRecognitionResultList::Create(results), base::TimeTicks::Now());
   }
 
   return MakeGarbageCollected<SpeechRecognitionEvent>(
-      event_type_names::kNomatch, 0, nullptr);
+      event_type_names::kNomatch, 0, nullptr, base::TimeTicks::Now());
 }
 
 const AtomicString& SpeechRecognitionEvent::InterfaceName() const {
@@ -73,8 +76,9 @@ SpeechRecognitionEvent::SpeechRecognitionEvent(
 SpeechRecognitionEvent::SpeechRecognitionEvent(
     const AtomicString& event_name,
     uint32_t result_index,
-    SpeechRecognitionResultList* results)
-    : Event(event_name, Bubbles::kNo, Cancelable::kNo),
+    SpeechRecognitionResultList* results,
+    base::TimeTicks platform_time_stamp)
+    : Event(event_name, Bubbles::kNo, Cancelable::kNo, platform_time_stamp),
       result_index_(result_index),
       results_(results) {}
 

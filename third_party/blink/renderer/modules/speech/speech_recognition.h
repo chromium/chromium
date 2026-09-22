@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SPEECH_SPEECH_RECOGNITION_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SPEECH_SPEECH_RECOGNITION_H_
 
+#include "base/time/time.h"
 #include "media/base/audio_parameters.h"
 #include "media/mojo/mojom/speech_recognizer.mojom-blink.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
@@ -203,6 +204,16 @@ class MODULES_EXPORT SpeechRecognition final
   bool started_ = false;
   bool stopping_ = false;
   HeapVector<Member<SpeechRecognitionResult>> final_results_;
+  // Time at which the audio stream began, i.e. the time origin that the
+  // per-result `audio_start_time`/`audio_end_time` offsets are relative to.
+  // Null until `AudioStarted()` fires.
+  //
+  // TODO(crbug.com/564526939): This reconstructs the time origin in the
+  // renderer, so it carries the recognizer's start-up delay plus the Mojo hop
+  // from the browser. Plumb the `base::TimeTicks` captured when audio was
+  // submitted to the recognizer through `media::mojom::TimingInformation`
+  // instead, and stamp events with that directly rather than deriving it here.
+  base::TimeTicks audio_start_ticks_;
   HeapMojoReceiver<media::mojom::blink::SpeechRecognitionSessionClient,
                    SpeechRecognition>
       receiver_;
