@@ -304,6 +304,25 @@ public class TabGroupUiUtils {
         }
     }
 
+    /**
+     * Commits pending closures for the group containing {@code tabId} if the tab is currently
+     * closing.
+     *
+     * @param tabModel The {@link TabModel} to search.
+     * @param tabId The ID of the tab.
+     */
+    public static void commitClosingTabsForTab(TabModel tabModel, @TabId int tabId) {
+        if (!isRemoteGroupOperationsEnabled() || tabId == Tab.INVALID_TAB_ID) {
+            return;
+        }
+        for (Tab tab : tabModel.getComprehensiveModel()) {
+            if (tab.getId() == tabId && tab.isClosing() && tab.getTabGroupId() != null) {
+                commitClosingTabsForGroup(tabModel, tab.getTabGroupId());
+                return;
+            }
+        }
+    }
+
     private static boolean isRemoteGroup(GroupWindowInfo group) {
         return group.groupWindowState == GroupWindowState.HIDDEN
                 || group.localId == null

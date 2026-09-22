@@ -3169,6 +3169,14 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         if (id == R.id.tab_group_tab_menu_item) {
             assert menuItemData != null;
             if (TabGroupUiUtils.isCrossWindowTabGroupOperationsEnabled()) {
+                @TabId
+                int tabId =
+                        menuItemData.getInt(
+                                AppMenuPropertiesDelegateImpl.TAB_ID_BUNDLE_KEY,
+                                Tab.INVALID_TAB_ID);
+                if (tabId != Tab.INVALID_TAB_ID) {
+                    TabGroupUiUtils.commitClosingTabsForTab(getCurrentTabModel(), tabId);
+                }
                 String urlString =
                         menuItemData.getString(AppMenuPropertiesDelegateImpl.TAB_URL_BUNDLE_KEY);
                 if (urlString != null) {

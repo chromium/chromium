@@ -1017,4 +1017,56 @@ public class TabGroupUiUtilsUnitTest {
         inOrder.verify(mUiActionHandler).openTabGroup(syncId);
         verify(mTabModel, never()).commitTabClosure(anyInt());
     }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void testCommitClosingTabsForTab_flagDisabled_doesNotCommit() {
+        Token groupId = Token.createRandom();
+        when(mClosingTab.getId()).thenReturn(42);
+        when(mClosingTab.getTabGroupId()).thenReturn(groupId);
+        when(mClosingTab.isClosing()).thenReturn(true);
+
+        TabGroupUiUtils.commitClosingTabsForTab(mTabModel, 42);
+        verify(mTabModel, never()).commitTabClosure(anyInt());
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true")
+    public void testCommitClosingTabsForTab_tabClosingInGroup_commitsClosure() {
+        Token groupId = Token.createRandom();
+        when(mClosingTab.getId()).thenReturn(42);
+        when(mClosingTab.getTabGroupId()).thenReturn(groupId);
+        when(mClosingTab.isClosing()).thenReturn(true);
+
+        when(mComprehensiveModel.iterator()).thenAnswer(inv -> List.of(mClosingTab).iterator());
+        when(mTabModel.getComprehensiveModel()).thenReturn(mComprehensiveModel);
+
+        TabGroupUiUtils.commitClosingTabsForTab(mTabModel, 42);
+        verify(mTabModel).commitTabClosure(42);
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true")
+    public void testCommitClosingTabsForTab_activeTab_doesNotCommit() {
+        Token groupId = Token.createRandom();
+        when(mTab.getId()).thenReturn(42);
+        when(mTab.getTabGroupId()).thenReturn(groupId);
+        when(mTab.isClosing()).thenReturn(false);
+
+        when(mComprehensiveModel.iterator()).thenAnswer(inv -> List.of(mTab).iterator());
+        when(mTabModel.getComprehensiveModel()).thenReturn(mComprehensiveModel);
+
+        TabGroupUiUtils.commitClosingTabsForTab(mTabModel, 42);
+        verify(mTabModel, never()).commitTabClosure(anyInt());
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true")
+    public void testCommitClosingTabsForTab_invalidTabId_doesNotCommit() {
+        TabGroupUiUtils.commitClosingTabsForTab(mTabModel, Tab.INVALID_TAB_ID);
+        verify(mTabModel, never()).commitTabClosure(anyInt());
+    }
 }
