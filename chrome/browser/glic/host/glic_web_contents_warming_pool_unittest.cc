@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
 
+#include "base/memory_coordinator/utils.h"
 #include "base/notreached.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -350,12 +351,12 @@ TEST_F(GlicWebContentsWarmingPoolTest,
   EXPECT_TRUE(warming_pool.HasWarmedContainerForTesting());
 
   // Trigger critical memory pressure to clear the container.
-  warming_pool.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  warming_pool.OnMemoryPressure(base::kCriticalMemoryPressureThreshold);
   EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
 
   // Relieve memory pressure. Since the pool was active, it schedules a delayed
   // backfill.
-  warming_pool.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_NONE);
+  warming_pool.OnMemoryPressure(base::kNoMemoryPressureThreshold);
   EXPECT_TRUE(warming_pool.GetDelayTimerForTesting().IsRunning());
 
   // Taking container while the backfill timer is running records
@@ -461,10 +462,10 @@ TEST_F(GlicWebContentsWarmingPoolTest,
 
   // Receiving non-critical memory pressure without previously being under
   // critical pressure should NOT trigger a delayed refill.
-  warming_pool.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_MODERATE);
+  warming_pool.OnMemoryPressure(base::kModerateMemoryPressureThreshold);
   EXPECT_FALSE(warming_pool.GetDelayTimerForTesting().IsRunning());
 
-  warming_pool.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_NONE);
+  warming_pool.OnMemoryPressure(base::kNoMemoryPressureThreshold);
   EXPECT_FALSE(warming_pool.GetDelayTimerForTesting().IsRunning());
 }
 
@@ -476,20 +477,20 @@ TEST_F(GlicWebContentsWarmingPoolTest,
 
   // Receiving critical memory pressure at startup without ever having called
   // initial warming should not trigger a delayed refill when pressure subsides.
-  warming_pool.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  warming_pool.OnMemoryPressure(base::kCriticalMemoryPressureThreshold);
   EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
 
-  warming_pool.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_NONE);
+  warming_pool.OnMemoryPressure(base::kNoMemoryPressureThreshold);
   EXPECT_FALSE(warming_pool.GetDelayTimerForTesting().IsRunning());
 
   // Attempting initial warming while under critical pressure records the
   // attempt even though container creation is blocked.
-  warming_pool.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  warming_pool.OnMemoryPressure(base::kCriticalMemoryPressureThreshold);
   EXPECT_FALSE(warming_pool.MaybeStartWarming(GlicWarmingTrigger::kStartup));
   EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
 
   // Now when memory pressure drops, the delayed refill timer should start.
-  warming_pool.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_NONE);
+  warming_pool.OnMemoryPressure(base::kNoMemoryPressureThreshold);
   EXPECT_TRUE(warming_pool.GetDelayTimerForTesting().IsRunning());
 }
 
@@ -506,8 +507,8 @@ TEST_F(GlicWebContentsWarmingPoolTest,
 
   // Receiving critical memory pressure when already shut down should not
   // schedule a refill when memory pressure subsides.
-  warming_pool.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
-  warming_pool.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_NONE);
+  warming_pool.OnMemoryPressure(base::kCriticalMemoryPressureThreshold);
+  warming_pool.OnMemoryPressure(base::kNoMemoryPressureThreshold);
   EXPECT_FALSE(warming_pool.GetDelayTimerForTesting().IsRunning());
 }
 
@@ -519,7 +520,7 @@ TEST_F(GlicWebContentsWarmingPoolTest,
   ASSERT_TRUE(warming_pool.MaybeStartWarming(GlicWarmingTrigger::kStartup));
   EXPECT_TRUE(warming_pool.HasWarmedContainerForTesting());
 
-  warming_pool.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  warming_pool.OnMemoryPressure(base::kCriticalMemoryPressureThreshold);
   EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
   histogram_tester.ExpectUniqueSample(
       "Glic.WarmingPool.WarmedContainerFate",
@@ -536,7 +537,7 @@ TEST_F(GlicWebContentsWarmingPoolTest,
 
   // When memory pressure subsides, the delayed refill should start because the
   // pool became active.
-  warming_pool.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_NONE);
+  warming_pool.OnMemoryPressure(base::kNoMemoryPressureThreshold);
   EXPECT_TRUE(warming_pool.GetDelayTimerForTesting().IsRunning());
 }
 
@@ -554,13 +555,13 @@ TEST_F(GlicWebContentsWarmingPoolTest,
 
   // When critical memory pressure is applied, the container is destroyed and
   // the expiry timer should be stopped.
-  warming_pool.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  warming_pool.OnMemoryPressure(base::kCriticalMemoryPressureThreshold);
   EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
   EXPECT_FALSE(warming_pool.IsExpiryTimerRunningForTesting());
 
   // Once memory pressure is relieved, the delay timer will run, after which a
   // new container will be created and the expiry timer should be running again.
-  warming_pool.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_NONE);
+  warming_pool.OnMemoryPressure(base::kNoMemoryPressureThreshold);
   EXPECT_TRUE(warming_pool.GetDelayTimerForTesting().IsRunning());
   task_environment_.FastForwardBy(
       base::Milliseconds(features::kGlicWarmingDelayMs.Get()));
@@ -590,13 +591,13 @@ TEST_F(GlicWebContentsWarmingPoolTest,
   EXPECT_TRUE(warming_pool.IsExpiryTimerRunningForTesting());
 
   // Under critical memory pressure, the reloaded container is cleared.
-  warming_pool.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  warming_pool.OnMemoryPressure(base::kCriticalMemoryPressureThreshold);
   EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
   EXPECT_FALSE(warming_pool.GetDelayTimerForTesting().IsRunning());
 
   // When memory pressure subsides, delayed refill must start because the pool
   // remained active through the reload.
-  warming_pool.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_NONE);
+  warming_pool.OnMemoryPressure(base::kNoMemoryPressureThreshold);
   EXPECT_TRUE(warming_pool.GetDelayTimerForTesting().IsRunning());
 }
 
@@ -605,13 +606,13 @@ TEST_F(GlicWebContentsWarmingPoolTest,
   TestGlicWebContentsWarmingPool warming_pool(&profile_,
                                               &web_contents_factory_);
 
-  warming_pool.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  warming_pool.OnMemoryPressure(base::kCriticalMemoryPressureThreshold);
   EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
 
   EXPECT_FALSE(warming_pool.MaybeStartWarming(GlicWarmingTrigger::kStartup));
   EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
 
-  warming_pool.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_NONE);
+  warming_pool.OnMemoryPressure(base::kNoMemoryPressureThreshold);
   ASSERT_TRUE(warming_pool.MaybeStartWarming(GlicWarmingTrigger::kStartup));
   EXPECT_TRUE(warming_pool.HasWarmedContainerForTesting());
 }
@@ -621,7 +622,7 @@ TEST_F(GlicWebContentsWarmingPoolTest,
   base::HistogramTester histogram_tester;
   TestGlicWebContentsWarmingPool warming_pool(&profile_,
                                               &web_contents_factory_);
-  warming_pool.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  warming_pool.OnMemoryPressure(base::kCriticalMemoryPressureThreshold);
   EXPECT_FALSE(warming_pool.MaybeStartWarming(GlicWarmingTrigger::kStartup));
   EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
 
@@ -644,7 +645,7 @@ TEST_F(GlicWebContentsWarmingPoolTest,
       GlicWebContentsWarmingPool::WarmingPoolStatus::kCold, 1);
 
   // Critical memory pressure arrives, cancelling the refill timer.
-  warming_pool.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  warming_pool.OnMemoryPressure(base::kCriticalMemoryPressureThreshold);
   EXPECT_FALSE(warming_pool.GetDelayTimerForTesting().IsRunning());
 
   // Second take occurs: the refill was cancelled by memory pressure,

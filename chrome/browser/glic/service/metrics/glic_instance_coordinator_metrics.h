@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -76,7 +75,7 @@ class GlicInstanceCoordinatorMetrics {
   void RecordActivateTabCandidateTabCount(size_t count);
 
   // Called on memory pressure events to record memory footprint metrics.
-  void OnMemoryPressure(base::MemoryPressureLevel level);
+  void OnMemoryPressure(int memory_limit);
 
   // Called periodically to record memory footprint metrics using the averaging
   // and totals scheme.

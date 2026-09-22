@@ -8,6 +8,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
+#include "base/memory_coordinator/utils.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/glic/glic_metrics.h"
@@ -90,11 +91,15 @@ void GlicInstanceCoordinatorMetrics::RecordActivateTabCandidateTabCount(
       "Glic.ActivateTabWithConversation.CandidateTabCount", count);
 }
 
-void GlicInstanceCoordinatorMetrics::OnMemoryPressure(
-    base::MemoryPressureLevel level) {
-  std::string_view suffix = (level == base::MEMORY_PRESSURE_LEVEL_MODERATE)
-                                ? ".ModeratePressure"
-                                : ".CriticalPressure";
+void GlicInstanceCoordinatorMetrics::OnMemoryPressure(int memory_limit) {
+  if (memory_limit > base::kModerateMemoryPressureThreshold) {
+    return;
+  }
+
+  std::string_view suffix =
+      (memory_limit <= base::kCriticalMemoryPressureThreshold)
+          ? ".CriticalPressure"
+          : ".ModeratePressure";
   RecordMemoryFootprint(suffix);
 }
 

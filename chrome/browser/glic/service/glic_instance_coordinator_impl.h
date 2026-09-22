@@ -31,6 +31,7 @@
 #include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
+#include "chrome/browser/glic/service/glic_instance_limit_calculator.h"
 #include "chrome/browser/glic/service/glic_invoke_handler.h"
 #include "chrome/browser/glic/service/glic_onboarding_tracker.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_coordinator_metrics.h"
@@ -59,8 +60,6 @@ class ContextualCueingService;
 class GlicWebContentsManager;
 class GlicWebContentsWarmingPool;
 BASE_DECLARE_FEATURE(kGlicHibernateOnMemoryUsage);
-
-BASE_DECLARE_FEATURE(kGlicMaxAwakeInstances);
 
 class GlicInstanceCoordinatorImpl
     : public GlicInstanceCoordinator,
