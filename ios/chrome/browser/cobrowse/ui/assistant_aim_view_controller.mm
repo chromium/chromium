@@ -185,7 +185,11 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
       CGPoint touchLocation = [gesture locationInView:inputPlateView];
       BOOL panningInInputPlate =
           CGRectContainsPoint(inputPlateView.bounds, touchLocation);
-      if (panningInInputPlate) {
+      // When the header overlaps the input plate (e.g.; the minimized state),
+      // treat the gesture as panning the header.
+      BOOL panningHeader =
+          CGRectContainsPoint(_headerView.bounds, touchLocation);
+      if (panningInInputPlate && !panningHeader) {
         _panGestureInInputPlate = gesture;
       }
 
