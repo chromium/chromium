@@ -15,6 +15,7 @@
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
+#include "ash/public/cpp/app_list/app_list_notifier.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/test/app_list_test_api.h"
@@ -96,6 +97,7 @@
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "components/user_manager/user_type.h"
@@ -107,13 +109,16 @@
 #include "extensions/common/constants.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "ui/aura/window.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/base/window_open_disposition_utils.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/scoped_display_for_new_windows.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/display/types/display_constants.h"
+#include "ui/events/event_constants.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/wm/core/window_util.h"
 #include "url/gurl.h"
@@ -129,6 +134,35 @@ constexpr char kTestPackageName[] = "com.test.package";
 apps::PackageId GetTestPackageId() {
   return apps::PackageId(apps::PackageType::kArc, kTestPackageName);
 }
+
+class TestUrlSearchResult : public ChromeSearchResult {
+ public:
+  TestUrlSearchResult(Profile* profile,
+                      AppListControllerDelegate* list_controller,
+                      const std::string& id,
+                      const GURL& url)
+      : profile_(profile), list_controller_(list_controller), url_(url) {
+    set_id(id);
+    SetResultType(ash::AppListSearchResultType::kOmnibox);
+    SetDisplayType(ash::SearchResultDisplayType::kList);
+    SetCategory(ash::AppListSearchResultCategory::kWeb);
+    SetMetricsType(ash::OMNIBOX_URL_WHAT_YOU_TYPED);
+  }
+  TestUrlSearchResult(const TestUrlSearchResult&) = delete;
+  TestUrlSearchResult& operator=(const TestUrlSearchResult&) = delete;
+  ~TestUrlSearchResult() override = default;
+
+  // ChromeSearchResult:
+  void Open(int event_flags) override {
+    list_controller_->OpenURL(profile_, url_, ui::PAGE_TRANSITION_TYPED,
+                              ui::DispositionFromEventFlags(event_flags));
+  }
+
+ private:
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<AppListControllerDelegate> list_controller_;
+  const GURL url_;
+};
 
 class TestObserver : public app_list::AppListSyncableService::Observer {
  public:
@@ -739,6 +773,76 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, OpenSearchResult) {
   // the bound WeakPtr to fail sequence check on a worker thread.
   // TODO(crbug.com/41459944): Remove after fixing AppLaunchEventLogger.
   content::RunAllTasksUntilIdle();
+}
+
+// Verifies that opening a URL search result from the Launcher with Ctrl+Alt
+// (which maps to WindowOpenDisposition::NEW_SPLIT_VIEW) works when a browser
+// has an unsplit active tab, and does not crash when the active tab is already
+// in a split view or when no regular browser window is open for the profile.
+IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
+                       OpenSearchResultInSplitView) {
+  AppListClientImpl* client = AppListClientImpl::GetInstance();
+  ASSERT_TRUE(client);
+  client->UpdateProfile();
+
+  AppListModelUpdater* model_updater = test::GetModelUpdater(client);
+  ASSERT_TRUE(model_updater);
+  app_list::SearchController* search_controller = client->search_controller();
+  ASSERT_TRUE(search_controller);
+
+  constexpr char kResultId1[] = "https://example.com/1";
+  constexpr char kResultId2[] = "https://example.com/2";
+  constexpr char kResultId3[] = "https://example.com/3";
+
+  constexpr int kSplitViewFlags = ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN;
+
+  auto open_result_in_split_view = [&](const char* result_id) {
+    client->ShowAppList(ash::AppListShowSource::kSearchKey);
+    client->GetNotifier()->NotifySearchQueryChanged(u"example");
+    std::vector<std::unique_ptr<ChromeSearchResult>> results;
+    results.push_back(std::make_unique<TestUrlSearchResult>(
+        profile(), client, result_id, GURL(result_id)));
+    search_controller->SetResults(ash::AppListSearchResultType::kOmnibox,
+                                  std::move(results));
+    ASSERT_TRUE(search_controller->FindSearchResult(result_id));
+    client->OpenSearchResult(model_updater->model_id(), result_id,
+                             kSplitViewFlags,
+                             ash::AppListLaunchedFrom::kLaunchedFromSearchBox,
+                             ash::AppListLaunchType::kSearchResult, 0,
+                             /*launch_as_default=*/false);
+  };
+
+  // 1. Open search result with Ctrl+Alt when a regular browser window is open
+  // with 1 unsplit tab: pairs the new tab into a split view with tab 0.
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
+  ASSERT_EQ(1, tab_strip_model->count());
+  open_result_in_split_view(kResultId1);
+  ASSERT_EQ(2, tab_strip_model->count());
+  EXPECT_TRUE(tab_strip_model->GetTabAtIndex(0)->IsSplit());
+  EXPECT_TRUE(tab_strip_model->GetTabAtIndex(1)->IsSplit());
+
+  // 2. Open search result with Ctrl+Alt when the active tab in the browser is
+  // already in a split view: must not CHECK-crash in AddToNewSplit().
+  open_result_in_split_view(kResultId2);
+  EXPECT_EQ(3, tab_strip_model->count());
+
+  // 3. Close the regular browser window (keeping an incognito window open so
+  // the browser process does not exit) and open a search result with Ctrl+Alt
+  // when no regular browser window exists for the profile: must create a new
+  // browser window with 1 active tab and not CHECK-crash in AddToNewSplit().
+  client->CreateNewWindow(/*incognito=*/true,
+                          /*should_trigger_session_restore=*/false);
+  CloseBrowserSynchronously(browser());
+  ASSERT_EQ(0U, ProfileBrowserCollection::GetForProfile(profile())->GetSize());
+
+  open_result_in_split_view(kResultId3);
+  ASSERT_EQ(1U, ProfileBrowserCollection::GetForProfile(profile())->GetSize());
+  BrowserWindowInterface* new_browser =
+      ProfileBrowserCollection::GetForProfile(profile())
+          ->GetLastActiveBrowser();
+  ASSERT_TRUE(new_browser);
+  EXPECT_EQ(1, new_browser->GetTabStripModel()->count());
+  EXPECT_FALSE(new_browser->GetTabStripModel()->GetTabAtIndex(0)->IsSplit());
 }
 
 // TODO(crbug.com/335362001): Re-enable this test.
