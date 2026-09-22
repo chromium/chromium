@@ -1049,29 +1049,29 @@ TEST_F(ActorTaskTest, BackgroundTaskSubtitleUpdate) {
   EXPECT_EQ(context.subtitleUpdateCount, 0);
 
   // First non-empty update should update the subtitle.
-  task_->Act({}, "Searching for flights", base::DoNothing());
-  EXPECT_NSEQ(context.subtitle, @"Searching for flights");
+  task_->Act({}, "Foo", base::DoNothing());
+  EXPECT_NSEQ(context.subtitle, @"Foo");
   EXPECT_EQ(context.subtitleUpdateCount, 1);
 
   // Identical update should not send a duplicate subtitle update.
-  task_->Act({}, "Searching for flights", base::DoNothing());
-  EXPECT_NSEQ(context.subtitle, @"Searching for flights");
+  task_->Act({}, "Foo", base::DoNothing());
+  EXPECT_NSEQ(context.subtitle, @"Foo");
   EXPECT_EQ(context.subtitleUpdateCount, 1);
 
   // Empty update after a valid update should not clear the subtitle or send an
   // update.
   task_->Act({}, "", base::DoNothing());
-  EXPECT_NSEQ(context.subtitle, @"Searching for flights");
+  EXPECT_NSEQ(context.subtitle, @"Foo");
   EXPECT_EQ(context.subtitleUpdateCount, 1);
 
   // Identical update after an empty update should still be deduplicated.
-  task_->Act({}, "Searching for flights", base::DoNothing());
-  EXPECT_NSEQ(context.subtitle, @"Searching for flights");
+  task_->Act({}, "Foo", base::DoNothing());
+  EXPECT_NSEQ(context.subtitle, @"Foo");
   EXPECT_EQ(context.subtitleUpdateCount, 1);
 
   // Distinct non-empty update should update the subtitle.
-  task_->Act({}, "Selecting return flight", base::DoNothing());
-  EXPECT_NSEQ(context.subtitle, @"Selecting return flight");
+  task_->Act({}, "Bar", base::DoNothing());
+  EXPECT_NSEQ(context.subtitle, @"Bar");
   EXPECT_EQ(context.subtitleUpdateCount, 2);
 }
 
@@ -1086,7 +1086,7 @@ TEST_F(ActorTaskTest, BackgroundTaskContextUsesCachedTaskUpdateOnRegistration) {
 
   // Execute an action with a non-empty update, followed by one with an empty
   // update before the background task context is attached.
-  task_->Act({}, "Comparing hotel prices", base::DoNothing());
+  task_->Act({}, "Foo", base::DoNothing());
   task_->Act({}, "", base::DoNothing());
 
   BackgroundContinuedProcessingTaskConfiguration* config =
@@ -1102,7 +1102,7 @@ TEST_F(ActorTaskTest, BackgroundTaskContextUsesCachedTaskUpdateOnRegistration) {
                    finishHandler:nil];
 
   task_->SetBackgroundTaskContext(context);
-  EXPECT_NSEQ(context.subtitle, @"Comparing hotel prices");
+  EXPECT_NSEQ(context.subtitle, @"Foo");
   EXPECT_EQ(context.subtitleUpdateCount, 1);
 }
 
