@@ -2956,6 +2956,79 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMultiSourceBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMultiSourceBrowserTest,
+                       DowngradesToQuietOnDismiss) {
+  cue_target()->eligible = false;
+  auto target = std::make_unique<TestCueTarget>();
+  target->requires_model_execution = false;
+  target->supported_intrusiveness = {CueIntrusiveness::kLoud,
+                                     CueIntrusiveness::kQuiet};
+  target->downgrades_to_quiet_on_dismiss = true;
+  target->generate_result = MakeCompleteResponse().contextual_cues(0);
+  TestCueTarget* target_ptr = target.get();
+  browser()
+      ->GetActiveTabInterface()
+      ->GetTabFeatures()
+      ->contextual_cueing_controller()
+      ->RegisterCueTarget(CueTargetType::kTestSource, std::move(target));
+
+  class TestObserver : public page_actions::PageActionModelObserver {
+   public:
+    void OnPageActionModelChanged(
+        const page_actions::PageActionModelInterface& model) override {
+      visible_ = model.GetVisible();
+      anchored_message_showing_ = model.ShouldShowAnchoredMessage();
+    }
+    bool visible_ = false;
+    bool anchored_message_showing_ = false;
+  };
+
+  TestObserver observer;
+  base::ScopedObservation<page_actions::PageActionModelInterface,
+                          page_actions::PageActionModelObserver>
+      observation(&observer);
+  GetPageActionController()->AddObserver(kActionAnchoredContextualCue,
+                                         observation);
+
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.activetab.com/abc"),
+      WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 1);
+  histogram_tester.ExpectUniqueSample("ContextualCueing.V2.Decision",
+                                      ContextualCueingDecision::kSuccess, 1);
+
+  EXPECT_TRUE(observer.visible_);
+  EXPECT_TRUE(observer.anchored_message_showing_);
+
+  // Now dismiss the cue.
+  browser()
+      ->GetActiveTabInterface()
+      ->GetTabFeatures()
+      ->contextual_cueing_controller()
+      ->OnCueInteraction(ContextualCueingInteraction::kCueDismissed,
+                         CueTargetType::kTestSource,
+                         *target_ptr->generate_result, {}, {}, "cuj", {},
+                         "fake_id");
+
+  // The chip should still be visible, but anchored message is NOT showing.
+  EXPECT_TRUE(observer.visible_);
+  EXPECT_FALSE(observer.anchored_message_showing_);
+
+  // When clicking the suggestion chip, it should expand out into an anchored
+  // message.
+  auto* action =
+      actions::ActionManager::Get().FindAction(kActionAnchoredContextualCue);
+  ASSERT_TRUE(action);
+  action->InvokeAction();
+
+  EXPECT_TRUE(observer.anchored_message_showing_);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMultiSourceBrowserTest,
                        QuietCueAllowedAfterDismissal) {
   auto* service =
       ContextualCueingServiceFactory::GetForProfile(browser()->GetProfile());

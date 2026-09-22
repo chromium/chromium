@@ -14,6 +14,7 @@ class TestCueTarget : public CueTarget {
   bool eligible = true;
   bool overrides_ucb_scoring = false;
   bool requires_model_execution = false;
+  bool downgrades_to_quiet_on_dismiss = false;
   std::optional<CueIntrusiveness> eligible_intrusiveness;
   std::set<CueIntrusiveness> supported_intrusiveness = {
       CueIntrusiveness::kLoud, CueIntrusiveness::kQuiet};
@@ -35,6 +36,7 @@ class TestCueTarget : public CueTarget {
   CueTargetType GetType() const override;
   bool RequiresModelExecution() const override;
   bool OverridesUcbScoring() const override;
+  bool DowngradesToQuietOnDismiss() const override;
   bool IsEligible() const override;
   void CheckEligibility(base::WeakPtr<content::WebContents> web_contents,
                         CueIntrusiveness intrusiveness,

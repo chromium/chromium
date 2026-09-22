@@ -25,6 +25,10 @@ bool CueTarget::OverridesUcbScoring() const {
   return false;
 }
 
+bool CueTarget::DowngradesToQuietOnDismiss() const {
+  return false;
+}
+
 const char* GetName(CueTargetType type) {
   switch (type) {
     case CueTargetType::kGlic:
