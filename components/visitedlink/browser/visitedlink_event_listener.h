@@ -17,6 +17,7 @@
 #include "content/public/browser/render_process_host_creation_observer.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/render_widget_host_observer.h"
+#include "content/public/common/child_process_id.h"
 
 namespace content {
 class BrowserContext;
@@ -92,8 +93,9 @@ class VisitedLinkEventListener
                                      content::RenderWidgetHostObserver>
       widget_observation_{this};
 
-  // Map between renderer child ids and their VisitedLinkUpdater.
-  std::map<int, std::unique_ptr<VisitedLinkUpdater>> updaters_;
+  // Map between renderer child process IDs and their VisitedLinkUpdater.
+  std::map<content::ChildProcessId, std::unique_ptr<VisitedLinkUpdater>>
+      updaters_;
 
   base::ReadOnlySharedMemoryRegion table_region_;
 

@@ -59,7 +59,7 @@ namespace visitedlink {
 // created.
 class VisitedLinkUpdater {
  public:
-  explicit VisitedLinkUpdater(int render_process_id)
+  explicit VisitedLinkUpdater(content::ChildProcessId render_process_id)
       : render_process_id_(render_process_id) {
     content::RenderProcessHost::FromID(render_process_id)
         ->BindReceiver(sink_.BindNewPipeAndPassReceiver());
@@ -141,7 +141,7 @@ class VisitedLinkUpdater {
  private:
   bool reset_needed_ = false;
   bool invalidate_hashes_ = false;
-  const int render_process_id_;
+  const content::ChildProcessId render_process_id_;
   mojo::Remote<mojom::VisitedLinkNotificationSink> sink_;
   VisitedLinkCommon::Fingerprints pending_;
 };
@@ -297,9 +297,8 @@ void VisitedLinkEventListener::OnRenderProcessHostCreated(
     }
   }
 
-  updaters_[rph->GetDeprecatedID()] =
-      std::make_unique<VisitedLinkUpdater>(rph->GetDeprecatedID());
-  updaters_[rph->GetDeprecatedID()]->SendVisitedLinkTable(&table_region_);
+  updaters_[rph->GetID()] = std::make_unique<VisitedLinkUpdater>(rph->GetID());
+  updaters_[rph->GetID()]->SendVisitedLinkTable(&table_region_);
 
   if (!host_observation_.IsObservingSource(rph)) {
     host_observation_.AddObservation(rph);
@@ -309,7 +308,7 @@ void VisitedLinkEventListener::OnRenderProcessHostCreated(
 void VisitedLinkEventListener::RenderProcessHostDestroyed(
     content::RenderProcessHost* host) {
   if (host_observation_.IsObservingSource(host)) {
-    updaters_.erase(host->GetDeprecatedID());
+    updaters_.erase(host->GetID());
     host_observation_.RemoveObservation(host);
   }
 }
@@ -317,7 +316,7 @@ void VisitedLinkEventListener::RenderProcessHostDestroyed(
 void VisitedLinkEventListener::RenderWidgetHostVisibilityChanged(
     content::RenderWidgetHost* rwh,
     bool became_visible) {
-  int child_id = rwh->GetProcess()->GetDeprecatedID();
+  content::ChildProcessId child_id = rwh->GetProcess()->GetID();
   if (auto it = updaters_.find(child_id); it != updaters_.end()) {
     it->second->Update();
   }
