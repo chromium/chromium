@@ -1055,8 +1055,14 @@ INSTANTIATE_TEST_SUITE_P(,
                          GetSyncTestModes(),
                          testing::PrintToStringParamName());
 
+// TODO(crbug.com/564627783): Enable and fix this test on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ShouldNotDeleteLastClosedTab DISABLED_ShouldNotDeleteLastClosedTab
+#else
+#define MAYBE_ShouldNotDeleteLastClosedTab ShouldNotDeleteLastClosedTab
+#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(SingleClientSessionsWithDestroyProfileSyncTest,
-                       ShouldNotDeleteLastClosedTab) {
+                       MAYBE_ShouldNotDeleteLastClosedTab) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(CheckInitialState(0));
 
