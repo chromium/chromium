@@ -9,6 +9,7 @@
 #import <algorithm>
 #import <memory>
 
+#import "base/check_deref.h"
 #import "base/feature_list.h"
 #import "base/numerics/safe_conversions.h"
 #import "base/run_loop.h"
@@ -38,6 +39,7 @@
 #import "ios/chrome/browser/web/model/error_page_util.h"
 #import "ios/chrome/browser/web_extension/model/extension_service.h"
 #import "ios/chrome/browser/web_extension/model/extension_service_factory.h"
+#import "ios/chrome/browser/web_extension/model/extension_service_impl.h"
 #import "ios/components/security_interstitials/https_only_mode/https_only_mode_container.h"
 #import "ios/components/security_interstitials/https_only_mode/https_only_mode_error.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
@@ -707,8 +709,8 @@ TEST_F(ChromeWebClientTest, GetExtensionController) API_AVAILABLE(ios(18.4)) {
       ExtensionServiceFactory::GetInstance(),
       base::BindRepeating(
           [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-            return std::make_unique<ExtensionService>(
-                profile->GetPrefs(),
+            return std::make_unique<ExtensionServiceImpl>(
+                CHECK_DEREF(profile->GetPrefs()),
                 /*universal_optout_service=*/nullptr,
                 web::ExtensionController::Create());
           }));

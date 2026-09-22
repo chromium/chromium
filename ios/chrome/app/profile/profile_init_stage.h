@@ -24,7 +24,7 @@ enum class ProfileInitStage {
   kProfileLoaded,
 
   // The application is loading any elements needed for UI for this profile
-  // (e.g. Session data, ...)
+  // (e.g. WebExtensions, ...) while waiting for the first scene to connect.
   kPrepareUI,
 
   // The application is ready to present UI for the profile, it will transition

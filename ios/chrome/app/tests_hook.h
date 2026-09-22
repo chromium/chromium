@@ -11,6 +11,7 @@
 #import "base/containers/span.h"
 
 class AimEligibilityService;
+class ExtensionService;
 class PrefService;
 class ProfileIOS;
 class ProfileOAuth2TokenServiceDelegate;
@@ -180,6 +181,10 @@ std::unique_ptr<commerce::ShoppingService> CreateShoppingService(
 // used if this hook returns null.
 std::unique_ptr<gcm::GCMProfileService> CreateGCMProfileService(
     ProfileIOS* profile);
+
+// Allows overriding the ExtensionService factory. The real factory will be
+// used if this hook returns null.
+std::unique_ptr<ExtensionService> CreateExtensionService(ProfileIOS* profile);
 
 // Allows additional test setup for the DataSharingService.
 void DataSharingServiceHooks(

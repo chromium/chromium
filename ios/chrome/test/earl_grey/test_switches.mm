@@ -20,6 +20,9 @@ const char kSimulatePostDeviceRestore[] = "simulate-post-device-restore";
 const char kEnableFakeTabGroupSyncService[] =
     "enable-fake-tab-group-sync-service";
 
+// Enables FakeExtensionService.
+const char kEnableFakeExtensionService[] = "enable-fake-extension-service";
+
 // Status of the Google Family fetch API call for the user.
 const char kFamilyStatus[] = "family-status";
 

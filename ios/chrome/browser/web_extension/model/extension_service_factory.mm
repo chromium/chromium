@@ -6,13 +6,16 @@
 
 #import <utility>
 
+#import "base/check_deref.h"
 #import "base/feature_list.h"
 #import "base/ios/ios_util.h"
 #import "components/universal_optout/features.h"
 #import "components/universal_optout/universal_optout_service.h"
+#import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/universal_optout/model/universal_optout_service_factory.h"
 #import "ios/chrome/browser/web_extension/model/extension_service.h"
+#import "ios/chrome/browser/web_extension/model/extension_service_impl.h"
 #import "ios/web/public/extension/extension_controller.h"
 
 // static
@@ -39,6 +42,12 @@ bool IsSupportedOS() {
 }
 
 std::unique_ptr<KeyedService> BuildExtensionService(ProfileIOS* profile) {
+  // Give the opportunity for the test hook to override the factory from
+  // the provider (allowing EG tests to use a fake ExtensionService).
+  if (auto extension_service = tests_hook::CreateExtensionService(profile)) {
+    return extension_service;
+  }
+
   if (!IsSupportedOS()) {
     return nullptr;
   }
@@ -62,8 +71,9 @@ std::unique_ptr<KeyedService> BuildExtensionService(ProfileIOS* profile) {
     if (!extension_controller) {
       return nullptr;
     }
-    auto service = std::make_unique<ExtensionService>(
-        profile->GetPrefs(), optout_service, std::move(extension_controller));
+    auto service = std::make_unique<ExtensionServiceImpl>(
+        CHECK_DEREF(profile->GetPrefs()), optout_service,
+        std::move(extension_controller));
     service->Initialize();
     return service;
   }

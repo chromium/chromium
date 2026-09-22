@@ -5,20 +5,36 @@
 source_set("model") {
   sources = [
     "extension_service.h",
-    "extension_service.mm",
     "extension_service_factory.h",
     "extension_service_factory.mm",
+    "extension_service_impl.h",
+    "extension_service_impl.mm",
   ]
   deps = [
     "//base",
     "//components/keyed_service/core",
     "//components/prefs",
     "//components/universal_optout",
+    "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/universal_optout/model",
     "//ios/web/public/extension",
   ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_extension_service.h",
+    "fake_extension_service.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//ios/web/public/extension",
+  ]
+  public_deps = [ ":model" ]
 }
 
 source_set("unit_tests") {

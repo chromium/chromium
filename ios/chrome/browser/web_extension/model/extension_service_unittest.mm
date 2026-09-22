@@ -8,6 +8,7 @@
 #import <optional>
 #import <utility>
 
+#import "base/callback_list.h"
 #import "base/functional/callback.h"
 #import "base/ios/ios_util.h"
 #import "base/test/scoped_feature_list.h"
@@ -26,6 +27,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/universal_optout/model/universal_optout_service_factory.h"
 #import "ios/chrome/browser/web_extension/model/extension_service_factory.h"
+#import "ios/chrome/browser/web_extension/model/extension_service_impl.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/extension/extension_controller.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -156,17 +158,13 @@ API_AVAILABLE(ios(18.4)) {
   auto fake_controller = std::make_unique<FakeExtensionController>();
   FakeExtensionController* raw_controller = fake_controller.get();
 
-  ExtensionService service(&pref_service_,
-                           /*universal_optout_service=*/nullptr,
-                           std::move(fake_controller));
+  ExtensionServiceImpl service(pref_service_,
+                               /*universal_optout_service=*/nullptr,
+                               std::move(fake_controller));
   service.Initialize();
 
   EXPECT_TRUE(service.IsReady());
   EXPECT_EQ(service.GetExtensionController(), raw_controller);
-
-  base::test::TestFuture<void> future;
-  service.RunWhenReady(future.GetCallback());
-  EXPECT_TRUE(future.IsReady());
 }
 
 // Tests that ExtensionService is ready immediately when initialized with an
@@ -179,16 +177,12 @@ API_AVAILABLE(ios(18.4)) {
   auto fake_controller = std::make_unique<FakeExtensionController>();
   FakeExtensionController* raw_controller = fake_controller.get();
 
-  ExtensionService service(&pref_service_, optout_service.get(),
-                           std::move(fake_controller));
+  ExtensionServiceImpl service(pref_service_, optout_service.get(),
+                               std::move(fake_controller));
   service.Initialize();
 
   EXPECT_TRUE(service.IsReady());
   EXPECT_EQ(service.GetExtensionController(), raw_controller);
-
-  base::test::TestFuture<void> future;
-  service.RunWhenReady(future.GetCallback());
-  EXPECT_TRUE(future.IsReady());
 }
 
 // Tests that ExtensionService is ready immediately when initialized with a
@@ -198,16 +192,12 @@ API_AVAILABLE(ios(18.4)) {
   auto optout_service = CreateOptOutService(/*eligible=*/true);
   SetOptedIn(true);
 
-  ExtensionService service(&pref_service_, optout_service.get(),
-                           /*extension_controller=*/nullptr);
+  ExtensionServiceImpl service(pref_service_, optout_service.get(),
+                               /*extension_controller=*/nullptr);
   service.Initialize();
 
   EXPECT_TRUE(service.IsReady());
   EXPECT_EQ(service.GetExtensionController(), nullptr);
-
-  base::test::TestFuture<void> future;
-  service.RunWhenReady(future.GetCallback());
-  EXPECT_TRUE(future.IsReady());
 }
 
 // Tests that ExtensionService creates the ExtensionController and is ready
@@ -220,8 +210,8 @@ API_AVAILABLE(ios(18.4)) {
   auto fake_controller = std::make_unique<FakeExtensionController>();
   FakeExtensionController* raw_fake_controller = fake_controller.get();
 
-  ExtensionService service(&pref_service_, optout_service.get(),
-                           std::move(fake_controller));
+  ExtensionServiceImpl service(pref_service_, optout_service.get(),
+                               std::move(fake_controller));
   service.Initialize();
 
   EXPECT_TRUE(service.IsReady());
@@ -229,10 +219,6 @@ API_AVAILABLE(ios(18.4)) {
   EXPECT_FALSE(raw_fake_controller->HasPendingLoad());
   EXPECT_FALSE(raw_fake_controller->IsBuiltInExtensionLoaded(
       web::BuiltInExtension::kGPC));
-
-  base::test::TestFuture<void> future;
-  service.RunWhenReady(future.GetCallback());
-  EXPECT_TRUE(future.IsReady());
 }
 
 // Tests that ExtensionService creates the ExtensionController, triggers
@@ -246,8 +232,8 @@ API_AVAILABLE(ios(18.4)) {
   auto fake_controller = std::make_unique<FakeExtensionController>();
   FakeExtensionController* raw_fake_controller = fake_controller.get();
 
-  ExtensionService service(&pref_service_, optout_service.get(),
-                           std::move(fake_controller));
+  ExtensionServiceImpl service(pref_service_, optout_service.get(),
+                               std::move(fake_controller));
   service.Initialize();
 
   EXPECT_FALSE(service.IsReady());
@@ -257,7 +243,8 @@ API_AVAILABLE(ios(18.4)) {
             web::BuiltInExtension::kGPC);
 
   base::test::TestFuture<void> future;
-  service.RunWhenReady(future.GetCallback());
+  base::CallbackListSubscription subscription =
+      service.RunWhenReady(future.GetCallback());
   EXPECT_FALSE(future.IsReady());
 
   raw_fake_controller->CompleteLoad(/*success=*/true);
@@ -278,8 +265,8 @@ API_AVAILABLE(ios(18.4)) {
   auto fake_controller = std::make_unique<FakeExtensionController>();
   FakeExtensionController* raw_fake_controller = fake_controller.get();
 
-  ExtensionService service(&pref_service_, optout_service.get(),
-                           std::move(fake_controller));
+  ExtensionServiceImpl service(pref_service_, optout_service.get(),
+                               std::move(fake_controller));
   service.Initialize();
 
   EXPECT_FALSE(service.IsReady());
@@ -287,7 +274,8 @@ API_AVAILABLE(ios(18.4)) {
   EXPECT_TRUE(raw_fake_controller->HasPendingLoad());
 
   base::test::TestFuture<void> future;
-  service.RunWhenReady(future.GetCallback());
+  base::CallbackListSubscription subscription =
+      service.RunWhenReady(future.GetCallback());
   EXPECT_FALSE(future.IsReady());
 
   // Fast forward by 2 seconds to trigger timeout.
@@ -311,14 +299,15 @@ API_AVAILABLE(ios(18.4)) {
   auto fake_controller = std::make_unique<FakeExtensionController>();
   FakeExtensionController* raw_fake_controller = fake_controller.get();
 
-  ExtensionService service(&pref_service_, optout_service.get(),
-                           std::move(fake_controller));
+  ExtensionServiceImpl service(pref_service_, optout_service.get(),
+                               std::move(fake_controller));
   service.Initialize();
 
   EXPECT_FALSE(service.IsReady());
 
   base::test::TestFuture<void> future;
-  service.RunWhenReady(future.GetCallback());
+  base::CallbackListSubscription subscription =
+      service.RunWhenReady(future.GetCallback());
   EXPECT_FALSE(future.IsReady());
 
   // Advance time by 1 second (less than the 2-second timeout).
@@ -345,8 +334,8 @@ API_AVAILABLE(ios(18.4)) {
   auto fake_controller = std::make_unique<FakeExtensionController>();
   FakeExtensionController* raw_fake_controller = fake_controller.get();
 
-  ExtensionService service(&pref_service_, optout_service.get(),
-                           std::move(fake_controller));
+  ExtensionServiceImpl service(pref_service_, optout_service.get(),
+                               std::move(fake_controller));
   service.Initialize();
 
   EXPECT_TRUE(service.IsReady());
@@ -374,8 +363,8 @@ API_AVAILABLE(ios(18.4)) {
   auto optout_service = CreateOptOutService(/*eligible=*/true);
 
   auto fake_controller = std::make_unique<FakeExtensionController>();
-  ExtensionService service(&pref_service_, optout_service.get(),
-                           std::move(fake_controller));
+  ExtensionServiceImpl service(pref_service_, optout_service.get(),
+                               std::move(fake_controller));
   service.Initialize();
 
   EXPECT_NE(service.GetExtensionController(), nullptr);
@@ -394,15 +383,16 @@ API_AVAILABLE(ios(18.4)) {
   auto fake_controller = std::make_unique<FakeExtensionController>();
   FakeExtensionController* raw_fake_controller = fake_controller.get();
 
-  ExtensionService service(&pref_service_, optout_service.get(),
-                           std::move(fake_controller));
+  ExtensionServiceImpl service(pref_service_, optout_service.get(),
+                               std::move(fake_controller));
   service.Initialize();
 
   EXPECT_FALSE(service.IsReady());
   EXPECT_TRUE(raw_fake_controller->HasPendingLoad());
 
   base::test::TestFuture<void> future;
-  service.RunWhenReady(future.GetCallback());
+  base::CallbackListSubscription subscription =
+      service.RunWhenReady(future.GetCallback());
   EXPECT_FALSE(future.IsReady());
 
   // Disable the preference while the extension is still loading.
@@ -433,8 +423,8 @@ API_AVAILABLE(ios(18.4)) {
   auto fake_controller = std::make_unique<FakeExtensionController>();
   FakeExtensionController* raw_fake_controller = fake_controller.get();
 
-  ExtensionService service(&pref_service_, optout_service.get(),
-                           std::move(fake_controller));
+  ExtensionServiceImpl service(pref_service_, optout_service.get(),
+                               std::move(fake_controller));
   service.Initialize();
 
   EXPECT_EQ(raw_fake_controller->load_call_count(), 1);
@@ -466,8 +456,8 @@ API_AVAILABLE(ios(18.4)) {
   auto fake_controller = std::make_unique<FakeExtensionController>();
   FakeExtensionController* raw_fake_controller = fake_controller.get();
 
-  ExtensionService service(&pref_service_, optout_service.get(),
-                           std::move(fake_controller));
+  ExtensionServiceImpl service(pref_service_, optout_service.get(),
+                               std::move(fake_controller));
   service.Initialize();
 
   EXPECT_EQ(raw_fake_controller->load_call_count(), 1);

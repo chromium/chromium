@@ -216,6 +216,7 @@ _ui_eg2tests_deps = [
   "//ios/chrome/browser/toolbar/tab_group/test:eg2_tests",
   "//ios/chrome/browser/toolbar/test:eg2_tests",
   "//ios/chrome/browser/unit_conversion/ui_bundled:eg2_tests",
+  "//ios/chrome/browser/web_extension/test:eg2_tests",
   "//ios/chrome/browser/webui/ui_bundled:eg2_tests",
   "//ios/chrome/browser/webui/ui_bundled/interstitials:eg2_tests",
   "//ios/chrome/browser/webui/ui_bundled/optimization_guide_internals:eg2_tests",

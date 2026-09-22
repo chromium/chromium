@@ -63,6 +63,8 @@
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
+#import "ios/chrome/browser/web_extension/model/extension_service.h"
+#import "ios/chrome/browser/web_extension/model/fake_extension_service.h"
 #import "ios/chrome/common/ui/reauthentication/mock_reauthentication_module.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/signin_test_util.h"
@@ -328,6 +330,14 @@ std::unique_ptr<gcm::GCMProfileService> CreateGCMProfileService(
   fake_gcm_driver->WaitForAppIdBeforeConnection(
       fake_server::FakeServerSyncInvalidationSender::kSyncInvalidationsAppId);
   return std::make_unique<FakeGCMProfileService>(std::move(fake_gcm_driver));
+}
+
+std::unique_ptr<ExtensionService> CreateExtensionService(ProfileIOS* profile) {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(test_switches::kEnableFakeExtensionService)) {
+    return nullptr;
+  }
+  return std::make_unique<FakeExtensionService>();
 }
 
 void DataSharingServiceHooks(

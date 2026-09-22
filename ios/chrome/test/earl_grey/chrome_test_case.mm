@@ -304,16 +304,22 @@ void ResetAuthentication() {
     policy_test_utils::ClearPolicies();
   }
 
-  UIInterfaceOrientation currentOrientation =
-      [ChromeEarlGrey interfaceOrientation];
-  if (currentOrientation != _originalOrientation) {
-    // Synchronization off due to an infinite spinner if the keyboard is
-    // visible.
-    ScopedSynchronizationDisabler disabler;
+  // Do not attempt to rotate if this is a startup test or if the original
+  // orientation is unknown (for tests that test the startup sequence, the
+  // orientation may not be available at -setUp).
+  if (![ChromeTestCase isStartupTest] &&
+      _originalOrientation != UIInterfaceOrientationUnknown) {
+    UIInterfaceOrientation currentOrientation =
+        [ChromeEarlGrey interfaceOrientation];
+    if (currentOrientation != _originalOrientation) {
+      // Synchronization off due to an infinite spinner if the keyboard is
+      // visible.
+      ScopedSynchronizationDisabler disabler;
 
-    // Rotate the device back to the original orientation, since some tests
-    // attempt to run in other orientations.
-    [EarlGrey rotateInterfaceToOrientation:_originalOrientation error:nil];
+      // Rotate the device back to the original orientation, since some tests
+      // attempt to run in other orientations.
+      [EarlGrey rotateInterfaceToOrientation:_originalOrientation error:nil];
+    }
   }
   _executedTestMethodSetUp = NO;
   _testServer = nil;

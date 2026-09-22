@@ -114,6 +114,10 @@ std::unique_ptr<gcm::GCMProfileService> CreateGCMProfileService(
   return nullptr;
 }
 
+std::unique_ptr<ExtensionService> CreateExtensionService(ProfileIOS* profile) {
+  return nullptr;
+}
+
 void DataSharingServiceHooks(
     data_sharing::DataSharingService* data_sharing_service) {}
 
