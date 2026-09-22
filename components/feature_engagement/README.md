@@ -325,6 +325,10 @@ shown.
 > calls because time has passed, other events might have been triggered, and
 > other state might have changed.
 
+> **NOTE: For a `tracking_only` experiment, this will return the same result as
+> for a non-tracking experiment so that the comparison of groups can be properly
+> handled when `ShouldTriggerHelpUI(...)` is invoked.**
+
 ## Configuring when to show in-product help
 
 To ensure that your in-product help triggers at the right time, you need to
@@ -603,6 +607,8 @@ into the same field trial.
     *   Tracker::ShouldTriggerHelpUI(...) will always return false, but if all
         other conditions are met, it will still be recorded as having been shown
         in the internal database and through UMA.
+    *   Tracker::WouldTriggerHelpUI(...) is not affected by `tracking_only` and
+        will return the same result as for a non-tracking experiment.
     *   This is meant to be used by either local tests or for comparisons
         between different experiment groups.
     *   If you want to later transition users with this flag set to `true` to in

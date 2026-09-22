@@ -68,6 +68,10 @@ public interface Tracker {
      * would yield the same result. The state might change in-between the calls because time has
      * passed, other events might have been triggered, and other state might have changed.
      *
+     * <p>NOTE: For a tracking_only experiment, this will return the same result as for a
+     * non-tracking experiment so that the comparison of groups can be properly handled when {@link
+     * #shouldTriggerHelpUi(String)} is invoked.
+     *
      * @return Whether feature enlightenment would be displayed if {@link
      *     #shouldTriggerHelpUi(String)} had been invoked instead.
      */

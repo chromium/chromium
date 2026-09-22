@@ -1175,11 +1175,15 @@ TEST_F(TrackerImplTest, TestWouldTriggerInspection) {
   base::UserActionTester user_action_tester;
 
   // Initially, both foo and bar would have been shown.
+  // Baz is tracking_only=true and should also return true for
+  // WouldTriggerHelpUI.
   EXPECT_TRUE(tracker_->WouldTriggerHelpUI(kTrackerTestFeatureFoo));
   EXPECT_TRUE(tracker_->WouldTriggerHelpUI(kTrackerTestFeatureBar));
+  EXPECT_TRUE(tracker_->WouldTriggerHelpUI(kTrackerTestFeatureBaz));
   EXPECT_FALSE(tracker_->WouldTriggerHelpUI(kTrackerTestFeatureQux));
   VerifyEventTriggerEvents(kTrackerTestFeatureFoo, 0u);
   VerifyEventTriggerEvents(kTrackerTestFeatureBar, 0u);
+  VerifyEventTriggerEvents(kTrackerTestFeatureBaz, 0u);
   VerifyEventTriggerEvents(kTrackerTestFeatureQux, 0u);
   VerifyUserActionsTriggerChecks(user_action_tester, 0, 0, 0, 0);
   VerifyUserActionsTriggered(user_action_tester, 0, 0, 0, 0);
@@ -1193,6 +1197,7 @@ TEST_F(TrackerImplTest, TestWouldTriggerInspection) {
   EXPECT_TRUE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureFoo));
   EXPECT_FALSE(tracker_->WouldTriggerHelpUI(kTrackerTestFeatureFoo));
   EXPECT_FALSE(tracker_->WouldTriggerHelpUI(kTrackerTestFeatureBar));
+  EXPECT_FALSE(tracker_->WouldTriggerHelpUI(kTrackerTestFeatureBaz));
   EXPECT_FALSE(tracker_->WouldTriggerHelpUI(kTrackerTestFeatureQux));
   VerifyEventTriggerEvents(kTrackerTestFeatureFoo, 1);
   VerifyUserActionsTriggerChecks(user_action_tester, 1, 0, 0, 0);
@@ -1210,6 +1215,7 @@ TEST_F(TrackerImplTest, TestWouldTriggerInspection) {
   EXPECT_FALSE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureFoo));
   EXPECT_TRUE(tracker_->WouldTriggerHelpUI(kTrackerTestFeatureBar));
   EXPECT_TRUE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureBar));
+  EXPECT_FALSE(tracker_->WouldTriggerHelpUI(kTrackerTestFeatureBaz));
   EXPECT_FALSE(tracker_->WouldTriggerHelpUI(kTrackerTestFeatureQux));
   VerifyEventTriggerEvents(kTrackerTestFeatureFoo, 1);
   VerifyEventTriggerEvents(kTrackerTestFeatureBar, 1);
@@ -1220,6 +1226,36 @@ TEST_F(TrackerImplTest, TestWouldTriggerInspection) {
   VerifyUserActionsDismissed(user_action_tester, 1);
   VerifyHistograms(true, 1, 1, 0, true, 1, 0, 0, false, 0, 0, 0, false, 0, 0,
                    0);
+}
+
+TEST_F(TrackerImplTest, TestWouldTriggerWithTrackingOnly) {
+  // Ensure all initialization is finished.
+  StoringInitializedCallback callback;
+  tracker_->AddOnInitializedCallback(base::BindOnce(
+      &StoringInitializedCallback::OnInitialized, base::Unretained(&callback)));
+  base::RunLoop().RunUntilIdle();
+
+  // Foo (tracking_only=false) and Baz (tracking_only=true) are configured
+  // identically except for tracking_only. Verify both yield the same
+  // WouldTriggerHelpUI result initially.
+  EXPECT_TRUE(tracker_->WouldTriggerHelpUI(kTrackerTestFeatureFoo));
+  EXPECT_TRUE(tracker_->WouldTriggerHelpUI(kTrackerTestFeatureBaz));
+
+  // When another feature is showing, both should return false.
+  EXPECT_TRUE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureBar));
+  EXPECT_FALSE(tracker_->WouldTriggerHelpUI(kTrackerTestFeatureFoo));
+  EXPECT_FALSE(tracker_->WouldTriggerHelpUI(kTrackerTestFeatureBaz));
+
+  tracker_->Dismissed(kTrackerTestFeatureBar);
+
+  // Both should return true again after bar is dismissed.
+  EXPECT_TRUE(tracker_->WouldTriggerHelpUI(kTrackerTestFeatureFoo));
+  EXPECT_TRUE(tracker_->WouldTriggerHelpUI(kTrackerTestFeatureBaz));
+
+  // Tracking-only feature returns false on ShouldTriggerHelpUI, but records the
+  // trigger event so subsequent WouldTriggerHelpUI calls return false.
+  EXPECT_FALSE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureBaz));
+  EXPECT_FALSE(tracker_->WouldTriggerHelpUI(kTrackerTestFeatureBaz));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

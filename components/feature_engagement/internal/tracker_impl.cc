@@ -426,7 +426,7 @@ bool TrackerImpl::WouldTriggerHelpUI(const base::Feature& feature) const {
            << ": trigger=" << result.NoErrors()
            << " tracking_only=" << feature_config.tracking_only << " "
            << result;
-  return result.NoErrors() && !feature_config.tracking_only;
+  return result.NoErrors();
 }
 
 bool TrackerImpl::HasEverTriggered(const base::Feature& feature,

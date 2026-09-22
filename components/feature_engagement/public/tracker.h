@@ -295,6 +295,10 @@ class Tracker : public KeyedService, public base::SupportsUserData {
   // after this would yield the same result. The state might change
   // in-between the calls because time has passed, other events might have been
   // triggered, and other state might have changed.
+  //
+  // NOTE: For a tracking_only experiment, this will return the same result as
+  // for a non-tracking experiment so that the comparison of groups can be
+  // properly handled when ShouldTriggerHelpUI(...) is invoked.
   virtual bool WouldTriggerHelpUI(const base::Feature& feature) const = 0;
 
   // This function can be called to query if a particular |feature| has ever
