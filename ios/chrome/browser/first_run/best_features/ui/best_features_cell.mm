@@ -66,7 +66,7 @@ const CGFloat kContentViewTrailingMargin = 13.0;
     _textLabel = [[UILabel alloc] init];
     _textLabel.translatesAutoresizingMaskIntoConstraints = NO;
     _textLabel.font =
-        CreateDynamicFont(UIFontTextStyleBody, UIFontWeightRegular);
+        PreferredFontForTextStyle(UIFontTextStyleBody, UIFontWeightRegular);
     _textLabel.adjustsFontForContentSizeCategory = YES;
     _textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
     _textLabel.backgroundColor = UIColor.clearColor;
@@ -76,7 +76,7 @@ const CGFloat kContentViewTrailingMargin = 13.0;
     _detailTextLabel = [[UILabel alloc] init];
     _detailTextLabel.translatesAutoresizingMaskIntoConstraints = NO;
     _detailTextLabel.font =
-        CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightRegular);
+        PreferredFontForTextStyle(UIFontTextStyleFootnote, UIFontWeightRegular);
     _detailTextLabel.adjustsFontForContentSizeCategory = YES;
     _detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     _detailTextLabel.backgroundColor = UIColor.clearColor;
