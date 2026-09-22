@@ -43,6 +43,7 @@ import org.chromium.blink.mojom.StylusWritingGestureData;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.ContentFeatureMap;
+import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.net.MimeTypeFilter;
 
@@ -103,6 +104,9 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
     private @Nullable TextInputState mCachedTextInputState;
     private int mCurrentExtractedTextRequestToken;
     private boolean mShouldUpdateExtractedText;
+    // Cached focused frame ID for rich media insertion (commitContent). Written on the UI thread
+    // during connection creation, reset, and state updates, and read on the background IME thread.
+    private volatile @Nullable GlobalRenderFrameHostId mTargetFrameId;
 
     ThreadedInputConnection(View view, ImeAdapterImpl imeAdapter, Handler handler) {
         super(view, true);
@@ -110,10 +114,12 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
         ImeUtils.checkOnUiThread();
         mImeAdapter = imeAdapter;
         mHandler = handler;
+        mTargetFrameId = mImeAdapter.getFocusedFrameId();
     }
 
     void resetOnUiThread() {
         ImeUtils.checkOnUiThread();
+        mTargetFrameId = mImeAdapter.getFocusedFrameId();
 
         mHandler.post(
                 () -> {
@@ -134,6 +140,7 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
             boolean singleLine,
             final boolean replyToRequest) {
         ImeUtils.checkOnUiThread();
+        mTargetFrameId = mImeAdapter.getFocusedFrameId();
 
         mCachedTextInputState =
                 new TextInputState(
@@ -868,6 +875,11 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
             return false;
         }
 
+        final GlobalRenderFrameHostId targetFrameId = mTargetFrameId;
+        if (targetFrameId == null) {
+            return false;
+        }
+
         final String mimeType = inputContentInfo.getDescription().getMimeType(0);
 
         if (!new MimeTypeFilter(
@@ -898,7 +910,7 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
                         PostTask.postTask(
                                 TaskTraits.UI_DEFAULT,
                                 () -> {
-                                    mImeAdapter.commitContent(bytes, extension);
+                                    mImeAdapter.commitContent(targetFrameId, bytes, extension);
                                 });
                     } catch (Exception e) {
                         Log.e(TAG, "Failed to commit rich content.", e);

@@ -27,6 +27,7 @@
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -412,8 +413,16 @@ void ImeAdapterAndroid::FinishComposingText(JNIEnv* env) {
 
 bool ImeAdapterAndroid::InsertMediaFromBytes(
     JNIEnv* env,
+    int render_process_id,
+    int render_frame_id,
     const base::android::JavaRef<jbyteArray>& bytes,
     const base::android::JavaRef<jstring>& extension) {
+  RenderFrameHost* target_rfh =
+      RenderFrameHost::FromID(render_process_id, render_frame_id);
+  if (!target_rfh || GetFocusedFrame() != target_rfh) {
+    return false;
+  }
+
   auto* input_handler = GetFocusedFrameWidgetInputHandler();
   if (!input_handler) {
     return false;
