@@ -612,7 +612,7 @@ void FocusAdjacentTabGroupInFocusMode(TabStripModel* tab_strip_model,
   tab_groups::TabGroupId current_focused_group =
       tab_strip_model->GetFocusedGroup().value();
 
-  if (tab_strip_model->IsTabGroupTemporary(current_focused_group)) {
+  if (tab_strip_model->IsEphemeralTabGroup(current_focused_group)) {
     return;
   }
 

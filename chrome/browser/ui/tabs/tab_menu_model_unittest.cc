@@ -255,7 +255,7 @@ TEST_F(TabMenuModelTest, ExtensionItems) {
 }
 #endif
 
-TEST_F(TabMenuModelTest, TemporaryGroupOmitsRemoveFromGroup) {
+TEST_F(TabMenuModelTest, EphemeralGroupOmitsRemoveFromGroup) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Initialize MenuManager for the TestingProfile.
   extensions::MenuManagerFactory::GetInstance()->SetTestingFactoryAndUse(
@@ -283,11 +283,11 @@ TEST_F(TabMenuModelTest, TemporaryGroupOmitsRemoveFromGroup) {
   // Remove tab 0 from the standard group.
   tab_strip_model.RemoveFromGroup({0});
 
-  // When tab 0 is in a temporary group, CommandRemoveFromGroup is omitted.
-  tab_strip_model.AddToNewGroup({0}, /*is_temporary=*/true);
-  TabMenuModel temporary_group_menu(&delegate_, &menu_model_delegate(),
+  // When tab 0 is in an ephemeral group, CommandRemoveFromGroup is omitted.
+  tab_strip_model.AddToNewGroup({0}, /*is_ephemeral=*/true);
+  TabMenuModel ephemeral_group_menu(&delegate_, &menu_model_delegate(),
                                     &tab_strip_model, 0);
-  EXPECT_FALSE(temporary_group_menu
+  EXPECT_FALSE(ephemeral_group_menu
                    .GetIndexOfCommandId(TabStripModel::CommandRemoveFromGroup)
                    .has_value());
 }

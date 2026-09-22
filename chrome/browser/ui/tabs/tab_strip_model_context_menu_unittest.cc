@@ -271,14 +271,14 @@ TEST_F(TabStripModelContextMenuTest, NonGroupFocusEnabledSingleTab) {
   EXPECT_TRUE(tab_strip_model()->IsContextMenuCommandEnabled(
       0, TabStripModel::CommandToggleFocusGroup));
 
-  // Executing the command creates a temporary group and focuses it.
+  // Executing the command creates an ephemeral group and focuses it.
   tab_strip_model()->ExecuteContextMenuCommand(
       0, TabStripModel::CommandToggleFocusGroup);
   std::optional<tab_groups::TabGroupId> focused_group =
       tab_strip_model()->GetFocusedGroup();
   ASSERT_TRUE(focused_group.has_value());
   EXPECT_EQ(tab_strip_model()->GetTabGroupForTab(0), focused_group);
-  EXPECT_TRUE(tab_strip_model()->IsTabGroupTemporary(focused_group.value()));
+  EXPECT_TRUE(tab_strip_model()->IsEphemeralTabGroup(focused_group.value()));
 
   histogram_tester.ExpectUniqueSample(
       "TabGroups.Focus.EntryPoint",
@@ -331,7 +331,7 @@ TEST_F(TabStripModelContextMenuTest, NonGroupFocusEnabledMultipleTabs) {
   ASSERT_TRUE(focused_group.has_value());
   EXPECT_EQ(tab_strip_model()->GetTabGroupForTab(0), focused_group);
   EXPECT_EQ(tab_strip_model()->GetTabGroupForTab(1), focused_group);
-  EXPECT_TRUE(tab_strip_model()->IsTabGroupTemporary(focused_group.value()));
+  EXPECT_TRUE(tab_strip_model()->IsEphemeralTabGroup(focused_group.value()));
 
   histogram_tester.ExpectUniqueSample(
       "TabGroups.Focus.EntryPoint",

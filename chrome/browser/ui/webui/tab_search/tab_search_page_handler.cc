@@ -532,7 +532,7 @@ void TabSearchPageHandler::WalkContainer(
     }
   } else if (container->data->is_tab_group()) {
     const auto& group_data = container->data->get_tab_group();
-    if (!group_data->is_temporary) {
+    if (!group_data->is_ephemeral) {
       auto tab_group = tab_search::mojom::TabGroup::New();
       tab_group->title = base::UTF16ToUTF8(group_data->data.title());
       tab_group->color = group_data->data.color();
@@ -756,7 +756,7 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
   const std::optional<tab_groups::TabGroupId> group_id = tab->GetGroup();
   if (group_id.has_value() &&
       (!tab_strip_model ||
-       !tab_strip_model->IsTabGroupTemporary(group_id.value()))) {
+       !tab_strip_model->IsEphemeralTabGroup(group_id.value()))) {
     tab_mojom_data->group_id = group_id.value().token();
   }
   tab_mojom_data->pinned = tab->IsPinned();

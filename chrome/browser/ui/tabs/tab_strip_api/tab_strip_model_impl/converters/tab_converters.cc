@@ -162,7 +162,7 @@ tabs_api::mojom::DataPtr BuildMojoTabCollectionData(
       const TabGroup* tab_group = group_collection->GetTabGroup();
       CHECK(tab_group);
       mojo_tab_group->data = *tab_group->visual_data();
-      mojo_tab_group->is_temporary = tab_group->is_temporary();
+      mojo_tab_group->is_ephemeral = tab_group->is_ephemeral();
       return tabs_api::mojom::Data::NewTabGroup(std::move(mojo_tab_group));
     }
     case tabs::TabCollection::Type::SPLIT: {

@@ -2041,7 +2041,7 @@ void TabStripModel::RestoreSplit(split_tabs::SplitTabId split_id,
 
 tab_groups::TabGroupId TabStripModel::AddToNewGroup(
     const std::vector<int> indices,
-    bool is_temporary) {
+    bool is_ephemeral) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
   CHECK(SupportsTabGroups());
 
@@ -2060,7 +2060,7 @@ tab_groups::TabGroupId TabStripModel::AddToNewGroup(
   // `tab_groups::TabGroupId::GenerateNew()`.
   const tab_groups::TabGroupId new_group =
       tab_groups::TabGroupId::GenerateNew();
-  AddToNewGroupImpl(indices, new_group, is_temporary);
+  AddToNewGroupImpl(indices, new_group, is_ephemeral);
   delegate_->GroupAdded(new_group);
 
   for (TabStripModelObserver& observer : observers_) {
@@ -2178,10 +2178,10 @@ void TabStripModel::RemoveSplit(split_tabs::SplitTabId split_id) {
   CompleteModelUpdateTransaction();
 }
 
-bool TabStripModel::IsTabGroupTemporary(
+bool TabStripModel::IsEphemeralTabGroup(
     const tab_groups::TabGroupId& group_id) const {
   return (group_model_ && group_model_->ContainsTabGroup(group_id))
-             ? group_model_->GetTabGroup(group_id)->is_temporary()
+             ? group_model_->GetTabGroup(group_id)->is_ephemeral()
              : false;
 }
 
@@ -2267,7 +2267,7 @@ void TabStripModel::UnfocusGroup() {
 
   SetFocusedGroup(std::nullopt);
 
-  if (IsTabGroupTemporary(old_focused_group.value())) {
+  if (IsEphemeralTabGroup(old_focused_group.value())) {
     const gfx::Range tab_range =
         group_model_->GetTabGroup(old_focused_group.value())->ListTabs();
     std::vector<int> indices;
@@ -2288,7 +2288,7 @@ void TabStripModel::RotateFocusedGroup(bool forward) {
   std::optional<tab_groups::TabGroupId> current_focused_group =
       GetFocusedGroup();
   if (current_focused_group.has_value()) {
-    if (IsTabGroupTemporary(current_focused_group.value())) {
+    if (IsEphemeralTabGroup(current_focused_group.value())) {
       return;
     }
   }
@@ -3078,7 +3078,7 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
         // leverage the existing tab group infrastructure.
         std::vector<int> indices = GetIndicesForCommand(context_index);
         tab_groups::TabGroupId new_group_id =
-            AddToNewGroup(indices, /*is_temporary=*/true);
+            AddToNewGroup(indices, /*is_ephemeral=*/true);
         RecordToggleFocusGroupMetrics(/*is_unfocus=*/false,
                                       /*is_non_group=*/true, indices.size());
         SetFocusedGroup(new_group_id);
@@ -4721,7 +4721,7 @@ void TabStripModel::UpdateTabInSplitImpl(tabs::TabInterface* split_tab,
 
 void TabStripModel::AddToNewGroupImpl(const std::vector<int>& indices,
                                       const tab_groups::TabGroupId& new_group,
-                                      bool is_temporary) {
+                                      bool is_ephemeral) {
   if (!group_model_) {
     return;
   }
@@ -4752,7 +4752,7 @@ void TabStripModel::AddToNewGroupImpl(const std::vector<int>& indices,
           tab_groups::TabGroupVisualData(
               std::u16string(),
               group_model_->GetNextColor(base::PassKey<TabStripModel>())));
-  group_collection->GetTabGroup()->SetIsTemporary(is_temporary);
+  group_collection->GetTabGroup()->SetIsEphemeral(is_ephemeral);
   group_model_->AddTabGroup(group_collection->GetTabGroup(),
                             base::PassKey<TabStripModel>());
   contents_data_->CreateTabGroup(std::move(group_collection));

@@ -113,7 +113,7 @@ ExistingTabGroupSubMenuModel::GetGroupsFromModel(TabStripModel* current_model) {
   // Add tab groups to `groups` if they differ from our indexes current group.
   std::vector<tab_groups::TabGroupId> groups;
   for (auto& group : current_model->group_model()->ListTabGroups()) {
-    if (current_model->IsTabGroupTemporary(group)) {
+    if (current_model->IsEphemeralTabGroup(group)) {
       continue;
     }
 
@@ -240,7 +240,7 @@ bool ExistingTabGroupSubMenuModel::ShouldShowGroup(
     TabStripModel* model,
     int context_index,
     tab_groups::TabGroupId group) {
-  if (model->IsTabGroupTemporary(group)) {
+  if (model->IsEphemeralTabGroup(group)) {
     return false;
   }
 

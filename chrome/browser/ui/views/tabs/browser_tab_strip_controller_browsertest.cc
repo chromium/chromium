@@ -349,19 +349,19 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripControllerTestFocusedGroup,
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserTabStripControllerTestFocusedGroup,
-                       TemporaryGroupDoesNotUpdateTheme) {
+                       EphemeralGroupDoesNotUpdateTheme) {
   BrowserWidget* widget =
       BrowserView::GetBrowserViewForBrowser(browser())->browser_widget();
   EXPECT_EQ(widget->user_color_override(), std::nullopt);
 
-  // Create a tab and a temporary group.
+  // Create a tab and an ephemeral group.
   controller()->CreateNewTab(NewTabTypes::kNewTabCommand);
   EXPECT_EQ(tab_strip_model()->count(), 2);
-  const tab_groups::TabGroupId temp_group =
-      tab_strip_model()->AddToNewGroup({0, 1}, /*is_temporary=*/true);
+  const tab_groups::TabGroupId ephemeral_group =
+      tab_strip_model()->AddToNewGroup({0, 1}, /*is_ephemeral=*/true);
 
-  // Focus on the temporary group. The browser itself should not theme.
-  controller()->SetFocusedGroup(temp_group);
+  // Focus on the ephemeral group. The browser itself should not theme.
+  controller()->SetFocusedGroup(ephemeral_group);
   EXPECT_EQ(widget->user_color_override(), std::nullopt);
 
   // Unset focused group.

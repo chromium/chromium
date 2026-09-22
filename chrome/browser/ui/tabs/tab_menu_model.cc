@@ -465,7 +465,7 @@ void TabMenuModel::Build(int index) {
   for (const auto& selection : indices) {
     std::optional<tab_groups::TabGroupId> group =
         tab_strip_->GetTabGroupForTab(selection);
-    if (group.has_value() && !tab_strip_->IsTabGroupTemporary(group.value())) {
+    if (group.has_value() && !tab_strip_->IsEphemeralTabGroup(group.value())) {
       AddItemWithStringId(TabStripModel::CommandRemoveFromGroup,
                           IDS_TAB_CXMENU_REMOVE_TAB_FROM_GROUP);
       break;

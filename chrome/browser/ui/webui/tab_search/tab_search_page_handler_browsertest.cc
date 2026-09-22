@@ -1715,11 +1715,11 @@ IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest,
   histogram_tester.ExpectTotalCount("Tabs.TabSearch.CloseAction2", 2);
 }
 
-IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest, TemporaryTabGroupFilteredOut) {
+IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest, EphemeralTabGroupFilteredOut) {
   AddTabWithTitle(browser1(), tab_url1_, kTabName1);
 
   TabStripModel* tab_strip_model = browser1()->tab_strip_model();
-  tab_strip_model->AddToNewGroup({0}, /*is_temporary=*/true);
+  tab_strip_model->AddToNewGroup({0}, /*is_ephemeral=*/true);
 
   tab_search::mojom::PageHandler::GetProfileDataCallback callback =
       base::BindLambdaForTesting(

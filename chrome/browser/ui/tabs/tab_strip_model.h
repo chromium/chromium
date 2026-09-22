@@ -680,7 +680,7 @@ class TabStripModel {
   // the new group. This may unsplit split tabs if they are only partially
   // contained in `indices`. `indices` must be sorted in ascending order.
   tab_groups::TabGroupId AddToNewGroup(const std::vector<int> indices,
-                                       bool is_temporary = false);
+                                       bool is_ephemeral = false);
 
   // Add the set of tabs pointed to by `indices` to the given tab group `group`.
   // The tabs take on the pinnedness of the tabs already in the group. Tabs
@@ -714,7 +714,7 @@ class TabStripModel {
 
   // When tabs are in focus selection mode, they can present as non-grouped
   // but be part of a group architecturally.
-  bool IsTabGroupTemporary(const tab_groups::TabGroupId& group_id) const;
+  bool IsEphemeralTabGroup(const tab_groups::TabGroupId& group_id) const;
 
   // Returns the ID of the group that is focused. If no group is focused,
   // returns nullopt.
@@ -723,7 +723,7 @@ class TabStripModel {
   // Sets the group to be focused.
   void SetFocusedGroup(std::optional<tab_groups::TabGroupId> group);
 
-  // Unfocuses the currently focused group, dissolving it if it is a temporary
+  // Unfocuses the currently focused group, dissolving it if it is an ephemeral
   // group.
   void UnfocusGroup();
 
@@ -1229,7 +1229,7 @@ class TabStripModel {
   // and have no tabs in it.
   void AddToNewGroupImpl(const std::vector<int>& indices,
                          const tab_groups::TabGroupId& new_group,
-                         bool is_temporary = false);
+                         bool is_ephemeral = false);
 
   void MoveGroupToImpl(const tab_groups::TabGroupId& group, int to_index);
 

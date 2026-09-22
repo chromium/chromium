@@ -65,7 +65,7 @@ void SavedTabGroupModelListener::OnTabGroupAdded(
   BrowserWindowInterface* browser =
       tab_groups::SavedTabGroupUtils::GetBrowserWithTabGroupId(group_id);
   if (browser && browser->GetTabStripModel() &&
-      browser->GetTabStripModel()->IsTabGroupTemporary(group_id)) {
+      browser->GetTabStripModel()->IsEphemeralTabGroup(group_id)) {
     return;
   }
 
