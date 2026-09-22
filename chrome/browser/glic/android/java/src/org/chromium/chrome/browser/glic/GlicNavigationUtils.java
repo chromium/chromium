@@ -42,6 +42,7 @@ public class GlicNavigationUtils {
     public static final String EXTRA_HIGHLIGHT_FIELD =
             "org.chromium.chrome.browser.glic.highlight_field";
     public static final String FIELD_LOCATION_PERMISSION = "location_permission";
+    public static final String FIELD_MICROPHONE_PERMISSION = "microphone_permission";
     private static @Nullable Supplier<SigninAndHistorySyncActivityLauncher> sLauncherSupplier;
 
     /**
@@ -62,8 +63,18 @@ public class GlicNavigationUtils {
     @CalledByNative
     static void showGlicSettings(
             @GlicSettingsPage int settingsPage, @JniType("std::string") String highlightField) {
-        Context context = ContextUtils.getApplicationContext();
+        showGlicSettings(ContextUtils.getApplicationContext(), settingsPage, highlightField);
+    }
 
+    /**
+     * Opens the GLIC settings page.
+     *
+     * @param context The {@link Context} used to start the settings activity.
+     * @param settingsPage The GLIC settings page to open.
+     * @param highlightField The preference to scroll to and highlight, or an empty string for none.
+     */
+    public static void showGlicSettings(
+            Context context, @GlicSettingsPage int settingsPage, String highlightField) {
         SettingsNavigation settingsNavigation =
                 SettingsNavigationFactory.createSettingsNavigation();
         Class<? extends Fragment> fragmentClass;

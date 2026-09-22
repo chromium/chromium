@@ -178,6 +178,24 @@ public class GlicSettingsUnitTest {
     }
 
     @Test
+    public void testMicrophoneHighlightParam() {
+        Bundle args = new Bundle();
+        args.putString(
+                GlicNavigationUtils.EXTRA_HIGHLIGHT_FIELD,
+                GlicNavigationUtils.FIELD_MICROPHONE_PERMISSION);
+
+        // Verifies launching with highlight parameters does not crash
+        GlicSettings fragment = launchFragment(args);
+
+        // Flush shadow main looper to run the posted scroll/highlight runnables
+        org.robolectric.shadows.ShadowLooper.idleMainLooper();
+
+        ChromeSwitchPreference microphonePref =
+                fragment.findPreference(GlicSettings.PERMISSION_MICROPHONE);
+        assertTrue("Microphone preference should be visible", microphonePref.isVisible());
+    }
+
+    @Test
     public void testClickPermissionsActivity() {
         GlicSettings fragment = launchFragment();
         Preference preference = fragment.findPreference("glic_permissions_activity");
