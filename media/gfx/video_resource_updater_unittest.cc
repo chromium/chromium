@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/renderers/video_resource_updater.h"
+#include "media/gfx/video_resource_updater.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -463,11 +463,7 @@ TEST_F(VideoResourceUpdaterTest, HighBitFrameNoF16) {
   EXPECT_EQ(VideoFrameResourceType::RGB, resource.type);
 }
 
-class VideoResourceUpdaterTestWithF16 : public VideoResourceUpdaterTest {
- public:
-  VideoResourceUpdaterTestWithF16() : VideoResourceUpdaterTest() {
-  }
-};
+class VideoResourceUpdaterTestWithF16 : public VideoResourceUpdaterTest {};
 
 TEST_F(VideoResourceUpdaterTestWithF16, HighBitFrame) {
   std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();

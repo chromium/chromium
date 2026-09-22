@@ -3,5 +3,6 @@
 include_rules = [
   "+media/base",
   "+media/capture",
+  "+media/gfx",
   "+media/mojo",
 ]

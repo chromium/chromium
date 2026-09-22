@@ -33,8 +33,8 @@
 #include "media/base/video_renderer_sink.h"
 #include "media/filters/decoder_stream.h"
 #include "media/filters/video_renderer_algorithm.h"
+#include "media/gfx/mappable_shared_image_video_frame_pool.h"
 #include "media/renderers/renderer_impl_factory.h"
-#include "media/video/mappable_shared_image_video_frame_pool.h"
 
 namespace base {
 class TickClock;

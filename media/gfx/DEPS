@@ -1,0 +1,31 @@
+# Do NOT add net/ or ui/base without a great reason, they're huge!
+include_rules = [
+  "+cc/base",
+  "+cc/paint",
+  "+components/viz/client",
+  "+components/viz/common",
+  "+gpu/command_buffer/client",
+  "+gpu/command_buffer/common",
+  "+gpu/ipc/client",
+  "+gpu/ipc/common",
+  "+media/base",
+  "+media/gfx",
+  "+media/video",
+  "+third_party/fp16/src/include",
+  "+third_party/khronos/GLES2",
+  "+third_party/khronos/GLES3",
+  "+third_party/libyuv",
+  "+third_party/skia/include",
+  "+ui/gfx",
+  "+ui/gl/gl_enums.h",
+]
+
+specific_include_rules = {
+  ".*_unittest.cc": [
+    "+cc/test",
+    "+components/viz/test",
+    "+gpu/command_buffer/client",
+    "+services/viz/public/cpp/gpu",
+    "+ui/gl",
+  ],
+}

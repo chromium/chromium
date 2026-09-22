@@ -20,7 +20,7 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "media/base/limits.h"
 #include "media/base/video_frame.h"
-#include "media/renderers/video_resource_updater.h"
+#include "media/gfx/video_resource_updater.h"
 
 namespace blink {
 

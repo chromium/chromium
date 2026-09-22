@@ -17,49 +17,24 @@ source_set("renderers") {
     "decrypting_renderer.h",
     "default_decoder_factory.cc",
     "default_decoder_factory.h",
-    "paint_canvas_video_renderer.cc",
-    "paint_canvas_video_renderer.h",
     "remote_playback_client_wrapper.h",
     "renderer_impl.cc",
     "renderer_impl.h",
     "renderer_impl_factory.cc",
     "renderer_impl_factory.h",
-    "resource_sync_token_client.cc",
-    "resource_sync_token_client.h",
-    "video_frame_rgba_to_yuva_converter.cc",
-    "video_frame_rgba_to_yuva_converter.h",
-    "video_frame_shared_image_cache.cc",
-    "video_frame_shared_image_cache.h",
-    "video_overlay_factory.cc",
-    "video_overlay_factory.h",
     "video_renderer_impl.cc",
     "video_renderer_impl.h",
-    "video_resource_updater.cc",
-    "video_resource_updater.h",
   ]
 
   deps = [
     "//base",
-    "//cc/base",  # For MathUtil.
-    "//cc/paint",
-    "//components/viz/client",
-    "//components/viz/common",
-    "//gpu/command_buffer/client:gles2_interface",
-    "//gpu/command_buffer/client:interface_base",
-    "//gpu/command_buffer/client:raster_interface",
-    "//gpu/command_buffer/common",
-    "//gpu/ipc/client",
     "//media:media_buildflags",
     "//media/audio",
     "//media/base",
     "//media/filters",
+    "//media/gfx",
     "//media/video",
-    "//third_party/fp16",
-    "//third_party/libyuv",
-    "//ui/gfx:memory_buffer",
-    "//ui/gfx/geometry",
-    "//ui/gfx/geometry:geometry_skia",
-    "//ui/gl:gl_enums",
+    "//ui/gfx",
   ]
 
   if (is_win) {
@@ -83,7 +58,10 @@ source_set("renderers") {
       "win/media_foundation_video_stream.h",
     ]
 
-    deps += [ "//media/base/win:media_foundation_util" ]
+    deps += [
+      "//gpu/config",
+      "//media/base/win:media_foundation_util",
+    ]
 
     # media_foundation_renderer uses Windows D3D and Media Foundation APIs.
     libs = [
@@ -96,57 +74,22 @@ source_set("renderers") {
   configs += [ "//media:subcomponent_config" ]
 }
 
-# Note: This is a roll-up only target; do not expand the visibility. DEPS should
-# depend on the //media:test_support target instead.
-static_library("test_support") {
-  visibility = [ "//media:test_support" ]
-  testonly = true
-  sources = [
-    "video_frame_test_utils.cc",
-    "video_frame_test_utils.h",
-  ]
-  configs += [ "//media:media_config" ]
-  deps = [
-    "//base",
-    "//components/viz/common",
-    "//gpu:test_support",
-    "//gpu/command_buffer/client:raster_interface",
-    "//gpu/command_buffer/common",
-    "//media/base:test_support",
-    "//third_party/libyuv",
-    "//ui/gfx",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [
     "audio_renderer_impl_unittest.cc",
     "decrypting_renderer_unittest.cc",
-    "paint_canvas_video_renderer_unittest.cc",
     "renderer_impl_unittest.cc",
-    "resource_sync_token_client_unittest.cc",
     "video_renderer_impl_unittest.cc",
-    "video_resource_updater_unittest.cc",
   ]
   configs += [ "//media:media_config" ]
   deps = [
     "//base",
     "//base/test:test_support",
-    "//cc/paint",
-    "//components/viz/client",
-    "//components/viz/test:test_support",
-    "//gpu:test_support",
-    "//gpu/command_buffer/client:gles2_interface",
-    "//gpu/command_buffer/common",
     "//media:test_support",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/fp16",
-    "//third_party/libyuv",
     "//ui/gfx",
-    "//ui/gl",
-    "//ui/gl:test_support",
   ]
 
   if (is_win) {

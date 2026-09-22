@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_RENDERERS_VIDEO_OVERLAY_FACTORY_H_
-#define MEDIA_RENDERERS_VIDEO_OVERLAY_FACTORY_H_
+#ifndef MEDIA_GFX_VIDEO_OVERLAY_FACTORY_H_
+#define MEDIA_GFX_VIDEO_OVERLAY_FACTORY_H_
 
 #include "base/memory/scoped_refptr.h"
 #include "base/unguessable_token.h"
@@ -40,4 +40,4 @@ class MEDIA_EXPORT VideoOverlayFactory {
 
 }  // namespace media
 
-#endif  // MEDIA_RENDERERS_VIDEO_OVERLAY_FACTORY_H_
+#endif  // MEDIA_GFX_VIDEO_OVERLAY_FACTORY_H_

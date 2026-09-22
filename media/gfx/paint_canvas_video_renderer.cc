@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/renderers/paint_canvas_video_renderer.h"
+#include "media/gfx/paint_canvas_video_renderer.h"
 
 #include <GLES3/gl3.h>
 

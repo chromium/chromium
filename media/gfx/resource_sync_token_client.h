@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_RENDERERS_RESOURCE_SYNC_TOKEN_CLIENT_H_
-#define MEDIA_RENDERERS_RESOURCE_SYNC_TOKEN_CLIENT_H_
+#ifndef MEDIA_GFX_RESOURCE_SYNC_TOKEN_CLIENT_H_
+#define MEDIA_GFX_RESOURCE_SYNC_TOKEN_CLIENT_H_
 
 #include "gpu/command_buffer/common/sync_token.h"
 #include "media/base/media_export.h"
@@ -45,4 +45,4 @@ class MEDIA_EXPORT ResourceSyncTokenClient
 
 }  // namespace media
 
-#endif  // MEDIA_RENDERERS_RESOURCE_SYNC_TOKEN_CLIENT_H_
+#endif  // MEDIA_GFX_RESOURCE_SYNC_TOKEN_CLIENT_H_

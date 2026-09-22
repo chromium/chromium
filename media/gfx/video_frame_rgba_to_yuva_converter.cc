@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
-#include "media/renderers/video_frame_rgba_to_yuva_converter.h"
+#include "media/gfx/video_frame_rgba_to_yuva_converter.h"
 
 #include <algorithm>
 

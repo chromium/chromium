@@ -62,7 +62,7 @@
 #include "components/viz/test/test_in_process_context_provider.h"
 #include "media/base/video_facing.h"
 #include "media/base/video_frame.h"
-#include "media/renderers/paint_canvas_video_renderer.h"
+#include "media/gfx/paint_canvas_video_renderer.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"

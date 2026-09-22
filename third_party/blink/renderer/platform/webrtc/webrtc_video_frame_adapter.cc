@@ -27,7 +27,7 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "media/base/video_util.h"
-#include "media/renderers/video_frame_rgba_to_yuva_converter.h"
+#include "media/gfx/video_frame_rgba_to_yuva_converter.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"

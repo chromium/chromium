@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_RENDERERS_PAINT_CANVAS_VIDEO_RENDERER_H_
-#define MEDIA_RENDERERS_PAINT_CANVAS_VIDEO_RENDERER_H_
+#ifndef MEDIA_GFX_PAINT_CANVAS_VIDEO_RENDERER_H_
+#define MEDIA_GFX_PAINT_CANVAS_VIDEO_RENDERER_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -23,7 +23,7 @@
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_transformation.h"
-#include "media/renderers/video_frame_shared_image_cache.h"
+#include "media/gfx/video_frame_shared_image_cache.h"
 
 namespace gfx {
 class RectF;
@@ -286,4 +286,4 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
 
 }  // namespace media
 
-#endif  // MEDIA_RENDERERS_PAINT_CANVAS_VIDEO_RENDERER_H_
+#endif  // MEDIA_GFX_PAINT_CANVAS_VIDEO_RENDERER_H_

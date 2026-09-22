@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/video/mappable_shared_image_video_frame_pool.h"
+#include "media/gfx/mappable_shared_image_video_frame_pool.h"
 
 #include <stdint.h>
 

@@ -17,7 +17,7 @@
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "gpu/ipc/client/client_shared_image_interface.h"
-#include "media/renderers/video_resource_updater.h"
+#include "media/gfx/video_resource_updater.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/compositor.h"

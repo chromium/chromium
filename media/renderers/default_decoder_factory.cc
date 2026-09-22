@@ -11,7 +11,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "components/viz/common/gpu/raster_context_provider.h"
 #include "media/base/decoder_factory.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"

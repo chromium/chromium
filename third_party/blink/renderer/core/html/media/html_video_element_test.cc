@@ -7,7 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "cc/layers/layer.h"
 #include "media/base/video_frame.h"
-#include "media/renderers/paint_canvas_video_renderer.h"
+#include "media/gfx/paint_canvas_video_renderer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"

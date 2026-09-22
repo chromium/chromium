@@ -9,7 +9,7 @@
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "media/base/video_frame.h"
-#include "media/renderers/paint_canvas_video_renderer.h"
+#include "media/gfx/paint_canvas_video_renderer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 

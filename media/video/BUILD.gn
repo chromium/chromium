@@ -13,6 +13,7 @@ source_set("video") {
     "//media",
     "//media/filters",
     "//media/formats",
+    "//media/gfx",
     "//media/renderers",
   ]
 
@@ -21,14 +22,10 @@ source_set("video") {
     "alpha_video_encoder_wrapper.h",
     "gpu_video_accelerator_factories.cc",
     "gpu_video_accelerator_factories.h",
-    "mappable_shared_image_video_frame_pool.cc",
-    "mappable_shared_image_video_frame_pool.h",
     "offloading_video_encoder.cc",
     "offloading_video_encoder.h",
     "picture.cc",
     "picture.h",
-    "renderable_mappable_shared_image_video_frame_pool.cc",
-    "renderable_mappable_shared_image_video_frame_pool.h",
     "video_decode_accelerator.cc",
     "video_decode_accelerator.h",
     "video_encode_accelerator.cc",
@@ -95,8 +92,6 @@ static_library("test_support") {
     "fake_video_encode_accelerator.h",
     "mock_gpu_video_accelerator_factories.cc",
     "mock_gpu_video_accelerator_factories.h",
-    "mock_mappable_shared_image_video_frame_pool.cc",
-    "mock_mappable_shared_image_video_frame_pool.h",
     "mock_video_encode_accelerator.cc",
     "mock_video_encode_accelerator.h",
   ]
@@ -117,9 +112,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "alpha_video_encoder_wrapper_unittest.cc",
-    "mappable_shared_image_video_frame_pool_unittest.cc",
     "offloading_video_encoder_unittest.cc",
-    "renderable_mappable_shared_image_video_frame_pool_unittest.cc",
     "software_video_encoder_test.cc",
     "video_encode_accelerator_adapter_test.cc",
     "video_encoder_fallback_test.cc",

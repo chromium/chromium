@@ -400,6 +400,7 @@ media_subcomponent_deps = [
   "//media/device_monitors",
   "//media/filters",
   "//media/formats",
+  "//media/gfx",
   "//media/muxers",
   "//media/parsers",
   "//media/renderers",

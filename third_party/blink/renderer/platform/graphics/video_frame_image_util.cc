@@ -17,7 +17,7 @@
 #include "media/base/video_types.h"
 #include "media/base/video_util.h"
 #include "media/base/wait_and_replace_sync_token_client.h"
-#include "media/renderers/paint_canvas_video_renderer.h"
+#include "media/gfx/paint_canvas_video_renderer.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_deferred_paint_record.h"

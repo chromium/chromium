@@ -33,7 +33,7 @@
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
-#include "media/renderers/video_resource_updater.h"
+#include "media/gfx/video_resource_updater.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"

@@ -11,7 +11,7 @@
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/frame_sinks/video_capture/video_frame_pool.h"
 #include "components/viz/service/viz_service_export.h"
-#include "media/video/renderable_mappable_shared_image_video_frame_pool.h"
+#include "media/gfx/renderable_mappable_shared_image_video_frame_pool.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom.h"
 
 namespace viz {

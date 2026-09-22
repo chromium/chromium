@@ -1,0 +1,122 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//media/media_options.gni")
+
+source_set("gfx") {
+  # Do not expand the visibility here without double-checking with OWNERS, this
+  # is a roll-up target which is part of the //media component. Most other DEPs
+  # should be using //media and not directly DEP this roll-up target.
+  visibility = [
+    "//media",
+    "//media/renderers",
+  ]
+
+  sources = [
+    "mappable_shared_image_video_frame_pool.cc",
+    "mappable_shared_image_video_frame_pool.h",
+    "paint_canvas_video_renderer.cc",
+    "paint_canvas_video_renderer.h",
+    "renderable_mappable_shared_image_video_frame_pool.cc",
+    "renderable_mappable_shared_image_video_frame_pool.h",
+    "resource_sync_token_client.cc",
+    "resource_sync_token_client.h",
+    "video_frame_rgba_to_yuva_converter.cc",
+    "video_frame_rgba_to_yuva_converter.h",
+    "video_frame_shared_image_cache.cc",
+    "video_frame_shared_image_cache.h",
+    "video_overlay_factory.cc",
+    "video_overlay_factory.h",
+    "video_resource_updater.cc",
+    "video_resource_updater.h",
+  ]
+
+  deps = [
+    "//base",
+    "//cc/base",  # For MathUtil.
+    "//cc/paint",
+    "//components/viz/client",
+    "//components/viz/common",
+    "//gpu/command_buffer/client",
+    "//gpu/command_buffer/client:gles2_interface",
+    "//gpu/command_buffer/client:interface_base",
+    "//gpu/command_buffer/client:raster_interface",
+    "//gpu/command_buffer/common",
+    "//gpu/ipc/client",
+    "//gpu/ipc/common",
+    "//media:media_buildflags",
+    "//media/base",
+    "//media/video",
+    "//third_party/fp16",
+    "//third_party/libyuv",
+    "//ui/gfx",
+    "//ui/gfx:memory_buffer",
+    "//ui/gfx/geometry",
+    "//ui/gfx/geometry:geometry_skia",
+    "//ui/gl:gl_enums",
+  ]
+
+  configs += [ "//media:subcomponent_config" ]
+}
+
+# Note: This is a roll-up only target; do not expand the visibility. DEPS should
+# depend on the //media:test_support target instead.
+static_library("test_support") {
+  visibility = [ "//media:test_support" ]
+  testonly = true
+  sources = [
+    "mock_mappable_shared_image_video_frame_pool.cc",
+    "mock_mappable_shared_image_video_frame_pool.h",
+    "video_frame_test_utils.cc",
+    "video_frame_test_utils.h",
+  ]
+  configs += [ "//media:media_config" ]
+  deps = [
+    "//base",
+    "//components/viz/common",
+    "//gpu:test_support",
+    "//gpu/command_buffer/client:gles2_interface",
+    "//gpu/command_buffer/client:raster_interface",
+    "//gpu/command_buffer/common",
+    "//media/base:test_support",
+    "//services/viz/public/cpp/gpu",
+    "//testing/gmock",
+    "//third_party/libyuv",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "mappable_shared_image_video_frame_pool_unittest.cc",
+    "paint_canvas_video_renderer_unittest.cc",
+    "renderable_mappable_shared_image_video_frame_pool_unittest.cc",
+    "resource_sync_token_client_unittest.cc",
+    "video_resource_updater_unittest.cc",
+  ]
+  configs += [ "//media:media_config" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//cc/paint",
+    "//components/viz/client",
+    "//components/viz/test:test_support",
+    "//gpu:test_support",
+    "//gpu/command_buffer/client:gles2_interface",
+    "//gpu/command_buffer/client:raster_interface",
+    "//gpu/command_buffer/common",
+    "//media:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/fp16",
+    "//third_party/libyuv",
+    "//ui/gfx",
+    "//ui/gfx:test_support",
+    "//ui/gfx/geometry",
+    "//ui/gl",
+    "//ui/gl:test_support",
+  ]
+}

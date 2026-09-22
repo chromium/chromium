@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/renderers/resource_sync_token_client.h"
+#include "media/gfx/resource_sync_token_client.h"
 
 #include <vector>
 

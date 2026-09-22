@@ -14,7 +14,7 @@ specific_include_rules = {
         "+gpu/command_buffer/client/shared_image_interface.h",
         "+gpu/command_buffer/common/shared_image_capabilities.h",
         "+gpu/command_buffer/common/shared_image_usage.h",
-        "+media/renderers/video_frame_rgba_to_yuva_converter.h",
+        "+media/gfx/video_frame_rgba_to_yuva_converter.h",
     ],
     "webrtc_video_frame_adapter_test\\.cc": [
         "+gpu/command_buffer/client/test_shared_image_interface.h",
@@ -22,7 +22,7 @@ specific_include_rules = {
     "webrtc_video_frame_adapter\\.h": [
         "+components/viz/common/gpu/raster_context_provider.h",
         "+media/video/gpu_video_accelerator_factories.h",
-        "+media/video/renderable_mappable_shared_image_video_frame_pool.h",
+        "+media/gfx/renderable_mappable_shared_image_video_frame_pool.h",
     ],
     "legacy_webrtc_video_frame_adapter\\.cc": [
         "+media/video/gpu_video_accelerator_factories.h",

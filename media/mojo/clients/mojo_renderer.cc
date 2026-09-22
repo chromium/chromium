@@ -17,9 +17,9 @@
 #include "media/base/pipeline_status.h"
 #include "media/base/renderer_client.h"
 #include "media/base/video_renderer_sink.h"
+#include "media/gfx/video_overlay_factory.h"
 #include "media/mojo/clients/mojo_demuxer_stream_impl.h"
 #include "media/mojo/common/media_type_converters.h"
-#include "media/renderers/video_overlay_factory.h"
 
 namespace media {
 

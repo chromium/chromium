@@ -27,7 +27,7 @@
 #include "media/base/video_frame_pool.h"
 #include "media/base/video_types.h"
 #include "media/base/video_util.h"
-#include "media/renderers/paint_canvas_video_renderer.h"
+#include "media/gfx/paint_canvas_video_renderer.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"

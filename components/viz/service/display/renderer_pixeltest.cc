@@ -56,7 +56,7 @@
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
-#include "media/renderers/video_resource_updater.h"
+#include "media/gfx/video_resource_updater.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkRefCnt.h"

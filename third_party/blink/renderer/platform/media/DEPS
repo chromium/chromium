@@ -25,7 +25,7 @@ include_rules = [
   "+media/formats",
   "+media/media_buildflags.h",
   "+media/mojo/mojom",
-  "+media/renderers/paint_canvas_video_renderer.h",
+  "+media/gfx/paint_canvas_video_renderer.h",
   "+net/base/data_url.h",
   "+net/base/net_errors.h",
   "+net/http/http_byte_range.h",

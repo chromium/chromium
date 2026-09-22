@@ -460,6 +460,7 @@ include_rules = [
   "+media/gpu/buildflags.h",
   "+media/remoting/device_capability_checker.h",
   "+media/capture",
+  "+media/gfx",
   "+media/midi",  # For midi switches
   "+media/mojo",  # For mojo media services.
   "+media/renderers",

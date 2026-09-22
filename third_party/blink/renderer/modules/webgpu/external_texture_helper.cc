@@ -10,7 +10,7 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_transformation.h"
 #include "media/base/video_util.h"
-#include "media/renderers/paint_canvas_video_renderer.h"
+#include "media/gfx/paint_canvas_video_renderer.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"

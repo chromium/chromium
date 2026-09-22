@@ -12,11 +12,11 @@
 #include "build/build_config.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/decoder_factory.h"
+#include "media/gfx/mappable_shared_image_video_frame_pool.h"
 #include "media/renderers/audio_renderer_impl.h"
 #include "media/renderers/renderer_impl.h"
 #include "media/renderers/video_renderer_impl.h"
 #include "media/video/gpu_video_accelerator_factories.h"
-#include "media/video/mappable_shared_image_video_frame_pool.h"
 
 namespace media {
 

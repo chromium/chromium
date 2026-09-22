@@ -27,7 +27,7 @@
 #include "cc/paint/skia_paint_canvas.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
-#include "media/renderers/paint_canvas_video_renderer.h"
+#include "media/gfx/paint_canvas_video_renderer.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "skia/ext/platform_canvas.h"
 #include "third_party/blink/public/platform/platform.h"

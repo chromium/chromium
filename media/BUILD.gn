@@ -173,9 +173,9 @@ source_set("test_support") {
     "//media/base:test_support",
     "//media/filters:test_support",
     "//media/formats:test_support",
+    "//media/gfx:test_support",
     "//media/mojo/services:test_support",
     "//media/parsers:test_support",
-    "//media/renderers:test_support",
     "//media/video:test_support",
   ]
 
@@ -210,6 +210,7 @@ test("media_unittests") {
     "//media/device_monitors:unit_tests",
     "//media/filters:unit_tests",
     "//media/formats:unit_tests",
+    "//media/gfx:unit_tests",
     "//media/gpu:unit_tests",
     "//media/mojo:unit_tests",
     "//media/muxers:unit_tests",

@@ -1,7 +1,7 @@
 // Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "media/renderers/video_resource_updater.h"
+#include "media/gfx/video_resource_updater.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -46,8 +46,8 @@
 #include "media/base/media_switches.h"
 #include "media/base/video_util.h"
 #include "media/base/wait_and_replace_sync_token_client.h"
-#include "media/renderers/paint_canvas_video_renderer.h"
-#include "media/renderers/resource_sync_token_client.h"
+#include "media/gfx/paint_canvas_video_renderer.h"
+#include "media/gfx/resource_sync_token_client.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/khronos/GLES2/gl2ext.h"
 #include "third_party/khronos/GLES3/gl3.h"
@@ -648,8 +648,9 @@ void VideoResourceUpdater::ClearFrameResources() {
 VideoFrameExternalResource
 VideoResourceUpdater::CreateExternalResourceFromVideoFrame(
     scoped_refptr<VideoFrame> video_frame) {
-  if (video_frame->format() == PIXEL_FORMAT_UNKNOWN)
+  if (video_frame->format() == PIXEL_FORMAT_UNKNOWN) {
     return VideoFrameExternalResource();
+  }
   DCHECK(video_frame->HasSharedImage() || video_frame->HasDirectCpuAccess());
   if (video_frame->HasSharedImage()) {
     return CreateForHardwareFrame(std::move(video_frame));
@@ -1319,8 +1320,9 @@ void VideoResourceUpdater::RecycleResource(uint32_t resource_id,
                                            bool lost_resource) {
   auto resource_it =
       std::ranges::find(all_resources_, resource_id, &FrameResource::id);
-  if (resource_it == all_resources_.end())
+  if (resource_it == all_resources_.end()) {
     return;
+  }
 
   if (context_provider_ && sync_token.HasData()) {
     (*resource_it)->UpdateSyncToken(sync_token);

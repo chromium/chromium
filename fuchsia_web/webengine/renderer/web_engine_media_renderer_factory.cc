@@ -13,10 +13,10 @@
 #include "base/task/sequenced_task_runner.h"
 #include "fuchsia_web/webengine/renderer/web_engine_audio_renderer.h"
 #include "media/base/decoder_factory.h"
+#include "media/gfx/mappable_shared_image_video_frame_pool.h"
 #include "media/renderers/renderer_impl.h"
 #include "media/renderers/video_renderer_impl.h"
 #include "media/video/gpu_video_accelerator_factories.h"
-#include "media/video/mappable_shared_image_video_frame_pool.h"
 
 WebEngineMediaRendererFactory::WebEngineMediaRendererFactory(
     media::MediaLog* media_log,

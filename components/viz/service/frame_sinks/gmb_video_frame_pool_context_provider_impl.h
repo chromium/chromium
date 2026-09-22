@@ -9,7 +9,7 @@
 
 #include "components/viz/service/frame_sinks/gmb_video_frame_pool_context_provider.h"
 #include "components/viz/service/viz_service_export.h"
-#include "media/video/renderable_mappable_shared_image_video_frame_pool.h"
+#include "media/gfx/renderable_mappable_shared_image_video_frame_pool.h"
 
 namespace viz {
 

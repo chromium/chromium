@@ -33,7 +33,7 @@
 #include "components/viz/service/viz_service_export.h"
 #include "media/base/video_frame.h"
 #include "media/capture/content/video_capture_oracle.h"
-#include "media/video/renderable_mappable_shared_image_video_frame_pool.h"
+#include "media/gfx/renderable_mappable_shared_image_video_frame_pool.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"

@@ -18,7 +18,7 @@ include_rules = [
     "+gpu/command_buffer/client/gles2_interface.h",
     "+gpu/command_buffer/client/raster_interface.h",
     "+gpu/command_buffer/common/sync_token.h",
-    "+media/renderers/paint_canvas_video_renderer.h",
+    "+media/gfx/paint_canvas_video_renderer.h",
     "+services/metrics/public/cpp/ukm_builders.h",
     "+ui/display/display.h",
     "+ui/gfx/geometry",

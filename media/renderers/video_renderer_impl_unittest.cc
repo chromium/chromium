@@ -38,7 +38,7 @@
 #include "media/base/test_helpers.h"
 #include "media/base/video_frame.h"
 #include "media/base/wall_clock_time_source.h"
-#include "media/video/mock_mappable_shared_image_video_frame_pool.h"
+#include "media/gfx/mock_mappable_shared_image_video_frame_pool.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::base::test::RunClosure;

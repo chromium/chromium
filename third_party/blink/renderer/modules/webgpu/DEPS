@@ -17,6 +17,6 @@ include_rules = [
     "+media/base/video_transformation.h",
     "+media/base/video_util.h",
     "+media/base/wait_and_replace_sync_token_client.h",
-    "+media/renderers/paint_canvas_video_renderer.h",
+    "+media/gfx/paint_canvas_video_renderer.h",
     "+services/metrics/public/cpp/ukm_builders.h",
 ]

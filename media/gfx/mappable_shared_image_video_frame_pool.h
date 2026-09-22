@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_VIDEO_MAPPABLE_SHARED_IMAGE_VIDEO_FRAME_POOL_H_
-#define MEDIA_VIDEO_MAPPABLE_SHARED_IMAGE_VIDEO_FRAME_POOL_H_
+#ifndef MEDIA_GFX_MAPPABLE_SHARED_IMAGE_VIDEO_FRAME_POOL_H_
+#define MEDIA_GFX_MAPPABLE_SHARED_IMAGE_VIDEO_FRAME_POOL_H_
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -76,4 +76,4 @@ class MEDIA_EXPORT MappableSharedImageVideoFramePool {
 
 }  // namespace media
 
-#endif  // MEDIA_VIDEO_MAPPABLE_SHARED_IMAGE_VIDEO_FRAME_POOL_H_
+#endif  // MEDIA_GFX_MAPPABLE_SHARED_IMAGE_VIDEO_FRAME_POOL_H_

@@ -9,7 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "media/video/renderable_mappable_shared_image_video_frame_pool.h"
+#include "media/gfx/renderable_mappable_shared_image_video_frame_pool.h"
 
 namespace viz {
 
