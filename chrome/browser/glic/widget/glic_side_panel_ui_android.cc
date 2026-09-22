@@ -45,21 +45,8 @@ namespace glic {
 
 namespace {
 
-void OnMediaAccessPermissionResult(
-    base::WeakPtr<content::WebContents> web_contents,
-    blink::mojom::MediaStreamType audio_type,
-    content::MediaResponseCallback callback,
-    const blink::mojom::StreamDevicesSet& stream_devices_set,
-    blink::mojom::MediaStreamRequestResult result,
-    std::unique_ptr<content::MediaStreamUI> ui) {
-  if (result != blink::mojom::MediaStreamRequestResult::OK &&
-      blink::IsAudioInputMediaType(audio_type)) {
-    if (web_contents) {
-      ShowMicDisabledSnackbar(web_contents->GetTopLevelNativeWindow());
-    }
-  }
-  std::move(callback).Run(stream_devices_set, result, std::move(ui));
-}
+// Android runtime permission required to capture audio.
+constexpr char kRecordAudioPermission[] = "android.permission.RECORD_AUDIO";
 
 }  // namespace
 
@@ -265,6 +252,12 @@ void GlicSidePanelUi::OnBrowserActivated(BrowserWindowInterface* browser) {
 }
 
 void GlicSidePanelUi::OnBrowserDeactivated(BrowserWindowInterface* browser) {
+  // A permission prompt takes window focus away from the browser, but the panel
+  // is still in the foreground from the user's perspective. Deactivation is
+  // re-evaluated in SyncEmbedderWindowActivation() once the prompt is gone.
+  if (is_requesting_media_permission_) {
+    return;
+  }
   if (tab_ && tab_->GetBrowserWindowInterface() == browser) {
     delegate_->OnEmbedderWindowActivationChanged(false);
   }
@@ -334,12 +327,109 @@ void GlicSidePanelUi::RequestMediaAccessPermission(
     content::WebContents* web_contents,
     const content::MediaStreamRequest& request,
     content::MediaResponseCallback callback) {
+  // Keep the panel from being treated as backgrounded while a permission prompt
+  // (Chrome's or the OS's) sits in front of the window. Activation is re-synced
+  // once the request completes.
+  is_requesting_media_permission_ = true;
+
+  ui::WindowAndroid* window_android =
+      web_contents ? web_contents->GetTopLevelNativeWindow() : nullptr;
+  if (window_android && blink::IsAudioInputMediaType(request.audio_type) &&
+      !window_android->HasPermission(kRecordAudioPermission)) {
+    // Explain why Gemini needs the microphone before handing off to the OS
+    // permission prompt.
+    //
+    // Note this is a two-step flow: Chrome's dialog is dismissed before the OS
+    // prompt is shown, so a user who accepts here can still deny the OS prompt.
+    // Keeping Chrome's dialog on screen while the OS prompt is up would mean
+    // driving the runtime permission request from Java instead (which is what
+    // the Glic settings microphone toggle does). That is intentionally not done
+    // here: the pre-prompt exists because Android only lets us show the OS
+    // prompt a limited number of times, so we want the user's intent before
+    // spending one of those.
+    ShowMicPermissionDialog(
+        window_android,
+        base::BindOnce(&GlicSidePanelUi::OnMicPermissionDialogResult,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       web_contents->GetWeakPtr(), request,
+                       std::move(callback)));
+    return;
+  }
+
+  RequestSystemMediaAccessPermission(web_contents, request,
+                                     std::move(callback));
+}
+
+void GlicSidePanelUi::OnMicPermissionDialogResult(
+    base::WeakPtr<content::WebContents> web_contents,
+    const content::MediaStreamRequest& request,
+    content::MediaResponseCallback callback,
+    bool allowed) {
+  if (!allowed) {
+    RejectMediaAccessRequest(
+        std::move(callback),
+        blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED);
+    return;
+  }
+  if (!web_contents) {
+    RejectMediaAccessRequest(
+        std::move(callback),
+        blink::mojom::MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN_OTHER);
+    return;
+  }
+
+  RequestSystemMediaAccessPermission(web_contents.get(), request,
+                                     std::move(callback));
+}
+
+void GlicSidePanelUi::RequestSystemMediaAccessPermission(
+    content::WebContents* web_contents,
+    const content::MediaStreamRequest& request,
+    content::MediaResponseCallback callback) {
   MediaCaptureDevicesDispatcher::GetInstance()->ProcessMediaAccessRequest(
       web_contents, request,
-      base::BindOnce(&OnMediaAccessPermissionResult,
+      base::BindOnce(&GlicSidePanelUi::OnMediaAccessPermissionResult,
+                     weak_ptr_factory_.GetWeakPtr(),
                      web_contents ? web_contents->GetWeakPtr() : nullptr,
                      request.audio_type, std::move(callback)),
       nullptr);
+}
+
+void GlicSidePanelUi::OnMediaAccessPermissionResult(
+    base::WeakPtr<content::WebContents> web_contents,
+    blink::mojom::MediaStreamType audio_type,
+    content::MediaResponseCallback callback,
+    const blink::mojom::StreamDevicesSet& stream_devices_set,
+    blink::mojom::MediaStreamRequestResult result,
+    std::unique_ptr<content::MediaStreamUI> ui) {
+  is_requesting_media_permission_ = false;
+  if (result != blink::mojom::MediaStreamRequestResult::OK &&
+      blink::IsAudioInputMediaType(audio_type) && web_contents) {
+    // No-ops if the OS permission was actually granted.
+    ShowMicDisabledSnackbar(web_contents->GetTopLevelNativeWindow());
+  }
+  std::move(callback).Run(stream_devices_set, result, std::move(ui));
+  SyncEmbedderWindowActivation();
+}
+
+void GlicSidePanelUi::RejectMediaAccessRequest(
+    content::MediaResponseCallback callback,
+    blink::mojom::MediaStreamRequestResult result) {
+  is_requesting_media_permission_ = false;
+  std::move(callback).Run(blink::mojom::StreamDevicesSet(), result, nullptr);
+  SyncEmbedderWindowActivation();
+}
+
+void GlicSidePanelUi::SyncEmbedderWindowActivation() {
+  // OnBrowserDeactivated() suppresses deactivation notifications while a
+  // permission prompt is showing, so the delegate may now be out of date.
+  if (!tab_) {
+    return;
+  }
+  BrowserWindowInterface* browser_window = tab_->GetBrowserWindowInterface();
+  if (browser_window && !browser_window->GetWindow()->IsActive()) {
+    delegate_->OnEmbedderWindowActivationChanged(false);
+  }
 }
 
 bool GlicSidePanelUi::CheckMediaAccessPermission(
