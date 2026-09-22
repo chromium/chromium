@@ -80,9 +80,6 @@ class ASH_EXPORT CalendarEventListView
   // The index of the current or the next event in the event list view.
   int current_or_next_event_index_ = 0;
 
-  // views::View:
-  void OnThemeChanged() override;
-
   base::ScopedObservation<CalendarViewController,
                           CalendarViewController::Observer>
       scoped_calendar_view_controller_observer_{this};

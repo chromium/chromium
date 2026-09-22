@@ -127,6 +127,9 @@ CalendarEventListView::CalendarEventListView(
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
+  SetBackground(
+      views::CreateSolidBackground(cros_tokens::kCrosSysSystemOnBaseOpaque));
+
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   // Set the bottom corners to be rounded so that `CalendarEventListView` is
@@ -180,12 +183,6 @@ CalendarEventListView::CalendarEventListView(
 }
 
 CalendarEventListView::~CalendarEventListView() = default;
-
-void CalendarEventListView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  SetBackground(views::CreateSolidBackground(
-      GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemOnBaseOpaque)));
-}
 
 void CalendarEventListView::Layout(PassKey) {
   LayoutSuperclass<views::View>(this);
