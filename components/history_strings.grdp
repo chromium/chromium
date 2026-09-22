@@ -75,20 +75,18 @@
       Delete Browsing Data...
     </message>
   </if>
-  <if expr="not is_android">
-    <message name="IDS_HISTORY_OTHER_SESSIONS_COLLAPSE_SESSION" desc="In the 'Other Sessions' menu on the history page, the label for the command to collapse (hide) the list of windows and tabs in a session.">
-      Collapse list
-    </message>
-    <message name="IDS_HISTORY_OTHER_SESSIONS_EXPAND_SESSION" desc="In the 'Other Sessions' menu on the history page, the label for the command to expand (uncollapse) the list of windows and tabs in a session.">
-      Expand list
-    </message>
-    <message name="IDS_HISTORY_OTHER_SESSIONS_HIDE_FOR_NOW" desc="In the 'Other Sessions' menu on the history page, the label for the command to remove entry corresponding to a session.">
-      Hide for now
-    </message>
-    <message name="IDS_HISTORY_OTHER_SESSIONS_OPEN_ALL" desc="In the 'Other Sessions' menu on the history page, the label for the command to open all tabs and windows from a session.">
-      Open all
-    </message>
-  </if>
+  <message name="IDS_HISTORY_OTHER_SESSIONS_COLLAPSE_SESSION" desc="In the 'Other Sessions' menu on the history page, the label for the command to collapse (hide) the list of windows and tabs in a session.">
+    Collapse list
+  </message>
+  <message name="IDS_HISTORY_OTHER_SESSIONS_EXPAND_SESSION" desc="In the 'Other Sessions' menu on the history page, the label for the command to expand (uncollapse) the list of windows and tabs in a session.">
+    Expand list
+  </message>
+  <message name="IDS_HISTORY_OTHER_SESSIONS_HIDE_FOR_NOW" desc="In the 'Other Sessions' menu on the history page, the label for the command to remove entry corresponding to a session.">
+    Hide for now
+  </message>
+  <message name="IDS_HISTORY_OTHER_SESSIONS_OPEN_ALL" desc="In the 'Other Sessions' menu on the history page, the label for the command to open all tabs and windows from a session.">
+    Open all
+  </message>
   <message name="IDS_HISTORY_REMOVE_BOOKMARK" desc="Tooltip shown when hovered over a history entry's bookmark star. When clicked, removes the bookmark.">
     Delete bookmark
   </message>
