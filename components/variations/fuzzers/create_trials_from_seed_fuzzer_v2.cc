@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
@@ -155,6 +156,21 @@ void CreateTrialsFromSeedFuzzer(
       test_case.has_entropy()
           ? test_case.entropy()
           : variations::CreateTrialsFromSeedTestCase::EntropyValues();
+  // `CreateTrialsFromSeedTestCase` is a proto2 message, so its `string` fields
+  // are not validated to be UTF-8 when parsed. `PrefService::SetString()`
+  // constructs a `base::Value`, which `DCHECK`s
+  // `base::IsStringUTF8AllowingNoncharacters()`. In production, `Local State`
+  // prefs are loaded from disk via `JsonPrefStore` (`base::JSONReader`), which
+  // enforces this exact UTF-8 invariant (failing to parse the JSON file on
+  // invalid UTF-8 while allowing valid non-ASCII UTF-8 strings into
+  // `PrefService`). Using `base::IsStringUTF8AllowingNoncharacters()` here
+  // mimics that production boundary while still allowing `MetricsStateManager`
+  // and `EntropyState` to be fuzzed against valid non-ASCII UTF-8 strings.
+  if (!base::IsStringUTF8AllowingNoncharacters(entropy_values.client_id()) ||
+      !base::IsStringUTF8AllowingNoncharacters(
+          entropy_values.limited_entropy_randomization_source())) {
+    return;
+  }
   auto state_manager = CreateMetricsStateManagerForFuzzer(
       entropy_values, pref_service, enabled_state_provider);
   auto entropy_providers = state_manager->CreateEntropyProviders(
