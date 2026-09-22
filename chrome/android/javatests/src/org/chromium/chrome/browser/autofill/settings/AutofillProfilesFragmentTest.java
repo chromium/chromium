@@ -1456,6 +1456,7 @@ public class AutofillProfilesFragmentTest {
                         any(),
                         eq(R.string.autofill_ai_save_or_update_local_entity_source_notice),
                         eq(R.string.done),
+                        eq(null),
                         any());
     }
 
@@ -1512,6 +1513,7 @@ public class AutofillProfilesFragmentTest {
                         any(),
                         eq(R.string.autofill_ai_save_or_update_entity_in_wallet_source_notice),
                         eq(R.string.done),
+                        eq(null),
                         localSaveFallbackCaptor.capture());
 
         ThreadUtils.runOnUiThreadBlocking(() -> localSaveFallbackCaptor.getValue().run());
@@ -1574,6 +1576,7 @@ public class AutofillProfilesFragmentTest {
                         any(),
                         eq(R.string.autofill_ai_save_or_update_entity_in_wallet_source_notice),
                         eq(R.string.done),
+                        eq(null),
                         localSaveFallbackCaptor.capture());
 
         ThreadUtils.runOnUiThreadBlocking(() -> localSaveFallbackCaptor.getValue().run());

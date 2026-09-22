@@ -122,6 +122,26 @@ TEST_F(EntityDataManagerAndroidTest,
               testing::ElementsAre(entity));
 }
 
+// Test that when saving a public pass with a context token, it is forwarded
+// to EntityDataManager.
+TEST_F(EntityDataManagerAndroidTest,
+       AddOrUpdate_PublicPass_PassesContextToken) {
+  EntityInstance entity = test::GetVehicleEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+
+  ASSERT_TRUE(GetWalletPassType(entity.type(), entity.record_type()) ==
+              EntityInstance::WalletPassType::kPublic);
+
+  test_api(*entity_data_manager_android_)
+      .AddOrUpdateEntityInstance(
+          entity, entity.record_type(), /*description_string_id=*/0,
+          /*accept_button_string_id=*/0, "context_token");
+  webdata_helper_.WaitUntilIdle();
+
+  EXPECT_THAT(entity_data_manager().GetEntityInstances(),
+              testing::ElementsAre(entity));
+}
+
 // Test that when save to wallet fails, it falls back to local save.
 TEST_F(EntityDataManagerAndroidTest,
        AddOrUpdate_WalletSaveFails_FallbackToLocal) {

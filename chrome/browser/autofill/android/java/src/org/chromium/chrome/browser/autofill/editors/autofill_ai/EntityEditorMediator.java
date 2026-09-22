@@ -44,6 +44,7 @@ import static org.chromium.chrome.browser.autofill.editors.common.text_field.Tex
 
 import android.app.Activity;
 import android.content.Context;
+import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
@@ -52,6 +53,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.AutofillProfileBridge;
+import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorCoordinator.Delegate;
@@ -65,6 +67,7 @@ import org.chromium.components.autofill.autofill_ai.AttributeType;
 import org.chromium.components.autofill.autofill_ai.DataType;
 import org.chromium.components.autofill.autofill_ai.EntityInstance;
 import org.chromium.components.autofill.autofill_ai.RecordType;
+import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.modelutil.ListModel;
@@ -92,9 +95,12 @@ class EntityEditorMediator {
     private final IdentityManager mIdentityManager;
     private final PersonalDataManager mPersonalDataManager;
     private final EntityInstance mEntityInstance;
+    private final @Nullable List<LegalMessageLine> mLegalMessageLines;
+    private final @Nullable String mContextToken;
     private final PropertyModel mEditorModel;
     private final Map<AttributeType, PropertyModel> mAttributeFields = new HashMap<>();
     private @Nullable EditorItem mRequiredSourceNotice;
+    private @Nullable EditorItem mEntitySourceNotice;
 
     EntityEditorMediator(
             Context context,
@@ -102,13 +108,17 @@ class EntityEditorMediator {
             Profile profile,
             IdentityManager identityManager,
             PersonalDataManager personalDataManager,
-            EntityInstance entityInstance) {
+            EntityInstance entityInstance,
+            @Nullable List<LegalMessageLine> legalMessageLines,
+            @Nullable String contextToken) {
         mContext = context;
         mDelegate = delegate;
         mProfile = profile;
         mIdentityManager = identityManager;
         mPersonalDataManager = personalDataManager;
         mEntityInstance = entityInstance;
+        mLegalMessageLines = legalMessageLines;
+        mContextToken = contextToken;
         mEditorModel = buildEditorModel();
     }
 
@@ -175,12 +185,14 @@ class EntityEditorMediator {
         }
         assumeNonNull(mEditorModel).set(EntityEditorProperties.VISIBLE, false);
         commitChanges();
+        final boolean hasLegalMessage = mLegalMessageLines != null && !mLegalMessageLines.isEmpty();
         mDelegate.onDone(
                 mEntityInstance,
                 mEntityInstance.getRecordType() == RecordType.LOCAL
                         ? R.string.autofill_ai_save_or_update_local_entity_source_notice
                         : R.string.autofill_ai_save_or_update_entity_in_wallet_source_notice,
-                R.string.done);
+                R.string.done,
+                hasLegalMessage ? mContextToken : null);
     }
 
     /**
@@ -456,7 +468,18 @@ class EntityEditorMediator {
         if (TextUtils.isEmpty(sourceNotice)) {
             return;
         }
-        editorFields.add(
+        if (mLegalMessageLines != null && !mLegalMessageLines.isEmpty()) {
+            SpannableStringBuilder builder = new SpannableStringBuilder(sourceNotice);
+            builder.append("\n\n");
+            builder.append(
+                    AutofillUiUtils.getSpannableStringForLegalMessageLines(
+                            mContext,
+                            mLegalMessageLines,
+                            /* underlineLinks= */ true,
+                            url -> AutofillUiUtils.openLink(mContext, url)));
+            sourceNotice = builder;
+        }
+        mEntitySourceNotice =
                 new EditorItem(
                         NOTICE,
                         new PropertyModel.Builder(NOTICE_ALL_KEYS)
@@ -465,7 +488,8 @@ class EntityEditorMediator {
                                 .with(IMPORTANT_FOR_ACCESSIBILITY, true)
                                 .with(NOTICE_VISIBLE, true)
                                 .build(),
-                        /* isFullLine= */ true));
+                        /* isFullLine= */ true);
+        editorFields.add(mEntitySourceNotice);
     }
 
     private CharSequence getEntitySourceNotice(

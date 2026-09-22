@@ -161,7 +161,8 @@ public class AutofillAiDelegate {
                 public void onDone(
                         EntityInstance entityInstance,
                         int descriptionStringId,
-                        int acceptButtonStringId) {
+                        int acceptButtonStringId,
+                        @Nullable String contextToken) {
                     EntityDataManager entityDataManager =
                             EntityDataManagerFactory.getForProfile(mFragment.getProfile());
                     if (entityDataManager == null) {
@@ -171,6 +172,7 @@ public class AutofillAiDelegate {
                             entityInstance,
                             descriptionStringId,
                             acceptButtonStringId,
+                            contextToken,
                             () -> onLocalSaveFallback());
                 }
 

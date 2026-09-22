@@ -309,6 +309,7 @@ public class AutofillTravelFragmentTest {
                         any(),
                         eq(R.string.autofill_ai_save_or_update_local_entity_source_notice),
                         eq(R.string.done),
+                        eq(null),
                         any());
     }
 
@@ -388,6 +389,7 @@ public class AutofillTravelFragmentTest {
                         any(),
                         eq(R.string.autofill_ai_save_or_update_entity_in_wallet_source_notice),
                         eq(R.string.done),
+                        eq("context_token_1"),
                         any());
 
         // Second entity addition consumes `response2`, saves to Wallet, and triggers a third fetch
@@ -400,11 +402,12 @@ public class AutofillTravelFragmentTest {
                 .getDetailsForUpsertPass(eq(EntityTypeName.VEHICLE), any());
         onView(withText("Add Vehicle")).inRoot(isDialog()).check(matches(isDisplayed()));
         onView(withText("Done")).inRoot(isDialog()).perform(click());
-        verify(mEntityDataManager, times(2))
+        verify(mEntityDataManager)
                 .addOrUpdateEntityInstance(
                         any(),
                         eq(R.string.autofill_ai_save_or_update_entity_in_wallet_source_notice),
                         eq(R.string.done),
+                        eq("context_token_2"),
                         any());
 
         // Third entity addition verifies that `response2` was consumed and removed from the map:
@@ -422,6 +425,7 @@ public class AutofillTravelFragmentTest {
                         any(),
                         eq(R.string.autofill_ai_save_or_update_local_entity_source_notice),
                         eq(R.string.done),
+                        eq(null),
                         any());
     }
 

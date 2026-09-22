@@ -120,6 +120,7 @@ class EntityDataManagerAndroid : public EntityDataManager::Observer {
                                  const jni_zero::JavaRef<jobject>& jEntity,
                                  int32_t description_string_id,
                                  int32_t accept_button_string_id,
+                                 std::optional<std::string> context_token,
                                  base::OnceClosure on_local_save_fallback);
 
   // Retrieves the details (legal message and context token) required to upsert
@@ -240,6 +241,7 @@ class EntityDataManagerAndroid : public EntityDataManager::Observer {
       EntityInstance::RecordType targeted_record_type,
       int description_string_id,
       int accept_button_string_id,
+      std::optional<std::string> context_token,
       base::OnceClosure on_local_save_fallback);
 
   // Called after an attempt to save a private pass to Google Wallet.

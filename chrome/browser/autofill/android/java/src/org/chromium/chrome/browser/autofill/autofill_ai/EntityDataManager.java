@@ -97,11 +97,12 @@ public class EntityDataManager implements Destroyable {
         return EntityDataManagerJni.get().getEntityInstance(mNativeEntityDataManagerAndroid, guid);
     }
 
-    /** Saves or update an entity. */
+    /** Saves or update an entity with an optional context token. */
     public void addOrUpdateEntityInstance(
             EntityInstance entity,
             int descriptionStringId,
             int acceptButtonStringId,
+            @Nullable String contextToken,
             Runnable onLocalSaveFallback) {
         ThreadUtils.assertOnUiThread();
         EntityDataManagerJni.get()
@@ -110,6 +111,7 @@ public class EntityDataManager implements Destroyable {
                         entity,
                         descriptionStringId,
                         acceptButtonStringId,
+                        contextToken,
                         onLocalSaveFallback);
     }
 
@@ -408,6 +410,7 @@ public class EntityDataManager implements Destroyable {
                 EntityInstance entity,
                 int descriptionStringId,
                 int acceptButtonStringId,
+                @Nullable @JniType("std::optional<std::string>") String contextToken,
                 @JniType("base::OnceClosure") Runnable onLocalSaveFallback);
 
         void getDetailsForUpsertPass(

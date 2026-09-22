@@ -36,7 +36,16 @@ public class EntityEditorCoordinator {
          *     used.
          * @param acceptButtonStringId the resource ID of the string used as the accept button for
          *     the consent.
+         * @param contextToken the context token certifying disclosure notice acceptance, or null.
          */
+        default void onDone(
+                EntityInstance entityInstance,
+                int descriptionStringId,
+                int acceptButtonStringId,
+                @Nullable String contextToken) {
+            onDone(entityInstance, descriptionStringId, acceptButtonStringId);
+        }
+
         default void onDone(
                 EntityInstance entityInstance, int descriptionStringId, int acceptButtonStringId) {}
 
@@ -77,7 +86,13 @@ public class EntityEditorCoordinator {
                         profile,
                         assumeNonNull(IdentityServicesProvider.get().getIdentityManager(profile)),
                         PersonalDataManagerFactory.getForProfile(profile),
-                        entityInstance);
+                        entityInstance,
+                        detailsForUpsertPass != null
+                                ? detailsForUpsertPass.getLegalMessageLines()
+                                : null,
+                        detailsForUpsertPass != null
+                                ? detailsForUpsertPass.getContextToken()
+                                : null);
         mEditorView = new EntityEditorView(activity);
     }
 
