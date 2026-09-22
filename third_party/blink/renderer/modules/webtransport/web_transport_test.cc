@@ -2237,6 +2237,34 @@ TEST_F(WebTransportTest, ReceiveDatagramWithoutEnoughBuffer) {
                            "supplied view is not large enough."));
 }
 
+TEST_F(WebTransportTest, QueuedDatagramWithoutEnoughBuffer) {
+  ScopedWebTransportDatagramsReadableTypeForTest readable_type_enabled(true);
+  V8TestingScope scope;
+  auto* web_transport = CreateAndConnectSuccessfully(
+      scope, "https://example.com", ByteDatagramOptions());
+
+  client_remote_->OnDatagramReceived({'A', 'B', 'C'});
+  test::RunPendingTasks();
+
+  auto* script_state = scope.GetScriptState();
+  auto* reader =
+      web_transport->datagrams()->readable()->GetBYOBReaderForTesting(
+          script_state, ASSERT_NO_EXCEPTION);
+  auto* read_options =
+      MakeGarbageCollected<ReadableStreamBYOBReaderReadOptions>();
+
+  NotShared<DOMArrayBufferView> view =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(1));
+  ScriptPromiseTester tester(
+      script_state,
+      reader->read(script_state, view, read_options, ASSERT_NO_EXCEPTION));
+  tester.WaitUntilSettled();
+
+  EXPECT_TRUE(tester.IsRejected());
+  EXPECT_TRUE(IsRangeError(script_state, tester.Value(),
+                           "supplied view is not large enough."));
+}
+
 // The default and byte datagrams.readable implementations share DatagramQueue
 // and DatagramSource, so the lifecycle and queueing behavior exercised by the
 // helpers below has to hold for both. `kBytes` selects the byte stream, which
