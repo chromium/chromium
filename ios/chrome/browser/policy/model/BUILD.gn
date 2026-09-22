@@ -178,14 +178,25 @@ source_set("cloud_profile_reporting") {
 source_set("saas_usage_reporting") {
   sources = [
     "reporting/saas_usage/saas_usage_report_factory_delegate_ios.h",
-    "reporting/saas_usage/saas_usage_report_factory_delegate_ios.mm",
     "reporting/saas_usage/saas_usage_report_scheduler_delegate_ios.h",
-    "reporting/saas_usage/saas_usage_report_scheduler_delegate_ios.mm",
     "reporting/saas_usage/saas_usage_report_uploader_ios.h",
-    "reporting/saas_usage/saas_usage_report_uploader_ios.mm",
     "reporting/saas_usage/saas_usage_reporting_delegate_factory_ios.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/enterprise",
+    "//ios/chrome/browser/shared/model/profile",
+  ]
+}
+
+source_set("saas_usage_reporting_impl") {
+  sources = [
+    "reporting/saas_usage/saas_usage_report_factory_delegate_ios.mm",
+    "reporting/saas_usage/saas_usage_report_scheduler_delegate_ios.mm",
+    "reporting/saas_usage/saas_usage_report_uploader_ios.mm",
     "reporting/saas_usage/saas_usage_reporting_delegate_factory_ios.mm",
   ]
+  public_deps = [ ":saas_usage_reporting" ]
   deps = [
     ":model",
     "//base",
@@ -199,6 +210,7 @@ source_set("saas_usage_reporting") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
   ]
+  visibility = [ ":unit_tests" ]
 }
 
 source_set("browser_agent") {
@@ -344,6 +356,7 @@ source_set("unit_tests") {
     ":model",
     ":policy_util",
     ":saas_usage_reporting",
+    ":saas_usage_reporting_impl",
     ":test_resources",
     ":test_support",
     "//base",
