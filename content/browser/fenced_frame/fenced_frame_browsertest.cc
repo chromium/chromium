@@ -51,8 +51,7 @@ class FencedFrameStubBrowserTest : public ContentBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(FencedFrameStubBrowserTest,
-                       DISABLED_ElementCreationAndLayout) {
+IN_PROC_BROWSER_TEST_F(FencedFrameStubBrowserTest, ElementCreationAndLayout) {
   // Navigate to an empty page.
   const GURL main_url =
       https_server()->GetURL("a.test", "/fenced_frames/empty.html");
@@ -71,13 +70,24 @@ IN_PROC_BROWSER_TEST_F(FencedFrameStubBrowserTest,
     (document.body.children[0] instanceof HTMLFencedFrameElement);
   )"));
 
-  // 2. Verify the layout size of the element is the default 300x150 size (plus
-  // 2px border on each side).
+  // 2. Verify the layout size of the element is the default empty frame size,
+  // using iframes as a point of comparison.
   EXPECT_EQ(true, EvalJs(primary_main_frame_host(), R"(
-    const el = document.body.children[0];
-    const rect = el.getBoundingClientRect();
-    (rect.width === 304) && (rect.height === 154) &&
-    (el.clientWidth === 300) && (el.clientHeight === 150);
+    const ff = document.body.children[0];
+    const ff_rect = ff.getBoundingClientRect();
+
+    const reference_iframe = document.createElement('iframe');
+    document.body.appendChild(reference_iframe);
+    const ref_rect = reference_iframe.getBoundingClientRect();
+
+    const is_matching = (ff_rect.width === ref_rect.width) &&
+                        (ff_rect.height === ref_rect.height) &&
+                        (ff.clientWidth === reference_iframe.clientWidth) &&
+                        (ff.clientHeight === reference_iframe.clientHeight);
+
+    reference_iframe.remove();
+
+    is_matching;
   )"));
 
   // 3. Verify that the FencedFrameConfig class exists.
