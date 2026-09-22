@@ -144,7 +144,19 @@ class GlicSidePanelUi
   FRIEND_TEST_ALL_PREFIXES(GlicSidePanelUiAndroidTest,
                            MicPermissionDialogAcceptedWithDeadWebContents);
   FRIEND_TEST_ALL_PREFIXES(GlicSidePanelUiAndroidTest,
-                           DeactivationSuppressedDuringPermissionRequest);
+                           MicPermissionDialogAcceptedAndSystemGranted);
+  FRIEND_TEST_ALL_PREFIXES(GlicSidePanelUiAndroidTest,
+                           MicPermissionDialogAcceptedButSystemDenied);
+  FRIEND_TEST_ALL_PREFIXES(
+      GlicSidePanelUiAndroidTest,
+      WindowDeactivatedDuringPermissionRequestIsSuppressed);
+  FRIEND_TEST_ALL_PREFIXES(GlicSidePanelUiAndroidTest,
+                           SuppressedDeactivationDeliveredAfterDialogDismissed);
+  FRIEND_TEST_ALL_PREFIXES(
+      GlicSidePanelUiAndroidTest,
+      SuppressedDeactivationDeliveredAfterSystemPromptCompletes);
+  FRIEND_TEST_ALL_PREFIXES(GlicSidePanelUiAndroidTest,
+                           NoDeactivationWhenWindowRegainsFocusAfterPrompt);
 
   GlicSidePanelCoordinator* GetGlicSidePanelCoordinator() const;
 
