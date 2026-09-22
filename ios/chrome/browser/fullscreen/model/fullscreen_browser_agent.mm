@@ -13,6 +13,7 @@
 #import "base/functional/callback_helpers.h"
 #import "base/metrics/histogram_functions.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_constants.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_progress_animator.h"
 #import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/material_timing.h"
@@ -124,6 +125,9 @@ FullscreenBrowserAgent::FullscreenBrowserAgent(Browser* browser)
     : BrowserUserData(browser) {}
 
 FullscreenBrowserAgent::~FullscreenBrowserAgent() {
+  // A scheduled CADisplayLink retains the animator, so it must be stopped
+  // explicitly rather than relying on the member going out of scope.
+  [progress_animator_ stop];
   for (auto& observer : observers_) {
     observer.WillShutDown(this);
   }
@@ -288,7 +292,10 @@ void FullscreenBrowserAgent::UpdateProgressAndBroadcast(
   ++animation_generation_;
 
   if (!animated) {
+    [progress_animator_ stop];
     is_animating_ = false;
+    interpolated_progress_ = target_progress;
+    settled_state_ = SettledStateForTransition(transition);
     NotifyObserversOfUpdatedState();
     NotifyFullscreenDidTransition(transition);
     return;
@@ -305,6 +312,11 @@ void FullscreenBrowserAgent::UpdateProgressAndBroadcast(
     animation_initial_velocity_ = params.initial_spring_velocity;
   }
   scroll_velocity_ = 0.0;
+
+  // Started before the UIKit animation so both share the same duration and
+  // velocity. This must also precede NotifyObserversOfUpdatedState(), which
+  // clears `animation_initial_velocity_`.
+  StartInterpolatedProgressAnimation(start_progress, target_progress, duration);
 
   auto update_state = base::CallbackToBlock(
       base::BindOnce(&FullscreenBrowserAgent::NotifyObserversOfUpdatedState,
@@ -400,6 +412,14 @@ void FullscreenBrowserAgent::AnimationDidComplete(
 
   is_animating_ = false;
 
+  // The UIKit animation and the display link terminate independently, so
+  // settle the per-frame value here to guarantee opted-in observers land
+  // exactly on the target even if the display link is truncated.
+  if (progress_animator_) {
+    [progress_animator_ stop];
+    NotifyObserversOfInterpolatedProgress(top_progress_);
+  }
+
   // `finished` is deliberately ignored. The progress and the settled state were
   // committed when the transition started, and an interruption by an external
   // layout pass snaps the observer views to that committed progress, so the
@@ -412,6 +432,36 @@ void FullscreenBrowserAgent::BroadcastDidTransition(
     FullscreenTransition transition) {
   for (auto& observer : observers_) {
     observer.FullscreenDidTransition(this, transition);
+  }
+}
+
+void FullscreenBrowserAgent::StartInterpolatedProgressAnimation(
+    CGFloat start_progress,
+    CGFloat target_progress,
+    base::TimeDelta duration) {
+  if (!progress_animator_) {
+    auto update_handler = base::CallbackToBlock(base::BindRepeating(
+        &FullscreenBrowserAgent::NotifyObserversOfInterpolatedProgress,
+        weak_ptr_factory_.GetWeakPtr()));
+    progress_animator_ =
+        [[FullscreenProgressAnimator alloc] initWithUpdateHandler:update_handler
+                                                       completion:nil];
+  }
+
+  [progress_animator_ animateFromProgress:start_progress
+                               toProgress:target_progress
+                                 duration:duration
+                          initialVelocity:animation_initial_velocity_];
+}
+
+void FullscreenBrowserAgent::NotifyObserversOfInterpolatedProgress(
+    CGFloat progress) {
+  interpolated_progress_ = progress;
+  // Broadcast unconditionally: the default implementation is empty, so
+  // filtering would cost an extra virtual call per observer per frame to avoid
+  // a virtual call that does nothing.
+  for (auto& observer : observers_) {
+    observer.DidUpdateInterpolatedProgress(this);
   }
 }
 

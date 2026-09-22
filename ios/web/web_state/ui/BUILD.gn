@@ -22,6 +22,7 @@ source_set("ui") {
     "//ios/web/annotations",
     "//ios/web/browsing_data",
     "//ios/web/common",
+    "//ios/web/common:critically_damped_spring",
     "//ios/web/common:crw_web_view_resizing_type",
     "//ios/web/download",
     "//ios/web/favicon",

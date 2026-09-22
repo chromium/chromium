@@ -7,7 +7,10 @@
 FullscreenBrowserAgentObserverBridge::FullscreenBrowserAgentObserverBridge(
     id<FullscreenBrowserAgentObserving> observer,
     FullscreenBrowserAgent* agent)
-    : observer_(observer) {
+    : observer_(observer),
+      wants_interpolated_progress_([observer
+          respondsToSelector:@selector(
+                                 fullscreenDidUpdateInterpolatedProgress:)]) {
   if (agent) {
     scoped_observation_.Observe(agent);
   }
@@ -30,18 +33,30 @@ void FullscreenBrowserAgentObserverBridge::DidUpdateState(
   }
 }
 
+void FullscreenBrowserAgentObserverBridge::DidUpdateInterpolatedProgress(
+    FullscreenBrowserAgent* agent) {
+  // Guarded by the flag rather than by `respondsToSelector:` because this runs
+  // on every display refresh.
+  if (!wants_interpolated_progress_) {
+    return;
+  }
+  [observer_ fullscreenDidUpdateInterpolatedProgress:agent];
+}
+
 void FullscreenBrowserAgentObserverBridge::WillUpdateObscuredInsetRange(
     FullscreenBrowserAgent* agent) {
-  if ([observer_ respondsToSelector:@selector
-                 (fullscreenWillUpdateObscuredInsetRange:)]) {
+  if ([observer_
+          respondsToSelector:@selector(
+                                 fullscreenWillUpdateObscuredInsetRange:)]) {
     [observer_ fullscreenWillUpdateObscuredInsetRange:agent];
   }
 }
 
 void FullscreenBrowserAgentObserverBridge::DidUpdateObscuredInsetRange(
     FullscreenBrowserAgent* agent) {
-  if ([observer_ respondsToSelector:@selector
-                 (fullscreenDidUpdateObscuredInsetRange:)]) {
+  if ([observer_
+          respondsToSelector:@selector(
+                                 fullscreenDidUpdateObscuredInsetRange:)]) {
     [observer_ fullscreenDidUpdateObscuredInsetRange:agent];
   }
 }

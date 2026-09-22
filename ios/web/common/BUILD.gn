@@ -62,6 +62,15 @@ source_set("crw_web_view_resizing_type") {
   deps = [ "//base" ]
 }
 
+# Standalone so that consumers outside //ios/web can share the animation curve
+# without depending on the rest of the common web interfaces.
+source_set("critically_damped_spring") {
+  sources = [
+    "critically_damped_spring.h",
+    "critically_damped_spring.mm",
+  ]
+}
+
 source_set("web_view_creation_util") {
   sources = [
     "web_view_creation_util.h",

@@ -18,6 +18,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 
+@class FullscreenProgressAnimator;
+
 class FullscreenBrowserAgentTest;
 class FullscreenMediatorPassKeyFactory;
 enum class FullscreenModeTransitionTrigger;
@@ -72,6 +74,19 @@ class FullscreenBrowserAgent : public BrowserUserData<FullscreenBrowserAgent> {
   // fully hidden (in fullscreen mode).
   CGFloat top_progress() const { return top_progress_; }
   CGFloat bottom_progress() const { return bottom_progress_; }
+
+  // The progress for the frame currently being composed. While
+  // `is_animating()` this sweeps across the range that `top_progress()` skips,
+  // since the latter is committed to the transition target up front. Outside
+  // an animation the two are identical.
+  //
+  // Only meaningful from
+  // FullscreenBrowserAgentObserver::DidUpdateInterpolatedProgress();
+  // everything else should keep reading `top_progress()` and let UIKit
+  // interpolate.
+  CGFloat interpolated_progress() const {
+    return is_animating_ ? interpolated_progress_ : top_progress_;
+  }
 
   // Returns whether an animated transition is currently in progress.
   bool is_animating() const { return is_animating_; }
@@ -186,6 +201,16 @@ class FullscreenBrowserAgent : public BrowserUserData<FullscreenBrowserAgent> {
   void RecordEnterFullscreenTiming();
   void RecordExitFullscreenTiming();
 
+  // Starts per-frame interpolation alongside the UIKit animation, so that
+  // observers whose UI is a non-linear function of progress can see the
+  // intermediate values that `top_progress_` skips.
+  void StartInterpolatedProgressAnimation(CGFloat start_progress,
+                                          CGFloat target_progress,
+                                          base::TimeDelta duration);
+
+  // Publishes `progress` to the observers.
+  void NotifyObserversOfInterpolatedProgress(CGFloat progress);
+
   base::ObserverList<FullscreenBrowserAgentObserver, true> observers_;
 
   // The number of features currently disabling fullscreen.
@@ -267,6 +292,14 @@ class FullscreenBrowserAgent : public BrowserUserData<FullscreenBrowserAgent> {
 
   // The normalized initial velocity for the current transition.
   CGFloat animation_initial_velocity_ = 0.0;
+
+  // The progress for the frame currently being composed. Only meaningful
+  // while `is_animating_`; see `interpolated_progress()`.
+  CGFloat interpolated_progress_ = 1.0;
+
+  // Drives `interpolated_progress_`. Created lazily on the first animated
+  // transition and reused thereafter.
+  FullscreenProgressAnimator* progress_animator_ = nil;
 
   // The obscured inset for the keyboard when visible.
   CGFloat keyboard_obscured_inset_ = 0.0;
