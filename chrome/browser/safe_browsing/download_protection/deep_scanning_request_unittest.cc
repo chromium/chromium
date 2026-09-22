@@ -2044,10 +2044,10 @@ TEST_F(DeepScanningReportingTest, ReportForceSaveToGDrive) {
 class DeepScanningReportingAutomationTest : public DeepScanningReportingTest {
  public:
   DeepScanningReportingAutomationTest() {
-    scoped_features_.InitWithFeatures(
-        {enterprise_data_protection::kEnableForceDownloadToCloud,
-         safe_browsing::kEnhancedFieldsForSecOps},
-        {});
+    SetFeatures(
+        /*enabled=*/{enterprise_data_protection::kEnableForceDownloadToCloud,
+                     safe_browsing::kEnhancedFieldsForSecOps},
+        /*disabled=*/{});
   }
 
   void SetUp() override {
@@ -2059,7 +2059,6 @@ class DeepScanningReportingAutomationTest : public DeepScanningReportingTest {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_features_;
   base::test::ScopedCommandLine scoped_command_line_;
 };
 
