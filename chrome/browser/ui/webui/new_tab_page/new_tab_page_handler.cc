@@ -170,7 +170,7 @@ bool ShouldForceDarkForegroundColorsForLogo(const ThemeService* theme_service) {
           "mckialangcdpcdcflekinnpamfkmkobo",
       });
 
-  const std::string& extension_id = theme_supplier->extension_id();
+  const std::string_view extension_id = theme_supplier->extension_id();
   return kPrideThemeExtensionIdsDarkForeground.contains(extension_id);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -32,7 +32,6 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 class BrowserWindowInterface;
-class BrowserThemePack;
 class CustomThemeSupplier;
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -388,7 +387,7 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
   // Gets the icon to use if the app icon is not available.
   ui::ImageModel GetFallbackAppIcon() const;
 
-  void UpdateThemePack();
+  void UpdateThemeSupplier();
 
  private:
   // Sets the url that the app browser controller was created with.
@@ -399,7 +398,7 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
   const bool has_tab_strip_;
   GURL initial_url_;
 
-  scoped_refptr<BrowserThemePack> theme_pack_;
+  scoped_refptr<CustomThemeSupplier> theme_supplier_;
   std::unique_ptr<ui::ThemeProvider> theme_provider_;
   std::optional<SkColor> last_theme_color_;
   std::optional<SkColor> last_background_color_;

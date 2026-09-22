@@ -4,19 +4,25 @@
 
 #include "chrome/browser/themes/theme_helper.h"
 
+#include <string_view>
+
 #include "base/feature_list.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
-#include "chrome/browser/themes/browser_theme_pack.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/grit/components_scaled_resources.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image.h"
 #include "ui/native_theme/native_theme.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/themes/browser_theme_pack.h"
+#endif
 
 #if BUILDFLAG(IS_LINUX)
 #include "ui/linux/linux_ui.h"
@@ -62,7 +68,7 @@ bool ThemeHelper::IsDefaultTheme(const CustomThemeSupplier* theme_supplier) {
     return false;
   }
 
-  const std::string& id = theme_supplier->extension_id();
+  const std::string_view id = theme_supplier->extension_id();
   return id == kDefaultThemeID || id == kDefaultThemeGalleryID;
 }
 
@@ -75,8 +81,12 @@ bool ThemeHelper::IsCustomTheme(const CustomThemeSupplier* theme_supplier) {
 // static
 bool ThemeHelper::HasCustomImage(int id,
                                  const CustomThemeSupplier* theme_supplier) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   return BrowserThemePack::IsPersistentImageID(id) && theme_supplier &&
          theme_supplier->HasCustomImage(id);
+#else
+  return false;
+#endif
 }
 
 ThemeHelper::ThemeHelper() = default;

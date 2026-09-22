@@ -7,10 +7,10 @@
 #include <memory>
 #include <optional>
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
-#include "chrome/browser/themes/browser_theme_pack.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/native_theme/native_theme.h"
 

@@ -47,6 +47,8 @@ class SystemThemeLinux : public CustomThemeSupplier {
   bool GetDisplayProperty(int id, int* result) const override;
   gfx::Image GetImageNamed(int id) const override;
   bool HasCustomImage(int id) const override;
+  void AddColorMixers(ui::ColorProvider* provider,
+                      const ui::ColorProviderKey& key) const override;
   ui::NativeTheme* GetNativeTheme() const override;
 
  private:
@@ -93,6 +95,16 @@ gfx::Image SystemThemeLinux::GetImageNamed(int id) const {
 
 bool SystemThemeLinux::HasCustomImage(int id) const {
   return false;
+}
+
+void SystemThemeLinux::AddColorMixers(ui::ColorProvider* provider,
+                                      const ui::ColorProviderKey& key) const {
+  // Intentionally a no-op. The Linux system theme feeds its colors into the
+  // color pipeline via LinuxUiTheme::AddNativeChromeColorMixer() instead of
+  // through the ThemeProperties-to-color-ID mapping that
+  // CustomThemeSupplier::AddColorMixers() performs. Since the custom theme's
+  // mixer is added after the native one, running that mapping here would
+  // clobber the colors the native mixer is meant to win on.
 }
 
 ui::NativeTheme* SystemThemeLinux::GetNativeTheme() const {

@@ -17,6 +17,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/timer/elapsed_timer.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resources_util.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -36,6 +37,7 @@
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
+#include "extensions/buildflags/buildflags.h"
 #include "net/base/url_util.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -52,8 +54,11 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/search/instant_service.h"
-#include "chrome/browser/themes/browser_theme_pack.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/themes/browser_theme_pack.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/grit/cros_styles_resources.h"  // nogncheck crbug.com/40143654
@@ -210,7 +215,7 @@ void ThemeSource::SendThemeBitmap(
     float scale) {
   ui::ResourceScaleFactor scale_factor =
       ui::GetSupportedResourceScaleFactor(scale);
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   if (BrowserThemePack::IsPersistentImageID(resource_id)) {
     scoped_refptr<base::RefCountedMemory> image_data(
         ThemeService::GetThemeProviderForProfile(profile_->GetOriginalProfile())
@@ -218,7 +223,7 @@ void ThemeSource::SendThemeBitmap(
     std::move(callback).Run(image_data.get());
     return;
   }
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   const ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   std::move(callback).Run(
       rb.LoadDataResourceBytesForScale(resource_id, scale_factor));
@@ -231,13 +236,13 @@ void ThemeSource::SendThemeImage(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   gfx::ImageSkia* image = nullptr;
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   if (BrowserThemePack::IsPersistentImageID(resource_id)) {
     const ui::ThemeProvider& tp = ThemeService::GetThemeProviderForProfile(
         profile_->GetOriginalProfile());
     image = tp.GetImageSkiaNamed(resource_id);
   }
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   if (!image) {
     image =
         ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(resource_id);

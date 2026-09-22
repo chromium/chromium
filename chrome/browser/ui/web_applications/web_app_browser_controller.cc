@@ -456,7 +456,7 @@ void WebAppBrowserController::OnWebAppUninstalled(
 void WebAppBrowserController::OnWebAppManifestUpdated(
     const webapps::AppId& updated_app_id) {
   if (updated_app_id == app_id()) {
-    UpdateThemePack();
+    UpdateThemeSupplier();
     app_icon_.reset();
     BrowserWindow::FromBrowser(browser())->UpdateTitleBar();
 

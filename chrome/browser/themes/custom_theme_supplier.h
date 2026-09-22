@@ -9,7 +9,6 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "extensions/common/extension_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/color/color_provider_key.h"
@@ -33,7 +32,10 @@ class NativeTheme;
 
 // A representation of a theme. All theme properties can be accessed through the
 // public methods. Subclasses are expected to override all methods which should
-// provide non-default values.
+// provide non-default values. This class also connects those theme properties
+// with Chrome's color pipeline via AddColorMixers(), and provides protected
+// helpers for subclasses that store colors to mutate and propagate frame and
+// toolbar colors.
 class CustomThemeSupplier
     : public ui::ColorProviderKey::ThemeInitializerSupplier {
  public:
@@ -41,10 +43,11 @@ class CustomThemeSupplier
   CustomThemeSupplier(const CustomThemeSupplier&) = delete;
   CustomThemeSupplier& operator=(const CustomThemeSupplier&) = delete;
 
-  const std::string& extension_id() const {
-    DCHECK_EQ(get_theme_type(), ThemeType::kExtension);
-    return extension_id_;
-  }
+  // The ID of the extension this theme was installed from. Defaults to
+  // ThemeHelper::kDefaultThemeID unless get_theme_type() is kExtension; the ID
+  // itself is stored by BrowserThemePack, which is the only supplier built from
+  // an extension.
+  virtual std::string_view extension_id() const;
 
   // Called when the theme starts being used.
   virtual void StartUsingTheme();
@@ -73,27 +76,33 @@ class CustomThemeSupplier
   // Whether this theme provides an image for |id|.
   bool HasCustomImage(int id) const override;
 
+  // Maps the theme properties returned by GetColor() and GetDisplayProperty()
+  // onto Chrome's color pipeline.
+  //
   // ui::ColorProviderKey::ThemeInitializerSupplier:
   void AddColorMixers(ui::ColorProvider* provider,
-                      const ui::ColorProviderKey& key) const override {
-    // TODO(pkasting): All classes that override GetColor() should override
-    // this.
-  }
+                      const ui::ColorProviderKey& key) const override;
 
   virtual ui::NativeTheme* GetNativeTheme() const;
 
  protected:
   ~CustomThemeSupplier() override;
 
-  void set_extension_id(std::string_view id) {
-    DCHECK_EQ(get_theme_type(), ThemeType::kExtension);
-    extension_id_ = id;
-  }
+  // Sets the color for `id`. Must be overridden by subclasses that call
+  // SetColorIfUnspecified() or SetFrameAndToolbarRelatedColors(); subclasses
+  // that do not store colors (e.g. SystemThemeLinux) inherit a NOTREACHED().
+  virtual void SetColor(int id, SkColor color);
+
+  // Sets the color for `id` only if GetColor(id, ...) returns false.
+  void SetColorIfUnspecified(int id, SkColor color);
+
+  // Sets frame, toolbar, and related colors (e.g. text, button icon, omnibox,
+  // tab foreground) based on the colors and tints currently set on `this`.
+  // Called by subclasses after setting primary theme colors.
+  void SetFrameAndToolbarRelatedColors();
 
  private:
   friend class base::RefCountedThreadSafe<CustomThemeSupplier>;
-
-  extensions::ExtensionId extension_id_;
 };
 
 #endif  // CHROME_BROWSER_THEMES_CUSTOM_THEME_SUPPLIER_H_
