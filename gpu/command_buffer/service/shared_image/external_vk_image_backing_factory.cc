@@ -312,6 +312,22 @@ bool ExternalVkImageBackingFactory::IsSupported(
       // Only support GL vulkan webgpu interop.
       return false;
     }
+
+    // WebGPU interop requires a single allocation aliased into both APIs. When
+    // ExternalVkImageBacking cannot do that it falls back to allocating an
+    // independent GL texture next to the VkImage and keeping the two in sync
+    // by reading back and re-uploading pixels on access. Nothing in this
+    // configuration is supposed to reach that fallback: the drivers it is
+    // enabled on all support external objects, and Blink always allocates the
+    // WebGPU swap texture with the preferred canvas format, which is RGBA on
+    // Linux (see GPU::GetPreferredCanvasFormat()). The format is
+    // renderer-controlled though, so enforce the invariant rather than relying
+    // on a well-behaved client - the fallback is untested here and exposes
+    // uninitialized memory when a copy fails.
+    if (ExternalVkImageBacking::UseSeparateGLTexture(context_state_.get(),
+                                                     format)) {
+      return false;
+    }
   }
 #endif
   return true;
