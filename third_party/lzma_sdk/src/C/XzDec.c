@@ -25,8 +25,8 @@
 #define PRF(x)
 #endif
 
-#define PRF_STR(s) PRF(printf("\n" s "\n"))
-#define PRF_STR_INT(s, d) PRF(printf("\n" s " %d\n", (unsigned)d))
+#define PRF_STR(s) PRF(printf("\n" s "\n");)
+#define PRF_STR_INT(s, d) PRF(printf("\n" s " %d\n", (unsigned)d);)
 
 #include <stdlib.h>
 #include <string.h>
@@ -574,7 +574,7 @@ static SRes MixCoder_ResetFromMethod(CMixCoder *p, unsigned coderIndex, UInt64 m
 output (status) can be :
   CODER_STATUS_NOT_FINISHED
   CODER_STATUS_FINISHED_WITH_MARK
-  CODER_STATUS_NEEDS_MORE_INPUT - not implemented still
+  CODER_STATUS_NEEDS_MORE_INPUT
 */
 
 static SRes MixCoder_Code(CMixCoder *p,
@@ -582,8 +582,8 @@ static SRes MixCoder_Code(CMixCoder *p,
     const Byte *src, SizeT *srcLen, int srcWasFinished,
     ECoderFinishMode finishMode)
 {
-  SizeT destLenOrig = *destLen;
-  SizeT srcLenOrig = *srcLen;
+  const SizeT destLenOrig = *destLen;
+  const SizeT srcLenOrig = *srcLen;
 
   *destLen = 0;
   *srcLen = 0;
@@ -597,39 +597,26 @@ static SRes MixCoder_Code(CMixCoder *p,
   if (p->outBuf)
   {
     SRes res;
-    SizeT destLen2, srcLen2;
+    SizeT destLen2;
     int wasFinished;
     
     PRF_STR("------- MixCoder Single ----------")
       
-    srcLen2 = srcLenOrig;
     destLen2 = destLenOrig;
-    
+    if (p->numCoders != 1)
+    {
+      if (destLen2 < p->outWritten)
+        return SZ_ERROR_FAIL;
+      destLen2 -= p->outWritten;
+    }
+    *srcLen = srcLenOrig;
     {
       IStateCoder *coder = &p->coders[0];
-      res = coder->Code2(coder->p, NULL, &destLen2, src, &srcLen2, srcWasFinished, finishMode,
-          // &wasFinished,
-          &p->status);
-      wasFinished = (p->status == CODER_STATUS_FINISHED_WITH_MARK);
+      res = coder->Code2(coder->p, NULL, &destLen2, src, srcLen, srcWasFinished, finishMode, &p->status);
     }
-    
     p->res = res;
-    
-    /*
-    if (wasFinished)
-      p->status = CODER_STATUS_FINISHED_WITH_MARK;
-    else
-    {
-      if (res == SZ_OK)
-        if (destLen2 != destLenOrig)
-          p->status = CODER_STATUS_NEEDS_MORE_INPUT;
-    }
-    */
-
-    
-    *srcLen = srcLen2;
-    src += srcLen2;
     p->outWritten += destLen2;
+    wasFinished = (p->status == CODER_STATUS_FINISHED_WITH_MARK);
     
     if (res != SZ_OK || srcWasFinished || wasFinished)
       p->wasFinished = True;
@@ -1016,8 +1003,8 @@ SRes XzUnpacker_Code(CXzUnpacker *p, Byte *dest, SizeT *destLen,
     const Byte *src, SizeT *srcLen, int srcFinished,
     ECoderFinishMode finishMode, ECoderStatus *status)
 {
-  SizeT destLenOrig = *destLen;
-  SizeT srcLenOrig = *srcLen;
+  const SizeT destLenOrig = *destLen;
+  const SizeT srcLenOrig = *srcLen;
   *destLen = 0;
   *srcLen = 0;
   *status = CODER_STATUS_NOT_SPECIFIED;
