@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Overscroll Gestures: Slotted toggle invoker inside closed area escapes inertness via flat tree</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<button id="outside-btn">Outside</button>
+<div id="container" overscrollcontainer style="width: 200px; height: 200px; overflow: auto;">
+  <div id="area" overscrollarea style="width: 100px; height: 100px; right: 100%;">
+    <div id="wrapper">
+      <template shadowrootmode="open">
+        <div class="inner"><slot></slot></div>
+      </template>
+      <button id="regular-btn">Regular</button>
+      <button id="toggle-btn" command="toggle-overscroll" commandfor="area">Toggle</button>
+    </div>
+  </div>
+</div>
+
+<script>
+test(() => {
+  const outsideBtn = document.getElementById('outside-btn');
+  const regularBtn = document.getElementById('regular-btn');
+  const toggleBtn = document.getElementById('toggle-btn');
+  const area = document.getElementById('area');
+
+  document.body.offsetTop;
+  assert_false(area.matches(':overscroll-open'), 'Area is closed initially');
+
+  outsideBtn.focus();
+  regularBtn.focus();
+  assert_equals(document.activeElement, outsideBtn, 'Regular slotted button inside closed area is inert');
+
+  toggleBtn.focus({ preventScroll: true });
+  assert_equals(document.activeElement, toggleBtn, 'Slotted toggle invoker inside closed area escapes inertness');
+
+  toggleBtn.click();
+  document.body.offsetTop;
+  assert_true(area.matches(':overscroll-open'), 'Clicking slotted toggle invoker opens area');
+}, 'Same-scope toggle invoker slotted through a shadow tree inside a closed overscroll area escapes inertness');
+</script>

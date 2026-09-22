@@ -7,6 +7,7 @@
 #include "cc/input/scroll_snap_data.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -57,7 +58,7 @@ void ScrollTo(PaintLayerScrollableArea* scrollable_area, ScrollOffset offset) {
 void AdjustAreaOrContentInertness(const Element& element,
                                   bool is_overscroll_area,
                                   std::optional<bool>& html_inert) {
-  Element* parent = element.parentElement();
+  Element* parent = FlatTreeTraversal::ParentElement(element);
   if (!parent) {
     return;
   }
@@ -103,7 +104,7 @@ void AdjustInvokerInertness(const Element& element,
   }
 
   Element* target = html_element->commandForElement();
-  if (!target) {
+  if (!target || target->GetTreeScope() != html_element->GetTreeScope()) {
     return;
   }
 
@@ -129,6 +130,10 @@ bool IsValidOverscrollAreaInternal(
   }
   if (!parent_style || parent_style->EffectiveOverscrollContainerType() ==
                            EOverscrollContainerType::kNone) {
+    return false;
+  }
+  Element* parent = FlatTreeTraversal::ParentElement(element);
+  if (!parent || parent->GetTreeScope() != element.GetTreeScope()) {
     return false;
   }
   bool is_in_top_layer =
@@ -221,8 +226,8 @@ bool OverscrollAreaTracker::HasAnyOpenArea() const {
 const Element* OverscrollAreaTracker::ContainingOverscrollArea(
     const Element* element) const {
   for (const Element* current = element; current;
-       current = current->parentElement()) {
-    if (current->parentElement() == container_) {
+       current = FlatTreeTraversal::ParentElement(*current)) {
+    if (FlatTreeTraversal::ParentElement(*current) == container_) {
       return overscroll_members_.Contains(current) ? current : nullptr;
     }
   }
@@ -234,6 +239,9 @@ bool OverscrollAreaTracker::ShouldRemoveInertness(const Element* invoker,
   CHECK(invoker);
   CHECK(target);
   DCHECK(overscroll_members_.Contains(target));
+  if (invoker->GetTreeScope() != target->GetTreeScope()) {
+    return false;
+  }
   // If the container itself is inert (e.g. via the inert attribute), nothing
   // inside it should have inertness removed.
   if (container_->GetComputedStyle() &&

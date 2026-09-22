@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Overscroll Gestures: Shadow container does not match slotted light DOM area</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div id="host">
+  <template shadowrootmode="open">
+    <div id="container" overscrollcontainer style="width: 200px; height: 200px; overflow: auto;">
+      <slot></slot>
+    </div>
+  </template>
+  <div id="area" overscrollarea style="width: 100px; height: 100px; right: 100%;"></div>
+  <button id="invoker" command="toggle-overscroll" commandfor="area">Toggle</button>
+</div>
+
+<script>
+test(() => {
+  const area = document.getElementById('area');
+  const invoker = document.getElementById('invoker');
+
+  document.body.offsetTop;
+  assert_false(area.matches(':overscroll-open'), 'Closed initially');
+
+  invoker.click();
+  document.body.offsetTop;
+  assert_false(area.matches(':overscroll-open'), 'Slotted area does not match container in shadow root');
+}, 'Slotted light DOM overscrollarea does not match overscrollcontainer inside shadow root');
+</script>

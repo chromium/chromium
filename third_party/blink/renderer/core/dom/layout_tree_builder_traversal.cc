@@ -95,11 +95,13 @@ LayoutObject* LayoutTreeBuilderTraversal::ParentLayoutObject(const Node& node) {
     return scope->GetLayoutObject();
   }
   const Node* search_start_node = &node;
-  // Parent of ::scroll-marker-group, ::scroll-button(), and ::interest-button
-  // should be layout parent of its originating element.
+  // Parent of ::scroll-marker-group, ::scroll-button(), ::interest-button, and
+  // ::-internal-overscroll-area-parent should be layout parent of its
+  // originating element.
   if (node.IsScrollMarkerGroupPseudoElement() ||
       node.IsScrollButtonPseudoElement() ||
-      node.IsInterestButtonPseudoElement()) {
+      node.IsInterestButtonPseudoElement() ||
+      node.GetPseudoId() == kPseudoIdOverscrollAreaParent) {
     search_start_node = node.parentNode();
   }
   ContainerNode* parent =
@@ -641,8 +643,23 @@ Node* LayoutTreeBuilderTraversal::FirstLayoutChild(const Node& node) {
 namespace {
 
 bool IsLayoutObjectReparented(const LayoutObject* layout_object) {
-  return layout_object->IsInTopOrViewTransitionLayer() ||
-         layout_object->StyleRef().IsInternalOverscrollPositionAuto();
+  if (layout_object->IsInTopOrViewTransitionLayer()) {
+    return true;
+  }
+  if (auto* element = DynamicTo<Element>(layout_object->GetNode())) {
+    // GetOverscrollContainer() caches whether `element` is a valid overscroll
+    // area (computed in Element::RecalcOwnStyle), which determines whether it
+    // is reparented into ::-internal-overscroll-area-parent. Note that
+    // IsInternalOverscrollPositionAuto() can still be true when the construct
+    // is invalid (e.g. when [overscrollcontainer] > [overscrollarea] matches in
+    // the DOM tree but flat-tree parent or tree scope checks fail).
+    DCHECK_EQ(!!element->GetOverscrollContainer(),
+              OverscrollAreaTracker::IsValidOverscrollArea(
+                  *element, element->GetComputedStyle(),
+                  element->ParentComputedStyle()));
+    return element->GetOverscrollContainer();
+  }
+  return false;
 }
 
 LayoutObject* NextSiblingLayoutObjectInternal(const Node& node) {

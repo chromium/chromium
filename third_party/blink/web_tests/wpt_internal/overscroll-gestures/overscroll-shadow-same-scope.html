@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Overscroll Gestures: Container, area, and invoker in the same shadow root</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div id="host">
+  <template shadowrootmode="open">
+    <style>
+      #container {
+        width: 200px;
+        height: 200px;
+        overflow: auto;
+      }
+      #area {
+        width: 100px;
+        height: 100px;
+        right: 100%;
+      }
+    </style>
+    <div id="container" overscrollcontainer>
+      <div id="area" overscrollarea></div>
+    </div>
+    <button id="invoker" command="toggle-overscroll" commandfor="area">Toggle</button>
+  </template>
+</div>
+
+<script>
+test(() => {
+  const root = document.getElementById('host').shadowRoot;
+  const area = root.getElementById('area');
+  const invoker = root.getElementById('invoker');
+
+  document.body.offsetTop;
+  assert_false(area.matches(':overscroll-open'), 'Closed initially');
+
+  invoker.click();
+  document.body.offsetTop;
+  assert_true(area.matches(':overscroll-open'), 'Opened when all in same shadow tree scope');
+
+  invoker.click();
+  document.body.offsetTop;
+  assert_false(area.matches(':overscroll-open'), 'Closed after second toggle');
+}, 'Overscroll area works when container, area, and invoker share the same shadow tree scope');
+</script>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Overscroll Gestures: Shadow host container does not match light DOM child area</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div id="host" overscrollcontainer style="position: relative; width: 200px; height: 200px; overflow: auto;">
+  <template shadowrootmode="open">
+    <slot></slot>
+  </template>
+  <div id="before" style="display: none; position: absolute; inset: 0; width: 100px; height: 100px;"></div>
+  <div id="area" overscrollarea style="position: absolute; inset: 0; width: 100px; height: 100px;"></div>
+  <div id="after" style="display: none; position: absolute; inset: 0; width: 100px; height: 100px;"></div>
+  <button id="invoker" command="toggle-overscroll" commandfor="area">Toggle</button>
+</div>
+
+<script>
+test(() => {
+  const area = document.getElementById('area');
+  const invoker = document.getElementById('invoker');
+
+  document.body.offsetTop;
+  assert_false(area.matches(':overscroll-open'), 'Closed initially');
+
+  invoker.click();
+  document.body.offsetTop;
+  assert_false(area.matches(':overscroll-open'), 'Light DOM child of shadow host does not match host as flat-tree parent is slot');
+}, 'Light DOM child overscrollarea of a shadow host overscrollcontainer does not match via parentElement');
+
+test(() => {
+  const host = document.getElementById('host');
+  const before = document.getElementById('before');
+  const area = document.getElementById('area');
+  const rect = host.getBoundingClientRect();
+  const x = rect.left + 50;
+  const y = rect.top + 50;
+
+  before.style.display = 'block';
+  document.body.offsetTop;
+  assert_equals(document.elementFromPoint(x, y), area,
+      'Preceding sibling renders behind invalid cross-scope overscrollarea');
+}, 'Dynamically showing a preceding sibling preserves DOM painting order with invalid cross-scope overscrollarea');
+
+test(() => {
+  const host = document.getElementById('host');
+  const area = document.getElementById('area');
+  const after = document.getElementById('after');
+  const rect = host.getBoundingClientRect();
+  const x = rect.left + 50;
+  const y = rect.top + 50;
+
+  after.style.display = 'block';
+  area.style.display = 'none';
+  document.body.offsetTop;
+  area.style.display = 'block';
+  document.body.offsetTop;
+  assert_equals(document.elementFromPoint(x, y), after,
+      'Invalid cross-scope overscrollarea renders behind following sibling');
+}, 'Dynamically re-showing an invalid cross-scope overscrollarea preserves DOM painting order with following sibling');
+</script>

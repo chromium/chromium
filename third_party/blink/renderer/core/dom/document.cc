@@ -10455,7 +10455,8 @@ void Document::UpdateOverscrollCommandTargets() {
   HeapHashSet<Member<Element>> new_targets;
   for (Element* element : overscroll_command_invokers_) {
     if (auto* html_element = DynamicTo<HTMLElement>(element)) {
-      if (Element* target = html_element->commandForElement()) {
+      if (Element* target = html_element->commandForElement();
+          target && target->GetTreeScope() == html_element->GetTreeScope()) {
         new_targets.insert(target);
       }
     }

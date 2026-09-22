@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Overscroll Gestures: Shadow host container does not match shadow root area</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div id="host" overscrollcontainer style="width: 200px; height: 200px; overflow: auto;">
+  <template shadowrootmode="open">
+    <style>
+      #area {
+        width: 100px;
+        height: 100px;
+        right: 100%;
+      }
+    </style>
+    <div id="area" overscrollarea></div>
+    <button id="invoker" command="toggle-overscroll" commandfor="area">Toggle</button>
+  </template>
+</div>
+
+<script>
+test(() => {
+  const root = document.getElementById('host').shadowRoot;
+  const area = root.getElementById('area');
+  const invoker = root.getElementById('invoker');
+
+  document.body.offsetTop;
+  assert_false(area.matches(':overscroll-open'), 'Closed initially');
+
+  invoker.click();
+  document.body.offsetTop;
+  assert_false(area.matches(':overscroll-open'), 'Does not open when container is the shadow host in parent tree scope');
+}, 'Overscroll area inside shadow root does not match shadow host overscrollcontainer');
+</script>

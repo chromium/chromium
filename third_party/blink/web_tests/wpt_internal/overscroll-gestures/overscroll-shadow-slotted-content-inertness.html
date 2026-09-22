@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Overscroll Gestures: Slotted light DOM content becomes inert when shadow overscroll area opens</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<button id="outside-btn">Outside</button>
+<div id="host">
+  <template shadowrootmode="open">
+    <div id="container" overscrollcontainer style="width: 200px; height: 200px; overflow: auto;">
+      <div id="area" overscrollarea style="width: 100px; height: 100px; right: 100%;"></div>
+      <slot></slot>
+    </div>
+    <button id="invoker" command="toggle-overscroll" commandfor="area">Toggle</button>
+  </template>
+  <button id="slotted-content-btn">Slotted Content</button>
+</div>
+
+<script>
+test(() => {
+  const outsideBtn = document.getElementById('outside-btn');
+  const slottedContentBtn = document.getElementById('slotted-content-btn');
+  const root = document.getElementById('host').shadowRoot;
+  const area = root.getElementById('area');
+  const invoker = root.getElementById('invoker');
+
+  document.body.offsetTop;
+  assert_false(area.matches(':overscroll-open'), 'Area is closed initially');
+
+  outsideBtn.focus();
+  slottedContentBtn.focus();
+  assert_equals(document.activeElement, slottedContentBtn, 'Slotted content can receive focus when area is closed');
+
+  invoker.click();
+  document.body.offsetTop;
+  assert_true(area.matches(':overscroll-open'), 'Area is open');
+
+  outsideBtn.focus();
+  slottedContentBtn.focus();
+  assert_equals(document.activeElement, outsideBtn, 'Slotted content is inert when shadow overscroll area is open');
+}, 'Slotted light DOM content in a shadow overscroll container becomes inert when overscroll area is open');
+</script>

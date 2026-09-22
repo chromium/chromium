@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Overscroll Gestures: Cross-tree-scope command invoker does not match area</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div id="container" overscrollcontainer style="width: 200px; height: 200px; overflow: auto;">
+  <div id="area" overscrollarea style="width: 100px; height: 100px; right: 100%;"></div>
+</div>
+<div id="host">
+  <template shadowrootmode="open">
+    <button id="shadow-invoker" command="toggle-overscroll">Toggle</button>
+  </template>
+</div>
+
+<script>
+test(() => {
+  const area = document.getElementById('area');
+  const shadowInvoker = document.getElementById('host').shadowRoot.getElementById('shadow-invoker');
+  shadowInvoker.commandForElement = area;
+  document.body.offsetTop;
+
+  assert_false(area.matches(':overscroll-open'), 'Closed initially');
+
+  shadowInvoker.click();
+  document.body.offsetTop;
+  assert_false(area.matches(':overscroll-open'), 'Cross-scope invoker cannot register or toggle overscroll area');
+}, 'Command invoker in a different tree scope cannot target an overscroll area');
+</script>

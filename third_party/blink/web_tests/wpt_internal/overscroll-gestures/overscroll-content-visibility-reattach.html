@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Overscroll Gestures: Unlocking content-visibility on overscrollarea attaches overscroll-area-parent under container</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div id="container" overscrollcontainer style="width: 200px; height: 200px; overflow: auto;">
+  <div id="area" overscrollarea style="content-visibility: hidden; width: 100px; height: 100px; right: 100%;"></div>
+  <button id="invoker" command="toggle-overscroll" commandfor="area">Toggle</button>
+</div>
+
+<script>
+test(() => {
+  const area = document.getElementById('area');
+  const invoker = document.getElementById('invoker');
+
+  document.body.offsetTop;
+
+  area.style.contentVisibility = 'visible';
+  area.style.display = 'flex';
+  document.body.offsetTop;
+
+  invoker.click();
+  document.body.offsetTop;
+  assert_true(area.matches(':overscroll-open'), 'Area opens after content-visibility is unlocked');
+}, 'Unlocking content-visibility on overscrollarea properly attaches its layout tree');
+</script>

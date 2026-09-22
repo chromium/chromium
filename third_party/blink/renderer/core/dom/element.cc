@@ -5760,22 +5760,27 @@ StyleRecalcChange Element::RecalcOwnStyle(
   // also clear GetOverscrollContainer() on `this`).
   bool is_valid_overscroll_area = OverscrollAreaTracker::IsValidOverscrollArea(
       *this, new_style, parent_style);
-  Element* parent = parentElement();
+  Element* overscroll_container = GetOverscrollContainer();
+  if (is_valid_overscroll_area || overscroll_container) {
+    Element* parent = FlatTreeTraversal::ParentElement(*this);
 
-  if (GetOverscrollContainer() && (!new_style || !is_valid_overscroll_area ||
-                                   GetOverscrollContainer() != parent)) {
-    DetachOverscroll();
-    // We may need to remove this element's ::-internal-overscroll-area-parent.
-    child_change =
-        child_change.EnsureAtLeast(StyleRecalcChange::kUpdatePseudoElements);
-  }
-  // If we no longer have an overscroll container, but need one, add this
-  // element to the parent overscroll container.
-  if (!GetOverscrollContainer() && is_valid_overscroll_area) {
-    parent->EnsureOverscrollAreaTracker().AddOverscroll(this);
-    // We need to add a ::-internal-overscroll-area-parent for this element.
-    child_change =
-        child_change.EnsureAtLeast(StyleRecalcChange::kUpdatePseudoElements);
+    if (overscroll_container && (!new_style || !is_valid_overscroll_area ||
+                                 overscroll_container != parent)) {
+      DetachOverscroll();
+      overscroll_container = nullptr;
+      // We may need to remove this element's
+      // ::-internal-overscroll-area-parent.
+      child_change =
+          child_change.EnsureAtLeast(StyleRecalcChange::kUpdatePseudoElements);
+    }
+    // If we no longer have an overscroll container, but need one, add this
+    // element to the parent overscroll container.
+    if (!overscroll_container && is_valid_overscroll_area) {
+      parent->EnsureOverscrollAreaTracker().AddOverscroll(this);
+      // We need to add a ::-internal-overscroll-area-parent for this element.
+      child_change =
+          child_change.EnsureAtLeast(StyleRecalcChange::kUpdatePseudoElements);
+    }
   }
 
   if (GetOverscrollAreaTracker() && old_style && new_style &&

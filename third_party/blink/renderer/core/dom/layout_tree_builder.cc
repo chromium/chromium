@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/layout_view_transition_root.h"
+#include "third_party/blink/renderer/core/overscroll/overscroll_area_tracker.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 
@@ -62,8 +63,13 @@ LayoutObject* LayoutTreeBuilderForElement::NextLayoutObject() const {
     return nullptr;
   }
   // Overscroll areas are the last child within their
-  // ::-internal-overscroll-area-parent.
-  if (style_->IsInternalOverscrollPositionAuto()) {
+  // ::-internal-overscroll-area-parent. GetOverscrollContainer() caches
+  // whether `node_` is a valid overscroll area (computed in
+  // Element::RecalcOwnStyle).
+  DCHECK_EQ(!!node_->GetOverscrollContainer(),
+            OverscrollAreaTracker::IsValidOverscrollArea(
+                *node_, style_, node_->ParentComputedStyle()));
+  if (node_->GetOverscrollContainer()) {
     return nullptr;
   }
 

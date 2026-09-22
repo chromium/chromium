@@ -3249,7 +3249,7 @@ bool HTMLElement::IsValidBuiltinCommand(HTMLElement& invoker,
   }
   if (Element::IsOverscrollCommand(command)) {
     CHECK(RuntimeEnabledFeatures::OverscrollGesturesEnabled());
-    return true;
+    return GetTreeScope() == invoker.GetTreeScope();
   }
   return false;
 }
