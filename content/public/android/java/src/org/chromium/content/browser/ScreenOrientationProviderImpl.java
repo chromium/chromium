@@ -10,6 +10,9 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.util.Pair;
 import android.view.Surface;
+import android.view.View;
+
+import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -20,13 +23,20 @@ import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.ScreenOrientationDelegate;
 import org.chromium.content_public.browser.ScreenOrientationProvider;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.device.mojom.ScreenOrientationLockType;
+import org.chromium.ui.base.EventForwarder;
+import org.chromium.ui.base.EventForwarder.TouchSequenceObserver;
+import org.chromium.ui.base.ViewAndroidDelegate;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 
+import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -104,7 +114,54 @@ public class ScreenOrientationProviderImpl
         }
     }
 
+    /**
+     * Tracks a deferred orientation request for a {@link WebContents} while an active touch
+     * sequence originating in the system gesture inset region is in progress.
+     *
+     * <p>The {@link TouchSequenceObserver} is registered lazily only while a touch-deferred request
+     * is pending and removed immediately upon touch completion or cancellation so that {@link
+     * EventForwarder} (retained in static {@code EventForwarder.sEventForwarders} until native
+     * teardown) does not retain strong references to {@link WebContents} or {@code AwContents}.
+     */
+    private static final class PendingTouchRequest implements TouchSequenceObserver {
+        private final ScreenOrientationProviderImpl mProvider;
+        private final WeakReference<WebContents> mWebContentsRef;
+        private final EventForwarder mEventForwarder;
+        private final boolean mLockOrUnlock;
+        private final byte mWebScreenOrientation;
+
+        public PendingTouchRequest(
+                ScreenOrientationProviderImpl provider,
+                WebContents webContents,
+                boolean lockOrUnlock,
+                byte webScreenOrientation) {
+            mProvider = provider;
+            mWebContentsRef = new WeakReference<>(webContents);
+            mEventForwarder = webContents.getEventForwarder();
+            mLockOrUnlock = lockOrUnlock;
+            mWebScreenOrientation = webScreenOrientation;
+            mEventForwarder.addTouchSequenceObserver(this);
+        }
+
+        public void cancel() {
+            mEventForwarder.removeTouchSequenceObserver(this);
+        }
+
+        @Override
+        public void onTouchSequenceEnded(boolean hasExceededTouchSlop) {
+            cancel();
+            WebContents webContents = mWebContentsRef.get();
+            if (webContents == null) return;
+            mProvider.mPendingTouchRequests.remove(webContents);
+            if (hasExceededTouchSlop) return;
+
+            mProvider.applyOrientationRequestForWebContents(
+                    webContents, mLockOrUnlock, mWebScreenOrientation);
+        }
+    }
+
     private final Map<WebContents, PendingRequest> mPendingRequests = new WeakHashMap<>();
+    private final Map<WebContents, PendingTouchRequest> mPendingTouchRequests = new WeakHashMap<>();
 
     @CalledByNative
     public static ScreenOrientationProviderImpl getInstance() {
@@ -173,14 +230,16 @@ public class ScreenOrientationProviderImpl
                 new PendingRequest(this, windowEventManager, lockOrUnlock, webScreenOrientation));
     }
 
+    @VisibleForTesting
     @CalledByNative
-    private void lockOrientationForWebContents(WebContents webContents, byte webScreenOrientation) {
-        WindowAndroid window = webContents.getTopLevelNativeWindow();
-        if (window == null) {
-            addPendingRequest(webContents, LOCK, webScreenOrientation);
-        } else {
-            lockOrientation(window, webScreenOrientation);
-        }
+    void lockOrientationForWebContents(WebContents webContents, byte webScreenOrientation) {
+        requestOrientationForWebContents(webContents, LOCK, webScreenOrientation);
+    }
+
+    @VisibleForTesting
+    @CalledByNative
+    void unlockOrientationForWebContents(WebContents webContents) {
+        requestOrientationForWebContents(webContents, UNLOCK, (byte) 0);
     }
 
     @Override
@@ -203,14 +262,60 @@ public class ScreenOrientationProviderImpl
         setMaybeDelayedRequestedOrientation(activity, /* lock= */ true, orientation);
     }
 
-    @CalledByNative
-    private void unlockOrientationForWebContents(WebContents webContents) {
+    private void requestOrientationForWebContents(
+            WebContents webContents, boolean lockOrUnlock, byte webScreenOrientation) {
+        PendingTouchRequest existingTouchRequest = mPendingTouchRequests.remove(webContents);
+        if (existingTouchRequest != null) existingTouchRequest.cancel();
+
+        if (shouldDeferForTouchInGestureInsets(webContents)) {
+            if (!webContents.getEventForwarder().hasCurrentTouchExceededTouchSlop()) {
+                mPendingTouchRequests.put(
+                        webContents,
+                        new PendingTouchRequest(
+                                this, webContents, lockOrUnlock, webScreenOrientation));
+            }
+            return;
+        }
+
+        applyOrientationRequestForWebContents(webContents, lockOrUnlock, webScreenOrientation);
+    }
+
+    private void applyOrientationRequestForWebContents(
+            WebContents webContents, boolean lockOrUnlock, byte webScreenOrientation) {
         WindowAndroid window = webContents.getTopLevelNativeWindow();
         if (window == null) {
-            addPendingRequest(webContents, UNLOCK, (byte) 0);
+            addPendingRequest(webContents, lockOrUnlock, webScreenOrientation);
+            return;
+        }
+
+        if (lockOrUnlock) {
+            lockOrientation(window, webScreenOrientation);
         } else {
             unlockOrientation(window);
         }
+    }
+
+    private static boolean shouldDeferForTouchInGestureInsets(WebContents webContents) {
+        if (!isRestrictInteractionsInSwipeRegionEnabled()) {
+            return false;
+        }
+        ViewAndroidDelegate viewDelegate = webContents.getViewAndroidDelegate();
+        View containerView = viewDelegate != null ? viewDelegate.getContainerView() : null;
+        if (containerView == null) return false;
+        return isFullscreenOrImmersive(webContents, containerView)
+                && webContents
+                        .getEventForwarder()
+                        .hasTouchOriginatingInGestureInsets(containerView);
+    }
+
+    private static boolean isFullscreenOrImmersive(WebContents webContents, View containerView) {
+        return webContents.isFullscreenForCurrentTab()
+                || ViewUtils.isStickyImmersiveMode(containerView);
+    }
+
+    private static boolean isRestrictInteractionsInSwipeRegionEnabled() {
+        return ContentFeatureMap.isEnabled(
+                ContentFeatures.RESTRICT_INTERACTIONS_IN_SWIPE_REGION_ON_FULLSCREEN);
     }
 
     @Override
