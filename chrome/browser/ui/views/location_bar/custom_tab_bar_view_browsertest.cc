@@ -775,6 +775,40 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest, BlobUrlLocation) {
       app_browser_view->toolbar()->custom_tab_bar()->location_for_testing() +
           u"/",
       base::ASCIIToUTF16(embedded_https_test_server().GetURL("/").spec()));
+  EXPECT_EQ(app_browser_view->toolbar()
+                ->custom_tab_bar()
+                ->GetLocationElideBehaviorForTesting(),
+            gfx::ElideBehavior::ELIDE_HEAD);
+}
+
+// Verify that navigating to an opaque-origin URL (like about:blank with a
+// crafted fragment) strips the fragment and uses tail elision rather than
+// head elision, preventing origin spoofing.
+IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
+                       AboutBlankWithFragmentDoesNotSpoofOrigin) {
+  InstallPWA(
+      embedded_https_test_server().GetURL("app.com", "/ssl/google.html"));
+  ASSERT_TRUE(app_browser_);
+  EXPECT_EQ(app_browser_->GetType(), BrowserWindowInterface::Type::TYPE_APP);
+
+  BrowserView* app_view = BrowserView::GetBrowserViewForBrowser(app_browser_);
+  content::WebContents* web_contents = app_view->GetActiveWebContents();
+  CustomTabBarView* bar = app_view->toolbar()->custom_tab_bar();
+
+  NavigateAndWait(web_contents,
+                  GURL("about:blank#////////////////https://victim.com/login"));
+
+  EXPECT_TRUE(bar->GetVisible());
+  EXPECT_EQ(bar->location_for_testing(), u"about:blank");
+  EXPECT_EQ(bar->GetLocationElideBehaviorForTesting(),
+            gfx::ElideBehavior::ELIDE_TAIL);
+
+  // Navigating to a hierarchical HTTPS URL should use head elision.
+  NavigateAndWait(web_contents, GURL("https://example.com/path"));
+  EXPECT_TRUE(bar->GetVisible());
+  EXPECT_EQ(bar->location_for_testing(), u"https://example.com");
+  EXPECT_EQ(bar->GetLocationElideBehaviorForTesting(),
+            gfx::ElideBehavior::ELIDE_HEAD);
 }
 
 // Check that the CustomTabBarView security chip updates when the visible

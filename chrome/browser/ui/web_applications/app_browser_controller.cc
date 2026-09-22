@@ -260,10 +260,23 @@ AppBrowserController::FindTopLevelBrowsingContextForWebApp(
 std::u16string AppBrowserController::FormatUrlOrigin(
     const GURL& url,
     url_formatter::FormatUrlTypes format_types) {
+  if (url.IsAboutBlank()) {
+    return url::kAboutBlankURL16;
+  }
+  if (url.IsAboutSrcdoc()) {
+    return url::kAboutSrcdocURL16;
+  }
   auto origin = url::Origin::Create(url);
-  return url_formatter::FormatUrl(origin.opaque() ? url : origin.GetURL(),
-                                  format_types, base::UnescapeRule::SPACES,
-                                  nullptr, nullptr, nullptr);
+  GURL url_to_format = origin.GetURL();
+  if (origin.opaque()) {
+    GURL::Replacements replacements;
+    replacements.ClearRef();
+    replacements.ClearQuery();
+    url_to_format = url.ReplaceComponents(replacements);
+  }
+  return url_formatter::FormatUrl(url_to_format, format_types,
+                                  base::UnescapeRule::SPACES, nullptr, nullptr,
+                                  nullptr);
 }
 
 const ui::ThemeProvider* AppBrowserController::GetThemeProvider() const {

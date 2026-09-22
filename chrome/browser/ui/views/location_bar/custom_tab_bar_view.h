@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/context_menu_controller.h"
@@ -106,6 +107,7 @@ class CustomTabBarView : public views::AccessiblePaneView,
   void GoBackToAppForTesting();
   bool IsShowingOriginForTesting() const;
   bool IsShowingCloseButtonForTesting() const;
+  gfx::ElideBehavior GetLocationElideBehaviorForTesting() const;
 
  private:
   // Takes the web contents for the custom tab bar back to the app scope.

@@ -29,6 +29,13 @@ TEST(AppBrowserController, FormatUrlOrigin) {
       // comprehensive tests in
       // components/url_formatter/url_formatter_unittest.cc.
       {"https://xn--36c-tfa.com", L"xn--36c-tfa.com"},
+      // Opaque origins should not retain fragments or queries that could spoof
+      // an origin when head-elided.
+      {"about:blank", L"about:blank"},
+      {"about:blank#https://victim.com/login", L"about:blank"},
+      {"about:blank?https://victim.com/login", L"about:blank"},
+      {"about:srcdoc#https://victim.com/login", L"about:srcdoc"},
+      {"data:text/html,hello#https://victim.com", L"data:text/html,hello"},
   };
   for (auto test_case : kTestCases) {
     EXPECT_EQ(AppBrowserController::FormatUrlOrigin(GURL(test_case.input)),

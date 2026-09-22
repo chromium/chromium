@@ -55,6 +55,7 @@
 #include "ui/views/style/typography_provider.h"
 #include "ui/views/view_class_properties.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace {
 
@@ -136,10 +137,13 @@ class CustomTabBarTitleOriginView : public views::View {
         .SetCrossAxisAlignment(views::LayoutAlignment::kStart);
   }
 
-  void Update(const std::u16string title, const std::u16string location) {
+  void Update(const std::u16string title,
+              const std::u16string location,
+              gfx::ElideBehavior location_elide_behavior) {
     if (title_label_) {
       title_label_->SetText(title);
     }
+    location_label_->SetElideBehavior(location_elide_behavior);
     location_label_->SetText(location);
     location_label_->SetVisible(!location.empty());
   }
@@ -191,6 +195,10 @@ class CustomTabBarTitleOriginView : public views::View {
 
   bool IsShowingOriginForTesting() const {
     return location_label_ && location_label_->GetVisible();
+  }
+
+  gfx::ElideBehavior GetLocationElideBehaviorForTesting() const {
+    return location_label_->GetElideBehavior();
   }
 
  private:
@@ -373,12 +381,22 @@ void CustomTabBarView::UpdateContents() {
     title = WindowMetadataController::FormatTitleForDisplay(
         entry->GetTitleForDisplay());
   }
+  const GURL visible_url = contents->GetVisibleURL();
   if (ShouldDisplayUrl(contents)) {
     location = web_app::AppBrowserController::FormatUrlOrigin(
-        contents->GetVisibleURL(), url_formatter::kFormatUrlOmitDefaults);
+        visible_url, url_formatter::kFormatUrlOmitDefaults);
   }
 
-  title_origin_view_->Update(title, location);
+  // Only head-elide hierarchical HTTP/HTTPS origins (where the registrable
+  // domain is at the end). For opaque origins or non-HTTP/HTTPS schemes, tail
+  // elision is required so that a crafted suffix cannot spoof an HTTPS origin.
+  const url::Origin origin = url::Origin::Create(visible_url);
+  const gfx::ElideBehavior location_elide_behavior =
+      (!origin.opaque() && origin.GetURL().SchemeIsHTTPOrHTTPS())
+          ? gfx::ElideBehavior::ELIDE_HEAD
+          : gfx::ElideBehavior::ELIDE_TAIL;
+
+  title_origin_view_->Update(title, location, location_elide_behavior);
   location_icon_view_->Update(/*suppress animations = */ false);
 
   // Hide location icon if we're already hiding the origin.
@@ -460,6 +478,11 @@ bool CustomTabBarView::IsShowingOriginForTesting() const {
 
 bool CustomTabBarView::IsShowingCloseButtonForTesting() const {
   return close_button_->GetVisible();
+}
+
+gfx::ElideBehavior CustomTabBarView::GetLocationElideBehaviorForTesting()
+    const {
+  return title_origin_view_->GetLocationElideBehaviorForTesting();  // IN-TEST
 }
 
 void CustomTabBarView::GoBackToApp() {
