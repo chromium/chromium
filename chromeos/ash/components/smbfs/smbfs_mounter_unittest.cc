@@ -26,8 +26,8 @@
 #include "mojo/core/embedder/scoped_ipc_support.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 #include "mojo/public/cpp/system/invitation.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
@@ -302,9 +302,7 @@ TEST_F(SmbFsMounterTest, MountOptions) {
         EXPECT_EQ(options->password->length,
                   static_cast<int32_t>(strlen(kPassword)));
         std::string password_buf(options->password->length, 'a');
-        base::ScopedFD fd =
-            mojo::UnwrapPlatformHandle(std::move(options->password->fd))
-                .TakeFD();
+        base::ScopedFD fd = options->password->fd.TakeFD();
         EXPECT_TRUE(base::ReadFromFD(fd.get(), password_buf));
         EXPECT_EQ(password_buf, kPassword);
         EXPECT_TRUE(options->allow_ntlm);
@@ -624,9 +622,7 @@ MULTIPROCESS_TEST_MAIN(SmbFsMain) {
         EXPECT_EQ(options->password->length,
                   static_cast<int32_t>(strlen(kPassword)));
         std::string password_buf(options->password->length, 'a');
-        base::ScopedFD fd =
-            mojo::UnwrapPlatformHandle(std::move(options->password->fd))
-                .TakeFD();
+        base::ScopedFD fd = options->password->fd.TakeFD();
         EXPECT_TRUE(base::ReadFromFD(fd.get(), password_buf));
         EXPECT_EQ(password_buf, kPassword);
 

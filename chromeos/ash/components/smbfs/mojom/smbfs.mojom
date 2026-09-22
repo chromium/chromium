@@ -20,8 +20,8 @@ const string kBootstrapPipeName = "smbfs-bootstrap";
 // Implemented by SmbFs, used from Chrome.
 interface SmbFsBootstrap {
   // Connect to an SMB share. This method must only be called once.
-  MountShare(MountOptions options, pending_remote<SmbFsDelegate> delegate) =>
-      (MountError error, pending_remote<SmbFs>? smbfs);
+  MountShare(MountOptions options, pending_remote<SmbFsDelegate> delegate)
+      => (MountError error, pending_remote<SmbFs>? smbfs);
 };
 
 // Implemented by SmbFs, used from Chrome.
@@ -96,7 +96,7 @@ struct Password {
   const int32 kMaxLength = 255;
 
   // File descriptor of pipe containing password.
-  handle fd;
+  handle<platform> fd;
   // Length of password stored in |fd|.
   int32 length;
 };
@@ -156,7 +156,8 @@ struct MountOptions {
 
   // Options for saving password to the daemon store. If present, the password
   // will be saved or restored based on whether the |password| field is present.
-  [MinVersion=1] CredentialStorageOptions? credential_storage_options;
+  [MinVersion=1]
+  CredentialStorageOptions? credential_storage_options;
 };
 
 struct Credentials {

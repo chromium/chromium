@@ -22,7 +22,6 @@
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/system/invitation.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 #include "url/gurl.h"
 
 namespace drivefs {
@@ -96,11 +95,9 @@ base::FilePath FakeDriveFsLauncherClient::MaybeMountDriveFs(
   mojo::PlatformChannel channel;
   mojo_bootstrap::PendingConnectionManager::GetForDriveFs().OpenIpcChannel(
       identity, channel.TakeLocalEndpoint().TakePlatformHandle().TakeFD());
-  launcher_->LaunchDriveFs(
-      base::FilePath("/tmp").Append(datadir),
-      base::FilePath("/media/fuse").Append(datadir),
-      mojo::WrapPlatformHandle(
-          channel.TakeRemoteEndpoint().TakePlatformHandle()));
+  launcher_->LaunchDriveFs(base::FilePath("/tmp").Append(datadir),
+                           base::FilePath("/media/fuse").Append(datadir),
+                           channel.TakeRemoteEndpoint().TakePlatformHandle());
   return chroot_path_.Append("media/fuse").Append(datadir);
 }
 

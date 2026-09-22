@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 
 namespace smbfs {
 namespace {
@@ -63,10 +64,9 @@ class SmbFsDelegateImpl : public mojom::SmbFsDelegate {
                              true /* non_blocking */));
       CHECK(base::WriteFileDescriptor(pipe_write_end.get(), password));
 
-      creds->password = mojom::Password::New(
-          mojo::WrapPlatformHandle(
-              mojo::PlatformHandle(std::move(pipe_read_end))),
-          static_cast<int32_t>(password.size()));
+      creds->password =
+          mojom::Password::New(mojo::PlatformHandle(std::move(pipe_read_end)),
+                               static_cast<int32_t>(password.size()));
     }
     std::move(callback).Run(std::move(creds));
   }

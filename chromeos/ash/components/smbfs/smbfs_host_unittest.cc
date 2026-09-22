@@ -10,7 +10,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/disks/mock_disk_mount_manager.h"
-#include "mojo/public/cpp/system/platform_handle.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -123,9 +123,7 @@ TEST_F(SmbFsHostTest, RequestCredentials_ProvideCredentials) {
         EXPECT_EQ(credentials->password->length,
                   static_cast<int32_t>(strlen(kPassword)));
         std::string password_buf(credentials->password->length, 'a');
-        base::ScopedFD fd =
-            mojo::UnwrapPlatformHandle(std::move(credentials->password->fd))
-                .TakeFD();
+        base::ScopedFD fd = credentials->password->fd.TakeFD();
         EXPECT_TRUE(base::ReadFromFD(fd.get(), password_buf));
         EXPECT_EQ(password_buf, kPassword);
         run_loop.Quit();

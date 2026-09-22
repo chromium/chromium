@@ -12,7 +12,7 @@
 #include "chromeos/components/mojo_bootstrap/pending_connection_manager.h"
 #include "mojo/core/configuration.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/system/platform_handle.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 
 namespace smbfs {
 
@@ -175,8 +175,7 @@ void SmbFsMounter::OnMountDone(
 
     mojom::PasswordPtr password = mojom::Password::New();
     password->length = static_cast<int32_t>(options_.password.size());
-    password->fd = mojo::WrapPlatformHandle(
-        mojo::PlatformHandle(std::move(pipe_read_end)));
+    password->fd = mojo::PlatformHandle(std::move(pipe_read_end));
     mount_options->password = std::move(password);
   }
 
