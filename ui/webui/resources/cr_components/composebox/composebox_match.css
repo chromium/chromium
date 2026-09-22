@@ -280,8 +280,7 @@
 :host([suggest-style='rich-image']:is(:focus-visible, [selected]))
     .container {
   box-shadow: none;
-  outline: 1px solid
-      var(--color-searchbox-results-image-focused-outline, #0B57D0);
+  outline: 2px solid var(--cr-focus-outline-color);
 }
 
 :host([suggest-style='rich-image']) #focusIndicator,
