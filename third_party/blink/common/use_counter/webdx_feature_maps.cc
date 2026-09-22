@@ -507,6 +507,8 @@ GetWebFeatureToWebDXFeatureMap() {
            WebDXFeature::kElementTiming},
           {WebFeature::kContainerTimingExplicitlyRequested,
            WebDXFeature::kContainerTiming},
+          {WebFeature::kGeolocationAccuracyModeApproximate,
+           WebDXFeature::kDRAFT_GeolocationAccuracyModeApproximate},
           // Add new features above this line.
       }};
 

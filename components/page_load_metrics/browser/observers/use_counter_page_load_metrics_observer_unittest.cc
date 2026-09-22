@@ -16,6 +16,7 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/use_counter/webdx_feature_maps.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom.h"
 #include "url/gurl.h"
@@ -377,4 +378,16 @@ TEST_F(UseCounterPageLoadMetricsObserverTest, ModelContextUkmFeaturesAllowed) {
   EXPECT_TRUE(allowed_features.contains(
       WebFeature::kModelContextExecuteDeclarativeAutosubmit));
   EXPECT_TRUE(allowed_features.contains(WebFeature::kModelContextGetTools));
+}
+
+TEST_F(UseCounterPageLoadMetricsObserverTest,
+       GeolocationAccuracyModeApproximateUkmFeatureAllowed) {
+  const auto& allowed_features =
+      UseCounterMetricsRecorder::GetAllowedUkmFeaturesForTesting();
+  EXPECT_TRUE(allowed_features.contains(
+      WebFeature::kGeolocationAccuracyModeApproximate));
+
+  const auto& webdx_map = blink::GetWebFeatureToWebDXFeatureMap();
+  EXPECT_EQ(webdx_map.at(WebFeature::kGeolocationAccuracyModeApproximate),
+            WebDXFeature::kDRAFT_GeolocationAccuracyModeApproximate);
 }

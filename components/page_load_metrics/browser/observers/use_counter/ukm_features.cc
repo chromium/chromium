@@ -508,6 +508,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kModelContextGetTools,
           WebFeature::kXmlCAPAlert,
           WebFeature::kXmlCAPAlertWithXSLT,
+          WebFeature::kGeolocationAccuracyModeApproximate,
           // NOTE: before adding new use counters here, verify in UMA that
           // their emissions are very rare, e.g. <1% of page loads.
       }));
