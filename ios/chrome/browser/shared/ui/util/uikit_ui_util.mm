@@ -40,19 +40,6 @@ void SetA11yLabelAndUiAutomationName(
   [element setAccessibilityIdentifier:englishUiAutomationName];
 }
 
-void SetUILabelScaledFont(UILabel* label, UIFont* font) {
-  label.font = [[UIFontMetrics defaultMetrics] scaledFontForFont:font];
-  label.adjustsFontForContentSizeCategory = YES;
-}
-
-void MaybeSetUILabelScaledFont(BOOL maybe, UILabel* label, UIFont* font) {
-  if (maybe) {
-    SetUILabelScaledFont(label, font);
-  } else {
-    label.font = font;
-  }
-}
-
 UIFont* PreferredFontForTextStyle(UIFontTextStyle style,
                                   std::optional<UIFontWeight> weight,
                                   std::optional<CGFloat> max_size) {
@@ -85,36 +72,6 @@ UIFont* PreferredFontForTextStyle(UIFontTextStyle style,
                      maximumPointSize:max_size.value()];
   }
   return [metrics scaledFontForFont:base_font];
-}
-
-void SetUITextFieldScaledFont(UITextField* textField, UIFont* font) {
-  textField.font = [[UIFontMetrics defaultMetrics] scaledFontForFont:font];
-  textField.adjustsFontForContentSizeCategory = YES;
-}
-
-void MaybeSetUITextFieldScaledFont(BOOL maybe,
-                                   UITextField* textField,
-                                   UIFont* font) {
-  if (maybe) {
-    SetUITextFieldScaledFont(textField, font);
-  } else {
-    textField.font = font;
-  }
-}
-
-UIFont* CreateDynamicFont(UIFontTextStyle style, UIFontWeight weight) {
-  UIFontDescriptor* fontDescriptor =
-      [UIFontDescriptor preferredFontDescriptorWithTextStyle:style];
-  return [UIFont systemFontOfSize:fontDescriptor.pointSize weight:weight];
-}
-
-UIFont* CreateDynamicFont(UIFontTextStyle style,
-                          UIFontWeight weight,
-                          id<UITraitEnvironment> environment) {
-  UIFontDescriptor* fontDescriptor = [UIFontDescriptor
-      preferredFontDescriptorWithTextStyle:style
-             compatibleWithTraitCollection:environment.traitCollection];
-  return [UIFont systemFontOfSize:fontDescriptor.pointSize weight:weight];
 }
 
 UIImage* CaptureViewWithOption(UIView* view,

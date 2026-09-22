@@ -30,16 +30,6 @@ void SetA11yLabelAndUiAutomationName(
     int idsAccessibilityLabel,
     NSString* englishUiAutomationName);
 
-// Sets dynamic font for the given `font` on iOS 11+ on the givel `label` or
-// `textField`. Use `maybe` versions to keep code short when dynamic types are
-// not in use yet.
-void SetUILabelScaledFont(UILabel* label, UIFont* font);
-void MaybeSetUILabelScaledFont(BOOL maybe, UILabel* label, UIFont* font);
-void SetUITextFieldScaledFont(UITextField* textField, UIFont* font);
-void MaybeSetUITextFieldScaledFont(BOOL maybe,
-                                   UITextField* textField,
-                                   UIFont* font);
-
 // Returns a UIFont for the given `style` and `weight` that can be used with
 // `adjustsFontForContentSizeCategory = YES` to allow a UILabel to
 // automatically adjust to changes in the `preferredContentSize` trait. When
@@ -49,14 +39,6 @@ UIFont* PreferredFontForTextStyle(
     UIFontTextStyle style,
     std::optional<UIFontWeight> weight = std::nullopt,
     std::optional<CGFloat> max_size = std::nullopt);
-
-// Creates a dynamically scablable custom font based on the given parameters.
-// Fonts returned do not automatically adjust when
-// `adjustsFontForContentSizeCategory` is set to `YES`.
-UIFont* CreateDynamicFont(UIFontTextStyle style, UIFontWeight weight);
-UIFont* CreateDynamicFont(UIFontTextStyle style,
-                          UIFontWeight weight,
-                          id<UITraitEnvironment> environment);
 
 enum CaptureViewOption {
   kNoCaptureOption,      // Equivalent to calling CaptureView without options.
