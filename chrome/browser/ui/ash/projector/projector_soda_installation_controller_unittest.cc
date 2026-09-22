@@ -85,10 +85,11 @@ class ProjectorSodaInstallationControllerTest : public ChromeAshTestBase {
               availability.on_device_availability =
                   SpeechRecognitionRecognizerClientImpl::
                       GetOnDeviceSpeechRecognitionAvailability(
-                          TestingBrowserProcess::GetGlobal()
-                              ->GetFeatures()
-                              ->application_locale_storage()
-                              ->Get());
+                          std::string(TestingBrowserProcess::GetGlobal()
+                                          ->GetFeatures()
+                                          ->application_locale_storage()
+                                          ->GetTag()
+                                          .tag_string()));
               return availability;
             });
 

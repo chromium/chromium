@@ -85,7 +85,8 @@ void ProjectorSodaInstallationController::OnSodaInstalled(
     speech::LanguageCode language_code) {
   // Check that language code matches the selected language for projector.
   if (language_code !=
-      speech::GetLanguageCode(application_locale_storage_->Get())) {
+      speech::GetLanguageCode(
+          application_locale_storage_->GetTag().tag_string())) {
     return;
   }
   projector_controller_->OnSpeechRecognitionAvailabilityChanged();
@@ -95,7 +96,8 @@ void ProjectorSodaInstallationController::OnSodaInstalled(
 void ProjectorSodaInstallationController::OnSodaInstallError(
     speech::LanguageCode language_code,
     speech::SodaInstaller::ErrorCode error_code) {
-  const auto& current_locale = application_locale_storage_->Get();
+  std::string_view current_locale =
+      application_locale_storage_->GetTag().tag_string();
   // Check that language code matches the selected language for projector or is
   // LanguageCode::kNone (signifying the SODA binary failed).
   if (language_code != speech::GetLanguageCode(current_locale) &&
@@ -105,7 +107,7 @@ void ProjectorSodaInstallationController::OnSodaInstallError(
   projector_controller_->OnSpeechRecognitionAvailabilityChanged();
 
   if (SpeechRecognitionRecognizerClientImpl::
-          GetServerBasedRecognitionAvailability(current_locale) !=
+          GetServerBasedRecognitionAvailability(std::string(current_locale)) !=
       ash::ServerBasedRecognitionAvailability::kAvailable) {
     app_client_->OnSodaInstallError();
   }
@@ -117,7 +119,8 @@ void ProjectorSodaInstallationController::OnSodaProgress(
   // Check that language code matches the selected language for projector or is
   // LanguageCode::kNone (signifying the SODA binary has progress).
   if (language_code !=
-          speech::GetLanguageCode(application_locale_storage_->Get()) &&
+          speech::GetLanguageCode(
+              application_locale_storage_->GetTag().tag_string()) &&
       language_code != speech::LanguageCode::kNone) {
     return;
   }
@@ -126,8 +129,8 @@ void ProjectorSodaInstallationController::OnSodaProgress(
 
 // This function is triggered after every sign in.
 void ProjectorSodaInstallationController::OnLocaleChanged() {
-  if (!IsLanguageSupported(
-          speech::GetLanguageCode(application_locale_storage_->Get()))) {
+  if (!IsLanguageSupported(speech::GetLanguageCode(
+          application_locale_storage_->GetTag().tag_string()))) {
     projector_controller_->OnSpeechRecognitionAvailabilityChanged();
   }
 }

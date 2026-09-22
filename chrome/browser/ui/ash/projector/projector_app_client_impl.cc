@@ -131,12 +131,14 @@ void ProjectorAppClientImpl::NotifyScreencastsPendingStatusChanged(
 
 bool ProjectorAppClientImpl::ShouldDownloadSoda() const {
   return ProjectorSodaInstallationController::ShouldDownloadSoda(
-      speech::GetLanguageCode(application_locale_storage_->Get()));
+      speech::GetLanguageCode(
+          application_locale_storage_->GetTag().tag_string()));
 }
 
 void ProjectorAppClientImpl::InstallSoda() {
   return ProjectorSodaInstallationController::InstallSoda(
-      *local_state_, application_locale_storage_->Get());
+      *local_state_,
+      std::string(application_locale_storage_->GetTag().tag_string()));
 }
 
 void ProjectorAppClientImpl::OnSodaInstallProgress(int combined_progress) {

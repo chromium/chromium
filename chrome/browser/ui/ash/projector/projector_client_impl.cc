@@ -136,12 +136,12 @@ ProjectorClientImpl::GetSpeechRecognitionAvailability() const {
   availability.use_on_device = true;
   availability.on_device_availability = SpeechRecognitionRecognizerClientImpl::
       GetOnDeviceSpeechRecognitionAvailability(
-          application_locale_storage_->Get());
+          std::string(application_locale_storage_->GetTag().tag_string()));
   availability.server_based_availability =
       SpeechRecognitionRecognizerClientImpl::
           GetServerBasedRecognitionAvailability(
-              GetLocaleOrLanguageForServerSideRecognition(
-                  application_locale_storage_->Get()));
+              GetLocaleOrLanguageForServerSideRecognition(std::string(
+                  application_locale_storage_->GetTag().tag_string())));
 
   if (ash::features::ShouldForceEnableServerSideSpeechRecognition() ||
       (availability.on_device_availability !=
@@ -159,7 +159,8 @@ void ProjectorClientImpl::StartSpeechRecognition() {
   DCHECK(availability.IsAvailable());
   DCHECK_EQ(speech_recognizer_.get(), nullptr);
   recognizer_status_ = SPEECH_RECOGNIZER_OFF;
-  const std::string& app_locale = application_locale_storage_->Get();
+  const std::string app_locale(
+      application_locale_storage_->GetTag().tag_string());
   const std::string locale =
       availability.use_on_device
           ? app_locale
