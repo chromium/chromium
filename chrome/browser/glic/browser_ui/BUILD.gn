@@ -202,39 +202,40 @@ source_set("glow_impl") {
   }
 }
 
-if (!is_android) {
-  source_set("unit_tests") {
-    testonly = true
-    sources = [
-      "glic_button_controller_unittest.cc",
-      "glic_selection_widget_unittest.cc",
-    ]
-    deps = [
-      ":browser_ui",
-      ":impl",
-      "//base/test:test_support",
-      "//chrome/browser:global_features",
-      "//chrome/browser/actor:test_support",
-      "//chrome/browser/glic",
-      "//chrome/browser/glic/test_support",
-      "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui:ui_features",
-      "//chrome/common:chrome_features",
-      "//chrome/common:constants",
-      "//chrome/test:test_support",
-      "//components/prefs",
-      "//components/signin/public/identity_manager:test_support",
-      "//content/test:test_support",
-      "//testing/gmock",
-      "//testing/gtest",
-      "//ui/gfx",
-    ]
-
-    if (is_chromeos) {
-      deps += [ "//chrome/browser/ash/test:test_support" ]
-    }
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "glic_button_controller_unittest.cc" ]
+  if (!is_android) {
+    sources += [ "glic_selection_widget_unittest.cc" ]
   }
+  deps = [
+    ":browser_ui",
+    ":impl",
+    "//base/test:test_support",
+    "//chrome/browser:global_features",
+    "//chrome/browser/actor:test_support",
+    "//chrome/browser/glic",
+    "//chrome/browser/glic/public:features",
+    "//chrome/browser/glic/test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/common:chrome_features",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//components/prefs",
+    "//components/signin/public/identity_manager:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/gfx",
+  ]
 
+  if (is_chromeos) {
+    deps += [ "//chrome/browser/ash/test:test_support" ]
+  }
+}
+
+if (!is_android) {
   source_set("interactive_ui_tests") {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]

@@ -13,9 +13,10 @@
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
-#include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
@@ -38,7 +40,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/vector_icon_types.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/test/glic_user_session_test_helper.h"
@@ -125,13 +126,25 @@ class MockGlicButtonControllerDelegate : public glic::GlicSplitButtonDelegate {
 class GlicButtonControllerTest : public testing::Test {
  public:
   void SetUp() override {
-    // Enable kGlic by default for testing.
+#if BUILDFLAG(IS_ANDROID)
+    if (!glic::GlicEnabling::IsOsVersionSupported()) {
+      GTEST_SKIP() << "OS version not supported by Glic";
+    }
+#endif
+    GlicEnabling::SetSystemRequirementMetForTesting(true);
+
+    // Enable kGlic by default for testing. kGlicShowForSignedOut is explicitly
+    // disabled because it is enabled by default on Android, and it makes a
+    // signed-out profile still count as "enabled" (the panel is shown to
+    // offer a sign-in promo), which these tests do not expect.
     scoped_feature_list_.InitWithFeatures(
         {
             features::kGlic,
             features::kGlicRollout,
         },
-        {});
+        {
+            features::kGlicShowForSignedOut,
+        });
 
     raw_ptr<TestingProfileManager> testing_profile_manager =
         TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
@@ -142,14 +155,20 @@ class GlicButtonControllerTest : public testing::Test {
         testing_profile_manager->profile_manager());
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-    profile_ = testing_profile_manager->CreateTestingProfile("profile");
+    profile_ = testing_profile_manager->CreateTestingProfile(
+        "profile", IdentityTestEnvironmentProfileAdaptor::
+                       GetIdentityTestEnvironmentFactories());
+
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_);
 
     actor_keyed_service_ =
         std::make_unique<actor::ActorKeyedServiceFake>(profile_);
 
     mock_glic_service_ =
         std::make_unique<MockGlicKeyedServiceForButtonController>(
-            profile_, identity_test_environment.identity_manager(),
+            profile_,
+            identity_test_env_adaptor_->identity_test_env()->identity_manager(),
             testing_profile_manager->profile_manager(), &glic_profile_manager_,
             /*contextual_cueing_service=*/nullptr, actor_keyed_service_.get());
 
@@ -178,11 +197,15 @@ class GlicButtonControllerTest : public testing::Test {
   }
 
   void TearDown() override {
+    if (IsSkipped()) {
+      return;
+    }
     glic_split_button_controller_.reset();
     mock_browser_window_interface_.reset();
 
     mock_glic_service_.reset();
     actor_keyed_service_.reset();
+    identity_test_env_adaptor_.reset();
     profile_ = nullptr;
 
     TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
@@ -190,6 +213,7 @@ class GlicButtonControllerTest : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS)
     glic_user_session_test_helper_.PostProfileTearDown();
 #endif  // BUILDFLAG(IS_CHROMEOS)
+    GlicEnabling::SetSystemRequirementMetForTesting(std::nullopt);
     scoped_feature_list_.Reset();
   }
 
@@ -227,7 +251,8 @@ class GlicButtonControllerTest : public testing::Test {
   ash::GlicUserSessionTestHelper glic_user_session_test_helper_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
   raw_ptr<Profile> profile_ = nullptr;
-  signin::IdentityTestEnvironment identity_test_environment;
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_adaptor_;
 
   GlicProfileManager glic_profile_manager_;
   MockGlicButtonControllerDelegate mock_tab_strip_glic_controller_delegate_;
