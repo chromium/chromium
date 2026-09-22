@@ -286,6 +286,8 @@ const base::FeatureParam<bool> kGlicShakeTriggerOnlyOnSidePanel{
 
 BASE_FEATURE(kGlicAndroidTablet, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicVoice, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGlicMarketingAutoOpen, base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kGlicMarketingUrlAllowlist{
     &kGlicMarketingAutoOpen, "allowlisted_urls",

@@ -8031,6 +8031,7 @@ from previous Chrome versions.
   <int value="-2076848010" label="NtpComposebox:disabled"/>
   <int value="-2076313806" label="TrustTokens:disabled"/>
   <int value="-2076121369" label="NtpMvcRefactor:disabled"/>
+  <int value="-2076064434" label="GlicVoice:disabled"/>
   <int value="-2075870708" label="MediaRemotingEncrypted:disabled"/>
   <int value="-2075807193" label="enable-webusb-on-any-origin"/>
   <int value="-2075725205" label="disable-new-zip-unpacker"/>
@@ -12269,6 +12270,7 @@ from previous Chrome versions.
   <int value="-794976372"
       label="LocalNetworkAccessChecksSplitPermissions:enabled"/>
   <int value="-793921836" label="ShowAllDialogsWithViewsToolkit:disabled"/>
+  <int value="-793402990" label="GlicVoice:enabled"/>
   <int value="-793383355" label="StrictOriginIsolation:enabled"/>
   <int value="-792785226" label="TemporaryUnexpireFlagsM78:disabled"/>
   <int value="-792594495" label="PeripheralsLogging:disabled"/>

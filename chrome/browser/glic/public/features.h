@@ -196,6 +196,10 @@ extern const base::FeatureParam<bool> kGlicShakeTriggerOnlyOnSidePanel;
 
 BASE_DECLARE_FEATURE(kGlicAndroidTablet);
 
+// Enables voice input for Gemini in Chrome, including the microphone permission
+// toggle in Glic settings.
+BASE_DECLARE_FEATURE(kGlicVoice);
+
 BASE_DECLARE_FEATURE(kGlicActionFirstFRE);
 
 BASE_DECLARE_FEATURE(kGlicWarmOnNudge);

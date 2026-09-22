@@ -8694,6 +8694,10 @@ inline constexpr char kGlicAndroidTabletName[] = "Glic Android Tablet";
 inline constexpr char kGlicAndroidTabletDescription[] =
     "Enables testing of the Glic feature on Android tablet devices.";
 
+inline constexpr char kGlicVoiceName[] = "Glic Voice";
+inline constexpr char kGlicVoiceDescription[] =
+    "Enables voice input for Gemini in Chrome";
+
 inline constexpr char kGlicAndroidOffscreenRenderingName[] =
     "Glic Android Offscreen Rendering";
 inline constexpr char kGlicAndroidOffscreenRenderingDescription[] =
