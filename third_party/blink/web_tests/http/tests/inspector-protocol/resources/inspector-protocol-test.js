@@ -4,13 +4,18 @@
 
 /**
  * @fileoverview
- * To have the IDE support for types when writing inspector-protocol tests:
+ * To have the IDE support for types when writing inspector-protocol tests,
+ * generate the Chrome DevTools Protocol typings from the .pdl files in this
+ * checkout:
  *
- * - `npm i devtools-protocol -g`
- * - `cd $HOME && npm link devtools-protocol`
+ *   autoninja -C out/Default \
+ *     third_party/blink/public/devtools_protocol:protocol_typescript_definitions
  *
- * Note that `devtools-protocol` package won't include your local changes
- * to the protocol and might be slightly out-of-date. Update it from time to time.
+ * The typings are written to
+ * `out/Default/gen/third_party/blink/public/devtools_protocol/types/`, which is
+ * where the `tsconfig.json` next to the tests points to. Regenerate them after
+ * changing a .pdl file. If you use an output directory other than
+ * `out/Default`, adjust the `paths` entry in `tsconfig.json` locally.
  */
 
 /**
