@@ -2621,15 +2621,27 @@ class WebUIToolbarFullyEnabledInteractiveUiTest
     return overflow_button->overflow_menu_for_testing();
   }
 
-  // Simulates a mouse click on the MenuItemView at `index` within
-  // `overflow_menu`.
+  // Simulates a mouse click on the MenuItemView labelled with the string
+  // `label_id` within `overflow_menu`, and waits for the menu to close.
   [[nodiscard]] bool ClickOverflowMenuItem(OverflowMenu& overflow_menu,
-                                           size_t index) {
+                                           int label_id) {
     views::MenuItemView* root_item = overflow_menu.root_menu_item();
     if (!root_item || !root_item->GetSubmenu()) {
       return false;
     }
-    views::MenuItemView* item = root_item->GetSubmenu()->GetMenuItemAt(index);
+
+    // Menu item titles have accelerators removed, so remove them from the
+    // string being searched for as well.
+    const std::u16string title = chrome::GetCleanTitleAndTooltipText(
+        l10n_util::GetStringUTF16(label_id));
+    views::MenuItemView* item = nullptr;
+    for (views::MenuItemView* menu_item :
+         root_item->GetSubmenu()->GetMenuItems()) {
+      if (menu_item->title() == title) {
+        item = menu_item;
+        break;
+      }
+    }
     if (!item || !item->GetVisible()) {
       return false;
     }
@@ -2649,23 +2661,71 @@ class WebUIToolbarFullyEnabledInteractiveUiTest
     });
   }
 
-  // Simulates a mouse click on the MenuItemView matching `title` within
-  // `overflow_menu`.
-  [[nodiscard]] static bool ClickOverflowMenuItem(OverflowMenu& overflow_menu,
-                                                  const std::u16string& title) {
-    views::MenuItemView* root_item = overflow_menu.root_menu_item();
-    if (!root_item || !root_item->GetSubmenu()) {
-      return false;
+  // A single item expected to be found in the overflow menu, for use with
+  // CheckOverflowMenu().
+  struct OverflowMenuItemInfo {
+    // The expected type of the item. Only separators and commands are
+    // currently expected to appear on the overflow menu.
+    ui::MenuModel::ItemType type = ui::MenuModel::ItemType::TYPE_COMMAND;
+
+    // String ID of the expected label of the item. Ignored for separators.
+    int label_id = -1;
+
+    // Whether the item is expected to be enabled. Ignored for separators.
+    bool enabled = true;
+  };
+
+  // Convenience value for expected separators.
+  static constexpr OverflowMenuItemInfo kSeparator{
+      .type = ui::MenuModel::ItemType::TYPE_SEPARATOR,
+      .label_id = -1,
+      .enabled = true};
+
+  // Checks that `overflow_menu` contains exactly `expected_menu_items`.
+  //
+  // If `expect_avatar_button_if_not_chromeos` is true, a separator and the
+  // avatar button are appended to the expected items, except on ChromeOS,
+  // where the avatar button isn't displayed on the toolbar of normal profiles.
+  // Tests of the cases where ChromeOS does display the avatar button need to
+  // pass false and include the separator and avatar button in
+  // `expected_menu_items` themselves.
+  void CheckOverflowMenu(const OverflowMenu& overflow_menu,
+                         std::vector<OverflowMenuItemInfo> expected_menu_items,
+                         bool expect_avatar_button_if_not_chromeos) {
+#if !BUILDFLAG(IS_CHROMEOS)
+    if (expect_avatar_button_if_not_chromeos) {
+      expected_menu_items.push_back(kSeparator);
+      expected_menu_items.push_back(
+          {.label_id = IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE});
     }
-    for (views::MenuItemView* item : root_item->GetSubmenu()->GetMenuItems()) {
-      if (item->title() == title && item->GetVisible()) {
-        gfx::Point center = item->GetBoundsInScreen().CenterPoint();
-        return ui_test_utils::SendMouseMoveSync(center) &&
-               ui_test_utils::SendMouseEventsSync(
-                   ui_controls::LEFT, ui_controls::DOWN | ui_controls::UP);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+    const ui::SimpleMenuModel* menu_model =
+        overflow_menu.menu_model_for_testing();
+    ASSERT_TRUE(menu_model);
+    ASSERT_EQ(menu_model->GetItemCount(), expected_menu_items.size());
+
+    for (size_t i = 0; i < expected_menu_items.size(); ++i) {
+      SCOPED_TRACE(i);
+      const OverflowMenuItemInfo& expected_item = expected_menu_items[i];
+      EXPECT_EQ(menu_model->GetTypeAt(i), expected_item.type);
+
+      // If the actual menu item is a separator, no need to check the other
+      // fields. If the expected menu item is a separator, but the actual is
+      // not, comparing the actual label ID field to the expected one (-1) will
+      // output the actual value, which may have some value.
+      if (menu_model->GetTypeAt(i) == ui::MenuModel::ItemType::TYPE_SEPARATOR) {
+        continue;
       }
+
+      // Labels of menu items have accelerators removed, so remove them from
+      // the expected strings as well. Most expected strings don't have
+      // accelerators, but it does no harm to unconditionally strip them.
+      EXPECT_EQ(menu_model->GetLabelAt(i),
+                chrome::GetCleanTitleAndTooltipText(
+                    l10n_util::GetStringUTF16(expected_item.label_id)));
+      EXPECT_EQ(menu_model->IsEnabledAt(i), expected_item.enabled);
     }
-    return false;
   }
 
  private:
@@ -2704,36 +2764,16 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
   ASSERT_TRUE(overflow_menu);
 
   // Check that the overflow menu has the expected buttons in the expected
-  // order, and nothing else.
-  const ui::SimpleMenuModel* menu_model =
-      overflow_menu->menu_model_for_testing();
-  ASSERT_TRUE(menu_model);
-#if BUILDFLAG(IS_CHROMEOS)
-  // ChromeOS should not show the avatar button.
-  ASSERT_EQ(menu_model->GetItemCount(), 3u);
-#else  // !BUILDFLAG(IS_CHROMEOS)
-  // Other platforms should show the avatar button.
-  ASSERT_EQ(menu_model->GetItemCount(), 5u);
-  EXPECT_EQ(menu_model->GetTypeAt(3), ui::MenuModel::TYPE_SEPARATOR);
-  EXPECT_EQ(menu_model->GetLabelAt(4),
-            l10n_util::GetStringUTF16(IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE));
-  EXPECT_TRUE(menu_model->IsEnabledAt(4));
-#endif
-
-  // Forward, home, and split tabs buttons should be shown on all platforms.
-  EXPECT_EQ(menu_model->GetLabelAt(0),
-            l10n_util::GetStringUTF16(IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD));
-  // The forward button should be disabled, since the back button has never been
-  // pressed.
-  EXPECT_FALSE(menu_model->IsEnabledAt(0));
-
-  EXPECT_EQ(menu_model->GetLabelAt(1),
-            l10n_util::GetStringUTF16(IDS_OVERFLOW_MENU_ITEM_TEXT_HOME));
-  EXPECT_TRUE(menu_model->IsEnabledAt(1));
-
-  EXPECT_EQ(menu_model->GetLabelAt(2),
-            l10n_util::GetStringUTF16(IDS_OVERFLOW_MENU_ITEM_TEXT_SPLIT_VIEW));
-  EXPECT_TRUE(menu_model->IsEnabledAt(2));
+  // order, and nothing else. The forward, home, and split tabs buttons should
+  // be shown on all platforms.
+  ASSERT_NO_FATAL_FAILURE(CheckOverflowMenu(
+      *overflow_menu,
+      {// The forward button should be disabled, since the back button has
+       // never been pressed.
+       {.label_id = IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD, .enabled = false},
+       {.label_id = IDS_OVERFLOW_MENU_ITEM_TEXT_HOME},
+       {.label_id = IDS_OVERFLOW_MENU_ITEM_TEXT_SPLIT_VIEW}},
+      /*expect_avatar_button_if_not_chromeos=*/true));
 }
 
 // Test the contents of the overflow menu when only some overflowable items
@@ -2808,18 +2848,11 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
   ASSERT_TRUE(overflow_menu);
 
   // Check that the overflow menu has only home and forward items.
-  const ui::SimpleMenuModel* menu_model =
-      overflow_menu->menu_model_for_testing();
-  ASSERT_TRUE(menu_model);
-  ASSERT_EQ(menu_model->GetItemCount(), 2u);
-
-  EXPECT_EQ(menu_model->GetLabelAt(0),
-            l10n_util::GetStringUTF16(IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD));
-  EXPECT_FALSE(menu_model->IsEnabledAt(0));
-
-  EXPECT_EQ(menu_model->GetLabelAt(1),
-            l10n_util::GetStringUTF16(IDS_OVERFLOW_MENU_ITEM_TEXT_HOME));
-  EXPECT_TRUE(menu_model->IsEnabledAt(1));
+  ASSERT_NO_FATAL_FAILURE(CheckOverflowMenu(
+      *overflow_menu,
+      {{.label_id = IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD, .enabled = false},
+       {.label_id = IDS_OVERFLOW_MENU_ITEM_TEXT_HOME}},
+      /*expect_avatar_button_if_not_chromeos=*/false));
 }
 
 // Test that clicking the home item on the overflow menu works.
@@ -2856,38 +2889,23 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
   ASSERT_TRUE(overflow_menu);
 
   // Check that the overflow menu has the expected buttons in the expected
-  // order, and nothing else.
-  const ui::SimpleMenuModel* menu_model =
-      overflow_menu->menu_model_for_testing();
-  ASSERT_TRUE(menu_model);
-#if BUILDFLAG(IS_CHROMEOS)
-  // ChromeOS should not show the avatar button.
-  ASSERT_EQ(menu_model->GetItemCount(), 2u);
-#else  // !BUILDFLAG(IS_CHROMEOS)
-  ASSERT_EQ(menu_model->GetItemCount(), 4u);
-  // Other platforms should show the avatar button.
-  EXPECT_EQ(menu_model->GetTypeAt(2), ui::MenuModel::TYPE_SEPARATOR);
-  EXPECT_EQ(menu_model->GetLabelAt(3),
-            l10n_util::GetStringUTF16(IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE));
-#endif
-
-  // Forward and home should be shown on all platforms.
-  EXPECT_EQ(menu_model->GetLabelAt(0),
-            l10n_util::GetStringUTF16(IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD));
-  // The forward button should be disabled, since the back button has never been
-  // pressed.
-  EXPECT_FALSE(menu_model->IsEnabledAt(0));
-
-  EXPECT_EQ(menu_model->GetLabelAt(1),
-            l10n_util::GetStringUTF16(IDS_OVERFLOW_MENU_ITEM_TEXT_HOME));
-  EXPECT_TRUE(menu_model->IsEnabledAt(1));
+  // order, and nothing else. Forward and home should be shown on all
+  // platforms.
+  ASSERT_NO_FATAL_FAILURE(CheckOverflowMenu(
+      *overflow_menu,
+      {// The forward button should be disabled, since the back button has
+       // never been pressed.
+       {.label_id = IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD, .enabled = false},
+       {.label_id = IDS_OVERFLOW_MENU_ITEM_TEXT_HOME}},
+      /*expect_avatar_button_if_not_chromeos=*/true));
 
   // Click the home button in the overflow menu and wait for navigation to
   // commit.
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver navigation_observer(web_contents);
-  ASSERT_TRUE(ClickOverflowMenuItem(*overflow_menu, 1));
+  ASSERT_TRUE(
+      ClickOverflowMenuItem(*overflow_menu, IDS_OVERFLOW_MENU_ITEM_TEXT_HOME));
   navigation_observer.Wait();
   EXPECT_EQ(web_contents->GetLastCommittedURL(), kHomePageUrl);
 }
@@ -2943,31 +2961,17 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
   OverflowMenu* overflow_menu = OpenOverflowMenu();
   ASSERT_TRUE(overflow_menu);
 
-  // Check that the overflow menu has the forward button, separator, and profile
-  // button.
-  const ui::SimpleMenuModel* menu_model =
-      overflow_menu->menu_model_for_testing();
-  ASSERT_TRUE(menu_model);
-#if BUILDFLAG(IS_CHROMEOS)
-  // ChromeOS should not show the avatar button.
-  ASSERT_EQ(menu_model->GetItemCount(), 1u);
-#else  // !BUILDFLAG(IS_CHROMEOS)
-  // Other platforms should show the avatar button.
-  ASSERT_EQ(menu_model->GetItemCount(), 3u);
-  EXPECT_EQ(menu_model->GetTypeAt(1), ui::MenuModel::TYPE_SEPARATOR);
-  EXPECT_EQ(menu_model->GetLabelAt(2),
-            l10n_util::GetStringUTF16(IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE));
-#endif
-
-  // Forward button should be shown on all platforms.
-  EXPECT_EQ(menu_model->GetLabelAt(0),
-            l10n_util::GetStringUTF16(IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD));
-  EXPECT_TRUE(menu_model->IsEnabledAt(0));
+  // Check that the overflow menu has the forward button, and, on platforms
+  // other than ChromeOS, a separator and the profile button.
+  ASSERT_NO_FATAL_FAILURE(CheckOverflowMenu(
+      *overflow_menu, {{.label_id = IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD}},
+      /*expect_avatar_button_if_not_chromeos=*/true));
 
   // Click the forward button in the overflow menu and wait for navigation to
   // commit.
   content::TestNavigationObserver forward_observer(web_contents);
-  ASSERT_TRUE(ClickOverflowMenuItem(*overflow_menu, 0));
+  ASSERT_TRUE(ClickOverflowMenuItem(*overflow_menu,
+                                    IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD));
   forward_observer.Wait();
   // Make sure the expected URL committed.
   EXPECT_EQ(web_contents->GetLastCommittedURL(), kSecondUrl);
@@ -3002,22 +3006,20 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
   OverflowMenu* overflow_menu = OpenOverflowMenu();
   ASSERT_TRUE(overflow_menu);
 
-  // Find the split-tabs item index in the overflow menu model.
-  const ui::SimpleMenuModel* menu_model =
-      overflow_menu->menu_model_for_testing();
-  ASSERT_TRUE(menu_model);
-  std::optional<size_t> split_tabs_index;
-  for (size_t i = 0; i < menu_model->GetItemCount(); ++i) {
-    if (menu_model->GetLabelAt(i) ==
-        l10n_util::GetStringUTF16(IDS_OVERFLOW_MENU_ITEM_TEXT_SPLIT_VIEW)) {
-      split_tabs_index = i;
-      break;
-    }
-  }
-  ASSERT_TRUE(split_tabs_index.has_value());
+  // The overflow menu should have the forward and split-tabs buttons, and, on
+  // platforms other than ChromeOS, a separator and the avatar button.
+  const std::vector<OverflowMenuItemInfo> expected_menu_items = {
+      // The forward button should be disabled, since the back button has never
+      // been pressed.
+      {.label_id = IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD, .enabled = false},
+      {.label_id = IDS_OVERFLOW_MENU_ITEM_TEXT_SPLIT_VIEW}};
+  ASSERT_NO_FATAL_FAILURE(
+      CheckOverflowMenu(*overflow_menu, expected_menu_items,
+                        /*expect_avatar_button_if_not_chromeos=*/true));
 
   // First press: Click split-tabs item on the overflow menu.
-  ASSERT_TRUE(ClickOverflowMenuItem(*overflow_menu, *split_tabs_index));
+  ASSERT_TRUE(ClickOverflowMenuItem(*overflow_menu,
+                                    IDS_OVERFLOW_MENU_ITEM_TEXT_SPLIT_VIEW));
 
   // Wait for the active tab to be split.
   ASSERT_TRUE(base::test::RunUntil([&]() -> bool {
@@ -3031,27 +3033,20 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
                                      {kToolbarSplitTabsToolbarButtonElementId,
                                       kToolbarAvatarButtonElementId}));
 
-  // Open the overflow menu a second time.
+  // Open the overflow menu a second time. Its contents should not have changed.
   overflow_menu = OpenOverflowMenu();
   ASSERT_TRUE(overflow_menu);
+  ASSERT_NO_FATAL_FAILURE(
+      CheckOverflowMenu(*overflow_menu, expected_menu_items,
+                        /*expect_avatar_button_if_not_chromeos=*/true));
 
   WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
   WebUISplitTabsControl* split_tabs_control =
       &webui_toolbar_view->split_tabs_control_for_testing();
-  menu_model = overflow_menu->menu_model_for_testing();
-  ASSERT_TRUE(menu_model);
-  split_tabs_index.reset();
-  for (size_t i = 0; i < menu_model->GetItemCount(); ++i) {
-    if (menu_model->GetLabelAt(i) ==
-        l10n_util::GetStringUTF16(IDS_OVERFLOW_MENU_ITEM_TEXT_SPLIT_VIEW)) {
-      split_tabs_index = i;
-      break;
-    }
-  }
-  ASSERT_TRUE(split_tabs_index.has_value());
 
   // Second press: Click split-tabs item on the overflow menu again.
-  ASSERT_TRUE(ClickOverflowMenuItem(*overflow_menu, *split_tabs_index));
+  ASSERT_TRUE(ClickOverflowMenuItem(*overflow_menu,
+                                    IDS_OVERFLOW_MENU_ITEM_TEXT_SPLIT_VIEW));
 
   // Expect second press to both show the split-tabs button and trigger menu
   // creation.
@@ -3101,42 +3096,22 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
   // Check that the overflow menu has forward, a separator, and battery saver,
   // in that order. Platforms other than ChromeOS also have the avatar button
   // (and another separator before it).
-  const ui::SimpleMenuModel* menu_model =
-      overflow_menu->menu_model_for_testing();
-  ASSERT_TRUE(menu_model);
-#if BUILDFLAG(IS_CHROMEOS)
-  // ChromeOS should not show the avatar button.
-  ASSERT_EQ(menu_model->GetItemCount(), 3u);
-#else  // !BUILDFLAG(IS_CHROMEOS)
-  // Other platforms should show the avatar button.
-  ASSERT_EQ(menu_model->GetItemCount(), 5u);
-  EXPECT_EQ(menu_model->GetTypeAt(3), ui::MenuModel::TYPE_SEPARATOR);
-  EXPECT_EQ(menu_model->GetLabelAt(4),
-            l10n_util::GetStringUTF16(IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE));
-  EXPECT_TRUE(menu_model->IsEnabledAt(4));
-#endif
-
-  EXPECT_EQ(menu_model->GetLabelAt(0),
-            l10n_util::GetStringUTF16(IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD));
-  // The forward button should be disabled, since the back button has never been
-  // pressed.
-  EXPECT_FALSE(menu_model->IsEnabledAt(0));
-
-  EXPECT_EQ(menu_model->GetTypeAt(1), ui::MenuModel::ItemType::TYPE_SEPARATOR);
-
-  EXPECT_EQ(
-      menu_model->GetLabelAt(2),
-      l10n_util::GetStringUTF16(IDS_OVERFLOW_MENU_ITEM_TEXT_ENERGY_SAVER));
-  EXPECT_TRUE(menu_model->IsEnabledAt(2));
+  ASSERT_NO_FATAL_FAILURE(CheckOverflowMenu(
+      *overflow_menu,
+      {// The forward button should be disabled, since the back button has
+       // never been pressed.
+       {.label_id = IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD, .enabled = false},
+       kSeparator,
+       {.label_id = IDS_OVERFLOW_MENU_ITEM_TEXT_ENERGY_SAVER}},
+      /*expect_avatar_button_if_not_chromeos=*/true));
 
   // Click the battery saver button in the overflow menu and wait for the
   // overflow menu to close.
   //
   // TODO(crbug.com/491791965): Also verify that the battery saver bubble is
   // shown once clicking the overflow menu item is wired up to open the bubble.
-  ASSERT_TRUE(ClickOverflowMenuItem(
-      *overflow_menu,
-      l10n_util::GetStringUTF16(IDS_OVERFLOW_MENU_ITEM_TEXT_ENERGY_SAVER)));
+  ASSERT_TRUE(ClickOverflowMenuItem(*overflow_menu,
+                                    IDS_OVERFLOW_MENU_ITEM_TEXT_ENERGY_SAVER));
 }
 
 // Test that clicking a pinned action (the Downloads button) on the overflow
@@ -3190,38 +3165,21 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
   // Check menu model contents: Forward, <divider>, Downloads. Platforms other
   // than ChromeOS also have the avatar button (and another separator before
   // it).
-  const ui::SimpleMenuModel* menu_model =
-      overflow_menu->menu_model_for_testing();
-  ASSERT_TRUE(menu_model);
-#if BUILDFLAG(IS_CHROMEOS)
-  // ChromeOS should not show the avatar button.
-  ASSERT_EQ(menu_model->GetItemCount(), 3u);
-#else  // !BUILDFLAG(IS_CHROMEOS)
-  // Other platforms should show the avatar button.
-  ASSERT_EQ(menu_model->GetItemCount(), 5u);
-  EXPECT_EQ(menu_model->GetTypeAt(3), ui::MenuModel::TYPE_SEPARATOR);
-  EXPECT_EQ(menu_model->GetLabelAt(4),
-            l10n_util::GetStringUTF16(IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE));
-  EXPECT_TRUE(menu_model->IsEnabledAt(4));
-#endif
-
-  EXPECT_EQ(menu_model->GetTypeAt(0), ui::MenuModel::TYPE_COMMAND);
-  EXPECT_EQ(menu_model->GetLabelAt(0),
-            l10n_util::GetStringUTF16(IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD));
-
-  EXPECT_EQ(menu_model->GetTypeAt(1), ui::MenuModel::TYPE_SEPARATOR);
-
-  EXPECT_EQ(menu_model->GetTypeAt(2), ui::MenuModel::TYPE_COMMAND);
-  const std::u16string downloads_label = chrome::GetCleanTitleAndTooltipText(
-      l10n_util::GetStringUTF16(IDS_SHOW_DOWNLOADS));
-  EXPECT_EQ(menu_model->GetLabelAt(2), downloads_label);
+  ASSERT_NO_FATAL_FAILURE(CheckOverflowMenu(
+      *overflow_menu,
+      {// The forward button should be disabled, since the back button has
+       // never been pressed.
+       {.label_id = IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD, .enabled = false},
+       kSeparator,
+       {.label_id = IDS_SHOW_DOWNLOADS}},
+      /*expect_avatar_button_if_not_chromeos=*/true));
 
   // Click the download action item in the overflow menu and wait for navigation
   // to the downloads page to commit.
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver downloads_observer(web_contents);
-  ASSERT_TRUE(ClickOverflowMenuItem(*overflow_menu, downloads_label));
+  ASSERT_TRUE(ClickOverflowMenuItem(*overflow_menu, IDS_SHOW_DOWNLOADS));
   downloads_observer.Wait();
 
   EXPECT_EQ(web_contents->GetLastCommittedURL(),
@@ -3253,22 +3211,17 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
   OverflowMenu* overflow_menu = OpenOverflowMenu(incognito_browser);
   ASSERT_TRUE(overflow_menu);
 
-  // Find the avatar item index in the overflow menu model.
-  const ui::SimpleMenuModel* menu_model =
-      overflow_menu->menu_model_for_testing();
-  ASSERT_TRUE(menu_model);
-  std::optional<size_t> avatar_index;
-  for (size_t i = 0; i < menu_model->GetItemCount(); ++i) {
-    if (menu_model->GetLabelAt(i) ==
-        l10n_util::GetStringUTF16(IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE)) {
-      avatar_index = i;
-      break;
-    }
-  }
-  ASSERT_TRUE(avatar_index.has_value());
-
-  // In Incognito session on ChromeOS, the Avatar button is enabled.
-  EXPECT_TRUE(menu_model->IsEnabledAt(*avatar_index));
+  // The overflow menu should have the forward button, a separator, and the
+  // avatar button. In an Incognito session on ChromeOS, the avatar button is
+  // enabled.
+  ASSERT_NO_FATAL_FAILURE(CheckOverflowMenu(
+      *overflow_menu,
+      {// The forward button should be disabled, since the back button has
+       // never been pressed.
+       {.label_id = IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD, .enabled = false},
+       kSeparator,
+       {.label_id = IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE}},
+      /*expect_avatar_button_if_not_chromeos=*/false));
 }
 
 class WebUIToolbarChromeOSGuestInteractiveUiTest
@@ -3325,22 +3278,17 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarChromeOSGuestInteractiveUiTest,
   OverflowMenu* overflow_menu = OpenOverflowMenu();
   ASSERT_TRUE(overflow_menu);
 
-  // Find the avatar item index in the overflow menu model.
-  const ui::SimpleMenuModel* menu_model =
-      overflow_menu->menu_model_for_testing();
-  ASSERT_TRUE(menu_model);
-  std::optional<size_t> avatar_index;
-  for (size_t i = 0; i < menu_model->GetItemCount(); ++i) {
-    if (menu_model->GetLabelAt(i) ==
-        l10n_util::GetStringUTF16(IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE)) {
-      avatar_index = i;
-      break;
-    }
-  }
-  ASSERT_TRUE(avatar_index.has_value());
-
-  // In a Guest session on ChromeOS, the Avatar button is disabled.
-  EXPECT_FALSE(menu_model->IsEnabledAt(*avatar_index));
+  // The overflow menu should have the forward button, a separator, and the
+  // avatar button. In a Guest session on ChromeOS, the avatar button is
+  // disabled.
+  ASSERT_NO_FATAL_FAILURE(CheckOverflowMenu(
+      *overflow_menu,
+      {// The forward button should be disabled, since the back button has
+       // never been pressed.
+       {.label_id = IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD, .enabled = false},
+       kSeparator,
+       {.label_id = IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE, .enabled = false}},
+      /*expect_avatar_button_if_not_chromeos=*/false));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -3437,14 +3385,9 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
   ASSERT_TRUE(overflow_menu);
 
   // Expect the real control (split-tabs) to be present in the menu model.
-  const ui::SimpleMenuModel* menu_model =
-      overflow_menu->menu_model_for_testing();
-  ASSERT_TRUE(menu_model);
-  ASSERT_EQ(menu_model->GetItemCount(), 1u);
-
-  EXPECT_EQ(menu_model->GetLabelAt(0),
-            l10n_util::GetStringUTF16(IDS_OVERFLOW_MENU_ITEM_TEXT_SPLIT_VIEW));
-  EXPECT_TRUE(menu_model->IsEnabledAt(0));
+  ASSERT_NO_FATAL_FAILURE(CheckOverflowMenu(
+      *overflow_menu, {{.label_id = IDS_OVERFLOW_MENU_ITEM_TEXT_SPLIT_VIEW}},
+      /*expect_avatar_button_if_not_chromeos=*/false));
 
   // Close the menu. Not strictly needed, as it should be closed during
   // teardown, anyways, but can't hurt.
