@@ -46,6 +46,21 @@ extern NSString* const kNTPIncognitoQuickActionIdentifier;
 // Represents the NTP omnibox.
 extern NSString* const kNTPFakeOmniboxAccessibilityButton;
 
+// Represents the NTP fake omnibox.
+extern NSString* const kNTPFakeOmniboxAccessibilityIdentifier;
+
+// Represents the NTP plus button in the fakebox.
+extern NSString* const kNTPPlusButtonAccessibilityIdentifier;
+
+// Represents the NTP voice search button in the fakebox.
+extern NSString* const kNTPVoiceSearchButtonAccessibilityIdentifier;
+
+// Represents the NTP lens button in the fakebox.
+extern NSString* const kNTPLensButtonAccessibilityIdentifier;
+
+// Represents the NTP backdrop blur view.
+extern NSString* const kNTPBackdropBlurIdentifier;
+
 // The corner radius for the module containers on the Home surface.
 extern const CGFloat kHomeModuleContainerCornerRadius;
 

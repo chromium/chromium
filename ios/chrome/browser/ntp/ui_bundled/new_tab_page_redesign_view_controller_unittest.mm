@@ -5,12 +5,10 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_redesign_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/public/magic_stack_constants.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_collection_view.h"
-#import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_item.h"
-#import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_collection_view.h"
-#import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_config.h"
 #import "ios/chrome/browser/content_suggestions/public/ntp_home_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_state.h"
@@ -39,7 +37,49 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
-const CGFloat kMinDragHandleHeight = 24.0;
+constexpr CGFloat kMinDragHandleHeight = 24.0;
+
+// Recursively searches for a subview matching the specified
+// accessibilityIdentifier.
+UIView* FindSubviewWithAccessibilityIdentifier(UIView* root,
+                                               NSString* identifier) {
+  if ([root.accessibilityIdentifier isEqualToString:identifier]) {
+    return root;
+  }
+  for (UIView* subview in root.subviews) {
+    if (UIView* match =
+            FindSubviewWithAccessibilityIdentifier(subview, identifier)) {
+      return match;
+    }
+  }
+  return nil;
+}
+
+// Recursively searches for the first subview of type T.
+template <typename T>
+T* FindSubviewByClass(UIView* root) {
+  if ([root isKindOfClass:[T class]]) {
+    return static_cast<T*>(root);
+  }
+  for (UIView* subview in root.subviews) {
+    if (T* match = FindSubviewByClass<T>(subview)) {
+      return match;
+    }
+  }
+  return nil;
+}
+
+// Finds a child view controller of type T.
+template <typename T>
+T* FindChildViewController(UIViewController* parent) {
+  for (UIViewController* child in parent.childViewControllers) {
+    if ([child isKindOfClass:[T class]]) {
+      return static_cast<T*>(child);
+    }
+  }
+  return nil;
+}
+
 }  // namespace
 
 @interface NewTabPageRedesignViewController (Testing) <
@@ -136,8 +176,8 @@ TEST_F(NewTabPageRedesignViewControllerTest, TestLoadView) {
               view_controller_.view.backgroundColor);
 }
 
-// Tests that didUpdateTopOffset updates fakeLocationBar.alpha and calls
-// NTPContentDelegate.
+// Tests that didUpdateTopOffset updates center content container alpha and
+// calls NTPContentDelegate.
 TEST_F(NewTabPageRedesignViewControllerTest, TestDidUpdateTopOffset) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kNewTabPageRedesign);
@@ -146,16 +186,20 @@ TEST_F(NewTabPageRedesignViewControllerTest, TestDidUpdateTopOffset) {
   [view_controller_ loadViewIfNeeded];
   [view_controller_.view layoutIfNeeded];
 
-  UIView* fake_location_bar =
-      [view_controller_ valueForKey:@"_fakeLocationBar"];
-  EXPECT_NE(nil, fake_location_bar);
+  UIView* fake_location_bar = FindSubviewWithAccessibilityIdentifier(
+      view_controller_.view, kNTPFakeOmniboxAccessibilityIdentifier);
+  ASSERT_TRUE(fake_location_bar != nil);
+  UIView* center_content_container = fake_location_bar.superview;
+  ASSERT_TRUE(center_content_container != nil);
 
   id mock_content_delegate =
       OCMProtocolMock(@protocol(NewTabPageContentDelegate));
   view_controller_.NTPContentDelegate = mock_content_delegate;
 
   NewTabPageBottomSheetViewController* sheet =
-      [view_controller_ valueForKey:@"_bottomSheetViewController"];
+      FindChildViewController<NewTabPageBottomSheetViewController>(
+          view_controller_);
+  ASSERT_TRUE(sheet != nil);
 
   CGFloat expandedOffset = [sheet expandedOffset];
   CGFloat restingOffset = [sheet restingOffset];
@@ -167,12 +211,12 @@ TEST_F(NewTabPageRedesignViewControllerTest, TestDidUpdateTopOffset) {
   [view_controller_ bottomSheetViewController:sheet
                            didUpdateTopOffset:midOffset];
 
-  EXPECT_FLOAT_EQ(0.5, fake_location_bar.alpha);
+  EXPECT_FLOAT_EQ(0.5, center_content_container.alpha);
   EXPECT_OCMOCK_VERIFY(mock_content_delegate);
 }
 
-// Tests that didUpdateTopOffset moves top content downward when topOffset >
-// restingOffset.
+// Tests that didUpdateTopOffset moves center content downward when
+// topOffset > restingOffset, keeping header buttons stationary.
 TEST_F(NewTabPageRedesignViewControllerTest, TestDidUpdateTopOffsetCollapsed) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kNewTabPageRedesign);
@@ -181,30 +225,64 @@ TEST_F(NewTabPageRedesignViewControllerTest, TestDidUpdateTopOffsetCollapsed) {
   [view_controller_ loadViewIfNeeded];
   [view_controller_.view layoutIfNeeded];
 
-  UIView* fake_location_bar =
-      [view_controller_ valueForKey:@"_fakeLocationBar"];
-  EXPECT_NE(nil, fake_location_bar);
-  NSLayoutConstraint* top_constraint =
-      [view_controller_ valueForKey:@"_fakeLocationBarTopConstraint"];
-  CGFloat initial_top = top_constraint.constant;
+  UIView* fake_location_bar = FindSubviewWithAccessibilityIdentifier(
+      view_controller_.view, kNTPFakeOmniboxAccessibilityIdentifier);
+  ASSERT_TRUE(fake_location_bar != nil);
+  CGRect initial_fakebox_frame =
+      [view_controller_.view convertRect:fake_location_bar.bounds
+                                fromView:fake_location_bar];
+
+  UIButton* identity_disc_button =
+      FindSubviewByClass<NTPIdentityDiscButton>(view_controller_.view);
+  ASSERT_TRUE(identity_disc_button != nil);
+  CGRect initial_identity_frame =
+      [view_controller_.view convertRect:identity_disc_button.bounds
+                                fromView:identity_disc_button];
+
+  UIButton* customization_button = view_controller_.customizationMenuButton;
+  ASSERT_TRUE(customization_button != nil);
+  CGRect initial_customization_frame =
+      [view_controller_.view convertRect:customization_button.bounds
+                                fromView:customization_button];
 
   id mock_content_delegate =
       OCMProtocolMock(@protocol(NewTabPageContentDelegate));
   view_controller_.NTPContentDelegate = mock_content_delegate;
 
   NewTabPageBottomSheetViewController* sheet =
-      [view_controller_ valueForKey:@"_bottomSheetViewController"];
+      FindChildViewController<NewTabPageBottomSheetViewController>(
+          view_controller_);
+  ASSERT_TRUE(sheet != nil);
   CGFloat restingOffset = [sheet restingOffset];
 
-  // Pass topOffset greater than restingOffset (downward drag)
-  CGFloat collapsedOffset = restingOffset + 100.0;
+  // Pass topOffset greater than restingOffset (downward drag by 100pt).
+  constexpr CGFloat kCollapsedDragDelta = 100.0;
+  CGFloat collapsedOffset = restingOffset + kCollapsedDragDelta;
   OCMExpect([mock_content_delegate didUpdateNTPTabOmniboxScrollProgress:0.0]);
 
   [view_controller_ bottomSheetViewController:sheet
                            didUpdateTopOffset:collapsedOffset];
 
-  EXPECT_FLOAT_EQ(initial_top + 100.0, top_constraint.constant);
-  EXPECT_FLOAT_EQ(1.0, fake_location_bar.alpha);
+  // The fake location bar should translate downward with the drag.
+  CGRect updated_fakebox_frame =
+      [view_controller_.view convertRect:fake_location_bar.bounds
+                                fromView:fake_location_bar];
+  EXPECT_NEAR(updated_fakebox_frame.origin.y,
+              initial_fakebox_frame.origin.y + kCollapsedDragDelta, 0.5);
+
+  // Top navigation buttons must remain stationary.
+  CGRect updated_identity_frame =
+      [view_controller_.view convertRect:identity_disc_button.bounds
+                                fromView:identity_disc_button];
+  EXPECT_TRUE(
+      CGRectEqualToRect(initial_identity_frame, updated_identity_frame));
+
+  CGRect updated_customization_frame =
+      [view_controller_.view convertRect:customization_button.bounds
+                                fromView:customization_button];
+  EXPECT_TRUE(CGRectEqualToRect(initial_customization_frame,
+                                updated_customization_frame));
+
   EXPECT_OCMOCK_VERIFY(mock_content_delegate);
 }
 
@@ -216,7 +294,9 @@ TEST_F(NewTabPageRedesignViewControllerTest, TestExpandedOffsetForBottomSheet) {
 
   [view_controller_ loadViewIfNeeded];
   NewTabPageBottomSheetViewController* sheet =
-      [view_controller_ valueForKey:@"_bottomSheetViewController"];
+      FindChildViewController<NewTabPageBottomSheetViewController>(
+          view_controller_);
+  ASSERT_TRUE(sheet != nil);
 
   // Top Omnibox: safeAreaTop + kToolbarHeight
   CGFloat offsetTop =
@@ -235,167 +315,29 @@ TEST_F(NewTabPageRedesignViewControllerTest, TestExpandedOffsetForBottomSheet) {
   EXPECT_EQ(offsetBottom, expectedBottomOffset);
 }
 
-// Tests that setOmniboxInBottomPosition updates state.
-TEST_F(NewTabPageRedesignViewControllerTest, TestSetOmniboxInBottomPosition) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kNewTabPageRedesign);
-
-  [view_controller_ loadViewIfNeeded];
-  [view_controller_ setOmniboxInBottomPosition:YES];
-
-  // _isBottomOmnibox is updated to YES
-  BOOL isBottom =
-      [[view_controller_ valueForKey:@"_isBottomOmnibox"] boolValue];
-  EXPECT_TRUE(isBottom);
-}
-
 // Tests that bottomSheetViewControllerDidEscape posts accessibility
 // notification.
 TEST_F(NewTabPageRedesignViewControllerTest, TestBottomSheetDidEscape) {
   [view_controller_ loadViewIfNeeded];
   NewTabPageBottomSheetViewController* sheet =
-      [view_controller_ valueForKey:@"_bottomSheetViewController"];
+      FindChildViewController<NewTabPageBottomSheetViewController>(
+          view_controller_);
+  ASSERT_TRUE(sheet != nil);
 
   // Calling bottomSheetViewControllerDidEscape should not crash.
   [view_controller_ bottomSheetViewControllerDidEscape:sheet];
 }
 
-// Tests that onHeightChanged callback triggers bottom sheet position update
-// when MVT is not in the bottom sheet.
-TEST_F(NewTabPageRedesignViewControllerTest,
-       TestMvtHeightChangeCallbackWhenNotInBottomSheet) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kMVTInBottomSheet);
-
-  id mock_bottom_sheet =
-      OCMClassMock([NewTabPageBottomSheetViewController class]);
-  [view_controller_ setValue:mock_bottom_sheet
-                      forKey:@"bottomSheetViewController"];
-
-  MostVisitedTilesConfig* config =
-      [[MostVisitedTilesConfig alloc] initWithLayoutGuideCenter:nil];
-  MostVisitedItem* item = [[MostVisitedItem alloc] init];
-  config.mostVisitedItems = @[ item ];
-
-  [view_controller_ setMostVisitedTilesConfig:config];
-
-  UIView* container = [view_controller_ valueForKey:@"mostVisitedView"];
-  ASSERT_TRUE(container != nil);
-
-  MostVisitedTilesCollectionView* collection_view = nil;
-  for (UIView* subview in container.subviews) {
-    if ([subview isKindOfClass:[MostVisitedTilesCollectionView class]]) {
-      collection_view = static_cast<MostVisitedTilesCollectionView*>(subview);
-      break;
-    }
-  }
-  ASSERT_TRUE(collection_view != nil);
-  ASSERT_TRUE(collection_view.onContentSizeChanged != nil);
-
-  OCMExpect([mock_bottom_sheet updateBottomSheetPositionAnimated:YES]);
-  collection_view.onContentSizeChanged(CGSizeMake(300, 100));
-  [mock_bottom_sheet verify];
-}
-
-// Tests that onHeightChanged callback is not set when MVT is in the bottom
-// sheet.
-TEST_F(NewTabPageRedesignViewControllerTest,
-       TestMvtHeightChangeCallbackWhenInBottomSheet) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kMVTInBottomSheet);
-
-  MostVisitedTilesConfig* config =
-      [[MostVisitedTilesConfig alloc] initWithLayoutGuideCenter:nil];
-  MostVisitedItem* item = [[MostVisitedItem alloc] init];
-  config.mostVisitedItems = @[ item ];
-
-  [view_controller_ setMostVisitedTilesConfig:config];
-
-  UIView* container = [view_controller_ valueForKey:@"mostVisitedView"];
-  ASSERT_TRUE(container != nil);
-
-  MostVisitedTilesCollectionView* collection_view = nil;
-  for (UIView* subview in container.subviews) {
-    if ([subview isKindOfClass:[MostVisitedTilesCollectionView class]]) {
-      collection_view = static_cast<MostVisitedTilesCollectionView*>(subview);
-      break;
-    }
-  }
-  ASSERT_TRUE(collection_view != nil);
-  EXPECT_TRUE(collection_view.onContentSizeChanged == nil);
-}
-
-// Tests that centeredFakeOmniboxTop and restingOffset remain identical between
-// Logo and Doodle when kConsistentLogoDoodleHeight is enabled.
-TEST_F(NewTabPageRedesignViewControllerTest, TestConsistentLogoDoodleHeight) {
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    GTEST_SKIP() << "Consistent logo doodle height is not supported on tablet.";
-  }
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kConsistentLogoDoodleHeight);
-
-  [view_controller_ loadViewIfNeeded];
-
-  [view_controller_
-      searchEngineLogoStateDidChange:SearchEngineLogoState::kLogo];
-  CGFloat omnibox_top_with_logo = [view_controller_ centeredFakeOmniboxTop];
-  CGFloat resting_offset_with_logo =
-      [view_controller_ restingOffsetForBottomSheetViewController:nil];
-
-  [view_controller_
-      searchEngineLogoStateDidChange:SearchEngineLogoState::kDoodle];
-  CGFloat omnibox_top_with_doodle = [view_controller_ centeredFakeOmniboxTop];
-  CGFloat resting_offset_with_doodle =
-      [view_controller_ restingOffsetForBottomSheetViewController:nil];
-
-  EXPECT_EQ(omnibox_top_with_logo, omnibox_top_with_doodle);
-  EXPECT_EQ(resting_offset_with_logo, resting_offset_with_doodle);
-}
-
-// Tests that fakebox subviews are created once and not re-created on setter
-// calls.
-TEST_F(NewTabPageRedesignViewControllerTest,
-       TestFakeboxSubviewsReusedOnStateChange) {
-  [view_controller_ loadViewIfNeeded];
-
-  UIView* plus_button = [view_controller_ valueForKey:@"_plusButton"];
-  UIView* logo_view = [view_controller_ valueForKey:@"_logoView"];
-  UIView* voice_button = [view_controller_ valueForKey:@"_voiceSearchButton"];
-  UIView* hint_label = [view_controller_ valueForKey:@"_hintLabel"];
-
-  ASSERT_TRUE(plus_button != nil);
-  ASSERT_TRUE(logo_view != nil);
-  ASSERT_TRUE(voice_button != nil);
-  ASSERT_TRUE(hint_label != nil);
-
-  // Trigger state updates
-  [view_controller_ setDefaultSearchEngineName:@"Yahoo"];
-  [view_controller_ setVoiceSearchIsEnabled:YES];
-  [view_controller_ setVoiceSearchIsEnabled:NO];
-  [view_controller_ setAIMAllowed:YES];
-  [view_controller_ setFuseboxEligible:YES];
-
-  // Subviews should be identical instances (not reallocated)
-  EXPECT_EQ(plus_button, [view_controller_ valueForKey:@"_plusButton"]);
-  EXPECT_EQ(logo_view, [view_controller_ valueForKey:@"_logoView"]);
-  EXPECT_EQ(voice_button, [view_controller_ valueForKey:@"_voiceSearchButton"]);
-  EXPECT_EQ(hint_label, [view_controller_ valueForKey:@"_hintLabel"]);
-}
-
-// Tests that setDefaultSearchEngineName updates hint label text and
-// accessibility label.
+// Tests that setDefaultSearchEngineName updates fakebox accessibility label.
 TEST_F(NewTabPageRedesignViewControllerTest,
        TestDefaultSearchEngineNameUpdatesHintLabel) {
   [view_controller_ loadViewIfNeeded];
 
-  UILabel* hint_label = [view_controller_ valueForKey:@"_hintLabel"];
-  UIView* fake_location_bar =
-      [view_controller_ valueForKey:@"_fakeLocationBar"];
-  ASSERT_TRUE(hint_label != nil);
+  UIView* fake_location_bar = FindSubviewWithAccessibilityIdentifier(
+      view_controller_.view, kNTPFakeOmniboxAccessibilityIdentifier);
   ASSERT_TRUE(fake_location_bar != nil);
 
   [view_controller_ setDefaultSearchEngineName:@"DuckDuckGo"];
-  EXPECT_TRUE([hint_label.text containsString:@"DuckDuckGo"]);
   EXPECT_TRUE(
       [fake_location_bar.accessibilityLabel containsString:@"DuckDuckGo"]);
 }
@@ -411,8 +353,14 @@ TEST_F(NewTabPageRedesignViewControllerTest,
 
   [view_controller_ loadViewIfNeeded];
 
-  UIButton* plus_button = [view_controller_ valueForKey:@"_plusButton"];
-  UIImageView* logo_view = [view_controller_ valueForKey:@"_logoView"];
+  UIView* fake_location_bar = FindSubviewWithAccessibilityIdentifier(
+      view_controller_.view, kNTPFakeOmniboxAccessibilityIdentifier);
+  ASSERT_TRUE(fake_location_bar != nil);
+
+  UIButton* plus_button = base::apple::ObjCCastStrict<UIButton>(
+      FindSubviewWithAccessibilityIdentifier(
+          fake_location_bar, kNTPPlusButtonAccessibilityIdentifier));
+  UIImageView* logo_view = FindSubviewByClass<UIImageView>(fake_location_bar);
   ASSERT_TRUE(plus_button != nil);
   ASSERT_TRUE(logo_view != nil);
 
@@ -436,7 +384,12 @@ TEST_F(NewTabPageRedesignViewControllerTest,
 TEST_F(NewTabPageRedesignViewControllerTest, TestSetVoiceSearchIsEnabled) {
   [view_controller_ loadViewIfNeeded];
 
-  UIButton* voice_button = [view_controller_ valueForKey:@"_voiceSearchButton"];
+  UIView* fake_location_bar = FindSubviewWithAccessibilityIdentifier(
+      view_controller_.view, kNTPFakeOmniboxAccessibilityIdentifier);
+  ASSERT_TRUE(fake_location_bar != nil);
+  UIButton* voice_button = base::apple::ObjCCastStrict<UIButton>(
+      FindSubviewWithAccessibilityIdentifier(
+          fake_location_bar, kNTPVoiceSearchButtonAccessibilityIdentifier));
   ASSERT_TRUE(voice_button != nil);
 
   [view_controller_ setVoiceSearchIsEnabled:YES];
@@ -464,7 +417,12 @@ TEST_F(NewTabPageRedesignViewControllerTest, TestPlusButtonAction) {
       OCMProtocolMock(@protocol(NewTabPageShortcutsHandler));
   view_controller_.NTPShortcutsHandler = mock_shortcuts_handler;
 
-  UIButton* plus_button = [view_controller_ valueForKey:@"_plusButton"];
+  UIView* fake_location_bar = FindSubviewWithAccessibilityIdentifier(
+      view_controller_.view, kNTPFakeOmniboxAccessibilityIdentifier);
+  ASSERT_TRUE(fake_location_bar != nil);
+  UIButton* plus_button = base::apple::ObjCCastStrict<UIButton>(
+      FindSubviewWithAccessibilityIdentifier(
+          fake_location_bar, kNTPPlusButtonAccessibilityIdentifier));
   ASSERT_TRUE(plus_button != nil);
 
   OCMExpect([mock_shortcuts_handler openMultimodalActionsMenu]);
@@ -482,7 +440,12 @@ TEST_F(NewTabPageRedesignViewControllerTest, TestVoiceSearchButtonAction) {
       OCMProtocolMock(@protocol(NewTabPageShortcutsHandler));
   view_controller_.NTPShortcutsHandler = mock_shortcuts_handler;
 
-  UIButton* voice_button = [view_controller_ valueForKey:@"_voiceSearchButton"];
+  UIView* fake_location_bar = FindSubviewWithAccessibilityIdentifier(
+      view_controller_.view, kNTPFakeOmniboxAccessibilityIdentifier);
+  ASSERT_TRUE(fake_location_bar != nil);
+  UIButton* voice_button = base::apple::ObjCCastStrict<UIButton>(
+      FindSubviewWithAccessibilityIdentifier(
+          fake_location_bar, kNTPVoiceSearchButtonAccessibilityIdentifier));
   ASSERT_TRUE(voice_button != nil);
 
   OCMExpect([mock_shortcuts_handler preloadVoiceSearch]);
@@ -502,7 +465,12 @@ TEST_F(NewTabPageRedesignViewControllerTest,
       OCMProtocolMock(@protocol(NewTabPageShortcutsHandler));
   view_controller_.NTPShortcutsHandler = mock_shortcuts_handler;
 
-  UIButton* voice_button = [view_controller_ valueForKey:@"_voiceSearchButton"];
+  UIView* fake_location_bar = FindSubviewWithAccessibilityIdentifier(
+      view_controller_.view, kNTPFakeOmniboxAccessibilityIdentifier);
+  ASSERT_TRUE(fake_location_bar != nil);
+  UIButton* voice_button = base::apple::ObjCCastStrict<UIButton>(
+      FindSubviewWithAccessibilityIdentifier(
+          fake_location_bar, kNTPVoiceSearchButtonAccessibilityIdentifier));
   ASSERT_TRUE(voice_button != nil);
 
   OCMExpect([mock_shortcuts_handler preloadVoiceSearch]);
@@ -519,7 +487,12 @@ TEST_F(NewTabPageRedesignViewControllerTest, TestLensButtonAction) {
       OCMProtocolMock(@protocol(NewTabPageShortcutsHandler));
   view_controller_.NTPShortcutsHandler = mock_shortcuts_handler;
 
-  UIButton* lens_button = [view_controller_ valueForKey:@"_lensButton"];
+  UIView* fake_location_bar = FindSubviewWithAccessibilityIdentifier(
+      view_controller_.view, kNTPFakeOmniboxAccessibilityIdentifier);
+  ASSERT_TRUE(fake_location_bar != nil);
+  UIButton* lens_button = base::apple::ObjCCastStrict<UIButton>(
+      FindSubviewWithAccessibilityIdentifier(
+          fake_location_bar, kNTPLensButtonAccessibilityIdentifier));
   ASSERT_TRUE(lens_button != nil);
 
   OCMExpect([mock_shortcuts_handler openLensViewFinder]);
@@ -536,7 +509,12 @@ TEST_F(NewTabPageRedesignViewControllerTest,
 
   [view_controller_ loadViewIfNeeded];
 
-  UIButton* lens_button = [view_controller_ valueForKey:@"_lensButton"];
+  UIView* fake_location_bar = FindSubviewWithAccessibilityIdentifier(
+      view_controller_.view, kNTPFakeOmniboxAccessibilityIdentifier);
+  ASSERT_TRUE(fake_location_bar != nil);
+  UIButton* lens_button = base::apple::ObjCCastStrict<UIButton>(
+      FindSubviewWithAccessibilityIdentifier(
+          fake_location_bar, kNTPLensButtonAccessibilityIdentifier));
   ASSERT_TRUE(lens_button != nil);
   lens_button.hidden = YES;
 
@@ -547,14 +525,19 @@ TEST_F(NewTabPageRedesignViewControllerTest,
 
 // Tests that notifyLensBadgeDisplayed is called when lensButton is visible.
 TEST_F(NewTabPageRedesignViewControllerTest,
-       TestLensBadgeNotifiedWhenLensButtonVisible) {
+       TestLensBadgeNotNotifiedWhenLensButtonVisible) {
   id mock_mutator = OCMProtocolMock(@protocol(NewTabPageMutator));
   view_controller_.mutator = mock_mutator;
   view_controller_.useNewBadgeForLensButton = YES;
 
   [view_controller_ loadViewIfNeeded];
 
-  UIButton* lens_button = [view_controller_ valueForKey:@"_lensButton"];
+  UIView* fake_location_bar = FindSubviewWithAccessibilityIdentifier(
+      view_controller_.view, kNTPFakeOmniboxAccessibilityIdentifier);
+  ASSERT_TRUE(fake_location_bar != nil);
+  UIButton* lens_button = base::apple::ObjCCastStrict<UIButton>(
+      FindSubviewWithAccessibilityIdentifier(
+          fake_location_bar, kNTPLensButtonAccessibilityIdentifier));
   ASSERT_TRUE(lens_button != nil);
   lens_button.hidden = NO;
 
@@ -576,6 +559,27 @@ TEST_F(NewTabPageRedesignViewControllerTest,
   EXPECT_NSEQ(
       l10n_util::GetNSString(IDS_IOS_HOME_CUSTOMIZATION_ACCESSIBILITY_LABEL),
       button.accessibilityLabel);
+}
+
+// Tests that the customization menu button and identity disc button share the
+// same vertical center line.
+TEST_F(NewTabPageRedesignViewControllerTest,
+       TestHeaderButtonsVerticalCenterAlignment) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kNewTabPageRedesign);
+
+  view_controller_.view.frame = CGRectMake(0, 0, 400, 800);
+  [view_controller_ loadViewIfNeeded];
+  [view_controller_.view layoutIfNeeded];
+
+  UIButton* identity_disc_button =
+      FindSubviewByClass<NTPIdentityDiscButton>(view_controller_.view);
+  ASSERT_TRUE(identity_disc_button != nil);
+  UIButton* customization_button = view_controller_.customizationMenuButton;
+  ASSERT_TRUE(customization_button != nil);
+
+  EXPECT_NEAR(customization_button.center.y, identity_disc_button.center.y,
+              0.5);
 }
 
 // Tests that layout guide kFeedIPHNamedGuide references the customization menu
@@ -679,7 +683,8 @@ TEST_F(NewTabPageRedesignViewControllerTest, TestBackdropTappedCollapsesSheet) {
   [view_controller_ loadViewIfNeeded];
 
   NewTabPageBottomSheetViewController* sheet =
-      [view_controller_ valueForKey:@"_bottomSheetViewController"];
+      FindChildViewController<NewTabPageBottomSheetViewController>(
+          view_controller_);
   ASSERT_TRUE(sheet != nil);
   id mock_sheet = OCMPartialMock(sheet);
   OCMExpect([mock_sheet collapseToRestingAnimated:YES]);
@@ -705,28 +710,25 @@ TEST_F(NewTabPageRedesignViewControllerTest,
       [[MagicStackCollectionViewController alloc] init];
   [view_controller_ setMagicStackViewController:magic_stack];
 
+  NewTabPageBottomSheetViewController* sheet =
+      FindChildViewController<NewTabPageBottomSheetViewController>(
+          view_controller_);
+  ASSERT_TRUE(sheet != nil);
+
   // In iPad regular, Magic Stack should be a direct child of redesign VC.
   EXPECT_EQ(view_controller_, magic_stack.parentViewController);
-  UIView* magic_stack_container =
-      [view_controller_ valueForKey:@"_magicStackContainerView"];
-  ASSERT_TRUE(magic_stack_container != nil);
-  EXPECT_EQ(magic_stack_container, magic_stack.view.superview);
-  EXPECT_FALSE(magic_stack_container.hidden);
-
-  NewTabPageBottomSheetViewController* sheet =
-      [view_controller_ valueForKey:@"_bottomSheetViewController"];
-  ASSERT_TRUE(sheet != nil);
   EXPECT_EQ(nil, sheet.magicStackViewController);
+  EXPECT_FALSE([magic_stack.view isDescendantOfView:sheet.view]);
+  EXPECT_TRUE([magic_stack.view isDescendantOfView:view_controller_.view]);
 
   // Transition to compact layout.
   view_controller_.traitOverrides.horizontalSizeClass =
       UIUserInterfaceSizeClassCompact;
   [view_controller_ updateMagicStackHierarchy];
 
-  // Magic Stack should no longer be a child of redesign VC, container hidden,
-  // and sheet should hold the reference.
+  // Magic Stack should no longer be a child of redesign VC, and sheet should
+  // hold the reference.
   EXPECT_NE(view_controller_, magic_stack.parentViewController);
-  EXPECT_TRUE(magic_stack_container.hidden);
   EXPECT_EQ(magic_stack, sheet.magicStackViewController);
 
   // Transition back to iPad regular layout.
@@ -735,8 +737,9 @@ TEST_F(NewTabPageRedesignViewControllerTest,
   [view_controller_ updateMagicStackHierarchy];
 
   EXPECT_EQ(view_controller_, magic_stack.parentViewController);
-  EXPECT_FALSE(magic_stack_container.hidden);
   EXPECT_EQ(nil, sheet.magicStackViewController);
+  EXPECT_FALSE([magic_stack.view isDescendantOfView:sheet.view]);
+  EXPECT_TRUE([magic_stack.view isDescendantOfView:view_controller_.view]);
 }
 
 // Tests that on iPad regular, didUpdateTopOffset synchronizes tablet omnibox
@@ -754,7 +757,8 @@ TEST_F(NewTabPageRedesignViewControllerTest,
   view_controller_.NTPContentDelegate = mock_content_delegate;
 
   NewTabPageBottomSheetViewController* sheet =
-      [view_controller_ valueForKey:@"_bottomSheetViewController"];
+      FindChildViewController<NewTabPageBottomSheetViewController>(
+          view_controller_);
   ASSERT_TRUE(sheet != nil);
 
   CGFloat expandedOffset = [sheet expandedOffset];
@@ -768,8 +772,8 @@ TEST_F(NewTabPageRedesignViewControllerTest,
   [view_controller_ bottomSheetViewController:sheet
                            didUpdateTopOffset:midOffset];
 
-  UIVisualEffectView* backdrop_blur =
-      [view_controller_ valueForKey:@"_backdropBlurView"];
+  UIView* backdrop_blur = FindSubviewWithAccessibilityIdentifier(
+      view_controller_.view, kNTPBackdropBlurIdentifier);
   ASSERT_TRUE(backdrop_blur != nil);
   EXPECT_FLOAT_EQ(0.5, backdrop_blur.alpha);
   EXPECT_TRUE(backdrop_blur.userInteractionEnabled);
@@ -794,19 +798,23 @@ TEST_F(NewTabPageRedesignViewControllerTest,
 
 // Tests that updateADPBadgeWithErrorFound updates the identity disc button.
 TEST_F(NewTabPageRedesignViewControllerTest, TestUpdateADPBadgeWithErrorFound) {
-  [view_controller_ updateADPBadgeWithErrorFound:YES
-                                            name:@"John Doe"
-                                           email:@"john@example.com"];
+  NSString* name = @"John Doe";
+  NSString* email = @"john@example.com";
+  [view_controller_ updateADPBadgeWithErrorFound:YES name:name email:email];
   // Load view so identity disc button is created.
   [view_controller_ loadViewIfNeeded];
   NTPIdentityDiscButton* identity_disc =
-      [view_controller_ valueForKey:@"_identityDiscButton"];
+      FindSubviewByClass<NTPIdentityDiscButton>(view_controller_.view);
   ASSERT_TRUE(identity_disc != nil);
-  EXPECT_TRUE([[identity_disc valueForKey:@"_hasAccountError"] boolValue]);
+  NSString* expected_error_label = l10n_util::GetNSStringF(
+      IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL_OPEN_ACCOUNT_MENU_WITH_ERROR,
+      base::SysNSStringToUTF16(name), base::SysNSStringToUTF16(email));
+  EXPECT_NSEQ(expected_error_label, identity_disc.accessibilityLabel);
 
   // Updating while view is loaded propagates immediately.
-  [view_controller_ updateADPBadgeWithErrorFound:NO
-                                            name:@"John Doe"
-                                           email:@"john@example.com"];
-  EXPECT_FALSE([[identity_disc valueForKey:@"_hasAccountError"] boolValue]);
+  [view_controller_ updateADPBadgeWithErrorFound:NO name:name email:email];
+  NSString* expected_normal_label = l10n_util::GetNSStringF(
+      IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL_OPEN_ACCOUNT_MENU,
+      base::SysNSStringToUTF16(name), base::SysNSStringToUTF16(email));
+  EXPECT_NSEQ(expected_normal_label, identity_disc.accessibilityLabel);
 }

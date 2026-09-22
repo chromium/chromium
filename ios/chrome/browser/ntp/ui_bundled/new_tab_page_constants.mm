@@ -31,6 +31,18 @@ NSString* const kNTPFeedHeaderIdentityDiscBadge =
 NSString* const kNTPFakeOmniboxAccessibilityButton =
     @"kNTPFakeOmniboxAccessibilityButton";
 
+NSString* const kNTPFakeOmniboxAccessibilityIdentifier =
+    @"kNTPFakeOmniboxAccessibilityIdentifier";
+
+NSString* const kNTPPlusButtonAccessibilityIdentifier =
+    @"kNTPPlusButtonAccessibilityIdentifier";
+
+NSString* const kNTPVoiceSearchButtonAccessibilityIdentifier = @"Voice Search";
+
+NSString* const kNTPLensButtonAccessibilityIdentifier = @"Lens";
+
+NSString* const kNTPBackdropBlurIdentifier = @"NTPBackdropBlurIdentifier";
+
 NSString* const kNTPMIAIdentifier = @"kNTPMIAIdentifier";
 
 NSString* const kNTPIncognitoQuickActionIdentifier =
