@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_hand_joint.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_layer_layout.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_texture_type.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -75,6 +76,10 @@ V8XREye GetV8Eye(const device::mojom::blink::XREye& eye);
 // Convert layer layout.
 device::mojom::blink::XRLayerLayout V8ToMojomLayerLayout(
     V8XRLayerLayout::Enum layout);
+
+// Convert texture type.
+device::mojom::blink::XRTextureType V8ToMojomTextureType(
+    V8XRTextureType::Enum type);
 
 // Helper method to get the number of views per texture.
 uint16_t GetVerticalViewCount(V8XRLayerLayout::Enum);

@@ -439,6 +439,8 @@ device::mojom::blink::XRCompositionLayerDataPtr XRWebGLLayer::CreateLayerData()
   layer_data->read_only_data->layout = V8ToMojomLayerLayout(
       session()->StereoscopicViews() ? V8XRLayerLayout::Enum::kStereoLeftRight
                                      : V8XRLayerLayout::Enum::kMono);
+  layer_data->read_only_data->texture_type =
+      device::mojom::blink::XRTextureType::kTexture;
   // Mutable data.
   layer_data->mutable_data = device::mojom::blink::XRLayerMutableData::New();
   layer_data->mutable_data->blend_texture_source_alpha = true;

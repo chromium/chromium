@@ -18,7 +18,12 @@ XRCubeLayer::XRCubeLayer(XRSession* session,
                          V8XRLayerLayout::Enum final_layout,
                          XRGraphicsBinding* binding,
                          XRLayerDrawingContext* drawing_context)
-    : XRShapedLayer(session, init, final_layout, binding, drawing_context) {
+    : XRShapedLayer(session,
+                    init,
+                    final_layout,
+                    V8XRTextureType::Enum::kTexture,
+                    binding,
+                    drawing_context) {
   if (init->hasOrientation()) {
     orientation_ = init->orientation();
   } else {

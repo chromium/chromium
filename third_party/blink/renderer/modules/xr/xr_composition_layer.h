@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_layer_layout.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_texture_type.h"
 #include "third_party/blink/renderer/modules/xr/xr_layer.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -23,7 +24,8 @@ class XRCompositionLayer : public XRLayer {
  public:
   XRCompositionLayer(XRSession* session,
                      XRGraphicsBinding* binding,
-                     XRLayerDrawingContext* drawing_context);
+                     XRLayerDrawingContext* drawing_context,
+                     V8XRTextureType::Enum texture_type);
   ~XRCompositionLayer() override = default;
 
   XRGraphicsBinding* binding() const { return binding_.Get(); }
@@ -40,6 +42,7 @@ class XRCompositionLayer : public XRLayer {
   uint16_t textureWidth() const;
   uint16_t textureHeight() const;
   uint16_t textureArrayLength() const;
+  V8XRTextureType::Enum TextureType() const { return texture_type_; }
 
   void OnFrameStart() override;
   void OnFrameEnd() override;
@@ -74,6 +77,7 @@ class XRCompositionLayer : public XRLayer {
   bool force_mono_presentation_{false};
   float opacity_{1.0};
   uint16_t mip_levels_{1};
+  V8XRTextureType::Enum texture_type_{V8XRTextureType::Enum::kTexture};
 
   Member<XRLayerDrawingContext> drawing_context_;
 };
