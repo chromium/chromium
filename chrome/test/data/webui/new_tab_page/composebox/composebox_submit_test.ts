@@ -24,6 +24,10 @@ suite('ComposeboxSubmitTest', () => {
     await microtasksFinished();
   });
 
+  teardown(() => {
+    document.body.removeAttribute('energy-effect-animation-enabled_');
+  });
+
   test('renders default properties', () => {
     assertFalse(submitButton.disabled);
     assertEquals(SubmitButtonIconType.UPWARD, submitButton.iconType);
@@ -60,6 +64,21 @@ suite('ComposeboxSubmitTest', () => {
     // Assert overlay properties.
     assertTrue(!!overlay);
     assertEquals('Custom Title', overlay.getAttribute('title'));
+  });
+
+  test('dims energy layer when disabled and energy effect is on', async () => {
+    // The energy layer holds the background color only when the energy
+    // effect is enabled, so the dimming rule is gated on the same attribute.
+    document.body.toggleAttribute('energy-effect-animation-enabled_', true);
+    const energy =
+        submitButton.shadowRoot.querySelector<HTMLElement>('#submitEnergy');
+    assertTrue(!!energy);
+    assertEquals('1', window.getComputedStyle(energy).opacity);
+
+    submitButton.disabled = true;
+    await microtasksFinished();
+
+    assertEquals('0.4', window.getComputedStyle(energy).opacity);
   });
 
   test('dispatches submit-click when not disabled', async () => {
