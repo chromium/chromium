@@ -12,7 +12,7 @@ import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test
 
 const TEST_TITLE_PARTS = ['Google Search'];
 const TEST_DESCRIPTION_PARTS = [{text: 'google.com'}, {text: '5 mins ago'}];
-const EXPECTED_ARIA_DESCRIPTION = 'google.com · 5 mins ago';
+const EXPECTED_ARIA_DESCRIPTION = 'google.com, 5 mins ago';
 const TEST_URL_1 = 'https://google.com';
 const TEST_URL_2 = 'https://youtube.com';
 
@@ -53,6 +53,25 @@ suite('OrganizerListSectionItemTest', () => {
     assertFalse(descriptionElement.hidden);
     assertDeepEquals(
         TEST_DESCRIPTION_PARTS, descriptionElement.descriptionParts);
+  });
+
+  test('combines multiple title and description parts for aria', async () => {
+    listItem.item = {
+      title: ['Google Search', 'YouTube'],
+      description: [
+        {text: 'google.com'},
+        {text: 'youtube.com'},
+        {text: '5 mins ago'},
+      ],
+    };
+    await microtasksFinished();
+
+    const crUrlListItem = listItem.$.crUrlListItem;
+    assertTrue(!!crUrlListItem);
+    assertEquals('Google Search, YouTube', crUrlListItem.itemAriaLabel);
+    assertEquals(
+        'google.com, youtube.com, 5 mins ago',
+        crUrlListItem.itemAriaDescription);
   });
 
   test('hides description element when description is absent', async () => {

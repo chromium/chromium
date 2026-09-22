@@ -129,14 +129,18 @@ export class OrganizerListSectionItemElement extends
     title: [],
   };
 
+  private listFormatter_ = new Intl.ListFormat(
+      document.documentElement.lang || undefined,
+      {style: 'narrow', type: 'conjunction'});
+
   protected getAriaLabel_(): string {
-    // TODO(crbug.com/560308768): Update to use a GRD string.
-    return this.item.title.join(' | ');
+    return this.listFormatter_.format(this.item.title);
   }
 
   protected getAriaDescription_(): string {
-    // TODO(crbug.com/560308768): Update to use a GRD string.
-    return this.item.description?.map(d => d.text).join(' · ') || '';
+    return this.item.description ?
+        this.listFormatter_.format(this.item.description.map(d => d.text)) :
+        '';
   }
 
   protected hasDescription_(): boolean {
