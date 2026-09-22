@@ -6,10 +6,21 @@
  * #type=style-lit
  * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
  * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=../settings_columned_section_lit.css.js
  * #import=../settings_shared_lit.css.js
- * #include=cr-icons-lit cr-shared-style-lit settings-shared-lit
+ * #include=cr-icons-lit cr-shared-style-lit settings-columned-section-lit settings-shared-lit
  * #css_wrapper_metadata_end */
 
 .section {
   padding: 0 var(--cr-section-padding);
+}
+
+.separator {
+  margin-inline-end: 4px;
+  margin-inline-start: 0;
+}
+
+.toggle-actions-container {
+  align-items: center;
+  display: flex;
 }
