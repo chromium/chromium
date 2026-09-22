@@ -1899,6 +1899,7 @@ suite('SearchboxMixinTest', () => {
           type: KeywordType.kInKeyword,
           keyword,
           displayText: 'Search Google',
+          iconPath: '',
         };
         await microtasksFinished();
         await mockInput.updateComplete;
@@ -2755,6 +2756,7 @@ suite('SearchboxMixinVirtualFocusTest', () => {
       type: KeywordType.kInKeyword,
       keyword: '@tabs',
       displayText: 'Tabs',
+      iconPath: '',
     };
 
     const match = createSearchMatchForTesting({
@@ -3276,11 +3278,13 @@ suite('SearchboxMixinVirtualFocusTest', () => {
         type: KeywordType.kChip,
         keyword: 'google.com',
         displayText: 'Search Google',
+        iconPath: '',
       },
       {
         type: KeywordType.kInstant,
         keyword: '@history',
         displayText: '@history',
+        iconPath: '',
       },
     ]);
     await testProxy.callbackRouterRemote.$.flushForTesting();
@@ -3303,6 +3307,7 @@ suite('SearchboxMixinVirtualFocusTest', () => {
           type: KeywordType.kChip,
           keyword: 'youtube.com',
           displayText: 'Search YouTube',
+          iconPath: '',
         }]);
         await testProxy.callbackRouterRemote.$.flushForTesting();
 
@@ -3344,6 +3349,7 @@ suite('SearchboxMixinVirtualFocusTest', () => {
           type: KeywordType.kChip,
           keyword: 'youtube.com',
           displayText: 'Search YouTube',
+          iconPath: '',
         }]);
         await testProxy.callbackRouterRemote.$.flushForTesting();
 
@@ -3380,6 +3386,7 @@ suite('SearchboxMixinVirtualFocusTest', () => {
           type: KeywordType.kInstant,
           keyword: '@history',
           displayText: 'History',
+          iconPath: '',
         }]);
         await testProxy.callbackRouterRemote.$.flushForTesting();
 
@@ -3404,6 +3411,7 @@ suite('SearchboxMixinVirtualFocusTest', () => {
           type: KeywordType.kChip,
           keyword: 'google.com',
           displayText: 'Google',
+          iconPath: '',
         }]);
         await testProxy.callbackRouterRemote.$.flushForTesting();
 
@@ -3426,6 +3434,7 @@ suite('SearchboxMixinVirtualFocusTest', () => {
       type: KeywordType.kInstant,
       keyword: '@history',
       displayText: 'History',
+      iconPath: '',
     }]);
     await testProxy.callbackRouterRemote.$.flushForTesting();
 

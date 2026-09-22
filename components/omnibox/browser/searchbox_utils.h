@@ -14,6 +14,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/gfx/vector_icon_types.h"
 
 class AutocompleteController;
 class OmniboxClient;
@@ -170,6 +171,9 @@ WindowOpenDisposition ComputeOpenDispositionFromModifiersAndLogToUma(
     bool control,
     bool alt,
     bool command);
+
+// Returns the correct VectorIcon for a given TemplateURL (Keyword provider).
+const gfx::VectorIcon& GetKeywordVectorIcon(const TemplateURL& turl);
 
 }  // namespace searchbox
 

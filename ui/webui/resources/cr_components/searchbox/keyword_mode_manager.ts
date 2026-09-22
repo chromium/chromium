@@ -103,6 +103,9 @@ export class KeywordModeManager {
       type: KeywordType.kInKeyword,
       keyword: keyword,
       displayText: displayText,
+      iconPath:
+          this.availableKeywordModels_.get(keyword.toLowerCase())?.iconPath ||
+          '',
     };
   }
 
@@ -420,6 +423,10 @@ export class KeywordModeManager {
       type: selectedMatch.keywordModel.type,
       keyword: selectedMatch.keywordModel.keyword,
       displayText: selectedMatch.keywordModel.chipHint,
+      iconPath: this.availableKeywordModels_
+                    .get(selectedMatch.keywordModel.keyword.toLowerCase())
+                    ?.iconPath ||
+          '',
     };
   }
 }

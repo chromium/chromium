@@ -9,8 +9,10 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/actions/omnibox_action_concepts.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -18,12 +20,19 @@
 #include "components/omnibox/browser/fake_autocomplete_controller.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
+#if !BUILDFLAG(IS_IOS)
+#include "components/omnibox/browser/vector_icons.h"
+#endif  // !BUILDFLAG(IS_IOS)
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
+#include "components/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "url/gurl.h"
 
 using ::testing::_;
@@ -242,5 +251,72 @@ TEST_F(SearchboxUtilsTest, GetKeywordLabelNames) {
   EXPECT_TRUE(empty_names.short_name.empty());
   EXPECT_TRUE(empty_names.full_name.empty());
 }
+
+#if !BUILDFLAG(IS_IOS)
+TEST_F(SearchboxUtilsTest, GetKeywordVectorIcon) {
+  TemplateURLData gemini_data;
+  gemini_data.starter_pack_id =
+      static_cast<int>(template_url_starter_pack_data::StarterPackId::kGemini);
+  TemplateURL gemini_turl(gemini_data);
+  EXPECT_EQ(omnibox::kSparkIcon.name, GetKeywordVectorIcon(gemini_turl).name);
+
+  TemplateURLData aimode_data;
+  aimode_data.starter_pack_id =
+      static_cast<int>(template_url_starter_pack_data::StarterPackId::kAiMode);
+  TemplateURL aimode_turl(aimode_data);
+
+  TemplateURLData bookmarks_data;
+  bookmarks_data.starter_pack_id = static_cast<int>(
+      template_url_starter_pack_data::StarterPackId::kBookmarks);
+  TemplateURL bookmarks_turl(bookmarks_data);
+
+  TemplateURLData history_data;
+  history_data.starter_pack_id =
+      static_cast<int>(template_url_starter_pack_data::StarterPackId::kHistory);
+  TemplateURL history_turl(history_data);
+
+  TemplateURLData tabs_data;
+  tabs_data.starter_pack_id =
+      static_cast<int>(template_url_starter_pack_data::StarterPackId::kTabs);
+  TemplateURL tabs_turl(tabs_data);
+
+  TemplateURLData regular_data;
+  regular_data.SetShortName(u"example");
+  regular_data.SetKeyword(u"example");
+  TemplateURL regular_turl(regular_data);
+
+  // When rounded icons are enabled:
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(features::kRoundedIcons);
+    EXPECT_EQ(omnibox::kSearchSparkIcon.name,
+              GetKeywordVectorIcon(aimode_turl).name);
+    EXPECT_EQ(omnibox::kStarFilledIcon.name,
+              GetKeywordVectorIcon(bookmarks_turl).name);
+    EXPECT_EQ(vector_icons::kHistoryIcon.name,
+              GetKeywordVectorIcon(history_turl).name);
+    EXPECT_EQ(omnibox::kChromeProductIcon.name,
+              GetKeywordVectorIcon(tabs_turl).name);
+    EXPECT_EQ(vector_icons::kSearchIcon.name,
+              GetKeywordVectorIcon(regular_turl).name);
+  }
+
+  // When rounded icons are disabled:
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(features::kRoundedIcons);
+    EXPECT_EQ(omnibox::kSearchSparkOldIcon.name,
+              GetKeywordVectorIcon(aimode_turl).name);
+    EXPECT_EQ(omnibox::kStarActiveChromeRefreshOldIcon.name,
+              GetKeywordVectorIcon(bookmarks_turl).name);
+    EXPECT_EQ(vector_icons::kHistoryChromeRefreshOldIcon.name,
+              GetKeywordVectorIcon(history_turl).name);
+    EXPECT_EQ(omnibox::kProductChromeRefreshOldIcon.name,
+              GetKeywordVectorIcon(tabs_turl).name);
+    EXPECT_EQ(vector_icons::kSearchChromeRefreshOldIcon.name,
+              GetKeywordVectorIcon(regular_turl).name);
+  }
+}
+#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace searchbox

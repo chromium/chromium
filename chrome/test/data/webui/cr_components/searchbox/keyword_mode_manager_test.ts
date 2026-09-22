@@ -69,6 +69,21 @@ suite('KeywordModeManagerTest', () => {
     assertEquals(null, manager.inputKeywordModel);
   });
 
+  test('enter with custom icon path from available models', () => {
+    manager.availableKeywordModels = [{
+      type: KeywordType.kInKeyword,
+      keyword: '@gemini',
+      displayText: 'Gemini',
+      iconPath: '//resources/cr_components/searchbox/icons/spark.svg',
+    }];
+    manager.enter('@gemini', 'Gemini', KeywordModeEntryMethod.TAB);
+    assertTrue(manager.isInKeywordMode);
+    assertEquals('@gemini', manager.activeKeyword);
+    assertEquals(
+        '//resources/cr_components/searchbox/icons/spark.svg',
+        manager.inputKeywordModel?.iconPath);
+  });
+
   test('acceptInputTrigger for space at end', () => {
     // Null cursor position -> false.
     assertFalse(manager.acceptInputTrigger('google.com ', null, spaceEvent));
@@ -81,6 +96,7 @@ suite('KeywordModeManagerTest', () => {
       type: KeywordType.kChip,
       keyword: 'google.com',
       displayText: 'Search Google',
+      iconPath: '',
     };
 
     // Cursor not at end -> false.
@@ -97,6 +113,7 @@ suite('KeywordModeManagerTest', () => {
       type: KeywordType.kInKeyword,
       keyword: 'google.com',
       displayText: 'Search Google',
+      iconPath: '',
     };
     assertFalse(manager.acceptInputTrigger('google.com ', 11, spaceEvent));
 
@@ -106,6 +123,7 @@ suite('KeywordModeManagerTest', () => {
       type: KeywordType.kChip,
       keyword: 'google.com',
       displayText: 'Search Google',
+      iconPath: '',
     };
     assertTrue(manager.acceptInputTrigger('google.com ', 11, spaceEvent));
     assertTrue(manager.isInKeywordMode);
@@ -116,6 +134,7 @@ suite('KeywordModeManagerTest', () => {
       type: KeywordType.kChip,
       keyword: 'google.com',
       displayText: 'Search Google',
+      iconPath: '',
     };
     assertTrue(manager.acceptInputTrigger(
         'google.com\u3000', 11, ideographicSpaceEvent));
@@ -127,6 +146,7 @@ suite('KeywordModeManagerTest', () => {
       type: KeywordType.kChip,
       keyword: 'google.com',
       displayText: 'Search Google',
+      iconPath: '',
     };
     assertTrue(manager.acceptInputTrigger('GOOGLE.COM ', 11, spaceEvent));
     assertTrue(manager.isInKeywordMode);
@@ -139,11 +159,13 @@ suite('KeywordModeManagerTest', () => {
         type: KeywordType.kInstant,
         keyword: '@history',
         displayText: '@history',
+        iconPath: '',
       },
       {
         type: KeywordType.kChip,
         keyword: 'google.com',
         displayText: 'Search Google',
+        iconPath: '',
       },
     ];
     assertTrue(manager.acceptInputTrigger('@history ', 9, spaceEvent));
@@ -172,6 +194,7 @@ suite('KeywordModeManagerTest', () => {
       type: KeywordType.kInstant,
       keyword: '@bookmarks',
       displayText: '@bookmarks',
+      iconPath: '',
     };
     assertTrue(manager.acceptInputTrigger('@bookmarks ', 11, spaceEvent));
     assertTrue(manager.isInKeywordMode);
@@ -183,6 +206,7 @@ suite('KeywordModeManagerTest', () => {
       type: KeywordType.kChip,
       keyword: 'google.com',
       displayText: 'Search Google',
+      iconPath: '',
     }];
     assertTrue(manager.acceptInputTrigger('google.com ', 11, spaceEvent));
     assertTrue(manager.isInKeywordMode);
@@ -201,6 +225,7 @@ suite('KeywordModeManagerTest', () => {
       type: KeywordType.kInstant,
       keyword: '@history',
       displayText: '@history',
+      iconPath: '',
     }];
     assertFalse(manager.acceptInputTrigger('@history ', 9, backspaceEvent));
     assertFalse(manager.isInKeywordMode);
@@ -222,6 +247,7 @@ suite('KeywordModeManagerTest', () => {
       type: KeywordType.kInstant,
       keyword: '@history',
       displayText: '@history',
+      iconPath: '',
     }];
     manager.keywordSpaceTriggeringEnabled = false;
     assertFalse(manager.acceptInputTrigger('@history ', 9, spaceEvent));
@@ -235,6 +261,7 @@ suite('KeywordModeManagerTest', () => {
       type: KeywordType.kChip,
       keyword: 'google.com',
       displayText: 'Search Google',
+      iconPath: '',
     };
     assertFalse(manager.acceptInputTrigger('google.com ', 11, spaceEvent));
     assertFalse(manager.isInKeywordMode);
@@ -268,11 +295,13 @@ suite('KeywordModeManagerTest', () => {
         type: KeywordType.kChip,
         keyword: 'google.com',
         displayText: 'Search Google',
+        iconPath: '',
       },
       {
         type: KeywordType.kInstant,
         keyword: '@history',
         displayText: '@history',
+        iconPath: '',
       },
     ];
 
@@ -309,6 +338,7 @@ suite('KeywordModeManagerTest', () => {
       type: KeywordType.kInstant,
       keyword: '@history',
       displayText: '@history',
+      iconPath: '',
     }];
     assertFalse(manager.acceptInputTrigger('google.com query', 11, spaceEvent));
     assertFalse(manager.isInKeywordMode);
@@ -319,11 +349,13 @@ suite('KeywordModeManagerTest', () => {
         type: KeywordType.kChip,
         keyword: 'google.com',
         displayText: 'Search Google',
+        iconPath: '',
       },
       {
         type: KeywordType.kInstant,
         keyword: '@history',
         displayText: '@history',
+        iconPath: '',
       },
     ];
 
@@ -367,6 +399,7 @@ suite('KeywordModeManagerTest', () => {
         type: KeywordType.kChip,
         keyword: 'YouTube.com',
         displayText: 'Search YouTube',
+        iconPath: '',
       },
     ];
     assertTrue(manager.acceptInputTrigger('youtube.com query', 12, spaceEvent));
@@ -471,6 +504,7 @@ suite('KeywordModeManagerTest', () => {
           type: KeywordType.kChip,
           keyword: 'youtube.com',
           displayText: 'Search YouTube',
+          iconPath: '',
         };
         assertTrue(manager.acceptInputTrigger('youtube.com ', 12, spaceEvent));
 
@@ -493,6 +527,7 @@ suite('KeywordModeManagerTest', () => {
           type: KeywordType.kChip,
           keyword: 'youtube.com',
           displayText: 'Search YouTube',
+          iconPath: '',
         }];
         assertFalse(
             manager.acceptInputTrigger('youtube.comquery', 16, spaceEvent));
@@ -727,11 +762,21 @@ suite('KeywordModeManagerTest', () => {
       }),
     });
 
+    manager.availableKeywordModels = [{
+      type: KeywordType.kChip,
+      keyword: 'youtube.com',
+      displayText: 'Search YouTube',
+      iconPath: '//resources/cr_components/searchbox/icons/youtube.svg',
+    }];
+
     manager.onSelectedMatchChanged(matchWithKeyword);
     assertTrue(manager.inputKeywordModel !== null);
     assertEquals(KeywordType.kChip, manager.inputKeywordModel?.type);
     assertEquals('youtube.com', manager.inputKeywordModel?.keyword);
     assertEquals('Search YouTube', manager.inputKeywordModel?.displayText);
+    assertEquals(
+        '//resources/cr_components/searchbox/icons/youtube.svg',
+        manager.inputKeywordModel?.iconPath);
 
     // Match without keyword model -> resets keyword model to null.
     const matchWithoutKeyword = createSearchMatchForTesting({

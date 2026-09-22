@@ -397,6 +397,14 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
     return this.placeholderText ?? this.i18n('searchBoxHint');
   }
 
+  protected computeDefaultIcon_(): string {
+    if (this.inKeywordMode_()) {
+      return this.inputKeywordModel?.iconPath ||
+          '//resources/cr_components/searchbox/icons/search_cr23.svg';
+    }
+    return this.searchboxIcon;
+  }
+
   protected inKeywordMode_(): boolean {
     return this.inputKeywordModel?.type === KeywordType.kInKeyword;
   }

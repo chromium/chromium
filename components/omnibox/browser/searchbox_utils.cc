@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/navigation_metrics/navigation_metrics.h"
@@ -32,13 +33,22 @@
 #include "components/omnibox/browser/omnibox_logging_utils.h"
 #include "components/omnibox/browser/omnibox_metrics_constants.h"
 #include "components/omnibox/browser/page_classification_functions.h"
+#if !BUILDFLAG(IS_IOS)
+#include "components/omnibox/browser/vector_icons.h"  // nogncheck
+#endif                                                // !BUILDFLAG(IS_IOS)
 #include "components/omnibox/browser/verbatim_match.h"
+#include "components/omnibox/common/omnibox_features.h"
+#include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/sessions/core/session_id.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "net/cookies/cookie_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/base/ui_base_features.h"
+#include "ui/gfx/vector_icon_types.h"
 
 using metrics::OmniboxEventProto;
 
@@ -532,6 +542,55 @@ KeywordLabelNames GetKeywordLabelNames(const std::u16string& keyword,
   names.full_name =
       l10n_util::GetStringFUTF16(IDS_OMNIBOX_KEYWORD_TEXT_MD, names.short_name);
   return names;
+}
+
+const gfx::VectorIcon& GetKeywordVectorIcon(const TemplateURL& turl) {
+#if BUILDFLAG(IS_IOS)
+  return gfx::VectorIcon::EmptyIcon();
+#else
+  using StarterPackId = template_url_starter_pack_data::StarterPackId;
+
+  // 1. Handle starter pack `@` keywords
+  switch (turl.starter_pack_id()) {
+    case StarterPackId::kGemini:
+      return omnibox::kSparkIcon;
+    case StarterPackId::kAiMode:
+      return features::IsRoundedIconsEnabled() ? omnibox::kSearchSparkIcon
+                                               : omnibox::kSearchSparkOldIcon;
+    case StarterPackId::kBookmarks:
+      return features::IsRoundedIconsEnabled()
+                 ? omnibox::kStarFilledIcon
+                 : omnibox::kStarActiveChromeRefreshOldIcon;
+    case StarterPackId::kHistory:
+      return features::IsRoundedIconsEnabled()
+                 ? vector_icons::kHistoryIcon
+                 : vector_icons::kHistoryChromeRefreshOldIcon;
+    case StarterPackId::kTabs:
+      return features::IsRoundedIconsEnabled()
+                 ? omnibox::kChromeProductIcon
+                 : omnibox::kProductChromeRefreshOldIcon;
+    default:
+      break;
+  }
+
+  if (turl.featured_by_policy()) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    if (turl.CreatedByEnterpriseSearchAggregatorPolicy()) {
+      return base::FeatureList::IsEnabled(omnibox::kUseAgentspace25Logo)
+                 ? vector_icons::kGoogleAgentspaceMonochromeLogo25Icon
+                 : vector_icons::kGoogleAgentspaceMonochromeLogoIcon;
+    }
+#endif
+    return features::IsRoundedIconsEnabled()
+               ? omnibox::kPublicIcon
+               : omnibox::kPageChromeRefreshOldIcon;
+  }
+
+  // 2. Fallback for generic site keywords (e.g. youtube.com, google.com)
+  return features::IsRoundedIconsEnabled()
+             ? vector_icons::kSearchIcon
+             : vector_icons::kSearchChromeRefreshOldIcon;
+#endif  // BUILDFLAG(IS_IOS)
 }
 
 }  // namespace searchbox
