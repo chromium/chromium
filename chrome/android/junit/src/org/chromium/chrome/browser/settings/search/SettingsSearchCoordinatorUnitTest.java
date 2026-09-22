@@ -761,6 +761,36 @@ public class SettingsSearchCoordinatorUnitTest {
     }
 
     @Test
+    public void testOnSlideStateUpdated_whenColumnModeCacheIsStale_showsSearchBox() {
+        setUpMultiColumnSettings();
+        // Start in single-column mode with the detail pane open (isLayoutOpen() == true). Because
+        // the detail pane covers main settings, initializeSearchUi() hides the search box.
+        mUseMultiColumn = false;
+        when(mMultiColumnSettings.isLayoutOpen()).thenReturn(true);
+        mCoordinator.initializeSearchUi(null);
+        ShadowLooper.idleMainLooper();
+
+        // The search box is hidden.
+        View searchBox = mActivity.findViewById(R.id.search_box);
+        assertNotNull(searchBox);
+        assertEquals(View.GONE, searchBox.getVisibility());
+
+        // Rotating a display whose width is within a few pixels of
+        // R.dimen.settings_min_multi_column_screen_width settles into two-column mode. The
+        // one-shot listener that refreshes |mUseMultiColumn| can read the pre-layout
+        // single-column value and never run again, leaving the cache stale. isLayoutOpen() reports
+        // the live two-column state, so pairing the two used to report main settings as hidden and
+        // hide the search box, with no way back: the pane is not slideable in two-column mode, so
+        // onPanelClosed() never fires. https://crbug.com/562493964
+        mUseMultiColumn = true;
+
+        mCoordinator.onSlideStateUpdated(MultiColumnSettings.SlideState.OPENED);
+
+        // The search box recovers instead of staying hidden.
+        assertEquals(View.VISIBLE, searchBox.getVisibility());
+    }
+
+    @Test
     public void testExitSearchState_whenShownInTab_multiColumn_focusesSearchBox() {
         setUpMultiColumnSettings();
         mUseMultiColumn = true;

@@ -824,7 +824,17 @@ public class SettingsSearchCoordinator
         if (mMultiColumnSettings == null || mMultiColumnSettings.getView() == null) {
             return false;
         }
-        return mUseMultiColumn ? true : !mMultiColumnSettings.isLayoutOpen();
+
+        // Read the column mode from the supplier rather than the |mUseMultiColumn| cache. The cache
+        // is refreshed by a one-shot layout listener, so it can read a single-column value
+        // mid-rotation, whereas isLayoutOpen() below always reports the live layout and returns
+        // true whenever the layout is two-column. Mixing the two makes this method claim main
+        // settings is hidden when it is fully visible, which hides the search box with no way back:
+        // the pane is not slideable in two-column mode, so closePane() is a no-op and
+        // onPanelClosed() never fires. https://crbug.com/562493964
+        if (mUseMultiColumnSupplier.getAsBoolean()) return true;
+
+        return !mMultiColumnSettings.isLayoutOpen();
     }
 
     private @Nullable View getHelpMenuView() {
