@@ -88,6 +88,7 @@ void AudioHandler::Dispose() {
   deferred_task_handler_->RemoveChangedChannelCountMode(this);
   deferred_task_handler_->RemoveChangedChannelInterpretation(this);
   deferred_task_handler_->RemoveAutomaticPullNode(this);
+  deferred_task_handler_->RemoveTailProcessingHandler(this, false);
   for (auto& output : outputs_) {
     output->Dispose();
   }

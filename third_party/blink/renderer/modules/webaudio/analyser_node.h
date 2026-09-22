@@ -28,6 +28,7 @@
 
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
 
 namespace blink {
@@ -37,7 +38,7 @@ class AnalyserOptions;
 class BaseAudioContext;
 class ExceptionState;
 
-class AnalyserNode final : public AudioNode {
+class MODULES_EXPORT AnalyserNode final : public AudioNode {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
