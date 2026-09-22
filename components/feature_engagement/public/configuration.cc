@@ -52,13 +52,6 @@ std::ostream& operator<<(std::ostream& os, Blocking::Type type) {
 
 }  // namespace
 
-Comparator::Comparator() : type(ANY), value(0) {}
-
-Comparator::Comparator(ComparatorType type, uint32_t value)
-    : type(type), value(value) {}
-
-Comparator::~Comparator() = default;
-
 bool Comparator::MeetsCriteria(uint32_t v) const {
   switch (type) {
     case ANY:

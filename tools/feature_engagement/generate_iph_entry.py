@@ -211,7 +211,7 @@ def update_feature_configurations_cc(feature_name, description):
     "    FeatureConfig config;\n",
     "    config.valid = true;\n\n",
     "    // IPH is always available at start-up.\n",
-    "    config.availability = Comparator(ANY, 0);\n\n",
+    "    config.availability = kAlwaysAvailable;\n\n",
     "    // IPH only shows if no other IPH has shown this session.\n",
     "    config.session_rate = Comparator(EQUAL, 0);\n\n",
     "    // IPH only shows once per 360 days.\n",

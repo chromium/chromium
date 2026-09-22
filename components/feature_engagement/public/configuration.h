@@ -50,9 +50,10 @@ enum StorageType {
 // verifying their relationship.
 struct Comparator {
  public:
-  Comparator();
-  Comparator(ComparatorType type, uint32_t value);
-  ~Comparator();
+  constexpr Comparator() : type(ANY), value(0) {}
+  constexpr Comparator(ComparatorType type, uint32_t value)
+      : type(type), value(value) {}
+  constexpr ~Comparator() = default;
 
   friend bool operator==(const Comparator&, const Comparator&) = default;
   friend auto operator<=>(const Comparator&, const Comparator&) = default;
@@ -64,6 +65,10 @@ struct Comparator {
   ComparatorType type;
   uint32_t value;
 };
+
+inline constexpr Comparator kAlwaysTrue(ANY, 0);
+inline constexpr Comparator kAlwaysAvailable(ANY, 0);
+inline constexpr Comparator kNoRestrictions(ANY, 0);
 
 std::ostream& operator<<(std::ostream& os, const Comparator& comparator);
 

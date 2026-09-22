@@ -139,5 +139,123 @@ class FeatureEngagementConstantsPresubmitTest(unittest.TestCase):
     results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
     self.assertEqual(0, len(results))
 
+  def testNoComparatorAny_ValidCode(self):
+    input_api = MockInputApi()
+    input_api.files = [MockFile(
+      'components/feature_engagement/public/feature_configurations.cc',
+      [],
+      [(1, 'config.availability = kAlwaysAvailable;'),
+       (2, 'config.session_rate = kNoRestrictions;'),
+       (3, 'config.session_rate = Comparator(EQUAL, 0);')])]
+    results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+    self.assertEqual(0, len(results))
+
+  def testNoComparatorAny_ConfigurationHExempt(self):
+    input_api = MockInputApi()
+    input_api.files = [MockFile(
+      'components/feature_engagement/public/configuration.h',
+      [],
+      [(1, 'inline constexpr Comparator kAlwaysTrue(ANY, 0);'),
+       (2, 'inline constexpr Comparator kAlwaysAvailable(ANY, 0);'),
+       (3, 'inline constexpr Comparator kNoRestrictions(ANY, 0);')])]
+    results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+    self.assertEqual(0, len(results))
+
+  def testNoComparatorAny_Violation(self):
+    input_api = MockInputApi()
+    input_api.files = [MockFile(
+      'components/feature_engagement/public/feature_configurations.cc',
+      [],
+      [(42, 'config.availability = Comparator(ANY, 0);')])]
+    results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+    self.assertEqual(1, len(results))
+    self.assertEqual('Error', results[0].type)
+    self.assertIn('Do not use Comparator(ANY, ...). Use kAlwaysTrue (or kAlwaysAvailable / kNoRestrictions) instead.',
+                  results[0].message)
+
+  def testNoComparatorAny_ViolationWithNonZero(self):
+    input_api = MockInputApi()
+    input_api.files = [MockFile(
+      'components/feature_engagement/public/feature_configurations.cc',
+      [],
+      [(42, 'config.availability = Comparator(ANY, 55);')])]
+    results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+    self.assertEqual(1, len(results))
+    self.assertEqual('Error', results[0].type)
+    self.assertIn('Do not use Comparator(ANY, ...). Use kAlwaysTrue (or kAlwaysAvailable / kNoRestrictions) instead.',
+                  results[0].message)
+
+  def testNoComparatorAny_IgnoredTestFiles(self):
+    input_api = MockInputApi()
+    input_api.files = [
+      MockFile(
+        'components/feature_engagement/public/configuration_unittest.cc',
+        [],
+        [(12, 'EXPECT_TRUE(Comparator(ANY, 0).MeetsCriteria(0));')]),
+      MockFile(
+        'components/feature_engagement/internal/feature_config_condition_validator_unittest.cc',
+        [],
+        [(25, 'Comparator(ANY, 0);')])
+    ]
+    results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+    self.assertEqual(0, len(results))
+
+  def testNoComparatorAny_ViolationInEventTrigger(self):
+    input_api = MockInputApi()
+    input_api.files = [MockFile(
+      'components/feature_engagement/public/feature_configurations.cc',
+      [],
+      [(45, 'config.trigger = EventConfig("iph_feature_trigger", Comparator(ANY, 0), 90, 90);')])]
+    results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+    self.assertEqual(1, len(results))
+    self.assertEqual('Error', results[0].type)
+    self.assertIn('Do not use Comparator(ANY, ...). Use kAlwaysTrue (or kAlwaysAvailable / kNoRestrictions) instead.',
+                  results[0].message)
+
+  def testNoComparatorAny_ViolationInEventUsed(self):
+    input_api = MockInputApi()
+    input_api.files = [MockFile(
+      'components/feature_engagement/public/feature_configurations.cc',
+      [],
+      [(48, 'config.used = EventConfig("iph_feature_used", Comparator(ANY, 0), 90, 90);')])]
+    results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+    self.assertEqual(1, len(results))
+    self.assertEqual('Error', results[0].type)
+    self.assertIn('Do not use Comparator(ANY, ...). Use kAlwaysTrue (or kAlwaysAvailable / kNoRestrictions) instead.',
+                  results[0].message)
+
+  def testNoComparatorAny_ViolationInEventConfigList(self):
+    input_api = MockInputApi()
+    input_api.files = [MockFile(
+      'components/feature_engagement/public/feature_configurations.cc',
+      [],
+      [(52, 'config.event_configs.insert(EventConfig("other_event", Comparator(ANY, 0), 30, 30));')])]
+    results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+    self.assertEqual(1, len(results))
+    self.assertEqual('Error', results[0].type)
+    self.assertIn('Do not use Comparator(ANY, ...). Use kAlwaysTrue (or kAlwaysAvailable / kNoRestrictions) instead.',
+                  results[0].message)
+
+  def testNoComparatorAny_ValidEventConfigWithAlwaysTrue(self):
+    input_api = MockInputApi()
+    input_api.files = [MockFile(
+      'components/feature_engagement/public/feature_configurations.cc',
+      [],
+      [(45, 'config.trigger = EventConfig("iph_feature_trigger", kAlwaysTrue, 90, 90);'),
+       (48, 'config.used = EventConfig("iph_feature_used", kAlwaysTrue, 90, 90);'),
+       (52, 'config.event_configs.insert(EventConfig("other_event", kAlwaysTrue, 30, 30));')])]
+    results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+    self.assertEqual(0, len(results))
+
+  def testNoComparatorAny_NonCppFile(self):
+    input_api = MockInputApi()
+    input_api.files = [MockFile(
+      'components/feature_engagement/README.md',
+      [],
+      [(1, 'Comparator(ANY, 0)')])]
+    results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+    self.assertEqual(0, len(results))
+
 if __name__ == '__main__':
   unittest.main()
+

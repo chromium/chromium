@@ -18,6 +18,7 @@ def _CommonChecks(input_api, output_api):
   results = []
   results.extend(_CheckJavaConstantsSorting(input_api, output_api))
   results.extend(_CheckFeatureListSorting(input_api, output_api))
+  results.extend(_CheckNoComparatorAny(input_api, output_api))
   return results
 
 def _CheckFeatureListSorting(input_api, output_api):
@@ -143,3 +144,33 @@ def _CheckStringConstantsSorted(input_api, output_api, lines,
       )
       return [output_api.PresubmitError(message)]
   return []
+
+def _CheckNoComparatorAny(input_api, output_api):
+  """Checks that no code uses Comparator(ANY, ...) directly."""
+  results = []
+  pattern = input_api.re.compile(
+      r'\b(?:feature_engagement::)?Comparator\s*\(\s*(?:feature_engagement::)?ANY\b')
+
+  for f in input_api.AffectedFiles():
+    local_path = f.LocalPath()
+    if not local_path.endswith(('.cc', '.h', '.mm', '.cpp')):
+      continue
+
+    # Skip unit tests that test Comparator/validator edge cases.
+    if local_path.endswith(('_unittest.cc', '_unittest.h')):
+      continue
+
+    # Skip configuration.h where the constants are defined.
+    if local_path.endswith(
+        'components/feature_engagement/public/configuration.h'):
+      continue
+
+    for line_num, line in f.ChangedContents():
+      if pattern.search(line):
+        message = (
+            f'{local_path}:{line_num}: Do not use Comparator(ANY, ...). '
+            f'Use kAlwaysTrue (or kAlwaysAvailable / kNoRestrictions) instead.'
+        )
+        results.append(output_api.PresubmitError(message))
+
+  return results
