@@ -5,14 +5,20 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <unordered_map>
 #include <utility>
 
 #include "base/files/file_path.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/pickle.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "base/threading/thread_restrictions.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/test/fake_content_analysis_delegate.h"
@@ -22,12 +28,18 @@
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
 #include "chrome/browser/glic/test_support/glic_drag_and_drop_test_base.h"
 #include "chrome/test/base/drag_and_drop_test_utils.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/drop_data.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace glic {
 namespace {
@@ -202,6 +214,63 @@ IN_PROC_BROWSER_TEST_F(GlicWebDragAndDropBrowserTest,
   histogram_tester.ExpectUniqueSample("Glic.DragAndDrop.ValidationResult",
                                       GlicDragAndDropValidationResult::kSuccess,
                                       1);
+}
+
+// Web-to-Glic drag-and-drop OSExchangeData custom data simulation is supported
+// on macOS, Windows, and ChromeOS, and disabled on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_testWebToGlicDragStripsDomDropPayload \
+  DISABLED_testWebToGlicDragStripsDomDropPayload
+#else
+#define MAYBE_testWebToGlicDragStripsDomDropPayload \
+  testWebToGlicDragStripsDomDropPayload
+#endif
+IN_PROC_BROWSER_TEST_F(GlicWebDragAndDropBrowserTest,
+                       MAYBE_testWebToGlicDragStripsDomDropPayload) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * glic_instance,
+                       OpenGlicForActiveTab());
+  Host* glic_host = &glic_instance->host();
+  PrepareGuestForDrag(*glic_host);
+  gfx::Point host_relative_point = GetGuestCenterInHost(*glic_host);
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  base::FilePath test_file = CreateTestFile(
+      temp_dir, "secret.txt", "This content must not reach the guest DOM.");
+
+  auto data = std::make_unique<ui::OSExchangeData>();
+  data->SetFilename(test_file);
+  data->SetString(u"Sensitive text");
+  data->SetURL(GURL("https://a.com/secret.png"), u"secret.png");
+
+  base::Pickle custom_data_pickle;
+  ui::WriteCustomDataToPickle(
+      std::unordered_map<std::u16string, std::u16string>{
+          {std::u16string(content::kDragIdCustomDataKey),
+           base::UTF8ToUTF16(base::UnguessableToken::Create().ToString())}},
+      &custom_data_pickle);
+  data->SetPickledData(ui::ClipboardFormatType::DataTransferCustomType(),
+                       custom_data_pickle);
+
+  drag_and_drop_test_utils::DragAndDropSimulator simulator(
+      glic_host->webui_contents());
+  ASSERT_TRUE(
+      simulator.SimulateDragEnter(host_relative_point, std::move(data)));
+
+  ContinueJsTest();
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return glic_host->GetGuestMainFrame()->GetRenderWidgetHost()->GetView() &&
+           !glic_host->GetGuestMainFrame()
+                ->GetRenderWidgetHost()
+                ->GetView()
+                ->GetViewBounds()
+                .IsEmpty();
+  }));
+  host_relative_point = GetGuestCenterInHost(*glic_host);
+  ASSERT_TRUE(simulator.SimulateDrop(host_relative_point));
+
+  ContinueJsTest();
 }
 
 }  // namespace

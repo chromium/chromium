@@ -256,8 +256,11 @@ void HandleOnPerformingDrop(
     // won't see the content anyway.
     if (glic::IsGlicWebDrag(drop_data)) {
       glic::StartDragAndDropInvoke(web_contents, drop_data);
-      drop_data.document_is_handling_drag = true;
-      std::move(callback).Run(std::move(drop_data));
+      // Do not forward the DOM drop to the guest renderer (`std::nullopt`
+      // triggers `DragTargetDragLeave` to dismiss the guest drop-target
+      // overlay). The dropped content is delivered asynchronously via Glic
+      // Invoke only after DLP policy checks succeed.
+      std::move(callback).Run(std::nullopt);
       return;
     }
   } else {
