@@ -43,7 +43,7 @@ struct PickObserverList<CheckedBase> {
   template <class TypeParam,
             bool check_empty = false,
             ObserverListReentrancyPolicy reentrancy =
-                ObserverListReentrancyPolicy::kDisallowReentrancy>
+                internal::kDefaultReentrancy>
   using ObserverListType = ObserverList<TypeParam, check_empty, reentrancy>;
 };
 template <>
@@ -51,7 +51,7 @@ struct PickObserverList<UncheckedBase> {
   template <class TypeParam,
             bool check_empty = false,
             ObserverListReentrancyPolicy reentrancy =
-                ObserverListReentrancyPolicy::kDisallowReentrancy>
+                internal::kDefaultReentrancy>
   using ObserverListType =
       typename ObserverList<TypeParam, check_empty, reentrancy>::Unchecked;
 };
@@ -960,7 +960,11 @@ class MockLogAssertHandler {
 #if DCHECK_IS_ON()
 TYPED_TEST(ObserverListTest, NonReentrantObserverList) {
   DECLARE_TYPES;
-  ObserverListFoo non_reentrant_observer_list;
+  using NonReentrantObserverListFoo =
+      typename PickObserverList<Foo>::template ObserverListType<
+          Foo, /*check_empty=*/false,
+          ObserverListReentrancyPolicy::kDisallowReentrancy>;
+  NonReentrantObserverListFoo non_reentrant_observer_list;
   Adder a(1);
   non_reentrant_observer_list.AddObserver(&a);
 
@@ -996,7 +1000,11 @@ TYPED_TEST(ObserverListTest, ReentrantObserverList) {
 
 TYPED_TEST(ObserverListTest, GetReentrantRange) {
   DECLARE_TYPES;
-  ObserverListFoo non_reentrant_observer_list;
+  using NonReentrantObserverListFoo =
+      typename PickObserverList<Foo>::template ObserverListType<
+          Foo, /*check_empty=*/false,
+          ObserverListReentrancyPolicy::kDisallowReentrancy>;
+  NonReentrantObserverListFoo non_reentrant_observer_list;
   Adder a(1);
   non_reentrant_observer_list.AddObserver(&a);
   bool passed = false;
