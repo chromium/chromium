@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_context_menu.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
@@ -34,6 +35,8 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_content.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
+#include "chrome/browser/ui/views/omnibox/webui_readonly_omnibox.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_interactive_test_mixin.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
@@ -84,6 +87,10 @@ DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
 // Whether the omnibox is in keyword mode; e.g. `@gemini`.
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
                                     kOmniboxKeywordState);
+// Current text displayed in the omnibox view.
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(
+    ui::test::PollingStateObserver<std::u16string>,
+    kOmniboxTextState);
 
 using DeepQuery = WebContentsInteractionTestUtil::DeepQuery;
 const DeepQuery kClassicContextMenu = {
@@ -197,6 +204,49 @@ class OmniboxWebUiInteractiveTestBase
         WaitForState(kOmniboxFocusState, true),
         // Release the state identifier so that it can be observed again.
         StopObservingState(kOmniboxFocusState));
+  }
+
+  auto WaitForOmniboxViewFocus(bool expected_focus) {
+    return Steps(
+        PollState(kOmniboxFocusState,
+                  [this]() {
+                    auto* browser_view =
+                        BrowserView::GetBrowserViewForBrowser(browser());
+                    if (!browser_view) {
+                      return false;
+                    }
+                    if (auto* location_bar_view =
+                            browser_view->GetLocationBarView()) {
+                      return location_bar_view->omnibox_view() &&
+                             location_bar_view->omnibox_view()->HasFocus();
+                    }
+                    if (auto* location_bar = browser_view->GetLocationBar()) {
+                      auto* omnibox_view = static_cast<WebUIReadOnlyOmnibox*>(
+                          location_bar->GetOmniboxView());
+                      return omnibox_view && omnibox_view->has_focus();
+                    }
+                    return false;
+                  }),
+        WaitForState(kOmniboxFocusState, expected_focus),
+        StopObservingState(kOmniboxFocusState));
+  }
+
+  auto WaitForOmniboxText(const std::u16string& expected_text) {
+    return Steps(
+        PollState(kOmniboxTextState,
+                  [this]() -> std::u16string {
+                    auto* browser_view =
+                        BrowserView::GetBrowserViewForBrowser(browser());
+                    if (!browser_view || !browser_view->GetLocationBar() ||
+                        !browser_view->GetLocationBar()->GetOmniboxView()) {
+                      return std::u16string();
+                    }
+                    return browser_view->GetLocationBar()
+                        ->GetOmniboxView()
+                        ->GetText();
+                  }),
+        WaitForState(kOmniboxTextState, expected_text),
+        StopObservingState(kOmniboxTextState));
   }
 };
 
@@ -433,8 +483,7 @@ class OmniboxAimWebUiInteractiveTestBase
   // Opens the AIM popup by clicking the page action icon.
   auto OpenAimPopup() {
     return Steps(
-        FocusElement(kOmniboxElementId),
-        WaitForPageActionChipVisible(kActionAiMode),
+        FocusOmnibox(), WaitForPageActionChipVisible(kActionAiMode),
         InvokePageAction(kActionAiMode), WaitForAimPopupReady(),
         InAnyContext(WaitForElementToRender(kAimPopupWebView, kAimInput)),
         InAnyContext(ExecuteJsAt(
@@ -554,14 +603,14 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
       OpenAimPopupInNewTab(),
       // Verify popup's web contents have focus.
       CheckJsResult(kAimPopupWebView, "() => document.hasFocus()", true),
-      CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, false),
+      WaitForOmniboxViewFocus(false),
       // Hide the popup.
       InAnyContext(
           ExecuteJsAt(kAimPopupWebView, kCancelIcon, "el => el.click()")),
       InAnyContext(
           WaitForHide(OmniboxPopupPresenterBase::kRoundedResultsFrame)),
       // Verify location bar has focus.
-      CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, true));
+      WaitForOmniboxViewFocus(true));
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
@@ -586,7 +635,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
       WaitForGoogleSearch(kNewTab, {{"q", "foo"}}),
       // Verify tab has focus and not the location bar.
       CheckJsResult(kNewTab, "() => document.hasFocus()", true),
-      CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, false));
+      WaitForOmniboxViewFocus(false));
 }
 
 // TODO(crbug.com/505548434, crbug.com/517370516): Flaky on Mac, Win and Linux.
@@ -748,7 +797,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest, TextTransfersOnDismiss) {
       // Close the popup by removing focus from it.
       RemoveFocusFromPopup(),
       // Ensure text transfers to the Omnibox.
-      WaitForViewProperty(kOmniboxElementId, views::Textfield, Text, u"foo"));
+      WaitForOmniboxText(u"foo"));
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest, TextTransfersOnEscape) {
@@ -762,8 +811,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest, TextTransfersOnEscape) {
       InAnyContext(
           WaitForHide(OmniboxPopupPresenterBase::kRoundedResultsFrame)),
       // Ensure text transfers to the Omnibox.
-      WaitForViewProperty(kOmniboxElementId, views::Textfield, Text,
-                          u"foo bar"));
+      WaitForOmniboxText(u"foo bar"));
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
@@ -1007,7 +1055,7 @@ IN_PROC_BROWSER_TEST_F(WebUIOmniboxSimplificationInteractiveTest,
   RunTestSequence(
       SetAimEligibleResponse(),
       AddInstrumentedTab(kNewTab, chrome::ChromeUINewTabURLAsGURL()),
-      SeedSearchboxResult("a"), FocusElement(kOmniboxElementId),
+      SeedSearchboxResult("a"), FocusOmnibox(),
       EnterText(kOmniboxElementId, u"a"), WaitForClassicPopupReady(),
       InAnyContext(WaitForOmniboxAimStateReady(kClassicPopupWebView)),
       InAnyContext(
@@ -1033,7 +1081,7 @@ IN_PROC_BROWSER_TEST_F(WebUIOmniboxSimplificationInteractiveTest,
   RunTestSequence(
       SetAimEligibleResponse(),
       AddInstrumentedTab(kNewTab, chrome::ChromeUINewTabURLAsGURL()),
-      SeedSearchboxResult("a"), FocusElement(kOmniboxElementId),
+      SeedSearchboxResult("a"), FocusOmnibox(),
       EnterText(kOmniboxElementId, u"a"), WaitForClassicPopupReady(),
       InAnyContext(WaitForOmniboxAimStateReady(kClassicPopupWebView)),
       InAnyContext(
