@@ -59,6 +59,10 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
           reflect: true,
         },
 
+        singleLineOnInlineAutocomplete: {
+          type: Boolean,
+        },
+
         result: {
           type: Object,
         },
@@ -104,6 +108,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
     private nextQueryId_: number = 0;
     accessor lastQueriedInput: string|null = null;
     accessor multiLineEnabled: boolean = false;
+    accessor singleLineOnInlineAutocomplete: boolean = false;
     accessor result: AutocompleteResult|null = null;
     accessor selectedMatch: AutocompleteMatch|null = null;
     accessor selectedMatchIndex: number = -1;
@@ -1076,6 +1081,7 @@ export interface SearchboxMixinInterface extends
   activeQueryId: number;
   lastQueriedInput: string|null;
   multiLineEnabled: boolean;
+  singleLineOnInlineAutocomplete: boolean;
   result: AutocompleteResult|null;
   searchboxAriaDescription: string;
   selectedMatch: AutocompleteMatch|null;

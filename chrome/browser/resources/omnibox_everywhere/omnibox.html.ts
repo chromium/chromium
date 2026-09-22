@@ -25,6 +25,8 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
           ?dropdown-is-visible="${this.dropdownIsVisible}"
           input-aria-live="${this.inputAriaLive}"
           ?multi-line-enabled="${this.multiLineEnabled}"
+          .singleLineOnInlineAutocomplete="${
+              this.singleLineOnInlineAutocomplete}"
           placeholder-text="${this.computePlaceholderText_()}"
           searchbox-aria-description="${this.searchboxAriaDescription}"
           searchbox-icon="${this.searchboxIcon_}"

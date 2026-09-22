@@ -69,6 +69,10 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
       dropdownIsVisible: {type: Boolean, reflect: true},
       inputAriaLive: {type: String},
       multiLineEnabled: {type: Boolean, reflect: true},
+      singleLineOnInlineAutocomplete: {type: Boolean},
+      forceSingleLine_:
+          {type: Boolean, reflect: true, attribute: 'force-single-line'},
+      showEllipsis_: {type: Boolean, reflect: true, attribute: 'show-ellipsis'},
       placeholderText: {type: String},
       searchboxAriaDescription: {type: String},
       searchboxIcon: {type: String},
@@ -88,6 +92,9 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
   accessor dropdownIsVisible: boolean = false;
   accessor inputAriaLive: string = '';
   accessor multiLineEnabled: boolean = false;
+  accessor singleLineOnInlineAutocomplete: boolean = false;
+  accessor forceSingleLine_: boolean = false;
+  accessor showEllipsis_: boolean = false;
   accessor placeholderText: string|undefined = undefined;
   accessor searchboxAriaDescription: string = '';
   accessor searchboxIcon: string = '';
@@ -102,6 +109,8 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
   private lastInput_: Input = {text: '', inline: ''};
   private isDeletingInput_: boolean = false;
   private pastedInInput_: boolean = false;
+  private resizeObserver_: ResizeObserver|null = null;
+  private onDocumentSelectionChangeBound_ = () => this.updateEllipsisState_();
 
   constructor() {
     super();
@@ -113,6 +122,9 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
     this.inputTextChangedListenerId_ =
         this.callbackRouter_.setInputText.addListener(
             this.onSetInputText_.bind(this));
+    document.addEventListener(
+        'selectionchange', this.onDocumentSelectionChangeBound_);
+    this.setupResizeObserver_();
   }
 
   override disconnectedCallback() {
@@ -120,6 +132,35 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
 
     assert(this.inputTextChangedListenerId_);
     this.callbackRouter_.removeListener(this.inputTextChangedListenerId_);
+    document.removeEventListener(
+        'selectionchange', this.onDocumentSelectionChangeBound_);
+    if (this.resizeObserver_) {
+      this.resizeObserver_.disconnect();
+      this.resizeObserver_ = null;
+    }
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has('inputKeywordModel')) {
+      this.toggleAttribute('in-keyword-mode', this.inKeywordMode_());
+    }
+  }
+
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
+    this.setupResizeObserver_();
+  }
+
+  private setupResizeObserver_() {
+    if (!this.resizeObserver_) {
+      this.resizeObserver_ = new ResizeObserver(() => {
+        this.updateEllipsisState_();
+      });
+    }
+    if (this.$.input) {
+      this.resizeObserver_.observe(this.$.input);
+    }
   }
 
   get inputElement(): HTMLInputElement|HTMLTextAreaElement {
@@ -178,6 +219,9 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
     if (!this.$.input) {
       return false;
     }
+    if (this.forceSingleLine_) {
+      return false;
+    }
     return this.multiLineEnabled &&
         this.$.input.scrollHeight > MULTILINE_INPUT_HEIGHT_THRESHOLD;
   }
@@ -199,6 +243,14 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
   //============================================================================
   // Event handlers
   //============================================================================
+
+  protected onInputFocus_() {
+    this.updateEllipsisState_();
+  }
+
+  protected onInputBlur_() {
+    this.updateEllipsisState_();
+  }
 
   protected onInputCopy_(e: ClipboardEvent) {
     this.onInputCutCopy_(e);
@@ -373,6 +425,11 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
     const oldSelectionStart = this.$.input?.selectionStart || null;
     const oldSelectionEnd = this.$.input?.selectionEnd || null;
 
+    // Clamp queries with inline autocomplete to a single line.
+    const hasInlineAutocomplete = newInput.inline !== '';
+    this.forceSingleLine_ =
+        this.singleLineOnInlineAutocomplete && hasInlineAutocomplete;
+
     if (this.$.input && newInputValue !== this.$.input.value) {
       this.$.input.value = newInputValue;
       needsSelectionUpdate = true;  // Setting .value blows away selection.
@@ -392,13 +449,39 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
         (lastInputValue.length > newInputValue.length &&
          lastInputValue.startsWith(newInputValue));
     this.lastInput_ = newInput;
+    this.updateEllipsisState_();
   }
 
-  override willUpdate(changedProperties: PropertyValues<this>) {
-    super.willUpdate(changedProperties);
-    if (changedProperties.has('inputKeywordModel')) {
-      this.toggleAttribute('in-keyword-mode', this.inKeywordMode_());
+  private updateEllipsisState_() {
+    if (!this.singleLineOnInlineAutocomplete) {
+      this.showEllipsis_ = false;
+      return;
     }
+
+    // Abort early if the searchbox input does not have focus or is missing.
+    if (this.shadowRoot?.activeElement !== this.$.input || !this.$.input) {
+      this.showEllipsis_ = false;
+      return;
+    }
+
+    // Verifies that the selection spans the entire autocompleted suffix
+    // (from the end of user-typed text to the end of input), confirming
+    // the user hasn't moved the cursor or edited the selection.
+    const hasInlineSelection =
+        this.$.input.selectionStart === this.lastInput_.text.length &&
+        this.$.input.selectionEnd === this.$.input.value.length &&
+        this.$.input.selectionStart !== this.$.input.selectionEnd;
+
+    if (this.lastInput_.inline !== '' && !hasInlineSelection) {
+      this.lastInput_ = {text: this.$.input.value, inline: ''};
+      this.forceSingleLine_ = false;
+    }
+
+    // Only force a reflow if the preconditions for showing the ellipsis are
+    // met.
+    const canShowEllipsis = this.forceSingleLine_ && hasInlineSelection;
+    this.showEllipsis_ =
+        canShowEllipsis && this.$.input.scrollWidth > this.$.input.clientWidth;
   }
 
   protected computePlaceholderText_(): string {

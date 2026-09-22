@@ -86,6 +86,9 @@ export class OmniboxEverywhereOmniboxElement extends
         type: Boolean,
         reflect: true,
       },
+      singleLineOnInlineAutocomplete: {
+        type: Boolean,
+      },
       virtualFocusEnabled: {
         type: Boolean,
       },
@@ -158,6 +161,10 @@ export class OmniboxEverywhereOmniboxElement extends
   accessor isActive: boolean = true;
   override accessor multiLineEnabled: boolean =
       loadTimeData.getBoolean('searchboxMultiline');
+  // Keeps the input on a single line during inline autocomplete when enabled,
+  // preventing multiline mode from suppressing the suggestions dropdown.
+  override accessor singleLineOnInlineAutocomplete: boolean =
+      loadTimeData.getBoolean('singleLineOnInlineAutocomplete');
   override accessor virtualFocusEnabled: boolean =
       loadTimeData.valueExists('omniboxEverywhereVirtualFocusNavigation') &&
       loadTimeData.getBoolean('omniboxEverywhereVirtualFocusNavigation');

@@ -38,6 +38,48 @@
   white-space: pre-wrap;
 }
 
+/* When force-single-line is enabled, keep the textarea as a single line. */
+:host([force-single-line]) textarea {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+:host([show-ellipsis]:focus-within) textarea {
+  text-overflow: clip;
+}
+
+#ellipsisIndicator {
+  background-color: var(--color-searchbox-selection-background);
+  color: var(
+      --color-searchbox-selection-foreground,
+      var(--color-searchbox-foreground));
+  display: none;
+  flex-shrink: 0;
+  height: var(--cr-searchbox-line-height, 24px);
+  line-height: var(--cr-searchbox-line-height, 24px);
+  margin-inline-end: 4px;
+  margin-top: calc(
+      (var(--cr-searchbox-height) - var(--cr-searchbox-line-height, 24px)) / 2);
+  padding-inline: 0 1px;
+  pointer-events: none;
+}
+
+:host([show-ellipsis]:focus-within) #ellipsisIndicator {
+  display: block;
+}
+
+/* Match native text selection background with the inline autocomplete
+ * ellipsis indicator badge. */
+:is(input, textarea)::selection {
+  background-color: var(--color-searchbox-selection-background);
+  color: var(
+      --color-searchbox-selection-foreground,
+      var(--color-searchbox-foreground));
+}
+
 /* The scrollbar is only rendered once the input content overflows its max
  * height, e.g. while a long voice transcription is being shown or when the
  * typed text grows past the last visible line. */

@@ -28,6 +28,8 @@ export function getHtml(this: SearchboxInputElement) {
           aria-expanded="${this.dropdownIsVisible}" aria-controls="matches"
           aria-description="${this.searchboxAriaDescription}"
           placeholder="${this.computePlaceholderText_()}"
+          @blur="${this.onInputBlur_}"
+          @focus="${this.onInputFocus_}"
           @copy="${this.onInputCopy_}"
           @cut="${this.onInputCut_}"
           @input="${this.onInputInput_}"
@@ -42,6 +44,8 @@ export function getHtml(this: SearchboxInputElement) {
           aria-expanded="${this.dropdownIsVisible}" aria-controls="matches"
           aria-description="${this.searchboxAriaDescription}"
           placeholder="${this.computePlaceholderText_()}"
+          @blur="${this.onInputBlur_}"
+          @focus="${this.onInputFocus_}"
           @copy="${this.onInputCopy_}"
           @cut="${this.onInputCut_}"
           @input="${this.onInputInput_}"
@@ -50,6 +54,7 @@ export function getHtml(this: SearchboxInputElement) {
           @mousedown="${this.onInputMousedown_}"
           @paste="${this.onInputPaste_}">
     `}
+    <span id="ellipsisIndicator" aria-hidden="true">...</span>
     <slot name="action-buttons"></slot>
     <slot name="compose-button"></slot>
 </div>
