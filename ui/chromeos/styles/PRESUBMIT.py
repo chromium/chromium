@@ -15,6 +15,15 @@ STYLE_VAR_GEN_INPUTS = [
 
 
 def CheckCrosColorCSS(input_api, output_api):
+    # CheckCrosColorCSS runs three distinct checks that inspect different file
+    # types:
+    # - .css, .html, .js: scanned by _CheckSemanticColors for CSS variables.
+    # - .json5: checked by FindDeletedCSSVariables for style var inputs.
+    # - .py: executed by RunUnitTestsInDirectory for python tests (*_test.py).
+    if not input_api.HasAffectedFiles(
+      extensions=('.json5', '.py', '.css', '.html', '.js')
+    ):
+        return []
     results = []
     try:
         import sys

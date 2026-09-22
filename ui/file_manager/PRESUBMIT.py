@@ -30,6 +30,10 @@ class SaveSysPath():
 
 
 def ChecksUnitTests(input_api, output_api):
+    # Only Python files need to be checked because this runner only executes
+    # python unit tests (TEST_PATTERNS = [r'.+_test.py$']) under base/.
+    if not input_api.HasAffectedFiles(extensions='.py'):
+        return []
     # Run all unit tests under ui/file_manager/base folder.
     return input_api.canned_checks.RunUnitTestsInDirectory(
         input_api, output_api, 'base', files_to_check=TEST_PATTERNS)

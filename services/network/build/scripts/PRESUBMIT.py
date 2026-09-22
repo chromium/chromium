@@ -36,6 +36,8 @@ def _GenerateTestCommand(input_api, output_api, file_name, affected_list):
 
 
 def _RunTests(input_api, output_api):
+    if not input_api.HasAffectedFiles(extensions=('.py', '.tmpl', '.json5', '.ref')):
+        return []
     tests = [{
         'file_name':
         'make_permissions_policy_features_tests.py',

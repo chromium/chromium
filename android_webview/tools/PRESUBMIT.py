@@ -19,6 +19,8 @@ def _GetPythonUnitTests(input_api, output_api):
 
 def CommonChecks(input_api, output_api):
   """Presubmit checks run on both upload and commit."""
+  if not input_api.HasAffectedFiles(extensions=('.py', '.json')):
+    return []
   checks = []
 
   src_root = input_api.os_path.join(input_api.PresubmitLocalPath(), '..', '..')

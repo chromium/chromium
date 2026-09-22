@@ -16,6 +16,8 @@ import tempfile
 PRESUBMIT_VERSION = '2.0.0'
 
 def CheckChange(input_api, output_api):
+  if not input_api.HasAffectedFiles(extensions='.py'):
+    return []
   # Additional python module paths (we're in src/mojo/); not everyone needs
   # them, but it's easiest to add them to everyone's path.
   # For ply and jinja2:
@@ -51,6 +53,8 @@ def CheckChange(input_api, output_api):
   return results
 
 def CheckGoldenFilesUpToDate(input_api, output_api):
+  if not input_api.HasAffectedFiles(path=['golden', 'public/tools']):
+    return []
   generate_script = os.path.join(input_api.PresubmitLocalPath(),
                                  'golden/generate.py')
   generated_dir = os.path.join(input_api.PresubmitLocalPath(),

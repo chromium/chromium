@@ -9,10 +9,15 @@ for more details about the presubmit API built into depot_tools.
 
 
 def _RunTestRunnerUnitTests(input_api, output_api):
+  """Runs iOS test runner unit tests"""
   # Don't run iOS tests on Windows.
   if input_api.is_windows:
     return []
-  """ Runs iOS test runner unit tests """
+  if not (
+    input_api.HasAffectedFiles(extensions='.py')
+    or input_api.HasAffectedFiles(path='test_data')
+  ):
+    return []
   files = ['.*_test.py$']
 
   return input_api.canned_checks.RunUnitTestsInDirectory(

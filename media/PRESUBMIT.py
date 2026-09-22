@@ -276,6 +276,8 @@ def _CheckChangeInBundle(input_api, output_api):
 
 def _CheckIfGenerateGnTestsFail(input_api, output_api):
     """Error if generate_gn.py was changed and tests are now failing."""
+    if not input_api.HasAffectedFiles(path='ffmpeg/scripts'):
+        return []
     should_run_tests = False
     generate_gn_re = re.compile(r'.*generate_gn.*\.py$')
     for f in input_api.AffectedFiles():

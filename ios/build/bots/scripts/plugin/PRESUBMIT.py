@@ -12,6 +12,8 @@ def _RunTestRunnerUnitTests(input_api, output_api):
   # Don't run iOS tests on Windows.
   if input_api.is_windows:
     return []
+  if not input_api.HasAffectedFiles(extensions='.py'):
+    return []
   # Runs iOS test runner unit tests
   files = ['.*_test.py$']
 

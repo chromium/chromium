@@ -11,11 +11,9 @@ PRESUBMIT_VERSION = '2.0.0'
 
 
 def CheckForOrphanedFlagMetadata(input_api, output_api):
-    about_flags_path = input_api.os_path.join('ios', 'chrome', 'browser',
-                                              'flags', 'about_flags.mm')
-    if not any(f.LocalPath() == about_flags_path
-               for f in input_api.AffectedFiles(include_deletes=False)):
-      # Keep presubmit fast when `about_flags.mm` isn't modified.
+    if not input_api.HasAffectedFiles(
+      path='about_flags.mm', include_deletes=False
+    ):
       return []
 
     flag_tools_dir = input_api.os_path.join(input_api.change.RepositoryRoot(),

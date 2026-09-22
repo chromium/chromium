@@ -5,6 +5,8 @@
 PRESUBMIT_VERSION = '2.0.0'
 
 def CheckStdlib(input_api, output_api):
+  if not input_api.HasAffectedFiles(path=['stdlib', 'test', 'protos']):
+    return []
   stdlib_dir = input_api.PresubmitLocalPath()
   chromium_src_dir = input_api.os_path.abspath(
     input_api.os_path.join(stdlib_dir, '..', '..'))
@@ -29,6 +31,8 @@ def CheckTestDataCheckedIn(input_api, output_api):
   """Checks that the test data files in base/tracing/test/data_sha256 are
   checked in.
   """
+  if not input_api.HasAffectedFiles(path=['stdlib', 'test', 'protos']):
+    return []
   def FileFilter(affected_file):
     return input_api.FilterSourceFile(affected_file,
                                       files_to_check=_STDLIB_PATHS)

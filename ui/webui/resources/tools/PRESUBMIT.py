@@ -31,13 +31,11 @@ webui_tests = set(
 
 
 def _CheckChangeOnUploadOrCommit(input_api, output_api):
-  results = []
-  affected = input_api.AffectedFiles()
-  affected_files = [input_api.os_path.basename(f.LocalPath()) for f in affected]
-  sources = webui_sources | webui_tests
-  if sources.intersection(set(affected_files)):
-    results += RunPresubmitTests(input_api, output_api)
-  return results
+  if not input_api.HasAffectedFiles(
+    path=list(webui_sources | webui_tests) + ['tests']
+  ):
+    return []
+  return RunPresubmitTests(input_api, output_api)
 
 
 def RunPresubmitTests(input_api, output_api):
