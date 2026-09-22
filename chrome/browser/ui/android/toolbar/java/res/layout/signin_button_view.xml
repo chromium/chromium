@@ -13,10 +13,13 @@ found in the LICENSE file.
     android:id="@+id/signin_button">
 
     <!-- ListMenuButton is used to support pressed state styling as well as to
-         maintain consistency with other toolbar buttons. -->
+         maintain consistency with other toolbar buttons. layout_width overrides
+         toolbar_button_width to keep the touch target the same size as the
+         legacy identity disc. -->
     <org.chromium.ui.listmenu.ListMenuButton
         android:id="@+id/avatar_button"
         style="@style/ToolbarHoverableButton"
+        android:layout_width="@dimen/signin_button_width"
         app:tint="@color/default_icon_color_tint_list"
         android:visibility="gone"/>
 

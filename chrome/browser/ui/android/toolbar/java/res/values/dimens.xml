@@ -36,6 +36,12 @@ found in the LICENSE file.
     <dimen name="toolbar_phone_optional_button_collapsed_state_width">52dp</dimen>
     <dimen name="toolbar_phone_optional_button_expanded_state_extra_width">12dp</dimen>
     <dimen name="toolbar_phone_optional_button_background_vertical_margin">4dp</dimen>
+
+    <!-- Width of the signin button's clickable area, matching the legacy
+         identity disc. Large form factors override it to toolbar_button_width
+         in values-sw600dp. See crbug.com/543773382. -->
+    <dimen name="signin_button_width">52dp</dimen>
+
     <!-- Top-left corner radius when rounded for vertical tabs -->
     <dimen name="toolbar_corner_radius">16dp</dimen>
 
