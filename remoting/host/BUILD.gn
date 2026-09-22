@@ -1026,6 +1026,7 @@ source_set("unit_tests") {
 
   if (is_win) {
     sources += [ "setup/daemon_controller_delegate_win_unittest.cc" ]
+    deps += [ "//remoting/host/installer/win/setup:unit_tests" ]
   }
 
   if (is_linux) {
