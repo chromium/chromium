@@ -1002,7 +1002,6 @@ FontSizeAdjust StyleBuilderConverterBase::ConvertFontSizeAdjust(
         primitive_value.ComputeNumber(state.CssToLengthConversionData()));
   }
 
-  DCHECK(value.IsValuePair());
   const auto& pair = To<CSSValuePair>(value);
   auto metric =
       To<CSSIdentifierValue>(pair.First()).ConvertTo<FontSizeAdjust::Metric>();
@@ -2483,7 +2482,7 @@ LengthPoint StyleBuilderConverter::ConvertPosition(
 LengthPoint StyleBuilderConverter::ConvertPositionOrAuto(
     StyleResolverState& state,
     const CSSValue& value) {
-  if (value.IsValuePair()) {
+  if (value.IsBaseValuePair()) {
     return ConvertPosition(state, value);
   }
   DCHECK(To<CSSIdentifierValue>(value).GetValueID() == CSSValueID::kAuto);
@@ -2493,7 +2492,7 @@ LengthPoint StyleBuilderConverter::ConvertPositionOrAuto(
 LengthPoint StyleBuilderConverter::ConvertOffsetPosition(
     StyleResolverState& state,
     const CSSValue& value) {
-  if (value.IsValuePair()) {
+  if (value.IsBaseValuePair()) {
     return ConvertPosition(state, value);
   }
   if (To<CSSIdentifierValue>(value).GetValueID() == CSSValueID::kAuto) {
