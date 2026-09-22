@@ -1511,8 +1511,8 @@ if (use_aura) {
   source_set("drag_and_drop_test_utils") {
     testonly = true
     sources = [
-      "drag_and_drop_test_utils.cc",
       "drag_and_drop_test_utils.h",
+      "drag_and_drop_test_utils_aura.cc",
     ]
     public_deps = [
       "//base",
