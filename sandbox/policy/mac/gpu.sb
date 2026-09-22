@@ -109,15 +109,82 @@
   (subpath "/System/Library/Video/Plug-Ins")
 )
 
-; crbug.com/980134
-; Restrict file-write to data/create/unlink only — the GPU process does not need
-; file-write-xattr or file-write-mode.
-; TODO(crbug.com/491422244): Remove file-write-owner needed by WebNN.
-(allow file-read* file-write-data file-write-create file-write-owner file-write-unlink
-  (subpath (param darwin-user-cache-dir))
-  (subpath (param darwin-user-dir))
-  (subpath (param darwin-user-temp-dir))
-)
+; Allows directory operations and file access for known Metal shader cache
+; files.
+(define (allow-metal-shader-cache dir)
+  (begin
+    ; Directory operations
+    (allow file-read* file-write-create
+      (require-all
+        (vnode-type DIRECTORY)
+        (require-any
+          (literal dir)
+          (subpath (string-append dir "/com.apple.gpuarchiver"))
+          (subpath (string-append dir "/com.apple.metalfe"))
+          (subpath (string-append dir "/com.apple.metal")))))
+
+    ; File read and write access to known Metal cache files, matching paths
+    ; such as:
+    ;   <dir>/com.apple.metalfe/modules.timestamp
+    ;   <dir>/com.apple.metal/16777235_355/functions.data
+    ;   <dir>/com.apple.metal/16777235_355/functions.list
+    ;   <dir>/com.apple.metal/16777235_179/functions1.list
+    ;   <dir>/com.apple.metal/32024/libraries.data
+    ;   <dir>/com.apple.metal/32024/libraries.list
+    (let ((metal-dir-regex
+           (string-append "^" (regex-quote dir) #"/com\.apple\.metal/[^/]+/")))
+      (allow file-read*
+        file-write-data
+        file-write-create
+        file-write-unlink
+        file-write-xattr
+        (literal (string-append dir "/com.apple.metalfe/modules.timestamp"))
+        (regex (string-append metal-dir-regex
+                              #"functions[0-9]*\.data(\.tmp)?$"))
+        (regex (string-append metal-dir-regex
+                              #"functions[0-9]*\.list(\.tmp)?$"))
+        (regex (string-append metal-dir-regex
+                              #"libraries[0-9]*\.data(\.tmp)?$"))
+        (regex (string-append metal-dir-regex
+                              #"libraries[0-9]*\.list(\.tmp)?$"))))))
+
+; If access to the Darwin user dirs is restricted, only allow file-read/-write
+; to known file names in the Darwin user cache dir.
+; Otherwise, allow file-read and a limited set of file-writes to the Darwin user
+; dirs (https://crbug.com/41468671 (The GPU process does not need
+; file-write-xattr or file-write-mode)
+; TODO(https://crbug.com/491422244): Remove file-write-owner needed by WebNN.
+(if (param-true? restrict-gpu-darwin-user-dirs)
+  (begin
+    (if (param-defined? bundle-id)
+      (allow-metal-shader-cache
+        (string-append (param darwin-user-cache-dir) "/" (param bundle-id))))
+    (if (param-defined? helper-bundle-id)
+      (allow-metal-shader-cache
+        (string-append (param darwin-user-cache-dir)
+                       "/" (param helper-bundle-id)))
+      (allow-metal-shader-cache (param darwin-user-cache-dir))))
+  (allow file-read*
+    file-write-data
+    file-write-create
+    file-write-owner
+    file-write-unlink
+    (subpath (param darwin-user-cache-dir))
+    (subpath (param darwin-user-dir))
+    (subpath (param darwin-user-temp-dir))))
+
+; TODO(https://crbug.com/491422244): Remove file-write-owner needed by WebNN.
+; This may be resolved by compiling CoreML models in a separate process, see
+; https://crbug.com/524263705.
+(define (allow-webnn-temp-dir)
+  (begin
+    ; Needed by NSFileManager's URLForDirectory with NSItemReplacementDirectory.
+    (allow file-read* file-write-create file-write-data file-write-owner
+      (subpath (string-append (param darwin-user-temp-dir) "/TemporaryItems/")))
+    ; Needed by MLModel's compileModelAtURL family of functions.
+    (allow file-read* file-write-create file-write-unlink
+      (subpath (param darwin-user-temp-dir)))))
+(if (param-true? restrict-gpu-darwin-user-dirs) (allow-webnn-temp-dir))
 
 ; Metal issues a sandbox extension to permit MTLCompilerService to read source
 ; files from disk. It's much broader than we'd like (see

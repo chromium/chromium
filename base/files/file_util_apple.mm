@@ -68,4 +68,35 @@ FilePath GetHomeDir() {
   return FilePath("/tmp");
 }
 
+#if BUILDFLAG(IS_MAC)
+FilePath GetDarwinUserDirectory(DarwinUserDirectory directory) {
+  int confstr_name;
+  switch (directory) {
+    case DarwinUserDirectory::kUser:
+      confstr_name = _CS_DARWIN_USER_DIR;
+      break;
+    case DarwinUserDirectory::kUserCache:
+      confstr_name = _CS_DARWIN_USER_CACHE_DIR;
+      break;
+    case DarwinUserDirectory::kUserTemp:
+      confstr_name = _CS_DARWIN_USER_TEMP_DIR;
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  char path_buf[PATH_MAX];
+  size_t rv = confstr(confstr_name, path_buf, sizeof(path_buf));
+  if (rv == 0 || rv > sizeof(path_buf)) {
+    return FilePath();
+  }
+
+  // confstr() returns paths starting with `/var`, which is a symbolic link
+  // to `/private/var` on macOS. File read and write permissions granted to
+  // sandboxed processes do not respect non-canonical paths, so resolve symbolic
+  // links to return the canonicalized path.
+  return MakeAbsoluteFilePath(FilePath(path_buf));
+}
+#endif  // BUILDFLAG(IS_MAC)
+
 }  // namespace base

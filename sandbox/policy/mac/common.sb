@@ -28,6 +28,10 @@
 ; Sandboxed processes which use Metal may need to disable the shader cache.
 (define disable-metal-shader-cache "DISABLE_METAL_SHADER_CACHE")
 
+; Restricts the GPU process's Darwin user directory access to a subset of known
+; directories and files.
+(define restrict-gpu-darwin-user-dirs "RESTRICT_GPU_DARWIN_USER_DIRS")
+
 ; --enable-sandbox-logging causes the sandbox to log failures to the syslog.
 (if (param-true? disable-sandbox-denial-logging)
   (deny default (with no-log))

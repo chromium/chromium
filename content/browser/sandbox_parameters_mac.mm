@@ -35,6 +35,26 @@
 
 namespace content {
 
+// If enabled, restricts the GPU process's access to the Darwin user cache
+// directory (/var/folders/.../C/) to a set of known file names used by Metal
+// ([functions|libraries].[data|list]) as well as providing limited permissions
+// to the Darwin user temp directory (/var/.../T/) to support WebNN's use of
+// CoreML.
+//
+// A sample Metal cache directory tree:
+//   /var/folders/.../C/[bundle_id|helper_bundle_id]
+//   ├── com.apple.metal
+//   │   ├── 16777235_355 (matches regex \d+_\d+)
+//   │   │   ├── functions.data
+//   │   │   └── functions.list
+//   │   └── 32024 (matches regex \d+)
+//   │       ├── libraries.data
+//   │       └── libraries.list
+//   └── com.apple.metalfe
+//       └── modules.timestamp
+BASE_FEATURE(kMacSandboxRestrictGpuDarwinUserDirs,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
 
 std::optional<base::FilePath>& GetNetworkTestCertsDirectory() {
@@ -61,25 +81,21 @@ std::string GetOSVersion() {
 
 // Retrieves the users shared darwin dirs and adds it to the profile.
 void AddDarwinDirs(sandbox::SandboxSerializer* serializer) {
-  char dir_path[PATH_MAX + 1];
-
-  size_t rv = confstr(_CS_DARWIN_USER_CACHE_DIR, dir_path, sizeof(dir_path));
-  PCHECK(rv != 0);
-  CHECK(serializer->SetParameter(
-      sandbox::policy::kParamDarwinUserCacheDir,
-      sandbox::policy::GetCanonicalPath(base::FilePath(dir_path)).value()));
-
-  rv = confstr(_CS_DARWIN_USER_DIR, dir_path, sizeof(dir_path));
-  PCHECK(rv != 0);
-  CHECK(serializer->SetParameter(
-      sandbox::policy::kParamDarwinUserDir,
-      sandbox::policy::GetCanonicalPath(base::FilePath(dir_path)).value()));
-
-  rv = confstr(_CS_DARWIN_USER_TEMP_DIR, dir_path, sizeof(dir_path));
-  PCHECK(rv != 0);
-  CHECK(serializer->SetParameter(
-      sandbox::policy::kParamDarwinUserTempDir,
-      sandbox::policy::GetCanonicalPath(base::FilePath(dir_path)).value()));
+  base::FilePath user_dir =
+      base::GetDarwinUserDirectory(base::DarwinUserDirectory::kUser);
+  CHECK(!user_dir.empty());
+  CHECK(serializer->SetParameter(sandbox::policy::kParamDarwinUserDir,
+                                 user_dir.value()));
+  base::FilePath user_cache_dir =
+      base::GetDarwinUserDirectory(base::DarwinUserDirectory::kUserCache);
+  CHECK(!user_cache_dir.empty());
+  CHECK(serializer->SetParameter(sandbox::policy::kParamDarwinUserCacheDir,
+                                 user_cache_dir.value()));
+  base::FilePath user_temp_dir =
+      base::GetDarwinUserDirectory(base::DarwinUserDirectory::kUserTemp);
+  CHECK(!user_temp_dir.empty());
+  CHECK(serializer->SetParameter(sandbox::policy::kParamDarwinUserTempDir,
+                                 user_temp_dir.value()));
 }
 
 // All of the below functions populate the `serializer` with the parameters that
@@ -176,6 +192,10 @@ bool SetupGpuSandboxParameters(sandbox::SandboxSerializer* serializer,
 
   base::FilePath helper_bundle_path =
       base::apple::GetInnermostAppBundlePath(command_line.GetProgram());
+
+  CHECK(serializer->SetBooleanParameter(
+      sandbox::policy::kParamRestrictGpuDarwinUserDirs,
+      base::FeatureList::IsEnabled(kMacSandboxRestrictGpuDarwinUserDirs)));
 
   // The helper may not be contained in an app bundle for unit tests.
   // In that case `kParamHelperBundleId` will remain unset.
