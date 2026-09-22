@@ -15,6 +15,7 @@
 #include "base/values.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
+#include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -215,8 +216,12 @@ void BookmarksMessageHandler::OnJavascriptDisallowed() {
 }
 
 int BookmarksMessageHandler::GetIncognitoAvailability() {
-  PrefService* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
-  return prefs->GetInteger(policy::policy_prefs::kIncognitoModeAvailability);
+  // `IncognitoModePrefs::GetAvailability()` resolves the availability of both
+  // standard Incognito mode and Enterprise Isolated Mode, which replaces
+  // Incognito and takes precedence over the IncognitoModeAvailability
+  // preference.
+  return static_cast<int>(
+      IncognitoModePrefs::GetAvailability(Profile::FromWebUI(web_ui())));
 }
 
 void BookmarksMessageHandler::HandleGetIncognitoAvailability(

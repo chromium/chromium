@@ -23,6 +23,7 @@ if (!is_android) {
       "//chrome/app:generated_resources",
       "//chrome/app/theme:theme_resources",
       "//chrome/browser/bookmarks",
+      "//chrome/browser/prefs",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/profiles/batch_upload",
       "//chrome/browser/profiles/batch_upload:impl",
