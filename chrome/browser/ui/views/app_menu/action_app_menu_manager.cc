@@ -353,6 +353,8 @@ void ActionAppMenuManager::AddNotificationActions(actions::ActionItem* root) {
             }
           }
         }
+        section.AddAction(kActionGlobalError,
+                          {.display_type = DisplayType::kNotification});
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
         section.AddAction(kActionSetBrowserAsDefault,
                           {.display_type = DisplayType::kNotification});

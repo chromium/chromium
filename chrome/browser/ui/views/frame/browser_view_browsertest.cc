@@ -46,6 +46,8 @@
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
+#include "chrome/browser/ui/global_error/global_error_service.h"
+#include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
@@ -76,6 +78,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_accessibility.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/common/chrome_features.h"
@@ -675,6 +678,18 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, FindBarBoundingBoxLocationBar) {
   EXPECT_FALSE(find_bar_bounds.IsEmpty());
   EXPECT_GT(find_bar_bounds.width(), 0);
   EXPECT_GT(find_bar_bounds.height(), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, ClosesAppMenuOnGlobalErrorsChanged) {
+  AppMenuControl* app_menu_control =
+      browser_view()->toolbar_button_provider()->GetAppMenuControl();
+  ASSERT_TRUE(app_menu_control);
+  app_menu_control->ShowMenu();
+  EXPECT_TRUE(app_menu_control->IsMenuShowing());
+
+  GlobalErrorServiceFactory::GetForProfile(browser()->GetProfile())
+      ->NotifyErrorsChanged();
+  EXPECT_FALSE(app_menu_control->IsMenuShowing());
 }
 
 // Test the find bar's bounding box when the location bar is not visible.

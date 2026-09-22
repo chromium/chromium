@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/download_close_type.h"
+#include "chrome/browser/ui/global_error/global_error_observer.h"
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -82,6 +83,7 @@ class ContentsContainerView;
 struct DropData;
 class ExclusiveAccessBubbleViews;
 class ExclusiveAccessBubbleViewsContext;
+class GlobalErrorService;
 class InfoBarContainerView;
 class LocationBarView;
 class MultiContentsView;
@@ -139,6 +141,7 @@ class BrowserView : public BrowserWindow,
                     public views::ClientView,
                     public infobars::InfoBarContainer::Delegate,
                     public ImmersiveModeController::Observer,
+                    public GlobalErrorObserver,
                     public views::FocusChangeListener,
                     public BookmarkBarController::Delegate {
   METADATA_HEADER(BrowserView, views::ClientView)
@@ -737,6 +740,9 @@ class BrowserView : public BrowserWindow,
 
   // ui::AcceleratorTarget:
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
+
+  // GlobalErrorObserver:
+  void OnGlobalErrorsChanged() override;
 
   // ImmersiveModeController::Observer:
   void OnImmersiveFullscreenEntered() override;
@@ -1339,6 +1345,9 @@ class BrowserView : public BrowserWindow,
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
+
+  base::ScopedObservation<GlobalErrorService, GlobalErrorObserver>
+      global_error_observation_{this};
 
   bool interactive_resize_in_progress_ = false;
 

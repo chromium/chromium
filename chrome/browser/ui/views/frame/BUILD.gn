@@ -531,6 +531,7 @@ source_set("browser_view_header") {
     "//chrome/browser/ui:download_close_type",
     "//chrome/browser/ui/bookmarks",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/global_error",
     "//chrome/browser/ui/immersive:immersive_mode_controller",
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",

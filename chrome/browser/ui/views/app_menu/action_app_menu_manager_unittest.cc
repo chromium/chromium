@@ -488,15 +488,18 @@ TEST_F(ActionAppMenuManagerTest, NotificationHeaderNoNotification) {
       root->GetChildren().children()[0]->GetActionItem();
   ASSERT_NE(notification_section, nullptr);
   const auto& section_children = notification_section->GetChildren().children();
-  ASSERT_GE(section_children.size(), 1u);
+  ASSERT_GE(section_children.size(), 2u);
   EXPECT_EQ(section_children[0]->GetActionItem()->GetActionId(),
             kActionUpgradeDialog);
   EXPECT_FALSE(section_children[0]->GetActionItem()->GetVisible());
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-  ASSERT_EQ(section_children.size(), 2u);
   EXPECT_EQ(section_children[1]->GetActionItem()->GetActionId(),
-            kActionSetBrowserAsDefault);
+            kActionGlobalError);
   EXPECT_FALSE(section_children[1]->GetActionItem()->GetVisible());
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+  ASSERT_EQ(section_children.size(), 3u);
+  EXPECT_EQ(section_children[2]->GetActionItem()->GetActionId(),
+            kActionSetBrowserAsDefault);
+  EXPECT_FALSE(section_children[2]->GetActionItem()->GetVisible());
 #endif
 }
 
@@ -597,6 +600,44 @@ TEST_F(ActionAppMenuManagerTest, NotificationHeaderSafetyHubNotification) {
             ui::kColorAppMenuUpgradeRowBackground);
 }
 
+TEST_F(ActionAppMenuManagerTest, NotificationHeaderGlobalError) {
+  actions::ActionItem* global_error_action =
+      actions::ActionManager::Get().FindAction(kActionGlobalError);
+  ASSERT_NE(global_error_action, nullptr);
+  global_error_action->SetVisible(true);
+
+  ActionAppMenuManager menu_manager(&mock_window_interface_);
+  menu_manager.CreateMenuHierarchy();
+
+  actions::ActionItem* root = menu_manager.GetAppMenuRoot();
+  ASSERT_NE(root, nullptr);
+
+  const auto& children = root->GetChildren().children();
+  ASSERT_GE(children.size(), 2u);
+
+  actions::ActionItem* notification_section = children[0]->GetActionItem();
+  ASSERT_NE(notification_section, nullptr);
+  EXPECT_EQ(
+      notification_section->GetProperty(AppMenuActionItem::kDisplayTypeKey),
+      AppMenuActionItem::DisplayType::kSection);
+  EXPECT_EQ(
+      notification_section->GetProperty(AppMenuActionItem::kContainerColorKey),
+      ui::kColorAppMenuUpgradeRowBackground);
+
+  const auto& section_children = notification_section->GetChildren().children();
+  ASSERT_GE(section_children.size(), 2u);
+
+  EXPECT_EQ(section_children[1]->GetActionItem()->GetActionId(),
+            kActionGlobalError);
+  EXPECT_TRUE(section_children[1]->GetActionItem()->GetVisible());
+  EXPECT_EQ(section_children[1]->GetActionItem()->GetProperty(
+                AppMenuActionItem::kDisplayTypeKey),
+            AppMenuActionItem::DisplayType::kNotification);
+  EXPECT_EQ(section_children[1]->GetActionItem()->GetProperty(
+                AppMenuActionItem::kContainerColorKey),
+            ui::kColorAppMenuUpgradeRowBackground);
+}
+
 TEST_F(ActionAppMenuManagerTest, ZoomSubmenuHasExpandedHeightProperty) {
   ActionAppMenuManager menu_manager(&mock_window_interface_);
   menu_manager.CreateMenuHierarchy();
@@ -636,17 +677,17 @@ TEST_F(ActionAppMenuManagerTest, NotificationHeaderDefaultBrowserPrompt) {
       ui::kColorAppMenuUpgradeRowBackground);
 
   const auto& section_children = notification_section->GetChildren().children();
-  ASSERT_GE(section_children.size(), 2u);
+  ASSERT_GE(section_children.size(), 3u);
 
-  // The second item in the notification section should be the default browser
+  // The third item in the notification section should be the default browser
   // action and visible.
-  EXPECT_EQ(section_children[1]->GetActionItem()->GetActionId(),
+  EXPECT_EQ(section_children[2]->GetActionItem()->GetActionId(),
             kActionSetBrowserAsDefault);
-  EXPECT_TRUE(section_children[1]->GetActionItem()->GetVisible());
-  EXPECT_EQ(section_children[1]->GetActionItem()->GetProperty(
+  EXPECT_TRUE(section_children[2]->GetActionItem()->GetVisible());
+  EXPECT_EQ(section_children[2]->GetActionItem()->GetProperty(
                 AppMenuActionItem::kDisplayTypeKey),
             AppMenuActionItem::DisplayType::kNotification);
-  EXPECT_EQ(section_children[1]->GetActionItem()->GetProperty(
+  EXPECT_EQ(section_children[2]->GetActionItem()->GetProperty(
                 AppMenuActionItem::kContainerColorKey),
             ui::kColorAppMenuUpgradeRowBackground);
 }

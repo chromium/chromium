@@ -79,6 +79,7 @@ void ActionAppMenuTestBase::SetUp() {
                        .SetAccessibleName(text)
                        .SetEnabled(true)
                        .SetVisible(action_id != kActionUpgradeDialog &&
+                                   action_id != kActionGlobalError &&
                                    action_id != kActionSetBrowserAsDefault)
                        .Build());
   };
@@ -100,6 +101,7 @@ void ActionAppMenuTestBase::SetUp() {
   add_action(kActionShowSyncPassphraseDialog, u"Enter passphrase");
   add_action(kActionShowSigninWhenPaused, u"Sign in again");
   add_action(kActionUpgradeDialog, u"Update Chrome");
+  add_action(kActionGlobalError, u"Global error");
   add_action(kActionOpenSafetyHub, u"Safety Hub");
   add_action(kActionSafetyHubManageExtensions, u"Manage extensions");
   add_action(kActionSafetyHubShowPasswordCheckup, u"Check passwords");
