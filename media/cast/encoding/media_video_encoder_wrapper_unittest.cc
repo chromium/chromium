@@ -81,10 +81,12 @@ MATCHER_P(OptionsAreEqual, options, "") {
   return arg.frame_size == options.frame_size && arg.bitrate == options.bitrate;
 }
 
-scoped_refptr<VideoFrame> CreateVideoFrame(const FrameInfo& frame_info) {
+scoped_refptr<VideoFrame> CreateVideoFrame(
+    const FrameInfo& frame_info,
+    VideoPixelFormat format = PIXEL_FORMAT_I420) {
   auto video_frame = VideoFrame::CreateZeroInitializedFrame(
-      PIXEL_FORMAT_I420, frame_info.size, gfx::Rect(frame_info.size),
-      frame_info.size, frame_info.reference_time - base::TimeTicks());
+      format, frame_info.size, gfx::Rect(frame_info.size), frame_info.size,
+      frame_info.reference_time - base::TimeTicks());
   video_frame->metadata().capture_begin_time = frame_info.capture_begin_time;
   video_frame->metadata().capture_end_time = frame_info.capture_end_time;
   video_frame->metadata().frame_duration = frame_info.frame_duration;
@@ -769,6 +771,31 @@ TEST_F(MediaVideoEncoderWrapperTest, HardwareEncoderUtilization) {
   // Hardware utilization should be backlog_size (1 in flight frame) /
   // kBacklogRedlineThreshold (4) = 0.25
   EXPECT_DOUBLE_EQ(encoded_frame->encoder_utilization, 0.25);
+}
+
+TEST_F(MediaVideoEncoderWrapperTest, EncodesNv12VideoFrame) {
+  ExpectEncoderInitialized();
+  SetEncoderAsInitialized();
+
+  const FrameInfo frame_info = CreateFrameInfo(FrameType::kKey);
+  ExpectVideoFrameEncoded(frame_info);
+
+  auto video_frame = CreateVideoFrame(frame_info, PIXEL_FORMAT_NV12);
+  std::unique_ptr<SenderEncodedFrame> encoded_frame;
+  base::RunLoop run_loop;
+
+  EXPECT_TRUE(encoder_->EncodeVideoFrame(
+      video_frame, frame_info.reference_time,
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<SenderEncodedFrame> frame) {
+            encoded_frame = std::move(frame);
+            run_loop.Quit();
+          })));
+
+  run_loop.Run();
+
+  EXPECT_NE(encoded_frame, nullptr);
+  EXPECT_TRUE(encoded_frame->is_key_frame);
 }
 
 }  // namespace media::cast

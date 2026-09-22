@@ -19,6 +19,7 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "third_party/libyuv/include/libyuv/convert.h"
+#include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace media::cast {
@@ -108,35 +109,53 @@ constexpr auto kCharacterRenderMap =
     });
 
 scoped_refptr<VideoFrame> CopyVideoFrame(scoped_refptr<VideoFrame> source) {
-  // Currently Cast only supports I420, and converts NV12 frames before passing
-  // them to the VideoSender.
-  CHECK_EQ(source->format(), media::PIXEL_FORMAT_I420);
+  // Currently Cast supports I420 and NV12.
+  CHECK(source->format() == media::PIXEL_FORMAT_I420 ||
+        source->format() == media::PIXEL_FORMAT_NV12);
 
   // Allocate a new frame, identical in configuration to `source`, then copy
   // over all data and metadata.
   const scoped_refptr<VideoFrame> frame = VideoFrame::CreateFrame(
-      media::PIXEL_FORMAT_I420, source->coded_size(), source->visible_rect(),
+      source->format(), source->coded_size(), source->visible_rect(),
       source->natural_size(), source->timestamp());
   if (!frame) {
     return nullptr;
   }
 
   // Copy the contents of the VideoFrame over.
-  libyuv::I420Copy(source->data(media::VideoFrame::Plane::kY),
-                   source->stride(media::VideoFrame::Plane::kY),
-                   source->data(media::VideoFrame::Plane::kU),
-                   source->stride(media::VideoFrame::Plane::kU),
-                   source->data(media::VideoFrame::Plane::kV),
-                   source->stride(media::VideoFrame::Plane::kV),
-                   frame->writable_data(media::VideoFrame::Plane::kY),
-                   frame->stride(media::VideoFrame::Plane::kY),
-                   frame->writable_data(media::VideoFrame::Plane::kU),
-                   frame->stride(media::VideoFrame::Plane::kU),
-                   frame->writable_data(media::VideoFrame::Plane::kV),
-                   frame->stride(media::VideoFrame::Plane::kV),
-                   source->coded_size().width(), source->coded_size().height());
+  if (source->format() == media::PIXEL_FORMAT_I420) {
+    libyuv::I420Copy(source->data(media::VideoFrame::Plane::kY),
+                     source->stride(media::VideoFrame::Plane::kY),
+                     source->data(media::VideoFrame::Plane::kU),
+                     source->stride(media::VideoFrame::Plane::kU),
+                     source->data(media::VideoFrame::Plane::kV),
+                     source->stride(media::VideoFrame::Plane::kV),
+                     frame->writable_data(media::VideoFrame::Plane::kY),
+                     frame->stride(media::VideoFrame::Plane::kY),
+                     frame->writable_data(media::VideoFrame::Plane::kU),
+                     frame->stride(media::VideoFrame::Plane::kU),
+                     frame->writable_data(media::VideoFrame::Plane::kV),
+                     frame->stride(media::VideoFrame::Plane::kV),
+                     source->coded_size().width(),
+                     source->coded_size().height());
+  } else {
+    libyuv::CopyPlane(source->data(media::VideoFrame::Plane::kY),
+                      source->stride(media::VideoFrame::Plane::kY),
+                      frame->writable_data(media::VideoFrame::Plane::kY),
+                      frame->stride(media::VideoFrame::Plane::kY),
+                      source->coded_size().width(),
+                      source->coded_size().height());
+    libyuv::CopyPlane(source->data(media::VideoFrame::Plane::kUV),
+                      source->stride(media::VideoFrame::Plane::kUV),
+                      frame->writable_data(media::VideoFrame::Plane::kUV),
+                      frame->stride(media::VideoFrame::Plane::kUV),
+                      source->coded_size().width(),
+                      (source->coded_size().height() + 1) / 2);
+  }
 
   frame->metadata().MergeMetadataFrom(source->metadata());
+  frame->set_color_space(source->ColorSpace());
+  frame->set_hdr_metadata(source->hdr_metadata());
 
   // Important: After all consumers are done with the frame, copy-back the
   // changed/new metadata to the source frame, as it contains feedback signals
@@ -266,9 +285,11 @@ scoped_refptr<VideoFrame> RenderPerformanceMetricsOverlay(
     return source;
   }
 
-  // Generally speaking, we unfortunately cannot modify the video frame in place
-  // so need to create a copy for modification. Allocate a new frame, identical
-  // in configuration to `source` and copy over all data and metadata.
+  // We cannot modify `source` in-place (or via a shallow wrapper like
+  // `WrapVideoFrame`) because it is an incoming capture frame that may be
+  // shared with other consumers or recycled by a buffer pool. Mutating its
+  // pixel buffer directly would corrupt shared/subsequent frames. Create a
+  // deep copy before rendering the overlay.
   scoped_refptr<VideoFrame> frame = CopyVideoFrame(source);
   if (!frame) {
     return source;  // Allocation failure: Return source frame.

@@ -217,14 +217,15 @@ class VideoSenderTest : public ::testing::Test, public WithCastEnvironment {
     RunTasksAndAdvanceClock();
   }
 
-  scoped_refptr<VideoFrame> GetNewVideoFrame() {
+  scoped_refptr<VideoFrame> GetNewVideoFrame(
+      VideoPixelFormat format = PIXEL_FORMAT_I420) {
     if (first_frame_timestamp_.is_null()) {
       first_frame_timestamp_ = NowTicks();
     }
     constexpr gfx::Size kSize(kWidth, kHeight);
     scoped_refptr<VideoFrame> video_frame =
-        VideoFrame::CreateFrame(PIXEL_FORMAT_I420, kSize, gfx::Rect(kSize),
-                                kSize, NowTicks() - first_frame_timestamp_);
+        VideoFrame::CreateFrame(format, kSize, gfx::Rect(kSize), kSize,
+                                NowTicks() - first_frame_timestamp_);
     PopulateVideoFrame(video_frame.get(), last_pixel_value_++);
     return video_frame;
   }
@@ -412,6 +413,33 @@ TEST_F(VideoSenderTest, GettersReturnValidValues) {
 
   EXPECT_EQ(video_sender().GetFramesInserted(), 1);
   EXPECT_GE(video_sender().GetEncoderBitrate(), 0u);
+}
+
+TEST_F(VideoSenderTest, PerformanceOverlayWithNV12) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(media::kCastStreamingPerformanceOverlay);
+
+  CreateSender(EncoderType::kSoftware);
+  ASSERT_EQ(STATUS_INITIALIZED, status_changes().front());
+
+  scoped_refptr<VideoFrame> video_frame = GetNewVideoFrame(PIXEL_FORMAT_NV12);
+  video_sender().InsertRawVideoFrame(video_frame, NowTicks());
+
+  SetVideoCaptureFeedbackClosure(task_environment().QuitClosure());
+  RunUntilQuit();
+}
+
+TEST_F(VideoSenderTest, BuiltInEncoderWithNV12) {
+  CreateSender(EncoderType::kSoftware);
+  ASSERT_EQ(STATUS_INITIALIZED, status_changes().front());
+
+  scoped_refptr<VideoFrame> video_frame = GetNewVideoFrame(PIXEL_FORMAT_NV12);
+  video_sender().InsertRawVideoFrame(video_frame, NowTicks());
+
+  SetVideoCaptureFeedbackClosure(task_environment().QuitClosure());
+  RunUntilQuit();
+
+  EXPECT_EQ(video_sender().GetFramesInserted(), 1);
 }
 
 }  // namespace media::cast

@@ -615,15 +615,15 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
 
   // Resizing should have been taken care of above.
   DCHECK_EQ(frame->visible_rect().size(), options_.frame_size);
-  auto planes = base::span(vpx_image_.planes);
-  auto stride = base::span(vpx_image_.stride);
   switch (profile_) {
     case VP8PROFILE_ANY:
     case VP9PROFILE_PROFILE0: {
-      DCHECK(frame->format() == PIXEL_FORMAT_NV12 ||
-             frame->format() == PIXEL_FORMAT_I420);
+      CHECK(frame->format() == PIXEL_FORMAT_NV12 ||
+            frame->format() == PIXEL_FORMAT_I420);
       if (frame->format() == PIXEL_FORMAT_NV12) {
         RecreateVpxImageIfNeeded(VPX_IMG_FMT_NV12, /*needs_memory=*/false);
+        auto planes = base::span(vpx_image_.planes);
+        auto stride = base::span(vpx_image_.stride);
         planes[VPX_PLANE_Y] =
             const_cast<uint8_t*>(frame->visible_data(VideoFrame::Plane::kY));
         planes[VPX_PLANE_U] =

@@ -586,12 +586,19 @@ TEST_P(SoftwareVideoEncoderTest, EncodeAndDecode) {
                   original_frame->visible_rect().size());
         EXPECT_EQ(decoded_frame->format(),
                   GetExpectedOutputPixelFormat(profile_));
-        if (decoded_frame->format() == original_frame->format()) {
-          EXPECT_LE(
-              CountDifferentPixels(*decoded_frame, *original_frame,
-                                   GetTolerance(original_frame->format())),
-              GetMaxDiffPixels(*original_frame));
+        scoped_refptr<VideoFrame> ref_frame = original_frame;
+        if (decoded_frame->format() != original_frame->format()) {
+          ref_frame = frame_pool_.CreateFrame(
+              decoded_frame->format(), original_frame->coded_size(),
+              original_frame->visible_rect(), original_frame->natural_size(),
+              original_frame->timestamp());
+          ASSERT_TRUE(
+              frame_converter_.ConvertAndScale(*original_frame, *ref_frame)
+                  .is_ok());
         }
+        EXPECT_LE(CountDifferentPixels(*decoded_frame, *ref_frame,
+                                       GetTolerance(ref_frame->format())),
+                  GetMaxDiffPixels(*ref_frame));
         ++total_decoded_frames;
       });
 
@@ -719,12 +726,19 @@ TEST_P(SoftwareVideoEncoderTest, EncodeAndDecodeWithEnablingDrop) {
                   original_frame->visible_rect().size());
         EXPECT_EQ(decoded_frame->format(),
                   GetExpectedOutputPixelFormat(profile_));
-        if (decoded_frame->format() == original_frame->format()) {
-          EXPECT_LE(
-              CountDifferentPixels(*decoded_frame, *original_frame,
-                                   GetTolerance(original_frame->format())),
-              GetMaxDiffPixels(*original_frame));
+        scoped_refptr<VideoFrame> ref_frame = original_frame;
+        if (decoded_frame->format() != original_frame->format()) {
+          ref_frame = frame_pool_.CreateFrame(
+              decoded_frame->format(), original_frame->coded_size(),
+              original_frame->visible_rect(), original_frame->natural_size(),
+              original_frame->timestamp());
+          ASSERT_TRUE(
+              frame_converter_.ConvertAndScale(*original_frame, *ref_frame)
+                  .is_ok());
         }
+        EXPECT_LE(CountDifferentPixels(*decoded_frame, *ref_frame,
+                                       GetTolerance(ref_frame->format())),
+                  GetMaxDiffPixels(*ref_frame));
         ++total_decoded_frames;
       });
 
@@ -1677,6 +1691,7 @@ SwVideoTestParams kVpxParams[] = {
     {VideoCodec::kVP9, VP9PROFILE_PROFILE3, PIXEL_FORMAT_XRGB},
     {VideoCodec::kVP9, VP9PROFILE_PROFILE3, PIXEL_FORMAT_YUV444P10},
     {VideoCodec::kVP8, VP8PROFILE_ANY, PIXEL_FORMAT_I420},
+    {VideoCodec::kVP8, VP8PROFILE_ANY, PIXEL_FORMAT_NV12},
     {VideoCodec::kVP8, VP8PROFILE_ANY, PIXEL_FORMAT_XRGB},
     {VideoCodec::kVP8, VP8PROFILE_ANY, PIXEL_FORMAT_YUV420P10}};
 
