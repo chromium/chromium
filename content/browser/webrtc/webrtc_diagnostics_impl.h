@@ -57,10 +57,11 @@ class CONTENT_EXPORT WebRtcDiagnosticsImpl : public WebRtcDiagnostics,
       std::vector<url::Origin> origins) override;
   StopCaptureResult StopCaptureForClient(BrowserContext* context,
                                          std::string_view client_id) override;
-  bool GetSnapshot(BrowserContext* context,
-                   std::string_view client_id,
-                   const std::vector<url::Origin>& origins,
-                   base::OnceCallback<void(base::Value)> callback) override;
+  GetSnapshotResult GetSnapshot(
+      BrowserContext* context,
+      std::string_view client_id,
+      const std::vector<url::Origin>& origins,
+      base::OnceCallback<void(base::DictValue)> callback) override;
   bool IsCapturingForClient(BrowserContext* context,
                             std::string_view client_id) override;
   std::vector<std::string> GetCapturingClients(

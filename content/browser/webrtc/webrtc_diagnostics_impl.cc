@@ -48,6 +48,8 @@ constexpr std::string_view kStatsKey = "stats";
 constexpr std::string_view kLogKey = "log";
 constexpr std::string_view kOriginKey = "origin";
 constexpr std::string_view kRequestIdKey = "request_id";
+constexpr std::string_view kRequestTypeKey = "request_type";
+constexpr std::string_view kStreamIdKey = "stream_id";
 constexpr std::string_view kAudioKey = "audio";
 constexpr std::string_view kVideoKey = "video";
 constexpr std::string_view kAudioTrackInfoKey = "audio_track_info";
@@ -69,9 +71,9 @@ constexpr std::string_view kAddStandardStats = "add-standard-stats";
 
 // Keys of the snapshot returned by GetSnapshot().
 constexpr std::string_view kGetUserMediaOutKey = "getUserMedia";
-constexpr std::string_view kPeerConnectionsOutKey = "PeerConnections";
-constexpr std::string_view kUserAgentOutKey = "UserAgent";
-constexpr std::string_view kUserAgentDataOutKey = "UserAgentData";
+constexpr std::string_view kPeerConnectionsOutKey = "peerConnections";
+constexpr std::string_view kUserAgentOutKey = "userAgent";
+constexpr std::string_view kUserAgentDataOutKey = "userAgentData";
 
 std::string MakePeerConnectionId(int rid, int lid) {
   return base::StringPrintf("%d-%d", rid, lid);
@@ -102,6 +104,30 @@ bool EntryMatchesFilter(const base::DictValue& entry,
     return false;
   }
   return MatchesFilter(origins, url::Origin::Create(GURL(*origin_str)));
+}
+
+// Returns `entry` with its getUserMedia keys under the names the snapshot
+// uses. WebRTCInternals spells them in snake_case because
+// chrome://webrtc-internals reads those events as they are, so the rename
+// happens here rather than at the emitter.
+base::DictValue ToSnapshotMediaEntry(const base::DictValue& entry) {
+  static constexpr std::pair<std::string_view, std::string_view>
+      kSnapshotNames[] = {
+          {kRequestIdKey, "requestId"},
+          {kRequestTypeKey, "requestType"},
+          {kStreamIdKey, "streamId"},
+          {kAudioTrackInfoKey, "audioTrackInfo"},
+          {kVideoTrackInfoKey, "videoTrackInfo"},
+          {kErrorMessageKey, "errorMessage"},
+      };
+
+  base::DictValue snapshot_entry = entry.Clone();
+  for (const auto& [wire_name, snapshot_name] : kSnapshotNames) {
+    if (std::optional<base::Value> value = snapshot_entry.Extract(wire_name)) {
+      snapshot_entry.Set(snapshot_name, std::move(*value));
+    }
+  }
+  return snapshot_entry;
 }
 
 }  // namespace
@@ -352,20 +378,20 @@ void WebRtcDiagnosticsImpl::RebuildMetadataFor(PerContext* state,
   }
 }
 
-bool WebRtcDiagnosticsImpl::GetSnapshot(
+WebRtcDiagnostics::GetSnapshotResult WebRtcDiagnosticsImpl::GetSnapshot(
     BrowserContext* context,
     std::string_view client_id,
     const std::vector<url::Origin>& origins,
-    base::OnceCallback<void(base::Value)> callback) {
+    base::OnceCallback<void(base::DictValue)> callback) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (origins.size() > WebRtcDiagnostics::kMaxFilterOrigins) {
-    return false;
+    return GetSnapshotResult::kTooManyOrigins;
   }
 
   for (const auto& origin : origins) {
     if (origin.opaque()) {
-      return false;
+      return GetSnapshotResult::kInvalidOrigin;
     }
   }
 
@@ -374,11 +400,11 @@ bool WebRtcDiagnosticsImpl::GetSnapshot(
   // captured.
   PerContext* state = PerContext::GetIfExists(context);
   if (!state) {
-    return false;
+    return GetSnapshotResult::kNotCapturing;
   }
   auto client = state->clients_.find(client_id);
   if (client == state->clients_.end()) {
-    return false;
+    return GetSnapshotResult::kNotCapturing;
   }
 
   // The request may narrow the session's filter but never widen it. With an
@@ -405,8 +431,8 @@ bool WebRtcDiagnosticsImpl::GetSnapshot(
       empty_root.Set(kUserAgentOutKey,
                      GetContentClient()->browser()->GetUserAgent());
       empty_root.Set(kUserAgentDataOutKey, base::ListValue());
-      std::move(callback).Run(base::Value(std::move(empty_root)));
-      return true;
+      std::move(callback).Run(std::move(empty_root));
+      return GetSnapshotResult::kSuccess;
     }
   }
 
@@ -417,7 +443,7 @@ bool WebRtcDiagnosticsImpl::GetSnapshot(
   for (const auto& item : state->get_user_media_requests_) {
     const base::DictValue* item_dict = item.GetIfDict();
     if (item_dict && EntryMatchesFilter(*item_dict, kOriginKey, effective)) {
-      filtered_list.Append(item.Clone());
+      filtered_list.Append(ToSnapshotMediaEntry(*item_dict));
     }
   }
   root.Set(kGetUserMediaOutKey, std::move(filtered_list));
@@ -458,8 +484,8 @@ bool WebRtcDiagnosticsImpl::GetSnapshot(
   }
   root.Set(kUserAgentDataOutKey, std::move(ua_data_list));
 
-  std::move(callback).Run(base::Value(std::move(root)));
-  return true;
+  std::move(callback).Run(std::move(root));
+  return GetSnapshotResult::kSuccess;
 }
 
 bool WebRtcDiagnosticsImpl::IsCapturingForClient(BrowserContext* context,
@@ -664,8 +690,8 @@ void WebRtcDiagnosticsImpl::OnUpdate(const std::string& event_name,
           continue;
         }
         for (std::string_view key :
-             {kAudioKey, kVideoKey, kAudioTrackInfoKey, kVideoTrackInfoKey,
-              kErrorKey, kErrorMessageKey}) {
+             {kAudioKey, kVideoKey, kStreamIdKey, kAudioTrackInfoKey,
+              kVideoTrackInfoKey, kErrorKey, kErrorMessageKey}) {
           if (const std::string* value = dict.FindString(key)) {
             item.GetDict().Set(key, *value);
           }

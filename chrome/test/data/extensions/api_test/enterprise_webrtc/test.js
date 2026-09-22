@@ -97,4 +97,53 @@ chrome.test.runTests([
         'Error: No capture session is active for this extension.');
     chrome.test.succeed();
   },
+
+  async function getSnapshotRejectsWithNoSession() {
+    await chrome.test.assertPromiseRejects(
+        chrome.enterprise.webrtc.getSnapshot(),
+        'Error: No capture session is active for this extension.');
+    chrome.test.succeed();
+  },
+
+  async function getSnapshotTooManyOriginsRejects() {
+    await chrome.enterprise.webrtc.startCapture();
+    await chrome.test.assertPromiseRejects(
+        chrome.enterprise.webrtc.getSnapshot({origins: TOO_MANY_ORIGINS}),
+        'Error: The origin filter contains too many entries.');
+    await chrome.enterprise.webrtc.stopCapture();
+    chrome.test.succeed();
+  },
+
+  async function getSnapshotUnparsableOriginRejects() {
+    await chrome.enterprise.webrtc.startCapture();
+    await chrome.test.assertPromiseRejects(
+        chrome.enterprise.webrtc.getSnapshot({origins: ['invalid-origin']}),
+        'Error: The origin filter contains an entry that is not a valid ' +
+            'origin.');
+    await chrome.enterprise.webrtc.stopCapture();
+    chrome.test.succeed();
+  },
+
+  async function getSnapshotReturnsCapturedData() {
+    await chrome.enterprise.webrtc.startCapture();
+    const snapshot = await chrome.enterprise.webrtc.getSnapshot();
+
+    // Nothing reachable from this worker can issue a getUserMedia request, so
+    // the list is always empty here and only its container shape is worth
+    // checking. The other three members are filled on every snapshot.
+    chrome.test.assertTrue(
+        Array.isArray(snapshot.getUserMedia), 'getUserMedia is not a list');
+    chrome.test.assertTrue(
+        !!snapshot.peerConnections &&
+            typeof snapshot.peerConnections === 'object',
+        'peerConnections is not a dictionary');
+    chrome.test.assertEq(
+        'string', typeof snapshot.userAgent, 'userAgent is not a string');
+    chrome.test.assertTrue(snapshot.userAgent.length > 0, 'userAgent is empty');
+    chrome.test.assertTrue(
+        Array.isArray(snapshot.userAgentData), 'userAgentData is not a list');
+
+    await chrome.enterprise.webrtc.stopCapture();
+    chrome.test.succeed();
+  },
 ]);

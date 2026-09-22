@@ -2921,6 +2921,7 @@ Called by update_extension_histograms.py.-->
   <int value="1986" label="ENTERPRISE_WEBRTC_STARTCAPTURE"/>
   <int value="1987" label="ENTERPRISE_WEBRTC_GETCAPTURESTATUS"/>
   <int value="1988" label="ENTERPRISE_WEBRTC_STOPCAPTURE"/>
+  <int value="1989" label="ENTERPRISE_WEBRTC_GETSNAPSHOT"/>
 </enum>
 
 <!-- LINT.ThenChange(//extensions/browser/extension_function_histogram_value.h:HistogramValue) -->

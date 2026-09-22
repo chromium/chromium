@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "chrome/browser/extensions/api/enterprise_webrtc/enterprise_webrtc_api_observer.h"
 #include "chrome/common/extensions/api/enterprise_webrtc.h"
@@ -80,6 +82,45 @@ ExtensionFunction::ResponseAction EnterpriseWebrtcStopCaptureFunction::Run() {
       return RespondNow(Error(kNotCapturingError));
   }
   NOTREACHED();
+}
+
+ExtensionFunction::ResponseAction EnterpriseWebrtcGetSnapshotFunction::Run() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  auto params = api::enterprise_webrtc::GetSnapshot::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  std::vector<std::string> origins;
+  if (params->filter && params->filter->origins) {
+    origins = std::move(*params->filter->origins);
+  }
+
+  switch (content::WebRtcDiagnostics::GetInstance()->GetSnapshot(
+      browser_context(), extension_id(), ParseOrigins(std::move(origins)),
+      base::BindOnce(&EnterpriseWebrtcGetSnapshotFunction::OnDataRetrieved,
+                     this))) {
+    case content::WebRtcDiagnostics::GetSnapshotResult::kSuccess:
+      return RespondLater();
+    case content::WebRtcDiagnostics::GetSnapshotResult::kNotCapturing:
+      return RespondNow(Error(kNotCapturingError));
+    case content::WebRtcDiagnostics::GetSnapshotResult::kInvalidOrigin:
+      return RespondNow(Error(kInvalidOriginError));
+    case content::WebRtcDiagnostics::GetSnapshotResult::kTooManyOrigins:
+      return RespondNow(Error(kTooManyOriginsError));
+  }
+  NOTREACHED();
+}
+
+void EnterpriseWebrtcGetSnapshotFunction::OnDataRetrieved(
+    base::DictValue data) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  api::enterprise_webrtc::CaptureSnapshot snapshot;
+  // //content builds the snapshot against this same schema, so a mismatch is
+  // a bug in one of the two rather than anything an extension can provoke.
+  CHECK(api::enterprise_webrtc::CaptureSnapshot::Populate(data, snapshot));
+
+  Respond(WithArguments(snapshot.ToValue()));
 }
 
 ExtensionFunction::ResponseAction

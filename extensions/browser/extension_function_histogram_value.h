@@ -2051,6 +2051,7 @@ enum HistogramValue {
   ENTERPRISE_WEBRTC_STARTCAPTURE = 1986,
   ENTERPRISE_WEBRTC_GETCAPTURESTATUS = 1987,
   ENTERPRISE_WEBRTC_STOPCAPTURE = 1988,
+  ENTERPRISE_WEBRTC_GETSNAPSHOT = 1989,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

@@ -53,6 +53,13 @@ class CONTENT_EXPORT WebRtcDiagnostics {
 
   enum class StopCaptureResult { kSuccess, kNotCapturing };
 
+  enum class GetSnapshotResult {
+    kSuccess,
+    kNotCapturing,
+    kInvalidOrigin,
+    kTooManyOrigins,
+  };
+
   // Observes capture events for a single BrowserContext. An observer is
   // registered against one context and only ever receives events belonging to
   // that context, so implementations do not need to re-check the profile.
@@ -88,16 +95,16 @@ class CONTENT_EXPORT WebRtcDiagnostics {
       std::string_view client_id) = 0;
 
   // Delivers a snapshot of the data captured for `context`, optionally further
-  // filtered to `origins`, by running `callback` before returning. Returns
-  // false if the request is rejected (invalid origin, too many origins, or no
-  // active session for `client_id`), in which case `callback` is not run.
+  // filtered to `origins`, by running `callback` before returning. `callback`
+  // is only run on kSuccess.
   //
   // The result is always scoped to the caller's own session: `origins` can
   // narrow what the session already covers but can never widen it.
-  virtual bool GetSnapshot(BrowserContext* context,
-                           std::string_view client_id,
-                           const std::vector<url::Origin>& origins,
-                           base::OnceCallback<void(base::Value)> callback) = 0;
+  virtual GetSnapshotResult GetSnapshot(
+      BrowserContext* context,
+      std::string_view client_id,
+      const std::vector<url::Origin>& origins,
+      base::OnceCallback<void(base::DictValue)> callback) = 0;
 
   // Whether `client_id` has an active capture session in `context`. This
   // reports the caller's own session, not whether any capture is running

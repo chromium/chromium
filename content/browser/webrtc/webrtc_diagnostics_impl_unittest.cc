@@ -24,6 +24,8 @@ namespace {
 constexpr char kClientA[] = "client-a";
 constexpr char kClientB[] = "client-b";
 
+using GetSnapshotResult = WebRtcDiagnostics::GetSnapshotResult;
+
 class MockWebRtcDiagnosticsObserver : public WebRtcDiagnostics::Observer {
  public:
   MockWebRtcDiagnosticsObserver() = default;
@@ -70,23 +72,25 @@ class WebRtcDiagnosticsImplTest : public testing::Test {
     testing::Test::TearDown();
   }
 
-  // Runs GetSnapshot() and returns the snapshot. `ok` receives the
-  // synchronous return value; the snapshot is left empty when it is false.
-  base::Value Snapshot(BrowserContext* context,
-                       std::string_view client_id,
-                       const std::vector<url::Origin>& origins,
-                       bool* ok) {
+  // Runs GetSnapshot() and returns the snapshot. `result` receives the
+  // synchronous return value; the snapshot is left empty unless it is
+  // kSuccess.
+  base::DictValue Snapshot(BrowserContext* context,
+                           std::string_view client_id,
+                           const std::vector<url::Origin>& origins,
+                           GetSnapshotResult* result) {
     base::RunLoop run_loop;
-    base::Value snapshot;
-    *ok = diagnostics()->GetSnapshot(
+    base::DictValue snapshot;
+    *result = diagnostics()->GetSnapshot(
         context, client_id, origins,
         base::BindOnce(
-            [](base::RunLoop* loop, base::Value* target, base::Value result) {
-              *target = std::move(result);
+            [](base::RunLoop* loop, base::DictValue* target,
+               base::DictValue snapshot) {
+              *target = std::move(snapshot);
               loop->Quit();
             },
             &run_loop, &snapshot));
-    if (*ok) {
+    if (*result == GetSnapshotResult::kSuccess) {
       run_loop.Run();
     }
     return snapshot;
@@ -197,19 +201,19 @@ TEST_F(WebRtcDiagnosticsImplTest, CaptureStoppedDoesNotCrossProfiles) {
 // extension cannot read what another caused to be captured.
 TEST_F(WebRtcDiagnosticsImplTest, SnapshotRequiresAnActiveSession) {
   TestBrowserContext context;
-  bool ok = false;
+  GetSnapshotResult result = GetSnapshotResult::kSuccess;
 
-  Snapshot(&context, kClientA, {}, &ok);
-  EXPECT_FALSE(ok);
+  Snapshot(&context, kClientA, {}, &result);
+  EXPECT_EQ(result, GetSnapshotResult::kNotCapturing);
 
   ASSERT_EQ(diagnostics()->StartCaptureForClient(&context, kClientA, {}),
             WebRtcDiagnostics::StartCaptureResult::kSuccess);
-  Snapshot(&context, kClientA, {}, &ok);
-  EXPECT_TRUE(ok);
+  Snapshot(&context, kClientA, {}, &result);
+  EXPECT_EQ(result, GetSnapshotResult::kSuccess);
 
   // A different client in the same profile still has no session of its own.
-  Snapshot(&context, kClientB, {}, &ok);
-  EXPECT_FALSE(ok);
+  Snapshot(&context, kClientB, {}, &result);
+  EXPECT_EQ(result, GetSnapshotResult::kNotCapturing);
 }
 
 // The request's filter narrows the session's filter and can never widen it.
@@ -230,19 +234,19 @@ TEST_F(WebRtcDiagnosticsImplTest, RequestFilterCannotWidenSessionFilter) {
   diagnostics()->OnUpdate("update-all-peer-connections", &update);
 
   // Unfiltered request: still limited to the session's own origin.
-  bool ok = false;
-  base::Value snapshot = Snapshot(&context, kClientA, {}, &ok);
-  ASSERT_TRUE(ok);
-  const base::DictValue* seen = snapshot.GetDict().FindDict("PeerConnections");
+  GetSnapshotResult result = GetSnapshotResult::kNotCapturing;
+  base::DictValue snapshot = Snapshot(&context, kClientA, {}, &result);
+  ASSERT_EQ(result, GetSnapshotResult::kSuccess);
+  const base::DictValue* seen = snapshot.FindDict("peerConnections");
   ASSERT_TRUE(seen);
   EXPECT_EQ(seen->size(), 1u);
 
   // Explicitly asking for the origin outside the session yields nothing.
   snapshot =
       Snapshot(&context, kClientA,
-               {url::Origin::Create(GURL("https://other.example"))}, &ok);
-  ASSERT_TRUE(ok);
-  seen = snapshot.GetDict().FindDict("PeerConnections");
+               {url::Origin::Create(GURL("https://other.example"))}, &result);
+  ASSERT_EQ(result, GetSnapshotResult::kSuccess);
+  seen = snapshot.FindDict("peerConnections");
   ASSERT_TRUE(seen);
   EXPECT_TRUE(seen->empty());
 }
@@ -261,10 +265,10 @@ TEST_F(WebRtcDiagnosticsImplTest, RemovePeerConnectionDropsItsData) {
   base::Value added = PeerConnectionEntry(rid, 7, "https://example.com/call");
   diagnostics()->OnUpdate("add-peer-connection", &added);
 
-  bool ok = false;
-  base::Value snapshot = Snapshot(&context, kClientA, {}, &ok);
-  ASSERT_TRUE(ok);
-  const base::DictValue* seen = snapshot.GetDict().FindDict("PeerConnections");
+  GetSnapshotResult result = GetSnapshotResult::kNotCapturing;
+  base::DictValue snapshot = Snapshot(&context, kClientA, {}, &result);
+  ASSERT_EQ(result, GetSnapshotResult::kSuccess);
+  const base::DictValue* seen = snapshot.FindDict("peerConnections");
   ASSERT_TRUE(seen);
   EXPECT_EQ(seen->size(), 1u);
 
@@ -274,9 +278,9 @@ TEST_F(WebRtcDiagnosticsImplTest, RemovePeerConnectionDropsItsData) {
   base::Value removed(std::move(removal));
   diagnostics()->OnUpdate("remove-peer-connection", &removed);
 
-  snapshot = Snapshot(&context, kClientA, {}, &ok);
-  ASSERT_TRUE(ok);
-  seen = snapshot.GetDict().FindDict("PeerConnections");
+  snapshot = Snapshot(&context, kClientA, {}, &result);
+  ASSERT_EQ(result, GetSnapshotResult::kSuccess);
+  seen = snapshot.FindDict("peerConnections");
   ASSERT_TRUE(seen);
   EXPECT_TRUE(seen->empty());
 }
@@ -297,10 +301,10 @@ TEST_F(WebRtcDiagnosticsImplTest, RepeatedAddMediaUpsertsRatherThanDuplicates) {
     diagnostics()->OnUpdate("add-media", &media);
   }
 
-  bool ok = false;
-  base::Value snapshot = Snapshot(&context, kClientA, {}, &ok);
-  ASSERT_TRUE(ok);
-  const base::ListValue* seen = snapshot.GetDict().FindList("getUserMedia");
+  GetSnapshotResult result = GetSnapshotResult::kNotCapturing;
+  base::DictValue snapshot = Snapshot(&context, kClientA, {}, &result);
+  ASSERT_EQ(result, GetSnapshotResult::kSuccess);
+  const base::ListValue* seen = snapshot.FindList("getUserMedia");
   ASSERT_TRUE(seen);
   EXPECT_EQ(seen->size(), 1u);
 }
@@ -323,6 +327,7 @@ TEST_F(WebRtcDiagnosticsImplTest, UpdateMediaMergesIntoExistingEntry) {
   update.Set("request_id", 1);
   update.Set("audio", "audio-constraints");
   update.Set("video", "video-constraints");
+  update.Set("stream_id", "stream-1");
   update.Set("audio_track_info", "audio-track");
   update.Set("video_track_info", "video-track");
   update.Set("error", "NotAllowedError");
@@ -330,24 +335,25 @@ TEST_F(WebRtcDiagnosticsImplTest, UpdateMediaMergesIntoExistingEntry) {
   base::Value update_value(std::move(update));
   diagnostics()->OnUpdate("update-media", &update_value);
 
-  bool ok = false;
-  base::Value snapshot = Snapshot(&context, kClientA, {}, &ok);
-  ASSERT_TRUE(ok);
-  const base::ListValue* seen = snapshot.GetDict().FindList("getUserMedia");
+  GetSnapshotResult result = GetSnapshotResult::kNotCapturing;
+  base::DictValue snapshot = Snapshot(&context, kClientA, {}, &result);
+  ASSERT_EQ(result, GetSnapshotResult::kSuccess);
+  const base::ListValue* seen = snapshot.FindList("getUserMedia");
   ASSERT_TRUE(seen);
   ASSERT_EQ(seen->size(), 1u);
 
   const base::DictValue* entry = (*seen)[0].GetIfDict();
   ASSERT_TRUE(entry);
   // The original fields survive and the update's fields are merged in.
-  EXPECT_EQ(entry->FindInt("request_id"), 1);
+  EXPECT_EQ(entry->FindInt("requestId"), 1);
   EXPECT_EQ(*entry->FindString("origin"), "https://example.com");
   EXPECT_EQ(*entry->FindString("audio"), "audio-constraints");
   EXPECT_EQ(*entry->FindString("video"), "video-constraints");
-  EXPECT_EQ(*entry->FindString("audio_track_info"), "audio-track");
-  EXPECT_EQ(*entry->FindString("video_track_info"), "video-track");
+  EXPECT_EQ(*entry->FindString("streamId"), "stream-1");
+  EXPECT_EQ(*entry->FindString("audioTrackInfo"), "audio-track");
+  EXPECT_EQ(*entry->FindString("videoTrackInfo"), "video-track");
   EXPECT_EQ(*entry->FindString("error"), "NotAllowedError");
-  EXPECT_EQ(*entry->FindString("error_message"), "permission denied");
+  EXPECT_EQ(*entry->FindString("errorMessage"), "permission denied");
 }
 
 // Data belonging to one profile must never appear in another's snapshot, and
@@ -381,20 +387,20 @@ TEST_F(WebRtcDiagnosticsImplTest, SnapshotIsScopedToItsBrowserContext) {
       MediaEntry(rph_otr.GetDeprecatedID(), 2, "https://otr.example");
   diagnostics()->OnUpdate("add-media", &media_otr);
 
-  bool ok = false;
-  base::Value snapshot_a = Snapshot(&context_a, kClientA, {}, &ok);
-  ASSERT_TRUE(ok);
-  EXPECT_FALSE(snapshot_a.GetDict().FindDict("PeerConnections")->empty());
-  EXPECT_TRUE(snapshot_a.GetDict().FindList("getUserMedia")->empty());
+  GetSnapshotResult result = GetSnapshotResult::kNotCapturing;
+  base::DictValue snapshot_a = Snapshot(&context_a, kClientA, {}, &result);
+  ASSERT_EQ(result, GetSnapshotResult::kSuccess);
+  EXPECT_FALSE(snapshot_a.FindDict("peerConnections")->empty());
+  EXPECT_TRUE(snapshot_a.FindList("getUserMedia")->empty());
 
-  base::Value snapshot_b = Snapshot(&context_b, kClientA, {}, &ok);
-  ASSERT_TRUE(ok);
-  EXPECT_TRUE(snapshot_b.GetDict().FindDict("PeerConnections")->empty());
-  EXPECT_EQ(snapshot_b.GetDict().FindList("getUserMedia")->size(), 1u);
+  base::DictValue snapshot_b = Snapshot(&context_b, kClientA, {}, &result);
+  ASSERT_EQ(result, GetSnapshotResult::kSuccess);
+  EXPECT_TRUE(snapshot_b.FindDict("peerConnections")->empty());
+  EXPECT_EQ(snapshot_b.FindList("getUserMedia")->size(), 1u);
 
-  base::Value snapshot_otr = Snapshot(&otr_context, kClientA, {}, &ok);
-  ASSERT_TRUE(ok);
-  EXPECT_EQ(snapshot_otr.GetDict().FindList("getUserMedia")->size(), 1u);
+  base::DictValue snapshot_otr = Snapshot(&otr_context, kClientA, {}, &result);
+  ASSERT_EQ(result, GetSnapshotResult::kSuccess);
+  EXPECT_EQ(snapshot_otr.FindList("getUserMedia")->size(), 1u);
 }
 
 // An entry whose rid does not resolve to a live renderer cannot be attributed
@@ -408,10 +414,10 @@ TEST_F(WebRtcDiagnosticsImplTest, UnattributableEntryIsDropped) {
   base::Value media = MediaEntry(999999, 1, "https://example.com");
   diagnostics()->OnUpdate("add-media", &media);
 
-  bool ok = false;
-  base::Value snapshot = Snapshot(&context, kClientA, {}, &ok);
-  ASSERT_TRUE(ok);
-  EXPECT_TRUE(snapshot.GetDict().FindList("getUserMedia")->empty());
+  GetSnapshotResult result = GetSnapshotResult::kNotCapturing;
+  base::DictValue snapshot = Snapshot(&context, kClientA, {}, &result);
+  ASSERT_EQ(result, GetSnapshotResult::kSuccess);
+  EXPECT_TRUE(snapshot.FindList("getUserMedia")->empty());
 }
 
 // A peer connection with no usable origin is dropped from a filtered read and
@@ -429,16 +435,16 @@ TEST_F(WebRtcDiagnosticsImplTest, OriginlessPeerConnectionRespectsFilter) {
   base::Value update(std::move(pcs));
   diagnostics()->OnUpdate("update-all-peer-connections", &update);
 
-  bool ok = false;
-  base::Value unfiltered = Snapshot(&context, kClientA, {}, &ok);
-  ASSERT_TRUE(ok);
-  EXPECT_FALSE(unfiltered.GetDict().FindDict("PeerConnections")->empty());
+  GetSnapshotResult result = GetSnapshotResult::kNotCapturing;
+  base::DictValue unfiltered = Snapshot(&context, kClientA, {}, &result);
+  ASSERT_EQ(result, GetSnapshotResult::kSuccess);
+  EXPECT_FALSE(unfiltered.FindDict("peerConnections")->empty());
 
-  base::Value filtered =
+  base::DictValue filtered =
       Snapshot(&context, kClientA,
-               {url::Origin::Create(GURL("http://example.com"))}, &ok);
-  ASSERT_TRUE(ok);
-  EXPECT_TRUE(filtered.GetDict().FindDict("PeerConnections")->empty());
+               {url::Origin::Create(GURL("http://example.com"))}, &result);
+  ASSERT_EQ(result, GetSnapshotResult::kSuccess);
+  EXPECT_TRUE(filtered.FindDict("peerConnections")->empty());
 }
 
 TEST_F(WebRtcDiagnosticsImplTest, StartRejectsTooManyOrigins) {
@@ -461,10 +467,12 @@ TEST_F(WebRtcDiagnosticsImplTest, GetSnapshotRejectsTooManyOrigins) {
     origins.push_back(url::Origin::Create(GURL("https://example.com")));
   }
 
-  EXPECT_FALSE(diagnostics()->GetSnapshot(
-      &context, kClientA, origins, base::BindOnce([](base::Value result) {
-        ADD_FAILURE() << "Callback should not be invoked";
-      })));
+  EXPECT_EQ(diagnostics()->GetSnapshot(
+                &context, kClientA, origins,
+                base::BindOnce([](base::DictValue snapshot) {
+                  ADD_FAILURE() << "Callback should not be invoked";
+                })),
+            GetSnapshotResult::kTooManyOrigins);
 }
 
 TEST_F(WebRtcDiagnosticsImplTest, StartRejectsOpaqueOrigin) {

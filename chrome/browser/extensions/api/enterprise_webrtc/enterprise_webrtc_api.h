@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_WEBRTC_ENTERPRISE_WEBRTC_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_WEBRTC_ENTERPRISE_WEBRTC_API_H_
 
+#include "base/values.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 
@@ -28,6 +29,19 @@ class EnterpriseWebrtcStopCaptureFunction : public ExtensionFunction {
  protected:
   ~EnterpriseWebrtcStopCaptureFunction() override = default;
   ResponseAction Run() override;
+};
+
+class EnterpriseWebrtcGetSnapshotFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("enterprise.webrtc.getSnapshot",
+                             ENTERPRISE_WEBRTC_GETSNAPSHOT)
+
+ protected:
+  ~EnterpriseWebrtcGetSnapshotFunction() override = default;
+  ResponseAction Run() override;
+
+ private:
+  void OnDataRetrieved(base::DictValue data);
 };
 
 class EnterpriseWebrtcGetCaptureStatusFunction : public ExtensionFunction {

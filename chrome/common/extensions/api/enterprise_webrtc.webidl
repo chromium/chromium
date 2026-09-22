@@ -4,6 +4,38 @@
 
 // Status of a WebRTC capture session. getCaptureStatus cannot fail, so the
 // promise always resolves with this result and never carries an error.
+dictionary CaptureStatus {
+  required boolean active;
+};
+
+// A getUserMedia request observed by WebRTC-internals.
+dictionary GetUserMediaRequest {
+  required long rid;
+  required long pid;
+  required long requestId;
+  required DOMString requestType;
+  required DOMString origin;
+  required DOMString url;
+  required double timestamp;
+  DOMString audio;
+  DOMString video;
+  DOMString streamId;
+  DOMString audioTrackInfo;
+  DOMString videoTrackInfo;
+  DOMString error;
+  DOMString errorMessage;
+};
+
+// A point-in-time snapshot of WebRTC-internals data.
+dictionary CaptureSnapshot {
+  required sequence<GetUserMediaRequest> getUserMedia;
+  // Dictionary of PeerConnectionData objects keyed by ID (free-form;
+  // compiles to additionalProperties:any).
+  required object peerConnections;
+  required DOMString userAgent;
+  required sequence<any> userAgentData;
+};
+
 dictionary StatusResult {
   // Whether this extension has an active capture session in this profile,
   // not whether some other client is capturing elsewhere in the browser.
@@ -41,6 +73,15 @@ interface Webrtc {
   // Stops the active capture session for this extension in this profile.
   // |Returns|: Rejects if there is no session to stop.
   static Promise<undefined> stopCapture();
+
+  // Returns the WebRTC diagnostic data this extension's session has
+  // captured in this profile.
+  // |filter|: Narrows the snapshot further; it cannot widen the scope set
+  // by $(ref:startCapture).
+  // |Returns|: Rejects if there is no session to snapshot, or if the filter
+  // has too many origins or one that cannot be parsed.
+  // |PromiseValue|: snapshot
+  static Promise<CaptureSnapshot> getSnapshot(optional CaptureFilter filter);
 
   // Returns the current capture status for this extension in this
   // profile.
