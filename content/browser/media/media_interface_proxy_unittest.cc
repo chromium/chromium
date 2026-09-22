@@ -184,8 +184,16 @@ TEST_F(MediaInterfaceProxyTest,
   EXPECT_FALSE(AudibilityBypassTracker::ClaimGrant(player_id));
 }
 
+// TODO(crbug.com/564789121): Failing on Win11 ARM64.
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+#define MAYBE_CreateMediaFoundationRenderer_GrantWithProtectedContext \
+  DISABLED_CreateMediaFoundationRenderer_GrantWithProtectedContext
+#else
+#define MAYBE_CreateMediaFoundationRenderer_GrantWithProtectedContext \
+  CreateMediaFoundationRenderer_GrantWithProtectedContext
+#endif
 TEST_F(MediaInterfaceProxyTest,
-       CreateMediaFoundationRenderer_GrantWithProtectedContext) {
+       MAYBE_CreateMediaFoundationRenderer_GrantWithProtectedContext) {
   mojo::PendingRemote<media::mojom::InterfaceFactory> dummy_factory_remote;
   auto dummy_factory_receiver =
       dummy_factory_remote.InitWithNewPipeAndPassReceiver();
