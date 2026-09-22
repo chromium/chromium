@@ -1,0 +1,17 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module organizer_panel.mojom;
+
+// Browser-side handler for general panel requests from WebUI page.
+interface PageHandler {
+  // Closes the organizer panel.
+  ClosePanel();
+};
+
+// Factory interface to bootstrap communication between WebUI and browser.
+interface PageHandlerFactory {
+  // The WebUI calls this method when the page is first initialized.
+  CreatePageHandler(pending_receiver<PageHandler> handler);
+};

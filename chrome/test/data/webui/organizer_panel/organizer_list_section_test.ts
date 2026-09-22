@@ -4,11 +4,12 @@
 
 import 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 
-import {INITIAL_ITEM_COUNT, SearchApiProxyImpl} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
+import {INITIAL_ITEM_COUNT, organizerPanelBrowserProxyFactory, OrganizerPanelPageHandlerRemote, SearchApiProxyImpl} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {OrganizerListSectionElement, OrganizerListSectionItem, OrganizerListSectionItemElement} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import type {CrUrlListItemElement} from 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestSearchApiProxy} from './test_search_api_proxy.js';
@@ -16,10 +17,14 @@ import {TestSectionDelegate} from './test_section_delegate.js';
 
 suite('OrganizerListSectionTest', () => {
   let listSection: OrganizerListSectionElement;
+  let mockHandler: TestMock<OrganizerPanelPageHandlerRemote>&
+      OrganizerPanelPageHandlerRemote;
   let testSearchProxy: TestSearchApiProxy;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    mockHandler = TestMock.fromClass(OrganizerPanelPageHandlerRemote);
+    organizerPanelBrowserProxyFactory.setInstance({handler: mockHandler});
     testSearchProxy = new TestSearchApiProxy();
     SearchApiProxyImpl.setInstance(testSearchProxy);
     listSection = document.createElement('organizer-list-section');
@@ -189,23 +194,26 @@ suite('OrganizerListSectionTest', () => {
         assertEquals(null, expandButton);
       });
 
-  test('notifies delegate when an item is clicked', async () => {
-    const items: Array<OrganizerListSectionItem<unknown>> = [
-      {title: ['Tab 1'], description: [{text: 'tab1.com'}]},
-      {title: ['Tab 2'], description: [{text: 'tab2.com'}]},
-    ];
-    const delegate = new TestSectionDelegate('Open Tabs', items);
-    listSection.delegate = delegate;
-    await microtasksFinished();
+  test(
+      'notifies delegate and closes panel when an item is clicked',
+      async () => {
+        const items: Array<OrganizerListSectionItem<unknown>> = [
+          {title: ['Tab 1'], description: [{text: 'tab1.com'}]},
+          {title: ['Tab 2'], description: [{text: 'tab2.com'}]},
+        ];
+        const delegate = new TestSectionDelegate('Open Tabs', items);
+        listSection.delegate = delegate;
+        await microtasksFinished();
 
-    const listItems =
-        listSection.shadowRoot.querySelectorAll('organizer-list-section-item');
-    assertEquals(2, listItems.length);
+        const listItems = listSection.shadowRoot.querySelectorAll(
+            'organizer-list-section-item');
+        assertEquals(2, listItems.length);
 
-    listItems[1]!.click();
-    assertEquals(1, delegate.getClickCount());
-    assertEquals(items[1], delegate.getLastClickedItem());
-  });
+        listItems[1]!.click();
+        assertEquals(1, delegate.getClickCount());
+        assertEquals(items[1], delegate.getLastClickedItem());
+        assertEquals(1, mockHandler.getCallCount('closePanel'));
+      });
 
   test('notifies delegate when an item action button is clicked', async () => {
     const items: Array<OrganizerListSectionItem<unknown>> = [

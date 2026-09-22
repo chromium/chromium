@@ -608,6 +608,7 @@ void PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsDesktop(
       .Add<tab_search::mojom::PageHandlerFactory>()
       .Add<tab_search::mojom::SearchHandler>();
   registry.ForWebUI<OrganizerPanelUI>()
+      .Add<organizer_panel::mojom::PageHandlerFactory>()
       .Add<tab_search::mojom::PageHandlerFactory>()
       .Add<tab_search::mojom::SearchHandler>()
       .Add<organizer_panel::mojom::TabGroupsOrganizerPageHandlerFactory>();

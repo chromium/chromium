@@ -16,6 +16,8 @@ import {getCss} from './organizer_list_section.css.js';
 import {getHtml} from './organizer_list_section.html.js';
 import type {OrganizerListSectionClient, OrganizerListSectionDelegate} from './organizer_list_section_delegate.js';
 import type {HighlightableOrganizerListSectionItem, OrganizerListSectionItem, OrganizerListSectionItemElement} from './organizer_list_section_item.js';
+import type {BrowserProxy} from './organizer_panel.mojom-webui.js';
+import {browserProxyFactory} from './organizer_panel.mojom-webui.js';
 import type {SearchOptions} from './search_utils.js';
 import {search} from './search_utils.js';
 
@@ -60,6 +62,7 @@ export class OrganizerListSectionElement extends CrLitElement implements
     };
   }
 
+  private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
   accessor delegate: OrganizerListSectionDelegate<unknown>|null = null;
   accessor items: Array<OrganizerListSectionItem<unknown>> = [];
   protected accessor expanded_: boolean = false;
@@ -236,6 +239,7 @@ export class OrganizerListSectionElement extends CrLitElement implements
     assert(target.item);
     assert(this.delegate);
     this.delegate.onItemClick(target.item);
+    this.browserProxy_.handler.closePanel();
   }
 
   protected onItemActionButtonClick_(e: CustomEvent<{
