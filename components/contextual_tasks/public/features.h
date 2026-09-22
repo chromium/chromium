@@ -149,6 +149,13 @@ BASE_DECLARE_FEATURE(kContextualTasksNonBlockingUrlNavigation);
 // Returns whether non-blocking AIM URL navigation is enabled.
 bool GetIsContextualTasksNonBlockingUrlNavigationEnabled();
 
+// Allows signed-out users to use side panel cobrowse in Desktop Android.
+BASE_DECLARE_FEATURE(kAllowSignedOutUserInDesktopAndroid);
+
+// Returns whether signed-out users are allowed to use side panel cobrowse in
+// Desktop Android.
+bool IsAllowSignedOutUserInDesktopAndroidEnabled();
+
 BASE_DECLARE_FEATURE(kContextualTasksEnableSpatialModelToolbarLayout);
 
 enum class OverflowMenuItems {

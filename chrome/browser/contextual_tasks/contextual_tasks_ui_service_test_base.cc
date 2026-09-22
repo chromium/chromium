@@ -39,8 +39,14 @@ void FakeContextualTasksEligibilityManager::SetIsEligible(bool eligible) {
   MaybeNotifyEligibilityChanged();
 }
 
+void FakeContextualTasksEligibilityManager::SetIsEligibleWithoutIdentity(
+    bool eligible) {
+  is_eligible_without_identity_ = eligible;
+  MaybeNotifyEligibilityChanged();
+}
+
 bool FakeContextualTasksEligibilityManager::IsEligibleWithoutIdentity() const {
-  return is_eligible_;
+  return is_eligible_without_identity_.value_or(is_eligible_);
 }
 
 bool FakeContextualTasksEligibilityManager::CalculateEligibility() const {

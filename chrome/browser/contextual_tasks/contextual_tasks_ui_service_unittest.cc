@@ -72,7 +72,9 @@
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#else
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif
 
@@ -90,6 +92,23 @@ class WebContents;
 namespace contextual_tasks {
 
 namespace {
+
+#if BUILDFLAG(IS_ANDROID)
+class ScopedDesktopAndroidForTesting {
+ public:
+  explicit ScopedDesktopAndroidForTesting(bool is_desktop) {
+    base::android::device_info::set_is_desktop_for_testing(is_desktop);
+  }
+  ~ScopedDesktopAndroidForTesting() {
+    base::android::device_info::reset_is_desktop_for_testing();
+  }
+};
+#else
+class ScopedDesktopAndroidForTesting {
+ public:
+  explicit ScopedDesktopAndroidForTesting(bool is_desktop) {}
+};
+#endif
 
 class MockActiveTaskContextProvider : public ActiveTaskContextProvider {
  public:
@@ -718,6 +737,219 @@ TEST_F(
       blink::mojom::WindowFeatures()));
 }
 
+// The signed-out bypass only exists on Android at the desktop form factor;
+// elsewhere Lens side panel unification governs signed-out access.
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(
+    ContextualTasksUiServiceTest,
+    HandleNavigation_AiPage_SignedOut_WithAttachedTab_DesktopAndroid_Intercepted) {
+  ScopedDesktopAndroidForTesting desktop_android(true);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kContextualTasksSidePanel, kAllowSignedOutUserInDesktopAndroid}, {});
+  GURL ai_url(kAiPageUrl);
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(Return(true));
+  ON_CALL(*service_for_nav_, IsSignedInToBrowserWithValidCredentials())
+      .WillByDefault(Return(false));
+  ON_CALL(*service_for_nav_, IsUrlForPrimaryAccount(_))
+      .WillByDefault(Return(false));
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  sessions::SessionTabHelper::CreateForWebContents(
+      web_contents.get(),
+      base::BindRepeating([](content::WebContents* contents) {
+        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
+      }));
+
+  auto mock_session = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  contextual_search::FileInfo file_info;
+  file_info.tab_session_id =
+      sessions::SessionTabHelper::IdForTab(web_contents.get());
+  std::vector<contextual_search::FileInfo> submitted_files = {file_info};
+  ON_CALL(*mock_session, GetSubmittedContextFileInfos)
+      .WillByDefault(Return(submitted_files));
+
+  auto* helper = ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
+      web_contents.get());
+  helper->SetTaskSession(std::nullopt, std::move(mock_session),
+                         /*input_state_model=*/nullptr);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(ai_url, _, _))
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+
+  EXPECT_TRUE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(ai_url, false), web_contents.get(),
+      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
+
+  run_loop.Run();
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
+TEST_F(
+    ContextualTasksUiServiceTest,
+    HandleNavigation_AiPage_SignedOut_WithAttachedTab_DesktopAndroid_FlagDisabled_NotIntercepted) {
+  ScopedDesktopAndroidForTesting desktop_android(true);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kContextualTasksSidePanel},
+                                       {kAllowSignedOutUserInDesktopAndroid});
+  GURL ai_url(kAiPageUrl);
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(Return(true));
+  ON_CALL(*service_for_nav_, IsSignedInToBrowserWithValidCredentials())
+      .WillByDefault(Return(false));
+  ON_CALL(*service_for_nav_, IsUrlForPrimaryAccount(_))
+      .WillByDefault(Return(false));
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  sessions::SessionTabHelper::CreateForWebContents(
+      web_contents.get(),
+      base::BindRepeating([](content::WebContents* contents) {
+        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
+      }));
+
+  auto mock_session = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  contextual_search::FileInfo file_info;
+  file_info.tab_session_id =
+      sessions::SessionTabHelper::IdForTab(web_contents.get());
+  std::vector<contextual_search::FileInfo> submitted_files = {file_info};
+  ON_CALL(*mock_session, GetSubmittedContextFileInfos)
+      .WillByDefault(Return(submitted_files));
+
+  auto* helper = ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
+      web_contents.get());
+  helper->SetTaskSession(std::nullopt, std::move(mock_session),
+                         /*input_state_model=*/nullptr);
+
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+      .Times(0);
+
+  EXPECT_FALSE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(ai_url, false), web_contents.get(),
+      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
+}
+
+TEST_F(
+    ContextualTasksUiServiceTest,
+    HandleNavigation_AiPage_SignedOut_NoAttachedTab_DesktopAndroid_NotIntercepted) {
+  ScopedDesktopAndroidForTesting desktop_android(true);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kContextualTasksSidePanel, kAllowSignedOutUserInDesktopAndroid}, {});
+  GURL ai_url(kAiPageUrl);
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(Return(true));
+  ON_CALL(*service_for_nav_, IsSignedInToBrowserWithValidCredentials())
+      .WillByDefault(Return(false));
+  ON_CALL(*service_for_nav_, IsUrlForPrimaryAccount(_))
+      .WillByDefault(Return(false));
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+      .Times(0);
+
+  EXPECT_FALSE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(ai_url, false), web_contents.get(),
+      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
+}
+
+// A navigation from within an existing Contextual Tasks session is no longer
+// on its own enough to admit a signed-out user on Desktop Android: that bypass
+// stays scoped to Lens side panel unification, which does not exist here.
+// Signed-out access is granted solely via an attached tab (tab in context).
+TEST_F(
+    ContextualTasksUiServiceTest,
+    HandleNavigation_ExistingSession_SignedOut_DesktopAndroid_NotIntercepted) {
+  ScopedDesktopAndroidForTesting desktop_android(true);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kContextualTasksSidePanel, kAllowSignedOutUserInDesktopAndroid}, {});
+  GURL ai_url(kAiPageUrl);
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(Return(true));
+  ON_CALL(*service_for_nav_, IsSignedInToBrowserWithValidCredentials())
+      .WillByDefault(Return(false));
+  ON_CALL(*service_for_nav_, IsUrlForPrimaryAccount(_))
+      .WillByDefault(Return(false));
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  GURL host_url(chrome::kChromeUIContextualTasksURL);
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(host_url);
+
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+      .Times(0);
+
+  EXPECT_FALSE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(ai_url, false), web_contents.get(),
+      /*is_from_embedded_page=*/true, /*from_can_create_window=*/false,
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
+}
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(
+    ContextualTasksUiServiceTest,
+    HandleNavigation_AiPage_SignedOut_WithAttachedTab_NotDesktopAndroid_NotIntercepted) {
+  ScopedDesktopAndroidForTesting not_desktop_android(false);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kContextualTasksSidePanel, kAllowSignedOutUserInDesktopAndroid}, {});
+  GURL ai_url(kAiPageUrl);
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(Return(true));
+  ON_CALL(*service_for_nav_, IsSignedInToBrowserWithValidCredentials())
+      .WillByDefault(Return(false));
+  ON_CALL(*service_for_nav_, IsUrlForPrimaryAccount(_))
+      .WillByDefault(Return(false));
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  sessions::SessionTabHelper::CreateForWebContents(
+      web_contents.get(),
+      base::BindRepeating([](content::WebContents* contents) {
+        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
+      }));
+
+  auto mock_session = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  contextual_search::FileInfo file_info;
+  file_info.tab_session_id =
+      sessions::SessionTabHelper::IdForTab(web_contents.get());
+  std::vector<contextual_search::FileInfo> submitted_files = {file_info};
+  ON_CALL(*mock_session, GetSubmittedContextFileInfos)
+      .WillByDefault(Return(submitted_files));
+
+  auto* helper = ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
+      web_contents.get());
+  helper->SetTaskSession(std::nullopt, std::move(mock_session),
+                         /*input_state_model=*/nullptr);
+
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+      .Times(0);
+
+  EXPECT_FALSE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(ai_url, false), web_contents.get(),
+      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
+}
+#endif
+
 TEST_F(ContextualTasksUiServiceTest,
        HandleNavigation_BypassedWhenRearchitectureEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
@@ -1206,6 +1438,58 @@ TEST_F(ContextualTasksUiServiceTest, AiPageNotIntercepted_NotEligible) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
+}
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(ContextualTasksUiServiceTest,
+       ShouldRedirectIneligibleRequest_SignedOutDesktopAndroid_NoRedirect) {
+  ScopedDesktopAndroidForTesting desktop_android(true);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kAllowSignedOutUserInDesktopAndroid);
+
+  // A signed-out user: ineligible overall, but eligible apart from identity.
+  auto* eligibility_manager = service_for_nav_->GetFakeEligibilityManager();
+  eligibility_manager->SetIsEligible(false);
+  eligibility_manager->SetIsEligibleWithoutIdentity(true);
+
+  EXPECT_FALSE(service_for_nav_->ShouldRedirectIneligibleRequest(
+      GURL(chrome::kChromeUIContextualTasksURL),
+      /*source_contents=*/nullptr));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
+TEST_F(ContextualTasksUiServiceTest,
+       ShouldRedirectIneligibleRequest_SignedOutFeatureDisabled_Redirects) {
+  ScopedDesktopAndroidForTesting desktop_android(true);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      kAllowSignedOutUserInDesktopAndroid);
+
+  auto* eligibility_manager = service_for_nav_->GetFakeEligibilityManager();
+  eligibility_manager->SetIsEligible(false);
+  eligibility_manager->SetIsEligibleWithoutIdentity(true);
+
+  EXPECT_TRUE(service_for_nav_->ShouldRedirectIneligibleRequest(
+      GURL(chrome::kChromeUIContextualTasksURL),
+      /*source_contents=*/nullptr));
+}
+
+// The bypass must be scoped to the missing-identity case only. A user who is
+// ineligible for another reason (e.g. policy or a non-Google DSE) must still be
+// redirected even with the feature enabled.
+TEST_F(ContextualTasksUiServiceTest,
+       ShouldRedirectIneligibleRequest_IneligibleWithoutIdentity_Redirects) {
+  ScopedDesktopAndroidForTesting desktop_android(true);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kAllowSignedOutUserInDesktopAndroid);
+
+  auto* eligibility_manager = service_for_nav_->GetFakeEligibilityManager();
+  eligibility_manager->SetIsEligible(false);
+  eligibility_manager->SetIsEligibleWithoutIdentity(false);
+
+  EXPECT_TRUE(service_for_nav_->ShouldRedirectIneligibleRequest(
+      GURL(chrome::kChromeUIContextualTasksURL),
+      /*source_contents=*/nullptr));
 }
 
 // Verifies the happy path. The AI page is intercepted when the user is signed

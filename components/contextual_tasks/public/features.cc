@@ -206,6 +206,20 @@ bool GetIsContextualTasksNonBlockingUrlNavigationEnabled() {
   return base::FeatureList::IsEnabled(kContextualTasksNonBlockingUrlNavigation);
 }
 
+BASE_FEATURE(kAllowSignedOutUserInDesktopAndroid,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsAllowSignedOutUserInDesktopAndroidEnabled() {
+#if BUILDFLAG(IS_ANDROID)
+  return base::FeatureList::IsEnabled(kAllowSignedOutUserInDesktopAndroid) &&
+         ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP;
+#else
+  // Desktop platforms admit signed-out users through Lens side panel
+  // unification instead; this feature must not widen that behaviour.
+  return false;
+#endif
+}
+
 bool GetIsContextualTasksPdfCitationsEnabled() {
   return base::FeatureList::IsEnabled(kContextualTasksPdfCitations);
 }
