@@ -30,6 +30,7 @@ source_set("controls") {
     "//chrome/browser/ui/views:layout_provider",
     "//components/content_settings/core/common",
     "//ui/base",
+    "//ui/menus",
     "//ui/views",
   ]
   deps = [
@@ -41,6 +42,7 @@ source_set("controls") {
     "//components/constrained_window",
     "//components/content_settings/browser/ui",
     "//components/strings:components_strings",
+    "//components/user_education/views",
     "//components/web_modal",
     "//content/public/browser",
   ]

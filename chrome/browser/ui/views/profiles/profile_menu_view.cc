@@ -1263,11 +1263,10 @@ void ProfileMenuView::BuildFeatureButtons() {
 void ProfileMenuView::MaybeBuildCrossDeviceSigninButton() {
   if (ShouldShowCrossDeviceSigninPromo(
           CrossDeviceSigninPromoEntryPoint::kProfileMenu, &profile())) {
-    bool is_new = false;
-    if (switches::kCrossDeviceSigninFromDesktopNewBadge.Get() &&
-        UserEducationService::MaybeShowNewBadge(
-            &profile(), switches::kCrossDeviceSigninFromDesktop)) {
-      is_new = true;
+    user_education::DisplayNewBadge display_new_badge;
+    if (switches::kCrossDeviceSigninFromDesktopNewBadge.Get()) {
+      display_new_badge = UserEducationService::MaybeShowNewBadge(
+          &profile(), switches::kCrossDeviceSigninFromDesktop);
     }
 
     AddFeatureButton(
@@ -1276,7 +1275,7 @@ void ProfileMenuView::MaybeBuildCrossDeviceSigninButton() {
         base::BindRepeating(&ProfileMenuView::OnCrossDeviceSigninButtonClicked,
                             base::Unretained(this)),
         kMobileIcon,
-        /*icon_to_image_ratio=*/1.0f, is_new);
+        /*icon_to_image_ratio=*/1.0f, display_new_badge);
   }
 }
 

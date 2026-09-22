@@ -8,17 +8,24 @@
 #include <memory>
 #include <string>
 
+#include "base/i18n/rtl.h"
 #include "base/strings/strcat.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/icu_test_util.h"
 #include "build/build_config.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/user_education/common/new_badge/new_badge_controller.h"
+#include "components/user_education/views/new_badge_label.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/text_utils.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
@@ -27,6 +34,7 @@
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget_utils.h"
 
 namespace {
@@ -206,6 +214,188 @@ TEST_F(HoverButtonTest, CreateButtonWithSubtitleAndIcons) {
                      u"Title", u"Subtitle", std::move(secondary_icon));
   EXPECT_TRUE(button.Contains(primary_icon_raw));
   EXPECT_TRUE(button.Contains(secondary_icon_raw));
+}
+
+// A `HoverButton` built without `display_new_badge` uses a plain label.
+TEST_F(HoverButtonTest, CreateButtonWithoutNewBadge) {
+  HoverButton::Params params;
+  params.title = u"Title";
+  params.icon_view = CreateIcon();
+  HoverButton button(views::Button::PressedCallback(), std::move(params));
+
+  EXPECT_EQ(views::AsViewClass<user_education::NewBadgeLabel>(button.title()),
+            nullptr);
+}
+
+// A truthy `display_new_badge` turns the title into a badged label, with the
+// badge drawn immediately after the text and no trailing padding.
+TEST_F(HoverButtonTest, CreateButtonWithNewBadge) {
+  HoverButton::Params params;
+  params.title = u"Title";
+  params.icon_view = CreateIcon();
+  params.display_new_badge =
+      user_education::DisplayNewBadge::create_for_test(true);
+  HoverButton button(views::Button::PressedCallback(), std::move(params));
+
+  auto* badge_label =
+      views::AsViewClass<user_education::NewBadgeLabel>(button.title());
+  ASSERT_NE(badge_label, nullptr);
+  EXPECT_EQ(badge_label->GetText(), u"Title");
+  EXPECT_TRUE(badge_label->GetDisplayNewBadge());
+  // The badge is the last element in the row, so it needs no trailing padding.
+  EXPECT_FALSE(badge_label->GetPadAfterNewBadge());
+  EXPECT_EQ(
+      badge_label->GetBadgePlacement(),
+      user_education::NewBadgeLabel::BadgePlacement::kImmediatelyAfterText);
+}
+
+// The badge must not change the row height in the configuration the profile
+// menu actually ships (`add_vertical_label_spacing == false`).
+//
+// NOTE: this holds because the 16x16 icon wrapper dominates the row height,
+// which is also why production is safe. It is *not* proof that the badge is
+// height-free in general: the badge adds
+// `AdjustVisualBorderForFont(font_list, kBadgeInternalPadding)` above and
+// below the text, so at large accessibility font scales the label can
+// out-grow the icon and the row will get taller. See
+// `NewBadgeMayGrowRowWhenLabelDominates` below for that case.
+TEST_F(HoverButtonTest, NewBadgeDoesNotChangeRowHeight) {
+  auto make_button = [this](user_education::DisplayNewBadge display_new_badge) {
+    HoverButton::Params params;
+    params.title = u"Title";
+    params.icon_view = CreateIcon();
+    // Matches `MenuButtonRowView`, the only production caller.
+    params.add_vertical_label_spacing = false;
+    params.display_new_badge = display_new_badge;
+    return std::make_unique<HoverButton>(views::Button::PressedCallback(),
+                                         std::move(params));
+  };
+
+  std::unique_ptr<HoverButton> unbadged = make_button({});
+  std::unique_ptr<HoverButton> badged =
+      make_button(user_education::DisplayNewBadge::create_for_test(true));
+
+  EXPECT_EQ(unbadged->GetPreferredSize().height(),
+            badged->GetPreferredSize().height());
+}
+
+// Documents the known and accepted bound when the icon does not dominate: the
+// badged row is never shorter than the unbadged one, and may be taller by the
+// badge's vertical padding.
+TEST_F(HoverButtonTest, NewBadgeMayGrowRowWhenLabelDominates) {
+  auto make_button = [](user_education::DisplayNewBadge display_new_badge) {
+    HoverButton::Params params;
+    params.title = u"Title";
+    // A 1x1 icon lets the label drive the row height.
+    params.icon_view = std::make_unique<views::View>();
+    params.icon_view->SetPreferredSize(gfx::Size(1, 1));
+    params.add_vertical_label_spacing = false;
+    params.display_new_badge = display_new_badge;
+    return std::make_unique<HoverButton>(views::Button::PressedCallback(),
+                                         std::move(params));
+  };
+
+  std::unique_ptr<HoverButton> unbadged = make_button({});
+  std::unique_ptr<HoverButton> badged =
+      make_button(user_education::DisplayNewBadge::create_for_test(true));
+
+  EXPECT_LE(unbadged->GetPreferredSize().height(),
+            badged->GetPreferredSize().height());
+}
+
+// The badge sits immediately after the text, which means the space reserved
+// for it is on the right in LTR and on the left in RTL.
+//
+// NOTE: this pins the padding reservation in
+// `NewBadgeLabel::UpdatePaddingForNewBadge()` only. Where the badge is
+// actually painted is computed separately in `NewBadgeLabel::OnPaint()`, and
+// is covered by the `CrossDeviceSigninPromoNewBadge_RTL` pixel case in
+// profile_menu_view_ui_browsertest.cc. The two are deliberately
+// complementary; neither is redundant.
+TEST_F(HoverButtonTest, NewBadgeIsAdjacentToTextInBothDirections) {
+  auto make_badged_button = [this]() {
+    HoverButton::Params params;
+    params.title = u"Title";
+    params.icon_view = CreateIcon();
+    params.display_new_badge =
+        user_education::DisplayNewBadge::create_for_test(true);
+    return std::make_unique<HoverButton>(views::Button::PressedCallback(),
+                                         std::move(params));
+  };
+
+  {
+    base::test::ScopedRestoreICUDefaultLocale ltr_locale("en_US");
+    ASSERT_FALSE(base::i18n::IsRTL());
+    std::unique_ptr<HoverButton> button = make_badged_button();
+    ASSERT_NE(button->title(), nullptr);
+    const gfx::Insets insets = button->title()->GetInsets();
+    EXPECT_GT(insets.right(), 0);
+    EXPECT_EQ(insets.left(), 0);
+  }
+
+  {
+    base::test::ScopedRestoreICUDefaultLocale rtl_locale("he");
+    ASSERT_TRUE(base::i18n::IsRTL());
+    std::unique_ptr<HoverButton> button = make_badged_button();
+    ASSERT_NE(button->title(), nullptr);
+    const gfx::Insets insets = button->title()->GetInsets();
+    EXPECT_GT(insets.left(), 0);
+    EXPECT_EQ(insets.right(), 0);
+  }
+}
+
+// The badge is announced exactly once, via the button's accessible name, and
+// never leaks into the visual tooltip.
+TEST_F(HoverButtonTest, NewBadgeAccessibleName) {
+  const std::u16string title_text =
+      u"A very long title that will be elided in the button layout";
+  const std::u16string badge_description =
+      l10n_util::GetStringUTF16(IDS_NEW_BADGE_SCREEN_READER_MESSAGE);
+
+  HoverButton::Params params;
+  params.title = title_text;
+  params.icon_view = CreateIcon();
+  params.display_new_badge =
+      user_education::DisplayNewBadge::create_for_test(true);
+  auto button = std::make_unique<HoverButton>(views::Button::PressedCallback(),
+                                              std::move(params));
+
+  views::IgnoreMissingWidgetForTestingScopedSetter ignore_missing_widget(
+      button->GetViewAccessibility());
+
+  // The title is longer than the available width, so a tooltip is required.
+  button->SetSize(gfx::Size(kButtonWidth, 40));
+
+  EXPECT_EQ(GetAccessibleName(*button),
+            base::StrCat({title_text, u"\n", badge_description}));
+  // The tooltip mirrors only what is painted.
+  EXPECT_EQ(button->GetTooltipText(), title_text);
+
+  // The label itself must be AX-ignored so the badge is not announced twice.
+  ASSERT_NE(button->title(), nullptr);
+  EXPECT_TRUE(button->title()->GetViewAccessibility().GetIsIgnored());
+}
+
+// Screen-reader-only text must reach the accessible name but must never be
+// rendered in the visual tooltip, even when the visible text is elided.
+TEST_F(HoverButtonTest, ExtraAccessibleTextIsExcludedFromTooltip) {
+  const std::u16string title_text =
+      u"A very long title that will be elided in the button layout";
+
+  std::unique_ptr<views::View> primary_icon = CreateIcon();
+  auto button = std::make_unique<HoverButton>(
+      views::Button::PressedCallback(), std::move(primary_icon), title_text);
+  button->AddExtraAccessibleText(u"This is a new feature");
+
+  views::IgnoreMissingWidgetForTestingScopedSetter ignore_missing_widget(
+      button->GetViewAccessibility());
+
+  // The title is longer than the available width, so a tooltip is required.
+  button->SetSize(gfx::Size(kButtonWidth, 40));
+
+  EXPECT_EQ(GetAccessibleName(*button),
+            base::StrCat({title_text, u"\nThis is a new feature"}));
+  EXPECT_EQ(button->GetTooltipText(), title_text);
 }
 
 // Tests a button with a subtitle and a footer.

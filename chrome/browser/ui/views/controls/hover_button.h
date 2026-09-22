@@ -15,6 +15,7 @@
 #include "base/types/pass_key.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/metadata/view_factory.h"
@@ -75,6 +76,16 @@ class HoverButton : public views::LabelButton {
     // Subtitle text. An empty `subtitle` and `footer` will vertically center
     // `title`.
     std::u16string subtitle;
+
+    // When truthy, `title` is rendered as a `user_education::NewBadgeLabel`
+    // with a "New" badge immediately after the text (in both LTR and RTL).
+    // Only user_education code can produce a truthy value, which is what
+    // guarantees that the badge eventually expires.
+    //
+    // This is spelled `ui::IsNewFeatureAtValue` rather than the equivalent
+    // `user_education::DisplayNewBadge` alias so that this widely-included
+    // header does not have to pull in the user_education dependency graph.
+    ui::IsNewFeatureAtValue display_new_badge;
 
     // Shown on the opposite side of the button from `icon_view`.
     std::unique_ptr<views::View> secondary_view;

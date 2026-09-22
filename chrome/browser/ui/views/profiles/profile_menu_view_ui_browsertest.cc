@@ -379,6 +379,24 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
         .with_cross_device_signin_promo = true,
         .with_cross_device_signin_new_badge = true,
     },
+    {
+        // The badge is rendered immediately after the label text, so it has to
+        // mirror to the leading edge in RTL.
+        .pixel_test_param = {.test_suffix =
+                                 "CrossDeviceSigninPromoNewBadge_RTL",
+                             .use_right_to_left_language = true},
+        .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
+        .with_cross_device_signin_promo = true,
+        .with_cross_device_signin_new_badge = true,
+    },
+    {
+        .pixel_test_param = {.test_suffix =
+                                 "CrossDeviceSigninPromoNewBadge_Dark",
+                             .use_dark_theme = true},
+        .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
+        .with_cross_device_signin_promo = true,
+        .with_cross_device_signin_new_badge = true,
+    },
 };
 
 }  // namespace

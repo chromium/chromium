@@ -76,6 +76,7 @@ if (is_win || is_mac || is_linux || is_chromeos) {
       "//chrome/browser/ui/views:close_bubble_on_tab_activation_helper",
       "//chrome/browser/ui/views/controls",
       "//components/signin/public/identity_manager",
+      "//components/user_education/common",
       "//content/public/browser",
       "//ui/base",
       "//ui/base/metadata",
