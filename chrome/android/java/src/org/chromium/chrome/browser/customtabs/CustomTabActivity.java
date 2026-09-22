@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.customtabs;
 
-import static androidx.annotation.VisibleForTesting.PRIVATE;
 import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_DARK;
 import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT;
 
@@ -28,11 +27,8 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
 
-import org.chromium.base.ActivityState;
-import org.chromium.base.ApplicationStatus;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
@@ -90,10 +86,6 @@ public class CustomTabActivity extends BaseCustomTabActivity {
 
     private final CustomTabsConnection mConnection = CustomTabsConnection.getInstance();
     private int mNumOmniboxNavigationEventsPerSession;
-
-    /** Prevents Tapjacking on T-. See crbug.com/40063907 */
-    private static final boolean sPreventTouches =
-            Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU;
 
     private CustomTabsOpenTimeRecorder mOpenTimeRecorder;
 
@@ -510,10 +502,8 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         if (sBlockTouchesDuringEnterAnimation && !mIsEnterAnimationCompleted) {
             return true;
         }
-        if (sPreventTouches && shouldPreventTouch()) {
-            // Discard the events which may be trickling down from an overlay activity above.
-            return true;
-        }
+        // The overlay/tapjacking guard lives in BaseCustomTabActivity so the whole family
+        // (including PWA/WebAPK windows) shares it. See crbug.com/40063907.
         return super.dispatchTouchEvent(ev);
     }
 
@@ -529,12 +519,6 @@ public class CustomTabActivity extends BaseCustomTabActivity {
                 10);
 
         super.finish();
-    }
-
-    @VisibleForTesting(otherwise = PRIVATE)
-    boolean shouldPreventTouch() {
-        if (ApplicationStatus.getStateForActivity(this) == ActivityState.RESUMED) return false;
-        return true;
     }
 
     /**
