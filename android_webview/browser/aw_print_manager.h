@@ -61,6 +61,10 @@ class AwPrintManager : public printing::PrintManager,
       DidPrintDocumentCallback did_print_document_cb,
       uint32_t page_count);
 
+  // Indicates whether AwPrintManager is performing Browser-initiated printing
+  // or not. Intended to be called in ScriptedPrint().
+  bool is_printing() const { return fd_.is_valid(); }
+
   std::unique_ptr<printing::PrintSettings> settings_;
 
   // The file descriptor into which the PDF of the document will be written.

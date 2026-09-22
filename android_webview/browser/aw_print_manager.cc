@@ -12,7 +12,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
-#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/task/task_traits.h"
@@ -63,6 +62,8 @@ void AwPrintManager::SetupScriptedPrintAndroid(
   // WebView does not support the print dialog triggered by window.print().
   // Run the callback immediately to unblock the renderer, maintaining the
   // previous behavior where window.print() was essentially a no-op.
+  //
+  // TODO(crbug.com/40342444): Add support for window.print().
   std::move(callback).Run();
 }
 
@@ -119,17 +120,20 @@ void AwPrintManager::ScriptedPrint(
     ScriptedPrintCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  content::RenderFrameHost& render_frame_host = CurrentTargetFrame();
-  if (!render_frame_host.IsActive()) {
-    // Only active RFHs should try to print.
+  // Prevents spurious requests from the renderer to print. This blocks
+  // window.print(), which is fine since window.print() is not supported, per
+  // comment in SetupScriptedPrintAndroid().
+  //
+  // TODO(crbug.com/40342444): Add support for window.print() and properly
+  // handle this to match applicable checks on other platforms.
+  if (!is_printing()) {
     std::move(callback).Run(nullptr);
     return;
   }
 
-  if (scripted_params->is_scripted &&
-      render_frame_host.IsNestedWithinFencedFrame()) {
-    DLOG(ERROR) << "Unexpected message received. Script Print is not allowed"
-                   " in a fenced frame.";
+  content::RenderFrameHost& render_frame_host = CurrentTargetFrame();
+  if (!render_frame_host.IsActive()) {
+    // Only active RFHs should try to print.
     std::move(callback).Run(nullptr);
     return;
   }
