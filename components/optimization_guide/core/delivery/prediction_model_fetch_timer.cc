@@ -33,14 +33,25 @@ PredictionModelFetchTimer::~PredictionModelFetchTimer() = default;
 
 void PredictionModelFetchTimer::NotifyModelFetchAttempt() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  is_last_fetch_error_non_retryable_ = false;
   local_state_->SetTime(prefs::localstate::kModelLastFetchAttempt,
                         clock_->Now());
 }
 
 void PredictionModelFetchTimer::NotifyModelFetchSuccess() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  is_last_fetch_error_non_retryable_ = false;
   local_state_->SetTime(prefs::localstate::kModelLastFetchSuccess,
                         clock_->Now());
+}
+
+void PredictionModelFetchTimer::NotifyModelFetchNonRetryableFailure() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  is_last_fetch_error_non_retryable_ = true;
+  if (fetch_timer_.IsRunning()) {
+    fetch_timer_.Stop();
+  }
+  SchedulePeriodicModelsFetch();
 }
 
 base::Time PredictionModelFetchTimer::GetLastFetchAttemptTime() const {
@@ -98,9 +109,12 @@ void PredictionModelFetchTimer::SchedulePeriodicModelsFetch() {
   const base::TimeDelta time_until_update_time =
       GetLastFetchSuccessTime() + features::PredictionModelFetchInterval() -
       clock_->Now();
+  const base::TimeDelta retry_delay =
+      is_last_fetch_error_non_retryable_
+          ? features::PredictionModelFetchInterval()
+          : features::PredictionModelFetchRetryDelay();
   const base::TimeDelta time_until_retry =
-      GetLastFetchAttemptTime() + features::PredictionModelFetchRetryDelay() -
-      clock_->Now();
+      GetLastFetchAttemptTime() + retry_delay - clock_->Now();
   base::TimeDelta fetcher_delay =
       std::max(time_until_update_time, time_until_retry);
   state_ = PredictionModelFetchTimerState::kPeriodicFetch;
@@ -141,6 +155,11 @@ void PredictionModelFetchTimer::ScheduleImmediateFetchForTesting() {
   fetch_timer_.Stop();
   fetch_timer_.Start(FROM_HERE, base::Milliseconds(1), this,
                      &PredictionModelFetchTimer::OnFetchTimerFired);
+}
+
+bool PredictionModelFetchTimer::IsLastFetchErrorNonRetryableForTesting() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return is_last_fetch_error_non_retryable_;
 }
 
 }  // namespace optimization_guide

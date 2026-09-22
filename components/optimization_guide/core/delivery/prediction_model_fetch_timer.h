@@ -47,6 +47,11 @@ class PredictionModelFetchTimer {
   // Notifies that the fetch for prediction models succeeded now.
   void NotifyModelFetchSuccess();
 
+  // Notifies that the prediction model fetch failed with a non-retryable error
+  // (e.g. HTTP 400 Bad Request / ErrInvalidArgument) and should back off until
+  // the periodic fetch interval.
+  void NotifyModelFetchNonRetryableFailure();
+
   void MaybeScheduleFirstModelFetch();
   void ScheduleFetchOnModelRegistration();
   void Stop();
@@ -60,6 +65,8 @@ class PredictionModelFetchTimer {
 
   // Schedules an immediate model fetch.
   void ScheduleImmediateFetchForTesting();
+
+  bool IsLastFetchErrorNonRetryableForTesting() const;
 
  private:
   friend class PredictionModelFetchTimerTest;
@@ -92,6 +99,12 @@ class PredictionModelFetchTimer {
 
   // The callback to call to trigger the model fetches.
   base::RepeatingClosure fetch_callback_;
+
+  // Whether the most recent model fetch attempt failed with a non-retryable
+  // error (e.g. HTTP 400 Bad Request / ErrInvalidArgument). When true, retry
+  // logic backs off until the full update interval instead of the fast retry delay.
+  bool is_last_fetch_error_non_retryable_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

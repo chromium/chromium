@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/expected.h"
 #include "base/version_info/version_info.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -66,7 +67,8 @@ bool PredictionModelFetcherImpl::FetchOptimizationGuideServiceModels(
 
   // If there are no models to request, do not make a GetModelsRequest.
   if (models_request_info.empty()) {
-    std::move(models_fetched_callback).Run(nullptr);
+    std::move(models_fetched_callback)
+        .Run(base::unexpected(PredictionModelFetchError::kRetryable));
     return false;
   }
 
@@ -146,9 +148,6 @@ void PredictionModelFetcherImpl::HandleResponse(
     const std::string& get_models_response_data,
     int net_status,
     int response_code) {
-  auto get_models_response =
-      std::make_unique<optimization_guide::proto::GetModelsResponse>();
-
   if (response_code >= 0 && response_code <= net::HTTP_VERSION_NOT_SUPPORTED) {
     UMA_HISTOGRAM_ENUMERATION(
         "OptimizationGuide.PredictionModelFetcher."
@@ -172,12 +171,19 @@ void PredictionModelFetcherImpl::HandleResponse(
         -net_status);
   }
 
-  if (net_status == net::OK && response_code == net::HTTP_OK &&
-      get_models_response->ParseFromString(get_models_response_data)) {
-    std::move(models_fetched_callback_).Run(std::move(get_models_response));
-  } else {
-    std::move(models_fetched_callback_).Run(nullptr);
+  if (net_status == net::OK && response_code == net::HTTP_OK) {
+    proto::GetModelsResponse get_models_response;
+    if (get_models_response.ParseFromString(get_models_response_data)) {
+      std::move(models_fetched_callback_).Run(std::move(get_models_response));
+      return;
+    }
   }
+
+  PredictionModelFetchError error =
+      (response_code == net::HTTP_BAD_REQUEST)
+          ? PredictionModelFetchError::kNotRetryable
+          : PredictionModelFetchError::kRetryable;
+  std::move(models_fetched_callback_).Run(base::unexpected(error));
 }
 
 void PredictionModelFetcherImpl::OnURLLoadComplete(

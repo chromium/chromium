@@ -47,13 +47,19 @@ class PredictionModelFetcherTest : public testing::Test {
   ~PredictionModelFetcherTest() override = default;
 
   void OnModelsFetched(
-      std::unique_ptr<proto::GetModelsResponse> get_models_response) {
-    if (get_models_response) {
+      base::expected<proto::GetModelsResponse, PredictionModelFetchError>
+          get_models_response) {
+    if (get_models_response.has_value()) {
       models_fetched_ = true;
+    } else {
+      last_fetch_error_ = get_models_response.error();
     }
   }
 
   bool models_fetched() { return models_fetched_; }
+  std::optional<PredictionModelFetchError> last_fetch_error() const {
+    return last_fetch_error_;
+  }
 
  protected:
   bool FetchModels(const std::vector<proto::ModelInfo> models_request_info,
@@ -94,6 +100,7 @@ class PredictionModelFetcherTest : public testing::Test {
   }
 
   bool models_fetched_ = false;
+  std::optional<PredictionModelFetchError> last_fetch_error_;
   base::test::TaskEnvironment task_environment_;
   variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
@@ -132,10 +139,41 @@ TEST_F(PredictionModelFetcherTest, FetchReturned404) {
   // Send a 404 to HintsFetcher.
   SimulateResponse(response_content, net::HTTP_NOT_FOUND);
   EXPECT_FALSE(models_fetched());
+  EXPECT_EQ(PredictionModelFetchError::kRetryable, last_fetch_error());
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PredictionModelFetcher."
       "GetModelsResponse.Status",
       net::HTTP_NOT_FOUND, 1);
+
+  // Net error codes are negative but UMA histograms require positive values.
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelFetcher."
+      "GetModelsResponse.NetErrorCode",
+      -net::ERR_HTTP_RESPONSE_CODE_FAILURE, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelFetcher."
+      "GetModelsResponse.NetErrorCode.PainfulPageLoad",
+      -net::ERR_HTTP_RESPONSE_CODE_FAILURE, 1);
+}
+
+// Tests 400 Bad Request response from request.
+TEST_F(PredictionModelFetcherTest, FetchReturned400) {
+  base::HistogramTester histogram_tester;
+  std::string response_content;
+
+  proto::ModelInfo model_info;
+  model_info.set_optimization_target(
+      proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
+  EXPECT_TRUE(FetchModels({model_info},
+                          proto::RequestContext::CONTEXT_BATCH_UPDATE_MODELS,
+                          "en-US"));
+  SimulateResponse(response_content, net::HTTP_BAD_REQUEST);
+  EXPECT_FALSE(models_fetched());
+  EXPECT_EQ(PredictionModelFetchError::kNotRetryable, last_fetch_error());
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelFetcher."
+      "GetModelsResponse.Status",
+      net::HTTP_BAD_REQUEST, 1);
 
   // Net error codes are negative but UMA histograms require positive values.
   histogram_tester.ExpectUniqueSample(
@@ -160,6 +198,7 @@ TEST_F(PredictionModelFetcherTest, FetchReturnBadResponse) {
   VerifyHasPendingFetchRequests();
   EXPECT_TRUE(SimulateResponse(response_content, net::HTTP_OK));
   EXPECT_FALSE(models_fetched());
+  EXPECT_EQ(PredictionModelFetchError::kRetryable, last_fetch_error());
 }
 
 TEST_F(PredictionModelFetcherTest, EmptyModelInfo) {
@@ -170,6 +209,7 @@ TEST_F(PredictionModelFetcherTest, EmptyModelInfo) {
                            "en-US"));
 
   EXPECT_FALSE(models_fetched());
+  EXPECT_EQ(PredictionModelFetchError::kRetryable, last_fetch_error());
 }
 
 }  // namespace optimization_guide

@@ -195,4 +195,40 @@ TEST_F(PredictionModelFetchTimerTest, NewRegistrationFetchEnabled) {
                 ->GetCurrentDelay());
 }
 
+TEST_F(PredictionModelFetchTimerTest, ModelFetchNonRetryableFailure) {
+  prediction_model_fetch_timer_->MaybeScheduleFirstModelFetch();
+  MoveClockTillFirstModelFetch();
+  EXPECT_TRUE(last_model_fetch_time_);
+  last_model_fetch_time_ = std::nullopt;
+
+  // On initial failure without non-retryable notice, the timer uses retry delay.
+  prediction_model_fetch_timer_->NotifyModelFetchAttempt();
+  prediction_model_fetch_timer_->SchedulePeriodicModelsFetch();
+  EXPECT_EQ(features::PredictionModelFetchRetryDelay(),
+            prediction_model_fetch_timer_->GetFetchTimerForTesting()
+                ->GetCurrentDelay());
+
+  // Notify of a non-retryable failure (e.g. HTTP 400 Bad Request).
+  prediction_model_fetch_timer_->NotifyModelFetchNonRetryableFailure();
+  EXPECT_TRUE(
+      prediction_model_fetch_timer_->IsLastFetchErrorNonRetryableForTesting());
+  EXPECT_EQ(features::PredictionModelFetchInterval(),
+            prediction_model_fetch_timer_->GetFetchTimerForTesting()
+                ->GetCurrentDelay());
+
+  // Advancing by retry delay should NOT trigger a fetch.
+  MoveClockForwardBy(features::PredictionModelFetchRetryDelay() +
+                     features::PredictionModelFetchRandomMaxDelay());
+  EXPECT_FALSE(last_model_fetch_time_);
+
+  // Advancing by the full interval triggers the next periodic fetch attempt.
+  MoveClockForwardBy(features::PredictionModelFetchInterval());
+  EXPECT_TRUE(last_model_fetch_time_);
+
+  // Attempting the next fetch resets the non-retryable error state.
+  prediction_model_fetch_timer_->NotifyModelFetchAttempt();
+  EXPECT_FALSE(
+      prediction_model_fetch_timer_->IsLastFetchErrorNonRetryableForTesting());
+}
+
 }  // namespace optimization_guide

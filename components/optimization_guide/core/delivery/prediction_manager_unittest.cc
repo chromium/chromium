@@ -91,15 +91,14 @@ proto::PredictionModel CreatePredictionModelForGetModelsResponse(
   return prediction_model;
 }
 
-std::unique_ptr<proto::GetModelsResponse> BuildGetModelsResponse(
+proto::GetModelsResponse BuildGetModelsResponse(
     std::set<proto::OptimizationTarget> optimization_targets) {
-  std::unique_ptr<proto::GetModelsResponse> get_models_response =
-      std::make_unique<proto::GetModelsResponse>();
+  proto::GetModelsResponse get_models_response;
 
   for (const auto& optimization_target : optimization_targets) {
     proto::PredictionModel prediction_model =
         CreatePredictionModelForGetModelsResponse(optimization_target);
-    *get_models_response->add_models() = std::move(prediction_model);
+    *get_models_response.add_models() = std::move(prediction_model);
   }
 
   return get_models_response;
@@ -206,6 +205,7 @@ enum class PredictionModelFetcherEndState {
   kFetchFailed = 0,
   kFetchSuccessWithModels = 1,
   kFetchSuccessWithEmptyResponse = 2,
+  kFetchFailedWithBadRequest = 3,
 };
 
 // A mock class implementation of PredictionModelFetcherImpl.
@@ -228,29 +228,32 @@ class TestPredictionModelFetcher : public PredictionModelFetcherImpl {
       const std::string& locale,
       ModelsFetchedCallback models_fetched_callback) override {
     if (!ValidateModelsInfoForFetch(models_request_info)) {
-      std::move(models_fetched_callback).Run(nullptr);
+      std::move(models_fetched_callback)
+          .Run(base::unexpected(PredictionModelFetchError::kRetryable));
       return false;
     }
 
-    std::unique_ptr<proto::GetModelsResponse> get_models_response;
+    base::expected<proto::GetModelsResponse, PredictionModelFetchError> result;
     locale_requested_ = locale;
     switch (fetch_state_) {
       case PredictionModelFetcherEndState::kFetchFailed:
-        get_models_response = nullptr;
+        result = base::unexpected(PredictionModelFetchError::kRetryable);
+        break;
+      case PredictionModelFetcherEndState::kFetchFailedWithBadRequest:
+        result = base::unexpected(PredictionModelFetchError::kNotRetryable);
         break;
       case PredictionModelFetcherEndState::kFetchSuccessWithModels:
         models_fetched_ = true;
-        get_models_response =
-            BuildGetModelsResponse(success_fetch_optimization_targets_);
+        result = BuildGetModelsResponse(success_fetch_optimization_targets_);
         break;
       case PredictionModelFetcherEndState::kFetchSuccessWithEmptyResponse:
         models_fetched_ = true;
-        get_models_response = std::make_unique<proto::GetModelsResponse>();
+        result = proto::GetModelsResponse();
         break;
     }
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(models_fetched_callback),
-                                  std::move(get_models_response)));
+        FROM_HERE,
+        base::BindOnce(std::move(models_fetched_callback), std::move(result)));
     return true;
   }
 
@@ -1196,6 +1199,39 @@ TEST_F(PredictionManagerTest, ModelFetcherTimerRetryDelay) {
           PredictionModelFetcherEndState::kFetchSuccessWithModels));
 
   MoveClockForwardBy(base::Seconds(kTestFetchRetryDelaySecs));
+  EXPECT_TRUE(prediction_model_fetcher()->models_fetched());
+}
+
+TEST_F(PredictionManagerTest, ModelFetcherTimerRetryDelayOnBadRequest) {
+  CreatePredictionManager();
+  prediction_manager()->SetPredictionModelFetcherForTesting(
+      BuildTestPredictionModelFetcher(
+          PredictionModelFetcherEndState::kFetchFailedWithBadRequest));
+
+  FakeOptimizationTargetModelObserver observer;
+  prediction_manager()->AddObserverForOptimizationTargetModel(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, std::nullopt, task_runner(),
+      &observer);
+
+  SetStoreInitialized();
+  EXPECT_FALSE(prediction_model_fetcher()->models_fetched());
+
+  // Fast forward by retry delay: HTTP 400 Bad Request is non-retryable, so no
+  // retry should occur after the fast retry delay.
+  MoveClockForwardBy(base::Seconds(kTestFetchRetryDelaySecs));
+  EXPECT_FALSE(prediction_model_fetcher()->models_fetched());
+
+  // Set the fetcher to succeed on the next attempt.
+  prediction_manager()->SetPredictionModelFetcherForTesting(
+      BuildTestPredictionModelFetcher(
+          PredictionModelFetcherEndState::kFetchSuccessWithModels));
+
+  // Fast forward again by the fast retry delay: still should not have fetched.
+  MoveClockForwardBy(base::Seconds(kTestFetchRetryDelaySecs));
+  EXPECT_FALSE(prediction_model_fetcher()->models_fetched());
+
+  // Fast forward by the periodic update time: fetch should now occur and succeed.
+  MoveClockForwardBy(base::Seconds(kUpdateFetchModelAndFeaturesTimeSecs));
   EXPECT_TRUE(prediction_model_fetcher()->models_fetched());
 }
 
