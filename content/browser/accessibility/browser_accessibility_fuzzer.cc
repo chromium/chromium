@@ -101,10 +101,12 @@ ax::mojom::Role GetInterestingRole(FuzzedDataProvider& fdp) {
 // Currently we're messing with ignored and invisible because that
 // affects a lot of the tree walking code.
 void AddStates(FuzzedDataProvider& fdp, ui::AXNodeData* node) {
-  if (fdp.ConsumeBool())
+  if (fdp.ConsumeBool()) {
     node->AddState(ax::mojom::State::kIgnored);
-  if (fdp.ConsumeBool())
+  }
+  if (fdp.ConsumeBool()) {
     node->AddState(ax::mojom::State::kInvisible);
+  }
 }
 
 // Construct an accessibility tree. The shape of the tree is static, but
@@ -170,14 +172,16 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     AddStates(fdp, &tree.nodes[i]);
   }
 
-  for (int i = 0; i < num_nodes; i++)
+  for (int i = 0; i < num_nodes; i++) {
     tree.nodes[i].SetName(fdp.ConsumeRandomLengthString(5));
+  }
 
   // Optionally, embed the child tree in the parent tree.
   int embedder_node = fdp.ConsumeIntegralInRange(0, num_nodes);
-  if (embedder_node > 0)
+  if (embedder_node > 0) {
     tree.nodes[embedder_node - 1].AddStringAttribute(
         ax::mojom::StringAttribute::kChildTreeId, child_tree_id.ToString());
+  }
 
   VLOG(1) << tree.ToString();
 
@@ -234,10 +238,12 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   search.SetImmediateDescendantsOnly(fdp.ConsumeBool());
   search.SetCanWrapToLastElement(fdp.ConsumeBool());
   search.SetOnscreenOnly(fdp.ConsumeBool());
-  if (fdp.ConsumeBool())
+  if (fdp.ConsumeBool()) {
     search.AddPredicate(ui::AccessibilityButtonPredicate);
-  if (fdp.ConsumeBool())
+  }
+  if (fdp.ConsumeBool()) {
     search.SetSearchText(fdp.ConsumeRandomLengthString(5));
+  }
   size_t matches = search.CountMatches();
   for (size_t i = 0; i < matches; i++) {
     results.push_back(search.GetMatchAtIndex(i));

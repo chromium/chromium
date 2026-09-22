@@ -261,7 +261,7 @@ fuzzer_test("speech_audio_encoder_fuzzer") {
 }
 
 fuzzer_test("browser_accessibility_fuzzer") {
-  sources = [ "browser_accessibility_fuzzer.cc" ]
+  sources = [ "../../browser/accessibility/browser_accessibility_fuzzer.cc" ]
   deps = [
     "//content/app:for_content_tests",
     "//content/browser",
