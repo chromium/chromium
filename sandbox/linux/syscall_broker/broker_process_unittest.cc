@@ -455,6 +455,72 @@ TEST(BrokerProcess, OpenCpuinfoNoClientCheckRecursive) {
   // expected.
 }
 
+void TestOpenDirectory(bool fast_check_in_client) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(
+      temp_dir.CreateUniqueTempDirUnderPath(base::FilePath(kTempDirForTests)));
+  const std::string temp_dir_str = temp_dir.GetPath().MaybeAsASCII();
+  ASSERT_FALSE(temp_dir_str.empty());
+
+  base::FilePath sub_dir_path = temp_dir.GetPath().AppendASCII("sub");
+  ASSERT_TRUE(base::CreateDirectory(sub_dir_path));
+  const std::string sub_dir_str = sub_dir_path.MaybeAsASCII();
+  ASSERT_FALSE(sub_dir_str.empty());
+
+  base::FilePath file_path = temp_dir.GetPath().AppendASCII("file");
+  ASSERT_TRUE(base::WriteFile(file_path, "data"));
+  const std::string file_str = file_path.MaybeAsASCII();
+  ASSERT_FALSE(file_str.empty());
+
+  BrokerCommandSet command_set = MakeBrokerCommandSet({COMMAND_OPEN});
+  std::vector<BrokerFilePermission> permissions = {
+      BrokerFilePermission::ReadWriteCreateRecursive(temp_dir_str + "/")};
+  auto policy = std::make_optional<BrokerSandboxConfig>(
+      command_set, permissions, kFakeErrnoSentinel);
+  BrokerProcess open_broker(std::move(policy), BrokerType::SIGNAL_BASED,
+                            fast_check_in_client);
+  ASSERT_TRUE(open_broker.Fork(base::BindOnce(&NoOpCallback)));
+
+  // Regular files under the recursive prefix open normally.
+  int fd =
+      open_broker.GetBrokerClientSignalBased()->Open(file_str.c_str(), O_RDWR);
+  EXPECT_GE(fd, 0);
+  if (fd >= 0) {
+    EXPECT_EQ(0, IGNORE_EINTR(close(fd)));
+  }
+
+  // Opening a directory under the recursive prefix is allowed.
+  fd = open_broker.GetBrokerClientSignalBased()->Open(sub_dir_str.c_str(),
+                                                      O_RDONLY);
+  EXPECT_GE(fd, 0);
+  if (fd >= 0) {
+    EXPECT_EQ(0, IGNORE_EINTR(close(fd)));
+  }
+  fd = open_broker.GetBrokerClientSignalBased()->Open(sub_dir_str.c_str(),
+                                                      O_RDONLY | O_DIRECTORY);
+  EXPECT_GE(fd, 0);
+  if (fd >= 0) {
+    EXPECT_EQ(0, IGNORE_EINTR(close(fd)));
+  }
+
+  // The recursive root itself, reached via a "/." suffix, is rejected.
+  fd = open_broker.GetBrokerClientSignalBased()->Open(
+      (temp_dir_str + "/.").c_str(), O_RDONLY);
+  EXPECT_EQ(fd, -kFakeErrnoSentinel);
+}
+
+TEST(BrokerProcess, OpenDirectoryClient) {
+  TestOpenDirectory(true /* fast_check_in_client */);
+  // Don't do anything here, so that ASSERT works in the subfunction as
+  // expected.
+}
+
+TEST(BrokerProcess, OpenDirectoryHost) {
+  TestOpenDirectory(false /* fast_check_in_client */);
+  // Don't do anything here, so that ASSERT works in the subfunction as
+  // expected.
+}
+
 TEST(BrokerProcess, OpenFileRW) {
   ScopedTemporaryFile tempfile;
   const char* tempfile_name = tempfile.full_file_name();
