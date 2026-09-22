@@ -209,6 +209,7 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
 
   void OnScreensharePickerOpened();
   void OnScreensharePickerClosed();
+  bool CancelChromeDefaultPicker(Profile* target_profile = nullptr);
 
   void ShowScreenshotDisclosureDialog(
       base::OnceClosure on_accepted,
@@ -383,6 +384,7 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   bool is_screenshare_picker_open_ = false;
   bool is_screenshare_disclosure_open_ = false;
   bool is_permission_prompt_open_ = false;
+  bool suppress_restore_on_screenshare_picker_closed_ = false;
   bool is_dragging_ = false;
   // Re-entrancy guard to prevent recursive closing or processing deactivation
   // events while Close() is executing synchronously on the stack.

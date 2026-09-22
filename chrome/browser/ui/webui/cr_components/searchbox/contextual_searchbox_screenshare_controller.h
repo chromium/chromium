@@ -124,6 +124,7 @@ class ContextualSearchboxScreenshareController {
   void StartScreenshare(bool prefer_entire_screen,
                         StartScreenshareCallback callback);
   void CaptureRegionScreenshot(CaptureRegionScreenshotCallback callback);
+  bool CancelChromeDefaultPicker();
   void OnScreenshotMenuClosed();
 
   Delegate* delegate() const { return delegate_; }
@@ -139,6 +140,12 @@ class ContextualSearchboxScreenshareController {
   void set_screen_capture_delay_for_testing(
       std::optional<base::TimeDelta> delay) {
     screen_capture_delay_for_testing_ = delay;
+  }
+  bool IsScreenshareInProgressForTesting() const {
+    return IsScreenshareInProgress();
+  }
+  DesktopMediaPickerController* screenshare_picker_controller_for_testing() {
+    return screenshare_picker_controller_.get();
   }
 #endif
 

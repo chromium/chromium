@@ -43,6 +43,7 @@
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/views/test/widget_activation_waiter.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -238,13 +239,98 @@ TEST_F(OmniboxEverywhereControllerTest, OnInvokeEphemeralModeToggling) {
   EXPECT_TRUE(controller.IsVisible());
 }
 
-// Tests that invocations are ignored while a screenshot picker (the native OS
-// screen picker or Chrome's default desktop media picker) is on screen, so the
-// widget cannot be summoned on top of the picker.
+// Tests that invoking while Chrome's default screen picker is open cancels the
+// screenshare flow, dismisses the picker, and restores the widget.
 TEST_F(OmniboxEverywhereControllerTest,
-       OnInvokeIgnoredDuringScreensharePicker) {
+       OnInvokeCancelsScreenshareCaptureFlowEphemeralMode) {
   TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetBoolean(
       omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, true);
+
+  base::HistogramTester histogram_tester;
+  FakeGlobalAcceleratorListener fake_listener;
+  omnibox_everywhere::OmniboxEverywhereController controller(
+      base::BindRepeating(
+          [](Profile* profile) -> std::unique_ptr<WebUIContentsWrapper> {
+            return std::make_unique<TestWebUIContentsWrapper>(profile);
+          }),
+      &fake_listener);
+
+  controller.OnInvoke(omnibox_everywhere::InvocationSource::kGlobalHotkey,
+                      profile_.get(), GetContext());
+  ASSERT_TRUE(controller.IsVisible());
+  histogram_tester.ExpectBucketCount(
+      "OmniboxEverywhere.InvocationSource",
+      omnibox_everywhere::InvocationSource::kGlobalHotkey, 1);
+
+  // Opening the picker hides the widget for the duration of the capture flow.
+  controller.ui_manager()->OnScreensharePickerOpened();
+  ASSERT_TRUE(controller.ui_manager()->IsScreenshareCaptureInProgress());
+  EXPECT_FALSE(controller.IsVisible());
+
+  // Invoking (e.g. via hotkey) while the default picker is up cancels
+  // screenshare, records the metric, and restores the widget.
+  controller.OnInvoke(omnibox_everywhere::InvocationSource::kGlobalHotkey,
+                      profile_.get(), GetContext());
+  EXPECT_FALSE(controller.ui_manager()->IsScreenshareCaptureInProgress());
+  EXPECT_TRUE(controller.IsVisible());
+  histogram_tester.ExpectBucketCount(
+      "OmniboxEverywhere.InvocationSource",
+      omnibox_everywhere::InvocationSource::kGlobalHotkey, 2);
+
+  // Now that the widget is visible again, invoking again dismisses/hides it.
+  controller.OnInvoke(omnibox_everywhere::InvocationSource::kGlobalHotkey,
+                      profile_.get(), GetContext());
+  EXPECT_FALSE(controller.IsVisible());
+}
+
+TEST_F(OmniboxEverywhereControllerTest,
+       OnInvokeCancelsScreenshareCaptureFlowPersistentMode) {
+  TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetBoolean(
+      omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, false);
+
+  base::HistogramTester histogram_tester;
+  FakeGlobalAcceleratorListener fake_listener;
+  omnibox_everywhere::OmniboxEverywhereController controller(
+      base::BindRepeating(
+          [](Profile* profile) -> std::unique_ptr<WebUIContentsWrapper> {
+            return std::make_unique<TestWebUIContentsWrapper>(profile);
+          }),
+      &fake_listener);
+
+  controller.OnInvoke(omnibox_everywhere::InvocationSource::kGlobalHotkey,
+                      profile_.get(), GetContext());
+  ASSERT_TRUE(controller.IsVisible());
+  ASSERT_TRUE(controller.ui_manager()->IsActive());
+  histogram_tester.ExpectBucketCount(
+      "OmniboxEverywhere.InvocationSource",
+      omnibox_everywhere::InvocationSource::kGlobalHotkey, 1);
+
+  // Opening the picker hides the widget for the duration of the capture flow.
+  controller.ui_manager()->OnScreensharePickerOpened();
+  ASSERT_TRUE(controller.ui_manager()->IsScreenshareCaptureInProgress());
+  EXPECT_FALSE(controller.IsVisible());
+
+  // Invoking via status tray icon cancels screenshare, records metric, and
+  // restores the widget.
+  controller.OnInvoke(omnibox_everywhere::InvocationSource::kStatusTrayIcon,
+                      profile_.get(), GetContext());
+  EXPECT_FALSE(controller.ui_manager()->IsScreenshareCaptureInProgress());
+  EXPECT_TRUE(controller.IsVisible());
+  EXPECT_TRUE(controller.ui_manager()->IsActive());
+  histogram_tester.ExpectBucketCount(
+      "OmniboxEverywhere.InvocationSource",
+      omnibox_everywhere::InvocationSource::kStatusTrayIcon, 1);
+}
+
+TEST_F(OmniboxEverywhereControllerTest,
+       OnInvokeCancelsChromeDefaultPickerAndSwitchesProfile) {
+  TestingProfile profile2;
+  TemplateURLServiceFactoryTestUtil util2(&profile2);
+  util2.VerifyLoad();
+  TemplateURLData data;
+  data.SetURL("https://www.google.com/search?q={searchTerms}");
+  util2.model()->SetUserSelectedDefaultSearchProvider(
+      util2.model()->Add(std::make_unique<TemplateURL>(data)));
 
   FakeGlobalAcceleratorListener fake_listener;
   omnibox_everywhere::OmniboxEverywhereController controller(
@@ -257,33 +343,64 @@ TEST_F(OmniboxEverywhereControllerTest,
   controller.OnInvoke(omnibox_everywhere::InvocationSource::kGlobalHotkey,
                       profile_.get(), GetContext());
   ASSERT_TRUE(controller.IsVisible());
+  EXPECT_EQ(profile_.get(), controller.target_profile());
 
   // Opening the picker hides the widget for the duration of the capture flow.
   controller.ui_manager()->OnScreensharePickerOpened();
   ASSERT_TRUE(controller.ui_manager()->IsScreenshareCaptureInProgress());
   EXPECT_FALSE(controller.IsVisible());
 
-  // No entry point may re-show the widget while the picker is up.
-  controller.OnInvoke(omnibox_everywhere::InvocationSource::kGlobalHotkey,
-                      profile_.get(), GetContext());
-  EXPECT_FALSE(controller.IsVisible());
-
+  // Invoking with profile2 cancels the picker and switches to profile2.
   controller.OnInvoke(omnibox_everywhere::InvocationSource::kStatusTrayIcon,
-                      profile_.get(), GetContext());
-  EXPECT_FALSE(controller.IsVisible());
-
-  controller.OnInvoke(omnibox_everywhere::InvocationSource::kCommandLine,
-                      profile_.get(), GetContext());
-  EXPECT_FALSE(controller.IsVisible());
-
-  // Closing the picker restores the widget and re-enables invocations.
-  controller.ui_manager()->OnScreensharePickerClosed();
+                      &profile2, GetContext());
   EXPECT_FALSE(controller.ui_manager()->IsScreenshareCaptureInProgress());
   EXPECT_TRUE(controller.IsVisible());
+  EXPECT_EQ(&profile2, controller.target_profile());
+  EXPECT_EQ(&profile2, controller.ui_manager()->profile());
+}
+
+TEST_F(OmniboxEverywhereControllerTest,
+       OnInvokeIgnoredDuringRegionSelectOverlay) {
+  using RegionCaptureSource =
+      omnibox_everywhere::OmniboxEverywhereUIManager::RegionCaptureSource;
+
+  base::HistogramTester histogram_tester;
+  FakeGlobalAcceleratorListener fake_listener;
+  omnibox_everywhere::OmniboxEverywhereController controller(
+      base::BindRepeating(
+          [](Profile* profile) -> std::unique_ptr<WebUIContentsWrapper> {
+            return std::make_unique<TestWebUIContentsWrapper>(profile);
+          }),
+      &fake_listener);
 
   controller.OnInvoke(omnibox_everywhere::InvocationSource::kGlobalHotkey,
                       profile_.get(), GetContext());
-  EXPECT_FALSE(controller.IsVisible());
+  ASSERT_TRUE(controller.IsVisible());
+  histogram_tester.ExpectBucketCount(
+      "OmniboxEverywhere.InvocationSource",
+      omnibox_everywhere::InvocationSource::kGlobalHotkey, 1);
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(100, 100);
+  bitmap.eraseColor(SK_ColorRED);
+
+  base::test::TestFuture<const SkBitmap&> future;
+  controller.ui_manager()->ShowRegionSelectOverlay(
+      bitmap, RegionCaptureSource::AllDisplays(), future.GetCallback());
+  ASSERT_TRUE(controller.ui_manager()->IsScreenshareCaptureInProgress());
+
+  // Invoking while region selection overlay is active must be ignored.
+  controller.OnInvoke(omnibox_everywhere::InvocationSource::kGlobalHotkey,
+                      profile_.get(), GetContext());
+  EXPECT_TRUE(controller.ui_manager()->IsScreenshareCaptureInProgress());
+  EXPECT_FALSE(future.IsReady());
+  // No additional invocation metric recorded.
+  histogram_tester.ExpectBucketCount(
+      "OmniboxEverywhere.InvocationSource",
+      omnibox_everywhere::InvocationSource::kGlobalHotkey, 1);
+
+  controller.ui_manager()->Shutdown();
+  EXPECT_TRUE(future.IsReady());
 }
 
 // Tests that invoking in persistent mode toggles between floating active and

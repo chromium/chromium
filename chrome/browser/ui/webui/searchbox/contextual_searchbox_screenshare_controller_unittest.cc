@@ -837,6 +837,40 @@ TEST_F(ContextualSearchboxScreenshareControllerTest,
   EXPECT_TRUE(future.Get().has_value());
   EXPECT_EQ(*future.Get(), expected_token);
 }
+
+TEST_F(ContextualSearchboxScreenshareControllerTest,
+       CancelChromeDefaultPicker_CancelsPickerAndNotifiesClosed) {
+  base::RepeatingClosure on_destroying;
+  DesktopMediaPicker::DoneCallback done_callback;
+  ControlledDesktopMediaPickerFactory picker_factory(&on_destroying,
+                                                     &done_callback);
+  CreateController(&picker_factory);
+
+  EXPECT_CALL(delegate(), OnScreensharePickerOpened());
+  EXPECT_CALL(delegate(), OnScreensharePickerClosed());
+
+  base::test::TestFuture<const std::optional<base::UnguessableToken>&> future;
+  controller().StartScreenshare(/*prefer_entire_screen=*/false,
+                                future.GetCallback());
+  EXPECT_TRUE(controller().screenshare_picker_controller_for_testing());
+  EXPECT_TRUE(controller().IsScreenshareInProgressForTesting());
+
+  EXPECT_TRUE(controller().CancelChromeDefaultPicker());
+  EXPECT_FALSE(controller().screenshare_picker_controller_for_testing());
+  EXPECT_FALSE(controller().IsScreenshareInProgressForTesting());
+  EXPECT_FALSE(future.Get().has_value());
+}
+
+TEST_F(ContextualSearchboxScreenshareControllerTest,
+       CancelChromeDefaultPicker_NoOpWhenNoPickerOpen) {
+  CreateController();
+  EXPECT_CALL(delegate(), OnScreensharePickerClosed()).Times(0);
+
+  EXPECT_FALSE(controller().IsScreenshareInProgressForTesting());
+  EXPECT_FALSE(controller().CancelChromeDefaultPicker());
+  EXPECT_FALSE(controller().IsScreenshareInProgressForTesting());
+}
+
 TEST_F(ContextualSearchboxScreenshareControllerTest,
        CaptureRegionScreenshot_NativePicker_Success) {
   if (base::mac::MacOSMajorVersion() < 14) {
