@@ -60,7 +60,7 @@ ExternalTextureSource GetExternalTextureSourceFromVideoFrame(
     VideoFrame* frame,
     ExceptionState& exception_state);
 
-ExternalTexture CreateExternalTexture(
+std::optional<ExternalTexture> CreateExternalTexture(
     GPUDevice* device,
     PredefinedColorSpace dst_predefined_color_space,
     scoped_refptr<media::VideoFrame> media_video_frame);
