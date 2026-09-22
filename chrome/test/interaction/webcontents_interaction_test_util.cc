@@ -1181,7 +1181,7 @@ views::WebView* TabWebContentsInteractionTestUtil::GetWebView() const {
     return nullptr;
   }
 
-  return browser_view->contents_web_view();
+  return browser_view->contents_web_view_for_testing();
 }
 
 ui::ElementContext TabWebContentsInteractionTestUtil::GetElementContext()

@@ -348,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, BorderResize) {
   border_bounds_waiter.WaitForNonEmptyBounds();
 
   auto* contents_web_view =
-      BrowserView::GetBrowserViewForBrowser(browser())->contents_web_view();
+      BrowserView::GetBrowserViewForBrowser(browser())->GetContentsView();
   EXPECT_EQ(border->GetVisibleBounds(), contents_web_view->GetVisibleBounds());
 
   // Resize the browser view to closer to its minimum size.

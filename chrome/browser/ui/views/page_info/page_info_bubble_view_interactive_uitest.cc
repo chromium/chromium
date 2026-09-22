@@ -143,7 +143,7 @@ class WebContentsFocusTracker : public FocusTracker,
       return false;
     }
     return BrowserView::GetBrowserViewForBrowser(browser)
-        ->contents_web_view()
+        ->GetContentsView()
         ->HasFocus();
   }
 };

@@ -198,8 +198,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewFocusTest, BrowsersRememberFocus) {
   ASSERT_TRUE(widget2);
   const views::FocusManager* focus_manager2 = widget2->GetFocusManager();
   ASSERT_TRUE(focus_manager2);
-  EXPECT_EQ(browser_view2->contents_web_view(),
-            focus_manager2->GetFocusedView());
+  EXPECT_EQ(browser_view2->GetContentsView(), focus_manager2->GetFocusedView());
 
   // Switch to the 1st browser window, focus should still be on the location
   // bar and the second browser should have nothing focused.
@@ -213,8 +212,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewFocusTest, BrowsersRememberFocus) {
   views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
   ASSERT_TRUE(widget);
   EXPECT_EQ(nullptr, widget->GetFocusManager()->GetFocusedView());
-  EXPECT_EQ(browser_view2->contents_web_view(),
-            focus_manager2->GetFocusedView());
+  EXPECT_EQ(browser_view2->GetContentsView(), focus_manager2->GetFocusedView());
 
   // Close the 2nd browser to avoid a DCHECK().
   browser_view2->Close();

@@ -192,8 +192,8 @@ class NewTabPageTest : public InProcessBrowserTest,
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kVerifyPixels)) {
       views::ViewSkiaGoldPixelDiff pixel_diff(screenshot_prefix);
-      return pixel_diff.CompareViewScreenshot(
-          screenshot_name, browser_view_->contents_web_view());
+      return pixel_diff.CompareViewScreenshot(screenshot_name,
+                                              browser_view_->GetContentsView());
     }
 #endif
     return true;

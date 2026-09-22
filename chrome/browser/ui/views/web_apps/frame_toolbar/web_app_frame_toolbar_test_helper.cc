@@ -267,7 +267,7 @@ void WebAppFrameToolbarTestHelper::TestDraggableRegions() {
   // region is defined in the kTestHTML of WebAppFrameToolbarTestHelper's
   // LoadWindowControlsOverlayTestPageWithDataAndGetURL.
   gfx::Point draggable_point(100, 100);
-  views::View::ConvertPointToTarget(browser_view()->contents_web_view(),
+  views::View::ConvertPointToTarget(browser_view()->GetContentsView(),
                                     frame_view, &draggable_point);
 
   EXPECT_EQ(frame_view->NonClientHitTest(draggable_point), HTCAPTION);
@@ -278,7 +278,7 @@ void WebAppFrameToolbarTestHelper::TestDraggableRegions() {
   // Validate that a point marked "app-region: no-drag" within a draggable
   // region is not draggable.
   gfx::Point non_draggable_point(106, 106);
-  views::View::ConvertPointToTarget(browser_view()->contents_web_view(),
+  views::View::ConvertPointToTarget(browser_view()->GetContentsView(),
                                     frame_view, &non_draggable_point);
 
   EXPECT_EQ(frame_view->NonClientHitTest(non_draggable_point), HTCLIENT);

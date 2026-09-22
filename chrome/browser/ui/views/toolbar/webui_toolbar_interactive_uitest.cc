@@ -298,7 +298,7 @@ class WebUIToolbarPixelInteractiveUiTest : public InteractiveBrowserTest {
     // finishes loading during `WaitForLoadStop`.
     BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
     gfx::Point safe_page_center =
-        browser_view->contents_web_view()->GetBoundsInScreen().CenterPoint();
+        browser_view->GetContentsView()->GetBoundsInScreen().CenterPoint();
     ASSERT_TRUE(ui_test_utils::SendMouseMoveSync(safe_page_center));
 
     // Wait for the WebContents to finish loading before checking `IsLoading()`,

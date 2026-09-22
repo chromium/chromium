@@ -313,9 +313,7 @@ class BrowserViewTest : public InProcessBrowserTest {
         ->devtools_web_view();
   }
 
-  views::WebView* contents_web_view() {
-    return browser_view()->contents_web_view();
-  }
+  views::View* contents_web_view() { return browser_view()->GetContentsView(); }
 
   content::WebContents* active_web_contents() {
     return browser()->GetTabStripModel()->GetActiveWebContents();

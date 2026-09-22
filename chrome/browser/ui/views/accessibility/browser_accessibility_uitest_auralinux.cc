@@ -261,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(AuraLinuxAccessibilityInProcessBrowserTest,
   EXPECT_EQ(0, browser()->GetTabStripModel()->active_index());
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  views::WebView* webview = browser_view->contents_web_view();
+  views::View* webview = browser_view->GetContentsView();
   gfx::NativeViewAccessible accessible =
       webview->GetViewAccessibility().GetNativeObject();
 

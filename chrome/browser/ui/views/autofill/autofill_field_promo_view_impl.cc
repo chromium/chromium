@@ -25,7 +25,7 @@ views::View* GetContentsWebView(content::WebContents* web_contents) {
     return nullptr;
   }
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  return browser_view ? browser_view->contents_web_view() : nullptr;
+  return browser_view ? browser_view->GetContentsView() : nullptr;
 }
 
 }  // namespace

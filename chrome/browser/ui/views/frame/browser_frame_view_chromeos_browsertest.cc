@@ -164,7 +164,6 @@
 using BrowserFrameViewChromeOSTest =
     TopChromeMdParamTest<ChromeOSBrowserUITest>;
 
-
 class BrowserFrameViewChromeOSTestApi {
  public:
   explicit BrowserFrameViewChromeOSTestApi(BrowserFrameViewChromeOS* frame_view)
@@ -343,7 +342,6 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
 
 using BrowserFrameViewChromeOSTouchTest =
     TopChromeTouchTest<ChromeOSBrowserUITest>;
-
 
 // Test that the frame view does not do any painting in non-immersive
 // fullscreen.
@@ -653,11 +651,11 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, PageInfoBubblePosition) {
 
 IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, FocusableViews) {
   SetUpWebApp();
-  EXPECT_TRUE(browser_view_->contents_web_view()->HasFocus());
+  EXPECT_TRUE(browser_view_->GetContentsView()->HasFocus());
   browser_view_->GetFocusManager()->AdvanceFocus(false);
   EXPECT_TRUE(web_app_menu_button_->HasFocus());
   browser_view_->GetFocusManager()->AdvanceFocus(false);
-  EXPECT_TRUE(browser_view_->contents_web_view()->HasFocus());
+  EXPECT_TRUE(browser_view_->GetContentsView()->HasFocus());
 }
 
 IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest,
@@ -783,7 +781,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, MAYBE_ShowTranslateIcon) {
 IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest,
                        BrowserCommandFocusToolbarAppMenu) {
   SetUpWebApp();
-  EXPECT_TRUE(browser_view_->contents_web_view()->HasFocus());
+  EXPECT_TRUE(browser_view_->GetContentsView()->HasFocus());
 
   EXPECT_FALSE(web_app_menu_button_->HasFocus());
   chrome::ExecuteCommand(app_browser_, IDC_FOCUS_TOOLBAR);
@@ -802,7 +800,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest,
   // visible and nonzero size).
   RunScheduledLayouts();
 
-  EXPECT_TRUE(browser_view_->contents_web_view()->HasFocus());
+  EXPECT_TRUE(browser_view_->GetContentsView()->HasFocus());
   EXPECT_FALSE(web_app_menu_button_->HasFocus());
   EXPECT_FALSE(geolocation_icon->HasFocus());
 
@@ -825,7 +823,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, BrowserCommandShowAppMenu) {
 IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest,
                        BrowserCommandFocusNextPane) {
   SetUpWebApp();
-  EXPECT_TRUE(browser_view_->contents_web_view()->HasFocus());
+  EXPECT_TRUE(browser_view_->GetContentsView()->HasFocus());
   EXPECT_FALSE(web_app_menu_button_->HasFocus());
   chrome::ExecuteCommand(app_browser_, IDC_FOCUS_NEXT_PANE);
   EXPECT_TRUE(web_app_menu_button_->HasFocus());
@@ -842,7 +840,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, IconNotShownButTitleShown) {
 // Tests that the custom tab bar is focusable from the keyboard.
 IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, CustomTabBarIsFocusable) {
   SetUpWebApp();
-  EXPECT_TRUE(browser_view_->contents_web_view()->HasFocus());
+  EXPECT_TRUE(browser_view_->GetContentsView()->HasFocus());
 
   auto* browser_view = BrowserView::GetBrowserViewForBrowser(app_browser_);
 
@@ -865,7 +863,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, CustomTabBarIsFocusable) {
 IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest,
                        BrowserCommandFocusPreviousPane) {
   SetUpWebApp();
-  EXPECT_TRUE(browser_view_->contents_web_view()->HasFocus());
+  EXPECT_TRUE(browser_view_->GetContentsView()->HasFocus());
   EXPECT_FALSE(web_app_menu_button_->HasFocus());
   chrome::ExecuteCommand(app_browser_, IDC_FOCUS_PREVIOUS_PANE);
   EXPECT_TRUE(web_app_menu_button_->HasFocus());
@@ -1831,7 +1829,6 @@ class BrowserFrameViewAshAvatarTest : public BrowserFrameViewChromeOSTest {
   }
 
  private:
-
   ash::DeviceStateMixin device_state_{
       &mixin_host_,
       ash::DeviceStateMixin::State::OOBE_COMPLETED_PERMANENTLY_UNOWNED};
@@ -2220,8 +2217,8 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewAshThemeChangeTest, ThemeChange) {
   ASSERT_TRUE(web_contents);
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
-  auto* contents_web_view =
-      BrowserView::GetBrowserViewForBrowser(browser)->contents_web_view();
+  auto* contents_web_view = BrowserView::GetBrowserViewForBrowser(browser)
+                                ->contents_web_view_for_testing();
 
   // Verify background color is immediately resolved from the app controller
   // despite the fact that the web contents background color hasn't loaded

@@ -4750,7 +4750,7 @@ int BrowserView::NonClientHitTest(const gfx::Point& point) {
       controller->draggable_region().has_value()) {
     // Draggable regions are defined relative to the web contents.
     gfx::Point point_in_contents_web_view_coords(point_in_browser_view_coords);
-    views::View::ConvertPointToTarget(this, contents_web_view(),
+    views::View::ConvertPointToTarget(this, GetContentsView(),
                                       &point_in_contents_web_view_coords);
 
     if (controller->draggable_region()->contains(

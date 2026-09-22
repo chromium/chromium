@@ -96,7 +96,7 @@ void BackForwardButton::NotifyClick(const ui::Event& event) {
   // If the focus is on web content the screen reader will announce the page
   // load; if not we want to make sure that something is still announced.
   if (GetFocusManager()->GetFocusedView() !=
-      BrowserView::GetBrowserViewForBrowser(browser_)->contents_web_view()) {
+      BrowserView::GetBrowserViewForBrowser(browser_)->GetContentsView()) {
     const std::u16string message = GetAccessiblePageLoadingMessage();
     if (!message.empty()) {
       GetViewAccessibility().AnnounceText(message);

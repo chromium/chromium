@@ -41,7 +41,7 @@ views::Widget* OpenLensRegionSearchInstructions(
   CHECK(browser_view);
   // Our anchor should be the browser view's top container view. This makes sure
   // that we account for side panel width and the top container view.
-  views::View* anchor = browser_view->contents_web_view();
+  views::View* anchor = browser_view->GetContentsView();
 
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
   lens::LensRegionSearchInstructionsView::LayoutParams layout_params{

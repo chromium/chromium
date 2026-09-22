@@ -186,7 +186,7 @@ class SendTabToSelfTutorialInteractiveUiTest : public InteractiveBrowserTest {
     return Do([this, id]() {
       auto* const browser_view =
           BrowserView::GetBrowserViewForBrowser(browser());
-      views::View* const view = browser_view->contents_web_view()->AddChildView(
+      views::View* const view = browser_view->GetContentsView()->AddChildView(
           std::make_unique<views::View>());
       view->SetProperty(views::kElementIdentifierKey, id);
     });

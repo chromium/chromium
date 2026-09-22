@@ -304,7 +304,7 @@ class BrowserView : public BrowserWindow,
   // Will return the single active contents view. If side by side is enabled,
   // it may make more sense to use GetAllVisibleContentsWebViews() depending on
   // the use case.
-  ContentsWebView* contents_web_view() {
+  ContentsWebView* contents_web_view_for_testing() {
     return static_cast<ContentsWebView*>(GetContentsView());
   }
 

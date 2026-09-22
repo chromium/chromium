@@ -156,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
   LaunchAppBrowser();
   TabStrip* tabstrip = browser_view()->horizontal_tab_strip_for_testing();
   ToolbarView* toolbar = browser_view()->toolbar();
-  views::WebView* contents_web_view = browser_view()->contents_web_view();
+  views::View* contents_web_view = browser_view()->GetContentsView();
   views::View* top_container = browser_view()->top_container();
 
   // Immersive fullscreen starts out disabled.
@@ -517,7 +517,8 @@ class ImmersiveModeControllerChromeosTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosTest, Layout) {
   TabStrip* tabstrip = browser_view()->horizontal_tab_strip_for_testing();
   ToolbarView* toolbar = browser_view()->toolbar();
-  views::WebView* contents_web_view = browser_view()->contents_web_view();
+  views::WebView* contents_web_view =
+      browser_view()->contents_web_view_for_testing();
 
   // Immersive fullscreen starts out disabled.
   ASSERT_FALSE(browser_view()->GetWidget()->IsFullscreen());
@@ -528,8 +529,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosTest, Layout) {
   EXPECT_TRUE(toolbar->GetVisible());
   if (!base::FeatureList::IsEnabled(
           views::features::kNativeViewHostManagesLayers)) {
-    EXPECT_EQ(
-        0, browser_view()->contents_web_view()->holder()->GetHitTestTopInset());
+    EXPECT_EQ(0, contents_web_view->holder()->GetHitTestTopInset());
   }
 
   ChromeOSBrowserUITest::EnterImmersiveFullscreenMode(browser());
@@ -549,8 +549,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosTest, Layout) {
   EXPECT_EQ(0, GetBoundsInWidget(browser_view()->top_container()).bottom());
   if (!base::FeatureList::IsEnabled(
           views::features::kNativeViewHostManagesLayers)) {
-    EXPECT_EQ(
-        0, browser_view()->contents_web_view()->holder()->GetHitTestTopInset());
+    EXPECT_EQ(0, contents_web_view->holder()->GetHitTestTopInset());
   }
 
   // Since the tab strip and tool bar are both hidden in immersive fullscreen
@@ -565,8 +564,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosTest, Layout) {
   EXPECT_TRUE(toolbar->GetVisible());
   if (!base::FeatureList::IsEnabled(
           views::features::kNativeViewHostManagesLayers)) {
-    EXPECT_NE(
-        0, browser_view()->contents_web_view()->holder()->GetHitTestTopInset());
+    EXPECT_EQ(0, contents_web_view->holder()->GetHitTestTopInset());
   }
 
   // The TopContainerView should be flush with the top edge of the widget. If
@@ -580,7 +578,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosTest, Layout) {
 
   // Repeat the test for when in both immersive fullscreen and tab fullscreen.
   ChromeOSBrowserUITest::EnterTabFullscreenMode(
-      browser(), browser_view()->contents_web_view()->GetWebContents());
+      browser(), contents_web_view->GetWebContents());
   // Hide and reveal the top-of-window views so that they get relain out.
   AttemptUnreveal();
   AttemptReveal();
@@ -611,8 +609,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosTest, Layout) {
   ChromeOSBrowserUITest::ExitImmersiveFullscreenMode(browser());
   if (!base::FeatureList::IsEnabled(
           views::features::kNativeViewHostManagesLayers)) {
-    EXPECT_EQ(
-        0, browser_view()->contents_web_view()->holder()->GetHitTestTopInset());
+    EXPECT_EQ(0, contents_web_view->holder()->GetHitTestTopInset());
   }
   EXPECT_FALSE(browser_view()->GetWidget()->IsFullscreen());
   EXPECT_FALSE(controller()->IsEnabled());

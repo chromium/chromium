@@ -593,7 +593,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthMaxMin) {
                (browser_width - two_thirds_browser_width -
                 GetLayoutConstant(LayoutConstant::kSidePanelInset)));
   EXPECT_EQ(BrowserView::GetBrowserViewForBrowser(browser())
-                ->contents_web_view()
+                ->GetContentsView()
                 ->width(),
             web_contents_width);
 }

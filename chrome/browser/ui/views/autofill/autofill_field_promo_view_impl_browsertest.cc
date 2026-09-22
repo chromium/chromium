@@ -164,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(AutofillFieldPromoViewImplBrowserTest,
   AutofillFieldPromoViewImpl* view_ptr = GetViewRawPtr(view);
 
   EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
-                  ->contents_web_view()
+                  ->GetContentsView()
                   ->Contains(view_ptr));
 
   view->Close();

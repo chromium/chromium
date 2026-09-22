@@ -52,7 +52,7 @@ class BrowserUserEducationServiceUiTest : public InteractiveFeaturePromoTest {
                                               kToolbarName),
         NameViewRelative(kBrowserViewElementId, kContentsPaneName,
                          [](BrowserView* browser_view) {
-                           return browser_view->contents_web_view();
+                           return browser_view->GetContentsView();
                          }),
         InAnyContext(WaitForShow(kWebUIIPHDemoElementIdentifier)));
   }

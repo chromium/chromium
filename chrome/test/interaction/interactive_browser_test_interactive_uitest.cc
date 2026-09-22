@@ -161,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest, TestNameAndDrag) {
       NameViewRelative(
           kBrowserViewElementId, kWebContentsName,
           base::BindOnce([](BrowserView* browser_view) -> views::View* {
-            return browser_view->contents_web_view();
+            return browser_view->GetContentsView();
           })),
       WithView(kWebContentsName,
                base::BindLambdaForTesting([&p1](views::View* view) {
@@ -405,7 +405,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
         BrowserView* const browser_view =
             BrowserView::GetBrowserViewForBrowser(browser());
         const gfx::Rect web_contents_bounds =
-            browser_view->contents_web_view()->GetBoundsInScreen();
+            browser_view->GetContentsView()->GetBoundsInScreen();
         const gfx::Point point = display::Screen::Get()->GetCursorScreenPoint();
         if (!web_contents_bounds.Contains(point)) {
           LOG(ERROR) << "Expected cursor pos " << point.ToString() << " to in "

@@ -95,7 +95,7 @@ class ScheduledRestartDialogDelegate : public ui::DialogModelDelegate {
     if (browser) {
       if (auto* browser_view =
               BrowserView::GetBrowserViewForBrowser(browser.get())) {
-        browser_view->contents_web_view()->RequestFocus();
+        browser_view->GetContentsView()->RequestFocus();
       }
       if (auto* toast_controller = ToastController::From(browser.get())) {
         toast_controller->MaybeShowToast(

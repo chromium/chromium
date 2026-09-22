@@ -70,12 +70,12 @@ std::optional<gfx::Rect> GetDebugWidgetBounds(
     return std::nullopt;
   }
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  if (!browser_view || !browser_view->contents_web_view()) {
+  if (!browser_view || !browser_view->GetContentsView()) {
     return std::nullopt;
   }
 
   gfx::Rect contents_bounds =
-      browser_view->contents_web_view()->GetBoundsInScreen();
+      browser_view->GetContentsView()->GetBoundsInScreen();
   int frame_width = contents_bounds.width() / 2;
   int frame_height = popup_results_height;
 

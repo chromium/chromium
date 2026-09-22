@@ -48,7 +48,7 @@ void SaveToMemoryBankBubbleController::ShowBubble() {
   if (!browser_view) {
     return;
   }
-  views::View* anchor_view = browser_view->contents_web_view();
+  views::View* anchor_view = browser_view->GetContentsView();
   if (browser_view->toolbar_button_provider()) {
     views::View* default_anchor = browser_view->toolbar_button_provider()
                                       ->GetDefaultExtensionDialogAnchor()

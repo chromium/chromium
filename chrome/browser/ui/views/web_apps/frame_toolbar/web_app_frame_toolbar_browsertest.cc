@@ -1856,7 +1856,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   auto widget_in_screen_bounds = widget->GetWindowBoundsInScreen();
   gfx::Point point_in_widget = widget_in_screen_bounds.CenterPoint();
   views::View::ConvertPointToTarget(
-      browser_view, browser_view->contents_web_view(), &point_in_widget);
+      browser_view, browser_view->GetContentsView(), &point_in_widget);
   EXPECT_TRUE(web_app::AppBrowserController::From(browser_view->browser())
                   ->draggable_region()
                   .has_value());
@@ -1918,7 +1918,7 @@ IN_PROC_BROWSER_TEST_F(
                     container_size.height() - kContentsTopInset)));
   views::test::RunScheduledLayout(browser_view);
   gfx::Point contents_origin_in_browser_view;
-  views::View::ConvertPointToTarget(browser_view->contents_web_view(),
+  views::View::ConvertPointToTarget(browser_view->GetContentsView(),
                                     browser_view,
                                     &contents_origin_in_browser_view);
   ASSERT_GT(contents_origin_in_browser_view.x(), 0);
@@ -2129,8 +2129,6 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   web_app::LaunchWebAppBrowserAndWait(browser()->GetProfile(), app_id);
   // If there's no crash, the test has passed.
 }
-
-
 
 // Extensions in  ChromeOS are not in the titlebar.
 #if !BUILDFLAG(IS_CHROMEOS)

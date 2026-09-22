@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(WebViewBrowserTest, DISABLED_ResizeWebView) {
       browser()->GetTabStripModel()->GetActiveWebContents();
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  views::WebView* contents_web_view = browser_view->contents_web_view();
+  views::View* contents_web_view = browser_view->GetContentsView();
 
   // Resize the web view so that only one of the two buttons fits.
   contents_web_view->SetSize(gfx::Size(300, 140));
@@ -158,7 +158,7 @@ class WebViewInAXTreeBrowserTest : public WebViewBrowserTest {
   }
 
   views::WebView* contents_web_view() {
-    return browser_view()->contents_web_view();
+    return browser_view()->contents_web_view_for_testing();
   }
 
   views::WidgetAXManager* widget_ax_manager() {
