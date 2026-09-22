@@ -9352,3 +9352,6 @@ crbug.com/552768634 external/wpt/html/canvas/element/manual/wide-gamut-canvas/ca
 crbug.com/552768634 external/wpt/preload/subresource-integrity.html [ Failure Pass ]
 crbug.com/552768634 external/wpt/resource-timing/response-status-code.no-cors.html [ Failure Pass ]
 crbug.com/552768634 external/wpt/scroll-to-text-fragment/scroll-to-text-fragment-security-replacestate.sub.html [ Failure Pass ]
+
+# Gardener 2026-09-15
+crbug.com/562009743 [ Win ] fast/ruby/base-shorter-than-text.html [ Failure Pass ]
