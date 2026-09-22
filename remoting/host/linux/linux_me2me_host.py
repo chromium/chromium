@@ -18,6 +18,7 @@ import abc
 import argparse
 import atexit
 import base64
+import contextlib
 import datetime
 import dbus
 import errno
@@ -28,6 +29,7 @@ import logging
 import os
 import platform
 import re
+import resource
 import shlex
 import shutil
 import signal
@@ -152,9 +154,40 @@ HOST_OFFLINE_REASON_CRASH_UPLOADER_RETRIES_EXCEEDED = (
 # chrome-remote-desktop@.service.
 RELAUNCH_EXIT_CODE = 41
 
+# Number of processes/threads reserved for the Chrome Remote Desktop host
+# process above the user session's soft RLIMIT_NPROC limit, so that thread or
+# process exhaustion in the user's desktop session cannot cause pthread_create()
+# or fork() in the host process to fail with EAGAIN.
+HOST_RESERVED_NPROC = 4096
+
 # Globals needed by the atexit cleanup() handler.
 g_desktop = None
 g_host_hash = hashlib.md5(socket.gethostname().encode()).hexdigest()
+
+
+@contextlib.contextmanager
+def reserve_host_process_limits():
+  """Temporarily raises the soft RLIMIT_NPROC limit while spawning the host
+  process so it inherits extra thread headroom without using preexec_fn."""
+  saved_limits = None
+  try:
+    soft, hard = resource.getrlimit(resource.RLIMIT_NPROC)
+    if soft != resource.RLIM_INFINITY:
+      new_soft = (soft + HOST_RESERVED_NPROC if hard == resource.RLIM_INFINITY
+                  else min(soft + HOST_RESERVED_NPROC, hard))
+      if new_soft > soft:
+        resource.setrlimit(resource.RLIMIT_NPROC, (new_soft, hard))
+        saved_limits = (soft, hard)
+  except (ValueError, OSError):
+    pass
+  try:
+    yield
+  finally:
+    if saved_limits is not None:
+      try:
+        resource.setrlimit(resource.RLIMIT_NPROC, saved_limits)
+      except (ValueError, OSError):
+        pass
 
 def gen_xorg_config():
   return (
@@ -840,8 +873,9 @@ class Desktop(abc.ABC):
     args.append("--signal-parent")
 
     logging.info(args)
-    self.host_proc = subprocess.Popen(args, env=self.child_env,
-                                      stdin=subprocess.PIPE)
+    with reserve_host_process_limits():
+      self.host_proc = subprocess.Popen(args, env=self.child_env,
+                                        stdin=subprocess.PIPE)
     if not self.host_proc.pid:
       raise Exception("Could not start Chrome Remote Desktop host")
 
