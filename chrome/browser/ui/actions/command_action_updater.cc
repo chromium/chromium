@@ -153,8 +153,8 @@ std::vector<int> CommandActionUpdater::GetAllIds() const {
   return result;
 }
 
-std::optional<actions::ActionId> CommandActionUpdater::GetActionId(
-    int id) const {
+// static
+std::optional<actions::ActionId> CommandActionUpdater::GetActionId(int id) {
   const auto& map = GetCommandIdToActionIdMap();
   auto it = map.find(id);
   return it != map.end() ? std::make_optional(it->second) : std::nullopt;

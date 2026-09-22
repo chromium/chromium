@@ -42,7 +42,7 @@ class CommandActionUpdater : public CommandUpdater {
   void DisableAllCommands() override;
   std::vector<int> GetAllIds() const override;
 
-  std::optional<actions::ActionId> GetActionId(int id) const;
+  static std::optional<actions::ActionId> GetActionId(int id);
 
  private:
   bool ExecuteCommandWithDispositionAndContext(

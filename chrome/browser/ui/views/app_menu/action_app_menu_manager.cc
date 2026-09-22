@@ -28,8 +28,11 @@
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/actions/command_action_updater.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/managed_ui.h"
+#include "chrome/browser/ui/safety_hub/menu_notification_service.h"
+#include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "ui/base/class_property.h"
 #include "ui/base/models/menu_separator_types.h"
@@ -326,11 +329,30 @@ void ActionAppMenuManager::AddNotificationActions(actions::ActionItem* root) {
   AppMenuBuilder(
       root, BrowserActions::From(browser_window_interface_)->root_action_item(),
       ui::kColorAppMenuUpgradeRowBackground)
-      .AddSection(DisplayType::kSection, [](AppMenuBuilder& section) {
+      .AddSection(DisplayType::kSection, [this](AppMenuBuilder& section) {
         section.AddAction(
             kActionUpgradeDialog,
             {.display_type = DisplayType::kNotification,
              .minor_text = AppMenuModel::GetUpgradeDialogSubstringText()});
+        // Query for the correct safety hub notification (if any) rather than
+        // adding all potential actions here and allowing their visibility to
+        // be determined by the action itself because
+        // safety_hub_service->GetNotificationToShow() carries side effects and
+        // is intended to be called once per menu show.
+        if (auto* safety_hub_service =
+                SafetyHubMenuNotificationServiceFactory::GetForProfile(
+                    browser_window_interface_->GetProfile())) {
+          if (std::optional<MenuNotificationEntry> notification =
+                  safety_hub_service->GetNotificationToShow()) {
+            if (std::optional<actions::ActionId> action_id =
+                    chrome::CommandActionUpdater::GetActionId(
+                        notification->command)) {
+              section.AddAction(action_id.value(),
+                                {.display_type = DisplayType::kNotification,
+                                 .text_override = notification->label});
+            }
+          }
+        }
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
         section.AddAction(kActionSetBrowserAsDefault,
                           {.display_type = DisplayType::kNotification});

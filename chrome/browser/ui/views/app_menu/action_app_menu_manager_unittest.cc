@@ -12,6 +12,9 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
+#include "chrome/browser/ui/safety_hub/menu_notification_service.h"
+#include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
+#include "chrome/browser/ui/safety_hub/safe_browsing_result.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/mock_vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_test_base.h"
@@ -136,6 +139,8 @@ TEST_F(ActionAppMenuManagerTest, MAYBE_ProfileSubmenu) {
   TestingProfile* profile1 = profile_manager.CreateTestingProfile("Profile 1");
   profile_manager.CreateTestingProfile("Profile 2");
 
+  SafetyHubMenuNotificationServiceFactory::GetInstance()->SetTestingFactory(
+      profile1, BrowserContextKeyedServiceFactory::TestingFactory());
   SyncServiceFactory::GetInstance()->SetTestingFactory(
       profile1,
       base::BindRepeating(
@@ -242,6 +247,8 @@ TEST_F(ActionAppMenuManagerTest, MAYBE_ProfileSubmenuSingleProfile) {
 
   TestingProfile* profile1 = profile_manager.CreateTestingProfile("Profile 1");
 
+  SafetyHubMenuNotificationServiceFactory::GetInstance()->SetTestingFactory(
+      profile1, BrowserContextKeyedServiceFactory::TestingFactory());
   SyncServiceFactory::GetInstance()->SetTestingFactory(
       profile1,
       base::BindRepeating(
@@ -480,27 +487,16 @@ TEST_F(ActionAppMenuManagerTest, NotificationHeaderNoNotification) {
   actions::ActionItem* notification_section =
       root->GetChildren().children()[0]->GetActionItem();
   ASSERT_NE(notification_section, nullptr);
-  ASSERT_FALSE(notification_section->GetChildren().children().empty());
-  EXPECT_EQ(notification_section->GetChildren()
-                .children()[0]
-                ->GetActionItem()
-                ->GetActionId(),
+  const auto& section_children = notification_section->GetChildren().children();
+  ASSERT_GE(section_children.size(), 1u);
+  EXPECT_EQ(section_children[0]->GetActionItem()->GetActionId(),
             kActionUpgradeDialog);
-  EXPECT_FALSE(notification_section->GetChildren()
-                   .children()[0]
-                   ->GetActionItem()
-                   ->GetVisible());
+  EXPECT_FALSE(section_children[0]->GetActionItem()->GetVisible());
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-  ASSERT_GE(notification_section->GetChildren().children().size(), 2u);
-  EXPECT_EQ(notification_section->GetChildren()
-                .children()[1]
-                ->GetActionItem()
-                ->GetActionId(),
+  ASSERT_EQ(section_children.size(), 2u);
+  EXPECT_EQ(section_children[1]->GetActionItem()->GetActionId(),
             kActionSetBrowserAsDefault);
-  EXPECT_FALSE(notification_section->GetChildren()
-                   .children()[1]
-                   ->GetActionItem()
-                   ->GetVisible());
+  EXPECT_FALSE(section_children[1]->GetActionItem()->GetVisible());
 #endif
 }
 
@@ -547,6 +543,59 @@ TEST_F(ActionAppMenuManagerTest, NotificationHeaderUpgradeNotification) {
             ui::kColorAppMenuUpgradeRowBackground);
 }
 #endif
+
+TEST_F(ActionAppMenuManagerTest, NotificationHeaderSafetyHubNotification) {
+  SafetyHubMenuNotificationServiceFactory::GetInstance()->SetTestingFactory(
+      profile_.get(), base::BindRepeating([](content::BrowserContext* context)
+                                              -> std::unique_ptr<KeyedService> {
+        Profile* profile = Profile::FromBrowserContext(context);
+        auto service = std::make_unique<SafetyHubMenuNotificationService>(
+            profile->GetPrefs(), nullptr, nullptr,
+#if !BUILDFLAG(IS_ANDROID)
+            nullptr,
+#endif
+            profile);
+        auto getter = base::BindRepeating(
+            []() -> std::optional<std::unique_ptr<SafetyHubResult>> {
+              return std::make_unique<SafetyHubSafeBrowsingResult>(
+                  SafeBrowsingState::kDisabledByUser);
+            });
+        service->UpdateResultGetterForTesting(
+            safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS, getter);
+        return service;
+      }));
+
+  ActionAppMenuManager menu_manager(&mock_window_interface_);
+  menu_manager.CreateMenuHierarchy();
+
+  actions::ActionItem* root = menu_manager.GetAppMenuRoot();
+  ASSERT_NE(root, nullptr);
+
+  const auto& children = root->GetChildren().children();
+  ASSERT_GE(children.size(), 2u);
+
+  actions::ActionItem* notification_section = children[0]->GetActionItem();
+  ASSERT_NE(notification_section, nullptr);
+  const auto& section_children = notification_section->GetChildren().children();
+  ASSERT_GE(section_children.size(), 2u);
+
+  EXPECT_EQ(section_children[1]->GetActionItem()->GetActionId(),
+            kActionOpenSafetyHub);
+  EXPECT_TRUE(section_children[1]->GetActionItem()->GetVisible());
+  ASSERT_NE(
+      section_children[1]->GetProperty(AppMenuActionItem::kTextOverrideKey),
+      nullptr);
+  EXPECT_EQ(
+      *section_children[1]->GetProperty(AppMenuActionItem::kTextOverrideKey),
+      l10n_util::GetStringUTF16(
+          IDS_SETTINGS_SAFETY_HUB_SAFE_BROWSING_MENU_NOTIFICATION));
+  EXPECT_EQ(section_children[1]->GetActionItem()->GetProperty(
+                AppMenuActionItem::kDisplayTypeKey),
+            AppMenuActionItem::DisplayType::kNotification);
+  EXPECT_EQ(section_children[1]->GetActionItem()->GetProperty(
+                AppMenuActionItem::kContainerColorKey),
+            ui::kColorAppMenuUpgradeRowBackground);
+}
 
 TEST_F(ActionAppMenuManagerTest, ZoomSubmenuHasExpandedHeightProperty) {
   ActionAppMenuManager menu_manager(&mock_window_interface_);
