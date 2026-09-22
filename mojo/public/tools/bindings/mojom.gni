@@ -1608,6 +1608,9 @@ template("mojom") {
         if (defined(invoker.rust_typemaps)) {
           rust_typemaps = invoker.rust_typemaps
         }
+        if (defined(invoker.scramble_message_ids)) {
+          scramble_message_ids = invoker.scramble_message_ids
+        }
       }
     }
 

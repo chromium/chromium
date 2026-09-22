@@ -15,6 +15,9 @@ template("mojom_rust") {
                            "jinja2_sources",
                            "parser_target_name",
                            "common_generator_args",
+                           "message_scrambling_inputs",
+                           "message_scrambling_args",
+                           "scramble_message_ids",
                            "output_file_base_paths",
                            "variant_suffix",
                            "output_visibility",
@@ -123,6 +126,10 @@ template("mojom_rust") {
                   rebase_path("$target_gen_dir/${base_name}_typemap.json",
                               root_build_dir) ]
       }
+      if (!defined(scramble_message_ids) || scramble_message_ids) {
+        inputs += message_scrambling_inputs
+        args += message_scrambling_args
+      }
     }
 
     rust_crate_root_target_name = "${base_name}__crate_root"
@@ -205,6 +212,9 @@ template("mojom_rust") {
                  "jinja2_sources",
                  "parser_target_name",
                  "common_generator_args",
+                 "message_scrambling_inputs",
+                 "message_scrambling_args",
+                 "scramble_message_ids",
                  "output_file_base_paths",
                  "variant_suffix",
                ])
