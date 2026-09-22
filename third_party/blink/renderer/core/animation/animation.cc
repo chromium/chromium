@@ -880,7 +880,7 @@ bool Animation::PreCommit(
   // paint apron, might be still in the kNeedsRepaint state. Once painted, the
   // animation may be able to start on the compositor.
   NativePaintWorkletReasons npw_reasons = GetNativePaintWorkletReasons();
-  if (should_start && !compositor_state_ &&
+  if (!compositor_state_ &&
       npw_reasons != NativePaintWorkletProperties::kNoPaintWorklet &&
       compositing_decision_.disposition !=
           CompositorAnimations::kAnimationHasNoVisibleChange) {
@@ -892,12 +892,20 @@ bool Animation::PreCommit(
     if (element_animations) {
       if (npw_reasons &
           NativePaintWorkletProperties::kBackgroundColorPaintWorklet) {
-        element_animations->SetCompositedBackgroundColorStatus(
-            ElementAnimations::CompositedPaintStatus::kNotComposited);
+        NativePaintWorkletData* npw_data =
+            element_animations->GetBackgroundColorNpwData();
+        if (npw_data && npw_data->GetAnimation() == this) {
+          element_animations->SetCompositedBackgroundColorStatus(
+              ElementAnimations::CompositedPaintStatus::kNotComposited);
+        }
       }
       if (npw_reasons & NativePaintWorkletProperties::kClipPathPaintWorklet) {
-        element_animations->SetCompositedClipPathStatus(
-            ElementAnimations::CompositedPaintStatus::kNotComposited);
+        NativePaintWorkletData* npw_data =
+            element_animations->GetClipPathNpwData();
+        if (npw_data && npw_data->GetAnimation() == this) {
+          element_animations->SetCompositedClipPathStatus(
+              ElementAnimations::CompositedPaintStatus::kNotComposited);
+        }
       }
     }
   }
@@ -3306,7 +3314,13 @@ bool Animation::Update(TimingUpdateReason reason) {
     // animation. This is known to occur when a retargeted transition is
     // finished before PreCommit has run the first time and a compositor state
     // has been created.
-    if (!inactive_ && !HasActiveAnimationsOnCompositor()) {
+    if (!inactive_ && !HasActiveAnimationsOnCompositor() &&
+        CompositorPending()) {
+      // TODO(kevers): Revisit this special casing for guarding against a stale
+      // compositing decision. The compositing decision should be linked to the
+      // animation and not the element. When the animation changes, we should
+      // reset. Otherwise, a compositor decision on a finished animation should
+      // remain firm.
       UpdateCompositedPaintStatus(
           CompositorPendingReason::kPendingEffectChange);
     }

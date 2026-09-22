@@ -136,6 +136,7 @@ class CORE_EXPORT ElementAnimations final
   bool SetCompositedClipPathStatus(CompositedPaintStatus status);
 
   NativePaintWorkletData* EnsureClipPathNpwData(Element* element);
+  NativePaintWorkletData* GetClipPathNpwData() { return clip_path_npw_data_; }
 
   // Animations affecting properties marked as important cannot be composited.
   // An animation running on the compositor must be cancelled once the affected
