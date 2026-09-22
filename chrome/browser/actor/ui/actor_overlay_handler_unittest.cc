@@ -4,11 +4,16 @@
 
 #include "chrome/browser/actor/ui/actor_overlay_handler.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 #include "chrome/browser/actor/ui/test_support/fake_actor_overlay_page.h"
 #include "chrome/browser/actor/ui/test_support/mock_actor_ui_tab_controller.h"
+#include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/color/chrome_color_mixer.h"
+#include "chrome/browser/ui/color/material_chrome_color_mixer.h"
 #include "chrome/browser/ui/webui/util/webui_util_desktop.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/chrome_features.h"
@@ -20,6 +25,14 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_mixer.h"
+#include "ui/color/color_provider.h"
+#include "ui/color/color_provider_key.h"
+#include "ui/color/color_recipe.h"
+#include "ui/color/ref_color_mixer.h"
+#include "ui/color/sys_color_mixer.h"
 
 namespace actor::ui {
 namespace {
@@ -178,6 +191,71 @@ TEST_F(ActorOverlayHandlerTest, TriggerClickAnimation) {
 
   EXPECT_TRUE(future.Wait());
   EXPECT_EQ(fake_page_.trigger_click_animation_call_count(), 1);
+}
+
+// Builds a ColorProvider that mimics a custom theme (e.g. an extension theme)
+// with the given frame color. Custom themes skip the material overrides, so
+// the Actor UI colors come from AddChromeColorMixer().
+void InitCustomThemeColorProvider(::ui::ColorProvider& provider,
+                                  SkColor frame_color) {
+  using ThemeType = ::ui::ColorProviderKey::ThemeInitializerSupplier::ThemeType;
+  ::ui::ColorProviderKey key;
+  key.custom_theme =
+      base::MakeRefCounted<CustomThemeSupplier>(ThemeType::kExtension);
+  ::ui::AddRefColorMixer(&provider, key);
+  ::ui::AddSysColorMixer(&provider, key);
+  AddChromeColorMixer(&provider, key);
+  AddMaterialChromeColorMixer(&provider, key);
+  provider.AddMixer()[::ui::kColorFrameActive] = {frame_color};
+}
+
+TEST(ActorUiThemeColorTest, ActorUiColorsFallBackForNearBlackCustomTheme) {
+  ::ui::ColorProvider provider;
+  InitCustomThemeColorProvider(provider, SK_ColorBLACK);
+
+  const SkColor expected_border_color =
+      provider.GetColor(::ui::kColorSysActorUiBorder);
+  const SkColor expected_glow_color =
+      provider.GetColor(::ui::kColorSysActorUiGradientEnd);
+
+  EXPECT_EQ(provider.GetColor(kColorActorUiHandoffButtonBorder),
+            expected_border_color);
+  EXPECT_EQ(provider.GetColor(kColorActorUiOverlayBorder),
+            expected_border_color);
+  EXPECT_EQ(provider.GetColor(kColorActorUiMagicCursor), expected_border_color);
+  EXPECT_EQ(provider.GetColor(kColorActorUiOverlayBorderGlow),
+            expected_glow_color);
+}
+
+TEST(ActorUiThemeColorTest, ActorUiColorsFallBackForNearWhiteCustomTheme) {
+  ::ui::ColorProvider provider;
+  InitCustomThemeColorProvider(provider, SK_ColorWHITE);
+
+  const SkColor expected_border_color =
+      provider.GetColor(::ui::kColorSysActorUiBorder);
+  const SkColor expected_glow_color =
+      provider.GetColor(::ui::kColorSysActorUiGradientEnd);
+
+  EXPECT_EQ(provider.GetColor(kColorActorUiHandoffButtonBorder),
+            expected_border_color);
+  EXPECT_EQ(provider.GetColor(kColorActorUiOverlayBorder),
+            expected_border_color);
+  EXPECT_EQ(provider.GetColor(kColorActorUiMagicCursor), expected_border_color);
+  EXPECT_EQ(provider.GetColor(kColorActorUiOverlayBorderGlow),
+            expected_glow_color);
+}
+
+TEST(ActorUiThemeColorTest, ActorUiColorsUseFrameColorForMidToneCustomTheme) {
+  constexpr SkColor kCustomFrameColor = SkColorSetRGB(0x20, 0x70, 0x40);
+  ::ui::ColorProvider provider;
+  InitCustomThemeColorProvider(provider, kCustomFrameColor);
+
+  EXPECT_EQ(provider.GetColor(kColorActorUiHandoffButtonBorder),
+            kCustomFrameColor);
+  EXPECT_EQ(provider.GetColor(kColorActorUiOverlayBorder), kCustomFrameColor);
+  EXPECT_EQ(provider.GetColor(kColorActorUiMagicCursor), kCustomFrameColor);
+  EXPECT_EQ(provider.GetColor(kColorActorUiOverlayBorderGlow),
+            kCustomFrameColor);
 }
 
 }  // namespace

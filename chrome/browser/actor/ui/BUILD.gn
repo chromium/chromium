@@ -449,6 +449,7 @@ source_set("unit_tests") {
       "//chrome/browser/actor",
       "//chrome/browser/actor:impl",
       "//chrome/browser/actor:test_support",
+      "//chrome/browser/ui/color:mixers",
       "//chrome/browser/ui/tabs:tabs_public",
       "//chrome/browser/ui/tabs:test_support",
       "//chrome/browser/ui/views/frame:test_support",
@@ -459,6 +460,7 @@ source_set("unit_tests") {
       "//content/test:test_support",
       "//testing/gmock",
       "//ui/base/unowned_user_data",
+      "//ui/color:mixers",
     ]
 
     data = [ "//tools/metrics/actions/actions.xml" ]

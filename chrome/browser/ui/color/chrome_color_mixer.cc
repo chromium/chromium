@@ -65,23 +65,27 @@ ui::ColorTransform SelectColorBasedOnDarkInputOrMode(
 }
 
 // Determines a color to use for Actor Ui components based on the tab frame
-// color used in custom themes. In the near-white case, we default to use an
-// accent color instead.
-ui::ColorTransform SelectActorUiColorBasedOnNearWhiteInput() {
+// color used in custom themes. In the near-white or near-black case, we default
+// to use `fallback_color_id` instead to ensure visibility.
+ui::ColorTransform SelectActorUiColor(ui::ColorId fallback_color_id) {
   return base::BindRepeating(
-      [](SkColor input_color, const ui::ColorMixer& mixer) {
+      [](ui::ColorId fallback_color_id, SkColor input_color,
+         const ui::ColorMixer& mixer) {
         const SkColor frame_color = mixer.GetResultColor(ui::kColorFrameActive);
 
-        // 1.0f is white. For near-white scenarios, we want to use the accent
-        // color to ensure visibility.
+        // 1.0f is identical contrast. For near-white or near-black scenarios,
+        // we want to use the fallback color to ensure visibility.
         constexpr float kThreshold = 1.1f;
         if (color_utils::GetContrastRatio(frame_color, SK_ColorWHITE) <
-            kThreshold) {
-          return mixer.GetResultColor(ui::kColorAccent);
+                kThreshold ||
+            color_utils::GetContrastRatio(frame_color, SK_ColorBLACK) <
+                kThreshold) {
+          return mixer.GetResultColor(fallback_color_id);
         }
 
         return frame_color;
-      });
+      },
+      fallback_color_id);
 }
 
 // Blend the custom color (based on the tab frame of a custom theme) on
@@ -333,18 +337,20 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
 
   mixer[kColorActorUiHandoffButtonBackground] = {ui::kColorSysSurface};
   mixer[kColorActorUiHandoffButtonBorder] =
-      SelectActorUiColorBasedOnNearWhiteInput();
+      SelectActorUiColor(ui::kColorSysActorUiBorder);
   mixer[kColorActorUiHandoffButtonForeground] = {ui::kColorSysOnSurface};
-  mixer[kColorActorUiOverlayBorder] = SelectActorUiColorBasedOnNearWhiteInput();
+  mixer[kColorActorUiOverlayBorder] =
+      SelectActorUiColor(ui::kColorSysActorUiBorder);
   mixer[kColorActorUiOverlayBorderGlow] =
-      SelectActorUiColorBasedOnNearWhiteInput();
+      SelectActorUiColor(ui::kColorSysActorUiGradientEnd);
   mixer[kColorActorUiScrimStart] = GetActorUiScrimColor(
       /*alpha=*/0x66);
   mixer[kColorActorUiScrimMiddle] = GetActorUiScrimColor(
       /*alpha=*/0x00);
   mixer[kColorActorUiScrimEnd] = GetActorUiScrimColor(
       /*alpha=*/0x26);
-  mixer[kColorActorUiMagicCursor] = SelectActorUiColorBasedOnNearWhiteInput();
+  mixer[kColorActorUiMagicCursor] =
+      SelectActorUiColor(ui::kColorSysActorUiBorder);
   mixer[kColorAppMenuHighlightSeverityLow] = AdjustHighlightColorForContrast(
       ui::kColorAlertLowSeverity, kColorToolbar);
   mixer[kColorAppMenuHighlightSeverityHigh] = {
