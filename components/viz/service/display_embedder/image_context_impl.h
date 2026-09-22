@@ -112,6 +112,11 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores);
 
+  // Validates that the promise image YCbCr info is compatible with the shared
+  // image YCbCr info. This is only implemented for some compositing
+  // configurations and will always return true for other configurations.
+  bool ValidateYCbCrInfo(gpu::SharedContextState* context_state);
+
   const bool maybe_concurrent_reads_ = false;
   // Indicates that this will be used to refer to allocations that originate
   // from the renderer.
