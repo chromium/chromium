@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.tab_group_sync.ClosingSource;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -254,8 +255,61 @@ public class TabGroupUiUtils {
         return Collections.emptyList();
     }
 
+    /**
+     * Commits pending closures for all closing tabs belonging to {@code groupId} in the {@link
+     * TabModel} that owns them (checking {@code tabModel} first, and searching other windows if
+     * cross-window operations are enabled).
+     *
+     * @param tabModel The local {@link TabModel}.
+     * @param groupId The target tab group ID whose closing tabs should be committed.
+     */
+    public static void commitClosingTabsForGroup(TabModel tabModel, @Nullable Token groupId) {
+        if (!isRemoteGroupOperationsEnabled() || groupId == null) {
+            return;
+        }
+        TabModel targetModel = getTabModelForGroup(tabModel, groupId);
+        if (targetModel != null) {
+            commitClosingTabsForModel(targetModel, groupId);
+        }
+    }
+
+    /**
+     * Commits all closing tabs belonging to {@code groupId} in {@code targetModel}.
+     *
+     * @param targetModel The {@link TabModel} containing the tabs to commit.
+     * @param groupId The target tab group ID.
+     */
+    private static void commitClosingTabsForModel(TabModel targetModel, Token groupId) {
+        TabList comprehensiveModel = targetModel.getComprehensiveModel();
+        if (comprehensiveModel == null) {
+            return;
+        }
+        List<Tab> tabsToCommit = new ArrayList<>();
+        if (comprehensiveModel.iterator() != null) {
+            for (Tab tab : comprehensiveModel) {
+                if (tab.isClosing() && groupId.equals(tab.getTabGroupId())) {
+                    tabsToCommit.add(tab);
+                }
+            }
+        } else {
+            for (int i = 0; i < comprehensiveModel.getCount(); i++) {
+                Tab tab = comprehensiveModel.getTabAt(i);
+                if (tab != null && tab.isClosing() && groupId.equals(tab.getTabGroupId())) {
+                    tabsToCommit.add(tab);
+                }
+            }
+        }
+        for (Tab tab : tabsToCommit) {
+            targetModel.commitTabClosure(tab.getId());
+        }
+    }
+
     private static boolean isRemoteGroup(GroupWindowInfo group) {
-        return group.groupWindowState == GroupWindowState.HIDDEN || group.localId == null;
+        return group.groupWindowState == GroupWindowState.HIDDEN
+                || group.localId == null
+                || (isRemoteGroupOperationsEnabled()
+                        && group.groupWindowState == GroupWindowState.IN_CURRENT_CLOSING
+                        && group.syncId != null);
     }
 
     /**
@@ -274,19 +328,52 @@ public class TabGroupUiUtils {
         if (destinationGroup == null) {
             return false;
         }
-        if (destinationGroup.groupWindowState == GroupWindowState.IN_CURRENT_CLOSING) {
-            return false;
-        }
-        if (destinationGroup.groupWindowState == GroupWindowState.IN_ANOTHER) {
-            return isCrossWindowTabGroupOperationsEnabled() && destinationGroup.localId != null;
-        }
         if (isRemoteGroup(destinationGroup)) {
             return isRemoteGroupOperationsEnabled()
                     && destinationGroup.syncId != null
                     && syncService != null
                     && uiActionHandler != null;
         }
+        if (destinationGroup.groupWindowState == GroupWindowState.IN_CURRENT_CLOSING) {
+            return false;
+        }
+        if (destinationGroup.groupWindowState == GroupWindowState.IN_ANOTHER) {
+            return isCrossWindowTabGroupOperationsEnabled() && destinationGroup.localId != null;
+        }
         return destinationGroup.localId != null;
+    }
+
+    /**
+     * Opens a synced tab group in the current window, committing any pending closures and cleaning
+     * up stale local mappings first if the group was in a closing/hidden state.
+     *
+     * @param tabModel The current {@link TabModel}.
+     * @param syncService The {@link TabGroupSyncService}.
+     * @param uiActionHandler The {@link TabGroupUiActionHandler}.
+     * @param syncId The sync ID of the tab group to open.
+     */
+    public static void openTabGroup(
+            TabModel tabModel,
+            @Nullable TabGroupSyncService syncService,
+            @Nullable TabGroupUiActionHandler uiActionHandler,
+            String syncId) {
+        if (syncService == null || uiActionHandler == null) {
+            return;
+        }
+        SavedTabGroup savedGroup = syncService.getGroup(syncId);
+        if (savedGroup != null && savedGroup.localId != null) {
+            Token groupId = savedGroup.localId.tabGroupId;
+            commitClosingTabsForGroup(tabModel, groupId);
+            TabModel targetModel = getTabModelForGroup(tabModel, groupId);
+            if (!targetModel.tabGroupExists(groupId)) {
+                savedGroup = syncService.getGroup(syncId);
+                if (savedGroup != null && savedGroup.localId != null) {
+                    syncService.removeLocalTabGroupMapping(
+                            savedGroup.localId, ClosingSource.CLOSED_BY_USER);
+                }
+            }
+        }
+        uiActionHandler.openTabGroup(syncId);
     }
 
     /**
@@ -325,8 +412,11 @@ public class TabGroupUiUtils {
             assert syncService != null;
             assert uiActionHandler != null;
 
+            if (destinationGroup.localId != null) {
+                commitClosingTabsForGroup(sourceTabModel, destinationGroup.localId);
+            }
             String syncId = destinationGroup.syncId;
-            uiActionHandler.openTabGroup(syncId);
+            openTabGroup(sourceTabModel, syncService, uiActionHandler, syncId);
             SavedTabGroup savedGroup = syncService.getGroup(syncId);
             if (savedGroup == null || savedGroup.localId == null) {
                 return;
