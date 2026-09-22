@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/core/browser/db/v5_update_protocol_manager.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/base64url.h"
@@ -337,16 +338,27 @@ V5UpdateProtocolManager::ParseUpdateResponse(
       return base::unexpected(V5ParseResult::kMismatchedNameError);
     }
 
-    PrefixSize expected_hash_prefix_lengths =
+    PrefixSize expected_hash_prefix_length =
         GetV5ListPrefixSize(list_identifier);
-    if ((hash_list.has_additions_four_bytes() &&
-         expected_hash_prefix_lengths != 4) ||
-        (hash_list.has_additions_eight_bytes() &&
-         expected_hash_prefix_lengths != 8) ||
-        (hash_list.has_additions_sixteen_bytes() &&
-         expected_hash_prefix_lengths != 16) ||
-        (hash_list.has_additions_thirty_two_bytes() &&
-         expected_hash_prefix_lengths != 32)) {
+    std::optional<PrefixSize> actual_hash_prefix_length;
+    switch (hash_list.compressed_additions_case()) {
+      case V5::HashList::kAdditionsFourBytes:
+        actual_hash_prefix_length = 4;
+        break;
+      case V5::HashList::kAdditionsEightBytes:
+        actual_hash_prefix_length = 8;
+        break;
+      case V5::HashList::kAdditionsSixteenBytes:
+        actual_hash_prefix_length = 16;
+        break;
+      case V5::HashList::kAdditionsThirtyTwoBytes:
+        actual_hash_prefix_length = 32;
+        break;
+      case V5::HashList::COMPRESSED_ADDITIONS_NOT_SET:
+        break;
+    }
+    if (actual_hash_prefix_length.has_value() &&
+        expected_hash_prefix_length != actual_hash_prefix_length.value()) {
       return base::unexpected(V5ParseResult::kMismatchedPrefixLengthError);
     }
 

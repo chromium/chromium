@@ -113,7 +113,7 @@ class ServicesDelegate {
   // database manager.
   virtual void StartOnUIThread(
       scoped_refptr<network::SharedURLLoaderFactory> browser_url_loader_factory,
-      const SBProtocolConfig& v4_config) = 0;
+      const SBProtocolConfig& config) = 0;
   virtual void StopOnUIThread(bool shutdown) = 0;
 
   virtual void CreateTelemetryService(Profile* profile) {}
