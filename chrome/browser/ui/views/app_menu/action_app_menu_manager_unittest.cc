@@ -343,6 +343,73 @@ TEST_F(ActionAppMenuManagerTest,
             kActionNewIsolatedWindow);
 }
 
+TEST_F(ActionAppMenuManagerTest, BlockActionsIncognitoNewTabTextOverride) {
+  Profile* otr_profile =
+      profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  ASSERT_TRUE(otr_profile->IsIncognitoProfile());
+  ON_CALL(mock_window_interface_, GetProfile())
+      .WillByDefault(testing::Return(otr_profile));
+
+  ActionAppMenuManager menu_manager(&mock_window_interface_);
+  menu_manager.CreateMenuHierarchy();
+
+  actions::ActionItem* root = menu_manager.GetAppMenuRoot();
+  ASSERT_NE(root, nullptr);
+
+  actions::ActionItem* block_section =
+      root->GetChildren().children()[1]->GetActionItem();
+  ASSERT_NE(block_section, nullptr);
+  ASSERT_FALSE(block_section->GetChildren().children().empty());
+
+  actions::BaseAction* new_tab_action =
+      block_section->GetChildren().children()[0].get();
+  ASSERT_NE(new_tab_action, nullptr);
+  EXPECT_EQ(new_tab_action->GetActionItem()->GetActionId(), kActionNewTab);
+
+  std::u16string* text_override =
+      new_tab_action->GetProperty(AppMenuActionItem::kTextOverrideKey);
+  ASSERT_NE(text_override, nullptr);
+  EXPECT_EQ(*text_override, u"New Incognito tab");
+}
+
+TEST_F(ActionAppMenuManagerTest,
+       BlockActionsEnterpriseIsolatedModeNewTabTextOverride) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      enterprise_isolated_mode::kEnableEnterpriseIsolatedMode);
+  profile_->GetPrefs()->SetInteger(
+      enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
+      static_cast<int>(
+          enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
+
+  Profile* isolated_profile =
+      profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  ASSERT_TRUE(isolated_profile->IsEnterpriseIsolatedModeProfile());
+  ON_CALL(mock_window_interface_, GetProfile())
+      .WillByDefault(testing::Return(isolated_profile));
+
+  ActionAppMenuManager menu_manager(&mock_window_interface_);
+  menu_manager.CreateMenuHierarchy();
+
+  actions::ActionItem* root = menu_manager.GetAppMenuRoot();
+  ASSERT_NE(root, nullptr);
+
+  actions::ActionItem* block_section =
+      root->GetChildren().children()[1]->GetActionItem();
+  ASSERT_NE(block_section, nullptr);
+  ASSERT_FALSE(block_section->GetChildren().children().empty());
+
+  actions::BaseAction* new_tab_action =
+      block_section->GetChildren().children()[0].get();
+  ASSERT_NE(new_tab_action, nullptr);
+  EXPECT_EQ(new_tab_action->GetActionItem()->GetActionId(), kActionNewTab);
+
+  std::u16string* text_override =
+      new_tab_action->GetProperty(AppMenuActionItem::kTextOverrideKey);
+  ASSERT_NE(text_override, nullptr);
+  EXPECT_EQ(*text_override, u"New Isolated tab");
+}
+
 TEST_F(ActionAppMenuManagerTest, BookmarkBarSubmenuCheckItems) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
