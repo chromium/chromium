@@ -697,7 +697,10 @@ def _CreatePlaceholderSrcJar(srcjar_path, jni_objs, *, script_name):
       # write a stubbed version of the class if it's imported by another class.
       for jni_obj in jni_objs:
         for java_class in jni_obj.CollectClassesToBeImported():
-          if java_class.full_name_with_slashes.startswith('java/'):
+          # JniPtr is already in gendeps_java; JniUniquePtr and JniRawPtr are in
+          # jni_zero_java and still need placeholders.
+          if (java_class.full_name_with_slashes.startswith('java/')
+              or java_class == java_types.JNI_PTR_CLASS):
             continue
           # TODO(mheikal): handle more than 1 nesting layer.
           if java_class.is_nested():
