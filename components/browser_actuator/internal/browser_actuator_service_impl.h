@@ -7,9 +7,12 @@
 
 #include <memory>
 #include <string_view>
+#include <vector>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "components/browser_actuator/public/browser_actuator_service.h"
+#include "components/browser_actuator/public/common.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -22,12 +25,18 @@ class IdentityManager;
 namespace browser_actuator {
 
 class TransportChannelImpl;
+class TransportHandlerFactory;
 
 class BrowserActuatorServiceImpl : public BrowserActuatorService {
  public:
+  // `extra_factories` are transport handler factories that this service takes
+  // ownership of and registers with the channel's handler factory registry.
+  // This lets embedder-layer code (for example //chrome) install factories
+  // without //components needing to know their concrete types.
   BrowserActuatorServiceImpl(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      signin::IdentityManager* identity_manager);
+      signin::IdentityManager* identity_manager,
+      std::vector<std::unique_ptr<TransportHandlerFactory>> extra_factories);
   ~BrowserActuatorServiceImpl() override;
 
   BrowserActuatorServiceImpl(const BrowserActuatorServiceImpl&) = delete;
@@ -40,7 +49,19 @@ class BrowserActuatorServiceImpl : public BrowserActuatorService {
   TransportSession* GetOrCreateSession(std::string_view session_id) override;
   TransportSession* GetSession(std::string_view session_id) override;
 
+  // Exposes owned extra factories. Intended for embedder diagnostic consumers
+  // (e.g. chrome://browser-actuator-internals) to retrieve concrete injected
+  // factories by `id`.
+  TransportHandlerFactory* GetFactory(FactoryId id) override;
+
  private:
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  // Declared before `channel_` on purpose. C++ destroys members in reverse
+  // declaration order, so `channel_` -- and the factory registry it owns, which
+  // holds raw pointers into `extra_factories_` -- is torn down first.
+  std::vector<std::unique_ptr<TransportHandlerFactory>> extra_factories_;
+
   std::unique_ptr<TransportChannelImpl> channel_;
 };
 
