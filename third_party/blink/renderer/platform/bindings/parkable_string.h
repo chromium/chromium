@@ -199,14 +199,6 @@ class PLATFORM_EXPORT ParkableStringImpl
     return &metadata_->digest_;
   }
 
-  int lock_depth() const {
-    if (!may_be_parked()) {
-      return 0;
-    }
-    base::AutoLock locker_(metadata_->lock_);
-    return metadata_->lock_depth_;
-  }
-
   void Release() const LOCKS_EXCLUDED(metadata_->lock_) {
     if (!may_be_parked()) {
       if (RefCountedThreadSafeBase::Release()) {
@@ -295,7 +287,10 @@ class PLATFORM_EXPORT ParkableStringImpl
   void DiscardUncompressedData() EXCLUSIVE_LOCKS_REQUIRED(metadata_->lock_);
   void DiscardCompressedData() EXCLUSIVE_LOCKS_REQUIRED(metadata_->lock_);
 
-  int lock_depth_for_testing() const { return lock_depth(); }
+  int lock_depth_for_testing() {
+    base::AutoLock locker_(metadata_->lock_);
+    return metadata_->lock_depth_;
+  }
 
   // Returns true if the string is parked. Doesn't take the lock inside but
   // expects it to be held before entering.
