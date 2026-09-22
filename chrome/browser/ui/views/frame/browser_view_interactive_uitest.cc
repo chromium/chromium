@@ -569,26 +569,6 @@ IN_PROC_BROWSER_TEST_F(BrowserViewFullscreenTest, MAYBE_Fullscreen) {
   }
 }
 
-class BrowserViewLoadingAnimationTest
-    : public BrowserViewTest,
-      public testing::WithParamInterface<bool> {
- public:
-  BrowserViewLoadingAnimationTest() {
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(features::kCompositorLoadingThrobber);
-    } else {
-      feature_list_.InitAndDisableFeature(features::kCompositorLoadingThrobber);
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(CompositorDrivenThrobber,
-                         BrowserViewLoadingAnimationTest,
-                         testing::Bool());
-
 // TODO(b/342017720): Re-enable on Mac
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_LoadingAnimationChangeOnMinimizeAndRestore \
@@ -597,7 +577,7 @@ INSTANTIATE_TEST_SUITE_P(CompositorDrivenThrobber,
 #define MAYBE_LoadingAnimationChangeOnMinimizeAndRestore \
   LoadingAnimationChangeOnMinimizeAndRestore
 #endif  // BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_P(BrowserViewLoadingAnimationTest,
+IN_PROC_BROWSER_TEST_F(BrowserViewTest,
                        MAYBE_LoadingAnimationChangeOnMinimizeAndRestore) {
   auto* contents = browser()->GetTabStripModel()->GetActiveWebContents();
   content::TestNavigationObserver navigation_watcher(

@@ -24,10 +24,6 @@ bool ShouldUseActionsForBrowserCommands();
 
 BASE_DECLARE_FEATURE(kAllowEyeDropperWGCScreenCapture);
 
-// Enables a compositor-driven rotation animation for the tab load throbber.
-BASE_DECLARE_FEATURE(kCompositorLoadingThrobber);
-
-
 BASE_DECLARE_FEATURE(kCtrlTabMru);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

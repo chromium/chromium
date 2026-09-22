@@ -677,12 +677,6 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
       CHECK_NE(dragged_view->parent(), this);
       AddChildViewRaw(dragged_view);
       dragged_view->set_dragging(true);
-      // The dragged tabs must be painted to a layer to ensure they appear
-      // on top of other tabs' loading throbbers.
-      if (base::FeatureList::IsEnabled(features::kCompositorLoadingThrobber)) {
-        dragged_view->SetPaintToLayer();
-        dragged_view->layer()->SetFillsBoundsOpaquely(false);
-      }
       if (TabGroupHeader* header =
               views::AsViewClass<TabGroupHeader>(dragged_view)) {
         tab_strip_->tab_container_->GetGroupViews(header->group().value())
@@ -925,7 +919,6 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
       AnimationProgressed(animation);
       slot_view_->set_animating(false);
       slot_view_->set_dragging(false);
-      slot_view_->DestroyLayer();
       tab_container_->ReturnTabSlotView(base::to_address(slot_view_));
     }
 
