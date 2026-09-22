@@ -5,8 +5,9 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 
 #include <algorithm>
-#include <map>
 #include <memory>
+#include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/constants/ash_pref_names.h"
@@ -14,7 +15,6 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/webui/mall/app_id.h"
 #include "base/containers/to_vector.h"
-#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -221,25 +221,29 @@ class ChromeShelfPrefsTest : public testing::Test {
   }
 
   std::string GetPinned() {
-    static const base::NoDestructor<std::map<std::string, std::string>> kAppMap(
-        {
-            {app_constants::kChromeAppId, "chrome"},
-            {ash::kGeminiAppId, "gemini"},
-            {ash::kNotebookLmAppId, "notebook_lm"},
-            {ash::kMallSystemAppId, "mall"},
-            {ash::kGmailAppId, "gmail"},
-            {ash::kGoogleCalendarAppId, "cal"},
-            {file_manager::kFileManagerSwaAppId, "files"},
-            {ash::kMessagesAppId, "messages"},
-            {ash::kGoogleMeetAppId, "meet"},
-            {arc::kPlayStoreAppId, "play"},
-            {ash::kYoutubeAppId, "youtube"},
-            {arc::kGooglePhotosAppId, "photos"},
-        });
+    struct AppIdName {
+      std::string_view app_id;
+      std::string_view name;
+    };
+    static constexpr AppIdName kAppNames[] = {
+        {app_constants::kChromeAppId, "chrome"},
+        {ash::kGeminiAppId, "gemini"},
+        {ash::kNotebookLmAppId, "notebook_lm"},
+        {ash::kMallSystemAppId, "mall"},
+        {ash::kGmailAppId, "gmail"},
+        {ash::kGoogleCalendarAppId, "cal"},
+        {file_manager::kFileManagerSwaAppId, "files"},
+        {ash::kMessagesAppId, "messages"},
+        {ash::kGoogleMeetAppId, "meet"},
+        {arc::kPlayStoreAppId, "play"},
+        {ash::kYoutubeAppId, "youtube"},
+        {arc::kGooglePhotosAppId, "photos"},
+    };
     std::vector<std::string> apps;
     for (const auto& app_id : GetPinnedAppIds()) {
-      auto it = kAppMap->find(app_id);
-      apps.push_back(it != kAppMap->end() ? it->second : app_id);
+      const auto* it = std::ranges::find(kAppNames, app_id, &AppIdName::app_id);
+      apps.push_back(it != std::end(kAppNames) ? std::string(it->name)
+                                               : app_id);
     }
     return base::JoinString(apps, ", ");
   }
